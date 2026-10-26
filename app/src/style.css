@@ -1353,3 +1353,6 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .t1warn{color:var(--bad);margin:6px 0}
 .t1me{font-weight:700;color:var(--accent)}
 @media (max-width:640px){.t1row{grid-template-columns:1fr}.t1row .t2{margin-top:-2px}}
+
+/* replay import */
+.replaybox{margin:10px 0}.replaybox summary{cursor:pointer;font-weight:700}.replaybox textarea{width:100%;margin:8px 0;font:12px var(--mono)}
