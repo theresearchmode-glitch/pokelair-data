@@ -109,9 +109,14 @@ function abDescribe(t, fmt) {
   if (fmt === 'singles' && arc && arc.label === 'Offense' && gp.c.haz >= .5) parts[0] = 'Rocks + offense';
   return {mons, label: parts.join(' + '), why, gp: gpl, megas: mons.filter(m => m.mega).length, score: Math.round(v.score), grade: proChecks(t, true)};
 }
+// before you build: what you'll get, plus three recent event winners you can load straight away
+function abStart() {
+  const E = META.events, picks = E ? E.events.filter(e => e.src === 'official' || e.players >= 64).filter(e => e.top[0] && e.top[0].place === 1).slice(0, 3) : [];
+  return `<div class="abstart"><div class="abwhat">${[['Six that work together', 'Built from teams that win at real tournaments, filtered to what you own.'], ['The why', 'Each pick comes with its job on the team and what it fixes.'], ['Your Team Score', 'How ready it is, and the one change that would help most.']].map(([h, t], i) => `<div class="abw"><span class="abwn">${i + 1}</span><div><b>${h}</b><p class="t2">${t}</p></div></div>`).join('')}</div>
+    ${picks.length ? `<div class="head abwinhead"><div><h3>Or start from a recent winner</h3><p class="hint">Full sets, ready to load.</p></div></div>${picks.map(e => teamSheetCard(e.top[0], e, e.id + '#0')).join('')}` : ''}</div>`; }
 function renderAutoBuild() {
   const el = $('abOut'); if (!el) return; const r = ui.ab;
-  if (!r) { el.innerHTML = ''; return; }
+  if (!r) { el.innerHTML = abStart(); return; }
   if (r.busy) { el.innerHTML = '<div class="empty-note">Building your teams…</div>'; return; }
   const col = (res) => { if (!res.teams.length) return `<div class="abcol"><div class="abfmt">${FMT(res.fmt)}</div><div class="empty-note">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team.` : res.short != null ? `Only ${res.short} usable Pokémon in your box for ${FMT(res.fmt).toLowerCase()}. Add more in My box, or switch to Whole roster.` : 'No legal team from this pool.'}</div></div>`;
     const k = (ui.abIdx && ui.abIdx[res.fmt]) || 0, tm = res.teams[k % res.teams.length];

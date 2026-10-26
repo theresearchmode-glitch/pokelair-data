@@ -31,20 +31,18 @@ function renderCores() {
   const rows = coreRows(), cap = 10 + coreUi.more * 15, base = +RES.base || .5;
   const seg = (k, opts) => `<div class="seg" role="group">${opts.map(([v, t]) => `<button type="button" data-core${k}="${v}" aria-pressed="${coreUi[k] === v}">${t}</button>`).join('')}</div>`;
   const mon = coreUi.mon && byName.get(coreUi.mon);
-  const ctl = `<div class="corectl">${seg('kind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']])}${seg('sort', [['win', 'Best win rate'], ['use', 'Most used']])}
+  const ctl = `<div class="corectl">${seg('kind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']])}${seg('sort', [['win', 'Top rated'], ['use', 'Most used']])}
     <div class="corefind">${mon ? `<span class="corechip">${sprite(mon, 'tiny')}${esc(mon.d)}<button type="button" data-corex="1" aria-label="Clear">×</button></span>` : '<div class="cb"><input class="field" id="coreMonIn" placeholder="With a Pokémon…" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Only cores with this Pokémon"></div>'}</div></div>`;
   const what = coreUi.kind === 'pairs' ? `two Pokémon on the same team, ${CORE_MIN.pairs}+ teams` : coreUi.kind === 'trios' ? `three Pokémon on the same team, ${RES.minCore || 6}+ teams` : `the exact six, ${CORE_MIN.teams}+ entries`;
-  const intro = `<p class="t2 coreintro">A core is a group of Pokémon that cover each other: one sets up, protects or speeds the other, or they handle each other's bad matchups. These are ${what}, from ${(+RES.teams || 0).toLocaleString('en-US')} tournament teams. Average team wins ${(100 * base).toFixed(1)}% of games. ${coreUi.sort === 'win' ? 'Ranked by win rate, with small samples pulled toward average.' : ''}</p>`;
+  const intro = `<p class="t2 coreintro">A core is a group of Pokémon that cover each other: one sets up, protects or speeds the other, or they handle each other's bad matchups. These are ${what}, from ${(+RES.teams || 0).toLocaleString('en-US')} tournament teams. Average team wins ${(100 * base).toFixed(1)}% of games. ${coreUi.sort === 'win' ? 'Ranked by win rate adjusted for sample size, so a high rate over a few teams can sit below a slightly lower one over many.' : 'Ranked by how many teams used it.'}</p>`;
   if (!rows.length) { el.innerHTML = ctl + intro + '<div class="empty-note">No cores match. Try another Pokémon.</div>'; bindCoreIn(); return; }
-  const mx = Math.max(.08, ...rows.slice(0, cap).map(x => Math.abs(x.d)));
-  const list = rows.slice(0, cap).map((x, i) => { const key = x.ns.join('|'), tags = coreTags(x.ns), ps = x.ns.map(n => byName.get(n));
+    const list = rows.slice(0, cap).map((x, i) => { const key = x.ns.join('|'), tags = coreTags(x.ns), ps = x.ns.map(n => byName.get(n));
     const conf = coreUi.confirm === key;
+    const names = ps.map(p => esc(p.d)).join(x.ns.length > 3 ? ' · ' : ' + ');
     return `<div class="corerow${x.ns.length > 3 ? ' six' : ''}"><span class="corerk">${i + 1}</span>
-      <div class="coremons">${ps.map(p => `<span class="coremon">${sprite(p, 'coresp')}<b>${esc(p.d)}</b></span>`).join('')}</div>
-      <div class="corestat"><div class="corewr"><b>${(100 * x.wr).toFixed(1)}%</b><span class="${x.d >= 0 ? 'up' : 'dn'}">${x.d >= 0 ? '+' : ''}${(100 * x.d).toFixed(1)}</span></div>
-        <div class="corebar" aria-hidden="true"><i class="${x.d >= 0 ? 'up' : 'dn'}" style="${x.d >= 0 ? 'left:50%' : 'right:50%'};width:${Math.min(50, 50 * Math.abs(x.d) / mx).toFixed(1)}%"></i></div>
-        <div class="t2">${x.n.toLocaleString('en-US')} ${x.ns.length > 3 ? 'entr' + (x.n === 1 ? 'y' : 'ies') : 'teams'} · ${x.use >= .1 ? x.use.toFixed(1) : '<0.1'}% of teams</div></div>
-      ${tags.length ? `<div class="coretags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+      <div class="coremain"><div class="coresprs">${ps.map(p => sprite(p, 'coresp')).join('')}</div><div class="corenames">${names}</div>
+        ${tags.length ? `<div class="coretags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}</div>
+      <div class="corestat" title="${x.use >= .1 ? x.use.toFixed(1) : 'under 0.1'}% of all tournament teams"><b>${(100 * x.wr).toFixed(1)}%</b><span class="${x.d >= 0 ? 'up' : 'dn'}">${x.d >= 0 ? '+' : '−'}${Math.abs(100 * x.d).toFixed(1)} vs avg</span><small>${x.n.toLocaleString('en-US')} ${x.ns.length > 3 ? 'entr' + (x.n === 1 ? 'y' : 'ies') : 'teams'}</small></div>
       <div class="row corebtns">${conf ? `<span class="inline-confirm" style="color:var(--ink)">Replace your team?</span><button class="btn sm primary" type="button" data-coreuse="${esc(key)}" data-sure="1">Replace</button><button class="btn sm" type="button" data-corecx="1">Cancel</button>`
         : `<button class="btn sm" type="button" data-coreuse="${esc(key)}">${x.ns.length > 3 ? 'Load team' : 'Add to my team'}</button>${x.ns.length <= 3 ? `<button class="linkbtn" type="button" data-corefind="${esc(key)}">Teams with it</button>` : `<button class="linkbtn" type="button" data-corepractice="${esc(key)}">Practice against</button>`}`}</div></div>`; }).join('');
   el.innerHTML = ctl + intro + `<div class="corelist">${list}</div>` + (rows.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-coremore="1">Show more (${rows.length - cap} left)</button></div>` : '');

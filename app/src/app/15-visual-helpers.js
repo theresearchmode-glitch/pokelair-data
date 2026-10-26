@@ -16,3 +16,10 @@ const ARCH_DARK_TEXT = new Set(['Sun', 'Sand', 'Snow', 'Electric Terrain', 'Tail
 function archChips(label) { return String(label || '').split(' · ').filter(Boolean).map(x => { const c = ARCH_COLOR[x] || (x.includes('-') ? 'linear-gradient(90deg,#6f7a8f,#9aa3b5)' : '#6f7a8f');
   return `<span class="archchip${ARCH_DARK_TEXT.has(x) ? ' dk' : ''}" style="--ac:${c}">${esc(x)}</span>`; }).join(''); }
 
+
+// a team's six as a compact grid (3 across on phones, 6 on wide screens): sprite + name, small Mega mark
+function teamGrid(names, hl) { return `<div class="tgrid">${names.map(n => { const p = byName.get(n); if (!p) return '';
+  return `<span class="tgm${hl && hl.has(p.d.toLowerCase()) ? ' hl' : ''}" title="${esc(p.d)}">${sprite(p, 'tgs')}<span class="tgn${tgFit(tgName(p))}">${esc(tgName(p))}</span>${p.m ? '<i class="tgmk" title="Mega Evolution">M</i>' : ''}</span>`; }).join('')}</div>`; }
+const tgFit = d => { d = String(d); const w = Math.max(...d.split(' ').map(x => x.length)); return w >= 11 || d.length >= 14 ? ' xs' : w >= 10 || d.length >= 10 ? ' sm' : ''; };
+// the M mark says Mega, so the grid drops the word and keeps the name whole
+const tgName = p => p.m ? String(p.d).replace(/^Mega /, '') : p.d;

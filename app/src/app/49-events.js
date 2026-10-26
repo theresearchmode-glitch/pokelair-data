@@ -21,15 +21,19 @@ let evUi = {open: null, filter: 'all', more: 0, sets: {}};
 // one team with its sets: sprites, then (folded) each Pokémon's item, ability, nature and moves
 function teamSheetCard(t, ev, key, hl) {
   const open = !!evUi.sets[key], H = x => hl && hl.has(x.toLowerCase()) ? ' class="hl"' : '';
-  return `<div class="plan evteam"><div class="ph"><div><div class="pt"><span class="evpl p${Math.min(t.place, 9)}">${t.place ? placeTxt(t.place) : ''}</span> ${esc(t.player)} ${t.record ? `<span class="vsub">${esc(t.record)}</span>` : ''}</div>${ev ? `<div class="t2">${esc(ev.name)} · ${evDate(ev.date)} · ${ev.players} players</div>` : ''}</div><span class="archchips">${archChips(teamPlanLabel(t.mons.map(m => m.n)))}</span></div>
-    <div class="ttmons">${t.mons.map(m => { const p = byName.get(m.n); return `<span class="ttmon">${sprite(p, 'tiny')}${esc(p.d)}</span>`; }).join('')}</div>
+  return `<div class="plan evteam"><div class="ttwho"><div class="pt"><span class="evpl p${Math.min(t.place, 9)}">${t.place ? placeTxt(t.place) : ''}</span> ${esc(t.player)} ${t.record ? `<span class="vsub">${esc(t.record)}</span>` : ''}</div>${ev ? `<div class="t2">${esc(ev.name)} · ${evDate(ev.date)} · ${ev.players} players</div>` : ''}</div>
+    ${open ? '' : teamGrid(t.mons.map(m => m.n), hl)}
+    <div class="ttmeta"><span class="archchips">${archChips(teamPlanLabel(t.mons.map(m => m.n)))}</span></div>
     ${open ? `<div class="evsets">${t.mons.map(m => { const p = byName.get(m.n); return `<div class="evset">${sprite(p, 'evspr')}<div><b${H(p.d)}>${esc(p.d)}</b>${m.i ? ` <span class="t2">@</span> <span${H(m.i)}>${esc(m.i)}</span>` : ''}
       <div class="t2"><span${H(m.a)}>${esc(m.a)}</span>${m.nt ? ' · ' + esc(m.nt) : ''}</div><div class="evmv">${m.mv.map(x => `<span${H(x)}>${esc(x)}</span>`).join('')}</div></div></div>`; }).join('')}</div>` : ''}
     <div class="row evbtns"><button class="btn sm" type="button" data-evload="${esc(key)}">Load team</button><button class="linkbtn" type="button" data-evsets="${esc(key)}" aria-expanded="${open}">${open ? 'Hide sets' : 'Sets'}</button><button class="linkbtn" type="button" data-evvs="${esc(key)}">Practice against</button></div></div>`; }
 function evTeam(key) { const E = META.events; if (!E) return null; const [id, k] = key.split('#'); const ev = E.events.find(e => e.id === id); return ev && ev.top[+k] ? {ev, t: ev.top[+k]} : null; }
+// plain words for the data line, when it has the usual shape
+function evSourceText(x) { x = String(x || ''); const m = x.match(/Limitless \((\d+)\+ players, last (\d+) days, top (\d+)\)/), o = x.match(/official events \(top (\d+)\)/);
+  return m ? `online events with ${m[1]}+ players from the last ${m[2]} days (top ${m[3]})${o ? ` and official events (top ${o[1]})` : ''}` : x; }
 function renderEvents() {
   const el = $('evOut'); if (!el) return; const E = META.events;
-  const src = $('evSource'); if (src) src.textContent = E ? `${E.events.length} events · ${E.source}` : '';
+  const src = $('evSource'); if (src) src.textContent = E ? `${E.events.length} events · ${evSourceText(E.source)}` : '';
   if (!E) { el.innerHTML = '<div class="empty-note">Tournament results appear here after the next data refresh.</div>'; return; }
   const ev = evUi.open && E.events.find(e => e.id === evUi.open);
   if (ev) {
@@ -58,7 +62,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.evload || d.evvs) { const x = evTeam(d.evload || d.evvs); if (!x) return;
     if (d.evload) { if (members().length && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to replace your team'; return; } loadSheet(x.t); return; }
     S.opp = x.t.mons.map(m => m.n); persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
-  keepScroll(() => { if (view === 'top') renderTeamSearch(); else renderEvents(); }); });
+  keepScroll(() => { if (view === 'top') renderTeamSearch(); else if (view === 'auto') renderAutoBuild(); else renderEvents(); }); });
 
 // ---- team search (Top teams) ----
 let tsUi = {f: [], more: 0};

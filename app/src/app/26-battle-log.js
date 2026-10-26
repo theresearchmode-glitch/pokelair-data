@@ -5,12 +5,15 @@ function teamRecord(ms) { if (!S.log || !S.log.length || ms.length < 6) return n
 function renderLog() {
   const form = $('logForm'), out = $('logStats'); if (!form || !out) return;
   if (!Array.isArray(S.log)) S.log = [];
-  const ms = members(), pick = (ui.logPick || []).filter(n => ms.some(m => m.p.n === n));
-  ui.logPick = pick;
+  const ms = members(); let pick = (ui.logPick || []).filter(n => ms.some(m => m.p.n === n));
+  // until you change it, the log starts from the four Battle mode suggested (leads first)
+  const fromPlan = !ui.logTouched && !pick.length && view === 'matchup' && Array.isArray(bmUi.four) && bmUi.four.length === 4 && bmUi.four.every(n => ms.some(m => m.p.n === n));
+  if (fromPlan) pick = bmUi.four.slice(); else ui.logPick = pick;
+  ui.logShown = pick;
   if (ms.length < 4) form.innerHTML = '<div class="empty-note">Add at least 4 Pokémon to your team to log a battle.</div>';
   else form.innerHTML = `<div class="logpicks">${ms.map(m => { const i = pick.indexOf(m.p.n);
       return `<button type="button" class="logpick${i >= 0 ? ' on' : ''}" data-logpick="${esc(m.p.n)}" aria-pressed="${i >= 0}">${sprite(m.p, 'mini')}<span>${esc(m.d)}</span>${i >= 0 ? `<b class="logord">${i < 2 ? 'Lead' : 'Back'} ${i + 1}</b>` : ''}</button>`; }).join('')}</div>
-    <div class="logacts"><span class="vsub">${pick.length}/4 picked${S.opp.some(Boolean) ? ` · vs ${S.opp.filter(Boolean).length} opposing Pokémon from Matchup` : ''}</span>
+    <div class="logacts"><span class="vsub">${fromPlan ? 'Filled in from the plan · tap to change' : pick.length + '/4 picked'}${S.opp.some(Boolean) ? ` · saved with their ${S.opp.filter(Boolean).length}` : ''}</span>
       <button class="btn logwin" type="button" data-logres="W"${pick.length === 4 ? '' : ' disabled'}>Win</button><button class="btn logloss" type="button" data-logres="L"${pick.length === 4 ? '' : ' disabled'}>Loss</button></div>`;
   const L = S.log; if (!L.length) { out.innerHTML = '<div class="empty-note">No battles logged yet. Your record by team, Pokémon and lead pair shows up here.</div>'; return; }
   const all = logStats(L), tr = teamRecord(ms);
@@ -31,9 +34,9 @@ function renderLog() {
     <details class="loglist"><summary>Recent battles</summary>${L.slice(-15).reverse().map(e => `<div class="logitem"><span class="res ${e.r === 'W' ? 'w' : 'l'}">${e.r}</span><span class="t2">${when(e.t)}</span><span class="lgb">${e.b.map(n => esc(dn(n))).join(', ')}${e.o.length ? ` <span class="vsub">vs ${e.o.slice(0, 3).map(n => esc(dn(n))).join(', ')}${e.o.length > 3 ? '…' : ''}</span>` : ''}</span><button type="button" class="x" data-logdel="${e.t}" aria-label="Delete this battle">×</button></div>`).join('')}</details>`;
 }
 document.addEventListener('click', e => { const t = e.target; if (!t || !t.closest) return; const g = t.closest('[data-logpick],[data-logres],[data-logdel]'); if (!g) return; const d = g.dataset;
-  if (d.logpick) { const p = ui.logPick || []; ui.logPick = p.includes(d.logpick) ? p.filter(x => x !== d.logpick) : (p.length >= 4 ? p : [...p, d.logpick]); renderLog(); return; }
-  if (d.logres) { const p = ui.logPick || []; if (p.length !== 4) return; if (!Array.isArray(S.log)) S.log = [];
+  if (d.logpick) { ui.logTouched = true; const p = ui.logShown || ui.logPick || []; ui.logPick = p.includes(d.logpick) ? p.filter(x => x !== d.logpick) : (p.length >= 4 ? p : [...p, d.logpick]); renderLog(); return; }
+  if (d.logres) { const p = ui.logShown || ui.logPick || []; if (p.length !== 4) return; if (!Array.isArray(S.log)) S.log = [];
     S.log.push({t: Date.now(), r: d.logres, b: p.slice(), tm: members().map(m => m.p.n), o: S.opp.filter(Boolean)}); if (S.log.length > 400) S.log = S.log.slice(-400);
-    ui.logPick = []; persist(); renderLog(); safe('verdict', () => render()); toast(d.logres === 'W' ? 'Win logged' : 'Loss logged'); return; }
+    ui.logPick = []; ui.logTouched = false; persist(); renderLog(); safe('verdict', () => render()); toast(d.logres === 'W' ? 'Win logged' : 'Loss logged'); return; }
   if (d.logdel) { const k = +d.logdel; S.log = (S.log || []).filter(x => x.t !== k); persist(); renderLog(); toast('Battle deleted'); } });
 

@@ -54,11 +54,12 @@ function renderBattle() {
     ${shotOk ? '<button type="button" class="btn sm" id="bmShot">Read screenshot</button>' : ''}<button type="button" class="btn sm ghost" id="bmClear">Clear</button></div>
     ${shotOk && shot.res ? `<div class="bmshot t2">${shot.res.busy ? '<span class="spin" aria-hidden="true"></span> Reading their team…' : shot.res.err ? esc(shot.res.err) : shot.res.found ? `Read ${shot.res.found.length} of 6 from your screenshot${shot.res.found.some(x => !x.sure) ? '. Double-check: ' + shot.res.found.filter(x => !x.sure).map(x => esc(x.p.d)).join(', ') : ''}.` : ''}</div>` : ''}
     <div class="bmopp">${slots}</div>`;
-  let body = '';
+  let body = ''; bmUi.four = null;
   if (mine.length < 4) body = '<div class="empty-note">Add at least 4 Pokémon on the Team page first.</div>';
   else if (!theirs.length) body = '<div class="empty-note">Type their Pokémon as you see them at team preview. Everything below fills in as you go.</div>';
   else {
     const r = planMatchup(mine, theirs, true), C = r.chosen.map(i => mine[i]);
+    bmUi.four = [...r.lead, ...r.back].map(i => mine[i].p.n);
     const card = (i, tag) => `<div class="bmpick${tag === 'Lead' ? ' lead' : ''}">${sprite(mine[i].p, 'bmpspr')}<span class="bmpn">${esc(mine[i].d)}</span><span class="tag">${tag.toUpperCase()}</span></div>`;
     const ll = r.B && theirs.length >= 2 ? likelyLead(theirs, r.B) : [];
     const bring = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Bring</span><span class="vsub">${dbl ? 'lead 2, back 2' : 'lead 1'}</span></div>
@@ -90,9 +91,9 @@ function renderBattle() {
       <div class="seg segwrap" role="group" aria-label="Intimidate"><button type="button" data-bmi="intMe" aria-pressed="${bmUi.intMe}">You're Intimidated</button><button type="button" data-bmi="intThem" aria-pressed="${bmUi.intThem}">They're Intimidated</button></div>
       ${grid}<p class="t2 bmleg" style="margin:0"><span class="bo k2">%</span> your best hit on them · <span class="bd k2">%</span> their best hit on you. Max roll, % of HP, each side's usual set. Green = can KO, gold = 2 hits.</p></div>`;
     let t1 = ''; if (dbl) { try { t1 = turnOnePlan(mine, theirs, r); } catch (e) {} }
-    const after = `<div class="plan bmcard bmafter" data-t="plan"><div class="qlog"><span class="vsub">After the game, played these four?</span><button class="btn logwin" type="button" data-qlog="W">Won</button><button class="btn logloss" type="button" data-qlog="L">Lost</button></div></div>`;
-    body = `<div class="seg bmtabs" role="group" aria-label="Show">${[['plan', 'Plan'], ['speed', 'Speed'], ['dmg', 'Damage']].map(([k, t]) => `<button type="button" data-bmt="${k}" aria-pressed="${bmUi.tab === k}">${t}</button>`).join('')}</div><div class="bmgrid" data-tab="${bmUi.tab}">${bring}${watch}${speed}${t1 ? `<div class="bmt1" data-t="plan">${t1}</div>` : ''}${dmgCard}${after}</div>`; }
+    body = `<div class="seg bmtabs" role="group" aria-label="Show">${[['plan', 'Plan'], ['speed', 'Speed'], ['dmg', 'Damage']].map(([k, t]) => `<button type="button" data-bmt="${k}" aria-pressed="${bmUi.tab === k}">${t}</button>`).join('')}</div><div class="bmgrid" data-tab="${bmUi.tab}">${bring}${watch}${speed}${t1 ? `<div class="bmt1" data-t="plan">${t1}</div>` : ''}${dmgCard}</div>`; }
   el.innerHTML = top + body;
+  safe('log', () => renderLog());
   S.opp.forEach((n, i) => { const inp = $('bmOpp' + i); if (inp) bindMonInput(inp, p => { S.opp[i] = p.n; persist(); renderMatchup(); const nx = S.opp.findIndex(x => !byName.get(x)); const f = nx >= 0 && $('bmOpp' + nx); if (f) f.focus(); }, p => !S.opp.includes(p.n)); });
   bmTimer(); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bms],[data-bmw],[data-bmi],[data-bmx],[data-bmt],#bmClear,#bmShot,#bmClockBtn,[data-battle]'); if (!b) return;

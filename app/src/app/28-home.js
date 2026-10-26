@@ -41,20 +41,18 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
       <div class="startacts"><button class="startbtn" type="button" data-view="auto"><b>Build for me</b><span>A real winning team you can field from your box</span></button><button class="startbtn" type="button" data-view="top"><b>Copy a top team</b><span>Load a team that won and tweak it</span></button><button class="startbtn" type="button" data-view="build"><b>Start from scratch</b><span>Type any Pokémon into a slot</span></button></div></div>`}
   <div class="htiles">${HOME_TILES.filter((x, k) => ui.homeAll || k < 6).map(([v2, t, d, ic]) => `<button type="button" class="htile" data-view="${v2}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><b>${t}</b><span>${d}</span></button>`).join('')}</div>
   <div class="htmore"><button type="button" class="linkbtn" id="homeAllBtn">${ui.homeAll ? 'Fewer tools' : `All tools (${HOME_TILES.length})`}</button></div>
-  <div class="hsec"><div class="hsh"><h3>Top of the meta</h3><button type="button" class="hlink" data-view="ratings">All ratings ›</button></div>
-    <p class="t2">Highest NastyPlot ratings right now. Tap one for the full breakdown.</p>
-    <div class="hrow">${top.map(x => homeMini(x.p, x.r)).join('')}</div></div>
+  <div class="hsec"><div class="hsh"><h3>${ui.homeGems && gems.length ? 'Hidden gems' : 'Top of the meta'}</h3><button type="button" class="hlink" data-view="ratings">All ratings ›</button></div>
+    <div class="hpick">${gems.length ? `<div class="seg" role="group" aria-label="Show"><button type="button" data-hgems="0" aria-pressed="${!ui.homeGems}">Top rated</button><button type="button" data-hgems="1" aria-pressed="${!!ui.homeGems}">Hidden gems</button></div>` : ''}<p class="t2">${ui.homeGems && gems.length ? 'Rated 55+ but rarely used. Results hold up so far.' : 'Highest NastyPlot ratings right now. Tap one for the breakdown.'}</p></div>
+    <div class="hrow">${ui.homeGems && gems.length ? gems.map(x => homeMini(x.p, x.r, '<i>◆</i>')).join('') : top.map(x => homeMini(x.p, x.r)).join('')}</div></div>
   ${homeTrends()}
-  ${gems.length ? `<div class="hsec"><div class="hsh"><h3>Hidden gems</h3><button type="button" class="hlink" data-view="ratings">More ›</button></div>
-    <p class="t2">Rated 55+ but rarely used. Results hold up so far.</p>
-    <div class="hrow">${gems.map(x => homeMini(x.p, x.r, '<i>◆</i>')).join('')}</div></div>` : ''}
   ${cores.length ? `<div class="hsec"><div class="hsh"><h3>Winning cores</h3><button type="button" class="hlink" data-view="cores">All cores ›</button></div>
-    <p class="t2">Three-Pokémon cores with the best win rates at Limitless events (60+ teams each).</p>
-    <div class="hcores">${cores.map(c => { const ps = c.slice(0, 3).map(n => byName.get(n)); return `<div class="hcore"><div class="hcs">${ps.map(p => sprite(p, 'hcspr') || '').join('')}</div><div class="hcn">${ps.map(p => esc(p.d)).join(' · ')}</div><div class="hcw"><b>${Math.round(c[4] * 100)}%</b> win rate · ${fmtN(c[3])} teams</div></div>`; }).join('')}</div></div>` : ''}
+    <p class="t2">Trios with the best win rates at tournaments (60+ teams each).</p>
+    <div class="hcores">${cores.map(c => { const ps = c.slice(0, 3).map(n => byName.get(n)); return `<button type="button" class="hcore" data-view="cores"><div class="hcs">${ps.map(p => sprite(p, 'hcspr') || '').join('')}</div><div class="hcn">${ps.map(p => esc(p.d)).join(' · ')}</div><div class="hcw"><b>${Math.round(c[4] * 100)}%</b> win rate · ${fmtN(c[3])} teams</div></button>`; }).join('')}</div></div>` : ''}
   <div class="hsec hlog"><div class="hsh"><h3>Your battles</h3><button type="button" class="hlink" data-view="matchup">Battle log ›</button></div>
     ${ls ? `<div class="hlogs"><div><b>${ls.w}–${ls.l}</b><span>${ls.pct}% wins</span></div><div><b>${ls.n}</b><span>logged</span></div><div class="hdots">${L.slice(-10).map(e => `<i class="${e.r === 'W' ? 'w' : 'l'}" title="${e.r === 'W' ? 'Win' : 'Loss'}"></i>`).join('')}</div></div>`
-      : '<div class="hempty"><p class="t2">No games logged yet. After a match, log the 4 you brought and the result (or paste a Showdown replay) and your record shows up here and on your team.</p><button type="button" class="btn sm" data-view="matchup">Log a game</button></div>'}</div>
+      : '<div class="hempty"><p class="t2">Log your games after each match and your record shows up here.</p><button type="button" class="btn sm" data-view="matchup">Log a game</button></div>'}</div>
   <p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings blend Limitless, official VGC events, in-game ranked and Showdown.</p>`; }
 
 
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#homeAllBtn'); if (!b) return; ui.homeAll = !ui.homeAll; keepScroll(() => renderHome()); });
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-hgems]'); if (!b) return; ui.homeGems = b.dataset.hgems === '1'; keepScroll(() => renderHome()); });
