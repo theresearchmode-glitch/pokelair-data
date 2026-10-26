@@ -17,6 +17,9 @@ jobs:
       - run: node update.mjs
         env:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
+      - run: node rk9.mjs || echo "rk9 skipped"
+      - run: node model.mjs || echo "model skipped"
+      - run: node ladder.mjs || echo "ladder stats skipped"
       - name: Commit
         run: |
           git config user.name "pokelair-bot"
