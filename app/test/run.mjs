@@ -122,24 +122,35 @@ for (const width of [1280, 390]) {
     if (width < 700) ok(b.sw <= b.w, 'battle: no sideways scroll on phone');
     await pg.evaluate(() => document.querySelector('[data-bms="tr"]').click()); await pg.waitForTimeout(200);
     ok(await pg.evaluate(() => { const v = [...document.querySelectorAll('.bmsv')].map(x => parseInt(x.textContent, 10)); return v.every((x, i) => !i || x >= v[i - 1]); }), 'battle: Trick Room sorts slowest first');
+    // one log: the battle log starts from the plan's four and records them
+    const lg = await pg.evaluate(() => ({on: document.querySelectorAll('#logForm .logpick.on').length, note: (document.querySelector('#logForm .logacts') || {}).textContent || '', old: document.querySelectorAll('[data-qlog]').length}));
+    ok(lg.on === 4 && /from the plan/.test(lg.note) && lg.old === 0, `battle log: prefilled from the plan, one place to log (${lg.on})`);
+    const n0 = await pg.evaluate(() => (window.__PL.getS().log || []).length); await pg.evaluate(() => document.querySelector('#logForm [data-logres="W"]').click()); await pg.waitForTimeout(200);
+    ok(await pg.evaluate(n => { const L = window.__PL.getS().log; return L.length === n + 1 && L[L.length - 1].b.length === 4; }, n0), 'battle log: win saved with four');
     await go(pg, 'cores'); await pg.waitForTimeout(400);
     const c = await pg.evaluate(() => document.querySelectorAll('.corerow').length); ok(c >= 10, `cores: ${c} pairs`);
     await pg.evaluate(() => document.querySelector('[data-corekind="trios"]').click()); await pg.waitForTimeout(300);
-    ok(await pg.evaluate(() => document.querySelectorAll(".corerow .coremon").length >= 30), 'cores: trios list');
+    ok(await pg.evaluate(() => { const r = [...document.querySelectorAll(".corerow .corenames")]; return r.length >= 10 && r.every(x => x.textContent.split(" + ").length === 3); }), 'cores: trios list');
     await pg.evaluate(() => document.querySelector('[data-corekind="teams"]').click()); await pg.waitForTimeout(300);
     ok(await pg.evaluate(() => document.querySelectorAll('.corerow.six').length >= 10), 'cores: full teams list');
     await go(pg, 'top'); await pg.waitForTimeout(300); await pg.evaluate(() => document.querySelector('.teamsw [data-view="events"]').click()); await pg.waitForTimeout(400);
     const ev = await pg.evaluate(() => document.querySelectorAll('.evcard').length); ok(ev >= 10, `events: ${ev} events`);
     await pg.evaluate(() => document.querySelector('.evcard').click()); await pg.waitForTimeout(300);
     ok(await pg.evaluate(() => document.querySelectorAll('.evteam').length >= 4), 'events: standings open');
-    await pg.evaluate(() => document.querySelector('[data-evsets]').click()); await pg.waitForTimeout(200);
-    ok(await pg.evaluate(() => document.querySelectorAll('.evset').length === 6), 'events: sets shown');
+    await pg.evaluate(() => document.querySelector('#evOut [data-evsets]').click()); await pg.waitForTimeout(200);
+    ok(await pg.evaluate(() => document.querySelectorAll('#evOut .evset').length === 6), 'events: sets shown');
     await go(pg, 'top'); await pg.waitForTimeout(300);
     await pg.fill('#tsIn', 'Choice Sc'); await pg.waitForTimeout(200);
     ok(await pg.evaluate(() => /Choice Scarf/.test((document.querySelector('.menu') || {}).innerText || '')), 'team search: suggests items');
     await pg.keyboard.press('Enter'); await pg.waitForTimeout(300);
     const ts = await pg.evaluate(() => ({n: document.querySelectorAll('#tsOut .evteam').length, hidden: document.getElementById('ttList').hidden})); ok(ts.n >= 3 && ts.hidden, `team search: ${ts.n} teams with Choice Scarf`);
-    await go(pg, 'calc'); await pg.waitForTimeout(400); await pg.evaluate(() => document.querySelector('[data-dcdir="theirs"]').click()); await pg.waitForTimeout(400);
+    await go(pg, 'calc'); await pg.waitForTimeout(400);
+    if (width < 700) { await pg.evaluate(() => scrollTo(0, 300)); await pg.waitForTimeout(300); const st = await pg.evaluate(() => { const x = document.getElementById('dcStick'); if (!x) return null; const r = x.getBoundingClientRect(); return {vis: getComputedStyle(x).opacity > .5 && r.top >= 0 && r.top < 120, txt: x.textContent}; });
+      ok(st && st.vis && /%/.test(st.txt), 'calc: result pinned on phone'); await pg.evaluate(() => scrollTo(0, 0)); }
+    // names fit: no cut-off Pokémon names on ratings tiles or team grids
+    for (const [v, sel] of [['ratings', '.ltn'], ['top', '.tgn'], ['auto', '.tgn']]) { await go(pg, v); await pg.waitForTimeout(400);
+      const cut = await pg.evaluate(sel => [...document.querySelectorAll(`[data-pane]:not([hidden]) ${sel}`)].filter(x => x.offsetParent && (x.scrollWidth > x.clientWidth + 1 || x.scrollHeight > x.clientHeight + 1)).map(x => x.textContent), sel);
+      ok(cut.length === 0, `${v}: names fit (${width}px)${cut.length ? ': ' + cut.slice(0, 5).join(', ') : ''}`); } await pg.evaluate(() => document.querySelector('[data-dcdir="theirs"]').click()); await pg.waitForTimeout(400);
     ok(await pg.evaluate(() => /best hit on your team/i.test(document.getElementById('dcOut').innerText)), 'calc: their hits on you');
     ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); } }
 await browser.close();
