@@ -1572,3 +1572,12 @@ h2 .tipq{width:19px;height:19px;font-size:11.5px}
 .welcome .row{margin-top:6px;gap:8px}
 .hhacts{margin-top:12px;position:relative;z-index:1}
 .thead>.trow{background:none;border:0;border-radius:0;padding:0;margin:0 0 2px}
+/* phone: a section's single action button sits beside the heading instead of on its own line */
+@media (max-width:700px){
+  .head:has(>.btn){position:relative}
+  .head>.btn{position:absolute;top:0;right:0;padding:6px 12px;font-size:13px}
+  .head:has(>.btn)>div:first-child{padding-right:112px;min-height:34px}
+}
+/* rating tiles: full names (Megas keep "Mega"), up to two lines */
+.ltile{height:54px}
+.ltn{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:11.5px;line-height:1.12;overflow:hidden}
