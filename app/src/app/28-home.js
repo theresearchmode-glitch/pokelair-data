@@ -19,6 +19,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
   const mine = S.slots.map((s, i) => ({p: byName.get(s.n), i})).filter(x => x.p);
   el.innerHTML = `
   <div class="hhero">
+    <div class="hhlogo"><span class="np" style="--s:.5" aria-hidden="true"><svg class="np-mark" viewBox="0 0 24 22" aria-hidden="true"><path d="M2 21.5 12 13.2l10 8.3v-5L12 8.2 2 16.5z" class="lm2"/><path d="M2 13.3 12 5l10 8.3v-5L12 0 2 8.3z" class="lm1"/></svg><span class="np-txt"><span class="np-kana">ナスティプロット</span><span class="np-nasty">NASTY</span><span class="np-plotw"><span class="np-plot"><span>PLOT</span></span><svg class="np-loop" viewBox="0 0 260 90" aria-hidden="true"><ellipse cx="130" cy="45" rx="128" ry="40" transform="rotate(-5 130 45)"/><path d="M246 20 284 -6M262 36 296 26"/></svg></span></span></span></div>
     <div class="hhk">Pokémon Champions · Reg M-C · VGC doubles</div>
     <div class="hht" role="heading" aria-level="2">Plot your <em>win.</em></div>
     <p class="hhs">Build teams that actually win. Ratings, builds and matchups from ${nTeams ? fmtN(nTeams) + ' real tournament teams' : 'real tournament results'}, refreshed every morning${dataDateText() ? ' (' + dataDateText().replace(/^Data from/, 'latest:') + ')' : ''}.</p>
