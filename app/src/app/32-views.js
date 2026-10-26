@@ -3,11 +3,11 @@ let view='home';
 // Five main pages, each with its sections. The first key of a group is the page the main nav opens.
 const GROUPS=[['build',[['build','My team'],['teams','Saved teams'],['box','My box']]],
   ['auto',[['auto','Build for me'],['coverage','Best additions']]],
-  ['matchup',[['matchup','Matchup'],['speed','Speed tiers'],['calc','Damage calc'],['gauntlet','Gauntlet']]],
+  ['matchup',[['matchup','Matchup'],['speed','Speed tiers'],['calc','Damage calc'],['gauntlet','Gauntlet'],['arch','Archetypes']]],
   ['ratings',[['ratings','Ratings'],['meta','Rankings'],['top','Top teams'],['sets','Popular sets'],['types','Type chart']]]];
 const VIEW_PARENT={};GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{if(v!==g)VIEW_PARENT[v]=g}));
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',build:'Team builder',auto:'Build for me',teams:'Saved teams',matchup:'Matchup',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Top teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet'};
+const VIEW_TITLE={home:'Home',build:'Team builder',auto:'Build for me',teams:'Saved teams',matchup:'Matchup',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Top teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes'};
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
   const def='<svg class="nic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>';
@@ -40,4 +40,5 @@ function setView(v,scroll){if(!document.querySelector(`[data-pane="${v}"]`))v='h
   if(v==='speed')safe('speed tiers',renderSpeed);
   if(v==='calc')safe('damage calc',renderCalc);
   if(v==='gauntlet')safe('gauntlet',renderGauntlet);
+  if(v==='arch')safe('archetypes',renderGuides);
   if(scroll!==false){try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}}}

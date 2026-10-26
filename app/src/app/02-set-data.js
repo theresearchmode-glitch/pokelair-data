@@ -94,6 +94,6 @@ const DATA_AT={};
 function noteDataDate(k,v){try{const t=v&&(v.updated||v.pulled||v.date);const ms=t?Date.parse(String(t).length===10?t+'T12:00:00':t):NaN;if(!isNaN(ms))DATA_AT[k]=ms;showDataDate()}catch(e){}}
 function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';const last=Math.max(...ts),days=Math.floor((Date.now()-last)/864e5);
   return 'Data from '+new Date(last).toLocaleDateString('en-US',{month:'short',day:'numeric'})+(days>2?' ('+days+' days old)':'')}
-function showDataDate(){const t=dataDateText();if(!t)return;const el=document.getElementById('eyebrow');
+function showDataDate(){try{if(typeof renderHealth==='function')renderHealth()}catch(e){}const t=dataDateText();if(!t)return;const el=document.getElementById('eyebrow');
   if(el&&!el.querySelector('.datadate')){const sp=document.createElement('span');sp.className='datadate';el.append(' · ',sp)}
   if(el)el.querySelector('.datadate').textContent=t;const sf=document.getElementById('sideFoot');if(sf)sf.textContent='Pokémon Champions · Reg M-C · '+t}

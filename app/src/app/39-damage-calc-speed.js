@@ -29,7 +29,12 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
   const tog=(k,t)=>`<button type="button" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
   $('spdCtl').innerHTML=`<div class="seg" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('tr','Trick Room')}</div>`;
   if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on the Team page to place them against the top threats.</div>';return}
-  const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&(spdUi.tr?r.v>me.v:r.v<me.v)).length;return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}</span>`}).join('');
+  const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&(spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
+    let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy){const ls=likelySpeed(p),cs=commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=ls.scarf?1.5:1;
+      const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
+      if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
+        tip=need!=null?` · <span class="spdtip">${need-cur} more Spe points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:` · <span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
+    return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}${tip}</span>`}).join('');
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
     return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
     <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Natures and items are the most common ones players register; fast Pokémon are assumed to put 32 points in Speed. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
