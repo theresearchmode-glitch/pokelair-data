@@ -16,8 +16,8 @@ function renderGauntlet(){const el=$('gauntOut');if(!el)return;const ms=members(
     return `<div class="gitem"><div class="gtop"><span class="sev ${c}">${t}</span><span class="gwho">${esc(x.t.who)}</span>${x.pm!=null?`<span class="tag gpm">Model ${Math.round(x.pm*100)}% to win</span>`:''}<span class="vsub">${esc(x.t.ev||'')}</span></div>
       <div class="gmons">${x.theirs.map((o,j)=>`<span class="gm${x.loose.includes(j)?' loose':''}" title="${esc(o.d)}${x.loose.includes(j)?': nothing in your four handles it well':''}">${sprite(o.p,'mini')||esc(o.d)}</span>`).join('')}</div>
       <div class="t2">Bring <b>${x.r.lead.map(nm).join(' + ')}</b> up front, ${x.r.back.map(nm).join(' + ')} in back.${x.loose.length?` Watch ${x.loose.map(j=>esc(x.theirs[j].d)).join(', ')}.`:''}</div>
-      <button type="button" class="btn gpractice" data-gaunt="${x.ix}">Open in Matchup</button></div>`}).join('')}</div>
-  <p class="t2" style="margin-top:10px">Each row runs the Matchup planner against that team (type matchups, real damage from each side's usual set, and speed)${modelOK()?', blended with the win model trained on real games':''}. Hardest matchups first.${modelOK()?' '+esc(modelLine()):''}</p>`}
+      <button type="button" class="btn gpractice" data-gaunt="${x.ix}">Practice in Battle mode</button></div>`}).join('')}</div>
+  <p class="t2" style="margin-top:10px">Each row runs the Battle mode planner against that team (type matchups, real damage from each side's usual set, and speed)${modelOK()?', blended with the win model trained on real games':''}. Hardest matchups first.${modelOK()?' '+esc(modelLine()):''}</p>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-gaunt],[data-qlog]');if(!b)return;
   if(b.dataset.gaunt!=null){const x=(gauntCache.rows||[]).find(r=>r.ix===+b.dataset.gaunt);if(!x)return;S.opp=x.t.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');persist();setView('matchup');renderMatchup();toast('Loaded as your opponent');return}
   if(b.dataset.qlog){const ms=members(),theirs=S.opp.map(n=>byName.get(n)).filter(Boolean).map(oppMember);if(ms.length<4||!theirs.length)return;

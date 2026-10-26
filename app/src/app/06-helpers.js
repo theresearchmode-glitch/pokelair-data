@@ -36,24 +36,40 @@ function proGrades(ms,useA){const th=metaThreats();if(!ms.length||!th.length)ret
   const oc=se2+(off>=18?.03:off>=17?0:-.05),og=oc>=.782?0:oc>=.747?1:oc>=.673?2:oc>=.577?3:4; // tournament p90/p75/p50/p25 (4-move sets)
   thin.sort((x,y)=>y.o.w-x.o.w);
   return {dg,og,se2,danger,dp,thin,full:ms.length===6}}
-// Winning-team checklist: plain yes/no checks for what 70%+ win-rate tournament teams (61 of 377) usually have.
+// Winning-team checklist: plain yes/no checks for what recent event winners usually have (rates measured live, see proLine).
 // No check predicts wins on its own; they flag gaps, not quality.
 function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms,useA);const a=analyze(ms,useA),sh=typeShape(a),dbl=S.format==='doubles',out=[];
   const fullMs=ms.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves});
   if(dbl){let gp=null;try{gp=gamePlan(fullMs)}catch(e){}const sp=gp&&gp.rows.find(r=>r.k==='speed')||{};
-    out.push({k:'speed',ok:sp.st==='ok',part:sp.st==='part',label:'Speed control',have:(sp.who||'')+(sp.st==='part'?' (only some sets run it)':''),miss:'Nothing to change turn order: add Tailwind, Trick Room, Icy Wind or Electroweb.',pro:'All 61 winning teams'});
-    const su=spreadUsers(fullMs);out.push({k:'spread',ok:su>=1,label:'Spread damage',have:su+' Pokémon with moves that hit both foes'+(su===1?' (most teams have 2)':''),miss:'No moves that hit both foes at once.',pro:'92% of winning teams'});
+    out.push({k:'speed',ok:sp.st==='ok',part:sp.st==='part',label:'Speed control',have:(sp.who||'')+(sp.st==='part'?' (only some sets run it)':''),miss:'Nothing to change turn order: add Tailwind, Trick Room, Icy Wind or Electroweb.',pro:proLine('speed','97% of event winners')});
+    const su=spreadUsers(fullMs);out.push({k:'spread',ok:su>=1,label:'Spread damage',have:su+' Pokémon with moves that hit both foes'+(su===1?' (most teams have 2)':''),miss:'No moves that hit both foes at once.',pro:proLine('spread','97% of event winners')});
     const fi=fullMs.filter(m=>m.ability==='Intimidate'||relMove(m,ROLE.fake)[0]>=.3||relMove(m,ROLE.redir)[0]>=.3).map(m=>m.d);
-    out.push({k:'fake',ok:fi.length>0,label:'Lead support',have:fi.join(', ')+' (Fake Out, Intimidate or redirection)',miss:'No Fake Out, Intimidate, Follow Me or Rage Powder to protect your attackers.',pro:'84% of winning teams'});
+    out.push({k:'fake',ok:fi.length>0,label:'Lead support',have:fi.join(', ')+' (Fake Out, Intimidate or redirection)',miss:'No Fake Out, Intimidate, Follow Me or Rage Powder to protect your attackers.',pro:proLine('fake','89% of event winners')});
     const mc=megaCount(ms);if(opts&&opts.itemsUnknown&&!mc){const can=ms.filter(m=>ROSTER.some(q=>q.m&&q.b===m.p.b)).map(m=>m.d);
       out.push({k:'mega',skip:true,ok:false,label:'Mega Evolution',have:'',miss:can.length?`Held items aren't listed for this team, so we can't tell which Pokémon Mega Evolved. Could Mega: ${can.join(', ')}.`:'Held items aren\'t listed, and none of these Pokémon can Mega Evolve.',pro:'Not counted'})}
-    else out.push({k:'mega',ok:mc>=Math.min(1,megaGoal())||megaGoal()===0,label:'Mega Evolution',have:mc+' Mega'+(mc===1?'':'s')+(mc>1?' (you can only Mega one per game)':''),miss:'No Mega.',pro:'100% of winning teams (82% bring 2)'});}
+    else out.push({k:'mega',ok:mc>=Math.min(1,megaGoal())||megaGoal()===0,label:'Mega Evolution',have:mc+' Mega'+(mc===1?'':'s')+(mc>1?' (you can only Mega one per game)':''),miss:'No Mega.',pro:proLine('mega','100% of event winners (81% bring 2)')});}
   const worst=a.rows.slice().sort((x,y)=>(y.w-y.r)-(x.w-x.r))[0];
-  out.push({k:'stack',ok:sh.maxStack<=2,label:'No major weak spot',have:'No attack type hits 3+ more of yours than resist it',miss:worst?`${worst.atk} hits ${worst.w} of yours and only ${worst.r} resist${worst.r===1?'s':''}.`:'',pro:dbl?'90% of winning teams':''});
+  out.push({k:'stack',ok:sh.maxStack<=2,label:'No major weak spot',have:'No attack type hits 3+ more of yours than resist it',miss:worst?`${worst.atk} hits ${worst.w} of yours and only ${worst.r} resist${worst.r===1?'s':''}.`:'',pro:dbl?proLine('stack','91% of event winners'):''});
   const big=a.rows.filter(r=>r.w>=3).map(r=>r.atk);
-  out.push({k:'w3',ok:sh.w3<=1,label:'Weak spots spread out',have:big.length?`Only ${big[0]} hits 3+ of yours`:'No type hits 3+ of yours',miss:`${big.join(' and ')} each hit 3+ of yours.`,pro:dbl?'82% of winning teams':''});
-  if(PG){const pc=Math.round(PG.se2*100);out.push({k:'reach',ok:PG.se2>=.6,part:PG.se2>=.55,label:'Pressure on the meta',have:`2+ of yours hit ${pc}% of the top 30 super effectively`,miss:`2+ of yours hit only ${pc}% of the top 30 super effectively (winners usually 55%+).`,pro:dbl?'92% of winning teams reach 55%':''})}
+  out.push({k:'w3',ok:sh.w3<=1,label:'Weak spots spread out',have:big.length?`Only ${big[0]} hits 3+ of yours`:'No type hits 3+ of yours',miss:`${big.join(' and ')} each hit 3+ of yours.`,pro:dbl?proLine('w3','78% of event winners'):''});
+  if(PG){const pc=Math.round(PG.se2*100);out.push({k:'reach',ok:PG.se2>=.6,part:PG.se2>=.55,label:'Pressure on the meta',have:`2+ of yours hit ${pc}% of the top 30 super effectively`,miss:`2+ of yours hit only ${pc}% of the top 30 super effectively (winners usually 55%+).`,pro:dbl?proLine('reach','94% of event winners'):''})}
   out.forEach(x=>{if(x.part&&!x.ok){x.ok=true;x.soft=true}});const cnt=out.filter(x=>!x.skip);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
 const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
 function teamRating(slots){const ms=slots.map(memberOf).filter(Boolean);return {ms,a:analyze(ms,true)}}
 function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2200)}
+
+// How often recent event winners pass each check, measured live from the Events data (each winner's real team and moves),
+// so the claims under the checklist stay true as the meta moves. Computed in small idle chunks after the data loads.
+let ckWin={key:null,rates:null,two:null,busy:false};
+function proLine(k,fb){const r=ckWin.rates&&ckWin.rates[k];if(!r||r[1]<20)return fb;
+  return `${Math.round(100*r[0]/r[1])}% of ${r[1]} recent event winners${k==='mega'&&ckWin.two!=null?` (${Math.round(100*ckWin.two/r[1])}% bring 2)`:''}`}
+function ckWinRefresh(){const E=META.events;if(!E||S.format!=='doubles')return;const key=E.updated+'|'+E.events.length;if(ckWin.key===key||ckWin.busy)return;
+  const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
+  ckWin.busy=true;const acc={},keep={slots:S.slots};let i=0,two=0,n=0;
+  const step=()=>{const t0=Date.now();try{while(i<list.length&&Date.now()-t0<12){const t=list[i++];
+      const ms=t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,mega:p.m,base:p.b,types:p.t}});
+      const CK=proChecks(ms,true);if(!CK)continue;n++;for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
+    catch(e){ckWin.busy=false;return}
+    if(i<list.length){setTimeout(step,30);return}
+    ckWin={key,rates:acc,two,busy:false};safe('checklist claims',()=>render())};
+  setTimeout(step,400)}

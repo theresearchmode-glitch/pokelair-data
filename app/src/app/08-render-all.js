@@ -21,7 +21,7 @@ function render(){
   const PG=ms.length?proGrades(ms,useA):null;
   const CK=ms.length?proChecks(ms,useA):null;
   $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Winning-team checklist${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
-     <div class="t2">${S.format==='doubles'?'What most tournament teams with a 70%+ win rate have (61 of 377 teams). A missing check is a gap to know about, not a verdict: plenty of 11-0 teams miss one, and play decides most games.':'Type checks for singles. The win-rate numbers come from doubles tournaments, so they are not shown here.'}</div>
+     <div class="t2">${S.format==='doubles'?'What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. It doesn\'t change the Team Score.':'Type checks for singles. The win-rate numbers come from doubles tournaments, so they are not shown here.'}</div>
      ${CK?`<ul class="cklist">${CK.items.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')}</ul>`:''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
@@ -64,7 +64,7 @@ function render(){
   ui.plans=plans;safe('problems',()=>renderProblems(ms,a,tRows,useA,plans));
   if(ui.vProven){const nd=$('needs');if(nd&&nd.innerHTML&&nd.insertAdjacentHTML)nd.insertAdjacentHTML('afterbegin','<div class="t2 provnote">This exact team has won at real events. Treat these as optional tweaks, not problems.</div>')}
   safe('plan cards',()=>renderPlans(ms,a,plans,useA,covered));
-  safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);safe('auto-build',renderAutoBuild);safe('pool',renderPoolCtl);safe('meta',renderMeta);{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
+  safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);safe('auto-build',renderAutoBuild);safe('pool',renderPoolCtl);safe('meta',renderMeta);{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
   safe('threats',()=>renderThreats(ms,useA));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);safe('top teams',renderTopTeams);safe('battle log',renderLog);safe('sets',renderSets);safe('paste',renderPastePanel);safe('home',renderHome);
 }
 // One-glance verdict for the Team page: how ready the team is, its biggest gap, its biggest threat, and whether it
@@ -77,30 +77,32 @@ function renderVerdict(ms,a,PG,CK){const el=$('verdict');ui.vProven=false;ui.vsu
   // real results lead: a team that already won is ready whatever the type chart says; otherwise the checklist decides
   const tr=typeof teamRecord==='function'?teamRecord(ms):null;if(tr)rows.unshift(['Your record',`${tr.w}-${tr.l} with this team (${tr.pct}%)`]);
   const wv=n>=6&&typeof winVsField==='function'?winVsField(ms.map(m=>m.p.n),true):null;
-  if(wv)rows.unshift(['Win model',`${Math.round(wv.p*100)}% expected against a typical tournament team${wv.pYou!=null?` · ${Math.round(wv.pYou*100)}% for you, adjusted by your battle log`:''}`]);
-  const TS=n>=6?teamScore({wv,best,CK,PG}):null;
+  const TS=n>=6?teamScore({wv}):null;
   let lvl,head;
   if(n<6){lvl='mid';head=`${n} of 6 picked: keep building`}
-  else{lvl=TS.score>=60?'good':TS.score>=45?'mid':'bad';head=`${TS.score} · ${TS.label}`}
+  else if(!TS){const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);lvl=dup?'bad':'mid';head=dup?`Not a legal team: only one ${dup.p.b} (any form) is allowed`:'Team Score is waiting for the win model data'}else{lvl=TS.score>=50?'good':TS.score>=25?'mid':'bad';head=`${TS.score} · ${TS.label}`}
   ui.vsum={lvl,head,best,tr,CK,excess:a.excess,TS};
   if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% at Limitless events${best.c>1?` (${best.c} players)`:''}`]);
-  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?`: missing ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
+  // how much of this exact combination real players have tried (the score pulls an untried mix toward the average)
+  if(wv&&wv.tested!=null)rows.push(['Played together',`${wv.tested} of the 15 pairs on this team have been brought together on 15+ tournament teams${wv.credit<1?`. An untried mix, so its edge over an average team counts ${Math.round(wv.credit*100)}% until real results back it up.`:'.'}`]);
+  if(wv&&wv.struct&&wv.struct.miss.length){const m=wv.struct.miss,cap=x=>x.charAt(0).toUpperCase()+x.slice(1);rows.push(['Unproven',`${esc(m.map(cap).join('. '))}. The model learned from teams that ${m.length>1?'have these covered':'have this covered'}, so its edge over an average team counts ${Math.round(wv.struct.c*100)}% here.`])}
+  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks (advice; not part of the score)`+(miss.length?`: missing ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
   if(thin.length)rows.push(['Watch out for',thin.slice(0,3).map(x=>esc(x.o.p.d)).join(', ')]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
   ui.vProven=!!(best&&best.k===6&&best.wr>=.55);el.className='verdict '+lvl;
-  const parts=TS?`<div class="tsparts">${TS.parts.map(p=>`<div class="tspart"><span>${p.label}</span><i style="--w:${p.v}%"></i><b>${p.v}</b><em>${Math.round(p.w*100)}% of score</em></div>`).join('')}</div>`:'';
+  const parts=TS?`<div class="tsparts"><div class="tsline"><b>${TS.score}</b><span>${TS.pct!=null?`Stronger than ${TS.score}% of tournament teams from the last 45 days.`:'Based on the win chance against an average tournament team.'} Win chance against an average one: <b>${Math.round(TS.p*100)}%</b>${TS.pYou!=null?` (${Math.round(TS.pYou*100)}% for you, from your battle log)`:''}.</span></div><div class="tsbar" aria-hidden="true"><i style="--w:${TS.score}%"></i><em style="left:50%">avg</em><em style="left:90%">top 10%</em></div></div>`:'';
   el.innerHTML=`<div class="vhead"><span class="vdot" aria-hidden="true"></span><b class="vtitle">${TS?'Team Score '+esc(head):esc(head)}</b></div>${parts}<dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`}
-// One Team Score, 0-100: the win model (real games), real results for this exact list, the checklist and the meta threats.
-// Each part is 0-100; the weights are shown next to it. The model leads because it is the only part tested on held-out games.
-function teamScore({wv,best,CK,PG}){const cl=x=>Math.max(0,Math.min(100,Math.round(x)));const P=[];
-  if(wv)P.push({label:wv.pYou!=null?'Win model (yours)':'Win model',v:cl(((wv.pYou!=null?wv.pYou:wv.p)-.35)/.3*100),w:best?.3:.45});
-  if(best)P.push({label:best.k===6?'This team at events':'Similar teams at events',v:cl((best.wr-.45)/.2*100),w:best.k===6?.2:.1});
-  if(CK)P.push({label:'Checklist',v:cl(100*CK.pass/CK.n),w:.25});
-  // meta threats: share of the top 30 (by usage) that 2+ of yours hit super effectively; minus 10 per threat nothing hits
-  if(PG)P.push({label:'Answers to the meta',v:cl(100*(PG.se2||0)/.8-10*(PG.thin||[]).filter(x=>!x.nh).length),w:.3});
-  const W=P.reduce((a,p)=>a+p.w,0);P.forEach(p=>p.w=p.w/W);
-  const score=cl(P.reduce((a,p)=>a+p.v*p.w,0));
-  return {score,label:score>=75?'Strong':score>=60?'Solid':score>=45?'Playable':'Needs work',parts:P}}
+// Team Score, 0-100: where this team's strength (the win model, trained on real games with player skill removed) falls
+// among real tournament teams from the last 45 days. 50 = a typical tournament team, 90 = top 10%.
+// Tested Oct 26 on held-out events: the checklist and "answers to the meta" added almost nothing to predicting winners
+// (checklist +0.0002 log-loss, meta coverage none), so they no longer move the score; they stay as advice. The old blend
+// also capped each part at 100, so many odd teams scored a perfect 100. Now 100 means stronger than every recent team.
+function teamScore({wv}){if(!wv)return null;const cl=x=>Math.max(0,Math.min(100,Math.round(x)));
+  const pct=wv.pct!=null?wv.pct:null;
+  // older model data (no team spread shipped yet): fall back to the win chance against an average team
+  const score=pct!=null?cl(Math.floor(pct)):cl((wv.p-.35)/.3*100);
+  const label=score>=90?'Elite':score>=75?'Strong':score>=50?'Solid':score>=25?'Playable':'Needs work';
+  return {score,label,p:wv.p,pYou:wv.pYou,pct}}
 let pmCache=new Map();
 // The 4 moves a Pokémon is graded and planned with: its 4 most-used moves, the same 4 its team card shows.
 function runMoves(p){const pm=popularMoves(p),r=pm.slice(0,4);r.src=pm.src;r.pct=pm.pct;return r}

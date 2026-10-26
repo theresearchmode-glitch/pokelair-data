@@ -2,10 +2,10 @@
 // A short welcome on Home for first-time visitors (dismissed for good with "Got it"), and small "?" buttons next to
 // the terms new players ask about. One popover at a time; tap outside or press Escape to close.
 const TIPS = {
-  teamscore: ['Team Score', 'One number out of 100 for how ready your team is. It blends how teams like yours actually do in real games, results at events, the checklist most winning teams pass, and how well you handle the top threats. 75+ is strong, 60+ solid.'],
+  teamscore: ['Team Score', 'Where your team stands among real tournament teams from the last 45 days: 50 is a typical tournament team, 90 is the top 10%. It comes from our win model, trained on real games with player skill removed and checked on events it never saw. Upside needs proof: a mix players haven\'t tried together, or a team without speed control, lead support, spread damage or a Mega, gets its edge cut; only your two best Megas count; and moves count only as far as builds real players run. The checklist is advice and does not change the score.'],
   spread: ['Spread', 'How the 66 stat points are split across HP / Attack / Defense / Sp. Atk / Sp. Def / Speed (up to 32 each). We show the spread players use most for this Pokémon.'],
   rating: ['NastyPlot rating', 'A 0–100 score for every legal Pokémon from real results: tournament wins, in-game ranked usage, the Showdown ladder and how much it helps teams win. A “?” means few games so far, so treat it as an estimate.'],
-  winmodel: ['Win odds', 'Our model learned from about 10,000 real tournament games which Pokémon, pairs, items and moves win. It is checked against recent events it never saw, and only used because it beats plain win rates.'],
+  winmodel: ['Win odds', 'Our model learned from real tournament games which Pokémon, pairs, items and moves win, with player skill taken out. It is checked against recent events it never saw, and only used because it beats plain win rates.'],
   checklist: ['Checklist', 'The things most winning tournament teams have: speed control, spread damage, lead support (Fake Out, Intimidate or redirection), a Mega, and no big shared weakness.'],
 };
 const tip = k => TIPS[k] ? `<button type="button" class="tipq" data-tip="${k}" aria-label="What is ${esc(TIPS[k][0])}?">?</button>` : '';

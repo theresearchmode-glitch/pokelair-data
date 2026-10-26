@@ -101,7 +101,7 @@ function gamePlan(team, fmt) {
   }
   if (dbl) {
     const fr = anyOf([c.fake, c.redir]);
-    rows.push({k: 'support', label: 'Fake Out / redirection', st: st(fr, .6, .3), who: who([...R.fake, ...R.redir].sort((a, b) => b.r - a.r), 3), note: fr >= .6 ? '' : '85% of top teams have one.'}); pen += 20 * (1 - fr);
+    rows.push({k: 'support', label: 'Fake Out / redirection', st: st(fr, .6, .3), who: who([...R.fake, ...R.redir].sort((a, b) => b.r - a.r), 3), note: fr >= .6 ? '' : `${proLine('fake', '89% of event winners')} have Fake Out, Intimidate or redirection.`}); pen += 20 * (1 - fr);
     rows.push({k: 'prio', label: 'Priority attacks', st: c.prio >= .5 ? 'ok' : 'opt', who: who(R.prio, 3), note: ''}); pen += 5 * (1 - c.prio);
     const ans = anyOf([c.anti, c.tr * .6]);
     rows.push({k: 'anti', label: 'Answer to their speed control', st: ans >= .5 ? 'ok' : 'opt', who: [who(R.anti, 2), c.tr >= .5 && c.tw >= .5 ? 'two speed modes' : ''].filter(Boolean).join('; '), note: ans >= .5 ? '' : 'Taunt or Encore stops an opposing Tailwind or Trick Room.'}); pen += 5 * (1 - ans);

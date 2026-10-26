@@ -126,8 +126,13 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   const base=plans.base;const more=plans.more||[],pg=ui.planMore||0,shown=more.slice(0,pg*3),left=more.length-shown.length;
   const moreBtn=`<div class="morebar">${left>0?`<button class="btn" type="button" id="planMoreBtn">More ideas</button><span class="vsub">${left} more plan${left===1?'':'s'}, including side-grades and rarely used picks</span>`:more.length?`<span class="vsub">That's every plan that keeps your type rating and speed control.</span><button class="btn sm" type="button" id="planMoreReset">Show fewer</button>`:''}</div>`;
   if(!plans.length&&!shown.length){el.innerHTML=`<div class="empty-note">${base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn;return}
+  // each plan's Team Score next to the current one, from the same win model, so a plan never hides that it makes the team weaker
+  const baseTS=(ui.vsum&&ui.vsum.TS)||null,planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
+  // plans that would lower the Team Score by 5+ go after the ones that keep or raise it
+  const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
+  const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
   const list=[...plans,...shown];
-  el.innerHTML=list.map((pl,k)=>{const st=pl.st;
+  el.innerHTML=list.map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;
     const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
     const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
     const newWeak=st.a.rows.filter((t,j)=>t.w>t.r&&!(a.rows[j].w>a.rows[j].r)).map(t=>t.atk);
@@ -137,7 +142,7 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
     const lines=[fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
       newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
       st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...syn];
-    return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">${k>=plans.length?(pl.side?'Side-grade':'Idea'):'Plan'} ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span><span class="row">${a.excess===st.a.excess?`<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`:`<span class="pill ${RC(a.excess)}">${wsTxt(a)}</span>→<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`}</span></div>
+    return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">${k>=plans.length?(pl.side?'Side-grade':'Idea'):'Plan'} ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span>${dT!=null?`<span class="tsd ${dT>0?'up':dT<0?'dn':''}" title="Team Score ${baseTS.score} → ${ts}">Team Score ${dT>0?'+':dT<0?'−':'±'}${Math.abs(dT)}</span>`:''}<span class="row">${a.excess===st.a.excess?`<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`:`<span class="pill ${RC(a.excess)}">${wsTxt(a)}</span>→<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`}</span></div>
       ${pl.ch.map(x=>`<div class="swap">${x.out?`<span class="out">${esc(x.out.d)}</span> →`:'Add'} ${sprite(x.c.p,'mini')}<span class="in">${esc(x.c.p.d)}</span>${confChip(x.c.p)}<span class="chips">${x.c.p.t.map(t=>chip(t)).join('')}</span>${x.c.p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(x.c.p)?'<span class="tag box ico" title="In your box">BOX</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${ratingTag(x.c.p)}${isGem(x.c.p)?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(x.c.p)}<span class="vsub">${esc(x.c.mem.ability)}${(t=>t?' @ '+esc(t.it[0][0]):'')(topItems(x.c.p))}${U(x.c.p)?` · ${U(x.c.p).toFixed(1)}% usage`:''}</span></div>`).join('')}
       ${(()=>{const L=lines.filter(Boolean),ul=`<ul>${L.map(l=>`<li>${l}</li>`).join('')}</ul>`;return PHONE()&&L.length>2?`<details class="planwhy"><summary>${L.length} reasons</summary>${ul}</details>`:ul})()}
       ${pl.side?'<p class="t2" style="margin:0">A different look: keeps your type rating and speed control without being clearly better.</p>':''}
