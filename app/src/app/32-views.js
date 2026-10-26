@@ -22,7 +22,11 @@ GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{const pane=document.querySelecto
 function sideOpen(on){const sd=$('side'),sc=$('scrim'),mb=$('moreBtn');if(!sd)return;try{sd.classList.toggle('open',!!on)}catch(e){}if(sc)sc.hidden=!on;if(mb)mb.setAttribute('aria-expanded',on?'true':'false')}
 // Light / dark: Auto follows the device (and the Claude app's own setting); Light and Dark override it. Stored per device.
 function setTheme(m){m=['light','dark'].includes(m)?m:'auto';LS.set('cc2.theme',m);try{document.documentElement.dataset.mode=m}catch(e){}
-  document.querySelectorAll('[data-thm]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.thm===m))}
+  document.querySelectorAll('[data-thm]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.thm===m));lookSync()}
+// data-look = the theme actually showing (light or dark), so the light "daylight" look can be scoped in CSS
+function lookSync(){try{const r=document.documentElement,m=r.dataset.mode||'auto',t=r.getAttribute('data-theme');
+  const dark=m==='dark'||(m==='auto'&&(t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)));r.dataset.look=dark?'dark':'light'}catch(e){}}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',lookSync);new MutationObserver(lookSync).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']})}catch(e){}
 setTheme(LS.get('cc2.theme','auto'));
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='scrim')sideOpen(false)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false)});
