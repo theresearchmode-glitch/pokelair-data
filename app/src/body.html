@@ -197,7 +197,7 @@
 <div class="view" data-pane="matchup" hidden>
   <section id="matchup">
     <div class="head"><div><h2>Matchup</h2><p class="hint">Drop a screenshot of team preview, or enter their Pokémon by hand. You get the ones to bring and the ones to lead, based on each side's most common moves, abilities and Mega Stones.</p></div>
-      <button class="btn" id="oppClear" type="button">Clear</button></div>
+      <div class="row"><button class="btn primary" type="button" data-battle="1">Battle mode</button><button class="btn" id="oppClear" type="button">Clear</button></div></div>
     <div class="shot" id="shotBox" hidden>
       <input type="file" id="shotFile" accept="image/*" hidden>
       <div class="shotdrop" id="shotDrop">
@@ -220,6 +220,12 @@
 </div>
 
 
+<div class="view" data-pane="battle" hidden>
+  <section id="battlemode">
+    <div class="head"><div><h2>Battle mode</h2><p class="hint">For the 90 seconds of team preview. Enter their six and get your four, the leads, what to watch out for, who moves first and damage both ways, all on one screen.</p></div></div>
+    <div id="bmOut"></div>
+  </section>
+</div>
 <div class="view" data-pane="speed" hidden>
   <section id="speedtiers">
     <div class="head"><div><h2>Speed tiers</h2><p class="hint">Your six against the 20 most-used Pokémon, fastest first. Turn on Tailwind or Trick Room to see who moves first.</p></div></div>
@@ -299,10 +305,25 @@
   </section>
 </div>
 
+<div class="view" data-pane="cores" hidden>
+  <section id="cores">
+    <div class="head"><div><h2>Winning cores</h2><p class="hint">The pairs and trios that win the most in real tournaments. Great for starting a team: pick a core, then fill the rest.</p></div></div>
+    <div id="coreOut"></div>
+  </section>
+</div>
+
+<div class="view" data-pane="events" hidden>
+  <section id="events">
+    <div class="head"><div><h2>Events</h2><p class="hint" id="evSource"></p></div></div>
+    <div id="evOut"></div>
+  </section>
+</div>
+
 <div class="view" data-pane="top" hidden>
   <section id="topteams">
     <div class="head"><div><h2>Top teams</h2><p class="hint" id="ttSource"></p></div>
       <button class="btn refreshbtn" id="refreshBtn2" type="button" title="Refreshes rankings, sets, top teams and the rating sources together">Refresh now</button></div>
+    <div id="tsBox"></div><div id="tsOut"></div>
     <div class="list" id="ttList"></div>
   </section>
 </div>
