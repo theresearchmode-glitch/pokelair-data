@@ -1497,3 +1497,10 @@ h2::before{width:15px;height:14px;clip-path:none;background:linear-gradient(180d
 :root:not([data-look="dark"]) .thspr,:root:not([data-look="dark"]) .hhspr{filter:drop-shadow(0 6px 6px rgba(29,11,46,.18))}
 :root:not([data-look="dark"]) .sgroup{background:#fff;border-color:var(--dline)}
 :root:not([data-look="dark"]) .sidefoot{color:var(--dmute)}
+/* share card dialog */
+.sharebox{position:fixed;inset:0;z-index:80;background:rgba(20,7,28,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
+.sharein{width:min(860px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--card);border-radius:18px;padding:14px;box-shadow:0 20px 60px rgba(20,7,28,.35);display:flex;flex-direction:column;gap:12px}
+.sharehd{display:flex;justify-content:space-between;align-items:center}
+.sharehd b{font:800 italic 20px var(--display);text-transform:uppercase;letter-spacing:.02em}
+.shareimg{width:100%;height:auto;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
+.sharerow{align-items:center;gap:12px}
