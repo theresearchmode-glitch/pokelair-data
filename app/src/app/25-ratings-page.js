@@ -9,7 +9,7 @@ function lairFilter(rows) { const q = (ui.lq || '').trim().toLowerCase(), ty = u
     && (!f.mega || p.m) && (!f.nomega || !p.m) && (!f.gem || isGem(p)) && (!f.box || inBox(p))); }
 function lairTile(p, r) { const a = TC[p.t[0]], b = TC[p.t[1] || p.t[0]];
   return `<button type="button" class="ltile${r.band >= 10 ? ' unsure' : ''}" data-lt="${esc(p.n)}" style="--ta:${a};--tb:${b}" title="${esc(p.d)} · ★ ${r.total} ±${r.band}${r.band >= 10 ? ' (few games: estimate)' : ''}"><span class="ltf">${p.m ? '<i class="ltm" title="Mega">M</i>' : ''}${isGem(p) ? '<i class="ltg" title="Hidden gem">◆</i>' : ''}${inBox(p) ? '<i class="ltb" title="In your box"></i>' : ''}</span><span class="lts">${r.total}</span>`
-    + `<span class="ltn">${esc(p.d.replace(/^Mega /, ''))}</span>${sprite(p,'ltspr')}</button>`; }
+    + `<span class="ltn">${esc(p.d)}</span>${sprite(p,'ltspr')}</button>`; }
 function renderLair(bodyOnly) {
   const pane = $('lairBody'); if (!pane) return; if (ui.lmode == null) { try { ui.lmode = LS.get('cc2.lmode', 'board'); } catch (e) { ui.lmode = 'board'; } }
   const fmt = S.format, all = lairRows(), rows = lairFilter(all), mode = ui.lmode === 'map' ? 'map' : 'board', pf = activePerf();
