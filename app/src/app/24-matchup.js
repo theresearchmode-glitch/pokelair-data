@@ -62,13 +62,13 @@ async function shotBlob(file) {
 const SHOT_ERR = {not_granted: 'Screenshot reading needs your OK to send the image to Claude. You can allow it from this page\'s permissions.', rate_limited: 'Too many reads in a row. Wait a minute and try again.', images_unavailable: 'Images can\'t be sent from this view.', image_rejected: 'That file type can\'t be read. Try a PNG or JPEG screenshot.'};
 async function readShot(file) {
   if (!shot.ready || shot.busy || !file || !/^image\//.test(file.type || '')) { if (file && !/^image\//.test(file.type || '')) toast('That isn\'t an image'); return; }
-  shot.busy = true; if (shot.url) URL.revokeObjectURL(shot.url); shot.url = URL.createObjectURL(file); shot.res = {busy: true}; renderShot();
+  shot.busy = true; if (shot.url) URL.revokeObjectURL(shot.url); shot.url = URL.createObjectURL(file); shot.res = {busy: true}; renderShot(); if (view === 'battle') safe('battle', renderBattle);
   try {
     const blob = await shotBlob(file); if (!blob) throw {code: 'image_rejected'};
     const out = await shot.sample.json(shotPrompt(), {images: [blob], modelTier: 'complex', cache: false});
     shot.res = applyShot(out);
   } catch (e) { shot.res = {err: SHOT_ERR[e && e.code] || 'Couldn\'t read that screenshot. Try a sharp, full-screen capture of team preview, or enter the Pokémon by hand below.'}; }
-  finally { shot.busy = false; renderShot(); }
+  finally { shot.busy = false; renderShot(); if (view === 'battle') safe('battle', renderBattle); }
 }
 function shotSide(arr) {
   const out = [], seen = new Set();

@@ -4,7 +4,7 @@ let S=LS.get('cc2.state',null);
 if(S&&(!Array.isArray(S.teams)||!Array.isArray(S.box)||!Array.isArray(S.slots)))S=null;
 if(!S){S={slots:DEFAULT_TEAM.slots.map(s=>({...s})),box:DEFAULT_BOX.slice(),teams:[{id:'t'+Date.now(),name:DEFAULT_TEAM.name,slots:DEFAULT_TEAM.slots,format:'doubles',saved:Date.now()}],loadedId:null,format:'doubles'};S.loadedId=S.teams[0].id}
 S.format='doubles'; // doubles only for now: singles is hidden, saved singles teams stay stored
-const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null};
+const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null,events:null};
 // meta/perf: raw outside performance tables from the daily refresh; anything malformed is dropped and the built-in snapshot is used
 function cleanPerf(v){if(!v||typeof v!=='object')return null;const okRows=x=>Array.isArray(x)&&x.length<=600;const t=v.tour;if(!t||!okRows(t.rows)||t.rows.length<20)return null;return v}
 const SRC={ingame:'doubles_ingame',tour:'doubles_tour',ladder:'doubles'};

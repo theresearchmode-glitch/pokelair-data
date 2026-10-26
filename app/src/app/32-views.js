@@ -3,13 +3,17 @@ let view='home';
 // Five main pages, each with its sections. The first key of a group is the page the main nav opens.
 const GROUPS=[['build',[['build','My team'],['teams','Saved teams'],['box','My box']]],
   ['auto',[['auto','Build for me'],['coverage','Best additions']]],
-  ['matchup',[['matchup','Matchup'],['speed','Speed tiers'],['calc','Damage calc'],['gauntlet','Gauntlet'],['arch','Archetypes']]],
-  ['ratings',[['ratings','Ratings'],['meta','Rankings'],['top','Top teams'],['sets','Popular sets'],['types','Type chart']]]];
+  ['matchup',[['matchup','Matchup'],['battle','Battle mode'],['speed','Speed tiers'],['calc','Damage calc'],['gauntlet','Gauntlet'],['arch','Archetypes']]],
+  ['ratings',[['ratings','Ratings'],['meta','Rankings'],['cores','Cores'],['top','Top teams'],['events','Events'],['sets','Popular sets'],['types','Type chart']]]];
 const VIEW_PARENT={};GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{if(v!==g)VIEW_PARENT[v]=g}));
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved teams',matchup:'Matchup',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Top teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes'};
+const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved teams',matchup:'Matchup',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Top teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle mode',cores:'Winning cores',events:'Events'};
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
+  const ic=d=>`<svg class="nic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  icon.battle=icon.battle||ic('<circle cx="12" cy="13" r="7.5"/><path d="M12 13V9M10 2.8h4M18.5 6.5l1.5-1.5"/>');
+  icon.cores=icon.cores||ic('<circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="16" r="4"/>');
+  icon.events=icon.events||ic('<path d="M4 6h16v14H4z"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/><path d="m10 15 1.5 1.5 3-3"/>');
   const def='<svg class="nic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>';
   const btn=(v,t)=>`<button type="button" role="tab" data-view="${v}" aria-selected="false">${icon[v]||def}<span class="nl">${t}</span>${v==='build'?'<span class="tc" id="tabCount"></span>':''}</button>`;
   const NAMES={build:'Team',auto:'Build',matchup:'Matchup',ratings:'Meta'};
@@ -46,4 +50,8 @@ function setView(v,scroll){if(!document.querySelector(`[data-pane="${v}"]`))v='h
   if(v==='calc')safe('damage calc',renderCalc);
   if(v==='gauntlet')safe('gauntlet',renderGauntlet);
   if(v==='arch')safe('archetypes',renderGuides);
+  if(v==='battle')safe('battle',renderBattle);
+  if(v==='cores')safe('cores',renderCores);
+  if(v==='events')safe('events',renderEvents);
+  if(v==='top')safe('team search',renderTeamSearch);
   if(scroll!==false){try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}}}

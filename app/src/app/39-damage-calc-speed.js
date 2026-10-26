@@ -100,7 +100,7 @@ function sideDefaults(p,role){const nat=topNature(p),it=topItem(p);let ab;try{ab
     :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,item,ability:ab,boost:0,real:true};
   return role==='atk'?{nat:nat||(phys?'Adamant':'Modest'),sp:32,item,ability:ab,boost:0}
     :{nat:nat||'Hardy',hpSp:32,defSp:0,spdSp:0,item,ability:ab,boost:0}}
-let dc={a:null,d:null,mv:null,weather:'',screen:false,hh:false,fg:false,crit:false,spread:null,inv:{}};
+let dc={dir:'mine',a:null,d:null,mv:null,weather:'',screen:false,hh:false,fg:false,crit:false,spread:null,inv:{}};
 const CALC_ITEMS=['','Life Orb','Choice Band','Choice Specs','Choice Scarf','Expert Belt','Assault Vest','Focus Sash','Sitrus Berry','Leftovers',...Object.keys(TYPE_ITEM),...Object.keys(RESIST_BERRY)];
 const NATURES=['Hardy','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
 function dcSide(role,n){const p=byName.get(n);if(!p)return null;const key=role+':'+n;if(!dc.inv[key])dc.inv[key]=sideDefaults(p,role);return {p,...dc.inv[key]}}
@@ -128,7 +128,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
       <div class="dc2"><label>Attack points${sel('dcASp',PTS(aShown),String(aShown))}</label><label>Nature${sel('dcANat',NATURES,A.nat)}</label></div>
       <div class="dc2"><label>Item${sel('dcAIt',CALC_ITEMS.map(x=>[x,x||'None']),A.item)}</label><label>Ability${sel('dcAAb',A.p.a,A.ability)}</label></div>
       <label>Stat stage (Intimidate = −1)${sel('dcABo',boosts,String(A.boost))}</label></div>
-    <div class="dccol"><h3>Defender</h3>${sprite(D.p,'dcspr')}
+    <button type="button" class="btn sm dcswap" id="dcSwap" title="Swap attacker and defender" aria-label="Swap attacker and defender">⇄ Swap</button><div class="dccol"><h3>Defender</h3>${sprite(D.p,'dcspr')}
       <label>Pokémon<select class="field" id="dcD">${monOptions(dc.d)}</select></label>
       <div class="dc2"><label>HP points${sel('dcDHp',PTS(D.hpSp),String(D.hpSp))}</label><label>Nature${sel('dcDNat',NATURES,D.nat)}</label></div>
       <div class="dc2"><label>Def points${sel('dcDDf',PTS(D.defSp),String(D.defSp))}</label><label>Sp. Def points${sel('dcDSd',PTS(D.spdSp),String(D.spdSp))}</label></div>
@@ -146,15 +146,19 @@ function bestHitOn(atkP,atkMoves,defP){let best=null;const A={p:atkP,...sideDefa
   for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread});if(r&&r.hp&&(!best||r.max>best.r.max))best={mv,r}}return best}
 function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThreats(12).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
   const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';return `<td class="${c}" title="${esc(b.mv.name)}: ${lo.toFixed(0)}–${p.toFixed(0)}%">${p.toFixed(0)}<span>${esc(b.mv.name)}</span></td>`};
-  return `<h3 class="dsub" style="margin-top:22px">Your best hit on each top threat</h3><p class="t2">Max roll, single target unless the move hits both. Your set vs their usual set and bulk (32 HP points). Green = OHKO range, gold = 2HKO range.</p>
-  <div class="tablewrap"><table class="dctab"><thead><tr><th></th>${thr.map(p=>`<th title="${esc(p.d||p.n)}">${sprite(p,'dcth')}<span>${esc((p.d||p.n).replace(/^Mega /,'M-'))}</span></th>`).join('')}</tr></thead>
-  <tbody>${ms.map(m=>`<tr><th>${sprite(m.p,'dcth')}<span>${esc(m.d||m.p.n)}</span></th>${thr.map(t=>cell(bestHitOn(m.p,m.moves,t))).join('')}</tr>`).join('')}</tbody></table></div>`}
+  const thH=p=>`<th title="${esc(p.d||p.n)}">${sprite(p,'dcth')}<span>${esc((p.d||p.n).replace(/^Mega /,'M-'))}</span></th>`,rowH=(p,d)=>`<th>${sprite(p,'dcth')}<span>${esc(d||p.d||p.n)}</span></th>`;
+  const theirs=dc.dir==='theirs';
+  const seg=`<div class="seg" role="group" aria-label="Direction"><button type="button" data-dcdir="mine" aria-pressed="${!theirs}">Your hits on them</button><button type="button" data-dcdir="theirs" aria-pressed="${theirs}">Their hits on you</button></div>`;
+  const table=theirs?`<table class="dctab"><thead><tr><th></th>${ms.map(m=>thH(m.p)).join('')}</tr></thead><tbody>${thr.map(t=>{const mv=popularMoves(t);return `<tr>${rowH(t)}${ms.map(m=>cell(bestHitOn(t,mv,m.p))).join('')}</tr>`}).join('')}</tbody></table>`
+    :`<table class="dctab"><thead><tr><th></th>${thr.map(thH).join('')}</tr></thead><tbody>${ms.map(m=>`<tr>${rowH(m.p,m.d)}${thr.map(t=>cell(bestHitOn(m.p,m.moves,t))).join('')}</tr>`).join('')}</tbody></table>`;
+  return `<h3 class="dsub" style="margin-top:22px">${theirs?'Each top threat\'s best hit on your team':'Your best hit on each top threat'}</h3><div style="margin:6px 0 8px">${seg}</div><p class="t2">Max roll, single target unless the move hits both. ${theirs?'Their usual set vs your set and the most common bulk.':'Your set vs their usual set and bulk.'} Green = OHKO range, gold = 2HKO range.${theirs?' A green column is a Pokémon you may need to Protect or switch.':''}</p>
+  <div class="tablewrap">${table}</div>`}
 document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.id))return;const v=t.value;
   const ak='atk:'+dc.a,dk='def:'+dc.d;
   if(t.id==='dcA'){dc.a=v;dc.mv=null;dc.spread=null}else if(t.id==='dcD'){dc.d=v}else if(t.id==='dcMv'){dc.mv=v;dc.spread=null}
   else if(t.id==='dcASp'){const I=dc.inv[ak],m=mvByName.get(dc.mv);I.sp=+v;if(m&&m.cat===2)I.spS=+v;else I.spA=+v}else if(t.id==='dcANat')dc.inv[ak].nat=v;else if(t.id==='dcAIt')dc.inv[ak].item=v;else if(t.id==='dcAAb')dc.inv[ak].ability=v;else if(t.id==='dcABo')dc.inv[ak].boost=+v;
   else if(t.id==='dcDHp')dc.inv[dk].hpSp=+v;else if(t.id==='dcDNat')dc.inv[dk].nat=v;else if(t.id==='dcDDf')dc.inv[dk].defSp=+v;else if(t.id==='dcDSd')dc.inv[dk].spdSp=+v;else if(t.id==='dcDIt')dc.inv[dk].item=v;else if(t.id==='dcDAb')dc.inv[dk].ability=v;else if(t.id==='dcDBo')dc.inv[dk].boost=+v;
   renderCalc()});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data-dct]');if(!b)return;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data-dct],[data-dcdir],#dcSwap');if(!b)return;if(b.dataset.dcdir){dc.dir=b.dataset.dcdir;keepScroll(()=>renderCalc());return}if(b.id==='dcSwap'){const a=dc.a;dc.a=dc.d;dc.d=a;dc.mv=null;dc.spread=null;renderCalc();return}
   if(b.dataset.dcw!=null)dc.weather=b.dataset.dcw;else{const k=b.dataset.dct;if(k==='spread'){const mv=mvByName.get(dc.mv);const cur=dc.spread==null?!!(mv&&mv.spread):dc.spread;dc.spread=!cur}else dc[k]=!dc[k]}renderCalc()});
 

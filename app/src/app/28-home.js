@@ -1,14 +1,18 @@
 // ---------- Home ----------
 // The front door: what NastyPlot is, where your team stands, what's winning right now, and one tap to each tool.
 const HOME_TILES = [
+  ['battle', 'Battle mode', 'Their six in, your four and the leads out. Built for team preview', '<circle cx="12" cy="13" r="7.5"/><path d="M12 13V9M10 2.8h4M18.5 6.5l1.5-1.5"/>'],
   ['matchup', 'Matchup', 'Scout an opponent from a team-preview screenshot', '<path d="M4 4l9 9M4 4h4M4 4v4M20 4l-9 9M20 4h-4M20 4v4M8.5 15.5l-4 4M15.5 15.5l4 4"/>'],
   ['ratings', 'Ratings', 'Every legal Pokémon on one tier board', '<path d="m12 3.2 2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/>'],
-  ['top', 'Top teams', 'Copy a team that won and make it yours', '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/>'],
+  ['top', 'Top teams', 'Search every winning team by Pokémon, item or move', '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/>'],
+  ['cores', 'Winning cores', 'Pairs and trios that win the most', '<circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="16" r="4"/>'],
+  ['events', 'Events', 'Every recent tournament, top cut and full sets', '<path d="M4 6h16v14H4z"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/><path d="m10 15 1.5 1.5 3-3"/>'],
   ['sets', 'Popular sets', 'Moves, items and natures players run', '<path d="M5 4h14v16H5z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>'],
   ['calc', 'Damage calc', 'Real damage with stats, items and spread moves', '<path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2M8 18h2M12 18h4"/>'],
   ['speed', 'Speed tiers', 'Who moves first, with Tailwind and Trick Room', '<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-6"/>'],
   ['gauntlet', 'Gauntlet', 'Run your team into the top 20 tournament teams', '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>'],
-  ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>']];
+  ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>'],
+  ['types', 'Type chart', 'What hits what, and your team against every type', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/>']];
 function homeMini(p, r, extra) { return `<button type="button" class="hmini" data-lt="${esc(p.n)}" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}" title="${esc(p.d)}">${sprite(p, 'hmspr') || ''}<span class="hmn">${esc(p.d.replace(/^Mega /, 'M-'))}</span><span class="hms"><b>${r.total}</b>${extra || ''}</span></button>`; }
 function renderHome() { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
   const rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 4);
@@ -44,7 +48,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
   ${gems.length ? `<div class="hsec"><div class="hsh"><h3>Hidden gems</h3><button type="button" class="hlink" data-view="ratings">More ›</button></div>
     <p class="t2">Rated 55+ but rarely used. Results hold up so far.</p>
     <div class="hrow">${gems.map(x => homeMini(x.p, x.r, '<i>◆</i>')).join('')}</div></div>` : ''}
-  ${cores.length ? `<div class="hsec"><div class="hsh"><h3>Winning cores</h3><button type="button" class="hlink" data-view="top">Top teams ›</button></div>
+  ${cores.length ? `<div class="hsec"><div class="hsh"><h3>Winning cores</h3><button type="button" class="hlink" data-view="cores">All cores ›</button></div>
     <p class="t2">Three-Pokémon cores with the best win rates at Limitless events (60+ teams each).</p>
     <div class="hcores">${cores.map(c => { const ps = c.slice(0, 3).map(n => byName.get(n)); return `<div class="hcore"><div class="hcs">${ps.map(p => sprite(p, 'hcspr') || '').join('')}</div><div class="hcn">${ps.map(p => esc(p.d)).join(' · ')}</div><div class="hcw"><b>${Math.round(c[4] * 100)}%</b> win rate · ${fmtN(c[3])} teams</div></div>`; }).join('')}</div></div>` : ''}
   <div class="hsec hlog"><div class="hsh"><h3>Your battles</h3><button type="button" class="hlink" data-view="matchup">Battle log ›</button></div>
