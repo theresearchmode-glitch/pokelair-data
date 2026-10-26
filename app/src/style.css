@@ -1418,3 +1418,82 @@ h2::before{width:15px;height:14px;clip-path:none;background:linear-gradient(180d
   mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M2 21.5 12 13.2l10 8.3v-5L12 8.2 2 16.5zM2 13.3 12 5l10 8.3v-5L12 0 2 8.3z'/%3E%3C/svg%3E") center/contain no-repeat;transform:skewX(-9deg)}
 /* badges become slanted plates, like PLOT in the logo */
 .thbadge{border-radius:0;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);padding:5px 14px}
+.np-tk{position:absolute;right:calc(-58px*var(--s));top:calc(-46px*var(--s));width:calc(34px*var(--s));height:auto;transform:rotate(28deg);overflow:visible}
+.np-tk .lm1{fill:var(--volt)}.np-tk .lm2{fill:var(--glow)}
+
+/* ================= DAYLIGHT: the main NastyPlot look =================
+   Built from the light logo: warm lilac-white paper, near-black plum ink, hot magenta, and a soft pink offset shadow
+   (the logo's shadow) on display type. Dark mode keeps the night look; everything here is scoped to the light theme. */
+:root{--day:#fbf8ff;--day2:#f4eefb;--dink:#14071c;--dmute:#6b5f86;--dline:#ebe3f5;--pinksh:#ffb1d8}
+:root:not([data-look="dark"]){--court:#f7f3fc;--line:#e9e1f4;--line2:#d9cdea;--soft:#f1eaf9;--card2:#f8f4fd;--navy:#1d0b2e;--deep:#14071c;--btn:#1d0b2e}
+:root:not([data-look="dark"]) .np{--np-ink:var(--dink);--np-sh:var(--pinksh)}
+:root:not([data-look="dark"]) body::before{background:var(--day)}
+/* header band */
+:root:not([data-look="dark"]) .band{color:var(--dink);background:radial-gradient(ellipse 45% 140% at 88% -10%,color-mix(in srgb,var(--volt) 13%,transparent),transparent 62%),radial-gradient(ellipse 40% 120% at 0% 110%,color-mix(in srgb,var(--glow) 16%,transparent),transparent 60%),var(--day)}
+:root:not([data-look="dark"]) .band::before,:root:not([data-look="dark"]) .band .stage{display:none}
+:root:not([data-look="dark"]) .band::after{background:repeating-linear-gradient(-62deg,transparent 0 22px,color-mix(in srgb,var(--volt) 6%,transparent) 22px 30px,transparent 30px 52px,color-mix(in srgb,var(--glow) 12%,transparent) 52px 55px)}
+:root:not([data-look="dark"]) h1{color:var(--dink);text-shadow:none}
+:root:not([data-look="dark"]) #viewTitle{color:var(--dink);text-shadow:2px 2px 0 var(--pinksh)}
+:root:not([data-look="dark"]) .eyebrow{color:var(--accent)}
+:root:not([data-look="dark"]) .wave .wtop{fill:var(--day)!important}
+:root:not([data-look="dark"]) .fmt{background:#fff;box-shadow:inset 0 0 0 1px var(--dline);backdrop-filter:none}
+:root:not([data-look="dark"]) .fmt button{color:var(--dink)}
+:root:not([data-look="dark"]) .fmt button[aria-pressed="true"]{color:var(--volt-ink);box-shadow:none}
+:root:not([data-look="dark"]) .vgcbadge span{color:var(--volt)}
+/* desktop tab bar */
+:root:not([data-look="dark"]) .tabs{background:#fff;box-shadow:0 2px 0 var(--volt),0 8px 20px rgba(29,11,46,.06)}
+:root:not([data-look="dark"]) .tabs button{color:var(--dmute)}
+:root:not([data-look="dark"]) .tabs button:hover{color:var(--dink);background:var(--day2)}
+:root:not([data-look="dark"]) .tabs button[aria-selected="true"]{color:var(--volt-ink);background:var(--volt);box-shadow:none}
+:root:not([data-look="dark"]) .tabs .tabsep{background:var(--dline)}
+:root:not([data-look="dark"]) .themeseg{background:var(--day2);box-shadow:inset 0 0 0 1px var(--dline)}
+:root:not([data-look="dark"]) .themeseg button{color:var(--dmute)}
+:root:not([data-look="dark"]) .themeseg button[aria-pressed="true"]{background:#fff;color:var(--dink);box-shadow:0 1px 3px rgba(29,11,46,.12)}
+/* phone menu sheet */
+:root:not([data-look="dark"]) .side{background:var(--day);color:var(--dink);box-shadow:0 -10px 40px rgba(29,11,46,.16)}
+:root:not([data-look="dark"]) .side::before{display:none}
+:root:not([data-look="dark"]) .sgl{color:var(--accent)!important}
+:root:not([data-look="dark"]) .sidenav button{color:#3d3157}
+:root:not([data-look="dark"]) .sidenav button:hover{background:var(--day2);color:var(--dink)}
+:root:not([data-look="dark"]) .sidenav button[aria-selected="true"]{color:var(--volt-ink)!important;background:var(--volt)!important;box-shadow:none}
+:root:not([data-look="dark"]) .sideclose{background:var(--day2);color:var(--dink)}
+:root:not([data-look="dark"]) .bmode{background:#fff;box-shadow:inset 0 0 0 1px var(--dline)}
+:root:not([data-look="dark"]) .bm{color:var(--dink)}
+:root:not([data-look="dark"]) .bm[aria-pressed="true"]{color:var(--volt-ink)}
+/* phone dock */
+:root:not([data-look="dark"]) .bnav{background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 0 0 1px var(--dline),0 10px 30px rgba(29,11,46,.14)}
+:root:not([data-look="dark"]) .bnav button{color:var(--dmute)}
+:root:not([data-look="dark"]) .bnav button[aria-selected="true"],:root:not([data-look="dark"]) .bnav #moreBtn[aria-expanded="true"]{color:var(--dink)}
+/* home hero: paper card, ink headline with the logo's pink shadow, WIN circled in ink */
+:root:not([data-look="dark"]) .hhero{color:var(--dink);background:radial-gradient(70% 90% at 100% 0%,color-mix(in srgb,var(--volt) 12%,transparent),transparent 60%),radial-gradient(60% 80% at 0% 100%,color-mix(in srgb,var(--glow) 16%,transparent),transparent 60%),#fff;box-shadow:0 0 0 1px var(--dline),0 14px 40px rgba(29,11,46,.08)}
+:root:not([data-look="dark"]) .hhk{color:var(--accent)}
+:root:not([data-look="dark"]) .hht{color:var(--dink);text-shadow:3px 3px 0 var(--pinksh)}
+:root:not([data-look="dark"]) .hht em.circled{text-shadow:3px 3px 0 color-mix(in srgb,var(--glow) 45%,transparent)}
+:root:not([data-look="dark"]) .hht em.circled>.circ{fill:var(--dink);opacity:1}
+:root:not([data-look="dark"]) .hhs{color:var(--dmute)}
+:root:not([data-look="dark"]) .hhfloor{display:none}
+:root:not([data-look="dark"]) .btn.hghost{background:#fff;color:var(--dink);border:1.5px solid var(--dink)}
+:root:not([data-look="dark"]) .btn.hghost:hover{background:var(--day2)}
+:root:not([data-look="dark"]) .btn.go{box-shadow:none}
+/* auto-build hero + rating stat tiles */
+:root:not([data-look="dark"]) .abhero{color:var(--dink);background:radial-gradient(70% 120% at 100% 0%,color-mix(in srgb,var(--volt) 12%,transparent),transparent 60%),#fff;box-shadow:0 0 0 1px var(--dline),var(--shadow)}
+:root:not([data-look="dark"]) .abhero::after{opacity:.35}
+:root:not([data-look="dark"]) .lhstat{background:#fff;color:var(--dink);box-shadow:0 0 0 1px var(--dline)}
+:root:not([data-look="dark"]) .lhstat b{color:var(--dink);text-shadow:2px 2px 0 var(--pinksh)}
+/* display type echoes the logo's offset shadow */
+:root:not([data-look="dark"]) h2,:root:not([data-look="dark"]) .htn{text-shadow:2px 2px 0 color-mix(in srgb,var(--volt) 20%,transparent)}
+:root:not([data-look="dark"]) .legal{background:var(--day)}
+:root:not([data-look="dark"]) .abhero h2{color:var(--dink)}
+:root:not([data-look="dark"]) .abhero .hint,:root:not([data-look="dark"]) .abctl .lbl{color:var(--dmute)}
+:root:not([data-look="dark"]) .abctl .toggle{color:var(--dink)}
+:root:not([data-look="dark"]) .abhero .srcseg button[aria-pressed="true"]{background:var(--volt);color:var(--volt-ink)}
+:root:not([data-look="dark"]) .thero{color:var(--dink);background:radial-gradient(80% 90% at 100% 0%,color-mix(in srgb,var(--volt) 12%,transparent),transparent 60%),radial-gradient(60% 80% at 0% 100%,color-mix(in srgb,var(--glow) 14%,transparent),transparent 60%),#fff;box-shadow:0 0 0 1px var(--dline),0 12px 32px rgba(29,11,46,.07)}
+:root:not([data-look="dark"]) .thk,:root:not([data-look="dark"]) .hhk{color:var(--accent)}
+:root:not([data-look="dark"]) .thname{color:var(--dink);text-shadow:3px 3px 0 var(--pinksh)}
+:root:not([data-look="dark"]) .thfloor{background:linear-gradient(90deg,transparent,var(--dline),transparent)}
+:root:not([data-look="dark"]) .ths{color:var(--dmute)}
+:root:not([data-look="dark"]) .ths b{color:var(--dink)}
+:root:not([data-look="dark"]) .ths.good b{color:var(--good)}:root:not([data-look="dark"]) .ths.warn b{color:var(--warn)}
+:root:not([data-look="dark"]) .thspr,:root:not([data-look="dark"]) .hhspr{filter:drop-shadow(0 6px 6px rgba(29,11,46,.18))}
+:root:not([data-look="dark"]) .sgroup{background:#fff;border-color:var(--dline)}
+:root:not([data-look="dark"]) .sidefoot{color:var(--dmute)}
