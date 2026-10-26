@@ -25,7 +25,7 @@ function teamSheetCard(t, ev, key, hl) {
     <div class="ttmons">${t.mons.map(m => { const p = byName.get(m.n); return `<span class="ttmon">${sprite(p, 'tiny')}${esc(p.d)}</span>`; }).join('')}</div>
     ${open ? `<div class="evsets">${t.mons.map(m => { const p = byName.get(m.n); return `<div class="evset">${sprite(p, 'evspr')}<div><b${H(p.d)}>${esc(p.d)}</b>${m.i ? ` <span class="t2">@</span> <span${H(m.i)}>${esc(m.i)}</span>` : ''}
       <div class="t2"><span${H(m.a)}>${esc(m.a)}</span>${m.nt ? ' · ' + esc(m.nt) : ''}</div><div class="evmv">${m.mv.map(x => `<span${H(x)}>${esc(x)}</span>`).join('')}</div></div></div>`; }).join('')}</div>` : ''}
-    <div class="row"><button class="btn sm" type="button" data-evsets="${esc(key)}" aria-expanded="${open}">${open ? 'Hide sets' : 'Show sets'}</button><button class="btn sm" type="button" data-evload="${esc(key)}">Load with sets</button><button class="btn sm ghost" type="button" data-evvs="${esc(key)}">Practice against</button></div></div>`; }
+    <div class="row evbtns"><button class="btn sm" type="button" data-evload="${esc(key)}">Load team</button><button class="linkbtn" type="button" data-evsets="${esc(key)}" aria-expanded="${open}">${open ? 'Hide sets' : 'Sets'}</button><button class="linkbtn" type="button" data-evvs="${esc(key)}">Practice against</button></div></div>`; }
 function evTeam(key) { const E = META.events; if (!E) return null; const [id, k] = key.split('#'); const ev = E.events.find(e => e.id === id); return ev && ev.top[+k] ? {ev, t: ev.top[+k]} : null; }
 function renderEvents() {
   const el = $('evOut'); if (!el) return; const E = META.events;
@@ -39,7 +39,7 @@ function renderEvents() {
       ${ev.top.map((t, k) => teamSheetCard(t, null, ev.id + '#' + k)).join('')}`;
     return; }
   let list = E.events; if (evUi.filter === 'official') list = list.filter(e => e.src === 'official'); else if (evUi.filter === 'big') list = list.filter(e => e.players >= 100);
-  const cap = 20 + evUi.more * 20;
+  const cap = 12 + evUi.more * 12;
   const seg = `<div class="seg" role="group" aria-label="Which events">${[['all', 'All'], ['official', 'Official'], ['big', '100+ players']].map(([k, t]) => `<button type="button" data-evf="${k}" aria-pressed="${evUi.filter === k}">${t}</button>`).join('')}</div>`;
   el.innerHTML = seg + `<div class="evlist">${list.slice(0, cap).map(e => { const w = e.top[0];
     return `<button type="button" class="evcard" data-evopen="${esc(e.id)}"><div class="evct"><span class="evname">${esc(e.name)}</span>${e.src === 'official' ? '<span class="tag evoff">OFFICIAL</span>' : ''}</div>
@@ -57,7 +57,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.evsets) evUi.sets[d.evsets] = !evUi.sets[d.evsets];
   else if (d.evload || d.evvs) { const x = evTeam(d.evload || d.evvs); if (!x) return;
     if (d.evload) { if (members().length && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to replace your team'; return; } loadSheet(x.t); return; }
-    S.opp = x.t.mons.map(m => m.n); persist(); setView('battle'); toast(`${x.t.player}'s team is your opponent`); return; }
+    S.opp = x.t.mons.map(m => m.n); persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
   keepScroll(() => { if (view === 'top') renderTeamSearch(); else renderEvents(); }); });
 
 // ---- team search (Top teams) ----
@@ -89,7 +89,7 @@ function renderTeamSearch() {
   if (!tsUi.f.length) { out.innerHTML = ''; if (list) list.hidden = false; return; }
   if (list) list.hidden = true;
   const hits = pool.filter(x => tsUi.f.every(f => tsMatch(x.t, f))).sort((a, b) => (b.ev.src === 'official') - (a.ev.src === 'official') || a.t.place - b.t.place || (b.ev.date > a.ev.date ? 1 : -1));
-  const cap = 12 + tsUi.more * 12, hl = new Set(tsUi.f.map(f => label(f).toLowerCase()));
+  const cap = 8 + tsUi.more * 8, hl = new Set(tsUi.f.map(f => label(f).toLowerCase()));
   hits.slice(0, cap).forEach(x => { if (evUi.sets[x.key] == null && tsUi.f.some(f => f.k !== 'mon')) evUi.sets[x.key] = true; });
   // what the matching teams have in common, to suggest the next filter
   const c = new Map(); hits.forEach(x => new Set(x.t.mons.map(m => m.n)).forEach(n => { if (!tsUi.f.some(f => f.k === 'mon' && f.v === n)) c.set(n, (c.get(n) || 0) + 1); }));

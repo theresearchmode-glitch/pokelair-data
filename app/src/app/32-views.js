@@ -3,11 +3,13 @@ let view='home';
 // Five main pages, each with its sections. The first key of a group is the page the main nav opens.
 const GROUPS=[['build',[['build','My team'],['teams','Saved teams'],['box','My box']]],
   ['auto',[['auto','Build for me'],['coverage','Best additions']]],
-  ['matchup',[['matchup','Matchup'],['battle','Battle mode'],['speed','Speed tiers'],['calc','Damage calc'],['gauntlet','Gauntlet'],['arch','Archetypes']]],
-  ['ratings',[['ratings','Ratings'],['meta','Rankings'],['cores','Cores'],['top','Top teams'],['events','Events'],['sets','Popular sets'],['types','Type chart']]]];
+  ['matchup',[['matchup','Battle mode'],['speed','Speed tiers'],['calc','Damage calc'],['gauntlet','Gauntlet'],['arch','Archetypes'],['types','Type chart']]],
+  ['ratings',[['ratings','Ratings'],['meta','Rankings'],['cores','Cores'],['top','Teams'],['sets','Popular sets']]]];
 const VIEW_PARENT={};GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{if(v!==g)VIEW_PARENT[v]=g}));
+// pages reached from inside another tab: Events sits under Teams; Battle mode is the Matchup page itself
+const SUB_OF={events:'top'},VIEW_ALIAS={battle:'matchup'};VIEW_PARENT.events='ratings';
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved teams',matchup:'Matchup',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Top teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle mode',cores:'Winning cores',events:'Events'};
+const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved teams',matchup:'Battle mode',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle mode',cores:'Winning cores',events:'Events'};
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
   const ic=d=>`<svg class="nic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -19,9 +21,9 @@ const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved t
   const NAMES={build:'Team',auto:'Build',matchup:'Matchup',ratings:'Meta'};
   nav.innerHTML=`<div class="sgroup">${btn('home','Home')}</div>`+GROUPS.map(([g,subs])=>`<div class="sgroup"><div class="sgl">${NAMES[g]}</div>${subs.map(([v,t])=>btn(v,t)).join('')}</div>`).join('')}}
 // Section tabs at the top of each page in a group (built here so every page in a group shows the same row)
-GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{const pane=document.querySelector(`[data-pane="${v}"]`);if(!pane)return;
+GROUPS.forEach(([g,subs])=>[...subs.map(([v])=>v),...Object.keys(SUB_OF).filter(x=>subs.some(([k])=>k===SUB_OF[x]))].forEach(v=>{const pane=document.querySelector(`[data-pane="${v}"]`);if(!pane)return;const sel=SUB_OF[v]||v;
   const nav=document.createElement('nav');nav.className='subnav';nav.setAttribute('aria-label','Sections');
-  nav.innerHTML=subs.map(([k,t])=>`<button type="button" class="sub" data-view="${k}" aria-selected="${k===v}">${t}</button>`).join('');pane.prepend(nav)}));
+  nav.innerHTML=subs.map(([k,t])=>`<button type="button" class="sub" data-view="${k}" aria-selected="${k===sel}">${t}</button>`).join('');pane.prepend(nav)}));
 // Sidebar: always open on wide screens; a slide-in drawer on narrow ones.
 function sideOpen(on){const sd=$('side'),sc=$('scrim'),mb=$('moreBtn');if(!sd)return;try{sd.classList.toggle('open',!!on)}catch(e){}if(sc)sc.hidden=!on;if(mb)mb.setAttribute('aria-expanded',on?'true':'false')}
 // Light / dark: Auto follows the device (and the Claude app's own setting); Light and Dark override it. Stored per device.
@@ -34,9 +36,9 @@ try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',lookSyn
 setTheme(LS.get('cc2.theme','auto'));
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='scrim')sideOpen(false)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false)});
-function setView(v,scroll){if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);
+function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);
   document.querySelectorAll('[data-pane]').forEach(el=>el.hidden=el.dataset.pane!==v);
-  const par=VIEW_PARENT[v]||v;const sideHas=!!document.querySelector(`.sidenav [data-view="${v}"]`);document.querySelectorAll('[data-view]').forEach(b=>{const on=b.classList.contains('sub')?b.dataset.view===v:(sideHas&&b.closest('.sidenav'))?b.dataset.view===v:b.dataset.view===par;b.setAttribute('aria-selected',on)});
+  const par=VIEW_PARENT[v]||v;const sideHas=!!document.querySelector(`.sidenav [data-view="${v}"]`);document.querySelectorAll('[data-view]').forEach(b=>{const on=b.classList.contains('sub')?b.dataset.view===(SUB_OF[v]||v):(sideHas&&b.closest('.sidenav'))?b.dataset.view===v:b.dataset.view===par;b.setAttribute('aria-selected',on)});
   {const t=$('viewTitle');if(t)t.textContent=VIEW_TITLE[v]||v}
   {const mb=$('moreBtn');if(mb)mb.classList.toggle('on',!MAIN_VIEWS.includes(VIEW_PARENT[v]||v))}
   sideOpen(false);
@@ -50,7 +52,7 @@ function setView(v,scroll){if(!document.querySelector(`[data-pane="${v}"]`))v='h
   if(v==='calc')safe('damage calc',renderCalc);
   if(v==='gauntlet')safe('gauntlet',renderGauntlet);
   if(v==='arch')safe('archetypes',renderGuides);
-  if(v==='battle')safe('battle',renderBattle);
+  if(v==='matchup')safe('battle',renderBattle);
   if(v==='cores')safe('cores',renderCores);
   if(v==='events')safe('events',renderEvents);
   if(v==='top')safe('team search',renderTeamSearch);

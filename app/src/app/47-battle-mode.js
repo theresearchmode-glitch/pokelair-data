@@ -2,7 +2,7 @@
 // Enter their six (or read a screenshot) and everything that matters sits on one phone-sized page: your four and the
 // leads, what to watch out for (immunities, Intimidate, Fake Out, redirection, weather), live speed order with Tailwind /
 // Trick Room toggles, and damage both ways. It shares their six with Matchup (S.opp), so either page can fill it.
-let bmUi = {tw: false, twOpp: false, tr: false, icy: false, weather: '', intMe: false, intThem: false, t0: 0, timer: null};
+let bmUi = {tab: 'plan', tw: false, twOpp: false, tr: false, icy: false, weather: '', intMe: false, intThem: false, t0: 0, timer: null};
 // best hit with the field toggles: weather, and -1 Attack on physical moves when that side is Intimidated
 function bmHit(aP, moves, dP, weather, intim) {
   let best = null; const A = {p: aP, ...sideDefaults(aP, 'atk')}, D = {p: dP, ...sideDefaults(dP, 'def')};
@@ -61,19 +61,19 @@ function renderBattle() {
     const r = planMatchup(mine, theirs, true), C = r.chosen.map(i => mine[i]);
     const card = (i, tag) => `<div class="bmpick${tag === 'Lead' ? ' lead' : ''}">${sprite(mine[i].p, 'bmpspr')}<span class="bmpn">${esc(mine[i].d)}</span><span class="tag">${tag.toUpperCase()}</span></div>`;
     const ll = r.B && theirs.length >= 2 ? likelyLead(theirs, r.B) : [];
-    const bring = `<div class="plan bmcard"><div class="ph"><span class="pt">Bring</span><span class="vsub">${dbl ? 'lead 2, back 2' : 'lead 1'}</span></div>
+    const bring = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Bring</span><span class="vsub">${dbl ? 'lead 2, back 2' : 'lead 1'}</span></div>
       <div class="bmpicks">${r.lead.map(i => card(i, 'Lead')).join('')}${r.back.map(i => card(i, 'Back')).join('')}</div>
       ${r.bench.length ? `<p class="t2" style="margin:0">Leave home: ${r.bench.map(i => esc(mine[i].d)).join(', ')}</p>` : ''}
       ${ll.length === 2 ? `<p class="t2" style="margin:0">Their likely lead: <b>${esc(ll[0].d)}</b> + <b>${esc(ll[1].d)}</b></p>` : ''}
       ${r.chosen.filter(i => mine[i].mega).length > 1 ? '<p class="t2" style="margin:0">Only one Mega can Mega Evolve this battle.</p>' : ''}</div>`;
     const W = bmWatch(C, theirs);
-    const watch = `<div class="plan bmcard"><div class="ph"><span class="pt">Watch out</span></div>${W.length ? W.map(w => `<div class="bmw">${sprite(w.o.p, 'bmwspr')}<div><b>${esc(w.o.d)}</b>${w.out.map(([c, t, d]) => `<div class="bmwl"><span class="sev ${c}">${t}</span><span class="t2">${d}</span></div>`).join('')}</div></div>`).join('')
+    const watch = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Watch out</span></div>${W.length ? W.map(w => `<div class="bmw">${sprite(w.o.p, 'bmwspr')}<div><b>${esc(w.o.d)}</b>${w.out.map(([c, t, d]) => `<div class="bmwl"><span class="sev ${c}">${t}</span><span class="t2">${d}</span></div>`).join('')}</div></div>`).join('')
       : '<p class="t2" style="margin:0">Nothing on their side shuts down your four.</p>'}</div>`;
     // speed
     const rows = [...C.map(m => ({x: m, me: true})), ...theirs.map(o => ({x: o, me: false}))].map(q => ({...q, ...bmSpeed(q.x.p, q.me)}));
     rows.sort((a, b) => bmUi.tr ? a.v - b.v : b.v - a.v); const mx = Math.max(...rows.map(q => q.v), 1);
     const tog = (k, t) => `<button type="button" data-bms="${k}" aria-pressed="${!!bmUi[k]}">${t}</button>`;
-    const speed = `<div class="plan bmcard"><div class="ph"><span class="pt">Speed</span><span class="vsub">${bmUi.tr ? 'slowest moves first' : 'fastest first'}</span></div>
+    const speed = `<div class="plan bmcard" data-t="speed"><div class="ph"><span class="pt">Speed</span><span class="vsub">${bmUi.tr ? 'slowest moves first' : 'fastest first'}</span></div>
       <div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('tr', 'Trick Room')}</div>
       <div class="bmspd">${rows.map((q, i) => { const tie = rows.some((o, j) => j !== i && o.v === q.v && o.me !== q.me);
         return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">TIE</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}</span></div>`; }).join('')}</div>
@@ -85,22 +85,23 @@ function renderBattle() {
     const grid = `<div class="tablewrap"><table class="bmdt"><thead><tr><th></th>${theirs.map(o => `<th title="${esc(o.d)}">${sprite(o.p, 'dcth')}<span>${esc(o.d.replace(/^Mega /, 'M-'))}</span></th>`).join('')}</tr></thead><tbody>
       ${C.map(m => `<tr><th>${sprite(m.p, 'dcth')}<span>${esc(m.d)}</span></th>${theirs.map(o => { const a = bmHit(m.p, memberMoves(m).moves, o.p, bmUi.weather, bmUi.intMe), d = bmHit(o.p, o.moves, m.p, bmUi.weather, bmUi.intThem);
         return `<td title="${a ? `${esc(m.d)} ${esc(a.mv.name)}: up to ${pc(a)}%` : ''}${d ? ` · ${esc(o.d)} ${esc(d.mv.name)}: up to ${pc(d)}%` : ''}"><span class="bo ${cls(a)}">${pc(a)}<i>${a ? esc(a.mv.name) : ''}</i></span><span class="bd ${cls(d)}">${pc(d)}<i>${d ? esc(d.mv.name) : ''}</i></span></td>`; }).join('')}</tr>`).join('')}</tbody></table></div>`;
-    const dmgCard = `<div class="plan bmcard bmdmg"><div class="ph"><span class="pt">Damage both ways</span></div>
+    const dmgCard = `<div class="plan bmcard bmdmg" data-t="dmg"><div class="ph"><span class="pt">Damage both ways</span></div>
       <div class="seg segwrap" role="group" aria-label="Weather">${wseg}</div>
       <div class="seg segwrap" role="group" aria-label="Intimidate"><button type="button" data-bmi="intMe" aria-pressed="${bmUi.intMe}">You're Intimidated</button><button type="button" data-bmi="intThem" aria-pressed="${bmUi.intThem}">They're Intimidated</button></div>
       ${grid}<p class="t2 bmleg" style="margin:0"><span class="bo k2">%</span> your best hit on them · <span class="bd k2">%</span> their best hit on you. Max roll, % of HP, each side's usual set. Green = can KO, gold = 2 hits.</p></div>`;
     let t1 = ''; if (dbl) { try { t1 = turnOnePlan(mine, theirs, r); } catch (e) {} }
-    const after = `<div class="plan bmcard bmafter"><div class="qlog"><span class="vsub">After the game, played these four?</span><button class="btn logwin" type="button" data-qlog="W">Won</button><button class="btn logloss" type="button" data-qlog="L">Lost</button></div></div>`;
-    body = `<div class="bmgrid">${bring}${watch}${speed}${t1 ? `<div class="bmt1">${t1}</div>` : ''}${dmgCard}${after}</div>`; }
+    const after = `<div class="plan bmcard bmafter" data-t="plan"><div class="qlog"><span class="vsub">After the game, played these four?</span><button class="btn logwin" type="button" data-qlog="W">Won</button><button class="btn logloss" type="button" data-qlog="L">Lost</button></div></div>`;
+    body = `<div class="seg bmtabs" role="group" aria-label="Show">${[['plan', 'Plan'], ['speed', 'Speed'], ['dmg', 'Damage']].map(([k, t]) => `<button type="button" data-bmt="${k}" aria-pressed="${bmUi.tab === k}">${t}</button>`).join('')}</div><div class="bmgrid" data-tab="${bmUi.tab}">${bring}${watch}${speed}${t1 ? `<div class="bmt1" data-t="plan">${t1}</div>` : ''}${dmgCard}${after}</div>`; }
   el.innerHTML = top + body;
-  S.opp.forEach((n, i) => { const inp = $('bmOpp' + i); if (inp) bindMonInput(inp, p => { S.opp[i] = p.n; persist(); renderBattle(); const nx = S.opp.findIndex(x => !byName.get(x)); const f = nx >= 0 && $('bmOpp' + nx); if (f) f.focus(); }, p => !S.opp.includes(p.n)); });
+  S.opp.forEach((n, i) => { const inp = $('bmOpp' + i); if (inp) bindMonInput(inp, p => { S.opp[i] = p.n; persist(); renderMatchup(); const nx = S.opp.findIndex(x => !byName.get(x)); const f = nx >= 0 && $('bmOpp' + nx); if (f) f.focus(); }, p => !S.opp.includes(p.n)); });
   bmTimer(); }
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bms],[data-bmw],[data-bmi],[data-bmx],#bmClear,#bmShot,#bmClockBtn,[data-battle]'); if (!b) return;
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bms],[data-bmw],[data-bmi],[data-bmx],[data-bmt],#bmClear,#bmShot,#bmClockBtn,[data-battle]'); if (!b) return;
   const d = b.dataset;
-  if (d.battle != null) { setView('battle'); return; }
+  if (d.battle != null) { setView('matchup'); return; }
   if (d.bms) bmUi[d.bms] = !bmUi[d.bms]; else if (d.bmw != null) bmUi.weather = d.bmw; else if (d.bmi) bmUi[d.bmi] = !bmUi[d.bmi];
-  else if (d.bmx != null) { S.opp[+d.bmx] = ''; persist(); }
-  else if (b.id === 'bmClear') { S.opp = ['', '', '', '', '', '']; persist(); }
+  else if (d.bmt) bmUi.tab = d.bmt;
+  else if (d.bmx != null) { S.opp[+d.bmx] = ''; persist(); keepScroll(() => renderMatchup()); const f = $('bmOpp' + d.bmx); if (f) f.focus(); return; }
+  else if (b.id === 'bmClear') { S.opp = ['', '', '', '', '', '']; persist(); renderMatchup(); return; }
   else if (b.id === 'bmShot') { const f = $('shotFile'); if (f) f.click(); return; }
   else if (b.id === 'bmClockBtn') { if (bmUi.t0) { bmUi.t0 = 0; clearInterval(bmUi.timer); bmUi.timer = null; } else { bmUi.t0 = Date.now(); clearInterval(bmUi.timer); bmUi.timer = setInterval(bmTimer, 250); } }
   keepScroll(() => renderBattle());

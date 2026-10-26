@@ -24,11 +24,11 @@ function coreTags(ns) { const key = metaVersion + '|' + ns.join(','); if (coreTa
     if (tr.length) out.push('Trick Room'); if (tw.length) out.push('Tailwind'); else if (r.speed.length && !tr.length) out.push('Speed control');
     if (r.fake.length) out.push('Fake Out'); if (r.redirect.length) out.push('Redirection'); if (r.intim.length) out.push('Intimidate');
     if (ms.filter(m => m.mega).length) out.push('Mega'); }); } catch (e) {}
-  out = [...new Set(out)].slice(0, 4); if (coreTagCache.size > 400) coreTagCache.clear(); coreTagCache.set(key, out); return out; }
+  out = [...new Set(out)].slice(0, 2); if (coreTagCache.size > 400) coreTagCache.clear(); coreTagCache.set(key, out); return out; }
 function renderCores() {
   const el = $('coreOut'); if (!el) return;
   if (!RES) { el.innerHTML = '<div class="empty-note">Cores appear once tournament results have loaded.</div>'; return; }
-  const rows = coreRows(), cap = 25 + coreUi.more * 25, base = +RES.base || .5;
+  const rows = coreRows(), cap = 10 + coreUi.more * 15, base = +RES.base || .5;
   const seg = (k, opts) => `<div class="seg" role="group">${opts.map(([v, t]) => `<button type="button" data-core${k}="${v}" aria-pressed="${coreUi[k] === v}">${t}</button>`).join('')}</div>`;
   const mon = coreUi.mon && byName.get(coreUi.mon);
   const ctl = `<div class="corectl">${seg('kind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']])}${seg('sort', [['win', 'Best win rate'], ['use', 'Most used']])}
@@ -46,7 +46,7 @@ function renderCores() {
         <div class="t2">${x.n.toLocaleString('en-US')} ${x.ns.length > 3 ? 'entr' + (x.n === 1 ? 'y' : 'ies') : 'teams'} · ${x.use >= .1 ? x.use.toFixed(1) : '<0.1'}% of teams</div></div>
       ${tags.length ? `<div class="coretags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
       <div class="row corebtns">${conf ? `<span class="inline-confirm" style="color:var(--ink)">Replace your team?</span><button class="btn sm primary" type="button" data-coreuse="${esc(key)}" data-sure="1">Replace</button><button class="btn sm" type="button" data-corecx="1">Cancel</button>`
-        : `<button class="btn sm" type="button" data-coreuse="${esc(key)}">${x.ns.length > 3 ? 'Load team' : 'Add to my team'}</button>${x.ns.length <= 3 ? `<button class="btn sm ghost" type="button" data-corefind="${esc(key)}">Teams with it</button>` : `<button class="btn sm ghost" type="button" data-corepractice="${esc(key)}">Practice against</button>`}`}</div></div>`; }).join('');
+        : `<button class="btn sm" type="button" data-coreuse="${esc(key)}">${x.ns.length > 3 ? 'Load team' : 'Add to my team'}</button>${x.ns.length <= 3 ? `<button class="linkbtn" type="button" data-corefind="${esc(key)}">Teams with it</button>` : `<button class="linkbtn" type="button" data-corepractice="${esc(key)}">Practice against</button>`}`}</div></div>`; }).join('');
   el.innerHTML = ctl + intro + `<div class="corelist">${list}</div>` + (rows.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-coremore="1">Show more (${rows.length - cap} left)</button></div>` : '');
   bindCoreIn(); }
 function bindCoreIn() { const i = $('coreMonIn'); if (i) bindMonInput(i, p => { coreUi.mon = p.n; coreUi.more = 0; renderCores(); }); }
@@ -68,5 +68,5 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.corecx) coreUi.confirm = null;
   else if (d.coreuse) { const ns = d.coreuse.split('|'); if (useCore(ns, !!d.sure)) { coreUi.confirm = null; return; } coreUi.confirm = d.coreuse; }
   else if (d.corefind) { if (typeof tsSet === 'function') { tsSet(d.corefind.split('|').map(n => ({k: 'mon', v: n}))); setView('top'); } return; }
-  else if (d.corepractice) { S.opp = d.corepractice.split('|').slice(0, 6); while (S.opp.length < 6) S.opp.push(''); persist(); setView('battle'); toast('Loaded as your opponent'); return; }
+  else if (d.corepractice) { S.opp = d.corepractice.split('|').slice(0, 6); while (S.opp.length < 6) S.opp.push(''); persist(); setView('matchup'); toast('Loaded as your opponent'); return; }
   keepScroll(() => renderCores()); });

@@ -68,7 +68,10 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
     return `<details class="prob-row fold" data-k="${esc(key)}"${wasOpen.has(key)?' open':''}><summary><span class="sev ${s}">${l}</span><div class="pbody"><div class="pmain">${tx}</div></div><span class="fixn">${n} fix${n>1?'es':''}</span></summary><div class="pfix">${q}</div></details>`};
   const real=out.filter(o=>o[0]!=='ok');
   {const sub=$('needsSub');if(sub)sub.textContent=real.length?real.length+' to look at':''}
-  el.innerHTML=real.length?out.map(row).join(''):'<div class="prob-row"><span class="sev ok">All clear</span><div>No type problems, and the team has speed control and support.</div></div>'+out.map(row).join('');
+  // the 4 that matter most up front; the rest one tap away
+  const rows=out.map(row),cap=ui.needsAll?rows.length:4,more=rows.length-cap;
+  el.innerHTML=(real.length?'':'<div class="prob-row"><span class="sev ok">All clear</span><div>No type problems, and the team has speed control and support.</div></div>')+rows.slice(0,cap).join('')
+    +(more>0?`<button type="button" class="btn sm ghost needsmore" id="needsMore">Show ${more} more</button>`:ui.needsAll&&rows.length>4?'<button type="button" class="btn sm ghost needsmore" id="needsMore">Show less</button>':'');
 }
 function megaFormFor(p,t){if(p.m||!t||!t.it||!t.it.length)return p;const [item,pct]=t.it[0];if(!(pct>=50)||!/ite( [XYZ])?$|inite/.test(item))return p;
   const suf=(item.match(/ ([XYZ])$/)||[])[1];const want=p.b+'-Mega'+(suf?'-'+suf:'');return byName.get(want)||byName.get(p.b+'-Mega')||p}
@@ -81,3 +84,5 @@ function renderOffMeta(entries,useA){const d=metaDoc();const wrap=$('offMetaWrap
   $('offMeta').innerHTML=`<tr><th class="t">Threat</th><th>Best</th><th class="t">Your best hit</th></tr>`+rows.map(r=>{const x=r.b?r.b.x:0;
     return `<tr class="${x<2?'prob':''}"><td class="t"><span style="font-weight:700">${esc(r.p.d)}</span> <span class="chips" style="display:inline-flex;vertical-align:middle">${r.p.t.map(t=>chip(t)).join('')}</span>${r.ab&&ABILITY_MODS[r.ab]?` <span class="vsub">${esc(r.ab)}</span>`:''}</td><td>${mcell(x)}</td><td class="who">${r.b?`${esc(disp(r.b.e.from))}: ${esc(r.b.e.move)} (${r.b.e.type})`:'—'}</td></tr>`}).join('');
 }
+
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#needsMore');if(!b)return;ui.needsAll=!ui.needsAll;keepScroll(()=>render())});

@@ -24,7 +24,7 @@ function renderSlots(){
       <div class="wr"><span class="lbl">Resists</span><div class="chips">${r.join('')||'<span class="none">None</span>'}</div></div>
       <div class="adesc"><b>${esc(m.ability)}:</b> ${esc((ABIL[m.ability]||'').replace(/Pokemon/g,'Pokémon'))}</div></div></details>
     </div></div>`}).join('');
-  if(ui.tview==null){try{ui.tview=LS.get('cc2.tview','full')}catch(e){ui.tview='full'}}
+  if(ui.tview==null){try{ui.tview=LS.get('cc2.tview','grid')}catch(e){ui.tview='grid'}}
   {const sl=$('slots');if(sl&&sl.classList)sl.classList.toggle('grid',ui.tview==='grid');document.querySelectorAll('[data-tview]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tview===ui.tview))}
   // Species Clause: a species already on the team (any form) is not offered again
   S.slots.forEach((s,i)=>{const inp=$('pk'+i);if(inp)bindMonInput(inp,p=>{S.slots[i]={n:p.n,a:null,lock:false};ui.fresh=i;render();ui.fresh=null;toast(p.d+' added')},

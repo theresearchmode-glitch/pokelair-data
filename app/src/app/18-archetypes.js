@@ -88,8 +88,8 @@ function renderMatchup() {
         q.innerHTML = `<label class="lbl" for="oppTeamSel">Practice against a top team</label><select class="field" id="oppTeamSel"><option value="">Pick a tournament team…</option>${d.teams.map((t, i) => `<option value="${i}">${esc(t.player)} ${esc(t.record)} · ${esc(teamPlanLabel(t.mons))}</option>`).join('')}</select>`; } } }
   const el = $('mu'); if (!el) return;
   const useA = $('useAbil').checked; const mine = members(); const theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
-  if (!mine.length) { el.innerHTML = '<div class="empty-note">Build your team on the Build tab first.</div>'; return; }
-  if (!theirs.length) { el.innerHTML = '<div class="empty-note">Add the Pokémon you see at team preview. Results update as you add them.</div>'; return; }
+  if (!mine.length) { el.innerHTML = '<div class="empty-note">Build your team on the Build tab first.</div>'; if (view === 'matchup') safe('battle', renderBattle); return; }
+  if (!theirs.length) { el.innerHTML = '<div class="empty-note">Add their Pokémon above first.</div>'; if (view === 'matchup') safe('battle', renderBattle); return; }
   const r = planMatchup(mine, theirs, useA); const dbl = S.format === 'doubles';
   const nm = i => esc(mine[i].d), th = j => esc(theirs[j].d);
   const handles = i => theirs.map((o, j) => j).filter(j => r.h.M[i][j] >= 1);
@@ -107,17 +107,11 @@ function renderMatchup() {
       <div class="archvs"><div><span class="lbl">You</span><span class="archchips">${archChips(r.A.label)}</span></div><span class="vs">vs</span><div><span class="lbl">Them</span><span class="archchips">${archChips(r.B.label)}</span></div></div>
       ${notes.map(n => `<div class="prob-row"><span class="sev ${n.tone === 'good' ? 'ok' : n.tone === 'bad' ? 'hi' : 'mid'}">${n.tone === 'good' ? 'Edge' : n.tone === 'bad' ? 'Watch' : 'Note'}</span><div><b>${esc(n.t)}</b>: ${esc(n.d)}</div></div>`).join('')}
       ${ll.length === 2 ? `<p class="t2" style="margin:0">Likely lead: <b>${esc(ll[0].d)}</b> + <b>${esc(ll[1].d)}</b> (their speed and field setters, then Fake Out).</p>` : ''}</div>`; })() : '';
-  let t1 = ''; try { t1 = turnOnePlan(mine, theirs, r); } catch (e) { console.warn('turn 1 plan', e); }
-  el.innerHTML = archBlock + t1 + `<div class="mucols">
-    <div class="plan"><div class="ph"><span class="pt">Bring ${r.chosen.length}</span><span class="vsub">${dbl ? 'lead 2, back 2' : 'lead 1'}</span></div>
-      ${r.lead.map(i => monLine(i, 'Lead')).join('')}${r.back.map(i => monLine(i, 'Back')).join('')}
-      ${r.chosen.filter(i => mine[i].mega).length > 1 ? '<p class="t2" style="margin:0">Only one of your Megas can Mega Evolve this battle.</p>' : ''}
-      <div class="qlog"><span class="vsub">Played it with these four?</span><button class="btn logwin" type="button" data-qlog="W">Won</button><button class="btn logloss" type="button" data-qlog="L">Lost</button></div></div>
-    <div class="fixcol">
-      ${r.bench.length ? `<div class="item"><div><div class="t1">Leave behind</div><div class="t2">${r.bench.map(i => { const bad = theirs.map((o, j) => j).filter(j => r.h.M[i][j] <= -1); return `${nm(i)}${bad.length ? ' (struggles into ' + bad.map(th).join(', ') + ')' : ''}`; }).join(' · ')}</div></div></div>` : ''}
-      <div class="problems">${threats.length ? threats.map(t => `<div class="prob-row"><span class="sev ${t.ans.length ? 'mid' : 'hi'}">Watch</span><div><b>${th(t.j)}</b>: ${esc(t.move)} hits ${t.hit.map(nm).join(', ')} super effectively. ${t.ans.length ? 'Answer: ' + t.ans.map(nm).join(', ') + '.' : 'No clean answer in your 4, so keep it in check with speed control or double-targeting.'}</div></div>`).join('')
-        : '<div class="prob-row"><span class="sev ok">Clear</span><div>None of their Pokémon threatens several of your picks at once.</div></div>'}</div>
-    </div></div>${grid}`;
+  // Battle mode (47-battle-mode.js) shows the four, the leads and turn 1; this is the deeper read underneath it
+  const thr = `<div class="plan"><div class="ph"><span class="pt">Their threats</span><span class="vsub">to your four</span></div><div class="problems">${threats.length ? threats.map(t => `<div class="prob-row"><span class="sev ${t.ans.length ? 'mid' : 'hi'}">Watch</span><div><b>${th(t.j)}</b>: ${esc(t.move)} hits ${t.hit.map(nm).join(', ')} super effectively. ${t.ans.length ? 'Answer: ' + t.ans.map(nm).join(', ') + '.' : 'No clean answer in your 4, so keep it in check with speed control or double-targeting.'}</div></div>`).join('')
+      : '<div class="prob-row"><span class="sev ok">Clear</span><div>None of their Pokémon threatens several of your picks at once.</div></div>'}</div></div>`;
+  el.innerHTML = archBlock + thr + grid;
+  if (typeof view !== 'undefined' && view === 'matchup') safe('battle', renderBattle);
 }
 
 // Biggest threats to your team from the current meta list.
@@ -190,7 +184,7 @@ function renderTopTeams() {
   const mine = members(), mg = mine.length === 6 ? gradeNames(mine.map(m => m.p.n), true) : null;
   const yours = `<div class="ttyours"><div><div class="lbl">Your team</div><div class="t2">${mine.length === 6 ? esc(mine.map(m => m.d).join(' · ')) : 'Add six Pokémon on the Team page to compare.'}</div></div><div class="ttright">${miniGrades(mg)}${mine.length === 6 ? `<span class="archchips">${archChips(teamPlanLabel(mine.map(m => m.p.n)))}</span>` : ''}</div></div>`;
   ui.ttMore = ui.ttMore || {};
-  el.innerHTML = yours + sections.map(sec => { const all = d.teams.map((t, k) => ({t, k})).filter(x => x.t.section === sec), cap = ui.ttMore[sec] ? all.length : 8;
+  el.innerHTML = yours + sections.map(sec => { const all = d.teams.map((t, k) => ({t, k})).filter(x => x.t.section === sec), cap = ui.ttMore[sec] ? all.length : 5;
     return `<h3 class="lbl" style="margin:8px 0 2px">${esc(sec)} <span class="vsub">${all.length}</span></h3>` + all.slice(0, cap).map(({t, k}) => {
     const confirm = ui.ttConfirm === k;
     return `<div class="plan ttcard"><div class="ph"><div><div class="pt">${esc(t.player)} <span class="vsub">${esc(t.record)}</span></div><div class="t2">${esc(t.event)}</div></div><div class="ttright">${miniGrades(gradeNames(t.mons))}<span class="archchips">${archChips(teamPlanLabel(t.mons))}</span></div></div>
