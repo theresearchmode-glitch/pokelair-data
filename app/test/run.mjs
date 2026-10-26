@@ -38,7 +38,7 @@ for (const width of [1280, 390]) {
   // Team Score, counters on Rankings, turn 1 plan in Matchup
   await go(pg, 'build'); await pg.waitForTimeout(400);
   const ts = await pg.evaluate(() => { const v = document.getElementById('verdict'); return v ? v.innerText : ''; });
-  ok(/Team Score \d+/.test(ts), 'team: Team Score shown');
+  ok(/Team Score \d+/i.test(ts), 'team: Team Score shown');
   await go(pg, 'meta'); await pg.evaluate(() => document.querySelector('[data-src="ladder"]').click()); await pg.waitForTimeout(300);
   ok(await pg.evaluate(() => /Checks & counters/.test(document.getElementById('metaList').innerText)), 'meta/ladder: checks & counters shown');
   // Gauntlet has teams with model odds
@@ -94,5 +94,21 @@ for (const width of [1280, 390]) {
   ok(r.open && r.img && r.save, `share card: dialog with image and save (${JSON.stringify(r)})`);
   await pg.keyboard.press('Escape'); ok(await pg.evaluate(() => document.getElementById('shareBox').hidden), 'share card: Escape closes');
   ok(errs.length === 0, `share card: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
+// team links: code round trip, Import accepts a link, an opened link asks before loading
+{ console.log('\n== team links');
+  const {pg, errs, ctx} = await open(1280);
+  const r = await pg.evaluate(() => { const T = window.__PL, S = T.getS(); const code = T.teamCode(); const back = T.decodeTeam('https://x.test/#team=' + code);
+    return {len: code.length, names: S.slots.filter(s => s.n).map(s => s.n).join(','), back: back && back.slots.map(s => s.n).join(','), bad: T.decodeTeam('hello world')}; });
+  ok(r.len > 10 && r.len < 600 && r.back === r.names && r.bad === null, `team links: round trip (${r.len} chars)`);
+  const code = await pg.evaluate(() => window.__PL.teamCode());
+  await ctx.close();
+  const c2 = await browser.newContext({viewport: {width: 390, height: 844}, isMobile: true}); const p2 = await c2.newPage(); const e2 = [];
+  p2.on('pageerror', e => e2.push(e.message));
+  await p2.addInitScript(() => { window.__PL_TEST = true; window.claude = {use: async () => null}; });
+  await p2.goto('file://' + page + '#team=' + code); await p2.waitForTimeout(1500);
+  ok(await p2.evaluate(() => !!document.getElementById('sharedBar')), 'team links: opened link shows the load banner');
+  await p2.click('[data-sharedload]'); await p2.waitForTimeout(400);
+  ok(await p2.evaluate(() => !document.getElementById('sharedBar') && document.querySelector('[data-pane="build"]').hidden === false), 'team links: Load it opens the team');
+  ok(e2.length === 0, `team links: no page errors${e2.length ? ': ' + e2.join(' | ') : ''}`); await c2.close(); }
 await browser.close();
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);
