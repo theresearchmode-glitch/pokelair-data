@@ -67,5 +67,18 @@ for (const width of [1280, 390]) {
   ok(r.hp === 95 + 75 + 32, 'level 50 HP with 32 points: base + 75 + points');
   ok(r.realSpread && r.realSpread.real, 'calc uses real ladder spreads when loaded'); ok(r.spe < 60, 'Trick Room setters stay slow');
   await ctx.close(); }
+// replay import and Showdown export
+{ console.log('\n== replay + export');
+  const {pg, ctx} = await open(1280);
+  const r = await pg.evaluate(() => { const T = window.__PL; const mine = T.members().map(m => m.p);
+    const sw = (s, i, p) => `|switch|${s}${'ab'[i % 2]}: X|${p.n}, L50|100/100`;
+    const log = ['|player|p1|Me|1', '|player|p2|Them|2', ...mine.map(p => `|poke|p1|${p.n}, L50|`), ...['Garchomp', 'Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Pelipper'].map(n => `|poke|p2|${n}, L50|`),
+      sw('p1', 0, mine[0]), sw('p1', 1, mine[1]), '|switch|p2a: Y|Garchomp, L50|100/100', '|turn|1', sw('p1', 0, mine[2]), sw('p1', 1, mine[3]), '|win|Me'].join('\n');
+    const x = T.parseReplay(log); const paste = T.exportPaste(), back = T.parsePaste(paste);
+    return {x, evs: /EVs: /.test(paste), nature: / Nature/.test(paste), back: back.slots.length, n: mine.length}; });
+  ok(r.x.r === 'W' && r.x.b.length === 4 && r.x.o.length === 6, 'replay: win, 4 brought, their 6 read from the log');
+  ok(r.evs && r.nature, 'export: spreads and natures in the Showdown paste');
+  ok(r.back === r.n, 'export: the paste imports back to the same six');
+  await ctx.close(); }
 await browser.close();
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);
