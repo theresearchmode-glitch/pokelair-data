@@ -1,4 +1,4 @@
-# PokéLair page source
+# NastyPlot page source
 
 The artifact is built from these files: `node app/build.mjs` joins the parts listed in `parts.json` into `dist/page.html`.
 
