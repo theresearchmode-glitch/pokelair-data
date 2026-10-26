@@ -1,7 +1,7 @@
 name: Update Limitless data
 on:
   schedule:
-    - cron: '7 9 * * *'   # daily, about 5:07 AM New York time (GitHub can start it up to an hour late), before PokéLair's 6:52 refresh
+    - cron: '7 9 * * *'   # daily, about 5:07 AM New York time (GitHub can start it up to an hour late), before NastyPlot's 6:52 refresh
   workflow_dispatch:
 permissions:
   contents: write

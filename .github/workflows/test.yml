@@ -1,4 +1,4 @@
-name: Test PokéLair page
+name: Test NastyPlot page
 on:
   push:
     paths: ['app/**']
