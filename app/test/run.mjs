@@ -9,8 +9,8 @@ fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewpor
 const rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json');
 const DOCS = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'),
-  'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
-const VIEWS = ['home', 'build', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'arch', 'coverage', 'types', 'ratings', 'meta', 'top', 'sets', 'teams', 'box'];
+  'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
+const VIEWS = ['home', 'build', 'auto', 'matchup', 'battle', 'speed', 'calc', 'gauntlet', 'arch', 'coverage', 'types', 'ratings', 'meta', 'cores', 'top', 'events', 'sets', 'teams', 'box'];
 let fails = 0; const ok = (c, msg) => { if (!c) { fails++; console.log('  FAIL', msg); } else console.log('  ok  ', msg); };
 const browser = await chromium.launch();
 async function open(width) {
@@ -110,5 +110,37 @@ for (const width of [1280, 390]) {
   await p2.click('[data-sharedload]'); await p2.waitForTimeout(400);
   ok(await p2.evaluate(() => !document.getElementById('sharedBar') && document.querySelector('[data-pane="build"]').hidden === false), 'team links: Load it opens the team');
   ok(e2.length === 0, `team links: no page errors${e2.length ? ': ' + e2.join(' | ') : ''}`); await c2.close(); }
+// battle mode, cores, events, team search, calc both ways
+{ console.log('\n== battle mode + cores + events');
+  for (const width of [1280, 390]) { const {pg, errs, ctx} = await open(width);
+    await pg.evaluate(() => { const S = window.__PL.getS(); S.opp = ['Incineroar', 'Rillaboom', 'Garchomp', 'Gengar', 'Sneasler', 'Kingambit']; });
+    await go(pg, 'battle'); await pg.waitForTimeout(600);
+    const b = await pg.evaluate(() => ({picks: document.querySelectorAll('.bmpick').length, lead: document.querySelectorAll('.bmpick.lead').length, speed: document.querySelectorAll('.bmsr').length,
+      cells: document.querySelectorAll('.bmdt td .bo').length, back: document.querySelectorAll('.bmdt td .bd').length, sw: document.documentElement.scrollWidth, w: document.documentElement.clientWidth}));
+    ok(b.picks === 4 && b.lead === 2, `battle: bring 4, lead 2 (${width}px)`); ok(b.speed === 10, `battle: speed order has 10 (${b.speed})`);
+    ok(b.cells === 24 && b.back === 24, `battle: damage both ways grid (${b.cells}/${b.back})`);
+    if (width < 700) ok(b.sw <= b.w, 'battle: no sideways scroll on phone');
+    await pg.evaluate(() => document.querySelector('[data-bms="tr"]').click()); await pg.waitForTimeout(200);
+    ok(await pg.evaluate(() => { const v = [...document.querySelectorAll('.bmsv')].map(x => parseInt(x.textContent, 10)); return v.every((x, i) => !i || x >= v[i - 1]); }), 'battle: Trick Room sorts slowest first');
+    await go(pg, 'cores'); await pg.waitForTimeout(400);
+    const c = await pg.evaluate(() => document.querySelectorAll('.corerow').length); ok(c >= 20, `cores: ${c} pairs`);
+    await pg.evaluate(() => document.querySelector('[data-corekind="trios"]').click()); await pg.waitForTimeout(300);
+    ok(await pg.evaluate(() => document.querySelectorAll('.corerow .coremon').length >= 60), 'cores: trios list');
+    await pg.evaluate(() => document.querySelector('[data-corekind="teams"]').click()); await pg.waitForTimeout(300);
+    ok(await pg.evaluate(() => document.querySelectorAll('.corerow.six').length >= 10), 'cores: full teams list');
+    await go(pg, 'events'); await pg.waitForTimeout(400);
+    const ev = await pg.evaluate(() => document.querySelectorAll('.evcard').length); ok(ev >= 10, `events: ${ev} events`);
+    await pg.evaluate(() => document.querySelector('.evcard').click()); await pg.waitForTimeout(300);
+    ok(await pg.evaluate(() => document.querySelectorAll('.evteam').length >= 4), 'events: standings open');
+    await pg.evaluate(() => document.querySelector('[data-evsets]').click()); await pg.waitForTimeout(200);
+    ok(await pg.evaluate(() => document.querySelectorAll('.evset').length === 6), 'events: sets shown');
+    await go(pg, 'top'); await pg.waitForTimeout(300);
+    await pg.fill('#tsIn', 'Choice Sc'); await pg.waitForTimeout(200);
+    ok(await pg.evaluate(() => /Choice Scarf/.test((document.querySelector('.menu') || {}).innerText || '')), 'team search: suggests items');
+    await pg.keyboard.press('Enter'); await pg.waitForTimeout(300);
+    const ts = await pg.evaluate(() => ({n: document.querySelectorAll('#tsOut .evteam').length, hidden: document.getElementById('ttList').hidden})); ok(ts.n >= 3 && ts.hidden, `team search: ${ts.n} teams with Choice Scarf`);
+    await go(pg, 'calc'); await pg.waitForTimeout(400); await pg.evaluate(() => document.querySelector('[data-dcdir="theirs"]').click()); await pg.waitForTimeout(400);
+    ok(await pg.evaluate(() => /best hit on your team/i.test(document.getElementById('dcOut').innerText)), 'calc: their hits on you');
+    ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); } }
 await browser.close();
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);
