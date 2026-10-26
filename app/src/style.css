@@ -1803,3 +1803,10 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .logpick{position:relative}
 .logpick span{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.15;font-size:13.5px}
 .logpick .logord{position:absolute;top:-7px;right:6px;font-size:9.5px;padding:2px 5px;letter-spacing:.02em}
+
+/* Team Score: one line and a bar against real teams */
+.tsline{display:flex;gap:12px;align-items:flex-start;margin:4px 0 8px}.tsline>b{font:800 italic 30px/1 var(--display);flex:none}.tsline span{font-size:13px;line-height:1.45;color:var(--mute)}.tsline span b{color:var(--ink)}
+.tsbar{position:relative;height:8px;border-radius:99px;background:var(--card2);margin:6px 0 18px}.tsbar i{position:absolute;left:0;top:0;bottom:0;width:var(--w);border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--volt))}
+.tsbar em{position:absolute;top:11px;transform:translateX(-50%);font:600 10px var(--mono);color:var(--faint);font-style:normal}.tsbar em::before{content:'';position:absolute;left:50%;top:-11px;width:1.5px;height:8px;background:var(--line2)}
+.tsd{font:700 11px var(--mono);padding:2px 7px;border-radius:99px;background:var(--card2);color:var(--mute);white-space:nowrap}.tsd.up{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}.tsd.dn{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.abts{display:inline-flex;align-items:center;gap:12px}.abtsv{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:11px;color:var(--mute);line-height:1.2}.abtsv b{font:800 italic 20px/1 var(--display);color:var(--ink)}
