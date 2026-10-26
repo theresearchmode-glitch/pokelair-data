@@ -7,7 +7,7 @@
   --volt:#ff3ea5; --volt2:#ff6ebd; --volt-ink:#1a0716; --gold:#f4a62a; --gold-soft:#fff2d9; --gold-ink:#6b4500;
   --soft:#efe9fb; --accent:#6a35e8;
   --good:#118a5b; --ok:#2a8a86; --warn:#b86e00; --bad:#d63a40;
-  --shadow:0 1px 2px rgba(20,24,56,.05),0 4px 14px rgba(20,24,56,.05);
+  --shadow:0 1px 2px rgba(20,24,56,.04);
   --display:"Sofia Sans Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"Sofia Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
@@ -1727,3 +1727,23 @@ h2 .tipq{width:19px;height:19px;font-size:11.5px}
 :root:not([data-look="dark"]) .bmdt thead th span{color:#5a4a7a}
 @media (min-width:1100px){.corelist:not(:has(.six)){display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 .sev.lo{display:inline-block;grid-template-columns:none;border:0;border-radius:0;padding:3px 9px;text-decoration:none}
+
+/* ---------- Declutter pass ---------- */
+#matchup>.shot{display:none!important}
+.mufold{margin-top:16px}
+.mufold #mu{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.oppquick{margin-top:14px}
+.bmtabs{display:none;margin-bottom:10px}
+@media (max-width:760px){.bmtabs{display:inline-flex}.bmgrid[data-tab="plan"]>:not([data-t="plan"]),.bmgrid[data-tab="speed"]>:not([data-t="speed"]),.bmgrid[data-tab="dmg"]>:not([data-t="dmg"]){display:none}}
+.moremenu{position:relative;display:inline-block}
+.moremenu>summary{list-style:none;cursor:pointer;min-width:40px;text-align:center}
+.moremenu>summary::-webkit-details-marker{display:none}
+.mmpop{position:absolute;right:0;top:calc(100% + 6px);z-index:30;background:var(--card);border:1px solid var(--line2);border-radius:10px;box-shadow:0 10px 30px rgba(28,12,66,.16);padding:6px;display:flex;flex-direction:column;gap:2px;min-width:150px}
+.mmpop .btn{justify-content:flex-start;text-align:left;width:100%}
+.teamsw{margin:0 0 12px}
+.evbtns{align-items:center;gap:14px}
+.corebtns{align-items:center;gap:14px}
+.needsmore{margin-top:6px;align-self:flex-start}
+.htmore{display:flex;justify-content:center;margin-top:10px}
+.corerow,.evcard,.evteam,.bmcard,.bmslot.on{box-shadow:none}
+.plan{gap:8px}
