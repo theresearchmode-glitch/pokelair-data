@@ -83,7 +83,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.delok){const t=S.teams.find(t=>t.id===d.delok);S.teams=S.teams.filter(x=>x.id!==d.delok);if(S.loadedId===d.delok)S.loadedId=null;ui.confirmDel=null;render();toast(`Deleted "${t.name}"`)}
   else if(d.delx){ui.confirmDel=null;renderSaved()}
 });
-const TRIGGER_ID='trig_014evvWRoLJicqGyvhYQCStx';  // "PokéLair data refresh": rankings, sets, top teams and the rating sources
+const TRIGGER_ID='trig_014evvWRoLJicqGyvhYQCStx';  // "NastyPlot data refresh" (formerly PokéLair): rankings, sets, top teams and the rating sources
 async function refreshNow(){const btns=[...document.querySelectorAll('.refreshbtn')];const set=(dis,txt)=>btns.forEach(b=>{b.disabled=dis;b.textContent=txt});
   const last=LS.get('cc2.refreshAt',0);if(Date.now()-last<20*60*1000){toast('A refresh is already running. It takes about 10–20 minutes.');return}
   set(true,'Starting…');

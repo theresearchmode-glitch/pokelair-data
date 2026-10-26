@@ -1,4 +1,4 @@
-// ---------- PokéLair ratings: every Reg M-C Pokémon on a tier board, a meta map, and a detail sheet ----------
+// ---------- NastyPlot ratings: every Reg M-C Pokémon on a tier board, a meta map, and a detail sheet ----------
 const LTIERS = [{k: 'S', min: 80, c: '#ffb400', d: 'Top of the format'}, {k: 'A', min: 70, c: '#ff6a3d', d: 'Strong, proven picks'}, {k: 'B', min: 60, c: '#b45cff', d: 'Solid with the right team'},
   {k: 'C', min: 50, c: '#2f9bff', d: 'Niche or team-dependent'}, {k: 'D', min: 35, c: '#22b58a', d: 'Needs a specific plan'}, {k: 'E', min: 0, c: '#8a90a6', d: 'Rarely worth a slot'}];
 const lTier = t => LTIERS.find(x => t >= x.min) || LTIERS[LTIERS.length - 1];
@@ -48,11 +48,11 @@ function lairMap(rows) {
   pts.filter(x => x.r.pop < sx && x.r.total >= 66).slice(0, ph ? 3 : 6).forEach(x => lab.add(x.p.n));
   pts.filter(x => x.r.pop >= sx && x.r.total < 62).slice(0, ph ? 2 : 4).forEach(x => lab.add(x.p.n));
   const Q = (x, y, t, a) => `<text class="lq" x="${x}" y="${y}" text-anchor="${a}">${t}</text>`;
-  return `<div class="lmapwrap"><svg class="lmap" viewBox="0 0 ${W} ${H}" role="img" aria-label="Usage against PokéLair rating">
+  return `<div class="lmapwrap"><svg class="lmap" viewBox="0 0 ${W} ${H}" role="img" aria-label="Usage against NastyPlot rating">
     <rect class="lqbg g" x="${L}" y="${Tp}" width="${X(sx) - L}" height="${Y(sy) - Tp}"/><rect class="lqbg k" x="${X(sx)}" y="${Tp}" width="${W - Rr - X(sx)}" height="${Y(sy) - Tp}"/>
     <line class="lax" x1="${X(sx)}" x2="${X(sx)}" y1="${Tp}" y2="${H - B}"/><line class="lax" x1="${L}" x2="${W - Rr}" y1="${Y(sy)}" y2="${Y(sy)}"/>
     <text class="lal" x="${(L + W) / 2}" y="${H - 8}" text-anchor="middle">${S.format === 'doubles' ? 'How often strong players pick it →' : 'Singles ladder usage rank →'}</text>
-    <text class="lal" x="12" y="${(Tp + H - B) / 2}" text-anchor="middle" transform="rotate(-90 12 ${(Tp + H - B) / 2})">PokéLair rating →</text>
+    <text class="lal" x="12" y="${(Tp + H - B) / 2}" text-anchor="middle" transform="rotate(-90 12 ${(Tp + H - B) / 2})">NastyPlot rating →</text>
     ${(() => { // place labels greedily: biggest ratings first, right of the dot or left of it, never on top of another label
       const fs = ph ? 10 : 10.5, boxes = [[W - Rr - 120, H - B - 22, 116, 18], [L + 4, H - B - 22, 50, 18]], lbl = new Map();
       const hit = (x, y, w, h) => boxes.some(([a, b, c, d]) => x < a + c && a < x + w && y < b + d && b < y + h);

@@ -6,7 +6,7 @@ function sprite(p, cls) { const id = p && SPRITE_ID[p.n]; return id ? `<img clas
 if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('error', e => { const t = e.target; if (t && t.classList && t.classList.contains('spr')) t.remove(); }, true);
 // ★ rating badge with a tier colour: gold 80+, silver 65+, bronze 50+, grey below.
 function ratingTag(p) { const r = rating(p), t = r.total, tier = t >= 80 ? 4 : t >= 65 ? 3 : t >= 50 ? 2 : 1;
-  return `<span class="tag rating r${tier}" title="PokéLair rating ${t}/100 · ${esc(evidenceLine(p))}">★ ${t}</span>`; }
+  return `<span class="tag rating r${tier}" title="NastyPlot rating ${t}/100 · ${esc(evidenceLine(p))}">★ ${t}</span>`; }
 // Archetype labels as coloured chips (rain blue, sun orange, Grassy green, Trick Room purple...).
 const ARCH_COLOR = {'Rain': '#2f7bff', 'Sun': '#ff7a1a', 'Sun-Rain': 'linear-gradient(90deg,#ff7a1a,#2f7bff)', 'Sand': '#c99a4a', 'Snow': '#7fd3ff',
   'Grassy Terrain': '#2fae4a', 'Psychic Terrain': '#ff4f9a', 'Electric Terrain': '#f2c200', 'Misty Terrain': '#f08ad0',

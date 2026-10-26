@@ -1,4 +1,4 @@
-// ---------- PokéLair rating: our own 0-100 score for every legal Pokémon ----------
+// ---------- NastyPlot rating: our own 0-100 score for every legal Pokémon ----------
 // Not just popularity. Intrinsic strength (stats, typing against the current meta, the tools it brings) is blended
 // with meta evidence (usage and real tournament win rate), so a strong Pokémon few people use still rates well.
 const RT_MOVES = {

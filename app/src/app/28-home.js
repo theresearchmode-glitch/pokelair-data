@@ -1,5 +1,5 @@
 // ---------- Home ----------
-// The front door: what PokéLair is, where your team stands, what's winning right now, and one tap to each tool.
+// The front door: what NastyPlot is, where your team stands, what's winning right now, and one tap to each tool.
 const HOME_TILES = [
   ['matchup', 'Matchup', 'Scout an opponent from a team-preview screenshot', '<path d="M4 4l9 9M4 4h4M4 4v4M20 4l-9 9M20 4h-4M20 4v4M8.5 15.5l-4 4M15.5 15.5l4 4"/>'],
   ['ratings', 'Ratings', 'Every legal Pokémon on one tier board', '<path d="m12 3.2 2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/>'],
@@ -20,8 +20,8 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
   el.innerHTML = `
   <div class="hhero">
     <div class="hhk">Pokémon Champions · Reg M-C · VGC doubles</div>
-    <div class="hht" role="heading" aria-level="2">Build teams that <em>actually win.</em></div>
-    <p class="hhs">Ratings, builds and matchups from ${nTeams ? fmtN(nTeams) + ' real tournament teams' : 'real tournament results'}, refreshed every morning${dataDateText() ? ' (' + dataDateText().replace(/^Data from/, 'latest:') + ')' : ''}.</p>
+    <div class="hht" role="heading" aria-level="2">Plot your <em>win.</em></div>
+    <p class="hhs">Build teams that actually win. Ratings, builds and matchups from ${nTeams ? fmtN(nTeams) + ' real tournament teams' : 'real tournament results'}, refreshed every morning${dataDateText() ? ' (' + dataDateText().replace(/^Data from/, 'latest:') + ')' : ''}.</p>
     <div class="hhline" aria-hidden="true">${lineup.map(x => sprite(x.p, 'hhspr')).join('')}</div>
     <div class="hhfloor" aria-hidden="true"></div>
     <div class="hhacts"><button type="button" class="btn go" data-view="auto">Build me a team</button><button type="button" class="btn hghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div>
@@ -35,7 +35,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
       <div class="startacts"><button class="startbtn" type="button" data-view="auto"><b>Build for me</b><span>A real winning team you can field from your box</span></button><button class="startbtn" type="button" data-view="top"><b>Copy a top team</b><span>Load a team that won and tweak it</span></button><button class="startbtn" type="button" data-view="build"><b>Start from scratch</b><span>Type any Pokémon into a slot</span></button></div></div>`}
   <div class="htiles">${HOME_TILES.map(([v2, t, d, ic]) => `<button type="button" class="htile" data-view="${v2}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><b>${t}</b><span>${d}</span></button>`).join('')}</div>
   <div class="hsec"><div class="hsh"><h3>Top of the meta</h3><button type="button" class="hlink" data-view="ratings">All ratings ›</button></div>
-    <p class="t2">Highest PokéLair ratings right now. Tap one for the full breakdown.</p>
+    <p class="t2">Highest NastyPlot ratings right now. Tap one for the full breakdown.</p>
     <div class="hrow">${top.map(x => homeMini(x.p, x.r)).join('')}</div></div>
   ${homeTrends()}
   ${gems.length ? `<div class="hsec"><div class="hsh"><h3>Hidden gems</h3><button type="button" class="hlink" data-view="ratings">More ›</button></div>
