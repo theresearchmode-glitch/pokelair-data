@@ -1388,22 +1388,33 @@ h1 .h1b,.logotx b{background:linear-gradient(90deg,var(--volt),var(--glow))!impo
 .lgsrc{color:var(--faint)}
 @media (max-width:1000px){.legal{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
 
-/* ---------- NastyPlot lockup: chevron mark + katakana + chrome NASTY + PLOT plate circled like the key play ---------- */
-.np{--s:1;display:inline-flex;align-items:center;gap:calc(22px*var(--s));position:relative;text-shadow:none;text-transform:none;font-style:normal;line-height:1;vertical-align:middle}
-.np-mark{width:calc(96px*var(--s));height:auto;flex:none;filter:drop-shadow(0 0 calc(14px*var(--s)) color-mix(in srgb,var(--volt) 55%,transparent));transform:skewX(-10deg)}
+/* ---------- NastyPlot logo: ^^ mark + NASTY (A cut as the rising chevron) + PLOT plate circled like the key play ---------- */
+.np{--s:1;--np-ink:#fff;--np-sh:#5b2bd1;display:inline-flex;align-items:center;gap:calc(20px*var(--s));position:relative;text-shadow:none;text-transform:none;font-style:normal;line-height:1;vertical-align:middle}
+.np-mark{width:calc(78px*var(--s));height:auto;flex:none;transform:skewX(-9deg)}
 .np-mark .lm1{fill:var(--volt)}.np-mark .lm2{fill:var(--glow)}
-.np-txt{display:flex;flex-direction:column;align-items:flex-start}
-.np-kana{font:900 calc(14px*var(--s))/1 'M PLUS 1p',sans-serif;letter-spacing:.35em;color:#cdb2ff;margin:0 0 calc(5px*var(--s)) calc(8px*var(--s));white-space:nowrap}
-.np-nasty{font:900 calc(96px*var(--s))/.9 Unbounded,var(--display);letter-spacing:-.04em;transform:skewX(-10deg);background:linear-gradient(180deg,#fff 0%,#fff 46%,#ffc2e4 53%,var(--volt) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 calc(4px*var(--s)) 0 #3a1a7a) drop-shadow(0 0 calc(18px*var(--s)) color-mix(in srgb,var(--volt) 40%,transparent));padding-right:.06em;white-space:nowrap}
-.np-plotw{position:relative;display:inline-block;margin:calc(10px*var(--s)) 0 0 calc(90px*var(--s))}
-.np-plot{display:block;background:var(--volt);clip-path:polygon(calc(14px*var(--s)) 0,100% 0,calc(100% - 14px*var(--s)) 100%,0 100%);padding:calc(4px*var(--s)) calc(28px*var(--s))}
-.np-plot span{display:block;font:900 calc(42px*var(--s))/1 Unbounded,var(--display);letter-spacing:.32em;color:var(--volt-ink);margin-right:-.32em}
-.np-loop{position:absolute;left:calc(-26px*var(--s));top:calc(-18px*var(--s));width:calc(260px*var(--s));height:calc(90px*var(--s));overflow:visible;pointer-events:none}
-.np-loop *{stroke:var(--volt);stroke-width:5;fill:none;stroke-linecap:round;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--volt) 70%,transparent))}
+.np-w{display:flex;flex-direction:column;align-items:flex-start}
+.np-n{display:flex;align-items:flex-end;font:900 calc(92px*var(--s))/.86 Unbounded,var(--display);letter-spacing:-.045em;color:var(--np-ink);transform:skewX(-9deg);text-shadow:calc(5px*var(--s)) calc(5px*var(--s)) 0 var(--np-sh);white-space:nowrap}
+.np-cha{height:.7em;width:auto;margin:0 .015em .02em .02em;fill:var(--volt);filter:drop-shadow(calc(5px*var(--s)) calc(5px*var(--s)) 0 var(--np-sh))}
+.np-pw{position:relative;display:block;margin:calc(14px*var(--s)) 0 0 calc(118px*var(--s))}
+.np-p{display:block;background:var(--volt);clip-path:polygon(calc(12px*var(--s)) 0,100% 0,calc(100% - 12px*var(--s)) 100%,0 100%);padding:calc(6px*var(--s)) calc(26px*var(--s)) calc(5px*var(--s))}
+.np-p b{display:block;font:900 calc(38px*var(--s))/1 Unbounded,var(--display);letter-spacing:.34em;margin-right:-.34em;color:var(--volt-ink)}
+.np-lp{position:absolute;left:calc(-34px*var(--s));top:calc(-26px*var(--s));width:calc(300px*var(--s));height:calc(96px*var(--s));overflow:visible;pointer-events:none}
+.np-lp path{fill:var(--np-ink)}
 @media (min-width:1001px){h1 .brand{display:inline-flex}}
 .side .logo{padding:2px 0}
-.legal .np-nasty{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--ink);filter:none}
-.legal .np-plot span{color:var(--volt-ink)}
-.lgbrand{gap:12px}
+.legal .np{--np-ink:var(--ink);--np-sh:transparent}
+.lgbrand{gap:14px}
 .hhlogo{display:none;margin:2px 0 16px}
 @media (max-width:1000px){.hhlogo{display:block}}
+/* ---------- brand motifs used across the site ---------- */
+/* the circled play: a hand-drawn marker loop around the thing that matters */
+.circled{position:relative;display:inline-block;z-index:0}
+.circled>.circ{position:absolute;left:-26%;top:-30%;width:152%;height:160%;fill:var(--volt);pointer-events:none;z-index:-1;overflow:visible}
+.hht em.circled{display:inline-block;margin-left:.32em!important;background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--volt);padding:0 .12em;margin-left:.08em}
+.hht em.circled>.circ{fill:#fff;opacity:.92}
+/* section headings lead with the ^^ mark instead of a plain tab */
+h2::before{width:15px;height:14px;clip-path:none;background:linear-gradient(180deg,var(--volt),var(--glow));
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M2 21.5 12 13.2l10 8.3v-5L12 8.2 2 16.5zM2 13.3 12 5l10 8.3v-5L12 0 2 8.3z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M2 21.5 12 13.2l10 8.3v-5L12 8.2 2 16.5zM2 13.3 12 5l10 8.3v-5L12 0 2 8.3z'/%3E%3C/svg%3E") center/contain no-repeat;transform:skewX(-9deg)}
+/* badges become slanted plates, like PLOT in the logo */
+.thbadge{border-radius:0;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);padding:5px 14px}
