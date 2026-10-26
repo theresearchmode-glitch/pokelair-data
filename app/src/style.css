@@ -1356,3 +1356,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* replay import */
 .replaybox{margin:10px 0}.replaybox summary{cursor:pointer;font-weight:700}.replaybox textarea{width:100%;margin:8px 0;font:12px var(--mono)}
+
+/* archetype guides */
+.guide{margin-bottom:10px}.guide summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;cursor:pointer;list-style:none}.guide summary::-webkit-details-marker{display:none}
+.guide .gkm{margin-left:auto;display:flex}.guide h4{margin:12px 0 4px;font-size:13px}.guide ul{margin:0;padding-left:18px}.guide li{margin:3px 0}
+
+/* data health */
+.healthbar{margin:12px 0 0;padding:10px 14px;border-radius:12px;border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);background:color-mix(in srgb,var(--warn) 12%,var(--card));font-size:14px}
+
+.spdsums{flex-direction:column;align-items:flex-start}.spdtip{color:var(--accent)}
