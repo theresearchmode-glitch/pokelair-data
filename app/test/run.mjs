@@ -1,4 +1,4 @@
-// PokéLair test suite: builds the page, loads it in Chromium with a mocked Claude runtime serving the repo's out/ data,
+// NastyPlot test suite: builds the page, loads it in Chromium with a mocked Claude runtime serving the repo's out/ data,
 // and checks every page on desktop and phone, the Meta sources, the damage calc, Gauntlet and phone layout.
 // Run: node app/test/run.mjs   (exit code 1 on any failure)
 import fs from 'node:fs'; import {execFileSync} from 'node:child_process'; import {chromium} from 'playwright';
