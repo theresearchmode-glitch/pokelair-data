@@ -4,6 +4,11 @@
 // Player skill is fitted alongside, so a strong player's wins don't inflate their Pokémon. Ridge-shrunk, fitted with Adam.
 // Tested on held-out recent events before anything ships: set features are kept only if they beat the species-only model,
 // and the model ships only if it beats raw win rates. Writes out/model.json with the numbers and the test scores.
+// v2 (Oct 26): set features are centered within each species (has feature − how often that species' decks have it), so a
+// Pokémon's strength lives in one shrunk number and sets only say how a build differs from the usual one. Before this, a
+// rarely used Pokémon with one fixed set could pile up credit across 5 set features (Mega Camerupt rated as the best
+// Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
+// team against real tournament teams instead of a fixed range that any odd team could max out.
 import fs from 'node:fs';
 const M = JSON.parse(fs.readFileSync('out/matches.json', 'utf8'));
 const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
@@ -23,6 +28,11 @@ if (hasSets) { const cnt = new Map(), used = new Set(); for (const g of G) { use
   for (const d of used) for (const f of M.decks[d]) cnt.set(f, (cnt.get(f) || 0) + 1);
   const keep = new Map([...cnt].filter(([, n]) => n >= 40).map(([f], i) => [f, i])); setNames = [...keep.keys()].map(f => M.feats[f]);
   deckF = M.decks.map(fs_ => fs_.map(f => keep.get(f)).filter(j => j != null)); }
+// centering: how often each kept feature appears among decks that carry its species
+const featSp = setNames.map(f => f.split(/[@:]/)[0]), spFeats = new Map(), freq = new Float64Array(setNames.length);
+if (hasSets) { const spDecks = new Map(), fd = new Float64Array(setNames.length), used = new Set(); for (const g of G) { used.add(g[7]); used.add(g[8]); }
+  for (const d of used) { for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1); for (const j of deckF[d]) fd[j]++; }
+  setNames.forEach((f, j) => { freq[j] = fd[j] / (spDecks.get(featSp[j]) || 1); if (!spFeats.has(featSp[j])) spFeats.set(featSp[j], []); spFeats.get(featSp[j]).push(j); }); }
 const nP = M.players;
 // time split: last 20% of events (by date) held out
 const evDates = M.events.map(e => e[1]); const order = [...evDates.keys()].sort((a, b) => evDates[a] < evDates[b] ? -1 : 1);
@@ -31,13 +41,16 @@ const train = G.filter(g => !cut.has(g[3])), test = G.filter(g => cut.has(g[3]))
 function fit(games, opt) { const {useSkill = true, usePairs = true, useSets = false, iters = 250, lb = 4, lp = 15, ls = 1.5, lc = 40} = opt || {};
   const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length);
   const P = [b, q, s, c], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length)), L = [lb, lp, ls, lc];
-  const x = (t, d) => { let v = 0; for (const j of tf[t].f) v += b[j]; if (usePairs) for (const j of tf[t].p) v += q[j]; if (useSets && d != null) for (const j of deckF[d]) v += c[j]; return v; };
+  // a deck's set features as [feature, value]: 1 − freq when the deck has it, −freq when the species is there without it
+  const dv = new Map(), deckVec = (t, d) => { if (!useSets || d == null) return []; const key = t * 100000 + d; let v = dv.get(key); if (v) return v; v = []; const has = new Set(deckF[d]);
+    for (const n of teams[t]) for (const j of (spFeats.get(n) || [])) v.push([j, (has.has(j) ? 1 : 0) - freq[j]]); dv.set(key, v); return v; };
+  const x = (t, d) => { let v = 0; for (const j of tf[t].f) v += b[j]; if (usePairs) for (const j of tf[t].p) v += q[j]; for (const [j, w] of deckVec(t, d)) v += c[j] * w; return v; };
   for (let it = 1; it <= iters; it++) { const Gr = P.map(a => new Float64Array(a.length));
     for (const [A, B, r, , pa, pb, , dA, dB] of games) { const eta = x(A, dA) - x(B, dB) + (useSkill ? s[pa] - s[pb] : 0), d = 1 / (1 + Math.exp(-eta)) - r;
       for (const j of tf[A].f) Gr[0][j] += d; for (const j of tf[B].f) Gr[0][j] -= d;
       if (usePairs) { for (const j of tf[A].p) Gr[1][j] += d; for (const j of tf[B].p) Gr[1][j] -= d; }
       if (useSkill) { Gr[2][pa] += d; Gr[2][pb] -= d; }
-      if (useSets) { for (const j of deckF[dA]) Gr[3][j] += d; for (const j of deckF[dB]) Gr[3][j] -= d; } }
+      for (const [j, w] of deckVec(A, dA)) Gr[3][j] += d * w; for (const [j, w] of deckVec(B, dB)) Gr[3][j] -= d * w; }
     const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
     for (let k = 0; k < 4; k++) { const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
       for (let j = 0; j < a.length; j++) { const gg = g[j] + 2 * L[k] * a[j]; m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg; a[j] -= .03 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8); } } }
@@ -69,11 +82,44 @@ console.log('held-out test', JSON.stringify(ev));
 const ships = ev.model_teams_only.logloss < ev.raw_win_rates.logloss;
 const F = ships ? fit(G, {...LAM, useSets, lc: LC ? LC.lc : 40}) : null;
 let meanX = 0; if (F) { let n = 0; for (const [A, B, , , , , , dA, dB] of G) { meanX += F.x(A, dA) + F.x(B, dB); n += 2; } meanX /= n; }
+// calibration on the held-out events: how far the train-only model's edges should be stretched or shrunk (1 = right as is)
+const calib = (() => { const pts = test.map(([A, B, r, , , , , dA, dB]) => [full.x(A, dA) - full.x(B, dB), r]); let w = 1;
+  for (let k = 0; k < 30; k++) { let g = 0, h = 0; for (const [e, r] of pts) { const p = 1 / (1 + Math.exp(-w * e)); g += (p - r) * e; h += p * (1 - p) * e * e; } w -= g / (h || 1); } return w; })();
+// how far a build can move a Pokémon. Down: to the 10th percentile of its real decks. Up: only as far as the best build that
+// real players actually run (a build on 20+ decks, or 5% of them); hand-picking the four moves with the biggest numbers
+// can't beat that. The page clamps every build to this range, and the real-team spread below uses the same clamp.
+const setRange = (() => { if (!F || !useSets) return {}; const vals = new Map(), sig = new Map(), seenTD = new Set();
+  for (const [A, B, , , , , , dA, dB] of G) for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k) || d == null) continue; seenTD.add(k); const has = new Set(deckF[d]);
+    for (const n of teams[t]) { const fj = spFeats.get(n) || []; let v = 0; for (const j of fj) v += F.c[j] * ((has.has(j) ? 1 : 0) - freq[j]);
+      if (!vals.has(n)) { vals.set(n, []); sig.set(n, new Map()); } vals.get(n).push(v); const key = fj.filter(j => has.has(j)).join(','); const g = sig.get(n).get(key) || {c: 0, v}; g.c++; sig.get(n).set(key, g); } }
+  const out = {}; for (const [n, a] of vals) { if (!spFeats.has(n)) continue; a.sort((x, y) => x - y); const builds = [...sig.get(n).values()], need = Math.max(20, .05 * a.length);
+    const common = builds.filter(b => b.c >= need); const top = (common.length ? common : [builds.sort((x, y) => y.c - x.c)[0]]).reduce((m, b) => Math.max(m, b.v), -1e9);
+    const lo = a.length >= 10 ? a[Math.floor(.1 * (a.length - 1))] : Math.min(0, top); out[n] = [+Math.min(lo, top).toFixed(4), +top.toFixed(4)]; } return out; })();
+// tested pairs: two Pokémon brought together on 15+ distinct tournament teams. A team whose pairs are mostly untested gets
+// its above-average edge cut: the model knows each Pokémon's results, but not how an untried mix plays together.
+// (Only upside is cut; a weak team is not pulled up.)
+// Credit = 0.5 + 0.5 × min(1, tested pairs / 6); a quarter of real teams have fewer than 6, most have 10+.
+const SUP_K = 6, tested = new Set(), teamSup = new Map();
+{ const pcAll = new Map(); for (const m of new Set(G.flatMap(g => [g[0], g[1]]))) { const t = teams[m]; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = t[i] < t[j] ? t[i] + '|' + t[j] : t[j] + '|' + t[i]; pcAll.set(k, (pcAll.get(k) || 0) + 1); } }
+  for (const [k, n] of pcAll) if (n >= 15) tested.add(k); }
+const supOf = t => { if (teamSup.has(t)) return teamSup.get(t); const m = teams[t]; let k = 0; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) if (tested.has(m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i])) k++; teamSup.set(t, k); return k; };
+const credit = t => .5 + .5 * Math.min(1, supOf(t) / SUP_K);
+// a team's x the way the page computes it: species + pairs + each member's set effect clamped to its real range
+const xClamp = (t, d) => { let v = 0; for (const j of tf[t].f) v += F.b[j]; for (const j of tf[t].p) v += F.q[j]; if (!useSets || d == null) return v; const has = new Set(deckF[d]);
+  for (const n of teams[t]) { let u = 0; for (const j of (spFeats.get(n) || [])) u += F.c[j] * ((has.has(j) ? 1 : 0) - freq[j]); const r = setRange[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; } return v; };
+// the average tournament team, measured the same way
+if (F) { let n = 0; meanX = 0; for (const [A, B, , , , , , dA, dB] of G) { meanX += xClamp(A, dA) + xClamp(B, dB); n += 2; } meanX /= n; }
+// the spread of real teams: x for each distinct team + set played in the last 45 days, as 101 percentile points
+const dist = (() => { if (!F) return null; const last = evDates.reduce((a, d) => d > a ? d : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
+  const seenTD = new Set(), xs = []; for (const [A, B, , ev, , , , dA, dB] of G) { if (evDates[ev] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); { const dv = xClamp(t, d) - meanX; xs.push(meanX + (dv > 0 ? dv * credit(t) : dv)); } } }
+  xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
 const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
-  note: 'x(team) = sum of mons + sum of pairs + sum of set features ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-(x(A)-x(B)))). Player skill removed. meanX = average tournament team.',
-  meanX: +meanX.toFixed(4),
+  note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
+  meanX: +meanX.toFixed(4), v: 2, center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
+  setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
   mons: F ? Object.fromEntries(mons.map((n, j) => [n, +F.b[j].toFixed(4)])) : {},
   pairs: F ? Object.fromEntries(pairs.map((k, j) => [k, +F.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)) : {},
-  sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)) : {}};
+  sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)])) : {}};
 fs.writeFileSync('out/model.json', JSON.stringify(out));
+console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);
