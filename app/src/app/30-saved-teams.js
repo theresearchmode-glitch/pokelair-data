@@ -8,7 +8,7 @@ function renderSaved(){
   $('savedList').innerHTML=!order.length?'<div class="empty-note">No saved teams yet. Build a team above and tap Save team.</div>':order.map(({t,r})=>{
     const names=r.ms.map(m=>m.d).join(' · ')||'Empty';const isLoaded=t.id===S.loadedId;
     const nameCell=ui.renaming===t.id?`<div class="row"><input class="field" id="rn_${t.id}" value="${esc(t.name)}" maxlength="40" style="flex:1"><button class="btn sm primary" data-rnok="${t.id}" type="button">Save</button><button class="btn sm" data-rnx="1" type="button">Cancel</button></div>`
-      :`<div class="t1">${esc(t.name)} ${isLoaded?' <span class="tag box">OPEN</span>':''}</div>`;
+      :`<div class="t1">${esc(t.name)} ${isLoaded?' <span class="tag box">LOADED</span>':''}</div>`;
     const actions=ui.confirmDel===t.id?`<div class="inline-confirm">Delete?<button class="btn sm danger" data-delok="${t.id}" type="button">Delete</button><button class="btn sm" data-delx="1" type="button">Keep</button></div>`
       :`<span class="pill ${r.ms.length?RC(r.a.excess):'bnone'}">${r.ms.length?wsTxt(r.a):'—'}</span><button class="btn sm primary" data-load="${t.id}" type="button">Open</button><button class="btn sm" data-rn="${t.id}" type="button">Rename</button><button class="btn sm danger" data-del="${t.id}" type="button">Delete</button>`;
     return `<div class="item"><div style="min-width:0">${nameCell}<div class="mon-list">${esc(names)}</div></div><div class="row" style="justify-content:flex-end">${actions}</div></div>`}).join('');

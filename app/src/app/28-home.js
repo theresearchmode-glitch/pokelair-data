@@ -7,7 +7,8 @@ const HOME_TILES = [
   ['sets', 'Popular sets', 'Moves, items and natures players run', '<path d="M5 4h14v16H5z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>'],
   ['calc', 'Damage calc', 'Real damage with stats, items and spread moves', '<path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2M8 18h2M12 18h4"/>'],
   ['speed', 'Speed tiers', 'Who moves first, with Tailwind and Trick Room', '<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-6"/>'],
-  ['gauntlet', 'Gauntlet', 'Run your team into the top 20 tournament teams', '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>']];
+  ['gauntlet', 'Gauntlet', 'Run your team into the top 20 tournament teams', '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>'],
+  ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>']];
 function homeMini(p, r, extra) { return `<button type="button" class="hmini" data-lt="${esc(p.n)}" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}" title="${esc(p.d)}">${sprite(p, 'hmspr') || ''}<span class="hmn">${esc(p.d.replace(/^Mega /, 'M-'))}</span><span class="hms"><b>${r.total}</b>${extra || ''}</span></button>`; }
 function renderHome() { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
   const rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 4);
@@ -27,6 +28,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
     <div class="hhfloor" aria-hidden="true"></div>
     <div class="hhacts"><button type="button" class="btn go" data-view="auto">Build me a team</button><button type="button" class="btn hghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div>
   </div>
+  ${typeof welcomeCard === 'function' ? welcomeCard() : ''}
   ${ms.length ? `<button type="button" class="hteam ${v.lvl || 'mid'}" data-view="build">
       <div class="htk"><span>Your team · ${mine.length}/6</span><span class="thbadge">${esc(shortHead(v.head))}</span></div>
       <div class="htn">${esc(teamTitleFor(ms))}</div>
@@ -47,6 +49,6 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
     <div class="hcores">${cores.map(c => { const ps = c.slice(0, 3).map(n => byName.get(n)); return `<div class="hcore"><div class="hcs">${ps.map(p => sprite(p, 'hcspr') || '').join('')}</div><div class="hcn">${ps.map(p => esc(p.d)).join(' · ')}</div><div class="hcw"><b>${Math.round(c[4] * 100)}%</b> win rate · ${fmtN(c[3])} teams</div></div>`; }).join('')}</div></div>` : ''}
   <div class="hsec hlog"><div class="hsh"><h3>Your battles</h3><button type="button" class="hlink" data-view="matchup">Battle log ›</button></div>
     ${ls ? `<div class="hlogs"><div><b>${ls.w}–${ls.l}</b><span>${ls.pct}% wins</span></div><div><b>${ls.n}</b><span>logged</span></div><div class="hdots">${L.slice(-10).map(e => `<i class="${e.r === 'W' ? 'w' : 'l'}" title="${e.r === 'W' ? 'Win' : 'Loss'}"></i>`).join('')}</div></div>`
-      : '<p class="t2">Log each game in Matchup (the 4 you brought, then Win or Loss) and your record shows up here and on your team.</p>'}</div>
+      : '<div class="hempty"><p class="t2">No games logged yet. After a match, log the 4 you brought and the result (or paste a Showdown replay) and your record shows up here and on your team.</p><button type="button" class="btn sm" data-view="matchup">Log a game</button></div>'}</div>
   <p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings blend Limitless, official VGC events, in-game ranked and Showdown.</p>`; }
 

@@ -71,10 +71,10 @@ function renderPastePanel() {
   if (ui.paste === 'export') {
     el.innerHTML = `<div class="plan"><div class="ph"><span class="pt">Export to Showdown</span><button class="x" type="button" data-pastex="1" aria-label="Close">×</button></div>
       <textarea class="field paste" id="pasteOut" readonly rows="10">${esc(exportPaste())}</textarea>
-      <div class="row"><button class="btn sm primary" type="button" id="pasteCopy">Copy</button><span class="t2">Paste into Showdown's teambuilder with Import from text. Items are the most-used ones; natures and stat points are yours to set.</span></div></div>`;
+      <div class="row"><button class="btn sm primary" type="button" id="pasteCopy">Copy</button><span class="t2">Paste into Showdown's teambuilder with Import from text. Items, natures and stat points are the most common ones from real play.</span></div></div>`;
   } else {
     el.innerHTML = `<div class="plan"><div class="ph"><span class="pt">Import a team</span><button class="x" type="button" data-pastex="1" aria-label="Close">×</button></div>
-      <textarea class="field paste" id="pasteIn" rows="10" placeholder="Paste a Showdown team here (from Showdown, Pokémon Zone, Pikalytics or Victory Road)."></textarea>
+      <textarea class="field paste" id="pasteIn" rows="10" placeholder="Paste a NastyPlot team link, or a Showdown team (from Showdown, Pokémon Zone, Pikalytics or Victory Road)."></textarea>
       <div class="row"><button class="btn sm primary" type="button" id="pasteLoad">Replace my team</button><span class="t2">Pokepaste links can't be opened from here; copy the team text instead.</span></div>
       <div id="pasteNotes" class="t2"></div></div>`;
   }

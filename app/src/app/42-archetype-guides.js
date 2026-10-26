@@ -46,7 +46,7 @@ function renderGuides() { const el = $('guideOut'); if (!el) return;
       (t.types || []).forEach(ty => { if (m.types.includes(ty) && !why.includes(ty + ' type')) why.push(ty + ' type'); });
       if (why.length) out.push(`<b>${esc(m.d)}</b> (${why.slice(0, 3).map(esc).join(', ')})`); }
     return out; };
-  el.innerHTML = `<p class="t2">${n ? `Read from the latest ${n} top tournament teams.` : 'Usage numbers appear once top teams load.'} Tap a guide to see how to play into it.</p>` + GUIDE_ORDER.map(k => { const g = GUIDE[k], c = counts[k] || 0, km = keyMons(k), y = ms.length ? yours(k) : null;
+  el.innerHTML = `<p class="t2">${n ? `Read from the latest ${n} top tournament teams.` : 'Usage numbers appear once top teams load.'} Tap a guide to see how to play into it.</p>` + GUIDE_ORDER.slice().sort((x, y) => (counts[y] || 0) - (counts[x] || 0)).map(k => { const g = GUIDE[k], c = counts[k] || 0, km = keyMons(k), y = ms.length ? yours(k) : null;
     return `<details class="plan guide"><summary><span class="pt">${esc(ARCH[k].name)}</span>${n ? `<span class="vsub">${Math.round(100 * c / n)}% of top teams</span>` : ''}<span class="gkm">${km.slice(0, 5).map(p => sprite(p, 'mini') || '').join('')}</span></summary>
       <p>${esc(g.what)}</p>${km.length ? `<p class="t2">Key Pokémon: ${km.map(p => esc(p.d)).join(', ')}</p>` : ''}
       <h4>How to beat it</h4><ul>${g.beat.map(b => `<li>${esc(b)}</li>`).join('')}</ul>

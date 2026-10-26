@@ -28,7 +28,7 @@ function render(){
      <div class="vsub">${ms.length}/6 Pokémon${PG?` · ${Math.round(PG.danger*100)}% of the top 30 can hit 3+ of yours super effectively`:''}</div></div>
      <div class="kv"><span>More weak than resist</span><div class="chips">${weakChips||'<span class="none">None</span>'}</div>
      <span>Nobody resists</span><div class="chips">${a.unresisted.map(t=>chip(t)).join('')||'<span class="none">None</span>'}</div>
-     <span>Same weak as resist</span><div class="chips">${tied||'<span class="none">None</span>'}</div>
+     <span>Even split</span><div class="chips">${tied||'<span class="none">None</span>'}</div>
      ${S.format==='singles'&&ms.length?`<span>Stealth Rock</span><div style="font-size:13px">${ms.filter(m=>srPct(m)>=25).map(m=>`${esc(m.d)} ${srPct(m)}%`).join(', ')||'<span class="none">Nobody takes 25% or more</span>'}</div>`:''}</div>
      <div class="t2">×2 next to a type means 2 more of yours are weak to it than resist it.</div>`;
   safe('trios',()=>renderTrios(ms,useA));
@@ -89,7 +89,7 @@ function renderVerdict(ms,a,PG,CK){const el=$('verdict');ui.vProven=false;ui.vsu
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
   ui.vProven=!!(best&&best.k===6&&best.wr>=.55);el.className='verdict '+lvl;
   const parts=TS?`<div class="tsparts">${TS.parts.map(p=>`<div class="tspart"><span>${p.label}</span><i style="--w:${p.v}%"></i><b>${p.v}</b><em>${Math.round(p.w*100)}% of score</em></div>`).join('')}</div>`:'';
-  el.innerHTML=`<div class="vhead"><span class="vdot" aria-hidden="true"></span><b>${TS?'Team Score '+esc(head):esc(head)}</b></div>${parts}<dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`}
+  el.innerHTML=`<div class="vhead"><span class="vdot" aria-hidden="true"></span><b class="vtitle">${TS?'Team Score '+esc(head):esc(head)}</b></div>${parts}<dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`}
 // One Team Score, 0-100: the win model (real games), real results for this exact list, the checklist and the meta threats.
 // Each part is 0-100; the weights are shown next to it. The model leads because it is the only part tested on held-out games.
 function teamScore({wv,best,CK,PG}){const cl=x=>Math.max(0,Math.min(100,Math.round(x)));const P=[];
@@ -125,7 +125,7 @@ function setRows(p){const st=setFor(p),it=topItems(p),na=st.na.length?st.na.slic
   const tag=src=>src==='sd'?` <span class="vsub" title="Showdown ladder, 1630+ rating">(Showdown)</span>`:'';
   const line=(label,arr,src)=>`<span class="lbl">${label}</span><div><span class="iname">${esc(arr[0][0])}</span>${pcTxt(arr[0][1])}${arr[1]?`<span class="ialt">or ${esc(arr[1][0])}${pcTxt(arr[1][1])}</span>`:''}${tag(src)}</div>`;
   const cs=typeof commonSpread==='function'?commonSpread(p):null;
-  const spr=cs?`<span class="lbl">Spread</span><div><span class="iname">${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}</span> <span class="vsub" title="HP/Atk/Def/SpA/SpD/Spe stat points, most common on the Showdown ladder (1630+)">${esc(cs.nat)} · HP/Atk/Def/SpA/SpD/Spe</span></div>`:'';
+  const spr=cs?`<span class="lbl">Spread${typeof tip==='function'?tip('spread'):''}</span><div><span class="iname">${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}</span> <span class="vsub" title="HP/Atk/Def/SpA/SpD/Spe stat points, most common on the Showdown ladder (1630+)">${esc(cs.nat)} · HP/Atk/Def/SpA/SpD/Spe</span></div>`:'';
   return `<div class="itemrow">${it?line('Item',it.it,it.src):''}${na?line('Nature',na,st.src.na):''}${spr}</div>`}
 // Each Pokémon is read with the 4 moves on its card (popular set unless you changed them).
 function memberMoves(m){const mv=m.moves&&m.moves.length?m.moves:popularMoves(m.p);if(mv.some(isCoverage))return {moves:mv,src:m.custom?'yours':'popular'};return {moves:[],src:'stab'}}

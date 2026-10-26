@@ -80,7 +80,7 @@ async function openShareCard() {
     box.hidden = false;
     box.innerHTML = `<div class="sharein" role="dialog" aria-label="Share card"><div class="sharehd"><b>Share card</b><button type="button" class="btn ghost sm" data-shareclose>Close</button></div>
       ${url ? `<img class="shareimg" src="${url}" alt="Your team as a NastyPlot share card">` : '<p class="t2">Could not draw the card in this view.</p>'}
-      <div class="row sharerow">${blob ? '<button type="button" class="btn go" id="shareSave">Save image</button>' : ''}<span class="t2" id="shareMsg">On a phone you can also press and hold the image to save or share it.</span></div></div>`;
+      <div class="row sharerow">${blob ? '<button type="button" class="btn go" id="shareSave">Save image</button>' : ''}<button type="button" class="btn" id="shareLink">Copy team link</button><span class="t2" id="shareMsg">On a phone you can also press and hold the image to save or share it.</span></div></div>`;
     box.onclick = async e => { const t = e.target;
       if (t === box || t.closest('[data-shareclose]')) { closeShare(); return; }
       if (t.id !== 'shareSave' || !blob) return;

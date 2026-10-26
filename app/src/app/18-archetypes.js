@@ -85,7 +85,7 @@ function renderMatchup() {
   renderOppSlots();
   { const q = $('oppQuick'), d = META.teams; if (q) { if (!d || !d.teams.length) q.innerHTML = '';
       else if (!q.dataset.ver || q.dataset.ver !== String(metaVersion)) { q.dataset.ver = String(metaVersion);
-        q.innerHTML = `<label class="lbl" for="oppTeamSel">Practise against a top team</label><select class="field" id="oppTeamSel"><option value="">Pick a tournament team…</option>${d.teams.map((t, i) => `<option value="${i}">${esc(t.player)} ${esc(t.record)} · ${esc(teamPlanLabel(t.mons))}</option>`).join('')}</select>`; } } }
+        q.innerHTML = `<label class="lbl" for="oppTeamSel">Practice against a top team</label><select class="field" id="oppTeamSel"><option value="">Pick a tournament team…</option>${d.teams.map((t, i) => `<option value="${i}">${esc(t.player)} ${esc(t.record)} · ${esc(teamPlanLabel(t.mons))}</option>`).join('')}</select>`; } } }
   const el = $('mu'); if (!el) return;
   const useA = $('useAbil').checked; const mine = members(); const theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
   if (!mine.length) { el.innerHTML = '<div class="empty-note">Build your team on the Build tab first.</div>'; return; }
@@ -189,12 +189,15 @@ function renderTopTeams() {
   const sections = [...new Set(d.teams.map(t => t.section))];
   const mine = members(), mg = mine.length === 6 ? gradeNames(mine.map(m => m.p.n), true) : null;
   const yours = `<div class="ttyours"><div><div class="lbl">Your team</div><div class="t2">${mine.length === 6 ? esc(mine.map(m => m.d).join(' · ')) : 'Add six Pokémon on the Team page to compare.'}</div></div><div class="ttright">${miniGrades(mg)}${mine.length === 6 ? `<span class="archchips">${archChips(teamPlanLabel(mine.map(m => m.p.n)))}</span>` : ''}</div></div>`;
-  el.innerHTML = yours + sections.map(sec => `<h3 class="lbl" style="margin:8px 0 2px">${esc(sec)}</h3>` + d.teams.map((t, k) => ({t, k})).filter(x => x.t.section === sec).map(({t, k}) => {
+  ui.ttMore = ui.ttMore || {};
+  el.innerHTML = yours + sections.map(sec => { const all = d.teams.map((t, k) => ({t, k})).filter(x => x.t.section === sec), cap = ui.ttMore[sec] ? all.length : 8;
+    return `<h3 class="lbl" style="margin:8px 0 2px">${esc(sec)} <span class="vsub">${all.length}</span></h3>` + all.slice(0, cap).map(({t, k}) => {
     const confirm = ui.ttConfirm === k;
     return `<div class="plan ttcard"><div class="ph"><div><div class="pt">${esc(t.player)} <span class="vsub">${esc(t.record)}</span></div><div class="t2">${esc(t.event)}</div></div><div class="ttright">${miniGrades(gradeNames(t.mons))}<span class="archchips">${archChips(teamPlanLabel(t.mons))}</span></div></div>
       <div class="ttmons">${t.mons.map(n => { const p = byName.get(n); return `<span class="ttmon">${sprite(p,'tiny')}${esc(p.d)}${p.m ? ' <span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? ' <span class="tag box ico" title="In your box">BOX</span>' : ''}</span>`; }).join('')}</div>
       <div class="row">${confirm ? `<span class="inline-confirm" style="color:var(--ink)">Replace your current team?</span><button class="btn sm primary" type="button" data-ttload="${k}">Replace</button><button class="btn sm" type="button" data-ttx="1">Cancel</button>`
-        : `<button class="btn sm" type="button" data-ttask="${k}">Load into builder</button>`}</div></div>`; }).join('')).join('');
+        : `<button class="btn sm" type="button" data-ttask="${k}">Load into builder</button>`}</div></div>`; }).join('')
+      + (all.length > cap ? `<button class="btn ttmore" type="button" data-ttmore="${esc(sec)}">Show ${all.length - cap} more</button>` : ''); }).join('');
 }
 function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return;
   S.slots = normSlots(t.mons.map(n => ({n, a: null, lock: false})));
@@ -217,3 +220,5 @@ function trendFor(name, rank) {
   return {cls: diff > 0 ? 'up' : 'down', txt: (diff > 0 ? '▲' : '▼') + Math.abs(diff)};
 }
 
+
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ttmore]'); if (!b) return; ui.ttMore = ui.ttMore || {}; ui.ttMore[b.dataset.ttmore] = true; renderTopTeams(); });

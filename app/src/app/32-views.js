@@ -7,7 +7,7 @@ const GROUPS=[['build',[['build','My team'],['teams','Saved teams'],['box','My b
   ['ratings',[['ratings','Ratings'],['meta','Rankings'],['top','Top teams'],['sets','Popular sets'],['types','Type chart']]]];
 const VIEW_PARENT={};GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{if(v!==g)VIEW_PARENT[v]=g}));
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',build:'Team builder',auto:'Build for me',teams:'Saved teams',matchup:'Matchup',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Top teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes'};
+const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved teams',matchup:'Matchup',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Top teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes'};
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
   const def='<svg class="nic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>';
@@ -36,6 +36,7 @@ function setView(v,scroll){if(!document.querySelector(`[data-pane="${v}"]`))v='h
   {const t=$('viewTitle');if(t)t.textContent=VIEW_TITLE[v]||v}
   {const mb=$('moreBtn');if(mb)mb.classList.toggle('on',!MAIN_VIEWS.includes(VIEW_PARENT[v]||v))}
   sideOpen(false);
+  requestAnimationFrame(()=>document.querySelectorAll('.subnav').forEach(n=>{if(n.offsetParent===null)return;n.classList.toggle('ovf',n.scrollWidth>n.clientWidth+2);const on=n.querySelector('[aria-selected="true"]');if(on&&n.scrollWidth>n.clientWidth){const l=on.offsetLeft-n.offsetLeft-(n.clientWidth-on.offsetWidth)/2;n.scrollLeft=Math.max(0,l)}}));
   if(v==='home')safe('home',renderHome);
   if(v==='types')renderTypeChart();
   if(v==='ratings')safe('ratings',renderLair);

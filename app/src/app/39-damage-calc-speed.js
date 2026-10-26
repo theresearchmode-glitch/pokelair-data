@@ -14,10 +14,10 @@ function commonSpread(p){const d=META.doubles;if(!d)return null;const row=[...(d
   return {nat,hp:v[0],atk:v[1],def:v[2],spa:v[3],spd:v[4],spe:v[5],pct}}
 const spreadText=s=>`${s.nat} ${s.hp}/${s.atk}/${s.def}/${s.spa}/${s.spd}/${s.spe}`;
 function likelySpeed(p){const it=topItem(p),cs=commonSpread(p);const scarf=it&&it[0]==='Choice Scarf'&&(it[1]==null||it[1]>=25);
-  if(cs){const v=calcStat(p,'Spe',cs.spe,natMul(cs.nat,'Spe'));return {v,scarf,label:`${cs.spe} Spe points, ${cs.nat} (most common spread)`,nat:cs.nat,real:true}}
+  if(cs){const v=calcStat(p,'Spe',cs.spe,natMul(cs.nat,'Spe'));return {v,scarf,label:`${cs.spe} Speed points, ${cs.nat} (most common spread)`,nat:cs.nat,real:true}}
   const nat=topNature(p);const up=(NAT_UP.Spe).includes(nat),dn=(NAT_DN.Spe).includes(nat);
   const sp=dn?0:(up||p.st[5]>=70)?32:0,mul=up?1.1:dn?.9:1;
-  const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 SP, −Spe':up?'32 SP, +Spe':sp?'32 SP, neutral':'0 SP, neutral')+(nat?` (${nat}, estimated)`:' (estimated)'),nat}}
+  const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 Speed points, Speed-lowering nature':up?'32 Speed points, Speed-boosting nature':sp?'32 Speed points':'0 Speed points')+(nat?`, ${nat} (estimated)`:' (estimated)'),nat}}
 // ---- speed tiers ----
 let spdUi={tw:false,twOpp:false,tr:false,icy:false};
 function renderSpeed(){const el=$('spdOut');if(!el)return;
@@ -33,7 +33,7 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
     let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy){const ls=likelySpeed(p),cs=commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=ls.scarf?1.5:1;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
       if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
-        tip=need!=null?` · <span class="spdtip">${need-cur} more Spe points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:` · <span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
+        tip=need!=null?` · <span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:` · <span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
     return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}${tip}</span>`}).join('');
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
     return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
@@ -135,7 +135,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
       <div class="dc2"><label>Item${sel('dcDIt',CALC_ITEMS.map(x=>[x,x||'None']),D.item)}</label><label>Ability${sel('dcDAb',D.p.a,D.ability)}</label></div>
       <label>Stat stage${sel('dcDBo',boosts,String(D.boost))}</label></div></div>
     <div class="dcfield"><div class="seg" role="group" aria-label="Weather">${[['','No weather'],['sun','Sun'],['rain','Rain'],['sand','Sand'],['snow','Snow']].map(([k,t])=>`<button type="button" data-dcw="${k}" aria-pressed="${dc.weather===k}">${t}</button>`).join('')}</div>
-      <div class="seg" role="group" aria-label="Field">${[['spread','Hits both foes'],['screen','Screen up'],['hh','Helping Hand'],['fg','Friend Guard'],['crit','Critical hit']].map(([k,t])=>`<button type="button" data-dct="${k}" aria-pressed="${k==='spread'?spread:!!dc[k]}">${t}</button>`).join('')}</div></div>
+      <div class="seg segwrap" role="group" aria-label="Field">${[['spread','Hits both foes'],['screen','Screen up'],['hh','Helping Hand'],['fg','Friend Guard'],['crit','Critical hit']].map(([k,t])=>`<button type="button" data-dct="${k}" aria-pressed="${k==='spread'?spread:!!dc[k]}">${t}</button>`).join('')}</div></div>
     <div class="dcres">${!mv?'<div class="empty-note">Pick a damaging move.</div>':!r?'<div class="empty-note">This move does no direct damage.</div>':r.max===0?`<b>No effect.</b> ${esc(D.p.d||D.p.n)} is immune to ${esc(r.type)}.`:
       `<div class="dcbig">${pct[0].toFixed(1)}–${pct[1].toFixed(1)}%</div>${bar}<div><b>${koText(r)}</b> · ${r.min}–${r.max} of ${r.hp} HP${r.hits>1?` · ${r.hits} hits${MULTI_HIT[dc.mv]===3&&r.hits===3?' (2–5)':''}`:''}${r.eff!==1?` · ${r.eff}× ${esc(r.type)}`:''}</div>
       ${(()=>{if(!r||r.max===0)return '';const bs=bulkToSurvive({atk:A,def:D,move:mv,spread,weather:dc.weather,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit});if(!bs)return '';if(bs.none)return `<p class="dcbulk">${esc(D.p.d||D.p.n)} can't survive this hit with any spread.</p>`;return `<p class="dcbulk">Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max<r.hp?'This spread already survives.':'This spread does not.'}</p>`})()}
@@ -146,7 +146,7 @@ function bestHitOn(atkP,atkMoves,defP){let best=null;const A={p:atkP,...sideDefa
   for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread});if(r&&r.hp&&(!best||r.max>best.r.max))best={mv,r}}return best}
 function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThreats(12).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
   const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';return `<td class="${c}" title="${esc(b.mv.name)}: ${lo.toFixed(0)}–${p.toFixed(0)}%">${p.toFixed(0)}<span>${esc(b.mv.name)}</span></td>`};
-  return `<h3 style="margin-top:22px">Your best hit on each top threat</h3><p class="t2">Max roll, single target unless the move hits both. Your set vs their usual set and bulk (32 HP points). Green = OHKO range, gold = 2HKO range.</p>
+  return `<h3 class="dsub" style="margin-top:22px">Your best hit on each top threat</h3><p class="t2">Max roll, single target unless the move hits both. Your set vs their usual set and bulk (32 HP points). Green = OHKO range, gold = 2HKO range.</p>
   <div class="tablewrap"><table class="dctab"><thead><tr><th></th>${thr.map(p=>`<th title="${esc(p.d||p.n)}">${sprite(p,'dcth')}<span>${esc((p.d||p.n).replace(/^Mega /,'M-'))}</span></th>`).join('')}</tr></thead>
   <tbody>${ms.map(m=>`<tr><th>${sprite(m.p,'dcth')}<span>${esc(m.d||m.p.n)}</span></th>${thr.map(t=>cell(bestHitOn(m.p,m.moves,t))).join('')}</tr>`).join('')}</tbody></table></div>`}
 document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.id))return;const v=t.value;

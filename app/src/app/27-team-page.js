@@ -16,7 +16,7 @@ function renderTeamHero(ms) { const el = $('teamHero'); if (!el) return; if (!ms
     <div class="thname${teamTitleFor(ms).length > 20 ? ' long' : ''}" role="heading" aria-level="3">${esc(teamTitleFor(ms))}</div>
     <div class="thline">${mons.map(x => `<button type="button" class="thmon" data-tjump="${x.i}" title="${esc(x.p.d)}" aria-label="Jump to ${esc(x.p.d)}">${sprite(x.p, 'thspr') || `<span class="thdot" style="--tc:${TC[x.p.t[0]]}"></span>`}</button>`).join('')}</div>
     <div class="thfloor" aria-hidden="true"></div>
-    <div class="thstats">${stats.slice(0, 3).map(([b, l, c]) => `<span class="ths ${c}"><b>${b}</b>${l}</span>`).join('')}</div>`; }
+    <div class="thstats">${stats.slice(0, 3).map(([b, l, c]) => `<span class="ths ${c}"><b>${b}</b>${l}${l === 'Team Score' ? (typeof tip === 'function' ? tip('teamscore') : '') : l === 'checklist' ? (typeof tip === 'function' ? tip('checklist') : '') : ''}</span>`).join('')}</div>`; }
 document.addEventListener('click', e => { const t = e.target; if (!t || !t.closest) return;
   const tv = t.closest('[data-tview]'); if (tv) { ui.tview = tv.dataset.tview === 'grid' ? 'grid' : 'full'; LS.set('cc2.tview', ui.tview); renderSlots(); return; }
   const j = t.closest('[data-tjump]'); const g = !j && ui.tview === 'grid' && t.closest('.slot.tcard') && !t.closest('button,input,select,a,summary') ? t.closest('.slot.tcard') : null;
