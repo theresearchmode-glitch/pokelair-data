@@ -45,6 +45,7 @@
  "src/app/38-gauntlet.js",
  "src/app/39-damage-calc-speed.js",
  "src/app/40-turn-one.js",
+ "src/app/41-replay-import.js",
  "src/app/99-start.js",
  "src/foot.html"
 ]
