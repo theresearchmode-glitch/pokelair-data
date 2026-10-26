@@ -1,6 +1,6 @@
 # pokelair-data
 
-Daily Pokémon Champions (Reg M-C, VGC doubles) data for PokéLair. A scheduled GitHub Action runs each morning (about 6:17 AM New York time); PokéLair's 6:52 AM refresh copies `out/` into the page.
+Daily Pokémon Champions (Reg M-C, VGC doubles) data for NastyPlot. A scheduled GitHub Action runs each morning (about 6:17 AM New York time); NastyPlot's 6:52 AM refresh copies `out/` into the page.
 
 | Step | Script | Output |
 |---|---|---|
