@@ -31,3 +31,5 @@ jobs:
           # code can change on main while the job runs; replay the data commit on top and retry
           for i in 1 2 3; do git pull --rebase origin main && git push && exit 0; sleep 10; done
           exit 1
+      - name: Data health
+        run: node health.mjs
