@@ -1666,24 +1666,25 @@ h2 .tipq{width:19px;height:19px;font-size:11.5px}
 .corechip.add{cursor:pointer;padding-right:10px}.corechip.add b{color:var(--accent);font:700 11px var(--mono)}
 .coreintro{margin:4px 0 12px;max-width:72ch}
 .corelist{display:flex;flex-direction:column;gap:10px}
-.corerow{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(150px,210px);grid-template-areas:"rk mons stat" "rk tags stat" "rk btns btns";gap:6px 14px;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:12px 14px;box-shadow:var(--shadow)}
-.corerk{grid-area:rk;align-self:start;font:800 italic 18px/1.2 var(--display);color:var(--faint)}
-.coremons{grid-area:mons;display:flex;flex-wrap:wrap;gap:4px 14px}
-.coremon{display:inline-flex;align-items:center;gap:4px;font-size:14px}
+.corerow{display:grid;grid-template-columns:22px minmax(0,1fr) auto;grid-template-areas:"rk main stat" "rk btns btns";gap:8px 12px;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:10px 12px;box-shadow:var(--shadow)}
+.corerk{grid-area:rk;align-self:start;margin-top:6px;font:800 italic 17px/1.2 var(--display);color:var(--faint)}
+.coremain{grid-area:main;min-width:0}
+.coresprs{display:flex;gap:2px;margin:-4px 0 0 -4px}
 .coresp{width:44px;height:44px}
-.corerow.six .coresp{width:34px;height:34px}.corerow.six .coremon{font-size:12.5px}
-.corestat{grid-area:stat}
-.corewr{display:flex;align-items:baseline;gap:8px}
-.corewr b{font:800 20px var(--mono)}
-.corewr span{font:700 12px var(--mono)}.corewr .up{color:var(--good)}.corewr .dn{color:var(--bad)}
-.corebar{position:relative;height:6px;border-radius:99px;background:var(--card2);margin:5px 0 4px}
-.corebar::after{content:'';position:absolute;left:50%;top:-2px;bottom:-2px;width:1.5px;background:var(--line2)}
-.corebar i{position:absolute;top:0;bottom:0;border-radius:99px}
-.corebar i.up{background:var(--good)}.corebar i.dn{background:var(--bad)}
-.coretags{grid-area:tags;display:flex;flex-wrap:wrap;gap:5px}
+.corerow.six .coresp{width:36px;height:36px}
+.corenames{font-size:13.5px;font-weight:750;line-height:1.3;margin-top:1px}
+.corerow.six .corenames{font-size:12px;font-weight:650;color:var(--mute)}
+.corestat{grid-area:stat;align-self:start;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:1px;padding-top:4px}
+.corestat b{font:800 19px/1.1 var(--mono)}
+.corestat span{font:700 11px var(--mono)}
+.corestat .up{color:var(--good)}
+.corestat .dn{color:var(--bad)}
+.corestat small{font-size:11px;color:var(--mute)}
+.coretags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
 .coretags .tag{background:var(--soft);color:var(--accent)}
-.corebtns{grid-area:btns;gap:8px}
-@media (max-width:640px){.corerow{grid-template-columns:24px minmax(0,1fr);grid-template-areas:"rk mons" "rk stat" "rk tags" "rk btns"}.coresp{width:38px;height:38px}}
+.corebtns{grid-area:btns;gap:8px;margin-top:-2px}
+.corebtns .btn.sm{min-height:32px;padding:5px 12px}
+@media (max-width:640px){.corerow{grid-template-columns:20px minmax(0,1fr) auto}.coresp{width:38px;height:38px}}
 
 /* ---------- Events ---------- */
 .evlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
@@ -1749,3 +1750,56 @@ h2 .tipq{width:19px;height:19px;font-size:11.5px}
 .plan{gap:8px}
 
 .row:has(>#saveBtn)>.moremenu>summary{height:100%;display:flex;align-items:center;justify-content:center;padding-inline:14px}
+
+/* ratings tiles: long names step down instead of being cut */
+.ltn.sm{font-size:10.5px}.ltn.xs{font-size:9.5px;letter-spacing:-.1px}
+/* compact team grid: sprite + name, 3 across on phones, 6 on wide cards */
+.tgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 8px;margin:10px 0 6px}
+.tgm{position:relative;display:flex;align-items:center;gap:5px;min-width:0;padding:3px 4px 3px 2px;border-radius:9px;background:var(--card2)}
+.tgm.hl{box-shadow:inset 0 0 0 1.5px var(--navy);background:var(--soft)}
+.spr.tgs{width:34px;height:34px;flex:none;margin:-4px -2px -4px -2px}
+.tgn{min-width:0;font-size:12px;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.tgmk{position:absolute;top:-4px;right:-3px;font-size:8px;font-weight:900;line-height:1;font-style:normal;color:#c2272e;background:#fff;border-radius:3px;padding:2px 3px;box-shadow:0 0 0 1px rgba(194,39,46,.35)}
+.tgbx{position:absolute;bottom:3px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--volt)}
+@media (min-width:900px){.tgrid{grid-template-columns:repeat(6,minmax(0,1fr))}.tgm{flex-direction:column;text-align:center;padding:6px 4px 7px}.spr.tgs{width:52px;height:52px;margin:0}.tgn{font-size:12px}}
+.ttck{font-size:12px;color:var(--mute);margin:2px 0 4px}.ttck b{color:var(--ink);font-weight:800}.ttck.all b{color:var(--good,#2e9e5b)}
+.ttwho{min-width:0}
+.ttmeta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:2px 0 6px}.ttmeta .archchips{justify-content:flex-start}.ttmeta:has(.archchips:empty):not(:has(.ttck)){display:none}
+.ttmeta .ttck{margin:0}
+.tgn{overflow-wrap:normal;word-break:normal}.tgn.sm{font-size:11px}.tgn.xs{font-size:10px;letter-spacing:-.1px}
+.ttmeta .ttck{flex:none}.ttmeta .archchips{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap}
+.ttmeta .ttck.wide{order:2;flex-basis:100%}
+
+/* damage calc: result pinned at the top on phones */
+.dcstick{display:none}
+@media (max-width:700px){.dcstick{position:sticky;top:calc(var(--bandh,0px) + 6px);z-index:8;display:flex;align-items:center;gap:6px;width:100%;margin:0 0 12px;padding:6px 12px 6px 6px;border:1px solid var(--line2);border-radius:14px;background:color-mix(in srgb,var(--card) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(29,11,46,.12);color:var(--ink);text-align:left;cursor:pointer;transition:opacity .2s,transform .2s}
+.dcstick.off{opacity:0;transform:translateY(-6px);pointer-events:none}
+.spr.dcsts{width:38px;height:38px;flex:none;margin:-4px -2px}
+.dcsta{color:var(--faint);font-weight:800}
+.dcstx{display:flex;flex-direction:column;min-width:0;margin-left:6px}
+.dcstx b{font:800 18px/1.1 var(--mono)}
+.dcstx span{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+
+/* Build for me: before the first build */
+.abstart{margin-top:18px}
+.abwhat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.abw{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.abw b{font-size:14px}.abw p{margin:3px 0 0;font-size:12.5px}
+.abwn{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--soft);color:var(--accent);font:800 13px var(--mono)}
+.abwinhead{margin:22px 0 4px}.abwinhead h3{margin:0}
+@media (max-width:700px){.abwhat{grid-template-columns:1fr;gap:8px}.abw{padding:10px 12px}}
+@media (max-width:700px){.abwhat{gap:0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}.abw{border:0;border-radius:0;background:none}.abw+.abw{border-top:1px solid var(--line)}}
+
+/* home: tighter sections */
+.hpick{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:2px 0 10px}.hpick .t2{margin:0}
+.hpick .seg button{padding:5px 11px;font-size:12.5px}
+button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+@media (max-width:700px){.hcores{gap:8px}.hcore{display:grid!important;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"s n" "s w";align-items:center;column-gap:10px;padding:8px 12px}
+.hcs{grid-area:s}.hcn{grid-area:n;margin:0;font-size:13px}.hcw{grid-area:w}.hcspr{width:40px;height:40px;margin-right:-10px}.hcw b{font-size:15px}}
+@media (max-width:760px){.htile{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"i t" "d d";column-gap:8px;row-gap:4px;align-items:center;padding:12px}
+.htile svg{grid-area:i;width:22px;height:22px;margin:0}.htile b{grid-area:t;font-size:16px}.htile span{grid-area:d;font-size:12px}}
+
+/* battle log picks: the whole name shows; Lead/Back sits as a small corner tag */
+.logpick{position:relative}
+.logpick span{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.15;font-size:13.5px}
+.logpick .logord{position:absolute;top:-7px;right:6px;font-size:9.5px;padding:2px 5px;letter-spacing:.02em}
