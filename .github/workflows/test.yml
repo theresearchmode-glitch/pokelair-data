@@ -3,11 +3,18 @@ on:
   push:
     paths: ['app/**']
   workflow_dispatch:
+# Changes land as a few commits in a row; only the newest one is tested. An older run still going is cancelled
+# (cancelled runs send no failure email), so a half-uploaded change can't trigger a false alarm.
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
