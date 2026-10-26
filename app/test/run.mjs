@@ -86,5 +86,13 @@ for (const width of [1280, 390]) {
   const old = DOCS['meta/model']; DOCS['meta/model'] = {...old, updated: '2026-01-01T00:00:00Z'};
   const stale = await open(1280); ok(await stale.pg.evaluate(() => { const b = document.getElementById('healthBar'); return !b.hidden && /Win model/.test(b.textContent); }), 'health: banner names a stale source'); await stale.ctx.close();
   DOCS['meta/model'] = old; }
+// share card: draws the team and opens the dialog
+{ console.log('\n== share card');
+  const {pg, errs, ctx} = await open(1280); await go(pg, 'build'); await pg.waitForTimeout(400);
+  await pg.click('#shareBtn'); await pg.waitForSelector('#shareBox:not([hidden])', {timeout: 15000}).catch(() => {});
+  const r = await pg.evaluate(() => { const b = document.getElementById('shareBox'); return {open: !!b && !b.hidden, img: !!document.querySelector('.shareimg'), save: !!document.getElementById('shareSave')}; });
+  ok(r.open && r.img && r.save, `share card: dialog with image and save (${JSON.stringify(r)})`);
+  await pg.keyboard.press('Escape'); ok(await pg.evaluate(() => document.getElementById('shareBox').hidden), 'share card: Escape closes');
+  ok(errs.length === 0, `share card: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
 await browser.close();
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);
