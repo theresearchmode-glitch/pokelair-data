@@ -23,7 +23,10 @@ function exportPaste() {
     const species = p.m ? base.n : p.n, ti = topItems(p), item = ti ? ti.it[0][0] : '';
     const ability = p.m ? (metaAbility(base) || bestAbility(base)) : m.ability;
     const mv = slotMoves(S.slots[m.i], p).names.filter(Boolean);
-    return `${species}${item ? ' @ ' + item : ''}\nAbility: ${ability}\nLevel: 50\n${mv.map(x => '- ' + x).join('\n')}`.trim();
+    // stat points: the most common real spread from the Showdown ladder (Champions stores them as EVs, 0-32 each)
+    const cs = typeof commonSpread === 'function' ? commonSpread(p) : null, nat = cs ? cs.nat : (setFor(p).na[0] || [])[0];
+    const ev = cs ? [['HP', cs.hp], ['Atk', cs.atk], ['Def', cs.def], ['SpA', cs.spa], ['SpD', cs.spd], ['Spe', cs.spe]].filter(x => x[1] > 0).map(([k, v]) => `${v} ${k}`).join(' / ') : '';
+    return `${species}${item ? ' @ ' + item : ''}\nAbility: ${ability}\nLevel: 50${ev ? '\nEVs: ' + ev : ''}${nat ? '\n' + nat + ' Nature' : ''}\n${mv.map(x => '- ' + x).join('\n')}`.trim();
   }).join('\n\n');
 }
 const pnorm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');

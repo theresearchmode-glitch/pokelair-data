@@ -17,7 +17,7 @@ function abScore(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.
   if (!S.fun && S.format === 'doubles' && RES && team.length >= 3) { const names = new Set(team.map(m => m.p.n)); let best = 0;
     for (const c of RES.cores) if (c[3] >= (RES.minCore || 6) && names.has(c[0]) && names.has(c[1]) && names.has(c[2])) best = Math.max(best, c[4] - RES.base); s += best * 400; }
   if (!S.fun && S.format === 'doubles' && team.length >= 4 && typeof modelOK === 'function' && modelOK()) { const nm = team.map(m => m.p.n);
-    s += (modelX(nm) - (META.model.meanX || 0) * team.length / 6) * 120; const pa = personalAdj(); if (pa) for (const n of nm) s += (pa.get(n) || 0) * 8; }
+    s += (modelX(nm) + setX(team) - (META.model.meanX || 0) * team.length / 6) * 120; const pa = personalAdj(); if (pa) for (const n of nm) s += (pa.get(n) || 0) * 8; }
   return s; }
 // Proven teams first: exact six-Pokémon lists real players won with at Limitless events (RESULTS.proven), that you can
 // field from your pool, or field all but one (the gap is filled from your pool by the team model). Tested Oct 24: the
