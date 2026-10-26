@@ -10,7 +10,7 @@ const rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } c
 const L = rd('limitless.json');
 const DOCS = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'),
   'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
-const VIEWS = ['home', 'build', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'coverage', 'types', 'ratings', 'meta', 'top', 'sets', 'teams', 'box'];
+const VIEWS = ['home', 'build', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'arch', 'coverage', 'types', 'ratings', 'meta', 'top', 'sets', 'teams', 'box'];
 let fails = 0; const ok = (c, msg) => { if (!c) { fails++; console.log('  FAIL', msg); } else console.log('  ok  ', msg); };
 const browser = await chromium.launch();
 async function open(width) {
@@ -80,5 +80,11 @@ for (const width of [1280, 390]) {
   ok(r.evs && r.nature, 'export: spreads and natures in the Showdown paste');
   ok(r.back === r.n, 'export: the paste imports back to the same six');
   await ctx.close(); }
+// data health banner: hidden with fresh data, shown when a source is stale
+{ console.log('\n== data health');
+  const fresh = await open(1280); ok(await fresh.pg.evaluate(() => document.getElementById('healthBar').hidden), 'health: no banner with fresh data'); await fresh.ctx.close();
+  const old = DOCS['meta/model']; DOCS['meta/model'] = {...old, updated: '2026-01-01T00:00:00Z'};
+  const stale = await open(1280); ok(await stale.pg.evaluate(() => { const b = document.getElementById('healthBar'); return !b.hidden && /Win model/.test(b.textContent); }), 'health: banner names a stale source'); await stale.ctx.close();
+  DOCS['meta/model'] = old; }
 await browser.close();
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);
