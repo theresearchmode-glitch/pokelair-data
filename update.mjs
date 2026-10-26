@@ -30,19 +30,21 @@ const key = m => { const it = m.item || ''; const z = it.match(/^(.*)ite( [XYZ])
 const list = [];
 for (let page = 1; page < 30; page++) { const r = await get(`/tournaments?game=VGC&format=${FORMAT}&limit=100&page=${page}`); if (!r.length) break; list.push(...r); }
 // v2 files (full sheets + pairings) are backfilled for older tournaments too, newest first, within MAX_FETCH.
-const now = Date.now(), has2 = id => fs.existsSync(`data/t2/${id}.json`) && fs.existsSync(`data/p/${id}.json`);
+const now = Date.now(), hasP = id => fs.existsSync(`data/p/${id}.json`);
+const has2 = id => { const T = readJSON(`data/t2/${id}.json`, null); return !!(T && T.v === 3) && hasP(id); };
 const todo = list.filter(t => !index.tournaments[t.id] || !has2(t.id) || (now - new Date(t.date)) < 3 * 864e5)
   .sort((a, b) => (index.tournaments[a.id] ? 1 : 0) - (index.tournaments[b.id] ? 1 : 0) || new Date(b.date) - new Date(a.date)).slice(0, MAX_FETCH);
 let fetched = 0, logged = false;
-const mv = m => ({n: m.name || '', i: m.item || '', a: m.ability || '', mv: Array.isArray(m.attacks) ? m.attacks.map(String) : Array.isArray(m.moves) ? m.moves.map(String) : [], t: m.tera || ''});
+const mv = m => ({n: m.name || '', i: m.item || '', a: m.ability || '', mv: Array.isArray(m.attacks) ? m.attacks.map(String) : Array.isArray(m.moves) ? m.moves.map(String) : [], t: m.tera || '', nt: m.nature || ''});
 for (const t of todo) {
   try { const s = await get(`/tournaments/${t.id}/standings`);
     if (!logged && s[0]) { console.log('sample standing', JSON.stringify(s[0]).slice(0, 600)); }
     const e = s.map(x => [String(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);
     fs.writeFileSync(`data/t/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, e}));
     const e2 = s.map(x => ({id: String(x.player || ''), nm: String(x.name || ''), pl: x.placing ?? null, w: x.record ? x.record.wins : 0, l: x.record ? x.record.losses : 0, ti: x.record ? (x.record.ties || 0) : 0, dk: (x.decklist || []).map(mv)}));
-    fs.writeFileSync(`data/t2/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, name: t.name, e: e2}));
+    fs.writeFileSync(`data/t2/${t.id}.json`, JSON.stringify({v: 3, d: t.date, p: t.players, name: t.name, e: e2}));
     let pr = [];
+    if (hasP(t.id) && (now - new Date(t.date)) >= 3 * 864e5) { logged = true; index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name}; fetched++; continue; }
     try { const P = await get(`/tournaments/${t.id}/pairings`);
       if (!logged && P[0]) console.log('sample pairing', JSON.stringify(P[0]).slice(0, 300));
       pr = (Array.isArray(P) ? P : []).map(x => [x.round ?? null, String(x.player1 ?? ''), String(x.player2 ?? ''), x.winner == null ? null : String(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
@@ -117,16 +119,16 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
 { const S = new Map(); let nT = 0;
   for (const T of V2) { if (lastD - new Date(T.d) > 28 * DAY) continue;
     for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue; nT++;
-      p.dk.forEach((m, i) => { const n = ns[i]; let o = S.get(n); if (!o) S.set(n, o = {t: 0, w: 0, g: 0, mv: new Map(), it: new Map(), ab: new Map(), tm: new Map()});
-        o.t++; o.w += p.w; o.g += p.w + p.l;
+      p.dk.forEach((m, i) => { const n = ns[i]; let o = S.get(n); if (!o) S.set(n, o = {t: 0, w: 0, g: 0, mv: new Map(), it: new Map(), ab: new Map(), tm: new Map(), na: new Map()});
+        o.t++; o.w += p.w; o.g += p.w + p.l; if (m.nt) o.na.set(m.nt, (o.na.get(m.nt) || 0) + 1);
         for (const x of new Set(m.mv)) o.mv.set(x, (o.mv.get(x) || 0) + 1);
         if (m.i) o.it.set(m.i, (o.it.get(m.i) || 0) + 1); if (m.a) o.ab.set(m.a, (o.ab.get(m.a) || 0) + 1);
         ns.forEach((q, j) => { if (j !== i) o.tm.set(q, (o.tm.get(q) || 0) + 1); }); }); } }
   const rows = [...S].sort((a, b) => b[1].t - a[1].t).map(([n, o], i) => ({r: i + 1, n, u: Math.round(1000 * o.t / nT) / 10, teams: o.t, w: o.g ? Math.round(1000 * o.w / o.g) / 10 : null,
-    mv: pct(o.mv, o.t, 12), it: pct(o.it, o.t, 6), ab: pct(o.ab, o.t, 4), na: [], tm: pct(o.tm, o.t, 10)}));
+    mv: pct(o.mv, o.t, 12), it: pct(o.it, o.t, 6), ab: pct(o.ab, o.t, 4), na: pct(o.na, o.t, 4), tm: pct(o.tm, o.t, 10)}));
   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
   fs.writeFileSync('out/meta_tour.json', JSON.stringify({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} Reg M-C tournaments`,
-    period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', updated: new Date().toISOString(), note: 'Moves, items and abilities as players registered them.',
+    period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', updated: new Date().toISOString(), note: 'Moves, items, abilities and natures as players registered them.',
     top: rows.slice(0, 60), more: rows.slice(60, 100)}));
   console.log(`meta_tour: ${nT} teams, ${rows.length} Pokémon`); }
 // 2) recent top finishes (events with 32+ players, last 14 days): top 4 of each, newest first, up to 60 teams

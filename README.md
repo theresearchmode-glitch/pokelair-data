@@ -1,10 +1,12 @@
 # pokelair-data
 
-Daily Pokémon Champions (Reg M-C, VGC doubles) tournament data for PokéLair.
+Daily Pokémon Champions (Reg M-C, VGC doubles) data for PokéLair. A scheduled GitHub Action runs each morning (about 6:17 AM New York time); PokéLair's 6:52 AM refresh copies `out/` into the page.
 
-A scheduled GitHub Action runs `update.mjs` each morning. It pulls new tournaments from the public Limitless API (under its 50-requests-per-5-minutes limit), keeps every standing in `data/`, and rebuilds `out/limitless.json`:
+| Step | Script | Output |
+|---|---|---|
+| Limitless tournaments: standings, full team sheets (moves, items, abilities, natures), pairings | `update.mjs` | `out/limitless.json`, `meta_tour.json`, `teams.json`, `history.json`, `matches.json` |
+| Official events: RK9 open team sheets, Masters top 64 per event | `rk9.mjs` | `out/official.json`, top 8s added to `teams.json` |
+| Win model: team strength from real games with player skill removed, tested on held-out recent events | `model.mjs` | `out/model.json` (`ships` is false if it doesn't beat raw win rates) |
+| Showdown ladder: Smogon monthly usage stats, 1630+ (only rebuilt when a new month is out) | `ladder.mjs` | `out/meta_ladder.json` |
 
-- `adj`: each Pokémon's own share of team wins, from one model over every team so partners don't get credit
-- `results`: Pokémon win rates, pairs seen on 25+ teams, cores on 40+ teams, and exact winning team lists
-
-The first run is started by hand (Actions → Update Limitless data → Run workflow) and downloads the full history, which takes about 40 minutes.
+Limitless allows 50 requests per 5 minutes, so the job waits between calls. A manual run (Actions → Update Limitless data → Run workflow) fetches up to 400 tournaments; scheduled runs fetch up to 40.
