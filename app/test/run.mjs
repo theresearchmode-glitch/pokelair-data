@@ -110,6 +110,28 @@ for (const width of [1280, 390]) {
   await p2.click('[data-sharedload]'); await p2.waitForTimeout(400);
   ok(await p2.evaluate(() => !document.getElementById('sharedBar') && document.querySelector('[data-pane="build"]').hidden === false), 'team links: Load it opens the team');
   ok(e2.length === 0, `team links: no page errors${e2.length ? ': ' + e2.join(' | ') : ''}`); await c2.close(); }
+// Team Score can't be gamed: calibrated, anchored to real teams, no 100 for an odd six, no Mega stacking, no duplicates
+{ console.log('\n== Team Score integrity');
+  const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(300);
+  const r = await pg.evaluate(() => { const P = window.__PL, S = P.getS(); S.format = 'doubles'; const M = P.META.model;
+    const sc = ns => { S.slots = P.normSlots(ns.map(n => ({n, a: null, lock: false}))); const ms = P.members(); if (ms.length !== 6) return null; const wv = P.winVsField(ns, true); return wv ? P.teamScore({wv}).score : null; };
+    const winners = P.META.events.events.map(e => e.top[0]).filter(t => t && t.place === 1).map(t => sc(t.mons.map(m => m.n))).filter(x => x != null).sort((a, b) => a - b);
+    // a quick hill climb over the 40 best-rated legal Pokémon, from two seeds, swapping one slot at a time
+    const pool = [...P.byName.values()].filter(p => P.rating(p).total >= 55).sort((a, b) => P.rating(b).total - P.rating(a).total).slice(0, 40).map(p => p.n);
+    const legal = ns => { const bs = new Set(); let mg = 0; for (const n of ns) { const p = P.byName.get(n); if (!p || bs.has(p.b)) return false; bs.add(p.b); if (p.m) mg++; } return mg <= 2; };
+    let best = 0; for (const seed of [pool.filter((n, i, a) => legal(a.slice(0, i + 1))).slice(0, 6), ['Sinistcha', 'Camerupt-Mega', 'Venusaur-Mega', 'Archaludon', 'Hydreigon', 'Basculegion-F']]) {
+      let cur = seed.slice(); if (!legal(cur) || cur.length < 6) continue; let cs = sc(cur); for (let pass = 0; pass < 2; pass++) for (let i = 0; i < 6; i++) for (const n of pool) { if (cur.includes(n)) continue; const nx = cur.slice(); nx[i] = n; if (!legal(nx)) continue; const v = sc(nx); if (v != null && v > cs) { cur = nx; cs = v; } } best = Math.max(best, cs); }
+    const two = ['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Milotic', 'Rillaboom'], four = ['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Charizard-Mega-Y', 'Gengar-Mega'];
+    return {calib: M.calib, dist: !!(M.dist && M.dist.q && M.dist.q.length === 101), center: !!M.center, med: winners[winners.length >> 1], n: winners.length, best,
+      gamed: sc(['Sinistcha', 'Camerupt-Mega', 'Venusaur-Mega', 'Archaludon', 'Hydreigon', 'Basculegion-F']), dup: sc(['Annihilape', 'Annihilape', 'Sinistcha', 'Milotic', 'Rillaboom', 'Kingambit']),
+      megaStack: sc(four) <= Math.max(sc(two), sc(['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Kingambit', 'Incineroar'])) + 15 }; });
+  ok(r.center && r.dist && r.calib > .7 && r.calib < 1.3, `model: centered builds, real-team spread, calibration ${r.calib}`);
+  ok(r.med >= 55, `validity: recent event winners score above an average team (median ${r.med} of ${r.n})`);
+  ok(r.best < 100, `can't be gamed: a hill-climbed six tops out at ${r.best}, below 100`);
+  ok(r.gamed != null && r.gamed < 90, `the old 100-point six now scores ${r.gamed}`);
+  ok(r.dup === null, 'duplicate species: no score');
+  ok(r.megaStack, 'stacking Megas does not pay');
+  ok(errs.length === 0, `Team Score: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
 // battle mode, cores, events, team search, calc both ways
 { console.log('\n== battle mode + cores + events');
   for (const width of [1280, 390]) { const {pg, errs, ctx} = await open(width);
