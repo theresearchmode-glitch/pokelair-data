@@ -1926,4 +1926,12 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .usebox summary{cursor:pointer;list-style:revert;padding:4px 0}
 .usetab{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
 .usetab th,.usetab td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;text-transform:none!important;letter-spacing:0!important;font-family:var(--body)!important;background:none!important}
-.usetab td:nth-child(n+2),.usetab th:nth-child(n+2){text-align:right;width:70px}
+.usetab td:nth-child(n+2),.usetab th:nth-child(n+2){text-align:right;width:70px}/* sleepers */
+.slgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:8px}
+.slcard{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+.slhead{display:flex;align-items:center;gap:8px;border:0;background:none;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.slname{display:flex;flex-direction:column}.slname b{font-size:15px}
+.slstat{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mute)}.slstat b{color:var(--good);font-size:15px}
+.slstat span:nth-child(2) b{color:var(--ink)}
+#lairSleep .hsec{margin:4px 0 14px}
+.ablock{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1.5px solid var(--accent);border-radius:12px;padding:8px 12px;margin:0 0 10px;background:var(--card)}

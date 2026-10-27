@@ -27,6 +27,8 @@ function renderLair(bodyOnly) {
   { const el = $('ratingTrack'), r = ratingTrack(); if (el) el.textContent = r ? `Track record: in ${r.events} recent events, the team with the higher average rating finished higher in ${Math.round(r.acc * 100)}% of ${r.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip; the Team Score, which judges whole teams, does better). Ratings rank single Pokémon: use them to find candidates, and the Team Score to judge a team.` : ''; }
   const pane = $('lairBody'); if (!pane) return; if (ui.lmode == null) { try { ui.lmode = LS.get('cc2.lmode', 'board'); } catch (e) { ui.lmode = 'board'; } }
   const all = lairRows(), rows = lairFilter(all), mode = ui.lmode === 'map' ? 'map' : 'board', pf = activePerf();
+  // Sleepers, just under the summary: what wins before the crowd notices
+  if (!bodyOnly) { const hero = $('lairHero'); if (hero) { let s = $('lairSleep'); if (!s) { s = document.createElement('div'); s.id = 'lairSleep'; hero.insertAdjacentElement('afterend', s); } s.innerHTML = typeof sleepersSection === 'function' ? sleepersSection('ratings') : ''; } }
   const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (!bodyOnly) {
     const src = pf && pf.sources ? Object.entries(pf.sources).filter(([, v]) => v) : [];
@@ -84,6 +86,7 @@ function lairSheet(n) {
   const bar = (l, v, note) => `<div class="lbar"><span>${l}</span><i style="--w:${Math.max(2, Math.min(100, v || 0))}%"></i><b>${v == null ? '–' : v}</b>${note ? `<em>${note}</em>` : ''}</div>`;
   const ev = [];
   {
+    const pt = pilotFor(p); if (pt) ev.push(['Same players test', `${pt.w}% with it · ${pt.wo}% without`, `the same ${pt.players.toLocaleString()} players: ${pt.g.toLocaleString()} games with it, ${pt.go.toLocaleString()} without. ${pt.d >= 3 ? 'A big gap: the Pokémon itself is winning games' : pt.d >= 1 ? 'Wins a little more than these players usually do' : pt.d > -1 ? 'About the same: these players win as often without it' : 'These players do better without it'}`]);
     if (src.adj) { const v = src.adj[0] * 25; ev.push(['Own share of team wins', `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(1)}% win chance`, `teammates accounted for · ${src.adj[2].toLocaleString()} Limitless teams`]); }
     if (src.tour) ev.push(['Limitless tournaments', `${src.tour[0]}% of teams`, `${src.tour[1]}% won · ${src.tour[2].toLocaleString()} games`]);
     if (src.official) ev.push(['Official VGC events', `${src.official[0]}% of teams`, `${src.official[1]}% won · ${src.official[2].toLocaleString()} games`]);
@@ -113,7 +116,7 @@ function lairSheet(n) {
       ${typeof OUTSIDE === 'object' ? `<div class="lsec"><h4>Other tier lists</h4><div class="lout">${OUTSIDE.lists.map(L => { const v = OUTSIDE.data[L.k] && OUTSIDE.data[L.k][p.n];
         return `<a class="lo" href="${L.url}" target="_blank" rel="noopener"><b class="lot${v ? ' t' + L.tiers[v] : ''}">${v ? L.tiers[v] : '–'}</b><span>${L.name}</span><em>${v ? L.how : 'not listed · ' + L.note}</em></a>`; }).join('')}</div><p class="t2">Checked ${OUTSIDE.date}. Shown for comparison, not counted in the score.</p></div>` : ''}
       <div class="lsec"><h4>Typical set</h4><div class="lset"><span>Ability</span><b>${esc(ab || '–')}</b>${ti ? `<span>Item</span><b>${ti.it.map(x => esc(x[0])).join(' / ')}</b>` : ''}${mv.length ? `<span>Moves</span><b>${mv.map(esc).join(' · ')}</b>` : ''}</div></div>
-      <div class="lsact">${onTeam ? '<span class="t2">On your team</span>' : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
+      <div class="lsact">${onTeam ? '<span class="t2">On your team</span>' : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-abaround="${esc(p.n)}">Build around it</button><button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
     </div></div>`;
   sh.hidden = false; ui.lsheet = p.n; try { document.body.classList.add('lsopen'); } catch (e) {}
   const x = sh.querySelector('.lsx'); if (x && x.focus) try { x.focus({preventScroll: true}); } catch (e) {}

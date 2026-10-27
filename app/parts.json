@@ -56,6 +56,7 @@
  "src/app/49-events.js",
  "src/app/50-jump.js",
  "src/app/51-usage.js",
+ "src/app/52-sleepers.js",
  "src/app/99-start.js",
  "src/foot.html"
 ]

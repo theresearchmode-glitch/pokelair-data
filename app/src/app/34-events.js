@@ -41,7 +41,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
     keepUndo();S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();toast(`Imported ${r.slots.length} Pokémon`+(r.notes.length?` (${r.notes.length} skipped item${r.notes.length>1?'s':''})`:''),true);return}
   if(d.megas!==undefined){S.megaGoal=Math.max(0,Math.min(2,+d.megas||0));S.maxMega=Math.max(1,S.megaGoal);recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.megaGoal?`Teams aim for ${S.megaGoal} Mega${S.megaGoal>1?'s':''}`:'Teams without Megas');return}
   if(d.clear!==undefined){const was=byName.get(S.slots[+d.clear].n);keepUndo();S.slots[+d.clear]=blank();render();if(was)toast(`Removed ${was.d}`,true)}
-  else if(b.id==='abBtn'){runAutoBuild()}
+  else if(b.id==='abBtn'){ui.abLock=null;runAutoBuild()}
   else if(d.recsrc){ui.recSrc=d.recsrc==='all'?'all':'box';LS.set('cc2.recsrc',ui.recSrc);renderRecs()}
   else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.absrc){ui.abSrc=d.absrc==='all'?'all':'box';LS.set('cc2.absrc',ui.abSrc);renderPoolCtl();if(ui.ab&&!ui.ab.busy)runAutoBuild()}

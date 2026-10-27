@@ -9,7 +9,7 @@
 // rarely used Pokémon with one fixed set could pile up credit across 5 set features (Mega Camerupt rated as the best
 // Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
 // team against real tournament teams instead of a fixed range that any odd team could max out.
-import fs from 'node:fs';
+import fs from 'node:fs'; import {pilotTest} from './pilot.mjs';
 const M = JSON.parse(fs.readFileSync('out/matches.json', 'utf8'));
 const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
 const monIx = new Map(), mons = [];
@@ -150,7 +150,9 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
   mons: F ? Object.fromEntries(mons.map((n, j) => [n, +F.b[j].toFixed(4)])) : {},
   pairs: F ? Object.fromEntries(pairs.map((k, j) => [k, +F.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)) : {},
-  sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)])) : {}};
+  sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)])) : {},
+  // the "same players without it" test for each Pokémon (pilot.mjs): [games with, win % with, games without, win % without, players]
+  pilot: pilotTest(M)};
 fs.writeFileSync('out/model.json', JSON.stringify(out));
 console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);

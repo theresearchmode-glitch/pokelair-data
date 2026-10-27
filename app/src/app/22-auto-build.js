@@ -27,7 +27,8 @@ function provenBuild() {
   const cands = [];
   for (const [names, n, wr] of RES.proven) {
     const ps = names.map(x => byName.get(x)); if (ps.some(p => !p)) continue;
-    const missing = ps.filter(p => !ok(p)); if (missing.length > 1) continue;
+    if (ui.abLock && !names.includes(ui.abLock)) continue; // "Build around it": only real teams that ran this Pokémon
+    const missing = ps.filter(p => !ok(p) && p.n !== ui.abLock); if (missing.length > 1) continue;
     cands.push({ps, n, wr, missing: missing[0] || null});
   }
   if (!cands.length) return null;
@@ -53,10 +54,20 @@ function provenBuild() {
     d.proven = {n: c.n, wr: c.wr, swapped: !!c.missing}; return d; })};
 }
 function buildBest() {
-  { const pr = provenBuild(); if (pr) return pr; }
+  // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below
+  // fills the rest, so a rare sleeper still gets three good teams
+  let keepPr = null;
+  { const pr = provenBuild(); if (pr && !ui.abLock) return pr;
+    if (pr && ui.abLock) { const good = pr.teams.filter(t => { try { return (tsOf(t.mons.map(m => abMember(byName.get(m.n)))) ?? 0) >= 50; } catch (e) { return false; } }); if (good.length >= 3) return {...pr, teams: good}; keepPr = good; } }
+  const res0 = buildBest_();
+  if (keepPr && keepPr.length) { const fresh = (res0.teams || []).filter(t => !keepPr.some(k => k.mons.filter(m => t.mons.some(x => x.n === m.n)).length > 3)); return {...res0, teams: [...keepPr, ...fresh].slice(0, 3)}; }
+  return res0;
+}
+function buildBest_() {
   const fmt = 'doubles'; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map();
   try {
     const pool = abPool(); if (pool.length < 6) return {fmt, teams: [], short: pool.length};
+    const lockP = ui.abLock ? byName.get(ui.abLock) : null; if (lockP && !pool.includes(lockP)) pool.push(lockP);
     const M = new Map(pool.map(p => [p.n, abMember(p)])), goal = megaGoal();
     // never more Megas than the goal, and never so few that the open slots can't reach it
     const legal = (t, p) => { if (t.some(m => m.base === p.b)) return false; const mg = megaCount(t) + (p.m ? 1 : 0); return mg <= goal && mg + (6 - t.length - 1) >= goal; };
@@ -67,6 +78,11 @@ function buildBest() {
     for (const p of byV.slice(0, 10)) { const m = M.get(p.n); const mates = setFor(p).tm.map(([n]) => byName.get(n)).filter(q => q && M.has(q.n));
       for (const q of mates.slice(0, 2)) if (legal([m], q)) seeds.push([m, M.get(q.n)]); }
     if (!seeds.length) seeds.push([M.get(byV[0].n)]);
+    // "Build around it": every seed must hold the locked Pokémon (it stays put through the polish, which only swaps
+    // members after the seed); its proven cores and teammates are tried first
+    if (lockP) { const L = M.get(lockP.n), has = t => t.some(m => m.p.n === lockP.n);
+      const extra = [[L], ...setFor(lockP).tm.map(([n]) => byName.get(n)).filter(q => q && M.has(q.n) && legal([L], q)).slice(0, 4).map(q => [L, M.get(q.n)])];
+      seeds = [...seeds.filter(has), ...extra]; if (!legal([], lockP)) return {fmt, teams: [], noMega: goal}; }
     const key = t => t.map(m => m.p.n).sort().join('|'); const seen = new Set(); seeds = seeds.filter(t => { const k = key(t); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 14);
     // candidates: strongest Pokémon plus everything that pairs well with the seeds
     const cand = byV.slice(0, OFFMETA ? 70 : 45).map(p => M.get(p.n));
@@ -143,7 +159,9 @@ function renderAutoBuild() {
       ${tm.fresh ? '<div class="t2 gemline">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</div>' : ''}
       <ul class="abwhy">${tm.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
       <div class="row"><button class="btn sm primary" type="button" data-abuse="${res.fmt}">Use this team</button><button class="btn sm" type="button" data-absave="${res.fmt}"${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}>Save</button>${res.teams.length > 1 ? `<button class="btn sm" type="button" data-abnext="${res.fmt}">Try another</button>` : ''}</div></div>`; };
-  el.innerHTML = `<div class="abgrid${r.doubles ? ' one' : ''}">${r.doubles ? col(r.doubles) : ''}</div>`;
+  const lk = ui.abLock && byName.get(ui.abLock);
+  el.innerHTML = (lk ? `<div class="ablock">${sprite(lk, 'mini') || ''}<span>Built around <b>${esc(lk.d)}</b>: every team keeps it.</span><button type="button" class="linkbtn" data-abaroundx="1">Build without it</button></div>` : '')
+    + `<div class="abgrid${r.doubles ? ' one' : ''}">${r.doubles ? col(r.doubles) : ''}</div>`;
 }
 function runAutoBuild() {
   ui.ab = {busy: true}; ui.abIdx = {}; renderAutoBuild();
@@ -152,7 +170,7 @@ function runAutoBuild() {
 // Add a "fresh take" as option 2: a team built with off-meta scoring, on power and fit (at most 2 meta staples),
 // kept only if it passes nearly as many winning-team checks as the proven build and isn't the same team.
 function addFreshTake(res) {
-  if (OFFMETA || !res || !res.teams || !res.teams.length) return res;
+  if (OFFMETA || ui.abLock || !res || !res.teams || !res.teams.length) return res;
   let alt = null; try { alt = withOffMeta(() => buildBest()); } catch (e) { alt = null; }
   if (!alt || !alt.teams || !alt.teams.length) return res;
   const best = res.teams[0], names = new Set(best.mons.map(m => m.n));
