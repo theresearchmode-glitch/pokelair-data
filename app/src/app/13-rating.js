@@ -24,7 +24,7 @@ function perfModel(PD, EX) {
   // A Pokémon on u% of teams often meets itself, which drags its win rate toward the average; divide by (1 - u) to undo that.
   const dev = (T, K) => { const m = wmean(T), D = {}; for (const k in T) { const [u, w, n] = T[k]; D[k] = {d: (w / 100 - m) / (1 - Math.min(.6, u / 100)) * n / (n + K), n}; } return D; };
   const sd = D => { let a = 0, b = 0; for (const k in D) if (D[k].n >= 200) { a += D[k].d ** 2 * D[k].n; b += D[k].n; } return Math.sqrt(a / (b || 1)) || .02; };
-  const T = EX.tour ? {} : (PD.doubles || {}), O = EX.official ? {} : (PD.official || {});
+  const T = EX.tour ? {} : (PD.doubles || {}), O = EX.official ? {} : (PD.official || {}), mT = wmean(T) * 100, mO = wmean(O) * 100;
   // Limitless team results with each Pokémon's own share of the win: a joint model of every team (teammates and the
   // player's skill accounted for), fit outside the page. b is in log-odds; z-scored here like the other sources.
   const A = EX.tour || W.adj === 'off' ? {} : (PD.adj || {}); let sA = .05;
@@ -51,7 +51,9 @@ function perfModel(PD, EX) {
     const popularity = pops.reduce((a, b) => a + b, 0) / pops.length;
     const evidence = (1 - W.pop) * perf + W.pop * popularity, conf = N / (N + 300);
     const t = T[k] || O[k];
-    out.set(k, {evidence, conf, perf, popularity, usage: t ? t[0] : null, wr: t ? t[1] : null, matches: t ? t[2] : null,
+    // the games-weighted average win rate of the source wr comes from (tournament sources average well above 50%)
+    const wrMean = T[k] ? mT : O[k] ? mO : null;
+    out.set(k, {evidence, conf, perf, popularity, usage: t ? t[0] : null, wr: t ? t[1] : null, wrMean, matches: t ? t[2] : null,
       src: {tour: T[k] || null, official: O[k] || null, ladder: L[k] || null, smogon: PD.smogon ? PD.smogon[k] : null, prd: PD.prd ? PD.prd[k] : null, adj: A[k] || null, ingame: PD.ingame && PD.ingame[k] != null ? PD.ingameRank[k] : null}});
   }
   return out;
@@ -105,10 +107,11 @@ function ratings() {
   // players run aren't judged only on raw win rates.
   let MP = null; if (dbl && typeof modelOK === 'function' && modelOK()) { const ks = Object.keys(META.model.mons).filter(n => byName.has(n)); const pr = pctRanks(ks.map(n => META.model.mons[n])); MP = new Map(ks.map((n, i) => [n, pr[i]])); }
   raw.forEach((r, i) => { const p = r.p, intr = pIntr[i];
-    let evidence = 0, conf = 0, usage = null, wr = null, matches = null, perf = null, rank = null, src = null, pop = null;
+    let evidence = 0, conf = 0, usage = null, wr = null, matches = null, perf = null, rank = null, src = null, pop = null, wrMean = null;
     let popC = null;
-    if (SRC && SRC.has(p.n)) { const e = SRC.get(p.n); pop = e.popularity; evidence = e.evidence; conf = e.conf; perf = e.perf; usage = e.usage; wr = e.wr; matches = e.matches; src = e.src; popC = e.popularity;
-      if (MP && MP.has(p.n) && perf != null) perf = .5 * perf + .5 * MP.get(p.n); }
+    if (SRC && SRC.has(p.n)) { const e = SRC.get(p.n); pop = e.popularity; evidence = e.evidence; conf = e.conf; perf = e.perf; usage = e.usage; wr = e.wr; wrMean = e.wrMean; matches = e.matches; src = e.src; popC = e.popularity;
+      // the win model's rank is a 0-100 percentile, while perf is 50 + 18 z: put the model on the same z scale before averaging
+      if (MP && MP.has(p.n) && perf != null) perf = .5 * perf + .5 * Math.max(0, Math.min(100, 50 + 18 * probit(Math.max(.01, Math.min(.99, MP.get(p.n) / 100))))); }
     else if (SRC) popC = RG.absent;
     else if (!dbl && PD && PD.singlesRank[p.n]) { rank = PD.singlesRank[p.n]; pop = 100 * (1 - (rank - 1) / PD.singlesTotal);
       evidence = 100 * Math.pow(1 - (rank - 1) / PD.singlesTotal, 1.5); conf = .75; }
@@ -123,7 +126,7 @@ function ratings() {
     else total = Math.round(Math.max(1, Math.min(99, .85 * (conf * evidence + (1 - conf) * prior) + .15 * intr)));
     const proven = dbl ? (usage != null ? usage >= 2 : viability(p) >= 45) : (rank != null ? rank <= 60 : viability(p) >= 45);
     map.set(p.n, {total, raw: total, win: ppV == null ? null : Math.round(ppV), popAll: popC == null ? null : Math.round(popC), intrinsic: Math.round(intr), power: Math.round(intr0[i].power), typing: Math.round(intr0[i].typing), tools: Math.round(intr0[i].tools),
-      evidence: Math.round(evidence), conf: +conf.toFixed(2), band: Math.round(3 + 15 * (1 - conf)), perf: perf == null ? null : Math.round(perf), pop: pop == null ? null : Math.round(pop), usage, wr, matches, rank, src, meta: Math.round(evidence), proven}); });
+      evidence: Math.round(evidence), conf: +conf.toFixed(2), band: Math.round(3 + 15 * (1 - conf)), perf: perf == null ? null : Math.round(perf), pop: pop == null ? null : Math.round(pop), usage, wr, wrMean, matches, rank, src, meta: Math.round(evidence), proven}); });
   { let mx = 0; for (const v of map.values()) mx = Math.max(mx, v.raw); const f = mx > 0 ? 95 / mx : 1; for (const v of map.values()) v.total = Math.max(1, Math.min(99, Math.round(v.raw * f))); }
   ratingCache = {key, map}; return map;
 }
@@ -143,5 +146,11 @@ function isTrap(p) { if (!p || S.fun || S.format !== 'doubles') return false; co
 // Untested: few tournament games behind it, so it's an idea rather than a proven pick (hidden gems have their own tag).
 function ideaTag(p) { if (S.format !== 'doubles') return ''; const r = rating(p); if (isGem(p) || (r.matches || 0) >= 300 || (r.src && r.src.adj && r.src.adj[1] >= 300)) return '';
   return '<span class="tag idea" title="Few tournament games behind it: an untested idea, not a proven pick">IDEA</span>'; }
-function isGem(p) { const r = rating(p); return !r.proven && r.total >= 55 && !(r.matches >= 60 && r.wr < 52) && !(r.matches >= 25 && r.wr < 50); }
+// win rates are judged against their source's own average (tournament sources sit well above 50%), not against 50%
+// inverse of the standard normal CDF (Acklam's approximation, error < 1e-8): turns a percentile into a z-score
+function probit(p) { const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239], b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572], c = [-.007784894002430293, -.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783], d = [.007784695709041462, .3224671290700398, 2.445134137142996, 3.754408661907416];
+  if (p < .02425) { const q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  if (p > 1 - .02425) return -probit(1 - p);
+  const q = p - .5, r = q * q; return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); }
+function isGem(p) { const r = rating(p), m = r.wrMean != null && isFinite(r.wrMean) ? r.wrMean : 50; return !r.proven && r.total >= 55 && !(r.matches >= 60 && r.wr < m + 2) && !(r.matches >= 25 && r.wr < m); }
 

@@ -22,7 +22,7 @@ function pairRes(a,b){if(!RES)return null;const k=[a.p.n,b.p.n].sort().join('|')
 // pair counts are put on the old 377-team scale so a common pair scores the same as before, whatever the data size
 function tourSyn(a,b){const r=pairRes(a,b);if(!r)return 0;return Math.min(14,3*Math.log2(1+r[0]*377/(RES.teams||377)))+(r[1]-RES.base)*60}
 // How a Pokémon did in real tournaments, above or below the field (doubles; shrunk, so rare picks stay near 0).
-function monSuccess(p){if(!RES)return 0;const r=RES.mons[p.n];return r?(r[1]-RES.base)*100:0}
+function monSuccess(p){if(!RES)return 0;const r=RES.mons[p.n];return r?(r[1]-RES.base)*100*(+r[0]||0)/((+r[0]||0)+50):0}
 // Weights fitted on real tournament teams vs random usage-weighted teams, checked on held-out tournaments.
 // Fitted Oct 2026: 0.82 held-out accuracy telling real tournament teams from random teams of the same Pokémon.
 let TV_W={via:.05,syn:1,tsyn:.19,succ:.1,type:.04,plan:.5,threat:.05,mega:6};
@@ -88,7 +88,17 @@ function planFixes(ms,pool,useA,opts){
   // and must never take away the team's speed control or start a weather clash
   const gpst=(pl,k)=>(pl.gp.rows.find(r=>r.k===k)||{}).st;
   const keepsPlan=pl=>!(gpst(basePl,'speed')==='ok'&&gpst(pl,'speed')!=='ok')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss');
-    const all=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(!full||((pl.st.a.excess<=base.a.excess)&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<basePl.score-(clean?25:10)))).sort((x,y)=>x.score-y.score);
+    let all=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(!full||((pl.st.a.excess<=base.a.excess)&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<basePl.score-(clean?25:10)))).sort((x,y)=>x.score-y.score);
+  // Team Score decides (doubles, with the win model): every plan that ends in a full six is judged by the Team Score it reaches.
+  // A plan must raise it by 2+, the highest score leads, and an extra change has to earn 2 more points. The planner's own score
+  // only shortlists (the 70 most promising) and breaks ties; the type rules relax to "at most one more weakness, no new stack".
+  const tsBase=useTSPick()&&full?tsOf(ms):null;let tsOn=false;
+  if(useTSPick()){const sh0=typeShape(base.a).maxStack;
+    const short=[...singles,...doubles].filter(pl=>pl.team.length===6&&keepsPlan(pl)&&pl.st.a.excess<=base.a.excess+1&&pl.st.a.unresisted.length<=base.a.unresisted.length+1&&typeShape(pl.st.a).maxStack<=Math.max(2,sh0)&&megaShort(pl.team)<=megaShort(ms)).sort((x,y)=>x.score-y.score).slice(0,70);
+    for(const pl of short)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
+    if(short.some(pl=>pl._ts!=null)){tsOn=true;
+      const ranked=short.filter(pl=>pl._ts!=null&&(tsBase==null||pl._ts>=tsBase+TS_GAIN)).sort((x,y)=>tsKey(y)-tsKey(x)||x.score-y.score);
+      all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
   // pick up to 3 plans that don't share an incoming Pokémon or the same outgoing set
   const out=[],usedIn=new Set();
   for(const pl of all){if(out.length>=3)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>usedIn.has(b)))continue;
@@ -98,7 +108,7 @@ function planFixes(ms,pool,useA,opts){
   const sp=pl=>(pl.gp.rows.find(r=>r.k==='speed')||{}).st;
   if(basePl.gp&&sp(basePl)!=='ok'&&!out.some(pl=>sp(pl)==='ok')){
     // look past the score cutoff: any plan that adds speed control without hurting the type rating
-    const pool2=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&sp(pl)==='ok'&&pl.st.a.excess<=Math.max(base.a.excess,full?base.a.excess:base.a.excess+1)&&pl.st.a.unresisted.length<=base.a.unresisted.length+(full?0:1)).sort((x,y)=>x.score-y.score);
+    const pool2=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&sp(pl)==='ok'&&(!tsOn||tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-3)&&pl.st.a.excess<=Math.max(base.a.excess,full?base.a.excess:base.a.excess+1)&&pl.st.a.unresisted.length<=base.a.unresisted.length+(full?0:1)).sort((x,y)=>x.score-y.score);
     const fix=pool2.find(pl=>!pl.ch.some(x=>out.some(o=>o.ch.some(y=>y.c.p.b===x.c.p.b))))||pool2[0];
     if(fix){if(out.length>=3)out.pop();out.push(fix)}}
   // More ideas: further plans with new incoming Pokémon, then (for a full team) side-grades that keep the type rating and speed control
@@ -107,12 +117,12 @@ function planFixes(ms,pool,useA,opts){
   if(full){const side=singles.filter(pl=>keepsPlan(pl)&&pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<=basePl.score+60&&megaShort(pl.team)<=megaShort(ms)&&(S.fun?rating(pl.ch[0].c.p).total>=35:ui.pool==='box'?rating(pl.ch[0].c.p).total>=35:rating(pl.ch[0].c.p).total>=50)).sort((x,y)=>(x.score-rating(x.ch[0].c.p).total*.3)-(y.score-rating(y.ch[0].c.p).total*.3));
     for(const pl of side){if(more.length>=18)break;const b=pl.ch[0].c.p.b;if(inSeen.has(b))continue;inSeen.add(b);pl.side=pl.score>=basePl.score-(clean?25:10);more.push(pl)}}
   out.more=more;
-  out.base=base;out.rolesBase=rolesBase;out.gp=basePl.gp;out.basePl=basePl;out.baseA=basePl.st.a;out.full=full;
+  out.base=base;out.rolesBase=rolesBase;out.gp=basePl.gp;out.basePl=basePl;out.baseA=basePl.st.a;out.full=full;out.tsBase=tsBase;out.tsOn=tsOn;
   out.singles=singles.filter(pl=>keepsPlan(pl)&&(full?(pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length):pl.st.a.excess<=base.a.excess+1));return out;
 }
 // Game-plan jobs a plan fills or breaks, in plain words.
 const GP_RANK={miss:0,opt:1,part:1,ok:2};
-const GP_WORD={speed:'speed control',backup:'backup speed',trfit:'Trick Room attackers',weather:'weather',terrain:'terrain',support:'Fake Out / redirection',prio:'priority',anti:'an answer to their speed control',haz:'Stealth Rock',hazrm:'hazard removal',pivot:'pivoting'};
+const GP_WORD={speed:'speed control',backup:'backup speed',trfit:'Trick Room attackers',weather:'weather',terrain:'terrain',support:'lead support (Fake Out, Intimidate or redirection)',prio:'priority',anti:'an answer to their speed control',haz:'Stealth Rock',hazrm:'hazard removal',pivot:'pivoting'};
 function gpDiff(a,b){if(!a||!b)return [];const out=[];
   for(const r of b.rows){const o=a.rows.find(x=>x.k===r.k);
     if(!o){if(r.st!=='ok'&&r.note)out.push(`<span class="warnline">${esc(r.label)}</span>: ${esc(r.note)}`);continue}
@@ -125,7 +135,7 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   if(!ms.length){el.innerHTML='<div class="empty-note">Add at least one Pokémon to get plans.</div>';return}
   const base=plans.base;const more=plans.more||[],pg=ui.planMore||0,shown=more.slice(0,pg*3),left=more.length-shown.length;
   const moreBtn=`<div class="morebar">${left>0?`<button class="btn" type="button" id="planMoreBtn">More ideas</button><span class="vsub">${left} more plan${left===1?'':'s'}, including side-grades and rarely used picks</span>`:more.length?`<span class="vsub">That's every plan that keeps your type rating and speed control.</span><button class="btn sm" type="button" id="planMoreReset">Show fewer</button>`:''}</div>`;
-  if(!plans.length&&!shown.length){el.innerHTML=`<div class="empty-note">${base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn;return}
+  if(!plans.length&&!shown.length){el.innerHTML=`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool raises the Team Score (${plans.tsBase}) by ${TS_GAIN} or more. Keep this team, or try "Full roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn;return}
   // each plan's Team Score next to the current one, from the same win model, so a plan never hides that it makes the team weaker
   const baseTS=(ui.vsum&&ui.vsum.TS)||null,planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
   // plans that would lower the Team Score by 5+ go after the ones that keep or raise it
@@ -168,10 +178,10 @@ function renderMeta(){
   $('metaStatus').innerHTML=st?`Last refresh ${esc(when(st.lastRun))}${st.ok===false?' · <span class="bad">failed: '+esc(st.note||'')+'</span>':st.note?' · '+esc(st.note):''} · ${esc(st.schedule||'Refreshes daily')}${fmt==='singles'&&d.smogon?`<br>Usage % from ${esc(d.smogon.source)}, ${esc(d.smogon.period)}.`:''}`:'';
   const kind=d.kind||(fmt==='doubles'?'ladder':'ingame');
   $('metaList').innerHTML=(d.top||[]).map(t0=>{const p=byName.get(t0.n);let t=t0;if(p&&fmt==='doubles'&&!(t0.mv&&t0.mv.length)){const st=setFor(p,'doubles','tour');t={...t0,mv:st.mv,it:st.it,ab:st.ab,na:st.na,tm:st.tm}}const u=kind==='ladder'?t.u:(fmt==='singles'&&p?U(p):null);
-    const sets=[t.w?`<div class="stat"><h4>Tournament win rate</h4><div class="pc">${(+t.w).toFixed(1)}%</div></div>`:'',stat('Abilities',t.ab,3),stat('Items',t.it,5),stat('Moves',t.mv,8),stat('Natures',t.na,3),t.cc&&t.cc.length?`<div class="stat"><h4>Checks &amp; counters</h4><div style="font-size:13px">${t.cc.slice(0,5).map(([n,v])=>{const q=byName.get(n);return esc(q?q.d:n)+` <span class="vsub">${(+v).toFixed(0)}</span>`}).join(', ')}</div></div>`:'',
+    const sets=[t.w?`<div class="stat"><h4>Win rate · ${esc(d.source||'this list')}</h4><div class="pc">${(+t.w).toFixed(1)}%</div></div>`:'',stat('Abilities',t.ab,3),stat('Items',t.it,5),stat('Moves',t.mv,8),stat('Natures',t.na,3),t.cc&&t.cc.length?`<div class="stat"><h4>Checks &amp; counters</h4><div style="font-size:13px">${t.cc.slice(0,5).map(([n,v])=>{const q=byName.get(n);return esc(q?q.d:n)+` <span class="vsub">${(+v).toFixed(0)}</span>`}).join(', ')}</div></div>`:'',
       t.tm&&t.tm.length?`<div class="stat"><h4>Teammates</h4><div style="font-size:13px">${t.tm.slice(0,5).map(([n,v])=>{const q=byName.get(n);return esc(q?q.d:n)+(v!=null?` <span class="vsub">${(+v).toFixed(0)}%</span>`:'')}).join(', ')}</div></div>`:''].join('');
     const add=p&&!members().some(m=>m.base===p.b)&&S.slots.some(s=>!byName.get(s.n))?`<button class="btn sm" type="button" data-addmeta="${esc(t.n)}">Add to team</button>`:'';
-    return `<details class="mrow${t.r<=3?' medal m'+t.r:''}"><summary><span class="rk">${t.r}</span>${(p&&sprite(p,'mini'))||'<span class="spr mini"></span>'}<span class="nm">${esc(p?p.d:t.n)}${(()=>{const tr=trendFor(t.n,t.r);return tr?`<span class="trend ${tr.cls}">${tr.txt}</span>`:''})()} <span class="chips" style="display:inline-flex;vertical-align:middle">${p?p.t.map(x=>chip(x)).join(''):''}</span></span><span class="pc">${t.teams?t.teams.toLocaleString()+' teams':u?u.toFixed(1)+'%':''}</span></summary><div class="mbody">${sets||'<div class="none">No set details for this one yet.</div>'}${add?`<div>${add}</div>`:''}</div></details>`}).join('')+(d.more&&d.more.length?`<div class="t2" style="padding:4px 2px">Also ranked ${d.more[0].r}–${d.more[d.more.length-1].r}: ${d.more.map(m=>{const q=byName.get(m.n);return esc(q?q.d:m.n)}).join(', ')}</div>`:'')+(d.note?`<div class="t2" style="padding:0 2px">${esc(d.note)}</div>`:'')||'<div class="empty-note">No Pokémon in this list.</div>';
+    return `<details class="mrow${t.r<=3?' medal m'+t.r:''}"><summary><span class="rk">${t.r}</span>${(p&&sprite(p,'mini'))||'<span class="spr mini"></span>'}<span class="nm">${esc(p?p.d:t.n)}${(()=>{const tr=trendFor(t.n,t.r);return tr?`<span class="trend ${tr.cls}">${tr.txt}</span>`:''})()} <span class="chips" style="display:inline-flex;vertical-align:middle">${p?p.t.map(x=>chip(x)).join(''):''}</span></span><span class="pc">${t.teams?t.teams.toLocaleString()+' teams':u?u.toFixed(1)+'%':''}</span></summary><div class="mbody">${sets||'<div class="none">No set details for this one yet.</div>'}${add?`<div>${add}</div>`:''}</div></details>`}).join('')+(d.more&&d.more.length?`<div class="t2" style="padding:4px 2px">Also ranked ${d.more[0].r}–${d.more[d.more.length-1].r}: ${d.more.slice(0,40).map(m=>{const q=byName.get(m.n);return esc(q?q.d:m.n)}).join(', ')}${d.more.length>40?` and ${d.more.length-40} more`:''}</div>`:'')+(d.note?`<div class="t2" style="padding:0 2px">${esc(d.note)}</div>`:'')||'<div class="empty-note">No Pokémon in this list.</div>';
 }
 // Ability picker: says plainly which ability most players run and whether you changed it.
 function abilBlock(s,i,m){const p=m.p,meta=metaAbility(p),rec=meta||bestAbility(p),st=setFor(p);
@@ -181,6 +191,24 @@ function abilBlock(s,i,m){const p=m.p,meta=metaAbility(p),rec=meta||bestAbility(
     :meta?`<span class="tag rec" title="Most used in ${esc(srcWord(st.src.ab))} ${S.format}">MOST USED</span>`:`<span class="tag rec soft">SUGGESTED</span><span class="vsub">no usage data</span>`;
   return `<div class="abil"><div class="lblrow"><span class="lbl">Ability</span>${tag}</div>
     <select class="field" id="ab${i}" data-i="${i}" aria-label="Ability for ${esc(p.d)}">${p.a.map(a=>{const pc=abilityPct(p,a);return `<option value="${esc(a)}"${a===m.ability?' selected':''}>${esc(a)}${pc!=null?` (${(+pc).toFixed(pc<1?1:0)}%)`:''}${a===rec?' ★':''}</option>`}).join('')}</select></div>`}
+// Every held item players actually run in Champions (from all the usage data loaded), so the picker never offers one the game lacks.
+var itemPoolCache;function notStone(n){return n==='Eviolite'||!STONE_RE.test(n)}
+function itemPool(){if(!itemPoolCache)itemPoolCache={v:-1,list:[]};if(itemPoolCache.v===metaVersion&&itemPoolCache.list.length)return itemPoolCache.list;const seen=new Map();
+  for(const d of [META.doubles_ingame,META.doubles,META.singles,META.doubles_tour])if(d)for(const row of [...(d.top||[]),...(d.more||[])])for(const [n,v] of (row.it||[]))
+    if(n&&typeof n==='string'&&notStone(n)&&!/^(nothing|other|none)$/i.test(n))seen.set(n,(seen.get(n)||0)+(+v||0));
+  const list=[...seen.keys()].sort((a,b)=>a.localeCompare(b));itemPoolCache={v:metaVersion,list};return list}
+// Item picker: the items most players run on it first (with %), then every other item. A Mega's stone can't change.
+function itemBlock(s,i,m,clash){const p=m.p;
+  const same=x=>x.p.n===p.n;
+  const warn=clash&&clash.sc.some(same)?`<div class="itwarn" role="note"><b>Clashes with Trick Room.</b> ${clash.tr.length===1&&same(clash.tr[0])?'It sets Trick Room itself':'Your team sets Trick Room'}, and under it the Scarf makes ${esc(m.d)} move later.</div>`:'';
+  if(p.m)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(m.item||'Mega Stone')}</div></div>`;
+  const pop=(setFor(p).it||[]).filter(([n])=>n&&notStone(n)).slice(0,8),popN=new Set(pop.map(([n])=>n)),def=defaultItem(p);
+  const rest=itemPool().filter(n=>!popN.has(n));if(m.item&&!popN.has(m.item)&&!rest.includes(m.item))rest.unshift(m.item);
+  const tag=m.heldItem&&m.heldItem!==def?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-itreset="${i}">Use ${esc(def||'the usual item')}</button>`
+    :pop.length?`<span class="tag rec">MOST USED</span>`:`<span class="tag rec soft">NO USAGE DATA</span>`;
+  const o=(n,pc)=>`<option value="${esc(n)}"${n===m.item?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
+  return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span>${tag}</div>
+    <select class="field" id="it${i}" data-iti="${i}" aria-label="Held item for ${esc(p.d)}">${m.item?'':'<option value="" selected>(no item)</option>'}${pop.length?`<optgroup label="Most used in ${S.format}">${pop.map(([n,v])=>o(n,v)).join('')}</optgroup>`:''}${rest.length?`<optgroup label="Other items">${rest.map(n=>o(n,null)).join('')}</optgroup>`:''}</select>${warn}</div>`}
 // Moves: four tiles, each a dropdown. Popular moves for this format come first with their usage %.
 function movesBlock(s,i,m){const p=m.p,sm=slotMoves(s,p),pm=popularMoves(p);
   const pct=pm.pct||new Map();

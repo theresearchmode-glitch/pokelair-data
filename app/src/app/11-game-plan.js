@@ -55,7 +55,7 @@ function gamePlan(team, fmt) {
     const main = opts.filter(o => o[1] >= .3).sort((a, b) => b[1] - a[1]);
     rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3),
       who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? `${team.filter(m => WEATHER_SPEED[m.ability]).map(m => m.d).join(', ')} in ${ARCH[kinds[0]].name.toLowerCase()}` : o[0]).join('; ') : '',
-      note: primary >= .6 ? '' : main.length ? 'Only priority moves. No reliable Tailwind or Trick Room, which 3 of 4 top teams carry.' : 'No Tailwind, Trick Room or weather speed. 3 of 4 top teams carry one.'});
+      note: primary >= .6 ? '' : (main.length ? 'Only priority moves: no reliable Tailwind or Trick Room.' : 'No Tailwind, Trick Room or weather speed.') + ` Speed control is on ${proLine('speed', '')}.`});
     pen += 55 * (1 - primary);
     // 2. a second option, so one Taunt or one KO on the setter doesn't decide the game
     const modes = [c.tw >= .5, c.tr >= .5, wSpeed >= .5, c.drop >= .5, fast >= .5].filter(Boolean).length;
@@ -87,7 +87,7 @@ function gamePlan(team, fmt) {
       return `${sn.join(', ')} ${self && !others.length ? 'sets and uses ' + w : 'sets ' + w}${others.length ? ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : ''}`; })(), note: ab.length ? '' : 'Nothing on the team uses it.'});
     pen += ab.length ? -(dbl ? 8 : 5) : 10; }
   else if (needs.length) { rows.push({k: 'weather', label: 'Weather', st: 'miss', who: '', note: `${team.filter(m => ARCH[needs[0]].abAb.includes(m.ability)).map(m => m.d).join(', ')} needs ${ARCH[needs[0]].name.toLowerCase()}, and nothing sets it.`}); pen += dbl ? 22 : 15; }
-  else { rows.push({k: 'weather', label: 'Weather', st: 'opt', who: '', note: dbl ? 'None. Opposing sun (about 1 in 4 top teams) or rain will control the field.' : 'None. Optional in singles.'}); pen += dbl ? 5 : 0; }
+  else { rows.push({k: 'weather', label: 'Weather', st: 'opt', who: '', note: dbl ? 'None. Opposing sun or rain will control the field.' : 'None. Optional in singles.'}); pen += dbl ? 5 : 0; }
   // terrain (Reg M-C): one setter with users is field control; two terrains overwrite each other
   { const ts = team.filter(m => TERRAIN_OF[m.ability]).map(m => ({m, t: TERRAIN_OF[m.ability]})), tk = [...new Set(ts.map(x => x.t))];
     if (tk.length > 1) { rows.push({k: 'terrain', label: 'Terrain', st: 'part', who: ts.map(x => `${x.m.d} · ${ARCH[x.t].name}`).join(', '), note: 'Two terrains overwrite each other: the last one to switch in wins.'}); pen += 8; }
@@ -100,8 +100,10 @@ function gamePlan(team, fmt) {
       rows.push({k: 'terrain', label: 'Terrain', st: 'miss', who: '', note: `${m.d} usually holds a ${ARCH[k].seed}, and nothing sets ${ARCH[k].name.toLowerCase()}.`}); pen += dbl ? 12 : 8; }
   }
   if (dbl) {
-    const fr = anyOf([c.fake, c.redir]);
-    rows.push({k: 'support', label: 'Fake Out / redirection', st: st(fr, .6, .3), who: who([...R.fake, ...R.redir].sort((a, b) => b.r - a.r), 3), note: fr >= .6 ? '' : `${proLine('fake', '89% of event winners')} have Fake Out, Intimidate or redirection.`}); pen += 20 * (1 - fr);
+    // lead support: Fake Out, redirection or Intimidate (the same three the checklist counts)
+    const intimL = team.filter(m => m.ability === 'Intimidate').map(m => ({m, r: 1, mv: 'Intimidate'}));
+    const fr = anyOf([c.fake, c.redir, intimL.length ? 1 : 0]);
+    rows.push({k: 'support', label: 'Lead support', st: st(fr, .6, .3), who: who([...R.fake, ...R.redir, ...intimL].sort((a, b) => b.r - a.r), 3), note: fr >= .6 ? '' : `${(s => s.charAt(0).toUpperCase() + s.slice(1))(proLine('fake', ''))} have Fake Out, Intimidate or redirection.`}); pen += 20 * (1 - fr);
     rows.push({k: 'prio', label: 'Priority attacks', st: c.prio >= .5 ? 'ok' : 'opt', who: who(R.prio, 3), note: ''}); pen += 5 * (1 - c.prio);
     const ans = anyOf([c.anti, c.tr * .6]);
     rows.push({k: 'anti', label: 'Answer to their speed control', st: ans >= .5 ? 'ok' : 'opt', who: [who(R.anti, 2), c.tr >= .5 && c.tw >= .5 ? 'two speed modes' : ''].filter(Boolean).join('; '), note: ans >= .5 ? '' : 'Taunt or Encore stops an opposing Tailwind or Trick Room.'}); pen += 5 * (1 - ans);

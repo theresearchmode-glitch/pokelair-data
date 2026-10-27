@@ -36,7 +36,10 @@ function renderSets() {
   $('setQuick').innerHTML = team.length ? `<span class="lbl">Your team</span>${team.map(m => `<button type="button" class="ttmon${m.p.n === ui.setMon ? ' on' : ''}" data-setmon="${esc(m.p.n)}">${esc(m.d)}</button>`).join('')}` : '';
   let p = byName.get(ui.setMon);
   if (!p && team.length) { p = team[0].p; ui.setMon = p.n; }
+  // no team and nothing looked up yet: open on the most-used Pokémon rather than an empty page
+  if (!p) { try { const r = lairRows(); p = r && r[0] ? r[0].p : null; } catch (e) {} if (p) ui.setMon = p.n; }
   if (!p) { out.innerHTML = '<div class="empty-note">Look up a Pokémon to see its popular sets.</div>'; return; }
+  if (!ui.setSrcLoaded) { ui.setSrcLoaded = true; try { const v = LS.get('cc2.setSrc', null); if (SET_SRC[v]) ui.setSrc = v; } catch (e) {} }
   const src = SET_SRC[ui.setSrc] ? ui.setSrc : 'ingame';
   const seg = `<div class="seg" role="group" aria-label="Doubles data source">${Object.entries(SET_SRC).map(([k, v]) => `<button type="button" data-setsrc="${k}" aria-pressed="${k === src}">${v}</button>`).join('')}</div>`;
   // In-game: the merged set (every Pokémon). Tournaments / Showdown: that list's own row, unmerged.
@@ -47,6 +50,7 @@ function renderSets() {
     dCard = setCard('Doubles', rankLine(d, row) || (d ? esc(d.source || '') : 'No data loaded yet'), row, seg); }
   const ss = setFor(p, 'singles'), sdoc = META.singles, srow = findIn(sdoc, p);
   out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}<span class="tag tier t${(v => v >= 70 ? 3 : v >= 45 ? 2 : v >= 25 ? 1 : 0)(viability(p))}">${vLabel(viability(p))} in ${S.format}</span></div>
+    ${(m => m ? `<p class="t2 setmine">Your ${esc(m.d)}: ${esc(m.ability)}${m.item ? ` @ <b>${esc(m.item)}</b>${m.heldItem ? ' (your pick)' : ''}` : ''} · ${m.moves.filter(Boolean).map(x => esc(x.name)).join(', ')}${m.custom ? ' (your moves)' : ''}</p>` : '')(team.find(m => m.p.n === p.n))}
     <div class="mucols one">${dCard}</div>`;
 }
 

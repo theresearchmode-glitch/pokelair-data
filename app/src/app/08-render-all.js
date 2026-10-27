@@ -21,7 +21,7 @@ function render(){
   const PG=ms.length?proGrades(ms,useA):null;
   const CK=ms.length?proChecks(ms,useA):null;
   $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Winning-team checklist${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
-     <div class="t2">${S.format==='doubles'?'What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. It doesn\'t change the Team Score.':'Type checks for singles. The win-rate numbers come from doubles tournaments, so they are not shown here.'}</div>
+     <div class="t2">${S.format==='doubles'?'What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. Only four of them touch the Team Score: missing speed control, lead support, spread damage or a Mega caps how far above average it can go.':'Type checks for singles. The win-rate numbers come from doubles tournaments, so they are not shown here.'}</div>
      ${CK?`<ul class="cklist">${CK.items.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')}</ul>`:''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
@@ -64,12 +64,15 @@ function render(){
   ui.plans=plans;safe('problems',()=>renderProblems(ms,a,tRows,useA,plans));
   if(ui.vProven){const nd=$('needs');if(nd&&nd.innerHTML&&nd.insertAdjacentHTML)nd.insertAdjacentHTML('afterbegin','<div class="t2 provnote">This exact team has won at real events. Treat these as optional tweaks, not problems.</div>')}
   safe('plan cards',()=>renderPlans(ms,a,plans,useA,covered));
-  safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);safe('auto-build',renderAutoBuild);safe('pool',renderPoolCtl);safe('meta',renderMeta);{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
+  safe('checklist claims',ckWinRefresh);safe('track record',trackRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);safe('auto-build',renderAutoBuild);safe('pool',renderPoolCtl);safe('meta',renderMeta);{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
   safe('threats',()=>renderThreats(ms,useA));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);safe('top teams',renderTopTeams);safe('battle log',renderLog);safe('sets',renderSets);safe('paste',renderPastePanel);safe('home',renderHome);
 }
 // One-glance verdict for the Team page: how ready the team is, its biggest gap, its biggest threat, and whether it
 // matches a real tournament team. The full report folds underneath.
-function renderVerdict(ms,a,PG,CK){const el=$('verdict');ui.vProven=false;ui.vsum=null;if(!el)return;if(!ms.length){el.innerHTML='';return}
+function renderVerdict(ms,a,PG,CK){
+  // the "How scoring works" note says whether the loaded model rates items and moves at all
+  {const M=META.model,n=M&&M.sets?Object.keys(M.sets).length:0;document.querySelectorAll('.mtrack').forEach(x=>{x.textContent=trackLine()});document.querySelectorAll('.msets').forEach(x=>{x.textContent=!M?'the model is still loading':n?`the current model rates ${n} item and move choices`:'the current model doesn’t yet, so items and moves don’t change the score'})}
+  const el=$('verdict');ui.vProven=false;ui.vsum=null;if(!el)return;if(!ms.length){el.innerHTML='';return}
   const n=ms.length,miss=CK?CK.items.filter(x=>!x.ok):[],thin=PG&&PG.thin?PG.thin:[];
   const rows=[];let best=null;
   if(n>=5&&RES&&Array.isArray(RES.proven)){const names=new Set(ms.map(m=>m.p.n));
@@ -80,17 +83,23 @@ function renderVerdict(ms,a,PG,CK){const el=$('verdict');ui.vProven=false;ui.vsu
   const TS=n>=6?teamScore({wv}):null;
   let lvl,head;
   if(n<6){lvl='mid';head=`${n} of 6 picked: keep building`}
-  else if(!TS){const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);lvl=dup?'bad':'mid';head=dup?`Not a legal team: only one ${dup.p.b} (any form) is allowed`:'Team Score is waiting for the win model data'}else{lvl=TS.score>=50?'good':TS.score>=25?'mid':'bad';head=`${TS.score} · ${TS.label}`}
+  else if(!TS){const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);lvl=dup?'bad':'mid';head=dup?`Not a legal team: only one ${dup.p.b} (any form) is allowed`:S.format!=='doubles'?'Team Score covers doubles only':'Team Score is waiting for the win model data'}else{lvl=TS.score>=50?'good':TS.score>=30?'mid':'bad';head=`${TS.score} · ${TS.label}`}
   ui.vsum={lvl,head,best,tr,CK,excess:a.excess,TS};
   if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% at Limitless events${best.c>1?` (${best.c} players)`:''}`]);
   // how much of this exact combination real players have tried (the score pulls an untried mix toward the average)
-  if(wv&&wv.tested!=null)rows.push(['Played together',`${wv.tested} of the 15 pairs on this team have been brought together on 15+ tournament teams${wv.credit<1?`. An untried mix, so its edge over an average team counts ${Math.round(wv.credit*100)}% until real results back it up.`:'.'}`]);
-  if(wv&&wv.struct&&wv.struct.miss.length){const m=wv.struct.miss,cap=x=>x.charAt(0).toUpperCase()+x.slice(1);rows.push(['Unproven',`${esc(m.map(cap).join('. '))}. The model learned from teams that ${m.length>1?'have these covered':'have this covered'}, so its edge over an average team counts ${Math.round(wv.struct.c*100)}% here.`])}
-  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks (advice; not part of the score)`+(miss.length?`: missing ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
+  // how much real tournament data stands behind this score: each Pokémon's tournament teams and the pairs played together
+  if(wv&&TS){const low=ms.filter(m=>{const c=confFor(m.p);return !c||c.c==='lo'}).map(m=>m.d),tp=wv.tested;
+    const lvl=low.length===0&&(tp==null||tp>=10)?'Solid':low.length<=1&&(tp==null||tp>=5)?'Some data':'Thin';
+    rows.push(['Data behind it',`<b>${lvl}</b>: ${tp!=null?`${tp} of the 15 pairs have been brought together on 15+ tournament teams`:''}${low.length?`${tp!=null?'; ':''}little tournament data on ${esc(low.join(', '))}`:''}${lvl==='Thin'?'. Treat this score as a rough guide.':'.'}`])}
+  // the points the score loses for an untried mix or missing basics, said out loud
+  if(TS&&TS.cut>0){const why=[];if(wv.credit<1)why.push('a mix players haven’t tried together yet');if(wv.struct&&wv.struct.miss.length)why.push(...wv.struct.miss);
+    rows.push(['Deductions',`<span class="warnline">−${TS.cut}</span> (${TS.before} before): ${esc(why.join('; '))}. The model can only vouch for an edge it has seen win.`])}
+  {const cl=scarfTrClash(ms);if(cl)rows.push(['Item clash',`<span class="warnline">${cl.sc.map(m=>esc(m.d)).join(', ')}: Choice Scarf on a Trick Room team</span>`])}
+  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks (advice; only missing basics cap the score)`+(miss.length?`: missing ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
   if(thin.length)rows.push(['Watch out for',thin.slice(0,3).map(x=>esc(x.o.p.d)).join(', ')]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
   ui.vProven=!!(best&&best.k===6&&best.wr>=.55);el.className='verdict '+lvl;
-  const parts=TS?`<div class="tsparts"><div class="tsline"><b>${TS.score}</b><span>${TS.pct!=null?`Stronger than ${TS.score}% of tournament teams from the last 45 days.`:'Based on the win chance against an average tournament team.'} Win chance against an average one: <b>${Math.round(TS.p*100)}%</b>${TS.pYou!=null?` (${Math.round(TS.pYou*100)}% for you, from your battle log)`:''}.${ckWin.wmed!=null?` A typical recent event winner scores ${ckWin.wmed}.`:''}</span></div><div class="tsbar" aria-hidden="true"><i style="--w:${TS.score}%"></i><em style="left:50%">avg</em>${ckWin.wmed!=null&&Math.abs(ckWin.wmed-50)>=8?`<em class="win" style="left:${ckWin.wmed}%">winners</em>`:''}</div></div>`:'';
+  const parts=TS?`<div class="tsparts"><div class="tsline"><b>${TS.score}</b><span>${TS.pct!=null?`Stronger than ${TS.score}% of tournament teams from the last 45 days.`:'Based on the win chance against an average tournament team.'} Win chance against an average one: <b>${Math.round(TS.p*100)}%</b>${TS.pYou!=null?` (${Math.round(TS.pYou*100)}% for you, from your battle log)`:''}.${ckWin.wmed!=null?` A typical recent event winner scores ${ckWin.wmed}.`:''}</span></div>${trackLine()?`<div class="t2 tstrack">${esc(trackLine())} So use it to compare teams that are far apart, not to split hairs.</div>`:''}<div class="tsbar" aria-hidden="true"><i style="--w:${TS.score}%"></i><em style="left:50%">avg</em>${ckWin.wmed!=null&&Math.abs(ckWin.wmed-50)>=8?`<em class="win" style="left:${ckWin.wmed}%">winners</em>`:''}</div></div>`:'';
   el.innerHTML=`<div class="vhead"><span class="vdot" aria-hidden="true"></span><b class="vtitle">${TS?'Team Score '+esc(head):esc(head)}</b></div>${parts}<dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`}
 // Team Score, 0-100: where this team's strength (the win model, trained on real games with player skill removed) falls
 // among real tournament teams from the last 45 days. 50 = a typical tournament team, 90 = top 10%.
@@ -103,7 +112,9 @@ function teamScore({wv}){if(!wv)return null;const cl=x=>Math.max(0,Math.min(100,
   const score=pct!=null?cl(Math.floor(pct)):cl((wv.p-.35)/.3*100);
   // labels anchored to real event winners scored with their own sets (Oct 27, 118 winners: median 77, top quarter 92+)
   const label=score>=90?'Elite':score>=75?'Winner level':score>=50?'Above average':score>=30?'Playable':'Needs work';
-  return {score,label,p:wv.p,pYou:wv.pYou,pct}}
+  // the points taken off for an untried mix or missing basics (score before the cuts minus the score)
+  const before=wv.pctRaw!=null?cl(Math.floor(wv.pctRaw)):score,cut=Math.max(0,before-score);
+  return {score,label,p:wv.p,pYou:wv.pYou,pct,before,cut}}
 let pmCache=new Map();
 // The 4 moves a Pokémon is graded and planned with: its 4 most-used moves, the same 4 its team card shows.
 function runMoves(p){const pm=popularMoves(p),r=pm.slice(0,4);r.src=pm.src;r.pct=pm.pct;return r}
@@ -123,7 +134,7 @@ function abilityPct(p,a){const x=setFor(p).ab.find(([n])=>n===a);return x?x[1]:n
 function topItems(p){const st=setFor(p);return st.it.length?{src:st.src.it,it:st.it.slice(0,2)}:null}
 function pcTxt(v){return v!=null?` <span class="vsub">${(+v).toFixed(0)}%</span>`:''}
 // Item and nature most players run, shown on the card.
-function setRows(p){const st=setFor(p),it=topItems(p),na=st.na.length?st.na.slice(0,2):null;
+function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.na.length?st.na.slice(0,2):null;
   if(!it&&!na)return '';
   const tag=src=>src==='sd'?` <span class="vsub" title="Showdown ladder, 1630+ rating">(Showdown)</span>`:'';
   const line=(label,arr,src)=>`<span class="lbl">${label}</span><div><span class="iname">${esc(arr[0][0])}</span>${pcTxt(arr[0][1])}${arr[1]?`<span class="ialt">or ${esc(arr[1][0])}${pcTxt(arr[1][1])}</span>`:''}${tag(src)}</div>`;

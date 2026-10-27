@@ -10,7 +10,7 @@ function spFeats(){const m=META.model;if(spFeatCache.m===m)return spFeatCache.ma
   for(const k of Object.keys((m&&m.sets)||{})){const sp=k.split(/[@:]/)[0];if(!map.has(sp))map.set(sp,[]);map.get(sp).push(k)}spFeatCache={m,map};return map}
 function setX(ms){return (ms||[]).reduce((a,m)=>a+setOne(m),0)}
 function setOne(m){const M=META.model,sets=M&&M.sets;if(!sets||!m)return 0;let x=0;const ms=[m];const center=!!M.center,fq=M.setFreq||{},F=center?spFeats():null;
-  for(const m of ms){const p=m.p;if(!p)continue;let it='';try{it=p.m?stoneFor(p):((topItem(p)||[])[0]||'')}catch(e){}
+  for(const m of ms){const p=m.p;if(!p)continue;let it='';try{it=p.m?stoneFor(p):(m.heldItem||(topItem(p)||[])[0]||'')}catch(e){}
     if(center){const mv=new Set((m.moves||[]).map(v=>v&&v.name).filter(Boolean));
       let u=0;for(const k of (F.get(p.n)||[])){const i=k.indexOf('@')===p.n.length,has=i?k.slice(p.n.length+1)===it:mv.has(k.slice(p.n.length+1));u+=sets[k]*((has?1:0)-(fq[k]||0))}
       // a build only counts as much as real builds of this Pokémon have shown (10th-90th percentile of real decks)
@@ -44,17 +44,23 @@ function mixCredit(names){const M=META.model,k=testedPairs(names);if(k==null||!M
 // Each missing piece cuts the above-average edge by 15% (never below 40%).
 const PILLARS={speed:'no speed control',fake:'no lead support (Fake Out, Intimidate or redirection)',spread:'no spread damage',mega:'no Mega'};
 function structCredit(ms){if(S.format!=='doubles'||ms.length!==6)return {c:1,miss:[]};let CK=null;try{CK=proChecks(ms,true)}catch(e){}if(!CK)return {c:1,miss:[]};
-  const miss=CK.items.filter(x=>PILLARS[x.k]&&!x.ok&&!x.skip).map(x=>PILLARS[x.k]);
+  // the Mega rule is fixed (at least one Mega), so the score never depends on your "Megas on team" setting
+  const miss=CK.items.filter(x=>PILLARS[x.k]&&x.k!=='mega'&&!x.ok&&!x.skip).map(x=>PILLARS[x.k]);if(!ms.some(m=>m.p&&m.p.m))miss.push(PILLARS.mega);
   // a Pokémon whose ability needs weather or terrain that nothing on the team sets (Swift Swim with no rain) is a broken piece
   try{const fullMs=ms.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves});const gp=gamePlan(fullMs);for(const r of gp.rows)if((r.k==='weather'||r.k==='terrain')&&r.st==='miss')miss.push(String(r.note||(r.k==='weather'?'weather it needs':'terrain it needs')).replace(/[.\s]+$/,''))}catch(e){}
   return {c:Math.max(.4,1-.15*miss.length),miss}}
-function winVsField(names,mine,msIn){if(!modelOK()||names.length<6)return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
-  const ms=mine?(msIn||members()):null,mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
-  // upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
-  const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]},xRaw=mx+(dev>0?dev*cr*sc.c:dev),x=calibK()*(xRaw-mx);
+// Team strength in the model's own units, adjusted exactly as the Team Score adjusts it. Team Score, fix plans, Best
+// additions, Build for me and the Gauntlet all read this one number, so they can never disagree about which team is stronger.
+// upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
+function strengthX(names,ms){const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
+  const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
+// The model is trained on doubles tournament games only, so singles teams get no Team Score.
+function winVsField(names,mine,msIn){if(!modelOK()||names.length<6||S.format!=='doubles')return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
+  const ms=mine?(msIn||members()):null,mx=META.model.meanX||0;
+  const {xRaw,x0,cr,sc}=strengthX(names,ms),x=calibK()*(xRaw-mx);
   const pa=mine?personalAdj():null;let xp=null;if(pa){xp=x;for(const n of names)xp+=(pa.get(n)||0)/4}
-  return {p:sig(x),pYou:xp==null?null:sig(xp),x:xRaw,pct:strengthPct(xRaw),credit:cr,tested:testedPairs(names),struct:sc}}
-function winVs(a,b,ma,mb){if(!modelOK())return null;return sig(calibK()*(teamX(a,ma)-teamX(b,mb)))}
+  return {p:sig(x),pYou:xp==null?null:sig(xp),x:xRaw,pct:strengthPct(xRaw),pctRaw:strengthPct(x0),credit:cr,tested:testedPairs(names),struct:sc}}
+function winVs(a,b,ma,mb){if(!modelOK())return null;return sig(calibK()*(strengthX(a,ma).xRaw-strengthX(b,mb).xRaw))}
 // where a team's strength falls among real tournament teams from the last 45 days (0-100, from the shipped percentiles)
 function strengthPct(x){const d=META.model&&META.model.dist,q=d&&Array.isArray(d.q)&&d.q.length===101?d.q:null;if(!q)return null;
   if(x<=q[0])return 0;if(x>=q[100])return 100;let i=0;while(i<99&&q[i+1]<x)i++;const lo=q[i],hi=q[i+1];return i+(hi>lo?(x-lo)/(hi-lo):0)}
@@ -64,5 +70,11 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
 
 // Team Score of any six members (plans, additions, builds), from the same model as the Team page
 function tsOf(team){if(!team||team.length!==6||S.format!=='doubles')return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?teamScore({wv}).score:null}catch(e){return null}}
+// Fix plans, Best additions and Build for me choose by Team Score in doubles when the win model is loaded (Fun mode keeps its own picks).
+function useTSPick(){return S.format==='doubles'&&!S.fun&&modelOK()}
+// What "improves the team" means everywhere (Fix plans, Quick add, Best additions): the Team Score rises by at least this much
+var TS_GAIN=2;
+// a plan's Team Score, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
+function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
 function tsChip(team){const base=ui.vsum&&ui.vsum.TS;const t=tsOf(team);if(t==null||!base)return '';const d=t-base.score;
   return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="Team Score ${base.score} → ${t}">Team Score ${d>0?'+':d<0?'−':'±'}${Math.abs(d)}</span>`}

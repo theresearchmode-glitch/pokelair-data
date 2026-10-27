@@ -3,6 +3,10 @@ document.addEventListener('change',e=>{const t=e.target;
   if(t.id&&/^ab\d$/.test(t.id)){const i=+t.dataset.i,m=memberOf(S.slots[i],i);const rec=m&&(metaAbility(m.p)||bestAbility(m.p));S.slots[i].a=t.value===rec?null:t.value;render();
     toast(t.value===rec?`${t.value}: the most-used ability`:`${t.value} set (most players run ${rec})`)}
   else if(t.dataset&&t.dataset.mvi){const [i,j]=t.dataset.mvi.split(':').map(Number);setMove(i,j,t.value)}
+  else if(t.dataset&&t.dataset.iti!=null){const i=+t.dataset.iti,s=S.slots[i],p=s&&byName.get(s.n);if(!p)return;const def=defaultItem(p),v=t.value;
+    const before=(ui.vsum&&ui.vsum.TS)?ui.vsum.TS.score:null;if(!s.it)s.it={};if(!v||v===def)delete s.it[S.format];else s.it[S.format]=v;if(!Object.keys(s.it).length)delete s.it;render();
+    const after=(ui.vsum&&ui.vsum.TS)?ui.vsum.TS.score:null,cl=scarfTrClash(members());
+    toast(`${v||'No item'}${v===def?': the usual item':''}${before!=null&&after!=null?` · Team Score ${before===after?'stays at '+after:before+' → '+after}`:''}${cl&&v==='Choice Scarf'?' · clashes with Trick Room':''}`)}
   else if(t.id==='poolSel'){ui.pool=['box','boxfill','all'].includes(t.value)?t.value:'boxfill';LS.set('cc2.pool',ui.pool);render();toast({box:'Suggestions only use your box',boxfill:'Your box first, then the best Pokémon to catch',all:'Suggestions use the full roster'}[ui.pool])}
   else if(t.id==='funPlan'||t.id==='funAb'||t.id==='funRec'){S.fun=t.checked;recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.fun?'Fun mode on: niche Pokémon get a real shot':'Fun mode off: back to proven meta picks')}
   else if(t.id==='oppTeamSel'){const d=META.teams,tm=d&&d.teams[+t.value];if(tm){S.opp=tm.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');persist();renderMatchup();toast('Loaded '+tm.player+'’s team as the opponent')}}
@@ -16,14 +20,16 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(d.thm){setTheme(d.thm);return}
   if(b.id==='sideClose'){sideOpen(false);return}
   if(d.view){setView(d.view);return}
-  if(d.type){const s=ui.typesSel||[];ui.typesMon=null;ui.typesSel=s.includes(d.type)?s.filter(x=>x!==d.type):(s.length>=2?[s[1],d.type]:[...s,d.type]);renderTypes();return}
-  if(b.id==='typesClear'||d.typesmonx){ui.typesSel=[];ui.typesMon=null;const f=$('typeMonIn');if(f)f.value='';renderTypes();return}
+  if(d.typesmon){const p=byName.get(d.typesmon);if(p){ui.typesMon=p.n;ui.typesSel=p.t.slice();renderTypes()}return}
+  if(d.type){const s=ui.typesSel||[];ui.typesMon=null;ui.typesCleared=true;ui.typesSel=s.includes(d.type)?s.filter(x=>x!==d.type):(s.length>=2?[s[1],d.type]:[...s,d.type]);renderTypes();return}
+  if(b.id==='typesClear'||d.typesmonx){ui.typesSel=[];ui.typesMon=null;ui.typesCleared=true;const f=$('typeMonIn');if(f)f.value='';renderTypes();return}
   if(d.mvreset!==undefined){const s=S.slots[+d.mvreset];if(s&&s.mv){const before=teamOffense();delete s.mv[S.format];if(!Object.keys(s.mv).length)delete s.mv;render();const after=teamOffense();toast(`Back to the popular set · Offense ${before===after?'stays at '+after:before+' → '+after} of 18`)}return}
   if(d.unexcl!==undefined){if(d.unexcl==='*'){S.excl=[];toast('Every Pokémon can be suggested again')}else{S.excl=S.excl.filter(n=>n!==d.unexcl);const q=byName.get(d.unexcl);toast(`${q?q.d:d.unexcl} can be suggested again`)}render();return}
+  if(d.itreset!==undefined){const s=S.slots[+d.itreset];if(s&&s.it){delete s.it[S.format];if(!Object.keys(s.it).length)delete s.it;render();toast('Back to the usual item')}return}
   if(d.abreset!==undefined){const s=S.slots[+d.abreset];if(s){s.a=null;render();toast('Back to the most-used ability')}return}
   if(d.fullset){if(byName.get(d.fullset)){ui.setMon=d.fullset;LS.set('cc2.setMon',d.fullset);setView('sets');renderSets()}return}
   if(d.setmon){if(byName.get(d.setmon)){ui.setMon=d.setmon;LS.set('cc2.setMon',d.setmon);renderSets();try{$('sets').scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}}return}
-  if(d.setsrc){ui.setSrc=d.setsrc;renderSets();return}
+  if(d.setsrc){ui.setSrc=d.setsrc;ui.setSrcLoaded=true;try{LS.set('cc2.setSrc',d.setsrc)}catch(e){}renderSets();return}
   if(d.unopp!==undefined){S.opp[+d.unopp]='';persist();renderMatchup();const f=$('opp'+d.unopp);if(f)f.focus();return}
   if(b.id==='oppClear'){S.opp=['','','','','',''];persist();renderMatchup();return}
   if(d.ttask!==undefined){if(members().length){ui.ttConfirm=+d.ttask;renderTopTeams()}else loadTopTeam(+d.ttask);return}

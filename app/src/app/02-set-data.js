@@ -79,7 +79,9 @@ function fixTeams(){S.teams=(Array.isArray(S.teams)?S.teams:[]).filter(t=>t&&Arr
 function normMv(mv){if(!mv||typeof mv!=='object'||Array.isArray(mv))return null;const o={};
   for(const f of ['doubles','singles']){const a=mv[f];if(!Array.isArray(a))continue;const c=a.slice(0,4).map(x=>typeof x==='string'&&mvByName.has(x)?x:'');while(c.length<4)c.push('');if(c.some(Boolean))o[f]=c}
   return Object.keys(o).length?o:null}
-function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>s&&typeof s==='object'?s:{}).map(s=>{const o={n:byName.has(s.n)?s.n:'',a:typeof s.a==='string'?s.a:null,lock:!!s.lock};const mv=o.n&&normMv(s.mv);if(mv)o.mv=mv;return o});
+function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>s&&typeof s==='object'?s:{}).map(s=>{const o={n:byName.has(s.n)?s.n:'',a:typeof s.a==='string'?s.a:null,lock:!!s.lock};const mv=o.n&&normMv(s.mv);if(mv)o.mv=mv;
+    // held items per format ({doubles:'Sitrus Berry'}), kept only as short plain strings
+    if(o.n&&s.it&&typeof s.it==='object'){const it={};for(const f of ['doubles','singles'])if(typeof s.it[f]==='string'&&s.it[f]&&s.it[f].length<=40)it[f]=s.it[f];if(Object.keys(it).length)o.it=it}return o});
   while(out.length<6)out.push(blank());return out}
 // Battle log entries: {t: time, r: 'W'|'L', b: the 4 brought (leads first), tm: the team's 6, o: opponent's Pokémon}
 function fixLog(){S.log=(Array.isArray(S.log)?S.log:[]).filter(e=>e&&(e.r==='W'||e.r==='L')&&Array.isArray(e.b)).slice(-400).map(e=>({t:+e.t||0,r:e.r,b:e.b.filter(n=>typeof n==='string'&&byName.has(n)).slice(0,4),tm:(Array.isArray(e.tm)?e.tm:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6),o:(Array.isArray(e.o)?e.o:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6)}))}

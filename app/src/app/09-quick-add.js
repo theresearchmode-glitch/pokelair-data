@@ -24,7 +24,13 @@ function qaReason(key,pl){const x=pl.ch[0],m=pl.team.find(t=>t.p===x.c.p)||x.c.m
   if(best)bits.push(`often paired with ${best.t.d}`);
   return bits.join(' · ')}
 function quickPicks(key,plans,ms,used){if(!plans||!plans.singles||!plans.basePl)return [];const base=plans.basePl.score;
-  const c=plans.singles.filter(pl=>pl.ch.length===1&&pl.score<base-3&&qaFixes(key,pl,ms)).sort((a,b)=>a.score-b.score);
+  let c=plans.singles.filter(pl=>pl.ch.length===1&&pl.score<base-3&&qaFixes(key,pl,ms)).sort((a,b)=>a.score-b.score);
+  // with the win model on, a quick add must not lower the Team Score, and the highest one comes first
+  // hidden-gem plans (plans.gems) carry no Team Score of their own, so they're judged against the team's
+  const tb=plans.tsBase!=null?plans.tsBase:(useTSPick()&&ui.plans&&ui.plans.tsBase!=null?ui.plans.tsBase:null);
+  if(tb!=null){c=c.slice(0,20);for(const pl of c)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
+    c=c.filter(pl=>pl._ts!=null&&pl._ts>=tb+TS_GAIN).sort((a,b)=>(b._ts??-1)-(a._ts??-1)||a.score-b.score);
+    const out=[],seen=new Set();for(const pl of c){const b=pl.ch[0].c.p.b;if(seen.has(b)||(used&&used.has(b)))continue;seen.add(b);out.push(pl);if(out.length>=3)break}return out}
   const out=[],seen=new Set();for(const pl of c){const b=pl.ch[0].c.p.b;if(seen.has(b)||(used&&used.has(b)))continue;seen.add(b);out.push(pl);if(out.length>=3)break}
   if(!out.length)return out;const top=base-out[0].score;return out.filter(pl=>base-pl.score>=top*.4)}
 // Each Pokémon is shown once across problems (under the first problem it fixes), so the list never repeats itself.
@@ -35,7 +41,7 @@ function renderQuick(key,plans,ms,used){const picks=quickPicks(key,plans,ms,used
   if(!picks.length)return `<div class="qnone">${ui.pool==='box'?'Nothing in your box fixes this cleanly. In Plan settings, set "Pick from" to "box, then fill gaps" to see what to catch.':'No single change fixes this without hurting the team. Check the fix plans for two-change options.'}</div>`;
   return `<div class="qa"><div class="qlbl">Quick add</div><div class="qpicks">${picks.map(pl=>{const x=pl.ch[0],p=x.c.p,i=ui.quick.push(pl)-1,fit=Math.round(plans.basePl.score-pl.score),why=qaReason(key,pl);
     return `<div class="qpick${pl.gem?' gem':''}"><div class="qtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(p)?'<span class="tag box ico" title="In your box">BOX</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${pl.gem?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(p)}</div>
-      ${why?`<div class="qwhy">${esc(why)}</div>`:''}<div class="qact"><button class="btn sm primary" type="button" data-qa="${i}">${x.out?'Swap for '+esc(x.out.d):'Add'}</button><span class="qfit" title="How much the team's overall score improves">Fit +${fit}</span></div></div>`}).join('')}</div></div>`}
+      ${why?`<div class="qwhy">${esc(why)}</div>`:''}<div class="qact"><button class="btn sm primary" type="button" data-qa="${i}">${x.out?'Swap for '+esc(x.out.d):'Add'}</button>${pl._ts!=null&&(ui.plans&&ui.plans.tsBase!=null)?`<span class="qfit" title="Team Score ${ui.plans.tsBase} → ${pl._ts}">Team Score ${pl._ts>ui.plans.tsBase?'+':'±'}${pl._ts-ui.plans.tsBase||0}</span>`:`<span class="qfit" title="Fits what the team is missing. A Team Score shows once you have 5 or more Pokémon">Good fit</span>`}</div></div>`}).join('')}</div></div>`}
 function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   if(!ms.length){el.innerHTML='<div class="empty-note">Add Pokémon to see what the team needs.</div>';const sub=$('needsSub');if(sub)sub.textContent='';return}
   const name=i=>esc(ms[i].d);const out=[];
@@ -43,6 +49,7 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   const gp=plans&&plans.gp?plans.gp:gamePlan(ms);
   if(ms.length>=3)for(const r of gp.rows){const big=r.k==='speed'||(S.format==='doubles'&&r.k==='support')||((r.k==='weather'||r.k==='terrain')&&r.st==='miss')||r.k==='trfit'||(S.format==='singles'&&r.k==='haz');
     if(big&&(r.st==='miss'||r.st==='part'))out.push([r.st==='miss'&&r.k!=='haz'?'hi':'mid',r.label,esc(r.note||''),'gp:'+r.k])}
+  {const cl=scarfTrClash(ms);if(cl)out.unshift(['hi','Item clash',clashText(cl)])}
   {const sh=megaShort(ms);if(sh&&ms.length>=3)out.push(['hi','Megas',`The team can't reach ${megaGoal()} Mega${megaGoal()>1?'s':''} (it has ${megaCount(ms)}${ms.length<6?` with ${6-ms.length} open slot${6-ms.length>1?'s':''}`:''}). Change it under Megas on team if you want fewer.`,'mega'])}
   a.rows.filter(t=>t.w>t.r).sort((x,y)=>(y.w-y.r)-(x.w-x.r)).forEach(t=>{const weak=t.who.map(o=>name(o.i)+(o.x>=4?' (4×)':''));
     const res=ms.filter(m=>mult(t.atk,m.types,m.ability,useA)<=.5).map(m=>esc(m.d));

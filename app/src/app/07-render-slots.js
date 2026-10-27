@@ -1,6 +1,6 @@
 // ---------- render: slots ----------
 function renderSlots(){
-  const useA=$('useAbil').checked;
+  const useA=$('useAbil').checked;let clash=null;try{clash=scarfTrClash(members())}catch(e){}
   $('slots').innerHTML=S.slots.map((s,i)=>{const m=memberOf(s,i);
     if(!m)return `<div class="slot empty"><div class="sl-top"><span class="sl-num">${i+1}</span><span class="addtok" aria-hidden="true">+</span><div class="cb"><input class="field" id="pk${i}" data-i="${i}" placeholder="Add a Pokémon" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Pokémon for slot ${i+1}"></div></div></div>`;
     const p=m.p;const w=[],r=[];
@@ -13,11 +13,12 @@ function renderSlots(){
         <span class="sl-name" title="${esc(p.d)}">${esc(p.d)}</span>
         <div class="sl-sub"><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(p)?'<span class="tag box ico" title="In your box">BOX</span>':''}${ratingTag(p)}</div>
         ${u?`<div class="tuse" title="${u.toFixed(1)}% of ${S.format} teams"><span class="tbar"><i style="--w:${Math.min(100,u*2).toFixed(0)}%"></i></span><span class="vsub">${u.toFixed(1)}%<span class="tus"> of teams</span></span></div>`:''}
-        ${ti?`<div class="titem">${esc(ti.it[0][0])}</div>`:''}${s.lock?'<span class="tlock" title="Locked">LOCKED</span>':''}
+        ${m.item?`<div class="titem${m.heldItem?' mine':''}">${esc(m.item)}</div>`:''}${s.lock?'<span class="tlock" title="Locked">LOCKED</span>':''}
       </div>
       <div class="slbody">${S.format==='singles'?srTag(m):''}
-      ${setRows(p)}
+      ${setRows(p,{noItem:true})}
       ${abilBlock(s,i,m)}
+      ${itemBlock(s,i,m,clash)}
       ${modText(m.ability)?`<div class="amod">${modText(m.ability)}</div>`:''}
       ${movesBlock(s,i,m)}
       <details class="slmore"><summary><span class="lbl">Weak</span><span class="sumw">${w.length?w.join(''):'<span class="none">None</span>'}</span></summary><div class="inmore">

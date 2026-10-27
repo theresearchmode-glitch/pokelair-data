@@ -16,7 +16,7 @@ const pairs=(a,max=10)=>Array.isArray(a)?a.filter(x=>Array.isArray(x)&&typeof x[
 function cleanMeta(d){if(!d||typeof d!=='object')return null;
   const row=t=>t&&typeof t.n==='string'?{r:Math.max(1,Math.round(num(t.r)||0)),n:t.n.slice(0,60),u:num(t.u),teams:num(t.teams),w:num(t.w),ab:pairs(t.ab),it:pairs(t.it),mv:pairs(t.mv,12),na:pairs(t.na),tm:pairs(t.tm),cc:pairs(t.cc,6),sp:pairs(t.sp,3).filter(([k])=>/^[A-Z][a-z]+:\d+(\/\d+){5}$/.test(k))}:null;
   const out={format:str(d.format,20),kind:str(d.kind,20),source:str(d.source),period:str(d.period),note:str(d.note,300),battles:num(d.battles),updated:str(d.updated,40),
-    top:(Array.isArray(d.top)?d.top:[]).slice(0,60).map(row).filter(Boolean),more:(Array.isArray(d.more)?d.more:[]).slice(0,40).map(row).filter(Boolean)};
+    top:(Array.isArray(d.top)?d.top:[]).slice(0,60).map(row).filter(Boolean),more:(Array.isArray(d.more)?d.more:[]).slice(0,300).map(row).filter(Boolean)};
   if(d.smogon&&typeof d.smogon==='object')out.smogon={source:str(d.smogon.source),period:str(d.smogon.period),battles:num(d.smogon.battles),usage:pairs(d.smogon.usage,80)};
   return out}
 function cleanStatus(d){if(!d||typeof d!=='object')return null;return {lastRun:str(d.lastRun,40),ok:d.ok!==false,note:str(d.note,300),schedule:str(d.schedule,80)}}

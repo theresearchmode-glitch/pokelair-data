@@ -18,7 +18,7 @@ function principles(P, ms) { const c = proChecks(ms, $('useAbil').checked); if (
   return c.items.map(x => ({ok: x.skip ? 'part' : x.soft ? 'part' : x.ok ? 'ok' : 'miss', label: x.label, detail: (x.ok ? x.have : x.miss) + (x.pro ? ` · ${x.pro}` : '')})); }
 let recCache = {key: null, val: null};
 function computeRecs(ms, useA) {
-  const key = JSON.stringify([!!S.fun, S.slots, ui.recSrc, S.format, megaGoal(), useA, metaVersion, S.box.join(), S.excl.join(), $('swapMega').checked]);
+  const key = JSON.stringify([!!S.fun, S.slots, ui.recSrc, S.format, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
   if (recCache.key === key) return recCache.val;
   ui.recMore = 0;
   const pool = (ui.recSrc === 'all' ? ROSTER.filter(p => inBox(p) || poolOK(p, 25)) : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isTrap(p) && (S.fun || viability(p) >= 12 || rating(p).total >= 50));
@@ -28,8 +28,16 @@ function computeRecs(ms, useA) {
     && B.gp.rows.every(r => gpRank[A.gpst(r.k) || 'miss'] >= gpRank[r.st]);
   const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0);
   const clean = [], soft = [], seen = new Set();
+  // Team Score decides when the pick completes a six (doubles, win model loaded): it must raise the Team Score, and the
+  // highest goes first. The type rules relax to "at most one more weakness or unresisted type, no new stack".
+  const useTS = useTSPick() && ms.length >= 5, baseTS = useTS && ms.length === 6 ? tsOf(ms) : null; let tsN = 0;
+  const tsOK = pl => { if (!useTS || pl.team.length !== 6) return null; if (pl._ts === undefined) { if (tsN >= 120) return null; tsN++; pl._ts = tsOf(pl.team); } return pl._ts; };
   for (const pl of res.singles) { const x = pl.ch[0], b = x.c.p.b; if (seen.has(b)) continue;
     const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
+    const t = tsOK(pl);
+    if (t != null) { const fits = A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && pl.megaShort <= shortB;
+      if (fits && (baseTS == null || t >= baseTS + TS_GAIN)) { seen.add(b); clean.push(pl); } else if (soft.length < 3 && fits) soft.push(pl);
+      if (clean.length >= 24) break; continue; }
     const megaFix = pl.megaShort < shortB && A.ex <= B.ex + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1;
     if ((keeps(A) || megaFix) && (ms.length < 6 || pl.gain > 0)) { seen.add(b); pl.megaFix = megaFix && !keeps(A); clean.push(pl); } else if (soft.length < 3 && A.ex <= B.ex + 1 && A.off >= B.off - 1) soft.push(pl);
     if (clean.length >= 24) break; }
@@ -37,7 +45,7 @@ function computeRecs(ms, useA) {
   // Strength floor: suggestions have to be good Pokémon, not just a type fit. Whole roster asks for a rating of 50+,
   // your own box 35+ (it's what you have). Then rank by rating plus how much the pick improves the team.
   const floor = S.fun ? 35 : ui.recSrc === 'all' ? 50 : 35, strong = pl => inBox(pl.ch[0].c.p) && ui.recSrc === 'box' ? rating(pl.ch[0].c.p).total >= floor : rating(pl.ch[0].c.p).total >= floor;
-  const rank = pl => rating(pl.ch[0].c.p).total + pl.gain * 4;
+  const rank = pl => (pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + pl.gain * 4;
   for (let k = clean.length - 1; k >= 0; k--) if (!strong(clean[k])) clean.splice(k, 1);
   clean.sort((x, y) => rank(y) - rank(x));
   // Hidden gems: outside Fun mode, also look past the usual meta picks for up to 2 strong Pokémon that fit just as cleanly.
@@ -47,7 +55,8 @@ function computeRecs(ms, useA) {
     const gres = withFun(() => planFixes(ms, gpool, useA, {singlesOnly: true}));
     const gseen = new Set();
     for (const pl of gres.singles) { const b = pl.ch[0].c.p.b; if (gseen.has(b)) continue; const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
-      if (keeps(A) && (ms.length < 6 || pl.gain > 0) && pl.megaShort <= shortB && isGem(pl.ch[0].c.p)) { gseen.add(b); pl.gem = true; gems.push(pl); }
+      const gt = useTS && pl.team.length === 6 ? tsOK(pl) : undefined;
+      if (keeps(A) && (gt !== undefined ? gt != null && (baseTS == null || gt >= baseTS + TS_GAIN) : (ms.length < 6 || pl.gain > 0)) && pl.megaShort <= shortB && isGem(pl.ch[0].c.p)) { gseen.add(b); pl.gem = true; gems.push(pl); }
       if (gems.length >= 12) break; }
     gems.sort((x, y) => rank(y) - rank(x)); }
   // Alternatives: swaps that don't improve the numbers but keep every check and stay close on them.
@@ -55,10 +64,12 @@ function computeRecs(ms, useA) {
   const alts = [], aseen = new Set([...clean, ...gems].map(pl => pl.ch[0].c.p.b)), passB = (proChecks(ms, useA) || {pass: 0}).pass;
   for (const pl of res.singles) { const b = pl.ch[0].c.p.b; if (aseen.has(b) || alts.length >= 18) continue;
     const A = pl.prof || teamProfile(pl.team, useA); pl.prof = A; if (pl.gain == null) pl.gain = gains(A, pl);
-    if (A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1 && A.ans >= B.ans - 2 && pl.megaShort <= shortB && strong(pl) && (proChecks(pl.team, useA) || {pass: 0}).pass >= passB) { aseen.add(b); pl.alt = true; alts.push(pl); } }
+    if (A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1 && A.ans >= B.ans - 2 && pl.megaShort <= shortB && strong(pl) && (proChecks(pl.team, useA) || {pass: 0}).pass >= passB
+      && (baseTS == null || pl.team.length !== 6 || (t => t != null && t >= baseTS - TS_GAIN)(tsOK(pl)))) { aseen.add(b); pl.alt = true; alts.push(pl); } }
   // first page: the 6 best clean picks plus 2 hidden gems; then everything else, mixing gems and alternatives in by rating
   const first = clean.slice(0, 6).concat(gems.slice(0, 2));
-  const rest = clean.slice(6).concat(gems.slice(2), alts).sort((x, y) => (rating(y.ch[0].c.p).total + (y.gem ? 6 : 0) + y.gain * 3) - (rating(x.ch[0].c.p).total + (x.gem ? 6 : 0) + x.gain * 3));
+  const rk2 = pl => (pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + (pl.gem ? 6 : 0) + pl.gain * 3;
+  const rest = clean.slice(6).concat(gems.slice(2), alts).sort((x, y) => rk2(y) - rk2(x));
   const val = {B, clean: first, more: rest, soft, basePl: res.basePl, full: res.full};
   recCache = {key, val}; return val;
 }

@@ -42,16 +42,30 @@ let vCache = new Map();
 // the row's top item tells which form it really describes. Returns a score multiplier: 1 = this form, .25 = another form.
 function rowFor(doc, p) {
   if (!doc || !doc.top) return null;
-  const rows = doc.top.filter(t => t.n === p.n || t.n === p.b || (byName.get(t.n) || {}).b === p.b);
+  // the same Pokémon, or its own Mega / its pre-Mega form. Different forms of a species (Indeedee and Indeedee-F, Rotom
+  // forms, Alolan Raichu) are different Pokémon and never share a row.
+  const fam = q => q ? (q.m ? ROSTER.find(f => f.b === q.b && !f.m && f.n === q.b) || ROSTER.find(f => f.b === q.b && !f.m && f.n.startsWith(q.b)) || q : q) : null, fp = fam(p);
+  const rows = doc.top.filter(t => { if (t.n === p.n) return true; const q = byName.get(t.n); return !!q && (q.m || p.m) && fam(q) === fp; });
   let best = null;
-  for (const t of rows) { const rp = byName.get(t.n); if (!rp) continue; const form = megaFormFor(rp, t);
-    const scale = form.n === p.n ? 1 : .25; if (!best || scale > best.scale || (scale === best.scale && t.r < best.t.r)) best = {t, scale}; }
+  for (const t of rows) { const rp = byName.get(t.n); if (!rp) continue;
+    // a species row with no item data (the in-game list) covers the plain form and its Megas together: share it out by how
+    // tournament players split the species, so plain Charizard isn't credited with Mega Charizard's rank
+    const sh = (!t.it || !t.it.length) && !rp.m ? formShare(rp, p) : null;
+    const scale = sh != null ? Math.max(.25, sh) : (megaFormFor(rp, t).n === p.n ? 1 : .25);
+    if (!best || scale > best.scale || (scale === best.scale && t.r < best.t.r)) best = {t, scale}; }
   return best;
 }
+// p's share of its species (plain form + Megas) in tournament teams, or null when the species has no Mega or no data.
+// Regional forms have no Mega of their own, so they're never split with the base form's Megas.
+function formShare(row, p) { if (row.n !== row.b || (p.b !== row.b) || (!p.m && p.n !== p.b)) return null;
+  const fam = ROSTER.filter(f => f.b === row.b && (f.n === row.n || f.m)); if (fam.length < 2) return null;
+  const T = META.doubles_tour, top = T ? [...(T.top || []), ...(T.more || [])] : []; const teams = n => ((top.find(x => x.n === n) || {}).teams) || 0;
+  const tot = fam.reduce((a, f) => a + teams(f.n), 0); return tot > 0 ? teams(p.n) / tot : null; }
 function viability(p) {
   const key = S.format + '|' + p.n; if (vCache.has(key)) return vCache.get(key);
   let v = 0;
-  const rankScore = (r) => Math.max(30, 100 - (r - 1) * 2.3);
+  // top 31 ranks fall from 100 to 31; below that it keeps falling gently (rank 256 ≈ 10) instead of flattening at 30
+  const rankScore = (r) => r <= 31 ? 100 - (r - 1) * 2.3 : Math.max(10, 31 - (r - 31) * 21 / 225);
   const usageScore = (u) => u > 0 ? Math.min(100, 20 + u * 2) : 0;
   if (S.format === 'singles') {
     const d = META.singles; const hit = rowFor(d, p); if (hit) v = Math.max(v, rankScore(hit.t.r) * hit.scale);
@@ -61,7 +75,7 @@ function viability(p) {
     const ig = META.doubles_ingame; const hit = rowFor(ig, p); if (hit) v = Math.max(v, rankScore(hit.t.r) * hit.scale);
     if (ig && ig.more) { const mm = ig.more.find(x => x.n === p.n) || (!p.m && ig.more.find(x => x.n === p.b && !byName.get(p.b + '-Mega'))); if (mm) v = Math.max(v, rankScore(mm.r)); }
     const tour = META.doubles_tour; if (tour && tour.top) { const max = Math.max(...tour.top.map(x => x.teams || 0), 1);
-      const tt = tour.top.find(x => x.n === p.n); if (tt && tt.teams) v = Math.max(v, 30 + 70 * tt.teams / max); }
+      const tt = tour.top.find(x => x.n === p.n) || (tour.more || []).find(x => x.n === p.n); if (tt && tt.teams) v = Math.max(v, 30 + 70 * tt.teams / max); }
     const d = META.doubles; const u = d && d.top ? ((d.top.find(y => y.n === p.n) || {}).u || 0) : (p.u || 0);
     v = Math.max(v, usageScore(u));
   }

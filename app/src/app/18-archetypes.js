@@ -128,7 +128,7 @@ function renderThreats(ms, useA) {
     .filter(r => r.hit.length >= 2 || !r.ans.length).sort((a, b) => b.danger - a.danger).slice(0, 8);
   const allRows = rows.length; if (PHONE() && !ui.threatsAll) rows.length = Math.min(rows.length, 4);
   el.innerHTML = rows.length ? rows.map(r => `<div class="item"><div style="min-width:0"><div class="t1">${esc(r.o.d)} <span class="chips" style="display:inline-flex;vertical-align:middle">${r.o.types.map(t => chip(t)).join('')}</span></div>
-      <div class="t2">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => esc(ms[i].d)).join(', ') : '<span class="no">No clean answer</span>'}${(() => { try { let b = null; ms.forEach(m => { const x = bestHitOn(r.o.p, r.o.moves || [], m.p); if (x && (!b || x.r.max / x.r.hp > b.x.r.max / b.x.r.hp)) b = {x, m}; });
+      <div class="t2">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => esc(ms[i].d)).join(', ') : '<span class="no">No clean answer</span>'}${(() => { try { let b = null; ms.forEach(m => { const x = bestHitOn(r.o.p, r.o.moves || [], m.p, null, m); if (x && (!b || x.r.max / x.r.hp > b.x.r.max / b.x.r.hp)) b = {x, m}; });
         return b ? `<br>Hardest hit: ${esc(b.x.mv.name)} does up to ${Math.round(100 * b.x.r.max / b.x.r.hp)}% to ${esc(b.m.d)}.` : ''; } catch (e) { return ''; } })()}</div></div>
       <span class="pill ${r.ans.length ? (r.hit.length >= 3 ? 'b2' : 'b1') : 'b3'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'Unanswered'}</span></div>`).join('')
     : '<div class="empty-note">No top meta Pokémon hits several of yours super effectively while going unanswered. Nice.</div>';
@@ -184,7 +184,8 @@ function renderTopTeams() {
   $('ttSource').textContent = d ? `${ttSourceText(d.source)}${d.updated ? ' · updated ' + new Date(d.updated).toLocaleDateString([], {month: 'short', day: 'numeric'}) : ''}` : '';
   if (!d || !d.teams.length) { el.innerHTML = '<div class="empty-note">Top teams appear here after the next data refresh.</div>'; return; }
   const sections = [...new Set(d.teams.map(t => t.section))];
-  const mine = members(), mg = mine.length === 6 ? gradeNames(mine.map(m => m.p.n), true) : null;
+  // your own team is graded exactly as the Team page grades it (your moves, abilities and items), so the two never disagree
+  const mine = members(); let mg = null; if (mine.length === 6) { try { mg = proChecks(mine, $('useAbil') ? $('useAbil').checked : true); } catch (e) { mg = gradeNames(mine.map(m => m.p.n), true); } }
   const yours = `<div class="ttyours"><div><div class="lbl">Your team</div><div class="t2">${mine.length === 6 ? esc(mine.map(m => m.d).join(' · ')) : 'Add six Pokémon on the Team page to compare.'}</div></div><div class="ttright">${miniGrades(mg)}${mine.length === 6 ? `<span class="archchips">${archChips(teamPlanLabel(mine.map(m => m.p.n)))}</span>` : ''}</div></div>`;
   ui.ttMore = ui.ttMore || {};
   el.innerHTML = yours + sections.map(sec => { const all = d.teams.map((t, k) => ({t, k})).filter(x => x.t.section === sec), cap = ui.ttMore[sec] ? all.length : 5;

@@ -1,12 +1,19 @@
 // ---------- Types: learn what a typing is strong and weak to ----------
 function renderTypes() {
   const el = $('typesOut'); if (!el) return;
+  const team = members();
+  // Opens on something useful: your first team member, or the most-used Pokémon when the team is empty (until you press Clear)
+  if (!(ui.typesSel || []).length && !ui.typesMon && !ui.typesCleared) { let p0 = team[0] ? team[0].p : null;
+    if (!p0) { try { const r = lairRows(); p0 = r && r[0] ? r[0].p : null; } catch (e) {} }
+    if (p0) { ui.typesMon = p0.n; ui.typesSel = p0.t.slice(); } }
   const sel = ui.typesSel || [];
   $('typePick').innerHTML = TYPES.map(t => `<button type="button" class="typebtn${sel.includes(t) ? ' on' : ''}" data-type="${t}" aria-pressed="${sel.includes(t)}" style="--tc:${TC[t]}">${t}</button>`).join('');
-  const mon = ui.typesMon ? byName.get(ui.typesMon) : null;
-  $('typeMon').innerHTML = mon ? `<span class="t2">Showing <b>${esc(mon.d)}</b> · ability ${esc(metaAbility(mon) || bestAbility(mon))}</span> <button class="btn sm" type="button" data-typesmonx="1">Clear</button>` : '';
+  const mon = ui.typesMon ? byName.get(ui.typesMon) : null, onTeam = mon ? team.find(m => m.p.n === mon.n) : null;
+  // a Pokémon on your team is read with the ability on its card; anyone else with the one most players run
+  const ab = mon ? (onTeam ? onTeam.ability : (metaAbility(mon) || bestAbility(mon))) : null;
+  $('typeMon').innerHTML = mon ? `<span class="t2">Showing <b>${esc(mon.d)}</b> · ability ${esc(ab)}${onTeam ? ' (from your team)' : ''}</span> <button class="btn sm" type="button" data-typesmonx="1">Clear</button>` : '';
+  { const q = $('typeQuick'); if (q) q.innerHTML = team.length ? `<span class="lbl">Your team</span>${team.map(m => `<button type="button" class="ttmon${mon && m.p.n === mon.n ? ' on' : ''}" data-typesmon="${esc(m.p.n)}">${esc(m.d)}</button>`).join('')}` : ''; }
   if (!sel.length) { el.innerHTML = '<div class="empty-note">Pick one or two types above, or look up a Pokémon.</div>'; return; }
-  const ab = mon ? (metaAbility(mon) || bestAbility(mon)) : null;
   const groups = {q: [], d: [], n: [], h: [], qr: [], z: []};
   const abNotes = [];
   for (const atk of TYPES) {

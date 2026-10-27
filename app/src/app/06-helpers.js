@@ -1,6 +1,15 @@
 // ---------- helpers ----------
 function memberOf(s,i){const p=byName.get(s.n);if(!p)return null;const ab=s.a&&p.a.includes(s.a)?s.a:(metaAbility(p)||bestAbility(p));
-  const sm=slotMoves(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom}}
+  const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi}}
+// Held item: a Mega's stone is fixed; otherwise your pick for this format (s.it[format]) or the item most players run.
+function defaultItem(p){try{if(p.m)return stoneFor(p)||'';const t=topItems(p);return t&&t.it[0]?t.it[0][0]:''}catch(e){return ''}}
+function slotItem(s,p){if(p.m)return null;const c=s.it&&s.it[S.format];return c&&typeof c==='string'?c:null}
+// Choice Scarf works against your own Trick Room: under it the faster Pokémon moves last, so the Scarf only makes its holder slower.
+function scarfTrClash(ms){const tr=ms.filter(m=>(m.moves||[]).some(x=>x&&x.name==='Trick Room'));if(!tr.length)return null;
+  const sc=ms.filter(m=>m.item==='Choice Scarf');return sc.length?{tr,sc}:null}
+function clashText(c){const n=a=>a.map(m=>esc(m.d)).join(', ');const self=c.sc.length===1&&c.tr.length===1&&c.sc[0]===c.tr[0];
+  return self?`${n(c.sc)} holds Choice Scarf and sets Trick Room. Once Trick Room is up, the Scarf makes it move later, and it stays locked into Trick Room until it switches. Give it a different item.`
+    :`${n(c.sc)} hold${c.sc.length===1?'s':''} Choice Scarf, but ${n(c.tr)} sets Trick Room. Under Trick Room the slowest moves first, so the Scarf makes ${c.sc.length===1?'it':'them'} move later. Pick a different item, or drop Trick Room.`}
 // The 4 moves a slot runs in the current format: your edits if you made any, else the popular set.
 function slotMoves(s,p){const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name));const c=s.mv&&s.mv[S.format];
   if(c){const names=c.map(x=>learn.has(x)?x:'');if(names.some(Boolean))return {names,moves:names.map(x=>mvByName.get(x)).filter(Boolean),custom:true}}
@@ -41,7 +50,7 @@ function proGrades(ms,useA){const th=metaThreats();if(!ms.length||!th.length)ret
 function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms,useA);const a=analyze(ms,useA),sh=typeShape(a),dbl=S.format==='doubles',out=[];
   const fullMs=ms.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves});
   if(dbl){let gp=null;try{gp=gamePlan(fullMs)}catch(e){}const sp=gp&&gp.rows.find(r=>r.k==='speed')||{};
-    out.push({k:'speed',ok:sp.st==='ok',part:sp.st==='part',label:'Speed control',have:(sp.who||'')+(sp.st==='part'?' (only some sets run it)':''),miss:'Nothing to change turn order: add Tailwind, Trick Room, Icy Wind or Electroweb.',pro:proLine('speed','97% of event winners')});
+    out.push({k:'speed',ok:sp.st==='ok',part:sp.st==='part',label:'Speed control',have:(sp.who||'')+(sp.st==='part'?' (only some sets run it)':''),miss:'No reliable way to change turn order: add Tailwind or Trick Room (or a weather speed core). Icy Wind and Electroweb help, but only as backup.',pro:proLine('speed','97% of event winners')});
     const su=spreadUsers(fullMs);out.push({k:'spread',ok:su>=1,label:'Spread damage',have:su+' Pokémon with moves that hit both foes'+(su===1?' (most teams have 2)':''),miss:'No moves that hit both foes at once.',pro:proLine('spread','97% of event winners')});
     const fi=fullMs.filter(m=>m.ability==='Intimidate'||relMove(m,ROLE.fake)[0]>=.3||relMove(m,ROLE.redir)[0]>=.3).map(m=>m.d);
     out.push({k:'fake',ok:fi.length>0,label:'Lead support',have:fi.join(', ')+' (Fake Out, Intimidate or redirection)',miss:'No Fake Out, Intimidate, Follow Me or Rage Powder to protect your attackers.',pro:proLine('fake','89% of event winners')});
@@ -52,7 +61,7 @@ function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms
   out.push({k:'stack',ok:sh.maxStack<=2,label:'No major weak spot',have:'No attack type hits 3+ more of yours than resist it',miss:worst?`${worst.atk} hits ${worst.w} of yours and only ${worst.r} resist${worst.r===1?'s':''}.`:'',pro:dbl?proLine('stack','91% of event winners'):''});
   const big=a.rows.filter(r=>r.w>=3).map(r=>r.atk);
   out.push({k:'w3',ok:sh.w3<=1,label:'Weak spots spread out',have:big.length?`Only ${big[0]} hits 3+ of yours`:'No type hits 3+ of yours',miss:`${big.join(' and ')} each hit 3+ of yours.`,pro:dbl?proLine('w3','78% of event winners'):''});
-  if(PG){const pc=Math.round(PG.se2*100);out.push({k:'reach',ok:PG.se2>=.6,part:PG.se2>=.55,label:'Pressure on the meta',have:`2+ of yours hit ${pc}% of the top 30 super effectively`,miss:`2+ of yours hit only ${pc}% of the top 30 super effectively (winners usually 55%+).`,pro:dbl?proLine('reach','94% of event winners'):''})}
+  if(PG){const pc=Math.round(PG.se2*100);out.push({k:'reach',ok:PG.se2>=.6,part:PG.se2>=.55,label:'Pressure on the meta',have:`2+ of yours hit ${pc}% of the top 30 super effectively`,miss:`2+ of yours hit only ${pc}% of the top 30 super effectively${ckWin.se2med!=null?` (recent event winners: ${Math.round(ckWin.se2med*100)}% at the median)`:''}.`,pro:dbl?proLine('reach','94% of event winners'):''})}
   out.forEach(x=>{if(x.part&&!x.ok){x.ok=true;x.soft=true}});const cnt=out.filter(x=>!x.skip);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
 const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
 function teamRating(slots){const ms=slots.map(memberOf).filter(Boolean);return {ms,a:analyze(ms,true)}}
@@ -61,16 +70,34 @@ function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTime
 // How often recent event winners pass each check, measured live from the Events data (each winner's real team and moves),
 // so the claims under the checklist stay true as the meta moves. Computed in small idle chunks after the data loads.
 let ckWin={key:null,rates:null,two:null,busy:false,wmed:null};
-function proLine(k,fb){const r=ckWin.rates&&ckWin.rates[k];if(!r||r[1]<20)return fb;
+// Before the live rates are measured (or with too few winners), no number is shown: never a stale hard-coded one.
+function proLine(k,fb){const r=ckWin.rates&&ckWin.rates[k];if(!r||r[1]<20)return 'most recent event winners';
   return `${Math.round(100*r[0]/r[1])}% of ${r[1]} recent event winners${k==='mega'&&ckWin.two!=null?` (${Math.round(100*ckWin.two/r[1])}% bring 2)`:''}`}
-function ckWinRefresh(){const E=META.events;if(!E||S.format!=='doubles')return;const key=E.updated+'|'+E.events.length;if(ckWin.key===key||ckWin.busy)return;
+// Team Score's track record, measured live: inside each recent event's top cut, take every pair of teams that finished in
+// different places and check whether the one with the higher Team Score finished higher. 50% would mean no better than a
+// coin flip. Computed in small idle chunks; refreshed whenever the events, the model or the meta data change.
+let tsTrack={key:null,busy:false,res:null};
+function trackRefresh(){const E=META.events;if(!E||S.format!=='doubles'||!modelOK())return;const key=E.updated+'|'+E.events.length+'|'+metaVersion;if(tsTrack.key===key||tsTrack.busy)return;
+  tsTrack.busy=true;const evs=E.events.slice();let i=0,agree=0,pairs=0,nev=0;
+  const mk=t=>t.mons.map(m=>{const p=byName.get(m.n);const mv=(m.mv||[]).map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}});
+  const step=()=>{const t0=Date.now();try{while(i<evs.length&&Date.now()-t0<15){const ev=evs[i++];
+      const sc=(ev.top||[]).filter(t=>t&&t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n))).map(t=>({pl:t.place,s:tsOf(mk(t))})).filter(x=>x.s!=null);if(sc.length>=2)nev++;
+      for(let a=0;a<sc.length;a++)for(let b=a+1;b<sc.length;b++){const A=sc[a],B=sc[b];if(A.pl===B.pl||A.s===B.s)continue;pairs++;if((A.s>B.s)===(A.pl<B.pl))agree++}}}
+    catch(e){tsTrack.busy=false;return}
+    if(i<evs.length){setTimeout(step,30);return}
+    tsTrack={key,busy:false,res:pairs>=200?{acc:agree/pairs,pairs,events:nev}:null};safe('track record',()=>render())};
+  setTimeout(step,1200)}
+// one plain sentence for the track record, or '' before it's measured
+function trackLine(){const r=tsTrack.res;if(!r)return '';return `Track record: in ${r.events} recent events, the team with the higher Team Score finished higher in ${Math.round(r.acc*100)}% of ${r.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip).`}
+function ckWinRefresh(){const E=META.events;if(!E||S.format!=='doubles')return;const key=E.updated+'|'+E.events.length+'|'+metaVersion+'|'+megaGoal()+'|'+modelOK();if(ckWin.key===key||ckWin.busy)return;
   const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
-  ckWin.busy=true;const acc={},wts=[];let i=0,two=0,n=0;
+  ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0;
   const step=()=>{const t0=Date.now();try{while(i<list.length&&Date.now()-t0<12){const t=list[i++];
-      const ms=t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,mega:p.m,base:p.b,types:p.t}});
+      // each winner read with its own moves and held item, as registered
+      const ms=t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}});
       if(typeof tsOf==='function'){const t=tsOf(ms);if(t!=null)wts.push(t)}
-      const CK=proChecks(ms,true);if(!CK)continue;n++;for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
+      const CK=proChecks(ms,true);if(!CK)continue;n++;if(CK.PG&&isFinite(CK.PG.se2))se2s.push(CK.PG.se2);for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
     catch(e){ckWin.busy=false;return}
     if(i<list.length){setTimeout(step,30);return}
-    wts.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null};safe('checklist claims',()=>render())};
+    wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};safe('checklist claims',()=>render())};
   setTimeout(step,400)}

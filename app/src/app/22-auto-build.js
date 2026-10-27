@@ -35,12 +35,18 @@ function provenBuild(fmt, avoid) {
   if (!cands.length) return null;
   const fill = c => { const keep = c.ps.filter(p => p !== c.missing).map(abMember); if (!c.missing) return keep;
     const used = new Set(keep.map(m => m.p.b)), mg = keep.filter(m => m.p.m).length;
-    let best = null, bs = -1e9;
-    for (const p of ROSTER) { if (!ok(p) || isTrap(p) || used.has(p.b) || (p.m && mg >= 2) || viability(p) < 8) continue; const t = [...keep, abMember(p)]; const sc = abScore(t); if (sc > bs) { bs = sc; best = t; } }
-    return best; };
-  const scored = cands.map(c => ({...c, s: c.wr + .006 * Math.log2(1 + c.n) - (c.missing ? .05 : 0) - (c.ps.filter(p => p.m).length !== goal ? .015 : 0)})).sort((a, b) => b.s - a.s);
+    const opts = [];
+    for (const p of ROSTER) { if (!ok(p) || isTrap(p) || used.has(p.b) || (p.m && mg >= 2) || viability(p) < 8) continue; const t = [...keep, abMember(p)]; opts.push({t, sc: abScore(t)}); }
+    opts.sort((a, b) => b.sc - a.sc); if (!opts.length) return null;
+    // the gap goes to whichever of the 8 best fits gives the highest Team Score
+    if (useTSPick()) { let best = null; for (const o of opts.slice(0, 8)) { const ts = tsOf(o.t); if (ts != null && (!best || ts > best.ts)) best = {t: o.t, ts}; } if (best) return best.t; }
+    return opts[0].t; };
+  let scored = cands.map(c => ({...c, s: c.wr + .006 * Math.log2(1 + c.n) - (c.missing ? .05 : 0) - (c.ps.filter(p => p.m).length !== goal ? .015 : 0)})).sort((a, b) => b.s - a.s);
+  // Team Score decides the order (win model loaded): the 15 best-proven lists, highest Team Score first
+  if (useTSPick()) { scored = scored.slice(0, 15); for (const c of scored) { c.t = fill(c); c.ts = c.t && c.t.length === 6 ? tsOf(c.t) : null; }
+    scored.sort((a, b) => (b.ts ?? -1) - (a.ts ?? -1) || b.s - a.s); }
   const out = [];
-  for (const c of scored) { if (out.length >= 3) break; const t = fill(c); if (!t || t.length !== 6) continue;
+  for (const c of scored) { if (out.length >= 3) break; const t = c.t !== undefined ? c.t : fill(c); if (!t || t.length !== 6) continue;
     if (out.some(o => o.t.filter(m => t.some(x => x.p.b === m.p.b)).length > 3)) continue; out.push({t, c}); }
   if (!out.length) return null;
   return {fmt, teams: out.map(({t, c}) => { const d = abDescribe(t, fmt);
@@ -83,7 +89,14 @@ function buildBest(fmt, avoid) {
     const polish = (t, lock) => { let best = t, bs = abScore(t);
       for (let i = lock; i < 6; i++) for (const c of cand) { const rest = best.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const s = abScore(nt); if (s > bs + 1) { best = nt; bs = s; } }
       return {t: best, s: bs}; };
-    const ranked = finals.map(f => ({...f, s: abScore(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12).map(x => polish(x.t, x.lock)).sort((a, b) => b.s - a.s);
+    let ranked = finals.map(f => ({...f, s: abScore(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12).map(x => ({...polish(x.t, x.lock), lock: x.lock})).sort((a, b) => b.s - a.s);
+    // Team Score decides the order (doubles, win model loaded): the search above only shortlists. Each shortlisted team then
+    // gets one round of Team Score polish: the single swap (outside its seed core) that raises its Team Score most.
+    if (useTSPick()) { const cTS = cand.slice(0, 25);
+      for (const r of ranked) { r.ts = tsOf(r.t); if (r.ts == null) continue;
+        let best = null; for (let i = r.lock; i < 6; i++) for (const c of cTS) { const rest = r.t.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const t = tsOf(nt); if (t != null && t > (best ? best.ts : r.ts + 1)) best = {t: nt, ts: t}; }
+        if (best) { r.t = best.t; r.ts = best.ts; } }
+      ranked.sort((a, b) => (b.ts ?? -1) - (a.ts ?? -1) || b.s - a.s); }
     // three different teams: each must differ from the ones kept by at least 3 Pokémon
     const out = [];
     for (const r of ranked) { if (megaCount(r.t) !== goal) continue; if (out.some(o => o.t.filter(m => r.t.some(x => x.p.b === m.p.b)).length > 3)) continue; out.push(r); if (out.length >= 3) break; }

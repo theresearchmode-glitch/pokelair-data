@@ -15,12 +15,15 @@ function headToHead(mine, theirs, useA) {
   const thEn = theirs.map(o => attackEntries({...o, ability: useA ? o.ability : null}, o.moves.some(isCoverage) ? o.moves : [], thCtx));
   const off = mine.map((m, i) => theirs.map(o => bestHit(myEn[i], o.types, useA ? o.ability : null)));
   const def = mine.map(m => theirs.map((o, j) => bestHit(thEn[j], m.types, useA ? m.ability : null)));
+  // under your own Trick Room the slower Pokémon moves first; a Choice Scarf (yours as chosen, theirs as usually run) is 1.5× Speed
+  const myTR = mine.some(m => (memberMoves(m).moves || []).some(x => x && x.name === 'Trick Room'));
+  const spdOf = (p, mem) => { const s = likelySpeed(p); const scarf = mem ? mem.item === 'Choice Scarf' : s.scarf; return Math.floor(s.v * (scarf ? 1.5 : 1)); };
   const M = mine.map((m, i) => theirs.map((o, j) => {
     let v = fScore(off[i][j] ? off[i][j].x : 1) - fScore(def[i][j] ? def[i][j].x : 1);
-    try { const dO = bestHitOn(m.p, memberMoves(m).moves, o.p), dD = bestHitOn(o.p, o.moves || [], m.p);
+    try { const dO = bestHitOn(m.p, memberMoves(m).moves, o.p, m, null), dD = bestHitOn(o.p, o.moves || [], m.p, null, m);
       const ds = b => { if (!b) return -1; const p = b.r.max / b.r.hp; return p >= 1 ? 2 : p >= .5 ? 1 : p >= .3 ? 0 : -1; };
       v = (v + ds(dO) - ds(dD)) / 2;
-      const sm = likelySpeed(m.p).v, so = likelySpeed(o.p).v; v += sm > so ? .25 : sm < so ? -.25 : 0;
+      const sm = spdOf(m.p, m), so = spdOf(o.p, null), first = myTR ? sm < so : sm > so, second = myTR ? sm > so : sm < so; v += first ? .25 : second ? -.25 : 0;
     } catch (e) { if (m.p.sp != null && o.p.sp != null) v += m.p.sp > o.p.sp + 10 ? .25 : m.p.sp + 10 < o.p.sp ? -.25 : 0; }
     return v; }));
   return {off, def, M};
@@ -30,7 +33,7 @@ const combos = (n, k) => { const out = []; const rec = (s, a) => { if (a.length 
 function planMatchup(mine, theirs, useA) {
   const dbl = S.format === 'doubles', bring = Math.min(dbl ? 4 : 3, mine.length);
   const h = headToHead(mine, theirs, useA);
-  const roles = mine.map(m => { const r = teamRoles([m]); return {speed: r.speed.length > 0, fake: r.fake.length > 0 || r.redirect.length > 0,
+  const roles = mine.map(m => { const r = teamRoles([m]); return {speed: r.speed.length > 0, fake: r.fake.length > 0 || r.redirect.length > 0 || m.ability === 'Intimidate',
     tr: relMove(m, ROLE.tr)[0] >= .5, tw: relMove(m, ROLE.tw)[0] >= .5, anti: relMove(m, ROLE.anti)[0] >= .4, ghost: (m.types || m.p.t).includes('Ghost'), chop: relMove(m, ['Throat Chop', 'Taunt'])[0] >= .3, prio: relMove(m, ROLE.prio)[0] >= .5}; });
   // archetypes: what they plan, and which of your field setters each of your Pokémon depends on
   const A = dbl ? teamArchetype(mine) : null, B = dbl ? teamArchetype(theirs) : null;
