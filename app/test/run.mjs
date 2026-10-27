@@ -126,7 +126,7 @@ for (const width of [1280, 390]) {
       gamed: sc(['Sinistcha', 'Camerupt-Mega', 'Venusaur-Mega', 'Archaludon', 'Hydreigon', 'Basculegion-F']), dup: sc(['Annihilape', 'Annihilape', 'Sinistcha', 'Milotic', 'Rillaboom', 'Kingambit']),
       megaStack: sc(four) <= Math.max(sc(two), sc(['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Kingambit', 'Incineroar'])) + 15 }; });
   ok(r.center && r.dist && r.calib > .7 && r.calib < 1.3, `model: centered builds, real-team spread, calibration ${r.calib}`);
-  ok(r.med >= 55, `validity: recent event winners score above an average team (median ${r.med} of ${r.n})`);
+  ok(r.med >= 55, `validity: recent event winners score above an average team (median ${r.med} of ${r.n}, popular sets)`);
   ok(r.best < 100, `can't be gamed: a hill-climbed six tops out at ${r.best}, below 100`);
   ok(r.gamed != null && r.gamed < 90, `the old 100-point six now scores ${r.gamed}`);
   ok(r.dup === null, 'duplicate species: no score');
