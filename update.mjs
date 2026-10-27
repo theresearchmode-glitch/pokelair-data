@@ -114,8 +114,6 @@ console.log(`teams ${E.length}, games ${G}, pokemon ${mon.size}, pairs ${Object.
 const V2 = Object.keys(index.tournaments).map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T ? {id, ...T} : null; }).filter(Boolean)
   .sort((a, b) => new Date(a.d) - new Date(b.d));
 const nameOf = m => lmap(key({name: m.n, item: m.i}));
-// 0) top-cut evidence for the ratings (who reaches top cut, conversion, win rate), into results.tc
-{ const tc = topcut(V2, nameOf); if (tc) { out.results.tc = tc; fs.writeFileSync('out/limitless.json', JSON.stringify(out)); console.log(`topcut: ${Object.keys(tc.rows).length} Pokémon from ${tc.events} events`); } }
 const pct = (c, n, k) => [...c].sort((a, b) => b[1] - a[1]).slice(0, k).map(([x, v]) => [x, Math.round(1000 * v / n) / 10]);
 const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() : Date.now();
 // 1) sets from real team sheets, last 28 days (sets drift; usage and win rates above use every event)
@@ -162,3 +160,8 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
     for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B) continue; const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
   fs.writeFileSync('out/matches.json', JSON.stringify({updated: new Date().toISOString(), events: V2.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}));
   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
+// 5) top-cut evidence for the ratings (top-cut share, conversion, win rate, rating-weighted usage, bring/lead rates
+// from replays), into results.tc of out/limitless.json. Runs last so it reads today's matches.json.
+{ const R = readJSON('out/replays.json', null), REP = Array.isArray(R) ? R : R ? (Object.values(R).find(Array.isArray) || []) : [];
+  const tc = topcut(V2, nameOf, readJSON('out/matches.json', null), REP);
+  if (tc) { out.results.tc = tc; fs.writeFileSync('out/limitless.json', JSON.stringify(out)); console.log(`topcut: ${Object.keys(tc.rows).length} Pokémon from ${tc.events} events`); } }
