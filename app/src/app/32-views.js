@@ -43,6 +43,7 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   {const mb=$('moreBtn');if(mb)mb.classList.toggle('on',!MAIN_VIEWS.includes(VIEW_PARENT[v]||v))}
   sideOpen(false);
   requestAnimationFrame(()=>document.querySelectorAll('.subnav').forEach(n=>{if(n.offsetParent===null)return;n.classList.toggle('ovf',n.scrollWidth>n.clientWidth+2);const on=n.querySelector('[aria-selected="true"]');if(on&&n.scrollWidth>n.clientWidth){const l=on.offsetLeft-n.offsetLeft-(n.clientWidth-on.offsetWidth)/2;n.scrollLeft=Math.max(0,l)}}));
+  if(typeof track==='function')track('view:'+v);
   if(v==='build'&&ui.plansStale){ui.plansStale=false;render()}
   if(v==='home')safe('home',renderHome);
   if(v==='types')renderTypeChart();

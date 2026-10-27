@@ -1,7 +1,8 @@
 name: Test NastyPlot page
 on:
   push:
-    paths: ['app/**']
+    # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
+    paths: ['app/**', 'out/**', 'model.mjs', 'replays.mjs', 'experiments/replays-test.mjs', '.github/workflows/test.yml']
   workflow_dispatch:
 # Changes land as a few commits in a row; only the newest one is tested. An older run still going is cancelled
 # (cancelled runs send no failure email), so a half-uploaded change can't trigger a false alarm.
@@ -21,6 +22,7 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium
       - run: node app/test/run.mjs
+      - run: node experiments/replays-test.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: page

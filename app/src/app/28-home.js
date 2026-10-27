@@ -62,6 +62,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
   <div class="hsec hlog"><div class="hsh"><h3>Your battles</h3><button type="button" class="hlink" data-view="matchup">Battle log ›</button></div>
     ${ls ? `<div class="hlogs"><div><b>${ls.w}–${ls.l}</b><span>${ls.pct}% wins</span></div><div><b>${ls.n}</b><span>logged</span></div><div class="hdots">${L.slice(-10).map(e => `<i class="${e.r === 'W' ? 'w' : 'l'}" title="${e.r === 'W' ? 'Win' : 'Loss'}"></i>`).join('')}</div></div>`
       : '<div class="hempty"><p class="t2">Log your games after each match and your record shows up here.</p><button type="button" class="btn sm" data-view="matchup">Log a game</button></div>'}</div>
+  ${ui.usageOwner ? `<details class="hsec usebox" id="usageBox"><summary><b>What people use</b> <span class="vsub">only you see this</span></summary><div id="usageOut"></div></details>` : ''}
   <p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings blend Limitless, official VGC events, in-game ranked and Showdown.</p>`; }
 
 

@@ -1922,4 +1922,8 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 :root[data-look="dark"] .sev.hi{color:#2a0508}
 :root[data-look="dark"] .tag.evoff{filter:brightness(.8)}
 .tsbar em{color:var(--mute)}
-.btn.logwin,.btn.logloss{filter:saturate(1.1) brightness(.88)}
+.btn.logwin,.btn.logloss{filter:saturate(1.1) brightness(.88)}/* owner-only usage report */
+.usebox summary{cursor:pointer;list-style:revert;padding:4px 0}
+.usetab{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.usetab th,.usetab td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;text-transform:none!important;letter-spacing:0!important;font-family:var(--body)!important;background:none!important}
+.usetab td:nth-child(n+2),.usetab th:nth-child(n+2){text-align:right;width:70px}
