@@ -80,35 +80,31 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
   return `Trained on ${(m.games||0).toLocaleString('en-US')} real games with player skill taken out. ${m.sets&&Object.keys(m.sets).length?'It reads items and moves too. ':''}On ${e.test_games.toLocaleString('en-US')} held-out games it called ${(t.acc*100).toFixed(1)}% of winners (raw win rates: ${(r.acc*100).toFixed(1)}%).`}
 
 
-// Team Score of any six members (plans, additions, builds), from the same model as the Team page
-function tsOf(team){if(!team||team.length!==6)return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?teamScore({wv}).score:null}catch(e){return null}}
-// What's behind a Team Score: for each member, how many points the score would lose (or gain) if that Pokémon were an
-// average tournament pick instead (its own strength and set, plus half of each pairing it's in), with the same untried-mix
-// and checklist cuts the score uses. Plus the points those cuts take off. The members don't add up to the score exactly:
-// the score is a rank among real teams, so points near the top are harder to earn than in the middle.
-function tsBreakdown(ms){if(!modelOK()||!ms||ms.length!==6)return null;const M=META.model,names=ms.map(m=>m.p.n),mx=M.meanX||0;
-  const wv=winVsField(names,true,ms);if(!wv)return null;const ts=teamScore({wv}),S0=strengthX(names,ms),avg=mx/6;
-  const megas=names.filter(n=>{const p=byName.get(n);return p&&p.m}),val=n=>(M.mons[n]||0)+setOne(ms[names.indexOf(n)]);
-  const capped=new Set(megas.sort((a,b)=>val(b)-val(a)).slice(2));
-  const pc=n=>{let s=0;for(const o of names)if(o!==n){const k=n<o?n+'|'+o:o+'|'+n;s+=(M.pairs[k]||0)/2}return s};
-  const pctOf=x0=>{const d=x0-mx,x=mx+(d>0?d*S0.cr*S0.sc.c:d),p=strengthPct(x);return p==null?null:Math.max(0,Math.min(100,Math.floor(p)))};
-  const rows=ms.map((m,i)=>{const n=names[i],c=(capped.has(n)?0:val(n))+pc(n),alt=pctOf(S0.x0-(c-avg));return {m,d:alt==null?0:ts.score-alt}});
-  return {score:ts.score,rows,cut:ts.cut,miss:S0.sc.miss,untried:S0.cr<1,tested:testedPairs(names),illegal:ts.illegal||null}}
-// Quick model strength for shortlisting: the same number as strengthX without the checklist cut (the slow part).
-function xQuick(team){if(!modelOK()||!team||team.length!==6)return -Infinity;const names=team.map(m=>m.p.n),mx=META.model.meanX||0,x=teamX(names,team),d=x-mx;return mx+(d>0?d*mixCredit(names):d)}
-// Which plans get a full Team Score check: the first n in the order given (the planner's own ranking) plus the n the win
-// model rates strongest, so a change the model likes is never missed just because the planner's type rules ranked it low.
-function tsShortlist(pls,n){const out=new Set(pls.slice(0,n));if(!modelOK())return [...out];
-  for(const pl of pls)if(pl._xq===undefined)pl._xq=xQuick(pl.team);
-  let k=0;for(const pl of pls.filter(pl=>pl._xq>-Infinity).sort((x,y)=>y._xq-x._xq)){if(k>=n)break;if(!out.has(pl)){out.add(pl);k++}}return [...out]}
-// Fix plans, Best additions and Build for me choose by Team Score when the win model is loaded (off-meta searches keep their own picks).
-function useTSPick(){return !OFFMETA&&modelOK()}
-// What "improves the team" means everywhere (Fix plans, Quick add, Best additions): the Team Score rises by at least this much
+// ---- team preparation: what every suggestion, build and saved team is judged by (Oct 28) ----
+// The win model above stays loaded in the background (research, and the Sleepers same-players test), but it no longer
+// scores or ranks teams: predicting who wins from six Pokémon, knowing nothing about the players, isn't something the data
+// supports (held-out: the model told top 8 from the rest only 59% of the time, 50% at regionals). Teams are judged by facts
+// instead: the share of the top-30 threats they're ready for (55-threats.js), and 0 when the Item Clause makes them illegal.
+// tsOf keeps its old name so every caller (Fix plans, Quick add, Best additions, Build for me, saved teams) switches at once.
+function tsOf(team){if(!team||team.length!==6)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;
+  if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=THR.teamReport(ms);return r?r.score:null}catch(e){return null}}
+// the full report for any six (or fewer), with the items each member would really hold
+function prepOf(team){if(!team||!team.length)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;return THR.teamReport(ms)}catch(e){return null}}
+// Which plans get a full readiness check: the planner's own best n (the readiness check is the slow part)
+function tsShortlist(pls,n){return pls.slice(0,n)}
+// Fix plans, Best additions and Build for me choose by readiness (off-meta searches keep their own picks)
+function useTSPick(){return !OFFMETA}
+// What "improves the team" means everywhere (Fix plans, Quick add, Best additions): ready for at least this many more points
 var TS_GAIN=2;
-// a plan's Team Score, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
+// a plan's readiness, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
 function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
-// Team Score and win chance of any six, for chips that show both (the rank moves much more than the win chance)
-function tsInfo(team){if(!team||team.length!==6)return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?{score:teamScore({wv}).score,p:wv.p}:null}catch(e){return null}}
-function tsTitle(base,t){return `Team Score ${base.score} → ${t.score}; win chance against an average team ${(base.p*100).toFixed(1)}% → ${(t.p*100).toFixed(1)}%`}
-function tsChip(team){const base=ui.vsum&&ui.vsum.TS;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
-  return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">Team Score ${d>0?'+':d<0?'−':'±'}${Math.abs(d)}</span>`}
+function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
+function tsTitle(base,t){return `Ready for ${base.score}% → ${t.score}% of the top 30 threats (weighted by how often each makes top cut)`}
+function tsChip(team){const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
+  return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">Ready ${d>0?'+':d<0?'−':'±'}${Math.abs(d)}%</span>`}
+// What a change does to the team's preparation, threat by threat, in plain words: [{up, html}] (best gains first, then losses)
+function threatDiff(baseTeam,team,max=3){const A=prepOf(baseTeam),B=prepOf(team);if(!A||!B||A.rows.length!==B.rows.length)return [];
+  const up=[],dn=[];A.rows.forEach((ra,j)=>{const rb=B.rows[j];if(!rb||ra.t.n!==rb.t.n)return;
+    if(rb.level>ra.level)up.push({w:ra.t.w,html:`<b>Covers ${esc(rb.t.d)}</b>: ${ra.label} → ${rb.label} (${esc(THR.evidence(rb))})`});
+    else if(rb.level<ra.level)dn.push({w:ra.t.w,html:`<span class="warnline">Loses ${esc(rb.t.d)}</span>: ${ra.label} → ${rb.label}`})});
+  up.sort((x,y)=>y.w-x.w);dn.sort((x,y)=>y.w-x.w);return [...up.slice(0,max).map(x=>({up:true,html:x.html})),...dn.slice(0,max).map(x=>({up:false,html:x.html}))]}

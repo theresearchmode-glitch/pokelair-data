@@ -18,11 +18,15 @@ const W_TYPE = {sun: 'Fire', rain: 'Water', sand: 'Rock', snow: 'Ice'};
 // How reliably m uses one of these moves: 1 if you picked it, else the share of players who run it.
 let relCache = new Map();
 function relMove(m, names) {
-  if (!m.custom) { const k = m.p.n + '|' + names[0] + '|' + names.length; let r = relCache.get(k); if (!r) { r = relMove_(m, names); relCache.set(k, r); } return r; }
+  if (!m.custom && !(m._mv && m._mv.length) && !(m.moves && m.moves.length)) { const k = m.p.n + '|' + names[0] + '|' + names.length; let r = relCache.get(k); if (!r) { r = relMove_(m, names); relCache.set(k, r); } return r; }
   return relMove_(m, names);
 }
 function relMove_(m, names) {
-  if (m.custom) { const x = (m.moves || []).find(y => names.includes(y.name)); return x ? [1, x.name] : [0, null]; }
+  // judged on the member's actual set: your moves, or the 4 on its card (the popular set) when you haven't changed them.
+  // (Before Oct 28, unedited members counted the share of players running each move, so two Pokémon that each run Tailwind
+  // 45% of the time could pass speed control together.)
+  const own = m._mv && m._mv.length ? m._mv : m.moves && m.moves.length ? m.moves : null;
+  if (m.custom || own) { const x = (own || m.moves || []).find(y => y && names.includes(y.name)); return x ? [1, x.name] : [0, null]; }
   let best = [0, null];
   for (const [n, v] of setFor(m.p).mv) if (names.includes(n)) { const r = v == null ? .6 : v / 100; if (r > best[0]) best = [r, n]; }
   if (!best[1] && !setFor(m.p).mv.length) { const x = popularMoves(m.p).slice(0, 4).find(y => names.includes(y.name)); if (x) best = [.5, x.name]; }
@@ -82,6 +86,12 @@ function gamePlan(team) {
     pen += ab.length ? -8 : 10; }
   else if (needs.length) { rows.push({k: 'weather', label: 'Weather', st: 'miss', who: '', note: `${team.filter(m => ARCH[needs[0]].abAb.includes(m.ability)).map(m => m.d).join(', ')} needs ${ARCH[needs[0]].name.toLowerCase()}, and nothing sets it.`}); pen += 22; }
   else { rows.push({k: 'weather', label: 'Weather', st: 'opt', who: '', note: 'None. Opposing sun or rain will control the field.'}); pen += 5; }
+  // moves that need a weather the team doesn't set: Solar Beam / Solar Blade (two turns without sun), Electro Shot (two turns
+  // without rain), Weather Ball (a 50-power Normal move with no weather), Hurricane / Thunder (70% accurate outside rain),
+  // Blizzard (70% outside snow)
+  { const NEED = {'Solar Beam': ['sun', 'takes two turns without sun'], 'Solar Blade': ['sun', 'takes two turns without sun'], 'Electro Shot': ['rain', 'takes two turns without rain'], 'Weather Ball': ['any', 'is a 50-power Normal move without weather'], Hurricane: ['rain', 'is only 70% accurate without rain'], Thunder: ['rain', 'is only 70% accurate without rain'], Blizzard: ['snow', 'is only 70% accurate without snow']};
+    const bad = []; for (const m of team) for (const mv of (m._mv && m._mv.length ? m._mv : m.moves || [])) { const nd = mv && NEED[mv.name]; if (!nd) continue; const ok = nd[0] === 'any' ? kinds.length > 0 : kinds.includes(nd[0]) || (nd[0] === 'sun' && m.ability === 'Mega Sol'); if (!ok) bad.push(`${m.d}'s ${mv.name} ${nd[1]}`); }
+    if (bad.length) { const r = rows.find(x => x.k === 'weather'); const txt = bad.join('; ') + ', and nothing on the team sets it.'; if (r) { r.note = (r.note ? r.note + ' ' : '') + txt; if (r.st === 'ok' || r.st === 'opt') r.st = 'part'; } pen += 6 * bad.length; } }
   // terrain (Reg M-C): one setter with users is field control; two terrains overwrite each other
   { const ts = team.filter(m => TERRAIN_OF[m.ability]).map(m => ({m, t: TERRAIN_OF[m.ability]})), tk = [...new Set(ts.map(x => x.t))];
     // seeds judged on the item each member actually holds (your pick, or its team-aware default), against what the team sets

@@ -1855,7 +1855,7 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .tsbbar i.up{left:50%;background:var(--good)}.tsbbar i.dn{right:50%;background:var(--bad)}
 .tsbr b{text-align:right;font:700 13px var(--mono)}.tsbr b.up{color:var(--good)}.tsbr b.dn{color:var(--bad)}
 .tsbcut{margin-top:8px!important}.tsbcut b{color:var(--bad)}
-/* home: newest winner and your Team Score next to the hero text on desktop */
+/* home: newest winner and your team's readiness next to the hero text on desktop */
 .hhside{display:none}
 @media (min-width:1001px){
   .hhero{display:grid;grid-template-columns:minmax(0,1fr) 330px;column-gap:28px;align-items:start}
@@ -1967,3 +1967,35 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 @media (min-width:800px){.wnew ul{grid-template-columns:1fr 1fr;column-gap:20px}}
 .wnew li{font-size:14px;line-height:1.4}
 .wnew li span{color:var(--mute)}
+
+/* scouting report (Oct 28): readiness header chips + threat preparation card at the top of the report */
+.report{grid-template-areas:"thr thr" "chk chk" "def plan" "off plan"}
+#thrCard{grid-area:thr}
+@media (max-width:760px){.report{grid-template-areas:"thr" "chk" "def" "off" "plan"}}
+.rchips{display:flex;flex-wrap:wrap;gap:8px}
+.rchip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:13px;color:var(--mute)}
+.rchip b{color:var(--ink);font-size:15px}
+.rchip.ok b{color:var(--good)}.rchip.bad b{color:var(--bad)}
+.thrcard .v{font-size:20px}
+.thrg{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.thrg>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;font-weight:700}
+.thrg>summary::-webkit-details-marker{display:none}
+.thrg>summary::before{content:"▸";color:var(--mute)}.thrg[open]>summary::before{content:"▾"}
+.thrl{font-weight:800;font-size:14px}
+.thrl.l0{color:var(--bad)}.thrl.l1{color:var(--warn)}.thrl.l2{color:var(--good)}.thrl.l3{color:var(--good)}
+.thrrow{margin:6px 0 0 4px;border-radius:10px;background:var(--card2);border:1px solid var(--line)}
+.thrrow>summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:auto minmax(110px,170px) 1fr;gap:4px 10px;align-items:center;padding:6px 10px}
+.thrrow>summary::-webkit-details-marker{display:none}
+.thrrow .thrn{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.thrrow .thrn b{font-size:14px}
+.thre{font-size:13px;color:var(--mute);min-width:0}
+.thrd{margin:4px 12px 6px 30px;padding:0;font-size:13px;line-height:1.45}
+.thrd li{margin:3px 0}.thrd li.ok::marker{content:"✓  ";color:var(--good)}.thrd li.part::marker{content:"~  ";color:var(--warn)}.thrd li.no::marker{content:"✗  ";color:var(--bad)}
+.thrrow>.t2{margin:0 12px 8px 30px}
+@media (max-width:520px){.thrrow>summary{grid-template-columns:auto 1fr}.thrrow .thre{grid-column:1/-1}.thrd{margin-left:16px}.thrrow>.t2{margin-left:16px}}
+.megapick{margin-top:6px}.megapick .linkbtn[aria-pressed="true"]{font-weight:800;text-decoration:underline}
+.prepgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-top:6px}
+.prepcell{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:13px}
+.prepcell b{display:block;font-size:13px}
+.prepcell .lv{font-weight:800}.prepcell .lv.l0{color:var(--bad)}.prepcell .lv.l1{color:var(--warn)}.prepcell .lv.l2,.prepcell .lv.l3{color:var(--good)}
+.report{grid-template-rows:auto auto auto 1fr}@media (max-width:760px){.report{grid-template-rows:none}}

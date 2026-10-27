@@ -18,6 +18,10 @@ function slotMoves(s,p){const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name))
   if(c){const names=c.map(x=>learn.has(x)?x:'');if(names.some(Boolean))return {names,moves:names.map(x=>mvByName.get(x)).filter(Boolean),custom:true}}
   const pm=popularMoves(p).slice(0,4);const names=pm.map(m=>m.name);while(names.length<4)names.push('');return {names,moves:pm,custom:false}}
 const members=()=>{const ms=S.slots.map(memberOf).filter(Boolean);return typeof assignItems==='function'?assignItems(ms):ms};
+// The team as it can actually play for the type chart: only one Mega Evolves per battle, so with 2+ Megas every Mega but the
+// chosen one (ui.megaPick, else the first) is read in its base form (types and ability). Moves and items stay.
+function playForm(ms){const megas=(ms||[]).filter(m=>m&&m.p&&m.p.m);if(megas.length<2)return ms;const keep=megas.find(m=>m.p.n===ui.megaPick)||megas[0];
+  return ms.map(m=>{if(!m||!m.p||!m.p.m||m===keep)return m;const b=byName.get(m.p.b);if(!b)return m;const ab=b.a.includes(m.ability)?m.ability:(metaAbility(b)||bestAbility(b));return {...m,types:b.t,ability:ab,d:b.d,mega:false,_base:true}})}
 // Item Clause (VGC): no two Pokémon may hold the same item. The Team Score (strengthX) reads the team through this: items
 // you picked stay as you picked them (two of the same makes the team illegal, see itemClause); a member on its default
 // (most-used) item takes the most-used item nobody else on the team holds. Mega Stones are fixed.
@@ -72,7 +76,7 @@ function proGrades(ms,useA){const th=metaThreats();if(!ms.length||!th.length)ret
   return {dg,og,se2,danger,dp,thin,full:ms.length===6}}
 // Winning-team checklist: plain yes/no checks for what recent event winners usually have (rates measured live, see proLine).
 // No check predicts wins on its own; they flag gaps, not quality.
-function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms,useA);const a=analyze(ms,useA),sh=typeShape(a),out=[];
+function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms,useA);const a=analyze(playForm(ms),useA),sh=typeShape(a),out=[];
   const fullMs=ms.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves});
   {let gp=null;try{gp=gamePlan(fullMs)}catch(e){}const sp=gp&&gp.rows.find(r=>r.k==='speed')||{};
     out.push({k:'speed',ok:sp.st==='ok',part:sp.st==='part',label:'Speed control',have:(sp.who||'')+(sp.st==='part'?' (only some sets run it)':''),miss:'No reliable way to change turn order: add Tailwind or Trick Room (or a weather speed core). Icy Wind and Electroweb help, but only as backup.',pro:proLine('speed','97% of event winners')});
@@ -86,10 +90,13 @@ function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms
   out.push({k:'stack',ok:sh.maxStack<=2,label:'No major weak spot',have:'No attack type hits 3+ more of yours than resist it',miss:worst?`${worst.atk} hits ${worst.w} of yours and only ${worst.r} resist${worst.r===1?'s':''}.`:'',pro:proLine('stack','91% of event winners')});
   const big=a.rows.filter(r=>r.w>=3).map(r=>r.atk);
   out.push({k:'w3',ok:sh.w3<=1,label:'Weak spots spread out',have:big.length?`Only ${big[0]} hits 3+ of yours`:'No type hits 3+ of yours',miss:`${big.join(' and ')} each hit 3+ of yours.`,pro:proLine('w3','78% of event winners')});
-  if(PG){const pc=Math.round(PG.se2*100);out.push({k:'reach',ok:PG.se2>=.6,part:PG.se2>=.55,label:'Pressure on the meta',have:`2+ of yours hit ${pc}% of the top 30 super effectively`,miss:`2+ of yours hit only ${pc}% of the top 30 super effectively${ckWin.se2med!=null?` (recent event winners: ${Math.round(ckWin.se2med*100)}% at the median)`:''}.`,pro:proLine('reach','94% of event winners')})}
+  // ready for the top threats (55-threats.js: real calcs with your sets against the sets most players run)
+  {let RD=null;try{RD=typeof prepOf==='function'?prepOf(ms):null}catch(e){}if(RD){const pc=RD.score,un=RD.rows.filter(r=>r.level===0).sort((x,y)=>y.t.w-x.t.w).map(r=>r.t.d),unT=un.length?`; not ready for ${un.slice(0,3).join(', ')}${un.length>3?` and ${un.length-3} more`:''}`:'';
+    out.push({k:'reach',ok:pc>=75,part:pc>=65,label:'Ready for the top threats',have:`Ready for ${pc}% of the top 30 threats${unT}`,miss:`Ready for only ${pc}% of the top 30 threats${unT}${ckWin.wmed!=null?` (recent event winners: ${ckWin.wmed}% at the median)`:''}.`,pro:proLine('reach','most recent event winners')})}}
   // items: Item Clause and items that can't work here (a row only when there's a problem, so clean teams keep the same checks)
   {let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}if(ip.length)out.push({k:'items',ok:false,label:'Items work',have:'',miss:ip.map(x=>x.why).join(' '),pro:'VGC rule: each item once per team'})}
-  out.forEach(x=>{if(x.part&&!x.ok){x.ok=true;x.soft=true}});const cnt=out.filter(x=>!x.skip);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
+  // partly there (Trick Room with too few slow attackers, priority instead of speed control…) shows as ~ and doesn't count as passed
+  const cnt=out.filter(x=>!x.skip);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
 const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
 function teamRating(slots){const ms=slots.map(memberOf).filter(Boolean);return {ms,a:analyze(ms,true)}}
 // toast(text, true) adds an Undo button (and stays up longer) for changes that replace team members

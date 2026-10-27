@@ -99,8 +99,20 @@
 </div>
 
 <div class="view" data-pane="build" hidden>
+  <div class="thero" id="teamHero" hidden></div>
+  <section id="defense">
+    <details class="repfold" id="repFold" open><summary>Scouting report <span class="vsub">legal and items, threat preparation, checklist, defense, offense, game plan</span></summary>
+    <div class="verdict" id="verdict"></div>
+    <div class="report">
+      <div class="vcard thrcard" id="thrCard"></div>
+      <div class="vcard" id="chkCard"></div>
+      <div class="vcard" id="defCard"></div>
+      <div class="vcard" id="offCard"></div>
+      <div class="gpcard"><div class="gphead"><span class="gpt">Game plan</span><span class="vsub" id="gplanSub"></span></div><div class="gplan" id="gplan"></div></div>
+    </div>
+    </details>
+  </section>
   <section id="team">
-    <div class="thero" id="teamHero" hidden></div>
     <div class="head teamhead">
       <div><h2 id="teamTitle">Team</h2><p class="hint" id="teamHint">Type part of a name, like "mega sal" or "hisuian arc".</p></div>
       <div class="row">
@@ -127,17 +139,6 @@
     </div>
   </section>
 
-  <section id="defense">
-    <details class="repfold" id="repFold"><summary>Full scouting report <span class="vsub">score breakdown, checklist, defense, offense, game plan</span></summary>
-    <div class="verdict" id="verdict"></div>
-    <div class="report">
-      <div class="vcard" id="chkCard"></div>
-      <div class="vcard" id="defCard"></div>
-      <div class="vcard" id="offCard"></div>
-      <div class="gpcard"><div class="gphead"><span class="gpt">Game plan</span><span class="vsub" id="gplanSub"></span></div><div class="gplan" id="gplan"></div></div>
-    </div>
-    </details>
-  </section>
 
   <section id="fixes">
     <div class="fixgrid">
@@ -169,7 +170,7 @@
           </div>
         </div></details>
         <div class="list" id="sugs"></div>
-        <p class="hint" id="planHint">Ranked by the Team Score each plan reaches. Your Mega and locked Pokémon stay put.</p>
+        <p class="hint" id="planHint">Item problems first, then the plans that ready the team for the most top threats. Your Mega and locked Pokémon stay put.</p>
       </div>
     </div>
   </section>
@@ -246,7 +247,7 @@
 </div>
 <div class="view" data-pane="coverage" hidden>
   <section id="recs">
-    <div class="head"><div><h2>Best additions</h2><p class="hint" id="recHint">Pokémon that raise your Team Score by 2 or more without breaking the team, best first.</p></div>
+    <div class="head"><div><h2>Best additions</h2><p class="hint" id="recHint">Pokémon that ready your team for more of the top threats without breaking it, best first.</p></div>
       <div class="row"><span class="toggle megactl" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span><div class="seg" role="group" aria-label="Suggest from"><button type="button" data-recsrc="box" aria-pressed="true">My box</button><button type="button" data-recsrc="all" aria-pressed="false">Whole roster</button></div></div></div>
     <div class="recgrid"><div class="princ" id="princ"></div><div class="list" id="recList"></div></div>
   </section>
@@ -264,7 +265,7 @@
     <h3 class="lbl" id="offMetaTitle" style="margin:6px 0 0"></h3>
     <div class="tablewrap" id="offMetaWrap"><table id="offMeta"></table></div></details>
   </section>
-  <details class="foot"><summary>How scoring works</summary><p>Team Score: where your team stands among real tournament teams from the last 45 days (50 = a typical tournament team; 75+ Winner level, where a typical recent event winner lands; 90+ Elite, the top quarter of winners). It comes from a win model trained on every Limitless game with both team lists known, with each player's skill fitted separately so a strong player's wins don't inflate their Pokémon. The model reads each Pokémon and the pairs players bring together, plus items and moves when a data refresh has enough games to rate them (<span class="msets">checking…</span>); it is tested on the most recent events it never saw, ships only if it beats plain win rates, and its odds are calibrated on those events. Upside needs proof: a mix players haven't tried together, or a team missing speed control, lead support, spread damage, a Mega, or the weather or terrain its Pokémon need, gets its edge over an average team cut; only your two best Megas count; a build counts only as far as builds real players run; and two of the same Pokémon is not a legal team. The rest of the checklist and the type charts are advice: tested on held-out games, they added almost nothing to predicting winners, so they don't move the score. <span class="mtrack"></span></p><p>Winning-team checklist: the things recent event winners usually have, such as speed control, spread damage, lead support (Fake Out, Intimidate or redirection), a Mega, no major weak spot and pressure on the top 30. The share of winners that pass each check is measured live from the Events data. A missing check is a gap to plan around, not a verdict. Move sets for other players' teams are estimated from popular sets, so a move only some players run counts as "partly" (~).</p><p>Defense: for each attacking type, Pokémon weak to it are matched against Pokémon that resist it, and immunities count as resists. Abilities counted on defense: Levitate, Eelevate, Earth Eater, Flash Fire, Well-Baked Body, Water Absorb, Storm Drain, Dry Skin, Volt Absorb, Lightning Rod, Motor Drive, Sap Sipper, Thick Fat, Heatproof, Water Bubble, Purifying Salt, Fluffy.</p><p>Offense: each Pokémon's damaging moves, after Aerilate, Pixilate, Refrigerate, Galvanize, Dragonize, Liquid Voice, Scrappy and Tinted Lens change how they hit.</p><p>Plans: Pokémon are rated from in-game rankings, tournament use and ladder usage, then checked for speed control, Fake Out or redirection, weather and Trick Room fit, and how often real teams pair them with yours. Each plan shows how it changes your Team Score, and plans that lower it by 5 or more are listed after the rest.</p><p>NastyPlot rating (★): a 0–100 score for every legal Pokémon, saying how strong it is in the current format, proven by results. Most of it is top-cut presence: how often it's on the teams that reach top cut at Limitless events (recent and bigger events count more). Next, how often strong players pick it: usage with each team weighted by the chance its player is in the top 30% by skill (Elo over every Limitless game), like Smogon's rating-weighted usage. Then conversion (does it make top cut more or less often than its usage predicts) and its win rate, both pulled toward average until there are enough games, so a few lucky runs can't push a rare pick to the top. The best Pokémon is 95; half the presence costs about 10 points. The mix was chosen by testing ten candidate measures (plain and skill-weighted usage, top cuts weighted by placing, top cuts per entry, event wins, a Wilson lower-bound win rate, skill-adjusted results, results against the most-used Pokémon, how many different players took it to top cut, and consistency) by building each from older events only and checking it against later events' top cuts and five outside tier lists; only skill-weighted usage added to the core. Team-preview bring and lead rates from Showdown replays are shown on each sheet but not scored until there are more games. The win model isn't used here (it judges whole teams in the Team Score). Pokémon with no tournament results get a rough placeholder from stats, typing and tools, capped at 30. Official-event, in-game and replay numbers are shown on each sheet for reference, with outside tier lists (Pokémon Zone, PokeSynergy, PokeTools) for comparison. Every day the ratings are saved and later checked against the tournaments played after them. Hidden gems are rarely used Pokémon (under 2% of teams) that reach top cut clearly more often than their usage predicts and win more than average, over 300+ games. Suggestions from the whole roster need a rating of 50+.</p><p>Archetypes: each team is read by its speed mode (Tailwind, Trick Room, both or none), its field (sun, rain, sand, snow, and Grassy, Psychic, Electric or Misty Terrain) and control plans like Perish Trap. Battle mode compares both archetypes and weighs them when it picks your 4 and your lead.</p><p>Roster, abilities, moves and learnsets come from Pokémon Showdown's Champions data.</p></details>
+  <details class="foot"><summary>How scoring works</summary><p>Ready for the top threats: the 30 Pokémon that make top cut most often (weighted by how often), and for each one whether your team is prepared. Every verdict is a real damage calc (the same engine as the damage calc, checked against Smogon's Champions calculator) with your sets against the set most players run, with the speed, weather, terrain, Tailwind and Trick Room your team actually has. A Pokémon of yours that moves first and OHKOs it, survives its best hit and OHKOs back, or takes at most half per hit and 2HKOs it is a solid answer; Intimidate (not into Defiant or Competitive), Will-O-Wisp, Wide Guard, Taunt or a fragile 1-on-1 win are partial answers. Support Pokémon whose job is Trick Room, screens or redirection are judged by answers to that job (Taunt, Imprison, your own Trick Room, screen breakers, Infiltrator, spread attacks, or KOing them before Trick Room goes up). Well handled = 2+ solid answers, Handled = 1, Shaky = partial only, Unanswered = none, and one level lower when a threat beats 4+ of your six 1-on-1. Readiness counts 1, 0.8, 0.4 and 0 points for those. The definition was checked on 42 hand-worked matchups and on 31,598 real tournament games, where better-prepared teams did better than the players' skill alone predicts. It is preparation, not a forecast: NastyPlot doesn't predict who wins a game, because the player decides that. Two Pokémon holding the same item make a team illegal (VGC Item Clause).</p><p>Winning-team checklist: the things recent event winners usually have, such as speed control, spread damage, lead support (Fake Out, Intimidate or redirection), a Mega, no major weak spot, items that work, and readiness for the top threats. The share of winners that pass each check is measured live from the Events data. A missing check is a gap to plan around, not a verdict. Move sets for other players' teams are estimated from popular sets, so a move only some players run counts as "partly" (~), and a partly-there check is not counted as passed.</p><p>Defense: for each attacking type, Pokémon weak to it are matched against Pokémon that resist it, and immunities count as resists. Abilities counted on defense: Levitate, Eelevate, Earth Eater, Flash Fire, Well-Baked Body, Water Absorb, Storm Drain, Dry Skin, Volt Absorb, Lightning Rod, Motor Drive, Sap Sipper, Thick Fat, Heatproof, Water Bubble, Purifying Salt, Fluffy.</p><p>Offense: each Pokémon's damaging moves, after Aerilate, Pixilate, Refrigerate, Galvanize, Dragonize, Liquid Voice, Scrappy and Tinted Lens change how they hit.</p><p>Plans: Pokémon are rated from in-game rankings, tournament use and ladder usage, then checked for speed control, Fake Out or redirection, weather and Trick Room fit, and how often real teams pair them with yours. Each plan says which top threats it covers and which it loses, and the checks it fixes or breaks. Plans never leave a duplicate item, a dead item or Choice Scarf under your own Trick Room.</p><p>NastyPlot rating (★): a 0–100 score for every legal Pokémon, saying how strong it is in the current format, proven by results. Most of it is top-cut presence: how often it's on the teams that reach top cut at Limitless events (recent and bigger events count more). Next, how often strong players pick it: usage with each team weighted by the chance its player is in the top 30% by skill (Elo over every Limitless game), like Smogon's rating-weighted usage. Then conversion (does it make top cut more or less often than its usage predicts) and its win rate, both pulled toward average until there are enough games, so a few lucky runs can't push a rare pick to the top. The best Pokémon is 95; half the presence costs about 10 points. The mix was chosen by testing ten candidate measures (plain and skill-weighted usage, top cuts weighted by placing, top cuts per entry, event wins, a Wilson lower-bound win rate, skill-adjusted results, results against the most-used Pokémon, how many different players took it to top cut, and consistency) by building each from older events only and checking it against later events' top cuts and five outside tier lists; only skill-weighted usage added to the core. Team-preview bring and lead rates from Showdown replays are shown on each sheet but not scored until there are more games. The win model isn't used here. Pokémon with no tournament results get a rough placeholder from stats, typing and tools, capped at 30. Official-event, in-game and replay numbers are shown on each sheet for reference, with outside tier lists (Pokémon Zone, PokeSynergy, PokeTools) for comparison. Every day the ratings are saved and later checked against the tournaments played after them. Hidden gems are rarely used Pokémon (under 2% of teams) that reach top cut clearly more often than their usage predicts and win more than average, over 300+ games. Suggestions from the whole roster need a rating of 50+.</p><p>Archetypes: each team is read by its speed mode (Tailwind, Trick Room, both or none), its field (sun, rain, sand, snow, and Grassy, Psychic, Electric or Misty Terrain) and control plans like Perish Trap. Battle mode compares both archetypes and weighs them when it picks your 4 and your lead.</p><p>Roster, abilities, moves and learnsets come from Pokémon Showdown's Champions data.</p></details>
 </div>
 
 <div class="view" data-pane="ratings" hidden>
@@ -350,7 +351,7 @@
       <div class="seg" role="group" aria-label="Sort saved teams">
         <button type="button" data-sort="recent" aria-pressed="true">Recent</button>
         <button type="button" data-sort="name" aria-pressed="false">Name</button>
-        <button type="button" data-sort="rating" aria-pressed="false">Team Score</button>
+        <button type="button" data-sort="rating" aria-pressed="false">Readiness</button>
       </div></div>
     <div class="list" id="savedList"></div>
   </section>
