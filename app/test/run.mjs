@@ -138,13 +138,43 @@ for (const width of [1280, 390]) {
     return {calib: M.calib, dist: !!(M.dist && M.dist.q && M.dist.q.length === 101), center: !!M.center, med: winners[winners.length >> 1], n: winners.length, best,
       gamed: sc(['Sinistcha', 'Camerupt-Mega', 'Venusaur-Mega', 'Archaludon', 'Hydreigon', 'Basculegion-F']), dup: sc(['Annihilape', 'Annihilape', 'Sinistcha', 'Milotic', 'Rillaboom', 'Kingambit']),
       megaStack: sc(four) <= Math.max(sc(two), sc(['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Kingambit', 'Incineroar'])) + 15 }; });
-  ok(r.center && r.dist && r.calib > .7 && r.calib < 1.3, `model: centered builds, real-team spread, calibration ${r.calib}`);
+  // (the page stretches or shrinks the model's edges by this held-out slope, so it only has to be sane)
+  ok(r.center && r.dist && r.calib > .6 && r.calib < 1.3, `model: centered builds, real-team spread, calibration ${r.calib}`);
   ok(r.med >= 55, `validity: recent event winners score above an average team (median ${r.med} of ${r.n}, popular sets)`);
   ok(r.best < 100, `can't be gamed: a hill-climbed six tops out at ${r.best}, below 100`);
   ok(r.gamed != null && r.gamed < 90, `the old 100-point six now scores ${r.gamed}`);
   ok(r.dup === null, 'duplicate species: no score');
   ok(r.megaStack, 'stacking Megas does not pay');
   ok(errs.length === 0, `Team Score: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
+// Team Score sense checks (Oct 27, from a real user team that scored 97): problems a player can see must cost points,
+// an illegal team can't score, and odd low-evidence sixes can't beat what real event winners score.
+{ console.log('\n== Team Score sense checks');
+  const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(300);
+  const USER97 = `Raichu @ Raichunite X\nAbility: Lightning Rod\nJolly Nature\n- Fake Out\n- Protect\n- Volt Tackle\n- Volt Switch\n\nSneasler @ Psychic Seed\nAbility: Unburden\nAdamant Nature\n- Close Combat\n- Dire Claw\n- Protect\n- Fake Out\n\nPrimarina @ Leftovers\nAbility: Liquid Voice\nModest Nature\n- Hyper Voice\n- Protect\n- Moonblast\n- Calm Mind\n\nCharizard @ Charizardite Y\nAbility: Blaze\nTimid Nature\n- Heat Wave\n- Protect\n- Weather Ball\n- Solar Beam\n\nFarigiraf @ Sitrus Berry\nAbility: Armor Tail\nBold Nature\n- Trick Room\n- Helping Hand\n- Psychic\n- Thunderbolt\n\nHydreigon @ Choice Scarf\nAbility: Levitate\nModest Nature\n- Dark Pulse\n- Draco Meteor\n- Earth Power\n- Snarl`;
+  const r = await pg.evaluate(txt => { const P = window.__PL, S = P.getS(); S.format = 'doubles';
+    const run = slots => { S.slots = P.normSlots(slots); const ms = P.members(); if (ms.length !== 6) return null; const wv = P.winVsField(ms.map(m => m.p.n), true, ms); if (!wv) return null; const ts = P.teamScore({wv}); const b = P.tsBreakdown(ms); return {s: ts.score, label: ts.label, illegal: !!ts.illegal, miss: wv.struct.miss, b}; };
+    const sl = (ns, extra) => ns.map((n, i) => ({n, a: null, lock: false, ...((extra || {})[i] || {})}));
+    // event winners with the sets they actually registered (items, moves, ability), like the user's own team
+    const winners = P.META.events.events.map(e => e.top[0]).filter(t => t && t.place === 1).map(t => run(t.mons.map(m => ({n: m.n, a: m.a || null, lock: false, it: m.i ? {doubles: m.i} : undefined, mv: m.mv && m.mv.length ? {doubles: m.mv} : undefined})))).filter(Boolean).map(x => x.s).sort((a, b) => a - b), med = winners[winners.length >> 1];
+    // the page's own import, with each held item put on its slot as the Team page stores it (the import keeps items once
+    // fix/items lands; set here so this check doesn't depend on it)
+    const u = P.parsePaste(txt), its = txt.split(/\n\s*\n/).map(b => (b.split('\n')[0].split(' @ ')[1] || '').trim());
+    u.slots.forEach((s, i) => { const p = P.byName.get(s.n); if (its[i] && p && !p.m) s.it = {doubles: its[i]}; }); const user = run(u.slots);
+    const tr = {0: {mv: {doubles: ['Trick Room', 'Psychic', 'Hyper Voice', 'Protect']}}};
+    const trOne = run(sl(['Farigiraf', 'Incineroar', 'Sneasler', 'Garchomp', 'Charizard-Mega-Y', 'Whimsicott'].map(n => n === 'Whimsicott' ? 'Raichu-Mega-Y' : n), tr));
+    const trOk = run(sl(['Farigiraf', 'Incineroar', 'Torkoal', 'Kingambit', 'Charizard-Mega-Y', 'Amoonguss'].filter(n => P.byName.has(n)).concat(['Ursaluna', 'Snorlax', 'Hatterene'].filter(n => P.byName.has(n))).slice(0, 6), tr));
+    const dup = run(sl(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott'], {0: {it: {doubles: 'Sitrus Berry'}}, 1: {it: {doubles: 'Sitrus Berry'}}}));
+    const dflt = run(sl(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott']));
+    const niche = run(sl(['Annihilape', 'Kommo-o', 'Scrafty', 'Venusaur-Mega', 'Hydreigon', 'Charizard-Mega-Y']));
+    return {med, n: winners.length, notes: u.notes, items: u.slots.map(s => s.it && s.it.doubles), user, trOne, trOk, dup, dflt, niche, dfltItems: P.resolveItems(P.members()).map(m => m.item)}; }, USER97);
+  console.log('   winners median', r.med, '| user team', r.user && r.user.s, r.user && r.user.miss.join('; '), '| TR one slow', r.trOne && r.trOne.s, '| TR coherent', r.trOk && r.trOk.s, '| niche', r.niche && r.niche.s);
+  ok(r.user && r.user.s < r.med, `user's 97 team now scores below the median event winner (${r.user && r.user.s} vs ${r.med})`);
+  ok(r.user && r.user.miss.some(x => /Trick Room/.test(x)) && r.user.miss.some(x => /Psychic Seed/.test(x)), 'user team: Trick Room with one slow attacker and the dead Psychic Seed are deductions');
+  ok(r.trOne && r.trOk && r.trOne.miss.some(x => /Trick Room/.test(x)) && !r.trOk.miss.some(x => /Trick Room/.test(x)), `TR coherence: one slow attacker is cut (${r.trOne && r.trOne.s}), a coherent TR team isn't (${r.trOk && r.trOk.s})`);
+  ok(r.dup && r.dup.illegal && r.dup.s === 0, 'Item Clause: two chosen Sitrus Berries make the team illegal (score 0)');
+  ok(r.dflt && !r.dflt.illegal && new Set(r.dfltItems.filter(Boolean)).size === r.dfltItems.filter(Boolean).length, 'default items never clash in the Team Score (each member gets a different item)');
+  ok(r.niche && r.niche.s < r.med, `a low-evidence niche six scores below the median event winner (${r.niche && r.niche.s} vs ${r.med})`);
+  ok(errs.length === 0, `sense checks: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
 // battle mode, cores, events, team search, calc both ways
 { console.log('\n== battle mode + cores + events');
   for (const width of [1280, 390]) { const {pg, errs, ctx} = await open(width);

@@ -1,6 +1,6 @@
 // ---------- start ----------
 // Test hook: the test runner sets window.__PL_TEST before load to reach internals.
-if(window.__PL_TEST)window.__PL={byName,rating,members,damage,likelySpeed,sideDefaults,mvByName,koText,winVsField,teamScore,normSlots,proChecks,render,planMatchup,oppMember,META,getS:()=>S,parseReplay:typeof parseReplay==='function'?parseReplay:null,exportPaste,parsePaste,teamCode:typeof teamCode==='function'?teamCode:null,decodeTeam:typeof decodeTeam==='function'?decodeTeam:null};
+if(window.__PL_TEST)window.__PL={byName,rating,members,damage,likelySpeed,sideDefaults,mvByName,koText,winVsField,teamScore,normSlots,proChecks,render,planMatchup,oppMember,META,getS:()=>S,parseReplay:typeof parseReplay==='function'?parseReplay:null,exportPaste,parsePaste,tsBreakdown,itemClause,resolveItems,trPlan,deadItems,teamCode:typeof teamCode==='function'?teamCode:null,decodeTeam:typeof decodeTeam==='function'?decodeTeam:null};
 // Retired option (Oct 27): the Meta map is hidden; the tier board is the default.
 ui.lmode='board';try{LS.set('cc2.lmode','board')}catch(e){}
 // any edit to the open team keeps it open; Save changes updates it

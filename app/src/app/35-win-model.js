@@ -10,7 +10,7 @@ function spFeats(){const m=META.model;if(spFeatCache.m===m)return spFeatCache.ma
   for(const k of Object.keys((m&&m.sets)||{})){const sp=k.split(/[@:]/)[0];if(!map.has(sp))map.set(sp,[]);map.get(sp).push(k)}spFeatCache={m,map};return map}
 function setX(ms){return (ms||[]).reduce((a,m)=>a+setOne(m),0)}
 function setOne(m){const M=META.model,sets=M&&M.sets;if(!sets||!m)return 0;let x=0;const ms=[m];const center=!!M.center,fq=M.setFreq||{},F=center?spFeats():null;
-  for(const m of ms){const p=m.p;if(!p)continue;let it='';try{it=p.m?stoneFor(p):(m.heldItem||(topItem(p)||[])[0]||'')}catch(e){}
+  for(const m of ms){const p=m.p;if(!p)continue;let it='';try{it=p.m?stoneFor(p):m._deadItem?'':(m.heldItem||m.item||(topItem(p)||[])[0]||'')}catch(e){}
     if(center){const mv=new Set((m.moves||[]).map(v=>v&&v.name).filter(Boolean));
       let u=0;for(const k of (F.get(p.n)||[])){const i=k.indexOf('@')===p.n.length,has=i?k.slice(p.n.length+1)===it:mv.has(k.slice(p.n.length+1));u+=sets[k]*((has?1:0)-(fq[k]||0))}
       // a build only counts as much as real builds of this Pokémon have shown (10th-90th percentile of real decks)
@@ -41,25 +41,36 @@ function testedPairs(names){const M=META.model;if(!M||!Array.isArray(M.tested))r
 function mixCredit(names){const M=META.model,k=testedPairs(names);if(k==null||!M.supK)return 1;return .5+.5*Math.min(1,k/M.supK)}
 // the pillars at least 82% of recent event winners have (see the checklist): the model learned from teams that have them,
 // so it can't vouch for the upside of a team without them. Same for a weather or terrain the team needs but never sets.
-// Each missing piece cuts the above-average edge by 15% (never below 40%).
+// Each missing piece cuts the above-average edge by 15% (never below 40% of it in all). Oct 27: plans that can't work
+// count too, a Trick Room team without slow attackers (30%) and items you picked that never activate (15% each).
 const PILLARS={speed:'no speed control',fake:'no lead support (Fake Out, Intimidate or redirection)',spread:'no spread damage',mega:'no Mega'};
 function structCredit(ms){if(ms.length!==6)return {c:1,miss:[]};let CK=null;try{CK=proChecks(ms,true)}catch(e){}if(!CK)return {c:1,miss:[]};
   // the Mega rule is fixed (at least one Mega), so the score never depends on your "Megas on team" setting
   const miss=CK.items.filter(x=>PILLARS[x.k]&&x.k!=='mega'&&!x.ok&&!x.skip).map(x=>PILLARS[x.k]);if(!ms.some(m=>m.p&&m.p.m))miss.push(PILLARS.mega);
+  let w=.15*miss.length;const add=(t,k)=>{miss.push(t);w+=k};
   // a Pokémon whose ability needs weather or terrain that nothing on the team sets (Swift Swim with no rain) is a broken piece
-  try{const fullMs=ms.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves});const gp=gamePlan(fullMs);for(const r of gp.rows)if((r.k==='weather'||r.k==='terrain')&&r.st==='miss')miss.push(String(r.note||(r.k==='weather'?'weather it needs':'terrain it needs')).replace(/[.\s]+$/,''))}catch(e){}
-  return {c:Math.max(.4,1-.15*miss.length),miss}}
+  try{const fullMs=ms.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves});const gp=gamePlan(fullMs);for(const r of gp.rows)if((r.k==='weather'||r.k==='terrain')&&r.st==='miss')add(String(r.note||(r.k==='weather'?'weather it needs':'terrain it needs')).replace(/[.\s]+$/,''),.15);
+    // a Trick Room team (no Tailwind) with at most one slow Pokémon besides its setters. Real Limitless teams built like
+    // that won 47.9% of games vs 51.6% with two slow attackers (Oct 27): about half the edge of a strong team, so 30%.
+    const tp=trPlan(fullMs);if(tp&&!tp.tw){const att=tp.slow.filter(m=>!tp.set.includes(m));if(att.length<=1)add(`Trick Room with ${att.length?'only one slow attacker ('+att[0].d+')':'no slow attackers'} to use it`,.3)}
+    // the Trick Room setter itself holds Choice Scarf: it moves last under its own room and is locked into the move
+    if(tp&&tp.scarf.some(m=>tp.set.includes(m)))add(`${tp.scarf.filter(m=>tp.set.includes(m)).map(m=>m.d).join(', ')} sets Trick Room while holding Choice Scarf`,.15);
+    // an item you picked that can never work (a Terrain Seed with no terrain, Room Service with no Trick Room)
+    for(const d of deadItems(fullMs))add(d.why,.15)}catch(e){}
+  return {c:Math.max(.4,1-w),miss}}
 // Team strength in the model's own units, adjusted exactly as the Team Score adjusts it. Team Score, fix plans, Best
 // additions, Build for me and the Gauntlet all read this one number, so they can never disagree about which team is stronger.
 // upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
-function strengthX(names,ms){const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
+// Every team is read the same way: 4 moves (an opponent's likely-move list keeps its 4 most used), its default item when
+// none is set, then Item Clause and dead items (a mirror of your own six in the Gauntlet is exactly even).
+function strengthX(names,ms){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
   const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
 // The model is trained on doubles tournament games only.
 function winVsField(names,mine,msIn){if(!modelOK()||names.length<6)return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
   const ms=mine?(msIn||members()):null,mx=META.model.meanX||0;
   const {xRaw,x0,cr,sc}=strengthX(names,ms),x=calibK()*(xRaw-mx);
   const pa=mine?personalAdj():null;let xp=null;if(pa){xp=x;for(const n of names)xp+=(pa.get(n)||0)/4}
-  return {p:sig(x),pYou:xp==null?null:sig(xp),x:xRaw,pct:strengthPct(xRaw),pctRaw:strengthPct(x0),credit:cr,tested:testedPairs(names),struct:sc}}
+  return {p:sig(x),pYou:xp==null?null:sig(xp),x:xRaw,pct:strengthPct(xRaw),pctRaw:strengthPct(x0),credit:cr,tested:testedPairs(names),struct:sc,illegal:ms?itemClause(ms):[]}}
 function winVs(a,b,ma,mb){if(!modelOK())return null;return sig(calibK()*(strengthX(a,ma).xRaw-strengthX(b,mb).xRaw))}
 // where a team's strength falls among real tournament teams from the last 45 days (0-100, from the shipped percentiles)
 function strengthPct(x){const d=META.model&&META.model.dist,q=d&&Array.isArray(d.q)&&d.q.length===101?d.q:null;if(!q)return null;
@@ -81,7 +92,7 @@ function tsBreakdown(ms){if(!modelOK()||!ms||ms.length!==6)return null;const M=M
   const pc=n=>{let s=0;for(const o of names)if(o!==n){const k=n<o?n+'|'+o:o+'|'+n;s+=(M.pairs[k]||0)/2}return s};
   const pctOf=x0=>{const d=x0-mx,x=mx+(d>0?d*S0.cr*S0.sc.c:d),p=strengthPct(x);return p==null?null:Math.max(0,Math.min(100,Math.floor(p)))};
   const rows=ms.map((m,i)=>{const n=names[i],c=(capped.has(n)?0:val(n))+pc(n),alt=pctOf(S0.x0-(c-avg));return {m,d:alt==null?0:ts.score-alt}});
-  return {score:ts.score,rows,cut:ts.cut,miss:S0.sc.miss,untried:S0.cr<1,tested:testedPairs(names)}}
+  return {score:ts.score,rows,cut:ts.cut,miss:S0.sc.miss,untried:S0.cr<1,tested:testedPairs(names),illegal:ts.illegal||null}}
 // Quick model strength for shortlisting: the same number as strengthX without the checklist cut (the slow part).
 function xQuick(team){if(!modelOK()||!team||team.length!==6)return -Infinity;const names=team.map(m=>m.p.n),mx=META.model.meanX||0,x=teamX(names,team),d=x-mx;return mx+(d>0?d*mixCredit(names):d)}
 // Which plans get a full Team Score check: the first n in the order given (the planner's own ranking) plus the n the win

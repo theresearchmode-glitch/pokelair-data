@@ -96,7 +96,8 @@ function renderVerdict(ms,a,PG,CK){
   // the points the score loses for an untried mix or missing basics, said out loud
   if(TS&&TS.cut>0){const why=[];if(wv.credit<1)why.push('a mix players haven’t tried together yet');if(wv.struct&&wv.struct.miss.length)why.push(...wv.struct.miss);
     rows.push(['Deductions',`<span class="warnline">−${TS.cut}</span> (${TS.before} before): ${esc(why.join('; '))}. The model can only vouch for an edge it has seen win.`])}
-  {const cl=scarfTrClash(ms);if(cl)rows.push(['Item clash',`<span class="warnline">${cl.sc.map(m=>esc(m.d)).join(', ')}: Choice Scarf on a Trick Room team</span>`])}
+  if(TS&&TS.illegal)rows.unshift(['Item Clause',`<span class="warnline">Not legal: ${TS.illegal.map(([it,a])=>`${a.map(m=>esc(m.d)).join(' and ')} both hold ${esc(it)}`).join('; ')}. VGC allows each item once per team, so this scores 0 until one of them changes item.</span>`]);
+  {const cl=scarfTrClash(ms);if(cl)rows.push(['Choice Scarf vs Trick Room',`<span class="warnline">${cl.sc.map(m=>esc(m.d)).join(', ')}: Choice Scarf on a team that sets Trick Room</span>`])}
   if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks (advice; only missing basics cap the score)`+(miss.length?`: missing ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
   if(thin.length)rows.push(['Watch out for',thin.slice(0,3).map(x=>esc(x.o.p.d)).join(', ')]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
@@ -112,10 +113,16 @@ function teamScore({wv}){if(!wv)return null;const cl=x=>Math.max(0,Math.min(100,
   const pct=wv.pct!=null?wv.pct:null;
   // older model data (no team spread shipped yet): fall back to the win chance against an average team
   const score=pct!=null?cl(Math.floor(pct)):cl((wv.p-.35)/.3*100);
-  // labels anchored to real event winners scored with their own sets (Oct 27, 118 winners: median 77, top quarter 92+)
-  const label=score>=90?'Elite':score>=75?'Winner level':score>=50?'Above average':score>=30?'Playable':'Needs work';
+  // labels anchored to real event winners scored the same way with their own sets (ckWin, measured live): Winner level =
+  // at least what the median recent event winner scores, Elite = what the top quarter of winners score. Before that's
+  // measured: the Oct 27 numbers (120 winners, median 83, top quarter 92).
+  const wm=ckWin&&ckWin.wmed!=null?ckWin.wmed:83,wq=ckWin&&ckWin.wq75!=null?ckWin.wq75:92;
+  const label=score>=wq?'Elite':score>=wm?'Winner level':score>=50?'Above average':score>=30?'Playable':'Needs work';
   // the points taken off for an untried mix or missing basics (score before the cuts minus the score)
   const before=wv.pctRaw!=null?cl(Math.floor(wv.pctRaw)):score,cut=Math.max(0,before-score);
+  // Item Clause: two Pokémon holding the same item can't enter a VGC event, so the team scores 0 until that's fixed
+  const ill=wv.illegal&&wv.illegal.length?wv.illegal:null;
+  if(ill)return {score:0,label:'Illegal: '+ill.map(([it,a])=>`${a.length} hold ${it}`).join(', '),illegal:ill,p:wv.p,pYou:wv.pYou,pct,before,cut:before};
   return {score,label,p:wv.p,pYou:wv.pYou,pct,before,cut}}
 let pmCache=new Map();
 // The 4 moves a Pokémon is graded and planned with: its 4 most-used moves, the same 4 its team card shows.
