@@ -60,16 +60,17 @@ function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTime
 
 // How often recent event winners pass each check, measured live from the Events data (each winner's real team and moves),
 // so the claims under the checklist stay true as the meta moves. Computed in small idle chunks after the data loads.
-let ckWin={key:null,rates:null,two:null,busy:false};
+let ckWin={key:null,rates:null,two:null,busy:false,wmed:null};
 function proLine(k,fb){const r=ckWin.rates&&ckWin.rates[k];if(!r||r[1]<20)return fb;
   return `${Math.round(100*r[0]/r[1])}% of ${r[1]} recent event winners${k==='mega'&&ckWin.two!=null?` (${Math.round(100*ckWin.two/r[1])}% bring 2)`:''}`}
 function ckWinRefresh(){const E=META.events;if(!E||S.format!=='doubles')return;const key=E.updated+'|'+E.events.length;if(ckWin.key===key||ckWin.busy)return;
   const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
-  ckWin.busy=true;const acc={},keep={slots:S.slots};let i=0,two=0,n=0;
+  ckWin.busy=true;const acc={},wts=[];let i=0,two=0,n=0;
   const step=()=>{const t0=Date.now();try{while(i<list.length&&Date.now()-t0<12){const t=list[i++];
       const ms=t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,mega:p.m,base:p.b,types:p.t}});
+      if(typeof tsOf==='function'){const t=tsOf(ms);if(t!=null)wts.push(t)}
       const CK=proChecks(ms,true);if(!CK)continue;n++;for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
     catch(e){ckWin.busy=false;return}
     if(i<list.length){setTimeout(step,30);return}
-    ckWin={key,rates:acc,two,busy:false};safe('checklist claims',()=>render())};
+    wts.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null};safe('checklist claims',()=>render())};
   setTimeout(step,400)}

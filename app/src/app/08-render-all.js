@@ -90,7 +90,7 @@ function renderVerdict(ms,a,PG,CK){const el=$('verdict');ui.vProven=false;ui.vsu
   if(thin.length)rows.push(['Watch out for',thin.slice(0,3).map(x=>esc(x.o.p.d)).join(', ')]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
   ui.vProven=!!(best&&best.k===6&&best.wr>=.55);el.className='verdict '+lvl;
-  const parts=TS?`<div class="tsparts"><div class="tsline"><b>${TS.score}</b><span>${TS.pct!=null?`Stronger than ${TS.score}% of tournament teams from the last 45 days.`:'Based on the win chance against an average tournament team.'} Win chance against an average one: <b>${Math.round(TS.p*100)}%</b>${TS.pYou!=null?` (${Math.round(TS.pYou*100)}% for you, from your battle log)`:''}.</span></div><div class="tsbar" aria-hidden="true"><i style="--w:${TS.score}%"></i><em style="left:50%">avg</em><em style="left:90%">top 10%</em></div></div>`:'';
+  const parts=TS?`<div class="tsparts"><div class="tsline"><b>${TS.score}</b><span>${TS.pct!=null?`Stronger than ${TS.score}% of tournament teams from the last 45 days.`:'Based on the win chance against an average tournament team.'} Win chance against an average one: <b>${Math.round(TS.p*100)}%</b>${TS.pYou!=null?` (${Math.round(TS.pYou*100)}% for you, from your battle log)`:''}.${ckWin.wmed!=null?` A typical recent event winner scores ${ckWin.wmed}.`:''}</span></div><div class="tsbar" aria-hidden="true"><i style="--w:${TS.score}%"></i><em style="left:50%">avg</em>${ckWin.wmed!=null&&Math.abs(ckWin.wmed-50)>=8?`<em class="win" style="left:${ckWin.wmed}%">winners</em>`:''}</div></div>`:'';
   el.innerHTML=`<div class="vhead"><span class="vdot" aria-hidden="true"></span><b class="vtitle">${TS?'Team Score '+esc(head):esc(head)}</b></div>${parts}<dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`}
 // Team Score, 0-100: where this team's strength (the win model, trained on real games with player skill removed) falls
 // among real tournament teams from the last 45 days. 50 = a typical tournament team, 90 = top 10%.
@@ -101,7 +101,8 @@ function teamScore({wv}){if(!wv)return null;const cl=x=>Math.max(0,Math.min(100,
   const pct=wv.pct!=null?wv.pct:null;
   // older model data (no team spread shipped yet): fall back to the win chance against an average team
   const score=pct!=null?cl(Math.floor(pct)):cl((wv.p-.35)/.3*100);
-  const label=score>=90?'Elite':score>=75?'Strong':score>=50?'Solid':score>=25?'Playable':'Needs work';
+  // labels anchored to real event winners scored with their own sets (Oct 27, 118 winners: median 77, top quarter 92+)
+  const label=score>=90?'Elite':score>=75?'Winner level':score>=50?'Above average':score>=30?'Playable':'Needs work';
   return {score,label,p:wv.p,pYou:wv.pYou,pct}}
 let pmCache=new Map();
 // The 4 moves a Pokémon is graded and planned with: its 4 most-used moves, the same 4 its team card shows.
