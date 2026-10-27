@@ -46,17 +46,24 @@ const SKINS={Aerilate:'Flying',Pixilate:'Fairy',Refrigerate:'Ice',Galvanize:'Ele
 const RESIST_BERRY={'Occa Berry':'Fire','Passho Berry':'Water','Wacan Berry':'Electric','Rindo Berry':'Grass','Yache Berry':'Ice','Chople Berry':'Fighting','Kebia Berry':'Poison','Shuca Berry':'Ground','Coba Berry':'Flying','Payapa Berry':'Psychic','Tanga Berry':'Bug','Charti Berry':'Rock','Kasib Berry':'Ghost','Haban Berry':'Dragon','Colbur Berry':'Dark','Babiri Berry':'Steel','Roseli Berry':'Fairy','Chilan Berry':'Normal'};
 // 2–5 hit moves count 3 hits (the usual roll), 5 with Skill Link
 const MULTI_HIT={'Bullet Seed':3,'Rock Blast':3,'Icicle Spear':3,'Scale Shot':3,'Tail Slap':3,'Pin Missile':3,'Water Shuriken':3,'Bone Rush':3,'Arm Thrust':3,'Dual Wingbeat':2,'Double Hit':2,'Dragon Darts':2,'Surging Strikes':3,'Triple Axel':3,'Triple Kick':3,'Population Bomb':10,'Bonemerang':2,'Double Kick':2,'Twin Beam':2,'Tachyon Cutter':2,'Dual Chop':2,'Gear Grind':2};
-// Triple Axel and Triple Kick hit harder each time (20/40/60, 10/20/30): counted as 3 hits of the middle power
-const RISING_HIT={'Triple Axel':40,'Triple Kick':20};
-// Move groups for the abilities that boost them. Physical moves make contact unless listed in NONCONTACT.
-const NONCONTACT=new Set(['Earthquake','Bulldoze','Rock Slide','Stone Edge','Rock Blast','Rock Tomb','Smack Down','Bullet Seed','Seed Bomb','Icicle Spear','Icicle Crash','Ice Shard','Scale Shot','Gunk Shot','Dragon Darts','Glacial Lance','Precipice Blades','Thousand Arrows','Thousand Waves','Diamond Storm','Pin Missile','Magnet Bomb','Bonemerang','Bone Rush','Shadow Bone','Poltergeist','Sacred Fire','Fling','Explosion','Self-Destruct','Beat Up','Aqua Cutter','Psycho Cut','Salt Cure','Ivy Cudgel','Spirit Shackle','Rock Wrecker','Sky Attack','Leafage','Razor Leaf','Egg Bomb','Barrage','Order Up','Gigaton Hammer','Tera Blast','Mountain Gale']);
-const SHARP=new Set(['Aerial Ace','Air Cutter','Air Slash','Aqua Cutter','Behemoth Blade','Bitter Blade','Ceaseless Edge','Cross Poison','Cut','Fury Cutter','Kowtow Cleave','Leaf Blade','Mighty Cleave','Night Slash','Population Bomb','Psyblade','Psycho Cut','Razor Leaf','Razor Shell','Sacred Sword','Slash','Solar Blade','Stone Axe','Tachyon Cutter','X-Scissor']);
-const PUNCH=new Set(['Bullet Punch','Comet Punch','Dizzy Punch','Double Iron Bash','Drain Punch','Dynamic Punch','Fire Punch','Focus Punch','Hammer Arm','Headlong Rush','Ice Hammer','Ice Punch','Jet Punch','Mach Punch','Mega Punch','Meteor Mash','Plasma Fists','Power-Up Punch','Rage Fist','Shadow Punch','Sky Uppercut','Surging Strikes','Thunder Punch','Wicked Blow']);
-const BITE=new Set(['Bite','Crunch','Fire Fang','Fishious Rend','Hyper Fang','Ice Fang','Jaw Lock','Poison Fang','Psychic Fangs','Thunder Fang']);
-const PULSE=new Set(['Aura Sphere','Dark Pulse','Dragon Pulse','Origin Pulse','Terrain Pulse','Water Pulse']);
-// moves with a secondary effect that Sheer Force removes for 1.3× power (the common ones)
-const SHEER=new Set(['Rock Slide','Iron Head','Flamethrower','Fire Blast','Heat Wave','Ice Beam','Blizzard','Icy Wind','Thunderbolt','Thunder','Discharge','Electroweb','Sludge Bomb','Sludge Wave','Gunk Shot','Poison Jab','Psychic','Earth Power','Shadow Ball','Energy Ball','Flash Cannon','Moonblast','Dark Pulse','Crunch','Air Slash','Bug Buzz','Scald','Fire Punch','Ice Punch','Thunder Punch','Zen Headbutt','Waterfall','Body Slam','Fire Fang','Ice Fang','Thunder Fang','Lava Plume','Muddy Water','Mystical Fire','Lunge','Trop Kick','Breaking Swipe','Snarl','Struggle Bug','Bulldoze','Rock Tomb','Mud Shot','Power-Up Punch','Flame Charge','Trailblaze','Spirit Break','Throat Chop','Liquidation','Crush Claw','Play Rough','Meteor Mash','Iron Tail','Headbutt','Bite','Fake Out','Nuzzle','Ancient Power','Charge Beam','Fiery Dance','Psychic Noise','Hurricane','Scorching Sands','Freeze-Dry','Strange Steam','Upper Hand','Poison Fang','Signal Beam','Water Pulse','Dragon Rush','Stomp','Extrasensory','Sky Attack','Steam Eruption','Esper Wing','Chilling Water','Matcha Gotcha','Mortal Spin','Lumina Crash']);
-const isContact=mv=>mv.cat===1&&!NONCONTACT.has(mv.name);
+// Triple Axel and Triple Kick hit harder each time: this much more power per hit (20/40/60, 10/20/30)
+const RISING_HIT={'Triple Axel':20,'Triple Kick':10};
+// Move groups for the abilities and effects that read them, from Showdown's Champions move data (experiments/calc-check.mjs --lists).
+// Physical moves make contact unless listed in NONCONTACT; CONTACT_SP are the special moves that do.
+const NONCONTACT=new Set(['Aqua Cutter','Aura Wheel','Barb Barrage','Beak Blast','Bone Rush','Bulldoze','Bullet Seed','Dragon Darts','Drum Beating','Earthquake','Explosion','Feint','Flower Trick','Gigaton Hammer','Grav Apple','Gunk Shot','Ice Shard','Icicle Crash','Icicle Spear','Last Respects','Meteor Assault','Mountain Gale','Petal Blizzard','Pin Missile','Poltergeist','Psycho Cut','Pyro Ball','Raging Fury','Rock Blast','Rock Slide','Rock Tomb','Rock Wrecker','Salt Cure','Sand Tomb','Scale Shot','Seed Bomb','Self-Destruct','Sky Attack','Smack Down','Spirit Shackle','Stone Edge','Triple Arrows','Bonemerang','Thousand Arrows','Thousand Waves','Precipice Blades','Diamond Storm','Glacial Lance','Fling','Beat Up']);
+const CONTACT_SP=new Set(['Draining Kiss','Infestation','Petal Dance','Grass Knot','Trump Card']);
+const SHARP=new Set(['Aerial Ace','Air Cutter','Air Slash','Aqua Cutter','Bitter Blade','Ceaseless Edge','Cross Poison','Crush Claw','Dire Claw','Dragon Claw','Kowtow Cleave','Leaf Blade','Metal Claw','Night Slash','Population Bomb','Psycho Cut','Razor Shell','Sacred Sword','Shadow Claw','Slash','Solar Blade','Stone Axe','X-Scissor','Behemoth Blade','Mighty Cleave','Psyblade','Tachyon Cutter','Razor Leaf','Cut','Fury Cutter']);
+const PUNCH=new Set(['Bullet Punch','Double Shock','Drain Punch','Dynamic Punch','Fire Punch','Focus Punch','Hammer Arm','Headlong Rush','Ice Hammer','Ice Punch','Jet Punch','Mach Punch','Meteor Mash','Rage Fist','Shadow Punch','Thunder Punch','Surging Strikes','Wicked Blow','Sky Uppercut','Power-Up Punch','Mega Punch','Comet Punch','Dizzy Punch']);
+const BITE=new Set(['Bite','Crunch','Fire Fang','Ice Fang','Jaw Lock','Poison Fang','Psychic Fangs','Thunder Fang','Fishious Rend','Hyper Fang']);
+const PULSE=new Set(['Aura Sphere','Dark Pulse','Dragon Pulse','Terrain Pulse','Water Pulse','Origin Pulse']);
+const BULLET=new Set(['Acid Spray','Aura Sphere','Beak Blast','Bullet Seed','Energy Ball','Focus Blast','Pollen Puff','Pyro Ball','Rock Blast','Rock Wrecker','Seed Bomb','Shadow Ball','Sludge Bomb','Syrup Bomb','Weather Ball','Zap Cannon','Electro Ball','Gyro Ball','Mud Bomb','Mist Ball','Octazooka','Magnet Bomb','Egg Bomb','Barrage']);
+// moves with a secondary effect, which Sheer Force removes for 1.3× power
+const SHEER=new Set(['Acid Spray','Air Slash','Alluring Voice','Ancient Power','Apple Acid','Aqua Step','Aura Wheel','Axe Kick','Barb Barrage','Bite','Bitter Malice','Blaze Kick','Blizzard','Body Slam','Bounce','Breaking Swipe','Bug Buzz','Bulldoze','Burning Jealousy','Ceaseless Edge','Charge Beam','Chilling Water','Cross Poison','Crunch','Crush Claw','Dark Pulse','Dire Claw','Discharge','Dragon Rush','Drum Beating','Dynamic Punch','Earth Power','Eerie Spell','Electro Shot','Electroweb','Energy Ball','Extrasensory','Fake Out','Fiery Dance','Fire Blast','Fire Fang','Fire Lash','Fire Punch','Flame Charge','Flamethrower','Flare Blitz','Flash Cannon','Focus Blast','Grav Apple','Gunk Shot','Heat Wave','Hurricane','Ice Beam','Ice Fang','Ice Punch','Icicle Crash','Icy Wind','Infernal Parade','Inferno','Iron Head','Iron Tail','Lava Plume','Liquidation','Low Sweep','Lumina Crash','Lunge','Matcha Gotcha','Meteor Mash','Moonblast','Mortal Spin','Mountain Gale','Mud Shot','Mud-Slap','Muddy Water','Mystical Fire','Night Daze','Nuzzle','Play Rough','Poison Fang','Poison Jab','Pounce','Psychic','Psychic Noise','Psyshield Bash','Pyro Ball','Rapid Spin','Razor Shell','Rock Slide','Rock Tomb','Salt Cure','Scald','Scorching Sands','Shadow Ball','Shell Side Arm','Skitter Smack','Sky Attack','Sludge Bomb','Sludge Wave','Snarl','Snore','Sparkling Aria','Spirit Break','Spirit Shackle','Steel Wing','Stone Axe','Struggle Bug','Syrup Bomb','Throat Chop','Thunder','Thunder Fang','Thunder Punch','Thunderbolt','Torch Song','Trailblaze','Tri Attack','Triple Arrows','Trop Kick','Upper Hand','Volt Tackle','Water Pulse','Waterfall','Zap Cannon','Zen Headbutt','Zing Zap']);
+// priority moves: they fail into Psychic Terrain (grounded target), Queenly Majesty and Armor Tail
+const PRIORITY=new Set(['Accelerock','Aqua Jet','Bullet Punch','Extreme Speed','Fake Out','Feint','First Impression','Ice Shard','Jet Punch','Mach Punch','Quick Attack','Shadow Sneak','Sucker Punch','Upper Hand','Vacuum Wave','Water Shuriken']);
+// recoil and crash moves (Reckless)
+const RECOIL=new Set(['Axe Kick','Brave Bird','Double-Edge','Flare Blitz','Head Smash','High Jump Kick','Light of Ruin','Supercell Slam','Volt Tackle','Wave Crash','Wild Charge','Wood Hammer','Take Down','Head Charge','Submission','Jump Kick']);
+const isContact=mv=>(mv.cat===1&&!NONCONTACT.has(mv.name))||CONTACT_SP.has(mv.name);
 // Type effectiveness of one move into one defender, the same way the type tables read it (hitMult): Scrappy and Mind's Eye,
 // Freeze-Dry, Flying Press, Thousand Arrows and Tinted Lens. Defending abilities are applied separately in damage().
 function moveEff(mv,type,ab,defTypes){let x=1;
@@ -67,72 +74,98 @@ function moveEff(mv,type,ab,defTypes){let x=1;
     if(mv.name==='Flying Press')f*=EFF.Flying[d];
     x*=f}
   return x}
-// One hit: returns {min,max,hp,rolls} in HP. o = {atk:{p,sp,nat,item,ability,boost}, def:{p,hpSp,defSp,nat,item,ability,boost}, move, spread, weather, screen, hh, fg, crit}
+// One hit: returns {min,max,hp,rolls} in HP. o = {atk:{p,sp,nat,item,ability,boost,burn}, def:{p,hpSp,defSp,spdSp,atkSp,nat,item,ability,boost}, move, spread, weather, terrain, screen, hh, fg, crit, fainted}
+// The game's own order and rounding (Gen 5+, as Showdown's Champions calculator does it): power, Attack and Defense
+// modifiers are each chained in 4096ths and applied once; "pokeRound" rounds .5 down; the final modifiers are chained too.
+const ALWAYS_CRIT=['Flower Trick','Wicked Blow','Surging Strikes','Storm Throw','Frost Breath'];
+const pokeRound=x=>(x%1>.5?Math.ceil(x):Math.floor(x)),chain4096=list=>list.reduce((c,x)=>x===4096?c:(c*x+2048)>>12,4096),applyMods=(v,list)=>Math.max(1,pokeRound(v*chain4096(list)/4096));
+const statStage=(v,s)=>Math.floor(s>=0?v*(2+s)/2:v*2/(2-s));
 function damage(o){const A=o.atk,D=o.def,mv=o.move;if(!mv||!mv.bp||mv.cat===0)return null;
-  let type=mv.type,bp=RISING_HIT[mv.name]||mv.bp;const ab=A.ability||'';
-  // Mold Breaker and friends ignore the defender's ability entirely
-  const breaker=['Mold Breaker','Teravolt','Turboblaze'].includes(ab),dab=breaker?'':(D.ability||'');
-  // these always land a critical hit
-  o={...o,crit:!!o.crit||['Flower Trick','Wicked Blow','Surging Strikes','Storm Throw','Frost Breath'].includes(mv.name)};
-  if(mv.name==='Weather Ball'&&o.weather){type={sun:'Fire',rain:'Water',sand:'Rock',snow:'Ice'}[o.weather];bp=100}
-  // Technician reads the move's own power, before any other boost
-  if(ab==='Technician'&&bp<=60)bp=Math.floor(bp*1.5);
-  if(type==='Normal'&&SKINS[ab]){type=SKINS[ab];bp=Math.floor(bp*1.2)}
-  if(ab==='Liquid Voice'&&mv.sound)type='Water';
-  const phys=mv.cat===1;const aStat=mv.name==='Body Press'?'Def':phys?'Atk':'SpA';const dStat=(phys||['Psyshock','Psystrike','Secret Sword'].includes(mv.name))?'Def':'SpD';
-  const aPts=aStat==='Atk'?(A.spA??A.sp):aStat==='SpA'?(A.spS??A.sp):aStat==='Def'?(A.spDef??0):A.sp;
-  let a=calcStat(A.p,aStat,aPts,natMul(A.nat,aStat)),d=calcStat(D.p,dStat,dStat==='Def'?D.defSp:D.spdSp,natMul(D.nat,dStat));
-  const hp=calcStat(D.p,'HP',D.hpSp,1);
-  const ab_=A.boost||0;a=Math.floor(a*BOOST(o.crit?Math.max(0,ab_):ab_));d=Math.floor(d*BOOST(o.crit?Math.min(0,D.boost||0):(D.boost||0)));
-  if(phys&&['Huge Power','Pure Power'].includes(ab))a*=2;if(phys&&ab==='Hustle')a=Math.floor(a*1.5);
-  if(ab==='Solar Power'&&!phys&&o.weather==='sun')a=Math.floor(a*1.5);if(ab==='Water Bubble'&&type==='Water')a*=2;
-  if(A.item==='Choice Band'&&phys)a=Math.floor(a*1.5);if(A.item==='Choice Specs'&&!phys)a=Math.floor(a*1.5);
-  if(D.item==='Assault Vest'&&dStat==='SpD'&&mv.name!=='Body Press')d=Math.floor(d*1.5);
-  if(dab==='Fur Coat'&&dStat==='Def')d*=2;
-  if(o.weather==='sand'&&dStat==='SpD'&&D.p.t.includes('Rock'))d=Math.floor(d*1.5);
-  if(o.weather==='snow'&&dStat==='Def'&&D.p.t.includes('Ice'))d=Math.floor(d*1.5);
-  if(ab==='Tough Claws'&&isContact(mv))bp=Math.floor(bp*1.3);if(ab==='Sharpness'&&SHARP.has(mv.name))bp=Math.floor(bp*1.5);
-  if(ab==='Iron Fist'&&PUNCH.has(mv.name))bp=Math.floor(bp*1.2);if(ab==='Strong Jaw'&&BITE.has(mv.name))bp=Math.floor(bp*1.5);
-  if(ab==='Mega Launcher'&&PULSE.has(mv.name))bp=Math.floor(bp*1.5);if(ab==='Punk Rock'&&mv.sound)bp=Math.floor(bp*1.3);
-  if(ab==='Sheer Force'&&SHEER.has(mv.name))bp=Math.floor(bp*1.3);
-  // Supreme Overlord (Kingambit): +10% power for each fainted ally, up to 5
-  if(ab==='Supreme Overlord'&&o.fainted)bp=Math.floor(bp*(1+.1*Math.min(5,o.fainted)));
-  // terrain: 1.3× for a grounded attacker's matching type; Grassy halves Earthquake/Bulldoze and Misty halves Dragon into grounded targets
-  {const gA=grounded({types:A.p.t,ability:ab}),gD=grounded({types:D.p.t,ability:D.ability||''}),T=o.terrain;
-    if(gA&&((T==='grassy'&&type==='Grass')||(T==='electric'&&type==='Electric')||(T==='psychic'&&type==='Psychic')))bp=Math.floor(bp*1.3);
-    if(gD&&((T==='grassy'&&(mv.name==='Earthquake'||mv.name==='Bulldoze'))||(T==='misty'&&type==='Dragon')))bp=Math.floor(bp/2)}
-  if(ab==='Sand Force'&&o.weather==='sand'&&['Rock','Ground','Steel'].includes(type))bp=Math.floor(bp*1.3);
-  if((ab==='Steelworker'&&type==='Steel')||(ab==="Dragon's Maw"&&type==='Dragon')||(ab==='Transistor'&&type==='Electric')||(ab==='Rocky Payload'&&type==='Rock'))bp=Math.floor(bp*1.5);
-  if(['Blaze','Torrent','Overgrow','Swarm'].includes(ab)&&o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab])a=Math.floor(a*1.5);
-  if(TYPE_ITEM[A.item]===type)bp=Math.floor(bp*1.2);
-  if(o.hh)bp=Math.floor(bp*1.5);
-  let base=Math.floor(Math.floor(22*bp*a/d)/50)+2;
+  const nm=mv.name,phys=mv.cat===1,ab=A.ability||'',dab0=D.ability||'';
+  // Klutz: the holder's item does nothing (Knock Off, Acrobatics and Poltergeist still see it)
+  const aIt=ab==='Klutz'?'':(A.item||''),dIt=dab0==='Klutz'?'':(D.item||'');
+  // Mold Breaker and friends ignore the defender's ability
+  const dab=['Mold Breaker','Teravolt','Turboblaze'].includes(ab)?'':dab0;
+  // Cloud Nine / Air Lock switch the weather off; Mega Sol makes the user's own moves act as if the sun were out
+  const fw=[ab,dab0].some(x=>x==='Cloud Nine'||x==='Air Lock')?'':(o.weather||''),aw=ab==='Mega Sol'?'sun':fw,T=o.terrain||'';
+  const gr=(t,x)=>!t.includes('Flying')&&x!=='Levitate'&&x!=='Eelevate',gA=gr(A.p.t,ab),gD=gr(D.p.t,dab);
+  // these always land a critical hit; Shell Armor and Battle Armor block crits
+  const crit=(!!o.crit||ALWAYS_CRIT.includes(nm))&&!['Shell Armor','Battle Armor'].includes(dab);
+  let type=mv.type,bp=mv.bp,ate=false;
+  if(nm==='Weather Ball'&&aw){type={sun:'Fire',rain:'Water',sand:'Rock',snow:'Ice'}[aw];bp*=2}
+  else if(nm==='Terrain Pulse'&&gA&&T){type={grassy:'Grass',electric:'Electric',psychic:'Psychic',misty:'Fairy'}[T];bp*=2}
+  else if(nm==='Raging Bull')type={'Tauros-Paldea-Combat':'Fighting','Tauros-Paldea-Blaze':'Fire','Tauros-Paldea-Aqua':'Water'}[A.p.n]||type;
+  if(!['Weather Ball','Terrain Pulse','Struggle'].includes(nm)){if(type==='Normal'&&SKINS[ab]){type=SKINS[ab];ate=true}else if(ab==='Liquid Voice'&&mv.sound)type='Water'}
+  if(nm==='Acrobatics'&&!A.item)bp*=2;if(nm==='Rising Voltage'&&gD&&T==='electric')bp*=2;if((nm==='Stored Power'||nm==='Power Trip')&&A.boost>0)bp+=20*A.boost;
   // type effectiveness, read the same way as the type tables; the defender's ability is kept apart so it can't switch
   // super-effective items (Expert Belt, resist berries, Filter) on or off
   const eff=moveEff(mv,type,ab,D.p.t);let abMul=1;
-  {const mods=ABILITY_MODS[dab];if(mods&&mods[type]!=null&&!(mv.name==='Thousand Arrows'&&type==='Ground'))abMul=mods[type]}
-  if(eff===0||abMul===0)return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0}};
-  // The game's own order and rounding (Gen 5+): modifiers are 4096ths, "pokeRound" rounds .5 down, and the final
-  // modifiers are chained into one number before they're applied. This matches Showdown's damage calculator.
-  const pr=x=>(x%1>.5?Math.ceil(x):Math.floor(x)),q=m=>Math.round(m*4096);
-  const wMod=o.weather==='sun'?(type==='Fire'?6144:type==='Water'?2048:4096):o.weather==='rain'?(type==='Water'?6144:type==='Fire'?2048:4096):4096;
-  // STAB comes from the attacker's own types (a skin or Liquid Voice only counts when the new type is one of them)
-  const stabMod=A.p.t.includes(type)?(ab==='Adaptability'?8192:6144):4096;
-  // final modifiers, chained (screens, Life Orb, Expert Belt, Tinted Lens, Filter, Multiscale, Fluffy, berries, Friend Guard, ...)
-  const fin=[];if(abMul!==1)fin.push(q(abMul));if(o.screen&&!o.crit)fin.push(2732);if(A.item==='Life Orb')fin.push(5324);if(A.item==='Expert Belt'&&eff>1)fin.push(4915);
-  if(ab==='Tinted Lens'&&eff<1)fin.push(8192);
-  if(eff>1&&['Filter','Solid Rock','Prism Armor'].includes(dab))fin.push(3072);
-  if(dab==='Ice Scales'&&!phys)fin.push(2048);if(dab==='Fluffy'&&isContact(mv))fin.push(2048);if(dab==='Punk Rock'&&mv.sound)fin.push(2048);
-  if(o.fg)fin.push(3072);if(eff>1&&RESIST_BERRY[D.item]===type)fin.push(2048);if(eff<=1&&D.item==='Chilan Berry'&&type==='Normal')fin.push(2048);
-  const chain=list=>list.reduce((c,x)=>Math.round(c*x/4096),4096);
-  const burn=A.burn&&phys&&ab!=='Guts';
-  const hits=MULTI_HIT[mv.name]===3&&ab==='Skill Link'?5:(MULTI_HIT[mv.name]||1);
-  // Multiscale / Shadow Shield halve only the first hit at full HP
-  const ms=(dab==='Multiscale'||dab==='Shadow Shield')&&o.fullHp!==false,finA=chain(ms?[...fin,2048]:fin),finB=chain(fin);
-  const one=(r,first)=>{let x=base;if(o.spread)x=pr(x*3072/4096);x=pr(x*wMod/4096);if(o.crit)x=Math.floor(x*1.5);
-    x=Math.floor(x*r/100);x=pr(x*stabMod/4096);x=Math.floor(x*eff);if(burn)x=Math.floor(x/2);x=pr(x*(first?finA:finB)/4096);return Math.max(1,x)};
-  const R=[...Array(16)].map((_,i)=>85+i),rolls=R.map(r=>one(r,true)+one(r,false)*(hits-1)),later=R.map(r=>one(r,false)*hits);
-  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:D.item==='Focus Sash'&&hits===1&&o.fullHp!==false}}
+  {const mods=ABILITY_MODS[dab];if(mods&&mods[type]!=null&&!(nm==='Thousand Arrows'&&type==='Ground'))abMul=mods[type]}
+  const hp=calcStat(D.p,'HP',D.hpSp,1),pri=PRIORITY.has(nm);
+  if(eff===0||abMul===0||(dab==='Bulletproof'&&BULLET.has(nm))||(dab==='Soundproof'&&mv.sound)||(pri&&(['Queenly Majesty','Armor Tail','Dazzling'].includes(dab)||(T==='psychic'&&gD)))
+    ||(nm==='Poltergeist'&&!D.item)||(nm==='Steel Roller'&&!T))return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0}};
+  // Attack and Defense. Foul Play uses the target's own Attack (its points, nature and stage); Body Press the user's Defense.
+  const aStat=nm==='Body Press'?'Def':phys?'Atk':'SpA',dStat=(phys||['Psyshock','Psystrike','Secret Sword'].includes(nm))?'Def':'SpD',foul=nm==='Foul Play',S=foul?D:A;
+  const aPts=foul?(D.atkSp??0):aStat==='Atk'?(A.spA??A.sp):aStat==='SpA'?(A.spS??A.sp):(A.spDef??0);
+  let aB=foul?(D.atkBoost||0):(A.boost||0),dB=D.boost||0;if(nm==='Meteor Beam'||nm==='Electro Shot')aB=Math.max(-6,Math.min(6,aB+(ab==='Contrary'?-1:1)));
+  // Unaware ignores the other side's stat stages; a crit ignores the attacker's drops and the defender's boosts
+  if(dab==='Unaware')aB=0;if(ab==='Unaware'||['Sacred Sword','Darkest Lariat','Chip Away'].includes(nm))dB=0;if(crit){aB=Math.max(0,aB);dB=Math.min(0,dB)}
+  let a=statStage(calcStat(S.p,aStat,aPts,natMul(S.nat,aStat)),aB),d=statStage(calcStat(D.p,dStat,dStat==='Def'?D.defSp:D.spdSp,natMul(D.nat,dStat)),dB);
+  if(phys&&ab==='Hustle')a=Math.floor(a*1.5);
+  const burned=!!A.burn,am=[];
+  if(ab==='Solar Power'&&!phys&&fw==='sun')am.push(6144);
+  else if((ab==='Guts'&&burned&&phys)||(o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab]))am.push(6144);
+  else if((ab==='Fire Mane'&&type==='Fire')||(ab==='Steelworker'&&type==='Steel')||(ab==="Dragon's Maw"&&type==='Dragon')||(ab==='Rocky Payload'&&type==='Rock'))am.push(6144);
+  else if(ab==='Transistor'&&type==='Electric')am.push(5325);
+  else if((ab==='Water Bubble'&&type==='Water')||(phys&&(ab==='Huge Power'||ab==='Pure Power')))am.push(8192);
+  if((dab==='Thick Fat'&&(type==='Fire'||type==='Ice'))||(dab==='Water Bubble'&&type==='Fire')||(dab==='Purifying Salt'&&type==='Ghost')||(dab==='Heatproof'&&type==='Fire'))am.push(2048);
+  if((aIt==='Choice Band'&&phys)||(aIt==='Choice Specs'&&!phys))am.push(6144);
+  a=applyMods(a,am);
+  if(ab!=='Mega Sol'){if(fw==='sand'&&dStat==='SpD'&&D.p.t.includes('Rock'))d=pokeRound(d*1.5);if(fw==='snow'&&dStat==='Def'&&D.p.t.includes('Ice'))d=pokeRound(d*1.5)}
+  const dm=[];if(dStat==='Def'&&dab==='Fur Coat')dm.push(8192);else if(dStat==='Def'&&dab==='Grass Pelt'&&T==='grassy')dm.push(6144);
+  if(dIt==='Assault Vest'&&dStat==='SpD')dm.push(6144);d=applyMods(d,dm);
+  // move power (b: this hit's own power, which Technician reads)
+  const contact=isContact(mv);
+  const power=b=>{const m=[];
+    if(nm==='Facade'&&burned)m.push(8192);else if(nm==='Expanding Force'&&gA&&T==='psychic')m.push(6144);else if((nm==='Knock Off'&&D.item)||(nm==='Misty Explosion'&&gA&&T==='misty'))m.push(6144);
+    else if((nm==='Solar Beam'||nm==='Solar Blade')&&['rain','sand','snow'].includes(aw))m.push(2048);
+    if(o.hh)m.push(6144);
+    // terrain: 1.3× for a grounded attacker's matching type; Grassy halves Earthquake/Bulldoze and Misty halves Dragon into grounded targets
+    if(gA&&((T==='grassy'&&type==='Grass')||(T==='electric'&&type==='Electric')||(T==='psychic'&&type==='Psychic')))m.push(5325);
+    if(gD&&((T==='misty'&&type==='Dragon')||(T==='grassy'&&(nm==='Earthquake'||nm==='Bulldoze'))))m.push(2048);
+    if((ab==='Technician'&&b<=60)||(ab==='Mega Launcher'&&PULSE.has(nm))||(ab==='Strong Jaw'&&BITE.has(nm))||(ab==='Steely Spirit'&&type==='Steel')||(ab==='Sharpness'&&SHARP.has(nm)))m.push(6144);
+    if(ab===type+' Aura'||dab0===type+' Aura')m.push(5448);
+    if((ab==='Sheer Force'&&SHEER.has(nm))||(ab==='Sand Force'&&fw==='sand'&&['Rock','Ground','Steel'].includes(type))||(ab==='Tough Claws'&&contact)||(ab==='Punk Rock'&&mv.sound))m.push(5325);
+    if(ate)m.push(4915);if((ab==='Reckless'&&RECOIL.has(nm))||(ab==='Iron Fist'&&PUNCH.has(nm)))m.push(4915);
+    if(dab==='Dry Skin'&&type==='Fire')m.push(5120);
+    // Supreme Overlord (Kingambit): +10% power for each fainted ally, up to 5
+    if(ab==='Supreme Overlord'&&o.fainted)m.push([4096,4506,4915,5325,5734,6144][Math.min(5,o.fainted)]);
+    if(TYPE_ITEM[aIt]===type)m.push(4915);else if((aIt==='Muscle Band'&&phys)||(aIt==='Wise Glasses'&&!phys))m.push(4505);
+    return applyMods(b,m)};
+  // hits: 2–5 hit moves count 3 (5 with Skill Link); Parental Bond adds a second hit at 1/4 power (single-target moves).
+  // Expanding Force in Psychic Terrain hits both foes, so it takes the spread cut.
+  const spread=!!o.spread||(nm==='Expanding Force'&&gA&&T==='psychic');
+  const hits0=MULTI_HIT[nm]===3&&ab==='Skill Link'?5:(MULTI_HIT[nm]||1),pb=ab==='Parental Bond'&&hits0===1&&!spread,hits=pb?2:hits0;
+  const wMod=aw==='sun'?(type==='Fire'?6144:type==='Water'?2048:4096):aw==='rain'?(type==='Water'?6144:type==='Fire'?2048:4096):4096;
+  const baseOf=h=>{let x=Math.floor(Math.floor(22*power(RISING_HIT[nm]?RISING_HIT[nm]*(h+1):bp)*a/d)/50)+2;
+    if(spread)x=pokeRound(x*3072/4096);if(pb&&h===1)x=pokeRound(x*1024/4096);if(wMod!==4096)x=pokeRound(x*wMod/4096);if(crit)x=Math.floor(x*1.5);return x};
+  // STAB comes from the attacker's own types (a skin or Liquid Voice only counts when the new type is one of them); Protean/Libero give it to every move
+  const stab=A.p.t.includes(type),stabMod=stab?(ab==='Adaptability'?8192:6144):(ab==='Protean'||ab==='Libero')?6144:4096;
+  // final modifiers, chained (screens, Sniper, Multiscale, Fluffy, Filter, Friend Guard, Expert Belt, Life Orb, berries, ...).
+  // Multiscale/Shadow Shield and resist berries only soften the first hit; Infiltrator, Brick Break and Psychic Fangs ignore screens.
+  const screen=o.screen&&!crit&&ab!=='Infiltrator'&&!['Brick Break','Psychic Fangs','Raging Bull'].includes(nm);
+  const finOf=first=>{const f=[];if(screen)f.push(2732);if(ab==='Sniper'&&crit)f.push(6144);if(ab==='Tinted Lens'&&eff<1)f.push(8192);
+    if(first&&(dab==='Multiscale'||dab0==='Shadow Shield')&&o.fullHp!==false)f.push(2048);
+    if((dab==='Fluffy'||dab==='Aura Guard')&&contact)f.push(2048);else if(dab==='Punk Rock'&&mv.sound)f.push(2048);if(dab==='Ice Scales'&&!phys)f.push(2048);
+    if(eff>1&&(['Filter','Solid Rock'].includes(dab)||dab0==='Prism Armor'))f.push(3072);
+    if(o.fg)f.push(3072);if(dab==='Fluffy'&&type==='Fire')f.push(8192);
+    if(aIt==='Expert Belt'&&eff>1)f.push(4915);else if(aIt==='Life Orb')f.push(5324);
+    if(first&&ab!=='Unnerve'&&RESIST_BERRY[dIt]===type&&(eff>1||type==='Normal'))f.push(2048);
+    return chain4096(f)};
+  const burn=burned&&phys&&ab!=='Guts'&&nm!=='Facade',FA=finOf(true),FB=finOf(false),H=[...Array(hits)].map((_,h)=>baseOf(h));
+  const one=(base,r,fm)=>{let x=Math.floor(base*r/100);x=pokeRound(x*stabMod/4096);x=Math.floor(x*eff);if(burn)x=Math.floor(x/2);return Math.max(1,pokeRound(x*fm/4096))};
+  const R=[...Array(16)].map((_,i)=>85+i),rolls=R.map(r=>H.reduce((s,b,h)=>s+one(b,r,h?FB:FA),0)),later=R.map(r=>H.reduce((s,b)=>s+one(b,r,FB),0));
+  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:dIt==='Focus Sash'&&hits===1&&o.fullHp!==false}}
 // Fewest bulk points (HP + the defense the move hits) that survive every roll, keeping the defender's nature.
 function bulkToSurvive(o){const mv=o.move;if(!mv||!mv.bp||mv.cat===0)return null;const special=mv.cat===2&&!['Psyshock','Psystrike','Secret Sword'].includes(mv.name);
   const cur=o.def.hpSp+(special?o.def.spdSp:o.def.defSp);
@@ -154,10 +187,11 @@ function sideDefaults(p,role,mem){const nat=topNature(p),it=topItem(p);let ab;tr
   if(mem&&mem.ability&&p.a.includes(mem.ability))ab=mem.ability;
   const st=p.st,phys=st[1]>=st[3],cs=commonSpread(p),item=mem&&mem.heldItem?mem.heldItem:it&&!STONE_RE.test(it[0])?it[0]:'';
   if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,item,ability:ab,boost:0,real:true}
-    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,item,ability:ab,boost:0,real:true};
-  // no spread data: assume full Defense for Body Press on Pokémon built around their Defense (base 100+)
+    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,item,ability:ab,boost:0,real:true};
+  // no spread data: assume full Defense for Body Press on Pokémon built around their Defense (base 100+);
+  // a defender's Attack points (for Foul Play) are full on physical attackers
   return role==='atk'?{nat:nat||(phys?'Adamant':'Modest'),sp:32,spDef:st[2]>=100?32:0,item,ability:ab,boost:0}
-    :{nat:nat||'Hardy',hpSp:32,defSp:0,spdSp:0,item,ability:ab,boost:0}}
+    :{nat:nat||'Hardy',hpSp:32,defSp:0,spdSp:0,atkSp:phys?32:0,item,ability:ab,boost:0}}
 let dc={dir:'mine',a:null,d:null,mv:null,weather:'',terrain:'',screen:false,hh:false,fg:false,crit:false,spread:null,inv:{}};
 const CALC_ITEMS=['','Life Orb','Choice Band','Choice Specs','Choice Scarf','Expert Belt','Assault Vest','Focus Sash','Sitrus Berry','Leftovers',...Object.keys(TYPE_ITEM),...Object.keys(RESIST_BERRY)];
 const NATURES=['Hardy','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
