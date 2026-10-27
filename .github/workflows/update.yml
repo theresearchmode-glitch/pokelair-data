@@ -19,6 +19,7 @@ jobs:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
       - run: node rk9.mjs || echo "rk9 skipped"
       - run: node events.mjs || echo "events skipped"
+      - run: node replays.mjs || echo "replays skipped"
       - run: node model.mjs || echo "model skipped"
       - run: node ladder.mjs || echo "ladder stats skipped"
       - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || echo "op.gg skipped"
