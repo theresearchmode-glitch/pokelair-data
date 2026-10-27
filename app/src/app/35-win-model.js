@@ -76,5 +76,8 @@ function useTSPick(){return S.format==='doubles'&&!S.fun&&modelOK()}
 var TS_GAIN=2;
 // a plan's Team Score, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
 function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
-function tsChip(team){const base=ui.vsum&&ui.vsum.TS;const t=tsOf(team);if(t==null||!base)return '';const d=t-base.score;
-  return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="Team Score ${base.score} → ${t}">Team Score ${d>0?'+':d<0?'−':'±'}${Math.abs(d)}</span>`}
+// Team Score and win chance of any six, for chips that show both (the rank moves much more than the win chance)
+function tsInfo(team){if(!team||team.length!==6||S.format!=='doubles')return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?{score:teamScore({wv}).score,p:wv.p}:null}catch(e){return null}}
+function tsTitle(base,t){return `Team Score ${base.score} → ${t.score}; win chance against an average team ${(base.p*100).toFixed(1)}% → ${(t.p*100).toFixed(1)}%`}
+function tsChip(team){const base=ui.vsum&&ui.vsum.TS;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
+  return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">Team Score ${d>0?'+':d<0?'−':'±'}${Math.abs(d)}</span>`}
