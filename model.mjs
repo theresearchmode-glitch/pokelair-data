@@ -44,6 +44,13 @@ const train = G.filter(g => before.has(g[3])), test = G.filter(g => cut.has(g[3]
 // (0 = all games equal); the half-life is picked on the validation slice. Tested on held-out events: recency plus
 // set features called 56.0% of games vs 54.9%, beat 50% in 56 of 66 events vs 52, and lowered calibrated log-loss.
 const day = s => new Date(s + 'T00:00:00Z').getTime() / 864e5;
+// v5 (Oct 27): evidence shrink. After fitting, each Pokémon's effect is scaled by n/(n+1000) and each pair's by
+// n/(n+300), n = its team appearances in the games fitted, so a Pokémon a few strong players brought can't carry a team
+// on a big number from a small sample. Tested on held-out events (TRAIN_ONLY + experiments/ts-audit.mjs, Oct 27):
+// log-loss 0.6828 vs 0.6830 without it, the same separation of top-8 teams from the rest (AUC 0.60), and a six of rare
+// high-number Pokémon (Annihilape, Kommo-o, Scrafty, Mega Venusaur, Hydreigon, Mega Charizard Y) fell from 68 to 28.
+// EVID_K / EVID_KP env vars override (0 = off).
+const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ?? 300);
 function fit(games, opt) { const {useSkill = true, usePairs = true, useSets = false, iters = 250, lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
   const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length);
   const P = [b, q, s, c], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length)), L = [lb, lp, ls, lc];
@@ -63,6 +70,11 @@ function fit(games, opt) { const {useSkill = true, usePairs = true, useSets = fa
     const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
     for (let k = 0; k < 4; k++) { const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
       for (let j = 0; j < a.length; j++) { const gg = g[j] + 2 * L[k] * a[j]; m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg; a[j] -= .03 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8); } } }
+  // evidence shrink: each Pokémon's / pair's effect scaled by n/(n+K), n = its team appearances in the games fitted
+  if (EVID_K > 0 || EVID_KP > 0) { const nb = new Float64Array(mons.length), nq = new Float64Array(pairs.length);
+    for (const [A, B] of games) for (const t of [A, B]) { for (const j of tf[t].f) nb[j]++; for (const j of tf[t].p) nq[j]++; }
+    if (EVID_K > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + EVID_K);
+    if (EVID_KP > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + EVID_KP); }
   return {b, q, s, c, x, useSets}; }
 function score(model, games, skillToo) { let ll = 0, acc = 0;
   for (const [A, B, r, , pa, pb, , dA, dB] of games) { const eta = model.x(A, dA) - model.x(B, dB) + (skillToo ? model.s[pa] - model.s[pb] : 0), p = 1 / (1 + Math.exp(-eta));
@@ -76,19 +88,21 @@ const t0 = Date.now();
 // pick the shrinkage on a validation slice (the latest 15% of training events), never on the test events
 const trEv = [...new Set(train.map(g => g[3]))].sort((a, b) => evDates[a] < evDates[b] ? -1 : 1), vcut = new Set(trEv.slice(Math.floor(trEv.length * .85)));
 const fitPart = train.filter(g => !vcut.has(g[3])), val = train.filter(g => vcut.has(g[3]));
-let bestL = null; for (const k of [1, 3, 10, 30, 100]) { const m = fit(fitPart, {lb: 4 * k, lp: 15 * k, ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
+// FAST=K,HALF,SKILL,SETS (experiments): skip the validation grid and use these settings
+const FAST = process.env.FAST ? process.env.FAST.split(',').map(Number) : null;
+let bestL = FAST ? {k: FAST[0], sc: 0} : null; if (!FAST) for (const k of [1, 3, 10, 30, 100]) { const m = fit(fitPart, {lb: 4 * k, lp: 15 * k, ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
 // recency half-life, picked on the validation slice (0 = no recency, kept if nothing beats it)
-let bestH = {half: 0, sc: bestL.sc}; for (const half of [14, 21, 30]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k, half}); const sc = score(m, val, false).logloss; console.log('recency half-life', half, sc); if (sc < bestH.sc) bestH = {half, sc}; }
+let bestH = {half: FAST ? FAST[1] : 0, sc: bestL.sc}; if (!FAST) for (const half of [14, 21, 30]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k, half}); const sc = score(m, val, false).logloss; console.log('recency half-life', half, sc); if (sc < bestH.sc) bestH = {half, sc}; }
 // v4 (Oct 27): how much of a result to put down to the player rather than the team, picked on the validation slice.
 // Fitting player skill stops a top player's wins inflating their Pokémon, but strong players also pick strong teams, so
 // separating them too hard throws away real signal. 0 = no player term at all. The full adjustment stays unless another
 // setting is clearly better (by 0.002 log-loss): tested Oct 27, a 10x lighter one gained only 0.0009 (noise) while letting
 // rare Pokémon that strong players brought rate higher (an odd six rose from below 90 to 92), so it was not shipped.
-let bestS = {sm: 1, sc: bestH.sc}; for (const sm of [.3, 3, 10, 0]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k * sm, useSkill: sm > 0, half: bestH.half}); const sc = score(m, val, false).logloss; console.log('player-skill shrink', sm, sc); if (sc < bestH.sc - .002 && sc < bestS.sc) bestS = {sm, sc}; }
+let bestS = {sm: FAST ? FAST[2] : 1, sc: bestH.sc}; if (!FAST) for (const sm of [.3, 3, 10, 0]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k * sm, useSkill: sm > 0, half: bestH.half}); const sc = score(m, val, false).logloss; console.log('player-skill shrink', sm, sc); if (sc < bestH.sc - .002 && sc < bestS.sc) bestS = {sm, sc}; }
 const K = bestL.k, HALF = bestH.half, LAM = {lb: 4 * K, lp: 15 * K, ls: 1.5 * K * (bestS.sm || 1), useSkill: bestS.sm > 0, half: HALF};
 bestH.sc = bestS.sc;
-let LC = null; if (hasSets && setNames.length) for (const lc of [20, 60, 200]) { const m = fit(fitPart, {...LAM, useSets: true, lc}); const sc = score(m, val, false).logloss; console.log('sets shrink', lc, sc); if (sc < bestH.sc && (!LC || sc < LC.sc)) LC = {lc, sc}; }
-const species = fit(train, LAM), withSets = LC ? fit(train, {...LAM, useSets: true, lc: LC.lc}) : null;
+let LC = FAST && FAST[3] ? {lc: FAST[3], sc: 0} : null; if (!FAST && hasSets && setNames.length) for (const lc of [20, 60, 200]) { const m = fit(fitPart, {...LAM, useSets: true, lc}); const sc = score(m, val, false).logloss; console.log('sets shrink', lc, sc); if (sc < bestH.sc && (!LC || sc < LC.sc)) LC = {lc, sc}; }
+const species = FAST && LC ? null : fit(train, LAM), withSets = LC ? fit(train, {...LAM, useSets: true, lc: LC.lc}) : null;
 // calibrated log-loss: the page always stretches or shrinks the model's edges by the held-out calibration slope, so
 // whether set features help is judged on the odds the page will actually show
 const calibOf = (model, games) => { const pts = games.map(([A, B, r, , , , , dA, dB]) => [model.x(A, dA) - model.x(B, dB), r]); let w = 1;
@@ -98,21 +112,25 @@ const calibOf = (model, games) => { const pts = games.map(([A, B, r, , , , , dA,
 // so the ratings can be tested on events nothing in them has seen (experiments/rating-fit.mjs)
 if (process.env.EXPORT_SPLITS === '1') { const fp = fit(fitPart, LAM), mm = m => Object.fromEntries(mons.map((n, j) => [n, +m.b[j].toFixed(4)]));
   fs.writeFileSync('out/model_splits.json', JSON.stringify({fitPart: mm(fp), train: mm(species)})); console.log('wrote out/model_splits.json'); }
-const evS = score(species, test, false), evW = withSets ? score(withSets, test, false) : null, cS = calibOf(species, test), cW = withSets ? calibOf(withSets, test) : null;
+const evS = species ? score(species, test, false) : null, evW = withSets ? score(withSets, test, false) : null, cS = species ? calibOf(species, test) : {ll: 9}, cW = withSets ? calibOf(withSets, test) : null;
 const useSets = !!(cW && cW.ll < cS.ll), full = useSets ? withSets : species;
-const noSkill = fit(train, {...LAM, useSkill: false, useSets, lc: LC ? LC.lc : 40}), noPairs = fit(train, {...LAM, usePairs: false, useSets, lc: LC ? LC.lc : 40}), raw = rawBaseline(train);
+const noSkill = FAST ? full : fit(train, {...LAM, useSkill: false, useSets, lc: LC ? LC.lc : 40}), noPairs = FAST ? full : fit(train, {...LAM, usePairs: false, useSets, lc: LC ? LC.lc : 40}), raw = rawBaseline(train);
 // how many held-out events the model calls better than a coin flip (so one big event can't carry the result)
 const evWins = (() => { const by = new Map(); for (const g of test) { const p = 1 / (1 + Math.exp(-(full.x(g[0], g[7]) - full.x(g[1], g[8])))); const e = by.get(g[3]) || [0, 0]; e[0] += (p > .5) === (g[2] === 1) ? 1 : 0; e[1]++; by.set(g[3], e); }
   const v = [...by.values()]; return {beat_coin_flip: v.filter(([a, n]) => a / n > .5).length, events: v.length}; })();
 const ev = {train_games: train.length, test_games: test.length, test_events: cut.size, recency_half_life_days: HALF || null, player_skill_shrink: bestS.sm,
-  calibrated_logloss: {species_only: cS.ll, with_sets: cW ? cW.ll : null}, events_beating_coin_flip: evWins,
+  calibrated_logloss: {species_only: species ? cS.ll : null, with_sets: cW ? cW.ll : null}, events_beating_coin_flip: evWins,
   model_teams_only: score(full, test, false), species_only: evS, with_sets: evW, model_with_known_players: score(full, test, true),
   without_player_skill: score(noSkill, test, false), without_pairs: score(noPairs, test, false), raw_win_rates: score(raw, test, false), coin_flip: {logloss: .6931, acc: .5}};
 console.log('held-out test', JSON.stringify(ev));
 // ship only if it beats the raw win-rate score on held-out games; then refit on everything
 const ships = ev.model_teams_only.logloss < ev.raw_win_rates.logloss;
-const F = ships ? fit(G, {...LAM, useSets, lc: LC ? LC.lc : 40}) : null;
-let meanX = 0; if (F) { let n = 0; for (const [A, B, , , , , , dA, dB] of G) { meanX += F.x(A, dA) + F.x(B, dB); n += 2; } meanX /= n; }
+// TRAIN_ONLY=1 (experiments): fit the shipped-style model on the training events only and write out/model_train.json,
+// so Team Scores can be checked on held-out events the model never saw
+const TRAIN_ONLY = process.env.TRAIN_ONLY === '1', GF = TRAIN_ONLY ? train : G;
+const F = ships ? fit(GF, {...LAM, useSets, lc: LC ? LC.lc : 40}) : null;
+if (F && TRAIN_ONLY) { ev.train_only_fit = {...score(F, test, false), calib: +calibOf(F, test).w.toFixed(3), calib_ll: calibOf(F, test).ll}; console.log('train-only fit on held-out', JSON.stringify(ev.train_only_fit)); }
+let meanX = 0; if (F) { let n = 0; for (const [A, B, , , , , , dA, dB] of GF) { meanX += F.x(A, dA) + F.x(B, dB); n += 2; } meanX /= n; }
 // calibration on the held-out events: how far the train-only model's edges should be stretched or shrunk (1 = right as is)
 const calib = (() => { const pts = test.map(([A, B, r, , , , , dA, dB]) => [full.x(A, dA) - full.x(B, dB), r]); let w = 1;
   for (let k = 0; k < 30; k++) { let g = 0, h = 0; for (const [e, r] of pts) { const p = 1 / (1 + Math.exp(-w * e)); g += (p - r) * e; h += p * (1 - p) * e * e; } w -= g / (h || 1); } return w; })();
@@ -120,7 +138,7 @@ const calib = (() => { const pts = test.map(([A, B, r, , , , , dA, dB]) => [full
 // real players actually run (a build on 20+ decks, or 5% of them); hand-picking the four moves with the biggest numbers
 // can't beat that. The page clamps every build to this range, and the real-team spread below uses the same clamp.
 const setRange = (() => { if (!F || !useSets) return {}; const vals = new Map(), sig = new Map(), seenTD = new Set();
-  for (const [A, B, , , , , , dA, dB] of G) for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k) || d == null) continue; seenTD.add(k); const has = new Set(deckF[d]);
+  for (const [A, B, , , , , , dA, dB] of GF) for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k) || d == null) continue; seenTD.add(k); const has = new Set(deckF[d]);
     for (const n of teams[t]) { const fj = spFeats.get(n) || []; let v = 0; for (const j of fj) v += F.c[j] * ((has.has(j) ? 1 : 0) - freq[j]);
       if (!vals.has(n)) { vals.set(n, []); sig.set(n, new Map()); } vals.get(n).push(v); const key = fj.filter(j => has.has(j)).join(','); const g = sig.get(n).get(key) || {c: 0, v}; g.c++; sig.get(n).set(key, g); } }
   const out = {}; for (const [n, a] of vals) { if (!spFeats.has(n)) continue; a.sort((x, y) => x - y); const builds = [...sig.get(n).values()], need = Math.max(20, .05 * a.length);
@@ -131,7 +149,7 @@ const setRange = (() => { if (!F || !useSets) return {}; const vals = new Map(),
 // (Only upside is cut; a weak team is not pulled up.)
 // Credit = 0.5 + 0.5 × min(1, tested pairs / 6); a quarter of real teams have fewer than 6, most have 10+.
 const SUP_K = 6, tested = new Set(), teamSup = new Map();
-{ const pcAll = new Map(); for (const m of new Set(G.flatMap(g => [g[0], g[1]]))) { const t = teams[m]; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = t[i] < t[j] ? t[i] + '|' + t[j] : t[j] + '|' + t[i]; pcAll.set(k, (pcAll.get(k) || 0) + 1); } }
+{ const pcAll = new Map(); for (const m of new Set(GF.flatMap(g => [g[0], g[1]]))) { const t = teams[m]; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = t[i] < t[j] ? t[i] + '|' + t[j] : t[j] + '|' + t[i]; pcAll.set(k, (pcAll.get(k) || 0) + 1); } }
   for (const [k, n] of pcAll) if (n >= 15) tested.add(k); }
 const supOf = t => { if (teamSup.has(t)) return teamSup.get(t); const m = teams[t]; let k = 0; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) if (tested.has(m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i])) k++; teamSup.set(t, k); return k; };
 const credit = t => .5 + .5 * Math.min(1, supOf(t) / SUP_K);
@@ -139,10 +157,10 @@ const credit = t => .5 + .5 * Math.min(1, supOf(t) / SUP_K);
 const xClamp = (t, d) => { let v = 0; for (const j of tf[t].f) v += F.b[j]; for (const j of tf[t].p) v += F.q[j]; if (!useSets || d == null) return v; const has = new Set(deckF[d]);
   for (const n of teams[t]) { let u = 0; for (const j of (spFeats.get(n) || [])) u += F.c[j] * ((has.has(j) ? 1 : 0) - freq[j]); const r = setRange[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; } return v; };
 // the average tournament team, measured the same way
-if (F) { let n = 0; meanX = 0; for (const [A, B, , , , , , dA, dB] of G) { meanX += xClamp(A, dA) + xClamp(B, dB); n += 2; } meanX /= n; }
+if (F) { let n = 0; meanX = 0; for (const [A, B, , , , , , dA, dB] of GF) { meanX += xClamp(A, dA) + xClamp(B, dB); n += 2; } meanX /= n; }
 // the spread of real teams: x for each distinct team + set played in the last 45 days, as 101 percentile points
-const dist = (() => { if (!F) return null; const last = evDates.reduce((a, d) => d > a ? d : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
-  const seenTD = new Set(), xs = []; for (const [A, B, , ev, , , , dA, dB] of G) { if (evDates[ev] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); { const dv = xClamp(t, d) - meanX; xs.push(meanX + (dv > 0 ? dv * credit(t) : dv)); } } }
+const dist = (() => { if (!F) return null; const last = GF.reduce((a, g) => evDates[g[3]] > a ? evDates[g[3]] : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
+  const seenTD = new Set(), xs = []; for (const [A, B, , ev, , , , dA, dB] of GF) { if (evDates[ev] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); { const dv = xClamp(t, d) - meanX; xs.push(meanX + (dv > 0 ? dv * credit(t) : dv)); } } }
   xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
 const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
   note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
@@ -152,7 +170,7 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   pairs: F ? Object.fromEntries(pairs.map((k, j) => [k, +F.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)) : {},
   sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)])) : {},
   // the "same players without it" test for each Pokémon (pilot.mjs): [games with, win % with, games without, win % without, players]
-  pilot: pilotTest(M)};
-fs.writeFileSync('out/model.json', JSON.stringify(out));
+  pilot: TRAIN_ONLY ? {} : pilotTest(M)};
+fs.writeFileSync(TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json', JSON.stringify(out));
 console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);
