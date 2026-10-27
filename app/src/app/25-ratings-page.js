@@ -15,7 +15,7 @@ function lairTile(p, r) { const a = TC[p.t[0]], b = TC[p.t[1] || p.t[0]];
 const ltName = p => { let n = p.m ? String(p.d).replace(/^Mega /, '') : String(p.d); if (n.length > 16) n = n.replace(/^(Alolan|Galarian|Hisuian|Paldean) /, (m, r) => r[0] + '. '); return n; };
 // smaller type for a long word, or a long name overall (tiles fit two lines)
 const ltnFit = p => { const n = ltName(p), w = Math.max(...n.split(' ').map(x => x.length)); return w >= 11 || n.length >= 19 ? ' xs' : w >= 9 || n.length >= 15 ? ' sm' : ''; };
-// The ratings' own track record, measured live like the Team Score's: inside each recent event's top cut, how often the
+// The ratings' own track record, measured live: inside each recent event's top cut, how often the
 // team with the higher average rating finished higher. Cheap (ratings are cached), so it's recomputed with the data.
 let ratingTrackCache = {key: null, res: null};
 function ratingTrack() { const E = META.events; if (!E) return null; const key = E.updated + '|' + E.events.length + '|' + metaVersion; if (ratingTrackCache.key === key) return ratingTrackCache.res;
@@ -24,7 +24,7 @@ function ratingTrack() { const E = META.events; if (!E) return null; const key =
     for (let a = 0; a < sc.length; a++) for (let b = a + 1; b < sc.length; b++) { const A = sc[a], B = sc[b]; if (A.pl === B.pl || A.s === B.s) continue; pairs++; if ((A.s > B.s) === (A.pl < B.pl)) agree++; } }
   const res = pairs >= 200 ? {acc: agree / pairs, pairs, events: E.events.length} : null; ratingTrackCache = {key, res}; return res; }
 function renderLair(bodyOnly) {
-  { const el = $('ratingTrack'), r = ratingTrack(); if (el) el.textContent = r ? `Track record: in ${r.events} recent events, the team with the higher average rating finished higher in ${Math.round(r.acc * 100)}% of ${r.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip; the Team Score, which judges whole teams, does better). Ratings rank single Pokémon: use them to find candidates, and the Team Score to judge a team.` : ''; }
+  { const el = $('ratingTrack'), r = ratingTrack(); if (el) el.textContent = r ? `Track record: in ${r.events} recent events, the team with the higher average rating finished higher in ${Math.round(r.acc * 100)}% of ${r.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip). Ratings rank single Pokémon: use them to find candidates, and the scouting report to check a team.` : ''; }
   const pane = $('lairBody'); if (!pane) return; if (ui.lmode == null) { try { ui.lmode = LS.get('cc2.lmode', 'board'); } catch (e) { ui.lmode = 'board'; } }
   const all = lairRows(), rows = lairFilter(all), mode = ui.lmode === 'map' ? 'map' : 'board', pf = activePerf();
   // Sleepers, just under the summary: what wins before the crowd notices
@@ -87,7 +87,7 @@ function lairSheet(n) {
   const ev = [];
   {
     const pt = pilotFor(p); if (pt) ev.push(['Same players test', `${pt.w}% with it · ${pt.wo}% without`, `the same ${pt.players.toLocaleString()} players: ${pt.g.toLocaleString()} games with it, ${pt.go.toLocaleString()} without. ${pt.d >= 3 ? 'A big gap: the Pokémon itself is winning games' : pt.d >= 1 ? 'Wins a little more than these players usually do' : pt.d > -1 ? 'About the same: these players win as often without it' : 'These players do better without it'}`]);
-    if (src.adj) { const v = src.adj[0] * 25; ev.push(['Own share of team wins', `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(1)}% win chance`, `teammates accounted for · ${src.adj[2].toLocaleString()} Limitless teams`]); }
+    // (the model-based "own share of team wins / win chance" row was removed Oct 28 with the other win predictions)
     { const bl = typeof bringLead === 'function' ? bringLead(p) : null; if (bl) ev.push(['Team preview (Showdown replays)', `brought ${bl.b}% · led ${bl.l}%`, `when it's on the team · ${bl.g.toLocaleString('en-US')} games${bl.forms ? ' · all forms' : ''}${bl.g < 300 ? ' · few games' : ''} · shown, not scored yet`]); }
     if (src.tour) ev.push(['Limitless tournaments', `${src.tour[0]}% of teams`, `${src.tour[1]}% won · ${src.tour[2].toLocaleString()} games`]);
     if (src.official) ev.push(['Official VGC events', `${src.official[0]}% of teams`, `${src.official[1]}% won · ${src.official[2].toLocaleString()} games`]);

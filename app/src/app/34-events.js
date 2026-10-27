@@ -4,11 +4,9 @@ document.addEventListener('change',e=>{const t=e.target;
     toast(t.value===rec?`${t.value}: the most-used ability`:`${t.value} set (most players run ${rec})`)}
   else if(t.dataset&&t.dataset.mvi){const [i,j]=t.dataset.mvi.split(':').map(Number);setMove(i,j,t.value)}
   else if(t.dataset&&t.dataset.iti!=null){const i=+t.dataset.iti,s=S.slots[i],p=s&&byName.get(s.n);if(!p)return;const def=defaultItem(p),v=t.value;
-    const T0=(ui.vsum&&ui.vsum.TS)||null,before=T0?T0.score:null,p0=T0?T0.p:null;if(!s.it)s.it={};if(!v||v===def)delete s.it[S.format];else s.it[S.format]=v;if(!Object.keys(s.it).length)delete s.it;render();
-    const T1=(ui.vsum&&ui.vsum.TS)||null,after=T1?T1.score:null,cl=scarfTrClash(members());
-    // the win chance moves much less than the rank: real teams sit close together, so both are shown
-    const pc=x=>(x*100).toFixed(1)+'%';
-    toast(`${v||'No item'}${v===def?': the usual item':''}${before!=null&&after!=null?` · Team Score ${before===after?'stays at '+after:before+' → '+after}${p0!=null&&T1&&before!==after?` (win chance ${pc(p0)} → ${pc(T1.p)})`:''}`:''}${cl&&v==='Choice Scarf'?' · clashes with Trick Room':''}`)}
+    const T0=(ui.vsum&&ui.vsum.RD)||null,before=T0?T0.score:null;if(!s.it)s.it={};if(!v||v===def)delete s.it[S.format];else s.it[S.format]=v;if(!Object.keys(s.it).length)delete s.it;render();
+    const T1=(ui.vsum&&ui.vsum.RD)||null,after=T1?T1.score:null,cl=scarfTrClash(members());
+    toast(`${v||'No item'}${v===def?': the usual item':''}${before!=null&&after!=null?` · ready for ${before===after?after+'% of the top threats (no change)':before+'% → '+after+'% of the top threats'}`:''}${cl&&v==='Choice Scarf'?' · clashes with Trick Room':''}`)}
   else if(t.id==='poolSel'){ui.pool=['box','boxfill','all'].includes(t.value)?t.value:'boxfill';LS.set('cc2.pool',ui.pool);render();toast({box:'Suggestions only use your box',boxfill:'Your box first, then the best Pokémon to catch',all:'Suggestions use the full roster'}[ui.pool])}
   else if(t.id==='oppTeamSel'){const d=META.teams,tm=d&&d.teams[+t.value];if(tm){S.opp=tm.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');persist();renderMatchup();toast('Loaded '+tm.player+'’s team as the opponent')}}
   else if(t.id==='useAbil'||t.id==='swapMega'){render();toast(t.id==='swapMega'?(t.checked?'Plans can now swap your Mega':'Your Mega is protected again'):'Plans updated')}});

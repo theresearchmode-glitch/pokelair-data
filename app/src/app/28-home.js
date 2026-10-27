@@ -13,16 +13,16 @@ const HOME_TILES = [
   ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>'],
   ['types', 'Type chart', 'What hits what, and your team against every type', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/>']];
 function homeMini(p, r, extra) { return `<button type="button" class="hmini" data-lt="${esc(p.n)}" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}" title="${esc(p.d)}">${sprite(p, 'hmspr') || ''}<span class="hmn">${esc(p.d.replace(/^Mega /, 'M-'))}</span><span class="hms"><b>${r.total}</b>${extra || ''}</span></button>`; }
-// Desktop hero, right side: the newest event winner (one tap to load it) and your own Team Score.
+// Desktop hero, right side: the newest event winner (one tap to load it) and how ready your team is for the top threats.
 function homeSide(v) { const E = META.events; let ev = null, t = null;
   if (E && Array.isArray(E.events)) for (const e of E.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }
-  if (!ev && !(v && v.TS)) return '';
+  if (!ev && !(v && v.RD)) return '';
   return `<aside class="hhside" aria-label="Latest winner">${ev ? `<div class="hsk">Latest winner</div>
     <div class="hswho"><b>${esc(t.player)}</b>${t.record ? ` <span class="vsub">${esc(t.record)}</span>` : ''}</div>
     <div class="t2">${esc(ev.name)} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>
     <div class="hsspr">${t.mons.map(m => sprite(byName.get(m.n), 'hsmon') || '').join('')}</div>
     <div class="row"><button class="btn sm" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All events ›</button></div>` : ''}
-    ${v && v.TS ? `<button type="button" class="hsts" data-view="build"><b>${v.TS.score}</b><span>Your Team Score · ${esc(v.TS.label)}</span></button>` : ''}</aside>`; }
+    ${v && v.RD ? `<button type="button" class="hsts" data-view="build"><b>${v.RD.score}%</b><span>Your team is ready for ${v.RD.score}% of the top 30 threats</span></button>` : ''}</aside>`; }
 function renderHome() { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
   const rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 4);
   const lineup = rows.filter(x => SPRITE_ID[x.p.n]).slice(0, 6);
@@ -48,7 +48,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
       <div class="htk"><span>Your team · ${mine.length}/6</span><span class="thbadge">${esc(shortHead(v.head))}</span></div>
       <div class="htn">${esc(teamTitleFor(ms))}</div>
       <div class="htl">${mine.map(x => sprite(x.p, 'htspr') || '').join('')}</div>
-      <div class="htf">${v.TS ? `<span><b>${v.TS.score}</b> Team Score</span>` : ''}${v.tr ? `<span><b>${v.tr.w}–${v.tr.l}</b> your record</span>` : ''}${v.CK ? `<span><b>${v.CK.pass}/${v.CK.n}</b> checklist</span>` : ''}${v.best ? `<span><b>${Math.round(v.best.wr * 100)}%</b> at events</span>` : ''}<span class="htgo">Open ›</span></div></button>`
+      <div class="htf">${v.RD ? `<span><b>${v.RD.score}%</b> ready for top threats</span>` : ''}${v.tr ? `<span><b>${v.tr.w}–${v.tr.l}</b> your record</span>` : ''}${v.CK ? `<span><b>${v.CK.pass}/${v.CK.n}</b> checklist</span>` : ''}${v.best ? `<span><b>${Math.round(v.best.wr * 100)}%</b> at events</span>` : ''}<span class="htgo">Open ›</span></div></button>`
     : `<div class="hstart"><div class="hsk">New here?</div><div class="hst">Three ways to start</div>
       <div class="startacts"><button class="startbtn" type="button" data-view="auto"><b>Build for me</b><span>A real winning team you can field from your box</span></button><button class="startbtn" type="button" data-view="top"><b>Copy a top team</b><span>Load a team that won and tweak it</span></button><button class="startbtn" type="button" data-view="build"><b>Start from scratch</b><span>Type any Pokémon into a slot</span></button></div></div>`}
   ${typeof sleepersSection === 'function' ? sleepersSection('home') : ''}

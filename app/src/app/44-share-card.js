@@ -34,11 +34,11 @@ async function buildShareCard() {
   ctx.strokeStyle = 'rgba(36,18,79,.05)'; ctx.lineWidth = 1.4;
   for (let yy = 0; yy < SC.H; yy += 48) for (let xx = 0; xx < SC.W; xx += 56) { ctx.beginPath(); ctx.moveTo(xx + 6, yy + 18); ctx.lineTo(xx + 14, yy + 11); ctx.lineTo(xx + 22, yy + 18); ctx.moveTo(xx + 6, yy + 24); ctx.lineTo(xx + 14, yy + 17); ctx.lineTo(xx + 22, yy + 24); ctx.stroke(); }
   scLogo(ctx, 64, 104, 1);
-  // Team Score, top right
+  // readiness for the top threats, top right
   const TS = (ui.vsum || {}).TS;
   if (TS) { ctx.textAlign = 'right'; ctx.font = 'italic 800 104px "Sofia Sans Condensed", sans-serif';
-    ctx.fillStyle = SC.pink; ctx.fillText(String(TS.score), 1145, 137); ctx.fillStyle = SC.ink; ctx.fillText(String(TS.score), 1140, 132);
-    ctx.font = '700 15px "JetBrains Mono", monospace'; ctx.fillStyle = SC.acc; ctx.fillText(('Team Score' + (TS.label ? ' · ' + TS.label : '')).toUpperCase(), 1140, 160); ctx.textAlign = 'left'; }
+    ctx.fillStyle = SC.pink; ctx.fillText(TS.score + '%', 1145, 137); ctx.fillStyle = SC.ink; ctx.fillText(TS.score + '%', 1140, 132);
+    ctx.font = '700 15px "JetBrains Mono", monospace'; ctx.fillStyle = SC.acc; ctx.fillText('READY FOR THE TOP 30 THREATS', 1140, 160); ctx.textAlign = 'left'; }
   // team name
   const title = (typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team';
   ctx.font = 'italic 800 62px "Sofia Sans Condensed", sans-serif'; const tt = scFit(ctx, title.toUpperCase(), 1070);

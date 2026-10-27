@@ -39,11 +39,11 @@ function provenBuild() {
     const opts = [];
     for (const p of ROSTER) { if (!ok(p) || isTrap(p) || used.has(p.b) || (p.m && mg >= 2) || viability(p) < 8) continue; const t = [...keep, abMember(p)]; opts.push({t, sc: abScore(t)}); }
     opts.sort((a, b) => b.sc - a.sc); if (!opts.length) return null;
-    // the gap goes to whichever of the 8 best fits gives the highest Team Score
+    // the gap goes to whichever of the 8 best fits leaves the team ready for the most top threats
     if (useTSPick()) { let best = null; for (const o of opts.slice(0, 8)) { const ts = tsOf(o.t); if (ts != null && (!best || ts > best.ts)) best = {t: o.t, ts}; } if (best) return best.t; }
     return opts[0].t; };
   // real results lead: the win rate (already shrunk toward the field in the pipeline) pulled further toward the field when
-  // few players ran it, plus a little for more players; Team Score only fills a missing slot and breaks near-ties
+  // few players ran it, plus a little for more players; readiness only fills a missing slot and breaks near-ties
   const shrunk = c => { const k = 4; return (c.wr * c.n + (RES.base || .5) * k) / (c.n + k); };
   let scored = cands.map(c => ({...c, s: shrunk(c) + .006 * Math.log2(1 + c.n) - (c.missing ? .05 : 0) - (c.ps.filter(p => p.m).length !== goal ? .015 : 0)})).sort((a, b) => b.s - a.s);
   if (useTSPick()) { scored = scored.slice(0, 15); for (const c of scored) { c.t = fill(c); c.ts = c.t && c.t.length === 6 ? tsOf(c.t) : null; }
@@ -108,8 +108,8 @@ function buildBest_() {
       for (let i = lock; i < 6; i++) for (const c of cand) { const rest = best.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const s = abScore(nt); if (s > bs + 1) { best = nt; bs = s; } }
       return {t: best, s: bs}; };
     let ranked = finals.map(f => ({...f, s: abScore(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12).map(x => ({...polish(x.t, x.lock), lock: x.lock})).sort((a, b) => b.s - a.s);
-    // Team Score decides the order (win model loaded): the search above only shortlists. Each shortlisted team then
-    // gets one round of Team Score polish: the single swap (outside its seed core) that raises its Team Score most.
+    // Readiness decides the order: the search above only shortlists. Each shortlisted team then gets one round of polish:
+    // the single swap (outside its seed core) that readies it for the most top threats.
     // Candidates for the polish: the 25 strongest by pick value plus the 15 the win model rates highest (so a Pokémon the
     // model likes is tried even if it's rarely picked). Up to 3 rounds, each taking the single swap that raises it most.
     if (useTSPick()) { const mv = p => (META.model.mons[p.n] || 0), cTS = [...new Set([...cand.slice(0, 25), ...pool.slice().sort((a, b) => mv(b) - mv(a)).slice(0, 15).map(p => M.get(p.n))])];
@@ -148,11 +148,11 @@ function abDescribe(t) {
 // before you build: what you'll get, plus three recent event winners you can load straight away
 function abStart() {
   const E = META.events, picks = E ? E.events.filter(e => e.src === 'official' || e.players >= 64).filter(e => e.top[0] && e.top[0].place === 1).slice(0, 3) : [];
-  return `<div class="abstart"><div class="abwhat">${[['Six that work together', 'Built from teams that win at real tournaments, filtered to what you own.'], ['The why', 'Each pick comes with its job on the team and what it fixes.'], ['Your Team Score', 'How ready it is, and the one change that would help most.']].map(([h, t], i) => `<div class="abw"><span class="abwn">${i + 1}</span><div><b>${h}</b><p class="t2">${t}</p></div></div>`).join('')}</div>
+  return `<div class="abstart"><div class="abwhat">${[['Six that work together', 'Built from teams that win at real tournaments, filtered to what you own.'], ['The why', 'Each pick comes with its job on the team and what it fixes.'], ['Ready for the top threats', 'Which of the top threats it answers, and the one change that would help most.']].map(([h, t], i) => `<div class="abw"><span class="abwn">${i + 1}</span><div><b>${h}</b><p class="t2">${t}</p></div></div>`).join('')}</div>
     ${picks.length ? `<div class="head abwinhead"><div><h3>Or start from a recent winner</h3><p class="hint">Full sets, ready to load.</p></div></div>${picks.map(e => teamSheetCard(e.top[0], e, e.id + '#0')).join('')}` : ''}</div>`; }
-// the built team's Team Score, from the same model as the Team page
-function abTS(tm) { if (tm.mons.length !== 6) return ''; if (tm._ts === undefined) { let t = null; try { const ms = tm.mons.map(m => abMember(byName.get(m.n))); const wv = winVsField(ms.map(m => m.p.n), true, ms); t = wv ? teamScore({wv}) : null; } catch (e) {} tm._ts = t; }
-  return tm._ts ? `<span class="abtsv" title="Team Score: stronger than ${tm._ts.score}% of recent tournament teams"><b>${tm._ts.score}</b>Team Score</span>` : ''; }
+// the built team's readiness for the top threats, from the same report as the Team page
+function abTS(tm) { if (tm.mons.length !== 6) return ''; if (tm._ts === undefined) { let t = null; try { t = tsOf(tm.mons.map(m => abMember(byName.get(m.n)))); } catch (e) {} tm._ts = t; }
+  return tm._ts != null ? `<span class="abtsv" title="Ready for ${tm._ts}% of the top 30 threats (weighted by how often each makes top cut)"><b>${tm._ts}%</b>ready</span>` : ''; }
 function renderAutoBuild() {
   const el = $('abOut'); if (!el) return; const r = ui.ab;
   if (!r) { el.innerHTML = abStart(); return; }
@@ -180,7 +180,7 @@ function addFreshTake(res) {
   let alt = null; try { alt = withOffMeta(() => buildBest()); } catch (e) { alt = null; }
   if (!alt || !alt.teams || !alt.teams.length) return res;
   const best = res.teams[0], names = new Set(best.mons.map(m => m.n));
-  // a fresh take must still be a good team (Oct 28 audit: one scored 15): Team Score 60+ and within 10 of the best option
+  // a fresh take must still be a good team (Oct 28 audit: one scored 15): ready for 60%+ of the top threats and within 10 of the best option
   const tsT = t => { try { return tsOf(t.mons.map(m => abMember(byName.get(m.n)))); } catch (e) { return null; } }, bestTS = tsT(best);
   const pick = alt.teams.find(t => { if (!(t.mons.filter(m => names.has(m.n)).length <= 3 && t.mons.filter(m => m.offMeta).length >= 2 && (!best.grade || !t.grade || t.grade.pass >= best.grade.pass - 1))) return false;
     if (!modelOK()) return true; const ts = tsT(t); return ts != null && ts >= 60 && (bestTS == null || ts >= bestTS - 10); });

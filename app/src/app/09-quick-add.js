@@ -24,8 +24,8 @@ function qaReason(key,pl){const x=pl.ch[0],m=pl.team.find(t=>t.p===x.c.p)||x.c.m
   return bits.join(' · ')}
 function quickPicks(key,plans,ms,used){if(!plans||!plans.singles||!plans.basePl)return [];const base=plans.basePl.score;
   let c=plans.singles.filter(pl=>pl.ch.length===1&&pl.score<base-3&&qaFixes(key,pl,ms)).sort((a,b)=>a.score-b.score);
-  // with the win model on, a quick add must not lower the Team Score, and the highest one comes first
-  // hidden-gem plans (plans.gems) carry no Team Score of their own, so they're judged against the team's
+  // a quick add must ready the team for more of the top threats, and the most prepared result comes first
+  // hidden-gem plans (plans.gems) carry no readiness base of their own, so they're judged against the team's
   const tb=plans.tsBase!=null?plans.tsBase:(useTSPick()&&ui.plans&&ui.plans.tsBase!=null?ui.plans.tsBase:null);
   if(tb!=null){c=tsShortlist(c,20);for(const pl of c)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
     c=c.filter(pl=>pl._ts!=null&&pl._ts>=tb+TS_GAIN).sort((a,b)=>(b._ts??-1)-(a._ts??-1)||a.score-b.score);
@@ -40,7 +40,7 @@ function renderQuick(key,plans,ms,used){const picks=quickPicks(key,plans,ms,used
   if(!picks.length)return `<div class="qnone">${ui.pool==='box'?'Nothing in your box fixes this cleanly. In Plan settings, set "Pick from" to "box, then fill gaps" to see what to catch.':'No single change fixes this without hurting the team. Check the fix plans for two-change options.'}</div>`;
   return `<div class="qa"><div class="qlbl">Quick add</div><div class="qpicks">${picks.map(pl=>{const x=pl.ch[0],p=x.c.p,i=ui.quick.push(pl)-1,fit=Math.round(plans.basePl.score-pl.score),why=qaReason(key,pl);
     return `<div class="qpick${pl.gem?' gem':''}"><div class="qtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(p)?'<span class="tag box ico" title="In your box">BOX</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${pl.gem?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(p)}</div>
-      ${why?`<div class="qwhy">${esc(why)}</div>`:''}<div class="qact"><button class="btn sm primary" type="button" data-qa="${i}">${x.out?'Swap for '+esc(x.out.d):'Add'}</button>${pl._ts!=null&&(ui.plans&&ui.plans.tsBase!=null)?`<span class="qfit" title="Team Score ${ui.plans.tsBase} → ${pl._ts}">Team Score ${pl._ts>ui.plans.tsBase?'+':'±'}${pl._ts-ui.plans.tsBase||0}</span>`:`<span class="qfit" title="Fits what the team is missing. A Team Score shows once you have 5 or more Pokémon">Good fit</span>`}</div></div>`}).join('')}</div></div>`}
+      ${why?`<div class="qwhy">${esc(why)}</div>`:''}${(()=>{if(ms.length!==6||pl.team.length!==6)return '';const d=threatDiff(ms,pl.team,1).find(x=>x.up);return d?`<div class="qwhy">${d.html}</div>`:''})()}<div class="qact"><button class="btn sm primary" type="button" data-qa="${i}">${x.out?'Swap for '+esc(x.out.d):'Add'}</button>${pl._ts!=null&&(ui.plans&&ui.plans.tsBase!=null)?`<span class="qfit" title="${esc(tsTitle({score:ui.plans.tsBase},{score:pl._ts}))}">Ready ${pl._ts>ui.plans.tsBase?'+':'±'}${pl._ts-ui.plans.tsBase||0}%</span>`:`<span class="qfit" title="Fits what the team is missing. Readiness for the top threats shows once the team has 6">Good fit</span>`}</div></div>`}).join('')}</div></div>`}
 function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   if(!ms.length){el.innerHTML='<div class="empty-note">Add Pokémon to see what the team needs.</div>';const sub=$('needsSub');if(sub)sub.textContent='';return}
   const name=i=>esc(ms[i].d);const out=[];
