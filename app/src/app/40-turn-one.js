@@ -10,10 +10,12 @@ function turnOnePlan(mine, theirs, r) {
   const spe = m => { const s = likelySpeed(m.p, mineM(m)); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
   const F = typeof turnOneField === 'function' ? turnOneField([...L, ...opp], spe) : {};
   const hitOn = (a, moves, d) => bestHitOn(a.p, moves, d.p, mineM(a), mineM(d), F);
+  // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
+  const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
   // their threat to each of my leads: the hardest single hit
   const danger = opp.map(o => { let worst = null; for (const m of L) { const h = hitOn(o, o.moves || [], m); if (h && (!worst || h.r.max / h.r.hp > worst.pct)) worst = {pct: h.r.max / h.r.hp, h, on: m}; } return {o, worst}; })
     .sort((a, b) => (b.worst ? b.worst.pct : 0) - (a.worst ? a.worst.pct : 0));
-  const fast = opp.filter(o => L.some(m => spe(o) > spe(m))).length;
+  const fast = opp.filter(o => L.some(m => speF(o) > speF(m))).length;
   const lines = [], used = new Set();
   for (const m of L) { const mv = names(m);
     if (mv.has('Fake Out') && danger[0] && !used.has('fake')) { used.add('fake'); lines.push([m, `Fake Out ${esc(danger[0].o.d)}`, danger[0].worst ? `its ${esc(danger[0].worst.h.mv.name)} does up to ${Math.round(100 * danger[0].worst.pct)}% to ${esc(danger[0].worst.on.d)}` : 'their biggest threat']); continue; }
@@ -26,7 +28,7 @@ function turnOnePlan(mine, theirs, r) {
     if (best) lines.push([m, `${esc(best.h.mv.name)} ${best.h.mv.spread ? '(hits both)' : 'into ' + esc(best.o.d)}`, `${best.ko ? 'KOs' : 'up to ' + Math.round(100 * best.pct) + '%'}${best.h.mv.spread ? ' on ' + esc(best.o.d) : ''}`]);
     else lines.push([m, 'Protect or switch', 'no good attack into these leads']); }
   const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${esc(x.o.d)}'s ${esc(x.worst.h.mv.name)} can KO ${esc(x.worst.on.d)}`);
-  const order = [...L, ...opp].map(x => ({x, s: spe(x), me: L.includes(x)})).sort((a, b) => b.s - a.s);
+  const order = [...L, ...opp].map(x => ({x, s: speF(x), me: L.includes(x)})).sort((a, b) => b.s - a.s);
   return `<div class="plan t1plan"><div class="ph"><span class="pt">Turn 1</span><span class="vsub">your ${esc(L[0].d)} + ${esc(L[1].d)} vs their likely ${esc(opp[0].d)} + ${esc(opp[1].d)}</span></div>
     ${lines.map(([m, act, why]) => `<div class="t1row"><b>${esc(m.d)}</b><span class="t1act">${act}</span><span class="t2">${why}</span></div>`).join('')}
     ${warn.length ? `<p class="t2 t1warn">Watch: ${warn.join('; ')}. Consider Protect.</p>` : ''}

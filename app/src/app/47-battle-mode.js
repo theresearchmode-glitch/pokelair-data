@@ -12,8 +12,11 @@ function bmHit(aP, moves, dP, weather, intim, aMem, dMem, terrain) {
     const r = damage({atk: {...A, boost: intim && mv.cat === 1 ? -1 : 0}, def: D, move: mv, spread: !!mv.spread, weather, terrain: terrain || ''});
     if (r && r.hp && (!best || r.max > best.r.max)) best = {mv, r}; }
   return best; }
-function bmSpeed(p, me, mem) { const s = likelySpeed(p, me ? mem : null); let v = s.scarf ? Math.floor(s.v * 1.5) : s.v;
-  if (me && bmUi.tw) v *= 2; if (!me && bmUi.twOpp) v *= 2; if (!me && bmUi.icy) v = Math.floor(v * BOOST(-1)); return {v, s}; }
+// weather: the weather in play (Chlorophyll/Swift Swim/Sand Rush/Slush Rush double Speed in theirs); Unburden's doubled
+// speed after its item is used comes back as unb
+function bmSpeed(p, me, mem, weather) { const s = likelySpeed(p, me ? mem : null), ab = me && mem ? mem.ability : abilityOf(mem && mem.p ? mem : {p});
+  const v = spdCalc(s.v, s.scarf, ab, weather || '', {tw: me ? bmUi.tw : bmUi.twOpp, icy: !me && bmUi.icy, par: !me && bmUi.par});
+  return {v, s, wxUp: speedMul(ab, weather || '') > 1, ab, unb: ab === 'Unburden' && !s.scarf ? v * 2 : null}; }
 // What to watch on each of their Pokémon, against your four
 const BM_IMMUNE = {Levitate: 'Ground', 'Earth Eater': 'Ground', 'Flash Fire': 'Fire', 'Well-Baked Body': 'Fire', 'Water Absorb': 'Water', 'Storm Drain': 'Water', 'Dry Skin': 'Water',
   'Volt Absorb': 'Electric', 'Lightning Rod': 'Electric', 'Motor Drive': 'Electric', 'Sap Sipper': 'Grass'};
@@ -70,25 +73,25 @@ function renderBattle() {
       ${r.bench.length ? `<p class="t2" style="margin:0">Leave home: ${r.bench.map(i => esc(mine[i].d)).join(', ')}</p>` : ''}
       ${ll.length === 2 ? `<p class="t2" style="margin:0">Their likely lead: <b>${esc(ll[0].d)}</b> + <b>${esc(ll[1].d)}</b></p>` : ''}
       ${r.chosen.filter(i => mine[i].mega).length > 1 ? '<p class="t2" style="margin:0">Only one Mega can Mega Evolve this battle.</p>' : ''}</div>`;
-    const W = bmWatch(C, theirs);
-    const watch = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Watch out</span></div>${W.length ? W.map(w => `<div class="bmw">${sprite(w.o.p, 'bmwspr')}<div><b>${esc(w.o.d)}</b>${w.out.map(([c, t, d]) => `<div class="bmwl"><span class="sev ${c}">${t}</span><span class="t2">${d}</span></div>`).join('')}</div></div>`).join('')
-      : '<p class="t2" style="margin:0">Nothing on their side shuts down your four.</p>'}</div>`;
-    // speed
-    const rows = [...C.map(m => ({x: m, me: true})), ...theirs.map(o => ({x: o, me: false}))].map(q => ({...q, ...bmSpeed(q.x.p, q.me, q.x)}));
-    rows.sort((a, b) => bmUi.tr ? a.v - b.v : b.v - a.v); const mx = Math.max(...rows.map(q => q.v), 1);
-    const tog = (k, t) => `<button type="button" data-bms="${k}" aria-pressed="${!!bmUi[k]}">${t}</button>`;
-    const speed = `<div class="plan bmcard" data-t="speed"><div class="ph"><span class="pt">Speed</span><span class="vsub">${bmUi.tr ? 'slowest moves first' : 'fastest first'}</span></div>
-      <div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('tr', 'Trick Room')}</div>
-      <div class="bmspd">${rows.map((q, i) => { const tie = rows.some((o, j) => j !== i && o.v === q.v && o.me !== q.me);
-        return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">TIE</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}</span></div>`; }).join('')}</div>
-      <p class="t2" style="margin:0">Your side: your items (and your spreads where you set them). Their side: the most common spreads, natures and items. Ties are a coin flip.</p></div>`;
-    // damage both ways
-    const cls = (b) => { if (!b) return 'z'; const lo = b.r.min / b.r.hp, hi = b.r.max / b.r.hp; return lo >= 1 ? 'k1' : hi >= 1 ? 'k1m' : lo >= .5 ? 'k2' : hi >= .5 ? 'k2m' : 'k3'; };
-    const pc = b => b ? Math.min(999, Math.round(100 * b.r.max / b.r.hp)) : '–';
     // turn-1 field from both sides' leads (yours and their likely lead), used when the weather is on Auto
     const spdOf = x => { const s = likelySpeed(x.p, C.includes(x) ? x : null); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
     const F1 = typeof turnOneField === 'function' ? turnOneField([...r.lead.map(i => mine[i]), ...(ll.length === 2 ? ll : theirs.slice(0, 2))], spdOf) : {weather: '', terrain: ''};
     const wNow = bmUi.weather === 'auto' ? F1.weather : bmUi.weather, tNow = bmUi.weather === 'auto' ? F1.terrain : '';
+    const W = bmWatch(C, theirs);
+    const watch = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Watch out</span></div>${W.length ? W.map(w => `<div class="bmw">${sprite(w.o.p, 'bmwspr')}<div><b>${esc(w.o.d)}</b>${w.out.map(([c, t, d]) => `<div class="bmwl"><span class="sev ${c}">${t}</span><span class="t2">${d}</span></div>`).join('')}</div></div>`).join('')
+      : '<p class="t2" style="margin:0">Nothing on their side shuts down your four.</p>'}</div>`;
+    // speed
+    const rows = [...C.map(m => ({x: m, me: true})), ...theirs.map(o => ({x: o, me: false}))].map(q => ({...q, ...bmSpeed(q.x.p, q.me, q.x, wNow)}));
+    rows.sort((a, b) => bmUi.tr ? a.v - b.v : b.v - a.v); const mx = Math.max(...rows.map(q => q.v), 1);
+    const tog = (k, t) => `<button type="button" data-bms="${k}" aria-pressed="${!!bmUi[k]}">${t}</button>`;
+    const speed = `<div class="plan bmcard" data-t="speed"><div class="ph"><span class="pt">Speed</span><span class="vsub">${bmUi.tr ? 'slowest moves first' : 'fastest first'}</span></div>
+      <div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('par', 'They\'re paralyzed')}${tog('tr', 'Trick Room')}</div>${wNow ? `<p class="t2" style="margin:0">Weather: ${esc(wNow)} (set it under Damage).</p>` : ''}
+      <div class="bmspd">${rows.map((q, i) => { const tie = rows.some((o, j) => j !== i && o.v === q.v && o.me !== q.me);
+        return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">TIE</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}${q.wxUp ? `<em> ${esc(q.ab)}</em>` : ''}${q.unb ? `<em> → ${q.unb} after item</em>` : ''}</span></div>`; }).join('')}</div>
+      <p class="t2" style="margin:0">Your side: your items (and your spreads where you set them). Their side: the most common spreads, natures and items. Ties are a coin flip.</p></div>`;
+    // damage both ways
+    const cls = (b) => { if (!b) return 'z'; const lo = b.r.min / b.r.hp, hi = b.r.max / b.r.hp; return lo >= 1 ? 'k1' : hi >= 1 ? 'k1m' : lo >= .5 ? 'k2' : hi >= .5 ? 'k2m' : 'k3'; };
+    const pc = b => b ? Math.min(999, Math.round(100 * b.r.max / b.r.hp)) : '–';
     const wseg = [['auto', `Leads${F1.weather || F1.terrain ? ': ' + fieldWords(F1) : ': none'}`], ['', 'No weather'], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']].map(([k, t]) => `<button type="button" data-bmw="${k}" aria-pressed="${bmUi.weather === k}">${esc(t)}</button>`).join('');
     const grid = `<div class="tablewrap"><table class="bmdt"><thead><tr><th></th>${theirs.map(o => `<th title="${esc(o.d)}">${sprite(o.p, 'dcth')}<span>${esc(o.d.replace(/^Mega /, 'M-'))}</span></th>`).join('')}</tr></thead><tbody>
       ${C.map(m => `<tr><th>${sprite(m.p, 'dcth')}<span>${esc(m.d)}</span></th>${theirs.map(o => { const a = bmHit(m.p, memberMoves(m).moves, o.p, wNow, bmUi.intMe, m, null, tNow), d = bmHit(o.p, o.moves, m.p, wNow, bmUi.intThem, null, m, tNow);

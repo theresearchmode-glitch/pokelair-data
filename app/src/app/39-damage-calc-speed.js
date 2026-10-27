@@ -20,27 +20,38 @@ function likelySpeed(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpre
   const sp=dn?0:(up||p.st[5]>=70)?32:0,mul=up?1.1:dn?.9:1;
   const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 Speed points, Speed-lowering nature':up?'32 Speed points, Speed-boosting nature':sp?'32 Speed points':'0 Speed points')+(nat?`, ${nat} (estimated)`:' (estimated)'),nat}}
 // ---- speed tiers ----
-let spdUi={tw:false,twOpp:false,tr:false,icy:false};
+// wx: the weather in play ('auto' = the one your team sets, if exactly one); par: they're paralyzed (×0.5)
+let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,wx:'auto'};
+// One row's speed under the conditions: item (Scarf ×1.5), weather speed ability ×2, Tailwind ×2, −1 stage, paralysis ×0.5.
+// Unburden: also the speed once its item is used (×2), shown as a second number.
+function spdCalc(base,scarf,ability,weather,o){let v=base;if(scarf)v=Math.floor(v*1.5);v*=typeof speedMul==='function'?speedMul(ability,weather):1;
+  if(o.tw)v*=2;if(o.icy)v=Math.floor(v*BOOST(-1));if(o.par)v=Math.floor(v*.5);return v}
 function renderSpeed(){const el=$('spdOut');if(!el)return;
-  const mine=members().map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
+  const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
   const thr=metaThreats(24).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
-  const myMem=new Map(members().map(m=>[m.p.n,m])),myItem=new Map([...myMem].map(([n,m])=>[n,m.item]));
-  const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const s={...likelySpeed(r.p,r.me?myMem.get(r.p.n):null)};let v=s.v;if(s.scarf)v=Math.floor(v*1.5);
-    if(r.me&&spdUi.tw)v*=2;if(!r.me&&spdUi.twOpp)v*=2;if(!r.me&&spdUi.icy)v=Math.floor(v*BOOST(-1));return {...r,s,v}});
+  const myMem=new Map(ms.map(m=>[m.p.n,m])),myItem=new Map([...myMem].map(([n,m])=>[n,m.item]));
+  const autoW=typeof sideField==='function'?sideField(ms).weather:'',W=spdUi.wx==='auto'?autoW:spdUi.wx;
+  const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const mem=r.me?myMem.get(r.p.n):null,s={...likelySpeed(r.p,mem)};
+    const ab=mem?mem.ability:abilityOf({p:r.p}),o={tw:r.me?spdUi.tw:spdUi.twOpp,icy:!r.me&&spdUi.icy,par:!r.me&&spdUi.par};
+    const v=spdCalc(s.v,s.scarf,ab,W,o),wxUp=typeof speedMul==='function'&&speedMul(ab,W)>1;
+    // Unburden: doubled once its item is used (Sneasler's seed or herb), unless Scarf/no item
+    const unb=ab==='Unburden'&&!s.scarf?v*2:null;return {...r,s,v,ab,wxUp,unb}});
   rows.sort((a,b)=>spdUi.tr?a.v-b.v:b.v-a.v);
   const tog=(k,t)=>`<button type="button" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
-  $('spdCtl').innerHTML=`<div class="seg" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('tr','Trick Room')}</div>`;
+  const wxb=(k,t)=>`<button type="button" data-spdwx="${k}" aria-pressed="${spdUi.wx===k}">${t}</button>`;
+  $('spdCtl').innerHTML=`<div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('par','They\'re paralyzed')}${tog('tr','Trick Room')}</div>
+    <div class="seg segwrap" role="group" aria-label="Weather" style="margin-top:6px">${wxb('auto',autoW?`Your weather (${autoW})`:'Your weather (none)')}${wxb('','No weather')}${wxb('sun','Sun')}${wxb('rain','Rain')}${wxb('sand','Sand')}${wxb('snow','Snow')}</div>`;
   if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on the Team page to place them against the top threats.</div>';return}
   const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&(spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
-    let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
+    let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
       if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
         tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
     return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}${tip}</span>`}).join('');
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
-    return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
-    <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Natures and items are the most common ones players register; fast Pokémon are assumed to put 32 points in Speed. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-spd]');if(!b)return;const k=b.dataset.spd;spdUi[k]=!spdUi[k];renderSpeed()});
+    return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''}${r.wxUp?` · ${esc(r.ab)} ×2 in ${esc(W)}`:''}${r.unb?` · ${r.unb} after its item is used (Unburden)`:''} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
+    <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Your side uses your items (and your spreads where you set them); theirs uses the most common natures and items, with fast Pokémon at 32 Speed points. Weather speed abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-spd],[data-spdwx]');if(!b)return;if(b.dataset.spdwx!=null)spdUi.wx=b.dataset.spdwx;else{const k=b.dataset.spd;spdUi[k]=!spdUi[k]}renderSpeed()});
 // ---- damage ----
 const TYPE_ITEM={Charcoal:'Fire','Mystic Water':'Water',Magnet:'Electric','Miracle Seed':'Grass','Never-Melt Ice':'Ice','Black Belt':'Fighting','Poison Barb':'Poison','Soft Sand':'Ground','Sharp Beak':'Flying','Twisted Spoon':'Psychic','Silver Powder':'Bug','Hard Stone':'Rock','Spell Tag':'Ghost','Dragon Fang':'Dragon','Black Glasses':'Dark','Metal Coat':'Steel','Fairy Feather':'Fairy','Silk Scarf':'Normal'};
 const SKINS={Aerilate:'Flying',Pixilate:'Fairy',Refrigerate:'Ice',Galvanize:'Electric',Dragonize:'Dragon'};
@@ -81,7 +92,10 @@ function moveEff(mv,type,ab,defTypes){let x=1;
 const ALWAYS_CRIT=['Flower Trick','Wicked Blow','Surging Strikes','Storm Throw','Frost Breath'];
 const pokeRound=x=>(x%1>.5?Math.ceil(x):Math.floor(x)),chain4096=list=>list.reduce((c,x)=>x===4096?c:(c*x+2048)>>12,4096),applyMods=(v,list)=>Math.max(1,pokeRound(v*chain4096(list)/4096));
 const statStage=(v,s)=>Math.floor(s>=0?v*(2+s)/2:v*2/(2-s));
-function damage(o){const A=o.atk,D=o.def,mv=o.move;if(!mv||!mv.bp||mv.cat===0)return null;
+// Aegislash attacks in Blade Forme (Stance Change) and defends in Shield Forme; the roster stores Shield Forme stats
+const BLADE_ST=[60,140,50,140,50,60];
+const atkForm=A=>A&&A.p&&A.p.n==='Aegislash'?{...A,p:{...A.p,st:BLADE_ST}}:A;
+function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.cat===0)return null;
   const nm=mv.name,phys=mv.cat===1,ab=A.ability||'',dab0=D.ability||'';
   // Klutz: the holder's item does nothing (Knock Off, Acrobatics and Poltergeist still see it)
   const aIt=ab==='Klutz'?'':(A.item||''),dIt=dab0==='Klutz'?'':(D.item||'');
@@ -210,7 +224,9 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   if(!dc.d||!byName.get(dc.d)){let t=[];try{t=metaThreats(5).map(x=>x.p||x)}catch(e){}dc.d=(t.find(p=>p.n!==dc.a)||byName.get('Incineroar')||ROSTER[1]).n}
   const A=dcSide('atk',dc.a),D=dcSide('def',dc.d);const mvs=dcMoves(A.p);
   // weather follows the attacker until you pick one: its own Drought/Drizzle/..., or your team's weather when it's yours
-  if(!dc.wSet){const mine=ms.some(m=>m.p.n===A.p.n);dc.weather=(typeof WEATHER_OF==='object'&&WEATHER_OF[A.ability])||(mine&&typeof sideField==='function'?sideField(ms).weather:'')||''}if(!dc.mv||![...mvs.pop,...mvs.rest].some(m=>m.name===dc.mv))dc.mv=(mvs.pop[0]||mvs.rest[0]||{}).name;
+  // (attacker's own setter first, then the defender's, then your team's when the attacker is yours); same for terrain
+  if(!dc.wSet){const mine=ms.some(m=>m.p.n===A.p.n);dc.weather=(typeof WEATHER_OF==='object'&&(WEATHER_OF[A.ability]||WEATHER_OF[D.ability]))||(mine&&typeof sideField==='function'?sideField(ms).weather:'')||''}
+  if(!dc.tSet){const mine=ms.some(m=>m.p.n===A.p.n),tk=typeof TERRAIN_OF==='object'?(TERRAIN_OF[A.ability]||TERRAIN_OF[D.ability]):'';dc.terrain=(tk&&typeof TERR_DC==='function'?TERR_DC(tk):'')||(mine&&typeof sideField==='function'?sideField(ms).terrain:'')||''}if(!dc.mv||![...mvs.pop,...mvs.rest].some(m=>m.name===dc.mv))dc.mv=(mvs.pop[0]||mvs.rest[0]||{}).name;
   const mv=mvByName.get(dc.mv);const spread=dc.spread==null?!!(mv&&mv.spread):dc.spread;
   const sel=(id,opts,v)=>`<select class="field" id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}"${o[0]===v?' selected':''}>${esc(o[1])}</option>`:`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
   const PTS=v=>[...new Set([32,28,24,20,16,12,8,4,0,+v])].sort((a,b)=>b-a).map(x=>[String(x),x===32?'32 (max)':String(x)]);
@@ -242,7 +258,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
     <div class="dcres">${!mv?'<div class="empty-note">Pick a damaging move.</div>':!r?'<div class="empty-note">This move does no direct damage.</div>':r.max===0?`<b>No effect.</b> ${esc(D.p.d||D.p.n)} is immune to ${esc(r.type)}.`:
       `<div class="dcbig">${pct[0].toFixed(1)}–${pct[1].toFixed(1)}%</div>${bar}<div><b>${koText(r)}</b> · ${r.min}–${r.max} of ${r.hp} HP${r.hits>1?` · ${r.hits} hits${MULTI_HIT[dc.mv]===3&&r.hits===3?' (2–5)':''}`:''}${r.eff!==1?` · ${r.eff}× ${esc(r.type)}`:''}</div>
       ${(()=>{if(!r||r.max===0)return '';const bs=bulkToSurvive({atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit});if(!bs)return '';if(bs.none)return `<p class="dcbulk">${esc(D.p.d||D.p.n)} can't survive this hit with any spread.</p>`;return `<p class="dcbulk">Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max<r.hp?'This spread already survives.':'This spread does not.'}</p>`})()}
-      <p class="t2">${esc(A.p.d||A.p.n)} ${aShown} ${mvC&&mvC.cat===2?'SpA':'Atk'} points ${esc(A.nat)}${A.item?' '+esc(A.item):''} · ${esc(dc.mv)}${spread?' (spread)':''} vs ${esc(D.p.d||D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${esc(D.nat)}${D.item?' '+esc(D.item):''}${A.real||D.real?' · spreads: most common on the Showdown ladder':''}</p>`}</div>
+      <p class="t2">${esc(A.p.d||A.p.n)} ${aShown} ${mvC&&mvC.cat===2?'SpA':'Atk'} points ${esc(A.nat)}${A.item?' '+esc(A.item):''} · ${esc(dc.mv)}${spread?' (spread)':''} vs ${esc(D.p.d||D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${esc(D.nat)}${D.item?' '+esc(D.item):''}${A.real||D.real?' · spreads: most common on the Showdown ladder':''}${A.p.n==='Aegislash'?' · Aegislash attacks in Blade Forme (Atk/SpA 140)':''}${D.p.n==='Aegislash'?' · Aegislash takes hits in Shield Forme':''}${A.p.formNote||D.p.formNote?' · Palafin in Hero Form':''}${dc.wSet||dc.tSet||!(dc.weather||dc.terrain)?'':' · field set by the Pokémon selected (change it above)'}</p>`}</div>
     ${renderHitTable(ms)}`;dcStickWatch()}
 // Your team's best hit on each top threat (each side's usual set).
 // field: {weather, terrain} in play (sun from Drought, etc.), so a lead's weather boost is counted
@@ -261,7 +277,7 @@ function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThrea
   <div class="tablewrap">${table}</div>`}
 document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.id))return;const v=t.value;
   const ak='atk:'+dc.a,dk='def:'+dc.d;
-  if(t.id==='dcA'){dc.a=v;dc.mv=null;dc.spread=null}else if(t.id==='dcD'){dc.d=v}else if(t.id==='dcMv'){dc.mv=v;dc.spread=null}
+  if(t.id==='dcA'){dc.a=v;dc.mv=null;dc.spread=null;dc.wSet=dc.tSet=false}else if(t.id==='dcD'){dc.d=v;dc.wSet=dc.tSet=false}else if(t.id==='dcMv'){dc.mv=v;dc.spread=null}
   else if(t.id==='dcASp'){const I=dc.inv[ak],m=mvByName.get(dc.mv);if(m&&m.name==='Body Press')I.spDef=+v;else{I.sp=+v;if(m&&m.cat===2)I.spS=+v;else I.spA=+v}}
   else if(t.id==='dcAFt')dc.fainted=+v||0;else if(t.id==='dcANat')dc.inv[ak].nat=v;else if(t.id==='dcAIt')dc.inv[ak].item=v;else if(t.id==='dcAAb')dc.inv[ak].ability=v;else if(t.id==='dcABo')dc.inv[ak].boost=+v;
   // Champions caps a Pokémon at 66 stat points in total (32 in any one stat): a change that would pass 66 takes the
@@ -270,7 +286,7 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.
     let over=I.hpSp+I.defSp+I.spdSp-66;for(const o of ['spdSp','defSp','hpSp']){if(over<=0)break;if(o===k)continue;const take=Math.min(over,I[o]);I[o]-=take;over-=take}}
   else if(t.id==='dcDNat')dc.inv[dk].nat=v;else if(t.id==='dcDIt')dc.inv[dk].item=v;else if(t.id==='dcDAb')dc.inv[dk].ability=v;else if(t.id==='dcDBo')dc.inv[dk].boost=+v;
   renderCalc()});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data-dct],[data-dcdir],[data-dcterr],#dcSwap');if(!b)return;if(b.dataset.dcterr!=null){dc.terrain=b.dataset.dcterr;renderCalc();return}if(b.dataset.dcdir){dc.dir=b.dataset.dcdir;keepScroll(()=>renderCalc());return}if(b.id==='dcSwap'){const a=dc.a;dc.a=dc.d;dc.d=a;dc.mv=null;dc.spread=null;renderCalc();return}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data-dct],[data-dcdir],[data-dcterr],#dcSwap');if(!b)return;if(b.dataset.dcterr!=null){dc.terrain=b.dataset.dcterr;dc.tSet=true;renderCalc();return}if(b.dataset.dcdir){dc.dir=b.dataset.dcdir;keepScroll(()=>renderCalc());return}if(b.id==='dcSwap'){const a=dc.a;dc.a=dc.d;dc.d=a;dc.mv=null;dc.spread=null;renderCalc();return}
   if(b.dataset.dcw!=null){dc.weather=b.dataset.dcw;dc.wSet=true}else{const k=b.dataset.dct;if(k==='spread'){const mv=mvByName.get(dc.mv);const cur=dc.spread==null?!!(mv&&mv.spread):dc.spread;dc.spread=!cur}else dc[k]=!dc[k]}renderCalc()});
 
 

@@ -37,6 +37,12 @@ function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '
   if (v.some(x => x > 32)) for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor(v[i] / 8));
   const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null;
   return any || okNat ? {nat: okNat, v} : null; }
+// An item from a paste is kept only if Champions has it: any item players run (usage data) or one the calc knows.
+// Choice Band, Choice Specs and Assault Vest aren't in Champions. With no usage data loaded yet, anything is kept.
+function pasteItemOK(it) { const NOT = ['Choice Band', 'Choice Specs', 'Assault Vest']; if (NOT.includes(it)) return false;
+  let pool = []; try { pool = itemPool(); } catch (e) {} if (!pool.length) return true;
+  const known = new Set([...pool, ...(typeof CALC_ITEMS !== 'undefined' ? CALC_ITEMS : []), 'White Herb', 'Mental Herb', 'Covert Cloak', 'Safety Goggles', 'Clear Amulet', 'Lum Berry']);
+  return known.has(it); }
 const pnorm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
 function speciesFromPaste(name) {
   const k = pnorm(name); if (!k) return null;
@@ -70,7 +76,7 @@ function parsePaste(text) {
     const slot = {n: p.n, a: ability, lock: false};
     if (mv.length) { const c = mv.slice(0, 4); while (c.length < 4) c.push(''); slot.mv = {doubles: c}; }
     // the held item you registered (a Mega's stone is implied by the form), your nature and stat points
-    if (item && !p.m && !STONE_RE.test(item) && item.length <= 40) slot.it = {doubles: item};
+    if (item && !p.m && !STONE_RE.test(item) && item.length <= 40) { if (pasteItemOK(item)) slot.it = {doubles: item}; else notes.push(`${p.d}: skipped item "${item}" (not in Champions)`); }
     const sp = pasteSpread(lines); if (sp) slot.sp = {doubles: sp};
     slots.push(slot);
   }

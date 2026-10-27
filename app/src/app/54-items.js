@@ -61,6 +61,16 @@ function assignItems(ms) { if (!Array.isArray(ms) || !ms.length) return ms;
 // For a problem item you chose: the item to switch to (most used for it that's free and works on this team)
 function itemFixFor(m, ms) { const live = ms.filter(x => x && x.p), F = teamField(live), tr = live.some(setsTR), used = new Set(live.filter(x => x !== m && x.item).map(x => x.item));
   return bestFreeItem(m, live, used, F, tr); }
+// ---- forms the roster stores in the wrong stance (Oct 28 reference check) ----
+// Palafin is stored as Zero Form, but it switches to Hero Form the first time it leaves the field, which every real player
+// plans around: calc, speed and ratings use Hero Form (100/160/97/106/87/100). (Aegislash: Blade Forme when attacking,
+// handled in damage().)
+try { const pf = byName.get('Palafin'); if (pf && pf.st && pf.st[1] < 100) { pf.stZero = pf.st.slice(); pf.st = [100, 160, 97, 106, 87, 100]; pf.formNote = 'Hero Form'; } } catch (e) {}
+// ---- speed from abilities and the field ----
+// Chlorophyll / Swift Swim / Sand Rush / Slush Rush double Speed in their weather; Unburden doubles it once the held item is
+// used (shown as a second number); paralysis halves it.
+const WEATHER_SPD_AB = {Chlorophyll: 'sun', 'Swift Swim': 'rain', 'Sand Rush': 'sand', 'Slush Rush': 'snow'};
+function speedMul(ability, weather) { return weather && WEATHER_SPD_AB[ability] === weather ? 2 : 1; }
 // ---- the field on turn 1 (for damage): weather/terrain set by the leads ----
 // Entry abilities go off fastest first, so the slowest setter's weather stays; a Mega's ability (Mega Charizard Y's
 // Drought) only starts once it Mega Evolves at the start of the turn, after every entry ability, so it wins.
