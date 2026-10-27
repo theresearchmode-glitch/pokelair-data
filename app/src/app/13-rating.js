@@ -3,9 +3,7 @@
 // with meta evidence (usage and real tournament win rate), so a strong Pokémon few people use still rates well.
 const RT_MOVES = {
   doubles: {'Fake Out': 8, 'Tailwind': 8, 'Trick Room': 7, 'Follow Me': 7, 'Rage Powder': 7, 'Spore': 6, 'Icy Wind': 4, 'Electroweb': 4, 'Parting Shot': 4, 'Sleep Powder': 4,
-    'Wide Guard': 3, 'Taunt': 3, 'Encore': 3, 'Helping Hand': 2, 'Will-O-Wisp': 2, 'Thunder Wave': 2, 'Snarl': 2, 'U-turn': 2, 'Quick Guard': 2, 'Coaching': 2, 'Pollen Puff': 2},
-  singles: {'Stealth Rock': 7, 'Spore': 6, 'Recover': 5, 'Slack Off': 5, 'Roost': 4, 'U-turn': 4, 'Volt Switch': 4, 'Parting Shot': 4, 'Knock Off': 4, 'Will-O-Wisp': 4,
-    'Synthesis': 3, 'Moonlight': 3, 'Flip Turn': 3, 'Toxic': 3, 'Thunder Wave': 3, 'Rapid Spin': 3, 'Defog': 3, 'Taunt': 3, 'Encore': 3, 'Spikes': 3, 'Trick Room': 2}};
+    'Wide Guard': 3, 'Taunt': 3, 'Encore': 3, 'Helping Hand': 2, 'Will-O-Wisp': 2, 'Thunder Wave': 2, 'Snarl': 2, 'U-turn': 2, 'Quick Guard': 2, 'Coaching': 2, 'Pollen Puff': 2}};
 const RT_SETUP = ['Swords Dance', 'Dragon Dance', 'Nasty Plot', 'Calm Mind', 'Quiver Dance', 'Shell Smash', 'Bulk Up', 'Shift Gear', 'Belly Drum', 'Victory Dance', 'Coil', 'Tidy Up'];
 const RT_ABIL = {'Intimidate': 10, 'Huge Power': 9, 'Pure Power': 9, 'Drizzle': 8, 'Drought': 8, 'Grassy Surge': 8, 'Prankster': 7, 'Psychic Surge': 7, 'Sand Stream': 6, 'Electric Surge': 6,
   'Speed Boost': 6, 'Good as Gold': 6, 'Shadow Tag': 6, 'Snow Warning': 5, 'Unburden': 5, 'Multiscale': 5, 'Adaptability': 5, 'Aerilate': 5, 'Pixilate': 5, 'Regenerator': 5, 'Armor Tail': 5,
@@ -70,9 +68,9 @@ const OUTSIDE = {date: 'Oct 25, 2026', lists: [
 // Rating blend (doubles): win-rate prior for few-game Pokémon, popularity weight, stats weight, popularity of a Pokémon no source lists.
 const RG = Object.assign({pp0: 40, pp1: .15, wpop: .4, wi: .05, absent: 4}, (typeof RATING_W === 'object' && RATING_W) || {});
 function ratings() {
-  const key = S.format + '|' + metaVersion + '|' + ui.metaSrc;
+  const key = metaVersion + '|' + ui.metaSrc;
   if (ratingCache.key === key) return ratingCache.map;
-  const dbl = S.format === 'doubles', th = metaThreats(), W = th.reduce((a, o) => a + o.w, 0) || 1;
+  const th = metaThreats(), W = th.reduce((a, o) => a + o.w, 0) || 1;
   const raw = ROSTER.map(p => {
     const st = p.st || [80, 80, 80, 80, 80, 80], ab = metaAbility(p) || bestAbility(p);
     const off = Math.max(st[1], st[3]), bulk = st[0] * (st[2] + st[4]) / 2, spe = st[5];
@@ -84,16 +82,16 @@ function ratings() {
     // tools: the best ability it can run, support moves, spread STAB, priority, setup
     const learn = new Set((LEARN[p.n] || []).map(k => MV[k] && MV[k].name).filter(Boolean));
     let tools = Math.max(0, ...p.a.map(a => RT_ABIL[a] || 0));
-    const tm = RT_MOVES[dbl ? 'doubles' : 'singles']; let mvPts = 0; for (const n in tm) if (learn.has(n)) mvPts += tm[n]; tools += Math.min(16, mvPts);
+    const tm = RT_MOVES.doubles; let mvPts = 0; for (const n in tm) if (learn.has(n)) mvPts += tm[n]; tools += Math.min(16, mvPts);
     const L = [...learn].map(n => mvByName.get(n)).filter(Boolean);
-    if (dbl && L.some(m => m.spread && m.bp >= 60 && p.t.includes(m.type) && m.cat > 0)) tools += 6;
+    if (L.some(m => m.spread && m.bp >= 60 && p.t.includes(m.type) && m.cat > 0)) tools += 6;
     if (L.some(m => ROLE.prio.includes(m.name) && p.t.includes(m.type))) tools += 3;
     if (RT_SETUP.some(n => learn.has(n))) tools += 4;
     return {p, off, bulk, spe, slowNuke: spe <= 55 && off >= 110, dv: dv / W, ov: ov / W, tools};
   });
   const P = k => pctRanks(raw.map(r => r[k])), pOff = P('off'), pBulk = P('bulk'), pSpe = P('spe'), pDv = P('dv'), pOv = P('ov'), pTools = P('tools');
   const intr0 = raw.map((r, i) => {
-    const power = .45 * pOff[i] + .35 * pBulk[i] + .2 * Math.max(pSpe[i], dbl && r.slowNuke ? 70 : 0);
+    const power = .45 * pOff[i] + .35 * pBulk[i] + .2 * Math.max(pSpe[i], r.slowNuke ? 70 : 0);
     const typing = .55 * pDv[i] + .45 * pOv[i];
     return {power, typing, tools: pTools[i], v: .45 * power + .25 * typing + .30 * pTools[i]}; });
   const pIntr = pctRanks(intr0.map(x => x.v));
@@ -102,32 +100,35 @@ function ratings() {
   // Win rates are shrunk toward each source's average for small samples and put on one scale (z-scores); popularity is
   // averaged across sources. Confidence grows with the number of real games behind the numbers.
   const PD = activePerf(), map = new Map(), EX = (typeof PERF_EXCLUDE === 'object' && PERF_EXCLUDE) || {};
-  const SRC = dbl && PD ? perfModel(PD, EX) : null;
+  const SRC = PD ? perfModel(PD, EX) : null;
   // Win model (real games, player skill removed): half of each Pokémon's win-rate score, so support Pokémon that strong
   // players run aren't judged only on raw win rates.
-  let MP = null; if (dbl && typeof modelOK === 'function' && modelOK()) { const ks = Object.keys(META.model.mons).filter(n => byName.has(n)); const pr = pctRanks(ks.map(n => META.model.mons[n])); MP = new Map(ks.map((n, i) => [n, pr[i]])); }
+  let MP = null; if (typeof modelOK === 'function' && modelOK()) { const ks = Object.keys(META.model.mons).filter(n => byName.has(n)); const pr = pctRanks(ks.map(n => META.model.mons[n])); MP = new Map(ks.map((n, i) => [n, pr[i]])); }
   raw.forEach((r, i) => { const p = r.p, intr = pIntr[i];
-    let evidence = 0, conf = 0, usage = null, wr = null, matches = null, perf = null, rank = null, src = null, pop = null, wrMean = null;
+    let evidence = 0, conf = 0, usage = null, wr = null, matches = null, perf = null, src = null, pop = null, wrMean = null;
     let popC = null;
     if (SRC && SRC.has(p.n)) { const e = SRC.get(p.n); pop = e.popularity; evidence = e.evidence; conf = e.conf; perf = e.perf; usage = e.usage; wr = e.wr; wrMean = e.wrMean; matches = e.matches; src = e.src; popC = e.popularity;
       // the win model's rank is a 0-100 percentile, while perf is 50 + 18 z: put the model on the same z scale before averaging
       if (MP && MP.has(p.n) && perf != null) perf = .5 * perf + .5 * Math.max(0, Math.min(100, 50 + 18 * probit(Math.max(.01, Math.min(.99, MP.get(p.n) / 100))))); }
     else if (SRC) popC = RG.absent;
-    else if (!dbl && PD && PD.singlesRank[p.n]) { rank = PD.singlesRank[p.n]; pop = 100 * (1 - (rank - 1) / PD.singlesTotal);
-      evidence = 100 * Math.pow(1 - (rank - 1) / PD.singlesTotal, 1.5); conf = .75; }
     else { const v = viability(p); if (v >= 25) { evidence = v; conf = .5; } }
     const prior = .6 * intr;
     let total, ppV = null;
-    // Doubles with tournament data: how often a Pokémon is picked is known for every Pokémon from 10,000+ teams, so it
+    // With tournament data: how often a Pokémon is picked is known for every Pokémon from 10,000+ teams, so it
     // always counts in full. Only the win-rate half is shrunk toward a stat-based guess when there are few games.
     // (Before, a Pokémon nobody uses was scored almost entirely on its stats and could outrank proven staples.)
-    if (dbl && SRC && popC != null) { const pp = ppV = conf * (perf != null ? perf : 50) + (1 - conf) * (RG.pp0 + RG.pp1 * intr);
+    if (SRC && popC != null) { const pp = ppV = conf * (perf != null ? perf : 50) + (1 - conf) * (RG.pp0 + RG.pp1 * intr);
       evidence = (1 - RG.wpop) * pp + RG.wpop * popC; total = Math.round(Math.max(1, Math.min(99, (1 - RG.wi) * evidence + RG.wi * intr))); }
     else total = Math.round(Math.max(1, Math.min(99, .85 * (conf * evidence + (1 - conf) * prior) + .15 * intr)));
-    const proven = dbl ? (usage != null ? usage >= 2 : viability(p) >= 45) : (rank != null ? rank <= 60 : viability(p) >= 45);
+    const proven = usage != null ? usage >= 2 : viability(p) >= 45;
     map.set(p.n, {total, raw: total, win: ppV == null ? null : Math.round(ppV), popAll: popC == null ? null : Math.round(popC), intrinsic: Math.round(intr), power: Math.round(intr0[i].power), typing: Math.round(intr0[i].typing), tools: Math.round(intr0[i].tools),
-      evidence: Math.round(evidence), conf: +conf.toFixed(2), band: Math.round(3 + 15 * (1 - conf)), perf: perf == null ? null : Math.round(perf), pop: pop == null ? null : Math.round(pop), usage, wr, wrMean, matches, rank, src, meta: Math.round(evidence), proven}); });
+      evidence: Math.round(evidence), conf: +conf.toFixed(2), band: Math.round(3 + 15 * (1 - conf)), perf: perf == null ? null : Math.round(perf), pop: pop == null ? null : Math.round(pop), usage, wr, wrMean, matches, src, meta: Math.round(evidence), proven}); });
   { let mx = 0; for (const v of map.values()) mx = Math.max(mx, v.raw); const f = mx > 0 ? 95 / mx : 1; for (const v of map.values()) v.total = Math.max(1, Math.min(99, Math.round(v.raw * f))); }
+  // Half the final rating is the win model's own strength for the Pokémon (its rank among rated Pokémon, put on the same
+  // spread as the ratings). Tested on 120 real events (Oct 27): teams with the higher average rating finished higher in
+  // 53.0% / 54.2% of pairs (older / newer half of events) with this blend, vs 51.8% / 53.1% without it.
+  if (MP && MP.size >= 50) { const tots = [...map.values()].map(v => v.total).sort((a, b) => a - b), q = pc => tots[Math.min(tots.length - 1, Math.max(0, Math.round(pc / 100 * (tots.length - 1))))];
+    for (const [n, v] of map) if (MP.has(n)) { v.model = q(MP.get(n)); v.total = Math.max(1, Math.min(99, Math.round(.5 * v.total + .5 * v.model))); } }
   ratingCache = {key, map}; return map;
 }
 function rating(p) { const r = ratings().get(p.n); return r || {total: 0, intrinsic: 0, power: 0, typing: 0, tools: 0, meta: 0, adj: 0, proven: false}; }
@@ -135,16 +136,16 @@ function rating(p) { const r = ratings().get(p.n); return r || {total: 0, intrin
 // A strong Pokémon the meta mostly ignores, and that hasn't been tried and found wanting (a big sample with a poor win rate rules it out).
 // A proven loser: 400+ Limitless games, its own share of team wins clearly negative AND a raw tournament win rate of
 // 46.5% or less (both, so supports like Indeedee that lose on paper but enable winning teams aren't caught).
-// Suggestions skip these unless Fun mode is on; you can still add them yourself.
+// Suggestions skip these (except off-meta searches); you can still add them yourself.
 let trapCache = {key: null, set: null};
-function isTrap(p) { if (!p || S.fun || S.format !== 'doubles') return false; const key = metaVersion;
+function isTrap(p) { if (!p || OFFMETA) return false; const key = metaVersion;
   if (trapCache.key !== key) { const PD = activePerf(), set = new Set();
     if (PD && PD.adj) for (const n in PD.adj) { const [b, g, , lw] = PD.adj[n], t = PD.doubles && PD.doubles[n], wr = lw != null ? lw : (t && t[2] >= 300 ? t[1] : null);
       if (g >= 400 && b <= -.05 && wr != null && wr <= 46.5) set.add(n); }
     trapCache = {key, set}; }
   return trapCache.set.has(p.n); }
 // Untested: few tournament games behind it, so it's an idea rather than a proven pick (hidden gems have their own tag).
-function ideaTag(p) { if (S.format !== 'doubles') return ''; const r = rating(p); if (isGem(p) || (r.matches || 0) >= 300 || (r.src && r.src.adj && r.src.adj[1] >= 300)) return '';
+function ideaTag(p) { const r = rating(p); if (isGem(p) || (r.matches || 0) >= 300 || (r.src && r.src.adj && r.src.adj[1] >= 300)) return '';
   return '<span class="tag idea" title="Few tournament games behind it: an untested idea, not a proven pick">IDEA</span>'; }
 // win rates are judged against their source's own average (tournament sources sit well above 50%), not against 50%
 // inverse of the standard normal CDF (Acklam's approximation, error < 1e-8): turns a percentile into a z-score
