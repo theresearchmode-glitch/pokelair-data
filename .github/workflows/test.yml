@@ -26,10 +26,10 @@ jobs:
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
       - run: node experiments/speed-check.mjs
       - run: node experiments/calc-check.mjs 2000
-      # legality: species / items / stones on the page vs the Reg M-C lists. Non-blocking until the roster question
-      # (Watchog is on the page but not on the Reg M-C list) is decided.
+      # legality: species / items / stones on the page vs the Reg M-C lists (Watchog settled Oct 28: legal, listed as Patrat)
       - run: node experiments/legality-check.mjs
-        continue-on-error: true
+      # threat preparation: 42 hand-checked verdicts + damage vs Smogon, support threats, real teams (user's team, regionals)
+      - run: node experiments/threat-check.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: page

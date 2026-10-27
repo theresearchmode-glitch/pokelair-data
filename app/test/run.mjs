@@ -36,16 +36,19 @@ for (const width of [1280, 390]) {
   // Meta: every source has rows
   for (const src of ['ingame', 'tour', 'ladder']) { await go(pg, 'meta'); await pg.evaluate(s => document.querySelector(`[data-src="${s}"]`).click(), src); await pg.waitForTimeout(300);
     const n = await pg.evaluate(() => document.getElementById('metaList').children.length); ok(n >= 40, `meta/${src}: ${n} rows`); }
-  // Team Score, counters on Rankings, turn 1 plan in Matchup
+  // scouting report header (readiness, checks, legality), counters on Rankings, turn 1 plan in Matchup
   await go(pg, 'build'); await pg.waitForTimeout(400);
   const ts = await pg.evaluate(() => { const v = document.getElementById('verdict'); return v ? v.textContent : ''; });
-  ok(/Team Score \d+/i.test(ts), 'team: Team Score shown');
+  ok(/Ready for \d+% of the top 30 threats/i.test(ts) && /checks/.test(ts) && /Legal/.test(ts), 'team: scouting report shows readiness, checks and legality');
+  await pg.waitForFunction(() => document.querySelectorAll('#thrCard .thrrow').length >= 20, null, {timeout: 8000}).catch(() => {});
+  const tc = await pg.evaluate(() => { const r = document.getElementById('repFold'), c = document.getElementById('thrCard'); return {open: !!r && r.open, head: !!c && /Threat preparation/i.test(c.innerText), rows: document.querySelectorAll('#thrCard .thrrow').length}; });
+  ok(tc.open && tc.head && tc.rows >= 20, `team: scouting report open, with threat preparation for the top threats (${tc.rows} threats)`);
   await go(pg, 'meta'); await pg.evaluate(() => document.querySelector('[data-src="ladder"]').click()); await pg.waitForTimeout(300);
   ok(await pg.evaluate(() => /Checks & counters/.test(document.getElementById('metaList').innerText)), 'meta/ladder: checks & counters shown');
-  // Gauntlet has teams with model odds
+  // Gauntlet: matchup prep against real teams, no win odds
   await go(pg, 'gauntlet'); await pg.waitForTimeout(2500);
-  const g = await pg.evaluate(() => ({n: document.querySelectorAll('.gitem').length, model: document.querySelectorAll('.gpm').length}));
-  ok(g.n >= 10, `gauntlet: ${g.n} teams`); ok(g.model >= 1, `gauntlet: model odds shown`);
+  const g = await pg.evaluate(() => ({n: document.querySelectorAll('.gitem').length, prep: document.querySelectorAll('.gprep').length, odds: /win chance|% to win/i.test(document.getElementById('gauntOut').innerText)}));
+  ok(g.n >= 10, `gauntlet: ${g.n} teams`); ok(g.prep >= 10 && !g.odds, `gauntlet: matchup prep for each team, no win odds (${g.prep})`);
   await pg.evaluate(() => document.querySelector('[data-gaunt]').click()); await pg.waitForTimeout(800);
   ok(await pg.evaluate(() => { const t = document.querySelector('.t1plan'); return !!t && /Speed order/.test(t.innerText); }), 'matchup: turn 1 plan shown');
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`);
@@ -123,59 +126,49 @@ for (const width of [1280, 390]) {
   ok(r.minTop10Use >= 3, `every top-10 Pokémon is on 3%+ of teams (lowest ${r.minTop10Use}%)`);
   ok(!r.staplesS_A.length, `format staples sit in S or A${r.staplesS_A.length ? ': not ' + r.staplesS_A.join(', ') : ''}`);
   ok(errs.length === 0, `ratings: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
-// Team Score can't be gamed: calibrated, anchored to real teams, no 100 for an odd six, no Mega stacking, no duplicates
-{ console.log('\n== Team Score integrity');
+// Threat preparation (Oct 28): facts, not predictions. Real event winners read as well prepared, the user's team that once
+// scored 97 shows its real gaps, problems a player can see show up as checks and items, plans fix them, and nothing on the
+// site shows a win chance.
+{ console.log('\n== Threat preparation');
   const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(300);
-  const r = await pg.evaluate(() => { const P = window.__PL, S = P.getS(); S.format = 'doubles'; const M = P.META.model;
-    const sc = ns => { S.slots = P.normSlots(ns.map(n => ({n, a: null, lock: false}))); const ms = P.members(); if (ms.length !== 6) return null; const wv = P.winVsField(ns, true); return wv ? P.teamScore({wv}).score : null; };
-    const winners = P.META.events.events.map(e => e.top[0]).filter(t => t && t.place === 1).map(t => sc(t.mons.map(m => m.n))).filter(x => x != null).sort((a, b) => a - b);
-    // a quick hill climb over the 40 best-rated legal Pokémon, from two seeds, swapping one slot at a time
-    const pool = [...P.byName.values()].filter(p => P.rating(p).total >= 55).sort((a, b) => P.rating(b).total - P.rating(a).total).slice(0, 40).map(p => p.n);
-    const legal = ns => { const bs = new Set(); let mg = 0; for (const n of ns) { const p = P.byName.get(n); if (!p || bs.has(p.b)) return false; bs.add(p.b); if (p.m) mg++; } return mg <= 2; };
-    let best = 0; for (const seed of [pool.filter((n, i, a) => legal(a.slice(0, i + 1))).slice(0, 6), ['Sinistcha', 'Camerupt-Mega', 'Venusaur-Mega', 'Archaludon', 'Hydreigon', 'Basculegion-F']]) {
-      let cur = seed.slice(); if (!legal(cur) || cur.length < 6) continue; let cs = sc(cur); for (let pass = 0; pass < 2; pass++) for (let i = 0; i < 6; i++) for (const n of pool) { if (cur.includes(n)) continue; const nx = cur.slice(); nx[i] = n; if (!legal(nx)) continue; const v = sc(nx); if (v != null && v > cs) { cur = nx; cs = v; } } best = Math.max(best, cs); }
-    const two = ['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Milotic', 'Rillaboom'], four = ['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Charizard-Mega-Y', 'Gengar-Mega'];
-    return {calib: M.calib, dist: !!(M.dist && M.dist.q && M.dist.q.length === 101), center: !!M.center, med: winners[winners.length >> 1], n: winners.length, best,
-      gamed: sc(['Sinistcha', 'Camerupt-Mega', 'Venusaur-Mega', 'Archaludon', 'Hydreigon', 'Basculegion-F']), dup: sc(['Annihilape', 'Annihilape', 'Sinistcha', 'Milotic', 'Rillaboom', 'Kingambit']),
-      megaStack: sc(four) <= Math.max(sc(two), sc(['Floette-Mega', 'Annihilape', 'Sinistcha', 'Raichu-Mega-Y', 'Kingambit', 'Incineroar'])) + 15 }; });
-  // (the page stretches or shrinks the model's edges by this held-out slope, so it only has to be sane)
-  ok(r.center && r.dist && r.calib > .6 && r.calib < 1.3, `model: centered builds, real-team spread, calibration ${r.calib}`);
-  ok(r.med >= 55, `validity: recent event winners score above an average team (median ${r.med} of ${r.n}, popular sets)`);
-  ok(r.best < 100, `can't be gamed: a hill-climbed six tops out at ${r.best}, below 100`);
-  ok(r.gamed != null && r.gamed < 90, `the old 100-point six now scores ${r.gamed}`);
-  ok(r.dup === null, 'duplicate species: no score');
-  ok(r.megaStack, 'stacking Megas does not pay');
-  ok(errs.length === 0, `Team Score: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
-// Team Score sense checks (Oct 27, from a real user team that scored 97): problems a player can see must cost points,
-// an illegal team can't score, and odd low-evidence sixes can't beat what real event winners score.
-{ console.log('\n== Team Score sense checks');
-  const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(300);
-  const USER97 = `Raichu @ Raichunite X\nAbility: Lightning Rod\nJolly Nature\n- Fake Out\n- Protect\n- Volt Tackle\n- Volt Switch\n\nSneasler @ Psychic Seed\nAbility: Unburden\nAdamant Nature\n- Close Combat\n- Dire Claw\n- Protect\n- Fake Out\n\nPrimarina @ Leftovers\nAbility: Liquid Voice\nModest Nature\n- Hyper Voice\n- Protect\n- Moonblast\n- Calm Mind\n\nCharizard @ Charizardite Y\nAbility: Blaze\nTimid Nature\n- Heat Wave\n- Protect\n- Weather Ball\n- Solar Beam\n\nFarigiraf @ Sitrus Berry\nAbility: Armor Tail\nBold Nature\n- Trick Room\n- Helping Hand\n- Psychic\n- Thunderbolt\n\nHydreigon @ Choice Scarf\nAbility: Levitate\nModest Nature\n- Dark Pulse\n- Draco Meteor\n- Earth Power\n- Snarl`;
+  const USER97 = `Raichu @ Raichunite X\nAbility: Lightning Rod\nLevel: 50\nEVs: 2 HP / 32 Atk / 32 Spe\nJolly Nature\n- Fake Out\n- Protect\n- Volt Tackle\n- Volt Switch\n\nSneasler @ Psychic Seed\nAbility: Unburden\nLevel: 50\nEVs: 2 HP / 32 Atk / 32 Spe\nAdamant Nature\n- Close Combat\n- Dire Claw\n- Protect\n- Fake Out\n\nPrimarina @ Leftovers\nAbility: Liquid Voice\nLevel: 50\nEVs: 32 HP / 32 SpA / 2 SpD\nModest Nature\n- Hyper Voice\n- Protect\n- Moonblast\n- Calm Mind\n\nCharizard @ Charizardite Y\nAbility: Blaze\nLevel: 50\nEVs: 2 HP / 32 SpA / 32 Spe\nTimid Nature\n- Heat Wave\n- Protect\n- Weather Ball\n- Solar Beam\n\nFarigiraf @ Sitrus Berry\nAbility: Armor Tail\nLevel: 50\nEVs: 27 HP / 20 Def / 19 SpD\nBold Nature\n- Trick Room\n- Helping Hand\n- Psychic\n- Thunderbolt\n\nHydreigon @ Choice Scarf\nAbility: Levitate\nLevel: 50\nEVs: 2 HP / 32 SpA / 32 Spe\nModest Nature\n- Dark Pulse\n- Draco Meteor\n- Earth Power\n- Snarl`;
   const r = await pg.evaluate(txt => { const P = window.__PL, S = P.getS(); S.format = 'doubles';
-    const run = slots => { S.slots = P.normSlots(slots); const ms = P.members(); if (ms.length !== 6) return null; const wv = P.winVsField(ms.map(m => m.p.n), true, ms); if (!wv) return null; const ts = P.teamScore({wv}); const b = P.tsBreakdown(ms); return {s: ts.score, label: ts.label, illegal: !!ts.illegal, miss: wv.struct.miss, b}; };
+    const load = slots => { S.slots = P.normSlots(slots); return P.members(); };
     const sl = (ns, extra) => ns.map((n, i) => ({n, a: null, lock: false, ...((extra || {})[i] || {})}));
-    // event winners with the sets they actually registered (items, moves, ability), like the user's own team
-    const winners = P.META.events.events.map(e => e.top[0]).filter(t => t && t.place === 1).map(t => run(t.mons.map(m => ({n: m.n, a: m.a || null, lock: false, it: m.i ? {doubles: m.i} : undefined, mv: m.mv && m.mv.length ? {doubles: m.mv} : undefined})))).filter(Boolean).map(x => x.s).sort((a, b) => a - b), med = winners[winners.length >> 1];
-    // the page's own import, with each held item put on its slot as the Team page stores it (the import keeps items once
-    // fix/items lands; set here so this check doesn't depend on it)
-    const u = P.parsePaste(txt), its = txt.split(/\n\s*\n/).map(b => (b.split('\n')[0].split(' @ ')[1] || '').trim());
-    u.slots.forEach((s, i) => { const p = P.byName.get(s.n); if (its[i] && p && !p.m) s.it = {doubles: its[i]}; }); const user = run(u.slots);
-    const tr = {0: {mv: {doubles: ['Trick Room', 'Psychic', 'Hyper Voice', 'Protect']}}};
-    const trOne = run(sl(['Farigiraf', 'Incineroar', 'Sneasler', 'Garchomp', 'Charizard-Mega-Y', 'Whimsicott'].map(n => n === 'Whimsicott' ? 'Raichu-Mega-Y' : n), tr));
-    const trOk = run(sl(['Farigiraf', 'Incineroar', 'Torkoal', 'Kingambit', 'Charizard-Mega-Y', 'Amoonguss'].filter(n => P.byName.has(n)).concat(['Ursaluna', 'Snorlax', 'Hatterene'].filter(n => P.byName.has(n))).slice(0, 6), tr));
-    const dup = run(sl(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott'], {0: {it: {doubles: 'Sitrus Berry'}}, 1: {it: {doubles: 'Sitrus Berry'}}}));
-    const dflt = run(sl(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott']));
-    const niche = run(sl(['Annihilape', 'Kommo-o', 'Scrafty', 'Venusaur-Mega', 'Hydreigon', 'Charizard-Mega-Y']));
-    return {med, n: winners.length, notes: u.notes, items: u.slots.map(s => s.it && s.it.doubles), user, trOne, trOk, dup, dflt, niche, dfltItems: P.resolveItems(P.members()).map(m => m.item)}; }, USER97);
-  console.log('   winners median', r.med, '| user team', r.user && r.user.s, r.user && r.user.miss.join('; '), '| TR one slow', r.trOne && r.trOne.s, '| TR coherent', r.trOk && r.trOk.s, '| niche', r.niche && r.niche.s);
-  ok(r.user && r.user.s < r.med, `user's 97 team now scores below the median event winner (${r.user && r.user.s} vs ${r.med})`);
-  ok(r.user && r.user.miss.some(x => /Trick Room/.test(x)) && r.user.miss.some(x => /Psychic Seed/.test(x)), 'user team: Trick Room with one slow attacker and the dead Psychic Seed are deductions');
-  ok(r.trOne && r.trOk && r.trOne.miss.some(x => /Trick Room/.test(x)) && !r.trOk.miss.some(x => /Trick Room/.test(x)), `TR coherence: one slow attacker is cut (${r.trOne && r.trOne.s}), a coherent TR team isn't (${r.trOk && r.trOk.s})`);
-  ok(r.dup && r.dup.illegal && r.dup.s === 0, 'Item Clause: two chosen Sitrus Berries make the team illegal (score 0)');
-  ok(r.dflt && !r.dflt.illegal && new Set(r.dfltItems.filter(Boolean)).size === r.dfltItems.filter(Boolean).length, 'default items never clash in the Team Score (each member gets a different item)');
-  ok(r.niche && r.niche.s < r.med, `a low-evidence niche six scores below the median event winner (${r.niche && r.niche.s} vs ${r.med})`);
-  ok(errs.length === 0, `sense checks: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
-// battle mode, cores, events, team search, calc both ways
+    // event winners with the sets they registered
+    const wins = P.META.events.events.map(e => e.top[0]).filter(t => t && t.place === 1 && t.mons.length === 6 && t.mons.every(m => P.byName.get(m.n)))
+      .map(t => P.tsOf(load(t.mons.map(m => ({n: m.n, a: m.a || null, lock: false, it: m.i ? {doubles: m.i} : undefined, mv: m.mv && m.mv.length ? {doubles: m.mv} : undefined}))))).filter(x => x != null).sort((a, b) => a - b);
+    const med = wins[wins.length >> 1];
+    const u = P.parsePaste(txt); const ums = load(u.slots); const urep = P.prepOf(ums), uts = P.tsOf(ums);
+    const ip = P.itemProblems(ums).map(x => x.k + ':' + x.item), gp = P.gamePlan(ums.map(m => ({...m, _mv: m.moves}))), sp = gp.rows.find(x => x.k === 'speed');
+    const ck = P.proChecks(ums, true), ckSpeed = ck.items.find(x => x.k === 'speed');
+    const plans = P.planFixes(ums, [...P.byName.values()], true) || [], planTeams = [...plans, ...(plans.more || [])].map(pl => P.assignItems(pl.team));
+    const planBad = planTeams.filter(t => P.itemProblems(t).some(x => x.k === 'clause') || new Set(t.map(m => m.p.b)).size < t.length).length;
+    const planFix = [...plans].some(pl => P.itemProblems(P.assignItems(pl.team)).length < P.itemProblems(ums).length);
+    const dup = P.tsOf(load(sl(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott'], {0: {it: {doubles: 'Sitrus Berry'}}, 1: {it: {doubles: 'Sitrus Berry'}}})));
+    const dms = load(sl(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott'])), dItems = dms.map(m => m.item).filter(Boolean);
+    const niche = P.tsOf(load(sl(['Annihilape', 'Kommo-o', 'Scrafty', 'Venusaur-Mega', 'Hydreigon', 'Charizard-Mega-Y'])));
+    const mir = (() => { const ms = load(sl(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott'])); const g = P.gauntletPrep(ms, ms.map(m => m.p.n)); return [g.yN, g.tN]; })();
+    return {med, n: wins.length, items: u.slots.map(s => s.it && s.it.doubles), uts, un: urep.rows.filter(x => x.level === 0).map(x => x.t.n), ip, spSt: sp && sp.st, ckSpeedOk: ckSpeed && ckSpeed.ok, planBad, planFix, nPlans: planTeams.length, dup, dItems, niche, mir}; }, USER97);
+  console.log('   winners median', r.med, `(${r.n})`, '| user team', r.uts, 'unanswered', r.un.join(', '), '| items', r.ip.join(', '), '| niche', r.niche, '| mirror', r.mir.join('/'));
+  ok(r.n >= 20 && r.med >= 75, `real event winners are well prepared (median ${r.med}% of ${r.n})`);
+  ok(r.uts != null && r.uts < r.med, `user's old 97 team is less prepared than the median winner (${r.uts}% vs ${r.med}%)`);
+  ok(r.un.length >= 2, `user team: unanswered threats are named (${r.un.join(', ')})`);
+  ok(r.items[1] === 'Psychic Seed' && r.items[2] === 'Leftovers' && r.items[4] === 'Sitrus Berry' && r.items[5] === 'Choice Scarf', `import keeps the pasted items (${r.items.join(', ')})`);
+  ok(r.ip.some(x => /dead:Psychic Seed/.test(x)) && r.ip.some(x => /scarftr:Choice Scarf/.test(x)), `user team: dead Psychic Seed and Choice Scarf under Trick Room are flagged (${r.ip.join(', ')})`);
+  ok(r.spSt === 'part' && r.ckSpeedOk === false, `user team: Trick Room with one slow attacker is only partial speed control, not a pass (${r.spSt})`);
+  ok(r.planFix, 'user team: a fix plan fixes an item problem');
+  ok(r.nPlans > 0 && r.planBad === 0, `no plan leaves a duplicate item or species (${r.nPlans} plans)`);
+  ok(r.dup === 0, 'Item Clause: two chosen Sitrus Berries read as an illegal team (0)');
+  ok(new Set(r.dItems).size === r.dItems.length, 'default items never clash (each member gets a different item)');
+  ok(r.niche != null && r.niche < r.med, `a niche six is less prepared than the median winner (${r.niche}% vs ${r.med}%)`);
+  ok(r.mir[0] === r.mir[1], `gauntlet mirror reads the same both ways (${r.mir.join(' / ')})`);
+  // no win prediction anywhere on the site
+  const VIEWS2 = ['home', 'build', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'coverage', 'ratings', 'meta', 'cores', 'top', 'events', 'sets', 'teams'];
+  const hits = []; for (const v of VIEWS2) { await go(pg, v); await pg.waitForTimeout(v === 'gauntlet' || v === 'coverage' ? 2500 : 500);
+    const tx = await pg.evaluate(v => document.querySelector(`[data-pane="${v}"]`).innerText, v); const m = tx.match(/win chance|chance to win|% to win|win %|Team Score/i); if (m) hits.push(v + ': ' + m[0]); }
+  ok(!hits.length, `no win prediction or Team Score shown anywhere${hits.length ? ': ' + hits.join(' | ') : ''}`);
+  ok(errs.length === 0, `threat preparation: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }// battle mode, cores, events, team search, calc both ways
 { console.log('\n== battle mode + cores + events');
   for (const width of [1280, 390]) { const {pg, errs, ctx} = await open(width);
     await pg.evaluate(() => { const S = window.__PL.getS(); S.opp = ['Incineroar', 'Rillaboom', 'Garchomp', 'Gengar', 'Sneasler', 'Kingambit']; });
