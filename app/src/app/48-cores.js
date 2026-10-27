@@ -6,14 +6,20 @@ let coreUi = {kind: 'pairs', sort: 'win', mon: null, more: 0, confirm: null};
 const CORE_MIN = {pairs: 60, trios: 0, teams: 3};
 function coreRows() {
   if (!RES) return [];
-  const base = +RES.base || .5, tot = +RES.teams || 0, k = 40, adj = (wr, n) => (wr * n + base * k) / (n + k);
+  // shrinkage (Oct 28 audit): a core's win rate is pulled toward average as if 300 average teams had also run it, so a
+  // high rate over a few dozen teams can't top the list (it was 40, which let 63-team cores lead). Full teams have few
+  // entries each, so they get a smaller prior of 20.
+  const base = +RES.base || .5, tot = +RES.teams || 0, k = coreUi.kind === 'teams' ? 20 : 300, adj = (wr, n) => (wr * n + base * k) / (n + k);
+  // what its members win on their own (each shrunk the same way): a core that only wins because one member always wins
+  // (or because strong players favour that member) shows little "together" gain
+  const own = n => { const r = RES.mons && RES.mons[n]; return r ? adj(+r[1], +r[0]) : base; };
   let rows = [];
   if (coreUi.kind === 'pairs') rows = Object.entries(RES.pairs || {}).map(([key, v]) => ({ns: key.split('|'), n: +v[0], wr: +v[1]})).filter(x => x.n >= CORE_MIN.pairs);
   else if (coreUi.kind === 'trios') rows = (RES.cores || []).map(c => ({ns: c.slice(0, 3), n: +c[3], wr: +c[4]})).filter(x => x.n >= (RES.minCore || 6));
   else rows = (RES.proven || []).map(x => ({ns: x[0], n: +x[1], wr: +x[2]})).filter(x => Array.isArray(x.ns) && x.n >= CORE_MIN.teams);
   rows = rows.filter(x => x.ns.every(n => byName.get(n)));
   if (coreUi.mon) { const b = (byName.get(coreUi.mon) || {}).b; rows = rows.filter(x => x.ns.some(n => n === coreUi.mon || (byName.get(n) || {}).b === b)); }
-  rows.forEach(x => { x.score = adj(x.wr, x.n); x.use = tot ? 100 * x.n / tot : 0; x.d = x.wr - base; });
+  rows.forEach(x => { x.score = adj(x.wr, x.n); x.use = tot ? 100 * x.n / tot : 0; x.d = x.wr - base; x.tog = x.ns.length <= 3 ? x.score - x.ns.reduce((a, n) => a + own(n), 0) / x.ns.length : null; });
   rows.sort((a, b) => coreUi.sort === 'use' ? b.n - a.n : b.score - a.score);
   return rows; }
 let coreTagCache = new Map();
@@ -34,7 +40,7 @@ function renderCores() {
   const ctl = `<div class="corectl">${seg('kind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']])}${seg('sort', [['win', 'Top rated'], ['use', 'Most used']])}
     <div class="corefind">${mon ? `<span class="corechip">${sprite(mon, 'tiny')}${esc(mon.d)}<button type="button" data-corex="1" aria-label="Clear">×</button></span>` : '<div class="cb"><input class="field" id="coreMonIn" placeholder="With a Pokémon…" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Only cores with this Pokémon"></div>'}</div></div>`;
   const what = coreUi.kind === 'pairs' ? `two Pokémon on the same team, ${CORE_MIN.pairs}+ teams` : coreUi.kind === 'trios' ? `three Pokémon on the same team, ${RES.minCore || 6}+ teams` : `the exact six, ${CORE_MIN.teams}+ entries`;
-  const intro = `<p class="t2 coreintro">A core is a group of Pokémon that cover each other: one sets up, protects or speeds the other, or they handle each other's bad matchups. These are ${what}, from ${(+RES.teams || 0).toLocaleString('en-US')} tournament teams. Average team wins ${(100 * base).toFixed(1)}% of games. ${coreUi.sort === 'win' ? 'Ranked by win rate adjusted for sample size, so a high rate over a few teams can sit below a slightly lower one over many.' : 'Ranked by how many teams used it.'}</p>`;
+  const intro = `<p class="t2 coreintro">A core is a group of Pokémon that cover each other: one sets up, protects or speeds the other, or they handle each other's bad matchups. These are ${what}, from ${(+RES.teams || 0).toLocaleString('en-US')} tournament teams. Average team wins ${(100 * base).toFixed(1)}% of games. ${coreUi.sort === 'win' ? `Ranked by win rate pulled toward the average as if ${coreUi.kind === 'teams' ? 20 : 300} average teams had also run it, so a high rate over a few teams sits below a slightly lower one over many. "Together" compares it with what its members win on their own. Win rates also reflect who plays them: strong players' favourite picks look better than they are.` : 'Ranked by how many teams used it.'}</p>`;
   if (!rows.length) { el.innerHTML = ctl + intro + '<div class="empty-note">No cores match. Try another Pokémon.</div>'; bindCoreIn(); return; }
     const list = rows.slice(0, cap).map((x, i) => { const key = x.ns.join('|'), tags = coreTags(x.ns), ps = x.ns.map(n => byName.get(n));
     const conf = coreUi.confirm === key;
@@ -42,7 +48,7 @@ function renderCores() {
     return `<div class="corerow${x.ns.length > 3 ? ' six' : ''}"><span class="corerk">${i + 1}</span>
       <div class="coremain"><div class="coresprs">${ps.map(p => sprite(p, 'coresp')).join('')}</div><div class="corenames">${names}</div>
         ${tags.length ? `<div class="coretags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}</div>
-      <div class="corestat" title="${x.use >= .1 ? x.use.toFixed(1) : 'under 0.1'}% of all tournament teams"><b>${(100 * x.wr).toFixed(1)}%</b><span class="${x.d >= 0 ? 'up' : 'dn'}">${x.d >= 0 ? '+' : '−'}${Math.abs(100 * x.d).toFixed(1)} vs avg</span><small>${x.n.toLocaleString('en-US')} ${x.ns.length > 3 ? 'entr' + (x.n === 1 ? 'y' : 'ies') : 'teams'}</small></div>
+      <div class="corestat" title="${x.use >= .1 ? x.use.toFixed(1) : 'under 0.1'}% of all tournament teams"><b>${(100 * x.wr).toFixed(1)}%</b><span class="${x.d >= 0 ? 'up' : 'dn'}">${x.d >= 0 ? '+' : '−'}${Math.abs(100 * x.d).toFixed(1)} vs avg</span><small>${x.n.toLocaleString('en-US')} ${x.ns.length > 3 ? 'entr' + (x.n === 1 ? 'y' : 'ies') : 'teams'}</small>${x.tog != null ? `<small title="Adjusted win rate minus what its members win on their own">${x.tog >= 0 ? '+' : '−'}${Math.abs(100 * x.tog).toFixed(1)} together</small>` : ''}</div>
       <div class="row corebtns">${conf ? `<span class="inline-confirm" style="color:var(--ink)">Replace your team?</span><button class="btn sm primary" type="button" data-coreuse="${esc(key)}" data-sure="1">Replace</button><button class="btn sm" type="button" data-corecx="1">Cancel</button>`
         : `<button class="btn sm" type="button" data-coreuse="${esc(key)}">${x.ns.length > 3 ? 'Load team' : 'Add to my team'}</button>${x.ns.length <= 3 ? `<button class="linkbtn" type="button" data-corefind="${esc(key)}">Teams with it</button>` : `<button class="linkbtn" type="button" data-corepractice="${esc(key)}">Practice against</button>`}`}</div></div>`; }).join('');
   el.innerHTML = ctl + intro + `<div class="corelist">${list}</div>` + (rows.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-coremore="1">Show more (${rows.length - cap} left)</button></div>` : '');
