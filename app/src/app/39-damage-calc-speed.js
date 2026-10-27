@@ -122,7 +122,10 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   // Attack and Defense. Foul Play uses the target's own Attack (its points, nature and stage); Body Press the user's Defense.
   const aStat=nm==='Body Press'?'Def':phys?'Atk':'SpA',dStat=(phys||['Psyshock','Psystrike','Secret Sword'].includes(nm))?'Def':'SpD',foul=nm==='Foul Play',S=foul?D:A;
   const aPts=foul?(D.atkSp??0):aStat==='Atk'?(A.spA??A.sp):aStat==='SpA'?(A.spS??A.sp):(A.spDef??0);
-  let aB=foul?(D.atkBoost||0):(A.boost||0),dB=D.boost||0;if(nm==='Meteor Beam'||nm==='Electro Shot')aB=Math.max(-6,Math.min(6,aB+(ab==='Contrary'?-1:1)));
+  let aB=foul?(D.atkBoost||0):(A.boost||0),dB=D.boost||0;
+  // a terrain seed pops as soon as its terrain is up: Grassy/Electric Seed +1 Def, Psychic/Misty Seed +1 SpD (as Smogon's calc)
+  {const sd={'Grassy Seed':['grassy','Def'],'Electric Seed':['electric','Def'],'Psychic Seed':['psychic','SpD'],'Misty Seed':['misty','SpD']}[dIt];if(sd&&T===sd[0]&&dStat===sd[1])dB=Math.min(6,dB+1)}
+  if(nm==='Meteor Beam'||nm==='Electro Shot')aB=Math.max(-6,Math.min(6,aB+(ab==='Contrary'?-1:1)));
   // Unaware ignores the other side's stat stages; a crit ignores the attacker's drops and the defender's boosts
   if(dab==='Unaware')aB=0;if(ab==='Unaware'||['Sacred Sword','Darkest Lariat','Chip Away'].includes(nm))dB=0;if(crit){aB=Math.max(0,aB);dB=Math.min(0,dB)}
   let a=statStage(calcStat(S.p,aStat,aPts,natMul(S.nat,aStat)),aB),d=statStage(calcStat(D.p,dStat,dStat==='Def'?D.defSp:D.spdSp,natMul(D.nat,dStat)),dB);

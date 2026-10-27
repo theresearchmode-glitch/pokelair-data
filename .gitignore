@@ -1,3 +1,9 @@
 node_modules/
 app/node_modules
 app/dist/
+
+threat-check.out.txt
+threat-empirical.out.json
+speed.out.txt
+legality.out.txt
+app/verify-*.html
