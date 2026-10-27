@@ -1810,3 +1810,4 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .tsbar em{position:absolute;top:11px;transform:translateX(-50%);font:600 10px var(--mono);color:var(--faint);font-style:normal}.tsbar em::before{content:'';position:absolute;left:50%;top:-11px;width:1.5px;height:8px;background:var(--line2)}
 .tsd{font:700 11px var(--mono);padding:2px 7px;border-radius:99px;background:var(--card2);color:var(--mute);white-space:nowrap}.tsd.up{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}.tsd.dn{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
 .abts{display:inline-flex;align-items:center;gap:12px}.abtsv{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:11px;color:var(--mute);line-height:1.2}.abtsv b{font:800 italic 20px/1 var(--display);color:var(--ink)}
+.tsbar em.win{color:var(--good)}.tsbar em.win::before{background:var(--good)}
