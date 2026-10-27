@@ -12,7 +12,7 @@ function renderSlots(){
         ${sprite(p,'tspr')||ticon(p.t[0],'wm')}
         <span class="sl-name" title="${esc(p.d)}">${esc(p.d)}</span>
         <div class="sl-sub"><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(p)?'<span class="tag box ico" title="In your box">BOX</span>':''}${ratingTag(p)}</div>
-        ${u?`<div class="tuse" title="${u.toFixed(1)}% of ${S.format} teams"><span class="tbar"><i style="--w:${Math.min(100,u*2).toFixed(0)}%"></i></span><span class="vsub">${u.toFixed(1)}%<span class="tus"> of teams</span></span></div>`:''}
+        ${u?`<div class="tuse" title="${u.toFixed(1)}% of ${S.format} teams"><span class="tbar"><i style="--w:${Math.min(100,u*2).toFixed(0)}%"></i></span><span class="vsub">${u.toFixed(1)}%<span class="tus"> of teams</span><span class="tug"> use</span></span></div>`:''}
         ${m.item?`<div class="titem${m.heldItem?' mine':''}">${esc(m.item)}</div>`:''}${s.lock?'<span class="tlock" title="Locked">LOCKED</span>':''}
       </div>
       <div class="slbody">

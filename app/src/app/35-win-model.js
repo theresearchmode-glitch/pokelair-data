@@ -70,6 +70,18 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
 
 // Team Score of any six members (plans, additions, builds), from the same model as the Team page
 function tsOf(team){if(!team||team.length!==6)return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?teamScore({wv}).score:null}catch(e){return null}}
+// What's behind a Team Score: for each member, how many points the score would lose (or gain) if that Pokémon were an
+// average tournament pick instead (its own strength and set, plus half of each pairing it's in), with the same untried-mix
+// and checklist cuts the score uses. Plus the points those cuts take off. The members don't add up to the score exactly:
+// the score is a rank among real teams, so points near the top are harder to earn than in the middle.
+function tsBreakdown(ms){if(!modelOK()||!ms||ms.length!==6)return null;const M=META.model,names=ms.map(m=>m.p.n),mx=M.meanX||0;
+  const wv=winVsField(names,true,ms);if(!wv)return null;const ts=teamScore({wv}),S0=strengthX(names,ms),avg=mx/6;
+  const megas=names.filter(n=>{const p=byName.get(n);return p&&p.m}),val=n=>(M.mons[n]||0)+setOne(ms[names.indexOf(n)]);
+  const capped=new Set(megas.sort((a,b)=>val(b)-val(a)).slice(2));
+  const pc=n=>{let s=0;for(const o of names)if(o!==n){const k=n<o?n+'|'+o:o+'|'+n;s+=(M.pairs[k]||0)/2}return s};
+  const pctOf=x0=>{const d=x0-mx,x=mx+(d>0?d*S0.cr*S0.sc.c:d),p=strengthPct(x);return p==null?null:Math.max(0,Math.min(100,Math.floor(p)))};
+  const rows=ms.map((m,i)=>{const n=names[i],c=(capped.has(n)?0:val(n))+pc(n),alt=pctOf(S0.x0-(c-avg));return {m,d:alt==null?0:ts.score-alt}});
+  return {score:ts.score,rows,cut:ts.cut,miss:S0.sc.miss,untried:S0.cr<1,tested:testedPairs(names)}}
 // Quick model strength for shortlisting: the same number as strengthX without the checklist cut (the slow part).
 function xQuick(team){if(!modelOK()||!team||team.length!==6)return -Infinity;const names=team.map(m=>m.p.n),mx=META.model.meanX||0,x=teamX(names,team),d=x-mx;return mx+(d>0?d*mixCredit(names):d)}
 // Which plans get a full Team Score check: the first n in the order given (the planner's own ranking) plus the n the win

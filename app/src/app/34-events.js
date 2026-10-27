@@ -38,22 +38,22 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(b.id==='pasteCopy'){const t=$('pasteOut');const txt=t?t.value:'';try{navigator.clipboard.writeText(txt).then(()=>toast('Copied'),()=>{t.select();toast('Press Ctrl+C or Cmd+C to copy')})}catch(err){if(t)t.select();toast('Press Ctrl+C or Cmd+C to copy')}return}
   if(b.id==='pasteLoad'){const raw=($('pasteIn')||{}).value,sh=typeof decodeTeam==='function'?decodeTeam(raw):null;if(sh){applyShared(sh);return}const r=parsePaste(raw);
     if(!r.slots.length){$('pasteNotes').textContent=r.notes.length?r.notes.join('. ')+'.':'No Pokémon found. Paste the team text, one Pokémon per block.';return}
-    S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();toast(`Imported ${r.slots.length} Pokémon`+(r.notes.length?` (${r.notes.length} skipped item${r.notes.length>1?'s':''})`:''));return}
+    keepUndo();S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();toast(`Imported ${r.slots.length} Pokémon`+(r.notes.length?` (${r.notes.length} skipped item${r.notes.length>1?'s':''})`:''),true);return}
   if(d.megas!==undefined){S.megaGoal=Math.max(0,Math.min(2,+d.megas||0));S.maxMega=Math.max(1,S.megaGoal);recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.megaGoal?`Teams aim for ${S.megaGoal} Mega${S.megaGoal>1?'s':''}`:'Teams without Megas');return}
-  if(d.clear!==undefined){S.slots[+d.clear]=blank();render()}
+  if(d.clear!==undefined){const was=byName.get(S.slots[+d.clear].n);keepUndo();S.slots[+d.clear]=blank();render();if(was)toast(`Removed ${was.d}`,true)}
   else if(b.id==='abBtn'){runAutoBuild()}
   else if(d.recsrc){ui.recSrc=d.recsrc==='all'?'all':'box';LS.set('cc2.recsrc',ui.recSrc);renderRecs()}
-  else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`)}
+  else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.absrc){ui.abSrc=d.absrc==='all'?'all':'box';LS.set('cc2.absrc',ui.abSrc);renderPoolCtl();if(ui.ab&&!ui.ab.busy)runAutoBuild()}
   else if(d.abnext){abNext(d.abnext)}
-  else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the ${FMT(d.abuse).toLowerCase()} team. Fix plans and the game plan now describe it.`)}
+  else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;keepUndo();S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the built team. Fix plans and the game plan now describe it.`,true)}
   else if(d.absave){const t=abTeam(d.absave);if(!t||S.teams.length>=10)return;const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
     const name=`${FMT(d.absave)}: ${t.label}`.slice(0,40);S.teams.push({id,name,slots:t.mons.map(m=>({n:m.n,a:null,lock:false})),format:d.absave,saved:Date.now()});render();toast(`Saved "${name}"`)}
-  else if(d.qa!==undefined){const pl=(ui.quick||[])[+d.qa];if(!pl)return;const x=pl.ch[0];S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};
-    keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`)}
-  else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;
+  else if(d.qa!==undefined){const pl=(ui.quick||[])[+d.qa];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};
+    keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
+  else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;keepUndo();
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false}});
-    keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`)}
+    keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`,true)}
   else if(d.lock!==undefined){const s=S.slots[+d.lock];s.lock=!s.lock;render()}
   else if(d.unbox!==undefined){S.box=S.box.filter(x=>x!==d.unbox);render()}
   else if(b.id==='replanBtn'){vCache=new Map();pmCache=new Map();planCache={key:null,plans:[]};render();toast('Plans refreshed')}
@@ -70,7 +70,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(b.id==='planMoreReset'){ui.planMore=0;render()}
   else if(d.src){ui.metaSrc=d.src;render()}
   else if(d.sort){ui.sort=d.sort;document.querySelectorAll('[data-sort]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.sort===ui.sort));renderSaved()}
-  else if(b.id==='clearTeam'){S.slots=Array.from({length:6},blank);S.loadedId=null;render()}
+  else if(b.id==='clearTeam'){keepUndo();S.slots=Array.from({length:6},blank);S.loadedId=null;render();toast('Team cleared',true)}
   else if(b.id==='boxReset'){S.box=DEFAULT_BOX.slice();render();toast('Box reset')}
   else if(b.id==='saveBtn'){ui.saving=!ui.saving;ui.paste=null;renderPastePanel();renderSavePanel()}
   else if(b.id==='saveCancel'){ui.saving=false;renderSavePanel()}
@@ -78,7 +78,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
     if(b.id==='saveOver'){const t=S.teams.find(t=>t.id===S.loadedId);t.name=name;t.slots=slots;t.format=S.format;t.saved=Date.now()}
     else{if(S.teams.length>=10)return;const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);S.teams.push({id,name,slots,format:S.format,saved:Date.now()});S.loadedId=id}
     ui.saving=false;renderSavePanel();render();toast(`Saved "${name}"`)}
-  else if(d.load){const t=S.teams.find(t=>t.id===d.load);S.slots=JSON.parse(JSON.stringify(t.slots));fixSlots();S.loadedId=t.id;S.format='doubles';render();toast(`Opened "${t.name}"`);setView('build')}
+  else if(d.load){const t=S.teams.find(t=>t.id===d.load);keepUndo();S.slots=JSON.parse(JSON.stringify(t.slots));fixSlots();S.loadedId=t.id;S.format='doubles';render();toast(`Opened "${t.name}"`,true);setView('build')}
   else if(d.rn){ui.renaming=d.rn;ui.confirmDel=null;renderSaved();const f=$('rn_'+d.rn);if(f){f.focus();f.select()}}
   else if(d.rnok){const t=S.teams.find(t=>t.id===d.rnok);const v=$('rn_'+d.rnok).value.trim();if(v)t.name=v;ui.renaming=null;render()}
   else if(d.rnx){ui.renaming=null;renderSaved()}

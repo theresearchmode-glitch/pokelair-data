@@ -13,6 +13,16 @@ const HOME_TILES = [
   ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>'],
   ['types', 'Type chart', 'What hits what, and your team against every type', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/>']];
 function homeMini(p, r, extra) { return `<button type="button" class="hmini" data-lt="${esc(p.n)}" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}" title="${esc(p.d)}">${sprite(p, 'hmspr') || ''}<span class="hmn">${esc(p.d.replace(/^Mega /, 'M-'))}</span><span class="hms"><b>${r.total}</b>${extra || ''}</span></button>`; }
+// Desktop hero, right side: the newest event winner (one tap to load it) and your own Team Score.
+function homeSide(v) { const E = META.events; let ev = null, t = null;
+  if (E && Array.isArray(E.events)) for (const e of E.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }
+  if (!ev && !(v && v.TS)) return '';
+  return `<aside class="hhside" aria-label="Latest winner">${ev ? `<div class="hsk">Latest winner</div>
+    <div class="hswho"><b>${esc(t.player)}</b>${t.record ? ` <span class="vsub">${esc(t.record)}</span>` : ''}</div>
+    <div class="t2">${esc(ev.name)} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>
+    <div class="hsspr">${t.mons.map(m => sprite(byName.get(m.n), 'hsmon') || '').join('')}</div>
+    <div class="row"><button class="btn sm" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All events ›</button></div>` : ''}
+    ${v && v.TS ? `<button type="button" class="hsts" data-view="build"><b>${v.TS.score}</b><span>Your Team Score · ${esc(v.TS.label)}</span></button>` : ''}</aside>`; }
 function renderHome() { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
   const rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 4);
   const lineup = rows.filter(x => SPRITE_ID[x.p.n]).slice(0, 6);
@@ -30,6 +40,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
     <div class="hhline" aria-hidden="true">${lineup.map(x => sprite(x.p, 'hhspr')).join('')}</div>
     <div class="hhfloor" aria-hidden="true"></div>
     <div class="hhacts"><button type="button" class="btn go" data-view="auto">Build me a team</button><button type="button" class="btn hghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div>
+    ${homeSide(v)}
   </div>
   ${typeof welcomeCard === 'function' ? welcomeCard() : ''}
   ${ms.length ? `<button type="button" class="hteam ${v.lvl || 'mid'}" data-view="build">

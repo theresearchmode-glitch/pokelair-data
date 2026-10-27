@@ -25,8 +25,8 @@ function decodeTeam(text) {
   const slots = o.s.slice(0, 6).map(r => Array.isArray(r) && byName.get(String(r[0])) ? {n: String(r[0]), a: typeof r[1] === 'string' && r[1] ? r[1] : null, lock: false, ...(Array.isArray(r[2]) ? {mv: {[f]: r[2].slice(0, 4).map(x => String(x || ''))}} : {})} : null).filter(Boolean);
   if (!slots.length) return null;
   return {f, n: typeof o.n === 'string' ? o.n.slice(0, 60) : '', slots}; }
-function applyShared(x) { S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');
-  toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`); }
+function applyShared(x) { keepUndo(); S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');
+  toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`, true); }
 async function copyTeamLink(btn) { const l = teamLink(); if (!l) { toast('Add some Pokémon first'); return; }
   let ok = false; try { await navigator.clipboard.writeText(l); ok = true; } catch (e) {}
   if (!ok) { try { const ta = document.createElement('textarea'); ta.value = l; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }

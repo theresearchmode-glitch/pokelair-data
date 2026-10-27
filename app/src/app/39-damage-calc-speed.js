@@ -193,7 +193,9 @@ function sideDefaults(p,role,mem){const nat=topNature(p),it=topItem(p);let ab;tr
   return role==='atk'?{nat:nat||(phys?'Adamant':'Modest'),sp:32,spDef:st[2]>=100?32:0,item,ability:ab,boost:0}
     :{nat:nat||'Hardy',hpSp:32,defSp:0,spdSp:0,atkSp:phys?32:0,item,ability:ab,boost:0}}
 let dc={dir:'mine',a:null,d:null,mv:null,weather:'',terrain:'',screen:false,hh:false,fg:false,crit:false,spread:null,inv:{}};
-const CALC_ITEMS=['','Life Orb','Choice Band','Choice Specs','Choice Scarf','Expert Belt','Assault Vest','Focus Sash','Sitrus Berry','Leftovers',...Object.keys(TYPE_ITEM),...Object.keys(RESIST_BERRY)];
+// Choice Band, Choice Specs and Assault Vest are not in Champions (missing from Showdown's Champions item list, and no
+// player in any of our usage data runs them), so the calc doesn't offer them; their math stays in damage().
+const CALC_ITEMS=['','Life Orb','Choice Scarf','Expert Belt','Focus Sash','Sitrus Berry','Leftovers',...Object.keys(TYPE_ITEM),...Object.keys(RESIST_BERRY)];
 const NATURES=['Hardy','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
 function dcSide(role,n){const p=byName.get(n);if(!p)return null;const key=role+':'+n;if(!dc.inv[key]){let mem=null;try{mem=members().find(m=>m.p.n===n)}catch(e){}dc.inv[key]=sideDefaults(p,role,mem)}return {p,...dc.inv[key]}}
 function dcMoves(p){const learn=(LEARN[p.n]||[]).map(k=>MV[k]).filter(m=>m.bp>0);let pop=[];try{const mem=members().find(m=>m.p.n===p.n);pop=(mem?mem.moves:popularMoves(p)).filter(m=>m&&m.bp>0)}catch(e){}

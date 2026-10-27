@@ -1813,3 +1813,63 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .tsd{font:700 11px var(--mono);padding:2px 7px;border-radius:99px;background:var(--card2);color:var(--mute);white-space:nowrap}.tsd.up{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}.tsd.dn{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
 .abts{display:inline-flex;align-items:center;gap:12px}.abtsv{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:11px;color:var(--mute);line-height:1.2}.abtsv b{font:800 italic 20px/1 var(--display);color:var(--ink)}
 .tsbar em.win{color:var(--good)}.tsbar em.win::before{background:var(--good)}
+
+/* ---- Oct 27 polish: slim header, search, score breakdown, home side panel, undo ---- */
+/* desktop: a slim header so content starts higher; the repeated VGC badge is gone (the eyebrow already says it) */
+@media (min-width:1001px){
+  .band .inner{padding-block:12px 10px!important}
+  .band .eyebrow{margin-bottom:4px}
+  .band .brand .np{--s:.4!important}
+  .band .stage{height:40%}
+  .wave{height:16px!important}
+}
+.jumpbtn{display:inline-flex;align-items:center;gap:8px;flex:none;border:1px solid var(--line2);background:color-mix(in srgb,var(--card) 80%,transparent);color:var(--mute);border-radius:12px;padding:8px 10px 8px 12px;font:500 14px var(--body);cursor:pointer;min-width:280px;transition:border-color .15s,color .15s}
+.jumpbtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;flex:none}
+.jumpbtn .jbt{flex:1;text-align:left}
+.jumpbtn kbd{font:600 11px var(--mono);border:1px solid var(--line2);border-radius:6px;padding:2px 6px;color:var(--faint);background:var(--card2)}
+@media (hover:hover){.jumpbtn:hover{border-color:var(--accent);color:var(--ink)}}
+@media (max-width:1000px){.jumpbtn{min-width:0;padding:8px;border-radius:12px}.jumpbtn .jbt,.jumpbtn kbd{display:none}.jumpbtn svg{width:20px;height:20px}}
+.jump{position:fixed;inset:0;z-index:60;background:rgba(14,6,26,.45);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px}
+.jump[hidden]{display:none}
+.jbox{width:min(560px,100%);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 60px rgba(14,6,26,.35);overflow:hidden}
+.jbox input{width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:16px 18px;font-size:16px;background:transparent;color:var(--ink);outline:none}
+.jbox ul{list-style:none;margin:0;padding:6px;max-height:min(56vh,440px);overflow:auto}
+.jbox li{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer}
+.jbox li[aria-selected="true"]{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.jbox li .jl{display:flex;flex-direction:column;min-width:0;flex:1}.jbox li .jl span{font-size:12.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jbox li .jk{font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--faint);flex:none}
+.jbox li.jnone{color:var(--mute);cursor:default;font-size:14px}
+.jhint{font-size:11.5px;color:var(--faint);padding:8px 14px;border-top:1px solid var(--line)}
+@media (max-width:1000px){.jhint{display:none}.jump{padding-top:8vh}}
+/* team hero: why score and checklist differ, and what's behind the score */
+.thnote{margin:10px 0 0;font-size:13px;line-height:1.45;opacity:.85}
+.tsbrk{margin-top:10px;border-top:1px solid color-mix(in srgb,currentColor 14%,transparent);padding-top:8px}
+.tsbrk summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--accent);list-style:revert}
+.tsbrk .t2{margin:6px 0 8px}
+.tsbrows{display:grid;gap:5px;max-width:520px}
+.tsbr{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) 42px;align-items:center;gap:10px;font-size:13px}
+.tsbn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsbbar{position:relative;height:8px;border-radius:99px;background:color-mix(in srgb,currentColor 10%,transparent)}
+.tsbbar::after{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;background:color-mix(in srgb,currentColor 35%,transparent)}
+.tsbbar i{position:absolute;top:0;bottom:0;width:var(--w);border-radius:99px}
+.tsbbar i.up{left:50%;background:var(--good)}.tsbbar i.dn{right:50%;background:var(--bad)}
+.tsbr b{text-align:right;font:700 13px var(--mono)}.tsbr b.up{color:var(--good)}.tsbr b.dn{color:var(--bad)}
+.tsbcut{margin-top:8px!important}.tsbcut b{color:var(--bad)}
+/* home: newest winner and your Team Score next to the hero text on desktop */
+.hhside{display:none}
+@media (min-width:1001px){
+  .hhero{display:grid;grid-template-columns:minmax(0,1fr) 330px;column-gap:28px;align-items:start}
+  .hhero>*:not(.hhside){grid-column:1}
+  .hhside{display:flex;flex-direction:column;gap:6px;grid-column:2;grid-row:1/span 8;align-self:center;position:relative;z-index:1;border:1px solid var(--line);border-radius:16px;padding:14px 16px;background:color-mix(in srgb,var(--card) 70%,transparent)}
+  .hhside .hsk{font:700 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .hhside .hswho{font-size:15px}
+  .hhside .hsspr{display:flex;margin:4px 0 2px}.hhside .hsspr .hsmon{width:46px;height:46px;margin-right:-4px;object-fit:contain}
+  .hhside .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .hhside .hsts{display:flex;align-items:baseline;gap:8px;margin-top:6px;padding:10px 0 0;border:0;border-top:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+  .hhside .hsts b{font:800 italic 28px/1 var(--display)}.hhside .hsts span{font-size:13px;color:var(--mute)}
+}
+/* Undo in the toast */
+.toast .tundo{margin-left:10px;border:0;background:var(--volt);color:var(--volt-ink);font:800 12px var(--body);padding:4px 10px;border-radius:6px;cursor:pointer}
+/* plain labels */
+.tag.rating .rtw{opacity:.6;font-size:.85em;margin-left:1px}
+.tug{display:none}.slots.grid .tug{display:inline}

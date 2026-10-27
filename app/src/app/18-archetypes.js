@@ -194,10 +194,10 @@ function renderTopTeams() {
         : `<button class="btn sm" type="button" data-ttask="${k}">Load team</button><button class="linkbtn" type="button" data-ttvs="${k}">Practice against</button>`}</div></div>`; }).join('')
       + (all.length > cap ? `<button class="btn ttmore" type="button" data-ttmore="${esc(sec)}">Show ${all.length - cap} more</button>` : ''); }).join('');
 }
-function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return;
+function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return; keepUndo();
   S.slots = normSlots(t.mons.map(n => ({n, a: null, lock: false})));
   // tournament teams are VGC doubles teams
-  S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`Loaded ${t.player}'s team (doubles)`); }
+  S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`Loaded ${t.player}'s team`, true); }
 
 // Trends: compare each Pokémon's rank today with about a week ago.
 function cleanHistory(d) { if (!d || !Array.isArray(d.days)) return null;

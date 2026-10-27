@@ -21,11 +21,13 @@ ROSTER.forEach(p=>{p.d=disp(p.n);p.k=norm(p.d)+' '+norm(p.n)+' '+norm(p.n.replac
 const byName=new Map(ROSTER.map(p=>[p.n,p]));
 const MV=MOVES.map(([name,t,cat,bp,sound,spread],i)=>({i,name,type:TYPES[t],cat,bp,sound,spread,k:norm(name)}));
 const mvByName=new Map(MV.map(m=>[m.name,m]));
-const DEFAULT_TEAM={name:'Mega Salamence core',slots:[
- {n:'Salamence-Mega',a:'Aerilate'},
- {n:'Incineroar',a:'Intimidate'},
- {n:'Rillaboom',a:'Grassy Surge'},
- {n:'Primarina',a:'Liquid Voice'},
- {n:'Tinkaton',a:'Mold Breaker'},
- {n:'Swampert',a:'Torrent'}]};
+// The sample a new visitor starts with: a real winning team (48 players brought this exact six at Limitless events and won
+// 63% of games; Team Score 93, 7/7 checks on Oct 27), so the first thing anyone sees is a good team, not a fixer-upper.
+const DEFAULT_TEAM={name:'Sun Tailwind (sample)',slots:[
+ {n:'Charizard-Mega-Y',a:'Drought'},
+ {n:'Whimsicott',a:'Prankster'},
+ {n:'Basculegion',a:'Adaptability'},
+ {n:'Kingambit',a:'Defiant'},
+ {n:'Garchomp',a:'Rough Skin'},
+ {n:'Sneasler',a:'Unburden'}]};
 const blank=()=>({n:'',a:null,lock:false});
