@@ -27,7 +27,7 @@ function quickPicks(key,plans,ms,used){if(!plans||!plans.singles||!plans.basePl)
   // with the win model on, a quick add must not lower the Team Score, and the highest one comes first
   // hidden-gem plans (plans.gems) carry no Team Score of their own, so they're judged against the team's
   const tb=plans.tsBase!=null?plans.tsBase:(useTSPick()&&ui.plans&&ui.plans.tsBase!=null?ui.plans.tsBase:null);
-  if(tb!=null){c=c.slice(0,20);for(const pl of c)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
+  if(tb!=null){c=tsShortlist(c,20);for(const pl of c)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
     c=c.filter(pl=>pl._ts!=null&&pl._ts>=tb+TS_GAIN).sort((a,b)=>(b._ts??-1)-(a._ts??-1)||a.score-b.score);
     const out=[],seen=new Set();for(const pl of c){const b=pl.ch[0].c.p.b;if(seen.has(b)||(used&&used.has(b)))continue;seen.add(b);out.push(pl);if(out.length>=3)break}return out}
   const out=[],seen=new Set();for(const pl of c){const b=pl.ch[0].c.p.b;if(seen.has(b)||(used&&used.has(b)))continue;seen.add(b);out.push(pl);if(out.length>=3)break}

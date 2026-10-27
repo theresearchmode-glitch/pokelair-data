@@ -32,12 +32,16 @@ function computeRecs(ms, useA) {
   // highest goes first. The type rules relax to "at most one more weakness or unresisted type, no new stack".
   const useTS = useTSPick() && ms.length >= 5, baseTS = useTS && ms.length === 6 ? tsOf(ms) : null; let tsN = 0;
   const tsOK = pl => { if (!useTS || pl.team.length !== 6) return null; if (pl._ts === undefined) { if (tsN >= 120) return null; tsN++; pl._ts = tsOf(pl.team); } return pl._ts; };
-  for (const pl of res.singles) { const x = pl.ch[0], b = x.c.p.b; if (seen.has(b)) continue;
+  // with the win model on, the Team Score checks go first to the planner's best 60 and the model's strongest 60
+  const order = useTS ? tsShortlist(res.singles, 60) : res.singles;
+  for (const pl of order) { const x = pl.ch[0], b = x.c.p.b; if (seen.has(b) && !useTS) continue;
     const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
     const t = tsOK(pl);
     if (t != null) { const fits = A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && pl.megaShort <= shortB;
-      if (fits && (baseTS == null || t >= baseTS + TS_GAIN)) { seen.add(b); clean.push(pl); } else if (soft.length < 3 && fits) soft.push(pl);
-      if (clean.length >= 24) break; continue; }
+      // one card per Pokémon: the swap that gives it the highest Team Score
+      if (fits && (baseTS == null || t >= baseTS + TS_GAIN)) { const j = clean.findIndex(y => y.ch[0].c.p.b === b); if (j < 0) { seen.add(b); clean.push(pl); } else if (t > clean[j]._ts) clean[j] = pl; }
+      else if (soft.length < 3 && fits && !seen.has(b) && !soft.some(y => y.ch[0].c.p.b === b)) soft.push(pl);
+      continue; }
     const megaFix = pl.megaShort < shortB && A.ex <= B.ex + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1;
     if ((keeps(A) || megaFix) && (ms.length < 6 || pl.gain > 0)) { seen.add(b); pl.megaFix = megaFix && !keeps(A); clean.push(pl); } else if (soft.length < 3 && A.ex <= B.ex + 1 && A.off >= B.off - 1) soft.push(pl);
     if (clean.length >= 24) break; }
@@ -53,7 +57,7 @@ function computeRecs(ms, useA) {
   if (!OFFMETA) { const taken = new Set(clean.map(pl => pl.ch[0].c.p.b));
     const gpool = (ui.recSrc === 'all' ? ROSTER : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isMetaPick(p) && !taken.has(p.b) && (rating(p).total >= 55 || p.m));
     const gres = withOffMeta(() => planFixes(ms, gpool, useA, {singlesOnly: true}));
-    const gseen = new Set();
+    const gseen = new Set(); tsN = 0;
     for (const pl of gres.singles) { const b = pl.ch[0].c.p.b; if (gseen.has(b)) continue; const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
       const gt = useTS && pl.team.length === 6 ? tsOK(pl) : undefined;
       if (keeps(A) && (gt !== undefined ? gt != null && (baseTS == null || gt >= baseTS + TS_GAIN) : (ms.length < 6 || pl.gain > 0)) && pl.megaShort <= shortB && isGem(pl.ch[0].c.p)) { gseen.add(b); pl.gem = true; gems.push(pl); }
@@ -61,7 +65,7 @@ function computeRecs(ms, useA) {
     gems.sort((x, y) => rank(y) - rank(x)); }
   // Alternatives: swaps that don't improve the numbers but keep every check and stay close on them.
   // They feed "More ideas", so the list never just stops when the team is already good.
-  const alts = [], aseen = new Set([...clean, ...gems].map(pl => pl.ch[0].c.p.b)), passB = (proChecks(ms, useA) || {pass: 0}).pass;
+  tsN = 0; const alts = [], aseen = new Set([...clean, ...gems].map(pl => pl.ch[0].c.p.b)), passB = (proChecks(ms, useA) || {pass: 0}).pass;
   for (const pl of res.singles) { const b = pl.ch[0].c.p.b; if (aseen.has(b) || alts.length >= 18) continue;
     const A = pl.prof || teamProfile(pl.team, useA); pl.prof = A; if (pl.gain == null) pl.gain = gains(A, pl);
     if (A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1 && A.ans >= B.ans - 2 && pl.megaShort <= shortB && strong(pl) && (proChecks(pl.team, useA) || {pass: 0}).pass >= passB

@@ -77,7 +77,14 @@ const fitPart = train.filter(g => !vcut.has(g[3])), val = train.filter(g => vcut
 let bestL = null; for (const k of [1, 3, 10, 30, 100]) { const m = fit(fitPart, {lb: 4 * k, lp: 15 * k, ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
 // recency half-life, picked on the validation slice (0 = no recency, kept if nothing beats it)
 let bestH = {half: 0, sc: bestL.sc}; for (const half of [14, 21, 30]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k, half}); const sc = score(m, val, false).logloss; console.log('recency half-life', half, sc); if (sc < bestH.sc) bestH = {half, sc}; }
-const K = bestL.k, HALF = bestH.half, LAM = {lb: 4 * K, lp: 15 * K, ls: 1.5 * K, half: HALF};
+// v4 (Oct 27): how much of a result to put down to the player rather than the team, picked on the validation slice.
+// Fitting player skill stops a top player's wins inflating their Pokémon, but strong players also pick strong teams, so
+// separating them too hard throws away real signal. 0 = no player term at all. The full adjustment stays unless another
+// setting is clearly better (by 0.002 log-loss): tested Oct 27, a 10x lighter one gained only 0.0009 (noise) while letting
+// rare Pokémon that strong players brought rate higher (an odd six rose from below 90 to 92), so it was not shipped.
+let bestS = {sm: 1, sc: bestH.sc}; for (const sm of [.3, 3, 10, 0]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k * sm, useSkill: sm > 0, half: bestH.half}); const sc = score(m, val, false).logloss; console.log('player-skill shrink', sm, sc); if (sc < bestH.sc - .002 && sc < bestS.sc) bestS = {sm, sc}; }
+const K = bestL.k, HALF = bestH.half, LAM = {lb: 4 * K, lp: 15 * K, ls: 1.5 * K * (bestS.sm || 1), useSkill: bestS.sm > 0, half: HALF};
+bestH.sc = bestS.sc;
 let LC = null; if (hasSets && setNames.length) for (const lc of [20, 60, 200]) { const m = fit(fitPart, {...LAM, useSets: true, lc}); const sc = score(m, val, false).logloss; console.log('sets shrink', lc, sc); if (sc < bestH.sc && (!LC || sc < LC.sc)) LC = {lc, sc}; }
 const species = fit(train, LAM), withSets = LC ? fit(train, {...LAM, useSets: true, lc: LC.lc}) : null;
 // calibrated log-loss: the page always stretches or shrinks the model's edges by the held-out calibration slope, so
@@ -91,7 +98,7 @@ const noSkill = fit(train, {...LAM, useSkill: false, useSets, lc: LC ? LC.lc : 4
 // how many held-out events the model calls better than a coin flip (so one big event can't carry the result)
 const evWins = (() => { const by = new Map(); for (const g of test) { const p = 1 / (1 + Math.exp(-(full.x(g[0], g[7]) - full.x(g[1], g[8])))); const e = by.get(g[3]) || [0, 0]; e[0] += (p > .5) === (g[2] === 1) ? 1 : 0; e[1]++; by.set(g[3], e); }
   const v = [...by.values()]; return {beat_coin_flip: v.filter(([a, n]) => a / n > .5).length, events: v.length}; })();
-const ev = {train_games: train.length, test_games: test.length, test_events: cut.size, recency_half_life_days: HALF || null,
+const ev = {train_games: train.length, test_games: test.length, test_events: cut.size, recency_half_life_days: HALF || null, player_skill_shrink: bestS.sm,
   calibrated_logloss: {species_only: cS.ll, with_sets: cW ? cW.ll : null}, events_beating_coin_flip: evWins,
   model_teams_only: score(full, test, false), species_only: evS, with_sets: evW, model_with_known_players: score(full, test, true),
   without_player_skill: score(noSkill, test, false), without_pairs: score(noPairs, test, false), raw_win_rates: score(raw, test, false), coin_flip: {logloss: .6931, acc: .5}};

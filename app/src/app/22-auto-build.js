@@ -90,10 +90,14 @@ function buildBest() {
     let ranked = finals.map(f => ({...f, s: abScore(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12).map(x => ({...polish(x.t, x.lock), lock: x.lock})).sort((a, b) => b.s - a.s);
     // Team Score decides the order (win model loaded): the search above only shortlists. Each shortlisted team then
     // gets one round of Team Score polish: the single swap (outside its seed core) that raises its Team Score most.
-    if (useTSPick()) { const cTS = cand.slice(0, 25);
-      for (const r of ranked) { r.ts = tsOf(r.t); if (r.ts == null) continue;
-        let best = null; for (let i = r.lock; i < 6; i++) for (const c of cTS) { const rest = r.t.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const t = tsOf(nt); if (t != null && t > (best ? best.ts : r.ts + 1)) best = {t: nt, ts: t}; }
-        if (best) { r.t = best.t; r.ts = best.ts; } }
+    // Candidates for the polish: the 25 strongest by pick value plus the 15 the win model rates highest (so a Pokémon the
+    // model likes is tried even if it's rarely picked). Up to 3 rounds, each taking the single swap that raises it most.
+    if (useTSPick()) { const mv = p => (META.model.mons[p.n] || 0), cTS = [...new Set([...cand.slice(0, 25), ...pool.slice().sort((a, b) => mv(b) - mv(a)).slice(0, 15).map(p => M.get(p.n))])];
+      for (const r of ranked.slice(0, 8)) { r.ts = tsOf(r.t); if (r.ts == null) continue;
+        for (let round = 0; round < 3; round++) { let best = null;
+          for (let i = r.lock; i < 6; i++) for (const c of cTS) { const rest = r.t.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const t = tsOf(nt); if (t != null && t > (best ? best.ts : r.ts + 1)) best = {t: nt, ts: t}; }
+          if (!best) break; r.t = best.t; r.ts = best.ts; } }
+      for (const r of ranked.slice(8)) r.ts = tsOf(r.t);
       ranked.sort((a, b) => (b.ts ?? -1) - (a.ts ?? -1) || b.s - a.s); }
     // three different teams: each must differ from the ones kept by at least 3 Pokémon
     const out = [];

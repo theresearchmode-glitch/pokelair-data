@@ -39,19 +39,29 @@ export function parseLog(log) {
 async function get(url) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
   try { const r = await fetch(url, {signal: c.signal, headers: {'user-agent': 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data)'}}); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// the replay server is sometimes slow or briefly down: try a list page up to 5 times, waiting longer each time
+async function getRetry(url) { for (let k = 0; ; k++) { try { return await get(url); } catch (e) { if (k >= 4) throw e; await sleep(5000 * (k + 1)); } } }
+// BACKFILL=1 walks all the way back through the search pages, skipping games we already have (a one-off catch-up
+// run; list pages are cheap, only new games are downloaded). The daily run stops when it reaches games it already has.
+const BACKFILL = process.env.BACKFILL === '1', MAX_PAGES = BACKFILL ? 100000 : 60;
+function save(prev, fresh) {
+  const byId = new Map(); for (const g of [...fresh, ...prev.games]) if (!byId.has(g.id)) byId.set(g.id, g);
+  const games = [...byId.values()].sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, KEEP);
+  fs.writeFileSync('out/replays.json', JSON.stringify({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games}));
+  return games.length; }
 async function main() {
   const prev = readJSON('out/replays.json', {games: []}), seen = new Set(prev.games.map(g => g.id)), fresh = [];
   let before = '', pages = 0, skipped = 0;
   // newest first; stop at replays we already have, or the per-run cap
-  outer: while (fresh.length < MAX_NEW && pages < 60) {
-    const list = await get(`${BASE}/search.json?format=${FMT}${before ? '&before=' + before : ''}`); pages++;
+  outer: while (fresh.length < MAX_NEW && pages < MAX_PAGES) {
+    let list; try { list = await getRetry(`${BASE}/search.json?format=${FMT}${before ? '&before=' + before : ''}`); } catch (e) { console.log('replays: list page failed (' + e.message + '), saving what we have'); break; } pages++;
     if (!Array.isArray(list) || !list.length) break;
-    for (const s of list) { if (seen.has(s.id)) { if (pages > 1) break outer; continue; }
+    for (const s of list) { if (seen.has(s.id)) { if (pages > 1 && !BACKFILL) break outer; continue; }
       await sleep(PAUSE); let j; try { j = await get(`${BASE}/${s.id}.json`); } catch (e) { skipped++; continue; }
       const g = parseLog(j.log); if (!g) { skipped++; continue; }
-      fresh.push({id: s.id, t: j.uploadtime || s.uploadtime || null, ...g}); if (fresh.length >= MAX_NEW) break; }
+      seen.add(s.id); fresh.push({id: s.id, t: j.uploadtime || s.uploadtime || null, ...g}); if (fresh.length >= MAX_NEW) break;
+      if (fresh.length % 250 === 0) { save(prev, fresh); console.log(`replays: ${fresh.length} so far`); } }
     before = list[list.length - 1].uploadtime; if (list.length < 51) break; await sleep(PAUSE); }
-  const games = [...fresh, ...prev.games].slice(0, KEEP);
-  fs.writeFileSync('out/replays.json', JSON.stringify({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games}));
-  console.log(`replays: ${fresh.length} new, ${skipped} skipped (not usable), ${games.length} kept`); }
+  const kept = save(prev, fresh);
+  console.log(`replays: ${fresh.length} new, ${skipped} skipped (not usable), ${kept} kept`); }
 if (process.argv[1] && process.argv[1].endsWith('replays.mjs')) main().catch(e => { console.log('replays: stopped (' + e.message + '); kept the existing file'); process.exit(0); });

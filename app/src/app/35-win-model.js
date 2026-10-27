@@ -70,6 +70,13 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
 
 // Team Score of any six members (plans, additions, builds), from the same model as the Team page
 function tsOf(team){if(!team||team.length!==6)return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?teamScore({wv}).score:null}catch(e){return null}}
+// Quick model strength for shortlisting: the same number as strengthX without the checklist cut (the slow part).
+function xQuick(team){if(!modelOK()||!team||team.length!==6)return -Infinity;const names=team.map(m=>m.p.n),mx=META.model.meanX||0,x=teamX(names,team),d=x-mx;return mx+(d>0?d*mixCredit(names):d)}
+// Which plans get a full Team Score check: the first n in the order given (the planner's own ranking) plus the n the win
+// model rates strongest, so a change the model likes is never missed just because the planner's type rules ranked it low.
+function tsShortlist(pls,n){const out=new Set(pls.slice(0,n));if(!modelOK())return [...out];
+  for(const pl of pls)if(pl._xq===undefined)pl._xq=xQuick(pl.team);
+  let k=0;for(const pl of pls.filter(pl=>pl._xq>-Infinity).sort((x,y)=>y._xq-x._xq)){if(k>=n)break;if(!out.has(pl)){out.add(pl);k++}}return [...out]}
 // Fix plans, Best additions and Build for me choose by Team Score when the win model is loaded (off-meta searches keep their own picks).
 function useTSPick(){return !OFFMETA&&modelOK()}
 // What "improves the team" means everywhere (Fix plans, Quick add, Best additions): the Team Score rises by at least this much

@@ -77,6 +77,10 @@ function planFixes(ms,pool,useA,opts){
   // two changes, built from the strongest single changes
   // best 8 single changes per slot, so two-change plans can combine fixes for different slots
   const bySlot=new Map();for(const s of singles){const k=s.ch[0].out?s.ch[0].out.i:'add';const arr=bySlot.get(k)||[];if(arr.length<(k==='add'?10:5))arr.push(s);bySlot.set(k,arr)}
+  // plus the 3 per slot the win model rates strongest, so two-change plans can pair up the model's favourites too
+  if(useTSPick()&&full){for(const s of singles)if(s._xq===undefined)s._xq=xQuick(s.team);
+    const byX=new Map();for(const s of singles.slice().sort((x,y)=>y._xq-x._xq)){const k=s.ch[0].out?s.ch[0].out.i:'add';const arr=byX.get(k)||[];if(arr.length<3&&s._xq>-Infinity){arr.push(s);byX.set(k,arr)}}
+    for(const [k,arr] of byX){const cur=bySlot.get(k)||[];for(const s of arr)if(!cur.includes(s))cur.push(s);bySlot.set(k,cur)}}
   const top=[...bySlot.values()].flat(),doubles=[];
   for(let i=0;i<top.length;i++)for(let j=i+1;j<top.length;j++){const A=top[i].ch[0],B=top[j].ch[0];
     if(A.c.p.b===B.c.p.b)continue;
@@ -94,7 +98,8 @@ function planFixes(ms,pool,useA,opts){
   // only shortlists (the 70 most promising) and breaks ties; the type rules relax to "at most one more weakness, no new stack".
   const tsBase=useTSPick()&&full?tsOf(ms):null;let tsOn=false;
   if(useTSPick()){const sh0=typeShape(base.a).maxStack;
-    const short=[...singles,...doubles].filter(pl=>pl.team.length===6&&keepsPlan(pl)&&pl.st.a.excess<=base.a.excess+1&&pl.st.a.unresisted.length<=base.a.unresisted.length+1&&typeShape(pl.st.a).maxStack<=Math.max(2,sh0)&&megaShort(pl.team)<=megaShort(ms)).sort((x,y)=>x.score-y.score).slice(0,70);
+    const short0=[...singles,...doubles].filter(pl=>pl.team.length===6&&keepsPlan(pl)&&pl.st.a.excess<=base.a.excess+1&&pl.st.a.unresisted.length<=base.a.unresisted.length+1&&typeShape(pl.st.a).maxStack<=Math.max(2,sh0)&&megaShort(pl.team)<=megaShort(ms)).sort((x,y)=>x.score-y.score);
+    const short=tsShortlist(short0,70);
     for(const pl of short)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
     if(short.some(pl=>pl._ts!=null)){tsOn=true;
       const ranked=short.filter(pl=>pl._ts!=null&&(tsBase==null||pl._ts>=tsBase+TS_GAIN)).sort((x,y)=>tsKey(y)-tsKey(x)||x.score-y.score);
