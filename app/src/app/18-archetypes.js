@@ -35,12 +35,12 @@ function archMatchup(A, B, mine) {
   if (trS(B.speed) || B.speed === 'tailroom') {
     if (trS(A.speed) || A.speed === 'tailroom') add('even', 'Trick Room mirror', `Both of you can set Trick Room. Setting it again ends it, so time yours to undo theirs or let theirs run out with Protect.`);
     else if (A.anti.length) add('even', 'Stop their Trick Room', `${listD(A.anti)} can Taunt or Encore ${listD(B.setters.tr) || 'their setter'} before it sets the room.${B.terrain.includes('psy') ? '' : ' Fake Out also buys a turn.'}`);
-    else add('bad', 'Their Trick Room flips your speed', `${listD(B.setters.tr) || 'Their setter'} can reverse turn order for 4 turns. You have no Taunt or Imprison, so ${B.terrain.includes('psy') ? 'hit the setter hard turn 1 (their Psychic Terrain blocks Fake Out)' : 'pressure or Fake Out the setter turn 1'}, or Protect and switch to stall the turns out.`);
+    else add('bad', 'Their Trick Room flips your speed', `${listD(B.setters.tr) || 'Their setter'} can reverse turn order for the next 4 turns. You have no Taunt or Imprison, so ${B.terrain.includes('psy') ? 'hit the setter hard turn 1 (their Psychic Terrain blocks Fake Out)' : 'pressure or Fake Out the setter turn 1'}, or Protect and switch to stall the turns out.`);
   }
   if (fastSpeed(B.speed) || B.speed === 'tailroom') {
     if (trS(A.speed) || A.speed === 'tailroom') add('good', 'Your Trick Room beats their Tailwind', `Under your room their Tailwind speed works against them. Watch for Taunt on ${listD(A.setters.tr)}.`);
     else if (A.speed === 'tw') add('even', 'Tailwind mirror', `Whoever sets Tailwind first and keeps it up usually wins. ${A.drop.length ? listD(A.drop) + ' can slow them back down.' : 'Speed drops like Icy Wind help here.'}`);
-    else add('bad', 'They control speed, you don\'t', `${listD(B.setters.tw) || 'Their setter'} can double their speed for 4 turns. Protect through it or knock the setter out turn 1.`);
+    else add('bad', 'They control speed, you don\'t', `${listD(B.setters.tw) || 'Their setter'} can double their speed for the next 3 turns. Protect through it or knock the setter out turn 1.`);
   }
   if (B.speed === 'none' && A.speed !== 'none') add('good', 'You control speed', `They have no Tailwind or Trick Room, so your ${A.speed === 'tw' ? 'Tailwind' : 'Trick Room'} should decide turn order.`);
   // weather war

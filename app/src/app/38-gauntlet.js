@@ -12,7 +12,9 @@ function renderGauntlet(){const el=$('gauntOut');if(!el)return;const ms=members(
   // always means better odds here. The Battle mode planner still picks the four to bring and flags what nothing handles.
   if(gauntCache.key!==key){let myX=null;try{if(ms.length===6&&S.format==='doubles'&&modelOK()){const nm=ms.map(m=>m.p.n);if(new Set(ms.map(m=>m.p.b)).size===6)myX=strengthX(nm,ms).xRaw}}catch(e){myX=null}
     gauntCache={key,rows:T.map((t,ix)=>{const theirs=t.mons.map(n=>byName.get(n)).filter(Boolean).map(oppMember);if(theirs.length<4)return null;const g=gauntletScore(ms,theirs,useA);
-      let pm=null;if(myX!=null&&theirs.length===6){try{pm=sig(calibK()*(myX-strengthX(theirs.map(o=>o.p.n),theirs).xRaw))}catch(e){pm=null}}
+      // their six are built exactly the way your own six would be with default sets (same moves, abilities and
+      // team-aware items), so the two sides are measured alike: an identical six is a 50% coin flip
+      let pm=null;if(myX!=null&&theirs.length===6){try{const tn=theirs.map(o=>o.p.n);const tm=assignItems(tn.map(n=>memberOf({n,a:null,lock:false},-1)).filter(Boolean));pm=sig(calibK()*(myX-strengthX(tn,tm).xRaw))}catch(e){pm=null}}
       if(pm!=null)g.s=(g.s+(pm-.5)*4)/2;return {ix,t,theirs,pm,...g}}).filter(Boolean)}}
   const rows=gauntCache.rows;const side=x=>x.pm!=null?(x.pm>=.55?1:x.pm<=.45?-1:0):(x.s>=.25?1:x.s<=-.25?-1:0);const fav=rows.filter(x=>side(x)>0).length,bad=rows.filter(x=>side(x)<0).length;
   const v=x=>side(x)>0?['ok','Favored']:side(x)<0?['hi','Unfavored']:['mid','Even'];

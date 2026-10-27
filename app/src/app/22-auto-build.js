@@ -25,11 +25,13 @@ function provenBuild() {
   const goal = megaGoal(), all = ui.abSrc === 'all';
   const ok = p => p && !isExcl(p) && (all || inBox(p));
   const cands = [];
-  for (const [names, n, wr] of RES.proven) {
+  // evidence first (Oct 28 audit): a "proven" team needs 3+ players who brought it, or 30+ games when the count is shipped
+  for (const [names, n, wr, g] of RES.proven) {
+    if (!(n >= 3 || (g != null && g >= 30))) continue;
     const ps = names.map(x => byName.get(x)); if (ps.some(p => !p)) continue;
     if (ui.abLock && !names.includes(ui.abLock)) continue; // "Build around it": only real teams that ran this Pokémon
     const missing = ps.filter(p => !ok(p) && p.n !== ui.abLock); if (missing.length > 1) continue;
-    cands.push({ps, n, wr, missing: missing[0] || null});
+    cands.push({ps, n, wr, g: g != null ? +g : null, missing: missing[0] || null});
   }
   if (!cands.length) return null;
   const fill = c => { const keep = c.ps.filter(p => p !== c.missing).map(abMember); if (!c.missing) return keep;
@@ -40,16 +42,18 @@ function provenBuild() {
     // the gap goes to whichever of the 8 best fits gives the highest Team Score
     if (useTSPick()) { let best = null; for (const o of opts.slice(0, 8)) { const ts = tsOf(o.t); if (ts != null && (!best || ts > best.ts)) best = {t: o.t, ts}; } if (best) return best.t; }
     return opts[0].t; };
-  let scored = cands.map(c => ({...c, s: c.wr + .006 * Math.log2(1 + c.n) - (c.missing ? .05 : 0) - (c.ps.filter(p => p.m).length !== goal ? .015 : 0)})).sort((a, b) => b.s - a.s);
-  // Team Score decides the order (win model loaded): the 15 best-proven lists, highest Team Score first
+  // real results lead: the win rate (already shrunk toward the field in the pipeline) pulled further toward the field when
+  // few players ran it, plus a little for more players; Team Score only fills a missing slot and breaks near-ties
+  const shrunk = c => { const k = 4; return (c.wr * c.n + (RES.base || .5) * k) / (c.n + k); };
+  let scored = cands.map(c => ({...c, s: shrunk(c) + .006 * Math.log2(1 + c.n) - (c.missing ? .05 : 0) - (c.ps.filter(p => p.m).length !== goal ? .015 : 0)})).sort((a, b) => b.s - a.s);
   if (useTSPick()) { scored = scored.slice(0, 15); for (const c of scored) { c.t = fill(c); c.ts = c.t && c.t.length === 6 ? tsOf(c.t) : null; }
-    scored.sort((a, b) => (b.ts ?? -1) - (a.ts ?? -1) || b.s - a.s); }
+    scored.sort((a, b) => (b.s + .0004 * (b.ts ?? 50)) - (a.s + .0004 * (a.ts ?? 50))); }
   const out = [];
   for (const c of scored) { if (out.length >= 3) break; const t = c.t !== undefined ? c.t : fill(c); if (!t || t.length !== 6) continue;
     if (out.some(o => o.t.filter(m => t.some(x => x.p.b === m.p.b)).length > 3)) continue; out.push({t, c}); }
   if (!out.length) return null;
   return {fmt: 'doubles', teams: out.map(({t, c}) => { const d = abDescribe(t);
-    const src = `${c.n > 1 ? `${c.n} players brought this exact team` : 'A real tournament team'} at Limitless events, winning about ${Math.round(c.wr * 100)}% of games`;
+    const src = `${c.n} players brought this exact team at Limitless events${c.g ? ` (${c.g.toLocaleString('en-US')} games)` : ''}, winning about ${Math.round(c.wr * 100)}% of them`;
     d.why.unshift(c.missing ? `${src}, with ${c.missing.d} where you have ${(t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: '?'}).d}` : src);
     d.proven = {n: c.n, wr: c.wr, swapped: !!c.missing}; return d; })};
 }
@@ -126,7 +130,9 @@ function buildBest_() {
 function abDescribe(t) {
   const v = teamValue(t), gp = v.gp, tr = v.tr;
   const role = m => monRole(m);
-  const mons = t.map(m => ({n: m.p.n, d: m.p.d, types: m.p.t, mega: !!m.p.m, box: inBox(m.p), role: role(m), ability: m.ability, offMeta: viability(m.p) < 25}));
+  // each member's item for this six (team-aware: no two the same, nothing that can't work here)
+  const tA = typeof assignItems === 'function' ? assignItems(t) : t;
+  const mons = t.map((m, i) => ({n: m.p.n, d: m.p.d, types: m.p.t, mega: !!m.p.m, box: inBox(m.p), role: role(m), ability: m.ability, it: (tA[i] && tA[i].item) || '', offMeta: viability(m.p) < 25}));
   const why = [];
   if (RES) { const names = new Set(t.map(m => m.p.n)); const core = RES.cores.find(c => c.slice(0, 3).every(n => names.has(n)));
     if (core) why.push(`${core.slice(0, 3).map(n => (byName.get(n) || {}).d || n).join(' + ')}: ${core[3]} tournament teams, ${Math.round(core[4] * 100)}% wins`); }
@@ -154,7 +160,7 @@ function renderAutoBuild() {
   const col = (res) => { if (!res.teams.length) return `<div class="abcol"><div class="abfmt">${FMT(res.fmt)}</div><div class="empty-note">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team.` : res.short != null ? `Only ${res.short} usable Pokémon in your box for ${FMT(res.fmt).toLowerCase()}. Add more in My box, or switch to Whole roster.` : 'No legal team from this pool.'}</div></div>`;
     const k = (ui.abIdx && ui.abIdx[res.fmt]) || 0, tm = res.teams[k % res.teams.length];
     return `<div class="abcol"><div class="abhead"><span class="abfmt">${FMT(res.fmt)}</span><span class="archchips">${archChips(tm.label)}</span>${tm.fresh ? '<span class="tag offmeta">FRESH TAKE</span>' : ''}${tm.proven ? `<span class="tag box" title="Built from a real tournament team">${tm.proven.swapped ? 'PROVEN · 1 SWAP' : 'PROVEN TEAM'}</span>` : ''}${tm.grade ? `<span style="margin-left:auto" class="abts">${abTS(tm)}${miniGrades(tm.grade)}</span>` : ''}${res.teams.length > 1 ? `<span class="vsub">option ${k % res.teams.length + 1} of ${res.teams.length}</span>` : ''}</div>
-      <div class="abmons">${tm.mons.map(m => `<div class="abmon">${sprite(byName.get(m.n),'mini')}<span class="abname">${esc(m.d)}</span>${confChip(byName.get(m.n))}<span class="chips">${m.types.map(t => chip(t)).join('')}</span>${m.box ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}${m.offMeta ? '<span class="tag offmeta">OFF-META</span>' : ''}<span class="abright"><span class="tag role">${esc(m.role)}${m.mega ? ' · MEGA' : ''}</span>${byName.get(m.n) ? ratingTag(byName.get(m.n)) : ''}</span></div>`).join('')}</div>
+      <div class="abmons">${tm.mons.map(m => `<div class="abmon">${sprite(byName.get(m.n),'mini')}<span class="abname">${esc(m.d)}${m.it ? `<span class="vsub abit"> @ ${esc(m.it)}</span>` : ''}</span>${confChip(byName.get(m.n))}<span class="chips">${m.types.map(t => chip(t)).join('')}</span>${m.box ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}${m.offMeta ? '<span class="tag offmeta">OFF-META</span>' : ''}<span class="abright"><span class="tag role">${esc(m.role)}${m.mega ? ' · MEGA' : ''}</span>${byName.get(m.n) ? ratingTag(byName.get(m.n)) : ''}</span></div>`).join('')}</div>
       <div class="abgp">${tm.gp.map(g => `<span class="sev ok">${esc(g)}</span>`).join('')}<span class="sev lo">${tm.megas} Mega option${tm.megas === 1 ? '' : 's'}</span></div>
       ${tm.fresh ? '<div class="t2 gemline">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</div>' : ''}
       <ul class="abwhy">${tm.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
@@ -174,7 +180,10 @@ function addFreshTake(res) {
   let alt = null; try { alt = withOffMeta(() => buildBest()); } catch (e) { alt = null; }
   if (!alt || !alt.teams || !alt.teams.length) return res;
   const best = res.teams[0], names = new Set(best.mons.map(m => m.n));
-  const pick = alt.teams.find(t => t.mons.filter(m => names.has(m.n)).length <= 3 && t.mons.filter(m => m.offMeta).length >= 2 && (!best.grade || !t.grade || t.grade.pass >= best.grade.pass - 1));
+  // a fresh take must still be a good team (Oct 28 audit: one scored 15): Team Score 60+ and within 10 of the best option
+  const tsT = t => { try { return tsOf(t.mons.map(m => abMember(byName.get(m.n)))); } catch (e) { return null; } }, bestTS = tsT(best);
+  const pick = alt.teams.find(t => { if (!(t.mons.filter(m => names.has(m.n)).length <= 3 && t.mons.filter(m => m.offMeta).length >= 2 && (!best.grade || !t.grade || t.grade.pass >= best.grade.pass - 1))) return false;
+    if (!modelOK()) return true; const ts = tsT(t); return ts != null && ts >= 60 && (bestTS == null || ts >= bestTS - 10); });
   if (!pick) return res;
   pick.fresh = true; res.teams.splice(1, 0, pick); return res;
 }

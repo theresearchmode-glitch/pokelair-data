@@ -2,7 +2,8 @@
 // Research (Oct 2026): of the 20 best-performing Reg M-C teams, 75% carry a reliable Tailwind or Trick Room
 // setter (60% Tailwind, 35% Trick Room); the rest win with Fake Out pressure plus priority and self-speed.
 // 85% have Fake Out or redirection, 75% a priority attacker, 50% a weather setter, and none mix two weathers.
-// In Champions Tailwind lasts 4 turns, Trick Room 5, weather 5 (8 with its rock); the last weather setter in wins.
+// In Champions (as in the main games) Tailwind lasts 4 turns and Trick Room 5, each counting the turn it's used, so 3 and
+// 4 more turns of moving; weather 5 (8 with its rock); the last weather setter in wins.
 const ROLE = {
   tw: ['Tailwind'], tr: ['Trick Room'],
   drop: ['Icy Wind', 'Electroweb', 'Thunder Wave', 'Nuzzle', 'Glare', 'Bulldoze', 'Rock Tomb', 'Scary Face'],
@@ -55,13 +56,14 @@ function gamePlan(team) {
     const opts = [['Tailwind', c.tw, R.tw], ['Trick Room', trEff, R.tr], ['weather speed', wSpeed * .9, []], ['priority and speed boosts', fast * .5, [...R.prio, ...R.self]]];  // priority alone never fully counts
     const primary = Math.max(...opts.map(o => o[1]));
     const main = opts.filter(o => o[1] >= .3).sort((a, b) => b[1] - a[1]);
-    rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3),
+    // mode: what the row's status rests on, so a gain from priority moves is never described as "speed control"
+    rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3), mode: main.length ? main[0][0] : '',
       who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? `${team.filter(m => WEATHER_SPEED[m.ability]).map(m => m.d).join(', ')} in ${ARCH[kinds[0]].name.toLowerCase()}` : o[0]).join('; ') : '',
       note: primary >= .6 ? '' : c.tr >= .6 && trSlow < 2 ? `Trick Room, but ${trSlow ? 'only one slow Pokémon' : 'no slow Pokémon'} besides the setter to use it.` : (main.length ? 'Only priority moves: no reliable Tailwind or Trick Room.' : 'No Tailwind, Trick Room or weather speed.') + ` Speed control is on ${proLine('speed', '')}.`});
     pen += 55 * (1 - primary);
     // 2. a second option, so one Taunt or one KO on the setter doesn't decide the game
     const modes = [c.tw >= .5, c.tr >= .5, wSpeed >= .5, c.drop >= .5, fast >= .5].filter(Boolean).length;
-    rows.push({k: 'backup', label: 'Backup speed', st: modes >= 2 ? 'ok' : modes === 1 && (c.prio >= .5 || c.drop >= .3) ? 'part' : 'miss',
+    rows.push({k: 'backup', label: 'Backup speed', st: modes >= 2 ? 'ok' : modes === 1 && (c.prio >= .5 || c.drop >= .3) ? 'part' : 'miss', prioOnly: modes < 2 && c.drop < .3 && c.prio >= .5,
       who: [R.drop.length ? who(R.drop, 2) : '', R.prio.length ? who(R.prio, 2) : ''].filter(Boolean).join('; '),
       note: modes >= 2 ? '' : primary >= .6 ? 'If your setter is Taunted or knocked out, nothing else controls speed.' : 'No second speed option either.'});
     if (modes < 2) pen += 10;
@@ -82,14 +84,18 @@ function gamePlan(team) {
   else { rows.push({k: 'weather', label: 'Weather', st: 'opt', who: '', note: 'None. Opposing sun or rain will control the field.'}); pen += 5; }
   // terrain (Reg M-C): one setter with users is field control; two terrains overwrite each other
   { const ts = team.filter(m => TERRAIN_OF[m.ability]).map(m => ({m, t: TERRAIN_OF[m.ability]})), tk = [...new Set(ts.map(x => x.t))];
+    // seeds judged on the item each member actually holds (your pick, or its team-aware default), against what the team sets
+    const seedOf = m => Object.keys(T_TYPE).find(k => m.item && ARCH[k].seed === m.item), fieldT = typeof teamField === 'function' ? teamField(team).t : new Set(tk);
+    const deadSeed = team.filter(m => { const k = seedOf(m); return k && !fieldT.has(k); });
+    const seedNote = deadSeed.length ? ` ${deadSeed.map(m => `${m.d}'s ${m.item} never activates (nothing sets ${ARCH[seedOf(m)].name})${m.ability === 'Unburden' ? ', so Unburden never triggers' : ''}.`).join(' ')}` : '';
     if (tk.length > 1) { rows.push({k: 'terrain', label: 'Terrain', st: 'part', who: ts.map(x => `${x.m.d} · ${ARCH[x.t].name}`).join(', '), note: 'Two terrains overwrite each other: the last one to switch in wins.'}); pen += 8; }
     else if (tk.length === 1) { const key = tk[0], setM = ts.map(x => x.m), ab = fieldAbusers(team, key, setM).concat(T_TYPE[key] ? team.filter(m => !setM.includes(m) && (m.types || m.p.t).includes(T_TYPE[key]) && grounded(m)) : []);
       const uniq = [...new Set(ab)];
       const selfBlock = key === 'psy' && c.fake + c.prio >= .5 ? ' Psychic Terrain also blocks your own Fake Out and priority into grounded foes.' : '';
-      rows.push({k: 'terrain', label: 'Terrain', st: uniq.length ? 'ok' : 'part', who: (() => { const others = uniq.filter(m => !setM.includes(m)); return `${setM.map(m => m.d).join(', ')} ${others.length ? 'sets ' + ARCH[key].name.toLowerCase() + ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : uniq.length ? 'sets and uses ' + ARCH[key].name.toLowerCase() : 'sets ' + ARCH[key].name.toLowerCase()}`; })(), note: (uniq.length ? '' : 'Nothing else on the team uses it.') + selfBlock});
-      pen += uniq.length ? -5 : 0; }
-    else if (team.some(m => Object.keys(T_TYPE).some(k => itemShare(m, ARCH[k].seed) >= .5))) { const m = team.find(x => Object.keys(T_TYPE).some(k => itemShare(x, ARCH[k].seed) >= .5)); const k = Object.keys(T_TYPE).find(k => itemShare(m, ARCH[k].seed) >= .5);
-      rows.push({k: 'terrain', label: 'Terrain', st: 'miss', who: '', note: `${m.d} usually holds a ${ARCH[k].seed}, and nothing sets ${ARCH[k].name.toLowerCase()}.`}); pen += 12; }
+      rows.push({k: 'terrain', label: 'Terrain', st: uniq.length && !deadSeed.length ? 'ok' : 'part', who: (() => { const others = uniq.filter(m => !setM.includes(m)); return `${setM.map(m => m.d).join(', ')} ${others.length ? 'sets ' + ARCH[key].name.toLowerCase() + ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : uniq.length ? 'sets and uses ' + ARCH[key].name.toLowerCase() : 'sets ' + ARCH[key].name.toLowerCase()}`; })(), note: (uniq.length ? '' : 'Nothing else on the team uses it.') + selfBlock + seedNote});
+      pen += (uniq.length ? -5 : 0) + deadSeed.length * 10; }
+    else if (deadSeed.length) { const m = deadSeed[0], k = seedOf(m);
+      rows.push({k: 'terrain', label: 'Terrain', st: 'miss', who: '', note: `${m.d} holds a ${ARCH[k].seed}, and nothing sets ${ARCH[k].name.toLowerCase()}.${m.ability === 'Unburden' ? ' The seed never activates, so Unburden never triggers.' : ''}`}); pen += 12; }
   }
   {
     // lead support: Fake Out, redirection or Intimidate (the same three the checklist counts)

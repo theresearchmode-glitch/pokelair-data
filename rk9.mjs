@@ -6,7 +6,7 @@ const SITE = 'https://www.rk9.gg', REG_START = '2026-09-01', TOP = +(process.env
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const dec = s => s.replace(/&amp;/g, '&').replace(/&#0?39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
-const text = h => dec(h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')).split('\n').map(x => x.trim()).filter(Boolean);
+const text = h => dec(h.replace(/<!--[\s\S]*?-->|<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')).split('\n').map(x => x.trim()).filter(Boolean);
 let calls = 0;
 async function get(path) { if (calls++) await sleep(GAP);
   for (let k = 0; k < 3; k++) { const r = await fetch(SITE + path, {headers: {'User-Agent': 'Mozilla/5.0 (pokelair-data; personal team-builder stats)'}});
@@ -31,20 +31,33 @@ function mapMon(species, item) {
   if (st && item !== 'Eviolite') { const s = st[2] ? st[2].trim() : ''; const base = n.replace(/-F$/, '');
     for (const c of [n + '-Mega' + (s ? '-' + s : ''), base + '-Mega' + (s ? '-' + s : ''), base + '-F-Mega', n + '-Mega', n.split('-')[0] + '-Mega' + (s ? '-' + s : '')]) if (ROSTER.has(c)) return c; }
   if (ROSTER.has(n)) return n; const b = n.split('-')[0]; return ROSTER.has(b) ? b : null; }
+// An item must look like an item: not a field label, not empty, a sane length; checked against the Reg M-C item list
+// (data/regmc-items.txt) when that file exists. Bad parses become '' (unknown) and are counted in the log.
+const ITEMS = new Set((() => { try { return fs.readFileSync('data/regmc-items.txt', 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean); } catch (e) { return []; } })());
+let badItems = 0;
+function validItem(it) { const s = String(it || '').trim(); if (!s) return '';
+  if (/:\s*$/.test(s) || /Alignment|Ability|Held Item|Nature/i.test(s) || s.length > 30 || (ITEMS.size && !ITEMS.has(s))) { badItems++; return ''; } return s; }
+// a cached event parsed by the old reader (a label stored as an item) is fetched again
+const staleParse = f => { const e = readJSON(f, null); return !!(e && e.teams && e.teams.some(t => t.mons.some(m => /:\s*$/.test(m.i || '')))); };
 function parseTeam(html) { const t = text(html); const out = []; let date = null;
   const di = t.findIndex(x => /^\d{4}-\d{2}-\d{2} at /.test(x)); if (di >= 0) date = t[di].slice(0, 10);
   const end = t.findIndex((x, i) => i > di && /^(FR|IT|DE|ES|JP|KO|SC|TC)$/.test(x) && t[i + 1] === 'Ability:');
   const L = t.slice(0, end > 0 ? end - 1 : t.length);
+  // Read the labelled fields in order. An empty field leaves its label with no value ("Held Item:" straight followed by
+  // "Stat Alignment:"); the old fixed-offset read took the next label as the item and lost the nature and first move.
+  const lab = x => /:\s*$/.test(x || '');
   for (let i = 0; i < L.length; i++) if (L[i] === 'Ability:' && (L[i - 1] === 'EN' || L[i - 2] === 'EN')) {
-    const species = L[i - 1] === 'EN' ? L[i - 2] : L[i - 1], ability = L[i + 1], item = L[i + 2] === 'Held Item:' ? L[i + 3] : '', nat = L[i + 4] === 'Stat Alignment:' ? L[i + 5] : '';
-    const mv = []; for (let j = i + 6; j < L.length && mv.length < 4 && L[j + 1] !== 'EN' && L[j] !== 'EN'; j++) mv.push(L[j]);
-    out.push({sp: species, n: mapMon(species, item), i: item, a: ability, nt: nat, mv}); }
+    const species = L[i - 1] === 'EN' ? L[i - 2] : L[i - 1], ability = L[i + 1]; let j = i + 2, item = '', nat = '';
+    if (L[j] === 'Held Item:') { j++; if (!lab(L[j])) { item = L[j]; j++; } }
+    if (L[j] === 'Stat Alignment:') { j++; if (!lab(L[j])) { nat = L[j]; j++; } }
+    const mv = []; for (; j < L.length && mv.length < 4 && L[j + 1] !== 'EN' && L[j] !== 'EN'; j++) if (!lab(L[j])) mv.push(L[j]);
+    out.push({sp: species, n: mapMon(species, item), i: validItem(item), a: ability, nt: nat, mv}); }
   return {date, mons: out}; }
 // 1) finished events since the regulation started
 const evHtml = await get('/events/pokemon');
 const slugs = [...new Set([...evHtml.matchAll(/href="\/event\/(pokemon-[a-z0-9-]+)"/g)].map(m => m[1]))].filter(s => /-20(2[7-9]|[3-9]\d)$/.test(s));
 const index = readJSON('data/rk9/index.json', {events: {}});
-for (const slug of slugs) { if (index.events[slug] && index.events[slug].done) continue;
+for (const slug of slugs) { if (index.events[slug] && index.events[slug].done && !index.events[slug].refetch && !(index.events[slug].date && staleParse(`data/rk9/${slug}.json`))) continue;
   try { const ev = await get('/event/' + slug); const name = (ev.match(/<title>([^<]*)/) || [, slug])[1].replace(/ - RK9$/, '').trim();
     const rosters = [...new Set([...ev.matchAll(/href="\/roster\/([A-Za-z0-9-]+)"/g)].map(m => m[1]))];
     let found = null;
@@ -71,7 +84,8 @@ fs.writeFileSync('data/rk9/index.json', JSON.stringify(index));
 const evs = Object.keys(index.events).filter(s => index.events[s].done && !index.events[s].skip).map(s => readJSON(`data/rk9/${s}.json`, null)).filter(Boolean).sort((a, b) => b.date < a.date ? -1 : 1);
 const miss = new Set(); evs.forEach(e => e.teams.forEach(t => t.mons.forEach(m => { if (!m.n) miss.add(m.sp); })));
 fs.writeFileSync('out/official.json', JSON.stringify({updated: new Date().toISOString(), source: 'RK9 open team sheets · official VGC events (Masters top ' + TOP + ')',
-  events: evs.map(e => ({name: e.name, date: e.date, players: e.players, teams: e.teams.map(t => ({player: t.player, st: t.st, mons: t.mons.map(m => ({n: m.n || m.sp, i: m.i, a: m.a, nt: m.nt, mv: m.mv}))}))}))}));
+  events: evs.map(e => ({name: e.name, date: e.date, players: e.players, teams: e.teams.map(t => ({player: t.player, st: t.st, mons: t.mons.map(m => ({n: m.n || m.sp, i: validItem(m.i), a: m.a, nt: m.nt, mv: m.mv}))}))}))}));
+if (badItems) console.log(`rk9: ${badItems} held items didn't parse as items and were left blank`);
 const T = readJSON('out/teams.json', {teams: []});
 const off = []; for (const e of evs.slice(0, 4)) for (const t of e.teams.filter(t => t.st <= 8 && t.mons.every(m => m.n))) off.push({player: t.player, event: `${e.name} · ${e.players} players`, record: `#${t.st} · official`, section: 'Official events', mons: t.mons.map(m => m.n)});
 T.teams = [...off, ...(T.teams || []).filter(t => t.section !== 'Official events')].slice(0, 90);

@@ -91,7 +91,9 @@ function renderRecs() {
   ui.recs = [];
   const delta = (lbl, a, b, better, fmt) => { const d = a === b ? 'same' : better ? 'up' : 'down'; return `<span class="dchip ${d}"><b>${lbl}</b> ${fmt(b)}${a === b ? '' : ` → ${fmt(a)}`}</span>`; };
   const card = (pl, soft) => { const x = pl.ch[0], p = x.c.p, A = pl.prof, i = ui.recs.push(pl) - 1, mem = pl.team.find(m => m.p === p) || x.c.mem;
-    const gpUp = B.gp.rows.filter(rw => ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => rw.label);
+    // "speed control" only for Tailwind, Trick Room or weather speed; a gain that comes from priority moves is called priority
+    const prioOnly = k => { const r = A.gp.rows.find(x => x.k === k) || {}; return k === 'speed' ? r.mode === 'priority and speed boosts' : k === 'backup' ? !!r.prioOnly : false; };
+    const gpUp = [...new Set(B.gp.rows.filter(rw => ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => prioOnly(rw.k) ? 'Priority' : rw.label))];
     const rest = pl.team.filter(m => m.p !== p); let pair = null; for (const t of rest) { const v = pairSyn({p}, t) + tourSyn({p}, t); if (v >= 8 && (!pair || v > pair.v)) pair = {t, v}; }
     const why = [gpUp.length ? 'Adds ' + gpUp.join(', ').toLowerCase() : '', pair ? `often paired with ${pair.t.d}` : '', x.out ? `replaces ${x.out.d}` : ''].filter(Boolean).join(' · ');
     return `<div class="addcard${soft ? ' soft' : ''}"><div class="rtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${confChip(p)}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}<span class="tag role">${esc(monRole(mem))}</span>${(pl.gem ? '<span class="tag offmeta">HIDDEN GEM</span>' : (pl.alt ? '<span class="tag sidegrade">SIDE-GRADE</span>' : '') + ideaTag(p)) + ratingTag(p)}</div>

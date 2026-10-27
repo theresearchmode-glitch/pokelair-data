@@ -5,13 +5,13 @@
 // Setup: npm install --no-save @smogon/calc  in %TEMP%\smogcalc (or set SMOGCALC to the folder holding node_modules).
 // Usage: node experiments/calc-check.mjs [n random cases=3000] [--examples]
 import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os'; import {execFileSync} from 'node:child_process'; import {fileURLToPath} from 'node:url'; import {createRequire} from 'node:module';
-import {chromium} from 'playwright';
+const {chromium} = createRequire(import.meta.url)('playwright');
 const SC = process.env.SMOGCALC || path.join(os.tmpdir(), 'smogcalc');
-const {Generations, Pokemon, Move, Field, calculate} = createRequire(path.join(SC, 'x.js'))('@smogon/calc');
+const {Generations, Pokemon, Move, Field, calculate} = (() => { try { return createRequire(path.join(SC, 'x.js'))('@smogon/calc'); } catch (e) { return createRequire(import.meta.url)('@smogon/calc'); } })();
 const G0 = Generations.get(0), G9 = Generations.get(9);
 const APP = fileURLToPath(new URL('../app/', import.meta.url)), OUT = APP + '../out/', NRAND = +(process.argv[2] || 3000), EXAMPLES = process.argv.includes('--examples');
-execFileSync('node', [APP + 'build.mjs'], {stdio: 'ignore'});
-const page = APP + 'dist/calccheck.html';
+
+const page = APP + 'verify-calc.html';
 // OLD_CALC=path/to/an/older/39-damage-calc-speed.js checks that version instead (for a before/after match rate)
 let html = fs.readFileSync(APP + 'dist/page.html', 'utf8');
 if (process.env.OLD_CALC) { const cur = fs.readFileSync(APP + 'src/app/39-damage-calc-speed.js', 'utf8').trim(); if (!html.includes(cur)) throw new Error('calc source not found verbatim in page.html');
@@ -76,7 +76,7 @@ for (let i = 0; i < NRAND; i++) cases.push(randCase());
 const flagMoves = f => MOVES.filter(m => { const r = ref(G0, m.name); return f(r, m); });
 const withAb = ab => DATA.R.filter(p => p.a.includes(ab));
 const T = (tag, n, o) => { for (let i = 0; i < n; i++) cases.push(randCase({...o, tag, ap: o.apL ? pick(o.apL) : o.ap, dp: o.dpL ? pick(o.dpL) : o.dp, mv: o.mvL ? pick(o.mvL) : o.mv})); };
-// only abilities some Champions Pokémon actually has
+// only abilities some Champions PokÃ©mon actually has
 const notInRoster = new Set();
 const atkAb = (ab, mvL) => { const L = withAb(ab); if (!L.length) { notInRoster.add(ab); return; } T('atk ' + ab, 120, {apL: L, mvL, f: c => { c.a.ability = ab; if (ab === 'Supreme Overlord') c.fainted = ri(1, 5); }}); };
 atkAb('Tough Claws', flagMoves(r => r.flags.contact)); atkAb('Sharpness', flagMoves(r => r.flags.slicing)); atkAb('Iron Fist', flagMoves(r => r.flags.punch));
@@ -111,7 +111,7 @@ function smog(c) {
   const mk = (s, role) => { const p = byN.get(s.n); let name = p.n; if (!g.species.get(toID(name))) name = g.species.get(toID(p.n.replace(/-Mega.*$/, ''))) ? p.n.replace(/-Mega.*$/, '') : 'Mew';
     const evs = role === 'a' ? {atk: s.spA, spa: s.spS, def: s.spDef} : {hp: s.hpSp, def: s.defSp, spd: s.spdSp, atk: s.atkSp};
     const opts = {level: 50, nature: s.nat, ability: s.ability || '(none)', item: s.item || undefined, boosts: {[role === 'a' ? aStat : dStat]: s.boost || 0}, status: s.burn ? 'brn' : '',
-      overrides: {types: p.t, baseStats: Object.fromEntries(SK.map((k, i) => [k, p.st[i]]))}};
+      overrides: {types: p.t, baseStats: Object.fromEntries(SK.map((k, i) => [k, (role === 'a' && p.n === 'Aegislash' ? [60, 140, 50, 140, 50, 60] : p.st)[i]]))}};
     if (c.g9) { opts.evs = Object.fromEntries(Object.entries(evs).map(([k, v]) => [k, Math.min(252, v * 8)])); opts.ivs = {hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31}; } else opts.evs = evs;
     if (role === 'a' && c.fainted) opts.alliesFainted = c.fainted;
     return new Pokemon(g, name, opts); };
@@ -162,7 +162,8 @@ const unexplained = bad.filter(r => { for (const [k, l] of groups) if (l.include
 console.log(`unexplained mismatches: ${unexplained}\n`);
 for (const [k, list] of [...groups].sort((a, b) => b[1].length - a[1].length)) {
   console.log(`${String(list.length).padStart(5)}  ${k}${why(k, list) ? '   [explained: ' + why(k, list) + ']' : ''}`); for (const r of list.slice(0, EXAMPLES ? 3 : 1)) console.log('      ' + fmt(r)); }
-console.log(`\nabilities in the targeted lists that no Champions Pokémon has (skipped): ${[...notInRoster].join(', ')}`);
+console.log(`\nabilities in the targeted lists that no Champions PokÃ©mon has (skipped): ${[...notInRoster].join(', ')}`);
 console.log(`\ndata differences vs Smogon's Champions data (${dataDiff.length}):`); for (const d of dataDiff.slice(0, 80)) console.log('  ' + d);
 fs.writeFileSync(path.join(os.tmpdir(), 'calc-check-mismatches.json'), JSON.stringify(bad.map(r => ({c: r.c, page: r.p, smogon: r.s})), null, 0));
-await browser.close();
+await browser.close(); try { fs.unlinkSync(page); } catch (e) {}
+{ const rate = res.filter(r => r.match).length / res.length; if (rate < .985) { console.log(`FAIL: exact match ${(100 * rate).toFixed(2)}% < 98.5%`); process.exit(1); } if (hpBad) { console.log(`FAIL: ${hpBad} HP mismatches`); process.exit(1); } }

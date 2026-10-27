@@ -1,9 +1,9 @@
 // ---------- archetype guides: how each common team style wins, how often it shows up, and what you have against it ----------
 const GUIDE = {
-  tr: {what: 'Sets Trick Room so its slow, hard-hitting Pokémon move first for 4 turns.',
-    beat: ['Fake Out or Taunt the setter on turn 1, or double-target it before it moves', 'Imprison or your own Trick Room cancels theirs', 'Protect and stall the 4 turns with your slow or bulky Pokémon', 'Keep a slow attacker in back that still moves first under their room'],
+  tr: {what: 'Sets Trick Room so its slow, hard-hitting Pokémon move first for the next 4 turns (5 counting the turn it\'s set).',
+    beat: ['Fake Out or Taunt the setter on turn 1, or double-target it before it moves', 'Imprison or your own Trick Room cancels theirs', 'Protect and stall out its 4 remaining turns with your slow or bulky Pokémon', 'Keep a slow attacker in back that still moves first under their room'],
     tools: {moves: ['Fake Out', 'Taunt', 'Imprison', 'Trick Room', 'Encore', 'Quash'], abil: ['Prankster']}},
-  tw: {what: 'Sets Tailwind to double its side\'s Speed for 4 turns, then overwhelms you with fast attackers.',
+  tw: {what: 'Sets Tailwind to double its side\'s Speed for the next 3 turns (4 counting the turn it\'s set), then overwhelms you with fast attackers.',
     beat: ['Set your own Tailwind or Trick Room in response', 'Icy Wind or Electroweb to drop their Speed', 'Fake Out the setter and attack the partner', 'Protect through the turns and come back when it ends'],
     tools: {moves: ['Tailwind', 'Trick Room', 'Icy Wind', 'Electroweb', 'Fake Out', 'Taunt', 'Thunder Wave', 'Quick Guard'], abil: ['Prankster', 'Intimidate']}},
   rain: {what: 'Rain powers Water moves by 50%, makes Hurricane and Thunder always hit, and doubles Swift Swim Speed.',

@@ -17,7 +17,7 @@ function headToHead(mine, theirs, useA) {
   const def = mine.map(m => theirs.map((o, j) => bestHit(thEn[j], m.types, useA ? m.ability : null)));
   // under your own Trick Room the slower Pokémon moves first; a Choice Scarf (yours as chosen, theirs as usually run) is 1.5× Speed
   const myTR = mine.some(m => (memberMoves(m).moves || []).some(x => x && x.name === 'Trick Room'));
-  const spdOf = (p, mem) => { const s = likelySpeed(p); const scarf = mem ? mem.item === 'Choice Scarf' : s.scarf; return Math.floor(s.v * (scarf ? 1.5 : 1)); };
+  const spdOf = (p, mem) => { const s = likelySpeed(p, mem); const scarf = mem ? mem.item === 'Choice Scarf' : s.scarf; return Math.floor(s.v * (scarf ? 1.5 : 1)); };
   const M = mine.map((m, i) => theirs.map((o, j) => {
     let v = fScore(off[i][j] ? off[i][j].x : 1) - fScore(def[i][j] ? def[i][j].x : 1);
     try { const dO = bestHitOn(m.p, memberMoves(m).moves, o.p, m, null), dD = bestHitOn(o.p, o.moves || [], m.p, null, m);

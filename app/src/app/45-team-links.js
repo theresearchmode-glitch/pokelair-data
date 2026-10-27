@@ -9,6 +9,9 @@ function teamCode() {
   const f = 'doubles', s = S.slots.filter(x => x && byName.get(x.n)).map(x => { const p = byName.get(x.n), m = memberOf(x, 0), row = [p.n];
     const defA = metaAbility(p) || bestAbility(p); if (x.a && x.a !== defA) row[1] = x.a;
     const c = x.mv && x.mv[f]; if (Array.isArray(c) && c.some(Boolean)) { row[1] = row[1] || ''; row[2] = c.slice(0, 4); }
+    // your held item (row[3]) and nature + stat points (row[4], "Jolly:2/32/0/0/0/32"), only when you set them (Oct 28)
+    const it = x.it && x.it[f], sp = x.sp && x.sp[f];
+    if (it || sp) { row[1] = row[1] || ''; row[2] = row[2] || 0; row[3] = it || ''; if (sp) row[4] = (sp.nat || '') + ':' + sp.v.join('/'); }
     return row; });
   if (!s.length) return '';
   const loaded = S.teams.find(t => t.id === S.loadedId), o = {v: 1, f, s}; if (loaded && loaded.name) o.n = String(loaded.name).slice(0, 60);
@@ -22,7 +25,9 @@ function decodeTeam(text) {
   let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; }
   if (!o || o.v !== 1 || !Array.isArray(o.s)) return null;
   const f = 'doubles';  // the format field is ignored: every link opens as a doubles team
-  const slots = o.s.slice(0, 6).map(r => Array.isArray(r) && byName.get(String(r[0])) ? {n: String(r[0]), a: typeof r[1] === 'string' && r[1] ? r[1] : null, lock: false, ...(Array.isArray(r[2]) ? {mv: {[f]: r[2].slice(0, 4).map(x => String(x || ''))}} : {})} : null).filter(Boolean);
+  const spOf = v => { const m = typeof v === 'string' && v.match(/^(\w*):(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)$/); return m ? {nat: m[1] || null, v: m.slice(2).map(Number)} : null; };
+  const slots = o.s.slice(0, 6).map(r => Array.isArray(r) && byName.get(String(r[0])) ? {n: String(r[0]), a: typeof r[1] === 'string' && r[1] ? r[1] : null, lock: false, ...(Array.isArray(r[2]) ? {mv: {[f]: r[2].slice(0, 4).map(x => String(x || ''))}} : {}),
+    ...(typeof r[3] === 'string' && r[3] && r[3].length <= 40 ? {it: {[f]: r[3]}} : {}), ...(spOf(r[4]) ? {sp: {[f]: spOf(r[4])}} : {})} : null).filter(Boolean);
   if (!slots.length) return null;
   return {f, n: typeof o.n === 'string' ? o.n.slice(0, 60) : '', slots}; }
 function applyShared(x) { keepUndo(); S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');

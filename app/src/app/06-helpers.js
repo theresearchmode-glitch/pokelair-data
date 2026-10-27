@@ -1,6 +1,9 @@
 // ---------- helpers ----------
 function memberOf(s,i){const p=byName.get(s.n);if(!p)return null;const ab=s.a&&p.a.includes(s.a)?s.a:(metaAbility(p)||bestAbility(p));
-  const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi}}
+  const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi,spread:slotSpread(s,p)}}
+// Your nature and stat points (from a paste or link), in the same shape as commonSpread(): {nat,hp,atk,def,spa,spd,spe,mine:true}
+function slotSpread(s,p){const x=s.sp&&s.sp[S.format];if(!x||!Array.isArray(x.v))return null;const v=x.v,cs=typeof commonSpread==='function'?commonSpread(p):null;
+  return {nat:x.nat||(cs&&cs.nat)||null,hp:v[0],atk:v[1],def:v[2],spa:v[3],spd:v[4],spe:v[5],mine:true}}
 // Held item: a Mega's stone is fixed; otherwise your pick for this format (s.it[format]) or the item most players run.
 function defaultItem(p){try{if(p.m)return stoneFor(p)||'';const t=topItems(p);return t&&t.it[0]?t.it[0][0]:''}catch(e){return ''}}
 function slotItem(s,p){if(p.m)return null;const c=s.it&&s.it[S.format];return c&&typeof c==='string'?c:null}
@@ -14,13 +17,13 @@ function clashText(c){const n=a=>a.map(m=>esc(m.d)).join(', ');const self=c.sc.l
 function slotMoves(s,p){const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name));const c=s.mv&&s.mv[S.format];
   if(c){const names=c.map(x=>learn.has(x)?x:'');if(names.some(Boolean))return {names,moves:names.map(x=>mvByName.get(x)).filter(Boolean),custom:true}}
   const pm=popularMoves(p).slice(0,4);const names=pm.map(m=>m.name);while(names.length<4)names.push('');return {names,moves:pm,custom:false}}
-const members=()=>S.slots.map(memberOf).filter(Boolean);
+const members=()=>{const ms=S.slots.map(memberOf).filter(Boolean);return typeof assignItems==='function'?assignItems(ms):ms};
 // Item Clause (VGC): no two Pokémon may hold the same item. The Team Score (strengthX) reads the team through this: items
 // you picked stay as you picked them (two of the same makes the team illegal, see itemClause); a member on its default
 // (most-used) item takes the most-used item nobody else on the team holds. Mega Stones are fixed.
 // A default is also never an item that can't work on this team (a Terrain Seed nothing activates, Room Service with no
 // Trick Room): those only count against a team when you picked them yourself.
-function resolveItems(ms){if(!Array.isArray(ms))return ms;const used=new Set();for(const m of ms)if(m&&(m.heldItem||(m.p&&m.p.m))&&m.item)used.add(m.item);
+function resolveItems(ms){if(typeof assignItems==='function')return assignItems(ms);if(!Array.isArray(ms))return ms;const used=new Set();for(const m of ms)if(m&&(m.heldItem||(m.p&&m.p.m))&&m.item)used.add(m.item);
   const ok=it=>it&&!used.has(it)&&itemWorks(ms,it);
   return ms.map(m=>{if(!m||m.heldItem||(m.p&&m.p.m)||!m.item)return m;if(ok(m.item)){used.add(m.item);return m}
     let alt='';try{const t=topItems(m.p);for(const r of (t&&t.it)||[]){const n=Array.isArray(r)?r[0]:r;if(ok(n)){alt=n;break}}}catch(e){}
@@ -40,15 +43,8 @@ const mvNames=m=>((m&&m._mv&&m._mv.length?m._mv:m&&m.moves)||[]).map(x=>x&&x.nam
 const TR_SLOW=60;
 function trPlan(ms){ms=ms||[];const set=ms.filter(m=>mvNames(m).includes('Trick Room'));if(!set.length)return null;
   return {set,slow:ms.filter(m=>m.p&&m.p.st&&m.p.st[5]<=TR_SLOW),tw:ms.some(m=>mvNames(m).includes('Tailwind')),scarf:ms.filter(m=>m.item==='Choice Scarf')}}
-// Items that can't work on this team: a Terrain Seed with nothing that sets its terrain (so it, and an Unburden it was
-// meant to trigger, never activate), or Room Service with no Trick Room. [{m, why}]
 const SEED_T={'Psychic Seed':'Psychic','Electric Seed':'Electric','Grassy Seed':'Grassy','Misty Seed':'Misty'};
-function deadItems(ms){ms=ms||[];const out=[];
-  for(const m of ms){const it=m&&m.heldItem;if(!it)continue;
-    if(SEED_T[it]&&!terrainSet(ms,SEED_T[it]))out.push({m,why:`${m.d}'s ${it} never activates: nothing on the team sets ${SEED_T[it]} Terrain${m.ability==='Unburden'?' (so Unburden never triggers)':''}`});
-    if(ROCK_W[it]&&!weatherSet(ms,ROCK_W[it]))out.push({m,why:`${m.d}'s ${it} does nothing: nothing on the team sets ${ROCK_W[it]==='sun'?'sun':ROCK_W[it]}`});
-    if(it==='Room Service'&&!trPlan(ms))out.push({m,why:`${m.d}'s Room Service needs Trick Room, and nothing sets it`})}
-  return out}
+// deadItems / itemProblems / assignItems live in 54-items.js (one source for every tool)
 // Box ownership: every regular form is caught separately (Wash Rotom is not Heat Rotom); a Mega comes from its base form.
 const ownKey=p=>p.m?(p.b==='Floette'?'Floette-Eternal':p.b):p.n;
 const inBox=p=>!!p&&S.box.includes(ownKey(p));
@@ -91,6 +87,8 @@ function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms
   const big=a.rows.filter(r=>r.w>=3).map(r=>r.atk);
   out.push({k:'w3',ok:sh.w3<=1,label:'Weak spots spread out',have:big.length?`Only ${big[0]} hits 3+ of yours`:'No type hits 3+ of yours',miss:`${big.join(' and ')} each hit 3+ of yours.`,pro:proLine('w3','78% of event winners')});
   if(PG){const pc=Math.round(PG.se2*100);out.push({k:'reach',ok:PG.se2>=.6,part:PG.se2>=.55,label:'Pressure on the meta',have:`2+ of yours hit ${pc}% of the top 30 super effectively`,miss:`2+ of yours hit only ${pc}% of the top 30 super effectively${ckWin.se2med!=null?` (recent event winners: ${Math.round(ckWin.se2med*100)}% at the median)`:''}.`,pro:proLine('reach','94% of event winners')})}
+  // items: Item Clause and items that can't work here (a row only when there's a problem, so clean teams keep the same checks)
+  {let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}if(ip.length)out.push({k:'items',ok:false,label:'Items work',have:'',miss:ip.map(x=>x.why).join(' '),pro:'VGC rule: each item once per team'})}
   out.forEach(x=>{if(x.part&&!x.ok){x.ok=true;x.soft=true}});const cnt=out.filter(x=>!x.skip);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
 const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
 function teamRating(slots){const ms=slots.map(memberOf).filter(Boolean);return {ms,a:analyze(ms,true)}}
@@ -113,7 +111,7 @@ function proLine(k,fb){const r=ckWin.rates&&ckWin.rates[k];if(!r||r[1]<20)return
 let tsTrack={key:null,busy:false,res:null};
 function trackRefresh(){const E=META.events;if(!E||!modelOK())return;const key=E.updated+'|'+E.events.length+'|'+metaVersion;if(tsTrack.key===key||tsTrack.busy)return;
   tsTrack.busy=true;const evs=E.events.slice();let i=0,agree=0,pairs=0,nev=0;
-  const mk=t=>t.mons.map(m=>{const p=byName.get(m.n);const mv=(m.mv||[]).map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}});
+  const mk=t=>assignItems(t.mons.map(m=>{const p=byName.get(m.n);const mv=(m.mv||[]).map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}}));
   const step=()=>{const t0=Date.now();try{while(i<evs.length&&Date.now()-t0<15){const ev=evs[i++];
       const sc=(ev.top||[]).filter(t=>t&&t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n))).map(t=>({pl:t.place,s:tsOf(mk(t))})).filter(x=>x.s!=null);if(sc.length>=2)nev++;
       for(let a=0;a<sc.length;a++)for(let b=a+1;b<sc.length;b++){const A=sc[a],B=sc[b];if(A.pl===B.pl||A.s===B.s)continue;pairs++;if((A.s>B.s)===(A.pl<B.pl))agree++}}}
@@ -128,7 +126,7 @@ function ckWinRefresh(){const E=META.events;if(!E)return;const key=E.updated+'|'
   ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0;
   const step=()=>{const t0=Date.now();try{while(i<list.length&&Date.now()-t0<12){const t=list[i++];
       // each winner read with its own moves and held item, as registered
-      const ms=t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}});
+      const ms=assignItems(t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}}));
       if(typeof tsOf==='function'){const t=tsOf(ms);if(t!=null)wts.push(t)}
       const CK=proChecks(ms,true);if(!CK)continue;n++;if(CK.PG&&isFinite(CK.PG.se2))se2s.push(CK.PG.se2);for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
     catch(e){ckWin.busy=false;return}

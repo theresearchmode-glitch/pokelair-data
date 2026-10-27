@@ -21,6 +21,8 @@ function cleanResults(v){try{if(!v||typeof v!=='object')return null;const ok=Arr
 function pairRes(a,b){if(!RES)return null;const k=[a.p.n,b.p.n].sort().join('|');return RES.pairs[k]||null}
 // pair counts are put on the old 377-team scale so a common pair scores the same as before, whatever the data size
 function tourSyn(a,b){const r=pairRes(a,b);if(!r)return 0;return Math.min(14,3*Math.log2(1+r[0]*377/(RES.teams||377)))+(r[1]-RES.base)*60}
+// How much real play a Pokémon has: the best of its usage % (ladder/tournament source in use) and its share of Limitless teams
+function evidPct(p){const u=U(p)||0;const r=RES&&RES.mons&&RES.mons[p.n];const t=r&&RES.teams?100*(+r[0]||0)/RES.teams:0;return Math.max(u,t)}
 // How a Pokémon did in real tournaments, above or below the field (doubles; shrunk, so rare picks stay near 0).
 function monSuccess(p){if(!RES)return 0;const r=RES.mons[p.n];return r?(r[1]-RES.base)*100*(+r[0]||0)/((+r[0]||0)+50):0}
 // Weights fitted on real tournament teams vs random usage-weighted teams, checked on held-out tournaments.
@@ -53,7 +55,9 @@ function planFixes(ms,pool,useA,opts){
   const swapMega=$('swapMega').checked;
   const canOut=m=>!S.slots[m.i].lock&&(!m.mega||swapMega);
   const rolesBase=teamRoles(ms);
-  const cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&(inBox(p)||poolOK(p,25))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
+  // evidence floor (Oct 28 audit): suggestions come from Pokémon real players actually run, unless you ask for off-meta.
+  // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ when you limit suggestions to your box.
+  const cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)&&ui.pool==='box'?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
     return {p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}}});
   const legal=(team)=>team.filter(m=>m.mega).length<=maxMega;
   const singles=[];
@@ -71,6 +75,12 @@ function planFixes(ms,pool,useA,opts){
       const f=archFit(x.c.p,x.c.mem.ability,rest,rolesBase);x.why=f.why;s-=f.s*.2;x.syn=synergy(x.c.p,rest);
       if(x.out)s+=4+(x.out.mega?6:0);if(ui.pool==='boxfill'&&!inBox(x.c.p))s+=12}
     pl.score=s;return pl};
+  // Items and staples (Oct 28 audit): a plan may never leave the team with more item problems (Item Clause, a dead seed,
+  // Scarf under your own Trick Room) than it has now, and never swaps out a staple (15%+ usage) for a rarely used pick
+  const ip0=typeof itemProblemCount==='function'?itemProblemCount(ms):0;
+  const ipOf=pl=>{if(pl._ip===undefined)pl._ip=typeof itemProblemCount==='function'?itemProblemCount(pl.team):0;return pl._ip};
+  const keepOK=pl=>ipOf(pl)<=ip0&&(OFFMETA||pl.ch.every(x=>!x.out||U(x.out.p)<15||evidPct(x.c.p)>=5));
+  {const keep=singles.filter(keepOK);singles.length=0;singles.push(...keep)}
   const basePl=evalPlan({ch:[],team:ms});
   singles.forEach(evalPlan);singles.sort((x,y)=>x.score-y.score);
   if(opts&&opts.singlesOnly)return {singles,basePl,base,full};
@@ -86,6 +96,7 @@ function planFixes(ms,pool,useA,opts){
     if(A.c.p.b===B.c.p.b)continue;
     if(A.out&&B.out){if(A.out===B.out)continue;const t=ms.map(x=>x===A.out?{...A.c.mem,i:x.i}:x===B.out?{...B.c.mem,i:x.i}:x);if(legal(t))doubles.push({ch:[{...A},{...B}],team:t})}
     else if(!A.out&&!B.out&&emptyIdx.length>=2){const t=[...ms,A.c.mem,B.c.mem];if(legal(t))doubles.push({ch:[{...A,slot:emptyIdx[0]},{...B,slot:emptyIdx[1]}],team:t})}}
+  {const keep=doubles.filter(keepOK);doubles.length=0;doubles.push(...keep)}
   doubles.forEach(evalPlan);
   const clean=base.a.excess===0&&!base.a.unresisted.length;
   // a plan must never make the type rating worse, and must beat the current team by a clear margin
@@ -100,9 +111,11 @@ function planFixes(ms,pool,useA,opts){
   if(useTSPick()){const sh0=typeShape(base.a).maxStack;
     const short0=[...singles,...doubles].filter(pl=>pl.team.length===6&&keepsPlan(pl)&&pl.st.a.excess<=base.a.excess+1&&pl.st.a.unresisted.length<=base.a.unresisted.length+1&&typeShape(pl.st.a).maxStack<=Math.max(2,sh0)&&megaShort(pl.team)<=megaShort(ms)).sort((x,y)=>x.score-y.score);
     const short=tsShortlist(short0,70);
+    // plans that fix an item problem are always checked, and qualify without the usual Team Score gain (they may not lower it by more than 3)
+    if(ip0>0)for(const pl of short0.filter(pl=>ipOf(pl)<ip0).slice(0,12))if(!short.includes(pl))short.push(pl);
     for(const pl of short)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
     if(short.some(pl=>pl._ts!=null)){tsOn=true;
-      const ranked=short.filter(pl=>pl._ts!=null&&(tsBase==null||pl._ts>=tsBase+TS_GAIN)).sort((x,y)=>tsKey(y)-tsKey(x)||x.score-y.score);
+      const ranked=short.filter(pl=>pl._ts!=null&&(tsBase==null||pl._ts>=tsBase+TS_GAIN||(ipOf(pl)<ip0&&pl._ts>=tsBase-3))).sort((x,y)=>(ipOf(x)-ipOf(y))||tsKey(y)-tsKey(x)||x.score-y.score);
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
   // pick up to 3 plans that don't share an incoming Pokémon or the same outgoing set
   const out=[],usedIn=new Set();
@@ -121,6 +134,10 @@ function planFixes(ms,pool,useA,opts){
   for(const pl of all){if(more.length>=12)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>inSeen.has(b)))continue;ins.forEach(b=>inSeen.add(b));more.push(pl)}
   if(full){const side=singles.filter(pl=>keepsPlan(pl)&&pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<=basePl.score+60&&megaShort(pl.team)<=megaShort(ms)&&(OFFMETA||ui.pool==='box'?ratingLoose(pl.ch[0].c.p)>=35:rating(pl.ch[0].c.p).total>=50)).sort((x,y)=>(x.score-rating(x.ch[0].c.p).total*.3)-(y.score-rating(y.ch[0].c.p).total*.3));
     for(const pl of side){if(more.length>=18)break;const b=pl.ch[0].c.p.b;if(inSeen.has(b))continue;inSeen.add(b);pl.side=pl.score>=basePl.score-(clean?25:10);more.push(pl)}}
+  // item problems now: make sure one plan fixes them (the item card above the plans offers the direct item swap too)
+  if(ip0>0&&!out.some(pl=>ipOf(pl)<ip0)){const fix=[...singles,...doubles].filter(pl=>ipOf(pl)<ip0&&keepsPlan(pl)&&(!tsOn||tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-3)).sort((x,y)=>ipOf(x)-ipOf(y)||x.score-y.score)[0];
+    if(fix){if(out.length>=3)out.pop();out.unshift(fix)}}
+  out.ip0=ip0;
   out.more=more;
   out.base=base;out.rolesBase=rolesBase;out.gp=basePl.gp;out.basePl=basePl;out.baseA=basePl.st.a;out.full=full;out.tsBase=tsBase;out.tsOn=tsOn;
   out.singles=singles.filter(pl=>keepsPlan(pl)&&(full?(pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length):pl.st.a.excess<=base.a.excess+1));return out;
@@ -132,33 +149,37 @@ function gpDiff(a,b){if(!a||!b)return [];const out=[];
   for(const r of b.rows){const o=a.rows.find(x=>x.k===r.k);
     if(!o){if(r.st!=='ok'&&r.note)out.push(`<span class="warnline">${esc(r.label)}</span>: ${esc(r.note)}`);continue}
     if(r.k==='prio'&&r.st==='opt')continue;const d=GP_RANK[r.st]-GP_RANK[o.st];
-    if(d>0)out.push(`<b>${r.st==='ok'?'Covers':'Improves'} ${esc(GP_WORD[r.k]||r.label)}</b>${r.who?': '+esc(r.who):''}`);
+    // a gain that rests on priority moves is called priority, never speed control
+    const word=(r.k==='speed'&&r.mode==='priority and speed boosts')||(r.k==='backup'&&r.prioOnly)?'priority':GP_WORD[r.k]||r.label;
+    if(d>0)out.push(`<b>${r.st==='ok'?'Covers':'Improves'} ${esc(word)}</b>${r.who?': '+esc(r.who):''}`);
     else if(d<0)out.push(`<span class="warnline">Weakens ${esc(GP_WORD[r.k]||r.label)}</span>${r.note?': '+esc(r.note):''}`)}
   return out}
 function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.length===6;
   $('sugTitle').textContent=full?'Fix plans':'Build plans';
   if(!ms.length){el.innerHTML='<div class="empty-note">Add at least one Pokémon to get plans.</div>';return}
   const base=plans.base;const more=plans.more||[],pg=ui.planMore||0,shown=more.slice(0,pg*3),left=more.length-shown.length;
+  // item problems (Item Clause, an item that can't work here) come first, each with a one-tap item swap
+  const itf=typeof itemFixHtml==='function'?itemFixHtml(ms):'';
   const moreBtn=`<div class="morebar">${left>0?`<button class="btn" type="button" id="planMoreBtn">More ideas</button><span class="vsub">${left} more plan${left===1?'':'s'}, including side-grades and rarely used picks</span>`:more.length?`<span class="vsub">That's every plan that keeps your type rating and speed control.</span><button class="btn sm" type="button" id="planMoreReset">Show fewer</button>`:''}</div>`;
-  if(!plans.length&&!shown.length){el.innerHTML=`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool raises the Team Score (${plans.tsBase}) by ${TS_GAIN} or more. Keep this team, or try "Full roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn;return}
+  if(!plans.length&&!shown.length){el.innerHTML=itf+`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool raises the Team Score (${plans.tsBase}) by ${TS_GAIN} or more. Keep this team, or try "Full roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn;return}
   // each plan's Team Score next to the current one, from the same win model, so a plan never hides that it makes the team weaker
   const baseTS=(ui.vsum&&ui.vsum.TS)||null,planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
   // plans that would lower the Team Score by 5+ go after the ones that keep or raise it
   const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
   const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
   const list=[...plans,...shown];
-  el.innerHTML=list.map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;
+  el.innerHTML=itf+list.map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;
     const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
     const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
     const newWeak=st.a.rows.filter((t,j)=>t.w>t.r&&!(a.rows[j].w>a.rows[j].r)).map(t=>t.atk);
     const syn=pl.ch.map(x=>{const t=metaEntry(x.c.p);const mates=(t&&t.tm||[]).map(([n])=>byName.get(n)).filter(q=>q&&pl.team.some(m=>m.base===q.b&&m.p!==x.c.p)).map(q=>q.d);return mates.length?`${esc(x.c.p.d)} is often paired with ${esc(mates.slice(0,2).join(' and '))}`:''}).filter(Boolean);
     const roleLines=gpDiff(plans.gp,pl.gp);
     const archLines=pl.ch.flatMap(x=>(x.why||[]).map(w=>`${esc(x.c.p.d)}: ${w}`));
-    const lines=[fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
+    const lines=[plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`:'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
       newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
       st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...syn];
     return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">${k>=plans.length?(pl.side?'Side-grade':'Idea'):'Plan'} ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span>${dT!=null?`<span class="tsd ${dT>0?'up':dT<0?'dn':''}" title="${esc((t=>t?tsTitle(baseTS,t):'Team Score '+baseTS.score+' → '+ts)(tsInfo(pl.team)))}">Team Score ${dT>0?'+':dT<0?'−':'±'}${Math.abs(dT)}</span>`:''}<span class="row">${a.excess===st.a.excess?`<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`:`<span class="pill ${RC(a.excess)}">${wsTxt(a)}</span>→<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`}</span></div>
-      ${pl.ch.map(x=>`<div class="swap">${x.out?`<span class="out">${esc(x.out.d)}</span> →`:'Add'} ${sprite(x.c.p,'mini')}<span class="in">${esc(x.c.p.d)}</span>${confChip(x.c.p)}<span class="chips">${x.c.p.t.map(t=>chip(t)).join('')}</span>${x.c.p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(x.c.p)?'<span class="tag box ico" title="In your box">BOX</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${ratingTag(x.c.p)}${isGem(x.c.p)?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(x.c.p)}<span class="vsub">${esc(x.c.mem.ability)}${(t=>t?' @ '+esc(t.it[0][0]):'')(topItems(x.c.p))}${U(x.c.p)?` · ${U(x.c.p).toFixed(1)}% usage`:''}</span></div>`).join('')}
+      ${pl.ch.map(x=>`<div class="swap">${x.out?`<span class="out">${esc(x.out.d)}</span> →`:'Add'} ${sprite(x.c.p,'mini')}<span class="in">${esc(x.c.p.d)}</span>${confChip(x.c.p)}<span class="chips">${x.c.p.t.map(t=>chip(t)).join('')}</span>${x.c.p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(x.c.p)?'<span class="tag box ico" title="In your box">BOX</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${ratingTag(x.c.p)}${isGem(x.c.p)?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(x.c.p)}<span class="vsub">${esc(x.c.mem.ability)}${(t=>t&&t.item?' @ '+esc(t.item):'')(tA.find(m=>m.p===x.c.p))}${U(x.c.p)?` · <span title="${esc(windowWords('tour'))}">${U(x.c.p).toFixed(1)}% usage</span>`:''}</span></div>`).join('')}
       ${(()=>{const L=lines.filter(Boolean),ul=`<ul>${L.map(l=>`<li>${l}</li>`).join('')}</ul>`;return PHONE()&&L.length>2?`<details class="planwhy"><summary>${L.length} reasons</summary>${ul}</details>`:ul})()}
       ${pl.side?'<p class="t2" style="margin:0">A different look: keeps your type rating and speed control without being clearly better.</p>':''}
       <div><button class="btn sm primary" type="button" data-plan="${k}">Apply ${k>=plans.length?'this':'plan '+(k+1)}</button></div></div>`}).join('')+moreBtn;

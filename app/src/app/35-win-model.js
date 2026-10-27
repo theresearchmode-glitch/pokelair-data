@@ -56,7 +56,8 @@ function structCredit(ms){if(ms.length!==6)return {c:1,miss:[]};let CK=null;try{
     // the Trick Room setter itself holds Choice Scarf: it moves last under its own room and is locked into the move
     if(tp&&tp.scarf.some(m=>tp.set.includes(m)))add(`${tp.scarf.filter(m=>tp.set.includes(m)).map(m=>m.d).join(', ')} sets Trick Room while holding Choice Scarf`,.15);
     // an item you picked that can never work (a Terrain Seed with no terrain, Room Service with no Trick Room)
-    for(const d of deadItems(fullMs))add(d.why,.15)}catch(e){}
+    // (Choice Scarf on a non-setter is a warning only: real teams with it did no worse, see the setter rule above)
+    for(const d of deadItems(fullMs))if(d.k!=='scarftr'&&d.m.heldItem)add(d.why,.15)}catch(e){}
   return {c:Math.max(.4,1-w),miss}}
 // Team strength in the model's own units, adjusted exactly as the Team Score adjusts it. Team Score, fix plans, Best
 // additions, Build for me and the Gauntlet all read this one number, so they can never disagree about which team is stronger.
