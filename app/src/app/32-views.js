@@ -36,6 +36,15 @@ try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',lookSyn
 setTheme(LS.get('cc2.theme','auto'));
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='scrim')sideOpen(false)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false)});
+// Back button: each page switch adds a browser history step (no address change), so the phone or browser back button
+// steps back through pages. Back first closes anything open on top (a Pokémon sheet, search, the menu, feedback).
+let NAV_POP=false;
+function navHist(v){if(NAV_POP)return;try{const cur=history.state&&history.state.npv;if(!cur)history.replaceState({npv:v},'');else if(cur!==v)history.pushState({npv:v},'')}catch(e){}}
+function overlayOpen(){const ids=['lairSheet','jump','fbSheet'];for(const id of ids){const el=$(id);if(el&&!el.hidden)return id}const sd=$('side');if(sd&&sd.classList.contains('open'))return 'side';return null}
+addEventListener('popstate',e=>{const o=overlayOpen();
+  if(o){if(o==='lairSheet'&&typeof lairClose==='function')lairClose();else if(o==='jump'&&typeof jumpClose==='function')jumpClose();else if(o==='fbSheet'&&typeof fbClose==='function')fbClose();else if(o==='side')sideOpen(false);
+    try{history.pushState({npv:view},'')}catch(er){}return}
+  const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v)}finally{NAV_POP=false}});
 function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);
   document.querySelectorAll('[data-pane]').forEach(el=>el.hidden=el.dataset.pane!==v);
   const par=VIEW_PARENT[v]||v;const sideHas=!!document.querySelector(`.sidenav [data-view="${v}"]`);document.querySelectorAll('[data-view]').forEach(b=>{const on=b.classList.contains('sub')?b.dataset.view===(SUB_OF[v]||v):(sideHas&&b.closest('.sidenav'))?b.dataset.view===v:b.dataset.view===par;b.setAttribute('aria-selected',on)});
@@ -43,6 +52,7 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   {const mb=$('moreBtn');if(mb)mb.classList.toggle('on',!MAIN_VIEWS.includes(VIEW_PARENT[v]||v))}
   sideOpen(false);
   requestAnimationFrame(()=>document.querySelectorAll('.subnav').forEach(n=>{if(n.offsetParent===null)return;n.classList.toggle('ovf',n.scrollWidth>n.clientWidth+2);const on=n.querySelector('[aria-selected="true"]');if(on&&n.scrollWidth>n.clientWidth){const l=on.offsetLeft-n.offsetLeft-(n.clientWidth-on.offsetWidth)/2;n.scrollLeft=Math.max(0,l)}}));
+  navHist(v);
   if(typeof track==='function')track('view:'+v);
   if(v==='build'&&ui.plansStale){ui.plansStale=false;render()}
   if(v==='home')safe('home',renderHome);

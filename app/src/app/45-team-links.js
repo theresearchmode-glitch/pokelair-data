@@ -37,5 +37,5 @@ function checkSharedLink() { let raw = ''; try { raw = (location.hash || '') + '
   const x = decodeTeam(raw); if (!x) return;
   let bar = $('sharedBar'); if (!bar) { bar = document.createElement('div'); bar.id = 'sharedBar'; bar.className = 'sharedbar'; document.body.appendChild(bar); }
   bar.innerHTML = `<div class="sbin"><div><b>Shared team</b><span>${esc(x.n || x.slots.map(s => (byName.get(s.n) || {}).d || s.n).slice(0, 3).join(' · ') + (x.slots.length > 3 ? ' …' : ''))}</span></div><button type="button" class="btn go sm" data-sharedload="1">Load it</button><button type="button" class="btn ghost sm" data-sharedx="1">Not now</button></div>`;
-  bar.onclick = e => { const t = e.target.closest('button'); if (!t) return; if (t.dataset.sharedload) applyShared(x); bar.remove(); try { history.replaceState(null, '', location.pathname); } catch (er) {} }; }
+  bar.onclick = e => { const t = e.target.closest('button'); if (!t) return; if (t.dataset.sharedload) applyShared(x); bar.remove(); try { history.replaceState(history.state, '', location.pathname); } catch (er) {} }; }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#shareLink,[data-copylink]'); if (b) copyTeamLink(b); });
