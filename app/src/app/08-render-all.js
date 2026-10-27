@@ -1,6 +1,8 @@
 // ---------- render: everything ----------
 let renderQueued=false,planCache={key:null,plans:[]},metaVersion=0;
-function scheduleRender(){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;render()},0)}
+// While the page is opening, the data arrives in up to 11 pieces; a short wait lets pieces that land close together share
+// one redraw instead of one each.
+function scheduleRender(){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;render()},performance.now()<6000?90:0)}
 // Run one part of the page; if it throws, log it and keep the rest of the page working.
 function safe(name,fn){try{fn()}catch(err){try{console.error('Champions Team Coverage: '+name+' failed',err)}catch(e){}}}
 function render(){
@@ -52,8 +54,12 @@ function render(){
   // Plans only change when the team, pool, settings, box or meta data change, so reuse them otherwise.
   const planKey=JSON.stringify([OFFMETA,S.slots,ui.pool,S.format,megaGoal(),$('swapMega').checked,useA,ui.metaSrc,metaVersion,S.box.join(),S.excl.join(),S.teams.map(t=>t.format+t.slots.map(x=>x.n).join()).join()]);
   let plans=[];
+  // Fix plans are the slow part (about a third of a second); they're only shown on the Team page, so other pages skip them
+  // and the Team page works them out when it opens.
+  const onTeam=typeof view==='undefined'||view==='build';
   if(planCache.key===planKey)plans=planCache.plans;
-  else safe('fix plans',()=>{ui.planMore=0;plans=ms.length?planFixes(ms,pool,useA):[];
+  else if(!onTeam){plans=[];ui.plansStale=true}
+  else safe('fix plans',()=>{ui.plansStale=false;ui.planMore=0;plans=ms.length?planFixes(ms,pool,useA):[];
     // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
     if(ms.length&&!OFFMETA){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{plans.gems=withOffMeta(()=>planFixes(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}
     planCache={key:planKey,plans}});

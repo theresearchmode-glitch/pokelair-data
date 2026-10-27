@@ -1873,3 +1873,53 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 /* plain labels */
 .tag.rating .rtw{opacity:.6;font-size:.85em;margin-left:1px}
 .tug{display:none}.slots.grid .tug{display:inline}
+/* compare two teams */
+.cmpbox{border:1.5px solid var(--accent);border-radius:16px;padding:14px 16px;margin:0 0 12px;background:var(--card)}
+.cmphd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cmpt{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed}
+.cmpt th,.cmpt td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cmpt thead th{font-weight:800;font-size:14px;overflow-wrap:anywhere}
+.cmpt tbody th{font-weight:500;color:var(--mute);width:34%}
+.cmpt td.win{color:var(--good);font-weight:800}
+.cmpt td.win::after{content:' ✓'}
+.cmpsix{display:flex;flex-wrap:wrap;gap:2px;margin-top:6px}
+.cmpm{display:inline-flex;border-radius:10px}.cmpm.sh{outline:2px solid var(--accent);outline-offset:-2px}
+.cmph2h{margin:10px 0 4px!important}
+.btn.on{border-color:var(--accent);color:var(--accent)}
+@media (max-width:640px){.cmpt{font-size:13px}.cmpt tbody th{width:38%}.cmpbox{padding:12px}}.cmpt th,.cmpt td{white-space:normal;overflow-wrap:anywhere;background:none!important;font-family:var(--body)!important;text-transform:none!important;letter-spacing:0!important}
+.cmpt tbody th{font-size:13.5px}
+.cmpt thead th{font-size:15px;color:var(--ink)}/* compare: even sprite cells, shared Pokémon on a soft tint (no outline) */
+.cmpsix{display:grid;grid-template-columns:repeat(6,34px);gap:4px}
+@media (max-width:640px){.cmpsix{grid-template-columns:repeat(3,34px)}}
+.cmpm{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:9px;outline:0!important}
+.cmpm .spr,.cmpm img{width:32px!important;height:32px!important;object-fit:contain;margin:0!important;position:static!important;transform:none!important}
+.cmpm.sh{background:color-mix(in srgb,var(--accent) 16%,transparent)}@media (max-width:640px){.cmpsix{grid-template-columns:repeat(3,30px);gap:3px}.cmpm{width:30px;height:30px}.cmpm .spr,.cmpm img{width:28px!important;height:28px!important}}
+/* ---- Readability pass (Oct 27): every text below 4.5:1 (3:1 for large text) in the contrast audit
+   (experiments/contrast.mjs), fixed at the token where possible so it holds everywhere ---- */
+/* light: a softer page so cards aren't white on white; muted text and status colors dark enough to read */
+:root:not([data-look="dark"]){--day:#ebe5f3;--day2:#e2daed;--court:#e8e2f0;--card:#fbf9fd;--card2:#f1ecf7;--soft:#ebe3f6;--dline:#e0d6ec;--line:#e1d8ec;
+  --faint:#686e88;--mute:#555b77;--good:#0b7a4f;--warn:#985800;--bad:#b9262d;--ok:#1d7470}
+:root:not([data-look="dark"]) :is(.fmt,.tabs,.bmode,.hhero,.btn.hghost,.abhero,.lhstat,.thero,.sgroup,.bmdt tbody th,.bmslot,.corerow,.evcard,.themeseg button[aria-pressed="true"]){background-color:var(--card)!important}
+:root:not([data-look="dark"]) .bnav{background:rgba(251,249,253,.92)}
+/* dark: muted text a step lighter; bright status fills carry dark text instead of white */
+:root[data-look="dark"]{--faint:#90909b}
+:root[data-look="dark"] :is(.ck.ok,.mq,.b0,.b1,.tag.spdme,.ck.part){color:#0b1a14!important;text-shadow:none}
+:root[data-look="dark"] :is(.m4,.b3,.b4,.ck.no){color:#2a0508!important}
+:root[data-look="dark"] .b2{color:#2a1a00!important}
+:root[data-look="dark"] .m0{background:#5d5d68;color:#fff}
+/* type, archetype and tier chips keep their colour but sit a shade darker under white text */
+.ty:not(.lt),.archchip,.ltl{background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22))}
+.ty{font-size:10.5px}.slots.grid .sl-sub .chips .ty{font-size:9.5px}
+.ltl span{opacity:1}
+/* small labels */
+.tabs .tc,.sidenav .tc{opacity:1;color:var(--mute)}
+.jumpbtn kbd{color:var(--mute)}
+.stat h4,.vtx .k,.lbl,.qlbl,.none,.swap .out,.mrow .rk,.htk span:first-child{color:var(--mute)}
+.mrow.m1 .rk{color:#a86f00}.mrow.m2 .rk{color:#66718a}.mrow.m3 .rk{color:#97571f}
+:root[data-look="dark"] .mrow.m1 .rk{color:#f4b544}:root[data-look="dark"] .mrow.m2 .rk{color:#b9c2d3}:root[data-look="dark"] .mrow.m3 .rk{color:#e09a5c}
+.sev{font-size:10px}.ty:not(.lt),.archchip,.ltl{background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22))!important}
+.tabs button[aria-selected="true"] .tc,.sidenav button[aria-selected="true"] .tc{color:inherit}
+:root[data-look="dark"] .sev.hi{color:#2a0508}
+:root[data-look="dark"] .tag.evoff{filter:brightness(.8)}
+.tsbar em{color:var(--mute)}
+.btn.logwin,.btn.logloss{filter:saturate(1.1) brightness(.88)}

@@ -58,7 +58,8 @@ async function buildShareCard() {
     ctx.textAlign = 'center'; ctx.fillStyle = SC.ink; const nm = (m.p.d || m.p.n).toUpperCase(); let fz = 25;
     do { ctx.font = `italic 800 ${fz}px "Sofia Sans Condensed", sans-serif`; } while (ctx.measureText(nm).width > cw - 14 && --fz > 16);
     ctx.fillText(scFit(ctx, nm, cw - 14), x + cw / 2, y0 + 176);
-    const ti = typeof topItems === 'function' ? topItems(m.p) : null, item = ti && ti.it && ti.it[0] ? ti.it[0][0] : '';
+    // the item this team actually holds (your pick, else the usual one), the same as the team card shows
+    const ti = typeof topItems === 'function' ? topItems(m.p) : null, item = m.item || (ti && ti.it && ti.it[0] ? ti.it[0][0] : '');
     ctx.font = '600 15px "Sofia Sans", sans-serif'; ctx.fillStyle = SC.mute; if (item) ctx.fillText(scFit(ctx, item, cw - 16), x + cw / 2, y0 + 200);
     const ts = m.p.t || []; ctx.font = '700 11px "JetBrains Mono", monospace';
     const wts = ts.map(t => ctx.measureText(t.toUpperCase()).width + 16), tw = wts.reduce((a, b) => a + b, 0) + (ts.length - 1) * 6; let tx = x + (cw - tw) / 2;
