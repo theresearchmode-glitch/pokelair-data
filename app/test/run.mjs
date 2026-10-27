@@ -177,4 +177,6 @@ for (const width of [1280, 390]) {
     ok(await pg.evaluate(() => /best hit on your team/i.test(document.getElementById('dcOut').innerText)), 'calc: their hits on you');
     ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); } }
 await browser.close();
+// items, suggestions and battle math (Oct 28 audit), on the same build
+try { execFileSync('node', [APP + 'test/items.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL items/suggestions suite'); }
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);

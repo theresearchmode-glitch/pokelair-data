@@ -2,7 +2,7 @@ name: Test NastyPlot page
 on:
   push:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
-    paths: ['app/**', 'out/**', 'model.mjs', 'replays.mjs', 'experiments/replays-test.mjs', '.github/workflows/test.yml']
+    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'rk9.mjs', 'experiments/replays-test.mjs', 'experiments/*-check.mjs', '.github/workflows/test.yml']
   workflow_dispatch:
 # Changes land as a few commits in a row; only the newest one is tested. An older run still going is cancelled
 # (cancelled runs send no failure email), so a half-uploaded change can't trigger a false alarm.
@@ -20,9 +20,16 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 && npx playwright install --with-deps chromium
       - run: node app/test/run.mjs
       - run: node experiments/replays-test.mjs
+      # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
+      - run: node experiments/speed-check.mjs
+      - run: node experiments/calc-check.mjs 2000
+      # legality: species / items / stones on the page vs the Reg M-C lists. Non-blocking until the roster question
+      # (Watchog is on the page but not on the Reg M-C list) is decided.
+      - run: node experiments/legality-check.mjs
+        continue-on-error: true
       - uses: actions/upload-artifact@v4
         with:
           name: page
