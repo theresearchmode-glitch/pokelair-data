@@ -84,7 +84,7 @@ function rawPower(p) { return Math.max(0, Math.min(60, ((p.s || 450) - 430) / 4)
 function isMetaPick(p) { return viability(p) >= 45; }
 // Normal mode: half popularity, half our rating, so strong unproven Pokémon can win a slot on fit. Off-meta search: our intrinsic score, meta picks discounted.
 function pickVia(p) { if (!OFFMETA) return Math.round(.5 * viability(p) + .5 * rating(p).total); return Math.round(.8 * rating(p).intrinsic + (isMetaPick(p) ? -12 : viability(p) < 25 ? 6 : 0)); }
-function poolOK(p, min) { return OFFMETA ? (rating(p).total >= 35 || !!p.m) : viability(p) >= min || rating(p).total >= 62; }
+function poolOK(p, min) { return OFFMETA ? (ratingLoose(p) >= 35 || !!p.m) : viability(p) >= min || rating(p).total >= 62; }
 // The ability most players run on p, from the meta data, if it's one p can have.
 function metaAbility(p) { const t = metaEntry(p); if (!t || !t.ab || !t.ab.length) return null; const a = t.ab[0][0]; return p.a.includes(a) ? a : null; }
 function vLabel(v) { return v >= 70 ? 'Top tier' : v >= 45 ? 'Strong' : v >= 25 ? 'Solid' : v >= 12 ? 'Niche' : 'Fringe'; }

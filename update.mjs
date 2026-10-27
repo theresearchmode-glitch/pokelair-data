@@ -7,6 +7,7 @@
 // (daily usage ranks for trends) and out/matches.json (game-level results for the team model).
 // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
 import fs from 'node:fs';
+import {topcut} from './topcut.mjs';
 const API = 'https://play.limitlesstcg.com/api', FORMAT = 'M-C', MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
@@ -113,6 +114,8 @@ console.log(`teams ${E.length}, games ${G}, pokemon ${mon.size}, pairs ${Object.
 const V2 = Object.keys(index.tournaments).map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T ? {id, ...T} : null; }).filter(Boolean)
   .sort((a, b) => new Date(a.d) - new Date(b.d));
 const nameOf = m => lmap(key({name: m.n, item: m.i}));
+// 0) top-cut evidence for the ratings (who reaches top cut, conversion, win rate), into results.tc
+{ const tc = topcut(V2, nameOf); if (tc) { out.results.tc = tc; fs.writeFileSync('out/limitless.json', JSON.stringify(out)); console.log(`topcut: ${Object.keys(tc.rows).length} Pokémon from ${tc.events} events`); } }
 const pct = (c, n, k) => [...c].sort((a, b) => b[1] - a[1]).slice(0, k).map(([x, v]) => [x, Math.round(1000 * v / n) / 10]);
 const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() : Date.now();
 // 1) sets from real team sheets, last 28 days (sets drift; usage and win rates above use every event)

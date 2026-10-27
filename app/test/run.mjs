@@ -111,6 +111,18 @@ for (const width of [1280, 390]) {
   await p2.click('[data-sharedload]'); await p2.waitForTimeout(400);
   ok(await p2.evaluate(() => !document.getElementById('sharedBar') && document.querySelector('[data-pane="build"]').hidden === false), 'team links: Load it opens the team');
   ok(e2.length === 0, `team links: no page errors${e2.length ? ': ' + e2.join(' | ') : ''}`); await c2.close(); }
+// Ratings mean proven strength: staples on top, rare picks can't take #1 (Oct 27 v3)
+{ console.log('\n== ratings');
+  const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(300);
+  const r = await pg.evaluate(() => { const P = window.__PL, R = n => P.rating(P.byName.get(n)), all = [...P.byName.values()].map(p => ({n: p.n, r: P.rating(p)})).filter(x => x.r.total).sort((a, b) => b.r.total - a.r.total);
+    const use = x => x.r.tc ? x.r.tc.field : x.r.usage; const top10 = all.slice(0, 10);
+    return {zard: R('Charizard-Mega-Y').total, ann: R('Annihilape').total, kom: R('Kommo-o').total, first: all[0].n, firstUse: use(all[0]), minTop10Use: Math.min(...top10.map(use)),
+      staplesS_A: ['Charizard-Mega-Y', 'Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Floette-Mega', 'Raichu-Mega-Y', 'Gholdengo', 'Salamence-Mega', 'Arcanine-Hisui'].filter(n => R(n).total < 70) }; });
+  ok(r.zard > r.ann, `Mega Charizard Y (${r.zard}) outranks Annihilape (${r.ann})`);
+  ok(r.firstUse >= 10, `#1 (${r.first}) is on ${r.firstUse}% of teams (10%+ needed)`);
+  ok(r.minTop10Use >= 3, `every top-10 Pokémon is on 3%+ of teams (lowest ${r.minTop10Use}%)`);
+  ok(!r.staplesS_A.length, `format staples sit in S or A${r.staplesS_A.length ? ': not ' + r.staplesS_A.join(', ') : ''}`);
+  ok(errs.length === 0, `ratings: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }
 // Team Score can't be gamed: calibrated, anchored to real teams, no 100 for an odd six, no Mega stacking, no duplicates
 { console.log('\n== Team Score integrity');
   const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(300);

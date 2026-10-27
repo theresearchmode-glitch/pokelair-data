@@ -67,7 +67,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
   ${ui.usageOwner ? `<details class="hsec usebox" id="usageBox"><summary><b>What people use</b> <span class="vsub">only you see this</span></summary><div id="usageOut"></div></details>
     <details class="hsec usebox" id="fbBox"><summary><b>Feedback</b> <span class="vsub">only you see this</span></summary><div id="fbOut"></div></details>` : ''}
   ${typeof FB !== 'undefined' && FB.ok ? '<div class="hfb"><span>Something off or missing?</span><button type="button" class="btn sm fbbtn" data-fbopen="1">Send feedback</button></div>' : ''}
-  <p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: win model, tournament win rates and ladder popularity, tested on events they hadn't seen.</p>`; }
+  <p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`; }
 
 
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#homeAllBtn'); if (!b) return; ui.homeAll = !ui.homeAll; keepScroll(() => renderHome()); });

@@ -66,12 +66,9 @@ const OUTSIDE = {date: 'Oct 25, 2026', lists: [
   {k: 'poketools', name: 'PokeTools', how: 'Showdown ladder usage', url: 'https://www.poketools.com/champions-tier-list', tiers: {4: 'S', 3: 'A', 2: 'B', 1: 'C'}, note: 'lists the top 60 by usage'}],
   data: {"pz":{"Floette-Mega":4,"Raichu-Mega-Y":4,"Charizard-Mega-Y":4,"Arcanine-Hisui":4,"Gholdengo":4,"Dragonite-Mega":3,"Staraptor-Mega":3,"Tyranitar-Mega":3,"Delphox-Mega":3,"Gengar-Mega":3,"Salamence-Mega":3,"Kingambit":3,"Excadrill":3,"Sneasler":3,"Rillaboom":3,"Incineroar":3,"Archaludon":3,"Raichu-Mega-X":2,"Swampert-Mega":2,"Froslass-Mega":2,"Garchomp-Mega-Z":2,"Gardevoir-Mega":2,"Golisopod-Mega":2,"Basculegion":2,"Indeedee":2,"Grimmsnarl":2,"Garchomp":2,"Milotic":2,"Pelipper":2,"Sinistcha":2,"Sylveon":2,"Volcarona":2,"Farigiraf":2,"Metagross-Mega":1,"Camerupt-Mega":1,"Lucario-Mega-Z":1,"Whimsicott":1,"Indeedee-F":1},"synergy":{"Rillaboom":3,"Sneasler":3,"Incineroar":3,"Raichu-Mega-Y":3,"Salamence-Mega":3,"Charizard-Mega-Y":3,"Gholdengo":3,"Kingambit":3,"Sylveon":3,"Garchomp-Mega-Z":3,"Archaludon":3,"Basculegion":3,"Farigiraf":3,"Pelipper":3,"Venusaur":3,"Floette-Mega":3,"Garchomp":3,"Golisopod-Mega":3,"Arcanine-Hisui":3,"Milotic":3,"Volcarona":3,"Indeedee":3,"Tyranitar-Mega":3,"Indeedee-F":3,"Excadrill":3,"Grimmsnarl":3,"Dragonite-Mega":3,"Toxapex":3,"Corviknight":3,"Basculegion-F":3,"Staraptor":2,"Politoed":2,"Gengar-Mega":2,"Sinistcha":2,"Gardevoir-Mega":2,"Whimsicott":2,"Kommo-o":2,"Torkoal":2,"Swampert":2,"Primarina":2,"Vivillon":2,"Aerodactyl-Mega":2,"Garchomp-Mega":2,"Delphox-Mega":1,"Froslass-Mega":1,"Armarouge":1,"Metagross":1,"Glimmora-Mega":1},"poketools":{"Rillaboom":4,"Sneasler":4,"Incineroar":4,"Salamence-Mega":4,"Kingambit":4,"Basculegion":3,"Indeedee-F":3,"Gholdengo":3,"Archaludon":3,"Golisopod-Mega":3,"Farigiraf":3,"Pelipper":3,"Raichu-Mega-Y":3,"Charizard-Mega-Y":3,"Milotic":3,"Arcanine-Hisui":2,"Floette-Mega":2,"Sylveon":2,"Garchomp":2,"Gardevoir-Mega":2,"Garchomp-Mega-Z":2,"Politoed":2,"Whimsicott":2,"Sinistcha":2,"Volcarona":2,"Gengar-Mega":2,"Armarouge":2,"Metagross-Mega":2,"Staraptor-Mega":2,"Indeedee":2,"Excadrill":1,"Tyranitar-Mega":1,"Swampert-Mega":1,"Grimmsnarl":1,"Torkoal":1,"Froslass-Mega":1,"Kommo-o":1,"Lucario-Mega-Z":1,"Primarina":1,"Pawmot":1,"Delphox-Mega":1,"Annihilape":1,"Blastoise-Mega":1,"Ninetales-Alola":1,"Venusaur":1,"Baxcalibur-Mega":1,"Maushold":1,"Dragonite-Mega":1,"Hatterene":1,"Tyranitar":1,"Ceruledge":1,"Aerodactyl-Mega":1,"Glimmora-Mega":1,"Corviknight":1,"Absol-Mega-Z":1,"Camerupt-Mega":1,"Talonflame":1,"Espathra":1,"Dragapult":1,"Raichu-Mega-X":1}}};
 // Rating blend (doubles): win-rate prior for few-game Pokémon, popularity weight, stats weight, popularity of a Pokémon no source lists.
-// The fitted rating recipe (Oct 27, experiments/rating-fit.mjs): every ingredient rebuilt from older events only, weights
-// fitted on the next events, scored on events nothing had seen, on two separate stretches of the season. Win-model strength
-// + tournament win rate + ladder popularity beat the old hand-weighted formula on both (newest 20% of events: 54.9% of
-// games called vs 54.8%, log-loss 0.6847 vs 0.6851; the 20% before: 54.6% vs 54.3%, 0.6882 vs 0.6891). Stats, typing and
-// tools made predictions worse, so they're shown as a profile but not scored. Weights: the average of the two fits.
-const RATE_FIT = {w: {model: .049, wr: .015, smogon: .029}, tested: 'Oct 27, 2026'};
+// (This blend is now only the fallback and the sheet's evidence; the rating itself is RATE_V3 below. The Oct 27 "fitted"
+// recipe was retired the same evening: it ordered Pokémon by the win model's per-Pokémon numbers, which put rare picks
+// such as Annihilape, Kommo-o and Mega Garchomp above the format's staples.)
 const RG = Object.assign({pp0: 40, pp1: .15, wpop: .4, wi: .05, absent: 4}, (typeof RATING_W === 'object' && RATING_W) || {});
 function ratings() {
   const key = metaVersion + '|' + ui.metaSrc;
@@ -130,36 +127,45 @@ function ratings() {
     map.set(p.n, {total, raw: total, win: ppV == null ? null : Math.round(ppV), popAll: popC == null ? null : Math.round(popC), intrinsic: Math.round(intr), power: Math.round(intr0[i].power), typing: Math.round(intr0[i].typing), tools: Math.round(intr0[i].tools),
       evidence: Math.round(evidence), conf: +conf.toFixed(2), band: Math.round(3 + 15 * (1 - conf)), perf: perf == null ? null : Math.round(perf), pop: pop == null ? null : Math.round(pop), usage, wr, wrMean, matches, src, meta: Math.round(evidence), proven}); });
   { let mx = 0; for (const v of map.values()) mx = Math.max(mx, v.raw); const f = mx > 0 ? 95 / mx : 1; for (const v of map.values()) v.total = Math.max(1, Math.min(99, Math.round(v.raw * f))); }
-  // Half the final rating is the win model's own strength for the Pokémon (its rank among rated Pokémon, put on the same
-  // spread as the ratings). Tested on 120 real events (Oct 27): teams with the higher average rating finished higher in
-  // 53.0% / 54.2% of pairs (older / newer half of events) with this blend, vs 51.8% / 53.1% without it.
-  if (MP && MP.size >= 50) { const tots = [...map.values()].map(v => v.total).sort((a, b) => a - b), q = pc => tots[Math.min(tots.length - 1, Math.max(0, Math.round(pc / 100 * (tots.length - 1))))];
-    for (const [n, v] of map) if (MP.has(n)) { v.model = q(MP.get(n)); v.total = Math.max(1, Math.min(99, Math.round(.5 * v.total + .5 * v.model))); } }
-  // Fitted rating (Oct 27): the order comes from a recipe fitted on real results and tested on events it never saw
-  // (experiments/rating-fit.mjs); the spread stays the familiar one (each Pokémon takes the score at its rank).
-  if (typeof RATE_FIT === 'object' && RATE_FIT && SRC) { const fit = rateFitScores(map); if (fit) { const tots = [...map.values()].map(v => v.total).sort((a, b) => a - b), ks = [...fit.keys()], pr = pctRanks(ks.map(k => fit.get(k)));
-      ks.forEach((k, i) => { const v = map.get(k); v.formula = v.total; v.fit = +fit.get(k).toFixed(3); v.total = tots[Math.min(tots.length - 1, Math.max(0, Math.round(pr[i] / 100 * (tots.length - 1))))]; }); } }
+  // The rating itself (v3, Oct 27): proven results among strong players (RATE_V3 below). The numbers above stay for the
+  // sheet's evidence rows and as the fallback when no tournament data has loaded at all.
+  v3Apply(map);
   ratingCache = {key, map}; return map;
 }
-// The fitted recipe's score for every rated Pokémon: each ingredient put on one scale (z over the roster, missing = average)
-// and weighted as fitted. Ingredients: win-model strength, tournament win rate (shrunk), how often tournament players pick
-// it, official-event win rate, ladder popularity (Smogon, top Showdown replays) and in-game rank.
-function rateFitScores(map) { const W = RATE_FIT.w, M = modelOK() ? META.model.mons : null, rows = [];
+// Rating v3 (Oct 27). What a rating means: how strong a Pokémon is in the current format, proven by results.
+//  - top-cut share: of the teams that reach top cut at Limitless events, how many use it (bigger events and the last
+//    few weeks count more). Most of the rating: the best Pokémon are the ones winning teams keep bringing.
+//  - conversion: how much more (or less) often it reaches top cut than its usage predicts (6 teams of prior, so a few
+//    lucky runs don't count).
+//  - win rate against the field, shrunk toward average with 1,500 games of prior.
+// score = ln(top-cut share) + ln(conversion) + 8 x shrunk win-rate edge. The best Pokémon is 95; each rating point is
+// 1/14 of a log step below it (half the top-cut share is about -10). Tested in experiments/topcut-eval.mjs: built from
+// events before Oct 11 / Oct 17 only, it predicted the later events' top-cut share with Spearman 0.81 / 0.82 (old
+// recipe 0.73 / 0.73) and named 6 / 7 of the later top 10 (old 3 / 3). Agreement with the outside tier lists (Spearman,
+// old -> new): Pokémon Zone 0.59 -> 0.61, PokeSynergy 0.35 -> 0.64, PokeTools 0.45 -> 0.72. The win model doesn't set ratings: its per-Pokémon numbers are noisy for rare picks (it had Annihilape #1).
+const RATE_V3 = {lift: 1, wr: 8, K: 1500, slope: 14, top: 95};
+function v3Evidence(map) { let res = null; try { res = RES; } catch (e) {}
+  const tc = res && res.tc && res.tc.rows && Object.keys(res.tc.rows).length >= 50 ? res.tc : null, out = new Map();
+  if (tc) { for (const [n, r] of Object.entries(tc.rows)) if (map.has(n) && Array.isArray(r)) out.set(n, {field: +r[0], top: +r[1], lift: +r[2], wr: +r[3], g: +r[4], base: 100 * (+tc.base || .5), full: true}); return out; }
+  // before the top-cut data loads: tournament usage and win rate only (conversion unknown, so 1)
   let a = 0, b = 0; for (const v of map.values()) { const t = v.src && v.src.tour; if (t) { a += t[1] * t[2]; b += t[2]; } } const wm = b ? a / b : 50;
-  for (const [n, v] of map) { const s = v.src || {}, t = s.tour, o = s.official;
-    rows.push([n, {model: M && M[n] != null ? M[n] : null, wr: t ? ((t[1] - wm) / 100) * t[2] / (t[2] + 600) : null, pick: Math.log10(Math.max(.03, t ? t[0] : .03)),
-      official: o ? ((o[1] - 50) / 100) * o[2] / (o[2] + 400) : null, smogon: Math.log10(Math.max(.05, s.smogon != null ? s.smogon : .05)), prd: Math.log10(Math.max(.03, s.prd != null ? s.prd : .03)),
-      ingame: -Math.log10(s.ingame != null ? s.ingame : 400)}]); }
-  const out = new Map(); for (const [n] of rows) out.set(n, 0);
-  // each ingredient as a 0-100 standing among all Pokémon (for the Ratings page bars); null where there's no data
-  const Phi = z => 100 / (1 + Math.exp(-1.702 * z));
-  for (const f of Object.keys(W)) { const vals = rows.map(r => r[1][f]).filter(x => x != null); if (vals.length < 20) return null; const m = vals.reduce((x, y) => x + y, 0) / vals.length, sd = Math.sqrt(vals.reduce((x, y) => x + (y - m) ** 2, 0) / vals.length) || 1;
-    for (const [n, r] of rows) { const v = map.get(n); v.parts = v.parts || {}; if (r[f] != null) { const z = (r[f] - m) / sd; out.set(n, out.get(n) + W[f] * z); v.parts[f] = Math.round(Phi(z)); } else v.parts[f] = null; } }
-  // tie-break only: Pokémon with no data all score the same, so a tiny touch of stats/typing/tools orders them
-  // (far too small to move any Pokémon that has real results)
-  { const iv = [...map.values()].map(v => v.intrinsic), im = iv.reduce((a, x) => a + x, 0) / iv.length, is = Math.sqrt(iv.reduce((a, x) => a + (x - im) ** 2, 0) / iv.length) || 1;
-    for (const [n, v] of map) out.set(n, out.get(n) + .0005 * (v.intrinsic - im) / is); }
+  for (const [n, v] of map) { const t = v.src && v.src.tour; if (t && t[0] > 0) out.set(n, {field: t[0], top: t[0], lift: 1, wr: t[1], g: t[2], base: wm, full: false}); }
   return out; }
+function v3Apply(map) { const E = v3Evidence(map); if (E.size < 30) return; const R = RATE_V3, sc = new Map(), edge = e => (e.wr - e.base) / 100 * e.g / (e.g + R.K);
+  for (const [n, e] of E) sc.set(n, Math.log(Math.max(1e-4, e.top / 100)) + R.lift * Math.log(Math.max(.2, e.lift)) + R.wr * edge(e));
+  const smax = Math.max(...sc.values()), ks = [...sc.keys()], P = f => { const pr = pctRanks(ks.map(n => f(E.get(n)))); return new Map(ks.map((n, i) => [n, Math.round(pr[i])])); };
+  const pTop = P(e => e.top), pLift = P(e => e.lift), pWr = P(edge);
+  for (const [n, v] of map) { v.formula = v.total; const e = E.get(n);
+    // thin evidence (a handful of games) leans on the same placeholder a never-used Pokémon gets, so being brought twice
+    // and missing top cut can't rate below never being tried
+    if (e) { const t = R.top + R.slope * (sc.get(n) - smax), fl = Math.min(30, 6 + .24 * (v.intrinsic || 0)), w = e.g / (e.g + 300);
+      v.total = Math.max(1, Math.min(99, Math.round(w * t + (1 - w) * Math.max(t, fl)))); v.tc = e; v.band = Math.round(3 + 15 * (1 - e.g / (e.g + R.K)));
+      v.parts = {top: pTop.get(n), lift: e.full ? pLift.get(n) : null, wr: pWr.get(n)}; }
+    // no tournament results: a rough floor from stats, typing and tools, never above the bottom of C
+    else { v.total = Math.max(1, Math.min(30, Math.round(6 + .24 * (v.intrinsic || 0)))); v.tc = null; v.band = 18; v.parts = null; } } }
+// The "not junk" floor for box-only and off-meta suggestions: the older, lenient score (stats, typing and tools count
+// there), so a Pokémon that simply hasn't been tried at events isn't shut out of your own box. The tier list uses total.
+function ratingLoose(p) { const r = rating(p); return r.formula != null ? Math.max(r.total, r.formula) : r.total; }
 function rating(p) { const r = ratings().get(p.n); return r || {total: 0, intrinsic: 0, power: 0, typing: 0, tools: 0, meta: 0, adj: 0, proven: false}; }
 // A strong Pokémon the meta mostly ignores.
 // A strong Pokémon the meta mostly ignores, and that hasn't been tried and found wanting (a big sample with a poor win rate rules it out).
@@ -182,5 +188,9 @@ function probit(p) { const a = [-39.69683028665376, 220.9460984245205, -275.9285
   if (p < .02425) { const q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
   if (p > 1 - .02425) return -probit(1 - p);
   const q = p - .5, r = q * q; return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); }
-function isGem(p) { const r = rating(p), m = r.wrMean != null && isFinite(r.wrMean) ? r.wrMean : 50; return !r.proven && r.total >= 55 && !(r.matches >= 60 && r.wr < m + 2) && !(r.matches >= 25 && r.wr < m); }
+// Hidden gem (v3): rarely used (under 2% of teams), but with real evidence it overperforms: reaches top cut at least 15%
+// more often than its usage predicts, wins more than average, over 300+ games. (The rating itself stays modest for
+// these: it measures proven presence. The gem tag and Sleepers are where under-used overperformers show up.)
+function isGem(p) { const r = rating(p), e = r.tc; if (r.proven || !e) return false;
+  return e.full ? e.g >= 300 && e.lift >= 1.15 && e.wr > e.base + 1 : e.g >= 300 && e.wr > e.base + 2; }
 

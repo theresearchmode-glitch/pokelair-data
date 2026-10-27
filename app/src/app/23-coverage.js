@@ -48,14 +48,14 @@ function computeRecs(ms, useA) {
   // rank by the model score plus how much each one lifts defense, offense, meta answers and the game plan
   // Strength floor: suggestions have to be good Pokémon, not just a type fit. Whole roster asks for a rating of 50+,
   // your own box 35+ (it's what you have). Then rank by rating plus how much the pick improves the team.
-  const floor = OFFMETA ? 35 : ui.recSrc === 'all' ? 50 : 35, strong = pl => inBox(pl.ch[0].c.p) && ui.recSrc === 'box' ? rating(pl.ch[0].c.p).total >= floor : rating(pl.ch[0].c.p).total >= floor;
+  const floor = OFFMETA ? 35 : ui.recSrc === 'all' ? 50 : 35, strong = pl => OFFMETA || ui.recSrc !== 'all' ? ratingLoose(pl.ch[0].c.p) >= floor : rating(pl.ch[0].c.p).total >= floor;
   const rank = pl => (pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + pl.gain * 4;
   for (let k = clean.length - 1; k >= 0; k--) if (!strong(clean[k])) clean.splice(k, 1);
   clean.sort((x, y) => rank(y) - rank(x));
   // Hidden gems: also look past the usual meta picks (with off-meta scoring) for up to 2 strong Pokémon that fit just as cleanly.
   const gems = [];
   if (!OFFMETA) { const taken = new Set(clean.map(pl => pl.ch[0].c.p.b));
-    const gpool = (ui.recSrc === 'all' ? ROSTER : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isMetaPick(p) && !taken.has(p.b) && (rating(p).total >= 55 || p.m));
+    const gpool = (ui.recSrc === 'all' ? ROSTER : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isMetaPick(p) && !taken.has(p.b) && (isGem(p) || ratingLoose(p) >= 55 || p.m));
     const gres = withOffMeta(() => planFixes(ms, gpool, useA, {singlesOnly: true}));
     const gseen = new Set(); tsN = 0;
     for (const pl of gres.singles) { const b = pl.ch[0].c.p.b; if (gseen.has(b)) continue; const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
