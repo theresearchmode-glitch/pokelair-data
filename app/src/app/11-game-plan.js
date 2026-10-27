@@ -53,13 +53,14 @@ function gamePlan(team) {
     const opts = [['Tailwind', c.tw, R.tw], ['Trick Room', c.tr, R.tr], ['weather speed', wSpeed * .9, []], ['priority and speed boosts', fast * .5, [...R.prio, ...R.self]]];  // priority alone never fully counts
     const primary = Math.max(...opts.map(o => o[1]));
     const main = opts.filter(o => o[1] >= .3).sort((a, b) => b[1] - a[1]);
-    rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3),
+    // mode: what the row's status rests on, so a gain from priority moves is never described as "speed control"
+    rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3), mode: main.length ? main[0][0] : '',
       who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? `${team.filter(m => WEATHER_SPEED[m.ability]).map(m => m.d).join(', ')} in ${ARCH[kinds[0]].name.toLowerCase()}` : o[0]).join('; ') : '',
       note: primary >= .6 ? '' : (main.length ? 'Only priority moves: no reliable Tailwind or Trick Room.' : 'No Tailwind, Trick Room or weather speed.') + ` Speed control is on ${proLine('speed', '')}.`});
     pen += 55 * (1 - primary);
     // 2. a second option, so one Taunt or one KO on the setter doesn't decide the game
     const modes = [c.tw >= .5, c.tr >= .5, wSpeed >= .5, c.drop >= .5, fast >= .5].filter(Boolean).length;
-    rows.push({k: 'backup', label: 'Backup speed', st: modes >= 2 ? 'ok' : modes === 1 && (c.prio >= .5 || c.drop >= .3) ? 'part' : 'miss',
+    rows.push({k: 'backup', label: 'Backup speed', st: modes >= 2 ? 'ok' : modes === 1 && (c.prio >= .5 || c.drop >= .3) ? 'part' : 'miss', prioOnly: modes < 2 && c.drop < .3 && c.prio >= .5,
       who: [R.drop.length ? who(R.drop, 2) : '', R.prio.length ? who(R.prio, 2) : ''].filter(Boolean).join('; '),
       note: modes >= 2 ? '' : primary >= .6 ? 'If your setter is Taunted or knocked out, nothing else controls speed.' : 'No second speed option either.'});
     if (modes < 2) pen += 10;

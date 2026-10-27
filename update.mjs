@@ -105,7 +105,7 @@ const out = {updated: new Date().toISOString(), tournaments: Object.keys(index.t
     mons: Object.fromEntries([...mon].map(([n, o]) => [n, [o.t, shrink(o.w, o.g, 40)]])),
     pairs: Object.fromEntries([...P].filter(([, o]) => o.n >= 25).map(([k, o]) => [k, [o.n, shrink(o.w, o.g, 40)]])),
     cores: [...C3].filter(([, o]) => o.n >= 40).map(([k, o]) => [...k.split('|'), o.n, shrink(o.w, o.g, 40)]).sort((a, b) => b[4] - a[4]),
-    proven: [...comp].map(([k, o]) => [k.split('|'), o.n, shrink(o.w, o.g, 20), o.g]).filter(x => x[2] >= base + .01 && (x[1] >= 2 || x[3] >= 8)).map(x => x.slice(0, 3)).sort((a, b) => b[2] - a[2] || b[1] - a[1])}};
+    proven: [...comp].map(([k, o]) => [k.split('|'), o.n, shrink(o.w, o.g, 20), o.g]).filter(x => x[2] >= base + .01 && (x[1] >= 2 || x[3] >= 8)).sort((a, b) => b[2] - a[2] || b[1] - a[1])}};
 fs.writeFileSync('out/limitless.json', JSON.stringify(out));
 console.log(`teams ${E.length}, games ${G}, pokemon ${mon.size}, pairs ${Object.keys(out.results.pairs).length}, cores ${out.results.cores.length}, proven ${out.results.proven.length}`);
 
