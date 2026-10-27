@@ -49,12 +49,15 @@ function gamePlan(team) {
   const st = (v, ok, part) => v >= ok ? 'ok' : v >= part ? 'part' : 'miss';
   {
     // 1. a way to move first: Tailwind, Trick Room, weather speed, or (weaker) a pile of priority and self-speed
-    const opts = [['Tailwind', c.tw, R.tw], ['Trick Room', c.tr, R.tr], ['weather speed', wSpeed * .9, []], ['priority and speed boosts', fast * .5, [...R.prio, ...R.self]]];  // priority alone never fully counts
+    // Trick Room only controls speed when there are slow Pokémon to use it: with fewer than 2 besides the setters (base
+    // Speed 60 or less) it counts as partial at best (real Trick Room teams built like that won 47.9% vs 51.6%, Oct 27)
+    const trSlow = team.filter(m => m.p && m.p.st && m.p.st[5] <= 60 && !R.tr.some(x => x.m === m)).length, trEff = trSlow >= 2 ? c.tr : c.tr * .4;
+    const opts = [['Tailwind', c.tw, R.tw], ['Trick Room', trEff, R.tr], ['weather speed', wSpeed * .9, []], ['priority and speed boosts', fast * .5, [...R.prio, ...R.self]]];  // priority alone never fully counts
     const primary = Math.max(...opts.map(o => o[1]));
     const main = opts.filter(o => o[1] >= .3).sort((a, b) => b[1] - a[1]);
     rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3),
       who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? `${team.filter(m => WEATHER_SPEED[m.ability]).map(m => m.d).join(', ')} in ${ARCH[kinds[0]].name.toLowerCase()}` : o[0]).join('; ') : '',
-      note: primary >= .6 ? '' : (main.length ? 'Only priority moves: no reliable Tailwind or Trick Room.' : 'No Tailwind, Trick Room or weather speed.') + ` Speed control is on ${proLine('speed', '')}.`});
+      note: primary >= .6 ? '' : c.tr >= .6 && trSlow < 2 ? `Trick Room, but ${trSlow ? 'only one slow Pokémon' : 'no slow Pokémon'} besides the setter to use it.` : (main.length ? 'Only priority moves: no reliable Tailwind or Trick Room.' : 'No Tailwind, Trick Room or weather speed.') + ` Speed control is on ${proLine('speed', '')}.`});
     pen += 55 * (1 - primary);
     // 2. a second option, so one Taunt or one KO on the setter doesn't decide the game
     const modes = [c.tw >= .5, c.tr >= .5, wSpeed >= .5, c.drop >= .5, fast >= .5].filter(Boolean).length;

@@ -15,6 +15,40 @@ function slotMoves(s,p){const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name))
   if(c){const names=c.map(x=>learn.has(x)?x:'');if(names.some(Boolean))return {names,moves:names.map(x=>mvByName.get(x)).filter(Boolean),custom:true}}
   const pm=popularMoves(p).slice(0,4);const names=pm.map(m=>m.name);while(names.length<4)names.push('');return {names,moves:pm,custom:false}}
 const members=()=>S.slots.map(memberOf).filter(Boolean);
+// Item Clause (VGC): no two Pokémon may hold the same item. The Team Score (strengthX) reads the team through this: items
+// you picked stay as you picked them (two of the same makes the team illegal, see itemClause); a member on its default
+// (most-used) item takes the most-used item nobody else on the team holds. Mega Stones are fixed.
+// A default is also never an item that can't work on this team (a Terrain Seed nothing activates, Room Service with no
+// Trick Room): those only count against a team when you picked them yourself.
+function resolveItems(ms){if(!Array.isArray(ms))return ms;const used=new Set();for(const m of ms)if(m&&(m.heldItem||(m.p&&m.p.m))&&m.item)used.add(m.item);
+  const ok=it=>it&&!used.has(it)&&itemWorks(ms,it);
+  return ms.map(m=>{if(!m||m.heldItem||(m.p&&m.p.m)||!m.item)return m;if(ok(m.item)){used.add(m.item);return m}
+    let alt='';try{const t=topItems(m.p);for(const r of (t&&t.it)||[]){const n=Array.isArray(r)?r[0]:r;if(ok(n)){alt=n;break}}}catch(e){}
+    if(alt)used.add(alt);return {...m,item:alt,itemAuto:true}})}
+function itemWorks(ms,it){if(SEED_T[it])return terrainSet(ms,SEED_T[it]);if(ROCK_W[it])return weatherSet(ms,ROCK_W[it]);if(it==='Room Service')return !!trPlan(ms);return true}
+// weather rocks only extend a weather someone on the team sets (by ability or move)
+const ROCK_W={'Damp Rock':'rain','Heat Rock':'sun','Smooth Rock':'sand','Icy Rock':'snow'},W_MOVE={rain:'Rain Dance',sun:'Sunny Day',sand:'Sandstorm',snow:'Snowscape'};
+const weatherSet=(ms,w)=>(ms||[]).some(m=>m&&((typeof WEATHER_OF==='object'&&WEATHER_OF[m.ability]===w)||mvNames(m).includes(W_MOVE[w])));
+const terrainSet=(ms,t)=>(ms||[]).some(m=>m&&(m.ability===t+' Surge'||mvNames(m).includes(t+' Terrain')||(t==='Electric'&&m.ability==='Hadron Engine')));
+// Items you picked that break the Item Clause: [[item, [members holding it]]]
+function itemClause(ms){const by=new Map();for(const m of ms||[]){const it=m&&m.heldItem;if(!it)continue;if(!by.has(it))by.set(it,[]);by.get(it).push(m)}
+  return [...by].filter(([,a])=>a.length>1)}
+const mvNames=m=>((m&&m._mv&&m._mv.length?m._mv:m&&m.moves)||[]).map(x=>x&&x.name).filter(Boolean);
+// Trick Room plan: who sets it, who is slow enough to use it (base Speed 60 or less, the setter included) and whether the
+// team also runs Tailwind (then Trick Room is a second mode, not the plan). Real Limitless teams (Oct 27): teams whose
+// only speed control is Trick Room won 47.9% of games with 0-1 slow members vs 50.7% with 2-3.
+const TR_SLOW=60;
+function trPlan(ms){ms=ms||[];const set=ms.filter(m=>mvNames(m).includes('Trick Room'));if(!set.length)return null;
+  return {set,slow:ms.filter(m=>m.p&&m.p.st&&m.p.st[5]<=TR_SLOW),tw:ms.some(m=>mvNames(m).includes('Tailwind')),scarf:ms.filter(m=>m.item==='Choice Scarf')}}
+// Items that can't work on this team: a Terrain Seed with nothing that sets its terrain (so it, and an Unburden it was
+// meant to trigger, never activate), or Room Service with no Trick Room. [{m, why}]
+const SEED_T={'Psychic Seed':'Psychic','Electric Seed':'Electric','Grassy Seed':'Grassy','Misty Seed':'Misty'};
+function deadItems(ms){ms=ms||[];const out=[];
+  for(const m of ms){const it=m&&m.heldItem;if(!it)continue;
+    if(SEED_T[it]&&!terrainSet(ms,SEED_T[it]))out.push({m,why:`${m.d}'s ${it} never activates: nothing on the team sets ${SEED_T[it]} Terrain${m.ability==='Unburden'?' (so Unburden never triggers)':''}`});
+    if(ROCK_W[it]&&!weatherSet(ms,ROCK_W[it]))out.push({m,why:`${m.d}'s ${it} does nothing: nothing on the team sets ${ROCK_W[it]==='sun'?'sun':ROCK_W[it]}`});
+    if(it==='Room Service'&&!trPlan(ms))out.push({m,why:`${m.d}'s Room Service needs Trick Room, and nothing sets it`})}
+  return out}
 // Box ownership: every regular form is caught separately (Wash Rotom is not Heat Rotom); a Mega comes from its base form.
 const ownKey=p=>p.m?(p.b==='Floette'?'Floette-Eternal':p.b):p.n;
 const inBox=p=>!!p&&S.box.includes(ownKey(p));
@@ -99,5 +133,5 @@ function ckWinRefresh(){const E=META.events;if(!E)return;const key=E.updated+'|'
       const CK=proChecks(ms,true);if(!CK)continue;n++;if(CK.PG&&isFinite(CK.PG.se2))se2s.push(CK.PG.se2);for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
     catch(e){ckWin.busy=false;return}
     if(i<list.length){setTimeout(step,30);return}
-    wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};safe('checklist claims',()=>render())};
+    wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,wq75:wts.length>=20?wts[Math.floor(wts.length*.75)]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};safe('checklist claims',()=>render())};
   setTimeout(step,400)}

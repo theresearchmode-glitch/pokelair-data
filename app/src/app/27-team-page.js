@@ -25,7 +25,7 @@ function scoreNote(v) { const ts = v.TS, ck = v.CK; if (!ts || !ck || !ck.full) 
 // Each member's share of the Team Score, as a small bar chart that folds open.
 function tsBreakHtml(ms) { let b = null; try { b = tsBreakdown(ms); } catch (e) { b = null; } if (!b) return '';
   const mx = Math.max(4, ...b.rows.map(r => Math.abs(r.d))), rows = b.rows.slice().sort((x, y) => y.d - x.d);
-  const cuts = [...b.miss.map(x => x.replace(/^no /, 'No ')), b.untried ? `Untried mix: only ${b.tested} of its 15 pairs were brought together on 15+ tournament teams` : ''].filter(Boolean);
+  const cuts = [b.illegal ? 'Illegal team (Item Clause): ' + b.illegal.map(([it, a]) => `${a.map(m => m.d).join(' and ')} both hold ${it}`).join('; ') : '', ...b.miss.map(x => x.replace(/^no /, 'No ')), b.untried ? `Untried mix: only ${b.tested} of its 15 pairs were brought together on 15+ tournament teams` : ''].filter(Boolean);
   return `<details class="tsbrk"${ui.tsbrk ? ' open' : ''}><summary>What's behind the score</summary>
     <p class="t2">Points each Pokémon adds or costs compared with an average tournament pick in its place.</p>
     <div class="tsbrows">${rows.map(r => `<div class="tsbr"><span class="tsbn">${esc(r.m.p.d)}</span><span class="tsbbar"><i class="${r.d >= 0 ? 'up' : 'dn'}" style="--w:${Math.round(Math.abs(r.d) / mx * 50)}%"></i></span><b class="${r.d > 0 ? 'up' : r.d < 0 ? 'dn' : ''}">${r.d > 0 ? '+' : r.d < 0 ? '−' : '±'}${Math.abs(r.d)}</b></div>`).join('')}</div>
