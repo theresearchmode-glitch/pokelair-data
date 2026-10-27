@@ -1,8 +1,9 @@
 // NastyPlot test suite: builds the page, loads it in Chromium with a mocked Claude runtime serving the repo's out/ data,
 // and checks every page on desktop and phone, the Meta sources, the damage calc, Gauntlet and phone layout.
 // Run: node app/test/run.mjs   (exit code 1 on any failure)
-import fs from 'node:fs'; import {execFileSync} from 'node:child_process'; import {chromium} from 'playwright';
-const APP = new URL('..', import.meta.url).pathname, OUT = APP + '../out/';
+import fs from 'node:fs'; import {execFileSync} from 'node:child_process'; import {chromium} from 'playwright'; import {fileURLToPath} from 'node:url';
+// fileURLToPath works on Windows too (URL.pathname gives "/C:/..." there)
+const APP = fileURLToPath(new URL('..', import.meta.url)), OUT = APP + '../out/';
 execFileSync('node', [APP + 'build.mjs'], {stdio: 'inherit'});
 const page = APP + 'dist/test.html';
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(APP + 'dist/page.html', 'utf8'));

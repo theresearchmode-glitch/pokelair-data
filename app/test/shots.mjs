@@ -1,6 +1,6 @@
 // Screenshots for a visual check: node app/test/shots.mjs <view,...> [width]
-import fs from 'node:fs'; import {chromium} from 'playwright';
-const APP = new URL('..', import.meta.url).pathname, OUT = APP + '../out/', rd = f => JSON.parse(fs.readFileSync(OUT + f, 'utf8'));
+import fs from 'node:fs'; import {chromium} from 'playwright'; import {fileURLToPath} from 'node:url';
+const APP = fileURLToPath(new URL('..', import.meta.url)), OUT = APP + '../out/', rd = f => JSON.parse(fs.readFileSync(OUT + f, 'utf8'));
 const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
 const W = +(process.argv[3] || 390), b = await chromium.launch();
 const ctx = await b.newContext({viewport: {width: W, height: W < 700 ? 844 : 1000}, deviceScaleFactor: W < 700 ? 2 : 1, isMobile: W < 700, hasTouch: W < 700, colorScheme: process.env.DARK ? 'dark' : 'light'});
