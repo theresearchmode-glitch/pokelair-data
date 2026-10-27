@@ -5,6 +5,8 @@ if(window.__PL_TEST)window.__PL={byName,rating,members,damage,likelySpeed,sideDe
 S.fun=false;ui.lmode='board';try{LS.set('cc2.lmode','board')}catch(e){}
 // any edit to the open team keeps it open; Save changes updates it
 try{document.querySelectorAll('.phonefold').forEach(d=>{d.open=!PHONE()})}catch(e){}
+// Refresh starts your scheduled data job, which only works when the page is open in Claude: hide it everywhere else
+try{if(!(window.claude&&window.claude.use))document.querySelectorAll('.refreshbtn').forEach(b=>b.hidden=true)}catch(e){}
 render();setView(view,false);
 try{if(typeof checkSharedLink==='function')checkSharedLink()}catch(e){}
 })();

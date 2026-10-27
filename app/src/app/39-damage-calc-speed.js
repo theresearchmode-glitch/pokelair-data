@@ -34,7 +34,7 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
     let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy){const ls=likelySpeed(p),cs=commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
       if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
-        tip=need!=null?` · <span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:` · <span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
+        tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
     return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}${tip}</span>`}).join('');
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
     return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
@@ -136,7 +136,9 @@ function damage(o){const A=o.atk,D=o.def,mv=o.move;if(!mv||!mv.bp||mv.cat===0)re
 // Fewest bulk points (HP + the defense the move hits) that survive every roll, keeping the defender's nature.
 function bulkToSurvive(o){const mv=o.move;if(!mv||!mv.bp||mv.cat===0)return null;const special=mv.cat===2&&!['Psyshock','Psystrike','Secret Sword'].includes(mv.name);
   const cur=o.def.hpSp+(special?o.def.spdSp:o.def.defSp);
-  for(let tot=0;tot<=64;tot++)for(let hp=Math.min(32,tot);hp>=Math.max(0,tot-32);hp--){const df=tot-hp;
+  // within Champions' 66-point total: the other defensive stat keeps its points, so HP + this defense can use the rest
+  const room=Math.min(64,66-(special?o.def.defSp:o.def.spdSp));
+  for(let tot=0;tot<=room;tot++)for(let hp=Math.min(32,tot);hp>=Math.max(0,tot-32);hp--){const df=tot-hp;
     const r=damage({...o,def:{...o.def,hpSp:hp,defSp:special?o.def.defSp:df,spdSp:special?df:o.def.spdSp}});if(r&&r.max<r.hp)return {hp,df,tot,cur,stat:special?'SpD':'Def'}}
   return {none:true}}
 // KO odds from the 16 real damage rolls. Later hits use r.next (Multiscale only softens the first); Focus Sash leaves 1 HP.
@@ -219,7 +221,11 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.
   if(t.id==='dcA'){dc.a=v;dc.mv=null;dc.spread=null}else if(t.id==='dcD'){dc.d=v}else if(t.id==='dcMv'){dc.mv=v;dc.spread=null}
   else if(t.id==='dcASp'){const I=dc.inv[ak],m=mvByName.get(dc.mv);if(m&&m.name==='Body Press')I.spDef=+v;else{I.sp=+v;if(m&&m.cat===2)I.spS=+v;else I.spA=+v}}
   else if(t.id==='dcAFt')dc.fainted=+v||0;else if(t.id==='dcANat')dc.inv[ak].nat=v;else if(t.id==='dcAIt')dc.inv[ak].item=v;else if(t.id==='dcAAb')dc.inv[ak].ability=v;else if(t.id==='dcABo')dc.inv[ak].boost=+v;
-  else if(t.id==='dcDHp')dc.inv[dk].hpSp=+v;else if(t.id==='dcDNat')dc.inv[dk].nat=v;else if(t.id==='dcDDf')dc.inv[dk].defSp=+v;else if(t.id==='dcDSd')dc.inv[dk].spdSp=+v;else if(t.id==='dcDIt')dc.inv[dk].item=v;else if(t.id==='dcDAb')dc.inv[dk].ability=v;else if(t.id==='dcDBo')dc.inv[dk].boost=+v;
+  // Champions caps a Pokémon at 66 stat points in total (32 in any one stat): a change that would pass 66 takes the
+  // points from the other two defensive stats, so the defender never shows an illegal spread
+  else if(t.id==='dcDHp'||t.id==='dcDDf'||t.id==='dcDSd'){const I=dc.inv[dk],k={dcDHp:'hpSp',dcDDf:'defSp',dcDSd:'spdSp'}[t.id];I[k]=+v;
+    let over=I.hpSp+I.defSp+I.spdSp-66;for(const o of ['spdSp','defSp','hpSp']){if(over<=0)break;if(o===k)continue;const take=Math.min(over,I[o]);I[o]-=take;over-=take}}
+  else if(t.id==='dcDNat')dc.inv[dk].nat=v;else if(t.id==='dcDIt')dc.inv[dk].item=v;else if(t.id==='dcDAb')dc.inv[dk].ability=v;else if(t.id==='dcDBo')dc.inv[dk].boost=+v;
   renderCalc()});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data-dct],[data-dcdir],[data-dcterr],#dcSwap');if(!b)return;if(b.dataset.dcterr!=null){dc.terrain=b.dataset.dcterr;renderCalc();return}if(b.dataset.dcdir){dc.dir=b.dataset.dcdir;keepScroll(()=>renderCalc());return}if(b.id==='dcSwap'){const a=dc.a;dc.a=dc.d;dc.d=a;dc.mv=null;dc.spread=null;renderCalc();return}
   if(b.dataset.dcw!=null)dc.weather=b.dataset.dcw;else{const k=b.dataset.dct;if(k==='spread'){const mv=mvByName.get(dc.mv);const cur=dc.spread==null?!!(mv&&mv.spread):dc.spread;dc.spread=!cur}else dc[k]=!dc[k]}renderCalc()});

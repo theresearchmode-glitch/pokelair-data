@@ -1230,6 +1230,9 @@ span.spr.mini{display:block}
 /* ---------- speed tiers + damage calc ---------- */
 .spdsums{display:flex;flex-wrap:wrap;gap:6px 14px;margin:4px 0 12px}
 .spdsum{font-size:13px;color:var(--mute)}.spdsum b{color:var(--ink)}
+/* the Speed-point tip sits on its own line under each summary, so a phone shows two short lines instead of one long wrap */
+.spdsum .spdtip{display:block;font-size:12px;margin-top:1px}
+@media (max-width:640px){.spdsums{gap:8px}.spdsum{line-height:1.35}}
 .spdlist{display:flex;flex-direction:column;gap:4px}
 .spdrow{display:grid;grid-template-columns:52px 40px 1fr;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 10px}
 .spdrow.me{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
