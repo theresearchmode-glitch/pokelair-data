@@ -28,6 +28,14 @@ if (M && M.ships && E && E.events) { const D = E.dict, sets = M.sets || {}, fq =
     if (ts.length < 2) continue; evs++; const xs = ts.map(t => ({p: t.place, x: x(t.mons)}));
     for (let i = 0; i < xs.length; i++) for (let j = i + 1; j < xs.length; j++) { if (xs[i].p === xs[j].p || xs[i].x === xs[j].x) continue; pairs++; if ((xs[i].x > xs[j].x) === (xs[i].p < xs[j].p)) right++; } }
   row.teamStrengthOnEvents = {acc: pairs ? +(right / pairs).toFixed(4) : null, pairs, events: evs}; }
+// Ratings, forward test: each saved snapshot 14+ days old, judged on the Limitless games played after it was taken
+// (team with the higher total rating should win). The oldest such snapshot gives the longest look ahead.
+{ const RL = rd('out/ratings_log.json'), MM = rd('out/matches.json');
+  if (RL && MM && RL.days.length) { const teams = MM.teams.map(k => k.split('|')), evD = MM.events.map(e => e[1]), now = Date.now(), outs = [];
+    for (const snap of RL.days) { if ((now - Date.parse(snap.d)) / 864e5 < 14) continue; let right = 0, n = 0;
+      for (const g of MM.m) { if (g[2] === .5 || evD[g[3]] <= snap.d) continue; const s = t => teams[t].reduce((a, m) => a + (snap.r[m] || 0), 0), a = s(g[0]), b = s(g[1]); if (a === b) continue; n++; if ((a > b) === (g[2] === 1)) right++; }
+      if (n >= 300) outs.push({d: snap.d, acc: +(right / n).toFixed(4), games: n}); }
+    if (outs.length) row.ratingsForward = {snapshot: outs[0].d, acc: outs[0].acc, games: outs[0].games, snapshots: outs.length, avgAcc: +(outs.reduce((a, x) => a + x.acc, 0) / outs.length).toFixed(4)}; } }
 if (R && Array.isArray(R.games)) row.replays = {games: R.games.length, rated1300: R.games.filter(g => Math.min(g.r[0] || 0, g.r[1] || 0) >= 1300).length};
 const board = rd('out/scoreboard.json', {history: []}), hist = board.history.filter(h => h.date !== today);
 // warn when today is clearly below the median of the last 14 days

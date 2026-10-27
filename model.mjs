@@ -36,8 +36,10 @@ if (hasSets) { const spDecks = new Map(), fd = new Float64Array(setNames.length)
 const nP = M.players;
 // time split: last 20% of events (by date) held out
 const evDates = M.events.map(e => e[1]); const order = [...evDates.keys()].sort((a, b) => evDates[a] < evDates[b] ? -1 : 1);
-const cut = new Set(order.slice(Math.floor(order.length * .8)));
-const train = G.filter(g => !cut.has(g[3])), test = G.filter(g => cut.has(g[3]));
+// TEST_FROM / TEST_TO (experiments only): hold out an earlier slice instead, training only on events before it
+const TF = +(process.env.TEST_FROM || .8), TT = +(process.env.TEST_TO || 1), lo = Math.floor(order.length * TF), hi = Math.floor(order.length * TT);
+const cut = new Set(order.slice(lo, hi)), before = new Set(order.slice(0, lo));
+const train = G.filter(g => before.has(g[3])), test = G.filter(g => cut.has(g[3]));
 // v3 (Oct 27): recent games count more. A game's weight halves every `half` days before the newest game in the fit
 // (0 = all games equal); the half-life is picked on the validation slice. Tested on held-out events: recency plus
 // set features called 56.0% of games vs 54.9%, beat 50% in 56 of 66 events vs 52, and lowered calibrated log-loss.
@@ -92,6 +94,10 @@ const species = fit(train, LAM), withSets = LC ? fit(train, {...LAM, useSets: tr
 const calibOf = (model, games) => { const pts = games.map(([A, B, r, , , , , dA, dB]) => [model.x(A, dA) - model.x(B, dB), r]); let w = 1;
   for (let k = 0; k < 30; k++) { let g = 0, h = 0; for (const [e, r] of pts) { const p = 1 / (1 + Math.exp(-w * e)); g += (p - r) * e; h += p * (1 - p) * e * e; } w -= g / (h || 1); }
   const ll = pts.reduce((a, [e, r]) => { const p = 1 / (1 + Math.exp(-w * e)); return a - (r * Math.log(p) + (1 - r) * Math.log(1 - p)); }, 0) / (pts.length || 1); return {w, ll: +ll.toFixed(5)}; };
+// EXPORT_SPLITS=1: also save Pokémon strengths fitted only on older data (the validation-fit part, and all training events),
+// so the ratings can be tested on events nothing in them has seen (experiments/rating-fit.mjs)
+if (process.env.EXPORT_SPLITS === '1') { const fp = fit(fitPart, LAM), mm = m => Object.fromEntries(mons.map((n, j) => [n, +m.b[j].toFixed(4)]));
+  fs.writeFileSync('out/model_splits.json', JSON.stringify({fitPart: mm(fp), train: mm(species)})); console.log('wrote out/model_splits.json'); }
 const evS = score(species, test, false), evW = withSets ? score(withSets, test, false) : null, cS = calibOf(species, test), cW = withSets ? calibOf(withSets, test) : null;
 const useSets = !!(cW && cW.ll < cS.ll), full = useSets ? withSets : species;
 const noSkill = fit(train, {...LAM, useSkill: false, useSets, lc: LC ? LC.lc : 40}), noPairs = fit(train, {...LAM, usePairs: false, useSets, lc: LC ? LC.lc : 40}), raw = rawBaseline(train);

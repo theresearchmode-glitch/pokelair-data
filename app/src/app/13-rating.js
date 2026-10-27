@@ -66,6 +66,12 @@ const OUTSIDE = {date: 'Oct 25, 2026', lists: [
   {k: 'poketools', name: 'PokeTools', how: 'Showdown ladder usage', url: 'https://www.poketools.com/champions-tier-list', tiers: {4: 'S', 3: 'A', 2: 'B', 1: 'C'}, note: 'lists the top 60 by usage'}],
   data: {"pz":{"Floette-Mega":4,"Raichu-Mega-Y":4,"Charizard-Mega-Y":4,"Arcanine-Hisui":4,"Gholdengo":4,"Dragonite-Mega":3,"Staraptor-Mega":3,"Tyranitar-Mega":3,"Delphox-Mega":3,"Gengar-Mega":3,"Salamence-Mega":3,"Kingambit":3,"Excadrill":3,"Sneasler":3,"Rillaboom":3,"Incineroar":3,"Archaludon":3,"Raichu-Mega-X":2,"Swampert-Mega":2,"Froslass-Mega":2,"Garchomp-Mega-Z":2,"Gardevoir-Mega":2,"Golisopod-Mega":2,"Basculegion":2,"Indeedee":2,"Grimmsnarl":2,"Garchomp":2,"Milotic":2,"Pelipper":2,"Sinistcha":2,"Sylveon":2,"Volcarona":2,"Farigiraf":2,"Metagross-Mega":1,"Camerupt-Mega":1,"Lucario-Mega-Z":1,"Whimsicott":1,"Indeedee-F":1},"synergy":{"Rillaboom":3,"Sneasler":3,"Incineroar":3,"Raichu-Mega-Y":3,"Salamence-Mega":3,"Charizard-Mega-Y":3,"Gholdengo":3,"Kingambit":3,"Sylveon":3,"Garchomp-Mega-Z":3,"Archaludon":3,"Basculegion":3,"Farigiraf":3,"Pelipper":3,"Venusaur":3,"Floette-Mega":3,"Garchomp":3,"Golisopod-Mega":3,"Arcanine-Hisui":3,"Milotic":3,"Volcarona":3,"Indeedee":3,"Tyranitar-Mega":3,"Indeedee-F":3,"Excadrill":3,"Grimmsnarl":3,"Dragonite-Mega":3,"Toxapex":3,"Corviknight":3,"Basculegion-F":3,"Staraptor":2,"Politoed":2,"Gengar-Mega":2,"Sinistcha":2,"Gardevoir-Mega":2,"Whimsicott":2,"Kommo-o":2,"Torkoal":2,"Swampert":2,"Primarina":2,"Vivillon":2,"Aerodactyl-Mega":2,"Garchomp-Mega":2,"Delphox-Mega":1,"Froslass-Mega":1,"Armarouge":1,"Metagross":1,"Glimmora-Mega":1},"poketools":{"Rillaboom":4,"Sneasler":4,"Incineroar":4,"Salamence-Mega":4,"Kingambit":4,"Basculegion":3,"Indeedee-F":3,"Gholdengo":3,"Archaludon":3,"Golisopod-Mega":3,"Farigiraf":3,"Pelipper":3,"Raichu-Mega-Y":3,"Charizard-Mega-Y":3,"Milotic":3,"Arcanine-Hisui":2,"Floette-Mega":2,"Sylveon":2,"Garchomp":2,"Gardevoir-Mega":2,"Garchomp-Mega-Z":2,"Politoed":2,"Whimsicott":2,"Sinistcha":2,"Volcarona":2,"Gengar-Mega":2,"Armarouge":2,"Metagross-Mega":2,"Staraptor-Mega":2,"Indeedee":2,"Excadrill":1,"Tyranitar-Mega":1,"Swampert-Mega":1,"Grimmsnarl":1,"Torkoal":1,"Froslass-Mega":1,"Kommo-o":1,"Lucario-Mega-Z":1,"Primarina":1,"Pawmot":1,"Delphox-Mega":1,"Annihilape":1,"Blastoise-Mega":1,"Ninetales-Alola":1,"Venusaur":1,"Baxcalibur-Mega":1,"Maushold":1,"Dragonite-Mega":1,"Hatterene":1,"Tyranitar":1,"Ceruledge":1,"Aerodactyl-Mega":1,"Glimmora-Mega":1,"Corviknight":1,"Absol-Mega-Z":1,"Camerupt-Mega":1,"Talonflame":1,"Espathra":1,"Dragapult":1,"Raichu-Mega-X":1}}};
 // Rating blend (doubles): win-rate prior for few-game Pokémon, popularity weight, stats weight, popularity of a Pokémon no source lists.
+// The fitted rating recipe (Oct 27, experiments/rating-fit.mjs): every ingredient rebuilt from older events only, weights
+// fitted on the next events, scored on events nothing had seen, on two separate stretches of the season. Win-model strength
+// + tournament win rate + ladder popularity beat the old hand-weighted formula on both (newest 20% of events: 54.9% of
+// games called vs 54.8%, log-loss 0.6847 vs 0.6851; the 20% before: 54.6% vs 54.3%, 0.6882 vs 0.6891). Stats, typing and
+// tools made predictions worse, so they're shown as a profile but not scored. Weights: the average of the two fits.
+const RATE_FIT = {w: {model: .049, wr: .015, smogon: .029}, tested: 'Oct 27, 2026'};
 const RG = Object.assign({pp0: 40, pp1: .15, wpop: .4, wi: .05, absent: 4}, (typeof RATING_W === 'object' && RATING_W) || {});
 function ratings() {
   const key = metaVersion + '|' + ui.metaSrc;
@@ -129,8 +135,31 @@ function ratings() {
   // 53.0% / 54.2% of pairs (older / newer half of events) with this blend, vs 51.8% / 53.1% without it.
   if (MP && MP.size >= 50) { const tots = [...map.values()].map(v => v.total).sort((a, b) => a - b), q = pc => tots[Math.min(tots.length - 1, Math.max(0, Math.round(pc / 100 * (tots.length - 1))))];
     for (const [n, v] of map) if (MP.has(n)) { v.model = q(MP.get(n)); v.total = Math.max(1, Math.min(99, Math.round(.5 * v.total + .5 * v.model))); } }
+  // Fitted rating (Oct 27): the order comes from a recipe fitted on real results and tested on events it never saw
+  // (experiments/rating-fit.mjs); the spread stays the familiar one (each Pokémon takes the score at its rank).
+  if (typeof RATE_FIT === 'object' && RATE_FIT && SRC) { const fit = rateFitScores(map); if (fit) { const tots = [...map.values()].map(v => v.total).sort((a, b) => a - b), ks = [...fit.keys()], pr = pctRanks(ks.map(k => fit.get(k)));
+      ks.forEach((k, i) => { const v = map.get(k); v.formula = v.total; v.fit = +fit.get(k).toFixed(3); v.total = tots[Math.min(tots.length - 1, Math.max(0, Math.round(pr[i] / 100 * (tots.length - 1))))]; }); } }
   ratingCache = {key, map}; return map;
 }
+// The fitted recipe's score for every rated Pokémon: each ingredient put on one scale (z over the roster, missing = average)
+// and weighted as fitted. Ingredients: win-model strength, tournament win rate (shrunk), how often tournament players pick
+// it, official-event win rate, ladder popularity (Smogon, top Showdown replays) and in-game rank.
+function rateFitScores(map) { const W = RATE_FIT.w, M = modelOK() ? META.model.mons : null, rows = [];
+  let a = 0, b = 0; for (const v of map.values()) { const t = v.src && v.src.tour; if (t) { a += t[1] * t[2]; b += t[2]; } } const wm = b ? a / b : 50;
+  for (const [n, v] of map) { const s = v.src || {}, t = s.tour, o = s.official;
+    rows.push([n, {model: M && M[n] != null ? M[n] : null, wr: t ? ((t[1] - wm) / 100) * t[2] / (t[2] + 600) : null, pick: Math.log10(Math.max(.03, t ? t[0] : .03)),
+      official: o ? ((o[1] - 50) / 100) * o[2] / (o[2] + 400) : null, smogon: Math.log10(Math.max(.05, s.smogon != null ? s.smogon : .05)), prd: Math.log10(Math.max(.03, s.prd != null ? s.prd : .03)),
+      ingame: -Math.log10(s.ingame != null ? s.ingame : 400)}]); }
+  const out = new Map(); for (const [n] of rows) out.set(n, 0);
+  // each ingredient as a 0-100 standing among all Pokémon (for the Ratings page bars); null where there's no data
+  const Phi = z => 100 / (1 + Math.exp(-1.702 * z));
+  for (const f of Object.keys(W)) { const vals = rows.map(r => r[1][f]).filter(x => x != null); if (vals.length < 20) return null; const m = vals.reduce((x, y) => x + y, 0) / vals.length, sd = Math.sqrt(vals.reduce((x, y) => x + (y - m) ** 2, 0) / vals.length) || 1;
+    for (const [n, r] of rows) { const v = map.get(n); v.parts = v.parts || {}; if (r[f] != null) { const z = (r[f] - m) / sd; out.set(n, out.get(n) + W[f] * z); v.parts[f] = Math.round(Phi(z)); } else v.parts[f] = null; } }
+  // tie-break only: Pokémon with no data all score the same, so a tiny touch of stats/typing/tools orders them
+  // (far too small to move any Pokémon that has real results)
+  { const iv = [...map.values()].map(v => v.intrinsic), im = iv.reduce((a, x) => a + x, 0) / iv.length, is = Math.sqrt(iv.reduce((a, x) => a + (x - im) ** 2, 0) / iv.length) || 1;
+    for (const [n, v] of map) out.set(n, out.get(n) + .0005 * (v.intrinsic - im) / is); }
+  return out; }
 function rating(p) { const r = ratings().get(p.n); return r || {total: 0, intrinsic: 0, power: 0, typing: 0, tools: 0, meta: 0, adj: 0, proven: false}; }
 // A strong Pokémon the meta mostly ignores.
 // A strong Pokémon the meta mostly ignores, and that hasn't been tried and found wanting (a big sample with a poor win rate rules it out).

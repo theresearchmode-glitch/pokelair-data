@@ -10,4 +10,6 @@ const DOCS = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, upd
 const b = await chromium.launch(), pg = await (await b.newContext()).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}})} : null}; }, DOCS);
 await pg.goto('file://' + page); await pg.waitForTimeout(3500);
-console.log(JSON.stringify(await pg.evaluate(c => window.__ev(c), process.argv[2]), null, 1)); await b.close(); fs.unlinkSync(page);
+// the code can also come from a file (EVFILE), for long snippets with data in them
+const code = process.env.EVFILE ? fs.readFileSync(process.env.EVFILE, 'utf8') : process.argv[2];
+console.log(JSON.stringify(await pg.evaluate(c => window.__ev(c), code), null, 1)); await b.close(); fs.unlinkSync(page);
