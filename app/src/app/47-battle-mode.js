@@ -2,15 +2,17 @@
 // Enter their six (or read a screenshot) and everything that matters sits on one phone-sized page: your four and the
 // leads, what to watch out for (immunities, Intimidate, Fake Out, redirection, weather), live speed order with Tailwind /
 // Trick Room toggles, and damage both ways. It shares their six with Matchup (S.opp), so either page can fill it.
-let bmUi = {tab: 'plan', tw: false, twOpp: false, tr: false, icy: false, weather: '', intMe: false, intThem: false, t0: 0, timer: null};
-// best hit with the field toggles: weather, and -1 Attack on physical moves when that side is Intimidated
-function bmHit(aP, moves, dP, weather, intim) {
-  let best = null; const A = {p: aP, ...sideDefaults(aP, 'atk')}, D = {p: dP, ...sideDefaults(dP, 'def')};
+// weather 'auto' = whatever the likely leads set on turn 1 (sun from Mega Charizard Y, rain from Pelipper...)
+let bmUi = {tab: 'plan', tw: false, twOpp: false, tr: false, icy: false, weather: 'auto', intMe: false, intThem: false, t0: 0, timer: null};
+// best hit with the field toggles: weather/terrain, and -1 Attack on physical moves when that side is Intimidated.
+// aMem/dMem: your own member on that side, so its real item and spread are used
+function bmHit(aP, moves, dP, weather, intim, aMem, dMem, terrain) {
+  let best = null; const A = {p: aP, ...sideDefaults(aP, 'atk', aMem)}, D = {p: dP, ...sideDefaults(dP, 'def', dMem)};
   for (const mv of moves || []) { if (!mv || !mv.bp) continue;
-    const r = damage({atk: {...A, boost: intim && mv.cat === 1 ? -1 : 0}, def: D, move: mv, spread: !!mv.spread, weather});
+    const r = damage({atk: {...A, boost: intim && mv.cat === 1 ? -1 : 0}, def: D, move: mv, spread: !!mv.spread, weather, terrain: terrain || ''});
     if (r && r.hp && (!best || r.max > best.r.max)) best = {mv, r}; }
   return best; }
-function bmSpeed(p, me) { const s = likelySpeed(p); let v = s.scarf ? Math.floor(s.v * 1.5) : s.v;
+function bmSpeed(p, me, mem) { const s = likelySpeed(p, me ? mem : null); let v = s.scarf ? Math.floor(s.v * 1.5) : s.v;
   if (me && bmUi.tw) v *= 2; if (!me && bmUi.twOpp) v *= 2; if (!me && bmUi.icy) v = Math.floor(v * BOOST(-1)); return {v, s}; }
 // What to watch on each of their Pokémon, against your four
 const BM_IMMUNE = {Levitate: 'Ground', 'Earth Eater': 'Ground', 'Flash Fire': 'Fire', 'Well-Baked Body': 'Fire', 'Water Absorb': 'Water', 'Storm Drain': 'Water', 'Dry Skin': 'Water',
@@ -29,8 +31,9 @@ function bmWatch(C, theirs) {
     if (ab === 'Intimidate' && phys.length) out.push(['mid', 'Intimidate', `−1 Attack to ${nm(phys)}`]);
     if (mv.has('Fake Out')) out.push(['mid', 'Fake Out', 'can flinch one of your leads turn 1']);
     if (mv.has('Follow Me') || mv.has('Rage Powder')) out.push(['mid', mv.has('Rage Powder') ? 'Rage Powder' : 'Follow Me', 'pulls your single-target attacks']);
-    if (mv.has('Trick Room')) out.push(['hi', 'Trick Room', 'slow Pokémon move first for 4 turns']);
-    if (mv.has('Tailwind')) out.push(['mid', 'Tailwind', 'their side doubles Speed for 4 turns']);
+    // durations as in the main games (Champions keeps them): Trick Room 5 turns and Tailwind 4, each counting the turn it's used
+    if (mv.has('Trick Room')) out.push(['hi', 'Trick Room', 'slow Pokémon move first for the next 4 turns (5 counting the turn it\'s set)']);
+    if (mv.has('Tailwind')) out.push(['mid', 'Tailwind', 'their side doubles Speed for the next 3 turns (4 counting the turn it\'s set)']);
     if (ab === 'Prankster') out.push(['mid', 'Prankster', 'status moves go first']);
     if (mv.has('Wide Guard') && spreaders.length) out.push(['mid', 'Wide Guard', `blocks spread moves from ${nm(spreaders)}`]);
     if (prio.length && (['Armor Tail', 'Queenly Majesty', 'Dazzling'].includes(ab) || ab === 'Psychic Surge')) out.push(['hi', esc(ab), `blocks priority and Fake Out from ${nm(prio)}`]);
@@ -71,20 +74,24 @@ function renderBattle() {
     const watch = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Watch out</span></div>${W.length ? W.map(w => `<div class="bmw">${sprite(w.o.p, 'bmwspr')}<div><b>${esc(w.o.d)}</b>${w.out.map(([c, t, d]) => `<div class="bmwl"><span class="sev ${c}">${t}</span><span class="t2">${d}</span></div>`).join('')}</div></div>`).join('')
       : '<p class="t2" style="margin:0">Nothing on their side shuts down your four.</p>'}</div>`;
     // speed
-    const rows = [...C.map(m => ({x: m, me: true})), ...theirs.map(o => ({x: o, me: false}))].map(q => ({...q, ...bmSpeed(q.x.p, q.me)}));
+    const rows = [...C.map(m => ({x: m, me: true})), ...theirs.map(o => ({x: o, me: false}))].map(q => ({...q, ...bmSpeed(q.x.p, q.me, q.x)}));
     rows.sort((a, b) => bmUi.tr ? a.v - b.v : b.v - a.v); const mx = Math.max(...rows.map(q => q.v), 1);
     const tog = (k, t) => `<button type="button" data-bms="${k}" aria-pressed="${!!bmUi[k]}">${t}</button>`;
     const speed = `<div class="plan bmcard" data-t="speed"><div class="ph"><span class="pt">Speed</span><span class="vsub">${bmUi.tr ? 'slowest moves first' : 'fastest first'}</span></div>
       <div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('tr', 'Trick Room')}</div>
       <div class="bmspd">${rows.map((q, i) => { const tie = rows.some((o, j) => j !== i && o.v === q.v && o.me !== q.me);
         return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">TIE</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}</span></div>`; }).join('')}</div>
-      <p class="t2" style="margin:0">Most common spreads, natures and items. Ties are a coin flip.</p></div>`;
+      <p class="t2" style="margin:0">Your side: your items (and your spreads where you set them). Their side: the most common spreads, natures and items. Ties are a coin flip.</p></div>`;
     // damage both ways
     const cls = (b) => { if (!b) return 'z'; const lo = b.r.min / b.r.hp, hi = b.r.max / b.r.hp; return lo >= 1 ? 'k1' : hi >= 1 ? 'k1m' : lo >= .5 ? 'k2' : hi >= .5 ? 'k2m' : 'k3'; };
     const pc = b => b ? Math.min(999, Math.round(100 * b.r.max / b.r.hp)) : '–';
-    const wseg = [['', 'No weather'], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']].map(([k, t]) => `<button type="button" data-bmw="${k}" aria-pressed="${bmUi.weather === k}">${t}</button>`).join('');
+    // turn-1 field from both sides' leads (yours and their likely lead), used when the weather is on Auto
+    const spdOf = x => { const s = likelySpeed(x.p, C.includes(x) ? x : null); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
+    const F1 = typeof turnOneField === 'function' ? turnOneField([...r.lead.map(i => mine[i]), ...(ll.length === 2 ? ll : theirs.slice(0, 2))], spdOf) : {weather: '', terrain: ''};
+    const wNow = bmUi.weather === 'auto' ? F1.weather : bmUi.weather, tNow = bmUi.weather === 'auto' ? F1.terrain : '';
+    const wseg = [['auto', `Leads${F1.weather || F1.terrain ? ': ' + fieldWords(F1) : ': none'}`], ['', 'No weather'], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']].map(([k, t]) => `<button type="button" data-bmw="${k}" aria-pressed="${bmUi.weather === k}">${esc(t)}</button>`).join('');
     const grid = `<div class="tablewrap"><table class="bmdt"><thead><tr><th></th>${theirs.map(o => `<th title="${esc(o.d)}">${sprite(o.p, 'dcth')}<span>${esc(o.d.replace(/^Mega /, 'M-'))}</span></th>`).join('')}</tr></thead><tbody>
-      ${C.map(m => `<tr><th>${sprite(m.p, 'dcth')}<span>${esc(m.d)}</span></th>${theirs.map(o => { const a = bmHit(m.p, memberMoves(m).moves, o.p, bmUi.weather, bmUi.intMe), d = bmHit(o.p, o.moves, m.p, bmUi.weather, bmUi.intThem);
+      ${C.map(m => `<tr><th>${sprite(m.p, 'dcth')}<span>${esc(m.d)}</span></th>${theirs.map(o => { const a = bmHit(m.p, memberMoves(m).moves, o.p, wNow, bmUi.intMe, m, null, tNow), d = bmHit(o.p, o.moves, m.p, wNow, bmUi.intThem, null, m, tNow);
         return `<td title="${a ? `${esc(m.d)} ${esc(a.mv.name)}: up to ${pc(a)}%` : ''}${d ? ` · ${esc(o.d)} ${esc(d.mv.name)}: up to ${pc(d)}%` : ''}"><span class="bo ${cls(a)}">${pc(a)}<i>${a ? esc(a.mv.name) : ''}</i></span><span class="bd ${cls(d)}">${pc(d)}<i>${d ? esc(d.mv.name) : ''}</i></span></td>`; }).join('')}</tr>`).join('')}</tbody></table></div>`;
     const dmgCard = `<div class="plan bmcard bmdmg" data-t="dmg"><div class="ph"><span class="pt">Damage both ways</span></div>
       <div class="seg segwrap" role="group" aria-label="Weather">${wseg}</div>

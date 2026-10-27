@@ -18,17 +18,25 @@ function stoneFor(p) {
   return p.b + 'ite' + (suf ? ' ' + suf : '');
 }
 function exportPaste() {
-  return S.slots.map((s, i) => memberOf(s, i)).filter(Boolean).map(m => {
+  return members().map(m => {
     const p = m.p, base = byName.get(p.b) || p;
-    const species = p.m ? base.n : p.n, ti = topItems(p), item = ti ? ti.it[0][0] : '';
+    const species = p.m ? base.n : p.n, ti = topItems(p), item = m.item || (ti ? ti.it[0][0] : '');
     const ability = p.m ? (metaAbility(base) || bestAbility(base)) : m.ability;
     const mv = slotMoves(S.slots[m.i], p).names.filter(Boolean);
     // stat points: the most common real spread from the Showdown ladder (Champions stores them as EVs, 0-32 each)
-    const cs = typeof commonSpread === 'function' ? commonSpread(p) : null, nat = cs ? cs.nat : (setFor(p).na[0] || [])[0];
+    const cs = m.spread || (typeof commonSpread === 'function' ? commonSpread(p) : null), nat = cs && cs.nat ? cs.nat : (setFor(p).na[0] || [])[0];
     const ev = cs ? [['HP', cs.hp], ['Atk', cs.atk], ['Def', cs.def], ['SpA', cs.spa], ['SpD', cs.spd], ['Spe', cs.spe]].filter(x => x[1] > 0).map(([k, v]) => `${v} ${k}`).join(' / ') : '';
     return `${species}${item ? ' @ ' + item : ''}\nAbility: ${ability}\nLevel: 50${ev ? '\nEVs: ' + ev : ''}${nat ? '\n' + nat + ' Nature' : ''}\n${mv.map(x => '- ' + x).join('\n')}`.trim();
   }).join('\n\n');
 }
+// Nature and stat points from a paste: 'EVs: 2 HP / 32 Atk / 32 Spe' (Champions stat points, 0-32 each) and 'Jolly Nature'.
+// Classic EVs (any value over 32) are converted at 8 EVs per stat point. Returns {nat, v: [hp, atk, def, spa, spd, spe]} or null.
+function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '').replace(/^EVs:\s*/i, ''), natL = lines.find(l => /^\w+\s+Nature\s*$/i.test(l));
+  const nat = natL ? natL.replace(/\s+Nature\s*$/i, '').trim() : null, K = {hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5}, v = [0, 0, 0, 0, 0, 0]; let any = false;
+  for (const part of ev.split('/')) { const m = part.trim().match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i); if (!m) continue; v[K[m[2].toLowerCase()]] = +m[1]; any = true; }
+  if (v.some(x => x > 32)) for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor(v[i] / 8));
+  const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null;
+  return any || okNat ? {nat: okNat, v} : null; }
 const pnorm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
 function speciesFromPaste(name) {
   const k = pnorm(name); if (!k) return null;
@@ -61,6 +69,9 @@ function parsePaste(text) {
     if (slots.some(s => byName.get(s.n).b === p.b)) { notes.push(`Skipped a second ${p.b} (one per species)`); continue; }
     const slot = {n: p.n, a: ability, lock: false};
     if (mv.length) { const c = mv.slice(0, 4); while (c.length < 4) c.push(''); slot.mv = {doubles: c}; }
+    // the held item you registered (a Mega's stone is implied by the form), your nature and stat points
+    if (item && !p.m && !STONE_RE.test(item) && item.length <= 40) slot.it = {doubles: item};
+    const sp = pasteSpread(lines); if (sp) slot.sp = {doubles: sp};
     slots.push(slot);
   }
   return {slots, notes};
@@ -71,7 +82,7 @@ function renderPastePanel() {
   if (ui.paste === 'export') {
     el.innerHTML = `<div class="plan"><div class="ph"><span class="pt">Export to Showdown</span><button class="x" type="button" data-pastex="1" aria-label="Close">×</button></div>
       <textarea class="field paste" id="pasteOut" readonly rows="10">${esc(exportPaste())}</textarea>
-      <div class="row"><button class="btn sm primary" type="button" id="pasteCopy">Copy</button><span class="t2">Paste into Showdown's teambuilder with Import from text. Items, natures and stat points are the most common ones from real play.</span></div></div>`;
+      <div class="row"><button class="btn sm primary" type="button" id="pasteCopy">Copy</button><span class="t2">Paste into Showdown's teambuilder with Import from text. Items, natures and stat points are yours where you set them, otherwise the most common ones from real play (never two Pokémon on one item).</span></div></div>`;
   } else {
     el.innerHTML = `<div class="plan"><div class="ph"><span class="pt">Import a team</span><button class="x" type="button" data-pastex="1" aria-label="Close">×</button></div>
       <textarea class="field paste" id="pasteIn" rows="10" placeholder="Paste a NastyPlot team link, or a Showdown team (from Showdown, Pokémon Zone, Pikalytics or Victory Road)."></textarea>

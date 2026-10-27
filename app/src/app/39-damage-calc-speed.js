@@ -13,8 +13,9 @@ function commonSpread(p){const d=META.doubles;if(!d)return null;const row=[...(d
   const [k,pct]=row.sp[0];const [nat,pts]=k.split(':');const v=pts.split('/').map(Number);if(v.length!==6||v.some(x=>!(x>=0&&x<=32)))return null;
   return {nat,hp:v[0],atk:v[1],def:v[2],spa:v[3],spd:v[4],spe:v[5],pct}}
 const spreadText=s=>`${s.nat} ${s.hp}/${s.atk}/${s.def}/${s.spa}/${s.spd}/${s.spe}`;
-function likelySpeed(p){const it=topItem(p),cs=commonSpread(p);const scarf=it&&it[0]==='Choice Scarf'&&(it[1]==null||it[1]>=25);
-  if(cs){const v=calcStat(p,'Spe',cs.spe,natMul(cs.nat,'Spe'));return {v,scarf,label:`${cs.spe} Speed points, ${cs.nat} (most common spread)`,nat:cs.nat,real:true}}
+// mem: your own team member, so its real item and (if you set one) its own spread are used instead of the usual ones
+function likelySpeed(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpread(p);const scarf=mem?mem.item==='Choice Scarf':it&&it[0]==='Choice Scarf'&&(it[1]==null||it[1]>=25);
+  if(cs){const v=calcStat(p,'Spe',cs.spe,natMul(cs.nat,'Spe'));return {v,scarf,label:`${cs.spe} Speed points, ${cs.nat}${cs.mine?' (your spread)':' (most common spread)'}`,nat:cs.nat,real:true}}
   const nat=topNature(p);const up=(NAT_UP.Spe).includes(nat),dn=(NAT_DN.Spe).includes(nat);
   const sp=dn?0:(up||p.st[5]>=70)?32:0,mul=up?1.1:dn?.9:1;
   const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 Speed points, Speed-lowering nature':up?'32 Speed points, Speed-boosting nature':sp?'32 Speed points':'0 Speed points')+(nat?`, ${nat} (estimated)`:' (estimated)'),nat}}
@@ -23,15 +24,15 @@ let spdUi={tw:false,twOpp:false,tr:false,icy:false};
 function renderSpeed(){const el=$('spdOut');if(!el)return;
   const mine=members().map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
   const thr=metaThreats(24).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
-  const myItem=new Map(members().map(m=>[m.p.n,m.item]));
-  const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const s={...likelySpeed(r.p)};if(r.me)s.scarf=myItem.get(r.p.n)==='Choice Scarf';let v=s.v;if(s.scarf)v=Math.floor(v*1.5);
+  const myMem=new Map(members().map(m=>[m.p.n,m])),myItem=new Map([...myMem].map(([n,m])=>[n,m.item]));
+  const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const s={...likelySpeed(r.p,r.me?myMem.get(r.p.n):null)};let v=s.v;if(s.scarf)v=Math.floor(v*1.5);
     if(r.me&&spdUi.tw)v*=2;if(!r.me&&spdUi.twOpp)v*=2;if(!r.me&&spdUi.icy)v=Math.floor(v*BOOST(-1));return {...r,s,v}});
   rows.sort((a,b)=>spdUi.tr?a.v-b.v:b.v-a.v);
   const tog=(k,t)=>`<button type="button" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
   $('spdCtl').innerHTML=`<div class="seg" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('tr','Trick Room')}</div>`;
   if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on the Team page to place them against the top threats.</div>';return}
   const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&(spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
-    let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy){const ls=likelySpeed(p),cs=commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
+    let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
       if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
         tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
@@ -185,7 +186,8 @@ function koText(r){if(!r)return '';if(r.max===0)return 'No effect';const rolls=r
 // mem: your own team member when this side is yours, so its chosen item and ability are used (never for an opposing copy)
 function sideDefaults(p,role,mem){const nat=topNature(p),it=topItem(p);let ab;try{ab=metaAbility(p)||bestAbility(p)}catch(e){ab=p.a[0]}
   if(mem&&mem.ability&&p.a.includes(mem.ability))ab=mem.ability;
-  const st=p.st,phys=st[1]>=st[3],cs=commonSpread(p),item=mem&&mem.heldItem?mem.heldItem:it&&!STONE_RE.test(it[0])?it[0]:'';
+  // your own member: your spread if you set one (paste/link), and its item (your pick, or the team-aware default)
+  const st=p.st,phys=st[1]>=st[3],cs=(mem&&mem.spread)||commonSpread(p),item=mem&&mem.item&&!STONE_RE.test(mem.item)?mem.item:mem&&mem.heldItem?mem.heldItem:it&&!STONE_RE.test(it[0])?it[0]:'';
   if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,item,ability:ab,boost:0,real:true}
     :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,item,ability:ab,boost:0,real:true};
   // no spread data: assume full Defense for Body Press on Pokémon built around their Defense (base 100+);
@@ -206,7 +208,9 @@ function monOptions(sel){const mine=members().map(m=>m.p);let thr=[];try{thr=met
 function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   if(!dc.a||!byName.get(dc.a))dc.a=(ms[0]&&ms[0].p.n)||'Garchomp';
   if(!dc.d||!byName.get(dc.d)){let t=[];try{t=metaThreats(5).map(x=>x.p||x)}catch(e){}dc.d=(t.find(p=>p.n!==dc.a)||byName.get('Incineroar')||ROSTER[1]).n}
-  const A=dcSide('atk',dc.a),D=dcSide('def',dc.d);const mvs=dcMoves(A.p);if(!dc.mv||![...mvs.pop,...mvs.rest].some(m=>m.name===dc.mv))dc.mv=(mvs.pop[0]||mvs.rest[0]||{}).name;
+  const A=dcSide('atk',dc.a),D=dcSide('def',dc.d);const mvs=dcMoves(A.p);
+  // weather follows the attacker until you pick one: its own Drought/Drizzle/..., or your team's weather when it's yours
+  if(!dc.wSet){const mine=ms.some(m=>m.p.n===A.p.n);dc.weather=(typeof WEATHER_OF==='object'&&WEATHER_OF[A.ability])||(mine&&typeof sideField==='function'?sideField(ms).weather:'')||''}if(!dc.mv||![...mvs.pop,...mvs.rest].some(m=>m.name===dc.mv))dc.mv=(mvs.pop[0]||mvs.rest[0]||{}).name;
   const mv=mvByName.get(dc.mv);const spread=dc.spread==null?!!(mv&&mv.spread):dc.spread;
   const sel=(id,opts,v)=>`<select class="field" id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}"${o[0]===v?' selected':''}>${esc(o[1])}</option>`:`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
   const PTS=v=>[...new Set([32,28,24,20,16,12,8,4,0,+v])].sort((a,b)=>b-a).map(x=>[String(x),x===32?'32 (max)':String(x)]);
@@ -241,16 +245,19 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
       <p class="t2">${esc(A.p.d||A.p.n)} ${aShown} ${mvC&&mvC.cat===2?'SpA':'Atk'} points ${esc(A.nat)}${A.item?' '+esc(A.item):''} · ${esc(dc.mv)}${spread?' (spread)':''} vs ${esc(D.p.d||D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${esc(D.nat)}${D.item?' '+esc(D.item):''}${A.real||D.real?' · spreads: most common on the Showdown ladder':''}</p>`}</div>
     ${renderHitTable(ms)}`;dcStickWatch()}
 // Your team's best hit on each top threat (each side's usual set).
-function bestHitOn(atkP,atkMoves,defP,aMem,dMem){let best=null;const A={p:atkP,...sideDefaults(atkP,'atk',aMem)},D={p:defP,...sideDefaults(defP,'def',dMem)};
-  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread});if(r&&r.hp&&(!best||r.max>best.r.max))best={mv,r}}return best}
+// field: {weather, terrain} in play (sun from Drought, etc.), so a lead's weather boost is counted
+function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A={p:atkP,...sideDefaults(atkP,'atk',aMem)},D={p:defP,...sideDefaults(defP,'def',dMem)};const F=field||{};
+  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||''});if(r&&r.hp&&(!best||r.max>best.r.max))best={mv,r}}return best}
 function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThreats(12).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
   const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';return `<td class="${c}" title="${esc(b.mv.name)}: ${lo.toFixed(0)}–${p.toFixed(0)}%">${p.toFixed(0)}<span>${esc(b.mv.name)}</span></td>`};
   const thH=p=>`<th title="${esc(p.d||p.n)}">${sprite(p,'dcth')}<span>${esc((p.d||p.n).replace(/^Mega /,'M-'))}</span></th>`,rowH=(p,d)=>`<th>${sprite(p,'dcth')}<span>${esc(d||p.d||p.n)}</span></th>`;
   const theirs=dc.dir==='theirs';
+  // each attacker's own weather/terrain counts: yours if your team sets exactly one, theirs from the threat's own ability
+  const myF=typeof sideField==='function'?sideField(ms):{},thF=t=>typeof sideField==='function'?sideField([{p:t,ability:abilityOf({p:t})}]):{};
   const seg=`<div class="seg" role="group" aria-label="Direction"><button type="button" data-dcdir="mine" aria-pressed="${!theirs}">Your hits on them</button><button type="button" data-dcdir="theirs" aria-pressed="${theirs}">Their hits on you</button></div>`;
-  const table=theirs?`<table class="dctab"><thead><tr><th></th>${ms.map(m=>thH(m.p)).join('')}</tr></thead><tbody>${thr.map(t=>{const mv=popularMoves(t);return `<tr>${rowH(t)}${ms.map(m=>cell(bestHitOn(t,mv,m.p,null,m))).join('')}</tr>`}).join('')}</tbody></table>`
-    :`<table class="dctab"><thead><tr><th></th>${thr.map(thH).join('')}</tr></thead><tbody>${ms.map(m=>`<tr>${rowH(m.p,m.d)}${thr.map(t=>cell(bestHitOn(m.p,m.moves,t,m,null))).join('')}</tr>`).join('')}</tbody></table>`;
-  return `<h3 class="dsub" style="margin-top:22px">${theirs?'Each top threat\'s best hit on your team':'Your best hit on each top threat'}</h3><div style="margin:6px 0 8px">${seg}</div><p class="t2">Max roll, single target unless the move hits both. ${theirs?'Their usual set vs your set and the most common bulk.':'Your set vs their usual set and bulk.'} Green = OHKO range, gold = 2HKO range.${theirs?' A green column is a Pokémon you may need to Protect or switch.':''}</p>
+  const table=theirs?`<table class="dctab"><thead><tr><th></th>${ms.map(m=>thH(m.p)).join('')}</tr></thead><tbody>${thr.map(t=>{const mv=popularMoves(t);return `<tr>${rowH(t)}${ms.map(m=>cell(bestHitOn(t,mv,m.p,null,m,thF(t)))).join('')}</tr>`}).join('')}</tbody></table>`
+    :`<table class="dctab"><thead><tr><th></th>${thr.map(thH).join('')}</tr></thead><tbody>${ms.map(m=>`<tr>${rowH(m.p,m.d)}${thr.map(t=>cell(bestHitOn(m.p,m.moves,t,m,null,myF))).join('')}</tr>`).join('')}</tbody></table>`;
+  return `<h3 class="dsub" style="margin-top:22px">${theirs?'Each top threat\'s best hit on your team':'Your best hit on each top threat'}</h3><div style="margin:6px 0 8px">${seg}</div><p class="t2">Max roll, single target unless the move hits both. ${theirs?'Their usual set vs your set and the most common bulk, in the weather or terrain the attacker sets itself.':`Your set vs their usual set and bulk${myF.weather||myF.terrain?`, in your ${esc(fieldWords(myF))}`:''}.`} Green = OHKO range, gold = 2HKO range.${theirs?' A green column is a Pokémon you may need to Protect or switch.':''}</p>
   <div class="tablewrap">${table}</div>`}
 document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.id))return;const v=t.value;
   const ak='atk:'+dc.a,dk='def:'+dc.d;
@@ -264,7 +271,7 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.
   else if(t.id==='dcDNat')dc.inv[dk].nat=v;else if(t.id==='dcDIt')dc.inv[dk].item=v;else if(t.id==='dcDAb')dc.inv[dk].ability=v;else if(t.id==='dcDBo')dc.inv[dk].boost=+v;
   renderCalc()});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data-dct],[data-dcdir],[data-dcterr],#dcSwap');if(!b)return;if(b.dataset.dcterr!=null){dc.terrain=b.dataset.dcterr;renderCalc();return}if(b.dataset.dcdir){dc.dir=b.dataset.dcdir;keepScroll(()=>renderCalc());return}if(b.id==='dcSwap'){const a=dc.a;dc.a=dc.d;dc.d=a;dc.mv=null;dc.spread=null;renderCalc();return}
-  if(b.dataset.dcw!=null)dc.weather=b.dataset.dcw;else{const k=b.dataset.dct;if(k==='spread'){const mv=mvByName.get(dc.mv);const cur=dc.spread==null?!!(mv&&mv.spread):dc.spread;dc.spread=!cur}else dc[k]=!dc[k]}renderCalc()});
+  if(b.dataset.dcw!=null){dc.weather=b.dataset.dcw;dc.wSet=true}else{const k=b.dataset.dct;if(k==='spread'){const mv=mvByName.get(dc.mv);const cur=dc.spread==null?!!(mv&&mv.spread):dc.spread;dc.spread=!cur}else dc[k]=!dc[k]}renderCalc()});
 
 
 // the pinned result hides while the full result is on screen, and taps through to it

@@ -5,8 +5,11 @@ function turnOnePlan(mine, theirs, r) {
   if (r.lead.length < 2 || theirs.length < 2) return '';
   const opp = r.B ? likelyLead(theirs, r.B) : theirs.slice(0, 2);
   const L = r.lead.map(i => mine[i]), names = m => new Set(memberMoves(m).moves.map(x => x.name));
-  const spe = m => { const s = likelySpeed(m.p); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
-  const hitOn = (a, moves, d) => bestHitOn(a.p, moves, d.p);
+  // your leads use their real items and spreads; the weather/terrain the four leads set is in play for every hit
+  const mineM = m => L.includes(m) ? m : null;
+  const spe = m => { const s = likelySpeed(m.p, mineM(m)); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
+  const F = typeof turnOneField === 'function' ? turnOneField([...L, ...opp], spe) : {};
+  const hitOn = (a, moves, d) => bestHitOn(a.p, moves, d.p, mineM(a), mineM(d), F);
   // their threat to each of my leads: the hardest single hit
   const danger = opp.map(o => { let worst = null; for (const m of L) { const h = hitOn(o, o.moves || [], m); if (h && (!worst || h.r.max / h.r.hp > worst.pct)) worst = {pct: h.r.max / h.r.hp, h, on: m}; } return {o, worst}; })
     .sort((a, b) => (b.worst ? b.worst.pct : 0) - (a.worst ? a.worst.pct : 0));
@@ -27,5 +30,6 @@ function turnOnePlan(mine, theirs, r) {
   return `<div class="plan t1plan"><div class="ph"><span class="pt">Turn 1</span><span class="vsub">your ${esc(L[0].d)} + ${esc(L[1].d)} vs their likely ${esc(opp[0].d)} + ${esc(opp[1].d)}</span></div>
     ${lines.map(([m, act, why]) => `<div class="t1row"><b>${esc(m.d)}</b><span class="t1act">${act}</span><span class="t2">${why}</span></div>`).join('')}
     ${warn.length ? `<p class="t2 t1warn">Watch: ${warn.join('; ')}. Consider Protect.</p>` : ''}
+    ${F.weather || F.terrain ? `<p class="t2" style="margin:0">Field on turn 1: ${esc(fieldWords(F))}${F.wBy ? ` (${esc(F.wBy.d)})` : ''}. Damage above includes it.</p>` : ''}
     <p class="t2" style="margin:0">Speed order: ${order.map(o => `<span class="${o.me ? 't1me' : ''}">${esc(o.x.d)} ${o.s}</span>`).join(' › ')}</p></div>`;
 }
