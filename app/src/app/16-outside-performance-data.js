@@ -61,7 +61,6 @@ function perfFromRaw(raw) {
     return [[n, 1]]; };
   const ladder = {}; for (const r of (raw.ladder && raw.ladder.rows) || []) { if (!Array.isArray(r)) continue; const n = srcName(r[0]); if (!n) continue; const v = [num(r[1]), num(r[2]), num(r[3])]; if (!v.every(isFinite)) continue;
     for (const [k, sh] of formsOf(n)) { const o = ladder[k]; ladder[k] = o ? [+(o[0] + v[0] * sh).toFixed(2), o[1], o[2]] : [+(v[0] * sh).toFixed(2), v[1], v[2]]; } }
-  const singlesRank = {}, sn = (raw.singles && raw.singles.names) || []; sn.forEach((x, i) => { const n = srcName(x); if (n && !singlesRank[n]) singlesRank[n] = i + 1; });
   // in-game ranked doubles (op.gg): a full rank order, no percentages. Turn rank r into a usage figure by giving it the r-th
   // biggest usage on the 1760+ ladder (same shape of curve), then hand base names to the form strong players use.
   const ingame = {}, ig = opggNames(raw.ingame && raw.ingame.names), curve = Object.values(smogon).sort((a, b) => b - a);
@@ -72,8 +71,8 @@ function perfFromRaw(raw) {
       const t = num(r[3]) || 0, w = isFinite(num(r[4])) ? num(r[4]) : null, o = D[n];
       // two rows for one Pokémon ("Floette|M" and "Eternal Flower Floette|M"): weighted merge by games
       D[n] = !o ? [b, g, t, w] : [+((o[0] * o[1] + b * g) / (o[1] + g || 1)).toFixed(3), o[1] + g, o[2] + t, o[3] == null || w == null ? (o[3] ?? w) : +((o[3] * o[1] + w * g) / (o[1] + g || 1)).toFixed(1)]; } return D; })(),
-    ladder, smogon, prd, ingame, ingameRank: (() => { const R = {}; ig.forEach((n, i) => { if (n) for (const [k] of formsOf(n)) if (!R[k]) R[k] = i + 1; }); return R; })(), ingameTotal: ig.length, singlesRank, singlesTotal: sn.length || 1, prdTeams: raw.prd && raw.prd.teams,
-    sources: {tour: raw.tour && raw.tour.label, official: raw.official && raw.official.label, ladder: raw.ladder && raw.ladder.label, smogon: raw.smogon && raw.smogon.label, prd: raw.prd && raw.prd.label, adj: raw.adj && raw.adj.label, ingame: raw.ingame && raw.ingame.label, singles: raw.singles && raw.singles.label}};
+    ladder, smogon, prd, ingame, ingameRank: (() => { const R = {}; ig.forEach((n, i) => { if (n) for (const [k] of formsOf(n)) if (!R[k]) R[k] = i + 1; }); return R; })(), ingameTotal: ig.length, prdTeams: raw.prd && raw.prd.teams,
+    sources: {tour: raw.tour && raw.tour.label, official: raw.official && raw.official.label, ladder: raw.ladder && raw.ladder.label, smogon: raw.smogon && raw.smogon.label, prd: raw.prd && raw.prd.label, adj: raw.adj && raw.adj.label, ingame: raw.ingame && raw.ingame.label}};
   return Object.keys(out.doubles).length >= 20 ? out : null;
 }
 // The performance data in use: today's refresh (meta/perf) if it's usable, otherwise the snapshot built into the page.

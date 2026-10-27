@@ -537,7 +537,7 @@ h2::before{background:linear-gradient(135deg,var(--navy),var(--accent))}
   .toast{bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 }
 
-/* ================= tokens: soft fills, dark mode, per-format accent ================= */
+/* ================= tokens: soft fills, dark mode ================= */
 :root{--skym:#1c0f45;--navyt:var(--navy);--good-soft:#dcf3e8;--warn-soft:#fff0d6;--bad-soft:#fde3e4;--mega-soft:#fde6e7;--mega-ink:#a3242a;--btn:var(--navy)}
 /* DARK — same values in both blocks so the device setting, the Claude app's setting and the page's own switch all agree */
 @media (prefers-color-scheme: dark){:root:not([data-mode="light"]):not([data-theme="light"]){
@@ -557,8 +557,6 @@ body{background-color:var(--court)}
 .btn.primary{background:var(--btn);border-color:var(--btn)}
 .plan .pt,.setcard .pt,.abfmt{color:var(--accent)}
 .emblem.b0 span{color:#4a2c00}
-/* SINGLES gets its own accent: cyan instead of volt, everywhere the accent shows */
-:root[data-format="singles"]{--volt:#55e6ff;--glow:#b48cff}
 
 /* ================= battle mode card (sidebar) ================= */
 .bmode{display:flex;flex-direction:column;gap:6px;margin:0 2px 20px;padding:10px;border-radius:12px;background:rgba(12,6,30,.45);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
@@ -790,11 +788,7 @@ body{background-color:var(--court)}
 .minick b{font:800 15px/1 var(--display);color:var(--ink)}.minick.all b{color:var(--good,#2e9e5b)}
 .minick i{font-style:normal;font-size:10.5px}
 
-/* fun mode */
-.functl .funq{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;font:800 10px/1 var(--body);opacity:.7;margin-left:2px;cursor:help}
-.funnote{display:none;font-size:12.5px;color:var(--mute);flex-basis:100%}
-.onnavy~.funnote,.abctl .funnote{color:inherit;opacity:.85}
-:root[data-fun="1"] .funnote{display:block}
+/* off-meta picks (hidden gems, fresh takes) */
 .tag.offmeta{background:linear-gradient(90deg,#ff7ad9,#9b7bff);color:#fff;border-color:transparent}
 .abgrid.one{grid-template-columns:1fr}
 .abnote{margin:0 0 10px}
@@ -1350,8 +1344,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .tspart span{color:var(--mute)}.tspart i{height:8px;border-radius:5px;background:linear-gradient(90deg,var(--accent) var(--w),var(--card2) var(--w));border:1px solid var(--line)}
 .tspart b{text-align:right}.tspart em{font-style:normal;font-size:11.5px;color:var(--faint);text-align:right}
 
-/* retired: Fun mode toggles and the Meta map switch */
-.functl,.lmodes{display:none!important}
+/* retired: the Meta map switch */
+.lmodes{display:none!important}
 
 .dcbulk{margin:8px 0 0;font-size:14px}
 

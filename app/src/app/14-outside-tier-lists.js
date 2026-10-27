@@ -15,11 +15,10 @@ const EXT_TIERS = {
       A: ['Golisopod', 'Aerodactyl', 'Camerupt', 'Scovillain', 'Tyranitar', 'Kangaskhan', 'Torkoal', 'Milotic', 'Pelipper', 'Talonflame', 'Excadrill', 'Toxapex', 'Annihilape', 'Gholdengo'],
       B: ['Absol', 'Lucario', 'Glimmora', 'Scizor', 'Mawile', 'Gardevoir', 'Blaziken', 'Pyroar', 'Politoed', 'Rotom-Wash', 'Ninetales-Alola', 'Primarina', 'Aegislash', 'Mamoswine'],
       C: ['Crabominable', 'Scrafty', 'Kommo-o', 'Meowscarada', 'Corviknight', 'Espathra', 'Dragapult']}}};
-// Average outside score for p (doubles only), or null if no source lists it. A listed base name counts fully for its
+// Average outside score for p, or null if no source lists it. A listed base name counts fully for its
 // Mega forms; the plain form of a Pokémon whose listing really means its Mega gets the score minus 15.
 let extCache = null;
 function extScore(p) {
-  if (S.format !== 'doubles') return null;
   if (!extCache) { extCache = new Map();
     for (const src of Object.values(EXT_TIERS)) for (const [t, names] of Object.entries(src.tiers)) for (const n of names) {
       const sc = src.score[t], q = byName.get(n), forms = ROSTER.filter(r => r.n === n || (q && r.b === q.b && (r.m || r.n === q.n)));
@@ -37,6 +36,5 @@ function evidenceLine(p) { const r = rating(p);
     if (r.src.prd != null) bits.push(`${r.src.prd}% of top-10% ladder teams`);
     if (bits.length) return bits.join(' · '); }
   if (r.usage != null) return `On ${r.usage}% of tournament teams${r.matches ? `, ${r.wr}% of ${r.matches.toLocaleString()} games won` : ''}`;
-  if (r.rank != null) return `#${r.rank} most used on the singles ladder`;
   return 'No tournament or ladder data yet'; }
 

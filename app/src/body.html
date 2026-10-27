@@ -155,10 +155,9 @@
               <option value="boxfill">My box, then fill gaps from the roster</option>
               <option value="all">Full roster</option>
             </select>
-            <label class="toggle" hidden><input type="checkbox" id="exclSaved"> <span id="exclSavedLbl">Skip Pokémon on my saved teams</span></label>
           </div>
           <div class="controls">
-            <span class="toggle megactl" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span><label class="toggle functl" title="Fun mode: suggestions look past the usual meta picks. Any Pokémon legal in the regulation can be suggested if it fixes your team's gaps or needs. Meta Pokémon still count, just less, so niche picks get a real shot."><input type="checkbox" id="funPlan"> Fun mode <span class="funq" aria-hidden="true">?</span></label>
+            <span class="toggle megactl" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span>
             <label class="toggle"><input type="checkbox" id="swapMega"> Let plans swap my Mega</label>
             <label class="toggle"><input type="checkbox" id="useAbil" checked> Count abilities</label>
             <button class="btn sm" id="replanBtn" type="button">Refresh plans</button>
@@ -185,10 +184,8 @@
           <button type="button" data-absrc="box" aria-pressed="true"><b>My box</b><span id="abBoxN">your Pokémon</span></button>
           <button type="button" data-absrc="all" aria-pressed="false"><b>Whole roster</b><span>quick build, anything legal</span></button>
         </div>
-        <span class="toggle megactl onnavy" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span><label class="toggle functl onnavy" title="Fun mode: suggestions look past the usual meta picks. Any Pokémon legal in the regulation can be suggested if it fixes your team's gaps or needs. Meta Pokémon still count, just less, so niche picks get a real shot."><input type="checkbox" id="funAb"> Fun mode <span class="funq" aria-hidden="true">?</span></label>
-        <label class="toggle" hidden><input type="checkbox" id="buildExcl"> <span id="buildExclLbl">Skip Pokémon on my saved teams</span></label>
+        <span class="toggle megactl onnavy" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span>
         <button class="btn go" id="abBtn" type="button">Build a team</button>
-        <span class="funnote">Fun mode is on: any legal Pokémon that fixes the gap can be picked, and meta picks count less.</span>
       </div>
     </div>
     <div id="abOut"></div>
@@ -250,7 +247,7 @@
 <div class="view" data-pane="coverage" hidden>
   <section id="recs">
     <div class="head"><div><h2>Best additions</h2><p class="hint" id="recHint">Pokémon that raise your Team Score by 2 or more without breaking the team, best first.</p></div>
-      <div class="row"><span class="toggle megactl" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span><label class="toggle functl" title="Fun mode: suggestions look past the usual meta picks. Any Pokémon legal in the regulation can be suggested if it fixes your team's gaps or needs. Meta Pokémon still count, just less, so niche picks get a real shot."><input type="checkbox" id="funRec"> Fun mode <span class="funq" aria-hidden="true">?</span></label><div class="seg" role="group" aria-label="Suggest from"><button type="button" data-recsrc="box" aria-pressed="true">My box</button><button type="button" data-recsrc="all" aria-pressed="false">Whole roster</button></div></div></div>
+      <div class="row"><span class="toggle megactl" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span><div class="seg" role="group" aria-label="Suggest from"><button type="button" data-recsrc="box" aria-pressed="true">My box</button><button type="button" data-recsrc="all" aria-pressed="false">Whole roster</button></div></div></div>
     <div class="recgrid"><div class="princ" id="princ"></div><div class="list" id="recList"></div></div>
   </section>
   <section>
@@ -259,7 +256,6 @@
   </section>
   <section>
     <div class="head"><div><h2>Defense</h2><p class="hint">How each attacking type hits each of your Pokémon. Red cells are weaknesses.</p></div></div>
-    <div id="trios" hidden></div>
     <details class="phonefold"><summary>Show the type table</summary><div class="tablewrap"><table id="grid"></table></div></details>
   </section>
   <section id="offense">

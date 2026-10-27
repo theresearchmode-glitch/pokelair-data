@@ -4,7 +4,7 @@
 const WEATHER_KEYS = ['sun', 'rain', 'sand', 'snow'], TERRAIN_KEYS = ['psy', 'grassy', 'elec', 'misty'];
 function teamArchetype(ms) {
   if (!ms.length) return null;
-  const r = teamRoles(ms), gp = gamePlan(ms), c = gp.c, dbl = S.format === 'doubles';
+  const r = teamRoles(ms), gp = gamePlan(ms), c = gp.c;
   const tw = c.tw >= .5, tr = c.tr >= .5, slow = ms.filter(m => isSlow(m.p)).length;
   const field = r.arch.filter(a => WEATHER_KEYS.includes(a.key) || TERRAIN_KEYS.includes(a.key));
   const weather = field.filter(a => WEATHER_KEYS.includes(a.key)), terrain = field.filter(a => TERRAIN_KEYS.includes(a.key));
@@ -17,7 +17,7 @@ function teamArchetype(ms) {
   if (wn.length) parts.push(wn.length === 2 && wn.includes('Sun') && wn.includes('Rain') ? 'Sun-Rain' : wn.join('-'));
   parts.push(...tn);
   if (SPEED_NAME[speed]) parts.push(SPEED_NAME[speed]);
-  const label = parts.length ? parts.slice(0, 3).join(' · ') : (dbl ? (c.fake >= .5 ? 'Balance (Fake Out pressure)' : 'Balance') : 'Offense');
+  const label = parts.length ? parts.slice(0, 3).join(' · ') : (c.fake >= .5 ? 'Balance (Fake Out pressure)' : 'Balance');
   const by = k => ms.filter(m => relMove(m, ROLE[k])[0] >= .5);
   const trappers = perish ? ms.filter(m => ['Shadow Tag', 'Arena Trap'].includes(m.ability) || relMove(m, ['Perish Song'])[0] >= .3) : [];
   return {label, speed, perish, trappers, slow, weather: weather.map(a => a.key), terrain: terrain.map(a => a.key), field, c,
@@ -90,7 +90,7 @@ function renderMatchup() {
   const useA = $('useAbil').checked; const mine = members(); const theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
   if (!mine.length) { el.innerHTML = '<div class="empty-note">Build your team on the Build tab first.</div>'; if (view === 'matchup') safe('battle', renderBattle); return; }
   if (!theirs.length) { el.innerHTML = '<div class="empty-note">Add their Pokémon above first.</div>'; if (view === 'matchup') safe('battle', renderBattle); return; }
-  const r = planMatchup(mine, theirs, useA); const dbl = S.format === 'doubles';
+  const r = planMatchup(mine, theirs, useA);
   const nm = i => esc(mine[i].d), th = j => esc(theirs[j].d);
   const handles = i => theirs.map((o, j) => j).filter(j => r.h.M[i][j] >= 1);
   const monLine = (i, tag) => { const hs = handles(i);
@@ -151,28 +151,23 @@ function inferMegas(mons) { if (!mons.length || mons.some(n => (byName.get(n) ||
   for (const n of mons) { const p = byName.get(n); if (!p || p.n !== p.b && p.n !== 'Floette-Eternal') continue; const fam = ROSTER.filter(f => f.b === p.b && (f.n === p.n || f.m));
     for (const q of fam.filter(f => f.m)) { const sh = share(q, fam); if (sh >= .85 && (!best || sh > best.sh)) best = {n, q: q.n, sh}; } }
   return best ? mons.map(n => n === best.n ? best.q : n) : mons; }
-// Run fn as if the page were in format fmt; every per-format cache is cleared on the way in and out.
-// Run fn with Fun mode scoring switched on (power and fit over popularity), then switch it back.
-function withFun(fn) { const keep = S.fun; S.fun = true; try { return fn(); } finally { S.fun = keep; } }
-function withFormat(fmt, fn) { const keep = S.format; if (keep === fmt) return fn();
-  const reset = () => { threatCache = {key: null, list: null}; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); };
-  S.format = fmt; reset(); try { return fn(); } finally { S.format = keep; reset(); } }
+// Run fn with off-meta scoring switched on (power and fit over popularity), then switch it back.
+function withOffMeta(fn) { const keep = OFFMETA; OFFMETA = true; try { return fn(); } finally { OFFMETA = keep; } }
+// The page is doubles only, so this just runs fn (kept for callers that still name the format).
+function withFormat(fmt, fn) { return fn(); }
 let ttLabelCache = new Map();
 function teamPlanLabel(mons) { const key = metaVersion + '|' + mons.join(','); if (ttLabelCache.has(key)) return ttLabelCache.get(key); const v = teamPlanLabel_(mons); if (ttLabelCache.size > 300) ttLabelCache.clear(); ttLabelCache.set(key, v); return v; }
 function teamPlanLabel_(mons) {
   const ms = () => mons.map(n => byName.get(n)).filter(Boolean).map(oppMember);
-  return withFormat('doubles', () => { const a = teamArchetype(ms()); return a ? a.label : 'Balance'; });
+  const a = teamArchetype(ms()); return a ? a.label : 'Balance';
 }
 // Run the winning-team checklist on any 6-name doubles team (cached per meta update).
 let ttGradeCache = new Map();
 function gradeNames(names, itemsKnown) {
   const key = metaVersion + '|' + (itemsKnown ? 'k|' : '') + names.join(','); if (ttGradeCache.has(key)) return ttGradeCache.get(key);
-  const keep = S.format; let g = null;
-  // switching format means every per-format cache has to be cleared on the way in and out (as Build for me does)
-  const reset = () => { threatCache = {key: null, list: null}; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); };
-  try { if (keep !== 'doubles') { S.format = 'doubles'; reset(); }
-    const ms = names.map(n => byName.get(n)).filter(Boolean).map(p => abMember(p)); if (ms.length === 6) g = proChecks(ms, true, {itemsUnknown: !itemsKnown && !names.some(n => /-Mega/.test(n))});
-  } catch (e) { g = null; } finally { if (keep !== 'doubles') { S.format = keep; reset(); } }
+  let g = null;
+  try { const ms = names.map(n => byName.get(n)).filter(Boolean).map(p => abMember(p)); if (ms.length === 6) g = proChecks(ms, true, {itemsUnknown: !itemsKnown && !names.some(n => /-Mega/.test(n))});
+  } catch (e) { g = null; }
   if (ttGradeCache.size > 200) ttGradeCache.clear(); ttGradeCache.set(key, g); return g;
 }
 const miniGrades = c => c ? `<span class="minick${c.pass === c.n ? ' all' : ''}" title="${esc(c.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : x.part ? '~ ' : '✗ ') + x.label + (x.skip ? ' (items not listed)' : '')).join('\n'))}"><b>${c.pass}/${c.n}</b> checks${c.pass < c.n ? `<i>missing: ${esc(c.items.filter(x => !x.ok && !x.skip).map(x => x.label.toLowerCase()).join(', '))}</i>` : ''}${c.items.some(x => x.skip) ? '<i class="unkn">Mega not counted: items not listed</i>' : ''}</span>` : '';
@@ -207,8 +202,8 @@ function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) r
 // Trends: compare each Pokémon's rank today with about a week ago.
 function cleanHistory(d) { if (!d || !Array.isArray(d.days)) return null;
   const obj = o => { const out = {}; if (o && typeof o === 'object') for (const k of Object.keys(o).slice(0, 80)) { const v = num(o[k]); if (v != null && typeof k === 'string') out[k] = v; } return out; };
-  return {days: d.days.slice(-40).filter(x => x && typeof x.d === 'string').map(x => ({d: x.d.slice(0, 10), ing: obj(x.ing), tour: obj(x.tour), sing: obj(x.sing), lad: obj(x.lad)}))}; }
-function trendKey() { return S.format === 'singles' ? 'sing' : {ingame: 'ing', tour: 'tour', ladder: 'lad'}[ui.metaSrc]; }
+  return {days: d.days.slice(-40).filter(x => x && typeof x.d === 'string').map(x => ({d: x.d.slice(0, 10), ing: obj(x.ing), tour: obj(x.tour), lad: obj(x.lad)}))}; }
+function trendKey() { return {ingame: 'ing', tour: 'tour', ladder: 'lad'}[ui.metaSrc]; }
 function trendFor(name, rank) {
   const h = META.history; if (!h || h.days.length < 2) return null;
   const k = trendKey(); const latest = h.days[h.days.length - 1];

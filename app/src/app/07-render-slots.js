@@ -15,7 +15,7 @@ function renderSlots(){
         ${u?`<div class="tuse" title="${u.toFixed(1)}% of ${S.format} teams"><span class="tbar"><i style="--w:${Math.min(100,u*2).toFixed(0)}%"></i></span><span class="vsub">${u.toFixed(1)}%<span class="tus"> of teams</span></span></div>`:''}
         ${m.item?`<div class="titem${m.heldItem?' mine':''}">${esc(m.item)}</div>`:''}${s.lock?'<span class="tlock" title="Locked">LOCKED</span>':''}
       </div>
-      <div class="slbody">${S.format==='singles'?srTag(m):''}
+      <div class="slbody">
       ${setRows(p,{noItem:true})}
       ${abilBlock(s,i,m)}
       ${itemBlock(s,i,m,clash)}

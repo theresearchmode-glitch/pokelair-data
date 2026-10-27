@@ -1,7 +1,7 @@
 // ---------- saved teams ----------
 function renderSaved(){
   {const hs=S.teams.filter(t=>t.format==='singles').length;$('savedCount').textContent=`${S.teams.length-hs}/10`;$('savedCount').title=hs?`${hs} older team${hs>1?'s':''} from a retired mode ${hs>1?'are':'is'} kept and also use${hs>1?'':'s'} a slot`:''}
-  // the same Team Score as the Team page, so saved teams can be compared at a glance (singles teams are stored but hidden)
+  // the same Team Score as the Team page, so saved teams can be compared at a glance (teams from the retired singles mode are kept in storage but hidden)
   const order=S.teams.filter(t=>t.format!=='singles').map(t=>{const r=teamRating(t.slots);let ts=null;try{ts=r.ms.length===6?tsInfo(r.ms):null}catch(e){}return {t,r,ts}});
   if(ui.sort==='name')order.sort((x,y)=>x.t.name.localeCompare(y.t.name));
   else if(ui.sort==='rating')order.sort((x,y)=>((y.ts?y.ts.score:-1)-(x.ts?x.ts.score:-1))||x.r.a.excess-y.r.a.excess);
@@ -18,7 +18,7 @@ function renderSavePanel(){
   const p=$('savePanel');if(!ui.saving){p.hidden=true;p.innerHTML='';return}
   const loaded=S.teams.find(t=>t.id===S.loadedId);const full=S.teams.length>=10;
   p.hidden=false;
-  p.innerHTML=`<div class="item" style="grid-template-columns:1fr"><div class="lbl">Save this ${S.format} team</div>
+  p.innerHTML=`<div class="item" style="grid-template-columns:1fr"><div class="lbl">Save this doubles team</div>
     <div class="row"><input class="field" id="saveName" maxlength="40" placeholder="Team name, e.g. Rain Archaludon" value="${esc(loaded?loaded.name:'')}" style="flex:1;min-width:180px">
     ${loaded?`<button class="btn primary" id="saveOver" type="button">Update "${esc(loaded.name)}"</button>`:''}
     <button class="btn ${loaded?'':'primary'}" id="saveNew" type="button" ${full?'disabled':''}>Save as new</button>

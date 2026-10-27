@@ -18,9 +18,8 @@ function qaReason(key,pl){const x=pl.ch[0],m=pl.team.find(t=>t.p===x.c.p)||x.c.m
   else if(k[1]==='weather'){const w=WEATHER_OF[x.c.mem.ability];if(w)bits.push(`Sets ${ARCH[w].name.toLowerCase()}`)}
   else if(k[1]==='trfit')bits.push('Slow, hard-hitting Trick Room attacker');
   else if(k[0]==='mega')bits.push(`Brings a Mega (${megaCount(pl.team)} of ${megaGoal()})`);
-  else if(k[1]==='haz'){const h=relMove(m,ROLE.haz);if(h[1])bits.push(`${h[1]} ${Math.round(h[0]*100)}%`)}
   // the teammate it's most often paired with
-  const rest=pl.team.filter(t=>t.p!==p);let best=null;for(const t of rest){const v=pairSyn({p},t)+(S.format==='doubles'?tourSyn({p},t):0);if(v>=8&&(!best||v>best.v))best={t,v}}
+  const rest=pl.team.filter(t=>t.p!==p);let best=null;for(const t of rest){const v=pairSyn({p},t)+tourSyn({p},t);if(v>=8&&(!best||v>best.v))best={t,v}}
   if(best)bits.push(`often paired with ${best.t.d}`);
   return bits.join(' · ')}
 function quickPicks(key,plans,ms,used){if(!plans||!plans.singles||!plans.basePl)return [];const base=plans.basePl.score;
@@ -47,8 +46,8 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   const name=i=>esc(ms[i].d);const out=[];
   // game-plan gaps first: these are the ones beginners miss most
   const gp=plans&&plans.gp?plans.gp:gamePlan(ms);
-  if(ms.length>=3)for(const r of gp.rows){const big=r.k==='speed'||(S.format==='doubles'&&r.k==='support')||((r.k==='weather'||r.k==='terrain')&&r.st==='miss')||r.k==='trfit'||(S.format==='singles'&&r.k==='haz');
-    if(big&&(r.st==='miss'||r.st==='part'))out.push([r.st==='miss'&&r.k!=='haz'?'hi':'mid',r.label,esc(r.note||''),'gp:'+r.k])}
+  if(ms.length>=3)for(const r of gp.rows){const big=r.k==='speed'||r.k==='support'||((r.k==='weather'||r.k==='terrain')&&r.st==='miss')||r.k==='trfit';
+    if(big&&(r.st==='miss'||r.st==='part'))out.push([r.st==='miss'?'hi':'mid',r.label,esc(r.note||''),'gp:'+r.k])}
   {const cl=scarfTrClash(ms);if(cl)out.unshift(['hi','Item clash',clashText(cl)])}
   {const sh=megaShort(ms);if(sh&&ms.length>=3)out.push(['hi','Megas',`The team can't reach ${megaGoal()} Mega${megaGoal()>1?'s':''} (it has ${megaCount(ms)}${ms.length<6?` with ${6-ms.length} open slot${6-ms.length>1?'s':''}`:''}). Change it under Megas on team if you want fewer.`,'mega'])}
   a.rows.filter(t=>t.w>t.r).sort((x,y)=>(y.w-y.r)-(x.w-x.r)).forEach(t=>{const weak=t.who.map(o=>name(o.i)+(o.x>=4?' (4×)':''));
@@ -60,10 +59,9 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   if(gaps.length)out.push([gaps.length>=4?'mid':'lo','Offense',`No super-effective hits on ${gaps.slice(0,-1).join(' ')} <span style="white-space:nowrap">${gaps[gaps.length-1]}.</span>`]);
   const even=a.rows.filter(t=>t.w>0&&t.w===t.r).map(t=>chip(t.atk));
   if(even.length)out.push(['lo','Same weak as resist',`${even.join(' ')} One resist covers one weakness. Fine, but one bad switch away.`]);
-  if(S.format==='singles')ms.filter(m=>srPct(m)>=50).forEach(m=>out.push(['mid','Stealth Rock',`${esc(m.d)} loses 50% to Stealth Rock on every switch-in.`]));
   const R=teamRoles(ms);const nm=arr=>arr.map(m=>esc(m.d)).join(', ');
   R.arch.filter(x=>x.key!=='tw'&&x.key!=='tr'&&!ARCH[x.key].setAb.some(a=>WEATHER_OF[a])&&!x.active).forEach(x=>out.push(['lo',x.name,`${nm(x.setters)} sets ${x.name}, but nothing else on the team uses it.`]));
-  if(!S.fun)ms.filter(m=>viability(m.p)<12).forEach(m=>out.push(['mid','Fringe pick',`${esc(m.d)} sees almost no competitive use in ${S.format} right now.`]));
+  if(!OFFMETA)ms.filter(m=>viability(m.p)<12).forEach(m=>out.push(['mid','Fringe pick',`${esc(m.d)} sees almost no competitive use in ${S.format} right now.`]));
   const good=R.arch.filter(x=>x.active&&x.key!=='tw').map(x=>`${x.name} (${nm(x.setters)} → ${nm(x.abusers)})`);
   if(good.length)out.push(['ok','Game plan',good.join('; ')]);
   // quick add on the first 4 fixable problems, so the list stays readable
@@ -84,7 +82,7 @@ function megaFormFor(p,t){if(p.m||!t||!t.it||!t.it.length)return p;const [item,p
   const suf=(item.match(/ ([XYZ])$/)||[])[1];const want=p.b+'-Mega'+(suf?'-'+suf:'');return byName.get(want)||byName.get(p.b+'-Mega')||p}
 function renderOffMeta(entries,useA){const d=metaDoc();const wrap=$('offMetaWrap');
   if(!d||!d.top||!entries.length){$('offMetaTitle').textContent='';wrap.hidden=true;return}
-  wrap.hidden=false;const src=S.format==='singles'?'singles in-game':{ingame:'in-game doubles',tour:'tournament',ladder:'Showdown doubles'}[ui.metaSrc];
+  wrap.hidden=false;const src={ingame:'in-game doubles',tour:'tournament',ladder:'Showdown doubles'}[ui.metaSrc];
   $('offMetaTitle').textContent=`Against the top ${Math.min(20,d.top.length)} ${src} Pokémon`;
   const rows=d.top.slice(0,20).map(t=>{let p=byName.get(t.n);if(!p)return null;p=megaFormFor(p,t);
     const ab=p.m?p.a[0]:(t.ab&&t.ab[0]&&t.ab[0][1]>=50?t.ab[0][0]:null);const b=bestHit(entries,p.t,useA?ab:null);return {t,p,ab,b}}).filter(Boolean);

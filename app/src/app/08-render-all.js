@@ -7,9 +7,6 @@ function render(){
   pmCache=new Map();vCache=new Map();setCache=new Map();pairCache=new Map();relCache=new Map();persist();renderSlots();
   const useA=$('useAbil').checked;const ms=members();const a=analyze(ms,useA);
   {const empty=!ms.length;const sc=$('startCard');if(sc)sc.hidden=!empty;for(const id of ['defense','fixes']){const e=$(id);if(e)e.hidden=empty}}
-  document.querySelectorAll('[data-fmt]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.fmt===S.format));try{document.documentElement.dataset.format=S.format}catch(e){}
-  ['funPlan','funAb','funRec'].forEach(id=>{const c=$(id);if(c)c.checked=!!S.fun});try{document.documentElement.dataset.fun=S.fun?'1':''}catch(e){}
-  document.querySelectorAll('[data-abfmt]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.abfmt===ui.abFmt));{const c=$('abDistinct');if(c)c.checked=ui.abDistinct;const w=$('abDistinctWrap');if(w)w.hidden=ui.abFmt!=='both'}
   document.querySelectorAll('[data-megas]').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.megas===megaGoal()));
   $('eyebrow').textContent='Pokémon Champions · Regulation M-C · VGC Doubles · bring 6, pick 4';showDataDate();
   const loaded=S.teams.find(t=>t.id===S.loadedId);
@@ -21,7 +18,7 @@ function render(){
   const PG=ms.length?proGrades(ms,useA):null;
   const CK=ms.length?proChecks(ms,useA):null;
   $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Winning-team checklist${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
-     <div class="t2">${S.format==='doubles'?'What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. Only four of them touch the Team Score: missing speed control, lead support, spread damage or a Mega caps how far above average it can go.':'Type checks for singles. The win-rate numbers come from doubles tournaments, so they are not shown here.'}</div>
+     <div class="t2">What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. Only four of them touch the Team Score: missing speed control, lead support, spread damage or a Mega caps how far above average it can go.</div>
      ${CK?`<ul class="cklist">${CK.items.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')}</ul>`:''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
@@ -29,9 +26,8 @@ function render(){
      <div class="kv"><span>More weak than resist</span><div class="chips">${weakChips||'<span class="none">None</span>'}</div>
      <span>Nobody resists</span><div class="chips">${a.unresisted.map(t=>chip(t)).join('')||'<span class="none">None</span>'}</div>
      <span>Even split</span><div class="chips">${tied||'<span class="none">None</span>'}</div>
-     ${S.format==='singles'&&ms.length?`<span>Stealth Rock</span><div style="font-size:13px">${ms.filter(m=>srPct(m)>=25).map(m=>`${esc(m.d)} ${srPct(m)}%`).join(', ')||'<span class="none">Nobody takes 25% or more</span>'}</div>`:''}</div>
+     </div>
      <div class="t2">×2 next to a type means 2 more of yours are weak to it than resist it.</div>`;
-  safe('trios',()=>renderTrios(ms,useA));
   // offense
   const ctx=teamContext(useA?ms:[]);
   const perMon=ms.map(m=>{const mm=memberMoves(m);return {m,src:mm.src,en:attackEntries({...m,ability:useA?m.ability:null},mm.moves,ctx)}});
@@ -54,12 +50,12 @@ function render(){
   safe('game plan',()=>renderGamePlan(ms));
   const pool=suggestPool();
   // Plans only change when the team, pool, settings, box or meta data change, so reuse them otherwise.
-  const planKey=JSON.stringify([!!S.fun,S.slots,ui.pool,S.format,megaGoal(),$('swapMega').checked,useA,ui.metaSrc,metaVersion,S.box.join(),S.excl.join(),ui.exclSaved,S.teams.map(t=>t.format+t.slots.map(x=>x.n).join()).join()]);
+  const planKey=JSON.stringify([OFFMETA,S.slots,ui.pool,S.format,megaGoal(),$('swapMega').checked,useA,ui.metaSrc,metaVersion,S.box.join(),S.excl.join(),S.teams.map(t=>t.format+t.slots.map(x=>x.n).join()).join()]);
   let plans=[];
   if(planCache.key===planKey)plans=planCache.plans;
   else safe('fix plans',()=>{ui.planMore=0;plans=ms.length?planFixes(ms,pool,useA):[];
     // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
-    if(ms.length&&!S.fun){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{plans.gems=withFun(()=>planFixes(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}
+    if(ms.length&&!OFFMETA){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{plans.gems=withOffMeta(()=>planFixes(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}
     planCache={key:planKey,plans}});
   ui.plans=plans;safe('problems',()=>renderProblems(ms,a,tRows,useA,plans));
   if(ui.vProven){const nd=$('needs');if(nd&&nd.innerHTML&&nd.insertAdjacentHTML)nd.insertAdjacentHTML('afterbegin','<div class="t2 provnote">This exact team has won at real events. Treat these as optional tweaks, not problems.</div>')}
@@ -83,7 +79,7 @@ function renderVerdict(ms,a,PG,CK){
   const TS=n>=6?teamScore({wv}):null;
   let lvl,head;
   if(n<6){lvl='mid';head=`${n} of 6 picked: keep building`}
-  else if(!TS){const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);lvl=dup?'bad':'mid';head=dup?`Not a legal team: only one ${dup.p.b} (any form) is allowed`:S.format!=='doubles'?'Team Score covers doubles only':'Team Score is waiting for the win model data'}else{lvl=TS.score>=50?'good':TS.score>=30?'mid':'bad';head=`${TS.score} · ${TS.label}`}
+  else if(!TS){const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);lvl=dup?'bad':'mid';head=dup?`Not a legal team: only one ${dup.p.b} (any form) is allowed`:'Team Score is waiting for the win model data'}else{lvl=TS.score>=50?'good':TS.score>=30?'mid':'bad';head=`${TS.score} · ${TS.label}`}
   ui.vsum={lvl,head,best,tr,CK,excess:a.excess,TS};
   if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% at Limitless events${best.c>1?` (${best.c} players)`:''}`]);
   // how much of this exact combination real players have tried (the score pulls an untried mix toward the average)
@@ -120,7 +116,7 @@ let pmCache=new Map();
 function runMoves(p){const pm=popularMoves(p),r=pm.slice(0,4);r.src=pm.src;r.pct=pm.pct;return r}
 function popularMoves(p){const key=S.format+'|'+ui.metaSrc+'|'+metaVersion+'|'+p.n;if(pmCache.has(key))return pmCache.get(key);const r=popularMoves_(p);pmCache.set(key,r);return r}
 const AWKWARD=new Set(['Hyper Beam','Giga Impact','Explosion','Self-Destruct','Focus Punch','Solar Beam','Solar Blade','Sky Attack','Meteor Beam','Dream Eater','Belch','Last Resort','Steel Beam','Mind Blown','Head Smash','Blast Burn','Hydro Cannon','Frenzy Plant','Rock Wrecker','Roar of Time','Prismatic Laser','Eternabeam','Shell Trap','Future Sight','Doom Desire','Synchronoise','Burn Up','Double Shock','Outrage','Thrash','Petal Dance','Raging Fury']);
-// Most-used moves for p in this format (see setFor), else the other format's, else its strongest attacks.
+// Most-used moves for p in doubles (see setFor), else its singles set (live fallback: OTHER() is 'singles'), else its strongest attacks.
 function popularMoves_(p){const toMoves=a=>a.map(([n])=>mvByName.get(n)).filter(Boolean).slice(0,6);
   const st=setFor(p);let r=toMoves(st.mv);if(r.length){r.src=st.src.mv;r.pct=new Map(st.mv);return r}
   const o=setFor(p,OTHER());r=toMoves(o.mv);if(r.length){r.src='other';r.pct=new Map();return r}
@@ -128,9 +124,10 @@ function popularMoves_(p){const toMoves=a=>a.map(([n])=>mvByName.get(n)).filter(
   const out=[];for(const t of p.t){const m=atk.filter(x=>x.type===t).sort((x,y)=>y.bp-x.bp)[0];if(m)out.push(m)}
   for(const m of atk.sort((x,y)=>pow(y)-pow(x))){if(out.length>=4)break;if(!out.some(o=>o.type===m.type))out.push(m)}
   out.src='guess';out.pct=new Map();return out}
-const OTHER=()=>S.format==='singles'?'doubles':'singles';
+// The format whose sets fill in when doubles has none. The page is doubles only, so this is always singles.
+const OTHER=()=>'singles';
 function abilityPct(p,a){const x=setFor(p).ab.find(([n])=>n===a);return x?x[1]:null}
-// Held items players run: a Mega holds its stone; otherwise the top items for this format.
+// Held items players run: a Mega holds its stone; otherwise the top items in doubles.
 function topItems(p){const st=setFor(p);return st.it.length?{src:st.src.it,it:st.it.slice(0,2)}:null}
 function pcTxt(v){return v!=null?` <span class="vsub">${(+v).toFixed(0)}%</span>`:''}
 // Item and nature most players run, shown on the card.

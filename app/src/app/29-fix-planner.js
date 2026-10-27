@@ -27,11 +27,11 @@ function monSuccess(p){if(!RES)return 0;const r=RES.mons[p.n];return r?(r[1]-RES
 // Fitted Oct 2026: 0.82 held-out accuracy telling real tournament teams from random teams of the same Pokémon.
 let TV_W={via:.05,syn:1,tsyn:.19,succ:.1,type:.04,plan:.5,threat:.05,mega:6};
 // The whole model in one number (higher is better).
-function teamValue(team,useA=true){const st=stateScore(team,useA),gp=gamePlan(team),tr=threatReport(team,useA),dbl=S.format==='doubles';
-  const v=team.reduce((a,m)=>a+pickVia(m.p),0);let syn=0,tsyn=0;const FM=S.fun?{s:.3,t:0}:{s:1,t:1};
-  for(let i=0;i<team.length;i++)for(let j=i+1;j<team.length;j++){syn+=pairSyn(team[i],team[j]);if(dbl)tsyn+=tourSyn(team[i],team[j])}
-  const succ=dbl?team.reduce((a,m)=>a+monSuccess(m.p),0):0,megas=team.filter(m=>m.mega).length;
-  const W=TV_W,parts={via:v*W.via,syn:syn*W.syn*FM.s,tsyn:tsyn*W.tsyn*FM.t,succ:succ*W.succ*FM.t,type:-st.s*W.type,plan:-gp.penalty*W.plan,threat:-tr.pen*W.threat,mega:(dbl&&team.length>=5&&megas===2?1:0)*W.mega};
+function teamValue(team,useA=true){const st=stateScore(team,useA),gp=gamePlan(team),tr=threatReport(team,useA);
+  const v=team.reduce((a,m)=>a+pickVia(m.p),0);let syn=0,tsyn=0;const FM=OFFMETA?{s:.3,t:0}:{s:1,t:1};
+  for(let i=0;i<team.length;i++)for(let j=i+1;j<team.length;j++){syn+=pairSyn(team[i],team[j]);tsyn+=tourSyn(team[i],team[j])}
+  const succ=team.reduce((a,m)=>a+monSuccess(m.p),0),megas=team.filter(m=>m.mega).length;
+  const W=TV_W,parts={via:v*W.via,syn:syn*W.syn*FM.s,tsyn:tsyn*W.tsyn*FM.t,succ:succ*W.succ*FM.t,type:-st.s*W.type,plan:-gp.penalty*W.plan,threat:-tr.pen*W.threat,mega:(team.length>=5&&megas===2?1:0)*W.mega};
   return {score:Object.values(parts).reduce((a,b)=>a+b,0),parts,st,gp,tr}}
 // Type balance as the planner and auto-build weigh it. In 377 tournament teams the raw count of leftover weaknesses
 // did not separate winners from losers (≈3.9 either way), but stacking did: teams where one type hits 3+ more members
@@ -43,7 +43,7 @@ function typeEmphasis(a){const {maxStack,w3}=typeShape(a);const un=a.unresisted.
 // The doubles pillars winning tournament teams almost all have (377 teams, 61 with 70%+ wins):
 // speed control (90% of winners: Tailwind, Trick Room or speed drops) and spread damage (2.1 attackers on average).
 function spreadUsers(team){return team.filter(m=>{const mv=m._mv&&m._mv.length?m._mv:(m.moves||[]);return mv.slice(0,6).some(x=>x.spread&&x.bp>0&&(!mv.pct||!mv.pct.size||(mv.pct.get(x.name)||0)>=40))}).length}
-function pillarCost(team,gp){if(S.format!=='doubles'||team.length<5)return 0;let c=0;
+function pillarCost(team,gp){if(team.length<5)return 0;let c=0;
   const sp=(gp.rows.find(r=>r.k==='speed')||{}).st;if(sp!=='ok')c+=sp==='part'?14:30;
   const su=spreadUsers(team);c+=Math.max(0,2-su)*7;return c}
 function planFixes(ms,pool,useA,opts){
@@ -67,7 +67,7 @@ function planFixes(ms,pool,useA,opts){
   // Mega goal: every Mega the finished team would still be short of costs a lot, so plans that bring one in rise to the top
   const evalPlan=pl=>{const tv=teamValue(pl.team,useA);let s=-tv.score+typeEmphasis(tv.st.a)+megaShort(pl.team)*35+pillarCost(pl.team,tv.gp);pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
     for(const a of rolesBase.arch)if(a.active&&a.key!=='tw'&&!pl.roles.arch.some(b=>b.key===a.key&&b.active))s+=20;
-    for(const x of pl.ch){const rest=pl.team.filter(m=>m.p!==x.c.p);const v=viability(x.c.p);x.v=v;if(v<12&&!S.fun)s+=15;if(S.fun&&isMetaPick(x.c.p))s+=10;
+    for(const x of pl.ch){const rest=pl.team.filter(m=>m.p!==x.c.p);const v=viability(x.c.p);x.v=v;if(v<12&&!OFFMETA)s+=15;if(OFFMETA&&isMetaPick(x.c.p))s+=10;
       const f=archFit(x.c.p,x.c.mem.ability,rest,rolesBase);x.why=f.why;s-=f.s*.2;x.syn=synergy(x.c.p,rest);
       if(x.out)s+=4+(x.out.mega?6:0);if(ui.pool==='boxfill'&&!inBox(x.c.p))s+=12}
     pl.score=s;return pl};
@@ -114,7 +114,7 @@ function planFixes(ms,pool,useA,opts){
   // More ideas: further plans with new incoming Pokémon, then (for a full team) side-grades that keep the type rating and speed control
   const more=[],inSeen=new Set(out.flatMap(pl=>pl.ch.map(x=>x.c.p.b)));
   for(const pl of all){if(more.length>=12)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>inSeen.has(b)))continue;ins.forEach(b=>inSeen.add(b));more.push(pl)}
-  if(full){const side=singles.filter(pl=>keepsPlan(pl)&&pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<=basePl.score+60&&megaShort(pl.team)<=megaShort(ms)&&(S.fun?rating(pl.ch[0].c.p).total>=35:ui.pool==='box'?rating(pl.ch[0].c.p).total>=35:rating(pl.ch[0].c.p).total>=50)).sort((x,y)=>(x.score-rating(x.ch[0].c.p).total*.3)-(y.score-rating(y.ch[0].c.p).total*.3));
+  if(full){const side=singles.filter(pl=>keepsPlan(pl)&&pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<=basePl.score+60&&megaShort(pl.team)<=megaShort(ms)&&(OFFMETA?rating(pl.ch[0].c.p).total>=35:ui.pool==='box'?rating(pl.ch[0].c.p).total>=35:rating(pl.ch[0].c.p).total>=50)).sort((x,y)=>(x.score-rating(x.ch[0].c.p).total*.3)-(y.score-rating(y.ch[0].c.p).total*.3));
     for(const pl of side){if(more.length>=18)break;const b=pl.ch[0].c.p.b;if(inSeen.has(b))continue;inSeen.add(b);pl.side=pl.score>=basePl.score-(clean?25:10);more.push(pl)}}
   out.more=more;
   out.base=base;out.rolesBase=rolesBase;out.gp=basePl.gp;out.basePl=basePl;out.baseA=basePl.st.a;out.full=full;out.tsBase=tsBase;out.tsOn=tsOn;
@@ -122,7 +122,7 @@ function planFixes(ms,pool,useA,opts){
 }
 // Game-plan jobs a plan fills or breaks, in plain words.
 const GP_RANK={miss:0,opt:1,part:1,ok:2};
-const GP_WORD={speed:'speed control',backup:'backup speed',trfit:'Trick Room attackers',weather:'weather',terrain:'terrain',support:'lead support (Fake Out, Intimidate or redirection)',prio:'priority',anti:'an answer to their speed control',haz:'Stealth Rock',hazrm:'hazard removal',pivot:'pivoting'};
+const GP_WORD={speed:'speed control',backup:'backup speed',trfit:'Trick Room attackers',weather:'weather',terrain:'terrain',support:'lead support (Fake Out, Intimidate or redirection)',prio:'priority',anti:'an answer to their speed control'};
 function gpDiff(a,b){if(!a||!b)return [];const out=[];
   for(const r of b.rows){const o=a.rows.find(x=>x.k===r.k);
     if(!o){if(r.st!=='ok'&&r.note)out.push(`<span class="warnline">${esc(r.label)}</span>: ${esc(r.note)}`);continue}
@@ -159,25 +159,20 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
       <div><button class="btn sm primary" type="button" data-plan="${k}">Apply ${k>=plans.length?'this':'plan '+(k+1)}</button></div></div>`}).join('')+moreBtn;
   ui.planList=list;
 }
-function renderTrios(ms,useA){const el=$('trios');
-  if(S.format!=='singles'||ms.length<4){el.hidden=true;el.innerHTML='';return}
-  const tr=[];for(let i=0;i<ms.length;i++)for(let j=i+1;j<ms.length;j++)for(let k=j+1;k<ms.length;k++){const t=[ms[i],ms[j],ms[k]];const a=analyze(t,useA);tr.push({t,a,s:score(a)})}
-  tr.sort((x,y)=>x.s-y.s);el.hidden=false;
-  el.innerHTML=`<h3 class="lbl" style="margin:4px 0 8px">Strongest picks of 3 (by type matchups)</h3><div class="list">${tr.slice(0,3).map(o=>`<div class="item"><div style="min-width:0"><div class="t1">${o.t.map(m=>esc(m.d)).join(' · ')}</div><div class="t2">${o.a.weak.length?'Weak to '+o.a.weak.join(', '):'No leftover weaknesses'}${o.a.unresisted.length?` · Nothing resists ${o.a.unresisted.join(', ')}`:''}</div></div><span class="pill ${RC(o.a.excess)}">${wsTxt(o.a)}</span></div>`).join('')}</div>`}
 function pctBars(arr,limit){return (arr||[]).slice(0,limit).map(([n,v])=>`<div class="bar"><span class="bn" style="--w:${Math.max(0,Math.min(100,+v||0))}%">${esc(n)}</span><span class="bv">${v==null?'':(+v).toFixed(1)+'%'}</span></div>`).join('')}
 function stat(title,arr,limit){return arr&&arr.length?`<div class="stat"><h4>${title}</h4>${pctBars(arr,limit)}</div>`:''}
 function renderMeta(){
-  if(S.format==='doubles'&&!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}
+  if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}
   document.querySelectorAll('[data-src]').forEach(x=>{const has=!!META[SRC[x.dataset.src]];x.disabled=!has;x.title=has?'':'No data from this source yet'});
-  const fmt=S.format,d=metaDoc(),st=META.status;
-  $('srcSeg').hidden=fmt==='singles';document.querySelectorAll('[data-src]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.src===ui.metaSrc));
-  $('metaTitle').textContent=(fmt==='singles'?'Singles':'Doubles')+' meta';
+  const d=metaDoc(),st=META.status;
+  $('srcSeg').hidden=false;document.querySelectorAll('[data-src]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.src===ui.metaSrc));
+  $('metaTitle').textContent='Doubles meta';
   if(!d){$('metaSource').textContent='Live data appears here when the page is opened in Claude.';$('metaList').innerHTML='<div class="empty-note">No meta data loaded yet.</div>';$('metaStatus').innerHTML='';return}
   const when=t=>{try{return new Date(t).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return t}};
   $('metaSource').textContent=`${d.source}${d.period&&!String(d.source).includes(d.period)?' · '+d.period:''}${d.battles?` · ${(+d.battles).toLocaleString()} battles`:''}`;
-  $('metaStatus').innerHTML=st?`Last refresh ${esc(when(st.lastRun))}${st.ok===false?' · <span class="bad">failed: '+esc(st.note||'')+'</span>':st.note?' · '+esc(st.note):''} · ${esc(st.schedule||'Refreshes daily')}${fmt==='singles'&&d.smogon?`<br>Usage % from ${esc(d.smogon.source)}, ${esc(d.smogon.period)}.`:''}`:'';
-  const kind=d.kind||(fmt==='doubles'?'ladder':'ingame');
-  $('metaList').innerHTML=(d.top||[]).map(t0=>{const p=byName.get(t0.n);let t=t0;if(p&&fmt==='doubles'&&!(t0.mv&&t0.mv.length)){const st=setFor(p,'doubles','tour');t={...t0,mv:st.mv,it:st.it,ab:st.ab,na:st.na,tm:st.tm}}const u=kind==='ladder'?t.u:(fmt==='singles'&&p?U(p):null);
+  $('metaStatus').innerHTML=st?`Last refresh ${esc(when(st.lastRun))}${st.ok===false?' · <span class="bad">failed: '+esc(st.note||'')+'</span>':st.note?' · '+esc(st.note):''} · ${esc(st.schedule||'Refreshes daily')}`:'';
+  const kind=d.kind||'ladder';
+  $('metaList').innerHTML=(d.top||[]).map(t0=>{const p=byName.get(t0.n);let t=t0;if(p&&!(t0.mv&&t0.mv.length)){const st=setFor(p,'doubles','tour');t={...t0,mv:st.mv,it:st.it,ab:st.ab,na:st.na,tm:st.tm}}const u=kind==='ladder'?t.u:null;
     const sets=[t.w?`<div class="stat"><h4>Win rate · ${esc(d.source||'this list')}</h4><div class="pc">${(+t.w).toFixed(1)}%</div></div>`:'',stat('Abilities',t.ab,3),stat('Items',t.it,5),stat('Moves',t.mv,8),stat('Natures',t.na,3),t.cc&&t.cc.length?`<div class="stat"><h4>Checks &amp; counters</h4><div style="font-size:13px">${t.cc.slice(0,5).map(([n,v])=>{const q=byName.get(n);return esc(q?q.d:n)+` <span class="vsub">${(+v).toFixed(0)}</span>`}).join(', ')}</div></div>`:'',
       t.tm&&t.tm.length?`<div class="stat"><h4>Teammates</h4><div style="font-size:13px">${t.tm.slice(0,5).map(([n,v])=>{const q=byName.get(n);return esc(q?q.d:n)+(v!=null?` <span class="vsub">${(+v).toFixed(0)}%</span>`:'')}).join(', ')}</div></div>`:''].join('');
     const add=p&&!members().some(m=>m.base===p.b)&&S.slots.some(s=>!byName.get(s.n))?`<button class="btn sm" type="button" data-addmeta="${esc(t.n)}">Add to team</button>`:'';

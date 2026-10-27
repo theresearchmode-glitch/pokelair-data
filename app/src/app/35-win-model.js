@@ -43,7 +43,7 @@ function mixCredit(names){const M=META.model,k=testedPairs(names);if(k==null||!M
 // so it can't vouch for the upside of a team without them. Same for a weather or terrain the team needs but never sets.
 // Each missing piece cuts the above-average edge by 15% (never below 40%).
 const PILLARS={speed:'no speed control',fake:'no lead support (Fake Out, Intimidate or redirection)',spread:'no spread damage',mega:'no Mega'};
-function structCredit(ms){if(S.format!=='doubles'||ms.length!==6)return {c:1,miss:[]};let CK=null;try{CK=proChecks(ms,true)}catch(e){}if(!CK)return {c:1,miss:[]};
+function structCredit(ms){if(ms.length!==6)return {c:1,miss:[]};let CK=null;try{CK=proChecks(ms,true)}catch(e){}if(!CK)return {c:1,miss:[]};
   // the Mega rule is fixed (at least one Mega), so the score never depends on your "Megas on team" setting
   const miss=CK.items.filter(x=>PILLARS[x.k]&&x.k!=='mega'&&!x.ok&&!x.skip).map(x=>PILLARS[x.k]);if(!ms.some(m=>m.p&&m.p.m))miss.push(PILLARS.mega);
   // a Pokémon whose ability needs weather or terrain that nothing on the team sets (Swift Swim with no rain) is a broken piece
@@ -54,8 +54,8 @@ function structCredit(ms){if(S.format!=='doubles'||ms.length!==6)return {c:1,mis
 // upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
 function strengthX(names,ms){const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
   const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
-// The model is trained on doubles tournament games only, so singles teams get no Team Score.
-function winVsField(names,mine,msIn){if(!modelOK()||names.length<6||S.format!=='doubles')return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
+// The model is trained on doubles tournament games only.
+function winVsField(names,mine,msIn){if(!modelOK()||names.length<6)return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
   const ms=mine?(msIn||members()):null,mx=META.model.meanX||0;
   const {xRaw,x0,cr,sc}=strengthX(names,ms),x=calibK()*(xRaw-mx);
   const pa=mine?personalAdj():null;let xp=null;if(pa){xp=x;for(const n of names)xp+=(pa.get(n)||0)/4}
@@ -69,15 +69,15 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
 
 
 // Team Score of any six members (plans, additions, builds), from the same model as the Team page
-function tsOf(team){if(!team||team.length!==6||S.format!=='doubles')return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?teamScore({wv}).score:null}catch(e){return null}}
-// Fix plans, Best additions and Build for me choose by Team Score in doubles when the win model is loaded (Fun mode keeps its own picks).
-function useTSPick(){return S.format==='doubles'&&!S.fun&&modelOK()}
+function tsOf(team){if(!team||team.length!==6)return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?teamScore({wv}).score:null}catch(e){return null}}
+// Fix plans, Best additions and Build for me choose by Team Score when the win model is loaded (off-meta searches keep their own picks).
+function useTSPick(){return !OFFMETA&&modelOK()}
 // What "improves the team" means everywhere (Fix plans, Quick add, Best additions): the Team Score rises by at least this much
 var TS_GAIN=2;
 // a plan's Team Score, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
 function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
 // Team Score and win chance of any six, for chips that show both (the rank moves much more than the win chance)
-function tsInfo(team){if(!team||team.length!==6||S.format!=='doubles')return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?{score:teamScore({wv}).score,p:wv.p}:null}catch(e){return null}}
+function tsInfo(team){if(!team||team.length!==6)return null;try{const wv=winVsField(team.map(m=>m.p.n),true,team);return wv?{score:teamScore({wv}).score,p:wv.p}:null}catch(e){return null}}
 function tsTitle(base,t){return `Team Score ${base.score} → ${t.score}; win chance against an average team ${(base.p*100).toFixed(1)}% → ${(t.p*100).toFixed(1)}%`}
 function tsChip(team){const base=ui.vsum&&ui.vsum.TS;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
   return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">Team Score ${d>0?'+':d<0?'−':'±'}${Math.abs(d)}</span>`}

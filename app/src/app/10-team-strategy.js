@@ -36,7 +36,7 @@ function roleMoves(m) {
 }
 function isSlow(p) { return p.sp != null && p.sp <= 60 && p.st && Math.max(p.st[1], p.st[3]) >= 95; }
 
-// Viability 0-100 from in-game rank, tournament use and ladder usage for the current format.
+// Viability 0-100 from in-game rank, tournament use and ladder usage in doubles.
 let vCache = new Map();
 // Find a row for p in a meta list. Rows often use the base name for a Mega (the in-game data does);
 // the row's top item tells which form it really describes. Returns a score multiplier: 1 = this form, .25 = another form.
@@ -67,11 +67,7 @@ function viability(p) {
   // top 31 ranks fall from 100 to 31; below that it keeps falling gently (rank 256 ≈ 10) instead of flattening at 30
   const rankScore = (r) => r <= 31 ? 100 - (r - 1) * 2.3 : Math.max(10, 31 - (r - 31) * 21 / 225);
   const usageScore = (u) => u > 0 ? Math.min(100, 20 + u * 2) : 0;
-  if (S.format === 'singles') {
-    const d = META.singles; const hit = rowFor(d, p); if (hit) v = Math.max(v, rankScore(hit.t.r) * hit.scale);
-    const su = d && d.smogon && d.smogon.usage ? (d.smogon.usage.find(x => x[0] === p.n) || [0, 0])[1] : (p.us || 0);
-    v = Math.max(v, usageScore(su));
-  } else {
+  {
     const ig = META.doubles_ingame; const hit = rowFor(ig, p); if (hit) v = Math.max(v, rankScore(hit.t.r) * hit.scale);
     if (ig && ig.more) { const mm = ig.more.find(x => x.n === p.n) || (!p.m && ig.more.find(x => x.n === p.b && !byName.get(p.b + '-Mega'))); if (mm) v = Math.max(v, rankScore(mm.r)); }
     const tour = META.doubles_tour; if (tour && tour.top) { const max = Math.max(...tour.top.map(x => x.teams || 0), 1);
@@ -82,13 +78,13 @@ function viability(p) {
   if (v === 0) v = Math.max(0, Math.min(18, ((p.s || 450) - 450) / 5));
   v = Math.round(v); vCache.set(key, v); return v;
 }
-// Fun mode: rank Pokémon by raw power and by how well they fix the team, not by how popular they are.
+// Off-meta search (OFFMETA, on only inside withOffMeta for hidden-gem and fresh-take searches): rank Pokémon by raw power and by how well they fix the team, not by how popular they are.
 // Meta picks still count, just less, so a niche Pokémon that solves the problem can win the slot.
 function rawPower(p) { return Math.max(0, Math.min(60, ((p.s || 450) - 430) / 4)); }
 function isMetaPick(p) { return viability(p) >= 45; }
-// Normal mode: half popularity, half our rating, so strong unproven Pokémon can win a slot on fit. Fun mode: our intrinsic score, meta picks discounted.
-function pickVia(p) { if (!S.fun) return Math.round(.5 * viability(p) + .5 * rating(p).total); return Math.round(.8 * rating(p).intrinsic + (isMetaPick(p) ? -12 : viability(p) < 25 ? 6 : 0)); }
-function poolOK(p, min) { return S.fun ? (rating(p).total >= 35 || !!p.m) : viability(p) >= min || rating(p).total >= 62; }
+// Normal mode: half popularity, half our rating, so strong unproven Pokémon can win a slot on fit. Off-meta search: our intrinsic score, meta picks discounted.
+function pickVia(p) { if (!OFFMETA) return Math.round(.5 * viability(p) + .5 * rating(p).total); return Math.round(.8 * rating(p).intrinsic + (isMetaPick(p) ? -12 : viability(p) < 25 ? 6 : 0)); }
+function poolOK(p, min) { return OFFMETA ? (rating(p).total >= 35 || !!p.m) : viability(p) >= min || rating(p).total >= 62; }
 // The ability most players run on p, from the meta data, if it's one p can have.
 function metaAbility(p) { const t = metaEntry(p); if (!t || !t.ab || !t.ab.length) return null; const a = t.ab[0][0]; return p.a.includes(a) ? a : null; }
 function vLabel(v) { return v >= 70 ? 'Top tier' : v >= 45 ? 'Strong' : v >= 25 ? 'Solid' : v >= 12 ? 'Niche' : 'Fringe'; }

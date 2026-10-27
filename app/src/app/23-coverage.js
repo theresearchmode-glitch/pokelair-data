@@ -1,13 +1,13 @@
 // ---------- Coverage: best additions ----------
 // What a Pokémon does for the team, in one word.
-function monRole(m, fmt) { const r = k => relMove(m, ROLE[k])[0];
+function monRole(m) { const r = k => relMove(m, ROLE[k])[0];
   if (WEATHER_OF[m.ability]) return ARCH[WEATHER_OF[m.ability]].name.toUpperCase(); if (r('tw') >= .5) return 'TAILWIND'; if (r('tr') >= .5) return 'TRICK ROOM';
-  if (fmt === 'doubles' && r('fake') >= .5) return 'FAKE OUT'; if (fmt === 'doubles' && r('redir') >= .5) return 'REDIRECT'; if (fmt === 'singles' && r('haz') >= .5) return 'ROCKS';
-  if (r('prio') >= .5) return 'PRIORITY'; if (fmt === 'singles' && r('pivot') >= .5) return 'PIVOT'; if (r('boost') >= .5) return 'SETUP'; return 'ATTACKER'; }
+  if (r('fake') >= .5) return 'FAKE OUT'; if (r('redir') >= .5) return 'REDIRECT';
+  if (r('prio') >= .5) return 'PRIORITY'; if (r('boost') >= .5) return 'SETUP'; return 'ATTACKER'; }
 // The team-building principles, each checked against tournament teams (377 teams, 2,459 games):
 // speed control (Tailwind teams won 56.6% vs 51.7%), no stacked weakness (51% vs 55%), at most one type hitting 3+ (50% vs 55.5%),
 // 17+ of 18 types hit super effectively (the bottom quarter of tournament teams hits 17), answers to 23+ of the 30 most-used Pokémon (the median),
-// and in doubles Fake Out or redirection and 2 Mega options (80% of teams).
+// and Fake Out or redirection and 2 Mega options (80% of teams).
 function teamProfile(ms, useA) {
   const st = stateScore(ms, useA), gp = gamePlan(ms), tr = threatReport(ms, useA), sh = typeShape(st.a);
   const ans = tr.rows.filter(r => r.best >= 1).length, gpst = k => (gp.rows.find(r => r.k === k) || {}).st;
@@ -18,17 +18,17 @@ function principles(P, ms) { const c = proChecks(ms, $('useAbil').checked); if (
   return c.items.map(x => ({ok: x.skip ? 'part' : x.soft ? 'part' : x.ok ? 'ok' : 'miss', label: x.label, detail: (x.ok ? x.have : x.miss) + (x.pro ? ` · ${x.pro}` : '')})); }
 let recCache = {key: null, val: null};
 function computeRecs(ms, useA) {
-  const key = JSON.stringify([!!S.fun, S.slots, ui.recSrc, S.format, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
+  const key = JSON.stringify([OFFMETA, S.slots, ui.recSrc, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
   if (recCache.key === key) return recCache.val;
   ui.recMore = 0;
-  const pool = (ui.recSrc === 'all' ? ROSTER.filter(p => inBox(p) || poolOK(p, 25)) : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isTrap(p) && (S.fun || viability(p) >= 12 || rating(p).total >= 50));
+  const pool = (ui.recSrc === 'all' ? ROSTER.filter(p => inBox(p) || poolOK(p, 25)) : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isTrap(p) && (OFFMETA || viability(p) >= 12 || rating(p).total >= 50));
   const res = planFixes(ms, pool, useA, {singlesOnly: true}), B = teamProfile(ms, useA);
   const gpRank = {miss: 0, opt: 1, part: 1, ok: 2};
   const keeps = (A) => A.ex <= B.ex && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.sh.w3 <= Math.max(1, B.sh.w3) && A.un <= B.un && A.off >= B.off && A.ans >= B.ans
     && B.gp.rows.every(r => gpRank[A.gpst(r.k) || 'miss'] >= gpRank[r.st]);
   const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0);
   const clean = [], soft = [], seen = new Set();
-  // Team Score decides when the pick completes a six (doubles, win model loaded): it must raise the Team Score, and the
+  // Team Score decides when the pick completes a six (win model loaded): it must raise the Team Score, and the
   // highest goes first. The type rules relax to "at most one more weakness or unresisted type, no new stack".
   const useTS = useTSPick() && ms.length >= 5, baseTS = useTS && ms.length === 6 ? tsOf(ms) : null; let tsN = 0;
   const tsOK = pl => { if (!useTS || pl.team.length !== 6) return null; if (pl._ts === undefined) { if (tsN >= 120) return null; tsN++; pl._ts = tsOf(pl.team); } return pl._ts; };
@@ -44,15 +44,15 @@ function computeRecs(ms, useA) {
   // rank by the model score plus how much each one lifts defense, offense, meta answers and the game plan
   // Strength floor: suggestions have to be good Pokémon, not just a type fit. Whole roster asks for a rating of 50+,
   // your own box 35+ (it's what you have). Then rank by rating plus how much the pick improves the team.
-  const floor = S.fun ? 35 : ui.recSrc === 'all' ? 50 : 35, strong = pl => inBox(pl.ch[0].c.p) && ui.recSrc === 'box' ? rating(pl.ch[0].c.p).total >= floor : rating(pl.ch[0].c.p).total >= floor;
+  const floor = OFFMETA ? 35 : ui.recSrc === 'all' ? 50 : 35, strong = pl => inBox(pl.ch[0].c.p) && ui.recSrc === 'box' ? rating(pl.ch[0].c.p).total >= floor : rating(pl.ch[0].c.p).total >= floor;
   const rank = pl => (pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + pl.gain * 4;
   for (let k = clean.length - 1; k >= 0; k--) if (!strong(clean[k])) clean.splice(k, 1);
   clean.sort((x, y) => rank(y) - rank(x));
-  // Hidden gems: outside Fun mode, also look past the usual meta picks for up to 2 strong Pokémon that fit just as cleanly.
+  // Hidden gems: also look past the usual meta picks (with off-meta scoring) for up to 2 strong Pokémon that fit just as cleanly.
   const gems = [];
-  if (!S.fun) { const taken = new Set(clean.map(pl => pl.ch[0].c.p.b));
+  if (!OFFMETA) { const taken = new Set(clean.map(pl => pl.ch[0].c.p.b));
     const gpool = (ui.recSrc === 'all' ? ROSTER : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isMetaPick(p) && !taken.has(p.b) && (rating(p).total >= 55 || p.m));
-    const gres = withFun(() => planFixes(ms, gpool, useA, {singlesOnly: true}));
+    const gres = withOffMeta(() => planFixes(ms, gpool, useA, {singlesOnly: true}));
     const gseen = new Set();
     for (const pl of gres.singles) { const b = pl.ch[0].c.p.b; if (gseen.has(b)) continue; const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
       const gt = useTS && pl.team.length === 6 ? tsOK(pl) : undefined;
@@ -88,9 +88,9 @@ function renderRecs() {
   const delta = (lbl, a, b, better, fmt) => { const d = a === b ? 'same' : better ? 'up' : 'down'; return `<span class="dchip ${d}"><b>${lbl}</b> ${fmt(b)}${a === b ? '' : ` → ${fmt(a)}`}</span>`; };
   const card = (pl, soft) => { const x = pl.ch[0], p = x.c.p, A = pl.prof, i = ui.recs.push(pl) - 1, mem = pl.team.find(m => m.p === p) || x.c.mem;
     const gpUp = B.gp.rows.filter(rw => ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => rw.label);
-    const rest = pl.team.filter(m => m.p !== p); let pair = null; for (const t of rest) { const v = pairSyn({p}, t) + (S.format === 'doubles' ? tourSyn({p}, t) : 0); if (v >= 8 && (!pair || v > pair.v)) pair = {t, v}; }
+    const rest = pl.team.filter(m => m.p !== p); let pair = null; for (const t of rest) { const v = pairSyn({p}, t) + tourSyn({p}, t); if (v >= 8 && (!pair || v > pair.v)) pair = {t, v}; }
     const why = [gpUp.length ? 'Adds ' + gpUp.join(', ').toLowerCase() : '', pair ? `often paired with ${pair.t.d}` : '', x.out ? `replaces ${x.out.d}` : ''].filter(Boolean).join(' · ');
-    return `<div class="addcard${soft ? ' soft' : ''}"><div class="rtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${confChip(p)}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}<span class="tag role">${esc(monRole(mem, S.format))}</span>${(pl.gem ? '<span class="tag offmeta">HIDDEN GEM</span>' : (pl.alt ? '<span class="tag sidegrade">SIDE-GRADE</span>' : '') + ideaTag(p)) + ratingTag(p)}</div>
+    return `<div class="addcard${soft ? ' soft' : ''}"><div class="rtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${confChip(p)}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}<span class="tag role">${esc(monRole(mem))}</span>${(pl.gem ? '<span class="tag offmeta">HIDDEN GEM</span>' : (pl.alt ? '<span class="tag sidegrade">SIDE-GRADE</span>' : '') + ideaTag(p)) + ratingTag(p)}</div>
       ${pl.gem ? `<div class="qwhy gemline">Hidden gem: ${esc(evidenceLine(p))}. It fits this team as cleanly as the usual picks.</div>` : pl.alt ? `<div class="qwhy gemline">A different look that keeps every check and stays close on the numbers.</div>` : ''}
       <div class="dchips">${tsChip(pl.team)}${delta('Weak', A.ex, B.ex, A.ex < B.ex, v => v)}${delta('Unresisted', A.un, B.un, A.un < B.un, v => v)}${delta('Offense', A.off, B.off, A.off > B.off, v => v + '/18')}${delta('Meta answers', A.ans, B.ans, A.ans > B.ans, v => v + '/' + B.nThreat)}</div>
       ${why ? `<div class="qwhy">${esc(why)}</div>` : ''}${pl.megaFix ? `<div class="qwhy warnline">Trade-off: ${[A.ex > B.ex ? 'one more weakness than resist' : '', A.un > B.un ? 'one more type nobody resists' : '', A.off < B.off ? 'one less type hit super effectively' : '', A.ans < B.ans ? 'one fewer meta answer' : ''].filter(Boolean).join(', ') || 'small coverage cost'}, but it brings the team to ${megaGoal()} Mega${megaGoal() > 1 ? 's' : ''}</div>` : ''}${soft ? `<div class="qwhy warnline">Trade-off: ${esc([A.ex > B.ex ? `${A.ex - B.ex} more weakness` : '', A.off < B.off ? 'one less type covered' : '', A.ans < B.ans ? `${B.ans - A.ans} fewer meta answers` : '', A.un > B.un ? 'one more unresisted type' : ''].filter(Boolean).join(', ') || 'loses part of the game plan')}</div>` : ''}

@@ -30,8 +30,7 @@ function relMove_(m, names) {
 const anyOf = rs => 1 - rs.reduce((a, r) => a * (1 - r), 1);
 const pctTxt = r => r >= .995 ? '' : ` ${Math.round(r * 100)}%`;
 // Returns {rows, penalty}. rows: [{k, label, st: ok|part|miss|opt, who, note}]. Lower penalty is better.
-function gamePlan(team, fmt) {
-  fmt = fmt || S.format; const dbl = fmt === 'doubles';
+function gamePlan(team) {
   const has = k => team.map(m => { const [r, mv] = relMove(m, ROLE[k]); return {m, r, mv}; }).filter(x => x.r >= .15).sort((a, b) => b.r - a.r);
   const cov = xs => anyOf(xs.map(x => x.r));
   const who = (xs, n = 3) => xs.slice(0, n).map(x => `${x.m.d}${x.mv ? ' · ' + x.mv : ''}${pctTxt(x.r)}`).join(', ');
@@ -48,7 +47,7 @@ function gamePlan(team, fmt) {
   const fast = Math.min(1, (R.prio.reduce((a, x) => a + x.r, 0) + R.self.reduce((a, x) => a + x.r, 0)) / 2.5);
   const rows = []; let pen = 0;
   const st = (v, ok, part) => v >= ok ? 'ok' : v >= part ? 'part' : 'miss';
-  if (dbl) {
+  {
     // 1. a way to move first: Tailwind, Trick Room, weather speed, or (weaker) a pile of priority and self-speed
     const opts = [['Tailwind', c.tw, R.tw], ['Trick Room', c.tr, R.tr], ['weather speed', wSpeed * .9, []], ['priority and speed boosts', fast * .5, [...R.prio, ...R.self]]];  // priority alone never fully counts
     const primary = Math.max(...opts.map(o => o[1]));
@@ -67,39 +66,29 @@ function gamePlan(team, fmt) {
     if (c.tr >= .4) { const slow = team.filter(m => isSlow(m.p) && !R.tr.some(x => x.m === m && x.r >= .5));
       rows.push({k: 'trfit', label: 'Trick Room attackers', st: slow.length >= 2 ? 'ok' : slow.length ? 'part' : 'miss', who: slow.map(m => m.d).join(', '), note: slow.length >= 2 ? '' : 'Trick Room pays off with 2+ slow, hard-hitting Pokémon.'});
       pen += slow.length >= 2 ? 0 : slow.length ? 8 : 18; }
-  } else {
-    const scarf = team.map(m => ({m, r: m.mega ? 0 : ((setFor(m.p).it.find(([n]) => n === 'Choice Scarf') || [0, 0])[1] || 0) / 100, mv: 'Choice Scarf'})).filter(x => x.r >= .2);
-    const fastMons = team.filter(m => (m.p.sp || 0) >= 100);
-    const v = Math.max(cov(scarf), c.prio, c.tr, c.self, Math.min(1, fastMons.length / 2));
-    rows.push({k: 'speed', label: 'Speed', st: st(v, .6, .3), who: [who([...scarf, ...R.self, ...R.prio, ...R.tr], 3), fastMons.length ? 'fast: ' + fastMons.slice(0, 3).map(m => m.d).join(', ') : ''].filter(Boolean).join('; '),
-      note: v >= .6 ? '' : 'Little to outspeed fast threats: no Scarf, priority or setup speed.'});
-    pen += 14 * (1 - v);
-    rows.push({k: 'haz', label: 'Stealth Rock', st: st(c.haz, .5, .25), who: who(R.haz, 2), note: c.haz >= .5 ? '' : 'Rocks chip every switch-in.'}); pen += 6 * (1 - c.haz);
-    rows.push({k: 'hazrm', label: 'Hazard removal', st: c.hazrm >= .4 ? 'ok' : 'opt', who: who(R.hazrm, 2), note: ''}); pen += 2 * (1 - c.hazrm);
-    rows.push({k: 'pivot', label: 'Pivoting', st: c.pivot >= .5 ? 'ok' : 'opt', who: who(R.pivot, 2), note: ''}); pen += 3 * (1 - c.pivot);
   }
   // weather: one setter that the team uses is weather control; two kinds fight each other
   // Two weathers: a real archetype (Pelipper + Mega Charizard Y, 23 of 377 tournament teams) but it wins less (48.8% vs 54.5%).
   if (kinds.length > 1) { const sr = kinds.length === 2 && kinds.includes('sun') && kinds.includes('rain');
-    rows.push({k: 'weather', label: 'Weather', st: 'part', who: setters.map(x => `${x.m.d} · ${ARCH[x.w].name}`).join(', '), note: sr ? 'Sun and rain: you can overwrite either opposing weather, but each setter cancels the other, so lead carefully.' : 'Two weathers cancel each other out.'}); pen += sr ? 8 : (dbl ? 25 : 18); }
+    rows.push({k: 'weather', label: 'Weather', st: 'part', who: setters.map(x => `${x.m.d} · ${ARCH[x.w].name}`).join(', '), note: sr ? 'Sun and rain: you can overwrite either opposing weather, but each setter cancels the other, so lead carefully.' : 'Two weathers cancel each other out.'}); pen += sr ? 8 : 25; }
   else if (kinds.length === 1) { const ab = abusersOf(kinds[0]);
     rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
       return `${sn.join(', ')} ${self && !others.length ? 'sets and uses ' + w : 'sets ' + w}${others.length ? ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : ''}`; })(), note: ab.length ? '' : 'Nothing on the team uses it.'});
-    pen += ab.length ? -(dbl ? 8 : 5) : 10; }
-  else if (needs.length) { rows.push({k: 'weather', label: 'Weather', st: 'miss', who: '', note: `${team.filter(m => ARCH[needs[0]].abAb.includes(m.ability)).map(m => m.d).join(', ')} needs ${ARCH[needs[0]].name.toLowerCase()}, and nothing sets it.`}); pen += dbl ? 22 : 15; }
-  else { rows.push({k: 'weather', label: 'Weather', st: 'opt', who: '', note: dbl ? 'None. Opposing sun or rain will control the field.' : 'None. Optional in singles.'}); pen += dbl ? 5 : 0; }
+    pen += ab.length ? -8 : 10; }
+  else if (needs.length) { rows.push({k: 'weather', label: 'Weather', st: 'miss', who: '', note: `${team.filter(m => ARCH[needs[0]].abAb.includes(m.ability)).map(m => m.d).join(', ')} needs ${ARCH[needs[0]].name.toLowerCase()}, and nothing sets it.`}); pen += 22; }
+  else { rows.push({k: 'weather', label: 'Weather', st: 'opt', who: '', note: 'None. Opposing sun or rain will control the field.'}); pen += 5; }
   // terrain (Reg M-C): one setter with users is field control; two terrains overwrite each other
   { const ts = team.filter(m => TERRAIN_OF[m.ability]).map(m => ({m, t: TERRAIN_OF[m.ability]})), tk = [...new Set(ts.map(x => x.t))];
     if (tk.length > 1) { rows.push({k: 'terrain', label: 'Terrain', st: 'part', who: ts.map(x => `${x.m.d} · ${ARCH[x.t].name}`).join(', '), note: 'Two terrains overwrite each other: the last one to switch in wins.'}); pen += 8; }
     else if (tk.length === 1) { const key = tk[0], setM = ts.map(x => x.m), ab = fieldAbusers(team, key, setM).concat(T_TYPE[key] ? team.filter(m => !setM.includes(m) && (m.types || m.p.t).includes(T_TYPE[key]) && grounded(m)) : []);
       const uniq = [...new Set(ab)];
-      const selfBlock = key === 'psy' && dbl && c.fake + c.prio >= .5 ? ' Psychic Terrain also blocks your own Fake Out and priority into grounded foes.' : '';
+      const selfBlock = key === 'psy' && c.fake + c.prio >= .5 ? ' Psychic Terrain also blocks your own Fake Out and priority into grounded foes.' : '';
       rows.push({k: 'terrain', label: 'Terrain', st: uniq.length ? 'ok' : 'part', who: (() => { const others = uniq.filter(m => !setM.includes(m)); return `${setM.map(m => m.d).join(', ')} ${others.length ? 'sets ' + ARCH[key].name.toLowerCase() + ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : uniq.length ? 'sets and uses ' + ARCH[key].name.toLowerCase() : 'sets ' + ARCH[key].name.toLowerCase()}`; })(), note: (uniq.length ? '' : 'Nothing else on the team uses it.') + selfBlock});
-      pen += uniq.length ? -(dbl ? 5 : 3) : 0; }
+      pen += uniq.length ? -5 : 0; }
     else if (team.some(m => Object.keys(T_TYPE).some(k => itemShare(m, ARCH[k].seed) >= .5))) { const m = team.find(x => Object.keys(T_TYPE).some(k => itemShare(x, ARCH[k].seed) >= .5)); const k = Object.keys(T_TYPE).find(k => itemShare(m, ARCH[k].seed) >= .5);
-      rows.push({k: 'terrain', label: 'Terrain', st: 'miss', who: '', note: `${m.d} usually holds a ${ARCH[k].seed}, and nothing sets ${ARCH[k].name.toLowerCase()}.`}); pen += dbl ? 12 : 8; }
+      rows.push({k: 'terrain', label: 'Terrain', st: 'miss', who: '', note: `${m.d} usually holds a ${ARCH[k].seed}, and nothing sets ${ARCH[k].name.toLowerCase()}.`}); pen += 12; }
   }
-  if (dbl) {
+  {
     // lead support: Fake Out, redirection or Intimidate (the same three the checklist counts)
     const intimL = team.filter(m => m.ability === 'Intimidate').map(m => ({m, r: 1, mv: 'Intimidate'}));
     const fr = anyOf([c.fake, c.redir, intimL.length ? 1 : 0]);

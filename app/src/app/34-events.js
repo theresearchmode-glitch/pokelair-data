@@ -10,11 +10,7 @@ document.addEventListener('change',e=>{const t=e.target;
     const pc=x=>(x*100).toFixed(1)+'%';
     toast(`${v||'No item'}${v===def?': the usual item':''}${before!=null&&after!=null?` · Team Score ${before===after?'stays at '+after:before+' → '+after}${p0!=null&&T1&&before!==after?` (win chance ${pc(p0)} → ${pc(T1.p)})`:''}`:''}${cl&&v==='Choice Scarf'?' · clashes with Trick Room':''}`)}
   else if(t.id==='poolSel'){ui.pool=['box','boxfill','all'].includes(t.value)?t.value:'boxfill';LS.set('cc2.pool',ui.pool);render();toast({box:'Suggestions only use your box',boxfill:'Your box first, then the best Pokémon to catch',all:'Suggestions use the full roster'}[ui.pool])}
-  else if(t.id==='funPlan'||t.id==='funAb'||t.id==='funRec'){S.fun=t.checked;recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.fun?'Fun mode on: niche Pokémon get a real shot':'Fun mode off: back to proven meta picks')}
   else if(t.id==='oppTeamSel'){const d=META.teams,tm=d&&d.teams[+t.value];if(tm){S.opp=tm.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');persist();renderMatchup();toast('Loaded '+tm.player+'’s team as the opponent')}}
-  else if(t.id==='abDistinct'){ui.abDistinct=t.checked;LS.set('cc2.abDistinct',ui.abDistinct);if(ui.ab&&!ui.ab.busy)runAutoBuild()}
-  else if(t.id==='buildExcl'){ui.abExcl=t.checked;LS.set('cc2.abExcl',ui.abExcl);if(ui.ab&&!ui.ab.busy)runAutoBuild();else renderPoolCtl()}
-  else if(t.id==='exclSaved'){ui.exclSaved=t.checked;LS.set('cc2.exclSaved',ui.exclSaved);render();toast(t.checked?'Pokémon on your other-format saved teams are skipped':'Saved-team Pokémon can be suggested again')}
   else if(t.id==='useAbil'||t.id==='swapMega'){render();toast(t.id==='swapMega'?(t.checked?'Plans can now swap your Mega':'Your Mega is protected again'):'Plans updated')}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(e.target.id==='saveName'){e.preventDefault();const o=$('saveOver');(o||$('saveNew')).click()}else if(e.target.id&&e.target.id.startsWith('rn_')){e.preventDefault();document.querySelector(`[data-rnok="${e.target.id.slice(3)}"]`).click()}}});
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
@@ -49,7 +45,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.recsrc){ui.recSrc=d.recsrc==='all'?'all':'box';LS.set('cc2.recsrc',ui.recSrc);renderRecs()}
   else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`)}
   else if(d.absrc){ui.abSrc=d.absrc==='all'?'all':'box';LS.set('cc2.absrc',ui.abSrc);renderPoolCtl();if(ui.ab&&!ui.ab.busy)runAutoBuild()}
-  else if(d.abfmt){ui.abFmt=['doubles','singles','both'].includes(d.abfmt)?d.abfmt:'both';LS.set('cc2.abfmt',ui.abFmt);keepScroll(()=>render());if(ui.ab&&!ui.ab.busy)runAutoBuild()}
   else if(d.abnext){abNext(d.abnext)}
   else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the ${FMT(d.abuse).toLowerCase()} team. Fix plans and the game plan now describe it.`)}
   else if(d.absave){const t=abTeam(d.absave);if(!t||S.teams.length>=10)return;const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);

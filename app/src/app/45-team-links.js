@@ -1,12 +1,12 @@
 // ---------- shareable team links ----------
-// A team packs into a short code: format, optional name, and per Pokémon its name, chosen ability (if not the default)
+// A team packs into a short code: format (always "doubles"; older links may say "singles" and open as doubles), optional name, and per Pokémon its name, chosen ability (if not the default)
 // and moves (only when you changed them). Links look like <site>#team=<code>; Import also accepts a pasted link or code.
 // Opening a link never replaces your team silently: a banner asks first.
 const TL_ART = 'https://claude.ai/artifact/5VBfLTR5sM4JU5NswJYyGk';
 function tlB64(str) { const b = new TextEncoder().encode(str); let s = ''; for (const x of b) s += String.fromCharCode(x); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 function tlUnB64(code) { const s = atob(code.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((code.length + 3) % 4)); const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return new TextDecoder().decode(b); }
 function teamCode() {
-  const f = S.format, s = S.slots.filter(x => x && byName.get(x.n)).map(x => { const p = byName.get(x.n), m = memberOf(x, 0), row = [p.n];
+  const f = 'doubles', s = S.slots.filter(x => x && byName.get(x.n)).map(x => { const p = byName.get(x.n), m = memberOf(x, 0), row = [p.n];
     const defA = metaAbility(p) || bestAbility(p); if (x.a && x.a !== defA) row[1] = x.a;
     const c = x.mv && x.mv[f]; if (Array.isArray(c) && c.some(Boolean)) { row[1] = row[1] || ''; row[2] = c.slice(0, 4); }
     return row; });
@@ -21,11 +21,11 @@ function decodeTeam(text) {
   const m = t.match(/team=([A-Za-z0-9_-]{8,})/) || (/^[A-Za-z0-9_-]{12,}$/.test(t) ? [0, t] : null); if (!m) return null;
   let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; }
   if (!o || o.v !== 1 || !Array.isArray(o.s)) return null;
-  const f = o.f === 'singles' ? 'singles' : 'doubles';
+  const f = 'doubles';  // the format field is ignored: every link opens as a doubles team
   const slots = o.s.slice(0, 6).map(r => Array.isArray(r) && byName.get(String(r[0])) ? {n: String(r[0]), a: typeof r[1] === 'string' && r[1] ? r[1] : null, lock: false, ...(Array.isArray(r[2]) ? {mv: {[f]: r[2].slice(0, 4).map(x => String(x || ''))}} : {})} : null).filter(Boolean);
   if (!slots.length) return null;
   return {f, n: typeof o.n === 'string' ? o.n.slice(0, 60) : '', slots}; }
-function applyShared(x) { S.format = x.f; S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');
+function applyShared(x) { S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');
   toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`); }
 async function copyTeamLink(btn) { const l = teamLink(); if (!l) { toast('Add some Pokémon first'); return; }
   let ok = false; try { await navigator.clipboard.writeText(l); ok = true; } catch (e) {}

@@ -39,6 +39,7 @@ function dropMegaMoves(p,mv){if(p.n!==p.b&&p.n!=='Floette-Eternal')return mv;
   const out=mv.filter(([n])=>{if(bad(n))return false;if(!offSide)return true;const m=mvByName.get(n);return !(m&&m.cat===offSide&&m.bp>0)});return out.length>=3?out:[]}
 let setCache=new Map();
 // pref: which doubles list leads ('ingame', 'tour' or 'ladder'); defaults to the one picked on the Meta tab.
+// fmt 'singles' is still live: the page is doubles only, but singles sets are the fallback when doubles has none (OTHER()).
 function setFor(p,fmt,pref){fmt=fmt||S.format;pref=fmt==='singles'?'ingame':(pref||ui.metaSrc);
   const bk=fmt+'|'+pref+'|'+metaVersion;let bucket=setCache.get(bk);if(!bucket){bucket=new Map();setCache.set(bk,bucket)}const hit=bucket.get(p.n);if(hit)return hit;
   const sd=sdRow(p,fmt),gm=gameRow(p,fmt),C=[];
@@ -72,10 +73,10 @@ function fixTeams(){S.teams=(Array.isArray(S.teams)?S.teams:[]).filter(t=>t&&Arr
   if(S.megaV!==1){S.maxMega=2;S.megaV=1}
   // how many Megas the team should carry: plans, additions and Build for me aim for exactly this many
   if(![0,1,2].includes(S.megaGoal))S.megaGoal=S.maxMega===1?1:2;
-  S.fun=!!S.fun;
   S.excl=[...new Set((Array.isArray(S.excl)?S.excl:[]).filter(n=>typeof n==='string'&&byName.has(n)))].slice(0,100)}
 // One shape for every team slot, live or saved: a known Pokémon, a string ability, a lock. Moves come from the meta.
 // Custom moves are kept per format: {doubles:[4 names], singles:[4 names]}. No entry means "use the popular set".
+// The singles entries come from the retired singles mode; they're kept so stored user data is never lost.
 function normMv(mv){if(!mv||typeof mv!=='object'||Array.isArray(mv))return null;const o={};
   for(const f of ['doubles','singles']){const a=mv[f];if(!Array.isArray(a))continue;const c=a.slice(0,4).map(x=>typeof x==='string'&&mvByName.has(x)?x:'');while(c.length<4)c.push('');if(c.some(Boolean))o[f]=c}
   return Object.keys(o).length?o:null}
@@ -89,7 +90,7 @@ function fixSlots(){S.slots=normSlots(S.slots);S.opp=(Array.isArray(S.opp)?S.opp
 fixSlots();fixTeams();fixLog();
 for(const k of ['doubles','doubles_ingame','doubles_tour','singles'])META[k]=cleanMeta(META[k]);
 META.teams=cleanTeams(META.teams);META.history=cleanHistory(META.history);
-let ui={recSrc:LS.get('cc2.recsrc','box')==='all'?'all':'box',abSrc:LS.get('cc2.absrc','box')==='all'?'all':'box',abExcl:false,abFmt:'doubles',abDistinct:LS.get('cc2.abDistinct',true)!==false,pool:['box','boxfill','all'].includes(LS.get('cc2.pool',''))?LS.get('cc2.pool',''):'boxfill',exclSaved:false,setMon:LS.get('cc2.setMon',null),setSrc:'ingame',metaSrc:'ingame',sort:'recent',confirmDel:null,renaming:null,saving:false};
+let ui={recSrc:LS.get('cc2.recsrc','box')==='all'?'all':'box',abSrc:LS.get('cc2.absrc','box')==='all'?'all':'box',pool:['box','boxfill','all'].includes(LS.get('cc2.pool',''))?LS.get('cc2.pool',''):'boxfill',setMon:LS.get('cc2.setMon',null),setSrc:'ingame',metaSrc:'ingame',sort:'recent',confirmDel:null,renaming:null,saving:false};
 
 // "Data from …" in the header: the newest date any data document carries.
 const DATA_AT={};

@@ -60,7 +60,7 @@ function parsePaste(text) {
       if (m && learn.has(m.name)) mv.push(m.name); else notes.push(`${p.d}: skipped move "${name}"`); }
     if (slots.some(s => byName.get(s.n).b === p.b)) { notes.push(`Skipped a second ${p.b} (one per species)`); continue; }
     const slot = {n: p.n, a: ability, lock: false};
-    if (mv.length) { const c = mv.slice(0, 4); while (c.length < 4) c.push(''); slot.mv = {[S.format]: c}; }
+    if (mv.length) { const c = mv.slice(0, 4); while (c.length < 4) c.push(''); slot.mv = {doubles: c}; }
     slots.push(slot);
   }
   return {slots, notes};

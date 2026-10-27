@@ -1,4 +1,4 @@
-// ---------- Sets: popular singles and doubles sets for any Pokémon ----------
+// ---------- Sets: popular doubles sets for any Pokémon ----------
 // "Best data" is the merged set: official in-game stats first, then Showdown or tournament rows where the game has none (a Mega's own set).
 const SET_SRC = {ingame: 'Best data', tour: 'Tournaments', ladder: 'Showdown'};
 function setCard(title, sub, t, extra, foot) {
@@ -48,8 +48,7 @@ function renderSets() {
     dCard = setCard('Doubles', rankLine(d, row) || mainSource(st), st, seg, setSources(st, 'doubles')); }
   else { const d = META[SRC[src]], row = findIn(d, p);
     dCard = setCard('Doubles', rankLine(d, row) || (d ? esc(d.source || '') : 'No data loaded yet'), row, seg); }
-  const ss = setFor(p, 'singles'), sdoc = META.singles, srow = findIn(sdoc, p);
-  out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}<span class="tag tier t${(v => v >= 70 ? 3 : v >= 45 ? 2 : v >= 25 ? 1 : 0)(viability(p))}">${vLabel(viability(p))} in ${S.format}</span></div>
+  out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}<span class="tag tier t${(v => v >= 70 ? 3 : v >= 45 ? 2 : v >= 25 ? 1 : 0)(viability(p))}">${vLabel(viability(p))} in doubles</span></div>
     ${(m => m ? `<p class="t2 setmine">Your ${esc(m.d)}: ${esc(m.ability)}${m.item ? ` @ <b>${esc(m.item)}</b>${m.heldItem ? ' (your pick)' : ''}` : ''} · ${m.moves.filter(Boolean).map(x => esc(x.name)).join(', ')}${m.custom ? ' (your moves)' : ''}</p>` : '')(team.find(m => m.p.n === p.n))}
     <div class="mucols one">${dCard}</div>`;
 }

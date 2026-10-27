@@ -18,22 +18,21 @@ function shotResolve(raw) {
   const m = raw.match(/^mega\s+(.+?)(?:\s+([xyz]))?$/i); if (m) { const b = shotResolve(m[1]); const q = b && byName.get(b.n + '-Mega' + (m[2] ? '-' + m[2].toUpperCase() : '')); if (q) return q; }
   return searchMon(raw, 1)[0] || null;
 }
-// How often this species runs its Mega Stone in the current format, and which Mega. Official in-game data first.
+// How often this species runs its Mega Stone in doubles, and which Mega. Official in-game data first.
 function stoneShare(p) {
   if (p.m) return null; const megas = ROSTER.filter(q => q.m && ownKey(q) === p.n); if (!megas.length) return null;
   let best = null; const take = (share, form, src) => { if (form && form.m && share > 0 && (!best || share > best.share)) best = {share, form, src}; };
   const fromItems = (it, src) => { if (!it || !it.length) return; const st = it.filter(([n]) => STONE_RE.test(n) && n !== 'Eviolite'); if (!st.length) return;
     const tot = st.reduce((a, [, v]) => a + (+v || 0), 0); take(tot, megaFormFor(p, {it: [[st[0][0], 100]]}), src); };
-  const live = findIn(S.format === 'singles' ? META.singles : META.doubles_ingame, p, true); if (live) fromItems(live.it, 'in-game');
-  if (!best) { const g = gameRow(p, S.format); if (g) fromItems(g.it, 'in-game'); }
-  if (!best && S.format === 'doubles' && META.doubles_tour) { const top = META.doubles_tour.top; const mr = top.find(t => megas.some(q => q.n === t.n)), br = top.find(t => t.n === p.n);
+  const live = findIn(META.doubles_ingame, p, true); if (live) fromItems(live.it, 'in-game');
+  if (!best) { const g = gameRow(p, 'doubles'); if (g) fromItems(g.it, 'in-game'); }
+  if (!best && META.doubles_tour) { const top = META.doubles_tour.top; const mr = top.find(t => megas.some(q => q.n === t.n)), br = top.find(t => t.n === p.n);
     if (mr && mr.teams) take(br && br.teams ? Math.min(100, 100 * mr.teams / br.teams) : 90, byName.get(mr.n), 'tournament'); }
   return best;
 }
 function shotPrompt() {
-  const dbl = S.format === 'doubles';
   const mine = members().map(m => m.p.n);
-  return `This image should be a screenshot of the team preview screen from Pokémon Champions (the 2026 Pokémon battle game), in ${dbl ? 'Doubles (each player brings 6 and picks 4)' : 'Singles (each player brings 6 and picks 3)'}.
+  return `This image should be a screenshot of the team preview screen from Pokémon Champions (the 2026 Pokémon battle game), in Doubles (each player brings 6 and picks 4).
 Team preview shows two teams of up to six Pokémon: the player's own team (usually on the left or bottom, often with more detail such as names, held items or moves) and the opponent's team (usually on the right or top, often only the Pokémon's pictures). Identify every Pokémon on both sides.
 
 How to identify each one:
