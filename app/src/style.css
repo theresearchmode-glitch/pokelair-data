@@ -1235,6 +1235,7 @@ span.spr.mini{display:block}
 .spdrow.me{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
 .spdv{font:700 17px var(--mono);text-align:right}
 .spdrow .spr.spdspr{width:40px;height:40px}
+.sprx{display:inline-block;flex:none;border-radius:8px;background:color-mix(in srgb,var(--line) 60%,transparent)}
 .spdn{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-width:0}.spdn .t2{flex-basis:100%}
 .tag.spdme{background:var(--accent);color:#fff}.tag.spdtie{background:var(--gold-soft);color:var(--gold-ink)}
 .dcgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
