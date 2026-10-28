@@ -18,7 +18,7 @@ const spreadText=s=>`${s.nat} ${s.hp}/${s.atk}/${s.def}/${s.spa}/${s.spd}/${s.sp
 function likelySpeed(p,mem){const r=likelySpeed0(p,mem);if(mem&&mem.item==='Iron Ball')return {...r,v:Math.floor(r.v/2),label:r.label+', Iron Ball halves it'};
   if(mem&&mem.item==='Quick Claw')return {...r,label:r.label+', Quick Claw: 20% chance to move first in its bracket'};return r}
 function likelySpeed0(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpread(p);const scarf=mem?mem.item==='Choice Scarf':it&&it[0]==='Choice Scarf'&&(it[1]==null||it[1]>=25);
-  if(cs){const v=calcStat(p,'Spe',cs.spe,natMul(cs.nat,'Spe'));return {v,scarf,label:`${cs.spe} Speed points, ${cs.nat}${cs.mine?' (your spread)':' (most common spread)'}`,nat:cs.nat,real:true}}
+  if(cs){const v=calcStat(p,'Spe',cs.spe,natMul(cs.nat,'Spe'));return {v,scarf,label:`${cs.spe} Speed points, ${cs.nat}${cs.assumed?' (your nature, most common spread)':cs.mine?' (your spread)':' (most common spread)'}`,nat:cs.nat,real:true}}
   const nat=topNature(p);const up=(NAT_UP.Spe).includes(nat),dn=(NAT_DN.Spe).includes(nat);
   const sp=dn?0:(up||p.st[5]>=70)?32:0,mul=up?1.1:dn?.9:1;
   const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 Speed points, Speed-lowering nature':up?'32 Speed points, Speed-boosting nature':sp?'32 Speed points':'0 Speed points')+(nat?`, ${nat} (estimated)`:' (estimated)'),nat}}
@@ -311,6 +311,9 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   // Body Press hits with the attacker's Defense, so the points box (and the stat stage) switch to Defense for it
   const mvC=mvByName.get(dc.mv),bp_=mvC&&mvC.name==='Body Press',aShown=bp_?(A.spDef??0):mvC&&mvC.cat===2?(A.spS??A.sp):(A.spA??A.sp);
   const boosts=[-2,-1,0,1,2].map(x=>[String(x),x>0?'+'+x:String(x)]);
+  // a Mega always holds its stone (shown, fixed); any other held item not in the short list is still shown as chosen
+  const itemSel=(id,X)=>X.p.m?`<select class="field" id="${id}" disabled title="A Mega always holds its Mega Stone"><option>${esc(typeof stoneFor==='function'?stoneFor(X.p):'Mega Stone')}</option></select>`
+    :sel(id,(X.item&&!CALC_ITEMS.includes(X.item)?[...CALC_ITEMS,X.item]:CALC_ITEMS).map(x=>[x,x||'None']),X.item);
   const r=damage({atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,fainted:dc.fainted||0,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit});
   const pct=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
   const bar=pct?`<div class="dcbar"><span style="width:${Math.min(100,pct[0]).toFixed(1)}%" class="lo"></span><span style="width:${Math.max(0,Math.min(100,pct[1])-Math.min(100,pct[0])).toFixed(1)}%" class="hi"></span></div>`:'';
@@ -321,14 +324,14 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
       <label>Pokémon<select class="field" id="dcA">${monOptions(dc.a)}</select></label>
       <label>Move<select class="field" id="dcMv">${mvs.pop.length?`<optgroup label="Its set">${mvs.pop.map(m=>`<option${m.name===dc.mv?' selected':''}>${esc(m.name)}</option>`).join('')}</optgroup>`:''}<optgroup label="Other moves">${mvs.rest.map(m=>`<option${m.name===dc.mv?' selected':''}>${esc(m.name)}</option>`).join('')}</optgroup></select></label>
       <div class="dc2"><label>${bp_?'Defense points (Body Press)':mvC&&mvC.cat===2?'Sp. Atk points':'Attack points'}${sel('dcASp',PTS(aShown),String(aShown))}</label><label>Nature${sel('dcANat',NATURES,A.nat)}</label></div>
-      <div class="dc2"><label>Item${sel('dcAIt',CALC_ITEMS.map(x=>[x,x||'None']),A.item)}</label><label>Ability${sel('dcAAb',A.p.a,A.ability)}</label></div>
+      <div class="dc2"><label>Item${itemSel('dcAIt',A)}</label><label>Ability${sel('dcAAb',A.p.a,A.ability)}</label></div>
       <label>${bp_?'Defense stage (Body Press)':'Stat stage (Intimidate = −1)'}${sel('dcABo',boosts,String(A.boost))}</label>
       ${A.ability==='Supreme Overlord'?`<label>Allies fainted (Supreme Overlord: +10% power each)${sel('dcAFt',[0,1,2,3,4,5].map(x=>[String(x),String(x)]),String(dc.fainted||0))}</label>`:''}</div>
     <button type="button" class="btn sm dcswap" id="dcSwap" title="Swap attacker and defender" aria-label="Swap attacker and defender">⇄ Swap</button><div class="dccol"><h3>Defender</h3>${sprite(D.p,'dcspr')}
       <label>Pokémon<select class="field" id="dcD">${monOptions(dc.d)}</select></label>
       <div class="dc2"><label>HP points${sel('dcDHp',PTS(D.hpSp),String(D.hpSp))}</label><label>Nature${sel('dcDNat',NATURES,D.nat)}</label></div>
       <div class="dc2"><label>Def points${sel('dcDDf',PTS(D.defSp),String(D.defSp))}</label><label>Sp. Def points${sel('dcDSd',PTS(D.spdSp),String(D.spdSp))}</label></div>
-      <div class="dc2"><label>Item${sel('dcDIt',CALC_ITEMS.map(x=>[x,x||'None']),D.item)}</label><label>Ability${sel('dcDAb',D.p.a,D.ability)}</label></div>
+      <div class="dc2"><label>Item${itemSel('dcDIt',D)}</label><label>Ability${sel('dcDAb',D.p.a,D.ability)}</label></div>
       <label>Stat stage${sel('dcDBo',boosts,String(D.boost))}</label></div></div>
     <div class="dcfield"><div class="seg" role="group" aria-label="Weather">${[['','No weather'],['sun','Sun'],['rain','Rain'],['sand','Sand'],['snow','Snow']].map(([k,t])=>`<button type="button" data-dcw="${k}" aria-pressed="${dc.weather===k}">${t}</button>`).join('')}</div>
       <div class="seg" role="group" aria-label="Terrain" style="margin-top:6px">${[['','No terrain'],['grassy','Grassy'],['electric','Electric'],['psychic','Psychic'],['misty','Misty']].map(([k,t])=>`<button type="button" data-dcterr="${k}" aria-pressed="${dc.terrain===k}">${t}</button>`).join('')}</div>

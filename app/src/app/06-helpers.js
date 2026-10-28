@@ -2,7 +2,10 @@
 function memberOf(s,i){const p=byName.get(s.n);if(!p)return null;const ab=s.a&&p.a.includes(s.a)?s.a:(metaAbility(p)||bestAbility(p));
   const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi,spread:slotSpread(s,p)}}
 // Your nature and stat points (from a paste or link), in the same shape as commonSpread(): {nat,hp,atk,def,spa,spd,spe,mine:true}
-function slotSpread(s,p){const x=s.sp&&s.sp[S.format];if(!x||!Array.isArray(x.v))return null;const v=x.v,cs=typeof commonSpread==='function'?commonSpread(p):null;
+function slotSpread(s,p){const x=s.sp&&s.sp[S.format];if(!x)return null;const cs=typeof commonSpread==='function'?commonSpread(p):null;
+  // a team sheet gives a nature but no stat points: your nature on the most common spread, marked as assumed
+  if(x.assumed){if(!cs)return null;return {nat:x.nat||cs.nat||null,hp:cs.hp,atk:cs.atk,def:cs.def,spa:cs.spa,spd:cs.spd,spe:cs.spe,mine:true,assumed:true}}
+  if(!Array.isArray(x.v))return null;const v=x.v;
   return {nat:x.nat||(cs&&cs.nat)||null,hp:v[0],atk:v[1],def:v[2],spa:v[3],spd:v[4],spe:v[5],mine:true}}
 // Held item: a Mega's stone is fixed; otherwise your pick for this format (s.it[format]) or the item most players run.
 function defaultItem(p){try{if(p.m)return stoneFor(p)||'';const t=topItems(p);return t&&t.it[0]?t.it[0][0]:''}catch(e){return ''}}

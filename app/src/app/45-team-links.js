@@ -11,7 +11,7 @@ function teamCode() {
     const c = x.mv && x.mv[f]; if (Array.isArray(c) && c.some(Boolean)) { row[1] = row[1] || ''; row[2] = c.slice(0, 4); }
     // your held item (row[3]) and nature + stat points (row[4], "Jolly:2/32/0/0/0/32"), only when you set them (Oct 28)
     const it = x.it && x.it[f], sp = x.sp && x.sp[f];
-    if (it || sp) { row[1] = row[1] || ''; row[2] = row[2] || 0; row[3] = it || ''; if (sp) row[4] = (sp.nat || '') + ':' + sp.v.join('/'); }
+    if (it || sp) { row[1] = row[1] || ''; row[2] = row[2] || 0; row[3] = it || ''; if (sp) row[4] = (sp.nat || '') + ':' + (sp.assumed || !Array.isArray(sp.v) ? 'a' : sp.v.join('/')); }
     return row; });
   if (!s.length) return '';
   const loaded = S.teams.find(t => t.id === S.loadedId), o = {v: 1, f, s}; if (loaded && loaded.name) o.n = String(loaded.name).slice(0, 60);
@@ -25,7 +25,8 @@ function decodeTeam(text) {
   let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; }
   if (!o || o.v !== 1 || !Array.isArray(o.s)) return null;
   const f = 'doubles';  // the format field is ignored: every link opens as a doubles team
-  const spOf = v => { const m = typeof v === 'string' && v.match(/^(\w*):(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)$/); return m ? {nat: m[1] || null, v: m.slice(2).map(Number)} : null; };
+  const spOf = v => { const a = typeof v === 'string' && v.match(/^(\w*):a$/); if (a) return {nat: a[1] || null, assumed: true};
+    const m = typeof v === 'string' && v.match(/^(\w*):(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)$/); return m ? {nat: m[1] || null, v: m.slice(2).map(Number)} : null; };
   // the same rules as a pasted team (stress test, Oct 28): one of each species, only abilities the Pokémon can have,
   // and only held items that exist in Champions (no Choice Band, no Mega Stone on a Pokémon it doesn't fit)
   const seen = new Set(), itemOf = v => { if (typeof v !== 'string' || !v || v.length > 40) return null; const it = typeof canonItem === 'function' ? canonItem(v) : v;

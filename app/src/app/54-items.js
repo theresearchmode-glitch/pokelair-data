@@ -12,7 +12,7 @@ function itTab() { return itTabCache || (itTabCache = {
   move: {'Sunny Day': ['w', 'sun'], 'Rain Dance': ['w', 'rain'], 'Sandstorm': ['w', 'sand'], 'Snowscape': ['w', 'snow'], 'Chilly Reception': ['w', 'snow'],
     'Psychic Terrain': ['t', 'psy'], 'Grassy Terrain': ['t', 'grassy'], 'Electric Terrain': ['t', 'elec'], 'Misty Terrain': ['t', 'misty']},
   // a safe spread of common held items, used only when every item players run on a Pokémon is already taken
-  fallback: ['Sitrus Berry', 'Leftovers', 'Focus Sash', 'Life Orb', 'Lum Berry', 'Mental Herb', 'Safety Goggles', 'Covert Cloak', 'Expert Belt', 'Wide Lens', 'Shuca Berry', 'Occa Berry', 'Black Glasses', 'Charcoal', 'Mystic Water', 'Magnet']}); }
+  fallback: ['Sitrus Berry', 'Leftovers', 'Focus Sash', 'Life Orb', 'Lum Berry', 'Mental Herb', 'White Herb', 'Chople Berry', 'Expert Belt', 'Wide Lens', 'Shuca Berry', 'Occa Berry', 'Black Glasses', 'Charcoal', 'Mystic Water', 'Magnet']}); }
 function memMoveNames(m) { const mv = m && (m._mv && m._mv.length ? m._mv : (m.moves || [])); return (mv || []).map(x => x && x.name).filter(Boolean); }
 // the weather and terrain this team can set (abilities, and moves it runs)
 function teamField(ms) { const T = itTab(), w = new Set(), t = new Set();

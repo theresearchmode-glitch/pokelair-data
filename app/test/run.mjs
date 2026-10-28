@@ -342,6 +342,38 @@ for (const width of [1280, 390]) {
   ok(!r.over[0] && /66/.test(r.over[1]), 'paste: stat points over 66 in total are skipped with a note');
   ok(r.clean, 'corrupt results data: bad rows dropped, no NaN');
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
+// Loose ends from the stress test (Oct 28): team sheets without stat points, the item lists, Megas in the calc
+{ console.log('\n== stress test loose ends');
+  const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(800);
+  const r = await pg.evaluate(() => { const T = window.__PL, S0 = T.getS(), keep = S0.slots;
+    // a team sheet: nature, no EVs line
+    const sheet = T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nJolly Nature\n- Earthquake\n- Dragon Claw');
+    const sl = sheet.slots[0];
+    S0.slots = T.normSlots(sheet.slots); const m = T.members()[0], ex = T.exportPaste(), back = T.parsePaste(ex);
+    S0.slots = T.normSlots(back.slots); const m2 = T.members()[0];
+    const code = (() => { S0.slots = T.normSlots(sheet.slots); return T.teamCode(); })(), dl = T.decodeTeam(code); S0.slots = T.normSlots(dl.slots); const m3 = T.members()[0];
+    // an explicit EVs line, even all zero, is kept exactly
+    const zero = T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nEVs: 0 HP\nJolly Nature\n- Earthquake'); S0.slots = T.normSlots(zero.slots); const mz = T.members()[0];
+    S0.slots = keep;
+    const reg = new Set(T.regmcItems), it = T.itTab();
+    return {assumed: !!(sl.sp && sl.sp.doubles.assumed), note: sheet.notes.join(' '), mSp: m.spread && [m.spread.nat, m.spread.assumed, m.spread.spe, m.spread.atk],
+      exEv: /EVs: /.test(ex), backSp: m2.spread && [m2.spread.nat, m2.spread.spe, m2.spread.atk], linkSp: m3.spread && [m3.spread.nat, !!m3.spread.assumed, m3.spread.spe],
+      zero: mz.spread && [mz.spread.nat, mz.spread.hp + mz.spread.atk + mz.spread.def + mz.spread.spa + mz.spread.spd + mz.spread.spe, !!mz.spread.assumed],
+      badCalc: T.calcItems.filter(x => x && !reg.has(x)), badFallback: it.fallback.filter(x => !reg.has(x)), past: ['Covert Cloak', 'Safety Goggles', 'Clear Amulet', 'Choice Band'].filter(x => T.pasteItemOK(x)), herb: T.pasteItemOK('White Herb')}; });
+  ok(r.assumed && /most common spread/.test(r.note), `team sheet (nature, no EVs line): stat points assumed, with a note ("${r.note}")`);
+  ok(r.mSp && r.mSp[0] === 'Jolly' && r.mSp[1] === true && r.mSp[2] + r.mSp[3] > 0, `team sheet: your nature on the most common spread, not 0 points (${r.mSp})`);
+  ok(r.exEv && r.backSp && r.backSp[0] === 'Jolly' && r.backSp[1] === r.mSp[2] && r.backSp[2] === r.mSp[3], `team sheet: export writes the assumed spread and re-imports the same numbers (${r.backSp})`);
+  ok(r.linkSp && r.linkSp[0] === 'Jolly' && r.linkSp[1] && r.linkSp[2] === r.mSp[2], `team sheet: a team link keeps the nature and the assumed spread (${r.linkSp})`);
+  ok(r.zero && r.zero[0] === 'Jolly' && r.zero[1] === 0 && !r.zero[2], `an explicit EVs line (all zero) is kept exactly (${r.zero})`);
+  ok(!r.badCalc.length, `every calc item is legal in Reg M-C (${r.badCalc.join(', ') || 'all'})`);
+  ok(!r.badFallback.length, `every fallback item is legal in Reg M-C (${r.badFallback.join(', ') || 'all'})`);
+  ok(!r.past.length && r.herb, `items Champions doesn't have are refused on import (${r.past.join(', ') || 'none accepted'})`);
+  // the calc shows a Mega's stone instead of "None"
+  await go(pg, 'calc'); await pg.waitForTimeout(300);
+  const c = await pg.evaluate(() => { const T = window.__PL; T.dc().a = 'Charizard-Mega-Y'; T.dc().d = 'Raichu-Mega-X'; T.renderCalc();
+    const a = document.getElementById('dcAIt'), d = document.getElementById('dcDIt'); return [a && a.disabled, a && a.value, d && d.value]; });
+  ok(c[0] && c[1] === 'Charizardite Y' && /Raichunite X/.test(c[2]), `calc: a Mega shows its Mega Stone, fixed (${c.join(' / ')})`);
+  ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 await browser.close();
 // items, suggestions and battle math (Oct 28 audit), on the same build
 try { execFileSync('node', [APP + 'test/items.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL items/suggestions suite'); }

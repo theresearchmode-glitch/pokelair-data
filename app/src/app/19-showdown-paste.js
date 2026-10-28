@@ -35,12 +35,14 @@ function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '
   const nat = natL ? natL.replace(/\s+Nature\s*$/i, '').trim() : null, K = {hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5}, v = [0, 0, 0, 0, 0, 0]; let any = false;
   for (const part of ev.split('/')) { const m = part.trim().match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i); if (!m) continue; v[K[m[2].toLowerCase()]] = +m[1]; any = true; }
   if (v.some(x => x > 32)) for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor(v[i] / 8));
-  const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null;
-  return any || okNat ? {nat: okNat, v} : null; }
+  const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null, hasEv = lines.some(l => /^EVs:/i.test(l));
+  // ev: false when the paste has no EVs line at all (tournament team sheets): the stat points are then assumed, not 0
+  return any || hasEv || okNat ? {nat: okNat, v, ev: any || hasEv} : null; }
 // An item from a paste is kept only if Champions has it: any item players run (usage data) or one the calc knows.
 // Choice Band, Choice Specs and Assault Vest aren't in Champions. With no usage data loaded yet, anything is kept.
 function pasteItemOK(it) { const NOT = ['Choice Band', 'Choice Specs', 'Assault Vest']; if (NOT.includes(it)) return false;
-  const extra = ['White Herb', 'Mental Herb', 'Covert Cloak', 'Safety Goggles', 'Clear Amulet', 'Lum Berry'], legal = typeof REGMC_ITEMS === 'object' ? REGMC_ITEMS : [];
+  // Covert Cloak, Safety Goggles and Clear Amulet are not in Champions (Showdown's Champions data marks them "Past")
+  const extra = ['White Herb', 'Mental Herb', 'Lum Berry'], legal = typeof REGMC_ITEMS === 'object' ? REGMC_ITEMS : [];
   // before usage data arrives (a team link opened on load), the Reg M-C item list decides (stress test, Oct 28: anything was kept)
   let pool = []; try { pool = itemPool(); } catch (e) {} if (!pool.length) return legal.includes(it) || extra.includes(it);
   const known = new Set([...pool, ...legal, ...(typeof CALC_ITEMS !== 'undefined' ? CALC_ITEMS : []), ...extra]);
@@ -57,7 +59,7 @@ function speciesFromPaste(name) {
 // Returns {slots, notes}. Unknown Pokémon and moves are skipped and reported, never guessed.
 // Moves from the paste become that Pokémon's moves for the current format.
 function parsePaste(text) {
-  const notes = [], slots = [];
+  const notes = [], slots = [], assumed = [];
   const blocks = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean).slice(0, 6);
   for (const b of blocks) {
     const lines = b.split('\n').map(l => l.trim()).filter(Boolean); if (!lines.length) continue;
@@ -82,9 +84,12 @@ function parsePaste(text) {
     // the held item you registered (a Mega's stone is implied by the form), your nature and stat points
     if (item && !p.m && !STONE_RE.test(item) && item.length <= 40) { if (pasteItemOK(item)) slot.it = {doubles: item}; else notes.push(`${p.d}: skipped item "${item}" (not in Champions)`); }
     const sp = pasteSpread(lines), spSum = sp ? sp.v.reduce((a, x) => a + x, 0) : 0;
-    if (sp && spSum > SP_TOTAL) notes.push(`${p.d}: skipped stat points (${spSum} in total; Champions allows ${SP_TOTAL})`); else if (sp) slot.sp = {doubles: sp};
+    // a nature with no EVs line (team sheets list none): your nature with the most common stat points, marked as assumed (stress test, Oct 28)
+    if (sp && !sp.ev) { slot.sp = {doubles: {nat: sp.nat, assumed: true}}; assumed.push(p.d); }
+    else if (sp && spSum > SP_TOTAL) notes.push(`${p.d}: skipped stat points (${spSum} in total; Champions allows ${SP_TOTAL})`); else if (sp) slot.sp = {doubles: {nat: sp.nat, v: sp.v}};
     slots.push(slot);
   }
+  if (assumed.length) notes.push(`No stat points in the paste for ${assumed.join(', ')}: using the most common spread with your nature`);
   return {slots, notes};
 }
 function renderPastePanel() {
