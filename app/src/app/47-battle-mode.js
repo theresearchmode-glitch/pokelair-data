@@ -17,8 +17,8 @@ function bmHit(aP, moves, dP, weather, intim, aMem, dMem, terrain) {
 // weather: the weather in play (Chlorophyll/Swift Swim/Sand Rush/Slush Rush double Speed in theirs); Unburden's doubled
 // speed after its item is used comes back as unb
 function bmSpeed(p, me, mem, weather) { const s = likelySpeed(p, me ? mem : null), ab = me && mem ? mem.ability : abilityOf(mem && mem.p ? mem : {p});
-  const v = spdCalc(s.v, s.scarf, ab, weather || '', {tw: me ? bmUi.tw : bmUi.twOpp, icy: !me && bmUi.icy, par: !me && bmUi.par});
-  return {v, s, wxUp: speedMul(ab, weather || '') > 1, ab, unb: ab === 'Unburden' && !s.scarf ? v * 2 : null}; }
+  const o = {tw: me ? bmUi.tw : bmUi.twOpp, icy: !me && bmUi.icy, par: !me && bmUi.par}, v = spdCalc(s.v, s.scarf, ab, weather || '', o);
+  return {v, s, wxUp: speedMul(ab, weather || '') > 1, ab, unb: ab === 'Unburden' && !s.scarf ? spdCalc(s.v, s.scarf, ab, weather || '', {...o, unb: true}) : null}; }
 // What to watch on each of their Pokémon, against your four
 const BM_IMMUNE = {Levitate: 'Ground', 'Earth Eater': 'Ground', 'Flash Fire': 'Fire', 'Well-Baked Body': 'Fire', 'Water Absorb': 'Water', 'Storm Drain': 'Water', 'Dry Skin': 'Water',
   'Volt Absorb': 'Electric', 'Lightning Rod': 'Electric', 'Motor Drive': 'Electric', 'Sap Sipper': 'Grass'};

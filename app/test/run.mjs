@@ -112,6 +112,31 @@ for (const width of [1280, 390]) {
       stoneOnOther: d(ttar, inc('Golisopite'))}; });
   ok(r.mega === r.megaNone && r.other > r.otherNone && r.stoneOnOther > r.otherNone, `Knock Off: no boost against a Mega Stone on its own Pokémon, boost otherwise (${r.mega}/${r.megaNone}, ${r.other}/${r.otherNone}, ${r.stoneOnOther})`);
   await ctx.close(); }
+// Found by the stress test (Oct 28): each against the game's rules as Showdown implements them
+{ console.log('\n== stress test');
+  const {pg, ctx} = await open(1280);
+  const r = await pg.evaluate(() => { const T = window.__PL, P = n => T.byName.get(n), M = n => T.mvByName.get(n), side = (n, role, o) => ({p: P(n), ...T.sideDefaults(P(n), role), ...(o || {})});
+    const d = (a, df, mv) => T.damage({atk: a, def: df, move: M(mv)}).max;
+    // the game's speed order: stage first, then Scarf/weather/Tailwind chained, then paralysis
+    const pr = x => (x % 1 > .5 ? Math.ceil(x) : Math.floor(x)); let spdBad = 0;
+    for (let v = 20; v <= 400; v++) for (const sc of [0, 1]) for (const tw of [0, 1]) for (const par of [0, 1]) { let s = Math.floor(v * 2 / 3), m = 4096;
+      for (const x of [sc ? 6144 : 4096, tw ? 8192 : 4096]) if (x !== 4096) m = (m * x + 2048) >> 12; s = Math.max(1, pr(s * m / 4096)); if (par) s = Math.floor(s / 2);
+      if (T.spdCalc(v, !!sc, '', '', {tw: !!tw, icy: true, par: !!par}) !== s) spdBad++;
+      // Unburden ×2 sits in the same chain, before paralysis halves it
+      if (!sc && T.spdCalc(v, false, 'Unburden', '', {tw: !!tw, par: !!par, unb: true}) !== Math.floor(v * (tw ? 4 : 2) / (par ? 2 : 1))) spdBad++; }
+    const A = n => ({...M(n)});
+    return {
+      // an Iron Ball holder is grounded: Ground moves hit a Flying type or a Levitate user
+      ironFly: d(side('Garchomp', 'atk'), side('Corviknight', 'def', {item: 'Iron Ball'}), 'Earthquake'), ironLev: d(side('Garchomp', 'atk'), side('Gengar', 'def', {ability: 'Levitate', item: 'Iron Ball'}), 'Earthquake'),
+      fly: d(side('Garchomp', 'atk'), side('Corviknight', 'def', {item: ''}), 'Earthquake'), spdBad,
+      // sure-hit moves ignore accuracy drops; one-hit KO moves ignore accuracy boosts
+      sure: [T.moveAcc(M('Aerial Ace'), 'Hustle', '', null, ''), T.moveAcc(M('Aura Sphere'), '', 'sand', {ability: 'Sand Veil', item: 'Bright Powder'}, '')],
+      hustle: T.moveAcc(M('Rock Slide'), 'Hustle', '', null, ''), ohko: M('Sheer Cold') ? T.moveAcc(M('Sheer Cold'), 'Compound Eyes', '', null, 'Wide Lens', ['Ice']) : 30 }; });
+  ok(r.ironFly > 0 && r.ironLev > 0 && r.fly === 0, `Iron Ball grounds the holder: Earthquake hits Flying and Levitate holders (${r.ironFly}, ${r.ironLev}; without it ${r.fly})`);
+  ok(r.spdBad === 0, `speed tiers apply a −1 stage before Scarf/Tailwind and paralysis after, as the game does (${r.spdBad} off)`);
+  ok(r.sure.every(x => x === 100) && r.hustle === 72, `sure-hit moves can't be made to miss; Hustle still cuts others (${r.sure.join('/')}, Rock Slide ${r.hustle})`);
+  ok(r.ohko === 30, `one-hit KO moves ignore Compound Eyes and Wide Lens (${r.ohko})`);
+  await ctx.close(); }
 // replay import and Showdown export
 { console.log('\n== replay + export');
   const {pg, ctx} = await open(1280);

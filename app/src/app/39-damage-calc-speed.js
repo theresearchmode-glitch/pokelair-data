@@ -27,8 +27,12 @@ function likelySpeed0(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpr
 let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,wx:'auto'};
 // One row's speed under the conditions: item (Scarf ×1.5), weather speed ability ×2, Tailwind ×2, −1 stage, paralysis ×0.5.
 // Unburden: also the speed once its item is used (×2), shown as a second number.
-function spdCalc(base,scarf,ability,weather,o){let v=base;if(scarf)v=Math.floor(v*1.5);v*=typeof speedMul==='function'?speedMul(ability,weather):1;
-  if(o.tw)v*=2;if(o.icy)v=Math.floor(v*BOOST(-1));if(o.par)v=Math.floor(v*.5);return v}
+// The game's order: the stat stage first, then the modifiers chained in 4096ths (rounded once), then paralysis halves it.
+function spdCalc(base,scarf,ability,weather,o){let v=base;if(o.icy)v=Math.floor(v*BOOST(-1));
+  // o.unb: Unburden active (its item is used), ×2 in the same chain
+  const wm=typeof speedMul==='function'?speedMul(ability,weather):1,mods=[scarf?6144:4096,wm>1?8192:4096,o.tw?8192:4096,o.unb?8192:4096];
+  let m=4096;for(const x of mods)if(x!==4096)m=(m*x+2048)>>12;if(m!==4096){const y=v*m/4096;v=Math.max(1,y%1>.5?Math.ceil(y):Math.floor(y))}
+  if(o.par)v=Math.floor(v*.5);return v}
 function renderSpeed(){const el=$('spdOut');if(!el)return;
   const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
   const thr=metaThreats(24).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
@@ -38,7 +42,7 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
     const ab=mem?mem.ability:abilityOf({p:r.p}),o={tw:r.me?spdUi.tw:spdUi.twOpp,icy:!r.me&&spdUi.icy,par:!r.me&&spdUi.par};
     const v=spdCalc(s.v,s.scarf,ab,W,o),wxUp=typeof speedMul==='function'&&speedMul(ab,W)>1;
     // Unburden: doubled once its item is used (Sneasler's seed or herb), unless Scarf/no item
-    const unb=ab==='Unburden'&&!s.scarf?v*2:null;return {...r,s,v,ab,wxUp,unb}});
+    const unb=ab==='Unburden'&&!s.scarf?spdCalc(s.v,s.scarf,ab,W,{...o,unb:true}):null;return {...r,s,v,ab,wxUp,unb}});
   rows.sort((a,b)=>spdUi.tr?a.v-b.v:b.v-a.v);
   const tog=(k,t)=>`<button type="button" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
   const wxb=(k,t)=>`<button type="button" data-spdwx="${k}" aria-pressed="${spdUi.wx===k}">${t}</button>`;
@@ -158,8 +162,10 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   if(nm==='Acrobatics'&&!A.item)bp*=2;if(nm==='Rising Voltage'&&gD&&T==='electric')bp*=2;if((nm==='Stored Power'||nm==='Power Trip')&&A.boost>0)bp+=20*A.boost;
   // type effectiveness, read the same way as the type tables; the defender's ability is kept apart so it can't switch
   // super-effective items (Expert Belt, resist berries, Filter) on or off
-  const eff=moveEff(mv,type,ab,D.p.t);let abMul=1;
-  {const mods=ABILITY_MODS[dab];if(mods&&mods[type]!=null&&!(nm==='Thousand Arrows'&&type==='Ground'))abMul=mods[type]}
+  // an Iron Ball holder is grounded: Ground moves hit its Flying type neutrally and ignore Levitate
+  const ironGround=type==='Ground'&&dIt==='Iron Ball';
+  const eff=moveEff(mv,type,ab,ironGround?D.p.t.filter(t=>t!=='Flying'):D.p.t);let abMul=1;
+  {const mods=ABILITY_MODS[dab];if(mods&&mods[type]!=null&&!((nm==='Thousand Arrows'||ironGround)&&type==='Ground'))abMul=mods[type]}
   // (Gale Wings only gives priority at full HP: o.atkFullHp false = the attacker has taken damage)
   const hp=calcStat(D.p,'HP',D.hpSp,1),pri=movePrio(mv,ab,{terrain:T,grounded:gA,fullHp:o.atkFullHp!==false})>0;
   // Air Balloon: Ground moves miss until the balloon is popped by a hit
@@ -352,7 +358,13 @@ function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A={p:
 function hitNote(b){if(!b)return '';const t=[];if(b.charge)t.push('charges first');if(b.acc!=null&&b.acc<100)t.push(b.acc+'% to hit');if(b.recharge)t.push('must recharge');if(b.r&&b.r.ohko)t.push('one-hit KO move');return t.join(', ')}
 // Chance (0-100) a move hits: No Guard always; rain makes Hurricane/Thunder sure-hit (sun: 50%), snow Blizzard; Compound Eyes ×1.3,
 // Wide Lens ×1.1, Hustle ×0.8 on physical moves; the target's Sand Veil / Snow Cloak in their weather ×0.8, Bright Powder ×0.9
-function moveAcc(mv,ab,weather,def,item){if(!mv)return 100;if(ab==='No Guard'||(def&&def.ability==='No Guard'))return 100;let a=mv.acc||(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||100;
+// Attacks that never miss (accuracy "true" in Showdown's Champions data): no accuracy modifier touches them
+const SURE_HIT=new Set(['Aerial Ace','Aura Sphere','Smart Strike','Clear Smog','Shadow Punch','Flower Trick','Kowtow Cleave','Swift','Magical Leaf','Shock Wave','Magnet Bomb','Vital Throw','Feint Attack','Disarming Voice']);
+// One-hit KO moves: 30% (Sheer Cold 20% unless the user is Ice type), and accuracy modifiers don't apply to them
+const OHKO_MOVES=new Set(['Fissure','Horn Drill','Sheer Cold','Guillotine']);
+function moveAcc(mv,ab,weather,def,item,userTypes){if(!mv)return 100;if(ab==='No Guard'||(def&&def.ability==='No Guard'))return 100;
+  if(SURE_HIT.has(mv.name))return 100;if(OHKO_MOVES.has(mv.name)||mv.ohko){const base=(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||30;return mv.name==='Sheer Cold'&&userTypes?(userTypes.includes('Ice')?30:20):base}
+  let a=mv.acc||(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||100;
   if(['Hurricane','Thunder'].includes(mv.name)){if(weather==='rain')return 100;if(weather==='sun')a=50}if(mv.name==='Blizzard'&&weather==='snow')return 100;
   if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(ab==='Hustle'&&mv.cat===1)a*=.8;
   if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
