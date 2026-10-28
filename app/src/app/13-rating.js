@@ -152,7 +152,7 @@ function ratings() {
 const RATE_V3 = {lift: 1, wr: 8, rw: .5, K: 1500, slope: 9.5, top: 95};
 function v3Evidence(map) { let res = null; try { res = RES; } catch (e) {}
   const tc = res && res.tc && res.tc.rows && Object.keys(res.tc.rows).length >= 50 ? res.tc : null, out = new Map();
-  if (tc) { for (const [n, r] of Object.entries(tc.rows)) if (map.has(n) && Array.isArray(r)) out.set(n, {field: +r[0], top: +r[1], lift: +r[2], wr: +r[3], g: +r[4], rw: r[5] != null ? +r[5] : +r[0], base: 100 * (+tc.base || .5), full: true});
+  if (tc) { for (const [n, r] of Object.entries(tc.rows)) if (map.has(n) && Array.isArray(r)) out.set(n, {field: +r[0], top: +r[1], lift: +r[2], wr: +r[3], g: +r[4], rw: r[5] != null ? +r[5] : +r[0], base: 100 * (+tc.base || .5), full: true, gs: r[6] != null ? +r[6] : null});
     return out; }
   // before the top-cut data loads: tournament usage and win rate only (conversion unknown, so 1)
   let a = 0, b = 0; for (const v of map.values()) { const t = v.src && v.src.tour; if (t) { a += t[1] * t[2]; b += t[2]; } } const wm = b ? a / b : 50;
@@ -201,6 +201,9 @@ function probit(p) { const a = [-39.69683028665376, 220.9460984245205, -275.9285
 // Hidden gem (v3): rarely used (under 2% of teams), but with real evidence it overperforms: reaches top cut at least 15%
 // more often than its usage predicts, wins more than average, over 300+ games. (The rating itself stays modest for
 // these: it measures proven presence. The gem tag and Sleepers are where under-used overperformers show up.)
+// It must also hold up when the data is resampled: still a gem in 80%+ of 20 resamples that each drop a random 10% of
+// teams (topcut.mjs; stress test Oct 28: Hydreigon passed on the full data but in only 12 of 30 resamples).
+const GEM_STABLE = .8;
 function isGem(p) { const r = rating(p), e = r.tc; if (r.proven || !e) return false;
-  return e.full ? e.g >= 300 && e.lift >= 1.15 && e.wr > e.base + 1 : e.g >= 300 && e.wr > e.base + 2; }
+  return e.full ? e.g >= 300 && e.lift >= 1.15 && e.wr > e.base + 1 && (e.gs == null || e.gs >= GEM_STABLE) : e.g >= 300 && e.wr > e.base + 2; }
 
