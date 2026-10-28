@@ -1920,7 +1920,9 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .sev{font-size:10px}.ty:not(.lt),.archchip,.ltl{background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22))!important}
 .tabs button[aria-selected="true"] .tc,.sidenav button[aria-selected="true"] .tc{color:inherit}
 :root[data-look="dark"] .sev.hi{color:#2a0508}
-:root[data-look="dark"] .tag.evoff{filter:brightness(.8)}
+/* contrast (stress test, Oct 28): the dimmed OFFICIAL tag and the gold 1st-place badge were hard to read in dark */
+:root[data-look="dark"] .tag.evoff{filter:none;background:#c2187a;color:#fff}
+:root[data-look="dark"] .evpl.p1{color:#3d2500}
 .tsbar em{color:var(--mute)}
 .btn.logwin,.btn.logloss{filter:saturate(1.1) brightness(.88)}/* owner-only usage report */
 .usebox summary{cursor:pointer;list-style:revert;padding:4px 0}

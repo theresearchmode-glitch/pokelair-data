@@ -81,6 +81,10 @@ function fixTeams(){S.teams=(Array.isArray(S.teams)?S.teams:[]).filter(t=>t&&Arr
 // One shape for every team slot, live or saved: a known Pokémon, a string ability, a lock. Moves come from the meta.
 // Custom moves are kept per format: {doubles:[4 names], singles:[4 names]}. No entry means "use the popular set".
 // The singles entries come from the retired singles mode; they're kept so stored user data is never lost.
+// Champions allows 66 stat points in total (32 in any one stat); a saved, pasted or linked spread over that is dropped
+const SP_TOTAL=66;
+// NATURES is declared further down (damage calc); before that runs, any short name is kept and checked on the next fix
+function natOK(n){try{return NATURES.includes(n)}catch(e){return true}}
 function normMv(mv){if(!mv||typeof mv!=='object'||Array.isArray(mv))return null;const o={};
   for(const f of ['doubles','singles']){const a=mv[f];if(!Array.isArray(a))continue;const c=a.slice(0,4).map(x=>typeof x==='string'&&mvByName.has(x)?x:'');while(c.length<4)c.push('');if(c.some(Boolean))o[f]=c}
   return Object.keys(o).length?o:null}
@@ -88,7 +92,7 @@ function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>
     // held items per format ({doubles:'Sitrus Berry'}), kept only as short plain strings
     if(o.n&&s.it&&typeof s.it==='object'){const it={};for(const f of ['doubles','singles'])if(typeof s.it[f]==='string'&&s.it[f]&&s.it[f].length<=40)it[f]=s.it[f];if(Object.keys(it).length)o.it=it}
     // your nature and stat points per format ({doubles:{nat:'Jolly',v:[hp,atk,def,spa,spd,spe]}}), from a paste or team link
-    if(o.n&&s.sp&&typeof s.sp==='object'){const sp={};for(const f of ['doubles','singles']){const x=s.sp[f];if(x&&Array.isArray(x.v)&&x.v.length===6&&x.v.every(n=>Number.isInteger(n)&&n>=0&&n<=32))sp[f]={nat:typeof x.nat==='string'&&x.nat.length<=12?x.nat:null,v:x.v.slice()}}if(Object.keys(sp).length)o.sp=sp}return o});
+    if(o.n&&s.sp&&typeof s.sp==='object'){const sp={};for(const f of ['doubles','singles']){const x=s.sp[f];if(x&&Array.isArray(x.v)&&x.v.length===6&&x.v.every(n=>Number.isInteger(n)&&n>=0&&n<=32)&&x.v.reduce((a,b)=>a+b,0)<=SP_TOTAL)sp[f]={nat:typeof x.nat==='string'&&x.nat.length<=12&&natOK(x.nat)?x.nat:null,v:x.v.slice()}}if(Object.keys(sp).length)o.sp=sp}return o});
   while(out.length<6)out.push(blank());return out}
 // Battle log entries: {t: time, r: 'W'|'L', b: the 4 brought (leads first), tm: the team's 6, o: opponent's Pokémon}
 function fixLog(){S.log=(Array.isArray(S.log)?S.log:[]).filter(e=>e&&(e.r==='W'||e.r==='L')&&Array.isArray(e.b)).slice(-400).map(e=>({t:+e.t||0,r:e.r,b:e.b.filter(n=>typeof n==='string'&&byName.has(n)).slice(0,4),tm:(Array.isArray(e.tm)?e.tm:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6),o:(Array.isArray(e.o)?e.o:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6)}))}

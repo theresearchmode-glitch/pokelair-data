@@ -26,8 +26,14 @@ function decodeTeam(text) {
   if (!o || o.v !== 1 || !Array.isArray(o.s)) return null;
   const f = 'doubles';  // the format field is ignored: every link opens as a doubles team
   const spOf = v => { const m = typeof v === 'string' && v.match(/^(\w*):(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)$/); return m ? {nat: m[1] || null, v: m.slice(2).map(Number)} : null; };
-  const slots = o.s.slice(0, 6).map(r => Array.isArray(r) && byName.get(String(r[0])) ? {n: String(r[0]), a: typeof r[1] === 'string' && r[1] ? r[1] : null, lock: false, ...(Array.isArray(r[2]) ? {mv: {[f]: r[2].slice(0, 4).map(x => String(x || ''))}} : {}),
-    ...(typeof r[3] === 'string' && r[3] && r[3].length <= 40 ? {it: {[f]: r[3]}} : {}), ...(spOf(r[4]) ? {sp: {[f]: spOf(r[4])}} : {})} : null).filter(Boolean);
+  // the same rules as a pasted team (stress test, Oct 28): one of each species, only abilities the Pokémon can have,
+  // and only held items that exist in Champions (no Choice Band, no Mega Stone on a Pokémon it doesn't fit)
+  const seen = new Set(), itemOf = v => { if (typeof v !== 'string' || !v || v.length > 40) return null; const it = typeof canonItem === 'function' ? canonItem(v) : v;
+    return !STONE_RE.test(it) && pasteItemOK(it) ? it : null; };
+  const slots = o.s.slice(0, 6).map(r => { const p = Array.isArray(r) && byName.get(String(r[0])); if (!p || seen.has(p.b)) return null; seen.add(p.b);
+    const it = p.m ? null : itemOf(r[3]);
+    return {n: p.n, a: typeof r[1] === 'string' && p.a.includes(r[1]) ? r[1] : null, lock: false, ...(Array.isArray(r[2]) ? {mv: {[f]: r[2].slice(0, 4).map(x => String(x || ''))}} : {}),
+      ...(it ? {it: {[f]: it}} : {}), ...(spOf(r[4]) ? {sp: {[f]: spOf(r[4])}} : {})}; }).filter(Boolean);
   if (!slots.length) return null;
   return {f, n: typeof o.n === 'string' ? o.n.slice(0, 60) : '', slots}; }
 function applyShared(x) { keepUndo(); S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');

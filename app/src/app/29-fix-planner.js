@@ -17,7 +17,14 @@ let RES=typeof RESULTS==='object'?RESULTS:null;
 // looks complete; otherwise the snapshot built into the page stays.
 function cleanResults(v){try{if(!v||typeof v!=='object')return null;const ok=Array.isArray(v.proven)&&v.proven.length>=100&&Array.isArray(v.cores)&&v.cores.length>=100&&v.pairs&&typeof v.pairs==='object'&&v.mons&&typeof v.mons==='object'&&+v.base>.4&&+v.base<.6;
   if(!ok)return null;const proven=v.proven.filter(x=>Array.isArray(x)&&Array.isArray(x[0])&&x[0].length===6&&x[0].every(n=>byName.has(n))&&isFinite(+x[2]));
-  const cores=v.cores.filter(c=>Array.isArray(c)&&c.length===5&&c.slice(0,3).every(n=>byName.has(n)));return proven.length>=100?{...v,proven,cores,base:+v.base,minCore:+v.minCore||40}:null}catch(e){return null}}
+  const fin=x=>typeof x==='number'&&Number.isFinite(x);
+  const cores=v.cores.filter(c=>Array.isArray(c)&&c.length===5&&c.slice(0,3).every(n=>byName.has(n))&&fin(c[3])&&fin(c[4]));
+  // per-Pokémon and per-pair [games, win rate]: a bad row is dropped, never shown as NaN (stress test, Oct 28)
+  const rows=o=>{const r={};if(o&&typeof o==='object'&&!Array.isArray(o))for(const k of Object.keys(o)){const x=o[k];if(Array.isArray(x)&&fin(x[0])&&x[0]>=0&&fin(x[1])&&x[1]>=0&&x[1]<=1)r[k]=x}return r};
+  const out={...v,proven:proven.filter(x=>fin(x[1])&&fin(x[2])),cores,base:+v.base,minCore:+v.minCore||40,mons:rows(v.mons),pairs:rows(v.pairs)};
+  if(!(fin(v.teams)&&v.teams>0))delete out.teams;
+  if(v.tc&&typeof v.tc==='object'&&v.tc.rows&&typeof v.tc.rows==='object')out.tc={...v.tc,base:fin(v.tc.base)?v.tc.base:.5,rows:Object.fromEntries(Object.entries(v.tc.rows).filter(([,x])=>Array.isArray(x)&&x.length>=5&&x.every(fin)))};else delete out.tc;
+  return out.proven.length>=100?out:null}catch(e){return null}}
 function pairRes(a,b){if(!RES)return null;const k=[a.p.n,b.p.n].sort().join('|');return RES.pairs[k]||null}
 // pair counts are put on the old 377-team scale so a common pair scores the same as before, whatever the data size
 function tourSyn(a,b){const r=pairRes(a,b);if(!r)return 0;return Math.min(14,3*Math.log2(1+r[0]*377/(RES.teams||377)))+(r[1]-RES.base)*60}

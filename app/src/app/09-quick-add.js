@@ -79,7 +79,7 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
     +(more>0?`<button type="button" class="btn sm ghost needsmore" id="needsMore">Show ${more} more</button>`:ui.needsAll&&rows.length>4?'<button type="button" class="btn sm ghost needsmore" id="needsMore">Show less</button>':'');
 }
 function megaFormFor(p,t){if(p.m||!t||!t.it||!t.it.length)return p;const [item,pct]=t.it[0];if(!(pct>=50)||!/ite( [XYZ])?$|inite/.test(item))return p;
-  const suf=(item.match(/ ([XYZ])$/)||[])[1];const want=p.b+'-Mega'+(suf?'-'+suf:'');return byName.get(want)||byName.get(p.b+'-Mega')||p}
+  const suf=(item.match(/ ([XYZ])$/)||[])[1];const want=p.b+'-Mega'+(suf?'-'+suf:'');return byName.get(want)||byName.get(p.b+'-Mega')||byName.get(p.b+'-M-Mega')||p}
 function renderOffMeta(entries,useA){const d=metaDoc();const wrap=$('offMetaWrap');
   if(!d||!d.top||!entries.length){$('offMetaTitle').textContent='';wrap.hidden=true;return}
   wrap.hidden=false;const src={ingame:'in-game doubles',tour:'tournament',ladder:'Showdown doubles'}[ui.metaSrc];

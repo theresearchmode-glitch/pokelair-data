@@ -20,7 +20,7 @@ function stoneFor(p) {
 function exportPaste() {
   return members().map(m => {
     const p = m.p, base = byName.get(p.b) || p;
-    const species = p.m ? base.n : p.n, ti = topItems(p), item = m.item || (ti ? ti.it[0][0] : '');
+    const species = p.n === 'Meowstic-F-Mega' ? 'Meowstic-F' : p.m ? base.n : p.n, ti = topItems(p), item = m.item || (ti ? ti.it[0][0] : '');
     const ability = p.m ? (metaAbility(base) || bestAbility(base)) : m.ability;
     const mv = slotMoves(S.slots[m.i], p).names.filter(Boolean);
     // stat points: the most common real spread from the Showdown ladder (Champions stores them as EVs, 0-32 each)
@@ -40,14 +40,16 @@ function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '
 // An item from a paste is kept only if Champions has it: any item players run (usage data) or one the calc knows.
 // Choice Band, Choice Specs and Assault Vest aren't in Champions. With no usage data loaded yet, anything is kept.
 function pasteItemOK(it) { const NOT = ['Choice Band', 'Choice Specs', 'Assault Vest']; if (NOT.includes(it)) return false;
-  let pool = []; try { pool = itemPool(); } catch (e) {} if (!pool.length) return true;
-  const known = new Set([...pool, ...(typeof CALC_ITEMS !== 'undefined' ? CALC_ITEMS : []), 'White Herb', 'Mental Herb', 'Covert Cloak', 'Safety Goggles', 'Clear Amulet', 'Lum Berry']);
+  const extra = ['White Herb', 'Mental Herb', 'Covert Cloak', 'Safety Goggles', 'Clear Amulet', 'Lum Berry'], legal = typeof REGMC_ITEMS === 'object' ? REGMC_ITEMS : [];
+  // before usage data arrives (a team link opened on load), the Reg M-C item list decides (stress test, Oct 28: anything was kept)
+  let pool = []; try { pool = itemPool(); } catch (e) {} if (!pool.length) return legal.includes(it) || extra.includes(it);
+  const known = new Set([...pool, ...legal, ...(typeof CALC_ITEMS !== 'undefined' ? CALC_ITEMS : []), ...extra]);
   return known.has(it); }
 const pnorm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
 function speciesFromPaste(name) {
   const k = pnorm(name); if (!k) return null;
   for (const p of ROSTER) if (pnorm(p.n) === k) return p;
-  const alias = {indeedeefemale: 'Indeedee-F', basculegionfemale: 'Basculegion-F', meowsticfemale: 'Meowstic', floette: 'Floette-Eternal', floetteeternalflower: 'Floette-Eternal', aegislashshield: 'Aegislash'};
+  const alias = {meowsticf: 'Meowstic', meowsticm: 'Meowstic', meowsticmale: 'Meowstic', indeedeefemale: 'Indeedee-F', basculegionfemale: 'Basculegion-F', meowsticfemale: 'Meowstic', floette: 'Floette-Eternal', floetteeternalflower: 'Floette-Eternal', aegislashshield: 'Aegislash'};
   if (alias[k]) return byName.get(alias[k]) || null;
   for (const p of ROSTER) if (pnorm(p.d) === k) return p;
   return null;
@@ -61,11 +63,13 @@ function parsePaste(text) {
     const lines = b.split('\n').map(l => l.trim()).filter(Boolean); if (!lines.length) continue;
     let head = lines[0], item = '';
     const at = head.lastIndexOf(' @ '); if (at >= 0) { item = head.slice(at + 3).trim(); head = head.slice(0, at).trim(); if (typeof canonItem === 'function') item = canonItem(item); }
-    head = head.replace(/\s*\((M|F)\)\s*$/, '');
+    const female = /\(F\)\s*$/.test(head); head = head.replace(/\s*\((M|F)\)\s*$/, '');
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);
     if (!p) { notes.push(`Skipped "${speciesName}": not on the M-C roster`); continue; }
-    if (item && !p.m && /ite( [XYZ])?$|inite/.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf; }
+    if (item && !p.m && /ite( [XYZ])?$|inite/.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
+      // Meowstic has a Mega for each gender: Showdown writes the female as "Meowstic-F" (stress test, Oct 28)
+      if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();
     const ability = p.a.includes(abl) ? abl : null;
     const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), mv = [];
@@ -77,7 +81,8 @@ function parsePaste(text) {
     if (mv.length) { const c = mv.slice(0, 4); while (c.length < 4) c.push(''); slot.mv = {doubles: c}; }
     // the held item you registered (a Mega's stone is implied by the form), your nature and stat points
     if (item && !p.m && !STONE_RE.test(item) && item.length <= 40) { if (pasteItemOK(item)) slot.it = {doubles: item}; else notes.push(`${p.d}: skipped item "${item}" (not in Champions)`); }
-    const sp = pasteSpread(lines); if (sp) slot.sp = {doubles: sp};
+    const sp = pasteSpread(lines), spSum = sp ? sp.v.reduce((a, x) => a + x, 0) : 0;
+    if (sp && spSum > SP_TOTAL) notes.push(`${p.d}: skipped stat points (${spSum} in total; Champions allows ${SP_TOTAL})`); else if (sp) slot.sp = {doubles: sp};
     slots.push(slot);
   }
   return {slots, notes};
