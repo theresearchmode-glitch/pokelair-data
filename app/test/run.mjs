@@ -419,6 +419,11 @@ for (const width of [1280, 390]) {
     window.__PL.getS().slots = window.__keep; return {txt, keys: [a1, a2, a3].map(a => Object.keys(a).join())}; });
   ok(rf.txt.every(t => t && t.length > 10) && new Set(rf.txt).size >= 4, `refresh button: a plain message for each failure (${rf.txt.length})`);
   ok(rf.keys.every(k => k === 'trigger_id'), `refresh button: sends trigger_id with or without the connector's schema (${rf.keys})`);
+  // Mold Breaker ignores the target's partner's Friend Guard (Showdown marks Friend Guard breakable; found by the simulator)
+  const fg = await pg.evaluate(() => { const T = window.__PL, A = n => ({p: T.byName.get('Ampharos-Mega'), sp: 32, nat: 'Modest', ability: n, item: '', boost: 0}),
+    D = {p: T.byName.get('Kingambit'), hpSp: 32, defSp: 0, spdSp: 2, nat: 'Adamant', ability: 'Defiant', item: '', boost: 0}, mv = T.mvByName.get('Thunderbolt');
+    const r = (ab, fg) => T.damage({atk: A(ab), def: D, move: mv, fg}).max; return [r('Mold Breaker', false), r('Mold Breaker', true), r('Static', false), r('Static', true)]; });
+  ok(fg[0] === fg[1] && fg[3] < fg[2], `Mold Breaker ignores Friend Guard; other abilities don't (${fg})`);
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 await browser.close();
 // items, suggestions and battle math (Oct 28 audit), on the same build

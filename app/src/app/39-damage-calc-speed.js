@@ -248,7 +248,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     if(first&&(dab==='Multiscale'||dab0==='Shadow Shield')&&o.fullHp!==false)f.push(2048);
     if((dab==='Fluffy'||dab==='Aura Guard')&&contact)f.push(2048);else if(dab==='Punk Rock'&&mv.sound)f.push(2048);if(dab==='Ice Scales'&&!phys)f.push(2048);
     if(eff>1&&(['Filter','Solid Rock'].includes(dab)||dab0==='Prism Armor'))f.push(3072);
-    if(o.fg)f.push(3072);if(dab==='Fluffy'&&type==='Fire')f.push(8192);
+    // Friend Guard is the partner's ability, so Mold Breaker (and Teravolt/Turboblaze) ignores it too (Showdown: breakable)
+    if(o.fg&&!['Mold Breaker','Teravolt','Turboblaze'].includes(ab))f.push(3072);if(dab==='Fluffy'&&type==='Fire')f.push(8192);
     if(aIt==='Expert Belt'&&eff>1)f.push(4915);else if(aIt==='Life Orb')f.push(5324);
     // Ripen doubles the berry: the hit is halved again (a quarter in all)
     if(first&&ab!=='Unnerve'&&RESIST_BERRY[dIt]===type&&(eff>1||type==='Normal')){f.push(2048);if(dab0==='Ripen')f.push(2048)}
