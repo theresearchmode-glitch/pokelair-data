@@ -256,6 +256,31 @@ for (const width of [1280, 390]) {
       ok(cut.length === 0, `${v}: names fit (${width}px)${cut.length ? ': ' + cut.slice(0, 5).join(', ') : ''}`); } await pg.evaluate(() => document.querySelector('[data-dcdir="theirs"]').click()); await pg.waitForTimeout(400);
     ok(await pg.evaluate(() => /best hit on your team/i.test(document.getElementById('dcOut').innerText)), 'calc: their hits on you');
     ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); } }
+// Found by the stress test (Oct 28): pasted and linked teams follow the game's rules; corrupt data never shows NaN
+{ console.log('\n== stress test');
+  const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(800);
+  const r = await pg.evaluate(() => { const T = window.__PL, b64 = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const link = T.decodeTeam('#team=' + b64(JSON.stringify({v: 1, s: [['Incineroar', 'Huge Power', 0, 'Choice Band', 'Careful:32/32/32/0/0/0'], ['Incineroar'], ['Garchomp', '', 0, 'Charizardite Y'], ['Sneasler', '', 0, '<img src=x>'], ['Kingambit', 'Defiant', 0, 'Black Glasses', 'Adamant:32/32/2/0/0/0']]})));
+    const ns = T.normSlots(link.slots);
+    const fem = T.parsePaste('Meowstic-F @ Meowsticite\nAbility: Prankster\n- Expanding Force\n- Protect');
+    const S0 = T.getS(); const keep = S0.slots; S0.slots = T.normSlots(fem.slots); const ex = T.exportPaste(); S0.slots = keep;
+    const male = T.parsePaste('Meowstic @ Meowsticite\nAbility: Prankster\n- Protect');
+    const over = T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nEVs: 32 HP / 32 Atk / 32 Def / 32 SpA / 32 SpD / 32 Spe\nJolly Nature\n- Earthquake');
+    const R = T.META.results, bad = JSON.parse(JSON.stringify(R)), k = Object.keys(bad.mons);
+    bad.mons[k[0]] = [null, 'x']; bad.mons[k[1]] = ['abc', .5]; bad.pairs[Object.keys(bad.pairs)[0]] = [{}, 99999]; bad.tc.rows[Object.keys(bad.tc.rows)[0]] = ['x', 1, 2, 3, 4, 5];
+    const c = T.cleanResults(bad);
+    return {names: link.slots.map(s => s.n), ab: link.slots[0].a, its: link.slots.map(s => s.it && s.it.doubles || ''), sps: ns.filter(s => s.sp).map(s => s.n),
+      fem: fem.slots.map(s => s.n), femEx: ex.split('\n')[0], male: male.slots.map(s => s.n), over: [!!(over.slots[0] && over.slots[0].sp), over.notes.join(' ')],
+      clean: !!c && !(k[0] in c.mons) && !(k[1] in c.mons) && Object.values(c.mons).every(x => Number.isFinite(x[0]) && Number.isFinite(x[1])) && Object.values(c.tc.rows).every(x => x.every(Number.isFinite)) && Object.keys(c.mons).length === k.length - 2}; });
+  ok(r.names.join() === 'Incineroar,Garchomp,Sneasler,Kingambit', `team link: one of each species (${r.names.join(', ')})`);
+  ok(r.ab === null, 'team link: an ability the Pokémon cannot have is dropped');
+  ok(r.its.join() === ',,,Black Glasses', `team link: only Champions items, no Mega Stone on the wrong Pokémon (${r.its.join(' / ')})`);
+  ok(r.sps.join() === 'Kingambit', 'team link: stat points over the 66 total are dropped');
+  ok(r.fem.join() === 'Meowstic-F-Mega' && r.femEx === 'Meowstic-F @ Meowsticite', `paste: female Mega Meowstic imports and exports (${r.fem}, "${r.femEx}")`);
+  ok(r.male.join() === 'Meowstic-M-Mega', 'paste: Meowstic with its stone becomes Mega Meowstic');
+  ok(!r.over[0] && /66/.test(r.over[1]), 'paste: stat points over 66 in total are skipped with a note');
+  ok(r.clean, 'corrupt results data: bad rows dropped, no NaN');
+  ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 await browser.close();
 // items, suggestions and battle math (Oct 28 audit), on the same build
 try { execFileSync('node', [APP + 'test/items.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL items/suggestions suite'); }
