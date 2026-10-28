@@ -57,7 +57,7 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
     return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}${tip}</span>`}).join('');
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
     return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''}${r.wxUp?` · ${esc(r.ab)} ×2 in ${esc(W)}`:''}${r.unb?` · ${r.unb} after its item is used (Unburden)`:''} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
-    <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Your side uses your items (and your spreads where you set them); theirs uses the most common natures and items, with fast Pokémon at 32 Speed points. Weather speed abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
+    <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Your side uses your items (and your spreads where you set them); theirs <span class="asm" title="Their real spreads and items are hidden">assumed</span> uses the most common natures and items, with fast Pokémon at 32 Speed points. Weather speed abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-spd],[data-spdwx]');if(!b)return;if(b.dataset.spdwx!=null)spdUi.wx=b.dataset.spdwx;else{const k=b.dataset.spd;spdUi[k]=!spdUi[k]}renderSpeed()});
 // ---- damage ----
 const TYPE_ITEM={Charcoal:'Fire','Mystic Water':'Water',Magnet:'Electric','Miracle Seed':'Grass','Never-Melt Ice':'Ice','Black Belt':'Fighting','Poison Barb':'Poison','Soft Sand':'Ground','Sharp Beak':'Flying','Twisted Spoon':'Psychic','Silver Powder':'Bug','Hard Stone':'Rock','Spell Tag':'Ghost','Dragon Fang':'Dragon','Black Glasses':'Dark','Metal Coat':'Steel','Fairy Feather':'Fairy','Silk Scarf':'Normal'};
@@ -280,12 +280,12 @@ function sideDefaults(p,role,mem){const nat=topNature(p),it=topItem(p);let ab;tr
   if(mem&&mem.ability&&p.a.includes(mem.ability))ab=mem.ability;
   // your own member: your spread if you set one (paste/link), and its item (your pick, or the team-aware default)
   const st=p.st,phys=st[1]>=st[3],cs=(mem&&mem.spread)||commonSpread(p),item=mem&&mem.item&&!STONE_RE.test(mem.item)?mem.item:mem&&mem.heldItem?mem.heldItem:it&&!STONE_RE.test(it[0])?it[0]:'';
-  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,item,ability:ab,boost:0,real:true}
-    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,item,ability:ab,boost:0,real:true};
+  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}
+    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'};
   // no spread data: assume full Defense for Body Press on Pokémon built around their Defense (base 100+);
   // a defender's Attack points (for Foul Play) are full on physical attackers
-  return role==='atk'?{nat:nat||(phys?'Adamant':'Modest'),sp:32,spDef:st[2]>=100?32:0,item,ability:ab,boost:0}
-    :{nat:nat||'Hardy',hpSp:32,defSp:0,spdSp:0,atkSp:phys?32:0,item,ability:ab,boost:0}}
+  return role==='atk'?{nat:nat||(phys?'Adamant':'Modest'),sp:32,spDef:st[2]>=100?32:0,item,ability:ab,boost:0,src:'estimated'}
+    :{nat:nat||'Hardy',hpSp:32,defSp:0,spdSp:0,atkSp:phys?32:0,item,ability:ab,boost:0,src:'estimated'}}
 let dc={dir:'mine',a:null,d:null,mv:null,weather:'',terrain:'',screen:false,hh:false,fg:false,crit:false,spread:null,inv:{}};
 // Choice Band, Choice Specs and Assault Vest are not in Champions (missing from Showdown's Champions item list, and no
 // player in any of our usage data runs them), so the calc doesn't offer them; their math stays in damage().
@@ -297,6 +297,8 @@ function dcMoves(p){const learn=(LEARN[p.n]||[]).map(k=>MV[k]).filter(m=>m.bp>0)
 function monOptions(sel){const mine=members().map(m=>m.p);let thr=[];try{thr=metaThreats(30).map(x=>x.p||x)}catch(e){}
   const seen=new Set();const grp=(lab,list)=>{const o=list.filter(p=>p&&!seen.has(p.n)&&seen.add(p.n)).map(p=>`<option value="${esc(p.n)}"${p.n===sel?' selected':''}>${esc(p.d||p.n)}</option>`).join('');return o?`<optgroup label="${lab}">${o}</optgroup>`:''};
   return grp('Your team',mine)+grp('Top of the meta',thr)+grp('Everyone',ROSTER.slice().sort((a,b)=>(a.d||a.n).localeCompare(b.d||b.n)))}
+// where a side's points and nature come from: your own spread, or an assumption (the most common spread, or an estimate)
+const dcSrc=X=>X&&X.src&&X.src!=='yours'?`<span class="asm" title="${X.src==='estimated'?'No spread data: points and nature are estimated':'Most common spread (or your nature on it); change the boxes to match yours'}">${X.src==='estimated'?'estimated':'assumed'} spread</span>`:'';
 function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   if(!dc.a||!byName.get(dc.a))dc.a=(ms[0]&&ms[0].p.n)||'Garchomp';
   if(!dc.d||!byName.get(dc.d)){let t=[];try{t=metaThreats(5).map(x=>x.p||x)}catch(e){}dc.d=(t.find(p=>p.n!==dc.a)||byName.get('Incineroar')||ROSTER[1]).n}
@@ -320,14 +322,14 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   // phones: the result rides along at the top while you change the inputs below
   const stick=pct&&r&&r.max>0?`<button type="button" class="dcstick" id="dcStick" aria-label="Jump to the full result">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>${pct[0].toFixed(1)}–${pct[1].toFixed(1)}%</b><span>${esc(koText(r))} · ${esc(dc.mv)}</span></span></button>`:mv&&r&&r.max===0?`<button type="button" class="dcstick" id="dcStick">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>No effect</b><span>${esc(dc.mv)}</span></span></button>`:'';
   el.innerHTML=stick+`<div class="dcgrid">
-    <div class="dccol"><h3>Attacker</h3>${sprite(A.p,'dcspr')}
+    <div class="dccol"><h3>Attacker ${dcSrc(A)}</h3>${sprite(A.p,'dcspr')}
       <label>Pokémon<select class="field" id="dcA">${monOptions(dc.a)}</select></label>
       <label>Move<select class="field" id="dcMv">${mvs.pop.length?`<optgroup label="Its set">${mvs.pop.map(m=>`<option${m.name===dc.mv?' selected':''}>${esc(m.name)}</option>`).join('')}</optgroup>`:''}<optgroup label="Other moves">${mvs.rest.map(m=>`<option${m.name===dc.mv?' selected':''}>${esc(m.name)}</option>`).join('')}</optgroup></select></label>
       <div class="dc2"><label>${bp_?'Defense points (Body Press)':mvC&&mvC.cat===2?'Sp. Atk points':'Attack points'}${sel('dcASp',PTS(aShown),String(aShown))}</label><label>Nature${sel('dcANat',NATURES,A.nat)}</label></div>
       <div class="dc2"><label>Item${itemSel('dcAIt',A)}</label><label>Ability${sel('dcAAb',A.p.a,A.ability)}</label></div>
       <label>${bp_?'Defense stage (Body Press)':'Stat stage (Intimidate = −1)'}${sel('dcABo',boosts,String(A.boost))}</label>
       ${A.ability==='Supreme Overlord'?`<label>Allies fainted (Supreme Overlord: +10% power each)${sel('dcAFt',[0,1,2,3,4,5].map(x=>[String(x),String(x)]),String(dc.fainted||0))}</label>`:''}</div>
-    <button type="button" class="btn sm dcswap" id="dcSwap" title="Swap attacker and defender" aria-label="Swap attacker and defender">⇄ Swap</button><div class="dccol"><h3>Defender</h3>${sprite(D.p,'dcspr')}
+    <button type="button" class="btn sm dcswap" id="dcSwap" title="Swap attacker and defender" aria-label="Swap attacker and defender">⇄ Swap</button><div class="dccol"><h3>Defender ${dcSrc(D)}</h3>${sprite(D.p,'dcspr')}
       <label>Pokémon<select class="field" id="dcD">${monOptions(dc.d)}</select></label>
       <div class="dc2"><label>HP points${sel('dcDHp',PTS(D.hpSp),String(D.hpSp))}</label><label>Nature${sel('dcDNat',NATURES,D.nat)}</label></div>
       <div class="dc2"><label>Def points${sel('dcDDf',PTS(D.defSp),String(D.defSp))}</label><label>Sp. Def points${sel('dcDSd',PTS(D.spdSp),String(D.spdSp))}</label></div>
@@ -387,6 +389,8 @@ function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThrea
   <div class="tablewrap">${table}</div>`}
 document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.id))return;const v=t.value;
   const ak='atk:'+dc.a,dk='def:'+dc.d;
+  // once you set a side's points or nature yourself, it's no longer an assumption
+  if(/^dcA(Sp|Nat)$/.test(t.id)&&dc.inv[ak])dc.inv[ak].src='yours';if(/^dcD(Hp|Df|Sd|Nat)$/.test(t.id)&&dc.inv[dk])dc.inv[dk].src='yours';
   if(t.id==='dcA'){dc.a=v;dc.mv=null;dc.spread=null;dc.wSet=dc.tSet=false}else if(t.id==='dcD'){dc.d=v;dc.wSet=dc.tSet=false}else if(t.id==='dcMv'){dc.mv=v;dc.spread=null}
   else if(t.id==='dcASp'){const I=dc.inv[ak],m=mvByName.get(dc.mv);if(m&&m.name==='Body Press')I.spDef=+v;else{I.sp=+v;if(m&&m.cat===2)I.spS=+v;else I.spA=+v}}
   else if(t.id==='dcAFt')dc.fainted=+v||0;else if(t.id==='dcANat')dc.inv[ak].nat=v;else if(t.id==='dcAIt')dc.inv[ak].item=v;else if(t.id==='dcAAb')dc.inv[ak].ability=v;else if(t.id==='dcABo')dc.inv[ak].boost=+v;

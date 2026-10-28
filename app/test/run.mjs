@@ -257,7 +257,8 @@ for (const width of [1280, 390]) {
   console.log('   winners median', r.med, `(${r.n})`, '| user team', r.uts, 'unanswered', r.un.join(', '), '| items', r.ip.join(', '), '| niche', r.niche, '| mirror', r.mir.join('/'));
   ok(r.n >= 20 && r.med >= 75, `real event winners are well prepared (median ${r.med}% of ${r.n})`);
   ok(r.uts != null && r.uts < r.med, `user's old 97 team is less prepared than the median winner (${r.uts}% vs ${r.med}%)`);
-  ok(r.un.length >= 2, `user team: unanswered threats are named (${r.un.join(', ')})`);
+  // Oct 28: 1+ (Grimmsnarl is now shaky for this team: Fake Out and 2HKOs count as partial answers to screens)
+  ok(r.un.length >= 1, `user team: unanswered threats are named (${r.un.join(', ')})`);
   ok(r.items[1] === 'Psychic Seed' && r.items[2] === 'Leftovers' && r.items[4] === 'Sitrus Berry' && r.items[5] === 'Choice Scarf', `import keeps the pasted items (${r.items.join(', ')})`);
   ok(r.ip.some(x => /dead:Psychic Seed/.test(x)) && r.ip.some(x => /scarftr:Choice Scarf/.test(x)), `user team: dead Psychic Seed and Choice Scarf under Trick Room are flagged (${r.ip.join(', ')})`);
   ok(r.spSt === 'part' && r.ckSpeedOk === false, `user team: Trick Room with one slow attacker is only partial speed control, not a pass (${r.spSt})`);
@@ -390,6 +391,34 @@ for (const width of [1280, 390]) {
     const run = () => teams.map(t => JSON.stringify(H.brief(H.report(t))));
     H.noCache(true); const a = run(); H.noCache(false); const b = run(), b2 = run(); return {n: teams.length, same: a.every((x, i) => x === b[i] && x === b2[i])}; });
   ok(eq.n >= 10 && eq.same, `threat engine: cached duels give identical reports (${eq.n} teams)`);
+  ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
+// Assumptions are labeled (Oct 28): an assumed spread is tagged on the team card and can be set in one tap; the calc tags a side
+// whose points are assumed; the refresh button explains every failure
+{ console.log('\n== assumptions labeled');
+  const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(800);
+  await pg.evaluate(() => { const T = window.__PL, S0 = T.getS(); window.__keep = S0.slots;
+    S0.slots = T.normSlots(T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nJolly Nature\n- Earthquake\n- Dragon Claw').slots); T.render(); });
+  await go(pg, 'build'); await pg.waitForTimeout(400);
+  const tag = await pg.evaluate(() => { const c = document.getElementById('slot0'); return c ? [...c.querySelectorAll('.asm')].map(x => x.textContent) : null; });
+  ok(tag && tag.includes('assumed'), `team card: the team sheet's spread is tagged assumed (${tag})`);
+  const clk = s => pg.evaluate(s => document.querySelector(s).click(), s), put = (s, v) => pg.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; }, [s, v]);
+  await clk('[data-spedit="0"]'); await put('#spv0', '40/0/0/0/0/32'); await clk('[data-spsave="0"]');
+  const bad = await pg.evaluate(() => (document.getElementById('spmsg0') || {}).textContent || '');
+  ok(/0-32/.test(bad), `spread editor refuses a stat over 32 ("${bad}")`);
+  await put('#spv0', '2/32/0/0/0/32'); await put('#spn0', 'Adamant'); await clk('[data-spsave="0"]'); await pg.waitForTimeout(200);
+  const set = await pg.evaluate(() => { const m = window.__PL.members()[0]; return m.spread && [m.spread.nat, m.spread.atk, m.spread.spe, !!m.spread.assumed, document.getElementById('slot0').querySelectorAll('.asm').length]; });
+  ok(set && set[0] === 'Adamant' && set[1] === 32 && set[2] === 32 && !set[3], `spread editor: your spread is saved and used (${set})`);
+  const ex = await pg.evaluate(() => window.__PL.exportPaste());
+  ok(/EVs: 2 HP \/ 32 Atk \/ 32 Spe/.test(ex) && /Adamant Nature/.test(ex), 'spread editor: export writes your spread');
+  await go(pg, 'calc'); await pg.waitForTimeout(300);
+  const cal = await pg.evaluate(() => { const T = window.__PL; T.dc().a = 'Garchomp'; T.dc().d = 'Incineroar'; T.dc().inv = {}; T.renderCalc(); const h = [...document.querySelectorAll('#dcOut .dccol h3')].map(x => x.innerText); return h; });
+  ok(cal.length === 2 && !/assumed|estimated/.test(cal[0]) && /assumed|estimated/.test(cal[1]), `calc: your spread untagged, theirs tagged (${cal.join(' | ')})`);
+  const rf = await pg.evaluate(async () => { const T = window.__PL; const codes = ['not_granted', 'rate_limited', 'server_not_connected', 'tool_error', undefined];
+    const txt = codes.map(c => T.refreshErrText(c ? {code: c} : new Error('x')));
+    const a1 = await T.refreshArgs({describeTool: async () => ({inputSchema: {properties: {trigger_id: {}}}})}), a2 = await T.refreshArgs({describeTool: async () => { throw {code: 'not_granted'}; }}), a3 = await T.refreshArgs({});
+    window.__PL.getS().slots = window.__keep; return {txt, keys: [a1, a2, a3].map(a => Object.keys(a).join())}; });
+  ok(rf.txt.every(t => t && t.length > 10) && new Set(rf.txt).size >= 4, `refresh button: a plain message for each failure (${rf.txt.length})`);
+  ok(rf.keys.every(k => k === 'trigger_id'), `refresh button: sends trigger_id with or without the connector's schema (${rf.keys})`);
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 await browser.close();
 // items, suggestions and battle math (Oct 28 audit), on the same build
