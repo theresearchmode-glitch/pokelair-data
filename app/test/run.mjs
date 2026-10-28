@@ -344,7 +344,20 @@ for (const width of [1280, 390]) {
   ok(r.clean, 'corrupt results data: bad rows dropped, no NaN');
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 // Loose ends from the stress test (Oct 28): team sheets without stat points, the item lists, Megas in the calc
-{ console.log('\n== stress test loose ends');
+// Bottom bar (Oct 28): Build sits dead centre (±1 px), labels visible, More reachable from the header
+{ console.log('\n== bottom bar');
+  for (const w of [375, 390, 430, 768, 1000]) { const {pg, errs, ctx} = await open(w); await pg.waitForTimeout(600);
+    const r = await pg.evaluate(() => { const b = document.querySelector('.bnav [data-view="auto"]'), f = b && b.querySelector('.chfab'), rc = (f || b).getBoundingClientRect(), mb = document.getElementById('moreBtn');
+      const labs = [...document.querySelectorAll('.bnav button')].filter(x => x.offsetParent).map(x => { const s = x.querySelector('span:not(.chfab)'); return s ? {t: s.textContent, fs: parseFloat(getComputedStyle(s).fontSize), v: s.offsetParent !== null} : null; });
+      return {c: rc.left + rc.width / 2, vw: document.documentElement.clientWidth, n: labs.length, labs, more: !!(mb && mb.closest('.band') && mb.offsetParent)}; });
+    ok(Math.abs(r.c - r.vw / 2) <= 1, `bottom bar ${w}px: Build centre ${r.c.toFixed(1)} vs ${r.vw / 2}`);
+    ok(r.n === 5 && r.labs.every(l => l && l.v && l.fs >= 11), `bottom bar ${w}px: 5 items, every label visible at 11px+ (${r.labs.map(l => l ? l.t + ' ' + l.fs : '?').join(', ')})`);
+    ok(r.more, `bottom bar ${w}px: More in the header`); await ctx.close(); } }// Archetypes (Oct 28): every guide card shows its key Pokémon (Trick Room and Tailwind had none)
+{ console.log('\n== archetypes');
+  const {pg, errs, ctx} = await open(390); await pg.waitForTimeout(800); await go(pg, 'arch'); await pg.waitForTimeout(800);
+  const cards = await pg.evaluate(() => [...document.querySelectorAll('#guideOut details.guide')].map(d => ({n: (d.querySelector('.pt') || {}).textContent, s: d.querySelectorAll('.gkm .spr').length})));
+  ok(cards.length >= 8 && cards.every(c => c.s >= 2), `archetypes: every card has key Pokémon sprites (${cards.map(c => c.n + ' ' + c.s).join(', ')})`);
+  ok(errs.length === 0, `archetypes: no page errors${errs.length ? ': ' + errs.join(' | ') : ''}`); await ctx.close(); }{ console.log('\n== stress test loose ends');
   const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(800);
   const r = await pg.evaluate(() => { const T = window.__PL, S0 = T.getS(), keep = S0.slots;
     // a team sheet: nature, no EVs line

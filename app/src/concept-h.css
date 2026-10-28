@@ -74,7 +74,7 @@ main details>summary{list-style:none}
 main details>summary::-webkit-details-marker{display:none}
 /* every other open/close (older pages' details) gets the same mark */
 main details:not(.chfold):not(.moremenu):not(.repfold)>summary{position:relative;padding-left:38px}
-main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{content:""!important;position:absolute;left:4px;top:50%;width:26px;height:18px;margin-top:-9px;transform:none;border:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 36'><path d='M4 26 L14 14 L24 26' fill='none' stroke='%230078BF' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/><path d='M4 34 L14 22 L24 34' fill='none' stroke='%230078BF' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' opacity='.5'/><path d='M28 26 L38 14 L48 26' fill='none' stroke='%23E8364F' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/><path d='M28 34 L38 22 L48 34' fill='none' stroke='%23E8364F' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' opacity='.5'/></svg>") center/contain no-repeat;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{content:""!important;position:absolute;left:4px;top:50%;width:26px;height:18px;margin-top:-9px;transform:none;border:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='124 72 264 293'><path d='M144 284.64L256 172.64L368 284.64L368 345.12L256 233.12L144 345.12Z' fill='%230078BF'/><path d='M144 204L256 92L368 204L368 264.48L256 152.48L144 264.48Z' fill='%23E8364F'/></svg>") center/contain no-repeat;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
 main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{transform:rotate(180deg)}
 /* ---------- shared H pieces ---------- */
 .chk{font:700 12px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--chink2)}
@@ -469,4 +469,125 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root:not(#_ch) #fbSheet>div,:root:not(#_ch) #fbSheet .fbpanel{background:var(--chp);color:var(--chink);border:3px solid var(--chline);border-radius:22px 22px 0 0}
 :root:not(#_ch) .toast{background:var(--chhdr);color:#F3EBDC;border:2px solid var(--chyel);border-radius:12px;font:600 14px var(--body)}
 :root:not(#_ch) .subnav .sub{border-radius:999px;border:2px solid var(--chline);min-height:40px;font:700 14px var(--body)}
-:root:not(#_ch) .subnav .sub[aria-selected="true"]{background:var(--chink);color:var(--chp)}
+:root:not(#_ch) .subnav .sub[aria-selected="true"]{background:var(--chink);color:var(--chp)}/* ===== round 5 ===== */
+/* old pink/navy chevron before headings: gone everywhere */
+:root:not(#_ch) h2::before,:root:not(#_ch) .abhero h2::before{display:none!important;content:none!important}
+/* Home chart: your six vs the top 12 */
+.chchart{display:grid;gap:3px;margin-top:4px}
+.chcr{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1.5fr) repeat(6,minmax(0,1fr));gap:3px;align-items:center;cursor:pointer;min-height:44px}
+.chcr.chch{cursor:default;min-height:0}.chcr.chch .spr{width:100%;max-width:44px;aspect-ratio:1;object-fit:contain;display:block;margin:0 auto}
+.chcr .th{display:flex;align-items:center;gap:4px;min-width:0;border-left:4px solid var(--line2);padding-left:4px}
+.chcr .th.l0{border-color:var(--chbad)}.chcr .th.l1{border-color:var(--chshaky)}.chcr .th.l2{border-color:var(--chmid)}.chcr .th.l3{border-color:var(--chok)}
+.chcr .th .spr{width:36px;height:36px;object-fit:contain;flex:none}.chcr .th i{font:700 11px/1.15 var(--body);font-style:normal;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chcr .cc{height:30px;border-radius:6px;display:block}
+.chcr .cc.win{background:var(--chok)}.chcr .cc.trade{background:var(--chshaky)}.chcr .cc.lose{background:var(--chbad)}.chcr .cc.none{background:color-mix(in srgb,var(--chink) 12%,transparent)}
+.chcr:not(.chch):hover .cc,.chcr:focus-visible .cc{outline:2px solid var(--chink);outline-offset:-2px}
+.chcr:focus-visible{outline:3px solid var(--chblue);outline-offset:2px;border-radius:6px}
+/* share card style toggle */
+.chshmode{margin:8px 0;background:none;padding:0;gap:6px;box-shadow:none}
+.chshmode button{border:2px solid var(--chline);border-radius:999px;min-height:40px;padding:0 16px;background:transparent;color:var(--chink);font:800 13px var(--body);text-transform:uppercase}
+.chshmode button[aria-pressed="true"]{background:var(--chink);color:var(--chp)}
+:root:not(#_ch) .sharein{background:var(--chp);color:var(--chink);border:3px solid var(--chline);border-radius:20px}
+/* ---------- Warm charcoal, vivid: a riso print under a stage light ---------- */
+:root:not(#_ch)[data-look="dark"]{--chblue:#3FA9FF;--chblueT:#6FC0FF;--chred:#FF5C77;--chredT:#FF7A8F;--chredB:#FF3F5F;--chpen:#FF8C7A;--chok:#3CD884;--chmid:#3D9BEA;--chshaky:#FFC22E;--chbad:#FF4F66;--chline:#5A524C;--line2:#4A4542;--accent:#6FC0FF}
+:root:not(#_ch)[data-look="dark"] body{background-image:radial-gradient(ellipse 90% 55% at 50% -8%,rgba(255,232,0,.09),transparent 65%),radial-gradient(ellipse 60% 40% at 100% 30%,rgba(255,63,95,.06),transparent 70%),radial-gradient(ellipse 60% 40% at 0% 70%,rgba(63,169,255,.06),transparent 70%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .45  0 0 0 0 .4  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");background-attachment:fixed,fixed,fixed,scroll}
+/* punchy display type: cream with a red + blue riso offset */
+:root[data-look="dark"] .chdisp,:root[data-look="dark"] .chpgt,:root[data-look="dark"] .chh1,:root[data-look="dark"] .chwh,:root[data-look="dark"] .chshn,:root[data-look="dark"] .chbringt,:root[data-look="dark"] .chthead .nm,:root[data-look="dark"] .chscout .chh{text-shadow:3px 3px 0 rgba(255,63,95,.9),-2px -1px 0 rgba(63,169,255,.55)}
+:root[data-look="dark"] .chpgt,:root[data-look="dark"] .chh1,:root[data-look="dark"] .chbmt span{color:#F7EFE0}
+:root[data-look="dark"] .chsec .cht,:root[data-look="dark"] .chmorebtn .cht{text-shadow:2px 2px 0 rgba(255,63,95,.75)}
+/* kickers in yellow, section accents in colour */
+:root[data-look="dark"] .chk{color:#FFE14D}
+:root[data-look="dark"] .chband .chk,:root[data-look="dark"] .chhot .chk,:root[data-look="dark"] .chabsix .chk,:root[data-look="dark"] .chdcband .chk,:root[data-look="dark"] .chlsk{color:#fff}
+/* coloured edges instead of cream outlines */
+:root[data-look="dark"] .chsec,:root[data-look="dark"] .chmorebtn{border-color:#3A6E9C;box-shadow:inset 4px 0 0 var(--chblue)}
+:root[data-look="dark"] .chshow,:root[data-look="dark"] .chwin,:root[data-look="dark"] .chsheet,:root[data-look="dark"] .chside,:root[data-look="dark"] .chready,:root[data-look="dark"] .chbring,:root[data-look="dark"] .dccol,:root[data-look="dark"] .dcres,:root[data-look="dark"] .evteam,:root[data-look="dark"] .corerow.chcbig,:root[data-look="dark"] .abcol,:root[data-look="dark"] .chabhero,:root[data-look="dark"] .chlstats,:root[data-look="dark"] .gitem,:root[data-look="dark"] #guideOut details{border-color:#F3EBDC!important;box-shadow:5px 5px 0 var(--chredB)!important}
+:root[data-look="dark"] .chhot,:root[data-look="dark"] .chabsix,:root[data-look="dark"] .chdcband{box-shadow:5px 5px 0 #F3EBDC}
+:root[data-look="dark"] .chsheet .hd{background:linear-gradient(90deg,#1E8FE8,#0B6AA8)}
+/* brighter halftone bands */
+:root[data-look="dark"] .chhalf{background-image:radial-gradient(rgba(255,255,255,.3) 1.3px,transparent 1.5px)}
+:root[data-look="dark"] .chband.you,:root[data-look="dark"] .chhot.blue,:root[data-look="dark"] .chabsix,:root[data-look="dark"] .chdcband.atk{background-color:#1E8FE8}
+:root[data-look="dark"] .chband.them,:root[data-look="dark"] .chhot.red,:root[data-look="dark"] .chdcband.def,:root:not(#_ch)[data-look="dark"] .bmopp.chhalf{background-color:#FF3F5F}
+/* sprites: a soft coloured glow and floor */
+:root[data-look="dark"] .chshm .spr,:root[data-look="dark"] .chwsix .spr,:root[data-look="dark"] .chrow .spr,:root[data-look="dark"] .chhr .spr,:root[data-look="dark"] main .tgrid .tgm .spr,:root[data-look="dark"] .chbring .bmpspr,:root[data-look="dark"] #guideOut .gkm .spr,:root[data-look="dark"] .chcr .spr,:root[data-look="dark"] .chbw .spr,:root[data-look="dark"] .spdrow .spdspr{filter:drop-shadow(0 0 8px rgba(63,169,255,.45)) drop-shadow(2px 3px 0 rgba(0,0,0,.45))}
+:root[data-look="dark"] .chshf{background:radial-gradient(ellipse at center,rgba(63,169,255,.35),transparent 70%)}
+:root[data-look="dark"] .chshow{background:radial-gradient(ellipse 70% 60% at 50% 100%,rgba(63,169,255,.28),transparent 70%),radial-gradient(ellipse 50% 40% at 50% 0%,rgba(255,232,0,.08),transparent 70%),#2C2A28}
+:root[data-look="dark"] .chpen{color:#FF8C7A;text-shadow:0 0 12px rgba(255,140,122,.25)}
+:root[data-look="dark"] .chring{border-color:#FF8C7A;color:#FF8C7A}
+:root[data-look="dark"] .chtier{border-color:#F3EBDC}
+:root[data-look="dark"] .bnav{background:#151413;box-shadow:0 -1px 0 rgba(255,232,0,.18)}
+:root[data-look="dark"] .chfab{border-color:#FFE800}/* ===== the split hero on Home ===== */
+.chsplit{display:grid;grid-template-columns:1fr;margin:0}
+.chsplit .chcol{padding:12px 16px 14px}
+.chcolt{font:400 30px/1 var(--display);text-transform:uppercase;margin:4px 0 6px;color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.2)}
+.chwho{font:600 13px/1.35 var(--body);color:#fff;opacity:.95;margin:-2px 0 6px;text-align:right}
+.chlist6{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.chhr2{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;position:relative}
+.chhr2 .spr{width:54px;height:54px;object-fit:contain;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
+.chhr2 .chbd2{min-width:0;width:100%}.chhr2 .chbd2 b{display:block;font:800 10px/1.15 var(--body);text-transform:uppercase;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chhr2 .chbd2 span{display:none}
+.chhr2 .chtag{font-size:9px;color:#fff;border-color:#fff;margin-top:2px;padding:0 3px}.chhr2 .chtag.lead{color:#1D2140;border-color:#1D2140}
+.chhr2 .emp{width:54px;height:54px;border:2px dashed rgba(255,255,255,.65);border-radius:10px}
+.chwl{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+.chwl .linkbtn{color:#fff;text-decoration:underline}
+.chghost.onred,.chghost.onblue{color:#fff;border-color:#fff;min-height:40px}
+.chsplit .chmid{padding:14px 16px 16px}
+.chlogo.chphone{margin:0 0 10px}
+@media (max-width:899px){.chsplit .chmid .chfour{display:grid}.chsplit .chband.them{order:3}.chsplit .chmid{order:2}.chsplit .chband.you{order:1}
+ .chsplit .chmid .chh1{font-size:42px}.chsplit .chmid .sub{font-size:24px}.chsplit .ch64{margin:8px 0 2px}.chsplit .ch64 .n{font-size:38px}.chsplit .chfour .spr{width:44px;height:44px}}
+@media (min-width:900px){
+ .chlogo.chphone{display:none}
+ .chsplit{grid-template-columns:1fr 1.15fr 1fr;margin:0;border:2px solid var(--chline);border-radius:18px;overflow:hidden}
+ .chsplit .chcol{padding:22px 22px 18px}.chcolt{font-size:44px}
+ .chlist6{grid-template-columns:1fr;gap:4px}
+ .chhr2{flex-direction:row;text-align:left;gap:10px;border:1.5px solid rgba(255,255,255,.45);border-radius:10px;padding:2px 8px 2px 2px}
+ .chhr2.r{flex-direction:row-reverse;text-align:right;padding:2px 2px 2px 8px}
+ .chhr2 .spr{width:56px;height:56px}.chhr2 .chbd2 b{font-size:14px}.chhr2 .chbd2 span{display:block;font:400 11px var(--mono);color:#fff;opacity:.88;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .chhr2 .chtag{font-size:10px;margin:0;flex:none}
+ .chsplit .chmid{padding:28px 30px;text-align:center}.chsplit .chmid .chh1{font-size:76px}.chsplit .chmid .sub{font-size:38px}
+ .chsplit .ch64{justify-content:center}.chsplit .chfour{display:grid;max-width:360px;margin:0 auto}
+ .chsplit .chacts{flex-direction:column;align-items:center}.chsplit .chacts .chprimary{width:auto}
+}
+:root[data-look="dark"] .chsplit{border-color:#F3EBDC}.chteamshow{margin-top:12px;cursor:default}.chteamshow .chshm{all:unset;box-sizing:border-box;display:flex;justify-content:center;cursor:pointer;min-height:44px}.chteamshow .chshm:focus-visible{outline:3px solid var(--chblue);border-radius:10px}.chteamshow .chshs{padding-top:10px}
+@media (max-width:899px){.chteamshow .chshm .spr{max-width:96px}}
+.chlogo.chphone.chpad{padding:8px 16px 4px;margin:0}
+.chcr.chch .spr{width:40px!important;height:40px!important;max-width:none;aspect-ratio:auto}
+@media (max-width:899px){.chcr{grid-template-columns:44px repeat(6,minmax(0,1fr))}.chcr .th i{display:none}.chcr .th{padding-left:2px}}
+/* ===== final logo "Stat Boost" ===== */
+.nplk{display:inline-flex;align-items:center;line-height:0}.nplk svg{display:block;height:100%;width:auto}
+.nplk .dk{display:none}:root[data-look="dark"] .nplk .lt{display:none}:root[data-look="dark"] .nplk .dk{display:block}
+.nplk>span{height:100%}
+.nplk.hdr{height:30px}.nplk.full{height:132px}
+.lgbrand .nplk.hdr{height:30px}.sidetop .logo .nplk.hdr{height:32px}
+:root:not(#_ch) .chbrand{display:none}
+@media (min-width:900px){.chsplit~* .nplk.full,.chlogo .nplk.full{height:150px}}
+.chtog{width:22px;height:24px}.chtog svg{width:22px;height:24px}
+main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{width:20px;height:22px;margin-top:-11px}
+/* header menu button (More moved up from the bottom bar) */
+:root:not(#_ch) .band #moreBtn.chmenubtn{display:none;width:44px;height:44px;border-radius:50%;border:2px solid var(--chline);background:var(--chc);color:var(--chink);align-items:center;justify-content:center;padding:0;margin-left:8px;flex:none}
+:root:not(#_ch) .band #moreBtn.chmenubtn span{display:none}
+:root:not(#_ch) .band #moreBtn.chmenubtn svg{width:22px;height:22px;fill:currentColor;stroke:none}
+:root:not(#_ch) .band #moreBtn.chmenubtn[aria-expanded="true"],:root:not(#_ch) .band #moreBtn.chmenubtn.on{background:var(--chink);color:var(--chp)}
+@media (max-width:1000px){:root:not(#_ch) .band #moreBtn.chmenubtn{display:inline-flex}:root:not(#_ch) .band .titlerow{flex-wrap:nowrap}:root:not(#_ch) .band .titlerow>div:first-child{flex:1;min-width:0}}
+/* ===== the bottom bar: a floating liquid-glass pill, 2 + Build + 2, Build dead centre ===== */
+@media (max-width:1000px){
+ :root:not(#_ch) .bnav{display:grid;grid-template-columns:repeat(5,1fr);align-items:end;gap:0;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom,0px));height:68px;padding:0 6px;border-radius:999px;
+  background:rgba(255,250,240,.58);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+  border:1px solid rgba(29,33,64,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 10px 30px rgba(29,33,64,.18),0 2px 6px rgba(29,33,64,.10)}
+ :root:not(#_ch)[data-look="dark"] .bnav{background:rgba(35,33,32,.72);border-color:rgba(243,235,220,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 30px rgba(0,0,0,.45)}
+ @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root:not(#_ch) .bnav{background:rgba(255,250,240,.9)}:root:not(#_ch)[data-look="dark"] .bnav{background:rgba(35,33,32,.92)}}
+ :root:not(#_ch) .bnav #moreBtn{display:none}
+ :root:not(#_ch) .bnav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;height:68px;padding:6px 0 7px;border-radius:999px;color:#1D2140;opacity:1;font:700 12px/1.1 var(--body);text-transform:none;letter-spacing:.01em;background:none;box-shadow:none}
+ :root:not(#_ch)[data-look="dark"] .bnav button{color:#F3EBDC}
+ :root:not(#_ch) .bnav button svg{width:26px;height:26px;padding:4px 14px;box-sizing:content-box;border-radius:999px;stroke-width:2;background:none;color:inherit;transition:background .18s}
+ :root:not(#_ch) .bnav button[aria-selected="true"] svg{background:rgba(29,33,64,.12);color:inherit}
+ :root:not(#_ch)[data-look="dark"] .bnav button[aria-selected="true"] svg{background:rgba(243,235,220,.16)}
+ :root:not(#_ch) .bnav button[aria-selected="true"]{color:#1D2140;font-weight:800}:root:not(#_ch)[data-look="dark"] .bnav button[aria-selected="true"]{color:#FFFFFF}
+ :root:not(#_ch) .bnav button::before{display:none!important}
+ /* Build: a raised glass circle in the exact centre, label under it */
+ :root:not(#_ch) .bnav button[data-view="auto"]>svg{display:none}
+ :root:not(#_ch) .bnav .chfab{width:54px;height:54px;border-radius:50%;margin:-26px 0 2px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,250,240,.82);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);border:2px solid #1D2140;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 16px rgba(29,33,64,.25)}
+ :root:not(#_ch)[data-look="dark"] .bnav .chfab{background:rgba(44,42,40,.9);border-color:#F3EBDC;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 16px rgba(0,0,0,.5)}
+ :root:not(#_ch) .bnav .chfab svg{width:28px!important;height:30px!important;padding:0!important;background:none!important}
+ :root:not(#_ch) .bnav button[data-view="auto"][aria-selected="true"] .chfab{background:#FFE800}
+}

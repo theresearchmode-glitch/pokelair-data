@@ -132,3 +132,53 @@ CH.wrap('renderSets', () => CH.pagehead($('sets'), 'Popular sets · what players
 CH.wrap('renderSaved', () => CH.pagehead($('saved'), 'Saved teams · in this browser', 'Saved teams', ''));
 CH.wrap('renderBox', () => CH.pagehead($('box'), 'My box · what you can field', 'My box', ''));
 CH.wrap('renderGuides', () => CH.pagehead($('guides'), 'Archetypes · the team styles you will face', 'Archetypes', ''));
+// ---------- round 5 ----------
+// My box: the first 30, the rest one tap away
+CH.wrap('renderBox', () => CH.more($('boxList'), ':scope > .boxchip', 30, 'box', 'in your box'));
+// Home: your six (columns) against the top 12 threats by top-cut share (rows, worst first)
+CH.LVC = {win: ['var(--chok)', 'answers it'], trade: ['var(--chshaky)', 'partial answer'], lose: ['var(--chbad)', 'loses 1-on-1'], none: ['var(--line2)', 'no direct matchup']};
+CH.cellOf = (r, m) => { const n = m.p.n, has = a => (a || []).some(x => x.m && x.m.n === n); return has(r.solid) ? 'win' : has(r.soft) ? 'trade' : has(r.losers) ? 'lose' : 'none'; };
+CH.chart = (RD, ms, k = 12) => { if (!RD || !ms.length) return ''; const rows = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, k).sort((a, b) => a.level - b.level || b.t.w - a.t.w);
+  return `<div class="chchart" role="table" aria-label="Your six against the top ${k} threats"><div class="chcr chch" role="row"><span role="columnheader"></span>${ms.map(m => `<span role="columnheader" title="${esc(m.d)}">${sprite(m.p) || esc(m.d.slice(0, 3))}</span>`).join('')}</div>
+    ${rows.map(r => `<button type="button" class="chcr" role="row" data-chhthr="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="th l${r.level}" role="rowheader">${sprite(byName.get(r.t.n)) || ''}<i>${esc(r.t.d)}</i></span>${ms.map(m => { const c = CH.cellOf(r, m); return `<span role="cell" class="cc ${c}" title="${esc(m.d)} vs ${esc(r.t.d)}: ${CH.LVC[c][1]}"></span>`; }).join('')}</button>`).join('')}</div>
+    <div class="chleg">${Object.entries(CH.LVC).map(([, [c, t]]) => `<span><i style="background:${c}"></i>${t}</span>`).join('')}</div><p class="t2" style="margin:2px 0 0">Rows are the top ${k} threats by top-cut share, worst first. Tap one for the full matchup.</p>`; };
+// Share card in Concept H (light and Warm charcoal)
+CH.shareMode = null;
+buildShareCard = async function () { const ms = members(); if (!ms.length) return null;
+  const dark = (CH.shareMode || document.documentElement.dataset.look) === 'dark';
+  const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#CFC6B7', blue: '#1E8FE8', red: '#FF3F5F', card: '#2C2A28', pen: '#FF8C7A', tile: '#171615', shadow: '#FF3F5F'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', red: '#E8364F', card: '#FBF6EC', pen: '#C41E35', tile: '#1D2140', shadow: '#0078BF'};
+  try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Space Mono"', '400 40px "Permanent Marker"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
+  const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
+  if (dark) { const g = x.createRadialGradient(600, -120, 0, 600, -120, 760); g.addColorStop(0, 'rgba(255,232,0,.10)'); g.addColorStop(1, 'rgba(255,232,0,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
+  // logo tile + wordmark
+  const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']);
+  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, 290, 290 * 196 / 761.34); } catch (e) {}
+  x.textBaseline = 'alphabetic';
+  // readiness, top right
+  const RD = prepOf(ms); x.textAlign = 'right';
+  if (RD) { x.font = '400 112px Anton, Impact, sans-serif'; const pw = x.measureText(RD.score + '%').width; x.fillStyle = P.shadow; x.fillText(RD.score + '%', 1150, 154); x.fillStyle = P.ink; x.fillText(RD.score + '%', 1144, 148);
+    x.font = '700 15px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('READY FOR THE TOP 30 THREATS', 1144, 178);
+    x.save(); x.translate(1144 - pw - 70, 100); x.rotate(-.14); x.strokeStyle = P.pen; x.lineWidth = 5; x.beginPath(); x.arc(0, 0, 48, 0, Math.PI * 2); x.stroke(); x.font = '400 54px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.textAlign = 'center'; x.fillText(CH.grade(RD.score), 0, 20); x.restore(); }
+  x.textAlign = 'left';
+  // team name with a riso offset
+  const title = ((typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team').toUpperCase(); let fz = 92;
+  do { x.font = `400 ${fz}px Anton, Impact, sans-serif`; } while (x.measureText(title).width > 760 && --fz > 44);
+  x.fillStyle = P.shadow; x.fillText(title, 62, 238); x.fillStyle = P.red; x.fillText(title, 56, 232);
+  x.font = '700 15px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · REG M-C · BRING 6 PICK 4', 58, 268);
+  // the six on a blue halftone band
+  const by = 296, bh = 316; x.fillStyle = P.blue; x.fillRect(0, by, W, bh); x.fillStyle = 'rgba(255,255,255,.22)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < W; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.4, 0, 7); x.fill(); }
+  const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp';
+  const imgs = await Promise.all(ms.slice(0, 6).map(m => { const id = typeof SPRITE_ID === 'object' && SPRITE_ID ? SPRITE_ID[m.p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); }));
+  const cw = W / 6; ms.slice(0, 6).forEach((m, i) => { const cx = i * cw + cw / 2, im = imgs[i];
+    x.fillStyle = 'rgba(0,0,0,.18)'; x.beginPath(); x.ellipse(cx, by + 238, 70, 12, 0, 0, 7); x.fill();
+    if (im) { const s = Math.min(176 / im.width, 176 / im.height); x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetX = 3; x.shadowOffsetY = 4; x.drawImage(im, cx - im.width * s / 2, by + 246 - im.height * s, im.width * s, im.height * s); x.restore(); }
+    x.textAlign = 'center'; x.fillStyle = '#fff'; let f2 = 22; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Archivo, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
+    if (m.item) { x.font = '400 14px "Space Mono", monospace'; x.fillStyle = 'rgba(255,255,255,.88)'; x.fillText(scFit(x, m.item, cw - 16), cx, by + 302); } x.textAlign = 'left'; });
+  x.font = '400 26px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.fillText('Plot your win.', 58, 652);
+  x.textAlign = 'right'; x.font = '700 14px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', 1144, 650); x.textAlign = 'left';
+  return c; };
+CH.wrap('openShareCard', () => { const box = $('shareBox'); if (!box || box.hidden || box.querySelector('.chshmode')) return; const hd = box.querySelector('.sharehd'); if (!hd) return;
+  const cur = CH.shareMode || document.documentElement.dataset.look || 'light';
+  hd.insertAdjacentHTML('afterend', `<div class="seg chshmode" role="group" aria-label="Card style">${[['light', 'Light'], ['dark', 'Dark']].map(([k, t]) => `<button type="button" data-chshm="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</div>`); });
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chshm]'); if (!b) return; CH.shareMode = b.dataset.chshm; const box = $('shareBox'); if (box) { box.hidden = true; box.innerHTML = ''; } openShareCard(); });

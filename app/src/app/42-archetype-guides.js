@@ -36,7 +36,8 @@ function renderGuides() { const el = $('guideOut'); if (!el) return;
       if (has) counts[k] = (counts[k] || 0) + 1; } }
   // key Pokémon: setters and abusers by usage; for Trick Room and Tailwind, the Pokémon that run the move most
   const doc = META.doubles_tour || META.doubles;
-  const moveUsers = mv => (doc && doc.top || []).filter(r => (r.mv || []).some(([m, pc]) => m === mv && pc >= 30)).slice(0, 6).map(r => byName.get(r.n)).filter(Boolean);
+  // tournament usage rows don't carry moves, so read each Pokémon's set the same way the rest of the page does
+  const moveUsers = mv => (doc && doc.top || []).map(r => byName.get(r.n)).filter(Boolean).filter(p => { let st = null; try { st = setFor(p); } catch (e) {} return !!(st && (st.mv || []).some(([m, pc]) => m === mv && pc >= 30)); }).slice(0, 6);
   const keyMons = k => { if (k === 'tr') return moveUsers('Trick Room'); if (k === 'tw') return moveUsers('Tailwind');
     const A = ARCH[k]; return ROSTER.filter(p => (A.setAb || []).some(a => p.a.includes(a)) || (A.abN || []).includes(p.n)).sort((a, b) => U(b) - U(a)).slice(0, 6); };
   const ms = members();

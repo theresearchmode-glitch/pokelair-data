@@ -7,7 +7,13 @@ const CH = {};
 CH.chev = (x, y, c) => { const p = (dy, col) => `<path d="M${x + 2} ${y + 22 + dy} L${x + 18} ${y + 8 + dy} L${x + 34} ${y + 22 + dy}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`; return p(3, '#FFE800') + p(0, c) + p(13, '#FFE800') + p(10, c); };
 // the logo: two +2 chevrons (blue = you, red = them) over the back two slots
 CH.logo = (s = 34, tile = '#1D2140') => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="${tile}"/>${CH.chev(12, 22, '#0078BF')}${CH.chev(52, 22, '#FF4C65')}<rect x="20" y="64" width="22" height="18" rx="6" fill="none" stroke="#F1E9DA" stroke-width="6"/><rect x="58" y="64" width="22" height="18" rx="6" fill="#F1E9DA"/></svg>`;
-CH.tog = () => `<span class="chtog" aria-hidden="true"><svg viewBox="0 0 52 36"><path d="M4 26 L14 14 L24 26" fill="none" stroke="var(--chblue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 34 L14 22 L24 34" fill="none" stroke="var(--chblue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/><path d="M28 26 L38 14 L48 26" fill="none" stroke="var(--chred)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 34 L38 22 L48 34" fill="none" stroke="var(--chred)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/></svg></span>`;
+// the final logo's two chevrons (blue under red): up = closed, flipped = open. Exactly two chevrons, always.
+CH.chev2 = (cls = '') => `<svg class="`+cls+`" viewBox="124 72 264 293" aria-hidden="true"><path d="M144 284.64L256 172.64L368 284.64L368 345.12L256 233.12L144 345.12Z" fill="var(--chblue,#0078BF)"/><path d="M144 204L256 92L368 204L368 264.48L256 152.48L144 264.48Z" fill="var(--chred,#E8364F)"/></svg>`;
+CH.tog = () => `<span class="chtog" aria-hidden="true">${CH.chev2()}</span>`;
+// the logo: full lockup (Home), compact header lockup (top bar, menu, footer); light and Warm charcoal
+// each copy gets its own mask ids: a hidden copy (the closed menu) would otherwise break the mask for every other copy
+CH._lk = 0; CH.uniq = svg => { const n = ++CH._lk; return svg.replace(/id="(np[^"]+)"/g, (m, id) => `id="${id}-${n}"`).replace(/url\(#(np[^)]+)\)/g, (m, id) => `url(#${id}-${n})`); };
+CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
 // readiness grade: preparation for the top 30 threats, never a win chance
 CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
 CH.LEGEND = 'Grade = top threats answered: A 90%+ · B 80+ · C 70+ · D 60+ · F below. Preparation, not a prediction.';
@@ -26,6 +32,11 @@ CH.four = ms => { if (!ms || ms.length < 4) return null; const six = CH.metaSix(
   if (CH._four.key === key) return CH._four.v; let v = null;
   try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, six.map(oppMember), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
   CH._four = {key, v}; return v; };
+// your four against any six (the Battle mode planner), cached
+CH._fv = {key: null, v: null};
+CH.fourVs = (ms, names) => { const key = metaVersion + '|' + names.join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|'); if (CH._fv.key === key) return CH._fv.v; let v = null;
+  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, names.map(n => oppMember(byName.get(n))), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
+  CH._fv = {key, v}; return v; };
 CH.leadWhy = m => { const mv = new Set(m.moves.map(x => x.name)); if (mv.has('Tailwind')) return 'Tailwind turn 1'; if (mv.has('Trick Room')) return 'Trick Room turn 1'; if (mv.has('Fake Out')) return 'Fake Out pressure';
   if (m.ability === 'Intimidate') return 'Intimidate on entry'; if (mv.has('Follow Me') || mv.has('Rage Powder')) return 'redirects attacks'; return ''; };
 // one real KO for a red-pen note: the most-used top threat one of yours OHKOs as its solid answer
@@ -84,15 +95,30 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const battles = ls ? `<div class="hlogs"><div><b>${ls.w}–${ls.l}</b><span>${ls.pct}% wins</span></div><div><b>${ls.n}</b><span>logged</span></div><div class="hdots">${L.slice(-10).map(e => `<i class="${e.r === 'W' ? 'w' : 'l'}" title="${e.r === 'W' ? 'Win' : 'Loss'}"></i>`).join('')}</div></div><button type="button" class="linkbtn" data-view="matchup">Battle log ›</button>`
     : '<div class="hempty"><p class="t2">Log your games after each match and your record shows up here.</p><button type="button" class="btn sm" data-view="matchup">Log a game</button></div>';
   let trends = ''; try { trends = homeTrends(); } catch (e) { trends = ''; }
-  const logo = `<span class="chbrand chbig">${CH.logo(58)}<span>NASTYPLOT</span></span>`;
-  const topH = `<div class="chtop"><div class="chtl"><div class="chlogo">${logo}</div><div class="chk">Pokémon Champions · Reg M-C · VGC doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div>
-    <p>Ratings, builds and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>, refreshed every morning.</p>
-    <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>${win}</div>`;
-  const vsSix = `<div class="chhero">${you}${them}${F ? mid : ''}</div>`;
-  el.innerHTML = topH + `
+  // the split hero: your six (blue) · plot your win (cream) · the latest champion's six (red), live from the events data
+  const logo = CH.lockup('full');
+  const champ = t ? t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''})).filter(x => x.p) : null;
+  const FC = champ && ms.length >= 4 ? CH.fourVs(ms, champ.map(x => x.p.n)) : null, foe = FC ? 'the champion\'s six' : 'the meta\'s six', F2 = FC || F;
+  const cl = F2 ? F2.lead.map(byN).filter(Boolean) : [], cb = F2 ? F2.back.map(byN).filter(Boolean) : [];
+  const ord2 = F2 ? [...cl, ...cb, ...mine.filter(m => !cl.includes(m) && !cb.includes(m))] : mine;
+  const tag2 = m => !F2 ? '' : cl.includes(m) ? '<span class="chtag lead">Lead</span>' : cb.includes(m) ? '<span class="chtag">Back</span>' : '<span class="chtag">Bench</span>';
+  const row = (sp, nm, line, tg, right) => `<div class="chhr2${right ? ' r' : ''}">${sp}<div class="chbd2"><b>${esc(nm)}</b>${line ? `<span>${esc(line)}</span>` : ''}</div>${tg || ''}</div>`;
+  const youH = `<div class="chband you chhalf chcol"><div class="chk">● You · ${ms.length ? 'pick 4' : 'your six'}</div><div class="chcolt">${ms.length ? esc(teamTitleFor(ms)) : 'Your six'}</div>
+    ${ms.length ? `<div class="chlist6">${ord2.map(m => row(sprite(m.p) || '', m.d, [m.item, m.ability].filter(Boolean).join(' · '), tag2(m))).join('')}</div><div class="chwl" style="justify-content:flex-start"><button type="button" class="chghost onblue" data-view="build">Open my team</button></div>`
+      : `<div class="chlist6 empty">${Array.from({length: 6}, () => '<div class="chhr2"><span class="emp"></span><div class="chbd2"><b>&nbsp;</b></div></div>').join('')}</div><button type="button" class="chghost onblue" data-view="build">Add your six</button>`}</div>`;
+  const themH = champ ? `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">Latest winner · ${esc(ev.name)} ●</div><div class="chcolt" style="text-align:right">The champion's six</div>
+    <div class="chwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen" style="color:#fff">same six as yours!</span>' : ''}</div>
+    <div class="chlist6">${champ.map(x => row(sprite(x.p) || '', x.p.d, [x.it, x.ab].filter(Boolean).join(' · '), '', true)).join('')}</div>
+    <div class="chwl"><button class="chghost onred" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div>` : `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div>${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
+  const midH = `<div class="chmid"><div class="chk">Team preview · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="sub">Before turn one.</div>
+    <p>From <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>. See their six, pick your four.</p>
+    ${F2 && cl.length ? `<div class="ch64"><span class="n b">6</span><span class="chk">bring</span><span style="font-size:26px" aria-hidden="true">→</span><span class="n r">4</span><span class="chk">pick</span></div>
+    <div class="chk" style="margin:2px 0 6px">NastyPlot's four vs ${foe}</div><div class="chfour">${[...cl, ...cb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'LEAD' : 'BACK'}</div></div>`).join('')}</div>` : ''}
+    <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>`;
+  const topH = `<div class="chlogo chphone chpad">${logo}</div><div class="chsplit">${youH}${midH}${themH}</div>`;  el.innerHTML = topH + `
     <div class="chpad">${typeof welcomeCard === 'function' ? welcomeCard() : ''}${typeof whatsNewCard === 'function' ? whatsNewCard() : ''}</div>
-    <div class="chhome2">${ready}</div>${pr}
-    <div class="chfolds">${CH.fold('vs', "Your six vs the meta's six", F ? `Your four: ${fl.concat(fb).map(m => esc(m.d)).join(', ')}` : 'Add four or more Pokémon to see your four', vsSix)}
+    ${pr}
+    <div class="chfolds">${RD ? CH.fold('vs', 'Your six vs the top 12', (() => { const r = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, 12), bad = r.filter(x => x.level <= 1).length; return bad ? `${bad} of the top 12 ${bad === 1 ? 'is' : 'are'} unanswered or shaky · tap a row for details` : 'Every one of the top 12 is handled · tap a row for details'; })(), CH.chart(RD, ms)) : ''}
       ${CH.fold('more', 'More on Home', `All ${HOME_TILES.length} tools · top of the meta${trends ? ' · what changed' : ''}${coresH ? ' · cores' : ''} · your battles`, `<div class="chk">All tools</div>${tools}<div class="chk" style="margin-top:14px">${ui.homeGems && gems.length ? 'Hidden gems' : 'Top of the meta'}</div>${topMeta}${trends ? `<div class="chk" style="margin-top:14px">What changed this week</div>${trends}` : ''}${coresH ? `<div class="chk" style="margin-top:14px">Winning cores</div>${coresH}` : ''}<div class="chk" style="margin-top:14px">Your battles${ls ? ' · ' + ls.w + '–' + ls.l : ''}</div>${battles}<p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`)}
 
 
@@ -137,6 +163,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">Your team · open team sheet · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="2">${esc(title)}</div>
       ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · ${c[0]} unanswered · ${c[1]} shaky${v.legal === false ? ' · <b style="color:var(--bad)">not legal yet</b>' : ''}</div>` : `<div class="rd">Type a Pokémon into a slot, or let NastyPlot draft one.</div>`}
       ${RD ? `<div class="chlegend">${CH.LEGEND}</div>` : ''}<div class="chacts2" id="chActs"></div></div>${RD ? `<div class="chring" title="Readiness grade">${CH.grade(RD.score)}</div>` : ''}</div>
+    ${slots.length ? `<div class="chshow chteamshow"><span class="chshs">${slots.map(({m, i}) => `<button type="button" class="chshm" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || `<b>${esc(m.d)}</b>`}</button>`).join('')}</span><span class="chshf" aria-hidden="true"></span></div>` : ''}
     <div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${slots.length ? slots.map(row).join('') : '<div class="chempty">No Pokémon yet. Open <b>Edit team</b> below to add your six, or use <b>Build</b> for a full team.</div>'}</div>
     ${RD ? `<div class="chside"><div class="chk">Ready for</div><div style="display:flex;align-items:center;gap:14px"><span class="chdisp" style="font-size:64px">${RD.score}%</span><span class="chring sm">${CH.grade(RD.score)}</span></div><div class="t2" style="margin-bottom:8px">of the top 30 threats · ${c[0]} unanswered · ${c[1]} shaky</div>${CH.tiles(RD, 'data-chthr')}${CH.legendRow(RD)}<button type="button" class="chprimary" data-chscout="">Open scouting report <span aria-hidden="true">➜</span></button></div>` : ''}`;
   if (CH.acts) $('chActs').append(CH.acts);
@@ -186,10 +213,10 @@ document.addEventListener('click', e => { const t = e.target; if (!t || !t.close
   if (t.closest('#chScout [data-plan]')) setTimeout(chScoutClose, 0); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') chScoutClose(); });
 // ---------- brand: the new logo in the top bar, the menu and the footer ----------
-function chBrand() { const mark = (s, t) => `<span class="chbrand">${CH.logo(s, t)}<span>NASTYPLOT</span></span>`;
-  document.querySelectorAll('.band .brand, .sidetop .logo, .lgbrand').forEach(el => { if (el.querySelector('.chbrand')) return; el.insertAdjacentHTML('afterbegin', mark(el.closest('.lgbrand') ? 26 : 32, '#1D2140')); });
-  const b = document.querySelector('.bnav [data-view="auto"]'); if (b && !b.querySelector('.chfab')) b.insertAdjacentHTML('afterbegin', `<span class="chfab" aria-hidden="true">${CH.logo(36, 'transparent')}</span>`); }
-// hook into the page: after every render, redraw the Team header; Home is redrawn by render() itself
+function chBrand() { document.querySelectorAll('.band .brand, .sidetop .logo, .lgbrand').forEach(el => { if (el.querySelector('.nplk')) return; el.insertAdjacentHTML('afterbegin', CH.lockup('hdr')); });
+  const b = document.querySelector('.bnav [data-view="auto"]'); if (b && !b.querySelector('.chfab')) b.insertAdjacentHTML('afterbegin', `<span class="chfab" aria-hidden="true">${CH.chev2()}</span>`);
+  // More moves to the header (next to search); the bottom bar keeps 2 + Build + 2, symmetric
+  const mb = $('moreBtn'), row = document.querySelector('.band .titlerow'); if (mb && row && !mb.closest('.band')) { mb.classList.add('chmenubtn'); mb.setAttribute('aria-label', 'More pages and settings'); row.append(mb); } }// hook into the page: after every render, redraw the Team header; Home is redrawn by render() itself
 safe('concept h', () => { chBrand(); chTeamInit(); });
 const chRenderOld = render;
 // the Team header only redraws while the Team page shows (and when it opens), so other pages stay fast

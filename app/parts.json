@@ -6,6 +6,7 @@
  "src/data/data.js",
  "src/data/move-acc.js",
  "src/data/items-list.js",
+ "src/data/logos.js",
  "src/data/move-meta.js",
  "src/engine/types.js",
  "src/app/00-main.js",
