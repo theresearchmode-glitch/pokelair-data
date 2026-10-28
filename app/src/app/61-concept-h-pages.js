@@ -99,7 +99,7 @@ CH.more = (box, sel, n, key, label) => { if (!box) return; const items = [...box
   if (!b) { b = document.createElement('button'); b.type = 'button'; b.className = 'chsec chmorebtn'; b.dataset.chmore = key; box.after(b); b.addEventListener('click', () => { ui.chMore[key] = !ui.chMore[key]; CH.more(box, sel, n, key, label); }); }
   b.setAttribute('aria-expanded', all ? 'true' : 'false');
   b.innerHTML = `<span class="chtog${all ? ' open' : ''}" aria-hidden="true">${CH.tog().replace(/^<span class="chtog" aria-hidden="true">|<\/span>$/g, '')}</span><span style="flex:1;text-align:left"><span class="cht">${all ? 'Show fewer' : `${items.length - n} more ${label}`}</span><span class="chs">${all ? 'Fold the rest away' : `Showing ${n} of ${items.length}`}</span></span>`; };
-CH.pagehead = (sec, kicker, title, sub) => { if (!sec || sec.querySelector(':scope > .chpghead')) return; const h = sec.querySelector(':scope > .head'); const w = document.createElement('div'); w.innerHTML = CH.head(kicker, title, sub); (h || sec.firstElementChild).after(w.firstElementChild); sec.classList.add('chpg'); };
+CH.pagehead = (sec, kicker, title, sub) => { if (!sec || sec.querySelector(':scope > .chpghead')) return; const h = sec.querySelector(':scope > .head'); const w = document.createElement('div'); w.innerHTML = CH.head(kicker, title, sub); if (h) h.before(w.firstElementChild); else sec.prepend(w.firstElementChild); sec.classList.add('chpg'); };
 // ---------- Damage calc: attacker vs defender as two cards, set details folded ----------
 CH.wrap('renderCalc', () => { const el = $('dcOut'), sec = $('dmgcalc'); if (!el) return; CH.pagehead(sec, 'Damage calc · common sets, auto-filled', 'Damage calc', '');
   el.querySelectorAll('.dccol').forEach((col, i) => { if (col.querySelector('.chdcband')) return; const h = col.querySelector('h3'), sp = col.querySelector('.dcspr'), sel = col.querySelector('select'), name = sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : '';
@@ -123,3 +123,12 @@ CH.wrap('renderTeamSearch', () => { const sec = $('topteams'); CH.pagehead(sec, 
 function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [...L.children], cards = kids.filter(x => x.classList.contains('ttcard')); if (cards.length < 5) return; CH.more(L, ':scope > *', kids.indexOf(cards[2]) + 1, 'ttlist', 'teams and sections'); }
 CH.wrap('renderTopTeams', () => safe('teams more', chTeamsMore));
 CH.wrap('renderEvents', () => { const sec = $('events'); CH.pagehead(sec, 'Events · recent tournaments', 'Events', ''); });
+// ---------- batch 4: Best additions, Types, Sets, Saved teams, Box, Archetypes ----------
+CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Best additions · for your team', 'Best additions', '');
+  CH.more($('recList'), ':scope > *', 2, 'recs', 'additions');
+  const thr = $('threats'); if (thr) { const s = thr.closest('section'); if (s && !s.closest('details.chsec')) CH.foldNode(s, 'covthreats', 'Biggest threats', 'Meta Pokémon that hit several of yours hard, or that nothing answers', false); } });
+CH.wrap('renderTypeChart', () => CH.pagehead($('types'), 'Type chart · what hits what', 'Type matchups', ''));
+CH.wrap('renderSets', () => CH.pagehead($('sets'), 'Popular sets · what players run', 'Popular sets', ''));
+CH.wrap('renderSaved', () => CH.pagehead($('saved'), 'Saved teams · in this browser', 'Saved teams', ''));
+CH.wrap('renderBox', () => CH.pagehead($('box'), 'My box · what you can field', 'My box', ''));
+CH.wrap('renderGuides', () => CH.pagehead($('guides'), 'Archetypes · the team styles you will face', 'Archetypes', ''));
