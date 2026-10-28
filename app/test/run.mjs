@@ -354,17 +354,28 @@ for (const width of [1280, 390]) {
     const code = (() => { S0.slots = T.normSlots(sheet.slots); return T.teamCode(); })(), dl = T.decodeTeam(code); S0.slots = T.normSlots(dl.slots); const m3 = T.members()[0];
     // an explicit EVs line, even all zero, is kept exactly
     const zero = T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nEVs: 0 HP\nJolly Nature\n- Earthquake'); S0.slots = T.normSlots(zero.slots); const mz = T.members()[0];
+    // and it survives export + re-import (the export writes "EVs: 0 HP" instead of dropping the line)
+    const zb = T.parsePaste(T.exportPaste()); S0.slots = T.normSlots(zb.slots); const mz2 = T.members()[0], zrt = !!(mz2.spread && !mz2.spread.assumed && mz2.spread.atk === 0 && mz2.spread.spe === 0);
+    // a garbage EVs line counts as missing (assumed spread, the same before and after export + re-import)
+    const gb = T.parsePaste('Whimsicott @ Focus Sash\nAbility: Prankster\nEVs: lots of speed\nTimid Nature\n- Tailwind\n- Moonblast'); S0.slots = T.normSlots(gb.slots); const g1 = T.members()[0];
+    const gb2 = T.parsePaste(T.exportPaste()); S0.slots = T.normSlots(gb2.slots); const g2 = T.members()[0];
+    const garb = [!!(g1.spread && g1.spread.assumed), g1.spread && [g1.spread.hp, g1.spread.spa, g1.spread.spe].join('/'), g2.spread && [g2.spread.hp, g2.spread.spa, g2.spread.spe].join('/')];
+    // a Mega gets its fixed ability on the first import (the paste writes the base form's)
+    const fl = T.parsePaste('Floette-Eternal @ Floettite\nAbility: Flower Veil\nModest Nature\n- Moonblast\n- Protect'); S0.slots = T.normSlots(fl.slots); const fl2 = T.parsePaste(T.exportPaste());
+    const mega = [fl.slots[0] && fl.slots[0].n, fl.slots[0] && fl.slots[0].a, fl2.slots[0] && fl2.slots[0].a];
     S0.slots = keep;
     const reg = new Set(T.regmcItems), it = T.itTab();
     return {assumed: !!(sl.sp && sl.sp.doubles.assumed), note: sheet.notes.join(' '), mSp: m.spread && [m.spread.nat, m.spread.assumed, m.spread.spe, m.spread.atk],
       exEv: /EVs: /.test(ex), backSp: m2.spread && [m2.spread.nat, m2.spread.spe, m2.spread.atk], linkSp: m3.spread && [m3.spread.nat, !!m3.spread.assumed, m3.spread.spe],
-      zero: mz.spread && [mz.spread.nat, mz.spread.hp + mz.spread.atk + mz.spread.def + mz.spread.spa + mz.spread.spd + mz.spread.spe, !!mz.spread.assumed],
-      badCalc: T.calcItems.filter(x => x && !reg.has(x)), badFallback: it.fallback.filter(x => !reg.has(x)), past: ['Covert Cloak', 'Safety Goggles', 'Clear Amulet', 'Choice Band'].filter(x => T.pasteItemOK(x)), herb: T.pasteItemOK('White Herb')}; });
+      zero: mz.spread && [mz.spread.nat, mz.spread.hp + mz.spread.atk + mz.spread.def + mz.spread.spa + mz.spread.spd + mz.spread.spe, !!mz.spread.assumed, zrt],
+      garb, mega, badCalc: T.calcItems.filter(x => x && !reg.has(x)), badFallback: it.fallback.filter(x => !reg.has(x)), past: ['Covert Cloak', 'Safety Goggles', 'Clear Amulet', 'Choice Band'].filter(x => T.pasteItemOK(x)), herb: T.pasteItemOK('White Herb')}; });
   ok(r.assumed && /most common spread/.test(r.note), `team sheet (nature, no EVs line): stat points assumed, with a note ("${r.note}")`);
   ok(r.mSp && r.mSp[0] === 'Jolly' && r.mSp[1] === true && r.mSp[2] + r.mSp[3] > 0, `team sheet: your nature on the most common spread, not 0 points (${r.mSp})`);
   ok(r.exEv && r.backSp && r.backSp[0] === 'Jolly' && r.backSp[1] === r.mSp[2] && r.backSp[2] === r.mSp[3], `team sheet: export writes the assumed spread and re-imports the same numbers (${r.backSp})`);
   ok(r.linkSp && r.linkSp[0] === 'Jolly' && r.linkSp[1] && r.linkSp[2] === r.mSp[2], `team sheet: a team link keeps the nature and the assumed spread (${r.linkSp})`);
-  ok(r.zero && r.zero[0] === 'Jolly' && r.zero[1] === 0 && !r.zero[2], `an explicit EVs line (all zero) is kept exactly (${r.zero})`);
+  ok(r.zero && r.zero[0] === 'Jolly' && r.zero[1] === 0 && !r.zero[2] && r.zero[3], `an explicit EVs line (all zero) is kept exactly, also through export + re-import (${r.zero})`);
+  ok(r.garb[0] && r.garb[1] && r.garb[1] === r.garb[2], `a garbage EVs line counts as missing: assumed spread, same after export + re-import (${r.garb})`);
+  ok(/Mega/.test(r.mega[0] || '') && r.mega[1] && r.mega[1] === r.mega[2], `a pasted Mega gets its fixed ability on import, same after round trip (${r.mega})`);
   ok(!r.badCalc.length, `every calc item is legal in Reg M-C (${r.badCalc.join(', ') || 'all'})`);
   ok(!r.badFallback.length, `every fallback item is legal in Reg M-C (${r.badFallback.join(', ') || 'all'})`);
   ok(!r.past.length && r.herb, `items Champions doesn't have are refused on import (${r.past.join(', ') || 'none accepted'})`);

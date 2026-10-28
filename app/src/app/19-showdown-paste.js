@@ -25,7 +25,9 @@ function exportPaste() {
     const mv = slotMoves(S.slots[m.i], p).names.filter(Boolean);
     // stat points: the most common real spread from the Showdown ladder (Champions stores them as EVs, 0-32 each)
     const cs = m.spread || (typeof commonSpread === 'function' ? commonSpread(p) : null), nat = cs && cs.nat ? cs.nat : (setFor(p).na[0] || [])[0];
-    const ev = cs ? [['HP', cs.hp], ['Atk', cs.atk], ['Def', cs.def], ['SpA', cs.spa], ['SpD', cs.spd], ['Spe', cs.spe]].filter(x => x[1] > 0).map(([k, v]) => `${v} ${k}`).join(' / ') : '';
+    let ev = cs ? [['HP', cs.hp], ['Atk', cs.atk], ['Def', cs.def], ['SpA', cs.spa], ['SpD', cs.spd], ['Spe', cs.spe]].filter(x => x[1] > 0).map(([k, v]) => `${v} ${k}`).join(' / ') : '';
+    // your own all-zero spread is written out, so re-importing it doesn't fall back to the assumed common spread
+    if (!ev && cs && cs.mine && !cs.assumed) ev = '0 HP';
     return `${species}${item ? ' @ ' + item : ''}\nAbility: ${ability}\nLevel: 50${ev ? '\nEVs: ' + ev : ''}${nat ? '\n' + nat + ' Nature' : ''}\n${mv.map(x => '- ' + x).join('\n')}`.trim();
   }).join('\n\n');
 }
@@ -35,9 +37,10 @@ function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '
   const nat = natL ? natL.replace(/\s+Nature\s*$/i, '').trim() : null, K = {hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5}, v = [0, 0, 0, 0, 0, 0]; let any = false;
   for (const part of ev.split('/')) { const m = part.trim().match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i); if (!m) continue; v[K[m[2].toLowerCase()]] = +m[1]; any = true; }
   if (v.some(x => x > 32)) for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor(v[i] / 8));
-  const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null, hasEv = lines.some(l => /^EVs:/i.test(l));
-  // ev: false when the paste has no EVs line at all (tournament team sheets): the stat points are then assumed, not 0
-  return any || hasEv || okNat ? {nat: okNat, v, ev: any || hasEv} : null; }
+  const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null;
+  // ev: false when the paste has no readable EVs line (none at all, as on tournament team sheets, or one with nothing
+  // parseable in it): the stat points are then assumed, not 0. "EVs: 0 HP" is a readable line, so it means 0.
+  return any || okNat ? {nat: okNat, v, ev: any} : null; }
 // An item from a paste is kept only if Champions has it: any item players run (usage data) or one the calc knows.
 // Choice Band, Choice Specs and Assault Vest aren't in Champions. With no usage data loaded yet, anything is kept.
 function pasteItemOK(it) { const NOT = ['Choice Band', 'Choice Specs', 'Assault Vest']; if (NOT.includes(it)) return false;
@@ -73,7 +76,8 @@ function parsePaste(text) {
       // Meowstic has a Mega for each gender: Showdown writes the female as "Meowstic-F" (stress test, Oct 28)
       if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();
-    const ability = p.a.includes(abl) ? abl : null;
+    // a Mega's ability is fixed by its form (Showdown pastes write the base form's), so it is filled in on import
+    const ability = p.m ? (p.a[0] || null) : p.a.includes(abl) ? abl : null;
     const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), mv = [];
     for (const l of lines.filter(l => l.startsWith('-'))) { const name = l.replace(/^-\s*/, '').replace(/\s*\[.*\]$/, '').trim();
       const m = [...mvByName.values()].find(x => pnorm(x.name) === pnorm(name));
