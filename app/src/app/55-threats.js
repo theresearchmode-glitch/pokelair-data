@@ -29,6 +29,11 @@ const THR = (() => {
   const SCREEN_BREAK = ['Brick Break', 'Psychic Fangs', 'Raging Bull', 'Defog'];
   const SUPPORT = new Set(['Trick Room', 'Reflect', 'Light Screen', 'Aurora Veil', 'Follow Me', 'Rage Powder', 'Helping Hand', 'Tailwind', 'Fake Out', 'Parting Shot', 'Spore', 'Sleep Powder', 'Thunder Wave', 'Encore', 'Taunt', 'Will-O-Wisp', 'Pollen Puff', 'Wide Guard', 'Ally Switch', 'Coaching']);
   const grounded = s => s.item === 'Iron Ball' || (!s.p.t.includes('Flying') && s.ability !== 'Levitate' && s.item !== 'Air Balloon');
+  // abilities that block priority moves aimed at their side (Prankster status moves included), and flinch blockers
+  const PRIO_BLOCK = new Set(['Armor Tail', 'Queenly Majesty', 'Dazzling']), FLINCH_BLOCK = new Set(['Inner Focus', 'Shield Dust']);
+  // a Prankster user's status moves get +1 priority, so they fail into Dark types, priority blockers and a grounded target in
+  // Psychic Terrain (a status move from a Pokémon without Prankster isn't affected)
+  const pranksterFails = (m, t, field) => m.ability === 'Prankster' && ((t.p.t || []).includes('Dark') || PRIO_BLOCK.has(t.ability) || (!!field && field.terrain === 'psychic' && grounded(t)));
   // real priority brackets from the move data (Fake Out +3, Extreme Speed +2, Sucker Punch +1, Grassy Glide +1 in Grassy Terrain…)
   const prioOf = (mv, field, att) => movePrio(mv, att.ability, {terrain: field.terrain, grounded: grounded(att)});
   // a move's guaranteed (100%) stat changes on the target, e.g. Snarl {spa:-1}, Icy Wind {spe:-1}, Acid Spray {spd:-2}
@@ -177,7 +182,7 @@ const THR = (() => {
   // answers to one support job: [{m, kind: 'solid'|'soft', why}]
   function modeAnswers(team, t, mode, rows, tmodes, field) { const out = [], tauntOK0 = !TAUNT_BLOCK.has(t.ability) && t.item !== 'Mental Herb';
     // priority moves (Prankster Taunt, Fake Out) fail into a grounded target in Psychic Terrain
-    const psyBlock = m => field && field.terrain === 'psychic' && grounded(t), tauntWorks = m => tauntOK0 && !(m.ability === 'Prankster' && psyBlock(m));
+    const psyBlock = m => field && field.terrain === 'psychic' && grounded(t), tauntWorks = m => tauntOK0 && !pranksterFails(m, t, field);
     for (const m of team) { const du = (rows.find(r => r.m === m) || {}).du;
       const ohko = du && du.nM === 1, two = du && du.nM === 2;
       if (mode === 'tr') {
@@ -186,7 +191,7 @@ const THR = (() => {
         else if (hasMove(m, 'Trick Room') && !tmodes.tr) out.push({m, kind: 'soft', why: `${m.d} can reverse its Trick Room with your own`});
         else if (ohko) out.push({m, kind: 'solid', why: `${m.d} OHKOs it with ${du.o.mv} (${pc(du.o.min)}-${pc(du.o.pct)}%) before Trick Room goes up`});
         else if (two) out.push({m, kind: 'soft', why: `${m.d} 2HKOs it with ${du.o.mv}: with a partner it falls before setting Trick Room twice`});
-        else if (hasMove(m, 'Fake Out') && t.ability !== 'Inner Focus' && t.ability !== 'Armor Tail' && !(t.p.t || []).includes('Ghost') && !psyBlock(m)) out.push({m, kind: 'soft', why: `${m.d}'s Fake Out delays its Trick Room a turn`});
+        else if (hasMove(m, 'Fake Out') && !FLINCH_BLOCK.has(t.ability) && !PRIO_BLOCK.has(t.ability) && t.item !== 'Covert Cloak' && !(t.p.t || []).includes('Ghost') && !psyBlock(m)) out.push({m, kind: 'soft', why: `${m.d}'s Fake Out delays its Trick Room a turn`});
         if (hasMove(m, 'Trick Room') && tmodes.tr && !out.some(x => x.m === m)) out.push({m, kind: 'solid', why: `your own Trick Room team plays under Trick Room anyway; ${m.d} can re-set or reverse it`});
       } else if (mode === 'screens') {
         const br = m.moves.find(x => x && SCREEN_BREAK.includes(x.name));
@@ -221,9 +226,9 @@ const THR = (() => {
       else if (du.d && du.d.pct <= .45 && du.o && du.o.mid >= .3) soft.push(`walls it: takes at most ${pc(du.d.pct)}% from ${du.d.mv}, hits back ~${pc(du.o.mid)}%`);
       const ph = physOf(t);
       if (m.ability === 'Intimidate' && ph >= .5) { if (PUNISH_INTIM.has(t.ability)) rows.push({m, kind: 'warn', du, why: `${m.d}'s Intimidate backfires: ${t.d} has ${t.ability}`}); else if (!NO_INTIM.has(t.ability)) soft.push('Intimidate cuts its physical attacks'); }
-      if (hasMove(m, 'Will-O-Wisp') && ph >= .5 && !t.p.t.includes('Fire') && !['Guts', 'Water Veil', 'Water Bubble', 'Flash Fire', 'Good as Gold', 'Magic Bounce'].includes(t.ability)) { const a = moveAcc(MVn('Will-O-Wisp'), m.ability, field.weather, {ability: t.ability, item: t.item}, m.item); soft.push(`Will-O-Wisp cripples it${a < 100 ? ` (${a}% to hit, so it can miss)` : ''}`); }
+      if (hasMove(m, 'Will-O-Wisp') && ph >= .5 && !t.p.t.includes('Fire') && !['Guts', 'Water Veil', 'Water Bubble', 'Flash Fire', 'Good as Gold', 'Magic Bounce'].includes(t.ability) && !pranksterFails(m, t, field) && !(field.terrain === 'misty' && grounded(t))) { const a = moveAcc(MVn('Will-O-Wisp'), m.ability, field.weather, {ability: t.ability, item: t.item}, m.item); soft.push(`Will-O-Wisp cripples it${a < 100 ? ` (${a}% to hit, so it can miss)` : ''}`); }
       if (hasMove(m, 'Wide Guard') && attacks(t).some(x => x.spread)) soft.push('Wide Guard blocks its spread attacks');
-      if (hasMove(m, 'Taunt') && t.moves.some(x => x && SETUP.has(x.name)) && !TAUNT_BLOCK.has(t.ability) && !(m.ability === 'Prankster' && field.terrain === 'psychic' && grounded(t))) soft.push(`Taunt stops its ${t.moves.filter(x => x && SETUP.has(x.name)).map(x => x.name).join('/')}`);
+      if (hasMove(m, 'Taunt') && t.moves.some(x => x && SETUP.has(x.name)) && !TAUNT_BLOCK.has(t.ability) && !pranksterFails(m, t, field)) soft.push(`Taunt stops its ${t.moves.filter(x => x && SETUP.has(x.name)).map(x => x.name).join('/')}`);
       rows.push(soft.length ? {m, kind: 'soft', why: `${m.d}: ${soft.join('; ')}`, du} : {m, kind: 'none', du});
     }
     let solid = rows.filter(r => r.kind === 'solid'), softR = rows.filter(r => r.kind === 'soft');

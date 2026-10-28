@@ -140,7 +140,10 @@ const BB = {n: 'Kingambit', moves: ['Kowtow Cleave', 'Sucker Punch', 'Brick Brea
 const S2 = [
   [[{n: 'Charizard-Mega-Y'}, BB, {n: 'Garchomp'}, {n: 'Whimsicott'}], 'Grimmsnarl', 'handled', 'Brick Break removes its screens'],
   [[{n: 'Charizard-Mega-Y'}, {n: 'Kingambit'}, {n: 'Garchomp'}, {n: 'Basculegion'}], 'Grimmsnarl', 'not-handled', 'no screen breaker, no Infiltrator'],
-  [[{n: 'Whimsicott', moves: ['Taunt', 'Tailwind', 'Moonblast', 'Protect']}, {n: 'Charizard-Mega-Y'}, {n: 'Garchomp'}], 'Farigiraf', 'handled', 'Taunt stops its Trick Room (Armor Tail doesn\'t block Taunt)'],
+  // Oct 28 stress test, checked in the Showdown engine: Armor Tail blocks a Prankster (+1) Taunt ("cant ... ability: Armor
+  // Tail"), but a normal-priority Taunt goes through
+  [[{n: 'Whimsicott', moves: ['Taunt', 'Tailwind', 'Moonblast', 'Protect']}, {n: 'Charizard-Mega-Y'}, {n: 'Garchomp'}], 'Farigiraf', 'not-handled', 'Armor Tail blocks Prankster Taunt'],
+  [[{n: 'Kingambit', moves: ['Kowtow Cleave', 'Sucker Punch', 'Taunt', 'Protect']}, {n: 'Charizard-Mega-Y'}, {n: 'Garchomp'}], 'Farigiraf', 'handled', 'a normal-priority Taunt stops its Trick Room (Armor Tail only blocks priority)'],
   [[{n: 'Garchomp'}, {n: 'Basculegion'}, {n: 'Kingambit'}], 'Farigiraf', 'not-handled', 'no Taunt, no Trick Room of its own, nothing OHKOs it'],
   [[{n: 'Farigiraf'}, {n: 'Torkoal'}, {n: 'Snorlax'}, {n: 'Incineroar'}], 'Farigiraf', 'handled', 'a Trick Room team already plays under Trick Room'],
   [[{n: 'Charizard-Mega-Y'}, {n: 'Garchomp'}, {n: 'Kingambit'}], 'Indeedee-F', 'not-handled', 'spread attacks beat its Follow Me, but nothing stops its Trick Room'],
