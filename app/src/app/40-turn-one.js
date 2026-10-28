@@ -6,9 +6,10 @@ function turnOnePlan(mine, theirs, r) {
   const opp = r.B ? likelyLead(theirs, r.B) : theirs.slice(0, 2);
   const L = r.lead.map(i => mine[i]), names = m => new Set(memberMoves(m).moves.map(x => x.name));
   // your leads use their real items and spreads; the weather/terrain the four leads set is in play for every hit
-  const mineM = m => L.includes(m) ? m : null;
+  const mineM = m => { const o = m && m._orig || m; return L.includes(o) ? o : null; }; // _orig: the pre-Mega stand-in turnOneField passes
   const spe = m => { const s = likelySpeed(m.p, mineM(m)); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
-  const F = typeof turnOneField === 'function' ? turnOneField([...L, ...opp], spe) : {};
+  // a Cloud Nine / Air Lock lead switches the weather's effects off for every hit and speed (F0.wx)
+  const F0 = typeof turnOneField === 'function' ? turnOneField([...L, ...opp], spe) : {}, F = {...F0, weather: F0.wx != null ? F0.wx : F0.weather};
   const hitOn = (a, moves, d) => bestHitOn(a.p, moves, d.p, mineM(a), mineM(d), F);
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
   const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
@@ -18,7 +19,7 @@ function turnOnePlan(mine, theirs, r) {
   const fast = opp.filter(o => L.some(m => speF(o) > speF(m))).length;
   const lines = [], used = new Set(), mvOf = (m, n) => memberMoves(m).moves.find(x => x && x.name === n) || mvByName.get(n);
   // each action carries its priority bracket (Fake Out +3, Prankster Tailwind +1, Trick Room −7…) for the turn order below
-  const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: !(m.types || m.p.t).includes('Flying') && m.ability !== 'Levitate'});
+  const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: grounded(m)});
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
     if (mv.has('Fake Out') && danger[0] && !used.has('fake')) { used.add('fake'); lines.push([m, `Fake Out ${esc(danger[0].o.d)}`, danger[0].worst ? `its ${esc(danger[0].worst.h.mv.name)} does up to ${Math.round(100 * danger[0].worst.pct)}% to ${esc(danger[0].worst.on.d)}` : 'their biggest threat', pr(m, 'Fake Out')]); continue; }
     if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast} of their leads outspeed your side`, pr(m, 'Tailwind')]); continue; }
@@ -40,6 +41,6 @@ function turnOnePlan(mine, theirs, r) {
   return `<div class="plan t1plan"><div class="ph"><span class="pt">Turn 1</span><span class="vsub">your ${esc(L[0].d)} + ${esc(L[1].d)} vs their likely ${esc(opp[0].d)} + ${esc(opp[1].d)}</span></div>
     ${lines.map(([m, act, why]) => `<div class="t1row"><b>${esc(m.d)}</b><span class="t1act">${act}</span><span class="t2">${why}</span></div>`).join('')}
     ${warn.length ? `<p class="t2 t1warn">Watch: ${warn.join('; ')}. Consider Protect.</p>` : ''}
-    ${F.weather || F.terrain ? `<p class="t2" style="margin:0">Field on turn 1: ${esc(fieldWords(F))}${F.wBy ? ` (${esc(F.wBy.d)})` : ''}. Damage above includes it.</p>` : ''}
+    ${F0.weather || F.terrain ? `<p class="t2" style="margin:0">Field on turn 1: ${esc(fieldWords(F0))}${F0.wBy ? ` (${esc(F0.wBy.d)})` : ''}${F0.negated && F0.weather ? ', but Cloud Nine / Air Lock cancels the weather while it\'s out' : ''}${F0.traced ? '. A Trace user may copy a weather or terrain ability and change this' : ''}. Damage above includes it.</p>` : ''}
     <p class="t2" style="margin:0">Turn order: ${order.map(o => `<span class="${o.me ? 't1me' : ''}">${esc(o.x.d)} ${o.s}${o.p ? ` (${o.p > 0 ? '+' : '−'}${Math.abs(o.p)}${!o.me ? ' if Fake Out' : ''})` : ''}</span>`).join(' › ')}</p></div>`;
 }

@@ -21,7 +21,8 @@ const WEATHER_OF = {Drizzle:'rain', Drought:'sun', 'Sand Stream':'sand', 'Snow W
 // Terrain setters (abilities) and the type each terrain boosts by 30% for grounded attackers.
 const TERRAIN_OF = {'Psychic Surge':'psy', 'Grassy Surge':'grassy', 'Seed Sower':'grassy', 'Electric Surge':'elec', 'Misty Surge':'misty'};
 const T_TYPE = {psy: 'Psychic', grassy: 'Grass', elec: 'Electric', misty: null};
-const grounded = m => !(m.types || m.p.t).includes('Flying') && m.ability !== 'Levitate';
+// grounded (terrain, Earthquake): Air Balloon floats its holder; Iron Ball pulls a flier or Levitate user down
+const grounded = m => m.item === 'Iron Ball' || (!(m.types || m.p.t).includes('Flying') && m.ability !== 'Levitate' && m.item !== 'Air Balloon');
 // How often m's players hold this item (0..1), from the meta sets.
 function itemShare(m, item) { if (!item) return 0; const it = (setFor(m.p).it || []).find(([n]) => n === item); return it ? (it[1] == null ? .5 : it[1] / 100) : 0; }
 // Abusers of a field condition (weather or terrain) on this team, not counting setters unless they're signature users.
@@ -93,6 +94,16 @@ function canonAbility(a, p) { if (!a || typeof a !== 'string') return a; const k
   const ex = own.find(x => k(x) === ka); if (ex) return ex;
   const lev = (s, t) => { const d = [...Array(t.length + 1).keys()]; for (let i = 1; i <= s.length; i++) { let prev = d[0]; d[0] = i; for (let j = 1; j <= t.length; j++) { const tmp = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (s[i - 1] === t[j - 1] ? 0 : 1)); prev = tmp; } } return d[t.length]; };
   const near = own.map(x => [x, lev(ka, k(x))]).filter(([, d]) => d <= 2).sort((x, y) => x[1] - y[1]); return near.length && (near.length === 1 || near[0][1] < near[1][1]) ? near[0][0] : a; }
+// Same for items: "Chopple Berry", "Grassy Seeds", "expertbelt", "salamencite" → the real Reg M-C item (case and spacing
+// ignored, a trailing "s" dropped, then a 2-letter typo if exactly one item is that close). Unknown names stay as written.
+let canonItemCache = null;
+function canonItem(n) { if (!n || typeof n !== 'string') return n; const k = s => s.toLowerCase().replace(/[^a-z]/g, '');
+  if (!canonItemCache) { canonItemCache = new Map(); for (const x of (typeof REGMC_ITEMS === 'object' ? REGMC_ITEMS : [])) canonItemCache.set(k(x), x); }
+  const kn = k(n); if (canonItemCache.has(kn)) return canonItemCache.get(kn); if (kn.endsWith('s') && canonItemCache.has(kn.slice(0, -1))) return canonItemCache.get(kn.slice(0, -1));
+  if (kn.length < 5) return n.trim();
+  const lev = (s, t) => { const d = [...Array(t.length + 1).keys()]; for (let i = 1; i <= s.length; i++) { let prev = d[0]; d[0] = i; for (let j = 1; j <= t.length; j++) { const tmp = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (s[i - 1] === t[j - 1] ? 0 : 1)); prev = tmp; } } return d[t.length]; };
+  const near = [...canonItemCache].map(([kk, x]) => [x, lev(kn, kk)]).filter(([, d]) => d <= 2).sort((a, b) => a[1] - b[1]);
+  return near.length && (near.length === 1 || near[0][1] < near[1][1]) ? near[0][0] : n.trim(); }
 function metaAbility(p) { const t = metaEntry(p); if (!t || !t.ab || !t.ab.length) return null;
   // the most-used ability, with every spelling of it merged
   const tot = new Map(); for (const [a, pct] of t.ab) { const c = canonAbility(a, p); if (p.a.includes(c)) tot.set(c, (tot.get(c) || 0) + (+pct || 0)); }

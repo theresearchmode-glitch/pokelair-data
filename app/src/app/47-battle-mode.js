@@ -81,9 +81,9 @@ function renderBattle() {
       ${ll.length === 2 ? `<p class="t2" style="margin:0">Their likely lead: <b>${esc(ll[0].d)}</b> + <b>${esc(ll[1].d)}</b></p>` : ''}
       ${r.chosen.filter(i => mine[i].mega).length > 1 ? '<p class="t2" style="margin:0">Only one Mega can Mega Evolve this battle.</p>' : ''}</div>`;
     // turn-1 field from both sides' leads (yours and their likely lead), used when the weather is on Auto
-    const spdOf = x => { const s = likelySpeed(x.p, C.includes(x) ? x : null); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
+    const spdOf = x => { const o = x._orig || x, s = likelySpeed(x.p, C.includes(o) ? o : null); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
     const F1 = typeof turnOneField === 'function' ? turnOneField([...r.lead.map(i => mine[i]), ...(ll.length === 2 ? ll : theirs.slice(0, 2))], spdOf) : {weather: '', terrain: ''};
-    const wNow = bmUi.weather === 'auto' ? F1.weather : bmUi.weather, tNow = bmUi.weather === 'auto' ? F1.terrain : '';
+    const wNow = bmUi.weather === 'auto' ? (F1.wx != null ? F1.wx : F1.weather) : bmUi.weather, tNow = bmUi.weather === 'auto' ? F1.terrain : '';
     const W = bmWatch(C, theirs);
     const watch = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Watch out</span></div>${W.length ? W.map(w => `<div class="bmw">${sprite(w.o.p, 'bmwspr')}<div><b>${esc(w.o.d)}</b>${w.out.map(([c, t, d]) => `<div class="bmwl"><span class="sev ${c}">${t}</span><span class="t2">${d}</span></div>`).join('')}</div></div>`).join('')
       : '<p class="t2" style="margin:0">Nothing on their side shuts down your four.</p>'}</div>`;

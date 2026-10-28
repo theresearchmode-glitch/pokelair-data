@@ -134,7 +134,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   const dab=['Mold Breaker','Teravolt','Turboblaze'].includes(ab)?'':dab0;
   // Cloud Nine / Air Lock switch the weather off; Mega Sol makes the user's own moves act as if the sun were out
   const fw=[ab,dab0].some(x=>x==='Cloud Nine'||x==='Air Lock')?'':(o.weather||''),aw=ab==='Mega Sol'?'sun':fw,T=o.terrain||'';
-  const gr=(t,x)=>!t.includes('Flying')&&x!=='Levitate'&&x!=='Eelevate',gA=gr(A.p.t,ab),gD=gr(D.p.t,dab);
+  // grounded (for terrain): an Air Balloon holder floats, an Iron Ball holder is pulled down even if it flies or levitates
+  const gr=(t,x,it)=>it==='Iron Ball'?true:!t.includes('Flying')&&x!=='Levitate'&&x!=='Eelevate'&&it!=='Air Balloon',gA=gr(A.p.t,ab,aIt),gD=gr(D.p.t,dab,dIt);
   // these always land a critical hit; Shell Armor and Battle Armor block crits
   const crit=(!!o.crit||ALWAYS_CRIT.includes(nm)||(MMETA(nm)||{}).cr>=9)&&!['Shell Armor','Battle Armor'].includes(dab);
   let type=mv.type,bp=mv.bp,ate=false;
@@ -218,8 +219,9 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     if(TYPE_ITEM[aIt]===type)m.push(4915);else if((aIt==='Muscle Band'&&phys)||(aIt==='Wise Glasses'&&!phys))m.push(4505);
     return applyMods(b,m)};
   // hits: 2–5 hit moves count 3 (5 with Skill Link); Parental Bond adds a second hit at 1/4 power (single-target moves).
-  // Expanding Force in Psychic Terrain hits both foes, so it takes the spread cut.
-  const spread=!!o.spread||(nm==='Expanding Force'&&gA&&T==='psychic');
+  // Expanding Force in Psychic Terrain hits both foes, so it takes the spread cut; o.oneFoe = only one foe left on the field
+  // (the other fainted or isn't there), so a spread move hits at full power (Showdown applies the cut only with 2+ targets).
+  const spread=!o.oneFoe&&(!!o.spread||(nm==='Expanding Force'&&gA&&T==='psychic'));
   // Dragon Darts in doubles hits each foe once; both darts hit one target only when the other foe is protected, immune or
   // gone (o.dartsBoth)
   const mhR=(MMETA(nm)||{}).mh,mhN=nm==='Dragon Darts'&&!o.dartsBoth?1:(MULTI_HIT[nm]||(Array.isArray(mhR)?(mhR[1]>=5?3:mhR[1]):(mhR||1)));

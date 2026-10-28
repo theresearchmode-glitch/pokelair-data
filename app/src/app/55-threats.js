@@ -28,7 +28,7 @@ const THR = (() => {
   const SCREENS = ['Reflect', 'Light Screen', 'Aurora Veil'], REDIR = ['Follow Me', 'Rage Powder'];
   const SCREEN_BREAK = ['Brick Break', 'Psychic Fangs', 'Raging Bull', 'Defog'];
   const SUPPORT = new Set(['Trick Room', 'Reflect', 'Light Screen', 'Aurora Veil', 'Follow Me', 'Rage Powder', 'Helping Hand', 'Tailwind', 'Fake Out', 'Parting Shot', 'Spore', 'Sleep Powder', 'Thunder Wave', 'Encore', 'Taunt', 'Will-O-Wisp', 'Pollen Puff', 'Wide Guard', 'Ally Switch', 'Coaching']);
-  const grounded = s => !s.p.t.includes('Flying') && s.ability !== 'Levitate';
+  const grounded = s => s.item === 'Iron Ball' || (!s.p.t.includes('Flying') && s.ability !== 'Levitate' && s.item !== 'Air Balloon');
   // real priority brackets from the move data (Fake Out +3, Extreme Speed +2, Sucker Punch +1, Grassy Glide +1 in Grassy Terrain…)
   const prioOf = (mv, field, att) => movePrio(mv, att.ability, {terrain: field.terrain, grounded: grounded(att)});
   // a move's guaranteed (100%) stat changes on the target, e.g. Snarl {spa:-1}, Icy Wind {spe:-1}, Acid Spray {spd:-2}

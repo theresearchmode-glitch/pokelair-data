@@ -78,10 +78,19 @@ const TERR_DC = k => ({psy: 'psychic', elec: 'electric', grassy: 'grassy', misty
 function abilityOf(x) { if (!x || !x.p) return ''; if (x.ability) return x.ability; try { return metaAbility(x.p) || bestAbility(x.p); } catch (e) { return x.p.a[0]; } }
 function turnOneField(leads, speedOf) { const ev = [];
   for (const x of leads || []) { const ab = abilityOf(x), w = typeof WEATHER_OF === 'object' ? WEATHER_OF[ab] : null, t = typeof TERRAIN_OF === 'object' ? TERRAIN_OF[ab] : null;
-    if (w || t) ev.push({x, w, t, mega: !!(x.p && x.p.m), s: speedOf ? speedOf(x) : 0}); }
+    // Megas evolve at the start of the turn in order of their Speed BEFORE evolving (Showdown sorts the Mega actions by the
+    // current, pre-Mega Speed), so the slower one's weather/terrain is set last and stays
+    const pre = x.p && x.p.m && typeof byName === 'object' && byName.get(x.p.b) ? {...x, p: byName.get(x.p.b), _orig: x} : x;
+    if (w || t) ev.push({x, w, t, mega: !!(x.p && x.p.m), s: speedOf ? speedOf(pre) : 0}); }
   ev.sort((a, b) => (a.mega - b.mega) || (b.s - a.s)); let weather = '', terrain = '', wBy = null, tBy = null;
   for (const e of ev) { if (e.w) { weather = e.w; wBy = e.x; } if (e.t) { terrain = TERR_DC(e.t); tBy = e.x; } }
-  return {weather, terrain, wBy, tBy}; }
+  // Cloud Nine / Air Lock on ANY Pokémon on the field switches the weather's effects off for everyone (the weather stays
+  // set, but damage, Chlorophyll/Swift Swim speed and Weather Ball act as if it weren't there). Use .wx for the effect.
+  const negated = (leads || []).some(x => ['Cloud Nine', 'Air Lock'].includes(abilityOf(x)));
+  // Trace (Mega Meowstic, Gardevoir…) copies a random opposing ability on entry / Mega Evolution: if a weather or terrain
+  // setter is on the field, the tracer may copy it and change the result, so the field can't be called for sure
+  const traced = ev.length > 0 && (leads || []).some(x => abilityOf(x) === 'Trace');
+  return {weather, terrain, wBy, tBy, negated, wx: negated ? '' : weather, traced}; }
 // The field a side sets by itself when it's the only one (for "your hits" tables): one weather and/or one terrain
 function sideField(ms) { const F = teamField(ms); return {weather: F.w.size === 1 ? [...F.w][0] : '', terrain: F.t.size === 1 ? TERR_DC([...F.t][0]) : '',
   // Fairy Aura / Dark Aura on the team (Mega Floette…) boosts every move of that type while it's on the field
