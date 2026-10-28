@@ -14,5 +14,6 @@ Mockup images only. The live NastyPlot page is unchanged.
 | r3-zine-mid | Zine, middle | Reference for the right amount of character |
 | r2-preview | Team Preview (VGC) | "Amazing" |
 | r3-fusion | Team Preview + Riso Zine | The direction Sim asked for |
+| r3-mobile | Concept H as 12 phone screenshots | Latest |
 
 What Sim wants: VGC-native (team preview, open team sheets, bring 6 pick 4, doubles pairs), artistic and original with real character, but calm enough to read at a glance. One primary button per screen.
