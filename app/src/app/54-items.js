@@ -24,11 +24,18 @@ function setsField(m, kind, key) { const T = itTab(); if (kind === 'w' && typeof
   if (kind === 't' && typeof TERRAIN_OF === 'object' && TERRAIN_OF[m.ability] === key) return true; return memMoveNames(m).some(n => { const f = T.move[n]; return f && f[0] === kind && f[1] === key; }); }
 const setsTR = m => memMoveNames(m).includes('Trick Room');
 const fieldName = k => (typeof ARCH === 'object' && ARCH[k] && ARCH[k].name) || k;
+// The Mega Stones in the game (from the roster's Megas, so "Eviolite" never counts as one)
+let megaStoneSet = null;
+function isMegaStone(item) { if (!megaStoneSet) { megaStoneSet = new Set(); try { for (const p of ROSTER) if (p.m) { const s = stoneFor(p); if (s) megaStoneSet.add(s); } } catch (e) { megaStoneSet = null; return false; } } return megaStoneSet.has(item); }
 // Why an item can't work on this team (or '' if it can). Used for defaults and for checking your own picks.
 function itemDeadWhy(m, item, ms, F, tr) { const T = itTab(); if (!item) return '';
   if (T.seed[item] && !F.t.has(T.seed[item])) return `${m.d}'s ${item} never activates: nothing on the team sets ${fieldName(T.seed[item])}.${m.ability === 'Unburden' ? ' So Unburden never triggers either.' : ''}`;
   if (T.rock[item] && !setsField(m, 'w', T.rock[item])) return `${m.d}'s ${item} does nothing: it only lengthens ${fieldName(T.rock[item])} that its holder sets, and ${m.d} doesn't set it.`;
   if (item === 'Choice Scarf' && tr) return `${m.d} holds Choice Scarf on a Trick Room team: once Trick Room is up, the Scarf makes it move later.`;
+  // extenders only lengthen what their holder sets itself (stress test, Oct 28: these passed as "Items work")
+  if (item === 'Light Clay' && !memMoveNames(m).some(n => ['Reflect', 'Light Screen', 'Aurora Veil'].includes(n))) return `${m.d}'s Light Clay does nothing: it only lengthens Reflect, Light Screen or Aurora Veil that its holder sets, and ${m.d} doesn't run any of them.`;
+  if (!(m.p && m.p.m) && isMegaStone(item)) return `${m.d} holds ${item}, which does nothing here: a Mega Stone only works when the Mega form of its own Pokémon is on the team.`;
+  if (item === 'Terrain Extender' && !['psy', 'grassy', 'elec', 'misty'].some(k => setsField(m, 't', k))) return `${m.d}'s Terrain Extender does nothing: it only lengthens terrain that its holder sets, and ${m.d} doesn't set any.`;
   return ''; }
 // Item Clause breaks: the same item on two or more members (by their current items)
 function itemClash(ms) { const by = new Map(); for (const m of ms || []) { if (!m || !m.item) continue; if (!by.has(m.item)) by.set(m.item, []); by.get(m.item).push(m); }
