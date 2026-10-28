@@ -104,6 +104,19 @@ function canonItem(n) { if (!n || typeof n !== 'string') return n; const k = s =
   const lev = (s, t) => { const d = [...Array(t.length + 1).keys()]; for (let i = 1; i <= s.length; i++) { let prev = d[0]; d[0] = i; for (let j = 1; j <= t.length; j++) { const tmp = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (s[i - 1] === t[j - 1] ? 0 : 1)); prev = tmp; } } return d[t.length]; };
   const near = [...canonItemCache].map(([kk, x]) => [x, lev(kn, kk)]).filter(([, d]) => d <= 2).sort((a, b) => a[1] - b[1]);
   return near.length && (near.length === 1 || near[0][1] < near[1][1]) ? near[0][0] : n.trim(); }
+// Same for moves (stress test, Oct 28: tournament sheets and the usage built from them had "Make it Rain", "U-Turn",
+// "Kowtow Kleave", "Last Respect", "Psychic Fang", "Fake out", and the page dropped them, so a winning Gholdengo lost
+// Make It Rain everywhere its sheet was used). Case, spacing and hyphens ignored, a missing or extra trailing "s", then a
+// 2-letter typo if exactly one move is that close, preferring moves the Pokémon can learn. Unknown names stay as written.
+let canonMoveCache = null;
+function canonMove(n, p) { if (!n || typeof n !== 'string') return n; const k = s => s.toLowerCase().replace(/[^a-z]/g, '');
+  if (!canonMoveCache) { canonMoveCache = new Map(); for (const m of (typeof MV === 'object' ? MV : [])) if (m && m.name) canonMoveCache.set(k(m.name), m.name); }
+  const kn = k(n), C = canonMoveCache; if (C.has(kn)) return C.get(kn); if (C.has(kn + 's')) return C.get(kn + 's'); if (kn.endsWith('s') && C.has(kn.slice(0, -1))) return C.get(kn.slice(0, -1));
+  if (kn.length < 5) return n.trim();
+  const lev = (s, t) => { const d = [...Array(t.length + 1).keys()]; for (let i = 1; i <= s.length; i++) { let prev = d[0]; d[0] = i; for (let j = 1; j <= t.length; j++) { const tmp = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (s[i - 1] === t[j - 1] ? 0 : 1)); prev = tmp; } } return d[t.length]; };
+  const learn = p && typeof LEARN === 'object' && LEARN[p.n] ? new Set(LEARN[p.n].map(i => MV[i] && MV[i].name)) : null;
+  const pick = list => { const near = list.map(x => [x, lev(kn, k(x))]).filter(([, d]) => d <= 2).sort((a, b) => a[1] - b[1]); return near.length && (near.length === 1 || near[0][1] < near[1][1]) ? near[0][0] : null; };
+  return (learn && pick([...learn].filter(Boolean))) || pick([...C.values()]) || n.trim(); }
 function metaAbility(p) { const t = metaEntry(p); if (!t || !t.ab || !t.ab.length) return null;
   // the most-used ability, with every spelling of it merged
   const tot = new Map(); for (const [a, pct] of t.ab) { const c = canonAbility(a, p); if (p.a.includes(c)) tot.set(c, (tot.get(c) || 0) + (+pct || 0)); }

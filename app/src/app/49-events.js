@@ -9,7 +9,7 @@ function cleanEvents(v) { try {
   const sheet = s => { if (!Array.isArray(s)) return null; const n = g(s[0]); if (!byName.has(n)) return null;
     // ability spelled by hand on the sheet → the Pokémon's real ability; curly apostrophes in move names (King’s Shield)
     // item names typed by hand too ("Chopple Berry", "Grassy Seeds") → the real item
-    return {n, i: typeof canonItem === 'function' ? canonItem(g(s[1])) : g(s[1]), a: canonAbility(g(s[2]), byName.get(n)), nt: g(s[3]), mv: (Array.isArray(s[4]) ? s[4] : []).slice(0, 4).map(x => g(x).replace(/[’‘]/g, "'")).filter(Boolean)}; };
+    return {n, i: typeof canonItem === 'function' ? canonItem(g(s[1])) : g(s[1]), a: canonAbility(g(s[2]), byName.get(n)), nt: g(s[3]), mv: (Array.isArray(s[4]) ? s[4] : []).slice(0, 4).map(x => g(x).replace(/[’‘]/g, "'")).filter(Boolean).map(x => typeof canonMove === 'function' ? canonMove(x, byName.get(n)) : x)}; };
   const events = v.events.slice(0, 200).map(e => { if (!e || !Array.isArray(e.top)) return null;
     const top = e.top.slice(0, 16).map(t => { if (!Array.isArray(t) || !Array.isArray(t[3])) return null; const mons = t[3].map(sheet).filter(Boolean); if (mons.length !== 6) return null;
       return {player: str(t[0], 60), place: +t[1] || 0, record: str(t[2], 20), mons}; }).filter(Boolean);
