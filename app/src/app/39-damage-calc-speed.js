@@ -159,7 +159,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     else if(vb==='respects')bp=Math.min(300,50+50*Math.min(5,o.fainted||0));else if(vb==='punish')bp=60;else if(vb==='ragefist')bp=50;
     else if(vb==='gyro'||vb==='eball'){const sm=it=>it==='Choice Scarf'?1.5:it==='Iron Ball'?.5:1,sA=Math.floor(calcStat(A.p,'Spe',A.speSp??0,natMul(A.nat,'Spe'))*sm(aIt)),sD=Math.floor(calcStat(D.p,'Spe',D.speSp??0,natMul(D.nat,'Spe'))*sm(dIt));
       bp=vb==='gyro'?Math.min(150,Math.floor(25*sD/Math.max(1,sA))+1):(()=>{const r=sA/Math.max(1,sD);return r>=4?150:r>=3?120:r>=2?80:r>=1?60:40})()}}
-  if(nm==='Acrobatics'&&!A.item)bp*=2;if(nm==='Rising Voltage'&&gD&&T==='electric')bp*=2;if((nm==='Stored Power'||nm==='Power Trip')&&A.boost>0)bp+=20*A.boost;
+  // (a Mega always holds its Mega Stone, which callers leave out of the item slot, so its Acrobatics is never doubled)
+  if(nm==='Acrobatics'&&!A.item&&!(A.p&&A.p.m))bp*=2;if(nm==='Rising Voltage'&&gD&&T==='electric')bp*=2;if((nm==='Stored Power'||nm==='Power Trip')&&A.boost>0)bp+=20*A.boost;
   // type effectiveness, read the same way as the type tables; the defender's ability is kept apart so it can't switch
   // super-effective items (Expert Belt, resist berries, Filter) on or off
   // an Iron Ball holder is grounded: Ground moves hit its Flying type neutrally and ignore Levitate
@@ -249,7 +250,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     if(eff>1&&(['Filter','Solid Rock'].includes(dab)||dab0==='Prism Armor'))f.push(3072);
     if(o.fg)f.push(3072);if(dab==='Fluffy'&&type==='Fire')f.push(8192);
     if(aIt==='Expert Belt'&&eff>1)f.push(4915);else if(aIt==='Life Orb')f.push(5324);
-    if(first&&ab!=='Unnerve'&&RESIST_BERRY[dIt]===type&&(eff>1||type==='Normal'))f.push(2048);
+    // Ripen doubles the berry: the hit is halved again (a quarter in all)
+    if(first&&ab!=='Unnerve'&&RESIST_BERRY[dIt]===type&&(eff>1||type==='Normal')){f.push(2048);if(dab0==='Ripen')f.push(2048)}
     return chain4096(f)};
   const burn=burned&&phys&&ab!=='Guts'&&nm!=='Facade',FA=finOf(true),FB=finOf(false),H=[...Array(hits)].map((_,h)=>baseOf(h));
   const one=(base,r,fm)=>{let x=Math.floor(base*r/100);x=pokeRound(x*stabMod/4096);x=Math.floor(x*eff);if(burn)x=Math.floor(x/2);return Math.max(1,pokeRound(x*fm/4096))};

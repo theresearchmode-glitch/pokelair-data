@@ -131,11 +131,17 @@ for (const width of [1280, 390]) {
       fly: d(side('Garchomp', 'atk'), side('Corviknight', 'def', {item: ''}), 'Earthquake'), spdBad,
       // sure-hit moves ignore accuracy drops; one-hit KO moves ignore accuracy boosts
       sure: [T.moveAcc(M('Aerial Ace'), 'Hustle', '', null, ''), T.moveAcc(M('Aura Sphere'), '', 'sand', {ability: 'Sand Veil', item: 'Bright Powder'}, '')],
+      // a Mega holds its Mega Stone, so its Acrobatics isn't doubled; a Pokémon with no item gets double power
+      acro: [d(side('Hawlucha-Mega', 'atk', {item: ''}), side('Incineroar', 'def'), 'Acrobatics'), d(side('Hawlucha', 'atk', {item: ''}), side('Incineroar', 'def'), 'Acrobatics'), d(side('Hawlucha', 'atk', {item: 'Sitrus Berry'}), side('Incineroar', 'def'), 'Acrobatics')],
+      // Ripen doubles a resist berry: Flapple's Tanga Berry takes Megahorn to a quarter (Smogon's calc agrees)
+      ripen: [d(side('Heracross', 'atk'), side('Flapple', 'def', {ability: 'Ripen', item: 'Tanga Berry'}), 'Megahorn'), d(side('Heracross', 'atk'), side('Flapple', 'def', {ability: 'Hustle', item: 'Tanga Berry'}), 'Megahorn')],
       hustle: T.moveAcc(M('Rock Slide'), 'Hustle', '', null, ''), ohko: M('Sheer Cold') ? T.moveAcc(M('Sheer Cold'), 'Compound Eyes', '', null, 'Wide Lens', ['Ice']) : 30 }; });
   ok(r.ironFly > 0 && r.ironLev > 0 && r.fly === 0, `Iron Ball grounds the holder: Earthquake hits Flying and Levitate holders (${r.ironFly}, ${r.ironLev}; without it ${r.fly})`);
   ok(r.spdBad === 0, `speed tiers apply a −1 stage before Scarf/Tailwind and paralysis after, as the game does (${r.spdBad} off)`);
   ok(r.sure.every(x => x === 100) && r.hustle === 72, `sure-hit moves can't be made to miss; Hustle still cuts others (${r.sure.join('/')}, Rock Slide ${r.hustle})`);
   ok(r.ohko === 30, `one-hit KO moves ignore Compound Eyes and Wide Lens (${r.ohko})`);
+  ok(r.ripen[0] > 0 && Math.abs(r.ripen[0] * 2 - r.ripen[1]) <= 2, `Ripen doubles a resist berry (${r.ripen.join(' vs ')})`);
+  ok(r.acro[1] > r.acro[2] * 1.8 && r.acro[0] < r.acro[1] * 1.3, `Acrobatics: double power with no item, not for a Mega holding its stone (${r.acro.join(' / ')})`);
   await ctx.close(); }
 // replay import and Showdown export
 { console.log('\n== replay + export');

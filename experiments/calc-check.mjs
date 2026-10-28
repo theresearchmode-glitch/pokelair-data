@@ -114,6 +114,9 @@ function smog(c) {
       overrides: {types: p.t, baseStats: Object.fromEntries(SK.map((k, i) => [k, (role === 'a' && p.n === 'Aegislash' ? [60, 140, 50, 140, 50, 60] : p.st)[i]]))}};
     if (c.g9) { opts.evs = Object.fromEntries(Object.entries(evs).map(([k, v]) => [k, Math.min(252, v * 8)])); opts.ivs = {hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31}; } else opts.evs = evs;
     if (role === 'a' && c.fainted) opts.alliesFainted = c.fainted;
+    // a Mega always holds its Mega Stone (the page leaves it out of the item slot); give Smogon a held item with no damage
+    // effect so Acrobatics isn't doubled for a Mega attacker
+    if (role === 'a' && p.m && !s.item) opts.item = 'Leftovers';
     return new Pokemon(g, name, opts); };
   const A = mk(c.a, 'a'), D = mk(c.d, 'd');
   const move = new Move(g, c.mv, {isCrit: !!c.crit, ability: A.ability, overrides: {...(mvP.vbp || mvP.fixed ? {} : {basePower: mvP.bp}), type: mvP.type, category: phys ? 'Physical' : 'Special', target: c.spread ? 'allAdjacentFoes' : 'normal'}});
