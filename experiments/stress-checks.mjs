@@ -35,6 +35,12 @@ const res = await ev(`(()=>{
   out.noSupport=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide']),mv('Archaludon',['Draco Meteor','Flash Cannon','Protect','Body Press']),mv('Gholdengo',['Make It Rain','Shadow Ball','Protect','Nasty Plot']),mv('Kingambit',['Kowtow Cleave','Iron Head','Protect','Swords Dance']),mv('Basculegion',['Wave Crash','Last Respects','Protect','Aqua Jet']),mv('Dragapult',['Dragon Darts','Phantom Force','Protect','U-turn'])]);
   out.electricStack=run([...new Map(ROSTER.filter(p=>!p.m&&p.t.includes('Electric')&&!p.t.includes('Ground')&&!p.t.includes('Flying')).sort((a,b)=>U(b)-U(a)).map(p=>[p.b,p.n])).values()].slice(0,4).concat(['Incineroar','Whimsicott']));
   out.perish=run([mv('Gengar-Mega',['Perish Song','Shadow Ball','Protect','Sludge Bomb']),'Incineroar','Archaludon','Garchomp','Whimsicott','Kingambit']);
+  out.scarfTailroom=run([mv('Farigiraf',['Trick Room','Psychic','Protect','Helping Hand']),mv('Whimsicott',['Tailwind','Moonblast','Encore','Protect']),mv('Garchomp',['Earthquake','Dragon Claw','Stomping Tantrum','Rock Slide'],'Choice Scarf'),'Incineroar','Archaludon','Kingambit']);
+  // real top-cut teams with a Trick Room setter and a Choice Scarf: flagged only when nobody runs Tailwind
+  out.realScarfTR=(()=>{const rows=[];for(const e of (META.events?META.events.events:[]))for(const t of e.top){const mons=t.mons.map(m=>{const p=byName.get(m.n);const mvs=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mvs,_mv:mvs,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}});
+      const tr=mons.some(m=>m.moves.some(x=>x.name==='Trick Room')),sc=mons.some(m=>m.item==='Choice Scarf');if(!tr||!sc)continue;const tw=mons.some(m=>m.moves.some(x=>x.name==='Tailwind'));
+      rows.push({tw,flag:itemProblems(assignItems(mons)).some(x=>x.k==='scarftr'),clash:!!scarfTrClash(mons),ex:e.name+' #'+t.place+' '+t.player+': '+mons.map(m=>m.p.n+'@'+m.item).join(', ')})}
+    return {n:rows.length,tw:rows.filter(r=>r.tw).length,flagged:rows.filter(r=>r.flag).length,wrong:rows.filter(r=>r.flag===r.tw||r.clash===r.tw).map(r=>r.ex),exTw:(rows.find(r=>r.tw)||{}).ex,exTr:(rows.find(r=>!r.tw)||{}).ex}})();
   // hand-typed move names on tournament sheets resolve (canonMove), every event sheet move is a real move
   out.canon=[['Make it Rain','Gholdengo'],['U-Turn','Rillaboom'],['Kowtow Kleave','Kingambit'],['Last Respect','Basculegion'],['Psychic Fang','Metagross-Mega'],['Heart power','Venusaur-Mega'],['fake out','Incineroar'],['Thunder','Raichu']].map(([n,p])=>canonMove(n,byName.get(p)));
   out.evMovesBad=META.events?META.events.events.flatMap(e=>e.top.flatMap(t=>t.mons.flatMap(m=>m.mv.filter(x=>!mvByName.has(x)).map(x=>m.n+':'+x)))):['no events'];
@@ -74,11 +80,14 @@ must(r.noSupport.ck.fake === 'no', 'no Fake Out/Intimidate/redirection fails lea
 must(r.electricStack.ck.stack === 'no', '4 Electric types: major weak spot (Ground): ' + JSON.stringify(r.electricStack.ck) + ' ' + r.electricStack.names);
 must(/Perish/.test(r.perish.arch || ''), 'Perish Song + Shadow Tag is Perish Trap: ' + r.perish.arch);
 must(r.empty.ck == null && r.empty.arch == null && r.empty.ts == null && r.empty.ip === 0, 'empty team: no checklist, no archetype, no readiness');
+must(!r.scarfTailroom.ip.length, 'Choice Scarf on a Tailwind team with a backup Trick Room setter is fine: ' + r.scarfTailroom.ip);
+must(r.realScarfTR.n >= 20 && r.realScarfTR.tw >= 5 && r.realScarfTR.n - r.realScarfTR.tw >= 5 && !r.realScarfTR.wrong.length, 'real top-cut Trick Room + Scarf teams: flagged exactly when there is no Tailwind: ' + JSON.stringify(r.realScarfTR).slice(0, 600));
+console.log(`real top-cut teams with Trick Room + Choice Scarf: ${r.realScarfTR.n}, ${r.realScarfTR.tw} also run Tailwind (not flagged), ${r.realScarfTR.flagged} flagged\n  not flagged e.g. ${r.realScarfTR.exTw}\n  flagged e.g. ${r.realScarfTR.exTr}`);
 must(r.canon.join() === 'Make It Rain,U-turn,Kowtow Cleave,Last Respects,Psychic Fangs,Earth Power,Fake Out,Thunder', 'move names resolve: ' + r.canon.join());
 must(!r.evMovesBad.length, 'every event sheet move resolves: ' + r.evMovesBad.slice(0, 8).join(', '));
 must(r.buildMegas.every((ts, g) => ts.length && ts.every(m => m === g)), 'Build me a team gives exactly 0/1/2 Megas: ' + JSON.stringify(r.buildMegas));
 must(r.gems.every(([, gs]) => gs == null || gs >= .8), 'hidden gems are stable: ' + JSON.stringify(r.gems));
-for (const [k, v] of Object.entries(r)) if (!['slowAtt', 'empty', 'canon', 'evMovesBad', 'buildMegas', 'gems'].includes(k)) console.log(k.padEnd(20), (v.arch || '').padEnd(32), JSON.stringify(v.ck), (v.ip || []).join(','), 'ts=' + v.ts, 'legal=' + v.legal);
+for (const [k, v] of Object.entries(r)) if (!['slowAtt', 'empty', 'canon', 'evMovesBad', 'buildMegas', 'gems', 'realScarfTR'].includes(k)) console.log(k.padEnd(20), (v.arch || '').padEnd(32), JSON.stringify(v.ck), (v.ip || []).join(','), 'ts=' + v.ts, 'legal=' + v.legal);
 console.log('slow attackers used:', r.slowAtt.join(', '));
 for (const f of fails) console.log('  FAIL', f);
 console.log(`page errors: ${errs.length} ${errs.slice(0, 5).join(' | ')}`);
