@@ -350,4 +350,63 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 @media (min-width:900px){.chbmt{font-size:72px}:root:not(#_ch) .chbring .bmpicks{grid-template-columns:repeat(4,1fr)}}.chpanel,.chpanel *{color:#F3EBDC}
 .chpanel b,.chpanel h3,.chpanel .bmt1h,.chpanel strong{color:#FFE800}
 .chpanel a,.chpanel [class*="mv"],.chpanel .t1mv{color:#9FD3FF}
-:root:not(#_ch) .bmopp .bmslot.on .bmn{opacity:1;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+:root:not(#_ch) .bmopp .bmslot.on .bmn{opacity:1;text-shadow:0 1px 2px rgba(0,0,0,.35)}/* ===== batch 2: Ratings hot list, Pokémon sheet, Rankings, Cores ===== */
+.chlair>.head{display:none}
+.chhothead{display:flex;align-items:center;gap:10px;margin:6px 0 8px}
+.chtier{width:44px;height:44px;border:3px solid var(--chbtnInk);border-radius:10px;background:var(--chyel);color:#1D2140;display:flex;align-items:center;justify-content:center;font:400 30px/1 var(--display);box-shadow:3px 3px 0 var(--chredB)}
+.chhot2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chhot{all:unset;box-sizing:border-box;position:relative;overflow:hidden;cursor:pointer;border:2px solid var(--chline);border-radius:16px;min-height:190px;padding:12px;color:#fff;display:flex;flex-direction:column}
+.chhot.red{background-color:var(--chredB)}.chhot.blue{background-color:var(--chblue)}:root[data-look="dark"] .chhot.blue{background-color:#0B6AA8}
+.chhot .n{font:400 58px/1 var(--display)}.chhot .nm{font:800 16px/1.1 var(--body);text-transform:uppercase;margin-top:2px;position:relative;z-index:1}
+.chhot .st{font:700 12px/1.6 var(--mono);opacity:.92;margin-top:6px;position:relative;z-index:1}
+.chhot .spr{position:absolute;right:-8px;bottom:-6px;width:118px;height:118px;object-fit:contain;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
+.chhot:focus-visible,.chhr:focus-visible{outline:3px solid var(--chink);outline-offset:2px}
+.chhotrows{margin-top:8px;border-top:2px solid var(--chline)}
+.chhr{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:6px 2px;min-height:60px;border-bottom:1px solid var(--line2);cursor:pointer}
+.chhr .rk{font:400 26px var(--display);color:var(--chink2);width:22px}.chhr .spr{width:52px;height:52px;object-fit:contain}
+.chhr .chbd{flex:1;min-width:0}.chhr .chbd b{display:block;font:800 15px var(--body);text-transform:uppercase}.chhr .chbd span{font:400 12px var(--mono);color:var(--chink2)}
+.chhr .sc{font:400 34px var(--display)}
+#chHot{margin-bottom:14px}
+.chlair .lctl{margin-top:4px}
+/* the sheet */
+:root:not(#_ch) .lspanel{background:var(--chp);color:var(--chink)}
+:root:not(#_ch) .lshead.chls{background-color:var(--ta);color:#fff;min-height:210px;border-radius:0;position:relative;overflow:hidden}
+:root:not(#_ch) .lshead.chls .lsspr{position:absolute;right:-14px;bottom:-10px;width:200px;height:200px;object-fit:contain;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.25));opacity:1}
+:root:not(#_ch) .lshead.chls .lsring{display:none}
+:root:not(#_ch) .lshead.chls .lsname{position:relative;z-index:1;margin-top:auto}
+:root:not(#_ch) .lshead.chls h3{font:400 46px/.95 var(--display);text-transform:uppercase;color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,.25);max-width:62%}
+:root:not(#_ch) .lshead.chls .lspos{display:none}
+.chlsk{position:absolute;left:16px;top:14px;font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#fff;opacity:.9}
+.chlstats{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--chline);border-radius:14px;background:var(--chc);margin:-26px 0 12px;position:relative;z-index:2}
+.chlstats>div{padding:10px 10px 8px;min-width:0}.chlstats>div+div{border-left:2px solid var(--chline)}
+.chlstats b{display:block;font:400 32px/1 var(--display)}.chlstats span{font:700 10px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--chink2)}
+.chlsdata{margin-bottom:10px}
+.chbar{display:grid;grid-template-columns:minmax(0,1.2fr) 1.5fr 54px;align-items:center;gap:10px;min-height:30px;font-size:14px}
+.chbar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chbar b{font:700 12px var(--mono);text-align:right}
+.chbar i{height:10px;border-radius:5px;background:var(--chp2);overflow:hidden;display:block}.chbar i em{display:block;height:100%;border-radius:5px}
+.chbar i.b em{background:var(--chblue)}.chbar i.r em{background:var(--chredB)}
+.chbw{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.chbw button{all:unset;box-sizing:border-box;border:2px solid var(--line2);border-radius:12px;background:var(--chc);text-align:center;padding:6px 2px;cursor:pointer;min-height:44px}
+.chbw .spr{width:56px;height:56px;object-fit:contain}.chbw b{display:block;font:700 13px var(--mono)}.chbw span{font:400 10px var(--mono);color:var(--chink2)}
+/* rankings */
+:root:not(#_ch) .mrow .nm{white-space:normal;overflow:visible;text-overflow:clip}
+/* cores */
+.chcores .corerow.chcbig .coresp{width:76px;height:76px}
+.chcores .corerow.chcbig .corestat b{font:400 40px/1 var(--display);color:var(--chblueT)}
+:root:not(#_ch) .corerow{background:var(--chc);border:2px solid var(--line2);border-radius:14px;box-shadow:none}
+:root:not(#_ch) .corerow.chcbig{border-color:var(--chline)}
+@media (min-width:900px){.chhot2{grid-template-columns:1fr 1fr}.chhot{min-height:230px}.chhot .spr{width:170px;height:170px}.chhotrows{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}}
+/* Battle mode: smaller footer on that page */:root:not(#_ch) footer.legal p{font-size:12px;line-height:1.45;margin:6px 0}:root:not(#_ch) footer.legal .inner{padding-block:14px}
+@media (max-width:899px){
+ :root:not(#_ch) .chbring .bmpspr{width:76px;height:76px}
+ .chbmt{font-size:34px}.chbmhead .chpgs{margin-top:4px;font-size:14px}
+ :root:not(#_ch) .bmopp.chhalf{padding:6px}:root:not(#_ch) .bmopp .bmspr{width:60px;height:60px}
+ :root:not(#_ch) .bmtabs{margin:10px 0 6px}
+ .chbringt{font-size:28px;margin-bottom:8px}
+}.chpanel>*{border:0!important;background:none!important;box-shadow:none!important;padding:0!important;margin:0!important}.chpanel{font-size:14px;line-height:1.4}.chpanel p{margin:4px 0!important}
+:root:not(#_ch) .bmopp .bmslot.on .bmn{background:rgba(20,18,16,.45);border-radius:4px;padding:0 5px;color:#fff}:root:not(#_ch) .bmclock i{color:#F3EBDC;opacity:.85}
+.mrow.chhid{display:none!important}
+.chmorebtn{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;margin-top:10px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);cursor:pointer}
+.chmorebtn .cht{display:block;font:400 21px/1 var(--display);text-transform:uppercase}.chmorebtn .chs{display:block;font:600 13px var(--body);color:var(--chink2);margin-top:3px}
+.chmorebtn:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
+#chBoard>.chbody{padding:0 2px 8px}

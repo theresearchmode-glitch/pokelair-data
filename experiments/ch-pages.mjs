@@ -16,10 +16,11 @@ for (const [w, h, dev, scheme] of sizes) {
   await pg.addInitScript(([D, opp]) => { try { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"x"'); localStorage.setItem('cc2.opp', JSON.stringify(opp)); } catch (e) {} window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}}), collection: () => ({doc: () => ({set: async () => {}, get: async () => ({exists: false}), onSnapshot: () => () => {}})})} : null}; }, [D, opp]);
   await pg.goto('file://' + page); await pg.waitForTimeout(3000);
   await pg.evaluate(() => window.__ev(`(()=>{for(const e of (META.events&&META.events.events)||[]){const t=(e.top||[]).find(x=>x&&x.place===2&&x.mons&&x.mons.length===6);if(t){S.opp=t.mons.map(m=>m.n);break}}persist();try{LS.set('cc2.seenNew',WHATS_NEW.id)}catch(e){}})()`));
-  for (const v0 of views) { const v = v0.replace('!', ''); await pg.evaluate(v => window.__ev(`setView(${JSON.stringify(v)});window.scrollTo(0,0)`), v); await pg.waitForTimeout(v === 'auto' || v === 'gauntlet' || v === 'coverage' ? 3500 : 1200);
+  for (const v0 of views) { const v = v0 === 'lair' ? 'ratings' : v0.replace('!', ''); await pg.evaluate(v => window.__ev(`setView(${JSON.stringify(v)});window.scrollTo(0,0)`), v); await pg.waitForTimeout(v === 'auto' || v === 'gauntlet' || v === 'coverage' ? 3500 : 1200);
+    if (v0 === 'lair') { await pg.evaluate(() => { const b = document.querySelector('[data-lt="Rillaboom"]'); if (b) b.click(); }); await pg.waitForTimeout(1200); }
     if (v0 === 'auto!') { await pg.evaluate(() => window.__ev('S.box=ROSTER.map(p=>p.n);runAutoBuild()')); await pg.waitForTimeout(9000); await pg.evaluate(() => window.scrollTo(0, 0)); }
     lens[`${dev}/${scheme}/${v0}`] = await pg.evaluate(() => document.documentElement.scrollHeight);
-    await pg.screenshot({path: `${dir}/${dev}_${v0.replace('!', '-built')}_${scheme === 'dark' ? 'charcoal' : 'light'}.png`, fullPage: true}); }
+    await pg.screenshot({path: `${dir}/${dev}_${v0.replace('!', '-built')}_${scheme === 'dark' ? 'charcoal' : 'light'}.png`, fullPage: v0 !== 'lair'}); if (v0 === 'lair') await pg.evaluate(() => window.__ev("typeof lairClose==='function'&&lairClose()")); }
   await ctx.close(); }
 await b.close(); fs.unlinkSync(page);
 const out = Object.fromEntries(Object.entries(lens).map(([k, v]) => [k, `${v}px = ${(v / (k.startsWith('phone') ? 844 : 900)).toFixed(1)} screens`]));
