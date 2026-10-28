@@ -283,4 +283,14 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root:not(#_ch) .band .brand .chbrand svg{width:28px;height:28px}
 :root:not(#_ch) .band h1{flex-wrap:wrap;row-gap:2px}
 :root[data-look="dark"] .chbrand svg rect:first-child{fill:#171615}
-@media (min-width:900px){.chtop{grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:10px 0 0}.chtl .chh1{font-size:72px}.chwinwrap .chwh{font-size:36px}.chbrand.chbig{font-size:60px}.chbrand.chbig svg{width:72px;height:72px}}
+@media (min-width:900px){.chtop{grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:10px 0 0}.chtl .chh1{font-size:72px}.chwinwrap .chwh{font-size:36px}.chbrand.chbig{font-size:60px}.chbrand.chbig svg{width:72px;height:72px}}/* Home: your team showcase, big sprites */
+.chshow{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;border:2px solid var(--chline);border-radius:16px;background:radial-gradient(ellipse 70% 60% at 50% 100%,color-mix(in srgb,var(--chblue) 16%,transparent),transparent 70%),var(--chc);overflow:hidden;position:relative}
+.chshow:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
+.chshn{display:block;font:400 34px/1 var(--display);text-transform:uppercase;color:var(--chredT);padding:14px 14px 0}
+.chshs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 6px;padding:6px 10px 4px;position:relative;z-index:1}
+.chshm{position:relative;display:flex;align-items:flex-end;justify-content:center;min-width:0}
+.chshm .spr{width:100%;max-width:118px;height:auto;aspect-ratio:1;object-fit:contain;filter:drop-shadow(3px 4px 0 color-mix(in srgb,var(--chink) 22%,transparent))}
+.chshm i{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 10px/1.4 var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.06em;padding:0 5px;border-radius:3px;background:var(--chc);color:var(--chink2);border:1px solid var(--line2);opacity:.9}
+.chshm i.lead{background:var(--chyel);color:#1D2140;border-color:#1D2140}
+.chshf{display:block;height:14px;margin:-8px 18px 10px;border-radius:50%;background:color-mix(in srgb,var(--chink) 10%,transparent)}
+@media (min-width:900px){.chshs{grid-template-columns:repeat(6,1fr)}.chshn{font-size:44px}.chhome2{grid-template-columns:1fr}}

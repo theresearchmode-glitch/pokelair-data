@@ -4,7 +4,7 @@ import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
-const dir = process.argv[2] || 'C:/Users/simra/OneDrive/Documents/NastyPlot/concept-h-built/v2'; fs.mkdirSync(dir, {recursive: true});
+const dir = process.argv[2] || 'C:/Users/simra/OneDrive/Documents/NastyPlot/concept-h-built/v3'; fs.mkdirSync(dir, {recursive: true});
 const page = APP + 'ch-shoot.html'; fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(APP + 'dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const errs = [], lens = {};
 const b = await chromium.launch();
@@ -26,4 +26,5 @@ for (const [w, h, dev] of [[390, 844, 'phone'], [1440, 900, 'desktop']]) for (co
 await b.close(); fs.unlinkSync(page);
 const scr = Object.fromEntries(Object.entries(lens).map(([k, v]) => [k, `${v}px = ${(v / (k.startsWith('phone') ? 844 : 900)).toFixed(1)} screens`]));
 fs.writeFileSync(dir + '/lengths.json', JSON.stringify(scr, null, 1)); console.log(JSON.stringify(scr, null, 1)); console.log(errs.length ? errs.join('\n') : 'no page errors');
+
 

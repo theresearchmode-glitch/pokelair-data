@@ -59,14 +59,19 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
     <div class="chwsix">${t.mons.map(m => `<span title="${esc(byName.get(m.n).d)}">${sprite(byName.get(m.n)) || esc(byName.get(m.n).d)}</span>`).join('')}</div>
     <div class="row"><button class="chghost" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div></div>` : '';
   // 02 your team: readiness, tiles worst first
-  const c = CH.lvCount(RD), ready = RD ? `<div class="chblock"><div class="chk chdesk">02 / Your team · ${esc(teamTitleFor(ms))}</div>
-    <div class="chready"><div style="display:flex;align-items:center;gap:12px"><span class="big">${RD.score}<i>%</i></span><span class="chring sm">${CH.grade(RD.score)}</span></div>
-    <div style="font-size:14px;color:var(--chink2)">Ready for <b style="color:var(--chink)">${RD.score}% of the top 30 threats</b>${typeof tip === 'function' ? tip('readiness') : ''}: ${c[0]} unanswered, ${c[1]} shaky. Preparation, not a prediction.</div>
-    <div style="grid-column:1/-1">${CH.tiles(RD, 'data-chhthr')}${CH.legendRow(RD)}<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><button type="button" class="chghost" data-chscout="">Open scouting report</button><span class="chlegend" style="margin:0">Grade: A 90%+ · B 80+ · C 70+ · D 60+ · F below</span></div></div></div></div>` : '';
+  // Your team on Home: the six as big sprites (the readiness tool lives on the Team page and its scouting sheet)
+  const ready = ms.length ? `<div class="chblock"><div class="chk">Your team · ${ms.length}/6</div>
+    <button type="button" class="chshow" data-view="build" aria-label="Open my team: ${esc(teamTitleFor(ms))}"><span class="chshn">${esc(teamTitleFor(ms))}</span>
+    <span class="chshs">${ord.map(m => `<span class="chshm" title="${esc(m.d)}">${sprite(m.p) || `<b>${esc(m.d)}</b>`}${F && (fl.includes(m) || fb.includes(m)) ? `<i class="${fl.includes(m) ? 'lead' : ''}">${fl.includes(m) ? 'Lead' : 'Back'}</i>` : ''}</span>`).join('')}</span><span class="chshf" aria-hidden="true"></span></button>
+    <button type="button" class="chghost" data-view="build" style="margin-top:10px">Open my team</button></div>`
+    : `<div class="chblock"><div class="chk">Your team</div><div class="chshow empty"><span class="chshn">Your six goes here</span>
+    <span class="chshs">${six.map(p => `<span class="chshm" title="${esc(p.d)}">${sprite(p) || ''}</span>`).join('')}</span><span class="chshf" aria-hidden="true"></span>
+    <span class="t2" style="display:block;padding:0 14px 12px">The six most-used Pokémon at tournaments right now. Build me a team drafts a full six from real winning teams.</span></div>
+    <button type="button" class="chghost" data-view="build" style="margin-top:10px">Start from scratch</button></div>`;
   // 03 doubles is played in pairs: Showdown replays, how often the first brings the second
   const bw = RES && RES.tc && RES.tc.bw, games = RES && RES.tc && RES.tc.games;
   let pairs = []; if (bw) { const used = new Set(); for (const p of six) { const k = brKeyOf(p), L = bw[k]; if (!L) continue; const x = L.find(y => !used.has(k + '|' + y[0]) && byName.get(y[0])); if (!x) continue; used.add(x[0] + '|' + k); pairs.push({a: p, b: byName.get(x[0]), pct: x[1], g: x[2]}); if (pairs.length === (PHONE() ? 2 : 4)) break; } }
-  const pr = pairs.length >= 2 ? `<div class="chblock"><div class="chk">03 / Team preview · Showdown replays${games ? ` · ${CH.n(games)} games` : ''}</div><h3>Doubles is played in <span class="hl">pairs.</span></h3>
+  const pr = pairs.length >= 2 ? `<div class="chblock"><div class="chk">Team preview · Showdown replays${games ? ` · ${CH.n(games)} games` : ''}</div><h3>Doubles is played in <span class="hl">pairs.</span></h3>
     <div class="chpair4">${pairs.map(x => `<button type="button" data-lt="${esc(x.b.n)}" aria-label="${esc(x.a.d)} and ${esc(x.b.d)}: brought together ${x.pct}%"><div class="sp">${sprite(x.a) || ''}${sprite(x.b) || ''}</div><div><div class="pct">${x.pct}<i>%</i></div><div class="nm">${esc(x.a.d)} + ${esc(x.b.d)}</div><div class="t2">${CH.n(x.g)} games</div></div></button>`).join('')}</div><div class="t2" style="margin-top:6px">% = how often the pair is brought together when both are on the team.</div></div>` : '';
   // the older Home sections, folded (nothing removed)
   const rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 4);
