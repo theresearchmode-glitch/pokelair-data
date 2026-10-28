@@ -50,7 +50,7 @@ for (const width of [1280, 390]) {
   const g = await pg.evaluate(() => ({n: document.querySelectorAll('.gitem').length, prep: document.querySelectorAll('.gprep').length, odds: /win chance|% to win/i.test(document.getElementById('gauntOut').innerText)}));
   ok(g.n >= 10, `gauntlet: ${g.n} teams`); ok(g.prep >= 10 && !g.odds, `gauntlet: matchup prep for each team, no win odds (${g.prep})`);
   await pg.evaluate(() => document.querySelector('[data-gaunt]').click()); await pg.waitForTimeout(800);
-  ok(await pg.evaluate(() => { const t = document.querySelector('.t1plan'); return !!t && /Speed order/.test(t.innerText); }), 'matchup: turn 1 plan shown');
+  ok(await pg.evaluate(() => { const t = document.querySelector('.t1plan'); return !!t && /Turn order/.test(t.innerText); }), 'matchup: turn 1 plan shown');
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`);
   await ctx.close(); }
 // damage calc and speed checks

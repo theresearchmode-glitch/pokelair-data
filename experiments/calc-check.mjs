@@ -25,7 +25,7 @@ const browser = await chromium.launch(), pg = await (await browser.newContext())
 pg.on('pageerror', e => console.log('PAGE ERROR', e.message));
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false})})} : null}; }, DOCS);
 await pg.goto('file://' + page); await pg.waitForTimeout(2500);
-const DATA = await pg.evaluate(() => window.__ev(`({R:ROSTER.map(p=>({n:p.n,t:p.t,st:p.st,a:p.a,m:!!p.m})),M:MV.filter(m=>m.bp>0&&m.cat>0).map(m=>({name:m.name,type:m.type,cat:m.cat,bp:m.bp,sound:!!m.sound,spread:!!m.spread})),
+const DATA = await pg.evaluate(() => window.__ev(`({R:ROSTER.map(p=>({n:p.n,t:p.t,st:p.st,a:p.a,m:!!p.m})),M:MV.filter(m=>m.bp>0&&m.cat>0&&!m.ohko).map(m=>({name:m.name,type:m.type,cat:m.cat,bp:m.bp,vbp:m.vbp||'',fixed:m.fixed||0,sound:!!m.sound,spread:!!m.spread})),
   L:Object.fromEntries(Object.entries(LEARN).map(([k,v])=>[k,v.map(i=>MV[i]&&MV[i].name).filter(Boolean)])),items:CALC_ITEMS,multi:MULTI_HIT})`));
 const byN = new Map(DATA.R.map(p => [p.n, p])), mvN = new Map(DATA.M.map(m => [m.name, m]));
 const toID = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '');
@@ -34,7 +34,7 @@ const ref = (g, n) => g.moves.get(toID(n));
 const dataDiff = [];
 for (const m of DATA.M) { const r = ref(G0, m.name); if (!r) { dataDiff.push(`move ${m.name}: not in Smogon's Champions move list`); continue; }
   const cat = {Physical: 1, Special: 2}[r.category], spread = ['allAdjacent', 'allAdjacentFoes'].includes(r.target);
-  if (r.basePower !== m.bp && !['Weather Ball'].includes(m.name)) dataDiff.push(`move ${m.name}: power ${m.bp} vs Smogon ${r.basePower}`);
+  if (r.basePower !== m.bp && !m.vbp && !m.fixed && !['Weather Ball'].includes(m.name)) dataDiff.push(`move ${m.name}: power ${m.bp} vs Smogon ${r.basePower}`);
   if (r.type !== m.type) dataDiff.push(`move ${m.name}: type ${m.type} vs Smogon ${r.type}`);
   if (cat !== m.cat) dataDiff.push(`move ${m.name}: category ${m.cat} vs Smogon ${r.category}`);
   if (spread !== m.spread) dataDiff.push(`move ${m.name}: spread ${m.spread} vs Smogon target ${r.target}`);
@@ -116,7 +116,7 @@ function smog(c) {
     if (role === 'a' && c.fainted) opts.alliesFainted = c.fainted;
     return new Pokemon(g, name, opts); };
   const A = mk(c.a, 'a'), D = mk(c.d, 'd');
-  const move = new Move(g, c.mv, {isCrit: !!c.crit, ability: A.ability, overrides: {basePower: mvP.bp, type: mvP.type, category: phys ? 'Physical' : 'Special', target: c.spread ? 'allAdjacentFoes' : 'normal'}});
+  const move = new Move(g, c.mv, {isCrit: !!c.crit, ability: A.ability, overrides: {...(mvP.vbp || mvP.fixed ? {} : {basePower: mvP.bp}), type: mvP.type, category: phys ? 'Physical' : 'Special', target: c.spread ? 'allAdjacentFoes' : 'normal'}});
   const W = {sun: 'Sun', rain: 'Rain', sand: 'Sand', snow: 'Snow'}[c.weather], TR = {grassy: 'Grassy', electric: 'Electric', psychic: 'Psychic', misty: 'Misty'}[c.terrain];
   const field = new Field({gameType: 'Doubles', weather: W, terrain: TR, attackerSide: {isHelpingHand: !!c.hh}, defenderSide: {isReflect: !!c.screen && phys, isLightScreen: !!c.screen && !phys, isFriendGuard: !!c.fg}});
   const r = calculate(g, A, D, move, field); let d = r.damage;
@@ -155,7 +155,8 @@ console.log(`mismatches: ${bad.length} (${within1} off by at most 1 HP per roll)
 // known, explained differences: things the page can't know (turn order, gender) or doesn't model on purpose (rare mid-move changes)
 const EXPLAINED = [[/Payback/, 'Payback doubles when the user moves last: Smogon decides from Speed, the page assumes it moves first'],
   [/Analytic/, 'Analytic boosts when moving last: Smogon decides from Speed, the page assumes it moves first'], [/Rivalry/, 'Rivalry depends on genders, which the page does not track'],
-  [/Shell Side Arm/, 'Shell Side Arm turns physical when that hits harder (not modelled; rare)'], [/Forecast/, 'Castform changes type with the weather (not modelled)'],
+  [/Double Shock/, 'Double Shock: Showdown\'s champions data mod (our source of truth) has no punch flag, so Iron Fist does not boost it; @smogon/calc marks it as a punch'],
+  [/Freeze-Dry/, 'Freeze-Dry has a 10% freeze chance (a secondary effect in the Showdown move data), so Sheer Force boosts it; the @smogon/calc Champions data leaves that secondary out'], [/(Grass Knot|Low Kick|Heavy Slam|Heat Crash) .*Stance Change/, 'Aegislash is missing from the Smogon Champions data, so its weight there is wrong'],[/Parental Bond.*Berry|Berry.*Parental Bond|Parental Bond \| def item=\w+ Berry/, 'Parental Bond with a resist berry: the berry is eaten by the first hit, the page leaves the second hit full; Smogon halves both'], [/def ability=Disguise/, 'Disguise: the page applies the game rule (the first hit only breaks the disguise for 1/8 HP); Smogon calc shows an ordinary hit'], [/Shell Side Arm/, 'Shell Side Arm turns physical when that hits harder (not modelled; rare)'], [/Forecast/, 'Castform changes type with the weather (not modelled)'],
   [/Weak Armor|Stamina|Seed Sower|Wandering Spirit/, 'ability that changes stats/terrain/abilities between hits of a multi-hit move (not modelled)']];
 const why = (k, l) => (EXPLAINED.find(([re]) => re.test(k) || l.every(r => re.test(r.c.mv + ' ' + r.c.a.ability + ' ' + r.c.d.ability))) || [])[1];
 const unexplained = bad.filter(r => { for (const [k, l] of groups) if (l.includes(r)) return !why(k, l); return true; }).length;

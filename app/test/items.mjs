@@ -139,7 +139,7 @@ ok(spd.some(r => /^Sneasler=.*after its item is used/.test(r)), 'speed tiers: Un
 ok(await ev(`(()=>{spdUi.par=true;renderSpeed();const ok=/They're paralyzed/.test(document.getElementById('spdCtl').innerText);spdUi.par=false;return ok})()`), 'speed tiers: paralysis toggle');
 // forms: Aegislash attacks in Blade Forme, Palafin in Hero Form
 const form = await ev(`(()=>{const a=byName.get('Aegislash'),d=byName.get('Incineroar'),mv=mvByName.get('Shadow Ball');const A={p:a,...sideDefaults(a,'atk')},D={p:d,...sideDefaults(d,'def')};
-  const r=damage({atk:A,def:D,move:mv});const shield=damage({atk:{...A,p:{...a,n:'x'}},def:D,move:mv});return {r:r.max/shield.max,pal:byName.get('Palafin').st.join('/')}})()`);
+  const r=damage({atk:A,def:D,move:mv});const shield=damage({atk:{...A,ability:'',p:{...a,n:'x'}},def:D,move:mv});return {r:r.max/shield.max,pal:byName.get('Palafin').st.join('/')}})()`);
 ok(form.r > 2, `Aegislash hits from Blade Forme (${form.r.toFixed(2)}× Shield)`);
 ok(form.pal === '100/160/97/106/87/100', 'Palafin uses Hero Form stats');
 // A8: priority is never called speed control

@@ -2,7 +2,7 @@ name: Test NastyPlot page
 on:
   push:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'rk9.mjs', 'experiments/replays-test.mjs', 'experiments/*-check.mjs', '.github/workflows/test.yml']
+    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'rk9.mjs', 'experiments/replays-test.mjs', 'experiments/*-check.mjs', 'experiments/fields-audit.mjs', 'experiments/gen-move-meta.mjs', '.github/workflows/test.yml']
   workflow_dispatch:
 # Changes land as a few commits in a row; only the newest one is tested. An older run still going is cancelled
 # (cancelled runs send no failure email), so a half-uploaded change can't trigger a false alarm.
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 && npx playwright install --with-deps chromium
+      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 pokemon-showdown@0.11.11 && npx playwright install --with-deps chromium
       - run: node app/test/run.mjs
       - run: node experiments/replays-test.mjs
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
@@ -30,6 +30,9 @@ jobs:
       - run: node experiments/legality-check.mjs
       # threat preparation: 42 hand-checked verdicts + damage vs Smogon, support threats, real teams (user's team, regionals)
       - run: node experiments/threat-check.mjs
+      # game-mechanics completeness: every VGC field (accuracy, priority, targets, flags, secondaries, weights…) is in the
+      # generated data, matches Showdown's champions mod, and is read by the engine (fails on any gap that changes answers)
+      - run: node experiments/fields-audit.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: page

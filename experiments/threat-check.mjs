@@ -21,7 +21,12 @@ const HYD = {n: 'Hydreigon', item: 'Choice Scarf', ability: 'Levitate', nat: 'Mo
 const TORK = {n: 'Torkoal'}, FARI = {n: 'Farigiraf'};
 // [member, threat, team (null = alone), expected kind, note]
 const C = [
-  ['Incineroar', 'Kingambit', null, 'solid+warn', 'Flare Blitz is SE and Kingambit hits Incineroar weakly; but Intimidate triggers Defiant'],
+  // Oct 28: Low Kick is calculated now (Kingambit 120-power Low Kick into 75 kg Incineroar: 50.5-59.4%, same as Smogon), so
+  // Incineroar wins 1-on-1 (faster, both 2HKO) but no longer walls it: an answer, not a counter
+  ['Incineroar', 'Kingambit', null, 'soft', 'Flare Blitz 2HKOs and Incineroar moves first; Kingambit\'s Low Kick 2HKOs back; Intimidate triggers Defiant'],
+  [{n: 'Kingambit', moves: ['Low Kick']}, 'Tyranitar', null, 'any', 'Low Kick into 202 kg Tyranitar: 120 power, 4x'],
+  [{n: 'Kingambit', moves: ['Low Kick']}, 'Archaludon', null, 'any', 'Low Kick into 60 kg Archaludon: 80 power, 2x'],
+  [{n: 'Kingambit', moves: ['Low Kick']}, 'Tyranitar-Mega', null, 'any', 'Low Kick into Mega Tyranitar (its own Champions weight)'],
   ['Rillaboom', 'Charizard-Mega-Y', null, 'none', 'Zard OHKOs Rilla in its own sun, Rilla does little'],
   ['Charizard-Mega-Y', 'Rillaboom', null, 'solid', 'faster, sun Heat Wave/Weather Ball OHKOs'],
   ['Rillaboom', 'Basculegion', null, 'solid', 'Grassy Glide priority in its own terrain, SE'],
@@ -91,6 +96,25 @@ for (const [m, t, chk, note] of [
   const r = await ev(`(a) => THR.one(a[0], a[1], null)`, [n(m), n(t)]); const ok = !!chk(r);
   if (ok) pass++; else fails.push(`accuracy: ${note} (got ${r.kind}, ${r.o && r.o.mv})`); C.push(0);
   lines.push(`${ok ? 'PASS' : 'FAIL'} accuracy: ${note} (${r.kind}; ${r.o && r.o.mv})`); }
+// 1c) mechanics from the move data: priority brackets, two-turn moves, guaranteed drops, ally-hitting spread moves
+{ const M = await ev(`() => { const mv = n => mvByName.get(n);
+    return {fake: movePrio(mv('Fake Out'), 'Intimidate'), twP: movePrio(mv('Tailwind'), 'Prankster'), prot: movePrio(mv('Protect'), ''), hh: movePrio(mv('Helping Hand'), ''), fm: movePrio(mv('Follow Me'), ''), tr: movePrio(mv('Trick Room'), ''),
+      es: movePrio(mv('Extreme Speed'), ''), ggT: movePrio(mv('Grassy Glide'), '', {terrain: 'grassy'}), gg: movePrio(mv('Grassy Glide'), '', {terrain: ''}), wg: movePrio(mv('Wide Guard'), ''),
+      eqAlly: allyHit(mv('Earthquake'), {p: byName.get('Incineroar'), ability: 'Intimidate'}), eqFly: allyHit(mv('Earthquake'), {p: byName.get('Charizard-Mega-Y'), ability: 'Drought'}),
+      eqLev: allyHit(mv('Earthquake'), {p: byName.get('Hydreigon'), ability: 'Levitate'}), eqBal: allyHit(mv('Earthquake'), {p: byName.get('Incineroar'), ability: 'Intimidate', item: 'Air Balloon'}),
+      dcAlly: allyHit(mv('Discharge'), {p: byName.get('Garchomp'), ability: 'Rough Skin'}), hvFoes: allyHit(mv('Hyper Voice'), {p: byName.get('Incineroar'), ability: 'Intimidate'}) }; }`);
+  for (const [ok, note] of [[M.fake === 3 && M.twP === 1 && M.fake > M.twP, `Fake Out +3 goes before Prankster Tailwind +1 (${M.fake} vs ${M.twP})`],
+    [M.prot === 4 && M.hh === 5 && M.fm === 2 && M.tr === -7 && M.es === 2 && M.wg === 3, `brackets: Protect ${M.prot}, Helping Hand ${M.hh}, Follow Me ${M.fm}, Trick Room ${M.tr}, Extreme Speed ${M.es}, Wide Guard ${M.wg}`],
+    [M.ggT === 1 && M.gg === 0, `Grassy Glide +1 only in Grassy Terrain (${M.ggT} / ${M.gg})`],
+    [M.eqAlly && !M.eqFly && !M.eqLev && !M.eqBal && !M.dcAlly && !M.hvFoes, `Earthquake hits a grounded partner, not Flying / Levitate / Air Balloon; Discharge doesn't touch Ground types; Hyper Voice never hits the ally`]]) {
+    if (ok) pass++; else fails.push('mechanics: ' + note); C.push(0); lines.push(`${ok ? 'PASS' : 'FAIL'} mechanics: ${note}`); }
+  const arch = {n: 'Archaludon', moves: ['Electro Shot']}, tgt = {n: 'Gyarados'};
+  const sun = await ev(`(a) => THR.one(a[0], a[1], a[2])`, [arch, tgt, [arch, {n: 'Charizard-Mega-Y'}]]), rain = await ev(`(a) => THR.one(a[0], a[1], a[2])`, [arch, tgt, [arch, {n: 'Pelipper'}]]);
+  const okE = sun.o && sun.o.charge && rain.o && !rain.o.charge; if (okE) pass++; else fails.push(`mechanics: Electro Shot charges in sun, fires at once in rain (sun ${sun.o && sun.o.mv}, rain ${rain.o && rain.o.mv})`); C.push(0);
+  lines.push(`${okE ? 'PASS' : 'FAIL'} mechanics: Electro Shot charges first next to sun (${sun.o && sun.o.mv}, ${sun.nM} hits), fires at once in rain (${rain.o && rain.o.mv}, ${rain.nM} hits)`);
+  const gh = {n: 'Primarina', moves: ['Moonblast']}, sn = await ev(`(a) => THR.one(a[0], a[1], null)`, [{n: 'Incineroar', moves: ['Snarl']}, gh]), bi = await ev(`(a) => THR.one(a[0], a[1], null)`, [{n: 'Incineroar', moves: ['Bite']}, gh]);
+  const okS = sn.nT > bi.nT; if (okS) pass++; else fails.push(`mechanics: Snarl lowers its later hits (${sn.nT} vs ${bi.nT} hits to KO)`); C.push(0);
+  lines.push(`${okS ? 'PASS' : 'FAIL'} mechanics: after Incineroar's Snarl, Primarina needs ${sn.nT} Moonblasts to KO it (${bi.nT} after a Bite)`); }
 // 2) support threats, judged as a whole team
 const BB = {n: 'Kingambit', moves: ['Kowtow Cleave', 'Sucker Punch', 'Brick Break', 'Protect']};
 const S2 = [
