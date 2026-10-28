@@ -126,7 +126,8 @@ function smog(c) {
 const PAGE_FN = `(cases)=>cases.map(c=>{try{const mv=mvByName.get(c.mv);const ph=mv.cat===1;
   const A={p:byName.get(c.a.n),sp:ph?c.a.spA:c.a.spS,spA:c.a.spA,spS:c.a.spS,spDef:c.a.spDef,nat:c.a.nat,item:c.a.item,ability:c.a.ability,boost:c.a.boost,burn:c.a.burn};
   const D={p:byName.get(c.d.n),hpSp:c.d.hpSp,defSp:c.d.defSp,spdSp:c.d.spdSp,atkSp:c.d.atkSp,nat:c.d.nat,item:c.d.item,ability:c.d.ability,boost:c.d.boost};
-  const r=damage({atk:A,def:D,move:mv,spread:c.spread,weather:c.weather,terrain:c.terrain,screen:c.screen,hh:c.hh,fg:c.fg,crit:c.crit,fainted:c.fainted});
+  // Smogon's calc puts both Dragon Darts on the one target; the page's default is one dart per foe (doubles), so compare like for like
+  const r=damage({atk:A,def:D,move:mv,spread:c.spread,weather:c.weather,terrain:c.terrain,screen:c.screen,hh:c.hh,fg:c.fg,crit:c.crit,fainted:c.fainted,dartsBoth:true});
   return r?{rolls:r.rolls.length===16?r.rolls:Array(16).fill(r.rolls[0]),hp:r.hp}:{rolls:Array(16).fill(0),hp:0}}catch(e){return {err:String(e)}}})`;
 async function runAll(list) { const out = [];
   for (let i = 0; i < list.length; i += 500) out.push(...await pg.evaluate(([src, cs]) => window.__ev(src)(cs), [PAGE_FN, list.slice(i, i + 500)]));
@@ -153,7 +154,7 @@ console.log(`cases: ${res.length} (${nRand.length} random, ${res.length - nRand.
 const within1 = bad.filter(r => r.p.rolls && r.s.rolls && r.p.rolls.every((x, i) => Math.abs(x - r.s.rolls[i]) <= 1)).length;
 console.log(`mismatches: ${bad.length} (${within1} off by at most 1 HP per roll)\n`);
 // known, explained differences: things the page can't know (turn order, gender) or doesn't model on purpose (rare mid-move changes)
-const EXPLAINED = [[/Payback/, 'Payback doubles when the user moves last: Smogon decides from Speed, the page assumes it moves first'],
+const EXPLAINED = [[/Super Fang/, 'Super Fang: @smogon/calc\'s Champions data returns 0; the Showdown simulator takes half the target\'s HP (as the page does). Until Oct 28 the page also returned 0, which matched this reference and hid the bug'], [/Poltergeist/, 'Poltergeist into a Mega: a Mega always holds its Mega Stone, so the move hits; this harness gives Smogon no item for Megas, so Smogon says it fails'], [/Payback/, 'Payback doubles when the user moves last: Smogon decides from Speed, the page assumes it moves first'],
   [/Analytic/, 'Analytic boosts when moving last: Smogon decides from Speed, the page assumes it moves first'], [/Rivalry/, 'Rivalry depends on genders, which the page does not track'],
   [/Freeze-Dry/, 'Freeze-Dry has a 10% freeze chance (a secondary effect in the Showdown move data), so Sheer Force boosts it; the @smogon/calc Champions data leaves that secondary out'], [/(Grass Knot|Low Kick|Heavy Slam|Heat Crash) .*Stance Change/, 'Aegislash is missing from the Smogon Champions data, so its weight there is wrong'],[/Parental Bond.*Berry|Berry.*Parental Bond|Parental Bond \| def item=\w+ Berry/, 'Parental Bond with a resist berry: the berry is eaten by the first hit, the page leaves the second hit full; Smogon halves both'], [/def ability=Disguise/, 'Disguise: the page applies the game rule (the first hit only breaks the disguise for 1/8 HP); Smogon calc shows an ordinary hit'], [/Shell Side Arm/, 'Shell Side Arm turns physical when that hits harder (not modelled; rare)'], [/Forecast/, 'Castform changes type with the weather (not modelled)'],
   [/Weak Armor|Stamina|Seed Sower|Wandering Spirit/, 'ability that changes stats/terrain/abilities between hits of a multi-hit move (not modelled)']];

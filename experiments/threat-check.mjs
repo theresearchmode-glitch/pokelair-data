@@ -115,6 +115,26 @@ for (const [m, t, chk, note] of [
   const gh = {n: 'Primarina', moves: ['Moonblast']}, sn = await ev(`(a) => THR.one(a[0], a[1], null)`, [{n: 'Incineroar', moves: ['Snarl']}, gh]), bi = await ev(`(a) => THR.one(a[0], a[1], null)`, [{n: 'Incineroar', moves: ['Bite']}, gh]);
   const okS = sn.nT > bi.nT; if (okS) pass++; else fails.push(`mechanics: Snarl lowers its later hits (${sn.nT} vs ${bi.nT} hits to KO)`); C.push(0);
   lines.push(`${okS ? 'PASS' : 'FAIL'} mechanics: after Incineroar's Snarl, Primarina needs ${sn.nT} Moonblasts to KO it (${bi.nT} after a Bite)`); }
+// 1c) fixed damage (Oct 28: Super Fang / Ruination returned 0 because the move data's fixed: 0 read as a fixed amount)
+{ const r = await ev(`() => { const d = (a, t, m) => damage({atk: {p: byName.get(a), sp: 32, nat: 'Adamant', item: '', ability: byName.get(a).a[0]}, def: {p: byName.get(t), hpSp: 32, defSp: 0, spdSp: 0, nat: 'Careful', item: '', ability: byName.get(t).a[0]}, move: mvByName.get(m), spread: false, weather: '', terrain: ''});
+    const sf = d('Maushold', 'Kingambit', 'Super Fang'), st = d('Incineroar', 'Kingambit', 'Seismic Toss'), ru = mvByName.get('Ruination') ? d('Kingambit', 'Incineroar', 'Ruination') : null;
+    return {sf: [sf.min, sf.max, sf.hp], st: [st.min, st.max], ru: ru && [ru.min, ru.hp]}; }`, null);
+  for (const [ok, note] of [[r.sf[0] === Math.floor(r.sf[2] / 2) && r.sf[1] === r.sf[0], `Super Fang = half the target's HP (${r.sf.join('/')})`], [r.st[0] === 50 && r.st[1] === 50, `Seismic Toss = 50 at level 50 (${r.st.join('-')})`], [!r.ru || r.ru[0] === Math.floor(r.ru[1] / 2), `Ruination = half HP (${r.ru && r.ru.join('/')})`]]) {
+    if (ok) pass++; else fails.push('fixed damage: ' + note); C.push(0); lines.push(`${ok ? 'PASS' : 'FAIL'} fixed damage: ${note}`); } }
+// 1d) mechanics found by the simulator / replay comparison (Oct 28): each must stay fixed
+{ const r = await ev(`() => { const S = (n, it, ab, sp = 32) => ({p: byName.get(n), sp, spA: sp, spS: sp, nat: 'Hardy', item: it || '', ability: ab || byName.get(n).a[0]}), T = (n, it, ab) => ({p: byName.get(n), hpSp: 32, defSp: 0, spdSp: 0, nat: 'Hardy', item: it || '', ability: ab || byName.get(n).a[0]});
+    const d = (a, t, m, x = {}) => damage({atk: a, def: t, move: mvByName.get(m), spread: false, weather: '', terrain: '', ...x});
+    const lb = d(S('Pikachu', 'Light Ball', 'Static'), T('Incineroar'), 'Thunderbolt'), nb = d(S('Pikachu', '', 'Static'), T('Incineroar'), 'Thunderbolt');
+    const dd = d(S('Dragapult', '', 'Clear Body'), T('Garchomp'), 'Dragon Darts'), dd2 = d(S('Dragapult', '', 'Clear Body'), T('Garchomp'), 'Dragon Darts', {dartsBoth: true});
+    const fa0 = d(S('Whimsicott', '', 'Prankster'), T('Kingambit'), 'Moonblast'), fa = d(S('Whimsicott', '', 'Prankster'), T('Kingambit'), 'Moonblast', {auras: ['Fairy Aura']});
+    const pg = byName.get('Charizard-Mega-Y') && mvByName.get('Poltergeist') ? d(S('Gengar'), T('Charizard-Mega-Y'), 'Poltergeist') : {max: 1};
+    const gw = mvByName.get('Brave Bird') && byName.get('Talonflame') ? [d(S('Talonflame', '', 'Gale Wings'), T('Indeedee-F'), 'Brave Bird', {terrain: 'psychic'}).max, d(S('Talonflame', '', 'Gale Wings'), T('Indeedee-F'), 'Brave Bird', {terrain: 'psychic', atkFullHp: false}).max] : [0, 1];
+    const ms = typeof WEATHER_OF === 'object' ? WEATHER_OF['Mega Sol'] : null, ms2 = typeof sideField === 'function' && byName.get('Meganium-Mega') ? sideField([memberOf({n: 'Meganium-Mega', a: null}, 0), memberOf({n: 'Venusaur', a: null}, 1)]).weather : '';
+    return {lb: lb.max / nb.max, dd: dd2.max / dd.max, fa: fa.max / fa0.max, pg: pg.max, gw, ms, ms2}; }`, null);
+  for (const [ok, note] of [[r.lb > 1.9, `Light Ball doubles Pikachu's damage (×${r.lb.toFixed(2)})`], [r.dd > 1.9, `Dragon Darts: one dart per foe, both only when asked (×${r.dd.toFixed(2)})`],
+      [r.fa > 1.3, `a partner's Fairy Aura boosts Fairy moves (×${r.fa.toFixed(2)})`], [r.pg > 0, `Poltergeist hits a Mega (it holds its stone): ${r.pg}`],
+      [r.gw[0] === 0 && r.gw[1] > 0, `Gale Wings Brave Bird is blocked by Psychic Terrain only at full HP (${r.gw.join(' / ')})`], [!r.ms && r.ms2 !== 'sun', `Mega Sol does not set sun for the team (${r.ms2 || 'no weather'})`]]) {
+    if (ok) pass++; else fails.push('mechanics: ' + note); C.push(0); lines.push(`${ok ? 'PASS' : 'FAIL'} mechanics: ${note}`); } }
 // 2) support threats, judged as a whole team
 const BB = {n: 'Kingambit', moves: ['Kowtow Cleave', 'Sucker Punch', 'Brick Break', 'Protect']};
 const S2 = [
