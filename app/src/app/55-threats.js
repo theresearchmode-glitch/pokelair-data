@@ -208,8 +208,68 @@ const THR = (() => {
         else if (hasMove(m, 'Taunt') && tauntWorks(m)) out.push({m, kind: 'soft', why: `${m.d}'s Taunt stops its redirection after the first turn`});
       } }
     return out; }
+  // The fields a matchup can be played on. Your own weather, terrain and auras are only up when you bring their setter, and
+  // you bring 4 of 6, so each is a choice: the "bare" field (only what the threat sets itself) is always one option, and every
+  // combination of the weather/terrain your team can set is another. An answer that works on the bare field is solid (you
+  // can leave your setter out, which is noted); one that needs your own weather or terrain is a conditional, soft answer.
+  function fieldsFor(team, t) {
+    const tw = WEATHER_AB[t.ability] || '', tt = TERRAIN_AB[t.ability] || '', tAura = [t.ability].filter(a => /^(Fairy|Dark) Aura$/.test(a || ''));
+    const W = [...new Set(team.map(m => WEATHER_AB[m.ability]).filter(Boolean))], T = [...new Set(team.map(m => TERRAIN_AB[m.ability]).filter(Boolean))];
+    const ownAura = team.map(m => m.ability).filter(a => /^(Fairy|Dark) Aura$/.test(a || ''));
+    const out = [];
+    for (const w of ['', ...W]) for (const tr of ['', ...T]) for (const a of ownAura.length ? [false, true] : [false])
+      out.push({weather: w || tw, terrain: tr || tt, auras: a ? [...new Set([...ownAura, ...tAura])] : tAura, own: {w, t: tr, aura: a}, bare: !w && !tr && !a});
+    return out; }
+  // a member's own field: the weather, terrain and aura it sets itself are always up while it's out (Drizzle Pelipper always
+  // plays in its rain); everything else your team sets is optional
+  const baseKey = m => [WEATHER_AB[m.ability] || '', TERRAIN_AB[m.ability] || '', /^(Fairy|Dark) Aura$/.test(m.ability || '')].join('|');
+  const fKey = f => [f.own.w, f.own.t, f.own.aura].join('|');
+  const OWN_W = {sun: 'sun', rain: 'rain', sand: 'sand', snow: 'snow'}, OWN_T = {grassy: 'Grassy Terrain', electric: 'Electric Terrain', psychic: 'Psychic Terrain', misty: 'Misty Terrain'};
+  // plain words for the own-field parts every field in fs shares: "your sun", "your rain and Psychic Terrain"
+  // the own-field parts (not set by m itself) that every field in fs shares: "sun", "rain and Psychic Terrain"
+  function ownWords(fs, m) { if (!fs.length) return ''; const mw = WEATHER_AB[m.ability] || '', mt = TERRAIN_AB[m.ability] || '';
+    const w = fs.every(f => f.own.w && f.own.w !== mw && f.own.w === fs[0].own.w) ? OWN_W[fs[0].own.w] : '',
+      tr = fs.every(f => f.own.t && f.own.t !== mt && f.own.t === fs[0].own.t) ? OWN_T[fs[0].own.t] : '',
+      a = fs.every(f => f.own.aura) && !/Aura$/.test(m.ability || '') ? 'Aura teammate' : '';
+    return [w, tr, a].filter(Boolean).join(' and '); }
   function vsThreat(team, t, modes, only) {
-    const field = fieldFor(team, t), rows = [];
+    const fs = fieldsFor(team, t), R = fs.map(f => vsIn(team, t, modes, only, f)), B = R[fs.findIndex(f => f.bare)], pool = only || team;
+    const dShow = R[R.length - 1]; // the field with all your own setters up, for the details shown
+    // merge one list of answers, member by member: solid on its own field (only what it sets itself, so always available) =
+    // solid; solid only with a teammate's weather/terrain = soft, with the condition; soft anywhere = soft
+    const merge = (get) => { const solid = [], soft = [];
+      for (const m of pool) { const bi = fs.findIndex(f => fKey(f) === baseKey(m)), base = bi >= 0 ? bi : fs.findIndex(f => f.bare);
+        // fields without m's own weather/terrain/aura can't happen while m is out, so they don't count for m
+        const mw = WEATHER_AB[m.ability] || '', mt = TERRAIN_AB[m.ability] || '', ma = /^(Fairy|Dark) Aura$/.test(m.ability || '');
+        const fits = f => (!mw || f.own.w === mw) && (!mt || f.own.t === mt) && (!ma || f.own.aura);
+        const sol = R.map((r, i) => fits(fs[i]) ? get(r).solid.find(y => y.m === m) : null);
+        if (sol[base]) { const bad = fs.filter((f, i) => fits(f) && !sol[i]), ow = ownWords(bad, m);
+          solid.push(ow ? {...sol[base], why: `${sol[base].why} (only if your ${ow} isn't up: leave its setter out)`, cond: 'without'} : sol[base]); continue; }
+        const okI = sol.map((x, i) => x ? i : -1).filter(i => i >= 0);
+        if (okI.length) { const x = sol[okI[0]], ow = ownWords(okI.map(i => fs[i]), m); soft.push({...x, kind: 'soft', why: `${x.why} (needs your ${ow || 'teammate\'s weather or terrain'})`, cond: 'needs'}); continue; }
+        const sf = [R[base], ...R.filter((r, i) => fits(fs[i]))].map(r => get(r).soft.find(y => y.m === m)).find(Boolean); if (sf) soft.push(sf); }
+      return {solid, soft}; };
+    let mode = null, solid, softR;
+    if (B.per) { const per = B.per.map(j => { const g = r => r.per.find(z => z.k === j.k), mm = merge(g);
+        return {k: j.k, name: j.name, solid: mm.solid.map(x => ({...x, role: 'mode'})), soft: mm.soft, level: mm.solid.length >= 2 ? 3 : mm.solid.length === 1 ? 2 : mm.soft.length ? 1 : 0}; });
+      mode = per.sort((a, b) => a.level - b.level); solid = mode[0].solid; softR = mode[0].soft; }
+    else { const mm = merge(r => r); solid = mm.solid; softR = mm.soft; }
+    // a member loses to it only if it loses on every field you could play it on
+    const losers = []; for (const m of pool) { const mw = WEATHER_AB[m.ability] || '', mt = TERRAIN_AB[m.ability] || '', ma = /^(Fairy|Dark) Aura$/.test(m.ability || '');
+      const L = R.filter((r, i) => (!mw || fs[i].own.w === mw) && (!mt || fs[i].own.t === mt) && (!ma || fs[i].own.aura)).map(r => r.losers.find(y => y.m === m));
+      if (L.length && L.every(Boolean)) losers.push(L[0]); }
+    const holders = pool.length - losers.length;
+    // overloaded: you bring 4, so it overloads you only when fewer than 3 of your Pokémon hold up against it (any 4 you bring
+    // then has at least 2 it beats). Adding a Pokémon can only add holders, so it never makes a threat worse.
+    // (it depends only on how many hold up, so a team still being built counts as overloaded until 3 of its Pokémon do)
+    const overloaded = !only && holders <= 2;
+    let level = solid.length >= 2 ? 3 : solid.length === 1 ? 2 : softR.length ? 1 : 0;
+    if (overloaded && level > 0 && !mode) level--;
+    const warn = []; for (const r of R) for (const x of r.warn) if (!warn.some(y => y.m === x.m)) warn.push(x);
+    return {t, field: dShow.field, fields: fs, level, label: ['Unanswered', 'Shaky', 'Handled', 'Well handled'][level], solid, soft: softR, warn, losers, overloaded, holders, mode, rows: dShow.rows};
+  }
+  function vsIn(team, t, modes, only, field) {
+    const rows = [];
     for (const m of (only || team)) {
       // Flower Veil on your side: your Grass types can't have their stats lowered (Intimidate included)
       m._fv = m.p.t.includes('Grass') && team.some(x => x.ability === 'Flower Veil');
@@ -235,16 +295,13 @@ const THR = (() => {
     const warn = rows.filter(r => r.kind === 'warn');
     // a member whose Intimidate backfires can still win the 1-on-1: that counts as a soft answer
     for (const r of rows) if (r.kind === 'warn' && r.du && r.du.win && r.du.nM <= 2) softR.push({...r, kind: 'soft', why: `${r.m.d}: wins 1-on-1 with ${r.du.o.mv}`});
-    const losers = rows.filter(r => r.du && r.du.d && !r.du.win && r.du.nT <= 2 && (!r.du.first || r.du.nT === 1));
-    const overloaded = losers.length >= 4;
-    // support-first threats: judged by answers to their job (the weakest-answered job decides)
-    const sm = supportModes(t); let mode = null;
-    if (sm.first && !only) { const per = sm.modes.map(k => { const a = modeAnswers(team, t, k, rows, modes, field), s = a.filter(x => x.kind === 'solid'), f = a.filter(x => x.kind === 'soft');
-        return {k, name: typeof MODE_NAME[k] === 'function' ? MODE_NAME[k](t) : MODE_NAME[k], solid: s, soft: f, level: s.length >= 2 ? 3 : s.length === 1 ? 2 : f.length ? 1 : 0}; });
-      mode = per.sort((a, b) => a.level - b.level); solid = mode[0].solid.map(x => ({...x, role: 'mode'})); softR = mode[0].soft.map(x => ({...x})); }
-    let level = solid.length >= 2 ? 3 : solid.length === 1 ? 2 : softR.length ? 1 : 0;
-    if (overloaded && level > 0 && !mode) level--;
-    return {t, field, level, label: ['Unanswered', 'Shaky', 'Handled', 'Well handled'][level], solid, soft: softR, warn, losers, overloaded, mode, rows};
+    // (each member once: a member whose Intimidate backfires also has a 'warn' row with the same duel)
+    const losers = rows.filter(r => r.kind !== 'warn' && r.du && r.du.d && !r.du.win && r.du.nT <= 2 && (!r.du.first || r.du.nT === 1));
+    // support-first threats: judged by answers to their job (vsThreat picks the weakest-answered job after merging fields)
+    const sm = supportModes(t); let per = null;
+    if (sm.first && !only) per = sm.modes.map(k => { const a = modeAnswers(team, t, k, rows, modes, field);
+      return {k, name: typeof MODE_NAME[k] === 'function' ? MODE_NAME[k](t) : MODE_NAME[k], solid: a.filter(x => x.kind === 'solid'), soft: a.filter(x => x.kind === 'soft')}; });
+    return {field, solid, soft: softR, warn, losers, per, rows};
   }
   const PTS = [0, .4, .8, 1];
   // the threat list: top 30 by recency-weighted top-cut share (results.tc); before that loads, the 30 most used
@@ -275,7 +332,8 @@ const THR = (() => {
     return {a: S_(a), d: S_(d), out}; }
   function one(mSpec, tSpec, teamSpecs) { const team = (teamSpecs || [mSpec]).map(side), m = side(mSpec), t = side(tSpec), modes = teamModes(team);
     const r = vsThreat(team, t, modes, [m]), x = r.solid[0] || r.soft[0] || r.warn[0];
-    const du = (r.solid[0] || r.soft[0] || {}).du || duel(m, t, modes, fieldFor(team, t));
+    // the numbers shown: the matchup with your whole team's weather and terrain up (as before)
+    const du = duel(m, t, modes, fieldFor(team, t));
     return {kind: r.solid.length ? 'solid' : r.soft.length ? 'soft' : r.warn.length ? 'warn' : 'none', why: x ? x.why : '', field: fieldFor(team, t), nM: du.nM, nT: du.nT, first: du.first, how: du.how, sm: du.sm, st: du.st,
       o: du.o && {mv: du.o.mv, name: du.o.name, acc: du.o.acc, charge: !!du.o.charge, min: pc(du.o.min), max: pc(du.o.pct)}, d: du.d && {mv: du.d.mv, name: du.d.name, acc: du.d.acc, min: pc(du.d.min), max: pc(du.d.pct)}}; }
   // one support threat judged as a whole team (phase 2 hand checks)

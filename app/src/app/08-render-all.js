@@ -118,7 +118,7 @@ const THR_LV=[['Unanswered','l0'],['Shaky','l1'],['Handled','l2'],['Well handled
 function renderThreatCard(ms,RD){const el=$('thrCard');if(!el)return;if(!RD||!ms.length){el.innerHTML='';return}
   const pc=x=>Math.round(x*100),open=ui.thrOpen||{};
   const det=r=>{const L=[];for(const x of r.solid)L.push(`<li class="ok">${esc(x.why)}</li>`);for(const x of r.soft)L.push(`<li class="part">${esc(x.why)}</li>`);for(const x of r.warn)L.push(`<li class="no">${esc(x.why)}</li>`);
-    if(r.losers.length)L.push(`<li class="no">It beats ${r.losers.map(x=>`${esc(x.m.d)} (${esc(x.du.d.mv)} ${pc(x.du.d.min)}-${pc(x.du.d.pct)}%${x.du.nT===1?', OHKO':', 2HKO'}${x.du.first?'':`, speed ${x.du.st} vs ${x.du.sm}`})`).join(', ')} 1-on-1${r.overloaded?': too many of your six, so one answer isn\'t enough':''}</li>`);
+    if(r.losers.length)L.push(`<li class="no">It beats ${r.losers.map(x=>`${esc(x.m.d)} (${esc(x.du.d.mv)} ${pc(x.du.d.min)}-${pc(x.du.d.pct)}%${x.du.nT===1?', OHKO':', 2HKO'}${x.du.first?'':`, speed ${x.du.st} vs ${x.du.sm}`})`).join(', ')} 1-on-1${r.overloaded?`: only ${r.holders} of your Pokémon hold up against it, so any 4 you bring includes at least 2 it beats`:''}</li>`);
     if(r.mode)L.push(`<li class="t2">Judged by its job: ${esc(r.mode.map(x=>x.name).join(' and '))}</li>`);
     if(!L.length)L.push('<li class="no">Nothing on the team beats it 1-on-1 or stops what it does</li>');
     const f=r.field||{};return `<ul class="thrd">${L.join('')}</ul><div class="t2">Field: ${f.weather?esc(f.weather):'no weather'}, ${f.terrain?esc(f.terrain)+' terrain':'no terrain'} · its usual set: ${esc(r.t.moves.slice(0,4).map(m=>m.name).join(', '))}${r.t.item?' @ '+esc(r.t.item):''}</div>`};

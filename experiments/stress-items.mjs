@@ -1,4 +1,4 @@
-﻿// Stress test for the items layer: random and adversarial teams through assignItems / itemProblems / itemFixFor.
+// Stress test for the items layer: random and adversarial teams through assignItems / itemProblems / itemFixFor.
 // Defaults must never break Item Clause, never be dead on the team, never change an item you chose, and a suggested fix
 // must clear the problem. Usage: node experiments/stress-items.mjs [teams=3000] [seed=3]
 import fs from 'node:fs'; import {fileURLToPath} from 'node:url'; import {createRequire} from 'node:module';

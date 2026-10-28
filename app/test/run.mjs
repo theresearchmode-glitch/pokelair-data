@@ -148,6 +148,31 @@ for (const width of [1280, 390]) {
   ok(r.ripen[0] > 0 && Math.abs(r.ripen[0] * 2 - r.ripen[1]) <= 2, `Ripen doubles a resist berry (${r.ripen.join(' vs ')})`);
   ok(r.acro[1] > r.acro[2] * 1.8 && r.acro[0] < r.acro[1] * 1.3, `Acrobatics: double power with no item, not for a Mega holding its stone (${r.acro.join(' / ')})`);
   await ctx.close(); }
+
+// Scouting report, approved Oct 28: your own weather/terrain is a choice (you bring 4 of 6), and adding a Pokémon never makes
+// any threat's verdict or the readiness score worse
+{ console.log('\n== own field + bring 4');
+  const {pg, ctx} = await open(1280);
+  const r = await pg.evaluate(() => { const H = window.__PL.THR, five = [{n: 'Staraptor'}, {n: 'Emolga'}, {n: 'Garchomp-Mega-Z'}, {n: 'Dragonite-Mega'}, {n: 'Delphox-Mega'}], six = [...five, {n: 'Pelipper'}];
+    const g5 = H.teamVs(five, {n: 'Gholdengo', top: true}), g6 = H.teamVs(six, {n: 'Gholdengo', top: true});
+    const bas = H.teamVs([{n: 'Basculegion', ability: 'Swift Swim'}, {n: 'Pelipper'}], {n: 'Floette-Mega', top: true});
+    const pel = H.teamVs([{n: 'Pelipper'}, {n: 'Kingambit'}, {n: 'Incineroar'}], {n: 'Charizard-Mega-Y'});
+    // a small fixed property run: each team, then each team with one more Pokémon in a random slot
+    const pool = ['Incineroar', 'Rillaboom', 'Pelipper', 'Torkoal', 'Kingambit', 'Sneasler', 'Farigiraf', 'Gholdengo', 'Charizard-Mega-Y', 'Basculegion', 'Archaludon', 'Whimsicott', 'Tyranitar', 'Excadrill', 'Venusaur', 'Indeedee-F', 'Garchomp', 'Sinistcha'];
+    let s = 3; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647, pick = a => a[Math.floor(rnd() * a.length)];
+    let pairs = 0, drops = [];
+    for (let i = 0; i < 8; i++) { const n = 2 + (i % 4), base = []; while (base.length < n) { const x = pick(pool); if (!base.includes(x)) base.push(x); }
+      let add; do add = pick(pool); while (base.includes(add)); const big = [...base]; big.splice(Math.floor(rnd() * (n + 1)), 0, add);
+      const a = H.report(base.map(n => ({n}))), b = H.report(big.map(n => ({n})));
+      if (b.score < a.score) drops.push(`${base.join('/')} +${add}: readiness ${a.score} -> ${b.score}`);
+      for (let k = 0; k < a.rows.length; k++) { pairs++; if (b.rows[k].level < a.rows[k].level) drops.push(`${base.join('/')} +${add}: ${a.rows[k].t.n} ${a.rows[k].label} -> ${b.rows[k].label}`); } }
+    return {g5: g5.level, g6: g6.level, g6why: g6.solid.join(' | '), basSolid: bas.solid.some(x => /Basculegion/.test(x)), basSoft: bas.soft.filter(x => /Basculegion/.test(x)).join(' | '),
+      pelSolid: pel.solid.filter(x => /Pelipper/.test(x)).join(' | '), pairs, drops}; });
+  ok(r.g6 >= r.g5 && /Delphox[^|]*only if your rain isn't up/.test(r.g6why), `adding Pelipper keeps Mega Delphox's Fire answer to Gholdengo, marked "only if your rain isn't up" (${r.g5} -> ${r.g6})`);
+  ok(!r.basSolid && /needs your rain/.test(r.basSoft), `an answer that needs a teammate's rain counts as soft, with the condition (${r.basSoft})`);
+  ok(r.pelSolid && !/needs your|isn't up/.test(r.pelSolid), `Pelipper's own rain is always up while it's out, so its answer is not conditional (${r.pelSolid})`);
+  ok(r.drops.length === 0 && r.pairs >= 200, `adding a Pokémon never lowers a threat's verdict or readiness (${r.pairs} threat checks${r.drops.length ? ': ' + r.drops.slice(0, 2).join('; ') : ''})`);
+  await ctx.close(); }
 // replay import and Showdown export
 { console.log('\n== replay + export');
   const {pg, ctx} = await open(1280);
