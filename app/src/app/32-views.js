@@ -40,9 +40,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false)});
 // steps back through pages. Back first closes anything open on top (a Pokémon sheet, search, the menu, feedback).
 let NAV_POP=false;
 function navHist(v){if(NAV_POP)return;try{const cur=history.state&&history.state.npv;if(!cur)history.replaceState({npv:v},'');else if(cur!==v)history.pushState({npv:v},'')}catch(e){}}
-function overlayOpen(){const ids=['lairSheet','jump','fbSheet'];for(const id of ids){const el=$(id);if(el&&!el.hidden)return id}const sd=$('side');if(sd&&sd.classList.contains('open'))return 'side';return null}
+function overlayOpen(){const ids=['chScout','lairSheet','jump','fbSheet'];for(const id of ids){const el=$(id);if(el&&!el.hidden)return id}const sd=$('side');if(sd&&sd.classList.contains('open'))return 'side';return null}
 addEventListener('popstate',e=>{const o=overlayOpen();
-  if(o){if(o==='lairSheet'&&typeof lairClose==='function')lairClose();else if(o==='jump'&&typeof jumpClose==='function')jumpClose();else if(o==='fbSheet'&&typeof fbClose==='function')fbClose();else if(o==='side')sideOpen(false);
+  if(o){if(o==='chScout'&&typeof chScoutClose==='function')chScoutClose();else if(o==='lairSheet'&&typeof lairClose==='function')lairClose();else if(o==='jump'&&typeof jumpClose==='function')jumpClose();else if(o==='fbSheet'&&typeof fbClose==='function')fbClose();else if(o==='side')sideOpen(false);
     try{history.pushState({npv:view},'')}catch(er){}return}
   const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v)}finally{NAV_POP=false}});
 function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);

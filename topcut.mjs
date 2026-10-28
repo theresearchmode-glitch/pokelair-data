@@ -48,7 +48,14 @@ export function topcut(V2, nameOf, M = null, REP = null, half = 21, stab = true)
   const br = {}; for (const R of REP || []) for (let s = 0; s < 2; s++) { const team = ((R.p || [])[s] || []).map(sp), b = new Set((((R.b || [])[s]) || []).map(sp)), l = new Set((((R.l || [])[s]) || []).map(sp)); if (!b.size) continue;
     for (const m of team) { const o = br[m] || (br[m] = [0, 0, 0]); o[0]++; if (b.has(m)) o[1]++; if (l.has(m)) o[2]++; } }
   for (const k in br) { const o = br[k]; br[k] = [o[0], Math.round(100 * o[1] / o[0]), Math.round(100 * o[2] / o[0])]; }
-  return {asOf, half, events: evs.length, cutEvents: evs.filter(E => E.top.length).length, base: r3(W / GM), rows, games: (REP || []).length, br}; }
+  return {asOf, half, events: evs.length, cutEvents: evs.filter(E => E.top.length).length, base: r3(W / GM), rows, games: (REP || []).length, br, bw: coBring(REP)}; }
+// team preview pairs from Showdown replays: when A is brought and B is on the same team, how often B is brought too.
+// {A: [[B, % brought together, games], ...]} (partners with 40+ games, most games first, top 8)
+export function coBring(REP, min = 40) { const N = new Map(), K = new Map();
+  for (const R of REP || []) for (let s = 0; s < 2; s++) { const team = [...new Set(((R.p || [])[s] || []).map(n => brKey(String(n || ''))))], b = new Set((((R.b || [])[s]) || []).map(n => brKey(String(n || '')))); if (!b.size) continue;
+    for (const a of b) for (const c of team) if (c !== a) { const k = a + '|' + c; N.set(k, (N.get(k) || 0) + 1); if (b.has(c)) K.set(k, (K.get(k) || 0) + 1); } }
+  const out = {}; for (const [k, n] of N) { if (n < min) continue; const [a, c] = k.split('|'); (out[a] || (out[a] = [])).push([c, Math.round(100 * (K.get(k) || 0) / n), n]); }
+  for (const a in out) out[a] = out[a].sort((x, y) => y[2] - x[2]).slice(0, 8); return out; }
 // team-preview species key for bring/lead rates: Megas fold into their species (the page looks Pokémon up the same way)
 export const brKey = n => n === 'Floette-Mega' ? 'Floette-Eternal' : n.replace(/-Mega(-[XYZ])?$/, '');
 // Limitless set -> page name (same rules as update.mjs), from roster.json
