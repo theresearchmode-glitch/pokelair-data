@@ -12,7 +12,13 @@ const API = 'https://play.limitlesstcg.com/api', FORMAT = 'M-C', MAX_FETCH = +(p
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 fs.mkdirSync('data/t', {recursive: true}); fs.mkdirSync('data/t2', {recursive: true}); fs.mkdirSync('data/p', {recursive: true}); fs.mkdirSync('out', {recursive: true});
-const index = readJSON('data/index.json', {tournaments: {}});
+const index = readJSON('data/index.json', null) || {tournaments: {}};
+if (!index.tournaments || typeof index.tournaments !== 'object') index.tournaments = {};
+// Fail-safe (stress test, Oct 28): a missing or corrupt index.json used to make the job rebuild every output from nothing
+// (0 teams) and commit it. The standings files on disk are the truth: put any tournament they hold back into the index.
+{ let healed = 0; for (const f of fs.readdirSync('data/t')) { const id = f.replace(/\.json$/, ''); if (index.tournaments[id]) continue; const T = readJSON(`data/t/${f}`, null); if (!T || !T.d) continue;
+    const T2 = readJSON(`data/t2/${f}`, null); index.tournaments[id] = {d: T.d, p: T.p, name: (T2 && T2.name) || ''}; healed++; }
+  if (healed) console.log(`index: restored ${healed} tournaments from data/t`); }
 let calls = 0;
 async function get(path) {
   for (let k = 0; k < 6; k++) {
@@ -39,6 +45,9 @@ let fetched = 0, logged = false;
 const mv = m => ({n: m.name || '', i: m.item || '', a: m.ability || '', mv: Array.isArray(m.attacks) ? m.attacks.map(String) : Array.isArray(m.moves) ? m.moves.map(String) : [], t: m.tera || '', nt: m.nature || ''});
 for (const t of todo) {
   try { const s = await get(`/tournaments/${t.id}/standings`);
+    // never replace standings we already have with an empty or much shorter list (a half-outage answers [] for a while)
+    { const old = readJSON(`data/t/${t.id}.json`, null), n0 = old && Array.isArray(old.e) ? old.e.length : 0;
+      if (!Array.isArray(s) || (n0 >= 4 && s.length < n0 * .5)) { console.log(`kept ${t.id}: standings came back with ${Array.isArray(s) ? s.length : 'no'} players (had ${n0})`); continue; } }
     if (!logged && s[0]) { console.log('sample standing', JSON.stringify(s[0]).slice(0, 600)); }
     const e = s.map(x => [String(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);
     fs.writeFileSync(`data/t/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, e}));
@@ -49,7 +58,8 @@ for (const t of todo) {
     try { const P = await get(`/tournaments/${t.id}/pairings`);
       if (!logged && P[0]) console.log('sample pairing', JSON.stringify(P[0]).slice(0, 300));
       pr = (Array.isArray(P) ? P : []).map(x => [x.round ?? null, String(x.player1 ?? ''), String(x.player2 ?? ''), x.winner == null ? null : String(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
-    fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr));
+    // a failed or shorter pairings fetch never overwrites the pairings already saved
+    { const old = readJSON(`data/p/${t.id}.json`, null); if (!(Array.isArray(old) && old.length > pr.length)) fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr)); }
     logged = true;
     index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name}; fetched++;
   } catch (err) { console.log('skip', t.id, err.message); }
@@ -64,6 +74,11 @@ for (const id of Object.keys(index.tournaments)) { const T = readJSON(`data/t/${
   for (const [pl, w, l, ks] of T.e) { const m = [...new Set(ks)]; if (m.length === 6 && w + l >= 3) E.push({m, w, l}); } }
 const keys = [...new Set(E.flatMap(e => e.m))], ki = new Map(keys.map((k, i) => [k, i])); E.forEach(e => e.ix = e.m.map(k => ki.get(k)));
 let W = 0, G = 0; for (const e of E) { W += e.w; G += e.w + e.l; } const base = W / G;
+// Fail-safe: never write outputs built from far less data than yesterday's (or with a nonsense win rate). Exiting here
+// stops the daily job before its commit, so the page keeps yesterday's data and the failed run emails a warning.
+{ const prev = readJSON('out/limitless.json', null);
+  if (!(base > .4 && base < .6) || (prev && prev.teams >= 100 && E.length < prev.teams * .8)) {
+    console.log(`::error::update: only ${E.length} teams (yesterday ${prev ? prev.teams : '?'}), base ${base}; outputs left unchanged`); process.exit(1); } }
 
 // 3) teammate-adjusted share of the win: logistic model over every team, ridge-shrunk (fit with Adam)
 function fit(lb, iters) { const n = keys.length, b = new Float64Array(n), mb = new Float64Array(n), vb = new Float64Array(n); let a = 0, ma = 0, va = 0;
@@ -139,7 +154,9 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
       const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue;
       out.push({player: p.nm, event: `${T.name} · ${T.p} players`, record: `${p.w}-${p.l}${p.ti ? '-' + p.ti : ''} · #${p.pl}`, section: lastD - new Date(T.d) <= 7 * DAY ? 'Last 7 days' : 'Last 14 days', mons: ns}); }
     if (out.length >= 60) break; }
-  fs.writeFileSync('out/teams.json', JSON.stringify({source: 'Limitless · top 4 of Reg M-C events with 32+ players', updated: new Date().toISOString(), teams: out.slice(0, 60)}));
+  // keep yesterday's official-event teams (rk9.mjs refreshes them next; if RK9 is down they'd otherwise vanish)
+  const prevT = readJSON('out/teams.json', null), off = prevT && Array.isArray(prevT.teams) ? prevT.teams.filter(t => t && t.section === 'Official events') : [];
+  fs.writeFileSync('out/teams.json', JSON.stringify({source: 'Limitless · top 4 of Reg M-C events with 32+ players' + (off.length ? ' + RK9 official events (top 8)' : ''), updated: new Date().toISOString(), teams: [...off, ...out.slice(0, 60)].slice(0, 90)}));
   console.log(`teams: ${out.length}`); }
 // 3) usage-rank history for trends: one entry per day for the last 21 days, each from the 14 days before it
 { const days = [];

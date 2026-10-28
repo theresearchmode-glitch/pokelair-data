@@ -45,5 +45,8 @@ let doc = {updated: new Date().toISOString(), source: `Limitless (${MIN_PLAYERS}
 while (Buffer.byteLength(JSON.stringify(doc)) > CAP && doc.events.length > 10) { let k = -1;
   for (let i = doc.events.length - 1; i >= 0; i--) if (doc.events[i].src !== 'official') { if (k < 0 || doc.events[i].players < doc.events[k].players) k = i; if (doc.events.length - i > 15) break; }
   doc.events.splice(k, 1); }
+// fail-safe (stress test, Oct 28): never replace yesterday's events with far fewer (a broken index or a bad day of data)
+{ const prev = readJSON('out/events.json', null), n0 = prev && Array.isArray(prev.events) ? prev.events.length : 0;
+  if (n0 >= 10 && doc.events.length < n0 * .5) { console.log(`::error::events: only ${doc.events.length} events (had ${n0}); kept the existing file`); process.exit(1); } }
 fs.writeFileSync('out/events.json', JSON.stringify(doc));
 console.log(`events: ${doc.events.length} (${doc.events.filter(e => e.src === 'official').length} official), ${Math.round(Buffer.byteLength(JSON.stringify(doc)) / 1024)} KiB`);

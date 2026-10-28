@@ -23,18 +23,29 @@ function teamField(ms) { const T = itTab(), w = new Set(), t = new Set();
 function setsField(m, kind, key) { const T = itTab(); if (kind === 'w' && typeof WEATHER_OF === 'object' && WEATHER_OF[m.ability] === key) return true;
   if (kind === 't' && typeof TERRAIN_OF === 'object' && TERRAIN_OF[m.ability] === key) return true; return memMoveNames(m).some(n => { const f = T.move[n]; return f && f[0] === kind && f[1] === key; }); }
 const setsTR = m => memMoveNames(m).includes('Trick Room');
+// Trick Room is the team's main speed mode: someone sets it and nobody runs Tailwind. On a Tailwind team a Trick Room setter is
+// a backup mode, and a Choice Scarf still works in the Tailwind games (user decision, Oct 28: 51 of the 94 real top-cut teams
+// with Trick Room and a Scarf also ran Tailwind), so only main-mode Trick Room makes a Scarf an item problem.
+const trMain = ms => (ms || []).some(m => m && setsTR(m)) && !(ms || []).some(m => m && memMoveNames(m).includes('Tailwind'));
 const fieldName = k => (typeof ARCH === 'object' && ARCH[k] && ARCH[k].name) || k;
+// The Mega Stones in the game (from the roster's Megas, so "Eviolite" never counts as one)
+let megaStoneSet = null;
+function isMegaStone(item) { if (!megaStoneSet) { megaStoneSet = new Set(); try { for (const p of ROSTER) if (p.m) { const s = stoneFor(p); if (s) megaStoneSet.add(s); } } catch (e) { megaStoneSet = null; return false; } } return megaStoneSet.has(item); }
 // Why an item can't work on this team (or '' if it can). Used for defaults and for checking your own picks.
 function itemDeadWhy(m, item, ms, F, tr) { const T = itTab(); if (!item) return '';
   if (T.seed[item] && !F.t.has(T.seed[item])) return `${m.d}'s ${item} never activates: nothing on the team sets ${fieldName(T.seed[item])}.${m.ability === 'Unburden' ? ' So Unburden never triggers either.' : ''}`;
   if (T.rock[item] && !setsField(m, 'w', T.rock[item])) return `${m.d}'s ${item} does nothing: it only lengthens ${fieldName(T.rock[item])} that its holder sets, and ${m.d} doesn't set it.`;
   if (item === 'Choice Scarf' && tr) return `${m.d} holds Choice Scarf on a Trick Room team: once Trick Room is up, the Scarf makes it move later.`;
+  // extenders only lengthen what their holder sets itself (stress test, Oct 28: these passed as "Items work")
+  if (item === 'Light Clay' && !memMoveNames(m).some(n => ['Reflect', 'Light Screen', 'Aurora Veil'].includes(n))) return `${m.d}'s Light Clay does nothing: it only lengthens Reflect, Light Screen or Aurora Veil that its holder sets, and ${m.d} doesn't run any of them.`;
+  if (!(m.p && m.p.m) && isMegaStone(item)) return `${m.d} holds ${item}, which does nothing here: a Mega Stone only works when the Mega form of its own Pokémon is on the team.`;
+  if (item === 'Terrain Extender' && !['psy', 'grassy', 'elec', 'misty'].some(k => setsField(m, 't', k))) return `${m.d}'s Terrain Extender does nothing: it only lengthens terrain that its holder sets, and ${m.d} doesn't set any.`;
   return ''; }
 // Item Clause breaks: the same item on two or more members (by their current items)
 function itemClash(ms) { const by = new Map(); for (const m of ms || []) { if (!m || !m.item) continue; if (!by.has(m.item)) by.set(m.item, []); by.get(m.item).push(m); }
   return [...by].filter(([, a]) => a.length > 1).map(([item, a]) => ({item, ms: a})); }
 // Items that can't work on this team: dead seeds and rocks, Choice Scarf under your own Trick Room
-function deadItems(ms) { const F = teamField(ms), tr = (ms || []).some(m => m && setsTR(m)), out = [];
+function deadItems(ms) { const F = teamField(ms), tr = trMain(ms), out = [];
   for (const m of ms || []) { if (!m || !m.item) continue; const why = itemDeadWhy(m, m.item, ms, F, tr); if (why) out.push({m, item: m.item, why, k: m.item === 'Choice Scarf' ? 'scarftr' : 'dead'}); }
   return out; }
 // Everything wrong with a team's items, each with plain words: [{k: 'clause'|'dead'|'scarftr', ms, item, why}]
@@ -49,7 +60,7 @@ function bestFreeItem(m, ms, used, F, tr) { const ok = n => n && !used.has(n) &&
 // Fill in default items for the whole team. Returns new member objects (never changes the ones passed in):
 // chosen items and Mega Stones stay; the rest get team-aware defaults (itemDefault: true).
 function assignItems(ms) { if (!Array.isArray(ms) || !ms.length) return ms;
-  const out = ms.map(m => m ? {...m} : m), live = out.filter(m => m && m.p), F = teamField(live), tr = live.some(setsTR), used = new Set();
+  const out = ms.map(m => m ? {...m} : m), live = out.filter(m => m && m.p), F = teamField(live), tr = trMain(live), used = new Set();
   for (const m of live) { if (m.p.m) { m.item = m.item && STONE_RE.test(m.item) ? m.item : (defaultItem(m.p) || m.item || ''); m.itemDefault = false; if (m.item) used.add(m.item); }
     else if (m.heldItem) { m.item = m.heldItem; m.itemDefault = false; } }
   // chosen items count as taken even when two of them clash (that clash is reported, not hidden)
@@ -59,7 +70,7 @@ function assignItems(ms) { if (!Array.isArray(ms) || !ms.length) return ms;
   for (const {m} of rest) { const it = bestFreeItem(m, live, used, F, tr); m.item = it; m.itemDefault = true; if (it) used.add(it); }
   return out; }
 // For a problem item you chose: the item to switch to (most used for it that's free and works on this team)
-function itemFixFor(m, ms) { const live = ms.filter(x => x && x.p), F = teamField(live), tr = live.some(setsTR), used = new Set(live.filter(x => x !== m && x.item).map(x => x.item));
+function itemFixFor(m, ms) { const live = ms.filter(x => x && x.p), F = teamField(live), tr = trMain(live), used = new Set(live.filter(x => x !== m && x.item).map(x => x.item));
   return bestFreeItem(m, live, used, F, tr); }
 // ---- forms the roster stores in the wrong stance (Oct 28 reference check) ----
 // Palafin is stored as Zero Form, but it switches to Hero Form the first time it leaves the field, which every real player

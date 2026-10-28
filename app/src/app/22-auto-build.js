@@ -31,13 +31,16 @@ function provenBuild() {
     const ps = names.map(x => byName.get(x)); if (ps.some(p => !p)) continue;
     if (ui.abLock && !names.includes(ui.abLock)) continue; // "Build around it": only real teams that ran this Pokémon
     const missing = ps.filter(p => !ok(p) && p.n !== ui.abLock); if (missing.length > 1) continue;
+    // exactly the Megas you asked for (Megas on team), like every other build (stress test, Oct 28: "0 Megas" still gave
+    // proven teams with 2): the kept five may be one short only when the open slot can bring the last Mega
+    const mk = ps.filter(p => p.m && p !== missing[0]).length; if (mk > goal || (missing.length ? mk < goal - 1 : mk !== goal)) continue;
     cands.push({ps, n, wr, g: g != null ? +g : null, missing: missing[0] || null});
   }
   if (!cands.length) return null;
   const fill = c => { const keep = c.ps.filter(p => p !== c.missing).map(abMember); if (!c.missing) return keep;
     const used = new Set(keep.map(m => m.p.b)), mg = keep.filter(m => m.p.m).length;
     const opts = [];
-    for (const p of ROSTER) { if (!ok(p) || isTrap(p) || used.has(p.b) || (p.m && mg >= 2) || viability(p) < 8) continue; const t = [...keep, abMember(p)]; opts.push({t, sc: abScore(t)}); }
+    for (const p of ROSTER) { if (!ok(p) || isTrap(p) || used.has(p.b) || (!!p.m !== (mg < goal)) || viability(p) < 8) continue; const t = [...keep, abMember(p)]; opts.push({t, sc: abScore(t)}); }
     opts.sort((a, b) => b.sc - a.sc); if (!opts.length) return null;
     // the gap goes to whichever of the 8 best fits leaves the team ready for the most top threats
     if (useTSPick()) { let best = null; for (const o of opts.slice(0, 8)) { const ts = tsOf(o.t); if (ts != null && (!best || ts > best.ts)) best = {t: o.t, ts}; } if (best) return best.t; }

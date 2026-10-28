@@ -1,0 +1,94 @@
+// Stress test: the checklist, item problems, game plan rows, archetype labels and the legality header on crafted teams
+// where the right answer is known. Every case states what must be true; any mismatch is a failure.
+// Usage: node experiments/stress-checks.mjs   (exit 1 on any failure)
+import {openPage} from './stress-lib.mjs';
+const {ev, errs, close} = await openPage();
+const res = await ev(`(()=>{
+  const T=(arr)=>arr.map(x=>typeof x==='string'?{n:x}:x);
+  const mv=(n,moves,item,ab)=>{const s={n,mv:{doubles:moves}};if(item)s.it={doubles:item};if(ab)s.a=ab;return s};
+  const run=(slots,goal)=>{const g0=S.megaGoal;if(goal!=null)S.megaGoal=goal;S.slots=JSON.parse(JSON.stringify(T(slots)));fixSlots();const ms=members();
+    const ck=proChecks(ms,true),gp=gamePlan(ms.map(m=>({...m,_mv:m.moves}))),arch=teamArchetype(ms),ip=itemProblems(ms),ts=tsOf(ms);
+    renderVerdict(ms,analyze(ms,true),null,ck);const v=ui.vsum;S.megaGoal=g0;
+    return {names:ms.map(m=>m.p.n+'@'+m.item),ck:Object.fromEntries(ck.items.map(x=>[x.k,x.ok?'ok':x.part?'part':'no'])),gp:Object.fromEntries(gp.rows.map(r=>[r.k,r.st])),arch:arch&&arch.label,speed:arch&&arch.speed,ip:ip.map(x=>x.k+':'+x.item),ts,legal:v&&v.legal}};
+  const slowAtt=ROSTER.filter(p=>!p.m&&p.n!=='Incineroar'&&isSlow(p)&&!(LEARN[p.n]||[]).some(k=>MV[k].name==='Trick Room')).sort((a,b)=>U(b)-U(a)).slice(0,6).map(p=>p.n);
+  const out={slowAtt};
+  out.trFast=run([mv('Farigiraf',['Trick Room','Psychic','Protect','Helping Hand']),mv('Dragapult',['Dragon Darts','Phantom Force','Protect','U-turn']),mv('Sneasler',['Close Combat','Dire Claw','Protect','Fake Out']),mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide']),mv('Meowscarada',['Flower Trick','Knock Off','Protect','U-turn']),mv('Basculegion',['Wave Crash','Last Respects','Protect','Aqua Jet'])]);
+  out.hardTR=run([mv('Farigiraf',['Trick Room','Psychic','Protect','Helping Hand']),...slowAtt.slice(0,4).map(n=>({n})),mv('Incineroar',['Fake Out','Flare Blitz','Parting Shot','Knock Off'])]);
+  out.tailwind=run([mv('Whimsicott',['Tailwind','Moonblast','Encore','Protect']),'Incineroar','Garchomp','Sneasler','Archaludon','Rillaboom']);
+  out.noSpeed=run([mv('Incineroar',['Fake Out','Flare Blitz','Knock Off','Protect']),mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide']),mv('Archaludon',['Draco Meteor','Flash Cannon','Protect','Body Press']),mv('Gholdengo',['Make It Rain','Shadow Ball','Protect','Nasty Plot']),mv('Kingambit',['Kowtow Cleave','Iron Head','Protect','Swords Dance']),mv('Sinistcha',['Matcha Gotcha','Rage Powder','Protect','Strength Sap'])]);
+  out.seedDead=run([mv('Sneasler',['Close Combat','Dire Claw','Protect','Fake Out'],'Psychic Seed'),'Garchomp','Incineroar','Archaludon','Whimsicott','Kingambit']);
+  out.seedLive=run([mv('Sneasler',['Close Combat','Dire Claw','Protect','Fake Out'],'Psychic Seed'),{n:'Indeedee-F',a:'Psychic Surge'},'Garchomp','Incineroar','Archaludon','Whimsicott']);
+  out.rockDead=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide'],'Damp Rock'),'Incineroar','Archaludon','Whimsicott','Kingambit','Sneasler']);
+  out.rockLive=run([mv('Pelipper',['Hurricane','Weather Ball','Protect','Tailwind'],'Damp Rock'),'Incineroar','Archaludon','Basculegion','Kingambit','Sneasler']);
+  out.clause=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide'],'Leftovers'),mv('Incineroar',['Fake Out','Flare Blitz','Knock Off','Parting Shot'],'Leftovers'),'Archaludon','Whimsicott','Kingambit','Sneasler']);
+  out.scarfTR=run([mv('Farigiraf',['Trick Room','Psychic','Protect','Helping Hand']),mv('Garchomp',['Earthquake','Dragon Claw','Stomping Tantrum','Rock Slide'],'Choice Scarf'),'Incineroar','Archaludon','Kingambit','Sneasler']);
+  out.scarfNoTR=run([mv('Whimsicott',['Tailwind','Moonblast','Encore','Protect']),mv('Garchomp',['Earthquake','Dragon Claw','Stomping Tantrum','Rock Slide'],'Choice Scarf'),'Incineroar','Archaludon','Kingambit','Sneasler']);
+  out.lightClayNoScreens=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide'],'Light Clay'),'Incineroar','Archaludon','Whimsicott','Kingambit','Sneasler']);
+  out.extenderNoTerrain=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide'],'Terrain Extender'),'Incineroar','Archaludon','Whimsicott','Kingambit','Sneasler']);
+  out.stoneOnWrongMon=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide'],'Charizardite Y'),'Incineroar','Archaludon','Whimsicott','Kingambit','Sneasler']);
+  out.sunRain=run(['Pelipper','Torkoal','Incineroar','Archaludon','Garchomp','Whimsicott'].filter(n=>byName.has(n)));
+  out.hurricaneDry=run([mv('Talonflame',['Hurricane','Tailwind','Protect','Brave Bird']),'Incineroar','Archaludon','Garchomp','Kingambit','Sneasler'].filter(x=>byName.has(x.n||x)));
+  out.noMega2=run(['Incineroar','Garchomp','Archaludon','Whimsicott','Kingambit','Sneasler'],2);
+  out.oneMega=run(['Charizard-Mega-Y','Garchomp','Archaludon','Whimsicott','Kingambit','Sneasler'],2);
+  out.dup=run(['Incineroar','Incineroar','Archaludon','Whimsicott','Kingambit','Sneasler']);
+  out.megaXY=run(['Charizard-Mega-X','Charizard-Mega-Y','Archaludon','Whimsicott','Kingambit','Sneasler']);
+  out.noSupport=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide']),mv('Archaludon',['Draco Meteor','Flash Cannon','Protect','Body Press']),mv('Gholdengo',['Make It Rain','Shadow Ball','Protect','Nasty Plot']),mv('Kingambit',['Kowtow Cleave','Iron Head','Protect','Swords Dance']),mv('Basculegion',['Wave Crash','Last Respects','Protect','Aqua Jet']),mv('Dragapult',['Dragon Darts','Phantom Force','Protect','U-turn'])]);
+  out.electricStack=run([...new Map(ROSTER.filter(p=>!p.m&&p.t.includes('Electric')&&!p.t.includes('Ground')&&!p.t.includes('Flying')).sort((a,b)=>U(b)-U(a)).map(p=>[p.b,p.n])).values()].slice(0,4).concat(['Incineroar','Whimsicott']));
+  out.perish=run([mv('Gengar-Mega',['Perish Song','Shadow Ball','Protect','Sludge Bomb']),'Incineroar','Archaludon','Garchomp','Whimsicott','Kingambit']);
+  out.scarfTailroom=run([mv('Farigiraf',['Trick Room','Psychic','Protect','Helping Hand']),mv('Whimsicott',['Tailwind','Moonblast','Encore','Protect']),mv('Garchomp',['Earthquake','Dragon Claw','Stomping Tantrum','Rock Slide'],'Choice Scarf'),'Incineroar','Archaludon','Kingambit']);
+  // real top-cut teams with a Trick Room setter and a Choice Scarf: flagged only when nobody runs Tailwind
+  out.realScarfTR=(()=>{const rows=[];for(const e of (META.events?META.events.events:[]))for(const t of e.top){const mons=t.mons.map(m=>{const p=byName.get(m.n);const mvs=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mvs,_mv:mvs,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}});
+      const tr=mons.some(m=>m.moves.some(x=>x.name==='Trick Room')),sc=mons.some(m=>m.item==='Choice Scarf');if(!tr||!sc)continue;const tw=mons.some(m=>m.moves.some(x=>x.name==='Tailwind'));
+      rows.push({tw,flag:itemProblems(assignItems(mons)).some(x=>x.k==='scarftr'),clash:!!scarfTrClash(mons),ex:e.name+' #'+t.place+' '+t.player+': '+mons.map(m=>m.p.n+'@'+m.item).join(', ')})}
+    return {n:rows.length,tw:rows.filter(r=>r.tw).length,flagged:rows.filter(r=>r.flag).length,wrong:rows.filter(r=>r.flag===r.tw||r.clash===r.tw).map(r=>r.ex),exTw:(rows.find(r=>r.tw)||{}).ex,exTr:(rows.find(r=>!r.tw)||{}).ex}})();
+  // hand-typed move names on tournament sheets resolve (canonMove), every event sheet move is a real move
+  out.canon=[['Make it Rain','Gholdengo'],['U-Turn','Rillaboom'],['Kowtow Kleave','Kingambit'],['Last Respect','Basculegion'],['Psychic Fang','Metagross-Mega'],['Heart power','Venusaur-Mega'],['fake out','Incineroar'],['Thunder','Raichu']].map(([n,p])=>canonMove(n,byName.get(p)));
+  out.evMovesBad=META.events?META.events.events.flatMap(e=>e.top.flatMap(t=>t.mons.flatMap(m=>m.mv.filter(x=>!mvByName.has(x)).map(x=>m.n+':'+x)))):['no events'];
+  // Build me a team gives exactly the Megas you asked for, proven teams included
+  out.buildMegas=[0,1,2].map(g=>{const s=[S.megaGoal,ui.abSrc,ui.abLock];S.megaGoal=g;ui.abSrc='all';ui.abLock=null;let r;try{r=buildBest()}finally{[S.megaGoal,ui.abSrc,ui.abLock]=s}return r.teams.map(t=>t.megas)});
+  // hidden gems hold up under resampling (topcut.mjs gem stability)
+  out.gems=ROSTER.filter(isGem).map(p=>[p.n,rating(p).tc.gs]);
+  out.empty=(()=>{S.slots=[];fixSlots();const ms=members();return {ck:proChecks(ms,true),arch:teamArchetype(ms),ts:tsOf(ms),ip:itemProblems(ms).length}})();
+  return out})()`);
+const fails = []; const must = (c, msg) => { if (!c) fails.push(msg); };
+const r = res;
+must(r.trFast.gp.speed !== 'ok', 'Trick Room with no slow Pokémon must not pass speed control: ' + JSON.stringify(r.trFast.gp));
+must(r.trFast.gp.trfit === 'miss', 'Trick Room with no slow attackers: trfit must be miss, got ' + r.trFast.gp.trfit);
+must(r.trFast.speed !== 'hardtr', 'fast Trick Room team must not be Hard Trick Room: ' + r.trFast.arch);
+must(r.hardTR.speed === 'hardtr', 'Trick Room + 4 slow attackers must be Hard Trick Room, got ' + r.hardTR.arch + ' ' + r.hardTR.names);
+must(r.hardTR.gp.speed === 'ok' && r.hardTR.gp.trfit === 'ok', 'Hard Trick Room passes speed and trfit: ' + JSON.stringify(r.hardTR.gp));
+must(r.tailwind.gp.speed === 'ok' && r.tailwind.ck.speed === 'ok', 'Tailwind team passes speed control: ' + JSON.stringify(r.tailwind.ck));
+must(r.noSpeed.ck.speed === 'no', 'no Tailwind/TR team fails speed control, got ' + r.noSpeed.ck.speed);
+must(r.seedDead.ip.includes('dead:Psychic Seed') && r.seedDead.ck.items === 'no', 'Psychic Seed with no setter is a dead item: ' + r.seedDead.ip);
+must(!r.seedLive.ip.length, 'Psychic Seed with Psychic Surge is fine: ' + r.seedLive.ip);
+must(r.rockDead.ip.includes('dead:Damp Rock'), 'Damp Rock on a non-setter is dead: ' + r.rockDead.ip);
+must(!r.rockLive.ip.some(x => /Damp Rock/.test(x)), 'Damp Rock on Pelipper is fine: ' + r.rockLive.ip);
+must(r.clause.ip.includes('clause:Leftovers') && r.clause.legal === false && r.clause.ts === 0, 'two Leftovers break the Item Clause: ' + JSON.stringify([r.clause.ip, r.clause.legal, r.clause.ts]));
+must(r.scarfTR.ip.includes('scarftr:Choice Scarf'), 'Choice Scarf on a Trick Room team is flagged: ' + r.scarfTR.ip);
+must(!r.scarfNoTR.ip.length, 'Choice Scarf without Trick Room is fine: ' + r.scarfNoTR.ip);
+must(r.lightClayNoScreens.ip.includes('dead:Light Clay'), 'Light Clay with no screens on its holder is a dead item: ' + r.lightClayNoScreens.ip);
+must(r.extenderNoTerrain.ip.includes('dead:Terrain Extender'), 'Terrain Extender on a Pokémon that sets no terrain is a dead item: ' + r.extenderNoTerrain.ip);
+must(r.stoneOnWrongMon.ip.includes('dead:Charizardite Y'), 'a Mega Stone on the wrong Pokémon is a dead item: ' + r.stoneOnWrongMon.ip);
+must(r.hardTR.legal === true && r.electricStack.legal === true, 'crafted teams are legal');
+must(r.sunRain.gp.weather === 'part', 'two weathers = part: ' + r.sunRain.gp.weather);
+must(r.hurricaneDry.gp.weather === 'part' || r.hurricaneDry.gp.weather === 'miss', 'Hurricane with no rain is flagged in the weather row: ' + r.hurricaneDry.gp.weather);
+must(r.noMega2.ck.mega === 'no', 'no Mega fails the Mega check: ' + r.noMega2.ck.mega);
+must(r.oneMega.ck.mega === 'ok', 'one Mega passes the Mega check: ' + r.oneMega.ck.mega);
+must(r.dup.legal === false, 'two Incineroar is not legal');
+must(r.megaXY.legal === false, 'Mega Charizard X + Y is not legal (Species Clause)');
+must(r.noSupport.ck.fake === 'no', 'no Fake Out/Intimidate/redirection fails lead support: ' + r.noSupport.ck.fake);
+must(r.electricStack.ck.stack === 'no', '4 Electric types: major weak spot (Ground): ' + JSON.stringify(r.electricStack.ck) + ' ' + r.electricStack.names);
+must(/Perish/.test(r.perish.arch || ''), 'Perish Song + Shadow Tag is Perish Trap: ' + r.perish.arch);
+must(r.empty.ck == null && r.empty.arch == null && r.empty.ts == null && r.empty.ip === 0, 'empty team: no checklist, no archetype, no readiness');
+must(!r.scarfTailroom.ip.length, 'Choice Scarf on a Tailwind team with a backup Trick Room setter is fine: ' + r.scarfTailroom.ip);
+must(r.realScarfTR.n >= 20 && r.realScarfTR.tw >= 5 && r.realScarfTR.n - r.realScarfTR.tw >= 5 && !r.realScarfTR.wrong.length, 'real top-cut Trick Room + Scarf teams: flagged exactly when there is no Tailwind: ' + JSON.stringify(r.realScarfTR).slice(0, 600));
+console.log(`real top-cut teams with Trick Room + Choice Scarf: ${r.realScarfTR.n}, ${r.realScarfTR.tw} also run Tailwind (not flagged), ${r.realScarfTR.flagged} flagged\n  not flagged e.g. ${r.realScarfTR.exTw}\n  flagged e.g. ${r.realScarfTR.exTr}`);
+must(r.canon.join() === 'Make It Rain,U-turn,Kowtow Cleave,Last Respects,Psychic Fangs,Earth Power,Fake Out,Thunder', 'move names resolve: ' + r.canon.join());
+must(!r.evMovesBad.length, 'every event sheet move resolves: ' + r.evMovesBad.slice(0, 8).join(', '));
+must(r.buildMegas.every((ts, g) => ts.length && ts.every(m => m === g)), 'Build me a team gives exactly 0/1/2 Megas: ' + JSON.stringify(r.buildMegas));
+must(r.gems.every(([, gs]) => gs == null || gs >= .8), 'hidden gems are stable: ' + JSON.stringify(r.gems));
+for (const [k, v] of Object.entries(r)) if (!['slowAtt', 'empty', 'canon', 'evMovesBad', 'buildMegas', 'gems', 'realScarfTR'].includes(k)) console.log(k.padEnd(20), (v.arch || '').padEnd(32), JSON.stringify(v.ck), (v.ip || []).join(','), 'ts=' + v.ts, 'legal=' + v.legal);
+console.log('slow attackers used:', r.slowAtt.join(', '));
+for (const f of fails) console.log('  FAIL', f);
+console.log(`page errors: ${errs.length} ${errs.slice(0, 5).join(' | ')}`);
+await close(); console.log(fails.length || errs.length ? `STRESS CHECKS: ${fails.length + errs.length} failures` : 'STRESS CHECKS CLEAN'); process.exit(fails.length || errs.length ? 1 : 0);
