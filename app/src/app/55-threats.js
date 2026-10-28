@@ -29,8 +29,12 @@ const THR = (() => {
   const SCREEN_BREAK = ['Brick Break', 'Psychic Fangs', 'Raging Bull', 'Defog'];
   const SUPPORT = new Set(['Trick Room', 'Reflect', 'Light Screen', 'Aurora Veil', 'Follow Me', 'Rage Powder', 'Helping Hand', 'Tailwind', 'Fake Out', 'Parting Shot', 'Spore', 'Sleep Powder', 'Thunder Wave', 'Encore', 'Taunt', 'Will-O-Wisp', 'Pollen Puff', 'Wide Guard', 'Ally Switch', 'Coaching']);
   const grounded = s => !s.p.t.includes('Flying') && s.ability !== 'Levitate';
-  const prioOf = (mv, field, att) => { if (!mv) return 0; if (mv.name === 'Grassy Glide') return field.terrain === 'grassy' && grounded(att) ? 1 : 0;
-    if (mv.name === 'Extreme Speed') return 2; return PRIORITY.has(mv.name) ? 1 : 0; };
+  // real priority brackets from the move data (Fake Out +3, Extreme Speed +2, Sucker Punch +1, Grassy Glide +1 in Grassy Terrain…)
+  const prioOf = (mv, field, att) => movePrio(mv, att.ability, {terrain: field.terrain, grounded: grounded(att)});
+  // a move's guaranteed (100%) stat changes on the target, e.g. Snarl {spa:-1}, Icy Wind {spe:-1}, Acid Spray {spd:-2}
+  const tDrop = mv => { const s = (mv && mv.sec || []).find(x => x[0] >= 100 && x[1]); return s ? s[1] : null; };
+  // the attacker's own stat change after using it (Draco Meteor −2 SpA, Superpower −1 Atk/Def, Make It Rain −1 SpA…)
+  const selfDrop = mv => { const sb = mv && (mv.self || (MOVE_META[mv.name] || {}).sb); if (!sb) return 0; return mv.cat === 1 ? (sb.atk || 0) : (sb.spa || 0); };
   const isStone = it => !!it && STONE_RE.test(it);
   const pc = x => Math.round(x * 100);
   // a side from a spec (tests, real team sheets): {n, item?, ability?, moves?:[names], nat?, sp?:{hp,atk,def,spa,spd,spe}}
@@ -70,9 +74,13 @@ const THR = (() => {
     return side({n: p.n, item: m.item || (p.m ? stoneFor(p) : ''), ability: m.ability, moves: mv.map(x => x.name), nat: cs && cs.nat ? cs.nat : undefined,
       sp: cs ? {hp: cs.hp, atk: cs.atk, def: cs.def, spa: cs.spa, spd: cs.spd, spe: cs.spe} : undefined}); }
   const atkObj = (s, boost = 0) => ({p: s.p, sp: s.p.st[1] >= s.p.st[3] ? s.sp.atk : s.sp.spa, spA: s.sp.atk, spS: s.sp.spa, spDef: s.sp.def, nat: s.nat, item: isStone(s.item) ? '' : s.item, ability: s.ability, boost});
+  // Intimidate on att. Flower Veil on att's side keeps Grass types from being lowered; White Herb resets the drop once (so it
+  // isn't there for a later self-drop: att._whUsed)
   function intimidated(att, foe) { if (!foe || foe.ability !== 'Intimidate') return {atk: 0, spa: 0};
-    const a = att.ability; if (['Defiant', 'Guard Dog', 'Contrary'].includes(a)) return {atk: 1, spa: 0}; if (a === 'Competitive') return {atk: -1, spa: 2};
-    if (NO_INTIM.has(a)) return {atk: 0, spa: 0}; return {atk: -1, spa: 0}; }
+    const a = att.ability; if (['Defiant', 'Guard Dog', 'Contrary'].includes(a)) return {atk: 1, spa: 0};
+    if (att._fv) return {atk: 0, spa: 0};
+    const r = a === 'Competitive' ? {atk: -1, spa: 2} : NO_INTIM.has(a) ? {atk: 0, spa: 0} : {atk: -1, spa: 0};
+    if (r.atk < 0 && att.item === 'White Herb') return {atk: 0, spa: r.spa, wh: true}; return r; }
   const defObj = s => ({p: s.p, hpSp: s.sp.hp, defSp: s.sp.def, spdSp: s.sp.spd, atkSp: s.sp.atk, nat: s.nat, item: isStone(s.item) ? '' : s.item, ability: s.ability, boost: 0});
   function fieldFor(team, t) {
     return {weather: team.map(m => WEATHER_AB[m.ability]).find(Boolean) || WEATHER_AB[t.ability] || '',
@@ -83,6 +91,7 @@ const THR = (() => {
     if (s.item === 'Choice Scarf') v = Math.floor(v * 1.5);
     if (WSPEED[s.ability] && field.weather === WSPEED[s.ability]) v *= 2;
     if (s.ability === 'Unburden' && SEED[s.item] && field.terrain === SEED[s.item]) v *= 2;
+    if (s.item === 'Iron Ball') v = Math.floor(v / 2);
     return v;
   }
   function hitsToKO(r, r2, sitrus) { if (!r || r.max === 0) return Infinity; const hp = r.hp, a = r.rolls[7], b = r2 ? r2.rolls[7] : (r.next && r.next.rolls ? r.next.rolls : r.rolls)[7];
@@ -91,25 +100,35 @@ const THR = (() => {
     while (left > 0 && n < 9) { left -= b; n++; if (left > 0 && berry && left <= hp / 2) { left += Math.floor(hp / 4); berry = false; } } return n; }
   // Chance a move hits (0-100): No Guard always hits; rain makes Hurricane/Thunder sure-hit (sun cuts them to 50%); snow does
   // the same for Blizzard; Compound Eyes ×1.3, Wide Lens ×1.1, Hustle ×0.8 on physical moves.
-  function accOf(mv, att, field) { if (att.ability === 'No Guard') return 100; let a = (typeof MOVE_ACC === 'object' && MOVE_ACC[mv.name]) || 100;
-    if (['Hurricane', 'Thunder'].includes(mv.name)) { if (field.weather === 'rain') return 100; if (field.weather === 'sun') a = 50; }
-    if (mv.name === 'Blizzard' && field.weather === 'snow') return 100;
-    if (a >= 100) return 100; if (att.ability === 'Compound Eyes') a *= 1.3; if (att.item === 'Wide Lens') a *= 1.1; if (att.ability === 'Hustle' && mv.cat === 1) a *= .8;
-    return Math.min(100, Math.round(a)); }
+  const accOf = (mv, att, field, def) => moveAcc(mv, att.ability, field.weather, def ? {ability: def.ability, item: def.item} : null, att.item);
   // a move under this accuracy can't be the reason a Pokémon counts as a solid answer
   const SURE = 85;
-  function bestAttack(att, def, field) {
-    let best = null; const st = intimidated(att, def);
+  // ext: {atk, spa} stage changes on the attacker from the other side's move (Snarl −1 SpA, Justified +1 Atk…); ext.after = only
+  // from the attacker's second hit on (it moved first, so its first hit was normal)
+  function bestAttack(att, def, field, ext) {
+    let best = null; const st = intimidated(att, def), E = ext || {};
     for (const mv of att.moves) { if (!mv || !mv.bp || mv.cat === 0 || mv.name === 'Fake Out') continue;
-      const b0 = mv.cat === 1 ? st.atk : st.spa, base = {def: defObj(def), move: mv, spread: !!mv.spread, weather: field.weather, terrain: field.terrain};
+      if (mv.vbp === 'counter' || mv.vbp === 'endeavor') continue; // conditional damage, never a planned KO
+      const k = mv.cat === 1 ? 'atk' : 'spa', b0 = st[k] + (E.after ? 0 : (E[k] || 0)), bLate = st[k] + (E[k] || 0);
+      const base = {def: defObj(def), move: mv, spread: !!mv.spread, weather: field.weather, terrain: field.terrain};
       const r = damage({...base, atk: atkObj(att, b0)}); if (!r) continue;
-      const drop = SELF_DROP[mv.name] && !['Contrary', 'Clear Body', 'White Smoke', 'Full Metal Body'].includes(att.ability) ? SELF_DROP[mv.name] : 0;
-      const r2 = drop ? damage({...base, atk: atkObj(att, Math.max(-6, b0 + drop))}) : null;
-      const h = hitsToKO(r, r2, def.item === 'Sitrus Berry' && att.ability !== 'Unnerve'), pr = prioOf(mv, field, att), mid = r.rolls[7] / r.hp, acc = accOf(mv, att, field);
-      // an unreliable move only wins the pick when it needs fewer hits than every reliable one
-      const key = h + (acc < SURE ? .6 : 0);
+      // its own drop after the hit; White Herb resets it once (unless Intimidate already used the herb), so the second hit is
+      // still at full power
+      const drop = ['Contrary', 'Clear Body', 'White Smoke', 'Full Metal Body'].includes(att.ability) || (att.item === 'White Herb' && !st.wh) ? 0 : selfDrop(mv);
+      // the second hit: the attacker's own drop, the other side's change, the target's own reaction (Weak Armor −1 Def,
+      // Stamina +1 Def) and the move's guaranteed drop on the target's defense (Acid Spray −2 SpD, Fire Lash −1 Def…)
+      const td = tDrop(mv) || {}, dS = mv.cat === 1 ? 'def' : 'spd';
+      let dB = (td[dS] || 0) + (def.ability === 'Weak Armor' && mv.cat === 1 ? -1 : 0) + (def.ability === 'Stamina' ? 1 : 0);
+      const late = drop || bLate !== b0 || dB ? damage({...base, def: {...defObj(def), boost: Math.max(-6, Math.min(6, dB))}, atk: atkObj(att, Math.max(-6, Math.min(6, bLate + drop)))}) : null;
+      let h = hitsToKO(r, late, def.item === 'Sitrus Berry' && att.ability !== 'Unnerve'), pr = prioOf(mv, field, att), mid = r.rolls[7] / r.hp, acc = r.ohko ? 30 : accOf(mv, att, field, def);
+      // a two-turn move that charges first (Electro Shot outside rain, Solar Beam outside sun) loses a turn
+      const ch = chargesFirst(mv, field.weather, att.item); if (ch) h += 1;
+      // an unreliable move only wins the pick when it needs fewer hits than every reliable one; a move that must recharge
+      // (Hyper Beam) only when it's the only KO; a one-hit KO move is never planned on
+      const key = h + (acc < SURE ? .6 : 0) + (mv.recharge ? .9 : 0) + (r.ohko ? 5 : 0);
+      const tag = [ch ? 'charges first' : '', acc < 100 ? `${acc}% to hit` : '', mv.recharge ? 'must recharge' : ''].filter(Boolean).join(', ');
       if (!best || key < best.key || (key === best.key && (pr > best.pr || (pr === best.pr && (acc > best.acc || (acc === best.acc && mid > best.mid))))))
-        best = {mv: mv.name + (acc < 100 ? ` (${acc}% to hit)` : ''), name: mv.name, h, key, pr, acc, pct: r.max / r.hp, mid, min: r.min / r.hp}; }
+        best = {mv: mv.name + (tag ? ` (${tag})` : ''), name: mv.name, move: mv, h, key, pr, acc, charge: ch, pct: r.max / r.hp, mid, min: r.min / r.hp, type: r.type, cat: mv.cat}; }
     return best;
   }
   const hasMove = (s, n) => s.moves.some(m => m && m.name === n);
@@ -118,14 +137,32 @@ const THR = (() => {
     const trSet = team.filter(m => hasMove(m, 'Trick Room')), slow = team.filter(m => m.p.st[5] <= 60 && !hasMove(m, 'Trick Room'));
     return {tr: trSet.length > 0 && slow.length >= 2, tw: team.some(m => hasMove(m, 'Tailwind'))};
   }
+  // what one side's hit does to the other's attacking stat: the move's guaranteed drop (Snarl / Spirit Break / Struggle Bug /
+  // Mystical Fire −1 SpA, Breaking Swipe / Trop Kick / Lunge −1 Atk) or the target's own ability (Justified +1 Atk from a Dark
+  // hit, Thermal Exchange +1 Atk from a Fire hit, Stamina…). Returns {atk, spa} for the side that got hit.
+  function hitEffect(o, tgt) { if (!o || !o.move) return null; const e = {atk: 0, spa: 0}, td = tDrop(o.move) || {};
+    if (!['Clear Body', 'White Smoke', 'Full Metal Body', 'Mirror Armor'].includes(tgt.ability)) { e.atk += td.atk || 0; e.spa += td.spa || 0;
+      if ((td.atk || td.spa) && tgt.ability === 'Defiant') e.atk += 2; if ((td.atk || td.spa) && tgt.ability === 'Competitive') e.spa += 2; }
+    // Flower Veil (a Grass type on its side) and White Herb (resets the drop once) cancel the lowering
+    if (tgt._fv || tgt.item === 'White Herb') { e.atk = Math.max(0, e.atk); e.spa = Math.max(0, e.spa); }
+    if (tgt.ability === 'Justified' && o.type === 'Dark') e.atk += 1; if (tgt.ability === 'Thermal Exchange' && o.type === 'Fire') e.atk += 1;
+    return e.atk || e.spa ? e : null; }
   function duel(m, t, modes, field) {
-    const o = bestAttack(m, t, field), d = bestAttack(t, m, field);
-    const nM = o ? o.h : Infinity, nT = d ? d.h : Infinity, sm = speedOf(m, field), st = speedOf(t, field);
+    let o = bestAttack(m, t, field), d = bestAttack(t, m, field);
+    const sm = speedOf(m, field), st = speedOf(t, field);
     const prM = o ? o.pr : 0, prT = d ? d.pr : 0;
     const orders = [['faster', sm > st]]; if (modes.tw) orders.push(['with Tailwind', sm * 2 > st]); if (modes.tr && m.p.st[5] <= 60) orders.push(['under Trick Room', sm < st]);
     let first = false, how = '';
     if (prM > prT) { first = true; how = 'priority'; } else if (prM === prT) for (const [k, f] of orders) if (f) { first = true; how = k; break; }
-    return {win: (first && nM <= nT) || (!first && nM < nT), nM, nT, first, how, o, d, sm, st};
+    // each side's hit changes the other's later hits (and all of them when it lands first)
+    const eT = hitEffect(o, t), eM = hitEffect(d, m);
+    if (eT) d = bestAttack(t, m, field, {...eT, after: !first}) || d;
+    if (eM) o = bestAttack(m, t, field, {...eM, after: first}) || o;
+    const nM = o ? o.h : Infinity, nT = d ? d.h : Infinity;
+    // Icy Wind / Electroweb / Rock Tomb…: after the first hit lands the target is −1 Speed, so from turn 2 the order can flip
+    const sd = o && o.move ? (tDrop(o.move) || {}).spe : 0, later = first || (!!sd && !prT && sm > Math.floor(st * 2 / (2 - sd)));
+    const win = (first && nM <= nT) || (!first && (nM < nT || (later && nM === nT && nM >= 2)));
+    return {win, nM, nT, first, how: first ? how : later ? 'after its Speed drop' : '', o, d, sm, st};
   }
   const attacks = t => t.moves.filter(m => m && m.bp > 0 && m.name !== 'Fake Out');
   const physOf = t => { const at = attacks(t); return at.length ? at.filter(m => m.cat === 1).length / at.length : 0; };
@@ -167,6 +204,8 @@ const THR = (() => {
   function vsThreat(team, t, modes, only) {
     const field = fieldFor(team, t), rows = [];
     for (const m of (only || team)) {
+      // Flower Veil on your side: your Grass types can't have their stats lowered (Intimidate included)
+      m._fv = m.p.t.includes('Grass') && team.some(x => x.ability === 'Flower Veil');
       const du = duel(m, t, modes, field), soft = [];
       const tag = du.first && du.how && du.how !== 'faster' ? ' (' + du.how + ')' : '';
       const check = du.win && du.nM === 1 && (du.first || (du.d && du.d.pct < 1)), counter = du.win && du.nM <= 2 && du.d && du.d.pct <= .5 && du.nT >= 3, immune = du.nM <= 2 && !du.d;
@@ -180,7 +219,7 @@ const THR = (() => {
       else if (du.d && du.d.pct <= .45 && du.o && du.o.mid >= .3) soft.push(`walls it: takes at most ${pc(du.d.pct)}% from ${du.d.mv}, hits back ~${pc(du.o.mid)}%`);
       const ph = physOf(t);
       if (m.ability === 'Intimidate' && ph >= .5) { if (PUNISH_INTIM.has(t.ability)) rows.push({m, kind: 'warn', du, why: `${m.d}'s Intimidate backfires: ${t.d} has ${t.ability}`}); else if (!NO_INTIM.has(t.ability)) soft.push('Intimidate cuts its physical attacks'); }
-      if (hasMove(m, 'Will-O-Wisp') && ph >= .5 && !t.p.t.includes('Fire') && !['Guts', 'Water Veil', 'Water Bubble', 'Flash Fire', 'Good as Gold', 'Magic Bounce'].includes(t.ability)) soft.push('Will-O-Wisp cripples it');
+      if (hasMove(m, 'Will-O-Wisp') && ph >= .5 && !t.p.t.includes('Fire') && !['Guts', 'Water Veil', 'Water Bubble', 'Flash Fire', 'Good as Gold', 'Magic Bounce'].includes(t.ability)) { const a = moveAcc(MVn('Will-O-Wisp'), m.ability, field.weather, {ability: t.ability, item: t.item}, m.item); soft.push(`Will-O-Wisp cripples it${a < 100 ? ` (${a}% to hit, so it can miss)` : ''}`); }
       if (hasMove(m, 'Wide Guard') && attacks(t).some(x => x.spread)) soft.push('Wide Guard blocks its spread attacks');
       if (hasMove(m, 'Taunt') && t.moves.some(x => x && SETUP.has(x.name)) && !TAUNT_BLOCK.has(t.ability) && !(m.ability === 'Prankster' && field.terrain === 'psychic' && grounded(t))) soft.push(`Taunt stops its ${t.moves.filter(x => x && SETUP.has(x.name)).map(x => x.name).join('/')}`);
       rows.push(soft.length ? {m, kind: 'soft', why: `${m.d}: ${soft.join('; ')}`, du} : {m, kind: 'none', du});
@@ -231,7 +270,7 @@ const THR = (() => {
     const r = vsThreat(team, t, modes, [m]), x = r.solid[0] || r.soft[0] || r.warn[0];
     const du = (r.solid[0] || r.soft[0] || {}).du || duel(m, t, modes, fieldFor(team, t));
     return {kind: r.solid.length ? 'solid' : r.soft.length ? 'soft' : r.warn.length ? 'warn' : 'none', why: x ? x.why : '', field: fieldFor(team, t), nM: du.nM, nT: du.nT, first: du.first, how: du.how, sm: du.sm, st: du.st,
-      o: du.o && {mv: du.o.mv, name: du.o.name, acc: du.o.acc, min: pc(du.o.min), max: pc(du.o.pct)}, d: du.d && {mv: du.d.mv, name: du.d.name, acc: du.d.acc, min: pc(du.d.min), max: pc(du.d.pct)}}; }
+      o: du.o && {mv: du.o.mv, name: du.o.name, acc: du.o.acc, charge: !!du.o.charge, min: pc(du.o.min), max: pc(du.o.pct)}, d: du.d && {mv: du.d.mv, name: du.d.name, acc: du.d.acc, min: pc(du.d.min), max: pc(du.d.pct)}}; }
   // one support threat judged as a whole team (phase 2 hand checks)
   function teamVs(teamSpecs, tSpec) { const team = teamSpecs.map(side), t = side(tSpec), r = vsThreat(team, t, teamModes(team));
     return {label: r.label, level: r.level, mode: r.mode ? r.mode.map(x => x.k) : null, solid: r.solid.map(x => x.why), soft: r.soft.map(x => x.why)}; }

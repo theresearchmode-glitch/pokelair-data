@@ -9,8 +9,10 @@ let bmUi = {tab: 'plan', tw: false, twOpp: false, tr: false, icy: false, weather
 function bmHit(aP, moves, dP, weather, intim, aMem, dMem, terrain) {
   let best = null; const A = {p: aP, ...sideDefaults(aP, 'atk', aMem)}, D = {p: dP, ...sideDefaults(dP, 'def', dMem)};
   for (const mv of moves || []) { if (!mv || !mv.bp) continue;
-    const r = damage({atk: {...A, boost: intim && mv.cat === 1 ? -1 : 0}, def: D, move: mv, spread: !!mv.spread, weather, terrain: terrain || ''});
-    if (r && r.hp && (!best || r.max > best.r.max)) best = {mv, r}; }
+    const r = damage({atk: {...A, boost: intim && mv.cat === 1 ? -1 : 0}, def: D, move: mv, spread: !!mv.spread, weather, terrain: terrain || ''}); if (!r || !r.hp) continue;
+    // weigh by what you can count on (accuracy, charging turn, recharge), the same way the hit tables do
+    const ch = chargesFirst(mv, weather, A.item), acc = moveAcc(mv, A.ability, weather, D, A.item), val = r.max * acc / 100 * (ch ? .5 : 1) * (mv.recharge ? .7 : 1);
+    if (!best || val > best.val) best = {mv, r, val, charge: ch, acc, recharge: !!mv.recharge}; }
   return best; }
 // weather: the weather in play (Chlorophyll/Swift Swim/Sand Rush/Slush Rush double Speed in theirs); Unburden's doubled
 // speed after its item is used comes back as unb
@@ -39,6 +41,11 @@ function bmWatch(C, theirs) {
     if (mv.has('Tailwind')) out.push(['mid', 'Tailwind', 'their side doubles Speed for the next 3 turns (4 counting the turn it\'s set)']);
     if (ab === 'Prankster') out.push(['mid', 'Prankster', 'status moves go first']);
     if (mv.has('Wide Guard') && spreaders.length) out.push(['mid', 'Wide Guard', `blocks spread moves from ${nm(spreaders)}`]);
+    // Quick Guard (+3) blocks priority moves for its side this turn, Fake Out included
+    if (mv.has('Quick Guard') && prio.length) out.push(['mid', 'Quick Guard', `blocks priority and Fake Out from ${nm(prio)} for a turn`]);
+    // Protect variants that punish contact: Spiky Shield (1/8 damage), Baneful Bunker (poison), King's Shield (−1 Attack)
+    for (const [k, w] of [['Spiky Shield', 'hurts contact attackers for 1/8 of their HP'], ['Baneful Bunker', 'poisons contact attackers'], ["King's Shield", 'lowers a contact attacker\'s Attack by 1']])
+      if (mv.has(k)) { const ct = C.filter(m => dmg(m).some(x => x.contact)); if (ct.length) out.push(['lo', k, `protects (+4) and ${w}: ${nm(ct)}`]); }
     if (prio.length && (['Armor Tail', 'Queenly Majesty', 'Dazzling'].includes(ab) || ab === 'Psychic Surge')) out.push(['hi', esc(ab), `blocks priority and Fake Out from ${nm(prio)}`]);
     if (BM_WEATHER[ab]) out.push(['lo', esc(ab), BM_WEATHER[ab]]);
     if (o.p.m) out.push(['lo', 'Mega', 'likely their Mega this game']);
@@ -84,10 +91,17 @@ function renderBattle() {
     const rows = [...C.map(m => ({x: m, me: true})), ...theirs.map(o => ({x: o, me: false}))].map(q => ({...q, ...bmSpeed(q.x.p, q.me, q.x, wNow)}));
     rows.sort((a, b) => bmUi.tr ? a.v - b.v : b.v - a.v); const mx = Math.max(...rows.map(q => q.v), 1);
     const tog = (k, t) => `<button type="button" data-bms="${k}" aria-pressed="${!!bmUi[k]}">${t}</button>`;
+    // your moves that always drop their Speed (Icy Wind, Electroweb…): the "−1" toggle is the order after you use one
+    const spDrop = [...new Set(C.flatMap(m => memberMoves(m).moves.filter(mv => mv && (mv.sec || []).some(s => s[0] >= 100 && s[1] && s[1].spe < 0)).map(mv => mv.name)))];
+    // moves that change turn order this battle: their bracket, from the move data (Fake Out +3, Protect +4, Trick Room −7…)
+    const prioOf = (x, me) => { const ab = me ? x.ability : abilityOf(x); return (me ? memberMoves(x).moves : (x.moves || [])).filter(Boolean)
+      .map(mv => [mv, movePrio(mv, ab, {terrain: tNow})]).filter(([mv, p]) => p !== 0 && !(mv.tg === 'self' && p === 4)).map(([mv, p]) => `${esc(mv.name)} ${p > 0 ? '+' : '−'}${Math.abs(p)}${mv.name === 'Grassy Glide' && p === 1 ? ' (Grassy Terrain)' : ''} (${esc(x.d)})`); };
+    const prioList = [...C.flatMap(m => prioOf(m, true)), ...theirs.flatMap(o => prioOf(o, false))];
     const speed = `<div class="plan bmcard" data-t="speed"><div class="ph"><span class="pt">Speed</span><span class="vsub">${bmUi.tr ? 'slowest moves first' : 'fastest first'}</span></div>
-      <div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('par', 'They\'re paralyzed')}${tog('tr', 'Trick Room')}</div>${wNow ? `<p class="t2" style="margin:0">Weather: ${esc(wNow)} (set it under Damage).</p>` : ''}
+      <div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', spDrop.length ? `Them −1 (after your ${esc(spDrop[0])})` : 'Them −1')}${tog('par', 'They\'re paralyzed')}${tog('tr', 'Trick Room')}</div>${wNow ? `<p class="t2" style="margin:0">Weather: ${esc(wNow)} (set it under Damage).</p>` : ''}
       <div class="bmspd">${rows.map((q, i) => { const tie = rows.some((o, j) => j !== i && o.v === q.v && o.me !== q.me);
         return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">TIE</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}${q.wxUp ? `<em> ${esc(q.ab)}</em>` : ''}${q.unb ? `<em> → ${q.unb} after item</em>` : ''}</span></div>`; }).join('')}</div>
+      ${prioList.length ? `<p class="t2" style="margin:0">Moves that skip the Speed order (higher bracket goes first, Speed only breaks ties inside a bracket): ${prioList.join(', ')}.</p>` : ''}
       <p class="t2" style="margin:0">Your side: your items (and your spreads where you set them). Their side: the most common spreads, natures and items. Ties are a coin flip.</p></div>`;
     // damage both ways
     const cls = (b) => { if (!b) return 'z'; const lo = b.r.min / b.r.hp, hi = b.r.max / b.r.hp; return lo >= 1 ? 'k1' : hi >= 1 ? 'k1m' : lo >= .5 ? 'k2' : hi >= .5 ? 'k2m' : 'k3'; };

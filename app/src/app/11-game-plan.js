@@ -6,8 +6,13 @@
 // 4 more turns of moving; weather 5 (8 with its rock); the last weather setter in wins.
 const ROLE = {
   tw: ['Tailwind'], tr: ['Trick Room'],
-  drop: ['Icy Wind', 'Electroweb', 'Thunder Wave', 'Nuzzle', 'Glare', 'Bulldoze', 'Rock Tomb', 'Scary Face'],
-  prio: ['Extreme Speed', 'Sucker Punch', 'Aqua Jet', 'Ice Shard', 'Bullet Punch', 'Mach Punch', 'Grassy Glide', 'Shadow Sneak', 'Jet Punch', 'Quick Attack', 'First Impression', 'Accelerock', 'Water Shuriken', 'Vacuum Wave', 'Upper Hand'],
+  // speed control by dropping the foe: Thunder Wave/Nuzzle/Glare (paralysis), Scary Face, plus every attack that always
+  // lowers the target's Speed (from the move data: Icy Wind, Electroweb, Bulldoze, Rock Tomb, Drum Beating, Mud Shot, Pounce, Low Sweep…)
+  drop: [...new Set(['Icy Wind', 'Electroweb', 'Thunder Wave', 'Nuzzle', 'Glare', 'Bulldoze', 'Rock Tomb', 'Scary Face', 'Drum Beating', 'Mud Shot', 'Pounce', 'Low Sweep',
+    ...(typeof MOVE_META === 'object' ? Object.keys(MOVE_META).filter(n => (MOVE_META[n].s || []).some(s => s[0] >= 100 && s[1] && s[1].spe < 0)) : [])])],
+  // priority attacks: every attacking move with a positive bracket (from the move data), plus Grassy Glide (only in Grassy Terrain)
+  prio: [...new Set(['Extreme Speed', 'Sucker Punch', 'Aqua Jet', 'Ice Shard', 'Bullet Punch', 'Mach Punch', 'Grassy Glide', 'Shadow Sneak', 'Jet Punch', 'Quick Attack', 'First Impression', 'Accelerock', 'Water Shuriken', 'Vacuum Wave', 'Upper Hand',
+    ...(typeof MOVE_META === 'object' && typeof MOVES === 'object' ? MOVES.filter(r => r[2] > 0 && (MOVE_META[r[0]] || {}).p > 0 && r[0] !== 'Fake Out' && r[0] !== 'Feint').map(r => r[0]) : [])])],
   boost: ['Dragon Dance', 'Quiver Dance', 'Shell Smash', 'Agility', 'Flame Charge', 'Trailblaze', 'Rock Polish', 'Shift Gear'],
   fake: ['Fake Out'], redir: ['Follow Me', 'Rage Powder'], anti: ['Taunt', 'Encore', 'Imprison'],
   haz: ['Stealth Rock', 'Spikes', 'Toxic Spikes', 'Sticky Web'], hazrm: ['Rapid Spin', 'Defog', 'Mortal Spin', 'Court Change', 'Tidy Up'],
@@ -117,6 +122,12 @@ function gamePlan(team) {
     rows.push({k: 'anti', label: 'Answer to their speed control', st: ans >= .5 ? 'ok' : 'opt', who: [who(R.anti, 2), c.tr >= .5 && c.tw >= .5 ? 'two speed modes' : ''].filter(Boolean).join('; '), note: ans >= .5 ? '' : 'Taunt or Encore stops an opposing Tailwind or Trick Room.'}); pen += 5 * (1 - ans);
     const intim = team.filter(m => m.ability === 'Intimidate'); pen += intim.length ? 0 : 3;
   }
+  // spread moves that also hit your own partner (Earthquake, Discharge, Surf, Bulldoze…): which teammates they'd hit.
+  // Information only (no penalty): plenty of teams run Earthquake next to Flying or Levitate partners, or protect the ally.
+  try { const notes = []; for (const m of team) for (const mv of (m._mv && m._mv.length ? m._mv : m.moves || [])) { if (!mv || !mv.ally || !mv.bp) continue;
+      const hit = team.filter(x => x !== m && typeof allyHit === 'function' && allyHit(mv, x)), safe = team.filter(x => x !== m && !hit.includes(x));
+      notes.push(`${m.d}'s ${mv.name} also hits ${hit.length ? hit.map(x => x.d).join(', ') : 'no one on your team'} next to it${hit.length && safe.length ? ` (safe partners: ${safe.map(x => x.d).join(', ')})` : ''}`); }
+    if (notes.length) rows.push({k: 'ally', label: 'Hits your own side', st: notes.some(n => !/no one/.test(n)) ? 'opt' : 'ok', who: '', note: notes.join('. ') + '.'}); } catch (e) {}
   return {rows, penalty: pen, c};
 }
 

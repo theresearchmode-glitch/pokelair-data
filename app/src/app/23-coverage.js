@@ -25,8 +25,8 @@ function computeRecs(ms, useA) {
   const res = planFixes(ms, pool, useA, {singlesOnly: true}), B = teamProfile(ms, useA);
   const gpRank = {miss: 0, opt: 1, part: 1, ok: 2};
   const keeps = (A) => A.ex <= B.ex && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.sh.w3 <= Math.max(1, B.sh.w3) && A.un <= B.un && A.off >= B.off && A.ans >= B.ans
-    && B.gp.rows.every(r => gpRank[A.gpst(r.k) || 'miss'] >= gpRank[r.st]);
-  const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0);
+    && B.gp.rows.filter(r => r.k !== 'ally').every(r => gpRank[A.gpst(r.k) || 'miss'] >= gpRank[r.st]);
+  const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => r.k !== 'ally' && gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0);
   const clean = [], soft = [], seen = new Set();
   // Readiness decides when the pick completes a six: it must ready the team for more of the top threats, and the most
   // prepared result goes first. The type rules relax to "at most one more weakness or unresisted type, no new stack".
@@ -93,7 +93,7 @@ function renderRecs() {
   const card = (pl, soft) => { const x = pl.ch[0], p = x.c.p, A = pl.prof, i = ui.recs.push(pl) - 1, mem = pl.team.find(m => m.p === p) || x.c.mem;
     // "speed control" only for Tailwind, Trick Room or weather speed; a gain that comes from priority moves is called priority
     const prioOnly = k => { const r = A.gp.rows.find(x => x.k === k) || {}; return k === 'speed' ? r.mode === 'priority and speed boosts' : k === 'backup' ? !!r.prioOnly : false; };
-    const gpUp = [...new Set(B.gp.rows.filter(rw => ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => prioOnly(rw.k) ? 'Priority' : rw.label))];
+    const gpUp = [...new Set(B.gp.rows.filter(rw => rw.k !== 'ally' && ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => prioOnly(rw.k) ? 'Priority' : rw.label))];
     const rest = pl.team.filter(m => m.p !== p); let pair = null; for (const t of rest) { const v = pairSyn({p}, t) + tourSyn({p}, t); if (v >= 8 && (!pair || v > pair.v)) pair = {t, v}; }
     const thr = threatDiff(ms, pl.team, 2).map(x => x.html);
     const why = [gpUp.length ? 'Adds ' + gpUp.join(', ').toLowerCase() : '', pair ? `often paired with ${pair.t.d}` : '', x.out ? `replaces ${x.out.d}` : ''].filter(Boolean).join(' · ');

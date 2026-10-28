@@ -7,7 +7,8 @@ function cleanEvents(v) { try {
   if (!v || typeof v !== 'object' || !Array.isArray(v.events) || !Array.isArray(v.dict)) return null;
   const D = v.dict.map(x => typeof x === 'string' ? x.slice(0, 60) : ''), g = i => D[i] || '';
   const sheet = s => { if (!Array.isArray(s)) return null; const n = g(s[0]); if (!byName.has(n)) return null;
-    return {n, i: g(s[1]), a: g(s[2]), nt: g(s[3]), mv: (Array.isArray(s[4]) ? s[4] : []).slice(0, 4).map(g).filter(Boolean)}; };
+    // ability spelled by hand on the sheet → the Pokémon's real ability; curly apostrophes in move names (King’s Shield)
+    return {n, i: g(s[1]), a: canonAbility(g(s[2]), byName.get(n)), nt: g(s[3]), mv: (Array.isArray(s[4]) ? s[4] : []).slice(0, 4).map(x => g(x).replace(/[’‘]/g, "'")).filter(Boolean)}; };
   const events = v.events.slice(0, 200).map(e => { if (!e || !Array.isArray(e.top)) return null;
     const top = e.top.slice(0, 16).map(t => { if (!Array.isArray(t) || !Array.isArray(t[3])) return null; const mons = t[3].map(sheet).filter(Boolean); if (mons.length !== 6) return null;
       return {player: str(t[0], 60), place: +t[1] || 0, record: str(t[2], 20), mons}; }).filter(Boolean);

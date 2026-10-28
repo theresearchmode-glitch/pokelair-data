@@ -86,7 +86,16 @@ function isMetaPick(p) { return viability(p) >= 45; }
 function pickVia(p) { if (!OFFMETA) return Math.round(.5 * viability(p) + .5 * rating(p).total); return Math.round(.8 * rating(p).intrinsic + (isMetaPick(p) ? -12 : viability(p) < 25 ? 6 : 0)); }
 function poolOK(p, min) { return OFFMETA ? (ratingLoose(p) >= 35 || !!p.m) : viability(p) >= min || rating(p).total >= 62; }
 // The ability most players run on p, from the meta data, if it's one p can have.
-function metaAbility(p) { const t = metaEntry(p); if (!t || !t.ab || !t.ab.length) return null; const a = t.ab[0][0]; return p.a.includes(a) ? a : null; }
+// Tournament sheets spell abilities by hand ("Flash fire", "Competetive", "INNER Focus"): match them to the Pokémon's own
+// abilities ignoring case and spacing, then allowing a 2-letter typo. Unknown names stay as written.
+function canonAbility(a, p) { if (!a || typeof a !== 'string') return a; const k = s => s.toLowerCase().replace(/[^a-z]/g, ''), ka = k(a), own = (p && p.a) || (typeof ABIL === 'object' ? Object.keys(ABIL) : []);
+  const ex = own.find(x => k(x) === ka); if (ex) return ex;
+  const lev = (s, t) => { const d = [...Array(t.length + 1).keys()]; for (let i = 1; i <= s.length; i++) { let prev = d[0]; d[0] = i; for (let j = 1; j <= t.length; j++) { const tmp = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (s[i - 1] === t[j - 1] ? 0 : 1)); prev = tmp; } } return d[t.length]; };
+  const near = own.map(x => [x, lev(ka, k(x))]).filter(([, d]) => d <= 2).sort((x, y) => x[1] - y[1]); return near.length && (near.length === 1 || near[0][1] < near[1][1]) ? near[0][0] : a; }
+function metaAbility(p) { const t = metaEntry(p); if (!t || !t.ab || !t.ab.length) return null;
+  // the most-used ability, with every spelling of it merged
+  const tot = new Map(); for (const [a, pct] of t.ab) { const c = canonAbility(a, p); if (p.a.includes(c)) tot.set(c, (tot.get(c) || 0) + (+pct || 0)); }
+  const best = [...tot].sort((x, y) => y[1] - x[1])[0]; return best ? best[0] : null; }
 function vLabel(v) { return v >= 70 ? 'Top tier' : v >= 45 ? 'Strong' : v >= 25 ? 'Solid' : v >= 12 ? 'Niche' : 'Fringe'; }
 
 // What the team does: speed control, Fake Out, redirection, Intimidate, active archetypes.
