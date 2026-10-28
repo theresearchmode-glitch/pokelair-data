@@ -60,7 +60,7 @@ function parsePaste(text) {
   for (const b of blocks) {
     const lines = b.split('\n').map(l => l.trim()).filter(Boolean); if (!lines.length) continue;
     let head = lines[0], item = '';
-    const at = head.lastIndexOf(' @ '); if (at >= 0) { item = head.slice(at + 3).trim(); head = head.slice(0, at).trim(); }
+    const at = head.lastIndexOf(' @ '); if (at >= 0) { item = head.slice(at + 3).trim(); head = head.slice(0, at).trim(); if (typeof canonItem === 'function') item = canonItem(item); }
     head = head.replace(/\s*\((M|F)\)\s*$/, '');
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);

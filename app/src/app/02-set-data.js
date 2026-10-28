@@ -49,7 +49,9 @@ function setFor(p,fmt,pref){fmt=fmt||S.format;pref=fmt==='singles'?'ingame':(pre
     for(const k of ['tour','ladder'])if(k!==pref)C.push([k,findIn(META[SRC[k]],p,true)])}
   if(!p.m)C.push(['sd',sd]);
   const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name));
-  const clean={mv:a=>a.filter(([n])=>learn.has(n)),it:a=>p.m?[]:a.filter(([n])=>!STONE_RE.test(n)||n==='Eviolite'),ab:a=>a.filter(([n])=>p.a.includes(n)),na:a=>a,tm:a=>a.filter(([n])=>byName.has(n)&&n!==p.n)};
+  // items: hand-typed spellings merged into the real item (canonItem), shares added up, most used first
+  const mergeIt=a=>{const tot=new Map();for(const [n,pct] of a){const c=typeof canonItem==='function'?canonItem(n):n;if(!c||/^no item$/i.test(c))continue;tot.set(c,(tot.get(c)||0)+(+pct||0))}return [...tot].sort((x,y)=>y[1]-x[1]).map(([n,v])=>[n,Math.round(v*10)/10])};
+  const clean={mv:a=>a.filter(([n])=>learn.has(n)),it:a=>p.m?[]:mergeIt(a).filter(([n])=>!STONE_RE.test(n)||n==='Eviolite'),ab:a=>a.filter(([n])=>p.a.includes(n)),na:a=>a,tm:a=>a.filter(([n])=>byName.has(n)&&n!==p.n)};
   const out={src:{},sd:null,shared:!!(gm&&gm.shared)};
   for(const f of ['mv','it','ab','na','tm']){out[f]=[];for(const [src,row] of C){if(!row||!row[f]||!row[f].length)continue;const v=clean[f](row[f]);if(!v.length)continue;out[f]=v;out.src[f]=src;if(src==='sd')out.sd=row;break}}
   if(!p.m&&out.mv.length&&out.src.mv!=='sd')out.mv=dropMegaMoves(p,out.mv);
