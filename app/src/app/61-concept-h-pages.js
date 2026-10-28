@@ -45,6 +45,8 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
   if (watch) { const n = watch.querySelectorAll('.bmw').length, ph = watch.querySelector('.ph'); if (ph) ph.remove(); const wrap = document.createElement('div'); wrap.dataset.t = 'plan'; wrap.className = 'chbmfold'; watch.before(wrap); wrap.append(watch); watch.removeAttribute('data-t');
     CH.foldNode(watch, 'bmwatch', 'Watch out', n ? `${n} of their six can shut something down` : 'Nothing on their side shuts down your four', false); }
   const t1 = el.querySelector('.bmt1'); if (t1) t1.classList.add('chpanel');
+  // desktop: turn 1 and watch out stack beside the pick, so neither column leaves a hole
+  { const wf = el.querySelector('.chbmfold'), bc = el.querySelector('.chbring'); if (bc && (t1 || wf)) { const side = document.createElement('div'); side.className = 'chbmside'; side.dataset.t = 'plan'; bc.after(side); if (t1) side.append(t1); if (wf) side.append(wf); } }
   const sp = el.querySelector('.bmcard[data-t="speed"] .ph .pt'); if (sp) sp.textContent = 'Who moves first';
   const dm = el.querySelector('.bmcard[data-t="dmg"] .ph .pt'); if (dm) dm.textContent = 'Damage both ways';
   const bl = battlelog; if (bl && !bl.closest('details.chsec')) { const L = Array.isArray(S.log) ? S.log : [], w = L.filter(x => x.r === 'W').length; CH.foldNode(bl, 'bmlog', 'Battle log', L.length ? `– ·  logged · log this game` : 'Log this game after the match', false); } });

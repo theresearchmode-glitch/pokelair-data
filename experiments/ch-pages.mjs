@@ -9,7 +9,8 @@ const page = APP + 'ch-pages.html'; fs.writeFileSync(page, '<!doctype html><meta
 // a real opponent for Battle mode: the runner-up of the latest event with a full top cut
 const EV = D['meta/events'], opp = (() => { for (const e of (EV && EV.events) || []) { const t = (e.top || []).find(x => x && x.place === 2 && x.mons && x.mons.length === 6); if (t) return t.mons.map(m => m.n); } return []; })();
 const errs = [], lens = {}, b = await chromium.launch();
-const sizes = [[390, 844, 'phone', 'light'], [390, 844, 'phone', 'dark'], ...(desk ? [[1440, 900, 'desktop', 'light'], [1440, 900, 'desktop', 'dark']] : [])];
+const wArg = (process.argv.find(a => a.startsWith('--w=')) || '').slice(4), deskOnly = process.argv.includes('--deskonly');
+const sizes = [...(deskOnly ? [] : [[390, 844, 'phone', 'light'], [390, 844, 'phone', 'dark']]), ...(desk ? (wArg ? wArg.split(',').map(x => { const [w, s] = x.split(':'); return [+w, 900, 'desktop' + w, s || 'light']; }) : [[1440, 900, 'desktop', 'light'], [1440, 900, 'desktop', 'dark']]) : [])];
 for (const [w, h, dev, scheme] of sizes) {
   const ctx = await b.newContext({viewport: {width: w, height: h}, deviceScaleFactor: w < 700 ? 2 : 1, isMobile: w < 700, hasTouch: w < 700, colorScheme: scheme}), pg = await ctx.newPage();
   pg.on('pageerror', e => errs.push(`${dev}/${scheme}: ${e.message}`)); pg.on('console', m => { if (m.type() === 'error' && !/favicon|net::ERR_FILE|fonts/.test(m.text())) errs.push(`${dev}/${scheme} console: ${m.text().slice(0, 200)}`); });

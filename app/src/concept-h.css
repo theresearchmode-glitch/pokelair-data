@@ -233,6 +233,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
   .chtiles{grid-template-columns:repeat(15,1fr)}
   .chteam{display:grid;grid-template-columns:1.6fr 1fr;gap:24px;align-items:start}
   .chteam .chthead{grid-column:1/-1}
+  .chtleft{min-width:0;display:flex;flex-direction:column;gap:12px}.chtleft>*{margin-top:0!important}.chteam .chtleft{margin-top:12px}.chteam .chside .chtiles{grid-template-columns:repeat(10,1fr)}
   .chthead .nm{font-size:80px}
   .chrow .spr{width:72px;height:72px}
 }
@@ -341,6 +342,8 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root:not(#_ch) .chbring .bmpick.lead .tag{background:var(--chyel);color:#1D2140}
 .chbring .chpen{font-size:15px}
 .chreasons{margin:10px 0 0;padding-left:22px;font-size:14px;color:var(--chink2)}.chreasons li{margin:4px 0}.chreasons b{color:var(--chink)}
+.chbmside{display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (min-width:861px){.bmgrid>[data-t="speed"]{grid-column:1/-1}.recgrid>.chmorebtn{grid-column:2;grid-row:2;margin-top:-20px}.recgrid>#princ{grid-row:1/span 2}}
 .chbmfold .bmcard{border:0;box-shadow:none;background:none;padding:0}
 .chpanel{background:var(--chhdr);color:#F3EBDC;border-radius:16px;padding:14px;border:2px solid var(--chline)}
 .chpanel h3,.chpanel b{color:#FFE800}
@@ -571,13 +574,15 @@ main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{width:20p
 /* ===== the bottom bar: a floating liquid-glass pill, 2 + Build + 2, Build dead centre ===== */
 @media (max-width:1000px){
  :root:not(#_ch) .bnav{display:grid;grid-template-columns:repeat(5,1fr);align-items:end;gap:0;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom,0px));height:68px;padding:0 6px;border-radius:999px;
-  background:rgba(255,250,240,.58);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+  background:rgba(255,250,240,.40);-webkit-backdrop-filter:blur(16px) saturate(1.8);backdrop-filter:blur(16px) saturate(1.8);
   border:1px solid rgba(29,33,64,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 10px 30px rgba(29,33,64,.18),0 2px 6px rgba(29,33,64,.10)}
- :root:not(#_ch)[data-look="dark"] .bnav{background:rgba(35,33,32,.72);border-color:rgba(243,235,220,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 30px rgba(0,0,0,.45)}
+ :root:not(#_ch)[data-look="dark"] .bnav{background:rgba(35,33,32,.52);border-color:rgba(243,235,220,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 30px rgba(0,0,0,.45)}
  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root:not(#_ch) .bnav{background:rgba(255,250,240,.9)}:root:not(#_ch)[data-look="dark"] .bnav{background:rgba(35,33,32,.92)}}
  :root:not(#_ch) .bnav #moreBtn{display:none}
  :root:not(#_ch) .bnav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;height:68px;padding:6px 0 7px;border-radius:999px;color:#1D2140;opacity:1;font:700 12px/1.1 var(--body);text-transform:none;letter-spacing:.01em;background:none;box-shadow:none}
- :root:not(#_ch)[data-look="dark"] .bnav button{color:#F3EBDC}
+ :root:not(#_ch)[data-look="dark"] .bnav button{color:#F3EBDC;text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.5)}
+ :root:not(#_ch) .bnav button{text-shadow:0 0 4px rgba(255,250,240,.95),0 0 10px rgba(255,250,240,.8)}
+ :root:not(#_ch) .bnav button svg{filter:drop-shadow(0 0 3px rgba(255,250,240,.9))}:root:not(#_ch)[data-look="dark"] .bnav button svg{filter:drop-shadow(0 1px 3px rgba(0,0,0,.8))}
  :root:not(#_ch) .bnav button svg{width:26px;height:26px;padding:4px 14px;box-sizing:content-box;border-radius:999px;stroke-width:2;background:none;color:inherit;transition:background .18s}
  :root:not(#_ch) .bnav button[aria-selected="true"] svg{background:rgba(29,33,64,.12);color:inherit}
  :root:not(#_ch)[data-look="dark"] .bnav button[aria-selected="true"] svg{background:rgba(243,235,220,.16)}
@@ -592,3 +597,30 @@ main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{width:20p
  :root:not(#_ch) .bnav button[data-view="auto"][aria-selected="true"] .chfab{background:#FFE800}
 }/* desktop: the header logo is the big, clearly visible brand mark (~230px wide) */
 @media (min-width:900px){:root:not(#_ch) .band .brand .nplk.hdr{height:60px}:root:not(#_ch) .band .inner{padding-block:14px 12px}:root:not(#_ch) .band h1{gap:16px}}
+/* ===== phone Home: one story — what this is + one button, the latest champion, your six ===== */
+.chmh{display:none}
+@media (max-width:899px){
+ .chmh{display:flex;flex-direction:column;gap:16px;padding:4px 16px 0}
+ :root:not(#_ch)[data-pg="home"] #viewTitle{display:none}
+ :root:not(#_ch)[data-pg="home"] .band .brand .nplk.hdr{height:44px}
+ .chmhero{padding:10px 0 4px}
+ .chmhero .chh1{font:400 56px/.9 var(--display);text-transform:uppercase;color:var(--chink);text-shadow:3px 3px 0 var(--chredB);margin:6px 0 0}
+ .chmhero .sub{font:400 30px/1 var(--display);text-transform:uppercase;color:var(--chblueT);margin-top:4px}
+ .chmhero p{margin:10px 0 0;font-size:16px;line-height:1.4;color:var(--chink2)}.chmhero p b{color:var(--chink)}
+ .chmacts{display:flex;flex-direction:column;gap:10px;margin-top:16px}.chmacts .chprimary,.chmacts .chghost{width:100%;justify-content:center;min-height:52px}
+ .chmcard{border-radius:18px;padding:16px 14px 14px;color:#fff;border:2px solid var(--chline);background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.4px);background-size:9px 9px}
+ .chmcard.them{background-color:var(--chredB)}.chmcard.you{background-color:var(--chblue)}:root[data-look="dark"] .chmcard.you{background-color:#0B6AA8}
+ .chmcard .chk{color:#fff;opacity:.92}
+ .chmct{font:400 34px/.95 var(--display);text-transform:uppercase;margin:4px 0 0;text-shadow:2px 2px 0 rgba(0,0,0,.18);overflow-wrap:anywhere}
+ .chmwho{font-size:14px;line-height:1.35;margin-top:6px;opacity:.95}.chmwho .chpen{color:#fff}
+ .chmgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 6px;margin-top:12px}
+ .chmmon{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.4);border-radius:12px;padding:6px 4px 8px}
+ .chmmon .spr{width:72px;height:72px;object-fit:contain;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.2))}
+ .chmmon b{font:800 12px/1.15 var(--body);text-transform:uppercase;letter-spacing:.01em;margin-top:2px;overflow-wrap:anywhere}
+ .chmmon span{font:400 10.5px/1.2 var(--mono);opacity:.88;margin-top:2px;overflow-wrap:anywhere}
+ .chmmon .chtag{font-size:10px;color:#fff;border-color:#fff;margin-top:5px;padding:0 5px}.chmmon .chtag.lead{background:#FFE800;color:#1D2140;border-color:#1D2140}
+ .chmrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px}.chmrow .linkbtn{color:#fff;text-decoration:underline;font-weight:700}
+ #homeOut .chpad:empty{display:none}
+ #homeOut .chsplit.chdesk{display:none}
+ .chmmon b{font-size:11px;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0}
+}
