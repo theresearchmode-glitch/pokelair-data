@@ -89,9 +89,20 @@ async function refreshNow(){const btns=[...document.querySelectorAll('.refreshbt
   const last=LS.get('cc2.refreshAt',0);if(Date.now()-last<20*60*1000){toast('A refresh is already running. It takes about 10–20 minutes.');return}
   set(true,'Starting…');
   try{const mcp=window.claude&&window.claude.use?await window.claude.use('mcp'):null;
-    if(!mcp)throw {code:'unavailable'};
-    await mcp.callTool('Claude Code Remote','fire_trigger',{trigger_id:TRIGGER_ID},{cache:false});
-    LS.set('cc2.refreshAt',Date.now());set(true,'Refreshing…');toast('Refresh started. Rankings, sets, top teams and ratings update here in about 10–20 minutes.');
+    if(!mcp||typeof mcp.callTool!=='function')throw {code:'unavailable'};
+    await mcp.callTool('Claude Code Remote','fire_trigger',await refreshArgs(mcp),{cache:false});
+    try{LS.set('cc2.refreshAt',Date.now())}catch(_){}
+    set(true,'Refreshing…');toast('Refresh started. Rankings, sets, top teams and ratings update here in about 10–20 minutes.');
     setTimeout(()=>set(false,'Refresh now'),20*60*1000);
-  }catch(e){set(false,'Refresh now');
-    toast(e&&e.code==='denied'||e&&e.code==='not_granted'?'Refresh needs permission to start your scheduled task.':'Couldn\'t start a refresh here right now.')}}
+  }catch(e){set(false,'Refresh now');toast(refreshErrText(e))}}
+// The connector's input schema is read when the viewer allows it; the trigger id goes under whichever id field it names
+// (trigger_id today). Any failure to describe falls back to trigger_id.
+async function refreshArgs(mcp){try{if(typeof mcp.describeTool==='function'){const d=await mcp.describeTool('Claude Code Remote','fire_trigger');
+  const p=d&&d.inputSchema&&d.inputSchema.properties?Object.keys(d.inputSchema.properties):[];const k=p.find(x=>/trigger.?id/i.test(x))||p.find(x=>/^id$/i.test(x));if(k)return{[k]:TRIGGER_ID}}}catch(_){}
+  return{trigger_id:TRIGGER_ID}}
+function refreshErrText(e){const c=e&&e.code;
+  if(c==='denied'||c==='not_granted'||c==='consent_required'||c==='approval_required')return 'Refresh needs permission to start your scheduled task.';
+  if(c==='rate_limited')return 'Too many refreshes just now. Try again in a few minutes.';
+  if(c==='server_not_connected'||c==='server_not_found'||c==='needs_reauth')return 'Connect Claude Code Remote in your claude.ai connectors to refresh from here.';
+  if(c==='cancelled')return 'Refresh cancelled.';
+  return 'Couldn\'t start a refresh here right now. The data still refreshes every morning.'}

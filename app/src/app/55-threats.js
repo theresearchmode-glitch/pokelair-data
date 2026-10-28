@@ -205,11 +205,18 @@ const THR = (() => {
         else if (hasMove(m, 'Fake Out') && !FLINCH_BLOCK.has(t.ability) && !PRIO_BLOCK.has(t.ability) && t.item !== 'Covert Cloak' && !(t.p.t || []).includes('Ghost') && !psyBlock(m)) out.push({m, kind: 'soft', why: `${m.d}'s Fake Out delays its Trick Room a turn`});
         if (hasMove(m, 'Trick Room') && tmodes.tr && !out.some(x => x.m === m)) out.push({m, kind: 'solid', why: `your own Trick Room team plays under Trick Room anyway; ${m.d} can re-set or reverse it`});
       } else if (mode === 'screens') {
-        const br = m.moves.find(x => x && SCREEN_BREAK.includes(x.name));
+        // Real games (20,000 Showdown replays, Oct 28): screen breakers are rare and barely change results; what decides the game
+        // is knocking the screen setter out. So focus fire counts: two Pokémon that each OHKO it take it down in one turn even
+        // through one screen (each still does 50%+), and a 2HKO or a Fake Out that delays the first screen is a partial answer.
+        const br = m.moves.find(x => x && SCREEN_BREAK.includes(x.name)), ohkos = team.filter(x => { const d = (rows.find(r => r.m === x) || {}).du; return d && d.nM === 1; });
+        const foOK = hasMove(m, 'Fake Out') && !FLINCH_BLOCK.has(t.ability) && !PRIO_BLOCK.has(t.ability) && t.item !== 'Covert Cloak' && !(t.p.t || []).includes('Ghost') && !psyBlock(m);
         if (br) out.push({m, kind: 'solid', why: `${m.d}'s ${br.name} removes its screens`});
         else if (m.ability === 'Infiltrator') out.push({m, kind: 'solid', why: `${m.d}'s Infiltrator ignores screens`});
+        else if (ohko && ohkos.length >= 2) out.push({m, kind: 'solid', why: `${m.d} OHKOs it with ${du.o.mv}; with ${ohkos.find(x => x !== m).d} it goes down in one turn even through a screen`});
         else if (ohko) out.push({m, kind: 'soft', why: `${m.d} OHKOs it with ${du.o.mv}, but only after the first screen is up`});
         else if (hasMove(m, 'Taunt') && tauntWorks(m)) out.push({m, kind: 'soft', why: `${m.d}'s Taunt stops its second screen`});
+        else if (foOK) out.push({m, kind: 'soft', why: `${m.d}'s Fake Out moves before Prankster and delays its first screen a turn`});
+        else if (two) out.push({m, kind: 'soft', why: `${m.d} 2HKOs it with ${du.o.mv}: focus it before the screens pile up`});
       } else if (mode === 'redir') {
         const sp = m.moves.find(x => x && x.spread && x.bp >= 60 && x.cat > 0);
         if (sp) out.push({m, kind: 'solid', why: `${m.d}'s ${sp.name} hits both foes, so redirection doesn't stop it`});
