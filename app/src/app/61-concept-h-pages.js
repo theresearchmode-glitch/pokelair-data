@@ -92,3 +92,34 @@ CH.wrap('renderCores', () => { const el = $('coreOut'); if (!el) return; const s
   const intro = el.querySelector('.coreintro'); if (intro) CH.foldNode(intro, 'coreabout', 'How cores are ranked', 'Win rate pulled toward the average, from real tournament teams', false);
   const rows = [...el.querySelectorAll('.corelist .corerow')]; rows.forEach((r, i) => { if (i < 3) r.classList.add('chcbig'); });
   if (rows.length > 4) { const rest = document.createElement('div'); rest.className = 'corelist'; rows.slice(3).forEach(r => rest.append(r)); const mb = el.querySelector(':scope > .morebar'); if (mb) rest.append(mb); const w = document.createElement('div'); w.innerHTML = CH.fold('coremore', `More cores`, `#4 to #${rows.length}${mb ? ' and Show more' : ''}`, '', false); const d = w.firstElementChild; d.querySelector('.chbody').append(rest); el.querySelector('.corelist').after(d); } });
+// ---------- shared: show the first n of a long list, the rest one tap away (rows stay in place) ----------
+CH.more = (box, sel, n, key, label) => { if (!box) return; const items = [...box.querySelectorAll(sel)]; let b = box.parentNode && box.parentNode.querySelector(`:scope > [data-chmore="${key}"]`);
+  if (items.length <= n) { items.forEach(x => x.classList.remove('chhid')); if (b) b.remove(); return; }
+  ui.chMore = ui.chMore || {}; const all = !!ui.chMore[key]; items.forEach((x, i) => x.classList.toggle('chhid', i >= n && !all));
+  if (!b) { b = document.createElement('button'); b.type = 'button'; b.className = 'chsec chmorebtn'; b.dataset.chmore = key; box.after(b); b.addEventListener('click', () => { ui.chMore[key] = !ui.chMore[key]; CH.more(box, sel, n, key, label); }); }
+  b.setAttribute('aria-expanded', all ? 'true' : 'false');
+  b.innerHTML = `<span class="chtog${all ? ' open' : ''}" aria-hidden="true">${CH.tog().replace(/^<span class="chtog" aria-hidden="true">|<\/span>$/g, '')}</span><span style="flex:1;text-align:left"><span class="cht">${all ? 'Show fewer' : `${items.length - n} more ${label}`}</span><span class="chs">${all ? 'Fold the rest away' : `Showing ${n} of ${items.length}`}</span></span>`; };
+CH.pagehead = (sec, kicker, title, sub) => { if (!sec || sec.querySelector(':scope > .chpghead')) return; const h = sec.querySelector(':scope > .head'); const w = document.createElement('div'); w.innerHTML = CH.head(kicker, title, sub); (h || sec.firstElementChild).after(w.firstElementChild); sec.classList.add('chpg'); };
+// ---------- Damage calc: attacker vs defender as two cards, set details folded ----------
+CH.wrap('renderCalc', () => { const el = $('dcOut'), sec = $('dmgcalc'); if (!el) return; CH.pagehead(sec, 'Damage calc · common sets, auto-filled', 'Damage calc', '');
+  el.querySelectorAll('.dccol').forEach((col, i) => { if (col.querySelector('.chdcband')) return; const h = col.querySelector('h3'), sp = col.querySelector('.dcspr'), sel = col.querySelector('select'), name = sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : '';
+    const nat = col.querySelector('#dcANat,#dcDNat'), ab = col.querySelector('#dcAAb,#dcDAb'), band = document.createElement('div'); band.className = 'chdcband chhalf ' + (i ? 'def' : 'atk');
+    band.innerHTML = `<div class="nm">${esc(name)}</div><div class="sub">${esc([nat && nat.value, ab && ab.value].filter(Boolean).join(' · '))}</div>`;
+    if (sp) band.prepend(sp); if (h) { h.classList.add('chk'); band.prepend(h); } col.prepend(band);
+    const det = [...col.querySelectorAll(':scope > .dc2, :scope > label')].filter(x => !x.querySelector('#dcA,#dcD,#dcMv'));
+    if (det.length) { const w = document.createElement('div'); det[0].before(w); det.forEach(x => w.append(x)); CH.foldNode(w, 'dcset' + i, 'Set details', 'Points, nature, item, ability, stat stage', false); } });
+  const root = sec || el, hd = [...root.querySelectorAll('h2,h3,h4')].find(x => /best hit/i.test(x.textContent) && !x.closest('details.chsec'));
+  if (hd) { let box = hd; while (box.parentElement && box.parentElement !== el && box.parentElement !== root) box = box.parentElement; if (box === hd) { const w = document.createElement('div'); hd.before(w); let n = hd; while (n) { const nx = n.nextElementSibling; w.append(n); n = nx; } box = w; } if (box && !box.closest('details.chsec')) { const t = hd.textContent; CH.foldNode(box, 'dctable', t, 'Max roll against the usual sets of the top threats', false); } } });
+// ---------- Speed: who moves first ----------
+CH.wrap('renderSpeed', () => { const el = $('spdOut'), sec = $('speedtiers'); if (!el) return; CH.pagehead(sec, 'Speed tiers · level 50', 'Who moves <span style="color:var(--chblueT)">first.</span>', '');
+  const sums = el.querySelector('.spdsums'); if (sums && !sums.closest('details.chsec')) { const n = sums.querySelectorAll('.spdsum').length; CH.foldNode(sums, 'spdsum', 'Your six vs the field', `How many of the top 20 each of your ${n} moves first against`, false); }
+  el.querySelectorAll('.spdrow .spdn .t2').forEach(t => { const r = t.closest('.spdrow'); if (r && !r.title) r.title = t.textContent; }); });
+// ---------- Gauntlet ----------
+CH.wrap('renderGauntlet', () => { const el = $('gauntOut'), sec = $('gauntlet'); if (!el) return; CH.pagehead(sec, 'Gauntlet · the latest top tournament teams', 'Run the gauntlet.', '');
+  const intro = el.querySelector(':scope > p.t2'); if (intro && !intro.closest('details.chsec')) CH.foldNode(intro, 'gintro', 'How it works', 'Same calcs as your scouting report, both ways', false);
+  CH.more(el.querySelector('.glist'), ':scope > .gitem', 3, 'gaunt', 'teams'); });
+// ---------- Teams and Events: big-sprite team sheets, the first few shown ----------
+CH.wrap('renderTeamSearch', () => { const sec = $('topteams'); CH.pagehead(sec, 'Teams · real top-cut team sheets', 'Winning teams', ''); chTeamsMore(); });
+function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [...L.children], cards = kids.filter(x => x.classList.contains('ttcard')); if (cards.length < 5) return; CH.more(L, ':scope > *', kids.indexOf(cards[2]) + 1, 'ttlist', 'teams and sections'); }
+CH.wrap('renderTopTeams', () => safe('teams more', chTeamsMore));
+CH.wrap('renderEvents', () => { const sec = $('events'); CH.pagehead(sec, 'Events · recent tournaments', 'Events', ''); });

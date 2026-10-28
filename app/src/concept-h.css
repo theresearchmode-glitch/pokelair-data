@@ -409,4 +409,44 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chmorebtn{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;margin-top:10px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);cursor:pointer}
 .chmorebtn .cht{display:block;font:400 21px/1 var(--display);text-transform:uppercase}.chmorebtn .chs{display:block;font:600 13px var(--body);color:var(--chink2);margin-top:3px}
 .chmorebtn:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
-#chBoard>.chbody{padding:0 2px 8px}
+#chBoard>.chbody{padding:0 2px 8px}/* ===== batch 3: Damage calc, Speed, Gauntlet, Teams/Events, team-sheet cards ===== */
+.chpg>.head{display:none}
+.chhid{display:none!important}
+/* calc */
+.chdcband{position:relative;border-radius:14px;color:#fff;padding:10px 12px 12px;margin:-2px -2px 10px;min-height:150px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.chdcband.atk{background-color:var(--chblue)}.chdcband.def{background-color:var(--chredB)}:root[data-look="dark"] .chdcband.atk{background-color:#0B6AA8}
+.chdcband .chk{color:#fff;position:absolute;top:10px;left:12px}
+.chdcband .nm{font:800 17px/1.15 var(--body);text-transform:uppercase;position:relative;z-index:1}.chdcband .sub{font:400 12px var(--mono);opacity:.9;position:relative;z-index:1}
+:root:not(#_ch) .chdcband .dcspr{position:absolute;right:4px;top:6px;width:104px;height:104px;object-fit:contain;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25));margin:0}
+.chdcband .asm{position:absolute;right:8px;bottom:8px;background:rgba(255,255,255,.9);color:#1D2140}
+:root:not(#_ch) .dccol{background:var(--chc);border:2px solid var(--chline);border-radius:16px;box-shadow:none}
+:root:not(#_ch) .dcres{background:var(--chc);border:2px solid var(--chline);border-radius:16px;box-shadow:none}
+:root:not(#_ch) .dcres .dcbig{font:400 52px/1 var(--display);color:var(--chink);text-shadow:3px 3px 0 var(--chredB)}
+:root:not(#_ch) .dcfield .seg{background:none;padding:0;gap:6px;box-shadow:none;flex-wrap:wrap}
+:root:not(#_ch) .dcfield .seg button,:root:not(#_ch) #spdCtl .seg button{border:2px solid var(--chline);border-radius:999px;background:transparent;color:var(--chink);min-height:40px;clip-path:none;font:700 13px var(--body)}
+:root:not(#_ch) .dcfield .seg button[aria-pressed="true"],:root:not(#_ch) #spdCtl .seg button[aria-pressed="true"]{background:var(--chink);color:var(--chp)}
+:root:not(#_ch) #spdCtl .seg{background:none;padding:0;gap:6px;box-shadow:none;flex-wrap:wrap}
+/* speed */
+:root:not(#_ch) .spdrow{min-height:50px;padding:4px 10px;border-radius:12px;border:1px solid var(--line2);background:var(--chc)}
+:root:not(#_ch) .spdrow .spdv{font:400 28px/1 var(--display);color:var(--chredT)}
+:root:not(#_ch) .spdrow.me{border:2px solid var(--chblue)}:root:not(#_ch) .spdrow.me .spdv{color:var(--chblueT)}
+:root:not(#_ch) .spdrow .spdspr{width:42px;height:42px}
+:root:not(#_ch) .spdrow .spdn .t2{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+:root:not(#_ch) .spdlist{gap:4px}
+/* gauntlet */
+:root:not(#_ch) .gsum{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--chline);border-radius:14px;background:var(--chc);gap:0}
+:root:not(#_ch) .gsum>div{padding:10px;border:0;background:none}:root:not(#_ch) .gsum>div+div{border-left:2px solid var(--chline)}
+:root:not(#_ch) .gsum b{font:400 40px/1 var(--display)}
+:root:not(#_ch) .gitem{background:var(--chc);border:2px solid var(--line2);border-radius:14px;box-shadow:none}
+:root:not(#_ch) .gitem .gmons .spr{width:52px;height:52px}
+/* team sheets (Teams, Events, Build's recent winners) */
+:root:not(#_ch) .evteam{background:var(--chc);border:2px solid var(--chline);border-radius:16px;box-shadow:none}
+:root:not(#_ch) .evteam .ttwho .pt{font:400 24px/1.05 var(--display);text-transform:uppercase}
+:root:not(#_ch) main .tgrid{grid-template-columns:repeat(3,1fr);gap:6px}
+:root:not(#_ch) main .tgrid .tgm{flex-direction:column;align-items:center;text-align:center;background:var(--chp2);border:0;border-radius:12px;padding:6px 4px;min-height:96px}
+:root:not(#_ch) main .tgrid .tgm .spr{width:64px;height:64px;object-fit:contain}
+:root:not(#_ch) main .tgrid .tgn{font-size:12px}
+@media (min-width:900px){:root:not(#_ch) main .tgrid{grid-template-columns:repeat(6,1fr)}.chdcband{min-height:180px}:root:not(#_ch) .chdcband .dcspr{width:140px;height:140px}}:root:not(#_ch) .spdrow{min-height:44px;padding:2px 10px}:root:not(#_ch) .spdrow .spdspr{width:36px;height:36px}
+:root:not(#_ch) main .plan .ttwho .pt{font:400 24px/1.05 var(--display);text-transform:uppercase}
+:root:not(#_ch) main .tgrid .tgm{display:flex;position:relative}:root:not(#_ch) main .tgrid .tgm .tgmk{position:absolute;right:4px;top:4px}
+.chdcband h3.chk{margin:0;font:700 12px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase}.chdcband h3.chk .asm{position:static;margin-left:6px}
