@@ -45,12 +45,12 @@ document.addEventListener('toggle', e => { const d = e.target; if (d && d.id ===
 // ---------- what's new: a short note shown once after each update ----------
 // Bump WHATS_NEW.id with each release worth announcing. First-time visitors get the welcome card instead, so they're
 // marked as having seen this one.
-const WHATS_NEW = {id: '2026-10-28', items: [
-  ['Sleepers', 'Pokémon that win more than their usage suggests, checked on the same players with and without them.'],
-  ['Build around it', 'Pick one Pokémon and get a full team built around it.'],
-  ['Quick search', 'Find any Pokémon or tool from the search button (Ctrl+K on a keyboard).'],
-  ['Compare saved teams', 'Put two saved teams side by side.'],
-  ['Undo', 'Changed your team by mistake? Undo from the message at the bottom.'],
+const WHATS_NEW = {id: '2026-10-28b', items: [
+  ['Threat prep', 'Your scouting report now shows how many of the top meta threats your team is ready for, with a check, counter or warning for each. No more win odds.'],
+  ['Move accuracy', 'A move that can miss is never counted as a sure answer. Weather, No Guard, Compound Eyes and Wide Lens are included.'],
+  ['New ratings', 'Ratings now weigh top-cut finishes, strong players and recent events most.'],
+  ['Team checks', 'Item Clause clashes, items that do nothing, and Trick Room teams without enough slow attackers are now caught.'],
+  ['Game mechanics', 'Damage, turn order and field effects were checked against the battle simulator and thousands of real battles, and every mismatch was fixed.'],
   ['Feedback', 'Tell us what\'s off with the Feedback button at the bottom of any page.']]};
 function whatsNewCard() { let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
   if (!welcomed) { try { LS.set('cc2.seenNew', WHATS_NEW.id); } catch (e) {} return ''; }
