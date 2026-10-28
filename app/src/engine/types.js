@@ -53,7 +53,8 @@ const ATE = {Aerilate:'Flying', Pixilate:'Fairy', Refrigerate:'Ice', Galvanize:'
 const BREAKERS = new Set(['Mold Breaker','Teravolt','Turboblaze']);
 // Moves that don't threaten through the type chart: fixed damage, counters, and openers.
 const NO_COVERAGE = new Set(['Fake Out','First Impression','Seismic Toss','Night Shade','Super Fang','Endeavor','Final Gambit','Counter','Mirror Coat','Metal Burst','Ruination','Psywave','Bide','Nature\'s Madness','Comeuppance']);
-const WEATHER = {Drizzle:'Water', 'Primordial Sea':'Water', Drought:'Fire', 'Mega Sol':'Fire', 'Sand Stream':'Rock', 'Snow Warning':'Ice'};
+// (Mega Sol is not a setter: only its holder's own moves act as if the sun were out, see attackEntries)
+const WEATHER = {Drizzle:'Water', 'Primordial Sea':'Water', Drought:'Fire', 'Sand Stream':'Rock', 'Snow Warning':'Ice'};
 const TERRAIN = {'Grassy Surge':'Grass', 'Psychic Surge':'Psychic', 'Electric Surge':'Electric', 'Misty Surge':'Fairy'};
 // Team context: which weather and terrain the team sets itself.
 function teamContext(members) {
@@ -69,7 +70,8 @@ function attackEntries(member, moves, ctx = {}) {
   const base = {from: member.name, breaker: BREAKERS.has(ab), scrappy: ab === 'Scrappy' || ab === "Mind's Eye", tinted: ab === 'Tinted Lens'};
   if (!dmg.length) return member.types.map(t => ({...base, type: t, move: 'STAB', stabOnly: true}));
   return dmg.map(m => { let t = m.type; const e = {...base, move: m.name};
-    if (m.name === 'Weather Ball' && ctx.weather) t = ctx.weather;
+    if (m.name === 'Weather Ball' && ab === 'Mega Sol') t = 'Fire';
+    else if (m.name === 'Weather Ball' && ctx.weather) t = ctx.weather;
     else if (m.name === 'Terrain Pulse' && ctx.terrain) t = ctx.terrain;
     else if (t === 'Normal' && ATE[ab]) t = ATE[ab];
     if (ab === 'Liquid Voice' && m.sound) t = 'Water';

@@ -156,15 +156,18 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   // super-effective items (Expert Belt, resist berries, Filter) on or off
   const eff=moveEff(mv,type,ab,D.p.t);let abMul=1;
   {const mods=ABILITY_MODS[dab];if(mods&&mods[type]!=null&&!(nm==='Thousand Arrows'&&type==='Ground'))abMul=mods[type]}
-  const hp=calcStat(D.p,'HP',D.hpSp,1),pri=movePrio(mv,ab,{terrain:T,grounded:gA})>0;
+  // (Gale Wings only gives priority at full HP: o.atkFullHp false = the attacker has taken damage)
+  const hp=calcStat(D.p,'HP',D.hpSp,1),pri=movePrio(mv,ab,{terrain:T,grounded:gA,fullHp:o.atkFullHp!==false})>0;
   // Air Balloon: Ground moves miss until the balloon is popped by a hit
   if(eff===0||abMul===0||(dab==='Bulletproof'&&mFlag(nm,'l',BULLET))||(dab==='Soundproof'&&mv.sound)||(pri&&(['Queenly Majesty','Armor Tail','Dazzling'].includes(dab)||(T==='psychic'&&gD)))
     ||(type==='Ground'&&dIt==='Air Balloon'&&nm!=='Thousand Arrows')
-    ||(nm==='Poltergeist'&&!D.item)||(nm==='Steel Roller'&&!T))return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0}};
+    // (a Mega always holds its Mega Stone, which callers leave out of the item slot)
+    ||(nm==='Poltergeist'&&!D.item&&!(D.p&&D.p.m))||(nm==='Steel Roller'&&!T))return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0}};
   // fixed damage: Seismic Toss / Night Shade = the user's level (50); Super Fang / Ruination / Nature's Madness = half the
   // target's current HP (full, then a quarter); one-hit KO moves KO when they land (Sturdy and Ice types vs Sheer Cold are immune)
   if(mv.fixed||mv.ohko||mv.vbp==='half'){
-    const v=mv.ohko?((dab==='Sturdy'||(mv.ohko==='Ice'&&D.p.t.includes('Ice')))?0:hp):mv.fixed==='level'?50:typeof mv.fixed==='number'?mv.fixed:Math.max(1,Math.floor(hp/2));
+    // (move data stores fixed: 0 for "no fixed damage", so only a positive number is a fixed amount)
+    const v=mv.ohko?((dab==='Sturdy'||(mv.ohko==='Ice'&&D.p.t.includes('Ice')))?0:hp):mv.fixed==='level'?50:typeof mv.fixed==='number'&&mv.fixed>0?mv.fixed:Math.max(1,Math.floor(hp/2));
     const v2=mv.vbp==='half'?Math.max(1,Math.floor((hp-v)/2)):v,rr=Array(16).fill(v),r2=Array(16).fill(v2);
     return {min:v,max:v,rolls:rr,hp,eff:v?1:0,type,hits:1,fixed:true,ohko:!!mv.ohko,next:{min:v2,max:v2,rolls:r2},sash:dIt==='Focus Sash'&&!mv.ohko&&mv.vbp!=='half'&&o.fullHp!==false}}
   // Attack and Defense. Foul Play uses the target's own Attack (its points, nature and stage); Body Press the user's Defense.
@@ -186,6 +189,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   else if((ab==='Water Bubble'&&type==='Water')||(phys&&(ab==='Huge Power'||ab==='Pure Power')))am.push(8192);
   if((dab==='Thick Fat'&&(type==='Fire'||type==='Ice'))||(dab==='Water Bubble'&&type==='Fire')||(dab==='Purifying Salt'&&type==='Ghost')||(dab==='Heatproof'&&type==='Fire'))am.push(2048);
   if((aIt==='Choice Band'&&phys)||(aIt==='Choice Specs'&&!phys))am.push(6144);
+  // Light Ball doubles Pikachu's Attack and Sp. Atk (any Pikachu form)
+  if(aIt==='Light Ball'&&(A.p.b||A.p.n||'').startsWith('Pikachu'))am.push(8192);
   a=applyMods(a,am);
   if(ab!=='Mega Sol'){if(fw==='sand'&&dStat==='SpD'&&D.p.t.includes('Rock'))d=pokeRound(d*1.5);if(fw==='snow'&&dStat==='Def'&&D.p.t.includes('Ice'))d=pokeRound(d*1.5)}
   const dm=[];if(dStat==='Def'&&dab==='Fur Coat')dm.push(8192);else if(dStat==='Def'&&dab==='Grass Pelt'&&T==='grassy')dm.push(6144);
@@ -200,7 +205,9 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     if(gA&&((T==='grassy'&&type==='Grass')||(T==='electric'&&type==='Electric')||(T==='psychic'&&type==='Psychic')))m.push(5325);
     if(gD&&((T==='misty'&&type==='Dragon')||(T==='grassy'&&(nm==='Earthquake'||nm==='Bulldoze'))))m.push(2048);
     if((ab==='Technician'&&b<=60)||(ab==='Mega Launcher'&&mFlag(nm,'u',PULSE))||(ab==='Strong Jaw'&&mFlag(nm,'b',BITE))||(ab==='Steely Spirit'&&type==='Steel')||(ab==='Sharpness'&&mFlag(nm,'k',SHARP)))m.push(6144);
-    if(ab===type+' Aura'||dab0===type+' Aura')m.push(5448);
+    // Fairy Aura / Dark Aura boost every move of that type on the field, from either side (o.auras: abilities of the other
+    // Pokémon on the field, e.g. a partner's Mega Floette)
+    if(ab===type+' Aura'||dab0===type+' Aura'||(Array.isArray(o.auras)&&o.auras.includes(type+' Aura')))m.push(5448);
     if((ab==='Sheer Force'&&isSheer(nm))||(ab==='Sand Force'&&fw==='sand'&&['Rock','Ground','Steel'].includes(type))||(ab==='Tough Claws'&&contact)||(ab==='Punk Rock'&&mv.sound))m.push(5325);
     if(ate)m.push(4915);if((ab==='Reckless'&&isRecoil(nm))||(ab==='Iron Fist'&&mFlag(nm,'p',PUNCH)))m.push(4915);
     if(dab==='Dry Skin'&&type==='Fire')m.push(5120);
@@ -213,7 +220,9 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   // hits: 2–5 hit moves count 3 (5 with Skill Link); Parental Bond adds a second hit at 1/4 power (single-target moves).
   // Expanding Force in Psychic Terrain hits both foes, so it takes the spread cut.
   const spread=!!o.spread||(nm==='Expanding Force'&&gA&&T==='psychic');
-  const mhR=(MMETA(nm)||{}).mh,mhN=MULTI_HIT[nm]||(Array.isArray(mhR)?(mhR[1]>=5?3:mhR[1]):(mhR||1));
+  // Dragon Darts in doubles hits each foe once; both darts hit one target only when the other foe is protected, immune or
+  // gone (o.dartsBoth)
+  const mhR=(MMETA(nm)||{}).mh,mhN=nm==='Dragon Darts'&&!o.dartsBoth?1:(MULTI_HIT[nm]||(Array.isArray(mhR)?(mhR[1]>=5?3:mhR[1]):(mhR||1)));
   const hits0=mhN===3&&(MULTI_HIT[nm]===3||Array.isArray(mhR))&&ab==='Skill Link'?5:mhN,pb=ab==='Parental Bond'&&hits0===1&&!spread,hits=pb?2:hits0;
   const wMod=aw==='sun'?(type==='Fire'?6144:type==='Water'?2048:4096):aw==='rain'?(type==='Water'?6144:type==='Fire'?2048:4096):4096;
   const baseOf=h=>{let x=Math.floor(Math.floor(22*power(RISING_HIT[nm]?RISING_HIT[nm]*(h+1):bp)*a/d)/50)+2;
@@ -321,7 +330,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
           Assurance:'doubles if the target was already hit this turn','Lash Out':'doubles if the user\'s stats were lowered this turn'};if(CN[mv.name])t.push(`listed power; ${CN[mv.name]}`)}if(mv.vbp==='hex')t.push('assumes no status on the target (130 power if it has one)');
         if(mv.fixed==='level')t.push('fixed damage: the user\'s level (50)');if(mv.vbp==='half')t.push('half the target\'s current HP');if(r.ohko)t.push('one-hit KO move: KOs only if it lands');
         if(acc<100)t.push(`${acc}% to hit`);if(chargesFirst(mv,dc.weather,A.item))t.push(mv.name==='Electro Shot'?'charges a turn first unless it\'s raining (or Power Herb)':mv.name==='Solar Beam'||mv.name==='Solar Blade'?'charges a turn first unless the sun is out (or Power Herb)':'charges a turn first (Power Herb skips it)');
-        if(mv.recharge)t.push('the user must recharge next turn');if(D.ability==='Disguise')t.push('Disguise takes the first hit (only 1/8 of its HP)');
+        if(mv.recharge)t.push('the user must recharge next turn');if(mv.name==='Dragon Darts')t.push('one dart per foe in doubles (both darts hit one target only if the other foe is protected or gone)');if(D.ability==='Disguise')t.push('Disguise takes the first hit (only 1/8 of its HP)');
         return t.length?`<p class="t2">${t.join(' · ')}</p>`:''})()}
       ${(()=>{if(!r||r.max===0)return '';const bs=bulkToSurvive({atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit});if(!bs)return '';if(bs.none)return `<p class="dcbulk">${esc(D.p.d||D.p.n)} can't survive this hit with any spread.</p>`;return `<p class="dcbulk">Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max<r.hp?'This spread already survives.':'This spread does not.'}</p>`})()}
       <p class="t2">${esc(A.p.d||A.p.n)} ${aShown} ${mvC&&mvC.cat===2?'SpA':'Atk'} points ${esc(A.nat)}${A.item?' '+esc(A.item):''} · ${esc(dc.mv)}${spread?' (spread)':''} vs ${esc(D.p.d||D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${esc(D.nat)}${D.item?' '+esc(D.item):''}${A.real||D.real?' · spreads: most common on the Showdown ladder':''}${A.p.n==='Aegislash'?' · Aegislash attacks in Blade Forme (Atk/SpA 140)':''}${D.p.n==='Aegislash'?' · Aegislash takes hits in Shield Forme':''}${A.p.formNote||D.p.formNote?' · Palafin in Hero Form':''}${dc.wSet||dc.tSet||!(dc.weather||dc.terrain)?'':' · field set by the Pokémon selected (change it above)'}</p>`}</div>
@@ -331,7 +340,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
 function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A={p:atkP,...sideDefaults(atkP,'atk',aMem)},D={p:defP,...sideDefaults(defP,'def',dMem)};const F=field||{};
   // best by what you can count on: a move's damage is weighed by its accuracy, a two-turn move that charges first or a move
   // that must recharge counts for less, so a coin-flip OHKO move or Hyper Beam doesn't outrank a reliable attack
-  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||''});if(!r||!r.hp)continue;
+  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||'',auras:F.auras});if(!r||!r.hp)continue;
     const ch=chargesFirst(mv,F.weather,A.item),acc=moveAcc(mv,A.ability,F.weather,D,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
     if(!best||val>best.val)best={mv,r,val,charge:ch,acc,recharge:!!mv.recharge}}return best}
 // plain words for what a best hit depends on: "charges first", "70% to hit", "must recharge", "one-hit KO move"

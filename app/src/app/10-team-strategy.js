@@ -5,7 +5,7 @@ const REDIRECT_MOVES = new Set(['Follow Me','Rage Powder']);
 const WEATHER_SPEED = {'Swift Swim':'Water','Chlorophyll':'Fire','Sand Rush':'Rock','Slush Rush':'Ice'};
 const ARCH = {
   rain: {name:'Rain', setAb:['Drizzle'], abAb:['Swift Swim','Rain Dish','Dry Skin','Hydration'], abMv:['Electro Shot','Hurricane','Thunder','Weather Ball'], abN:['Archaludon','Basculegion','Basculegion-F','Golisopod-Mega','Swampert-Mega','Barbaracle-Mega','Blastoise-Mega','Pelipper','Politoed']},
-  sun:  {name:'Sun', setAb:['Drought','Mega Sol'], abAb:['Chlorophyll','Solar Power','Flower Gift'], abMv:['Solar Beam','Weather Ball','Eruption'], abN:['Venusaur','Volcarona','Armarouge','Torkoal','Charizard-Mega-Y','Meganium-Mega','Scovillain-Mega']},
+  sun:  {name:'Sun', setAb:['Drought'], abAb:['Chlorophyll','Solar Power','Flower Gift'], abMv:['Solar Beam','Weather Ball','Eruption'], abN:['Venusaur','Volcarona','Armarouge','Torkoal','Charizard-Mega-Y','Meganium-Mega','Scovillain-Mega']},
   sand: {name:'Sand', setAb:['Sand Stream'], abAb:['Sand Rush','Sand Force'], abMv:[], abN:['Excadrill','Garchomp-Mega','Steelix-Mega','Garganacl']},
   snow: {name:'Snow', setAb:['Snow Warning'], abAb:['Slush Rush','Ice Body'], abMv:['Blizzard','Aurora Veil'], abN:['Baxcalibur-Mega','Baxcalibur','Ninetales-Alola','Froslass-Mega']},
   // terrains (Reg M-C): setters on switch-in, abusers by ability, signature move, matching seed (Unburden Sneasler) or same-type attacks
@@ -16,7 +16,8 @@ const ARCH = {
   tr:   {name:'Trick Room'},
   tw:   {name:'Tailwind'}
 };
-const WEATHER_OF = {Drizzle:'rain', Drought:'sun', 'Mega Sol':'sun', 'Sand Stream':'sand', 'Snow Warning':'snow'};
+// Mega Sol is not here: it makes only its holder's own moves act as if the sun were out and never sets sun (Showdown's Champions data)
+const WEATHER_OF = {Drizzle:'rain', Drought:'sun', 'Sand Stream':'sand', 'Snow Warning':'snow'};
 // Terrain setters (abilities) and the type each terrain boosts by 30% for grounded attackers.
 const TERRAIN_OF = {'Psychic Surge':'psy', 'Grassy Surge':'grassy', 'Seed Sower':'grassy', 'Electric Surge':'elec', 'Misty Surge':'misty'};
 const T_TYPE = {psy: 'Psychic', grassy: 'Grass', elec: 'Electric', misty: null};

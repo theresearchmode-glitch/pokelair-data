@@ -83,7 +83,9 @@ function turnOneField(leads, speedOf) { const ev = [];
   for (const e of ev) { if (e.w) { weather = e.w; wBy = e.x; } if (e.t) { terrain = TERR_DC(e.t); tBy = e.x; } }
   return {weather, terrain, wBy, tBy}; }
 // The field a side sets by itself when it's the only one (for "your hits" tables): one weather and/or one terrain
-function sideField(ms) { const F = teamField(ms); return {weather: F.w.size === 1 ? [...F.w][0] : '', terrain: F.t.size === 1 ? TERR_DC([...F.t][0]) : ''}; }
+function sideField(ms) { const F = teamField(ms); return {weather: F.w.size === 1 ? [...F.w][0] : '', terrain: F.t.size === 1 ? TERR_DC([...F.t][0]) : '',
+  // Fairy Aura / Dark Aura on the team (Mega Floette…) boosts every move of that type while it's on the field
+  auras: (ms || []).map(m => m && abilityOf(m)).filter(a => /^(Fairy|Dark) Aura$/.test(a || ''))}; }
 const fieldWords = f => [f.weather ? ({sun: 'sun', rain: 'rain', sand: 'sand', snow: 'snow'})[f.weather] : '', f.terrain ? f.terrain[0].toUpperCase() + f.terrain.slice(1) + ' Terrain' : ''].filter(Boolean).join(' + ');
 // Problems a suggestion (plan, build, addition) may not create: counted on a team with team-aware defaults
 function itemProblemCount(ms) { try { return itemProblems(assignItems(ms)).length; } catch (e) { return 0; } }

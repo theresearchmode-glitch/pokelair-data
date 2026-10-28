@@ -16,7 +16,7 @@
 // teams did better than player skill alone predicts). See experiments/threat-check.mjs.
 const THR = (() => {
   const MVn = n => mvByName.get(n);
-  const WEATHER_AB = {Drought: 'sun', 'Mega Sol': 'sun', Drizzle: 'rain', 'Sand Stream': 'sand', 'Snow Warning': 'snow'};
+  const WEATHER_AB = {Drought: 'sun', Drizzle: 'rain', 'Sand Stream': 'sand', 'Snow Warning': 'snow'};
   const TERRAIN_AB = {'Grassy Surge': 'grassy', 'Electric Surge': 'electric', 'Psychic Surge': 'psychic', 'Misty Surge': 'misty', 'Hadron Engine': 'electric'};
   const WSPEED = {Chlorophyll: 'sun', 'Swift Swim': 'rain', 'Sand Rush': 'sand', 'Slush Rush': 'snow'};
   const SEED = {'Grassy Seed': 'grassy', 'Electric Seed': 'electric', 'Psychic Seed': 'psychic', 'Misty Seed': 'misty'};
@@ -84,7 +84,9 @@ const THR = (() => {
   const defObj = s => ({p: s.p, hpSp: s.sp.hp, defSp: s.sp.def, spdSp: s.sp.spd, atkSp: s.sp.atk, nat: s.nat, item: isStone(s.item) ? '' : s.item, ability: s.ability, boost: 0});
   function fieldFor(team, t) {
     return {weather: team.map(m => WEATHER_AB[m.ability]).find(Boolean) || WEATHER_AB[t.ability] || '',
-      terrain: team.map(m => TERRAIN_AB[m.ability]).find(Boolean) || TERRAIN_AB[t.ability] || ''};
+      terrain: team.map(m => TERRAIN_AB[m.ability]).find(Boolean) || TERRAIN_AB[t.ability] || '',
+      // Fairy Aura / Dark Aura on the field (yours or theirs) boosts every move of that type
+      auras: [...team.map(m => m.ability), t.ability].filter(a => /^(Fairy|Dark) Aura$/.test(a || ''))};
   }
   function speedOf(s, field) {
     let v = calcStat(s.p, 'Spe', s.sp.spe, natMul(s.nat, 'Spe'));
@@ -110,7 +112,7 @@ const THR = (() => {
     for (const mv of att.moves) { if (!mv || !mv.bp || mv.cat === 0 || mv.name === 'Fake Out') continue;
       if (mv.vbp === 'counter' || mv.vbp === 'endeavor') continue; // conditional damage, never a planned KO
       const k = mv.cat === 1 ? 'atk' : 'spa', b0 = st[k] + (E.after ? 0 : (E[k] || 0)), bLate = st[k] + (E[k] || 0);
-      const base = {def: defObj(def), move: mv, spread: !!mv.spread, weather: field.weather, terrain: field.terrain};
+      const base = {def: defObj(def), move: mv, spread: !!mv.spread, weather: field.weather, terrain: field.terrain, auras: field.auras};
       const r = damage({...base, atk: atkObj(att, b0)}); if (!r) continue;
       // its own drop after the hit; White Herb resets it once (unless Intimidate already used the herb), so the second hit is
       // still at full power
