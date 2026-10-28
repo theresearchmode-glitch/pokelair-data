@@ -35,6 +35,13 @@ const res = await ev(`(()=>{
   out.noSupport=run([mv('Garchomp',['Earthquake','Dragon Claw','Protect','Rock Slide']),mv('Archaludon',['Draco Meteor','Flash Cannon','Protect','Body Press']),mv('Gholdengo',['Make It Rain','Shadow Ball','Protect','Nasty Plot']),mv('Kingambit',['Kowtow Cleave','Iron Head','Protect','Swords Dance']),mv('Basculegion',['Wave Crash','Last Respects','Protect','Aqua Jet']),mv('Dragapult',['Dragon Darts','Phantom Force','Protect','U-turn'])]);
   out.electricStack=run([...new Map(ROSTER.filter(p=>!p.m&&p.t.includes('Electric')&&!p.t.includes('Ground')&&!p.t.includes('Flying')).sort((a,b)=>U(b)-U(a)).map(p=>[p.b,p.n])).values()].slice(0,4).concat(['Incineroar','Whimsicott']));
   out.perish=run([mv('Gengar-Mega',['Perish Song','Shadow Ball','Protect','Sludge Bomb']),'Incineroar','Archaludon','Garchomp','Whimsicott','Kingambit']);
+  // hand-typed move names on tournament sheets resolve (canonMove), every event sheet move is a real move
+  out.canon=[['Make it Rain','Gholdengo'],['U-Turn','Rillaboom'],['Kowtow Kleave','Kingambit'],['Last Respect','Basculegion'],['Psychic Fang','Metagross-Mega'],['Heart power','Venusaur-Mega'],['fake out','Incineroar'],['Thunder','Raichu']].map(([n,p])=>canonMove(n,byName.get(p)));
+  out.evMovesBad=META.events?META.events.events.flatMap(e=>e.top.flatMap(t=>t.mons.flatMap(m=>m.mv.filter(x=>!mvByName.has(x)).map(x=>m.n+':'+x)))):['no events'];
+  // Build me a team gives exactly the Megas you asked for, proven teams included
+  out.buildMegas=[0,1,2].map(g=>{const s=[S.megaGoal,ui.abSrc,ui.abLock];S.megaGoal=g;ui.abSrc='all';ui.abLock=null;let r;try{r=buildBest()}finally{[S.megaGoal,ui.abSrc,ui.abLock]=s}return r.teams.map(t=>t.megas)});
+  // hidden gems hold up under resampling (topcut.mjs gem stability)
+  out.gems=ROSTER.filter(isGem).map(p=>[p.n,rating(p).tc.gs]);
   out.empty=(()=>{S.slots=[];fixSlots();const ms=members();return {ck:proChecks(ms,true),arch:teamArchetype(ms),ts:tsOf(ms),ip:itemProblems(ms).length}})();
   return out})()`);
 const fails = []; const must = (c, msg) => { if (!c) fails.push(msg); };
@@ -67,7 +74,11 @@ must(r.noSupport.ck.fake === 'no', 'no Fake Out/Intimidate/redirection fails lea
 must(r.electricStack.ck.stack === 'no', '4 Electric types: major weak spot (Ground): ' + JSON.stringify(r.electricStack.ck) + ' ' + r.electricStack.names);
 must(/Perish/.test(r.perish.arch || ''), 'Perish Song + Shadow Tag is Perish Trap: ' + r.perish.arch);
 must(r.empty.ck == null && r.empty.arch == null && r.empty.ts == null && r.empty.ip === 0, 'empty team: no checklist, no archetype, no readiness');
-for (const [k, v] of Object.entries(r)) if (k !== 'slowAtt' && k !== 'empty') console.log(k.padEnd(20), (v.arch || '').padEnd(32), JSON.stringify(v.ck), (v.ip || []).join(','), 'ts=' + v.ts, 'legal=' + v.legal);
+must(r.canon.join() === 'Make It Rain,U-turn,Kowtow Cleave,Last Respects,Psychic Fangs,Earth Power,Fake Out,Thunder', 'move names resolve: ' + r.canon.join());
+must(!r.evMovesBad.length, 'every event sheet move resolves: ' + r.evMovesBad.slice(0, 8).join(', '));
+must(r.buildMegas.every((ts, g) => ts.length && ts.every(m => m === g)), 'Build me a team gives exactly 0/1/2 Megas: ' + JSON.stringify(r.buildMegas));
+must(r.gems.every(([, gs]) => gs == null || gs >= .8), 'hidden gems are stable: ' + JSON.stringify(r.gems));
+for (const [k, v] of Object.entries(r)) if (!['slowAtt', 'empty', 'canon', 'evMovesBad', 'buildMegas', 'gems'].includes(k)) console.log(k.padEnd(20), (v.arch || '').padEnd(32), JSON.stringify(v.ck), (v.ip || []).join(','), 'ts=' + v.ts, 'legal=' + v.legal);
 console.log('slow attackers used:', r.slowAtt.join(', '));
 for (const f of fails) console.log('  FAIL', f);
 console.log(`page errors: ${errs.length} ${errs.slice(0, 5).join(' | ')}`);
