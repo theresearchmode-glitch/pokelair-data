@@ -373,6 +373,12 @@ for (const width of [1280, 390]) {
   const c = await pg.evaluate(() => { const T = window.__PL; T.dc().a = 'Charizard-Mega-Y'; T.dc().d = 'Raichu-Mega-X'; T.renderCalc();
     const a = document.getElementById('dcAIt'), d = document.getElementById('dcDIt'); return [a && a.disabled, a && a.value, d && d.value]; });
   ok(c[0] && c[1] === 'Charizardite Y' && /Raichunite X/.test(c[2]), `calc: a Mega shows its Mega Stone, fixed (${c.join(' / ')})`);
+  // the threat engine's duel cache never changes a result: 12 teams from the top threats, cache on vs off
+  const eq = await pg.evaluate(() => { const H = window.__PL.THR, names = H.threatList().map(s => s.n), teams = [];
+    for (let i = 0; i + 6 <= names.length && teams.length < 12; i += 2) teams.push(names.slice(i, i + 6).map(n => ({n, top: true})));
+    const run = () => teams.map(t => JSON.stringify(H.brief(H.report(t))));
+    H.noCache(true); const a = run(); H.noCache(false); const b = run(), b2 = run(); return {n: teams.length, same: a.every((x, i) => x === b[i] && x === b2[i])}; });
+  ok(eq.n >= 10 && eq.same, `threat engine: cached duels give identical reports (${eq.n} teams)`);
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 await browser.close();
 // items, suggestions and battle math (Oct 28 audit), on the same build

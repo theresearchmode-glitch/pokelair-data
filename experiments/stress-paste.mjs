@@ -58,7 +58,7 @@ const b = await chromium.launch(), ctx = await b.newContext({viewport: {width: 1
 const errs = []; pg.on('pageerror', e => errs.push(e.message)); pg.on('dialog', d => { errs.push('dialog: ' + d.message()); d.dismiss(); });
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}}), collection: () => ({doc: () => ({set: async () => {}, get: async () => ({exists: false}), onSnapshot: () => () => {}})})} : null}; }, D);
 await pg.goto('file://' + page); await pg.waitForTimeout(2500);
-const fails = {}, add = (k, m) => { (fails[k] = fails[k] || []).push(m); }; const counts = {};
+const fails = {}, add = (k, m) => { (fails[k] = fails[k] || []).push(m); }; const counts = {}, times = [];
 const t0 = Date.now();
 for (let i = 0; i < cases.length; i += 50) {
   const chunk = cases.slice(i, i + 50);
@@ -67,16 +67,17 @@ for (let i = 0; i < cases.length; i += 50) {
       const views=['build','home','matchup','calc'];setView(views[out.length%4]);
       const t1=performance.now();r.ms=Math.round(t1-t0);
       const ex=exportPaste();const u2=parsePaste(ex);
-      const key=s=>s.filter(x=>x&&x.n).map(x=>[x.n,x.a||'',(x.mv&&x.mv.doubles||[]).join(','),x.it&&x.it.doubles||'',x.sp&&x.sp.doubles?(x.sp.doubles.nat||'')+':'+x.sp.doubles.v.join('/'):''].join('|'));
+      const key=s=>s.filter(x=>x&&x.n).map(x=>[x.n,x.a||'',(x.mv&&x.mv.doubles||[]).join(','),x.it&&x.it.doubles||'',x.sp&&x.sp.doubles?(e=>e?(x.sp.doubles.nat||'')+':'+[e.hp,e.atk,e.def,e.spa,e.spd,e.spe].join('/'):'')(slotSpread(x,byName.get(x.n))):''].join('|'));
+      // (a team sheet's spread is assumed: compared by the stat points it is played with, Oct 28)
       const a=key(S.slots),b2=key(normSlots(u2.slots));
       // compare what the user set: species, ability chosen, moves, held item, nature+SP
       r.n=a.length;r.rt=a.length===b2.length&&a.every((x,i)=>{const [n,ab,mv,it,sp]=x.split('|'),[n2,ab2,mv2,it2,sp2]=b2[i].split('|');return n===n2&&(!ab||ab===ab2||byName.get(n).m)&&(!mv||mv===mv2)&&(!it||it===it2)&&(!sp||sp===sp2||(sp.startsWith(':')&&sp.split(':')[1]===sp2.split(':')[1]))});
       if(!r.rt)r.diff=[a,b2];
       const txt=document.body.innerText;r.bad=(txt.match(/\\bNaN\\b|\\bundefined\\b|\\[object |\\bInfinity\\b/)||[])[0]||null;
       r.inj=!!window.__pwned||!!document.querySelector('main img[src="x"], main svg[onload], main script:not([type])');
-      r.sp=S.slots.filter(x=>x.sp&&x.sp.doubles).map(x=>x.sp.doubles.v.reduce((s,v)=>s+v,0));
+      r.sp=S.slots.filter(x=>x.sp&&x.sp.doubles).map(x=>(x.sp.doubles.v||[]).reduce((s,v)=>s+v,0));
     }catch(e){r.err=e.message+' @ '+(e.stack||'').split('\\n')[1]}out.push(r)}return out})()`), chunk);
-  for (const r of res) { counts[r.name] = (counts[r.name] || 0) + 1;
+  for (const r of res) { counts[r.name] = (counts[r.name] || 0) + 1; if (r.ms != null) times.push(r.ms);
     if (r.err) add('crash', `${r.name}: ${r.err}`);
     if (r.inj) add('injection', r.name);
     if (r.bad) add('bad-text', `${r.name}: ${r.bad}`);
@@ -87,6 +88,7 @@ for (let i = 0; i < cases.length; i += 50) {
 }
 await b.close(); fs.unlinkSync(page);
 console.log(`${cases.length} pastes in ${Math.round((Date.now() - t0) / 1000)} s`, JSON.stringify(counts));
+{ const s = times.slice().sort((a, b) => a - b), q = f => s[Math.min(s.length - 1, Math.floor(f * s.length))]; console.log(`import + render ms: median ${q(.5)}, p95 ${q(.95)}, max ${s[s.length - 1]}`); }
 for (const [k, v] of Object.entries(fails)) { console.log(`\n${k}: ${v.length}`); for (const m of [...new Set(v)].slice(0, 8)) console.log('  ' + m); }
 console.log(Object.keys(fails).length ? '\nPASTE FUZZ: ISSUES' : '\nPASTE FUZZ CLEAN');
 process.exit(Object.keys(fails).length ? 1 : 0);

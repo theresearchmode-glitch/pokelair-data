@@ -34,7 +34,8 @@ for(let i=0;i<${N};i++){const mode=modes[i%modes.length];let pool=ROSTER;if(mode
     if(!a.p.m&&a.heldItem&&b.item!==a.heldItem)fail('chosen item changed',{n:a.p.n,chose:a.heldItem,got:b.item});
     if(a.p.m&&!(b.item&&STONE_RE.test(b.item)))fail('Mega without its stone',{n:a.p.n,item:b.item});
     if(b.itemDefault&&b.item){if(out.some((x,j)=>j!==k&&x.item===b.item))fail('default item breaks Item Clause',{n:b.p.n,item:b.item,team:out.map(x=>x.item)});
-      const F=teamField(out),tr=out.some(setsTR);if(itemDeadWhy(b,b.item,out,F,tr))fail('default item is dead on the team',{n:b.p.n,item:b.item,why:itemDeadWhy(b,b.item,out,F,tr)})}
+      // Trick Room counts against a Scarf only as the team's main mode (approved rule, Oct 28: trMain, as assignItems uses)
+      const F=teamField(out),tr=trMain(out);if(itemDeadWhy(b,b.item,out,F,tr))fail('default item is dead on the team',{n:b.p.n,item:b.item,why:itemDeadWhy(b,b.item,out,F,tr)})}
     if(b.itemDefault&&!b.item)fail('no default item found',b.p.n)}
   let probs;try{probs=itemProblems(out)}catch(e){fail('itemProblems CRASH '+e,0);continue}
   for(const pr of probs){if(/undefined|NaN/.test(pr.why))fail('bad text in item problem',pr.why);

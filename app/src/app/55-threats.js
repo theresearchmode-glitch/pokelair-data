@@ -154,7 +154,18 @@ const THR = (() => {
     if (tgt._fv || tgt.item === 'White Herb') { e.atk = Math.max(0, e.atk); e.spa = Math.max(0, e.spa); }
     if (tgt.ability === 'Justified' && o.type === 'Dark') e.atk += 1; if (tgt.ability === 'Thermal Exchange' && o.type === 'Fire') e.atk += 1;
     return e.atk || e.spa ? e : null; }
+  // A duel depends only on the two sets, the team's speed modes, Flower Veil and the field's weather/terrain/auras, so it is
+  // cached by those (speed, Oct 28: judging every field you could play on made the scouting report ~60% slower). Results
+  // are identical with the cache off (THR.noCache, checked in app/test/run.mjs).
+  const duelCache = new Map(), cacheOpt = {off: false};
+  // (built every call, never stored on the set, so a changed set can't reuse a stale key)
+  const sigOf = s => [s.p ? s.p.n : s.n, s.item || '', s.ability || '', s.nat || '', s.sp ? [s.sp.hp, s.sp.atk, s.sp.def, s.sp.spa, s.sp.spd, s.sp.spe].join('/') : '',
+    (s.moves || []).map(x => x ? x.name : '').join('+')].join(':');
   function duel(m, t, modes, field) {
+    if (cacheOpt.off) return duel0(m, t, modes, field);
+    const k = sigOf(m) + (m._fv ? '#fv' : '') + '>' + sigOf(t) + (t._fv ? '#fv' : '') + '|' + (modes.tr ? 1 : 0) + (modes.tw ? 1 : 0) + '@' + (field.weather || '') + '|' + (field.terrain || '') + '|' + (field.auras || []).slice().sort().join(',');
+    let r = duelCache.get(k); if (r) return r; if (duelCache.size > 50000) duelCache.clear(); r = duel0(m, t, modes, field); duelCache.set(k, r); return r; }
+  function duel0(m, t, modes, field) {
     let o = bestAttack(m, t, field), d = bestAttack(t, m, field);
     const sm = speedOf(m, field), st = speedOf(t, field);
     const prM = o ? o.pr : 0, prT = d ? d.pr : 0;
@@ -343,7 +354,8 @@ const THR = (() => {
   function evidence(r) { if (r.solid.length) return r.solid[0].why; if (r.soft.length) return r.soft[0].why;
     if (r.mode) return `Nothing on the team answers its ${r.mode[0].name}`;
     const l = r.losers[0]; return l ? `It beats ${r.losers.slice(0, 3).map(x => x.m.d).join(', ')} 1-on-1 (${l.du.d.mv} ${pc(l.du.d.min)}-${pc(l.du.d.pct)}% on ${l.m.d})` : 'No one on the team beats it 1-on-1'; }
-  return {side, fromMember, report, reportSides, teamReport, threatList, brief, pair, one, teamVs, vsThreat, teamModes, speedOf, fieldFor, duel, evidence, PTS};
+  return {side, fromMember, report, reportSides, teamReport, threatList, brief, pair, one, teamVs, vsThreat, teamModes, speedOf, fieldFor, duel, evidence, PTS,
+    noCache: off => { cacheOpt.off = !!off; duelCache.clear(); repCache.clear(); }};
 })();
 if (window.__PL_TEST || window.__THR_EXPOSE) window.THR = THR;
 // readiness of any six members (suggestions, saved teams, home card): {score, rows} or null
