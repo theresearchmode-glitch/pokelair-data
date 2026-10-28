@@ -293,4 +293,61 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chshm i{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 10px/1.4 var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.06em;padding:0 5px;border-radius:3px;background:var(--chc);color:var(--chink2);border:1px solid var(--line2);opacity:.9}
 .chshm i.lead{background:var(--chyel);color:#1D2140;border-color:#1D2140}
 .chshf{display:block;height:14px;margin:-8px 18px 10px;border-radius:50%;background:color-mix(in srgb,var(--chink) 10%,transparent)}
-@media (min-width:900px){.chshs{grid-template-columns:repeat(6,1fr)}.chshn{font-size:44px}.chhome2{grid-template-columns:1fr}}
+@media (min-width:900px){.chshs{grid-template-columns:repeat(6,1fr)}.chshn{font-size:44px}.chhome2{grid-template-columns:1fr}}/* ===== Concept H pages, batch 1: Build me a team + Battle mode ===== */
+.chpghead{margin:4px 0 12px}.chpgt{font-size:40px;color:var(--chink);margin:4px 0 0}.chpgs{margin:8px 0 0;font-size:15px;color:var(--chink2)}.chpgs b{color:var(--chink)}
+/* page section heads on restyled pages: Anton, no old marker */
+:root:not(#_ch) .view .head h2{font:400 30px/1 var(--display);text-transform:uppercase}
+/* Build */
+:root:not(#_ch) .abhero.chabhero{background:var(--chc);border:2px solid var(--chline);border-radius:16px;box-shadow:none;color:var(--chink);display:block;padding:16px}
+:root:not(#_ch) .abhero.chabhero::before,:root:not(#_ch) .abhero.chabhero::after{display:none}
+.chabhero .abctl{display:flex;flex-direction:column;gap:12px;margin-top:14px;align-items:stretch}
+:root:not(#_ch) .chabhero .srcseg{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:none;padding:0;box-shadow:none}
+:root:not(#_ch) .chabhero .srcseg button{border:2px solid var(--chline);border-radius:14px;background:var(--chc);color:var(--chink);text-align:left;padding:10px 12px;min-height:64px;clip-path:none;box-shadow:none}
+:root:not(#_ch) .chabhero .srcseg button b{font:400 22px/1 var(--display);text-transform:uppercase;display:block}
+:root:not(#_ch) .chabhero .srcseg button span{font:400 12px var(--mono);color:inherit;opacity:.8}
+:root:not(#_ch) .chabhero .srcseg button[aria-pressed="true"]{background:var(--chink);color:var(--chp);box-shadow:4px 4px 0 var(--chredB)}
+:root:not(#_ch) .chabhero .megactl{color:var(--chink)}
+.chabsix{background-color:var(--chblue);color:#fff;border-radius:16px;padding:14px 12px 10px;margin-bottom:10px}
+:root[data-look="dark"] .chabsix{background-color:#0B6AA8}
+.chabt{font:400 34px/1 var(--display);text-transform:uppercase;margin:4px 0 6px}
+.chabg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.chabg>div{text-align:center;min-width:0}.chabg .spr{width:100%;max-width:104px;aspect-ratio:1;object-fit:contain;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.25))}
+.chabg span{display:block;font:700 13px/1.2 var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root:not(#_ch) .abcol{background:var(--chc);border:2px solid var(--chline);border-radius:16px;box-shadow:none}
+@media (min-width:900px){.chabg{grid-template-columns:repeat(6,1fr)}.chabhero .abctl{flex-direction:row;align-items:center}.chabhero .chprimary{width:auto}}
+/* Battle mode */
+.chbm>.head{display:none}
+.chbmhead{margin:4px 0 10px}
+.chbmt{font-size:40px;line-height:.95;margin:6px 0 0;color:var(--chink)}.chbmt small{font-size:22px;color:var(--chink2);margin:0 2px}.chbmt em{font-style:normal;color:var(--chredT)}
+.chbmhead .bmbar{margin-top:10px}
+:root:not(#_ch) .bmclock{background:var(--chhdr);color:#F3EBDC;border:0;border-radius:8px}
+.chbmk{margin:6px 0 4px}
+:root:not(#_ch) .bmopp.chhalf{background-color:var(--chredB);border-radius:16px;padding:10px;gap:6px}
+:root:not(#_ch) .bmopp .bmslot{background:transparent;border:0;color:#fff}
+:root:not(#_ch) .bmopp .bmslot.on .bmn{color:#fff;font:800 12px var(--body);text-transform:uppercase}
+:root:not(#_ch) .bmopp .bmslot .x{color:#fff;border-color:rgba(255,255,255,.6);background:transparent}
+:root:not(#_ch) .bmopp .bmslot .field{background:rgba(255,255,255,.92);color:#1D2140}
+:root:not(#_ch) .bmopp .bmspr{filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
+:root:not(#_ch) .bmtabs{background:none;padding:0;gap:8px;box-shadow:none;margin:14px 0 8px}
+:root:not(#_ch) .bmtabs button{border:2px solid var(--chline);border-radius:999px;min-height:44px;padding:0 18px;font:800 13px var(--body);text-transform:uppercase;letter-spacing:.04em;background:transparent;color:var(--chink);clip-path:none}
+:root:not(#_ch) .bmtabs button[aria-pressed="true"]{background:var(--chink);color:var(--chp)}
+:root:not(#_ch) .chbring{background:var(--chc);border:2px solid var(--chline);border-radius:16px;box-shadow:none}
+.chbringt{font-size:34px;margin:4px 0 10px;color:var(--chink)}.chbringt span{color:var(--chblueT);display:block}
+:root:not(#_ch) .chbring .bmpicks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+:root:not(#_ch) .chbring .bmpick{border:2px solid var(--chline);border-radius:12px;background:var(--chp2);padding:6px 6px 0;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+:root:not(#_ch) .chbring .bmpspr{width:96px;height:96px;object-fit:contain}
+:root:not(#_ch) .chbring .bmpn{font:800 13px var(--body);text-transform:uppercase;text-align:center}
+:root:not(#_ch) .chbring .bmpick .tag{width:calc(100% + 12px);text-align:center;border-radius:0;margin-top:6px;background:var(--chp2);color:var(--chink);border:0;border-top:2px solid var(--chline);font:700 11px var(--mono)}
+:root:not(#_ch) .chbring .bmpick.lead .tag{background:var(--chyel);color:#1D2140}
+.chbring .chpen{font-size:15px}
+.chreasons{margin:10px 0 0;padding-left:22px;font-size:14px;color:var(--chink2)}.chreasons li{margin:4px 0}.chreasons b{color:var(--chink)}
+.chbmfold .bmcard{border:0;box-shadow:none;background:none;padding:0}
+.chpanel{background:var(--chhdr);color:#F3EBDC;border-radius:16px;padding:14px;border:2px solid var(--chline)}
+.chpanel h3,.chpanel b{color:#FFE800}
+.chpanel .t2,.chpanel p{color:#E6DCCB}
+:root:not(#_ch) .bmsr.me .bmsb i{background:var(--chblue)}:root:not(#_ch) .bmsr:not(.me) .bmsb i{background:var(--chredB)}
+:root:not(#_ch) .bmsr.me .bmsn{color:var(--chblueT)}:root:not(#_ch) .bmsr:not(.me) .bmsn{color:var(--chredT)}
+@media (min-width:900px){.chbmt{font-size:72px}:root:not(#_ch) .chbring .bmpicks{grid-template-columns:repeat(4,1fr)}}.chpanel,.chpanel *{color:#F3EBDC}
+.chpanel b,.chpanel h3,.chpanel .bmt1h,.chpanel strong{color:#FFE800}
+.chpanel a,.chpanel [class*="mv"],.chpanel .t1mv{color:#9FD3FF}
+:root:not(#_ch) .bmopp .bmslot.on .bmn{opacity:1;text-shadow:0 1px 2px rgba(0,0,0,.35)}
