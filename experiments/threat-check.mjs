@@ -154,6 +154,10 @@ let p2 = 0; const l2 = [];
 for (const [team, t, exp, note] of S2) { let r; try { r = await ev(`(a) => THR.teamVs(a[0], a[1])`, [team, {n: t}]); } catch (e) { r = {label: 'error: ' + e.message.slice(0, 80), level: -1}; }
   const ok = exp === 'handled' ? r.level >= 2 : r.level <= 1; if (ok) p2++; else fails.push(`support ${t} vs ${team.map(x => x.n).join('/')}: expected ${exp}, got ${r.label}`);
   l2.push(`${ok ? 'PASS' : 'FAIL'} ${t} vs ${team.map(x => x.n).join(', ')}: expected ${exp}, got ${r.label}${r.mode ? ' [judged by ' + r.mode.join(', ') + ']' : ''}${r.solid && r.solid.length ? ' — ' + r.solid[0] : r.soft && r.soft.length ? ' — ' + r.soft[0] : ''}  (${note})`); }
+// Grimmsnarl's screens: Fake Out (+3) moves before its Prankster screens, so it is a partial answer (Shaky), not nothing
+{ const r = await ev(`(a) => THR.teamVs(a[0], a[1])`, [[{n: 'Incineroar', moves: ['Fake Out', 'Parting Shot', 'Flare Blitz', 'Protect']}], {n: 'Grimmsnarl'}]);
+  const ok = r.level === 1 && (r.soft || []).some(s => /Fake Out/.test(s)); l2.push(`${ok ? 'PASS' : 'FAIL'} Grimmsnarl vs Incineroar (Fake Out): expected Shaky via Fake Out, got ${r.label}${r.soft && r.soft.length ? ' — ' + r.soft[0] : ''}`);
+  if (!ok) fails.push(`Grimmsnarl vs Fake Out Incineroar: expected Shaky via Fake Out, got ${r.label}`); }
 // 3) real teams
 const USER = [
   {n: 'Raichu-Mega-X', item: 'Raichunite X', ability: 'Lightning Rod', nat: 'Jolly', sp: {hp: 2, atk: 32, def: 0, spa: 0, spd: 0, spe: 32}, moves: ['Fake Out', 'Protect', 'Volt Tackle', 'Volt Switch']},
@@ -166,7 +170,9 @@ for (const e of OFF.events) for (const t of e.teams) if (t.st <= 2 && REG.length
 const rep = async team => ev(`(a) => { const r = THR.report(a); return {score: r.score, un: r.rows.filter(x => x.level === 0).map(x => x.t.n), shaky: r.rows.filter(x => x.level === 1).map(x => x.t.n)} }`, team);
 const user = await rep(USER), regs = []; for (const r of REG) { try { regs.push({who: r.who, ...(await rep(r.team))}); } catch (e) { regs.push({who: r.who, error: e.message.slice(0, 80)}); } }
 const regScores = regs.filter(r => r.score != null).map(r => r.score).sort((a, b) => a - b), med = regScores[regScores.length >> 1];
-if (!(user.un.length >= 2)) fails.push(`user team should show 2+ unanswered threats (got ${user.un.join(', ') || 'none'})`);
+// Oct 28: was 2+ (Grimmsnarl and Excadrill). Grimmsnarl is now shaky for this team (2HKOs into it count as a partial answer to
+// screens, backed by 20,000 replays: breaking screens barely changes results, KOing the setter does), so 1+ unanswered remains.
+if (!(user.un.length >= 1)) fails.push(`user team should show 1+ unanswered threats (got ${user.un.join(', ') || 'none'})`);
 if (!(med >= 80)) fails.push(`regional #1/#2 median readiness should be 80+ (got ${med})`);
 if (!(user.score < med)) fails.push(`user team (${user.score}) should be below the regional median (${med})`);
 const report = [...lines, '', `one-on-one verdict+numbers pass: ${pass}/${C.length}; damage within 1% of Smogon: ${nPass}/${nCmp}`, '', ...l2, `support threats pass: ${p2}/${S2.length}`, '',

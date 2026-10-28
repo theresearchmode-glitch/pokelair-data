@@ -176,8 +176,27 @@ function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.n
   const tag=src=>src==='sd'?` <span class="vsub" title="Showdown ladder, 1630+ rating">(Showdown)</span>`:'';
   const line=(label,arr,src)=>`<span class="lbl">${label}</span><div><span class="iname">${esc(arr[0][0])}</span>${pcTxt(arr[0][1])}${arr[1]?`<span class="ialt">or ${esc(arr[1][0])}${pcTxt(arr[1][1])}</span>`:''}${tag(src)}</div>`;
   const cs=typeof commonSpread==='function'?commonSpread(p):null;
-  const spr=cs?`<span class="lbl">Spread${typeof tip==='function'?tip('spread'):''}</span><div><span class="iname">${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}</span> <span class="vsub" title="HP/Atk/Def/SpA/SpD/Spe stat points, most common on the Showdown ladder (1630+)">${esc(cs.nat)} · HP/Atk/Def/SpA/SpD/Spe</span></div>`:'';
+  const spr=o&&o.noSpread?'':cs?`<span class="lbl">Spread${typeof tip==='function'?tip('spread'):''}</span><div><span class="iname">${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}</span> <span class="vsub" title="HP/Atk/Def/SpA/SpD/Spe stat points, most common on the Showdown ladder (1630+)">${esc(cs.nat)} · HP/Atk/Def/SpA/SpD/Spe</span></div>`:'';
   return `<div class="itemrow">${it?line('Item',it.it,it.src):''}${na?line('Nature',na,st.src.na):''}${spr}</div>`}
+// The spread a team member is played with, and where it comes from: yours (paste, link or set here), assumed (a team sheet
+// gave a nature but no points, so the most common spread), or the most common one. One tap opens a small editor.
+function spreadBlock(s,i,m){const cs=m.spread||(typeof commonSpread==='function'?commonSpread(m.p):null);
+  const src=m.spread&&m.spread.assumed?'assumed':m.spread?'yours':'common';
+  const tag=src==='assumed'?'<span class="asm" title="The team sheet had no stat points: this is the most common spread with your nature">assumed</span>':src==='yours'?'<span class="vsub">yours</span>':'<span class="asm" title="Most common on the Showdown ladder (1630+); set your own if yours differs">assumed</span>';
+  const v=cs?`${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}`:'';
+  const open=ui.spEdit===i;
+  const ed=open?`<div class="spedit"><input class="field" id="spv${i}" value="${esc(v)}" placeholder="HP/Atk/Def/SpA/SpD/Spe" inputmode="numeric" aria-label="Stat points for ${esc(m.p.d)}, HP/Atk/Def/SpA/SpD/Spe (0-32 each, ${SP_TOTAL} total)">
+    <select class="field" id="spn${i}" aria-label="Nature">${NATURES.map(n=>`<option${cs&&cs.nat===n?' selected':''}>${n}</option>`).join('')}</select>
+    <button class="btn sm primary" type="button" data-spsave="${i}">Save</button>${m.spread?`<button class="linkbtn" type="button" data-spclear="${i}">Use common</button>`:''}<button class="linkbtn" type="button" data-spedit="">Cancel</button><span class="vsub" id="spmsg${i}"></span></div>`:'';
+  if(!cs&&!open)return '';
+  return `<div class="itemrow"><span class="lbl">Spread</span><div>${cs?`<span class="iname">${v}</span> <span class="vsub">${esc(cs.nat||'')}</span> ${tag}`:'<span class="none">None</span>'} <button class="linkbtn" type="button" data-spedit="${open?'':i}" aria-expanded="${open}">${open?'Close':'Set'}</button></div>${ed}</div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-spedit],[data-spsave],[data-spclear]');if(!b)return;
+  if(b.dataset.spedit!=null){ui.spEdit=b.dataset.spedit===''?null:+b.dataset.spedit;renderSlots();const f=$('spv'+ui.spEdit);if(f)f.focus();return}
+  if(b.dataset.spclear!=null){const s=S.slots[+b.dataset.spclear];if(s&&s.sp)delete s.sp[S.format];ui.spEdit=null;render();toast('Using the most common spread');return}
+  const i=+b.dataset.spsave,s=S.slots[i],raw=($('spv'+i)||{}).value||'',nat=($('spn'+i)||{}).value,v=raw.split(/[\/\s,]+/).filter(Boolean).map(Number),msg=$('spmsg'+i);
+  const bad=v.length!==6||v.some(n=>!Number.isInteger(n)||n<0||n>32)?'Six numbers, 0-32 each':v.reduce((a,b)=>a+b,0)>SP_TOTAL?`${v.reduce((a,b)=>a+b,0)} points: Champions allows ${SP_TOTAL}`:!natOK(nat)?'Pick a nature':'';
+  if(bad){if(msg)msg.textContent=bad;return}
+  s.sp=Object.assign({},s.sp,{[S.format]:{nat,v}});ui.spEdit=null;render();toast('Spread saved')});
 // Each Pokémon is read with the 4 moves on its card (popular set unless you changed them).
 function memberMoves(m){const mv=m.moves&&m.moves.length?m.moves:popularMoves(m.p);if(mv.some(isCoverage))return {moves:mv,src:m.custom?'yours':'popular'};return {moves:[],src:'stab'}}
 const GP_TAG={ok:['ok','Covered'],part:['mid','Partly'],miss:['hi','Missing'],opt:['lo','Optional']};

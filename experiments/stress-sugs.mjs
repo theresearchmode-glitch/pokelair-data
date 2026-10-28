@@ -55,7 +55,7 @@ await ev(`window.SB=(()=>{
     const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rk(x.pl)-rk(y.pl)||x.i-y.i).map(x=>x.pl);const pl=ordered[0];if(!pl)return null;
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false}});return pl}
   function converge(team,maxSteps){S.slots=JSON.parse(JSON.stringify(team.s));fixSlots();const seen=new Set(),hist=[],v=[];
-    for(let st=0;st<maxSteps;st++){const ms=members();if(!ms.length)break;const key=ms.map(m=>m.p.n).sort().join('|');
+    for(let st=0;st<maxSteps;st++){const ms=members();if(!ms.length)break;const key=ms.map(m=>m.p.n+'@'+(m.item||'')).sort().join('|'); // a loop = the same six with the same items (a plan that swaps a Pokémon back with a better item is progress, Oct 28)
       if(seen.has(key)){v.push('LOOP after '+st+' steps: '+hist.join(' / '));break}seen.add(key);
       let plans;try{plans=planFixes(ms,suggestPool(),true)}catch(e){v.push('CRASH '+e.message);break}
       const ts=ms.length===6?tsOf(ms):null,ip=itemProblemCount(ms);hist.push(key.replace(/\\|/g,',')+' ts='+ts+' ip='+ip);

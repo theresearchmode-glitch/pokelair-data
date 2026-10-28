@@ -102,7 +102,7 @@ function renderBattle() {
       <div class="bmspd">${rows.map((q, i) => { const tie = rows.some((o, j) => j !== i && o.v === q.v && o.me !== q.me);
         return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">TIE</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}${q.wxUp ? `<em> ${esc(q.ab)}</em>` : ''}${q.unb ? `<em> → ${q.unb} after item</em>` : ''}</span></div>`; }).join('')}</div>
       ${prioList.length ? `<p class="t2" style="margin:0">Moves that skip the Speed order (higher bracket goes first, Speed only breaks ties inside a bracket): ${prioList.join(', ')}.</p>` : ''}
-      <p class="t2" style="margin:0">Your side: your items (and your spreads where you set them). Their side: the most common spreads, natures and items. Ties are a coin flip.</p></div>`;
+      <p class="t2" style="margin:0">Your side: your items (and your spreads where you set them). Their side <span class="asm" title="Their real spreads and items are hidden until the battle shows them">assumed</span>: the most common spreads, natures and items. Ties are a coin flip.</p></div>`;
     // damage both ways
     const cls = (b) => { if (!b) return 'z'; const lo = b.r.min / b.r.hp, hi = b.r.max / b.r.hp; return lo >= 1 ? 'k1' : hi >= 1 ? 'k1m' : lo >= .5 ? 'k2' : hi >= .5 ? 'k2m' : 'k3'; };
     const pc = b => b ? Math.min(999, Math.round(100 * b.r.max / b.r.hp)) : '–';
