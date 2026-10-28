@@ -100,6 +100,18 @@ for (const width of [1280, 390]) {
   ok(r.items.join('|') === 'Chople Berry|Grassy Seed|Expert Belt|Salamencite|Venusaurite|Life Orb|No Item', `hand-typed sheet items match the real item (${r.items.join(', ')})`);
   ok(r.grass[1] === r.grass[2] && r.grass[0] > r.grass[1], `Air Balloon holder gets no terrain boost; an Iron Ball holder does (${r.grass.join(' / ')})`);
   await ctx.close(); }
+
+// Found in 20,000 real Showdown battles (Oct 28)
+{ console.log('\n== real battles');
+  const {pg, ctx} = await open(1280);
+  const r = await pg.evaluate(() => { const T = window.__PL, P = n => T.byName.get(n), M = n => T.mvByName.get(n), side = (n, role, o) => ({p: P(n), ...T.sideDefaults(P(n), role), ...(o || {})});
+    const d = (a, df, o) => T.damage({atk: a, def: df, move: M('Knock Off'), ...(o || {})}).max;
+    const ttar = side('Tyranitar', 'atk'), gol = n => side('Golisopod-Mega', 'def', {item: n}), inc = n => side('Incineroar', 'def', {item: n});
+    // a Mega Stone can't be knocked off its own Pokémon, so Knock Off gets no 1.5× boost; any other item still gives it
+    return {mega: d(ttar, gol('Golisopite')), megaNone: d(ttar, gol('')), other: d(ttar, inc('Sitrus Berry')), otherNone: d(ttar, inc('')),
+      stoneOnOther: d(ttar, inc('Golisopite'))}; });
+  ok(r.mega === r.megaNone && r.other > r.otherNone && r.stoneOnOther > r.otherNone, `Knock Off: no boost against a Mega Stone on its own Pokémon, boost otherwise (${r.mega}/${r.megaNone}, ${r.other}/${r.otherNone}, ${r.stoneOnOther})`);
+  await ctx.close(); }
 // replay import and Showdown export
 { console.log('\n== replay + export');
   const {pg, ctx} = await open(1280);

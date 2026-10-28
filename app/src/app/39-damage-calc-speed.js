@@ -123,6 +123,9 @@ function moveEff(mv,type,ab,defTypes){let x=1;
 const ALWAYS_CRIT=['Flower Trick','Wicked Blow','Surging Strikes','Storm Throw','Frost Breath'];
 const pokeRound=x=>(x%1>.5?Math.ceil(x):Math.floor(x)),chain4096=list=>list.reduce((c,x)=>x===4096?c:(c*x+2048)>>12,4096),applyMods=(v,list)=>Math.max(1,pokeRound(v*chain4096(list)/4096));
 const statStage=(v,s)=>Math.floor(s>=0?v*(2+s)/2:v*2/(2-s));
+// an item that can't be knocked off: a Mega Stone on its own Pokémon (Knock Off then gets no 1.5× boost)
+const fixedItem=D=>{const it=D&&D.item;if(!it||typeof MEGA_STONE!=='object'||!D.p)return false;const base=D.p.n.split('-Mega')[0];
+  return Object.entries(MEGA_STONE).some(([k,v])=>v===it&&k.split('-Mega')[0]===base)};
 // Aegislash attacks in Blade Forme (Stance Change) and defends in Shield Forme; the roster stores Shield Forme stats
 const BLADE_ST=[60,140,50,140,50,60];
 const atkForm=A=>A&&A.p&&(A.p.n==='Aegislash'||A.ability==='Stance Change')?{...A,p:{...A.p,st:BLADE_ST}}:A;
@@ -199,7 +202,7 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   // move power (b: this hit's own power, which Technician reads)
   const contact=isContact(mv);
   const power=b=>{const m=[];
-    if(nm==='Facade'&&burned)m.push(8192);else if(nm==='Expanding Force'&&gA&&T==='psychic')m.push(6144);else if((nm==='Knock Off'&&D.item)||(nm==='Misty Explosion'&&gA&&T==='misty'))m.push(6144);
+    if(nm==='Facade'&&burned)m.push(8192);else if(nm==='Expanding Force'&&gA&&T==='psychic')m.push(6144);else if((nm==='Knock Off'&&D.item&&!fixedItem(D))||(nm==='Misty Explosion'&&gA&&T==='misty'))m.push(6144);
     else if((nm==='Solar Beam'||nm==='Solar Blade')&&['rain','sand','snow'].includes(aw))m.push(2048);
     if(o.hh)m.push(6144);
     // terrain: 1.3× for a grounded attacker's matching type; Grassy halves Earthquake/Bulldoze and Misty halves Dragon into grounded targets
