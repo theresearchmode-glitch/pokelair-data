@@ -268,3 +268,19 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chside .chtiles{grid-template-columns:repeat(6,1fr)}
 .chside .chprimary{margin-top:10px}
 @media (min-width:900px){#chCta{display:none}.chteam .chsheet,.chteam .chside{margin-top:12px}}:root:not(#_ch) .ltn,:root:not(#_ch) .tgn{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-transform:uppercase;line-height:1.3}
+/* Home top: the logo lockup, the headline and the latest winning team */
+.chbrand.chbig{gap:12px;font-size:46px}
+.chtop{display:grid;grid-template-columns:1fr;gap:14px;padding:6px 16px 0}
+.chlogo{margin:4px 0 10px}
+.chtl .chh1{font-size:48px;color:var(--chink);margin:6px 0 0}
+.chtl p{margin:8px 0 0;font-size:15px;color:var(--chink2)}.chtl p b{color:var(--chink)}
+.chwinwrap .chwh{font:400 26px/1 var(--display);text-transform:uppercase;margin:4px 0 8px}
+.chwinwrap .chwh .hl{background:var(--chyel);color:#1D2140;padding:0 5px}
+.chtop .chacts{margin-top:14px}
+/* the lockup in the top bar on every page, phone included, so it's always clear this is NastyPlot */
+:root:not(#_ch) .band .brand{display:inline-flex!important;align-items:center}
+:root:not(#_ch) .band .brand .chbrand{font-size:22px}
+:root:not(#_ch) .band .brand .chbrand svg{width:28px;height:28px}
+:root:not(#_ch) .band h1{flex-wrap:wrap;row-gap:2px}
+:root[data-look="dark"] .chbrand svg rect:first-child{fill:#171615}
+@media (min-width:900px){.chtop{grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:10px 0 0}.chtl .chh1{font-size:72px}.chwinwrap .chwh{font-size:36px}.chbrand.chbig{font-size:60px}.chbrand.chbig svg{width:72px;height:72px}}

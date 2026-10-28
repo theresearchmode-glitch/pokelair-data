@@ -46,16 +46,15 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const mine = ms.slice(0, 6), ord = F ? [...fl, ...fb, ...mine.filter(m => !fl.includes(m) && !fb.includes(m))] : mine;
   const you = `<div class="chband you chhalf"><div class="chk">● You${ms.length ? ' · ' + esc(teamTitleFor(ms)) : ''}</div><div class="chsix">${ms.length ? ord.map(m => `<div>${sprite(m.p) || ''}${tagOf(m)}</div>`).join('') : Array.from({length: 6}, () => '<div><div class="empty"></div></div>').join('')}</div>${ms.length ? '' : '<div class="chk" style="margin-top:6px">Your six goes here</div>'}</div>`;
   const them = `<div class="chband them chhalf"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div>${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
-  const mid = `<div class="chmid"><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="sub">Before turn one.</div>
-    <p>From <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>. See their six, pick your four.</p>
+  const mid = `<div class="chmid">
     ${F ? `<div class="ch64"><span class="n b">6</span><span class="chk">bring</span><span style="font-size:26px" aria-hidden="true">→</span><span class="n r">4</span><span class="chk">pick</span><span class="chpen" style="margin-left:auto;transform:rotate(-3deg)">your four vs the meta's six <span class="chup">↑</span><span class="chdn">↓</span></span></div>
     <div class="chfour">${[...fl, ...fb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'LEAD' : 'BACK'}</div></div>`).join('')}</div>` : ''}
-    <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>`;
+    </div>`;
   // 01 latest winner
   const E = META.events; let ev = null, t = null;
   if (E && Array.isArray(E.events)) for (const e of E.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }
   const sameSix = !!(t && ms.length === 6 && t.mons.every(m => ms.some(x => x.p.n === m.n)));
-  const win = ev ? `<div class="chblock"><div class="chk">01 / Latest winner · ${esc(ev.name)}</div><h3>The champion brought ${sameSix ? '<span class="hl">your</span>' : 'these'} six.</h3>
+  const win = ev ? `<div class="chwinwrap"><div class="chk">Latest winner · ${esc(ev.name)}</div><div class="chwh">The champion brought ${sameSix ? '<span class="hl">your</span>' : 'these'} six.</div>
     <div class="chwin"><div class="top">${t.record ? `<span class="rec">${esc(t.record)}</span>` : ''}<div><div class="who">${esc(t.player)}</div><div class="chk">${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>${sameSix ? '<div class="chpen">Same six as yours!</div>' : ''}</div></div>
     <div class="chwsix">${t.mons.map(m => `<span title="${esc(byName.get(m.n).d)}">${sprite(byName.get(m.n)) || esc(byName.get(m.n).d)}</span>`).join('')}</div>
     <div class="row"><button class="chghost" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div></div>` : '';
@@ -80,10 +79,16 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const battles = ls ? `<div class="hlogs"><div><b>${ls.w}–${ls.l}</b><span>${ls.pct}% wins</span></div><div><b>${ls.n}</b><span>logged</span></div><div class="hdots">${L.slice(-10).map(e => `<i class="${e.r === 'W' ? 'w' : 'l'}" title="${e.r === 'W' ? 'Win' : 'Loss'}"></i>`).join('')}</div></div><button type="button" class="linkbtn" data-view="matchup">Battle log ›</button>`
     : '<div class="hempty"><p class="t2">Log your games after each match and your record shows up here.</p><button type="button" class="btn sm" data-view="matchup">Log a game</button></div>';
   let trends = ''; try { trends = homeTrends(); } catch (e) { trends = ''; }
-  el.innerHTML = `<div class="chhero">${you}${them}${mid}</div>
+  const logo = `<span class="chbrand chbig">${CH.logo(58)}<span>NASTYPLOT</span></span>`;
+  const topH = `<div class="chtop"><div class="chtl"><div class="chlogo">${logo}</div><div class="chk">Pokémon Champions · Reg M-C · VGC doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div>
+    <p>Ratings, builds and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>, refreshed every morning.</p>
+    <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>${win}</div>`;
+  const vsSix = `<div class="chhero">${you}${them}${F ? mid : ''}</div>`;
+  el.innerHTML = topH + `
     <div class="chpad">${typeof welcomeCard === 'function' ? welcomeCard() : ''}${typeof whatsNewCard === 'function' ? whatsNewCard() : ''}</div>
-    <div class="chhome2">${win}${ready}</div>${pr}
-    <div class="chfolds">${CH.fold('more', 'More on Home', `All ${HOME_TILES.length} tools · top of the meta${trends ? ' · what changed' : ''}${coresH ? ' · cores' : ''} · your battles`, `<div class="chk">All tools</div>${tools}<div class="chk" style="margin-top:14px">${ui.homeGems && gems.length ? 'Hidden gems' : 'Top of the meta'}</div>${topMeta}${trends ? `<div class="chk" style="margin-top:14px">What changed this week</div>${trends}` : ''}${coresH ? `<div class="chk" style="margin-top:14px">Winning cores</div>${coresH}` : ''}<div class="chk" style="margin-top:14px">Your battles${ls ? ' · ' + ls.w + '–' + ls.l : ''}</div>${battles}<p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`)}
+    <div class="chhome2">${ready}</div>${pr}
+    <div class="chfolds">${CH.fold('vs', "Your six vs the meta's six", F ? `Your four: ${fl.concat(fb).map(m => esc(m.d)).join(', ')}` : 'Add four or more Pokémon to see your four', vsSix)}
+      ${CH.fold('more', 'More on Home', `All ${HOME_TILES.length} tools · top of the meta${trends ? ' · what changed' : ''}${coresH ? ' · cores' : ''} · your battles`, `<div class="chk">All tools</div>${tools}<div class="chk" style="margin-top:14px">${ui.homeGems && gems.length ? 'Hidden gems' : 'Top of the meta'}</div>${topMeta}${trends ? `<div class="chk" style="margin-top:14px">What changed this week</div>${trends}` : ''}${coresH ? `<div class="chk" style="margin-top:14px">Winning cores</div>${coresH}` : ''}<div class="chk" style="margin-top:14px">Your battles${ls ? ' · ' + ls.w + '–' + ls.l : ''}</div>${battles}<p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`)}
 
 
 
