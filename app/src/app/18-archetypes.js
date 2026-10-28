@@ -9,7 +9,11 @@ function teamArchetype(ms) {
   const field = r.arch.filter(a => WEATHER_KEYS.includes(a.key) || TERRAIN_KEYS.includes(a.key));
   const weather = field.filter(a => WEATHER_KEYS.includes(a.key)), terrain = field.filter(a => TERRAIN_KEYS.includes(a.key));
   const perish = ms.some(m => relMove(m, ['Perish Song'])[0] >= .3) && ms.some(m => ['Shadow Tag', 'Arena Trap'].includes(m.ability) || relMove(m, ['Mean Look', 'Block', 'Spirit Shackle'])[0] >= .3);
-  const speed = tw && tr ? 'tailroom' : tr ? (slow >= 2 ? 'hardtr' : 'tr') : tw ? 'tw' : 'none';
+  // Hard Trick Room = the team is built around the room: 3+ slow attackers besides the setters and at most one fast
+  // Pokémon (base Speed 90+). A Trick Room setter on an otherwise fast team is just "Trick Room" (a second mode).
+  const trSet = ms.filter(m => relMove(m, ['Trick Room'])[0] >= .5), slowAtt = ms.filter(m => isSlow(m.p) && !trSet.includes(m)).length,
+    fast = ms.filter(m => (m.p.st ? m.p.st[5] : m.p.sp) >= 90).length;
+  const speed = tw && tr ? 'tailroom' : tr ? (slowAtt >= 3 && fast <= 1 ? 'hardtr' : 'tr') : tw ? 'tw' : 'none';
   const SPEED_NAME = {tailroom: 'TailRoom', hardtr: 'Hard Trick Room', tr: 'Trick Room', tw: 'Tailwind', none: ''};
   const wn = weather.filter(a => a.active || weather.length > 1).map(a => a.name), tn = terrain.filter(a => a.active).map(a => a.name);
   const parts = [];

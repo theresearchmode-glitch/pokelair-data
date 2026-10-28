@@ -35,7 +35,22 @@ const THR = (() => {
   const pc = x => Math.round(x * 100);
   // a side from a spec (tests, real team sheets): {n, item?, ability?, moves?:[names], nat?, sp?:{hp,atk,def,spa,spd,spe}}
   // Default moves: the 4 most used, plus any attack at least 30% of players run (so a support-first set still carries its attack).
+  // What strong players bring: every set on recent top-cut teams (Limitless top 8, official RK9 top 16) for one Pokémon.
+  // Threats use this when there are 15+ such sets, so a move casual players like but top players drop doesn't decide a verdict.
+  let tcCache = {v: -1, map: null};
+  function topCutSets() { if (tcCache.v === metaVersion) return tcCache.map; const map = new Map();
+    try { for (const e of (META.events && META.events.events) || []) for (const t of e.top) for (const m of t.mons) {
+      let o = map.get(m.n); if (!o) map.set(m.n, o = {n: 0, mv: {}, it: {}, ab: {}, nt: {}}); o.n++;
+      for (const v of m.mv) o.mv[v] = (o.mv[v] || 0) + 1; if (m.i) o.it[m.i] = (o.it[m.i] || 0) + 1; if (m.a) o.ab[m.a] = (o.ab[m.a] || 0) + 1; if (m.nt) o.nt[m.nt] = (o.nt[m.nt] || 0) + 1; } } catch (e) {}
+    tcCache = {v: metaVersion, map}; return map; }
+  const topOf = o => Object.entries(o).sort((a, b) => b[1] - a[1]);
+  function topCutSpec(n) { const o = topCutSets().get(n); if (!o || o.n < 15) return null; const p = byName.get(n);
+    const mvs = topOf(o.mv).map(([k, c]) => [k, 100 * c / o.n]).filter(([k]) => MVn(k)), moves = mvs.slice(0, 4).map(x => x[0]);
+    for (const [k, pct] of mvs) { const mv = MVn(k); if (mv && mv.bp > 0 && pct >= 30 && !moves.includes(k)) moves.push(k); }
+    const it = topOf(o.it).map(x => x[0]).find(k => !isStone(k)), ab = topOf(o.ab).map(x => x[0]).find(k => p.a.includes(k)), nt = (topOf(o.nt)[0] || [])[0];
+    return {n, moves, item: p.m ? undefined : it, ability: ab, nat: nt && NAT_UP && Object.values(NAT_UP).some(a => a.includes(nt)) ? nt : undefined, sets: o.n}; }
   function side(spec) {
+    if (spec.top && !spec.moves) { const ts = topCutSpec(spec.n); if (ts) spec = {...ts, ...Object.fromEntries(Object.entries(spec).filter(([k]) => k !== 'top'))}; }
     const p = byName.get(spec.n); if (!p) throw new Error('unknown ' + spec.n);
     const cs = commonSpread(p), phys = p.st[1] >= p.st[3];
     const nat = spec.nat || (cs && cs.nat) || topNature(p) || (phys ? 'Adamant' : 'Modest');
@@ -74,6 +89,15 @@ const THR = (() => {
     if (a >= hp) return r.sash ? 2 : 1; let left = hp - a, n = 1, berry = !!sitrus;
     if (berry && left <= hp / 2) { left += Math.floor(hp / 4); berry = false; }
     while (left > 0 && n < 9) { left -= b; n++; if (left > 0 && berry && left <= hp / 2) { left += Math.floor(hp / 4); berry = false; } } return n; }
+  // Chance a move hits (0-100): No Guard always hits; rain makes Hurricane/Thunder sure-hit (sun cuts them to 50%); snow does
+  // the same for Blizzard; Compound Eyes ×1.3, Wide Lens ×1.1, Hustle ×0.8 on physical moves.
+  function accOf(mv, att, field) { if (att.ability === 'No Guard') return 100; let a = (typeof MOVE_ACC === 'object' && MOVE_ACC[mv.name]) || 100;
+    if (['Hurricane', 'Thunder'].includes(mv.name)) { if (field.weather === 'rain') return 100; if (field.weather === 'sun') a = 50; }
+    if (mv.name === 'Blizzard' && field.weather === 'snow') return 100;
+    if (a >= 100) return 100; if (att.ability === 'Compound Eyes') a *= 1.3; if (att.item === 'Wide Lens') a *= 1.1; if (att.ability === 'Hustle' && mv.cat === 1) a *= .8;
+    return Math.min(100, Math.round(a)); }
+  // a move under this accuracy can't be the reason a Pokémon counts as a solid answer
+  const SURE = 85;
   function bestAttack(att, def, field) {
     let best = null; const st = intimidated(att, def);
     for (const mv of att.moves) { if (!mv || !mv.bp || mv.cat === 0 || mv.name === 'Fake Out') continue;
@@ -81,8 +105,11 @@ const THR = (() => {
       const r = damage({...base, atk: atkObj(att, b0)}); if (!r) continue;
       const drop = SELF_DROP[mv.name] && !['Contrary', 'Clear Body', 'White Smoke', 'Full Metal Body'].includes(att.ability) ? SELF_DROP[mv.name] : 0;
       const r2 = drop ? damage({...base, atk: atkObj(att, Math.max(-6, b0 + drop))}) : null;
-      const h = hitsToKO(r, r2, def.item === 'Sitrus Berry' && att.ability !== 'Unnerve'), pr = prioOf(mv, field, att), mid = r.rolls[7] / r.hp;
-      if (!best || h < best.h || (h === best.h && (pr > best.pr || (pr === best.pr && mid > best.mid)))) best = {mv: mv.name, h, pr, pct: r.max / r.hp, mid, min: r.min / r.hp}; }
+      const h = hitsToKO(r, r2, def.item === 'Sitrus Berry' && att.ability !== 'Unnerve'), pr = prioOf(mv, field, att), mid = r.rolls[7] / r.hp, acc = accOf(mv, att, field);
+      // an unreliable move only wins the pick when it needs fewer hits than every reliable one
+      const key = h + (acc < SURE ? .6 : 0);
+      if (!best || key < best.key || (key === best.key && (pr > best.pr || (pr === best.pr && (acc > best.acc || (acc === best.acc && mid > best.mid))))))
+        best = {mv: mv.name + (acc < 100 ? ` (${acc}% to hit)` : ''), name: mv.name, h, key, pr, acc, pct: r.max / r.hp, mid, min: r.min / r.hp}; }
     return best;
   }
   const hasMove = (s, n) => s.moves.some(m => m && m.name === n);
@@ -143,7 +170,9 @@ const THR = (() => {
       const du = duel(m, t, modes, field), soft = [];
       const tag = du.first && du.how && du.how !== 'faster' ? ' (' + du.how + ')' : '';
       const check = du.win && du.nM === 1 && (du.first || (du.d && du.d.pct < 1)), counter = du.win && du.nM <= 2 && du.d && du.d.pct <= .5 && du.nT >= 3, immune = du.nM <= 2 && !du.d;
-      if (check || counter || immune) { rows.push({m, kind: 'solid', role: check ? 'check' : 'counter', du,
+      // the answer leans on a move that misses too often (under 85%): it's an answer, but a shaky one
+      if ((check || counter || immune) && du.o && du.o.acc < SURE) { soft.push(`${check ? 'OHKOs' : '2HKOs'} with ${du.o.mv}, so it can miss`); }
+      else if (check || counter || immune) { rows.push({m, kind: 'solid', role: check ? 'check' : 'counter', du,
         why: check ? (du.first ? `${m.d} moves first${tag} and OHKOs with ${du.o.mv} (${pc(du.o.min)}-${pc(du.o.pct)}%)` : `${m.d} survives its ${du.d.mv} (at most ${pc(du.d.pct)}%) and OHKOs back with ${du.o.mv} (${pc(du.o.min)}-${pc(du.o.pct)}%)`)
           : immune ? `${m.d} is immune to its attacks and 2HKOs with ${du.o.mv} (${pc(du.o.min)}-${pc(du.o.pct)}%)`
           : `${m.d} takes at most ${pc(du.d.pct)}% from ${du.d.mv} and 2HKOs with ${du.o.mv} (${pc(du.o.min)}-${pc(du.o.pct)}%)`}); continue; }
@@ -178,7 +207,7 @@ const THR = (() => {
     const key = metaVersion + '|' + (tc ? 'tc' : 'u') + '|' + n; if (thCache.key === key) return thCache.list;
     let list = tc ? Object.entries(tc).filter(([k, r]) => byName.has(k) && Array.isArray(r)).sort((a, b) => b[1][1] - a[1][1]).slice(0, n).map(([k, r]) => ({n: k, w: +r[1], src: 'top cut'}))
       : ROSTER.map(p => ({n: p.n, w: U(p)})).filter(x => x.w > 0).sort((a, b) => b.w - a.w).slice(0, n).map(x => ({...x, src: 'usage'}));
-    const sides = []; for (const x of list) { try { sides.push({...side({n: x.n}), w: x.w, src: x.src}); } catch (e) {} }
+    const sides = []; for (const x of list) { try { const s = side({n: x.n, top: true}); sides.push({...s, w: x.w, src: x.src, setSrc: s.spec && s.spec.sets ? `top-cut sets (${s.spec.sets})` : 'all tournament teams'}); } catch (e) {} }
     thCache = {key, list: sides}; return sides; }
   // report for spec arrays (tests, real sheets) or ready-made sides
   function reportSides(team, ths) { const modes = teamModes(team), rows = ths.map(t => vsThreat(team, t, modes)), W = ths.reduce((a, t) => a + t.w, 0) || 1;
@@ -202,7 +231,7 @@ const THR = (() => {
     const r = vsThreat(team, t, modes, [m]), x = r.solid[0] || r.soft[0] || r.warn[0];
     const du = (r.solid[0] || r.soft[0] || {}).du || duel(m, t, modes, fieldFor(team, t));
     return {kind: r.solid.length ? 'solid' : r.soft.length ? 'soft' : r.warn.length ? 'warn' : 'none', why: x ? x.why : '', field: fieldFor(team, t), nM: du.nM, nT: du.nT, first: du.first, how: du.how, sm: du.sm, st: du.st,
-      o: du.o && {mv: du.o.mv, min: pc(du.o.min), max: pc(du.o.pct)}, d: du.d && {mv: du.d.mv, min: pc(du.d.min), max: pc(du.d.pct)}}; }
+      o: du.o && {mv: du.o.mv, name: du.o.name, acc: du.o.acc, min: pc(du.o.min), max: pc(du.o.pct)}, d: du.d && {mv: du.d.mv, name: du.d.name, acc: du.d.acc, min: pc(du.d.min), max: pc(du.d.pct)}}; }
   // one support threat judged as a whole team (phase 2 hand checks)
   function teamVs(teamSpecs, tSpec) { const team = teamSpecs.map(side), t = side(tSpec), r = vsThreat(team, t, teamModes(team));
     return {label: r.label, level: r.level, mode: r.mode ? r.mode.map(x => x.k) : null, solid: r.solid.map(x => x.why), soft: r.soft.map(x => x.why)}; }

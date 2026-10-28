@@ -76,13 +76,21 @@ for (const [m, t, team, exp, note] of C) {
   const r = await ev(`(a) => THR.one(a[0], a[1], a[2])`, [ms, ts, tm]);
   const pr = await ev(`(a) => [THR.pair(a[0], a[1], a[2]), THR.pair(a[1], a[0], a[2])]`, [ms, ts, r.field]);
   let num = '', numOK = true;
-  for (const [P, mv] of [[pr[0], r.o && r.o.mv], [pr[1], r.d && r.d.mv]]) { if (!mv) continue; const mine = P.out.find(x => x.mv === mv); const ref = smogon(P.a, P.d, mv, r.field); if (!ref) continue; nCmp++;
+  for (const [P, mv] of [[pr[0], r.o && (r.o.name || r.o.mv)], [pr[1], r.d && (r.d.name || r.d.mv)]]) { if (!mv) continue; const mine = P.out.find(x => x.mv === mv); const ref = smogon(P.a, P.d, mv, r.field); if (!ref) continue; nCmp++;
     const ok = Math.abs(ref[0] - mine.pct[0]) <= 1 && Math.abs(ref[1] - mine.pct[1]) <= 1; if (ok) nPass++; else numOK = false;
     num += ` | ${P.a.n} ${mv}: page ${mine.pct[0]}-${mine.pct[1]}% vs Smogon ${ref.join('-')}%`; }
   const got = r.kind, verdictOK = exp === 'any' || (exp === 'answer' && (got === 'solid' || got === 'soft')) || (exp === 'not-solid' ? got !== 'solid' : exp === 'solid+warn' ? got === 'solid' : got === exp);
   if (verdictOK && numOK) pass++; else fails.push(`${ms.n} vs ${ts.n}: expected ${exp}, got ${got}${numOK ? '' : ' (damage differs from Smogon)'}`);
   lines.push(`${verdictOK && numOK ? 'PASS' : 'FAIL'} ${ms.n} vs ${ts.n}: expected ${exp}, got ${got}${r.why ? ' (' + r.why + ')' : ''} [field ${r.field.weather || '-'}/${r.field.terrain || '-'}; speed ${r.sm} vs ${r.st}${r.first ? ', first ' + r.how : ''}; hits ${r.nM} vs ${r.nT}]${num}`);
 }
+// 1b) accuracy: a sub-85% move can't make a solid answer; No Guard and rain-Hurricane always hit
+for (const [m, t, chk, note] of [
+  [{n: 'Hydreigon', moves: ['Focus Blast']}, 'Kingambit', r => r.o && r.o.acc === 70 && r.kind !== 'solid', 'Focus Blast is 70%: never a solid answer'],
+  [{n: 'Raichu-Mega-Y', moves: ['Focus Blast']}, 'Kingambit', r => r.o && r.o.acc === 100, 'No Guard: Focus Blast always hits'],
+  [{n: 'Pelipper', ability: 'Drizzle', moves: ['Hurricane']}, 'Rillaboom', r => r.o && r.o.acc === 100, 'Hurricane always hits in rain']]) {
+  const r = await ev(`(a) => THR.one(a[0], a[1], null)`, [n(m), n(t)]); const ok = !!chk(r);
+  if (ok) pass++; else fails.push(`accuracy: ${note} (got ${r.kind}, ${r.o && r.o.mv})`); C.push(0);
+  lines.push(`${ok ? 'PASS' : 'FAIL'} accuracy: ${note} (${r.kind}; ${r.o && r.o.mv})`); }
 // 2) support threats, judged as a whole team
 const BB = {n: 'Kingambit', moves: ['Kowtow Cleave', 'Sucker Punch', 'Brick Break', 'Protect']};
 const S2 = [

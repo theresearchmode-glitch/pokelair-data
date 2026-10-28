@@ -3,6 +3,7 @@
  "src/style.css",
  "src/body.html",
  "src/data/data.js",
+ "src/data/move-acc.js",
  "src/engine/types.js",
  "src/app/00-main.js",
  "src/app/01-state.js",
