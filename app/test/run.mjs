@@ -71,6 +71,35 @@ for (const width of [1280, 390]) {
   ok(r.hp === 95 + 75 + 32, 'level 50 HP with 32 points: base + 75 + points');
   ok(r.realSpread && r.realSpread.real, 'calc uses real ladder spreads when loaded'); ok(r.spe < 60, 'Trick Room setters stay slow');
   await ctx.close(); }
+
+// Found by the battle simulator, round 2 (Oct 28): each case checked against Pokémon Showdown's own engine
+{ console.log('\n== simulator round 2');
+  const {pg, ctx} = await open(1280);
+  const r = await pg.evaluate(() => { const T = window.__PL, P = n => T.byName.get(n), M = n => T.mvByName.get(n), side = (n, role, o) => ({p: P(n), ...T.sideDefaults(P(n), role), ...(o || {})});
+    const d = (a, df, mv, o) => T.damage({atk: a, def: df, move: M(mv), ...(o || {})});
+    const ind = side('Indeedee', 'atk', {ability: 'Psychic Surge'}), pel = side('Pelipper', 'def', {ability: 'Drizzle'});
+    const lead = (n, ab, spe, nat) => ({p: P(n), ability: ab, _spe: spe, _nat: nat});
+    const spOf = x => T.calcStat ? 0 : 0;
+    // Mega Charizard Y (base Charizard 100) vs Mega Froslass (base Froslass 110): the faster pre-Mega Froslass evolves first,
+    // Charizard's Drought comes last and stays
+    const megaF = T.turnOneField([{p: P('Charizard-Mega-Y')}, {p: P('Froslass-Mega')}], x => x.p.st[5]);
+    const c9 = T.turnOneField([{p: P('Torkoal'), ability: 'Drought'}, {p: P('Altaria'), ability: 'Cloud Nine'}], x => x.p.st[5]);
+    const tr = T.turnOneField([{p: P('Pelipper'), ability: 'Drizzle'}, {p: P('Meowstic-F-Mega')}], x => x.p.st[5]);
+    const rilla = side('Rillaboom', 'atk', {ability: 'Grassy Surge'}), def = side('Incineroar', 'def');
+    return {
+      // Expanding Force in Psychic Terrain: spread cut with two foes, full power when only one is left
+      ef2: d(ind, pel, 'Expanding Force', {terrain: 'psychic'}).max, ef1: d(ind, pel, 'Expanding Force', {terrain: 'psychic', oneFoe: true}).max,
+      megaW: megaF.weather, c9: [c9.weather, c9.wx, c9.negated], traced: tr.traced,
+      items: ['Chopple Berry', 'Grassy Seeds', 'expertbelt', 'salamencite', 'Venosaurite', 'Life Orb', 'No Item'].map(T.canonItem),
+      // an Air Balloon holder floats: no Grassy Terrain boost on its own Grass move; Iron Ball keeps it grounded
+      grass: [d({...rilla, item: 'Iron Ball'}, def, 'Wood Hammer', {terrain: 'grassy'}).max, d({...rilla, item: 'Air Balloon'}, def, 'Wood Hammer', {terrain: 'grassy'}).max, d({...rilla, item: 'Air Balloon'}, def, 'Wood Hammer').max] }; });
+  ok(r.ef1 > r.ef2, `Expanding Force at full power when only one foe is left (${r.ef2} → ${r.ef1})`);
+  ok(r.megaW === 'sun', `Megas evolve in pre-Mega Speed order: Mega Froslass's snow first, Mega Charizard Y's sun stays (${r.megaW})`);
+  ok(r.c9[0] === 'sun' && r.c9[1] === '' && r.c9[2] === true, 'Cloud Nine on the field cancels the weather\'s effects (still set, no effect)');
+  ok(r.traced === true, 'a Trace lead (Mega Meowstic) next to a weather setter flags the field as uncertain');
+  ok(r.items.join('|') === 'Chople Berry|Grassy Seed|Expert Belt|Salamencite|Venusaurite|Life Orb|No Item', `hand-typed sheet items match the real item (${r.items.join(', ')})`);
+  ok(r.grass[1] === r.grass[2] && r.grass[0] > r.grass[1], `Air Balloon holder gets no terrain boost; an Iron Ball holder does (${r.grass.join(' / ')})`);
+  await ctx.close(); }
 // replay import and Showdown export
 { console.log('\n== replay + export');
   const {pg, ctx} = await open(1280);
