@@ -20,7 +20,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 pokemon-showdown@0.11.11 && npx playwright install --with-deps chromium
+      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d && npx playwright install --with-deps chromium
+      # Showdown's Champions mod with Reg M-C data (pinned GitHub commit; npm 0.11.11 stops at Reg M-B): build it once
+      - run: cd node_modules/pokemon-showdown && node build
       - run: node app/test/run.mjs
       - run: node experiments/replays-test.mjs
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls

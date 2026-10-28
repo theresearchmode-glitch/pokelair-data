@@ -1,12 +1,12 @@
 // Game-mechanics completeness guard: every VGC-relevant field the reference has must be in our data AND used by the engine.
-// Reference: Pokémon Showdown's "champions" data mod (pokemon-showdown 0.11.11) first; @smogon/calc gen 0 and @pkmn/dex gen 9 only for entries the mod lacks. Read-only. Exit 1 on any gap that would change an
+// Reference: Pokémon Showdown's "champions" data mod with Reg M-C data (GitHub build pinned at commit 1242c1e2d9763ba5b85d33f13aecb89bae19ae3d; NOT npm 0.11.11, which stops at Reg M-B) first; @smogon/calc gen 0 and @pkmn/dex gen 9 only for entries the mod lacks. Read-only. Exit 1 on any gap that would change an
 // answer users see. Usage: node experiments/fields-audit.mjs   (needs @pkmn/dex + @smogon/calc in node_modules; CI installs
 // them with --no-save; locally it also looks in C:/Users/simra/code/pl-verify/node_modules)
 import fs from 'node:fs'; import {createRequire} from 'node:module'; import {fileURLToPath} from 'node:url';
 const ROOT = fileURLToPath(new URL('../', import.meta.url)), SRC = ROOT + 'app/src/', OUT = ROOT + 'out/';
 let require = createRequire(ROOT + 'package.json'); try { require.resolve('@pkmn/dex'); } catch (e) { require = createRequire('C:/Users/simra/code/pl-verify/package.json'); }
 const {Dex} = require('@pkmn/dex'); const {Generations, toID} = require('@smogon/calc'); const G0 = Generations.get(0);
-let PSR = createRequire(ROOT + 'package.json'); try { PSR.resolve('pokemon-showdown'); } catch (e) { PSR = createRequire('C:/Users/simra/code/pl-mech/coverage/package.json'); }
+let PSR = createRequire(ROOT + 'package.json'); try { PSR.resolve('pokemon-showdown'); } catch (e) { PSR = createRequire('C:/Users/simra/code/pl-mech/sim/package.json'); }
 const CH = PSR('pokemon-showdown').Dex.mod('champions');
 const rd = f => fs.readFileSync(f, 'utf8'), data = rd(SRC + 'data/data.js'), metaSrc = rd(SRC + 'data/move-meta.js'), accSrc = rd(SRC + 'data/move-acc.js');
 const grab = (re, s) => { const m = s.match(re); return m ? JSON.parse(m[1]) : null; };
