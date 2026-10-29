@@ -242,6 +242,9 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
     ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
   if (CH.acts) $('chActs').append(CH.acts);
   document.querySelectorAll('#chP1,#chP2,#chP3').forEach(p => { p.hidden = !ms.length; });
+  // empty team: nothing to save, share, export or clear (Import stays in ⋯), and "Your six" is the only part, so no step number
+  ['saveBtn', 'shareBtn', 'exportBtn', 'clearTeam'].forEach(id => { const x = $(id); if (x) x.hidden = !ms.length; });
+  { const n = document.querySelector('#chP4 .chparth .n'); if (n) n.hidden = !ms.length; const q = document.querySelector('#chP4 .chparth p'); if (q) q.textContent = ms.length ? 'Tap a Pokémon to edit its set' : 'Tap a slot to add a Pokémon'; }
   document.querySelectorAll('[data-chpool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.chpool === ui.pool));
   // part 1: suggestions
   { const o = $('chSugOut'); if (o) o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No change readies this team for more of the top threats. Nice.</p>') : ''; }
