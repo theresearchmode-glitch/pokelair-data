@@ -31,9 +31,12 @@ function chOppName() { const opp = S.opp.filter(Boolean); if (opp.length < 6) re
   for (const e of E.events) for (const t of e.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.every(m => opp.includes(m.n))) return {who: t.player, rec: t.record, place: t.place, ev: e}; return null; }
 CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const sec = $('matchup'); if (sec) sec.classList.add('chbm');
   const mine = members(), on = chOppName(), title = mine.length ? teamTitleFor(mine) : 'Your team';
+  // their side is named by what it runs (Rain · Tailwind, Trick Room…), not by the player
+  const theirs = S.opp.map(n => byName.get(n)).filter(Boolean); let arch = ''; try { const a = theirs.length >= 3 ? teamArchetype(theirs.map(oppMember)) : null; arch = a && a.label ? a.label : ''; } catch (e) {}
+  const ord = n => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th';
   const head = document.createElement('div'); head.className = 'chbmhead';
-  head.innerHTML = `<div class="chk">${on ? 'Their real open team sheet' : 'Team preview'}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span>${esc(title)}</span> <small>vs</small> <em>${on ? esc(on.who) : 'their six'}</em></div>
-    ${on ? `<p class="chpgs">${esc(on.who)} went <b>${esc(on.rec || '')}</b>${on.place ? ` for ${on.place === 1 ? '1st' : on.place === 2 ? '2nd' : on.place === 3 ? '3rd' : on.place + 'th'}` : ''} at ${esc(on.ev.name)}${on.ev.players ? ` (${on.ev.players} players)` : ''}.</p>` : '<p class="chpgs">Type their six as you see them at team preview.</p>'}`;
+  head.innerHTML = `<div class="chk">${on ? 'Their real open team sheet' : 'Team preview'}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span>${esc(title)}</span> <small>vs</small> <em>${arch ? esc(arch) : 'their six'}</em></div>
+    ${on ? `<p class="chpgs"><b>${esc(on.who)}</b>${on.rec ? ` went <b>${esc(on.rec)}</b>${on.place ? ` and finished ${ord(on.place)}` : ''}` : on.place ? ` finished ${ord(on.place)}` : ' played this team'} at ${esc(on.ev.name)}${on.ev.players ? ` (${on.ev.players} players)` : ''}.</p>` :'<p class="chpgs">Type their six as you see them at team preview.</p>'}`;
   const bar = el.querySelector('.bmbar'); if (bar) head.append(bar);
   // the heading first, then the opponent picker, then their six (the picker lives outside the redrawn area)
   const oq = $('oppQuick'); if (oq && sec) { sec.querySelectorAll(':scope > .chbmhead').forEach(x => x.remove()); oq.before(head); } else el.prepend(head);
