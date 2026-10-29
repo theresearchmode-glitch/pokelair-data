@@ -60,7 +60,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
     if(p&&S.slots.some(s=>{const q=byName.get(s.n);return q&&q.b===p.b}))toast(p.d+' is already on your team');
     else if(p&&j<0)toast('Your team is full. Remove a Pokémon first.');
     else if(p){S.slots[j]={n:p.n,a:null,lock:false};keepScroll(()=>render());toast(p.d+' added')}}
-  else if(b.id==='refreshBtn'||b.id==='refreshBtn2'||b.id==='refreshBtn3'){refreshNow()}
   else if(b.id==='threatsAllBtn'){ui.threatsAll=true;keepScroll(()=>render())}
   else if(b.id==='recMoreBtn'){ui.recMore=(ui.recMore||0)+1;keepScroll(()=>renderRecs())}
   else if(b.id==='recMoreReset'){ui.recMore=0;renderRecs();const l=$('recList');if(l&&l.scrollIntoView)l.scrollIntoView({block:'start'})}
@@ -84,25 +83,3 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.delok){const t=S.teams.find(t=>t.id===d.delok);S.teams=S.teams.filter(x=>x.id!==d.delok);if(S.loadedId===d.delok)S.loadedId=null;ui.confirmDel=null;render();toast(`Deleted "${t.name}"`)}
   else if(d.delx){ui.confirmDel=null;renderSaved()}
 });
-const TRIGGER_ID='trig_014evvWRoLJicqGyvhYQCStx';  // "NastyPlot data refresh" (formerly PokéLair): rankings, sets, top teams and the rating sources
-async function refreshNow(){const btns=[...document.querySelectorAll('.refreshbtn')];const set=(dis,txt)=>btns.forEach(b=>{b.disabled=dis;b.textContent=txt});
-  const last=LS.get('cc2.refreshAt',0);if(Date.now()-last<20*60*1000){toast('A refresh is already running. It takes about 10–20 minutes.');return}
-  set(true,'Starting…');
-  try{const mcp=window.claude&&window.claude.use?await window.claude.use('mcp'):null;
-    if(!mcp||typeof mcp.callTool!=='function')throw {code:'unavailable'};
-    await mcp.callTool('Claude Code Remote','fire_trigger',await refreshArgs(mcp),{cache:false});
-    try{LS.set('cc2.refreshAt',Date.now())}catch(_){}
-    set(true,'Refreshing…');toast('Refresh started. Rankings, sets, top teams and ratings update here in about 10–20 minutes.');
-    setTimeout(()=>set(false,'Refresh now'),20*60*1000);
-  }catch(e){set(false,'Refresh now');toast(refreshErrText(e))}}
-// The connector's input schema is read when the viewer allows it; the trigger id goes under whichever id field it names
-// (trigger_id today). Any failure to describe falls back to trigger_id.
-async function refreshArgs(mcp){try{if(typeof mcp.describeTool==='function'){const d=await mcp.describeTool('Claude Code Remote','fire_trigger');
-  const p=d&&d.inputSchema&&d.inputSchema.properties?Object.keys(d.inputSchema.properties):[];const k=p.find(x=>/trigger.?id/i.test(x))||p.find(x=>/^id$/i.test(x));if(k)return{[k]:TRIGGER_ID}}}catch(_){}
-  return{trigger_id:TRIGGER_ID}}
-function refreshErrText(e){const c=e&&e.code;
-  if(c==='denied'||c==='not_granted'||c==='consent_required'||c==='approval_required')return 'Refresh needs permission to start your scheduled task.';
-  if(c==='rate_limited')return 'Too many refreshes just now. Try again in a few minutes.';
-  if(c==='server_not_connected'||c==='server_not_found'||c==='needs_reauth')return 'Connect Claude Code Remote in your claude.ai connectors to refresh from here.';
-  if(c==='cancelled')return 'Refresh cancelled.';
-  return 'Couldn\'t start a refresh here right now. The data still refreshes every morning.'}

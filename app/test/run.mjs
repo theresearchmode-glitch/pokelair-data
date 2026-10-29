@@ -426,12 +426,7 @@ for (const width of [1280, 390]) {
   await go(pg, 'calc'); await pg.waitForTimeout(300);
   const cal = await pg.evaluate(() => { const T = window.__PL; T.dc().a = 'Garchomp'; T.dc().d = 'Incineroar'; T.dc().inv = {}; T.renderCalc(); const h = [...document.querySelectorAll('#dcOut .dccol h3')].map(x => x.innerText); return h; });
   ok(cal.length === 2 && !/assumed|estimated/.test(cal[0]) && /assumed|estimated/.test(cal[1]), `calc: your spread untagged, theirs tagged (${cal.join(' | ')})`);
-  const rf = await pg.evaluate(async () => { const T = window.__PL; const codes = ['not_granted', 'rate_limited', 'server_not_connected', 'tool_error', undefined];
-    const txt = codes.map(c => T.refreshErrText(c ? {code: c} : new Error('x')));
-    const a1 = await T.refreshArgs({describeTool: async () => ({inputSchema: {properties: {trigger_id: {}}}})}), a2 = await T.refreshArgs({describeTool: async () => { throw {code: 'not_granted'}; }}), a3 = await T.refreshArgs({});
-    window.__PL.getS().slots = window.__keep; return {txt, keys: [a1, a2, a3].map(a => Object.keys(a).join())}; });
-  ok(rf.txt.every(t => t && t.length > 10) && new Set(rf.txt).size >= 4, `refresh button: a plain message for each failure (${rf.txt.length})`);
-  ok(rf.keys.every(k => k === 'trigger_id'), `refresh button: sends trigger_id with or without the connector's schema (${rf.keys})`);
+  await pg.evaluate(() => { window.__PL.getS().slots = window.__keep; });
   // Mold Breaker ignores the target's partner's Friend Guard (Showdown marks Friend Guard breakable; found by the simulator)
   const fg = await pg.evaluate(() => { const T = window.__PL, A = n => ({p: T.byName.get('Ampharos-Mega'), sp: 32, nat: 'Modest', ability: n, item: '', boost: 0}),
     D = {p: T.byName.get('Kingambit'), hpSp: 32, defSp: 0, spdSp: 2, nat: 'Adamant', ability: 'Defiant', item: '', boost: 0}, mv = T.mvByName.get('Thunderbolt');
