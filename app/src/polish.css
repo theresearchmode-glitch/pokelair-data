@@ -163,3 +163,7 @@ label.toggle{min-height:40px;display:inline-flex;align-items:center;gap:8px}
  .chhtop .hrow>*:nth-child(n+4){display:none}
  .chhtop,.chhtools{margin-top:20px}
 }
+/* one big title per page: second sections get section-size headings */
+[data-pane="auto"] #cores .chpghead .chpgt,[data-pane="cores"] #cores .chpghead .chpgt{font-size:26px!important;line-height:1.05}
+.chcalc .chcalct{font-size:24px!important;line-height:1.05}
+[data-pane="matchup"] details.chsec .chbody h2,[data-pane="matchup"] #battlelog h2{font-size:20px!important}
