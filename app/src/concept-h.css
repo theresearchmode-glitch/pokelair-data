@@ -831,3 +831,7 @@ details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marke
 .chmetaq{margin:4px 0 12px}.chmetaq .field{width:100%;max-width:420px}#chMetaCount{margin-top:6px}#chMetaCount:empty{display:none}
 .lsearch.chmetaq{flex:none!important}
 #box .chpgt{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.chboxn{font:700 13px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:7px 11px;border-radius:999px;background:var(--chink);color:var(--chp);text-shadow:none}
+.chedit[data-slot="0"] .slots>.slot:has(#pk0),.chedit[data-slot="1"] .slots>.slot:has(#pk1),.chedit[data-slot="2"] .slots>.slot:has(#pk2),.chedit[data-slot="3"] .slots>.slot:has(#pk3),.chedit[data-slot="4"] .slots>.slot:has(#pk4),.chedit[data-slot="5"] .slots>.slot:has(#pk5){display:block!important}.chedit .slot.empty{min-height:0}.chedit .slot.empty .field{font-size:16px}
+/* adding a Pokémon: the panel opens near the top so the name box and its list sit above the phone keyboard */
+.chedit.chadd{top:calc(64px + env(safe-area-inset-top,0px));bottom:auto;border-radius:22px;border:3px solid var(--chline);left:8px;right:8px;min-height:62vh;max-height:calc(100dvh - 80px)}
+@media (min-width:900px){.chedit.chadd{left:50%;right:auto;top:90px}}

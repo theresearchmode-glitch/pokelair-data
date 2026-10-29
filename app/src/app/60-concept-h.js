@@ -212,8 +212,9 @@ function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'
 function chEditOpen(i) { const ed = $('chEdit'); if (!ed) return; ed.dataset.slot = i == null ? 'all' : String(i);
   if (ui.tview === 'grid') { ui.tview = 'full'; LS.set('cc2.tview', 'full'); try { renderSlots(); } catch (e) {} }
   const m = i == null ? null : members().find(x => x.i === +i); $('chEditT').textContent = i == null ? 'Edit team' : m ? 'Edit ' + m.d : 'Add a Pokémon';
-  ed.hidden = false; $('chEditScrim').hidden = false; document.documentElement.classList.add('chlock'); ed.scrollTop = 0;
-  requestAnimationFrame(() => { const inp = i == null ? null : ed.querySelector(`#slot${i} input`); if (inp && !m) inp.focus(); }); }
+  ed.classList.toggle('chadd', i != null && !m); ed.hidden = false; $('chEditScrim').hidden = false; document.documentElement.classList.add('chlock'); ed.scrollTop = 0;
+  // an empty slot: focus its name box right away, inside the tap, so phones open the keyboard
+  if (i != null && !m) { const inp = ed.querySelector(`#pk${i}`) || ed.querySelector(`#slot${i} input`); if (inp) { try { inp.focus({preventScroll: true}); } catch (e) { inp.focus(); } } } }
 function chEditClose() { const ed = $('chEdit'); if (!ed || ed.hidden) return; ed.hidden = true; $('chEditScrim').hidden = true; document.documentElement.classList.remove('chlock'); }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; chEditOpen(b.dataset.chedit === 'all' ? null : +b.dataset.chedit); });
 // Import, Export and Save show their panels inside the editor
