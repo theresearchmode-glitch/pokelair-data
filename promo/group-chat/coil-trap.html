@@ -201,9 +201,14 @@ M.forEach((m, i) => {
 });
 function buildChat() {
   const vpH = $('#vp').clientHeight; const stops = [];
-  M.forEach(m => stops.push([m.type ? m.t - m.type : m.t, Math.max(0, m.node.offsetTop + m.node.offsetHeight + 14 - vpH)]));
+  // big attachments: the typing dots sit where the card will appear, and the chat only scrolls far enough for the dots;
+  // it scrolls the rest of the way when the card itself lands (no empty gap while someone is typing)
+  M.forEach(m => { if (m.typeNode && m.img) { const ty = m.typeNode, nm = m.node.querySelector('.nm'); ty.style.bottom = 'auto'; ty.style.top = (nm ? nm.offsetHeight + 4 : 0) + 'px'; } });
+  const bottomOf = m => Math.max(0, m.node.offsetTop + m.node.offsetHeight + 14 - vpH);
+  M.forEach(m => { if (m.type && m.img) { const ty = m.typeNode; stops.push([m.t - m.type, Math.max(0, m.node.offsetTop + ty.offsetTop + ty.offsetHeight + 14 - vpH)]); stops.push([m.t, bottomOf(m)]); }
+    else stops.push([m.type ? m.t - m.type : m.t, bottomOf(m)]); });
   stops.sort((a, b) => a[0] - b[0]); let cur = 0;
-  stops.forEach(([t, y]) => { if (y > cur) { anim(list, [{transform: `translateY(${-cur}px)`}, {transform: `translateY(${-y}px)`}], t, 0.3, 'cubic-bezier(.2,.9,.25,1)'); cur = y; } });
+  stops.forEach(([t, y]) => { if (y > cur) { anim(list, [{transform: `translateY(${-cur}px)`}, {transform: `translateY(${-y}px)`}], t, Math.min(.7, .3 + (y - cur) / 1100), 'cubic-bezier(.4,0,.2,1)'); cur = y; } });
   M.forEach(m => {
     const n = m.node;
     if (m.typeNode) { const ty = m.typeNode, t0 = m.t - m.type;
