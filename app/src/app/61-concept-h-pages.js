@@ -279,3 +279,12 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 CH.wrap('renderBattle', () => { const head = document.querySelector('#matchup > .chbmhead'); if (!head) return; let c = $('chCalcCard'); if (!c) { c = document.createElement('div'); c.id = 'chCalcCard'; } head.after(c); c.innerHTML = chCalcCard(); });
 // a ⋯ menu closes once one of its actions is tapped (after Clear team it stayed open showing only Import, which looked like a pop-up)
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('details.moremenu .mmpop button'); if (!b) return; const d = b.closest('details.moremenu'); if (d) setTimeout(() => { d.open = false; }, 0); });
+// ---------- day / night toggle in the header (Oct 29, Sim): a sun in day mode, a moon at night; one tap switches ----------
+const TH_SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></svg>';
+const TH_MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8z"/></svg>';
+function chThemeIcon() { const b = $('thmBtn'); if (!b) return; const dark = document.documentElement.dataset.look === 'dark';
+  b.innerHTML = dark ? TH_MOON : TH_SUN; b.setAttribute('aria-label', dark ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'); b.title = dark ? 'Night mode' : 'Day mode'; }
+safe('theme toggle', () => { const row = document.querySelector('.band .titlerow'), js = row && row.querySelector('.jumpbtn'); if (!row || $('thmBtn')) return;
+  const b = document.createElement('button'); b.type = 'button'; b.id = 'thmBtn'; b.className = 'chthm'; if (js) js.after(b); else row.append(b);
+  b.addEventListener('click', () => { setTheme(document.documentElement.dataset.look === 'dark' ? 'light' : 'dark'); chThemeIcon(); });
+  chThemeIcon(); try { new MutationObserver(chThemeIcon).observe(document.documentElement, {attributes: true, attributeFilter: ['data-look']}); } catch (e) {} });

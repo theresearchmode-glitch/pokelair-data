@@ -190,3 +190,9 @@ html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
 /* adding a Pokémon: a compact header and strip, so name suggestions stay above the phone keyboard */
 .chedit.chadd .chedh{padding-top:8px;padding-bottom:6px}
 .chedit.chadd .chedstrip{padding:4px 2px 6px;gap:5px}.chedit.chadd .chst{height:34px}.chedit.chadd .chst .spr,.chedit.chadd .chst img{width:30px;height:30px}
+/* day / night toggle: a round header button like search and ⋯ */
+:root:not(#_ch) .band .chthm{all:unset;box-sizing:border-box;flex:none;width:44px;height:44px;margin-left:8px;border-radius:50%;border:2px solid var(--chline);background:var(--chc);color:var(--chink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+:root:not(#_ch) .band .chthm svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+:root:not(#_ch)[data-look="dark"] .band .chthm svg{fill:currentColor;stroke:none}
+:root:not(#_ch) .band .chthm:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
+@media (hover:hover){:root:not(#_ch) .band .chthm:hover{background:var(--chink);color:var(--chp)}}
