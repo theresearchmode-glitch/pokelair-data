@@ -64,7 +64,7 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
   const big = (x, c) => `<button type="button" class="chhot ${c} chhalf" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${x.r.total}"><span class="n">${x.r.total}</span><span class="nm">${esc(x.p.d)}</span><span class="st">${line(x).replace(' · ', '<br>')}</span>${sprite(x.p) || ''}</button>`;
   const T = lTier(top[0].r.total), nS = rows.filter(x => x.r.total >= T.min).length, tie = top[0].r.total === top[1].r.total;
   return `<div class="chhothead"><span class="chtier">${T.k}</span><span class="chk">${T.min}+ · ${nS} Pokémon</span>${tie ? '<span class="chpen" style="margin-left:auto">Tied for #1!</span>' : ''}</div>
-    <div class="chhot2">${big(top[0], 'red')}${big(top[1], 'blue')}</div>
+    <div class="chhot2">${big(top[0], 'ink')}${big(top[1], 'blue')}</div>
     <div class="chhotrows">${top.slice(2).map((x, i) => `${(() => { const t = lTier(x.r.total), pv = lTier(top[i + 1].r.total); return t.k !== pv.k ? `<div class="chtierdiv"><span class="chtier sm">${t.k}</span><span class="chk">${t.min}+ · ${rows.filter(y => lTier(y.r.total).k === t.k).length} Pokémon</span></div>` : ''; })()}<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span></span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
   if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg M-C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
@@ -177,7 +177,7 @@ CH.chart = (RD, ms, k = 12) => { if (!RD || !ms.length) return ''; const rows = 
 CH.shareMode = null;
 buildShareCard = async function () { const ms = members(); if (!ms.length) return null;
   const dark = (CH.shareMode || document.documentElement.dataset.look) === 'dark';
-  const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#CFC6B7', blue: '#1E8FE8', red: '#FF3F5F', card: '#2C2A28', pen: '#FF8C7A', tile: '#171615', shadow: '#FF3F5F'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', red: '#E8364F', card: '#FBF6EC', pen: '#C41E35', tile: '#1D2140', shadow: '#0078BF'};
+  const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#CFC6B7', blue: '#1E8FE8', red: '#FF3F5F', card: '#2C2A28', pen: '#7CC4FF', tile: '#171615', shadow: '#FF3F5F'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', red: '#E8364F', card: '#FBF6EC', pen: '#005A90', tile: '#1D2140', shadow: '#0078BF'};
   try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Space Mono"', '400 40px "Permanent Marker"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
   const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);

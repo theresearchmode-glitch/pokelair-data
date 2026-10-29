@@ -5,7 +5,7 @@
    Selectors use :root:not(#_ch) so they win over the older light/dark blocks without !important. */
 :root:not(#_ch){
   --chp:#F1E9DA;--chp2:#E6D8BF;--chc:#FBF6EC;--chink:#1D2140;--chink2:#4E5068;--chline:#1D2140;
-  --chblue:#0078BF;--chblueT:#005A90;--chred:#E8364F;--chredT:#B81F37;--chredB:#FF4C65;--chyel:#FFE800;--chpen:#C41E35;
+  --chblue:#0078BF;--chblueT:#005A90;--chred:#E8364F;--chredT:#B81F37;--chredB:#FF4C65;--chyel:#FFE800;--chpen:#005A90;
   --chbar:#1D2140;--chbarInk:#F1E9DA;--chhdr:#1D2140;--chbtnInk:#1D2140;--chshadow:#1D2140;
   --chok:#1E8E4E;--chmid:#2E7FB8;--chshaky:#C98A00;--chbad:#E8364F;
   --court:var(--chp);--card:var(--chc);--card2:#F4ECDD;--ink:var(--chink);--mute:var(--chink2);--faint:#6E6F82;--line:#D8CCB6;--line2:#C4B79F;--soft:#EDE3D0;
@@ -17,7 +17,7 @@
   color-scheme:light}
 :root:not(#_ch)[data-look="dark"]{
   --chp:#232120;--chp2:#2E2B29;--chc:#2C2A28;--chink:#F3EBDC;--chink2:#BDB5A8;--chline:#F3EBDC;
-  --chblue:#4AAEF5;--chblueT:#6CBDF7;--chred:#FF6B80;--chredT:#FF8596;--chredB:#E8364F;--chyel:#FFE800;--chpen:#FF9A86;
+  --chblue:#4AAEF5;--chblueT:#6CBDF7;--chred:#FF6B80;--chredT:#FF8596;--chredB:#E8364F;--chyel:#FFE800;--chpen:#7CC4FF;
   --chbar:#181716;--chbarInk:#F3EBDC;--chhdr:#171615;--chbtnInk:#1A1918;--chshadow:#FF6B80;
   --chok:#3DBE78;--chmid:#3D93D6;--chshaky:#F2B728;--chbad:#FF5A70;
   --card2:#34312E;--faint:#8E877D;--line:#3D3936;--line2:#4A4542;--soft:#34312E;--deep:#181716;--navy:#171615;--navy-ink:#F3EBDC;--navyt:#F3EBDC;--btn:#F3EBDC;
@@ -359,7 +359,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chtier{width:44px;height:44px;border:3px solid var(--chbtnInk);border-radius:10px;background:var(--chyel);color:#1D2140;display:flex;align-items:center;justify-content:center;font:400 30px/1 var(--display);box-shadow:3px 3px 0 var(--chredB)}
 .chhot2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .chhot{all:unset;box-sizing:border-box;position:relative;overflow:hidden;cursor:pointer;border:2px solid var(--chline);border-radius:16px;min-height:190px;padding:12px;color:#fff;display:flex;flex-direction:column}
-.chhot.red{background-color:var(--chredB)}.chhot.blue{background-color:var(--chblue)}:root[data-look="dark"] .chhot.blue{background-color:#0B6AA8}
+.chhot.red{background-color:var(--chredB)}.chhot.ink{background-color:var(--chink)}:root[data-look="dark"] .chhot.ink{background-color:#2B3270;border-color:#6E78C8}.chhot.blue{background-color:var(--chblue)}:root[data-look="dark"] .chhot.blue{background-color:#0B6AA8}
 .chhot .n{font:400 58px/1 var(--display)}.chhot .nm{font:800 16px/1.1 var(--body);text-transform:uppercase;margin-top:2px;position:relative;z-index:1}
 .chhot .st{font:700 12px/1.6 var(--mono);opacity:.92;margin-top:6px;position:relative;z-index:1}
 .chhot .spr{position:absolute;right:-8px;bottom:-6px;width:118px;height:118px;object-fit:contain;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.25))}
@@ -492,7 +492,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chshmode button[aria-pressed="true"]{background:var(--chink);color:var(--chp)}
 :root:not(#_ch) .sharein{background:var(--chp);color:var(--chink);border:3px solid var(--chline);border-radius:20px}
 /* ---------- Warm charcoal, vivid: a riso print under a stage light ---------- */
-:root:not(#_ch)[data-look="dark"]{--chblue:#3FA9FF;--chblueT:#6FC0FF;--chred:#FF5C77;--chredT:#FF7A8F;--chredB:#FF3F5F;--chpen:#FF8C7A;--chok:#3CD884;--chmid:#3D9BEA;--chshaky:#FFC22E;--chbad:#FF4F66;--chline:#5A524C;--line2:#4A4542;--accent:#6FC0FF}
+:root:not(#_ch)[data-look="dark"]{--chblue:#3FA9FF;--chblueT:#6FC0FF;--chred:#FF5C77;--chredT:#FF7A8F;--chredB:#FF3F5F;--chpen:#7CC4FF;--chok:#3CD884;--chmid:#3D9BEA;--chshaky:#FFC22E;--chbad:#FF4F66;--chline:#5A524C;--line2:#4A4542;--accent:#6FC0FF}
 :root:not(#_ch)[data-look="dark"] body{background-image:radial-gradient(ellipse 90% 55% at 50% -8%,rgba(255,232,0,.09),transparent 65%),radial-gradient(ellipse 60% 40% at 100% 30%,rgba(255,63,95,.06),transparent 70%),radial-gradient(ellipse 60% 40% at 0% 70%,rgba(63,169,255,.06),transparent 70%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .45  0 0 0 0 .4  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");background-attachment:fixed,fixed,fixed,scroll}
 /* punchy display type: cream with a red + blue riso offset */
 :root[data-look="dark"] .chdisp,:root[data-look="dark"] .chpgt,:root[data-look="dark"] .chh1,:root[data-look="dark"] .chwh,:root[data-look="dark"] .chshn,:root[data-look="dark"] .chbringt,:root[data-look="dark"] .chthead .nm,:root[data-look="dark"] .chscout .chh{text-shadow:3px 3px 0 rgba(255,63,95,.9),-2px -1px 0 rgba(63,169,255,.55)}
@@ -514,8 +514,8 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root[data-look="dark"] .chshm .spr,:root[data-look="dark"] .chwsix .spr,:root[data-look="dark"] .chrow .spr,:root[data-look="dark"] .chhr .spr,:root[data-look="dark"] main .tgrid .tgm .spr,:root[data-look="dark"] .chbring .bmpspr,:root[data-look="dark"] #guideOut .gkm .spr,:root[data-look="dark"] .chcr .spr,:root[data-look="dark"] .chbw .spr,:root[data-look="dark"] .spdrow .spdspr{filter:drop-shadow(0 0 8px rgba(63,169,255,.45)) drop-shadow(2px 3px 0 rgba(0,0,0,.45))}
 :root[data-look="dark"] .chshf{background:radial-gradient(ellipse at center,rgba(63,169,255,.35),transparent 70%)}
 :root[data-look="dark"] .chshow{background:radial-gradient(ellipse 70% 60% at 50% 100%,rgba(63,169,255,.28),transparent 70%),radial-gradient(ellipse 50% 40% at 50% 0%,rgba(255,232,0,.08),transparent 70%),#2C2A28}
-:root[data-look="dark"] .chpen{color:#FF8C7A;text-shadow:0 0 12px rgba(255,140,122,.25)}
-:root[data-look="dark"] .chring{border-color:#FF8C7A;color:#FF8C7A}
+:root[data-look="dark"] .chpen{color:#7CC4FF;text-shadow:0 0 12px rgba(124,196,255,.25)}
+:root[data-look="dark"] .chring{border-color:#7CC4FF;color:#7CC4FF}
 :root[data-look="dark"] .chtier{border-color:#F3EBDC}
 :root[data-look="dark"] .bnav{background:#151413;box-shadow:0 -1px 0 rgba(255,232,0,.18)}
 :root[data-look="dark"] .chfab{border-color:#FFE800}/* ===== the split hero on Home ===== */
