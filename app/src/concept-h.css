@@ -18,7 +18,7 @@
 :root:not(#_ch)[data-look="dark"]{
   --chp:#232120;--chp2:#2E2B29;--chc:#2C2A28;--chink:#F3EBDC;--chink2:#BDB5A8;--chline:#F3EBDC;
   --chblue:#4AAEF5;--chblueT:#6CBDF7;--chred:#FF6B80;--chredT:#FF8596;--chredB:#E8364F;--chyel:#FFE800;--chpen:#7CC4FF;
-  --chbar:#181716;--chbarInk:#F3EBDC;--chhdr:#171615;--chbtnInk:#1A1918;--chshadow:#FF6B80;
+  --chbar:#181716;--chbarInk:#F3EBDC;--chhdr:#171615;--chbtnInk:#1A1918;--chshadow:#1E8FE8;
   --chok:#3DBE78;--chmid:#3D93D6;--chshaky:#F2B728;--chbad:#FF5A70;
   --card2:#34312E;--faint:#8E877D;--line:#3D3936;--line2:#4A4542;--soft:#34312E;--deep:#181716;--navy:#171615;--navy-ink:#F3EBDC;--navyt:#F3EBDC;--btn:#F3EBDC;
   --volt-ink:#1A1918;--gold:#FFC94D;--gold-soft:#3A3122;--gold-ink:#FFD98A;
@@ -113,7 +113,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chmid p{margin:12px 0 0;font-size:15px;color:var(--chink2)}
 .chmid p b{color:var(--chink)}
 .ch64{display:flex;align-items:center;gap:12px;margin:12px 0 6px;flex-wrap:wrap}
-.ch64 .n{font:400 52px/1 var(--display)}.ch64 .n.b{color:var(--chblueT)}.ch64 .n.r{color:var(--chredT)}
+.ch64 .n{font:400 52px/1 var(--display)}.ch64 .n.b{color:var(--chblueT)}.ch64 .n.r{color:var(--chink)}
 .chfour{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .chfour>div{border:2px solid var(--chline);border-radius:10px;background:var(--chc);text-align:center;padding-top:4px;overflow:hidden}
 .chfour .spr{width:58px;height:58px;object-fit:contain}
@@ -306,7 +306,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root:not(#_ch) .chabhero .srcseg button{border:2px solid var(--chline);border-radius:14px;background:var(--chc);color:var(--chink);text-align:left;padding:10px 12px;min-height:64px;clip-path:none;box-shadow:none}
 :root:not(#_ch) .chabhero .srcseg button b{font:400 22px/1 var(--display);text-transform:uppercase;display:block}
 :root:not(#_ch) .chabhero .srcseg button span{font:400 12px var(--mono);color:inherit;opacity:.8}
-:root:not(#_ch) .chabhero .srcseg button[aria-pressed="true"]{background:var(--chink);color:var(--chp);box-shadow:4px 4px 0 var(--chredB)}
+:root:not(#_ch) .chabhero .srcseg button[aria-pressed="true"]{background:var(--chink);color:var(--chp);box-shadow:4px 4px 0 var(--chblue)}
 :root:not(#_ch) .chabhero .megactl{color:var(--chink)}
 .chabsix{background-color:var(--chblue);color:#fff;border-radius:16px;padding:14px 12px 10px;margin-bottom:10px}
 :root[data-look="dark"] .chabsix{background-color:#0B6AA8}
@@ -503,7 +503,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root[data-look="dark"] .chband .chk,:root[data-look="dark"] .chhot .chk,:root[data-look="dark"] .chabsix .chk,:root[data-look="dark"] .chdcband .chk,:root[data-look="dark"] .chlsk{color:#fff}
 /* coloured edges instead of cream outlines */
 :root[data-look="dark"] .chsec,:root[data-look="dark"] .chmorebtn{border-color:#3A6E9C;box-shadow:inset 4px 0 0 var(--chblue)}
-:root[data-look="dark"] .chshow,:root[data-look="dark"] .chwin,:root[data-look="dark"] .chsheet,:root[data-look="dark"] .chside,:root[data-look="dark"] .chready,:root[data-look="dark"] .chbring,:root[data-look="dark"] .dccol,:root[data-look="dark"] .dcres,:root[data-look="dark"] .evteam,:root[data-look="dark"] .corerow.chcbig,:root[data-look="dark"] .abcol,:root[data-look="dark"] .chabhero,:root[data-look="dark"] .chlstats,:root[data-look="dark"] .gitem,:root[data-look="dark"] #guideOut details{border-color:#F3EBDC!important;box-shadow:5px 5px 0 var(--chredB)!important}
+:root[data-look="dark"] .chshow,:root[data-look="dark"] .chwin,:root[data-look="dark"] .chsheet,:root[data-look="dark"] .chside,:root[data-look="dark"] .chready,:root[data-look="dark"] .chbring,:root[data-look="dark"] .dccol,:root[data-look="dark"] .dcres,:root[data-look="dark"] .evteam,:root[data-look="dark"] .corerow.chcbig,:root[data-look="dark"] .abcol,:root[data-look="dark"] .chabhero,:root[data-look="dark"] .chlstats,:root[data-look="dark"] .gitem,:root[data-look="dark"] #guideOut details{border-color:#F3EBDC!important;box-shadow:5px 5px 0 #1E8FE8!important}
 :root[data-look="dark"] .chhot,:root[data-look="dark"] .chabsix,:root[data-look="dark"] .chdcband{box-shadow:5px 5px 0 #F3EBDC}
 :root[data-look="dark"] .chsheet .hd{background:linear-gradient(90deg,#1E8FE8,#0B6AA8)}
 /* brighter halftone bands */

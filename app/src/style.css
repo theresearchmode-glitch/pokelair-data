@@ -772,7 +772,7 @@ body{background-color:var(--court)}
 .mg{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:38px;height:42px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);color:#fff;line-height:1}
 .mg b{font:800 italic 18px/1 var(--display)}.mg i{font:700 7.5px var(--mono);font-style:normal;letter-spacing:.08em;opacity:.9;margin-top:1px}
 .mg.b0{background:linear-gradient(160deg,#ffd75e,#f4a62a 60%,#d9820b);color:#4a2c00}
-.ttyours{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:var(--card);border:1.5px solid var(--volt);box-shadow:var(--shadow)}
+.ttyours{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:var(--card);border:1.5px solid var(--chblue,#0078BF);box-shadow:var(--shadow)}
 .ttyours>div:first-child{min-width:0}
 .b4,.emblem.b4,.mg.b4{background:#b3262e}
 
