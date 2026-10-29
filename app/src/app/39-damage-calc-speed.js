@@ -33,6 +33,10 @@ function spdCalc(base,scarf,ability,weather,o){let v=base;if(o.icy)v=Math.floor(
   const wm=typeof speedMul==='function'?speedMul(ability,weather):1,mods=[scarf?6144:4096,wm>1?8192:4096,o.tw?8192:4096,o.unb?8192:4096];
   let m=4096;for(const x of mods)if(x!==4096)m=(m*x+2048)>>12;if(m!==4096){const y=v*m/4096;v=Math.max(1,y%1>.5?Math.ceil(y):Math.floor(y))}
   if(o.par)v=Math.floor(v*.5);return v}
+// turn-order abilities, noted on the speed line: Stall always moves last in its priority bracket (Showdown −0.1, even under
+// Trick Room); Quick Draw is a 30% chance to move first in its bracket with an attack (never relied on); Quick Feet needs a status
+const spdAbNote=ab=>ab==='Stall'?' · Stall: always moves last in its priority bracket':ab==='Quick Draw'?' · Quick Draw: 30% chance to move first in its bracket (attacks)'
+  :ab==='Quick Feet'?' · Quick Feet not counted (only with a status condition)':'';
 function renderSpeed(){const el=$('spdOut');if(!el)return;
   const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
   const thr=metaThreats(24).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
@@ -49,14 +53,14 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
   $('spdCtl').innerHTML=`<div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('par','They\'re paralyzed')}${tog('tr','Trick Room')}</div>
     <div class="seg segwrap" role="group" aria-label="Weather" style="margin-top:6px">${wxb('auto',autoW?`Your weather (${autoW})`:'Your weather (none)')}${wxb('','No weather')}${wxb('sun','Sun')}${wxb('rain','Rain')}${wxb('sand','Sand')}${wxb('snow','Snow')}</div>`;
   if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on the Team page to place them against the top threats.</div>';return}
-  const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&(spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
+  const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
     let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
       if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
         tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
     return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}${tip}</span>`}).join('');
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
-    return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''}${r.wxUp?` · ${esc(r.ab)} ×2 in ${esc(W)}`:''}${r.unb?` · ${r.unb} after its item is used (Unburden)`:''} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
+    return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''}${r.wxUp?` · ${esc(r.ab)} ×2 in ${esc(W)}`:''}${r.unb?` · ${r.unb} after its item is used (Unburden)`:''}${spdAbNote(r.ab)} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
     <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Your side uses your items (and your spreads where you set them); theirs <span class="asm" title="Their real spreads and items are hidden">assumed</span> uses the most common natures and items, with fast Pokémon at 32 Speed points. Weather speed abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-spd],[data-spdwx]');if(!b)return;if(b.dataset.spdwx!=null)spdUi.wx=b.dataset.spdwx;else{const k=b.dataset.spd;spdUi[k]=!spdUi[k]}renderSpeed()});
 // ---- damage ----
@@ -133,7 +137,33 @@ const fixedItem=D=>{const it=D&&D.item;if(!it||typeof MEGA_STONE!=='object'||!D.
 // Aegislash attacks in Blade Forme (Stance Change) and defends in Shield Forme; the roster stores Shield Forme stats
 const BLADE_ST=[60,140,50,140,50,60];
 const atkForm=A=>A&&A.p&&(A.p.n==='Aegislash'||A.ability==='Stance Change')?{...A,p:{...A.p,st:BLADE_ST}}:A;
-function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.cat===0)return null;
+// Forecast (Castform) takes the weather's type, Mimicry (Galarian Stunfisk) the terrain's (Showdown: no weather / terrain =
+// its own types). weather here is the one in effect (Cloud Nine / Air Lock already applied). null = types unchanged.
+function formTypes(p,ab,weather,terrain){if(!p)return null;
+  if(ab==='Forecast'&&(p.b||p.n||'').startsWith('Castform'))return [{sun:'Fire',rain:'Water',snow:'Ice'}[weather]||'Normal'];
+  if(ab==='Mimicry'&&terrain)return [{electric:'Electric',grassy:'Grass',misty:'Fairy',psychic:'Psychic'}[terrain]];return null}
+// Fling: power from the held item (Showdown's item.fling.basePower, Reg M-C items; checked by experiments/fields-audit.mjs).
+// Every other legal item flings at 10; a Mega Stone can't be thrown by its Mega and Normal Gem can't be flung at all.
+const FLING_BP={'Iron Ball':130,'Hard Stone':100,'Quick Claw':80,'Dragon Fang':70,'Poison Barb':70,'Damp Rock':60,'Heat Rock':60,Leek:60,'Rocky Helmet':60,'Terrain Extender':60,'Sharp Beak':50,'Icy Rock':40,
+  'Binding Band':30,'Black Belt':30,'Black Glasses':30,Charcoal:30,'Eject Button':30,"King's Rock":30,'Life Orb':30,'Light Ball':30,'Light Clay':30,Magnet:30,'Metal Coat':30,Metronome:30,'Miracle Seed':30,
+  'Mystic Water':30,'Never-Melt Ice':30,'Scope Lens':30,'Shell Bell':30,'Spell Tag':30,'Twisted Spoon':30,'Normal Gem':0};
+const flingBp=it=>!it||STONE_RE.test(it)?0:FLING_BP[it]??10;
+// Beat Up (Gen 5+): one hit per healthy Pokémon in the party, each with 5 + its base Attack / 10 power (the species on the
+// team sheet, so a Mega counts with its base form's Attack). party: the Pokémon brought (user included).
+const beatUpBp=party=>party.map(p=>{const b=p&&p.m&&typeof byName==='object'&&byName.get(p.b)||p;return 5+Math.floor(((b&&b.st)||[0,0])[1]/10)});
+// Things the calc can't know from the sets (HP left, status, KOs, switching, genders): not counted, and said so under the
+// result. One list, also read by experiments/fields-audit.mjs, so keep it JSON (double quotes). [reason, side]:
+// a = attacker's ability/item/move, d = defender's, b = either.
+const NOT_COUNTED={"Blaze":["only below ⅓ HP","a"],"Torrent":["only below ⅓ HP","a"],"Overgrow":["only below ⅓ HP","a"],"Swarm":["only below ⅓ HP","a"],
+  "Marvel Scale":["only with a status condition","d"],"Quick Feet":["only with a status condition","b"],"Moxie":["only after it KOs something","a"],
+  "Berserk":["only after a hit drops it below half HP","a"],"Stakeout":["only on a Pokémon that just switched in","a"],"Battle Bond":["only after it KOs something","a"],
+  "Electromorphosis":["only after it's been hit","a"],"Metronome":["only when it uses the same move again","a"],"Rivalry":["depends on genders","a"],
+  "Merciless":["only on a poisoned target","a"],"Hunger Switch":["form changes every turn","a"],"Spit Up":["needs Stockpile first","a"]};
+// Crit chance by stage (Gen 9): +0 = 1/24, +1 = 1/8, +2 = 1/2, +3 or more = always
+function critStage(A,mv){const x=MMETA(mv.name)||{};if(ALWAYS_CRIT.includes(mv.name)||x.cr>=9)return 3;let s=(x.cr||1)-1;
+  if(A.ability==='Super Luck')s++;const it=A.ability==='Klutz'?'':A.item;if(it==='Scope Lens')s++;if(it==='Leek'&&/^(Farfetch|Sirfetch)/.test((A.p&&(A.p.b||A.p.n))||''))s+=2;return Math.min(3,s)}
+const CRIT_TXT=['1/24','1/8','1/2','always'];
+function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||mv.cat===0)return null;
   const nm=mv.name,phys=mv.cat===1,ab=A.ability||'',dab0=D.ability||'';
   // Klutz: the holder's item does nothing (Knock Off, Acrobatics and Poltergeist still see it)
   const aIt=ab==='Klutz'?'':(A.item||''),dIt=dab0==='Klutz'?'':(D.item||'');
@@ -141,11 +171,12 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   const dab=['Mold Breaker','Teravolt','Turboblaze'].includes(ab)?'':dab0;
   // Cloud Nine / Air Lock switch the weather off; Mega Sol makes the user's own moves act as if the sun were out
   const fw=[ab,dab0].some(x=>x==='Cloud Nine'||x==='Air Lock')?'':(o.weather||''),aw=ab==='Mega Sol'?'sun':fw,T=o.terrain||'';
+  const ta=formTypes(A.p,ab,fw,T),td=formTypes(D.p,dab0,fw,T);if(ta)A={...A,p:{...A.p,t:ta}};if(td)D={...D,p:{...D.p,t:td}}
   // grounded (for terrain): an Air Balloon holder floats, an Iron Ball holder is pulled down even if it flies or levitates
   const gr=(t,x,it)=>it==='Iron Ball'?true:!t.includes('Flying')&&x!=='Levitate'&&x!=='Eelevate'&&it!=='Air Balloon',gA=gr(A.p.t,ab,aIt),gD=gr(D.p.t,dab,dIt);
   // these always land a critical hit; Shell Armor and Battle Armor block crits
-  const crit=(!!o.crit||ALWAYS_CRIT.includes(nm)||(MMETA(nm)||{}).cr>=9)&&!['Shell Armor','Battle Armor'].includes(dab);
-  let type=mv.type,bp=mv.bp,ate=false;
+  const crit=(!!o.crit||ALWAYS_CRIT.includes(nm)||(MMETA(nm)||{}).cr>=9||critStage(A,mv)>=3)&&!['Shell Armor','Battle Armor'].includes(dab);
+  let type=mv.type,bp=mv.bp,ate=false,beatUp=null;
   if(nm==='Weather Ball'&&aw){type={sun:'Fire',rain:'Water',sand:'Rock',snow:'Ice'}[aw];bp*=2}
   else if(nm==='Terrain Pulse'&&gA&&T){type={grassy:'Grass',electric:'Electric',psychic:'Psychic',misty:'Fairy'}[T];bp*=2}
   else if(nm==='Raging Bull')type={'Tauros-Paldea-Combat':'Fighting','Tauros-Paldea-Blaze':'Fire','Tauros-Paldea-Aqua':'Water'}[A.p.n]||type;
@@ -156,6 +187,7 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     if(vb==='wt'){const w=wtOf(D.p)*(dab==='Heavy Metal'?2:dab==='Light Metal'?.5:1)*(dIt==='Float Stone'?.5:1);bp=w>=200?120:w>=100?100:w>=50?80:w>=25?60:w>=10?40:20}
     else if(vb==='wtr'){const wa=wtOf(A.p)*(ab==='Heavy Metal'?2:ab==='Light Metal'?.5:1)*(aIt==='Float Stone'?.5:1),wd=Math.max(.1,wtOf(D.p)*(dab==='Heavy Metal'?2:dab==='Light Metal'?.5:1)*(dIt==='Float Stone'?.5:1)),r=wa/wd;bp=r>=5?120:r>=4?100:r>=3?80:r>=2?60:40}
     else if(vb==='lowhp')bp=20;else if(vb==='fullhp')bp=nm==='Hard Press'?100:120;else if(vb==='userhp')bp=mv.bp||150;else if(vb==='hex')bp=65;
+    else if(vb==='fling')bp=ab==='Klutz'?0:flingBp(A.item);else if(vb==='beatup')beatUp=beatUpBp(o.party&&o.party.length?o.party:[A.p,A.p,A.p,A.p]);
     else if(vb==='respects')bp=Math.min(300,50+50*Math.min(5,o.fainted||0));else if(vb==='punish')bp=60;else if(vb==='ragefist')bp=50;
     else if(vb==='gyro'||vb==='eball'){const sm=it=>it==='Choice Scarf'?1.5:it==='Iron Ball'?.5:1,sA=Math.floor(calcStat(A.p,'Spe',A.speSp??0,natMul(A.nat,'Spe'))*sm(aIt)),sD=Math.floor(calcStat(D.p,'Spe',D.speSp??0,natMul(D.nat,'Spe'))*sm(dIt));
       bp=vb==='gyro'?Math.min(150,Math.floor(25*sD/Math.max(1,sA))+1):(()=>{const r=sA/Math.max(1,sD);return r>=4?150:r>=3?120:r>=2?80:r>=1?60:40})()}}
@@ -174,13 +206,15 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     ||(type==='Ground'&&dIt==='Air Balloon'&&nm!=='Thousand Arrows')
     // (a Mega always holds its Mega Stone, which callers leave out of the item slot)
     ||(nm==='Poltergeist'&&!D.item&&!(D.p&&D.p.m))||(nm==='Steel Roller'&&!T))return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0}};
+  if(mv.vbp==='fling'&&!bp)return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0},fail:'Fling fails: it needs a held item it can throw'};
   // fixed damage: Seismic Toss / Night Shade = the user's level (50); Super Fang / Ruination / Nature's Madness = half the
   // target's current HP (full, then a quarter); one-hit KO moves KO when they land (Sturdy and Ice types vs Sheer Cold are immune)
-  if(mv.fixed||mv.ohko||mv.vbp==='half'){
+  // Final Gambit: the user's current HP (full HP assumed), then the user faints
+  if(mv.fixed||mv.ohko||mv.vbp==='half'||mv.vbp==='gambit'){
     // (move data stores fixed: 0 for "no fixed damage", so only a positive number is a fixed amount)
-    const v=mv.ohko?((dab==='Sturdy'||(mv.ohko==='Ice'&&D.p.t.includes('Ice')))?0:hp):mv.fixed==='level'?50:typeof mv.fixed==='number'&&mv.fixed>0?mv.fixed:Math.max(1,Math.floor(hp/2));
+    const v=mv.vbp==='gambit'?calcStat(A.p,'HP',A.hpSp??0,1):mv.ohko?((dab==='Sturdy'||(mv.ohko==='Ice'&&D.p.t.includes('Ice')))?0:hp):mv.fixed==='level'?50:typeof mv.fixed==='number'&&mv.fixed>0?mv.fixed:Math.max(1,Math.floor(hp/2));
     const v2=mv.vbp==='half'?Math.max(1,Math.floor((hp-v)/2)):v,rr=Array(16).fill(v),r2=Array(16).fill(v2);
-    return {min:v,max:v,rolls:rr,hp,eff:v?1:0,type,hits:1,fixed:true,ohko:!!mv.ohko,next:{min:v2,max:v2,rolls:r2},sash:dIt==='Focus Sash'&&!mv.ohko&&mv.vbp!=='half'&&o.fullHp!==false}}
+    return {min:v,max:v,rolls:rr,hp,eff:v?1:0,type,hits:1,fixed:true,ohko:!!mv.ohko,next:{min:v2,max:v2,rolls:r2},sash:dIt==='Focus Sash'&&!mv.ohko&&mv.vbp!=='half'&&o.fullHp!==false,band:dIt==='Focus Band'&&!mv.ohko}}
   // Attack and Defense. Foul Play uses the target's own Attack (its points, nature and stage); Body Press the user's Defense.
   const aStat=nm==='Body Press'?'Def':phys?'Atk':'SpA',dStat=(phys||['Psyshock','Psystrike','Secret Sword'].includes(nm))?'Def':'SpD',foul=nm==='Foul Play',S=foul?D:A;
   const aPts=foul?(D.atkSp??0):aStat==='Atk'?(A.spA??A.sp):aStat==='SpA'?(A.spS??A.sp):(A.spDef??0);
@@ -194,7 +228,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   if(phys&&ab==='Hustle')a=Math.floor(a*1.5);
   const burned=!!A.burn,am=[];
   if(ab==='Solar Power'&&!phys&&fw==='sun')am.push(6144);
-  else if((ab==='Guts'&&burned&&phys)||(o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab]))am.push(6144);
+  // Plus / Minus: 1.5× Sp. Atk when an ally on the field has Plus or Minus (o.plusAlly)
+  else if((ab==='Guts'&&burned&&phys)||(o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab])||(o.plusAlly&&!phys&&(ab==='Plus'||ab==='Minus')))am.push(6144);
   else if((ab==='Fire Mane'&&type==='Fire')||(ab==='Steelworker'&&type==='Steel')||(ab==="Dragon's Maw"&&type==='Dragon')||(ab==='Rocky Payload'&&type==='Rock'))am.push(6144);
   else if(ab==='Transistor'&&type==='Electric')am.push(5325);
   else if((ab==='Water Bubble'&&type==='Water')||(phys&&(ab==='Huge Power'||ab==='Pure Power')))am.push(8192);
@@ -207,7 +242,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   const dm=[];if(dStat==='Def'&&dab==='Fur Coat')dm.push(8192);else if(dStat==='Def'&&dab==='Grass Pelt'&&T==='grassy')dm.push(6144);
   if(dIt==='Assault Vest'&&dStat==='SpD')dm.push(6144);d=applyMods(d,dm);
   // move power (b: this hit's own power, which Technician reads)
-  const contact=isContact(mv);
+  // Long Reach: its moves don't make contact (no Tough Claws / Fluffy / Rough Skin / Rocky Helmet)
+  const contact=isContact(mv)&&ab!=='Long Reach';
   const power=b=>{const m=[];
     if(nm==='Facade'&&burned)m.push(8192);else if(nm==='Expanding Force'&&gA&&T==='psychic')m.push(6144);else if((nm==='Knock Off'&&D.item&&!fixedItem(D))||(nm==='Misty Explosion'&&gA&&T==='misty'))m.push(6144);
     else if((nm==='Solar Beam'||nm==='Solar Blade')&&['rain','sand','snow'].includes(aw))m.push(2048);
@@ -219,7 +255,9 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
     // Fairy Aura / Dark Aura boost every move of that type on the field, from either side (o.auras: abilities of the other
     // Pokémon on the field, e.g. a partner's Mega Floette)
     if(ab===type+' Aura'||dab0===type+' Aura'||(Array.isArray(o.auras)&&o.auras.includes(type+' Aura')))m.push(5448);
-    if((ab==='Sheer Force'&&isSheer(nm))||(ab==='Sand Force'&&fw==='sand'&&['Rock','Ground','Steel'].includes(type))||(ab==='Tough Claws'&&contact)||(ab==='Punk Rock'&&mv.sound))m.push(5325);
+    if((ab==='Sheer Force'&&isSheer(nm))||(ab==='Sand Force'&&fw==='sand'&&['Rock','Ground','Steel'].includes(type))||(ab==='Tough Claws'&&contact)||(ab==='Punk Rock'&&mv.sound)
+      // Analytic: 1.3× when the user moves after the target (o.atkLast, decided from Speed by the caller)
+      ||(ab==='Analytic'&&o.atkLast))m.push(5325);
     if(ate)m.push(4915);if((ab==='Reckless'&&isRecoil(nm))||(ab==='Iron Fist'&&mFlag(nm,'p',PUNCH)))m.push(4915);
     if(dab==='Dry Skin'&&type==='Fire')m.push(5120);
     // Supreme Overlord (Kingambit): +10% power for each fainted ally, up to 5
@@ -235,9 +273,9 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   // Dragon Darts in doubles hits each foe once; both darts hit one target only when the other foe is protected, immune or
   // gone (o.dartsBoth)
   const mhR=(MMETA(nm)||{}).mh,mhN=nm==='Dragon Darts'&&!o.dartsBoth?1:(MULTI_HIT[nm]||(Array.isArray(mhR)?(mhR[1]>=5?3:mhR[1]):(mhR||1)));
-  const hits0=mhN===3&&(MULTI_HIT[nm]===3||Array.isArray(mhR))&&ab==='Skill Link'?5:mhN,pb=ab==='Parental Bond'&&hits0===1&&!spread,hits=pb?2:hits0;
+  const hits0=beatUp?beatUp.length:mhN===3&&(MULTI_HIT[nm]===3||Array.isArray(mhR))&&ab==='Skill Link'?5:mhN,pb=ab==='Parental Bond'&&hits0===1&&!spread,hits=pb?2:hits0;
   const wMod=aw==='sun'?(type==='Fire'?6144:type==='Water'?2048:4096):aw==='rain'?(type==='Water'?6144:type==='Fire'?2048:4096):4096;
-  const baseOf=h=>{let x=Math.floor(Math.floor(22*power(RISING_HIT[nm]?RISING_HIT[nm]*(h+1):bp)*a/d)/50)+2;
+  const baseOf=h=>{let x=Math.floor(Math.floor(22*power(RISING_HIT[nm]?RISING_HIT[nm]*(h+1):beatUp?beatUp[h]:bp)*a/d)/50)+2;
     if(spread)x=pokeRound(x*3072/4096);if(pb&&h===1)x=pokeRound(x*1024/4096);if(wMod!==4096)x=pokeRound(x*wMod/4096);if(crit)x=Math.floor(x*1.5);return x};
   // STAB comes from the attacker's own types (a skin or Liquid Voice only counts when the new type is one of them); Protean/Libero give it to every move
   const stab=A.p.t.includes(type),stabMod=stab?(ab==='Adaptability'?8192:6144):(ab==='Protean'||ab==='Libero')?6144:4096;
@@ -259,7 +297,8 @@ function damage(o){const A=atkForm(o.atk),D=o.def,mv=o.move;if(!mv||!mv.bp||mv.c
   // Disguise (Mimikyu): the first hit only breaks the disguise and costs it 1/8 of its HP
   const disg=dab==='Disguise'&&o.fullHp!==false,dg=Math.floor(hp/8);
   const R=[...Array(16)].map((_,i)=>85+i),rolls=R.map(r=>H.reduce((s,b,h)=>s+(disg&&h===0?dg:one(b,r,h?FB:FA)),0)),later=R.map(r=>H.reduce((s,b)=>s+one(b,r,FB),0));
-  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:dIt==='Focus Sash'&&hits===1&&o.fullHp!==false}}
+  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:dIt==='Focus Sash'&&hits===1&&o.fullHp!==false,
+    band:dIt==='Focus Band',contact,beatUp,bp,crit,critStage:critStage(A,mv),aTypes:ta,dTypes:td}}
 // Fewest bulk points (HP + the defense the move hits) that survive every roll, keeping the defender's nature.
 function bulkToSurvive(o){const mv=o.move;if(!mv||!mv.bp||mv.cat===0||mv.fixed||mv.ohko||mv.vbp==='half')return null;const special=mv.cat===2&&!['Psyshock','Psystrike','Secret Sword'].includes(mv.name);
   const cur=o.def.hpSp+(special?o.def.spdSp:o.def.defSp);
@@ -269,7 +308,9 @@ function bulkToSurvive(o){const mv=o.move;if(!mv||!mv.bp||mv.cat===0||mv.fixed||
     const r=damage({...o,def:{...o.def,hpSp:hp,defSp:special?o.def.defSp:df,spdSp:special?df:o.def.spdSp}});if(r&&r.max<r.hp)return {hp,df,tot,cur,stat:special?'SpD':'Def'}}
   return {none:true}}
 // KO odds from the 16 real damage rolls. Later hits use r.next (Multiscale only softens the first); Focus Sash leaves 1 HP.
-function koText(r){if(!r)return '';if(r.max===0)return 'No effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r;
+// Focus Band: a 10% chance to hold on at 1 HP from any hit that would KO (never relied on, only noted)
+function koText(r){const t=koText0(r);return r&&r.band&&r.max>0&&r.max+(r.next||r).max>=r.hp&&!r.sash?t+' (Focus Band: 10% to hold on at 1 HP)':t}
+function koText0(r){if(!r)return '';if(r.max===0)return 'No effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r;
   const k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
   if(r.sash&&k1>0)return k1>=1?'Focus Sash holds at 1 HP, then any hit KOs':`${Math.round(k1*100)}% to OHKO without its Focus Sash; the Sash holds at 1 HP`;
   if(k1>=1)return 'Guaranteed OHKO';if(k1>0)return `${Math.round(k1*100)}% chance to OHKO`;
@@ -281,7 +322,7 @@ function sideDefaults(p,role,mem){const nat=topNature(p),it=topItem(p);let ab;tr
   if(mem&&mem.ability&&p.a.includes(mem.ability))ab=mem.ability;
   // your own member: your spread if you set one (paste/link), and its item (your pick, or the team-aware default)
   const st=p.st,phys=st[1]>=st[3],cs=(mem&&mem.spread)||commonSpread(p),item=mem&&mem.item&&!STONE_RE.test(mem.item)?mem.item:mem&&mem.heldItem?mem.heldItem:it&&!STONE_RE.test(it[0])?it[0]:'';
-  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}
+  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,hpSp:cs.hp,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}
     :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'};
   // no spread data: assume full Defense for Body Press on Pokémon built around their Defense (base 100+);
   // a defender's Attack points (for Foul Play) are full on physical attackers
@@ -300,6 +341,54 @@ function monOptions(sel){const mine=members().map(m=>m.p);let thr=[];try{thr=met
   return grp('Your team',mine)+grp('Top of the meta',thr)+grp('Everyone',ROSTER.slice().sort((a,b)=>(a.d||a.n).localeCompare(b.d||b.n)))}
 // where a side's points and nature come from: your own spread, or an assumption (the most common spread, or an estimate)
 const dcSrc=X=>X&&X.src&&X.src!=='yours'?`<span class="asm" title="${X.src==='estimated'?'No spread data: points and nature are estimated':'Most common spread (or your nature on it); change the boxes to match yours'}">${X.src==='estimated'?'estimated':'assumed'} spread</span>`:'';
+// Turn order between the two calc sides (for Analytic and Zoom Lens): each side's likely Speed (your spread for your own
+// Pokémon), the item picked here (Choice Scarf ×1.5, Iron Ball ×0.5) and weather speed abilities; no Tailwind or Trick Room.
+// Stall always moves last in its bracket; a priority move goes first. last: the attacker moves after the defender.
+function dcSpeed(X,weather){let mem=null;try{mem=members().find(m=>m.p.n===X.p.n)}catch(e){}let v=likelySpeed0(X.p,mem).v;if(X.item==='Iron Ball')v=Math.floor(v/2);
+  return spdCalc(v,X.item==='Choice Scarf',X.ability,weather||'',{})}
+function dcOrder(A,D,mv,weather,terrain){const a=dcSpeed(A,weather),d=dcSpeed(D,weather),pr=movePrio(mv,A.ability,{terrain})>0;
+  const sa=A.ability==='Stall',sd=D.ability==='Stall';
+  const last=!pr&&!sd&&(sa||a<d),tie=!pr&&sa===sd&&a===d;return {a,d,last,tie,pr,stall:sa!==sd}}
+// What the calc knows about the attacker's own side: your team when it's your Pokémon. plusAlly: a teammate has Plus or Minus
+// (counted as if it's the partner on the field); party: the Pokémon brought for Beat Up (it and your next three).
+function dcContext(A,ms){const me=ms.find(m=>m.p.n===A.p.n);if(!me)return {plusAlly:false,party:null,mine:false};
+  const rest=ms.filter(m=>m!==me),pm=rest.find(m=>['Plus','Minus'].includes(m.ability||abilityOf(m)));
+  return {mine:true,plusAlly:!!pm,plusBy:pm,party:[me.p,...rest.slice(0,3).map(m=>m.p)],partyN:rest.slice(0,3)}}
+const dname=X=>esc(X.p.d||X.p.n);
+// Short notes under a calc result for the mechanics counted (or noted) from the sets: turn order, contact damage, recoil,
+// crit chance, flinch, type changes and the special moves.
+function calcNotes(A,D,mv,r,ord,ctx,weather,terrain){const t=[];if(!r||!mv)return t;const ab=A.ability||'',it=ab==='Klutz'?'':(A.item||''),dab=D.ability||'',dit=dab==='Klutz'?'':(D.item||'');
+  if(ab==='Analytic'&&ord){if(ord.pr)t.push('Analytic not counted: a priority move goes first');else if(ord.last)t.push(`Analytic 1.3×: moves after ${dname(D)} (${ord.stall?'Stall':`Speed ${ord.a} vs ${ord.d}`}); in doubles it needs to move last of all four`);
+    else if(ord.tie)t.push(`Analytic not counted: Speed tie with ${dname(D)} (${ord.a}), 1.3× only if it moves second`);else t.push(`Analytic not counted: moves before ${dname(D)} (Speed ${ord.a} vs ${ord.d})`)}
+  if(['Plus','Minus'].includes(ab)&&mv.cat===2)t.push(ctx.plusAlly?`${esc(ab)} 1.5× Sp. Atk: counts your ${esc(ctx.plusBy.d||ctx.plusBy.p.n)} (${esc(ctx.plusBy.ability||abilityOf(ctx.plusBy))}) as its partner`:`${esc(ab)} not counted: needs a Plus or Minus partner on the field`);
+  if(it==='Zoom Lens'&&ord&&(MMETA(mv.name)||{}).a<100)t.push(ord.last?`Zoom Lens: 1.2× accuracy, it moves after ${dname(D)}`:`Zoom Lens: no boost, it moves first`);
+  if(r.aTypes)t.push(`${dname(A)} is ${r.aTypes.join('/')} type here (${esc(ab)})`);if(r.dTypes)t.push(`${dname(D)} is ${r.dTypes.join('/')} type here (${esc(dab)})`);
+  if(ab==='Long Reach'&&isContact(mv))t.push('Long Reach: no contact');
+  if(r.max>0){
+    // contact: Rough Skin / Iron Barbs (1/8) and Rocky Helmet (1/6) hurt the attacker; Magic Guard ignores both
+    if(r.contact){const c=[];if(['Rough Skin','Iron Barbs'].includes(dab))c.push(`${esc(dab)} 1/8`);if(dit==='Rocky Helmet')c.push('Rocky Helmet 1/6');
+      if(c.length)t.push(ab==='Magic Guard'?`no damage back from ${c.map(x=>x.split(' 1/')[0]).join(' or ')} (Magic Guard)`:`contact: ${dname(A)} loses ${c.join(' + ')} of its max HP`)}
+    // recoil (a share of the damage dealt; Rock Head and Magic Guard stop it). Steel Beam / Mind Blown cost half the user's HP
+    // whatever the damage, which Rock Head doesn't stop.
+    const rc=(MMETA(mv.name)||{}).rc;if(rc){if(['Steel Beam','Mind Blown','Chloroblast'].includes(mv.name))t.push(ab==='Magic Guard'?'no HP cost (Magic Guard)':'costs the user half its max HP');
+      else if(ab==='Rock Head'||ab==='Magic Guard')t.push(`no recoil (${esc(ab)})`);
+      else{const rv=x=>Math.max(1,Math.round(Math.min(x,r.hp)*rc[0]/rc[1]));t.push(`recoil ${rv(r.min)}–${rv(r.max)} HP (${Math.round(100*rc[0]/rc[1])}% of the damage)`)}}
+    // crit chance when it's above the usual 1 in 24
+    if(!r.crit&&r.critStage>0){const why=[];if((MMETA(mv.name)||{}).cr>1)why.push('high-crit move');if(ab==='Super Luck')why.push('Super Luck');if(it==='Scope Lens')why.push('Scope Lens');if(it==='Leek'&&r.critStage>=2)why.push('Leek');
+      t.push(`crit chance ${CRIT_TXT[r.critStage]}${why.length?` (${why.join(', ')})`:''}`)}
+    else if(r.crit&&!dc.crit&&r.critStage>=3&&!ALWAYS_CRIT.includes(mv.name)&&!((MMETA(mv.name)||{}).cr>=9))t.push('always a critical hit (crit stage +3)');
+    // King's Rock / Stench: 10% flinch on attacks without their own flinch chance (Serene Grace 20%), only if it moves first
+    const fl=(it==="King's Rock"||ab==='Stench')&&!((MMETA(mv.name)||{}).s||[]).some(x=>x[3]);
+    if(fl&&!['Inner Focus','Shield Dust'].includes(dab))t.push(`${it==="King's Rock"?"King's Rock":'Stench'}: ${ab==='Serene Grace'?20:10}% to flinch if it moves first`)}
+  if(mv.vbp==='fling'&&r.max>0)t.push(`Fling: ${r.bp} power from ${esc(it)} (the item is used up)`);
+  if(r.beatUp)t.push(`Beat Up: ${r.beatUp.length} hits (${r.beatUp.join('/')} power), one per Pokémon brought${ctx.mine?`: ${dname(A)}${ctx.partyN.map(m=>', '+esc(m.d||m.p.n)).join('')}`:', assuming 4 like it'}, none fainted or statused`);
+  if(mv.vbp==='gambit'&&r.max>0)t.push(`Final Gambit: damage equals the user's HP (full HP assumed: ${A.hpSp??0} HP points), then the user faints`);
+  return t}
+// "Not counted" labels for the attacker's or defender's ability, item or move (NOT_COUNTED)
+function notCounted(A,D,mv,r){const out=[],seen=new Set(),add=(k,side)=>{const x=NOT_COUNTED[k];if(!x||seen.has(k)||!(x[1]==='b'||x[1]===side))return;seen.add(k);out.push(`${k} (${x[0]})`)};
+  const pinchT={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'};
+  if(!(pinchT[A.ability]&&r&&r.type!==pinchT[A.ability]))add(A.ability,'a');if(A.ability!=='Klutz')add(A.item,'a');add(mv&&mv.name,'a');
+  if(!(D.ability==='Marvel Scale'&&mv&&mv.cat!==1))add(D.ability,'d');return out}
 function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   if(!dc.a||!byName.get(dc.a))dc.a=(ms[0]&&ms[0].p.n)||'Garchomp';
   if(!dc.d||!byName.get(dc.d)){let t=[];try{t=metaThreats(5).map(x=>x.p||x)}catch(e){}dc.d=(t.find(p=>p.n!==dc.a)||byName.get('Incineroar')||ROSTER[1]).n}
@@ -317,7 +406,9 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   // a Mega always holds its stone (shown, fixed); any other held item not in the short list is still shown as chosen
   const itemSel=(id,X)=>X.p.m?`<select class="field" id="${id}" disabled title="A Mega always holds its Mega Stone"><option>${esc(typeof stoneFor==='function'?stoneFor(X.p):'Mega Stone')}</option></select>`
     :sel(id,(X.item&&!CALC_ITEMS.includes(X.item)?[...CALC_ITEMS,X.item]:CALC_ITEMS).map(x=>[x,x||'None']),X.item);
-  const r=damage({atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,fainted:dc.fainted||0,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit});
+  const ord=mv?dcOrder(A,D,mv,dc.weather,dc.terrain):null,ctx=dcContext(A,ms);
+  const opt={atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,fainted:dc.fainted||0,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit,atkLast:!!(ord&&ord.last),plusAlly:ctx.plusAlly,party:ctx.party};
+  const r=damage(opt);
   const pct=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
   const bar=pct?`<div class="dcbar"><span style="width:${Math.min(100,pct[0]).toFixed(1)}%" class="lo"></span><span style="width:${Math.max(0,Math.min(100,pct[1])-Math.min(100,pct[0])).toFixed(1)}%" class="hi"></span></div>`:'';
   // phones: the result rides along at the top while you change the inputs below
@@ -339,9 +430,9 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
     <div class="dcfield"><div class="seg" role="group" aria-label="Weather">${[['','No weather'],['sun','Sun'],['rain','Rain'],['sand','Sand'],['snow','Snow']].map(([k,t])=>`<button type="button" data-dcw="${k}" aria-pressed="${dc.weather===k}">${t}</button>`).join('')}</div>
       <div class="seg" role="group" aria-label="Terrain" style="margin-top:6px">${[['','No terrain'],['grassy','Grassy'],['electric','Electric'],['psychic','Psychic'],['misty','Misty']].map(([k,t])=>`<button type="button" data-dcterr="${k}" aria-pressed="${dc.terrain===k}">${t}</button>`).join('')}</div>
       <div class="seg segwrap" role="group" aria-label="Field">${[['spread','Hits both foes'],['screen','Screen up'],['hh','Helping Hand'],['fg','Friend Guard'],['crit','Critical hit']].map(([k,t])=>`<button type="button" data-dct="${k}" aria-pressed="${k==='spread'?spread:!!dc[k]}">${t}</button>`).join('')}</div></div>
-    <div class="dcres">${!mv?'<div class="empty-note">Pick a damaging move.</div>':!r?`<div class="empty-note">${mv.vbp==='counter'?`${esc(mv.name)} hits back with ${mv.name==='Metal Burst'||mv.name==='Comeuppance'?'1.5×':'2×'} the damage it takes that turn, so it depends on the hit it receives and isn't calculated here.`:mv.vbp==='endeavor'?'Endeavor cuts the target down to your own HP, so it depends on how much HP you have left.':mv.cat>0?'This move\'s damage depends on the battle and isn\'t calculated.':'This move does no direct damage.'}</div>`:r.max===0?`<b>No effect.</b> ${esc(D.p.d||D.p.n)} is immune to ${esc(r.type)}.`:
+    <div class="dcres">${!mv?'<div class="empty-note">Pick a damaging move.</div>':!r?`<div class="empty-note">${mv.vbp==='counter'?`${esc(mv.name)} hits back with ${mv.name==='Metal Burst'||mv.name==='Comeuppance'?'1.5×':'2×'} the damage it takes that turn, so it depends on the hit it receives and isn't calculated here.`:mv.vbp==='endeavor'?'Endeavor cuts the target down to your own HP, so it depends on how much HP you have left.':mv.vbp==='stockpile'?'Not counted: Spit Up needs Stockpile first (its power depends on how many).':mv.cat>0?'This move\'s damage depends on the battle and isn\'t calculated.':'This move does no direct damage.'}</div>`:r.max===0?r.fail?`<b>No effect.</b> ${esc(r.fail)}.`:`<b>No effect.</b> ${esc(D.p.d||D.p.n)} is immune to ${esc(r.type)}.`:
       `<div class="dcbig">${pct[0].toFixed(1)}–${pct[1].toFixed(1)}%</div>${bar}<div><b>${koText(r)}</b> · ${r.min}–${r.max} of ${r.hp} HP${r.hits>1?` · ${r.hits} hits${MULTI_HIT[dc.mv]===3&&r.hits===3?' (2–5)':''}`:''}${r.eff!==1?` · ${r.eff}× ${esc(r.type)}`:''}</div>
-      ${(()=>{const t=[],acc=moveAcc(mv,A.ability,dc.weather,D,A.item);
+      ${(()=>{const t=[],acc=moveAcc(mv,A.ability,dc.weather,D,A.item,A.p.t,!!(ord&&ord.last));
         if(mv.vbp==='wt')t.push(`power from ${esc(D.p.d||D.p.n)}'s weight (${wtOf(D.p)} kg)`);if(mv.vbp==='wtr')t.push(`power from the weight ratio (${wtOf(A.p)} kg vs ${wtOf(D.p)} kg)`);
         if(mv.vbp==='lowhp')t.push('assumes full HP (20 power; more as HP drops)');if(mv.vbp==='userhp')t.push('assumes the user is at full HP (power drops with its HP)');
         {const CN={'Stomping Tantrum':'doubles if the user\'s last move failed','Temper Flare':'doubles if the user\'s last move failed',Payback:'doubles if the user moves after the target',Round:'doubles if an ally used Round first this turn',
@@ -350,8 +441,10 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
         if(mv.fixed==='level')t.push('fixed damage: the user\'s level (50)');if(mv.vbp==='half')t.push('half the target\'s current HP');if(r.ohko)t.push('one-hit KO move: KOs only if it lands');
         if(acc<100)t.push(`${acc}% to hit`);if(chargesFirst(mv,dc.weather,A.item))t.push(mv.name==='Electro Shot'?'charges a turn first unless it\'s raining (or Power Herb)':mv.name==='Solar Beam'||mv.name==='Solar Blade'?'charges a turn first unless the sun is out (or Power Herb)':'charges a turn first (Power Herb skips it)');
         if(mv.recharge)t.push('the user must recharge next turn');if(mv.name==='Dragon Darts')t.push('one dart per foe in doubles (both darts hit one target only if the other foe is protected or gone)');if(D.ability==='Disguise')t.push('Disguise takes the first hit (only 1/8 of its HP)');
-        return t.length?`<p class="t2">${t.join(' · ')}</p>`:''})()}
-      ${(()=>{if(!r||r.max===0)return '';const bs=bulkToSurvive({atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit});if(!bs)return '';if(bs.none)return `<p class="dcbulk">${esc(D.p.d||D.p.n)} can't survive this hit with any spread.</p>`;return `<p class="dcbulk">Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max<r.hp?'This spread already survives.':'This spread does not.'}</p>`})()}
+        t.push(...calcNotes(A,D,mv,r,ord,ctx,dc.weather,dc.terrain));
+        const nc=notCounted(A,D,mv,r);
+        return (t.length?`<p class="t2">${t.join(' · ')}</p>`:'')+(nc.length?`<p class="t2">Not counted: ${nc.join('; ')}.</p>`:'')})()}
+      ${(()=>{if(!r||r.max===0)return '';const bs=bulkToSurvive(opt);if(!bs)return '';if(bs.none)return `<p class="dcbulk">${esc(D.p.d||D.p.n)} can't survive this hit with any spread.</p>`;return `<p class="dcbulk">Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max<r.hp?'This spread already survives.':'This spread does not.'}</p>`})()}
       <p class="t2">${esc(A.p.d||A.p.n)} ${aShown} ${mvC&&mvC.cat===2?'SpA':'Atk'} points ${esc(A.nat)}${A.item?' '+esc(A.item):''} · ${esc(dc.mv)}${spread?' (spread)':''} vs ${esc(D.p.d||D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${esc(D.nat)}${D.item?' '+esc(D.item):''}${A.real||D.real?' · spreads: most common on the Showdown ladder':''}${A.p.n==='Aegislash'?' · Aegislash attacks in Blade Forme (Atk/SpA 140)':''}${D.p.n==='Aegislash'?' · Aegislash takes hits in Shield Forme':''}${A.p.formNote||D.p.formNote?' · Palafin in Hero Form':''}${dc.wSet||dc.tSet||!(dc.weather||dc.terrain)?'':' · field set by the Pokémon selected (change it above)'}</p>`}</div>
     ${renderHitTable(ms)}`;dcStickWatch()}
 // Your team's best hit on each top threat (each side's usual set).
@@ -370,11 +463,12 @@ function hitNote(b){if(!b)return '';const t=[];if(b.charge)t.push('charges first
 const SURE_HIT=new Set(['Aerial Ace','Aura Sphere','Smart Strike','Clear Smog','Shadow Punch','Flower Trick','Kowtow Cleave','Swift','Magical Leaf','Shock Wave','Magnet Bomb','Vital Throw','Feint Attack','Disarming Voice']);
 // One-hit KO moves: 30% (Sheer Cold 20% unless the user is Ice type), and accuracy modifiers don't apply to them
 const OHKO_MOVES=new Set(['Fissure','Horn Drill','Sheer Cold','Guillotine']);
-function moveAcc(mv,ab,weather,def,item,userTypes){if(!mv)return 100;if(ab==='No Guard'||(def&&def.ability==='No Guard'))return 100;
+// moved: the user moves after the target (Zoom Lens ×1.2, 4915/4096 as Showdown)
+function moveAcc(mv,ab,weather,def,item,userTypes,moved){if(!mv)return 100;if(ab==='No Guard'||(def&&def.ability==='No Guard'))return 100;
   if(SURE_HIT.has(mv.name))return 100;if(OHKO_MOVES.has(mv.name)||mv.ohko){const base=(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||30;return mv.name==='Sheer Cold'&&userTypes?(userTypes.includes('Ice')?30:20):base}
   let a=mv.acc||(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||100;
   if(['Hurricane','Thunder'].includes(mv.name)){if(weather==='rain')return 100;if(weather==='sun')a=50}if(mv.name==='Blizzard'&&weather==='snow')return 100;
-  if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(ab==='Hustle'&&mv.cat===1)a*=.8;
+  if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(item==='Zoom Lens'&&moved)a=a*4915/4096;if(ab==='Hustle'&&mv.cat===1)a*=.8;
   if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
   return Math.min(100,Math.round(a))}
 function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThreats(12).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';

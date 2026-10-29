@@ -171,14 +171,17 @@ const THR = (() => {
     const prM = o ? o.pr : 0, prT = d ? d.pr : 0;
     const orders = [['faster', sm > st]]; if (modes.tw) orders.push(['with Tailwind', sm * 2 > st]); if (modes.tr && m.p.st[5] <= 60) orders.push(['under Trick Room', sm < st]);
     let first = false, how = '';
-    if (prM > prT) { first = true; how = 'priority'; } else if (prM === prT) for (const [k, f] of orders) if (f) { first = true; how = k; break; }
+    // Stall (Sableye) always moves last inside its priority bracket, whatever the Speed or Trick Room
+    const stM = m.ability === 'Stall', stT = t.ability === 'Stall';
+    if (prM > prT) { first = true; how = 'priority'; } else if (prM === prT && stM !== stT) { first = stT; how = stT ? 'it has Stall' : ''; }
+    else if (prM === prT) for (const [k, f] of orders) if (f) { first = true; how = k; break; }
     // each side's hit changes the other's later hits (and all of them when it lands first)
     const eT = hitEffect(o, t), eM = hitEffect(d, m);
     if (eT) d = bestAttack(t, m, field, {...eT, after: !first}) || d;
     if (eM) o = bestAttack(m, t, field, {...eM, after: first}) || o;
     const nM = o ? o.h : Infinity, nT = d ? d.h : Infinity;
     // Icy Wind / Electroweb / Rock Tomb…: after the first hit lands the target is −1 Speed, so from turn 2 the order can flip
-    const sd = o && o.move ? (tDrop(o.move) || {}).spe : 0, later = first || (!!sd && !prT && sm > Math.floor(st * 2 / (2 - sd)));
+    const sd = o && o.move ? (tDrop(o.move) || {}).spe : 0, later = first || (!!sd && !prT && stM === stT && sm > Math.floor(st * 2 / (2 - sd)));
     const win = (first && nM <= nT) || (!first && (nM < nT || (later && nM === nT && nM >= 2)));
     return {win, nM, nT, first, how: first ? how : later ? 'after its Speed drop' : '', o, d, sm, st};
   }
