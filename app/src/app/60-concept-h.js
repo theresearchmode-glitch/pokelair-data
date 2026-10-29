@@ -223,7 +223,15 @@ function chEditOpen(i) { const ed = $('chEdit'); if (!ed) return; ed.dataset.slo
   const m = i == null ? null : members().find(x => x.i === +i); $('chEditT').textContent = i == null ? 'Edit team' : m ? 'Edit ' + m.d : 'Add a Pokémon';
   ed.classList.toggle('chadd', i != null && !m); ed.hidden = false; $('chEditScrim').hidden = false; document.documentElement.classList.add('chlock'); ed.scrollTop = 0; { const eb = ed.querySelector('.chedb'); if (eb) eb.scrollTop = 0; }
   // an empty slot: focus its name box right away, inside the tap, so phones open the keyboard
+  try { chEditStrip(); } catch (e) {}
   if (i != null && !m) { const inp = ed.querySelector(`#pk${i}`) || ed.querySelector(`#slot${i} input`); if (inp) { try { inp.focus({preventScroll: true}); } catch (e) { inp.focus(); } } } }
+// the edit panel's team strip: your six as mini sprites (tap to switch), + for an empty slot; and a clear Remove button
+function chEditStrip() { const ed = $('chEdit'); if (!ed || ed.hidden) return; let st = ed.querySelector('.chedstrip'); if (!st) { st = document.createElement('div'); st.className = 'chedstrip'; st.setAttribute('role', 'group'); st.setAttribute('aria-label', 'Your six'); ed.querySelector('.chedh').after(st); }
+  const cur = ed.dataset.slot, mm = new Map(members().map(m => [m.i, m]));
+  st.innerHTML = S.slots.map((x, i) => { const m = mm.get(i); return `<button type="button" class="chst${String(i) === cur ? ' on' : ''}${m ? '' : ' add'}" data-chedit="${i}" aria-label="${m ? 'Edit ' + esc(m.d) : 'Add a Pokémon in slot ' + (i + 1)}"${String(i) === cur ? ' aria-current="true"' : ''}>${m ? (sprite(m.p, 'mini') || esc(m.d.slice(0, 3))) : '<span aria-hidden="true">+</span>'}</button>`; }).join('');
+  let rb = ed.querySelector('.chedrm'); const m = cur !== 'all' ? mm.get(+cur) : null;
+  if (!rb) { rb = document.createElement('button'); rb.type = 'button'; rb.className = 'chghost chedrm'; ed.querySelector('.chedb').append(rb); }
+  rb.hidden = !m; if (m) { rb.dataset.chrm = cur; rb.textContent = `Remove ${m.d} from the team`; } }
 function chEditClose() { const ed = $('chEdit'); if (!ed || ed.hidden) return; ed.hidden = true; $('chEditScrim').hidden = true; document.documentElement.classList.remove('chlock'); }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; chEditOpen(b.dataset.chedit === 'all' ? null : +b.dataset.chedit); });
 // Import, Export and Save show their panels inside the editor
@@ -233,7 +241,8 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const F = CH.four(ms), lead = F ? ms.find(m => m.p.n === F.lead[0]) || null : null, ko = CH.koNote(RD);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };
   const all = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).slice(0, 6);
-  const row = ({m, i}) => m ? `<button type="button" class="chrow" data-chedit="${i}" aria-label="Edit ${esc(m.d)}"><span class="ix">${i + 1}</span>${sprite(m.p) || ''}<div class="chbd"><div class="nm">${esc(m.d)}${m.spread && m.spread.assumed ? ' <span class="chtag ass" title="No stat points on the sheet: your nature on the most common spread">spread assumed</span>' : ''}</div><div class="mono">${esc(m.item || 'No item')} · ${esc(m.ability || '')}</div><div class="mono mv">${m.moves.map(x => esc(x.name)).join(' · ')}</div>${note(m)}</div><span class="chedi" aria-hidden="true">Edit</span></button>`
+  // a filled card is a tappable box (not a button) so it can hold its own − (remove) button
+  const row = ({m, i}) => m ? `<div role="button" tabindex="0" class="chrow" data-chedit="${i}" aria-label="Edit ${esc(m.d)}"><button type="button" class="chrm" data-chrm="${i}" aria-label="Remove ${esc(m.d)} from the team">−</button><span class="ix">${i + 1}</span>${sprite(m.p) || ''}<div class="chbd"><div class="nm">${esc(m.d)}${m.spread && m.spread.assumed ? ' <span class="chtag ass" title="No stat points on the sheet: your nature on the most common spread">spread assumed</span>' : ''}</div><div class="mono">${esc(m.item || 'No item')} · ${esc(m.ability || '')}</div><div class="mono mv">${m.moves.map(x => esc(x.name)).join(' · ')}</div>${note(m)}</div><span class="chedi" aria-hidden="true">Edit</span></div>`
     : `<button type="button" class="chrow empty" data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="ix">${i + 1}</span><span class="chadd">+</span><div class="chbd"><div class="nm">Add a Pokémon</div></div></button>`;
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
   const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
@@ -259,7 +268,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}${CH.legendRow(RD)}</div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
   // part 4: the sheet, every slot (empty ones say Add)
   { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${all.map(row).join('')}</div>`; }
-  if (!$('chScout').hidden) chScoutRender(); }
+  if (!$('chScout').hidden) chScoutRender(); try { chEditStrip(); } catch (e) {} }
 // the Teams ▾ menu
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#chTeamsBtn'), m = $('chTeamsMenu'); if (!m) return;
   if (b) { m.hidden = !m.hidden; b.setAttribute('aria-expanded', !m.hidden); return; } if (!e.target.closest || !e.target.closest('#chTeamsMenu')) { m.hidden = true; } else setTimeout(() => { m.hidden = true; }, 0); });
@@ -314,3 +323,9 @@ if (window.__PL_TEST) window.__CH = {open: chScoutOpen, close: chScoutClose, fou
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chpool]'); if (!b) return; const v = b.dataset.chpool; if (v === ui.pool) return;
   ui.pool = v; LS.set('cc2.pool', v); const sel = $('poolSel'); if (sel) sel.value = v; render();
   toast({box: 'Suggestions only use your box', boxfill: 'Your box first, then the best Pokémon to catch', all: 'Suggestions use the full roster'}[v]); });
+// − on a Your six card (or Remove in the edit panel): take that Pokémon off the team, with Undo. Runs before the card's own tap.
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chrm]'); if (!b) return; e.stopPropagation(); e.preventDefault();
+  const i = +b.dataset.chrm, was = byName.get((S.slots[i] || {}).n); keepUndo(); S.slots[i] = blank(); render(); if (was) toast(`Removed ${was.d}`, true);
+  const ed = $('chEdit'); if (ed && !ed.hidden && b.closest('#chEdit')) chEditOpen(i); }, true);
+// a Your six card opens with Enter or Space too
+document.addEventListener('keydown', e => { const r = e.target; if (!r || !r.matches || !r.matches('div.chrow[data-chedit]') || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); r.click(); });

@@ -174,3 +174,19 @@ label.toggle{min-height:40px;display:inline-flex;align-items:center;gap:8px}
 .chedit .chedh{position:static!important;flex:none;margin-bottom:0}
 .chedit .chedb{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding-top:10px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
 html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
+/* quick remove (−) on Your six cards, and the edit panel's team strip + Remove button */
+#chSheetOut .chrow,.chrow{position:relative}
+.chrm{all:unset;box-sizing:border-box;position:absolute;top:6px;right:6px;z-index:2;width:32px;height:32px;border-radius:50%;border:2px solid var(--chink);background:var(--chc);color:var(--chink);display:flex;align-items:center;justify-content:center;font:700 22px/1 var(--body);cursor:pointer}
+.chrm::after{content:"";position:absolute;inset:-6px}
+.chrm:hover,.chrm:focus-visible{background:var(--chink);color:var(--chp)}
+.chedstrip{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:8px 2px 10px;border-bottom:1px dashed var(--line2)}
+.chst{all:unset;box-sizing:border-box;height:46px;border-radius:12px;border:1.5px solid var(--line2);background:var(--chc);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.chst .spr,.chst img{width:40px;height:40px;object-fit:contain}
+.chst.on{border:2.5px solid var(--chink);background:var(--chp2)}
+.chst.add{border-style:dashed;color:var(--chink2);font:700 22px/1 var(--body)}
+.chedit:not([data-slot="all"]) .slot .x{display:none!important}
+.chedrm{display:block;width:100%;margin-top:14px;min-height:44px}
+.chedrm[hidden]{display:none!important}
+/* adding a Pokémon: a compact header and strip, so name suggestions stay above the phone keyboard */
+.chedit.chadd .chedh{padding-top:8px;padding-bottom:6px}
+.chedit.chadd .chedstrip{padding:4px 2px 6px;gap:5px}.chedit.chadd .chst{height:34px}.chedit.chadd .chst .spr,.chedit.chadd .chst img{width:30px;height:30px}
