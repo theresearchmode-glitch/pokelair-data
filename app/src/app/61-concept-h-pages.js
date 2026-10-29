@@ -158,6 +158,9 @@ function chPlansDedup() { const el = $('sugs'); if (!el) return; const R = new S
   const t = $('sugTitle'); if (t && t.textContent === 'Fix plans') t.textContent = 'Bigger plans';
   let n = $('chPlanNone'); if (!j && el.querySelector('.plan')) { if (!n) { n = document.createElement('p'); n.id = 'chPlanNone'; n.className = 't2'; el.prepend(n); } n.textContent = 'Every one-change plan is a swap above. Tap More ideas for plans with two or more changes.'; } else if (n) n.remove(); }
 CH.wrap('renderPlans', () => safe('plans dedup', chPlansDedup));
+// All suggestions: the bigger plans sit in a fold under the swaps (Oct 29), so the page fits in about three phone screens
+CH.wrap('renderPlans', () => { const ps = $('planSec'), fc = ps && ps.querySelector(':scope > .fixcol'); if (!fc || fc.closest('details.chsec')) return;
+  const d = CH.foldNode(fc, 'bigplans', 'Bigger plans', 'Two or more changes at once', false); if (d) { const h = fc.querySelector(':scope > .head'); if (h) h.hidden = true; } });
 CH.wrap('renderTypeChart', () => CH.pagehead($('types'), 'Type chart · what hits what', 'Type matchups', ''));
 CH.wrap('renderSets', () => CH.pagehead($('sets'), 'Popular sets · what players run', 'Popular sets', ''));
 CH.wrap('renderSaved', () => CH.pagehead($('saved'), 'Saved teams · in this browser', 'Saved teams', ''));

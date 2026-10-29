@@ -55,7 +55,7 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
 CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
   // nothing makes the team readier: show the side-grades (different picks that keep every check) instead of a dead end
   if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { L = ui.planList = ui.plans.more.slice(0, 3); side = true; }
-  const top = L.slice(0, 3); if (!top.length) return '';
+  const top = L.slice(0, 2); if (!top.length) return ''; // top 2 here; All suggestions has the rest
   return `<section class="chsugs" aria-label="Suggestions">${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}
     ${top.map((pl, k) => { if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } } const d = pl._ts != null && base != null ? pl._ts - base : null;
       const pics = pl.ch.map(x => `${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span>`).join('');
@@ -194,8 +194,10 @@ function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'
   // 3 · How your team plays: the game plan, then what you hit hard and what hits you
   const p3 = CH.part('chP3', '3', 'How your team plays', 'Leads, what to bring, what you hit and what hits you'); const b3 = p3.querySelector('.chpartb'), on3 = LS.get('cc2.seg.types', 'off');
   const gp = rep.querySelector('.gpcard'); if (gp) { const g = mk('rgplan', 'Game plan', false); g.id = 'chfGplan'; g.querySelector('.chbody').append(gp); b3.append(g); }
-  b3.append(Object.assign(document.createElement('div'), {innerHTML: `<h3 class="chsub3">Types</h3>${CH.seg('types', [['off', 'Offense: what you hit'], ['def', 'Defense: what hits you']], on3)}`}));
-  b3.append(panel('types', 'off', [$('offCard'), flat('offense', true)], on3), panel('types', 'def', [$('defCard'), flat('defSec', true)], on3));
+  // Types sits in a fold like Game plan, so My team fits in about three phone screens
+  { const ty = mk('rtypes', 'Types', false); ty.id = 'chfTypes'; ty.querySelector('.chs').textContent = 'What you hit and what hits you'; const tb = ty.querySelector('.chbody');
+    tb.append(Object.assign(document.createElement('div'), {innerHTML: CH.seg('types', [['off', 'Offense: what you hit'], ['def', 'Defense: what hits you']], on3)}).firstElementChild);
+    tb.append(panel('types', 'off', [$('offCard'), flat('offense', true)], on3), panel('types', 'def', [$('defCard'), flat('defSec', true)], on3)); b3.append(ty); }
   // 4 · Your six: the sheet; tap a row to edit that set
   const p4 = CH.part('chP4', '4', 'Your six', 'Tap a Pokémon to edit its set'); p4.querySelector('.chpartb').innerHTML = '<div id="chSheetOut"></div>';
   const grid = document.createElement('div'); grid.className = 'chparts'; grid.append(p1, p2, p3, p4); head.after(grid);
