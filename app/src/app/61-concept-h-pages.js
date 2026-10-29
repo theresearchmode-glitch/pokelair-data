@@ -180,7 +180,7 @@ CH.chart = (RD, ms, k = 12) => { if (!RD || !ms.length) return ''; const rows = 
 CH.shareMode = null;
 buildShareCard = async function () { const ms = members(); if (!ms.length) return null;
   const dark = (CH.shareMode || document.documentElement.dataset.look) === 'dark';
-  const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#CFC6B7', blue: '#1E8FE8', red: '#FF3F5F', card: '#2C2A28', pen: '#7CC4FF', tile: '#171615', shadow: '#FF3F5F'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', red: '#E8364F', card: '#FBF6EC', pen: '#005A90', tile: '#1D2140', shadow: '#0078BF'};
+  const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#E6DDCD', blue: '#1E8FE8', red: '#FF3F5F', card: '#2C2A28', pen: '#7CC4FF', tile: '#171615', shadow: '#1E8FE8'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', red: '#E8364F', card: '#FBF6EC', pen: '#005A90', tile: '#1D2140', shadow: '#0078BF'};
   try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Space Mono"', '400 40px "Permanent Marker"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
   const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
@@ -192,14 +192,14 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   // readiness, top right
   const RD = prepOf(ms); x.textAlign = 'right';
   if (RD) { x.font = '400 112px Anton, Impact, sans-serif'; const pw = x.measureText(RD.score + '%').width; x.fillStyle = P.shadow; x.fillText(RD.score + '%', 1150, 154); x.fillStyle = P.ink; x.fillText(RD.score + '%', 1144, 148);
-    x.font = '700 15px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('READY FOR THE TOP 30 THREATS', 1144, 178);
+    x.font = '700 20px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('READY FOR THE TOP 30 THREATS', 1144, 184);
     x.save(); x.translate(1144 - pw - 70, 100); x.rotate(-.14); x.strokeStyle = P.pen; x.lineWidth = 5; x.beginPath(); x.arc(0, 0, 48, 0, Math.PI * 2); x.stroke(); x.font = '400 54px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.textAlign = 'center'; x.fillText(CH.grade(RD.score), 0, 20); x.restore(); }
   x.textAlign = 'left';
   // team name with a riso offset
   const title = ((typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team').toUpperCase(); let fz = 92;
-  do { x.font = `400 ${fz}px Anton, Impact, sans-serif`; } while (x.measureText(title).width > 760 && --fz > 44);
-  x.fillStyle = P.shadow; x.fillText(title, 62, 238); x.fillStyle = P.red; x.fillText(title, 56, 232);
-  x.font = '700 15px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · REG M-C · BRING 6 PICK 4', 58, 268);
+  do { x.font = `400 ${fz}px Anton, Impact, sans-serif`; } while (x.measureText(title).width > 700 && --fz > 40); // stays clear of the readiness label on the right
+  x.fillStyle = P.shadow; x.fillText(title, 62, 238); x.fillStyle = P.ink; x.fillText(title, 56, 232); // your team: ink with a blue offset (red is for opponents)
+  x.font = '700 20px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · REG M-C · BRING 6 PICK 4', 58, 274);
   // the six on a blue halftone band
   const by = 296, bh = 316; x.fillStyle = P.blue; x.fillRect(0, by, W, bh); x.fillStyle = 'rgba(255,255,255,.22)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < W; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.4, 0, 7); x.fill(); }
   const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp';
@@ -207,10 +207,10 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   const cw = W / 6; ms.slice(0, 6).forEach((m, i) => { const cx = i * cw + cw / 2, im = imgs[i];
     x.fillStyle = 'rgba(0,0,0,.18)'; x.beginPath(); x.ellipse(cx, by + 238, 70, 12, 0, 0, 7); x.fill();
     if (im) { const s = Math.min(176 / im.width, 176 / im.height); x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetX = 3; x.shadowOffsetY = 4; x.drawImage(im, cx - im.width * s / 2, by + 246 - im.height * s, im.width * s, im.height * s); x.restore(); }
-    x.textAlign = 'center'; x.fillStyle = '#fff'; let f2 = 22; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Archivo, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
-    if (m.item) { x.font = '400 14px "Space Mono", monospace'; x.fillStyle = 'rgba(255,255,255,.88)'; x.fillText(scFit(x, m.item, cw - 16), cx, by + 302); } x.textAlign = 'left'; });
-  x.font = '400 26px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.fillText('Plot your win.', 58, 652);
-  x.textAlign = 'right'; x.font = '700 14px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', 1144, 650); x.textAlign = 'left';
+    x.textAlign = 'center'; x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowOffsetY = 2; x.shadowBlur = 4; x.fillStyle = '#fff'; let f2 = 24; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Archivo, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
+    if (m.item) { let f3 = 18; do { x.font = `700 ${f3}px "Space Mono", monospace`; } while (x.measureText(m.item).width > cw - 12 && --f3 > 12); x.fillStyle = '#fff'; x.fillText(m.item, cx, by + 305); } x.restore(); x.textAlign = 'left'; });
+  x.font = '400 32px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.fillText('Plot your win.', 58, 656);
+  x.textAlign = 'right'; x.font = '700 19px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', 1144, 652); x.textAlign = 'left';
   return c; };
 CH.wrap('openShareCard', () => { const box = $('shareBox'); if (!box || box.hidden || box.querySelector('.chshmode')) return; const hd = box.querySelector('.sharehd'); if (!hd) return;
   const cur = CH.shareMode || document.documentElement.dataset.look || 'light';
