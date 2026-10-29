@@ -670,3 +670,37 @@ details.chflat>summary{display:none}details.chflat{margin:0}
 :root:not(#_ch) main .seg.segwrap button[aria-pressed="true"]{background:var(--chink);color:var(--chp);border-color:var(--chink)}
 :root:not(#_ch) .spdrow .spdn .t2{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .chpanel b,.chpanel h3,.chpanel .bmt1h,.chpanel strong{color:#7CC4FF}
+/* readable headings: one clean offset, never two */
+:root[data-look="dark"] .chdisp,:root[data-look="dark"] .chpgt,:root[data-look="dark"] .chh1,:root[data-look="dark"] .chwh,:root[data-look="dark"] .chshn,:root[data-look="dark"] .chbringt,:root[data-look="dark"] .chscout .chh{text-shadow:3px 3px 0 rgba(255,63,95,.55)}
+.chthead .nm,:root[data-look="dark"] .chthead .nm{color:var(--chink);text-shadow:3px 3px 0 color-mix(in srgb,var(--chblue) 70%,transparent)}
+:root[data-look="dark"] .chsec .cht,:root[data-look="dark"] .chmorebtn .cht{text-shadow:none}
+/* suggestions on the report */
+.chsugs{grid-column:1/-1;margin:16px 0 4px;border:2px solid var(--chline);border-radius:16px;background:var(--chc);padding:12px 14px 6px}
+.chsugh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}.chsugh .chdisp{font-size:28px;line-height:1;text-transform:uppercase;color:var(--chink);text-shadow:none!important}
+.chsug{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-top:1px dashed var(--line2)}.chsugh+.chsug{border-top:0}
+.chsug .sw{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.chsug .sw .o,.chsug .sw .i{display:inline-flex;align-items:center;gap:4px;min-width:0}.chsug .sw .spr{width:40px;height:40px;object-fit:contain}
+.chsug .sw b{font:800 13px/1.15 var(--body)}.chsug .sw .o b{color:var(--chink2);text-decoration:line-through;text-decoration-thickness:1.5px}.chsug .sw .o .spr{opacity:.6;filter:grayscale(.5)}
+.chsug .sw .ar{font-size:18px;color:var(--chink2)}.chsug .sw .sep{width:10px}
+.chsug .ft{display:flex;align-items:center;gap:10px;margin-left:auto}
+.chsug .dl{font:700 12px var(--mono);padding:3px 8px;border-radius:999px;border:1.5px solid var(--line2);white-space:nowrap}.chsug .dl.up{color:var(--chok);border-color:var(--chok)}.chsug .dl.dn{color:var(--chbad);border-color:var(--chbad)}
+.chsug .chapply{min-height:40px;width:auto;padding:0 18px;font-size:14px}
+/* top threats: ten by name, then a small strip */
+.chtl10{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
+.chtr{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:6px;min-height:46px;padding:2px 8px 2px 4px;border-radius:10px;border:1.5px solid var(--line2);background:var(--chp);cursor:pointer;min-width:0}
+.chtr:focus-visible{outline:3px solid var(--chblue)}
+.chtr .rk{font:400 16px/1 var(--display);color:var(--chink2);width:16px;text-align:center;flex:none}
+.chtr .spr{width:40px;height:40px;object-fit:contain;flex:none}
+.chtr .tx{display:flex;flex-direction:column;min-width:0}.chtr .tx b{font:800 12.5px/1.15 var(--body);overflow-wrap:anywhere}
+.chtr .st{font:700 10px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.04em}
+.chtr .st.bad{color:var(--chbad)}.chtr .st.shaky{color:#B07A00}.chtr .st.mid{color:var(--chmid)}.chtr .st.ok{color:var(--chok)}
+:root[data-look="dark"] .chtr .st.shaky{color:var(--chshaky)}
+.chtr.l0{border-color:var(--chbad)}.chtr.l1{border-color:var(--chshaky)}
+.chtk{margin:12px 0 6px}
+.chtiles.chsm{grid-template-columns:repeat(10,1fr)!important;gap:3px}.chtiles.chsm .chtile{border-width:1.5px;border-radius:7px}
+@media (max-width:899px){.chteam .chside{padding:12px}}
+.chsug{flex-wrap:nowrap!important;gap:10px}
+.chsug .pics{display:flex;align-items:center;flex:none;gap:2px}.chsug .pics .spr{width:38px;height:38px;object-fit:contain}.chsug .pics .o .spr{opacity:.55;filter:grayscale(.6)}.chsug .pics .ar{font-size:15px;color:var(--chink2)}
+.chsug .txt{flex:1;min-width:0;font-size:13px;line-height:1.3}.chsug .txt b{font:800 14px/1.2 var(--body);color:var(--chink)}.chsug .txt .for{color:var(--chink2);font-size:12.5px}
+.chsug .txt .dl{display:inline-block;margin-top:4px}
+.chsug .chapply{flex:none;min-height:40px;padding:0 16px!important}
