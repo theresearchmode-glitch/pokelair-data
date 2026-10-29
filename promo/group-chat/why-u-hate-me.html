@@ -1,0 +1,283 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Permanent+Marker&display=swap">
+<style>
+:root{--night:#0D0F1F;--night2:#181B33;--night3:#262A48;--cream:#F1E9DA;--card:#FBF6EC;--ink:#1D2140;--ink2:#4E5068;--blue:#0078BF;--red:#E8364F;--pen:#C41E35;--yel:#FFE800}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:540px;height:960px;overflow:hidden;background:#000}
+body{font-family:Archivo,"Noto Color Emoji",sans-serif}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--night)}
+/* ---- dark chat app ---- */
+#screen{position:absolute;inset:0;background:var(--night);overflow:hidden;transform-origin:50% 55%}
+#screen::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 1px 1px,rgba(255,255,255,.045) 1px,transparent 1.6px) 0 0/14px 14px}
+#hdr{position:absolute;left:0;right:0;top:0;height:126px;background:rgba(24,27,51,.97);border-bottom:1px solid rgba(255,255,255,.08);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;gap:6px;color:#fff}
+#hdr .sb{position:absolute;top:12px;left:28px;right:28px;display:flex;justify-content:space-between;font:700 15px Archivo}
+#hdr .avs{display:flex}#hdr .avs span{margin-left:-10px;border:2px solid var(--night2)}
+#hdr .gt{font:800 18px Archivo,"Noto Color Emoji"}
+#hdr .gs{font:500 12.5px Archivo;color:rgba(255,255,255,.6);margin-top:-4px}
+#hdr .back{position:absolute;left:20px;bottom:30px;font:700 30px Archivo;color:#4FB3FF}
+.av{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:800 15px Archivo;color:#fff;flex:none}
+.av.jay{background:var(--blue)}.av.mo{background:var(--red)}
+#vp{position:absolute;left:0;right:0;top:126px;bottom:84px;overflow:hidden}
+#list{position:absolute;left:0;right:0;top:0;padding:18px 18px 10px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:flex-end;gap:9px;position:relative}
+.row.me{justify-content:flex-end}
+.row .av{visibility:hidden}.row.showav .av{visibility:visible}
+.col{display:flex;flex-direction:column;gap:4px;max-width:78%;position:relative}
+.row.me .col{align-items:flex-end}
+.nm{font:700 13px Archivo;color:rgba(255,255,255,.55);margin-left:12px}
+.bub{padding:12px 17px;border-radius:24px;font:600 22px/1.28 Archivo,"Noto Color Emoji";position:relative}
+.row.me .bub{background:var(--blue);color:#fff;border-bottom-right-radius:7px}
+.row.them .bub{background:var(--night3);color:#fff;border-bottom-left-radius:7px}
+.att{border-radius:18px;overflow:hidden;border:3px solid var(--cream);background:var(--card);width:300px}
+.att img{display:block;width:100%}
+.link{width:320px;border-radius:18px;overflow:hidden;background:var(--night3);border:1px solid rgba(255,255,255,.1)}
+.link .lim{height:150px;background:var(--cream) center 0/cover no-repeat}
+.link .lt{padding:10px 14px 12px;color:#fff}
+.link .lt b{display:block;font:800 18px Archivo}
+.link .lt span{display:block;font:500 14.5px/1.3 Archivo;color:rgba(255,255,255,.75);margin-top:2px}
+.link .lt i{display:block;font:400 12.5px 'Space Mono';color:rgba(255,255,255,.5);margin-top:5px;font-style:normal}
+.typing{position:absolute;left:0;bottom:0;background:var(--night3);border-radius:22px;border-bottom-left-radius:7px;padding:15px 18px;display:flex;gap:6px}
+.typing i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.6);display:block}
+.chip{align-self:center;font:700 14px 'Space Mono';letter-spacing:.08em;text-transform:uppercase;color:var(--night);background:var(--yel);border-radius:20px;padding:6px 16px;margin:8px 0}
+#inp{position:absolute;left:0;right:0;bottom:0;height:84px;background:rgba(24,27,51,.97);border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;padding:0 18px 14px}
+#inp .pl{font:500 30px Archivo;color:rgba(255,255,255,.6)}
+#inp .box{flex:1;height:42px;border:1.5px solid rgba(255,255,255,.15);border-radius:21px;background:var(--night);font:400 17px Archivo;color:rgba(255,255,255,.4);display:flex;align-items:center;padding:0 16px}
+/* ---- feature panels ---- */
+.panel{position:absolute;inset:0;z-index:6;overflow:hidden}
+.panel .bg{position:absolute;inset:-40px;background:var(--pc)}
+.panel .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 2px 2px,rgba(255,255,255,.16) 2px,transparent 2.8px) 0 0/18px 18px}
+.panel.yel .bg::after{background:radial-gradient(circle at 2px 2px,rgba(29,33,64,.12) 2px,transparent 2.8px) 0 0/18px 18px}
+.panel .num{position:absolute;right:-14px;top:-30px;font:400 300px/1 Anton;color:rgba(255,255,255,.13)}
+.panel.yel .num{color:rgba(29,33,64,.1)}
+.panel .card{position:absolute;left:50%;border-radius:22px;overflow:visible}
+.panel .card .in{border-radius:22px;overflow:hidden;border:4px solid var(--ink);background:var(--card);box-shadow:10px 10px 0 var(--ink)}
+.panel .card img{display:block;width:100%}
+.panel .card svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.panel .lab{position:absolute;left:26px;right:26px;text-align:center}
+.panel .k{display:inline-block;font:700 15px 'Space Mono';letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--yel);padding:4px 12px;border-radius:4px}
+.panel.yel .k{background:var(--ink);color:var(--yel)}
+.panel .t{font:400 76px/1 Anton;color:#fff;text-transform:uppercase;letter-spacing:.01em;margin-top:10px;white-space:nowrap}
+.panel .t span{display:inline-block;text-shadow:5px 5px 0 var(--ink)}
+.panel.yel .t{color:var(--ink)}.panel.yel .t span{text-shadow:5px 5px 0 var(--red)}
+.panel .d{display:inline-block;font:700 23px/1.3 Archivo;color:#fff;margin-top:14px;background:var(--ink);padding:10px 16px;border-radius:12px}
+/* ---- outro ---- */
+#flash{position:absolute;inset:0;background:#fff;z-index:30;opacity:0}
+#pop{position:absolute;inset:0;z-index:8;opacity:0;overflow:hidden}
+#pop .bg{position:absolute;inset:0;background:var(--yel)}
+#pop .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 2px 2px,rgba(29,33,64,.12) 2px,transparent 2.8px) 0 0/18px 18px}
+#pop .giant{position:absolute;left:50%;top:50%;font:400 420px/1 Anton;color:transparent;-webkit-text-stroke:5px rgba(29,33,64,.18);white-space:nowrap}
+#pop .bb{position:absolute;left:50%;top:47%}
+#pop .big{background:var(--blue);color:#fff;font:800 46px/1.15 Archivo,"Noto Color Emoji";padding:22px 32px;border-radius:38px;border-bottom-right-radius:12px;white-space:nowrap;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink)}
+#pop .rx{position:absolute;bottom:-30px;right:-6px;display:flex;gap:4px;background:#fff;border-radius:24px;padding:4px 10px;font:32px "Noto Color Emoji";border:3px solid var(--ink)}
+#pop .rx span{display:inline-block}
+.burst{position:absolute;left:50%;top:47%;font:50px "Noto Color Emoji";z-index:9;opacity:0}
+#reveal{position:absolute;inset:0;z-index:10;opacity:0;background:var(--blue);overflow:hidden}
+#reveal::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 2px 2px,rgba(255,255,255,.14) 2px,transparent 2.8px) 0 0/18px 18px;z-index:0}
+#reveal>*{z-index:1}
+#reveal .ttl{position:absolute;left:0;right:0;top:56px;text-align:center}
+#reveal .ttl .t{font:400 64px/1 Anton;color:#fff;text-transform:uppercase}
+#reveal .ttl .t span{display:inline-block;text-shadow:5px 5px 0 var(--ink)}
+#reveal .ph{position:absolute;top:236px;left:50%;width:262px;height:540px;border-radius:38px;border:9px solid var(--ink);background:#000;overflow:hidden;box-shadow:12px 12px 0 var(--ink)}
+#reveal .ph img{width:100%;display:block}
+#reveal .feats{position:absolute;left:0;right:0;bottom:40px;display:flex;flex-wrap:wrap;justify-content:center;gap:9px;padding:0 22px}
+#reveal .feats span{font:800 17px Archivo;color:var(--ink);background:var(--yel);border:3px solid var(--ink);border-radius:22px;padding:6px 14px;opacity:0}
+#end{position:absolute;inset:0;z-index:11;background:#F1E9DA;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+#end img{width:440px}
+#end .t{font:400 84px/1 Anton;text-transform:uppercase;color:var(--ink);margin-top:18px}
+#end .t span{display:inline-block;text-shadow:5px 5px 0 var(--red)}
+#end .d{font:700 23px/1.35 Archivo;color:var(--ink2);max-width:430px;margin-top:8px}
+#end .cs{margin-top:26px;font:700 16px 'Space Mono';letter-spacing:.18em;color:var(--yel);background:var(--ink);padding:11px 24px;border-radius:26px}
+#black{position:absolute;inset:0;background:#000;z-index:40;opacity:0}
+</style></head><body>
+<div id="stage">
+  <div id="screen">
+    <div id="hdr"><div class="sb"><span>9:41</span><span>●●● 100%</span></div><div class="back">‹</div>
+      <div class="avs"><span class="av jay">J</span><span class="av mo">M</span></div>
+      <div class="gt">VGC squad 🏆</div><div class="gs">Jay, Mo, you</div></div>
+    <div id="vp"><div id="list"></div></div>
+    <div id="inp"><span class="pl">+</span><div class="box">Message</div></div>
+  </div>
+  <div id="panels"></div>
+  <div id="pop"><div class="bg"></div><div class="giant">4-0</div><div class="bb"><div class="big">ok I'm 4-0 now 😤</div><div class="rx"><span>🔥</span><span>🏆</span><span>💯</span></div></div></div>
+  <div id="bursts"></div>
+  <div id="reveal">
+    <div class="ttl"><div class="t"><span>Every</span> <span>answer.</span><br><span>One</span> <span>page.</span></div></div>
+    <div class="ph"><img src="a/home.png"></div>
+    <div class="feats"><span>Team grade</span><span>Fix it</span><span>Damage calc</span><span>Battle mode</span><span>Ratings</span><span>Build me a team</span></div>
+  </div>
+  <div id="end"><img src="a/logo.png"><div class="t"><span>Plot</span> <span>your</span> <span>win.</span></div><div class="d">Teams, sets and matchups from 12,226 real tournament teams.</div><div class="cs">COMING SOON</div></div>
+  <div id="flash"></div>
+  <div id="black"></div>
+</div>
+<script>
+// ===== Music grid: why_u_hate_me. Bars are 3.0 s (16 sixteenths of 0.1875 s), starting at 0.
+// Kicks land on sixteenths 0, 3 and 10 of every bar in the drops. Drop 1 = bar 8 (24 s), break = bar 16, drop 2 = bar 17 (51 s).
+const BAR = 3.0, S16 = BAR / 16, BEAT = BAR / 4;
+const at = (bar, s16 = 0) => bar * BAR + s16 * S16;
+const KICK = [0, 3, 10];
+const inDrop = t => (t >= 24 && t < 48) || t >= 51;
+// ===== Script. Each feature: chat lands in the 3 beats before its downbeat; the panel slams on the downbeat and holds 5 beats.
+const FEAT = [
+  {L: at(4),  img: 'grade',  k: 'My team',  t: 'Team grade',      d: 'A grade for your six, and how ready it is.', col: 'blue', ann: {type: 'circle', cx: .12, cy: .55, w: .26, h: .2}},
+  {L: at(6),  img: 'fixit',  k: 'My team',  t: 'Fix it',          d: 'What to change, best first. And why.',        col: 'red',  ann: {type: 'circle', cx: .455, cy: .748, w: .3, h: .13}},
+  {L: at(8),  img: 'calc',   k: 'Battle',   t: 'Damage calc',     d: 'Real level-50 doubles damage.',               col: 'yel',  ann: {type: 'circle', cx: .505, cy: .1, w: .47, h: .17}},
+  {L: at(10), img: 'battle', k: 'Battle',   t: 'Battle mode',     d: 'Their six in. Your four and leads out.',      col: 'blue', ann: {type: 'under', x0: .06, x1: .5, y: .43}},
+  {L: at(12), img: 'rate',   k: 'Meta',     t: 'Ratings',         d: 'Every Pokémon rated 0–100 from real results.', col: 'red',  ann: {type: 'circle', cx: .135, cy: .2, w: .24, h: .15}},
+  {L: at(14), img: 'build2', k: 'Build',    t: 'Build me a team', d: 'Proven winning teams from your box.',          col: 'yel',  ann: {type: 'circle', cx: .34, cy: .935, w: .2, h: .085}},
+];
+const M = [
+  {who: 'me',  t: at(0, 4),  text: 'lost 0-2 again 💀'},
+  {who: 'me',  t: at(0, 12), text: 'my team is mid'},
+  {who: 'jay', t: at(1, 8),  type: at(1, 8) - at(1, 0), text: 'run it through nastyplot'},
+  {who: 'jay', t: at(2, 0),  link: 1},
+  {who: 'me',  t: at(3, 0),  text: 'ok it says my team’s a B 😬'},
+  {who: 'me',  t: at(3, 8),  img: 'grade'},
+  {who: 'jay', t: at(5, 8),  type: BEAT, text: 'B is fine. hit Fix it 👇'},
+  {who: 'jay', t: at(5, 12), img: 'fixit'},
+  {who: 'me',  t: at(7, 4),  text: 'does zard heat wave KO rilla?'},
+  {who: 'mo',  t: at(7, 12), type: BEAT, img: 'calc'},
+  {who: 'me',  t: at(9, 4),  text: 'what do I bring vs grassy terrain?'},
+  {who: 'jay', t: at(9, 12), type: BEAT, img: 'battle'},
+  {who: 'mo',  t: at(11, 8), type: BEAT, text: 'here’s what’s actually good rn'},
+  {who: 'mo',  t: at(11, 12), img: 'rate'},
+  {who: 'mo',  t: at(13, 8), type: BEAT, text: 'or just let it build you one'},
+  {who: 'mo',  t: at(13, 12), img: 'build2'},
+  {who: 'me',  t: at(15, 8), text: 'ok queueing 🫡'},
+  {chip: '2 hours later',    t: at(16, 0)},
+];
+const T_POP = at(17), T_REVEAL = at(18), T_END = at(20), T_TOTAL = at(22);
+window.T_TOTAL = T_TOTAL;
+// ===== engine
+const $ = s => document.querySelector(s), el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const ANIMS = [];
+function anim(node, frames, start, dur, easing = 'cubic-bezier(.2,.8,.2,1)') { const a = node.animate(frames, {delay: start * 1000, duration: Math.max(1, dur * 1000), fill: 'both', easing}); a.pause(); ANIMS.push(a); return a; }
+const SLAM = 'cubic-bezier(.2,1.6,.4,1)';
+// kick-driven pulses on the `scale` property between t0 and t1
+function pulses(node, t0, t1, amp = 0.035) {
+  for (let bar = Math.floor(t0 / BAR); bar * BAR < t1; bar++) for (const k of KICK) { const t = at(bar, k); if (t < t0 - 1e-6 || t >= t1) continue;
+    const a = inDrop(t) ? amp : amp * 0.45; anim(node, [{scale: `${1 + a}`}, {scale: '1'}], t, 0.32, 'cubic-bezier(.1,.6,.3,1)'); } }
+// ---- chat
+const list = $('#list'); let prevWho = null; const NAMES = {jay: 'Jay', mo: 'Mo'};
+M.forEach((m, i) => {
+  if (m.chip) { const c = el('div', 'chip', m.chip); list.append(c); m.node = c; prevWho = null; return; }
+  const row = el('div', 'row ' + (m.who === 'me' ? 'me' : 'them'));
+  const next = M[i + 1]; if (m.who !== 'me' && (!next || next.who !== m.who)) row.classList.add('showav');
+  if (m.who !== 'me') row.append(el('span', 'av ' + m.who, m.who[0].toUpperCase()));
+  const col = el('div', 'col'); if (m.who !== 'me' && prevWho !== m.who) col.append(el('div', 'nm', NAMES[m.who]));
+  let body;
+  if (m.text) body = el('div', 'bub', m.text);
+  else if (m.img) body = el('div', 'att', `<img src="a/${m.img}.png">`);
+  else body = el('div', 'link', `<div class="lim" style="background-image:url(a/home.png)"></div><div class="lt"><b>NastyPlot</b><span>Teams, sets and matchups from 12,226 real tournament teams. Plot your win.</span><i>pokémon champions · reg m-c doubles</i></div>`);
+  col.append(body); row.append(col);
+  if (m.type) { const ty = el('div', 'typing', '<i></i><i></i><i></i>'); col.append(ty); m.typeNode = ty; }
+  list.append(row); m.node = row; m.body = body; prevWho = m.who;
+});
+function buildChat() {
+  const vpH = $('#vp').clientHeight; const stops = [];
+  M.forEach(m => stops.push([m.type ? m.t - m.type : m.t, Math.max(0, m.node.offsetTop + m.node.offsetHeight + 14 - vpH)]));
+  stops.sort((a, b) => a[0] - b[0]); let cur = 0;
+  stops.forEach(([t, y]) => { if (y > cur) { anim(list, [{transform: `translateY(${-cur}px)`}, {transform: `translateY(${-y}px)`}], t, 0.3, 'cubic-bezier(.2,.9,.25,1)'); cur = y; } });
+  M.forEach(m => {
+    const n = m.node;
+    if (m.typeNode) { const ty = m.typeNode, t0 = m.t - m.type;
+      anim(n, [{opacity: 0}, {opacity: 1}], t0, 0.01);
+      anim(ty, [{opacity: 0, transform: 'scale(.6)'}, {opacity: 1, transform: 'scale(1)'}], t0, 0.18);
+      anim(ty, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: 'scale(1)'}], m.t, 0.06);
+      // dots hop on the eighth notes
+      ty.querySelectorAll('i').forEach((d, k) => { for (let s = t0; s < m.t - 0.05; s += BEAT / 2) anim(d, [{transform: 'translateY(0)'}, {transform: 'translateY(-6px)'}, {transform: 'translateY(0)'}], s + k * 0.06, 0.3, 'ease-out'); });
+      [...n.querySelectorAll('.col > :not(.typing)')].forEach(c => anim(c, [{opacity: 0, transform: 'scale(.8)'}, {opacity: 1, transform: 'scale(1)'}], m.t, 0.3, SLAM));
+    } else {
+      n.style.transformOrigin = m.who === 'me' ? '100% 100%' : (m.chip ? '50% 50%' : '0 100%');
+      anim(n, [{opacity: 0, transform: 'translateY(18px) scale(.8)'}, {opacity: 1, transform: 'translateY(0) scale(1)'}], m.t, 0.32, SLAM);
+    }
+  });
+  // the chat itself breathes on the kicks while it is on screen
+  pulses($('#screen'), at(1), T_POP, 0.012);
+}
+// ---- feature panels
+function marker(ann, W, H) {
+  // a hand-drawn red pen mark, in the card's own coordinates (0..100)
+  if (ann.type === 'circle') { const {cx, cy, w, h} = ann, rx = w * W / 2, ry = h * H / 2, X = cx * W, Y = cy * H;
+    let d = ''; for (let i = 0; i <= 40; i++) { const a = -2.2 + i / 40 * (Math.PI * 2 + .5), wob = 1 + Math.sin(i * 1.7) * .03; d += (i ? 'L' : 'M') + (X + Math.cos(a) * rx * wob).toFixed(2) + ' ' + (Y + Math.sin(a) * ry * wob * (1 + i / 400)).toFixed(2); }
+    return d; }
+  const {x0, x1, y} = ann; return `M${x0 * W} ${y * H} C${x0 * W + (x1 - x0) * W * .33} ${y * H + 5} ${x0 * W + (x1 - x0) * W * .66} ${y * H - 4} ${x1 * W} ${y * H + 2}`;
+}
+function makePanel(f, i) {
+  const t0 = f.L, t1 = f.L + 5 * BEAT;
+  const P = el('div', 'panel ' + f.col); P.style.setProperty('--pc', f.col === 'blue' ? 'var(--blue)' : f.col === 'red' ? 'var(--red)' : 'var(--yel)');
+  const img = new Image(); img.src = `a/${f.img}.png`;
+  const ar = f.ar, maxW = 476, maxH = 500, w = Math.min(maxW, maxH / ar), h = w * ar;
+  const labH = 210, gap = 40, top = Math.max(50, (960 - (h + gap + labH)) / 2);
+  const words = f.t.split(' ').map(x => `<span>${x}</span>`).join(' ');
+  P.innerHTML = `<div class="bg"></div><div class="num">0${i + 1}</div>
+    <div class="card" style="width:${w}px;top:${top}px;margin-left:${-w / 2}px"><div class="in"><img src="a/${f.img}.png"></div>
+      <svg viewBox="0 0 ${w} ${h}"><path d="${marker(f.ann, w, h)}" fill="none" stroke="#C41E35" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg></div>
+    <div class="lab" style="top:${top + h + gap}px"><div class="k">${f.k}</div><div class="t" style="${f.t.length > 12 ? 'font-size:64px' : ''}">${words}</div><div><div class="d">${f.d}</div></div></div>`;
+  $('#panels').append(P);
+  const bg = P.querySelector('.bg'), card = P.querySelector('.card'), lab = P.querySelector('.lab'), k = P.querySelector('.k'), d = P.querySelector('.d'), num = P.querySelector('.num'), path = P.querySelector('path');
+  // in: diagonal wipe on the downbeat, card punches up, title words slam on the kicks
+  const dir = i % 2 ? -1 : 1;
+  anim(P, [{opacity: 1, clipPath: dir > 0 ? 'polygon(0 0,0 0,-20% 100%,-20% 100%)' : 'polygon(100% 0,100% 0,120% 100%,120% 100%)'}, {opacity: 1, clipPath: dir > 0 ? 'polygon(0 0,140% 0,120% 100%,-20% 100%)' : 'polygon(100% 0,-40% 0,-20% 100%,120% 100%)'}], t0 - 0.12, 0.24, 'cubic-bezier(.5,0,.3,1)');
+  anim(card, [{transform: 'translateY(260px) rotate(-6deg) scale(.7)', opacity: 0}, {transform: 'translateY(0) rotate(-1.2deg) scale(1)', opacity: 1}], t0, 0.42, SLAM);
+  anim(num, [{transform: 'translateX(80px)', opacity: 0}, {transform: 'translateX(0)', opacity: 1}], t0, 0.6);
+  anim(k, [{opacity: 0, transform: 'translateY(10px)'}, {opacity: 1, transform: 'translateY(0)'}], t0 + S16 * 1, 0.2);
+  [...P.querySelectorAll('.t span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], t0 + S16 * (j === 0 ? 3 : j === 1 ? 6 : 8), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
+  anim(d, [{opacity: 0, transform: 'translateY(14px)'}, {opacity: 1, transform: 'translateY(0)'}], t0 + S16 * 10, 0.3);
+  anim(path, [{strokeDashoffset: 100}, {strokeDashoffset: 0}], t0 + S16 * 9, 0.45, 'cubic-bezier(.4,0,.2,1)');
+  pulses(card, t0 + 0.45, t1, 0.04);
+  anim(card, [{translate: '0 0'}, {translate: '0 -10px'}], t0 + 0.4, t1 - t0 - 0.4, 'ease-in-out');
+  // out: everything drops away on beat 5, the panel wipes off
+  anim(card, [{transform: 'translateY(0) rotate(-1.2deg) scale(1)', opacity: 1}, {transform: 'translateY(-120px) rotate(4deg) scale(.85)', opacity: 0}], t1 - 0.05, 0.25, 'cubic-bezier(.6,0,.9,.5)');
+  anim(lab, [{opacity: 1}, {opacity: 0}], t1 - 0.05, 0.18);
+  anim(P, [{opacity: 1, clipPath: 'polygon(0 0,140% 0,120% 100%,-20% 100%)'}, {opacity: 1, clipPath: dir > 0 ? 'polygon(140% 0,140% 0,120% 100%,120% 100%)' : 'polygon(-40% 0,-40% 0,-20% 100%,-20% 100%)'}], t1, 0.24, 'cubic-bezier(.5,0,.3,1)');
+}
+function flash(t, peak = .85) { anim($('#flash'), [{opacity: 0}, {opacity: peak, offset: .08}, {opacity: 0}], t, 0.45, 'linear'); }
+function outro() {
+  // 4-0 on the second drop
+  const pop = $('#pop'), bb = pop.querySelector('.bb'), giant = pop.querySelector('.giant');
+  anim(pop, [{opacity: 0}, {opacity: 1}], T_POP - 0.02, 0.04, 'linear');
+  anim(bb, [{transform: 'translate(-50%,-50%) scale(.2) rotate(-8deg)'}, {transform: 'translate(-50%,-50%) scale(1) rotate(-3deg)'}], T_POP, 0.4, SLAM);
+  anim(giant, [{transform: 'translate(-50%,-50%) scale(1.6)', opacity: 0}, {transform: 'translate(-50%,-50%) scale(1)', opacity: 1}], T_POP, 0.5);
+  pulses(bb, T_POP + 0.4, T_REVEAL, 0.05);
+  const rx = pop.querySelector('.rx'); anim(rx, [{opacity: 0}, {opacity: 1}], T_POP + 2 * S16, 0.05);
+  rx.querySelectorAll('span').forEach((s, k) => anim(s, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], at(17, [3, 6, 8][k]), 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
+  let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const E = ['🔥', '🏆', '💯', '😤', '⚡', '🔥', '🏆', '✨'];
+  [at(17, 0), at(17, 3), at(17, 10)].forEach((tb, wave) => { for (let i = 0; i < 8; i++) { const b = el('div', 'burst', E[(i + wave) % E.length]); $('#bursts').append(b);
+    const ang = rnd() * Math.PI * 2, dist = 200 + rnd() * 170, dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist - 30;
+    anim(b, [{opacity: 0, transform: 'translate(-50%,-50%) scale(.4)'}, {opacity: 1, transform: 'translate(-50%,-50%) scale(.6)', offset: .03}, {opacity: 1, transform: `translate(calc(-50% + ${dx * .85}px),calc(-50% + ${dy * .85}px)) scale(1.15) rotate(${(rnd() - .5) * 70}deg)`, offset: .55}, {opacity: 0, transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy + 70}px)) scale(.9)`}], tb, 1.5, 'cubic-bezier(.1,.7,.3,1)'); } });
+  // reveal on bar 18
+  const R = $('#reveal');
+  anim(R, [{opacity: 1, clipPath: 'circle(0% at 50% 47%)'}, {opacity: 1, clipPath: 'circle(80% at 50% 47%)'}], T_REVEAL, 0.35, 'cubic-bezier(.5,0,.3,1)');
+  anim(R.querySelector('.ph'), [{transform: 'translateX(-50%) translateY(500px) rotate(8deg)'}, {transform: 'translateX(-50%) translateY(0) rotate(-2deg)'}], T_REVEAL + 0.1, 0.6, SLAM);
+  anim(R.querySelector('.ph img'), [{transform: 'translateY(0)'}, {transform: 'translateY(-60px)'}], T_REVEAL + 0.8, 5, 'ease-in-out');
+  [...R.querySelectorAll('.ttl span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], at(18, [0, 3, 8, 10][j]), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
+  pulses(R.querySelector('.ph'), T_REVEAL + 0.7, T_END, 0.03);
+  [...R.querySelectorAll('.feats span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(.4)'}, {opacity: 1, transform: 'scale(1)'}], at(19, 0) + j * BEAT / 2, 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
+  // end card on bar 20
+  const En = $('#end');
+  anim(En, [{opacity: 0}, {opacity: 1}], T_END - 0.02, 0.04, 'linear');
+  anim(En.querySelector('img'), [{transform: 'scale(1.8) rotate(-6deg)', opacity: 0}, {transform: 'scale(1) rotate(0)', opacity: 1}], T_END, 0.35, SLAM);
+  [...En.querySelectorAll('.t span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], at(20, [3, 6, 10][j]), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
+  anim(En.querySelector('.d'), [{opacity: 0, transform: 'translateY(12px)'}, {opacity: 1, transform: 'translateY(0)'}], at(21, 0), 0.3);
+  anim(En.querySelector('.cs'), [{opacity: 0, transform: 'scale(.5)'}, {opacity: 1, transform: 'scale(1)'}], at(21, 8), 0.3, 'cubic-bezier(.3,1.8,.5,1)');
+  pulses(En.querySelector('img'), at(20, 1), T_TOTAL, 0.03);
+  anim($('#black'), [{opacity: 0}, {opacity: 1}], T_TOTAL - 0.9, 0.9, 'linear');
+  flash(at(8)); flash(T_POP); flash(T_REVEAL, .5); flash(T_END, .6);
+}
+// seek: for each element+property set, only the latest started animation fills
+let GROUPS = null;
+function groups() { const m = new Map(); ANIMS.forEach(a => { const ef = a.effect, props = Object.keys(ef.getKeyframes()[0]).filter(k => !['offset', 'easing', 'composite', 'computedOffset'].includes(k)).sort().join();
+  if (!ef.target.__gid) ef.target.__gid = Math.random().toString(36).slice(2); const key = ef.target.__gid + '|' + props; if (!m.has(key)) m.set(key, []); m.get(key).push(a); });
+  return [...m.values()].map(g => g.sort((x, y) => x.effect.getTiming().delay - y.effect.getTiming().delay)); }
+window.seek = t => { if (!GROUPS) GROUPS = groups(); const ms = t * 1000;
+  for (const g of GROUPS) { let pick = g[0]; for (const a of g) if (a.effect.getTiming().delay <= ms) pick = a;
+    for (const a of g) { a.effect.updateTiming({fill: a === pick ? 'both' : 'none'}); a.currentTime = ms; } } };
+window.ready = (async () => { await document.fonts.ready;
+  await Promise.all(FEAT.map(f => new Promise(r => { const i = new Image(); i.onload = () => { f.ar = i.naturalHeight / i.naturalWidth; r(); }; i.src = `a/${f.img}.png`; })));
+  await Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })));
+  buildChat(); FEAT.forEach(makePanel); outro(); seek(0); return T_TOTAL; })();
+window.cues = () => { const c = []; M.forEach(m => { if (m.chip) return; c.push({t: m.t, k: m.who === 'me' ? 'send' : 'recv'}); });
+  FEAT.forEach(f => c.push({t: f.L - 0.12, k: 'whoosh'})); c.push({t: T_REVEAL, k: 'whoosh'}); return c; };
+</script></body></html>
