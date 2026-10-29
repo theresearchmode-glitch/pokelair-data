@@ -39,5 +39,13 @@ function renderTypeChart() {
   const ab = t => t.slice(0, 3).toUpperCase();
   el.innerHTML = `<tr><th class="t">Atk ↓ Def →</th>${TYPES.map(t => `<th title="${t}" style="color:${TC[t]}">${ab(t)}</th>`).join('')}</tr>` +
     TYPES.map(a => `<tr><td class="t">${chip(a)}</td>${TYPES.map(d => { const x = EFF[a][d]; return `<td><span class="m ${x === 0 ? 'm0' : x >= 2 ? 'mq' : x < 1 ? 'm2' : ''}">${x === 0 ? '0' : x === .5 ? '½' : x === 2 ? '2' : ''}</span></td>`; }).join('')}</tr>`).join('');
+  renderTypeRow();
 }
+// Phones can't fit 18 columns: pick an attacking type and its row reads as three groups of chips (Oct 29). The grid stays on wider screens.
+function renderTypeRow() { const tbl = $('typeChart'); if (!tbl) return; let box = $('typeRow');
+  if (!box) { box = document.createElement('div'); box.id = 'typeRow'; box.className = 'tcphone'; const wrap = tbl.closest('.tablewrap'); (wrap || tbl).before(box); if (wrap) { wrap.classList.add('tcgrid'); const n = wrap.nextElementSibling; if (n && n.tagName === 'P') n.classList.add('tcgrid'); } }
+  const a = TYPES.includes(ui.tcAtk) ? ui.tcAtk : 'Fire', grp = (lab, f, cls) => { const ts = TYPES.filter(d => f(EFF[a][d])); return `<div class="tcg ${cls}"><div class="chk">${lab}</div><div class="chips">${ts.length ? ts.map(d => chip(d)).join('') : '<span class="none">None</span>'}</div></div>`; };
+  box.innerHTML = `<div class="chk">Attacking type</div><div class="tcpick">${TYPES.map(t => `<button type="button" class="tcb${t === a ? ' on' : ''}" data-tcatk="${t}" aria-pressed="${t === a}" style="--tc:${TC[t]}">${esc(t)}</button>`).join('')}</div>
+    <div class="tcres"><div class="tchd">${chip(a)} <b>attacks hit…</b></div>${grp('Super effective (2×)', x => x >= 2, 'se')}${grp('Not very effective (½×)', x => x > 0 && x < 1, 'nve')}${grp('No effect (0×)', x => x === 0, 'no')}<p class="t2">Every other type takes normal damage.</p></div>`; }
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-tcatk]'); if (!b) return; ui.tcAtk = b.dataset.tcatk; renderTypeRow(); });
 
