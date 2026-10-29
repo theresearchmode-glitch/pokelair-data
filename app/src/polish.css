@@ -167,3 +167,10 @@ label.toggle{min-height:40px;display:inline-flex;align-items:center;gap:8px}
 [data-pane="auto"] #cores .chpghead .chpgt,[data-pane="cores"] #cores .chpghead .chpgt{font-size:26px!important;line-height:1.05}
 .chcalc .chcalct{font-size:24px!important;line-height:1.05}
 [data-pane="matchup"] details.chsec .chbody h2,[data-pane="matchup"] #battlelog h2{font-size:20px!important}
+/* Edit panel (Oct 29, Sim's iPhone): no sticky header (iOS let it drift over the card during the bounce). The header is a fixed
+   top bar and only the body scrolls, up and down only. */
+.chedit{display:flex!important;flex-direction:column;overflow:hidden!important;overscroll-behavior:contain;padding-bottom:0!important}
+.chedit[hidden]{display:none!important}
+.chedit .chedh{position:static!important;flex:none;margin-bottom:0}
+.chedit .chedb{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding-top:10px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}

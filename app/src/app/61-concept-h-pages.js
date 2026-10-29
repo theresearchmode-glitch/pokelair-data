@@ -277,3 +277,5 @@ function chCalcCard() { const ms = members(), opp = S.opp.map(n => byName.get(n)
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-dcgo]'); if (!b) return; const [a, d] = b.dataset.dcgo.split('|');
   if (byName.get(a)) dc.a = a; if (byName.get(d)) dc.d = d; dc.dir = 'mine'; dc.mv = null; dc.spread = null; dc.wSet = dc.tSet = false; setView('calc'); safe('calc', renderCalc); window.scrollTo(0, 0); });
 CH.wrap('renderBattle', () => { const head = document.querySelector('#matchup > .chbmhead'); if (!head) return; let c = $('chCalcCard'); if (!c) { c = document.createElement('div'); c.id = 'chCalcCard'; } head.after(c); c.innerHTML = chCalcCard(); });
+// a ⋯ menu closes once one of its actions is tapped (after Clear team it stayed open showing only Import, which looked like a pop-up)
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('details.moremenu .mmpop button'); if (!b) return; const d = b.closest('details.moremenu'); if (d) setTimeout(() => { d.open = false; }, 0); });
