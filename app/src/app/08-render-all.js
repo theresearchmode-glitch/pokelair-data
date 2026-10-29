@@ -48,8 +48,8 @@ function render(){
   $('offTypes').innerHTML=`<tr><th class="t">Defending type</th><th>Best</th><th class="t">Who hits it super effectively</th></tr>`+tRows.map(r=>{const x=r.best?r.best.x:0;
     return `<tr class="${r.hits.length?'':'prob'}"><td class="t">${chip(r.t)}</td><td>${mcell(x)}</td><td class="who">${r.hits.length?r.hits.map(h=>`${esc(h.m.d)} <span style="opacity:.8">(${esc(h.b.e.move)})</span>`).join(', '):'<span class="no">Nobody</span>'}</td></tr>`}).join('');
   // defense grid
-  const head=`<tr><th class="t">Attack</th>${msPlay.map(m=>`<th title="${esc(m.d)}">${esc(m.d.replace('Mega ','M·').slice(0,12))}</th>`).join('')}<th>Weak</th><th>Resist</th><th>Net</th></tr>`;
-  $('grid').innerHTML=head+a.rows.map(t=>`<tr class="${t.w>t.r?'prob':''}"><td class="t">${chip(t.atk)}</td>${msPlay.map(m=>`<td>${dcell(mult(t.atk,m.types,m.ability,useA))}</td>`).join('')}<td>${t.w||''}</td><td>${t.r||''}</td><td class="net ${t.net>0?'pos':t.net<0?'neg':'zero'}">${t.net>0?'+'+t.net:t.net}</td></tr>`).join('');
+  const head=`<tr><th class="t">Attack</th>${msPlay.map(m=>`<th class="gmon" title="${esc(m.d)}" aria-label="${esc(m.d)}">${sprite(m.p,'mini')||''}<span class="gnm">${esc(m.d.replace('Mega ','M·').slice(0,12))}</span></th>`).join('')}<th class="gwr">Weak</th><th class="gwr">Resist</th><th>Net</th></tr>`;
+  $('grid').innerHTML=head+a.rows.map(t=>`<tr class="${t.w>t.r?'prob':''}"><td class="t">${chip(t.atk)}</td>${msPlay.map(m=>`<td>${dcell(mult(t.atk,m.types,m.ability,useA))}</td>`).join('')}<td class="gwr">${t.w||''}</td><td class="gwr">${t.r||''}</td><td class="net ${t.net>0?'pos':t.net<0?'neg':'zero'}">${t.net>0?'+'+t.net:t.net}</td></tr>`).join('');
   // problems + plans
   safe('game plan',()=>renderGamePlan(ms));
   const pool=suggestPool();

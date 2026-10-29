@@ -21,7 +21,7 @@ ROSTER.forEach(p=>{p.d=disp(p.n);p.k=norm(p.d)+' '+norm(p.n)+' '+norm(p.n.replac
 const byName=new Map(ROSTER.map(p=>[p.n,p]));
 // Each move also carries its reference mechanics (data/move-meta.js): priority, target, flags, accuracy, secondaries.
 // Variable- and fixed-damage moves get a stand-in power so every tool considers them; damage() works out the real number.
-const VAR_CALC=new Set(['wt','wtr','lowhp','gyro','eball','half','fullhp','userhp','hex','respects','punish','ragefist']);
+const VAR_CALC=new Set(['wt','wtr','lowhp','gyro','eball','half','fullhp','userhp','hex','respects','punish','ragefist','fling','beatup','gambit']);
 const MV=MOVES.map(([name,t,cat,bp,sound,spread],i)=>{const x=(typeof MOVE_META==='object'&&MOVE_META[name])||{},f=x.f||'';
   const mv={i,name,type:TYPES[t],cat,bp,sound:x.f!=null||x.t?f.includes('s'):sound,spread:x.t?['allAdjacentFoes','allAdjacent'].includes(x.t):spread,k:norm(name),
     pr:x.p||0,tg:x.t||'',contact:f.includes('c'),charge:f.includes('C'),recharge:f.includes('R'),acc:x.a||100,sec:x.s||[],sheer:!!x.sf,self:x.sb||null,tb:x.tb||null,mh:x.mh||0,ohko:x.o||0,fixed:x.d||0,vbp:x.v||'',ally:x.t==='allAdjacent'};

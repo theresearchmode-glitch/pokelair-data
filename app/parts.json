@@ -2,6 +2,7 @@
  "src/head.html",
  "src/style.css",
  "src/concept-h.css",
+ "src/polish.css",
  "src/body.html",
  "src/data/data.js",
  "src/data/move-acc.js",
@@ -67,6 +68,7 @@
  "src/app/55-threats.js",
  "src/app/60-concept-h.js",
  "src/app/61-concept-h-pages.js",
+ "src/app/62-polish.js",
  "src/app/99-start.js",
  "src/foot.html"
 ]

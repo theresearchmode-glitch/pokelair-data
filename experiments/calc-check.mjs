@@ -57,7 +57,9 @@ const pick = a => a[Math.floor(rnd() * a.length)], ri = (a, b) => a + Math.floor
 const NATS = ['Hardy', 'Adamant', 'Jolly', 'Modest', 'Timid', 'Brave', 'Quiet', 'Bold', 'Impish', 'Calm', 'Careful', 'Relaxed', 'Sassy', 'Lonely', 'Naughty', 'Mild', 'Rash', 'Hasty', 'Naive', 'Gentle', 'Lax'];
 const NOT_CHAMP_ITEMS = new Set(['Choice Band', 'Choice Specs', 'Assault Vest']);
 const ITEMS = DATA.items.filter(x => x && !NOT_CHAMP_ITEMS.has(x));
-const known = m => ref(G0, m.name);
+// Fling, Beat Up and Final Gambit (power from the item / the party / the user's HP) get their own targeted cases below, so the
+// random sample stays comparable with earlier runs
+const SPECIAL_POWER = new Set(['Fling', 'Beat Up', 'Final Gambit']), known = m => ref(G0, m.name) && !SPECIAL_POWER.has(m.name);
 const MOVES = DATA.M.filter(known);
 const pts3 = () => { let a = [ri(0, 32), ri(0, 32), ri(0, 32)]; const s = a[0] + a[1] + a[2]; if (s > 66) a = a.map(x => Math.floor(x * 66 / s)); return a; };
 function randCase(o = {}) {
@@ -101,6 +103,10 @@ const SPECIAL_MOVES = ['Body Press', 'Foul Play', 'Psyshock', 'Weather Ball', 'K
   'Low Kick', 'Grass Knot', 'Heavy Slam', 'Stored Power', 'Fake Out', 'Population Bomb', 'Grav Apple', 'Misty Explosion', 'Payback', 'Venoshock', 'Lash Out', 'Last Respects', 'Rage Fist', 'Collision Course', 'Electro Drift',
   ...Object.keys(DATA.multi)];
 for (const n of [...new Set(SPECIAL_MOVES)]) { const m = mvN.get(n); if (m && known(m)) T('move ' + n, 40, {mv: m, f: c => { c.spread = m.spread; }}); }
+// Fling: a non-Mega attacker holding an item Smogon's Fling table knows; Final Gambit: damage = the user's HP
+{ const fl = mvN.get('Fling'), fg = mvN.get('Final Gambit'), flItems = ITEMS.filter(it => it && G0.items.get(toID(it)) && G0.items.get(toID(it)).fling);
+  if (fl) T('move Fling', 80, {mv: fl, apL: DATA.R.filter(p => !p.m), f: c => { c.a.item = pick(flItems); c.a.ability = c.a.ability === 'Klutz' ? '' : c.a.ability; }});
+  if (fg) T('move Final Gambit', 40, {mv: fg}); }
 // Choice Band / Specs / Assault Vest aren't Champions items: checked against Smogon's Gen 9 calc instead (abilities off)
 for (const it of NOT_CHAMP_ITEMS) T('gen9 item ' + it, 80, {mvL: MOVES.filter(m => ref(G9, m.name) && !ref(G9, m.name).secondaries && ref(G9, m.name).basePower === m.bp), f: c => { c.g9 = true; c.a.ability = c.d.ability = ''; c.terrain = ''; if (it === 'Assault Vest') c.d.item = it; else c.a.item = it; }});
 // ---- reference (Smogon) ----
@@ -130,7 +136,10 @@ const PAGE_FN = `(cases)=>cases.map(c=>{try{const mv=mvByName.get(c.mv);const ph
   const A={p:byName.get(c.a.n),sp:ph?c.a.spA:c.a.spS,spA:c.a.spA,spS:c.a.spS,spDef:c.a.spDef,nat:c.a.nat,item:c.a.item,ability:c.a.ability,boost:c.a.boost,burn:c.a.burn};
   const D={p:byName.get(c.d.n),hpSp:c.d.hpSp,defSp:c.d.defSp,spdSp:c.d.spdSp,atkSp:c.d.atkSp,nat:c.d.nat,item:c.d.item,ability:c.d.ability,boost:c.d.boost};
   // Smogon's calc puts both Dragon Darts on the one target; the page's default is one dart per foe (doubles), so compare like for like
-  const r=damage({atk:A,def:D,move:mv,spread:c.spread,weather:c.weather,terrain:c.terrain,screen:c.screen,hh:c.hh,fg:c.fg,crit:c.crit,fainted:c.fainted,dartsBoth:true});
+  const r=damage({atk:A,def:D,move:mv,spread:c.spread,weather:c.weather,terrain:c.terrain,screen:c.screen,hh:c.hh,fg:c.fg,crit:c.crit,fainted:c.fainted,dartsBoth:true,
+    // Analytic: Smogon's turn order is attacker Speed > defender Speed (0 Speed points; Choice Scarf, Iron Ball and weather
+    // speed abilities counted, as its getFinalSpeed does), else it moves last
+    atkLast:(()=>{const sp=X=>{let v=calcStat(X.p,'Spe',0,natMul(X.nat,'Spe'));if(X.item==='Iron Ball')v=Math.floor(v/2);return spdCalc(v,X.item==='Choice Scarf',X.ability,c.weather,{})};return sp(A)<=sp(D)})()});
   return r?{rolls:r.rolls.length===16?r.rolls:Array(16).fill(r.rolls[0]),hp:r.hp}:{rolls:Array(16).fill(0),hp:0}}catch(e){return {err:String(e)}}})`;
 async function runAll(list) { const out = [];
   for (let i = 0; i < list.length; i += 500) out.push(...await pg.evaluate(([src, cs]) => window.__ev(src)(cs), [PAGE_FN, list.slice(i, i + 500)]));
@@ -158,9 +167,12 @@ const within1 = bad.filter(r => r.p.rolls && r.s.rolls && r.p.rolls.every((x, i)
 console.log(`mismatches: ${bad.length} (${within1} off by at most 1 HP per roll)\n`);
 // known, explained differences: things the page can't know (turn order, gender) or doesn't model on purpose (rare mid-move changes)
 const EXPLAINED = [[/Super Fang/, 'Super Fang: @smogon/calc\'s Champions data returns 0; the Showdown simulator takes half the target\'s HP (as the page does). Until Oct 28 the page also returned 0, which matched this reference and hid the bug'], [/Poltergeist/, 'Poltergeist into a Mega: a Mega always holds its Mega Stone, so the move hits; this harness gives Smogon no item for Megas, so Smogon says it fails'], [/Payback/, 'Payback doubles when the user moves last: Smogon decides from Speed, the page assumes it moves first'],
-  [/Analytic/, 'Analytic boosts when moving last: Smogon decides from Speed, the page assumes it moves first'], [/Rivalry/, 'Rivalry depends on genders, which the page does not track'],
+  [/Rivalry/, 'Rivalry depends on genders, which the page does not track'],
   [/Freeze-Dry/, 'Freeze-Dry has a 10% freeze chance (a secondary effect in the Showdown move data), so Sheer Force boosts it; the @smogon/calc Champions data leaves that secondary out'], [/(Grass Knot|Low Kick|Heavy Slam|Heat Crash) .*Stance Change/, 'Aegislash is missing from the Smogon Champions data, so its weight there is wrong'],[/Parental Bond.*Berry|Berry.*Parental Bond|Parental Bond \| def item=\w+ Berry/, 'Parental Bond with a resist berry: the berry is eaten by the first hit, the page leaves the second hit full; Smogon halves both'], [/def ability=Disguise/, 'Disguise: the page applies the game rule (the first hit only breaks the disguise for 1/8 HP); Smogon calc shows an ordinary hit'], [/Shell Side Arm/, 'Shell Side Arm turns physical when that hits harder (not modelled; rare)'], [/Forecast/, 'Castform changes type with the weather (not modelled)'],
   [/(Mold Breaker|Teravolt|Turboblaze).*friend guard=true|friend guard=true.*(Mold Breaker|Teravolt|Turboblaze)/, 'Mold Breaker ignores Friend Guard (Showdown marks it breakable; found by the simulator, Oct 28); @smogon/calc still applies it'],
+  [/Mimicry/, 'Mimicry: the page changes Galarian Stunfisk\'s type with the terrain as the game (and Showdown\'s simulator) does; @smogon/calc does not'],
+  [/Beat Up/, 'Beat Up: @smogon/calc returns 0; the page uses the Gen 5+ rule (one hit per Pokémon brought, 5 + base Attack / 10 power), checked against the Showdown simulator in app/test/run.mjs'],
+  [/Fling.*(Fairy Feather)|Fairy Feather.*Fling/, 'Fling: @smogon/calc\'s Fling table lacks this item (Showdown: 10 power)'],
   [/Weak Armor|Stamina|Seed Sower|Wandering Spirit/, 'ability that changes stats/terrain/abilities between hits of a multi-hit move (not modelled)']];
 const why = (k, l) => (EXPLAINED.find(([re]) => re.test(k) || l.every(r => re.test(r.c.mv + ' ' + r.c.a.ability + ' ' + r.c.d.ability))) || [])[1];
 const unexplained = bad.filter(r => { for (const [k, l] of groups) if (l.includes(r)) return !why(k, l); return true; }).length;

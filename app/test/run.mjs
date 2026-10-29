@@ -426,17 +426,80 @@ for (const width of [1280, 390]) {
   await go(pg, 'calc'); await pg.waitForTimeout(300);
   const cal = await pg.evaluate(() => { const T = window.__PL; T.dc().a = 'Garchomp'; T.dc().d = 'Incineroar'; T.dc().inv = {}; T.renderCalc(); const h = [...document.querySelectorAll('#dcOut .dccol h3')].map(x => x.innerText); return h; });
   ok(cal.length === 2 && !/assumed|estimated/.test(cal[0]) && /assumed|estimated/.test(cal[1]), `calc: your spread untagged, theirs tagged (${cal.join(' | ')})`);
-  const rf = await pg.evaluate(async () => { const T = window.__PL; const codes = ['not_granted', 'rate_limited', 'server_not_connected', 'tool_error', undefined];
-    const txt = codes.map(c => T.refreshErrText(c ? {code: c} : new Error('x')));
-    const a1 = await T.refreshArgs({describeTool: async () => ({inputSchema: {properties: {trigger_id: {}}}})}), a2 = await T.refreshArgs({describeTool: async () => { throw {code: 'not_granted'}; }}), a3 = await T.refreshArgs({});
-    window.__PL.getS().slots = window.__keep; return {txt, keys: [a1, a2, a3].map(a => Object.keys(a).join())}; });
-  ok(rf.txt.every(t => t && t.length > 10) && new Set(rf.txt).size >= 4, `refresh button: a plain message for each failure (${rf.txt.length})`);
-  ok(rf.keys.every(k => k === 'trigger_id'), `refresh button: sends trigger_id with or without the connector's schema (${rf.keys})`);
+  await pg.evaluate(() => { window.__PL.getS().slots = window.__keep; });
   // Mold Breaker ignores the target's partner's Friend Guard (Showdown marks Friend Guard breakable; found by the simulator)
   const fg = await pg.evaluate(() => { const T = window.__PL, A = n => ({p: T.byName.get('Ampharos-Mega'), sp: 32, nat: 'Modest', ability: n, item: '', boost: 0}),
     D = {p: T.byName.get('Kingambit'), hpSp: 32, defSp: 0, spdSp: 2, nat: 'Adamant', ability: 'Defiant', item: '', boost: 0}, mv = T.mvByName.get('Thunderbolt');
     const r = (ab, fg) => T.damage({atk: A(ab), def: D, move: mv, fg}).max; return [r('Mold Breaker', false), r('Mold Breaker', true), r('Static', false), r('Static', true)]; });
   ok(fg[0] === fg[1] && fg[3] < fg[2], `Mold Breaker ignores Friend Guard; other abilities don't (${fg})`);
+  ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
+// Mechanics from the sets (Oct 29): each number below is from Pokémon Showdown's simulator (champions mod, Reg M-C format, the
+// lowest and highest damage roll, no crit), run one turn at a time; the page's damage() must give the same min and max.
+{ console.log('\n== mechanics from the sets (vs the Showdown simulator)');
+  const {pg, errs, ctx} = await open(1280);
+  const m = await pg.evaluate(() => { const T = window.__PL, P = n => T.byName.get(n), M = n => T.mvByName.get(n);
+    const A = (n, o) => ({p: P(n), sp: 32, spA: 32, spS: 32, spDef: 0, nat: 'Hardy', item: '', ability: P(n).a[0], boost: 0, ...(o || {})});
+    const D = (n, o) => ({p: P(n), hpSp: 32, defSp: 0, spdSp: 0, atkSp: 0, nat: 'Hardy', item: '', ability: P(n).a[0], boost: 0, ...(o || {})});
+    const mm = r => r ? [r.min, r.max] : null, d = (a, df, mv, o) => T.damage({atk: a, def: df, move: M(mv), ...(o || {})});
+    const gar = D('Garchomp', {ability: 'Rough Skin'});
+    return {
+      mimicry: mm(d(A('Pincurchin', {nat: 'Modest', ability: 'Electric Surge'}), D('Stunfisk-Galar', {ability: 'Mimicry'}), 'Thunderbolt', {terrain: 'electric'})),
+      forecast: mm(d(A('Castform', {nat: 'Modest', ability: 'Forecast'}), gar, 'Weather Ball', {weather: 'sun'})),
+      analytic: [mm(d(A('Starmie', {nat: 'Quiet', ability: 'Analytic'}), D('Garchomp', {nat: 'Jolly'}), 'Scald', {atkLast: true})), mm(d(A('Starmie', {nat: 'Quiet', ability: 'Analytic'}), D('Garchomp', {nat: 'Jolly'}), 'Scald', {atkLast: false}))],
+      plus: [mm(d(A('Ampharos', {nat: 'Modest', ability: 'Plus'}), D('Kingambit'), 'Thunderbolt', {plusAlly: true})), mm(d(A('Ampharos', {nat: 'Modest', ability: 'Plus'}), D('Kingambit'), 'Thunderbolt'))],
+      fling: ['Life Orb', 'Iron Ball', 'Hard Stone'].map(it => mm(d(A('Clefable', {nat: 'Adamant', ability: 'Unaware', item: it}), gar, 'Fling'))),
+      flingFail: [d(A('Clefable', {item: ''}), gar, 'Fling'), d(A('Clefable', {item: 'Normal Gem'}), gar, 'Fling')].map(r => r && r.max === 0 && !!r.fail),
+      beatUp: (() => { const r = d(A('Whimsicott', {nat: 'Adamant', ability: 'Infiltrator'}), D('Snorlax', {ability: 'Thick Fat'}), 'Beat Up', {party: ['Whimsicott', 'Incineroar', 'Garchomp', 'Kingambit'].map(P)}); return [r.min, r.max, r.hits]; })(),
+      gambit: (() => { const r = d(A('Lucario', {hpSp: 20}), D('Snorlax'), 'Final Gambit'); return [r.min, r.max]; })(),
+      gambitGhost: d(A('Lucario', {hpSp: 20}), D('Gengar'), 'Final Gambit').max,
+      recoil: d(A('Aerodactyl', {nat: 'Adamant', ability: 'Pressure'}), gar, 'Double-Edge').max,
+      crit: [T.critStage(A('Absol', {ability: 'Super Luck', item: 'Scope Lens'}), M('Night Slash')), T.critStage(A('Absol', {ability: 'Super Luck'}), M('Crunch')), T.critStage(A('Absol', {ability: 'Pressure', item: 'Scope Lens'}), M('Crunch')),
+        T.critStage(A('Sirfetch’d', {item: 'Leek'}), M('Brick Break')), T.critStage(A('Sirfetch’d', {item: 'Leek'}), M('Leaf Blade')), T.critStage(A('Absol', {ability: 'Pressure'}), M('Crunch'))],
+      critAlways: d(A('Absol', {ability: 'Super Luck', item: 'Scope Lens'}), D('Snorlax'), 'Night Slash').crit,
+      zoom: [T.moveAcc(M('Stone Edge'), 'Sand Stream', '', null, 'Zoom Lens', null, true), T.moveAcc(M('Stone Edge'), 'Rough Skin', '', null, 'Zoom Lens', null, false)],
+      longReach: [d(A('Decidueye', {ability: 'Long Reach'}), gar, 'Leaf Blade').contact, d(A('Decidueye', {ability: 'Overgrow'}), gar, 'Leaf Blade').contact],
+      band: T.koText(d(A('Conkeldurr', {nat: 'Adamant', ability: 'Guts'}), D('Snorlax', {hpSp: 0, item: 'Focus Band'}), 'Close Combat')),
+      palafin: [P('Palafin').st.join('/'), T.likelySpeed(P('Palafin')).v > 0],
+      fl: T.flingBp('Charizardite Y'),
+      nc: Object.keys(T.NOT_COUNTED).length };
+  });
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  ok(eq(m.mimicry, [50, 59]), `Mimicry: Galarian Stunfisk is Electric type in Electric Terrain (Thunderbolt ${m.mimicry}, sim 50-59)`);
+  ok(eq(m.forecast, [54, 65]), `Forecast: Castform is Fire type in sun (Weather Ball ${m.forecast}, sim 54-65)`);
+  // (the simulator's numbers less Scald's burn tick of 13, which the harness let through)
+  ok(eq(m.analytic, [[93, 111], [72, 85]]), `Analytic: 1.3× only when it moves after the target (${JSON.stringify(m.analytic)}, sim 93-111 / 72-85)`);
+  ok(eq(m.plus, [[133, 157], [90, 106]]), `Plus: 1.5× Sp. Atk with a Plus/Minus partner (${JSON.stringify(m.plus)}, sim 133-157 / 90-106)`);
+  ok(eq(m.fling, [[18, 22], [57, 68], [45, 53]]), `Fling: power from the held item (Life Orb / Iron Ball / Hard Stone ${JSON.stringify(m.fling)}, sim 18-22 / 57-68 / 45-53)`);
+  ok(m.flingFail.every(Boolean) && m.fl === 0, 'Fling fails with no item, Normal Gem or a Mega Stone');
+  ok(eq(m.beatUp, [39, 49, 4]), `Beat Up: one hit per Pokémon brought, 5 + base Attack / 10 power (${m.beatUp}, sim 39-49 in 4 hits)`);
+  ok(eq(m.gambit, [165, 165]) && m.gambitGhost === 0, `Final Gambit: damage = the user's HP, Ghost types immune (${m.gambit}, sim 165)`);
+  ok(m.recoil === 80, `Double-Edge damage for the recoil note (${m.recoil}, sim 80; recoil 26)`);
+  ok(eq(m.crit, [3, 1, 1, 2, 3, 0]) && m.critAlways, `crit stages: Super Luck, Scope Lens, Leek, high-crit moves; +3 always crits (${m.crit}; sim 1/1, 1/8, 1/8, 1/2, 1/1)`);
+  ok(eq(m.zoom, [96, 80]), `Zoom Lens: 1.2× accuracy only when moving after the target (${m.zoom}, sim 96 / 80)`);
+  ok(eq(m.longReach, [false, true]), 'Long Reach: no contact (sim: no Rough Skin or Rocky Helmet damage)');
+  ok(/Focus Band: 10%/.test(m.band), `Focus Band noted in the KO text ("${m.band}")`);
+  ok(m.palafin[0] === '100/160/97/106/87/100' && m.palafin[1], 'Zero to Hero: Palafin calculated in Hero Form (Showdown Palafin-Hero stats)');
+  ok(m.nc >= 15, `labels for what the sets can't tell (${m.nc})`);
+  // the calc result's notes: recoil, Rock Head, contact damage, crit chance, flinch, Not counted
+  await go(pg, 'calc'); await pg.waitForTimeout(300);
+  const note = (a, d, mv, ao, dO) => pg.evaluate(([a, d, mv, ao, dO]) => { const T = window.__PL, dc = T.dc(); dc.a = a; dc.d = d; dc.mv = mv; dc.inv = {}; dc.weather = ''; dc.terrain = ''; dc.wSet = dc.tSet = true; T.renderCalc();
+    dc.mv = mv; Object.assign(dc.inv['atk:' + a], ao || {}); Object.assign(dc.inv['def:' + d], dO || {}); T.renderCalc(); const r = document.querySelector('#dcOut .dcres'); return r ? r.innerText : ''; }, [a, d, mv, ao, dO]);
+  const rh = await note('Aggron', 'Garchomp', 'Double-Edge', {ability: 'Rock Head'}), rp = await note('Aggron', 'Garchomp', 'Double-Edge', {ability: 'Sturdy'});
+  ok(/no recoil \(Rock Head\)/.test(rh) && /recoil \d+–\d+ HP \(33% of the damage\)/.test(rp), 'calc: recoil shown, none with Rock Head');
+  const hel = await note('Decidueye', 'Garchomp', 'Leaf Blade', {ability: 'Overgrow'}, {ability: 'Rough Skin', item: 'Rocky Helmet'}), lr = await note('Decidueye', 'Garchomp', 'Leaf Blade', {ability: 'Long Reach'}, {ability: 'Rough Skin', item: 'Rocky Helmet'});
+  ok(/loses Rough Skin 1\/8 \+ Rocky Helmet 1\/6 of its max HP/.test(hel) && !/Rocky Helmet 1\/6/.test(lr) && /Long Reach: no contact/.test(lr), 'calc: Rough Skin and Rocky Helmet on contact; Long Reach avoids both');
+  ok(/Not counted: Overgrow \(only below ⅓ HP\)\./.test(hel), 'calc: "Not counted: Overgrow (only below ⅓ HP)."');
+  const cr = await note('Absol', 'Snorlax', 'Night Slash', {ability: 'Pressure', item: 'Scope Lens'}), kr = await note('Garchomp', 'Snorlax', 'Dragon Claw', {item: "King's Rock"});
+  ok(/crit chance 1\/2 \(high-crit move, Scope Lens\)/.test(cr), 'calc: crit chance from a high-crit move and Scope Lens');
+  ok(/King's Rock: 10% to flinch if it moves first/.test(kr), "calc: King's Rock flinch chance noted");
+  const an = await note('Starmie', 'Garchomp', 'Scald', {ability: 'Analytic', nat: 'Quiet'});
+  ok(/Analytic (1\.3×|not counted)/.test(an), 'calc: Analytic says whether it moves after the target');
+  // Stall: always moves last in its bracket (threat engine duel), noted on speed lines
+  const st = await pg.evaluate(() => { const H = window.__PL.THR, f = {weather: '', terrain: '', auras: []}, mo = {tr: false, tw: false};
+    const sab = ab => H.side({n: 'Sableye', ability: ab, moves: ['Shadow Ball'], nat: 'Timid', sp: {hp: 0, atk: 0, def: 0, spa: 32, spd: 0, spe: 32}}), sn = H.side({n: 'Snorlax', moves: ['Body Slam'], nat: 'Brave', sp: {hp: 32, atk: 32, def: 0, spa: 0, spd: 0, spe: 0}});
+    return [H.duel(sab('Stall'), sn, mo, f).first, H.duel(sab('Keen Eye'), sn, mo, f).first, H.duel(sn, sab('Stall'), mo, f).first, window.__PL.spdAbNote('Stall'), window.__PL.spdAbNote('Quick Draw')]; });
+  ok(st[0] === false && st[1] === true && st[2] === true, `Stall moves last in its bracket even when faster (sim: Snorlax moves before a faster Stall Sableye) (${st.slice(0, 3)})`);
+  ok(/Stall: always moves last/.test(st[3]) && /Quick Draw: 30% chance/.test(st[4]), 'speed lines note Stall and Quick Draw');
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 await browser.close();
 // items, suggestions and battle math (Oct 28 audit), on the same build

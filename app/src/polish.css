@@ -1,0 +1,127 @@
+/* ===== Polish pass (Oct 29): the pages that were only lightly restyled for Concept H =====
+   Saved teams, Archetype guides, Popular sets, Type chart (phone), My team's type tables, Damage calc. Same tokens as concept-h.css. */
+/* ---------- Saved teams: sprites, big name, one button ---------- */
+:root:not(#_ch) #savedList .item.svt{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:14px 14px 12px;border:2px solid var(--line2);border-radius:16px;background:var(--chc)}
+:root:not(#_ch) #savedList .item.svt.on{border-color:var(--chblue)}
+:root:not(#_ch) #savedList .item.svt.cmpon{border-color:var(--chink);box-shadow:4px 4px 0 var(--chshadow)}
+.svhd{display:flex;align-items:center;gap:10px;min-width:0}
+.svname{font:400 26px/1 var(--display);text-transform:uppercase;letter-spacing:.01em;color:var(--chink);min-width:0;overflow-wrap:anywhere}
+.svhd .tag{flex:none}
+.svrn{flex-wrap:nowrap}.svrn .field{flex:1;min-width:0}
+.svsix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 4px;background:var(--chp2);border-radius:12px;padding:8px 6px}
+.svm{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.svm .spr{width:60px;height:60px;object-fit:contain}
+.svm span{font:700 12px/1.2 var(--body);color:var(--chink);text-align:center;max-width:100%}
+.svm.empty i{display:block;width:44px;height:44px;border:2px dashed var(--line2);border-radius:50%;margin:8px 0}
+.svm.empty span{color:var(--faint)}
+.svfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.svstats{display:flex;align-items:center;gap:10px}
+.svstats .tsd{font-size:12px;padding:3px 9px}
+.svacts{display:flex;align-items:center;gap:8px;margin-left:auto}
+.svacts .inline-confirm{display:flex;align-items:center;gap:8px;font-weight:700}
+.svmore>summary{min-width:44px;font-size:20px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding-bottom:6px}
+.svmore .mmpop{min-width:170px}
+.svmore .mmpop .btn.on{color:var(--chblueT)}
+@media (min-width:640px){.svsix{grid-template-columns:repeat(6,minmax(0,1fr))}.svm .spr{width:72px;height:72px}}
+/* ---------- Archetype guides: sprites for key Pokémon, numbered counters, your answers as cards ---------- */
+.guide .gbody{display:flex;flex-direction:column;gap:14px;padding-top:4px}
+.guide .gwhat{font-size:16px;line-height:1.45;margin:0}
+.gsec{display:flex;flex-direction:column;gap:8px}
+.gkey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 4px;background:var(--chp2);border-radius:12px;padding:8px 6px}
+.gkey .svm .spr{width:56px;height:56px}
+@media (min-width:640px){.gkey{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.gbeat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:gb}
+.gbeat li{counter-increment:gb;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;background:var(--chp2);border-radius:12px;padding:9px 12px 9px 8px;font-size:15px;line-height:1.35}
+.gbeat li::before{content:counter(gb);font:400 26px/1 var(--display);color:var(--chblueT);text-align:center}
+.gyours{display:flex;flex-direction:column;gap:6px}
+.gyou{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;border:2px solid var(--chblue);border-radius:12px;padding:4px 12px 4px 4px;background:var(--chc)}
+.gyou .spr{width:48px;height:48px;object-fit:contain}
+.gyou b{display:block;font-size:15px}.gyou span{display:block;font:700 12px/1.3 var(--mono);color:var(--chink2)}
+.gok{font-style:normal;font-weight:800;color:var(--chok);font-size:18px}
+.gnone{border:2px solid var(--chbad);border-radius:12px;padding:10px 12px;font-size:15px;line-height:1.4;background:var(--bad-soft)}
+.gnone b{color:var(--chredT)}
+.guide[open]>summary .gkm{display:none}
+.gbeat li{padding:7px 12px 7px 8px}
+/* ---------- Popular sets: blue move bars, one build block, teammates as sprites ---------- */
+.setgrid2{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:760px){.setgrid2{grid-template-columns:3fr 2fr;align-items:start}}
+.smvs{display:flex;flex-direction:column;gap:9px}
+.smv{display:flex;flex-direction:column;gap:4px}
+.smvt{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.smvt b{font-size:15px;color:var(--chink)}
+.smvt span{font:700 13px var(--mono);color:var(--chink2);font-variant-numeric:tabular-nums}
+.smv i{display:block;height:9px;border-radius:99px;background:var(--chp2);position:relative;overflow:hidden}
+.smv i::before{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);background:var(--chblue);border-radius:99px}
+.sbuilds{display:flex;flex-direction:column;gap:10px}
+.sbuild{display:flex;flex-direction:column;gap:5px}
+.sbchips{display:flex;flex-wrap:wrap;gap:6px}
+.sbchip{font:700 14px var(--body);background:var(--chp2);color:var(--chink);border-radius:999px;padding:5px 12px}
+.sbchip.top{background:var(--chink);color:var(--chp)}
+.sbchip em{font:700 12px var(--mono);font-style:normal;opacity:.75}
+.stms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+@media (min-width:640px){.stms{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.stm{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--chp2);border:0;border-radius:12px;padding:6px 4px 8px;cursor:pointer;color:var(--chink);min-width:0}
+.stm:hover{background:var(--soft)}
+.stm .spr{width:56px;height:56px;object-fit:contain}
+.stm b{font-size:12px;line-height:1.2;text-align:center}
+.stm span{font:700 11px var(--mono);color:var(--chink2)}
+:root:not(#_ch) #setOut .setcard .stat h4{font:700 12px/1.3 var(--mono);letter-spacing:.1em;color:var(--chink2);margin:0 0 8px}
+.sbuild .chk{font-size:12px}
+/* ---------- Type chart: on phones, one attacking type at a time ---------- */
+.tcphone{display:flex;flex-direction:column;gap:10px;margin:8px 0 4px}
+.tcpick{display:flex;flex-wrap:wrap;gap:6px}
+.tcb{font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;border:2px solid var(--tc);background:transparent;color:var(--chink);border-radius:999px;padding:5px 10px;cursor:pointer;min-height:34px}
+.tcb.on{background:var(--tc);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.tcres{display:flex;flex-direction:column;gap:10px;background:var(--chp2);border-radius:14px;padding:12px}
+.tchd{display:flex;align-items:center;gap:8px;font-size:15px}
+.tcg{display:flex;flex-direction:column;gap:6px}
+.tcg.se .chk{color:var(--chok)}.tcg.nve .chk{color:var(--chredT)}.tcg.no .chk{color:var(--chink)}
+.tcres .t2{margin:0}
+@media (max-width:899px){#types .tcgrid{display:none}}
+@media (min-width:900px){.tcphone{display:none}}
+/* ---------- My team type tables: fit a phone, no overlaps ---------- */
+#grid th.gmon{padding:4px 2px;vertical-align:bottom;text-align:center}
+#grid th.gmon .spr{width:34px;height:34px;object-fit:contain;display:block;margin:0 auto}
+#grid th.gmon .gnm{display:block;font:700 9.5px/1.1 var(--mono);text-transform:uppercase;letter-spacing:.02em;max-width:72px;margin:2px auto 0;white-space:normal}
+@media (max-width:640px){
+  #grid{width:100%;table-layout:fixed}
+  #grid th.gmon .gnm,#grid .gwr{display:none}
+  #grid th:first-child,#grid td:first-child{width:96px}
+  #grid td,#grid th{padding:6px 1px;text-align:center}
+  #grid td.t,#grid th.t{text-align:left;padding-left:6px}
+  #grid td .chip,#grid td.t>*{font-size:10px}
+  /* offense tables: each row is a small card */
+  #offTypes,#offMeta{display:block;width:100%}
+  #offTypes tbody,#offMeta tbody{display:flex;flex-direction:column;gap:6px;padding:6px}
+  #offTypes tr:first-child,#offMeta tr:first-child{display:none}
+  #offTypes tr,#offMeta tr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;background:var(--chc);border:1.5px solid var(--line);border-radius:12px;padding:8px 10px}
+  #offTypes tr.prob,#offMeta tr.prob{border-color:var(--chbad)}
+  #offTypes td,#offMeta td{display:block;padding:0;border:0;min-width:0}
+  #offTypes td.who,#offMeta td.who{grid-column:1/-1;white-space:normal;font-size:13.5px;line-height:1.35;color:var(--chink2)}
+  #offMeta td.t{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+  #offMeta td.t .chips{display:inline-flex!important;flex-wrap:wrap;gap:4px}
+  #offTypes~*,#offMetaWrap{overflow:visible}
+  #offense .tablewrap,#defSec .tablewrap{background:transparent;border:0;box-shadow:none;overflow:visible}
+  #defSec .tablewrap{overflow-x:auto}
+}
+/* ---------- Damage calc: pill menus, threat table as tiles on phones ---------- */
+:root:not(#_ch) #dcOut select.field{appearance:none;-webkit-appearance:none;border-radius:999px;border:2px solid var(--line2);background:var(--chc) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%231D2140' stroke-width='2' stroke-linecap='round'/></svg>") no-repeat right 14px center/12px 8px;padding:8px 30px 8px 12px;font:700 14px var(--body);color:var(--chink);min-height:44px;text-overflow:ellipsis;width:100%;background-position:right 11px center}
+:root:not(#_ch)[data-look="dark"] #dcOut select.field{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23F3EBDC' stroke-width='2' stroke-linecap='round'/></svg>")}
+:root:not(#_ch) #dcOut select.field:focus{border-color:var(--chblue);outline:none}
+:root:not(#_ch) #dcOut select.field:disabled{opacity:.65}
+.dctile{display:none}
+@media (max-width:640px){
+  #dcOut .dctab,#dcOut .dctab tbody{display:block;min-width:0}
+  #dcOut .dctab thead{display:none}
+  #dcOut .dctab tbody{display:flex;flex-direction:column;gap:8px}
+  #dcOut .dctab tr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;background:var(--chc);border:1.5px solid var(--line);border-radius:14px;padding:8px}
+  #dcOut .dctab tbody th{grid-column:1/-1;position:static;background:transparent;display:flex;align-items:center;gap:6px;border:0;padding:0 0 2px;font:400 18px var(--display);text-transform:uppercase}
+  #dcOut .dctab tbody th span{font:inherit;color:var(--chink);margin:0;max-width:none;white-space:normal;overflow:visible}
+  #dcOut .dctab td{display:flex;flex-direction:column;align-items:center;gap:0;border:0;border-radius:9px;padding:3px 1px 4px;background:var(--chp2);min-width:0;font-size:13px}
+  #dcOut .dctab td.k1{background:color-mix(in srgb,var(--good) 30%,var(--chc))}#dcOut .dctab td.k1m{background:color-mix(in srgb,var(--good) 15%,var(--chc))}#dcOut .dctab td.k2{background:color-mix(in srgb,var(--gold) 30%,var(--chc))}#dcOut .dctab td.k2m{background:color-mix(in srgb,var(--gold) 15%,var(--chc))}
+  #dcOut .dctab td.dcz{justify-content:center}
+  #dcOut .dctab td span{max-width:100%;font:700 9px/1.1 var(--body);letter-spacing:0;white-space:normal;overflow:visible;text-align:center;color:var(--chink2)}
+  .dctile{display:block;font-style:normal}.dctile img{width:26px;height:26px;object-fit:contain;display:block}
+  #dcOut .tablewrap:has(.dctab){background:transparent;border:0;box-shadow:none;overflow:visible}
+}
+@media (max-width:480px){#dcOut .dc2:has(#dcAIt,#dcDIt,#dcAAb,#dcDAb){grid-template-columns:1fr}}

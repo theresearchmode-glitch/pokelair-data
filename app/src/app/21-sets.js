@@ -2,9 +2,14 @@
 // "Best data" is the merged set: official in-game stats first, then Showdown or tournament rows where the game has none (a Mega's own set).
 const SET_SRC = {ingame: 'Best data', tour: 'Tournaments', ladder: 'Showdown'};
 function setCard(title, sub, t, extra, foot) {
-  const tm = t && t.tm && t.tm.length ? `<div class="stat"><h4>Teammates</h4><div class="ttmons">${t.tm.slice(0, 6).map(([n, v]) => { const q = byName.get(n);
-    return `<button type="button" class="ttmon" data-setmon="${esc(q ? q.n : n)}"${q ? '' : ' disabled'}>${esc(q ? q.d : n)}${v != null ? ` <span class="vsub">${(+v).toFixed(0)}%</span>` : ''}</button>`; }).join('')}</div></div>` : '';
-  const body = hasSet(t) ? `<div class="setgrid">${stat('Moves', t.mv, 8)}${stat('Items', t.it, 5)}${stat('Abilities', t.ab, 3)}${stat('Natures', t.na, 3)}</div>${tm}`
+  // Concept H (Oct 29): moves as solid blue bars, items / abilities / natures as one block of chips, teammates as sprites
+  const pc = v => v == null ? '' : (+v).toFixed(+v >= 10 ? 0 : 1) + '%';
+  const moves = t && t.mv && t.mv.length ? `<div class="stat"><h4>Moves</h4><div class="smvs">${t.mv.slice(0, 8).map(([n, v]) => `<div class="smv"><div class="smvt"><b>${esc(n)}</b><span>${pc(v)}</span></div><i style="--w:${Math.max(2, Math.min(100, +v || 0))}%"></i></div>`).join('')}</div></div>` : '';
+  const chips = (lab, arr, k) => arr && arr.length ? `<div class="sbuild"><span class="chk">${lab}</span><div class="sbchips">${arr.slice(0, k).map(([n, v], i) => `<span class="sbchip${i === 0 ? ' top' : ''}">${esc(n)}${v == null ? '' : ` <em>${pc(v)}</em>`}</span>`).join('')}</div></div>` : '';
+  const build = t ? chips('Item', t.it, 4) + chips('Ability', t.ab, 3) + chips('Nature', t.na, 3) : '';
+  const tm = t && t.tm && t.tm.length ? `<div class="stat"><h4>Teammates</h4><div class="stms">${t.tm.slice(0, 6).map(([n, v]) => { const q = byName.get(n);
+    return `<button type="button" class="stm" data-setmon="${esc(q ? q.n : n)}"${q ? '' : ' disabled'}>${q ? sprite(q) || '' : ''}<b>${esc(q ? q.d : n)}</b>${v != null ? `<span>${(+v).toFixed(0)}%</span>` : ''}</button>`; }).join('')}</div></div>` : '';
+  const body = hasSet(t) ? `<div class="setgrid2">${moves}${build ? `<div class="stat sbuilds">${build}</div>` : ''}</div>${tm}`
                  : `<div class="empty-note">Not among the top Pokémon in this list. "Best data" covers every Pokémon.</div>`;
   return `<div class="setcard"><div class="ph"><div><div class="pt">${title}</div><div class="t2">${sub}</div></div>${extra || ''}</div>${body}${foot ? `<div class="t2 setfoot">${foot}</div>` : ''}</div>`;
 }
