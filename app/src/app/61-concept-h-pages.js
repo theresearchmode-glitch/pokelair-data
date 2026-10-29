@@ -220,7 +220,7 @@ safe('restyle folds', () => { CH.restyle($('muFold'), 'mufold', 'Deeper read', '
 safe('one page per job', () => {
   const ap = document.querySelector('[data-pane="auto"]'), cs = $('cores'); if (ap && cs && !ap.contains(cs)) ap.append(cs);
   const mu = $('matchup'); if (mu && !$('chTools')) { const d = document.createElement('div'); d.id = 'chTools'; d.className = 'chtools';
-    d.innerHTML = `<h3 class="chsub3">More ways to prep</h3><div class="chtoolsg">${[['gauntlet', 'Gauntlet', 'Your team against the latest top teams'], ['speed', 'Speed tiers', 'Who moves first across the meta'], ['calc', 'Damage calc', 'Any attacker into any defender'], ['types', 'Type chart', 'What hits what']].map(([v, t, s]) => `<button type="button" data-view="${v}"><b>${t}</b><span>${s}</span></button>`).join('')}</div>`;
+    d.innerHTML = `<h3 class="chsub3">More ways to prep</h3><div class="chtoolsg">${[['calc', 'Damage calc', 'Any attacker into any defender'], ['gauntlet', 'Gauntlet', 'Your team against the latest top teams'], ['speed', 'Speed tiers', 'Who moves first across the meta'], ['types', 'Type chart', 'What hits what']].map(([v, t, s]) => `<button type="button" data-view="${v}"><b>${t}</b><span>${s}</span></button>`).join('')}</div>`;
     const bl = $('battlelog'); (bl ? bl.closest('details') || bl : mu).before(d); } });
 CH.wrap('renderAutoBuild', () => { const ap = document.querySelector('[data-pane="auto"]'); if (ap && !ap.hidden) safe('cores', renderCores); });
 CH.wrap('renderCores', () => CH.pagehead($('cores'), 'Pick a pair or trio that wins, then fill the rest', 'Build around a core', ''));
@@ -255,3 +255,15 @@ CH.wrap('renderMeta', () => { const sec = $('meta'), list = $('metaList'); if (!
 // My box: a live count next to the heading
 CH.wrap('renderBox', () => { const h = document.querySelector('#box > .chpghead .chpgt'); if (!h) return; let c = $('chBoxN'); if (!c) { c = document.createElement('span'); c.id = 'chBoxN'; c.className = 'chboxn'; h.append(c); }
   c.textContent = `${S.box.length} Pokémon`; });
+// ---------- Battle: the damage calc up top (one tap from any of your six into their Pokémon) ----------
+function chCalcCard() { const ms = members(), opp = S.opp.map(n => byName.get(n)).filter(Boolean);
+  const top = (() => { try { const r = lairRows(); return r[0] ? r[0].p : null; } catch (e) { return null; } })();
+  const def = opp[0] || top || byName.get('Incineroar'); if (!def) return '';
+  const atk = ms.length ? ms.slice(0, 6).map(m => m.p) : [byName.get('Garchomp')].filter(Boolean);
+  return `<section class="chcalc" aria-label="Damage calc"><div class="chcalch"><div><div class="chk">Real level-50 doubles damage</div><div class="chdisp chcalct">Damage calc</div></div><button type="button" class="chprimary chcalcgo" data-dcgo="${esc((atk[0] || {}).n || '')}|${esc(def.n)}">Open damage calc <span aria-hidden="true">➜</span></button></div>
+    <p class="t2">Spreads, items, abilities, weather, terrain, screens, Intimidate and spread moves. Pick an attacker to hit ${opp[0] ? 'their' : 'the most-used'} <b>${esc(def.d)}</b>:</p>
+    <div class="chcalcrow"><div class="chcalcatk">${atk.map(p => `<button type="button" data-dcgo="${esc(p.n)}|${esc(def.n)}" aria-label="${esc(p.d)} into ${esc(def.d)}">${sprite(p) || ''}<span>${esc(p.d)}</span></button>`).join('')}</div>
+      <span class="chcalcvs" aria-hidden="true">→</span><div class="chcalcdef">${sprite(def) || ''}<span>${esc(def.d)}</span></div></div></section>`; }
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-dcgo]'); if (!b) return; const [a, d] = b.dataset.dcgo.split('|');
+  if (byName.get(a)) dc.a = a; if (byName.get(d)) dc.d = d; dc.dir = 'mine'; dc.mv = null; dc.spread = null; dc.wSet = dc.tSet = false; setView('calc'); safe('calc', renderCalc); window.scrollTo(0, 0); });
+CH.wrap('renderBattle', () => { const head = document.querySelector('#matchup > .chbmhead'); if (!head) return; let c = $('chCalcCard'); if (!c) { c = document.createElement('div'); c.id = 'chCalcCard'; } head.after(c); c.innerHTML = chCalcCard(); });

@@ -850,3 +850,23 @@ details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marke
 .chwhy li+li{margin-top:5px}.chwhy li b{color:var(--chink)}
 .chwhy .warnline{color:var(--chbad);font-weight:700}
 .chpoolrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin:0 0 12px}.chpoolrow .chk{margin:0}
+/* Battle: damage calc card */
+.chcalc{margin:14px 0 16px;border:2px solid var(--chline);border-radius:18px;padding:14px 14px 12px;color:#fff;background-color:var(--chblue);background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.4px);background-size:9px 9px;box-shadow:4px 4px 0 var(--chredB)}
+:root[data-look="dark"] .chcalc{background-color:#0B6AA8}
+.chcalc .chk,.chcalc .t2,.chcalc .t2 b{color:#fff}.chcalc .t2{opacity:.95;margin:8px 0 10px}
+.chcalch{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.chcalct{font-size:34px!important;line-height:1;text-transform:uppercase;color:#fff!important;text-shadow:2px 2px 0 rgba(0,0,0,.2)!important;margin-top:2px}
+.chcalcgo{width:auto!important;min-height:44px}
+.chcalcrow{display:flex;align-items:center;gap:8px}
+.chcalcatk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;flex:1;min-width:0}
+.chcalcatk button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:12px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.45);min-width:0}
+.chcalcatk button:hover,.chcalcatk button:focus-visible{background:rgba(255,255,255,.3);outline:none}
+.chcalcatk .spr,.chcalcdef .spr{width:48px;height:48px;object-fit:contain}
+.chcalcatk span,.chcalcdef span{font:800 10.5px/1.15 var(--body);text-transform:uppercase;text-align:center;color:#fff}
+.chcalcvs{font-size:22px;flex:none}
+.chcalcdef{flex:none;width:84px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:12px;background:var(--chredB);border:1.5px solid rgba(255,255,255,.6)}
+.chcalcdef .spr{width:60px;height:60px}
+@media (min-width:900px){.chcalcatk{grid-template-columns:repeat(6,minmax(0,1fr))}.chcalcdef{width:110px}.chcalcatk .spr{width:60px;height:60px}}
+@media (max-width:899px){.chcalcatk span{font-size:8.5px;letter-spacing:0;word-break:normal;overflow-wrap:normal;hyphens:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chcalcatk .spr{width:44px;height:44px}.chcalcdef{width:76px}}
+@media (max-width:899px){.chcalcatk span{font-size:9px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.1}}
+:root:not(#_ch) .chbmhead #bmClear{border:1.5px solid var(--line2)!important;border-radius:999px!important;min-height:38px;padding:0 14px!important;background:transparent!important;color:var(--chink)!important;font:700 13px var(--body)!important}.chbmhead .bmbar{margin:10px 0 0}#chCalcCard .chcalc{margin-top:16px}

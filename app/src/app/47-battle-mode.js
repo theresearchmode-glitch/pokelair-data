@@ -50,11 +50,6 @@ function bmWatch(C, theirs) {
     if (BM_WEATHER[ab]) out.push(['lo', esc(ab), BM_WEATHER[ab]]);
     if (o.p.m) out.push(['lo', 'Mega', 'likely their Mega this game']);
     return {o, out}; }).filter(x => x.out.length); }
-function bmTimer() { const el = $('bmClock'); if (!el) { clearInterval(bmUi.timer); bmUi.timer = null; return; }
-  const left = bmUi.t0 ? Math.max(0, 90 - Math.floor((Date.now() - bmUi.t0) / 1000)) : 90;
-  el.textContent = bmUi.t0 ? `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}` : '1:30';
-  el.parentElement.classList.toggle('run', !!bmUi.t0 && left > 0); el.parentElement.classList.toggle('low', !!bmUi.t0 && left <= 15);
-  if (bmUi.t0 && left === 0) { clearInterval(bmUi.timer); bmUi.timer = null; } }
 function renderBattle() {
   const el = $('bmOut'); if (!el) return;
   const mine = members(), theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember), dbl = S.format === 'doubles';
@@ -62,10 +57,7 @@ function renderBattle() {
   const slots = S.opp.map((n, i) => { const p = byName.get(n);
     return p ? `<div class="bmslot on">${sprite(p, 'bmspr')}<span class="bmn">${esc(p.d)}</span><button class="x" type="button" data-bmx="${i}" aria-label="Remove ${esc(p.d)}">×</button></div>`
       : `<div class="bmslot"><div class="cb"><input class="field" id="bmOpp${i}" placeholder="${i + 1}" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Their Pokémon ${i + 1}"></div></div>`; }).join('');
-  const shotOk = typeof shot === 'object' && shot.ready;
-  const top = `<div class="bmbar"><button type="button" class="bmclock" id="bmClockBtn" aria-label="Start the 90 second team preview timer"><span id="bmClock">1:30</span><i>${bmUi.t0 ? 'Reset' : 'Start timer'}</i></button>
-    ${shotOk ? '<button type="button" class="btn sm" id="bmShot">Read screenshot</button>' : ''}<button type="button" class="btn sm ghost" id="bmClear">Clear</button></div>
-    ${shotOk && shot.res ? `<div class="bmshot t2">${shot.res.busy ? '<span class="spin" aria-hidden="true"></span> Reading their team…' : shot.res.err ? esc(shot.res.err) : shot.res.found ? `Read ${shot.res.found.length} of 6 from your screenshot${shot.res.found.some(x => !x.sure) ? '. Double-check: ' + shot.res.found.filter(x => !x.sure).map(x => esc(x.p.d)).join(', ') : ''}.` : ''}</div>` : ''}
+  const top = `<div class="bmbar"><button type="button" class="btn sm ghost" id="bmClear">Clear their six</button></div>
     <div class="bmopp">${slots}</div>`;
   let body = ''; bmUi.four = null;
   if (mine.length < 4) body = '<div class="empty-note">Add at least 4 Pokémon on the Team page first.</div>';
@@ -119,15 +111,13 @@ function renderBattle() {
   el.innerHTML = top + body;
   safe('log', () => renderLog());
   S.opp.forEach((n, i) => { const inp = $('bmOpp' + i); if (inp) bindMonInput(inp, p => { S.opp[i] = p.n; persist(); renderMatchup(); const nx = S.opp.findIndex(x => !byName.get(x)); const f = nx >= 0 && $('bmOpp' + nx); if (f) f.focus(); }, p => !S.opp.includes(p.n)); });
-  bmTimer(); }
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bms],[data-bmw],[data-bmi],[data-bmx],[data-bmt],#bmClear,#bmShot,#bmClockBtn,[data-battle]'); if (!b) return;
+  }
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bms],[data-bmw],[data-bmi],[data-bmx],[data-bmt],#bmClear,[data-battle]'); if (!b) return;
   const d = b.dataset;
   if (d.battle != null) { setView('matchup'); return; }
   if (d.bms) bmUi[d.bms] = !bmUi[d.bms]; else if (d.bmw != null) bmUi.weather = d.bmw; else if (d.bmi) bmUi[d.bmi] = !bmUi[d.bmi];
   else if (d.bmt) bmUi.tab = d.bmt;
   else if (d.bmx != null) { S.opp[+d.bmx] = ''; persist(); keepScroll(() => renderMatchup()); const f = $('bmOpp' + d.bmx); if (f) f.focus(); return; }
   else if (b.id === 'bmClear') { S.opp = ['', '', '', '', '', '']; persist(); renderMatchup(); return; }
-  else if (b.id === 'bmShot') { const f = $('shotFile'); if (f) f.click(); return; }
-  else if (b.id === 'bmClockBtn') { if (bmUi.t0) { bmUi.t0 = 0; clearInterval(bmUi.timer); bmUi.timer = null; } else { bmUi.t0 = Date.now(); clearInterval(bmUi.timer); bmUi.timer = setInterval(bmTimer, 250); } }
   keepScroll(() => renderBattle());
   if (d.bmx != null) { const f = $('bmOpp' + d.bmx); if (f) f.focus(); } });
