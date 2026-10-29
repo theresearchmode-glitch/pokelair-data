@@ -52,7 +52,7 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
   const wxb=(k,t)=>`<button type="button" data-spdwx="${k}" aria-pressed="${spdUi.wx===k}">${t}</button>`;
   $('spdCtl').innerHTML=`<div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('par','They\'re paralyzed')}${tog('tr','Trick Room')}</div>
     <div class="seg segwrap" role="group" aria-label="Weather" style="margin-top:6px">${wxb('auto',autoW?`Your weather (${autoW})`:'Your weather (none)')}${wxb('','No weather')}${wxb('sun','Sun')}${wxb('rain','Rain')}${wxb('sand','Sand')}${wxb('snow','Snow')}</div>`;
-  if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on the Team page to place them against the top threats.</div>';return}
+  if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on My team to place them against the top threats.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>';return}
   const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
     let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];

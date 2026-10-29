@@ -185,7 +185,7 @@ function renderTopTeams() {
   const sections = [...new Set(d.teams.map(t => t.section))];
   // your own team is graded exactly as the Team page grades it (your moves, abilities and items), so the two never disagree
   const mine = members(); let mg = null; if (mine.length === 6) { try { mg = proChecks(mine, $('useAbil') ? $('useAbil').checked : true); } catch (e) { mg = gradeNames(mine.map(m => m.p.n), true); } }
-  const yours = `<div class="ttyours"><div><div class="lbl">Your team</div><div class="t2">${mine.length === 6 ? esc(mine.map(m => m.d).join(' · ')) : 'Add six Pokémon on the Team page to compare.'}</div></div><div class="ttright">${miniGrades(mg)}${mine.length === 6 ? `<span class="archchips">${archChips(teamPlanLabel(mine.map(m => m.p.n)))}</span>` : ''}</div></div>`;
+  const yours = `<div class="ttyours"><div><div class="lbl">Your team</div><div class="t2">${mine.length === 6 ? esc(mine.map(m => m.d).join(' · ')) : 'Add six Pokémon on My team to compare.'}</div></div><div class="ttright">${miniGrades(mg)}${mine.length === 6 ? `<span class="archchips">${archChips(teamPlanLabel(mine.map(m => m.p.n)))}</span>` : ''}</div></div>`;
   ui.ttMore = ui.ttMore || {};
   el.innerHTML = yours + sections.map(sec => { const all = d.teams.map((t, k) => ({t, k})).filter(x => x.t.section === sec), cap = ui.ttMore[sec] ? all.length : 5;
     return `<h3 class="lbl" style="margin:8px 0 2px">${esc(sec)} <span class="vsub">${all.length}</span></h3>` + all.slice(0, cap).map(({t, k}) => {

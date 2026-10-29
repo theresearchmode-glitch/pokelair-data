@@ -28,7 +28,7 @@ function welcomeCard() { let seen = false; try { seen = !!LS.get('cc2.welcomed',
       <li><b>Get a team</b><span>Let us build one from real winning teams, copy a top team, or type your own six.</span></li>
       <li><b>Read your scouting report</b><span>Which top threats your team is ready for, the checks it passes, and exactly what to fix.</span></li>
       <li><b>Plan each match</b><span>Scout their six, see who moves first, run the damage, and get a turn 1 plan.</span></li></ol>
-    <p class="t2">The team below is a sample to explore. Replace it any time on the Team page.</p>
+    <p class="t2">The team below is a sample to explore. Replace it any time on My team.</p>
     <div class="row"><button type="button" class="btn go sm" data-view="auto">Build me a team</button><button type="button" class="btn sm" data-view="top">Copy a top team</button><button type="button" class="btn ghost sm" data-welcomex="1">Got it</button></div></div>`; }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-welcomex],#welcomeCard [data-view]'); if (!b) return;
   try { LS.set('cc2.welcomed', '1'); } catch (er) {} const c = $('welcomeCard'); if (c && b.dataset.welcomex) c.remove(); });

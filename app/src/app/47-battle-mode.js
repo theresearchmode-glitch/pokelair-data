@@ -60,7 +60,7 @@ function renderBattle() {
   const top = `<div class="bmbar"><button type="button" class="btn sm ghost" id="bmClear">Clear their six</button></div>
     <div class="bmopp">${slots}</div>`;
   let body = ''; bmUi.four = null;
-  if (mine.length < 4) body = '<div class="empty-note">Add at least 4 Pokémon on the Team page first.</div>';
+  if (mine.length < 4) body = '<div class="empty-note">Add at least 4 Pokémon on My team first.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>';
   else if (!theirs.length) body = '<div class="empty-note">Type their Pokémon as you see them at team preview. Everything below fills in as you go.</div>';
   else {
     const r = planMatchup(mine, theirs, true), C = r.chosen.map(i => mine[i]);

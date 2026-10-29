@@ -81,7 +81,7 @@ function renderRecs() {
   const elP = $('princ'), elL = $('recList'); if (!elP || !elL) return;
   document.querySelectorAll('[data-recsrc]').forEach(x => x.setAttribute('aria-pressed', x.dataset.recsrc === ui.recSrc));
   const useA = $('useAbil').checked, ms = members();
-  if (ms.length < 2) { elP.innerHTML = ''; elL.innerHTML = '<div class="empty-note">Add at least two Pokémon on the Team page to get suggestions.</div>'; return; }
+  if (ms.length < 2) { elP.innerHTML = ''; elL.innerHTML = '<div class="empty-note">Add at least two Pokémon on My team to get suggestions.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>'; return; }
   const r = computeRecs(ms, useA), B = r.B, pr = principles(B, ms);
   const mark = {ok: '✓', part: '~', miss: '✕'};
   { const head = `<span class="gpt">Winning-team checklist</span><span class="vsub">${pr.filter(x => x.ok !== 'miss').length} of ${pr.length} checks</span>`,

@@ -14,7 +14,7 @@ function gauntletPrep(ms,names){const mine=ms.map(THR.fromMember);
   const mm=THR.teamModes(mine),tm=THR.teamModes(theirs);
   const you=theirs.map(t=>THR.vsThreat(mine,{...t,w:1},mm)),them=mine.map(t=>THR.vsThreat(theirs,{...t,w:1},tm));
   return {you,them,yN:you.filter(r=>r.level>=2).length,tN:them.filter(r=>r.level>=2).length,n:theirs.length}}
-function renderGauntlet(){const el=$('gauntOut');if(!el)return;const ms=members();if(ms.length<4){el.innerHTML='<div class="empty-note">Add at least 4 Pokémon on the Team page to run the gauntlet.</div>';return}
+function renderGauntlet(){const el=$('gauntOut');if(!el)return;const ms=members();if(ms.length<4){el.innerHTML=`<div class="empty-note">Add at least 4 Pokémon on My team to run the gauntlet.${ms.length?` You have ${ms.length}.`:''}<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>`;return}
   const useA=$('useAbil')?$('useAbil').checked:true;const T=gauntletTeams();if(!T.length){el.innerHTML='<div class="empty-note">Top tournament teams load with the daily data. Check back after the next refresh.</div>';return}
   const key=metaVersion+'|'+ui.metaSrc+'|'+megaGoal()+'|'+ms.map(m=>m.p.n+'/'+m.ability+'@'+(m.item||'')+':'+m.moves.map(x=>x.name).join(',')).join('|')+'|'+useA;
   if(gauntCache.key!==key){gauntCache={key,rows:T.map((t,ix)=>{const names=t.mons.filter(n=>byName.get(n));const theirs=names.map(n=>byName.get(n)).map(oppMember);if(theirs.length<4)return null;
@@ -26,7 +26,7 @@ function renderGauntlet(){const el=$('gauntOut');if(!el)return;const ms=members(
   <div class="gsum"><div><b>${more}</b><span>you're better prepared</span></div><div><b>${rows.length-more-less}</b><span>about even</span></div><div><b>${less}</b><span>they're better prepared</span></div></div>
   <div class="glist">${rows.slice().sort((a,b)=>edge(a)-edge(b)).map(x=>{const nm=i=>esc(ms[i].d),pr=x.pr,e=edge(x),c=e>=2?'ok':e<=-2?'hi':'mid';
     const un=pr?pr.you.map((r,j)=>r.level===0?j:-1).filter(j=>j>=0):x.loose;
-    return `<div class="gitem"><div class="gtop"><span class="sev ${c}">${pr?`Ready for ${pr.yN}/${pr.n}`:'—'}</span><span class="gwho">${esc(x.t.who)}</span>${pr?`<span class="vsub">they're ready for ${pr.tN}/${ms.length} of yours</span>`:''}<span class="vsub">${esc(x.t.ev||'')}</span></div>
+    return `<div class="gitem"><div class="gtop"><span class="sev ${c}">${pr?`You: ready for ${pr.yN} of their ${pr.n}`:'—'}</span><span class="gwho">${esc(x.t.who)}</span>${pr?`<span class="vsub">Them: ready for ${pr.tN} of your ${ms.length}</span>`:''}<span class="vsub">${esc(x.t.ev||'')}</span></div>
       <div class="gmons">${x.theirs.map((o,j)=>`<span class="gm${un.includes(j)?' loose':''}" title="${esc(o.d)}${pr&&pr.you[j]?': '+esc(pr.you[j].label)+' · '+esc(THR.evidence(pr.you[j])):''}">${sprite(o.p,'mini')||esc(o.d)}</span>`).join('')}</div>
       <div class="t2">Bring <b>${x.r.lead.map(nm).join(' + ')}</b> up front, ${x.r.back.map(nm).join(' + ')} in back.${un.length?` Watch ${un.map(j=>esc(x.theirs[j].d)).join(', ')}.`:''}</div>
       ${pr?`<details class="gprep"><summary>Matchup prep</summary><div class="lbl">You against their six</div><div class="prepgrid">${pr.you.map(r=>cell(r,byName.get(r.t.n))).join('')}</div>
