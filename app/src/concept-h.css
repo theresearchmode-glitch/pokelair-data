@@ -835,3 +835,18 @@ details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marke
 /* adding a Pokémon: the panel opens near the top so the name box and its list sit above the phone keyboard */
 .chedit.chadd{top:calc(64px + env(safe-area-inset-top,0px));bottom:auto;border-radius:22px;border:3px solid var(--chline);left:8px;right:8px;min-height:62vh;max-height:calc(100dvh - 80px)}
 @media (min-width:900px){.chedit.chadd{left:50%;right:auto;top:90px}}
+/* suggestions: each one with a Why? that opens its reasons in place */
+.chsugw{border-top:1px dashed var(--line2);padding:2px 0 10px}.chsugw:first-of-type{border-top:0}
+.chsugw .chsug{border-top:0!important}
+.chwhy{margin:2px 0 0}
+.chwhy>summary{list-style:none;display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1.5px solid var(--line2);border-radius:999px;cursor:pointer;font:700 13px/1 var(--body);color:var(--chink)}
+.chwhy>summary::-webkit-details-marker{display:none}
+:root:not(#_ch) main .chwhy>summary::before{display:none!important}
+.chwhy>summary .n{font:700 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--chink2)}
+.chwhy>summary::after{content:'';width:7px;height:7px;border-right:2px solid var(--chink2);border-bottom:2px solid var(--chink2);transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.chwhy[open]>summary::after{transform:rotate(-135deg) translateY(-1px)}
+.chwhy[open]>summary{background:var(--chink);color:var(--chp);border-color:var(--chink)}.chwhy[open]>summary .n{color:var(--chp);opacity:.8}
+.chwhy ul{margin:10px 0 2px;padding:12px 14px 12px 30px;border-radius:12px;background:var(--chp2);font-size:13.5px;line-height:1.45;color:var(--chink)}
+.chwhy li+li{margin-top:5px}.chwhy li b{color:var(--chink)}
+.chwhy .warnline{color:var(--chbad);font-weight:700}
+.chpoolrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin:0 0 12px}.chpoolrow .chk{margin:0}

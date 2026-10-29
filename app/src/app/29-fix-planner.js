@@ -167,14 +167,16 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   // item problems (Item Clause, an item that can't work here) come first, each with a one-tap item swap
   const itf=typeof itemFixHtml==='function'?itemFixHtml(ms):'';
   const moreBtn=`<div class="morebar">${left>0?`<button class="btn" type="button" id="planMoreBtn">More ideas</button><span class="vsub">${left} more plan${left===1?'':'s'}, including side-grades and rarely used picks</span>`:more.length?`<span class="vsub">That's every plan that keeps your type rating and speed control.</span><button class="btn sm" type="button" id="planMoreReset">Show fewer</button>`:''}</div>`;
-  if(!plans.length&&!shown.length){el.innerHTML=itf+`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool readies the team for more of the top threats (it's ready for ${plans.tsBase}%). Keep this team, or try "Full roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn;return}
+  const none=!plans.length&&!shown.length;if(none){el.innerHTML=itf+`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool readies the team for more of the top threats (it's ready for ${plans.tsBase}%). Keep this team, or try "Full roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn}
   // each plan's readiness next to the current one, so a plan never hides that it leaves the team less prepared
   const baseTS=(ui.vsum&&ui.vsum.RD)||null,planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
   // plans that would lower readiness by 5+ go after the ones that keep or raise it
   const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
   const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
   const list=[...plans,...shown];
-  el.innerHTML=itf+list.map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;
+  // nothing improves the team: the top side-grades still get their reasons worked out (My team shows them behind Why?)
+  const extra=!plans.length?more.slice(0,3).filter(x=>!list.includes(x)):[];
+  const htmls=[...list,...extra].map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;
     const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
     const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
     const newWeak=st.a.rows.filter((t,j)=>t.w>t.r&&!(a.rows[j].w>a.rows[j].r)).map(t=>t.atk);
@@ -184,11 +186,14 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
     const lines=[...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
       newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
       st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
+    // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
+    pl._why=lines.filter(Boolean);pl._wk=a.excess===st.a.excess?null:[wsTxt(a),wsTxt(st.a)];
     return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">${k>=plans.length?(pl.side?'Side-grade':'Idea'):'Plan'} ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span>${dT!=null?`<span class="tsd ${dT>0?'up':dT<0?'dn':''}" title="${esc(tsTitle(baseTS,{score:ts}))}">Ready ${dT>0?'+':dT<0?'−':'±'}${Math.abs(dT)}%</span>`:''}<span class="row">${a.excess===st.a.excess?`<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`:`<span class="pill ${RC(a.excess)}">${wsTxt(a)}</span>→<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`}</span></div>
       ${pl.ch.map(x=>`<div class="swap">${x.out?`<span class="out">${esc(x.out.d)}</span> →`:'Add'} ${sprite(x.c.p,'mini')}<span class="in">${esc(x.c.p.d)}</span>${confChip(x.c.p)}<span class="chips">${x.c.p.t.map(t=>chip(t)).join('')}</span>${x.c.p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(x.c.p)?'<span class="tag box ico" title="In your box">BOX</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${ratingTag(x.c.p)}${isGem(x.c.p)?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(x.c.p)}<span class="vsub">${esc(x.c.mem.ability)}${(t=>t&&t.item?' @ '+esc(t.item):'')(tA.find(m=>m.p===x.c.p))}${U(x.c.p)?` · <span title="${esc(windowWords('tour'))}">${U(x.c.p).toFixed(1)}% usage</span>`:''}</span></div>`).join('')}
       ${(()=>{const L=lines.filter(Boolean),ul=`<ul>${L.map(l=>`<li>${l}</li>`).join('')}</ul>`;return PHONE()&&L.length>2?`<details class="planwhy"><summary>${L.length} reasons</summary>${ul}</details>`:ul})()}
       ${pl.side?'<p class="t2" style="margin:0">A different look: keeps your type rating and speed control without being clearly better.</p>':''}
-      <div><button class="btn sm primary" type="button" data-plan="${k}">Apply ${k>=plans.length?'this':'plan '+(k+1)}</button></div></div>`}).join('')+moreBtn;
+      <div><button class="btn sm primary" type="button" data-plan="${k}">Apply ${k>=plans.length?'this':'plan '+(k+1)}</button></div></div>`});
+  if(!none)el.innerHTML=itf+htmls.slice(0,list.length).join('')+moreBtn;
   ui.planList=list;
 }
 function pctBars(arr,limit){return (arr||[]).slice(0,limit).map(([n,v])=>`<div class="bar"><span class="bn" style="--w:${Math.max(0,Math.min(100,+v||0))}%">${esc(n)}</span><span class="bv">${v==null?'':(+v).toFixed(1)+'%'}</span></div>`).join('')}

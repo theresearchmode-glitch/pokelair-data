@@ -54,13 +54,18 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
 // suggestions on the report: the top fix plans, one tap to apply (same plans as Build › Swaps)
 CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
   // nothing makes the team readier: show the side-grades (different picks that keep every check) instead of a dead end
-  if (!L.length && ui.plans && Array.isArray(ui.plans.more) && ui.plans.more.length) { L = ui.planList = ui.plans.more.slice(0, 3); side = true; }
+  if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { L = ui.planList = ui.plans.more.slice(0, 3); side = true; }
   const top = L.slice(0, 3); if (!top.length) return '';
   return `<section class="chsugs" aria-label="Suggestions">${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}
     ${top.map((pl, k) => { if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } } const d = pl._ts != null && base != null ? pl._ts - base : null;
       const pics = pl.ch.map(x => `${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span>`).join('');
       const words = pl.ch.map(x => `<b>${esc(x.c.p.d)}</b>${x.out ? ` <span class="for">for ${esc(x.out.d)}</span>` : ' <span class="for">added</span>'}`).join('<br>');
-      return `<div class="chsug"><div class="pics">${pics}</div><div class="txt">${words}${d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)}% ready</span>` : ''}</div><button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button></div>`; }).join('')}<button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; };
+      // Why?: the same reasons the full plan card gives, one tap away
+      const why = (pl._why && pl._why.length ? pl._why : side ? ['Keeps every check and your speed control', 'About as ready for the top threats as now, with a different look'] : []);
+      const wk = pl._wk ? `<li>Weak spots: <b>${esc(pl._wk[0])}</b> → <b>${esc(pl._wk[1])}</b></li>` : '';
+      const nr = why.length + (wk ? 1 : 0);
+      const whyH = nr ? `<details class="chwhy"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${why.map(l => `<li>${l}</li>`).join('')}</ul></details>` : '';
+      return `<div class="chsugw"><div class="chsug"><div class="pics">${pics}</div><div class="txt">${words}${d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)}% ready</span>` : ''}</div><button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button></div>${whyH}</div>`; }).join('')}<button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; };
 CH.legendRow = RD => { const c = CH.lvCount(RD); return `<div class="chleg">${[[0, 'var(--chbad)'], [1, 'var(--chshaky)'], [2, 'var(--chmid)'], [3, 'var(--chok)']].map(([l, col]) => `<span><i style="background:${col}"></i>${CH.LV[l]} ${c[l]}</span>`).join('')}</div>`; };
 // ---------- Home ----------
 const chHomeOld = renderHome;
@@ -178,7 +183,7 @@ function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'
   const head = document.createElement('div'); head.id = 'chTeam'; head.className = 'chteam'; rp.prepend(head);
   // 1 · Fix it: suggestions, then everything still to look at (problems, checklist, legal and items)
   const p1 = CH.part('chP1', '1', 'Fix it', 'What to change, best first'); const b1 = p1.querySelector('.chpartb');
-  b1.innerHTML = '<div id="chSugOut"></div>'; if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
+  b1.innerHTML = '<div class="chpoolrow"><span class="chk">Suggest from</span><div class="seg chpool" role="group" aria-label="Suggest from"><button type="button" data-chpool="box">My box</button><button type="button" data-chpool="boxfill">Box + catch</button><button type="button" data-chpool="all">Whole roster</button></div></div><div id="chSugOut"></div>'; if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
   const fx = mk('rfix', 'Problems and checklist', false); fx.id = 'chfFix'; const fb = fx.querySelector('.chbody'); [cols[0], $('chkCard'), $('verdict')].filter(Boolean).forEach(n => fb.append(n)); b1.append(fx);
   // 2 · Threats: one section, three views of the same 30 threats
   const p2 = CH.part('chP2', '2', 'Threats', 'Who beats you, and who handles them'); const b2 = p2.querySelector('.chpartb'), on2 = LS.get('cc2.seg.thr', 'top');
@@ -237,6 +242,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
     ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
   if (CH.acts) $('chActs').append(CH.acts);
   document.querySelectorAll('#chP1,#chP2,#chP3').forEach(p => { p.hidden = !ms.length; });
+  document.querySelectorAll('[data-chpool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.chpool === ui.pool));
   // part 1: suggestions
   { const o = $('chSugOut'); if (o) o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No change readies this team for more of the top threats. Nice.</p>') : ''; }
   const sum = (id, t) => { const d = $(id); const s = d && d.querySelector('.chs'); if (s) s.textContent = t; };
@@ -296,3 +302,8 @@ render = function () { chRenderOld.apply(this, arguments); if (typeof view === '
 const chSetViewOld = setView;
 setView = function (v) { chSetViewOld.apply(this, arguments); if ((view === 'build' || view === 'report') && CH.stale) { CH.stale = false; safe('concept h team', chTeamRender); } };
 if (window.__PL_TEST) window.__CH = {open: chScoutOpen, close: chScoutClose, four: CH.four, grade: CH.grade};
+
+// Suggest from (My team): the same setting as Plan settings › Pick from
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chpool]'); if (!b) return; const v = b.dataset.chpool; if (v === ui.pool) return;
+  ui.pool = v; LS.set('cc2.pool', v); const sel = $('poolSel'); if (sel) sel.value = v; render();
+  toast({box: 'Suggestions only use your box', boxfill: 'Your box first, then the best Pokémon to catch', all: 'Suggestions use the full roster'}[v]); });
