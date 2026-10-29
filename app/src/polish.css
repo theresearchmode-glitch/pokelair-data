@@ -128,3 +128,9 @@
 /* two-style archetype tags keep their gradient under the shared darkening layer */
 :root:not(#_ch) .archchip{background-color:var(--ac)}
 :root:not(#_ch) .archchip.grad{background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22)),var(--acg)!important}
+
+/* Box: long names (Meowscarada, Kommo-o) fit inside their card on phones */
+:root:not(#_ch) #boxList .boxchip{padding-left:2px;padding-right:2px}:root:not(#_ch) #boxList .boxchip b{font-size:11px;letter-spacing:-.01em;max-width:100%}
+.hmn{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere}
+/* Ratings tiles on small phones (≤370px): smaller sprite so names fit */
+@media(max-width:370px){.ltile{padding-left:31px!important;padding-right:3px!important}.ltile .ltspr{width:30px!important;height:30px!important;left:0!important}.ltgrid{gap:4px!important}}
