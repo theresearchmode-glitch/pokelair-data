@@ -1,5 +1,8 @@
 // ---------- render: slots ----------
-function renderSlots(){
+// a redraw while someone is typing in a name box must not drop their focus (on phones that closes the keyboard)
+function renderSlots(){const ae=document.activeElement,fid=ae&&ae.id&&ae.tagName==='INPUT'?ae.id:null,ss=fid?ae.selectionStart:null,se=fid?ae.selectionEnd:null;
+  try{renderSlots_()}finally{if(fid&&document.activeElement!==document.getElementById(fid)){const x=document.getElementById(fid);if(x&&x.offsetParent!==null){try{x.focus({preventScroll:true});if(ss!=null)x.setSelectionRange(ss,se)}catch(e){}}}}}
+function renderSlots_(){
   const useA=$('useAbil').checked;let clash=null;try{clash=scarfTrClash(members())}catch(e){}
   $('slots').innerHTML=S.slots.map((s,i)=>{const m=memberOf(s,i);
     if(!m)return `<div class="slot empty"><div class="sl-top"><span class="sl-num">${i+1}</span><span class="addtok" aria-hidden="true">+</span><div class="cb"><input class="field" id="pk${i}" data-i="${i}" placeholder="Add a Pokémon" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Pokémon for slot ${i+1}"></div></div></div>`;
