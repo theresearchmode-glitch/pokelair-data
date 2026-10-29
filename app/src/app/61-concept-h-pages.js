@@ -252,3 +252,6 @@ CH.wrap('renderMeta', () => { const sec = $('meta'), list = $('metaList'); if (!
   if (!$('chMetaQ')) { const w = document.createElement('div'); w.className = 'lsearch chmetaq'; w.innerHTML = '<input class="field" id="chMetaQ" type="search" placeholder="Find a Pokémon" autocomplete="off" aria-label="Find a Pokémon in usage"><div class="t2" id="chMetaCount" aria-live="polite"></div>'; list.before(w);
     w.querySelector('input').addEventListener('input', e => { ui.metaQ = e.target.value; chMetaFilter(); }); }
   chMetaFilter(); });
+// My box: a live count next to the heading
+CH.wrap('renderBox', () => { const h = document.querySelector('#box > .chpghead .chpgt'); if (!h) return; let c = $('chBoxN'); if (!c) { c = document.createElement('span'); c.id = 'chBoxN'; c.className = 'chboxn'; h.append(c); }
+  c.textContent = `${S.box.length} Pokémon`; });

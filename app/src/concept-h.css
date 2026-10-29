@@ -830,3 +830,4 @@ details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marke
 :root:not(#_ch) #chActs .mmpop .btn:hover{background:var(--chp2)!important}
 .chmetaq{margin:4px 0 12px}.chmetaq .field{width:100%;max-width:420px}#chMetaCount{margin-top:6px}#chMetaCount:empty{display:none}
 .lsearch.chmetaq{flex:none!important}
+#box .chpgt{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.chboxn{font:700 13px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:7px 11px;border-radius:999px;background:var(--chink);color:var(--chp);text-shadow:none}
