@@ -196,3 +196,8 @@ html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
 :root:not(#_ch)[data-look="dark"] .band .chthm svg{fill:currentColor;stroke:none}
 :root:not(#_ch) .band .chthm:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
 @media (hover:hover){:root:not(#_ch) .band .chthm:hover{background:var(--chink);color:var(--chp)}}
+/* Ratings top two: card colour from the Pokémon's types (Oct 29, Sim) */
+:root:not(#_ch) .chhot.typed,:root:not(#_ch)[data-look="dark"] .chhot.typed{background-color:var(--t1)!important;background-image:linear-gradient(rgba(0,0,0,.30),rgba(0,0,0,.30)),linear-gradient(135deg,var(--t1) 0%,var(--t1) 38%,var(--t2) 62%,var(--t2) 100%)!important}
+.chhot.typed .n,.chhot.typed .nm,.chhot.typed .st{text-shadow:0 1px 3px rgba(0,0,0,.45)}
+/* desktop already shows the Auto / Light / Dark switch, so the one-tap toggle is for phones and tablets only */
+@media (min-width:1001px){:root:not(#_ch) .band .chthm{display:none!important}}

@@ -61,7 +61,8 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
 // ---------- Ratings: the hot list ----------
 function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; const top = rows.slice(0, PHONE() ? 16 : 20);
   const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${(+t[0]).toFixed(1)}% use · ${(+t[1]).toFixed(1)}% win` : `★ ${x.r.total}`; };
-  const big = (x, c) => `<button type="button" class="chhot ${c} chhalf" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${x.r.total}"><span class="n">${x.r.total}</span><span class="nm">${esc(x.p.d)}</span><span class="st">${line(x).replace(' · ', '<br>')}</span>${sprite(x.p) || ''}</button>`;
+  // the top two take their own type colours (a blend for dual types), darkened a little so the white text stays readable
+  const big = (x, c) => `<button type="button" class="chhot ${c} chhalf typed" style="--t1:${TC[x.p.t[0]] || '#4E5068'};--t2:${TC[x.p.t[1] || x.p.t[0]] || TC[x.p.t[0]] || '#4E5068'}" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${x.r.total}"><span class="n">${x.r.total}</span><span class="nm">${esc(x.p.d)}</span><span class="st">${line(x).replace(' · ', '<br>')}</span>${sprite(x.p) || ''}</button>`;
   const T = lTier(top[0].r.total), nS = rows.filter(x => x.r.total >= T.min).length, tie = top[0].r.total === top[1].r.total;
   return `<div class="chhothead"><span class="chtier">${T.k}</span><span class="chk">${T.min}+ · ${nS} Pokémon</span>${tie ? '<span class="chpen" style="margin-left:auto">Tied for #1!</span>' : ''}</div>
     <div class="chhot2">${big(top[0], 'ink')}${big(top[1], 'blue')}</div>
