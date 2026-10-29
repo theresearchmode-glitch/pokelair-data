@@ -1,8 +1,9 @@
 # Group Chat promo
 
-A 66-second vertical (1080×1920) promo styled as a group text: a player's team is "mid", friends point them to NastyPlot, and each reply lifts a real NastyPlot screen into a full-screen feature card. Six features: Team grade, Fix it, Damage calc, Battle mode, Ratings, Build me a team. Ends on the 4-0 moment, the Home page in a phone and the end card.
+A 66–70-second vertical (1080×1920) promo styled as a group text: a player's team is "mid", friends point them to NastyPlot, and each reply lifts a real NastyPlot screen into a full-screen feature card. Six features: Team grade, Fix it, Damage calc, Battle mode, Ratings, Build me a team. Ends on the 4-0 moment, the Home page in a phone and the end card.
 
 - `why-u-hate-me.html`: the main version (the one Sim picked), timed to *why_u_hate_me*. Bars are 3.0 s from 0:00; kicks on sixteenths 0, 3 and 10; drops at 0:24 (Damage calc lands here) and 0:51 (the 4-0).
+- `coil-trap.html`: the same edit on the *RuneScape 07 – Coil Trap* remix (75 BPM, 3.2 s bars from 2.55 s; beat in at 0:28.15 where Damage calc lands, quieter bars 12–15, the big section at 0:53.75 where the 4-0 lands). Picked over the rap tracks so the music suits more people.
 - `fido.html`: the same edit on *Fido* (115 BPM, 2.087 s bars from 0.461 s, drums in at 0:17.16, loud section at 0:50.55).
 
 Everything in a composition is placed on the song's bar grid (`at(bar, sixteenth)` near the top of the script), so retiming means changing the grid constants and the bar numbers in `FEAT` and `M`.
