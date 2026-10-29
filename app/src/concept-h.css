@@ -704,3 +704,4 @@ details.chflat>summary{display:none}details.chflat{margin:0}
 .chsug .txt{flex:1;min-width:0;font-size:13px;line-height:1.3}.chsug .txt b{font:800 14px/1.2 var(--body);color:var(--chink)}.chsug .txt .for{color:var(--chink2);font-size:12.5px}
 .chsug .txt .dl{display:inline-block;margin-top:4px}
 .chsug .chapply{flex:none;min-height:40px;padding:0 16px!important}
+:root:not(#_ch) .subnav{background:none!important;border:0!important;box-shadow:none!important;padding:2px 0!important;gap:6px}:root:not(#_ch) .subnav .sub{border:1.5px solid var(--line2);border-radius:999px;background:transparent;color:var(--chink2)}:root:not(#_ch) .subnav .sub[aria-selected="true"]{border-color:var(--chink)}
