@@ -77,9 +77,9 @@ body{font-family:Archivo,"Noto Color Emoji",sans-serif}
 #pop{position:absolute;inset:0;z-index:8;opacity:0;overflow:hidden}
 #pop .bg{position:absolute;inset:0;background:var(--yel)}
 #pop .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 2px 2px,rgba(29,33,64,.12) 2px,transparent 2.8px) 0 0/18px 18px}
-#pop .giant{position:absolute;left:50%;top:50%;font:400 420px/1 Anton;color:transparent;-webkit-text-stroke:5px rgba(29,33,64,.18);white-space:nowrap}
+#pop .giant{position:absolute;left:50%;top:50%;font:400 170px/.95 Anton;text-align:center;color:transparent;-webkit-text-stroke:5px rgba(29,33,64,.3);white-space:nowrap}
 #pop .bb{position:absolute;left:50%;top:47%}
-#pop .big{background:var(--blue);color:#fff;font:800 46px/1.15 Archivo,"Noto Color Emoji";padding:22px 32px;border-radius:38px;border-bottom-right-radius:12px;white-space:nowrap;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink)}
+#pop .big{background:var(--blue);color:#fff;font:800 38px/1.15 Archivo,"Noto Color Emoji";padding:22px 32px;border-radius:38px;border-bottom-right-radius:12px;white-space:nowrap;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink)}
 #pop .rx{position:absolute;bottom:-30px;right:-6px;display:flex;gap:4px;background:#fff;border-radius:24px;padding:4px 10px;font:32px "Noto Color Emoji";border:3px solid var(--ink)}
 #pop .rx span{display:inline-block}
 .burst{position:absolute;left:50%;top:47%;font:50px "Noto Color Emoji";z-index:9;opacity:0}
@@ -110,7 +110,7 @@ body{font-family:Archivo,"Noto Color Emoji",sans-serif}
     <div id="inp"><span class="pl">+</span><div class="box">Message</div></div>
   </div>
   <div id="panels"></div>
-  <div id="pop"><div class="bg"></div><div class="giant">4-0</div><div class="bb"><div class="big">ok I'm 4-0 now 😤</div><div class="rx"><span>🔥</span><span>🏆</span><span>💯</span></div></div></div>
+  <div id="pop"><div class="bg"></div><div class="giant">CLUTCH<br>WIN</div><div class="bb"><div class="big">on a 6-win streak 😤</div><div class="rx"><span>🔥</span><span>🏆</span></div></div></div>
   <div id="bursts"></div>
   <div id="reveal">
     <div class="ttl"><div class="t"><span>Every</span> <span>answer.</span><br><span>One</span> <span>page.</span></div></div>
@@ -151,7 +151,7 @@ const FEAT = [
   {L: at(15), img: 'build2', k: 'Build',    t: 'Build me a team', d: 'Proven winning teams from your box.',          col: 'yel',  ann: {type: 'circle', cx: .34, cy: .935, w: .2, h: .085}},
 ];
 const M = [
-  {who: 'me',  t: at(0, 4),  text: 'lost 0-2 again 💀'},
+  {who: 'me',  t: at(0, 4),  text: 'lost again 💀'},
   {who: 'me',  t: at(1, 0),  text: 'my team is mid'},
   {who: 'jay', t: at(2, 0),  type: at(2, 0) - at(1, 8), text: 'run it through nastyplot'},
   {who: 'jay', t: at(2, 8),  link: 1},
@@ -262,14 +262,14 @@ function makePanel(f, i) {
 }
 function flash(t, peak = .85) { anim($('#flash'), [{opacity: 0}, {opacity: peak, offset: .08}, {opacity: 0}], t, 0.45, 'linear'); }
 function outro() {
-  // 4-0 on the second drop
+  // the win streak on the second drop
   const pop = $('#pop'), bb = pop.querySelector('.bb'), giant = pop.querySelector('.giant');
   anim(pop, [{opacity: 0}, {opacity: 1}], T_POP - 0.02, 0.04, 'linear');
   anim(bb, [{transform: 'translate(-50%,-50%) scale(.2) rotate(-8deg)'}, {transform: 'translate(-50%,-50%) scale(1) rotate(-3deg)'}], T_POP, 0.4, SLAM);
   anim(giant, [{transform: 'translate(-50%,-50%) scale(1.6)', opacity: 0}, {transform: 'translate(-50%,-50%) scale(1)', opacity: 1}], T_POP, 0.5);
   pulses(bb, T_POP + 0.4, T_REVEAL, 0.05);
   const rx = pop.querySelector('.rx'); anim(rx, [{opacity: 0}, {opacity: 1}], T_POP + 2 * S16, 0.05);
-  rx.querySelectorAll('span').forEach((s, k) => anim(s, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], at(17, [4, 7, 12][k]), 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
+  rx.querySelectorAll('span').forEach((s, k) => anim(s, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], at(17, [4, 7][k]), 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
   let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
   const E = ['🔥', '🏆', '💯', '😤', '⚡', '🔥', '🏆', '✨'];
   [at(17, 0), at(17, 4), at(17, 12)].forEach((tb, wave) => { for (let i = 0; i < 8; i++) { const b = el('div', 'burst', E[(i + wave) % E.length]); $('#bursts').append(b);
