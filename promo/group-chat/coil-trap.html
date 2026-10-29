@@ -63,6 +63,17 @@ body{font-family:Archivo,"Noto Color Emoji",sans-serif}
 .panel .d{display:inline-block;font:700 23px/1.3 Archivo;color:#fff;margin-top:14px;background:var(--ink);padding:10px 16px;border-radius:12px}
 /* ---- outro ---- */
 #flash{position:absolute;inset:0;background:#fff;z-index:30;opacity:0}
+#recap{position:absolute;inset:0;z-index:10;pointer-events:none}
+#recap .rs{position:absolute;inset:0;opacity:0;overflow:hidden}
+#recap .rs .bg{position:absolute;inset:-20px;background:var(--blue)}
+#recap .rs.red .bg{background:var(--red)}#recap .rs.yel .bg{background:var(--yel)}#recap .rs.ink .bg{background:var(--ink)}
+#recap .rs .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 2px 2px,rgba(255,255,255,.16) 2px,transparent 2.8px) 0 0/18px 18px}
+#recap .cd{position:absolute;left:50%;top:42%;width:430px}
+#recap .cd .in{border-radius:22px;overflow:hidden;border:4px solid var(--ink);background:var(--card);box-shadow:10px 10px 0 var(--ink)}
+#recap .cd img{display:block;width:100%;max-height:540px;object-fit:cover;object-position:top}
+#recap .tt{position:absolute;left:0;right:0;bottom:96px;text-align:center;font:400 72px/1 Anton;color:#fff;text-transform:uppercase;text-shadow:5px 5px 0 var(--ink)}
+#recap .rs.yel .tt{color:var(--ink);text-shadow:5px 5px 0 var(--red)}
+#recap .big{position:absolute;left:50%;top:50%;font:400 150px/1 Anton;color:var(--yel);text-transform:uppercase;white-space:nowrap;text-shadow:7px 7px 0 var(--red)}
 #pop{position:absolute;inset:0;z-index:8;opacity:0;overflow:hidden}
 #pop .bg{position:absolute;inset:0;background:var(--yel)}
 #pop .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 2px 2px,rgba(29,33,64,.12) 2px,transparent 2.8px) 0 0/18px 18px}
@@ -113,42 +124,54 @@ body{font-family:Archivo,"Noto Color Emoji",sans-serif}
 <script>
 // ===== Music grid: why_u_hate_me. Bars are 3.0 s (16 sixteenths of 0.1875 s), starting at 0.
 // Kicks land on sixteenths 0, 3 and 10 of every bar in the drops. Drop 1 = bar 8 (24 s), break = bar 16, drop 2 = bar 17 (51 s).
-// Coil Trap remix: 75 BPM, bars of 3.2 s from 2.55 s. Snare on sixteenths 0 and 8, kick on 4 and 10.
-// Beat in at bar 8 (28.15 s), quieter bars 12–15, the big section from bar 16 (53.75 s).
-const D0 = 2.55, BAR = 3.2, S16 = BAR / 16, BEAT = BAR / 4;
+// Coil Trap remix: 75 BPM, bars of 3.2 s with the first downbeat at 0.15 s (measured: kick on sixteenths 0 and 7,
+// snare on 4 and 12). No drums in bars 0–8; the beat comes in on bar 9 (28.95 s); bars 13–16 are quieter; the big
+// section starts on bar 17 (54.55 s).
+const D0 = 0.15, BAR = 3.2, S16 = BAR / 16, BEAT = BAR / 4;
 const at = (bar, s16 = 0) => D0 + bar * BAR + s16 * S16;
-const KICK = [0, 4, 8, 10];
-const inDrop = t => (t >= at(8) && t < at(12)) || t >= at(16);
+const KICK = [0, 4, 7, 12];
+// Melody notes (measured from the track's harmonic part above the bass: [time, strength]). The lead runs in triplets
+// (12 notes a bar, a little behind the drum grid), so in the bars without drums everything lands on these notes instead.
+const MEL = [[0.151, 0.63], [0.319, 0.48], [0.464, 0.52], [0.604, 0.52], [0.766, 0.64], [0.877, 0.5], [1.057, 0.52], [1.167, 0.58], [1.567, 0.65], [1.683, 0.52], [1.956, 0.51], [2.363, 0.55], [3.007, 0.48], [3.158, 0.56], [3.402, 0.58], [3.576, 0.83], [3.762, 0.61], [3.901, 0.59], [4.034, 0.55], [4.162, 0.6], [4.307, 0.6], [4.418, 0.71], [4.69, 0.63], [4.818, 0.62], [4.957, 0.77], [5.143, 0.56], [5.224, 0.64], [5.358, 0.66], [5.497, 0.69], [5.637, 0.66], [5.753, 0.6], [5.892, 0.59], [6.02, 0.61], [6.159, 0.57], [6.293, 0.67], [6.49, 0.71], [6.786, 0.61], [6.873, 0.59], [7.03, 0.81], [7.308, 0.7], [7.564, 0.87], [7.674, 0.53], [7.831, 0.66], [8.092, 0.69], [8.33, 0.58], [8.423, 0.58], [8.644, 0.69], [8.76, 0.56], [8.841, 0.56], [8.916, 0.64], [9.033, 0.6], [9.178, 0.64], [9.433, 0.8], [9.567, 0.52], [9.694, 0.59], [9.781, 0.58], [9.979, 0.69], [10.165, 0.68], [10.298, 0.63], [10.437, 0.57], [10.559, 0.64], [10.71, 0.6], [10.82, 0.66], [10.971, 0.6], [11.093, 0.7], [11.227, 0.64], [11.366, 0.8], [11.54, 0.57], [11.622, 0.68], [11.761, 0.64], [11.894, 0.68], [12.034, 0.61], [12.156, 0.58], [12.289, 0.58], [12.434, 0.68], [12.614, 0.58], [12.696, 0.73], [12.771, 0.57], [12.904, 0.84], [13.177, 0.74], [13.276, 0.56], [13.439, 0.72], [13.566, 0.53], [13.706, 0.62], [13.973, 0.66], [14.24, 0.77], [14.512, 0.63], [14.733, 0.64], [14.826, 0.61], [14.93, 0.56], [15.041, 0.76], [15.314, 0.7], [15.494, 0.53], [15.581, 0.57], [15.842, 0.68], [15.97, 0.54], [16.109, 0.64], [16.353, 0.69], [16.434, 0.6], [16.649, 0.71], [16.765, 0.51], [16.91, 0.7], [17.183, 0.64], [17.438, 0.72], [17.566, 0.51], [17.711, 0.78], [17.978, 0.71], [18.129, 0.56], [18.251, 0.69], [18.396, 0.53], [18.506, 0.69], [18.773, 0.67], [19.04, 0.72], [19.313, 0.72], [19.569, 0.75], [19.847, 0.72], [20.021, 0.5], [20.114, 0.65], [20.37, 0.64], [20.643, 0.73], [20.91, 0.6], [21.026, 0.61], [21.153, 0.59], [21.24, 0.63], [21.444, 0.7], [21.711, 0.63], [21.972, 0.61], [22.047, 0.64], [22.239, 0.7], [22.367, 0.55], [22.5, 0.62], [22.738, 0.61], [22.819, 0.59], [22.941, 0.54], [23.04, 0.65], [23.162, 0.56], [23.272, 0.6], [23.574, 0.62], [23.673, 0.56], [23.835, 0.59], [23.969, 0.55], [24.097, 0.57], [24.178, 0.55], [24.381, 0.58], [24.543, 0.52], [24.642, 0.7], [24.758, 0.6], [25.049, 0.53], [25.17, 0.68], [25.496, 0.68], [25.977, 0.67], [26.192, 0.67], [26.291, 0.77], [26.366, 0.6], [26.569, 0.68], [26.773, 0.71], [27.092, 0.78], [27.307, 0.84], [27.568, 0.85], [27.899, 0.79], [28.154, 0.81], [28.381, 0.8], [28.555, 0.84], [28.81, 0.86], [29.054, 0.87], [29.153, 0.85], [29.251, 0.88], [29.362, 0.88], [29.46, 0.89], [29.582, 0.83], [29.896, 0.81], [30.169, 0.63], [30.296, 0.65], [30.418, 0.72], [30.557, 0.73], [30.697, 0.7], [30.819, 0.85], [31.016, 0.65], [31.092, 0.81], [31.237, 0.72], [31.417, 0.58], [31.492, 0.69], [31.62, 0.66], [31.817, 0.62], [31.893, 0.78], [32.044, 0.62], [32.218, 0.81], [32.38, 0.68], [32.473, 0.59], [32.636, 0.69], [32.81, 0.56], [32.903, 0.54], [33.059, 0.59], [33.176, 0.79], [33.28, 0.51], [33.443, 0.81], [33.617, 0.66], [33.71, 0.73], [33.802, 0.61], [34.023, 0.85], [34.244, 0.94], [34.377, 0.56], [34.47, 0.66], [34.673, 0.62], [34.778, 0.69], [35.039, 0.84], [35.161, 0.61], [35.445, 0.64], [35.573, 0.73], [35.817, 0.67], [35.898, 0.63], [36.037, 0.65], [36.293, 0.71], [36.426, 0.75], [36.699, 0.61], [36.827, 0.71], [36.966, 0.73], [37.1, 0.61], [37.222, 0.89], [37.396, 0.61], [37.494, 0.67], [37.645, 0.76], [37.82, 0.57], [37.97, 0.68], [38.214, 0.58], [38.296, 0.69], [38.435, 0.55], [38.615, 0.68], [38.772, 0.67], [38.847, 0.59], [39.091, 0.7], [39.166, 0.7], [39.265, 0.57], [39.451, 0.57], [39.573, 0.84], [39.683, 0.53], [39.845, 0.7], [40.02, 0.66], [40.107, 0.7], [40.2, 0.68], [40.426, 0.81], [40.647, 0.85], [40.89, 0.68], [41.059, 0.58], [41.175, 0.81], [41.442, 0.84], [41.703, 0.76], [41.953, 0.89], [42.063, 0.88], [42.22, 0.91], [42.382, 0.75], [42.487, 0.85], [42.765, 0.68], [43.015, 0.72], [43.09, 0.65], [43.166, 0.63], [43.311, 0.86], [43.561, 0.74], [43.654, 0.63], [43.729, 0.57], [43.839, 0.62], [44.1, 0.78], [44.373, 0.63], [44.635, 0.68], [44.768, 0.66], [44.902, 0.88], [44.983, 0.58], [45.174, 0.68], [45.488, 0.61], [45.708, 0.61], [45.97, 0.63], [46.248, 0.64], [46.364, 0.55], [46.51, 0.86], [46.777, 0.66], [47.084, 0.59], [47.241, 0.56], [47.316, 0.67], [47.572, 0.75], [47.839, 0.76], [47.932, 0.51], [48.106, 0.65], [48.373, 0.84], [48.64, 0.76], [48.901, 0.79], [49.168, 0.8], [49.441, 0.88], [49.714, 0.71], [49.975, 0.98], [50.202, 0.83], [50.294, 0.65], [50.509, 0.62], [50.602, 0.57], [50.776, 0.92], [50.852, 0.57], [51.043, 0.99], [51.31, 0.84], [51.409, 0.7], [51.577, 0.95], [51.722, 0.71], [51.844, 1.02], [52.065, 1.01], [52.164, 0.87], [52.367, 1.02], [52.483, 0.7], [52.564, 0.78], [52.64, 1.19], [52.889, 1.11], [52.971, 0.83], [53.168, 0.73], [53.336, 0.71], [53.429, 1.03], [53.563, 0.77], [53.638, 0.77], [53.876, 0.83], [53.969, 0.93], [54.184, 0.99], [54.3, 1.07], [54.439, 0.95], [54.561, 0.99], [54.642, 0.95], [54.787, 0.87], [55.06, 0.9], [55.171, 1.01], [55.467, 0.78], [55.56, 0.78], [55.687, 0.74], [55.879, 0.84]];
+const inMelody = t => t < at(9) - .05 || (t >= at(13) - .05 && t < at(17) - .05);
+// the nearest strong melody note to t (within win), or t itself in the drum bars
+function snap(t, win = .22, thr = .55) { if (!inMelody(t)) return t; let best = null;
+  for (const [x, v] of MEL) { if (v < thr || Math.abs(x - t) > win) continue; if (best == null || Math.abs(x - t) < Math.abs(best - t)) best = x; } return best ?? t; }
+// the next n strong notes after t, at least gap apart
+function notesAfter(t, n, gap = .26, thr = .6) { const out = []; let last = -9;
+  for (const [x, v] of MEL) { if (x < t + .2 || v < thr || x - last < gap) continue; out.push(x); last = x; if (out.length >= n) break; } return out; }
+const inDrop = t => (t >= at(9) && t < at(13)) || t >= at(17);
 // ===== Script. Each feature: chat lands in the 3 beats before its downbeat; the panel slams on the downbeat and holds 5 beats.
 const FEAT = [
-  {L: at(4),  img: 'grade',  k: 'My team',  t: 'Team grade',      d: 'A grade for your six, and how ready it is.', col: 'blue', ann: {type: 'circle', cx: .12, cy: .55, w: .26, h: .2}},
-  {L: at(6),  img: 'fixit',  k: 'My team',  t: 'Fix it',          d: 'What to change, best first. And why.',        col: 'red',  ann: {type: 'circle', cx: .455, cy: .748, w: .3, h: .13}},
-  {L: at(8),  img: 'calc',   k: 'Battle',   t: 'Damage calc',     d: 'Real level-50 doubles damage.',               col: 'yel',  ann: {type: 'circle', cx: .505, cy: .1, w: .47, h: .17}},
-  {L: at(10), img: 'battle', k: 'Battle',   t: 'Battle mode',     d: 'Their six in. Your four and leads out.',      col: 'blue', ann: {type: 'under', x0: .06, x1: .5, y: .43}},
-  {L: at(12), img: 'rate',   k: 'Meta',     t: 'Ratings',         d: 'Every Pokémon rated 0–100 from real results.', col: 'red',  ann: {type: 'circle', cx: .135, cy: .2, w: .24, h: .15}},
-  {L: at(14), img: 'build2', k: 'Build',    t: 'Build me a team', d: 'Proven winning teams from your box.',          col: 'yel',  ann: {type: 'circle', cx: .34, cy: .935, w: .2, h: .085}},
+  {L: at(5),  img: 'grade',  k: 'My team',  t: 'Team grade',      d: 'A grade for your six, and how ready it is.', col: 'blue', ann: {type: 'circle', cx: .12, cy: .55, w: .26, h: .2}},
+  {L: at(7),  img: 'fixit',  k: 'My team',  t: 'Fix it',          d: 'What to change, best first. And why.',        col: 'red',  ann: {type: 'circle', cx: .455, cy: .748, w: .3, h: .13}},
+  {L: at(9),  img: 'calc',   k: 'Battle',   t: 'Damage calc',     d: 'Real level-50 doubles damage.',               col: 'yel',  ann: {type: 'circle', cx: .505, cy: .1, w: .47, h: .17}},
+  {L: at(11), img: 'battle', k: 'Battle',   t: 'Battle mode',     d: 'Their six in. Your four and leads out.',      col: 'blue', ann: {type: 'under', x0: .06, x1: .5, y: .43}},
+  {L: at(13), img: 'rate',   k: 'Meta',     t: 'Ratings',         d: 'Every Pokémon rated 0–100 from real results.', col: 'red',  ann: {type: 'circle', cx: .135, cy: .2, w: .24, h: .15}},
+  {L: at(15), img: 'build2', k: 'Build',    t: 'Build me a team', d: 'Proven winning teams from your box.',          col: 'yel',  ann: {type: 'circle', cx: .34, cy: .935, w: .2, h: .085}},
 ];
 const M = [
   {who: 'me',  t: at(0, 4),  text: 'lost 0-2 again 💀'},
-  {who: 'me',  t: at(0, 12), text: 'my team is mid'},
-  {who: 'jay', t: at(1, 8),  type: at(1, 8) - at(1, 0), text: 'run it through nastyplot'},
-  {who: 'jay', t: at(2, 0),  link: 1},
-  {who: 'me',  t: at(3, 0),  text: 'ok it says my team’s a B 😬'},
-  {who: 'me',  t: at(3, 8),  img: 'grade'},
-  {who: 'jay', t: at(5, 8),  type: BEAT, text: 'B is fine. hit Fix it 👇'},
-  {who: 'jay', t: at(5, 12), img: 'fixit'},
-  {who: 'me',  t: at(7, 4),  text: 'does zard heat wave KO rilla?'},
-  {who: 'mo',  t: at(7, 12), type: BEAT, img: 'calc'},
-  {who: 'me',  t: at(9, 4),  text: 'what do I bring vs grassy terrain?'},
-  {who: 'jay', t: at(9, 12), type: BEAT, img: 'battle'},
-  {who: 'mo',  t: at(11, 8), type: BEAT, text: 'here’s what’s actually good rn'},
-  {who: 'mo',  t: at(11, 12), img: 'rate'},
-  {who: 'mo',  t: at(13, 8), type: BEAT, text: 'or just let it build you one'},
-  {who: 'mo',  t: at(13, 12), img: 'build2'},
-  {who: 'me',  t: at(15, 6), text: 'ok queueing 🫡'},
-  {chip: '2 hours later',    t: at(15, 12)},
+  {who: 'me',  t: at(1, 0),  text: 'my team is mid'},
+  {who: 'jay', t: at(2, 0),  type: at(2, 0) - at(1, 8), text: 'run it through nastyplot'},
+  {who: 'jay', t: at(2, 8),  link: 1},
+  {who: 'me',  t: at(3, 8),  text: 'ok it says my team’s a B 😬'},
+  {who: 'me',  t: at(4, 4),  img: 'grade'},
+  {who: 'jay', t: at(6, 8),  type: BEAT, text: 'B is fine. hit Fix it 👇'},
+  {who: 'jay', t: at(6, 12), img: 'fixit'},
+  {who: 'me',  t: at(8, 4),  text: 'does zard heat wave KO rilla?'},
+  {who: 'mo',  t: at(8, 12), type: BEAT, img: 'calc'},
+  {who: 'me',  t: at(10, 4), text: 'what do I bring vs grassy terrain?'},
+  {who: 'jay', t: at(10, 12), type: BEAT, img: 'battle'},
+  {who: 'mo',  t: at(12, 7), type: BEAT, text: 'here’s what’s actually good rn'},
+  {who: 'mo',  t: at(12, 12), img: 'rate'},
+  {who: 'mo',  t: at(14, 8), type: BEAT, text: 'or just let it build you one'},
+  {who: 'mo',  t: at(14, 12), img: 'build2'},
+  {who: 'me',  t: at(16, 4), text: 'ok queueing 🫡'},
+  {chip: '2 hours later',    t: at(16, 12)},
 ];
-const T_POP = at(16), T_REVEAL = at(17), T_END = at(19), T_TOTAL = at(21);
+const T_POP = at(17), T_REVEAL = at(18), T_RECAP = at(20), T_END = at(22), T_TOTAL = at(25) + .8;
+M.forEach(m => { m.t = snap(m.t); }); FEAT.forEach(f => { f.L = snap(f.L, .3); });
 window.T_TOTAL = T_TOTAL;
 // ===== engine
 const $ = s => document.querySelector(s), el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
@@ -156,9 +179,10 @@ const ANIMS = [];
 function anim(node, frames, start, dur, easing = 'cubic-bezier(.2,.8,.2,1)') { const a = node.animate(frames, {delay: start * 1000, duration: Math.max(1, dur * 1000), fill: 'both', easing}); a.pause(); ANIMS.push(a); return a; }
 const SLAM = 'cubic-bezier(.2,1.6,.4,1)';
 // kick-driven pulses on the `scale` property between t0 and t1
+function melPulses(node, t0, t1, amp, thr = .75) { for (const [x, v] of MEL) if (x >= t0 && x < t1 && v >= thr) anim(node, [{scale: `${1 + amp * v}`}, {scale: '1'}], x, .3, 'cubic-bezier(.1,.6,.3,1)'); }
 function pulses(node, t0, t1, amp = 0.035) {
-  for (let bar = Math.floor((t0 - D0) / BAR); at(bar) < t1; bar++) for (const k of KICK) { const t = at(bar, k); if (t < t0 - 1e-6 || t >= t1) continue;
-    const a = inDrop(t) ? amp : amp * 0.45; anim(node, [{scale: `${1 + a}`}, {scale: '1'}], t, 0.32, 'cubic-bezier(.1,.6,.3,1)'); } }
+  for (let bar = Math.floor((t0 - D0) / BAR); at(bar) < t1; bar++) for (const k of KICK) { const t = at(bar, k); if (t < t0 - 1e-6 || t >= t1 || t < at(9) - 1e-6) continue;
+    if (!inDrop(t)) continue; const a = amp * (k === 4 || k === 12 ? 1.2 : 0.85); anim(node, [{scale: `${1 + a}`}, {scale: '1'}], t, 0.32, 'cubic-bezier(.1,.6,.3,1)'); } }
 // ---- chat
 const list = $('#list'); let prevWho = null; const NAMES = {jay: 'Jay', mo: 'Mo'};
 M.forEach((m, i) => {
@@ -196,6 +220,8 @@ function buildChat() {
   });
   // the chat itself breathes on the kicks while it is on screen
   pulses($('#screen'), at(1), T_POP, 0.012);
+  melPulses($('#screen'), 0, at(9), .006, .8); melPulses($('#screen'), at(13), at(16), .006, .8);
+  for (const [x, v] of MEL) if (x >= at(16) && x < at(17) && v >= .7) { const k = (x - at(16)) / BAR; anim($('#screen'), [{scale: `${1 + .006 + .022 * k * k}`}, {scale: '1'}], x, .25, 'cubic-bezier(.1,.6,.3,1)'); }
 }
 // ---- feature panels
 function marker(ann, W, H) {
@@ -206,7 +232,7 @@ function marker(ann, W, H) {
   const {x0, x1, y} = ann; return `M${x0 * W} ${y * H} C${x0 * W + (x1 - x0) * W * .33} ${y * H + 5} ${x0 * W + (x1 - x0) * W * .66} ${y * H - 4} ${x1 * W} ${y * H + 2}`;
 }
 function makePanel(f, i) {
-  const t0 = f.L, t1 = f.L + 5 * BEAT;
+  const t0 = f.L, t1 = f.L + 5 * BEAT, mel = inMelody(t0), nw = f.t.split(' ').length, MT = mel ? notesAfter(t0, nw + 2) : null;
   const P = el('div', 'panel ' + f.col); P.style.setProperty('--pc', f.col === 'blue' ? 'var(--blue)' : f.col === 'red' ? 'var(--red)' : 'var(--yel)');
   const img = new Image(); img.src = `a/${f.img}.png`;
   const ar = f.ar, maxW = 476, maxH = 500, w = Math.min(maxW, maxH / ar), h = w * ar;
@@ -224,10 +250,10 @@ function makePanel(f, i) {
   anim(card, [{transform: 'translateY(260px) rotate(-6deg) scale(.7)', opacity: 0}, {transform: 'translateY(0) rotate(-1.2deg) scale(1)', opacity: 1}], t0, 0.42, SLAM);
   anim(num, [{transform: 'translateX(80px)', opacity: 0}, {transform: 'translateX(0)', opacity: 1}], t0, 0.6);
   anim(k, [{opacity: 0, transform: 'translateY(10px)'}, {opacity: 1, transform: 'translateY(0)'}], t0 + S16 * 1, 0.2);
-  [...P.querySelectorAll('.t span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], t0 + S16 * [4, 8, 10, 12][j], 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
-  anim(d, [{opacity: 0, transform: 'translateY(14px)'}, {opacity: 1, transform: 'translateY(0)'}], t0 + S16 * 10, 0.3);
-  anim(path, [{strokeDashoffset: 100}, {strokeDashoffset: 0}], t0 + S16 * 9, 0.45, 'cubic-bezier(.4,0,.2,1)');
-  pulses(card, t0 + 0.45, t1, 0.04);
+  [...P.querySelectorAll('.t span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], (mel ? MT[j] : t0 + S16 * [4, 7, 9, 12][j]), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
+  anim(d, [{opacity: 0, transform: 'translateY(14px)'}, {opacity: 1, transform: 'translateY(0)'}], mel ? MT[nw] : t0 + S16 * 10, 0.3);
+  anim(path, [{strokeDashoffset: 100}, {strokeDashoffset: 0}], mel ? MT[nw + 1] : t0 + S16 * 12, 0.45, 'cubic-bezier(.4,0,.2,1)');
+  if (mel) melPulses(card, t0 + .45, t1, .028); else pulses(card, t0 + 0.45, t1, 0.04);
   anim(card, [{translate: '0 0'}, {translate: '0 -10px'}], t0 + 0.4, t1 - t0 - 0.4, 'ease-in-out');
   // out: everything drops away on beat 5, the panel wipes off
   anim(card, [{transform: 'translateY(0) rotate(-1.2deg) scale(1)', opacity: 1}, {transform: 'translateY(-120px) rotate(4deg) scale(.85)', opacity: 0}], t1 - 0.05, 0.25, 'cubic-bezier(.6,0,.9,.5)');
@@ -243,10 +269,10 @@ function outro() {
   anim(giant, [{transform: 'translate(-50%,-50%) scale(1.6)', opacity: 0}, {transform: 'translate(-50%,-50%) scale(1)', opacity: 1}], T_POP, 0.5);
   pulses(bb, T_POP + 0.4, T_REVEAL, 0.05);
   const rx = pop.querySelector('.rx'); anim(rx, [{opacity: 0}, {opacity: 1}], T_POP + 2 * S16, 0.05);
-  rx.querySelectorAll('span').forEach((s, k) => anim(s, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], at(16, [4, 8, 10][k]), 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
+  rx.querySelectorAll('span').forEach((s, k) => anim(s, [{transform: 'scale(0)'}, {transform: 'scale(1)'}], at(17, [4, 7, 12][k]), 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
   let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
   const E = ['🔥', '🏆', '💯', '😤', '⚡', '🔥', '🏆', '✨'];
-  [at(16, 0), at(16, 4), at(16, 8)].forEach((tb, wave) => { for (let i = 0; i < 8; i++) { const b = el('div', 'burst', E[(i + wave) % E.length]); $('#bursts').append(b);
+  [at(17, 0), at(17, 4), at(17, 12)].forEach((tb, wave) => { for (let i = 0; i < 8; i++) { const b = el('div', 'burst', E[(i + wave) % E.length]); $('#bursts').append(b);
     const ang = rnd() * Math.PI * 2, dist = 200 + rnd() * 170, dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist - 30;
     anim(b, [{opacity: 0, transform: 'translate(-50%,-50%) scale(.4)'}, {opacity: 1, transform: 'translate(-50%,-50%) scale(.6)', offset: .03}, {opacity: 1, transform: `translate(calc(-50% + ${dx * .85}px),calc(-50% + ${dy * .85}px)) scale(1.15) rotate(${(rnd() - .5) * 70}deg)`, offset: .55}, {opacity: 0, transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy + 70}px)) scale(.9)`}], tb, 1.5, 'cubic-bezier(.1,.7,.3,1)'); } });
   // reveal on bar 18
@@ -254,19 +280,28 @@ function outro() {
   anim(R, [{opacity: 1, clipPath: 'circle(0% at 50% 47%)'}, {opacity: 1, clipPath: 'circle(80% at 50% 47%)'}], T_REVEAL, 0.35, 'cubic-bezier(.5,0,.3,1)');
   anim(R.querySelector('.ph'), [{transform: 'translateX(-50%) translateY(500px) rotate(8deg)'}, {transform: 'translateX(-50%) translateY(0) rotate(-2deg)'}], T_REVEAL + 0.1, 0.6, SLAM);
   anim(R.querySelector('.ph img'), [{transform: 'translateY(0)'}, {transform: 'translateY(-60px)'}], T_REVEAL + 0.8, 5, 'ease-in-out');
-  [...R.querySelectorAll('.ttl span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], at(17, [0, 4, 8, 10][j]), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
-  pulses(R.querySelector('.ph'), T_REVEAL + 0.7, T_END, 0.03);
-  [...R.querySelectorAll('.feats span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(.4)'}, {opacity: 1, transform: 'scale(1)'}], at(18, 0) + j * BEAT / 2, 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
-  // end card on bar 20
+  [...R.querySelectorAll('.ttl span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], at(18, [0, 4, 7, 12][j]), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
+  pulses(R.querySelector('.ph'), T_REVEAL + 0.7, T_RECAP, 0.03);
+  [...R.querySelectorAll('.feats span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(.4)'}, {opacity: 1, transform: 'scale(1)'}], at(19, [0, 4, 7, 9, 10, 12][j]), 0.25, 'cubic-bezier(.3,1.8,.5,1)'));
+  // recap on bars 20–21: the six tools, one per big drum hit, then FREE. / NO ADS.
+  const RC = el('div', '', ''); RC.id = 'recap'; $('#reveal').after(RC);
+  const RT = [at(20, 0), at(20, 4), at(20, 7), at(20, 12), at(21, 0), at(21, 4), at(21, 7), at(21, 12), T_END];
+  const cols = ['blue', 'red', 'yel', 'blue', 'red', 'yel'];
+  RT.slice(0, 8).forEach((t, i) => { const f = FEAT[i], sl = el('div', 'rs ' + (f ? cols[i] : 'ink')); RC.append(sl);
+    sl.innerHTML = f ? `<div class="bg"></div><div class="cd"><div class="in"><img src="a/${f.img}.png"></div></div><div class="tt">${f.t}</div>` : `<div class="bg"></div><div class="big">${i === 6 ? 'Free.' : 'No ads.'}</div>`;
+    anim(sl, [{opacity: 0}, {opacity: 1}], t - .02, .04, 'linear'); anim(sl, [{opacity: 1}, {opacity: 0}], RT[i + 1] - .02, .04, 'linear');
+    const c = sl.querySelector('.cd,.big'); anim(c, [{transform: `translate(-50%,-50%) scale(1.25) rotate(${i % 2 ? 3 : -3}deg)`}, {transform: `translate(-50%,-50%) scale(1) rotate(${i % 2 ? 1 : -1}deg)`}], t, .3, SLAM);
+    const tt = sl.querySelector('.tt'); if (tt) anim(tt, [{opacity: 0, transform: 'translateY(30px)'}, {opacity: 1, transform: 'translateY(0)'}], t + .05, .2); });
+  // end card on bar 22
   const En = $('#end');
   anim(En, [{opacity: 0}, {opacity: 1}], T_END - 0.02, 0.04, 'linear');
   anim(En.querySelector('img'), [{transform: 'scale(1.8) rotate(-6deg)', opacity: 0}, {transform: 'scale(1) rotate(0)', opacity: 1}], T_END, 0.35, SLAM);
-  [...En.querySelectorAll('.t span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], at(19, [4, 8, 10][j]), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
-  anim(En.querySelector('.d'), [{opacity: 0, transform: 'translateY(12px)'}, {opacity: 1, transform: 'translateY(0)'}], at(20, 0), 0.3);
-  anim(En.querySelector('.cs'), [{opacity: 0, transform: 'scale(.5)'}, {opacity: 1, transform: 'scale(1)'}], at(20, 8), 0.3, 'cubic-bezier(.3,1.8,.5,1)');
-  pulses(En.querySelector('img'), at(19, 1), T_TOTAL, 0.03);
-  anim($('#black'), [{opacity: 0}, {opacity: 1}], T_TOTAL - 0.9, 0.9, 'linear');
-  flash(at(8)); flash(T_POP); flash(T_REVEAL, .5); flash(T_END, .6);
+  [...En.querySelectorAll('.t span')].forEach((s, j) => anim(s, [{opacity: 0, transform: 'scale(2.2)'}, {opacity: 1, transform: 'scale(1)'}], at(22, [4, 7, 12][j]), 0.22, 'cubic-bezier(.3,1.3,.5,1)'));
+  anim(En.querySelector('.d'), [{opacity: 0, transform: 'translateY(12px)'}, {opacity: 1, transform: 'translateY(0)'}], at(23, 0), 0.3);
+  anim(En.querySelector('.cs'), [{opacity: 0, transform: 'scale(.5)'}, {opacity: 1, transform: 'scale(1)'}], at(23, 4), 0.3, 'cubic-bezier(.3,1.8,.5,1)');
+  pulses(En.querySelector('img'), at(22, 1), at(25), 0.03);
+  anim($('#black'), [{opacity: 0}, {opacity: 1}], at(25), .8, 'linear');
+  flash(at(9)); flash(T_POP); flash(T_REVEAL, .5); flash(T_RECAP, .4); flash(T_END, .6);
 }
 // seek: for each element+property set, only the latest started animation fills
 let GROUPS = null;
