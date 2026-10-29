@@ -103,7 +103,8 @@ function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms
   // partly there (Trick Room with too few slow attackers, priority instead of speed control…) shows as ~ and doesn't count as passed
   const cnt=out.filter(x=>!x.skip);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
 const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
-function teamRating(slots){const ms=slots.map(memberOf).filter(Boolean);return {ms,a:analyze(ms,true)}}
+// same item assignment as the open team (members()), so a saved team shows the same checks as when it's open
+function teamRating(slots){const m0=slots.map(memberOf).filter(Boolean),ms=typeof assignItems==='function'?assignItems(m0):m0;return {ms,a:analyze(ms,true)}}
 // toast(text, true) adds an Undo button (and stays up longer) for changes that replace team members
 function toast(t,undo){const el=$('toast');el.innerHTML=esc(t)+(undo&&ui.undo?' <button type="button" class="tundo" id="toastUndo">Undo</button>':'');el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,undo?6000:2200)}
 // remember the team before a change, so Undo can put it back
