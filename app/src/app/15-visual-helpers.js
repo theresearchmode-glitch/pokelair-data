@@ -14,8 +14,12 @@ const ARCH_COLOR = {'Rain': '#2f7bff', 'Sun': '#ff7a1a', 'Sun-Rain': 'linear-gra
   'Tailwind': '#2fd0bd', 'Trick Room': '#9a64ff', 'Hard Trick Room': '#7a3dff', 'TailRoom': 'linear-gradient(90deg,#2fd0bd,#9a64ff)', 'Perish Trap': '#5b3fa8',
   'Balance': '#6f7a8f', 'Balance (Fake Out pressure)': '#6f7a8f', 'Offense': '#e2475b', 'Rocks + offense': '#a0765a'};
 const ARCH_DARK_TEXT = new Set(['Sun', 'Sand', 'Snow', 'Electric Terrain', 'Tailwind', 'Misty Terrain']);
-function archChips(label) { return String(label || '').split(' · ').filter(Boolean).map(x => { const c = ARCH_COLOR[x] || (x.includes('-') ? 'linear-gradient(90deg,#6f7a8f,#9aa3b5)' : '#6f7a8f');
-  return `<span class="archchip${ARCH_DARK_TEXT.has(x) ? ' dk' : ''}" style="--ac:${c}">${esc(x)}</span>`; }).join(''); }
+// Two-style tags (Sun-Snow, TailRoom) are a gradient of their two colours; --ac stays a solid colour so the chip is never
+// see-through when the shared darkening layer replaces the background image (Oct 29: those chips were white on pale grey)
+function archChips(label) { return String(label || '').split(' · ').filter(Boolean).map(x => { let c = ARCH_COLOR[x];
+    if (!c && x.includes('-')) { const parts = x.split('-').map(y => ARCH_COLOR[y] || ARCH_COLOR[y.charAt(0).toUpperCase() + y.slice(1).toLowerCase()]).filter(y => y && !y.startsWith('linear')); if (parts.length === 2) c = `linear-gradient(90deg,${parts[0]},${parts[1]})`; }
+    c = c || '#6f7a8f'; const g = c.startsWith('linear'), solid = g ? (c.match(/#[0-9a-f]{6}/i) || ['#6f7a8f'])[0] : c;
+    return `<span class="archchip${ARCH_DARK_TEXT.has(x) ? ' dk' : ''}${g ? ' grad' : ''}" style="--ac:${solid}${g ? `;--acg:${c}` : ''}">${esc(x)}</span>`; }).join(''); }
 
 
 // a team's six as a compact grid (3 across on phones, 6 on wide screens): sprite + name, small Mega mark

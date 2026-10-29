@@ -125,3 +125,6 @@
   #dcOut .tablewrap:has(.dctab){background:transparent;border:0;box-shadow:none;overflow:visible}
 }
 @media (max-width:480px){#dcOut .dc2:has(#dcAIt,#dcDIt,#dcAAb,#dcDAb){grid-template-columns:1fr}}
+/* two-style archetype tags keep their gradient under the shared darkening layer */
+:root:not(#_ch) .archchip{background-color:var(--ac)}
+:root:not(#_ch) .archchip.grad{background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22)),var(--acg)!important}

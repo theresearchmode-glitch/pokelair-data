@@ -456,8 +456,8 @@ h2::before{background:linear-gradient(135deg,var(--navy),var(--accent))}
 .vcard,.gpcard,.princ,.addcard,.plan,.prob-row,.setcard,.abcol{transition:box-shadow .18s}
 /* meta medals */
 .mrow.medal .rk{font-size:20px}
-.mrow.m1 .rk{color:#d9970b}.mrow.m2 .rk{color:#8f9ab0}.mrow.m3 .rk{color:#b8743a}
-.mrow.m1{border-left:4px solid #f4a62a}.mrow.m2{border-left:4px solid #b9c2d3}.mrow.m3{border-left:4px solid #d08b4c}
+.mrow.md1 .rk{color:#d9970b}.mrow.md2 .rk{color:#8f9ab0}.mrow.md3 .rk{color:#b8743a}
+.mrow.md1{border-left:4px solid #f4a62a}.mrow.md2{border-left:4px solid #b9c2d3}.mrow.md3{border-left:4px solid #d08b4c}
 /* build-for-me hero matches the stadium */
 .abhero{background:radial-gradient(ellipse 70% 140% at 85% 120%,color-mix(in srgb,var(--glow) 35%,transparent),transparent 60%),linear-gradient(160deg,var(--sky1),var(--sky2))}
 /* toast slides in */
@@ -1915,8 +1915,8 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .tabs .tc,.sidenav .tc{opacity:1;color:var(--mute)}
 .jumpbtn kbd{color:var(--mute)}
 .stat h4,.vtx .k,.lbl,.qlbl,.none,.swap .out,.mrow .rk,.htk span:first-child{color:var(--mute)}
-.mrow.m1 .rk{color:#a86f00}.mrow.m2 .rk{color:#66718a}.mrow.m3 .rk{color:#97571f}
-:root[data-look="dark"] .mrow.m1 .rk{color:#f4b544}:root[data-look="dark"] .mrow.m2 .rk{color:#b9c2d3}:root[data-look="dark"] .mrow.m3 .rk{color:#e09a5c}
+.mrow.md1 .rk{color:#a86f00}.mrow.md2 .rk{color:#66718a}.mrow.md3 .rk{color:#97571f}
+:root[data-look="dark"] .mrow.md1 .rk{color:#f4b544}:root[data-look="dark"] .mrow.md2 .rk{color:#b9c2d3}:root[data-look="dark"] .mrow.md3 .rk{color:#e09a5c}
 .sev{font-size:10px}.ty:not(.lt),.archchip,.ltl{background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22))!important}
 .tabs button[aria-selected="true"] .tc,.sidenav button[aria-selected="true"] .tc{color:inherit}
 :root[data-look="dark"] .sev.hi{color:#2a0508}
