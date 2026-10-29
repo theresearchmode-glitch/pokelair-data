@@ -803,3 +803,4 @@ details.chsec>summary{list-style:none}details.chsec>summary::-webkit-details-mar
 /* condition rows in the calc and speed tiers: no panel behind them either */
 :root:not(#_ch) #dmgcalc .dcconds,:root:not(#_ch) #dmgcalc .dcrow,:root:not(#_ch) #spdCtl{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 :root:not(#_ch) #dmgcalc .dcfield{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;display:flex;flex-direction:column;gap:10px}
+details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marker{display:none}

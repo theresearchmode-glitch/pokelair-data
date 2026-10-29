@@ -52,8 +52,11 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
   return `<div class="chtl10">${top.map((r, i) => { const p = byName.get(r.t.n); return `<button type="button" class="chtr l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="rk">${i + 1}</span>${sprite(p) || ''}<span class="tx"><b>${esc(r.t.d)}</b><span class="st ${lv[r.level]}">${CH.LV[r.level]}</span></span></button>`; }).join('')}</div>
     ${rest.length ? `<div class="chk chtk">The next ${rest.length}, worst first</div><div class="chtiles chsm" role="group" aria-label="The next ${rest.length} threats">${rest.map(r => { const p = byName.get(r.t.n); return `<button type="button" class="chtile l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${sprite(p) || `<span class="chk">${esc(r.t.d.slice(0, 3))}</span>`}</button>`; }).join('')}</div>` : ''}`; };
 // suggestions on the report: the top fix plans, one tap to apply (same plans as Build › Swaps)
-CH.sugs = () => { const L = ui.planList || [], base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null, top = L.slice(0, 3); if (!top.length) return '';
-  return `<section class="chsugs" aria-label="Suggestions">
+CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
+  // nothing makes the team readier: show the side-grades (different picks that keep every check) instead of a dead end
+  if (!L.length && ui.plans && Array.isArray(ui.plans.more) && ui.plans.more.length) { L = ui.planList = ui.plans.more.slice(0, 3); side = true; }
+  const top = L.slice(0, 3); if (!top.length) return '';
+  return `<section class="chsugs" aria-label="Suggestions">${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}
     ${top.map((pl, k) => { if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } } const d = pl._ts != null && base != null ? pl._ts - base : null;
       const pics = pl.ch.map(x => `${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span>`).join('');
       const words = pl.ch.map(x => `<b>${esc(x.c.p.d)}</b>${x.out ? ` <span class="for">for ${esc(x.out.d)}</span>` : ' <span class="for">added</span>'}`).join('<br>');
