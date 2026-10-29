@@ -80,9 +80,9 @@
 
 <nav class="tabs gut" aria-label="Pages"><div class="inner" role="tablist">
   <button type="button" role="tab" data-view="home" aria-selected="false">Home</button>
-  <button type="button" role="tab" data-view="report" aria-selected="false">Team<span class="tc"></span></button>
   <button type="button" role="tab" data-view="auto" aria-selected="false">Build</button>
-  <button type="button" role="tab" data-view="matchup" aria-selected="false">Matchup</button>
+  <button type="button" role="tab" data-view="report" aria-selected="false">My team<span class="tc"></span></button>
+  <button type="button" role="tab" data-view="matchup" aria-selected="false">Battle</button>
   <button type="button" role="tab" data-view="ratings" aria-selected="false">Meta</button>
   <div class="themeseg tabtheme" role="group" aria-label="Light or dark">
     <button type="button" data-thm="auto" aria-pressed="true" title="Match my device"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg><span class="sr">Auto</span></button>
@@ -273,7 +273,7 @@
 </div>
 
 <div class="view" data-pane="ratings" hidden>
-  <section id="lair">
+  <section id="lair"><div class="seg teamsw" role="group" aria-label="Pokémon by"><button type="button" data-view="ratings" aria-pressed="true">Rating</button><button type="button" data-view="meta" aria-pressed="false">Usage</button><button type="button" data-view="sets" aria-pressed="false">Sets</button></div>
     <div class="head"><div><h2>NastyPlot ratings <button type="button" class="tipq" data-tip="rating" aria-label="What is the NastyPlot rating?">?</button></h2><p class="hint">Every Pokémon legal in Regulation M-C, scored 0–100 from real results across several sources. Tap any Pokémon for the full breakdown.</p><p class="t2" id="ratingTrack"></p></div></div>
     <div class="lhero" id="lairHero"></div>
     <div class="lctl">
@@ -289,7 +289,7 @@
 <div class="lsheet" id="lairSheet" hidden></div>
 
 <div class="view" data-pane="meta" hidden>
-  <section id="meta">
+  <section id="meta"><div class="seg teamsw" role="group" aria-label="Pokémon by"><button type="button" data-view="ratings" aria-pressed="false">Rating</button><button type="button" data-view="meta" aria-pressed="true">Usage</button><button type="button" data-view="sets" aria-pressed="false">Sets</button></div>
     <div class="head"><div><h2 id="metaTitle">Meta</h2><p class="hint" id="metaSource">Plotting… loading the latest data.</p></div>
       <button class="btn refreshbtn" id="refreshBtn" type="button" title="Refreshes rankings, sets, top teams and the rating sources together">Refresh now</button></div>
     <div class="seg" role="group" aria-label="Data source" id="srcSeg">
@@ -328,7 +328,7 @@
 </div>
 
 <div class="view" data-pane="sets" hidden>
-  <section id="sets">
+  <section id="sets"><div class="seg teamsw" role="group" aria-label="Pokémon by"><button type="button" data-view="ratings" aria-pressed="false">Rating</button><button type="button" data-view="meta" aria-pressed="false">Usage</button><button type="button" data-view="sets" aria-pressed="true">Sets</button></div>
     <div class="head"><div><h2>Popular sets</h2><p class="hint">What players run on any Pokémon.</p></div>
       <button class="btn refreshbtn" id="refreshBtn3" type="button" title="Refreshes rankings, sets, top teams and the rating sources together">Refresh now</button></div>
     <div class="row"><div class="cb" style="max-width:320px"><input class="field" id="setMonIn" placeholder="Look up a Pokémon" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Look up a Pokémon's popular sets"></div></div>
@@ -381,9 +381,9 @@
 </div>
 <nav class="bnav" aria-label="Main pages">
   <button type="button" data-view="home" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M6 9.6V20h12V9.6"/><path d="M10 20v-5.5h4V20"/></svg><span>Home</span></button>
-  <button type="button" data-view="report" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5l-8.2-4.7V7.2z"/><path d="M12 7.5v9M7.5 12h9"/></svg><span>Team</span></button>
   <button type="button" data-view="auto" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg><span>Build</span></button>
-  <button type="button" data-view="matchup" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M4 4h4M4 4v4M20 4l-9 9M20 4h-4M20 4v4M8.5 15.5l-4 4M15.5 15.5l4 4"/></svg><span>Matchup</span></button>
+  <button type="button" data-view="report" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5l-8.2-4.7V7.2z"/><path d="M12 7.5v9M7.5 12h9"/></svg><span>My team</span></button>
+  <button type="button" data-view="matchup" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M4 4h4M4 4v4M20 4l-9 9M20 4h-4M20 4v4M8.5 15.5l-4 4M15.5 15.5l4 4"/></svg><span>Battle</span></button>
   <button type="button" data-view="ratings" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.2 2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/></svg><span>Meta</span></button>
   <button type="button" id="moreBtn" aria-controls="side" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>More</span></button>
 </nav>

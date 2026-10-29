@@ -1,16 +1,22 @@
 // ---------- views ----------
 let view='home';
 // Five main pages, each with its sections. The first key of a group is the page the main nav opens.
-// Regrouped Oct 28: at most 4 sections per page so the row fits a phone. Team opens on the scouting report.
-const GROUPS=[['report',[['report','Report'],['build','Edit'],['teams','Saved'],['box','Box']]],
-  ['auto',[['auto','Build for me'],['coverage','Swaps'],['cores','Cores']]],
-  ['matchup',[['matchup','Team preview'],['gauntlet','Gauntlet'],['speed','Tools']]],
-  ['ratings',[['ratings','Tier list'],['meta','Usage'],['top','Teams'],['sets','Sets']]]];
+// One page per job (Oct 28): Home · Build · My team (centre) · Battle · Meta. Only Meta has a section row
+// (Pokémon · Tournaments); everything else is one page. Pages opened from inside a page show a back link instead.
+const GROUPS=[['report',[['report','My team']]],['auto',[['auto','Build']]],['matchup',[['matchup','Battle']]],
+  ['ratings',[['ratings','Pokémon'],['top','Tournaments']]]];
 const VIEW_PARENT={};GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{if(v!==g)VIEW_PARENT[v]=g}));
-// pages reached by a switch inside a section: Teams holds Events and Archetypes; Tools holds Damage calc and Type chart
-const SUB_OF={events:'top',arch:'top',calc:'speed',types:'speed'},VIEW_ALIAS={battle:'matchup'};Object.assign(VIEW_PARENT,{events:'ratings',arch:'ratings',calc:'matchup',types:'matchup'});
+// pages reached by a switch inside a section: Pokémon holds Usage and Sets; Tournaments holds Events and Archetypes
+const SUB_OF={meta:'ratings',sets:'ratings',events:'top',arch:'top'},VIEW_ALIAS={battle:'matchup',build:'report',cores:'auto'};
+Object.assign(VIEW_PARENT,{meta:'ratings',sets:'ratings',events:'ratings',arch:'ratings',teams:'report',box:'report',coverage:'report',gauntlet:'matchup',speed:'matchup',calc:'matchup',types:'matchup'});
+// pages opened from inside another page: a back link to it
+const BACK={teams:['report','My team'],box:['report','My team'],coverage:['report','My team'],gauntlet:['matchup','Battle'],speed:['matchup','Battle'],calc:['matchup','Battle'],types:['matchup','Battle']};
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',report:'Scouting report',build:'Edit team',auto:'Build for me',teams:'Saved teams',matchup:'Team preview',coverage:'Swaps',types:'Type chart',ratings:'Tier list',meta:'Usage',top:'Winning teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Team preview',cores:'Cores',events:'Events'};
+const VIEW_TITLE={home:'Home',report:'My team',build:'My team',auto:'Build',teams:'Saved teams',matchup:'Battle',coverage:'All suggestions',types:'Type chart',ratings:'Pokémon ratings',meta:'Usage',top:'Winning teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle',cores:'Cores',events:'Events'};
+// the ⋯ menu lists every page, grouped the same way as the bottom bar
+const MENU=[['Build',[['auto','Build for me'],['cores','Build around a core']]],['My team',[['report','My team'],['coverage','All suggestions'],['teams','Saved teams'],['box','My box']]],
+  ['Battle',[['matchup','Battle a team'],['gauntlet','Gauntlet'],['speed','Speed tiers'],['calc','Damage calc'],['types','Type chart']]],
+  ['Meta',[['ratings','Pokémon ratings'],['meta','Usage'],['sets','Popular sets'],['top','Winning teams'],['events','Events'],['arch','Archetypes']]]];
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
   const ic=d=>`<svg class="nic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -20,10 +26,11 @@ const VIEW_TITLE={home:'Home',report:'Scouting report',build:'Edit team',auto:'B
   const def='<svg class="nic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>';
   const btn=(v,t)=>`<button type="button" role="tab" data-view="${v}" aria-selected="false">${icon[v]||def}<span class="nl">${t}</span>${v==='report'?'<span class="tc" id="tabCount"></span>':''}</button>`;
   icon.report=icon.report||icon.build;icon.build=ic('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>');
-  const NAMES={report:'Team',auto:'Build',matchup:'Matchup',ratings:'Meta'};
-  nav.innerHTML=`<div class="sgroup">${btn('home','Home')}</div>`+GROUPS.map(([g,subs])=>`<div class="sgroup"><div class="sgl">${NAMES[g]}</div>${subs.map(([v,t])=>btn(v,t)).join('')}</div>`).join('')}}
-// Section tabs at the top of each page in a group (built here so every page in a group shows the same row)
-GROUPS.forEach(([g,subs])=>[...subs.map(([v])=>v),...Object.keys(SUB_OF).filter(x=>subs.some(([k])=>k===SUB_OF[x]))].forEach(v=>{const pane=document.querySelector(`[data-pane="${v}"]`);if(!pane)return;const sel=SUB_OF[v]||v;
+  nav.innerHTML=`<div class="sgroup">${btn('home','Home')}</div>`+MENU.map(([g,subs])=>`<div class="sgroup"><div class="sgl">${g}</div>${subs.map(([v,t])=>btn(v,t)).join('')}</div>`).join('')}}
+// back links on pages opened from inside another page
+Object.entries(BACK).forEach(([v,[to,name]])=>{const pane=document.querySelector(`[data-pane="${v}"]`);if(!pane||pane.querySelector(':scope > .chback'))return;pane.insertAdjacentHTML('afterbegin',`<button type="button" class="chback" data-view="${to}"><span aria-hidden="true">←</span> ${name}</button>`)});
+// Section tabs at the top of each page in a group (only where a page has more than one section)
+GROUPS.filter(([,subs])=>subs.length>1).forEach(([g,subs])=>[...subs.map(([v])=>v),...Object.keys(SUB_OF).filter(x=>subs.some(([k])=>k===SUB_OF[x]))].forEach(v=>{const pane=document.querySelector(`[data-pane="${v}"]`);if(!pane)return;const sel=SUB_OF[v]||v;
   const nav=document.createElement('nav');nav.className='subnav';nav.setAttribute('aria-label','Sections');
   nav.innerHTML=subs.map(([k,t])=>`<button type="button" class="sub" data-view="${k}" aria-selected="${k===sel}">${t}</button>`).join('');pane.prepend(nav)}));
 // Sidebar: always open on wide screens; a slide-in drawer on narrow ones.
@@ -42,9 +49,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false)});
 // steps back through pages. Back first closes anything open on top (a Pokémon sheet, search, the menu, feedback).
 let NAV_POP=false;
 function navHist(v){if(NAV_POP)return;try{const cur=history.state&&history.state.npv;if(!cur)history.replaceState({npv:v},'');else if(cur!==v)history.pushState({npv:v},'')}catch(e){}}
-function overlayOpen(){const ids=['chScout','lairSheet','jump','fbSheet'];for(const id of ids){const el=$(id);if(el&&!el.hidden)return id}const sd=$('side');if(sd&&sd.classList.contains('open'))return 'side';return null}
+function overlayOpen(){const ids=['chEdit','chScout','lairSheet','jump','fbSheet'];for(const id of ids){const el=$(id);if(el&&!el.hidden)return id}const sd=$('side');if(sd&&sd.classList.contains('open'))return 'side';return null}
 addEventListener('popstate',e=>{const o=overlayOpen();
-  if(o){if(o==='chScout'&&typeof chScoutClose==='function')chScoutClose();else if(o==='lairSheet'&&typeof lairClose==='function')lairClose();else if(o==='jump'&&typeof jumpClose==='function')jumpClose();else if(o==='fbSheet'&&typeof fbClose==='function')fbClose();else if(o==='side')sideOpen(false);
+  if(o){if(o==='chEdit'&&typeof chEditClose==='function')chEditClose();else if(o==='chScout'&&typeof chScoutClose==='function')chScoutClose();else if(o==='lairSheet'&&typeof lairClose==='function')lairClose();else if(o==='jump'&&typeof jumpClose==='function')jumpClose();else if(o==='fbSheet'&&typeof fbClose==='function')fbClose();else if(o==='side')sideOpen(false);
     try{history.pushState({npv:view},'')}catch(er){}return}
   const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v)}finally{NAV_POP=false}});
 function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);

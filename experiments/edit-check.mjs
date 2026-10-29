@@ -1,0 +1,25 @@
+// The My team edit panel: tap a row → panel shows only that set; Done closes it; Teams ▾ opens its menu.
+import fs from 'node:fs'; import {createRequire} from 'node:module';
+const {chromium} = createRequire(import.meta.url)('playwright');
+const APP = 'C:/Users/simra/code/pl-h/app/', OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
+const page = APP + 'edit-check.html'; fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(APP + 'dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
+const out = process.argv[2] || 'C:/pl/edit'; fs.mkdirSync(out, {recursive: true});
+const b = await chromium.launch(), fails = [], ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails.push(m); };
+for (const [w, h, mob] of [[390, 844, true], [1440, 900, false]]) { const pg = await (await b.newContext({viewport: {width: w, height: h}, isMobile: mob, hasTouch: mob, deviceScaleFactor: mob ? 2 : 1})).newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
+  await pg.addInitScript(D => { localStorage.setItem('cc2.welcomed', '"1"'); window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}}), collection: () => ({doc: () => ({set: async () => {}, get: async () => ({exists: false}), onSnapshot: () => () => {}})})} : null}; }, D);
+  await pg.goto('file://' + page); await pg.waitForTimeout(3000); await pg.evaluate(() => window.__ev("setView('report')")); await pg.waitForTimeout(1500);
+  if (process.env.DBG) await pg.evaluate(() => { const ed = document.getElementById('chEdit'); new MutationObserver(ms => ms.forEach(m => { if (m.attributeName === 'hidden') console.log('HIDDEN->' + ed.hidden + ' ' + new Error().stack.split('\n').slice(1, 4).join(' / ')); })).observe(ed, {attributes: true}); const o = window.__ev('chEditClose'); });
+  if (process.env.DBG) pg.on('console', m => { if (/HIDDEN/.test(m.text())) console.log(m.text()); });
+  await pg.click('#chSheetOut .chrow[data-chedit="2"]'); await pg.waitForTimeout(500);
+  if (process.env.DBG) console.log(await pg.evaluate(() => { const ed = document.getElementById('chEdit'), cs = getComputedStyle(ed), r = ed.getBoundingClientRect(), team = document.getElementById('team'); return JSON.stringify({disp: cs.display, vis: cs.visibility, op: cs.opacity, pos: cs.position, z: cs.zIndex, r: [r.x, r.y, r.width, r.height], parent: ed.parentElement.tagName, teamIn: ed.contains(team), teamDisp: team && getComputedStyle(team).display, slots: [...document.querySelectorAll('#chEdit .slots > *')].map(x => x.id + ':' + getComputedStyle(x).display).join(' ')}); }));
+  const s = await pg.evaluate(() => { const ed = document.getElementById('chEdit'); const vis = [...document.querySelectorAll('#chEdit .slots > *')].filter(x => x.offsetParent !== null).map(x => x.id); return {open: ed && !ed.hidden, vis, title: document.getElementById('chEditT').textContent}; });
+  ok(s.open && s.vis.length === 1 && s.vis[0] === 'slot2', `${w}px: tapping row 3 opens the editor on that set only (${s.vis.join(',')}; "${s.title}")`);
+  await pg.screenshot({path: `${out}/edit_${w}.png`});
+  await pg.click('#chEditDone'); await pg.waitForTimeout(300); ok(await pg.evaluate(() => document.getElementById('chEdit').hidden), `${w}px: Done closes it`);
+  await pg.click('#chTeamsBtn'); await pg.waitForTimeout(200); ok(await pg.evaluate(() => !document.getElementById('chTeamsMenu').hidden), `${w}px: Teams ▾ opens the menu`);
+  await pg.click('#chTeamsMenu [data-view="teams"]'); await pg.waitForTimeout(500); ok(await pg.evaluate(() => !document.querySelector('[data-pane="teams"]').hidden && !!document.querySelector('[data-pane="teams"] .chback')), `${w}px: Saved teams opens, with a back link`);
+  await pg.click('[data-pane="teams"] .chback'); await pg.waitForTimeout(500); ok(await pg.evaluate(() => !document.querySelector('[data-pane="report"]').hidden), `${w}px: back link returns to My team`);
+  await pg.click('#chSugOut [data-plan="0"]').catch(() => {}); await pg.waitForTimeout(800); ok(await pg.evaluate(() => /Undo|plan|applied|swapped/i.test((document.getElementById('toast') || {}).textContent || '')), `${w}px: Apply on a suggestion changes the team (toast shown)`);
+  ok(!errs.length, `${w}px: no page errors ${errs.join(' | ')}`); }
+await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED');

@@ -53,11 +53,11 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
     ${rest.length ? `<div class="chk chtk">The next ${rest.length}, worst first</div><div class="chtiles chsm" role="group" aria-label="The next ${rest.length} threats">${rest.map(r => { const p = byName.get(r.t.n); return `<button type="button" class="chtile l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${sprite(p) || `<span class="chk">${esc(r.t.d.slice(0, 3))}</span>`}</button>`; }).join('')}</div>` : ''}`; };
 // suggestions on the report: the top fix plans, one tap to apply (same plans as Build › Swaps)
 CH.sugs = () => { const L = ui.planList || [], base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null, top = L.slice(0, 3); if (!top.length) return '';
-  return `<section class="chsugs" aria-label="Suggestions"><div class="chsugh"><span class="chdisp">Suggestions</span><button type="button" class="linkbtn" data-view="coverage">See all ›</button></div>
+  return `<section class="chsugs" aria-label="Suggestions">
     ${top.map((pl, k) => { if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } } const d = pl._ts != null && base != null ? pl._ts - base : null;
       const pics = pl.ch.map(x => `${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span>`).join('');
       const words = pl.ch.map(x => `<b>${esc(x.c.p.d)}</b>${x.out ? ` <span class="for">for ${esc(x.out.d)}</span>` : ' <span class="for">added</span>'}`).join('<br>');
-      return `<div class="chsug"><div class="pics">${pics}</div><div class="txt">${words}${d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)}% ready</span>` : ''}</div><button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button></div>`; }).join('')}</section>`; };
+      return `<div class="chsug"><div class="pics">${pics}</div><div class="txt">${words}${d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)}% ready</span>` : ''}</div><button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button></div>`; }).join('')}<button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; };
 CH.legendRow = RD => { const c = CH.lvCount(RD); return `<div class="chleg">${[[0, 'var(--chbad)'], [1, 'var(--chshaky)'], [2, 'var(--chmid)'], [3, 'var(--chok)']].map(([l, col]) => `<span><i style="background:${col}"></i>${CH.LV[l]} ${c[l]}</span>`).join('')}</div>`; };
 // ---------- Home ----------
 const chHomeOld = renderHome;
@@ -158,80 +158,97 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
 // replay keys fold Megas into their species (same as the ratings sheet)
 function brKeyOf(p) { return p.n === 'Floette-Mega' ? 'Floette-Eternal' : p.n.replace(/-Mega(-[XYZ])?$/, ''); }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chhthr]'); if (!b) return; const n = b.dataset.chhthr; if (view !== 'report') setView('report'); setTimeout(() => chScoutOpen(n), 50); });
-// ---------- Team: Report (the scouting report as its own page) and Edit (the six and their sets) ----------
-// Every part of the report is one fold of the same style, in reading order. Nothing is removed: the original cards and
-// tables are moved in whole, so their renderers, ids and handlers keep working.
-function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'), pane = document.querySelector('[data-pane="build"]'); if (!rp || !pane || rp.dataset.ch) return; rp.dataset.ch = '1';
+// ---------- My team: one page in four parts (Fix it · Threats · How your team plays · Your six) ----------
+// Every original card and table is moved in whole, so its renderer, ids and handlers keep working. Editing a set happens
+// in a panel that slides up (the whole editor lives there), so there is no separate Edit page.
+CH.seg = (key, opts, on) => `<div class="seg chseg" role="group" data-chseg="${key}">${opts.map(([k, t]) => `<button type="button" data-chsegv="${k}" aria-pressed="${k === on}">${t}</button>`).join('')}</div>`;
+CH.part = (id, n, title, q) => { const s = document.createElement('section'); s.className = 'chpart'; s.id = id; s.innerHTML = `<div class="chparth"><span class="n">${n}</span><div><h2 class="chdisp">${title}</h2><p>${q}</p></div></div><div class="chpartb"></div>`; return s; };
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chsegv]'); if (!b) return; const g = b.closest('[data-chseg]'), key = g.dataset.chseg, v = b.dataset.chsegv;
+  LS.set('cc2.seg.' + key, v); g.querySelectorAll('[data-chsegv]').forEach(x => x.setAttribute('aria-pressed', x === b)); document.querySelectorAll(`[data-chsegp="${key}"]`).forEach(p => { p.hidden = p.dataset.chsegk !== v; }); });
+function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'); if (!rp || rp.dataset.ch) return; rp.dataset.ch = '1';
   const team = $('team'), fixes = $('fixes'), rep = $('repFold'); if (!team || !fixes || !rep) return;
-  const head = document.createElement('div'); head.id = 'chTeam'; head.className = 'chteam'; const sub = rp.querySelector('.subnav'); if (sub) sub.after(head); else rp.prepend(head);
+  const cols = fixes.querySelectorAll('.fixcol');
   const mk = (key, title, open) => { const w = document.createElement('div'); w.innerHTML = CH.fold(key, title, '', '', open); const d = w.firstElementChild; d.querySelector('.chs') || d.querySelector('summary > div').insertAdjacentHTML('beforeend', '<div class="chs"></div>'); return d; };
-  const cols = fixes.querySelectorAll('.fixcol'), parts = [];
-  const put = (key, title, nodes, id) => { const d = mk(key, title, false); if (id) d.id = id; const b = d.querySelector('.chbody'); nodes.filter(Boolean).forEach(n => b.append(n)); parts.push(d); return d; };
-  // a moved section keeps its one-line explainer, not its own heading (the fold names it)
-  const flat = sid => { const s = $(sid); if (!s) return null; const h = s.querySelector(':scope > .head'); if (h) { const p = h.querySelector('.hint'); if (p) { p.classList.add('t2'); h.before(p); } h.remove(); } s.querySelectorAll('.phonefold').forEach(x => { x.open = true; x.classList.add('chflat'); }); return s; };
-  if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
-  put('fix', 'What to fix', [cols[0]], 'chfFix');
-  put('rvs', 'Your six vs the top 12', [Object.assign(document.createElement('div'), {id: 'chVsOut'})], 'chfVs');
-  put('rthr', 'Threat preparation', [$('thrCard')], 'chfThr');
-  put('rbig', 'Biggest threats', [flat('thrSec')], 'chfBig');
-  put('rchk', 'Winning-team checklist', [$('chkCard')], 'chfChk');
-  put('rplan', 'Game plan', [rep.querySelector('.gpcard')], 'chfPlanG');
-  put('rdef', 'Defense', [$('defCard'), flat('defSec')], 'chfDef');
-  put('roff', 'Offense', [$('offCard'), flat('offense')], 'chfOff');
-  // the quick verdict (legal, items, real results, type balance) is the first fold, not a second header
-  { const ver = $('verdict'); if (ver) { const d = mk('rglance', 'Legal, items and results', false); d.id = 'chfGlance'; d.querySelector('.chbody').append(ver); parts.unshift(d); } }
-  // the folds sit in one grid: two columns on desktop, one on phones; an open fold takes the full width
-  const grid = document.createElement('div'); grid.className = 'chrgrid'; head.after(grid); parts.forEach(d => grid.append(d)); let at = grid;
-  // How scoring works: the same fold style as the rest of the report
-  const foot = document.querySelector('[data-pane="coverage"] details.foot'); if (foot) { grid.append(foot); foot.className = 'chsec chfold'; foot.dataset.chf = 'rhow'; const s = foot.querySelector('summary'), body = document.createElement('div'); body.className = 'chbody';
-    [...foot.children].filter(x => x !== s).forEach(x => body.append(x)); foot.append(body); if (s) s.innerHTML = `${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">How scoring works</div><div class="chs">Readiness, the checklist, defense, offense, plans and ratings</div></div>`; }
+  const flat = (sid, keepFold) => { const s = $(sid); if (!s) return null; const h = s.querySelector(':scope > .head'); if (h) { const p = h.querySelector('.hint'); if (p) { p.classList.add('t2'); h.before(p); } h.remove(); } if (!keepFold) s.querySelectorAll('.phonefold').forEach(x => { x.open = true; x.classList.add('chflat'); }); return s; };
+  const panel = (key, k, nodes, on) => { const d = document.createElement('div'); d.dataset.chsegp = key; d.dataset.chsegk = k; d.hidden = k !== on; nodes.filter(Boolean).forEach(n => d.append(n)); return d; };
+  const head = document.createElement('div'); head.id = 'chTeam'; head.className = 'chteam'; rp.prepend(head);
+  // 1 · Fix it: suggestions, then everything still to look at (problems, checklist, legal and items)
+  const p1 = CH.part('chP1', '1', 'Fix it', 'What to change, best first'); const b1 = p1.querySelector('.chpartb');
+  b1.innerHTML = '<div id="chSugOut"></div>'; if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
+  const fx = mk('rfix', 'Problems and checklist', false); fx.id = 'chfFix'; const fb = fx.querySelector('.chbody'); [cols[0], $('chkCard'), $('verdict')].filter(Boolean).forEach(n => fb.append(n)); b1.append(fx);
+  // 2 · Threats: one section, three views of the same 30 threats
+  const p2 = CH.part('chP2', '2', 'Threats', 'Who beats you, and who handles them'); const b2 = p2.querySelector('.chpartb'), on2 = LS.get('cc2.seg.thr', 'top');
+  b2.append(Object.assign(document.createElement('div'), {innerHTML: CH.seg('thr', [['top', 'Top 10'], ['grid', 'vs top 12'], ['all', 'All 30']], on2)}).firstElementChild);
+  b2.append(panel('thr', 'top', [Object.assign(document.createElement('div'), {id: 'chThrTop'})], on2), panel('thr', 'grid', [Object.assign(document.createElement('div'), {id: 'chVsOut'})], on2), panel('thr', 'all', [$('thrCard'), flat('thrSec')], on2));
+  // 3 · How your team plays: the game plan, then what you hit hard and what hits you
+  const p3 = CH.part('chP3', '3', 'How your team plays', 'Leads, what to bring, what you hit and what hits you'); const b3 = p3.querySelector('.chpartb'), on3 = LS.get('cc2.seg.types', 'off');
+  const gp = rep.querySelector('.gpcard'); if (gp) { const g = mk('rgplan', 'Game plan', false); g.id = 'chfGplan'; g.querySelector('.chbody').append(gp); b3.append(g); }
+  b3.append(Object.assign(document.createElement('div'), {innerHTML: `<h3 class="chsub3">Types</h3>${CH.seg('types', [['off', 'Offense: what you hit'], ['def', 'Defense: what hits you']], on3)}`}));
+  b3.append(panel('types', 'off', [$('offCard'), flat('offense', true)], on3), panel('types', 'def', [$('defCard'), flat('defSec', true)], on3));
+  // 4 · Your six: the sheet; tap a row to edit that set
+  const p4 = CH.part('chP4', '4', 'Your six', 'Tap a Pokémon to edit its set'); p4.querySelector('.chpartb').innerHTML = '<div id="chSheetOut"></div>';
+  const grid = document.createElement('div'); grid.className = 'chparts'; grid.append(p1, p2, p3, p4); head.after(grid);
+  // How scoring works: a small link at the bottom that opens the explainer
+  const foot = document.querySelector('[data-pane="coverage"] details.foot'); if (foot) { grid.after(foot); foot.className = 'chsec chfold chhow'; foot.dataset.chf = 'rhow'; const s = foot.querySelector('summary'), body = document.createElement('div'); body.className = 'chbody';
+    [...foot.children].filter(x => x !== s).forEach(x => body.append(x)); foot.append(body); if (s) s.innerHTML = `${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">How scoring works</div></div>`; }
   rep.hidden = true; const dsec = $('defense'); if (dsec) dsec.hidden = true;
-  // Edit: the team name and its actions, then the six
-  const eh = document.createElement('div'); eh.id = 'chEditHead'; eh.className = 'chpghead chedithead'; const esub = pane.querySelector('.subnav'); if (esub) esub.after(eh); else pane.prepend(eh);
+  // the edit panel: the whole team editor, slid up over the page, showing the one set you tapped
   const acts = team.querySelector('.teamhead .row'); if (acts) { acts.classList.add('chacts2'); CH.acts = acts; }
-  const cta = document.createElement('div'); cta.className = 'chcta'; cta.id = 'chCta'; cta.innerHTML = '<button type="button" class="chprimary" data-view="report">See the scouting report <span aria-hidden="true">➜</span></button>'; team.after(cta);
-  // Swaps: the fix plans sit under the one-Pokémon additions
+  const ed = document.createElement('div'); ed.className = 'chedit'; ed.id = 'chEdit'; ed.hidden = true; ed.setAttribute('role', 'dialog'); ed.setAttribute('aria-modal', 'true'); ed.setAttribute('aria-label', 'Edit team');
+  ed.innerHTML = '<div class="chedh"><b id="chEditT">Edit</b><button type="button" class="chghost" id="chEditDone">Done</button></div><div class="chedb"></div>';
+  const escrim = document.createElement('div'); escrim.className = 'chscrim'; escrim.id = 'chEditScrim'; escrim.hidden = true;
+  document.body.append(escrim, ed); ed.querySelector('.chedb').append(team); escrim.addEventListener('click', () => chEditClose()); $('chEditDone').addEventListener('click', () => chEditClose());
+  // All suggestions (the Swaps page) keeps the bigger plans under the one-Pokémon swaps
   const ps = $('planSec'); if (ps && cols[1]) ps.append(cols[1]); fixes.hidden = true;
-  // the bottom sheet (one threat at a time, from a tile or a chart row)
+  // the threat sheet (one threat at a time, from a tile or a chart row)
   const scrim = document.createElement('div'); scrim.className = 'chscrim'; scrim.id = 'chScrim'; scrim.hidden = true;
-  const sh = document.createElement('div'); sh.className = 'chscout'; sh.id = 'chScout'; sh.hidden = true; sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', 'Scouting report');
+  const sh = document.createElement('div'); sh.className = 'chscout'; sh.id = 'chScout'; sh.hidden = true; sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', 'Threat');
   document.body.append(scrim, sh); scrim.addEventListener('click', () => chScoutClose()); }
+// open the editor on one slot (or the whole team for import, export and saving)
+function chEditOpen(i) { const ed = $('chEdit'); if (!ed) return; ed.dataset.slot = i == null ? 'all' : String(i);
+  if (ui.tview === 'grid') { ui.tview = 'full'; LS.set('cc2.tview', 'full'); try { renderSlots(); } catch (e) {} }
+  const m = i == null ? null : members().find(x => x.i === +i); $('chEditT').textContent = i == null ? 'Edit team' : m ? 'Edit ' + m.d : 'Add a Pokémon';
+  ed.hidden = false; $('chEditScrim').hidden = false; document.documentElement.classList.add('chlock'); ed.scrollTop = 0;
+  requestAnimationFrame(() => { const inp = i == null ? null : ed.querySelector(`#slot${i} input`); if (inp && !m) inp.focus(); }); }
+function chEditClose() { const ed = $('chEdit'); if (!ed || ed.hidden) return; ed.hidden = true; $('chEditScrim').hidden = true; document.documentElement.classList.remove('chlock'); }
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; chEditOpen(b.dataset.chedit === 'all' ? null : +b.dataset.chedit); });
+// Import, Export and Save show their panels inside the editor
+document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('#importBtn,#exportBtn,#saveBtn'); if (t && $('chEdit') && $('chEdit').hidden) chEditOpen(null); }, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') chEditClose(); });
 function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD);
   const F = CH.four(ms), lead = F ? ms.find(m => m.p.n === F.lead[0]) || null : null, ko = CH.koNote(RD);
-  const slots = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).filter(x => x.m);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };
-  const row = ({m, i}) => `<button type="button" class="chrow" data-chedit="${i}" aria-label="Edit ${esc(m.d)}"><span class="ix">${i + 1}</span>${sprite(m.p) || ''}<div class="chbd"><div class="nm">${esc(m.d)}${m.spread && m.spread.assumed ? ' <span class="chtag ass" title="No stat points on the sheet: your nature on the most common spread">spread assumed</span>' : ''}</div><div class="mono">${esc(m.item || 'No item')} · ${esc(m.ability || '')}</div><div class="mono mv">${m.moves.map(x => esc(x.name)).join(' · ')}</div>${note(m)}</div></button>`;
-  const title = ms.length ? teamTitleFor(ms) : 'No team yet';
-  head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">Scouting report · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="2">${esc(title)}</div>
-      ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · ${c[0]} unanswered · ${c[1]} shaky${v.legal === false ? ' · <b style="color:var(--bad)">not legal yet</b>' : ''}</div>` :`<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
-      <div class="chacts2"><button type="button" class="chghost" data-view="build">${ms.length ? 'Edit team' : 'Add your six'}</button>${ms.length ? '<button type="button" class="chghost" data-chshare="1">Share</button>' : ''}</div></div>${RD ? `<div class="chring" title="Readiness grade">${CH.grade(RD.score)}</div>` : ''}</div>
-    ${ms.length ? CH.sugs() : ''}
-    ${slots.length ? `<div class="chtleft"><div class="chshow chteamshow"><span class="chshs">${slots.map(({m, i}) => `<button type="button" class="chshm" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || `<b>${esc(m.d)}</b>`}</button>`).join('')}</span><span class="chshf" aria-hidden="true"></span></div>
-    ${RD ? `<div class="chside"><div class="chk">Top threats · tap one for the matchup</div>${CH.threats10(RD, 'data-chthr')}</div>` : ''}</div>
-    <div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${slots.map(row).join('')}</div>` : ''}`;
-  // Edit header: one title, one line, the actions
-  const eh = $('chEditHead'); if (eh) { eh.innerHTML = `<div class="chk">Edit team · ${ms.length} of 6</div><div class="chdisp chpgt" role="heading" aria-level="2">${esc(ms.length ? teamTitleFor(ms) : 'New team')}</div><p class="chpgs">${ms.length ? 'Tap any part of a set to change it.' : 'Type a Pokémon into a slot, or let NastyPlot draft a full six.'}</p><div class="chacts2" id="chActs"></div>`; if (CH.acts) $('chActs').append(CH.acts); }
-  // fold summaries
+  const all = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).slice(0, 6);
+  const row = ({m, i}) => m ? `<button type="button" class="chrow" data-chedit="${i}" aria-label="Edit ${esc(m.d)}"><span class="ix">${i + 1}</span>${sprite(m.p) || ''}<div class="chbd"><div class="nm">${esc(m.d)}${m.spread && m.spread.assumed ? ' <span class="chtag ass" title="No stat points on the sheet: your nature on the most common spread">spread assumed</span>' : ''}</div><div class="mono">${esc(m.item || 'No item')} · ${esc(m.ability || '')}</div><div class="mono mv">${m.moves.map(x => esc(x.name)).join(' · ')}</div>${note(m)}</div><span class="chedi" aria-hidden="true">Edit</span></button>`
+    : `<button type="button" class="chrow empty" data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="ix">${i + 1}</span><span class="chadd">+</span><div class="chbd"><div class="nm">Add a Pokémon</div></div></button>`;
+  const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
+  const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
+  head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
+      ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · ${c[0]} unanswered · ${c[1]} shaky</div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
+      <div class="chpills">${legal}${ck}</div>
+      ${ms.length ? `<div class="chsix6">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || esc(m.d)}</button>`).join('')}</div>` : ''}
+      <div class="chacts2" id="chActs"><button type="button" class="chghost chteamsbtn" aria-haspopup="true" aria-expanded="false" id="chTeamsBtn">Teams ▾</button></div>
+      <div class="chteamsmenu" id="chTeamsMenu" hidden><button type="button" data-view="teams">Saved teams</button><button type="button" data-view="box">My box</button><button type="button" data-chedit="all">Import or export</button><button type="button" data-view="auto">Build a new team</button></div></div>
+    ${RD ? `<div class="chring" title="Readiness grade: preparation, not a prediction">${CH.grade(RD.score)}</div>` : ''}</div>
+    ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
+  if (CH.acts) $('chActs').append(CH.acts);
+  document.querySelectorAll('#chP1,#chP2,#chP3').forEach(p => { p.hidden = !ms.length; });
+  // part 1: suggestions
+  { const o = $('chSugOut'); if (o) o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No change readies this team for more of the top threats. Nice.</p>') : ''; }
   const sum = (id, t) => { const d = $(id); const s = d && d.querySelector('.chs'); if (s) s.textContent = t; };
-  document.querySelectorAll('[data-pane="report"] details.chsec').forEach(d => { d.hidden = !ms.length; });
-  { const nd = $('needs'), n = $('needsSub'), w = nd && nd.querySelector('.prob-row:not(.minor) .sev'); sum('chfFix', (n && n.textContent ? n.textContent : 'Nothing big to fix') + (w ? ' · worst: ' + w.textContent.toLowerCase() : '')); }
-  if (RD) { const r = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, 12), bad = r.filter(x => x.level <= 1).length; sum('chfVs', bad ? `${bad} of the top 12 ${bad === 1 ? 'is' : 'are'} unanswered or shaky` : 'Every one of the top 12 is handled'); const o = $('chVsOut'); if (o) o.innerHTML = CH.chart(RD, ms); }
-  sum('chfGlance', [v.legal === false ? 'Not legal yet' : 'Legal', v.CK ? `${v.CK.pass}/${v.CK.n} checks` : '', 'past results and type balance'].filter(Boolean).join(' · '));
-  sum('chfThr', RD ?`${RD.score}% ready · ${c[0]} unanswered · ${c[1]} shaky` : '');
-  { const th = $('threats'); const k = th ? th.querySelectorAll(':scope > *').length : 0; sum('chfBig', k ? `${k} that hit several of yours hard, or that nothing answers` : 'Nothing hits several of yours hard'); }
-  sum('chfChk', v.CK ? `${v.CK.pass} of ${v.CK.n} things recent winners have` : '');
-  sum('chfPlanG', 'Leads, what to bring and what to watch');
-  sum('chfDef', 'Weak spots and resists by type'); sum('chfOff', 'What your attacks hit hard');
-  const cta = $('chCta'); if (cta) cta.hidden = !RD;
+  { const nd = $('needs'), n = $('needsSub'); sum('chfFix', [n && n.textContent ? n.textContent : 'Nothing big to fix', v.CK ? `${v.CK.pass}/${v.CK.n} checks` : '', v.legal === false ? 'not legal yet' : 'legal'].filter(Boolean).join(' · ')); }
+  { const g = document.querySelector('#chfGplan .gpcard'), tags = g ? [...g.querySelectorAll('.gphead .tag, .gphead .chip, .gphead .arch')].map(x => x.textContent.trim()).filter(Boolean) : []; sum('chfGplan', (tags.length ? tags.map(x => x.charAt(0) + x.slice(1).toLowerCase()).join(' + ') + ' · ' : '') + 'leads, backups and what to watch'); }
+  // part 2: threats
+  { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}${CH.legendRow(RD)}</div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
+  // part 4: the sheet, every slot (empty ones say Add)
+  { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${all.map(row).join('')}</div>`; }
   if (!$('chScout').hidden) chScoutRender(); }
-// Share on the report uses the same share button as the Edit page
-document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chshare]'); if (!b) return; const s = $('shareBtn'); if (s) s.click(); });
+// the Teams ▾ menu
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#chTeamsBtn'), m = $('chTeamsMenu'); if (!m) return;
+  if (b) { m.hidden = !m.hidden; b.setAttribute('aria-expanded', !m.hidden); return; } if (!e.target.closest || !e.target.closest('#chTeamsMenu')) { m.hidden = true; } else setTimeout(() => { m.hidden = true; }, 0); });
 // the top plan, as one line (the plans themselves are worked out by the fix planner)
 function chBestPlan() { const L = ui.planList || []; const pl = L[0]; if (!pl || !pl.ch) return null; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
   return {pl, txt: pl.ch.map(x => x.out ? `${x.out.d} → ${x.c.p.d}` : `add ${x.c.p.d}`).join(', '), d: pl._ts != null && base != null ? pl._ts - base : null}; }
-document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; const i = +b.dataset.chedit; if (view !== 'build') setView('build');
-  if (ui.tview === 'grid') { ui.tview = 'full'; LS.set('cc2.tview', 'full'); renderSlots(); }
-  requestAnimationFrame(() => { const el = $('slot' + i); if (el) { try { el.scrollIntoView({behavior: 'smooth', block: 'start'}); } catch (err) {} el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 900); } }); });
 // ---------- the scouting report bottom sheet ----------
 CH.sel = null; CH.last = null;
 function chScoutOpen(sel) { const sh = $('chScout'); if (!sh) return; CH.sel = sel || null; CH.last = document.activeElement; chScoutRender(); sh.hidden = false; $('chScrim').hidden = false;
@@ -264,7 +281,7 @@ document.addEventListener('click', e => { const t = e.target; if (!t || !t.close
 document.addEventListener('keydown', e => { if (e.key === 'Escape') chScoutClose(); });
 // ---------- brand: the new logo in the top bar, the menu and the footer ----------
 function chBrand() { document.querySelectorAll('.band .brand, .sidetop .logo, .lgbrand').forEach(el => { if (el.querySelector('.nplk')) return; el.insertAdjacentHTML('afterbegin', CH.lockup('hdr')); });
-  const b = document.querySelector('.bnav [data-view="auto"]'); if (b && !b.querySelector('.chfab')) b.insertAdjacentHTML('afterbegin', `<span class="chfab" aria-hidden="true">${CH.chev2()}</span>`);
+  const b = document.querySelector('.bnav [data-view="report"]'); if (b && !b.querySelector('.chfab')) b.insertAdjacentHTML('afterbegin', `<span class="chfab" aria-hidden="true">${CH.chev2()}</span>`);
   // More moves to the header (next to search); the bottom bar keeps 2 + Build + 2, symmetric
   const mb = $('moreBtn'), row = document.querySelector('.band .titlerow'); if (mb && row && !mb.closest('.band')) { mb.classList.add('chmenubtn'); mb.setAttribute('aria-label', 'More pages and settings'); row.append(mb); } }// hook into the page: after every render, redraw the Team header; Home is redrawn by render() itself
 safe('concept h', () => { chBrand(); chTeamInit(); });

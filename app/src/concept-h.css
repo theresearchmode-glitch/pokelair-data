@@ -52,7 +52,7 @@ html:not(#_ch){font-synthesis:none}
 :root:not(#_ch) .bnav button{color:var(--chbarInk);opacity:.72;font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;min-height:44px}
 :root:not(#_ch) .bnav button[aria-selected="true"],:root:not(#_ch) .bnav button.on{opacity:1;color:var(--chbarInk)}
 :root:not(#_ch) .bnav button[aria-selected="true"]::before{background:var(--chyel)}
-:root:not(#_ch) .bnav button[data-view="auto"]>svg{display:none}
+:root:not(#_ch) .bnav button[data-view="report"]>svg{display:none}
 .chfab{width:52px;height:52px;border-radius:16px;background:var(--chp2);border:2px solid var(--chbarInk);display:flex;align-items:center;justify-content:center;margin-top:-22px;margin-bottom:2px}
 :root[data-look="dark"] .chfab{background:#2E2B29}
 /* sidebar */
@@ -589,12 +589,12 @@ main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{width:20p
  :root:not(#_ch) .bnav button[aria-selected="true"]{color:#1D2140;font-weight:800}:root:not(#_ch)[data-look="dark"] .bnav button[aria-selected="true"]{color:#FFFFFF}
  :root:not(#_ch) .bnav button::before{display:none!important}
  /* Build: a raised glass circle in the exact centre, label under it */
- :root:not(#_ch) .bnav button[data-view="auto"]>svg{display:none}
+ :root:not(#_ch) .bnav button[data-view="report"]>svg{display:none}
  :root:not(#_ch) .bnav .chfab{width:54px;height:54px;border-radius:50%;margin:-26px 0 2px;display:flex;align-items:center;justify-content:center;
   background:rgba(255,250,240,.82);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);border:2px solid #1D2140;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 16px rgba(29,33,64,.25)}
  :root:not(#_ch)[data-look="dark"] .bnav .chfab{background:rgba(44,42,40,.9);border-color:#F3EBDC;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 16px rgba(0,0,0,.5)}
  :root:not(#_ch) .bnav .chfab svg{width:28px!important;height:30px!important;padding:0!important;background:none!important}
- :root:not(#_ch) .bnav button[data-view="auto"][aria-selected="true"] .chfab{background:#FFE800}
+ :root:not(#_ch) .bnav button[data-view="report"][aria-selected="true"] .chfab{background:#FFE800}
 }/* desktop: the header logo is the big, clearly visible brand mark (~230px wide) */
 @media (min-width:900px){:root:not(#_ch) .band .brand .nplk.hdr{height:60px}:root:not(#_ch) .band .inner{padding-block:14px 12px}:root:not(#_ch) .band h1{gap:16px}}
 /* ===== phone Home: one story — what this is + one button, the latest champion, your six ===== */
@@ -705,3 +705,69 @@ details.chflat>summary{display:none}details.chflat{margin:0}
 .chsug .txt .dl{display:inline-block;margin-top:4px}
 .chsug .chapply{flex:none;min-height:40px;padding:0 16px!important}
 :root:not(#_ch) .subnav{background:none!important;border:0!important;box-shadow:none!important;padding:2px 0!important;gap:6px}:root:not(#_ch) .subnav .sub{border:1.5px solid var(--line2);border-radius:999px;background:transparent;color:var(--chink2)}:root:not(#_ch) .subnav .sub[aria-selected="true"]{border-color:var(--chink)}
+/* ===== one page per job (Oct 28 night) ===== */
+.chback{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;margin:0 0 6px;border:1.5px solid var(--line2);border-radius:999px;font:700 13px/1 var(--body);color:var(--chink);cursor:pointer}
+.chback:focus-visible{outline:3px solid var(--chblue)}
+/* My team: header, then four numbered parts */
+.chteam{display:block!important}
+.chpills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chpill{font:700 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.04em;padding:5px 9px;border-radius:999px;border:1.5px solid var(--line2);color:var(--chink2)}
+.chpill.ok{border-color:var(--chok);color:var(--chok)}.chpill.bad{border-color:var(--chbad);color:var(--chbad)}
+.chsix6{display:flex;gap:2px;margin-top:10px;flex-wrap:wrap}.chsix6 button{all:unset;cursor:pointer;border-radius:10px}.chsix6 button:focus-visible{outline:3px solid var(--chblue)}
+.chsix6 .spr{width:56px;height:56px;object-fit:contain;display:block}
+.chteam .chacts2{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.chteamsmenu{position:absolute;z-index:40;margin-top:6px;display:flex;flex-direction:column;min-width:200px;background:var(--chc);border:2px solid var(--chline);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.chteamsmenu[hidden]{display:none}.chteamsmenu button{all:unset;box-sizing:border-box;padding:12px 12px;border-radius:9px;font:700 14px/1.2 var(--body);color:var(--chink);cursor:pointer}.chteamsmenu button:hover,.chteamsmenu button:focus-visible{background:var(--chp2)}
+.chthead{position:relative}
+.chempty2{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.chparts{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;margin-top:22px}
+.chpart[hidden]{display:none}
+.chparth{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.chparth .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--chink);color:var(--chp);display:flex;align-items:center;justify-content:center;font:400 20px/1 var(--display)}
+.chparth h2{margin:0;font-size:32px!important;line-height:1;text-transform:uppercase;color:var(--chink);text-shadow:none!important}
+.chparth p{margin:4px 0 0;font-size:14px;color:var(--chink2)}
+.chpartb>*+*{margin-top:12px}
+.chsugs{margin:0!important}
+.chseeall{display:inline-block;margin:10px 0 6px;font-weight:700}
+:root:not(#_ch) main .seg.chseg{display:flex;flex-wrap:wrap;gap:6px;background:none;padding:0;box-shadow:none;border:0}
+:root:not(#_ch) main .seg.chseg button{min-height:38px;padding:4px 14px;font:700 13px/1.2 var(--body);border:1.5px solid var(--line2);border-radius:999px;background:transparent;color:var(--chink2);box-shadow:none}
+:root:not(#_ch) main .seg.chseg button[aria-pressed="true"]{background:var(--chink);color:var(--chp);border-color:var(--chink)}
+.chsub3{font:400 22px/1 var(--display);text-transform:uppercase;color:var(--chink);margin:18px 0 8px}
+#chP3 .gpcard{border:2px solid var(--chline);border-radius:14px;padding:12px 14px;background:var(--chc)}
+.chrow .chedi{margin-left:auto;align-self:center;font:700 11px var(--mono);text-transform:uppercase;color:var(--chink2);border:1.5px solid var(--line2);border-radius:999px;padding:4px 8px;flex:none}
+.chrow.empty .chadd{width:44px;height:44px;border:2px dashed var(--line2);border-radius:10px;display:flex;align-items:center;justify-content:center;font:400 24px/1 var(--display);color:var(--chink2)}
+.chrow.empty .nm{color:var(--chink2)}
+.chhow{margin-top:22px}
+@media (min-width:900px){.chparts{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 32px}#chP3,#chP4{grid-column:1/-1}#chSheetOut .chsheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#chSheetOut .chsheet .hd{grid-column:1/-1}#chSheetOut .chrow:nth-child(odd){border-left:1px dashed var(--line2)}
+ .chsix6 .spr{width:72px;height:72px}}
+/* the edit panel */
+.chedit{position:fixed;left:0;right:0;bottom:0;z-index:90;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;background:var(--chp);border-top:3px solid var(--chline);border-radius:22px 22px 0 0;padding:0 14px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.3)}
+.chedit[hidden],#chEditScrim[hidden]{display:none}
+.chedh{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 2px 10px;background:var(--chp);border-bottom:1px dashed var(--line2);margin-bottom:10px}
+.chedh b{font:400 26px/1 var(--display);text-transform:uppercase;color:var(--chink)}
+#chEditScrim{z-index:89}
+.chedit #team .teamhead,.chedit #sixHead,.chedit #startCard{display:none!important}
+.chedit:not([data-slot="all"]) .slots>*{display:none}
+.chedit[data-slot="0"] #slot0,.chedit[data-slot="1"] #slot1,.chedit[data-slot="2"] #slot2,.chedit[data-slot="3"] #slot3,.chedit[data-slot="4"] #slot4,.chedit[data-slot="5"] #slot5{display:block!important}
+.chedit:not([data-slot="all"]) #savePanel,.chedit:not([data-slot="all"]) #pastePanel{display:none!important}
+.chedit .slots{grid-template-columns:minmax(0,1fr)!important}
+@media (min-width:900px){.chedit{left:50%;right:auto;width:min(760px,94vw);transform:translateX(-50%);bottom:24px;border:3px solid var(--chline);border-radius:22px}}
+html.chlock,html.chlock body{overflow:hidden}
+/* Battle: more ways to prep */
+.chtools{margin:26px 0 8px}.chtoolsg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.chtoolsg button{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:4px;padding:14px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);cursor:pointer}
+.chtoolsg button b{font:400 20px/1 var(--display);text-transform:uppercase;color:var(--chink)}.chtoolsg span{font-size:13px;color:var(--chink2)}
+.chtoolsg button:focus-visible{outline:3px solid var(--chblue)}
+@media (min-width:900px){.chtoolsg{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* Build: cores under the builder */
+[data-pane="auto"] #cores{margin-top:30px}
+#chActs .row{display:contents}
+.chsix6{flex-wrap:nowrap;gap:0}.chsix6 button{flex:1 1 0;min-width:0;display:flex;justify-content:center}.chsix6 .spr{width:100%;max-width:56px;height:auto;aspect-ratio:1}
+@media (min-width:900px){.chsix6 .spr{max-width:76px}.chsix6{max-width:520px}}
+#chP3 #chfGplan .gpcard{border:0;padding:0;background:none}
+:root:not(#_ch) #chActs .btn,:root:not(#_ch) #chActs .chghost,:root:not(#_ch) #chActs details.moremenu{width:auto!important;flex:none!important;min-height:40px}
+:root:not(#_ch) #chActs details.moremenu>summary{min-width:44px}
+.chtr .tx{flex:1}.chtr .tx b{overflow-wrap:normal!important;word-break:normal;hyphens:none;font-size:12px}
+details.chsec>summary{list-style:none}details.chsec>summary::-webkit-details-marker{display:none}
+:root:not(#_ch) main details.chsec>summary::before{display:none!important}
+@media (min-width:1100px){.chcores #coreOut>.corelist:not(:has(.six)){grid-template-columns:repeat(3,minmax(0,1fr))}}

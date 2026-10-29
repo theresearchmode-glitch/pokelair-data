@@ -64,7 +64,7 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
     <div class="chhot2">${big(top[0], 'red')}${big(top[1], 'blue')}</div>
     <div class="chhotrows">${top.slice(2).map((x, i) => `<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span></span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
-  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`NastyPlot rating · Reg M-C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Tier list', ''));
+  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg M-C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     const hero = $('lairHero'); const f = CH.foldNode(hero, 'lairabout', 'About the ratings', 'How they are made, sources and their track record', false);
     if (f) { const b = f.querySelector('.chbody'); sec.querySelectorAll('.head .hint, #ratingTrack').forEach(p => b.prepend(p)); }
     // search and filters first, then the top of the list
@@ -132,13 +132,13 @@ CH.wrap('renderGauntlet', () => { const el = $('gauntOut'), sec = $('gauntlet');
   const intro = el.querySelector(':scope > p.t2'); if (intro && !intro.closest('details.chsec')) CH.foldNode(intro, 'gintro', 'How it works', 'Same calcs as your scouting report, both ways', false);
   CH.more(el.querySelector('.glist'), ':scope > .gitem', 3, 'gaunt', 'teams'); });
 // ---------- Teams and Events: big-sprite team sheets, the first few shown ----------
-CH.wrap('renderTeamSearch', () => { const sec = $('topteams'); CH.pagehead(sec, 'Teams · real top-cut team sheets', 'Winning teams', ''); chTeamsMore(); });
+CH.wrap('renderTeamSearch', () => { const sec = $('topteams'); CH.pagehead(sec, 'Tournaments · real top-cut team sheets', 'Winning teams', ''); chTeamsMore(); });
 function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [...L.children], cards = kids.filter(x => x.classList.contains('ttcard')); if (cards.length < 5) return; CH.more(L, ':scope > *', kids.indexOf(cards[2]) + 1, 'ttlist', 'teams and sections'); }
 CH.wrap('renderTopTeams', () => safe('teams more', chTeamsMore));
 CH.wrap('renderEvents', () => { const sec = $('events'); CH.pagehead(sec, 'Events · recent tournaments', 'Events', ''); });
 // ---------- batch 4: Best additions, Types, Sets, Saved teams, Box, Archetypes ----------
 // Swaps: one-Pokémon additions first, then the bigger fix plans (the checklist lives on the scouting report)
-CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Swaps · for your team', 'Swaps', '');
+CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Every swap and plan for your team', 'All suggestions', '');
   const pr = $('princ'); if (pr) pr.hidden = true; if (sec) sec.classList.add('chswaps');
   const g = sec && sec.querySelector('.recgrid'); if (g && !sec.querySelector('.chswk')) g.insertAdjacentHTML('beforebegin', '<h3 class="chswk">One Pokémon in, one out</h3>');
   CH.more($('recList'), ':scope > *', 3, 'recs', 'swaps'); chPlansDedup(); });
@@ -215,3 +215,16 @@ CH.restyle = (d, key, title, sub) => { if (!d || d.classList.contains('chsec')) 
 safe('restyle folds', () => { CH.restyle($('muFold'), 'mufold', 'Deeper read', 'Archetypes, their threats, the full matchup grid');
   CH.restyle($('plset'), 'plset', 'Plan settings', '');
   CH.restyle(document.querySelector('#types details.foot'), 'typechart', 'Full type chart', 'Every attacking type against every defending type'); });
+
+// ---------- one page per job: Build holds the cores; Battle links its tools ----------
+safe('one page per job', () => {
+  const ap = document.querySelector('[data-pane="auto"]'), cs = $('cores'); if (ap && cs && !ap.contains(cs)) ap.append(cs);
+  const mu = $('matchup'); if (mu && !$('chTools')) { const d = document.createElement('div'); d.id = 'chTools'; d.className = 'chtools';
+    d.innerHTML = `<h3 class="chsub3">More ways to prep</h3><div class="chtoolsg">${[['gauntlet', 'Gauntlet', 'Your team against the latest top teams'], ['speed', 'Speed tiers', 'Who moves first across the meta'], ['calc', 'Damage calc', 'Any attacker into any defender'], ['types', 'Type chart', 'What hits what']].map(([v, t, s]) => `<button type="button" data-view="${v}"><b>${t}</b><span>${s}</span></button>`).join('')}</div>`;
+    const bl = $('battlelog'); (bl ? bl.closest('details') || bl : mu).before(d); } });
+CH.wrap('renderAutoBuild', () => { const ap = document.querySelector('[data-pane="auto"]'); if (ap && !ap.hidden) safe('cores', renderCores); });
+CH.wrap('renderCores', () => CH.pagehead($('cores'), 'Pick a pair or trio that wins, then fill the rest', 'Build around a core', ''));
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-view="cores"]'); if (!b) return; setTimeout(() => { safe('cores', renderCores); const c = $('cores'); if (c) try { c.scrollIntoView({behavior: 'smooth', block: 'start'}); } catch (er) {} }, 60); });// the type tables on My team: closed folds in the same style ("Full tables")
+safe('type table folds', () => { document.querySelectorAll('#offense details.phonefold, #defSec details.phonefold').forEach((d, i) => { d.open = false; d.classList.remove('phonefold'); CH.restyle(d, i ? 'deftables' : 'offtables', 'Full tables', i ? 'Every attacking type against each of your six' : 'Every defending type, and your best hit on each top threat'); }); });
+// Build shows its cores every time it opens
+CH.wrap('setView', () => { if (view === 'auto') safe('cores', renderCores); });

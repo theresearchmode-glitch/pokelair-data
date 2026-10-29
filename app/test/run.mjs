@@ -11,7 +11,7 @@ const rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } c
 const L = rd('limitless.json');
 const DOCS = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'),
   'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
-const VIEWS = ['home', 'build', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'arch', 'coverage', 'types', 'ratings', 'meta', 'cores', 'top', 'events', 'sets', 'teams', 'box'];
+const VIEWS = ['home', 'report', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'arch', 'coverage', 'types', 'ratings', 'meta', 'top', 'events', 'sets', 'teams', 'box'];
 let fails = 0; const ok = (c, msg) => { if (!c) { fails++; console.log('  FAIL', msg); } else console.log('  ok  ', msg); };
 const browser = await chromium.launch();
 async function open(width) {
@@ -37,12 +37,12 @@ for (const width of [1280, 390]) {
   for (const src of ['ingame', 'tour', 'ladder']) { await go(pg, 'meta'); await pg.evaluate(s => document.querySelector(`[data-src="${s}"]`).click(), src); await pg.waitForTimeout(300);
     const n = await pg.evaluate(() => document.getElementById('metaList').children.length); ok(n >= 40, `meta/${src}: ${n} rows`); }
   // scouting report header (readiness, checks, legality), counters on Rankings, turn 1 plan in Matchup
-  await go(pg, 'build'); await pg.waitForTimeout(400);
+  await go(pg, 'report'); await pg.waitForTimeout(400);
   const ts = await pg.evaluate(() => { const v = document.getElementById('verdict'); return v ? v.textContent : ''; });
   ok(/Ready for \d+% of the top 30 threats/i.test(ts) && /checks/.test(ts) && /Legal/.test(ts), 'team: scouting report shows readiness, checks and legality');
   await pg.waitForFunction(() => document.querySelectorAll('#thrCard .thrrow').length >= 20, null, {timeout: 8000}).catch(() => {});
-  const tc = await pg.evaluate(() => { const c = document.getElementById('thrCard'), s = document.querySelector('#chfThr .chs'), rp = document.querySelector('[data-pane="report"]'); const tiles = document.querySelectorAll('#chTeam [data-chthr]').length; if (window.__CH) window.__CH.open(); const sh = document.getElementById('chScout'), n = sh && !sh.hidden ? sh.querySelectorAll('[data-chthr]').length : 0; if (window.__CH) window.__CH.close(); return {open: !!rp && !!c && rp.contains(c) && !!s && /unanswered/.test(s.textContent) && tiles === 30 && n === 30, head: !!c && /Threat preparation/i.test(c.textContent), rows: document.querySelectorAll('#thrCard .thrrow').length}; });
-  ok(tc.open && tc.head && tc.rows >= 20, `team: scouting report is its own page (30 threat tiles, fold summaries, threat sheet), with threat preparation for the top threats (${tc.rows} threats)`);
+  const tc = await pg.evaluate(() => { const c = document.getElementById('thrCard'), s = document.querySelector('#chfFix .chs'), rp = document.querySelector('[data-pane="report"]'); const tiles = document.querySelectorAll('#chThrTop [data-chthr]').length; if (window.__CH) window.__CH.open(); const sh = document.getElementById('chScout'), n = sh && !sh.hidden ? sh.querySelectorAll('[data-chthr]').length : 0; if (window.__CH) window.__CH.close(); return {open: !!rp && !!c && rp.contains(c) && !!s && /checks/.test(s.textContent) && tiles === 30 && n === 30, head: !!c && /Threat preparation/i.test(c.textContent), rows: document.querySelectorAll('#thrCard .thrrow').length}; });
+  ok(tc.open && tc.head && tc.rows >= 20, `team: My team page (30 threats in Threats, Fix it summary, threat sheet), with threat preparation for the top threats (${tc.rows} threats)`);
   await go(pg, 'meta'); await pg.evaluate(() => document.querySelector('[data-src="ladder"]').click()); await pg.waitForTimeout(300);
   ok(await pg.evaluate(() => /Checks & counters/.test(document.getElementById('metaList').innerText)), 'meta/ladder: checks & counters shown');
   // Gauntlet: matchup prep against real teams, no win odds
@@ -194,7 +194,7 @@ for (const width of [1280, 390]) {
   DOCS['meta/model'] = old; }
 // share card: draws the team and opens the dialog
 { console.log('\n== share card');
-  const {pg, errs, ctx} = await open(1280); await go(pg, 'build'); await pg.waitForTimeout(400);
+  const {pg, errs, ctx} = await open(1280); await go(pg, 'report'); await pg.waitForTimeout(400);
   await pg.click('#shareBtn'); await pg.waitForSelector('#shareBox:not([hidden])', {timeout: 15000}).catch(() => {});
   const r = await pg.evaluate(() => { const b = document.getElementById('shareBox'); return {open: !!b && !b.hidden, img: !!document.querySelector('.shareimg'), save: !!document.getElementById('shareSave')}; });
   ok(r.open && r.img && r.save, `share card: dialog with image and save (${JSON.stringify(r)})`);
@@ -214,7 +214,7 @@ for (const width of [1280, 390]) {
   await p2.goto('file://' + page + '#team=' + code); await p2.waitForTimeout(1500);
   ok(await p2.evaluate(() => !!document.getElementById('sharedBar')), 'team links: opened link shows the load banner');
   await p2.click('[data-sharedload]'); await p2.waitForTimeout(400);
-  ok(await p2.evaluate(() => !document.getElementById('sharedBar') && document.querySelector('[data-pane="build"]').hidden === false), 'team links: Load it opens the team');
+  ok(await p2.evaluate(() => !document.getElementById('sharedBar') && document.querySelector('[data-pane="report"]').hidden === false), 'team links: Load it opens the team');
   ok(e2.length === 0, `team links: no page errors${e2.length ? ': ' + e2.join(' | ') : ''}`); await c2.close(); }
 // Ratings mean proven strength: staples on top, rare picks can't take #1 (Oct 27 v3)
 { console.log('\n== ratings');
@@ -271,7 +271,7 @@ for (const width of [1280, 390]) {
   ok(r.niche != null && /-speed/.test(r.nDbg) && /-(stack|w3)/.test(r.nDbg), `a niche six is flagged by the checklist (${r.nDbg}; ready ${r.niche}% vs winners ${r.med}%)`);
   ok(r.mir[0] === r.mir[1], `gauntlet mirror reads the same both ways (${r.mir.join(' / ')})`);
   // no win prediction anywhere on the site
-  const VIEWS2 = ['home', 'build', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'coverage', 'ratings', 'meta', 'cores', 'top', 'events', 'sets', 'teams'];
+  const VIEWS2 = ['home', 'report', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'coverage', 'ratings', 'meta', 'top', 'events', 'sets', 'teams'];
   const hits = []; for (const v of VIEWS2) { await go(pg, v); await pg.waitForTimeout(v === 'gauntlet' || v === 'coverage' ? 2500 : 500);
     const tx = await pg.evaluate(v => document.querySelector(`[data-pane="${v}"]`).innerText, v); const m = tx.match(/win chance|chance to win|% to win|win %|Team Score/i); if (m) hits.push(v + ': ' + m[0]); }
   ok(!hits.length, `no win prediction or Team Score shown anywhere${hits.length ? ': ' + hits.join(' | ') : ''}`);
@@ -292,7 +292,7 @@ for (const width of [1280, 390]) {
     ok(lg.on === 4 && /from the plan/.test(lg.note) && lg.old === 0, `battle log: prefilled from the plan, one place to log (${lg.on})`);
     const n0 = await pg.evaluate(() => (window.__PL.getS().log || []).length); await pg.evaluate(() => document.querySelector('#logForm [data-logres="W"]').click()); await pg.waitForTimeout(200);
     ok(await pg.evaluate(n => { const L = window.__PL.getS().log; return L.length === n + 1 && L[L.length - 1].b.length === 4; }, n0), 'battle log: win saved with four');
-    await go(pg, 'cores'); await pg.waitForTimeout(400);
+    await go(pg, 'auto'); await pg.waitForTimeout(400);
     const c = await pg.evaluate(() => document.querySelectorAll('.corerow').length); ok(c >= 10, `cores: ${c} pairs`);
     await pg.evaluate(() => document.querySelector('[data-corekind="trios"]').click()); await pg.waitForTimeout(300);
     ok(await pg.evaluate(() => { const r = [...document.querySelectorAll(".corerow .corenames")]; return r.length >= 10 && r.every(x => x.textContent.split(" + ").length === 3); }), 'cores: trios list');
@@ -344,13 +344,13 @@ for (const width of [1280, 390]) {
   ok(r.clean, 'corrupt results data: bad rows dropped, no NaN');
   ok(errs.length === 0, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`); await ctx.close(); }
 // Loose ends from the stress test (Oct 28): team sheets without stat points, the item lists, Megas in the calc
-// Bottom bar (Oct 28): Build sits dead centre (±1 px), labels visible, More reachable from the header
+// Bottom bar (Oct 28): My team sits dead centre (±1 px), labels visible, More reachable from the header
 { console.log('\n== bottom bar');
   for (const w of [375, 390, 430, 768, 1000]) { const {pg, errs, ctx} = await open(w); await pg.waitForTimeout(600);
-    const r = await pg.evaluate(() => { const b = document.querySelector('.bnav [data-view="auto"]'), f = b && b.querySelector('.chfab'), rc = (f || b).getBoundingClientRect(), mb = document.getElementById('moreBtn');
+    const r = await pg.evaluate(() => { const b = document.querySelector('.bnav [data-view="report"]'), f = b && b.querySelector('.chfab'), rc = (f || b).getBoundingClientRect(), mb = document.getElementById('moreBtn');
       const labs = [...document.querySelectorAll('.bnav button')].filter(x => x.offsetParent).map(x => { const s = x.querySelector('span:not(.chfab)'); return s ? {t: s.textContent, fs: parseFloat(getComputedStyle(s).fontSize), v: s.offsetParent !== null} : null; });
       return {c: rc.left + rc.width / 2, vw: document.documentElement.clientWidth, n: labs.length, labs, more: !!(mb && mb.closest('.band') && mb.offsetParent)}; });
-    ok(Math.abs(r.c - r.vw / 2) <= 1, `bottom bar ${w}px: Build centre ${r.c.toFixed(1)} vs ${r.vw / 2}`);
+    ok(Math.abs(r.c - r.vw / 2) <= 1, `bottom bar ${w}px: My team centre ${r.c.toFixed(1)} vs ${r.vw / 2}`);
     ok(r.n === 5 && r.labs.every(l => l && l.v && l.fs >= 11), `bottom bar ${w}px: 5 items, every label visible at 11px+ (${r.labs.map(l => l ? l.t + ' ' + l.fs : '?').join(', ')})`);
     ok(r.more, `bottom bar ${w}px: More in the header`); await ctx.close(); } }// Archetypes (Oct 28): every guide card shows its key Pokémon (Trick Room and Tailwind had none)
 { console.log('\n== archetypes');
@@ -411,7 +411,7 @@ for (const width of [1280, 390]) {
   const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(800);
   await pg.evaluate(() => { const T = window.__PL, S0 = T.getS(); window.__keep = S0.slots;
     S0.slots = T.normSlots(T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nJolly Nature\n- Earthquake\n- Dragon Claw').slots); T.render(); });
-  await go(pg, 'build'); await pg.waitForTimeout(400);
+  await go(pg, 'report'); await pg.waitForTimeout(400);
   const tag = await pg.evaluate(() => { const c = document.getElementById('slot0'); return c ? [...c.querySelectorAll('.asm')].map(x => x.textContent) : null; });
   ok(tag && tag.includes('assumed'), `team card: the team sheet's spread is tagged assumed (${tag})`);
   const clk = s => pg.evaluate(s => document.querySelector(s).click(), s), put = (s, v) => pg.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; }, [s, v]);
