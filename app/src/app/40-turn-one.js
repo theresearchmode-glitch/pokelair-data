@@ -35,9 +35,10 @@ function turnOnePlan(mine, theirs, r) {
     else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); }
   const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${esc(x.o.d)}'s ${esc(x.worst.h.mv.name)} can KO ${esc(x.worst.on.d)}`);
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
+  // (Stall always moves last inside its bracket)
   const oPr = o => (o.moves || []).some(x => x && x.name === 'Fake Out') ? 3 : 0;
-  const order = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x)}; })
-    .sort((a, b) => b.p - a.p || b.s - a.s);
+  const order = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0}; })
+    .sort((a, b) => b.p - a.p || a.st - b.st || b.s - a.s);
   return `<div class="plan t1plan"><div class="ph"><span class="pt">Turn 1</span><span class="vsub">your ${esc(L[0].d)} + ${esc(L[1].d)} vs their likely ${esc(opp[0].d)} + ${esc(opp[1].d)}</span></div>
     ${lines.map(([m, act, why]) => `<div class="t1row"><b>${esc(m.d)}</b><span class="t1act">${act}</span><span class="t2">${why}</span></div>`).join('')}
     ${warn.length ? `<p class="t2 t1warn">Watch: ${warn.join('; ')}. Consider Protect.</p>` : ''}

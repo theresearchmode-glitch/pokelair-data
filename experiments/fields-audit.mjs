@@ -23,8 +23,8 @@ const ENGINE_USES = [['priority (movePrio from MOVE_META)', /function movePrio\(
 for (const [what, re] of ENGINE_USES) if (!uses(re)) fail('engine does not use ' + what);
 // 2. every move's data matches the reference
 const bad = {meta: [], acc: [], prio: [], target: [], flags: [], sec: [], self: [], mh: [], ohko: [], fixed: [], varRule: []};
-const VAR_OK = new Set(['wt', 'wtr', 'lowhp', 'gyro', 'eball', 'half', 'fullhp', 'userhp', 'hex', 'respects', 'punish', 'ragefist']), VAR_NOTE = new Set(['counter', 'endeavor']);
-const RARE_VAR = new Set(['gambit', 'psywave', 'fling', 'gift', 'beatup', 'trump', 'magnitude', 'present', 'stockpile']);
+const VAR_OK = new Set(['wt', 'wtr', 'lowhp', 'gyro', 'eball', 'half', 'fullhp', 'userhp', 'hex', 'respects', 'punish', 'ragefist', 'fling', 'beatup', 'gambit']), VAR_NOTE = new Set(['counter', 'endeavor']);
+const RARE_VAR = new Set(['psywave', 'gift', 'trump', 'magnitude', 'present', 'stockpile']);
 for (const [n, , cat] of MOVES) { const ch = CH.moves.get(n), d = ch && ch.exists ? ch : Dex.moves.get(n), c = ch && ch.exists ? null : G0.moves.get(toID(n)), m = META[n]; if (!d || !d.exists) continue; if (!m) { bad.meta.push(n); continue; }
   const a = d.accuracy === true ? 100 : d.accuracy; if ((m.a || 100) !== a || (a < 100 && ACC[n] !== a)) bad.acc.push(`${n} ${a} (ours ${m.a || 100}/${ACC[n] || 100})`);
   const pr = c && c.priority != null ? c.priority : d.priority; if ((m.p || 0) !== pr) bad.prio.push(`${n} ${pr} (ours ${m.p || 0})`);
@@ -37,14 +37,23 @@ for (const [n, , cat] of MOVES) { const ch = CH.moves.get(n), d = ch && ch.exist
   if (d.ohko && !m.o) bad.ohko.push(n); if (d.damage && m.d !== d.damage) bad.fixed.push(n);
   if (cat > 0 && !d.basePower && !d.damage && !d.ohko) { if (!m.v) bad.varRule.push(`${n} (no rule)`); else if (!VAR_OK.has(m.v) && !VAR_NOTE.has(m.v) && !RARE_VAR.has(m.v)) bad.varRule.push(`${n} (${m.v} not handled)`); else if (RARE_VAR.has(m.v)) notes.push(`${n}: ${m.v} rule not calculated (rare)`); } }
 for (const [k, v] of Object.entries(bad)) if (v.length) fail(`move data: ${k} differs from the reference`, v);
+// 2b. Fling power for every Reg M-C item (the page's FLING_BP table, default 10) matches Showdown's item.fling.basePower
+{ const FB = (() => { const m = ENGINE.match(/const FLING_BP=(\{[\s\S]*?\});/); return m ? Function('return ' + m[1])() : null; })();
+  const REGMC = grab(/const REGMC_ITEMS=(\[[\s\S]*?\]);/, rd(SRC + 'data/items-list.js')) || [], STONE = /ite( [XYZ])?$|inite$/;
+  if (!FB) fail('FLING_BP table not found in the engine');
+  else { const flingBad = REGMC.filter(n => !STONE.test(n)).filter(n => { const r = CH.items.get(n), want = r && r.fling ? r.fling.basePower : 0; return (FB[n] ?? 10) !== want; }).map(n => `${n} ${(CH.items.get(n).fling || {}).basePower || 0} (ours ${FB[n] ?? 10})`);
+    if (flingBad.length) fail('Fling power differs from the champions mod', flingBad); } }
 // 3. weights for every Pokémon
 const noW = ROSTER.filter(p => !WT[p.n]).map(p => p.n), wDiff = ROSTER.filter(p => { const s = CH.species.get(p.n); return s && s.exists && WT[p.n] !== s.weightkg; }).map(p => p.n); if (wDiff.length) fail('weights differ from the champions mod', wDiff); if (noW.length) fail('Pokémon without weight', noW);
 // 4. abilities and items players run: modelled, or listed as deliberately not modelled with the reason
-const NOT_MODELLED = {'Super Luck': 'raises crit chance only; the calc shows the hit with and without a crit (Critical hit toggle)', 'Marvel Scale': 'only with a status condition; calcs assume a healthy Pokémon',
-  'Quick Claw': 'a 20% chance to move first; noted on speed lines, never relied on', Rivalry: 'needs genders, not tracked', Moxie: 'only after it KOs something; each calc is a single hit'};
-const NO_CALC_EFFECT = new Set(['No Item', 'Pressure', 'Keen Eye', 'Frisk', 'Synchronize', 'Cute Charm', 'Flame Body', 'Cursed Body', 'Healer', 'Shield Dust', 'Damp', 'Stall', 'Anticipation', 'Vital Spirit', 'Pickpocket', 'Cud Chew', 'Rock Head',
+// The page's own "Not counted" labels (NOT_COUNTED in 39-damage-calc-speed.js: state the sets can't tell, such as HP left,
+// status, KOs, switching or genders) are the deliberately-not-modelled list, so each reason is written once.
+const NC = grab(/const NOT_COUNTED=(\{[\s\S]*?\});/, ENGINE); if (!NC) fail('NOT_COUNTED labels not found in the engine');
+const NOT_MODELLED = {...Object.fromEntries(Object.entries(NC || {}).map(([k, v]) => [k, v[0]])),
+  Gluttony: 'only changes pinch berries (Figy, Wiki, Mago, Aguav, Iapapa), none of which are legal in Reg M-C'};
+const NO_CALC_EFFECT = new Set(['No Item', 'Pressure', 'Keen Eye', 'Frisk', 'Synchronize', 'Cute Charm', 'Flame Body', 'Cursed Body', 'Healer', 'Shield Dust', 'Damp', 'Anticipation', 'Vital Spirit', 'Pickpocket', 'Cud Chew', 
   'Emergency Exit', 'Flower Veil', 'Static', 'Poison Point', 'Insomnia', 'Limber', 'Leaf Guard', 'Telepathy', 'Magician', 'Shed Skin', 'Immunity', 'Early Bird', 'Poison Heal', 'Toxic Debris', 'Spicy Spray', 'Trace', 'Illusion',
-  'Moody', 'Anger Point', 'Steadfast', 'Magma Armor', 'Corrosion', 'Merciless', 'Overgrow', 'Blaze', 'Torrent', 'Swarm', 'Light Clay', 'Rocky Helmet', 'Eject Button', 'Leppa Berry', 'Binding Band', 'Big Root', 'Red Card',
+  'Moody', 'Anger Point', 'Steadfast', 'Magma Armor', 'Corrosion', 'Light Clay', 'Eject Button', 'Leppa Berry', 'Binding Band', 'Big Root', 'Red Card',
   'Regenerator', 'Natural Cure', 'Harvest', 'Pickup', 'Run Away', 'Honey Gather', 'Ball Fetch', 'Sitrus Berry', 'Leftovers', 'Lum Berry', 'Mental Herb', 'White Herb', 'Shell Bell', 'Black Sludge', 'Focus Sash', 'Power Herb', 'Mirror Herb', 'Eject Pack', 'Covert Cloak', 'Safety Goggles', 'Throat Spray', 'Room Service', 'Adrenaline Orb', 'Booster Energy', 'Ability Shield', 'Clear Amulet', 'Punching Glove', 'Loaded Dice']);
 const T = JSON.parse(rd(OUT + 'meta_tour.json')), rows = [...T.top, ...(T.more || [])].sort((a, b) => b.u - a.u).slice(0, 100), ab = new Map(), it = new Map();
 for (const r of rows) { for (const [n, p] of r.ab || []) if (p >= 1) ab.set(n, Math.max(ab.get(n) || 0, p * r.u / 100)); for (const [n, p] of r.it || []) if (p >= 1) it.set(n, Math.max(it.get(n) || 0, p * r.u / 100)); }
