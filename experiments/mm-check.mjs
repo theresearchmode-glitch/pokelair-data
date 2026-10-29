@@ -1,0 +1,10 @@
+﻿import fs from 'node:fs'; import {createRequire} from 'node:module';
+const {chromium} = createRequire(import.meta.url)('playwright');
+const APP='C:/Users/simra/code/pl-h/app/', page=APP+'mm.html'; fs.writeFileSync(page,'<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+fs.readFileSync(APP+'dist/page.html','utf8').replace('render();setView(view,false);','window.__ev=c=>eval(c);render();setView(view,false);'));
+const b=await chromium.launch(); const pg=await (await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2})).newPage();
+await pg.addInitScript(()=>{localStorage.setItem('cc2.welcomed','"1"');window.claude={use:async()=>null}});
+await pg.goto('file://'+page); await pg.waitForTimeout(2500); await pg.evaluate(()=>window.__ev("setView('report')")); await pg.waitForTimeout(1200);
+await pg.click('#chActs details.moremenu > summary'); await pg.waitForTimeout(300);
+const r=await pg.evaluate(()=>{const m=document.querySelector('#chActs .mmpop').getBoundingClientRect();return {l:Math.round(m.left),r:Math.round(m.right),vw:innerWidth}});
+console.log('menu box',JSON.stringify(r), r.l>=0&&r.r<=r.vw?'ON SCREEN':'OFF SCREEN');
+await pg.screenshot({path:'C:/pl/mm.png'}); await b.close(); fs.unlinkSync(page);

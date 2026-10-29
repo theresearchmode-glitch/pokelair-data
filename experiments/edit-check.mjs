@@ -17,8 +17,8 @@ for (const [w, h, mob] of [[390, 844, true], [1440, 900, false]]) { const pg = a
   ok(s.open && s.vis.length === 1 && s.vis[0] === 'slot2', `${w}px: tapping row 3 opens the editor on that set only (${s.vis.join(',')}; "${s.title}")`);
   await pg.screenshot({path: `${out}/edit_${w}.png`});
   await pg.click('#chEditDone'); await pg.waitForTimeout(300); ok(await pg.evaluate(() => document.getElementById('chEdit').hidden), `${w}px: Done closes it`);
-  await pg.click('#chTeamsBtn'); await pg.waitForTimeout(200); ok(await pg.evaluate(() => !document.getElementById('chTeamsMenu').hidden), `${w}px: Teams ▾ opens the menu`);
-  await pg.click('#chTeamsMenu [data-view="teams"]'); await pg.waitForTimeout(500); ok(await pg.evaluate(() => !document.querySelector('[data-pane="teams"]').hidden && !!document.querySelector('[data-pane="teams"] .chback')), `${w}px: Saved teams opens, with a back link`);
+  ok(await pg.evaluate(() => !!document.querySelector('#chActs [data-view="box"]') && !!document.querySelector('#chActs [data-view="teams"]')), `${w}px: Saved teams and My box buttons are on the page`);
+  await pg.click('#chActs [data-view="teams"]'); await pg.waitForTimeout(500); ok(await pg.evaluate(() => !document.querySelector('[data-pane="teams"]').hidden && !!document.querySelector('[data-pane="teams"] .chback')), `${w}px: Saved teams opens, with a back link`);
   await pg.click('[data-pane="teams"] .chback'); await pg.waitForTimeout(500); ok(await pg.evaluate(() => !document.querySelector('[data-pane="report"]').hidden), `${w}px: back link returns to My team`);
   await pg.click('#chSugOut [data-plan="0"]').catch(() => {}); await pg.waitForTimeout(800); ok(await pg.evaluate(() => /Undo|plan|applied|swapped/i.test((document.getElementById('toast') || {}).textContent || '')), `${w}px: Apply on a suggestion changes the team (toast shown)`);
   ok(!errs.length, `${w}px: no page errors ${errs.join(' | ')}`); }

@@ -56,13 +56,13 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
   const dm = el.querySelector('.bmcard[data-t="dmg"] .ph .pt'); if (dm) dm.textContent = 'Damage both ways';
   const bl = battlelog; if (bl && !bl.closest('details.chsec')) { const L = Array.isArray(S.log) ? S.log : [], w = L.filter(x => x.r === 'W').length; CH.foldNode(bl, 'bmlog', 'Battle log', L.length ? `– ·  logged · log this game` : 'Log this game after the match', false); } });
 // ---------- Ratings: the hot list ----------
-function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; const top = rows.slice(0, 8);
+function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; const top = rows.slice(0, PHONE() ? 16 : 20);
   const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${(+t[0]).toFixed(1)}% use · ${(+t[1]).toFixed(1)}% win` : `★ ${x.r.total}`; };
   const big = (x, c) => `<button type="button" class="chhot ${c} chhalf" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${x.r.total}"><span class="n">${x.r.total}</span><span class="nm">${esc(x.p.d)}</span><span class="st">${line(x).replace(' · ', '<br>')}</span>${sprite(x.p) || ''}</button>`;
   const T = lTier(top[0].r.total), nS = rows.filter(x => x.r.total >= T.min).length, tie = top[0].r.total === top[1].r.total;
   return `<div class="chhothead"><span class="chtier">${T.k}</span><span class="chk">${T.min}+ · ${nS} Pokémon</span>${tie ? '<span class="chpen" style="margin-left:auto">Tied for #1!</span>' : ''}</div>
     <div class="chhot2">${big(top[0], 'red')}${big(top[1], 'blue')}</div>
-    <div class="chhotrows">${top.slice(2).map((x, i) => `<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span></span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
+    <div class="chhotrows">${top.slice(2).map((x, i) => `${(() => { const t = lTier(x.r.total), pv = lTier(top[i + 1].r.total); return t.k !== pv.k ? `<div class="chtierdiv"><span class="chtier sm">${t.k}</span><span class="chk">${t.min}+ · ${rows.filter(y => lTier(y.r.total).k === t.k).length} Pokémon</span></div>` : ''; })()}<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span></span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
   if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg M-C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     const hero = $('lairHero'); const f = CH.foldNode(hero, 'lairabout', 'About the ratings', 'How they are made, sources and their track record', false);
@@ -154,11 +154,11 @@ CH.wrap('renderPlans', () => safe('plans dedup', chPlansDedup));
 CH.wrap('renderTypeChart', () => CH.pagehead($('types'), 'Type chart · what hits what', 'Type matchups', ''));
 CH.wrap('renderSets', () => CH.pagehead($('sets'), 'Popular sets · what players run', 'Popular sets', ''));
 CH.wrap('renderSaved', () => CH.pagehead($('saved'), 'Saved teams · in this browser', 'Saved teams', ''));
-CH.wrap('renderBox', () => CH.pagehead($('box'), 'My box · what you can field', 'My box', ''));
+CH.wrap('renderBox', () => CH.pagehead($('box'), 'The Pokémon you own', 'My box', ''));
 CH.wrap('renderGuides', () => CH.pagehead($('guides'), 'Archetypes · the team styles you will face', 'Archetypes', ''));
 // ---------- round 5 ----------
 // My box: the first 30, the rest one tap away
-CH.wrap('renderBox', () => CH.more($('boxList'), ':scope > .boxchip', 30, 'box', 'in your box'));
+CH.wrap('renderBox', () => CH.more($('boxList'), ':scope > .boxchip', PHONE() ? 24 : 40, 'box', 'in your box'));
 // Home: your six (columns) against the top 12 threats by top-cut share (rows, worst first)
 CH.LVC = {win: ['var(--chok)', 'answers it'], trade: ['var(--chshaky)', 'partial answer'], lose: ['var(--chbad)', 'loses 1-on-1'], none: ['var(--line2)', 'no direct matchup']};
 CH.cellOf = (r, m) => { const n = m.p.n, has = a => (a || []).some(x => x.m && x.m.n === n); return has(r.solid) ? 'win' : has(r.soft) ? 'trade' : has(r.losers) ? 'lose' : 'none'; };
@@ -228,3 +228,27 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 safe('type table folds', () => { document.querySelectorAll('#offense details.phonefold, #defSec details.phonefold').forEach((d, i) => { d.open = false; d.classList.remove('phonefold'); CH.restyle(d, i ? 'deftables' : 'offtables', 'Full tables', i ? 'Every attacking type against each of your six' : 'Every defending type, and your best hit on each top threat'); }); });
 // Build shows its cores every time it opens
 CH.wrap('setView', () => { if (view === 'auto') safe('cores', renderCores); });
+// ---------- Build page order: Build me a team · How it works · Build around a core · Recent winners (folded) ----------
+{ const prev = renderAutoBuild;
+  renderAutoBuild = function () { const ap = document.querySelector('[data-pane="auto"]'), cs = $('cores');
+    // keep the cores section safe while the builder redraws its own area
+    if (ap && cs && cs.parentElement !== ap) ap.append(cs);
+    const r = prev.apply(this, arguments);
+    safe('build order', () => { const out = $('abOut'), st = out && out.querySelector('.abstart'); if (!st) return;
+      const how = st.querySelector(':scope > details.chsec'), head = st.querySelector(':scope > .abwinhead'), cards = [...st.querySelectorAll(':scope > .evteam')];
+      if (head && cards.length && !st.querySelector('[data-chf="abwin"]')) { const w = document.createElement('div'); w.innerHTML = CH.fold('abwin', 'Start from a recent winner', `${cards.length} winning teams, full sets, ready to load`, '', false); const d = w.firstElementChild;
+        head.before(d); const b = d.querySelector('.chbody'); const h = head.querySelector('h2,h3'); if (h) h.remove(); b.append(head, ...cards); }
+      if (cs) (how || st.firstElementChild || st).after(cs); });
+    return r; }; }
+// ⋯ menus open toward whichever side has room, so they never land off-screen
+document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matches || !d.matches('details.moremenu') || !d.open) return; const p = d.querySelector('.mmpop'); if (!p) return;
+  p.style.left = '0'; p.style.right = 'auto'; const r = p.getBoundingClientRect(); if (r.right > innerWidth - 8) { p.style.left = 'auto'; p.style.right = '0'; } }, true);
+// ---------- Usage: a search box above the list (filters every rank, not just the top 10) ----------
+function chMetaFilter() { const el = $('metaList'); if (!el) return; const q = (ui.metaQ || '').trim().toLowerCase(), rows = [...el.querySelectorAll(':scope > .mrow')], more = $('chMetaMore'), sec = $('meta');
+  let n = 0; rows.forEach((r, i) => { const nm = r.querySelector(':scope > summary .nm'), hit = !q || (nm ? nm.firstChild && nm.firstChild.textContent || nm.textContent : r.textContent).toLowerCase().includes(q); r.hidden = !hit; if (q) { r.classList.remove('chhid'); if (hit) n++; } else r.classList.toggle('chhid', i >= 10 && !ui.chMetaAll); });
+  if (more) more.hidden = !!q; if (sec) sec.querySelectorAll('p, div.t2').forEach(p => { if (/^Also ranked/.test(p.textContent.trim())) p.hidden = !!q || !ui.chMetaAll; });
+  const c = $('chMetaCount'); if (c) c.textContent = q ? (n ? `${n} match${n === 1 ? '' : 'es'}` : 'No Pokémon in this list matches that') : ''; }
+CH.wrap('renderMeta', () => { const sec = $('meta'), list = $('metaList'); if (!sec || !list) return;
+  if (!$('chMetaQ')) { const w = document.createElement('div'); w.className = 'lsearch chmetaq'; w.innerHTML = '<input class="field" id="chMetaQ" type="search" placeholder="Find a Pokémon" autocomplete="off" aria-label="Find a Pokémon in usage"><div class="t2" id="chMetaCount" aria-live="polite"></div>'; list.before(w);
+    w.querySelector('input').addEventListener('input', e => { ui.metaQ = e.target.value; chMetaFilter(); }); }
+  chMetaFilter(); });

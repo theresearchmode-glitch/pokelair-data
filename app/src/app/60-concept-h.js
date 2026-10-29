@@ -147,9 +147,10 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   </div>`;
   const topH = phoneH + `<div class="chsplit chdesk">${youH}${midH}${themH}</div>`;  el.innerHTML = topH + `
     <div class="chpad">${typeof welcomeCard === 'function' ? welcomeCard() : ''}${typeof whatsNewCard === 'function' ? whatsNewCard() : ''}</div>
-    ${pr}
+    <section class="chblock chhtop"><div class="chk">${ui.homeGems && gems.length ? 'Rated 55+ but rarely used' : 'NastyPlot ratings · from real tournament results'}</div><h3>Top of the <span class="hl">meta.</span></h3>${topMeta}</section>
+    <section class="chblock chhtools"><div class="chk">Everything NastyPlot does</div><h3>All ${HOME_TILES.length} <span class="hl">tools.</span></h3>${tools}</section>
     <div class="chfolds">
-      ${CH.fold('more', 'More on Home', `All ${HOME_TILES.length} tools · top of the meta${trends ? ' · what changed' : ''}${coresH ? ' · cores' : ''} · your battles`, `<div class="chk">All tools</div>${tools}<div class="chk" style="margin-top:14px">${ui.homeGems && gems.length ? 'Hidden gems' : 'Top of the meta'}</div>${topMeta}${trends ? `<div class="chk" style="margin-top:14px">What changed this week</div>${trends}` : ''}${coresH ? `<div class="chk" style="margin-top:14px">Winning cores</div>${coresH}` : ''}<div class="chk" style="margin-top:14px">Your battles${ls ? ' · ' + ls.w + '–' + ls.l : ''}</div>${battles}<p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`)}
+      ${CH.fold('more', 'More on Home', `Doubles is played in pairs${trends ? ' · what changed' : ''}${coresH ? ' · winning cores' : ''} · your battles`, `${pr}${trends ?`<div class="chk" style="margin-top:14px">What changed this week</div>${trends}` : ''}${coresH ? `<div class="chk" style="margin-top:14px">Winning cores</div>${coresH}` : ''}<div class="chk" style="margin-top:14px">Your battles${ls ? ' · ' + ls.w + '–' + ls.l : ''}</div>${battles}<p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`)}
 
 
 
@@ -230,8 +231,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
       ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · ${c[0]} unanswered · ${c[1]} shaky</div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
       <div class="chpills">${legal}${ck}</div>
       ${ms.length ? `<div class="chsix6">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || esc(m.d)}</button>`).join('')}</div>` : ''}
-      <div class="chacts2" id="chActs"><button type="button" class="chghost chteamsbtn" aria-haspopup="true" aria-expanded="false" id="chTeamsBtn">Teams ▾</button></div>
-      <div class="chteamsmenu" id="chTeamsMenu" hidden><button type="button" data-view="teams">Saved teams</button><button type="button" data-view="box">My box</button><button type="button" data-chedit="all">Import or export</button><button type="button" data-view="auto">Build a new team</button></div></div>
+      <div class="chacts2" id="chActs"><button type="button" class="chghost" data-view="teams">Saved teams</button><button type="button" class="chghost" data-view="box">My box</button></div></div>
     ${RD ? `<div class="chring" title="Readiness grade: preparation, not a prediction">${CH.grade(RD.score)}</div>` : ''}</div>
     ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
   if (CH.acts) $('chActs').append(CH.acts);

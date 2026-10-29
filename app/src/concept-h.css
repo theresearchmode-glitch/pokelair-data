@@ -804,3 +804,29 @@ details.chsec>summary{list-style:none}details.chsec>summary::-webkit-details-mar
 :root:not(#_ch) #dmgcalc .dcconds,:root:not(#_ch) #dmgcalc .dcrow,:root:not(#_ch) #spdCtl{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 :root:not(#_ch) #dmgcalc .dcfield{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;display:flex;flex-direction:column;gap:10px}
 details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marker{display:none}
+/* My box: sprite cards in a grid, same card look as the rest of the site */
+:root:not(#_ch) #boxList{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+@media (min-width:900px){:root:not(#_ch) #boxList{grid-template-columns:repeat(8,minmax(0,1fr));gap:10px}}
+:root:not(#_ch) #boxList .boxchip{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 10px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);min-width:0;font-size:inherit;height:auto}
+:root:not(#_ch) #boxList .boxchip .spr{width:56px;height:56px;object-fit:contain}
+:root:not(#_ch) #boxList .boxchip b{font:800 11.5px/1.15 var(--body);text-align:center;color:var(--chink);overflow-wrap:normal;word-break:normal}
+:root:not(#_ch) #boxList .boxchip .x{position:absolute;top:2px;right:2px;width:28px;height:28px;min-height:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--chink2);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+:root:not(#_ch) #boxList .boxchip .x:hover{background:var(--chp2);color:var(--chbad)}
+:root:not(#_ch) #boxList .boxchip.chhid{display:none}
+:root:not(#_ch) #box .row{gap:8px;flex-wrap:wrap}
+[data-pane="auto"] #abOut #cores{margin:22px 0 22px}
+/* Home: top of the meta as a grid you can see at a glance (6 on phones, 10 on desktop) */
+.chhtop .hrow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible!important;gap:8px;margin:0}
+.chhtop .hrow>*{min-width:0!important;width:auto!important}
+@media (max-width:899px){.chhtop .hrow>*:nth-child(n+7){display:none}}
+@media (min-width:900px){.chhtop .hrow{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.chhtop,.chhtools{margin-top:26px}
+.chhtools .htiles>.htile:last-child:nth-child(odd){grid-column:span 2}@media (min-width:900px){.chhtools .htiles>.htile:last-child{grid-column:span 2}}
+.chtierdiv{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:14px 0 6px}.chtier.sm{width:34px;height:34px;font-size:22px;border-width:2px;box-shadow:2px 2px 0 var(--chblue)}
+/* the ⋯ team menu opens toward the page, never off-screen */
+:root:not(#_ch) #chActs details.moremenu{position:relative}
+:root:not(#_ch) #chActs .mmpop{min-width:210px;max-width:calc(100vw - 32px);z-index:60;background:var(--chc);border:2px solid var(--chline);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+:root:not(#_ch) #chActs .mmpop .btn{min-height:44px!important;width:100%!important;justify-content:flex-start;border:0!important;background:transparent!important;color:var(--chink)!important;font:700 14px var(--body)!important;padding:0 12px!important;border-radius:9px!important}
+:root:not(#_ch) #chActs .mmpop .btn:hover{background:var(--chp2)!important}
+.chmetaq{margin:4px 0 12px}.chmetaq .field{width:100%;max-width:420px}#chMetaCount{margin-top:6px}#chMetaCount:empty{display:none}
+.lsearch.chmetaq{flex:none!important}

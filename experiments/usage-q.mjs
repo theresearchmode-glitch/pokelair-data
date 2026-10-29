@@ -1,0 +1,14 @@
+﻿import fs from 'node:fs'; import {createRequire} from 'node:module';
+const {chromium} = createRequire(import.meta.url)('playwright');
+const APP='C:/Users/simra/code/pl-h/app/', OUT=APP+'../out/', rd=f=>{try{return JSON.parse(fs.readFileSync(OUT+f,'utf8'))}catch(e){return null}};
+const L=rd('limitless.json'), D={'meta/results':L.results,'meta/perf':{adj:L.adj,updated:L.updated.slice(0,10)},'meta/doubles_tour':rd('meta_tour.json'),'meta/doubles':rd('meta_ladder.json'),'meta/doubles_ingame':rd('meta_ingame.json'),'meta/events':rd('events.json'),'meta/model':rd('model.json')};
+const page=APP+'uq.html'; fs.writeFileSync(page,'<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+fs.readFileSync(APP+'dist/page.html','utf8').replace('render();setView(view,false);','window.__ev=c=>eval(c);render();setView(view,false);'));
+const b=await chromium.launch(); const pg=await (await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true})).newPage();
+await pg.addInitScript(D=>{localStorage.setItem('cc2.welcomed','"1"');window.claude={use:async n=>n==='db'?{doc:p=>({onSnapshot:cb=>{setTimeout(()=>cb({exists:!!D[p],data:()=>D[p]}),5);return()=>{}},get:async()=>({exists:false}),set:async()=>{}}),collection:()=>({doc:()=>({set:async()=>{},get:async()=>({exists:false}),onSnapshot:()=>()=>{}})})}:null}},D);
+await pg.goto('file://'+page); await pg.waitForTimeout(3000); await pg.evaluate(()=>window.__ev("setView('meta')")); await pg.waitForTimeout(1200);
+const vis=()=>pg.evaluate(()=>[...document.querySelectorAll('#metaList > .mrow')].filter(r=>r.offsetParent!==null).map(r=>r.innerText.split('\n').slice(0,2).join(' ')).slice(0,4));
+console.log('before:', (await vis()).length, 'visible rows (top 10 expected)');
+await pg.fill('#chMetaQ','garch'); await pg.waitForTimeout(300); console.log('garch:', JSON.stringify(await vis()), await pg.textContent('#chMetaCount'));
+await pg.fill('#chMetaQ','gengar'); await pg.waitForTimeout(300); console.log('gengar (outside top 10):', JSON.stringify(await vis()), await pg.textContent('#chMetaCount'));
+await pg.fill('#chMetaQ',''); await pg.waitForTimeout(300); console.log('cleared:', (await vis()).length);
+await b.close(); fs.unlinkSync(page);

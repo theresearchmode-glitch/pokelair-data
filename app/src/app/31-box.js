@@ -1,7 +1,7 @@
 // ---------- box ----------
 function renderBox(){
   $('boxCount').textContent=`(${S.box.length})`;
-  $('boxList').innerHTML=S.box.length?S.box.map(b=>[b,(byName.get(b)||{}).d||b]).sort((x,y)=>x[1].localeCompare(y[1])).map(([b,dn])=>`<span class="boxchip">${esc(dn)}<button class="x" type="button" data-unbox="${esc(b)}" aria-label="Remove ${esc(dn)}">×</button></span>`).join(''):'<span class="none">Your box is empty. Add the Pokémon you own.</span>';
+  $('boxList').innerHTML=S.box.length?S.box.map(b=>[b,(byName.get(b)||{}).d||b]).sort((x,y)=>x[1].localeCompare(y[1])).map(([b,dn])=>`<span class="boxchip">${sprite(byName.get(b))||''}<b>${esc(dn)}</b><button class="x" type="button" data-unbox="${esc(b)}" aria-label="Remove ${esc(dn)}">×</button></span>`).join(''):'<span class="none">Your box is empty. Add the Pokémon you own.</span>';
 }
 function renderPoolCtl(){const ps=$('plsetSum');if(ps)ps.textContent=[{box:'My box only',boxfill:'Box, then fill gaps',all:'Full roster'}[ui.pool],megaGoal()+' Mega'+(megaGoal()===1?'':'s'),S.excl.length?S.excl.length+' never-suggest':''].filter(Boolean).join(' · ');
   document.querySelectorAll('[data-absrc]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.absrc===ui.abSrc));{const n=$('abBoxN');if(n)n.textContent=S.box.length+' in your box'}
