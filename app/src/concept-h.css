@@ -594,7 +594,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{width:20p
   background:rgba(255,250,240,.82);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);border:2px solid #1D2140;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 16px rgba(29,33,64,.25)}
  :root:not(#_ch)[data-look="dark"] .bnav .chfab{background:rgba(44,42,40,.9);border-color:#F3EBDC;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 16px rgba(0,0,0,.5)}
  :root:not(#_ch) .bnav .chfab svg{width:28px!important;height:30px!important;padding:0!important;background:none!important}
- :root:not(#_ch) .bnav button[data-view="report"][aria-selected="true"] .chfab{background:#FFE800}
+ :root:not(#_ch) .bnav button[data-view="report"][aria-selected="true"] .chfab{background:#1D2140;color:#F3EBDC}:root:not(#_ch)[data-look="dark"] .bnav button[data-view="report"][aria-selected="true"] .chfab{background:#F3EBDC;color:#1D2140}
 }/* desktop: the header logo is the big, clearly visible brand mark (~230px wide) */
 @media (min-width:900px){:root:not(#_ch) .band .brand .nplk.hdr{height:60px}:root:not(#_ch) .band .inner{padding-block:14px 12px}:root:not(#_ch) .band h1{gap:16px}}
 /* ===== phone Home: one story — what this is + one button, the latest champion, your six ===== */
