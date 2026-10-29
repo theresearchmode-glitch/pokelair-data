@@ -58,7 +58,7 @@ function render(){
   let plans=[];
   // Fix plans are the slow part (about a third of a second); they're only shown on the Team page, so other pages skip them
   // and the Team page works them out when it opens.
-  const onTeam=typeof view==='undefined'||view==='build';
+  const onTeam=typeof view==='undefined'||view==='build'||view==='report'||view==='coverage';
   if(planCache.key===planKey)plans=planCache.plans;
   else if(!onTeam){plans=[];ui.plansStale=true}
   else safe('fix plans',()=>{ui.plansStale=false;ui.planMore=0;plans=ms.length?planFixes(ms,pool,useA):[];

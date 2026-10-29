@@ -80,7 +80,7 @@
 
 <nav class="tabs gut" aria-label="Pages"><div class="inner" role="tablist">
   <button type="button" role="tab" data-view="home" aria-selected="false">Home</button>
-  <button type="button" role="tab" data-view="build" aria-selected="true">Team<span class="tc"></span></button>
+  <button type="button" role="tab" data-view="report" aria-selected="false">Team<span class="tc"></span></button>
   <button type="button" role="tab" data-view="auto" aria-selected="false">Build</button>
   <button type="button" role="tab" data-view="matchup" aria-selected="false">Matchup</button>
   <button type="button" role="tab" data-view="ratings" aria-selected="false">Meta</button>
@@ -98,8 +98,7 @@
   <section id="home"><div id="homeOut"></div></section>
 </div>
 
-<div class="view" data-pane="build" hidden>
-  <div class="thero" id="teamHero" hidden></div>
+<div class="view" data-pane="report" hidden>
   <section id="defense">
     <details class="repfold" id="repFold" open><summary>Scouting report <span class="vsub">legal and items, threat preparation, checklist, defense, offense, game plan</span></summary>
     <div class="verdict" id="verdict"></div>
@@ -112,6 +111,24 @@
     </div>
     </details>
   </section>
+  <section id="thrSec">
+    <div class="head"><div><h2>Biggest threats</h2><p class="hint" id="threatHint">Meta Pokémon that hit several of yours hard, or that nothing answers.</p></div></div>
+    <div class="list" id="threats"></div>
+  </section>
+  <section id="defSec">
+    <div class="head"><div><h2>Defense</h2><p class="hint">How each attacking type hits each of your Pokémon. Red cells are weaknesses.</p></div></div>
+    <details class="phonefold"><summary>Show the type table</summary><div class="tablewrap"><table id="grid"></table></div></details>
+  </section>
+  <section id="offense">
+    <div class="head"><div><h2>Offense</h2><p class="hint">Real attacks only: Fake Out, fixed-damage and 40-power moves are left out.</p></div></div>
+    <details class="phonefold"><summary>Show the offense tables</summary><div class="tablewrap"><table id="offTypes"></table></div>
+    <h3 class="lbl" id="offMetaTitle" style="margin:6px 0 0"></h3>
+    <div class="tablewrap" id="offMetaWrap"><table id="offMeta"></table></div></details>
+  </section>
+</div>
+
+<div class="view" data-pane="build" hidden>
+  <div class="thero" id="teamHero" hidden></div>
   <section id="team">
     <div class="head teamhead">
       <div><h2 id="teamTitle">Team</h2><p class="hint" id="teamHint">Type part of a name, like "mega sal" or "hisuian arc".</p></div>
@@ -204,12 +221,12 @@
       </div>
       <div id="shotOut" aria-live="polite"></div>
     </div>
+    <div class="oppquick" id="oppQuick"></div>
     <div id="bmOut"></div>
     <div class="oppgrid" id="oppSlots" hidden></div>
     <details class="repfold mufold" id="muFold"><summary>Deeper read <span class="vsub">archetypes, their threats, full matchup grid</span></summary>
       <div id="mu"></div>
     </details>
-    <div class="oppquick" id="oppQuick"></div>
   </section>
   <section id="battlelog">
     <div class="head"><div><h2>Battle log</h2><p class="hint">After each game, check the four you brought and tap the result. Your record shows what actually works.</p></div></div>
@@ -221,20 +238,20 @@
 
 
 <div class="view" data-pane="speed" hidden>
-  <section id="speedtiers">
+  <section id="speedtiers"><div class="seg teamsw toolsw" role="group" aria-label="Tool"><button type="button" data-view="speed" aria-pressed="true">Speed tiers</button><button type="button" data-view="calc" aria-pressed="false">Damage calc</button><button type="button" data-view="types" aria-pressed="false">Type chart</button></div>
     <div class="head"><div><h2>Speed tiers</h2><p class="hint">Your six against the 20 most-used Pokémon, fastest first.</p></div></div>
     <div id="spdCtl" style="margin-bottom:10px"></div>
     <div id="spdOut"></div>
   </section>
 </div>
 <div class="view" data-pane="calc" hidden>
-  <section id="dmgcalc">
+  <section id="dmgcalc"><div class="seg teamsw toolsw" role="group" aria-label="Tool"><button type="button" data-view="speed" aria-pressed="false">Speed tiers</button><button type="button" data-view="calc" aria-pressed="true">Damage calc</button><button type="button" data-view="types" aria-pressed="false">Type chart</button></div>
     <div class="head"><div><h2>Damage calc</h2><p class="hint">Level 50 doubles damage. Each side starts with its most common set.</p></div></div>
     <div id="dcOut"></div>
   </section>
 </div>
 <div class="view" data-pane="arch" hidden>
-  <section id="guides">
+  <section id="guides"><div class="seg teamsw" role="group" aria-label="Teams, events or archetypes"><button type="button" data-view="top" aria-pressed="false">Winning teams</button><button type="button" data-view="events" aria-pressed="false">Events</button><button type="button" data-view="arch" aria-pressed="true">Archetypes</button></div>
     <div class="head"><div><h2>Archetypes</h2><p class="hint">The team styles you'll face most, how they win, and how to play into them.</p></div></div>
     <div id="guideOut"></div>
   </section>
@@ -251,20 +268,7 @@
       <div class="row"><span class="toggle megactl" title="73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.">Megas on team <span class="seg" role="group" aria-label="Megas on the team"><button type="button" data-megas="0" aria-pressed="false">0</button><button type="button" data-megas="1" aria-pressed="false">1</button><button type="button" data-megas="2" aria-pressed="true">2</button></span></span><div class="seg" role="group" aria-label="Suggest from"><button type="button" data-recsrc="box" aria-pressed="true">My box</button><button type="button" data-recsrc="all" aria-pressed="false">Whole roster</button></div></div></div>
     <div class="recgrid"><div class="princ" id="princ"></div><div class="list" id="recList"></div></div>
   </section>
-  <section>
-    <div class="head"><div><h2>Biggest threats</h2><p class="hint" id="threatHint">Meta Pokémon that hit several of yours hard, or that nothing answers.</p></div></div>
-    <div class="list" id="threats"></div>
-  </section>
-  <section>
-    <div class="head"><div><h2>Defense</h2><p class="hint">How each attacking type hits each of your Pokémon. Red cells are weaknesses.</p></div></div>
-    <details class="phonefold"><summary>Show the type table</summary><div class="tablewrap"><table id="grid"></table></div></details>
-  </section>
-  <section id="offense">
-    <div class="head"><div><h2>Offense</h2><p class="hint">Real attacks only: Fake Out, fixed-damage and 40-power moves are left out.</p></div></div>
-    <details class="phonefold"><summary>Show the offense tables</summary><div class="tablewrap"><table id="offTypes"></table></div>
-    <h3 class="lbl" id="offMetaTitle" style="margin:6px 0 0"></h3>
-    <div class="tablewrap" id="offMetaWrap"><table id="offMeta"></table></div></details>
-  </section>
+  <section id="planSec"></section>
   <details class="foot"><summary>How scoring works</summary><p>Ready for the top threats: the 30 Pokémon that make top cut most often (weighted by how often), and for each one whether your team is prepared. Every verdict is a real damage calc (the same engine as the damage calc, checked against Smogon's Champions calculator) with your sets against the set most players run, with the speed, weather, terrain, Tailwind and Trick Room your team actually has. A Pokémon of yours that moves first and OHKOs it, survives its best hit and OHKOs back, or takes at most half per hit and 2HKOs it is a solid answer; Intimidate (not into Defiant or Competitive), Will-O-Wisp, Wide Guard, Taunt or a fragile 1-on-1 win are partial answers. Support Pokémon whose job is Trick Room, screens or redirection are judged by answers to that job (Taunt, Imprison, your own Trick Room, screen breakers, Infiltrator, spread attacks, or KOing them before Trick Room goes up). Well handled = 2+ solid answers, Handled = 1, Shaky = partial only, Unanswered = none, and one level lower when a threat beats 4+ of your six 1-on-1. Readiness counts 1, 0.8, 0.4 and 0 points for those. The definition was checked on 42 hand-worked matchups and on 31,598 real tournament games, where better-prepared teams did better than the players' skill alone predicts. It is preparation, not a forecast: NastyPlot doesn't predict who wins a game, because the player decides that. Two Pokémon holding the same item make a team illegal (VGC Item Clause).</p><p>Winning-team checklist: the things recent event winners usually have, such as speed control, spread damage, lead support (Fake Out, Intimidate or redirection), a Mega, no major weak spot, items that work, and readiness for the top threats. The share of winners that pass each check is measured live from the Events data. A missing check is a gap to plan around, not a verdict. Move sets for other players' teams are estimated from popular sets, so a move only some players run counts as "partly" (~), and a partly-there check is not counted as passed.</p><p>Defense: for each attacking type, Pokémon weak to it are matched against Pokémon that resist it, and immunities count as resists. Abilities counted on defense: Levitate, Eelevate, Earth Eater, Flash Fire, Well-Baked Body, Water Absorb, Storm Drain, Dry Skin, Volt Absorb, Lightning Rod, Motor Drive, Sap Sipper, Thick Fat, Heatproof, Water Bubble, Purifying Salt, Fluffy.</p><p>Offense: each Pokémon's damaging moves, after Aerilate, Pixilate, Refrigerate, Galvanize, Dragonize, Liquid Voice, Scrappy and Tinted Lens change how they hit.</p><p>Plans: Pokémon are rated from in-game rankings, tournament use and ladder usage, then checked for speed control, Fake Out or redirection, weather and Trick Room fit, and how often real teams pair them with yours. Each plan says which top threats it covers and which it loses, and the checks it fixes or breaks. Plans never leave a duplicate item, a dead item or Choice Scarf under your own Trick Room.</p><p>NastyPlot rating (★): a 0–100 score for every legal Pokémon, saying how strong it is in the current format, proven by results. Most of it is top-cut presence: how often it's on the teams that reach top cut at Limitless events (recent and bigger events count more). Next, how often strong players pick it: usage with each team weighted by the chance its player is in the top 30% by skill (Elo over every Limitless game), like Smogon's rating-weighted usage. Then conversion (does it make top cut more or less often than its usage predicts) and its win rate, both pulled toward average until there are enough games, so a few lucky runs can't push a rare pick to the top. The best Pokémon is 95; half the presence costs about 10 points. The mix was chosen by testing ten candidate measures (plain and skill-weighted usage, top cuts weighted by placing, top cuts per entry, event wins, a Wilson lower-bound win rate, skill-adjusted results, results against the most-used Pokémon, how many different players took it to top cut, and consistency) by building each from older events only and checking it against later events' top cuts and five outside tier lists; only skill-weighted usage added to the core. Team-preview bring and lead rates from Showdown replays are shown on each sheet but not scored until there are more games. The win model isn't used here. Pokémon with no tournament results get a rough placeholder from stats, typing and tools, capped at 30. Official-event, in-game and replay numbers are shown on each sheet for reference, with outside tier lists (Pokémon Zone, PokeSynergy, PokeTools) for comparison. Every day the ratings are saved and later checked against the tournaments played after them. Hidden gems are rarely used Pokémon (under 2% of teams) that reach top cut clearly more often than their usage predicts and win more than average, over 300+ games. Suggestions from the whole roster need a rating of 50+.</p><p>Archetypes: each team is read by its speed mode (Tailwind, Trick Room, both or none), its field (sun, rain, sand, snow, and Grassy, Psychic, Electric or Misty Terrain) and control plans like Perish Trap. Battle mode compares both archetypes and weighs them when it picks your 4 and your lead.</p><p>Roster, abilities, moves and learnsets come from Pokémon Showdown's Champions data.</p></details>
 </div>
 
@@ -308,7 +312,7 @@
 <div class="view" data-pane="events" hidden>
   <section id="events">
     <div class="head"><div><h2>Events</h2><p class="hint" id="evSource"></p></div></div>
-    <div class="seg teamsw" role="group" aria-label="Teams or events"><button type="button" data-view="top" aria-pressed="false">Winning teams</button><button type="button" data-view="events" aria-pressed="true">Events</button></div>
+    <div class="seg teamsw" role="group" aria-label="Teams, events or archetypes"><button type="button" data-view="top" aria-pressed="false">Winning teams</button><button type="button" data-view="events" aria-pressed="true">Events</button><button type="button" data-view="arch" aria-pressed="false">Archetypes</button></div>
     <div id="evOut"></div>
   </section>
 </div>
@@ -317,7 +321,7 @@
   <section id="topteams">
     <div class="head"><div><h2>Teams</h2><p class="hint" id="ttSource"></p></div>
       <button class="btn refreshbtn" id="refreshBtn2" type="button" title="Refreshes rankings, sets, top teams and the rating sources together">Refresh now</button></div>
-    <div class="seg teamsw" role="group" aria-label="Teams or events"><button type="button" data-view="top" aria-pressed="true">Winning teams</button><button type="button" data-view="events" aria-pressed="false">Events</button></div>
+    <div class="seg teamsw" role="group" aria-label="Teams, events or archetypes"><button type="button" data-view="top" aria-pressed="true">Winning teams</button><button type="button" data-view="events" aria-pressed="false">Events</button><button type="button" data-view="arch" aria-pressed="false">Archetypes</button></div>
     <div id="tsBox"></div><div id="tsOut"></div>
     <div class="list" id="ttList"></div>
   </section>
@@ -334,7 +338,7 @@
 </div>
 
 <div class="view" data-pane="types" hidden>
-  <section id="types">
+  <section id="types"><div class="seg teamsw toolsw" role="group" aria-label="Tool"><button type="button" data-view="speed" aria-pressed="false">Speed tiers</button><button type="button" data-view="calc" aria-pressed="false">Damage calc</button><button type="button" data-view="types" aria-pressed="true">Type chart</button></div>
     <div class="head"><div><h2>Type matchups</h2><p class="hint">Pick types or a Pokémon to see what it beats and fears.</p></div>
       <button class="btn" id="typesClear" type="button">Clear</button></div>
     <div class="typepick" id="typePick"></div>
@@ -377,7 +381,7 @@
 </div>
 <nav class="bnav" aria-label="Main pages">
   <button type="button" data-view="home" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.2 12 4l8.5 7.2"/><path d="M6 9.6V20h12V9.6"/><path d="M10 20v-5.5h4V20"/></svg><span>Home</span></button>
-  <button type="button" data-view="build" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5l-8.2-4.7V7.2z"/><path d="M12 7.5v9M7.5 12h9"/></svg><span>Team</span></button>
+  <button type="button" data-view="report" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5l-8.2-4.7V7.2z"/><path d="M12 7.5v9M7.5 12h9"/></svg><span>Team</span></button>
   <button type="button" data-view="auto" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg><span>Build</span></button>
   <button type="button" data-view="matchup" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l9 9M4 4h4M4 4v4M20 4l-9 9M20 4h-4M20 4v4M8.5 15.5l-4 4M15.5 15.5l4 4"/></svg><span>Matchup</span></button>
   <button type="button" data-view="ratings" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.2 2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/></svg><span>Meta</span></button>

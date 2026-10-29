@@ -38,13 +38,13 @@ await ev("setView('home')"); await pg.waitForTimeout(200); await pg.$eval('#fbBo
 ok((await pg.textContent('#fbOut')).includes('Calc froze') && (await pg.textContent('#fbOut')).includes('2 messages'), 'owner sees the feedback list');
 if (shots) { await pg.$eval('#fbBox', e => e.scrollIntoView({block: 'start'})); await pg.screenshot({path: shots + '/fblist.png'}); }
 // back button
-await ev("setView('home')"); await pg.click('.bnav [data-view="build"]'); await pg.click('.bnav [data-view="ratings"]'); await pg.click('.bnav [data-view="matchup"]');
+await ev("setView('home')"); await pg.click('.bnav [data-view="report"]'); await pg.click('.bnav [data-view="ratings"]'); await pg.click('.bnav [data-view="matchup"]');
 await pg.goBack(); await pg.waitForTimeout(200); ok(await ev('view') === 'ratings', 'back: Battle mode -> Ratings');
-await pg.goBack(); await pg.waitForTimeout(200); ok(await ev('view') === 'build', 'back: Ratings -> My team');
-await pg.goForward(); await pg.waitForTimeout(200); ok(await ev('view') === 'ratings', 'forward: My team -> Ratings');
+await pg.goBack(); await pg.waitForTimeout(200); ok(await ev('view') === 'report', 'back: Ratings -> Report');
+await pg.goForward(); await pg.waitForTimeout(200); ok(await ev('view') === 'ratings', 'forward: Report -> Ratings');
 await ev("lairSheet('Incineroar')"); await pg.waitForTimeout(200); ok(await pg.$eval('#lairSheet', e => !e.hidden), 'sheet open');
 await pg.goBack(); await pg.waitForTimeout(200); ok(await pg.$eval('#lairSheet', e => e.hidden) && await ev('view') === 'ratings', 'back closes the sheet, stays on Ratings');
-await pg.goBack(); await pg.waitForTimeout(200); ok(await ev('view') === 'build', 'next back goes to the previous page');
-await ev("setView('calc')"); await ev("setView('calc')"); await pg.goBack(); await pg.waitForTimeout(200); ok(await ev('view') === 'build', 'same page twice adds one step');
+await pg.goBack(); await pg.waitForTimeout(200); ok(await ev('view') === 'report', 'next back goes to the previous page');
+await ev("setView('calc')"); await ev("setView('calc')"); await pg.goBack(); await pg.waitForTimeout(200); ok(await ev('view') === 'report', 'same page twice adds one step');
 await b.close(); fs.unlinkSync(page);
 console.log(fails.length ? `\n${fails.length} FAILED\n` + fails.join('\n') : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);

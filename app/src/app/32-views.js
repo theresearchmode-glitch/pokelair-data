@@ -1,15 +1,16 @@
 // ---------- views ----------
 let view='home';
 // Five main pages, each with its sections. The first key of a group is the page the main nav opens.
-const GROUPS=[['build',[['build','My team'],['teams','Saved teams'],['box','My box']]],
-  ['auto',[['auto','Build for me'],['coverage','Best additions']]],
-  ['matchup',[['matchup','Battle mode'],['speed','Speed tiers'],['calc','Damage calc'],['gauntlet','Gauntlet'],['arch','Archetypes'],['types','Type chart']]],
-  ['ratings',[['ratings','Ratings'],['meta','Rankings'],['cores','Cores'],['top','Teams'],['sets','Popular sets']]]];
+// Regrouped Oct 28: at most 4 sections per page so the row fits a phone. Team opens on the scouting report.
+const GROUPS=[['report',[['report','Report'],['build','Edit'],['teams','Saved'],['box','Box']]],
+  ['auto',[['auto','Build for me'],['coverage','Swaps'],['cores','Cores']]],
+  ['matchup',[['matchup','Team preview'],['gauntlet','Gauntlet'],['speed','Tools']]],
+  ['ratings',[['ratings','Tier list'],['meta','Usage'],['top','Teams'],['sets','Sets']]]];
 const VIEW_PARENT={};GROUPS.forEach(([g,subs])=>subs.forEach(([v])=>{if(v!==g)VIEW_PARENT[v]=g}));
-// pages reached from inside another tab: Events sits under Teams; Battle mode is the Matchup page itself
-const SUB_OF={events:'top'},VIEW_ALIAS={battle:'matchup'};VIEW_PARENT.events='ratings';
+// pages reached by a switch inside a section: Teams holds Events and Archetypes; Tools holds Damage calc and Type chart
+const SUB_OF={events:'top',arch:'top',calc:'speed',types:'speed'},VIEW_ALIAS={battle:'matchup'};Object.assign(VIEW_PARENT,{events:'ratings',arch:'ratings',calc:'matchup',types:'matchup'});
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved teams',matchup:'Battle mode',coverage:'Best additions',types:'Type chart',ratings:'Ratings',meta:'Meta rankings',top:'Teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle mode',cores:'Winning cores',events:'Events'};
+const VIEW_TITLE={home:'Home',report:'Scouting report',build:'Edit team',auto:'Build for me',teams:'Saved teams',matchup:'Team preview',coverage:'Swaps',types:'Type chart',ratings:'Tier list',meta:'Usage',top:'Winning teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Team preview',cores:'Cores',events:'Events'};
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
   const ic=d=>`<svg class="nic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -17,8 +18,9 @@ const VIEW_TITLE={home:'Home',build:'My team',auto:'Build for me',teams:'Saved t
   icon.cores=icon.cores||ic('<circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="16" r="4"/>');
   icon.events=icon.events||ic('<path d="M4 6h16v14H4z"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/><path d="m10 15 1.5 1.5 3-3"/>');
   const def='<svg class="nic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>';
-  const btn=(v,t)=>`<button type="button" role="tab" data-view="${v}" aria-selected="false">${icon[v]||def}<span class="nl">${t}</span>${v==='build'?'<span class="tc" id="tabCount"></span>':''}</button>`;
-  const NAMES={build:'Team',auto:'Build',matchup:'Matchup',ratings:'Meta'};
+  const btn=(v,t)=>`<button type="button" role="tab" data-view="${v}" aria-selected="false">${icon[v]||def}<span class="nl">${t}</span>${v==='report'?'<span class="tc" id="tabCount"></span>':''}</button>`;
+  icon.report=icon.report||icon.build;icon.build=ic('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>');
+  const NAMES={report:'Team',auto:'Build',matchup:'Matchup',ratings:'Meta'};
   nav.innerHTML=`<div class="sgroup">${btn('home','Home')}</div>`+GROUPS.map(([g,subs])=>`<div class="sgroup"><div class="sgl">${NAMES[g]}</div>${subs.map(([v,t])=>btn(v,t)).join('')}</div>`).join('')}}
 // Section tabs at the top of each page in a group (built here so every page in a group shows the same row)
 GROUPS.forEach(([g,subs])=>[...subs.map(([v])=>v),...Object.keys(SUB_OF).filter(x=>subs.some(([k])=>k===SUB_OF[x]))].forEach(v=>{const pane=document.querySelector(`[data-pane="${v}"]`);if(!pane)return;const sel=SUB_OF[v]||v;
@@ -55,7 +57,8 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   requestAnimationFrame(()=>document.querySelectorAll('.subnav').forEach(n=>{if(n.offsetParent===null)return;n.classList.toggle('ovf',n.scrollWidth>n.clientWidth+2);const on=n.querySelector('[aria-selected="true"]');if(on&&n.scrollWidth>n.clientWidth){const l=on.offsetLeft-n.offsetLeft-(n.clientWidth-on.offsetWidth)/2;n.scrollLeft=Math.max(0,l)}}));
   navHist(v);
   if(typeof track==='function')track('view:'+v);
-  if(v==='build'&&ui.plansStale){ui.plansStale=false;render()}
+  if((v==='build'||v==='report'||v==='coverage')&&ui.plansStale){ui.plansStale=false;render()}
+  document.querySelectorAll('.teamsw [data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
   if(v==='home')safe('home',renderHome);
   if(v==='types')renderTypeChart();
   if(v==='ratings')safe('ratings',renderLair);

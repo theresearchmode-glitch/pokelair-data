@@ -104,7 +104,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const tag2 = m => !F2 ? '' : cl.includes(m) ? '<span class="chtag lead">Lead</span>' : cb.includes(m) ? '<span class="chtag">Back</span>' : '<span class="chtag">Bench</span>';
   const row = (sp, nm, line, tg, right) => `<div class="chhr2${right ? ' r' : ''}">${sp}<div class="chbd2"><b>${esc(nm)}</b>${line ? `<span>${esc(line)}</span>` : ''}</div>${tg || ''}</div>`;
   const youH = `<div class="chband you chhalf chcol"><div class="chk">● You · ${ms.length ? 'pick 4' : 'your six'}</div><div class="chcolt">${ms.length ? esc(teamTitleFor(ms)) : 'Your six'}</div>
-    ${ms.length ? `<div class="chlist6">${ord2.map(m => row(sprite(m.p) || '', m.d, [m.item, m.ability].filter(Boolean).join(' · '), tag2(m))).join('')}</div><div class="chwl" style="justify-content:flex-start"><button type="button" class="chghost onblue" data-view="build">Open my team</button></div>`
+    ${ms.length ? `<div class="chlist6">${ord2.map(m => row(sprite(m.p) || '', m.d, [m.item, m.ability].filter(Boolean).join(' · '), tag2(m))).join('')}</div><div class="chwl" style="justify-content:flex-start"><button type="button" class="chghost onblue" data-view="report">Open my team</button></div>`
       : `<div class="chlist6 empty">${Array.from({length: 6}, () => '<div class="chhr2"><span class="emp"></span><div class="chbd2"><b>&nbsp;</b></div></div>').join('')}</div><button type="button" class="chghost onblue" data-view="build">Add your six</button>`}</div>`;
   const themH = champ ? `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">Latest winner · ${esc(ev.name)} ●</div><div class="chcolt" style="text-align:right">The champion's six</div>
     <div class="chwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen" style="color:#fff">same six as yours!</span>' : ''}</div>
@@ -114,26 +114,26 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
     <p>From <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>. See their six, pick your four.</p>
     ${F2 && cl.length ? `<div class="ch64"><span class="n b">6</span><span class="chk">bring</span><span style="font-size:26px" aria-hidden="true">→</span><span class="n r">4</span><span class="chk">pick</span></div>
     <div class="chk" style="margin:2px 0 6px">NastyPlot's four vs ${foe}</div><div class="chfour">${[...cl, ...cb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'LEAD' : 'BACK'}</div></div>`).join('')}</div>` : ''}
-    <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>`;
+    <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="report">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>`;
   // phone Home: one story top to bottom. What this is + the one button, then the latest champion, then your six.
   const mon = (p, sub, tg) => `<div class="chmmon">${sprite(p) || ''}<b>${esc(p.d)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${tg || ''}</div>`;
   const pickLine = F2 && cl.length && cb.length ? `<div class="chmwho">NastyPlot's pick vs ${foe}: lead <b>${cl.map(m => esc(m.d)).join(' + ')}</b>, back ${cb.map(m => esc(m.d)).join(' + ')}</div>` : '';
   const phoneH = `<div class="chmh">
     <section class="chmhero"><div class="chk">Pokémon Champions · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="chdisp sub">Before turn one.</div>
       <p>Teams, sets and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>.</p>
-      <div class="chmacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="build">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></section>
+      <div class="chmacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="report">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></section>
     ${champ ? `<section class="chmcard them"><div class="chk">Latest winner · ${esc(ev.name)}</div><div class="chmct">The champion's six</div>
       <div class="chmwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen">same six as yours!</span>' : ''}</div>
       <div class="chmgrid">${champ.map(x => mon(x.p, x.it)).join('')}</div>
       <div class="chmrow"><button class="chghost onred" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></section>` : ''}
     <section class="chmcard you"><div class="chk">Your team${ms.length ? ` · ${ms.length}/6` : ''}</div><div class="chmct">${ms.length ? esc(teamTitleFor(ms)) : 'Your six goes here'}</div>
-      ${ms.length ? `${pickLine}<div class="chmgrid">${ord2.map(m => mon(m.p, '', tag2(m))).join('')}</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="build">Open my team</button>${FC && !sameSix ? `<button type="button" class="linkbtn" data-evvs="${esc(ev.id)}#${ev.top.indexOf(t)}">Prep vs the champion ›</button>` : ''}</div>`
+      ${ms.length ? `${pickLine}<div class="chmgrid">${ord2.map(m => mon(m.p, '', tag2(m))).join('')}</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="report">Open my team</button>${FC && !sameSix ? `<button type="button" class="linkbtn" data-evvs="${esc(ev.id)}#${ev.top.indexOf(t)}">Prep vs the champion ›</button>` : ''}</div>`
         : `<div class="chmwho">Add six Pokémon and NastyPlot scouts the top threats for you.</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="build">Add your six</button></div>`}</section>
   </div>`;
   const topH = phoneH + `<div class="chsplit chdesk">${youH}${midH}${themH}</div>`;  el.innerHTML = topH + `
     <div class="chpad">${typeof welcomeCard === 'function' ? welcomeCard() : ''}${typeof whatsNewCard === 'function' ? whatsNewCard() : ''}</div>
     ${pr}
-    <div class="chfolds">${RD ? CH.fold('vs', 'Your six vs the top 12', (() => { const r = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, 12), bad = r.filter(x => x.level <= 1).length; return bad ? `${bad} of the top 12 ${bad === 1 ? 'is' : 'are'} unanswered or shaky · tap a row for details` : 'Every one of the top 12 is handled · tap a row for details'; })(), CH.chart(RD, ms)) : ''}
+    <div class="chfolds">
       ${CH.fold('more', 'More on Home', `All ${HOME_TILES.length} tools · top of the meta${trends ? ' · what changed' : ''}${coresH ? ' · cores' : ''} · your battles`, `<div class="chk">All tools</div>${tools}<div class="chk" style="margin-top:14px">${ui.homeGems && gems.length ? 'Hidden gems' : 'Top of the meta'}</div>${topMeta}${trends ? `<div class="chk" style="margin-top:14px">What changed this week</div>${trends}` : ''}${coresH ? `<div class="chk" style="margin-top:14px">Winning cores</div>${coresH}` : ''}<div class="chk" style="margin-top:14px">Your battles${ls ? ' · ' + ls.w + '–' + ls.l : ''}</div>${battles}<p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`)}
 
 
@@ -145,27 +145,42 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
 </div>`; };
 // replay keys fold Megas into their species (same as the ratings sheet)
 function brKeyOf(p) { return p.n === 'Floette-Mega' ? 'Floette-Eternal' : p.n.replace(/-Mega(-[XYZ])?$/, ''); }
-document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chhthr]'); if (!b) return; const n = b.dataset.chhthr; setView('build'); setTimeout(() => chScoutOpen(n), 50); });
-// ---------- Team page ----------
-function chTeamInit() { const pane = document.querySelector('[data-pane="build"]'); if (!pane || pane.dataset.ch) return; pane.dataset.ch = '1';
-  const team = $('team'), def = $('defense'), fixes = $('fixes'), rep = $('repFold'); if (!team || !def || !fixes || !rep) return;
-  const head = document.createElement('div'); head.id = 'chTeam'; head.className = 'chteam'; const sub = pane.querySelector('.subnav'); if (sub) sub.after(head); else pane.prepend(head);
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chhthr]'); if (!b) return; const n = b.dataset.chhthr; if (view !== 'report') setView('report'); setTimeout(() => chScoutOpen(n), 50); });
+// ---------- Team: Report (the scouting report as its own page) and Edit (the six and their sets) ----------
+// Every part of the report is one fold of the same style, in reading order. Nothing is removed: the original cards and
+// tables are moved in whole, so their renderers, ids and handlers keep working.
+function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'), pane = document.querySelector('[data-pane="build"]'); if (!rp || !pane || rp.dataset.ch) return; rp.dataset.ch = '1';
+  const team = $('team'), fixes = $('fixes'), rep = $('repFold'); if (!team || !fixes || !rep) return;
+  const head = document.createElement('div'); head.id = 'chTeam'; head.className = 'chteam'; const sub = rp.querySelector('.subnav'); if (sub) sub.after(head); else rp.prepend(head);
   const mk = (key, title, open) => { const w = document.createElement('div'); w.innerHTML = CH.fold(key, title, '', '', open); const d = w.firstElementChild; d.querySelector('.chs') || d.querySelector('summary > div').insertAdjacentHTML('beforeend', '<div class="chs"></div>'); return d; };
-  const fEdit = mk('edit', 'Edit team', false); fEdit.id = 'chfEdit'; fEdit.querySelector('.chbody').append(team);
-  // the full scouting report stays a fold of its own (the bottom sheet is the quick read)
-  rep.classList.add('chsec'); rep.dataset.chf = 'report'; { const o = LS.get('cc2.chf.report', 0); if (o) rep.setAttribute('open', ''); else rep.removeAttribute('open'); }
-  rep.querySelector('summary').innerHTML = `${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">Scouting report</div><div class="chs" id="chRepSub"></div></div>`;
-  // inside the full report: each card is its own fold (closed), so opening the report stays short
-  { const R = rep.querySelector('.report'), nm = {thrCard: 'Threat preparation', chkCard: 'Winning-team checklist', defCard: 'Defense', offCard: 'Offense'};
-    if (R) [...R.children].forEach(el => { const key = el.id || (el.classList.contains('gpcard') ? 'gplan' : ''); if (!key) return; const d = document.createElement('details'); d.className = 'chsub'; d.dataset.chf = 'rep-' + key;
-      if (LS.get('cc2.chf.rep-' + key, 0)) d.open = true; d.innerHTML = `<summary>${CH.tog()}<span>${nm[key] || 'Game plan'}</span></summary>`; el.before(d); d.append(el); }); }  const cols = fixes.querySelectorAll('.fixcol'); const fFix = mk('fix', 'Fix these', false), fPlan = mk('plans', 'Fix plans', false);
-  fFix.id = 'chfFix'; fPlan.id = 'chfPlan'; if (cols[0]) fFix.querySelector('.chbody').append(cols[0]); if (cols[1]) fPlan.querySelector('.chbody').append(cols[1]);
-  const cta = document.createElement('div'); cta.className = 'chcta'; cta.id = 'chCta'; cta.innerHTML = '<button type="button" class="chprimary" data-chscout="">Open scouting report <span aria-hidden="true">➜</span></button>';
-  head.after(fEdit); fEdit.after(def); def.after(fFix); fFix.after(fPlan); fPlan.after(cta); fixes.hidden = true;
-  // Save / Share / ⋯ live in the team header; Import and Export open the edit fold so their panels show
-  const acts = team.querySelector('.teamhead .row'); if (acts) { acts.classList.add('chacts2'); head.dataset.acts = '1'; CH.acts = acts; }
-  document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('#importBtn,#exportBtn,#saveBtn,#shareBtn'); if (t && t.id !== 'shareBtn') fEdit.open = true; }, true);
-  // the bottom sheet
+  const cols = fixes.querySelectorAll('.fixcol'), parts = [];
+  const put = (key, title, nodes, id) => { const d = mk(key, title, false); if (id) d.id = id; const b = d.querySelector('.chbody'); nodes.filter(Boolean).forEach(n => b.append(n)); parts.push(d); return d; };
+  // a moved section keeps its one-line explainer, not its own heading (the fold names it)
+  const flat = sid => { const s = $(sid); if (!s) return null; const h = s.querySelector(':scope > .head'); if (h) { const p = h.querySelector('.hint'); if (p) { p.classList.add('t2'); h.before(p); } h.remove(); } s.querySelectorAll('.phonefold').forEach(x => { x.open = true; x.classList.add('chflat'); }); return s; };
+  if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
+  put('fix', 'What to fix', [cols[0]], 'chfFix');
+  put('rvs', 'Your six vs the top 12', [Object.assign(document.createElement('div'), {id: 'chVsOut'})], 'chfVs');
+  put('rthr', 'Threat preparation', [$('thrCard')], 'chfThr');
+  put('rbig', 'Biggest threats', [flat('thrSec')], 'chfBig');
+  put('rchk', 'Winning-team checklist', [$('chkCard')], 'chfChk');
+  put('rplan', 'Game plan', [rep.querySelector('.gpcard')], 'chfPlanG');
+  put('rdef', 'Defense', [$('defCard'), flat('defSec')], 'chfDef');
+  put('roff', 'Offense', [$('offCard'), flat('offense')], 'chfOff');
+  // the quick verdict (legal, items, real results, type balance) is the first fold, not a second header
+  { const ver = $('verdict'); if (ver) { const d = mk('rglance', 'Legal, items and results', false); d.id = 'chfGlance'; d.querySelector('.chbody').append(ver); parts.unshift(d); } }
+  // the folds sit in one grid: two columns on desktop, one on phones; an open fold takes the full width
+  const grid = document.createElement('div'); grid.className = 'chrgrid'; head.after(grid); parts.forEach(d => grid.append(d)); let at = grid;
+  // How scoring works: the same fold style as the rest of the report
+  const foot = document.querySelector('[data-pane="coverage"] details.foot'); if (foot) { grid.append(foot); foot.className = 'chsec chfold'; foot.dataset.chf = 'rhow'; const s = foot.querySelector('summary'), body = document.createElement('div'); body.className = 'chbody';
+    [...foot.children].filter(x => x !== s).forEach(x => body.append(x)); foot.append(body); if (s) s.innerHTML = `${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">How scoring works</div><div class="chs">Readiness, the checklist, defense, offense, plans and ratings</div></div>`; }
+  rep.hidden = true; const dsec = $('defense'); if (dsec) dsec.hidden = true;
+  // Edit: the team name and its actions, then the six
+  const eh = document.createElement('div'); eh.id = 'chEditHead'; eh.className = 'chpghead chedithead'; const esub = pane.querySelector('.subnav'); if (esub) esub.after(eh); else pane.prepend(eh);
+  const acts = team.querySelector('.teamhead .row'); if (acts) { acts.classList.add('chacts2'); CH.acts = acts; }
+  const cta = document.createElement('div'); cta.className = 'chcta'; cta.id = 'chCta'; cta.innerHTML = '<button type="button" class="chprimary" data-view="report">See the scouting report <span aria-hidden="true">➜</span></button>'; team.after(cta);
+  // Swaps: the fix plans sit under the one-Pokémon additions
+  const ps = $('planSec'); if (ps && cols[1]) ps.append(cols[1]); fixes.hidden = true;
+  // the bottom sheet (one threat at a time, from a tile or a chart row)
   const scrim = document.createElement('div'); scrim.className = 'chscrim'; scrim.id = 'chScrim'; scrim.hidden = true;
   const sh = document.createElement('div'); sh.className = 'chscout'; sh.id = 'chScout'; sh.hidden = true; sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', 'Scouting report');
   document.body.append(scrim, sh); scrim.addEventListener('click', () => chScoutClose()); }
@@ -174,27 +189,34 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const slots = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).filter(x => x.m);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };
   const row = ({m, i}) => `<button type="button" class="chrow" data-chedit="${i}" aria-label="Edit ${esc(m.d)}"><span class="ix">${i + 1}</span>${sprite(m.p) || ''}<div class="chbd"><div class="nm">${esc(m.d)}${m.spread && m.spread.assumed ? ' <span class="chtag ass" title="No stat points on the sheet: your nature on the most common spread">spread assumed</span>' : ''}</div><div class="mono">${esc(m.item || 'No item')} · ${esc(m.ability || '')}</div><div class="mono mv">${m.moves.map(x => esc(x.name)).join(' · ')}</div>${note(m)}</div></button>`;
-  const title = ms.length ? teamTitleFor(ms) : 'New team';
-  head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">Your team · open team sheet · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="2">${esc(title)}</div>
-      ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · ${c[0]} unanswered · ${c[1]} shaky${v.legal === false ? ' · <b style="color:var(--bad)">not legal yet</b>' : ''}</div>` : `<div class="rd">Type a Pokémon into a slot, or let NastyPlot draft one.</div>`}
-      ${RD ? `<div class="chlegend">${CH.LEGEND}</div>` : ''}<div class="chacts2" id="chActs"></div></div>${RD ? `<div class="chring" title="Readiness grade">${CH.grade(RD.score)}</div>` : ''}</div>
-    <div class="chtleft">${slots.length ? `<div class="chshow chteamshow"><span class="chshs">${slots.map(({m, i}) => `<button type="button" class="chshm" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || `<b>${esc(m.d)}</b>`}</button>`).join('')}</span><span class="chshf" aria-hidden="true"></span></div>` : ''}
-    ${RD ? `<div class="chside"><div class="chk">Ready for</div><div style="display:flex;align-items:center;gap:14px"><span class="chdisp" style="font-size:64px">${RD.score}%</span><span class="chring sm">${CH.grade(RD.score)}</span></div><div class="t2" style="margin-bottom:8px">of the top 30 threats · ${c[0]} unanswered · ${c[1]} shaky</div>${CH.tiles(RD, 'data-chthr')}${CH.legendRow(RD)}<button type="button" class="chprimary" data-chscout="">Open scouting report <span aria-hidden="true">➜</span></button></div>` : ''}</div>
-    <div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${slots.length ? slots.map(row).join('') : '<div class="chempty">No Pokémon yet. Open <b>Edit team</b> below to add your six, or use <b>Build</b> for a full team.</div>'}</div>`;
-  if (CH.acts) $('chActs').append(CH.acts);
+  const title = ms.length ? teamTitleFor(ms) : 'No team yet';
+  head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">Scouting report · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="2">${esc(title)}</div>
+      ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · ${c[0]} unanswered · ${c[1]} shaky${v.legal === false ? ' · <b style="color:var(--bad)">not legal yet</b>' : ''}</div>` :`<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
+      <div class="chacts2"><button type="button" class="chghost" data-view="build">${ms.length ? 'Edit team' : 'Add your six'}</button>${ms.length ? '<button type="button" class="chghost" data-chshare="1">Share</button>' : ''}</div></div>${RD ? `<div class="chring" title="Readiness grade">${CH.grade(RD.score)}</div>` : ''}</div>
+    ${slots.length ? `<div class="chtleft"><div class="chshow chteamshow"><span class="chshs">${slots.map(({m, i}) => `<button type="button" class="chshm" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || `<b>${esc(m.d)}</b>`}</button>`).join('')}</span><span class="chshf" aria-hidden="true"></span></div>
+    ${RD ? `<div class="chside"><div class="chk">Ready for</div><div class="t2" style="margin-bottom:8px">the top 30 threats, worst first · tap one for the matchup</div>${CH.tiles(RD, 'data-chthr')}${CH.legendRow(RD)}</div>` : ''}</div>
+    <div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${slots.map(row).join('')}</div>` : ''}`;
+  // Edit header: one title, one line, the actions
+  const eh = $('chEditHead'); if (eh) { eh.innerHTML = `<div class="chk">Edit team · ${ms.length} of 6</div><div class="chdisp chpgt" role="heading" aria-level="2">${esc(ms.length ? teamTitleFor(ms) : 'New team')}</div><p class="chpgs">${ms.length ? 'Tap any part of a set to change it.' : 'Type a Pokémon into a slot, or let NastyPlot draft a full six.'}</p><div class="chacts2" id="chActs"></div>`; if (CH.acts) $('chActs').append(CH.acts); }
   // fold summaries
   const sum = (id, t) => { const d = $(id); const s = d && d.querySelector('.chs'); if (s) s.textContent = t; };
-  sum('chfEdit', ms.length ? `${ms.length}/6 · tap a row on the sheet to edit its set` : 'Add your six here');
-  if (!ms.length) { const f = $('chfEdit'); if (f) f.open = true; }
-  { const s = $('chRepSub'); if (s) s.textContent = RD ? `${c[0]} unanswered · ${c[1]} shaky${v.CK ? ` · ${v.CK.pass}/${v.CK.n} checks` : ''}` : 'Add Pokémon to see it'; }
-  { const nd = $('needs'), n = $('needsSub'), w = nd && nd.querySelector('.prob-row:not(.minor) .sev'); sum('chfFix', (n && n.textContent ? n.textContent : ms.length ? 'Nothing big to fix' : '') + (w ? ' · worst: ' + w.textContent.toLowerCase() : '')); }
-  { const b = chBestPlan(); sum('chfPlan', b ? `Best: ${b.txt}${b.d != null ? ` · ${b.d > 0 ? '+' : ''}${b.d}% ready` : ''}` : ms.length ? 'Opens with the plans for this team' : ''); }
+  document.querySelectorAll('[data-pane="report"] details.chsec').forEach(d => { d.hidden = !ms.length; });
+  { const nd = $('needs'), n = $('needsSub'), w = nd && nd.querySelector('.prob-row:not(.minor) .sev'); sum('chfFix', (n && n.textContent ? n.textContent : 'Nothing big to fix') + (w ? ' · worst: ' + w.textContent.toLowerCase() : '')); }
+  if (RD) { const r = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, 12), bad = r.filter(x => x.level <= 1).length; sum('chfVs', bad ? `${bad} of the top 12 ${bad === 1 ? 'is' : 'are'} unanswered or shaky` : 'Every one of the top 12 is handled'); const o = $('chVsOut'); if (o) o.innerHTML = CH.chart(RD, ms); }
+  sum('chfGlance', [v.legal === false ? 'Not legal yet' : 'Legal', v.CK ? `${v.CK.pass}/${v.CK.n} checks` : '', 'past results and type balance'].filter(Boolean).join(' · '));
+  sum('chfThr', RD ?`${RD.score}% ready · ${c[0]} unanswered · ${c[1]} shaky` : '');
+  { const th = $('threats'); const k = th ? th.querySelectorAll(':scope > *').length : 0; sum('chfBig', k ? `${k} that hit several of yours hard, or that nothing answers` : 'Nothing hits several of yours hard'); }
+  sum('chfChk', v.CK ? `${v.CK.pass} of ${v.CK.n} things recent winners have` : '');
+  sum('chfPlanG', 'Leads, what to bring and what to watch');
+  sum('chfDef', 'Weak spots and resists by type'); sum('chfOff', 'What your attacks hit hard');
   const cta = $('chCta'); if (cta) cta.hidden = !RD;
   if (!$('chScout').hidden) chScoutRender(); }
+// Share on the report uses the same share button as the Edit page
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chshare]'); if (!b) return; const s = $('shareBtn'); if (s) s.click(); });
 // the top plan, as one line (the plans themselves are worked out by the fix planner)
 function chBestPlan() { const L = ui.planList || []; const pl = L[0]; if (!pl || !pl.ch) return null; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
   return {pl, txt: pl.ch.map(x => x.out ? `${x.out.d} → ${x.c.p.d}` : `add ${x.c.p.d}`).join(', '), d: pl._ts != null && base != null ? pl._ts - base : null}; }
-document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; const i = +b.dataset.chedit, f = $('chfEdit'); if (f) f.open = true;
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; const i = +b.dataset.chedit; if (view !== 'build') setView('build');
   if (ui.tview === 'grid') { ui.tview = 'full'; LS.set('cc2.tview', 'full'); renderSlots(); }
   requestAnimationFrame(() => { const el = $('slot' + i); if (el) { try { el.scrollIntoView({behavior: 'smooth', block: 'start'}); } catch (err) {} el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 900); } }); });
 // ---------- the scouting report bottom sheet ----------
@@ -236,7 +258,7 @@ safe('concept h', () => { chBrand(); chTeamInit(); });
 const chRenderOld = render;
 // the Team header only redraws while the Team page shows (and when it opens), so other pages stay fast
 CH.stale = true;
-render = function () { chRenderOld.apply(this, arguments); if (typeof view === 'undefined' || view === 'build') { CH.stale = false; safe('concept h team', chTeamRender); } else CH.stale = true; };
+render = function () { chRenderOld.apply(this, arguments); if (typeof view === 'undefined' || view === 'build' || view === 'report') { CH.stale = false; safe('concept h team', chTeamRender); } else CH.stale = true; };
 const chSetViewOld = setView;
-setView = function (v) { chSetViewOld.apply(this, arguments); if (view === 'build' && CH.stale) { CH.stale = false; safe('concept h team', chTeamRender); } };
+setView = function (v) { chSetViewOld.apply(this, arguments); if ((view === 'build' || view === 'report') && CH.stale) { CH.stale = false; safe('concept h team', chTeamRender); } };
 if (window.__PL_TEST) window.__CH = {open: chScoutOpen, close: chScoutClose, four: CH.four, grade: CH.grade};

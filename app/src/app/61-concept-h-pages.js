@@ -5,7 +5,10 @@
 CH.wrap = (name, after) => { try { const old = eval(name); if (typeof old !== 'function') return; const fn = function () { const r = old.apply(this, arguments); safe('concept h ' + name, () => after.apply(this, arguments)); return r; }; eval(name + ' = fn'); } catch (e) {} };
 // fold an existing node in place (keeps its id and handlers)
 CH.foldNode = (node, key, title, sub, open) => { if (!node || node.closest('details.chsec')) return null; const w = document.createElement('div'); w.innerHTML = CH.fold(key, title, sub, '', open); const d = w.firstElementChild; node.before(d); d.querySelector('.chbody').append(node); return d; };
-CH.head = (kicker, title, sub) => `<div class="chpghead"><div class="chk">${kicker}</div><div class="chdisp chpgt" role="heading" aria-level="2">${title}</div>${sub ? `<p class="chpgs">${sub}</p>` : ''}</div>`;
+// one title per page: the small label above the heading never repeats the page's own name
+CH.kick = (kicker, title) => { const tt = String(title).replace(/<[^>]+>/g, '').toLowerCase(), k = String(kicker).split(' · ');
+  if (k.length > 1 && tt.includes(k[0].trim().toLowerCase())) k.shift(); const s = k.join(' · '); return s.charAt(0).toUpperCase() + s.slice(1); };
+CH.head = (kicker, title, sub) => `<div class="chpghead"><div class="chk">${CH.kick(kicker, title)}</div><div class="chdisp chpgt" role="heading" aria-level="2">${title}</div>${sub ? `<p class="chpgs">${sub}</p>` : ''}</div>`;
 // ---------- Build me a team ----------
 function chBuildInit() { const sec = $('autobuild'); if (!sec || sec.dataset.ch) return; sec.dataset.ch = '1';
   const hero = sec.querySelector('.abhero'); if (hero) { hero.classList.add('chabhero'); const h = hero.querySelector('h2'), p = hero.querySelector('.hint');
@@ -29,9 +32,11 @@ function chOppName() { const opp = S.opp.filter(Boolean); if (opp.length < 6) re
 CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const sec = $('matchup'); if (sec) sec.classList.add('chbm');
   const mine = members(), on = chOppName(), title = mine.length ? teamTitleFor(mine) : 'Your team';
   const head = document.createElement('div'); head.className = 'chbmhead';
-  head.innerHTML = `<div class="chk">Matchup · team preview${on ? ' · their real open team sheet' : ''}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span>${esc(title)}</span> <small>vs</small> <em>${on ? esc(on.who) : 'their six'}</em></div>
+  head.innerHTML = `<div class="chk">${on ? 'Their real open team sheet' : 'Team preview'}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span>${esc(title)}</span> <small>vs</small> <em>${on ? esc(on.who) : 'their six'}</em></div>
     ${on ? `<p class="chpgs">${esc(on.who)} went <b>${esc(on.rec || '')}</b>${on.place ? ` for ${on.place === 1 ? '1st' : on.place === 2 ? '2nd' : on.place === 3 ? '3rd' : on.place + 'th'}` : ''} at ${esc(on.ev.name)}${on.ev.players ? ` (${on.ev.players} players)` : ''}.</p>` : '<p class="chpgs">Type their six as you see them at team preview.</p>'}`;
-  const bar = el.querySelector('.bmbar'); if (bar) head.append(bar); el.prepend(head);
+  const bar = el.querySelector('.bmbar'); if (bar) head.append(bar);
+  // the heading first, then the opponent picker, then their six (the picker lives outside the redrawn area)
+  const oq = $('oppQuick'); if (oq && sec) { sec.querySelectorAll(':scope > .chbmhead').forEach(x => x.remove()); oq.before(head); } else el.prepend(head);
   const opp = el.querySelector('.bmopp'); if (opp) { opp.classList.add('chhalf'); opp.insertAdjacentHTML('beforebegin', '<div class="chk chbmk">Their six</div>'); }
   // bring these four: the planner's pick, its two leads up front
   const bring = el.querySelector('.bmcard[data-t="plan"]'); if (bring && bring.querySelector('.bmpicks')) { bring.classList.add('chbring');
@@ -59,10 +64,11 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
     <div class="chhot2">${big(top[0], 'red')}${big(top[1], 'blue')}</div>
     <div class="chhotrows">${top.slice(2).map((x, i) => `<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span></span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
-  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Ratings · Reg M-C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'The hot list', ''));
+  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`NastyPlot rating · Reg M-C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Tier list', ''));
     const hero = $('lairHero'); const f = CH.foldNode(hero, 'lairabout', 'About the ratings', 'How they are made, sources and their track record', false);
     if (f) { const b = f.querySelector('.chbody'); sec.querySelectorAll('.head .hint, #ratingTrack').forEach(p => b.prepend(p)); }
-    const hot = document.createElement('div'); hot.id = 'chHot'; (f || hero).after(hot); }
+    // search and filters first, then the top of the list
+    const hot = document.createElement('div'); hot.id = 'chHot'; const cnt = $('lairCount'); (cnt || f || hero).after(hot); }
   const hot = $('chHot'); const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (hot) { hot.hidden = filtered; if (!filtered && !bodyOnly) hot.innerHTML = chHotHtml(); }
   // the full board under the hot list, folded until you search or filter
@@ -89,7 +95,10 @@ CH.wrap('renderMeta', () => { const el = $('metaList'); if (!el) return; const r
   if (ui.chMetaAll == null) ui.chMetaAll = false; rows.forEach((r, i) => r.classList.toggle('chhid', i >= 10 && !ui.chMetaAll));
   if (!b) { b = document.createElement('button'); b.type = 'button'; b.id = 'chMetaMore'; b.className = 'chsec chmorebtn'; el.after(b); b.addEventListener('click', () => { ui.chMetaAll = !ui.chMetaAll; renderMeta(); }); }
   b.setAttribute('aria-expanded', ui.chMetaAll ? 'true' : 'false');
-  b.innerHTML = `<span class="chtog${ui.chMetaAll ? ' open' : ''}" aria-hidden="true">${CH.tog().replace(/^<span class="chtog" aria-hidden="true">|<\/span>$/g, '')}</span><span style="flex:1;text-align:left"><span class="cht">${ui.chMetaAll ? 'Show the top 10' : `Ranks 11–${rows.length}`}</span><span class="chs">${ui.chMetaAll ? 'Fold the rest away' : 'The rest of the list'}</span></span>`; });// ---------- Cores: the top three as big cards, the explainer folded ----------
+  b.innerHTML = `<span class="chtog${ui.chMetaAll ? ' open' : ''}" aria-hidden="true">${CH.tog().replace(/^<span class="chtog" aria-hidden="true">|<\/span>$/g, '')}</span><span style="flex:1;text-align:left"><span class="cht">${ui.chMetaAll ? 'Show the top 10' : `Ranks 11–${rows.length}`}</span><span class="chs">${ui.chMetaAll ? 'Fold the rest away' : 'The rest of the list'}</span></span>`;
+  // the "also ranked" name list belongs to the rest of the list: it shows with ranks 11+, after them
+  if (sec) [...sec.querySelectorAll('p, div.t2')].filter(p => /^Also ranked/.test(p.textContent.trim())).forEach(p => { p.hidden = !ui.chMetaAll; if (ui.chMetaAll) el.after(p); else b.after(p); }); });
+CH.wrap('renderMeta', () => CH.pagehead($('meta'), 'Usage · how often each Pokémon is picked', 'Usage', ''));// ---------- Cores: the top three as big cards, the explainer folded ----------
 CH.wrap('renderCores', () => { const el = $('coreOut'); if (!el) return; const sec = $('cores'); if (sec) sec.classList.add('chcores');
   const intro = el.querySelector('.coreintro'); if (intro) CH.foldNode(intro, 'coreabout', 'How cores are ranked', 'Win rate pulled toward the average, from real tournament teams', false);
   const rows = [...el.querySelectorAll('.corelist .corerow')]; rows.forEach((r, i) => { if (i < 3) r.classList.add('chcbig'); });
@@ -115,7 +124,9 @@ CH.wrap('renderCalc', () => { const el = $('dcOut'), sec = $('dmgcalc'); if (!el
 // ---------- Speed: who moves first ----------
 CH.wrap('renderSpeed', () => { const el = $('spdOut'), sec = $('speedtiers'); if (!el) return; CH.pagehead(sec, 'Speed tiers · level 50', 'Who moves <span style="color:var(--chblueT)">first.</span>', '');
   const sums = el.querySelector('.spdsums'); if (sums && !sums.closest('details.chsec')) { const n = sums.querySelectorAll('.spdsum').length; CH.foldNode(sums, 'spdsum', 'Your six vs the field', `How many of the top 20 each of your ${n} moves first against`, false); }
-  el.querySelectorAll('.spdrow .spdn .t2').forEach(t => { const r = t.closest('.spdrow'); if (r && !r.title) r.title = t.textContent; }); });
+  el.querySelectorAll('.spdrow .spdn .t2').forEach(t => { const r = t.closest('.spdrow'); if (r && !r.title) r.title = t.textContent;
+    // the note under the list already says their spreads are the most common ones; each row stays one line
+    if (/most common spread/.test(t.textContent)) t.innerHTML = t.innerHTML.replace(/ ?\(most common spread\)/g, ''); }); });
 // ---------- Gauntlet ----------
 CH.wrap('renderGauntlet', () => { const el = $('gauntOut'), sec = $('gauntlet'); if (!el) return; CH.pagehead(sec, 'Gauntlet · the latest top tournament teams', 'Run the gauntlet.', '');
   const intro = el.querySelector(':scope > p.t2'); if (intro && !intro.closest('details.chsec')) CH.foldNode(intro, 'gintro', 'How it works', 'Same calcs as your scouting report, both ways', false);
@@ -126,9 +137,20 @@ function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [..
 CH.wrap('renderTopTeams', () => safe('teams more', chTeamsMore));
 CH.wrap('renderEvents', () => { const sec = $('events'); CH.pagehead(sec, 'Events · recent tournaments', 'Events', ''); });
 // ---------- batch 4: Best additions, Types, Sets, Saved teams, Box, Archetypes ----------
-CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Best additions · for your team', 'Best additions', '');
-  CH.more($('recList'), ':scope > *', 2, 'recs', 'additions');
-  const thr = $('threats'); if (thr) { const s = thr.closest('section'); if (s && !s.closest('details.chsec')) CH.foldNode(s, 'covthreats', 'Biggest threats', 'Meta Pokémon that hit several of yours hard, or that nothing answers', false); } });
+// Swaps: one-Pokémon additions first, then the bigger fix plans (the checklist lives on the scouting report)
+CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Swaps · for your team', 'Swaps', '');
+  const pr = $('princ'); if (pr) pr.hidden = true; if (sec) sec.classList.add('chswaps');
+  const g = sec && sec.querySelector('.recgrid'); if (g && !sec.querySelector('.chswk')) g.insertAdjacentHTML('beforebegin', '<h3 class="chswk">One Pokémon in, one out</h3>');
+  CH.more($('recList'), ':scope > *', 3, 'recs', 'swaps'); chPlansDedup(); });
+// a one-change plan that is already a swap card above is shown once (the swap card); the rest are renumbered
+function chPlansDedup() { const el = $('sugs'); if (!el) return; const R = new Set((ui.recs || []).map(pl => { const x = pl.ch && pl.ch[0]; return x ? (x.out ? x.out.d : '') + '>' + x.c.p.d : ''; }));
+  let j = 0; el.querySelectorAll(':scope > .plan').forEach(c => { const sw = c.querySelectorAll('.swap'); let dup = false;
+    if (sw.length === 1) { const o = sw[0].querySelector('.out'), i = sw[0].querySelector('.in'); dup = R.has((o ? o.textContent : '') + '>' + (i ? i.textContent : '')); }
+    c.classList.toggle('chdup', dup); if (dup) return; j++; const pt = c.querySelector('.pt'); if (pt) pt.textContent = pt.textContent.replace(/^(Plan|Idea|Side-grade) \d+/, `$1 ${j}`);
+    const b = c.querySelector('[data-plan]'); if (b && /plan \d+/.test(b.textContent)) b.textContent = 'Apply plan ' + j; });
+  const t = $('sugTitle'); if (t && t.textContent === 'Fix plans') t.textContent = 'Bigger plans';
+  let n = $('chPlanNone'); if (!j && el.querySelector('.plan')) { if (!n) { n = document.createElement('p'); n.id = 'chPlanNone'; n.className = 't2'; el.prepend(n); } n.textContent = 'Every one-change plan is a swap above. Tap More ideas for plans with two or more changes.'; } else if (n) n.remove(); }
+CH.wrap('renderPlans', () => safe('plans dedup', chPlansDedup));
 CH.wrap('renderTypeChart', () => CH.pagehead($('types'), 'Type chart · what hits what', 'Type matchups', ''));
 CH.wrap('renderSets', () => CH.pagehead($('sets'), 'Popular sets · what players run', 'Popular sets', ''));
 CH.wrap('renderSaved', () => CH.pagehead($('saved'), 'Saved teams · in this browser', 'Saved teams', ''));
@@ -184,3 +206,12 @@ CH.wrap('openShareCard', () => { const box = $('shareBox'); if (!box || box.hidd
   const cur = CH.shareMode || document.documentElement.dataset.look || 'light';
   hd.insertAdjacentHTML('afterend', `<div class="seg chshmode" role="group" aria-label="Card style">${[['light', 'Light'], ['dark', 'Dark']].map(([k, t]) => `<button type="button" data-chshm="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</div>`); });
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chshm]'); if (!b) return; CH.shareMode = b.dataset.chshm; const box = $('shareBox'); if (box) { box.hidden = true; box.innerHTML = ''; } openShareCard(); });
+
+// ---------- one fold style everywhere: older collapsible sections take the Concept H fold look (ids and live text kept) ----------
+CH.restyle = (d, key, title, sub) => { if (!d || d.classList.contains('chsec')) return; const s = d.querySelector(':scope > summary'); if (!s) return;
+  const keep = [...s.querySelectorAll('[id]')]; d.classList.add('chsec', 'chfold'); d.classList.remove('repfold', 'foot'); d.dataset.chf = key;
+  const body = document.createElement('div'); body.className = 'chbody'; [...d.children].filter(x => x !== s).forEach(x => body.append(x)); d.append(body);
+  s.className = ''; s.innerHTML = `${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">${title}</div><div class="chs">${sub}</div></div>`; const cs = s.querySelector('.chs'); keep.forEach(k => { cs.append(' ', k); }); };
+safe('restyle folds', () => { CH.restyle($('muFold'), 'mufold', 'Deeper read', 'Archetypes, their threats, the full matchup grid');
+  CH.restyle($('plset'), 'plset', 'Plan settings', '');
+  CH.restyle(document.querySelector('#types details.foot'), 'typechart', 'Full type chart', 'Every attacking type against every defending type'); });
