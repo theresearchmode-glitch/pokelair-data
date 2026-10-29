@@ -117,6 +117,12 @@ const src = `${E.length.toLocaleString('en-US')} Reg M-C tournament teams, ${G.t
 const out = {updated: new Date().toISOString(), tournaments: Object.keys(index.tournaments).length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
   adj: {label: `Limitless · ${Object.keys(index.tournaments).length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
     rows: [...mon].map(([n, o]) => [n, Math.round(1000 * o.bs / (o.g || 1)) / 1000, o.g, o.t, Math.round(1000 * o.w / (o.g || 1)) / 10])},
+  // the ratings' tournament input, rebuilt every day from these same teams (it used to be a hand-made Pokémon Zone snapshot):
+  // [name, % of teams, game win %, games]. Megas are already their own rows (split: the page doesn't subtract them again).
+  tour: {label: `Limitless · ${Object.keys(index.tournaments).length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
+    updated: new Date().toISOString().slice(0, 10),
+    rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
+    megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
   results: {source: src, teams: E.length, base: Math.round(base * 1e4) / 1e4, minCore: 40,
     mons: Object.fromEntries([...mon].map(([n, o]) => [n, [o.t, shrink(o.w, o.g, 40)]])),
     pairs: Object.fromEntries([...P].filter(([, o]) => o.n >= 25).map(([k, o]) => [k, [o.n, shrink(o.w, o.g, 40)]])),

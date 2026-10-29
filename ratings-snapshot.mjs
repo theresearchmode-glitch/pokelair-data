@@ -8,7 +8,8 @@ let chromium; try { ({chromium} = await import('playwright')); } catch (e) { con
 execFileSync('node', ['app/build.mjs'], {stdio: 'ignore'});
 const page = 'app/dist/snapshot-ratings.html';
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync('app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
-const L = rd('limitless.json'), D = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'),
+// meta/perf as the morning refresh writes it: fresh tournament usage and in-game order from perf.json, plus adj
+const L = rd('limitless.json'), P = rd('perf.json'), D = {'meta/results': L && L.results, 'meta/perf': L && Object.assign({}, P && P.tour ? {tour: P.tour} : {}, P && P.ingame ? {ingame: P.ingame} : {}, {adj: L.adj, updated: L.updated.slice(0, 10)}), 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'),
   'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
 const b = await chromium.launch(), pg = await (await b.newContext()).newPage();
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}})} : null}; }, D);

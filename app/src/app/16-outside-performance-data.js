@@ -38,11 +38,12 @@ function perfFromRaw(raw) {
   if (!raw || typeof raw !== 'object') return null;
   const num = v => (typeof v === 'number' && isFinite(v)) ? v : +v;
   // tournament tables list base names that include their Mega users; split the plain form out
-  const pz = (rows, megas) => { const D = {}; for (const r of [...(rows || []), ...(megas || [])]) { if (!Array.isArray(r)) continue; const n = srcName(r[0]); if (!n) continue;
+  // split: the table already lists Megas on their own rows (our daily Limitless table), so nothing is subtracted
+  const pz = (rows, megas, split) => { const D = {}; for (const r of [...(rows || []), ...(megas || [])]) { if (!Array.isArray(r)) continue; const n = srcName(r[0]); if (!n) continue;
       const u = num(r[1]), w = num(r[2]), mt = num(r[3]); if (![u, w, mt].every(isFinite)) continue;
       // two rows for one Pokémon (cosmetic forms like Sinistcha-Masterpiece) add up instead of overwriting
       const o = D[n]; D[n] = o ? [+(o[0] + u).toFixed(2), o[2] + mt > 0 ? +((o[1] * o[2] + w * mt) / (o[2] + mt)).toFixed(1) : w, o[2] + mt] : [u, w, mt]; }
-    for (const p of ROSTER) { if (p.m || !D[p.n] || (p.n !== p.b && p.n !== 'Floette-Eternal')) continue;
+    if (!split) for (const p of ROSTER) { if (p.m || !D[p.n] || (p.n !== p.b && p.n !== 'Floette-Eternal')) continue;
       const ms = ROSTER.filter(q => q.m && q.b === p.b && D[q.n]); if (!ms.length) continue;
       let [u, w, mt] = D[p.n], wins = w / 100 * mt; for (const q of ms) { u -= D[q.n][0]; mt -= D[q.n][2]; wins -= D[q.n][1] / 100 * D[q.n][2]; }
       D[p.n] = [Math.max(0, +u.toFixed(2)), mt > 0 ? +Math.max(0, Math.min(100, wins / mt * 100)).toFixed(1) : 0, Math.max(0, Math.round(mt))]; }
@@ -66,7 +67,7 @@ function perfFromRaw(raw) {
   const ingame = {}, ig = opggNames(raw.ingame && raw.ingame.names), curve = Object.values(smogon).sort((a, b) => b - a);
   const igSeen = new Set(); ig.forEach((n, i) => { if (!n || igSeen.has(n)) return; igSeen.add(n); const v = curve.length ? (curve[i] != null ? curve[i] : curve[curve.length - 1] * Math.pow(.97, i - curve.length + 1)) : 0;
     for (const [k, sh] of formsOf(n)) ingame[k] = (ingame[k] || 0) + v * sh; });
-  const out = {updated: raw.updated || '', doubles: pz(raw.tour && raw.tour.rows, raw.tour && raw.tour.megas), official: pz(raw.official && raw.official.rows, raw.official && raw.official.megas),
+  const out = {updated: raw.updated || '', doubles: pz(raw.tour && raw.tour.rows, raw.tour && raw.tour.megas, !!(raw.tour && raw.tour.split)), official: pz(raw.official && raw.official.rows, raw.official && raw.official.megas),
     adj: (() => { const D = {}; for (const r of (raw.adj && raw.adj.rows) || []) { if (!Array.isArray(r)) continue; const n = srcName(r[0]); const b = num(r[1]), g = num(r[2]); if (!n || !isFinite(b) || !isFinite(g)) continue;
       const t = num(r[3]) || 0, w = isFinite(num(r[4])) ? num(r[4]) : null, o = D[n];
       // two rows for one Pokémon ("Floette|M" and "Eternal Flower Floette|M"): weighted merge by games
@@ -79,7 +80,7 @@ function perfFromRaw(raw) {
 let perfCache = {key: null, val: null};
 function activePerf() { const key = metaVersion; if (perfCache.key === key) return perfCache.val;
   // the daily refresh doesn't fetch op.gg yet: borrow the built-in in-game ranking when today's data lacks it
-  let v = null; try { let raw = META.perf; if (raw && typeof PERF_RAW === 'object') { const add = {}; for (const k of ['ingame', 'adj']) if (!raw[k] && PERF_RAW[k]) add[k] = PERF_RAW[k]; if (Object.keys(add).length) raw = Object.assign({}, raw, add); } v = raw ? perfFromRaw(raw) : null; } catch (e) { v = null; }
+  let v = null; try { let raw = META.perf; if (raw && typeof PERF_RAW === 'object') { const add = {}; for (const k of ['tour', 'official', 'ladder', 'smogon', 'prd', 'ingame', 'adj']) if (!raw[k] && PERF_RAW[k]) add[k] = PERF_RAW[k]; if (Object.keys(add).length) raw = Object.assign({}, raw, add); } v = raw ? perfFromRaw(raw) : null; } catch (e) { v = null; }
   if (!v) { try { v = typeof PERF_RAW === 'object' ? perfFromRaw(PERF_RAW) : null; } catch (e) { v = null; } }
   perfCache = {key, val: v}; return v; }
 

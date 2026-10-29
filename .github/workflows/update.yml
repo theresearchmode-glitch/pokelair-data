@@ -23,6 +23,8 @@ jobs:
       - run: node model.mjs || echo "model skipped"
       - run: node ladder.mjs || echo "ladder stats skipped"
       - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || echo "op.gg skipped"
+      # the ratings' daily inputs (tournament table + in-game order) for the morning refresh; checked by health.mjs
+      - run: node perf.mjs || echo "perf skipped"
       - run: node ratings-snapshot.mjs || echo "ratings snapshot skipped"
       - run: node scoreboard.mjs || echo "scoreboard skipped"
       - name: Commit

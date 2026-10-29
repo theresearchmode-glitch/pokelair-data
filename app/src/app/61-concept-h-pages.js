@@ -72,6 +72,10 @@ CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec
     if (f) { const b = f.querySelector('.chbody'); sec.querySelectorAll('.head .hint, #ratingTrack').forEach(p => b.prepend(p)); }
     // search and filters first, then the top of the list
     const hot = document.createElement('div'); hot.id = 'chHot'; const cnt = $('lairCount'); (cnt || f || hero).after(hot); }
+  // the date line is rebuilt on every render: the first render can run before today's data has loaded (Oct 29 fix)
+  { const k = sec.querySelector(':scope > .chpghead .chk'), pf = activePerf(); if (k) { let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : '';
+      try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
+      k.textContent = `Rated 0–100 from real results · Reg M-C doubles${d ? ' · updated ' + d : ''}`; } }
   const hot = $('chHot'); const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (hot) { hot.hidden = filtered; if (!filtered && !bodyOnly) hot.innerHTML = chHotHtml(); }
   // the full board under the hot list, folded until you search or filter
