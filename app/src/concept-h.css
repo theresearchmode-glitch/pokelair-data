@@ -10,7 +10,7 @@
   --chok:#1E8E4E;--chmid:#2E7FB8;--chshaky:#C98A00;--chbad:#E8364F;
   --court:var(--chp);--card:var(--chc);--card2:#F4ECDD;--ink:var(--chink);--mute:var(--chink2);--faint:#6E6F82;--line:#D8CCB6;--line2:#C4B79F;--soft:#EDE3D0;
   --navy:var(--chink);--deep:#14172E;--navy-ink:#F1E9DA;--navyt:var(--chink);--btn:var(--chink);
-  --volt:var(--chred);--volt2:#FF6B80;--volt-ink:#ffffff;--accent:var(--chblueT);--gold:#C98A00;--gold-soft:#FFF4C2;--gold-ink:#5C4300;
+  --volt:var(--chblue);--volt2:#4AAEF5;--volt-ink:#ffffff;--accent:var(--chblueT);--gold:#C98A00;--gold-soft:#FFF4C2;--gold-ink:#5C4300;
   --good:#1E7E46;--ok:#1F6F9E;--warn:#9A5E00;--bad:#C41E35;--good-soft:#DDEFD9;--warn-soft:#FBEBC6;--bad-soft:#F9DADD;--mega-soft:#F9DADD;--mega-ink:#9E1B2E;
   --display:"Anton","Impact","Arial Narrow",sans-serif;--body:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Space Mono",ui-monospace,Menlo,monospace;
   --day:var(--chp);--day2:var(--chp2);--dink:var(--chink);--dmute:var(--chink2);--dline:var(--line);--pinksh:transparent;

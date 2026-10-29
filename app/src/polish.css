@@ -135,3 +135,19 @@
 /* Ratings tiles on small phones (≤370px): smaller sprite so names fit */
 @media(max-width:370px){.ltile{padding-left:31px!important;padding-right:3px!important}.ltile .ltspr{width:30px!important;height:30px!important;left:0!important}.ltgrid{gap:4px!important}}
 .chparth .n[hidden],#chActs [hidden],.moremenu [hidden]{display:none!important}
+/* tap targets: at least ~40px to tap, without changing how links and chips look */
+.linkbtn,.hlink,.tipq,.ltype,.lflag,.tcb{position:relative}
+.linkbtn::after,.hlink::after{content:"";position:absolute;left:-4px;right:-4px;top:-13px;bottom:-13px}
+.tipq::after{content:"";position:absolute;inset:-12px}
+.ltype::after,.lflag::after,.tcb::after{content:"";position:absolute;left:0;right:0;top:-6px;bottom:-6px}
+:root:not(#_ch) #boxList .boxchip .x{width:40px;height:40px;top:-4px;right:-4px}
+.trow{min-height:40px}
+label.toggle{min-height:40px;display:inline-flex;align-items:center;gap:8px}
+:root:not(#_ch) main .megactl .seg>button{min-height:40px;min-width:40px}
+.megactl.onnavy .seg button[aria-pressed="true"],:root:not([data-look="dark"]) .megactl.onnavy .seg button[aria-pressed="true"]{background:var(--chblue,#0078BF)!important;color:#fff!important}
+:root:not(#_ch) main .seg.segwrap button{min-height:40px}
+/* readable small text: Home winner card on a deeper red, full-strength labels; Ratings top cards; tier labels */
+:root:not([data-look="dark"]) .chmcard.them{background-color:#C42740}
+.chmcard .chk,.chmcard .chmwho,.chmcard .chmgrid span,.chmcard .chtag{opacity:1!important}
+.chhot .st{opacity:1}
+.ltl span{font-size:11px!important}
