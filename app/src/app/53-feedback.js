@@ -55,7 +55,8 @@ const WHATS_NEW = {id: '2026-10-28b', items: [
 function whatsNewCard() { let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
   if (!welcomed) { try { LS.set('cc2.seenNew', WHATS_NEW.id); } catch (e) {} return ''; }
   if (seen === WHATS_NEW.id) return '';
-  return `<div class="wnew" id="wnewCard"><div class="wnh"><span class="wk">What's new</span><button type="button" class="fbx" data-wnewx="1" aria-label="Dismiss">×</button></div>
-    <ul>${WHATS_NEW.items.map(([t, d]) => `<li><b>${esc(t)}</b> <span>${esc(d)}</span></li>`).join('')}</ul></div>`; }
-document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-wnewx]'); if (!b) return;
+  // a one-line fold: the list opens on tap (Oct 29, so Home fits in about three phone screens)
+  return `<details class="wnew" id="wnewCard"><summary class="wnh"><span class="wk">What's new</span><span class="wns">${WHATS_NEW.items.length} updates · ${WHATS_NEW.items.slice(0, 2).map(([t]) => esc(t)).join(', ')}…</span><button type="button" class="fbx" data-wnewx="1" aria-label="Dismiss">×</button></summary>
+    <ul>${WHATS_NEW.items.map(([t, d]) => `<li><b>${esc(t)}</b> <span>${esc(d)}</span></li>`).join('')}</ul></details>`; }
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-wnewx]'); if (!b) return; e.preventDefault();
   try { LS.set('cc2.seenNew', WHATS_NEW.id); } catch (er) {} const c = $('wnewCard'); if (c) c.remove(); });

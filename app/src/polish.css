@@ -151,3 +151,15 @@ label.toggle{min-height:40px;display:inline-flex;align-items:center;gap:8px}
 .chmcard .chk,.chmcard .chmwho,.chmcard .chmgrid span,.chmcard .chtag{opacity:1!important}
 .chhot .st{opacity:1}
 .ltl span{font-size:11px!important}
+/* ===== Home in about three phone screens (Oct 29, approved plan) ===== */
+.wnew>summary{list-style:none;cursor:pointer;gap:10px;min-height:40px}.wnew>summary::-webkit-details-marker{display:none}
+.wnew .wns{flex:1;min-width:0;font-size:13px;color:var(--mute);line-height:1.3}
+.wnew[open] .wns{display:none}.wnew:not([open]){padding-top:8px;padding-bottom:8px}
+.htile .hsd{display:none}
+@media (max-width:760px){
+ .htile .hld{display:none}.htile .hsd{display:block}
+ .htiles{gap:8px}.htile{padding:9px 10px;row-gap:2px}
+ .chmmon{padding:4px 3px 6px}.chmmon .spr{width:52px;height:52px}.chmgrid{gap:8px 6px;margin-top:10px}
+ .chhtop .hrow>*:nth-child(n+4){display:none}
+ .chhtop,.chhtools{margin-top:20px}
+}
