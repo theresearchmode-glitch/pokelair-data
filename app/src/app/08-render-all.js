@@ -2,7 +2,11 @@
 let renderQueued=false,planCache={key:null,plans:[]},metaVersion=0;
 // While the page is opening, the data arrives in up to 11 pieces; a short wait lets pieces that land close together share
 // one redraw instead of one each.
-function scheduleRender(){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;render()},performance.now()<6000?90:0)}
+function scheduleRender(){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;bgRender()},performance.now()<6000?90:0)}
+// Background updates (data arriving, slow checks finishing) wait while someone is typing in a box: a redraw would rebuild the box
+// and wipe what they typed (Oct 30 audit). They run as soon as the box loses focus.
+function typingNow(){const a=document.activeElement;return !!(a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&/^(text|search|)$/.test(a.type||''))))}
+let bgWait=false;function bgRender(){if(!typingNow()){render();return}if(bgWait)return;bgWait=true;const go=()=>{document.removeEventListener('focusout',go,true);setTimeout(()=>{bgWait=false;if(typingNow()){bgRender();return}render()},150)};document.addEventListener('focusout',go,true)}
 // Run one part of the page; if it throws, log it and keep the rest of the page working.
 function safe(name,fn){try{fn()}catch(err){try{console.error('Champions Team Coverage: '+name+' failed',err)}catch(e){}}}
 function render(){
