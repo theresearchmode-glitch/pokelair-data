@@ -494,8 +494,13 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.
   else if(t.id==='dcDHp'||t.id==='dcDDf'||t.id==='dcDSd'){const I=dc.inv[dk],k={dcDHp:'hpSp',dcDDf:'defSp',dcDSd:'spdSp'}[t.id];I[k]=+v;
     let over=I.hpSp+I.defSp+I.spdSp-66;for(const o of ['spdSp','defSp','hpSp']){if(over<=0)break;if(o===k)continue;const take=Math.min(over,I[o]);I[o]-=take;over-=take}}
   else if(t.id==='dcDNat')dc.inv[dk].nat=v;else if(t.id==='dcDIt')dc.inv[dk].item=v;else if(t.id==='dcDAb')dc.inv[dk].ability=v;else if(t.id==='dcDBo')dc.inv[dk].boost=+v;
-  renderCalc()});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data-dct],[data-dcdir],[data-dcterr],#dcSwap');if(!b)return;if(b.dataset.dcterr!=null){dc.terrain=b.dataset.dcterr;dc.tSet=true;renderCalc();return}if(b.dataset.dcdir){dc.dir=b.dataset.dcdir;keepScroll(()=>renderCalc());return}if(b.id==='dcSwap'){const a=dc.a;dc.a=dc.d;dc.d=a;dc.mv=null;dc.spread=null;renderCalc();return}
+  if(t.id)dcRerender(t);else renderCalc()});
+// A field button redraws the whole calculator; the button you tapped stays at the same spot on screen (Sim, Oct 30: the page
+// jumped about 77px and the numbers seemed to flicker). Runs before the screen paints.
+function dcPin(b,fn){const at=['data-dcw','data-dct','data-dcdir','data-dcterr'].find(a=>b.hasAttribute(a)),sel=at?`[${at}="${CSS.escape(b.getAttribute(at))}"]`:(b.id?'#'+b.id:null),top=b.getBoundingClientRect().top,y=scrollY;
+  fn();const n=sel&&document.querySelector('#dcOut '+sel);if(n){const d=n.getBoundingClientRect().top-top;if(Math.abs(d)>1)scrollBy(0,d)}else if(Math.abs(scrollY-y)>1)scrollTo(0,y)}
+function dcRerender(b){dcPin(b,()=>renderCalc())}
+document.addEventListener('click',e=>{const b0=e.target.closest('[data-dcw],[data-dct],[data-dcdir],[data-dcterr],#dcSwap');if(!b0)return;const renderCalc=()=>dcRerender(b0);const b=b0;if(b.dataset.dcterr!=null){dc.terrain=b.dataset.dcterr;dc.tSet=true;renderCalc();return}if(b.dataset.dcdir){dc.dir=b.dataset.dcdir;keepScroll(()=>renderCalc());return}if(b.id==='dcSwap'){const a=dc.a;dc.a=dc.d;dc.d=a;dc.mv=null;dc.spread=null;renderCalc();return}
   if(b.dataset.dcw!=null){dc.weather=b.dataset.dcw;dc.wSet=true}else{const k=b.dataset.dct;if(k==='spread'){const mv=mvByName.get(dc.mv);const cur=dc.spread==null?!!(mv&&mv.spread):dc.spread;dc.spread=!cur}else dc[k]=!dc[k]}renderCalc()});
 
 
@@ -503,5 +508,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-dcw],[data
 let dcObs=null;
 function dcStickWatch(){const st=$('dcStick'),res=document.querySelector('#dcOut .dcres');if(dcObs){dcObs.disconnect();dcObs=null}if(!st||!res)return;
   const band=document.querySelector('header.band');if(band)document.documentElement.style.setProperty('--bandh',(getComputedStyle(band).position==='sticky'?band.getBoundingClientRect().height:0)+'px');
+  // decide right away, before the screen paints, whether the full result is on screen: a redraw (tapping a weather) makes a new
+  // bar that would otherwise show for a frame until the observer reports, which flickered at the top (Sim, Oct 30)
+  {const r=res.getBoundingClientRect(),vh=innerHeight||document.documentElement.clientHeight,vis=Math.max(0,Math.min(r.bottom,vh)-Math.max(r.top,0));st.style.transition='none';st.classList.toggle('off',r.height>0&&vis/r.height>=.35);void st.offsetWidth;st.style.transition=''}
   try{dcObs=new IntersectionObserver(es=>{for(const x of es)st.classList.toggle('off',x.isIntersecting)},{threshold:.35});dcObs.observe(res)}catch(e){}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#dcStick');if(!b)return;const res=document.querySelector('#dcOut .dcres');if(res)try{res.scrollIntoView({behavior:'smooth',block:'center'})}catch(er){res.scrollIntoView()}});
