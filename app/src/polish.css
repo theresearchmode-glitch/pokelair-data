@@ -324,3 +324,8 @@ details.slmore[open]>summary::after{content:"Hide"}
 .abaround .abchip{font-size:15px;padding:4px 6px 4px 4px}.abaround .abchip .spr{width:34px;height:34px}
 .abaround .abchip button{min-width:40px;min-height:40px;font-size:20px}
 :root:not(#_ch) .abhero.chabhero{overflow:visible} /* the Build around menu drops below the card */
+
+/* grade ring is a button: tap for why */
+button.chring{background:none;cursor:pointer;padding:0}
+.chgwhy{margin:10px 0 4px;padding:12px 14px;border:2px solid var(--chline);border-radius:12px;background:var(--chc);color:var(--chink);font-size:15px;line-height:1.45}
+.chgwhy .t2{display:inline-block;margin-top:6px;font-size:14px}

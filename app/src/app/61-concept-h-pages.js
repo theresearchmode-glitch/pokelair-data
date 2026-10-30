@@ -217,7 +217,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   const RD = prepOf(ms); x.textAlign = 'right';
   if (RD) { x.font = '400 112px Anton, Impact, sans-serif'; const pw = x.measureText(RD.score + '%').width; x.fillStyle = P.shadow; x.fillText(RD.score + '%', 1150, 154); x.fillStyle = P.ink; x.fillText(RD.score + '%', 1144, 148);
     x.font = '700 20px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('READY FOR THE TOP 30 THREATS', 1144, 184);
-    x.save(); x.translate(1144 - pw - 70, 100); x.rotate(-.14); x.strokeStyle = P.pen; x.lineWidth = 5; x.beginPath(); x.arc(0, 0, 48, 0, Math.PI * 2); x.stroke(); x.font = '400 54px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.textAlign = 'center'; x.fillText(CH.grade(RD.score), 0, 20); x.restore(); }
+    x.save(); x.translate(1144 - pw - 70, 100); x.rotate(-.14); x.strokeStyle = P.pen; x.lineWidth = 5; x.beginPath(); x.arc(0, 0, 48, 0, Math.PI * 2); x.stroke(); x.font = '400 54px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.textAlign = 'center'; x.fillText(CH.gradeOf(RD, (ui.vsum || {}).CK).letter, 0, 20); x.restore(); }
   x.textAlign = 'left';
   // team name with a riso offset
   const title = ((typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team').toUpperCase(); let fz = 92;
