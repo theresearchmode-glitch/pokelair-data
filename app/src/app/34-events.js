@@ -16,7 +16,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(d.thm){setTheme(d.thm);return}
   if(b.id==='sideClose'){sideOpen(false);return}
   if(d.view){setView(d.view);return}
-  if(d.typesmon){const p=byName.get(d.typesmon);if(p){ui.typesMon=p.n;ui.typesSel=p.t.slice();renderTypes()}return}
+  if(d.typesmon){const p=byName.get(d.typesmon);if(p){ui.typesAuto=false;ui.typesMon=p.n;ui.typesSel=p.t.slice();renderTypes()}return}
   if(d.type){const s=ui.typesSel||[];ui.typesMon=null;ui.typesCleared=true;ui.typesSel=s.includes(d.type)?s.filter(x=>x!==d.type):(s.length>=2?[s[1],d.type]:[...s,d.type]);renderTypes();return}
   if(b.id==='typesClear'||d.typesmonx){ui.typesSel=[];ui.typesMon=null;ui.typesCleared=true;const f=$('typeMonIn');if(f)f.value='';renderTypes();return}
   if(d.mvreset!==undefined){const s=S.slots[+d.mvreset];if(s&&s.mv){const before=teamOffense();delete s.mv[S.format];if(!Object.keys(s.mv).length)delete s.mv;render();const after=teamOffense();toast(`Back to the popular set · Offense ${before===after?'stays at '+after:before+' → '+after} of 18`)}return}
@@ -44,9 +44,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.absrc){ui.abSrc=d.absrc==='all'?'all':'box';LS.set('cc2.absrc',ui.abSrc);renderPoolCtl();if(ui.ab&&!ui.ab.busy)runAutoBuild()}
   else if(d.abnext){abNext(d.abnext)}
-  else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;keepUndo();S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the built team. Fix plans and the game plan now describe it.`,true)}
+  else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;keepUndo();S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the built team. Fix it and the game plan now describe it.`,true)}
   else if(d.absave){const t=abTeam(d.absave);if(!t||S.teams.length>=10)return;const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-    const name=`${FMT(d.absave)}: ${t.label}`.slice(0,40);S.teams.push({id,name,slots:t.mons.map(m=>({n:m.n,a:null,lock:false})),format:d.absave,saved:Date.now()});render();toast(`Saved "${name}"`)}
+    const name=`${t.label||'Built team'}`.slice(0,40);S.teams.push({id,name,slots:t.mons.map(m=>({n:m.n,a:null,lock:false})),format:d.absave,saved:Date.now()});render();toast(`Saved "${name}"`)}
   else if(d.qa!==undefined){const pl=(ui.quick||[])[+d.qa];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};
     keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;keepUndo();

@@ -5,7 +5,8 @@ function renderTypes() {
   // Opens on something useful: your first team member, or the most-used Pokémon when the team is empty (until you press Clear)
   if (!(ui.typesSel || []).length && !ui.typesMon && !ui.typesCleared) { let p0 = team[0] ? team[0].p : null;
     if (!p0) { try { const r = lairRows(); p0 = r && r[0] ? r[0].p : null; } catch (e) {} }
-    if (p0) { ui.typesMon = p0.n; ui.typesSel = p0.t.slice(); } }
+    if (p0) { ui.typesMon = p0.n; ui.typesSel = p0.t.slice(); ui.typesAuto = true; } }
+  else if (ui.typesAuto && ui.typesMon && team.length && !team.some(m => m.p.n === ui.typesMon)) { const p0 = team[0].p; ui.typesMon = p0.n; ui.typesSel = p0.t.slice(); }
   const sel = ui.typesSel || [];
   $('typePick').innerHTML = TYPES.map(t => `<button type="button" class="typebtn${sel.includes(t) ? ' on' : ''}" data-type="${t}" aria-pressed="${sel.includes(t)}" style="--tc:${TC[t]}">${t}</button>`).join('');
   const mon = ui.typesMon ? byName.get(ui.typesMon) : null, onTeam = mon ? team.find(m => m.p.n === mon.n) : null;

@@ -15,7 +15,7 @@ function renderExcl(){const el=$('exclList');if(!el)return;
   $('exclNote').textContent=S.excl.length?`${S.excl.length} excluded`:'Nothing excluded'}
 $('boxCb').innerHTML=`<input class="field" id="boxAdd" placeholder="Add a Pokémon" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Add a Pokémon to your box">`;
 bindMonInput($('setMonIn'),p=>{ui.setMon=p.n;LS.set('cc2.setMon',p.n);$('setMonIn').value='';renderSets()});
-bindMonInput($('typeMonIn'),p=>{ui.typesMon=p.n;ui.typesSel=p.t.slice();$('typeMonIn').value='';renderTypes()});
+bindMonInput($('typeMonIn'),p=>{ui.typesAuto=false;ui.typesMon=p.n;ui.typesSel=p.t.slice();$('typeMonIn').value='';renderTypes()});
 bindMonInput($('exclAdd'),p=>{if(!isExcl(p)){S.excl.push(p.n);toast(`${p.d} won't be suggested${!p.m&&ROSTER.some(q=>q.m&&ownKey(q)===p.n)?' (nor its Mega)':''}`)}$('exclAdd').value='';render()},p=>!isExcl(p));
 bindMonInput($('boxAdd'),p=>{if(!inBox(p)){S.box.push(p.n);toast(p.d+' added to your box')}$('boxAdd').value='';render()},p=>!p.m&&!inBox(p));
 // Re-rendering replaces whole panels, so the page can briefly get shorter and the browser jumps up.

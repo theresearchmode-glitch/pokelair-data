@@ -57,7 +57,7 @@ function renderBattle() {
   const slots = S.opp.map((n, i) => { const p = byName.get(n);
     return p ? `<div class="bmslot on">${sprite(p, 'bmspr')}<span class="bmn">${esc(p.d)}</span><button class="x" type="button" data-bmx="${i}" aria-label="Remove ${esc(p.d)}">×</button></div>`
       : `<div class="bmslot"><div class="cb"><input class="field" id="bmOpp${i}" placeholder="${i + 1}" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Their Pokémon ${i + 1}"></div></div>`; }).join('');
-  const top = `<div class="bmbar"><button type="button" class="btn sm ghost" id="bmClear">Clear their six</button></div>
+  const top = `<div class="bmbar">${S.opp.some(Boolean) ? '<button type="button" class="btn sm ghost" id="bmClear">Clear their six</button>' : ''}</div>
     <div class="bmopp">${slots}</div>`;
   let body = ''; bmUi.four = null;
   if (mine.length < 4) body = '<div class="empty-note">Add at least 4 Pokémon on My team first.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>';

@@ -17,7 +17,7 @@ function render(){
   $('eyebrow').textContent='Pokémon Champions · Regulation M-C · VGC Doubles · bring 6, pick 4';showDataDate();
   const loaded=S.teams.find(t=>t.id===S.loadedId);
   $('teamTitle').textContent=loaded?loaded.name:'Team';document.querySelectorAll('.tc').forEach(tc=>tc.textContent=ms.length?ms.length+'/6':'');
-  $('saveBtn').textContent=loaded?'Save changes':'Save team';
+  $('saveBtn').textContent=loaded?'Update saved team':'Save team';
   // defense card
   const weakChips=a.rows.filter(t=>t.w>t.r).map(t=>chip(t.atk,t.w-t.r>1?` <b>×${t.w-t.r}</b>`:'')).join('');
   const tied=a.rows.filter(t=>t.w>0&&t.w===t.r).map(t=>chip(t.atk)).join('');
@@ -30,7 +30,7 @@ function render(){
      ${CK?`<ul class="cklist">${CK.items.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')}</ul>`:''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
-     <div class="vsub">${ms.length}/6 Pokémon${RDd?` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length?` (${RDd.over.slice(0,3).map(r=>esc(r.t.d)).join(', ')})`:''}`:''}</div></div>
+     <div class="vsub">${ms.length}/6 Pokémon${RDd?` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length?` (${RDd.over.slice(0,3).map(r=>esc(r.t.d)).join(', ')}${RDd.over.length>3?` and ${RDd.over.length-3} more`:''})`:''}`:''}</div></div>
      <div class="kv"><span>More weak than resist</span><div class="chips">${weakChips||'<span class="none">None</span>'}</div>
      <span>Nobody resists</span><div class="chips">${a.unresisted.map(t=>chip(t)).join('')||'<span class="none">None</span>'}</div>
      <span>Even split</span><div class="chips">${tied||'<span class="none">None</span>'}</div>

@@ -288,3 +288,14 @@ button.chmmon:focus-visible,.chsix [data-lt]:focus-visible{outline:3px solid #ff
 .chtr .tx{min-width:0}.chtr .tx b{overflow-wrap:anywhere;word-break:normal;hyphens:auto}
 .chtr .st{white-space:nowrap}
 @media (max-width:400px){.chtl10 .chtr{gap:4px;padding-left:6px;padding-right:6px}.chtl10 .chtr .spr{width:34px;height:34px}.chtl10 .chtr .tx b{font-size:11.5px}.chtl10 .chtr .st{font-size:9.5px;letter-spacing:.02em}.chtl10 .chtr .rk{font-size:15px;width:auto}}
+/* edit card: the Weak/Resists toggle says what it is; no yellow fills (yellow is for the main button) */
+details.slmore>summary::after{content:"Weak & resists";font:600 11px var(--body);color:var(--chink2);margin-left:auto;padding-left:6px}
+details.slmore[open]>summary::after{content:"Hide"}
+:root:not(#_ch) .chedit .itemrow{background:var(--chp2)!important}
+:root:not(#_ch)[data-look="dark"] .chedit .itemrow{background:#34312E!important}
+/* ⋯ side menu above the bottom nav */
+@media (max-width:1000px){:root:not(#_ch) .side{z-index:120}:root:not(#_ch) .scrim{z-index:110}}
+/* header readiness line keeps numbers next to their words */
+.chthead .vsub b,.chthead .chstat{white-space:nowrap}
+.chlegk{margin:10px 0 2px}
+.rd .nw{white-space:nowrap}
