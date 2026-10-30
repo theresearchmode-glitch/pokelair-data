@@ -275,7 +275,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   { const nd = $('needs'), n = $('needsSub'); sum('chfFix', [n && n.textContent ? n.textContent : 'Nothing big to fix', v.CK ? `${v.CK.pass}/${v.CK.n} checks` : '', v.legal === false ? 'not legal yet' : 'legal'].filter(Boolean).join(' · ')); }
   { const g = document.querySelector('#chfGplan .gpcard'), tags = g ? [...g.querySelectorAll('.gphead .tag, .gphead .chip, .gphead .arch')].map(x => x.textContent.trim()).filter(Boolean) : []; sum('chfGplan', (tags.length ? tags.map(x => x.charAt(0) + x.slice(1).toLowerCase()).join(' + ') + ' · ' : '') + 'leads, backups and what to watch'); }
   // part 2: threats
-  { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}<div class="chk chlegk">All 30 threats</div>${CH.legendRow(RD)}</div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
+  { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}<div class="chlegk">${CH.legendRow(RD)}</div></div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
   // part 4: the sheet, every slot (empty ones say Add)
   { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${all.map(row).join('')}</div>`; }
   if (!$('chScout').hidden) chScoutRender(); try { chEditStrip(); } catch (e) {} }

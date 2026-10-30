@@ -37,7 +37,9 @@ function wxUses(m, w) { if (!m || !w) return false; if ((WX_AB_USE[w] || []).inc
   if (w === 'rain') return hasType('Water'); if (w === 'sun') return hasType('Fire'); if (w === 'sand') return T.includes('Rock'); if (w === 'snow') return T.includes('Ice');
   return false; }
 // setter weathers with nobody else on the team using them
-function wxIdle(team) { return wxSetsOf(team).filter(w => !team.some(m => m && WEATHER_OF[m.ability] !== w && wxUses(m, w))); }
+// the setter itself counts only through a move made for the weather (Alolan Ninetales' Aurora Veil, Pelipper's Hurricane), not its own type
+const wxMoveUse = (m, w) => (m.moves || []).some(x => x && (WX_MV_USE[w] || []).includes(x.name || x));
+function wxIdle(team) { return wxSetsOf(team).filter(w => !team.some(m => m && (WEATHER_OF[m.ability] !== w ? wxUses(m, w) : wxMoveUse(m, w)))); }
 // how much the team's own weather helps vs hurts its non-setters: Water attackers in rain (+), Fire in rain (-), and the reverse in sun
 function wxNet(team) { const s = wxSetsOf(team); if (s.length !== 1 || !(s[0] === 'rain' || s[0] === 'sun')) return 0; const up = s[0] === 'rain' ? 'Water' : 'Fire', dn = s[0] === 'rain' ? 'Fire' : 'Water';
   let n = 0; for (const m of team) { if (!m || WEATHER_OF[m.ability]) continue; const t = m.types || m.p.t; if (WEATHER_NEED[m.ability] === s[0]) n += 2; if (t.includes(up)) n++; if (t.includes(dn)) n--; } return n; }

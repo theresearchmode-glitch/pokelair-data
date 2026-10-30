@@ -14,7 +14,20 @@ function chBuildInit() { const sec = $('autobuild'); if (!sec || sec.dataset.ch)
   const hero = sec.querySelector('.abhero'); if (hero) { hero.classList.add('chabhero'); const h = hero.querySelector('h2'), p = hero.querySelector('.hint');
     if (h) h.outerHTML = `<div class="chk">Build · real winning teams</div><div class="chdisp chpgt" role="heading" aria-level="2">Build me a team</div>`; if (p) p.className = 'chpgs';
     const go = $('abBtn'); if (go) { go.className = 'chprimary'; go.innerHTML = 'Build me a team <span aria-hidden="true">➜</span>'; } } }
-CH.wrap('renderAutoBuild', () => { chBuildInit(); const el = $('abOut'); if (!el) return;
+// Build around a Pokémon (Sim, Oct 30): an optional pick above the button; every team built keeps it. Redrawn only when the pick
+// changes, so typing in the box is never interrupted.
+function abAroundRender() { const go = $('abBtn'); if (!go) return; let box = $('abAround');
+  if (!box) { box = document.createElement('div'); box.id = 'abAround'; box.className = 'abaround'; go.parentNode.insertBefore(box, go); }
+  const lk = ui.abLock && byName.get(ui.abLock), key = lk ? lk.n : '';
+  go.innerHTML = `${lk ? 'Build around ' + esc(lk.d) : 'Build me a team'} <span aria-hidden="true">➜</span>`;
+  if (box.dataset.k === key && box.childNodes.length) return; box.dataset.k = key;
+  box.innerHTML = `<div class="ablab">Build around a Pokémon <span>optional</span></div>` + (lk
+    ? `<span class="corechip abchip">${sprite(lk, 'tiny')}${esc(lk.d)}<button type="button" data-abaroundclr="1" aria-label="Stop building around ${esc(lk.d)}">×</button></span>`
+    : '<div class="cb"><input class="field" id="abAroundIn" placeholder="Your favourite Pokémon…" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Build around a Pokémon"></div>');
+  const i = $('abAroundIn'); if (i) bindMonInput(i, p => { ui.abLock = p.n; if (ui.ab && !ui.ab.busy) ui.ab = null; abAroundRender(); renderAutoBuild(); const g = $('abBtn'); if (g) g.focus(); }); }
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-abaroundclr]'); if (!b) return;
+  ui.abLock = null; if (ui.ab && !ui.ab.busy) ui.ab = null; abAroundRender(); renderAutoBuild(); const i = $('abAroundIn'); if (i) i.focus(); });
+CH.wrap('renderAutoBuild', () => { chBuildInit(); safe('build around', abAroundRender); const el = $('abOut'); if (!el) return;
   // before building: the explainer folds away; recent winners show as big-sprite sheets
   const what = el.querySelector('.abwhat'); if (what) CH.foldNode(what, 'abhow', 'How it works', 'Six that work together, the why, and how ready they are', false);
   // a built team: the six as big sprites on a blue halftone card; the full sets and roles fold underneath
@@ -300,7 +313,7 @@ safe('theme toggle', () => { const row = document.querySelector('.band .titlerow
   b.addEventListener('click', () => { setTheme(document.documentElement.dataset.look === 'dark' ? 'light' : 'dark'); chThemeIcon(); });
   chThemeIcon(); try { new MutationObserver(chThemeIcon).observe(document.documentElement, {attributes: true, attributeFilter: ['data-look']}); } catch (e) {} });
 // ---------- an × in search and lookup boxes (Oct 30, Sim): one tap clears the box and keeps the keyboard up ----------
-const CLR_SEL = 'input[type="search"],#lairQ,#setMonIn,#typeMonIn,#coreMonIn,#tsIn,#jumpIn,#chMetaQ,#boxAdd,#exclAdd,#saveName,input[id^="pk"],input[id^="opp"],input[id^="bmOpp"]';
+const CLR_SEL = 'input[type="search"],#lairQ,#setMonIn,#typeMonIn,#coreMonIn,#abAroundIn,#tsIn,#jumpIn,#chMetaQ,#boxAdd,#exclAdd,#saveName,input[id^="pk"],input[id^="opp"],input[id^="bmOpp"]';
 function clrWrap(inp) { if (!inp || inp.dataset.clr || inp.type === 'hidden' || inp.closest('.clrw')) return; inp.dataset.clr = '1';
   const w = document.createElement('span'); w.className = 'clrw'; const cs = getComputedStyle(inp); if (cs.display === 'block' || inp.classList.contains('field') || parseFloat(cs.width) > 200) w.classList.add('blk');
   if (cs.flex && cs.flex !== '0 1 auto') { w.style.flex = cs.flex; w.classList.add('flx'); } w.style.minWidth = inp.style.minWidth || '0'; if (inp.style.minWidth) { inp.style.minWidth = '0'; w.classList.add('flx'); } if (cs.gridColumn && cs.gridColumn !== 'auto') w.style.gridColumn = cs.gridColumn;

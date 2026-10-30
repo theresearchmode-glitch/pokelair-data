@@ -200,7 +200,8 @@ function renderAutoBuild() {
       <ul class="abwhy">${tm.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
       <div class="row"><button class="btn sm primary" type="button" data-abuse="${res.fmt}">Use this team</button><button class="btn sm" type="button" data-absave="${res.fmt}"${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}>Save</button>${res.teams.length > 1 ? `<button class="btn sm" type="button" data-abnext="${res.fmt}">Try another</button>` : ''}</div></div>`; };
   const lk = ui.abLock && byName.get(ui.abLock);
-  el.innerHTML = (lk ? `<div class="ablock">${sprite(lk, 'mini') || ''}<span>Built around <b>${esc(lk.d)}</b>: every team keeps it.</span><button type="button" class="linkbtn" data-abaroundx="1">Build without it</button></div>` : '')
+  // the Build around pick shows as a chip with × in the card above (61-concept-h-pages.js), so no banner here
+  el.innerHTML = ``
     + `<div class="abgrid${r.doubles ? ' one' : ''}">${r.doubles ? col(r.doubles) : ''}</div>`;
 }
 // Runs the build a few steps at a time (about 30 ms each), drawing in between so the page never freezes; a newer build (Megas,
