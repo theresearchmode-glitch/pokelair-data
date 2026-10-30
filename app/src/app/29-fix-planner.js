@@ -55,6 +55,46 @@ function spreadUsers(team){return team.filter(m=>{const mv=m._mv&&m._mv.length?m
 function pillarCost(team,gp){if(team.length<5)return 0;let c=0;
   const sp=(gp.rows.find(r=>r.k==='speed')||{}).st;if(sp!=='ok')c+=sp==='part'?14:30;
   const su=spreadUsers(team);c+=Math.max(0,2-su)*7;return c}
+// Open game-plan gaps one Pokémon can close (Oct 30, Sim: Mega Swampert with nothing to set rain got no rain setter
+// suggested, because suggestions were ranked only by readiness for the top threats, and closing the team's own gap earned
+// nothing). A gap is a game-plan row that is missing or partial for: weather an ability needs (Swift Swim, Chlorophyll, Sand
+// Rush, Slush Rush), Trick Room attackers, terrain (a seed nothing activates), lead support, speed control.
+const GAP_KEYS=['weather','terrain','trfit','support','speed'];  // GP_RANK (miss < opt = part < ok) is defined below
+function gpGaps(gp){return gp?gp.rows.filter(r=>GAP_KEYS.includes(r.k)&&(r.st==='miss'||r.st==='part')).map(r=>r.k):[]}
+// the weathers the team's speed abilities need (Swift Swim: rain, Chlorophyll: sun…) and the weathers it sets
+function weatherNeeds(team){return Object.keys(W_TYPE).filter(w=>team.some(m=>ARCH[w].abAb.includes(m.ability)&&WEATHER_SPEED[m.ability]))}
+function weatherSets(team){return [...new Set(team.filter(m=>WEATHER_OF[m.ability]).map(m=>WEATHER_OF[m.ability]))]}
+// what a change does to those gaps: which it closes (with plain reasons), and whether it brings in a weather that works
+// against the team's own (a sun setter next to Swift Swim Mega Swampert): that never counts as a fix and is never suggested
+function gapEffect(team0,gp0,team,gp){const fix=[],why=[],st=k=>(gp.rows.find(r=>r.k===k)||{}).st,st0=k=>(gp0.rows.find(r=>r.k===k)||{}).st;
+  // clash: an added weather while the team still has a Pokémon that needs a different one (rain next to Chlorophyll Venusaur)
+  const need0=weatherNeeds(team0),needT=weatherNeeds(team),set0=new Set(weatherSets(team0)),added=weatherSets(team).filter(w=>!set0.has(w)),clash=added.some(w=>needT.some(n=>n!==w)),need=need0;
+  const newM=team.filter(m=>!team0.some(x=>x.p===m.p));
+  for(const k of gpGaps(gp0)){if(GP_RANK[st(k)||'miss']<=GP_RANK[st0(k)])continue;
+    // weather counts only when the change sets the weather a Pokémon needs (or gives a used-by-nobody weather a user while
+    // keeping its setter): swapping out the Pokémon that needs it is not a fix
+    if(k==='weather'){if(clash)continue;const w=added.find(x=>need.includes(x)&&needT.includes(x));
+      if(!w&&(st0(k)==='miss'||weatherSets(team).length<set0.size))continue;
+      if(w){const setter=newM.find(m=>WEATHER_OF[m.ability]===w),users=team.filter(m=>ARCH[w].abAb.includes(m.ability)&&WEATHER_SPEED[m.ability]);
+        why.push(`Sets ${ARCH[w].name.toLowerCase()} for ${users.map(m=>`${m.d} (${m.ability})`).join(', ')}${setter?` with ${setter.ability}`:''}`)}
+      else why.push('Gives your weather a Pokémon that uses it')}
+    else if(k==='trfit')why.push('Slow attacker for your Trick Room');
+    else if(k==='terrain')why.push('Fixes your terrain: '+String((gp0.rows.find(r=>r.k==='terrain')||{}).note||'').replace(/\.$/,'').replace(/^./,c=>c.toLowerCase()));
+    else if(k==='support')why.push('Adds lead support (Fake Out, Intimidate or redirection)');
+    else if(k==='speed')why.push('Adds speed control');
+    fix.push(k)}
+  return {fix,why,clash}}
+// what a change must not make worse (Oct 30 sweep): lead support (swapping out the only Fake Out / Intimidate), Trick Room
+// attackers, terrain and weather (taking away the Pokémon that uses the team's sand, or adding a second weather), and speed
+// control (swapping out the only Tailwind setter). Returns the keys that got worse.
+const GUARD_KEYS=['speed','support','trfit','terrain','weather'];
+function gpWorse(gp0,gp){return GUARD_KEYS.filter(k=>{const o=(gp0.rows.find(r=>r.k===k)||{}).st;if(!o)return false;const n=(gp.rows.find(r=>r.k===k)||{}).st;return GP_RANK[n||'miss']<GP_RANK[o]})}
+// the gap the first two suggestions must cover: the most serious one they leave open (missing before partial, then weather,
+// Trick Room attackers, terrain, lead support; speed control has its own rule). Partial lead support never forces a pick.
+// Returns [] when nothing needs forcing, else [key].
+function gapTarget(gp0,top){const order=['weather','trfit','terrain','support'],st=k=>(gp0.rows.find(r=>r.k===k)||{}).st,covered=k=>top.slice(0,2).some(pl=>pl.gap&&pl.gap.fix.includes(k));
+  const open=gpGaps(gp0).filter(k=>order.includes(k)&&!(k==='support'&&st(k)!=='miss')).sort((a,b)=>(st(a)==='miss'?0:1)-(st(b)==='miss'?0:1)||order.indexOf(a)-order.indexOf(b));
+  const k=open.find(k=>!covered(k));return k&&!(st(k)==='part'&&open.some(j=>st(j)==='miss'&&covered(j)))?[k]:[]}
 function planFixes(ms,pool,useA,opts){
   const maxMega=megaGoal();const full=ms.length===6;
   const emptyIdx=S.slots.map((s,i)=>byName.get(s.n)?-1:i).filter(i=>i>=0);
@@ -66,7 +106,8 @@ function planFixes(ms,pool,useA,opts){
   // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ when you limit suggestions to your box.
   const cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)&&ui.pool==='box'?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
     return {p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}}});
-  const legal=(team)=>team.filter(m=>m.mega).length<=maxMega;
+  // never more Megas than the goal, or (when the team is already over it: Megas on team 0 with a Mega in) than it has now
+  const mega0=ms.filter(m=>m.mega).length,legal=(team)=>{const n=team.filter(m=>m.mega).length;return n<=maxMega||n<=mega0};
   const singles=[];
   // one change: fill an empty slot, or swap a member (a Mega only for another Mega)
   for(const c of cands){
@@ -76,11 +117,16 @@ function planFixes(ms,pool,useA,opts){
   // Lower is better: the team's model score (teamValue), plus the type-balance emphasis (typeEmphasis),
   // a cost for losing an active archetype, and a small cost per change so plans stay minimal.
   // Mega goal: every Mega the finished team would still be short of costs a lot, so plans that bring one in rise to the top
-  const evalPlan=pl=>{const tv=teamValue(pl.team,useA);let s=-tv.score+typeEmphasis(tv.st.a)+megaShort(pl.team)*35+pillarCost(pl.team,tv.gp);pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
+  const gp0=gamePlan(ms);
+  const evalPlan=pl=>{const tv=teamValue(pl.team,useA);let s=-tv.score+typeEmphasis(tv.st.a)+megaShort(pl.team)*35+Math.max(0,pl.team.filter(m=>m.mega).length-maxMega)*35+pillarCost(pl.team,tv.gp);
+    // the team's own rain or sun: a change that brings in what it hurts (a Water attacker into sun, Primarina's Liquid Voice) or a
+    // weather nobody uses (Pelipper next to Fire attackers) costs a little (audit, Oct 30)
+    {const n0=wxNet(ms),n1=wxNet(pl.team);if(n1<n0)s+=(n0-n1)*5;if(wxSetsOf(pl.team).length>wxSetsOf(ms).length&&n1<=0)s+=12}pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
     for(const a of rolesBase.arch)if(a.active&&a.key!=='tw'&&!pl.roles.arch.some(b=>b.key===a.key&&b.active))s+=20;
     for(const x of pl.ch){const rest=pl.team.filter(m=>m.p!==x.c.p);const v=viability(x.c.p);x.v=v;if(v<12&&!OFFMETA)s+=15;if(OFFMETA&&isMetaPick(x.c.p))s+=10;
       const f=archFit(x.c.p,x.c.mem.ability,rest,rolesBase);x.why=f.why;s-=f.s*.2;x.syn=synergy(x.c.p,rest);
       if(x.out)s+=4+(x.out.mega?6:0);if(ui.pool==='boxfill'&&!inBox(x.c.p))s+=12}
+    pl.gap=pl.ch.length?gapEffect(ms,gp0,pl.team,tv.gp):{fix:[],why:[],clash:false};s-=pl.gap.fix.length*14;
     pl.score=s;return pl};
   // Items and staples (Oct 28 audit): a plan may never leave the team with more item problems (Item Clause, a dead seed,
   // Scarf under your own Trick Room) than it has now, and never swaps out a staple (15%+ usage) for a rarely used pick
@@ -105,7 +151,7 @@ function planFixes(ms,pool,useA,opts){
   // a plan must never make the type rating worse, and must beat the current team by a clear margin
   // and must never take away the team's speed control or start a weather clash
   const gpst=(pl,k)=>(pl.gp.rows.find(r=>r.k===k)||{}).st;
-  const keepsPlan=pl=>!(gpst(basePl,'speed')==='ok'&&gpst(pl,'speed')!=='ok')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss');
+  const keepsPlan=pl=>!(gpst(basePl,'speed')==='ok'&&gpst(pl,'speed')!=='ok')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss')&&!(pl.gap&&pl.gap.clash)&&!(pl.gp&&gpWorse(gp0,pl.gp).length);
     let all=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(!full||((pl.st.a.excess<=base.a.excess)&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<basePl.score-(clean?25:10)))).sort((x,y)=>x.score-y.score);
   // Readiness decides (Oct 28): every plan that ends in a full six is judged by the share of the top-30 threats it's ready for.
   // Item problems come first; then a plan must raise readiness by 2+, the highest leads, and an extra change has to earn 2 more.
@@ -117,13 +163,17 @@ function planFixes(ms,pool,useA,opts){
     const short=tsShortlist(short0,70);
     // plans that fix an item problem are always checked, and qualify without the usual readiness gain (they may not lower it by more than 3)
     if(ip0>0)for(const pl of short0.filter(pl=>ipOf(pl)<ip0).slice(0,12))if(!short.includes(pl))short.push(pl);
+    // so are the best plans that close a game-plan gap (rain for Swift Swim, Trick Room attackers…)
+    for(const pl of short0.filter(pl=>pl.gap&&pl.gap.fix.length).slice(0,12))if(!short.includes(pl))short.push(pl);
     for(const pl of short)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
     if(short.some(pl=>pl._ts!=null)){tsOn=true;
-      const ranked=short.filter(pl=>pl._ts!=null&&(tsBase==null||pl._ts>=tsBase+TS_GAIN||(ipOf(pl)<ip0&&pl._ts>=tsBase-3))).sort((x,y)=>(ipOf(x)-ipOf(y))||tsKey(y)-tsKey(x)||x.score-y.score);
+      const ranked=short.filter(pl=>pl._ts!=null&&(tsBase==null||pl._ts>=tsBase+TS_GAIN||((ipOf(pl)<ip0||pl.gap.fix.length)&&pl._ts>=tsBase-3))).sort((x,y)=>(ipOf(x)-ipOf(y))||tsKey(y)-tsKey(x)||x.score-y.score);
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
+  // a suggestion never lowers the winning-team checklist score (worked out only for the plans actually shown)
+  let ck0=null;const ckDrop=pl=>{if(typeof proChecks!=='function')return false;if(ck0==null)ck0=(proChecks(ms,useA)||{pass:0}).pass;if(pl._ck===undefined)pl._ck=(proChecks(pl.team,useA)||{pass:0}).pass;return pl._ck<ck0};
   // pick up to 3 plans that don't share an incoming Pokémon or the same outgoing set
   const out=[],usedIn=new Set();
-  for(const pl of all){if(out.length>=3)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>usedIn.has(b)))continue;
+  for(const pl of all){if(out.length>=3)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>usedIn.has(b))||ckDrop(pl))continue;
     const outs=pl.ch.map(x=>x.out?x.out.i:'e'+x.slot).sort().join();if(out.some(o=>o._outs===outs&&o.ch.length===pl.ch.length&&pl.ch.length===1))continue;
     pl._outs=outs;ins.forEach(b=>usedIn.add(b));out.push(pl)}
   // speed control is the job teams most often lack: if it's missing, make sure one plan fixes it
@@ -131,8 +181,23 @@ function planFixes(ms,pool,useA,opts){
   if(basePl.gp&&sp(basePl)!=='ok'&&!out.some(pl=>sp(pl)==='ok')){
     // look past the score cutoff: any plan that adds speed control without hurting the type rating
     const pool2=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&sp(pl)==='ok'&&(!tsOn||tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-3)&&pl.st.a.excess<=Math.max(base.a.excess,full?base.a.excess:base.a.excess+1)&&pl.st.a.unresisted.length<=base.a.unresisted.length+(full?0:1)).sort((x,y)=>x.score-y.score);
-    const fix=pool2.find(pl=>!pl.ch.some(x=>out.some(o=>o.ch.some(y=>y.c.p.b===x.c.p.b))))||pool2[0];
+    const fix=pool2.find(pl=>!ckDrop(pl)&&!pl.ch.some(x=>out.some(o=>o.ch.some(y=>y.c.p.b===x.c.p.b))))||pool2.find(pl=>!ckDrop(pl));
     if(fix){if(out.length>=3)out.pop();out.push(fix)}}
+  // an open game-plan gap (weather a Swift Swim / Chlorophyll / Sand Rush / Slush Rush Pokémon needs, Trick Room attackers,
+  // terrain, lead support): one of the first two plans closes it, if anything in the pool can without hurting the type rating
+  // or lowering readiness by more than 3. Otherwise out.gapNone says which gaps nothing in the pool closes.
+  // (partial lead support, one weaker option, doesn't force a plan; a missing one does)
+  // The most serious open gap is the one that must be covered: missing before partial, weather first.
+  {const gk=gapTarget(gp0,out),fixes=pl=>pl.gap&&pl.gap.fix.some(k=>gk.includes(k));
+    if(gk.length){
+      const pool3=[...singles,...doubles].filter(pl=>fixes(pl)&&keepsPlan(pl)&&(!tsOn||tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-3)&&pl.st.a.excess<=Math.max(base.a.excess,full?base.a.excess:base.a.excess+1)&&pl.st.a.unresisted.length<=base.a.unresisted.length+(full?0:1)&&megaShort(pl.team)<=megaShort(ms))
+        .sort((x,y)=>y.gap.fix.length-x.gap.fix.length||x.ch.length-y.ch.length||((y._ts||0)-(x._ts||0))||x.score-y.score);
+      const fix=pool3.find(pl=>!ckDrop(pl)&&!pl.ch.some(x=>out.some(o=>o.ch.some(y=>y.c.p.b===x.c.p.b))))||pool3.find(pl=>!ckDrop(pl));
+      if(fix){const j=out.indexOf(fix);if(j>=0)out.splice(j,1);out.splice(Math.min(1,out.length),0,fix);if(out.length>3)out.pop()}
+      else{out.gapNone=gk;const r=gp0.rows.find(x=>x.k===gk[0])||{};
+        out.gapNote=`${r.note?r.note+' ':''}Nothing in ${ui.pool==='box'?'your box':ui.pool==='boxfill'?'your box or the usual picks to catch':'the whole roster'} fixes it without weakening the team${ui.pool==='box'?': try "Box + catch" or "Whole roster"':ui.pool==='boxfill'?': try "Whole roster"':''}.`}}}
+  // over the Mega goal (Megas on team 0 with a Mega in, audit Oct 30): say so, and say why no plan drops it
+  if(mega0>maxMega&&!out.some(pl=>pl.team.filter(m=>m.mega).length<mega0)){const t=`Your team has ${mega0} Mega${mega0===1?'':'s'} and Megas on team is set to ${maxMega}. ${$('swapMega').checked?'No swap without '+(mega0===1?'it':'them')+' keeps your game plan, so these plans keep '+(mega0===1?'it':'them')+'.':'Turn on "Let plans swap my Mega" to see swaps without '+(mega0===1?'it':'them')+'.'}`;out.gapNote=(out.gapNote?out.gapNote+' ':'')+t}
   // More ideas: further plans with new incoming Pokémon, then (for a full team) side-grades that keep the type rating and speed control
   const more=[],inSeen=new Set(out.flatMap(pl=>pl.ch.map(x=>x.c.p.b)));
   for(const pl of all){if(more.length>=12)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>inSeen.has(b)))continue;ins.forEach(b=>inSeen.add(b));more.push(pl)}
@@ -165,7 +230,8 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   if(!ms.length){el.innerHTML='<div class="empty-note">Add at least one Pokémon to get plans.</div>';return}
   const base=plans.base;const more=plans.more||[],pg=ui.planMore||0,shown=more.slice(0,pg*3),left=more.length-shown.length;
   // item problems (Item Clause, an item that can't work here) come first, each with a one-tap item swap
-  const itf=typeof itemFixHtml==='function'?itemFixHtml(ms):'';
+  // a game-plan gap nothing in this pool can close (Mega Swampert needs rain and the box has no rain setter): say so, and where to look
+  const itf=(typeof itemFixHtml==='function'?itemFixHtml(ms):'')+(plans.gapNote?`<p class="t2 gapnote">${esc(plans.gapNote)}</p>`:'');
   const moreBtn=`<div class="morebar">${left>0?`<button class="btn" type="button" id="planMoreBtn">More ideas</button><span class="vsub">${left} more plan${left===1?'':'s'}, including side-grades and rarely used picks</span>`:more.length?`<span class="vsub">That's every plan that keeps your type rating and speed control.</span><button class="btn sm" type="button" id="planMoreReset">Show fewer</button>`:''}</div>`;
   const none=!plans.length&&!shown.length;if(none){el.innerHTML=itf+`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool readies the team for more of the top threats (it's ready for ${plans.tsBase}%). Keep this team, or try "Full roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn}
   // each plan's readiness next to the current one, so a plan never hides that it leaves the team less prepared
@@ -183,7 +249,7 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
     const syn=pl.ch.map(x=>{const t=metaEntry(x.c.p);const mates=(t&&t.tm||[]).map(([n])=>byName.get(n)).filter(q=>q&&pl.team.some(m=>m.base===q.b&&m.p!==x.c.p)).map(q=>q.d);return mates.length?`${esc(x.c.p.d)} is often paired with ${esc(mates.slice(0,2).join(' and '))}`:''}).filter(Boolean);
     const roleLines=gpDiff(plans.gp,pl.gp),thrLines=pl.team.length===6&&ms.length===6&&k<plans.length+6?threatDiff(ms,pl.team,3).map(x=>x.html):[];
     const archLines=pl.ch.flatMap(x=>(x.why||[]).map(w=>`${esc(x.c.p.d)}: ${w}`));
-    const lines=[...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
+    const lines=[...(pl.gap?pl.gap.why:[]).map(w=>`<b>${esc(w)}</b>`),...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
       newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
       st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
     // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
@@ -236,9 +302,12 @@ function itemBlock(s,i,m,clash){const p=m.p;
   if(p.m)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(m.item||'Mega Stone')}</div></div>`;
   const pop=(setFor(p).it||[]).filter(([n])=>n&&notStone(n)).slice(0,8),popN=new Set(pop.map(([n])=>n)),def=defaultItem(p);
   const rest=itemPool().filter(n=>!popN.has(n));if(m.item&&!popN.has(m.item)&&!rest.includes(m.item))rest.unshift(m.item);
-  const tag=m.heldItem&&m.heldItem!==def?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-itreset="${i}">Use ${esc(def||'the usual item')}</button>`
+  // with no item picked, show the item it actually holds: Item Clause can move the usual item to a teammate (Oct 30 audit)
+  let shown=m.item;if(!m.heldItem){try{const k=JSON.stringify(S.slots)+'|'+metaVersion;if(itemBlock._k!==k){itemBlock._k=k;itemBlock._a=new Map((typeof assignItems==='function'?assignItems(members()):[]).map(x=>[x.i,x.item]))}const a=itemBlock._a.get(m.i);if(a)shown=a}catch(e){}}
+  const moved=!m.heldItem&&def&&shown&&shown!==def;
+  const tag=moved?`<span class="tag rec soft" title="Item Clause: one of each item per team">${esc(def)} is on a teammate</span>`:m.heldItem&&m.heldItem!==def?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-itreset="${i}">Use ${esc(def||'the usual item')}</button>`
     :pop.length?`<span class="tag rec">MOST USED</span>`:`<span class="tag rec soft">NO USAGE DATA</span>`;
-  const o=(n,pc)=>`<option value="${esc(n)}"${n===m.item?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
+  if(shown&&!popN.has(shown)&&!rest.includes(shown))rest.unshift(shown);const o=(n,pc)=>`<option value="${esc(n)}"${n===shown?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
   return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span>${tag}</div>
     <select class="field" id="it${i}" data-iti="${i}" aria-label="Held item for ${esc(p.d)}">${m.item?'':'<option value="" selected>(no item)</option>'}${pop.length?`<optgroup label="Most used in ${S.format}">${pop.map(([n,v])=>o(n,v)).join('')}</optgroup>`:''}${rest.length?`<optgroup label="Other items">${rest.map(n=>o(n,null)).join('')}</optgroup>`:''}</select>${warn}</div>`}
 // Moves: four tiles, each a dropdown. Popular moves for this format come first with their usage %.

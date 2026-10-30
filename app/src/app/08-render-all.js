@@ -2,7 +2,11 @@
 let renderQueued=false,planCache={key:null,plans:[]},metaVersion=0;
 // While the page is opening, the data arrives in up to 11 pieces; a short wait lets pieces that land close together share
 // one redraw instead of one each.
-function scheduleRender(){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;render()},performance.now()<6000?90:0)}
+function scheduleRender(){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;bgRender()},performance.now()<6000?90:0)}
+// Background updates (data arriving, slow checks finishing) wait while someone is typing in a box: a redraw would rebuild the box
+// and wipe what they typed (Oct 30 audit). They run as soon as the box loses focus.
+function typingNow(){const a=document.activeElement;return !!(a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&/^(text|search|)$/.test(a.type||''))))}
+let bgWait=false;function bgRender(){if(!typingNow()){render();return}if(bgWait)return;bgWait=true;const go=()=>{document.removeEventListener('focusout',go,true);setTimeout(()=>{bgWait=false;if(typingNow()){bgRender();return}render()},150)};document.addEventListener('focusout',go,true)}
 // Run one part of the page; if it throws, log it and keep the rest of the page working.
 function safe(name,fn){try{fn()}catch(err){try{console.error('Champions Team Coverage: '+name+' failed',err)}catch(e){}}}
 function render(){
@@ -13,7 +17,7 @@ function render(){
   $('eyebrow').textContent='Pokémon Champions · Regulation M-C · VGC Doubles · bring 6, pick 4';showDataDate();
   const loaded=S.teams.find(t=>t.id===S.loadedId);
   $('teamTitle').textContent=loaded?loaded.name:'Team';document.querySelectorAll('.tc').forEach(tc=>tc.textContent=ms.length?ms.length+'/6':'');
-  $('saveBtn').textContent=loaded?'Save changes':'Save team';
+  $('saveBtn').textContent=loaded?'Update saved team':'Save team';
   // defense card
   const weakChips=a.rows.filter(t=>t.w>t.r).map(t=>chip(t.atk,t.w-t.r>1?` <b>×${t.w-t.r}</b>`:'')).join('');
   const tied=a.rows.filter(t=>t.w>0&&t.w===t.r).map(t=>chip(t.atk)).join('');
@@ -26,7 +30,7 @@ function render(){
      ${CK?`<ul class="cklist">${CK.items.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')}</ul>`:''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
-     <div class="vsub">${ms.length}/6 Pokémon${RDd?` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length?` (${RDd.over.slice(0,3).map(r=>esc(r.t.d)).join(', ')})`:''}`:''}</div></div>
+     <div class="vsub">${ms.length}/6 Pokémon${RDd?` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length?` (${RDd.over.slice(0,3).map(r=>esc(r.t.d)).join(', ')}${RDd.over.length>3?` and ${RDd.over.length-3} more`:''})`:''}`:''}</div></div>
      <div class="kv"><span>More weak than resist</span><div class="chips">${weakChips||'<span class="none">None</span>'}</div>
      <span>Nobody resists</span><div class="chips">${a.unresisted.map(t=>chip(t)).join('')||'<span class="none">None</span>'}</div>
      <span>Even split</span><div class="chips">${tied||'<span class="none">None</span>'}</div>
@@ -97,7 +101,7 @@ function renderVerdict(ms,a,PG,CK){
     rows.push(['Not ready for',un.length?un.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(un.length>5?` and ${un.length-5} more`:''):'None of the top 30']);
     if(sh.length)rows.push(['Shaky against',sh.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(sh.length>5?` and ${sh.length-5} more`:'')])}
   // 3. checklist, real results, your record, type balance
-  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?`: missing ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
+  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?` · not yet: ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
   if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% of games at Limitless events (${best.c} players${best.g?`, ${best.g} games`:''})`]);
   if(tr)rows.push(['Your record',`${tr.w}-${tr.l} with this team (${tr.pct}%)`]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
@@ -177,19 +181,21 @@ function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.n
   const line=(label,arr,src)=>`<span class="lbl">${label}</span><div><span class="iname">${esc(arr[0][0])}</span>${pcTxt(arr[0][1])}${arr[1]?`<span class="ialt">or ${esc(arr[1][0])}${pcTxt(arr[1][1])}</span>`:''}${tag(src)}</div>`;
   const cs=typeof commonSpread==='function'?commonSpread(p):null;
   const spr=o&&o.noSpread?'':cs?`<span class="lbl">Spread${typeof tip==='function'?tip('spread'):''}</span><div><span class="iname">${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}</span> <span class="vsub" title="HP/Atk/Def/SpA/SpD/Spe stat points, most common on the Showdown ladder (1630+)">${esc(cs.nat)} · HP/Atk/Def/SpA/SpD/Spe</span></div>`:'';
-  return `<div class="itemrow">${it?line('Item',it.it,it.src):''}${na?line('Nature',na,st.src.na):''}${spr}</div>`}
+  // your own nature, once set, leads the row (Oct 30 audit: it kept showing the meta's natures next to your spread)
+  const mineN=o&&o.mine?`<span class="lbl">Nature</span><div><span class="iname">${esc(o.mine)}</span> <span class="tag mine">YOURS</span>${na&&na[0][0]!==o.mine?`<span class="ialt">usually ${esc(na[0][0])}${pcTxt(na[0][1])}</span>`:''}</div>`:'';
+  return `<div class="itemrow">${it?line('Item',it.it,it.src):''}${mineN||(na?line('Nature',na,st.src.na):'')}${spr}</div>`}
 // The spread a team member is played with, and where it comes from: yours (paste, link or set here), assumed (a team sheet
 // gave a nature but no points, so the most common spread), or the most common one. One tap opens a small editor.
 function spreadBlock(s,i,m){const cs=m.spread||(typeof commonSpread==='function'?commonSpread(m.p):null);
   const src=m.spread&&m.spread.assumed?'assumed':m.spread?'yours':'common';
-  const tag=src==='assumed'?'<span class="asm" title="The team sheet had no stat points: this is the most common spread with your nature">assumed</span>':src==='yours'?'<span class="vsub">yours</span>':'<span class="asm" title="Most common on the Showdown ladder (1630+); set your own if yours differs">assumed</span>';
+  const tag=src==='assumed'?'<span class="asm" title="The team sheet had no stat points: this is the most common spread with your nature">assumed</span>':src==='yours'?'<span class="vsub">yours</span>':'<span class="asm" title="Most common spread on the Showdown ladder (1630+), so its nature can differ from the tournament natures above; set your own if yours differs">ladder usual</span>';
   const v=cs?`${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}`:'';
   const open=ui.spEdit===i;
   const ed=open?`<div class="spedit"><input class="field" id="spv${i}" value="${esc(v)}" placeholder="HP/Atk/Def/SpA/SpD/Spe" inputmode="numeric" aria-label="Stat points for ${esc(m.p.d)}, HP/Atk/Def/SpA/SpD/Spe (0-32 each, ${SP_TOTAL} total)">
     <select class="field" id="spn${i}" aria-label="Nature">${NATURES.map(n=>`<option${cs&&cs.nat===n?' selected':''}>${n}</option>`).join('')}</select>
     <button class="btn sm primary" type="button" data-spsave="${i}">Save</button>${m.spread?`<button class="linkbtn" type="button" data-spclear="${i}">Use common</button>`:''}<button class="linkbtn" type="button" data-spedit="">Cancel</button><span class="vsub" id="spmsg${i}"></span></div>`:'';
   if(!cs&&!open)return '';
-  return `<div class="itemrow"><span class="lbl">Spread</span><div>${cs?`<span class="iname">${v}</span> <span class="vsub">${esc(cs.nat||'')}</span> ${tag}`:'<span class="none">None</span>'} <button class="linkbtn" type="button" data-spedit="${open?'':i}" aria-expanded="${open}">${open?'Close':'Set'}</button></div>${ed}</div>`}
+  return `<div class="itemrow"><span class="lbl">Spread</span><div>${cs?`<span class="iname">${v}</span> <span class="vsub">${esc(cs.nat||'')}</span> ${tag}`:'<span class="none">None</span>'} ${open?'':`<button class="linkbtn" type="button" data-spedit="${i}" aria-expanded="false">Set</button>`}</div>${ed}</div>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-spedit],[data-spsave],[data-spclear]');if(!b)return;
   if(b.dataset.spedit!=null){ui.spEdit=b.dataset.spedit===''?null:+b.dataset.spedit;renderSlots();const f=$('spv'+ui.spEdit);if(f)f.focus();return}
   if(b.dataset.spclear!=null){const s=S.slots[+b.dataset.spclear];if(s&&s.sp)delete s.sp[S.format];ui.spEdit=null;render();toast('Using the most common spread');return}

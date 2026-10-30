@@ -63,7 +63,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.evsets) evUi.sets[d.evsets] = !evUi.sets[d.evsets];
   else if (d.evload || d.evvs) { const x = evTeam(d.evload || d.evvs); if (!x) return;
     if (d.evload) { if (members().length && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to replace your team'; return; } loadSheet(x.t); return; }
-    S.opp = x.t.mons.map(m => m.n); persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
+    S.opp = x.t.mons.map(m => m.n); ui.oppFrom = {who: x.t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
   keepScroll(() => { if (view === 'top') renderTeamSearch(); else if (view === 'auto') renderAutoBuild(); else renderEvents(); }); });
 
 // ---- team search (Top teams) ----
@@ -82,7 +82,7 @@ function renderTeamSearch() {
   const pool = tsPool();
   if (!pool.length) { box.innerHTML = ''; out.innerHTML = ''; if (list) list.hidden = false; return; }
   const label = f => f.k === 'mon' ? (byName.get(f.v) || {}).d || f.v : f.v;
-  box.innerHTML = `<div class="tsrow"><div class="cb tsin"><input class="field" id="tsIn" placeholder="Search ${pool.length} winning teams: Pokémon, item, move or ability" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Search winning teams"></div></div>
+  box.innerHTML = `<div class="tsrow"><div class="cb tsin"><input class="field" id="tsIn" placeholder="Search winning teams" aria-label="Search ${pool.length} winning teams by Pokémon, item, move or ability" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Search winning teams"></div></div>
     ${tsUi.f.length ? `<div class="tschips">${tsUi.f.map((f, i) => `<span class="corechip">${f.k === 'mon' ? sprite(byName.get(f.v), 'tiny') : `<i class="tsk">${TS_KIND[f.k]}</i>`}${esc(label(f))}<button type="button" data-tsx="${i}" aria-label="Remove">×</button></span>`).join('')}<button type="button" class="linkbtn" data-tsx="*">Clear</button></div>` : ''}`;
   const inp = $('tsIn');
   if (inp) { const run = () => { const q = norm(inp.value); if (!q) { closeMenu(); return; }

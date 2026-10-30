@@ -1,6 +1,6 @@
 // ---------- Gauntlet: your team against real top tournament teams ----------
 let gauntCache={key:null,rows:null};
-function gauntletTeams(){const d=META.teams;if(d&&d.teams&&d.teams.length)return d.teams.slice(0,20).map(t=>({who:`${t.player} · ${t.record}`,ev:t.event,mons:t.mons}));
+function gauntletTeams(){const d=META.teams;if(d&&d.teams&&d.teams.length)return d.teams.slice(0,20).map(t=>({who:`${t.player} · ${t.record}`,player:t.player,ev:t.event,mons:t.mons}));
   const pv=RES&&Array.isArray(RES.proven)?RES.proven:[];return pv.slice(0,20).map(x=>({who:`Won ${Math.round(x[2]*100)}% across ${x[1]} entr${x[1]===1?"y":"ies"}`,ev:'Proven team list',mons:x[0]}))}
 function gauntletScore(mine,theirs,useA){const r=planMatchup(mine,theirs,useA);let s=0,n=0;for(const i of r.chosen)for(let j=0;j<theirs.length;j++){s+=r.h.M[i][j];n++}
   // their side: how many of their six your four can't handle
@@ -33,7 +33,7 @@ function renderGauntlet(){const el=$('gauntOut');if(!el)return;const ms=members(
         <div class="lbl" style="margin-top:8px">Their six against yours</div><div class="prepgrid">${pr.them.map(r=>cell(r,byName.get(r.t.n))).join('')}</div></details>`:''}
       <button type="button" class="btn gpractice" data-gaunt="${x.ix}">Practice in Battle mode</button></div>`}).join('')}</div>
   <p class="t2" style="margin-top:10px">Each verdict is a real damage calc with your sets against each team's usual sets, the same as the threat preparation in your scouting report. The suggested four come from the Battle mode planner. Least prepared matchups first.</p>`}document.addEventListener('click',e=>{const b=e.target.closest('[data-gaunt],[data-qlog]');if(!b)return;
-  if(b.dataset.gaunt!=null){const x=(gauntCache.rows||[]).find(r=>r.ix===+b.dataset.gaunt);if(!x)return;S.opp=x.t.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');persist();setView('matchup');renderMatchup();toast('Loaded as your opponent');return}
+  if(b.dataset.gaunt!=null){const x=(gauntCache.rows||[]).find(r=>r.ix===+b.dataset.gaunt);if(!x)return;S.opp=x.t.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');ui.oppFrom={who:x.t.player||x.t.who,key:S.opp.slice().sort().join('|')};persist();setView('matchup');renderMatchup();toast('Loaded as your opponent');return}
   if(b.dataset.qlog){const ms=members(),theirs=S.opp.map(n=>byName.get(n)).filter(Boolean).map(oppMember);if(ms.length<4||!theirs.length)return;
     const useA=$('useAbil')?$('useAbil').checked:true;const r=planMatchup(ms,theirs,useA);const picks=[...r.lead,...r.back].map(i=>ms[i].p.n);
     if(!Array.isArray(S.log))S.log=[];S.log.push({t:Date.now(),r:b.dataset.qlog,b:picks,tm:ms.map(m=>m.p.n),o:S.opp.filter(Boolean)});if(S.log.length>400)S.log=S.log.slice(-400);

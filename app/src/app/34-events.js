@@ -8,7 +8,7 @@ document.addEventListener('change',e=>{const t=e.target;
     const T1=(ui.vsum&&ui.vsum.RD)||null,after=T1?T1.score:null,cl=scarfTrClash(members());
     toast(`${v||'No item'}${v===def?': the usual item':''}${before!=null&&after!=null?` · ready for ${before===after?after+'% of the top threats (no change)':before+'% → '+after+'% of the top threats'}`:''}${cl&&v==='Choice Scarf'?' · clashes with Trick Room':''}`)}
   else if(t.id==='poolSel'){ui.pool=['box','boxfill','all'].includes(t.value)?t.value:'boxfill';LS.set('cc2.pool',ui.pool);render();toast({box:'Suggestions only use your box',boxfill:'Your box first, then the best Pokémon to catch',all:'Suggestions use the full roster'}[ui.pool])}
-  else if(t.id==='oppTeamSel'){const d=META.teams,tm=d&&d.teams[+t.value];if(tm){S.opp=tm.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');persist();renderMatchup();toast('Loaded '+tm.player+'’s team as the opponent')}}
+  else if(t.id==='oppTeamSel'){const d=META.teams,tm=d&&d.teams[+t.value];if(tm){S.opp=tm.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');ui.oppFrom={who:tm.player,key:S.opp.slice().sort().join('|')};persist();renderMatchup();toast('Loaded '+tm.player+'’s team as the opponent')}}
   else if(t.id==='useAbil'||t.id==='swapMega'){render();toast(t.id==='swapMega'?(t.checked?'Plans can now swap your Mega':'Your Mega is protected again'):'Plans updated')}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(e.target.id==='saveName'){e.preventDefault();const o=$('saveOver');(o||$('saveNew')).click()}else if(e.target.id&&e.target.id.startsWith('rn_')){e.preventDefault();document.querySelector(`[data-rnok="${e.target.id.slice(3)}"]`).click()}}});
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
@@ -16,7 +16,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(d.thm){setTheme(d.thm);return}
   if(b.id==='sideClose'){sideOpen(false);return}
   if(d.view){setView(d.view);return}
-  if(d.typesmon){const p=byName.get(d.typesmon);if(p){ui.typesMon=p.n;ui.typesSel=p.t.slice();renderTypes()}return}
+  if(d.typesmon){const p=byName.get(d.typesmon);if(p){ui.typesAuto=false;ui.typesMon=p.n;ui.typesSel=p.t.slice();renderTypes()}return}
   if(d.type){const s=ui.typesSel||[];ui.typesMon=null;ui.typesCleared=true;ui.typesSel=s.includes(d.type)?s.filter(x=>x!==d.type):(s.length>=2?[s[1],d.type]:[...s,d.type]);renderTypes();return}
   if(b.id==='typesClear'||d.typesmonx){ui.typesSel=[];ui.typesMon=null;ui.typesCleared=true;const f=$('typeMonIn');if(f)f.value='';renderTypes();return}
   if(d.mvreset!==undefined){const s=S.slots[+d.mvreset];if(s&&s.mv){const before=teamOffense();delete s.mv[S.format];if(!Object.keys(s.mv).length)delete s.mv;render();const after=teamOffense();toast(`Back to the popular set · Offense ${before===after?'stays at '+after:before+' → '+after} of 18`)}return}
@@ -36,7 +36,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(b.id==='pasteCopy'){const t=$('pasteOut');const txt=t?t.value:'';try{navigator.clipboard.writeText(txt).then(()=>toast('Copied'),()=>{t.select();toast('Press Ctrl+C or Cmd+C to copy')})}catch(err){if(t)t.select();toast('Press Ctrl+C or Cmd+C to copy')}return}
   if(b.id==='pasteLoad'){const raw=($('pasteIn')||{}).value,sh=typeof decodeTeam==='function'?decodeTeam(raw):null;if(sh){applyShared(sh);return}const r=parsePaste(raw);
     if(!r.slots.length){$('pasteNotes').textContent=r.notes.length?r.notes.join('. ')+'.':'No Pokémon found. Paste the team text, one Pokémon per block.';return}
-    keepUndo();S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();toast(`Imported ${r.slots.length} Pokémon`+(r.notes.length?` (${r.notes.length} skipped item${r.notes.length>1?'s':''})`:''),true);return}
+    keepUndo();S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();{const sk=r.notes.map(n=>{const x=n.match(/^(.+?): skipped (item|move) "(.+?)"/);return x?`${x[3]} (${x[1]})`:null}).filter(Boolean);toast(`Imported ${r.slots.length} Pokémon`+(sk.length?`. Not in Champions, skipped: ${sk.slice(0,3).join(', ')}${sk.length>3?` and ${sk.length-3} more`:''}`:''),true)}return}
   if(d.megas!==undefined){S.megaGoal=Math.max(0,Math.min(2,+d.megas||0));S.maxMega=Math.max(1,S.megaGoal);recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.megaGoal?`Teams aim for ${S.megaGoal} Mega${S.megaGoal>1?'s':''}`:'Teams without Megas');return}
   if(d.clear!==undefined){const was=byName.get(S.slots[+d.clear].n);keepUndo();S.slots[+d.clear]=blank();render();if(was)toast(`Removed ${was.d}`,true)}
   else if(b.id==='abBtn'){ui.abLock=null;runAutoBuild()}
@@ -44,16 +44,16 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.absrc){ui.abSrc=d.absrc==='all'?'all':'box';LS.set('cc2.absrc',ui.abSrc);renderPoolCtl();if(ui.ab&&!ui.ab.busy)runAutoBuild()}
   else if(d.abnext){abNext(d.abnext)}
-  else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;keepUndo();S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the built team. Fix plans and the game plan now describe it.`,true)}
+  else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;keepUndo();S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the built team. Fix it and the game plan now describe it.`,true)}
   else if(d.absave){const t=abTeam(d.absave);if(!t||S.teams.length>=10)return;const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-    const name=`${FMT(d.absave)}: ${t.label}`.slice(0,40);S.teams.push({id,name,slots:t.mons.map(m=>({n:m.n,a:null,lock:false})),format:d.absave,saved:Date.now()});render();toast(`Saved "${name}"`)}
+    const name=`${t.label||'Built team'}`.slice(0,40);S.teams.push({id,name,slots:t.mons.map(m=>({n:m.n,a:null,lock:false})),format:d.absave,saved:Date.now()});render();toast(`Saved "${name}"`)}
   else if(d.qa!==undefined){const pl=(ui.quick||[])[+d.qa];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};
     keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;keepUndo();
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false}});
     keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`,true)}
   else if(d.lock!==undefined){const s=S.slots[+d.lock];s.lock=!s.lock;render()}
-  else if(d.unbox!==undefined){S.box=S.box.filter(x=>x!==d.unbox);render()}
+  else if(d.unbox!==undefined){ui.boxUndo=S.box.slice();S.box=S.box.filter(x=>x!==d.unbox);render();const q=byName.get(d.unbox);toastBox(`Removed ${q?q.d:d.unbox} from your box`)}
   else if(b.id==='replanBtn'){vCache=new Map();pmCache=new Map();planCache={key:null,plans:[]};render();toast('Plans refreshed')}
   
   else if(d.addmeta){const p=byName.get(d.addmeta);const j=S.slots.findIndex(s=>!byName.get(s.n));
@@ -68,7 +68,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.src){ui.metaSrc=d.src;render()}
   else if(d.sort){ui.sort=d.sort;document.querySelectorAll('[data-sort]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.sort===ui.sort));renderSaved()}
   else if(b.id==='clearTeam'){keepUndo();S.slots=Array.from({length:6},blank);S.loadedId=null;render();toast('Team cleared',true)}
-  else if(b.id==='boxReset'){S.box=DEFAULT_BOX.slice();render();toast('Box reset')}
+  else if(b.id==='boxReset'){if(!ui.boxResetAsk){ui.boxResetAsk=true;b.textContent='Tap again to reset';setTimeout(()=>{ui.boxResetAsk=false;const x=$('boxReset');if(x)x.textContent='Reset to default'},3500);return}ui.boxResetAsk=false;b.textContent='Reset to default';const was=S.box.slice();S.box=DEFAULT_BOX.slice();ui.boxUndo=was;render();toastBox('Box reset to the default list')}
   else if(b.id==='saveBtn'){ui.saving=!ui.saving;ui.paste=null;renderPastePanel();renderSavePanel()}
   else if(b.id==='saveCancel'){ui.saving=false;renderSavePanel()}
   else if(b.id==='saveOver'||b.id==='saveNew'){const name=($('saveName').value||'').trim()||'Untitled team';const slots=JSON.parse(JSON.stringify(S.slots));

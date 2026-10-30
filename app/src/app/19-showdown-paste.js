@@ -36,7 +36,10 @@ function exportPaste() {
 function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '').replace(/^EVs:\s*/i, ''), natL = lines.find(l => /^\w+\s+Nature\s*$/i.test(l));
   const nat = natL ? natL.replace(/\s+Nature\s*$/i, '').trim() : null, K = {hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5}, v = [0, 0, 0, 0, 0, 0]; let any = false;
   for (const part of ev.split('/')) { const m = part.trim().match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i); if (!m) continue; v[K[m[2].toLowerCase()]] = +m[1]; any = true; }
-  if (v.some(x => x > 32)) for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor(v[i] / 8));
+  // classic EVs (0-252) → stat points: 252 → 32, 4 → 1 (round to nearest), never over the total (Oct 30 audit: 252 became 31)
+  if (v.some(x => x > 32)) { for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor((v[i] + 4) / 8));
+    const cap = typeof SP_TOTAL === 'number' ? SP_TOTAL : 66; let over = v.reduce((a, b) => a + b, 0) - cap;
+    while (over > 0) { let k = -1; for (let i = 0; i < 6; i++) if (v[i] > 0 && v[i] < 32 && (k < 0 || v[i] < v[k])) k = i; if (k < 0) k = v.indexOf(Math.max(...v)); v[k]--; over--; } }
   const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null;
   // ev: false when the paste has no readable EVs line (none at all, as on tournament team sheets, or one with nothing
   // parseable in it): the stat points are then assumed, not 0. "EVs: 0 HP" is a readable line, so it means 0.

@@ -32,4 +32,4 @@ function sleepersSection(where) { if (!SHOW_SLEEPERS) return ''; const L = sleep
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-abaround],[data-abaroundx]'); if (!b) return;
   if (b.dataset.abaroundx) { ui.abLock = null; runAutoBuild(); return; }
   const p = byName.get(b.dataset.abaround); if (!p) return; ui.abLock = p.n; if (!inBox(p)) ui.abSrc = 'all';
-  const sh = $('lairSheet'); if (sh) sh.hidden = true; setView('auto'); runAutoBuild(); });
+  if (typeof lairClose === 'function') lairClose(); setView('auto'); runAutoBuild(); });

@@ -201,3 +201,117 @@ html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
 .chhot.typed .n,.chhot.typed .nm,.chhot.typed .st{text-shadow:0 1px 3px rgba(0,0,0,.45)}
 /* desktop already shows the Auto / Light / Dark switch, so the one-tap toggle is for phones and tablets only */
 @media (min-width:1001px){:root:not(#_ch) .band .chthm{display:none!important}}
+/* All suggestions: "More ideas" is a section heading and one full-width button, not boxed like a card (Oct 30, Sim) */
+:root:not(#_ch) #recList>.lbl.chaltk,:root:not(#_ch) #recList>.morebar{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+#recList>.lbl.chaltk{display:flex;flex-direction:column;gap:2px;margin:18px 2px 4px;text-transform:none;letter-spacing:0;font:inherit;color:var(--chink)}
+#recList>.lbl.chaltk b{font:400 24px/1.05 var(--display);text-transform:uppercase}
+#recList>.lbl.chaltk span{font-size:13.5px;color:var(--chink2)}
+#recList>.morebar{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin-top:6px}
+.btn.chmoreideas{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:56px;padding:10px 14px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);color:var(--chink);cursor:pointer;text-align:center}
+.btn.chmoreideas b{font:400 22px/1 var(--display);text-transform:uppercase}
+.btn.chmoreideas .vsub{font-size:13px;color:var(--chink2)}
+.btn.chmoreideas:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
+#recList>.morebar>.vsub{text-align:center;font-size:13.5px;color:var(--chink2)}
+:root:not(#_ch) #recList .btn.chmoreideas{border-radius:14px!important;min-height:56px!important}
+/* Fix it: a plan with two or more changes lists one change per row, readiness + Apply underneath */
+.chsug.multi{flex-direction:column!important;align-items:stretch!important;gap:8px!important}
+.chsug.multi .chml{display:flex;flex-direction:column;gap:6px}
+.chsug.multi .chmc{display:flex;align-items:center;gap:10px}
+.chsug.multi .chmc .pics{flex:none;width:96px}
+.chsug.multi .chmc .txt{flex:1;min-width:0}
+.chsug.multi .chmf{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chsug.multi .chmf .dl{margin-top:0}
+/* Ratings tier tiles on phones (Oct 30, Sim): sprite + badges on top, the full name underneath (never cut), cleaner "estimate" score */
+@media (max-width:760px){
+ .ltile{height:auto!important;min-height:62px;padding:5px 6px 6px 6px!important;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:30px auto;row-gap:2px;align-items:center}
+ .ltile .ltspr{top:3px!important;left:4px!important;bottom:auto!important;width:30px!important;height:30px!important}
+ .ltile .ltf{padding-left:32px;min-height:30px}
+ .ltile .ltn{grid-column:1/-1;padding:0!important;display:block!important;-webkit-line-clamp:unset!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:normal;word-break:normal;font-size:12px;line-height:1.1;align-self:end}
+ .ltile .ltn.sm{font-size:11px}.ltile .ltn.xs{font-size:10px}
+}
+.ltile.unsure .lts{background:rgba(0,0,0,.28)!important;color:#fff!important;box-shadow:none!important;border:1.5px solid rgba(255,255,255,.75)!important;border-style:solid!important}
+@media (max-width:760px){.ltile .lts{margin-left:4px}.ltile .ltf{gap:3px;overflow:hidden}}
+/* × in search and lookup boxes */
+.clrw{position:relative;display:inline-block;max-width:100%}.clrw.blk{display:block;width:100%}
+.clrw>input{padding-right:40px!important}
+.clrx{all:unset;box-sizing:border-box;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;display:none;align-items:center;justify-content:center;background:var(--chp2);color:var(--chink);font:700 18px/1 var(--body);cursor:pointer;z-index:2}
+.clrx::after{content:"";position:absolute;inset:-6px}
+.clrw.has>.clrx{display:inline-flex}
+:root[data-look="dark"] .clrx{background:#3A3734;color:#F3EBDC}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+/* Home: the six on the champion and your-team cards are tappable */
+button.chmmon{font:inherit;color:inherit;cursor:pointer;width:100%;-webkit-appearance:none;appearance:none;text-align:center}
+button.chmmon:active{transform:scale(.97)}
+button.chmmon:focus-visible,.chsix [data-lt]:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.chsix [data-lt]{cursor:pointer}
+/* Fix it: a game-plan gap nothing in the chosen pool can fix */
+.chgapnote{margin:4px 0 10px;padding:10px 12px;border-radius:12px;background:var(--warn-soft,#FBEBC6);color:var(--chink);font-size:13.5px;line-height:1.35;border:1.5px solid var(--chshaky,#C98A00)}
+:root[data-look="dark"] .chgapnote{background:#3A3122;color:#F3EBDC}
+/* My box: sort row */
+.boxsort{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 12px}
+.boxsort .bslbl{font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--chink2);margin-right:2px}
+.boxsort{flex-wrap:nowrap;gap:5px}
+:root:not(#_ch) main .boxsort.seg.segwrap{padding:0;gap:5px}
+:root:not(#_ch) main .boxsort.seg.segwrap button{padding:4px 9px;min-width:0;white-space:nowrap}
+@media (max-width:370px){.boxsort .bslbl{display:none}}
+/* Ratings legend: each item stays together when the line wraps */
+.lnote .lng{white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+/* sheet: names under Brought-with sprites */
+.chbw .bwn{display:block;font:700 11px/1.15 var(--body);font-style:normal;text-transform:uppercase;overflow-wrap:anywhere;margin-top:2px}
+/* tier letters readable on bright tier colours */
+.ltl b,.ltl span{text-shadow:0 1px 2px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.6)}
+.recgrid>[data-chmore],.recgrid>.chmorebtn{grid-column:1/-1}
+@media (min-width:861px){.recgrid:has(>#princ:empty)>.chmorebtn{grid-column:1/-1!important;grid-row:auto!important;margin-top:0!important}.recgrid:has(>#princ:empty)>#recList{grid-column:1/-1}}
+/* Build: full names on the big six (wrap instead of …) */
+.chabg span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:normal;word-break:normal;font-size:12.5px;line-height:1.15}
+@media (max-width:370px){.chabg span{font-size:11.5px}}
+/* Cores → Full teams on phones: the six sprites fit inside the card */
+@media (max-width:760px){.corerow.six .coresprs{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;margin:0;max-width:calc(100% - 4px)}.corerow.six .coresprs .spr,.corerow.six .coresprs img{width:100%!important;height:auto!important;aspect-ratio:1;max-width:56px}}
+/* Battle: their-six name suggestions readable in light mode; a visible remove × */
+:root:not(#_ch) .bmopp .menu,:root:not(#_ch) .bmopp .menu .opt,:root:not(#_ch) .bmopp .menu .opt *{color:var(--chink)}
+:root:not(#_ch)[data-look="dark"] .bmopp .menu,:root:not(#_ch)[data-look="dark"] .bmopp .menu .opt,:root:not(#_ch)[data-look="dark"] .bmopp .menu .opt *{color:#F3EBDC}
+:root:not(#_ch) .bmopp .bmslot .x{width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.35)!important;color:#fff!important;border:1.5px solid #fff!important;opacity:1!important;display:inline-flex;align-items:center;justify-content:center;position:relative}
+:root:not(#_ch) .bmopp .bmslot .x::after{content:"";position:absolute;inset:-6px}
+:root:not(#_ch) .bmopp .bmslot .bmn{overflow-wrap:normal;word-break:normal;hyphens:none}
+/* Battle: Plan / Speed / Damage tabs only on phones (desktop shows every card) */
+@media (min-width:761px){:root:not(#_ch) main .seg.bmtabs,.bmtabs{display:none!important}}
+/* spread editor uses the card's full width (it was squeezed into the label column on phones) */
+.itemrow>.spedit{grid-column:1/-1}
+.spedit .field{flex:1 1 170px!important}.spedit select.field{flex:0 1 130px!important}
+.clrw.flx>input{width:100%!important;box-sizing:border-box}
+@media (max-width:520px){#savePanel .row{flex-wrap:wrap}#savePanel .row .clrw{flex:1 1 100%!important;min-width:0!important}}
+/* Home cards in dark mode: small labels stay white like in light mode */
+:root[data-look="dark"] .chmcard .chk,:root[data-look="dark"] .chband .chk{color:#fff!important;opacity:1!important}
+/* desktop team sheet: the − sits clear of the Edit pill */
+@media (min-width:761px){#chSheetOut .chrow .chedi{margin-right:44px}}
+/* Top 10 threat tiles: names wrap inside the tile on small phones, status stays on one line */
+.chtr .tx{min-width:0}.chtr .tx b{overflow-wrap:anywhere;word-break:normal;hyphens:auto}
+.chtr .st{white-space:nowrap}
+@media (max-width:400px){.chtl10 .chtr{gap:4px;padding-left:6px;padding-right:6px}.chtl10 .chtr .spr{width:34px;height:34px}.chtl10 .chtr .tx b{font-size:11.5px}.chtl10 .chtr .st{font-size:9.5px;letter-spacing:.02em}.chtl10 .chtr .rk{font-size:15px;width:auto}}
+/* edit card: the Weak/Resists toggle says what it is; no yellow fills (yellow is for the main button) */
+details.slmore>summary::after{content:"Weak & resists";font:600 11px var(--body);color:var(--chink2);margin-left:auto;padding-left:6px}
+details.slmore[open]>summary::after{content:"Hide"}
+:root:not(#_ch) .chedit .itemrow{background:var(--chp2)!important}
+:root:not(#_ch)[data-look="dark"] .chedit .itemrow{background:#34312E!important}
+/* ⋯ side menu above the bottom nav */
+@media (max-width:1000px){:root:not(#_ch) .side{z-index:120}:root:not(#_ch) .scrim{z-index:110}}
+/* header readiness line keeps numbers next to their words */
+.chthead .vsub b,.chthead .chstat{white-space:nowrap}
+.chlegk{margin:10px 0 2px}
+.rd .nw{white-space:nowrap}
+/* messages (Undo, import notes) show above the edit panel and sheets */
+.toast{z-index:200!important}
+/* Usage search: the × stays inside the box on desktop */
+.chmetaq .clrw{display:inline-block;width:auto;max-width:100%}.chmetaq .clrw>input{width:100%}
+@media (min-width:761px){.chmetaq .clrw.blk{display:block;width:min(420px,100%)}}
+/* cores trios on phones: the big number moves below the sprites so nothing overlaps */
+@media (max-width:520px){.corerow:not(.six) .coresprs{max-width:calc(100% - 110px)}.corerow:not(.six) .coresprs .spr,.corerow:not(.six) .coresprs img{max-width:52px;height:auto}}
+/* the "Show all" bar under the old threat list sits flush, no empty outline */
+#threats .morebar{background:none!important;border:0!important;padding:0!important;justify-content:center}
+.chhr2[data-lt]{cursor:pointer}.chhr2[data-lt]:hover{filter:brightness(1.06)}
+.chbd2 span{overflow-wrap:anywhere}
+/* Ratings kicker on small phones: "REG M-C" never splits */
+.chpghead .chk{word-break:normal;overflow-wrap:normal}
+.chbd2 span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+.chpghead .chk+.chpgt,.chpghead .chk+*{margin-top:4px}
+.chgapnote.onrecs{margin:0 0 12px}

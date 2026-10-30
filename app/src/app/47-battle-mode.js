@@ -57,7 +57,7 @@ function renderBattle() {
   const slots = S.opp.map((n, i) => { const p = byName.get(n);
     return p ? `<div class="bmslot on">${sprite(p, 'bmspr')}<span class="bmn">${esc(p.d)}</span><button class="x" type="button" data-bmx="${i}" aria-label="Remove ${esc(p.d)}">×</button></div>`
       : `<div class="bmslot"><div class="cb"><input class="field" id="bmOpp${i}" placeholder="${i + 1}" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Their Pokémon ${i + 1}"></div></div>`; }).join('');
-  const top = `<div class="bmbar"><button type="button" class="btn sm ghost" id="bmClear">Clear their six</button></div>
+  const top = `<div class="bmbar">${S.opp.some(Boolean) ? '<button type="button" class="btn sm ghost" id="bmClear">Clear their six</button>' : ''}</div>
     <div class="bmopp">${slots}</div>`;
   let body = ''; bmUi.four = null;
   if (mine.length < 4) body = '<div class="empty-note">Add at least 4 Pokémon on My team first.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>';
@@ -75,7 +75,7 @@ function renderBattle() {
     // turn-1 field from both sides' leads (yours and their likely lead), used when the weather is on Auto
     const spdOf = x => { const o = x._orig || x, s = likelySpeed(x.p, C.includes(o) ? o : null); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
     const F1 = typeof turnOneField === 'function' ? turnOneField([...r.lead.map(i => mine[i]), ...(ll.length === 2 ? ll : theirs.slice(0, 2))], spdOf) : {weather: '', terrain: ''};
-    const wNow = bmUi.weather === 'auto' ? (F1.wx != null ? F1.wx : F1.weather) : bmUi.weather, tNow = bmUi.weather === 'auto' ? F1.terrain : '';
+    const wNow = bmUi.weather === 'auto' ? (F1.wx != null ? F1.wx : F1.weather) : bmUi.weather, tNow = F1.terrain || ''; // terrain from the leads stays when you pick a weather by hand (Oct 30 audit)
     const W = bmWatch(C, theirs);
     const watch = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Watch out</span></div>${W.length ? W.map(w => `<div class="bmw">${sprite(w.o.p, 'bmwspr')}<div><b>${esc(w.o.d)}</b>${w.out.map(([c, t, d]) => `<div class="bmwl"><span class="sev ${c}">${t}</span><span class="t2">${d}</span></div>`).join('')}</div></div>`).join('')
       : '<p class="t2" style="margin:0">Nothing on their side shuts down your four.</p>'}</div>`;
@@ -105,7 +105,7 @@ function renderBattle() {
     const dmgCard = `<div class="plan bmcard bmdmg" data-t="dmg"><div class="ph"><span class="pt">Damage both ways</span></div>
       <div class="seg segwrap" role="group" aria-label="Weather">${wseg}</div>
       <div class="seg segwrap" role="group" aria-label="Intimidate"><button type="button" data-bmi="intMe" aria-pressed="${bmUi.intMe}">You're Intimidated</button><button type="button" data-bmi="intThem" aria-pressed="${bmUi.intThem}">They're Intimidated</button></div>
-      ${grid}<p class="t2 bmleg" style="margin:0"><span class="bo k2">%</span> your best hit on them · <span class="bd k2">%</span> their best hit on you. Max roll, % of HP, each side's usual set. Green = can KO, gold = 2 hits.</p></div>`;
+      ${grid}<p class="t2 bmleg" style="margin:0"><span class="bo k2">%</span> your best hit on them · <span class="bd k2">%</span> their best hit on you. Max roll, % of HP, each side's usual set. Green = can KO, gold = 2 hits; on their side, red and pink cells mean they can do the same to you.</p></div>`;
     let t1 = ''; if (dbl) { try { t1 = turnOnePlan(mine, theirs, r); } catch (e) {} }
     body = `<div class="seg bmtabs" role="group" aria-label="Show">${[['plan', 'Plan'], ['speed', 'Speed'], ['dmg', 'Damage']].map(([k, t]) => `<button type="button" data-bmt="${k}" aria-pressed="${bmUi.tab === k}">${t}</button>`).join('')}</div><div class="bmgrid" data-tab="${bmUi.tab}">${bring}${watch}${speed}${t1 ? `<div class="bmt1" data-t="plan">${t1}</div>` : ''}${dmgCard}</div>`; }
   el.innerHTML = top + body;

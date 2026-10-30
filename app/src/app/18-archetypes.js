@@ -124,6 +124,7 @@ function renderThreats(ms, useA) {
   const d = metaDoc();
   if (!ms.length) { el.innerHTML = '<div class="empty-note">Add Pokémon to see which meta threats hit your team hardest.</div>'; return; }
   if (!d || !d.top || !d.top.length) { el.innerHTML = '<div class="empty-note">Threats appear once meta data has loaded.</div>'; return; }
+  let RDx = null; try { RDx = prepOf(ms); } catch (e) {} const rdLv = n => { if (!RDx) return null; const b = (byName.get(n) || {}).b; const row = RDx.rows.find(x => x.t && x.t.n === n) || RDx.rows.find(x => x.t && (byName.get(x.t.n) || {}).b === b); return row ? row.level : null; }; const rdName = (n, d) => { if (!RDx) return d; const b = (byName.get(n) || {}).b, row = RDx.rows.find(x => x.t && x.t.n === n) || RDx.rows.find(x => x.t && (byName.get(x.t.n) || {}).b === b); return row ? row.t.d : d; };
   const theirs = d.top.slice(0, 20).map(t => { const p = byName.get(t.n); return p ? oppMember(megaFormFor(p, t)) : null; }).filter(Boolean);
   const h = headToHead(ms, theirs, useA);
   const rows = theirs.map((o, j) => { const hit = ms.map((m, i) => i).filter(i => h.def[i][j] && h.def[i][j].x >= 2);
@@ -131,10 +132,10 @@ function renderThreats(ms, useA) {
     return {o, j, hit, ans, danger: hit.length * 2 + (ans.length ? 0 : 3) - ans.length * .5 + viability(o.p) / 50}; })
     .filter(r => r.hit.length >= 2 || !r.ans.length).sort((a, b) => b.danger - a.danger).slice(0, 8);
   const allRows = rows.length; if (PHONE() && !ui.threatsAll) rows.length = Math.min(rows.length, 4);
-  el.innerHTML = rows.length ? rows.map(r => `<div class="item"><div style="min-width:0"><div class="t1">${esc(r.o.d)} <span class="chips" style="display:inline-flex;vertical-align:middle">${r.o.types.map(t => chip(t)).join('')}</span></div>
-      <div class="t2">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => esc(ms[i].d)).join(', ') : '<span class="no">No clean answer</span>'}${(() => { try { let b = null; ms.forEach(m => { const x = bestHitOn(r.o.p, r.o.moves || [], m.p, null, m); if (x && (!b || x.r.max / x.r.hp > b.x.r.max / b.x.r.hp)) b = {x, m}; });
+  el.innerHTML = rows.length ? rows.map(r => `<div class="item"><div style="min-width:0"><div class="t1">${esc(rdName(r.o.p.n, (byName.get(r.o.p.n) || r.o).d))} <span class="chips" style="display:inline-flex;vertical-align:middle">${r.o.types.map(t => chip(t)).join('')}</span></div>
+      <div class="t2">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => esc(ms[i].d)).join(', ') : rdLv(r.o.p.n) >= 2 ? 'Answered by your scouting report (speed control, support or a combined KO), not 1-on-1' : '<span class="no">No clean answer</span>'}${(() => { try { let b = null; ms.forEach(m => { const x = bestHitOn(r.o.p, r.o.moves || [], m.p, null, m); if (x && (!b || x.r.max / x.r.hp > b.x.r.max / b.x.r.hp)) b = {x, m}; });
         return b ? `<br>Hardest hit: ${esc(b.x.mv.name)} does up to ${Math.round(100 * b.x.r.max / b.x.r.hp)}% to ${esc(b.m.d)}.` : ''; } catch (e) { return ''; } })()}</div></div>
-      <span class="pill ${r.ans.length ? (r.hit.length >= 3 ? 'b2' : 'b1') : 'b3'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'Unanswered'}</span></div>`).join('')
+      ${(() => { const lv = rdLv(r.o.p.n); return lv != null ? `<span class="pill ${['b3', 'b2', 'b1', 'b1'][lv]}">${['Unanswered', 'Shaky', 'Handled', 'Well handled'][lv]}</span>` : `<span class="pill ${r.ans.length ? (r.hit.length >= 3 ? 'b2' : 'b1') : 'b3'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'Unanswered'}</span>`; })()}</div>`).join('')
     : '<div class="empty-note">No top meta Pokémon hits several of yours super effectively while going unanswered. Nice.</div>';
   if (allRows > rows.length) el.innerHTML += `<div class="morebar"><button class="btn sm" type="button" id="threatsAllBtn">Show all ${allRows}</button></div>`;
 }
@@ -198,7 +199,11 @@ function renderTopTeams() {
         : `<button class="btn sm" type="button" data-ttask="${k}">Load team</button><button class="linkbtn" type="button" data-ttvs="${k}">Practice against</button>`}</div></div>`; }).join('')
       + (all.length > cap ? `<button class="btn ttmore" type="button" data-ttmore="${esc(sec)}">Show ${all.length - cap} more</button>` : ''); }).join('');
 }
-function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return; keepUndo();
+function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return;
+  // the same team from an event's full sheet (moves, items, abilities) when we have it (Oct 30 audit: it loaded popular sets)
+  try { const key = t.mons.slice().sort().join('|'), E = META.events && META.events.events || [];
+    for (const ev of E) for (const x of ev.top || []) if (x.player === t.player && x.mons.map(m => m.n).sort().join('|') === key) { ui.ttConfirm = null; loadSheet(x); return; } } catch (e) {}
+  keepUndo();
   S.slots = normSlots(t.mons.map(n => ({n, a: null, lock: false})));
   // tournament teams are VGC doubles teams
   S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`Loaded ${t.player}'s team`, true); }
@@ -224,4 +229,4 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // "Practice against": a top team becomes the opponent in Battle mode
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ttvs]'); if (!b) return;
   const t = META.teams && META.teams.teams[+b.dataset.ttvs]; if (!t) return;
-  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); persist(); setView('matchup'); toast(`${t.player}'s team is your opponent`); });
+  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`${t.player}'s team is your opponent`); });

@@ -55,8 +55,9 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
 CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
   // nothing makes the team readier: show the side-grades (different picks that keep every check) instead of a dead end
   if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { L = ui.planList = ui.plans.more.slice(0, 3); side = true; }
-  const top = L.slice(0, 2); if (!top.length) return ''; // top 2 here; All suggestions has the rest
-  return `<section class="chsugs" aria-label="Suggestions">${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}
+  const top = L.slice(0, 2); const gapN = ui.plans && ui.plans.gapNote ? `<p class="chgapnote">${esc(ui.plans.gapNote)}</p>` : ''; // a game-plan gap nothing in this pool can fix
+  if (!top.length) return gapN ? `<section class="chsugs" aria-label="Suggestions">${gapN}</section>` : ''; // top 2 here; All suggestions has the rest
+  return `<section class="chsugs" aria-label="Suggestions">${gapN}${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}
     ${top.map((pl, k) => { if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } } const d = pl._ts != null && base != null ? pl._ts - base : null;
       const pics = pl.ch.map(x => `${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span>`).join('');
       const words = pl.ch.map(x => `<b>${esc(x.c.p.d)}</b>${x.out ? ` <span class="for">for ${esc(x.out.d)}</span>` : ' <span class="for">added</span>'}`).join('<br>');
@@ -65,8 +66,13 @@ CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum 
       const wk = pl._wk ? `<li>Weak spots: <b>${esc(pl._wk[0])}</b> → <b>${esc(pl._wk[1])}</b></li>` : '';
       const nr = why.length + (wk ? 1 : 0);
       const whyH = nr ? `<details class="chwhy"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${why.map(l => `<li>${l}</li>`).join('')}</ul></details>` : '';
-      return `<div class="chsugw"><div class="chsug"><div class="pics">${pics}</div><div class="txt">${words}${d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)}% ready</span>` : ''}</div><button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button></div>${whyH}</div>`; }).join('')}<button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; };
+      const dlH = d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)}% ready</span>` : '', apH = `<button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button>`;
+      // two or more changes: one row per change, then the readiness and Apply underneath (Oct 30, Sim: the squeezed column looked unpolished)
+      if (pl.ch.length > 1) return `<div class="chsugw"><div class="chsug multi"><div class="chml">${pl.ch.map(x => `<div class="chmc"><div class="pics">${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span></div><div class="txt"><b>${esc(x.c.p.d)}</b>${x.out ? ` <span class="for">for ${esc(x.out.d)}</span>` : ' <span class="for">added</span>'}</div></div>`).join('')}</div><div class="chmf">${dlH}${apH}</div></div>${whyH}</div>`;
+      return `<div class="chsugw"><div class="chsug"><div class="pics">${pics}</div><div class="txt">${words}${dlH}</div>${apH}</div>${whyH}</div>`; }).join('')}<button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; };
 CH.legendRow = RD => { const c = CH.lvCount(RD); return `<div class="chleg">${[[0, 'var(--chbad)'], [1, 'var(--chshaky)'], [2, 'var(--chmid)'], [3, 'var(--chok)']].map(([l, col]) => `<span><i style="background:${col}"></i>${CH.LV[l]} ${c[l]}</span>`).join('')}</div>`; };
+// event names without a trailing prize-pool note, e.g. "($40 USD prize pool)" (Oct 30 audit)
+const evName = n => String(n || '').replace(/\s*\((?:[^()]*?(?:prize|USD|\$)[^()]*)\)\s*$/i, '').trim();
 // ---------- Home ----------
 const chHomeOld = renderHome;
 renderHome = function () { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
@@ -75,8 +81,8 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const byN = n => ms.find(m => m.p.n === n), fl = F ? F.lead.map(byN).filter(Boolean) : [], fb = F ? F.back.map(byN).filter(Boolean) : [];
   const tagOf = m => !F ? '' : fl.includes(m) ? '<div class="chtag lead">Lead</div>' : fb.includes(m) ? '<div class="chtag">Back</div>' : '<div class="chtag">Bench</div>';
   const mine = ms.slice(0, 6), ord = F ? [...fl, ...fb, ...mine.filter(m => !fl.includes(m) && !fb.includes(m))] : mine;
-  const you = `<div class="chband you chhalf"><div class="chk">● You${ms.length ? ' · ' + esc(teamTitleFor(ms)) : ''}</div><div class="chsix">${ms.length ? ord.map(m => `<div>${sprite(m.p) || ''}${tagOf(m)}</div>`).join('') : Array.from({length: 6}, () => '<div><div class="empty"></div></div>').join('')}</div>${ms.length ? '' : '<div class="chk" style="margin-top:6px">Your six goes here</div>'}</div>`;
-  const them = `<div class="chband them chhalf"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div>${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
+  const you = `<div class="chband you chhalf"><div class="chk">● You${ms.length ? ' · ' + esc(teamTitleFor(ms)) : ''}</div><div class="chsix">${ms.length ? ord.map(m => `<div role="button" tabindex="0" data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info">${sprite(m.p) || ''}${tagOf(m)}</div>`).join('') : Array.from({length: 6}, () => '<div><div class="empty"></div></div>').join('')}</div>${ms.length ? '' : '<div class="chk" style="margin-top:6px">Your six goes here</div>'}</div>`;
+  const them = `<div class="chband them chhalf"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div role="button" tabindex="0" data-lt="${esc(p.n)}" aria-label="${esc(p.d)}: open its info">${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
   const mid = `<div class="chmid">
     ${F ? `<div class="ch64"><span class="n b">6</span><span class="chk">bring</span><span style="font-size:26px" aria-hidden="true">→</span><span class="n r">4</span><span class="chk">pick</span><span class="chpen" style="margin-left:auto;transform:rotate(-3deg)">your four vs the meta's six <span class="chup">↑</span><span class="chdn">↓</span></span></div>
     <div class="chfour">${[...fl, ...fb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'LEAD' : 'BACK'}</div></div>`).join('')}</div>` : ''}
@@ -85,7 +91,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const E = META.events; let ev = null, t = null;
   if (E && Array.isArray(E.events)) for (const e of E.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }
   const sameSix = !!(t && ms.length === 6 && t.mons.every(m => ms.some(x => x.p.n === m.n)));
-  const win = ev ? `<div class="chwinwrap"><div class="chk">Latest winner · ${esc(ev.name)}</div><div class="chwh">The champion brought ${sameSix ? '<span class="hl">your</span>' : 'these'} six.</div>
+  const win = ev ? `<div class="chwinwrap"><div class="chk">Latest winner · ${esc(evName(ev.name))}</div><div class="chwh">The champion brought ${sameSix ? '<span class="hl">your</span>' : 'these'} six.</div>
     <div class="chwin"><div class="top">${t.record ? `<span class="rec">${esc(t.record)}</span>` : ''}<div><div class="who">${esc(t.player)}</div><div class="chk">${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>${sameSix ? '<div class="chpen">Same six as yours!</div>' : ''}</div></div>
     <div class="chwsix">${t.mons.map(m => `<span title="${esc(byName.get(m.n).d)}">${sprite(byName.get(m.n)) || esc(byName.get(m.n).d)}</span>`).join('')}</div>
     <div class="row"><button class="chghost" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div></div>` : '';
@@ -124,27 +130,29 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const cl = F2 ? F2.lead.map(byN).filter(Boolean) : [], cb = F2 ? F2.back.map(byN).filter(Boolean) : [];
   const ord2 = F2 ? [...cl, ...cb, ...mine.filter(m => !cl.includes(m) && !cb.includes(m))] : mine;
   const tag2 = m => !F2 ? '' : cl.includes(m) ? '<span class="chtag lead">Lead</span>' : cb.includes(m) ? '<span class="chtag">Back</span>' : '<span class="chtag">Bench</span>';
-  const row = (sp, nm, line, tg, right) => `<div class="chhr2${right ? ' r' : ''}">${sp}<div class="chbd2"><b>${esc(nm)}</b>${line ? `<span>${esc(line)}</span>` : ''}</div>${tg || ''}</div>`;
+  // desktop rows open the Pokémon's info sheet too (the name is the Pokémon's display name)
+  const row = (sp, nm, line, tg, right) => { const q = ROSTER.find(x => x.d === nm); return `<div class="chhr2${right ? ' r' : ''}"${q ? ` role="button" tabindex="0" data-lt="${esc(q.n)}" aria-label="${esc(nm)}: open its info"` : ''}>${sp}<div class="chbd2"><b>${esc(nm)}</b>${line ? `<span>${esc(line)}</span>` : ''}</div>${tg || ''}</div>`; };
   const youH = `<div class="chband you chhalf chcol"><div class="chk">● You · ${ms.length ? 'pick 4' : 'your six'}</div><div class="chcolt">${ms.length ? esc(teamTitleFor(ms)) : 'Your six'}</div>
     ${ms.length ? `<div class="chlist6">${ord2.map(m => row(sprite(m.p) || '', m.d, [m.item, m.ability].filter(Boolean).join(' · '), tag2(m))).join('')}</div><div class="chwl" style="justify-content:flex-start"><button type="button" class="chghost onblue" data-view="report">Open my team</button></div>`
       : `<div class="chlist6 empty">${Array.from({length: 6}, () => '<div class="chhr2"><span class="emp"></span><div class="chbd2"><b>&nbsp;</b></div></div>').join('')}</div><button type="button" class="chghost onblue" data-view="build">Add your six</button>`}</div>`;
-  const themH = champ ? `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">Latest winner · ${esc(ev.name)} ●</div><div class="chcolt" style="text-align:right">The champion's six</div>
+  const themH = champ ? `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">Latest winner · ${esc(evName(ev.name))} ●</div><div class="chcolt" style="text-align:right">The champion's six</div>
     <div class="chwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen" style="color:#fff">same six as yours!</span>' : ''}</div>
     <div class="chlist6">${champ.map(x => row(sprite(x.p) || '', x.p.d, [x.it, x.ab].filter(Boolean).join(' · '), '', true)).join('')}</div>
-    <div class="chwl"><button class="chghost onred" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div>` : `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div>${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
+    <div class="chwl"><button class="chghost onred" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div>` : `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div role="button" tabindex="0" data-lt="${esc(p.n)}" aria-label="${esc(p.d)}: open its info">${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
   const midH = `<div class="chmid"><div class="chk">Team preview · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="sub">Before turn one.</div>
     <p>From <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>. See their six, pick your four.</p>
     ${F2 && cl.length ? `<div class="ch64"><span class="n b">6</span><span class="chk">bring</span><span style="font-size:26px" aria-hidden="true">→</span><span class="n r">4</span><span class="chk">pick</span></div>
     <div class="chk" style="margin:2px 0 6px">NastyPlot's four vs ${foe}</div><div class="chfour">${[...cl, ...cb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'LEAD' : 'BACK'}</div></div>`).join('')}</div>` : ''}
     <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="report">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>`;
   // phone Home: one story top to bottom. What this is + the one button, then the latest champion, then your six.
-  const mon = (p, sub, tg) => `<div class="chmmon">${sprite(p) || ''}<b>${esc(p.d)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${tg || ''}</div>`;
+  // each Pokémon opens its info sheet (Oct 30, Sim)
+  const mon = (p, sub, tg) => `<button type="button" class="chmmon" data-lt="${esc(p.n)}" aria-label="${esc(p.d)}: open its info">${sprite(p) || ''}<b>${esc(p.d)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${tg || ''}</button>`;
   const pickLine = F2 && cl.length && cb.length ? `<div class="chmwho">NastyPlot's pick vs ${foe}: lead <b>${cl.map(m => esc(m.d)).join(' + ')}</b>, back ${cb.map(m => esc(m.d)).join(' + ')}</div>` : '';
   const phoneH = `<div class="chmh">
     <section class="chmhero"><div class="chk">Pokémon Champions · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="chdisp sub">Before turn one.</div>
       <p>Teams, sets and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>.</p>
       <div class="chmacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="report">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></section>
-    ${champ ? `<section class="chmcard them"><div class="chk">Latest winner · ${esc(ev.name)}</div><div class="chmct">The champion's six</div>
+    ${champ ? `<section class="chmcard them"><div class="chk">Latest winner · ${esc(evName(ev.name))}</div><div class="chmct">The champion's six</div>
       <div class="chmwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen">same six as yours!</span>' : ''}</div>
       <div class="chmgrid">${champ.map(x => mon(x.p, x.it)).join('')}</div>
       <div class="chmrow"><button class="chghost onred" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></section>` : ''}
@@ -231,7 +239,9 @@ function chEditStrip() { const ed = $('chEdit'); if (!ed || ed.hidden) return; l
   st.innerHTML = S.slots.map((x, i) => { const m = mm.get(i); return `<button type="button" class="chst${String(i) === cur ? ' on' : ''}${m ? '' : ' add'}" data-chedit="${i}" aria-label="${m ? 'Edit ' + esc(m.d) : 'Add a Pokémon in slot ' + (i + 1)}"${String(i) === cur ? ' aria-current="true"' : ''}>${m ? (sprite(m.p, 'mini') || esc(m.d.slice(0, 3))) : '<span aria-hidden="true">+</span>'}</button>`; }).join('');
   let rb = ed.querySelector('.chedrm'); const m = cur !== 'all' ? mm.get(+cur) : null;
   if (!rb) { rb = document.createElement('button'); rb.type = 'button'; rb.className = 'chghost chedrm'; ed.querySelector('.chedb').append(rb); }
-  rb.hidden = !m; if (m) { rb.dataset.chrm = cur; rb.textContent = `Remove ${m.d} from the team`; } }
+  rb.hidden = !m; if (m) { rb.dataset.chrm = cur; rb.textContent = `Remove ${m.d} from the team`; }
+  // the title follows the slot: after adding a Pokémon it says Edit <name>, not Add a Pokémon
+  { const t = $('chEditT'); if (t) t.textContent = cur === 'all' ? 'Edit team' : m ? 'Edit ' + m.d : 'Add a Pokémon'; ed.classList.toggle('chadd', cur !== 'all' && !m); } }
 function chEditClose() { const ed = $('chEdit'); if (!ed || ed.hidden) return; ed.hidden = true; $('chEditScrim').hidden = true; document.documentElement.classList.remove('chlock'); }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; chEditOpen(b.dataset.chedit === 'all' ? null : +b.dataset.chedit); });
 // Import, Export and Save show their panels inside the editor
@@ -247,7 +257,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
   const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
-      ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · ${c[0]} unanswered · ${c[1]} shaky</div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
+      ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · <span class="nw">${c[0]} unanswered</span> · <span class="nw">${c[1]} shaky</span></div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
       <div class="chpills">${legal}${ck}</div>
       ${ms.length ? `<div class="chsix6">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || esc(m.d)}</button>`).join('')}</div>` : ''}
       <div class="chacts2" id="chActs"><button type="button" class="chghost" data-view="teams">Saved teams</button><button type="button" class="chghost" data-view="box">My box</button></div></div>
@@ -260,12 +270,12 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   { const n = document.querySelector('#chP4 .chparth .n'); if (n) n.hidden = !ms.length; const q = document.querySelector('#chP4 .chparth p'); if (q) q.textContent = ms.length ? 'Tap a Pokémon to edit its set' : 'Tap a slot to add a Pokémon'; }
   document.querySelectorAll('[data-chpool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.chpool === ui.pool));
   // part 1: suggestions
-  { const o = $('chSugOut'); if (o) o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No change readies this team for more of the top threats. Nice.</p>') : ''; }
+  { const o = $('chSugOut'); if (o) o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No single change from this pool readies the team for more of the top threats. Try another pool above, or see Threats below for what to watch.</p>') : ''; }
   const sum = (id, t) => { const d = $(id); const s = d && d.querySelector('.chs'); if (s) s.textContent = t; };
   { const nd = $('needs'), n = $('needsSub'); sum('chfFix', [n && n.textContent ? n.textContent : 'Nothing big to fix', v.CK ? `${v.CK.pass}/${v.CK.n} checks` : '', v.legal === false ? 'not legal yet' : 'legal'].filter(Boolean).join(' · ')); }
   { const g = document.querySelector('#chfGplan .gpcard'), tags = g ? [...g.querySelectorAll('.gphead .tag, .gphead .chip, .gphead .arch')].map(x => x.textContent.trim()).filter(Boolean) : []; sum('chfGplan', (tags.length ? tags.map(x => x.charAt(0) + x.slice(1).toLowerCase()).join(' + ') + ' · ' : '') + 'leads, backups and what to watch'); }
   // part 2: threats
-  { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}${CH.legendRow(RD)}</div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
+  { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}<div class="chk chlegk">All 30 threats</div>${CH.legendRow(RD)}</div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
   // part 4: the sheet, every slot (empty ones say Add)
   { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${all.map(row).join('')}</div>`; }
   if (!$('chScout').hidden) chScoutRender(); try { chEditStrip(); } catch (e) {} }

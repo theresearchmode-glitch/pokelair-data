@@ -17,8 +17,9 @@ function teamProfile(ms, useA) {
 function principles(P, ms) { const c = proChecks(ms, $('useAbil').checked); if (!c) return [];
   return c.items.map(x => ({ok: x.skip ? 'part' : x.soft ? 'part' : x.ok ? 'ok' : 'miss', label: x.label, detail: (x.ok ? x.have : x.miss) + (x.pro ? ` · ${x.pro}` : '')})); }
 let recCache = {key: null, val: null};
+const recKey = useA => JSON.stringify([OFFMETA, S.slots, ui.recSrc, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
 function computeRecs(ms, useA) {
-  const key = JSON.stringify([OFFMETA, S.slots, ui.recSrc, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
+  const key = recKey(useA);
   if (recCache.key === key) return recCache.val;
   ui.recMore = 0;
   const pool = (ui.recSrc === 'all' ? ROSTER.filter(p => inBox(p) || poolOK(p, 25)) : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isTrap(p) && (OFFMETA || viability(p) >= 12 || rating(p).total >= 50));
@@ -26,20 +27,27 @@ function computeRecs(ms, useA) {
   const gpRank = {miss: 0, opt: 1, part: 1, ok: 2};
   const keeps = (A) => A.ex <= B.ex && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.sh.w3 <= Math.max(1, B.sh.w3) && A.un <= B.un && A.off >= B.off && A.ans >= B.ans
     && B.gp.rows.filter(r => r.k !== 'ally').every(r => gpRank[A.gpst(r.k) || 'miss'] >= gpRank[r.st]);
-  const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => r.k !== 'ally' && gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0);
+  const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => r.k !== 'ally' && gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0) - (wxSetsOf(pl.team).length > wxSetsOf(ms).length && wxNet(pl.team) <= 0 ? 6 : 0) - Math.max(0, wxNet(ms) - wxNet(pl.team)) * 2;
   const clean = [], soft = [], seen = new Set();
   // Readiness decides when the pick completes a six: it must ready the team for more of the top threats, and the most
   // prepared result goes first. The type rules relax to "at most one more weakness or unresisted type, no new stack".
   const useTS = useTSPick() && ms.length >= 5, baseTS = useTS && ms.length === 6 ? tsOf(ms) : null; let tsN = 0;
   const tsOK = pl => { if (!useTS || pl.team.length !== 6) return null; if (pl._ts === undefined) { if (tsN >= 120) return null; tsN++; pl._ts = tsOf(pl.team); } return pl._ts; };
   // the readiness checks go to the planner's best 60
-  const order = useTS ? tsShortlist(res.singles, 60) : res.singles;
+  // plus the best picks that close a game-plan gap (rain for Swift Swim Mega Swampert, Trick Room attackers…; Oct 30)
+  const passB0 = (proChecks(ms, useA) || {pass: 0}).pass;
+  const gapFix = pl => !!(pl.gap && pl.gap.fix.length), shortL = useTS ? tsShortlist(res.singles, 60) : res.singles;
+  const order = useTS ? shortL.concat(res.singles.filter(pl => gapFix(pl) && !shortL.includes(pl)).slice(0, 12)) : res.singles;
   for (const pl of order) { const x = pl.ch[0], b = x.c.p.b; if (seen.has(b) && !useTS) continue;
-    const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
+    // never a weather that works against the team's own (a sun setter next to Swift Swim), and never a swap that takes away
+    // the team's lead support, Trick Room attackers, terrain or weather (the same guard as Fix it)
+    if ((pl.gap && pl.gap.clash) || (pl.gp && gpWorse(res.basePl.gp, pl.gp).length)) continue;
+    const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl) + (gapFix(pl) ? 6 * pl.gap.fix.length : 0);
     const t = tsOK(pl);
     if (t != null) { const fits = A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && pl.megaShort <= shortB;
-      // one card per Pokémon: the swap that leaves the team ready for the most top threats
-      if (fits && (baseTS == null || t >= baseTS + TS_GAIN)) { const j = clean.findIndex(y => y.ch[0].c.p.b === b); if (j < 0) { seen.add(b); clean.push(pl); } else if (t > clean[j]._ts) clean[j] = pl; }
+      // one card per Pokémon: the swap that leaves the team ready for the most top threats (a gap fix may cost up to 3)
+      // and never lowers the winning-team checklist score (Fix it follows the same rule)
+      if (fits && (baseTS == null || t >= baseTS + TS_GAIN || (gapFix(pl) && t >= baseTS - 3)) && (proChecks(pl.team, useA) || {pass: 0}).pass >= passB0) { const j = clean.findIndex(y => y.ch[0].c.p.b === b); if (j < 0) { seen.add(b); clean.push(pl); } else if (t > clean[j]._ts) clean[j] = pl; }
       else if (soft.length < 3 && fits && !seen.has(b) && !soft.some(y => y.ch[0].c.p.b === b)) soft.push(pl);
       continue; }
     const megaFix = pl.megaShort < shortB && A.ex <= B.ex + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1;
@@ -52,13 +60,17 @@ function computeRecs(ms, useA) {
   const rank = pl => (pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + pl.gain * 4;
   for (let k = clean.length - 1; k >= 0; k--) if (!strong(clean[k])) clean.splice(k, 1);
   clean.sort((x, y) => rank(y) - rank(x));
+  // an open game-plan gap: the best pick that closes it sits in the first two (Fix it does the same)
+  { const gk = gapTarget(B.gp, clean);
+    if (gk.length) {
+      const j = clean.findIndex(pl => pl.gap && pl.gap.fix.some(k => gk.includes(k))); if (j > 1) clean.splice(1, 0, clean.splice(j, 1)[0]); } }
   // Hidden gems: also look past the usual meta picks (with off-meta scoring) for up to 2 strong Pokémon that fit just as cleanly.
   const gems = [];
   if (!OFFMETA) { const taken = new Set(clean.map(pl => pl.ch[0].c.p.b));
     const gpool = (ui.recSrc === 'all' ? ROSTER : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isMetaPick(p) && !taken.has(p.b) && (isGem(p) || ratingLoose(p) >= 55 || p.m));
     const gres = withOffMeta(() => planFixes(ms, gpool, useA, {singlesOnly: true}));
     const gseen = new Set(); tsN = 0;
-    for (const pl of gres.singles) { const b = pl.ch[0].c.p.b; if (gseen.has(b)) continue; const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
+    for (const pl of gres.singles) { const b = pl.ch[0].c.p.b; if (gseen.has(b) || (pl.gap && pl.gap.clash) || (pl.gp && gpWorse(res.basePl.gp, pl.gp).length)) continue; const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl);
       const gt = useTS && pl.team.length === 6 ? tsOK(pl) : undefined;
       if (keeps(A) && (gt !== undefined ? gt != null && (baseTS == null || gt >= baseTS + TS_GAIN) : (ms.length < 6 || pl.gain > 0)) && pl.megaShort <= shortB && isGem(pl.ch[0].c.p)) { gseen.add(b); pl.gem = true; gems.push(pl); }
       if (gems.length >= 12) break; }
@@ -66,7 +78,7 @@ function computeRecs(ms, useA) {
   // Alternatives: swaps that don't improve the numbers but keep every check and stay close on them.
   // They feed "More ideas", so the list never just stops when the team is already good.
   tsN = 0; const alts = [], aseen = new Set([...clean, ...gems].map(pl => pl.ch[0].c.p.b)), passB = (proChecks(ms, useA) || {pass: 0}).pass;
-  for (const pl of res.singles) { const b = pl.ch[0].c.p.b; if (aseen.has(b) || alts.length >= 18) continue;
+  for (const pl of res.singles) { const b = pl.ch[0].c.p.b; if (aseen.has(b) || alts.length >= 18 || (pl.gap && pl.gap.clash) || (pl.gp && gpWorse(res.basePl.gp, pl.gp).length)) continue;
     const A = pl.prof || teamProfile(pl.team, useA); pl.prof = A; if (pl.gain == null) pl.gain = gains(A, pl);
     if (A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1 && A.ans >= B.ans - 2 && pl.megaShort <= shortB && strong(pl) && (proChecks(pl.team, useA) || {pass: 0}).pass >= passB
       && (baseTS == null || pl.team.length !== 6 || (t => t != null && t >= baseTS - TS_GAIN)(tsOK(pl)))) { aseen.add(b); pl.alt = true; alts.push(pl); } }
@@ -93,21 +105,23 @@ function renderRecs() {
   const card = (pl, soft) => { const x = pl.ch[0], p = x.c.p, A = pl.prof, i = ui.recs.push(pl) - 1, mem = pl.team.find(m => m.p === p) || x.c.mem;
     // "speed control" only for Tailwind, Trick Room or weather speed; a gain that comes from priority moves is called priority
     const prioOnly = k => { const r = A.gp.rows.find(x => x.k === k) || {}; return k === 'speed' ? r.mode === 'priority and speed boosts' : k === 'backup' ? !!r.prioOnly : false; };
-    const gpUp = [...new Set(B.gp.rows.filter(rw => rw.k !== 'ally' && ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => prioOnly(rw.k) ? 'Priority' : rw.label))];
+    // weather only counts as added when it helps more of the team than it hurts (Pelipper next to Incineroar: no)
+    const wxUseless = wxSetsOf(pl.team).length > wxSetsOf(ms).length && wxNet(pl.team) <= 0;
+    const gpUp = [...new Set(B.gp.rows.filter(rw => rw.k !== 'ally' && !(rw.k === 'weather' && wxUseless) && ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => prioOnly(rw.k) ? 'Priority' : rw.label))];
     const rest = pl.team.filter(m => m.p !== p); let pair = null; for (const t of rest) { const v = pairSyn({p}, t) + tourSyn({p}, t); if (v >= 8 && (!pair || v > pair.v)) pair = {t, v}; }
     const thr = threatDiff(ms, pl.team, 2).map(x => x.html);
     const why = [gpUp.length ? 'Adds ' + gpUp.join(', ').toLowerCase() : '', pair ? `often paired with ${pair.t.d}` : '', x.out ? `replaces ${x.out.d}` : ''].filter(Boolean).join(' · ');
     return `<div class="addcard${soft ? ' soft' : ''}"><div class="rtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${confChip(p)}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}<span class="tag role">${esc(monRole(mem))}</span>${(pl.gem ? '<span class="tag offmeta">HIDDEN GEM</span>' : (pl.alt ? '<span class="tag sidegrade">SIDE-GRADE</span>' : '') + ideaTag(p)) + ratingTag(p)}</div>
       ${pl.gem ? `<div class="qwhy gemline">Hidden gem: ${esc(evidenceLine(p))}. It fits this team as cleanly as the usual picks.</div>` : pl.alt ? `<div class="qwhy gemline">A different look that keeps every check and stays close on the numbers.</div>` : ''}
       <div class="dchips">${tsChip(pl.team)}${[A.ex !== B.ex ? delta('Weak', A.ex, B.ex, A.ex < B.ex, v => v) : '', A.un !== B.un ? delta('Unresisted', A.un, B.un, A.un < B.un, v => v) : '', A.off !== B.off ? delta('Offense', A.off, B.off, A.off > B.off, v => v + '/18') : ''].join('')}</div>
-      ${thr.map(l => `<div class="qwhy">${l}</div>`).join('')}
+      ${(pl.gap ? pl.gap.why : []).map(w => `<div class="qwhy gapwhy"><b>${esc(w)}</b></div>`).join('')}${thr.map(l => `<div class="qwhy">${l}</div>`).join('')}
       ${why ? `<div class="qwhy">${esc(why)}</div>` : ''}${pl.megaFix ? `<div class="qwhy warnline">Trade-off: ${[A.ex > B.ex ? 'one more weakness than resist' : '', A.un > B.un ? 'one more type nobody resists' : '', A.off < B.off ? 'one less type hit super effectively' : ''].filter(Boolean).join(', ') || 'small coverage cost'}, but it brings the team to ${megaGoal()} Mega${megaGoal() > 1 ? 's' : ''}</div>` : ''}${soft ? `<div class="qwhy warnline">Trade-off: ${esc([A.ex > B.ex ? `${A.ex - B.ex} more weakness` : '', A.off < B.off ? 'one less type covered' : '', A.un > B.un ? 'one more unresisted type' : ''].filter(Boolean).join(', ') || 'loses part of the game plan')}</div>` : ''}
       <div class="row"><button class="btn sm primary" type="button" data-rec="${i}">${x.out ? 'Swap for ' + esc(x.out.d) : 'Add to team'}</button></div></div>`; };
   const where = ui.recSrc === 'all' ? 'the whole roster' : 'your box';
   // same list on phone and desktop (Oct 29): the page folds it to the first 3 on both, with the rest one tap away
   const ph = PHONE(), first = r.clean, page = ui.recMore || 0, pool2 = r.more, extra = pool2.slice(0, page * 6), left = pool2.length - extra.length;
-  const moreBtn = `<div class="morebar">${left > 0 ? `<button class="btn" type="button" id="recMoreBtn">More ideas</button><span class="vsub">${left} more option${left === 1 ? '' : 's'}${ph ? '' : ', including rarely used picks and side-grades'}</span>` : pool2.length ? `<span class="vsub">That's every option from ${where} that keeps your checks.</span><button class="btn sm" type="button" id="recMoreReset">Back to the top picks</button>` : ''}</div>`;
-  const altHead = extra.length ? `<div class="lbl" style="margin-top:6px">More ideas</div>` : '';
+  const moreBtn = `<div class="morebar">${left > 0 ? `<button class="btn chmoreideas" type="button" id="recMoreBtn"><b>More ideas</b><span class="vsub">${left} more option${left === 1 ? '' : 's'}${ph ? '' : ', including rarely used picks and side-grades'}</span></button>` : pool2.length ? `<span class="vsub">That's every option from ${where} that keeps your checks.</span><button class="btn sm" type="button" id="recMoreReset">Back to the top picks</button>` : ''}</div>`;
+  const altHead = extra.length ? `<div class="lbl chaltk"><b>More ideas</b><span>Rarely used picks and side-grades</span></div>` : '';
   if (!r.clean.length && extra.length === 0 && r.more.length && !page) { ui.recMore = 1; return renderRecs(); }
   elL.innerHTML = (first.length || extra.length) ? first.map(pl => card(pl, false)).join('') + altHead + extra.map(pl => card(pl, false)).join('') + moreBtn
     : `<div class="empty-note">Nothing in ${where} improves this team without costing something${r.full ? ' (every swap gives up some defense, offense, readiness for a top threat or a game-plan job)' : ''}.${ui.recSrc === 'box' ? ' Try "Whole roster" to see what to catch.' : ''}</div>` + moreBtn + (r.soft.length ? `<div class="lbl" style="margin-top:6px">Closest options, with their trade-off</div>` + r.soft.map(pl => card(pl, true)).join('') : '');

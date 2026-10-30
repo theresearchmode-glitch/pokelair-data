@@ -40,14 +40,13 @@ function renderLair(bodyOnly) {
     document.querySelectorAll('[data-lmode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lmode === mode));
     $('lairTypes').innerHTML = TYPES.map(t => `<button type="button" class="ltype${(ui.lty || []).includes(t) ? ' on' : ''}" data-lty="${t}" style="--tc:${TC[t]}" title="${t}" aria-pressed="${(ui.lty || []).includes(t)}">${ticon(t)}<span>${t}</span></button>`).join('');
     const f = ui.lf || {};
-    $('lairFlags').innerHTML = [['mega', 'Megas'], ['nomega', 'No Megas'], ['gem', '◆ Hidden gems'], ['box', 'In my box']].map(([k, l]) => `<button type="button" class="lflag" data-lflag="${k}" aria-pressed="${!!f[k]}">${l}</button>`).join('')
-      + (filtered ? '<button type="button" class="lflag clr" data-lflag="clear">Clear</button>' : '');
+    $('lairFlags').innerHTML = (filtered ? '<button type="button" class="lflag clr" data-lflag="clear">Clear</button>' : '') + [['mega', 'Megas'], ['nomega', 'No Megas'], ...(ROSTER.some(q => isGem(q)) ? [['gem', '◆ Hidden gems']] : []), ['box', 'In my box']].map(([k, l]) => `<button type="button" class="lflag" data-lflag="${k}" aria-pressed="${!!f[k]}">${l}</button>`).join('');
   }
   $('lairCount').textContent = filtered ? `${rows.length} of ${all.length} match` : '';
-  if (!rows.length) { pane.innerHTML = '<div class="empty-note">No Pokémon match. Try clearing a filter.</div>'; return; }
+  if (!rows.length) { pane.innerHTML = `<div class="empty-note">${(ui.lf || {}).box && !S.box.length ? 'Your box is empty. Add the Pokémon you own on My box.' : 'No Pokémon match. Try clearing a filter.'}</div>`; return; }
   if (mode === 'map') { pane.innerHTML = lairMap(rows); return; }
   const cols = Math.max(3, Math.floor(((pane.clientWidth || 900) - 56 - 16 + 6) / 118)), cap = PHONE() ? 5 : cols * 2 - 1, open = ui.lopen || {};
-  pane.innerHTML = `<p class="t2 lnote"><i class="ltm">M</i> Mega · ◆ hidden gem · <i class="ltb"></i> in your box · <span class="lts dash">?</span> few games, so the score is an estimate</p><div class="lboard">${LTIERS.map(T => {
+  pane.innerHTML = `<p class="t2 lnote"><span class="lng"><i class="ltm">M</i> Mega</span>${ROSTER.some(q => isGem(q)) ? ' · <span class="lng">◆ hidden gem</span>' : ''} · <span class="lng"><i class="ltb"></i> in your box</span> · <span class="lng"><span class="lts dash">?</span> few games, so the score is an estimate</span></p><div class="lboard">${LTIERS.map(T => {
     const inT = rows.filter(x => lTier(x.r.total) === T); if (!inT.length) return '';
     const showAll = filtered || open[T.k] || inT.length <= cap + 1, shown = showAll ? inT : inT.slice(0, cap);
     return `<div class="ltier" style="--tc:${T.c}"><div class="ltl"><b>${T.k}</b><span>${T.min ? T.min + '+' : '<' + LTIERS[LTIERS.length - 2].min}</span></div>
@@ -91,21 +90,21 @@ function lairSheet(n) {
     { const bl = typeof bringLead === 'function' ? bringLead(p) : null; if (bl) ev.push(['Team preview (Showdown replays)', `brought ${bl.b}% · led ${bl.l}%`, `when it's on the team · ${bl.g.toLocaleString('en-US')} games${bl.forms ? ' · all forms' : ''}${bl.g < 300 ? ' · few games' : ''} · shown, not scored yet`]); }
     if (src.tour) ev.push(['Limitless tournaments', `${src.tour[0]}% of teams`, `${src.tour[1]}% won · ${src.tour[2].toLocaleString()} games`]);
     if (src.official) ev.push(['Official VGC events', `${src.official[0]}% of teams`, `${src.official[1]}% won · ${src.official[2].toLocaleString()} games`]);
-    const fam = ROSTER.some(q => q.m && q.b === p.b), spn = (byName.get(p.b) || p).d;
+    const fam = ROSTER.some(q => q.m && q.b === p.b), spn = ((byName.get(p.b) || ROSTER.find(q => q.b === p.b && !q.m) || p).d || '').replace(/\s*\(.*\)$/, '').replace(/^Mega /, ''); // Floette has no plain entry (only Eternal and Mega)
     if (src.ingame != null) ev.push(['In-game Ranked Doubles', `#${src.ingame} most used`, `op.gg, season M-7${fam ? ` · ${esc(spn)}, all forms (shared by form)` : ''}`]);
     if (src.smogon != null) ev.push(['Showdown 1760+', `${src.smogon}% of teams`, 'Smogon usage stats']);
     if (src.prd != null) ev.push(['Top-10% Showdown replays', `${src.prd}% of teams`, 'project-red-data']);
     if (src.ladder) ev.push(['Showdown ladder', `${src.ladder[0]}% of teams`, `${src.ladder[1]}% won · avg player ${src.ladder[2]}${fam ? ` · ${esc(spn)} total, shared by form` : ''}`]);
   }
   const ab = metaAbility(p) || bestAbility(p), ti = topItems(p), mv = (() => { try { return runMoves(p).map(m => m.name).filter(Boolean); } catch (e) { return []; } })();
-  const onTeam = members().some(m => m.base === p.b), full = !S.slots.some(s => !byName.get(s.n));
+  const onT = members().find(m => m.base === p.b), onTeam = !!onT, full = !S.slots.some(s => !byName.get(s.n));
   sh.innerHTML = `<div class="lsback" data-lclose="1"></div><div class="lspanel" role="dialog" aria-modal="true" aria-label="${esc(p.d)} rating">
     <div class="lshead" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}"><button type="button" class="lsx" data-lclose="1" aria-label="Close">✕</button>${sprite(p,'lsspr')}
       <div class="lsring" style="--v:${r.total};--tc:${T.c}"><b>${r.total}</b><span>±${r.band} · ${T.k}</span></div>
       <div class="lsname"><h3>${esc(p.d)}</h3><div class="chips">${p.t.map(t => chip(t)).join('')}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${isGem(p) ? '<span class="tag offmeta">HIDDEN GEM</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}</div>
       <div class="lspos">#${pos} of ${all.length} in doubles</div></div></div>
     <div class="lsbody">
-      <div class="lsec"><h4>Why it rates ${r.total}</h4>${r.parts && r.tc ? `${bar('Top-cut presence', r.parts.top, `on ${r.tc.top.toFixed(r.tc.top < 10 ? 1 : 0)}% of top-cut teams`)}${bar('Picked by strong players', r.parts.rw, `${r.tc.rw.toFixed(r.tc.rw < 10 ? 1 : 0)}% of teams, weighted by player skill`)}${r.parts.lift != null ? bar('Converts to top cut', r.parts.lift, `×${r.tc.lift.toFixed(2)} vs its ${r.tc.field.toFixed(r.tc.field < 10 ? 1 : 0)}% usage`) : ''}${bar('Win rate', r.parts.wr, `${r.tc.wr.toFixed(1)}% over ${Math.round(r.tc.g).toLocaleString('en-US')} games${r.tc.g < 800 ? ', few games' : ''}`)}
+      <div class="lsec"><h4>Why it rates ${r.total}</h4>${r.parts && r.tc ? `${bar('Top-cut presence', r.parts.top, `on ${r.tc.top.toFixed(r.tc.top < 10 ? 1 : 0)}% of top-cut teams`)}${bar('Picked by strong players', r.parts.rw, `${r.tc.rw.toFixed(r.tc.rw < 10 ? 1 : 0)}% of teams, weighted by player skill`)}${r.parts.lift != null ? bar('Converts to top cut', r.parts.lift, `×${r.tc.lift.toFixed(2)} vs its ${r.tc.field > 0 && r.tc.field < .1 ? '<0.1' : r.tc.field.toFixed(r.tc.field < 10 ? 1 : 0)}% usage`) : ''}${bar('Win rate', r.parts.wr, r.tc.g < 30 ? `only ${Math.round(r.tc.g)} games so far` : `${r.tc.wr.toFixed(1)}% over ${Math.round(r.tc.g).toLocaleString('en-US')} games${r.tc.g < 800 ? ', few games' : ''}`)}
         <p class="t2">Each bar is where it stands among all Pokémon. Top-cut presence counts most: the best Pokémon are the ones winning teams keep bringing. How often strong players pick it (usage with each team weighted by its player's skill) comes next. Converting to top cut and win rate adjust it, pulled toward average until there are enough games, so a few lucky runs can't push a rare pick to the top${isGem(p) ? '. It overperforms its usage, so it\'s tagged a hidden gem' : ''}. Likely range ${Math.max(1, r.total - r.band)}–${Math.min(99, r.total + r.band)}${r.band >= 10 ? '; few games so far, so treat this one as an estimate' : ''}.</p>
         <details class="lprof"><summary>Profile: power ${r.power}, typing ${r.typing}, tools ${r.tools}</summary><p class="t2">Stats, typing against the current meta, and the moves and abilities it brings. Shown for reference; they don't change the rating.</p></details>`
         : !r.tc && r.parts === null ? `<p class="t2">No tournament results yet, so this is a rough placeholder from its stats, typing and tools (capped at 30). It moves up once it shows up at events.</p>`
@@ -118,7 +117,7 @@ function lairSheet(n) {
       ${typeof OUTSIDE === 'object' ? `<div class="lsec"><h4>Other tier lists</h4><div class="lout">${OUTSIDE.lists.map(L => { const v = OUTSIDE.data[L.k] && OUTSIDE.data[L.k][p.n];
         return `<a class="lo" href="${L.url}" target="_blank" rel="noopener"><b class="lot${v ? ' t' + L.tiers[v] : ''}">${v ? L.tiers[v] : '–'}</b><span>${L.name}</span><em>${v ? L.how : 'not listed · ' + L.note}</em></a>`; }).join('')}</div><p class="t2">Checked ${OUTSIDE.date}. Shown for comparison, not counted in the score.</p></div>` : ''}
       <div class="lsec"><h4>Typical set</h4><div class="lset"><span>Ability</span><b>${esc(ab || '–')}</b>${ti ? `<span>Item</span><b>${ti.it.map(x => esc(x[0])).join(' / ')}</b>` : ''}${mv.length ? `<span>Moves</span><b>${mv.map(esc).join(' · ')}</b>` : ''}</div></div>
-      <div class="lsact">${onTeam ? '<span class="t2">On your team</span>' : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-abaround="${esc(p.n)}">Build around it</button><button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
+      <div class="lsact">${onTeam ? `<span class="t2">${onT.p.n === p.n ? 'On your team' : esc(onT.d) + ' is already on your team (one per species)'}</span>` : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-abaround="${esc(p.n)}">Build around it</button><button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
     </div></div>`;
   sh.hidden = false; ui.lsheet = p.n; try { document.body.classList.add('lsopen'); } catch (e) {}
   const x = sh.querySelector('.lsx'); if (x && x.focus) try { x.focus({preventScroll: true}); } catch (e) {}
@@ -130,7 +129,7 @@ document.addEventListener('click', e => { const t = e.target; if (!t || !t.close
   if (d.lclose) { lairClose(); return; }
   if (d.ltier) { ui.lopen = Object.assign({}, ui.lopen, {[d.ltier]: !(ui.lopen || {})[d.ltier]}); renderLair(true); return; }
   if (d.lty) { const s = ui.lty || []; ui.lty = s.includes(d.lty) ? s.filter(x => x !== d.lty) : (s.length >= 2 ? [s[1], d.lty] : [...s, d.lty]); renderLair(); return; }
-  if (d.lflag) { if (d.lflag === 'clear') { ui.lf = {}; ui.lty = []; ui.lq = ''; const q = $('lairQ'); if (q) q.value = ''; }
+  if (d.lflag) { if (d.lflag === 'clear') { ui.lf = {}; ui.lty = []; ui.lq = ''; const q = $('lairQ'); if (q) { q.value = ''; if (typeof clrSync === 'function') clrSync(q); } }
     else { const f = Object.assign({}, ui.lf); f[d.lflag] = !f[d.lflag]; if (d.lflag === 'mega' && f.mega) f.nomega = false; if (d.lflag === 'nomega' && f.nomega) f.mega = false; ui.lf = f; } renderLair(); return; }
   if (d.lmode) { ui.lmode = d.lmode; try { LS.set('cc2.lmode', d.lmode); } catch (e) {} renderLair(); return; }
   if (d.laddteam) { const p = byName.get(d.laddteam), j = S.slots.findIndex(s => !byName.get(s.n)); if (p && j >= 0) { S.slots[j] = {n: p.n, a: null, lock: false}; render(); toast(p.d + ' added to your team'); lairSheet(p.n); } return; }

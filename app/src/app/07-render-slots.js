@@ -19,7 +19,7 @@ function renderSlots_(){
         ${m.item?`<div class="titem${m.heldItem?' mine':p.m?'':' asmb'}"${m.heldItem||p.m?'':' title="Assumed: you haven\'t set an item, so this is the one most players run"'}>${esc(m.item)}</div>`:''}${s.lock?'<span class="tlock" title="Locked">LOCKED</span>':''}
       </div>
       <div class="slbody">
-      ${setRows(p,{noItem:true,noSpread:true})}
+      ${setRows(p,{noItem:true,noSpread:true,mine:(m&&m.spread&&m.spread.nat)||null})}
       ${spreadBlock(s,i,m)}
       ${abilBlock(s,i,m)}
       ${itemBlock(s,i,m,clash)}
