@@ -289,3 +289,21 @@ safe('theme toggle', () => { const row = document.querySelector('.band .titlerow
   const b = document.createElement('button'); b.type = 'button'; b.id = 'thmBtn'; b.className = 'chthm'; if (js) js.after(b); else row.append(b);
   b.addEventListener('click', () => { setTheme(document.documentElement.dataset.look === 'dark' ? 'light' : 'dark'); chThemeIcon(); });
   chThemeIcon(); try { new MutationObserver(chThemeIcon).observe(document.documentElement, {attributes: true, attributeFilter: ['data-look']}); } catch (e) {} });
+// ---------- an × in search and lookup boxes (Oct 30, Sim): one tap clears the box and keeps the keyboard up ----------
+const CLR_SEL = 'input[type="search"],#lairQ,#setMonIn,#typeMonIn,#coreMonIn,#tsIn,#jumpIn,#chMetaQ,#boxAdd,#exclAdd,#saveName,input[id^="pk"],input[id^="opp"],input[id^="bmOpp"]';
+function clrWrap(inp) { if (!inp || inp.dataset.clr || inp.type === 'hidden' || inp.closest('.clrw')) return; inp.dataset.clr = '1';
+  const w = document.createElement('span'); w.className = 'clrw'; const cs = getComputedStyle(inp); if (cs.display === 'block' || inp.classList.contains('field') || parseFloat(cs.width) > 200) w.classList.add('blk');
+  if (cs.flex && cs.flex !== '0 1 auto') w.style.flex = cs.flex; w.style.minWidth = '0'; if (cs.gridColumn && cs.gridColumn !== 'auto') w.style.gridColumn = cs.gridColumn;
+  const had = document.activeElement === inp, ss = had ? inp.selectionStart : null, se = had ? inp.selectionEnd : null;
+  inp.parentNode.insertBefore(w, inp); w.append(inp);
+  if (had) { try { inp.focus({preventScroll: true}); if (ss != null) inp.setSelectionRange(ss, se); } catch (e) {} } // moving it must not drop focus (the phone keyboard would close)
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'clrx'; b.tabIndex = -1; b.setAttribute('aria-label', 'Clear'); b.textContent = '×'; w.append(b); clrSync(inp); }
+function clrSync(inp) { const w = inp && inp.closest('.clrw'); if (w) w.classList.toggle('has', !!inp.value); }
+function clrScan(root) { try { (root || document).querySelectorAll(CLR_SEL).forEach(clrWrap); } catch (e) {} }
+document.addEventListener('input', e => { if (e.target && e.target.matches && e.target.matches(CLR_SEL)) clrSync(e.target); }, true);
+document.addEventListener('focusin', e => { if (e.target && e.target.matches && e.target.matches(CLR_SEL)) clrSync(e.target); });
+// pointerdown keeps focus in the box (so the phone keyboard stays up); the clear runs on click
+document.addEventListener('pointerdown', e => { if (e.target && e.target.closest && e.target.closest('.clrx')) e.preventDefault(); }, true);
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.clrx'); if (!b) return; e.preventDefault(); e.stopPropagation();
+  const inp = b.parentNode.querySelector('input'); if (!inp) return; inp.value = ''; inp.dispatchEvent(new Event('input', {bubbles: true})); inp.dispatchEvent(new Event('change', {bubbles: true})); clrSync(inp); try { inp.focus({preventScroll: true}); } catch (er) { inp.focus(); } }, true);
+safe('clear buttons', () => { clrScan(); try { let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(() => clrScan(), 60); }).observe(document.body, {childList: true, subtree: true}); } catch (e) {} });

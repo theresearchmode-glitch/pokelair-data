@@ -231,3 +231,11 @@ html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
 }
 .ltile.unsure .lts{background:rgba(0,0,0,.28)!important;color:#fff!important;box-shadow:none!important;border:1.5px solid rgba(255,255,255,.75)!important;border-style:solid!important}
 @media (max-width:760px){.ltile .lts{margin-left:4px}.ltile .ltf{gap:3px;overflow:hidden}}
+/* × in search and lookup boxes */
+.clrw{position:relative;display:inline-block;max-width:100%}.clrw.blk{display:block;width:100%}
+.clrw>input{padding-right:40px!important}
+.clrx{all:unset;box-sizing:border-box;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;display:none;align-items:center;justify-content:center;background:var(--chp2);color:var(--chink);font:700 18px/1 var(--body);cursor:pointer;z-index:2}
+.clrx::after{content:"";position:absolute;inset:-6px}
+.clrw.has>.clrx{display:inline-flex}
+:root[data-look="dark"] .clrx{background:#3A3734;color:#F3EBDC}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
