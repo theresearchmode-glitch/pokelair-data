@@ -244,3 +244,6 @@ button.chmmon{font:inherit;color:inherit;cursor:pointer;width:100%;-webkit-appea
 button.chmmon:active{transform:scale(.97)}
 button.chmmon:focus-visible,.chsix [data-lt]:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .chsix [data-lt]{cursor:pointer}
+/* Fix it: a game-plan gap nothing in the chosen pool can fix */
+.chgapnote{margin:4px 0 10px;padding:10px 12px;border-radius:12px;background:var(--warn-soft,#FBEBC6);color:var(--chink);font-size:13.5px;line-height:1.35;border:1.5px solid var(--chshaky,#C98A00)}
+:root[data-look="dark"] .chgapnote{background:#3A3122;color:#F3EBDC}

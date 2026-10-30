@@ -55,8 +55,9 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
 CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
   // nothing makes the team readier: show the side-grades (different picks that keep every check) instead of a dead end
   if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { L = ui.planList = ui.plans.more.slice(0, 3); side = true; }
-  const top = L.slice(0, 2); if (!top.length) return ''; // top 2 here; All suggestions has the rest
-  return `<section class="chsugs" aria-label="Suggestions">${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}
+  const top = L.slice(0, 2); const gapN = ui.plans && ui.plans.gapNote ? `<p class="chgapnote">${esc(ui.plans.gapNote)}</p>` : ''; // a game-plan gap nothing in this pool can fix
+  if (!top.length) return gapN ? `<section class="chsugs" aria-label="Suggestions">${gapN}</section>` : ''; // top 2 here; All suggestions has the rest
+  return `<section class="chsugs" aria-label="Suggestions">${gapN}${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}
     ${top.map((pl, k) => { if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } } const d = pl._ts != null && base != null ? pl._ts - base : null;
       const pics = pl.ch.map(x => `${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span>`).join('');
       const words = pl.ch.map(x => `<b>${esc(x.c.p.d)}</b>${x.out ? ` <span class="for">for ${esc(x.out.d)}</span>` : ' <span class="for">added</span>'}`).join('<br>');
