@@ -17,6 +17,8 @@ function abScore(team) { if (abMemo) { const k = team.map(m => m.p.n).sort().joi
 function abScore0(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.penalty - (team.length >= 4 ? typeEmphasis(v.st.a) : 0) - pillarCost(team, v.gp);
   // a rain or sun that helps nobody (Pelipper next to only Fire attackers) costs a little
   if (team.length >= 4 && wxSetsOf(team).length === 1) { const n = wxNet(team); if (n <= 0) s -= 12 - 4 * n; }
+  // a weather with no teammate using it steers the search toward adding a user (Sim, Oct 30)
+  if (team.length >= 5 && wxIdle(team).length) s -= 25;
   // aim for the grades too: fewer defense points, more of the meta hit by 2+ members (a secondary goal next to proven cores and pillars)
   if (team.length >= 5) { const g = proGrades(team, true); if (g) s += -g.dp * 8 + (g.se2 - .67) * 60 - Math.max(0, g.og - 1) * 18 - Math.max(0, g.dg - 1) * 18; }
   if (OFFMETA) { const mc = team.filter(m => isMetaPick(m.p)).length; s -= Math.max(0, mc - 2) * 30; }
@@ -152,7 +154,7 @@ function* buildBestGen_() {
     // only when nothing else is left
     const spOK = t => { const r = gamePlan(t).rows.find(x => x.k === 'speed'); return !r || r.st !== 'miss'; };
     // (each kept team differs from the others by 3+ Pokémon; if that leaves fewer than 3, by 2+)
-    for (const [pass, same] of [[true, 3], [false, 3], [false, 4]]) for (const r of ranked) { if (out.length >= 3) break; if (out.includes(r) || megaCount(r.t) !== goal || wxConflict(r.t) || wxUnmet(r.t).length) continue; if (pass && !spOK(r.t)) continue;
+    for (const [pass, same, idleOK] of [[true, 3, false], [false, 3, false], [false, 4, false], [false, 4, true]]) for (const r of ranked) { if (out.length >= 3) break; if (out.includes(r) || megaCount(r.t) !== goal || wxConflict(r.t) || wxUnmet(r.t).length || (!idleOK && wxIdle(r.t).length)) continue; if (pass && !spOK(r.t)) continue;
       if (out.some(o => o.t.filter(m => r.t.some(x => x.p.b === m.p.b)).length > same)) continue; out.push(r); }
     if (!out.length) return {fmt, teams: [], noMega: goal};
     return {fmt, teams: out.map(r => abDescribe(r.t))};

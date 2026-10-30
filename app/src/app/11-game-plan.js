@@ -27,6 +27,17 @@ const wxSetsOf = team => [...new Set(team.filter(m => m && WEATHER_OF[m.ability]
 const wxNeedsOf = team => [...new Set(team.map(m => m && WEATHER_NEED[m.ability]).filter(Boolean))];
 function wxConflict(team) { const s = wxSetsOf(team); return s.length > 1 || (s.length === 1 && wxNeedsOf(team).some(w => w !== s[0])); }
 function wxUnmet(team) { const s = wxSetsOf(team); return wxNeedsOf(team).filter(w => !s.includes(w)); }
+// who actually uses a weather (Oct 30, Sim: a weather setter needs at least one teammate that uses it)
+const WX_AB_USE = {rain: ['Swift Swim', 'Rain Dish', 'Dry Skin', 'Hydration'], sun: ['Chlorophyll', 'Solar Power', 'Leaf Guard', 'Protosynthesis', 'Flower Gift'], sand: ['Sand Rush', 'Sand Force', 'Sand Veil'], snow: ['Slush Rush', 'Ice Body', 'Snow Cloak']};
+const WX_MV_USE = {rain: ['Thunder', 'Hurricane', 'Weather Ball', 'Bleakwind Storm', 'Wildbolt Storm', 'Sandsear Storm'], sun: ['Solar Beam', 'Solar Blade', 'Weather Ball', 'Growth', 'Morning Sun', 'Synthesis', 'Moonlight'], sand: ['Shore Up', 'Weather Ball'], snow: ['Blizzard', 'Aurora Veil', 'Weather Ball']};
+function wxUses(m, w) { if (!m || !w) return false; if ((WX_AB_USE[w] || []).includes(m.ability)) return true;
+  const mv = (m.moves || []).map(x => x && (x.name || x)).filter(Boolean), T = m.types || (m.p && m.p.t) || [];
+  if (mv.some(n => (WX_MV_USE[w] || []).includes(n))) return true;
+  const hasType = t => (m.moves || []).some(x => x && x.type === t && (+x.bp || 0) > 0);
+  if (w === 'rain') return hasType('Water'); if (w === 'sun') return hasType('Fire'); if (w === 'sand') return T.includes('Rock'); if (w === 'snow') return T.includes('Ice');
+  return false; }
+// setter weathers with nobody else on the team using them
+function wxIdle(team) { return wxSetsOf(team).filter(w => !team.some(m => m && WEATHER_OF[m.ability] !== w && wxUses(m, w))); }
 // how much the team's own weather helps vs hurts its non-setters: Water attackers in rain (+), Fire in rain (-), and the reverse in sun
 function wxNet(team) { const s = wxSetsOf(team); if (s.length !== 1 || !(s[0] === 'rain' || s[0] === 'sun')) return 0; const up = s[0] === 'rain' ? 'Water' : 'Fire', dn = s[0] === 'rain' ? 'Fire' : 'Water';
   let n = 0; for (const m of team) { if (!m || WEATHER_OF[m.ability]) continue; const t = m.types || m.p.t; if (WEATHER_NEED[m.ability] === s[0]) n += 2; if (t.includes(up)) n++; if (t.includes(dn)) n--; } return n; }
