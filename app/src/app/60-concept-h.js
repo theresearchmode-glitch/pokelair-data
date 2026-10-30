@@ -30,12 +30,22 @@ CH._recMap = null; CH._recSrc = null;
 CH.recOf = ms => { if (!ms || ms.length !== 6 || !RES || !Array.isArray(RES.proven)) return null;
   if (CH._recSrc !== RES.proven) { CH._recSrc = RES.proven; CH._recMap = new Map(); for (const [ns, n, wr, g] of RES.proven) if (Array.isArray(ns) && ns.length === 6 && g != null && +g >= CH.REC_MIN) CH._recMap.set(ns.slice().sort().join('|'), {n: +n, wr: +wr, g: +g}); }
   return CH._recMap.get(ms.map(m => (m.p || m).n).sort().join('|')) || null; };
-CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok) : [], s = RD.score - CH.GMISS * miss.length, rec = CH.recOf(ms);
-  return {s, letter: rec ? CH.recLetter(rec.wr) : CH.grade(s), miss, CK, rec}; };
+// Teams with no record of their own (Sim, Oct 30: "accuracy on point"): the grade adds what the team-strength model (trained on
+// 35k real games, player skill taken out) says about these Pokémon and sets. Tested on events neither had seen
+// (experiments/grade-eval.mjs): newest 20% of Limitless games, who won: readiness alone 52.5%, model alone 54.8%, grade + 0.75×model
+// 55.1%; official RK9 events, top 8 vs the rest: grade 0.586, model 0.515, blend 0.586. So the blend is the best on both. The model
+// part is 0.75 × the grade's spread (15 points) per standard deviation of real teams' model strength, centred on the median team.
+CH.GMODEL = 11.3;
+CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const q = META.model.dist && META.model.dist.q; if (!Array.isArray(q) || q.length !== 101) return null;
+  const sd = (q[84] - q[16]) / 2; if (!(sd > 0)) return null; const x = strengthX(ms.map(m => m.p.n), ms).x0; return isFinite(x) ? Math.max(-25, Math.min(25, CH.GMODEL * (x - q[50]) / sd)) : null; } catch (e) { return null; } };
+CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok) : [], mp = CH.modelPts(ms), s = RD.score - CH.GMISS * miss.length + (mp || 0), rec = CH.recOf(ms);
+  return {s, letter: rec ? CH.recLetter(rec.wr) : CH.grade(s), miss, CK, rec, mp}; };
 CH.gradeWhy = G => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.rec) return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}). With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ready for ${G.r}% of the top 30 threats, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
-  return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
+  const mp = G.mp != null ? Math.round(G.mp) : null;
+  return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b> · score ${Math.round(G.s)}: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
     + (G.miss.length ? ` Each missed check takes ${CH.GMISS} points off: ${G.miss.map(x => esc(x.label.toLowerCase())).join(', ')}.` : ' No missed checks, so nothing comes off.')
+    + (mp != null ? ` ${mp === 0 ? 'Teams with these Pokémon and sets do about average in real games (±0).' : `Teams with these Pokémon and sets do ${mp > 0 ? 'better' : 'worse'} than average in real games (${mp > 0 ? '+' : '−'}${Math.abs(mp)}).`}` : '')
     + ` A 90+, B 80+, C 70+, D 60+.<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span></div>`; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
 CH.LEGEND = 'Grade = top threats answered: A 90%+ · B 80+ · C 70+ · D 60+ · F below. Preparation, not a prediction.';
