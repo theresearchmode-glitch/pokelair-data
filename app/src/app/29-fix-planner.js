@@ -106,7 +106,8 @@ function planFixes(ms,pool,useA,opts){
   // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ when you limit suggestions to your box.
   const cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)&&ui.pool==='box'?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
     return {p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}}});
-  const legal=(team)=>team.filter(m=>m.mega).length<=maxMega;
+  // never more Megas than the goal, or (when the team is already over it: Megas on team 0 with a Mega in) than it has now
+  const mega0=ms.filter(m=>m.mega).length,legal=(team)=>{const n=team.filter(m=>m.mega).length;return n<=maxMega||n<=mega0};
   const singles=[];
   // one change: fill an empty slot, or swap a member (a Mega only for another Mega)
   for(const c of cands){
@@ -117,7 +118,10 @@ function planFixes(ms,pool,useA,opts){
   // a cost for losing an active archetype, and a small cost per change so plans stay minimal.
   // Mega goal: every Mega the finished team would still be short of costs a lot, so plans that bring one in rise to the top
   const gp0=gamePlan(ms);
-  const evalPlan=pl=>{const tv=teamValue(pl.team,useA);let s=-tv.score+typeEmphasis(tv.st.a)+megaShort(pl.team)*35+pillarCost(pl.team,tv.gp);pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
+  const evalPlan=pl=>{const tv=teamValue(pl.team,useA);let s=-tv.score+typeEmphasis(tv.st.a)+megaShort(pl.team)*35+Math.max(0,pl.team.filter(m=>m.mega).length-maxMega)*35+pillarCost(pl.team,tv.gp);
+    // the team's own rain or sun: a change that brings in what it hurts (a Water attacker into sun, Primarina's Liquid Voice) or a
+    // weather nobody uses (Pelipper next to Fire attackers) costs a little (audit, Oct 30)
+    {const n0=wxNet(ms),n1=wxNet(pl.team);if(n1<n0)s+=(n0-n1)*5;if(wxSetsOf(pl.team).length>wxSetsOf(ms).length&&n1<=0)s+=12}pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
     for(const a of rolesBase.arch)if(a.active&&a.key!=='tw'&&!pl.roles.arch.some(b=>b.key===a.key&&b.active))s+=20;
     for(const x of pl.ch){const rest=pl.team.filter(m=>m.p!==x.c.p);const v=viability(x.c.p);x.v=v;if(v<12&&!OFFMETA)s+=15;if(OFFMETA&&isMetaPick(x.c.p))s+=10;
       const f=archFit(x.c.p,x.c.mem.ability,rest,rolesBase);x.why=f.why;s-=f.s*.2;x.syn=synergy(x.c.p,rest);
@@ -191,7 +195,9 @@ function planFixes(ms,pool,useA,opts){
       const fix=pool3.find(pl=>!ckDrop(pl)&&!pl.ch.some(x=>out.some(o=>o.ch.some(y=>y.c.p.b===x.c.p.b))))||pool3.find(pl=>!ckDrop(pl));
       if(fix){const j=out.indexOf(fix);if(j>=0)out.splice(j,1);out.splice(Math.min(1,out.length),0,fix);if(out.length>3)out.pop()}
       else{out.gapNone=gk;const r=gp0.rows.find(x=>x.k===gk[0])||{};
-        out.gapNote=`${r.note?r.note+' ':''}Nothing in ${ui.pool==='box'?'your box':ui.pool==='boxfill'?'your box or the usual picks':'the roster'} fixes it without weakening the team${ui.pool==='box'?': try "Box + catch" or "Whole roster"':''}.`}}}
+        out.gapNote=`${r.note?r.note+' ':''}Nothing in ${ui.pool==='box'?'your box':ui.pool==='boxfill'?'your box or the usual picks to catch':'the whole roster'} fixes it without weakening the team${ui.pool==='box'?': try "Box + catch" or "Whole roster"':ui.pool==='boxfill'?': try "Whole roster"':''}.`}}}
+  // over the Mega goal (Megas on team 0 with a Mega in, audit Oct 30): say so, and say why no plan drops it
+  if(mega0>maxMega&&!out.some(pl=>pl.team.filter(m=>m.mega).length<mega0)){const t=`Your team has ${mega0} Mega${mega0===1?'':'s'} and Megas on team is set to ${maxMega}. ${$('swapMega').checked?'No swap without '+(mega0===1?'it':'them')+' keeps your game plan, so these plans keep '+(mega0===1?'it':'them')+'.':'Turn on "Let plans swap my Mega" to see swaps without '+(mega0===1?'it':'them')+'.'}`;out.gapNote=(out.gapNote?out.gapNote+' ':'')+t}
   // More ideas: further plans with new incoming Pokémon, then (for a full team) side-grades that keep the type rating and speed control
   const more=[],inSeen=new Set(out.flatMap(pl=>pl.ch.map(x=>x.c.p.b)));
   for(const pl of all){if(more.length>=12)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>inSeen.has(b)))continue;ins.forEach(b=>inSeen.add(b));more.push(pl)}

@@ -60,7 +60,9 @@ function bestFreeItem(m, ms, used, F, tr) { const ok = n => n && !used.has(n) &&
 // Fill in default items for the whole team. Returns new member objects (never changes the ones passed in):
 // chosen items and Mega Stones stay; the rest get team-aware defaults (itemDefault: true).
 function assignItems(ms) { if (!Array.isArray(ms) || !ms.length) return ms;
-  const out = ms.map(m => m ? {...m} : m), live = out.filter(m => m && m.p), F = teamField(live), tr = trMain(live), used = new Set();
+  // default items never give a Choice Scarf to a team that sets its own Trick Room, even as a backup mode (audit, Oct 30);
+  // a Scarf you picked yourself is only flagged under main-mode Trick Room (user decision, Oct 28)
+  const out = ms.map(m => m ? {...m} : m), live = out.filter(m => m && m.p), F = teamField(live), tr = trMain(live) || live.some(m => setsTR(m)), used = new Set();
   for (const m of live) { if (m.p.m) { m.item = m.item && STONE_RE.test(m.item) ? m.item : (defaultItem(m.p) || m.item || ''); m.itemDefault = false; if (m.item) used.add(m.item); }
     else if (m.heldItem) { m.item = m.heldItem; m.itemDefault = false; } }
   // chosen items count as taken even when two of them clash (that clash is reported, not hidden)
