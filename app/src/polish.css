@@ -201,3 +201,15 @@ html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
 .chhot.typed .n,.chhot.typed .nm,.chhot.typed .st{text-shadow:0 1px 3px rgba(0,0,0,.45)}
 /* desktop already shows the Auto / Light / Dark switch, so the one-tap toggle is for phones and tablets only */
 @media (min-width:1001px){:root:not(#_ch) .band .chthm{display:none!important}}
+/* All suggestions: "More ideas" is a section heading and one full-width button, not boxed like a card (Oct 30, Sim) */
+:root:not(#_ch) #recList>.lbl.chaltk,:root:not(#_ch) #recList>.morebar{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+#recList>.lbl.chaltk{display:flex;flex-direction:column;gap:2px;margin:18px 2px 4px;text-transform:none;letter-spacing:0;font:inherit;color:var(--chink)}
+#recList>.lbl.chaltk b{font:400 24px/1.05 var(--display);text-transform:uppercase}
+#recList>.lbl.chaltk span{font-size:13.5px;color:var(--chink2)}
+#recList>.morebar{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin-top:6px}
+.btn.chmoreideas{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:56px;padding:10px 14px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);color:var(--chink);cursor:pointer;text-align:center}
+.btn.chmoreideas b{font:400 22px/1 var(--display);text-transform:uppercase}
+.btn.chmoreideas .vsub{font-size:13px;color:var(--chink2)}
+.btn.chmoreideas:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
+#recList>.morebar>.vsub{text-align:center;font-size:13.5px;color:var(--chink2)}
+:root:not(#_ch) #recList .btn.chmoreideas{border-radius:14px!important;min-height:56px!important}
