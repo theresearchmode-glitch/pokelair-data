@@ -297,7 +297,7 @@ details.slmore[open]>summary::after{content:"Hide"}
 @media (max-width:1000px){:root:not(#_ch) .side{z-index:120}:root:not(#_ch) .scrim{z-index:110}}
 /* header readiness line keeps numbers next to their words */
 .chthead .vsub b,.chthead .chstat{white-space:nowrap}
-.chlegk{margin:10px 0 2px}
+.chlegk{margin:14px 0 2px}
 .rd .nw{white-space:nowrap}
 /* messages (Undo, import notes) show above the edit panel and sheets */
 .toast{z-index:200!important}
@@ -315,3 +315,17 @@ details.slmore[open]>summary::after{content:"Hide"}
 .chbd2 span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 .chpghead .chk+.chpgt,.chpghead .chk+*{margin-top:4px}
 .chgapnote.onrecs{margin:0 0 12px}
+
+/* Build around a Pokémon (optional pick above Build me a team) */
+.abaround{margin:4px 0 12px;width:100%}
+.abaround .ablab{font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+.abaround .ablab span{font-weight:400;color:var(--mute);text-transform:none;letter-spacing:0;margin-left:6px}
+.abaround .cb{width:100%;max-width:420px}.abaround .field{width:100%}
+.abaround .abchip{font-size:15px;padding:4px 6px 4px 4px}.abaround .abchip .spr{width:34px;height:34px}
+.abaround .abchip button{min-width:40px;min-height:40px;font-size:20px}
+:root:not(#_ch) .abhero.chabhero{overflow:visible} /* the Build around menu drops below the card */
+
+/* grade ring is a button: tap for why */
+button.chring{background:none;cursor:pointer;padding:0}
+.chgwhy{margin:10px 0 4px;padding:12px 14px;border:2px solid var(--chline);border-radius:12px;background:var(--chc);color:var(--chink);font-size:15px;line-height:1.45}
+.chgwhy .t2{display:inline-block;margin-top:6px;font-size:14px}

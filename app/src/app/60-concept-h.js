@@ -16,6 +16,18 @@ CH._lk = 0; CH.uniq = svg => { const n = ++CH._lk; return svg.replace(/id="(np[^
 CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
 // readiness grade: preparation for the top 30 threats, never a win chance
 CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
+// The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
+// Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
+// letters in the same order as the teams' finishes most often. Weather and Taunt/Encore aren't checks: teams without them won
+// just as often.
+CH.GMISS = 6;
+CH.gradeOf = (RD, CK) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok) : [], s = RD.score - CH.GMISS * miss.length;
+  return {s, letter: CH.grade(s), miss, CK}; };
+CH.gradeWhy = G => { if (!G) return ''; const {RD} = G, n = G.CK ? G.CK.n : 0;
+  return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
+    + (G.miss.length ? ` Each missed check takes ${CH.GMISS} points off: ${G.miss.map(x => esc(x.label.toLowerCase())).join(', ')}.` : ' No missed checks, so nothing comes off.')
+    + ` A 90+, B 80+, C 70+, D 60+.<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span></div>`; };
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
 CH.LEGEND = 'Grade = top threats answered: A 90%+ · B 80+ · C 70+ · D 60+ · F below. Preparation, not a prediction.';
 CH.LV = ['Unanswered', 'Shaky', 'Handled', 'Well handled'];
 CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
@@ -247,7 +259,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 // Import, Export and Save show their panels inside the editor
 document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('#importBtn,#exportBtn,#saveBtn'); if (t && $('chEdit') && $('chEdit').hidden) chEditOpen(null); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') chEditClose(); });
-function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD);
+function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK), {r: RD.score}) : null;
   const F = CH.four(ms), lead = F ? ms.find(m => m.p.n === F.lead[0]) || null : null, ko = CH.koNote(RD);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };
   const all = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).slice(0, 6);
@@ -261,7 +273,8 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
       <div class="chpills">${legal}${ck}</div>
       ${ms.length ? `<div class="chsix6">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || esc(m.d)}</button>`).join('')}</div>` : ''}
       <div class="chacts2" id="chActs"><button type="button" class="chghost" data-view="teams">Saved teams</button><button type="button" class="chghost" data-view="box">My box</button></div></div>
-    ${RD ? `<div class="chring" title="Readiness grade: preparation, not a prediction">${CH.grade(RD.score)}</div>` : ''}</div>
+    ${G ? `<button type="button" class="chring" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy" aria-label="Grade ${G.letter}: why" title="Why this grade">${G.letter}</button>` : ''}</div>
+    ${G ? CH.gradeWhy(G).replace('id="chGwhy"', `id="chGwhy"${ui.gwhy ? '' : ' hidden'}`) : ''}
     ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
   if (CH.acts) $('chActs').append(CH.acts);
   document.querySelectorAll('#chP1,#chP2,#chP3').forEach(p => { p.hidden = !ms.length; });
@@ -275,7 +288,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   { const nd = $('needs'), n = $('needsSub'); sum('chfFix', [n && n.textContent ? n.textContent : 'Nothing big to fix', v.CK ? `${v.CK.pass}/${v.CK.n} checks` : '', v.legal === false ? 'not legal yet' : 'legal'].filter(Boolean).join(' · ')); }
   { const g = document.querySelector('#chfGplan .gpcard'), tags = g ? [...g.querySelectorAll('.gphead .tag, .gphead .chip, .gphead .arch')].map(x => x.textContent.trim()).filter(Boolean) : []; sum('chfGplan', (tags.length ? tags.map(x => x.charAt(0) + x.slice(1).toLowerCase()).join(' + ') + ' · ' : '') + 'leads, backups and what to watch'); }
   // part 2: threats
-  { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}<div class="chk chlegk">All 30 threats</div>${CH.legendRow(RD)}</div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
+  { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}<div class="chlegk">${CH.legendRow(RD)}</div></div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
   // part 4: the sheet, every slot (empty ones say Add)
   { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${all.map(row).join('')}</div>`; }
   if (!$('chScout').hidden) chScoutRender(); try { chEditStrip(); } catch (e) {} }
@@ -302,7 +315,7 @@ function chScoutRender() { const sh = $('chScout'); if (!sh) return; const ms = 
   const b = chBestPlan();
   const best = b ? `<div class="chbest"><div class="chk">Best fix${b.d != null ? ` · ${b.d > 0 ? '+' : ''}${b.d}% ready` : ''}</div><div class="sw">${b.pl.ch.map(x => `${x.out ? `${sprite(x.out.p, 'out') || ''}<span aria-hidden="true" style="color:var(--chyel);font-size:22px">→</span>` : '+'}${sprite(x.c.p) || ''}`).join(' ')}<span>${esc(b.txt)}</span></div><button type="button" class="chprimary" data-plan="0">Apply this fix <span aria-hidden="true">➜</span></button></div>` : '';
   sh.innerHTML = `<div class="grab"></div><button type="button" class="x" data-chclose aria-label="Close">×</button>
-    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm">${CH.grade(RD.score)}</div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm">${CH.gradeOf(RD, v.CK).letter}</div></div>
     <div style="font-size:14px;color:var(--chink2);margin-top:6px"><b style="color:var(--chink)">${RD.score}% ready</b> · ${CH.LEGEND}</div>
     ${CH.legendRow(RD)}${CH.tiles(RD, 'data-chthr')}${det}
     ${list ? `<div class="chlist" style="margin-top:8px">${list}</div>` : ''}${ck}${best}
