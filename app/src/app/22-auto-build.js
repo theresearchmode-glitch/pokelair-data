@@ -70,7 +70,7 @@ function* provenBuildGen() {
   return {fmt: 'doubles', teams: out.map(({t, c}) => { const d = abDescribe(t);
     const src = `${c.n} players brought this exact team at Limitless events${c.g ? ` (${c.g.toLocaleString('en-US')} games)` : ''}, winning about ${Math.round(c.wr * 100)}% of them`;
     d.why.unshift(c.missing ? `${src}, with ${c.missing.d} where you have ${(t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: '?'}).d}` : src);
-    d.proven = {n: c.n, wr: c.wr, swapped: !!c.missing}; return d; })};
+    d.proven = {n: c.n, wr: c.wr, g: c.g, swapped: !!c.missing}; return d; })};
 }
 // The build runs as a generator so the page can draw between steps (audit, Oct 30: it froze phones for up to 17 s);
 // buildBest() runs it straight through for callers that need the result at once.
@@ -185,6 +185,8 @@ function abStart() {
     ${picks.length ? `<div class="head abwinhead"><div><h3>Or start from a recent winner</h3><p class="hint">Full sets, ready to load.</p></div></div>${picks.map(e => teamSheetCard(e.top[0], e, e.id + '#0')).join('')}` : ''}</div>`; }
 // the built team's readiness for the top threats, from the same report as the Team page
 function abTS(tm) { if (tm.mons.length !== 6) return ''; if (tm._ts === undefined) { let t = null; try { t = tsOf(tm.mons.map(m => abMember(byName.get(m.n)))); } catch (e) {} tm._ts = t; }
+  // a real team with 30+ games leads with its record, the same thing its grade on My team comes from
+  const pv = tm.proven; if (pv && !pv.swapped && pv.g >= CH.REC_MIN) return `<span class="abtsv" title="These exact six won about ${Math.round(pv.wr * 100)}% of ${pv.g} tournament games. Our own check: ready for ${tm._ts ?? '?'}% of the top 30 threats."><b>${Math.round(pv.wr * 100)}%</b>won · ${pv.g.toLocaleString('en-US')} games</span>`;
   return tm._ts != null ? `<span class="abtsv" title="Ready for ${tm._ts}% of the top 30 threats (weighted by how often each makes top cut)"><b>${tm._ts}%</b>ready</span>` : ''; }
 function renderAutoBuild() {
   const el = $('abOut'); if (!el) return; const r = ui.ab;
