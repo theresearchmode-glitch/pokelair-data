@@ -198,7 +198,11 @@ function renderTopTeams() {
         : `<button class="btn sm" type="button" data-ttask="${k}">Load team</button><button class="linkbtn" type="button" data-ttvs="${k}">Practice against</button>`}</div></div>`; }).join('')
       + (all.length > cap ? `<button class="btn ttmore" type="button" data-ttmore="${esc(sec)}">Show ${all.length - cap} more</button>` : ''); }).join('');
 }
-function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return; keepUndo();
+function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return;
+  // the same team from an event's full sheet (moves, items, abilities) when we have it (Oct 30 audit: it loaded popular sets)
+  try { const key = t.mons.slice().sort().join('|'), E = META.events && META.events.events || [];
+    for (const ev of E) for (const x of ev.top || []) if (x.player === t.player && x.mons.map(m => m.n).sort().join('|') === key) { ui.ttConfirm = null; loadSheet(x); return; } } catch (e) {}
+  keepUndo();
   S.slots = normSlots(t.mons.map(n => ({n, a: null, lock: false})));
   // tournament teams are VGC doubles teams
   S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`Loaded ${t.player}'s team`, true); }

@@ -53,7 +53,7 @@ function renderSets() {
     dCard = setCard('Doubles', rankLine(d, row) || mainSource(st), st, seg, setSources(st, 'doubles')); }
   else { const d = META[SRC[src]], row = findIn(d, p);
     dCard = setCard('Doubles', rankLine(d, row) || (d ? esc(d.source || '') : 'No data loaded yet'), row, seg); }
-  out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}<span class="tag tier t${(v => v >= 70 ? 3 : v >= 45 ? 2 : v >= 25 ? 1 : 0)(viability(p))}">${vLabel(viability(p))} in doubles</span></div>
+  out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}${(() => { try { const r = rating(p), T = lTier(r.total); return `<span class="tag tier" style="background:${T.c};color:#fff" title="NastyPlot rating ${r.total}">${T.k} tier · ${esc(T.d)}</span>`; } catch (e) { return ""; } })()}</div>
     ${(m => m ? `<p class="t2 setmine">Your ${esc(m.d)}: ${esc(m.ability)}${m.item ? ` @ <b>${esc(m.item)}</b>${m.heldItem ? ' (your pick)' : ''}` : ''} · ${m.moves.filter(Boolean).map(x => esc(x.name)).join(', ')}${m.custom ? ' (your moves)' : ''}</p>` : '')(team.find(m => m.p.n === p.n))}
     <div class="mucols one">${dCard}</div>`;
 }

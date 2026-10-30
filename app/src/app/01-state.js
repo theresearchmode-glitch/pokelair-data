@@ -16,7 +16,10 @@ const SRC={ingame:'doubles_ingame',tour:'doubles_tour',ladder:'doubles'};
 // keep only known fields, coerce numbers, cap list sizes. A bad row is dropped, never rendered.
 const num=v=>{const n=typeof v==='number'?v:parseFloat(v);return Number.isFinite(n)?n:null};
 const str=(v,max=200)=>typeof v==='string'?v.slice(0,max):'';
-const pairs=(a,max=10)=>Array.isArray(a)?a.filter(x=>Array.isArray(x)&&typeof x[0]==='string').slice(0,max).map(x=>[x[0].slice(0,60),num(x[1])]):[];
+// entries typed by hand in different cases ("grassy surge" next to "Grassy Surge") are merged into the properly capitalised one (Oct 30 audit)
+const pairs=(a,max=10)=>{if(!Array.isArray(a))return[];const M=new Map();for(const x of a){if(!Array.isArray(x)||typeof x[0]!=='string')continue;const nm=x[0].slice(0,60),k=nm.toLowerCase().replace(/[^a-z0-9]/g,''),v=num(x[1]),o=M.get(k);
+  if(!o){M.set(k,[nm,v]);continue}if(v!=null)o[1]=(o[1]||0)+v;if(nm!==nm.toLowerCase()&&o[0]===o[0].toLowerCase())o[0]=nm}
+  return [...M.values()].sort((x,y)=>(y[1]||0)-(x[1]||0)).slice(0,max)};
 function cleanMeta(d){if(!d||typeof d!=='object')return null;
   const row=t=>t&&typeof t.n==='string'?{r:Math.max(1,Math.round(num(t.r)||0)),n:t.n.slice(0,60),u:num(t.u),teams:num(t.teams),w:num(t.w),ab:pairs(t.ab),it:pairs(t.it),mv:pairs(t.mv,12),na:pairs(t.na),tm:pairs(t.tm),cc:pairs(t.cc,6),sp:pairs(t.sp,3).filter(([k])=>/^[A-Z][a-z]+:\d+(\/\d+){5}$/.test(k))}:null;
   const out={format:str(d.format,20),kind:str(d.kind,20),source:str(d.source),period:str(d.period),note:str(d.note,300),battles:num(d.battles),updated:str(d.updated,40),

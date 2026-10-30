@@ -23,7 +23,7 @@ CH.wrap('renderAutoBuild', () => { chBuildInit(); const el = $('abOut'); if (!el
     const imgs = [...mons.querySelectorAll('.abmon img.spr')].map(i => i.getAttribute('src'));
     const head = col.querySelector('.abhead'), lab = head ? [...head.querySelectorAll('.archchips .tag, .archchips span')].map(x => x.textContent.trim()).filter(Boolean).slice(0, 2).join(' · ') : '';
     const six = document.createElement('div'); six.className = 'chabsix chhalf';
-    six.innerHTML = `<div class="chk" style="color:#fff">${col.querySelector('.tag.box') ? esc(col.querySelector('.tag.box').textContent) : col.querySelector('.tag.offmeta') ? 'Fresh take' : 'Your build'}</div><div class="chabt">${esc(lab || 'Your six')}</div>
+    six.innerHTML = `<div class="chk" style="color:#fff">${col.querySelector('.abhead .tag.box') ? esc(col.querySelector('.abhead .tag.box').textContent) : col.querySelector('.tag.offmeta') ? 'Fresh take' : 'Your build'}</div><div class="chabt">${esc(lab || 'Your six')}</div>
       <div class="chabg">${names.map((n, i) => `<div>${imgs[i] ? `<img class="spr" src="${esc(imgs[i])}" alt="">` : ''}<span>${esc(n)}</span></div>`).join('')}</div>`;
     (head || mons).before(six); CH.foldNode(mons, 'absets', 'Sets and roles', 'Items, abilities, roles and ratings for each of the six', false); }); });
 // ---------- Battle mode: team preview ----------
@@ -86,13 +86,16 @@ document.addEventListener('input', e => { if (e.target && e.target.id === 'lairQ
 // ---------- the Pokémon sheet: big sprite hero, three numbers, moves, items, brought with ----------
 CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = byName.get(n); if (!sh || !p || sh.hidden) return; const panel = sh.querySelector('.lspanel'); if (!panel || panel.querySelector('.chls')) return;
   const r = rating(p), T = lTier(r.total), src = r.src || {}, st = setFor(p) || {}, all = lairRows(), pos = all.findIndex(x => x.p.n === p.n) + 1;
-  const bars = (arr, cls, k) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="chbar"><span>${esc(nm)}</span><i class="${cls}"><em style="width:${Math.max(2, Math.min(100, +v || 0))}%"></em></i><b>${(+v).toFixed(1)}%</b></div>`).join('');
+  const bars = (arr, cls, k) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="chbar"><span>${esc(nm)}</span><i class="${cls}"><em style="width:${Math.max(2, Math.min(100, +v || 0))}%"></em></i>${v == null ? '' : `<b>${(+v).toFixed(1)}%</b>`}</div>`).join('');
   const bw = RES && RES.tc && RES.tc.bw ? RES.tc.bw[brKeyOf(p)] : null, games = bw ? null : null;
   const head = panel.querySelector('.lshead'); if (head) { head.classList.add('chls', 'chhalf'); head.insertAdjacentHTML('beforeend', `<div class="chlsk">#${pos} of ${all.length} · ${T.k} tier</div>`); }
-  const stats = `<div class="chlstats"><div><b>${r.total}</b><span>Rating · ${T.k}</span></div><div><b>${src.tour ? (+src.tour[0]).toFixed(1) + '%' : '–'}</b><span>of teams</span></div><div><b>${src.tour ? (+src.tour[1]).toFixed(1) + '%' : '–'}</b><span>win rate${src.tour ? ` · ${(+src.tour[2]).toLocaleString('en-US')} games` : ''}</span></div></div>`;
-  const ab = st.ab && st.ab[0] ? `Ability: ${esc(st.ab[0][0])} ${(+st.ab[0][1]).toFixed(1)}%` : '';
-  const mv = st.mv && st.mv.length ? `<div class="chk">Moves</div>${bars(st.mv, 'b', 5)}` : '', it = st.it && st.it.length ? `<div class="chk" style="margin-top:12px">Items${ab ? ' · ' + ab : ''}</div>${bars(st.it, 'r', 3)}` : '';
-  const with_ = bw && bw.length ? `<div class="chk" style="margin-top:12px">Brought with · Showdown replays</div><div class="chbw">${bw.filter(x => byName.get(x[0])).slice(0, 4).map(x => `<button type="button" data-lt="${esc(x[0])}" title="When both are on the team, ${esc(p.d)} and ${esc(byName.get(x[0]).d)} are brought together ${x[1]}% of the time (${x[2]} games)">${sprite(byName.get(x[0])) || ''}<b>${x[1]}%</b><span>${(+x[2]).toLocaleString('en-US')} games</span></button>`).join('')}</div><p class="t2" style="margin:4px 0 0">% = brought together when both are on the team.</p>` : '';
+  // the header uses the same results the rating is built from (r.tc), so it matches "Why it rates" below (Oct 30 audit)
+  const tcOK = r.tc && r.tc.g >= 30, hU = tcOK ? r.tc.field : src.tour ? +src.tour[0] : null, hW = tcOK ? r.tc.wr : src.tour ? +src.tour[1] : null, hG = tcOK ? r.tc.g : src.tour ? +src.tour[2] : null;
+  const pc = v => v == null ? '–' : v > 0 && v < .1 ? '<0.1%' : v.toFixed(1) + '%';
+  const stats = `<div class="chlstats"><div><b>${r.total}</b><span>Rating · ${T.k}</span></div><div><b>${pc(hU)}</b><span>of teams</span></div><div><b>${hG != null && hG >= 30 ? pc(hW) : '–'}</b><span>win rate${hG ? ` · ${Math.round(hG).toLocaleString('en-US')} games` : ''}</span></div></div>`;
+  const ab = st.ab && st.ab[0] ? `Ability: ${esc(st.ab[0][0])}${st.ab[0][1] == null ? '' : ' ' + (+st.ab[0][1]).toFixed(1) + '%'}` : '';
+  const mv = st.mv && st.mv.length ? `<div class="chk">Moves</div>${bars(st.mv, 'b', 5)}` : '', it = st.it && st.it.length ? `<div class="chk" style="margin-top:12px">Items${ab ? ' · ' + ab : ''}</div>${bars(st.it, 'b', 3)}` : '';
+  const with_ = bw && bw.length ? `<div class="chk" style="margin-top:12px">Brought with · Showdown replays</div><div class="chbw">${bw.filter(x => byName.get(x[0])).slice(0, 4).map(x => `<button type="button" data-lt="${esc(x[0])}" title="When both are on the team, ${esc(p.d)} and ${esc(byName.get(x[0]).d)} are brought together ${x[1]}% of the time (${x[2]} games)">${sprite(byName.get(x[0])) || ''}<i class="bwn">${esc(byName.get(x[0]).d)}</i><b>${x[1]}%</b><span>${(+x[2]).toLocaleString('en-US')} games</span></button>`).join('')}</div><p class="t2" style="margin:4px 0 0">% = brought together when both are on the team.</p>` : '';
   const body = panel.querySelector('.lsbody'); if (!body) return; body.insertAdjacentHTML('afterbegin', stats + `<div class="chlsdata">${mv}${it}${with_}</div>`);
   // the deeper sections fold (same content)
   body.querySelectorAll(':scope > .lsec').forEach((s, i) => { const h = s.querySelector('h4'); if (!h) return; const t = h.textContent; h.remove(); const w = document.createElement('div'); w.innerHTML = `<details class="chsec chfold"><summary>${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">${esc(t)}</div></div></summary><div class="chbody"></div></details>`; const d = w.firstElementChild; s.before(d); d.querySelector('.chbody').append(s); });
@@ -105,7 +108,10 @@ CH.wrap('renderMeta', () => { const el = $('metaList'); if (!el) return; const r
   b.setAttribute('aria-expanded', ui.chMetaAll ? 'true' : 'false');
   b.innerHTML = `<span class="chtog${ui.chMetaAll ? ' open' : ''}" aria-hidden="true">${CH.tog().replace(/^<span class="chtog" aria-hidden="true">|<\/span>$/g, '')}</span><span style="flex:1;text-align:left"><span class="cht">${ui.chMetaAll ? 'Show the top 10' : `Ranks 11–${rows.length}`}</span><span class="chs">${ui.chMetaAll ? 'Fold the rest away' : 'The rest of the list'}</span></span>`;
   // the "also ranked" name list belongs to the rest of the list: it shows with ranks 11+, after them
-  if (sec) [...sec.querySelectorAll('p, div.t2')].filter(p => /^Also ranked/.test(p.textContent.trim())).forEach(p => { p.hidden = !ui.chMetaAll; if (ui.chMetaAll) el.after(p); else b.after(p); }); });
+  // the "also ranked" name list belongs to the rest of the list: it shows with ranks 11+, after them.
+  // Only the one just rendered inside the list is kept; copies moved out on earlier renders (other sources) are removed (Oct 30 audit)
+  if (sec) { const all = [...sec.querySelectorAll('p, div.t2')].filter(p => /^Also ranked/.test(p.textContent.trim())), fresh = all.filter(p => el.contains(p));
+    all.filter(p => !el.contains(p) && fresh.length).forEach(p => p.remove()); (fresh.length ? fresh : all).forEach(p => { p.hidden = !ui.chMetaAll; if (ui.chMetaAll) el.after(p); else b.after(p); }); } });
 CH.wrap('renderMeta', () => CH.pagehead($('meta'), 'Usage · how often each Pokémon is picked', 'Usage', ''));// ---------- Cores: the top three as big cards, the explainer folded ----------
 CH.wrap('renderCores', () => { const el = $('coreOut'); if (!el) return; const sec = $('cores'); if (sec) sec.classList.add('chcores');
   const intro = el.querySelector('.coreintro'); if (intro) CH.foldNode(intro, 'coreabout', 'How cores are ranked', 'Win rate pulled toward the average, from real tournament teams', false);
@@ -117,7 +123,7 @@ CH.more = (box, sel, n, key, label) => { if (!box) return; const items = [...box
   ui.chMore = ui.chMore || {}; const all = !!ui.chMore[key]; items.forEach((x, i) => x.classList.toggle('chhid', i >= n && !all));
   if (!b) { b = document.createElement('button'); b.type = 'button'; b.className = 'chsec chmorebtn'; b.dataset.chmore = key; box.after(b); b.addEventListener('click', () => { ui.chMore[key] = !ui.chMore[key]; CH.more(box, sel, n, key, label); }); }
   b.setAttribute('aria-expanded', all ? 'true' : 'false');
-  b.innerHTML = `<span class="chtog${all ? ' open' : ''}" aria-hidden="true">${CH.tog().replace(/^<span class="chtog" aria-hidden="true">|<\/span>$/g, '')}</span><span style="flex:1;text-align:left"><span class="cht">${all ? 'Show fewer' : `${items.length - n} more ${label}`}</span><span class="chs">${all ? 'Fold the rest away' : `Showing ${n} of ${items.length}`}</span></span>`; };
+  b.innerHTML = `<span class="chtog${all ? ' open' : ''}" aria-hidden="true">${CH.tog().replace(/^<span class="chtog" aria-hidden="true">|<\/span>$/g, '')}</span><span style="flex:1;text-align:left"><span class="cht">${all ? 'Show fewer' : typeof label === 'function' ? label(items, n)[0] : `${items.length - n} more ${label}`}</span><span class="chs">${all ? 'Fold the rest away' : typeof label === 'function' ? label(items, n)[1] : `Showing ${n} of ${items.length}`}</span></span>`; };
 CH.pagehead = (sec, kicker, title, sub) => { if (!sec || sec.querySelector(':scope > .chpghead')) return; const h = sec.querySelector(':scope > .head'); const w = document.createElement('div'); w.innerHTML = CH.head(kicker, title, sub); if (h) h.before(w.firstElementChild); else sec.prepend(w.firstElementChild); sec.classList.add('chpg'); };
 // ---------- Damage calc: attacker vs defender as two cards, set details folded ----------
 CH.wrap('renderCalc', () => { const el = $('dcOut'), sec = $('dmgcalc'); if (!el) return; CH.pagehead(sec, 'Damage calc · common sets, auto-filled', 'Damage calc', '');
@@ -141,15 +147,15 @@ CH.wrap('renderGauntlet', () => { const el = $('gauntOut'), sec = $('gauntlet');
   CH.more(el.querySelector('.glist'), ':scope > .gitem', 3, 'gaunt', 'teams'); });
 // ---------- Teams and Events: big-sprite team sheets, the first few shown ----------
 CH.wrap('renderTeamSearch', () => { const sec = $('topteams'); CH.pagehead(sec, 'Tournaments · real top-cut team sheets', 'Winning teams', ''); chTeamsMore(); });
-function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [...L.children], cards = kids.filter(x => x.classList.contains('ttcard')); if (cards.length < 5) return; CH.more(L, ':scope > *', kids.indexOf(cards[2]) + 1, 'ttlist', 'teams and sections'); }
+function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [...L.children], cards = kids.filter(x => x.classList.contains('ttcard')); if (cards.length < 5) return; CH.more(L, ':scope > *', kids.indexOf(cards[2]) + 1, 'ttlist', () => ['More winning teams', `Showing the top 3 of ${cards.length}${L.querySelector('.morebar, [data-ttmore]') ? '+' : ''}`]); }
 CH.wrap('renderTopTeams', () => safe('teams more', chTeamsMore));
 CH.wrap('renderEvents', () => { const sec = $('events'); CH.pagehead(sec, 'Events · recent tournaments', 'Events', ''); });
 // ---------- batch 4: Best additions, Types, Sets, Saved teams, Box, Archetypes ----------
 // Swaps: one-Pokémon additions first, then the bigger fix plans (the checklist lives on the scouting report)
 CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Every swap and plan for your team', 'All suggestions', '');
   const pr = $('princ'); if (pr) pr.hidden = true; if (sec) sec.classList.add('chswaps');
-  const g = sec && sec.querySelector('.recgrid'); if (g && !sec.querySelector('.chswk')) g.insertAdjacentHTML('beforebegin', '<h3 class="chswk">One Pokémon in, one out</h3>');
-  CH.more($('recList'), ':scope > *', 3, 'recs', 'swaps'); chPlansDedup(); });
+  const g = sec && sec.querySelector('.recgrid'); if (g && !sec.querySelector('.chswk')) g.insertAdjacentHTML('beforebegin', '<h3 class="chswk">One Pokémon in, one out</h3>'); { const h = sec && sec.querySelector('.chswk'); if (h) h.textContent = members().length >= 6 ? 'One Pokémon in, one out' : 'Pokémon to add'; }
+  CH.more($('recList'), ':scope > .addcard', 3, 'recs', (items, n) => { const c = items.filter(x => x.classList.contains('addcard')), h = c.filter((x, i) => items.indexOf(x) >= n).length; return [h ? `${h} more swap${h === 1 ? '' : 's'}` : 'More swaps and ideas', `Showing ${c.length - h} of ${c.length}`]; }); chPlansDedup(); });
 // a one-change plan that is already a swap card above is shown once (the swap card); the rest are renumbered
 function chPlansDedup() { const el = $('sugs'); if (!el) return; const R = new Set((ui.recs || []).map(pl => { const x = pl.ch && pl.ch[0]; return x ? (x.out ? x.out.d : '') + '>' + x.c.p.d : ''; }));
   let j = 0; el.querySelectorAll(':scope > .plan').forEach(c => { const sw = c.querySelectorAll('.swap'); let dup = false;
