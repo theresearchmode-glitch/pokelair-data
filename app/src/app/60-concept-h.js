@@ -130,7 +130,8 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const cl = F2 ? F2.lead.map(byN).filter(Boolean) : [], cb = F2 ? F2.back.map(byN).filter(Boolean) : [];
   const ord2 = F2 ? [...cl, ...cb, ...mine.filter(m => !cl.includes(m) && !cb.includes(m))] : mine;
   const tag2 = m => !F2 ? '' : cl.includes(m) ? '<span class="chtag lead">Lead</span>' : cb.includes(m) ? '<span class="chtag">Back</span>' : '<span class="chtag">Bench</span>';
-  const row = (sp, nm, line, tg, right) => `<div class="chhr2${right ? ' r' : ''}">${sp}<div class="chbd2"><b>${esc(nm)}</b>${line ? `<span>${esc(line)}</span>` : ''}</div>${tg || ''}</div>`;
+  // desktop rows open the Pokémon's info sheet too (the name is the Pokémon's display name)
+  const row = (sp, nm, line, tg, right) => { const q = ROSTER.find(x => x.d === nm); return `<div class="chhr2${right ? ' r' : ''}"${q ? ` role="button" tabindex="0" data-lt="${esc(q.n)}" aria-label="${esc(nm)}: open its info"` : ''}>${sp}<div class="chbd2"><b>${esc(nm)}</b>${line ? `<span>${esc(line)}</span>` : ''}</div>${tg || ''}</div>`; };
   const youH = `<div class="chband you chhalf chcol"><div class="chk">● You · ${ms.length ? 'pick 4' : 'your six'}</div><div class="chcolt">${ms.length ? esc(teamTitleFor(ms)) : 'Your six'}</div>
     ${ms.length ? `<div class="chlist6">${ord2.map(m => row(sprite(m.p) || '', m.d, [m.item, m.ability].filter(Boolean).join(' · '), tag2(m))).join('')}</div><div class="chwl" style="justify-content:flex-start"><button type="button" class="chghost onblue" data-view="report">Open my team</button></div>`
       : `<div class="chlist6 empty">${Array.from({length: 6}, () => '<div class="chhr2"><span class="emp"></span><div class="chbd2"><b>&nbsp;</b></div></div>').join('')}</div><button type="button" class="chghost onblue" data-view="build">Add your six</button>`}</div>`;

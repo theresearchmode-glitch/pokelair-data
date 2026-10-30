@@ -299,3 +299,19 @@ details.slmore[open]>summary::after{content:"Hide"}
 .chthead .vsub b,.chthead .chstat{white-space:nowrap}
 .chlegk{margin:10px 0 2px}
 .rd .nw{white-space:nowrap}
+/* messages (Undo, import notes) show above the edit panel and sheets */
+.toast{z-index:200!important}
+/* Usage search: the × stays inside the box on desktop */
+.chmetaq .clrw{display:inline-block;width:auto;max-width:100%}.chmetaq .clrw>input{width:100%}
+@media (min-width:761px){.chmetaq .clrw.blk{display:block;width:min(420px,100%)}}
+/* cores trios on phones: the big number moves below the sprites so nothing overlaps */
+@media (max-width:520px){.corerow:not(.six) .coresprs{max-width:calc(100% - 110px)}.corerow:not(.six) .coresprs .spr,.corerow:not(.six) .coresprs img{max-width:52px;height:auto}}
+/* the "Show all" bar under the old threat list sits flush, no empty outline */
+#threats .morebar{background:none!important;border:0!important;padding:0!important;justify-content:center}
+.chhr2[data-lt]{cursor:pointer}.chhr2[data-lt]:hover{filter:brightness(1.06)}
+.chbd2 span{overflow-wrap:anywhere}
+/* Ratings kicker on small phones: "REG M-C" never splits */
+.chpghead .chk{word-break:normal;overflow-wrap:normal}
+.chbd2 span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+.chpghead .chk+.chpgt,.chpghead .chk+*{margin-top:4px}
+.chgapnote.onrecs{margin:0 0 12px}

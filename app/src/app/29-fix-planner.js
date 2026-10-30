@@ -79,7 +79,7 @@ function gapEffect(team0,gp0,team,gp){const fix=[],why=[],st=k=>(gp.rows.find(r=
         why.push(`Sets ${ARCH[w].name.toLowerCase()} for ${users.map(m=>`${m.d} (${m.ability})`).join(', ')}${setter?` with ${setter.ability}`:''}`)}
       else why.push('Gives your weather a Pokémon that uses it')}
     else if(k==='trfit')why.push('Slow attacker for your Trick Room');
-    else if(k==='terrain')why.push('Fixes your terrain: '+String((gp0.rows.find(r=>r.k==='terrain')||{}).note||'').replace(/\.$/,'').toLowerCase());
+    else if(k==='terrain')why.push('Fixes your terrain: '+String((gp0.rows.find(r=>r.k==='terrain')||{}).note||'').replace(/\.$/,'').replace(/^./,c=>c.toLowerCase()));
     else if(k==='support')why.push('Adds lead support (Fake Out, Intimidate or redirection)');
     else if(k==='speed')why.push('Adds speed control');
     fix.push(k)}

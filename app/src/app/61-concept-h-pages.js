@@ -72,7 +72,7 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
     <div class="chhot2">${big(top[0], 'ink')}${big(top[1], 'blue')}</div>
     <div class="chhotrows">${top.slice(2).map((x, i) => `${(() => { const t = lTier(x.r.total), pv = lTier(top[i + 1].r.total); return t.k !== pv.k ? `<div class="chtierdiv"><span class="chtier sm">${t.k}</span><span class="chk">${t.min}+ · ${rows.filter(y => lTier(y.r.total).k === t.k).length} Pokémon</span></div>` : ''; })()}<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span></span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
-  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg M-C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
+  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg M‑C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     const hero = $('lairHero'); const f = CH.foldNode(hero, 'lairabout', 'About the ratings', 'How they are made, sources and their track record', false);
     if (f) { const b = f.querySelector('.chbody'); sec.querySelectorAll('.head .hint, #ratingTrack').forEach(p => b.prepend(p)); }
     // search and filters first, then the top of the list
@@ -80,7 +80,7 @@ CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec
   // the date line is rebuilt on every render: the first render can run before today's data has loaded (Oct 29 fix)
   { const k = sec.querySelector(':scope > .chpghead .chk'), pf = activePerf(); if (k) { let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : '';
       try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
-      k.textContent = `Rated 0–100 from real results · Reg M-C doubles${d ? ' · updated ' + d : ''}`; } }
+      k.textContent = `Rated 0–100 from real results · Reg M‑C doubles${d ? ' · updated ' + d : ''}`; } }
   const hot = $('chHot'); const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (hot) { hot.hidden = filtered; if (!filtered && !bodyOnly) hot.innerHTML = chHotHtml(); }
   // the full board under the hot list, folded until you search or filter
@@ -325,3 +325,7 @@ CH.wrap('renderLog', () => { const bl = typeof battlelog !== 'undefined' ? battl
 // "Practice against a top team" goes back to "Pick…" once their six no longer matches the team it loaded, so it can be picked again
 CH.wrap('renderBattle', () => { const sel = $('oppTeamSel'); if (!sel || sel.value === '') return; const tm = META.teams && META.teams.teams && META.teams.teams[+sel.value];
   if (!tm || tm.mons.slice().sort().join('|') !== S.opp.filter(Boolean).sort().join('|')) { sel.value = ''; ui.oppFrom = null; } });
+// All suggestions shows the same game-plan gap note as Fix it when nothing in the pool fixes it (Oct 30 re-check)
+function chRecsGap() { const L = $('recList'); if (!L) return; const old = L.parentNode && L.parentNode.querySelector(':scope > .chgapnote'); if (old) old.remove();
+  const n = ui.plans && ui.plans.gapNote; if (!n) return; const p = document.createElement('p'); p.className = 'chgapnote onrecs'; p.textContent = n.replace('try "Box + catch" or "Whole roster"', 'try "Whole roster" above'); L.before(p); }
+CH.wrap('renderRecs', () => safe('recs gap', chRecsGap)); CH.wrap('renderPlans', () => safe('recs gap', chRecsGap));

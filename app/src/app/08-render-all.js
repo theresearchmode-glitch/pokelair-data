@@ -188,7 +188,7 @@ function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.n
 // gave a nature but no points, so the most common spread), or the most common one. One tap opens a small editor.
 function spreadBlock(s,i,m){const cs=m.spread||(typeof commonSpread==='function'?commonSpread(m.p):null);
   const src=m.spread&&m.spread.assumed?'assumed':m.spread?'yours':'common';
-  const tag=src==='assumed'?'<span class="asm" title="The team sheet had no stat points: this is the most common spread with your nature">assumed</span>':src==='yours'?'<span class="vsub">yours</span>':'<span class="asm" title="Most common on the Showdown ladder (1630+); set your own if yours differs">assumed</span>';
+  const tag=src==='assumed'?'<span class="asm" title="The team sheet had no stat points: this is the most common spread with your nature">assumed</span>':src==='yours'?'<span class="vsub">yours</span>':'<span class="asm" title="Most common spread on the Showdown ladder (1630+), so its nature can differ from the tournament natures above; set your own if yours differs">ladder usual</span>';
   const v=cs?`${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}`:'';
   const open=ui.spEdit===i;
   const ed=open?`<div class="spedit"><input class="field" id="spv${i}" value="${esc(v)}" placeholder="HP/Atk/Def/SpA/SpD/Spe" inputmode="numeric" aria-label="Stat points for ${esc(m.p.d)}, HP/Atk/Def/SpA/SpD/Spe (0-32 each, ${SP_TOTAL} total)">
