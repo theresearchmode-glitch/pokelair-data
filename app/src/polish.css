@@ -239,3 +239,8 @@ html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
 .clrw.has>.clrx{display:inline-flex}
 :root[data-look="dark"] .clrx{background:#3A3734;color:#F3EBDC}
 input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+/* Home: the six on the champion and your-team cards are tappable */
+button.chmmon{font:inherit;color:inherit;cursor:pointer;width:100%;-webkit-appearance:none;appearance:none;text-align:center}
+button.chmmon:active{transform:scale(.97)}
+button.chmmon:focus-visible,.chsix [data-lt]:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.chsix [data-lt]{cursor:pointer}

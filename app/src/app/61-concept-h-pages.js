@@ -307,3 +307,6 @@ document.addEventListener('pointerdown', e => { if (e.target && e.target.closest
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.clrx'); if (!b) return; e.preventDefault(); e.stopPropagation();
   const inp = b.parentNode.querySelector('input'); if (!inp) return; inp.value = ''; inp.dispatchEvent(new Event('input', {bubbles: true})); inp.dispatchEvent(new Event('change', {bubbles: true})); clrSync(inp); try { inp.focus({preventScroll: true}); } catch (er) { inp.focus(); } }, true);
 safe('clear buttons', () => { clrScan(); try { let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(() => clrScan(), 60); }).observe(document.body, {childList: true, subtree: true}); } catch (e) {} });
+// the Pokémon info sheet opens from any page (Home's tiles too): it lives at the page level, not inside Ratings
+safe('sheet anywhere', () => { const sh = $('lairSheet'); if (sh && sh.parentElement !== document.body) document.body.append(sh); });
+document.addEventListener('keydown', e => { const t = e.target; if (!t || !t.matches || !t.matches('[role="button"][data-lt]') || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); t.click(); });
