@@ -213,3 +213,21 @@ html.chlock,html.chlock body{overflow:hidden!important;overscroll-behavior:none}
 .btn.chmoreideas:focus-visible{outline:3px solid var(--chblue);outline-offset:2px}
 #recList>.morebar>.vsub{text-align:center;font-size:13.5px;color:var(--chink2)}
 :root:not(#_ch) #recList .btn.chmoreideas{border-radius:14px!important;min-height:56px!important}
+/* Fix it: a plan with two or more changes lists one change per row, readiness + Apply underneath */
+.chsug.multi{flex-direction:column!important;align-items:stretch!important;gap:8px!important}
+.chsug.multi .chml{display:flex;flex-direction:column;gap:6px}
+.chsug.multi .chmc{display:flex;align-items:center;gap:10px}
+.chsug.multi .chmc .pics{flex:none;width:96px}
+.chsug.multi .chmc .txt{flex:1;min-width:0}
+.chsug.multi .chmf{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chsug.multi .chmf .dl{margin-top:0}
+/* Ratings tier tiles on phones (Oct 30, Sim): sprite + badges on top, the full name underneath (never cut), cleaner "estimate" score */
+@media (max-width:760px){
+ .ltile{height:auto!important;min-height:62px;padding:5px 6px 6px 6px!important;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:30px auto;row-gap:2px;align-items:center}
+ .ltile .ltspr{top:3px!important;left:4px!important;bottom:auto!important;width:30px!important;height:30px!important}
+ .ltile .ltf{padding-left:32px;min-height:30px}
+ .ltile .ltn{grid-column:1/-1;padding:0!important;display:block!important;-webkit-line-clamp:unset!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:normal;word-break:normal;font-size:12px;line-height:1.1;align-self:end}
+ .ltile .ltn.sm{font-size:11px}.ltile .ltn.xs{font-size:10px}
+}
+.ltile.unsure .lts{background:rgba(0,0,0,.28)!important;color:#fff!important;box-shadow:none!important;border:1.5px solid rgba(255,255,255,.75)!important;border-style:solid!important}
+@media (max-width:760px){.ltile .lts{margin-left:4px}.ltile .ltf{gap:3px;overflow:hidden}}
