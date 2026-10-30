@@ -247,3 +247,10 @@ button.chmmon:focus-visible,.chsix [data-lt]:focus-visible{outline:3px solid #ff
 /* Fix it: a game-plan gap nothing in the chosen pool can fix */
 .chgapnote{margin:4px 0 10px;padding:10px 12px;border-radius:12px;background:var(--warn-soft,#FBEBC6);color:var(--chink);font-size:13.5px;line-height:1.35;border:1.5px solid var(--chshaky,#C98A00)}
 :root[data-look="dark"] .chgapnote{background:#3A3122;color:#F3EBDC}
+/* My box: sort row */
+.boxsort{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 12px}
+.boxsort .bslbl{font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--chink2);margin-right:2px}
+.boxsort{flex-wrap:nowrap;gap:5px}
+:root:not(#_ch) main .boxsort.seg.segwrap{padding:0;gap:5px}
+:root:not(#_ch) main .boxsort.seg.segwrap button{padding:4px 9px;min-width:0;white-space:nowrap}
+@media (max-width:370px){.boxsort .bslbl{display:none}}
