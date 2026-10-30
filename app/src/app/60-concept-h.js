@@ -21,9 +21,19 @@ CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 
 // letters in the same order as the teams' finishes most often. Weather and Taunt/Encore aren't checks: teams without them won
 // just as often.
 CH.GMISS = 6;
-CH.gradeOf = (RD, CK) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok) : [], s = RD.score - CH.GMISS * miss.length;
-  return {s, letter: CH.grade(s), miss, CK}; };
-CH.gradeWhy = G => { if (!G) return ''; const {RD} = G, n = G.CK ? G.CK.n : 0;
+// Real results first (Sim, Oct 30): when these exact six have 30+ tournament games, the letter comes from how often they won.
+// On 339 real teams, our own grade didn't line up with their records (higher grades didn't win more), so a real record wins.
+// 50% is an average team; each letter is 5 points of win rate. The win rate is already pulled toward the field for small samples.
+CH.REC_MIN = 30;
+CH.recLetter = wr => wr >= .6 ? 'A' : wr >= .55 ? 'B' : wr >= .5 ? 'C' : wr >= .45 ? 'D' : 'F';
+CH._recMap = null; CH._recSrc = null;
+CH.recOf = ms => { if (!ms || ms.length !== 6 || !RES || !Array.isArray(RES.proven)) return null;
+  if (CH._recSrc !== RES.proven) { CH._recSrc = RES.proven; CH._recMap = new Map(); for (const [ns, n, wr, g] of RES.proven) if (Array.isArray(ns) && ns.length === 6 && g != null && +g >= CH.REC_MIN) CH._recMap.set(ns.slice().sort().join('|'), {n: +n, wr: +wr, g: +g}); }
+  return CH._recMap.get(ms.map(m => (m.p || m).n).sort().join('|')) || null; };
+CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok) : [], s = RD.score - CH.GMISS * miss.length, rec = CH.recOf(ms);
+  return {s, letter: rec ? CH.recLetter(rec.wr) : CH.grade(s), miss, CK, rec}; };
+CH.gradeWhy = G => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
+  if (G.rec) return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}). With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ready for ${G.r}% of the top 30 threats, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
   return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
     + (G.miss.length ? ` Each missed check takes ${CH.GMISS} points off: ${G.miss.map(x => esc(x.label.toLowerCase())).join(', ')}.` : ' No missed checks, so nothing comes off.')
     + ` A 90+, B 80+, C 70+, D 60+.<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span></div>`; };
@@ -259,7 +269,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 // Import, Export and Save show their panels inside the editor
 document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('#importBtn,#exportBtn,#saveBtn'); if (t && $('chEdit') && $('chEdit').hidden) chEditOpen(null); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') chEditClose(); });
-function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK), {r: RD.score}) : null;
+function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK, ms), {r: RD.score}) : null;
   const F = CH.four(ms), lead = F ? ms.find(m => m.p.n === F.lead[0]) || null : null, ko = CH.koNote(RD);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };
   const all = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).slice(0, 6);
@@ -269,7 +279,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
   const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
-      ${RD ? `<div class="rd"><b>${RD.score}% ready</b> for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · <span class="nw">${c[0]} unanswered</span> · <span class="nw">${c[1]} shaky</span></div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
+      ${RD ? `<div class="rd">${G && G.rec ? `<b>Won ${Math.round(G.rec.wr * 100)}%</b> of ${G.rec.g.toLocaleString('en-US')} real games · ${RD.score}% ready` : `<b>${RD.score}% ready</b>`} for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · <span class="nw">${c[0]} unanswered</span> · <span class="nw">${c[1]} shaky</span></div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
       <div class="chpills">${legal}${ck}</div>
       ${ms.length ? `<div class="chsix6">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || esc(m.d)}</button>`).join('')}</div>` : ''}
       <div class="chacts2" id="chActs"><button type="button" class="chghost" data-view="teams">Saved teams</button><button type="button" class="chghost" data-view="box">My box</button></div></div>
@@ -315,7 +325,7 @@ function chScoutRender() { const sh = $('chScout'); if (!sh) return; const ms = 
   const b = chBestPlan();
   const best = b ? `<div class="chbest"><div class="chk">Best fix${b.d != null ? ` · ${b.d > 0 ? '+' : ''}${b.d}% ready` : ''}</div><div class="sw">${b.pl.ch.map(x => `${x.out ? `${sprite(x.out.p, 'out') || ''}<span aria-hidden="true" style="color:var(--chyel);font-size:22px">→</span>` : '+'}${sprite(x.c.p) || ''}`).join(' ')}<span>${esc(b.txt)}</span></div><button type="button" class="chprimary" data-plan="0">Apply this fix <span aria-hidden="true">➜</span></button></div>` : '';
   sh.innerHTML = `<div class="grab"></div><button type="button" class="x" data-chclose aria-label="Close">×</button>
-    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm">${CH.gradeOf(RD, v.CK).letter}</div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm">${CH.gradeOf(RD, v.CK, ms).letter}</div></div>
     <div style="font-size:14px;color:var(--chink2);margin-top:6px"><b style="color:var(--chink)">${RD.score}% ready</b> · ${CH.LEGEND}</div>
     ${CH.legendRow(RD)}${CH.tiles(RD, 'data-chthr')}${det}
     ${list ? `<div class="chlist" style="margin-top:8px">${list}</div>` : ''}${ck}${best}
