@@ -36,7 +36,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(b.id==='pasteCopy'){const t=$('pasteOut');const txt=t?t.value:'';try{navigator.clipboard.writeText(txt).then(()=>toast('Copied'),()=>{t.select();toast('Press Ctrl+C or Cmd+C to copy')})}catch(err){if(t)t.select();toast('Press Ctrl+C or Cmd+C to copy')}return}
   if(b.id==='pasteLoad'){const raw=($('pasteIn')||{}).value,sh=typeof decodeTeam==='function'?decodeTeam(raw):null;if(sh){applyShared(sh);return}const r=parsePaste(raw);
     if(!r.slots.length){$('pasteNotes').textContent=r.notes.length?r.notes.join('. ')+'.':'No Pokémon found. Paste the team text, one Pokémon per block.';return}
-    keepUndo();S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();toast(`Imported ${r.slots.length} Pokémon`+(r.notes.length?` (${r.notes.length} skipped item${r.notes.length>1?'s':''})`:''),true);return}
+    keepUndo();S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();{const sk=r.notes.map(n=>{const x=n.match(/^(.+?): skipped (item|move) "(.+?)"/);return x?`${x[3]} (${x[1]})`:null}).filter(Boolean);toast(`Imported ${r.slots.length} Pokémon`+(sk.length?`. Not in Champions, skipped: ${sk.slice(0,3).join(', ')}${sk.length>3?` and ${sk.length-3} more`:''}`:''),true)}return}
   if(d.megas!==undefined){S.megaGoal=Math.max(0,Math.min(2,+d.megas||0));S.maxMega=Math.max(1,S.megaGoal);recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.megaGoal?`Teams aim for ${S.megaGoal} Mega${S.megaGoal>1?'s':''}`:'Teams without Megas');return}
   if(d.clear!==undefined){const was=byName.get(S.slots[+d.clear].n);keepUndo();S.slots[+d.clear]=blank();render();if(was)toast(`Removed ${was.d}`,true)}
   else if(b.id==='abBtn'){ui.abLock=null;runAutoBuild()}
@@ -53,7 +53,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false}});
     keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`,true)}
   else if(d.lock!==undefined){const s=S.slots[+d.lock];s.lock=!s.lock;render()}
-  else if(d.unbox!==undefined){S.box=S.box.filter(x=>x!==d.unbox);render()}
+  else if(d.unbox!==undefined){ui.boxUndo=S.box.slice();S.box=S.box.filter(x=>x!==d.unbox);render();const q=byName.get(d.unbox);toastBox(`Removed ${q?q.d:d.unbox} from your box`)}
   else if(b.id==='replanBtn'){vCache=new Map();pmCache=new Map();planCache={key:null,plans:[]};render();toast('Plans refreshed')}
   
   else if(d.addmeta){const p=byName.get(d.addmeta);const j=S.slots.findIndex(s=>!byName.get(s.n));
@@ -68,7 +68,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.src){ui.metaSrc=d.src;render()}
   else if(d.sort){ui.sort=d.sort;document.querySelectorAll('[data-sort]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.sort===ui.sort));renderSaved()}
   else if(b.id==='clearTeam'){keepUndo();S.slots=Array.from({length:6},blank);S.loadedId=null;render();toast('Team cleared',true)}
-  else if(b.id==='boxReset'){S.box=DEFAULT_BOX.slice();render();toast('Box reset')}
+  else if(b.id==='boxReset'){if(!ui.boxResetAsk){ui.boxResetAsk=true;b.textContent='Tap again to reset';setTimeout(()=>{ui.boxResetAsk=false;const x=$('boxReset');if(x)x.textContent='Reset to default'},3500);return}ui.boxResetAsk=false;b.textContent='Reset to default';const was=S.box.slice();S.box=DEFAULT_BOX.slice();ui.boxUndo=was;render();toastBox('Box reset to the default list')}
   else if(b.id==='saveBtn'){ui.saving=!ui.saving;ui.paste=null;renderPastePanel();renderSavePanel()}
   else if(b.id==='saveCancel'){ui.saving=false;renderSavePanel()}
   else if(b.id==='saveOver'||b.id==='saveNew'){const name=($('saveName').value||'').trim()||'Untitled team';const slots=JSON.parse(JSON.stringify(S.slots));

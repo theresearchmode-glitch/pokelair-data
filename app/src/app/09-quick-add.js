@@ -49,7 +49,8 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   if(ms.length>=3)for(const r of gp.rows){const big=r.k==='speed'||r.k==='support'||((r.k==='weather'||r.k==='terrain')&&r.st==='miss')||r.k==='trfit';
     if(big&&(r.st==='miss'||r.st==='part'))out.push([r.st==='miss'?'hi':'mid',r.label,esc(r.note||''),'gp:'+r.k])}
   {const cl=scarfTrClash(ms);if(cl)out.unshift(['hi','Item clash',clashText(cl)])}
-  {const sh=megaShort(ms);if(sh&&ms.length>=3)out.push(['hi','Megas',`The team can't reach ${megaGoal()} Mega${megaGoal()>1?'s':''} (it has ${megaCount(ms)}${ms.length<6?` with ${6-ms.length} open slot${6-ms.length>1?'s':''}`:''}). Change it under Megas on team if you want fewer.`,'mega'])}
+  // one Mega is a complete plan (only one can Mega Evolve per battle): only a team with none gets a note (Oct 30 audit)
+  {if(ms.length>=6&&megaCount(ms)===0)out.push(['mid','Megas','No Mega on the team. Most winning teams bring one or two Mega options; only one can Mega Evolve each battle.','mega'])}
   a.rows.filter(t=>t.w>t.r).sort((x,y)=>(y.w-y.r)-(x.w-x.r)).forEach(t=>{const weak=t.who.map(o=>name(o.i)+(o.x>=4?' (4×)':''));
     const res=ms.filter(m=>mult(t.atk,m.types,m.ability,useA)<=.5).map(m=>esc(m.d));
     out.push([t.w-t.r>=2?'hi':'mid','Weakness',`${chip(t.atk)} ${t.w} weak (${weak.join(', ')}), ${res.length?`only ${res.length} resist${res.length===1?'s':''} (${res.join(', ')})`:'nothing resists it'}.`,'weak:'+t.atk])});

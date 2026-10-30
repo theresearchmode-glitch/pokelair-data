@@ -193,7 +193,7 @@ function spreadBlock(s,i,m){const cs=m.spread||(typeof commonSpread==='function'
     <select class="field" id="spn${i}" aria-label="Nature">${NATURES.map(n=>`<option${cs&&cs.nat===n?' selected':''}>${n}</option>`).join('')}</select>
     <button class="btn sm primary" type="button" data-spsave="${i}">Save</button>${m.spread?`<button class="linkbtn" type="button" data-spclear="${i}">Use common</button>`:''}<button class="linkbtn" type="button" data-spedit="">Cancel</button><span class="vsub" id="spmsg${i}"></span></div>`:'';
   if(!cs&&!open)return '';
-  return `<div class="itemrow"><span class="lbl">Spread</span><div>${cs?`<span class="iname">${v}</span> <span class="vsub">${esc(cs.nat||'')}</span> ${tag}`:'<span class="none">None</span>'} <button class="linkbtn" type="button" data-spedit="${open?'':i}" aria-expanded="${open}">${open?'Close':'Set'}</button></div>${ed}</div>`}
+  return `<div class="itemrow"><span class="lbl">Spread</span><div>${cs?`<span class="iname">${v}</span> <span class="vsub">${esc(cs.nat||'')}</span> ${tag}`:'<span class="none">None</span>'} ${open?'':`<button class="linkbtn" type="button" data-spedit="${i}" aria-expanded="false">Set</button>`}</div>${ed}</div>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-spedit],[data-spsave],[data-spclear]');if(!b)return;
   if(b.dataset.spedit!=null){ui.spEdit=b.dataset.spedit===''?null:+b.dataset.spedit;renderSlots();const f=$('spv'+ui.spEdit);if(f)f.focus();return}
   if(b.dataset.spclear!=null){const s=S.slots[+b.dataset.spclear];if(s&&s.sp)delete s.sp[S.format];ui.spEdit=null;render();toast('Using the most common spread');return}

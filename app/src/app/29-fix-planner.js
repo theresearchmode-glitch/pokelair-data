@@ -296,9 +296,12 @@ function itemBlock(s,i,m,clash){const p=m.p;
   if(p.m)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(m.item||'Mega Stone')}</div></div>`;
   const pop=(setFor(p).it||[]).filter(([n])=>n&&notStone(n)).slice(0,8),popN=new Set(pop.map(([n])=>n)),def=defaultItem(p);
   const rest=itemPool().filter(n=>!popN.has(n));if(m.item&&!popN.has(m.item)&&!rest.includes(m.item))rest.unshift(m.item);
-  const tag=m.heldItem&&m.heldItem!==def?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-itreset="${i}">Use ${esc(def||'the usual item')}</button>`
+  // with no item picked, show the item it actually holds: Item Clause can move the usual item to a teammate (Oct 30 audit)
+  let shown=m.item;if(!m.heldItem){try{const k=JSON.stringify(S.slots)+'|'+metaVersion;if(itemBlock._k!==k){itemBlock._k=k;itemBlock._a=new Map((typeof assignItems==='function'?assignItems(members()):[]).map(x=>[x.i,x.item]))}const a=itemBlock._a.get(m.i);if(a)shown=a}catch(e){}}
+  const moved=!m.heldItem&&def&&shown&&shown!==def;
+  const tag=moved?`<span class="tag rec soft" title="Item Clause: one of each item per team">${esc(def)} is on a teammate</span>`:m.heldItem&&m.heldItem!==def?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-itreset="${i}">Use ${esc(def||'the usual item')}</button>`
     :pop.length?`<span class="tag rec">MOST USED</span>`:`<span class="tag rec soft">NO USAGE DATA</span>`;
-  const o=(n,pc)=>`<option value="${esc(n)}"${n===m.item?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
+  if(shown&&!popN.has(shown)&&!rest.includes(shown))rest.unshift(shown);const o=(n,pc)=>`<option value="${esc(n)}"${n===shown?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
   return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span>${tag}</div>
     <select class="field" id="it${i}" data-iti="${i}" aria-label="Held item for ${esc(p.d)}">${m.item?'':'<option value="" selected>(no item)</option>'}${pop.length?`<optgroup label="Most used in ${S.format}">${pop.map(([n,v])=>o(n,v)).join('')}</optgroup>`:''}${rest.length?`<optgroup label="Other items">${rest.map(n=>o(n,null)).join('')}</optgroup>`:''}</select>${warn}</div>`}
 // Moves: four tiles, each a dropdown. Popular moves for this format come first with their usage %.

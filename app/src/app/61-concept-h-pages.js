@@ -303,7 +303,7 @@ safe('theme toggle', () => { const row = document.querySelector('.band .titlerow
 const CLR_SEL = 'input[type="search"],#lairQ,#setMonIn,#typeMonIn,#coreMonIn,#tsIn,#jumpIn,#chMetaQ,#boxAdd,#exclAdd,#saveName,input[id^="pk"],input[id^="opp"],input[id^="bmOpp"]';
 function clrWrap(inp) { if (!inp || inp.dataset.clr || inp.type === 'hidden' || inp.closest('.clrw')) return; inp.dataset.clr = '1';
   const w = document.createElement('span'); w.className = 'clrw'; const cs = getComputedStyle(inp); if (cs.display === 'block' || inp.classList.contains('field') || parseFloat(cs.width) > 200) w.classList.add('blk');
-  if (cs.flex && cs.flex !== '0 1 auto') w.style.flex = cs.flex; w.style.minWidth = '0'; if (cs.gridColumn && cs.gridColumn !== 'auto') w.style.gridColumn = cs.gridColumn;
+  if (cs.flex && cs.flex !== '0 1 auto') { w.style.flex = cs.flex; w.classList.add('flx'); } w.style.minWidth = inp.style.minWidth || '0'; if (inp.style.minWidth) { inp.style.minWidth = '0'; w.classList.add('flx'); } if (cs.gridColumn && cs.gridColumn !== 'auto') w.style.gridColumn = cs.gridColumn;
   const had = document.activeElement === inp, ss = had ? inp.selectionStart : null, se = had ? inp.selectionEnd : null;
   inp.parentNode.insertBefore(w, inp); w.append(inp);
   if (had) { try { inp.focus({preventScroll: true}); if (ss != null) inp.setSelectionRange(ss, se); } catch (e) {} } // moving it must not drop focus (the phone keyboard would close)

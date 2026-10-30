@@ -236,7 +236,9 @@ function chEditStrip() { const ed = $('chEdit'); if (!ed || ed.hidden) return; l
   st.innerHTML = S.slots.map((x, i) => { const m = mm.get(i); return `<button type="button" class="chst${String(i) === cur ? ' on' : ''}${m ? '' : ' add'}" data-chedit="${i}" aria-label="${m ? 'Edit ' + esc(m.d) : 'Add a Pokémon in slot ' + (i + 1)}"${String(i) === cur ? ' aria-current="true"' : ''}>${m ? (sprite(m.p, 'mini') || esc(m.d.slice(0, 3))) : '<span aria-hidden="true">+</span>'}</button>`; }).join('');
   let rb = ed.querySelector('.chedrm'); const m = cur !== 'all' ? mm.get(+cur) : null;
   if (!rb) { rb = document.createElement('button'); rb.type = 'button'; rb.className = 'chghost chedrm'; ed.querySelector('.chedb').append(rb); }
-  rb.hidden = !m; if (m) { rb.dataset.chrm = cur; rb.textContent = `Remove ${m.d} from the team`; } }
+  rb.hidden = !m; if (m) { rb.dataset.chrm = cur; rb.textContent = `Remove ${m.d} from the team`; }
+  // the title follows the slot: after adding a Pokémon it says Edit <name>, not Add a Pokémon
+  { const t = $('chEditT'); if (t) t.textContent = cur === 'all' ? 'Edit team' : m ? 'Edit ' + m.d : 'Add a Pokémon'; ed.classList.toggle('chadd', cur !== 'all' && !m); } }
 function chEditClose() { const ed = $('chEdit'); if (!ed || ed.hidden) return; ed.hidden = true; $('chEditScrim').hidden = true; document.documentElement.classList.remove('chlock'); }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; chEditOpen(b.dataset.chedit === 'all' ? null : +b.dataset.chedit); });
 // Import, Export and Save show their panels inside the editor

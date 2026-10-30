@@ -27,3 +27,6 @@ function keepScroll(fn){const y=window.scrollY||0,b=document.body,t0=Date.now();
   try{fn()}finally{const back=()=>{try{if(userScrollAt<t0&&Math.abs((window.scrollY||0)-y)>2)window.scrollTo(0,y)}catch(e){}};back();
     try{requestAnimationFrame(()=>{back();setTimeout(()=>{back();pin('')},350)})}catch(e){pin('')}}}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-boxsort]');if(!b)return;ui.boxSort=b.dataset.boxsort;LS.set('cc2.boxSort',ui.boxSort);renderBox()});
+// box changes can be undone too (Oct 30 audit: Reset and × had no way back)
+function toastBox(t){const el=$('toast');el.innerHTML=esc(t)+' <button type="button" class="tundo" id="toastBoxUndo">Undo</button>';el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,6000)}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#toastBoxUndo');if(!b||!ui.boxUndo)return;S.box=ui.boxUndo;ui.boxUndo=null;render();toast('Box restored')});
