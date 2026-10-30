@@ -228,4 +228,4 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // "Practice against": a top team becomes the opponent in Battle mode
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ttvs]'); if (!b) return;
   const t = META.teams && META.teams.teams[+b.dataset.ttvs]; if (!t) return;
-  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); persist(); setView('matchup'); toast(`${t.player}'s team is your opponent`); });
+  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`${t.player}'s team is your opponent`); });

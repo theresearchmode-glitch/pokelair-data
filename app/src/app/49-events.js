@@ -63,7 +63,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.evsets) evUi.sets[d.evsets] = !evUi.sets[d.evsets];
   else if (d.evload || d.evvs) { const x = evTeam(d.evload || d.evvs); if (!x) return;
     if (d.evload) { if (members().length && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to replace your team'; return; } loadSheet(x.t); return; }
-    S.opp = x.t.mons.map(m => m.n); persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
+    S.opp = x.t.mons.map(m => m.n); ui.oppFrom = {who: x.t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
   keepScroll(() => { if (view === 'top') renderTeamSearch(); else if (view === 'auto') renderAutoBuild(); else renderEvents(); }); });
 
 // ---- team search (Top teams) ----

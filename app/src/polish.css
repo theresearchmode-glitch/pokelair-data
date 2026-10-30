@@ -267,3 +267,11 @@ button.chmmon:focus-visible,.chsix [data-lt]:focus-visible{outline:3px solid #ff
 @media (max-width:370px){.chabg span{font-size:11.5px}}
 /* Cores → Full teams on phones: the six sprites fit inside the card */
 @media (max-width:760px){.corerow.six .coresprs{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;margin:0;max-width:calc(100% - 4px)}.corerow.six .coresprs .spr,.corerow.six .coresprs img{width:100%!important;height:auto!important;aspect-ratio:1;max-width:56px}}
+/* Battle: their-six name suggestions readable in light mode; a visible remove × */
+:root:not(#_ch) .bmopp .menu,:root:not(#_ch) .bmopp .menu .opt,:root:not(#_ch) .bmopp .menu .opt *{color:var(--chink)}
+:root:not(#_ch)[data-look="dark"] .bmopp .menu,:root:not(#_ch)[data-look="dark"] .bmopp .menu .opt,:root:not(#_ch)[data-look="dark"] .bmopp .menu .opt *{color:#F3EBDC}
+:root:not(#_ch) .bmopp .bmslot .x{width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.35)!important;color:#fff!important;border:1.5px solid #fff!important;opacity:1!important;display:inline-flex;align-items:center;justify-content:center;position:relative}
+:root:not(#_ch) .bmopp .bmslot .x::after{content:"";position:absolute;inset:-6px}
+:root:not(#_ch) .bmopp .bmslot .bmn{overflow-wrap:normal;word-break:normal;hyphens:none}
+/* Battle: Plan / Speed / Damage tabs only on phones (desktop shows every card) */
+@media (min-width:761px){:root:not(#_ch) main .seg.bmtabs,.bmtabs{display:none!important}}

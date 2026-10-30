@@ -28,7 +28,9 @@ CH.wrap('renderAutoBuild', () => { chBuildInit(); const el = $('abOut'); if (!el
     (head || mons).before(six); CH.foldNode(mons, 'absets', 'Sets and roles', 'Items, abilities, roles and ratings for each of the six', false); }); });
 // ---------- Battle mode: team preview ----------
 function chOppName() { const opp = S.opp.filter(Boolean); if (opp.length < 6) return null; const E = META.events; if (!E || !Array.isArray(E.events)) return null;
-  for (const e of E.events) for (const t of e.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.every(m => opp.includes(m.n))) return {who: t.player, rec: t.record, place: t.place, ev: e}; return null; }
+  const want = ui.oppFrom && ui.oppFrom.key === opp.slice().sort().join('|') ? ui.oppFrom.who : null; let first = null;
+  for (const e of E.events) for (const t of e.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.every(m => opp.includes(m.n))) { const r = {who: t.player, rec: t.record, place: t.place, ev: e}; if (!want || t.player === want) return r; first = first || r; }
+  return want ? null : first; }
 CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const sec = $('matchup'); if (sec) sec.classList.add('chbm');
   const mine = members(), on = chOppName(), title = mine.length ? teamTitleFor(mine) : 'Your team';
   // their side is named by what it runs (Rain · Tailwind, Trick Room…), not by the player
@@ -57,7 +59,9 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
   { const wf = el.querySelector('.chbmfold'), bc = el.querySelector('.chbring'); if (bc && (t1 || wf)) { const side = document.createElement('div'); side.className = 'chbmside'; side.dataset.t = 'plan'; bc.after(side); if (t1) side.append(t1); if (wf) side.append(wf); } }
   const sp = el.querySelector('.bmcard[data-t="speed"] .ph .pt'); if (sp) sp.textContent = 'Who moves first';
   const dm = el.querySelector('.bmcard[data-t="dmg"] .ph .pt'); if (dm) dm.textContent = 'Damage both ways';
-  const bl = battlelog; if (bl && !bl.closest('details.chsec')) { const L = Array.isArray(S.log) ? S.log : [], w = L.filter(x => x.r === 'W').length; CH.foldNode(bl, 'bmlog', 'Battle log', L.length ? `– ·  logged · log this game` : 'Log this game after the match', false); } });
+  const bl = battlelog; if (bl) { const L = Array.isArray(S.log) ? S.log : [], w = L.filter(x => x.r === 'W').length, sub = L.length ? `${w}–${L.length - w} · ${L.length} logged · log this game` : 'Log this game after the match';
+    if (!bl.closest('details.chsec')) CH.foldNode(bl, 'bmlog', 'Battle log', sub, false); else { const c = bl.closest('details.chsec').querySelector(':scope > summary .chs'); if (c) c.textContent = sub; }
+    const h = bl.querySelector(':scope > .head h2, :scope > h2'); if (h) h.hidden = true; } });
 // ---------- Ratings: the hot list ----------
 function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; const top = rows.slice(0, PHONE() ? 16 : 20);
   const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${(+t[0]).toFixed(1)}% use · ${(+t[1]).toFixed(1)}% win` : `★ ${x.r.total}`; };
@@ -316,3 +320,8 @@ safe('clear buttons', () => { clrScan(); try { let t = 0; new MutationObserver((
 // the Pokémon info sheet opens from any page (Home's tiles too): it lives at the page level, not inside Ratings
 safe('sheet anywhere', () => { const sh = $('lairSheet'); if (sh && sh.parentElement !== document.body) document.body.append(sh); });
 document.addEventListener('keydown', e => { const t = e.target; if (!t || !t.matches || !t.matches('[role="button"][data-lt]') || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); t.click(); });
+// the Battle log fold heading keeps its record current after logging or deleting a game
+CH.wrap('renderLog', () => { const bl = typeof battlelog !== 'undefined' ? battlelog : null, d = bl && bl.closest('details.chsec'); if (!d) return; const L = Array.isArray(S.log) ? S.log : [], w = L.filter(x => x.r === 'W').length, c = d.querySelector(':scope > summary .chs'); if (c) c.textContent = L.length ? `${w}–${L.length - w} · ${L.length} logged · log this game` : 'Log this game after the match'; });
+// "Practice against a top team" goes back to "Pick…" once their six no longer matches the team it loaded, so it can be picked again
+CH.wrap('renderBattle', () => { const sel = $('oppTeamSel'); if (!sel || sel.value === '') return; const tm = META.teams && META.teams.teams && META.teams.teams[+sel.value];
+  if (!tm || tm.mons.slice().sort().join('|') !== S.opp.filter(Boolean).sort().join('|')) { sel.value = ''; ui.oppFrom = null; } });
