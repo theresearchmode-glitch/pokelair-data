@@ -111,7 +111,7 @@ function* buildBestGen_() {
     if (lockP) { const L = M.get(lockP.n), has = t => t.some(m => m.p.n === lockP.n);
       const extra = [[L], ...setFor(lockP).tm.map(([n]) => byName.get(n)).filter(q => q && M.has(q.n) && legal([L], q)).slice(0, 4).map(q => [L, M.get(q.n)])];
       seeds = [...seeds.filter(has), ...extra]; if (!legal([], lockP)) return {fmt, teams: [], noMega: goal}; }
-    const key = t => t.map(m => m.p.n).sort().join('|'); const seen = new Set(); seeds = seeds.filter(t => { const k = key(t); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 10);
+    const key = t => t.map(m => m.p.n).sort().join('|'); const seen = new Set(); seeds = seeds.filter(t => { const k = key(t); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 14);
     // candidates: strongest Pokémon plus everything that pairs well with the seeds
     const cand = byV.slice(0, OFFMETA ? 70 : 45).map(p => M.get(p.n));
     const finals = [];
@@ -137,14 +137,13 @@ function* buildBestGen_() {
     // Candidates for the polish: the 25 strongest by pick value plus the 15 the win model rates highest (so a Pokémon the
     // model likes is tried even if it's rarely picked). Up to 3 rounds, each taking the single swap that raises it most.
     if (useTSPick()) { const mv = p => (META.model.mons[p.n] || 0), cTS = [...new Set([...cand.slice(0, 25), ...pool.slice().sort((a, b) => mv(b) - mv(a)).slice(0, 15).map(p => M.get(p.n))])];
-      // speed (audit, Oct 30: up to 17 s on a phone): the readiness check is the slow part, so each round only checks the 12
-      // swaps the team model likes best, and a six already checked is never checked twice
+      // every swap is checked for readiness (accuracy over speed, Sim Oct 30); a six already checked is never checked twice
       const tsM = tsB;
       for (const r of ranked.slice(0, 8)) { r.ts = tsM(r.t); if (r.ts == null) continue;
         for (let round = 0; round < 3; round++) { yield; let best = null; const sw = [];
           for (let i = r.lock; i < 6; i++) for (const c of cTS) { const rest = r.t.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; sw.push([abScore(nt), nt]); }
           sw.sort((x, y) => y[0] - x[0]);
-          for (const [, nt] of sw.slice(0, 12)) { const t = tsM(nt); if (t != null && t > (best ? best.ts : r.ts + 1)) best = {t: nt, ts: t}; }
+          for (const [, nt] of sw) { const t = tsM(nt); if (t != null && t > (best ? best.ts : r.ts + 1)) best = {t: nt, ts: t}; }
           if (!best) break; r.t = best.t; r.ts = best.ts; } }
       for (const r of ranked.slice(8)) r.ts = tsM(r.t);
       ranked.sort((a, b) => (b.ts ?? -1) - (a.ts ?? -1) || b.s - a.s); }
