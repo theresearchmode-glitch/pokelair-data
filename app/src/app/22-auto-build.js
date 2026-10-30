@@ -8,7 +8,15 @@ function abPool() {
 }
 // For a full build, the game plan (speed control above all) and the best proven core's win rate count extra:
 // a beginner's team should come with a plan, and cores that win more (Tailwind sun: 62%) should rank first.
-function abScore(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.penalty - (team.length >= 4 ? typeEmphasis(v.st.a) : 0) - pillarCost(team, v.gp);
+// the same six (or partial team) is scored many times during one build: remember each score for the build (abMemo is reset
+// at the start and end of every search)
+let abMemo = null, tsMemoB = null;
+// readiness for a six, remembered for the length of one build
+const tsB = t => { if (!tsMemoB) return tsOf(t); const k = t.map(m => m.p.n).sort().join('|'); if (tsMemoB.has(k)) return tsMemoB.get(k); const v = tsOf(t); tsMemoB.set(k, v); return v; };
+function abScore(team) { if (abMemo) { const k = team.map(m => m.p.n).sort().join('|') + (OFFMETA ? '#o' : ''); let v = abMemo.get(k); if (v === undefined) { v = abScore0(team); abMemo.set(k, v); } return v; } return abScore0(team); }
+function abScore0(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.penalty - (team.length >= 4 ? typeEmphasis(v.st.a) : 0) - pillarCost(team, v.gp);
+  // a rain or sun that helps nobody (Pelipper next to only Fire attackers) costs a little
+  if (team.length >= 4 && wxSetsOf(team).length === 1) { const n = wxNet(team); if (n <= 0) s -= 12 - 4 * n; }
   // aim for the grades too: fewer defense points, more of the meta hit by 2+ members (a secondary goal next to proven cores and pillars)
   if (team.length >= 5) { const g = proGrades(team, true); if (g) s += -g.dp * 8 + (g.se2 - .67) * 60 - Math.max(0, g.og - 1) * 18 - Math.max(0, g.dg - 1) * 18; }
   if (OFFMETA) { const mc = team.filter(m => isMetaPick(m.p)).length; s -= Math.max(0, mc - 2) * 30; }
@@ -20,7 +28,8 @@ function abScore(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.
 // Proven teams first: exact six-Pokémon lists real players won with at Limitless events (RESULTS.proven), that you can
 // field from your pool, or field all but one (the gap is filled from your pool by the team model). Tested Oct 24: the
 // hand-built team score barely predicts which teams win (held-out rho 0.09), so real results lead and the model only fills.
-function provenBuild() {
+function provenBuild() { return genRun(provenBuildGen()); }
+function* provenBuildGen() {
   if (OFFMETA || !RES || !Array.isArray(RES.proven) || !RES.proven.length) return null;
   const goal = megaGoal(), all = ui.abSrc === 'all';
   const ok = p => p && !isExcl(p) && (all || inBox(p));
@@ -40,16 +49,17 @@ function provenBuild() {
   const fill = c => { const keep = c.ps.filter(p => p !== c.missing).map(abMember); if (!c.missing) return keep;
     const used = new Set(keep.map(m => m.p.b)), mg = keep.filter(m => m.p.m).length;
     const opts = [];
-    for (const p of ROSTER) { if (!ok(p) || isTrap(p) || used.has(p.b) || (!!p.m !== (mg < goal)) || viability(p) < 8) continue; const t = [...keep, abMember(p)]; opts.push({t, sc: abScore(t)}); }
+    const clash0 = wxConflict(keep);
+    for (const p of ROSTER) { if (!ok(p) || isTrap(p) || used.has(p.b) || (!!p.m !== (mg < goal)) || viability(p) < 8) continue; const t = [...keep, abMember(p)]; if (!clash0 && (wxConflict(t) || wxUnmet(t).length > wxUnmet(keep).length)) continue; opts.push({t, sc: abScore(t)}); }
     opts.sort((a, b) => b.sc - a.sc); if (!opts.length) return null;
     // the gap goes to whichever of the 8 best fits leaves the team ready for the most top threats
-    if (useTSPick()) { let best = null; for (const o of opts.slice(0, 8)) { const ts = tsOf(o.t); if (ts != null && (!best || ts > best.ts)) best = {t: o.t, ts}; } if (best) return best.t; }
+    if (useTSPick()) { let best = null; for (const o of opts.slice(0, 5)) { const ts = tsB(o.t); if (ts != null && (!best || ts > best.ts)) best = {t: o.t, ts}; } if (best) return best.t; }
     return opts[0].t; };
   // real results lead: the win rate (already shrunk toward the field in the pipeline) pulled further toward the field when
   // few players ran it, plus a little for more players; readiness only fills a missing slot and breaks near-ties
   const shrunk = c => { const k = 4; return (c.wr * c.n + (RES.base || .5) * k) / (c.n + k); };
   let scored = cands.map(c => ({...c, s: shrunk(c) + .006 * Math.log2(1 + c.n) - (c.missing ? .05 : 0) - (c.ps.filter(p => p.m).length !== goal ? .015 : 0)})).sort((a, b) => b.s - a.s);
-  if (useTSPick()) { scored = scored.slice(0, 15); for (const c of scored) { c.t = fill(c); c.ts = c.t && c.t.length === 6 ? tsOf(c.t) : null; }
+  if (useTSPick()) { scored = scored.slice(0, 15); for (const c of scored) { yield; c.t = fill(c); c.ts = c.t && c.t.length === 6 ? tsB(c.t) : null; }
     scored.sort((a, b) => (b.s + .0004 * (b.ts ?? 50)) - (a.s + .0004 * (a.ts ?? 50))); }
   const out = [];
   for (const c of scored) { if (out.length >= 3) break; const t = c.t !== undefined ? c.t : fill(c); if (!t || t.length !== 6) continue;
@@ -60,24 +70,33 @@ function provenBuild() {
     d.why.unshift(c.missing ? `${src}, with ${c.missing.d} where you have ${(t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: '?'}).d}` : src);
     d.proven = {n: c.n, wr: c.wr, swapped: !!c.missing}; return d; })};
 }
-function buildBest() {
+// The build runs as a generator so the page can draw between steps (audit, Oct 30: it froze phones for up to 17 s);
+// buildBest() runs it straight through for callers that need the result at once.
+const genRun = g => { let r; while (!(r = g.next()).done); return r.value; };
+function buildBest() { return genRun(buildBestGen()); }
+function* buildBestGen() { const own = !tsMemoB; if (own) tsMemoB = new Map(); try { return yield* buildBestGen0(); } finally { if (own) tsMemoB = null; } }
+function* buildBestGen0() {
   // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below
   // fills the rest, so a rare sleeper still gets three good teams
   let keepPr = null;
-  { const pr = provenBuild(); if (pr && !ui.abLock) return pr;
-    if (pr && ui.abLock) { const good = pr.teams.filter(t => { try { return (tsOf(t.mons.map(m => abMember(byName.get(m.n)))) ?? 0) >= 50; } catch (e) { return false; } }); if (good.length >= 3) return {...pr, teams: good}; keepPr = good; } }
-  const res0 = buildBest_();
+  { const pr = yield* provenBuildGen(); if (pr && !ui.abLock) return pr;
+    if (pr && ui.abLock) { yield; const good = pr.teams.filter(t => { try { return (tsB(t.mons.map(m => abMember(byName.get(m.n)))) ?? 0) >= 50; } catch (e) { return false; } }); if (good.length >= 3) return {...pr, teams: good}; keepPr = good; } }
+  const res0 = yield* buildBestGen_();
   if (keepPr && keepPr.length) { const fresh = (res0.teams || []).filter(t => !keepPr.some(k => k.mons.filter(m => t.mons.some(x => x.n === m.n)).length > 3)); return {...res0, teams: [...keepPr, ...fresh].slice(0, 3)}; }
   return res0;
 }
-function buildBest_() {
-  const fmt = 'doubles'; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map();
+function buildBest_() { return genRun(buildBestGen_()); }
+function* buildBestGen_() {
+  const fmt = 'doubles'; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); abMemo = new Map();
   try {
     const pool = abPool(); if (pool.length < 6) return {fmt, teams: [], short: pool.length};
     const lockP = ui.abLock ? byName.get(ui.abLock) : null; if (lockP && !pool.includes(lockP)) pool.push(lockP);
     const M = new Map(pool.map(p => [p.n, abMember(p)])), goal = megaGoal();
     // never more Megas than the goal, and never so few that the open slots can't reach it
-    const legal = (t, p) => { if (t.some(m => m.base === p.b)) return false; const mg = megaCount(t) + (p.m ? 1 : 0); return mg <= goal && mg + (6 - t.length - 1) >= goal; };
+    const legal = (t, p) => { if (t.some(m => m.base === p.b)) return false; const mg = megaCount(t) + (p.m ? 1 : 0); if (!(mg <= goal && mg + (6 - t.length - 1) >= goal)) return false;
+      // weather (audit, Oct 30): never two different setters, never a Pokémon whose ability needs a weather the team overrides,
+      // and a full six never keeps a weather user (Swift Swim, Sand Rush, Sand Force…) without its setter
+      const nt = [...t, M.get(p.n) || abMember(p)]; if (wxConflict(nt)) return false; return nt.length < 6 || !wxUnmet(nt).length; };
     // seeds
     let seeds = [];
     if (RES && !OFFMETA) for (const c of RES.cores) { const ps = c.slice(0, 3).map(n => byName.get(n)); if (ps.every(p => p && M.has(p.n))) { const t = []; let okk = true; for (const p of ps) { if (!legal(t, p)) { okk = false; break; } t.push(M.get(p.n)); } if (okk) seeds.push(t); } if (seeds.length >= 10) break; }
@@ -90,13 +109,13 @@ function buildBest_() {
     if (lockP) { const L = M.get(lockP.n), has = t => t.some(m => m.p.n === lockP.n);
       const extra = [[L], ...setFor(lockP).tm.map(([n]) => byName.get(n)).filter(q => q && M.has(q.n) && legal([L], q)).slice(0, 4).map(q => [L, M.get(q.n)])];
       seeds = [...seeds.filter(has), ...extra]; if (!legal([], lockP)) return {fmt, teams: [], noMega: goal}; }
-    const key = t => t.map(m => m.p.n).sort().join('|'); const seen = new Set(); seeds = seeds.filter(t => { const k = key(t); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 14);
+    const key = t => t.map(m => m.p.n).sort().join('|'); const seen = new Set(); seeds = seeds.filter(t => { const k = key(t); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 10);
     // candidates: strongest Pokémon plus everything that pairs well with the seeds
     const cand = byV.slice(0, OFFMETA ? 70 : 45).map(p => M.get(p.n));
     const finals = [];
-    for (const seed of seeds) {
+    for (const seed of seeds) { yield;
       let beam = [seed];
-      while (beam[0].length < 6) {
+      while (beam[0].length < 6) { yield;
         const next = [];
         for (const t of beam) { const scored = [];
           for (const c of cand) { if (!legal(t, c.p)) continue; scored.push([abScore([...t, c]), [...t, c]]); }
@@ -110,24 +129,34 @@ function buildBest_() {
     const polish = (t, lock) => { let best = t, bs = abScore(t);
       for (let i = lock; i < 6; i++) for (const c of cand) { const rest = best.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const s = abScore(nt); if (s > bs + 1) { best = nt; bs = s; } }
       return {t: best, s: bs}; };
-    let ranked = finals.map(f => ({...f, s: abScore(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12).map(x => ({...polish(x.t, x.lock), lock: x.lock})).sort((a, b) => b.s - a.s);
+    let ranked = finals.map(f => ({...f, s: abScore(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12); for (let i = 0; i < ranked.length; i++) { yield; ranked[i] = {...polish(ranked[i].t, ranked[i].lock), lock: ranked[i].lock}; } ranked.sort((a, b) => b.s - a.s);
     // Readiness decides the order: the search above only shortlists. Each shortlisted team then gets one round of polish:
     // the single swap (outside its seed core) that readies it for the most top threats.
     // Candidates for the polish: the 25 strongest by pick value plus the 15 the win model rates highest (so a Pokémon the
     // model likes is tried even if it's rarely picked). Up to 3 rounds, each taking the single swap that raises it most.
     if (useTSPick()) { const mv = p => (META.model.mons[p.n] || 0), cTS = [...new Set([...cand.slice(0, 25), ...pool.slice().sort((a, b) => mv(b) - mv(a)).slice(0, 15).map(p => M.get(p.n))])];
-      for (const r of ranked.slice(0, 8)) { r.ts = tsOf(r.t); if (r.ts == null) continue;
-        for (let round = 0; round < 3; round++) { let best = null;
-          for (let i = r.lock; i < 6; i++) for (const c of cTS) { const rest = r.t.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const t = tsOf(nt); if (t != null && t > (best ? best.ts : r.ts + 1)) best = {t: nt, ts: t}; }
+      // speed (audit, Oct 30: up to 17 s on a phone): the readiness check is the slow part, so each round only checks the 12
+      // swaps the team model likes best, and a six already checked is never checked twice
+      const tsM = tsB;
+      for (const r of ranked.slice(0, 8)) { r.ts = tsM(r.t); if (r.ts == null) continue;
+        for (let round = 0; round < 3; round++) { yield; let best = null; const sw = [];
+          for (let i = r.lock; i < 6; i++) for (const c of cTS) { const rest = r.t.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; sw.push([abScore(nt), nt]); }
+          sw.sort((x, y) => y[0] - x[0]);
+          for (const [, nt] of sw.slice(0, 12)) { const t = tsM(nt); if (t != null && t > (best ? best.ts : r.ts + 1)) best = {t: nt, ts: t}; }
           if (!best) break; r.t = best.t; r.ts = best.ts; } }
-      for (const r of ranked.slice(8)) r.ts = tsOf(r.t);
+      for (const r of ranked.slice(8)) r.ts = tsM(r.t);
       ranked.sort((a, b) => (b.ts ?? -1) - (a.ts ?? -1) || b.s - a.s); }
     // three different teams: each must differ from the ones kept by at least 3 Pokémon
     const out = [];
-    for (const r of ranked) { if (megaCount(r.t) !== goal) continue; if (out.some(o => o.t.filter(m => r.t.some(x => x.p.b === m.p.b)).length > 3)) continue; out.push(r); if (out.length >= 3) break; }
+    // speed control above all (audit, Oct 30): teams with Tailwind, Trick Room or weather speed come first; one without is kept
+    // only when nothing else is left
+    const spOK = t => { const r = gamePlan(t).rows.find(x => x.k === 'speed'); return !r || r.st !== 'miss'; };
+    // (each kept team differs from the others by 3+ Pokémon; if that leaves fewer than 3, by 2+)
+    for (const [pass, same] of [[true, 3], [false, 3], [false, 4]]) for (const r of ranked) { if (out.length >= 3) break; if (out.includes(r) || megaCount(r.t) !== goal || wxConflict(r.t) || wxUnmet(r.t).length) continue; if (pass && !spOK(r.t)) continue;
+      if (out.some(o => o.t.filter(m => r.t.some(x => x.p.b === m.p.b)).length > same)) continue; out.push(r); }
     if (!out.length) return {fmt, teams: [], noMega: goal};
     return {fmt, teams: out.map(r => abDescribe(r.t))};
-  } finally { vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, list: null}; }
+  } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, list: null}; }
 }
 // Everything the card shows about one built team.
 function abDescribe(t) {
@@ -158,8 +187,9 @@ function abTS(tm) { if (tm.mons.length !== 6) return ''; if (tm._ts === undefine
   return tm._ts != null ? `<span class="abtsv" title="Ready for ${tm._ts}% of the top 30 threats (weighted by how often each makes top cut)"><b>${tm._ts}%</b>ready</span>` : ''; }
 function renderAutoBuild() {
   const el = $('abOut'); if (!el) return; const r = ui.ab;
-  if (!r) { el.innerHTML = abStart(); return; }
-  if (r.busy) { el.innerHTML = '<div class="empty-note">Building your teams…</div>'; return; }
+  if (!r) { const btn = $('abBtn'); if (btn) btn.disabled = false; el.innerHTML = abStart(); return; }
+  { const btn = $('abBtn'); if (btn) { btn.disabled = !!r.busy; btn.setAttribute('aria-busy', r.busy ? 'true' : 'false'); } }
+  if (r.busy) { el.innerHTML = '<div class="empty-note abbusy" role="status" aria-live="polite"><span class="abspin" aria-hidden="true"></span>Building your teams… checking each against the top 30 threats.</div>'; return; }
   const col = (res) => { if (!res.teams.length) return `<div class="abcol"><div class="abfmt">${FMT(res.fmt)}</div><div class="empty-note">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team.` : res.short != null ? `Only ${res.short} usable Pokémon in your box for ${FMT(res.fmt).toLowerCase()}. Add more in My box, or switch to Whole roster.` : 'No legal team from this pool.'}</div></div>`;
     const k = (ui.abIdx && ui.abIdx[res.fmt]) || 0, tm = res.teams[k % res.teams.length];
     return `<div class="abcol"><div class="abhead"><span class="abfmt">${FMT(res.fmt)}</span><span class="archchips">${archChips(tm.label)}</span>${tm.fresh ? '<span class="tag offmeta">FRESH TAKE</span>' : ''}${tm.proven ? `<span class="tag box" title="Built from a real tournament team">${tm.proven.swapped ? 'PROVEN · 1 SWAP' : 'PROVEN TEAM'}</span>` : ''}${tm.grade ? `<span style="margin-left:auto" class="abts">${abTS(tm)}${miniGrades(tm.grade)}</span>` : ''}${res.teams.length > 1 ? `<span class="vsub">option ${k % res.teams.length + 1} of ${res.teams.length}</span>` : ''}</div>
@@ -172,15 +202,41 @@ function renderAutoBuild() {
   el.innerHTML = (lk ? `<div class="ablock">${sprite(lk, 'mini') || ''}<span>Built around <b>${esc(lk.d)}</b>: every team keeps it.</span><button type="button" class="linkbtn" data-abaroundx="1">Build without it</button></div>` : '')
     + `<div class="abgrid${r.doubles ? ' one' : ''}">${r.doubles ? col(r.doubles) : ''}</div>`;
 }
+// Runs the build a few steps at a time (about 30 ms each), drawing in between so the page never freezes; a newer build (Megas,
+// box or Whole roster changed meanwhile) replaces it, and the result is redone if the settings changed while it ran.
+let abRunId = 0;
+async function abDrive(g, id) { let t = performance.now(), r;
+  try { while (!(r = g.next()).done) { if (id !== abRunId) { g.return(); return undefined; } if (performance.now() - t > 30) { await new Promise(res => setTimeout(res, 0)); t = performance.now(); } } }
+  catch (e) { try { g.return(); } catch (x) {} throw e; }
+  return r.value; }
+function* abFullGen() { const r = yield* buildBestGen(); return yield* addFreshTakeGen(r); }
+function abKey() { return [megaGoal(), ui.abSrc, ui.abLock || '', S.box.join(), S.excl.join()].join('#'); }
+async function abRun() { const id = ++abRunId; return abDrive(abFullGen(), id); }
 function runAutoBuild() {
-  ui.ab = {busy: true}; ui.abIdx = {}; renderAutoBuild();
-  setTimeout(() => { try { ui.ab = {doubles: addFreshTake(buildBest())}; } catch (e) { try { console.error('Champions Team Coverage: auto-build failed', e); } catch (x) {} ui.ab = null; toast('Auto-build hit a problem. Try again.'); } render(); }, 30);
+  const id = ++abRunId, key = abKey(); ui.ab = {busy: true}; ui.abIdx = {}; renderAutoBuild();
+  // the main options show as soon as they're ready; the fresh take is worked out after and slots in as option 2
+  setTimeout(async () => { let res;
+    const fail = e => { if (id !== abRunId) return; try { console.error('Champions Team Coverage: auto-build failed', e); } catch (x) {} ui.ab = null; toast('Auto-build hit a problem. Try again.'); render(); };
+    try { res = await abDrive(buildBestGen(), id); } catch (e) { fail(e); return; }
+    if (id !== abRunId || res === undefined) return;
+    if (abKey() !== key) { runAutoBuild(); return; }
+    ui.ab = {doubles: res}; render();
+    if (!res || !res.teams || !res.teams.length || OFFMETA || ui.abLock) return;
+    const n0 = res.teams.length, copy = {...res, teams: res.teams.slice()}; let withFresh;
+    try { withFresh = await abDrive(addFreshTakeGen(copy), id); } catch (e) { return; }
+    if (id !== abRunId || !withFresh || abKey() !== key || withFresh.teams.length === n0 || !ui.ab || ui.ab.doubles !== res) return;
+    const fresh = withFresh.teams.find(t => t.fresh); if (!fresh) return;
+    // option 2 if you're still on option 1; otherwise it joins the end so the one you're looking at doesn't move
+    if (((ui.abIdx && ui.abIdx.doubles) || 0) === 0) res.teams.splice(1, 0, fresh); else res.teams.push(fresh);
+    if (view === 'auto') renderAutoBuild(); }, 30);
 }
 // Add a "fresh take" as option 2: a team built with off-meta scoring, on power and fit (at most 2 meta staples),
 // kept only if it passes nearly as many winning-team checks as the proven build and isn't the same team.
-function addFreshTake(res) {
+function addFreshTake(res) { return genRun(addFreshTakeGen(res)); }
+function* addFreshTakeGen(res) {
   if (OFFMETA || ui.abLock || !res || !res.teams || !res.teams.length) return res;
-  let alt = null; try { alt = withOffMeta(() => buildBest()); } catch (e) { alt = null; }
+  // the off-meta search runs with off-meta scoring switched on only while each of its steps runs (never while the page draws)
+  let alt = null; try { const g = buildBestGen(); while (true) { const keep = OFFMETA; OFFMETA = true; let r; try { r = g.next(); } finally { OFFMETA = keep; } if (r.done) { alt = r.value; break; } yield; } } catch (e) { alt = null; }
   if (!alt || !alt.teams || !alt.teams.length) return res;
   const best = res.teams[0], names = new Set(best.mons.map(m => m.n));
   // a fresh take must still be a good team (Oct 28 audit: one scored 15): ready for 60%+ of the top threats and within 10 of the best option
@@ -194,3 +250,5 @@ function abNext(fmt) { ui.abIdx = ui.abIdx || {}; ui.abIdx[fmt] = (ui.abIdx[fmt]
   renderAutoBuild(); }
 function abTeam(fmt) { const res = ui.ab && ui.ab[fmt]; if (!res || !res.teams.length) return null; const k = (ui.abIdx && ui.abIdx[fmt]) || 0; return res.teams[k % res.teams.length]; }
 
+// the "Building…" spinner (kept here, next to the build, so the stylesheets stay untouched)
+try { const st = document.createElement('style'); st.textContent = '.abbusy{display:flex;align-items:center;gap:10px}.abspin{flex:none;width:18px;height:18px;border-radius:50%;border:3px solid currentColor;border-right-color:transparent;opacity:.7;animation:abspin .8s linear infinite}@keyframes abspin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.abspin{animation:none}}#abBtn[disabled]{opacity:.6;cursor:progress}'; document.head.append(st); } catch (e) {}

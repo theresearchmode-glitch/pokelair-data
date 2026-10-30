@@ -17,8 +17,9 @@ function teamProfile(ms, useA) {
 function principles(P, ms) { const c = proChecks(ms, $('useAbil').checked); if (!c) return [];
   return c.items.map(x => ({ok: x.skip ? 'part' : x.soft ? 'part' : x.ok ? 'ok' : 'miss', label: x.label, detail: (x.ok ? x.have : x.miss) + (x.pro ? ` · ${x.pro}` : '')})); }
 let recCache = {key: null, val: null};
+const recKey = useA => JSON.stringify([OFFMETA, S.slots, ui.recSrc, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
 function computeRecs(ms, useA) {
-  const key = JSON.stringify([OFFMETA, S.slots, ui.recSrc, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
+  const key = recKey(useA);
   if (recCache.key === key) return recCache.val;
   ui.recMore = 0;
   const pool = (ui.recSrc === 'all' ? ROSTER.filter(p => inBox(p) || poolOK(p, 25)) : ROSTER.filter(inBox)).filter(p => !isExcl(p) && !isTrap(p) && (OFFMETA || viability(p) >= 12 || rating(p).total >= 50));
@@ -26,7 +27,7 @@ function computeRecs(ms, useA) {
   const gpRank = {miss: 0, opt: 1, part: 1, ok: 2};
   const keeps = (A) => A.ex <= B.ex && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.sh.w3 <= Math.max(1, B.sh.w3) && A.un <= B.un && A.off >= B.off && A.ans >= B.ans
     && B.gp.rows.filter(r => r.k !== 'ally').every(r => gpRank[A.gpst(r.k) || 'miss'] >= gpRank[r.st]);
-  const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => r.k !== 'ally' && gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0);
+  const shortB = megaShort(ms), gains = (A, pl) => (shortB - pl.megaShort) * 6 + (B.ex - A.ex) * 3 + (B.un - A.un) * 2 + (A.off - B.off) * 2 + (A.ans - B.ans) + B.gp.rows.filter(r => r.k !== 'ally' && gpRank[A.gpst(r.k) || 'miss'] > gpRank[r.st]).length * 3 + (B.sh.maxStack > 2 && A.sh.maxStack <= 2 ? 4 : 0) - (wxSetsOf(pl.team).length > wxSetsOf(ms).length && wxNet(pl.team) <= 0 ? 6 : 0) - Math.max(0, wxNet(ms) - wxNet(pl.team)) * 2;
   const clean = [], soft = [], seen = new Set();
   // Readiness decides when the pick completes a six: it must ready the team for more of the top threats, and the most
   // prepared result goes first. The type rules relax to "at most one more weakness or unresisted type, no new stack".
@@ -104,7 +105,9 @@ function renderRecs() {
   const card = (pl, soft) => { const x = pl.ch[0], p = x.c.p, A = pl.prof, i = ui.recs.push(pl) - 1, mem = pl.team.find(m => m.p === p) || x.c.mem;
     // "speed control" only for Tailwind, Trick Room or weather speed; a gain that comes from priority moves is called priority
     const prioOnly = k => { const r = A.gp.rows.find(x => x.k === k) || {}; return k === 'speed' ? r.mode === 'priority and speed boosts' : k === 'backup' ? !!r.prioOnly : false; };
-    const gpUp = [...new Set(B.gp.rows.filter(rw => rw.k !== 'ally' && ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => prioOnly(rw.k) ? 'Priority' : rw.label))];
+    // weather only counts as added when it helps more of the team than it hurts (Pelipper next to Incineroar: no)
+    const wxUseless = wxSetsOf(pl.team).length > wxSetsOf(ms).length && wxNet(pl.team) <= 0;
+    const gpUp = [...new Set(B.gp.rows.filter(rw => rw.k !== 'ally' && !(rw.k === 'weather' && wxUseless) && ({miss: 0, opt: 1, part: 1, ok: 2})[A.gpst(rw.k) || 'miss'] > ({miss: 0, opt: 1, part: 1, ok: 2})[rw.st]).map(rw => prioOnly(rw.k) ? 'Priority' : rw.label))];
     const rest = pl.team.filter(m => m.p !== p); let pair = null; for (const t of rest) { const v = pairSyn({p}, t) + tourSyn({p}, t); if (v >= 8 && (!pair || v > pair.v)) pair = {t, v}; }
     const thr = threatDiff(ms, pl.team, 2).map(x => x.html);
     const why = [gpUp.length ? 'Adds ' + gpUp.join(', ').toLowerCase() : '', pair ? `often paired with ${pair.t.d}` : '', x.out ? `replaces ${x.out.d}` : ''].filter(Boolean).join(' · ');

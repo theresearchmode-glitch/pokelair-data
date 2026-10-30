@@ -7,7 +7,7 @@ function renderBox(){
   const cmp={az:(x,y)=>x[1].localeCompare(y[1]),za:(x,y)=>y[1].localeCompare(x[1]),type:(x,y)=>ty(x[0])-ty(y[0])||x[1].localeCompare(y[1]),new:(x,y)=>y[2]-x[2],old:(x,y)=>x[2]-y[2],rating:(x,y)=>rt(y[0])-rt(x[0])||x[1].localeCompare(y[1])}[so]||((x,y)=>x[1].localeCompare(y[1]));
   $('boxList').innerHTML=S.box.length?S.box.map((b,i)=>[b,(byName.get(b)||{}).d||b,i]).sort(cmp).map(([b,dn])=>`<span class="boxchip">${sprite(byName.get(b))||''}<b>${esc(dn)}</b><button class="x" type="button" data-unbox="${esc(b)}" aria-label="Remove ${esc(dn)}">×</button></span>`).join(''):'<span class="none">Your box is empty. Add the Pokémon you own.</span>';
 }
-function renderPoolCtl(){const ps=$('plsetSum');if(ps)ps.textContent=[{box:'My box only',boxfill:'Box, then fill gaps',all:'Full roster'}[ui.pool],megaGoal()+' Mega'+(megaGoal()===1?'':'s'),S.excl.length?S.excl.length+' never-suggest':''].filter(Boolean).join(' · ');
+function renderPoolCtl(){const ps=$('plsetSum');if(ps)ps.textContent=[{box:'My box',boxfill:'Box + catch',all:'Whole roster'}[ui.pool],megaGoal()+' Mega'+(megaGoal()===1?'':'s'),S.excl.length?S.excl.length+' never-suggest':''].filter(Boolean).join(' · ');
   document.querySelectorAll('[data-absrc]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.absrc===ui.abSrc));{const n=$('abBoxN');if(n)n.textContent=S.box.length+' in your box'}
   const sel=$('poolSel');if(sel&&sel.value!==ui.pool)sel.value=ui.pool}
 function renderExcl(){const el=$('exclList');if(!el)return;

@@ -49,21 +49,38 @@ function renderCores() {
       <div class="coremain"><div class="coresprs">${ps.map(p => sprite(p, 'coresp')).join('')}</div><div class="corenames">${names}</div>
         ${tags.length ? `<div class="coretags">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}</div>
       <div class="corestat" title="${x.use >= .1 ? x.use.toFixed(1) : 'under 0.1'}% of all tournament teams"><b title="Adjusted win rate: the number the list is ranked by">${(100 * (coreUi.sort === 'use' ? x.wr : x.score)).toFixed(1)}%</b><span class="${(coreUi.sort === 'use' ? x.d : x.score - base) >= 0 ? 'up' : 'dn'}">${(coreUi.sort === 'use' ? x.d : x.score - base) >= 0 ? '+' : '−'}${Math.abs(100 * (coreUi.sort === 'use' ? x.d : x.score - base)).toFixed(1)} vs avg</span>${coreUi.sort === 'use' ? '' : `<small title="Win rate before adjusting for sample size">${(100 * x.wr).toFixed(1)}% raw</small>`}<small>${x.n.toLocaleString('en-US')} ${x.ns.length > 3 ? 'entr' + (x.n === 1 ? 'y' : 'ies') : 'teams'}</small>${x.tog != null ? `<small title="Adjusted win rate minus what its members win on their own">${x.tog >= 0 ? '+' : '−'}${Math.abs(100 * x.tog).toFixed(1)} together</small>` : ''}</div>
-      <div class="row corebtns">${conf ? `<span class="inline-confirm" style="color:var(--ink)">Replace your team?</span><button class="btn sm primary" type="button" data-coreuse="${esc(key)}" data-sure="1">Replace</button><button class="btn sm" type="button" data-corecx="1">Cancel</button>`
+      <div class="row corebtns">${conf ? `<span class="inline-confirm" style="color:var(--ink)">${esc(coreConfirmText(x.ns))}</span><button class="btn sm primary" type="button" data-coreuse="${esc(key)}" data-sure="1">Replace</button><button class="btn sm" type="button" data-corecx="1">Cancel</button>`
         : `<button class="btn sm" type="button" data-coreuse="${esc(key)}">${x.ns.length > 3 ? 'Load team' : 'Add to my team'}</button>${x.ns.length <= 3 ? `<button class="linkbtn" type="button" data-corefind="${esc(key)}">Teams with it</button>` : `<button class="linkbtn" type="button" data-corepractice="${esc(key)}">Practice against</button>`}`}</div></div>`; }).join('');
   el.innerHTML = ctl + intro + `<div class="corelist">${list}</div>` + (rows.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-coremore="1">Show more (${rows.length - cap} left)</button></div>` : '');
   bindCoreIn(); }
 function bindCoreIn() { const i = $('coreMonIn'); if (i) bindMonInput(i, p => { coreUi.mon = p.n; coreUi.more = 0; renderCores(); }); }
-// a core joins your team: it goes first, your other Pokémon keep their places after it, extras drop off the end
+// a core joins your team: it goes first, your other Pokémon keep their places after it. On a full team the ones that make
+// room are the least needed: never a locked slot, your Megas last, then the lowest rated (audit, Oct 30: it used to drop the
+// last two slots, which could be the team's only Mega)
+function corePlan(ns) {
+  const cur = S.slots.filter(s => byName.get(s.n)), same = s => ns.includes(s.n) || ns.some(n => (byName.get(n) || {}).b === (byName.get(s.n) || {}).b);
+  const keep = cur.filter(s => !same(s)), room = Math.max(0, ns.length + keep.length - 6);
+  // what each one does for the team: speed control (Tailwind, Trick Room) and lead support (Fake Out, Intimidate, redirection)
+  // only it brings stays too, so a core never takes away the team's only Tailwind
+  const mem = new Map(members().map(m => [m.p.n, m])), job = (s, k) => { const m = mem.get(s.n); try { return m && relMove(m, ROLE[k])[0] >= .5; } catch (e) { return false; } };
+  const only = (s, k) => job(s, k) && !keep.some(o => o !== s && job(o, k)) && !ns.some(n => { const m = mem.get(n) || (byName.get(n) && abMember(byName.get(n))); try { return m && relMove(m, ROLE[k])[0] >= .5; } catch (e) { return false; } });
+  const val = s => { const p = byName.get(s.n); let r = 0; try { r = rating(p).total; } catch (e) {} const m = mem.get(s.n);
+    return (s.lock ? 2000 : 0) + (p && p.m ? 1000 : 0) + (only(s, 'tw') || only(s, 'tr') ? 500 : 0) + ((only(s, 'fake') || only(s, 'redir') || (m && m.ability === 'Intimidate' && !keep.some(o => o !== s && (mem.get(o.n) || {}).ability === 'Intimidate'))) ? 200 : 0) + r; };
+  const drop = new Set(keep.slice().sort((a, b) => val(a) - val(b)).slice(0, room));
+  const next = [...ns.map(n => cur.find(s => s.n === n) || {n, a: null, lock: false}), ...keep.filter(s => !drop.has(s))];
+  const megas = next.filter(s => (byName.get(s.n) || {}).m).length;
+  return {cur, next, dropped: keep.filter(s => drop.has(s)).map(s => (byName.get(s.n) || {}).d).filter(Boolean), megas};
+}
+const andList = a => a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+function coreConfirmText(ns) { if (ns.length > 3) return 'Replace your team?'; const c = corePlan(ns);
+  return `Replace ${andList(c.dropped)}?${c.megas > 2 ? ` Your team would have ${c.megas} Megas (only one can Mega Evolve per battle).` : ''}`; }
 function useCore(ns, sure) {
   const cur = S.slots.filter(s => byName.get(s.n)), have = new Set(cur.map(s => s.n));
   if (ns.length > 3) { if (cur.length && !sure) return false; S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast('Loaded the team (doubles)'); return true; }
-  const keep = cur.filter(s => !ns.includes(s.n) && !ns.some(n => (byName.get(n) || {}).b === (byName.get(s.n) || {}).b));
-  const next = [...ns.map(n => cur.find(s => s.n === n) || {n, a: null, lock: false}), ...keep];
-  if (next.length > 6 && !sure) return false;
-  const dropped = next.slice(6).map(s => (byName.get(s.n) || {}).d).filter(Boolean);
-  S.slots = normSlots(next.slice(0, 6)); S.format = 'doubles'; render(); setView('build');
-  toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${dropped.length ? ' · removed ' + dropped.join(', ') : ''}`); return true; }
+  const c = corePlan(ns);
+  if (c.dropped.length && !sure) return false;
+  S.slots = normSlots(c.next.slice(0, 6)); S.format = 'doubles'; render(); setView('build');
+  toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${c.dropped.length ? ' · removed ' + c.dropped.join(', ') : ''}${c.megas > 2 ? ` · ${c.megas} Megas on the team now` : ''}`); return true; }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-corekind],[data-coresort],[data-corex],[data-coremore],[data-coreuse],[data-corecx],[data-corefind],[data-corepractice]'); if (!b) return; const d = b.dataset;
   if (d.corekind) { coreUi.kind = d.corekind; coreUi.more = 0; coreUi.confirm = null; }
   else if (d.coresort) { coreUi.sort = d.coresort; coreUi.more = 0; }

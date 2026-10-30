@@ -20,6 +20,16 @@ const ROLE = {
 };
 const SELF_SPEED_AB = new Set(['Unburden', 'Speed Boost']);
 const W_TYPE = {sun: 'Fire', rain: 'Water', sand: 'Rock', snow: 'Ice'};
+// abilities that only work in one weather (speed and power), and simple weather checks shared by the auto-build and the plans:
+// two different setters cancel each other; a Pokémon needing another weather than the one the team sets is switched off
+const WEATHER_NEED = {'Swift Swim': 'rain', Chlorophyll: 'sun', 'Solar Power': 'sun', 'Sand Rush': 'sand', 'Sand Force': 'sand', 'Slush Rush': 'snow'};
+const wxSetsOf = team => [...new Set(team.filter(m => m && WEATHER_OF[m.ability]).map(m => WEATHER_OF[m.ability]))];
+const wxNeedsOf = team => [...new Set(team.map(m => m && WEATHER_NEED[m.ability]).filter(Boolean))];
+function wxConflict(team) { const s = wxSetsOf(team); return s.length > 1 || (s.length === 1 && wxNeedsOf(team).some(w => w !== s[0])); }
+function wxUnmet(team) { const s = wxSetsOf(team); return wxNeedsOf(team).filter(w => !s.includes(w)); }
+// how much the team's own weather helps vs hurts its non-setters: Water attackers in rain (+), Fire in rain (-), and the reverse in sun
+function wxNet(team) { const s = wxSetsOf(team); if (s.length !== 1 || !(s[0] === 'rain' || s[0] === 'sun')) return 0; const up = s[0] === 'rain' ? 'Water' : 'Fire', dn = s[0] === 'rain' ? 'Fire' : 'Water';
+  let n = 0; for (const m of team) { if (!m || WEATHER_OF[m.ability]) continue; const t = m.types || m.p.t; if (WEATHER_NEED[m.ability] === s[0]) n += 2; if (t.includes(up)) n++; if (t.includes(dn)) n--; } return n; }
 // How reliably m uses one of these moves: 1 if you picked it, else the share of players who run it.
 let relCache = new Map();
 function relMove(m, names) {
@@ -88,7 +98,11 @@ function gamePlan(team) {
   else if (kinds.length === 1) { const ab = abusersOf(kinds[0]);
     rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
       return `${sn.join(', ')} ${self && !others.length ? 'sets and uses ' + w : 'sets ' + w}${others.length ? ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : ''}`; })(), note: ab.length ? '' : 'Nothing on the team uses it.'});
-    pen += ab.length ? -8 : 10; }
+    pen += ab.length ? -8 : 10;
+    // a Pokémon whose ability needs a different weather (Swift Swim Mega Swampert on a Mega Charizard Y sun team): the team's
+    // own weather switches it off (audit, Oct 30)
+    { const off = team.filter(m => WEATHER_NEED[m.ability] && WEATHER_NEED[m.ability] !== kinds[0]); if (off.length) { const r = rows[rows.length - 1];
+      r.st = 'part'; r.note = (r.note ? r.note + ' ' : '') + `${off.map(m => `${m.d} (${m.ability})`).join(', ')} needs ${ARCH[WEATHER_NEED[off[0].ability]].name.toLowerCase()}, but your ${ARCH[kinds[0]].name.toLowerCase()} replaces it.`; pen += 18 * off.length; } } }
   else if (needs.length) { rows.push({k: 'weather', label: 'Weather', st: 'miss', who: '', note: `${team.filter(m => ARCH[needs[0]].abAb.includes(m.ability)).map(m => m.d).join(', ')} needs ${ARCH[needs[0]].name.toLowerCase()}, and nothing sets it.`}); pen += 22; }
   else { rows.push({k: 'weather', label: 'Weather', st: 'opt', who: '', note: 'None. Opposing sun or rain will control the field.'}); pen += 5; }
   // moves that need a weather the team doesn't set: Solar Beam / Solar Blade (two turns without sun), Electro Shot (two turns

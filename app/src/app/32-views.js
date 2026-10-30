@@ -64,12 +64,19 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   requestAnimationFrame(()=>document.querySelectorAll('.subnav').forEach(n=>{if(n.offsetParent===null)return;n.classList.toggle('ovf',n.scrollWidth>n.clientWidth+2);const on=n.querySelector('[aria-selected="true"]');if(on&&n.scrollWidth>n.clientWidth){const l=on.offsetLeft-n.offsetLeft-(n.clientWidth-on.offsetWidth)/2;n.scrollLeft=Math.max(0,l)}}));
   navHist(v);
   if(typeof track==='function')track('view:'+v);
-  if((v==='build'||v==='report'||v==='coverage')&&ui.plansStale){ui.plansStale=false;render()}
+  if((v==='build'||v==='report')&&ui.plansStale){ui.plansStale=false;render()}
+
   document.querySelectorAll('.teamsw [data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
   if(v==='home')safe('home',renderHome);
   if(v==='types')renderTypeChart();
   if(v==='ratings')safe('ratings',renderLair);
-  if(v==='coverage')safe('additions',renderRecs);
+  // All suggestions: the page shows at once; when the suggestions need working out, a short note shows and they fill in
+  // a frame later (audit, Oct 30: opening it froze phones for ~3 s)
+  if(v==='coverage'){const l=$('recList'),fresh=typeof recKey==='function'&&recCache.key===recKey($('useAbil').checked);
+    // then the bigger plans (the slow part), a frame after the swaps
+    const plansLater=()=>{if(ui.plansStale)requestAnimationFrame(()=>setTimeout(()=>{if(view==='coverage'&&ui.plansStale){ui.plansStale=false;render()}},0))};
+    if(fresh||!l||members().length<2){safe('additions',renderRecs);plansLater()}
+    else{l.innerHTML='<div class="empty-note abbusy" role="status"><span class="abspin" aria-hidden="true"></span>Working out the best swaps for your team…</div>';requestAnimationFrame(()=>setTimeout(()=>{if(view==='coverage'){safe('additions',renderRecs);plansLater()}},0))}}
   try{const sn=document.querySelector(`[data-pane="${v}"] .subnav`),on=sn&&sn.querySelector('.sub[aria-selected="true"]');if(on){const x=on.getBoundingClientRect().left-sn.getBoundingClientRect().left+sn.scrollLeft;sn.scrollLeft=Math.max(0,x-sn.clientWidth/2+on.offsetWidth/2)}}catch(e){}
   if(v==='speed')safe('speed tiers',renderSpeed);
   if(v==='calc')safe('damage calc',renderCalc);
