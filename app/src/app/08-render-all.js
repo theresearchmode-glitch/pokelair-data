@@ -101,7 +101,7 @@ function renderVerdict(ms,a,PG,CK){
     rows.push(['Not ready for',un.length?un.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(un.length>5?` and ${un.length-5} more`:''):'None of the top 30']);
     if(sh.length)rows.push(['Shaky against',sh.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(sh.length>5?` and ${sh.length-5} more`:'')])}
   // 3. checklist, real results, your record, type balance
-  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?`: missing ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
+  if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?` · not yet: ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
   if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% of games at Limitless events (${best.c} players${best.g?`, ${best.g} games`:''})`]);
   if(tr)rows.push(['Your record',`${tr.w}-${tr.l} with this team (${tr.pct}%)`]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
@@ -181,7 +181,9 @@ function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.n
   const line=(label,arr,src)=>`<span class="lbl">${label}</span><div><span class="iname">${esc(arr[0][0])}</span>${pcTxt(arr[0][1])}${arr[1]?`<span class="ialt">or ${esc(arr[1][0])}${pcTxt(arr[1][1])}</span>`:''}${tag(src)}</div>`;
   const cs=typeof commonSpread==='function'?commonSpread(p):null;
   const spr=o&&o.noSpread?'':cs?`<span class="lbl">Spread${typeof tip==='function'?tip('spread'):''}</span><div><span class="iname">${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}</span> <span class="vsub" title="HP/Atk/Def/SpA/SpD/Spe stat points, most common on the Showdown ladder (1630+)">${esc(cs.nat)} · HP/Atk/Def/SpA/SpD/Spe</span></div>`:'';
-  return `<div class="itemrow">${it?line('Item',it.it,it.src):''}${na?line('Nature',na,st.src.na):''}${spr}</div>`}
+  // your own nature, once set, leads the row (Oct 30 audit: it kept showing the meta's natures next to your spread)
+  const mineN=o&&o.mine?`<span class="lbl">Nature</span><div><span class="iname">${esc(o.mine)}</span> <span class="tag mine">YOURS</span>${na&&na[0][0]!==o.mine?`<span class="ialt">usually ${esc(na[0][0])}${pcTxt(na[0][1])}</span>`:''}</div>`:'';
+  return `<div class="itemrow">${it?line('Item',it.it,it.src):''}${mineN||(na?line('Nature',na,st.src.na):'')}${spr}</div>`}
 // The spread a team member is played with, and where it comes from: yours (paste, link or set here), assumed (a team sheet
 // gave a nature but no points, so the most common spread), or the most common one. One tap opens a small editor.
 function spreadBlock(s,i,m){const cs=m.spread||(typeof commonSpread==='function'?commonSpread(m.p):null);
