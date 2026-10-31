@@ -67,20 +67,36 @@ function perfFromRaw(raw) {
   const ingame = {}, ig = opggNames(raw.ingame && raw.ingame.names), curve = Object.values(smogon).sort((a, b) => b - a);
   const igSeen = new Set(); ig.forEach((n, i) => { if (!n || igSeen.has(n)) return; igSeen.add(n); const v = curve.length ? (curve[i] != null ? curve[i] : curve[curve.length - 1] * Math.pow(.97, i - curve.length + 1)) : 0;
     for (const [k, sh] of formsOf(n)) ingame[k] = (ingame[k] || 0) + v * sh; });
-  const out = {updated: raw.updated || '', doubles: pz(raw.tour && raw.tour.rows, raw.tour && raw.tour.megas, !!(raw.tour && raw.tour.split)), official: pz(raw.official && raw.official.rows, raw.official && raw.official.megas),
+  const out = {updated: raw.updated || '', doubles: pz(raw.tour && raw.tour.rows, raw.tour && raw.tour.megas, !!(raw.tour && raw.tour.split)), official: pz(raw.official && raw.official.rows, raw.official && raw.official.megas, !!(raw.official && raw.official.split)),
     adj: (() => { const D = {}; for (const r of (raw.adj && raw.adj.rows) || []) { if (!Array.isArray(r)) continue; const n = srcName(r[0]); const b = num(r[1]), g = num(r[2]); if (!n || !isFinite(b) || !isFinite(g)) continue;
       const t = num(r[3]) || 0, w = isFinite(num(r[4])) ? num(r[4]) : null, o = D[n];
       // two rows for one Pokémon ("Floette|M" and "Eternal Flower Floette|M"): weighted merge by games
       D[n] = !o ? [b, g, t, w] : [+((o[0] * o[1] + b * g) / (o[1] + g || 1)).toFixed(3), o[1] + g, o[2] + t, o[3] == null || w == null ? (o[3] ?? w) : +((o[3] * o[1] + w * g) / (o[1] + g || 1)).toFixed(1)]; } return D; })(),
     ladder, smogon, prd, ingame, ingameRank: (() => { const R = {}; ig.forEach((n, i) => { if (n) for (const [k] of formsOf(n)) if (!R[k]) R[k] = i + 1; }); return R; })(), ingameTotal: ig.length, prdTeams: raw.prd && raw.prd.teams,
-    sources: {tour: raw.tour && raw.tour.label, official: raw.official && raw.official.label, ladder: raw.ladder && raw.ladder.label, smogon: raw.smogon && raw.smogon.label, prd: raw.prd && raw.prd.label, adj: raw.adj && raw.adj.label, ingame: raw.ingame && raw.ingame.label}};
+    sources: {tour: raw.tour && raw.tour.label, official: raw.official && raw.official.label, ladder: raw.ladder && raw.ladder.label, smogon: raw.smogon && raw.smogon.label, prd: raw.prd && raw.prd.label, adj: raw.adj && raw.adj.label, ingame: raw.ingame && raw.ingame.label},
+    // the date of each source's data, for the sheet ("Oct 30", "Sep 2026"), and the in-game season
+    dates: Object.fromEntries(PERF_KEYS.map(k => [k, perfDate(raw, k)]).filter(x => x[1])), season: (raw.ingame && (raw.ingame.season || ((raw.ingame.label || '').match(/season ([A-Z]-?\d+)/) || [])[1])) || '',
+    outside: raw.outside && Array.isArray(raw.outside.lists) && raw.outside.data && typeof raw.outside.data === 'object' ? raw.outside : null};
   return Object.keys(out.doubles).length >= 20 ? out : null;
 }
-// The performance data in use: today's refresh (meta/perf) if it's usable, otherwise the snapshot built into the page.
+// Outdated numbers are wrong numbers: every part of the outside data carries the date of its data, and a part older than its
+// source's cadence is left out (daily sources 3 days, op.gg / RK9 / Showdowntier / tier lists 4, Smogon's monthly stats
+// 40 days past the end of their month). The parts are tour, adj, ingame, official, smogon, prd, ladder and outside.
+// "2026-10-30" -> "Oct 30", "2026-09" -> "Sep 2026" (the one date format used for data dates)
+function perfDateText(d) { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], s = String(d || ''); let m;
+  if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return `${M[+m[2] - 1]} ${+m[3]}`; if ((m = s.match(/^(\d{4})-(\d{2})$/))) return `${M[+m[2] - 1]} ${m[1]}`; return s; }
+const PERF_KEYS = ['tour', 'adj', 'ingame', 'official', 'smogon', 'prd', 'ladder', 'outside'], PERF_MAXAGE = {tour: 3, adj: 3, ingame: 4, official: 4, smogon: 40, prd: 3, ladder: 4, outside: 4};
+function perfDate(raw, k) { const x = raw && raw[k]; if (!x) return ''; return String(x.updated || raw.updated || '').slice(0, 10); }
+function perfAgeDays(d) { const s = String(d || ''); let t;
+  if (/^\d{4}-\d{2}$/.test(s)) { const [y, m] = s.split('-').map(Number); t = Date.UTC(y, m, 1); } else t = Date.parse(s.length === 10 ? s + 'T12:00:00Z' : s);
+  return isNaN(t) ? Infinity : (Date.now() - t) / 864e5; }
+function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of PERF_KEYS) if (raw[k] && perfAgeDays(perfDate(raw, k)) <= PERF_MAXAGE[k]) o[k] = raw[k]; return o; }
+// The performance data in use: today's refresh (meta/perf), each part only while it is current, topped up with the
+// snapshot built into the page (PERF_RAW) where that part of the snapshot is still current. Without the refresh at all
+// (no database), the built-in snapshot is used as it is, and its dates are shown.
 let perfCache = {key: null, val: null};
 function activePerf() { const key = metaVersion; if (perfCache.key === key) return perfCache.val;
-  // the daily refresh doesn't fetch op.gg yet: borrow the built-in in-game ranking when today's data lacks it
-  let v = null; try { let raw = META.perf; if (raw && typeof PERF_RAW === 'object') { const add = {}; for (const k of ['tour', 'official', 'ladder', 'smogon', 'prd', 'ingame', 'adj']) if (!raw[k] && PERF_RAW[k]) add[k] = PERF_RAW[k]; if (Object.keys(add).length) raw = Object.assign({}, raw, add); } v = raw ? perfFromRaw(raw) : null; } catch (e) { v = null; }
+  let v = null; try { const raw = META.perf; if (raw) { const fresh = Object.assign({}, typeof PERF_RAW === 'object' ? perfFreshParts(PERF_RAW) : {}, perfFreshParts(raw));
+      if (fresh.tour) { for (const k of PERF_KEYS) if (fresh[k] && !fresh[k].updated) fresh[k] = Object.assign({}, fresh[k], {updated: perfDate(raw[k] ? raw : PERF_RAW, k)}); v = perfFromRaw(Object.assign({updated: raw.updated}, fresh)); } } } catch (e) { v = null; }
   if (!v) { try { v = typeof PERF_RAW === 'object' ? perfFromRaw(PERF_RAW) : null; } catch (e) { v = null; } }
   perfCache = {key, val: v}; return v; }
-

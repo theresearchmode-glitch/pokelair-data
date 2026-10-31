@@ -39,7 +39,7 @@ function renderLair(bodyOnly) {
     $('lairHero').innerHTML = `<div class="lhstat"><b>${all.length}</b><span>Pokémon rated</span></div><div class="lhstat"><b>${src.length}</b><span>data source${src.length === 1 ? '' : 's'}</span></div>`
       + `<div class="lhstat"><b>${all.filter(x => x.r.total >= 80).length}</b><span>in S tier</span></div><div class="lhstat"><b>${all.filter(x => isGem(x.p)).length}</b><span>hidden gems</span></div>`
       + `<details class="lhsrc"><summary>Doubles sources${pf && pf.updated ? ' · data from ' + esc(when(pf.updated)) : ''}</summary><ul>${src.map(([, v]) => `<li>${esc(v)}</li>`).join('')}</ul>
-        <p class="t2">A rating says how strong a Pokémon is in the current format, proven by results. Four ingredients, each shown on every Pokémon\'s sheet: how often it\'s on teams that reach top cut at tournaments (counts most; recent and bigger events weigh more), how often strong players pick it (usage weighted by each player\'s skill), whether it makes top cut more or less often than its usage predicts, and its win rate. The last two are pulled toward average until there are enough games. The best Pokémon is 95; half the presence costs about 10 points. This mix was chosen by testing ten candidate measures on later events and against five outside tier lists; only the ones that helped are in. Rarely used Pokémon that overperform get the ◆ hidden gem tag instead of jumping the tier list. Ratings are saved every day and checked later against the tournaments that came after.</p></details>`;
+        <p class="t2">A rating says how strong a Pokémon is in the current format, proven by results. Four ingredients, each shown on every Pokémon\'s sheet: how often it\'s on teams that reach top cut at tournaments (counts most; recent and bigger events weigh more), how often strong players pick it (usage weighted by each player\'s skill), whether it makes top cut more or less often than its usage predicts, and its win rate. The last two are pulled toward average until there are enough games. The best Pokémon is 95; half the presence costs about 10 points. This mix was chosen on Oct 27 by testing ten candidate measures on later events and against five outside tier lists; only the ones that helped are in. Rarely used Pokémon that overperform get the ◆ hidden gem tag instead of jumping the tier list. Ratings are saved every day and checked later against the tournaments that came after.</p></details>`;
     document.querySelectorAll('[data-lmode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lmode === mode));
     $('lairTypes').innerHTML = TYPES.map(t => `<button type="button" class="ltype${(ui.lty || []).includes(t) ? ' on' : ''}" data-lty="${t}" style="--tc:${TC[t]}" title="${t}" aria-pressed="${(ui.lty || []).includes(t)}">${ticon(t)}<span>${t}</span></button>`).join('');
     const f = ui.lf || {};
@@ -85,20 +85,22 @@ function lairMap(rows) {
 }
 function lairSheet(n) {
   const sh = $('lairSheet'); if (!sh) return; const p = byName.get(n); if (!p) { sh.hidden = true; return; }
-  const r = rating(p), T = lTier(r.total), all = lairRows(), pos = all.findIndex(x => x.p.n === p.n) + 1, src = r.src || {};
+  const r = rating(p), T = lTier(r.total), all = lairRows(), pos = all.findIndex(x => x.p.n === p.n) + 1, src = r.src || {}, pf0 = activePerf();
   const bar = (l, v, note) => `<div class="lbar"><span>${l}</span><i style="--w:${Math.max(2, Math.min(100, v || 0))}%"></i><b>${v == null ? '–' : v}</b>${note ? `<em>${note}</em>` : ''}</div>`;
   const ev = [];
   {
     const pt = pilotFor(p); if (pt) ev.push(['Same players test', `${pt.w}% with it · ${pt.wo}% without`, `the same ${pt.players.toLocaleString()} players: ${pt.g.toLocaleString()} games with it, ${pt.go.toLocaleString()} without. ${pt.d >= 3 ? 'A big gap: the Pokémon itself is winning games' : pt.d >= 1 ? 'Wins a little more than these players usually do' : pt.d > -1 ? 'About the same: these players win as often without it' : 'These players do better without it'}`]);
     // (the model-based "own share of team wins / win chance" row was removed Oct 28 with the other win predictions)
     { const bl = typeof bringLead === 'function' ? bringLead(p) : null; if (bl) ev.push(['Team preview (Showdown replays)', `brought ${bl.b}% · led ${bl.l}%`, `when it's on the team · ${bl.g.toLocaleString('en-US')} games${bl.forms ? ' · all forms' : ''}${bl.g < 300 ? ' · few games' : ''} · shown, not scored yet`]); }
-    if (src.tour) ev.push(['Limitless tournaments', `${src.tour[0]}% of teams`, `${src.tour[1]}% won · ${src.tour[2].toLocaleString()} games`]);
-    if (src.official) ev.push(['Official VGC events', `${src.official[0]}% of teams`, `${src.official[1]}% won · ${src.official[2].toLocaleString()} games`]);
+    // every row says how recent its numbers are, in one format ("Oct 30", "Sep 2026")
+    const dt = k => { const d = pf0 && pf0.dates && pf0.dates[k]; return d ? ' · ' + perfDateText(d) : ''; };
+    if (src.tour) ev.push(['Limitless tournaments', `${src.tour[0]}% of teams`, `${src.tour[1]}% won · ${src.tour[2].toLocaleString()} games${dt('tour')}`]);
+    if (src.official) ev.push(['Official VGC events', `${src.official[0]}% of teams`, `${src.official[1]}% of matches won · ${src.official[2].toLocaleString()} matches · RK9, whole field${dt('official')}`]);
     const fam = ROSTER.some(q => q.m && q.b === p.b), spn = ((byName.get(p.b) || ROSTER.find(q => q.b === p.b && !q.m) || p).d || '').replace(/\s*\(.*\)$/, '').replace(/^Mega /, ''); // Floette has no plain entry (only Eternal and Mega)
-    if (src.ingame != null) ev.push(['In-game Ranked Doubles', `#${src.ingame} most used`, `op.gg, season M-7${fam ? ` · ${esc(spn)}, all forms (shared by form)` : ''}`]);
-    if (src.smogon != null) ev.push(['Showdown 1760+', `${src.smogon}% of teams`, 'Smogon usage stats']);
-    if (src.prd != null) ev.push(['Top-10% Showdown replays', `${src.prd}% of teams`, 'project-red-data']);
-    if (src.ladder) ev.push(['Showdown ladder', `${src.ladder[0]}% of teams`, `${src.ladder[1]}% won · avg player ${src.ladder[2]}${fam ? ` · ${esc(spn)} total, shared by form` : ''}`]);
+    if (src.ingame != null) ev.push(['In-game Ranked Doubles', `#${src.ingame} most used`, `op.gg${pf0 && pf0.season ? ', season ' + esc(pf0.season) : ''}${fam ? ` · ${esc(spn)}, all forms (shared by form)` : ''}${dt('ingame')}`]);
+    if (src.smogon != null) ev.push(['Showdown 1760+', `${src.smogon}% of teams`, `Smogon usage stats${dt('smogon')}`]);
+    if (src.prd != null) ev.push(['Top-10% Showdown replays', `${src.prd}% of teams`, `project-red-data, last 30 days${dt('prd')}`]);
+    if (src.ladder) ev.push(['Showdown ladder', `${src.ladder[0]}% of teams`, `${src.ladder[1]}% won · avg player ${src.ladder[2]}${fam ? ` · ${esc(spn)} total, shared by form` : ''} · Showdowntier, 14 days${dt('ladder')}`]);
   }
   const ab = metaAbility(p) || bestAbility(p), ti = topItems(p), mv = (() => { try { return runMoves(p).map(m => m.name).filter(Boolean); } catch (e) { return []; } })();
   const onT = members().find(m => m.base === p.b), onTeam = !!onT, full = !S.slots.some(s => !byName.get(s.n));
@@ -118,8 +120,9 @@ function lairSheet(n) {
         <p class="t2">Likely range ${Math.max(1, r.total - r.band)}–${Math.min(99, r.total + r.band)}. Real results count ${Math.round(r.conf * 100)}% toward the score; stats, typing and tools make up the rest${r.band >= 10 ? ', so treat this one as an estimate' : ''}.</p>`}</div>
       ${isTrap(p) ? `<div class="lsec"><p class="t2" style="color:var(--bad)">Suggestions skip this one: across ${((r.src && r.src.adj && r.src.adj[1]) || 0).toLocaleString()}+ Limitless games it lost more than it won, even after accounting for its teammates. You can still add it yourself.</p></div>` : ''}
       <div class="lsec"><h4>What the data says</h4>${ev.length ? `<div class="levs">${ev.map(e => `<div class="lev"><span>${e[0]}</span><b>${e[1]}</b><em>${e[2]}</em></div>`).join('')}</div>` : '<p class="t2">No tournament or ladder games yet: this rating comes from stats, typing and tools.</p>'}</div>
-      ${typeof OUTSIDE === 'object' ? `<div class="lsec"><h4>Other tier lists</h4><div class="lout">${OUTSIDE.lists.map(L => { const v = OUTSIDE.data[L.k] && OUTSIDE.data[L.k][p.n];
-        return `<a class="lo" href="${L.url}" target="_blank" rel="noopener"><b class="lot${v ? ' t' + L.tiers[v] : ''}">${v ? L.tiers[v] : '–'}</b><span>${L.name}</span><em>${v ? L.how : 'not listed · ' + L.note}</em></a>`; }).join('')}</div><p class="t2">Checked ${OUTSIDE.date}. Shown for comparison, not counted in the score.</p></div>` : ''}
+      ${(() => { const O = pf0 && pf0.outside; if (!O || !O.lists.length) return ''; // other sites' lists, fetched daily (perf.mjs); left out when not current
+        return `<div class="lsec"><h4>Other tier lists</h4><div class="lout">${O.lists.map(L => { const v = O.data[L.k] && O.data[L.k][p.n];
+        return `<a class="lo" href="${esc(L.url)}" target="_blank" rel="noopener"><b class="lot${v ? ' t' + esc(L.tiers[v]) : ''}">${v ? esc(L.tiers[v]) : '–'}</b><span>${esc(L.name)}</span><em>${v ? esc(L.how) : 'not listed · ' + esc(L.note)} · ${esc(perfDateText(L.date))}</em></a>`; }).join('')}</div><p class="t2">Shown for comparison, not counted in the score.</p></div>`; })()}
       <div class="lsec"><h4>Typical set</h4><div class="lset"><span>Ability</span><b>${esc(ab || '–')}</b>${ti ? `<span>Item</span><b>${ti.it.map(x => esc(x[0])).join(' / ')}</b>` : ''}${mv.length ? `<span>Moves</span><b>${mv.map(esc).join(' · ')}</b>` : ''}</div></div>
       <div class="lsact">${onTeam ? `<span class="t2">${onT.p.n === p.n ? 'On your team' : esc(onT.d) + ' is already on your team (one per species)'}</span>` : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-abaround="${esc(p.n)}">Build around it</button><button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
     </div></div>`;
