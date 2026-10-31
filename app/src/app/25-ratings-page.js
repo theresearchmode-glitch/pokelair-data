@@ -40,7 +40,8 @@ function renderLair(bodyOnly) {
     document.querySelectorAll('[data-lmode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lmode === mode));
     $('lairTypes').innerHTML = TYPES.map(t => `<button type="button" class="ltype${(ui.lty || []).includes(t) ? ' on' : ''}" data-lty="${t}" style="--tc:${TC[t]}" title="${t}" aria-pressed="${(ui.lty || []).includes(t)}">${ticon(t)}<span>${t}</span></button>`).join('');
     const f = ui.lf || {};
-    $('lairFlags').innerHTML = (filtered ? '<button type="button" class="lflag clr" data-lflag="clear">Clear</button>' : '') + [['mega', 'Megas'], ['nomega', 'No Megas'], ...(ROSTER.some(q => isGem(q)) ? [['gem', '◆ Hidden gems']] : []), ['box', 'In my box']].map(([k, l]) => `<button type="button" class="lflag" data-lflag="${k}" aria-pressed="${!!f[k]}">${l}</button>`).join('');
+    $('lairFlags').innerHTML = (filtered ? '<button type="button" class="lflag clr" data-lflag="clear">Clear</button>' : '') + [['mega', 'Megas'], ['nomega', 'No Megas'], ...(ROSTER.some(q => isGem(q)) ? [['gem', '◆ Hidden gems']] : []), ['box', 'In my box']].map(([k, l]) => `<button type="button" class="lflag" data-lflag="${k}" aria-pressed="${!!f[k]}">${l}</button>`).join('')
+;
   }
   $('lairCount').textContent = filtered ? `${rows.length} of ${all.length} match` : '';
   if (!rows.length) { pane.innerHTML = `<div class="empty-note">${(ui.lf || {}).box && !S.box.length ? 'Your box is empty. Add the Pokémon you own on My box.' : 'No Pokémon match. Try clearing a filter.'}</div>`; return; }
@@ -120,7 +121,8 @@ function lairSheet(n) {
       <div class="lsact">${onTeam ? `<span class="t2">${onT.p.n === p.n ? 'On your team' : esc(onT.d) + ' is already on your team (one per species)'}</span>` : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-abaround="${esc(p.n)}">Build around it</button><button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
     </div></div>`;
   sh.hidden = false; ui.lsheet = p.n; try { document.body.classList.add('lsopen'); } catch (e) {}
-  const x = sh.querySelector('.lsx'); if (x && x.focus) try { x.focus({preventScroll: true}); } catch (e) {}
+  // focus moves into the sheet (for keyboards and screen readers) without ringing the × on a tap (Sim, Oct 31)
+  const x = sh.querySelector('.lspanel') || sh.querySelector('.lsx'); if (x && x.focus) try { if (x.classList.contains('lspanel')) x.setAttribute('tabindex', '-1'); x.focus({preventScroll: true}); } catch (e) {}
 }
 function lairClose() { const sh = $('lairSheet'); if (sh) sh.hidden = true; ui.lsheet = null; try { document.body.classList.remove('lsopen'); } catch (e) {} }
 document.addEventListener('click', e => { const t = e.target; if (!t || !t.closest) return;
