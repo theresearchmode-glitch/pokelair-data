@@ -398,3 +398,5 @@ button.chring{background:none;cursor:pointer;padding:0}
 #guideOut .guide>summary{flex-wrap:wrap}
 #guideOut .guide>summary .gkm{flex-basis:100%;order:9;margin:6px 0 0 0;justify-content:flex-start}
 #chEdit:focus{outline:none}
+/* fix plans being worked out after an edit (Oct 31): the previous ones stay in place, faded, until the new ones fill in */
+.planstale{opacity:.45;transition:opacity .2s;cursor:progress}

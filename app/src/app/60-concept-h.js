@@ -222,7 +222,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 CH.seg = (key, opts, on) => `<div class="seg chseg" role="group" data-chseg="${key}">${opts.map(([k, t]) => `<button type="button" data-chsegv="${k}" aria-pressed="${k === on}">${t}</button>`).join('')}</div>`;
 CH.part = (id, n, title, q) => { const s = document.createElement('section'); s.className = 'chpart'; s.id = id; s.innerHTML = `<div class="chparth"><span class="n">${n}</span><div><h2 class="chdisp">${title}</h2><p>${q}</p></div></div><div class="chpartb"></div>`; return s; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chsegv]'); if (!b) return; const g = b.closest('[data-chseg]'), key = g.dataset.chseg, v = b.dataset.chsegv;
-  LS.set('cc2.seg.' + key, v); g.querySelectorAll('[data-chsegv]').forEach(x => x.setAttribute('aria-pressed', x === b)); document.querySelectorAll(`[data-chsegp="${key}"]`).forEach(p => { p.hidden = p.dataset.chsegk !== v; }); });
+  LS.set('cc2.seg.' + key, v); g.querySelectorAll('[data-chsegv]').forEach(x => x.setAttribute('aria-pressed', x === b)); document.querySelectorAll(`[data-chsegp="${key}"]`).forEach(p => { p.hidden = p.dataset.chsegk !== v; }); safe('page parts', lazyFlush); });
 function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'); if (!rp || rp.dataset.ch) return; rp.dataset.ch = '1';
   const team = $('team'), fixes = $('fixes'), rep = $('repFold'); if (!team || !fixes || !rep) return;
   const cols = fixes.querySelectorAll('.fixcol');
@@ -269,6 +269,8 @@ function chEditOpen(i) { const ed = $('chEdit'); if (!ed) return; ed.dataset.slo
   if (ui.tview === 'grid') { ui.tview = 'full'; LS.set('cc2.tview', 'full'); try { renderSlots(); } catch (e) {} }
   const m = i == null ? null : members().find(x => x.i === +i); $('chEditT').textContent = i == null ? 'Edit team' : m ? 'Edit ' + m.d : 'Add a Pokémon';
   ed.classList.toggle('chadd', i != null && !m); ed.hidden = false; $('chEditScrim').hidden = false; document.documentElement.classList.add('chlock'); ed.scrollTop = 0; { const eb = ed.querySelector('.chedb'); if (eb) eb.scrollTop = 0; }
+  // its set editor, drawn now if an edit since it was last drawn changed the team
+  safe('set editor', slotsFlush);
   // an empty slot: focus its name box right away, inside the tap, so phones open the keyboard
   try { chEditStrip(); } catch (e) {}
   if (i != null && !m) { const inp = ed.querySelector(`#pk${i}`) || ed.querySelector(`#slot${i} input`); if (inp) { try { inp.focus({preventScroll: true}); } catch (e) { inp.focus(); } } }
@@ -311,7 +313,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   { const n = document.querySelector('#chP4 .chparth .n'); if (n) n.hidden = !ms.length; const q = document.querySelector('#chP4 .chparth p'); if (q) q.textContent = ms.length ? 'Tap a Pokémon to edit its set' : 'Tap a slot to add a Pokémon'; }
   document.querySelectorAll('[data-chpool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.chpool === ui.pool));
   // part 1: suggestions
-  { const o = $('chSugOut'); if (o) o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No single change from this pool readies the team for more of the top threats. Try another pool above, or see Threats below for what to watch.</p>') : ''; }
+  { const o = $('chSugOut'); if (o && ms.length && ui.plans && ui.plans.pending) planStale(o, PLAN_WAIT.replace('the best fixes', 'suggestions')); else if (o) { planFresh(o); o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No single change from this pool readies the team for more of the top threats. Try another pool above, or see Threats below for what to watch.</p>') : ''; } }
   const sum = (id, t) => { const d = $(id); const s = d && d.querySelector('.chs'); if (s) s.textContent = t; };
   { const nd = $('needs'), n = $('needsSub'); sum('chfFix', [n && n.textContent ? n.textContent : 'Nothing big to fix', v.CK ? `${v.CK.pass}/${v.CK.n} checks` : '', v.legal === false ? 'not legal yet' : 'legal'].filter(Boolean).join(' · ')); }
   { const g = document.querySelector('#chfGplan .gpcard'), tags = g ? [...g.querySelectorAll('.gphead .tag, .gphead .chip, .gphead .arch')].map(x => x.textContent.trim()).filter(Boolean) : []; sum('chfGplan', (tags.length ? tags.map(x => x.charAt(0) + x.slice(1).toLowerCase()).join(' + ') + ' · ' : '') + 'leads, backups and what to watch'); }

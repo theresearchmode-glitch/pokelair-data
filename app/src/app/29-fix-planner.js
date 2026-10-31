@@ -95,7 +95,11 @@ function gpWorse(gp0,gp){return GUARD_KEYS.filter(k=>{const o=(gp0.rows.find(r=>
 function gapTarget(gp0,top){const order=['weather','trfit','terrain','support'],st=k=>(gp0.rows.find(r=>r.k===k)||{}).st,covered=k=>top.slice(0,2).some(pl=>pl.gap&&pl.gap.fix.includes(k));
   const open=gpGaps(gp0).filter(k=>order.includes(k)&&!(k==='support'&&st(k)!=='miss')).sort((a,b)=>(st(a)==='miss'?0:1)-(st(b)==='miss'?0:1)||order.indexOf(a)-order.indexOf(b));
   const k=open.find(k=>!covered(k));return k&&!(st(k)==='part'&&open.some(j=>st(j)==='miss'&&covered(j)))?[k]:[]}
-function planFixes(ms,pool,useA,opts){
+// The fix planner. planFixes works the plans out at once; planFixesG is the same search as a generator that pauses between
+// candidate plans, so the page can work them out in small slices between frames (an edit then paints at once: about 3 s of
+// frozen page per edit on a mid-range phone before, Oct 31). Both run exactly the same code, so the plans are identical.
+function planFixes(ms,pool,useA,opts){const g=planFixesG(ms,pool,useA,opts);let r;do r=g.next();while(!r.done);return r.value}
+function* planFixesG(ms,pool,useA,opts){
   const maxMega=megaGoal();const full=ms.length===6;
   const emptyIdx=S.slots.map((s,i)=>byName.get(s.n)?-1:i).filter(i=>i>=0);
   const base=stateScore(ms,useA);
@@ -136,7 +140,7 @@ function planFixes(ms,pool,useA,opts){
   const keepOK=pl=>ipOf(pl)<=ip0&&(OFFMETA||pl.ch.every(x=>!x.out||U(x.out.p)<15||evidPct(x.c.p)>=5));
   {const keep=singles.filter(keepOK);singles.length=0;singles.push(...keep)}
   const basePl=evalPlan({ch:[],team:ms});
-  singles.forEach(evalPlan);singles.sort((x,y)=>x.score-y.score);
+  for(const pl of singles){evalPlan(pl);yield}singles.sort((x,y)=>x.score-y.score);
   if(opts&&opts.singlesOnly)return {singles,basePl,base,full};
   // two changes, built from the strongest single changes
   // best 8 single changes per slot, so two-change plans can combine fixes for different slots
@@ -147,7 +151,7 @@ function planFixes(ms,pool,useA,opts){
     if(A.out&&B.out){if(A.out===B.out)continue;const t=ms.map(x=>x===A.out?{...A.c.mem,i:x.i}:x===B.out?{...B.c.mem,i:x.i}:x);if(legal(t))doubles.push({ch:[{...A},{...B}],team:t})}
     else if(!A.out&&!B.out&&emptyIdx.length>=2){const t=[...ms,A.c.mem,B.c.mem];if(legal(t))doubles.push({ch:[{...A,slot:emptyIdx[0]},{...B,slot:emptyIdx[1]}],team:t})}}
   {const keep=doubles.filter(keepOK);doubles.length=0;doubles.push(...keep)}
-  doubles.forEach(evalPlan);
+  for(const pl of doubles){evalPlan(pl);yield}
   const clean=base.a.excess===0&&!base.a.unresisted.length;
   // a plan must never make the type rating worse, and must beat the current team by a clear margin
   // and must never take away the team's speed control or start a weather clash
@@ -166,7 +170,7 @@ function planFixes(ms,pool,useA,opts){
     if(ip0>0)for(const pl of short0.filter(pl=>ipOf(pl)<ip0).slice(0,12))if(!short.includes(pl))short.push(pl);
     // so are the best plans that close a game-plan gap (rain for Swift Swim, Trick Room attackers…)
     for(const pl of short0.filter(pl=>pl.gap&&pl.gap.fix.length).slice(0,12))if(!short.includes(pl))short.push(pl);
-    for(const pl of short)if(pl._ts===undefined)pl._ts=tsOf(pl.team);
+    for(const pl of short)if(pl._ts===undefined){pl._ts=tsOf(pl.team);yield}
     if(short.some(pl=>pl._ts!=null)){tsOn=true;
       const ranked=short.filter(pl=>pl._ts!=null&&(tsBase==null||pl._ts>=tsBase+TS_GAIN||((ipOf(pl)<ip0||pl.gap.fix.length)&&pl._ts>=tsBase-3))).sort((x,y)=>(ipOf(x)-ipOf(y))||tsKey(y)-tsKey(x)||x.score-y.score);
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
