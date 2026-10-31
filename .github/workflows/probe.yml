@@ -56,6 +56,9 @@ jobs:
       - name: Report cross-check
         working-directory: ${{ runner.temp }}/probe
         run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" cross
+      - name: Report Smogon rows
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" smogon
   backfill:
     # every finished official event, whole field (about 4,500 team lists at RK9's pace): only when the commit asks for it
     if: contains(github.event.head_commit.message, '[backfill]')

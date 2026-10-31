@@ -8,7 +8,9 @@ const t = process.argv[2];
 if (t === 'log') { const L = fs.existsSync(process.argv[3]) ? fs.readFileSync(process.argv[3], 'utf8').split('\n').filter(Boolean) : ['(no log)']; for (let i = 0; i < L.length && i < 250; i += 25) note(`log ${process.argv[3].split('/').pop()} ${i / 25 + 1}`, L.slice(i, i + 25)); }
 if (t === 'official') { const O = rd('official_perf.json'); if (!O) note('official', 'no official_perf.json'); else {
   note('official summary', [O.label, `teams ${O.teams}, matches ${O.matches}`, ...O.events.map(e => `${e.date} ${e.name}: ${e.lists}/${e.players} lists, ${e.matches} matches`), `waiting: ${O.waiting.join('; ')}`]);
-  note('official top 40', O.rows.slice(0, 40).map(r => r.join(' | '))); } }
+  // every row, compact JSON in chunks, so the table can be rebuilt from the annotations
+  const J = JSON.stringify(O.rows); for (let i = 0, k = 1; i < J.length && k <= 8; i += 3700, k++) note(`official rows ${k}`, J.slice(i, i + 3700)); } }
+if (t === 'smogon') { const P = rd('perf.json') || {}; if (P.smogon) { const J = JSON.stringify({label: P.smogon.label, updated: P.smogon.updated, rows: P.smogon.rows}); for (let i = 0, k = 1; i < J.length && k <= 9; i += 3700, k++) note(`smogon rows ${k}`, J.slice(i, i + 3700)); } else note('smogon', 'none'); }
 if (t === 'sources') { const S = rd('sources.json') || {}; note('sources problems', S.problems && S.problems.length ? S.problems : ['none']);
   for (const k of ['sdt', 'pika', 'prd']) { const s = S[k]; if (!s) { note(`source ${k}`, 'missing'); continue; }
     note(`source ${k}`, [`date ${s.date} ${s.dataDate ? 'dataDate ' + s.dataDate : ''} ${s.from ? s.from + '..' + s.to : ''} battles ${s.battles || ''} teams ${s.teams || ''} rows ${s.rows.length} unmapped ${(s.miss || []).join(', ')}`,
