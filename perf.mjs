@@ -6,7 +6,7 @@
 //   smogon   Smogon usage stats, 1760+ ladder, latest month (ladder.mjs, meta_ladder.json "usage1760")
 //   prd      project-red-data: top 10% of Showdown replays, last 30 days (sources.mjs)
 //   ladder   Showdowntier: Showdown ladder usage, win rate and average rating, last 14 days (sources.mjs)
-//   outside  other sites' tier lists for each Pokémon's sheet: Pokémon Zone, Showdowntier (sources.mjs)
+//   outside  other sites' tier lists for each Pokémon's sheet: Showdowntier (sources.mjs; Pokémon Zone refuses automated reads)
 // Every part carries the date of its data ("updated", YYYY-MM-DD; a month for Smogon) and its label says it, so the page
 // can show the date and leave out anything older than its cadence. A part whose source failed today is left out.
 // Usage: node perf.mjs   (after update.mjs, rk9-field.mjs, ladder.mjs, opgg.mjs and sources.mjs)
@@ -38,8 +38,7 @@ function tierList(k, name, how, url, note, src, megaSrc) { if (!src) return null
   for (const r of src.rows) { if (!r.tier) continue; const fam = famOf(r.n), best = fam.slice().sort((a, b) => (tourU[b] || 0) - (tourU[a] || 0))[0];
     const key = data[best] == null ? best : r.n; if (data[key] == null) data[key] = idx(r.tier); }
   return {list: {k, name, how, url, note, date: src.date || today, tiers: Object.fromEntries(order.map(t => [idx(t), t]))}, data}; }
-const T = [tierList('pz', 'Pokémon Zone', 'tournament win rate', 'https://www.pokemon-zone.com/champions/tier-list/', 'lists Pokémon on about 6%+ of teams', S.pz, S.pzMega),
-  tierList('showdowntier', 'Showdowntier', 'Showdown ladder usage + win rate', 'https://showdowntier.com/formats/dmc/index.html', 'lists Pokémon with 1%+ ladder usage', S.sdt)].filter(Boolean);
+const T = [tierList('showdowntier', 'Showdowntier', 'Showdown ladder usage + win rate', 'https://showdowntier.com/formats/dmc/index.html', 'lists Pokémon with 1%+ ladder usage', S.sdt)].filter(Boolean);
 if (T.length) out.outside = {updated: today, lists: T.map(t => t.list), data: Object.fromEntries(T.map(t => [t.list.k, t.data]))};
 fs.writeFileSync('out/perf.json', JSON.stringify(out));
 console.log(`perf: ${['tour', 'adj', 'ingame', 'official', 'smogon', 'prd', 'ladder'].map(k => `${k} ${out[k] ? (out[k].rows || out[k].names).length + ' (' + out[k].updated + ')' : 'none'}`).join(', ')}, outside ${T.map(t => t.list.k + ' ' + Object.keys(t.data).length).join('/') || 'none'}`);

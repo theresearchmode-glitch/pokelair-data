@@ -1,6 +1,6 @@
 name: Probe new fetchers (branch only, dry run)
 # Runs the new and changed data steps against the real sites, in a scratch copy of out/ and data/ outside the checkout.
-# Commits nothing and pushes nothing: results are uploaded as an artifact to inspect. Remove before merging.
+# Commits nothing and pushes nothing: results are reported as annotations (and an artifact). Remove before merging.
 on:
   push:
     branches: ['claude/freshness']
@@ -21,37 +21,41 @@ jobs:
       - name: Scratch copy
         run: |
           P="$RUNNER_TEMP/probe"; mkdir -p "$P/data"
-          cp -r out "$P/out"; cp -r data/rk9 "$P/data/rk9"; cp data/index.json data/regmc-items.txt roster.json "$P/data/" 2>/dev/null || true
-          cp roster.json "$P/"; cp data/index.json "$P/data/index.json"
+          cp -r out "$P/out"; cp -r data/rk9 "$P/data/rk9"; cp data/regmc-items.txt data/index.json "$P/data/"; cp roster.json "$P/"
       - name: RK9 whole field (newest event only)
         working-directory: ${{ runner.temp }}/probe
         env:
           RK9_FIELD_MAX: '300'
-        run: node "$GITHUB_WORKSPACE/rk9-field.mjs" || echo "::warning::rk9-field failed"
+        run: node "$GITHUB_WORKSPACE/rk9-field.mjs" 2>&1 | tee rk9.log || true
       - name: Smogon (forced, to read the 1760+ cut)
         working-directory: ${{ runner.temp }}/probe
         env:
           FORCE: '1'
-        run: node "$GITHUB_WORKSPACE/ladder.mjs" || echo "::warning::ladder failed"
+        run: node "$GITHUB_WORKSPACE/ladder.mjs" 2>&1 | tee ladder.log || true
       - name: Outside sources
         working-directory: ${{ runner.temp }}/probe
-        run: node "$GITHUB_WORKSPACE/sources.mjs" || echo "::warning::sources failed"
+        run: node "$GITHUB_WORKSPACE/sources.mjs" 2>&1 | tee sources.log || true
       - name: Ratings inputs and cross-check
         working-directory: ${{ runner.temp }}/probe
         run: |
-          node "$GITHUB_WORKSPACE/perf.mjs" || echo "::warning::perf failed"
-          node "$GITHUB_WORKSPACE/crosscheck.mjs" || echo "::warning::crosscheck failed"
-          node "$GITHUB_WORKSPACE/health.mjs" || echo "health exit $?"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: probe-quick
-          path: |
-            ${{ runner.temp }}/probe/out/perf.json
-            ${{ runner.temp }}/probe/out/sources.json
-            ${{ runner.temp }}/probe/out/crosscheck.json
-            ${{ runner.temp }}/probe/out/official_perf.json
-            ${{ runner.temp }}/probe/out/meta_ladder.json
-            ${{ runner.temp }}/probe/data/rk9/field/
+          node "$GITHUB_WORKSPACE/perf.mjs" 2>&1 | tee perf.log || true
+          node "$GITHUB_WORKSPACE/crosscheck.mjs" 2>&1 | tee cross.log || true
+          node "$GITHUB_WORKSPACE/health.mjs" > health.log 2>&1 || true
+      - name: Report logs
+        working-directory: ${{ runner.temp }}/probe
+        run: cat rk9.log ladder.log sources.log perf.log cross.log health.log > all.log; node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" log all.log
+      - name: Report official
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" official
+      - name: Report sources
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" sources
+      - name: Report perf
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" perf
+      - name: Report cross-check
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" cross
   backfill:
     # every finished official event, whole field (about 4,500 team lists at RK9's pace): only when the commit asks for it
     if: contains(github.event.head_commit.message, '[backfill]')
@@ -70,11 +74,12 @@ jobs:
         working-directory: ${{ runner.temp }}/probe
         env:
           RK9_FIELD_MAX: '8000'
-        run: node "$GITHUB_WORKSPACE/rk9-field.mjs" || echo "::warning::rk9-field failed"
-      - uses: actions/upload-artifact@v4
+        run: node "$GITHUB_WORKSPACE/rk9-field.mjs" 2>&1 | tee rk9.log || true
+      - name: Report log
         if: always()
-        with:
-          name: probe-backfill
-          path: |
-            ${{ runner.temp }}/probe/out/official_perf.json
-            ${{ runner.temp }}/probe/data/rk9/field/
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" log rk9.log
+      - name: Report official
+        if: always()
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/experiments/probe-report.mjs" official

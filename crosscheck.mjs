@@ -2,8 +2,8 @@
 // mapping mistake on our side shows up as a disagreement. Writes out/crosscheck.json; health.mjs prints the summary.
 // For each comparison: the 40 most used Pokémon (by our number), ours vs theirs, the difference, and flags when they
 // disagree beyond the tolerance. Tolerances allow for the known, legitimate differences listed in each check's "known":
-//  - windows: our Limitless table covers all of Reg M-C; Pikalytics about the last 2 weeks; meta_tour the last 4 weeks
-//  - samples: Pokémon Zone counts tournaments with 16+ players and match (not game) records
+//  - windows: Pikalytics covers about the last 2 weeks of tournaments; our meta_tour the last 4 weeks
+//  - samples: Pikalytics applies its own minimum event size; Pokémon Zone (not read: it refuses automated requests)
 //  - ladders: Smogon is one calendar month at a rating cut; Showdowntier the last 14 days, all ratings; project-red-data
 //    the top 10% of public replays over 30 days
 //  - names: sites list a species ("Charizard"); we split Megas out. Everything here is compared per species (a team can
@@ -23,7 +23,7 @@ const lc = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const checks = [];
 function compare({id, ours, theirs, oursName, theirsName, known, tolU = [3, .25], tolW = null, sets = null, top = 40, form = false}) {
   if (!ours || !theirs || !Object.keys(ours).length || !Object.keys(theirs).length) { checks.push({id, skipped: !theirs ? `${theirsName}: not fetched today` : `${oursName}: missing`}); return; }
-  // win rates are compared as the gap to each source's own average over these rows (Pokémon Zone counts finishers' match
+  // win rates are compared as the gap to each source's own average over these rows (some sites count finishers' match
   // records, which average well above 50%; game records of every player average about 50%)
   const avg = (D, ks) => { let a = 0, b = 0; for (const k of ks) { const o = D[k]; if (o && o.w != null && o.g) { a += o.w * o.g; b += o.g; } } return b ? a / b : null; };
   const names = Object.keys(ours).sort((a, b) => (ours[b].u || 0) - (ours[a].u || 0)).slice(0, top), rows = [], both = names.filter(n => theirs[n]), mO = avg(ours, both), mT = avg(theirs, both);
@@ -47,21 +47,11 @@ const fromSrc = rows => bySpecies((rows || []).map(r => [r.n, r.u, r.wr != null 
 // per species, the set of the form most players use (rows give each form's usage)
 const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map(r => [r.n, r.u])), D = {}, best = {};
   for (const [k, v] of Object.entries(sets || {})) { const s = spec(k), u = U[k] != null ? U[k] : 0; if (!D[s] || u > best[s]) { D[s] = v; best[s] = u; } } return D; };
-const tourSp = P.tour ? bySpecies([...(P.tour.rows || []), ...(P.tour.megas || [])]) : null;
-const tourForm = P.tour ? Object.fromEntries((P.tour.megas || []).map(r => [r[0], {u: r[1], w: r[2], g: r[3]}])) : null;
 const mtSp = MT ? bySpecies(metaRows(MT).map(r => [r.n, r.u, r.w, r.teams])) : null;
-// 1. Limitless tournaments: ours (whole Reg M-C) vs Pokémon Zone (also Limitless, whole Reg M-C)
-compare({id: 'tour-vs-pokemonzone', ours: tourSp, theirs: S.pz && fromSrc(S.pz.rows), oursName: P.tour && P.tour.label, theirsName: S.pz && `Pokémon Zone tier list (${S.pz.events || '?'} Limitless tournaments, ${S.pz.date})`,
-  known: 'Same underlying Limitless results. Pokémon Zone keeps tournaments with 16+ players and counts match records (we count games), so its win rates sit closer to 50% and usage can differ by a point or two.', tolW: 4});
-compare({id: 'tour-megas-vs-pokemonzone', form: true, ours: tourForm, theirs: S.pzMega && Object.fromEntries(S.pzMega.rows.map(r => [r.n, {u: r.u, w: r.wr, g: r.m}])), oursName: 'Limitless Megas (per form)', theirsName: S.pzMega && `Pokémon Zone Mega tier list (${S.pzMega.date})`,
-  known: 'As above, per Mega form.', tolW: 4, top: 25});
 // 2. Recent tournaments + sets: our last-4-weeks team sheets vs Pikalytics (tournaments, about the last 2 weeks)
 compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics Reg M-C (${S.pika.scope || 'recent tournaments'})`,
   known: 'Both are tournament team sheets, but Pikalytics covers about the last 2 weeks with its own minimum event size; ours covers 4 weeks of Limitless. A Pokémon rising or falling right now differs by window.',
   tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
-// 3. Official events: our RK9 whole-field table vs Pokémon Zone's official (pokedata) list
-compare({id: 'official-vs-pokemonzone', ours: P.official && bySpecies(P.official.rows), theirs: S.pzOfficial && fromSrc(S.pzOfficial.rows), oursName: P.official && P.official.label, theirsName: S.pzOfficial && `Pokémon Zone, official events data (${S.pzOfficial.date})`,
-  known: 'Both from RK9 official events. Pokémon Zone may count a different set of events (it updates on its own schedule) and match records of finishers.', tolW: 4});
 // 4. Ladder usage: Smogon 1760+ (monthly) vs project-red-data (top 10% of replays, 30 days) and Showdowntier (14 days)
 const smSp = P.smogon ? bySpecies(P.smogon.rows) : null, mlSets = setsOf(ML);
 compare({id: 'smogon1760-vs-prd', ours: smSp, theirs: S.prd && fromSrc(S.prd.rows), oursName: P.smogon && P.smogon.label, theirsName: S.prd && `project-red-data top 10% replays (${S.prd.date})`,

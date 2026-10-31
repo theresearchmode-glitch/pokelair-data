@@ -1,9 +1,7 @@
 // Outside sources (daily, after ladder.mjs): other sites' numbers for Reg M-C doubles, read straight from their pages.
 // Writes out/sources.json. perf.mjs uses them as rating inputs (Showdowntier ladder table, project-red-data replays) and
-// for the "Other tier lists" on each Pokémon's sheet (Pokémon Zone, Showdowntier); crosscheck.mjs compares our own
+// for the "Other tier list" on each Pokémon's sheet (Showdowntier); crosscheck.mjs compares our own
 // numbers against them. Each source is optional: one that fails or changes its page is left out (and reported).
-//   pz      Pokémon Zone tier list: Limitless tournaments (16+ players), all of Reg M-C. Tier, match win %, usage %, matches
-//   pzMega  Pokémon Zone Mega tier list (same data, Mega forms)
 //   sdt     Showdowntier: Showdown ladder, last 14 days. Tier, usage %, win %, average player rating
 //   pika    Pikalytics: Showdown ladder 1760+. Usage %, win %; items and moves for the 40 most used
 //   prd     project-red-data (GitHub): top 10% of public Showdown replays, last 30 days. Usage, items, moves
@@ -16,7 +14,6 @@ async function get(url, opt = {}) { if (calls++) await sleep(1500);
   for (let k = 0; k < 3; k++) { const r = await fetch(url, {headers: {...UA, ...(opt.headers || {})}, redirect: opt.redirect || 'follow'});
     if (opt.raw) return r; if (r.ok) return r.text(); if (r.status === 429 || r.status >= 500) { await sleep(15000); continue; } throw new Error(url + ' ' + r.status); }
   throw new Error(url + ' failed'); }
-const ISO = s => { const t = Date.parse(s); return isFinite(t) ? new Date(t).toISOString().slice(0, 10) : null; };
 // any site's name -> our roster name: Showdown ids ("Indeedee-F", "Rotom-Wash"), Pokémon Zone / RK9 ("Arcanine [Hisuian Form]"),
 // Megas written "Mega Charizard Y" or "Charizard-Mega-Y". null when it isn't on the roster.
 export function norm(raw) { let n = dec(String(raw || '')).replace(/\s+/g, ' ').trim(); if (!n) return null;
@@ -29,29 +26,8 @@ export function norm(raw) { let n = dec(String(raw || '')).replace(/\s+/g, ' ').
   const d = n.replace(/ /g, '-'); return ROSTER.has(d) ? d : null; }
 const out = {updated: new Date().toISOString(), problems: []};
 const tryIt = async (k, f) => { try { const v = await f(); if (v) out[k] = v; else out.problems.push(`${k}: nothing parsed`); } catch (e) { out.problems.push(`${k}: ${e.message}`); console.log(`sources: ${k} failed: ${e.message}`); } };
-// Pokémon Zone tier lists: cards under tier headings, each "WR 59.9% · 11.9% usage · 8192 matches"
-function pzParse(h) { const rows = [], miss = []; let tier = null;
-  for (const part of h.split(/(?=<div class="tier-row__label|<a [^>]*class="champs-pokemon-card")/)) {
-    const t = part.match(/^<div class="tier-row__label[^"]*">\s*([A-Z][+-]?)\s*</); if (t) { tier = t[1]; continue; }
-    if (!/^<a [^>]*champs-pokemon-card/.test(part)) continue;
-    const nm = (part.match(/champs-pokemon-card__name">([\s\S]*?)<\/div>/) || [])[1], st = (part.match(/champs-pokemon-card__usage">([\s\S]*?)<\/div>/) || [])[1];
-    if (!nm || !st) continue; const raw = text(nm).join(' '), n = norm(raw), s = text(st).join(' ');
-    const wr = +(s.match(/WR ([\d.]+)%/) || [])[1], u = +(s.match(/([\d.]+)% usage/) || [])[1], mt = +(s.match(/([\d,]+) matches/) || [, ''])[1].replace(/,/g, '');
-    if (!n) { miss.push(raw); continue; } rows.push({n, raw, tier, wr, u, m: mt}); }
-  const meta = (h.match(/Last updated ([A-Z][a-z]+ \d+, \d{4}) with (\d+) Pokémon ranked across (\d+) tournaments/) || []);
-  return {date: meta[1] ? ISO(meta[1]) : null, ranked: +meta[2] || null, events: +meta[3] || null, rows, miss}; }
-await tryIt('pz', async () => { const P = pzParse(await get('https://www.pokemon-zone.com/champions/tier-list/'));
-  // the popular order lists more Pokémon (usage, not tiers): fill in usage for the ones the tier list leaves out
-  try { const Q = pzParse(await get('https://www.pokemon-zone.com/champions/tier-list/?sort=popular')); const have = new Set(P.rows.map(r => r.n)); for (const r of Q.rows) if (!have.has(r.n)) P.rows.push({...r, tier: null}); } catch (e) {}
-  return P.rows.length >= 15 ? P : null; });
-await tryIt('pzMega', async () => { const P = pzParse(await get('https://www.pokemon-zone.com/champions/tier-list-mega/')); return P.rows.length >= 5 ? P : null; });
-// Pokémon Zone's other data set (RK9 official events, via pokedata): chosen with a cookie set by its set-source link
-await tryIt('pzOfficial', async () => { const r = await get('https://www.pokemon-zone.com/champions/set-source/?source=pokedata&next=/champions/tier-list/', {raw: true, redirect: 'manual'});
-  const ck = (r.headers.getSetCookie ? r.headers.getSetCookie() : [r.headers.get('set-cookie') || '']).map(c => c.split(';')[0]).filter(Boolean).join('; ');
-  if (!ck) throw new Error('no cookie from set-source (status ' + r.status + ')');
-  const h = await get('https://www.pokemon-zone.com/champions/tier-list/?sort=popular', {headers: {Cookie: ck}}), P = pzParse(h);
-  P.cookie = ck.replace(/=.*/, '=…'); P.note = (h.match(/Last updated[^<]{0,160}/) || [''])[0];
-  return P.rows.length >= 10 ? P : null; });
+// Pokémon Zone is not read: it answers automated requests with 403 (tested Oct 31 from the daily job's runner), and
+// that refusal is respected. Its tier list and the official-events data it shows are not part of the daily data.
 // Showdowntier: one table, every row carries data-name / data-tier / data-usage / data-win / data-rating
 await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/formats/dmc/index.html'), rows = [], miss = [];
   for (const m of h.matchAll(/<tr[^>]*data-rank="(\d+)"[^>]*data-name="([^"]+)"[^>]*data-tier="([^"]*)"[^>]*data-usage="([\d.]+)"[^>]*data-win="([\d.]+)"[^>]*data-rating="([\d.]+)"/g)) {
@@ -82,6 +58,6 @@ await tryIt('prd', async () => { const j = JSON.parse(await get('https://raw.git
   rows.sort((a, b) => b.u - a.u);
   const I = j.info || {}; return rows.length >= 30 ? {date: String(I.generated || '').slice(0, 10) || null, teams: I.teams || null, source: I.source || '', rows, sets, miss} : null; });
 fs.writeFileSync('out/sources.json', JSON.stringify(out));
-for (const k of ['pz', 'pzMega', 'pzOfficial', 'sdt', 'pika', 'prd']) { const s = out[k];
+for (const k of ['sdt', 'pika', 'prd']) { const s = out[k];
   console.log(`sources: ${k} ${s ? `${s.rows.length} rows, dated ${s.date || s.dataDate || '?'}; top ${s.rows.slice(0, 3).map(r => `${r.n} ${r.u}%`).join(', ')}${s.miss && s.miss.length ? '; unmapped ' + s.miss.slice(0, 12).join(', ') : ''}` : 'missing'}`); }
 if (out.problems.length) console.log('::warning::sources: ' + out.problems.join(' | '));

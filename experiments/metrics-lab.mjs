@@ -79,8 +79,8 @@ const FWD = [.6, .75].map(fr => { const k = Math.floor(EV.length * fr), past = E
   const P = ingredients(past, GAMES.filter(G => G.d <= asOf), asOf), Fu = ingredients(fut, [], fut[fut.length - 1].d, 1e9);
   const pool = [...Fu.keys()].filter(n => Fu.get(n).field >= .005 || (P.get(n) && P.get(n).field >= .005)); return {asOf, P, Fu, pool}; });
 const ALL = ingredients(EV, GAMES, EV[EV.length - 1].d);
-// outside references: OUTSIDE (13-rating.js) + Showdowntier + Suckerpunch (base-species names -> our most-used form)
-const src13 = fs.readFileSync('app/src/app/13-rating.js', 'utf8'), OUT = JSON.parse(src13.match(/data: (\{"pz".*\})\};/)[1]), EXT = rd('experiments/outside-refs.json');
+// outside references: the Oct 25 lists (experiments/outside-oct25.json) + Showdowntier + Suckerpunch (base-species names -> our most-used form)
+const OUT = (({_note, ...d}) => d)(JSON.parse(fs.readFileSync('experiments/outside-oct25.json', 'utf8'))), EXT = rd('experiments/outside-refs.json');
 const ours = n => { let x = nameOf.lmap(n) || n; if (/^Floette/.test(x)) x = 'Floette-Mega'; const c = [x, x + '-Mega', x + '-Mega-X', x + '-Mega-Y', x + '-Mega-Z'].filter(k => ALL.has(k)); return c.sort((a, b) => ALL.get(b).field - ALL.get(a).field)[0] || null; };
 const REFS = {pz: OUT.pz, synergy: OUT.synergy, poketools: OUT.poketools};
 for (const [k, L] of Object.entries(EXT)) { if (k.startsWith('_')) continue; const m = {}; for (const [n, v] of Object.entries(L)) { const o = ours(n); if (o && m[o] == null) m[o] = v; } REFS[k] = m; }

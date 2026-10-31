@@ -55,8 +55,8 @@ function forward(cutFrac) { const k = Math.floor(EV.length * cutFrac), past = EV
     const top10 = new Set(rows.slice().sort((a, b) => b[2] - a[2]).slice(0, 10).map(r => r[0])), mine = rows.slice().sort((a, b) => b[1] - a[1]).slice(0, 10).map(r => r[0]);
     res[name] = {n: xs.length, spTop: +spear(xs, ys).toFixed(3), spLift: +spear(xs, yc).toFixed(3), top10: mine.filter(n => top10.has(n)).length}; }
   return {cut: asOf, pastEv: past.length, futEv: fut.length, res}; }
-// outside tier lists (13-rating.js OUTSIDE.data)
-const src13 = fs.readFileSync('app/src/app/13-rating.js', 'utf8'), OUT = JSON.parse(src13.match(/data: (\{"pz".*\})\};/)[1]);
+// outside tier lists (Oct 25 snapshot, experiments/outside-oct25.json)
+const OUT = (({_note, ...d}) => d)(JSON.parse(fs.readFileSync('experiments/outside-oct25.json', 'utf8')));
 function outside(score) { const r = {}; for (const [k, L] of Object.entries(OUT)) { const ns = Object.keys(L).filter(n => score(n) != null); r[k] = +spear(ns.map(n => score(n)), ns.map(n => L[n])).toFixed(3); } return r; }
 const eAll = evidence(EV, EV[EV.length - 1].d);
 for (const f of [.6, .75]) console.log('forward', JSON.stringify(forward(f)));
