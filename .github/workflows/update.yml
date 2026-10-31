@@ -8,7 +8,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -19,12 +19,20 @@ jobs:
         env:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
       - run: node rk9.mjs || echo "::warning::rk9 skipped"
+      # every Masters team list and match of the finished official events (once per event; a big backlog spreads over days)
+      - run: node rk9-field.mjs || echo "::warning::rk9 whole field skipped"
+        env:
+          RK9_FIELD_MAX: '1500'
       - run: node events.mjs || echo "::warning::events skipped"
       - run: node model.mjs || echo "::warning::model skipped"
       - run: node ladder.mjs || echo "::warning::ladder stats skipped"
+      # other sites' numbers: Pokémon Zone, Showdowntier, Pikalytics, project-red-data (rating inputs, tier lists, cross-check)
+      - run: node sources.mjs || echo "::warning::outside sources skipped"
       - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || echo "::warning::op.gg skipped"
-      # the ratings' daily inputs (tournament table + in-game order) for the morning refresh; checked by health.mjs
+      # the ratings' daily inputs (all of out/perf.json) for the morning refresh; checked by health.mjs
       - run: node perf.mjs || echo "::warning::perf skipped"
+      # our numbers against the outside sources (out/crosscheck.json; summary and warnings in the Data health step)
+      - run: node crosscheck.mjs || echo "::warning::crosscheck skipped"
       - run: node ratings-snapshot.mjs || echo "::warning::ratings snapshot skipped"
       - run: node scoreboard.mjs || echo "::warning::scoreboard skipped"
       - name: Commit

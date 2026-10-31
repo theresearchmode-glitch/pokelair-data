@@ -1,0 +1,80 @@
+name: Probe new fetchers (branch only, dry run)
+# Runs the new and changed data steps against the real sites, in a scratch copy of out/ and data/ outside the checkout.
+# Commits nothing and pushes nothing: results are uploaded as an artifact to inspect. Remove before merging.
+on:
+  push:
+    branches: ['claude/freshness']
+permissions:
+  contents: read
+jobs:
+  quick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    concurrency:
+      group: probe-quick
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Scratch copy
+        run: |
+          P="$RUNNER_TEMP/probe"; mkdir -p "$P/data"
+          cp -r out "$P/out"; cp -r data/rk9 "$P/data/rk9"; cp data/index.json data/regmc-items.txt roster.json "$P/data/" 2>/dev/null || true
+          cp roster.json "$P/"; cp data/index.json "$P/data/index.json"
+      - name: RK9 whole field (newest event only)
+        working-directory: ${{ runner.temp }}/probe
+        env:
+          RK9_FIELD_MAX: '300'
+        run: node "$GITHUB_WORKSPACE/rk9-field.mjs" || echo "::warning::rk9-field failed"
+      - name: Smogon (forced, to read the 1760+ cut)
+        working-directory: ${{ runner.temp }}/probe
+        env:
+          FORCE: '1'
+        run: node "$GITHUB_WORKSPACE/ladder.mjs" || echo "::warning::ladder failed"
+      - name: Outside sources
+        working-directory: ${{ runner.temp }}/probe
+        run: node "$GITHUB_WORKSPACE/sources.mjs" || echo "::warning::sources failed"
+      - name: Ratings inputs and cross-check
+        working-directory: ${{ runner.temp }}/probe
+        run: |
+          node "$GITHUB_WORKSPACE/perf.mjs" || echo "::warning::perf failed"
+          node "$GITHUB_WORKSPACE/crosscheck.mjs" || echo "::warning::crosscheck failed"
+          node "$GITHUB_WORKSPACE/health.mjs" || echo "health exit $?"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe-quick
+          path: |
+            ${{ runner.temp }}/probe/out/perf.json
+            ${{ runner.temp }}/probe/out/sources.json
+            ${{ runner.temp }}/probe/out/crosscheck.json
+            ${{ runner.temp }}/probe/out/official_perf.json
+            ${{ runner.temp }}/probe/out/meta_ladder.json
+            ${{ runner.temp }}/probe/data/rk9/field/
+  backfill:
+    # every finished official event, whole field (about 4,500 team lists at RK9's pace): only when the commit asks for it
+    if: contains(github.event.head_commit.message, '[backfill]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Scratch copy
+        run: |
+          P="$RUNNER_TEMP/probe"; mkdir -p "$P/data"
+          cp -r out "$P/out"; cp -r data/rk9 "$P/data/rk9"; cp data/regmc-items.txt "$P/data/"; cp roster.json "$P/"
+      - name: RK9 whole field, all events
+        working-directory: ${{ runner.temp }}/probe
+        env:
+          RK9_FIELD_MAX: '8000'
+        run: node "$GITHUB_WORKSPACE/rk9-field.mjs" || echo "::warning::rk9-field failed"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: probe-backfill
+          path: |
+            ${{ runner.temp }}/probe/out/official_perf.json
+            ${{ runner.temp }}/probe/data/rk9/field/
