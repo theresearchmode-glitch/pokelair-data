@@ -410,3 +410,5 @@ button.chring{background:none;cursor:pointer;padding:0}
 /* the sheet header on a light type colour (Normal, Electric, Ice…): dark ink instead of white */
 :root:not(#_ch) .lshead.chls.ltype h3,:root:not(#_ch) .lshead.chls.ltype .chlsk{color:#1D2140;text-shadow:none}
 :root:not(#_ch) .lshead.chls.ltype .lsx{background:rgba(0,0,0,.14)!important;color:#1D2140!important}
+/* fix plans being worked out after an edit (Oct 31): the previous ones stay in place, faded, until the new ones fill in */
+.planstale{opacity:.45;transition:opacity .2s;cursor:progress}

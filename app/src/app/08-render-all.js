@@ -9,6 +9,79 @@ function typingNow(){const a=document.activeElement;return !!(a&&(a.tagName==='T
 let bgWait=false;function bgRender(){if(!typingNow()){render();return}if(bgWait)return;bgWait=true;const go=()=>{document.removeEventListener('focusout',go,true);setTimeout(()=>{bgWait=false;if(typingNow()){bgRender();return}render()},150)};document.addEventListener('focusout',go,true)}
 // Run one part of the page; if it throws, log it and keep the rest of the page working.
 function safe(name,fn){try{fn()}catch(err){try{console.error('Champions Team Coverage: '+name+' failed',err)}catch(e){}}}
+// what the fix plans depend on: the team, pool, settings, box, saved teams and meta data
+function planKeyOf(useA){return JSON.stringify([OFFMETA,S.slots,ui.pool,S.format,megaGoal(),$('swapMega').checked,useA,ui.metaSrc,metaVersion,S.box.join(),S.excl.join(),S.teams.map(t=>t.format+t.slots.map(x=>x.n).join()).join()])}
+// plans for the last few teams (Undo, or editing back and forth, reuses them)
+const planLRU=new Map();
+function planKeep(key,plans){planLRU.delete(key);planLRU.set(key,plans);while(planLRU.size>8)planLRU.delete(planLRU.keys().next().value)}
+// The plans being worked out in the background: the same planner (planFixesG), run about 30 ms at a time between frames.
+// A newer team replaces it; when it finishes, the page redraws with the plans (from the cache, so that redraw is quick).
+let planJob=null;
+function planJobStart(key,ms,pool,useA,a){if(planJob&&planJob.key===key)return;
+  const job={key};planJob=job;const gems=!OFFMETA;let main=null,gem=null,plans=null,warm=null;
+  const fail=(e,what)=>{try{console.error('Champions Team Coverage: '+what+' failed',e)}catch(x){}};
+  const step=()=>{if(planJob!==job)return;const t=performance.now();
+    try{
+      if(!main)main=planFixesG(ms,pool,useA);
+      if(!plans){for(;;){const r=main.next();if(r.done){plans=r.value;break}if(performance.now()-t>30){setTimeout(step,0);return}}
+        // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
+        if(gems){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{gem=withOffMeta(()=>planFixesG(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}}
+      if(gem){try{for(;;){const r=withOffMeta(()=>gem.next());if(r.done){plans.gems=r.value;gem=null;break}if(performance.now()-t>30){setTimeout(step,0);return}}}catch(e){plans.gems=null;gem=null}}
+      // then the readiness reports the redraw will look up, so the redraw itself is quick
+      if(!warm)warm=planWarmG(ms,plans,a);
+      for(;;){let r;try{r=warm.next()}catch(e){break}if(r.done)break;if(performance.now()-t>30){setTimeout(step,0);return}}
+    }catch(e){fail(e,'fix plans');plans=[]}
+    planJob=null;
+    // the team or settings changed without a redraw yet: the next redraw starts over
+    if(planKeyOf($('useAbil').checked)!==key)return;
+    planCache={key,plans};planKeep(key,plans);
+    // redraw with the plans if a page that shows them is open (another page picks them up from the cache when it opens)
+    if(typeof view==='undefined'||view==='build'||view==='report'||view==='coverage')planDone()};
+  setTimeout(step,0)}
+// Readiness reports (cached by THR.teamReport) for the six-Pokémon teams the plan cards, Quick add and the My team suggestions
+// look up: worked out here one at a time, so the redraw that shows the plans finds them ready. Only warms the cache; the
+// numbers are the same either way.
+function* planWarmG(ms,plans,a){const seen=new Set(),warm=function*(team){if(!team||team.length!==6||seen.has(team))return;seen.add(team);prepOf(team);yield};
+  for(const pl of [...plans,...(plans.more||[])])yield* warm(pl.team);
+  // Quick add: the same keys and shortlists renderProblems / quickPicks use
+  const keys=[];const gp=plans.gp?plans.gp:gamePlan(ms);
+  if(ms.length>=3)for(const r of gp.rows){const big=r.k==='speed'||r.k==='support'||((r.k==='weather'||r.k==='terrain')&&r.st==='miss')||r.k==='trfit';if(big&&(r.st==='miss'||r.st==='part'))keys.push('gp:'+r.k)}
+  if(ms.length>=6&&megaCount(ms)===0)keys.push('mega');
+  for(const t of a.rows){if(t.w>t.r)keys.push('weak:'+t.atk);if(t.r===0&&t.w<=t.r)keys.push('unres:'+t.atk)}
+  const list=[],keep=ui.plans;ui.plans=plans;
+  try{for(const src of [plans,plans.gems])if(src&&src.singles&&src.basePl){const base=src.basePl.score;
+    for(const k of keys)list.push(...src.singles.filter(pl=>pl.ch.length===1&&pl.score<base-3&&qaFixes(k,pl,ms)).sort((x,y)=>x.score-y.score).slice(0,20))}}
+  finally{ui.plans=keep}
+  for(const pl of list)yield* warm(pl.team)}
+// While the plans are worked out (they fill in a moment later): what was there stays in place, faded and not tappable, so
+// nothing jumps; an empty spot gets a short note. Its buttons can't be tapped, as they belong to the team before the edit.
+const PLAN_WAIT='<div class="empty-note abbusy planwait" role="status"><span class="abspin" aria-hidden="true"></span>Working out the best fixes for your team…</div>';
+function planStale(el,wait){if(!el)return;if(el.classList.contains('planstale'))return;
+  if(el.innerHTML.trim()&&!el.querySelector('.planwait')){el.classList.add('planstale');el.inert=true;el.setAttribute('aria-busy','true')}else el.innerHTML=wait}
+function planFresh(el){if(el&&el.classList.contains('planstale')){el.classList.remove('planstale');el.inert=false;el.removeAttribute('aria-busy')}}
+function planWait(){ui.quick=[];planStale($('needs'),PLAN_WAIT);planStale($('sugs'),PLAN_WAIT.replace('the best fixes','fix plans'))}
+// the parts of the page drawn from the fix plans (render, and planDone when the plans come in)
+function plansDraw({ms,a,tRows,useA,covered},plans){
+  if(plans.pending){ui.planList=[];safe('plans wait',planWait);return}
+  planFresh($('needs'));planFresh($('sugs'));safe('problems',()=>renderProblems(ms,a,tRows,useA,plans));
+  if(ui.vProven){const nd=$('needs');if(nd&&nd.innerHTML&&nd.insertAdjacentHTML)nd.insertAdjacentHTML('afterbegin','<div class="t2 provnote">This exact team has won at real events. Treat these as optional tweaks, not problems.</div>')}
+  safe('plan cards',()=>renderPlans(ms,a,plans,useA,covered))}
+// the plans are ready: redraw, keeping what's on screen where it is if the plans above it grew or shrank
+function planDone(){if(typingNow()){bgRender();return}
+  const pane=document.querySelector('[data-pane]:not([hidden])'),c=[];
+  try{if(pane&&(window.scrollY||0)>0)for(const el of pane.querySelectorAll('[id]')){const r=el.getBoundingClientRect();if(r.height&&r.top>=0){c.push([el,r.top]);if(c.length>=8)break}}}catch(e){}
+  // nothing else changed since the last redraw (same team and settings): only the parts drawn from the plans are redrawn
+  const x=ui.planCtx;if(x&&x.key===planCache.key&&ui.plans&&ui.plans.pending){ui.plans=planCache.plans;plansDraw(x,ui.plans);
+    if(typeof CH!=='undefined'){if(view==='build'||view==='report'){CH.stale=false;safe('concept h team',chTeamRender)}else CH.stale=true}}
+  else render();
+  try{for(const [el,top] of c)if(el.isConnected&&el.getClientRects().length){const d=el.getBoundingClientRect().top-top;if(Math.abs(d)>1)window.scrollBy(0,d);break}}catch(e){}}
+// Parts of the page that aren't showing (another page, a closed tab) are redrawn when they show, not on every edit: each edit
+// used to redraw every page (Oct 31). lazy() runs a part now if it shows, else marks it; lazyFlush() (on a page or tab switch)
+// draws the marked parts that now show, with the state at that moment, as a full redraw would have.
+const lazyDirty=new Map();
+function lazyShown(id){const el=$(id);return !el||!el.closest('[hidden]')}
+function lazy(name,id,fn){if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}else lazyDirty.set(name,[id,fn])}
+function lazyFlush(){for(const [name,[id,fn]] of [...lazyDirty])if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}}
 function render(){
   pmCache=new Map();vCache=new Map();setCache=new Map();pairCache=new Map();relCache=new Map();persist();renderSlots();
   const useA=$('useAbil').checked;const ms=members();const msPlay=playForm(ms);const a=analyze(msPlay,useA);
@@ -58,22 +131,21 @@ function render(){
   safe('game plan',()=>renderGamePlan(ms));
   const pool=suggestPool();
   // Plans only change when the team, pool, settings, box or meta data change, so reuse them otherwise.
-  const planKey=JSON.stringify([OFFMETA,S.slots,ui.pool,S.format,megaGoal(),$('swapMega').checked,useA,ui.metaSrc,metaVersion,S.box.join(),S.excl.join(),S.teams.map(t=>t.format+t.slots.map(x=>x.n).join()).join()]);
+  const planKey=planKeyOf(useA);
   let plans=[];
-  // Fix plans are the slow part (about a third of a second); they're only shown on the Team page, so other pages skip them
-  // and the Team page works them out when it opens.
+  // Fix plans are the slow part (about a third of a second, 3 s on a mid-range phone); they're only shown on the Team page, so
+  // other pages skip them and the Team page works them out when it opens: in small slices between frames, so the edit itself
+  // paints at once and the plans fill in a moment later (Oct 31). The last few teams' plans are kept, so Undo is instant.
   const onTeam=typeof view==='undefined'||view==='build'||view==='report'||view==='coverage';
+  if(planCache.key===null&&planCache.plans&&!planCache.plans.length)planLRU.clear();
+  if(planCache.key!==planKey&&planLRU.has(planKey)){ui.plansStale=false;ui.planMore=0;planCache={key:planKey,plans:planLRU.get(planKey)}}
   if(planCache.key===planKey)plans=planCache.plans;
   else if(!onTeam){plans=[];ui.plansStale=true}
-  else safe('fix plans',()=>{ui.plansStale=false;ui.planMore=0;plans=ms.length?planFixes(ms,pool,useA):[];
-    // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
-    if(ms.length&&!OFFMETA){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{plans.gems=withOffMeta(()=>planFixes(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}
-    planCache={key:planKey,plans}});
-  ui.plans=plans;safe('problems',()=>renderProblems(ms,a,tRows,useA,plans));
-  if(ui.vProven){const nd=$('needs');if(nd&&nd.innerHTML&&nd.insertAdjacentHTML)nd.insertAdjacentHTML('afterbegin','<div class="t2 provnote">This exact team has won at real events. Treat these as optional tweaks, not problems.</div>')}
-  safe('plan cards',()=>renderPlans(ms,a,plans,useA,covered));
-  safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);safe('auto-build',renderAutoBuild);safe('pool',renderPoolCtl);safe('meta',renderMeta);{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
-  safe('threats',()=>renderThreats(ms,useA));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);safe('top teams',renderTopTeams);safe('battle log',renderLog);safe('sets',renderSets);safe('paste',renderPastePanel);safe('home',renderHome);
+  else if(!ms.length){ui.plansStale=false;ui.planMore=0;planCache={key:planKey,plans};planKeep(planKey,plans)}
+  else{ui.plansStale=false;if(!planJob||planJob.key!==planKey)ui.planMore=0;planJobStart(planKey,ms,pool,useA,a);plans=[];plans.pending=true}
+  ui.plans=plans;ui.planCtx={key:planKey,ms,a,tRows,useA,covered};plansDraw(ui.planCtx,plans);
+  safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
+  lazy('threats','threats',()=>renderThreats(members(),$('useAbil').checked));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);lazy('top teams','ttList',()=>renderTopTeams());safe('battle log',renderLog);safe('sets',renderSets);safe('paste',renderPastePanel);safe('home',renderHome);
 }
 // The scouting report's header: legal and items first, then how ready the team is for the top threats, the checklist, and
 // real results. Facts only: no win chance, no prediction (Oct 28).
