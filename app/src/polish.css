@@ -329,3 +329,28 @@ details.slmore[open]>summary::after{content:"Hide"}
 button.chring{background:none;cursor:pointer;padding:0}
 .chgwhy{margin:10px 0 4px;padding:12px 14px;border:2px solid var(--chline);border-radius:12px;background:var(--chc);color:var(--chink);font-size:15px;line-height:1.45}
 .chgwhy .t2{display:inline-block;margin-top:6px;font-size:14px}
+
+/* ---- Polish (Sim, Oct 31): cleaner sprites, sheet and team tiles ---- */
+/* dark mode: no blue halo around sprites, just a soft shadow (the halo read as random circles) */
+:root[data-look="dark"] .chshm .spr,:root[data-look="dark"] .chwsix .spr,:root[data-look="dark"] .chrow .spr,:root[data-look="dark"] .chhr .spr,:root[data-look="dark"] main .tgrid .tgm .spr,:root[data-look="dark"] .chbring .bmpspr,:root[data-look="dark"] #guideOut .gkm .spr,:root[data-look="dark"] .chcr .spr,:root[data-look="dark"] .chbw .spr,:root[data-look="dark"] .spdrow .spdspr{filter:drop-shadow(0 3px 4px rgba(0,0,0,.45))}
+/* team tiles: one clean style; a Pokémon matching your search gets a clear blue tint, not a stray outline */
+:root:not(#_ch) main .tgrid .tgm{border:0;box-shadow:none}
+:root:not(#_ch) main .tgrid .tgm.hl{background:color-mix(in srgb,var(--chblue) 22%,var(--chp2));box-shadow:inset 0 0 0 2px var(--chblue)}
+:root:not(#_ch) .tgmk{top:5px;right:5px;font:700 9px/1 var(--mono);letter-spacing:.04em;color:var(--chc);background:var(--chink);border-radius:5px;padding:3px 4px;box-shadow:none}
+/* the sheet */
+.lsback{background:rgba(8,10,20,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+:root:not(#_ch) .lshead.chls .lsspr{width:230px;height:230px;right:-18px;bottom:-14px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.28))}
+.lsx{background:rgba(0,0,0,.28)!important;color:#fff!important;width:40px!important;height:40px!important;font-size:18px!important;z-index:3;outline:none}
+.lsx:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.chlstats,:root[data-look="dark"] .chlstats{border:1.5px solid var(--line2)!important;box-shadow:0 8px 24px -12px rgba(0,0,0,.45)!important;border-radius:16px}
+.chlstats>div+div{border-left:1.5px solid var(--line2)}
+.chlstats>div{padding:12px 12px 10px}
+.chlstats span{display:block}.chlstats span i{display:block;font-style:normal;font-weight:400;letter-spacing:.02em;opacity:.8;margin-top:2px}
+.chlsnote{margin:6px 0 0;font-size:15px;line-height:1.45}
+.chlsnote .linkbtn{display:inline-block;margin-top:2px}
+/* "Brought with": names never break mid-word; long ones get a smaller size */
+.chbw .bwn{overflow-wrap:normal;word-break:normal;hyphens:none;white-space:normal;font-size:11px}
+.chbw .bwn.sm{font-size:9.5px;letter-spacing:-.01em}
+.chbw button{border-width:1.5px}
+.lspanel:focus{outline:none}
+:root[data-look="dark"]:not(#_ch) main .tgrid .tgm:not(.hl){background:rgba(255,255,255,.055)}
