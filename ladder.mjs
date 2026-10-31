@@ -6,7 +6,7 @@ const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8'))
 const prev = readJSON('out/meta_ladder.json', null);
 const months = [...(await (await fetch(BASE)).text()).matchAll(/href="(\d{4}-\d{2})\/"/g)].map(m => m[1]).sort().reverse();
 let month = null, data = null;
-for (const m of months.slice(0, 3)) { const r = await fetch(`${BASE}${m}/chaos/${FMT}-${CUT}.json`); if (r.ok) { month = m; if (prev && prev.month === m && !process.env.FORCE) break; data = await r.json(); break; } }
+for (const m of months.slice(0, 3)) { const r = await fetch(`${BASE}${m}/chaos/${FMT}-${CUT}.json`); if (r.ok) { month = m; if (prev && prev.month === m && prev.usage1760 && !process.env.FORCE) break; data = await r.json(); break; } }
 if (!month) { console.log('ladder: no stats found'); process.exit(0); }
 if (!data) { console.log(`ladder: ${month} already built`); process.exit(0); }
 // Showdown ids -> names
@@ -24,7 +24,12 @@ const rows = Object.entries(D).sort((a, b) => b[1].usage - a[1].usage).slice(0, 
   const cc = Object.entries(x['Checks and Counters'] || {}).filter(([, v]) => v.n >= 30).map(([o, v]) => [mapMon(o) || o, Math.round(1000 * (v.p - 4 * v.d)) / 10]).sort((a, b) => b[1] - a[1]).slice(0, 6);
   return {r: i + 1, n: n || name, u: Math.round(10000 * x.usage) / 100, mv: pc(x.Moves, 12, id => nm(MOVES, id)), it: pc(x.Items, 6, id => nm(ITEMS, id)), ab: pc(x.Abilities, 4, id => nm(ABIL, id)),
     na: pc(nat, 4), sp: pc(x.Spreads, 3), tm: pc(x.Teammates, 10, o => mapMon(o) || o), cc}; });
+// the 1760+ cut of the same month: usage only, for the ratings (perf.mjs "smogon" row: how strong ladder players build)
+let usage1760 = null;
+try { const r = await fetch(`${BASE}${month}/chaos/${FMT}-1760.json`); if (r.ok) { const d = await r.json();
+  usage1760 = {cut: 1760, month, battles: d.info['number of battles'], rows: Object.entries(d.data).map(([k, x]) => [mapMon(k) || k, Math.round(10000 * x.usage) / 100]).filter(r => r[1] >= .05).sort((a, b) => b[1] - a[1])}; } }
+catch (e) { console.log('ladder: 1760 stats unavailable: ' + e.message); }
 const out = {format: 'doubles', kind: 'ladder', month, source: `Showdown ladder ${CUT}+ (Smogon usage stats, ${FMT})`, period: month, battles: N, updated: new Date().toISOString(),
-  note: 'Usage among teams on the 1630+ ladder. Checks & counters: how often the listed Pokémon KOs or forces this one out.', top: rows.slice(0, 60), more: rows.slice(60)};
+  note: 'Usage among teams on the 1630+ ladder. Checks & counters: how often the listed Pokémon KOs or forces this one out.', top: rows.slice(0, 60), more: rows.slice(60), usage1760};
 fs.writeFileSync('out/meta_ladder.json', JSON.stringify(out));
-console.log(`ladder: ${month}, ${N} battles, ${rows.length} Pokémon${miss.length ? ', not in roster: ' + miss.join(', ') : ''}`);
+console.log(`ladder: ${month}, ${N} battles, 1760+ ${usage1760 ? usage1760.rows.length + ' Pokémon' : 'missing'}, ${rows.length} Pokémon${miss.length ? ', not in roster: ' + miss.join(', ') : ''}`);

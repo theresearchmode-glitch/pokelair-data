@@ -8,7 +8,7 @@
 // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
-import {offFormat} from './formats.mjs';
+import {offFormat, oddEvents} from './formats.mjs';
 const API = 'https://play.limitlesstcg.com/api', FORMAT = 'M-C', MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
@@ -69,7 +69,8 @@ fs.writeFileSync('data/index.json', JSON.stringify(index));
 console.log(`list ${list.length} tournaments, fetched ${fetched}, cached ${Object.keys(index.tournaments).length}`);
 
 // standard Reg M-C events only: themed and restricted cups are kept on disk but left out of every number below
-const KEEP = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name));
+const KEEP0 = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name)), ODD = oddEvents(KEEP0, id => readJSON(`data/t/${id}.json`, null));
+const KEEP = KEEP0.filter(id => !ODD.has(id));
 console.log(`off-format events left out: ${Object.keys(index.tournaments).length - KEEP.length}`);
 // 2) all teams with a full six and 3+ games
 const E = []; let first = null, last = null;

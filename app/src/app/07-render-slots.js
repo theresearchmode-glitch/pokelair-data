@@ -1,10 +1,29 @@
 // ---------- render: slots ----------
 // a redraw while someone is typing in a name box must not drop their focus (on phones that closes the keyboard)
-function renderSlots(){const ae=document.activeElement,fid=ae&&ae.id&&ae.tagName==='INPUT'?ae.id:null,ss=fid?ae.selectionStart:null,se=fid?ae.selectionEnd:null;
-  try{renderSlots_()}finally{if(fid&&document.activeElement!==document.getElementById(fid)){const x=document.getElementById(fid);if(x&&x.offsetParent!==null){try{x.focus({preventScroll:true});if(ss!=null)x.setSelectionRange(ss,se)}catch(e){}}}}}
-function renderSlots_(){
+function renderSlots(flush){const ae=document.activeElement,fid=ae&&ae.id&&ae.tagName==='INPUT'?ae.id:null,ss=fid?ae.selectionStart:null,se=fid?ae.selectionEnd:null;
+  try{renderSlots_(flush)}finally{if(fid&&document.activeElement!==document.getElementById(fid)){const x=document.getElementById(fid);if(x&&x.offsetParent!==null){try{x.focus({preventScroll:true});if(ss!=null)x.setSelectionRange(ss,se)}catch(e){}}}}}
+// The six set editors live in the edit panel, which shows one of them at a time (or all six for import, export and saving).
+// Each redraw draws only the ones showing; the others are drawn when the panel opens on them (slotsFlush), with the team as
+// it is then, so an edit redraws one editor instead of six (Oct 31: the six were a third of each edit's time on phones).
+let slotGen=0;const slotAt=[];
+function slotsShowing(){const ed=$('chEdit'),sl=$('slots');if(!ed||!sl||!ed.contains(sl))return null;if(ed.hidden)return [];
+  const k=ed.dataset.slot;return k==null||k==='all'?null:[+k]}
+function slotsFlush(){const want=slotsShowing(),sl=$('slots');if(!sl)return;if(!want||want.some(i=>slotAt[i]!==slotGen))renderSlots(true)}
+// the ones not showing are drawn in idle moments too, one at a time, so opening the panel usually finds its editor ready
+let slotIdleT=0;
+function slotsIdle(){if(slotIdleT)return;const go=()=>{slotIdleT=0;const sl=$('slots');if(!sl||sl.children.length!==S.slots.length)return;
+    const i=S.slots.findIndex((x,j)=>slotAt[j]!==slotGen);if(i<0)return;safe('set editor',()=>renderSlots_(true,[i]));slotsIdle()};
+  slotIdleT=typeof requestIdleCallback==='function'?requestIdleCallback(go,{timeout:1500}):setTimeout(go,300)}
+function renderSlots_(flush,only){
   const useA=$('useAbil').checked;let clash=null;try{clash=scarfTrClash(members())}catch(e){}
-  $('slots').innerHTML=S.slots.map((s,i)=>{const m=memberOf(s,i);
+  if(!flush)slotGen++;
+  const sl=$('slots'),want=only||slotsShowing(),part=want&&sl.children.length===S.slots.length;
+  const draw=i=>!part||want.includes(i);
+  const html=S.slots.map((s,i)=>draw(i)?slotHtml(s,i,useA,clash):'');
+  if(part){want.forEach(i=>{if(slotAt[i]===slotGen&&flush)return;const t=document.createElement('template');t.innerHTML=html[i];sl.children[i].replaceWith(t.content);slotAt[i]=slotGen})}
+  else{sl.innerHTML=html.join('');S.slots.forEach((x,i)=>slotAt[i]=slotGen)}
+  slotsAfter(part?want:null);if(part&&S.slots.some((x,j)=>slotAt[j]!==slotGen))slotsIdle()}
+function slotHtml(s,i,useA,clash){{const m=memberOf(s,i);
     if(!m)return `<div class="slot empty"><div class="sl-top"><span class="sl-num">${i+1}</span><span class="addtok" aria-hidden="true">+</span><div class="cb"><input class="field" id="pk${i}" data-i="${i}" placeholder="Add a Pokémon" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Pokémon for slot ${i+1}"></div></div></div>`;
     const p=m.p;const w=[],r=[];
     TYPES.forEach(t=>{const x=mult(t,p.t,m.ability,useA);if(x>=2)w.push(chip(t,x>=4?' <b>4×</b>':''));else if(x<=.5)r.push(chip(t,x===0?' <b>0</b>':x<=.25?' <b>¼</b>':''))});
@@ -28,10 +47,11 @@ function renderSlots_(){
       <details class="slmore"><summary><span class="lbl">Weak</span><span class="sumw">${w.length?w.join(''):'<span class="none">None</span>'}</span></summary><div class="inmore">
       <div class="wr"><span class="lbl">Resists</span><div class="chips">${r.join('')||'<span class="none">None</span>'}</div></div>
       <div class="adesc"><b>${esc(m.ability)}:</b> ${esc((ABIL[m.ability]||'').replace(/Pokemon/g,'Pokémon'))}</div></div></details>
-    </div></div>`}).join('');
+    </div></div>`}}
+function slotsAfter(only){
   if(ui.tview==null){try{ui.tview=LS.get('cc2.tview','grid')}catch(e){ui.tview='grid'}}
   {const sl=$('slots');if(sl&&sl.classList)sl.classList.toggle('grid',ui.tview==='grid');document.querySelectorAll('[data-tview]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tview===ui.tview))}
   // Species Clause: a species already on the team (any form) is not offered again
-  S.slots.forEach((s,i)=>{const inp=$('pk'+i);if(inp)bindMonInput(inp,p=>{S.slots[i]={n:p.n,a:null,lock:false};ui.fresh=i;render();ui.fresh=null;toast(p.d+' added')},
+  S.slots.forEach((s,i)=>{if(only&&!only.includes(i))return;const inp=$('pk'+i);if(inp)bindMonInput(inp,p=>{S.slots[i]={n:p.n,a:null,lock:false};ui.fresh=i;render();ui.fresh=null;toast(p.d+' added')},
     p=>!S.slots.some((o,j)=>{const q=j!==i&&byName.get(o.n);return q&&q.b===p.b}))});
 }

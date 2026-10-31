@@ -66,6 +66,7 @@ addEventListener('popstate',e=>{if(OV_SKIP){OV_SKIP--;return}const o=overlayOpen
   const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v)}finally{NAV_POP=false}});
 function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);
   document.querySelectorAll('[data-pane]').forEach(el=>el.hidden=el.dataset.pane!==v);
+  safe('page parts',lazyFlush);
   const par=VIEW_PARENT[v]||v;const sideHas=!!document.querySelector(`.sidenav [data-view="${v}"]`);document.querySelectorAll('[data-view]').forEach(b=>{const on=b.classList.contains('sub')?b.dataset.view===(SUB_OF[v]||v):(sideHas&&b.closest('.sidenav'))?b.dataset.view===v:b.dataset.view===par;b.setAttribute('aria-selected',on)});
   {const t=$('viewTitle');if(t)t.textContent=VIEW_TITLE[v]||v}
   document.documentElement.dataset.pg=v;

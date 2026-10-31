@@ -105,7 +105,7 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = byName.get(n); if (!s
   const r = rating(p), T = lTier(r.total), src = r.src || {}, st = setFor(p) || {}, all = lairRows(), pos = all.findIndex(x => x.p.n === p.n) + 1;
   const bars = (arr, cls, k) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="chbar"><span>${esc(nm)}</span><i class="${cls}"><em style="width:${Math.max(2, Math.min(100, +v || 0))}%"></em></i>${v == null ? '' : `<b>${(+v).toFixed(1)}%</b>`}</div>`).join('');
   const bw = RES && RES.tc && RES.tc.bw ? RES.tc.bw[brKeyOf(p)] : null, games = bw ? null : null;
-  const head = panel.querySelector('.lshead'); if (head) { head.classList.add('chls', 'chhalf'); head.insertAdjacentHTML('beforeend', `<div class="chlsk">#${pos} of ${all.length} · ${T.k} tier</div>`); }
+  const head = panel.querySelector('.lshead'); if (head) { head.classList.add('chls', 'chhalf'); head.classList.toggle('ltype', typeof LIGHT !== 'undefined' && LIGHT.has(p.t[0])); head.insertAdjacentHTML('beforeend', `<div class="chlsk">#${pos} of ${all.length} · ${T.k} tier</div>`); }
   // the header uses the same results the rating is built from (r.tc), so it matches "Why it rates" below (Oct 30 audit)
   // the header shows real totals, the same numbers as this Pokémon's row in the Ratings list (sweep, Oct 31: it used the
   // recency-weighted figures, so the same Pokémon showed two usage shares and a weighted game count); weighted ones are under Why it rates
@@ -307,7 +307,7 @@ function chCalcCard() { const ms = members(), opp = S.opp.map(n => byName.get(n)
       <span class="chcalcvs" aria-hidden="true">→</span><div class="chcalcdef">${sprite(def) || ''}<span>${esc(def.d)}</span></div></div></section>`; }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-dcgo]'); if (!b) return; const [a, d] = b.dataset.dcgo.split('|');
   if (byName.get(a)) dc.a = a; if (byName.get(d)) dc.d = d; dc.dir = 'mine'; dc.mv = null; dc.spread = null; dc.wSet = dc.tSet = false; setView('calc'); safe('calc', renderCalc); window.scrollTo(0, 0); });
-CH.wrap('renderBattle', () => { const head = document.querySelector('#matchup > .chbmhead'); if (!head) return; let c = $('chCalcCard'); if (!c) { c = document.createElement('div'); c.id = 'chCalcCard'; } head.after(c); c.innerHTML = chCalcCard(); });
+CH.wrap('renderBattle', () => { const head = document.querySelector('#matchup > .chbmhead'); if (!head) return; let c = $('chCalcCard'); if (!c) { c = document.createElement('div'); c.id = 'chCalcCard'; } head.after(c); const h = chCalcCard(); if (c.__h !== h || !c.firstChild) { c.innerHTML = h; c.__h = h; } }); // unchanged card: left as it is (no redraw under a tap)
 // a ⋯ menu closes once one of its actions is tapped (after Clear team it stayed open showing only Import, which looked like a pop-up)
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('details.moremenu .mmpop button'); if (!b) return; const d = b.closest('details.moremenu'); if (d) setTimeout(() => { d.open = false; }, 0); });
 // ---------- day / night toggle in the header (Oct 29, Sim): a sun in day mode, a moon at night; one tap switches ----------
