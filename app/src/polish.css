@@ -378,8 +378,10 @@ button.chring{background:none;cursor:pointer;padding:0}
 .dctab th,.dctab td{text-overflow:clip!important;white-space:normal!important;overflow-wrap:normal;word-break:normal;hyphens:none}
 .dctab th{font-size:10.5px!important;line-height:1.15}
 /* Pokémon sheet hero: the whole sprite stays inside the header, above the stats card and clear of × */
-:root:not(#_ch) .lshead.chls{min-height:232px}
-:root:not(#_ch) .lshead.chls .lsspr{width:178px!important;height:178px!important;right:6px!important;bottom:34px!important;top:auto}
+/* hero sprite: big again (Oct 31 visual check: 178px read as timid), still whole: above the stats card, inside the header */
+:root:not(#_ch) .lshead.chls{min-height:272px}
+:root:not(#_ch) .lshead.chls .lsspr{width:248px!important;height:248px!important;right:-4px!important;bottom:24px!important;top:auto;z-index:0}
+:root:not(#_ch) .lshead.chls .lsname{position:relative;z-index:1}:root:not(#_ch) .lshead.chls .chlsk{z-index:1}
 :root:not(#_ch) .lshead.chls h3{max-width:58%}
 /* Brought with: sprite and text centred the same way, one name size */
 .chbw button{display:flex;flex-direction:column;align-items:center}
