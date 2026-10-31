@@ -52,9 +52,9 @@ for (const slug of slugs) { const E = index.events[slug], f = `data/rk9/field/${
     for (const p of R.players) { const k = keyOf(p); if (seen.get(k) > 1 || F.teams[k]) continue; const t = bySt.get(p.st); if (t && t.mons.length === 6) F.teams[k] = t.mons.map(m => m.n || '?' + m.sp); }
     for (const p of R.players) { const k = keyOf(p); if (seen.get(k) > 1 || F.teams[k]) continue; if (fetched >= MAX) break;
       try { const t = parseTeam(await get(p.tl)); fetched++; if (t.mons.length === 6) F.teams[k] = t.mons.map(m => m.n || '?' + m.sp); else F.teams[k] = null; }
-      catch (e) { console.log('rk9-field: list', k, e.message); }
+      catch (e) { console.log('rk9-field: list', k, e.message); if (/ 40[034]$/.test(e.message)) F.teams[k] = null; }  // a list RK9 doesn't serve isn't asked for again
       if (fetched % 50 === 0) save(f, F); }
-    F.dupes = [...seen.values()].filter(v => v > 1).length;
+    F.dupes = [...seen.values()].filter(v => v > 1).reduce((a, v) => a + v, 0);  // players sharing a name and country (left out)
     if (!F.rec) { const P = await pairings(R.rid); if (!P.open && P.matches) { F.rec = P.rec; F.pod = P.pod; F.rounds = P.rounds; F.matches = P.matches; } else console.log(`rk9-field: ${slug} pairings not final (${P.open} open, ${P.matches} done)`); }
     const read = Object.keys(F.teams).length;
     F.complete = !!F.rec && read >= R.players.length - F.dupes;

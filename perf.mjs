@@ -20,7 +20,7 @@ if (L && L.adj && Array.isArray(L.adj.rows) && L.adj.rows.length >= 50) out.adj 
 if (G && Array.isArray(G.top)) { const rows = [...G.top, ...(G.more || [])].sort((a, b) => a.r - b.r), d = day(G.updated);
   if (rows.length >= 100) out.ingame = {label: `${G.source}${d ? ` · ${d}` : ''} (all ${rows.length} Pokémon ranked)`, names: rows.map(x => x.n), season: G.period || '', updated: d};
   else console.log(`::warning::perf: in-game order has only ${rows.length} Pokémon; ingame left out`); }
-if (O && Array.isArray(O.rows) && O.rows.length >= 30 && O.teams >= 500) out.official = {label: O.label, rows: O.rows, megas: [], split: true, teams: O.teams, matches: O.matches, events: O.events, updated: day(O.updated)};
+if (O && Array.isArray(O.rows) && O.rows.length >= 30 && O.teams >= 300) out.official = {label: O.label, rows: O.rows, megas: [], split: true, teams: O.teams, matches: O.matches, events: O.events, updated: day(O.updated)};
 else console.log('::warning::perf: no official-events table (official_perf.json); official left out');
 if (Lad && Lad.usage1760 && Array.isArray(Lad.usage1760.rows) && Lad.usage1760.rows.length >= 30) out.smogon = {label: `Smogon usage stats · 1760+ rating, ${Lad.usage1760.month} (${Number(Lad.usage1760.battles || 0).toLocaleString('en-US')} battles)`, rows: Lad.usage1760.rows, updated: Lad.usage1760.month};
 else console.log('::warning::perf: no Smogon 1760+ usage (meta_ladder.json usage1760); smogon left out');

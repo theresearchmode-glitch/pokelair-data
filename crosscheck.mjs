@@ -50,8 +50,12 @@ const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map
 const mtSp = MT ? bySpecies(metaRows(MT).map(r => [r.n, r.u, r.w, r.teams])) : null;
 // 2. Recent tournaments + sets: our last-4-weeks team sheets vs Pikalytics (tournaments, about the last 2 weeks)
 compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics Reg M-C (${S.pika.scope || 'recent tournaments'})`,
-  known: 'Both are tournament team sheets, but Pikalytics covers about the last 2 weeks with its own minimum event size; ours covers 4 weeks of Limitless. A Pokémon rising or falling right now differs by window.',
-  tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
+  known: 'Different populations: Pikalytics is about the last 2 weeks with its own event-size threshold and a much bigger sample per Pokémon than Limitless alone (Rillaboom ~40,000 games in 2 weeks vs ~25,000 for us in 4), so it likely includes events Limitless does not list. Its usage table names species while its core lists name Megas, so Mega species (Garchomp, Raichu, Salamence) are not comparable. Our Limitless numbers are checked against RK9 official events below; this check mainly guards sets (top item and move).',
+  tolU: [6, .45], tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
+// 3. Our Limitless table (whole Reg M-C) vs RK9's official events (every Masters team and match): two independent
+//    tournament records. Official events are in person, bigger, and mostly stronger players; Limitless is online.
+compare({id: 'tour-vs-rk9-field', ours: P.tour && bySpecies([...(P.tour.rows || []), ...(P.tour.megas || [])]), theirs: P.official && bySpecies(P.official.rows), oursName: P.tour && P.tour.label, theirsName: P.official && P.official.label,
+  known: 'Online Limitless events vs in-person official events (different players, more Bo3 matches, the official field reads the same few events). Win rates: games (ours) vs matches (theirs), compared as gaps to each average.', tolU: [4, .35], tolW: 5});
 // 4. Ladder usage: Smogon 1760+ (monthly) vs project-red-data (top 10% of replays, 30 days) and Showdowntier (14 days)
 const smSp = P.smogon ? bySpecies(P.smogon.rows) : null, mlSets = setsOf(ML);
 compare({id: 'smogon1760-vs-prd', ours: smSp, theirs: S.prd && fromSrc(S.prd.rows), oursName: P.smogon && P.smogon.label, theirsName: S.prd && `project-red-data top 10% replays (${S.prd.date})`,
