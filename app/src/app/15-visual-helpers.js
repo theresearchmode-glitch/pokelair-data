@@ -42,7 +42,7 @@ const ARCH_COLOR = {'Rain': '#2f7bff', 'Sun': '#ff7a1a', 'Sun-Rain': 'linear-gra
 // (gradient chips also get a light shade under white text, see polish.css). Was a hand list that left TailRoom at 1.9:1.
 const lumOf = hex => { const h = hex.replace('#', ''); return .2126 * lin(parseInt(h.slice(0, 2), 16)) + .7152 * lin(parseInt(h.slice(2, 4), 16)) + .0722 * lin(parseInt(h.slice(4, 6), 16)); }, lin = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
 const cr = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05), INK_L = lumOf('#1a1206');
-const archDark = c => { const st = (String(c).match(/#[0-9a-f]{6}/gi) || ['#6f7a8f']).map(lumOf), shade = st.length > 1 ? .62 : 1; return Math.min(...st.map(l => cr(l, INK_L))) >= Math.min(...st.map(l => cr(1, l * shade))); };
+const archDark = c => { const st = (String(c).match(/#[0-9a-f]{6}/gi) || ['#6f7a8f']).map(lumOf), shade = 1; return Math.min(...st.map(l => cr(l, INK_L))) >= Math.min(...st.map(l => cr(1, l * shade))); };
 const ARCH_DARK_TEXT = {has: x => archDark(ARCH_COLOR[x] || '#6f7a8f')};
 // Two-style tags (Sun-Snow, TailRoom) are a gradient of their two colours; --ac stays a solid colour so the chip is never
 // see-through when the shared darkening layer replaces the background image (Oct 29: those chips were white on pale grey)

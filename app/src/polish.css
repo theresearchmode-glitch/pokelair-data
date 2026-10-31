@@ -127,7 +127,7 @@
 @media (max-width:480px){#dcOut .dc2:has(#dcAIt,#dcDIt,#dcAAb,#dcDAb){grid-template-columns:1fr}}
 /* two-style archetype tags keep their gradient under the shared darkening layer */
 :root:not(#_ch) .archchip{background-color:var(--ac)}
-:root:not(#_ch) .archchip.grad{background-image:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.22)),var(--acg)!important}
+:root:not(#_ch) .archchip.grad{background-image:var(--acg)!important}
 
 /* Box: long names (Meowscarada, Kommo-o) fit inside their card on phones */
 :root:not(#_ch) #boxList .boxchip{padding-left:2px;padding-right:2px}:root:not(#_ch) #boxList .boxchip b{font-size:11px;letter-spacing:-.01em;max-width:100%}
@@ -389,7 +389,6 @@ button.chring{background:none;cursor:pointer;padding:0}
 /* Box tiles: × sits in the corner, off the sprite */
 :root:not(#_ch) #boxList .boxchip{padding-top:20px}:root:not(#_ch) #boxList .boxchip .spr{width:52px;height:52px}:root:not(#_ch) #boxList .boxchip b{font-size:11px}
 /* contrast: white type names on mid-tone type colours read at 3:1; a light shade brings them over 4.5:1 without changing the palette */
-.ty:not(.lt){background-image:linear-gradient(rgba(0,0,0,.16),rgba(0,0,0,.16))}
 :root:not([data-look="dark"]):not(#_ch) .chpill.ok{color:#156B3A;border-color:#156B3A}
 /* Build me a team result: ready % (or the real record) and checks side by side, top-aligned; the "missing" note sits right under the checks */
 .abhead .abts{display:inline-flex!important;align-items:flex-start!important;gap:16px!important}
@@ -402,7 +401,6 @@ button.chring{background:none;cursor:pointer;padding:0}
 #chEdit:focus{outline:none}
 /* archetype chips: dark text sits on the plain colours; white text gets a light shade so every chip reads at 4.5:1+ (Oct 31) */
 :root:not(#_ch) .archchip.grad.dk{background-image:var(--acg)!important}
-:root:not(#_ch) .archchip:not(.dk):not(.grad){background-image:linear-gradient(rgba(0,0,0,.14),rgba(0,0,0,.14))}
 /* contrast fixes from the sweep scan (Oct 31) */
 .tag.rating.r4{color:#3d2500!important}.tag.rating.r3{color:#1d2533!important}.tag.rating.r2{color:#2e1708!important}
 .tag.rating.r3 .rtw,.tag.rating.r4 .rtw,.tag.rating.r2 .rtw{color:inherit!important;opacity:.75}
@@ -414,3 +412,6 @@ button.chring{background:none;cursor:pointer;padding:0}
 :root:not(#_ch) .lshead.chls.ltype .lsx{background:rgba(0,0,0,.14)!important;color:#1D2140!important}
 /* fix plans being worked out after an edit (Oct 31): the previous ones stay in place, faded, until the new ones fill in */
 .planstale{opacity:.45;transition:opacity .2s;cursor:progress}
+
+/* vibrant chips: the colour as it is, text picks dark or white for itself (Oct 31) */
+:root:not(#_ch) .archchip.grad{background-image:var(--acg)!important}
