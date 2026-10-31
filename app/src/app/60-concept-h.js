@@ -271,7 +271,8 @@ function chEditOpen(i) { const ed = $('chEdit'); if (!ed) return; ed.dataset.slo
   ed.classList.toggle('chadd', i != null && !m); ed.hidden = false; $('chEditScrim').hidden = false; document.documentElement.classList.add('chlock'); ed.scrollTop = 0; { const eb = ed.querySelector('.chedb'); if (eb) eb.scrollTop = 0; }
   // an empty slot: focus its name box right away, inside the tap, so phones open the keyboard
   try { chEditStrip(); } catch (e) {}
-  if (i != null && !m) { const inp = ed.querySelector(`#pk${i}`) || ed.querySelector(`#slot${i} input`); if (inp) { try { inp.focus({preventScroll: true}); } catch (e) { inp.focus(); } } } }
+  if (i != null && !m) { const inp = ed.querySelector(`#pk${i}`) || ed.querySelector(`#slot${i} input`); if (inp) { try { inp.focus({preventScroll: true}); } catch (e) { inp.focus(); } } }
+  else { try { ed.setAttribute('tabindex', '-1'); ed.focus({preventScroll: true}); } catch (e) {} } } /* focus moves into the editor, not left on the card behind */
 // the edit panel's team strip: your six as mini sprites (tap to switch), + for an empty slot; and a clear Remove button
 function chEditStrip() { const ed = $('chEdit'); if (!ed || ed.hidden) return; let st = ed.querySelector('.chedstrip'); if (!st) { st = document.createElement('div'); st.className = 'chedstrip'; st.setAttribute('role', 'group'); st.setAttribute('aria-label', 'Your six'); ed.querySelector('.chedh').after(st); }
   const cur = ed.dataset.slot, mm = new Map(members().map(m => [m.i, m]));
@@ -281,11 +282,11 @@ function chEditStrip() { const ed = $('chEdit'); if (!ed || ed.hidden) return; l
   rb.hidden = !m; if (m) { rb.dataset.chrm = cur; rb.textContent = `Remove ${m.d} from the team`; }
   // the title follows the slot: after adding a Pokémon it says Edit <name>, not Add a Pokémon
   { const t = $('chEditT'); if (t) t.textContent = cur === 'all' ? 'Edit team' : m ? 'Edit ' + m.d : 'Add a Pokémon'; ed.classList.toggle('chadd', cur !== 'all' && !m); } }
-function chEditClose() { const ed = $('chEdit'); if (!ed || ed.hidden) return; ed.hidden = true; $('chEditScrim').hidden = true; document.documentElement.classList.remove('chlock'); }
+function chEditClose() { const ed = $('chEdit'); if (!ed || ed.hidden) return; ui.saving = false; ui.paste = null; /* the next Save/Import opens its panel again (sweep, Oct 31) */ ed.hidden = true; $('chEditScrim').hidden = true; document.documentElement.classList.remove('chlock'); }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chedit]'); if (!b) return; chEditOpen(b.dataset.chedit === 'all' ? null : +b.dataset.chedit); });
 // Import, Export and Save show their panels inside the editor
 document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('#importBtn,#exportBtn,#saveBtn'); if (t && $('chEdit') && $('chEdit').hidden) chEditOpen(null); }, true);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') chEditClose(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !e.__cbEsc) chEditClose(); }); // Escape in an open name list closes just the list
 function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK, ms), {r: RD.score}) : null;
   const F = CH.four(ms), lead = F ? ms.find(m => m.p.n === F.lead[0]) || null : null, ko = CH.koNote(RD);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };

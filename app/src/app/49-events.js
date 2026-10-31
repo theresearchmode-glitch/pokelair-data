@@ -62,7 +62,8 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.evmore) evUi.more++;
   else if (d.evsets) evUi.sets[d.evsets] = !evUi.sets[d.evsets];
   else if (d.evload || d.evvs) { const x = evTeam(d.evload || d.evvs); if (!x) return;
-    if (d.evload) { if (members().length && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap again to replace your team'; return; } loadSheet(x.t); return; }
+    if (d.evload) { const sure = ui.evSure && ui.evSure.k === d.evload && Date.now() - ui.evSure.t < 6000; /* kept in ui, so a redraw between taps doesn't reset it */
+      if (members().length && !sure) { ui.evSure = {k: d.evload, t: Date.now()}; b.textContent = 'Tap again to replace your team'; return; } ui.evSure = null; loadSheet(x.t); return; }
     S.opp = x.t.mons.map(m => m.n); ui.oppFrom = {who: x.t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
   keepScroll(() => { if (view === 'top') renderTeamSearch(); else if (view === 'auto') renderAutoBuild(); else renderEvents(); }); });
 

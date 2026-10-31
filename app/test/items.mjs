@@ -108,13 +108,13 @@ const regs = await ev(`(META.teams&&META.teams.teams||[]).filter(t=>t.section===
 let clash = 0, dead = 0, badPlans = [], stapleDrops = [], nPlans = 0;
 for (const mons of regs.slice(0, 12)) {
   const r = await ev(`(()=>{S.slots=${JSON.stringify(mons)}.map(n=>({n,a:null,lock:false}));fixSlots();planCache={key:null,plans:[]};render();const ms=members();
-    const pl=(ui.planList||[]).map(pl=>({ip:itemProblemCount(pl.team),drop:pl.ch.filter(x=>x.out&&U(x.out.p)>=15&&evidPct(x.c.p)<5).map(x=>x.out.p.n+'>'+x.c.p.n),rare:pl.ch.filter(x=>evidPct(x.c.p)<2).map(x=>x.c.p.n)}));
+    const pl=(ui.planList||[]).map(pl=>({ip:itemProblemCount(pl.team),drop:pl.ch.filter(x=>x.out&&U(x.out.p)>=15&&evidPct(x.c.p)<5).map(x=>x.out.p.n+'>'+x.c.p.n),rare:pl.ch.filter(x=>evidPct(x.c.p)<(inBox(x.c.p)?.5:2)).map(x=>x.c.p.n)}));
     return {clash:itemClash(ms).length,dead:deadItems(ms).length,pl}})()`);
   clash += r.clash; dead += r.dead; nPlans += r.pl.length;
   for (const p of r.pl) { if (p.ip > 0) badPlans.push(mons.join('/')); if (p.drop.length) stapleDrops.push(p.drop.join(',')); if (p.rare.length) stapleDrops.push('rare:' + p.rare.join(',')); } }
 ok(clash === 0 && dead === 0, `real regional teams: no duplicate or dead default items (${regs.slice(0, 12).length} teams)`);
 ok(badPlans.length === 0, `fix plans on real teams never output an item problem (${nPlans} plans)`);
-ok(stapleDrops.length === 0, `fix plans never drop a staple for a rare pick, never suggest <2% picks${stapleDrops.length ? ': ' + stapleDrops.slice(0, 4).join('; ') : ''}`);
+ok(stapleDrops.length === 0, `fix plans never drop a staple for a rare pick, never suggest <2% picks (0.5% for your own box Pokémon, Oct 31)${stapleDrops.length ? ': ' + stapleDrops.slice(0, 4).join('; ') : ''}`);
 // Build for me: no item problems, proven teams have 3+ players, fresh take has a real Team Score
 const ab = await ev(`(()=>{ui.abSrc='all';ui.abLock=null;const res=addFreshTake(buildBest());return res.teams.map(t=>{const tm=t.mons.map(m=>abMember(byName.get(m.n)));return {ip:itemProblemCount(tm),items:t.mons.map(m=>m.it),fresh:!!t.fresh,proven:t.proven||null,ts:modelOK()?tsOf(tm):null}})})()`);
 ok(ab.length && ab.every(t => t.ip === 0 && new Set(t.items.filter(Boolean)).size === t.items.filter(Boolean).length), `Build for me: no duplicate/dead items (${ab.length} teams)`);

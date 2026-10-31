@@ -397,3 +397,4 @@ button.chring{background:none;cursor:pointer;padding:0}
 /* Archetypes: every card's sprite row starts at the same place, on its own line under the name */
 #guideOut .guide>summary{flex-wrap:wrap}
 #guideOut .guide>summary .gkm{flex-basis:100%;order:9;margin:6px 0 0 0;justify-content:flex-start}
+#chEdit:focus{outline:none}

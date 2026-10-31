@@ -127,7 +127,9 @@ function lairSheet(n) {
   // focus moves into the sheet (for keyboards and screen readers) without ringing the × on a tap (Sim, Oct 31)
   const x = sh.querySelector('.lspanel') || sh.querySelector('.lsx'); if (x && x.focus) try { if (x.classList.contains('lspanel')) x.setAttribute('tabindex', '-1'); x.focus({preventScroll: true}); } catch (e) {}
 }
-function lairClose() { const sh = $('lairSheet'); if (sh) sh.hidden = true; ui.lsheet = null; try { document.body.classList.remove('lsopen'); } catch (e) {} }
+// focus goes back to whatever opened the sheet (keyboard users land where they were)
+let lairOpener = null; document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('[data-lt],[data-lsheet],[data-chthr],.chtr,.chtile'); if (t) lairOpener = t; }, true);
+function lairClose() { const sh = $('lairSheet'); const was = sh && !sh.hidden; if (sh) sh.hidden = true; if (was && lairOpener && lairOpener.isConnected && lairOpener.focus) try { lairOpener.focus({preventScroll: true}); } catch (e) {} ui.lsheet = null; try { document.body.classList.remove('lsopen'); } catch (e) {} }
 document.addEventListener('click', e => { const t = e.target; if (!t || !t.closest) return;
   const g = t.closest('[data-lt],[data-ltier],[data-lty],[data-lflag],[data-lmode],[data-lclose],[data-laddteam],[data-lsets]'); if (!g) return; const d = g.dataset;
   if (d.lt) { lairSheet(d.lt); return; }

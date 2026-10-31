@@ -71,7 +71,7 @@ function randCase(o = {}) {
     d: {n: dp.n, hpSp, defSp, spdSp, atkSp: Math.min(32, ri(0, 66 - hpSp - defSp - spdSp)), nat: pick(NATS), item: rnd() < .5 ? pick(ITEMS) : '', ability: pick(dp.a), boost: rnd() < .15 ? ri(-2, 2) : 0},
     mv: mv.name, spread: mv.spread && rnd() < .8, weather: rnd() < .25 ? pick(['sun', 'rain', 'sand', 'snow']) : '', terrain: rnd() < .2 ? pick(['grassy', 'electric', 'psychic', 'misty']) : '',
     crit: rnd() < .08, screen: rnd() < .08, hh: rnd() < .08, fg: rnd() < .05, fainted: 0, tag: o.tag || 'random'};
-  if (c.a.ability === 'Supreme Overlord') c.fainted = ri(0, 5);
+  if (c.a.ability === 'Supreme Overlord') c.fainted = ri(0, 3);
   return o.f ? (o.f(c), c) : c; }
 const cases = [];
 for (let i = 0; i < NRAND; i++) cases.push(randCase());
@@ -80,7 +80,7 @@ const withAb = ab => DATA.R.filter(p => p.a.includes(ab));
 const T = (tag, n, o) => { for (let i = 0; i < n; i++) cases.push(randCase({...o, tag, ap: o.apL ? pick(o.apL) : o.ap, dp: o.dpL ? pick(o.dpL) : o.dp, mv: o.mvL ? pick(o.mvL) : o.mv})); };
 // only abilities some Champions PokÃ©mon actually has
 const notInRoster = new Set();
-const atkAb = (ab, mvL) => { const L = withAb(ab); if (!L.length) { notInRoster.add(ab); return; } T('atk ' + ab, 120, {apL: L, mvL, f: c => { c.a.ability = ab; if (ab === 'Supreme Overlord') c.fainted = ri(1, 5); }}); };
+const atkAb = (ab, mvL) => { const L = withAb(ab); if (!L.length) { notInRoster.add(ab); return; } T('atk ' + ab, 120, {apL: L, mvL, f: c => { c.a.ability = ab; if (ab === 'Supreme Overlord') c.fainted = ri(1, 3); }}); };
 atkAb('Tough Claws', flagMoves(r => r.flags.contact)); atkAb('Sharpness', flagMoves(r => r.flags.slicing)); atkAb('Iron Fist', flagMoves(r => r.flags.punch));
 atkAb('Strong Jaw', flagMoves(r => r.flags.bite)); atkAb('Mega Launcher', flagMoves(r => r.flags.pulse)); atkAb('Punk Rock', flagMoves(r => r.flags.sound));
 atkAb('Sheer Force', flagMoves(r => r.secondaries)); atkAb('Technician', flagMoves(r => r.basePower <= 60)); atkAb('Adaptability'); atkAb('Huge Power', flagMoves(r => r.category === 'Physical'));
