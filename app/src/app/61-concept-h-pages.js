@@ -105,7 +105,7 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = byName.get(n); if (!s
   const r = rating(p), T = lTier(r.total), src = r.src || {}, st = setFor(p) || {}, all = lairRows(), pos = all.findIndex(x => x.p.n === p.n) + 1;
   const bars = (arr, cls, k) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="chbar"><span>${esc(nm)}</span><i class="${cls}"><em style="width:${Math.max(2, Math.min(100, +v || 0))}%"></em></i>${v == null ? '' : `<b>${(+v).toFixed(1)}%</b>`}</div>`).join('');
   const bw = RES && RES.tc && RES.tc.bw ? RES.tc.bw[brKeyOf(p)] : null, games = bw ? null : null;
-  const head = panel.querySelector('.lshead'); if (head) { head.classList.add('chls', 'chhalf'); head.insertAdjacentHTML('beforeend', `<div class="chlsk">#${pos} of ${all.length} · ${T.k} tier</div>`); }
+  const head = panel.querySelector('.lshead'); if (head) { head.classList.add('chls', 'chhalf'); head.classList.toggle('ltype', typeof LIGHT !== 'undefined' && LIGHT.has(p.t[0])); head.insertAdjacentHTML('beforeend', `<div class="chlsk">#${pos} of ${all.length} · ${T.k} tier</div>`); }
   // the header uses the same results the rating is built from (r.tc), so it matches "Why it rates" below (Oct 30 audit)
   // the header shows real totals, the same numbers as this Pokémon's row in the Ratings list (sweep, Oct 31: it used the
   // recency-weighted figures, so the same Pokémon showed two usage shares and a weighted game count); weighted ones are under Why it rates
