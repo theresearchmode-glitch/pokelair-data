@@ -65,7 +65,7 @@ function renderBattle() {
   else {
     const r = planMatchup(mine, theirs, true), C = r.chosen.map(i => mine[i]);
     bmUi.four = [...r.lead, ...r.back].map(i => mine[i].p.n);
-    const card = (i, tag) => `<div class="bmpick${tag === 'Lead' ? ' lead' : ''}">${sprite(mine[i].p, 'bmpspr')}<span class="bmpn">${esc(mine[i].d)}</span><span class="tag">${tag.toUpperCase()}</span></div>`;
+    const card = (i, tag) => `<div class="bmpick${tag === 'Lead' ? ' lead' : ''}">${sprite(mine[i].p, 'bmpspr')}<span class="bmpn">${escName(mine[i].d)}</span><span class="tag">${tag.toUpperCase()}</span></div>`;
     const ll = r.B && theirs.length >= 2 ? likelyLead(theirs, r.B) : [];
     const bring = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Bring</span><span class="vsub">${dbl ? 'lead 2, back 2' : 'lead 1'}</span></div>
       <div class="bmpicks">${r.lead.map(i => card(i, 'Lead')).join('')}${r.back.map(i => card(i, 'Back')).join('')}</div>

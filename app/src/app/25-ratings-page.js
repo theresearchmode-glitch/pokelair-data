@@ -31,7 +31,10 @@ function renderLair(bodyOnly) {
   if (!bodyOnly) { const hero = $('lairHero'); if (hero) { let s = $('lairSleep'); if (!s) { s = document.createElement('div'); s.id = 'lairSleep'; hero.insertAdjacentElement('afterend', s); } s.innerHTML = typeof sleepersSection === 'function' ? sleepersSection('ratings') : ''; } }
   const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (!bodyOnly) {
-    const src = pf && pf.sources ? Object.entries(pf.sources).filter(([, v]) => v) : [];
+    // one line per source, every date written the same way ("Oct 23", "Sep 2026"); the Limitless tournament line and the
+    // per-Pokémon share line come from the same teams, so only one is listed (sweep, Oct 31)
+    const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], fixD = v => String(v).replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, (m, y, mo, d) => `${MON[+mo - 1]} ${+d}`).replace(/\b(\d{4})-(\d{2})\b/g, (m, y, mo) => `${MON[+mo - 1]} ${y}`);
+    const src = pf && pf.sources ? Object.entries(pf.sources).filter(([k, v]) => v && !(k === 'adj' && pf.sources.tour)).map(([k, v]) => [k, fixD(v)]) : [];
     const when = t => { try { return new Date(t + 'T12:00:00').toLocaleDateString([], {month: 'short', day: 'numeric'}); } catch (e) { return t; } };
     $('lairHero').innerHTML = `<div class="lhstat"><b>${all.length}</b><span>Pokémon rated</span></div><div class="lhstat"><b>${src.length}</b><span>data source${src.length === 1 ? '' : 's'}</span></div>`
       + `<div class="lhstat"><b>${all.filter(x => x.r.total >= 80).length}</b><span>in S tier</span></div><div class="lhstat"><b>${all.filter(x => isGem(x.p)).length}</b><span>hidden gems</span></div>`
@@ -67,7 +70,7 @@ function lairMap(rows) {
   return `<div class="lmapwrap"><svg class="lmap" viewBox="0 0 ${W} ${H}" role="img" aria-label="Usage against NastyPlot rating">
     <rect class="lqbg g" x="${L}" y="${Tp}" width="${X(sx) - L}" height="${Y(sy) - Tp}"/><rect class="lqbg k" x="${X(sx)}" y="${Tp}" width="${W - Rr - X(sx)}" height="${Y(sy) - Tp}"/>
     <line class="lax" x1="${X(sx)}" x2="${X(sx)}" y1="${Tp}" y2="${H - B}"/><line class="lax" x1="${L}" x2="${W - Rr}" y1="${Y(sy)}" y2="${Y(sy)}"/>
-    <text class="lal" x="${(L + W) / 2}" y="${H - 8}" text-anchor="middle">How often strong players pick it →</text>
+    <text class="lal" x="${(L + W) / 2}" y="${H - 8}" text-anchor="middle">How often it’s picked →</text>
     <text class="lal" x="12" y="${(Tp + H - B) / 2}" text-anchor="middle" transform="rotate(-90 12 ${(Tp + H - B) / 2})">NastyPlot rating →</text>
     ${(() => { // place labels greedily: biggest ratings first, right of the dot or left of it, never on top of another label
       const fs = ph ? 10 : 10.5, boxes = [[W - Rr - 120, H - B - 22, 116, 18], [L + 4, H - B - 22, 50, 18]], lbl = new Map();
@@ -102,10 +105,10 @@ function lairSheet(n) {
   sh.innerHTML = `<div class="lsback" data-lclose="1"></div><div class="lspanel" role="dialog" aria-modal="true" aria-label="${esc(p.d)} rating">
     <div class="lshead" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}"><button type="button" class="lsx" data-lclose="1" aria-label="Close">✕</button>${sprite(p,'lsspr')}
       <div class="lsring" style="--v:${r.total};--tc:${T.c}"><b>${r.total}</b><span>±${r.band} · ${T.k}</span></div>
-      <div class="lsname"><h3>${esc(p.d)}</h3><div class="chips">${p.t.map(t => chip(t)).join('')}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${isGem(p) ? '<span class="tag offmeta">HIDDEN GEM</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}</div>
+      <div class="lsname"><h3>${escName(p.d)}</h3><div class="chips">${p.t.map(t => chip(t)).join('')}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${isGem(p) ? '<span class="tag offmeta">HIDDEN GEM</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}</div>
       <div class="lspos">#${pos} of ${all.length} in doubles</div></div></div>
     <div class="lsbody">
-      <div class="lsec"><h4>Why it rates ${r.total}</h4>${r.parts && r.tc ? `${bar('Top-cut presence', r.parts.top, `on ${r.tc.top.toFixed(r.tc.top < 10 ? 1 : 0)}% of top-cut teams`)}${bar('Picked by strong players', r.parts.rw, `${r.tc.rw.toFixed(r.tc.rw < 10 ? 1 : 0)}% of teams, weighted by player skill`)}${r.parts.lift != null ? bar('Converts to top cut', r.parts.lift, `×${r.tc.lift.toFixed(2)} vs its ${r.tc.field > 0 && r.tc.field < .1 ? '<0.1' : r.tc.field.toFixed(r.tc.field < 10 ? 1 : 0)}% usage`) : ''}${bar('Win rate', r.parts.wr, r.tc.g < 30 ? `only ${Math.round(r.tc.g)} games so far` : `${r.tc.wr.toFixed(1)}% over ${Math.round(r.tc.g).toLocaleString('en-US')} games${r.tc.g < 800 ? ', few games' : ''}`)}
+      <div class="lsec"><h4>Why it rates ${r.total}</h4>${r.parts && r.tc ? `${bar('Top-cut presence', r.parts.top, `on ${r.tc.top.toFixed(r.tc.top < 10 ? 1 : 0)}% of top-cut teams`)}${bar('Picked by strong players', r.parts.rw, `${r.tc.rw.toFixed(r.tc.rw < 10 ? 1 : 0)}% of teams, weighted by player skill`)}${r.parts.lift != null ? bar('Converts to top cut', r.parts.lift, `×${r.tc.lift.toFixed(2)} vs its ${r.tc.field > 0 && r.tc.field < .1 ? '<0.1' : r.tc.field.toFixed(r.tc.field < 10 ? 1 : 0)}% usage`) : ''}${bar('Win rate', r.parts.wr, r.tc.g < 30 ? `only ${Math.round(r.tc.g)} games so far` : `${r.tc.wr.toFixed(1)}% over ${Math.round(r.tc.g).toLocaleString('en-US')} recency-weighted games${r.tc.g < 800 ? ', few games' : ''}`)}
         <p class="t2">Each bar is where it stands among all Pokémon. Top-cut presence counts most: the best Pokémon are the ones winning teams keep bringing. How often strong players pick it (usage with each team weighted by its player's skill) comes next. Converting to top cut and win rate adjust it, pulled toward average until there are enough games, so a few lucky runs can't push a rare pick to the top${isGem(p) ? '. It overperforms its usage, so it\'s tagged a hidden gem' : ''}. Likely range ${Math.max(1, r.total - r.band)}–${Math.min(99, r.total + r.band)}${r.band >= 10 ? '; few games so far, so treat this one as an estimate' : ''}.</p>
         <details class="lprof"><summary>Profile: power ${r.power}, typing ${r.typing}, tools ${r.tools}</summary><p class="t2">Stats, typing against the current meta, and the moves and abilities it brings. Shown for reference; they don't change the rating.</p></details>`
         : !r.tc && r.parts === null ? `<p class="t2">No tournament results yet, so this is a rough placeholder from its stats, typing and tools (capped at 30). It moves up once it shows up at events.</p>`

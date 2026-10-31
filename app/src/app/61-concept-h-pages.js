@@ -107,7 +107,9 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = byName.get(n); if (!s
   const bw = RES && RES.tc && RES.tc.bw ? RES.tc.bw[brKeyOf(p)] : null, games = bw ? null : null;
   const head = panel.querySelector('.lshead'); if (head) { head.classList.add('chls', 'chhalf'); head.insertAdjacentHTML('beforeend', `<div class="chlsk">#${pos} of ${all.length} · ${T.k} tier</div>`); }
   // the header uses the same results the rating is built from (r.tc), so it matches "Why it rates" below (Oct 30 audit)
-  const tcOK = r.tc && r.tc.g >= 30, hU = tcOK ? r.tc.field : src.tour ? +src.tour[0] : null, hW = tcOK ? r.tc.wr : src.tour ? +src.tour[1] : null, hG = tcOK ? r.tc.g : src.tour ? +src.tour[2] : null;
+  // the header shows real totals, the same numbers as this Pokémon's row in the Ratings list (sweep, Oct 31: it used the
+  // recency-weighted figures, so the same Pokémon showed two usage shares and a weighted game count); weighted ones are under Why it rates
+  const tOK = src.tour && +src.tour[2] > 0, tcOK = !tOK && r.tc && r.tc.g >= 30, hU = tOK ? +src.tour[0] : tcOK ? r.tc.field : null, hW = tOK ? +src.tour[1] : tcOK ? r.tc.wr : null, hG = tOK ? +src.tour[2] : tcOK ? r.tc.g : null;
   const pc = v => v == null ? '–' : v > 0 && v < .1 ? '<0.1%' : v.toFixed(1) + '%';
   const stats = `<div class="chlstats"><div><b>${r.total}</b><span>rating<i>${T.k} tier</i></span></div><div><b>${pc(hU)}</b><span>of teams</span></div><div><b>${hG != null && hG >= 30 ? pc(hW) : '–'}</b><span>win rate${hG ? `<i>${Math.round(hG).toLocaleString('en-US')} games</i>` : ''}</span></div></div>`;
   const ab = st.ab && st.ab[0] ? `Ability: ${esc(st.ab[0][0])}${st.ab[0][1] == null ? '' : ' ' + (+st.ab[0][1]).toFixed(1) + '%'}` : '';
@@ -150,7 +152,7 @@ CH.pagehead = (sec, kicker, title, sub) => { if (!sec || sec.querySelector(':sco
 // ---------- Damage calc: attacker vs defender as two cards, set details folded ----------
 CH.wrap('renderCalc', () => { const el = $('dcOut'), sec = $('dmgcalc'); if (!el) return; CH.pagehead(sec, 'Damage calc · common sets, auto-filled', 'Damage calc', '');
   el.querySelectorAll('.dccol').forEach((col, i) => { if (col.querySelector('.chdcband')) return; const h = col.querySelector('h3'), sp = col.querySelector('.dcspr'), sel = col.querySelector('select'), name = sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : '';
-    const nat = col.querySelector('#dcANat,#dcDNat'), ab = col.querySelector('#dcAAb,#dcDAb'), band = document.createElement('div'); band.className = 'chdcband chhalf ' + (i ? 'def' : 'atk');
+    const nat = col.querySelector('#dcANat,#dcDNat'), ab = col.querySelector('#dcAAb,#dcDAb'), band = document.createElement('div'); band.className = 'chdcband chhalf ' + (i ? 'def' : 'atk') + (i && members().some(m => m.p.n === dc.d) ? ' mine' : ''); /* red only for an opponent */
     band.innerHTML = `<div class="nm">${esc(name)}</div><div class="sub">${esc([nat && nat.value, ab && ab.value].filter(Boolean).join(' · '))}</div>`;
     if (sp) band.prepend(sp); if (h) { h.classList.add('chk'); band.prepend(h); } col.prepend(band);
     const det = [...col.querySelectorAll(':scope > .dc2, :scope > label')].filter(x => !x.querySelector('#dcA,#dcD,#dcMv'));
@@ -169,14 +171,14 @@ CH.wrap('renderGauntlet', () => { const el = $('gauntOut'), sec = $('gauntlet');
   CH.more(el.querySelector('.glist'), ':scope > .gitem', 3, 'gaunt', 'teams'); });
 // ---------- Teams and Events: big-sprite team sheets, the first few shown ----------
 CH.wrap('renderTeamSearch', () => { const sec = $('topteams'); CH.pagehead(sec, 'Tournaments · real top-cut team sheets', 'Winning teams', ''); chTeamsMore(); });
-function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [...L.children], cards = kids.filter(x => x.classList.contains('ttcard')); if (cards.length < 5) return; CH.more(L, ':scope > *', kids.indexOf(cards[2]) + 1, 'ttlist', () => ['More winning teams', `Showing the top 3 of ${cards.length}${L.querySelector('.morebar, [data-ttmore]') ? '+' : ''}`]); }
+function chTeamsMore() { const L = $('ttList'); if (!L) return; const kids = [...L.children], cards = kids.filter(x => x.classList.contains('ttcard')); if (cards.length < 5) return; CH.more(L, ':scope > *', kids.indexOf(cards[2]) + 1, 'ttlist', () => ['More winning teams', `Showing the top 3 of ${META.teams && Array.isArray(META.teams.teams) ? META.teams.teams.length : cards.length}`]); }
 CH.wrap('renderTopTeams', () => safe('teams more', chTeamsMore));
 CH.wrap('renderEvents', () => { const sec = $('events'); CH.pagehead(sec, 'Events · recent tournaments', 'Events', ''); });
 // ---------- batch 4: Best additions, Types, Sets, Saved teams, Box, Archetypes ----------
 // Swaps: one-Pokémon additions first, then the bigger fix plans (the checklist lives on the scouting report)
 CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Every swap and plan for your team', 'All suggestions', '');
   const pr = $('princ'); if (pr) pr.hidden = true; if (sec) sec.classList.add('chswaps');
-  const g = sec && sec.querySelector('.recgrid'); if (g && !sec.querySelector('.chswk')) g.insertAdjacentHTML('beforebegin', '<h3 class="chswk">One Pokémon in, one out</h3>'); { const h = sec && sec.querySelector('.chswk'); if (h) h.textContent = members().length >= 6 ? 'One Pokémon in, one out' : 'Pokémon to add'; }
+  const g = sec && sec.querySelector('.recgrid'); if (g && !sec.querySelector('.chswk')) g.insertAdjacentHTML('beforebegin', '<h3 class="chswk">One Pokémon in, one out</h3>'); { const h = sec && sec.querySelector('.chswk'); if (h) { h.textContent = members().length >= 6 ? 'One Pokémon in, one out' : 'Pokémon to add'; const rl = $('recList'); h.hidden = !(rl && rl.querySelector('.addcard')); } } /* no heading over an empty list (sweep, Oct 31) */
   CH.more($('recList'), ':scope > .addcard', 3, 'recs', (items, n) => { const c = items.filter(x => x.classList.contains('addcard')), h = c.filter((x, i) => items.indexOf(x) >= n).length; return [h ? `${h} more swap${h === 1 ? '' : 's'}` : 'More swaps and ideas', `Showing ${c.length - h} of ${c.length}`]; }); chPlansDedup(); });
 // a one-change plan that is already a swap card above is shown once (the swap card); the rest are renumbered
 function chPlansDedup() { const el = $('sugs'); if (!el) return; const R = new Set((ui.recs || []).map(pl => { const x = pl.ch && pl.ch[0]; return x ? (x.out ? x.out.d : '') + '>' + x.c.p.d : ''; }));

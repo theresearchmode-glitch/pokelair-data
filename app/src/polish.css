@@ -354,3 +354,46 @@ button.chring{background:none;cursor:pointer;padding:0}
 .chbw button{border-width:1.5px}
 .lspanel:focus{outline:none}
 :root[data-look="dark"]:not(#_ch) main .tgrid .tgm:not(.hl){background:rgba(255,255,255,.055)}
+
+/* ---- Full sweep fixes (Oct 31) ---- */
+/* Battle › Their six, light theme: tiles are cream cards, so names and × use dark ink (were white-on-grey pills over the sprite) */
+:root:not([data-look="dark"]):not(#_ch) .bmopp .bmslot.on .bmn{background:none;color:var(--chink);text-shadow:none;padding:0;min-height:2.3em;display:flex;align-items:flex-start;justify-content:center;text-align:center;line-height:1.15}
+:root:not([data-look="dark"]):not(#_ch) .bmopp .bmslot .x{position:absolute!important;top:6px;right:6px;width:28px;height:28px;background:var(--chc)!important;color:var(--chink)!important;border:1.5px solid var(--line2)!important}
+:root[data-look="dark"]:not(#_ch) .bmopp .bmslot.on .bmn{min-height:2.3em;display:flex;align-items:flex-start;justify-content:center;text-align:center}
+/* red is for opponents only: your own negatives (a plan that lowers readiness, a new weakness, 4× weak, no effect) are amber */
+:root:not(#_ch){--np-warn:#9A5E00;--np-warn-soft:#FBEBC6}
+:root[data-look="dark"]:not(#_ch){--np-warn:#F2B544;--np-warn-soft:rgba(242,181,68,.16)}
+.chsug .dl.dn{color:var(--np-warn)!important;border-color:var(--np-warn)!important}
+.dchip.down{background:var(--np-warn-soft)!important;color:var(--np-warn)!important}
+.tsd.dn{background:var(--np-warn-soft)!important;color:var(--np-warn)!important}
+.problems .sev.hi,.prob-row .sev.hi{background:var(--np-warn-soft)!important;color:var(--np-warn)!important;border-color:var(--np-warn)!important}
+/* Mega tags: purple (Mega Evolution's own colour), not red */
+:root:not(#_ch){--mega-soft:#ECE3FA;--mega-ink:#5B2A9E}
+:root[data-look="dark"]:not(#_ch){--mega-soft:rgba(178,140,255,.18);--mega-ink:#D3BFFF}
+/* the damage calc's defender band is red only when it's an opponent; your own Pokémon there is navy */
+.chdcband.def.mine,:root[data-look="dark"] .chdcband.def.mine{background-color:#1D2140!important}
+/* Gauntlet: a team's six on one row on phones */
+@media (max-width:480px){:root:not(#_ch) .gitem .gmons{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px}:root:not(#_ch) .gitem .gmons .spr{width:100%;height:auto;max-width:48px;aspect-ratio:1}}
+/* Damage both ways: full names, no ellipsis */
+.dctab th,.dctab td{text-overflow:clip!important;white-space:normal!important;overflow-wrap:normal;word-break:normal;hyphens:none}
+.dctab th{font-size:10.5px!important;line-height:1.15}
+/* Pokémon sheet hero: the whole sprite stays inside the header, above the stats card and clear of × */
+:root:not(#_ch) .lshead.chls{min-height:232px}
+:root:not(#_ch) .lshead.chls .lsspr{width:178px!important;height:178px!important;right:6px!important;bottom:34px!important;top:auto}
+:root:not(#_ch) .lshead.chls h3{max-width:58%}
+/* Brought with: sprite and text centred the same way, one name size */
+.chbw button{display:flex;flex-direction:column;align-items:center}
+.chbw .bwn,.chbw .bwn.sm{font-size:10px;letter-spacing:-.005em}
+/* Box tiles: × sits in the corner, off the sprite */
+:root:not(#_ch) #boxList .boxchip{padding-top:20px}:root:not(#_ch) #boxList .boxchip .spr{width:52px;height:52px}:root:not(#_ch) #boxList .boxchip b{font-size:11px}
+/* contrast: white type names on mid-tone type colours read at 3:1; a light shade brings them over 4.5:1 without changing the palette */
+.ty:not(.lt){background-image:linear-gradient(rgba(0,0,0,.16),rgba(0,0,0,.16))}
+:root:not([data-look="dark"]):not(#_ch) .chpill.ok{color:#156B3A;border-color:#156B3A}
+/* Build me a team result: ready % (or the real record) and checks side by side, top-aligned; the "missing" note sits right under the checks */
+.abhead .abts{display:inline-flex!important;align-items:flex-start!important;gap:16px!important}
+.abhead .abts .abtsv{align-items:flex-end}
+.abhead .abts .minick{display:inline-flex;flex-direction:column;align-items:flex-end;text-align:right;max-width:190px;line-height:1.25}
+.abhead .abts .minick i{display:block;font-size:11px;margin-top:2px}
+/* Archetypes: every card's sprite row starts at the same place, on its own line under the name */
+#guideOut .guide>summary{flex-wrap:wrap}
+#guideOut .guide>summary .gkm{flex-basis:100%;order:9;margin:6px 0 0 0;justify-content:flex-start}

@@ -2,6 +2,7 @@
 // Limitless events with 32+ players from the last 30 days (top 8 each) and RK9 official events (top 16 each).
 // Compact on purpose: the page keeps it in one document (256 KiB cap). Run after update.mjs and rk9.mjs.
 import fs from 'node:fs';
+import {offFormat} from './formats.mjs';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
 const DAY = 864e5, LIM_TOP = +(process.env.EV_TOP || 8), OFF_TOP = 16, DAYS = 30, MIN_PLAYERS = 32, CAP = 240 * 1024;
@@ -16,6 +17,9 @@ function lmap(k) { let [n, mega] = k.split('|'); if (/^Eternal Flower Floette$/.
   m = n.match(/^(.*?) \((.*)\)$/); if (m) n = m[1] + ({'Dusk Form': '-Dusk', 'Midnight Form': '-Midnight', 'Low Key Form': '-Low-Key'}[m[2]] || '');
   if (mega != null) { const s = mega.slice(1); for (const c of [n + '-Mega' + (s ? '-' + s : ''), n.replace(/-F$/, '') + '-F-Mega', n + '-Mega']) if (names.has(c)) return c; return null; }
   if (names.has(n)) return n; const b = n.split('-')[0]; return names.has(b) ? b : null; }
+// the event's own calendar day: Limitless times are UTC, and evening events in the Americas start after midnight UTC
+// (sweep, Oct 31: 72 of 379 showed the next day). Six hours back puts them on the day they were played.
+const evDay = d => { const t = new Date(d).getTime(); return isFinite(t) ? new Date(t - 6 * 3600e3).toISOString().slice(0, 10) : String(d).slice(0, 10); };
 const lname = m => lmap(key({name: m.n, item: m.i}));
 // every name, item, ability, nature and move is stored once in dict and referenced by its index
 const dict = [], dix = new Map(), D = x => { x = String(x || ''); if (!dix.has(x)) { dix.set(x, dict.length); dict.push(x); } return dix.get(x); };
@@ -28,7 +32,7 @@ for (const e of (readJSON('out/official.json', {events: []}).events || [])) {
   if (top.length) out.push({id: 'rk9-' + e.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), name: e.name, date: e.date, players: e.players, src: 'official', top}); }
 // Limitless
 const index = readJSON('data/index.json', {tournaments: {}});
-const ids = Object.keys(index.tournaments);
+const ids = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name)); // standard Reg M-C only (formats.mjs)
 const lastD = Math.max(...ids.map(id => new Date(index.tournaments[id].d).getTime()).filter(x => x > 0), 0);
 for (const id of ids) { const T = readJSON(`data/t2/${id}.json`, null); if (!T || (T.p || 0) < MIN_PLAYERS || lastD - new Date(T.d) > DAYS * DAY) continue;
   const top = T.e.filter(p => p.pl != null && p.pl <= LIM_TOP && p.dk.length === 6).sort((a, b) => a.pl - b.pl).map(p => { const ns = p.dk.map(lname);
@@ -37,7 +41,7 @@ for (const id of ids) { const T = readJSON(`data/t2/${id}.json`, null); if (!T |
   const c = new Map(); let n = 0;
   for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(lname); if (!ns.every(Boolean)) continue; n++; for (const x of new Set(ns)) c.set(x, (c.get(x) || 0) + 1); }
   const field = [...c].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([x, k]) => [D(x), Math.round(1000 * k / n) / 10]);
-  if (top.length >= 4) out.push({id, name: T.name, date: T.d.slice(0, 10), players: T.p, src: 'limitless', top, field}); }
+  if (top.length >= 4) out.push({id, name: T.name, date: evDay(T.d), players: T.p, src: 'limitless', top, field}); }
 out.sort((a, b) => (b.date > a.date ? 1 : b.date < a.date ? -1 : b.players - a.players));
 // keep under the document cap: drop the oldest small events first
 console.log("qualifying", out.length);
@@ -45,6 +49,9 @@ let doc = {updated: new Date().toISOString(), source: `Limitless (${MIN_PLAYERS}
 while (Buffer.byteLength(JSON.stringify(doc)) > CAP && doc.events.length > 10) { let k = -1;
   for (let i = doc.events.length - 1; i >= 0; i--) if (doc.events[i].src !== 'official') { if (k < 0 || doc.events[i].players < doc.events[k].players) k = i; if (doc.events.length - i > 15) break; }
   doc.events.splice(k, 1); }
+// say how far back the kept events really go (the cap can trim the oldest ones)
+{ const lim = doc.events.filter(e => e.src !== 'official'); if (lim.length) { const old = lim.reduce((a, e) => e.date < a ? e.date : a, lim[0].date), days = Math.round((lastD - new Date(old + 'T12:00:00Z')) / DAY) + 1;
+  if (days < DAYS) doc.source = doc.source.replace(`last ${DAYS} days`, `last ${days} days`); } }
 // fail-safe (stress test, Oct 28): never replace yesterday's events with far fewer (a broken index or a bad day of data)
 { const prev = readJSON('out/events.json', null), n0 = prev && Array.isArray(prev.events) ? prev.events.length : 0;
   if (n0 >= 10 && doc.events.length < n0 * .5) { console.log(`::error::events: only ${doc.events.length} events (had ${n0}); kept the existing file`); process.exit(1); } }

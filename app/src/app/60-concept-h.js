@@ -27,28 +27,35 @@ CH.GMISS = 6;
 CH.REC_MIN = 30;
 CH.recLetter = wr => wr >= .6 ? 'A' : wr >= .55 ? 'B' : wr >= .5 ? 'C' : wr >= .45 ? 'D' : 'F';
 CH._recMap = null; CH._recSrc = null;
-CH.recOf = ms => { if (!ms || ms.length !== 6 || !RES || !Array.isArray(RES.proven)) return null;
-  if (CH._recSrc !== RES.proven) { CH._recSrc = RES.proven; CH._recMap = new Map(); for (const [ns, n, wr, g] of RES.proven) if (Array.isArray(ns) && ns.length === 6 && g != null && +g >= CH.REC_MIN) CH._recMap.set(ns.slice().sort().join('|'), {n: +n, wr: +wr, g: +g}); }
+// every six with 30+ games (results.records, winners and losers alike); older data only has the winning ones (results.proven)
+CH.recList = () => RES && (Array.isArray(RES.records) ? RES.records : Array.isArray(RES.proven) ? RES.proven : null);
+CH.recOf = ms => { const L = CH.recList(); if (!ms || ms.length !== 6 || !L) return null;
+  if (CH._recSrc !== L) { CH._recSrc = L; CH._recMap = new Map(); for (const [ns, n, wr, g] of L) if (Array.isArray(ns) && ns.length === 6 && g != null && +g >= CH.REC_MIN) CH._recMap.set(ns.slice().sort().join('|'), {n: +n, wr: +wr, g: +g}); }
   return CH._recMap.get(ms.map(m => (m.p || m).n).sort().join('|')) || null; };
 // Teams with no record of their own (Sim, Oct 30: "accuracy on point"): the grade adds what the team-strength model (trained on
 // 35k real games, player skill taken out) says about these Pokémon and sets. Tested on events neither had seen
 // (experiments/grade-eval.mjs): newest 20% of Limitless games, who won: readiness alone 52.5%, model alone 54.8%, grade + 0.75×model
 // 55.1%; official RK9 events, top 8 vs the rest: grade 0.586, model 0.515, blend 0.586. So the blend is the best on both. The model
 // part is 0.75 × the grade's spread (15 points) per standard deviation of real teams' model strength, centred on the median team.
-CH.GMODEL = 11.3;
+// Re-tested Oct 31 on cleaned data (themed events removed; 'ready for the top threats' no longer charged twice): blend 55.3% of
+// held-out games, 0.576 at official events; the grade's spread is now 12.1 points, so 0.75 of it is 9.1 per model SD.
+CH.GMODEL = 9.1;
 CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const q = META.model.dist && META.model.dist.q; if (!Array.isArray(q) || q.length !== 101) return null;
   const sd = (q[84] - q[16]) / 2; if (!(sd > 0)) return null; const x = strengthX(ms.map(m => m.p.n), ms).x0; return isFinite(x) ? Math.max(-25, Math.min(25, CH.GMODEL * (x - q[50]) / sd)) : null; } catch (e) { return null; } };
-CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok) : [], mp = CH.modelPts(ms), s = RD.score - CH.GMISS * miss.length + (mp || 0), rec = CH.recOf(ms);
-  return {s, letter: rec ? CH.recLetter(rec.wr) : CH.grade(s), miss, CK, rec, mp}; };
+// 'Ready for the top threats' is itself the readiness score, so it isn't charged again as a missed check (sweep, Oct 31: it
+// made a 7-point cliff between 74% and 75% ready). The letter comes from the score as shown, rounded.
+CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && x.k !== 'reach') : [], mp = CH.modelPts(ms), s = RD.score - CH.GMISS * miss.length + (mp || 0), rec = CH.recOf(ms);
+  const sr = Math.max(0, Math.round(s)), illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok));
+  return {s: sr, letter: rec ? CH.recLetter(rec.wr) : CH.grade(sr), illegal, partial: !ms || ms.length < 6, miss, CK, rec, mp}; };
 CH.gradeWhy = G => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.rec) return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}). With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ready for ${G.r}% of the top 30 threats, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
   const mp = G.mp != null ? Math.round(G.mp) : null;
-  return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b> · score ${Math.round(G.s)}: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
+  return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b> · score ${G.s}${G.partial ? ' so far' : ''}: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
     + (G.miss.length ? ` Each missed check takes ${CH.GMISS} points off: ${G.miss.map(x => esc(x.label.toLowerCase())).join(', ')}.` : ' No missed checks, so nothing comes off.')
     + (mp != null ? ` ${mp === 0 ? 'Teams with these Pokémon and sets do about average in real games (±0).' : `Teams with these Pokémon and sets do ${mp > 0 ? 'better' : 'worse'} than average in real games (${mp > 0 ? '+' : '−'}${Math.abs(mp)}).`}` : '')
-    + ` A 90+, B 80+, C 70+, D 60+.<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span></div>`; };
+    + ` A 90+, B 80+, C 70+, D 60+.${G.partial ? ' The grade settles once all six are in.' : ''}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span></div>`; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
-CH.LEGEND = 'Grade = top threats answered: A 90%+ · B 80+ · C 70+ · D 60+ · F below. Preparation, not a prediction.';
+CH.LEGEND = 'Grade = readiness, minus missed team checks, plus how teams like it do in real games (or its own record with 30+ games). A 90+ · B 80+ · C 70+ · D 60+. Preparation, not a prediction.';
 CH.LV = ['Unanswered', 'Shaky', 'Handled', 'Well handled'];
 CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
 // a fold: remembers open/closed per device
@@ -81,7 +88,7 @@ CH.tiles = (RD, attr) => `<div class="chtiles" role="group" aria-label="Top 30 t
 // the 10 most common threats by name (sprite, name, how ready you are), then the other 20 as a small strip, worst first
 CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, 10), set = new Set(top), rest = CH.order(RD).filter(r => !set.has(r));
   const lv = ['bad', 'shaky', 'mid', 'ok'];
-  return `<div class="chtl10">${top.map((r, i) => { const p = byName.get(r.t.n); return `<button type="button" class="chtr l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="rk">${i + 1}</span>${sprite(p) || ''}<span class="tx"><b>${esc(r.t.d)}</b><span class="st ${lv[r.level]}">${CH.LV[r.level]}</span></span></button>`; }).join('')}</div>
+  return `<div class="chtl10">${top.map((r, i) => { const p = byName.get(r.t.n); return `<button type="button" class="chtr l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="rk">${i + 1}</span>${sprite(p) || ''}<span class="tx"><b>${escName(r.t.d)}</b><span class="st ${lv[r.level]}">${CH.LV[r.level]}</span></span></button>`; }).join('')}</div>
     ${rest.length ? `<div class="chk chtk">The next ${rest.length}, worst first</div><div class="chtiles chsm" role="group" aria-label="The next ${rest.length} threats">${rest.map(r => { const p = byName.get(r.t.n); return `<button type="button" class="chtile l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${sprite(p) || `<span class="chk">${esc(r.t.d.slice(0, 3))}</span>`}</button>`; }).join('')}</div>` : ''}`; };
 // suggestions on the report: the top fix plans, one tap to apply (same plans as Build › Swaps)
 CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;

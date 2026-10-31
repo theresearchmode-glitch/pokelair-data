@@ -188,7 +188,7 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
     else if(vb==='wtr'){const wa=wtOf(A.p)*(ab==='Heavy Metal'?2:ab==='Light Metal'?.5:1)*(aIt==='Float Stone'?.5:1),wd=Math.max(.1,wtOf(D.p)*(dab==='Heavy Metal'?2:dab==='Light Metal'?.5:1)*(dIt==='Float Stone'?.5:1)),r=wa/wd;bp=r>=5?120:r>=4?100:r>=3?80:r>=2?60:40}
     else if(vb==='lowhp')bp=20;else if(vb==='fullhp')bp=nm==='Hard Press'?100:120;else if(vb==='userhp')bp=mv.bp||150;else if(vb==='hex')bp=65;
     else if(vb==='fling')bp=ab==='Klutz'?0:flingBp(A.item);else if(vb==='beatup')beatUp=beatUpBp(o.party&&o.party.length?o.party:[A.p,A.p,A.p,A.p]);
-    else if(vb==='respects')bp=Math.min(300,50+50*Math.min(5,o.fainted||0));else if(vb==='punish')bp=60;else if(vb==='ragefist')bp=50;
+    else if(vb==='respects')bp=50+50*Math.min(3,o.fainted||0);else if(vb==='punish')bp=60;else if(vb==='ragefist')bp=50;
     else if(vb==='gyro'||vb==='eball'){const sm=it=>it==='Choice Scarf'?1.5:it==='Iron Ball'?.5:1,sA=Math.floor(calcStat(A.p,'Spe',A.speSp??0,natMul(A.nat,'Spe'))*sm(aIt)),sD=Math.floor(calcStat(D.p,'Spe',D.speSp??0,natMul(D.nat,'Spe'))*sm(dIt));
       bp=vb==='gyro'?Math.min(150,Math.floor(25*sD/Math.max(1,sA))+1):(()=>{const r=sA/Math.max(1,sD);return r>=4?150:r>=3?120:r>=2?80:r>=1?60:40})()}}
   // (a Mega always holds its Mega Stone, which callers leave out of the item slot, so its Acrobatics is never doubled)
@@ -260,8 +260,8 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
       ||(ab==='Analytic'&&o.atkLast))m.push(5325);
     if(ate)m.push(4915);if((ab==='Reckless'&&isRecoil(nm))||(ab==='Iron Fist'&&mFlag(nm,'p',PUNCH)))m.push(4915);
     if(dab==='Dry Skin'&&type==='Fire')m.push(5120);
-    // Supreme Overlord (Kingambit): +10% power for each fainted ally, up to 5
-    if(ab==='Supreme Overlord'&&o.fainted)m.push([4096,4506,4915,5325,5734,6144][Math.min(5,o.fainted)]);
+    // Supreme Overlord (Kingambit): +10% power for each fainted ally; bring 4 in doubles, so at most 3
+    if(ab==='Supreme Overlord'&&o.fainted)m.push([4096,4506,4915,5325][Math.min(3,o.fainted)]);
     // Normal Gem: 1.3× the first Normal-type move (then it's used up)
     if(aIt==='Normal Gem'&&type==='Normal')m.push(5325);
     if(TYPE_ITEM[aIt]===type)m.push(4915);else if((aIt==='Muscle Band'&&phys)||(aIt==='Wise Glasses'&&!phys))m.push(4505);
@@ -420,7 +420,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
       <div class="dc2"><label>${bp_?'Defense points (Body Press)':mvC&&mvC.cat===2?'Sp. Atk points':'Attack points'}${sel('dcASp',PTS(aShown),String(aShown))}</label><label>Nature${sel('dcANat',NATURES,A.nat)}</label></div>
       <div class="dc2"><label>Item${itemSel('dcAIt',A)}</label><label>Ability${sel('dcAAb',A.p.a,A.ability)}</label></div>
       <label>${bp_?'Defense stage (Body Press)':'Stat stage (Intimidate = −1)'}${sel('dcABo',boosts,String(A.boost))}</label>
-      ${A.ability==='Supreme Overlord'?`<label>Allies fainted (Supreme Overlord: +10% power each)${sel('dcAFt',[0,1,2,3,4,5].map(x=>[String(x),String(x)]),String(dc.fainted||0))}</label>`:''}</div>
+      ${A.ability==='Supreme Overlord'||(mv&&mv.name==='Last Respects')?`<label>Allies fainted (${A.ability==='Supreme Overlord'?'Supreme Overlord: +10% power each':'Last Respects: +50 power each'})${sel('dcAFt',[0,1,2,3].map(x=>[String(x),String(x)]),String(Math.min(3,dc.fainted||0)))}</label>`:''}</div>
     <button type="button" class="btn sm dcswap" id="dcSwap" title="Swap attacker and defender" aria-label="Swap attacker and defender">⇄ Swap</button><div class="dccol"><h3>Defender ${dcSrc(D)}</h3>${sprite(D.p,'dcspr')}
       <label>Pokémon<select class="field" id="dcD">${monOptions(dc.d)}</select></label>
       <div class="dc2"><label>HP points${sel('dcDHp',PTS(D.hpSp),String(D.hpSp))}</label><label>Nature${sel('dcDNat',NATURES,D.nat)}</label></div>

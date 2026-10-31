@@ -1,3 +1,5 @@
+// readable text on a tier colour: dark ink on light colours (gold S tier), white on dark ones (sweep, Oct 31: 1.8:1 contrast)
+const tierInk = c => { const h = String(c).replace('#', ''); if (h.length !== 6) return '#fff'; const [r, g, b] = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * r + .7152 * g + .0722 * b > .25 ? '#1D2140' : '#fff'; };
 // ---------- Sets: popular doubles sets for any Pokémon ----------
 // "Best data" is the merged set: official in-game stats first, then Showdown or tournament rows where the game has none (a Mega's own set).
 const SET_SRC = {ingame: 'Best data', tour: 'Tournaments', ladder: 'Showdown'};
@@ -53,7 +55,7 @@ function renderSets() {
     dCard = setCard('Doubles', rankLine(d, row) || mainSource(st), st, seg, setSources(st, 'doubles')); }
   else { const d = META[SRC[src]], row = findIn(d, p);
     dCard = setCard('Doubles', rankLine(d, row) || (d ? esc(d.source || '') : 'No data loaded yet'), row, seg); }
-  out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}${(() => { try { const r = rating(p), T = lTier(r.total); return `<span class="tag tier" style="background:${T.c};color:#fff" title="NastyPlot rating ${r.total}">${T.k} tier · ${esc(T.d)}</span>`; } catch (e) { return ""; } })()}</div>
+  out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}${(() => { try { const r = rating(p), T = lTier(r.total); return `<span class="tag tier" style="background:${T.c};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${r.total}">${T.k} tier · ${esc(T.d)}</span>`; } catch (e) { return ""; } })()}</div>
     ${(m => m ? `<p class="t2 setmine">Your ${esc(m.d)}: ${esc(m.ability)}${m.item ? ` @ <b>${esc(m.item)}</b>${m.heldItem ? ' (your pick)' : ''}` : ''} · ${m.moves.filter(Boolean).map(x => esc(x.name)).join(', ')}${m.custom ? ' (your moves)' : ''}</p>` : '')(team.find(m => m.p.n === p.n))}
     <div class="mucols one">${dCard}</div>`;
 }

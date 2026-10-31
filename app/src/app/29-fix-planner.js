@@ -103,8 +103,9 @@ function planFixes(ms,pool,useA,opts){
   const canOut=m=>!S.slots[m.i].lock&&(!m.mega||swapMega);
   const rolesBase=teamRoles(ms);
   // evidence floor (Oct 28 audit): suggestions come from Pokémon real players actually run, unless you ask for off-meta.
-  // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ when you limit suggestions to your box.
-  const cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)&&ui.pool==='box'?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
+  // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ for Pokémon in your box, whichever pool is
+  // picked (sweep, Oct 31: Box + catch dropped your own box Pokémon that My box offered, so the bigger pool gave worse plans).
+  const cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
     return {p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}}});
   // never more Megas than the goal, or (when the team is already over it: Megas on team 0 with a Mega in) than it has now
   const mega0=ms.filter(m=>m.mega).length,legal=(team)=>{const n=team.filter(m=>m.mega).length;return n<=maxMega||n<=mega0};
@@ -233,7 +234,7 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   // a game-plan gap nothing in this pool can close (Mega Swampert needs rain and the box has no rain setter): say so, and where to look
   const itf=(typeof itemFixHtml==='function'?itemFixHtml(ms):'')+(plans.gapNote?`<p class="t2 gapnote">${esc(plans.gapNote)}</p>`:'');
   const moreBtn=`<div class="morebar">${left>0?`<button class="btn" type="button" id="planMoreBtn">More ideas</button><span class="vsub">${left} more plan${left===1?'':'s'}, including side-grades and rarely used picks</span>`:more.length?`<span class="vsub">That's every plan that keeps your type rating and speed control.</span><button class="btn sm" type="button" id="planMoreReset">Show fewer</button>`:''}</div>`;
-  const none=!plans.length&&!shown.length;if(none){el.innerHTML=itf+`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool readies the team for more of the top threats (it's ready for ${plans.tsBase}%). Keep this team, or try "Full roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Full roster" or unlock a Pokémon.'}</div>`+moreBtn}
+  const none=!plans.length&&!shown.length;if(none){el.innerHTML=itf+`<div class="empty-note">${plans.tsOn&&plans.tsBase!=null?`No change from this pool readies the team for more of the top threats (it's ready for ${plans.tsBase}%). Keep this team, or try "Whole roster" or unlock a Pokémon.`:base&&base.a.excess===0&&!base.a.unresisted.length?'This team has no type problems, and no change from this pool makes it meaningfully better. Keep it.':'No change from this pool improves the team. Try "Whole roster" or unlock a Pokémon.'}</div>`+moreBtn}
   // each plan's readiness next to the current one, so a plan never hides that it leaves the team less prepared
   const baseTS=(ui.vsum&&ui.vsum.RD)||null,planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
   // plans that would lower readiness by 5+ go after the ones that keep or raise it
@@ -272,7 +273,7 @@ function renderMeta(){
   $('metaTitle').textContent='Doubles meta';
   if(!d){$('metaSource').textContent='Live data appears here when the page is opened in Claude.';$('metaList').innerHTML='<div class="empty-note">No meta data loaded yet.</div>';$('metaStatus').innerHTML='';return}
   const when=t=>{try{return new Date(t).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return t}};
-  $('metaSource').textContent=`${d.source}${d.period&&!String(d.source).includes(d.period)?' · '+d.period:''}${d.battles?` · ${(+d.battles).toLocaleString()} battles`:''}`;
+  $('metaSource').textContent=`${d.source}${d.period&&!String(d.source).includes(d.period)?' · '+(/^\d{4}-\d{2}$/.test(d.period)?new Date(d.period+'-15T12:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'}):d.period):''}${d.battles?` · ${(+d.battles).toLocaleString()} battles`:''}`;
   $('metaStatus').innerHTML=st?`Last refresh ${esc(when(st.lastRun))}${st.ok===false?' · <span class="bad">failed: '+esc(st.note||'')+'</span>':st.note?' · '+esc(st.note):''} · ${esc(st.schedule||'Refreshes daily')}`:'';
   const kind=d.kind||'ladder';
   $('metaList').innerHTML=(d.top||[]).map(t0=>{const p=byName.get(t0.n);let t=t0;if(p&&!(t0.mv&&t0.mv.length)){const st=setFor(p,'doubles','tour');t={...t0,mv:st.mv,it:st.it,ab:st.ab,na:st.na,tm:st.tm}}const u=kind==='ladder'?t.u:null;

@@ -73,7 +73,10 @@ function corePlan(ns) {
 }
 const andList = a => a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 function coreConfirmText(ns) { if (ns.length > 3) return 'Replace your team?'; const c = corePlan(ns);
-  return `Replace ${andList(c.dropped)}?${c.megas > 2 ? ` Your team would have ${c.megas} Megas (only one can Mega Evolve per battle).` : ''}`; }
+  // warn when the core brings a weather that fights one already on the team (sweep, Oct 31: Pelipper in next to Charizard Y)
+  let wx = ''; try { const nt = c.next.map(s => byName.get(s.n)).filter(Boolean).map(p => abMember(p)), ws = wxSetsOf(nt);
+    if (ws.length > 1) wx = ` The team would set both ${ws.map(w => ARCH[w].name.toLowerCase()).join(' and ')}, which cancel each other out.`; } catch (e) {}
+  return `Replace ${andList(c.dropped)}?${c.megas > 2 ? ` Your team would have ${c.megas} Megas (only one can Mega Evolve per battle).` : ''}${wx}`; }
 function useCore(ns, sure) {
   const cur = S.slots.filter(s => byName.get(s.n)), have = new Set(cur.map(s => s.n));
   if (ns.length > 3) { if (cur.length && !sure) return false; S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast('Loaded the team (doubles)'); return true; }
