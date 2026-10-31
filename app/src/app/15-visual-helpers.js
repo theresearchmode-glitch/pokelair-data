@@ -1,3 +1,5 @@
+// a Pokémon name for display, with its form letter kept on the same line ("Mega Charizard Y" never ends a line on "Y")
+const escName = n => esc(n).replace(/ ([XYZ])$/, '\u00a0$1');
 // ---------- visual helpers shared by every page ----------
 // Pokémon sprites: Pokémon HOME renders from the PokéAPI sprite collection, cropped and shrunk to 160px WebP (about 7 KB
 // each), published next to the page as sp/<PokéAPI id>.webp. Loaded lazily; a missing file just disappears.

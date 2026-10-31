@@ -32,8 +32,8 @@ pg.on('pageerror', e => console.log('PAGE ERROR', e.message));
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}})} : null}; }, D);
 await pg.goto('file://' + page); await pg.waitForTimeout(4000);
 await pg.evaluate(() => window.__ev(`window.__score=function(tm){S.slots=tm.map(x=>({n:x.n,a:x.a||null,lock:false,it:x.it?{doubles:x.it}:undefined,mv:x.mv&&x.mv.length?{doubles:x.mv}:undefined}));fixSlots();
-  const ms=members();if(ms.length!==6)return null;const RD=prepOf(ms);if(!RD)return null;const CK=proChecks(ms,true);const miss=CK.items.filter(x=>!x.skip&&!x.ok).length;
-  let x=null;try{x=strengthX(ms.map(m=>m.p.n),ms).x0}catch(e){}return {ready:RD.score,grade:RD.score-6*miss,miss,model:x}};0`));
+  const ms=members();if(ms.length!==6)return null;const RD=prepOf(ms);if(!RD)return null;const CK=proChecks(ms,true);const miss=CK.items.filter(x=>!x.skip&&!x.ok).length,miss2=CK.items.filter(x=>!x.skip&&!x.ok&&x.k!=='reach').length;
+  let x=null;try{x=strengthX(ms.map(m=>m.p.n),ms).x0}catch(e){}return {ready:RD.score,grade:RD.score-6*miss,grade2:RD.score-6*miss2,miss,model:x}};0`));
 async function scoreAll(list) { const out = []; for (let i = 0; i < list.length; i += 100) { const part = list.slice(i, i + 100);
   out.push(...await pg.evaluate(ts => ts.map(t => { try { return window.__score(t); } catch (e) { return null; } }), part)); if (i % 1000 === 0) process.stdout.write(`${i}/${list.length} `); } return out; }
 const dk = [...decks.values()], ds = await scoreAll(dk.map(d => d.team)); dk.forEach((d, i) => { d.s = ds[i]; });
@@ -42,13 +42,13 @@ await b.close(); fs.unlinkSync(page); console.log('');
 for (const d of dk) { const n4 = near(d.names, 4), n5 = near(d.names, 5); d.n4 = n4 && n4.v; d.n5 = n5 && n5.v; }
 for (const r of offRows) { const n4 = near(r.names, 4), n5 = near(r.names, 5); r.n4 = n4 && n4.v; r.n5 = n5 && n5.v; }
 const keyOf = (t, d) => t + '#' + d, S = (k, f) => { const d = decks.get(k); return d && d.s ? f(d) : null; };
-const PRED = {ready: d => d.s.ready, grade: d => d.s.grade, model: d => d.s.model, near4: d => d.n4, near5: d => d.n5};
+const PRED = {ready: d => d.s.ready, grade: d => d.s.grade, grade2: d => d.s.grade2, model: d => d.s.model, near4: d => d.n4, near5: d => d.n5};
 const rep = {games: {}, official: {}};
 for (const [name, f] of Object.entries(PRED)) { let hit = 0, n = 0, cov = 0;
   for (const g of test) { const a = S(keyOf(g[0], g[7]), f), c = S(keyOf(g[1], g[8]), f); if (a == null || c == null) continue; cov++; if (a === c) { hit += .5; n++; continue; } n++; if ((a > c) === (g[2] === 1)) hit++; }
   rep.games[name] = {acc: +(hit / n).toFixed(4), games: n, of: test.length}; }
 const auc = (pos, neg) => { let w = 0, n = 0; for (const a of pos) for (const c of neg) { w += a > c ? 1 : a === c ? .5 : 0; n++; } return n ? +(w / n).toFixed(3) : null; };
-const OP = {ready: r => r.s && r.s.ready, grade: r => r.s && r.s.grade, model: r => r.s && r.s.model, near4: r => r.n4, near5: r => r.n5};
+const OP = {ready: r => r.s && r.s.ready, grade: r => r.s && r.s.grade, grade2: r => r.s && r.s.grade2, model: r => r.s && r.s.model, near4: r => r.n4, near5: r => r.n5};
 for (const [name, f] of Object.entries(OP)) { const byEv = new Map(); for (const r of offRows) { const v = f(r); if (v == null) continue; (byEv.get(r.ev) || byEv.set(r.ev, []).get(r.ev)).push({v, place: r.place}); }
   const per = []; let pos = [], neg = []; for (const [, E] of byEv) { const p = E.filter(x => x.place <= 8).map(x => x.v), q = E.filter(x => x.place > 8).map(x => x.v); const a = auc(p, q); if (a != null) per.push(a); pos = pos.concat(p); neg = neg.concat(q); }
   rep.official[name] = {auc_per_event: per.length ? +(per.reduce((a, x) => a + x, 0) / per.length).toFixed(3) : null, events: per.length, teams: pos.length + neg.length}; }

@@ -26,4 +26,4 @@ function bindMonInput(input,onPick,pool){
   input.addEventListener('blur',()=>setTimeout(()=>{if(cbState&&cbState.input===input)closeMenu()},120));
   input.addEventListener('keydown',kb);
 }
-function kb(e){if(!cbState)return;if(e.key==='ArrowDown'){e.preventDefault();moveSel(1)}else if(e.key==='ArrowUp'){e.preventDefault();moveSel(-1)}else if(e.key==='Enter'){e.preventDefault();pick(cbState.idx)}else if(e.key==='Escape'){closeMenu()}}
+function kb(e){if(!cbState)return;if(e.key==='ArrowDown'){e.preventDefault();moveSel(1)}else if(e.key==='ArrowUp'){e.preventDefault();moveSel(-1)}else if(e.key==='Enter'){e.preventDefault();pick(cbState.idx)}else if(e.key==='Escape'){closeMenu();e.preventDefault();e.__cbEsc=true}}

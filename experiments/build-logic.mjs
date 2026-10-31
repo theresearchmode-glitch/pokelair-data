@@ -43,7 +43,7 @@ for (const pool of ['box', 'boxfill', 'all']) { const r = await plans(sample, po
   ok(/has 1 Mega and Megas on team is set to 0/.test(r.note), `Megas on team 0 with a Mega in: the plans explain it ("${r.note}")`); }
 // cores: Add to my team on a full team names who goes, keeps the team's only Mega, and warns past 2 Megas
 { const t = await ev(`(()=>{S.slots=DEFAULT_TEAM.slots.map(s=>({...s}));fixSlots();return {txt:coreConfirmText(['Pelipper','Archaludon']),plan:corePlan(['Pelipper','Archaludon']),mega:members().filter(m=>m.mega).map(m=>m.p.n)}})()`);
-  ok(/^Replace \S.* and \S.*\?$/.test(t.txt), `Add to my team on a full team names both Pokémon it replaces ("${t.txt}")`);
+  ok(/^Replace \S.* and \S.*\?( .*)?$/.test(t.txt), `Add to my team on a full team names both Pokémon it replaces ("${t.txt}")`);
   ok(t.mega.every(n => t.plan.next.some(s => s.n === n)), `Add to my team keeps the team's only Mega (${t.mega})`);
   const t3 = await ev(`(()=>{S.slots=['Charizard-Mega-Y','Garchomp-Mega','Incineroar','Whimsicott','Rillaboom','Sneasler'].map(n=>({n,a:null,lock:false}));fixSlots();return coreConfirmText(['Floette-Mega','Kingambit'])})()`);
   ok(/3 Megas/.test(t3), `a core that would make 3 Megas says so ("${t3}")`); }

@@ -65,11 +65,13 @@ function* provenBuildGen() {
     scored.sort((a, b) => (b.s + .0004 * (b.ts ?? 50)) - (a.s + .0004 * (a.ts ?? 50))); }
   const out = [];
   for (const c of scored) { if (out.length >= 3) break; const t = c.t !== undefined ? c.t : fill(c); if (!t || t.length !== 6) continue;
+    if (wxIdle(t).length) continue; /* same weather rule as built teams: a setter comes with a teammate that uses it (sweep, Oct 31) */
     if (out.some(o => o.t.filter(m => t.some(x => x.p.b === m.p.b)).length > 3)) continue; out.push({t, c}); }
   if (!out.length) return null;
   return {fmt: 'doubles', teams: out.map(({t, c}) => { const d = abDescribe(t);
     const src = `${c.n} players brought this exact team at Limitless events${c.g ? ` (${c.g.toLocaleString('en-US')} games)` : ''}, winning about ${Math.round(c.wr * 100)}% of them`;
     d.why.unshift(c.missing ? `${src}, with ${c.missing.d} where you have ${(t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: '?'}).d}` : src);
+    { const ws = wxSetsOf(t); if (ws.length > 1) d.why.push(`Sets both ${ws.map(w => ARCH[w].name.toLowerCase()).join(' and ')}: each cancels the other, so lead with the one you want up`); }
     d.proven = {n: c.n, wr: c.wr, g: c.g, swapped: !!c.missing}; return d; })};
 }
 // The build runs as a generator so the page can draw between steps (audit, Oct 30: it froze phones for up to 17 s);
@@ -82,7 +84,7 @@ function* buildBestGen0() {
   // fills the rest, so a rare sleeper still gets three good teams
   let keepPr = null;
   { const pr = yield* provenBuildGen(); if (pr && !ui.abLock) return pr;
-    if (pr && ui.abLock) { yield; const good = pr.teams.filter(t => { try { return (tsB(t.mons.map(m => abMember(byName.get(m.n)))) ?? 0) >= 50; } catch (e) { return false; } }); if (good.length >= 3) return {...pr, teams: good}; keepPr = good; } }
+    if (pr && ui.abLock) { yield; const good = pr.teams.filter(t => { try { const tm = t.mons.map(m => abMember(byName.get(m.n))); if ((tsB(tm) ?? 0) < 50) return false; const gp = gamePlan(tm.map(m => ({...m, _mv: memberMoves(m).moves}))), sp = gp && gp.rows.find(r => r.k === 'speed'); return !sp || sp.st !== 'miss'; } catch (e) { return false; } }); /* same bar as built teams: 50+ ready and some speed control */ if (good.length >= 3) return {...pr, teams: good}; keepPr = good; } }
   const res0 = yield* buildBestGen_();
   if (keepPr && keepPr.length) { const fresh = (res0.teams || []).filter(t => !keepPr.some(k => k.mons.filter(m => t.mons.some(x => x.n === m.n)).length > 3)); return {...res0, teams: [...keepPr, ...fresh].slice(0, 3)}; }
   return res0;
@@ -167,11 +169,12 @@ function abDescribe(t) {
   const tA = typeof assignItems === 'function' ? assignItems(t) : t;
   const mons = t.map((m, i) => ({n: m.p.n, d: m.p.d, types: m.p.t, mega: !!m.p.m, box: inBox(m.p), role: role(m), ability: m.ability, it: (tA[i] && tA[i].item) || '', offMeta: viability(m.p) < 25}));
   const why = [];
-  if (RES) { const names = new Set(t.map(m => m.p.n)); const core = RES.cores.find(c => c.slice(0, 3).every(n => names.has(n)));
+  if (RES) { const names = new Set(t.map(m => m.p.n)); const core = RES.cores.filter(c => c.slice(0, 3).every(n => names.has(n)) && c[4] >= (RES.base || .5)).sort((a, b) => b[4] - a[4])[0]; /* only a core that wins more than average, the best one */
     if (core) why.push(`${core.slice(0, 3).map(n => (byName.get(n) || {}).d || n).join(' + ')}: ${core[3]} tournament teams, ${Math.round(core[4] * 100)}% wins`); }
   else { let best = null; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const s = pairSyn(t[i], t[j]); if (!best || s > best.s) best = {s, a: t[i], b: t[j]}; }
     if (best && best.s >= 8) why.push(`${best.a.d} and ${best.b.d} are often run together in ranked`); }
-  const ans = tr.rows.filter(r => r.best >= 1).length; why.push(`Answers ${ans} of the ${tr.rows.length} most-used Pokémon`);
+  // the same readiness report as My team, so the card and the team page never disagree (sweep, Oct 31)
+  { let RD = null; try { RD = prepOf(t); } catch (e) {} if (RD && RD.rows) { const un = RD.rows.filter(r => r.level === 0).length, sh = RD.rows.filter(r => r.level === 1).length; why.push(`Ready for ${RD.score}% of the top ${RD.rows.length} threats: ${un} unanswered, ${sh} shaky`); } }
   const gpl = gp.rows.filter(r => r.st === 'ok' && ['speed', 'weather', 'terrain', 'support', 'haz', 'pivot'].includes(r.k)).map(r => r.label.replace('Fake Out / redirection', 'Fake Out'));
   mons.filter(m => !m.box).forEach(m => why.push(`${m.d} isn't in your box: the best one to catch for this team`));
   // the team's plan in a few words: weather + speed mode, or how it wins without one
@@ -193,7 +196,7 @@ function renderAutoBuild() {
   if (!r) { const btn = $('abBtn'); if (btn) btn.disabled = false; el.innerHTML = abStart(); return; }
   { const btn = $('abBtn'); if (btn) { btn.disabled = !!r.busy; btn.setAttribute('aria-busy', r.busy ? 'true' : 'false'); } }
   if (r.busy) { el.innerHTML = '<div class="empty-note abbusy" role="status" aria-live="polite"><span class="abspin" aria-hidden="true"></span>Building your teams… checking each against the top 30 threats.</div>'; return; }
-  const col = (res) => { if (!res.teams.length) return `<div class="abcol"><div class="abfmt">${FMT(res.fmt)}</div><div class="empty-note">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team.` : res.short != null ? `Only ${res.short} usable Pokémon in your box for ${FMT(res.fmt).toLowerCase()}. Add more in My box, or switch to Whole roster.` : 'No legal team from this pool.'}</div></div>`;
+  const col = (res) => { if (!res.teams.length) return `<div class="abcol"><div class="abfmt">${FMT(res.fmt)}</div><div class="empty-note">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. ${ui.abSrc === 'all' ? 'Try a different number of Megas on team' + (ui.abLock ? ' or build without the pick' : '') + '.' : 'Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team.'}` : res.short != null ? `Only ${res.short} usable Pokémon in your box for ${FMT(res.fmt).toLowerCase()}. Add more in My box, or switch to Whole roster.` : 'No legal team from this pool.'}</div></div>`;
     const k = (ui.abIdx && ui.abIdx[res.fmt]) || 0, tm = res.teams[k % res.teams.length];
     return `<div class="abcol"><div class="abhead"><span class="archchips">${archChips(tm.label)}</span>${tm.fresh ? '<span class="tag offmeta">FRESH TAKE</span>' : ''}${tm.proven ? `<span class="tag box" title="Built from a real tournament team">${tm.proven.swapped ? 'PROVEN · 1 SWAP' : 'PROVEN TEAM'}</span>` : ''}${tm.grade ? `<span style="margin-left:auto" class="abts">${abTS(tm)}${miniGrades(tm.grade)}</span>` : ''}${res.teams.length > 1 ? `<span class="vsub">option ${k % res.teams.length + 1} of ${res.teams.length}</span>` : ''}</div>
       <div class="abmons">${tm.mons.map(m => `<div class="abmon">${sprite(byName.get(m.n),'mini')}<span class="abname">${esc(m.d)}${m.it ? `<span class="vsub abit"> @ ${esc(m.it)}</span>` : ''}</span>${confChip(byName.get(m.n))}<span class="chips">${m.types.map(t => chip(t)).join('')}</span>${m.box ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}${m.offMeta ? '<span class="tag offmeta">OFF-META</span>' : ''}<span class="abright"><span class="tag role">${esc(m.role)}${m.mega ? ' · MEGA' : ''}</span>${byName.get(m.n) ? ratingTag(byName.get(m.n)) : ''}</span></div>`).join('')}</div>

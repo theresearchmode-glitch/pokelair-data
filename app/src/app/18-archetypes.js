@@ -220,7 +220,10 @@ function trendFor(name, rank) {
   const past = h.days.slice(0, -1).filter(x => x.d >= cutoff)[0] || h.days[h.days.length - 2];
   if (!past || !past[k] || !Object.keys(past[k]).length) return null;
   const was = past[k][name]; if (was == null) return {cls: 'new', txt: 'NEW'};
-  const diff = was - rank; if (!diff) return null;
+  // both ranks from the same daily history (sweep, Oct 31: the list's own rank is a 28-day window, history is 14 days, so
+  // comparing across them flipped most arrows); the same numbers as Home's "What changed this week"
+  const now = latest[k] && latest[k][name]; if (now == null) return null;
+  const diff = was - now; if (!diff) return null;
   return {cls: diff > 0 ? 'up' : 'down', txt: (diff > 0 ? '▲' : '▼') + Math.abs(diff)};
 }
 

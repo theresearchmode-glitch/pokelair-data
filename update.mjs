@@ -8,6 +8,7 @@
 // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
+import {offFormat} from './formats.mjs';
 const API = 'https://play.limitlesstcg.com/api', FORMAT = 'M-C', MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
@@ -67,9 +68,12 @@ for (const t of todo) {
 fs.writeFileSync('data/index.json', JSON.stringify(index));
 console.log(`list ${list.length} tournaments, fetched ${fetched}, cached ${Object.keys(index.tournaments).length}`);
 
+// standard Reg M-C events only: themed and restricted cups are kept on disk but left out of every number below
+const KEEP = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name));
+console.log(`off-format events left out: ${Object.keys(index.tournaments).length - KEEP.length}`);
 // 2) all teams with a full six and 3+ games
 const E = []; let first = null, last = null;
-for (const id of Object.keys(index.tournaments)) { const T = readJSON(`data/t/${id}.json`, null); if (!T) continue;
+for (const id of KEEP) { const T = readJSON(`data/t/${id}.json`, null); if (!T) continue;
   first = !first || T.d < first ? T.d : first; last = !last || T.d > last ? T.d : last;
   for (const [pl, w, l, ks] of T.e) { const m = [...new Set(ks)]; if (m.length === 6 && w + l >= 3) E.push({m, w, l}); } }
 const keys = [...new Set(E.flatMap(e => e.m))], ki = new Map(keys.map((k, i) => [k, i])); E.forEach(e => e.ix = e.m.map(k => ki.get(k)));
@@ -113,13 +117,13 @@ for (const e of E) { const m = [...new Set(e.ix.map(j => nm[j]).filter(Boolean))
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = m[i] + '|' + m[j], o = P.get(k) || {n: 0, w: 0, g: 0}; o.n++; o.w += e.w; o.g += g; P.set(k, o);
     for (let l = j + 1; l < 6; l++) { const k3 = k + '|' + m[l], q = C3.get(k3) || {n: 0, w: 0, g: 0}; q.n++; q.w += e.w; q.g += g; C3.set(k3, q); } } }
 const day = d => new Date(d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
-const src = `${E.length.toLocaleString('en-US')} Reg M-C tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${Object.keys(index.tournaments).length} events, ${day(first)} – ${day(last)})`;
-const out = {updated: new Date().toISOString(), tournaments: Object.keys(index.tournaments).length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
-  adj: {label: `Limitless · ${Object.keys(index.tournaments).length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
+const src = `${E.length.toLocaleString('en-US')} Reg M-C tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${day(first)} – ${day(last)})`;
+const out = {updated: new Date().toISOString(), tournaments: KEEP.length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
+  adj: {label: `Limitless · ${KEEP.length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
     rows: [...mon].map(([n, o]) => [n, Math.round(1000 * o.bs / (o.g || 1)) / 1000, o.g, o.t, Math.round(1000 * o.w / (o.g || 1)) / 10])},
   // the ratings' tournament input, rebuilt every day from these same teams (it used to be a hand-made Pokémon Zone snapshot):
   // [name, % of teams, game win %, games]. Megas are already their own rows (split: the page doesn't subtract them again).
-  tour: {label: `Limitless · ${Object.keys(index.tournaments).length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
+  tour: {label: `Limitless · ${KEEP.length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
     updated: new Date().toISOString().slice(0, 10),
     rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
     megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
@@ -127,12 +131,15 @@ const out = {updated: new Date().toISOString(), tournaments: Object.keys(index.t
     mons: Object.fromEntries([...mon].map(([n, o]) => [n, [o.t, shrink(o.w, o.g, 40)]])),
     pairs: Object.fromEntries([...P].filter(([, o]) => o.n >= 25).map(([k, o]) => [k, [o.n, shrink(o.w, o.g, 40)]])),
     cores: [...C3].filter(([, o]) => o.n >= 40).map(([k, o]) => [...k.split('|'), o.n, shrink(o.w, o.g, 40)]).sort((a, b) => b[4] - a[4]),
-    proven: [...comp].map(([k, o]) => [k.split('|'), o.n, shrink(o.w, o.g, 20), o.g]).filter(x => x[2] >= base + .01 && (x[1] >= 2 || x[3] >= 8)).sort((a, b) => b[2] - a[2] || b[1] - a[1])}};
+    proven: [...comp].map(([k, o]) => [k.split('|'), o.n, shrink(o.w, o.g, 20), o.g]).filter(x => x[2] >= base + .01 && (x[1] >= 2 || x[3] >= 8)).sort((a, b) => b[2] - a[2] || b[1] - a[1]),
+    // every exact six with 30+ games, winning or not: the page grades a team on its real record (sweep, Oct 31: the most-played
+    // six, 45.7% won over 2,119 games, was missing because proven keeps winners only)
+    records: [...comp].filter(([, o]) => o.g >= 30).map(([k, o]) => [k.split('|'), o.n, shrink(o.w, o.g, 20), o.g]).sort((a, b) => b[3] - a[3])}};
 fs.writeFileSync('out/limitless.json', JSON.stringify(out));
 console.log(`teams ${E.length}, games ${G}, pokemon ${mon.size}, pairs ${Object.keys(out.results.pairs).length}, cores ${out.results.cores.length}, proven ${out.results.proven.length}`);
 
 // ---------- v2 outputs ----------
-const V2 = Object.keys(index.tournaments).map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T ? {id, ...T} : null; }).filter(Boolean)
+const V2 = KEEP.map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T ? {id, ...T} : null; }).filter(Boolean)
   .sort((a, b) => new Date(a.d) - new Date(b.d));
 const nameOf = m => lmap(key({name: m.n, item: m.i}));
 const pct = (c, n, k) => [...c].sort((a, b) => b[1] - a[1]).slice(0, k).map(([x, v]) => [x, Math.round(1000 * v / n) / 10]);
@@ -167,7 +174,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
 // 3) usage-rank history for trends: one entry per day for the last 21 days, each from the 14 days before it
 { const days = [];
   for (let k = 20; k >= 0; k--) { const end = lastD - k * DAY, c = new Map(); let n = 0;
-    for (const id of Object.keys(index.tournaments)) { const T = readJSON(`data/t/${id}.json`, null); if (!T) continue; const t = new Date(T.d).getTime(); if (t > end || t <= end - 14 * DAY) continue;
+    for (const id of KEEP) { const T = readJSON(`data/t/${id}.json`, null); if (!T) continue; const t = new Date(T.d).getTime(); if (t > end || t <= end - 14 * DAY) continue;
       for (const [, w, l, ks] of T.e) { const ms = [...new Set(ks.map(lmap).filter(Boolean))]; if (ms.length !== 6) continue; n++; for (const m of ms) c.set(m, (c.get(m) || 0) + 1); } }
     if (!n) continue; days.push({d: new Date(end).toISOString().slice(0, 10), tour: Object.fromEntries([...c].sort((a, b) => b[1] - a[1]).slice(0, 80).map(([m], i) => [m, i + 1]))}); }
   fs.writeFileSync('out/history.json', JSON.stringify({days})); console.log(`history: ${days.length} days`); }
@@ -179,7 +186,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   const tix = ns => { const k = [...ns].sort().join('|'); if (!teamIx.has(k)) { teamIx.set(k, teams.length); teams.push(k); } return teamIx.get(k); };
   const pix = k => { if (!players.has(k)) { players.set(k, plist.length); plist.push(k); } return players.get(k); };
   V2.forEach((T, ti) => { const P = readJSON(`data/p/${T.id}.json`, []); if (!P.length) return; const by = new Map();
-    for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue; by.set(p.id, {t: tix(ns), pl: pix(p.nm.toLowerCase().trim() || p.id), d: dix(ns, p.dk)}); }
+    for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue; by.set(p.id, {t: tix(ns), pl: pix(p.id ? 'id:' + String(p.id).toLowerCase() : p.nm.toLowerCase().trim()) /* the Limitless account, not the display name (sweep, Oct 31: 517 accounts showed under 2+ names) */, d: dix(ns, p.dk)}); }
     for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B) continue; const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
   fs.writeFileSync('out/matches.json', JSON.stringify({updated: new Date().toISOString(), events: V2.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}));
   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }

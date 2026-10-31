@@ -49,10 +49,20 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false)});
 // steps back through pages. Back first closes anything open on top (a Pokémon sheet, search, the menu, feedback).
 let NAV_POP=false;
 function navHist(v){if(NAV_POP)return;try{const cur=history.state&&history.state.npv;if(!cur)history.replaceState({npv:v},'');else if(cur!==v)history.pushState({npv:v},'')}catch(e){}}
-function overlayOpen(){const ids=['chEdit','chScout','lairSheet','jump','fbSheet'];for(const id of ids){const el=$(id);if(el&&!el.hidden)return id}const sd=$('side');if(sd&&sd.classList.contains('open'))return 'side';return null}
-addEventListener('popstate',e=>{const o=overlayOpen();
-  if(o){if(o==='chEdit'&&typeof chEditClose==='function')chEditClose();else if(o==='chScout'&&typeof chScoutClose==='function')chScoutClose();else if(o==='lairSheet'&&typeof lairClose==='function')lairClose();else if(o==='jump'&&typeof jumpClose==='function')jumpClose();else if(o==='fbSheet'&&typeof fbClose==='function')fbClose();else if(o==='side')sideOpen(false);
-    try{history.pushState({npv:view},'')}catch(er){}return}
+const OVERLAYS=['chEdit','chScout','lairSheet','jump','fbSheet','shareBox'];
+function overlayOpen(){for(const id of OVERLAYS){const el=$(id);if(el&&!el.hidden)return id}const sd=$('side');if(sd&&sd.classList.contains('open'))return 'side';return null}
+function overlayClose(o){if(o==='chEdit'&&typeof chEditClose==='function')chEditClose();else if(o==='chScout'&&typeof chScoutClose==='function')chScoutClose();else if(o==='lairSheet'&&typeof lairClose==='function')lairClose();else if(o==='jump'&&typeof jumpClose==='function')jumpClose();else if(o==='fbSheet'&&typeof fbClose==='function')fbClose();else if(o==='shareBox'){if(typeof closeShare==='function')closeShare();else{const x=$('shareBox');if(x)x.hidden=true}}else if(o==='side')sideOpen(false)}
+// Back closes what's open on top (sweep, Oct 31): opening a sheet, the search, the menu or the share card adds its own history
+// step, so back closes it even on the first page (it used to leave the app) and the page keeps its scroll position; closing it
+// with × or the backdrop takes that step back out quietly.
+try{history.scrollRestoration='manual'}catch(e){}
+let OV_SKIP=0;
+function ovSync(){const o=overlayOpen(),st=history.state||{};try{if(o&&!st.ov)history.pushState({npv:view,ov:1},'');else if(!o&&st.ov){OV_SKIP++;history.back()}}catch(e){}}
+setTimeout(()=>{try{const kick=()=>{clearTimeout(ovSync._t);ovSync._t=setTimeout(ovSync,0)};
+  const mo=new MutationObserver(rs=>{for(const r of rs){const t=r.target;if(r.type==='childList'?[...r.addedNodes].some(n=>n.id&&OVERLAYS.includes(n.id)):(t.id&&(OVERLAYS.includes(t.id)||t.id==='side'))){kick();return}}});
+  mo.observe(document.body,{attributes:true,subtree:true,attributeFilter:['hidden','class'],childList:true})}catch(e){}},0);
+addEventListener('popstate',e=>{if(OV_SKIP){OV_SKIP--;return}const o=overlayOpen();
+  if(o){overlayClose(o);return}
   const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v)}finally{NAV_POP=false}});
 function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);
   document.querySelectorAll('[data-pane]').forEach(el=>el.hidden=el.dataset.pane!==v);
@@ -87,3 +97,8 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   if(v==='events')safe('events',renderEvents);
   if(v==='top')safe('team search',renderTeamSearch);
   if(scroll!==false){try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}}}
+// Tab stays inside an open sheet or editor (they're modal), wrapping from the last control to the first (sweep, Oct 31)
+document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const o=overlayOpen();if(!o||o==='side'||o==='jump')return;const box=$(o);if(!box)return;
+  const f=[...box.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),summary')].filter(x=>x.offsetParent!==null);if(!f.length)return;
+  const a=f[0],z=f[f.length-1],act=document.activeElement;if(!box.contains(act)){e.preventDefault();a.focus();return}
+  if(e.shiftKey&&act===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&act===z){e.preventDefault();a.focus()}});

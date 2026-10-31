@@ -1,7 +1,7 @@
 name: Update Limitless data
 on:
   schedule:
-    - cron: '7 9 * * *'   # daily, about 5:07 AM New York time (GitHub can start it up to an hour late), before NastyPlot's 6:52 refresh
+    - cron: '7 9 * * *'   # daily, about 5:07 AM New York time in summer, 4:07 AM in winter (GitHub can start it up to an hour late), before NastyPlot's 6:52 refresh
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,19 +14,19 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - run: node replays.mjs || echo "::warning::replays skipped"   # first, so today's bring/lead rates reach the ratings (was a day behind)
       - run: node update.mjs
         env:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
-      - run: node rk9.mjs || echo "rk9 skipped"
-      - run: node events.mjs || echo "events skipped"
-      - run: node replays.mjs || echo "replays skipped"
-      - run: node model.mjs || echo "model skipped"
-      - run: node ladder.mjs || echo "ladder stats skipped"
-      - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || echo "op.gg skipped"
+      - run: node rk9.mjs || echo "::warning::rk9 skipped"
+      - run: node events.mjs || echo "::warning::events skipped"
+      - run: node model.mjs || echo "::warning::model skipped"
+      - run: node ladder.mjs || echo "::warning::ladder stats skipped"
+      - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || echo "::warning::op.gg skipped"
       # the ratings' daily inputs (tournament table + in-game order) for the morning refresh; checked by health.mjs
-      - run: node perf.mjs || echo "perf skipped"
-      - run: node ratings-snapshot.mjs || echo "ratings snapshot skipped"
-      - run: node scoreboard.mjs || echo "scoreboard skipped"
+      - run: node perf.mjs || echo "::warning::perf skipped"
+      - run: node ratings-snapshot.mjs || echo "::warning::ratings snapshot skipped"
+      - run: node scoreboard.mjs || echo "::warning::scoreboard skipped"
       - name: Commit
         run: |
           git config user.name "pokelair-bot"

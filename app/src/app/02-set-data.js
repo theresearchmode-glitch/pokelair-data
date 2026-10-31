@@ -58,7 +58,7 @@ function setFor(p,fmt,pref){fmt=fmt||S.format;pref=fmt==='singles'?'ingame':(pre
   for(const f of ['mv','it','ab','na','tm']){out[f]=[];for(const [src,row] of C){if(!row||!row[f]||!row[f].length)continue;const v=clean[f](row[f]);if(!v.length)continue;out[f]=v;out.src[f]=src;if(src==='sd')out.sd=row;break}}
   // a base form whose players nearly all hold its Mega Stone: keep how many do, so the sheet can say so instead of showing the
   // few leftover items as tiny bars (Sim, Oct 31: Golisopod's items added up to about 1%)
-  if(!p.m&&out.src.it){const row=(C.find(([src])=>src===out.src.it)||[])[1];if(row&&row.it){const st=mergeIt(row.it).filter(([n])=>STONE_RE.test(n)&&n!=='Eviolite').reduce((a,[,v])=>a+(+v||0),0);if(st>0)out.itStone=Math.min(100,Math.round(st*10)/10)}}
+  if(!p.m&&out.src.it){const row=(C.find(([src])=>src===out.src.it)||[])[1];if(row&&row.it){const sts=mergeIt(row.it).filter(([n])=>STONE_RE.test(n)&&n!=='Eviolite'),st=sts.reduce((a,[,v])=>a+(+v||0),0);if(st>0){out.itStone=Math.min(100,Math.round(st*10)/10);out.itStones=sts}}}
   if(!p.m&&out.mv.length&&out.src.mv!=='sd')out.mv=dropMegaMoves(p,out.mv);
   if(p.m){out.it=[[stoneFor(p),null]];out.src.it='mega';out.ab=[[p.a[0],null]];out.src.ab='mega'}
   if(gm&&gm.partial&&out.src.mv!=='sd')out.partial=true;
