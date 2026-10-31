@@ -398,3 +398,15 @@ button.chring{background:none;cursor:pointer;padding:0}
 #guideOut .guide>summary{flex-wrap:wrap}
 #guideOut .guide>summary .gkm{flex-basis:100%;order:9;margin:6px 0 0 0;justify-content:flex-start}
 #chEdit:focus{outline:none}
+/* archetype chips: dark text sits on the plain colours; white text gets a light shade so every chip reads at 4.5:1+ (Oct 31) */
+:root:not(#_ch) .archchip.grad.dk{background-image:var(--acg)!important}
+:root:not(#_ch) .archchip:not(.dk):not(.grad){background-image:linear-gradient(rgba(0,0,0,.14),rgba(0,0,0,.14))}
+/* contrast fixes from the sweep scan (Oct 31) */
+.tag.rating.r4{color:#3d2500!important}.tag.rating.r3{color:#1d2533!important}.tag.rating.r2{color:#2e1708!important}
+.tag.rating.r3 .rtw,.tag.rating.r4 .rtw,.tag.rating.r2 .rtw{color:inherit!important;opacity:.75}
+:root[data-look="dark"] .chblock h3 .hl,:root[data-look="dark"] .chwinwrap .chwh .hl{color:#0B1020}
+:root[data-look="dark"] .chcalch .chk{color:rgba(255,255,255,.88)}
+:root[data-look="dark"]:not(#_ch) .chmcard.them{background-color:#C9283F!important}
+/* the sheet header on a light type colour (Normal, Electric, Ice…): dark ink instead of white */
+:root:not(#_ch) .lshead.chls.ltype h3,:root:not(#_ch) .lshead.chls.ltype .chlsk{color:#1D2140;text-shadow:none}
+:root:not(#_ch) .lshead.chls.ltype .lsx{background:rgba(0,0,0,.14)!important;color:#1D2140!important}

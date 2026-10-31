@@ -2,7 +2,7 @@
 // Limitless events with 32+ players from the last 30 days (top 8 each) and RK9 official events (top 16 each).
 // Compact on purpose: the page keeps it in one document (256 KiB cap). Run after update.mjs and rk9.mjs.
 import fs from 'node:fs';
-import {offFormat} from './formats.mjs';
+import {offFormat, oddEvents} from './formats.mjs';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
 const DAY = 864e5, LIM_TOP = +(process.env.EV_TOP || 8), OFF_TOP = 16, DAYS = 30, MIN_PLAYERS = 32, CAP = 240 * 1024;
@@ -32,7 +32,8 @@ for (const e of (readJSON('out/official.json', {events: []}).events || [])) {
   if (top.length) out.push({id: 'rk9-' + e.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), name: e.name, date: e.date, players: e.players, src: 'official', top}); }
 // Limitless
 const index = readJSON('data/index.json', {tournaments: {}});
-const ids = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name)); // standard Reg M-C only (formats.mjs)
+const ids0 = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name)), odd = oddEvents(ids0, id => readJSON(`data/t/${id}.json`, null), () => {});
+const ids = ids0.filter(id => !odd.has(id)); // standard Reg M-C only (formats.mjs: by name, and by the staples alarm)
 const lastD = Math.max(...ids.map(id => new Date(index.tournaments[id].d).getTime()).filter(x => x > 0), 0);
 for (const id of ids) { const T = readJSON(`data/t2/${id}.json`, null); if (!T || (T.p || 0) < MIN_PLAYERS || lastD - new Date(T.d) > DAYS * DAY) continue;
   const top = T.e.filter(p => p.pl != null && p.pl <= LIM_TOP && p.dk.length === 6).sort((a, b) => a.pl - b.pl).map(p => { const ns = p.dk.map(lname);
