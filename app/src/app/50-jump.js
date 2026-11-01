@@ -3,7 +3,7 @@
 const JUMP_TOOLS = [['home', 'Home', 'Start page'], ['build', 'My team', 'Your six, scouting report, fix plans'], ['auto', 'Build for me', 'A winning team from your box'],
   ['coverage', 'Best additions', 'Pokémon that ready your team for more top threats'], ['matchup', 'Battle mode', 'Their six in, your four and leads out'], ['speed', 'Speed tiers', 'Who moves first'],
   ['calc', 'Damage calc', 'Exact damage rolls'], ['gauntlet', 'Gauntlet', 'Your team against the top 20 teams'], ['ratings', 'Ratings', 'Every Pokémon on one tier board'],
-  ['meta', 'Meta rankings', 'Usage and sets by source'], ['top', 'Teams', 'Search winning teams'], ['events', 'Events', 'Recent tournaments and top cuts'],
+  ['meta', 'Meta rankings', 'Usage and sets by source'], ['top', 'Teams', 'Search winning teams'], ['compare', 'Compare teams', 'Two teams side by side'], ['events', 'Events', 'Recent tournaments and top cuts'],
   ['cores', 'Winning cores', 'Pairs and trios that win most'], ['sets', 'Popular sets', 'Moves, items, natures'], ['arch', 'Archetypes', 'How to beat Trick Room, rain, sun…'],
   ['types', 'Type chart', 'What hits what'], ['teams', 'Saved teams', 'Your saved teams'], ['box', 'My box', 'The Pokémon you own']];
 let jumpSel = 0, jumpList = [];

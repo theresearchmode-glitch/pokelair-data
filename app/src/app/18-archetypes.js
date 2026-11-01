@@ -196,7 +196,7 @@ function renderTopTeams() {
       ${teamGrid(t.mons)}
       <div class="ttmeta">${g ? `<span class="ttck${g.pass === g.n ? ' all' : ''}${miss.length ? ' wide' : ''}" title="${esc(g.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : '✗ ') + x.label).join('\n'))}"><b>${g.pass}/${g.n}</b> checks${miss.length ? ` · missing ${esc(miss.join(', '))}` : ''}</span>` : ''}<span class="archchips">${archChips(teamPlanLabel(t.mons))}</span></div>
       <div class="row evbtns">${confirm ? `<span class="inline-confirm" style="color:var(--ink)">Replace your current team?</span><button class="btn sm primary" type="button" data-ttload="${k}">Replace</button><button class="btn sm" type="button" data-ttx="1">Cancel</button>`
-        : `<button class="btn sm" type="button" data-ttask="${k}">Load team</button><button class="linkbtn" type="button" data-ttvs="${k}">Practice against</button>`}</div></div>`; }).join('')
+        : `<button class="btn sm" type="button" data-ttask="${k}">Load team</button><button class="linkbtn" type="button" data-ttvs="${k}">Practice against</button><button class="linkbtn" type="button" data-cxgo="cur|t:${k}">Compare</button>`}</div></div>`; }).join('')
       + (all.length > cap ? `<button class="btn ttmore" type="button" data-ttmore="${esc(sec)}">Show ${all.length - cap} more</button>` : ''); }).join('');
 }
 function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) return;

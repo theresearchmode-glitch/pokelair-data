@@ -415,3 +415,82 @@ button.chring{background:none;cursor:pointer;padding:0}
 
 /* vibrant chips: the colour as it is, text picks dark or white for itself (Oct 31) */
 :root:not(#_ch) .archchip.grad{background-image:var(--acg)!important}
+
+/* ---------- Compare teams (Nov): A in blue, B in violet (red stays for opponents) ---------- */
+:root{--cxa:var(--chblue,#0078BF);--cxb:#7A3FF2;--cxdiff:rgba(255,232,0,.16)}
+:root[data-look="dark"]{--cxb:#B48CFF;--cxdiff:rgba(255,232,0,.08)}
+.cxbadge{display:inline-flex;align-items:center;justify-content:center;flex:none;width:22px;height:22px;border-radius:7px;font:800 12px/1 var(--mono);color:#fff;background:var(--cxa);margin-right:6px;vertical-align:-5px}
+.cxbadge.b{background:var(--cxb)}:root[data-look="dark"] .cxbadge{color:#0B1020}
+.cxheads{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 6px}
+.cxhead{position:relative;min-width:0;display:flex;flex-direction:column;gap:4px;padding:12px 10px 10px;border:2px solid var(--chline);border-top:6px solid var(--cxa);border-radius:14px;background:var(--chc);text-align:left;color:var(--chink);font:inherit}
+.cxhead.b{border-top-color:var(--cxb)}
+.cxhead.empty{border-style:dashed;border-top-style:solid;cursor:pointer;min-height:150px;justify-content:center;align-items:flex-start}
+.cxnm{font:800 15px/1.2 var(--body);text-transform:uppercase;letter-spacing:.01em;overflow-wrap:anywhere;hyphens:none}
+.cxhead .cxbadge{margin:0 0 2px}
+.cxsub{font-size:12px;line-height:1.3;overflow-wrap:anywhere}
+.cxsix{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px}
+.cxsix span{display:flex;align-items:center;justify-content:center;aspect-ratio:1;min-width:0}
+.cxsix .spr{width:100%;height:auto;max-width:64px}
+.cxsix .cxe{border:1.5px dashed var(--line2);border-radius:10px;margin:6px}
+.cxchg{align-self:flex-start;min-height:40px;padding:0 2px}
+.cxswap{text-align:center;margin:0 0 6px}.cxswap .linkbtn{min-height:40px}
+.cxpick{border:2px solid var(--chline);border-radius:14px;background:var(--chc);padding:12px;margin:6px 0 12px;display:flex;flex-direction:column;gap:8px}
+.cxpickh{display:flex;align-items:center;gap:6px}.cxpickh b{flex:1;font:800 15px var(--body);text-transform:uppercase}
+.cxpickh .linkbtn{min-height:40px}
+.cxpick .chk{margin-top:6px}
+.cxopt{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:6px 10px;border:1.5px solid var(--line2);border-radius:12px;background:transparent;color:var(--chink);text-align:left;cursor:pointer;font:inherit}
+.cxopt:hover{border-color:var(--chline)}.cxopt.dim{opacity:.6}
+.cxot{flex:1;min-width:0;display:flex;flex-direction:column}.cxot b{font-weight:800;overflow-wrap:anywhere}.cxot .t2{font-size:12px}
+.cxos{display:flex;flex-wrap:wrap;justify-content:flex-end;max-width:84px;flex:none}.cxos .spr.tiny{width:26px;height:26px;margin:0}
+.cxmore{align-self:flex-start}
+.cxpaste{width:100%;min-height:110px}
+.cxsum{border:2px solid var(--chline);border-radius:14px;background:var(--chc);padding:12px 14px;margin:6px 0 12px}
+.cxsum ul{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.cxsum li{line-height:1.4}.cxsum li .cxbadge{width:18px;height:18px;font-size:10px;margin-right:4px;vertical-align:-3px}
+.cxgrid{display:flex;flex-direction:column;border:2px solid var(--chline);border-radius:14px;background:var(--chc);overflow:hidden}
+.cxrow{display:grid;grid-template-columns:1fr 1fr;column-gap:10px;padding:10px 12px;border-top:1px solid var(--line2)}
+.cxrow:first-child{border-top:0}
+.cxlab{grid-column:1/-1;font:700 11px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--chink2);margin-bottom:6px}
+.cxc{min-width:0;display:block;padding-left:8px;border-left:3px solid var(--cxa);overflow-wrap:anywhere;font-size:14px;line-height:1.35}
+.cxc.b{border-left-color:var(--cxb)}
+.cxl{display:block}.cxl+.cxl{margin-top:3px}
+.cxtm{display:inline-block;padding:0 7px;border-radius:7px;background:var(--cxa);color:#fff;font-weight:800;white-space:nowrap}.cxtm.b{background:var(--cxb)}:root[data-look="dark"] .cxtm{color:#0B1020}
+.cxgr{display:block;font:400 30px/1.1 "Permanent Marker",cursive;color:var(--chpen)}
+.cxgs{display:block;font-size:12px;color:var(--chink2)}
+.cxck{font:800 20px/1 var(--body)}.cxck.ok{color:var(--chok)}.cxck.no{color:var(--chbad)}.cxck.un{color:var(--chink2)}
+.cxthr{display:flex;flex-direction:column;gap:2px}.cxthr>span{display:flex;align-items:center;gap:6px;min-height:28px;font-weight:700;font-size:13px;line-height:1.2}.cxthr .spr.tiny{width:26px;height:26px;margin:0;flex:none}
+.cxty{display:flex;flex-wrap:wrap;gap:4px}
+.cxc .archchips{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-start}
+.cxwhy,.cxsame{margin-top:12px;border:2px solid var(--chline);border-radius:14px;background:var(--chc)}
+.cxwhy>summary,.cxsame>summary{min-height:48px;display:flex;align-items:center;gap:8px;padding:0 14px;cursor:pointer;font:800 14px var(--body);text-transform:uppercase}
+.cxsame>.cxgrid{border:0;border-top:1px solid var(--line2);border-radius:0}
+.cxwhyi{display:flex;gap:8px;padding:0 14px 12px}.cxwhyi .chgwhy{margin:0;flex:1}.cxwhy>.t2{padding:0 14px 12px}
+.cxfoot{margin:12px 2px 0}
+:root:not(#_ch) #savedList>.cmphint{margin:0 0 10px;background:none;border:0;padding:0 2px}
+@media (min-width:760px){
+  .cxheads{gap:16px;padding-left:236px}.cxnm{font-size:18px}
+  .cxrow{grid-template-columns:220px 1fr 1fr;column-gap:16px;align-items:start}
+  .cxlab{grid-column:auto;margin:3px 0 0}
+  .cxsix .spr{max-width:72px}
+}
+/* Your games (Nov): the log fed back into the team */
+.myrec{text-align:left;margin-top:14px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);padding:12px 14px}
+.myrech{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.myrech .chghost{flex:none;min-height:44px}
+.myrecn{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:2px}.myrecn b{font:800 26px/1.1 var(--body)}
+.myins{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px;line-height:1.4}
+.myins0{margin:8px 0 0}
+.qllast{display:flex;align-items:center;gap:8px;margin-top:8px;font-weight:700;color:var(--chok)}.qllast .linkbtn{min-height:40px}
+.qlog{align-items:stretch;margin-top:12px;padding-top:12px;border-top:1px solid var(--line2);display:flex;flex-direction:column;gap:8px}
+.qlleads{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.qllead{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:64px;padding:4px;border:1.5px solid var(--line2);border-radius:12px;background:transparent;color:var(--chink);font:700 11px/1.2 var(--body);cursor:pointer;text-align:center}
+.qllead .spr{width:40px;height:40px}.qllead span{overflow-wrap:anywhere}
+.qllead.on{border:2.5px solid var(--cxa);background:color-mix(in srgb,var(--cxa) 14%,transparent)}
+.qlopp .spr.tiny{margin:0}.qlopp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.qlopp .corechip button{min-width:32px;min-height:32px}
+.qlin{flex:1;min-width:180px}.qlin .field{width:100%;min-height:44px}
+.qlres{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.qlres .btn{min-height:52px;font-size:17px;font-weight:800;border-radius:999px}
+.btn.qlwin{background:var(--chok);border-color:var(--chok);color:#fff}
+.btn.qlloss{background:var(--chink);border-color:var(--chink);color:var(--chc)}
+:root[data-look="dark"] .btn.qlwin{color:#0B1020}
+.svrec{flex-basis:100%;display:flex;align-items:baseline;gap:6px;font-size:14px}.svrec .chk{font-size:11px}

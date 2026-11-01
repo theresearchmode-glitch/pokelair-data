@@ -145,7 +145,7 @@ function render(){
   else{ui.plansStale=false;if(!planJob||planJob.key!==planKey)ui.planMore=0;planJobStart(planKey,ms,pool,useA,a);plans=[];plans.pending=true}
   ui.plans=plans;ui.planCtx={key:planKey,ms,a,tRows,useA,covered};plansDraw(ui.planCtx,plans);
   safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
-  lazy('threats','threats',()=>renderThreats(members(),$('useAbil').checked));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);lazy('top teams','ttList',()=>renderTopTeams());safe('battle log',renderLog);safe('sets',renderSets);safe('paste',renderPastePanel);safe('home',renderHome);
+  lazy('threats','threats',()=>renderThreats(members(),$('useAbil').checked));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch);if(view==='compare')safe('compare',renderCompare)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);lazy('top teams','ttList',()=>renderTopTeams());safe('battle log',renderLog);safe('sets',renderSets);safe('paste',renderPastePanel);safe('home',renderHome);
 }
 // The scouting report's header: legal and items first, then how ready the team is for the top threats, the checklist, and
 // real results. Facts only: no win chance, no prediction (Oct 28).
@@ -175,7 +175,7 @@ function renderVerdict(ms,a,PG,CK){
   // 3. checklist, real results, your record, type balance
   if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?` · not yet: ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
   if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% of games at Limitless events (${best.c} players${best.g?`, ${best.g} games`:''})`]);
-  if(tr)rows.push(['Your record',`${tr.w}-${tr.l} with this team (${tr.pct}%)`]);
+  if(tr)rows.push(['Your games',`${tr.w}-${tr.l} in games you logged with this six (${tr.pct}%)`]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
   const score=RD?RD.score:null;
   const lvl=illegal?'bad':n<6?'mid':score==null?'mid':score>=80?'good':score>=65?'mid':'bad';

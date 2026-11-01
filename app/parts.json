@@ -69,6 +69,8 @@
  "src/app/60-concept-h.js",
  "src/app/61-concept-h-pages.js",
  "src/app/62-polish.js",
+ "src/app/63-compare.js",
+ "src/app/64-my-record.js",
  "src/app/99-start.js",
  "src/foot.html"
 ]
