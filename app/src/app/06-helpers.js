@@ -134,7 +134,13 @@ function trackRefresh(){const E=META.events;if(!E||!modelOK())return;const key=E
   setTimeout(step,1200)}
 // one plain sentence for the track record, or '' before it's measured
 function trackLine(){const r=tsTrack.res;if(!r)return '';return `Track record: in ${r.events} recent events, the team with the higher Team Score finished higher in ${Math.round(r.acc*100)}% of ${r.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip).`}
-function ckWinRefresh(){const E=META.events;if(!E)return;const key=E.updated+'|'+E.events.length+'|'+metaVersion+'|'+megaGoal()+'|'+modelOK();if(ckWin.key===key||ckWin.busy)return;
+// Only the My team checklist shows these numbers (load speed, Nov 1): other pages don't start the ~120-team pass, and the
+// checklist says "most recent event winners" until it's measured
+function ckWinNeeded(){return typeof view==='undefined'||view==='report'||view==='build'||view==='coverage'}
+function ckWinRefresh(){const E=META.events;if(!E)return;
+  // load speed (Nov 1): this pass is ~120 full team calcs (long tasks on a phone); while the data is still arriving every new piece
+  // would restart it, so it waits until the pieces have stopped for 1.5 s, then runs once
+  {const q=performance.now()-META_AT;if(META_AT&&q<1500){clearTimeout(ckWinRefresh.t);ckWinRefresh.t=setTimeout(()=>safe('checklist claims',ckWinRefresh),1550-q);return}}const key=E.updated+'|'+E.events.length+'|'+metaVersion+'|'+megaGoal()+'|'+modelOK();if(ckWin.key===key||ckWin.busy)return;
   const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
   ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0;
   const step=()=>{const t0=Date.now();try{while(i<list.length&&Date.now()-t0<12){const t=list[i++];

@@ -1,5 +1,7 @@
 // ---------- persistence: db (synced to your account) with browser fallback ----------
 let db=null,uid=null,docRef=null,saveTimer=null;
+// when the last data document arrived (load speed, Nov 1): background work waits until the pieces stop arriving
+var META_AT=0;
 let writing=null,pending=false,lastJson='';
 function snapshot(){return JSON.stringify({slots:S.slots,box:S.box,teams:S.teams,loadedId:S.loadedId||null,format:S.format,maxMega:S.maxMega===2?2:1,megaGoal:megaGoal(),opp:S.opp,boxV:S.boxV,excl:S.excl,megaV:S.megaV,log:S.log||[]})}
 async function flush(){if(!docRef)return;if(writing){pending=true;return}
@@ -10,7 +12,7 @@ function persist(){LS.set('cc2.state',S);if(!docRef)return;clearTimeout(saveTime
 (async()=>{try{
   const c=window.claude;if(!c||!c.use)return;
   const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
-  if(d){['doubles','doubles_ingame','doubles_tour','singles','status','teams','history','perf','results','model','events'].forEach(k=>{try{d.doc('meta/'+k).onSnapshot(s=>{const v=s.exists?s.data():null;noteDataDate(k,v);if(k==='model'){META.model=v&&typeof v==='object'&&v.mons?v:null;metaVersion++;scheduleRender();return}if(k==='results'){META.results=cleanResults(v);RES=META.results||(typeof RESULTS==='object'?RESULTS:null);planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender();return}META[k]=k==='status'?cleanStatus(v):k==='teams'?cleanTeams(v):k==='history'?cleanHistory(v):k==='perf'?cleanPerf(v):k==='events'?cleanEvents(v):cleanMeta(v);usageCache={};metaVersion++;scheduleRender()},()=>{})}catch(e){}})}
+  if(d){['doubles','doubles_ingame','doubles_tour','singles','status','teams','history','perf','results','model','events'].forEach(k=>{try{d.doc('meta/'+k).onSnapshot(s=>{META_AT=performance.now();const v=s.exists?s.data():null;noteDataDate(k,v);if(k==='model'){META.model=v&&typeof v==='object'&&v.mons?v:null;metaVersion++;scheduleRender();return}if(k==='results'){META.results=cleanResults(v);RES=META.results||(typeof RESULTS==='object'?RESULTS:null);planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender();return}META[k]=k==='status'?cleanStatus(v):k==='teams'?cleanTeams(v):k==='history'?cleanHistory(v):k==='perf'?cleanPerf(v):k==='events'?cleanEvents(v):cleanMeta(v);usageCache={};metaVersion++;scheduleRender()},()=>{})}catch(e){}})}
   if(!d||!u)return;
   const id=await u.id();if(!id)return;db=d;uid=id;docRef=db.doc('data/users/'+uid+'/state');
   const snap=await docRef.get();
