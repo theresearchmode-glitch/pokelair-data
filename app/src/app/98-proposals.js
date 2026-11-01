@@ -1,9 +1,7 @@
-// ---------- PROPOSALS (preview only, Nov 1) ----------
-// Mockups for Sim to choose from; nothing here is on unless the preview switch is set:
-//   localStorage np.mock = "paths-a" | "paths-b" | "short"   (or several, comma separated)
-// paths-a / paths-b: Home with three clear starting paths (3b). short: shorter Home and My team (5a).
-// Not for the live page until Sim picks; the lead drops this part (and its parts.json line) or turns one into the real thing.
-const NPM = (() => { try { return String(JSON.parse(localStorage.getItem('np.mock') || '""')).split(','); } catch (e) { return []; } })();
+// ---------- Home with three starting paths + shorter Home and My team (Sim picked these, Nov 1) ----------
+// paths-a: Home's three path cards (3b, variant A). short: shorter Home and My team (5a).
+// Variant B ("Where are you?" switch) stays here unused, reachable only with localStorage np.mock = "paths-b".
+const NPM = (() => { try { const v = localStorage.getItem('np.mock'); if (v) return String(JSON.parse(v)).split(','); } catch (e) {} return ['paths-a', 'short']; })();
 const npOn = k => NPM.includes(k);
 // 3b · three paths. The yellow (main) button follows the player: no team yet → "Build me a team"; a team → "Grade it".
 function npPaths(variant) { const ms = members(), has = ms.length > 0, main = has ? 'grade' : 'build';

@@ -67,6 +67,7 @@ function renderTrack() { const el = $('trackOut'); if (!el) return; const T = ME
     : `<div class="trsoon"><b>From about ${npDay(fwAt)}</b><span>Needs ratings saved 14+ days earlier and 300+ games played since.</span></div>`}</div>`;
   const next = [E < TR_MIN.verdict ? `A one-line verdict after ${TR_MIN.verdict} events (${E} so far)` : '', E < TR_MIN.misses ? `High-rated misses after ${TR_MIN.misses} events` : ''].filter(Boolean);
   const evl = E ? CH.fold('trevents', 'Events checked', `${E} event${E === 1 ? '' : 's'}, newest first`, `<ul class="trevs">${T.ev.slice().reverse().slice(0, 60).map(e => `<li><b>${esc(e.name)}</b><span>${npDay(e.date)} · ${e.players} players${e.off ? ' · official' : ''} · ratings from ${npDay(e.snap)}</span></li>`).join('')}</ul>`, false) : '';
-  el.innerHTML = head + stats + how + main + hm + time + games
+  /* Nov 1 (Sim): no games-won percentage on the page, to stay clear of win-odds talk */
+  el.innerHTML = head + stats + how + main + hm + time
     + (next.length ? `<div class="trcard"><div class="chk">Coming as the data grows</div><ul class="trnext">${next.map(x => `<li>${x}</li>`).join('')}</ul></div>` : '') + evl
     + `<div class="nprow">${npLink('rating', 'How ratings work')}</div>`; }
