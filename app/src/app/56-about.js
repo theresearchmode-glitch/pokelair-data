@@ -41,7 +41,7 @@ const srcNames = () => { const n = DATA_SOURCES.map(s => esc(s.name) + (s.note ?
 /* footer: the source list comes from DATA_SOURCES */
 function footFill() { const s = $('lgSrcList'); if (s) s.innerHTML = srcNames(); }
 const ABT_ICON = {
-  what: '<path d="M12 3.5 20 8v8l-8 4.5L4 16V8z"/><path d="M12 8v5M12 16v.5"/>',
+  what: '<path d="M12 3.5 20 8v8l-8 4.5L4 16V8z"/><path d="M12 11v5.5M12 7.8v.4"/>',
   disc: '<path d="M12 3 19.5 6v6c0 4.6-3.2 8-7.5 9.2C7.7 20 4.5 16.6 4.5 12V6z"/><path d="M9 12h6"/>',
   data: '<ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6"/>',
   warr: '<path d="M12 3.5 21 19H3z"/><path d="M12 10v4M12 16.6v.4"/>',
