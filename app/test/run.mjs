@@ -409,6 +409,8 @@ for (const width of [1280, 390]) {
 // whose points are assumed; the refresh button explains every failure
 { console.log('\n== assumptions labeled');
   const {pg, errs, ctx} = await open(1280); await pg.waitForTimeout(800);
+  // the assumed spread is the ladder's usual one, so wait until the ladder data has arrived
+  await pg.waitForFunction(() => window.__PL && window.__PL.META && window.__PL.META.doubles, null, {timeout: 15000}).catch(() => {});
   await pg.evaluate(() => { const T = window.__PL, S0 = T.getS(); window.__keep = S0.slots;
     S0.slots = T.normSlots(T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nJolly Nature\n- Earthquake\n- Dragon Claw').slots); T.render(); });
   await go(pg, 'report'); await pg.waitForTimeout(400);
