@@ -3,6 +3,7 @@
 // Writes out/meta_ingame.json (same shape as the other meta files; ranks only, sets come from the other sources).
 import fs from 'node:fs';
 import {chromium} from 'playwright';
+import {UA} from './http.mjs';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
 const cap = s => s.split(' ').map(w => w ? w[0].toUpperCase() + w.slice(1) : w).join(' ');
@@ -23,7 +24,7 @@ function mapKey(key, name) {
   return null; }
 const browser = await chromium.launch();
 try {
-  const pg = await browser.newPage({userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36'});
+  const pg = await browser.newPage({userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36 ' + UA});
   await pg.goto('https://op.gg/pokemon-champions/tier', {waitUntil: 'domcontentloaded', timeout: 60000});
   await pg.waitForTimeout(3000);
   const first = async () => pg.evaluate(() => { const a = document.querySelector('a[href*="/pokemon-champions/pokedex/"]'); return a ? a.getAttribute('href') : null; });
