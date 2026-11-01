@@ -41,7 +41,7 @@ function renderEvents() {
   if (ev) {
     el.innerHTML = `<button class="btn sm ghost evback" type="button" data-evback="1">‹ All events</button>
       <div class="evhead"><div><div class="evname">${esc(ev.name)}</div><div class="t2">${evDate(ev.date)} · ${ev.players.toLocaleString('en-US')} players · ${ev.src === 'official' ? 'Official Pokémon event' : 'Online (Limitless)'} · top ${ev.top.length}</div></div>${ev.src === 'official' ? '<span class="tag evoff">OFFICIAL</span>' : ''}</div>
-      ${ev.field.length ? `<div class="evfield"><div class="lbl">Most brought by the whole field</div><div class="evfl">${ev.field.map(([n, pc]) => { const p = byName.get(n); return `<span class="evfm">${sprite(p, 'tiny')}${esc(p.d)} <b>${pc}%</b></span>`; }).join('')}</div></div>` : ''}
+      ${ev.field.length ? `<div class="evfield"><div class="lbl">Most brought by the whole field${ev.players ? ' ' + basis(ev.players, 'player', 'teams', {pre: '· of'}) : ''}</div><div class="evfl">${ev.field.map(([n, pc]) => { const p = byName.get(n); return `<span class="evfm">${sprite(p, 'tiny')}${esc(p.d)} <b>${pc}%</b></span>`; }).join('')}</div></div>` : ''}
       ${ev.top.map((t, k) => teamSheetCard(t, null, ev.id + '#' + k)).join('')}`;
     return; }
   let list = E.events; if (evUi.filter === 'official') list = list.filter(e => e.src === 'official'); else if (evUi.filter === 'big') list = list.filter(e => e.players >= 100);

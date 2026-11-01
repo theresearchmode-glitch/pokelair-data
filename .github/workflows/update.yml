@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      # which regulation the newest events are played under (out/reg.json): every step below counts only that regulation
+      - run: node reg.mjs || echo "::warning::regulation check skipped"
       - run: node replays.mjs || echo "::warning::replays skipped"   # first, so today's bring/lead rates reach the ratings (was a day behind)
       - run: node update.mjs
         env:

@@ -7,6 +7,7 @@
 //   prd      project-red-data: top 10% of Showdown replays, last 30 days (sources.mjs)
 //   ladder   Showdowntier: Showdown ladder usage, win rate and average rating, last 14 days (sources.mjs)
 //   outside  other sites' tier lists for each Pokémon's sheet: Showdowntier (sources.mjs; Pokémon Zone refuses automated reads)
+//   reg      the regulation the numbers come from and any newer one being played (reg.mjs: out/reg.json)
 // Every part carries the date of its data ("updated", YYYY-MM-DD; a month for Smogon) and its label says it, so the page
 // can show the date and leave out anything older than its cadence. A part whose source failed today is left out.
 // Usage: node perf.mjs   (after update.mjs, rk9-field.mjs, ladder.mjs, opgg.mjs and sources.mjs)
@@ -40,5 +41,7 @@ function tierList(k, name, how, url, note, src, megaSrc) { if (!src) return null
   return {list: {k, name, how, url, note, date: src.date || today, tiers: Object.fromEntries(order.map(t => [idx(t), t]))}, data}; }
 const T = [tierList('showdowntier', 'Showdowntier', 'Showdown ladder usage + win rate', 'https://showdowntier.com/formats/dmc/index.html', 'lists Pokémon with 1%+ ladder usage', S.sdt)].filter(Boolean);
 if (T.length) out.outside = {updated: today, lists: T.map(t => t.list), data: Object.fromEntries(T.map(t => [t.list.k, t.data]))};
+// the regulation every number here is built from, and a newer one being played (reg.mjs, formats.mjs): the page's banner
+{ const R = rd('reg.json'); if (R && typeof R.id === 'string') out.reg = {id: R.id, name: R.name, since: R.since, site: R.site, now: R.now || null, switched: R.switched || null, seen: R.seen || {}, checked: R.checked}; }
 fs.writeFileSync('out/perf.json', JSON.stringify(out));
 console.log(`perf: ${['tour', 'adj', 'ingame', 'official', 'smogon', 'prd', 'ladder'].map(k => `${k} ${out[k] ? (out[k].rows || out[k].names).length + ' (' + out[k].updated + ')' : 'none'}`).join(', ')}, outside ${T.map(t => t.list.k + ' ' + Object.keys(t.data).length).join('/') || 'none'}`);

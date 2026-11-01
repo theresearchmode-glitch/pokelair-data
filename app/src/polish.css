@@ -415,3 +415,26 @@ button.chring{background:none;cursor:pointer;padding:0}
 
 /* vibrant chips: the colour as it is, text picks dark or white for itself (Oct 31) */
 :root:not(#_ch) .archchip.grad{background-image:var(--acg)!important}
+
+/* ---------- trust pass (Nov): the data behind each number, small samples, regulation banner, report a mistake ---------- */
+.basis{display:inline-flex;align-items:center;gap:5px;font:500 12px/1.3 var(--body);color:var(--chink2,var(--mute));white-space:nowrap;letter-spacing:0;text-transform:none}
+.basis.blk{display:flex;margin-top:3px}
+.basis.thin i{font-style:normal;font-weight:700;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;padding:1px 6px;border-radius:999px;background:color-mix(in srgb,var(--chmid,#2E7FB8) 16%,transparent);color:var(--chblueT,#005A90);border:1px solid color-mix(in srgb,var(--chmid,#2E7FB8) 45%,transparent)}
+:root[data-look="dark"] .basis.thin i{color:#9FD4FF}
+.chhot .basis{color:inherit;opacity:.92;font-size:11.5px}
+.chhot .basis.thin i{background:rgba(255,255,255,.22);color:inherit;border-color:rgba(255,255,255,.5)}
+.regbar{margin:12px 0 14px;padding:10px 14px 10px 40px;border-radius:14px;border:2px solid var(--chmid,#2E7FB8);background:color-mix(in srgb,var(--chblue,#0078BF) 13%,#fff);color:var(--chink,inherit);font:500 14px/1.45 var(--body);position:relative}
+.regbar::before{content:"";position:absolute;left:14px;top:13px;width:16px;height:16px;border-radius:50%;background:var(--chmid,#2E7FB8);box-shadow:inset 0 0 0 4px color-mix(in srgb,var(--chmid,#2E7FB8) 40%,#fff)}
+.regbar b{font-weight:800}
+:root[data-look="dark"] .regbar{background:color-mix(in srgb,var(--chblue,#3FA9FF) 16%,var(--chc,#2C2A28))}
+/* the regulation banner shows on Home and the Meta pages only */
+:root:not([data-pg="home"]):not([data-pg="ratings"]):not([data-pg="meta"]):not([data-pg="sets"]):not([data-pg="top"]):not([data-pg="events"]):not([data-pg="arch"]) .regbar{display:none}
+.regbar .t2{display:block;margin-top:2px;font-size:12.5px;color:var(--chink2,var(--mute))}
+.fbmis{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 4px;background:none;border:0;color:var(--chblueT,#005A90);font:600 13px var(--body);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+:root[data-look="dark"] .fbmis{color:var(--chpen,#7CC4FF)}
+.fbmis svg{width:15px;height:15px;flex:none}
+.fbmis[hidden]{display:none}
+.lsmis{display:flex;justify-content:center;margin:6px 0 0}.dcmis{margin:4px 0 0}
+.fbtag.mistake{background:color-mix(in srgb,var(--chmid,#2E7FB8) 22%,transparent)}
+.fbctx{margin:8px 0;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--chmid,#2E7FB8) 9%,transparent);border:1px solid color-mix(in srgb,var(--chmid,#2E7FB8) 35%,transparent);font:500 12.5px/1.45 var(--body);color:var(--chink,inherit);white-space:pre-line;max-height:9.5em;overflow:auto}
+.fbctx b{display:block;font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--chink2,var(--mute));margin-bottom:2px}

@@ -409,6 +409,11 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   const ord=mv?dcOrder(A,D,mv,dc.weather,dc.terrain):null,ctx=dcContext(A,ms);
   const opt={atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,fainted:dc.fainted||0,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit,atkLast:!!(ord&&ord.last),plusAlly:ctx.plusAlly,party:ctx.party};
   const r=damage(opt);
+  /* what the result shows, for "Report a mistake" (trust pass): attacker, defender, move, field and the numbers */
+  try{const W={sun:'Sun',rain:'Rain',sand:'Sand',snow:'Snow'},tg=[spread&&'hits both foes',dc.screen&&'screen up',dc.hh&&'Helping Hand',dc.fg&&'Friend Guard',dc.crit&&'critical hit'].filter(Boolean),pc0=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
+    dc.lastCtx=[`Attacker: ${A.p.d||A.p.n} · ${A.nat} · ${A.item||'no item'} · ${A.ability} · stage ${A.boost>0?'+':''}${A.boost}${A.real?' · ladder spread':''}`,`Defender: ${D.p.d||D.p.n} · ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${D.nat} · ${D.item||'no item'} · ${D.ability} · stage ${D.boost>0?'+':''}${D.boost}${D.real?' · ladder spread':''}`,
+      `Move: ${dc.mv||'none'}`,`Field: ${W[dc.weather]||'no weather'} · ${dc.terrain?dc.terrain+' terrain':'no terrain'}${tg.length?' · '+tg.join(', '):''}`,
+      `Result shown: ${!r?'not calculated':r.max===0?'no effect':`${pc0[0].toFixed(1)}–${pc0[1].toFixed(1)}% (${r.min}–${r.max} of ${r.hp} HP) · ${koText(r)}`}`].join('\n')}catch(e){dc.lastCtx=''}
   const pct=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
   const bar=pct?`<div class="dcbar"><span style="width:${Math.min(100,pct[0]).toFixed(1)}%" class="lo"></span><span style="width:${Math.max(0,Math.min(100,pct[1])-Math.min(100,pct[0])).toFixed(1)}%" class="hi"></span></div>`:'';
   // phones: the result rides along at the top while you change the inputs below
@@ -445,7 +450,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
         const nc=notCounted(A,D,mv,r);
         return (t.length?`<p class="t2">${t.join(' · ')}</p>`:'')+(nc.length?`<p class="t2">Not counted: ${nc.join('; ')}.</p>`:'')})()}
       ${(()=>{if(!r||r.max===0)return '';const bs=bulkToSurvive(opt);if(!bs)return '';if(bs.none)return `<p class="dcbulk">${esc(D.p.d||D.p.n)} can't survive this hit with any spread.</p>`;return `<p class="dcbulk">Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max<r.hp?'This spread already survives.':'This spread does not.'}</p>`})()}
-      <p class="t2">${esc(A.p.d||A.p.n)} ${aShown} ${mvC&&mvC.cat===2?'SpA':'Atk'} points ${esc(A.nat)}${A.item?' '+esc(A.item):''} · ${esc(dc.mv)}${spread?' (spread)':''} vs ${esc(D.p.d||D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${esc(D.nat)}${D.item?' '+esc(D.item):''}${A.real||D.real?' · spreads: most common on the Showdown ladder':''}${A.p.n==='Aegislash'?' · Aegislash attacks in Blade Forme (Atk/SpA 140)':''}${D.p.n==='Aegislash'?' · Aegislash takes hits in Shield Forme':''}${A.p.formNote||D.p.formNote?' · Palafin in Hero Form':''}${dc.wSet||dc.tSet||!(dc.weather||dc.terrain)?'':' · field set by the Pokémon selected (change it above)'}</p>`}</div>
+      <p class="t2">${esc(A.p.d||A.p.n)} ${aShown} ${mvC&&mvC.cat===2?'SpA':'Atk'} points ${esc(A.nat)}${A.item?' '+esc(A.item):''} · ${esc(dc.mv)}${spread?' (spread)':''} vs ${esc(D.p.d||D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${esc(D.nat)}${D.item?' '+esc(D.item):''}${A.real||D.real?' · spreads: most common on the Showdown ladder':''}${A.p.n==='Aegislash'?' · Aegislash attacks in Blade Forme (Atk/SpA 140)':''}${D.p.n==='Aegislash'?' · Aegislash takes hits in Shield Forme':''}${A.p.formNote||D.p.formNote?' · Palafin in Hero Form':''}${dc.wSet||dc.tSet||!(dc.weather||dc.terrain)?'':' · field set by the Pokémon selected (change it above)'}</p>`}${mv&&typeof fbMisBtn==='function'?`<div class="dcmis">${fbMisBtn('calc')}</div>`:''}</div>
     ${renderHitTable(ms)}`;dcStickWatch()}
 // Your team's best hit on each top threat (each side's usual set).
 // field: {weather, terrain} in play (sun from Drought, etc.), so a lead's weather boost is counted

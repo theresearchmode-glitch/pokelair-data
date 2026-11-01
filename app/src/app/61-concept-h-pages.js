@@ -77,15 +77,17 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
     const h = bl.querySelector(':scope > .head h2, :scope > h2'); if (h) h.hidden = true; } });
 // ---------- Ratings: the hot list ----------
 function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; const top = rows.slice(0, PHONE() ? 16 : 20);
-  const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${(+t[0]).toFixed(1)}% use · ${(+t[1]).toFixed(1)}% win` : `★ ${x.r.total}`; };
+  const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${(+t[0]).toFixed(1)}% use · ${(+t[1]).toFixed(1)}% win` : `★ ${x.r.total}`; },
+    /* the data behind the line (trust pass): the games its win rate comes from, flagged when few */
+    bas = x => { const t = tour(x); return t && +t[2] > 0 ? CH.basis(t[2], 'game', 'games', {short: true}) : ''; };
   // the top two take their own type colours (a blend for dual types), darkened a little so the white text stays readable
-  const big = (x, c) => `<button type="button" class="chhot ${c} chhalf typed" style="--t1:${TC[x.p.t[0]] || '#4E5068'};--t2:${TC[x.p.t[1] || x.p.t[0]] || TC[x.p.t[0]] || '#4E5068'}" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${x.r.total}"><span class="n">${x.r.total}</span><span class="nm">${esc(x.p.d)}</span><span class="st">${line(x).replace(' · ', '<br>')}</span>${sprite(x.p) || ''}</button>`;
+  const big = (x, c) => `<button type="button" class="chhot ${c} chhalf typed" style="--t1:${TC[x.p.t[0]] || '#4E5068'};--t2:${TC[x.p.t[1] || x.p.t[0]] || TC[x.p.t[0]] || '#4E5068'}" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${x.r.total}"><span class="n">${x.r.total}</span><span class="nm">${esc(x.p.d)}</span><span class="st">${line(x).replace(' · ', '<br>')}<br>${bas(x)}</span>${sprite(x.p) || ''}</button>`;
   const T = lTier(top[0].r.total), nS = rows.filter(x => x.r.total >= T.min).length, tie = top[0].r.total === top[1].r.total;
   return `<div class="chhothead"><span class="chtier">${T.k}</span><span class="chk">${T.min}+ · ${nS} Pokémon</span>${tie ? '<span class="chpen" style="margin-left:auto">Tied for #1!</span>' : ''}</div>
     <div class="chhot2">${big(top[0], 'ink')}${big(top[1], 'blue')}</div>
-    <div class="chhotrows">${top.slice(2).map((x, i) => `${(() => { const t = lTier(x.r.total), pv = lTier(top[i + 1].r.total); return t.k !== pv.k ? `<div class="chtierdiv"><span class="chtier sm">${t.k}</span><span class="chk">${t.min}+ · ${rows.filter(y => lTier(y.r.total).k === t.k).length} Pokémon</span></div>` : ''; })()}<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span></span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
+    <div class="chhotrows">${top.slice(2).map((x, i) => `${(() => { const t = lTier(x.r.total), pv = lTier(top[i + 1].r.total); return t.k !== pv.k ? `<div class="chtierdiv"><span class="chtier sm">${t.k}</span><span class="chk">${t.min}+ · ${rows.filter(y => lTier(y.r.total).k === t.k).length} Pokémon</span></div>` : ''; })()}<button type="button" class="chhr" data-lt="${esc(x.p.n)}"><span class="rk">${i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span>${bas(x).replace('class="basis', 'class="basis blk')}</span><span class="sc">${x.r.total}</span></button>`).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
-  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg M‑C doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
+  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     const hero = $('lairHero'); const f = CH.foldNode(hero, 'lairabout', 'About the ratings', 'How they are made, sources and their track record', false);
     if (f) { const b = f.querySelector('.chbody'); sec.querySelectorAll('.head .hint, #ratingTrack').forEach(p => b.prepend(p)); }
     // search and filters first, then the top of the list
@@ -93,7 +95,7 @@ CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec
   // the date line is rebuilt on every render: the first render can run before today's data has loaded (Oct 29 fix)
   { const k = sec.querySelector(':scope > .chpghead .chk'), pf = activePerf(); if (k) { let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : '';
       try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
-      k.textContent = `Rated 0–100 from real results · Reg M‑C doubles${d ? ' · updated ' + d : ''}`; } }
+      k.textContent = `Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${RES && +RES.teams > 0 ? ' · ' + basisNum(RES.teams) + ' teams' : ''}${d ? ' · updated ' + d : ''}`; } }
   const hot = $('chHot'); const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (hot) { hot.hidden = filtered; if (!filtered && !bodyOnly) hot.innerHTML = chHotHtml(); }
   // the full board under the hot list, folded until you search or filter
@@ -111,10 +113,13 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = byName.get(n); if (!s
   // recency-weighted figures, so the same Pokémon showed two usage shares and a weighted game count); weighted ones are under Why it rates
   const tOK = src.tour && +src.tour[2] > 0, tcOK = !tOK && r.tc && r.tc.g >= 30, hU = tOK ? +src.tour[0] : tcOK ? r.tc.field : null, hW = tOK ? +src.tour[1] : tcOK ? r.tc.wr : null, hG = tOK ? +src.tour[2] : tcOK ? r.tc.g : null;
   const pc = v => v == null ? '–' : v > 0 && v < .1 ? '<0.1%' : v.toFixed(1) + '%';
-  const stats = `<div class="chlstats"><div><b>${r.total}</b><span>rating<i>${T.k} tier</i></span></div><div><b>${pc(hU)}</b><span>of teams</span></div><div><b>${hG != null && hG >= 30 ? pc(hW) : '–'}</b><span>win rate${hG ? `<i>${Math.round(hG).toLocaleString('en-US')} games</i>` : ''}</span></div></div>`;
+  /* the data behind each number (trust pass): the teams the share is out of, the games behind the win rate; few games read "Early read" */
+  const tot = tOK && RES && +RES.teams > 0 ? +RES.teams : null, thinR = (hG != null && CH.thin(hG, 'rating')) || r.band >= 10;
+  const stats = `<div class="chlstats"><div><b>${r.total}</b><span>rating<i>${T.k} tier</i>${thinR ? `<i class="basis thin" title="${esc(hG ? 'Rated from ' + Math.round(hG).toLocaleString('en-US') + ' games: a small sample, so the score can still move' : 'Few results so far, so the score can still move')}"><i>Early read</i></i>` : ''}</span></div><div><b>${pc(hU)}</b><span>of teams${tot ? `<i>of ${basisNum(tot, true)}</i>` : ''}</span></div><div><b>${hG != null && hG >= 30 ? pc(hW) : '–'}</b><span>win rate${hG ? `<i>${CH.thin(hG, 'games') && hG >= 30 ? 'Early read · ' : ''}${Math.round(hG).toLocaleString('en-US')} games</i>` : ''}</span></div></div>`;
   const ab = st.ab && st.ab[0] ? `Ability: ${esc(st.ab[0][0])}${st.ab[0][1] == null ? '' : ' ' + (+st.ab[0][1]).toFixed(1) + '%'}` : '';
-  const mv = st.mv && st.mv.length ? `<div class="chk">Moves</div>${bars(st.mv, 'b', 5)}` : '', it = (() => { const megas = ROSTER.filter(q => q.m && q.b === p.b && q.n !== p.n), top = (st.itStones || [])[0], mg = (top && megas.find(q => stoneFor(q) === top[0])) || megas[0], stn = st.itStone || 0, /* the Mega players actually pick, for species with two (sweep, Oct 31) */ rest = (st.it || []).reduce((a, [, v]) => a + (+v || 0), 0);
-    const lab = `<div class="chk" style="margin-top:12px">Items${ab ? ' · ' + ab : ''}</div>`;
+  const sbM = setBasis(p, st, 'mv'), sbI = setBasis(p, st, 'it');
+  const mv = st.mv && st.mv.length ? `<div class="chk">Moves${sbM ? ' · ' + sbM.html : ''}</div>${bars(st.mv, 'b', 5)}` : '', it = (() => { const megas = ROSTER.filter(q => q.m && q.b === p.b && q.n !== p.n), top = (st.itStones || [])[0], mg = (top && megas.find(q => stoneFor(q) === top[0])) || megas[0], stn = st.itStone || 0, /* the Mega players actually pick, for species with two (sweep, Oct 31) */ rest = (st.it || []).reduce((a, [, v]) => a + (+v || 0), 0);
+    const lab = `<div class="chk" style="margin-top:12px">Items${ab ? ' · ' + ab : ''}${sbI && (!sbM || sbI.html !== sbM.html) ? ' · ' + sbI.html : ''}</div>`;
     // most players Mega Evolve it: say so and point to the Mega, instead of near-empty bars
     if (mg && stn >= 50) return lab + `<p class="chlsnote">${Math.round(stn)}% hold ${megas.length > 1 ? 'a Mega Stone' : esc(stoneFor(mg) || 'its Mega Stone')} to Mega Evolve${megas.length > 1 && top ? `, most often ${esc(top[0])}` : ''}.${rest >= 5 ? ' The rest mostly run ' + esc(st.it[0][0]) + '.' : ''} <button type="button" class="linkbtn" data-lt="${esc(mg.n)}">See ${esc(mg.d)} ›</button></p>`;
     if (p.m) return lab + `<p class="chlsnote">Always holds ${esc(stoneFor(p) || 'its Mega Stone')}.</p>`;
@@ -123,7 +128,9 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = byName.get(n); if (!s
   const body = panel.querySelector('.lsbody'); if (!body) return; body.insertAdjacentHTML('afterbegin', stats + `<div class="chlsdata">${mv}${it}${with_}</div>`);
   // the deeper sections fold (same content)
   body.querySelectorAll(':scope > .lsec').forEach((s, i) => { const h = s.querySelector('h4'); if (!h) return; const t = h.textContent; h.remove(); const w = document.createElement('div'); w.innerHTML = `<details class="chsec chfold"><summary>${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">${esc(t)}</div></div></summary><div class="chbody"></div></details>`; const d = w.firstElementChild; s.before(d); d.querySelector('.chbody').append(s); });
-  const act = body.querySelector('.lsact'); if (act) body.append(act); });
+  const act = body.querySelector('.lsact'); if (act) body.append(act);
+  /* report a mistake (trust pass): a small link under the buttons, filled in with this Pokémon's numbers; hidden for viewers who can't save */
+  if (typeof fbMisBtn === 'function') body.insertAdjacentHTML('beforeend', `<div class="lsmis">${fbMisBtn('mon:' + p.n)}</div>`); });
 // ---------- Rankings: the first ten, the rest folded ----------
 CH.wrap('renderMeta', () => { const el = $('metaList'); if (!el) return; const rows = [...el.querySelectorAll(':scope > .mrow')], sec = $('meta'); if (sec) sec.classList.add('chmeta');
   let b = $('chMetaMore'); if (rows.length <= 12) { if (b) b.remove(); return; }

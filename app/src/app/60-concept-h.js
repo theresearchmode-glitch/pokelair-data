@@ -4,6 +4,8 @@
 // layout and pick up the palette through the shared tokens (concept-h.css). Every feature stays reachable: older Home
 // sections and the full scouting report sit in folds that open with the logo's chevron pair (up = closed, down = open).
 const CH = {};
+/* the data behind a number, one shared helper (36-confidence.js) */
+CH.basis = basis; CH.thin = thinFor; CH.basisText = basisText;
 CH.chev = (x, y, c) => { const p = (dy, col) => `<path d="M${x + 2} ${y + 22 + dy} L${x + 18} ${y + 8 + dy} L${x + 34} ${y + 22 + dy}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`; return p(3, '#FFE800') + p(0, c) + p(13, '#FFE800') + p(10, c); };
 // the logo: two +2 chevrons (blue = you, red = them) over the back two slots
 CH.logo = (s = 34, tile = '#1D2140') => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="${tile}"/>${CH.chev(12, 22, '#0078BF')}${CH.chev(52, 22, '#FF4C65')}<rect x="20" y="64" width="22" height="18" rx="6" fill="none" stroke="#F1E9DA" stroke-width="6"/><rect x="58" y="64" width="22" height="18" rx="6" fill="#F1E9DA"/></svg>`;
@@ -48,7 +50,7 @@ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.
   const sr = Math.max(0, Math.round(s)), illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok));
   return {s: sr, letter: rec ? CH.recLetter(rec.wr) : CH.grade(sr), illegal, partial: !ms || ms.length < 6, miss, CK, rec, mp}; };
 CH.gradeWhy = G => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
-  if (G.rec) return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}). With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ready for ${G.r}% of the top 30 threats, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
+  if (G.rec) return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'})${CH.thin(G.rec.g, 'record') ? ' ' + CH.basis(G.rec.g, 'game', 'record', {pre: '·'}) : ''}. With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ready for ${G.r}% of the top 30 threats, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
   const mp = G.mp != null ? Math.round(G.mp) : null;
   return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b> · score ${G.s}${G.partial ? ' so far' : ''}: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
     + (G.miss.length ? ` Each missed check takes ${CH.GMISS} points off: ${G.miss.map(x => esc(x.label.toLowerCase())).join(', ')}.` : ' No missed checks, so nothing comes off.')
@@ -201,7 +203,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   </div>`;
   const topH = phoneH + `<div class="chsplit chdesk">${youH}${midH}${themH}</div>`;  el.innerHTML = topH + `
     <div class="chpad">${typeof welcomeCard === 'function' ? welcomeCard() : ''}${typeof whatsNewCard === 'function' ? whatsNewCard() : ''}</div>
-    <section class="chblock chhtop"><div class="chk">${ui.homeGems && gems.length ? 'Rated 55+ but rarely used' : 'NastyPlot ratings · from real tournament results'}</div><h3>Top of the <span class="hl">meta.</span></h3>${topMeta}</section>
+    <section class="chblock chhtop"><div class="chk">${ui.homeGems && gems.length ? 'Rated 55+ but rarely used' : `NastyPlot ratings · from ${RES && +RES.teams > 0 ? basisNum(RES.teams) + ' ' : 'real '}tournament teams`}</div><h3>Top of the <span class="hl">meta.</span></h3>${topMeta}</section>
     <section class="chblock chhtools"><div class="chk">Everything NastyPlot does</div><h3>All ${HOME_TILES.length} <span class="hl">tools.</span></h3>${tools}</section>
     <div class="chfolds">
       ${CH.fold('more', 'More on Home', `Doubles is played in pairs${trends ? ' · what changed' : ''}${coresH ? ' · winning cores' : ''} · your battles`, `${pr}${trends ?`<div class="chk" style="margin-top:14px">What changed this week</div>${trends}` : ''}${coresH ? `<div class="chk" style="margin-top:14px">Winning cores</div>${coresH}` : ''}<div class="chk" style="margin-top:14px">Your battles${ls ? ' · ' + ls.w + '–' + ls.l : ''}</div>${battles}<p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`)}

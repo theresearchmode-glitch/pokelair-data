@@ -189,7 +189,7 @@ function abStart() {
 // the built team's readiness for the top threats, from the same report as the Team page
 function abTS(tm) { if (tm.mons.length !== 6) return ''; if (tm._ts === undefined) { let t = null; try { t = tsOf(tm.mons.map(m => abMember(byName.get(m.n)))); } catch (e) {} tm._ts = t; }
   // a real team with 30+ games leads with its record, the same thing its grade on My team comes from
-  const pv = tm.proven; if (pv && !pv.swapped && pv.g >= CH.REC_MIN) return `<span class="abtsv" title="These exact six won about ${Math.round(pv.wr * 100)}% of ${pv.g} tournament games. Our own check: ready for ${tm._ts ?? '?'}% of the top 30 threats."><b>${Math.round(pv.wr * 100)}%</b>won · ${pv.g.toLocaleString('en-US')} games</span>`;
+  const pv = tm.proven; if (pv && !pv.swapped && pv.g >= CH.REC_MIN) return `<span class="abtsv" title="These exact six won about ${Math.round(pv.wr * 100)}% of ${pv.g} tournament games. Our own check: ready for ${tm._ts ?? '?'}% of the top 30 threats."><b>${Math.round(pv.wr * 100)}%</b>won · ${CH.thin(pv.g, 'record') ? 'early read · ' : ''}${pv.g.toLocaleString('en-US')} games</span>`;
   return tm._ts != null ? `<span class="abtsv" title="Ready for ${tm._ts}% of the top 30 threats (weighted by how often each makes top cut)"><b>${tm._ts}%</b>ready</span>` : ''; }
 function renderAutoBuild() {
   const el = $('abOut'); if (!el) return; const r = ui.ab;

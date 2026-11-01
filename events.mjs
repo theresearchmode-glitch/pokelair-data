@@ -2,7 +2,8 @@
 // Limitless events with 32+ players from the last 30 days (top 8 each) and RK9 official events (top 16 each).
 // Compact on purpose: the page keeps it in one document (256 KiB cap). Run after update.mjs and rk9.mjs.
 import fs from 'node:fs';
-import {offFormat, oddEvents} from './formats.mjs';
+import {offFormat, oddEvents, activeReg, sameReg, inRegWindow} from './formats.mjs';
+const RG = activeReg(); // one regulation only (formats.mjs)
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
 const DAY = 864e5, LIM_TOP = +(process.env.EV_TOP || 8), OFF_TOP = 16, DAYS = 30, MIN_PLAYERS = 32, CAP = 240 * 1024;
@@ -26,13 +27,13 @@ const dict = [], dix = new Map(), D = x => { x = String(x || ''); if (!dix.has(x
 const sheet = (n, m) => [D(n), D(m.i), D(m.a), D(m.nt), (m.mv || []).slice(0, 4).map(D)];
 const out = [];
 // official events first (biggest and most watched)
-for (const e of (readJSON('out/official.json', {events: []}).events || [])) {
+for (const e of (readJSON('out/official.json', {events: []}).events || [])) { if (!inRegWindow(e.date, RG)) continue;
   const top = e.teams.filter(t => t.st <= OFF_TOP && t.mons.length === 6 && t.mons.every(m => ROSTER.has(m.n))).sort((a, b) => a.st - b.st)
     .map(t => [t.player, t.st, '', t.mons.map(m => sheet(m.n, m))]);
   if (top.length) out.push({id: 'rk9-' + e.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), name: e.name, date: e.date, players: e.players, src: 'official', top}); }
 // Limitless
 const index = readJSON('data/index.json', {tournaments: {}});
-const ids0 = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name)), odd = oddEvents(ids0, id => readJSON(`data/t/${id}.json`, null), () => {});
+const ids0 = Object.keys(index.tournaments).filter(id => sameReg(index.tournaments[id], RG.id) && !offFormat(index.tournaments[id].name)), odd = oddEvents(ids0, id => readJSON(`data/t/${id}.json`, null), () => {});
 const ids = ids0.filter(id => !odd.has(id)); // standard Reg M-C only (formats.mjs: by name, and by the staples alarm)
 const lastD = Math.max(...ids.map(id => new Date(index.tournaments[id].d).getTime()).filter(x => x > 0), 0);
 for (const id of ids) { const T = readJSON(`data/t2/${id}.json`, null); if (!T || (T.p || 0) < MIN_PLAYERS || lastD - new Date(T.d) > DAYS * DAY) continue;

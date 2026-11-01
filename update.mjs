@@ -8,8 +8,10 @@
 // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
-import {offFormat, oddEvents} from './formats.mjs';
-const API = 'https://play.limitlesstcg.com/api', FORMAT = 'M-C', MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
+import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
+// the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
+const RG = activeReg();
+const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 fs.mkdirSync('data/t', {recursive: true}); fs.mkdirSync('data/t2', {recursive: true}); fs.mkdirSync('data/p', {recursive: true}); fs.mkdirSync('out', {recursive: true});
@@ -18,7 +20,7 @@ if (!index.tournaments || typeof index.tournaments !== 'object') index.tournamen
 // Fail-safe (stress test, Oct 28): a missing or corrupt index.json used to make the job rebuild every output from nothing
 // (0 teams) and commit it. The standings files on disk are the truth: put any tournament they hold back into the index.
 { let healed = 0; for (const f of fs.readdirSync('data/t')) { const id = f.replace(/\.json$/, ''); if (index.tournaments[id]) continue; const T = readJSON(`data/t/${f}`, null); if (!T || !T.d) continue;
-    const T2 = readJSON(`data/t2/${f}`, null); index.tournaments[id] = {d: T.d, p: T.p, name: (T2 && T2.name) || ''}; healed++; }
+    const T2 = readJSON(`data/t2/${f}`, null); index.tournaments[id] = {d: T.d, p: T.p, name: (T2 && T2.name) || '', f: T.f || undefined}; healed++; }
   if (healed) console.log(`index: restored ${healed} tournaments from data/t`); }
 let calls = 0;
 async function get(path) {
@@ -51,25 +53,26 @@ for (const t of todo) {
       if (!Array.isArray(s) || (n0 >= 4 && s.length < n0 * .5)) { console.log(`kept ${t.id}: standings came back with ${Array.isArray(s) ? s.length : 'no'} players (had ${n0})`); continue; } }
     if (!logged && s[0]) { console.log('sample standing', JSON.stringify(s[0]).slice(0, 600)); }
     const e = s.map(x => [String(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);
-    fs.writeFileSync(`data/t/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, e}));
+    fs.writeFileSync(`data/t/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, e, f: t.format || FORMAT}));
     const e2 = s.map(x => ({id: String(x.player || ''), nm: String(x.name || ''), pl: x.placing ?? null, w: x.record ? x.record.wins : 0, l: x.record ? x.record.losses : 0, ti: x.record ? (x.record.ties || 0) : 0, dk: (x.decklist || []).map(mv)}));
-    fs.writeFileSync(`data/t2/${t.id}.json`, JSON.stringify({v: 3, d: t.date, p: t.players, name: t.name, e: e2}));
+    fs.writeFileSync(`data/t2/${t.id}.json`, JSON.stringify({v: 3, d: t.date, p: t.players, name: t.name, f: t.format || FORMAT, e: e2}));
     let pr = [];
-    if (hasP(t.id) && (now - new Date(t.date)) >= 3 * 864e5) { logged = true; index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name}; fetched++; continue; }
+    if (hasP(t.id) && (now - new Date(t.date)) >= 3 * 864e5) { logged = true; index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || FORMAT}; fetched++; continue; }
     try { const P = await get(`/tournaments/${t.id}/pairings`);
       if (!logged && P[0]) console.log('sample pairing', JSON.stringify(P[0]).slice(0, 300));
       pr = (Array.isArray(P) ? P : []).map(x => [x.round ?? null, String(x.player1 ?? ''), String(x.player2 ?? ''), x.winner == null ? null : String(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
     // a failed or shorter pairings fetch never overwrites the pairings already saved
     { const old = readJSON(`data/p/${t.id}.json`, null); if (!(Array.isArray(old) && old.length > pr.length)) fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr)); }
     logged = true;
-    index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name}; fetched++;
+    index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || FORMAT}; fetched++;
   } catch (err) { console.log('skip', t.id, err.message); }
 }
 fs.writeFileSync('data/index.json', JSON.stringify(index));
 console.log(`list ${list.length} tournaments, fetched ${fetched}, cached ${Object.keys(index.tournaments).length}`);
 
 // standard Reg M-C events only: themed and restricted cups are kept on disk but left out of every number below
-const KEEP0 = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name)), ODD = oddEvents(KEEP0, id => readJSON(`data/t/${id}.json`, null));
+// and only the active regulation's events: never two regulations in the same numbers (formats.mjs)
+const KEEP0 = Object.keys(index.tournaments).filter(id => sameReg(index.tournaments[id], FORMAT) && !offFormat(index.tournaments[id].name)), ODD = oddEvents(KEEP0, id => readJSON(`data/t/${id}.json`, null));
 const KEEP = KEEP0.filter(id => !ODD.has(id));
 console.log(`off-format events left out: ${Object.keys(index.tournaments).length - KEEP.length}`);
 // 2) all teams with a full six and 3+ games
@@ -82,7 +85,9 @@ let W = 0, G = 0; for (const e of E) { W += e.w; G += e.w + e.l; } const base = 
 // Fail-safe: never write outputs built from far less data than yesterday's (or with a nonsense win rate). Exiting here
 // stops the daily job before its commit, so the page keeps yesterday's data and the failed run emails a warning.
 { const prev = readJSON('out/limitless.json', null);
-  if (!(base > .4 && base < .6) || (prev && prev.teams >= 100 && E.length < prev.teams * .8)) {
+  // (a regulation switch starts over from the new regulation's teams, so yesterday's count doesn't apply then)
+  const sameAsPrev = !prev || (prev.reg || 'M-C') === FORMAT;
+  if (!(base > .4 && base < .6) || (sameAsPrev && prev && prev.teams >= 100 && E.length < prev.teams * .8)) {
     console.log(`::error::update: only ${E.length} teams (yesterday ${prev ? prev.teams : '?'}), base ${base}; outputs left unchanged`); process.exit(1); } }
 
 // 3) teammate-adjusted share of the win: logistic model over every team, ridge-shrunk (fit with Adam)
@@ -118,13 +123,13 @@ for (const e of E) { const m = [...new Set(e.ix.map(j => nm[j]).filter(Boolean))
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = m[i] + '|' + m[j], o = P.get(k) || {n: 0, w: 0, g: 0}; o.n++; o.w += e.w; o.g += g; P.set(k, o);
     for (let l = j + 1; l < 6; l++) { const k3 = k + '|' + m[l], q = C3.get(k3) || {n: 0, w: 0, g: 0}; q.n++; q.w += e.w; q.g += g; C3.set(k3, q); } } }
 const day = d => new Date(d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
-const src = `${E.length.toLocaleString('en-US')} Reg M-C tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${day(first)} – ${day(last)})`;
-const out = {updated: new Date().toISOString(), tournaments: KEEP.length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
-  adj: {label: `Limitless · ${KEEP.length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
+const src = `${E.length.toLocaleString('en-US')} ${RG.name} tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${day(first)} – ${day(last)})`;
+const out = {updated: new Date().toISOString(), reg: FORMAT, tournaments: KEEP.length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
+  adj: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
     rows: [...mon].map(([n, o]) => [n, Math.round(1000 * o.bs / (o.g || 1)) / 1000, o.g, o.t, Math.round(1000 * o.w / (o.g || 1)) / 10])},
   // the ratings' tournament input, rebuilt every day from these same teams (it used to be a hand-made Pokémon Zone snapshot):
   // [name, % of teams, game win %, games]. Megas are already their own rows (split: the page doesn't subtract them again).
-  tour: {label: `Limitless · ${KEEP.length} Reg M-C tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
+  tour: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
     updated: new Date().toISOString().slice(0, 10),
     rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
     megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
@@ -157,7 +162,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   const rows = [...S].sort((a, b) => b[1].t - a[1].t).map(([n, o], i) => ({r: i + 1, n, u: Math.round(1000 * o.t / nT) / 10, teams: o.t, w: o.g ? Math.round(1000 * o.w / o.g) / 10 : null,
     mv: pct(o.mv, o.t, 12), it: pct(o.it, o.t, 6), ab: pct(o.ab, o.t, 4), na: pct(o.na, o.t, 4), tm: pct(o.tm, o.t, 10)}));
   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
-  fs.writeFileSync('out/meta_tour.json', JSON.stringify({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} Reg M-C tournaments`,
+  fs.writeFileSync('out/meta_tour.json', JSON.stringify({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
     period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', updated: new Date().toISOString(), note: 'Moves, items, abilities and natures as players registered them.',
     top: rows.slice(0, 60), more: rows.slice(60, 100)}));
   console.log(`meta_tour: ${nT} teams, ${rows.length} Pokémon`); }
@@ -170,7 +175,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
     if (out.length >= 60) break; }
   // keep yesterday's official-event teams (rk9.mjs refreshes them next; if RK9 is down they'd otherwise vanish)
   const prevT = readJSON('out/teams.json', null), off = prevT && Array.isArray(prevT.teams) ? prevT.teams.filter(t => t && t.section === 'Official events') : [];
-  fs.writeFileSync('out/teams.json', JSON.stringify({source: 'Limitless · top 4 of Reg M-C events with 32+ players' + (off.length ? ' + RK9 official events (top 8)' : ''), updated: new Date().toISOString(), teams: [...off, ...out.slice(0, 60)].slice(0, 90)}));
+  fs.writeFileSync('out/teams.json', JSON.stringify({source: `Limitless · top 4 of ${RG.name} events with 32+ players` + (off.length ? ' + RK9 official events (top 8)' : ''), updated: new Date().toISOString(), teams: [...off, ...out.slice(0, 60)].slice(0, 90)}));
   console.log(`teams: ${out.length}`); }
 // 3) usage-rank history for trends: one entry per day for the last 21 days, each from the 14 days before it
 { const days = [];

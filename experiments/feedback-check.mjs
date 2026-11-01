@@ -34,8 +34,22 @@ ok(m1 && m1.length === 1 && m1[0].k === 'bug' && m1[0].v === 'calc' && m1[0].t.s
 ok(await pg.$eval('#fbSheet', e => e.hidden), 'sheet closes after sending');
 await pg.click('.legal .fbbtn'); await pg.fill('#fbText', 'Love the sleepers.'); await pg.click('[data-fbk="like"]'); await pg.click('#fbSend'); await pg.waitForTimeout(300);
 st = await pg.evaluate(() => window.__store['feedback/u1']); ok(Object.keys(st.m).length === 2, 'second message adds, first kept');
+// report a mistake (Nov trust pass): one tap on a Pokémon sheet or the calc result, context filled in, the note optional
+await ev("lairSheet('Incineroar')"); await pg.waitForTimeout(200);
+ok(await pg.$eval('#lairSheet .fbmis', e => !e.hidden), 'Report a mistake shows on the Pokémon sheet');
+await pg.click('#lairSheet .fbmis'); await pg.waitForTimeout(200);
+ok((await pg.textContent('#fbSheet .fbctx')).includes('Incineroar · rated'), 'sheet report is filled in with the Pokémon and its numbers');
+await pg.click('#fbSend'); await pg.waitForTimeout(300);
+st = await pg.evaluate(() => window.__store['feedback/u1']); { const x = Object.values(st.m).find(m => m.k === 'mistake'); ok(x && /Incineroar/.test(x.c) && x.t === '', 'sent with no note: kind "mistake", context saved'); }
+await ev("lairClose();setView('calc')"); await pg.waitForTimeout(300);
+ok(await pg.$eval('#dcOut .fbmis', e => !e.hidden), 'Report a mistake shows under the calc result');
+await pg.click('#dcOut .fbmis'); await pg.waitForTimeout(200);
+{ const c = await pg.textContent('#fbSheet .fbctx'); ok(/Attacker: .*Defender: .*Move: .*Field: .*Result shown: /s.test(c), 'calc report carries attacker, defender, move, field and the result'); }
+await pg.fill('#fbText', 'Should be a KO'); await pg.click('#fbSend'); await pg.waitForTimeout(300);
+st = await pg.evaluate(() => window.__store['feedback/u1']); ok(Object.values(st.m).filter(m => m.k === 'mistake').length === 2, 'calc report saved');
+await pg.click('.legal .fbbtn'); await pg.waitForTimeout(150); ok(!(await pg.$('#fbSheet .fbctx')) && (await pg.$('[data-fbk="mistake"]')), 'the plain Feedback button opens without the context (Wrong info is one of the kinds)'); await ev('fbClose()');
 await ev("setView('home')"); await pg.waitForTimeout(200); await pg.$eval('#fbBox', d => { d.open = true; }); await pg.waitForTimeout(400);
-ok((await pg.textContent('#fbOut')).includes('Calc froze') && (await pg.textContent('#fbOut')).includes('2 messages'), 'owner sees the feedback list');
+ok((await pg.textContent('#fbOut')).includes('Calc froze') && (await pg.textContent('#fbOut')).includes('4 messages') && (await pg.textContent('#fbOut')).includes('Wrong info'), 'owner sees the feedback list (with the mistake reports)');
 if (shots) { await pg.$eval('#fbBox', e => e.scrollIntoView({block: 'start'})); await pg.screenshot({path: shots + '/fblist.png'}); }
 // back button
 await ev("setView('home')"); await pg.click('.bnav [data-view="report"]'); await pg.click('.bnav [data-view="ratings"]'); await pg.click('.bnav [data-view="matchup"]');
