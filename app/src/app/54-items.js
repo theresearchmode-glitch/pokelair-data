@@ -115,7 +115,7 @@ function itemProblemCount(ms) { try { return itemProblems(assignItems(ms)).lengt
 function itemFixHtml(ms) { if (!ms || !ms.length) return ''; let pr; try { pr = itemProblems(ms); } catch (e) { return ''; } if (!pr.length) return '';
   const rows = pr.map(x => { const tgt = x.k === 'clause' ? x.ms[x.ms.length - 1] : x.ms[0], fix = tgt && tgt.i >= 0 ? itemFixFor(tgt, ms) : '';
     return `<li><span class="warnline">${esc(x.k === 'clause' ? 'Item Clause' : x.k === 'scarftr' ? 'Clashes with Trick Room' : 'Item does nothing')}</span>: ${esc(x.why)}${fix ? ` <button class="btn sm" type="button" data-itfix="${tgt.i}|${esc(fix)}">Give ${esc(tgt.d)} ${esc(fix)}</button>` : ''}</li>`; });
-  return `<div class="plan itemfix"><div class="ph"><span class="pt">Fix your items first</span></div><ul>${rows.join('')}</ul></div>`; }
+  return `<div class="plan itemfix"><div class="ph"><span class="pt">Fix your items first</span></div><ul>${rows.join('')}</ul>${typeof regNote === 'function' ? regNote() : ''}</div>`; }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-itfix]'); if (!b) return;
   const [i, item] = b.dataset.itfix.split('|'); const s = S.slots[+i]; if (!s || !item) return; try { keepUndo(); } catch (er) {}
   s.it = Object.assign({}, s.it || {}, {[S.format]: item}); render(); toast(`Gave ${(byName.get(s.n) || {d: s.n}).d} ${item}`, true); });
