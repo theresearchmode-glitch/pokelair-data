@@ -95,11 +95,10 @@ function lairSheet(n) {
     // every row says how recent its numbers are, in one format ("Oct 30", "Sep 2026")
     const dt = k => { const d = pf0 && pf0.dates && pf0.dates[k]; return d ? ' · ' + perfDateText(d) : ''; };
     if (src.tour) ev.push(['Limitless tournaments', `${src.tour[0]}% of teams`, `${src.tour[1]}% won · ${src.tour[2].toLocaleString()} games${dt('tour')}`]);
-    if (src.official) ev.push(['Official VGC events', `${src.official[0]}% of teams`, `${src.official[1]}% of matches won · ${src.official[2].toLocaleString()} matches · RK9, whole field${dt('official')}`]);
+    if (src.official) ev.push(['Official VGC events', `${src.official[0]}% of teams`, `${src.official[1]}% of matches won · ${src.official[2].toLocaleString()} matches · whole field${pf0 && pf0.frozenOfficial ? ` · RK9, read before Nov 1 · frozen, newest event${dt('official').replace(' ·', '')}` : dt('official')}`]);
     const fam = ROSTER.some(q => q.m && q.b === p.b), spn = ((byName.get(p.b) || ROSTER.find(q => q.b === p.b && !q.m) || p).d || '').replace(/\s*\(.*\)$/, '').replace(/^Mega /, ''); // Floette has no plain entry (only Eternal and Mega)
     if (src.ingame != null) ev.push(['In-game Ranked Doubles', `#${src.ingame} most used`, `op.gg${pf0 && pf0.season ? ', season ' + esc(pf0.season) : ''}${fam ? ` · ${esc(spn)}, all forms (shared by form)` : ''}${dt('ingame')}`]);
     if (src.smogon != null) ev.push(['Showdown 1760+', `${src.smogon}% of teams`, `Smogon usage stats${dt('smogon')}`]);
-    if (src.prd != null) ev.push(['Top-10% Showdown replays', `${src.prd}% of teams`, `project-red-data, last 30 days${dt('prd')}`]);
     if (src.ladder) ev.push(['Showdown ladder', `${src.ladder[0]}% of teams`, `${src.ladder[1]}% won · avg player ${src.ladder[2]}${fam ? ` · ${esc(spn)} total, shared by form` : ''} · Showdowntier, 14 days${dt('ladder')}`]);
   }
   const ab = metaAbility(p) || bestAbility(p), ti = topItems(p), mv = (() => { try { return runMoves(p).map(m => m.name).filter(Boolean); } catch (e) { return []; } })();

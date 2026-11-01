@@ -20,7 +20,7 @@ function tour(games) { const ent = new Map(), w = new Map(), n = new Map();
   const E = ent.size, out = {}; for (const [m, k] of n) out[m] = [100 * (cnt.get(m) || 0) / E, 100 * (w.get(m) || 0) / k, k]; return out; }
 const NAMES = Object.keys(C);
 // one feature row per Pokémon; z-scored over the roster so the weights are comparable
-const FEATS = ['model', 'wr', 'pick', 'official', 'smogon', 'prd', 'ingame', 'power', 'typing', 'tools'];
+const FEATS = ['model', 'wr', 'pick', 'official', 'smogon', 'ingame', 'power', 'typing', 'tools'];
 function features(T, mons) { const wm = (() => { let a = 0, b = 0; for (const k in T) { a += T[k][1] * T[k][2]; b += T[k][2]; } return a / b; })();
   const raw = NAMES.map(n => { const c = C[n], t = T[n], o = c.off;
     return [mons[n] ?? null,
@@ -28,7 +28,6 @@ function features(T, mons) { const wm = (() => { let a = 0, b = 0; for (const k 
       t ? Math.log10(Math.max(.03, t[0])) : Math.log10(.03),
       o ? ((o[1] - 50) / 100) * o[2] / (o[2] + 400) : null,
       c.smogon != null ? Math.log10(Math.max(.05, c.smogon)) : Math.log10(.05),
-      c.prd != null ? Math.log10(Math.max(.03, c.prd)) : Math.log10(.03),
       c.ingame != null ? -Math.log10(c.ingame) : -Math.log10(400),
       c.power, c.typing, c.tools]; });
   const st = FEATS.map((_, j) => { const v = raw.map(r => r[j]).filter(x => x != null), m = v.reduce((a, x) => a + x, 0) / v.length, s = Math.sqrt(v.reduce((a, x) => a + (x - m) ** 2, 0) / v.length) || 1; return {m, s}; });
