@@ -9,7 +9,6 @@
 //   minR: the ladder rating the aggregates count from ("strong players")
 //   opp:  [six, n, mons]  an opposing six (base forms, as at team preview) and, across every game where a player rated
 //         minR+ faced a similar six: n = such games, mons = [[mon, games with it, brought it, led with it], ...]
-//         (mons on fewer than 2 of those teams are left out)
 //   rounds: [oppIndex, mySix, myBrought, myLead, myRating, theirRating, iWon, theirBrought, theirLead, pair]
 //         one real game seen from the side facing opp[oppIndex]; pair = what players with a similar six did against a
 //         similar opposing six: [games, mostCommonFour, itsCount, mostCommonLead, itsCount]
@@ -40,7 +39,7 @@ const opp = [], rounds = [];
 for (const six of picked) {
   const vs = strong.filter(s => shared(s.ob, six) >= 5); if (vs.length < 10) continue;
   const m = new Map(); for (const s of vs) for (const x of s.sb) { const c = m.get(x) || [0, 0, 0]; c[0]++; if (s.b.includes(x)) c[1]++; if (s.l.includes(x)) c[2]++; m.set(x, c); }
-  const mons = [...m].filter(([, c]) => c[0] >= 2).sort((a, b) => b[1][0] - a[1][0]).map(([x, c]) => [id(x), ...c]);
+  const mons = [...m].sort((a, b) => b[1][0] - a[1][0]).map(([x, c]) => [id(x), ...c]);
   const oi = opp.length; opp.push([six.map(id), vs.length, mons]);
   // rounds: real games against this exact six by higher-rated players, own sixes with the most data first (so the reveal has
   // numbers to show), each round a different own six

@@ -448,7 +448,7 @@ button.chring{background:none;cursor:pointer;padding:0}
 .prscore span{background:var(--chp2);border-radius:999px;padding:6px 12px;font:600 13px var(--body);color:var(--chink)}
 .prscore b{font:400 18px/1 var(--display);color:var(--chblueT);margin-right:2px}
 .prgo{margin:4px 0}
-.prgo:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+.prgo:disabled{background:transparent;border:3px dashed var(--chline);color:var(--chink2);cursor:not-allowed;box-shadow:none;transform:none}
 .prband{border-radius:18px;padding:14px;border:2px solid var(--chline);animation:prIn .35s ease both}
 .prband.them{background:var(--chred);color:#fff;border-color:var(--chredT)}
 .prband.them .chk{color:#fff}
