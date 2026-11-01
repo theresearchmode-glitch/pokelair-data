@@ -70,18 +70,20 @@ async function buildShareCard() {
   ctx.textAlign = 'right'; ctx.fillStyle = SC.mute; ctx.font = '600 15px "Sofia Sans", sans-serif'; ctx.fillText('Built on NastyPlot · unofficial fan tool', 1136, 640); ctx.textAlign = 'left';
   return c;
 }
-function closeShare() { const b = $('shareBox'); if (!b || b.hidden) return; b.hidden = true; const im = b.querySelector('img'); if (im && im.src.startsWith('blob:')) URL.revokeObjectURL(im.src); b.innerHTML = ''; }
+/* what the share box shows: null = your team (the default); the weekly digest sets {build, file, alt, empty} */
+let SHARE_KIND = null;
+function closeShare() { SHARE_KIND = null; const b = $('shareBox'); if (!b || b.hidden) return; b.hidden = true; const im = b.querySelector('img'); if (im && im.src.startsWith('blob:')) URL.revokeObjectURL(im.src); b.innerHTML = ''; }
 async function openShareCard() {
   const btn = $('shareBtn'); if (btn) btn.disabled = true;
-  try { const c = await buildShareCard(); if (!c) { toast('Add some Pokémon first'); return; }
+  try { const K = SHARE_KIND, c = await (K ? K.build() : buildShareCard()); if (!c) { toast(K ? K.empty : 'Add some Pokémon first'); return; }
     let blob = null; try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (e) {}
     const url = blob ? URL.createObjectURL(blob) : null;
     let box = $('shareBox'); if (!box) { box = document.createElement('div'); box.id = 'shareBox'; box.className = 'sharebox'; document.body.appendChild(box); }
-    const name = ((typeof teamTitleFor === 'function' ? teamTitleFor(members()) : '') || 'My team').replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + ' - NastyPlot.png';
+    const name = K ? K.file : ((typeof teamTitleFor === 'function' ? teamTitleFor(members()) : '') || 'My team').replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + ' - NastyPlot.png';
     box.hidden = false;
     box.innerHTML = `<div class="sharein" role="dialog" aria-label="Share card"><div class="sharehd"><b>Share card</b><button type="button" class="btn ghost sm" data-shareclose>Close</button></div>
-      ${url ? `<img class="shareimg" src="${url}" alt="Your team as a NastyPlot share card">` : '<p class="t2">Could not draw the card in this view.</p>'}
-      <div class="row sharerow">${blob ? '<button type="button" class="btn go" id="shareSave">Save image</button>' : ''}<button type="button" class="btn" id="shareLink">Copy team link</button><span class="t2" id="shareMsg">On a phone you can also press and hold the image to save or share it.</span></div></div>`;
+      ${url ? `<img class="shareimg" src="${url}" alt="${K ? esc(K.alt) : 'Your team as a NastyPlot share card'}">` : '<p class="t2">Could not draw the card in this view.</p>'}
+      <div class="row sharerow">${blob ? '<button type="button" class="btn go" id="shareSave">Save image</button>' : ''}${K ? '' : '<button type="button" class="btn" id="shareLink">Copy team link</button>'}<span class="t2" id="shareMsg">On a phone you can also press and hold the image to save or share it.</span></div></div>`;
     box.onclick = async e => { const t = e.target;
       if (t === box || t.closest('[data-shareclose]')) { closeShare(); return; }
       if (t.id !== 'shareSave' || !blob) return;
