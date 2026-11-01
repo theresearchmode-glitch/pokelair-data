@@ -15,6 +15,8 @@ jobs:
         with:
           node-version: '22'
       - run: node replays.mjs || echo "::warning::replays skipped"   # first, so today's bring/lead rates reach the ratings (was a day behind)
+      # team preview practice: a few hundred real games and what strong players brought (out/practice.json, page key meta/practice)
+      - run: node practice.mjs || echo "::warning::practice skipped"
       - run: node update.mjs
         env:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
