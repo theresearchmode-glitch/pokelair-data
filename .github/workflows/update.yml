@@ -18,11 +18,11 @@ jobs:
       - run: node update.mjs
         env:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
-      - run: node rk9.mjs || echo "::warning::rk9 skipped"
-      # every Masters team list and match of the finished official events (once per event; a big backlog spreads over days)
-      - run: node rk9-field.mjs || echo "::warning::rk9 whole field skipped"
-        env:
-          RK9_FIELD_MAX: '1500'
+      # RK9 steps switched off (Nov 1): RK9's Terms of Service (rk9.gg/terms 5.3) forbid automated data extraction.
+      # out/official.json and the official-events data already collected are kept as they are. Replacement
+      # (Victory Road + PokePaste, checked against Liquipedia) is being built on its own branch.
+      # - run: node rk9.mjs || echo "::warning::rk9 skipped"
+      # - run: node rk9-field.mjs || echo "::warning::rk9 whole field skipped"
       - run: node events.mjs || echo "::warning::events skipped"
       - run: node model.mjs || echo "::warning::model skipped"
       - run: node ladder.mjs || echo "::warning::ladder stats skipped"
