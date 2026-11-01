@@ -57,6 +57,16 @@ CH.gradeWhy = G => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
 CH.LEGEND = 'Grade = readiness, minus missed team checks, plus how teams like it do in real games (or its own record with 30+ games). A 90+ · B 80+ · C 70+ · D 60+. Preparation, not a prediction.';
 CH.LV = ['Unanswered', 'Shaky', 'Handled', 'Well handled'];
+// Motion (Nov 1): when the grade first shows or changes, the ring pops in and the "% ready" counts up from the last number,
+// 200 ms, transform/opacity only for the ring; the number is tabular so nothing moves. Off with reduced motion, and only on
+// the page that's showing (redraws with the same grade do nothing).
+CH.reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+CH.gradeMotion = (head, G, RD) => { const key = G ? G.letter + '|' + RD.score : '', prev = CH.gKey; CH.gKey = key;
+  if (!G || key === prev || CH.reduced() || head.closest('[hidden]')) return;
+  const ring = head.querySelector('.chring'); if (ring && (!prev || prev.split('|')[0] !== G.letter)) ring.classList.add('np-pop');
+  const b = head.querySelector('.rd > b'), to = RD.score, from = prev ? +prev.split('|')[1] : Math.max(0, to - 30); if (!b || !/% ready$/.test(b.textContent) || from === to) return;
+  b.classList.add('np-num'); const t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 200), v = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+    if (!b.isConnected) return; b.textContent = v + '% ready'; if (k < 1) requestAnimationFrame(tick); }; b.textContent = from + '% ready'; requestAnimationFrame(tick); };
 CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
 // a fold: remembers open/closed per device
 CH.fold = (key, title, sub, body, open) => { const o = LS.get('cc2.chf.' + key, null); const isOpen = o == null ? !!open : !!o;
@@ -307,6 +317,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
     ${G ? CH.gradeWhy(G).replace('id="chGwhy"', `id="chGwhy"${ui.gwhy ? '' : ' hidden'}`) : ''}
     ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
   if (CH.acts) $('chActs').append(CH.acts);
+  safe('grade motion', () => CH.gradeMotion(head, G, RD));
   document.querySelectorAll('#chP1,#chP2,#chP3').forEach(p => { p.hidden = !ms.length; });
   // empty team: nothing to save, share, export or clear (Import stays in ⋯), and "Your six" is the only part, so no step number
   ['saveBtn', 'shareBtn', 'exportBtn', 'clearTeam'].forEach(id => { const x = $(id); if (x) x.hidden = !ms.length; });

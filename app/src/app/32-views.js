@@ -64,7 +64,10 @@ setTimeout(()=>{try{const kick=()=>{clearTimeout(ovSync._t);ovSync._t=setTimeout
 addEventListener('popstate',e=>{if(OV_SKIP){OV_SKIP--;return}const o=overlayOpen();
   if(o){overlayClose(o);return}
   const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v)}finally{NAV_POP=false}});
-function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';view=v;LS.set('cc2.view',v);
+function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';
+  // motion (Nov 1): a page switch fades the new page in (polish.css, html.np-sw); not on the first page at load
+  if(v!==view&&document.body&&document.body.dataset.npReady){const r=document.documentElement;r.classList.add('np-sw');clearTimeout(setView.sw);setView.sw=setTimeout(()=>r.classList.remove('np-sw'),260)}
+  view=v;LS.set('cc2.view',v);
   document.querySelectorAll('[data-pane]').forEach(el=>el.hidden=el.dataset.pane!==v);
   safe('page parts',lazyFlush);
   const par=VIEW_PARENT[v]||v;const sideHas=!!document.querySelector(`.sidenav [data-view="${v}"]`);document.querySelectorAll('[data-view]').forEach(b=>{const on=b.classList.contains('sub')?b.dataset.view===(SUB_OF[v]||v):(sideHas&&b.closest('.sidenav'))?b.dataset.view===v:b.dataset.view===par;b.setAttribute('aria-selected',on)});
@@ -79,6 +82,7 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
 
   document.querySelectorAll('.teamsw [data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===v));
   if(v==='home')safe('home',renderHome);
+  if(ckWinNeeded())safe('checklist claims',ckWinRefresh);
   if(v==='types')renderTypeChart();
   if(v==='ratings')safe('ratings',renderLair);
   // All suggestions: the page shows at once; when the suggestions need working out, a short note shows and they fill in
