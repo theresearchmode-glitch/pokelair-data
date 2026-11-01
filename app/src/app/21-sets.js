@@ -16,14 +16,16 @@ function setCard(title, sub, t, extra, foot) {
   return `<div class="setcard"><div class="ph"><div><div class="pt">${title}</div><div class="t2">${sub}</div></div>${extra || ''}</div>${body}${foot ? `<div class="t2 setfoot">${foot}</div>` : ''}</div>`;
 }
 // Where each part of a merged set came from, in plain words.
-function setSources(st, fmt) {
+function setSources(st, fmt, p) {
   const label = {mv: 'moves', it: 'items', ab: 'abilities', na: 'natures', tm: 'teammates'}, by = {};
   const mega = st.src.it === 'mega';
   for (const f in label) { const s = st.src[f]; if (!s || s === 'mega') continue; const w = s === 'live' ? 'official in-game stats (live)' : s === 'game' ? `official in-game stats (${SETS.meta.pulled} snapshot)` : s === 'sd' ? `Showdown 1630+${mega ? ' (Mega-specific)' : st.sd && st.sd.cut === 0 ? ' (all ratings)' : ''}` : srcWord(s, fmt) + ' data'; (by[w] = by[w] || []).push(label[f]); }
   const k = Object.keys(by); if (!k.length) return '';
   let txt = k.length === 1 ? 'From ' + k[0] : k.map(w => `${by[w].join(', ').replace(/^./, c => c.toUpperCase())}: ${w}`).join(' · ');
   if (mega) txt += ' · Its stone and ability are fixed';
-  if (st.sd && st.sd.raw < 500) txt += ` · Showdown sample is small (${st.sd.raw.toLocaleString()} battles)`;
+  /* the data behind the percentages (trust pass): the Pokémon's own battles or teams in that list, small samples flagged */
+  if (st.sd && +st.sd.raw > 0 && Object.values(st.src).includes('sd')) txt += ` · ${basisText(st.sd.raw, 'Showdown battle', 'battles')}`;
+  { const b = p && setBasis(p, st, 'mv'); if (b && b.src === 'tour') txt += ` · moves: ${basisText(b.n, 'tournament team', 'sets', {pre: 'of'})}`; }
   if (st.shared) txt += ' · Shares stats with the same-ability plumage; the game counts them together';
   if (st.partial) txt += ' · The game\'s file is missing its top moves';
   return esc(txt);
@@ -33,7 +35,7 @@ function mainSource(st) { const s = st.src.mv; return s === 'sd' ? (st.src.it ==
 function rankLine(d, t) {
   if (!d || !t) return '';
   const bits = ['#' + t.r];
-  if (t.teams) bits.push(t.teams.toLocaleString() + ' teams'); else if (t.u) bits.push((+t.u).toFixed(1) + '% usage');
+  if (t.teams) bits.push(basisText(t.teams, 'team', 'sets')); else if (t.u) bits.push((+t.u).toFixed(1) + '% usage' + (d.battles ? ` of ${basisNum(d.battles, true)} battles` : ''));
   if (t.w) bits.push((+t.w).toFixed(1) + '% wins');
   return bits.join(' · ') + ' · ' + esc(d.source || '');
 }
@@ -52,7 +54,7 @@ function renderSets() {
   // In-game: the merged set (every Pokémon). Tournaments / Showdown: that list's own row, unmerged.
   let dCard;
   if (src === 'ingame') { const st = setFor(p, 'doubles', 'ingame'), d = META[SRC.ingame], row = findIn(d, p);
-    dCard = setCard('Doubles', rankLine(d, row) || mainSource(st), st, seg, setSources(st, 'doubles')); }
+    dCard = setCard('Doubles', rankLine(d, row) || mainSource(st), st, seg, setSources(st, 'doubles', p)); }
   else { const d = META[SRC[src]], row = findIn(d, p);
     dCard = setCard('Doubles', rankLine(d, row) || (d ? esc(d.source || '') : 'No data loaded yet'), row, seg); }
   out.innerHTML = `<div class="sethead">${sprite(p,'big')}<span class="sl-name">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : ''}${(() => { try { const r = rating(p), T = lTier(r.total); return `<span class="tag tier" style="background:${T.c};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${r.total}">${T.k} tier · ${esc(T.d)}</span>`; } catch (e) { return ""; } })()}</div>

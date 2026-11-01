@@ -174,7 +174,7 @@ function renderVerdict(ms,a,PG,CK){
     if(sh.length)rows.push(['Shaky against',sh.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(sh.length>5?` and ${sh.length-5} more`:'')])}
   // 3. checklist, real results, your record, type balance
   if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?` · not yet: ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
-  if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% of games at Limitless events (${best.c} players${best.g?`, ${best.g} games`:''})`]);
+  if(best)rows.push(['Real results',`${best.k===6?'This exact team':'5 of these 6'} won about ${Math.round(best.wr*100)}% of games at Limitless events (${best.c} players${best.g?`, ${best.g} games`:''})${best.g&&thinFor(best.g,'record')?' · early read: few games':''}`]);
   if(tr)rows.push(['Your record',`${tr.w}-${tr.l} with this team (${tr.pct}%)`]);
   rows.push(['Type balance',a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resists`+(a.unresisted.length?`; nothing resists ${a.unresisted.slice(0,2).join(', ')}`:''):'every weakness covered']);
   const score=RD?RD.score:null;

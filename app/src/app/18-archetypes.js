@@ -177,7 +177,7 @@ function gradeNames(names, itemsKnown) {
 }
 const miniGrades = c => c ? `<span class="minick${c.pass === c.n ? ' all' : ''}" title="${esc(c.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : x.part ? '~ ' : '✗ ') + x.label + (x.skip ? ' (items not listed)' : '')).join('\n'))}"><b>${c.pass}/${c.n}</b> checks${c.pass < c.n ? `<i>missing: ${esc(c.items.filter(x => !x.ok && !x.skip).map(x => x.label.toLowerCase()).join(', '))}</i>` : ''}${c.items.some(x => x.skip) ? '<i class="unkn">Mega not counted: items not listed</i>' : ''}</span>` : '';
 // the raw source line is written for the data log; say it in plain words when it has the usual shape
-function ttSourceText(src) { src = String(src || ''); const on = src.match(/top (\d+) of Reg M-C events with (\d+)\+ players/), off = src.match(/official events \(top (\d+)\)/);
+function ttSourceText(src) { src = String(src || ''); const on = src.match(/top (\d+) of Reg [A-Z]-[A-Z] events with (\d+)\+ players/), off = src.match(/official events \(top (\d+)\)/);
   if (!on) return src; return `Top ${on[1]} from online events with ${on[2]}+ players${off ? `, top ${off[1]} from official events` : ''}`; }
 function renderTopTeams() {
   const el = $('ttList'); if (!el) return; const d = META.teams;
