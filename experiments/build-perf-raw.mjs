@@ -3,7 +3,7 @@
 // Usage: node experiments/build-perf-raw.mjs [perf.json]
 import fs from 'node:fs';
 const P = JSON.parse(fs.readFileSync(process.argv[2] || 'out/perf.json', 'utf8')), f = 'app/src/data/data.js', s = fs.readFileSync(f, 'utf8');
-const keep = {updated: P.updated}; for (const k of ['tour', 'official', 'ladder', 'smogon', 'ingame', 'adj', 'prd', 'outside']) if (P[k]) keep[k] = P[k];
+const keep = {updated: P.updated}; for (const k of ['tour', 'official', 'ladder', 'smogon', 'ingame', 'adj', 'outside']) if (P[k]) keep[k] = P[k];
 const i = s.indexOf('const PERF_RAW='), j = s.indexOf('\n', i);
 if (i < 0) throw new Error('PERF_RAW not found');
 fs.writeFileSync(f, s.slice(0, i) + 'const PERF_RAW=' + JSON.stringify(keep) + ';' + s.slice(j));

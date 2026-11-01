@@ -44,7 +44,7 @@ const THR = (() => {
   const pc = x => Math.round(x * 100);
   // a side from a spec (tests, real team sheets): {n, item?, ability?, moves?:[names], nat?, sp?:{hp,atk,def,spa,spd,spe}}
   // Default moves: the 4 most used, plus any attack at least 30% of players run (so a support-first set still carries its attack).
-  // What strong players bring: every set on recent top-cut teams (Limitless top 8, official RK9 top 16) for one Pokémon.
+  // What strong players bring: every set on recent top-cut teams (Limitless top 8, official events top 16) for one Pokémon.
   // Threats use this when there are 15+ such sets, so a move casual players like but top players drop doesn't decide a verdict.
   let tcCache = {v: -1, map: null};
   function topCutSets() { if (tcCache.v === metaVersion) return tcCache.map; const map = new Map();

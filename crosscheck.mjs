@@ -4,8 +4,7 @@
 // disagree beyond the tolerance. Tolerances allow for the known, legitimate differences listed in each check's "known":
 //  - windows: Pikalytics covers about the last 2 weeks of tournaments; our meta_tour the last 4 weeks
 //  - samples: Pikalytics applies its own minimum event size; Pokémon Zone (not read: it refuses automated requests)
-//  - ladders: Smogon is one calendar month at a rating cut; Showdowntier the last 14 days, all ratings; project-red-data
-//    the top 10% of public replays over 30 days
+//  - ladders: Smogon is one calendar month at a rating cut; Showdowntier the last 14 days, all ratings
 //  - names: sites list a species ("Charizard"); we split Megas out. Everything here is compared per species (a team can
 //    hold only one of a species, so the plain form and its Megas add up exactly), except checks marked per form.
 import fs from 'node:fs';
@@ -41,8 +40,8 @@ function compare({id, ours, theirs, oursName, theirsName, known, tolU = [3, .25]
   const staples = new Set(names.slice(0, 12));
   checks.push({id, ours: oursName, theirs: theirsName, known, per: form ? 'form' : 'species', tolerance: {usage: `max(${tolU[0]} points, ${tolU[1] * 100}% of the larger)`, win: tolW == null ? null : `${tolW} points, each measured from its own source's average (300+ games)`}, winAverage: tolW == null ? null : {ours: mO && +mO.toFixed(1), theirs: mT && +mT.toFixed(1)},
     rows, missingHere: extra, flagged: rows.filter(r => r.flags.length).length, staplesFlagged: rows.filter(r => r.flags.length && staples.has(r.n)).map(r => `${r.n} (${r.flags.join(', ')})`)}); }
-// a source's rows per species: usage adds up over forms (sites that split Megas out, like project-red-data, list the
-// plain form without its Mega users); win rate weighted by games
+// a source's rows per species: usage adds up over forms (sites that split Megas out list the plain form without its
+// Mega users); win rate weighted by games
 const fromSrc = rows => bySpecies((rows || []).map(r => [r.n, r.u, r.wr != null ? r.wr : r.w != null ? r.w : null, r.g || r.m || (r.wr != null || r.w != null ? 1 : 0)]));
 // per species, the set of the form most players use (rows give each form's usage)
 const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map(r => [r.n, r.u])), D = {}, best = {};
@@ -50,27 +49,30 @@ const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map
 const mtSp = MT ? bySpecies(metaRows(MT).map(r => [r.n, r.u, r.w, r.teams])) : null;
 // 2. Recent tournaments + sets: our last-4-weeks team sheets vs Pikalytics (tournaments, about the last 2 weeks)
 compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics Reg M-C (${S.pika.scope || 'recent tournaments'})`,
-  known: 'Different populations: Pikalytics is about the last 2 weeks with its own event-size threshold and a much bigger sample per Pokémon than Limitless alone (Rillaboom ~40,000 games in 2 weeks vs ~25,000 for us in 4), so it likely includes events Limitless does not list. Its usage table names species while its core lists name Megas, so Mega species (Garchomp, Raichu, Salamence) are not comparable. Our Limitless numbers are checked against RK9 official events below; this check mainly guards sets (top item and move).',
+  known: 'Different populations: Pikalytics is about the last 2 weeks with its own event-size threshold and a much bigger sample per Pokémon than Limitless alone (Rillaboom ~40,000 games in 2 weeks vs ~25,000 for us in 4), so it likely includes events Limitless does not list. Its usage table names species while its core lists name Megas, so Mega species (Garchomp, Raichu, Salamence) are not comparable. Our Limitless numbers are checked against the official events below; this check mainly guards sets (top item and move).',
   tolU: [6, .45], tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
-// 3. Our Limitless table (whole Reg M-C) vs RK9's official events (every Masters team and match): two independent
-//    tournament records. Official events are in person, bigger, and mostly stronger players; Limitless is online.
-compare({id: 'tour-vs-rk9-field', ours: P.tour && bySpecies([...(P.tour.rows || []), ...(P.tour.megas || [])]), theirs: P.official && bySpecies(P.official.rows), oursName: P.tour && P.tour.label, theirsName: P.official && P.official.label,
+// 3. Our Limitless table (whole Reg M-C) vs the official events' whole field (every Masters team and match; frozen since
+//    Nov 1, when RK9 reads stopped): two independent tournament records. Official events are in person, bigger, and
+//    mostly stronger players; Limitless is online.
+compare({id: 'tour-vs-official-field', ours: P.tour && bySpecies([...(P.tour.rows || []), ...(P.tour.megas || [])]), theirs: P.official && bySpecies(P.official.rows), oursName: P.tour && P.tour.label, theirsName: P.official && P.official.label,
   known: 'Online Limitless events vs in-person official events (different players, more Bo3 matches, the official field reads the same few events). Win rates: games (ours) vs matches (theirs), compared as gaps to each average.', tolU: [4, .35], tolW: 5});
-// 4. Ladder usage: Smogon 1760+ (monthly) vs project-red-data (top 10% of replays, 30 days) and Showdowntier (14 days)
-const smSp = P.smogon ? bySpecies(P.smogon.rows) : null, mlSets = setsOf(ML);
-compare({id: 'smogon1760-vs-prd', ours: smSp, theirs: S.prd && fromSrc(S.prd.rows), oursName: P.smogon && P.smogon.label, theirsName: S.prd && `project-red-data top 10% replays (${S.prd.date})`,
-  known: 'Different windows (a finished calendar month vs the last 30 days) and cuts (1760+ vs the top 10% of public replays, about 1560+). Megas: project-red-data lists the species from team preview.', tolU: [4, .35]});
-compare({id: 'ladder-sets-vs-prd', ours: ML ? bySpecies(metaRows(ML).map(r => [r.n, r.u])) : null, theirs: S.prd && fromSrc(S.prd.rows), oursName: ML && ML.source, theirsName: S.prd && 'project-red-data open team sheets (items, moves)',
-  known: 'Sets: Smogon 1630+ for one month vs open team sheets from Bo3 and some Bo1 ladder replays. Usage differs by window and cut.', tolU: [5, .4],
-  sets: S.prd && {ours: mlSets, theirs: bestForm(S.prd.sets, S.prd.rows)}});
+// 4. Ladder usage: Smogon 1760+ (monthly) vs Showdowntier (14 days)
+const smSp = P.smogon ? bySpecies(P.smogon.rows) : null;
 compare({id: 'smogon1760-vs-showdowntier', ours: smSp, theirs: S.sdt && fromSrc(S.sdt.rows), oursName: P.smogon && P.smogon.label, theirsName: S.sdt && `Showdowntier (${S.sdt.from} – ${S.sdt.to}, all ratings)`,
   known: 'Showdowntier counts every rated battle (average player about 1290); Smogon 1760+ is the strong end of the ladder for a past month. Large gaps are expected for Pokémon strong players favour or avoid.', tolU: [5, .4]});
-// 5. Our own two set sources against each other: Limitless sheets vs RK9 official top 64 (top item and moves)
+// 5. Our own two set sources against each other: Limitless sheets vs the official events' top 64 open team sheets
+//    (Victory Road + VR Pastes; top item and moves)
 if (MT && OF) { const T = {}; for (const e of OF.events || []) for (const t of e.teams || []) for (const m of t.mons || []) { const k = spec(m.n), o = T[k] = T[k] || {c: 0, it: {}, mv: {}}; o.c++; if (m.i) o.it[m.i] = (o.it[m.i] || 0) + 1; for (const v of m.mv || []) o.mv[v] = (o.mv[v] || 0) + 1; }
   const N = (OF.events || []).reduce((a, e) => a + (e.teams || []).length, 0) || 1, top = o => Object.entries(o).sort((a, b) => b[1] - a[1]);
   const theirs = Object.fromEntries(Object.entries(T).map(([k, o]) => [k, {u: +(100 * o.c / N).toFixed(1)}])), sets = Object.fromEntries(Object.entries(T).filter(([, o]) => o.c >= 15).map(([k, o]) => [k, {it: top(o.it).slice(0, 3).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)]), mv: top(o.mv).slice(0, 6).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)])}]));
-  compare({id: 'tour-sets-vs-rk9-top64', ours: mtSp, theirs, oursName: MT.source, theirsName: `RK9 official events, top 64 open team sheets (${N} teams)`,
+  compare({id: 'tour-sets-vs-official-top64', ours: mtSp, theirs, oursName: MT.source, theirsName: `${OF.source || 'Official events'} (${N} teams)`,
     known: 'Usage is not comparable (top 64 of big events vs every Limitless team), so only sets are judged: the top item and top move should agree for staples.', tolU: [100, 1], sets: {ours: setsOf(MT), theirs: sets}}); }
+// 6. Official events: Victory Road's standings and team sheets against Liquipedia (placements, player count, start date)
+//    and against Victory Road's own event page (the six Pokémon on the page vs the team sheet). official.mjs does the
+//    work and stores it in out/official.json "checks"; here each event is one row.
+if (OF && Array.isArray(OF.checks)) { const rows = OF.checks.map(c => ({n: c.event, ours: c.teams, theirs: c.liquipedia && c.liquipedia.placed != null ? c.liquipedia.agree + '/' + c.liquipedia.placed : null, flags: c.flags.slice(0, 12), note: typeof c.liquipedia === 'string' ? c.liquipedia : undefined}));
+  checks.push({id: 'official-vs-liquipedia', ours: OF.source, theirs: 'Liquipedia (MediaWiki API; CC-BY-SA 3.0) and Victory Road event pages', known: 'Liquipedia lists placements in ranges (9-16, 17-32 ...) and only top cut by bracket; names are matched loosely (Victory Road prints first name + one surname). Player counts differ by a few between sites (late drops).', per: 'event',
+    rows, missingHere: [], flagged: rows.filter(r => r.flags.length).length, staplesFlagged: rows.filter(r => r.flags.some(f => /Liquipedia places|start date/.test(f))).map(r => `${r.n} (${r.flags.filter(f => /Liquipedia places|start date/.test(f)).length} placement/date)`)}); }
 const out = {updated: new Date().toISOString(), checks};
 fs.writeFileSync('out/crosscheck.json', JSON.stringify(out));
 for (const c of checks) console.log(c.skipped ? `crosscheck ${c.id}: skipped (${c.skipped})` : `crosscheck ${c.id}: ${c.flagged}/${c.rows.length} differ beyond tolerance${c.staplesFlagged.length ? '; staples: ' + c.staplesFlagged.join(', ') : ''}`);

@@ -49,7 +49,7 @@ function perfFromRaw(raw) {
       D[p.n] = [Math.max(0, +u.toFixed(2)), mt > 0 ? +Math.max(0, Math.min(100, wins / mt * 100)).toFixed(1) : 0, Math.max(0, Math.round(mt))]; }
     return D; };
   const usageMap = rows => { const D = {}; for (const r of rows || []) { if (!Array.isArray(r)) continue; const n = srcName(r[0]); if (n && isFinite(num(r[1]))) D[n] = +((D[n] || 0) + num(r[1])).toFixed(2); } return D; };
-  const smogon = usageMap(raw.smogon && raw.smogon.rows), prd = usageMap(raw.prd && raw.prd.rows);
+  const smogon = usageMap(raw.smogon && raw.smogon.rows);
   // ladder and in-game rows use species names that cover the plain form and its Megas together ("Garchomp" includes
   // Mega Garchomp and Mega Garchomp Z). Share each row out by how strong players split the species (Smogon's form usage,
   // else tournament usage), so a popular Mega isn't scored as unused and its base form isn't credited with its games.
@@ -72,25 +72,28 @@ function perfFromRaw(raw) {
       const t = num(r[3]) || 0, w = isFinite(num(r[4])) ? num(r[4]) : null, o = D[n];
       // two rows for one Pokémon ("Floette|M" and "Eternal Flower Floette|M"): weighted merge by games
       D[n] = !o ? [b, g, t, w] : [+((o[0] * o[1] + b * g) / (o[1] + g || 1)).toFixed(3), o[1] + g, o[2] + t, o[3] == null || w == null ? (o[3] ?? w) : +((o[3] * o[1] + w * g) / (o[1] + g || 1)).toFixed(1)]; } return D; })(),
-    ladder, smogon, prd, ingame, ingameRank: (() => { const R = {}; ig.forEach((n, i) => { if (n) for (const [k] of formsOf(n)) if (!R[k]) R[k] = i + 1; }); return R; })(), ingameTotal: ig.length, prdTeams: raw.prd && raw.prd.teams,
-    sources: {tour: raw.tour && raw.tour.label, official: raw.official && raw.official.label, ladder: raw.ladder && raw.ladder.label, smogon: raw.smogon && raw.smogon.label, prd: raw.prd && raw.prd.label, adj: raw.adj && raw.adj.label, ingame: raw.ingame && raw.ingame.label},
+    ladder, smogon, ingame, ingameRank: (() => { const R = {}; ig.forEach((n, i) => { if (n) for (const [k] of formsOf(n)) if (!R[k]) R[k] = i + 1; }); return R; })(), ingameTotal: ig.length,
+    sources: {tour: raw.tour && raw.tour.label, official: raw.official && raw.official.label, ladder: raw.ladder && raw.ladder.label, smogon: raw.smogon && raw.smogon.label, adj: raw.adj && raw.adj.label, ingame: raw.ingame && raw.ingame.label},
     // the date of each source's data, for the sheet ("Oct 30", "Sep 2026"), and the in-game season
+    frozenOfficial: !!(raw.official && raw.official.frozen),
     dates: Object.fromEntries(PERF_KEYS.map(k => [k, perfDate(raw, k)]).filter(x => x[1])), season: (raw.ingame && (raw.ingame.season || ((raw.ingame.label || '').match(/season ([A-Z]-?\d+)/) || [])[1])) || '',
     outside: raw.outside && Array.isArray(raw.outside.lists) && raw.outside.data && typeof raw.outside.data === 'object' ? raw.outside : null};
   return Object.keys(out.doubles).length >= 20 ? out : null;
 }
 // Outdated numbers are wrong numbers: every part of the outside data carries the date of its data, and a part older than its
-// source's cadence is left out (daily sources 3 days, op.gg / RK9 / Showdowntier / tier lists 4, Smogon's monthly stats
-// 40 days past the end of their month). The parts are tour, adj, ingame, official, smogon, prd, ladder and outside.
+// source's cadence is left out (daily sources 3 days, op.gg / Showdowntier / tier lists 4, Smogon's monthly stats
+// 40 days past the end of their month). The parts are tour, adj, ingame, official, smogon, ladder and outside.
+// A part marked frozen (the official-events table, kept from RK9 when its reads stopped on Nov 1: no permitted source has
+// every match) is dated by its newest event and shown for 28 days after it, then left out.
 // "2026-10-30" -> "Oct 30", "2026-09" -> "Sep 2026" (the one date format used for data dates)
 function perfDateText(d) { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], s = String(d || ''); let m;
   if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return `${M[+m[2] - 1]} ${+m[3]}`; if ((m = s.match(/^(\d{4})-(\d{2})$/))) return `${M[+m[2] - 1]} ${m[1]}`; return s; }
-const PERF_KEYS = ['tour', 'adj', 'ingame', 'official', 'smogon', 'prd', 'ladder', 'outside'], PERF_MAXAGE = {tour: 3, adj: 3, ingame: 4, official: 4, smogon: 40, prd: 3, ladder: 4, outside: 4};
+const PERF_KEYS = ['tour', 'adj', 'ingame', 'official', 'smogon', 'ladder', 'outside'], PERF_MAXAGE = {tour: 3, adj: 3, ingame: 4, official: 4, smogon: 40, ladder: 4, outside: 4}, PERF_FROZEN_MAXAGE = 28;
 function perfDate(raw, k) { const x = raw && raw[k]; if (!x) return ''; return String(x.updated || raw.updated || '').slice(0, 10); }
 function perfAgeDays(d) { const s = String(d || ''); let t;
   if (/^\d{4}-\d{2}$/.test(s)) { const [y, m] = s.split('-').map(Number); t = Date.UTC(y, m, 1); } else t = Date.parse(s.length === 10 ? s + 'T12:00:00Z' : s);
   return isNaN(t) ? Infinity : (Date.now() - t) / 864e5; }
-function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of PERF_KEYS) if (raw[k] && perfAgeDays(perfDate(raw, k)) <= PERF_MAXAGE[k]) o[k] = raw[k]; return o; }
+function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of PERF_KEYS) if (raw[k] && perfAgeDays(perfDate(raw, k)) <= (raw[k].frozen ? PERF_FROZEN_MAXAGE : PERF_MAXAGE[k])) o[k] = raw[k]; return o; }
 // The performance data in use: today's refresh (meta/perf), each part only while it is current, topped up with the
 // snapshot built into the page (PERF_RAW) where that part of the snapshot is still current. Without the refresh at all
 // (no database), the built-in snapshot is used as it is, and its dates are shown.

@@ -5,7 +5,7 @@ var REG_NAME = 'Reg M-C';
 const DATA_SOURCES = [
   {name: 'Limitless', url: 'https://play.limitlesstcg.com', use: 'Results, standings and team lists from online tournaments', terms: 'Read through its public API, within its rate limits'},
   {name: 'Victory Road', url: 'https://victoryroad.pro', use: 'Official event results and team lists', terms: 'Read once a day; its robots rules allow it'},
-  {name: 'PokePaste', url: 'https://pokepast.es', use: 'Team lists linked from event results', terms: 'Only the team pages results link to, read once a day'},
+  {name: 'VR Pastes', url: 'https://www.vrpastes.com', use: 'Full team sheets linked from Victory Road event results', terms: 'Each team read once, at least 1 second apart, as its robots rules ask'},
   {name: 'Liquipedia', url: 'https://liquipedia.net/pokemon', note: 'CC BY-SA', use: 'Official event results and placements', terms: 'Read through its official API at its speed limits; text under CC BY-SA 3.0 (see below)'},
   {name: 'Pokémon Showdown', url: 'https://pokemonshowdown.com', use: 'Game data (Pokémon, moves, items, abilities) and public battle replays', terms: 'Game data under the MIT License (notice below); replays from its public replay API'},
   {name: 'Smogon', url: 'https://www.smogon.com/stats/', use: 'Monthly Showdown ladder usage stats', terms: 'Public stats files, read when a new month is out'},

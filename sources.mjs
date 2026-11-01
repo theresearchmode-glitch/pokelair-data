@@ -1,12 +1,12 @@
 // Outside sources (daily, after ladder.mjs): other sites' numbers for Reg M-C doubles, read straight from their pages.
-// Writes out/sources.json. perf.mjs uses them as rating inputs (Showdowntier ladder table, project-red-data replays) and
+// Writes out/sources.json. perf.mjs uses them as rating inputs (Showdowntier ladder table) and
 // for the "Other tier list" on each Pokémon's sheet (Showdowntier); crosscheck.mjs compares our own
 // numbers against them. Each source is optional: one that fails or changes its page is left out (and reported).
 //   sdt     Showdowntier: Showdown ladder, last 14 days. Tier, usage %, win %, average player rating
 //   pika    Pikalytics: Showdown ladder 1760+. Usage %, win %; items and moves for the 40 most used
-//   prd     project-red-data (GitHub): top 10% of public Showdown replays, last 30 days. Usage, items, moves
+// (project-red-data was dropped on Nov 1: its repository carries no licence, so we have no permission to reuse it.)
 import fs from 'node:fs';
-import {mapMon, ROSTER, dec, text} from './rk9-lib.mjs';
+import {mapMon, ROSTER, dec, text} from './names.mjs';
 import {UA as NP_UA, politeFetch} from './http.mjs';
 const UA = {'User-Agent': NP_UA};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -15,7 +15,7 @@ async function get(url, opt = {}) { if (calls++) await sleep(1500);
   for (let k = 0; k < 3; k++) { const r = await politeFetch(url, {headers: {...UA, ...(opt.headers || {})}, redirect: opt.redirect || 'follow'});
     if (opt.raw) return r; if (r.ok) return r.text(); if (r.status === 429 || r.status >= 500) { await sleep(15000); continue; } throw new Error(url + ' ' + r.status); }
   throw new Error(url + ' failed'); }
-// any site's name -> our roster name: Showdown ids ("Indeedee-F", "Rotom-Wash"), Pokémon Zone / RK9 ("Arcanine [Hisuian Form]"),
+// any site's name -> our roster name: Showdown ids ("Indeedee-F", "Rotom-Wash"), official team-sheet style ("Arcanine [Hisuian Form]"),
 // Megas written "Mega Charizard Y" or "Charizard-Mega-Y". null when it isn't on the roster.
 export function norm(raw) { let n = dec(String(raw || '')).replace(/\s+/g, ' ').trim(); if (!n) return null;
   if (ROSTER.has(n)) return n; const q = n.replace(/'/g, '’'); if (ROSTER.has(q)) return q;
@@ -49,16 +49,7 @@ await tryIt('pika', async () => { const F = 'gen9championsvgc2026regmc', h = awa
       const rec = t.match(/\*\*Record\*\* \| (\d+)-(\d+)/); date = date || (t.match(/\*\*Data Date\*\* \| ([\d-]+)/) || [])[1] || null;
       sets[r.n] = {it: sec('Items').slice(0, 4), mv: sec('Moves').slice(0, 6), g: rec ? +rec[1] + +rec[2] : null}; } catch (e) {} }
   return {date: new Date().toISOString().slice(0, 10), dataDate: date, scope, rows, sets, miss}; });
-// project-red-data: stats.json in the pkmn stats shape
-await tryIt('prd', async () => { const j = JSON.parse(await get('https://raw.githubusercontent.com/jamesrcode/project-red-data/main/stats.json')), rows = [], sets = {}, miss = [];
-  const pct = o => Object.entries(o || {}).sort((a, b) => b[1] - a[1]); const tot = o => Object.values(o || {}).reduce((a, b) => a + b, 0) || 1;
-  for (const [k, v] of Object.entries(j.pokemon || {})) { const n = norm(k); if (!n) { miss.push(k); continue; } const u = v.usage && typeof v.usage === 'object' ? v.usage.raw : v.usage;
-    rows.push({n, u: +(100 * u).toFixed(2)});
-    const it = pct(v.items), mv = pct(v.moves), ti = tot(v.items), tm = tot(v.moves) / 4;
-    if (it.length || mv.length) sets[n] = {it: it.slice(0, 4).map(([a, b]) => [a, +(100 * b / ti).toFixed(1)]), mv: mv.slice(0, 6).map(([a, b]) => [a, +(100 * b / tm).toFixed(1)])}; }
-  rows.sort((a, b) => b.u - a.u);
-  const I = j.info || {}; return rows.length >= 30 ? {date: String(I.generated || '').slice(0, 10) || null, teams: I.teams || null, source: I.source || '', rows, sets, miss} : null; });
 fs.writeFileSync('out/sources.json', JSON.stringify(out));
-for (const k of ['sdt', 'pika', 'prd']) { const s = out[k];
+for (const k of ['sdt', 'pika']) { const s = out[k];
   console.log(`sources: ${k} ${s ? `${s.rows.length} rows, dated ${s.date || s.dataDate || '?'}; top ${s.rows.slice(0, 3).map(r => `${r.n} ${r.u}%`).join(', ')}${s.miss && s.miss.length ? '; unmapped ' + s.miss.slice(0, 12).join(', ') : ''}` : 'missing'}`); }
 if (out.problems.length) console.log('::warning::sources: ' + out.problems.join(' | '));

@@ -22,11 +22,12 @@ jobs:
       - run: node update.mjs
         env:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
-      # RK9 steps switched off (Nov 1): RK9's Terms of Service (rk9.gg/terms 5.3) forbid automated data extraction.
-      # out/official.json and the official-events data already collected are kept as they are. Replacement
-      # (Victory Road + PokePaste, checked against Liquipedia) is being built on its own branch.
-      # - run: node rk9.mjs || echo "::warning::rk9 skipped"
-      # - run: node rk9-field.mjs || echo "::warning::rk9 whole field skipped"
+      # Official events (Reg M-C Regionals/Internationals, Masters top 64 open team sheets): Victory Road's event pages and
+      # VR Pastes, checked against Liquipedia's API. Polite: one request a second per site, our User-Agent, only new or
+      # edited events, every paste read once. If anything fails or disagrees with yesterday's file, out/official.json is kept.
+      # (RK9 was read here until Nov 1; its terms, rk9.gg/terms 5.3, forbid automated extraction, so rk9.mjs and
+      # rk9-field.mjs were removed. The whole-field table they made is kept frozen in out/official_perf.json.)
+      - run: node official.mjs || echo "::warning::official events skipped (previous out/official.json kept)"
       - run: node events.mjs || echo "::warning::events skipped"
       # this week vs last week from the team sheets already on disk (out/weekly.json; no network)
       - run: node weekly.mjs || echo "::warning::weekly digest skipped"
@@ -34,7 +35,7 @@ jobs:
       - run: node calendar.mjs || echo "::warning::calendar skipped"
       - run: node model.mjs || echo "::warning::model skipped"
       - run: node ladder.mjs || echo "::warning::ladder stats skipped"
-      # other sites' numbers: Pokémon Zone, Showdowntier, Pikalytics, project-red-data (rating inputs, tier lists, cross-check)
+      # other sites' numbers: Showdowntier, Pikalytics (rating inputs, tier lists, cross-check)
       - run: node sources.mjs || echo "::warning::outside sources skipped"
       - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || echo "::warning::op.gg skipped"
       # the ratings' daily inputs (all of out/perf.json) for the morning refresh; checked by health.mjs

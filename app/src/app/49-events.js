@@ -1,5 +1,5 @@
 // ---------- Events (tournament pages) and team search ----------
-// meta/events (out/events.json from events.mjs): recent Limitless events with 32+ players (top 8) and official RK9
+// meta/events (out/events.json from events.mjs): recent Limitless events with 32+ players (top 8) and official
 // events (top 16), each with full team sheets. Strings are stored once in "dict" and referenced by index.
 // Events lists them with the winner up front; one tap opens the standings with every set.
 // Team search (on Top teams) filters every one of those teams by Pokémon, item, move or ability.
@@ -40,7 +40,7 @@ function renderEvents() {
   const ev = evUi.open && E.events.find(e => e.id === evUi.open);
   if (ev) {
     el.innerHTML = `<button class="btn sm ghost evback" type="button" data-evback="1">‹ All events</button>
-      <div class="evhead"><div><div class="evname">${esc(ev.name)}</div><div class="t2">${evDate(ev.date)} · ${ev.players.toLocaleString('en-US')} players · ${ev.src === 'official' ? 'Official Pokémon event' : 'Online (Limitless)'} · top ${ev.top.length}</div></div>${ev.src === 'official' ? '<span class="tag evoff">OFFICIAL</span>' : ''}</div>
+      <div class="evhead"><div><div class="evname">${esc(ev.name)}</div><div class="t2">${evDate(ev.date)} · ${ev.players.toLocaleString('en-US')} players · ${ev.src === 'official' ? 'Official Pokémon event (Victory Road)' : 'Online (Limitless)'} · top ${ev.top.length}</div></div>${ev.src === 'official' ? '<span class="tag evoff">OFFICIAL</span>' : ''}</div>
       ${ev.field.length ? `<div class="evfield"><div class="lbl">Most brought by the whole field${ev.players ? ' ' + basis(ev.players, 'player', 'teams', {pre: '· of'}) : ''}</div><div class="evfl">${ev.field.map(([n, pc]) => { const p = byName.get(n); return `<span class="evfm">${sprite(p, 'tiny')}${esc(p.d)} <b>${pc}%</b></span>`; }).join('')}</div></div>` : ''}
       ${ev.top.map((t, k) => teamSheetCard(t, null, ev.id + '#' + k)).join('')}`;
     return; }

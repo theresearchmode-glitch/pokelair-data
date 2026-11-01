@@ -174,9 +174,9 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
       const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue;
       out.push({player: p.nm, event: `${T.name} · ${T.p} players`, record: `${p.w}-${p.l}${p.ti ? '-' + p.ti : ''} · #${p.pl}`, section: lastD - new Date(T.d) <= 7 * DAY ? 'Last 7 days' : 'Last 14 days', mons: ns}); }
     if (out.length >= 60) break; }
-  // keep yesterday's official-event teams (rk9.mjs refreshes them next; if RK9 is down they'd otherwise vanish)
+  // keep yesterday's official-event teams (official.mjs refreshes them next; if its sources are down they'd otherwise vanish)
   const prevT = readJSON('out/teams.json', null), off = prevT && Array.isArray(prevT.teams) ? prevT.teams.filter(t => t && t.section === 'Official events') : [];
-  fs.writeFileSync('out/teams.json', JSON.stringify({source: `Limitless · top 4 of ${RG.name} events with 32+ players` + (off.length ? ' + RK9 official events (top 8)' : ''), updated: new Date().toISOString(), teams: [...off, ...out.slice(0, 60)].slice(0, 90)}));
+  fs.writeFileSync('out/teams.json', JSON.stringify({source: `Limitless · top 4 of ${RG.name} events with 32+ players` + (off.length ? ' + ' + ((prevT.source || '').match(/\+ ((?:RK9|Victory Road) official events.*)$/) || [, 'Victory Road official events (top 8)'])[1] : ''), updated: new Date().toISOString(), teams: [...off, ...out.slice(0, 60)].slice(0, 90)}));
   console.log(`teams: ${out.length}`); }
 // 3) usage-rank history for trends: one entry per day for the last 21 days, each from the 14 days before it
 { const days = [];

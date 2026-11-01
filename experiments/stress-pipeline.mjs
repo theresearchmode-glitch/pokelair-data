@@ -1,4 +1,4 @@
-// Stress test: the daily data job must fail safe. Runs the job's steps (update, rk9, events, replays, ladder) in a
+// Stress test: the daily data job must fail safe. Runs the job's steps (update, official, events, replays, ladder) in a
 // throwaway copy of the repo with every outside source down, erroring, sending HTML, sending nothing, or half-working, and
 // with corrupted local files. Afterwards every out/*.json must still parse and hold at least ~80% of what it held before
 // (yesterday's data kept, never garbage), and the raw tournament files must keep their teams.
@@ -6,7 +6,7 @@
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import {spawnSync} from 'node:child_process'; import {fileURLToPath, pathToFileURL} from 'node:url';
 const ROOT = fileURLToPath(new URL('../', import.meta.url)), STUB = pathToFileURL(fileURLToPath(new URL('./stress-fetch-stub.mjs', import.meta.url))).href;
 const MODES = process.argv.slice(2).length ? process.argv.slice(2) : ['down', '500', 'html', 'empty', 'glitch', 'corrupt-index+empty', 'missing-index+empty', 'corrupt-out+empty', 'truncated-t2+empty', 'half-data+empty'];
-const STEPS = [['update.mjs', true], ['rk9.mjs', false], ['events.mjs', false], ['replays.mjs', false], ['ladder.mjs', false]];
+const STEPS = [['update.mjs', true], ['official.mjs', false], ['events.mjs', false], ['replays.mjs', false], ['ladder.mjs', false]];
 const copy = (a, b) => fs.cpSync(a, b, {recursive: true});
 const rdj = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return undefined; } };
 // what each output holds, to compare before/after

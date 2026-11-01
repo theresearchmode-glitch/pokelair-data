@@ -12,7 +12,7 @@ if (t === 'official') { const O = rd('official_perf.json'); if (!O) note('offici
   const J = JSON.stringify(O.rows); for (let i = 0, k = 1; i < J.length && k <= 8; i += 3700, k++) note(`official rows ${k}`, J.slice(i, i + 3700)); } }
 if (t === 'smogon') { const P = rd('perf.json') || {}; if (P.smogon) { const J = JSON.stringify({label: P.smogon.label, updated: P.smogon.updated, rows: P.smogon.rows}); for (let i = 0, k = 1; i < J.length && k <= 9; i += 3700, k++) note(`smogon rows ${k}`, J.slice(i, i + 3700)); } else note('smogon', 'none'); }
 if (t === 'sources') { const S = rd('sources.json') || {}; note('sources problems', S.problems && S.problems.length ? S.problems : ['none']);
-  for (const k of ['sdt', 'pika', 'prd']) { const s = S[k]; if (!s) { note(`source ${k}`, 'missing'); continue; }
+  for (const k of ['sdt', 'pika']) { const s = S[k]; if (!s) { note(`source ${k}`, 'missing'); continue; }
     note(`source ${k}`, [`date ${s.date} ${s.dataDate ? 'dataDate ' + s.dataDate : ''} ${s.from ? s.from + '..' + s.to : ''} battles ${s.battles || ''} teams ${s.teams || ''} rows ${s.rows.length} unmapped ${(s.miss || []).join(', ')}`,
       ...s.rows.slice(0, 25).map(r => `${r.n} u=${r.u} w=${r.w ?? r.wr ?? ''} ${r.r || r.g || ''} ${r.tier || ''}`),
       ...(s.sets ? Object.entries(s.sets).slice(0, 8).map(([n, v]) => `${n}: it ${(v.it || []).map(x => x.join(' ')).join(', ')} | mv ${(v.mv || []).slice(0, 4).map(x => x.join(' ')).join(', ')}`) : [])]); } }

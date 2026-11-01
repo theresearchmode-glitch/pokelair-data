@@ -16,7 +16,7 @@ function perfModel(PD, EX) {
   // Weights tuned on held-out data (Oct 23): build the rating without one source, check how well it predicts that source's
   // real win rates. Ladder win rates added nothing for tournament results, so they're shown but not scored.
   const W = Object.assign({pop: .3, ladder: 0, official: 1.3, popLadder: 1, ingame: 1, adj: 'add', adjW: .5}, (typeof PERF_W === 'object' && PERF_W) || {});
-  const out = new Map(), all = new Set([...Object.keys(PD.doubles || {}), ...Object.keys(PD.official || {}), ...Object.keys(PD.ladder || {}), ...Object.keys(PD.smogon || {}), ...Object.keys(PD.prd || {}), ...Object.keys(PD.ingame || {}), ...Object.keys(PD.adj || {})]);
+  const out = new Map(), all = new Set([...Object.keys(PD.doubles || {}), ...Object.keys(PD.official || {}), ...Object.keys(PD.ladder || {}), ...Object.keys(PD.smogon || {}), ...Object.keys(PD.ingame || {}), ...Object.keys(PD.adj || {})]);
   const wmean = T => { let a = 0, b = 0; for (const k in T) { const [, w, n] = T[k]; a += w / 100 * n; b += n; } return b ? a / b : .5; };
   // win-rate deviation, shrunk toward the source average, and the source's spread so sources can be put on one scale
   // A Pokémon on u% of teams often meets itself, which drags its win rate toward the average; divide by (1 - u) to undo that.
@@ -44,7 +44,7 @@ function perfModel(PD, EX) {
     const wsum = zs.reduce((a, x) => a + x[1], 0), z = wsum ? zs.reduce((a, x) => a + x[0] * x[1], 0) / Math.max(wsum, .6) : 0;
     const perf = Math.max(0, Math.min(100, 50 + 18 * z));
     const pops = [T[k] ? pop(T[k][0]) : pop(.03), O[k] ? pop(O[k][0]) : pop(.03), (EX.smogon || !W.popLadder ? null : PD.smogon && PD.smogon[k] != null ? pop(PD.smogon[k]) : pop(.1)),
-      (EX.prd || !W.popLadder ? null : PD.prd && PD.prd[k] != null ? pop(PD.prd[k]) : pop(.03)), (EX.ladder || !W.popLadder ? null : L[k] ? pop(L[k][0]) : pop(.5)),
+      (EX.ladder || !W.popLadder ? null : L[k] ? pop(L[k][0]) : pop(.5)),
       (EX.ingame || !W.ingame || !PD.ingame || !Object.keys(PD.ingame).length ? null : pop(PD.ingame[k] != null ? PD.ingame[k] : .02))].filter(x => x != null);
     const popularity = pops.reduce((a, b) => a + b, 0) / pops.length;
     const evidence = (1 - W.pop) * perf + W.pop * popularity, conf = N / (N + 300);
@@ -52,7 +52,7 @@ function perfModel(PD, EX) {
     // the games-weighted average win rate of the source wr comes from (tournament sources average well above 50%)
     const wrMean = T[k] ? mT : O[k] ? mO : null;
     out.set(k, {evidence, conf, perf, popularity, usage: t ? t[0] : null, wr: t ? t[1] : null, wrMean, matches: t ? t[2] : null,
-      src: {tour: T[k] || null, official: O[k] || null, ladder: L[k] || null, smogon: PD.smogon ? PD.smogon[k] : null, prd: PD.prd ? PD.prd[k] : null, adj: A[k] || null, ingame: PD.ingame && PD.ingame[k] != null ? PD.ingameRank[k] : null}});
+      src: {tour: T[k] || null, official: O[k] || null, ladder: L[k] || null, smogon: PD.smogon ? PD.smogon[k] : null, adj: A[k] || null, ingame: PD.ingame && PD.ingame[k] != null ? PD.ingameRank[k] : null}});
   }
   return out;
 }
