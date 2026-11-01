@@ -16,7 +16,7 @@ function renderSaved(){
     let ck=null;try{ck=r.ms.length===6?proChecks(r.ms,true):null}catch(e){}
     const stats=`<div class="svstats">${ts?`<span class="tsd${ts.score>=75?' up':''}" title="Ready for ${ts.score}% of the top 30 threats (weighted by how often each makes top cut)">Ready ${ts.score}%</span>`:`<span class="vsub">${r.ms.length<6?r.ms.length+'/6 Pokémon':'—'}</span>`}${ck?`<span class="vsub" title="Winning-team checklist">${ck.pass}/${ck.n} checks</span>`:''}</div>`;
     const actions=ui.confirmDel===t.id?`<div class="inline-confirm">Delete ${esc(t.name)}?<button class="btn sm danger" data-delok="${t.id}" type="button">Delete</button><button class="btn sm" data-delx="1" type="button">Keep</button></div>`
-      :`<button class="btn sm primary" data-load="${t.id}" type="button">Open</button><details class="moremenu svmore"><summary class="btn sm" aria-label="More for ${esc(t.name)}">⋯</summary><div class="mmpop">
+      :`<button class="btn sm primary" data-load="${t.id}" type="button">Open</button>${sdBtn('saved:'+t.id)}<details class="moremenu svmore"><summary class="btn sm" aria-label="More for ${esc(t.name)}">⋯</summary><div class="mmpop">
         <button class="btn ghost${ui.cmp.includes(t.id)?' on':''}" data-cmp="${t.id}" type="button" aria-pressed="${ui.cmp.includes(t.id)}">${ui.cmp.includes(t.id)?'Comparing ✓':'Compare'}</button><button class="btn ghost" data-rn="${t.id}" type="button">Rename</button><button class="btn ghost danger" data-del="${t.id}" type="button">Delete</button></div></details>`;
     return `<div class="item svt${isLoaded?' on':''}${ui.cmp.includes(t.id)?' cmpon':''}">${nameCell}${six}<div class="svfoot">${stats}<div class="svacts">${actions}</div></div></div>`}).join('');
 }

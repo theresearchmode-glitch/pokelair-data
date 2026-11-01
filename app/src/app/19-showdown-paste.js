@@ -20,7 +20,7 @@ function stoneFor(p) {
 function exportPaste() {
   return members().map(m => {
     const p = m.p, base = byName.get(p.b) || p;
-    const species = p.n === 'Meowstic-F-Mega' ? 'Meowstic-F' : p.m ? base.n : p.n, ti = topItems(p), item = m.item || (ti ? ti.it[0][0] : '');
+    const species = typeof sdSpecies === 'function' ? sdSpecies(p) : p.n === 'Meowstic-F-Mega' ? 'Meowstic-F' : p.m ? base.n : p.n, ti = topItems(p), item = m.item || (ti ? ti.it[0][0] : '');
     const ability = p.m ? (metaAbility(base) || bestAbility(base)) : m.ability;
     const mv = slotMoves(S.slots[m.i], p).names.filter(Boolean);
     // stat points: the most common real spread from the Showdown ladder (Champions stores them as EVs, 0-32 each)
@@ -40,7 +40,8 @@ function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '
   if (v.some(x => x > 32)) { for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor((v[i] + 4) / 8));
     const cap = typeof SP_TOTAL === 'number' ? SP_TOTAL : 66; let over = v.reduce((a, b) => a + b, 0) - cap;
     while (over > 0) { let k = -1; for (let i = 0; i < 6; i++) if (v[i] > 0 && v[i] < 32 && (k < 0 || v[i] < v[k])) k = i; if (k < 0) k = v.indexOf(Math.max(...v)); v[k]--; over--; } }
-  const okNat = nat && typeof NATURES !== 'undefined' && NATURES.includes(nat) ? nat : null;
+  /* the four other neutral natures (Docile, Serious, Bashful, Quirky) read as Hardy: the same stats, and the calc's list has Hardy (Nov) */
+  const okNat = nat && typeof NATURES !== 'undefined' ? (NATURES.includes(nat) ? nat : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(nat) && NATURES.includes('Hardy') ? 'Hardy' : null) : null;
   // ev: false when the paste has no readable EVs line (none at all, as on tournament team sheets, or one with nothing
   // parseable in it): the stat points are then assumed, not 0. "EVs: 0 HP" is a readable line, so it means 0.
   return any || okNat ? {nat: okNat, v, ev: any} : null; }

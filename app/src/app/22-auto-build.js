@@ -203,7 +203,7 @@ function renderAutoBuild() {
       <div class="abgp">${tm.gp.map(g => `<span class="sev ok">${esc(g)}</span>`).join('')}${tm.megas ? `<span class="sev lo">${tm.megas} Mega option${tm.megas === 1 ? '' : 's'}</span>` : ''}</div>
       ${tm.fresh ? '<div class="t2 gemline">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</div>' : ''}
       <ul class="abwhy">${tm.why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
-      <div class="row"><button class="btn sm primary" type="button" data-abuse="${res.fmt}">Use this team</button><button class="btn sm" type="button" data-absave="${res.fmt}"${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}>Save</button>${res.teams.length > 1 ? `<button class="btn sm" type="button" data-abnext="${res.fmt}">Try another</button>` : ''}</div></div>`; };
+      <div class="row"><button class="btn sm primary" type="button" data-abuse="${res.fmt}">Use this team</button>${sdBtn('ab:' + res.fmt)}<button class="btn sm" type="button" data-absave="${res.fmt}"${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}>Save</button>${res.teams.length > 1 ? `<button class="btn sm" type="button" data-abnext="${res.fmt}">Try another</button>` : ''}</div></div>`; };
   const lk = ui.abLock && byName.get(ui.abLock);
   // the Build around pick shows as a chip with × in the card above (61-concept-h-pages.js), so no banner here
   el.innerHTML = ``

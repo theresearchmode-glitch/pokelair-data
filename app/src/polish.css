@@ -525,3 +525,93 @@ button.chring{background:none;cursor:pointer;padding:0}
 .trgrid{stroke:var(--line);stroke-width:1}.trax{font:11px var(--body);fill:var(--chink2)}.trlab{font:600 11px var(--body);fill:var(--chink)}
 .trleg{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:12.5px;color:var(--chink2)}.trleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 #track .chsec,#method .chsec{margin-top:10px}
+/* ---------- Copy for Showdown (Nov): one small button on every team ---------- */
+.sdcopy{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 12px;border-radius:999px;border:2px solid var(--chblue);background:transparent;color:var(--chblueT);font:800 12px var(--body);text-transform:uppercase;letter-spacing:.03em;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.sdcopy svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sdcopy:hover{background:color-mix(in srgb,var(--chblue) 12%,transparent)}
+.sdcopy.sddone{background:var(--chblue);color:#fff}
+:root[data-look="dark"] .sdcopy.sddone{color:#14172E}
+.sdcopy.onred{border-color:#fff;color:#fff}.sdcopy.onred.sddone{background:#fff;color:var(--chredT)}
+.gbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.gbtns .gpractice{margin:0}
+.sdsheet{position:fixed;inset:0;z-index:9999;background:rgba(10,12,30,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.sdsheet[hidden]{display:none}
+.sdbox{background:var(--chc);color:var(--chink);border:2px solid var(--chline);border-radius:18px;padding:16px;width:100%;max-width:560px;max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.sdh{display:flex;align-items:center;justify-content:space-between;font:800 16px var(--body)}
+.sdx{min-width:44px;min-height:44px;border:0;background:none;color:var(--chink);font-size:26px;cursor:pointer}
+.sdbox textarea{width:100%;font:13px/1.4 var(--mono)}.sdnote{color:var(--warn)}
+
+/* ---------- Team preview practice (Nov) ---------- */
+@keyframes prIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes prPop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:none}}
+#prOut{display:flex;flex-direction:column;gap:12px}
+.prlede{font:500 17px/1.45 var(--body);margin:0}
+.prmodes{display:grid;gap:10px}
+@media (min-width:700px){.prmodes{grid-template-columns:1fr 1fr}}
+.prmode{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;min-height:84px;padding:14px 16px;border-radius:16px;border:2px solid var(--chline);background:var(--chc);color:var(--chink);cursor:pointer;font:inherit}
+.prmode b{font:800 16px var(--body)}.prmode>span{color:var(--chink2);font-size:14px;line-height:1.35}
+.prmode[aria-checked="true"]{border-color:var(--chblue);box-shadow:inset 0 0 0 2px var(--chblue);background:color-mix(in srgb,var(--chblue) 10%,var(--chc))}
+.prmode[aria-checked="true"] b::after{content:" ✓";color:var(--chblueT)}
+.prmode:disabled{opacity:.6;cursor:not-allowed}
+.prmini{display:flex;gap:2px;margin-top:4px}.prmini .spr{width:40px;height:40px}
+.prscore{display:flex;flex-wrap:wrap;gap:6px}
+.prscore span{background:var(--chp2);border-radius:999px;padding:6px 12px;font:600 13px var(--body);color:var(--chink)}
+.prscore b{font:400 18px/1 var(--display);color:var(--chblueT);margin-right:2px}
+.prgo{margin:4px 0}
+.prgo:disabled{background:transparent;border:3px dashed var(--chline);color:var(--chink2);cursor:not-allowed;box-shadow:none;transform:none}
+.prband{border-radius:18px;padding:14px;border:2px solid var(--chline);animation:prIn .35s ease both}
+.prband.them{background:var(--chred);color:#fff;border-color:var(--chredT)}
+.prband.them .chk{color:#fff}
+:root[data-look="dark"] .prband.them{background:#B81F37;border-color:#FF6B80}
+.prband.you{background:var(--chc)}
+.prsix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.prm{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;text-align:center}
+.prm .spr,.prpick .spr{width:100%;max-width:104px;height:auto;aspect-ratio:1}
+.prband.them .prm .spr{max-width:80px}.prband.them.sm .prm .spr{max-width:56px}.prband.them.sm{padding:10px 14px}
+#practice>.head{display:none}
+.prmn{font:800 12px/1.15 var(--body);text-transform:uppercase;letter-spacing:.02em;overflow-wrap:normal;word-break:normal;hyphens:none}
+.prwho{margin:0}
+.prsteps{display:flex;flex-wrap:wrap;gap:6px}
+.prst{border:2px solid var(--chline);border-radius:999px;padding:4px 12px;font:700 13px var(--body);opacity:.65}
+.prst.on{background:var(--chink);color:var(--chp);opacity:1}.prst.done{opacity:.8}
+.prhint{margin:8px 0 0;font:600 14px var(--body);color:var(--chink2)}
+.prpick{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:124px;padding:10px 6px 8px;border-radius:16px;border:2px solid var(--line2);background:var(--card2);color:var(--chink);cursor:pointer;font:inherit;transition:transform .15s,border-color .15s,background .15s;-webkit-tap-highlight-color:transparent}
+.prpick:active{transform:scale(.97)}
+.prpick.on{border-color:var(--chblue);border-width:3px;padding:9px 5px 7px;background:color-mix(in srgb,var(--chblue) 16%,var(--chc));transform:translateY(-2px)}
+.prpick.ld{background:var(--chblue);color:#fff}
+:root[data-look="dark"] .prpick.ld{color:#14172E}
+.prtag{display:inline-block;font:700 10px/1 var(--mono);letter-spacing:.06em;padding:4px 7px;border-radius:999px;background:var(--chp2);color:var(--chink);font-style:normal}
+.prtag.lead{background:var(--chink);color:var(--chp)}
+.prpick .prtag{position:absolute;top:6px;left:6px;background:var(--chblue);color:#fff}
+.prpick.ld .prtag{background:#fff;color:#0A4F80}
+.prrow{gap:16px}
+.prres{display:flex;flex-direction:column;gap:4px;border-radius:18px;padding:16px;animation:prPop .45s ease both}
+.prres b{font:400 26px/1.05 var(--display);text-transform:uppercase}
+.prres.yes{background:var(--chok);color:#fff}.prres.no{background:var(--chblue);color:#fff}.prres.none{background:var(--card2);color:var(--chink)}
+:root[data-look="dark"] .prres.yes,:root[data-look="dark"] .prres.no{color:#14172E}
+.prgrid2{display:grid;gap:12px}
+@media (min-width:800px){.prgrid2{grid-template-columns:1fr 1fr}}
+.prcard{background:var(--chc);border:2px solid var(--chline);border-radius:16px;padding:14px;animation:prIn .4s ease both}
+.prgrid2 .prcard:nth-child(2){animation-delay:.12s}
+#prOut>.prcard{animation-delay:.22s}
+.prcard p{margin:6px 0 0}
+.prfour{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.prfour .spr{max-width:84px}
+.prfour .prtag{margin-top:2px}
+.prhintn{display:inline-block;background:var(--warn-soft);color:var(--warn);border-radius:999px;padding:2px 9px;font:700 12px var(--body)}
+.prrates{display:flex;flex-direction:column}
+.prrate{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.prrate:first-child{border-top:0}
+.prrate .spr{width:48px;height:48px}
+.prrb{flex:1;min-width:0}
+.prrn{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.prbar{height:10px;border-radius:999px;background:var(--chp2);margin:6px 0 4px;overflow:hidden}
+.prbar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--chblue),var(--chmid));transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.prbar i.go{width:var(--w)}
+.prsrc{margin:4px 0 0}
+.prentry{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;margin:12px 0;padding:12px 14px;border-radius:16px;border:2px solid var(--chline);background:var(--chc);color:var(--chink);text-align:left;cursor:pointer;font:inherit}
+.prentry>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px}.prentry b{font:800 15px var(--body)}
+.prei{flex:none;background:var(--chblue);color:#fff;font:400 18px/1 var(--display);border-radius:12px;padding:10px 8px}
+:root[data-look="dark"] .prei{color:#14172E}
+.prcopyopp{display:flex;align-items:center;gap:8px;margin:4px 0 8px;flex-wrap:wrap}
+@media (min-width:900px){.prsix{grid-template-columns:repeat(6,minmax(0,1fr))}.prm .spr,.prpick .spr{max-width:128px}.prband.them .prm .spr{max-width:112px}.prband.them.sm .prm .spr{max-width:72px}.prpick{min-height:150px}}
+@media (prefers-reduced-motion:reduce){.prband,.prres,.prcard{animation:none}.prbar i{transition:none}}

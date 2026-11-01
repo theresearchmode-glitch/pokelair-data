@@ -21,7 +21,7 @@ function homeSide(v) { const E = META.events; let ev = null, t = null;
     <div class="hswho"><b>${esc(t.player)}</b>${t.record ? ` <span class="vsub">${esc(t.record)}</span>` : ''}</div>
     <div class="t2">${esc(ev.name)} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>
     <div class="hsspr">${t.mons.map(m => sprite(byName.get(m.n), 'hsmon') || '').join('')}</div>
-    <div class="row"><button class="btn sm" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button><button class="linkbtn" type="button" data-view="events">All events ›</button></div>` : ''}
+    <div class="row"><button class="btn sm" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t))}<button class="linkbtn" type="button" data-view="events">All events ›</button></div>` : ''}
     ${v && v.RD ? `<button type="button" class="hsts" data-view="build"><b>${v.RD.score}%</b><span>Your team is ready for ${v.RD.score}% of the top 30 threats</span></button>` : ''}</aside>`; }
 function renderHome() { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
   const rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 4);

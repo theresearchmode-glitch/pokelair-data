@@ -417,7 +417,8 @@ for (const width of [1280, 390]) {
   const tag = await pg.evaluate(() => { const c = document.getElementById('slot0'); return c ? [...c.querySelectorAll('.asm')].map(x => x.textContent) : null; });
   ok(tag && tag.includes('assumed'), `team card: the team sheet's spread is tagged assumed (${tag})`);
   const clk = s => pg.evaluate(s => document.querySelector(s).click(), s), put = (s, v) => pg.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; }, [s, v]);
-  await clk('[data-spedit="0"]'); await put('#spv0', '40/0/0/0/0/32'); await clk('[data-spsave="0"]');
+  /* the hidden set editors are drawn in idle moments (Oct 31), so wait for this one instead of racing it (Nov) */
+  await clk('[data-spedit="0"]'); await pg.waitForSelector('#spv0', {state: 'attached', timeout: 5000}); await put('#spv0', '40/0/0/0/0/32'); await clk('[data-spsave="0"]');
   const bad = await pg.evaluate(() => (document.getElementById('spmsg0') || {}).textContent || '');
   ok(/0-32/.test(bad), `spread editor refuses a stat over 32 ("${bad}")`);
   await put('#spv0', '2/32/0/0/0/32'); await put('#spn0', 'Adamant'); await clk('[data-spsave="0"]'); await pg.waitForTimeout(200);

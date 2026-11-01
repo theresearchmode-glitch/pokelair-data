@@ -28,7 +28,7 @@ function teamSheetCard(t, ev, key, hl) {
     <div class="ttmeta"><span class="archchips">${archChips(teamPlanLabel(t.mons.map(m => m.n)))}</span></div>
     ${open ? `<div class="evsets">${t.mons.map(m => { const p = byName.get(m.n); return `<div class="evset">${sprite(p, 'evspr')}<div><b${H(p.d)}>${esc(p.d)}</b>${m.i ? ` <span class="t2">@</span> <span${H(m.i)}>${esc(m.i)}</span>` : ''}
       <div class="t2"><span${H(m.a)}>${esc(m.a)}</span>${m.nt ? ' · ' + esc(m.nt) : ''}</div><div class="evmv">${m.mv.map(x => `<span${H(x)}>${esc(x)}</span>`).join('')}</div></div></div>`; }).join('')}</div>` : ''}
-    <div class="row evbtns"><button class="btn sm" type="button" data-evload="${esc(key)}">Load team</button><button class="linkbtn" type="button" data-evsets="${esc(key)}" aria-expanded="${open}">${open ? 'Hide sets' : 'Sets'}</button><button class="linkbtn" type="button" data-evvs="${esc(key)}">Practice against</button></div></div>`; }
+    <div class="row evbtns"><button class="btn sm" type="button" data-evload="${esc(key)}">Load team</button><button class="linkbtn" type="button" data-evsets="${esc(key)}" aria-expanded="${open}">${open ? 'Hide sets' : 'Sets'}</button><button class="linkbtn" type="button" data-evvs="${esc(key)}">Practice against</button>${sdBtn('ev:' + key)}</div></div>`; }
 function evTeam(key) { const E = META.events; if (!E) return null; const [id, k] = key.split('#'); const ev = E.events.find(e => e.id === id); return ev && ev.top[+k] ? {ev, t: ev.top[+k]} : null; }
 // plain words for the data line, when it has the usual shape
 function evSourceText(x) { x = String(x || ''); const m = x.match(/Limitless \((\d+)\+ players, last (\d+) days, top (\d+)\)/), o = x.match(/official events \(top (\d+)\)/);
