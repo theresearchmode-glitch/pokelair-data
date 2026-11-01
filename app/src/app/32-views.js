@@ -12,17 +12,18 @@ Object.assign(VIEW_PARENT,{meta:'ratings',sets:'ratings',events:'ratings',arch:'
 // pages opened from inside another page: a back link to it
 const BACK={teams:['report','My team'],box:['report','My team'],coverage:['report','My team'],gauntlet:['matchup','Battle'],speed:['matchup','Battle'],calc:['matchup','Battle'],types:['matchup','Battle']};
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',report:'My team',build:'My team',auto:'Build',teams:'Saved teams',matchup:'Battle',coverage:'All suggestions',types:'Type chart',ratings:'Pokémon ratings',meta:'Usage',top:'Winning teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle',cores:'Cores',events:'Events'};
+const VIEW_TITLE={home:'Home',report:'My team',build:'My team',auto:'Build',teams:'Saved teams',matchup:'Battle',coverage:'All suggestions',types:'Type chart',ratings:'Pokémon ratings',meta:'Usage',top:'Winning teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle',cores:'Cores',events:'Events',about:'About & legal'};
 // the ⋯ menu lists every page, grouped the same way as the bottom bar
 const MENU=[['Build',[['auto','Build for me'],['cores','Build around a core']]],['My team',[['report','My team'],['coverage','All suggestions'],['teams','Saved teams'],['box','My box']]],
   ['Battle',[['matchup','Battle a team'],['gauntlet','Gauntlet'],['speed','Speed tiers'],['calc','Damage calc'],['types','Type chart']]],
-  ['Meta',[['ratings','Pokémon ratings'],['meta','Usage'],['sets','Popular sets'],['top','Winning teams'],['events','Events'],['arch','Archetypes']]]];
+  ['Meta',[['ratings','Pokémon ratings'],['meta','Usage'],['sets','Popular sets'],['top','Winning teams'],['events','Events'],['arch','Archetypes']]],['Info',[['about','About & legal']]]];
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
   const ic=d=>`<svg class="nic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
   icon.battle=icon.battle||ic('<circle cx="12" cy="13" r="7.5"/><path d="M12 13V9M10 2.8h4M18.5 6.5l1.5-1.5"/>');
   icon.cores=icon.cores||ic('<circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="16" r="4"/>');
   icon.events=icon.events||ic('<path d="M4 6h16v14H4z"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/><path d="m10 15 1.5 1.5 3-3"/>');
+  icon.about=icon.about||ic('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.4"/>');
   const def='<svg class="nic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>';
   const btn=(v,t)=>`<button type="button" role="tab" data-view="${v}" aria-selected="false">${icon[v]||def}<span class="nl">${t}</span>${v==='report'?'<span class="tc" id="tabCount"></span>':''}</button>`;
   icon.report=icon.report||icon.build;icon.build=ic('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>');
@@ -97,6 +98,7 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   if(v==='cores')safe('cores',renderCores);
   if(v==='events')safe('events',renderEvents);
   if(v==='top')safe('team search',renderTeamSearch);
+  if(v==='about')safe('about',renderAbout);
   if(scroll!==false){try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}}}
 // Tab stays inside an open sheet or editor (they're modal), wrapping from the last control to the first (sweep, Oct 31)
 document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const o=overlayOpen();if(!o||o==='side'||o==='jump')return;const box=$(o);if(!box)return;
