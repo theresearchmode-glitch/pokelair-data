@@ -141,6 +141,10 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
   // load speed (Nov 1): this pass is ~120 full team calcs (long tasks on a phone); while the data is still arriving every new piece
   // would restart it, so it waits until the pieces have stopped for 1.5 s, then runs once
   {const q=performance.now()-META_AT;if(META_AT&&q<1500){clearTimeout(ckWinRefresh.t);ckWinRefresh.t=setTimeout(()=>safe('checklist claims',ckWinRefresh),1550-q);return}}const key=E.updated+'|'+E.events.length+'|'+metaVersion+'|'+megaGoal()+'|'+modelOK();if(ckWin.key===key||ckWin.busy)return;
+  // the same data as last visit (every document's date, the events list, the Mega setting): reuse the numbers saved then
+  // instead of the ~120-team pass (load speed, Nov 1). New data has new dates, so it's measured again.
+  const skey=JSON.stringify([Object.keys(DATA_AT).sort().map(k=>k+DATA_AT[k]),E.events.length,(E.events[0]||{}).id||'',(E.events[E.events.length-1]||{}).id||'',megaGoal(),modelOK()]);
+  {const c=LS.get('np.ckwin',null);if(c&&c.k===skey&&c.v&&c.v.rates){ckWin=Object.assign({},c.v,{key,busy:false,track:ckWin.track||null});safe('checklist claims',()=>bgRender());return}}
   const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
   ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0;
   const step=()=>{const t0=Date.now();try{while(i<list.length&&Date.now()-t0<12){const t=list[i++];
@@ -150,5 +154,5 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
       const CK=proChecks(ms,true);if(!CK)continue;n++;if(CK.PG&&isFinite(CK.PG.se2))se2s.push(CK.PG.se2);for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
     catch(e){ckWin.busy=false;return}
     if(i<list.length){setTimeout(step,30);return}
-    wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,wq75:wts.length>=20?wts[Math.floor(wts.length*.75)]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};safe('checklist claims',()=>bgRender())};
+    wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,wq75:wts.length>=20?wts[Math.floor(wts.length*.75)]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};try{LS.set('np.ckwin',{k:skey,v:{rates:ckWin.rates,two:ckWin.two,wmed:ckWin.wmed,wq75:ckWin.wq75,se2med:ckWin.se2med}})}catch(e){}safe('checklist claims',()=>bgRender())};
   setTimeout(step,400)}
