@@ -8,7 +8,7 @@ S.format='doubles'; // NastyPlot is doubles only. Teams saved under the retired 
 // "fresh take" searches turn it on, through withOffMeta(); it is never a user setting.
 let OFFMETA=false;
 // META.singles stays: popular-set lookups fall back to singles data when doubles has none (setFor(p,OTHER())).
-const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null,events:null};
+const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null,events:null,weekly:null,calendar:null};
 // meta/perf: raw outside performance tables from the daily refresh; anything malformed is dropped and the built-in snapshot is used
 function cleanPerf(v){if(!v||typeof v!=='object')return null;const okRows=x=>Array.isArray(x)&&x.length<=600;const t=v.tour;if(!t||!okRows(t.rows)||t.rows.length<20)return null;return v}
 const SRC={ingame:'doubles_ingame',tour:'doubles_tour',ladder:'doubles'};

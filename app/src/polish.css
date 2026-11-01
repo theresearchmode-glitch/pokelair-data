@@ -615,3 +615,77 @@ button.chring{background:none;cursor:pointer;padding:0}
 .prcopyopp{display:flex;align-items:center;gap:8px;margin:4px 0 8px;flex-wrap:wrap}
 @media (min-width:900px){.prsix{grid-template-columns:repeat(6,minmax(0,1fr))}.prm .spr,.prpick .spr{max-width:128px}.prband.them .prm .spr{max-width:112px}.prband.them.sm .prm .spr{max-width:72px}.prpick{min-height:150px}}
 @media (prefers-reduced-motion:reduce){.prband,.prres,.prcard{animation:none}.prbar i{transition:none}}
+/* ---- This week + Next events (Nov) ---- */
+/* falling is indigo, not red (red is for opponents); rising is the site's green. The older trend arrows (Home's "What changed
+   this week", the usage list) used red for falling and take the same indigo. */
+:root:not(#_ch){--np-rise:#1E8E4E;--np-rise-soft:#DDF1E3;--np-fall:#4A5BF0;--np-fall-soft:#E3E6FD}
+:root[data-look="dark"]:not(#_ch){--np-rise:#3DBE78;--np-rise-soft:rgba(61,190,120,.16);--np-fall:#8C9BFF;--np-fall-soft:rgba(140,155,255,.18)}
+.trow .tr.down,.trend.down{color:var(--np-fall)!important}
+.wkhead{display:flex;flex-direction:column;gap:6px;margin:-4px 0 10px}
+.wkhead .chpgs{margin:0}
+.wkshare{max-width:420px}
+.wkcard,.calbox{border:2px solid var(--chline);border-radius:14px;background:var(--chc);padding:12px 12px 10px;margin:10px 0}
+.wkt{font:400 24px/1.1 var(--display);color:var(--chink);margin:0 0 6px;letter-spacing:.01em}
+.wkcap{margin:2px 0 8px}
+.wknone{margin:4px 0;color:var(--chink2);font-size:14px}
+.wkcols{display:grid;grid-template-columns:1fr;gap:4px 14px}
+@media (min-width:700px){.wkcols{grid-template-columns:1fr 1fr}}
+.wkh{font:700 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;margin:6px 0 2px}
+.wkh.up{color:var(--np-rise)}.wkh.dn{color:var(--np-fall)}
+.wkrow{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:4px 6px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--chink);text-align:left;cursor:pointer;font:inherit}
+.wkrow:last-child{border-bottom:0}
+.spr.wkspr{width:44px;height:44px;flex:none;margin:-4px 0;object-fit:contain}
+.wkn{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.wkn>b{font:800 15px/1.2 var(--body);overflow-wrap:anywhere}
+.wkn>b i{font-style:normal;color:var(--chink2);font-weight:700}
+.wkn>span{font:400 13px/1.3 var(--body);color:var(--chink2)}
+.wkn>span b{color:var(--chink)}
+.wkar{flex:none;min-width:48px;text-align:center;font:400 20px/1 var(--display);padding:6px 8px;border-radius:999px}
+.wkar.up{color:var(--np-rise);background:var(--np-rise-soft)}.wkar.dn{color:var(--np-fall);background:var(--np-fall-soft)}
+.wktop{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px}
+.wktm .spr.wkspr{width:36px;height:36px;margin:0}
+.wktm{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:44px;padding:4px 2px;border:0;border-radius:10px;background:var(--card2);color:var(--chink);cursor:pointer;font:inherit;min-width:0}
+.wktm b{font:400 17px/1 var(--display)}
+.wktm span{font:600 10.5px/1.2 var(--body);color:var(--chink2);max-width:100%;text-align:center;overflow-wrap:anywhere;hyphens:none}
+.wkstyles{display:flex;flex-wrap:wrap;gap:6px}
+.wkst{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--card2);color:var(--chink);font:600 13px var(--body);border:1.5px solid transparent}
+.wkst b{font-weight:800}.wkst i{font-style:normal;font-weight:800}
+.wkst.up{background:var(--np-rise-soft);border-color:var(--np-rise)}.wkst.up i{color:var(--np-rise)}
+.wkst.dn{background:var(--np-fall-soft);border-color:var(--np-fall)}.wkst.dn i{color:var(--np-fall)}
+.wkst .spr.wkspr{width:28px;height:28px;margin:-6px 0}
+.wkev{display:flex;flex-direction:column;gap:3px;width:100%;padding:8px 4px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--chink);text-align:left;cursor:pointer;font:inherit}
+.wkev:last-child{border-bottom:0}
+.wkevt{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.wkevt b{font:800 15px/1.2 var(--body)}
+.wksix{display:grid;grid-template-columns:repeat(6,1fr);max-width:330px}
+.wksix .spr.wkspr{width:100%;height:auto;max-width:52px;margin:0}
+.wkfresh{display:grid;grid-template-columns:1fr;gap:2px}
+@media (min-width:700px){.wkfresh{grid-template-columns:1fr 1fr}}
+.wkfr{display:flex;align-items:center;gap:8px;min-height:48px;padding:2px 4px;border:0;background:none;color:var(--chink);text-align:left;cursor:pointer;font:inherit}
+.wkfr>span{display:flex;flex-direction:column;min-width:0}.wkfr b{font:800 14px/1.2 var(--body)}.wkfr>span>span{font:400 12.5px/1.3 var(--body);color:var(--chink2);overflow-wrap:anywhere}
+.wkfoot{margin:6px 0 4px;font-size:13px;color:var(--chink2)}.wkfoot summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-weight:700;color:var(--chink)}
+.wkfoot p{margin:0 0 8px;line-height:1.45}
+.wkteaser,.calchip{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;margin:10px 0;padding:12px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);color:var(--chink);text-align:left;cursor:pointer;font:inherit}
+.wkteb{display:flex;flex-wrap:wrap;gap:6px}
+.calchip{flex-direction:row;align-items:center;flex-wrap:wrap}.calchip b{flex:1;font:800 15px var(--body)}
+/* Next events */
+.calhd{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.calrow{display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 0;border-bottom:1px solid var(--line);color:inherit;text-decoration:none}
+a.calrow:hover .calmain b{text-decoration:underline}
+.calday{flex:none;width:46px;height:50px;border-radius:10px;background:var(--chblue);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.calday b{font:400 22px/1 var(--display)}.calday span{font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.calrow.international .calday,.calrow.worlds .calday{background:#7B3FE4}
+.calrow.online .calday{background:#0E8F8A}
+.calmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.calmain b{font:800 15px/1.2 var(--body);color:var(--chink)}
+.calmain span{font:400 13px/1.3 var(--body);color:var(--chink2)}.caltype{font-style:normal;font-weight:700}
+.calcd{flex:none;font:700 11.5px var(--mono);padding:5px 8px;border-radius:999px;background:var(--card2);color:var(--chink);white-space:nowrap}
+.calcd.soon{background:var(--np-rise-soft);color:var(--np-rise)}
+.calcd.live{background:var(--np-rise);color:#fff}
+.callink{flex:none;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:999px;border:2px solid var(--chline);color:var(--chink);text-decoration:none;font-weight:800}
+.calbox .calmore,.calbox .calpast .linkbtn{margin:0!important;padding:0 2px!important;min-height:40px;display:inline-flex;align-items:center}
+.calbox .calmore{margin-top:4px!important}
+.calpast{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin-top:4px}
+.calpast .linkbtn{min-height:40px}
+.calsrc{margin:8px 0 0}.calsrc a{color:var(--chpen)}
+:root[data-look="dark"] .calrow.international .calday,:root[data-look="dark"] .calrow.worlds .calday{background:#9B6BFF;color:#1A1918}
+:root[data-look="dark"] .calday{color:#1A1918}
+:root[data-look="dark"] .calrow.online .calday{background:#3CC7C0}

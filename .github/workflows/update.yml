@@ -28,6 +28,10 @@ jobs:
       # - run: node rk9.mjs || echo "::warning::rk9 skipped"
       # - run: node rk9-field.mjs || echo "::warning::rk9 whole field skipped"
       - run: node events.mjs || echo "::warning::events skipped"
+      # this week vs last week from the team sheets already on disk (out/weekly.json; no network)
+      - run: node weekly.mjs || echo "::warning::weekly digest skipped"
+      # upcoming official VGC events from Victory Road's season calendar (out/calendar.json; keeps yesterday's file on failure)
+      - run: node calendar.mjs || echo "::warning::calendar skipped"
       - run: node model.mjs || echo "::warning::model skipped"
       - run: node ladder.mjs || echo "::warning::ladder stats skipped"
       # other sites' numbers: Pokémon Zone, Showdowntier, Pikalytics, project-red-data (rating inputs, tier lists, cross-check)
