@@ -423,6 +423,9 @@ button.chring{background:none;cursor:pointer;padding:0}
 .chleg i.g-part,.chdots i.g-part,.chcr .cc.trade{color:#2a1c00}
 .chleg i.g-none,.chdots i.g-none,.chcr .cc.none{color:var(--chink2)}
 .chcr .cc{display:grid;place-items:center;font:900 15px/1 var(--body);color:#fff}
+/* threat tiles (scouting sheet, the next 20): the two that need a plan carry ✗ (unanswered) or ~ (shaky) in the corner */
+.chtile.l0::after,.chtile.l1::after{position:absolute;top:1px;right:1px;min-width:11px;height:11px;border-radius:3px;display:grid;place-items:center;font:900 8px/1 var(--body);pointer-events:none}
+.chtile.l0::after{content:"✗";background:var(--chbad);color:#fff}.chtile.l1::after{content:"~";background:var(--chshaky);color:#2a1c00}
 /* your battle record on Home: W / L inside each dot */
 .hdots{align-items:center}.hdots i{width:16px;height:16px;display:inline-grid;place-items:center;font:800 9px/1 var(--mono);font-style:normal;color:#fff}
 /* damage tables: a KO / 2HKO tag on top of the colour; ? = only the top rolls do it */
