@@ -415,3 +415,26 @@ button.chring{background:none;cursor:pointer;padding:0}
 
 /* vibrant chips: the colour as it is, text picks dark or white for itself (Oct 31) */
 :root:not(#_ch) .archchip.grad{background-image:var(--acg)!important}
+
+/* colour is never the only signal (colour-blind check, Nov 1): every colour code also carries a shape or a word */
+/* legend swatches and grid cells: ✓ answers · ~ partial · ✗ loses · – nothing direct */
+.chleg i[class^="g-"],.chdots i[class^="g-"]{display:inline-grid;place-items:center;min-width:13px;width:auto;height:13px;padding:0 1px;box-sizing:border-box;font:900 9px/1 var(--body);font-style:normal;color:#fff;letter-spacing:-.5px;vertical-align:-2px}
+.chdots i[class^="g-"]{border-radius:50%;width:15px;height:15px;font-size:10px}
+.chleg i.g-part,.chdots i.g-part,.chcr .cc.trade{color:#2a1c00}
+.chleg i.g-none,.chdots i.g-none,.chcr .cc.none{color:var(--chink2)}
+.chcr .cc{display:grid;place-items:center;font:900 15px/1 var(--body);color:#fff}
+/* your battle record on Home: W / L inside each dot */
+.hdots{align-items:center}.hdots i{width:16px;height:16px;display:inline-grid;place-items:center;font:800 9px/1 var(--mono);font-style:normal;color:#fff}
+/* damage tables: a KO / 2HKO tag on top of the colour; ? = only the top rolls do it */
+#dcOut .dctab td,.dctab td,.bo,.bd{position:relative}
+.dctab td:is(.k1,.k1m,.k2,.k2m)::after,:is(.bo,.bd):is(.k1,.k1m,.k2,.k2m)::after{position:absolute;top:2px;right:2px;font:800 7.5px/1 var(--mono);letter-spacing:0;padding:1.5px 2.5px;border-radius:3px;pointer-events:none;color:#fff;background:var(--chok,#1E8E4E)}
+.dctab td.k1::after,:is(.bo,.bd).k1::after{content:"KO"}
+.dctab td.k1m::after,:is(.bo,.bd).k1m::after{content:"KO?"}
+.dctab td.k2::after,:is(.bo,.bd).k2::after{content:"2HKO";background:var(--chshaky,#C98A00);color:#2a1c00}
+.dctab td.k2m::after,:is(.bo,.bd).k2m::after{content:"2HKO?";background:var(--chshaky,#C98A00);color:#2a1c00}
+.bd:is(.k1,.k1m)::after{background:var(--chbad,#E8364F)}
+/* the battle grid's cells are narrow: the tag sits in a strip above the number instead of over it */
+:is(.bo,.bd):is(.k1,.k1m,.k2,.k2m){padding-top:11px}
+:is(.bo,.bd):is(.k1,.k1m,.k2,.k2m)::after{top:2px;right:auto;left:50%;transform:translateX(-50%)}
+.bmleg :is(.bo,.bd){padding-top:2px}.bmleg :is(.bo,.bd)::after{transform:none}
+.bmleg :is(.bo,.bd)::after{position:static;display:inline-block;margin-left:3px;vertical-align:1px}

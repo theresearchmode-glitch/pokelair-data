@@ -105,7 +105,7 @@ function renderBattle() {
     const dmgCard = `<div class="plan bmcard bmdmg" data-t="dmg"><div class="ph"><span class="pt">Damage both ways</span></div>
       <div class="seg segwrap" role="group" aria-label="Weather">${wseg}</div>
       <div class="seg segwrap" role="group" aria-label="Intimidate"><button type="button" data-bmi="intMe" aria-pressed="${bmUi.intMe}">You're Intimidated</button><button type="button" data-bmi="intThem" aria-pressed="${bmUi.intThem}">They're Intimidated</button></div>
-      ${grid}<p class="t2 bmleg" style="margin:0"><span class="bo k2">%</span> your best hit on them · <span class="bd k2">%</span> their best hit on you. Max roll, % of HP, each side's usual set. Green = can KO, gold = 2 hits; on their side, red and pink cells mean they can do the same to you.</p></div>`;
+      ${grid}<p class="t2 bmleg" style="margin:0"><span class="bo k2">%</span> your best hit on them · <span class="bd k2">%</span> their best hit on you. Max roll, % of HP, each side's usual set. Green or KO = can KO, gold or 2HKO = 2 hits (? = only the top rolls); on their side, red and pink cells mean they can do the same to you.</p></div>`;
     let t1 = ''; if (dbl) { try { t1 = turnOnePlan(mine, theirs, r); } catch (e) {} }
     body = `<div class="seg bmtabs" role="group" aria-label="Show">${[['plan', 'Plan'], ['speed', 'Speed'], ['dmg', 'Damage']].map(([k, t]) => `<button type="button" data-bmt="${k}" aria-pressed="${bmUi.tab === k}">${t}</button>`).join('')}</div><div class="bmgrid" data-tab="${bmUi.tab}">${bring}${watch}${speed}${t1 ? `<div class="bmt1" data-t="plan">${t1}</div>` : ''}${dmgCard}</div>`; }
   el.innerHTML = top + body;

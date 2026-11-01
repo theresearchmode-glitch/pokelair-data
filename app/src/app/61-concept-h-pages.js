@@ -201,12 +201,13 @@ CH.wrap('renderGuides', () => CH.pagehead($('guides'), 'Archetypes · the team s
 // My box: the first 30, the rest one tap away
 CH.wrap('renderBox', () => CH.more($('boxList'), ':scope > .boxchip', PHONE() ? 24 : 40, 'box', 'in your box'));
 // Home: your six (columns) against the top 12 threats by top-cut share (rows, worst first)
-CH.LVC = {win: ['var(--chok)', 'answers it'], trade: ['var(--chshaky)', 'partial answer'], lose: ['var(--chbad)', 'loses 1-on-1'], none: ['var(--line2)', 'no direct matchup']};
+// colour plus a shape (colour-blind check, Nov 1): ✓ answers, ~ partial, ✗ loses, – nothing direct
+CH.LVC = {win: ['var(--chok)', 'answers it', '✓', 'ok'], trade: ['var(--chshaky)', 'partial answer', '~', 'part'], lose: ['var(--chbad)', 'loses 1-on-1', '✗', 'bad'], none: ['var(--line2)', 'no direct matchup', '–', 'none']};
 CH.cellOf = (r, m) => { const n = m.p.n, has = a => (a || []).some(x => x.m && x.m.n === n); return has(r.solid) ? 'win' : has(r.soft) ? 'trade' : has(r.losers) ? 'lose' : 'none'; };
 CH.chart = (RD, ms, k = 12) => { if (!RD || !ms.length) return ''; const rows = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, k).sort((a, b) => a.level - b.level || b.t.w - a.t.w);
   return `<div class="chchart" role="table" aria-label="Your six against the top ${k} threats"><div class="chcr chch" role="row"><span role="columnheader"></span>${ms.map(m => `<span role="columnheader" title="${esc(m.d)}">${sprite(m.p) || esc(m.d.slice(0, 3))}</span>`).join('')}</div>
-    ${rows.map(r => `<button type="button" class="chcr" role="row" data-chhthr="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="th l${r.level}" role="rowheader">${sprite(byName.get(r.t.n)) || ''}<i>${esc(r.t.d)}</i></span>${ms.map(m => { const c = CH.cellOf(r, m); return `<span role="cell" class="cc ${c}" title="${esc(m.d)} vs ${esc(r.t.d)}: ${CH.LVC[c][1]}"></span>`; }).join('')}</button>`).join('')}</div>
-    <div class="chleg">${Object.entries(CH.LVC).map(([, [c, t]]) => `<span><i style="background:${c}"></i>${t}</span>`).join('')}</div><p class="t2" style="margin:2px 0 0">Rows are the top ${k} threats by top-cut share, worst first. Tap one for the full matchup.</p>`; };
+    ${rows.map(r => `<button type="button" class="chcr" role="row" data-chhthr="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="th l${r.level}" role="rowheader">${sprite(byName.get(r.t.n)) || ''}<i>${esc(r.t.d)}</i></span>${ms.map(m => { const c = CH.cellOf(r, m); return `<span role="cell" class="cc ${c}" title="${esc(m.d)} vs ${esc(r.t.d)}: ${CH.LVC[c][1]}" aria-label="${esc(m.d)}: ${CH.LVC[c][1]}">${CH.LVC[c][2]}</span>`; }).join('')}</button>`).join('')}</div>
+    <div class="chleg">${Object.entries(CH.LVC).map(([, [c, t, g, k]]) => `<span><i class="g-${k}" style="background:${c}" aria-hidden="true">${g}</i>${t}</span>`).join('')}</div><p class="t2" style="margin:2px 0 0">Rows are the top ${k} threats by top-cut share, worst first. Tap one for the full matchup.</p>`; };
 // Share card in Concept H (light and Warm charcoal)
 CH.shareMode = null;
 buildShareCard = async function () { const ms = members(); if (!ms.length) return null;
