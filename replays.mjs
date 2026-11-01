@@ -4,7 +4,9 @@
 // Writes out/replays.json (newest 20,000 games kept). Polite: one request at a time with a pause, capped per run.
 // If the replay server is down the step just stops and the existing file stays (the workflow treats it as optional).
 import fs from 'node:fs';
-export const FMT = 'gen9championsvgc2026regmc';
+import {activeReg} from './formats.mjs';
+// the active regulation's Showdown format (formats.mjs); Reg M-C is gen9championsvgc2026regmc
+export const FMT = activeReg().sd;
 const BASE = 'https://replay.pokemonshowdown.com', KEEP = 20000, MAX_NEW = +(process.env.MAX_REPLAYS || 600), PAUSE = 350;
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
@@ -50,7 +52,10 @@ function save(prev, fresh) {
   fs.writeFileSync('out/replays.json', JSON.stringify({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games}));
   return games.length; }
 async function main() {
-  const prev = readJSON('out/replays.json', {games: []}), seen = new Set(prev.games.map(g => g.id)), fresh = [];
+  const prev = readJSON('out/replays.json', {games: []});
+  // a different regulation's games are never kept alongside this one's: after a switch the file starts over
+  if (prev.format && prev.format !== FMT) { console.log(`replays: regulation changed (${prev.format} → ${FMT}); starting a new file`); prev.games = []; }
+  const seen = new Set(prev.games.map(g => g.id)), fresh = [];
   let before = '', pages = 0, skipped = 0;
   // newest first; stop at replays we already have, or the per-run cap
   outer: while (fresh.length < MAX_NEW && pages < MAX_PAGES) {

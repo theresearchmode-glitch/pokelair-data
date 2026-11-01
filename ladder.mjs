@@ -1,13 +1,17 @@
 // Monthly Showdown ladder stats (step 5): Smogon's usage stats for Champions VGC Reg M-C, 1630+ ladder.
 // Builds out/meta_ladder.json in the same shape as meta_tour.json (plus checks & counters), only when a new month is out.
 import fs from 'node:fs'; import vm from 'node:vm';
-const FMT = 'gen9championsvgc2026regmc', CUT = 1630, BASE = 'https://www.smogon.com/stats/';
+import {activeReg} from './formats.mjs';
+const FMT = activeReg().sd, CUT = 1630, BASE = 'https://www.smogon.com/stats/';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const prev = readJSON('out/meta_ladder.json', null);
 const months = [...(await (await fetch(BASE)).text()).matchAll(/href="(\d{4}-\d{2})\/"/g)].map(m => m[1]).sort().reverse();
 let month = null, data = null;
-for (const m of months.slice(0, 3)) { const r = await fetch(`${BASE}${m}/chaos/${FMT}-${CUT}.json`); if (r.ok) { month = m; if (prev && prev.month === m && prev.usage1760 && !process.env.FORCE) break; data = await r.json(); break; } }
-if (!month) { console.log('ladder: no stats found'); process.exit(0); }
+for (const m of months.slice(0, 3)) { const r = await fetch(`${BASE}${m}/chaos/${FMT}-${CUT}.json`); if (r.ok) { month = m; if (prev && prev.month === m && prev.usage1760 && String(prev.source || '').includes(FMT) && !process.env.FORCE) break; data = await r.json(); break; } }
+if (!month) { console.log('ladder: no stats found');
+  // last regulation's ladder stats are never shown as this one's (formats.mjs): an empty list until Smogon has the new format
+  if (prev && !String(prev.source || '').includes(FMT)) { fs.writeFileSync('out/meta_ladder.json', JSON.stringify({format: 'doubles', kind: 'ladder', month: null, source: `Showdown ladder (no ${FMT} stats yet)`, period: '', battles: 0, updated: new Date().toISOString(), note: 'Smogon publishes monthly; the new regulation shows here after its first month.', top: [], more: []})); console.log('ladder: regulation changed; cleared the old ladder stats'); }
+  process.exit(0); }
 if (!data) { console.log(`ladder: ${month} already built`); process.exit(0); }
 // Showdown ids -> names
 const sd = async (f, key) => { const t = await (await fetch('https://play.pokemonshowdown.com/data/' + f)).text(); const ctx = {exports: {}}; vm.runInNewContext(t, ctx); return ctx.exports[key]; };

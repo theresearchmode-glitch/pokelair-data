@@ -3,7 +3,8 @@
 // in data/rk9/, writes out/official.json, and puts each event's top 8 at the front of out/teams.json.
 // (rk9-field.mjs then reads every Masters team and every match of the same events for the ratings' official-events row.)
 import fs from 'node:fs';
-import {get, readJSON, parseTeam, parseRoster, validItem, bad, REG_START} from './rk9-lib.mjs';
+import {get, readJSON, parseTeam, parseRoster, validItem, bad, REG_START, REG_ACTIVE} from './rk9-lib.mjs';
+import {inRegWindow} from './formats.mjs';
 const TOP = +(process.env.RK9_TOP || 64);
 fs.mkdirSync('data/rk9', {recursive: true});
 // a cached event parsed by the old reader (a label stored as an item) is fetched again
@@ -23,7 +24,9 @@ for (const slug of slugs) { if (index.events[slug] && index.events[slug].done &&
       if (!first.date || first.mons.length !== 6) continue;  // TCG and GO lists have no Pokémon sets
       found = {rid, players, first}; break; }
     if (!found) { index.events[slug] = {name, done: false, note: 'no VGC team lists yet'}; continue; }
-    if (found.first.date < REG_START) { index.events[slug] = {name, done: true, skip: 'before Reg M-C'}; continue; }
+    if (found.first.date < REG_START) { index.events[slug] = {name, done: true, skip: 'before ' + REG_ACTIVE.name}; continue; }
+    // played under a newer regulation that isn't active yet: not counted, and looked at again once it is
+    if (REG_ACTIVE.end && found.first.date >= REG_ACTIVE.end) { index.events[slug] = {name, date: found.first.date, done: false, note: 'newer regulation'}; continue; }
     const teams = [];
     for (const p of found.players.slice(0, TOP)) { const T = p === found.players[0] ? found.first : parseTeam(await get(p.tl));
       if (T.mons.length === 6) teams.push({player: `${p.first} ${p.last}`.trim(), country: p.country, st: p.st, mons: T.mons}); }
@@ -33,7 +36,7 @@ for (const slug of slugs) { if (index.events[slug] && index.events[slug].done &&
   } catch (err) { console.log('rk9 skip', slug, err.message); } }
 fs.writeFileSync('data/rk9/index.json', JSON.stringify(index));
 // 2) outputs
-const evs = Object.keys(index.events).filter(s => index.events[s].done && !index.events[s].skip).map(s => readJSON(`data/rk9/${s}.json`, null)).filter(Boolean).sort((a, b) => b.date < a.date ? -1 : 1);
+const evs = Object.keys(index.events).filter(s => index.events[s].done && !index.events[s].skip && inRegWindow(index.events[s].date, REG_ACTIVE)).map(s => readJSON(`data/rk9/${s}.json`, null)).filter(Boolean).sort((a, b) => b.date < a.date ? -1 : 1);
 const miss = new Set(); evs.forEach(e => e.teams.forEach(t => t.mons.forEach(m => { if (!m.n) miss.add(m.sp); })));
 fs.writeFileSync('out/official.json', JSON.stringify({updated: new Date().toISOString(), source: 'RK9 open team sheets · official VGC events (Masters top ' + TOP + ')',
   events: evs.map(e => ({name: e.name, date: e.date, players: e.players, teams: e.teams.map(t => ({player: t.player, st: t.st, mons: t.mons.map(m => ({n: m.n || m.sp, i: validItem(m.i), a: m.a, nt: m.nt, mv: m.mv}))}))}))}));

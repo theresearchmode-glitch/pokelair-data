@@ -1,7 +1,10 @@
 // Shared RK9 helpers for rk9.mjs (top 64 open team sheets) and rk9-field.mjs (every Masters team + every match).
 // Paths are relative to the working folder, so a dry run can run these scripts from a scratch copy of out/ and data/.
 import fs from 'node:fs';
-export const SITE = 'https://www.rk9.gg', REG_START = '2026-09-01';
+import {activeReg} from './formats.mjs';
+// official events count only inside the active regulation's window (formats.mjs): from the day it started to the day a newer one started
+export const REG_ACTIVE = activeReg();
+export const SITE = 'https://www.rk9.gg', REG_START = REG_ACTIVE.since;
 const GAP = +(process.env.RK9_GAP || 1200);
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 export const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };

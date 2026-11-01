@@ -6,11 +6,12 @@
 // (RK9_FIELD_MAX per run, default 1500, about 30 minutes at RK9's pace); a big backlog finishes over the next runs.
 // The top 64 already read by rk9.mjs are reused. Only events with 95%+ of their team lists read are counted.
 import fs from 'node:fs';
-import {get, readJSON, text, dec, parseTeam, parseRoster, pkey, callCount} from './rk9-lib.mjs';
+import {get, readJSON, text, dec, parseTeam, parseRoster, pkey, callCount, REG_ACTIVE} from './rk9-lib.mjs';
+import {inRegWindow} from './formats.mjs';
 const MAX = +(process.env.RK9_FIELD_MAX || 1500), MIN_COVER = .95;
 fs.mkdirSync('data/rk9/field', {recursive: true});
 const index = readJSON('data/rk9/index.json', {events: {}});
-const slugs = Object.keys(index.events).filter(s => index.events[s].done && !index.events[s].skip).sort((a, b) => (index.events[b].date || '') < (index.events[a].date || '') ? -1 : 1);
+const slugs = Object.keys(index.events).filter(s => index.events[s].done && !index.events[s].skip && inRegWindow(index.events[s].date, REG_ACTIVE)).sort((a, b) => (index.events[b].date || '') < (index.events[a].date || '') ? -1 : 1);
 let fetched = 0;
 const save = (f, F) => fs.writeFileSync(f, JSON.stringify(F));
 // the VGC roster of an event: the one whose team lists hold six Pokémon (TCG and GO rosters are skipped)
