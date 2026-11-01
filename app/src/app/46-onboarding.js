@@ -15,7 +15,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   e.preventDefault(); e.stopPropagation(); const open = $('tipPop'); if (open && open.dataset.k === b.dataset.tip) { closeTip(); return; } closeTip();
   const [t, d] = TIPS[b.dataset.tip] || []; if (!t) return;
   const p = document.createElement('div'); p.id = 'tipPop'; p.className = 'tippop'; p.dataset.k = b.dataset.tip; p.setAttribute('role', 'dialog');
-  p.innerHTML = `<b>${esc(t)}</b><p>${esc(d)}</p>`; document.body.appendChild(p);
+  p.innerHTML = `<b>${esc(t)}</b><p>${esc(d)}</p>${typeof methodTipLink === 'function' ? methodTipLink(b.dataset.tip) : ''}`; document.body.appendChild(p);
   const r = b.getBoundingClientRect(), w = Math.min(300, innerWidth - 24); p.style.width = w + 'px';
   const left = Math.max(12, Math.min(innerWidth - w - 12, r.left + r.width / 2 - w / 2)); p.style.left = left + 'px';
   const below = r.bottom + 8 + p.offsetHeight < innerHeight - 90; p.style.top = (below ? r.bottom + 8 : Math.max(12, r.top - 8 - p.offsetHeight)) + scrollY + 'px'; }, true);

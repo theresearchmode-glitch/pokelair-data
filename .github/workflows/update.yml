@@ -37,6 +37,8 @@ jobs:
       - run: node crosscheck.mjs || echo "::warning::crosscheck skipped"
       - run: node ratings-snapshot.mjs || echo "::warning::ratings snapshot skipped"
       - run: node scoreboard.mjs || echo "::warning::scoreboard skipped"
+      # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
+      - run: node track.mjs || echo "::warning::track record skipped"
       - name: Commit
         run: |
           git config user.name "pokelair-bot"
