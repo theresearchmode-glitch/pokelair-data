@@ -7,11 +7,12 @@
 //   prd     project-red-data (GitHub): top 10% of public Showdown replays, last 30 days. Usage, items, moves
 import fs from 'node:fs';
 import {mapMon, ROSTER, dec, text} from './rk9-lib.mjs';
-const UA = {'User-Agent': 'Mozilla/5.0 (pokelair-data; personal team-builder stats)'};
+import {UA as NP_UA, politeFetch} from './http.mjs';
+const UA = {'User-Agent': NP_UA};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let calls = 0;
 async function get(url, opt = {}) { if (calls++) await sleep(1500);
-  for (let k = 0; k < 3; k++) { const r = await fetch(url, {headers: {...UA, ...(opt.headers || {})}, redirect: opt.redirect || 'follow'});
+  for (let k = 0; k < 3; k++) { const r = await politeFetch(url, {headers: {...UA, ...(opt.headers || {})}, redirect: opt.redirect || 'follow'});
     if (opt.raw) return r; if (r.ok) return r.text(); if (r.status === 429 || r.status >= 500) { await sleep(15000); continue; } throw new Error(url + ' ' + r.status); }
   throw new Error(url + ' failed'); }
 // any site's name -> our roster name: Showdown ids ("Indeedee-F", "Rotom-Wash"), Pokémon Zone / RK9 ("Arcanine [Hisuian Form]"),

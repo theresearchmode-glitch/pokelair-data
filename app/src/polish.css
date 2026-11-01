@@ -767,3 +767,39 @@ a.calrow:hover .calmain b{text-decoration:underline}
 .btn.qlloss{background:var(--chink);border-color:var(--chink);color:var(--chc)}
 :root[data-look="dark"] .btn.qlwin{color:#0B1020}
 .svrec{flex-basis:100%;display:flex;align-items:baseline;gap:6px;font-size:14px}.svrec .chk{font-size:11px}
+/* ---------- About & legal page, footer links, "check the official rules" captions (Nov 1) ---------- */
+.regnote{margin:8px 0 0;font:italic 500 11.5px/1.4 var(--body);color:var(--faint)}
+.plan .regnote,.verdict .regnote{margin-top:10px}
+.legal .lglinks{display:flex;flex-wrap:wrap;align-items:center;gap:0 2px;color:var(--faint)}
+.legal .lglinks .linkbtn{min-height:40px;padding:0 4px;font-size:12.5px}
+.legal .lglinks .linkbtn:first-child{padding-left:0}
+.abt{--abv:#7B4FD6}
+:root[data-look="dark"] .abt{--abv:#9C7BFF}
+.abthero{position:relative;overflow:hidden;color:#fff;background-color:var(--chblue);background-image:linear-gradient(118deg,transparent 64%,rgba(255,255,255,.14) 64% 72%,transparent 72% 78%,rgba(255,255,255,.1) 78% 82%,transparent 82%);border:2px solid var(--chline);border-radius:16px;padding:16px 18px 16px}
+:root[data-look="dark"] .abthero{background-color:#1E8FE8;border-color:#3A6E9C}
+.abthero .chk{color:#fff!important;opacity:.95}
+.abthero h2{margin:6px 0 8px;font-size:30px;color:#fff;text-shadow:none!important}
+.abthero p{margin:0;max-width:52ch;font:600 14.5px/1.45 var(--body)}
+.abtchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.abtchips span{padding:5px 10px;border-radius:999px;border:1.5px solid rgba(255,255,255,.85);font:700 11px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.1)}
+.abt .abtsec>summary{gap:10px}
+.abtic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;color:#fff}
+.abtic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.abtic.b{background:var(--chblue)}.abtic.g{background:var(--chok)}.abtic.m{background:var(--chmid)}.abtic.v{background:var(--abv)}
+.abt .abtsec .cht{font-size:19px}
+.abtbody p{margin:0 0 10px;font-size:14.5px;line-height:1.55;max-width:70ch}
+.abtbody a{color:var(--accent);font-weight:700}
+.abth{margin:16px 0 6px;font:400 17px/1 var(--display);text-transform:uppercase;letter-spacing:.01em}
+.abtsrcs{list-style:none;margin:6px 0 4px;padding:0;display:grid;grid-template-columns:1fr;gap:8px}
+.abtsrc{padding:10px 12px;border:1.5px solid var(--line2);border-left:5px solid var(--chblue);border-radius:12px;background:var(--card2)}
+.abtsn{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.abtsn a{font:800 15px/1.2 var(--body);color:var(--accent)}
+.abtlic{padding:3px 7px;border-radius:999px;border:1.5px solid var(--chok);color:var(--chok);font:700 10.5px/1 var(--mono);letter-spacing:.04em}
+.abtuse{margin-top:3px;font-size:13.5px;line-height:1.4}
+.abtterm{margin-top:3px;font:600 12.5px/1.4 var(--body);color:var(--good)}
+.abtlicense{margin:6px 0 0;max-height:260px;overflow:auto;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);font:11.5px/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.abtlist{margin:0 0 10px;padding-left:18px}
+.abtlist li{margin:0 0 8px;font-size:14px;line-height:1.5}
+.abtmail{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.abtaddr{font:800 16px/1.3 var(--body);color:var(--accent);overflow-wrap:anywhere}
+@media (min-width:760px){.abtsrcs{grid-template-columns:1fr 1fr}.abthero{padding:22px 24px}.abthero h2{font-size:38px}}

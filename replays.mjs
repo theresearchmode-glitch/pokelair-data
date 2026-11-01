@@ -4,6 +4,7 @@
 // Writes out/replays.json (newest 20,000 games kept). Polite: one request at a time with a pause, capped per run.
 // If the replay server is down the step just stops and the existing file stays (the workflow treats it as optional).
 import fs from 'node:fs';
+import {politeFetch} from './http.mjs';
 import {activeReg} from './formats.mjs';
 // the active regulation's Showdown format (formats.mjs); Reg M-C is gen9championsvgc2026regmc
 export const FMT = activeReg().sd;
@@ -39,7 +40,7 @@ export function parseLog(log) {
   const w = winner === names.p1 ? 0 : winner === names.p2 ? 1 : null; if (w == null) return null;
   return {p: [out.p1.team, out.p2.team], b: [out.p1.brought, out.p2.brought], l: [out.p1.leads, out.p2.leads], m: [out.p1.mega, out.p2.mega], r: [out.p1.rating, out.p2.rating], w}; }
 async function get(url) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
-  try { const r = await fetch(url, {signal: c.signal, headers: {'user-agent': 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data)'}}); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
+  try { const r = await politeFetch(url, {signal: c.signal}); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // the replay server is sometimes slow or briefly down: try a list page up to 5 times, waiting longer each time
 async function getRetry(url) { for (let k = 0; ; k++) { try { return await get(url); } catch (e) { if (k >= 4) throw e; await sleep(5000 * (k + 1)); } } }

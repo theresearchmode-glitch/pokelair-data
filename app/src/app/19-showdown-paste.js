@@ -111,7 +111,7 @@ function renderPastePanel() {
     el.innerHTML = `<div class="plan"><div class="ph"><span class="pt">Import a team</span><button class="x" type="button" data-pastex="1" aria-label="Close">×</button></div>
       <textarea class="field paste" id="pasteIn" rows="10" placeholder="Paste a NastyPlot team link, or a Showdown team (from Showdown, Pokémon Zone, Pikalytics or Victory Road)."></textarea>
       <div class="row"><button class="btn sm primary" type="button" id="pasteLoad">Replace my team</button><span class="t2">Pokepaste links can't be opened from here; copy the team text instead.</span></div>
-      <div id="pasteNotes" class="t2"></div></div>`;
+      <div id="pasteNotes" class="t2"></div>${typeof regNote === 'function' ? regNote() : ''}</div>`;
   }
 }
 

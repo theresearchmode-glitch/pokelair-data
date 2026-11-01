@@ -9,6 +9,7 @@
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
 import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
+import {politeFetch} from './http.mjs';
 // the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
 const RG = activeReg();
 const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
@@ -26,7 +27,7 @@ let calls = 0;
 async function get(path) {
   for (let k = 0; k < 6; k++) {
     if (calls++) await sleep(GAP_MS);
-    const r = await fetch(API + path, {headers: {'User-Agent': 'pokelair-data (personal team-builder stats)'}});
+    const r = await politeFetch(API + path);
     if (r.status === 429) { await sleep(((+r.headers.get('retry-after')) || 60) * 1000 + 2000); continue; }
     if (!r.ok) throw new Error(path + ' ' + r.status);
     return r.json();

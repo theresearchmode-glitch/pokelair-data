@@ -1,6 +1,6 @@
 // Monthly Showdown ladder stats (step 5): Smogon's usage stats for Champions VGC Reg M-C, 1630+ ladder.
 // Builds out/meta_ladder.json in the same shape as meta_tour.json (plus checks & counters), only when a new month is out.
-import fs from 'node:fs'; import vm from 'node:vm';
+import fs from 'node:fs'; import vm from 'node:vm'; import {politeFetch as fetch} from './http.mjs';
 import {activeReg} from './formats.mjs';
 const FMT = activeReg().sd, CUT = 1630, BASE = 'https://www.smogon.com/stats/';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };

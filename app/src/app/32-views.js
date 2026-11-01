@@ -12,11 +12,11 @@ Object.assign(VIEW_PARENT,{compare:'report',weekly:'ratings',meta:'ratings',sets
 // pages opened from inside another page: a back link to it
 const BACK={teams:['report','My team'],compare:['report','My team'],box:['report','My team'],coverage:['report','My team'],gauntlet:['matchup','Battle'],practice:['matchup','Battle'],speed:['matchup','Battle'],calc:['matchup','Battle'],types:['matchup','Battle'],track:['ratings','Pokémon ratings']};
 const MAIN_VIEWS=['home',...GROUPS.map(g=>g[0])];
-const VIEW_TITLE={home:'Home',report:'My team',build:'My team',auto:'Build',teams:'Saved teams',compare:'Compare teams',matchup:'Battle',coverage:'All suggestions',types:'Type chart',ratings:'Pokémon ratings',meta:'Usage',top:'Winning teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle',cores:'Cores',events:'Events',practice:'Practice',method:'How we calculate',track:'Track record',weekly:'This week'};
+const VIEW_TITLE={home:'Home',report:'My team',build:'My team',auto:'Build',teams:'Saved teams',compare:'Compare teams',matchup:'Battle',coverage:'All suggestions',types:'Type chart',ratings:'Pokémon ratings',meta:'Usage',top:'Winning teams',sets:'Popular sets',box:'My box',speed:'Speed tiers',calc:'Damage calc',gauntlet:'Gauntlet',arch:'Archetypes',battle:'Battle',cores:'Cores',events:'Events',practice:'Practice',method:'How we calculate',track:'Track record',weekly:'This week',about:'About & legal'};
 // the ⋯ menu lists every page, grouped the same way as the bottom bar
 const MENU=[['Build',[['auto','Build for me'],['cores','Build around a core']]],['My team',[['report','My team'],['coverage','All suggestions'],['teams','Saved teams'],['compare','Compare teams'],['box','My box']]],
   ['Battle',[['matchup','Battle a team'],['practice','Team preview practice'],['gauntlet','Gauntlet'],['speed','Speed tiers'],['calc','Damage calc'],['types','Type chart']]],
-  ['Meta',[['weekly','This week'],['ratings','Pokémon ratings'],['meta','Usage'],['sets','Popular sets'],['top','Winning teams'],['events','Events'],['arch','Archetypes'],['track','Track record'],['method','How we calculate']]]];
+  ['Meta',[['weekly','This week'],['ratings','Pokémon ratings'],['meta','Usage'],['sets','Popular sets'],['top','Winning teams'],['events','Events'],['arch','Archetypes'],['track','Track record'],['method','How we calculate']]],['Info',[['about','About & legal']]]];
 // The menu (sidebar on wide screens, "More" sheet on phones) mirrors the same five pages and their sections.
 {const nav=document.querySelector('.sidenav');if(nav){const icon={};nav.querySelectorAll('[data-view]').forEach(b=>{const s=b.querySelector('svg');if(s)icon[b.dataset.view]=s.outerHTML});
   const ic=d=>`<svg class="nic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -28,6 +28,7 @@ const MENU=[['Build',[['auto','Build for me'],['cores','Build around a core']]],
   icon.method=icon.method||ic('<path d="M5 3.5h14v17H5z"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/>');
   icon.track=icon.track||ic('<path d="M4 19.5h16"/><path d="m5 15 4.5-4.5 3.5 3 6-6.5"/><path d="M15 7h4v4"/>');
   icon.compare=icon.compare||ic('<rect x="3.5" y="5" width="7" height="14" rx="1.5"/><rect x="13.5" y="5" width="7" height="14" rx="1.5"/><path d="M12 3v18"/>');
+  icon.about=icon.about||ic('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.4"/>');
   const def='<svg class="nic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>';
   const btn=(v,t)=>`<button type="button" role="tab" data-view="${v}" aria-selected="false">${icon[v]||def}<span class="nl">${t}</span>${v==='report'?'<span class="tc" id="tabCount"></span>':''}</button>`;
   icon.report=icon.report||icon.build;icon.build=ic('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>');
@@ -106,6 +107,7 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   if(v==='method'&&typeof renderMethod==='function')safe('how we calculate',renderMethod);
   if(v==='track'&&typeof renderTrack==='function')safe('track record',renderTrack);
   if(v==='compare')safe('compare',renderCompare);
+  if(v==='about')safe('about',renderAbout);
   if(scroll!==false){try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}}}
 // Tab stays inside an open sheet or editor (they're modal), wrapping from the last control to the first (sweep, Oct 31)
 document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const o=overlayOpen();if(!o||o==='side'||o==='jump')return;const box=$(o);if(!box)return;
