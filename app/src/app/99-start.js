@@ -6,5 +6,7 @@ ui.lmode='board';try{LS.set('cc2.lmode','board')}catch(e){}
 // any edit to the open team keeps it open; Save changes updates it
 try{document.querySelectorAll('.phonefold').forEach(d=>{d.open=!PHONE()})}catch(e){}
 render();setView(view,false);
+/* page switches fade in from now on (not the first page at load) */
+try{setTimeout(()=>{document.body.dataset.npReady='1'},0)}catch(e){}
 try{if(typeof checkSharedLink==='function')checkSharedLink()}catch(e){}
 })();

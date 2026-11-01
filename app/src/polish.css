@@ -803,3 +803,54 @@ a.calrow:hover .calmain b{text-decoration:underline}
 .abtmail{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .abtaddr{font:800 16px/1.3 var(--body);color:var(--accent);overflow-wrap:anywhere}
 @media (min-width:760px){.abtsrcs{grid-template-columns:1fr 1fr}.abthero{padding:22px 24px}.abthero h2{font-size:38px}}
+/* colour is never the only signal (colour-blind check, Nov 1): every colour code also carries a shape or a word */
+/* legend swatches and grid cells: ✓ answers · ~ partial · ✗ loses · – nothing direct */
+.chleg i[class^="g-"],.chdots i[class^="g-"]{display:inline-grid;place-items:center;min-width:13px;width:auto;height:13px;padding:0 1px;box-sizing:border-box;font:900 9px/1 var(--body);font-style:normal;color:#fff;letter-spacing:-.5px;vertical-align:-2px}
+.chdots i[class^="g-"]{border-radius:50%;width:15px;height:15px;font-size:10px}
+.chleg i.g-part,.chdots i.g-part,.chcr .cc.trade{color:#2a1c00}
+.chleg i.g-none,.chdots i.g-none,.chcr .cc.none{color:var(--chink2)}
+.chcr .cc{display:grid;place-items:center;font:900 15px/1 var(--body);color:#fff}
+/* threat tiles (scouting sheet, the next 20): the two that need a plan carry ✗ (unanswered) or ~ (shaky) in the corner */
+.chtile.l0::after,.chtile.l1::after{position:absolute;top:1px;right:1px;min-width:11px;height:11px;border-radius:3px;display:grid;place-items:center;font:900 8px/1 var(--body);pointer-events:none}
+.chtile.l0::after{content:"✗";background:var(--chbad);color:#fff}.chtile.l1::after{content:"~";background:var(--chshaky);color:#2a1c00}
+/* your battle record on Home: W / L inside each dot */
+.hdots{align-items:center}.hdots i{width:16px;height:16px;display:inline-grid;place-items:center;font:800 9px/1 var(--mono);font-style:normal;color:#fff}
+/* damage tables: a KO / 2HKO tag on top of the colour; ? = only the top rolls do it */
+#dcOut .dctab td,.dctab td,.bo,.bd{position:relative}
+.dctab td:is(.k1,.k1m,.k2,.k2m)::after,:is(.bo,.bd):is(.k1,.k1m,.k2,.k2m)::after{position:absolute;top:2px;right:2px;font:800 7.5px/1 var(--mono);letter-spacing:0;padding:1.5px 2.5px;border-radius:3px;pointer-events:none;color:#fff;background:var(--chok,#1E8E4E)}
+.dctab td.k1::after,:is(.bo,.bd).k1::after{content:"KO"}
+.dctab td.k1m::after,:is(.bo,.bd).k1m::after{content:"KO?"}
+.dctab td.k2::after,:is(.bo,.bd).k2::after{content:"2HKO";background:var(--chshaky,#C98A00);color:#2a1c00}
+.dctab td.k2m::after,:is(.bo,.bd).k2m::after{content:"2HKO?";background:var(--chshaky,#C98A00);color:#2a1c00}
+.bd:is(.k1,.k1m)::after{background:var(--chbad,#E8364F)}
+/* the battle grid's cells are narrow: the tag sits in a strip above the number instead of over it */
+:is(.bo,.bd):is(.k1,.k1m,.k2,.k2m){padding-top:11px}
+:is(.bo,.bd):is(.k1,.k1m,.k2,.k2m)::after{top:2px;right:auto;left:50%;transform:translateX(-50%)}
+.bmleg :is(.bo,.bd){padding-top:2px}.bmleg :is(.bo,.bd)::after{transform:none}
+
+/* Motion (Nov 1): small, quick (≤200 ms), transform and opacity only, never in the way of a tap; none at all with reduced motion */
+@media (prefers-reduced-motion: no-preference){
+  /* sheets slide up: scouting report, Pokémon editor (the Pokémon info sheet already does), their backdrops fade */
+  .chscout:not([hidden]),.chedit:not([hidden]){animation:np-up .2s cubic-bezier(.2,.8,.2,1)}
+  .chscrim:not([hidden]),#chEditScrim:not([hidden]),.jump:not([hidden]),.sharebox:not([hidden]){animation:lsf .16s ease-out}
+  /* the ? popovers grow out of their button */
+  .tippop{animation:np-tip .16s cubic-bezier(.2,.8,.2,1);transform-origin:50% 0}
+  /* a page switch: the new page fades and rises 8px */
+  html.np-sw [data-pane]:not([hidden]){animation:np-view .2s cubic-bezier(.2,.8,.2,1)}
+  /* the grade ring pops in (it keeps its tilt) */
+  .chring.np-pop{animation:np-pop .2s cubic-bezier(.3,1.5,.5,1)}
+  /* tap feedback on tiles and cards: a quick press-in */
+  :is(.htile,.hmini,.hcore,.chmmon,.chtr,.chrow,.chhr,.ltile,.chhot,.evcard,.stm,.logpick,.chsug,.chsec,.chring,.boxchip,.tgm):active{transform:scale(.97);transition:transform .08s ease-out}
+  :is(.htile,.hmini,.hcore,.chmmon,.chtr,.chrow,.chhr,.ltile,.chhot,.evcard,.stm,.logpick,.chsug,.chsec,.boxchip,.tgm){transition:transform .14s ease-out}
+  .chring:active{transform:rotate(-8deg) scale(.94)}
+}
+@media (prefers-reduced-motion: no-preference) and (min-width:900px){.chscout:not([hidden]),.chedit:not([hidden]){animation-name:np-upc}}
+@keyframes np-up{from{transform:translateY(28px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes np-upc{from{transform:translate(-50%,28px);opacity:.3}to{transform:translate(-50%,0);opacity:1}}
+@keyframes np-tip{from{transform:translateY(-4px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+@keyframes np-view{from{transform:translateY(8px);opacity:.2}to{transform:none;opacity:1}}
+@keyframes np-pop{0%{transform:rotate(-8deg) scale(.55);opacity:0}70%{transform:rotate(-8deg) scale(1.08);opacity:1}100%{transform:rotate(-8deg) scale(1)}}
+.np-num{font-variant-numeric:tabular-nums}
+/* reduced motion: the sheets, toasts and backdrops that already moved stand still too */
+@media (prefers-reduced-motion: reduce){.lspanel,.lsback,.fbwrap,.fbbox,.tippop,.chscout,.chedit,.chscrim,.slot.fresh,.toast,.bm .pip.on,[data-pane]{animation:none!important}}
+.bmleg :is(.bo,.bd)::after{position:static;display:inline-block;margin-left:3px;vertical-align:1px}
