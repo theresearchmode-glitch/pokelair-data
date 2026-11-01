@@ -504,5 +504,5 @@ button.chring{background:none;cursor:pointer;padding:0}
 .prei{flex:none;background:var(--chblue);color:#fff;font:400 18px/1 var(--display);border-radius:12px;padding:10px 8px}
 :root[data-look="dark"] .prei{color:#14172E}
 .prcopyopp{display:flex;align-items:center;gap:8px;margin:4px 0 8px;flex-wrap:wrap}
-@media (min-width:900px){.prm .spr,.prpick .spr{max-width:128px}.prband.them .prm .spr{max-width:112px}.prband.them.sm .prm .spr{max-width:72px}.prpick{min-height:150px}}
+@media (min-width:900px){.prsix{grid-template-columns:repeat(6,minmax(0,1fr))}.prm .spr,.prpick .spr{max-width:128px}.prband.them .prm .spr{max-width:112px}.prband.them.sm .prm .spr{max-width:72px}.prpick{min-height:150px}}
 @media (prefers-reduced-motion:reduce){.prband,.prres,.prcard{animation:none}.prbar i{transition:none}}
