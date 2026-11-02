@@ -32,7 +32,7 @@ function cxInfo(slots) { const key = cxKey(slots); if (CX.cache.has(key)) return
     try { o.A = teamArchetype(ms); } catch (e) {}
     try { o.pr = teamProfile(ms, true); } catch (e) {}
     try { const F = sideField(ms); o.wx = F.weather;
-      o.spd = ms.map(m => { const s = likelySpeed(m.p, m); return {m, v: spdCalc(s.v, s.scarf, m.ability, F.weather, {}), scarf: s.scarf}; }).sort((x, y) => y.v - x.v); } catch (e) {}
+      o.spd = ms.map(m => { const s = likelySpeed(m.p, m); return {m, v: spdCalc(s.v, s.scarf, m.ability, F.weather, {}), scarf: s.scarf}; }).sort((x, y) => y.v - x.v); o.wxS = F.weather; } catch (e) {}
     o.thr = new Map(o.RD ? o.RD.rows.map(r => [r.t.n, r]) : []);
     try { o.rec = typeof myGames === 'function' ? myGames(ms) : null; } catch (e) {}
   }
@@ -85,7 +85,9 @@ function cxRows(RA, RB, a, b) { const rows = [], NA = 'Team A', NB = 'Team B';
   for (const [k, label] of keys) { const x = ck(a, k), y = ck(b, k), m = v => v == null ? '<span class="cxck un" title="Not counted">?</span>' : v ? '<span class="cxck ok" aria-label="Yes">✓</span>' : '<span class="cxck no" aria-label="No">✗</span>';
     add('ck:' + k, label, m(x), m(y), x != null && y != null && x !== y, k !== 'reach' && x != null && y != null && x !== y ? `${label}: only ${x ? NA : NB} has it.` : ''); }
   /* speed */
-  const sp = I => I.spd && I.spd.length ? `<span class="cxl">Fastest <b>${esc(I.spd[0].m.d)}</b> ${I.spd[0].v}</span><span class="cxl">Slowest <b>${esc(I.spd[I.spd.length - 1].m.d)}</b> ${I.spd[I.spd.length - 1].v}</span>` : '—';
+  /* Nov 2: each speed in plain terms too, against the top 30 threats (outspeedOf, the Speed tiers page's count) */
+  const osT = (I, x) => { const r = typeof outspeedOf === 'function' ? outspeedOf(x.v, I.wxS || '', {}) : null; return r ? `<span class="t2 cxl">outspeeds ${r.pct}% of the top ${r.n}</span>` : ''; };
+  const sp = I => I.spd && I.spd.length ? `<span class="cxl">Fastest <b>${esc(I.spd[0].m.d)}</b> ${I.spd[0].v}</span>${osT(I, I.spd[0])}<span class="cxl">Slowest <b>${esc(I.spd[I.spd.length - 1].m.d)}</b> ${I.spd[I.spd.length - 1].v}</span>${osT(I, I.spd[I.spd.length - 1])}` : '—';
   add('spd', 'Speed (likely stat)', sp(a), sp(b), a.spd && b.spd && a.spd.length && b.spd.length && (a.spd[0].v !== b.spd[0].v || a.spd[a.spd.length - 1].v !== b.spd[b.spd.length - 1].v), '');
   const sc = I => { const t = I.A ? I.A.setters.tw : [], r = I.A ? I.A.setters.tr : []; return {t, r, txt: [t.length ? `Tailwind: ${cxWho(t, 2)}` : '', r.length ? `Trick Room: ${cxWho(r, 2)}` : ''].filter(Boolean)}; };
   const sa = sc(a), sb = sc(b), mode = s => (s.t.length ? 'T' : '') + (s.r.length ? 'R' : '');

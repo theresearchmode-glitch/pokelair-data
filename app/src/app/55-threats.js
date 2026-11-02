@@ -203,7 +203,7 @@ const THR = (() => {
         if (hasMove(m, 'Taunt') && tauntWorks(m)) out.push({m, kind: 'solid', why: `${m.d} Taunts it before Trick Room goes up (Trick Room moves last)`});
         else if (hasMove(m, 'Imprison') && hasMove(m, 'Trick Room')) out.push({m, kind: 'solid', why: `${m.d}'s Imprison stops its Trick Room`});
         else if (hasMove(m, 'Trick Room') && !tmodes.tr) out.push({m, kind: 'soft', why: `${m.d} can reverse its Trick Room with your own`});
-        else if (ohko) out.push({m, kind: 'solid', why: `${m.d} OHKOs it with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}% before Trick Room goes up`});
+        else if (ohko) out.push({m, kind: 'solid', why: `${m.d} OHKOs it with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}% of HP before Trick Room goes up`});
         else if (two) out.push({m, kind: 'soft', why: `${m.d} 2HKOs it with ${du.o.mv}: with a partner it falls before setting Trick Room twice`});
         else if (hasMove(m, 'Fake Out') && !FLINCH_BLOCK.has(t.ability) && !PRIO_BLOCK.has(t.ability) && t.item !== 'Covert Cloak' && !(t.p.t || []).includes('Ghost') && !psyBlock(m)) out.push({m, kind: 'soft', why: `${m.d}'s Fake Out delays its Trick Room a turn`});
         if (hasMove(m, 'Trick Room') && tmodes.tr && !out.some(x => x.m === m)) out.push({m, kind: 'solid', why: `your own Trick Room team plays under Trick Room anyway; ${m.d} can re-set or reverse it`});
@@ -224,7 +224,7 @@ const THR = (() => {
         const sp = m.moves.find(x => x && x.spread && x.bp >= 60 && x.cat > 0);
         if (sp) out.push({m, kind: 'solid', why: `${m.d}'s ${sp.name} hits both foes, so redirection doesn't stop it`});
         else if (['Stalwart', 'Propeller Tail'].includes(m.ability) || hasMove(m, 'Snipe Shot')) out.push({m, kind: 'solid', why: `${m.d} ignores redirection (${hasMove(m, 'Snipe Shot') ? 'Snipe Shot' : m.ability})`});
-        else if (ohko) out.push({m, kind: 'solid', why: `${m.d} OHKOs the redirector with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}%`});
+        else if (ohko) out.push({m, kind: 'solid', why: `${m.d} OHKOs the redirector with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}% of HP`});
         else if (hasMove(t, 'Rage Powder') && !hasMove(t, 'Follow Me') && (m.p.t.includes('Grass') || m.ability === 'Overcoat' || m.item === 'Safety Goggles')) out.push({m, kind: 'solid', why: `${m.d} is immune to Rage Powder`});
         else if (hasMove(m, 'Taunt') && tauntWorks(m)) out.push({m, kind: 'soft', why: `${m.d}'s Taunt stops its redirection after the first turn`});
       } }
@@ -300,11 +300,11 @@ const THR = (() => {
       // the answer leans on a move that misses too often (under 85%): it's an answer, but a shaky one
       if ((check || counter || immune) && du.o && du.o.acc < SURE) { soft.push(`${check ? 'OHKOs' : '2HKOs'} with ${du.o.mv}, so it can miss`); }
       else if (check || counter || immune) { rows.push({m, kind: 'solid', role: check ? 'check' : 'counter', du,
-        why: check ? (du.first ? `${m.d} moves first${tag} and OHKOs with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}%` : `${m.d} survives its ${du.d.mv} (at most ${pc(du.d.pct)}%) and OHKOs back with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}%`)
-          : immune ? `${m.d} is immune to its attacks and 2HKOs with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}%`
-          : `${m.d} takes at most ${pc(du.d.pct)}% from ${du.d.mv} and 2HKOs with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}%`}); continue; }
-      if (du.win && du.nM <= 2) soft.push(`wins 1-on-1 (${du.nM === 1 ? 'OHKO' : '2HKO'} with ${du.o.mv}${du.first ? ', moves first' + tag : ''}) but takes up to ${pc(du.d ? du.d.pct : 0)}% back`);
-      else if (du.d && du.d.pct <= .45 && du.o && du.o.mid >= .3) soft.push(`walls it: takes at most ${pc(du.d.pct)}% from ${du.d.mv}, hits back ~${pc(du.o.mid)}%`);
+        why: check ? (du.first ? `${m.d} moves first${tag} and OHKOs with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}% of HP` : `${m.d} survives its ${du.d.mv} (at most ${pc(du.d.pct)}% of HP) and OHKOs back with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}% of HP`)
+          : immune ? `${m.d} is immune to its attacks and 2HKOs with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}% of HP`
+          : `${m.d} takes at most ${pc(du.d.pct)}% of HP from ${du.d.mv} and 2HKOs with ${du.o.mv}, ${pc(du.o.min)}⁠–⁠${pc(du.o.pct)}% of HP`}); continue; }
+      if (du.win && du.nM <= 2) soft.push(`wins 1-on-1 (${du.nM === 1 ? 'OHKO' : '2HKO'} with ${du.o.mv}${du.first ? ', moves first' + tag : ''}) but takes up to ${pc(du.d ? du.d.pct : 0)}% of HP back`);
+      else if (du.d && du.d.pct <= .45 && du.o && du.o.mid >= .3) soft.push(`walls it: takes at most ${pc(du.d.pct)}% of HP from ${du.d.mv}, hits back ~${pc(du.o.mid)}% of HP`);
       const ph = physOf(t);
       if (m.ability === 'Intimidate' && ph >= .5) { if (PUNISH_INTIM.has(t.ability)) rows.push({m, kind: 'warn', du, why: `${m.d}'s Intimidate backfires: ${t.d} has ${t.ability}`}); else if (!NO_INTIM.has(t.ability)) soft.push('Intimidate cuts its physical attacks'); }
       if (hasMove(m, 'Will-O-Wisp') && ph >= .5 && !t.p.t.includes('Fire') && !['Guts', 'Water Veil', 'Water Bubble', 'Flash Fire', 'Good as Gold', 'Magic Bounce'].includes(t.ability) && !pranksterFails(m, t, field) && !(field.terrain === 'misty' && grounded(t))) { const a = moveAcc(MVn('Will-O-Wisp'), m.ability, field.weather, {ability: t.ability, item: t.item}, m.item); soft.push(`Will-O-Wisp cripples it${a < 100 ? ` (${a}% to hit, so it can miss)` : ''}`); }
@@ -363,7 +363,7 @@ const THR = (() => {
   // one line of evidence for a threat row (the best answer, or why it's a problem)
   function evidence(r) { if (r.solid.length) return r.solid[0].why; if (r.soft.length) return r.soft[0].why;
     if (r.mode) return `Nothing on the team answers its ${r.mode[0].name}`;
-    const l = r.losers[0]; return l ? `It beats ${r.losers.slice(0, 3).map(x => x.m.d).join(', ')} 1-on-1 (${l.du.d.mv} ${pc(l.du.d.min)}-${pc(l.du.d.pct)}% on ${l.m.d})` : 'No one on the team beats it 1-on-1'; }
+    const l = r.losers[0]; return l ? `It beats ${r.losers.slice(0, 3).map(x => x.m.d).join(', ')} 1-on-1 (${l.du.d.mv} ${pc(l.du.d.min)}-${pc(l.du.d.pct)}% of HP on ${l.m.d}, ${l.du.nT === 1 ? "an OHKO" : "a 2HKO"})` : 'No one on the team beats it 1-on-1'; }
   return {side, fromMember, report, reportSides, teamReport, threatList, brief, pair, one, teamVs, vsThreat, teamModes, speedOf, fieldFor, duel, evidence, PTS,
     noCache: off => { cacheOpt.off = !!off; duelCache.clear(); repCache.clear(); }};
 })();

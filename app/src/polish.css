@@ -911,3 +911,10 @@ a.calrow:hover .calmain b{text-decoration:underline}
 .corestat b i{font-size:.55em;font-style:normal;font-weight:700;margin-left:2px;color:var(--chink2,var(--mute))}
 .svacts{flex-wrap:wrap;justify-content:flex-end;max-width:100%}
 .mrow .nm .trend:not(.new){display:block;width:max-content;margin:1px 0 0}
+
+/* damage in words (Nov 2): the tag says how many hits, with the chance when only some rolls do it ("OHKO 44%", "2HKO", "3HKO") */
+.dctab td[data-ko]:not([data-ko=""])::after,:is(.bo,.bd)[data-ko]:not([data-ko=""])::after{content:attr(data-ko);position:absolute;top:2px;right:2px;font:800 7.5px/1 var(--mono);letter-spacing:0;padding:1.5px 2.5px;border-radius:3px;pointer-events:none;white-space:nowrap}
+.dctab td.k3[data-ko]::after,:is(.bo,.bd).k3[data-ko]::after{background:var(--chp2,var(--card2));color:var(--chink2,var(--mute));border:1px solid var(--line)}
+:is(.bo,.bd)[data-ko]:not([data-ko=""]){padding-top:11px}
+:is(.bo,.bd)[data-ko]:not([data-ko=""])::after{right:auto;left:50%;transform:translateX(-50%)}
+.dcbig small{font-size:.45em;margin-left:4px;letter-spacing:0}

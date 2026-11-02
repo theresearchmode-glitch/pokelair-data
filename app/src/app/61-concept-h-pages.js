@@ -168,7 +168,7 @@ CH.wrap('renderCalc', () => { const el = $('dcOut'), sec = $('dmgcalc'); if (!el
   if (hd) { let box = hd; while (box.parentElement && box.parentElement !== el && box.parentElement !== root) box = box.parentElement; if (box === hd) { const w = document.createElement('div'); hd.before(w); let n = hd; while (n) { const nx = n.nextElementSibling; w.append(n); n = nx; } box = w; } if (box && !box.closest('details.chsec')) { const t = hd.textContent; CH.foldNode(box, 'dctable', t, 'Max roll against the usual sets of the top threats', false); } } });
 // ---------- Speed: who moves first ----------
 CH.wrap('renderSpeed', () => { const el = $('spdOut'), sec = $('speedtiers'); if (!el) return; CH.pagehead(sec, 'Speed tiers · level 50', 'Who moves <span style="color:var(--chblueT)">first.</span>', '');
-  const sums = el.querySelector('.spdsums'); if (sums && !sums.closest('details.chsec')) { const n = sums.querySelectorAll('.spdsum').length; CH.foldNode(sums, 'spdsum', 'Your six vs the field', `How many of the top 20 each of your ${n} moves first against`, false); }
+  const sums = el.querySelector('.spdsums'); if (sums && !sums.closest('details.chsec')) { const n = sums.querySelectorAll('.spdsum').length; CH.foldNode(sums, 'spdsum', 'Your six vs the field', `How many of the top 30 threats each of your ${n} outspeeds`, false); }
   el.querySelectorAll('.spdrow .spdn .t2').forEach(t => { const r = t.closest('.spdrow'); if (r && !r.title) r.title = t.textContent;
     // the note under the list already says their spreads are the most common ones; each row stays one line
     if (/most common spread/.test(t.textContent)) t.innerHTML = t.innerHTML.replace(/ ?\(most common spread\)/g, ''); }); });

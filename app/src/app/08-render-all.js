@@ -201,7 +201,7 @@ function renderThreatCard(ms,RD){const el=$('thrCard');if(!el)return;if(!RD||!ms
     if(r.mode)L.push(`<li class="t2">Judged by its job: ${esc(r.mode.map(x=>x.name).join(' and '))}</li>`);
     if(!L.length)L.push('<li class="no">Nothing on the team beats it 1-on-1 or stops what it does</li>');
     const f=r.field||{};return `<ul class="thrd">${L.join('')}</ul><div class="t2">Field: ${f.weather?esc(f.weather):'no weather'}, ${f.terrain?esc(f.terrain)+' terrain':'no terrain'} · its usual set: ${esc(r.t.moves.slice(0,4).map(m=>m.name).join(', '))}${r.t.item?' @ '+esc(r.t.item):''}</div>`};
-  const row=r=>{const p=byName.get(r.t.n);return `<details class="thrrow" data-thr="${esc(r.t.n)}"${open[r.t.n]?' open':''}><summary>${p?sprite(p,'mini'):''}<span class="thrn"><b>${esc(r.t.d)}</b><span class="vsub">${(+r.t.w).toFixed(1)}% of top cuts</span></span><span class="thre">${esc(THR.evidence(r))}</span></summary>${det(r)}</details>`};
+  const row=r=>{const p=byName.get(r.t.n);return `<details class="thrrow" data-thr="${esc(r.t.n)}"${open[r.t.n]?' open':''}><summary>${p?sprite(p,'mini'):''}<span class="thrn"><b>${esc(r.t.d)}</b><span class="vsub">${pctTxt(+r.t.w)} of top cuts</span></span><span class="thre">${esc(THR.evidence(r))}</span></summary>${det(r)}</details>`};
   const grp=(lv,start)=>{const rs=RD.rows.filter(r=>r.level===lv).sort((x,y)=>y.t.w-x.t.w);if(!rs.length)return '';const [lab,c]=THR_LV[lv];
     return `<details class="thrg ${c}"${start?' open':''}><summary><span class="thrl ${c}">${lab}</span> <span class="vsub">${rs.length} threat${rs.length===1?'':'s'}</span></summary>${rs.map(row).join('')}</details>`};
   const un=RD.rows.filter(r=>r.level===0).length;
