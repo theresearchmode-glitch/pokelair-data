@@ -4,7 +4,17 @@ const parts = JSON.parse(fs.readFileSync(new URL('./parts.json', import.meta.url
 import {fileURLToPath} from 'node:url';
 // fileURLToPath works on Windows too (URL.pathname gives "/C:/..." there)
 const dir = fileURLToPath(new URL('.', import.meta.url));
-let out = parts.map(p => fs.readFileSync(dir + p, 'utf8').replace(/\n$/, '')).join('\n');
+// Faster first load (Nov 2): the big data tables in src/data/*.js are written as `const X=<JSON>;`. A browser reads the same
+// data from a JSON.parse('...') string much faster than from a JS object literal (it skips the full JavaScript parser), so
+// each such line of 20 KB or more is rewritten that way. Only lines that are exactly `const NAME=<valid JSON>;` change, and
+// the value is checked to come back identical; anything else is left alone. `node app/build.mjs --no-json-parse` turns it off.
+const asJsonParse = (src) => process.argv.includes('--no-json-parse') ? src : src.split('\n').map(l => {
+  const m = /^const ([A-Za-z_$][\w$]*)=(.*);$/.exec(l); if (!m || m[2].length < 20000) return l;
+  let v; try { v = JSON.parse(m[2]); } catch (e) { return l; }
+  const lit = "'" + m[2].replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(new RegExp('\\u2028', 'g'), '\\u2028').replace(new RegExp('\\u2029', 'g'), '\\u2029') + "'";
+  if (/<\/script/i.test(lit) || JSON.stringify(JSON.parse(Function('return ' + lit)())) !== JSON.stringify(v)) return l;
+  return `const ${m[1]}=JSON.parse(${lit});`; }).join('\n');
+let out = parts.map(p => { const s = fs.readFileSync(dir + p, 'utf8').replace(/\n$/, ''); return /^src\/data\/.*\.js$/.test(p) ? asJsonParse(s) : s; }).join('\n');
 // Smaller page (Nov 1, load speed): whole-line // comments inside the app's plain <script> blocks are dropped, about 150 KB
 // (57 KB gzipped, 10% of the download) that the phone no longer downloads or parses. Only lines that are nothing but a comment
 // go; code, strings and the battle-log text block (<script type="text/plain">) are untouched. Checked by comparing an

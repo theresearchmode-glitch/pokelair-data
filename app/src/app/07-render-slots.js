@@ -17,7 +17,11 @@ function slotsIdle(){if(slotIdleT)return;const go=()=>{slotIdleT=0;const sl=$('s
 function renderSlots_(flush,only){
   const useA=$('useAbil').checked;let clash=null;try{clash=scarfTrClash(members())}catch(e){}
   if(!flush)slotGen++;
-  const sl=$('slots'),want=only||slotsShowing(),part=want&&sl.children.length===S.slots.length;
+  const sl=$('slots'),want=only||slotsShowing();
+  /* first load (Nov 2, load speed): with the edit panel closed, the six set editors start as empty placeholders and are drawn
+     in idle moments (slotsIdle) or when the panel opens (slotsFlush), instead of all six before the first page shows */
+  if(want&&!want.length&&sl.children.length!==S.slots.length){sl.innerHTML=S.slots.map(()=>'<div class="slot slotwait"></div>').join('');S.slots.forEach((x,i)=>slotAt[i]=-1)}
+  const part=want&&sl.children.length===S.slots.length;
   const draw=i=>!part||want.includes(i);
   const html=S.slots.map((s,i)=>draw(i)?slotHtml(s,i,useA,clash):'');
   if(part){want.forEach(i=>{if(slotAt[i]===slotGen&&flush)return;const t=document.createElement('template');t.innerHTML=html[i];sl.children[i].replaceWith(t.content);slotAt[i]=slotGen})}
