@@ -1264,3 +1264,80 @@ img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 
 .npty-steel{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 2h32v32H2z'/%3E%3Ccircle cx='7' cy='7' r='1.8'/%3E%3Ccircle cx='29' cy='7' r='1.8'/%3E%3Ccircle cx='7' cy='29' r='1.8'/%3E%3Ccircle cx='29' cy='29' r='1.8'/%3E%3C/svg%3E");--nptw:36px;--npth:36px}
 .npty-fairy{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z'/%3E%3Cpath d='M30 23l1.3 5 5 1.3-5 1.3-1.3 5-1.3-5-5-1.3 5-1.3z'/%3E%3Ccircle cx='31' cy='8' r='1.4'/%3E%3Ccircle cx='8' cy='31' r='1.4'/%3E%3C/svg%3E");--nptw:40px;--npth:40px}
 /* ========== end EXTRAS A ========== */
+
+/* ========== EXTRAS B (Nov 2): weather on your team header · Team poster ========== */
+/* The backdrop sits under the header's content; only transform/opacity move; a static tint stays under reduced motion.
+   Contrast (measured: 8 frames per effect, the worst pixel behind every text box):
+   - the tint and the big soft shapes (sun rays and glow, psychic waves, mist) blend in "color" mode: they change the hue
+     behind the text but keep its lightness, so contrast does not move;
+   - the small particles: in the light theme the header face is the plain card colour while the weather shows, and the
+     particles are kept light enough (colour and opacity) that text stays at 4.5:1 or more over them; in the dark theme they
+     blend in "color" mode too. */
+.chthead.wxon{isolation:isolate}
+:root:not([data-look="dark"]) .chthead.wxon{background:var(--chc)}
+.chthead.wxon>:not(.wxfx){position:relative;z-index:1}
+/* the grade ring keeps a solid face (its band tint over the card colour), so its small number never sits on the weather */
+:root .chthead.wxon .chring,:root .chthead.wxon .chring.gc{background:linear-gradient(color-mix(in srgb,var(--gc,transparent) 13%,transparent),color-mix(in srgb,var(--gc,transparent) 13%,transparent)),var(--chc)}
+.wxfx{position:absolute;inset:0;overflow:hidden;border-radius:9px 9px 16px 16px;pointer-events:none}
+.wxfx::before{content:'';position:absolute;inset:0;background:var(--wxbg,none);mix-blend-mode:color}
+.wxfx i{position:absolute;display:block}
+.wxfx b{position:absolute;display:block}
+:root[data-look="dark"] .wxfx i,.wxchip .wxfx i{mix-blend-mode:color}
+.wxfx.wxp :is(i,b),.wxhid .wxfx :is(i,b){animation-play-state:paused!important}
+@media (prefers-reduced-motion: reduce){.wxfx i{display:none}}
+.wxlbl{white-space:nowrap}
+@keyframes wx-fall{to{transform:translate3d(-28px,200%,0)}}
+@keyframes wx-sway{from{transform:translateX(-9px)}to{transform:translateX(9px)}}
+@keyframes wx-drift{to{transform:translate3d(200%,18px,0)}}
+@keyframes wx-spin{to{transform:rotate(360deg)}}
+@keyframes wx-pulse{from{opacity:.55;transform:scale(.92)}to{opacity:1;transform:scale(1.06)}}
+@keyframes wx-leaf{from{transform:translateX(-14px) rotate(-35deg)}to{transform:translateX(14px) rotate(50deg)}}
+@keyframes wx-wave{0%{transform:translate3d(0,0,0);opacity:0}25%,75%{opacity:1}100%{transform:translate3d(200%,-10px,0);opacity:0}}
+@keyframes wx-spark{0%,84%,100%{opacity:0;transform:scale(.5) rotate(0)}88%{opacity:1;transform:scale(1.1) rotate(-8deg)}91%{opacity:.35}94%{opacity:.9;transform:scale(.9) rotate(6deg)}}
+@keyframes wx-mist{from{transform:translate3d(-22px,6px,0);opacity:.45}to{transform:translate3d(24px,-8px,0);opacity:1}}
+@keyframes wx-twinkle{0%,100%{opacity:0;transform:rotate(45deg) scale(.4)}50%{opacity:1;transform:rotate(45deg) scale(1)}}
+/* particle colours: light theme (normal blend, kept light enough), then dark theme and the Home chip (color blend, vivid) */
+.wxfx{--wxc:rgba(40,110,220,.25);--wxs:rgba(150,200,245,.75);--wxg:rgba(200,140,40,.3);--wxl:rgba(100,190,80,.27);--wxe:rgba(240,180,0,.65);--wxm:rgba(240,90,160,.42)}
+:root[data-look="dark"] .wxfx,.wxchip .wxfx{--wxc:rgba(20,110,255,.95);--wxs:rgba(60,190,255,.95);--wxg:rgba(240,150,20,.95);--wxl:rgba(30,200,40,.95);--wxe:#ffc800;--wxm:#ff4fa8}
+/* rain */
+.wx-rain{--wxbg:linear-gradient(180deg,rgba(20,110,255,.22),rgba(20,110,255,.06) 80%)}
+.wx-rain i{left:var(--x);top:-100%;height:100%;width:3px;animation:wx-fall calc(var(--d) * 1.05s) linear calc(var(--ph) - var(--o)) infinite}
+.wx-rain b{bottom:0;left:0;width:2px;height:calc(26px * var(--s));border-radius:2px;background:linear-gradient(transparent,var(--wxc));transform:rotate(7deg)}
+/* snow */
+.wx-snow{--wxbg:linear-gradient(180deg,rgba(60,190,255,.28),rgba(60,190,255,.08) 80%)}
+.wx-snow i{left:var(--x);top:-100%;height:100%;width:12px;animation:wx-fall calc(var(--d) * 9s) linear calc(var(--ph) - var(--o)) infinite}
+.wx-snow b{bottom:0;left:0;width:calc(8px * var(--s));height:calc(8px * var(--s));border-radius:50%;background:radial-gradient(circle,var(--wxs) 0 50%,transparent 72%);animation:wx-sway calc(var(--d) * 2.6s) ease-in-out calc(var(--ph) - var(--o)) infinite alternate}
+/* sand */
+.wx-sand{--wxbg:linear-gradient(100deg,rgba(240,150,20,.45),rgba(240,150,20,.12) 60%,rgba(240,150,20,.35))}
+.wx-sand i{top:var(--y);left:-100%;width:100%;height:5px;animation:wx-drift calc(var(--d) * 3.2s) linear calc(var(--ph) - var(--o)) infinite}
+.wx-sand b{right:0;top:0;width:calc(4.5px * var(--s));height:calc(4.5px * var(--s));border-radius:50%;background:var(--wxg)}
+/* sun: a warm glow in the corner and slow light rays (both hue-only) */
+.wx-sun{--wxbg:radial-gradient(ellipse 70% 80% at 92% 0%,rgba(255,140,0,.65),rgba(255,140,0,.1) 75%)}
+.wx-sun i:nth-child(1){width:1100px;height:1100px;left:calc(92% - 550px);top:-550px;mix-blend-mode:color;background:repeating-conic-gradient(from 0deg,rgba(255,130,0,.7) 0deg 5deg,transparent 5deg 22deg);-webkit-mask:radial-gradient(closest-side,#000 8%,transparent 72%);mask:radial-gradient(closest-side,#000 8%,transparent 72%);animation:wx-spin 90s linear calc(var(--ph) - var(--o)) infinite}
+.wx-sun i:nth-child(2){width:400px;height:400px;left:calc(92% - 200px);top:-200px;border-radius:50%;mix-blend-mode:color;background:radial-gradient(closest-side,rgba(255,150,0,.7),transparent);animation:wx-pulse 5s ease-in-out calc(var(--ph) - var(--o)) infinite alternate}
+/* Grassy Terrain: leaves */
+.wx-grassy{--wxbg:linear-gradient(180deg,rgba(30,200,40,.25),rgba(30,200,40,.07) 80%)}
+.wx-grassy i{left:var(--x);top:-100%;height:100%;width:16px;animation:wx-fall calc(var(--d) * 10s) linear calc(var(--ph) - var(--o)) infinite}
+.wx-grassy b{bottom:0;left:0;width:calc(13px * var(--s));height:calc(8px * var(--s));border-radius:0 100% 0 100%;background:var(--wxl);animation:wx-leaf calc(var(--d) * 3s) ease-in-out calc(var(--ph) - var(--o)) infinite alternate}
+/* Psychic Terrain: pink shimmer waves (hue-only) */
+.wx-psy{--wxbg:linear-gradient(120deg,rgba(255,60,140,.35),rgba(255,60,140,.08) 50%,rgba(170,80,255,.35))}
+.wx-psy i{top:calc(var(--y) - 30%);left:-100%;width:100%;height:60%;mix-blend-mode:color;animation:wx-wave calc(var(--d) * 9s) ease-in-out calc(var(--ph) - var(--o)) infinite}
+.wx-psy b{inset:0;border-radius:50%;transform:skewX(-24deg);background:linear-gradient(90deg,transparent,rgba(255,60,140,.75) 45%,rgba(190,90,255,.65) 55%,transparent)}
+/* Electric Terrain: small sparks */
+.wx-elec{--wxbg:linear-gradient(180deg,rgba(255,200,0,.4),rgba(255,200,0,.1) 80%)}
+.wx-elec i{left:var(--x);top:var(--y);width:13px;height:18px}
+.wx-elec b{inset:0;opacity:0;background:var(--wxe);clip-path:polygon(55% 0,10% 58%,45% 58%,30% 100%,90% 38%,55% 38%,75% 0);animation:wx-spark calc(var(--d) * 3s) linear calc(var(--ph) - var(--o)) infinite}
+/* Misty Terrain: pink mist (hue-only) and small sparkles */
+.wx-misty{--wxbg:linear-gradient(160deg,rgba(255,80,170,.4),rgba(255,80,170,.1) 65%)}
+.wx-misty i{left:var(--x);top:var(--y)}
+.wx-misty i:nth-child(odd){mix-blend-mode:color}
+.wx-misty i:nth-child(odd) b{width:calc(90px * var(--s));height:calc(54px * var(--s));margin:-27px 0 0 -45px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,80,170,.8),transparent);animation:wx-mist calc(var(--d) * 8s) ease-in-out calc(var(--ph) - var(--o)) infinite alternate}
+.wx-misty i:nth-child(even) b{width:7px;height:7px;background:var(--wxm);opacity:0;animation:wx-twinkle calc(var(--d) * 3.4s) ease-in-out calc(var(--ph) - var(--o)) infinite}
+/* Home: the weather as a small labelled window beside "Your team" (its own backing, white text, hue-only particles) */
+.wxchip{position:relative;isolation:isolate;display:inline-flex;align-items:center;vertical-align:middle;margin-left:4px;padding:3px 10px;border-radius:999px;overflow:hidden;background:#3A4A72;color:#fff!important;opacity:1!important;white-space:nowrap}
+.wxchip>span{position:relative;z-index:1}
+.wxchip .wxfx{border-radius:inherit}
+/* the share box: the poster is portrait, so it is shown by height */
+.shareimg.poster{display:block;width:auto;max-width:100%;max-height:62vh;margin:0 auto}
+.wxkind{margin:4px 0 8px}
+/* ========== end EXTRAS B ========== */
