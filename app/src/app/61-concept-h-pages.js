@@ -101,7 +101,7 @@ CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec
   // the date line is rebuilt on every render: the first render can run before today's data has loaded (Oct 29 fix)
   { const k = sec.querySelector(':scope > .chpghead .chk'), pf = activePerf(); if (k) { let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : '';
       try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
-      k.textContent = `Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${RES && +RES.teams > 0 ? ' · ' + basisNum(RES.teams) + ' teams' : ''}${d ? ' · updated ' + d : ''}`; } }
+      k.textContent = `Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${RES && +RES.teams > 0 ? ' · ' + basisNum(RES.teams) + ' teams' : ''}${d ? ' · data as of ' + d : ''}`; } }
   const hot = $('chHot'); const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (hot) { hot.hidden = filtered; if (!filtered && !bodyOnly) hot.innerHTML = chHotHtml(); }
   // the full board under the hot list, folded until you search or filter

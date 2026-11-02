@@ -1,11 +1,15 @@
 // ---------- data health: say plainly when a source stops updating ----------
-// Each data document carries its own date. Daily sources older than 2 days (op.gg 3) and the monthly ladder stats older
-// than 45 days get a banner, so stale numbers are never shown as if they were fresh.
-const HEALTH = [['doubles_tour', 'Tournament sets', 2], ['perf', 'Tournament win rates', 2], ['teams', 'Top teams', 2], ['events', 'Events', 2], ['model', 'Win model', 2], ['doubles_ingame', 'In-game rankings', 3], ['doubles', 'Showdown ladder stats', 45]];
-function renderHealth() { try { renderReg(); } catch (e) {} const el = $('healthBar'); if (!el) return; const now = Date.now(), stale = [];
-  for (const [k, label, days] of HEALTH) { const t = DATA_AT[k]; if (!t) continue; const age = Math.floor((now - t) / 864e5); if (age > days) stale.push(`${label} (${age} days old)`); }
+// Each data document carries its own date. A source past its usual age (the same limits as the daily job's health gate,
+// health.mjs) gets a calm amber note on Home and the Meta pages (CSS shows #healthBar only there), naming it and the day it
+// was last updated, so stale numbers are never shown as if they were fresh. A missing document is simply not listed.
+const HEALTH = [['doubles_tour', 'Tournament sets', 2], ['perf', 'Tournament win rates', 2], ['teams', 'Top teams', 2], ['model', 'Win model', 2], ['events', 'Events', 3], ['doubles_ingame', 'In-game rankings', 3], ['practice', 'Team preview practice', 4], ['track', 'Ratings track record', 2], ['doubles', 'Showdown ladder stats', 45]];
+const healthDay = t => { try { return new Date(t).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) { return ''; } };
+function healthStale(now) { now = now || Date.now(); const out = []; const at = typeof DATA_AT === 'object' ? DATA_AT : {};
+  for (const [k, label, days] of HEALTH) { const t = at[k]; if (!t) continue; const age = Math.floor((now - t) / 864e5); if (age > days) out.push({k, label, age, day: healthDay(t)}); }
+  return out; }
+function renderHealth() { try { renderReg(); } catch (e) {} const el = $('healthBar'); if (!el) return; const stale = healthStale();
   el.hidden = !stale.length;
-  el.innerHTML = stale.length ? `<b>Data check:</b> ${stale.map(esc).join(', ')} ${stale.length > 1 ? 'have' : 'has'} not updated. The daily job may have failed; everything else is current.` : ''; }
+  el.innerHTML = stale.length ? `<b>Some data is older than usual:</b> ${stale.map(x => `${esc(x.label)}, last updated ${esc(x.day)}`).join('; ')}.<span class="t2">Everything else is current. Numbers from ${stale.length > 1 ? 'these parts' : 'this part'} may be a little behind until the daily update catches up.</span>` : ''; }
 /* ---------- regulation banner (Nov 1) ----------
    meta/perf.reg (reg.mjs → perf.json): the regulation every number is built from, and a newer one being played. The data job
    never mixes two regulations; while a new one is short of data the page keeps the old numbers and says so calmly on Home

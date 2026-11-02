@@ -227,7 +227,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const pickLine = F2 && cl.length && cb.length ? `<div class="chmwho">NastyPlot's pick vs ${foe}: lead <b>${cl.map(m => esc(m.d)).join(' + ')}</b>, back ${cb.map(m => esc(m.d)).join(' + ')}</div>` : '';
   const phoneH = `<div class="chmh">
     <section class="chmhero"><div class="chk">Pokémon Champions · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="chdisp sub">Before turn one.</div>
-      <p>Teams, sets and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>.</p>
+      <p>Teams, sets and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>${dataDateText() ? `<span class="chasof"> · ${esc(dataDateText().replace(/^Data as of/, 'data as of'))}</span>` : ''}.</p>
       <div class="chmacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="report">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></section>
     ${champ ? `<section class="chmcard them"><div class="chk">Latest winner · ${esc(evName(ev.name))}</div><div class="chmct">The champion's six</div>
       <div class="chmwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen">same six as yours!</span>' : ''}</div>

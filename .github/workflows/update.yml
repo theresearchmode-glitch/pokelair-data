@@ -4,7 +4,8 @@ on:
     - cron: '7 9 * * *'   # daily, about 5:07 AM New York time in summer, 4:07 AM in winter (GitHub can start it up to an hour late), before NastyPlot's 6:52 refresh
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: write   # commit the day's data
+  issues: write     # open, refresh or close the one "Daily data problem" issue (last step)
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -56,5 +57,41 @@ jobs:
           # code can change on main while the job runs; replay the data commit on top and retry
           for i in 1 2 3; do git pull --rebase origin main && git push && exit 0; sleep 10; done
           exit 1
+      # Data health gate: runs after the commit, so whatever good data the day produced is already saved. It fails the run
+      # (GitHub emails the owner about failed runs) when a file the page relies on is missing, broken, or past its age limit
+      # (limits in health.mjs: daily sources 2 days, so one flaky day never alerts), and writes a table to the job summary.
       - name: Data health
+        id: health
+        if: always()
+        env:
+          HEALTH_REPORT: ${{ runner.temp }}/health.md
         run: node health.mjs
+      # One "Daily data problem" issue, reused: opened when the run fails, its text refreshed each failing day (a comment only
+      # when the list of problems changes, so a repeat doesn't email again), closed with a note on the first healthy run.
+      - name: Daily data problem issue
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          HEALTH_REPORT: ${{ runner.temp }}/health.md
+          JOB_STATUS: ${{ job.status }}
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
+        with:
+          script: |
+            const fs = require('fs'), title = 'Daily data problem';
+            let report = ''; try { report = fs.readFileSync(process.env.HEALTH_REPORT, 'utf8'); } catch (e) {}
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const healthy = process.env.JOB_STATUS === 'success' && process.env.HEALTH_OUTCOME === 'success';
+            const open = (await github.paginate(github.rest.issues.listForRepo, {...context.repo, state: 'open', per_page: 100}))
+              .filter(i => !i.pull_request && i.title === title);
+            const issue = open[0];
+            if (healthy) {
+              if (issue) { await github.rest.issues.createComment({...context.repo, issue_number: issue.number, body: `Fixed: today's data check passed. ${run}`});
+                await github.rest.issues.update({...context.repo, issue_number: issue.number, state: 'closed', state_reason: 'completed'}); }
+              return; }
+            const lead = process.env.HEALTH_OUTCOME === 'success' ? `A step of the daily job failed (see the run log), although every data file is still within its age limit.\n\n` : '';
+            const body = `${lead}${report || 'The data check did not run; see the run log.'}\n\nLast checked: ${run}`;
+            const list = b => (String(b || '').match(/^- .*$/gm) || []).join('\n');
+            if (!issue) { await github.rest.issues.create({...context.repo, title, body}); return; }
+            const changed = list(issue.body) !== list(body);
+            await github.rest.issues.update({...context.repo, issue_number: issue.number, body});
+            if (changed) await github.rest.issues.createComment({...context.repo, issue_number: issue.number, body: `The list of problems changed today. ${run}`});

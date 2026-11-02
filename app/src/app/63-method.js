@@ -120,7 +120,7 @@ const NP_SECTIONS = [
   ['fresh', 'Updates and cross-checks', 'Every morning, each number with its date', () => { const H = typeof HEALTH === 'object' ? HEALTH : [], at = typeof DATA_AT === 'object' ? DATA_AT : {};
     const rows = H.filter(([k]) => at[k]).map(([k, l]) => `<li><span>${esc(l)}</span><b>${npDay(new Date(at[k]).toISOString())}</b></li>`).join('');
     return `<ul class="npdots"><li>The data job runs every morning and the page picks it up at about 7 AM New York time.</li>
-      <li>Every source carries its own date. A banner appears when a daily source is more than 2 days old (in-game rankings 3, monthly ladder stats 45), and rating inputs past their date are left out.</li>
+      <li>Every source carries its own date. An amber note appears on Home and the Meta pages when a daily source is more than 2 days old (events and in-game rankings 3, practice games 4, monthly ladder stats 45), and rating inputs past their date are left out. If the daily job finds a source stale or broken, it alerts us the same morning.</li>
       <li><b>Cross-check:</b> each day our numbers are compared with independent sites (recent tournament usage, online vs official events, ladder usage). Big disagreements are flagged in the daily job's report.</li></ul>
       ${rows ? `<div class="chk" style="margin-top:12px">Data on this page</div><ul class="npdates">${rows}</ul>` : ''}`; }]];
 /* "How to read our numbers" (Nov 2): one compact card at the top. The rating bands come from LTIERS, the team-grade bands
