@@ -1514,3 +1514,7 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 /* ========== end SHEET TABS ========== */
 /* feedback box (pre-launch privacy, Nov 2): the anonymity note right under the text box; body font, main ink for contrast */
 .fbbox .fbanon{margin:6px 2px 0;font:500 13px/1.4 var(--body,'Archivo',sans-serif);color:var(--chink,var(--ink))}
+/* one yellow button per page (Sim, Nov 2): on My team that is Save team / Update saved team; the top suggestion's Apply
+   becomes the dark button like its neighbours */
+:root:not(#_ch) #saveBtn.btn.primary{background:var(--chyel);border:2px solid var(--chbtnInk);color:var(--chbtnInk)}
+:root:not(#_ch) .chsug .chapply.chprimary{background:var(--chink);border:2px solid var(--chink);color:var(--chp);box-shadow:none}
