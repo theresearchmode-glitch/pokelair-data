@@ -1346,7 +1346,7 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 :root:not(#_lg) .lshead.chls.ltype h3{color:#1D2140!important}
 :root:not(#_lg) .lshead.chls .lsname::before{content:"";position:absolute;left:-70px;right:-150px;top:-60px;bottom:-40px;z-index:-1;pointer-events:none;
   background:radial-gradient(ellipse 64% 50% at 36% 52%,rgba(12,14,32,.66) 0,rgba(12,14,32,.58) 50%,rgba(12,14,32,.24) 80%,transparent 100%)}
-:root:not(#_lg) .lshead.chls.ltype .lsname::before{background:radial-gradient(ellipse 64% 50% at 36% 52%,rgba(255,252,244,.62) 0,rgba(255,252,244,.5) 50%,rgba(255,252,244,.2) 80%,transparent 100%)}
+:root:not(#_lg) .lshead.chls.ltype .lsname::before{left:-24px;right:-40px;top:-18px;bottom:-14px;background:radial-gradient(ellipse 60% 55% at 40% 52%,rgba(255,252,244,.42) 0,rgba(255,252,244,.3) 55%,rgba(255,252,244,.08) 85%,transparent 100%)}
 /* the header is full-bleed: no edge line (the panel's rounded corners clip it), the darkening is a background layer (not a
    huge inset shadow) and the type pattern covers the whole box, so no plain band shows along any edge or corner */
 :root:not(#_ch) .lshead.chls{border:0;box-shadow:none;background-image:linear-gradient(rgba(10,12,30,.3),rgba(10,12,30,.3))}
