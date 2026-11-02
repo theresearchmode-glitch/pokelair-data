@@ -82,8 +82,8 @@ for (const n of ['Rillaboom', 'Charizard-Mega-Y', 'Pelipper']) { await open(n);
   const r = await EF(n => { const p = byName.get(n), maxN = calcStat(p, 'Spe', 32, 1.1), s = likelySpeed(p, null), run = spdCalc(s.v, s.scarf, abilityOf({p}), '', {});
     const want = {run, none: calcStat(p, 'Spe', 0, 1), max: calcStat(p, 'Spe', 32, 1), maxn: maxN, tw: spdCalc(maxN, false, '', '', {tw: true}), tr: calcStat(p, 'Spe', 0, .9)}; if (!p.m) want.scarf = spdCalc(maxN, true, '', '', {});
     const got = {}; for (const x of LST.speeds(p)) got[x.k] = x.v;
-    const shown = [...document.querySelectorAll('#lairSheet .lsspr b')].map(b => +b.textContent);
-    const os = document.querySelector('#lairSheet .lsspr.main .lsspo'), ot = outspeedTxt(outspeedOf(run, '', {}));
+    const shown = [...document.querySelectorAll('#lairSheet .lsvr b')].map(b => +b.textContent);
+    const os = document.querySelector('#lairSheet .lsvr.main .lsvo'), ot = outspeedTxt(outspeedOf(run, '', {}));
     return {ok: Object.keys(want).every(k => got[k] === want[k]), shownOk: shown.length >= 6 && shown[0] === run, osOk: !ot || (os && os.textContent === ot), want, got, mega: p.m, hasScarf: 'scarf' in got}; }, n);
   ok(r.ok && r.shownOk && r.osOk && (r.mega ? !r.hasScarf : r.hasScarf), `${n}: Speed rows equal calcStat / spdCalc / likelySpeed (${JSON.stringify(r.got)})`); }
 // the same numbers as the Speed tiers page: every threat listed there (no weather, no toggles) shows the same Speed on its sheet

@@ -58,7 +58,7 @@ LST.info = p => { const st = (() => { try { return setFor(p) || {}; } catch (e) 
     <p class="t2 lsnote">${M.only ? `Its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} with ${esc(M.only)}` : `For its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} alone`}. Every type not listed hits it for normal damage.</p>`;
   /* speed */
   const sp = LST.speeds(p);
-  const spd = `<div class="lsspd">${sp.map(r => `<div class="lsspr${r.main ? ' main' : ''}${r.tr ? ' tr' : ''}"><span class="lsspl">${esc(r.l)}</span><b>${r.v}</b><span class="lsspn">${esc(r.note)}</span>${r.os ? `<span class="lsspo">${esc(outspeedTxt(r.os, {tr: r.tr}))}${r.tr ? ' under Trick Room' : ''}</span>` : ''}</div>`).join('')}</div>
+  const spd = `<div class="lsvd">${sp.map(r => `<div class="lsvr${r.main ? ' main' : ''}${r.tr ? ' tr' : ''}"><span class="lsvl">${esc(r.l)}</span><b>${r.v}</b><span class="lsvn">${esc(r.note)}</span>${r.os ? `<span class="lsvo">${esc(outspeedTxt(r.os, {tr: r.tr}))}${r.tr ? ' under Trick Room' : ''}</span>` : ''}</div>`).join('')}</div>
     <p class="t2 lsnote">Level 50, as in Pokémon Champions: base Speed ${p.st[5]}, Speed points 0–32 add 1 each, a Speed nature adds 10%. "Top 30" = the 30 biggest threats at their usual Speed.</p>
     <button type="button" class="nplink" data-view="speed">Speed tiers <span aria-hidden="true">→</span></button>`;
   const sec = (k, t, h) => `<section class="lsi lsi-${k}"><h4>${t}</h4>${h}</section>`;
