@@ -170,7 +170,7 @@ function abDescribe(t) {
   const mons = t.map((m, i) => ({n: m.p.n, d: m.p.d, types: m.p.t, mega: !!m.p.m, box: inBox(m.p), role: role(m), ability: m.ability, it: (tA[i] && tA[i].item) || '', offMeta: viability(m.p) < 25}));
   const why = [];
   if (RES) { const names = new Set(t.map(m => m.p.n)); const core = RES.cores.filter(c => c.slice(0, 3).every(n => names.has(n)) && c[4] >= (RES.base || .5)).sort((a, b) => b[4] - a[4])[0]; /* only a core that wins more than average, the best one */
-    if (core) why.push(`${core.slice(0, 3).map(n => (byName.get(n) || {}).d || n).join(' + ')}: ${core[3]} tournament teams, ${Math.round(core[4] * 100)}% wins`); }
+    if (core) why.push(`${core.slice(0, 3).map(n => (byName.get(n) || {}).d || n).join(' + ')}: ${core[3]} tournament teams, ${winFmt(core[4] * 100)} wins`); }
   else { let best = null; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const s = pairSyn(t[i], t[j]); if (!best || s > best.s) best = {s, a: t[i], b: t[j]}; }
     if (best && best.s >= 8) why.push(`${best.a.d} and ${best.b.d} are often run together in ranked`); }
   // the same readiness report as My team, so the card and the team page never disagree (sweep, Oct 31)

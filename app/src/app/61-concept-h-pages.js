@@ -77,7 +77,7 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
     const h = bl.querySelector(':scope > .head h2, :scope > h2'); if (h) h.hidden = true; } });
 // ---------- Ratings: the hot list ----------
 function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; const top = rows.slice(0, PHONE() ? 16 : 20);
-  const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${pctFmt(+t[0])} of teams · ${pctFmt(+t[1])} wins` : `rated ${RS(x.r.total)}`; },
+  const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${pctFmt(+t[0])} of teams · ${winFmt(+t[1])} wins` : `rated ${RS(x.r.total)}`; },
     /* the data behind the line (trust pass): the games its win rate comes from, flagged when few */
     bas = x => { const t = tour(x); return t && +t[2] > 0 ? CH.basis(t[2], 'game', 'games', {short: true}) : ''; };
   // the top two take their own type colours (a blend for dual types), darkened a little so the white text stays readable

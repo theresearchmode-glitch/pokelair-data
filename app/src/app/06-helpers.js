@@ -167,3 +167,6 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
    (11-game-plan.js keeps its own local pctTxt for a different job, so this one is pctFmt.) */
 function pctFmt(v,sign=true){if(v==null||v===''||!isFinite(+v))return '–';v=+v;const a=Math.abs(v),s=sign?'%':'';
   if(a===0)return '0'+s;if(a<.1)return (v<0?'>−':'<')+'0.1'+s;return (v<0?'−':'')+(a>=9.95?String(Math.round(a)):a.toFixed(1))+s}
+
+/* win rates keep one decimal (Sim, Nov 2): 51.6% and 52.0% must not both read 52%; every other % follows pctFmt */
+function winFmt(v){if(v==null||v===''||!isFinite(+v))return '–';return (+v).toFixed(1)+'%'}
