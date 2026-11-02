@@ -1165,17 +1165,12 @@ img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 
 :root[data-look="dark"] .nprm.me i{color:#B4DDFF}:root[data-look="dark"] .nprm i{color:#DDD6CA}
 
 /* --- 7 · wow moments --- */
-/* S tier: a gold frame and a slow gold sheen. The sheen is one pseudo-element under the text (isolation + z-index -1) that only
-   shifts hue (mix-blend-mode: color keeps the background's lightness), so text contrast never changes. */
+/* S tier: a gold frame. The slow gold sheen that was here became the holographic foil in EXTRAS A (end of this file,
+   app/src/app/66-extras-a.js): same pseudo-element, same hue-only blend, so the two never stack. */
 .chhot.nps{outline:2.5px solid #ffb400;outline-offset:2px}
 .ltier.nps{position:relative;isolation:isolate;outline:2px solid #ffb400;outline-offset:-1px}
 .chlsr.nps{position:relative;isolation:isolate;overflow:hidden;background:var(--chc);border-radius:14px 0 0 14px;box-shadow:inset 0 0 0 2px #ffb400}
 .chhot.nps{isolation:isolate}
-@media (prefers-reduced-motion: no-preference){
-  :is(.chhot,.ltier,.chlsr).nps::after{content:'';position:absolute;top:-10%;bottom:-10%;left:0;width:45%;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 0,#ffc21a 50%,transparent 100%);mix-blend-mode:color;transform:translateX(-130%);animation:np-sheen 6s ease-in-out 1s infinite}
-  .ltier.nps::after{width:30%}
-}
-@keyframes np-sheen{0%{transform:translateX(-130%)}10%,100%{transform:translateX(360%)}}
 /* My team grade A: a glow in the A colour around (never inside) the ring */
 .chring.npA{position:relative}
 .chring.npA::before{content:'';position:absolute;inset:-16px;border-radius:50%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,transparent 67%,color-mix(in srgb,var(--gc) 50%,transparent) 73%,transparent 100%)}
@@ -1194,3 +1189,78 @@ img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 
 @media (prefers-reduced-motion: no-preference){.npgain{animation:np-gain .45s cubic-bezier(.3,1.6,.5,1)}}
 @keyframes np-gain{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
 /* ========== end DESIGN PASS C ========== */
+/* ========== EXTRAS A (Nov 2): holographic S tier, Mega moments, type-themed info sheets — app/src/app/66-extras-a.js ========== */
+/* --- 1 · holographic S-tier cards (replaces design pass C's gold sheen) ---
+   One pseudo-element under the text (the card is isolated, z-index -1): diagonal rainbow foil bands, blended with
+   mix-blend-mode: color, which takes only hue and saturation and keeps the card's own lightness, so text contrast holds.
+   It moves by transform/translate only: with scroll on its own where the browser has scroll-driven animations (no script),
+   and by --hx / --hy (0..1) that 66-extras-a.js sets from the pointer over the card (desktop), device tilt (only where no
+   permission prompt is needed) or, in browsers without scroll-driven animations, the card's place on screen.
+   With reduced motion nothing moves (a still foil). */
+.chhot.nps,.ltier.nps,.chlsr.nps{--hx:.5;--hy:.5}
+:is(.chhot,.ltier,.chlsr).nps::after{content:'';position:absolute;inset:-80%;z-index:-1;pointer-events:none;
+  background:repeating-linear-gradient(115deg,transparent 0 70px,#ff4f8b 86px,#ffb400 100px,#46e0a2 114px,#3fa9ff 128px,#b45cff 142px,transparent 158px 250px);
+  mix-blend-mode:color;opacity:.4;will-change:transform;
+  translate:calc((var(--hx) - .5) * -30%) calc((var(--hy) - .5) * -30%)}
+.ltier.nps::after{opacity:.45}.chlsr.nps::after{opacity:.55}
+/* the rating box's gold frame is drawn as an outline (painted above the foil), so the frame stays gold */
+.chlsr.nps{box-shadow:none;outline:2px solid #ffb400;outline-offset:-2px}
+:root[data-look="dark"] :is(.chhot,.ltier,.chlsr).nps::after{opacity:.34}
+@media (prefers-reduced-motion: no-preference){
+  :is(.chhot,.ltier,.chlsr).nps::after{transition:translate .35s cubic-bezier(.2,.7,.3,1)}
+  @supports (animation-timeline: view()){:is(.chhot,.ltier,.chlsr).nps::after{animation:np-foil linear both;animation-timeline:view()}}
+}
+@keyframes np-foil{from{transform:translate3d(10%,12%,0)}to{transform:translate3d(-10%,-12%,0)}}
+
+/* --- 2 · Mega moments --- */
+/* MEGA badges: a rainbow drifting through the badge, under its letters, hue-only (mix-blend-mode: color) so the badge keeps
+   its lightness and its text contrast. It moves only where a Mega is the star (info sheet, set view, your team's slots);
+   in long lists it stays a still rainbow. */
+.tag.mega{position:relative;isolation:isolate;overflow:hidden}
+/* the blend needs a solid badge underneath (the dark theme's badge was see-through, so on a coloured header the rainbow showed raw) */
+:root[data-look="dark"] .tag.mega{background-color:color-mix(in srgb,#b28cff 22%,#17151c)}
+.tag.mega::after{content:'';position:absolute;top:0;bottom:0;left:0;width:200%;z-index:-1;pointer-events:none;
+  background:linear-gradient(90deg,#ff4f8b,#ffb400,#46e0a2,#3fa9ff,#b45cff,#ff4f8b) 0 0/50% 100% repeat-x;mix-blend-mode:color;opacity:.75}
+@media (prefers-reduced-motion: no-preference){:is(.lshead,.sethead,.sl-sub) .tag.mega::after{animation:np-mega 5s linear infinite}}
+@keyframes np-mega{to{transform:translateX(-50%)}}
+/* the little M flags (tier board tiles, team grids): a rainbow underline inside the flag, no size change */
+.ltm,:root:not(#_ch) .tgmk{background-image:linear-gradient(90deg,#ff4f8b,#ffb400,#46e0a2,#3fa9ff,#b45cff);background-size:100% 2px;background-position:0 100%;background-repeat:no-repeat}
+/* a soft prismatic halo behind Mega pictures, only on the info sheet hero, the hot list and your team sheet. It is the
+   picture's own background (no extra element, no filter), so nothing is re-created and nothing flickers. */
+:is(.chhot,.chhr).npmega .spr,#chSheetOut .chrow.npmega .spr,.lshead.npmega .lsspr{border-radius:50%;
+  background:radial-gradient(closest-side,transparent 46%,rgba(255,79,139,.22) 57%,rgba(255,180,0,.22) 66%,rgba(70,224,162,.2) 75%,rgba(63,169,255,.2) 84%,rgba(180,92,255,.14) 92%,transparent 100%)}
+:root[data-look="dark"] :is(.chhot,.chhr).npmega .spr,:root[data-look="dark"] #chSheetOut .chrow.npmega .spr{
+  background:radial-gradient(closest-side,transparent 44%,rgba(255,79,139,.34) 56%,rgba(255,180,0,.32) 65%,rgba(70,224,162,.3) 74%,rgba(63,169,255,.3) 83%,rgba(180,92,255,.22) 91%,transparent 100%)}
+
+/* --- 3 · type-themed info sheets ---
+   The header's halftone dots give way to a faint pattern for the first type, coloured from the second type (--tb; the same
+   as the first for single types). Under white text it is multiplied (can only darken the background), under dark text it is
+   screened (can only lighten it): the name and the small lines on the header never lose contrast. It stays still. */
+:root:not(#_ch) .lshead.chls.npty{isolation:isolate;background-image:none}
+.lshead.chls.npty::before{content:'';position:absolute;left:calc(-1 * var(--nptw));top:calc(-1 * var(--npth));right:0;bottom:0;z-index:-1;pointer-events:none;
+  background:color-mix(in srgb,var(--tb) 45%,#000);-webkit-mask:var(--npm) 0 0/var(--nptw) var(--npth) repeat;mask:var(--npm) 0 0/var(--nptw) var(--npth) repeat;
+  mix-blend-mode:multiply;opacity:.36}
+.lshead.chls.npty.ltype::before{background:color-mix(in srgb,var(--tb) 30%,#fff);mix-blend-mode:screen;opacity:.2}
+/* (a very slow drift was tried and left out: on a 4x-throttled phone it added ~60 ms to opening the sheet. To bring it back:
+   @media (prefers-reduced-motion: no-preference){.lshead.chls.npty::before{animation:np-drift 40s linear infinite}}
+   @keyframes np-drift{to{transform:translate3d(var(--nptw),var(--npth),0)}} ) */
+/* pattern tiles, one per type (generated from inline SVG by a small script; black = pattern, used as a mask) */
+.npty-normal{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='5.5' cy='5.5' r='2.4'/%3E%3Ccircle cx='16.5' cy='16.5' r='2.4'/%3E%3C/svg%3E");--nptw:22px;--npth:22px}
+.npty-fire{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath d='M10 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4 3-7 1 2 2 3 3 3 0-3-1-5 0-7z'/%3E%3Cpath d='M31 25c.7 2.6 4 4 4 7.2a4 4 0 0 1-8 0c0-2 1.3-2.7 2-4.6.7 1.3 1.3 2 2 2 0-2-.7-3.3 0-4.6z'/%3E%3Cpath d='M33 6l2.2 3-2.2 3-2.2-3z'/%3E%3Cpath d='M15 33l1.8 2.4-1.8 2.4-1.8-2.4z'/%3E%3Ccircle cx='40' cy='17' r='1.3'/%3E%3Ccircle cx='4' cy='26' r='1.3'/%3E%3C/svg%3E");--nptw:44px;--npth:44px}
+.npty-water{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='22' viewBox='0 0 48 22'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M-2 7q7-6 13 0t13 0 13 0 13 0M-2 18q7-5 13 0t13 0 13 0 13 0'/%3E%3C/svg%3E");--nptw:48px;--npth:22px}
+.npty-grass{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M6 22C6 11 15 5 24 5c0 11-9 17-18 17z'/%3E%3Cpath d='M26 37c0-8 6-12 12-12 0 8-6 12-12 12z'/%3E%3C/svg%3E");--nptw:40px;--npth:40px}
+.npty-electric{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'%3E%3Cpath d='M12 2 5 15h6l-3 10 10-14h-6l4-9z'/%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M22 30l5-5 4 4 5-5'/%3E%3C/svg%3E");--nptw:38px;--npth:38px}
+.npty-ice{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M18 7v22M8.5 12.5l19 11M8.5 23.5l19-11M15 8l3 3 3-3M15 28l3-3 3 3'/%3E%3Ccircle cx='3' cy='3' r='1.4'/%3E%3Ccircle cx='33' cy='33' r='1.4'/%3E%3C/svg%3E");--nptw:36px;--npth:36px}
+.npty-fighting{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M20 4v7M20 29v7M4 20h7M29 20h7M8.5 8.5l5 5M31.5 8.5l-5 5M8.5 31.5l5-5M31.5 31.5l-5-5'/%3E%3C/svg%3E");--nptw:40px;--npth:40px}
+.npty-poison{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' cx='12' cy='12' r='7'/%3E%3Ccircle fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' cx='29' cy='27' r='4.5'/%3E%3Ccircle cx='31' cy='9' r='2.2'/%3E%3Ccircle cx='10' cy='31' r='2.6'/%3E%3C/svg%3E");--nptw:40px;--npth:40px}
+.npty-ground{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='24' viewBox='0 0 56 24'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M-2 6h16l5 4h22l6-4h11M-2 17h9l6-3h17l5 4h23'/%3E%3C/svg%3E");--nptw:56px;--npth:24px}
+.npty-flying{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='36' viewBox='0 0 52 36'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M3 11h20a5 5 0 1 0-5-5M14 27h26a5 5 0 1 1-5 5'/%3E%3C/svg%3E");--nptw:52px;--npth:36px}
+.npty-psychic{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='22' viewBox='0 0 44 22'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M-2 11q5.5-9 11 0t11 0 11 0 11 0 11 0'/%3E%3Ccircle cx='9' cy='20' r='1.3'/%3E%3Ccircle cx='31' cy='2' r='1.3'/%3E%3C/svg%3E");--nptw:44px;--npth:22px}
+.npty-bug{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M13.4 11.1L8.0 14.2L2.6 11.1L2.6 4.9L8.0 1.8L13.4 4.9ZM28.4 26.1L23.0 29.2L17.6 26.1L17.6 19.9L23.0 16.8L28.4 19.9Z'/%3E%3C/svg%3E");--nptw:30px;--npth:30px}
+.npty-rock{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M5 20 13 7l12 4 2 13-13 5zM13 7l1 22M2 40l9-6 8 3M30 38l8-10 6 6'/%3E%3C/svg%3E");--nptw:44px;--npth:44px}
+.npty-ghost{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M5 30c7 0 9-6 5-11s0-12 7-12M27 40c6 0 7-5 4-9s0-9 6-9'/%3E%3C/svg%3E");--nptw:44px;--npth:44px}
+.npty-dragon{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' d='M0 12a6 6 0 0 1 12 0a6 6 0 0 1 12 0M-6 6a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0'/%3E%3C/svg%3E");--nptw:24px;--npth:12px}
+.npty-dark{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='42' height='42' viewBox='0 0 42 42'%3E%3Cpath d='M13 4a9 9 0 1 0 9 13.5A7 7 0 1 1 13 4z'/%3E%3Cpath d='M32 24a5 5 0 1 0 5 7.5A4 4 0 1 1 32 24z'/%3E%3C/svg%3E");--nptw:42px;--npth:42px}
+.npty-steel{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M2 2h32v32H2z'/%3E%3Ccircle cx='7' cy='7' r='1.8'/%3E%3Ccircle cx='29' cy='7' r='1.8'/%3E%3Ccircle cx='7' cy='29' r='1.8'/%3E%3Ccircle cx='29' cy='29' r='1.8'/%3E%3C/svg%3E");--nptw:36px;--npth:36px}
+.npty-fairy{--npm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z'/%3E%3Cpath d='M30 23l1.3 5 5 1.3-5 1.3-1.3 5-1.3-5-5-1.3 5-1.3z'/%3E%3Ccircle cx='31' cy='8' r='1.4'/%3E%3Ccircle cx='8' cy='31' r='1.4'/%3E%3C/svg%3E");--nptw:40px;--npth:40px}
+/* ========== end EXTRAS A ========== */

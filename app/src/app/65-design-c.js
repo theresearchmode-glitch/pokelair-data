@@ -63,8 +63,8 @@ window.addEventListener('resize', () => { clearTimeout(NPR.rt); NPR.rt = setTime
   if (Math.abs((el.clientWidth || 0) - (NPR.cw || 0)) > 8) renderSpeed(); }, 200); });
 
 /* ===== Wow moments =====
-   S tier: a slow gold sheen on the ratings hot list's top cards, the S row of the tier board and the info sheet's rating box
-   (class nps; the sheen is a hue-only blend under the text, so it never changes text contrast). The My team grade ring glows
+   S tier: a holographic foil (Extras A, 66-extras-a.js; it replaced the slow gold sheen) on the ratings hot list's top cards, the S row of the tier board and the info sheet's rating box
+   (class nps; the foil is a hue-only blend under the text, so it never changes text contrast). The My team grade ring glows
    in the A colour when the letter is A (class npA), sparkles once when the grade goes up after a change (np-spark), and Fix
    it's Apply adds a popping "+N points ready" to its toast when it raised readiness. All motion is CSS, off with reduced motion. */
 const npIsS = n => { try { const p = byName.get(n); return !!p && lTier(rating(p).total).k === 'S'; } catch (e) { return false; } };
