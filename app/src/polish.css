@@ -432,7 +432,7 @@ button.chring{background:none;cursor:pointer;padding:0}
 .regbar .t2{display:block;margin-top:2px;font-size:12.5px;color:var(--chink2,var(--mute))}
 /* data health note (pre-launch, Nov 2): calm amber, never red (red is for opponents). Home and the Meta pages only; the
    element stays hidden when every source is current. Small text uses the main ink for 7:1 contrast. */
-.healthbar{margin:12px 0 0;padding:10px 14px 10px 40px;border-radius:14px;border:2px solid #C98A12;background:#FFF1CF;color:#1D2140;font:500 14px/1.45 var(--body);position:relative}
+.healthbar{margin:12px 0 14px;padding:10px 14px 10px 40px;border-radius:14px;border:2px solid #C98A12;background:#FFF1CF;color:#1D2140;font:500 14px/1.45 var(--body);position:relative}
 .healthbar::before{content:"";position:absolute;left:14px;top:13px;width:16px;height:16px;border-radius:50%;background:#E3A21A;box-shadow:inset 0 0 0 4px #FFE3A0}
 .healthbar b{font-weight:800}
 .healthbar .t2{display:block;margin-top:2px;font-size:13px;color:#1D2140}

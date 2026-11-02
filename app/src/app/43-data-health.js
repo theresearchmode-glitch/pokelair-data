@@ -9,7 +9,7 @@ function healthStale(now) { now = now || Date.now(); const out = []; const at = 
   return out; }
 function renderHealth() { try { renderReg(); } catch (e) {} const el = $('healthBar'); if (!el) return; const stale = healthStale();
   el.hidden = !stale.length;
-  el.innerHTML = stale.length ? `<b>Some data is older than usual:</b> ${stale.map(x => `${esc(x.label)}, last updated ${esc(x.day)}`).join('; ')}.<span class="t2">Everything else is current. Numbers from ${stale.length > 1 ? 'these parts' : 'this part'} may be a little behind until the daily update catches up.</span>` : ''; }
+  el.innerHTML = stale.length ? `<b>Some data is older than usual:</b> ${stale.map(x => `${esc(x.label)}, last updated ${esc(x.day)}`).join('; ')}.<span class="t2">Everything else is current.</span>` : ''; }
 /* ---------- regulation banner (Nov 1) ----------
    meta/perf.reg (reg.mjs → perf.json): the regulation every number is built from, and a newer one being played. The data job
    never mixes two regulations; while a new one is short of data the page keeps the old numbers and says so calmly on Home
