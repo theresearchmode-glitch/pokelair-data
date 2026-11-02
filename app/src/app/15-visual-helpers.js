@@ -34,7 +34,7 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
 // rating badge: the shown (school-scale) rating with its tier letter, in the tier's colour (Nov 2: it printed the internal
 // score in a gold/silver/bronze palette of its own; now the same LTIERS colours and numbers as everywhere else)
 function ratingTag(p) { const r = rating(p), t = RS(r.total), T = lTier(r.total), rk = typeof rankTxt === 'function' ? rankTxt(p) : '';
-  return `<span class="tag rating lt" style="background:${T.c};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${t} · ${T.k} tier${rk ? ' · ' + rk : ''} · ${esc(rRange(r))} · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t}, ${T.k} tier">${T.k} ${t}</span>`; }
+  return `<span class="tag rating lt" style="background:${tierBg(T.c)};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${t} · ${T.k} tier${rk ? ' · ' + rk : ''} · ${esc(rRange(r))} · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t}, ${T.k} tier">${T.k} ${t}</span>`; }
 /* Design pass A (Nov 2, item 1): numbers wear their band colour. bandAt(total) = ' data-band="S"' for an internal rating total;
    CSS (polish.css, DESIGN A block) colours any number carrying data-band with the band's text-safe ink (--bni) for the theme.
    winSpan(v) wraps a win rate so it reads above (green) or below (indigo, never red) the 50% average. */
@@ -50,14 +50,20 @@ const ARCH_COLOR = {'Rain': '#2f7bff', 'Sun': '#ff7a1a', 'Sun-Rain': 'linear-gra
 // (gradient chips also get a light shade under white text, see polish.css). Was a hand list that left TailRoom at 1.9:1.
 const lumOf = hex => { const h = hex.replace('#', ''); return .2126 * lin(parseInt(h.slice(0, 2), 16)) + .7152 * lin(parseInt(h.slice(2, 4), 16)) + .0722 * lin(parseInt(h.slice(4, 6), 16)); }, lin = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
 const cr = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05), INK_L = lumOf('#1a1206');
-const archDark = c => { const st = (String(c).match(/#[0-9a-f]{6}/gi) || ['#6f7a8f']).map(lumOf), shade = 1; return Math.min(...st.map(l => cr(l, INK_L))) >= Math.min(...st.map(l => cr(1, l * shade))); };
+const archDark = c => { const st = (String(c).match(/#[0-9a-f]{6}/gi) || ['#6f7a8f']).map(lumOf); return Math.min(...st.map(l => cr(l, INK_L))) >= 4.5; }; /* legibility (Nov 2): dark text only where it reaches 4.5:1 on every stop, else white on a measured veil */
 const ARCH_DARK_TEXT = {has: x => archDark(ARCH_COLOR[x] || '#6f7a8f')};
 // Two-style tags (Sun-Snow, TailRoom) are a gradient of their two colours; --ac stays a solid colour so the chip is never
 // see-through when the shared darkening layer replaces the background image (Oct 29: those chips were white on pale grey)
 function archChips(label) { return String(label || '').split(' · ').filter(Boolean).map(x => { let c = ARCH_COLOR[x];
     if (!c && x.includes('-')) { const parts = x.split('-').map(y => ARCH_COLOR[y] || ARCH_COLOR[y.charAt(0).toUpperCase() + y.slice(1).toLowerCase()]).filter(y => y && !y.startsWith('linear')); if (parts.length === 2) c = `linear-gradient(90deg,${parts[0]},${parts[1]})`; }
     c = c || '#6f7a8f'; const g = c.startsWith('linear'), solid = g ? (c.match(/#[0-9a-f]{6}/i) || ['#6f7a8f'])[0] : c;
-    return `<span class="archchip${ARCH_DARK_TEXT.has(x) ? ' dk' : ''}${g ? ' grad' : ''}" style="--ac:${solid}${g ? `;--acg:${c}` : ''}">${esc(x)}</span>`; }).join(''); }
+    const dk = ARCH_DARK_TEXT.has(x), sh = dk ? 0 : archShade(c);
+    return `<span class="archchip${dk ? ' dk' : ''}${g ? ' grad' : ''}" style="--ac:${solid}${g ? `;--acg:${c}` : ''}${sh ? `;--acd:${sh}` : ''}">${esc(x)}</span>`; }).join(''); }
+/* legibility (Nov 2): white chip text must reach 4.5:1 on every colour stop, so light chips get just enough of a dark
+   veil (--acd, polish.css LEGIBILITY) instead of a lighter shade */
+function archShade(c) { const st = (String(c).match(/#[0-9a-f]{6}/gi) || ['#6f7a8f']).map(h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)));
+  for (let a = 0; a <= .75; a += .05) { const ok = st.every(([r, g, b]) => { const m = [r, g, b].map((v, i) => v * (1 - a) + [20, 18, 40][i] * a); return cr(1, .2126 * lin(m[0]) + .7152 * lin(m[1]) + .0722 * lin(m[2])) >= 4.6; }); if (ok) return +a.toFixed(2); }
+  return .75; }
 
 
 // a team's six as a compact grid (3 across on phones, 6 on wide screens): sprite + name, small Mega mark

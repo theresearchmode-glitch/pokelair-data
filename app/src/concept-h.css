@@ -49,7 +49,7 @@ html:not(#_ch){font-synthesis:none}
 :root:not(#_ch) .tabs [role=tab][aria-selected="true"]::after{display:none}
 /* phone bottom bar: ink, with Build as the logo tile (ink, never yellow: yellow is each screen's one main action) */
 :root:not(#_ch) .bnav{background:var(--chbar);border-top:0;box-shadow:none}
-:root:not(#_ch) .bnav button{color:var(--chbarInk);opacity:.72;font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;min-height:44px}
+:root:not(#_ch) .bnav button{color:var(--chbarInk);opacity:.72;font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;min-height:44px}
 :root:not(#_ch) .bnav button[aria-selected="true"],:root:not(#_ch) .bnav button.on{opacity:1;color:var(--chbarInk)}
 :root:not(#_ch) .bnav button[aria-selected="true"]::before{background:var(--chyel)}
 :root:not(#_ch) .bnav button[data-view="report"]>svg{display:none}
@@ -77,15 +77,15 @@ main details:not(.chfold):not(.moremenu):not(.repfold)>summary{position:relative
 main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{content:""!important;position:absolute;left:4px;top:50%;width:26px;height:18px;margin-top:-9px;transform:none;border:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='124 72 264 293'><path d='M144 284.64L256 172.64L368 284.64L368 345.12L256 233.12L144 345.12Z' fill='%230078BF'/><path d='M144 204L256 92L368 204L368 264.48L256 152.48L144 264.48Z' fill='%23E8364F'/></svg>") center/contain no-repeat;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
 main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{transform:rotate(180deg)}
 /* ---------- shared H pieces ---------- */
-.chk{font:700 12px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--chink2)}
+.chk{font:700 12px/1.3 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--chink2)}
 .chdisp{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:.95}
 .chpen{font-family:"Permanent Marker",cursive;color:var(--chpen);font-size:15px;line-height:1.2}
 .chring{flex:none;width:72px;height:72px;border:3px solid var(--chpen);border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 38px/1 "Permanent Marker",cursive;color:var(--chpen);transform:rotate(-8deg)}
 .chring.sm{width:58px;height:58px;font-size:30px}
 .chhalf{background-image:radial-gradient(rgba(255,255,255,.2) 1.2px,transparent 1.4px);background-size:7px 7px}
-.chtag{display:inline-block;font:700 11px/1.5 var(--mono);padding:0 5px;border-radius:3px;border:1.5px solid currentColor;text-transform:uppercase}
+.chtag{display:inline-block;font:700 12px/1.5 var(--mono);padding:0 5px;border-radius:3px;border:1.5px solid currentColor;text-transform:uppercase}
 .chtag.lead{background:var(--chyel);color:#1D2140;border-color:#1D2140}
-.chtag.ass{border-style:dashed;color:var(--chink2);font-size:11px}
+.chtag.ass{border-style:dashed;color:var(--chink2);font-size:12px}
 .chsec{border:2px solid var(--chline);border-radius:14px;background:var(--chc);margin-top:10px}
 .chsec>summary,.chsechead{display:flex;align-items:center;gap:12px;min-height:58px;padding:10px 14px;cursor:pointer}
 .chsec .cht{font:400 21px/1 var(--display);text-transform:uppercase}
@@ -104,7 +104,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chsix>div{text-align:center;min-width:0}
 .chsix .spr{width:52px;height:52px;object-fit:contain;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
 .chsix .pc{font:700 12px var(--mono)}
-.chsix .chtag{color:#fff;border-color:#fff;font-size:10px;margin-top:2px}
+.chsix .chtag{color:#fff;border-color:#fff;font-size:12px;margin-top:2px}
 .chsix .chtag.lead{color:#1D2140;border-color:#1D2140}
 .chsix .empty{width:52px;height:52px;margin:0 auto;border:2px dashed rgba(255,255,255,.6);border-radius:10px}
 .chmid{padding:16px 16px 4px}
@@ -117,7 +117,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chfour{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .chfour>div{border:2px solid var(--chline);border-radius:10px;background:var(--chc);text-align:center;padding-top:4px;overflow:hidden}
 .chfour .spr{width:58px;height:58px;object-fit:contain}
-.chfour .lab{font:700 11px var(--mono);border-top:2px solid var(--chline);padding:2px;background:var(--chp2)}
+.chfour .lab{font:700 12px var(--mono);border-top:2px solid var(--chline);padding:2px;background:var(--chp2)}
 .chfour .lab.lead{background:var(--chyel);color:#1D2140}
 .chacts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
 .chblock{margin:22px 16px 0}
@@ -165,13 +165,13 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chthead .nm{font:400 44px/.95 var(--display);text-transform:uppercase;color:var(--chredT);margin:4px 0 0;overflow-wrap:anywhere}
 .chthead .rd{font-size:14px;color:var(--chink2);margin-top:6px}
 .chthead .rd b{color:var(--chink)}
-.chlegend{font:700 11px/1.4 var(--mono);color:var(--chink2);letter-spacing:.06em;margin-top:8px}
+.chlegend{font:700 12px/1.4 var(--mono);color:var(--chink2);letter-spacing:.06em;margin-top:8px}
 .chacts2{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
 .chacts2 .btn{min-height:44px}
 .chsheet{margin-top:12px;border:2px solid var(--chline);border-radius:12px;overflow:hidden;background:var(--chc)}
 .chsheet .hd{background:var(--chhdr);color:#F1E9DA;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .chsheet .hd .chdisp{font-size:17px}
-.chsheet .hd .mono{font:700 11px var(--mono)}
+.chsheet .hd .mono{font:700 12px var(--mono)}
 .chrow{all:unset;box-sizing:border-box;display:flex;gap:10px;padding:8px 12px;align-items:center;width:100%;cursor:pointer;min-height:64px}
 .chrow+.chrow{border-top:1px dashed var(--chink2)}
 .chrow:focus-visible{outline:3px solid var(--chblue);outline-offset:-3px}
@@ -210,7 +210,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chlist .spr{width:42px;height:42px;object-fit:contain;flex:none}
 .chlist .nm{font:800 14px var(--body);text-transform:uppercase}
 .chlist .t2{font-size:13px;color:var(--chink2)}
-.chlv{font:700 11px var(--mono);padding:3px 6px;border-radius:3px;color:#1D2140;flex:none}
+.chlv{font:700 12px var(--mono);padding:3px 6px;border-radius:3px;color:#1D2140;flex:none}
 .chlv.l0{background:var(--chbad);color:#fff}.chlv.l1{background:var(--chshaky)}.chlv.l2{background:var(--chmid);color:#fff}.chlv.l3{background:var(--chok);color:#fff}
 .chbest{margin-top:12px;border-radius:14px;padding:12px;background:var(--chhdr);color:#F3EBDC;border:2px solid var(--chline)}
 .chbest .chk{color:var(--chyel)}
@@ -263,7 +263,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 }@media (max-width:899px){
  .chacts{flex-direction:row}.chacts .chprimary{flex:1;width:auto;padding:0 12px;font-size:15px}.chacts .chghost{flex:none}
  .chsix .spr{width:46px;height:46px}.chband{padding:8px 16px 10px}
- .chleg{gap:4px 10px;font-size:11px;margin:6px 0}
+ .chleg{gap:4px 10px;font-size:12px;margin:6px 0}
 }@media (max-width:899px){.chdesk{display:none}.chready .big{font-size:48px}.chready{gap:4px 12px}}
 .chside{border:2px solid var(--chline);border-radius:14px;background:var(--chc);padding:16px;margin-top:12px}
 .chside .chtiles{grid-template-columns:repeat(6,1fr)}
@@ -291,7 +291,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chshs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 6px;padding:6px 10px 4px;position:relative;z-index:1}
 .chshm{position:relative;display:flex;align-items:flex-end;justify-content:center;min-width:0}
 .chshm .spr{width:100%;max-width:118px;height:auto;aspect-ratio:1;object-fit:contain;filter:drop-shadow(3px 4px 0 color-mix(in srgb,var(--chink) 22%,transparent))}
-.chshm i{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 10px/1.4 var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.06em;padding:0 5px;border-radius:3px;background:var(--chc);color:var(--chink2);border:1px solid var(--line2);opacity:.9}
+.chshm i{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font:700 12px/1.4 var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.06em;padding:0 5px;border-radius:3px;background:var(--chc);color:var(--chink2);border:1px solid var(--line2);opacity:.9}
 .chshm i.lead{background:var(--chyel);color:#1D2140;border-color:#1D2140}
 .chshf{display:block;height:14px;margin:-8px 18px 10px;border-radius:50%;background:color-mix(in srgb,var(--chink) 10%,transparent)}
 @media (min-width:900px){.chshs{grid-template-columns:repeat(6,1fr)}.chshn{font-size:44px}.chhome2{grid-template-columns:1fr}}/* ===== Concept H pages, batch 1: Build me a team + Battle mode ===== */
@@ -338,7 +338,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root:not(#_ch) .chbring .bmpick{border:2px solid var(--chline);border-radius:12px;background:var(--chp2);padding:6px 6px 0;display:flex;flex-direction:column;align-items:center;overflow:hidden}
 :root:not(#_ch) .chbring .bmpspr{width:96px;height:96px;object-fit:contain}
 :root:not(#_ch) .chbring .bmpn{font:800 13px var(--body);text-transform:uppercase;text-align:center}
-:root:not(#_ch) .chbring .bmpick .tag{width:calc(100% + 12px);text-align:center;border-radius:0;margin-top:6px;background:var(--chp2);color:var(--chink);border:0;border-top:2px solid var(--chline);font:700 11px var(--mono)}
+:root:not(#_ch) .chbring .bmpick .tag{width:calc(100% + 12px);text-align:center;border-radius:0;margin-top:6px;background:var(--chp2);color:var(--chink);border:0;border-top:2px solid var(--chline);font:700 12px var(--mono)}
 :root:not(#_ch) .chbring .bmpick.lead .tag{background:var(--chyel);color:#1D2140}
 .chbring .chpen{font-size:15px}
 .chreasons{margin:10px 0 0;padding-left:22px;font-size:14px;color:var(--chink2)}.chreasons li{margin:4px 0}.chreasons b{color:var(--chink)}
@@ -379,10 +379,10 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root:not(#_ch) .lshead.chls .lsname{position:relative;z-index:1;margin-top:auto}
 :root:not(#_ch) .lshead.chls h3{font:400 46px/.95 var(--display);text-transform:uppercase;color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,.25);max-width:62%}
 :root:not(#_ch) .lshead.chls .lspos{display:none}
-.chlsk{position:absolute;left:16px;top:14px;font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#fff;opacity:.9}
+.chlsk{position:absolute;left:16px;top:14px;font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:#fff;opacity:.9}
 .chlstats{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--chline);border-radius:14px;background:var(--chc);margin:-26px 0 12px;position:relative;z-index:2}
 .chlstats>div{padding:10px 10px 8px;min-width:0}.chlstats>div+div{border-left:2px solid var(--chline)}
-.chlstats b{display:block;font:400 32px/1 var(--display)}.chlstats span{font:700 10px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--chink2)}
+.chlstats b{display:block;font:400 32px/1 var(--display)}.chlstats span{font:700 12px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--chink2)}
 .chlsdata{margin-bottom:10px}
 .chbar{display:grid;grid-template-columns:minmax(0,1.2fr) 1.5fr 54px;align-items:center;gap:10px;min-height:30px;font-size:14px}
 .chbar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chbar b{font:700 12px var(--mono);text-align:right}
@@ -390,7 +390,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chbar i.b em{background:var(--chblue)}.chbar i.r em{background:var(--chredB)}
 .chbw{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
 .chbw button{all:unset;box-sizing:border-box;border:2px solid var(--line2);border-radius:12px;background:var(--chc);text-align:center;padding:6px 2px;cursor:pointer;min-height:44px}
-.chbw .spr{width:56px;height:56px;object-fit:contain}.chbw b{display:block;font:700 13px var(--mono)}.chbw span{font:400 10px var(--mono);color:var(--chink2)}
+.chbw .spr{width:56px;height:56px;object-fit:contain}.chbw b{display:block;font:700 13px var(--mono)}.chbw span{font:400 12px var(--mono);color:var(--chink2)}
 /* rankings */
 :root:not(#_ch) .mrow .nm{white-space:normal;overflow:visible;text-overflow:clip}
 /* cores */
@@ -452,7 +452,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 @media (min-width:900px){:root:not(#_ch) main .tgrid{grid-template-columns:repeat(6,1fr)}.chdcband{min-height:180px}:root:not(#_ch) .chdcband .dcspr{width:140px;height:140px}}:root:not(#_ch) .spdrow{min-height:44px;padding:2px 10px}:root:not(#_ch) .spdrow .spdspr{width:36px;height:36px}
 :root:not(#_ch) main .plan .ttwho .pt{font:400 24px/1.05 var(--display);text-transform:uppercase}
 :root:not(#_ch) main .tgrid .tgm{display:flex;position:relative}:root:not(#_ch) main .tgrid .tgm .tgmk{position:absolute;right:4px;top:4px}
-.chdcband h3.chk{margin:0;font:700 12px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase}.chdcband h3.chk .asm{position:static;margin-left:6px}
+.chdcband h3.chk{margin:0;font:700 12px/1.3 var(--mono);letter-spacing:.04em;text-transform:uppercase}.chdcband h3.chk .asm{position:static;margin-left:6px}
 /* ===== batch 4: Best additions, Types, Sets, Saved teams, Box, Archetypes, menus and sheets ===== */
 #guideOut details>summary::after{display:none!important}
 :root:not(#_ch) #guideOut details{background:var(--chc);border:2px solid var(--chline);border-radius:14px;box-shadow:none}
@@ -464,7 +464,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 :root:not(#_ch) #boxList>*{border-radius:12px;background:var(--chc);border:1.5px solid var(--line2)}
 /* menus and sheets: the side menu / More sheet, search, feedback, toasts */
 :root:not(#_ch) .side{background:var(--chp)}
-:root:not(#_ch) .sidenav .sgl{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--chink2)}
+:root:not(#_ch) .sidenav .sgl{font:700 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--chink2)}
 :root:not(#_ch) .sidenav [role=tab]{border-radius:12px;min-height:44px;color:var(--chink)}
 :root:not(#_ch) .sidenav [role=tab][aria-selected="true"]{background:var(--chink);color:var(--chp)}
 :root:not(#_ch) .scrim{background:rgba(20,18,16,.55)}
@@ -481,7 +481,7 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chcr.chch{cursor:default;min-height:0}.chcr.chch .spr{width:100%;max-width:44px;aspect-ratio:1;object-fit:contain;display:block;margin:0 auto}
 .chcr .th{display:flex;align-items:center;gap:4px;min-width:0;border-left:4px solid var(--line2);padding-left:4px}
 .chcr .th.l0{border-color:var(--chbad)}.chcr .th.l1{border-color:var(--chshaky)}.chcr .th.l2{border-color:var(--chmid)}.chcr .th.l3{border-color:var(--chok)}
-.chcr .th .spr{width:36px;height:36px;object-fit:contain;flex:none}.chcr .th i{font:700 11px/1.15 var(--body);font-style:normal;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chcr .th .spr{width:36px;height:36px;object-fit:contain;flex:none}.chcr .th i{font:700 12px/1.15 var(--body);font-style:normal;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chcr .cc{height:30px;border-radius:6px;display:block}
 .chcr .cc.win{background:var(--chok)}.chcr .cc.trade{background:var(--chshaky)}.chcr .cc.lose{background:var(--chbad)}.chcr .cc.none{background:color-mix(in srgb,var(--chink) 12%,transparent)}
 .chcr:not(.chch):hover .cc,.chcr:focus-visible .cc{outline:2px solid var(--chink);outline-offset:-2px}
@@ -526,9 +526,9 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
 .chlist6{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
 .chhr2{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;position:relative}
 .chhr2 .spr{width:54px;height:54px;object-fit:contain;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
-.chhr2 .chbd2{min-width:0;width:100%}.chhr2 .chbd2 b{display:block;font:800 10px/1.15 var(--body);text-transform:uppercase;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chhr2 .chbd2{min-width:0;width:100%}.chhr2 .chbd2 b{display:block;font:800 12px/1.15 var(--body);text-transform:uppercase;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chhr2 .chbd2 span{display:none}
-.chhr2 .chtag{font-size:9px;color:#fff;border-color:#fff;margin-top:2px;padding:0 3px}.chhr2 .chtag.lead{color:#1D2140;border-color:#1D2140}
+.chhr2 .chtag{font-size:12px;color:#fff;border-color:#fff;margin-top:2px;padding:0 3px}.chhr2 .chtag.lead{color:#1D2140;border-color:#1D2140}
 .chhr2 .emp{width:54px;height:54px;border:2px dashed rgba(255,255,255,.65);border-radius:10px}
 .chwl{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
 .chwl .linkbtn{color:#fff;text-decoration:underline}
@@ -544,8 +544,8 @@ main details:not(.chfold):not(.moremenu):not(.repfold)[open]>summary::before{tra
  .chlist6{grid-template-columns:1fr;gap:4px}
  .chhr2{flex-direction:row;text-align:left;gap:10px;border:1.5px solid rgba(255,255,255,.45);border-radius:10px;padding:2px 8px 2px 2px}
  .chhr2.r{flex-direction:row-reverse;text-align:right;padding:2px 2px 2px 8px}
- .chhr2 .spr{width:56px;height:56px}.chhr2 .chbd2 b{font-size:14px}.chhr2 .chbd2 span{display:block;font:400 11px var(--mono);color:#fff;opacity:.88;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
- .chhr2 .chtag{font-size:10px;margin:0;flex:none}
+ .chhr2 .spr{width:56px;height:56px}.chhr2 .chbd2 b{font-size:14px}.chhr2 .chbd2 span{display:block;font:400 12px var(--mono);color:#fff;opacity:.88;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .chhr2 .chtag{font-size:12px;margin:0;flex:none}
  .chsplit .chmid{padding:28px 30px;text-align:center}.chsplit .chmid .chh1{font-size:76px}.chsplit .chmid .sub{font-size:38px}
  .chsplit .ch64{justify-content:center}.chsplit .chfour{display:grid;max-width:360px;margin:0 auto}
  .chsplit .chacts{flex-direction:column;align-items:center}.chsplit .chacts .chprimary{width:auto}
@@ -617,12 +617,12 @@ main details:not(.chfold):not(.moremenu):not(.repfold)>summary::before{width:20p
  .chmmon{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.4);border-radius:12px;padding:6px 4px 8px}
  .chmmon .spr{width:72px;height:72px;object-fit:contain;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.2))}
  .chmmon b{font:800 12px/1.15 var(--body);text-transform:uppercase;letter-spacing:.01em;margin-top:2px;overflow-wrap:anywhere}
- .chmmon span{font:400 10.5px/1.2 var(--mono);opacity:.88;margin-top:2px;overflow-wrap:anywhere}
- .chmmon .chtag{font-size:10px;color:#fff;border-color:#fff;margin-top:5px;padding:0 5px}.chmmon .chtag.lead{background:#FFE800;color:#1D2140;border-color:#1D2140}
+ .chmmon span{font:400 12px/1.2 var(--mono);opacity:.88;margin-top:2px;overflow-wrap:anywhere}
+ .chmmon .chtag{font-size:12px;color:#fff;border-color:#fff;margin-top:5px;padding:0 5px}.chmmon .chtag.lead{background:#FFE800;color:#1D2140;border-color:#1D2140}
  .chmrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px}.chmrow .linkbtn{color:#fff;text-decoration:underline;font-weight:700}
  #homeOut .chpad:empty{display:none}
  #homeOut .chsplit.chdesk{display:none}
- .chmmon b{font-size:11px;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0}
+ .chmmon b{font-size:12px;overflow-wrap:normal;word-break:normal;hyphens:none;letter-spacing:0}
 }
 
 /* ===== regroup (Oct 28): Report + Edit, Swaps, Tools, one title per page ===== */
@@ -692,7 +692,7 @@ details.chflat>summary{display:none}details.chflat{margin:0}
 .chtr .rk{font:400 16px/1 var(--display);color:var(--chink2);width:16px;text-align:center;flex:none}
 .chtr .spr{width:40px;height:40px;object-fit:contain;flex:none}
 .chtr .tx{display:flex;flex-direction:column;min-width:0}.chtr .tx b{font:800 12.5px/1.15 var(--body);overflow-wrap:anywhere}
-.chtr .st{font:700 10px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.04em}
+.chtr .st{font:700 12px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.04em}
 .chtr .st.bad{color:var(--chbad)}.chtr .st.shaky{color:#B07A00}.chtr .st.mid{color:var(--chmid)}.chtr .st.ok{color:var(--chok)}
 :root[data-look="dark"] .chtr .st.shaky{color:var(--chshaky)}
 .chtr.l0{border-color:var(--chbad)}.chtr.l1{border-color:var(--chshaky)}
@@ -711,7 +711,7 @@ details.chflat>summary{display:none}details.chflat{margin:0}
 /* My team: header, then four numbered parts */
 .chteam{display:block!important}
 .chpills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chpill{font:700 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.04em;padding:5px 9px;border-radius:999px;border:1.5px solid var(--line2);color:var(--chink2)}
+.chpill{font:700 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.04em;padding:5px 9px;border-radius:999px;border:1.5px solid var(--line2);color:var(--chink2)}
 .chpill.ok{border-color:var(--chok);color:var(--chok)}.chpill.bad{border-color:var(--chbad);color:var(--chbad)}
 .chsix6{display:flex;gap:2px;margin-top:10px;flex-wrap:wrap}.chsix6 button{all:unset;cursor:pointer;border-radius:10px}.chsix6 button:focus-visible{outline:3px solid var(--chblue)}
 .chsix6 .spr{width:56px;height:56px;object-fit:contain;display:block}
@@ -734,7 +734,7 @@ details.chflat>summary{display:none}details.chflat{margin:0}
 :root:not(#_ch) main .seg.chseg button[aria-pressed="true"]{background:var(--chink);color:var(--chp);border-color:var(--chink)}
 .chsub3{font:400 22px/1 var(--display);text-transform:uppercase;color:var(--chink);margin:18px 0 8px}
 #chP3 .gpcard{border:2px solid var(--chline);border-radius:14px;padding:12px 14px;background:var(--chc)}
-.chrow .chedi{margin-left:auto;align-self:center;font:700 11px var(--mono);text-transform:uppercase;color:var(--chink2);border:1.5px solid var(--line2);border-radius:999px;padding:4px 8px;flex:none}
+.chrow .chedi{margin-left:auto;align-self:center;font:700 12px var(--mono);text-transform:uppercase;color:var(--chink2);border:1.5px solid var(--line2);border-radius:999px;padding:4px 8px;flex:none}
 .chrow.empty .chadd{width:44px;height:44px;border:2px dashed var(--line2);border-radius:10px;display:flex;align-items:center;justify-content:center;font:400 24px/1 var(--display);color:var(--chink2)}
 .chrow.empty .nm{color:var(--chink2)}
 .chhow{margin-top:22px}
@@ -789,7 +789,7 @@ details.chsec>summary{list-style:none}details.chsec>summary::-webkit-details-mar
  #chSheetOut .chrow .spr{width:64px;height:64px;align-self:center}
  #chSheetOut .chrow .mv,#chSheetOut .chrow .chpen,#chSheetOut .chrow .chedi{display:none}
  #chSheetOut .chrow .nm{font-size:13px}
- #chSheetOut .chrow .mono{white-space:normal;font-size:11px}
+ #chSheetOut .chrow .mono{white-space:normal;font-size:12px}
  #chSheetOut .chrow.empty .chadd{align-self:center}
 }
 @media (max-width:899px){:root:not(#_ch) #chActs .btn,:root:not(#_ch) #chActs .chghost,:root:not(#_ch) #chActs details.moremenu>summary{min-height:38px!important;padding:0 12px!important;font-size:13px!important}#chActs{gap:6px!important}}
@@ -809,7 +809,7 @@ details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marke
 @media (min-width:900px){:root:not(#_ch) #boxList{grid-template-columns:repeat(8,minmax(0,1fr));gap:10px}}
 :root:not(#_ch) #boxList .boxchip{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 10px;border:2px solid var(--chline);border-radius:14px;background:var(--chc);min-width:0;font-size:inherit;height:auto}
 :root:not(#_ch) #boxList .boxchip .spr{width:56px;height:56px;object-fit:contain}
-:root:not(#_ch) #boxList .boxchip b{font:800 11.5px/1.15 var(--body);text-align:center;color:var(--chink);overflow-wrap:normal;word-break:normal}
+:root:not(#_ch) #boxList .boxchip b{font:800 12px/1.15 var(--body);text-align:center;color:var(--chink);overflow-wrap:normal;word-break:normal}
 :root:not(#_ch) #boxList .boxchip .x{position:absolute;top:2px;right:2px;width:28px;height:28px;min-height:0;padding:0;border:0;border-radius:50%;background:transparent;color:var(--chink2);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
 :root:not(#_ch) #boxList .boxchip .x:hover{background:var(--chp2);color:var(--chbad)}
 :root:not(#_ch) #boxList .boxchip.chhid{display:none}
@@ -842,7 +842,7 @@ details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marke
 .chwhy>summary{list-style:none;display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1.5px solid var(--line2);border-radius:999px;cursor:pointer;font:700 13px/1 var(--body);color:var(--chink)}
 .chwhy>summary::-webkit-details-marker{display:none}
 :root:not(#_ch) main .chwhy>summary::before{display:none!important}
-.chwhy>summary .n{font:700 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--chink2)}
+.chwhy>summary .n{font:700 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--chink2)}
 .chwhy>summary::after{content:'';width:7px;height:7px;border-right:2px solid var(--chink2);border-bottom:2px solid var(--chink2);transform:rotate(45deg) translateY(-2px);transition:transform .15s}
 .chwhy[open]>summary::after{transform:rotate(-135deg) translateY(-1px)}
 .chwhy[open]>summary{background:var(--chink);color:var(--chp);border-color:var(--chink)}.chwhy[open]>summary .n{color:var(--chp);opacity:.8}
@@ -862,11 +862,11 @@ details.hsec>summary{list-style:none}details.hsec>summary::-webkit-details-marke
 .chcalcatk button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:12px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.45);min-width:0}
 .chcalcatk button:hover,.chcalcatk button:focus-visible{background:rgba(255,255,255,.3);outline:none}
 .chcalcatk .spr,.chcalcdef .spr{width:48px;height:48px;object-fit:contain}
-.chcalcatk span,.chcalcdef span{font:800 10.5px/1.15 var(--body);text-transform:uppercase;text-align:center;color:#fff}
+.chcalcatk span,.chcalcdef span{font:800 12px/1.15 var(--body);text-transform:uppercase;text-align:center;color:#fff}
 .chcalcvs{font-size:22px;flex:none}
 .chcalcdef{flex:none;width:84px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:12px;background:var(--chredB);border:1.5px solid rgba(255,255,255,.6)}
 .chcalcdef .spr{width:60px;height:60px}
 @media (min-width:900px){.chcalcatk{grid-template-columns:repeat(6,minmax(0,1fr))}.chcalcdef{width:110px}.chcalcatk .spr{width:60px;height:60px}}
-@media (max-width:899px){.chcalcatk span{font-size:8.5px;letter-spacing:0;word-break:normal;overflow-wrap:normal;hyphens:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chcalcatk .spr{width:44px;height:44px}.chcalcdef{width:76px}}
-@media (max-width:899px){.chcalcatk span{font-size:9px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.1}}
+@media (max-width:899px){.chcalcatk span{font-size:12px;letter-spacing:0;word-break:normal;overflow-wrap:normal;hyphens:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chcalcatk .spr{width:44px;height:44px}.chcalcdef{width:76px}}
+@media (max-width:899px){.chcalcatk span{font-size:12px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.1}}
 :root:not(#_ch) .chbmhead #bmClear{border:1.5px solid var(--line2)!important;border-radius:999px!important;min-height:38px;padding:0 14px!important;background:transparent!important;color:var(--chink)!important;font:700 13px var(--body)!important}.chbmhead .bmbar{margin:10px 0 0}#chCalcCard .chcalc{margin-top:16px}

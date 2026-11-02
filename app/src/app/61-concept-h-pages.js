@@ -85,7 +85,7 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
   /* the rows: % of teams as a small bar against the most used of the list; the games count waits behind "Details" (design B) */
   const umax = Math.max(...top.map(x => { const t = tour(x); return t ? +t[0] || 0 : 0; })), ub = x => { const t = tour(x); return t ? ubar(+t[0], umax) : ''; };
   /* tier chips in their band colour, bands on the shown scale (Nov 2: the S head said "80+", the old internal number) */
-  const tc = (t, sm) => `<span class="chtier${sm ? ' sm' : ''}" style="--tc:${t.c};--ti:${tierInk(t.c)}">${t.k}</span>`, of = (lairRank(top[0].p) || {}).of;
+  const tc = (t, sm) => `<span class="chtier${sm ? ' sm' : ''}" style="--tc:${tierBg(t.c)};--ti:${tierInk(t.c)}">${t.k}</span>`, of = (lairRank(top[0].p) || {}).of;
   const T = lTier(top[0].r.total), nS = rows.filter(x => x.r.total >= T.min).length, tie = top[0].r.total === top[1].r.total;
   return `<div class="chhothead">${tc(T)}<span class="chk">${tierBand(T)} · ${nS} Pokémon${of ? ` · ranks of ${of}` : ''}</span>${typeof tip === 'function' ? tip('tiers') : ''}${tie ? '<span class="chpen" style="margin-left:auto">Tied for #1!</span>' : ''}${dbBtn('hot', 'games behind each win rate')}</div>
     <div class="chhot2"${dbAttr('hot')}>${big(top[0], 'ink')}${big(top[1], 'blue')}</div>

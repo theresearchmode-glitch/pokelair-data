@@ -22,7 +22,7 @@ const rRange = r => { const a = RS(Math.max(1, r.total - (r.band || 0))), b = RS
 /* a tier's shown band in words: "90+", ..., "under 50" */
 const tierBand = T => T.k === 'F' ? `under ${LTIERS[LTIERS.length - 2].show}` : `${T.show}+`;
 /* a small tier letter in its band colour (the same colours everywhere) */
-const tierChip = (T, cls) => `<span class="rtier${cls ? ' ' + cls : ''}" style="--tc:${T.c};--ti:${tierInk(T.c)}">${T.k}</span>`;
+const tierChip = (T, cls) => `<span class="rtier${cls ? ' ' + cls : ''}" style="--tc:${tierBg(T.c)};--ti:${tierInk(T.c)}">${T.k}</span>`;
 function lairFilter(rows) { const q = (ui.lq || '').trim().toLowerCase(), ty = ui.lty || [], f = ui.lf || {};
   return rows.filter(({p}) => (!q || p.d.toLowerCase().includes(q) || p.t.some(t => t.toLowerCase() === q)) && (!ty.length || ty.every(t => p.t.includes(t)))
     && (!f.mega || p.m) && (!f.nomega || !p.m) && (!f.gem || isGem(p)) && (!f.box || inBox(p))); }
@@ -72,7 +72,7 @@ function renderLair(bodyOnly) {
   pane.innerHTML = `<p class="t2 lnote"><span class="lng">Number = rating${typeof tip === 'function' ? tip('tiers') : ''}</span> · <span class="lng"><i class="ltm">M</i> Mega</span>${ROSTER.some(q => isGem(q)) ? ' · <span class="lng">◆ hidden gem</span>' : ''} · <span class="lng"><i class="ltb"></i> in your box</span> · <span class="lng"><span class="lts dash">?</span> few games, so the score is an estimate</span></p><div class="lboard">${LTIERS.map(T => {
     const inT = rows.filter(x => lTier(x.r.total) === T); if (!inT.length) return '';
     const showAll = filtered || open[T.k] || inT.length <= cap + 1, shown = showAll ? inT : inT.slice(0, cap);
-    return `<div class="ltier" style="--tc:${T.c}"><div class="ltl" title="${T.k} tier: rated ${tierBand(T)} · ${esc(T.d)}"><b>${T.k}</b><span>${T.k === 'F' ? '<' + LTIERS[LTIERS.length - 2].show : tierBand(T)}</span></div>
+    return `<div class="ltier" style="--tc:${T.c};--tcb:${tierBg(T.c)};--ti:${tierInk(T.c)}"><div class="ltl" title="${T.k} tier: rated ${tierBand(T)} · ${esc(T.d)}"><b>${T.k}</b><span>${T.k === 'F' ? '<' + LTIERS[LTIERS.length - 2].show : tierBand(T)}</span></div>
       <div class="ltbody"><div class="ltd">${T.d} · ${inT.length}</div><div class="ltgrid">${shown.map(x => lairTile(x.p, x.r)).join('')}${showAll ? (open[T.k] && !filtered && inT.length > cap + 1 ? `<button type="button" class="ltile more" data-ltier="${T.k}">Show fewer</button>` : '') : `<button type="button" class="ltile more" data-ltier="${T.k}">+${inT.length - cap} more</button>`}</div></div></div>`; }).join('')}</div>`;
 }
 // Usage (x) against rating (y): where the meta agrees with the numbers, and where it doesn't.
