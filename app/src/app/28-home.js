@@ -12,7 +12,7 @@ const HOME_TILES = [
   ['speed', 'Speed tiers', 'Who moves first, with Tailwind and Trick Room', '<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-6"/>'],
   ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>'],
   ['types', 'Type chart', 'What hits what, and your team against every type', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/>']];
-function homeMini(p, r, extra) { return `<button type="button" class="hmini" data-lt="${esc(p.n)}" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}" title="${esc(p.d)}">${sprite(p, 'hmspr') || ''}<span class="hmn">${esc(p.d.replace(/^Mega /, 'M-'))}</span><span class="hms">${tierChip(lTier(r.total))}<b>${RS(r.total)}</b>${rankTxt(p) ? `<i class="hmrk">${rankTxt(p, 1)}</i>` : ''}${extra || ''}</span></button>`; }
+function homeMini(p, r, extra) { return `<button type="button" class="hmini" data-lt="${esc(p.n)}" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}" title="${esc(p.d)}">${sprite(p, 'hmspr') || ''}<span class="hmn">${esc(p.d.replace(/^Mega /, 'M-'))}</span><span class="hms">${tierChip(lTier(r.total))}<b${bandAt(r.total)}>${RS(r.total)}</b>${rankTxt(p) ? `<i class="hmrk">${rankTxt(p, 1)}</i>` : ''}${extra || ''}</span></button>`; }
 // Desktop hero, right side: the newest event winner (one tap to load it) and how ready your team is for the top threats.
 function homeSide(v) { const E = META.events; let ev = null, t = null;
   if (E && Array.isArray(E.events)) for (const e of E.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }

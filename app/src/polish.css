@@ -940,3 +940,117 @@ a.calrow:hover .calmain b{text-decoration:underline}
 :is(.bo,.bd)[data-ko]:not([data-ko=""]){padding-top:11px}
 :is(.bo,.bd)[data-ko]:not([data-ko=""])::after{right:auto;left:50%;transform:translateX(-50%)}
 .dcbig small{font-size:.45em;margin-left:4px;letter-spacing:0}
+
+/* ======================================================================================================
+   DESIGN A (Nov 2, "colour, pop, wow"): tokens · numbers in band colours · section colours · page headers · nav · card chrome
+   Owner: design agent A. Other blocks reuse these tokens (do not redefine them):
+     --band-S..F          band fills (LTIERS colours)       --band-S-ink..F-ink  text-safe band colour for the current theme
+     [data-band="S"]      on any element sets --bn (fill), --bni (ink, 4.5:1) and --bnb (big-number ink, 3:1) for that band; a number carrying it is coloured --bni
+     --wr-up / --wr-down  win rate above / below the 50% average (green-ish / indigo, never red); markup .wrv[data-wr=up|down|even]
+     --sec --sec-ink --sec-2 --sec-soft --on-sec   this page's section colour (html[data-sec]: home build team battle meta info)
+     [data-sec=x]         on any element sets --s / --s-ink / --s-2 for that section (the menus use it)
+     --glow               dark-theme neon halo in the section colour (none in light)
+   ====================================================================================================== */
+:root{--band-S:#ffb400;--band-A:#ff6a3d;--band-B:#b45cff;--band-C:#2f9bff;--band-D:#22b58a;--band-F:#8a90a6;
+  --band-S-ink:#935400;--band-A-ink:#B3330F;--band-B-ink:#8A2BE2;--band-C-ink:#0A60BC;--band-D-ink:#08694F;--band-F-ink:#5B6178;
+  --band-S-big:#B87200;--band-A-big:#E0501F;--band-B-big:#9B45F0;--band-C-big:#1C82E8;--band-D-big:#109473;--band-F-big:#737990;
+  --wr-up:#17703D;--wr-down:#3646D6;
+  --sec-home:#1E8FE8;--sec-build:#D4E000;--sec-team:#1E8FE8;--sec-battle:#12C2B0;--sec-meta:#FFB400;--sec-info:#A774FF;
+  --sec-home-ink:#0A56A8;--sec-build-ink:#5C6600;--sec-team-ink:#0A56A8;--sec-battle-ink:#00705F;--sec-meta-ink:#935400;--sec-info-ink:#6A2BD6;
+  --sec-home-2:#12C2B0;--sec-build-2:#7ED321;--sec-team-2:#4A5BF0;--sec-battle-2:#2F9BFF;--sec-meta-2:#FF6A3D;--sec-info-2:#4A5BF0;
+  --on-sec:#1D2140;--glow:none}
+:root[data-look="dark"]{--band-S-ink:#FFC233;--band-A-ink:#FF8A63;--band-B-ink:#C58AFF;--band-C-ink:#5CB2FF;--band-D-ink:#3CD3A5;--band-F-ink:#A9AEC0;
+  --band-S-big:var(--band-S-ink);--band-A-big:var(--band-A-ink);--band-B-big:var(--band-B-ink);--band-C-big:var(--band-C-ink);--band-D-big:var(--band-D-ink);--band-F-big:var(--band-F-ink);
+  --wr-up:#3CD884;--wr-down:#8C9BFF;
+  --sec-home:#3FA9FF;--sec-build:#D8EC3A;--sec-team:#3FA9FF;--sec-battle:#2ED8C6;--sec-meta:#FFB400;--sec-info:#A974FF;
+  --sec-home-ink:#6FC0FF;--sec-build-ink:#E2F25A;--sec-team-ink:#6FC0FF;--sec-battle-ink:#5BEADB;--sec-meta-ink:#FFC94D;--sec-info-ink:#C9A2FF}
+[data-sec="home"]{--s:var(--sec-home);--s-ink:var(--sec-home-ink);--s-2:var(--sec-home-2)}
+[data-sec="build"]{--s:var(--sec-build);--s-ink:var(--sec-build-ink);--s-2:var(--sec-build-2)}
+[data-sec="team"]{--s:var(--sec-team);--s-ink:var(--sec-team-ink);--s-2:var(--sec-team-2)}
+[data-sec="battle"]{--s:var(--sec-battle);--s-ink:var(--sec-battle-ink);--s-2:var(--sec-battle-2)}
+[data-sec="meta"]{--s:var(--sec-meta);--s-ink:var(--sec-meta-ink);--s-2:var(--sec-meta-2)}
+[data-sec="info"]{--s:var(--sec-info);--s-ink:var(--sec-info-ink);--s-2:var(--sec-info-2)}
+html{--sec:var(--s,var(--sec-home));--sec-ink:var(--s-ink,var(--sec-home-ink));--sec-2:var(--s-2,var(--sec-home-2));--sec-soft:color-mix(in srgb,var(--sec) 16%,var(--chc,#FBF6EC))}
+html[data-look="dark"]{--glow:0 0 0 1px color-mix(in srgb,var(--sec) 45%,transparent),0 0 26px -6px color-mix(in srgb,var(--sec) 65%,transparent)}
+
+/* ---- item 1: numbers wear their band colour ---- */
+[data-band="S"]{--bn:var(--band-S);--bni:var(--band-S-ink);--bnb:var(--band-S-big)}[data-band="A"]{--bn:var(--band-A);--bni:var(--band-A-ink);--bnb:var(--band-A-big)}[data-band="B"]{--bn:var(--band-B);--bni:var(--band-B-ink);--bnb:var(--band-B-big)}
+[data-band="C"]{--bn:var(--band-C);--bni:var(--band-C-ink);--bnb:var(--band-C-big)}[data-band="D"]{--bn:var(--band-D);--bni:var(--band-D-ink);--bnb:var(--band-D-big)}[data-band="E"],[data-band="F"]{--bn:var(--band-F);--bni:var(--band-F-ink);--bnb:var(--band-F-big)}
+:root:not(#_ch) :not(.chring)[data-band]{color:var(--bni)}
+:root:not(#_ch) .chring.gc[data-band] small{color:var(--bni)}
+/* big display numbers (24px+, large text: 3:1) take the brighter --bnb so S reads gold, not brown */
+:root:not(#_ch) :is(.chhr .sc,.trr,.chlsr b)[data-band]{color:var(--bnb)}
+/* the hot list's two big cards sit on type colours: the number stays white with a band-coloured riso offset */
+:root:not(#_ch) .chhot .n[data-band]{color:#fff;text-shadow:3px 3px 0 var(--bn)}
+/* tier-board tiles: the score chip gets a band-coloured edge, number in the band ink */
+:root:not(#_ch) .ltile:not(.unsure) .lts[data-band]{box-shadow:inset 0 -3px 0 var(--bn)}
+:root:not(#_ch) .ltile.unsure .lts[data-band]{color:#fff}
+:root:not(#_ch) .wrv[data-wr="up"]{color:var(--wr-up);font-weight:700}
+:root:not(#_ch) .wrv[data-wr="down"]{color:var(--wr-down);font-weight:700}
+/* on the hot list's type-coloured cards the win rate stays white */
+:root:not(#_ch) .chhot .wrv[data-wr]{color:inherit}
+/* above / below average elsewhere: cores' "pts vs avg" and the team-score bars used red for "below"; red is for opponents only */
+:root:not(#_ch) :is(.corestat .up,.tsbr b.up){color:var(--wr-up)}
+:root:not(#_ch) :is(.corestat .dn,.tsbr b.dn){color:var(--wr-down)}
+:root:not(#_ch) .tsbbar i.dn{background:var(--wr-down)}
+/* readability fixes found in the pass: My box remove ×, the cores' rank number (dark), Gauntlet's Handled labels (light) */
+:root:not(#_ch) #boxList .boxchip .x{opacity:1}
+:root:not(#_ch)[data-look="dark"] .corerk{color:var(--chink2)}
+:root:not(#_ch):not([data-look="dark"]) .prepcell :is(.lv.l2,.lv.l3){color:var(--wr-up)}
+
+/* ---- item 3: section colour on menus ---- */
+:root:not(#_ch) .sidenav .sgl{color:var(--s-ink,var(--chink2));display:flex;align-items:center;gap:6px}
+:root:not(#_ch) .sidenav .sgl::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--s);flex:none}
+:root:not(#_ch) .sidenav [role=tab] .nic{color:var(--s-ink,currentColor);opacity:1}
+:root:not(#_ch) .sidenav [role=tab][aria-selected="true"]{box-shadow:inset 5px 0 0 var(--s,var(--sec))}
+:root:not(#_ch) .sidenav [role=tab][aria-selected="true"] .nic{color:var(--s,var(--sec))}
+:root:not(#_ch) .bnav button[data-sec] svg{color:var(--s-ink)}
+:root:not(#_ch) .bnav button[data-sec][aria-selected="true"] svg{background:color-mix(in srgb,var(--s) 30%,transparent);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--s) 70%,transparent)}
+:root:not(#_ch)[data-look="dark"] .bnav button[data-sec][aria-selected="true"] svg{background:color-mix(in srgb,var(--s) 26%,transparent);color:var(--s-ink)}
+:root:not(#_ch) .bnav button[data-view="report"][aria-selected="true"] .chfab{box-shadow:0 0 0 3px var(--sec-team)}
+:root:not(#_ch) .subnav .sub[aria-selected="true"]{box-shadow:3px 3px 0 var(--sec)}
+:root:not(#_ch) .tabs [role=tab][data-sec] svg{color:var(--s-ink)}
+:root:not(#_ch) .tabs [role=tab][data-sec][aria-selected="true"]{box-shadow:3px 3px 0 var(--s)}
+
+/* ---- item 9: splashier page headers: a bold section band, tinted panel, halftone and a sprite collage ---- */
+:root:not(#_ch) :is(.chpghead,.chbmhead){position:relative;isolation:isolate;overflow:hidden;margin:6px -8px 14px;padding:12px 10px 14px;
+  border:2px solid var(--chline);border-top:9px solid var(--sec);border-radius:18px;
+  background:linear-gradient(118deg,var(--chc) 28%,color-mix(in srgb,var(--sec) 24%,var(--chc)) 100%)}
+/* Home's hero holds the three start paths, so it stays open: every section's colour as one band over the title, halftone in the corner */
+:root:not(#_ch) .chmhero{position:relative;isolation:isolate;padding-top:22px;background:linear-gradient(90deg,var(--sec-build) 0 20%,var(--sec-team) 20% 40%,var(--sec-battle) 40% 60%,var(--sec-meta) 60% 80%,var(--sec-info) 80%) top/100% 8px no-repeat;border-radius:4px}
+:root:not(#_ch) :is(.chpghead,.chmhero,.chbmhead)::before{content:"";position:absolute;inset:0 0 0 30%;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(color-mix(in srgb,var(--sec) 75%,transparent) 1.4px,transparent 1.8px);background-size:9px 9px;
+  -webkit-mask-image:radial-gradient(ellipse 85% 80% at 100% 100%,#000 25%,transparent 72%);mask-image:radial-gradient(ellipse 85% 80% at 100% 100%,#000 25%,transparent 72%)}
+:root:not(#_ch) .chmhero::before{inset:8px 0 auto 45%;height:240px;-webkit-mask-image:radial-gradient(ellipse 90% 90% at 100% 0%,#000 20%,transparent 70%);mask-image:radial-gradient(ellipse 90% 90% at 100% 0%,#000 20%,transparent 70%)}
+:root:not(#_ch) .chpghead .pgart{position:absolute;right:-10px;bottom:-16px;z-index:-1;display:flex;align-items:flex-end;pointer-events:none;opacity:.34}
+:root:not(#_ch) .pgart .pgspr{width:92px;height:92px;object-fit:contain;margin-left:-30px;transform:rotate(-6deg)}
+:root:not(#_ch) .pgart .pgspr:nth-child(2){width:108px;height:108px;transform:rotate(4deg) translateY(-6px)}
+:root:not(#_ch)[data-look="dark"] .chpghead .pgart{opacity:.42}
+:root:not(#_ch) .chpghead .chpgt,:root:not(#_ch) .chabhero .chpgt,:root:not(#_ch) .chmhero .chh1,:root:not(#_ch) .chbmhead .chbmt span{text-shadow:3px 3px 0 var(--sec)}
+:root:not(#_ch) .chpghead>.chk,:root:not(#_ch) .chmhero>.chk,:root:not(#_ch) .chbmhead .chk{color:var(--sec-ink)}
+:root:not(#_ch) .chthead{padding:12px 10px 14px;border:2px solid var(--chline);border-top:9px solid var(--sec);border-radius:18px;margin:6px -8px 0;
+  background:linear-gradient(118deg,var(--chc) 30%,color-mix(in srgb,var(--sec) 20%,var(--chc)) 100%)}
+:root:not(#_ch) .chthead .nm{text-shadow:3px 3px 0 var(--sec)}
+:root:not(#_ch) .abhero.chabhero{border-top:9px solid var(--sec);background:linear-gradient(118deg,var(--chc) 35%,color-mix(in srgb,var(--sec) 20%,var(--chc)) 100%)}
+:root:not(#_ch)[data-look="dark"] :is(.chpghead,.chbmhead,.chthead){border-color:color-mix(in srgb,var(--sec) 45%,#5A524C);box-shadow:var(--glow)}
+:root:not(#_ch)[data-look="dark"] :is(.chpghead,.chbmhead,.chthead){border-top-color:var(--sec);background:linear-gradient(118deg,#2C2A28 30%,color-mix(in srgb,var(--sec) 15%,#2C2A28) 100%)}
+:root:not(#_ch)[data-look="dark"] .chpghead .chpgt,:root:not(#_ch)[data-look="dark"] .chabhero .chpgt,:root:not(#_ch)[data-look="dark"] .chmhero .chh1,:root:not(#_ch)[data-look="dark"] .chbmhead .chbmt span,:root:not(#_ch)[data-look="dark"] .chthead .nm{text-shadow:3px 3px 0 color-mix(in srgb,var(--sec) 80%,transparent)}
+:root:not(#_ch)[data-look="dark"] .abhero.chabhero{border-top:9px solid var(--sec)!important;background:linear-gradient(118deg,#2C2A28 35%,color-mix(in srgb,var(--sec) 15%,#2C2A28) 100%)}
+
+/* ---- item 8: card chrome. Light: bold, saturated fold headers instead of cream on cream. Dark: section-coloured neon edges ---- */
+:root:not(#_ch) details.chsec,:root:not(#_ch) .chsec.chmorebtn{border-left:7px solid var(--sec)}
+:root:not(#_ch) details.chsec>summary{background:linear-gradient(90deg,color-mix(in srgb,var(--sec) 30%,var(--chc)),var(--chc) 88%);border-radius:6px 12px 12px 6px}
+:root:not(#_ch) details.chsec[open]>summary{border-radius:6px 12px 0 0}
+:root:not(#_ch) .chsec.chmorebtn{background:linear-gradient(90deg,color-mix(in srgb,var(--sec) 26%,var(--chc)),var(--chc) 88%)}
+:root:not(#_ch) :is(.trcard,.myrec,.gsum,.cxpick,.calbox)>.chk:first-child{color:var(--sec-ink)}
+:root:not(#_ch) :is(.trcard,.myrec,.gsum,.chsugs,.calbox){border-top:6px solid var(--sec)}
+:root:not(#_ch)[data-look="dark"] :is(details.chsec,.chsec.chmorebtn){border-color:color-mix(in srgb,var(--sec) 45%,#5A524C);border-left:5px solid var(--sec);box-shadow:var(--glow)}
+:root:not(#_ch)[data-look="dark"] details.chsec>summary,:root:not(#_ch)[data-look="dark"] .chsec.chmorebtn{background:linear-gradient(90deg,color-mix(in srgb,var(--sec) 13%,#2C2A28),#2C2A28 80%)}
+:root[data-look="dark"] :is(.chshow,.chwin,.chsheet,.chside,.chready,.chbring,.dccol,.dcres,.evteam,.corerow.chcbig,.abcol,.chabhero,.chlstats,.myrec,.trcard,.gsum,.cxpick){border-color:color-mix(in srgb,var(--sec) 55%,#F3EBDC)!important;box-shadow:5px 5px 0 var(--sec),0 0 24px -6px color-mix(in srgb,var(--sec) 60%,transparent)!important}
+:root[data-look="dark"] :is(.gitem,.corerow:not(.chcbig)){box-shadow:5px 5px 0 color-mix(in srgb,var(--sec) 80%,transparent)!important}
+/* top cards: type-coloured halos in dark (the hot list's big two, Home's top-rated minis) */
+:root[data-look="dark"] .chhot.typed{box-shadow:0 0 0 2px color-mix(in srgb,var(--t1) 70%,#fff),0 0 30px -4px color-mix(in srgb,var(--t1) 75%,transparent),0 10px 34px -10px color-mix(in srgb,var(--t2) 80%,transparent)}
+:root[data-look="dark"] .hmini{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--ta) 65%,transparent),0 0 22px -6px color-mix(in srgb,var(--ta) 70%,transparent)}
+/* light: Home's top-rated minis get a saturated type-coloured cap instead of cream */
+:root:not([data-look="dark"]) .hmini{box-shadow:inset 0 6px 0 var(--ta)}
+/* ===== end DESIGN A ===== */

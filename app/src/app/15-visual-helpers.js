@@ -35,6 +35,12 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
 // score in a gold/silver/bronze palette of its own; now the same LTIERS colours and numbers as everywhere else)
 function ratingTag(p) { const r = rating(p), t = RS(r.total), T = lTier(r.total), rk = typeof rankTxt === 'function' ? rankTxt(p) : '';
   return `<span class="tag rating lt" style="background:${T.c};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${t} · ${T.k} tier${rk ? ' · ' + rk : ''} · ${esc(rRange(r))} · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t}, ${T.k} tier">${T.k} ${t}</span>`; }
+/* Design pass A (Nov 2, item 1): numbers wear their band colour. bandAt(total) = ' data-band="S"' for an internal rating total;
+   CSS (polish.css, DESIGN A block) colours any number carrying data-band with the band's text-safe ink (--bni) for the theme.
+   winSpan(v) wraps a win rate so it reads above (green) or below (indigo, never red) the 50% average. */
+function bandAt(total) { try { return ` data-band="${lTier(total).k}"`; } catch (e) { return ''; } }
+function winSpan(v, avg) { if (v == null || v === '' || !isFinite(+v)) return winFmt(v); const d = +v - (avg == null ? 50 : avg);
+  return `<span class="wrv" data-wr="${d >= 0.5 ? 'up' : d <= -0.5 ? 'down' : 'even'}">${winFmt(v)}</span>`; }
 // Archetype labels as coloured chips (rain blue, sun orange, Grassy green, Trick Room purple...).
 const ARCH_COLOR = {'Rain': '#2f7bff', 'Sun': '#ff7a1a', 'Sun-Rain': 'linear-gradient(90deg,#ff7a1a,#2f7bff)', 'Sand': '#c99a4a', 'Snow': '#7fd3ff',
   'Grassy Terrain': '#2fae4a', 'Psychic Terrain': '#ff4f9a', 'Electric Terrain': '#f2c200', 'Misty Terrain': '#f08ad0',

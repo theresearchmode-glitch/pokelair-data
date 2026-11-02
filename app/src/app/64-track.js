@@ -37,7 +37,7 @@ function trLines(T) { const W = new Map(); for (const e of T.ev) { const k = trW
   const xl = wk.map((k, i) => (i === 0 || i === wk.length - 1 || wk.length <= 6) ? `<text x="${X(i)}" y="${h - 6}" class="trax" text-anchor="middle">${npDay(k)}</text>` : '').join('');
   return `<svg class="trline" viewBox="0 0 ${w} ${h}" role="img" aria-label="Share of top-8 teams per Pokémon, week by week, by rating band">${grid}${xl}${lines}</svg>
     <div class="trleg">${TR_BANDS.map((t, b) => `<span><i style="background:var(--trb${b})"></i>Rated ${t}</span>`).join('')}</div>`; }
-function trMonRow(m, text) { const p = byName.get(m.n); return `<button type="button" class="trmon" data-lt="${esc(m.n)}">${sprite(p, 'tiny') || ''}<span class="trmb"><b>${esc(p.d)}</b><span>${text}</span></span><span class="trr" style="--tc:${lTier(m.r).c}">${RS(m.r)}</span></button>`; }
+function trMonRow(m, text) { const p = byName.get(m.n); return `<button type="button" class="trmon" data-lt="${esc(m.n)}">${sprite(p, 'tiny') || ''}<span class="trmb"><b>${esc(p.d)}</b><span>${text}</span></span><span class="trr" style="--tc:${lTier(m.r).c}"${bandAt(m.r)}>${RS(m.r)}</span></button>`; }
 function renderTrack() { const el = $('trackOut'); if (!el) return; const T = META.track;
   const head = CH.head('Ratings · checked against later events', 'Track record', 'How right have our ratings been?');
   const how = `<div class="trflow" aria-label="How the check works"><span><b>1</b>Every morning, every rating is saved</span><span><b>2</b>An event is played after that</span><span><b>3</b>We compare its top 8 with what we'd rated</span></div>

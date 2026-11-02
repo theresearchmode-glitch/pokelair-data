@@ -27,7 +27,7 @@ function lairFilter(rows) { const q = (ui.lq || '').trim().toLowerCase(), ty = u
   return rows.filter(({p}) => (!q || p.d.toLowerCase().includes(q) || p.t.some(t => t.toLowerCase() === q)) && (!ty.length || ty.every(t => p.t.includes(t)))
     && (!f.mega || p.m) && (!f.nomega || !p.m) && (!f.gem || isGem(p)) && (!f.box || inBox(p))); }
 function lairTile(p, r) { const a = TC[p.t[0]], b = TC[p.t[1] || p.t[0]];
-  return `<button type="button" class="ltile${r.band >= 10 ? ' unsure' : ''}" data-lt="${esc(p.n)}" style="--ta:${a};--tb:${b}" title="${esc(p.d)} · rated ${RS(r.total)}${rankTxt(p) ? ' · ' + rankTxt(p) : ''} · ${rRange(r)}${r.band >= 10 ? ' (few games: an estimate)' : ''}"><span class="ltf">${p.m ? '<i class="ltm" title="Mega">M</i>' : ''}${isGem(p) ? '<i class="ltg" title="Hidden gem">◆</i>' : ''}${inBox(p) ? '<i class="ltb" title="In your box"></i>' : ''}</span><span class="lts">${RS(r.total)}</span>`
+  return `<button type="button" class="ltile${r.band >= 10 ? ' unsure' : ''}" data-lt="${esc(p.n)}" style="--ta:${a};--tb:${b}" title="${esc(p.d)} · rated ${RS(r.total)}${rankTxt(p) ? ' · ' + rankTxt(p) : ''} · ${rRange(r)}${r.band >= 10 ? ' (few games: an estimate)' : ''}"><span class="ltf">${p.m ? '<i class="ltm" title="Mega">M</i>' : ''}${isGem(p) ? '<i class="ltg" title="Hidden gem">◆</i>' : ''}${inBox(p) ? '<i class="ltb" title="In your box"></i>' : ''}</span><span class="lts"${bandAt(r.total)}>${RS(r.total)}</span>`
     + `<span class="ltn${ltnFit(p)}">${esc(ltName(p))}</span>${sprite(p,'ltspr')}</button>`; }
 // the M badge already says Mega, so tiles drop the word; longer names step down a size instead of being cut off
 // Tile names: Megas drop "Mega", and long regional names shorten their region ("P. Tauros (Combat)"); the full name is on the sheet.
@@ -111,17 +111,17 @@ function lairSheet(n) {
     return `<div class="lbar"${T ? ` style="--bc:${T.c}"` : ''}><span>${l}</span><i style="--w:${vb}%"></i><b>${v == null ? '–' : v}</b><em>${v == null ? '' : `<strong>Top ${Math.max(1, 100 - v)}%</strong> of Pokémon${note ? ' · ' : ''}`}${note || ''}</em></div>`; };
   const ev = [];
   {
-    const pt = pilotFor(p); if (pt) ev.push(['Same players test', `${winFmt(pt.w)} wins with it · ${pctFmt(pt.wo)} without`, `the same ${pt.players.toLocaleString()} players: ${pt.g.toLocaleString()} games with it, ${pt.go.toLocaleString()} without. ${pt.d >= 3 ? 'A big gap: the Pokémon itself is winning games' : pt.d >= 1 ? 'Wins a little more than these players usually do' : pt.d > -1 ? 'About the same: these players win as often without it' : 'These players do better without it'}`]);
+    const pt = pilotFor(p); if (pt) ev.push(['Same players test', `${winSpan(pt.w)} wins with it · ${pctFmt(pt.wo)} without`, `the same ${pt.players.toLocaleString()} players: ${pt.g.toLocaleString()} games with it, ${pt.go.toLocaleString()} without. ${pt.d >= 3 ? 'A big gap: the Pokémon itself is winning games' : pt.d >= 1 ? 'Wins a little more than these players usually do' : pt.d > -1 ? 'About the same: these players win as often without it' : 'These players do better without it'}`]);
     // (the model-based "own share of team wins / win chance" row was removed Oct 28 with the other win predictions)
     { const bl = typeof bringLead === 'function' ? bringLead(p) : null; if (bl) ev.push(['Team preview (Showdown replays)', `brought ${pctFmt(bl.b)} · led ${pctFmt(bl.l)} of games`, `when it's on the team · ${bl.g.toLocaleString('en-US')} games${bl.forms ? ' · all forms' : ''}${bl.g < 300 ? ' · few games' : ''} · shown, not scored yet`]); }
     // every row says how recent its numbers are, in one format ("Oct 30", "Sep 2026")
     const dt = k => { const d = pf0 && pf0.dates && pf0.dates[k]; return d ? ' · ' + perfDateText(d) : ''; };
-    if (src.tour) ev.push(['Limitless tournaments', `${pctFmt(src.tour[0])} of teams`, `${winFmt(src.tour[1])} wins · ${src.tour[2].toLocaleString()} games${dt('tour')}`]);
+    if (src.tour) ev.push(['Limitless tournaments', `${pctFmt(src.tour[0])} of teams`, `${winSpan(src.tour[1])} wins · ${src.tour[2].toLocaleString()} games${dt('tour')}`]);
     if (src.official) ev.push(['Official VGC events', `${pctFmt(src.official[0])} of teams`, `${pctFmt(src.official[1])} of matches won · ${src.official[2].toLocaleString()} matches · whole field${pf0 && pf0.frozenOfficial ? ` · RK9, read before Nov 1 · frozen, newest event${dt('official').replace(' ·', '')}` : dt('official')}`]);
     const fam = ROSTER.some(q => q.m && q.b === p.b), spn = ((byName.get(p.b) || ROSTER.find(q => q.b === p.b && !q.m) || p).d || '').replace(/\s*\(.*\)$/, '').replace(/^Mega /, ''); // Floette has no plain entry (only Eternal and Mega)
     if (src.ingame != null) ev.push(['In-game Ranked Doubles', `#${src.ingame} most used`, `op.gg${pf0 && pf0.season ? ', season ' + esc(pf0.season) : ''}${fam ? ` · ${esc(spn)}, all forms (shared by form)` : ''}${dt('ingame')}`]);
     if (src.smogon != null) ev.push(['Showdown 1760+', `${pctFmt(src.smogon)} of teams`, `Smogon usage stats${dt('smogon')}`]);
-    if (src.ladder) ev.push(['Showdown ladder', `${pctFmt(src.ladder[0])} of teams`, `${winFmt(src.ladder[1])} wins · avg player ${src.ladder[2]}${fam ? ` · ${esc(spn)} total, shared by form` : ''} · Showdowntier, 14 days${dt('ladder')}`]);
+    if (src.ladder) ev.push(['Showdown ladder', `${pctFmt(src.ladder[0])} of teams`, `${winSpan(src.ladder[1])} wins · avg player ${src.ladder[2]}${fam ? ` · ${esc(spn)} total, shared by form` : ''} · Showdowntier, 14 days${dt('ladder')}`]);
   }
   const ab = metaAbility(p) || bestAbility(p), ti = topItems(p), mv = (() => { try { return runMoves(p).map(m => m.name).filter(Boolean); } catch (e) { return []; } })();
   const onT = members().find(m => m.base === p.b), onTeam = !!onT, full = !S.slots.some(s => !byName.get(s.n));
