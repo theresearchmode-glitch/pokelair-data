@@ -14,6 +14,14 @@ pg.on('pageerror', e => errs.push(e.message));
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}})} : null}; }, DOCS);
 await pg.goto('file://' + page); await pg.waitForTimeout(3000);
 const ev = c => pg.evaluate(c => window.__ev(c), c);
+// The fix plans are worked out in the background after a render (a slice at a time between frames), and ui.planList is []
+// until they come in. Wait for that instead of a fixed time: plans in for the current team and settings, no job running,
+// and still so a moment later (a data piece arriving can start a new job).
+const PLANS_IN = "ui.plans&&!ui.plans.pending&&!planJob&&planCache.key===planKeyOf($('useAbil').checked)&&ui.planCtx&&ui.planCtx.key===planCache.key";
+async function plansReady(timeout = 60000) { const end = Date.now() + timeout;
+  for (;;) { await pg.waitForFunction(c => window.__ev(c), PLANS_IN, {timeout: Math.max(1, end - Date.now()), polling: 100});
+    const key = await ev('planCache.key'); await pg.waitForTimeout(250);
+    if (await ev(PLANS_IN) && await ev('planCache.key') === key) return; } }
 console.log('\n== items, suggestions, battle math');
 // the user's team that wrongly scored 97 (Oct 27): dead Psychic Seed, Choice Scarf under its own Trick Room
 const USER = `Raichu @ Raichunite X
@@ -93,7 +101,7 @@ ok(pr.k.some(x => x.startsWith('dead:Sneasler')), 'dead Psychic Seed found (Raic
 ok(pr.k.some(x => x.startsWith('scarftr:Hydreigon')), 'Choice Scarf under own Trick Room found');
 ok(pr.row === false, 'checklist shows a failing Items row');
 ok(/Psychic Seed never activates/.test(pr.terr), 'game plan terrain row names the dead seed');
-await ev("setView('build');render()"); await pg.waitForTimeout(2500);
+await ev("setView('build');render()"); await plansReady();
 const card = await ev(`(()=>{const c=document.querySelector('#sugs .itemfix');return c?{n:c.querySelectorAll('[data-itfix]').length,t:c.innerText}:null})()`);
 ok(card && card.n >= 2, `item fix card with one-tap fixes (${card ? card.n : 0})`);
 const plansU = await ev(`(ui.planList||[]).map(pl=>({ip:itemProblemCount(pl.team),ch:pl.ch.map(x=>(x.out?x.out.p.n:'+')+'>'+x.c.p.n)}))`);
@@ -107,7 +115,9 @@ ok(await ev('itemProblemCount(members())') < ip0, 'one-tap item fix removes a pr
 const regs = await ev(`(META.teams&&META.teams.teams||[]).filter(t=>t.section==='Official events').slice(0,24).map(t=>t.mons)`);
 let clash = 0, dead = 0, badPlans = [], stapleDrops = [], nPlans = 0;
 for (const mons of regs.slice(0, 12)) {
-  const r = await ev(`(()=>{S.slots=${JSON.stringify(mons)}.map(n=>({n,a:null,lock:false}));fixSlots();planCache={key:null,plans:[]};render();const ms=members();
+  // the plans for this team come in the background: read them once they're in (reading right after render() saw none)
+  await ev(`S.slots=${JSON.stringify(mons)}.map(n=>({n,a:null,lock:false}));fixSlots();planCache={key:null,plans:[]};render()`); await plansReady();
+  const r = await ev(`(()=>{const ms=members();
     const pl=(ui.planList||[]).map(pl=>({ip:itemProblemCount(pl.team),drop:pl.ch.filter(x=>x.out&&U(x.out.p)>=15&&evidPct(x.c.p)<5).map(x=>x.out.p.n+'>'+x.c.p.n),rare:pl.ch.filter(x=>evidPct(x.c.p)<(inBox(x.c.p)?.5:2)).map(x=>x.c.p.n)}));
     return {clash:itemClash(ms).length,dead:deadItems(ms).length,pl}})()`);
   clash += r.clash; dead += r.dead; nPlans += r.pl.length;

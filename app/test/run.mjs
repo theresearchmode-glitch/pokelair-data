@@ -415,7 +415,10 @@ for (const width of [1280, 390]) {
   await pg.waitForFunction(() => window.__PL && window.__PL.META && window.__PL.META.doubles, null, {timeout: 15000}).catch(() => {});
   await pg.evaluate(() => { const T = window.__PL, S0 = T.getS(); window.__keep = S0.slots;
     S0.slots = T.normSlots(T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nJolly Nature\n- Earthquake\n- Dragon Claw').slots); T.render(); });
-  await go(pg, 'report'); await pg.waitForTimeout(400);
+  await go(pg, 'report');
+  /* the set editors are hidden here and redrawn in idle moments (Oct 31), so slot 0 can still show the card from before the
+     paste for a moment on a busy machine: wait for it to be redrawn (up to 8 s) instead of a fixed 400 ms (Nov 2) */
+  await pg.waitForFunction(() => { const c = document.getElementById('slot0'); return !!c && [...c.querySelectorAll('.asm')].some(x => x.textContent === 'assumed'); }, null, {timeout: 8000, polling: 100}).catch(() => {});
   const tag = await pg.evaluate(() => { const c = document.getElementById('slot0'); return c ? [...c.querySelectorAll('.asm')].map(x => x.textContent) : null; });
   ok(tag && tag.includes('assumed'), `team card: the team sheet's spread is tagged assumed (${tag})`);
   const clk = s => pg.evaluate(s => document.querySelector(s).click(), s), put = (s, v) => pg.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; }, [s, v]);
