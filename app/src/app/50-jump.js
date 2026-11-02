@@ -12,14 +12,14 @@ function jumpItems(q) { const k = norm(q || ''), out = [];
   for (const [v, t, d] of JUMP_TOOLS) if (document.querySelector(`[data-pane="${v}"]`) && (hit(t) || hit(d))) out.push({kind: 'Tool', label: t, sub: d, go: () => setView(v)});
   for (const t of S.teams || []) if (hit(t.name)) out.push({kind: 'Saved team', label: t.name, sub: t.slots.map(s => (byName.get(s.n) || {}).d).filter(Boolean).join(', '), go: () => jumpClick({load: t.id})});
   if (k) { const mons = ROSTER.filter(p => p.k.includes(k) || p.tok.some(x => x.startsWith(k))).sort((a, b) => (norm(a.d).startsWith(k) ? 0 : 1) - (norm(b.d).startsWith(k) ? 0 : 1) || rating(b).total - rating(a).total).slice(0, 8);
-    for (const p of mons) out.push({kind: 'Pokémon', label: p.d, sub: `Rating ${rating(p).total} · ${p.t.join('/')}`, p, go: () => { setView('ratings'); setTimeout(() => lairSheet(p.n), 60); }}); }
+    for (const p of mons) out.push({kind: 'Pokémon', label: p.d, sub: `Rated ${RS(rating(p).total)}${rankTxt(p) ? ' · ' + rankTxt(p) : ''} · ${p.t.join('/')}`, p, go: () => { setView('ratings'); setTimeout(() => lairSheet(p.n), 60); }}); }
   // whole name starts with it, then any word starts with it, then anything else
   const rank = x => norm(x.label).startsWith(k) ? 0 : x.label.split(/[\s()-]+/).some(w => norm(w).startsWith(k)) ? 1 : 2;
   return k ? out.sort((a, b) => rank(a) - rank(b)).slice(0, 14) : out.slice(0, 14); }
 // run an existing button's action without duplicating its code
 function jumpClick(data) { const b = document.createElement('button'); b.type = 'button'; b.hidden = true; for (const [k, v] of Object.entries(data)) b.dataset[k] = v; document.body.appendChild(b); b.click(); b.remove(); }
 function jumpRender() { const el = $('jumpList'); if (!el) return; jumpList = jumpItems(($('jumpIn') || {}).value); jumpSel = Math.min(jumpSel, Math.max(0, jumpList.length - 1));
-  el.innerHTML = jumpList.length ? jumpList.map((x, i) => `<li role="option" id="jo${i}" aria-selected="${i === jumpSel}" data-jo="${i}">${x.p ? sprite(x.p, 'mini') || '' : ''}<span class="jl"><b>${esc(x.label)}</b><span>${esc(x.sub || '')}</span></span><span class="jk">${x.kind}</span></li>`).join('')
+  el.innerHTML = jumpList.length ? jumpList.map((x, i) => `<li role="option" id="jo${i}" aria-selected="${i === jumpSel}" data-jo="${i}"${x.p ? ` class="tyacc" style="${tyv(x.p)}"` : ''}>${x.p ? sprite(x.p, 'mini') || '' : ''}<span class="jl"><b>${esc(x.label)}</b><span>${esc(x.sub || '')}</span></span><span class="jk">${x.kind}</span></li>`).join('')
     : '<li class="jnone">Nothing matches. Try a Pokémon, a tool like "speed", or a saved team.</li>';
   const inp = $('jumpIn'); if (inp) inp.setAttribute('aria-activedescendant', jumpList.length ? 'jo' + jumpSel : ''); const cur = $('jo' + jumpSel); if (cur && cur.scrollIntoView) cur.scrollIntoView({block: 'nearest'}); }
 function jumpOpen() { let w = $('jump'); if (!w) { w = document.createElement('div'); w.id = 'jump'; w.className = 'jump'; w.hidden = true;

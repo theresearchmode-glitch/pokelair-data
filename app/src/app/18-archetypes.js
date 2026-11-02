@@ -224,7 +224,9 @@ function trendFor(name, rank) {
   // comparing across them flipped most arrows); the same numbers as Home's "What changed this week"
   const now = latest[k] && latest[k][name]; if (now == null) return null;
   const diff = was - now; if (!diff) return null;
-  return {cls: diff > 0 ? 'up' : 'down', txt: (diff > 0 ? '▲' : '▼') + Math.abs(diff)};
+  /* Nov 2: a trend states its units and before → after: "▲3 places" (rank #12 → #9) */
+  return {cls: diff > 0 ? 'up' : 'down', txt: (diff > 0 ? '▲' : '▼') + Math.abs(diff) + (Math.abs(diff) === 1 ? ' place' : ' places'), was, now,
+    long: `${diff > 0 ? 'Up' : 'Down'} ${Math.abs(diff)} place${Math.abs(diff) === 1 ? '' : 's'} in usage rank in a week (#${was} → #${now})`};
 }
 
 

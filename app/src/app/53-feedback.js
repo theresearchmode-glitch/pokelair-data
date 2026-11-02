@@ -18,7 +18,7 @@ function fbMisBtn(key, label) { return `<button type="button" class="fbmis" data
 function fbMisContext(key) { key = String(key || ''); try {
   if (key === 'calc') return {title: 'Damage calc', text: (typeof dc === 'object' && dc.lastCtx) || 'Damage calc'};
   if (key.startsWith('mon:')) { const p = byName.get(key.slice(4)); if (!p) return null; const r = rating(p), src = r.src || {}, st = setFor(p) || {}, pf = activePerf(), L = [];
-    L.push(`${p.d} · rated ${r.total} (±${r.band}, ${lTier(r.total).k} tier)`);
+    L.push(`${p.d} · rated ${RS(r.total)} (${rRange(r)}, ${lTier(r.total).k} tier${rankTxt(p) ? ', ' + rankTxt(p) : ''})`);
     if (src.tour) L.push(`Tournaments: ${src.tour[0]}% of teams, ${src.tour[1]}% won, ${(+src.tour[2]).toLocaleString('en-US')} games`);
     if (st.mv && st.mv.length) L.push('Moves shown: ' + st.mv.slice(0, 5).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));
     if (st.it && st.it.length) L.push('Items shown: ' + st.it.slice(0, 3).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));

@@ -99,9 +99,9 @@ var TS_GAIN=2;
 // a plan's readiness, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
 function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
 function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
-function tsTitle(base,t){return `Ready for ${base.score}% → ${t.score}% of the top 30 threats (weighted by how often each makes top cut)`}
+function tsTitle(base,t){return `${base.score}% → ${t.score}% ready for the top 30 threats (each threat weighted by how often it makes top cut)`}
 function tsChip(team){const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
-  return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">Ready ${d>0?'+':d<0?'−':'±'}${Math.abs(d)}%</span>`}
+  return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">${readyDelta(d)}</span>`}
 // What a change does to the team's preparation, threat by threat, in plain words: [{up, html}] (best gains first, then losses)
 function threatDiff(baseTeam,team,max=3){const A=prepOf(baseTeam),B=prepOf(team);if(!A||!B||A.rows.length!==B.rows.length)return [];
   const up=[],dn=[];A.rows.forEach((ra,j)=>{const rb=B.rows[j];if(!rb||ra.t.n!==rb.t.n)return;

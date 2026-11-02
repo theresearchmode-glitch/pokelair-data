@@ -1,7 +1,7 @@
 // ---------- Gauntlet: your team against real top tournament teams ----------
 let gauntCache={key:null,rows:null};
 function gauntletTeams(){const d=META.teams;if(d&&d.teams&&d.teams.length)return d.teams.slice(0,20).map(t=>({who:`${t.player} · ${t.record}`,player:t.player,ev:t.event,mons:t.mons}));
-  const pv=RES&&Array.isArray(RES.proven)?RES.proven:[];return pv.slice(0,20).map(x=>({who:`Won ${Math.round(x[2]*100)}% across ${x[1]} entr${x[1]===1?"y":"ies"}`,ev:'Proven team list',mons:x[0]}))}
+  const pv=RES&&Array.isArray(RES.proven)?RES.proven:[];return pv.slice(0,20).map(x=>({who:`Won ${pctTxt(x[2]*100)} of games across ${x[1]} entr${x[1]===1?"y":"ies"}`,ev:'Proven team list',mons:x[0]}))}
 function gauntletScore(mine,theirs,useA){const r=planMatchup(mine,theirs,useA);let s=0,n=0;for(const i of r.chosen)for(let j=0;j<theirs.length;j++){s+=r.h.M[i][j];n++}
   // their side: how many of their six your four can't handle
   const loose=theirs.map((o,j)=>j).filter(j=>!r.chosen.some(i=>r.h.M[i][j]>=.75));return {r,s:n?s/n:0,loose}}
@@ -21,13 +21,13 @@ function renderGauntlet(){const el=$('gauntOut');if(!el)return;const ms=members(
       const g=gauntletScore(ms,theirs,useA);let pr=null;try{pr=gauntletPrep(ms,names)}catch(e){pr=null}return {ix,t,theirs,pr,...g}}).filter(Boolean)}}
   const rows=gauntCache.rows,edge=x=>x.pr?x.pr.yN-x.pr.tN:0;
   const more=rows.filter(x=>edge(x)>=2).length,less=rows.filter(x=>edge(x)<=-2).length;
-  const lv=['l0','l1','l2','l3'],cell=(r,p)=>`<div class="prepcell">${p?sprite(p,'mini'):''}<div><b>${esc(r.t.d)}</b><span class="lv ${lv[r.level]}">${esc(r.label)}</span><div class="t2">${esc(THR.evidence(r))}</div></div></div>`;
+  const lv=['l0','l1','l2','l3'],cell=(r,p)=>`<div class="prepcell${p?' tyacc':''}" style="${tyv(p)}">${p?sprite(p,'mini'):''}<div><b>${esc(r.t.d)}</b><span class="lv ${lv[r.level]}">${esc(r.label)}</span><div class="t2">${esc(THR.evidence(r))}</div></div></div>`;
   el.innerHTML=`<p class="t2" style="margin:0 0 8px">Your six against real top tournament teams, with the same calcs as your scouting report: how many of their Pokémon you're ready for, and how many of yours they're ready for. A red <b style="color:var(--bad)">!</b> marks one of theirs you have no answer to. Preparation, not a forecast: the player still decides the game.</p>
   <div class="gsum"><div><b>${more}</b><span>you're better prepared</span></div><div><b>${rows.length-more-less}</b><span>about even</span></div><div><b>${less}</b><span>they're better prepared</span></div></div>
   <div class="glist">${rows.slice().sort((a,b)=>edge(a)-edge(b)).map(x=>{const nm=i=>esc(ms[i].d),pr=x.pr,e=edge(x),c=e>=2?'ok':e<=-2?'hi':'mid';
     const un=pr?pr.you.map((r,j)=>r.level===0?j:-1).filter(j=>j>=0):x.loose;
     return `<div class="gitem"><div class="gtop"><span class="sev ${c}">${pr?`You: ready for ${pr.yN} of their ${pr.n}`:'—'}</span><span class="gwho">${esc(x.t.who)}</span>${pr?`<span class="vsub">Them: ready for ${pr.tN} of your ${ms.length}</span>`:''}<span class="vsub">${esc(x.t.ev||'')}</span></div>
-      <div class="gmons">${x.theirs.map((o,j)=>`<span class="gm${un.includes(j)?' loose':''}" title="${esc(o.d)}${pr&&pr.you[j]?': '+esc(pr.you[j].label)+' · '+esc(THR.evidence(pr.you[j])):''}">${sprite(o.p,'mini')||esc(o.d)}</span>`).join('')}</div>
+      <div class="gmons">${x.theirs.map((o,j)=>`<span class="gm${un.includes(j)?' loose':''}" title="${esc(o.d)}${pr&&pr.you[j]?': '+esc(pr.you[j].label)+' · '+esc(THR.evidence(pr.you[j])):''}">${sprH(o.p,'mini')||esc(o.d)}</span>`).join('')}</div>
       <div class="t2">Bring <b>${x.r.lead.map(nm).join(' + ')}</b> up front, ${x.r.back.map(nm).join(' + ')} in back.${un.length?` Watch ${un.map(j=>esc(x.theirs[j].d)).join(', ')}.`:''}</div>
       ${pr?`<details class="gprep"><summary>Matchup prep</summary><div class="lbl">You against their six</div><div class="prepgrid">${pr.you.map(r=>cell(r,byName.get(r.t.n))).join('')}</div>
         <div class="lbl" style="margin-top:8px">Their six against yours</div><div class="prepgrid">${pr.them.map(r=>cell(r,byName.get(r.t.n))).join('')}</div></details>`:''}

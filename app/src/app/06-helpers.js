@@ -1,4 +1,10 @@
 // ---------- helpers ----------
+// One rounding rule for every printed percentage (Sim, Nov 2): 10 and up → whole number, under 10 → one decimal, under 0.1 → "<0.1".
+// pctTxt(9.43) = "9.4%", pctTxt(23.6) = "24%". ptsTxt is the same rule for a change in points, without the % sign.
+function ptsTxt(v){v=+v;if(!isFinite(v))return '—';const a=Math.abs(v);if(a===0)return '0';if(a<.1)return '<0.1';const r1=Math.round(a*10)/10;return (v<0?'−':'')+(r1>=10?String(Math.round(a)):r1.toFixed(1))}
+function pctTxt(v){return ptsTxt(v)+'%'}
+// a change in readiness, in points (Nov 2: "-2% ready" read like 2% of something): "+3 points ready", "−1 point ready", "no change"
+function readyDelta(d){d=Math.round(+d||0);return d===0?'no change in ready':`${d>0?'+':'−'}${Math.abs(d)} point${Math.abs(d)===1?'':'s'} ready`}
 function memberOf(s,i){const p=byName.get(s.n);if(!p)return null;const ab=s.a&&p.a.includes(s.a)?s.a:(metaAbility(p)||bestAbility(p));
   const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi,spread:slotSpread(s,p)}}
 // Your nature and stat points (from a paste or link), in the same shape as commonSpread(): {nat,hp,atk,def,spa,spd,spe,mine:true}
@@ -156,3 +162,11 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
     if(i<list.length){setTimeout(step,30);return}
     wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,wq75:wts.length>=20?wts[Math.floor(wts.length*.75)]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};try{LS.set('np.ckwin',{k:skey,v:{rates:ckWin.rates,two:ckWin.two,wmed:ckWin.wmed,wq75:ckWin.wq75,se2med:ckWin.se2med}})}catch(e){}safe('checklist claims',()=>bgRender())};
   setTimeout(step,400)}
+/* One rounding rule for every printed percentage (Nov 2, "numbers read like school grades"): 10 or more → whole number,
+   under 10 → one decimal, under 0.1 → "<0.1". v is already a percentage (12.6, not .126); sign=false drops the "%".
+   (11-game-plan.js keeps its own local pctTxt for a different job, so this one is pctFmt.) */
+function pctFmt(v,sign=true){if(v==null||v===''||!isFinite(+v))return '–';v=+v;const a=Math.abs(v),s=sign?'%':'';
+  if(a===0)return '0'+s;if(a<.1)return (v<0?'>−':'<')+'0.1'+s;return (v<0?'−':'')+(a>=9.95?String(Math.round(a)):a.toFixed(1))+s}
+
+/* win rates keep one decimal (Sim, Nov 2): 51.6% and 52.0% must not both read 52%; every other % follows pctFmt */
+function winFmt(v){if(v==null||v===''||!isFinite(+v))return '–';return (+v).toFixed(1)+'%'}
