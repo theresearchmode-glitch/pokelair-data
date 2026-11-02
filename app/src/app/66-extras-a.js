@@ -57,5 +57,11 @@ CH.wrap('chTeamRender', () => { const o = $('chSheetOut'); if (!o) return;
    The info sheet's header gets a faint pattern for its first type (embers, ripples, leaves ...), drawn from inline SVG masks
    in polish.css and coloured from the second type (--tb). It is blended so it can only push the header's background away
    from the text colour (darker under white text, lighter under dark text): text contrast never drops. */
+/* Nov 2 declutter: the name is plain letters (no outline), so the header picks whichever reads better for its first type:
+   ink on the type colour as it is, or white on the type colour under the sheet's 30% dark veil (the same veil as before).
+   npInk(type) is true for ink. Measured on the 18 type colours, the chosen pair is 4.8:1 or more before the soft scrim. */
+const npInk = t => { const h = TC[t] || '#4E5068', ch = i => parseInt(h.slice(i, i + 2), 16), L = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); },
+  lum = c => .2126 * L(c[0]) + .7152 * L(c[1]) + .0722 * L(c[2]), raw = [ch(1), ch(3), ch(5)], dk = raw.map((v, i) => v * .7 + [10, 12, 30][i] * .3),
+  ink = (lum(raw) + .05) / (lum([29, 33, 64]) + .05), white = 1.05 / (lum(dk) + .05); return ink > white; };
 CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = n && byName.get(n); if (!sh || sh.hidden || !p) return; const head = sh.querySelector('.lshead'); if (!head) return;
-  head.className = head.className.replace(/\bnpty-\w+/g, '').trim(); head.classList.add('npty', 'npty-' + String(p.t[0] || 'normal').toLowerCase()); head.classList.toggle('npmega', !!p.m); });
+  head.className = head.className.replace(/\bnpty-\w+/g, '').trim(); head.classList.add('npty', 'npty-' + String(p.t[0] || 'normal').toLowerCase()); head.classList.toggle('npmega', !!p.m); head.classList.toggle('ltype', npInk(p.t[0])); });

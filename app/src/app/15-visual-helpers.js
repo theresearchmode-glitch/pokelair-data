@@ -36,8 +36,8 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
 function ratingTag(p) { const r = rating(p), t = RS(r.total), T = lTier(r.total), rk = typeof rankTxt === 'function' ? rankTxt(p) : '';
   return `<span class="tag rating lt" style="background:${tierBg(T.c)};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${t} · ${T.k} tier${rk ? ' · ' + rk : ''} · ${esc(rRange(r))} · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t}, ${T.k} tier">${T.k} ${t}</span>`; }
 /* Design pass A (Nov 2, item 1): numbers wear their band colour. bandAt(total) = ' data-band="S"' for an internal rating total;
-   CSS (polish.css, DESIGN A block) colours any number carrying data-band with the band's text-safe ink (--bni) for the theme.
-   winSpan(v) wraps a win rate so it reads above (green) or below (indigo, never red) the 50% average. */
+   winSpan(v) marks a win rate as above / below the 50% average (.wrv[data-wr]). Since the Nov 2 declutter neither is coloured
+   (numbers are plain ink); the markup stays so a future style can use it. */
 function bandAt(total) { try { return ` data-band="${lTier(total).k}"`; } catch (e) { return ''; } }
 function winSpan(v, avg) { if (v == null || v === '' || !isFinite(+v)) return winFmt(v); const d = +v - (avg == null ? 50 : avg);
   return `<span class="wrv" data-wr="${d >= 0.5 ? 'up' : d <= -0.5 ? 'down' : 'even'}">${winFmt(v)}</span>`; }

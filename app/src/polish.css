@@ -928,7 +928,6 @@ a.calrow:hover .calmain b{text-decoration:underline}
 .nplrow .npbands{margin:3px 0;gap:3px 10px}.nplrow .npbands span{padding:0;border:0;gap:4px;font:600 13px var(--body)}
 .nplrow .npbands .rtier{font-size:13px;border-radius:4px}
 .nplegend .npdots{margin:8px 0 0;padding-left:18px}.nplegend .npdots li{margin:3px 0;font-size:14px;line-height:1.4}
-.trr[style*="--tc"]{border-bottom:3px solid var(--tc)}
 :root,:root[data-look="dark"]{--trb0:#ffb400;--trb1:#ff6a3d;--trb2:#2f9bff;--trb3:#8a90a6}
 .lo b.lot.tC{background:#2f9bff}.lo b.lot.tD{background:#22b58a;color:#062a1f}.lo b.lot.tE,.lo b.lot.tF{background:#8a90a6;color:#fff}
 .hms b::before{content:none!important}.hms .rtier{font-size:12px;height:16px;min-width:16px;margin-right:4px;vertical-align:1px}.hms .hmrk{font-style:normal;color:var(--mute);margin-left:6px}
@@ -970,7 +969,7 @@ a.calrow:hover .calmain b{text-decoration:underline}
   --sec-home:#1E8FE8;--sec-build:#D4E000;--sec-team:#1E8FE8;--sec-battle:#12C2B0;--sec-meta:#FFB400;--sec-info:#A774FF;
   --sec-home-ink:#0A56A8;--sec-build-ink:#5C6600;--sec-team-ink:#0A56A8;--sec-battle-ink:#00705F;--sec-meta-ink:#935400;--sec-info-ink:#6A2BD6;
   --sec-home-2:#12C2B0;--sec-build-2:#7ED321;--sec-team-2:#4A5BF0;--sec-battle-2:#2F9BFF;--sec-meta-2:#FF6A3D;--sec-info-2:#4A5BF0;
-  --on-sec:#1D2140;--glow:none}
+  --on-sec:#1D2140}
 :root[data-look="dark"]{--band-S-ink:#FFC233;--band-A-ink:#FF8A63;--band-B-ink:#C58AFF;--band-C-ink:#5CB2FF;--band-D-ink:#3CD3A5;--band-F-ink:#A9AEC0;
   --band-S-big:var(--band-S-ink);--band-A-big:var(--band-A-ink);--band-B-big:var(--band-B-ink);--band-C-big:var(--band-C-ink);--band-D-big:var(--band-D-ink);--band-F-big:var(--band-F-ink);
   --wr-up:#3CD884;--wr-down:#8C9BFF;
@@ -983,24 +982,13 @@ a.calrow:hover .calmain b{text-decoration:underline}
 [data-sec="meta"]{--s:var(--sec-meta);--s-ink:var(--sec-meta-ink);--s-2:var(--sec-meta-2)}
 [data-sec="info"]{--s:var(--sec-info);--s-ink:var(--sec-info-ink);--s-2:var(--sec-info-2)}
 html{--sec:var(--s,var(--sec-home));--sec-ink:var(--s-ink,var(--sec-home-ink));--sec-2:var(--s-2,var(--sec-home-2));--sec-soft:color-mix(in srgb,var(--sec) 16%,var(--chc,#FBF6EC))}
-html[data-look="dark"]{--glow:0 0 0 1px color-mix(in srgb,var(--sec) 45%,transparent),0 0 26px -6px color-mix(in srgb,var(--sec) 65%,transparent)}
 
-/* ---- item 1: numbers wear their band colour ---- */
+/* ---- DECLUTTER (Nov 2, Sim: "remove the clash"): the section colours (page washes, coloured header bands, coloured menus),
+   card chrome (coloured top bands, side stripes, offset coloured shadows, neon edges, halos) and band-coloured numbers that
+   were here are gone. Kept: the band tokens (tier chips use them) and the up/down colours that replaced red. ---- */
 [data-band="S"]{--bn:var(--band-S);--bni:var(--band-S-ink);--bnb:var(--band-S-big)}[data-band="A"]{--bn:var(--band-A);--bni:var(--band-A-ink);--bnb:var(--band-A-big)}[data-band="B"]{--bn:var(--band-B);--bni:var(--band-B-ink);--bnb:var(--band-B-big)}
 [data-band="C"]{--bn:var(--band-C);--bni:var(--band-C-ink);--bnb:var(--band-C-big)}[data-band="D"]{--bn:var(--band-D);--bni:var(--band-D-ink);--bnb:var(--band-D-big)}[data-band="E"],[data-band="F"]{--bn:var(--band-F);--bni:var(--band-F-ink);--bnb:var(--band-F-big)}
-:root:not(#_ch) :not(.chring)[data-band]{color:var(--bni)}
-:root:not(#_ch) .chring.gc[data-band] small{color:var(--bni)}
-/* big display numbers (24px+, large text: 3:1) take the brighter --bnb so S reads gold, not brown */
-:root:not(#_ch) :is(.chhr .sc,.trr,.chlsr b)[data-band]{color:var(--bnb)}
-/* the hot list's two big cards sit on type colours: the number stays white with a band-coloured riso offset */
-:root:not(#_ch) .chhot .n[data-band]{color:#fff;text-shadow:3px 3px 0 var(--bn)}
-/* tier-board tiles: the score chip gets a band-coloured edge, number in the band ink */
-:root:not(#_ch) .ltile:not(.unsure) .lts[data-band]{box-shadow:inset 0 -3px 0 var(--bn)}
 :root:not(#_ch) .ltile.unsure .lts[data-band]{color:#fff}
-:root:not(#_ch) .wrv[data-wr="up"]{color:var(--wr-up);font-weight:700}
-:root:not(#_ch) .wrv[data-wr="down"]{color:var(--wr-down);font-weight:700}
-/* on the hot list's type-coloured cards the win rate stays white */
-:root:not(#_ch) .chhot .wrv[data-wr]{color:inherit}
 /* above / below average elsewhere: cores' "pts vs avg" and the team-score bars used red for "below"; red is for opponents only */
 :root:not(#_ch) :is(.corestat .up,.tsbr b.up){color:var(--wr-up)}
 :root:not(#_ch) :is(.corestat .dn,.tsbr b.dn){color:var(--wr-down)}
@@ -1009,61 +997,9 @@ html[data-look="dark"]{--glow:0 0 0 1px color-mix(in srgb,var(--sec) 45%,transpa
 :root:not(#_ch) #boxList .boxchip .x{opacity:1}
 :root:not(#_ch)[data-look="dark"] .corerk{color:var(--chink2)}
 :root:not(#_ch):not([data-look="dark"]) .prepcell :is(.lv.l2,.lv.l3){color:var(--wr-up)}
-
-/* ---- item 3: section colour on menus ---- */
-:root:not(#_ch) .sidenav .sgl{color:var(--s-ink,var(--chink2));display:flex;align-items:center;gap:6px}
-:root:not(#_ch) .sidenav .sgl::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--s);flex:none}
-:root:not(#_ch) .sidenav [role=tab] .nic{color:var(--s-ink,currentColor);opacity:1}
-:root:not(#_ch) .sidenav [role=tab][aria-selected="true"]{box-shadow:inset 5px 0 0 var(--s,var(--sec))}
-:root:not(#_ch) .sidenav [role=tab][aria-selected="true"] .nic{color:var(--s,var(--sec))}
-:root:not(#_ch) .bnav button[data-sec] svg{color:var(--s-ink)}
-:root:not(#_ch) .bnav button[data-sec][aria-selected="true"] svg{background:color-mix(in srgb,var(--s) 30%,transparent);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--s) 70%,transparent)}
-:root:not(#_ch)[data-look="dark"] .bnav button[data-sec][aria-selected="true"] svg{background:color-mix(in srgb,var(--s) 26%,transparent);color:var(--s-ink)}
-:root:not(#_ch) .bnav button[data-view="report"][aria-selected="true"] .chfab{box-shadow:0 0 0 3px var(--sec-team)}
-:root:not(#_ch) .subnav .sub[aria-selected="true"]{box-shadow:3px 3px 0 var(--sec)}
-:root:not(#_ch) .tabs [role=tab][data-sec] svg{color:var(--s-ink)}
-:root:not(#_ch) .tabs [role=tab][data-sec][aria-selected="true"]{box-shadow:3px 3px 0 var(--s)}
-
-/* ---- item 9: splashier page headers: a bold section band, tinted panel, halftone and a sprite collage ---- */
-:root:not(#_ch) :is(.chpghead,.chbmhead){position:relative;isolation:isolate;overflow:hidden;margin:6px -8px 14px;padding:12px 10px 14px;
-  border:2px solid var(--chline);border-top:9px solid var(--sec);border-radius:18px;
-  background:linear-gradient(118deg,var(--chc) 28%,color-mix(in srgb,var(--sec) 24%,var(--chc)) 100%)}
-/* Home's hero holds the three start paths, so it stays open: every section's colour as one band over the title, halftone in the corner */
-:root:not(#_ch) .chmhero{position:relative;isolation:isolate;padding-top:22px;background:linear-gradient(90deg,var(--sec-build) 0 20%,var(--sec-team) 20% 40%,var(--sec-battle) 40% 60%,var(--sec-meta) 60% 80%,var(--sec-info) 80%) top/100% 8px no-repeat;border-radius:4px}
-:root:not(#_ch) :is(.chpghead,.chmhero,.chbmhead)::before{content:"";position:absolute;inset:0 0 0 30%;z-index:-1;pointer-events:none;
-  background-image:radial-gradient(color-mix(in srgb,var(--sec) 75%,transparent) 1.4px,transparent 1.8px);background-size:9px 9px;
-  -webkit-mask-image:radial-gradient(ellipse 85% 80% at 100% 100%,#000 25%,transparent 72%);mask-image:radial-gradient(ellipse 85% 80% at 100% 100%,#000 25%,transparent 72%)}
-:root:not(#_ch) .chmhero::before{inset:8px 0 auto 45%;height:240px;-webkit-mask-image:radial-gradient(ellipse 90% 90% at 100% 0%,#000 20%,transparent 70%);mask-image:radial-gradient(ellipse 90% 90% at 100% 0%,#000 20%,transparent 70%)}
-:root:not(#_ch) .chpghead .pgart{position:absolute;right:-10px;bottom:-16px;z-index:-1;display:flex;align-items:flex-end;pointer-events:none;opacity:.34}
-:root:not(#_ch) .pgart .pgspr{width:92px;height:92px;object-fit:contain;margin-left:-30px;transform:rotate(-6deg)}
-:root:not(#_ch) .pgart .pgspr:nth-child(2){width:108px;height:108px;transform:rotate(4deg) translateY(-6px)}
-:root:not(#_ch)[data-look="dark"] .chpghead .pgart{opacity:.42}
-:root:not(#_ch) .chpghead .chpgt,:root:not(#_ch) .chabhero .chpgt,:root:not(#_ch) .chmhero .chh1,:root:not(#_ch) .chbmhead .chbmt span{text-shadow:3px 3px 0 var(--sec)}
-:root:not(#_ch) .chpghead>.chk,:root:not(#_ch) .chmhero>.chk,:root:not(#_ch) .chbmhead .chk{color:var(--sec-ink)}
-:root:not(#_ch) .chthead{padding:12px 10px 14px;border:2px solid var(--chline);border-top:9px solid var(--sec);border-radius:18px;margin:6px -8px 0;
-  background:linear-gradient(118deg,var(--chc) 30%,color-mix(in srgb,var(--sec) 20%,var(--chc)) 100%)}
-:root:not(#_ch) .chthead .nm{text-shadow:3px 3px 0 var(--sec)}
-:root:not(#_ch) .abhero.chabhero{border-top:9px solid var(--sec);background:linear-gradient(118deg,var(--chc) 35%,color-mix(in srgb,var(--sec) 20%,var(--chc)) 100%)}
-:root:not(#_ch)[data-look="dark"] :is(.chpghead,.chbmhead,.chthead){border-color:color-mix(in srgb,var(--sec) 45%,#5A524C);box-shadow:var(--glow)}
-:root:not(#_ch)[data-look="dark"] :is(.chpghead,.chbmhead,.chthead){border-top-color:var(--sec);background:linear-gradient(118deg,#2C2A28 30%,color-mix(in srgb,var(--sec) 15%,#2C2A28) 100%)}
-:root:not(#_ch)[data-look="dark"] .chpghead .chpgt,:root:not(#_ch)[data-look="dark"] .chabhero .chpgt,:root:not(#_ch)[data-look="dark"] .chmhero .chh1,:root:not(#_ch)[data-look="dark"] .chbmhead .chbmt span,:root:not(#_ch)[data-look="dark"] .chthead .nm{text-shadow:3px 3px 0 color-mix(in srgb,var(--sec) 80%,transparent)}
-:root:not(#_ch)[data-look="dark"] .abhero.chabhero{border-top:9px solid var(--sec)!important;background:linear-gradient(118deg,#2C2A28 35%,color-mix(in srgb,var(--sec) 15%,#2C2A28) 100%)}
-
-/* ---- item 8: card chrome. Light: bold, saturated fold headers instead of cream on cream. Dark: section-coloured neon edges ---- */
-:root:not(#_ch) details.chsec,:root:not(#_ch) .chsec.chmorebtn{border-left:7px solid var(--sec)}
-:root:not(#_ch) details.chsec>summary{background:linear-gradient(90deg,color-mix(in srgb,var(--sec) 30%,var(--chc)),var(--chc) 88%);border-radius:6px 12px 12px 6px}
-:root:not(#_ch) details.chsec[open]>summary{border-radius:6px 12px 0 0}
-:root:not(#_ch) .chsec.chmorebtn{background:linear-gradient(90deg,color-mix(in srgb,var(--sec) 26%,var(--chc)),var(--chc) 88%)}
-:root:not(#_ch) :is(.trcard,.myrec,.gsum,.cxpick,.calbox)>.chk:first-child{color:var(--sec-ink)}
-:root:not(#_ch) :is(.trcard,.myrec,.gsum,.chsugs,.calbox){border-top:6px solid var(--sec)}
-:root:not(#_ch)[data-look="dark"] :is(details.chsec,.chsec.chmorebtn){border-color:color-mix(in srgb,var(--sec) 45%,#5A524C);border-left:5px solid var(--sec);box-shadow:var(--glow)}
-:root:not(#_ch)[data-look="dark"] details.chsec>summary,:root:not(#_ch)[data-look="dark"] .chsec.chmorebtn{background:linear-gradient(90deg,color-mix(in srgb,var(--sec) 13%,#2C2A28),#2C2A28 80%)}
-:root[data-look="dark"] :is(.chshow,.chwin,.chsheet,.chside,.chready,.chbring,.dccol,.dcres,.evteam,.corerow.chcbig,.abcol,.chabhero,.chlstats,.myrec,.trcard,.gsum,.cxpick){border-color:color-mix(in srgb,var(--sec) 55%,#F3EBDC)!important;box-shadow:5px 5px 0 var(--sec),0 0 24px -6px color-mix(in srgb,var(--sec) 60%,transparent)!important}
-:root[data-look="dark"] :is(.gitem,.corerow:not(.chcbig)){box-shadow:5px 5px 0 color-mix(in srgb,var(--sec) 80%,transparent)!important}
-/* top cards: type-coloured halos in dark (the hot list's big two, Home's top-rated minis) */
-:root[data-look="dark"] .chhot.typed{box-shadow:0 0 0 2px color-mix(in srgb,var(--t1) 70%,#fff),0 0 30px -4px color-mix(in srgb,var(--t1) 75%,transparent),0 10px 34px -10px color-mix(in srgb,var(--t2) 80%,transparent)}
-:root[data-look="dark"] .hmini{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--ta) 65%,transparent),0 0 22px -6px color-mix(in srgb,var(--ta) 70%,transparent)}
-/* light: Home's top-rated minis get a saturated type-coloured cap instead of cream */
+/* My team header: a plain card (the neutral card surface, no band, no wash), the frame the weather plays inside */
+:root:not(#_ch) .chthead{padding:12px 10px 14px;border:2px solid var(--chline);border-radius:18px;margin:6px -8px 0;background:var(--chc)}
+/* Home's top-rated minis keep a type-coloured cap in light (a Pokémon card: type colour stays on Pokémon) */
 :root:not([data-look="dark"]) .hmini{box-shadow:inset 0 6px 0 var(--ta)}
 /* ===== end DESIGN A ===== */
 /* ==================== DESIGN PASS B (Nov 2): rows & cards — type accents, sprites lead, mini graphics, Details taps ====================
@@ -1072,9 +1008,7 @@ html[data-look="dark"]{--glow:0 0 0 1px color-mix(in srgb,var(--sec) 45%,transpa
 .tyacc{background-image:linear-gradient(180deg,var(--ta),var(--tb)),linear-gradient(100deg,color-mix(in srgb,var(--ta) 16%,transparent) 0,color-mix(in srgb,var(--tb) 8%,transparent) 45%,transparent 78%)!important;
   background-size:5px 100%,100% 100%!important;background-repeat:no-repeat!important;background-position:left top,left top!important}
 :root[data-look="dark"] .tyacc{background-image:linear-gradient(180deg,var(--ta),var(--tb)),linear-gradient(100deg,color-mix(in srgb,var(--ta) 15%,transparent) 0,color-mix(in srgb,var(--tb) 8%,transparent) 45%,transparent 78%)!important}
-/* the sprite's own halo in its type colours */
-img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 34%,transparent) 0,color-mix(in srgb,var(--tb) 18%,transparent) 62%,transparent 100%);border-radius:50%}
-:root[data-look="dark"] img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 46%,transparent) 0,color-mix(in srgb,var(--tb) 24%,transparent) 62%,transparent 100%)}
+/* (the type-coloured halo behind each sprite was removed in the Nov 2 declutter: no glows except the Mega glow) */
 /* 5 · small filled usage bar (the % is always printed beside it) */
 .dbbar{display:block;height:5px;max-width:170px;margin:4px 0 1px;border-radius:3px;background:color-mix(in srgb,var(--chink2,#4E5068) 16%,transparent);overflow:hidden}
 .dbbar em{display:block;height:100%;border-radius:3px;background:var(--bc,linear-gradient(90deg,var(--ta,#2f9bff),var(--tb,var(--ta,#2f9bff))))}
@@ -1183,11 +1117,8 @@ img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 
 .ltier.nps{position:relative;isolation:isolate;outline:2px solid #ffb400;outline-offset:-1px}
 .chlsr.nps{position:relative;isolation:isolate;overflow:hidden;background:var(--chc);border-radius:14px 0 0 14px;box-shadow:inset 0 0 0 2px #ffb400}
 .chhot.nps{isolation:isolate}
-/* My team grade A: a glow in the A colour around (never inside) the ring */
+/* (the glow round an A-grade ring was removed in the Nov 2 declutter: no glows except the Mega glow) */
 .chring.npA{position:relative}
-.chring.npA::before{content:'';position:absolute;inset:-16px;border-radius:50%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,transparent 67%,color-mix(in srgb,var(--gc) 50%,transparent) 73%,transparent 100%)}
-@media (prefers-reduced-motion: no-preference){.chring.npA::before{animation:np-fade .5s ease-out}}
-@keyframes np-fade{from{opacity:0}to{opacity:1}}
 /* the grade went up after a change: a one-off burst of sparkles round the ring */
 .chring.np-spark{position:relative}
 @media (prefers-reduced-motion: no-preference){
@@ -1248,7 +1179,7 @@ img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 
    The header's halftone dots give way to a faint pattern for the first type, coloured from the second type (--tb; the same
    as the first for single types). Under white text it is multiplied (can only darken the background), under dark text it is
    screened (can only lighten it): the name and the small lines on the header never lose contrast. It stays still. */
-:root:not(#_ch) .lshead.chls.npty{isolation:isolate;background-image:none}
+:root:not(#_ch) .lshead.chls.npty{isolation:isolate}
 .lshead.chls.npty::before{content:'';position:absolute;left:calc(-1 * var(--nptw));top:calc(-1 * var(--npth));right:0;bottom:0;z-index:-1;pointer-events:none;
   background:color-mix(in srgb,var(--tb) 45%,#000);-webkit-mask:var(--npm) 0 0/var(--nptw) var(--npth) repeat;mask:var(--npm) 0 0/var(--nptw) var(--npth) repeat;
   mix-blend-mode:multiply;opacity:.36}
@@ -1290,7 +1221,7 @@ img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 
 .chthead.wxon>:not(.wxfx){position:relative;z-index:1}
 /* the grade ring keeps a solid face (its band tint over the card colour), so its small number never sits on the weather */
 :root .chthead.wxon .chring,:root .chthead.wxon .chring.gc{background:linear-gradient(color-mix(in srgb,var(--gc,transparent) 13%,transparent),color-mix(in srgb,var(--gc,transparent) 13%,transparent)),var(--chc)}
-.wxfx{position:absolute;inset:0;overflow:hidden;border-radius:9px 9px 16px 16px;pointer-events:none}
+.wxfx{position:absolute;inset:0;overflow:hidden;border-radius:16px;pointer-events:none}
 .wxfx::before{content:'';position:absolute;inset:0;background:var(--wxbg,none);mix-blend-mode:color}
 .wxfx i{position:absolute;display:block}
 .wxfx b{position:absolute;display:block}
@@ -1365,25 +1296,21 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 /* 2. greys: secondary text reaches ~7:1 on cards in both themes, faint text ≥ 7:1 on the page */
 :root:not(#_lg){--chink2:#3F4157;--faint:#45475B}
 :root:not(#_lg)[data-look="dark"]{--chink2:#D6CEC1;--faint:#BDB6AA}
-/* 3. display titles: crisp letters. The offset colour shadow (which doubled the letters) becomes a section-coloured underline */
+/* 3. display titles: crisp letters, plain (Nov 2 declutter: no offset shadow, no underline, no outline) */
 :root:not(#_lg) :is(.chdisp,.chpgt,.chh1,.chwh,.chshn,.chbringt,.chthead .nm,.chscout .chh,.chbmt span,.chbmt em){text-shadow:none!important}
-:root:not(#_lg) :is(.chpghead .chpgt,.chabhero .chpgt,.chmhero .chh1,.chbmhead .chbmt span,.chthead .nm){text-decoration:underline;text-decoration-color:var(--sec);text-decoration-thickness:.11em;text-underline-offset:.12em;text-decoration-skip-ink:none}
-:root:not(#_lg) .chbmhead .chbmt em{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--chredT) 55%,transparent);text-decoration-thickness:.11em;text-underline-offset:.12em;text-decoration-skip-ink:none}
 :root:not(#_lg) :is(.chpghead .chpgt,.chabhero .chpgt,.chbmhead .chbmt,.chthead .nm){line-height:1.08}
 /* the team preview title: their plan on two clear lines, "vs" a readable pill */
 :root:not(#_lg) .chbmt{font-size:30px}
 :root:not(#_lg) .chbmt>span{display:block}
 :root:not(#_lg) .chbmt small{display:inline-block;vertical-align:.3em;margin:6px 8px 0 0;padding:2px 9px;border-radius:999px;font:800 14px/1.3 var(--body);letter-spacing:.02em;text-transform:none;color:var(--chp);background:var(--chink)}
 @media (min-width:900px){:root:not(#_lg) .chbmt{font-size:52px}:root:not(#_lg) .chbmt small{font-size:18px}}
-/* 4. halftone dots never sit behind words: page headers keep them in the bottom-right corner only, the blue cards in the top-right */
-:root:not(#_lg) :is(.chpghead,.chbmhead)::before{inset:auto 0 0 auto;width:34%;height:62%;
-  -webkit-mask-image:radial-gradient(ellipse 100% 100% at 100% 100%,#000 20%,transparent 70%);mask-image:radial-gradient(ellipse 100% 100% at 100% 100%,#000 20%,transparent 70%)}
+/* 4. halftone dots never sit behind words: the blue cards keep them in the top-right */
 :root:not(#_lg) :is(.chcalc,.chmcard){position:relative;isolation:isolate;background-image:none!important}
 :root:not(#_lg) :is(.chcalc,.chmcard)::after{content:"";position:absolute;top:0;right:0;width:30%;height:64px;z-index:-1;pointer-events:none;border-top-right-radius:16px;
   background-image:radial-gradient(rgba(255,255,255,.3) 1.2px,transparent 1.6px);background-size:9px 9px;
   -webkit-mask-image:radial-gradient(ellipse 100% 100% at 100% 0%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse 100% 100% at 100% 0%,#000 25%,transparent 75%)}
-/* the blue damage-calc card: a deeper blue so white words reach 7:1; its offset edge is the Battle colour (red is only for opponents) */
-:root:not(#_lg) .chcalc{background-color:#005E99;box-shadow:4px 4px 0 var(--sec-battle,#12C2B0)}
+/* the blue damage-calc card: a deeper blue so white words reach 7:1; its offset edge is plain ink like the other Concept H cards (Nov 2 declutter) */
+:root:not(#_lg) .chcalc{background-color:#005E99;box-shadow:4px 4px 0 var(--chline)}
 :root:not(#_lg)[data-look="dark"] .chcalc{background-color:#085C93}
 /* 5. the bottom bar is solid: nothing on the page shows through behind its labels */
 @media (max-width:1000px){
@@ -1403,10 +1330,6 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
  :root:not(#_lg) .chcalcdef .spr{width:44px;height:44px}
  :root:not(#_lg) .chcalcdef span{font:800 14px/1.15 var(--body);text-transform:none}
 }
-/* 7. page headers with a sprite collage: the art stays, the words get a soft card-coloured halo so no sprite edge cuts a letter */
-:root:not(#_lg) .chpghead.pghas>:is(.chk,.chpgt,.chpgs){text-shadow:0 0 2px var(--chc),0 0 6px var(--chc),0 0 12px var(--chc)!important}
-:root:not(#_lg)[data-look="dark"] .chpghead.pghas>:is(.chk,.chpgt,.chpgs){text-shadow:0 0 2px #2C2A28,0 0 6px #2C2A28,0 0 12px #2C2A28!important}
-:root:not(#_lg) .chpghead .pgart{opacity:.26}:root:not(#_lg)[data-look="dark"] .chpghead .pgart{opacity:.3}
 /* their Pokémon in the calc card: a deeper opponent red so its white name reads */
 :root:not(#_lg) .chcalcdef{background:#C41E35}
 /* 8. band-coloured numbers and the up/down colours: the same hues, one step deeper (light) or lighter (dark) so they read
@@ -1415,9 +1338,20 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
   --band-S-big:var(--band-S-ink);--band-A-big:var(--band-A-ink);--band-B-big:var(--band-B-ink);--band-C-big:var(--band-C-ink);--band-D-big:var(--band-D-ink);--band-F-big:var(--band-F-ink);
   --wr-up:#14633A;--wr-down:#2F3FC8}
 :root:not(#_lg)[data-look="dark"]{--band-S-ink:#FFC233;--band-A-ink:#FF9B7A;--band-B-ink:#D0A0FF;--band-C-ink:#6FBDFF;--band-D-ink:#3CD3A5;--band-F-ink:#B4B9CA;--wr-up:#3CD884;--wr-down:#A3AFFF}
-/* 9. info-sheet headers (18 type patterns, Mega halos): the name is a sticker (white letters, thick ink outline) that reads
-   on every type colour; the rank line and the close button sit on solid card-coloured plates */
-:root:not(#_lg) .lshead.chls h3,:root:not(#_lg) .lshead.chls.ltype h3{color:#fff!important;-webkit-text-stroke:7px #1D2140;paint-order:stroke fill;text-shadow:none!important;letter-spacing:.01em}
+/* 9. info-sheet headers (18 type patterns, Mega halos). Nov 2 declutter: the name is plain condensed letters, white or ink
+   by the type colour (.ltype = a light type colour), with no outline and no plate. Behind it a soft, wide scrim (dark under
+   white letters, light under ink) fades out into the header, so the name reads at 4.5:1+ over the pattern, the sprite and
+   the Mega halo. The rank line and the close button sit on small card-coloured chips. */
+:root:not(#_lg) .lshead.chls h3{color:#fff!important;-webkit-text-stroke:0;text-shadow:none!important;letter-spacing:.01em}
+:root:not(#_lg) .lshead.chls.ltype h3{color:#1D2140!important}
+:root:not(#_lg) .lshead.chls .lsname::before{content:"";position:absolute;left:-70px;right:-150px;top:-60px;bottom:-40px;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 64% 50% at 36% 52%,rgba(12,14,32,.66) 0,rgba(12,14,32,.58) 50%,rgba(12,14,32,.24) 80%,transparent 100%)}
+:root:not(#_lg) .lshead.chls.ltype .lsname::before{background:radial-gradient(ellipse 64% 50% at 36% 52%,rgba(255,252,244,.62) 0,rgba(255,252,244,.5) 50%,rgba(255,252,244,.2) 80%,transparent 100%)}
+/* the header is full-bleed: no edge line (the panel's rounded corners clip it), the darkening is a background layer (not a
+   huge inset shadow) and the type pattern covers the whole box, so no plain band shows along any edge or corner */
+:root:not(#_ch) .lshead.chls{border:0;box-shadow:none;background-image:linear-gradient(rgba(10,12,30,.3),rgba(10,12,30,.3))}
+:root:not(#_ch) .lshead.chls.ltype{background-image:none}
+:root:not(#_ch) .lshead.chls.npty::before{left:0;top:0;right:0;bottom:0}
 :root:not(#_lg) .lshead.chls .chlsk,:root:not(#_lg) .lshead.chls.ltype .chlsk{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--chc);color:var(--chink)!important;opacity:1;text-shadow:none;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.25)}
 :root:not(#_lg) .lshead.chls .lsx,:root:not(#_lg) .lshead.chls.ltype .lsx{background:var(--chc)!important;color:var(--chink)!important;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 /* 10. unselected choice chips (Megas on team 0 / 1 / 2 and the other pill rows): full-strength numbers and a clear outline */
@@ -1427,10 +1361,6 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 :root:not(#_lg) .archchip:not(.dk){background-image:linear-gradient(rgba(20,18,40,var(--acd,0)),rgba(20,18,40,var(--acd,0))),var(--acg,linear-gradient(transparent,transparent))!important}
 :root:not(#_lg) .archchip.dk:not(.grad){background-image:none!important}
 :root:not(#_lg) .tag.offmeta{background:linear-gradient(90deg,#C2318F,#6A4BD8)}
-:root:not(#_lg) .chhot .n,:root:not(#_lg) .chhot .n[data-band]{color:#fff;text-shadow:none!important;-webkit-text-stroke:6px #1D2140;paint-order:stroke fill}
-/* the header halo is for words on the art only: pills with their own backing keep a clean edge */
-:root:not(#_lg) .chpghead.pghas>:is(.chk,.chpgt,.chpgs) :is(.chboxn,.tipq,button,.chip,.tag){text-shadow:none!important}
-:root:not(#_lg) .chpghead.pghas .tipq{background:var(--chc)}
 /* 12. status colours (✓/✗ chips, grid cells, "Well handled / Shaky / Unanswered"): one step deeper in light so white glyphs and
    coloured words reach 5:1+; in dark the bright chips carry dark glyphs */
 :root:not(#_lg):not([data-look="dark"]){--chok:#17733F;--chbad:#C41E35;--chmid:#1F6BA3}
@@ -1457,10 +1387,9 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 /* 13. remaining spots from the measured sweep */
 /* light tokens for chips: words in green / amber on their soft chips reach 5:1+ */
 :root:not(#_lg):not([data-look="dark"]){--good:#16683A;--warn:#7E4C00}
-/* tier-board tiles: the score chip is always white, so its number uses the light-theme band ink in both themes;
+/* tier-board tiles: the score chip is always white and its number plain ink (Nov 2 declutter: numbers are not band-coloured);
    the Mega "M" mark sits on the sprite's corner so it is never cut off; tile names get a soft dark edge on light type colours */
 [data-band="S"]{--bnl:#855000}[data-band="A"]{--bnl:#A42C0B}[data-band="B"]{--bnl:#7A1FD0}[data-band="C"]{--bnl:#0856AB}[data-band="D"]{--bnl:#065C45}[data-band="E"],[data-band="F"]{--bnl:#50566C}
-:root:not(#_lg) .ltile:not(.unsure) .lts[data-band]{color:var(--bnl)}
 @media (max-width:760px){:root:not(#_lg) .ltile .ltf .ltm{position:absolute;left:0;top:-2px;z-index:2}}
 :root:not(#_lg) .ltile .ltn{text-shadow:0 0 2px rgba(0,0,0,.75),0 1px 3px rgba(0,0,0,.6)}
 :root:not(#_lg) .ltile:not(.more){box-shadow:inset 0 0 0 100px rgba(10,12,30,.36)}:root:not(#_lg) .ltile:not(.more):hover{box-shadow:inset 0 0 0 100px rgba(10,12,30,.26),0 4px 12px rgba(10,12,30,.18)}
@@ -1549,7 +1478,7 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 /* Info · abilities */
 .lsab{padding:9px 12px;border-radius:12px;background:var(--chc,#FBF6EC);border:1.5px solid var(--line2)}
 .lsab+.lsab{margin-top:6px}
-.lsab.top{border-color:color-mix(in srgb,var(--sec-info) 70%,transparent);box-shadow:inset 4px 0 0 var(--sec-info)}
+.lsab.top{border-color:color-mix(in srgb,var(--sec-info) 70%,transparent)}
 .lsabh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .lsabh b{font:800 15px/1.2 "Archivo",system-ui,sans-serif;color:var(--chink)}
 .lsabu{font:700 12px/1 "Archivo",system-ui,sans-serif;padding:4px 8px;border-radius:999px;background:var(--sec-info-ink);color:#fff}
@@ -1570,7 +1499,7 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 .lsvd{display:grid;grid-template-columns:1fr;gap:6px}
 .lsvr{padding:8px 10px;border-radius:12px;background:var(--chc,#FBF6EC);border:1.5px solid var(--line2);display:grid;grid-template-columns:1fr auto;column-gap:8px;row-gap:2px;align-content:start;min-width:0}
 .lsvr>:not(b){grid-column:1}.lsvr>b{grid-column:2;grid-row:1/span 3;align-self:center}
-.lsvr.main{border-color:color-mix(in srgb,var(--sec-battle) 70%,transparent);box-shadow:inset 4px 0 0 var(--sec-battle)}
+.lsvr.main{border-color:color-mix(in srgb,var(--sec-battle) 70%,transparent)}
 .lsvr.tr{border-style:dashed}
 .lsvl{font:800 12px/1.2 "Archivo",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--chink)}
 .lsvr b{font:400 28px/1 var(--display);color:var(--chink)}
