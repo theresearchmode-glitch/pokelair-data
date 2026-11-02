@@ -26,7 +26,7 @@ function teamSheetCard(t, ev, key, hl) {
   return `<div class="plan evteam"><div class="ttwho"><div class="pt"><span class="evpl p${Math.min(t.place, 9)}">${t.place ? placeTxt(t.place) : ''}</span> ${esc(t.player)} ${t.record ? `<span class="vsub">${esc(t.record)}</span>` : ''}</div>${ev ? `<div class="t2">${esc(ev.name)} · ${evDate(ev.date)} · ${ev.players} players</div>` : ''}</div>
     ${open ? '' : teamGrid(t.mons.map(m => m.n), hl)}
     <div class="ttmeta"><span class="archchips">${archChips(teamPlanLabel(t.mons.map(m => m.n)))}</span></div>
-    ${open ? `<div class="evsets">${t.mons.map(m => { const p = byName.get(m.n); return `<div class="evset">${sprite(p, 'evspr')}<div><b${H(p.d)}>${esc(p.d)}</b>${m.i ? ` <span class="t2">@</span> <span${H(m.i)}>${esc(m.i)}</span>` : ''}
+    ${open ? `<div class="evsets">${t.mons.map(m => { const p = byName.get(m.n); return `<div class="evset tyacc" style="${tyv(p)}">${sprite(p, 'evspr')}<div><b${H(p.d)}>${esc(p.d)}</b>${m.i ? ` <span class="t2">@</span> <span${H(m.i)}>${esc(m.i)}</span>` : ''}
       <div class="t2"><span${H(m.a)}>${esc(m.a)}</span>${m.nt ? ' · ' + esc(m.nt) : ''}</div><div class="evmv">${m.mv.map(x => `<span${H(x)}>${esc(x)}</span>`).join('')}</div></div></div>`; }).join('')}</div>` : ''}
     <div class="row evbtns"><button class="btn sm" type="button" data-evload="${esc(key)}">Load team</button><button class="linkbtn" type="button" data-evsets="${esc(key)}" aria-expanded="${open}">${open ? 'Hide sets' : 'Sets'}</button><button class="linkbtn" type="button" data-evvs="${esc(key)}">Practice against</button><button class="linkbtn" type="button" data-cxgo="cur|e:${esc(key)}">Compare</button>${sdBtn('ev:' + key)}</div></div>`; }
 function evTeam(key) { const E = META.events; if (!E) return null; const [id, k] = key.split('#'); const ev = E.events.find(e => e.id === id); return ev && ev.top[+k] ? {ev, t: ev.top[+k]} : null; }
@@ -50,7 +50,7 @@ function renderEvents() {
   el.innerHTML = seg + `<div class="evlist">${list.slice(0, cap).map(e => { const w = e.top[0];
     return `<button type="button" class="evcard" data-evopen="${esc(e.id)}"><div class="evct"><span class="evname">${esc(e.name)}</span>${e.src === 'official' ? '<span class="tag evoff">OFFICIAL</span>' : ''}</div>
       <div class="t2">${evDate(e.date)} · ${e.players.toLocaleString('en-US')} players · won by <b>${esc(w.player)}</b></div>
-      <div class="evwin">${w.mons.map(m => sprite(byName.get(m.n), 'mini')).join('')}</div></button>`; }).join('') || '<div class="empty-note">No events here yet.</div>'}</div>`
+      <div class="evwin">${w.mons.map(m => sprH(byName.get(m.n), 'mini')).join('')}</div></button>`; }).join('') || '<div class="empty-note">No events here yet.</div>'}</div>`
     + (list.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-evmore="1">Show more (${list.length - cap} left)</button></div>` : ''); }
 function loadSheet(t) { keepUndo(); S.slots = normSlots(t.mons.map(m => { const p = byName.get(m.n); const mv = m.mv.filter(x => mvByName.has(x)); while (mv.length < 4) mv.push('');
     return {n: m.n, a: p.a.includes(m.a) ? m.a : null, lock: false, ...(mv.some(Boolean) ? {mv: {doubles: mv.slice(0, 4)}} : {}), ...(!p.m && m.i && typeof m.i === 'string' ? {it: {doubles: m.i}} : {})}; }));

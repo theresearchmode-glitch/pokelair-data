@@ -62,7 +62,35 @@ function archChips(label) { return String(label || '').split(' · ').filter(Bool
 
 // a team's six as a compact grid (3 across on phones, 6 on wide screens): sprite + name, small Mega mark
 function teamGrid(names, hl) { return `<div class="tgrid">${names.map(n => { const p = byName.get(n); if (!p) return '';
-  return `<span class="tgm${hl && hl.has(p.d.toLowerCase()) ? ' hl' : ''}" title="${esc(p.d)}">${sprite(p, 'tgs')}<span class="tgn${tgFit(tgName(p))}">${esc(tgName(p))}</span>${p.m ? '<i class="tgmk" title="Mega Evolution">M</i>' : ''}</span>`; }).join('')}</div>`; }
+  return `<span class="tgm tyacc${hl && hl.has(p.d.toLowerCase()) ? ' hl' : ''}" style="${tyv(p)}" title="${esc(p.d)}">${sprite(p, 'tgs')}<span class="tgn${tgFit(tgName(p))}">${esc(tgName(p))}</span>${p.m ? '<i class="tgmk" title="Mega Evolution">M</i>' : ''}</span>`; }).join('')}</div>`; }
 const tgFit = d => { d = String(d); const w = Math.max(...d.split(' ').map(x => x.length)); return w >= 11 || d.length >= 14 ? ' xs' : w >= 10 || d.length >= 10 ? ' sm' : ''; };
 // the M mark says Mega, so the grid drops the word and keeps the name whole
 const tgName = p => p.m ? String(p.d).replace(/^Mega /, '') : p.d;
+/* ---------- Design pass B (Nov 2): type accents, mini graphics, "Details" taps ---------- */
+/* a Pokémon's two type colours as CSS vars (a single type uses its colour twice; q = a partner whose first type is the
+   second colour, for pairs); rows and cards with class "tyacc" get a side stripe and a soft wash (polish.css, design B block) */
+function tyv(p, q) { if (!p || !p.t) return ''; const a = TC[p.t[0]] || '#8a90a6', b = q && q.t ? TC[q.t[0]] || a : TC[p.t[1] || p.t[0]] || a; return `--ta:${a};--tb:${b}`; }
+/* a sprite sitting on a soft halo of its type colours (a background gradient on the picture itself: cheap, no filters) */
+function sprH(p, cls) { const s = sprite(p, (cls ? cls + ' ' : '') + 'tyh'); return s ? s.replace('<img ', `<img style="${tyv(p)}" `) : ''; }
+/* a small filled usage bar: v as a share of the list's biggest value (the number beside it says the real %) */
+function ubar(v, max, tc) { v = +v || 0; max = +max || 0; if (!(v > 0) || !(max > 0)) return ''; const w = Math.max(4, Math.min(100, 100 * v / max));
+  return `<i class="dbbar" aria-hidden="true"${tc ? ` style="--bc:${tc}"` : ''}><em style="width:${w.toFixed(0)}%"></em></i>`; }
+/* a 7-day sparkline of a Pokémon's usage rank, from the daily history (tournament list; the other lists have no history).
+   Higher on the chart = better rank. Green-ish when the rank improved, indigo when it slipped (never red). */
+function rankSpark(name) { const h = typeof META !== 'undefined' && META.history; if (!h || !h.days || h.days.length < 3 || typeof trendKey !== 'function') return '';
+  const k = trendKey(), d = h.days.slice(-8).map(x => x[k] && x[k][name]).filter(v => v != null); if (d.length < 3) return '';
+  const lo = Math.min(...d), hi = Math.max(...d), W = 40, H = 14, sp = Math.max(1, hi - lo), pts = d.map((v, i) => `${(i * W / (d.length - 1)).toFixed(1)},${(1.5 + (v - lo) * (H - 3) / sp).toFixed(1)}`);
+  const c = d[d.length - 1] < d[0] ? 'up' : d[d.length - 1] > d[0] ? 'dn' : 'fl', last = pts[pts.length - 1].split(',');
+  return `<svg class="dbspark ${c}" viewBox="-2 -1 44 16" width="44" height="16" role="img" aria-label="Usage rank over ${d.length} days: #${d[0]} to #${d[d.length - 1]}"><title>Usage rank, last ${d.length} days: #${d.join(', #')}</title><polyline points="${pts.join(' ')}"/><circle cx="${last[0]}" cy="${last[1]}" r="2"/></svg>`; }
+/* a ring that fills with how many of the top threats a team handles ("27 of 30"); the number inside is the handled count */
+function hRing(h, sz) { if (!h || !h.n) return ''; const s = sz || 30, r = s / 2 - 3, C = 2 * Math.PI * r, f = Math.max(0, Math.min(1, h.x / h.n)), m = s / 2;
+  return `<svg class="dbring" viewBox="0 0 ${s} ${s}" width="${s}" height="${s}" aria-hidden="true"><circle cx="${m}" cy="${m}" r="${r}" class="bg"/><circle cx="${m}" cy="${m}" r="${r}" class="fg" stroke-dasharray="${(C * f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${m} ${m})"/>${s >= 24 ? `<text x="${m}" y="${m}" dy=".36em" text-anchor="middle">${h.x}</text>` : ''}</svg>`; }
+/* "Details": secondary numbers wait behind one small tap. A box marked with dbAttr(key) shows its .dbsec parts once its
+   Details button (dbBtn(key)) is pressed; the choice holds through redraws for this visit. */
+var DB_OPEN = new Set();
+function dbAttr(key) { return ` data-dbbox="${esc(key)}"${DB_OPEN.has(key) ? ' data-dbo="1"' : ''}`; }
+function dbBtn(key, what) { const on = DB_OPEN.has(key); return `<button type="button" class="dbdt" data-dbdt="${esc(key)}" aria-expanded="${on}"${what ? ` aria-label="${on ? 'Hide' : 'Show'} details: ${esc(what)}"` : ''}>${on ? 'Hide details' : 'Details'}</button>`; }
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-dbdt]'); if (!b) return; e.preventDefault(); e.stopPropagation();
+  const k = b.dataset.dbdt, on = !DB_OPEN.has(k); if (on) DB_OPEN.add(k); else DB_OPEN.delete(k);
+  document.querySelectorAll('[data-dbbox]').forEach(x => { if (x.dataset.dbbox === k) { if (on) x.setAttribute('data-dbo', '1'); else x.removeAttribute('data-dbo'); } });
+  document.querySelectorAll('[data-dbdt]').forEach(x => { if (x.dataset.dbdt !== k) return; x.setAttribute('aria-expanded', on); x.textContent = on ? 'Hide details' : 'Details'; const l = x.getAttribute('aria-label'); if (l) x.setAttribute('aria-label', l.replace(/^(Show|Hide)/, on ? 'Hide' : 'Show')); }); }, true);
