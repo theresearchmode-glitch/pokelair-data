@@ -168,7 +168,9 @@ for (const width of [1280, 390]) {
       for (let k = 0; k < a.rows.length; k++) { pairs++; if (b.rows[k].level < a.rows[k].level) drops.push(`${base.join('/')} +${add}: ${a.rows[k].t.n} ${a.rows[k].label} -> ${b.rows[k].label}`); } }
     return {g5: g5.level, g6: g6.level, g6why: g6.solid.join(' | '), basSolid: bas.solid.some(x => /Basculegion/.test(x)), basSoft: bas.soft.filter(x => /Basculegion/.test(x)).join(' | '),
       pelSolid: pel.solid.filter(x => /Pelipper/.test(x)).join(' | '), pairs, drops}; });
-  ok(r.g6 >= r.g5 && /Delphox[^|]*only if your rain isn't up/.test(r.g6why), `adding Pelipper keeps Mega Delphox's Fire answer to Gholdengo, marked "only if your rain isn't up" (${r.g5} -> ${r.g6})`);
+  // which Fire user answers Gholdengo first follows the day's sets (Nov 2: Mega Dragonite's Heat Wave now leads); the rule is that a
+  // Fire answer on a rain team stays, marked as needing the rain setter left out
+  ok(r.g6 >= r.g5 && /(Delphox|Dragonite|Charizard|Heat Wave|Flamethrower|Fire)[^|]*only if your rain isn't up/.test(r.g6why), `adding Pelipper keeps a Fire answer to Gholdengo, marked "only if your rain isn't up" (${r.g5} -> ${r.g6})`);
   ok(!r.basSolid && /needs your rain/.test(r.basSoft), `an answer that needs a teammate's rain counts as soft, with the condition (${r.basSoft})`);
   ok(r.pelSolid && !/needs your|isn't up/.test(r.pelSolid), `Pelipper's own rain is always up while it's out, so its answer is not conditional (${r.pelSolid})`);
   ok(r.drops.length === 0 && r.pairs >= 200, `adding a Pokémon never lowers a threat's verdict or readiness (${r.pairs} threat checks${r.drops.length ? ': ' + r.drops.slice(0, 2).join('; ') : ''})`);
