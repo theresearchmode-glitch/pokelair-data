@@ -890,3 +890,11 @@ a.calrow:hover .calmain b{text-decoration:underline}
 .np-short #chSheetOut .chrow .spr{width:64px!important;height:64px!important}
 .np-short #chSheetOut .chrow .nm{font-size:12px}
 .np-short #chSheetOut .chrow .chbd>*:not(.nm){font-size:10px}
+
+/* ---------- numbers read like school grades (Nov 2): bars coloured by band, "top X%" spelled out ---------- */
+.lbar i::after{background:var(--bc,linear-gradient(90deg,var(--glow,#5ee0c0),var(--cyan,#3fb4ff)))!important}
+.lbar em{color:var(--chink2,var(--mute))!important}
+.lbar em strong{color:var(--chink,inherit);font-weight:700}
+.chring{flex-direction:column;gap:0}
+.chring .chrl{line-height:.9}
+.chring small{font:700 12px/1 var(--mono,monospace);letter-spacing:.02em;transform:rotate(8deg);margin-top:2px}

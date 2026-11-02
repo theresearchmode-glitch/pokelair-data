@@ -16,7 +16,7 @@ function sleepers() { const key = metaVersion + '|' + ui.metaSrc; if (sleeperCac
   list.sort((a, b) => b.r.total - a.r.total || b.pt.d - a.pt.d);
   sleeperCache = {key, list}; return list; }
 function sleeperCard(x, compact) { const {p, r, pt, use} = x;
-  return `<div class="slcard"><button type="button" class="slhead" data-lt="${esc(p.n)}">${sprite(p, 'mini') || ''}<span class="slname"><b>${esc(p.d)}</b><span class="vsub">★ ${r.total} · on ${use < 1 ? 'under 1' : use.toFixed(1)}% of teams</span></span></button>
+  return `<div class="slcard"><button type="button" class="slhead" data-lt="${esc(p.n)}">${sprite(p, 'mini') || ''}<span class="slname"><b>${esc(p.d)}</b><span class="vsub">★ ${RS(r.total)} · on ${use < 1 ? 'under 1' : use.toFixed(1)}% of teams</span></span></button>
     <div class="slstat"><span><b>${pt.w}%</b> wins with it</span><span><b>${pt.wo}%</b> same players without</span>${compact ? '' : `<span class="vsub">${pt.players.toLocaleString()} players · ${pt.g.toLocaleString()} games</span>`}</div>
     <div class="row"><button type="button" class="btn sm primary" data-abaround="${esc(p.n)}">Build around it</button>${compact ? '' : `<button type="button" class="linkbtn" data-lt="${esc(p.n)}">Full breakdown</button>`}</div></div>`; }
 // Hidden until the forward and repeat checks run automatically (user decision, 2026-10-28). Set true to bring it back.
