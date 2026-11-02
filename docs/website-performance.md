@@ -6,7 +6,7 @@ static host the same app can load much less on every visit after the first, and 
 
 ## Where the time goes today (measured Nov 2, cold load, fake database, Chromium)
 
-Phone = 390 px, 4x CPU slowdown. Median of 5 runs, in `scratchpad/nov/prelaunch/perf-*.json`.
+Phone = 390 px, 4x CPU slowdown; rough breakdown from performance marks and CPU profiles. After the Nov 2 load work Home is drawn at about 2.3 s on that phone (was 2.5 s) and 0.56 s on desktop (was 0.73 s).
 
 | Step on a phone | About |
 |---|---|
