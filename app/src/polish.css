@@ -1492,3 +1492,82 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 :root:not(#_lg) .bmdt thead th span{max-width:84px;white-space:normal;overflow:visible;text-overflow:clip;text-transform:none;letter-spacing:0;line-height:1.15;overflow-wrap:normal;word-break:normal;hyphens:none}
 :root:not(#_lg) :is(.bo,.bd) i{white-space:normal;overflow:visible;text-overflow:clip;max-width:84px;line-height:1.15;overflow-wrap:normal;word-break:normal;hyphens:none}
 /* ========== end LEGIBILITY ========== */
+
+/* ========== SHEET TABS (Nov 2): the Pokémon sheet's "Info | Meta | Rating" switch and the new Info tab ==========
+   Tabs: a segmented control under the three numbers, sticky at the top of the sheet while you scroll. Each tab has its own
+   accent (Info violet, Meta gold, Rating blue: the site's section colours); the chosen one is a tinted, raised segment with
+   an accent bar, text stays the dark/light ink (well over 7:1). Not yellow (main button), not red (opponents). */
+.lstabmark{height:0;margin:0 0 -14px}
+.lstabs{--ac:var(--sec-info);position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;margin:-4px -6px 0;border-radius:14px;background:var(--chp2,#E6D8BF);box-shadow:0 0 0 6px var(--chp,#F1E9DA)}
+.lstab{appearance:none;border:0;margin:0;min-height:48px;padding:6px 4px 7px;border-radius:10px;background:transparent;color:var(--chink2);font-family:"Archivo",system-ui,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative;line-height:1.15;-webkit-tap-highlight-color:transparent}
+.lstab b{font:800 15px/1.1 "Archivo",system-ui,sans-serif;color:var(--chink);letter-spacing:.01em}
+.lstab span{font:600 12px/1.2 "Archivo",system-ui,sans-serif;color:var(--chink2);white-space:nowrap;letter-spacing:0}
+.lstab-info{--ac:var(--sec-info)}.lstab-meta{--ac:var(--sec-meta)}.lstab-rating{--ac:var(--band-C,#2F9BFF)}
+.lstab::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ac);position:absolute;top:8px;left:10px;opacity:.9}
+.lstab[aria-selected="true"]{background:color-mix(in srgb,var(--ac) 24%,var(--chc,#FBF6EC));box-shadow:0 2px 8px -3px rgba(0,0,0,.35),inset 0 -4px 0 var(--ac)}
+.lstab[aria-selected="true"] span{color:var(--chink)}
+.lstab:not([aria-selected="true"]):hover{background:color-mix(in srgb,var(--ac) 10%,transparent)}
+.lstab:focus-visible{outline:3px solid var(--ac);outline-offset:1px}
+@media (max-width:370px){.lstab span{font-size:12px;white-space:normal;text-align:center}.lstab::before{display:none}}
+.lstpw{display:block}
+.lstp{display:flex;flex-direction:column;gap:14px}.lstp[hidden]{display:none}
+.lstp:focus{outline:none}
+.lstp.lsfade{animation:lsfade .18s ease-out}
+@keyframes lsfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.lstp.lsfade{animation:none}}
+/* unfolded sections keep a clear heading */
+.lstp .lsec>h4,.lsi>h4{margin:0 0 8px;font:800 13px/1.2 "Archivo",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--chink)}
+.lstp .lsec>h4::before,.lsi>h4::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px;background:var(--sec-info)}
+.lstp-meta .lsec>h4::before{background:var(--sec-meta)}.lstp-rating .lsec>h4::before{background:var(--band-C,#2F9BFF)}
+.lsnote{margin:6px 0 0}
+.lslinks{display:flex;flex-wrap:wrap;gap:8px}
+.lsempty{margin:0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--sec-meta) 14%,var(--chc,#FBF6EC));border:1.5px solid color-mix(in srgb,var(--sec-meta) 45%,transparent);color:var(--chink);font:500 14px/1.4 "Archivo",system-ui,sans-serif}
+.lsempty b{display:block;margin-bottom:2px;font-weight:800}
+/* Info · base stats */
+.lstats{display:grid;gap:6px}
+.lstr{display:grid;grid-template-columns:64px 1fr 38px auto;align-items:center;gap:8px;font-family:"Archivo",system-ui,sans-serif}
+.lstr span{font:700 13px/1.2 "Archivo",system-ui,sans-serif;color:var(--chink2)}
+.lstr i{display:block;height:12px;border-radius:6px;background:color-mix(in srgb,var(--chink) 9%,transparent);overflow:hidden}
+.lstr i em{display:block;height:100%;border-radius:6px}
+.lstr b{font:800 16px/1 "Archivo",system-ui,sans-serif;color:var(--chink);text-align:right;font-variant-numeric:tabular-nums}
+.lstd{font:700 12px/1 "Archivo",system-ui,sans-serif;font-style:normal;color:var(--wr-up);min-width:34px}
+.lstd.dn{color:var(--wr-down)}
+.lstot{border-top:1.5px solid var(--line2);padding-top:6px;margin-top:2px}
+.lstot i{background:none}.lstot span{color:var(--chink)}
+/* Info · abilities */
+.lsab{padding:9px 12px;border-radius:12px;background:var(--chc,#FBF6EC);border:1.5px solid var(--line2)}
+.lsab+.lsab{margin-top:6px}
+.lsab.top{border-color:color-mix(in srgb,var(--sec-info) 70%,transparent);box-shadow:inset 4px 0 0 var(--sec-info)}
+.lsabh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lsabh b{font:800 15px/1.2 "Archivo",system-ui,sans-serif;color:var(--chink)}
+.lsabu{font:700 12px/1 "Archivo",system-ui,sans-serif;padding:4px 8px;border-radius:999px;background:var(--sec-info-ink);color:#fff}
+.lsabs{font:700 12px/1 "Archivo",system-ui,sans-serif;color:var(--chink2)}
+.lsab p{margin:3px 0 0;font:500 13px/1.4 "Archivo",system-ui,sans-serif;color:var(--chink2)}
+/* Info · type matchups */
+.lsty{display:grid;grid-template-columns:78px 1fr;gap:8px;align-items:center;padding:4px 0}
+.lsty+.lsty{border-top:1px dashed var(--line2)}
+.lstyl{font:800 12px/1.2 "Archivo",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--chink)}
+.lsty .chips{display:flex;flex-wrap:wrap;gap:4px}
+.lsty.w4 .lstyl{color:var(--sec-info-ink)}.lsty.im .lstyl{color:var(--wr-up)}
+.lsabn{margin-top:8px;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--sec-info) 12%,var(--chc,#FBF6EC));border:1.5px solid color-mix(in srgb,var(--sec-info) 50%,transparent)}
+.lsabnh{font:800 13px/1.3 "Archivo",system-ui,sans-serif;color:var(--chink);margin-bottom:4px}
+.lsabnh span{font-weight:600;color:var(--chink2)}
+.lsabc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:500 13px/1.3 "Archivo",system-ui,sans-serif;color:var(--chink2)}
+.lsabc+.lsabc{margin-top:4px}.lsabc b{color:var(--chink);font-weight:800}
+/* Info · speed */
+.lsspd{display:grid;grid-template-columns:1fr;gap:6px}
+.lsspr{padding:8px 10px;border-radius:12px;background:var(--chc,#FBF6EC);border:1.5px solid var(--line2);display:grid;grid-template-columns:1fr auto;column-gap:8px;row-gap:2px;align-content:start;min-width:0}
+.lsspr>:not(b){grid-column:1}.lsspr>b{grid-column:2;grid-row:1/span 3;align-self:center}
+.lsspr.main{border-color:color-mix(in srgb,var(--sec-battle) 70%,transparent);box-shadow:inset 4px 0 0 var(--sec-battle)}
+.lsspr.tr{border-style:dashed}
+.lsspl{font:800 12px/1.2 "Archivo",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--chink)}
+.lsspr b{font:400 28px/1 var(--display);color:var(--chink)}
+.lsspn,.lsspo{font:500 12px/1.3 "Archivo",system-ui,sans-serif;color:var(--chink2)}
+.lsspo{font-weight:700;color:var(--sec-battle-ink)}
+:root[data-look="dark"] .lstab[aria-selected="true"]{background:color-mix(in srgb,var(--ac) 30%,var(--chc,#2C2A28));box-shadow:0 2px 10px -3px rgba(0,0,0,.6),inset 0 -4px 0 var(--ac)}
+:root[data-look="dark"] .lsabu{background:var(--sec-info-ink);color:#1D2140}
+:root:not([data-look="dark"]) .lsspo{color:#005A4C}
+:root:not([data-look="dark"]) .lstd,:root:not([data-look="dark"]) .lsty.im .lstyl{color:#0E4A27}
+:root:not([data-look="dark"]) .lstd.dn{color:#2A36B0}
+:root:not([data-look="dark"]) .lsty.w4 .lstyl{color:#5A1FC0}
+/* ========== end SHEET TABS ========== */

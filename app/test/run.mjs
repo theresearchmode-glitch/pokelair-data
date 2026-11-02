@@ -509,6 +509,8 @@ for (const width of [1280, 390]) {
 await browser.close();
 // items, suggestions and battle math (Oct 28 audit), on the same build
 try { execFileSync('node', [APP + 'test/items.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL items/suggestions suite'); }
+// the Pokémon sheet's Info | Meta | Rating tabs (Nov 2): switching, remembering, swipe, Info numbers vs ROSTER / type chart / speed maths
+try { execFileSync('node', [APP + 'test/sheet-tabs.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL sheet tabs suite'); }
 // stress-test cases (Oct 28): checklist, item problems, archetypes, legality, move names, Build me a team Megas, gem stability
 try { execFileSync('node', [APP + '../experiments/stress-checks.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL stress checks suite'); }
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);
