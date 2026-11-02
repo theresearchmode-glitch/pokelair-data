@@ -920,3 +920,23 @@ a.calrow:hover .calmain b{text-decoration:underline}
 :root,:root[data-look="dark"]{--trb0:#ffb400;--trb1:#ff6a3d;--trb2:#2f9bff;--trb3:#8a90a6}
 .lo b.lot.tC{background:#2f9bff}.lo b.lot.tD{background:#22b58a;color:#062a1f}.lo b.lot.tE,.lo b.lot.tF{background:#8a90a6;color:#fff}
 .hms b::before{content:none!important}.hms .rtier{font-size:11px;height:16px;min-width:16px;margin-right:4px;vertical-align:1px}.hms .hmrk{font-style:normal;color:var(--mute);margin-left:6px}
+
+/* ---------- team grades in the band colours (Nov 2): A = the A colour, B = B, ... the same LTIERS colours as the ratings ---------- */
+.chring.gc,:root[data-look="dark"] .chring.gc{border-color:var(--gc);color:var(--gc);background:color-mix(in srgb,var(--gc) 13%,transparent)}
+.chring.gc small{color:var(--chink)}
+.npgw{font:400 19px/1 "Permanent Marker",cursive}
+.npgb{display:inline-flex;align-items:center;gap:8px;text-align:left}
+.npgb .npgl{flex:none;width:40px;height:40px;border:2.5px solid var(--gc);border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 22px/1 "Permanent Marker",cursive;color:var(--gc);background:color-mix(in srgb,var(--gc) 13%,transparent);transform:rotate(-8deg)}
+.npgb .npgt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.npgb .npgt b{font:800 14px/1.15 var(--body,inherit);color:var(--chink,var(--ink))}
+.npgb .npgt small{font-size:11.5px;line-height:1.25;color:var(--chink2,var(--mute))}
+.corestat b i{font-size:.55em;font-style:normal;font-weight:700;margin-left:2px;color:var(--chink2,var(--mute))}
+.svacts{flex-wrap:wrap;justify-content:flex-end;max-width:100%}
+.mrow .nm .trend:not(.new){display:block;width:max-content;margin:1px 0 0}
+
+/* damage in words (Nov 2): the tag says how many hits, with the chance when only some rolls do it ("OHKO 44%", "2HKO", "3HKO") */
+.dctab td[data-ko]:not([data-ko=""])::after,:is(.bo,.bd)[data-ko]:not([data-ko=""])::after{content:attr(data-ko);position:absolute;top:2px;right:2px;font:800 7.5px/1 var(--mono);letter-spacing:0;padding:1.5px 2.5px;border-radius:3px;pointer-events:none;white-space:nowrap}
+.dctab td.k3[data-ko]::after,:is(.bo,.bd).k3[data-ko]::after{background:var(--chp2,var(--card2));color:var(--chink2,var(--mute));border:1px solid var(--line)}
+:is(.bo,.bd)[data-ko]:not([data-ko=""]){padding-top:11px}
+:is(.bo,.bd)[data-ko]:not([data-ko=""])::after{right:auto;left:50%;transform:translateX(-50%)}
+.dcbig small{font-size:.45em;margin-left:4px;letter-spacing:0}

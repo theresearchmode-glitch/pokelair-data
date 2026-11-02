@@ -48,15 +48,31 @@ CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'fu
 // made a 7-point cliff between 74% and 75% ready). The letter comes from the score as shown, rounded.
 CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && x.k !== 'reach') : [], mp = CH.modelPts(ms), s = RD.score - CH.GMISS * miss.length + (mp || 0), rec = CH.recOf(ms);
   const sr = Math.max(0, Math.round(s)), illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok));
-  return {s: sr, letter: rec ? CH.recLetter(rec.wr) : CH.grade(sr), illegal, partial: !ms || ms.length < 6, miss, CK, rec, mp}; };
+  return {s: sr, letter: rec ? CH.recLetter(rec.wr) : CH.grade(sr), illegal, partial: !ms || ms.length < 6, miss, CK, rec, mp, h: CH.hand(RD)}; };
 // Grade line (Sim, Nov 2: numbers must read like school grades): "Grade 92 = 85% ready + 7 team strength − 6 (1 missed check)".
 // The team-strength part is the remainder, so the shown parts always add up to the shown grade.
-CH.gradeSum = (G, RD) => { const nm = G.miss ? G.miss.length : 0, ts = G.s - RD.score + CH.GMISS * nm, sg = v => v < 0 ? '−' : '+';
+CH.gradeParts = (G, RD) => { const nm = G.miss ? G.miss.length : 0; return {nm, ts: G.s - RD.score + CH.GMISS * nm}; };
+CH.gradeSum = (G, RD) => { const {nm, ts} = CH.gradeParts(G, RD), sg = v => v < 0 ? '−' : '+';
   return `<b>Grade ${G.s}</b> = ${RD.score}% ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}`; };
+/* the same sum, short, for cards and table cells: "92 = 85% ready + 7 strength − 6 checks" */
+CH.gradeSumS = (G, RD) => { const {nm, ts} = CH.gradeParts(G, RD), sg = v => v < 0 ? '−' : '+';
+  return `${G.s} = ${RD.score}% ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} strength` : ''}${nm ? ` − ${CH.GMISS * nm} for ${nm} missed check${nm === 1 ? '' : 's'}` : ''}`; };
+/* grade letters in the rating band colours (A = the A colour, ...), one source: LTIERS */
+CH.gcol = L => { const T = typeof LTIERS !== 'undefined' ? LTIERS.find(t => t.k === L) : null; return T ? T.c : '#8a90a6'; };
+/* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
+CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
+CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
+/* a team's grade as a badge (Build me a team, Saved teams): the letter in its band colour, the grade number, and the sum
+   underneath so "% ready" always reads as one part of the grade. A team with 30+ real games shows its record instead. */
+CH.gradeBadge = (G, RD) => { if (!G || !RD) return ''; const h = CH.handTxt(RD, true);
+  const sub = G.rec ? `won ${Math.round(G.rec.wr * 100)}% of ${CH.n(G.rec.g)} games` : G.partial ? `${RD.score}% ready so far` : CH.gradeSumS(G, RD);
+  const tt = G.rec ? `Grade ${G.letter} comes from these six's tournament record. Our own check: ${RD.score}% ready, ${CH.handTxt(RD)}.` : `Grade ${G.s} (${G.letter}) = ${RD.score}% ready for the top threats, plus or minus team strength, minus ${CH.GMISS} per missed team check. The team ${CH.handTxt(RD)}.`;
+  return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(tt)}"><b class="npgl">${G.letter}</b><span class="npgt"><b>${G.rec ? 'Real record' : `Grade ${G.s}${G.partial ? ' so far' : ''}`}</b><small>${sub}</small>${h ? `<small>${h} top threats</small>` : ''}</span></span>`; };
 CH.gradeWhy = G => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
-  if (G.rec) return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b>: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'})${CH.thin(G.rec.g, 'record') ? ' ' + CH.basis(G.rec.g, 'game', 'record', {pre: '·'}) : ''}. With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ready for ${G.r}% of the top 30 threats, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
+  const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '';
+  if (G.rec) return `<div class="chgwhy" id="chGwhy">${L}: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'})${CH.thin(G.rec.g, 'record') ? ' ' + CH.basis(G.rec.g, 'game', 'record', {pre: '·'}) : ''}. With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ${G.r}% ready for the top 30 threats${hd}, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
   const mp = G.mp != null ? Math.round(G.mp) : null;
-  return `<div class="chgwhy" id="chGwhy"><b>${G.letter}</b> · score ${G.s}${G.partial ? ' so far' : ''}: ready for ${G.r}% of the top 30 threats${G.CK ? `, ${n - G.miss.length}/${n} team checks` : ''}.`
+  return `<div class="chgwhy" id="chGwhy">${L} · grade ${G.s}${G.partial ? ' so far' : ''}. It starts from ${G.r}% ready for the top 30 threats${hd}${G.CK ? `; ${n - G.miss.length}/${n} team checks` : ''}.`
     + (G.miss.length ? ` Each missed check takes ${CH.GMISS} points off: ${G.miss.map(x => esc(x.label.toLowerCase())).join(', ')}.` : ' No missed checks, so nothing comes off.')
     + (mp != null ? ` ${mp === 0 ? 'Teams with these Pokémon and sets do about average in real games (±0).' : `Teams with these Pokémon and sets do ${mp > 0 ? 'better' : 'worse'} than average in real games (${mp > 0 ? '+' : '−'}${Math.abs(mp)}).`}` : '')
     + ` A 90+, B 80+, C 70+, D 60+.${G.partial ? ' The grade settles once all six are in.' : ''}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; };
@@ -67,12 +83,17 @@ CH.LV = ['Unanswered', 'Shaky', 'Handled', 'Well handled'];
 // 200 ms, transform/opacity only for the ring; the number is tabular so nothing moves. Off with reduced motion, and only on
 // the page that's showing (redraws with the same grade do nothing).
 CH.reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
-CH.gradeMotion = (head, G, RD) => { const key = G ? G.letter + '|' + RD.score : '', prev = CH.gKey; CH.gKey = key;
+/* Nov 2: the headline number is now the grade ("Grade 92"; "85% ready" while the team is still partial): that number counts up,
+   and the ring's own number (the same grade) counts with it */
+CH.gradeMotion = (head, G, RD) => { const b = head.querySelector('.rd > b'), m = b && /^(\D*)(\d+)(\D*)$/.exec(b.textContent), to = m ? +m[2] : null;
+  const key = G ? G.letter + '|' + (to == null ? RD.score : to) : '', prev = CH.gKey; CH.gKey = key;
   if (!G || key === prev || CH.reduced() || head.closest('[hidden]')) return;
   const ring = head.querySelector('.chring'); if (ring && (!prev || prev.split('|')[0] !== G.letter)) ring.classList.add('np-pop');
-  const b = head.querySelector('.rd > b'), to = RD.score, from = prev ? +prev.split('|')[1] : Math.max(0, to - 30); if (!b || !/% ready$/.test(b.textContent) || from === to) return;
-  b.classList.add('np-num'); const t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 200), v = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
-    if (!b.isConnected) return; b.textContent = v + '% ready'; if (k < 1) requestAnimationFrame(tick); }; b.textContent = from + '% ready'; requestAnimationFrame(tick); };
+  const from = prev ? +prev.split('|')[1] : Math.max(0, to - 30); if (to == null || from === to) return;
+  const sm = ring && ring.querySelector('small'), smOn = sm && sm.textContent === String(to);
+  b.classList.add('np-num'); const put = v => { b.textContent = m[1] + v + m[3]; if (smOn) sm.textContent = String(v); };
+  const t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 200), v = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+    if (!b.isConnected) return; put(v); if (k < 1) requestAnimationFrame(tick); }; put(from); requestAnimationFrame(tick); };
 CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
 // a fold: remembers open/closed per device
 CH.fold = (key, title, sub, body, open) => { const o = LS.get('cc2.chf.' + key, null); const isOpen = o == null ? !!open : !!o;
@@ -121,7 +142,7 @@ CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum 
       const wk = pl._wk ? `<li>Weak spots: <b>${esc(pl._wk[0])}</b> → <b>${esc(pl._wk[1])}</b></li>` : '';
       const nr = why.length + (wk ? 1 : 0);
       const whyH = nr ? `<details class="chwhy"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${why.map(l => `<li>${l}</li>`).join('')}</ul></details>` : '';
-      const dlH = d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)}% ready</span>` : '', apH = `<button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button>`;
+      const dlH = d != null ? `<span class="dl ${d > 0 ? 'up' : d < 0 ? 'dn' : ''}">${readyDelta(d)}</span>` : '', apH = `<button type="button" class="${k ? 'chghost' : 'chprimary'} chapply" data-plan="${k}">Apply</button>`;
       // two or more changes: one row per change, then the readiness and Apply underneath (Oct 30, Sim: the squeezed column looked unpolished)
       if (pl.ch.length > 1) return `<div class="chsugw"><div class="chsug multi"><div class="chml">${pl.ch.map(x => `<div class="chmc"><div class="pics">${x.out ? `<span class="o">${sprite(x.out.p) || ''}</span><span class="ar" aria-hidden="true">→</span>` : '<span class="ar" aria-hidden="true">+</span>'}<span class="i">${sprite(x.c.p) || ''}</span></div><div class="txt"><b>${esc(x.c.p.d)}</b>${x.out ? ` <span class="for">for ${esc(x.out.d)}</span>` : ' <span class="for">added</span>'}</div></div>`).join('')}</div><div class="chmf">${dlH}${apH}</div></div>${whyH}</div>`;
       return `<div class="chsugw"><div class="chsug"><div class="pics">${pics}</div><div class="txt">${words}${dlH}</div>${apH}</div>${whyH}</div>`; }).join('')}<button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; };
@@ -305,7 +326,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 // Import, Export and Save show their panels inside the editor
 document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('#importBtn,#exportBtn,#saveBtn'); if (t && $('chEdit') && $('chEdit').hidden) chEditOpen(null); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !e.__cbEsc) chEditClose(); }); // Escape in an open name list closes just the list
-function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK, ms), {r: RD.score}) : null;
+function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK, ms), {r: RD.score}) : null, hd = CH.hand(RD);
   const F = CH.four(ms), lead = F ? ms.find(m => m.p.n === F.lead[0]) || null : null, ko = CH.koNote(RD);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };
   const all = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).slice(0, 6);
@@ -315,11 +336,11 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
   const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event.">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
-      ${RD ? `<div class="rd">${G && G.rec ? `<b>Grade ${G.letter}</b>: these six won ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} real games · ${RD.score}% ready` : G && !G.partial ? CH.gradeSum(G, RD) : `<b>${RD.score}% ready</b>`} for the top 30 threats${typeof tip === 'function' ? tip('readiness') : ''} · <span class="nw">${c[0]} unanswered</span> · <span class="nw">${c[1]} shaky</span></div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
+      ${RD ? `<div class="rd">${G && G.rec ? `<b>Grade ${G.letter}</b>: these six won ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} real games · our own check: ${RD.score}% ready for the top 30 threats` : G && !G.partial ? CH.gradeSum(G, RD) : `<b>${RD.score}% ready</b> for the top 30 threats`}${typeof tip === 'function' ? tip('readiness') : ''}${hd ? ` · <span class="nw">handles ${hd.x} of ${G && !G.partial && !G.rec ? `the top ${hd.n} threats` : hd.n}</span>` : ''} · <span class="nw">${c[1]} shaky</span> · <span class="nw">${c[0]} unanswered</span></div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
       <div class="chpills">${legal}${ck}</div>
       ${ms.length ? `<div class="chsix6">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || esc(m.d)}</button>`).join('')}</div>` : ''}
       <div class="chacts2" id="chActs"><button type="button" class="chghost" data-view="teams">Saved teams</button><button type="button" class="chghost" data-view="box">My box</button>${ms.length ? '<button type="button" class="chghost" data-cxgo="cur|">Compare with…</button>' : ''}${ms.length && typeof sdBtn === 'function' ? sdBtn('mine') : ''}</div></div>
-    ${G ? `<button type="button" class="chring" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy" aria-label="Grade ${G.letter}: why" title="Why this grade"><span class="chrl">${G.letter}</span><small>${G.rec ? Math.round(G.rec.wr * 100) + '% wins' : G.s}</small></button>` : ''}</div>
+    ${G ? `<button type="button" class="chring gc" style="--gc:${CH.gcol(G.letter)}" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy" aria-label="Grade ${G.letter}: why" title="Why this grade"><span class="chrl">${G.letter}</span><small>${G.rec ? Math.round(G.rec.wr * 100) + '% wins' : G.s}</small></button>` : ''}</div>
     ${G ? CH.gradeWhy(G).replace('id="chGwhy"', `id="chGwhy"${ui.gwhy ? '' : ' hidden'}`) : ''}
     ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
   if (CH.acts) $('chActs').append(CH.acts);
@@ -352,18 +373,18 @@ function chScoutOpen(sel) { const sh = $('chScout'); if (!sh) return; CH.sel = s
 function chScoutClose() { const sh = $('chScout'); if (!sh || sh.hidden) return; sh.hidden = true; $('chScrim').hidden = true; try { if (CH.last && CH.last.focus) CH.last.focus(); } catch (e) {} }
 function chScoutRender() { const sh = $('chScout'); if (!sh) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {};
   if (!RD) { sh.innerHTML = '<div class="grab"></div><button type="button" class="x" data-chclose aria-label="Close">×</button><div class="chh" role="heading" aria-level="2">Scouting report</div><p class="t2">Add Pokémon to your team to see how ready it is for the top threats.</p>'; return; }
-  const c = CH.lvCount(RD), need = c[0] + c[1], ord = CH.order(RD), sel = CH.sel && RD.rows.find(r => r.t.n === CH.sel);
+  const c = CH.lvCount(RD), need = c[0] + c[1], ord = CH.order(RD), G = CH.gradeOf(RD, v.CK, ms), sel = CH.sel && RD.rows.find(r => r.t.n === CH.sel);
   const dot = (r, m) => { const n = m.p.n, has = a => (a || []).some(x => x.m && x.m.n === n);
     const k = CH.LVC[CH.cellOf(r, m)];
     return `<span title="${esc(m.d)}: ${k[1]}">${sprite(m.p) || ''}<i class="g-${k[3]}" style="background:${k[0]}" aria-hidden="true">${k[2]}</i>${k[1]}</span>`; };
-  const det = sel ? `<div class="chdet" aria-live="polite"><div class="top">${sprite(byName.get(sel.t.n)) || ''}<div style="flex:1"><div class="nm" style="font:800 15px var(--body);text-transform:uppercase">${esc(sel.t.d)} <span class="chk">${(+sel.t.w).toFixed(1)}% of top cuts</span></div><div class="t2">${esc(THR.evidence(sel))}</div></div><span class="chlv l${sel.level}">${CH.LV[sel.level].toUpperCase()}</span></div><div class="chdots">${ms.map(m => dot(sel, m)).join('')}</div></div>` : '';
-  const list = ord.filter(r => r.level <= 1).slice(0, 5).map(r => `<div class="it">${sprite(byName.get(r.t.n)) || ''}<div style="flex:1;min-width:0"><div class="nm">${esc(r.t.d)} <span class="chk" style="font-weight:400">${(+r.t.w).toFixed(1)}% of top cuts</span></div><div class="t2">${esc(THR.evidence(r))}</div></div><span class="chlv l${r.level}">${CH.LV[r.level].toUpperCase()}</span></div>`).join('');
+  const det = sel ? `<div class="chdet" aria-live="polite"><div class="top">${sprite(byName.get(sel.t.n)) || ''}<div style="flex:1"><div class="nm" style="font:800 15px var(--body);text-transform:uppercase">${esc(sel.t.d)} <span class="chk">${pctTxt(+sel.t.w)} of top cuts</span></div><div class="t2">${esc(THR.evidence(sel))}</div></div><span class="chlv l${sel.level}">${CH.LV[sel.level].toUpperCase()}</span></div><div class="chdots">${ms.map(m => dot(sel, m)).join('')}</div></div>` : '';
+  const list = ord.filter(r => r.level <= 1).slice(0, 5).map(r => `<div class="it">${sprite(byName.get(r.t.n)) || ''}<div style="flex:1;min-width:0"><div class="nm">${esc(r.t.d)} <span class="chk" style="font-weight:400">${pctTxt(+r.t.w)} of top cuts</span></div><div class="t2">${esc(THR.evidence(r))}</div></div><span class="chlv l${r.level}">${CH.LV[r.level].toUpperCase()}</span></div>`).join('');
   const ck = v.CK ? `<div class="chk" style="margin-top:14px">Checklist · ${v.CK.pass}/${v.CK.n}</div><div class="chleg">${v.CK.items.filter(x => !x.skip).map(x => `<span><i class="g-${x.ok ? 'ok' : 'bad'}" style="background:${x.ok ? 'var(--chok)' : 'var(--chbad)'}" role="img" aria-label="${x.ok ? 'yes' : 'no'}">${x.ok ? '✓' : '✗'}</i>${esc(x.label)}</span>`).join('')}</div>` : '';
   const b = chBestPlan();
-  const best = b ? `<div class="chbest"><div class="chk">Best fix${b.d != null ? ` · ${b.d > 0 ? '+' : ''}${b.d}% ready` : ''}</div><div class="sw">${b.pl.ch.map(x => `${x.out ? `${sprite(x.out.p, 'out') || ''}<span aria-hidden="true" style="color:var(--chyel);font-size:22px">→</span>` : '+'}${sprite(x.c.p) || ''}`).join(' ')}<span>${esc(b.txt)}</span></div><button type="button" class="chprimary" data-plan="0">Apply this fix <span aria-hidden="true">➜</span></button></div>` : '';
+  const best = b ? `<div class="chbest"><div class="chk">Best fix${b.d != null ? ` · ${readyDelta(b.d)}` : ''}</div><div class="sw">${b.pl.ch.map(x => `${x.out ? `${sprite(x.out.p, 'out') || ''}<span aria-hidden="true" style="color:var(--chyel);font-size:22px">→</span>` : '+'}${sprite(x.c.p) || ''}`).join(' ')}<span>${esc(b.txt)}</span></div><button type="button" class="chprimary" data-plan="0">Apply this fix <span aria-hidden="true">➜</span></button></div>` : '';
   sh.innerHTML = `<div class="grab"></div><button type="button" class="x" data-chclose aria-label="Close">×</button>
-    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm">${CH.gradeOf(RD, v.CK, ms).letter}</div></div>
-    <div style="font-size:14px;color:var(--chink2);margin-top:6px"><b style="color:var(--chink)">${RD.score}% ready</b> · ${CH.LEGEND}</div>
+    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm gc" style="--gc:${CH.gcol(G.letter)}"><span class="chrl">${G.letter}</span><small>${G.rec ? Math.round(G.rec.wr * 100) + '% wins' : G.s}</small></div></div>
+    <div style="font-size:14px;color:var(--chink2);margin-top:6px"><span style="color:var(--chink)">${G.rec ? `<b>Grade ${G.letter}</b> from these six's real record · our own check: ${RD.score}% ready` : G.partial ? `<b>${RD.score}% ready</b> so far` : CH.gradeSum(G, RD)}</span> · ${CH.handTxt(RD)} · ${CH.LEGEND}</div>
     ${CH.legendRow(RD)}${CH.tiles(RD, 'data-chthr')}${det}
     ${list ? `<div class="chlist" style="margin-top:8px">${list}</div>` : ''}${ck}${best}
     <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap"><button type="button" class="chghost" data-chfull="">Full report</button><button type="button" class="chghost" data-chclose="">Close</button></div>`;

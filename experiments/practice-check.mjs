@@ -46,7 +46,9 @@ for (let k = 0; k < 20; k++) {
     if (!r) { fails.push(`round ${k}: no row for ${n}`); continue; }
     if (!c) { if (r.g !== 0 || !/No games with it/.test(r.txt)) fails.push(`round ${k}: ${n} shows data the file doesn't have`); continue; }
     if (r.g !== c[0] || r.b !== pc(c[1], c[0]) || r.l !== pc(c[2], c[0])) fails.push(`round ${k}: ${n} shows ${r.g}/${r.b}%/${r.l}%, file says ${c[0]}/${pc(c[1], c[0])}%/${pc(c[2], c[0])}%`);
-    if (!r.txt.includes(`Brought ${pc(c[1], c[0])}%`) || !r.txt.includes(`${c[0].toLocaleString('en-US')} game`)) fails.push(`round ${k}: ${n} text doesn't match its numbers: ${r.txt}`);
+    /* Nov 2: the shared rounding rule (10+ whole, under 10 one decimal, under 0.1 "<0.1") and the word "of games" */
+    const pt = (a, b) => { const v = 100 * a / b, r1 = Math.round(v * 10) / 10; return (v === 0 ? '0' : v < .1 ? '<0.1' : r1 >= 10 ? String(Math.round(v)) : r1.toFixed(1)) + '%'; };
+    if (!r.txt.includes(`Brought in ${pt(c[1], c[0])} of games`) || !r.txt.includes(`${c[0].toLocaleString('en-US')} game`)) fails.push(`round ${k}: ${n} text doesn't match its numbers: ${r.txt}`);
     if (c[0] < 10 && !/treat as a hint/.test(r.txt)) fails.push(`round ${k}: ${n} has ${c[0]} games but no small-sample note`); }
   // the target four and the match
   let target = null;

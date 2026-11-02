@@ -37,6 +37,16 @@ function spdCalc(base,scarf,ability,weather,o){let v=base;if(o.icy)v=Math.floor(
 // Trick Room); Quick Draw is a 30% chance to move first in its bracket with an attack (never relied on); Quick Feet needs a status
 const spdAbNote=ab=>ab==='Stall'?' · Stall: always moves last in its priority bracket':ab==='Quick Draw'?' · Quick Draw: 30% chance to move first in its bracket (attacks)'
   :ab==='Quick Feet'?' · Quick Feet not counted (only with a status condition)':'';
+// Speed in plain terms (Sim, Nov 2): "outspeeds 63% of the top 30". The top 30 are the same threats as the readiness score
+// (THR.threatList), each at its likely Speed (likelySpeed + spdCalc, as the list below), ties counted as half. o: {tr, tw (theirs),
+// icy, par, W}. Under Trick Room the slower one moves first, so "outspeeds" becomes "moves before".
+let spdTopC={key:null,v:null};
+function topThreatSpeeds(W,o){o=o||{};const key=metaVersion+'|'+W+'|'+!!o.tw+!!o.icy+!!o.par;if(spdTopC.key===key)return spdTopC.v;let v=[];
+  try{v=THR.threatList(30).map(t=>byName.get(t.n||(t.p&&t.p.n))).filter(p=>p&&p.st).map(p=>{const s=likelySpeed(p,null),ab=abilityOf({p});return {p,v:spdCalc(s.v,s.scarf,ab,W,{tw:!!o.tw,icy:!!o.icy,par:!!o.par})}})}catch(e){v=[]}
+  spdTopC={key,v};return v}
+function outspeedOf(v,W,o){o=o||{};const L=topThreatSpeeds(W,o);if(!L.length||!(v>0))return null;let x=0;for(const t of L)x+=t.v===v?.5:(o.tr?v<t.v:v>t.v)?1:0;
+  return {pct:Math.round(100*x/L.length),n:L.length,x}}
+function outspeedTxt(r,o){if(!r)return '';o=o||{};return `${o.tr?'moves before':'outspeeds'} ${r.pct}% of the top ${r.n}`}
 function renderSpeed(){const el=$('spdOut');if(!el)return;
   const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
   const thr=metaThreats(24).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
@@ -58,7 +68,8 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
       if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
         tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
-    return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> moves first against ${beat} of ${thr.length}${tip}</span>`}).join('');
+    const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
+    return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> ${os?`${outspeedTxt(os,{tr:spdUi.tr})} threats${cond?` (${cond})`:''} · `:''}moves first against ${beat} of the ${thr.length} below${tip}</span>`}).join('');
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
     return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''}${r.wxUp?` · ${esc(r.ab)} ×2 in ${esc(W)}`:''}${r.unb?` · ${r.unb} after its item is used (Unburden)`:''}${spdAbNote(r.ab)} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
     <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Your side uses your items (and your spreads where you set them); theirs <span class="asm" title="Their real spreads and items are hidden">assumed</span> uses the most common natures and items, with fast Pokémon at 32 Speed points. Weather speed abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
@@ -310,11 +321,21 @@ function bulkToSurvive(o){const mv=o.move;if(!mv||!mv.bp||mv.cat===0||mv.fixed||
 // KO odds from the 16 real damage rolls. Later hits use r.next (Multiscale only softens the first); Focus Sash leaves 1 HP.
 // Focus Band: a 10% chance to hold on at 1 HP from any hit that would KO (never relied on, only noted)
 function koText(r){const t=koText0(r);return r&&r.band&&r.max>0&&r.max+(r.next||r).max>=r.hp&&!r.sash?t+' (Focus Band: 10% to hold on at 1 HP)':t}
+// Damage in words, short (Sim, Nov 2), for table cells: "OHKO", "OHKO 40%", "2HKO", "2HKO 40%", "3HKO", "4HKO+", the same odds as koText
+function ko2Odds(r){const a=r&&r.rolls,b=r&&r.next&&r.next.rolls||a;if(!Array.isArray(a)||!Array.isArray(b)||!a.length||!b.length)return null;let c=0;for(const x of a)for(const y of b)if(x+y>=r.hp)c++;return c/(a.length*b.length)}
+const koPc=k=>Math.min(99,Math.max(1,Math.round(100*k)));
+function koShort(r){if(!r||!r.hp)return '';if(r.max===0)return 'no effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r,k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
+  if(r.sash&&k1>0)return 'Sash holds';if(k1>=1)return 'OHKO';if(k1>0)return `OHKO ${koPc(k1)}%`;if(r.min+nx.min>=r.hp)return '2HKO';
+  if(r.max+nx.max>=r.hp){const k2=ko2Odds(r);return k2!=null?`2HKO ${koPc(k2)}%`:'2HKO?'}if(r.min+2*nx.min>=r.hp)return '3HKO';const n=1+Math.ceil((r.hp-r.max)/Math.max(1,nx.max));return `${n}HKO+`}
+/* a damage percentage under the shared rounding rule, never showing 100 for a hit that can't reach 100% */
+const dmgP=v=>{const t=ptsTxt(v);return v<100&&+t>=100?'99':t};
+// the range as words for a damage result: "62–74% of HP"
+const dmgRange=r=>r&&r.hp?`${dmgP(100*r.min/r.hp)}–${dmgP(100*r.max/r.hp)}% of HP`:'';
 function koText0(r){if(!r)return '';if(r.max===0)return 'No effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r;
   const k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
   if(r.sash&&k1>0)return k1>=1?'Focus Sash holds at 1 HP, then any hit KOs':`${Math.round(k1*100)}% to OHKO without its Focus Sash; the Sash holds at 1 HP`;
   if(k1>=1)return 'Guaranteed OHKO';if(k1>0)return `${Math.round(k1*100)}% chance to OHKO`;
-  if(r.min+nx.min>=r.hp)return 'Guaranteed 2HKO';if(r.max+nx.max>=r.hp)return 'Possible 2HKO';if(r.min+2*nx.min>=r.hp)return 'Guaranteed 3HKO';
+  if(r.min+nx.min>=r.hp)return 'Guaranteed 2HKO';if(r.max+nx.max>=r.hp){const k2=ko2Odds(r);return k2!=null?`${koPc(k2)}% chance to 2HKO`:'Possible 2HKO'}if(r.min+2*nx.min>=r.hp)return 'Guaranteed 3HKO';
   return `${1+Math.ceil((r.hp-r.max)/Math.max(1,nx.max))}HKO or worse`}
 // Defaults for a side, from what players run with that Pokémon.
 // mem: your own team member when this side is yours, so its chosen item and ability are used (never for an opposing copy)
@@ -413,11 +434,11 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   try{const W={sun:'Sun',rain:'Rain',sand:'Sand',snow:'Snow'},tg=[spread&&'hits both foes',dc.screen&&'screen up',dc.hh&&'Helping Hand',dc.fg&&'Friend Guard',dc.crit&&'critical hit'].filter(Boolean),pc0=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
     dc.lastCtx=[`Attacker: ${A.p.d||A.p.n} · ${A.nat} · ${A.item||'no item'} · ${A.ability} · stage ${A.boost>0?'+':''}${A.boost}${A.real?' · ladder spread':''}`,`Defender: ${D.p.d||D.p.n} · ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${D.nat} · ${D.item||'no item'} · ${D.ability} · stage ${D.boost>0?'+':''}${D.boost}${D.real?' · ladder spread':''}`,
       `Move: ${dc.mv||'none'}`,`Field: ${W[dc.weather]||'no weather'} · ${dc.terrain?dc.terrain+' terrain':'no terrain'}${tg.length?' · '+tg.join(', '):''}`,
-      `Result shown: ${!r?'not calculated':r.max===0?'no effect':`${pc0[0].toFixed(1)}–${pc0[1].toFixed(1)}% (${r.min}–${r.max} of ${r.hp} HP) · ${koText(r)}`}`].join('\n')}catch(e){dc.lastCtx=''}
+      `Result shown: ${!r?'not calculated':r.max===0?'no effect':`${pc0[0].toFixed(1)}–${pc0[1].toFixed(1)}% of HP (${r.min}–${r.max} of ${r.hp} HP) · ${koText(r)}`}`].join('\n')}catch(e){dc.lastCtx=''}
   const pct=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
   const bar=pct?`<div class="dcbar"><span style="width:${Math.min(100,pct[0]).toFixed(1)}%" class="lo"></span><span style="width:${Math.max(0,Math.min(100,pct[1])-Math.min(100,pct[0])).toFixed(1)}%" class="hi"></span></div>`:'';
   // phones: the result rides along at the top while you change the inputs below
-  const stick=pct&&r&&r.max>0?`<button type="button" class="dcstick" id="dcStick" aria-label="Jump to the full result">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>${pct[0].toFixed(1)}–${pct[1].toFixed(1)}%</b><span>${esc(koText(r))} · ${esc(dc.mv)}</span></span></button>`:mv&&r&&r.max===0?`<button type="button" class="dcstick" id="dcStick">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>No effect</b><span>${esc(dc.mv)}</span></span></button>`:'';
+  const stick=pct&&r&&r.max>0?`<button type="button" class="dcstick" id="dcStick" aria-label="Jump to the full result">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>${dmgP(pct[0])}–${dmgP(pct[1])}% of HP</b><span>${esc(koText(r))} · ${esc(dc.mv)}</span></span></button>`:mv&&r&&r.max===0?`<button type="button" class="dcstick" id="dcStick">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>No effect</b><span>${esc(dc.mv)}</span></span></button>`:'';
   el.innerHTML=stick+`<div class="dcgrid">
     <div class="dccol"><h3>Attacker ${dcSrc(A)}</h3>${sprite(A.p,'dcspr')}
       <label>Pokémon<select class="field" id="dcA">${monOptions(dc.a)}</select></label>
@@ -436,7 +457,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
       <div class="seg" role="group" aria-label="Terrain" style="margin-top:6px">${[['','No terrain'],['grassy','Grassy'],['electric','Electric'],['psychic','Psychic'],['misty','Misty']].map(([k,t])=>`<button type="button" data-dcterr="${k}" aria-pressed="${dc.terrain===k}">${t}</button>`).join('')}</div>
       <div class="seg segwrap" role="group" aria-label="Field">${[['spread','Hits both foes'],['screen','Screen up'],['hh','Helping Hand'],['fg','Friend Guard'],['crit','Critical hit']].map(([k,t])=>`<button type="button" data-dct="${k}" aria-pressed="${k==='spread'?spread:!!dc[k]}">${t}</button>`).join('')}</div></div>
     <div class="dcres">${!mv?'<div class="empty-note">Pick a damaging move.</div>':!r?`<div class="empty-note">${mv.vbp==='counter'?`${esc(mv.name)} hits back with ${mv.name==='Metal Burst'||mv.name==='Comeuppance'?'1.5×':'2×'} the damage it takes that turn, so it depends on the hit it receives and isn't calculated here.`:mv.vbp==='endeavor'?'Endeavor cuts the target down to your own HP, so it depends on how much HP you have left.':mv.vbp==='stockpile'?'Not counted: Spit Up needs Stockpile first (its power depends on how many).':mv.cat>0?'This move\'s damage depends on the battle and isn\'t calculated.':'This move does no direct damage.'}</div>`:r.max===0?r.fail?`<b>No effect.</b> ${esc(r.fail)}.`:`<b>No effect.</b> ${esc(D.p.d||D.p.n)} is immune to ${esc(r.type)}.`:
-      `<div class="dcbig">${pct[0].toFixed(1)}–${pct[1].toFixed(1)}%</div>${bar}<div><b>${koText(r)}</b> · ${r.min}–${r.max} of ${r.hp} HP${r.hits>1?` · ${r.hits} hits${MULTI_HIT[dc.mv]===3&&r.hits===3?' (2–5)':''}`:''}${r.eff!==1?` · ${r.eff}× ${esc(r.type)}`:''}</div>
+      `<div class="dcbig">${dmgP(pct[0])}–${dmgP(pct[1])}%<small> of HP</small></div>${bar}<div><b>${koText(r)}</b> · ${r.min}–${r.max} of ${r.hp} HP${r.hits>1?` · ${r.hits} hits${MULTI_HIT[dc.mv]===3&&r.hits===3?' (2–5)':''}`:''}${r.eff!==1?` · ${esc(r.type)} is ${r.eff>=4?'super effective twice over':r.eff>=2?'super effective':r.eff<=.25?'resisted twice over':'resisted'}`:''}</div>
       ${(()=>{const t=[],acc=moveAcc(mv,A.ability,dc.weather,D,A.item,A.p.t,!!(ord&&ord.last));
         if(mv.vbp==='wt')t.push(`power from ${esc(D.p.d||D.p.n)}'s weight (${wtOf(D.p)} kg)`);if(mv.vbp==='wtr')t.push(`power from the weight ratio (${wtOf(A.p)} kg vs ${wtOf(D.p)} kg)`);
         if(mv.vbp==='lowhp')t.push('assumes full HP (20 power; more as HP drops)');if(mv.vbp==='userhp')t.push('assumes the user is at full HP (power drops with its HP)');
@@ -477,7 +498,7 @@ function moveAcc(mv,ab,weather,def,item,userTypes,moved){if(!mv)return 100;if(ab
   if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
   return Math.min(100,Math.round(a))}
 function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThreats(12).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
-  const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';const nt=hitNote(b);return `<td class="${c}" title="${esc(b.mv.name)}: ${lo.toFixed(0)}–${p.toFixed(0)}%${nt?' ('+nt+')':''}">${p.toFixed(0)}<span>${esc(b.mv.name)}${nt?' *':''}</span></td>`};
+  const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';const nt=hitNote(b),ks=koShort(b.r);return `<td class="${c}" data-ko="${esc(ks)}" title="${esc(b.mv.name)}: ${dmgRange(b.r)} · ${esc(koText(b.r))}${nt?' ('+nt+')':''}">${dmgP(p)}%<span>${esc(b.mv.name)}${nt?' *':''}</span></td>`};
   const thH=p=>`<th title="${esc(p.d||p.n)}">${sprite(p,'dcth')}<span>${esc((p.d||p.n).replace(/^Mega /,'M-'))}</span></th>`,rowH=(p,d)=>`<th>${sprite(p,'dcth')}<span>${esc(d||p.d||p.n)}</span></th>`;
   const theirs=dc.dir==='theirs';
   // each attacker's own weather/terrain counts: yours if your team sets exactly one, theirs from the threat's own ability
@@ -485,7 +506,7 @@ function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThrea
   const seg=`<div class="seg" role="group" aria-label="Direction"><button type="button" data-dcdir="mine" aria-pressed="${!theirs}">Your hits on them</button><button type="button" data-dcdir="theirs" aria-pressed="${theirs}">Their hits on you</button></div>`;
   const table=theirs?`<table class="dctab"><thead><tr><th></th>${ms.map(m=>thH(m.p)).join('')}</tr></thead><tbody>${thr.map(t=>{const mv=popularMoves(t);return `<tr>${rowH(t)}${ms.map(m=>cell(bestHitOn(t,mv,m.p,null,m,thF(t)))).join('')}</tr>`}).join('')}</tbody></table>`
     :`<table class="dctab"><thead><tr><th></th>${thr.map(thH).join('')}</tr></thead><tbody>${ms.map(m=>`<tr>${rowH(m.p,m.d)}${thr.map(t=>cell(bestHitOn(m.p,m.moves,t,m,null,myF))).join('')}</tr>`).join('')}</tbody></table>`;
-  return `<h3 class="dsub" style="margin-top:22px">${theirs?'Each top threat\'s best hit on your team':'Your best hit on each top threat'}</h3><div style="margin:6px 0 8px">${seg}</div><p class="t2">Max roll, single target unless the move hits both. ${theirs?'Their usual set vs your set and the most common bulk, in the weather or terrain the attacker sets itself.':`Your set vs their usual set and bulk${myF.weather||myF.terrain?`, in your ${esc(fieldWords(myF))}`:''}.`} Green with a KO tag = OHKO range, gold with 2HKO = 2HKO range (a ? means only the top rolls do it).${theirs?' A green column is a Pokémon you may need to Protect or switch.':''}</p>
+  return `<h3 class="dsub" style="margin-top:22px">${theirs?'Each top threat\'s best hit on your team':'Your best hit on each top threat'}</h3><div style="margin:6px 0 8px">${seg}</div><p class="t2">Max roll, single target unless the move hits both. ${theirs?'Their usual set vs your set and the most common bulk, in the weather or terrain the attacker sets itself.':`Your set vs their usual set and bulk${myF.weather||myF.terrain?`, in your ${esc(fieldWords(myF))}`:''}.`} Each cell is the top roll as % of HP, tagged with how many hits it takes: OHKO (green), 2HKO (gold), with the chance when only some rolls do it.${theirs?' A green column is a Pokémon you may need to Protect or switch.':''}</p>
   <div class="tablewrap">${table}</div>`}
 document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.id))return;const v=t.value;
   const ak='atk:'+dc.a,dk='def:'+dc.d;

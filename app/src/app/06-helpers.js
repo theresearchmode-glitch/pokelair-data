@@ -1,4 +1,10 @@
 // ---------- helpers ----------
+// One rounding rule for every printed percentage (Sim, Nov 2): 10 and up → whole number, under 10 → one decimal, under 0.1 → "<0.1".
+// pctTxt(9.43) = "9.4%", pctTxt(23.6) = "24%". ptsTxt is the same rule for a change in points, without the % sign.
+function ptsTxt(v){v=+v;if(!isFinite(v))return '—';const a=Math.abs(v);if(a===0)return '0';if(a<.1)return '<0.1';const r1=Math.round(a*10)/10;return (v<0?'−':'')+(r1>=10?String(Math.round(a)):r1.toFixed(1))}
+function pctTxt(v){return ptsTxt(v)+'%'}
+// a change in readiness, in points (Nov 2: "-2% ready" read like 2% of something): "+3 points ready", "−1 point ready", "no change"
+function readyDelta(d){d=Math.round(+d||0);return d===0?'no change in ready':`${d>0?'+':'−'}${Math.abs(d)} point${Math.abs(d)===1?'':'s'} ready`}
 function memberOf(s,i){const p=byName.get(s.n);if(!p)return null;const ab=s.a&&p.a.includes(s.a)?s.a:(metaAbility(p)||bestAbility(p));
   const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi,spread:slotSpread(s,p)}}
 // Your nature and stat points (from a paste or link), in the same shape as commonSpread(): {nat,hp,atk,def,spa,spd,spe,mine:true}

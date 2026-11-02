@@ -64,12 +64,12 @@ function relMove_(m, names) {
   return best;
 }
 const anyOf = rs => 1 - rs.reduce((a, r) => a * (1 - r), 1);
-const pctTxt = r => r >= .995 ? '' : ` ${Math.round(r * 100)}%`;
+const gpPct = r => r >= .995 ? '' : ` ${Math.round(r * 100)}%`;
 // Returns {rows, penalty}. rows: [{k, label, st: ok|part|miss|opt, who, note}]. Lower penalty is better.
 function gamePlan(team) {
   const has = k => team.map(m => { const [r, mv] = relMove(m, ROLE[k]); return {m, r, mv}; }).filter(x => x.r >= .15).sort((a, b) => b.r - a.r);
   const cov = xs => anyOf(xs.map(x => x.r));
-  const who = (xs, n = 3) => xs.slice(0, n).map(x => `${x.m.d}${x.mv ? ' · ' + x.mv : ''}${pctTxt(x.r)}`).join(', ');
+  const who = (xs, n = 3) => xs.slice(0, n).map(x => `${x.m.d}${x.mv ? ' · ' + x.mv : ''}${gpPct(x.r)}`).join(', ');
   const R = {}; for (const k in ROLE) R[k] = has(k);
   R.self = team.map(m => SELF_SPEED_AB.has(m.ability) ? {m, r: 1, mv: m.ability} : (x => ({m, r: x[0], mv: x[1]}))(relMove(m, ROLE.boost))).filter(x => x.r >= .15);
   // weather: setters, and who benefits (abilities, signature users and moves, plus same-type attackers)

@@ -174,12 +174,12 @@ function abDescribe(t) {
   else { let best = null; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const s = pairSyn(t[i], t[j]); if (!best || s > best.s) best = {s, a: t[i], b: t[j]}; }
     if (best && best.s >= 8) why.push(`${best.a.d} and ${best.b.d} are often run together in ranked`); }
   // the same readiness report as My team, so the card and the team page never disagree (sweep, Oct 31)
-  { let RD = null; try { RD = prepOf(t); } catch (e) {} if (RD && RD.rows) { const un = RD.rows.filter(r => r.level === 0).length, sh = RD.rows.filter(r => r.level === 1).length; why.push(`Ready for ${RD.score}% of the top ${RD.rows.length} threats: ${un} unanswered, ${sh} shaky`); } }
+  let RD = null; try { RD = prepOf(t); } catch (e) {} if (RD && RD.rows) { const un = RD.rows.filter(r => r.level === 0).length, sh = RD.rows.filter(r => r.level === 1).length; why.push(`${RD.score}% ready for the top ${RD.rows.length} threats: handles ${RD.rows.length - un - sh}, ${sh} shaky, ${un} unanswered`); }
   const gpl = gp.rows.filter(r => r.st === 'ok' && ['speed', 'weather', 'terrain', 'support', 'haz', 'pivot'].includes(r.k)).map(r => r.label.replace('Fake Out / redirection', 'Fake Out'));
   mons.filter(m => !m.box).forEach(m => why.push(`${m.d} isn't in your box: the best one to catch for this team`));
   // the team's plan in a few words: weather + speed mode, or how it wins without one
   const arc = teamArchetype(t), parts = [arc ? arc.label : 'Balance'];
-  return {mons, label: parts.join(' + '), why, gp: gpl, megas: mons.filter(m => m.mega).length, score: Math.round(v.score), grade: proChecks(t, true)};
+  return {mons, label: parts.join(' + '), why, gp: gpl, megas: mons.filter(m => m.mega).length, score: Math.round(v.score), grade: proChecks(t, true), _rd: RD, _ms: t};
 }
 // before you build: what you'll get, plus three recent event winners you can load straight away
 function abStart() {
@@ -187,10 +187,11 @@ function abStart() {
   return `<div class="abstart"><div class="abwhat">${[['Six that work together', 'Built from teams that win at real tournaments, filtered to what you own.'], ['The why', 'Each pick comes with its job on the team and what it fixes.'], ['Ready for the top threats', 'Which of the top threats it answers, and the one change that would help most.']].map(([h, t], i) => `<div class="abw"><span class="abwn">${i + 1}</span><div><b>${h}</b><p class="t2">${t}</p></div></div>`).join('')}</div>
     ${picks.length ? `<div class="head abwinhead"><div><h3>Or start from a recent winner</h3><p class="hint">Full sets, ready to load.</p></div></div>${picks.map(e => teamSheetCard(e.top[0], e, e.id + '#0')).join('')}` : ''}</div>`; }
 // the built team's readiness for the top threats, from the same report as the Team page
-function abTS(tm) { if (tm.mons.length !== 6) return ''; if (tm._ts === undefined) { let t = null; try { t = tsOf(tm.mons.map(m => abMember(byName.get(m.n)))); } catch (e) {} tm._ts = t; }
-  // a real team with 30+ games leads with its record, the same thing its grade on My team comes from
-  const pv = tm.proven; if (pv && !pv.swapped && pv.g >= CH.REC_MIN) return `<span class="abtsv" title="These exact six won about ${Math.round(pv.wr * 100)}% of ${pv.g} tournament games. Our own check: ready for ${tm._ts ?? '?'}% of the top 30 threats."><b>${Math.round(pv.wr * 100)}%</b>won · ${CH.thin(pv.g, 'record') ? 'early read · ' : ''}${pv.g.toLocaleString('en-US')} games</span>`;
-  return tm._ts != null ? `<span class="abtsv" title="Ready for ${tm._ts}% of the top 30 threats (weighted by how often each makes top cut)"><b>${tm._ts}%</b>ready</span>` : ''; }
+/* Nov 2: the same grade as My team (CH.gradeOf: readiness, team strength, missed checks; a real record with 30+ games), shown as a
+   badge whose second line is the sum, so "% ready" reads as one part of the grade */
+function abTS(tm) { if (tm.mons.length !== 6) return ''; if (tm._g === undefined) { let G = null; try { const ms = tm._ms || tm.mons.map(m => abMember(byName.get(m.n))), RD = tm._rd || prepOf(ms);
+      if (RD) { G = Object.assign(CH.gradeOf(RD, tm.grade || proChecks(ms, true), ms), {r: RD.score}); tm._rdv = RD; } } catch (e) {} tm._g = G; }
+  return tm._g ? `<span class="abtsv abgr">${CH.gradeBadge(tm._g, tm._rdv)}</span>` : ''; }
 function renderAutoBuild() {
   const el = $('abOut'); if (!el) return; const r = ui.ab;
   if (!r) { const btn = $('abBtn'); if (btn) btn.disabled = false; el.innerHTML = abStart(); return; }
