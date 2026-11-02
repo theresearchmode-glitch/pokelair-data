@@ -72,12 +72,13 @@ function renderAbout() { const el = $('aboutOut'); if (!el) return; if (el.datas
       <pre class="abtlicense" tabindex="0">${esc(SD_MIT)}</pre>`)}
     ${abtSec('warr', 'm', 'No guarantee', 'Check the official rules before an event',
       `<p>NastyPlot is provided as-is, without warranty. Numbers, calcs and legality checks can be wrong; we're not responsible for results from using it. Always check the official rules before an event.</p>`)}
-    ${abtSec('priv', 'b', 'Privacy', 'No names, no cookies, no ads or trackers',
-      `<p>NastyPlot never asks for your name or email. It sets no cookies and has no ads or trackers. Here is everything it saves:</p>
+    ${abtSec('priv', 'b', 'Privacy', 'Anonymous · no names, no cookies, no ads or trackers',
+      `<p>NastyPlot never asks for your name, email or any contact details, and never reads them from your Claude account. It sets no cookies and has no ads or trackers. Here is everything it saves:</p>
       <ul class="abtlist">
         <li><b>Your teams.</b> Your current team, saved teams, box, the opponent team you're testing and your battle log are saved under an anonymous ID (not your name), so they're there next time. Anyone who can open this page could technically read that saved data, so don't put anything private in team names.</li>
-        <li><b>Usage counts.</b> How many times each page or button was opened in a visit, with the date and phone or desktop, under the same anonymous ID. Never what you type. Only NastyPlot's owner can read these.</li>
-        <li><b>Feedback.</b> Messages you send with the Feedback button, with the page you were on, phone or desktop and the time. Only the owner can read them.</li>
+        <li><b>Usage counts.</b> How many times each page or button was used in a visit, with the date and phone or desktop. Never what you type, and no first- or last-visit dates. Only NastyPlot's owner can read these.</li>
+        <li><b>Feedback.</b> The message you send with the Feedback or Report a mistake button, its kind, the page you were on, phone or desktop and the date (not the time). Email addresses, phone numbers and @handles typed into a message are removed before it's saved. There's no field for contact details. Only the owner can read feedback.</li>
+        <li><b>One anonymous ID.</b> The page's storage only lets each person write their own records, so your teams, usage counts and feedback are each filed under the same anonymous ID that Claude gives this page. It's a random code, not your name, email or username, and NastyPlot never looks up who an ID belongs to.</li>
         <li><b>On this device only.</b> Your theme, the last page you opened, which sections are open, sort and filter choices, and a copy of your teams stay in this browser's storage. They never leave your device; clearing your browser data removes them.</li>
         <li><b>Fonts.</b> Fonts load from Google Fonts, which sees an ordinary request from your device, like any web font.</li></ul>
       <p>Want your saved data or feedback deleted? Email us (see Removal &amp; contact).</p>`)}

@@ -511,6 +511,8 @@ await browser.close();
 try { execFileSync('node', [APP + 'test/items.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL items/suggestions suite'); }
 // the Pokémon sheet's Info | Meta | Rating tabs (Nov 2): switching, remembering, swipe, Info numbers vs ROSTER / type chart / speed maths
 try { execFileSync('node', [APP + 'test/sheet-tabs.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL sheet tabs suite'); }
+// pre-launch (Nov 2): "Data as of", the amber older-than-usual note, anonymous feedback and usage
+try { execFileSync('node', [APP + 'test/prelaunch.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL pre-launch suite'); }
 // stress-test cases (Oct 28): checklist, item problems, archetypes, legality, move names, Build me a team Megas, gem stability
 try { execFileSync('node', [APP + '../experiments/stress-checks.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL stress checks suite'); }
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);

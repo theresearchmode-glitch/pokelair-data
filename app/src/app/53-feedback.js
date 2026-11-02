@@ -1,6 +1,9 @@
 // ---------- feedback: a quick way for testers to say what's off ----------
-// Each viewer has one document, feedback/<their opaque id>, holding their messages by time. No names: only the text,
-// what kind it is, the page they were on and phone or desktop. Only the owner can read everyone's (db rules at publish).
+// Anonymous (pre-launch privacy pass, Nov 2; many players are kids). Each viewer has one document, feedback/<opaque id>:
+// the db rules at publish let each viewer write only their own document, so the path carries the platform's opaque viewer
+// id (never a name, email or handle) and nothing inside identifies them. A message stores only: the text (with email
+// addresses, phone numbers and @handles removed before saving), its kind, the page, phone or desktop, and the date (no
+// time); its key is random. The box never asks for contact details. Only the owner can read everyone's.
 // The button only shows for viewers whose sharing level can save data (Contributor and up).
 var FB = {ref: null, ok: false, from: null, kind: 'idea', busy: false};
 (async () => { try { const c = window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
@@ -28,20 +31,28 @@ function fbMisContext(key) { key = String(key || ''); try {
 function fbMistake(key) { const c = fbMisContext(key); if (!c) return; FB.kind = 'mistake'; FB.ctx = c; fbOpen(); }
 function fbOpen(fromMenu) { if (fromMenu) FB.ctx = null; if (!FB.ctx && FB.kind === 'mistake') FB.kind = 'idea'; FB.from = view; const C = FB.ctx; let w = $('fbSheet'); if (!w) { w = document.createElement('div'); w.id = 'fbSheet'; w.className = 'fbwrap'; document.body.appendChild(w); }
   w.hidden = false; w.innerHTML = `<div class="fbbox" role="dialog" aria-modal="true" aria-labelledby="fbT"><div class="fbh"><b id="fbT">${C ? 'Report a mistake' : 'Send feedback'}</b><button type="button" class="fbx" data-fbx="1" aria-label="Close">×</button></div>
-    ${C ? `<p class="t2">This is sent with it, so you only need to say what's wrong (optional). Never your name.</p><div class="fbctx"><b>${esc(C.title)}</b>${esc(C.text)}</div>`
-      : `<p class="t2">Something off, confusing or missing? A line or two helps. We see the page you were on (${esc(VIEW_TITLE[FB.from] || FB.from)}), never your name.</p>
+    ${C ? `<p class="t2">This is sent with it, so you only need to say what's wrong (optional).</p><div class="fbctx"><b>${esc(C.title)}</b>${esc(C.text)}</div>`
+      : `<p class="t2">Something off, confusing or missing? A line or two helps. We see the page you were on (${esc(VIEW_TITLE[FB.from] || FB.from)}).</p>
     <div class="seg fbkind" role="group" aria-label="Kind of feedback">${FB_KINDS.map(([k, t]) => `<button type="button" data-fbk="${k}" aria-pressed="${FB.kind === k}">${t}</button>`).join('')}</div>`}
-    <textarea id="fbText" maxlength="1000" rows="${C ? 3 : 4}" placeholder="${C ? 'What looks wrong? (optional)' : 'What happened, or what would help?'}"></textarea>
+    <textarea id="fbText" maxlength="1000" rows="${C ? 3 : 4}" placeholder="${C ? 'What looks wrong? (optional)' : 'What happened, or what would help?'}" aria-describedby="fbAnon"></textarea>${FB_ANON.replace('<p ', '<p id="fbAnon" ')}
     <div class="fbfoot"><span class="t2" id="fbMsg" role="status"></span><button type="button" class="btn go sm" id="fbSend">Send</button></div></div>`;
   setTimeout(() => { const t = $('fbText'); if (t) t.focus(); }, 30); }
+/* personal details typed by mistake are removed before saving: email addresses, phone numbers (9+ digits, so damage
+   ranges like "45.2 - 53.1%" and EV spreads stay) and @handles (not Showdown's "Mon @ Item", which has a space) */
+function fbScrub(t) { let n = 0; t = String(t || '')
+  .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, () => { n++; return '[email removed]'; })
+  .replace(/\+?\d[\d\s().-]{7,}\d/g, m => (m.match(/\d/g) || []).length >= 9 ? (n++, '[number removed]') : m)
+  .replace(/(^|[\s(])@[A-Za-z0-9_.]{2,}/g, (m, a) => { n++; return a + '[handle removed]'; });
+  return {t, n}; }
+const FB_ANON = '<p class="fbanon">Anonymous — please don\'t include personal info like your name or email.</p>';
 function fbClose() { const w = $('fbSheet'); if (w) w.hidden = true; }
 async function fbSend() { const ta = $('fbText'), msg = $('fbMsg'), btn = $('fbSend'); if (!ta || FB.busy) return; const t = ta.value.trim();
   const C = FB.kind === 'mistake' ? FB.ctx : null; if (t.length < 3 && !C) { msg.textContent = 'Write a few words first.'; return; }
   if (!FB.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
-  FB.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const now = new Date(), k = now.getTime().toString(36);
-  const entry = {t: t.slice(0, 1000), k: FB.kind, v: FB.from || view, w: innerWidth < 760 ? 'phone' : 'desktop', d: now.toISOString()}; if (C) entry.c = String(C.title + '\n' + C.text).slice(0, 1200);
+  FB.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
+  const entry = {t: sc.t, k: FB.kind, v: FB.from || view, w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (C) entry.c = String(C.title + '\n' + C.text).slice(0, 1200);
   try { const s = await FB.ref.get(); if (s.exists) await FB.ref.update({m: {[k]: entry}}); else await FB.ref.set({m: {[k]: entry}});
-    track('feedback:' + FB.kind); fbClose(); toast(C ? 'Thanks! Mistake reported.' : 'Thanks! Feedback sent.'); if (C) { FB.ctx = null; FB.kind = 'idea'; } }
+    track('feedback:' + FB.kind); fbClose(); toast((C ? 'Thanks! Mistake reported.' : 'Thanks! Feedback sent.') + (sc.n ? ' Personal details were removed.' : '')); if (C) { FB.ctx = null; FB.kind = 'idea'; } }
   catch (e) { msg.textContent = "Couldn't send. Try again in a moment."; btn.disabled = false; }
   finally { FB.busy = false; } }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-fbopen],[data-fbmis],[data-fbx],[data-fbk],#fbSend');
@@ -54,7 +65,7 @@ const fbWhen = d => { try { const t = new Date(d); return isNaN(t) ? String(d ||
 async function renderFeedback() { const el = $('fbOut'); if (!el || !FB.db) return; el.innerHTML = '<p class="t2">Loading…</p>'; let snap;
   try { snap = await FB.db.collection('feedback').get(); } catch (e) { el.innerHTML = '<p class="t2">Couldn\'t load feedback.</p>'; return; }
   const all = []; snap.docs.forEach((doc, i) => Object.values((doc.data() || {}).m || {}).forEach(x => all.push({...x, who: i + 1})));
-  all.sort((a, b) => String(b.d).localeCompare(String(a.d)));
+  all.sort((a, b) => String(b.d).localeCompare(String(a.d)));  /* older messages carry a full time, newer ones the date only */
   if (!all.length) { el.innerHTML = '<p class="t2">No feedback yet.</p>'; return; }
   const kind = Object.fromEntries(FB_KINDS);
   el.innerHTML = `<p class="t2">${all.length} message${all.length === 1 ? '' : 's'} from ${snap.docs.length} ${snap.docs.length === 1 ? 'person' : 'people'}.</p><div class="fblist">${all.slice(0, 60).map(x =>

@@ -1,20 +1,22 @@
 // ---------- usage counts: which pages and buttons people actually use ----------
 // So the page can be redesigned around what's popular, not guesses. Anonymous: each viewer has one document,
-// usage/<their opaque id>, holding only counts ("view:calc": 3, "btn:plan": 1) per visit. No names, no teams, nothing
-// typed. Only the page's owner can read them (the db rules declared at publish). Viewers whose sharing level can't save
-// data (Viewer, Commenter, signed out) simply aren't counted.
+// usage/<opaque id> (the db rules at publish let each viewer write only their own document, so the path needs the platform's
+// opaque viewer id; never a name, email or handle). It holds only counts per visit ("view:calc": 3, "btn:plan": 1) with the
+// visit's date and phone or desktop, under a random visit key. No teams, nothing typed, no first/last-seen dates (dropped
+// Nov 2). Only the page's owner can read them. Viewers whose sharing level can't save data (Viewer, Commenter, signed out)
+// simply aren't counted.
 // var, not const: the first page switch (and its track call) runs before this file does
 var USE = {ref: null, sid: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), c: {}, sent: '', busy: false, ok: false, keys: 0};
 function track(k) { if (!k) return; k = String(k).slice(0, 40); if (!(k in USE.c)) { if (USE.keys >= 150) return; USE.keys++; } USE.c[k] = (USE.c[k] || 0) + 1; }
 // this visit's counts, merged into the viewer's document under its own key (absolute values, so a retry never double counts)
 async function usageFlush() { if (!USE.ok || USE.busy) return; const j = JSON.stringify(USE.c); if (j === USE.sent || j === '{}') return; USE.busy = true;
-  try { await USE.ref.update({last: new Date().toISOString().slice(0, 10), s: {[USE.sid]: {d: new Date().toISOString().slice(0, 10), w: innerWidth < 760 ? 'phone' : 'desktop', c: JSON.parse(j)}}}); USE.sent = j; }
+  try { await USE.ref.update({s: {[USE.sid]: {d: new Date().toISOString().slice(0, 10), w: innerWidth < 760 ? 'phone' : 'desktop', c: JSON.parse(j)}}}); USE.sent = j; }
   catch (e) { if (e && (e.code === 'invalid_argument' || e.code === 'permission_denied' || e.code === 'not_granted')) USE.ok = false; }
   finally { USE.busy = false; } }
 (async () => { try { const c = window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
   if (typeof u.can === 'function' && u.can('data.write') === false && !(u.isOwner && u.isOwner())) return;
   const id = await u.id(); if (!id) return; USE.ref = d.doc('usage/' + id);
-  const s = await USE.ref.get(); if (!s.exists) await USE.ref.set({first: new Date().toISOString().slice(0, 10), s: {}});
+  const s = await USE.ref.get(); if (!s.exists) await USE.ref.set({s: {}});
   USE.ok = true; track('visit'); setInterval(usageFlush, 30000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') usageFlush(); });
   if (u.isOwner && u.isOwner()) { ui.usageOwner = true; ui.usageDb = d; } } catch (e) {} })();

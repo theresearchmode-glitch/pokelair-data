@@ -1583,3 +1583,5 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 :root:not([data-look="dark"]) .lstd.dn{color:#2A36B0}
 :root:not([data-look="dark"]) .lsty.w4 .lstyl{color:#5A1FC0}
 /* ========== end SHEET TABS ========== */
+/* feedback box (pre-launch privacy, Nov 2): the anonymity note right under the text box; body font, main ink for contrast */
+.fbbox .fbanon{margin:6px 2px 0;font:500 13px/1.4 var(--body,'Archivo',sans-serif);color:var(--chink,var(--ink))}
