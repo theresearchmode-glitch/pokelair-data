@@ -84,7 +84,10 @@ for (const n of ['Rillaboom', 'Charizard-Mega-Y', 'Pelipper']) { await open(n);
     const got = {}; for (const x of LST.speeds(p)) got[x.k] = x.v;
     const shown = [...document.querySelectorAll('#lairSheet .lsvr b')].map(b => +b.textContent);
     const os = document.querySelector('#lairSheet .lsvr.main .lsvo'), ot = outspeedTxt(outspeedOf(run, '', {}));
-    return {ok: Object.keys(want).every(k => got[k] === want[k]), shownOk: shown.length >= 6 && shown[0] === run, osOk: !ot || (os && os.textContent === ot), want, got, mega: p.m, hasScarf: 'scarf' in got}; }, n);
+    const notes = {}; for (const x of LST.speeds(p)) notes[x.k] = x.note;
+    /* a standard row equal to what players run is folded into it ("same as …"), so it may be missing on purpose */
+    const folded = Object.keys(want).filter(k => k !== 'run' && k !== 'tw' && k !== 'tr' && !(k in got));
+    return {ok: Object.keys(want).every(k => got[k] === want[k] || (folded.includes(k) && want[k] === run && /same as/.test(notes.run || ''))) && folded.length <= 1, shownOk: shown.length >= 5 && shown[0] === run, osOk: !ot || (os && os.textContent === ot), want, got, mega: p.m, hasScarf: 'scarf' in got || folded.includes('scarf')}; }, n);
   ok(r.ok && r.shownOk && r.osOk && (r.mega ? !r.hasScarf : r.hasScarf), `${n}: Speed rows equal calcStat / spdCalc / likelySpeed (${JSON.stringify(r.got)})`); }
 // the same numbers as the Speed tiers page: every threat listed there (no weather, no toggles) shows the same Speed on its sheet
 { await E(`S.slots=[{n:'Staraptor-Mega'},{n:'Gholdengo'},{n:'Raichu-Mega-Y'},{n:'Primarina'},{n:'Rillaboom'},{n:'Incineroar'}];fixSlots();render();0`);

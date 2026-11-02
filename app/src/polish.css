@@ -1495,14 +1495,14 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 
 /* ========== SHEET TABS (Nov 2): the Pokémon sheet's "Info | Meta | Rating" switch and the new Info tab ==========
    Tabs: a segmented control under the three numbers, sticky at the top of the sheet while you scroll. Each tab has its own
-   accent (Info violet, Meta gold, Rating blue: the site's section colours); the chosen one is a tinted, raised segment with
+   accent (Info violet, Meta teal, Rating blue: the site's section colours); the chosen one is a tinted, raised segment with
    an accent bar, text stays the dark/light ink (well over 7:1). Not yellow (main button), not red (opponents). */
 .lstabmark{height:0;margin:0 0 -14px}
 .lstabs{--ac:var(--sec-info);position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;margin:-4px -6px 0;border-radius:14px;background:var(--chp2,#E6D8BF);box-shadow:0 0 0 6px var(--chp,#F1E9DA)}
 .lstab{appearance:none;border:0;margin:0;min-height:48px;padding:6px 4px 7px;border-radius:10px;background:transparent;color:var(--chink2);font-family:"Archivo",system-ui,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative;line-height:1.15;-webkit-tap-highlight-color:transparent}
 .lstab b{font:800 15px/1.1 "Archivo",system-ui,sans-serif;color:var(--chink);letter-spacing:.01em}
 .lstab span{font:600 12px/1.2 "Archivo",system-ui,sans-serif;color:var(--chink2);white-space:nowrap;letter-spacing:0}
-.lstab-info{--ac:var(--sec-info)}.lstab-meta{--ac:var(--sec-meta)}.lstab-rating{--ac:var(--band-C,#2F9BFF)}
+.lstab-info{--ac:var(--sec-info)}.lstab-meta{--ac:var(--sec-battle)}.lstab-rating{--ac:var(--band-C,#2F9BFF)}
 .lstab::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ac);position:absolute;top:8px;left:10px;opacity:.9}
 .lstab[aria-selected="true"]{background:color-mix(in srgb,var(--ac) 24%,var(--chc,#FBF6EC));box-shadow:0 2px 8px -3px rgba(0,0,0,.35),inset 0 -4px 0 var(--ac)}
 .lstab[aria-selected="true"] span{color:var(--chink)}
@@ -1518,10 +1518,10 @@ textarea.paste,.sdbox textarea,.replaybox textarea,.abtlicense{font-family:var(-
 /* unfolded sections keep a clear heading */
 .lstp .lsec>h4,.lsi>h4{margin:0 0 8px;font:800 13px/1.2 "Archivo",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--chink)}
 .lstp .lsec>h4::before,.lsi>h4::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px;background:var(--sec-info)}
-.lstp-meta .lsec>h4::before{background:var(--sec-meta)}.lstp-rating .lsec>h4::before{background:var(--band-C,#2F9BFF)}
+.lstp-meta .lsec>h4::before{background:var(--sec-battle)}.lstp-rating .lsec>h4::before{background:var(--band-C,#2F9BFF)}
 .lsnote{margin:6px 0 0}
 .lslinks{display:flex;flex-wrap:wrap;gap:8px}
-.lsempty{margin:0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--sec-meta) 14%,var(--chc,#FBF6EC));border:1.5px solid color-mix(in srgb,var(--sec-meta) 45%,transparent);color:var(--chink);font:500 14px/1.4 "Archivo",system-ui,sans-serif}
+.lsempty{margin:0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--sec-battle) 14%,var(--chc,#FBF6EC));border:1.5px solid color-mix(in srgb,var(--sec-battle) 45%,transparent);color:var(--chink);font:500 14px/1.4 "Archivo",system-ui,sans-serif}
 .lsempty b{display:block;margin-bottom:2px;font-weight:800}
 /* Info · base stats */
 .lstats{display:grid;gap:6px}

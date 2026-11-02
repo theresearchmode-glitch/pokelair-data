@@ -37,6 +37,9 @@ LST.speeds = p => { const rows = [], os = (v, tr) => { try { return outspeedOf(v
   const WX = {sun: 'sun', rain: 'rain', sand: 'sand', snow: 'snow'};
   for (const a of [...new Set(p.a)]) { const w = typeof WEATHER_SPD_AB === 'object' && WEATHER_SPD_AB[a]; if (w) rows.push({k: 'wx', l: `${a} in ${WX[w] || w}`, v: spdCalc(maxN, false, a, w, {}), note: 'max + Speed nature, Speed doubled'}); }
   rows.push({k: 'tr', l: 'Trick Room build', v: calcStat(p, 'Spe', 0, .9), note: '0 points, Speed-lowering nature', tr: true});
+  /* no repeated numbers (Sim, Nov 2): when what players run equals a standard row, that row is folded into it */
+  const run = rows.find(r => r.k === 'run'), dup = run && rows.find(r => r !== run && !r.tr && r.k !== 'wx' && r.k !== 'tw' && r.v === run.v);
+  if (dup) { run.note += ` · same as ${dup.l.replace(/^./, c => c.toLowerCase())}`; rows.splice(rows.indexOf(dup), 1); }
   for (const r of rows) if (r.os === undefined) r.os = os(r.v, r.tr);
   return rows; };
 LST.info = p => { const st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })(), bf = LST.baseForm(p);
