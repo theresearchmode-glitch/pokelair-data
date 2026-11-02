@@ -19,7 +19,7 @@ function jumpItems(q) { const k = norm(q || ''), out = [];
 // run an existing button's action without duplicating its code
 function jumpClick(data) { const b = document.createElement('button'); b.type = 'button'; b.hidden = true; for (const [k, v] of Object.entries(data)) b.dataset[k] = v; document.body.appendChild(b); b.click(); b.remove(); }
 function jumpRender() { const el = $('jumpList'); if (!el) return; jumpList = jumpItems(($('jumpIn') || {}).value); jumpSel = Math.min(jumpSel, Math.max(0, jumpList.length - 1));
-  el.innerHTML = jumpList.length ? jumpList.map((x, i) => `<li role="option" id="jo${i}" aria-selected="${i === jumpSel}" data-jo="${i}">${x.p ? sprite(x.p, 'mini') || '' : ''}<span class="jl"><b>${esc(x.label)}</b><span>${esc(x.sub || '')}</span></span><span class="jk">${x.kind}</span></li>`).join('')
+  el.innerHTML = jumpList.length ? jumpList.map((x, i) => `<li role="option" id="jo${i}" aria-selected="${i === jumpSel}" data-jo="${i}"${x.p ? ` class="tyacc" style="${tyv(x.p)}"` : ''}>${x.p ? sprite(x.p, 'mini') || '' : ''}<span class="jl"><b>${esc(x.label)}</b><span>${esc(x.sub || '')}</span></span><span class="jk">${x.kind}</span></li>`).join('')
     : '<li class="jnone">Nothing matches. Try a Pokémon, a tool like "speed", or a saved team.</li>';
   const inp = $('jumpIn'); if (inp) inp.setAttribute('aria-activedescendant', jumpList.length ? 'jo' + jumpSel : ''); const cur = $('jo' + jumpSel); if (cur && cur.scrollIntoView) cur.scrollIntoView({block: 'nearest'}); }
 function jumpOpen() { let w = $('jump'); if (!w) { w = document.createElement('div'); w.id = 'jump'; w.className = 'jump'; w.hidden = true;

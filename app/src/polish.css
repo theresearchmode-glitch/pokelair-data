@@ -940,3 +940,71 @@ a.calrow:hover .calmain b{text-decoration:underline}
 :is(.bo,.bd)[data-ko]:not([data-ko=""]){padding-top:11px}
 :is(.bo,.bd)[data-ko]:not([data-ko=""])::after{right:auto;left:50%;transform:translateX(-50%)}
 .dcbig small{font-size:.45em;margin-left:4px;letter-spacing:0}
+
+/* ==================== DESIGN PASS B (Nov 2): rows & cards — type accents, sprites lead, mini graphics, Details taps ====================
+   Items 2, 4, 5, 10 of the "colour, pop, wow" pass. Uses only --ta/--tb (type colours, set inline by tyv()), --bc and --gc. */
+/* 2 · type accent: a side stripe in the Pokémon's type colours plus a soft wash from the left. Background layers only (no filters). */
+.tyacc{background-image:linear-gradient(180deg,var(--ta),var(--tb)),linear-gradient(100deg,color-mix(in srgb,var(--ta) 16%,transparent) 0,color-mix(in srgb,var(--tb) 8%,transparent) 45%,transparent 78%)!important;
+  background-size:5px 100%,100% 100%!important;background-repeat:no-repeat!important;background-position:left top,left top!important}
+:root[data-look="dark"] .tyacc{background-image:linear-gradient(180deg,var(--ta),var(--tb)),linear-gradient(100deg,color-mix(in srgb,var(--ta) 15%,transparent) 0,color-mix(in srgb,var(--tb) 8%,transparent) 45%,transparent 78%)!important}
+/* the sprite's own halo in its type colours */
+img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 34%,transparent) 0,color-mix(in srgb,var(--tb) 18%,transparent) 62%,transparent 100%);border-radius:50%}
+:root[data-look="dark"] img.spr.tyh{background:radial-gradient(closest-side,color-mix(in srgb,var(--ta) 46%,transparent) 0,color-mix(in srgb,var(--tb) 24%,transparent) 62%,transparent 100%)}
+/* 5 · small filled usage bar (the % is always printed beside it) */
+.dbbar{display:block;height:5px;max-width:170px;margin:4px 0 1px;border-radius:3px;background:color-mix(in srgb,var(--chink2,#4E5068) 16%,transparent);overflow:hidden}
+.dbbar em{display:block;height:100%;border-radius:3px;background:var(--bc,linear-gradient(90deg,var(--ta,#2f9bff),var(--tb,var(--ta,#2f9bff))))}
+/* 5 · 7-day usage-rank sparkline next to a trend arrow: green-ish up, indigo down (never red) */
+.dbspark{display:inline-block;vertical-align:middle;margin-left:6px;overflow:visible}
+.dbspark polyline{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dbspark circle{fill:currentColor}
+.dbspark.up{color:#1E8E4E}.dbspark.dn{color:#4A5BF0}.dbspark.fl{color:var(--chink2,#4E5068)}
+:root[data-look="dark"] .dbspark.up{color:#3DBE78}:root[data-look="dark"] .dbspark.dn{color:#8C9BFF}
+/* 5 · "handles X of 30" ring */
+.dbring{flex:none;display:inline-block;vertical-align:middle}
+.dbring .bg{fill:none;stroke:color-mix(in srgb,var(--chink2,#4E5068) 22%,transparent);stroke-width:3.5}
+.dbring .fg{fill:none;stroke-width:3.5;stroke-linecap:round}
+.dbring text{font:800 11px var(--body,sans-serif);fill:var(--chink,var(--ink))}
+.dbhand{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;vertical-align:middle}
+/* 10 · secondary numbers wait behind a "Details" tap */
+[data-dbbox]:not([data-dbo]) .dbsec{display:none!important}
+.dbdt{flex:none;min-height:40px;padding:0 12px;margin-left:auto;border:1.5px solid var(--line2);border-radius:999px;background:transparent;color:var(--chink,var(--ink));font:700 12px var(--mono);letter-spacing:.02em;cursor:pointer}
+.dbdt[aria-expanded="true"]{background:var(--chink,var(--ink));color:var(--chc,var(--card));border-color:transparent}
+.dbdt:focus-visible{outline:3px solid var(--chink);outline-offset:2px}
+
+/* tiles (sprite on top, name under) take the stripe along the top edge and the wash from the top */
+:is(.tgm,.boxchip,.svm,.stm,.wktm).tyacc{background-image:linear-gradient(90deg,var(--ta),var(--tb)),linear-gradient(180deg,color-mix(in srgb,var(--ta) 14%,transparent) 0,color-mix(in srgb,var(--tb) 6%,transparent) 60%,transparent 100%)!important;background-size:100% 4px,100% 100%!important}
+:root[data-look="dark"] :is(.tgm,.boxchip,.svm,.stm,.wktm).tyacc{background-image:linear-gradient(90deg,var(--ta),var(--tb)),linear-gradient(180deg,color-mix(in srgb,var(--ta) 15%,transparent) 0,color-mix(in srgb,var(--tb) 7%,transparent) 60%,transparent 100%)!important}
+:is(.tgm,.stm,.wktm,.svm).tyacc{overflow:hidden}
+.svm.tyacc{border-radius:10px;padding:4px 2px 4px}
+/* rows: room for the stripe */
+:is(.wkrow,.wkfr,.prepcell,.evset).tyacc{padding-left:12px;border-radius:12px}
+:is(.wkrow,.wkfr).tyacc{border-bottom-color:transparent;margin:3px 0}
+.jbox li.tyacc{padding-left:14px}
+/* the usage list keeps its medal border on the left, so its rows take only the wash, no stripe */
+.mrow>summary.tyacc{background-size:0 0,100% 100%!important;border-radius:inherit}
+.mrow>summary .spr.mini{width:44px;height:44px}
+.mrow .pc .dbbar{width:64px;margin-left:auto}
+/* popular sets: the header card and the move bars in the Pokémon's colours */
+.sethead.tyacc{padding:8px 12px 10px 16px;border-radius:16px}
+#setOut .smv i::before{background:linear-gradient(90deg,var(--ta,var(--chblue)),var(--tb,var(--chblue)))}
+
+/* 4 · sprites lead, numbers follow */
+.chhothead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chhothead>.chk{flex:1 1 160px;min-width:0}
+.chhr.tyacc{padding:4px 2px 4px 12px;border-radius:12px;border-bottom-color:transparent;margin:3px 0;min-height:64px}
+.chhr.tyacc .spr{width:60px;height:60px;margin:-4px 0}
+.chcores .corerow.chcbig .coresp,:root .chcores .corerow.chcbig:not(.six) .coresprs .spr{width:72px!important;height:72px!important;max-width:72px!important}
+.chcores .corerow.chcbig .coresprs{max-width:none!important}
+.chcores .corerow.chcbig .corestat b{font-size:30px}
+.corestat .dbdt{margin:4px 0 0;min-height:40px;padding:0 10px;font-size:11px}
+.corerow.tyacc{padding-left:14px}
+.spr.wkspr{width:52px;height:52px}
+.wktm .spr.wkspr{width:44px;height:44px}
+.wksix .spr.wkspr.tyh{max-width:56px}
+.dbhd{display:flex;align-items:center;gap:8px}.dbhd>h3{flex:1;min-width:0}
+.evwin .spr.mini.tyh{width:38px;height:38px}
+/* "handles X of 30" ring colour: the readiness green */
+.dbring{--rc:#1E8E4E}:root[data-look="dark"] .dbring{--rc:#3DBE78}
+.dbring .fg{stroke:var(--rc)}
+.npgt small.dbhand{display:inline-flex;gap:4px}
+.cxl.dbhand{display:inline-flex}
+/* ==================== END DESIGN PASS B ==================== */
