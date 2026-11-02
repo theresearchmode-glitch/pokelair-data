@@ -53,7 +53,7 @@ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.
 // The team-strength part is the remainder, so the shown parts always add up to the shown grade.
 CH.gradeParts = (G, RD) => { const nm = G.miss ? G.miss.length : 0; return {nm, ts: G.s - RD.score + CH.GMISS * nm}; };
 CH.gradeSum = (G, RD) => { const {nm, ts} = CH.gradeParts(G, RD), sg = v => v < 0 ? '−' : '+';
-  return `<b>Grade ${G.s}</b> = ${RD.score}% ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}`; };
+  return `<b>Grade ${G.s}</b>${typeof tip === 'function' ? tip('numbers') : ''} = ${RD.score}% ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}`; };
 /* the same sum, short, for cards and table cells: "92 = 85% ready + 7 strength − 6 checks" */
 CH.gradeSumS = (G, RD) => { const {nm, ts} = CH.gradeParts(G, RD), sg = v => v < 0 ? '−' : '+';
   return `${G.s} = ${RD.score}% ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} strength` : ''}${nm ? ` − ${CH.GMISS * nm} for ${nm} missed check${nm === 1 ? '' : 's'}` : ''}`; };
