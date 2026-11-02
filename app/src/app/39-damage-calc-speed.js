@@ -24,7 +24,7 @@ function likelySpeed0(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpr
   const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 Speed points, Speed-lowering nature':up?'32 Speed points, Speed-boosting nature':sp?'32 Speed points':'0 Speed points')+(nat?`, ${nat} (estimated)`:' (estimated)'),nat}}
 // ---- speed tiers ----
 // wx: the weather in play ('auto' = the one your team sets, if exactly one); par: they're paralyzed (×0.5)
-let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,wx:'auto'};
+let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,wx:'auto'},spdLast=null;
 // One row's speed under the conditions: item (Scarf ×1.5), weather speed ability ×2, Tailwind ×2, −1 stage, paralysis ×0.5.
 // Unburden: also the speed once its item is used (×2), shown as a second number.
 // The game's order: the stat stage first, then the modifiers chained in 4096ths (rounded once), then paralysis halves it.
@@ -70,6 +70,8 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
         tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
     const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
     return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> ${os?`${outspeedTxt(os,{tr:spdUi.tr})} threats${cond?` (${cond})`:''}`:`moves first against ${beat} of the ${thr.length} below`}${tip}</span>`}).join('');
+  /* the race track (65-design-c.js) draws from the same rows as the list */
+  spdLast={rows,W};
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
     return `<div class="spdrow${r.me?' me':''}"><span class="spdv">${r.v}</span>${sprite(r.p,'spdspr')}<span class="spdn"><b>${esc(r.p.d||r.p.n)}</b>${r.me?' <span class="tag spdme">YOU</span>':''}${tie?' <span class="tag spdtie">TIE</span>':''}<span class="t2">${esc(r.s.label)}${r.s.scarf?' · Choice Scarf':''}${r.wxUp?` · ${esc(r.ab)} ×2 in ${esc(W)}`:''}${r.unb?` · ${r.unb} after its item is used (Unburden)`:''}${spdAbNote(r.ab)} · base ${r.p.st[5]}</span></span></div>`}).join('')}</div>
     <p class="t2" style="margin-top:10px">Level 50 with 31 IVs. Your side uses your items (and your spreads where you set them); theirs <span class="asm" title="Their real spreads and items are hidden">assumed</span> uses the most common natures and items, with fast Pokémon at 32 Speed points. Weather speed abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather. ${spdUi.tr?'Trick Room: the slowest moves first.':''}</p>`}
