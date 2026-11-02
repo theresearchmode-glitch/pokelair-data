@@ -2,7 +2,9 @@
 // meta/track (out/track.json from track.mjs): each recent event checked against the ratings saved BEFORE it was played.
 // The history is short (snapshots started Oct 29), so the page says exactly how much it rests on, shows the numbers as
 // "early" until there are enough events, and lists what appears when. It never claims more than the data supports.
-const TR_BANDS = ['80+', '60–79', '40–59', 'Under 40'], TR_MIN = {verdict: 10, misses: 5, weeks: 3};
+/* track.mjs buckets the saved (internal) totals at 80 / 60 / 40; the labels show those cut points on the shown school
+   scale (RS), so "Rated 90+" here means the same as 90+ everywhere else (Nov 2) */
+const TR_CUT = [80, 60, 40], TR_BANDS = [`${RS(TR_CUT[0])}+`, `${RS(TR_CUT[1])}–${RS(TR_CUT[0]) - 1}`, `${RS(TR_CUT[2])}–${RS(TR_CUT[1]) - 1}`, `Under ${RS(TR_CUT[2])}`], TR_MIN = {verdict: 10, misses: 5, weeks: 3};
 function cleanTrack(v) { try {
   if (!v || typeof v !== 'object' || !Array.isArray(v.ev) || !/^\d{4}-\d{2}-\d{2}$/.test(String(v.since || ''))) return null;
   const n4 = a => Array.isArray(a) && a.length === 4 && a.every(x => isFinite(+x) && +x >= 0) ? a.map(Number) : null;
@@ -14,7 +16,7 @@ function cleanTrack(v) { try {
   const mb = Array.isArray(v.mb) && v.mb.length === 4 ? v.mb.map(x => Array.isArray(x) ? [+x[0] || 0, +x[1] || 0] : [0, 0]) : [[0, 0], [0, 0], [0, 0], [0, 0]];
   const fw = (Array.isArray(v.fw) ? v.fw : []).filter(x => Array.isArray(x) && isFinite(+x[1]) && +x[2] > 0).map(x => ({d: str(x[0], 10), acc: +x[1], games: +x[2]}));
   return {since: v.since, snaps: +v.snaps || 0, last: str(v.last, 10), top: +v.top || 8, updated: str(v.updated, 40), ev, mons, mb, fw}; } catch (e) { return null; } }
-const trPct = x => x >= .1 ? Math.round(100 * x) + '%' : x > 0 && x < .001 ? 'under 0.1%' : (100 * x).toFixed(1) + '%';
+const trPct = x => pctFmt(100 * x);
 const trAdd = (d, n) => { const t = new Date(d + 'T12:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
 const trWeek = d => { const t = new Date(d + 'T12:00:00Z'), w = (t.getUTCDay() + 6) % 7; t.setUTCDate(t.getUTCDate() - w); return t.toISOString().slice(0, 10); };
 // per band: the average share of top-8 teams each Pokémon in the band was on
@@ -35,7 +37,7 @@ function trLines(T) { const W = new Map(); for (const e of T.ev) { const k = trW
   const xl = wk.map((k, i) => (i === 0 || i === wk.length - 1 || wk.length <= 6) ? `<text x="${X(i)}" y="${h - 6}" class="trax" text-anchor="middle">${npDay(k)}</text>` : '').join('');
   return `<svg class="trline" viewBox="0 0 ${w} ${h}" role="img" aria-label="Share of top-8 teams per Pokémon, week by week, by rating band">${grid}${xl}${lines}</svg>
     <div class="trleg">${TR_BANDS.map((t, b) => `<span><i style="background:var(--trb${b})"></i>Rated ${t}</span>`).join('')}</div>`; }
-function trMonRow(m, text) { const p = byName.get(m.n); return `<button type="button" class="trmon" data-lt="${esc(m.n)}">${sprite(p, 'tiny') || ''}<span class="trmb"><b>${esc(p.d)}</b><span>${text}</span></span><span class="trr">${m.r}</span></button>`; }
+function trMonRow(m, text) { const p = byName.get(m.n); return `<button type="button" class="trmon" data-lt="${esc(m.n)}">${sprite(p, 'tiny') || ''}<span class="trmb"><b>${esc(p.d)}</b><span>${text}</span></span><span class="trr" style="--tc:${lTier(m.r).c}">${RS(m.r)}</span></button>`; }
 function renderTrack() { const el = $('trackOut'); if (!el) return; const T = META.track;
   const head = CH.head('Ratings · checked against later events', 'Track record', 'How right have our ratings been?');
   const how = `<div class="trflow" aria-label="How the check works"><span><b>1</b>Every morning, every rating is saved</span><span><b>2</b>An event is played after that</span><span><b>3</b>We compare its top 8 with what we'd rated</span></div>
@@ -48,14 +50,14 @@ function renderTrack() { const el = $('trackOut'); if (!el) return; const T = ME
   else { const r = trRates(T.ev), ratio = r[0] && r[3] ? r[0] / r[3] : null;
     main = `<div class="trcard"><div class="chk">Top-8 teams, by the rating we gave</div><div class="trsub">How often each Pokémon was on a top-8 team, on average · ${E} event${E === 1 ? '' : 's'}, ${CH.n(T.ev.reduce((a, e) => a + e.teams, 0))} top-8 teams</div>
       ${early ? `<div class="trearly"><b>Early:</b> only ${E} event${E === 1 ? '' : 's'}. Too few to judge yet, so these numbers will move. A verdict appears after ${TR_MIN.verdict} events.</div>` : ''}
-      ${trBars(T)}${!early && ratio && isFinite(ratio) ? `<p class="trverdict">Pokémon we rated 80+ were on top-8 teams <b>${ratio >= 20 ? 'more than 20×' : ratio >= 10 ? Math.round(ratio) + '×' : ratio.toFixed(1) + '×'}</b> as often as Pokémon we rated under 40.</p>` : ''}</div>`; }
+      ${trBars(T)}${!early && ratio && isFinite(ratio) ? `<p class="trverdict">Pokémon we rated ${TR_BANDS[0]} were on top-8 teams <b>${ratio >= 20 ? 'more than 20×' : ratio >= 10 ? Math.round(ratio) + '×' : ratio.toFixed(1) + '×'}</b> as often as Pokémon we rated ${TR_BANDS[3].toLowerCase()}.</p>` : ''}</div>`; }
   // hits and misses: average of the ratings saved before each event
   const ms = T.mons, hits = ms.filter(m => m.r >= 70 && m.c > 0).sort((a, b) => b.c - a.c || b.r - a.r).slice(0, 3);
   const lows = ms.filter(m => m.r < 50 && m.c > 0).sort((a, b) => b.w - a.w || b.c - a.c || a.r - b.r).slice(0, 3);
   const highs = E >= TR_MIN.misses ? ms.filter(m => m.r >= 75 && m.c === 0 && m.ev >= TR_MIN.misses).sort((a, b) => b.r - a.r).slice(0, 3) : [];
   const won = m => m.w ? (m.w === 1 ? `won ${esc(m.best)}` : `won ${m.w} events`) : `on ${m.c} top-8 team${m.c === 1 ? '' : 's'}${m.best ? ` (${esc(m.best)})` : ''}`;
-  const hm = E ? `<div class="trhm"><div class="trcard"><div class="chk">Biggest hits</div>${hits.length ? hits.map(m => trMonRow(m, `Rated ${m.r} · on ${m.c} top-8 team${m.c === 1 ? '' : 's'} in ${m.ev} event${m.ev === 1 ? '' : 's'}${m.w ? ` · won ${m.w === 1 ? esc(m.best) : m.w + ' events'}` : ''}`)).join('') : '<p class="t2">None yet.</p>'}</div>
-    <div class="trcard"><div class="chk">Biggest misses</div>${lows.map(m => trMonRow(m, `Rated only ${m.r} · ${won(m)}`)).join('')}${highs.map(m => trMonRow(m, `Rated ${m.r} · no top 8 in ${m.ev} events`)).join('')}
+  const hm = E ? `<div class="trhm"><div class="trcard"><div class="chk">Biggest hits</div>${hits.length ? hits.map(m => trMonRow(m, `Rated ${RS(m.r)} · on ${m.c} top-8 team${m.c === 1 ? '' : 's'} in ${m.ev} event${m.ev === 1 ? '' : 's'}${m.w ? ` · won ${m.w === 1 ? esc(m.best) : m.w + ' events'}` : ''}`)).join('') : '<p class="t2">None yet.</p>'}</div>
+    <div class="trcard"><div class="chk">Biggest misses</div>${lows.map(m => trMonRow(m, `Rated only ${RS(m.r)} · ${won(m)}`)).join('')}${highs.map(m => trMonRow(m, `Rated ${RS(m.r)} · no top 8 in ${m.ev} events`)).join('')}
       ${!lows.length && !highs.length ? '<p class="t2">None yet.</p>' : ''}${E < TR_MIN.misses ? `<p class="t2">High ratings that miss every top 8 show here after ${TR_MIN.misses} events.</p>` : ''}</div></div>
     <p class="t2">"Rated" is the average of the ratings saved before each event. Tap a Pokémon for its sheet.</p>` : '';
   // over time

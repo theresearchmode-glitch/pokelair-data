@@ -898,3 +898,25 @@ a.calrow:hover .calmain b{text-decoration:underline}
 .chring{flex-direction:column;gap:0}
 .chring .chrl{line-height:.9}
 .chring small{font:700 12px/1 var(--mono,monospace);letter-spacing:.02em;transform:rotate(8deg);margin-top:2px}
+/* Nov 2, numbers read like school grades: one palette for tiers everywhere (LTIERS: S gold, A orange, B purple, C blue, D teal, F grey) */
+.rtier{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;padding:0 .3em;border-radius:5px;background:var(--tc);color:var(--ti,#fff);font:400 1.05em/1 var(--display);letter-spacing:0;vertical-align:-.2em;text-shadow:none;box-shadow:none}
+.chtier[style*="--tc"],:root[data-look="dark"] .chtier[style*="--tc"]{background:var(--tc)!important;color:var(--ti,#fff)!important;border-color:var(--tc)!important}
+.chhothead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.chhothead .tipq{margin-left:0}
+.chhr .rk{width:auto;min-width:34px;font-size:22px}
+.chhot .st .chrk{font:inherit;font-weight:800;opacity:1}
+.lbarhd{margin:2px 0 6px!important;font-weight:600}
+.lnote .lng .tipq{margin-left:4px}
+.chlstats .rtier{color:var(--ti,#fff)!important;opacity:1!important;font-size:12px!important;line-height:1!important;display:inline-grid!important;font-size:12px;height:17px;min-width:17px;margin-right:3px;letter-spacing:0;vertical-align:-3px}
+.chlstats .tipq{width:17px;height:17px;font-size:10.5px;vertical-align:1px}
+.npbands span .rtier,.npbands .rtier{font-size:15px;border:0!important;padding:0 .3em!important;border-radius:5px!important;display:inline-grid!important;color:var(--ti,#fff)!important}
+.nplegend{border:1.5px solid var(--line2);border-radius:16px;background:var(--chc,var(--card));padding:12px 14px;margin:12px 0 14px}
+.nplegend .chk{margin-bottom:6px}
+.nplrow{display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap;margin:2px 0}
+.nplrow>b{font:700 13px var(--body);color:var(--chink,var(--ink));min-width:112px}
+.nplrow .npbands{margin:3px 0;gap:3px 10px}.nplrow .npbands span{padding:0;border:0;gap:4px;font:600 13px var(--body)}
+.nplrow .npbands .rtier{font-size:13px;border-radius:4px}
+.nplegend .npdots{margin:8px 0 0;padding-left:18px}.nplegend .npdots li{margin:3px 0;font-size:14px;line-height:1.4}
+.trr[style*="--tc"]{border-bottom:3px solid var(--tc)}
+:root,:root[data-look="dark"]{--trb0:#ffb400;--trb1:#ff6a3d;--trb2:#2f9bff;--trb3:#8a90a6}
+.lo b.lot.tC{background:#2f9bff}.lo b.lot.tD{background:#22b58a;color:#062a1f}.lo b.lot.tE,.lo b.lot.tF{background:#8a90a6;color:#fff}
+.hms b::before{content:none!important}.hms .rtier{font-size:11px;height:16px;min-width:16px;margin-right:4px;vertical-align:1px}.hms .hmrk{font-style:normal;color:var(--mute);margin-left:6px}

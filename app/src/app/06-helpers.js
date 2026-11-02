@@ -156,3 +156,8 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
     if(i<list.length){setTimeout(step,30);return}
     wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,wq75:wts.length>=20?wts[Math.floor(wts.length*.75)]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};try{LS.set('np.ckwin',{k:skey,v:{rates:ckWin.rates,two:ckWin.two,wmed:ckWin.wmed,wq75:ckWin.wq75,se2med:ckWin.se2med}})}catch(e){}safe('checklist claims',()=>bgRender())};
   setTimeout(step,400)}
+/* One rounding rule for every printed percentage (Nov 2, "numbers read like school grades"): 10 or more → whole number,
+   under 10 → one decimal, under 0.1 → "<0.1". v is already a percentage (12.6, not .126); sign=false drops the "%".
+   (11-game-plan.js keeps its own local pctTxt for a different job, so this one is pctFmt.) */
+function pctFmt(v,sign=true){if(v==null||v===''||!isFinite(+v))return '–';v=+v;const a=Math.abs(v),s=sign?'%':'';
+  if(a===0)return '0'+s;if(a<.1)return (v<0?'>−':'<')+'0.1'+s;return (v<0?'−':'')+(a>=9.95?String(Math.round(a)):a.toFixed(1))+s}

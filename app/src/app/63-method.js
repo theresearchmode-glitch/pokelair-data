@@ -16,7 +16,7 @@ const NP_SOURCES = [
 const NP_OFF_WORDS = ['Off-meta', 'Spooky', 'Monotype', 'Small Pokémon', 'Ultra Beast', 'Draft', 'BST', '−1%', 'Under X%', 'Little Cup', 'NFE'];
 const NP_BAND_C = {light: ['#E8590C', '#9B4DE0', '#0E9F7E', '#1F6FD1'], dark: ['#E8590C', '#A464EA', '#17A283', '#3F86E6']};
 // tips that explain a method end with a link to its section here
-const NP_TIP_SEC = {readiness: 'ready', rating: 'rating', checklist: 'checks'};
+const NP_TIP_SEC = {readiness: 'ready', rating: 'rating', checklist: 'checks', bars: 'rating', tiers: 'rating', numbers: 'legend'};
 const npLink = (sec, label) => `<button type="button" class="nplink" data-view="method" data-msec="${sec}">${label || 'How we calculate'} <span aria-hidden="true">→</span></button>`;
 function methodTipLink(k) { return NP_TIP_SEC[k] ? `<div class="tiplinkrow">${npLink(NP_TIP_SEC[k])}</div>` : ''; }
 // a link that opens one section: remember which, close any tip, then the shared [data-view] handler opens the page
@@ -71,14 +71,17 @@ const NP_SECTIONS = [
       <p class="t2">~ means partly there and doesn't count as passed. The share of recent event winners that pass each check is measured live from the Events data once there are 20+ winners.</p>`; }],
   // 13-rating.js: RATE_V3, v3Evidence, v3Apply (thin-evidence floor, no-results placeholder); 25-ratings-page.js LTIERS; topcut.mjs
   ['rating', 'Pokémon ratings (0–100)', 'Proven results: top cuts, strong players, conversion, wins', () => { const tc = RES && RES.tc; let n = 0; try { n = lairRows().length; } catch (e) {}
-    return `<div class="npeq" role="img" aria-label="Rating adds top-cut share, half of strong-player usage, conversion and 8 times the win-rate edge, scaled so the best is 95">${npChip('o', 'Top-cut share', 'the core')}${npOp('+')}${npChip('p', '½ Strong players', 'skill-weighted use')}${npOp('+')}${npChip('b', 'Conversion', 'top cut vs use')}${npOp('+')}${npChip('g', '8 × Win edge', 'vs the field')}</div>
-      <p class="t2 npcenter">Each part is on a log scale; the best Pokémon is set to 95, and halving its presence costs about 10 points.</p>
+    /* Nov 2: shown on the school scale (RS), no multipliers in the words; the code's weights (RATE_V3) are described, not printed as ×N */
+    const R = RATE_V3, edgePt = R.wr * R.slope / 100;
+    return `<div class="npeq" role="img" aria-label="Rating adds top-cut share, strong-player usage counted at half weight, conversion and the win-rate edge, scaled so the best shows as ${RS(R.top)}">${npChip('o', 'Top-cut share', 'the core')}${npOp('+')}${npChip('p', 'Strong players', 'counts half as much')}${npOp('+')}${npChip('b', 'Conversion', 'top cut vs use')}${npOp('+')}${npChip('g', 'Win edge', 'vs the field')}</div>
+      <p class="t2 npcenter">Each part is on a log scale. The best Pokémon shows as ${RS(R.top)}, and halving a Pokémon's presence costs about 10 points (about 5 inside S, where the top is squeezed).</p>
       <ol class="npsteps"><li><b>Top-cut share:</b> of the teams that reach top cut at tournaments, how many use it. Recent and bigger events count more.</li>
       <li><b>Strong players:</b> its usage with each team weighted by the chance its player is in the top 30% by skill (Elo over every online tournament game), like Smogon's rating-weighted usage.</li>
       <li><b>Conversion:</b> does it make top cut more or less often than its usage predicts.</li>
-      <li><b>Win edge:</b> its win rate against the field, pulled toward average until there are enough games (1,500 games count as half the evidence), so a few lucky runs can't push a rare pick up.</li></ol>
-      <p>With only a few games, a rating can't drop below the rough placeholder a never-tried Pokémon gets: a floor from stats, typing and tools, at most 30. With no tournament results at all, that placeholder is its rating. The ± next to a rating shrinks as the games behind it grow.</p>
-      <div class="npbands"><span><b>S</b> 80+</span><span><b>A</b> 70+</span><span><b>B</b> 60+</span><span><b>C</b> 50+</span><span><b>D</b> 35+</span><span><b>E</b> under 35</span></div>
+      <li><b>Win edge:</b> its win rate against the field, pulled toward average until there are enough games (${CH.n(R.K)} games count as half the evidence), so a few lucky runs can't push a rare pick up. With plenty of games, winning 4% more of its games than the field (say 54% wins against 50%) adds about ${Math.round(4 * edgePt)} points (less inside S).</li></ol>
+      <p>With only a few games, a rating can't drop below the rough placeholder a never-tried Pokémon gets: a floor from stats, typing and tools, at most ${RS(30)}. With no tournament results at all, that placeholder is its rating. Each rating comes with a range in words (“likely 80–88”) that narrows as the games behind it grow, and a rank among the Pokémon with results${(() => { const k = n ? lairRank(lairRows()[0].p) : null; return k ? ` (“#20 of ${k.of}”)` : ''; })()}.</p>
+      <p><b>Shown like school grades.</b> The score is worked out on its own scale, then each tier's band is stretched onto a school band, so the order never changes: S 90+, A 80s, B 70s, C 60s, D 50s, F under 50.</p>
+      <div class="npbands">${LTIERS.map(T => `<span>${tierChip(T)} ${tierBand(T)}</span>`).join('')}</div>
       <p class="t2">${n ? `${n} Pokémon rated` : 'Ratings'}${tc && tc.events ? ` from ${CH.n(tc.events)} events up to ${npDay(tc.asOf)}` : ''}. The mix was chosen by building candidates from older events only and checking them against later events' top cuts. The win model isn't used here.</p>
       <div class="nprow">${`<button type="button" class="nplink" data-view="track">How right have they been? <span aria-hidden="true">→</span></button>`}</div>`; }],
   // update.mjs, rk9*.mjs, replays.mjs, ladder.mjs, opgg.mjs, sources.mjs, perf.mjs; 16-outside-performance-data.js activePerf().sources
@@ -120,12 +123,24 @@ const NP_SECTIONS = [
       <li>Every source carries its own date. A banner appears when a daily source is more than 2 days old (in-game rankings 3, monthly ladder stats 45), and rating inputs past their date are left out.</li>
       <li><b>Cross-check:</b> each day our numbers are compared with independent sites (recent tournament usage, online vs official events, ladder usage). Big disagreements are flagged in the daily job's report.</li></ul>
       ${rows ? `<div class="chk" style="margin-top:12px">Data on this page</div><ul class="npdates">${rows}</ul>` : ''}`; }]];
+/* "How to read our numbers" (Nov 2): one compact card at the top. The rating bands come from LTIERS, the team-grade bands
+   from CH.grade itself (probed, so they follow the code), each letter in the same colour everywhere. */
+function npLegend() { const col = k => (LTIERS.find(T => T.k === k) || LTIERS[LTIERS.length - 1]);
+  let gb = []; try { const L = ['A', 'B', 'C', 'D']; gb = L.map(k => { for (let s = 0; s <= 100; s++) if (CH.grade(s) === k) return [k, s]; return null; }).filter(Boolean); } catch (e) { gb = []; }
+  const gl = gb.length ? `${gb.map(([k, s], i) => `<span>${tierChip(col(k))} ${i ? s + 's' : s + '+'}</span>`).join('')}<span>${tierChip(col('F'))} &lt;${gb[gb.length - 1][1]}</span>` : '';
+  const rk = (() => { try { const k = lairRank(lairRows()[0].p); return k ? k.of : null; } catch (e) { return null; } })();
+  return `<div class="nplegend" id="np-legend"><div class="chk">How to read our numbers</div>
+    <div class="nplrow"><b>Pokémon ratings</b><div class="npbands">${LTIERS.map(T => `<span>${tierChip(T)} ${T.k === 'S' ? '90+' : T.k === 'F' ? '&lt;' + LTIERS[LTIERS.length - 2].show : T.show + 's'}</span>`).join('')}</div></div>
+    ${gl ? `<div class="nplrow"><b>Team grades</b><div class="npbands">${gl}</div></div>` : ''}
+    <ul class="npdots"><li><b>Bars</b> = rank among all Pokémon: 94 beats 94% of them (top 6%).</li>
+      <li><b>#20${rk ? ' of ' + rk : ''}</b> = rank among Pokémon with results · <b>likely 80–88</b> = the range, from the games so far.</li>
+      <li><b>A % always says of what</b> (% of teams, % wins, % ready) · <b>Grade</b> = % ready ± team strength − missed checks.</li></ul></div>`; }
 function renderMethod() { const el = $('methodOut'); if (!el) return; const g = META.model && META.model.games, teams = RES && RES.teams;
   const sub = [teams ? `Built from ${CH.n(teams)} tournament teams` : '', g ? `${CH.n(g)} games in the team model` : '', npFresh()].filter(Boolean).join(' · ');
   const T = META.track, tr = T ? `Tracking since ${npDay(T.since)} · ${T.ev.length} event${T.ev.length === 1 ? '' : 's'} checked` : 'Every rating is saved daily and checked against later events';
   const want = ui.msec; ui.msec = null;
   el.innerHTML = CH.head('Reg M‑C doubles · plain words', 'How we calculate', esc(sub || 'Every number on NastyPlot, and where it comes from.'))
-    + `<p class="npintro">Every grade, rating and verdict here comes from real tournament results and real damage calcs. Tap a part to see exactly how it's worked out.</p>`
+    + `<p class="npintro">Every grade, rating and verdict here comes from real tournament results and real damage calcs. Tap a part to see exactly how it's worked out.</p>` + npLegend()
     + NP_SECTIONS.map(([k, t, s, body]) => { let b = ''; try { b = body(); } catch (e) { b = '<p class="t2">This part needs the day’s data.</p>'; } return CH.fold('np_' + k, t, s, b, k === want).replace('<details ', `<details id="np-${k}" `); }).join('')
     + `<button type="button" class="nptrack" data-view="track"><span class="chk">Track record</span><b>How right have our ratings been?</b><span>${esc(tr)}</span><span class="arr" aria-hidden="true">→</span></button>`;
   if (want) { const d = $('np-' + want); if (d) { d.open = true; setTimeout(() => { try { d.scrollIntoView({block: 'start', behavior: 'smooth'}); } catch (e) {} }, 80); } } }

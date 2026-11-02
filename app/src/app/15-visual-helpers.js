@@ -31,9 +31,10 @@ if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') 
   sprMO.observe(document.documentElement, {childList: true, subtree: true}); }
 // a sprite that fails to load becomes an empty box of the same size, so grid rows (speed tiers, hit tables) keep their columns
 if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('error', e => { const t = e.target; if (t && t.classList && t.classList.contains('spr')) { const s = document.createElement('span'); s.className = t.className + ' sprx'; s.setAttribute('aria-hidden', 'true'); t.replaceWith(s); } }, true);
-// ★ rating badge with a tier colour: gold 80+, silver 65+, bronze 50+, grey below.
-function ratingTag(p) { const r = rating(p), t = r.total, tier = t >= 80 ? 4 : t >= 65 ? 3 : t >= 50 ? 2 : 1;
-  return `<span class="tag rating r${tier}" title="NastyPlot rating ${t}/100 · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t} out of 100">★ ${t}<span class="rtw">/100</span></span>`; }
+// rating badge: the shown (school-scale) rating with its tier letter, in the tier's colour (Nov 2: it printed the internal
+// score in a gold/silver/bronze palette of its own; now the same LTIERS colours and numbers as everywhere else)
+function ratingTag(p) { const r = rating(p), t = RS(r.total), T = lTier(r.total), rk = typeof rankTxt === 'function' ? rankTxt(p) : '';
+  return `<span class="tag rating lt" style="background:${T.c};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${t} · ${T.k} tier${rk ? ' · ' + rk : ''} · ${esc(rRange(r))} · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t}, ${T.k} tier">${T.k} ${t}</span>`; }
 // Archetype labels as coloured chips (rain blue, sun orange, Grassy green, Trick Room purple...).
 const ARCH_COLOR = {'Rain': '#2f7bff', 'Sun': '#ff7a1a', 'Sun-Rain': 'linear-gradient(90deg,#ff7a1a,#2f7bff)', 'Sand': '#c99a4a', 'Snow': '#7fd3ff',
   'Grassy Terrain': '#2fae4a', 'Psychic Terrain': '#ff4f9a', 'Electric Terrain': '#f2c200', 'Misty Terrain': '#f08ad0',
