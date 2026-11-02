@@ -41,6 +41,6 @@ function renderSavePanel(){
     ${loaded?`<button class="btn primary" id="saveOver" type="button">Update "${esc(loaded.name)}"</button>`:''}
     <button class="btn ${loaded?'':'primary'}" id="saveNew" type="button" ${full?'disabled':''}>Save as new</button>
     <button class="btn" id="saveCancel" type="button">Cancel</button></div>
-    ${full?'<div class="t2" style="color:var(--bad)">You have 10 saved teams. Update an open team or delete one in Saved teams to save a new one.</div>':''}</div>`;
+    ${full?'<div class="t2" style="color:var(--warn)">You have 10 saved teams. Update an open team or delete one in Saved teams to save a new one.</div>':''}</div>`;
   setTimeout(()=>{const n=$('saveName');if(n){n.focus();n.select()}},30);
 }
