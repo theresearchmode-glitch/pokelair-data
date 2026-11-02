@@ -186,7 +186,7 @@ function renderVerdict(ms,a,PG,CK){
   ui.vsum={lvl,head,best,tr,CK,excess:a.excess,RD:score==null?null:{score},legal:!illegal};
   ui.vProven=!!(best&&best.k===6&&best.wr>=.55);el.className='verdict '+lvl;
   const chips=[score!=null?`<span class="rchip"><b>${score}%</b> ready${typeof tip==='function'?tip('readiness'):''}</span>`:'',CK?`<span class="rchip"><b>${CK.pass}/${CK.n}</b> checks${typeof tip==='function'?tip('checklist'):''}</span>`:'',`<span class="rchip ${illegal?'bad':'ok'}"><b>${illegal?'Not legal':'Legal'}</b></span>`].join('');
-  el.innerHTML=`<div class="vhead"><span class="vdot" aria-hidden="true"></span><b class="vtitle">${esc(head)}</b></div><div class="rchips">${chips}</div><dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>${typeof regNote==='function'?regNote():''}`;
+  el.innerHTML=`<div class="vhead"><span class="vdot" aria-hidden="true"></span><b class="vtitle">${esc(head)}${!illegal&&RD&&typeof CH!=='undefined'&&CH.hand(RD)?` · ${CH.handTxt(RD,true)}`:''}</b></div><div class="rchips">${chips}</div><dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>${typeof regNote==='function'?regNote():''}`;
   safe('threat card',()=>renderThreatCard(ms,RD))}
 // With 2+ Megas, the type chart reads one as the Mega (only one Mega Evolves per battle): pick which
 function megaPickHtml(ms){const megas=ms.filter(m=>m.p&&m.p.m);if(megas.length<2)return '';const keep=megas.find(m=>m.p.n===ui.megaPick)||megas[0];
