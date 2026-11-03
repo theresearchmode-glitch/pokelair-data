@@ -1,0 +1,195 @@
+/* ===== The stage (Nov 3 redesign, approved by Sim: My team "Lead · Back · Leave home" and the Sneasler info sheet) =====
+   One system for both pages: a rounded colour stage (one deep type colour, the type's pattern printed faintly), the name in
+   Anton top left with a plain line under it, the headline number top right in the wide heavy numerals with a plain-text label
+   (never a chip or a ring: nothing on it looks tappable except the Pokémon), soft contact shadows, no glows on the stage.
+   Under it: the scoreboard strip, the one yellow button, quiet actions. Colours: --stg (light theme) and --stgd (dark),
+   from STG.PAL in 68-stage.js; every stage colour gives white text 6.8:1 or more. */
+:root{--stgsurf:var(--chc);--stgsoft:color-mix(in srgb,var(--chink) 7%,var(--chc));--stgline:color-mix(in srgb,var(--chink) 11%,transparent);
+  --stgmut:var(--chink2);--stgshadow:0 1px 2px rgba(18,19,22,.05),0 6px 18px rgba(18,19,22,.06)}
+:root[data-look="dark"]{--stgsoft:color-mix(in srgb,var(--chink) 9%,var(--chc));--stgshadow:none}
+.stgnum{font-family:Archivo,system-ui,sans-serif;font-weight:900;font-stretch:125%;font-variation-settings:"wdth" 125;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stg{position:relative;border-radius:28px;overflow:hidden;isolation:isolate;color:#fff;background:var(--stg,#3533A1)}
+:root[data-look="dark"] .stg{background:var(--stgd,#2E2C8C)}
+.stg::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 70% at 50% 100%,rgba(6,4,30,.22),transparent 70%)}
+.stg-pat{position:absolute;inset:0;z-index:0;background:#fff;opacity:.075;-webkit-mask:var(--npm) 0 0/var(--nptw,40px) var(--npth,40px) repeat;mask:var(--npm) 0 0/var(--nptw,40px) var(--npth,40px) repeat}
+.stg-floor{position:absolute;left:-10%;right:-10%;bottom:0;height:300px;z-index:1;pointer-events:none;background:radial-gradient(60% 34% at 50% 90%,rgba(255,255,255,.10),transparent 70%),radial-gradient(48% 16% at 50% 52%,rgba(255,255,255,.06),transparent 75%)}
+.stg-head{position:relative;z-index:6;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 20px 0}
+.stg-head>div:first-child{min-width:0}
+.stg-tn{margin:0;font:400 32px/1 Anton,Impact,sans-serif;text-transform:uppercase;letter-spacing:.01em;color:#fff;overflow-wrap:anywhere;text-wrap:balance}
+.stg-ts{margin-top:6px;font:600 14px/1.3 Archivo,system-ui,sans-serif;color:rgba(255,255,255,.88)}
+.stg-gr{display:flex;flex-direction:column;align-items:flex-end;flex:none;text-align:right}
+.stg-gr b{font-size:56px;line-height:.9;color:#fff}
+.stg-gr span{margin-top:4px;font:700 14px/1.2 Archivo,system-ui,sans-serif;color:rgba(255,255,255,.92);white-space:nowrap}
+/* the weather inside the stage: particles only (no colour wash, no glow: Sim, Nov 3 "a glow breaking the colour") */
+.stg .wxfx{z-index:2;border-radius:0}
+.stg .wxfx::before{display:none}
+.stg .wxfx i{mix-blend-mode:normal!important}
+.stg .wx-grassy{--wxl:#9BE07A}
+.stg .wx-grassy b{width:calc(17px * var(--s));height:calc(11px * var(--s));filter:drop-shadow(0 2px 3px rgba(6,4,34,.35))}
+.stg .wx-rain{--wxc:rgba(255,255,255,.55)}.stg .wx-snow{--wxs:rgba(255,255,255,.9)}.stg .wx-sand{--wxg:rgba(255,226,170,.75)}
+.stg .wx-sun i,.stg .wx-psy i{display:none}
+/* ---- My team ---- */
+.stgteam{display:grid;gap:0;margin:0 0 6px}
+.stgteam .stg-team{height:438px}
+.stg-figs{position:absolute;inset:0;z-index:4}
+.pk{position:absolute;display:block;padding:0;margin:0;border:0;background:none;cursor:pointer;transition:transform .35s cubic-bezier(.2,.8,.2,1);-webkit-tap-highlight-color:transparent}
+.pk img{position:absolute;max-width:none;height:auto;z-index:2;filter:drop-shadow(0 6px 8px rgba(8,6,40,.28));pointer-events:none}
+.pk .pksh{position:absolute;left:10%;right:10%;bottom:-7px;height:16px;border-radius:50%;background:radial-gradient(closest-side,rgba(6,4,34,.62),rgba(6,4,34,.28) 60%,transparent);z-index:1}
+.pk.pkb img{filter:brightness(.86) drop-shadow(0 4px 6px rgba(8,6,40,.25))}
+.pk.pkb .pksh{opacity:.7;bottom:-5px;height:12px}
+.pk[aria-pressed="true"]{transform:translateY(-5px)}
+.pk[aria-pressed="true"] .pksh{opacity:.75;transform:scale(.92)}
+.pk.pkb[aria-pressed="true"] img{filter:brightness(.98) drop-shadow(0 4px 6px rgba(8,6,40,.25))}
+.pk:focus-visible{outline:3px solid #fff;outline-offset:2px;border-radius:12px}
+.stg-names{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:space-between;gap:12px;padding:34px 20px 14px;background:linear-gradient(transparent,color-mix(in srgb,var(--stg,#3533A1) 40%,rgba(10,8,40,.85)) 62%);pointer-events:none}
+:root[data-look="dark"] .stg-names{background:linear-gradient(transparent,color-mix(in srgb,var(--stgd,#2E2C8C) 40%,rgba(8,6,30,.88)) 62%)}
+.stg-names p{margin:0;display:flex;flex-direction:column;font:700 15px/1.2 Archivo,system-ui,sans-serif;color:#fff;min-width:0}
+.stg-names p:last-child:not(:first-child){text-align:right;align-items:flex-end}
+.stg-names span{font-size:12px;font-weight:700;color:rgba(255,255,255,.86);margin-bottom:2px}
+.stg-bench{margin:8px 4px 0}
+.stg-bl{font:700 13px/1.3 Archivo,system-ui,sans-serif;color:var(--stgmut);margin:0 0 2px 4px}
+.stg-bns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bn{display:flex;align-items:center;gap:10px;min-width:0;font:700 15px/1.2 Archivo,system-ui,sans-serif;color:var(--chink);padding:6px 10px 6px 8px;border:0;border-radius:18px;background:none;text-align:left;cursor:pointer;transition:background .25s}
+.bn>span:last-child{min-width:0;overflow-wrap:normal;word-break:normal;font-size:min(15px,3.8vw);text-wrap:balance}
+.bpic{position:relative;flex:none;width:58px;height:56px;display:grid;place-items:center}
+.bpic img{position:relative;z-index:1;max-width:58px;max-height:56px;width:auto;height:auto}
+.bpic .halo{position:absolute;inset:2px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--mc) 55%,#fff) 0,color-mix(in srgb,var(--mc) 70%,transparent) 45%,transparent 100%);opacity:.62;filter:blur(7px)}
+.bn[aria-pressed="true"]{background:var(--stgsurf);box-shadow:var(--stgshadow)}
+:root[data-look="dark"] .bn[aria-pressed="true"]{background:var(--stgsoft)}
+.bn:focus-visible{outline:3px solid var(--chink);outline-offset:2px}
+/* scoreboard strip (shared with the info sheet) */
+.stg-score{list-style:none;display:grid;grid-template-columns:1.25fr 1fr 1.1fr 1fr;margin:8px 0 0;padding:10px 4px;background:var(--stgsurf);border-radius:18px;box-shadow:var(--stgshadow)}
+:root[data-look="dark"] .stg-score{background:var(--stgsoft)}
+.stg-score li{padding:0 10px;display:flex;flex-direction:column;min-width:0}
+.stg-score li+li{border-left:1px solid var(--stgline)}
+.stg-score b{font-size:26px;line-height:1;color:var(--chink)}
+.stg-score b small{font-size:14px;font-weight:700;color:var(--stgmut);font-stretch:100%;font-variation-settings:"wdth" 100;letter-spacing:0}
+.stg-score li>span{font:600 13px/1.25 Archivo,system-ui,sans-serif;color:var(--stgmut);margin-top:4px}
+.stg-score .s-un b{color:var(--chbad,#C41E35)}
+.stg-score .s-sh b{color:var(--warn,#9A5E00)}
+.stg-legal{margin:8px 4px 0;font:700 14px/1.35 Archivo,system-ui,sans-serif;color:var(--warn,#9A5E00)}
+/* the yellow button and the quiet actions: today's buttons (Save/Update saved team, Share, ⋯, Saved teams, My box, Compare, Copy for
+   Showdown) restyled in place, so every handler keeps working */
+#chTeam .stgteam .chacts2{display:flex;flex-wrap:wrap;gap:4px 6px;margin:10px 0 0;padding:0;border:0;background:none;box-shadow:none}
+#chTeam .stgteam .chacts2>.chacts2{display:contents}
+:root:not(#_ch) #chTeam .stgteam #chActs #saveBtn{order:-2;flex:1 1 100%!important;width:100%!important;max-width:none!important;height:54px;margin:0 0 6px;border-radius:27px!important;border:0!important;background:var(--chyel,#FFE800)!important;color:#121316!important;font:800 16px/1 Archivo,system-ui,sans-serif!important;text-transform:none!important;letter-spacing:0!important;box-shadow:none!important}
+#chTeam .stgteam #saveBtn:focus-visible{outline:3px solid var(--chink);outline-offset:3px}
+:root:not(#_ch) #chTeam .stgteam #chActs :is(button,.btn,summary):not(#saveBtn){height:40px;min-height:40px;padding:0 12px;border:0!important;border-radius:20px!important;background:none!important;box-shadow:none!important;color:var(--chink)!important;font:700 14px/1 Archivo,system-ui,sans-serif!important;text-transform:none!important;letter-spacing:0!important;display:inline-flex;align-items:center;gap:6px}
+#chTeam .stgteam .chacts2 :is(button,.btn,summary):not(#saveBtn):hover{background:var(--stgsoft)!important}
+#chTeam .stgteam .chacts2 .moremenu{position:relative}
+#chTeam .stgteam .chgwhy{margin:8px 4px 0}
+/* the set panel: tap a Pokémon, its set slides in */
+.stg-set{margin-top:12px;background:var(--stgsurf);border-radius:20px;box-shadow:var(--stgshadow);padding:14px 16px;transition:opacity .14s,transform .2s}
+:root[data-look="dark"] .stg-set{background:var(--stgsoft)}
+.stg-set.out{opacity:0;transform:translateX(-14px)}
+.stg-set.pre{opacity:0;transform:translateX(18px);transition:none}
+.set-top{display:flex;align-items:center;gap:10px}
+.set-art{width:52px;height:52px;flex:none;display:grid;place-items:center}
+.set-art img{max-width:52px;max-height:52px;width:auto;height:auto}
+.set-id{flex:1;min-width:0}
+.set-name{font:400 22px/1.05 Anton,Impact,sans-serif;text-transform:uppercase;color:var(--chink);overflow-wrap:anywhere;text-wrap:balance}
+.set-ty{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
+.set-ty span{display:inline-flex;align-items:center;gap:5px;font:600 13px/1.2 Archivo,system-ui,sans-serif;color:var(--stgmut)}
+.set-ty i{width:9px;height:9px;border-radius:50%}
+.set-rate{text-align:right;display:flex;flex-direction:column;align-items:flex-end;flex:none}
+.set-rate b{font-size:26px;line-height:1;color:var(--chink)}
+.set-rate span{font:700 12px/1.2 Archivo,system-ui,sans-serif;color:var(--stgmut);margin-top:3px}
+.set-kv{display:grid;grid-template-columns:1.2fr 1.2fr .9fr;gap:8px;margin:12px 0 0}
+.set-kv div{min-width:0}
+.set-kv dt{font:700 12px/1.2 Archivo,system-ui,sans-serif;color:var(--stgmut)}
+.set-kv dd{margin:1px 0 0;font:700 14px/1.25 Archivo,system-ui,sans-serif;color:var(--chink);overflow-wrap:anywhere}
+.set-mv{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0 0;padding:0}
+.set-mv li{font:600 14px/1.25 Archivo,system-ui,sans-serif;padding:9px 12px;border-radius:12px;background:var(--stgsoft);color:var(--chink);min-width:0;overflow-wrap:anywhere}
+:root[data-look="dark"] .set-mv li{background:var(--chc)}
+.set-line{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:12px}
+.set-line>span{font:700 13px/1.2 Archivo,system-ui,sans-serif;color:var(--stgmut)}
+.set-seg{display:inline-flex;gap:2px;padding:3px;border-radius:14px;background:var(--stgsoft)}
+:root[data-look="dark"] .set-seg{background:var(--chc)}
+.set-seg button{height:36px;min-height:36px;padding:0 12px;border:0;border-radius:11px;background:none;color:var(--stgmut);font:700 14px/1 Archivo,system-ui,sans-serif;cursor:pointer}
+.set-seg button[aria-pressed="true"]{background:var(--chink);color:var(--chc)}
+.set-seg button:focus-visible{outline:3px solid var(--chink);outline-offset:2px}
+.set-links{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:10px}
+.set-links button{height:40px;padding:0;border:0;background:none;color:var(--chink);font:700 14px/1 Archivo,system-ui,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.set-why{margin:8px 0 0;font:500 13px/1.4 Archivo,system-ui,sans-serif;color:var(--stgmut)}
+/* the old header pieces the stage replaces */
+#chTeam.stgon .chthead{display:none}
+@media (prefers-reduced-motion:no-preference){
+  .stg-figs .pk{animation:stgrise .7s cubic-bezier(.2,.8,.2,1) both}
+  .stg-figs .pk.pkb{animation-delay:.18s}
+  @keyframes stgrise{from{opacity:0;translate:0 26px}}
+}
+@media (prefers-reduced-motion:reduce){.stg .wxfx i{display:none}.pk,.stg-set{transition:none}.stg-figs .pk{animation:none}}
+/* desktop: the stage on the left, the strip, button, actions and set on the right */
+@media (min-width:1000px){
+  .stgteam{grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);column-gap:24px;align-items:start}
+  .stgteam>.stg-team{grid-row:1/span 6;height:470px}
+  .stgteam>:not(.stg-team){grid-column:2}
+  .stg-bench{margin-top:0}
+}
+/* ---- Info sheet ---- */
+.lspanel .lshead.stgsheet{position:relative;display:block;margin:0 12px;padding:0!important;min-height:0;height:420px;border:0!important;border-radius:28px!important;box-shadow:none!important;background:var(--stg)!important;color:#fff;overflow:hidden;isolation:isolate}
+:root[data-look="dark"] .lspanel .lshead.stgsheet{background:var(--stgd)!important}
+.lspanel .lshead.stgsheet::before{display:none!important}
+.lspanel .lshead.stgsheet::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 70% at 50% 100%,rgba(6,4,30,.22),transparent 70%)}
+.lshead.stgsheet .stg-head{padding:20px 20px 0}
+.lshead.stgsheet .stg-tn{font-size:34px}
+.stg-hero{position:absolute;left:0;right:0;bottom:24px;height:282px;display:flex;justify-content:center;z-index:3;pointer-events:none}
+.stg-hero img.lsspr{position:relative!important;inset:auto!important;transform:none!important;height:100%!important;width:auto!important;max-width:none!important;max-height:none!important;margin:0!important;opacity:1!important;z-index:2;filter:drop-shadow(0 6px 8px rgba(20,6,40,.3))!important}
+.stg-hero .pksh{position:absolute;bottom:-8px;left:50%;width:190px;height:20px;translate:-50% 0;border-radius:50%;background:radial-gradient(closest-side,rgba(18,4,34,.62),rgba(18,4,34,.26) 60%,transparent);z-index:1}
+.stgbar{position:relative;height:52px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px}
+.stgbar .grab{position:absolute;left:50%;top:10px;width:40px;height:5px;border-radius:3px;background:var(--stgline);translate:-50% 0}
+:root[data-look="dark"] .stgbar .grab{background:rgba(255,255,255,.18)}
+.stgbar .lsx{position:static!important;width:44px!important;height:44px!important;border-radius:50%!important;display:grid!important;place-items:center;background:var(--stgsoft)!important;color:var(--chink)!important;border:0!important;box-shadow:none!important;font-size:18px}
+.lspanel:has(.stgsheet){padding-top:0}
+.lspanel:has(.stgsheet) .lsbody{padding-left:16px;padding-right:16px}
+.lspanel:has(.stgsheet) .chlstats{display:grid!important;grid-template-columns:1fr 1.2fr 1fr;gap:0!important;margin:8px 0 0!important;padding:10px 4px!important;background:var(--stgsurf)!important;border:0!important;border-radius:18px!important;box-shadow:var(--stgshadow)!important}
+:root[data-look="dark"] .lspanel:has(.stgsheet) .chlstats{background:var(--stgsoft)!important}
+.lspanel:has(.stgsheet) .chlstats>div{padding:0 10px!important;border:0!important;background:none!important;box-shadow:none!important;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left}
+.lspanel:has(.stgsheet) .chlstats>div+div{border-left:1px solid var(--stgline)!important}
+.lspanel:has(.stgsheet) .chlstats>div>b{font-family:Archivo,system-ui,sans-serif!important;font-weight:900!important;font-stretch:125%;font-variation-settings:"wdth" 125;letter-spacing:-.02em;font-size:26px!important;line-height:1!important;color:var(--chink)!important}
+.lspanel:has(.stgsheet) .chlstats>div>span{font:600 13px/1.3 Archivo,system-ui,sans-serif!important;color:var(--stgmut)!important;text-transform:none!important;letter-spacing:0!important;margin-top:4px;display:flex;flex-direction:column}
+.lspanel:has(.stgsheet) .chlstats>div>span i{font-style:normal;font-weight:500;color:var(--stgmut)}
+.stgadd{margin:10px 0 0}
+.stgadd .stgyel{display:block;width:100%;height:54px;border:0;border-radius:27px;background:var(--chyel,#FFE800);color:#121316;font:800 16px/1 Archivo,system-ui,sans-serif;text-align:center;cursor:pointer}
+.stgadd .stgyel:focus-visible{outline:3px solid var(--chink);outline-offset:3px}
+.stgadd p{margin:0;padding:6px 4px 0;font:700 14px/1.35 Archivo,system-ui,sans-serif;color:var(--stgmut)}
+/* quiet tabs: the active one only gets a soft background */
+.lspanel:has(.stgsheet) .lstabs{display:flex!important;gap:4px!important;margin:22px 0 2px!important;padding:0 2px!important;background:none!important;border:0!important;box-shadow:none!important}
+.lspanel:has(.stgsheet) .lstab{flex:1;height:42px!important;min-height:42px;border:0!important;border-radius:14px!important;background:none!important;box-shadow:none!important;text-align:center;color:var(--stgmut)!important;display:grid;place-items:center}
+.lspanel:has(.stgsheet) .lstab b{font:700 15px/1 Archivo,system-ui,sans-serif!important;color:inherit!important;text-transform:none!important;letter-spacing:0!important}
+.lspanel:has(.stgsheet) .lstab span{display:none}
+.lspanel:has(.stgsheet) .lstab[aria-selected="true"]{background:var(--stgsoft)!important;color:var(--chink)!important}
+.lspanel:has(.stgsheet) .lstab::before,.lspanel:has(.stgsheet) .lstab::after{display:none!important}
+/* base stats: one colour (the stage's, lighter), the best stat in the stage colour */
+.lspanel:has(.stgsheet) .lstats .lstr>i>em{background:var(--stgbar)!important}
+.lspanel:has(.stgsheet) .lstats .lstr.best>i>em{background:var(--stgbarb)!important}
+.lspanel:has(.stgsheet) .lstats .lstr.best>span{color:var(--chink);font-weight:700}
+.lspanel:has(.stgsheet) .lsi>h4{font:400 24px/1 Anton,Impact,sans-serif!important;text-transform:uppercase;letter-spacing:.01em;color:var(--chink)!important;margin:24px 0 10px!important}
+.lspanel[data-stg]{--stgbar:color-mix(in srgb,var(--stg) 40%,#fff);--stgbarb:var(--stg)}
+:root[data-look="dark"] .lspanel[data-stg]{--stgbar:color-mix(in srgb,var(--stgd) 78%,#fff);--stgbarb:color-mix(in srgb,var(--stgd) 30%,#fff)}
+@media (min-width:1000px){
+  .lspanel .lshead.stgsheet{height:440px}
+  .stg-hero{height:300px}
+}
+#chTeam.stgon{margin-top:-14px}
+@media (min-width:1000px){#chTeam.stgon{margin-top:0}}
+/* the rest of My team, restyled quietly to match the stage: soft surfaces instead of outlined boxes and offset shadows */
+:root:not(#_ch):not(#_lg) [data-pane="report"] :is(.chsugs,details.chsec.chfold,.myrec,.chside,.gpcard,.chsheet,.vcard){border:0!important;border-radius:20px!important;background:var(--stgsurf)!important;box-shadow:var(--stgshadow)!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] [data-pane="report"] :is(.chsugs,details.chsec.chfold,.myrec,.chside,.gpcard,.chsheet,.vcard){background:var(--stgsoft)!important}
+:root:not(#_ch):not(#_lg) [data-pane="report"] .chsheet .hd{background:none!important;color:var(--chink)!important;border-bottom:1px solid var(--stgline)}
+:root:not(#_ch):not(#_lg) [data-pane="report"] .chsheet .hd :is(.chdisp,.mono){color:inherit!important}
+:root:not(#_ch):not(#_lg) [data-pane="report"] :is(.chk,.chsheet .hd .mono,.chsheet .hd .chdisp){text-transform:none!important;letter-spacing:0!important}
+:root:not(#_ch):not(#_lg) [data-pane="report"] .chsheet .chrow{border-color:var(--stgline)!important}
+:root:not(#_ch):not(#_lg) [data-pane="report"] .chtr{border-color:var(--stgline)!important}
+:root:not(#_ch):not(#_lg) #chTeam .stgteam #chActs{gap:0 2px}
+:root:not(#_ch):not(#_lg) #chTeam .stgteam #chActs :is(button,.btn,summary):not(#saveBtn){padding:0 10px}
+/* the sheet's sections, quiet: no dots before headings, no outlined cards, sentence-case labels; the sticky tab bar keeps the page colour */
+.lspanel:has(.stgsheet) .lstabs{position:sticky;background:var(--chp)!important}
+.lspanel:has(.stgsheet) .lsi>h4::before,.lspanel:has(.stgsheet) .lsi>h4::after{display:none!important}
+.lspanel:has(.stgsheet) :is(.lsab,.lsvr){border:0!important;box-shadow:none!important;background:var(--stgsoft)!important;border-radius:14px!important}
+:root[data-look="dark"] .lspanel:has(.stgsheet) :is(.lsab,.lsvr){background:var(--chc)!important}
+.lspanel:has(.stgsheet) .lsab.top{background:color-mix(in srgb,var(--stg) 12%,var(--stgsurf))!important}
+:root[data-look="dark"] .lspanel:has(.stgsheet) .lsab.top{background:color-mix(in srgb,var(--stgd) 40%,var(--chc))!important}
+.lspanel:has(.stgsheet) .lsvr.main{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--stg) 55%,transparent)!important}
+.lspanel:has(.stgsheet) :is(.lsvl,.lstyl,.lsabu){text-transform:none!important;letter-spacing:0!important}
+.stgquiet .stg-figs .pk{animation:none!important}

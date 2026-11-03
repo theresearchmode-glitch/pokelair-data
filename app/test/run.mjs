@@ -513,6 +513,8 @@ try { execFileSync('node', [APP + 'test/items.mjs'], {stdio: 'inherit'}); } catc
 try { execFileSync('node', [APP + 'test/sheet-tabs.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL sheet tabs suite'); }
 // pre-launch (Nov 2): "Data as of", the amber older-than-usual note, anonymous feedback and usage
 try { execFileSync('node', [APP + 'test/prelaunch.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL pre-launch suite'); }
+// the stage (Nov 3 redesign): lead/back/leave-home suggestion and changes, plan colours, no-overlap placement, tap-to-set, info sheet
+try { execFileSync('node', [APP + 'test/stage.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL stage suite'); }
 // stress-test cases (Oct 28): checklist, item problems, archetypes, legality, move names, Build me a team Megas, gem stability
 try { execFileSync('node', [APP + '../experiments/stress-checks.mjs'], {stdio: 'inherit'}); } catch (e) { fails++; console.log('  FAIL stress checks suite'); }
 console.log(fails ? `\n${fails} FAILED` : '\nALL PASSED'); process.exit(fails ? 1 : 0);
