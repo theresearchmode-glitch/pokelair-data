@@ -11,7 +11,7 @@
    the scoreboard strip, the one yellow Add to my team, then the quiet Info | Meta | Rating tabs. */
 const STG = {};
 /* deep stage colours [light theme, dark theme]; white text on each is 6.8:1 or more (app/test/stage.mjs checks) */
-STG.PAL = {Normal: ['#625B3F', '#575138'], Fire: ['#90461B', '#813F18'], Water: ['#2158B0', '#1E4F9F'], Electric: ['#775403', '#6B4C03'], Grass: ['#28681A', '#245E18'],
+STG.PAL = {Normal: ['#625B3F', '#575138'], Fire: ['#A03D04', '#973A04'], Water: ['#2158B0', '#1E4F9F'], Electric: ['#775403', '#6B4C03'], Grass: ['#28681A', '#245E18'],
   Ice: ['#0E6460', '#0D5B58'], Fighting: ['#8B491D', '#7D411A'], Poison: ['#5B2A86', '#4D2373'], Ground: ['#7D5024', '#714921'], Flying: ['#3533A1', '#2E2C8C'],
   Psychic: ['#A7206C', '#981D63'], Bug: ['#525F11', '#4B570F'], Rock: ['#715526', '#654D22'], Ghost: ['#6B3FBD', '#6139AA'], Dragon: ['#6138D9', '#5629D6'],
   Dark: ['#423A4A', '#3A3341'], Steel: ['#445B7E', '#3E5372'], Fairy: ['#A31F7B', '#941C70']};
@@ -151,7 +151,7 @@ STG.apply = () => { const head = $('chTeam'); if (!head) return; const ms = memb
   const gl = G.rec ? `Grade ${G.letter} · real record` : G.partial ? `Grade ${G.letter} so far` : `Grade ${G.letter}`;
   const pk = (m, g) => `<button type="button" class="pk ${g === 'lead' ? 'pkf' : 'pkb'}" data-stgpk="${esc(m.p.n)}" aria-pressed="${m.p.n === STG.sel}" aria-label="${esc(m.d)}, ${g === 'lead' ? 'lead' : 'back'}: show its set" style="visibility:hidden"><span class="pksh" aria-hidden="true"></span>${sprite(m.p) || ''}</button>`;
   const names = L.lead.map(m => `<p><span>Lead</span>${escName(m.d)}</p>`).join('');
-  const html = `<div class="stg stg-team" style="${STG.vars(P.t)}" data-plan="${esc(P.why)}"><div class="stg-pat ${STG.pat(P.t === 'Flying' ? 'flying' : P.t)}" aria-hidden="true"></div>${k && typeof wxLayer === 'function' ? wxLayer(k) : ''}<div class="stg-floor" aria-hidden="true"></div>
+  const html = `<div class="stg stg-team" style="${STG.vars(P.t)}" data-plan="${esc(P.why)}"><div class="stg-pat ${STG.pat(P.t === 'Flying' ? 'flying' : P.t)}" aria-hidden="true"></div>${k === 'sun' || k === 'psy' ? STG.fx(k) : k && typeof wxLayer === 'function' ? wxLayer(k) : ''}<div class="stg-shade" aria-hidden="true"></div><div class="stg-floor" aria-hidden="true"></div>
       <div class="stg-head"><div><div class="stg-tn" role="heading" aria-level="1">${esc(title)}</div>${sub.filter(Boolean).length ? `<div class="stg-ts">${esc(sub.filter(Boolean).join(' · '))}</div>` : ''}</div>
         <div class="stg-gr"><b class="stgnum" data-stgnum="${G.s}">${G.s}</b><span>${gl}</span></div></div>
       <div class="stg-figs">${L.lead.map(m => pk(m, 'lead')).join('')}${L.back.map(m => pk(m, 'back')).join('')}</div>
@@ -176,6 +176,12 @@ STG.apply = () => { const head = $('chTeam'); if (!head) return; const ms = memb
   const st = w.querySelector('.stg-team'); STG.place(st); w.querySelectorAll('.pk').forEach(b => { b.style.visibility = ''; }); if (STG.RO) STG.RO.observe(st);
   if (typeof wxWatch === 'function') wxWatch(st);
   STG.count(w.querySelector('[data-stgnum]')); };
+/* sun and Psychic Terrain on the stage (Nov 3, Sim): the page's sun glow and psychic waves are colour washes, which break the
+   stage colour, so the stage gets its own: slow drifting warm motes of light for sun, small soft sparkles for Psychic Terrain.
+   Fixed positions (a seeded sequence), transform/opacity only, off under reduced motion. */
+STG.fx = k => { const n = k === 'sun' ? 16 : 14, rnd = i => { const x = Math.sin((i + 1) * 12.9898 + (k === 'sun' ? 3 : 7) * 78.233) * 43758.5453; return x - Math.floor(x); };
+  let h = ''; for (let i = 0; i < n; i++) h += `<i style="--x:${(4 + rnd(i) * 92).toFixed(1)}%;--y:${(18 + rnd(i + 30) * 74).toFixed(1)}%;--d:${(.75 + rnd(i + 60) * .6).toFixed(2)};--o:${(rnd(i + 90) * 10).toFixed(2)}s;--s:${(.7 + rnd(i + 120) * .7).toFixed(2)}"></i>`;
+  return `<div class="stgfx stgfx-${k}" aria-hidden="true">${h}</div>`; };
 /* the grade counts up once per new value (off under reduced motion) */
 STG.lastN = null;
 STG.count = el => { if (!el) return; const to = +el.dataset.stgnum, from = STG.lastN; STG.lastN = to;
@@ -204,7 +210,7 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = n && byName.get(n); i
   const thin = !!(stats && stats.querySelector('.basis.thin')), img = head.querySelector('img.lsspr') || head.querySelector('img'), x = head.querySelector('.lsx');
   panel.setAttribute('style', (panel.getAttribute('style') || '') + ';' + STG.vars(t)); panel.dataset.stg = t;
   head.className = 'lshead stgsheet'; head.removeAttribute('style');
-  head.innerHTML = `<div class="stg-pat ${STG.pat(t)}" aria-hidden="true"></div><div class="stg-floor" aria-hidden="true"></div><div class="stg-head"><div><h3 class="stg-tn">${escName(p.d)}</h3><div class="stg-ts">${p.t.map(esc).join(' · ')}${p.m ? ' · Mega' : ''}</div></div>
+  head.innerHTML = `<div class="stg-pat ${STG.pat(t)}" aria-hidden="true"></div><div class="stg-shade" aria-hidden="true"></div><div class="stg-floor" aria-hidden="true"></div><div class="stg-head"><div><h3 class="stg-tn">${escName(p.d)}</h3><div class="stg-ts">${p.t.map(esc).join(' · ')}${p.m ? ' · Mega' : ''}</div></div>
     <div class="stg-gr"><b class="stgnum">${RS(r.total)}</b><span>Rating · ${T.k} tier${thin ? ' · early read' : ''}</span></div></div><div class="stg-hero"><span class="pksh" aria-hidden="true"></span></div>`;
   if (img) { img.removeAttribute('style'); head.querySelector('.stg-hero').prepend(img); }
   const bar = document.createElement('div'); bar.className = 'stgbar'; bar.innerHTML = '<span class="grab" aria-hidden="true"></span>'; if (x) bar.append(x); head.before(bar);

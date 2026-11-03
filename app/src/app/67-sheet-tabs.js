@@ -49,7 +49,8 @@ LST.info = p => { const st = (() => { try { return setFor(p) || {}; } catch (e) 
     <div class="lstr lstot"><span>Total</span><i></i><b>${tot}</b>${bf ? dif(tot, btot) || '<em class="lstd"></em>' : ''}</div></div>${bf ? `<p class="t2 lsnote">Mega Evolved stats. The small numbers are the change from ${esc(bf.d)} (total ${btot}).</p>` : ''}`;
   /* abilities: every one it can have, the one players use most marked with its share (popular sets data) */
   const abSh = new Map((st.ab || []).map(([n, v]) => [n, v])), top = (st.ab || [])[0], sb = (() => { try { return setBasis(p, st, 'ab'); } catch (e) { return null; } })();
-  const abl = [...new Set(p.a)].map(a => { const v = abSh.get(a), isTop = top && top[0] === a && p.a.length > 1;
+  /* most used first (Sim, Nov 3: Sneasler showed Pressure 0.1% above Unburden 88%); ones without set data keep their order after */
+  const abl = [...new Set(p.a)].map((a, i) => ({a, i, v: abSh.has(a) ? +abSh.get(a) : -1})).sort((x, y) => y.v - x.v || x.i - y.i).map(o => o.a).map(a => { const v = abSh.get(a), isTop = top && top[0] === a && p.a.length > 1;
     return `<div class="lsab${isTop ? ' top' : ''}"><div class="lsabh"><b>${esc(a)}</b>${isTop ? `<span class="lsabu">Most used${v != null ? ' · ' + pctFmt(+v) : ''}</span>` : v != null && p.a.length > 1 ? `<span class="lsabs">${pctFmt(+v)}</span>` : ''}</div>${LST.abDesc(a) ? `<p>${esc(LST.abDesc(a))}</p>` : ''}</div>`; }).join('');
   const abNote = p.m && bf ? `<p class="t2 lsnote">The Mega's ability. Before Mega Evolving, ${esc(bf.d)} has ${[...new Set(bf.a)].map(esc).join(' or ')}.</p>`
     : p.a.length === 1 ? '<p class="t2 lsnote">Its only ability.</p>' : top && abSh.size ? `<p class="t2 lsnote">Share of players' sets with each ability${sb ? ' · ' + sb.html : ''}.</p>` : '<p class="t2 lsnote">No set data yet, so no ability is marked as most used.</p>';

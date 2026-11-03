@@ -91,18 +91,24 @@ await E(`lairClose();lairSheet('Sneasler');0`); await pg.waitForTimeout(400);
 const sh = await pg.evaluate(() => { const p = document.querySelector('#lairSheet .lspanel'), h = p.querySelector('.lshead');
   return {stage: h.classList.contains('stgsheet'), stg: p.dataset.stg, name: (h.querySelector('.stg-tn') || {}).textContent, num: (h.querySelector('.stg-gr b') || {}).textContent, lab: (h.querySelector('.stg-gr span') || {}).textContent,
     img: !!h.querySelector('.stg-hero'), strip: [...p.querySelectorAll('.chlstats > div')].length, yel: [...p.querySelectorAll('.stgyel')].map(b => b.textContent), x: !!p.querySelector('.stgbar .lsx'), tabs: p.querySelectorAll('.lstabs [role=tab]').length,
-    best: [...p.querySelectorAll('.lstats .lstr.best > span')].map(x => x.textContent)}; });
+    best: [...p.querySelectorAll('.lstats .lstr.best > span')].map(x => x.textContent), ab: [...p.querySelectorAll('.lstp-info .lsab .lsabh b')].map(x => x.textContent)}; });
 ok(sh.stage && sh.stg === 'Poison', `Sneasler's sheet is on a Poison stage (${sh.stg})`);
 ok(/sneasler/i.test(sh.name) && /^\d+$/.test(sh.num) && /^Rating · [SABCDF] tier/.test(sh.lab), `name, rating number and "Rating · tier" as plain text (${sh.num} / ${sh.lab})`);
 ok(sh.img && sh.x && sh.tabs === 3, `the hero stage, the close button and the three tabs are there (the picture itself needs sp/, not in the test copy) (${sh.img} ${sh.x} ${sh.tabs})`);
 ok(sh.strip === 3, `the strip shows % of teams, win rate and rank (${sh.strip})`);
 ok(sh.yel.length === 1 && sh.yel[0] === 'Add to my team', `one yellow button: Add to my team (${sh.yel})`);
 ok(sh.best.join() === 'Attack', `the best base stat is marked (${sh.best})`);
+ok(sh.ab[0] === 'Unburden', `abilities are listed most used first (${sh.ab.join(', ')})`);
 await pg.click('#lairSheet .stgyel'); await pg.waitForTimeout(500);
 ok(await E(`members().some(m=>m.p.n==='Sneasler')`), 'Add to my team adds it');
 await E(`lairClose();lairSheet('Charizard-Mega-Y');0`); await pg.waitForTimeout(300);
 ok(await pg.evaluate(() => document.querySelector('#lairSheet .lspanel').dataset.stg === 'Fire' && /Mega/.test(document.querySelector('#lairSheet .stg-ts').textContent)), 'a Mega sheet works (Fire stage, "Mega" in its line)');
 
+// 9. Home: the champion card's pick names whose six it plans against (My team plans against the meta)
+await team(SAMPLE); await E(`setView('home',false);render();0`); await pg.waitForTimeout(600);
+{ const w = await pg.evaluate(() => [...document.querySelectorAll('#homeOut .chmwho, #homeOut .chk')].map(x => x.textContent).filter(t => /pick vs|four vs/.test(t)));
+  const pl = await E(`(()=>{try{const E=META.events,ev=E&&E.events&&E.events[0],t=ev&&ev.top&&ev.top[0];return t&&t.player||''}catch(e){return ''}})()`);
+  ok(w.length && w.every(t => !/the champion's six/.test(t)) && (!pl || w.some(t => t.includes(pl + "'s six"))), `Home names the six it plans against (${w.join(' | ').slice(0, 120)})`); }
 ok(!errs.length, `no page errors${errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''}`);
 await browser.close(); try { fs.unlinkSync(page); } catch (e) {}
 console.log(fails ? `${fails} FAILED (stage)` : 'stage: all passed'); process.exit(fails ? 1 : 0);

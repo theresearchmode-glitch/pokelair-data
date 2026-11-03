@@ -203,7 +203,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   // the split hero: your six (blue) · plot your win (cream) · the latest champion's six (red), live from the events data
   const logo = CH.lockup('full');
   const champ = t ? t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''})).filter(x => x.p) : null;
-  const FC = champ && ms.length >= 4 ? CH.fourVs(ms, champ.map(x => x.p.n)) : null, foe = FC ? 'the champion\'s six' : 'the meta\'s six', F2 = FC || F;
+  const FC = champ && ms.length >= 4 ? CH.fourVs(ms, champ.map(x => x.p.n)) : null, foe = FC ? (t && t.player ? esc(t.player) + '\'s six' : 'the champion\'s six') : 'the meta\'s six' /* Nov 3 (Sim): named, so it doesn't read as contradicting My team's lead (planned vs the meta) */, F2 = FC || F;
   const cl = F2 ? F2.lead.map(byN).filter(Boolean) : [], cb = F2 ? F2.back.map(byN).filter(Boolean) : [];
   const ord2 = F2 ? [...cl, ...cb, ...mine.filter(m => !cl.includes(m) && !cb.includes(m))] : mine;
   const tag2 = m => !F2 ? '' : cl.includes(m) ? '<span class="chtag lead">Lead</span>' : cb.includes(m) ? '<span class="chtag">Back</span>' : '<span class="chtag">Bench</span>';

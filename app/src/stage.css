@@ -41,7 +41,7 @@
 .pk[aria-pressed="true"] .pksh{opacity:.75;transform:scale(.92)}
 .pk.pkb[aria-pressed="true"] img{filter:brightness(.98) drop-shadow(0 4px 6px rgba(8,6,40,.25))}
 .pk:focus-visible{outline:3px solid #fff;outline-offset:2px;border-radius:12px}
-.stg-names{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:space-between;gap:12px;padding:34px 20px 14px;background:linear-gradient(transparent,color-mix(in srgb,var(--stg,#3533A1) 40%,rgba(10,8,40,.85)) 62%);pointer-events:none}
+.stg-names{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:space-between;gap:12px;padding:34px 20px 14px;background:linear-gradient(transparent,color-mix(in srgb,var(--stg,#3533A1) 30%,rgba(8,6,30,.92)) 62%);pointer-events:none}
 :root[data-look="dark"] .stg-names{background:linear-gradient(transparent,color-mix(in srgb,var(--stgd,#2E2C8C) 40%,rgba(8,6,30,.88)) 62%)}
 .stg-names p{margin:0;display:flex;flex-direction:column;font:700 15px/1.2 Archivo,system-ui,sans-serif;color:#fff;min-width:0}
 .stg-names p:last-child:not(:first-child){text-align:right;align-items:flex-end}
@@ -193,3 +193,14 @@
 .lspanel:has(.stgsheet) .lsvr.main{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--stg) 55%,transparent)!important}
 .lspanel:has(.stgsheet) :is(.lsvl,.lstyl,.lsabu){text-transform:none!important;letter-spacing:0!important}
 .stgquiet .stg-figs .pk{animation:none!important}
+/* sun motes and psychic sparkles (stage only): small, soft, no glow wash; Misty Terrain keeps only its sparkles on the stage */
+.stgfx{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.stgfx i{position:absolute;left:var(--x);top:var(--y);display:block;opacity:0}
+.stgfx-sun i{width:calc(7px * var(--s));height:calc(7px * var(--s));border-radius:50%;background:radial-gradient(circle,rgba(255,236,190,.95) 0 38%,rgba(255,206,120,.45) 60%,transparent 72%);animation:stg-mote calc(var(--d) * 12s) ease-in-out calc(-1 * var(--o)) infinite}
+.stgfx-psy i{width:calc(9px * var(--s));height:calc(9px * var(--s));background:rgba(255,226,246,.95);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);animation:stg-spark calc(var(--d) * 4.2s) ease-in-out calc(-1 * var(--o)) infinite}
+@keyframes stg-mote{0%{opacity:0;transform:translate3d(0,0,0)}20%{opacity:.85}80%{opacity:.7}100%{opacity:0;transform:translate3d(26px,-60px,0)}}
+@keyframes stg-spark{0%,100%{opacity:0;transform:scale(.4) rotate(0)}45%,55%{opacity:.9;transform:scale(1) rotate(20deg)}}
+.stg .wx-misty i:nth-child(odd){display:none}
+@media (prefers-reduced-motion:reduce){.stgfx{display:none}}
+/* a soft shade behind the title row, so the name and number stay 6:1+ over the pattern on the brighter stages (Fire) */
+.stg-shade{position:absolute;left:0;right:0;top:0;height:150px;z-index:1;pointer-events:none;background:linear-gradient(rgba(6,4,30,.18),rgba(6,4,30,0))}
