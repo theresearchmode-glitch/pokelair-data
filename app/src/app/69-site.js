@@ -3,9 +3,7 @@
    type pattern; the champion's card stays the opponent's red, as a stage; the top-rated cards (Home and Ratings) become small
    stages in each Pokémon's own type (Fighting uses its second, like the info sheet). Everything else is CSS (site.css). */
 STG.site = root => { if (!root) return;
-  const yous = root.querySelectorAll('.chmcard.you,.chband.you'), ms = typeof members === 'function' ? members() : [];
-  for (const you of yous) if (ms.length) { const t = STG.planType(ms).t; you.classList.add('stgcard'); you.style.cssText += ';' + STG.vars(t);
-    if (!you.querySelector(':scope > .stg-pat')) you.insertAdjacentHTML('afterbegin', `<div class="stg-pat ${STG.pat(t)}" aria-hidden="true"></div>`); }
+  /* Home's your-six side stays the brand blue (Sim, Nov 3: keep the blue | cream | red 6v6 hero) */
   const them = root.querySelector('.chmcard.them'); if (them && !them.querySelector(':scope > .stg-pat')) them.insertAdjacentHTML('afterbegin', '<div class="stg-pat npty-fighting" aria-hidden="true"></div>');
   root.querySelectorAll('.chhot[data-lt]').forEach(c => { const p = byName.get(c.dataset.lt); if (!p) return; const t = STG.sheetType(p); c.classList.add('stgmini'); c.style.cssText += ';' + STG.vars(t); }); };
 CH.wrap('renderHome', () => STG.site($('homeOut')));

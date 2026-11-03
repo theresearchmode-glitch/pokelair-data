@@ -162,16 +162,20 @@
 :root:not(#_ch):not(#_lg)[data-look="dark"] .nhfoot :is(#wnewCard,details.chsec){background:var(--chc)!important}
 :root:not(#_ch):not(#_lg) .nhfoot .chfolds{margin:0!important}
 :root:not(#_ch):not(#_lg) .nhfoot .chfold>summary .cht{font:700 15px/1.2 Archivo,system-ui,sans-serif!important;text-transform:none!important}
-/* desktop: two columns (the stage and its button on the left, the rest on the right) */
+/* desktop: the v79 6v6 hero stays on top (its own phone-only parts of the new layout hide); below it top of the meta and
+   the tools side by side, the small line under them */
 @media (min-width:1000px){
-  .nh{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);column-gap:28px;align-items:start}
-  .nh>.nhhead,.nh>.nhmain,.nh>.nhwelcome{grid-column:1}
-  .nh>.nhchamp,.nh>.nhtop,.nh>.nhtools,.nh>.nhfoot{grid-column:2}
-  .nh>.nhhead{grid-row:1}.nh>.nhmain{grid-row:2/span 4}
-  .nh>.nhchamp{grid-row:1/span 2}
-  .nhstage.stg-team{height:420px}
+  .nh{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;align-items:start;margin-top:22px}
+  .nh>:is(.nhhead,.nhmain,.nhchamp){display:none!important}
+  .nh>.nhwelcome,.nh>.nhfoot{grid-column:1/-1}
   .nhminis img{width:100px;height:100px}
 }
+/* the v79 phone cards (STG.HOME_PHONE = 'v79') and the desktop hero, lightly restyled: soft, no outlines or stickers */
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chband,.chmid){border:0!important;box-shadow:none!important;background-image:none!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chsplit{border:0!important;box-shadow:none!important;border-radius:28px;overflow:hidden}
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chsplit,.chmh) :is(.chk,.chhr2 b,.lab,.chtag){text-transform:none!important;letter-spacing:0!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chsplit .chhr2{border:0!important;box-shadow:none!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chsplit .chfour>div{border:0!important;box-shadow:none!important}
 .nhstage .stg-head{position:absolute!important;top:0;left:0;right:0}
 :root:not(#_ch):not(#_lg) .nhtools .htile[hidden]{display:none!important}
 
