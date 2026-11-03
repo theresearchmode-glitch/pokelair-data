@@ -4,6 +4,7 @@
  "src/concept-h.css",
  "src/polish.css",
  "src/stage.css",
+ "src/site.css",
  "src/body.html",
  "src/data/data.js",
  "src/data/move-acc.js",
@@ -84,6 +85,7 @@
  "src/app/66-extras-b.js",
  "src/app/67-sheet-tabs.js",
  "src/app/68-stage.js",
+ "src/app/69-site.js",
  "src/app/98-proposals.js",
  "src/app/99-start.js",
  "src/foot.html"

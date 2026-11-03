@@ -1,0 +1,99 @@
+/* ===== The stage system across the whole site (Nov 3, Sim: "do the whole site at once") =====
+   Same pieces as My team and the info sheet: soft cards (no outlined boxes, no offset shadows), plain sentence-case labels
+   (no small upper-case eyebrows), quiet tabs and pills, the wide heavy numerals for headline numbers, one yellow button per
+   page, and a small page header (Anton title in ink, a plain line under it) where a page has no hero. Pages with a hero
+   Pokémon or team get the stage: Home's team card (the plan colour), the champion's card (opponent red), the top-rated
+   cards (each Pokémon's own type). Restyle only: every element, handler and number is the one that was there.
+   The rules sit behind :root:not(#_ch):not(#_lg) because the earlier layers (concept-h.css, polish.css) use the same guard. */
+:root{--sitecard:var(--stgsurf);--sitesoft:var(--stgsoft);--siteline:var(--stgline)}
+/* ---------- soft cards ---------- */
+:root:not(#_ch):not(#_lg) .mainwrap :is(details.chsec,.chsec,.chmorebtn,.wnew,.setcard,.addcard,.calbox,.item.svt,.wkcard,.trcard,.trsoon,.cxpick,.gsum,.abthero,.prentry,.dccol,.dcres,.gitem,.chcalc,.mufold,.ltier,.gyou,.plan,.plan.guide,.evteam,.abhero,.corerow,.prob-row,.vcard,.verdict,.cxhead,.prmode,.htile,.hcore,.nppath,.chside,.gpcard,.chsheet,.myrec,.chsugs,.lout .lo,.levs .lev){border:0!important;box-shadow:var(--stgshadow)!important;border-radius:20px!important}
+:root:not(#_ch):not(#_lg) .mainwrap :is(details.chsec,.chsec,.chmorebtn,.wnew,.setcard,.addcard,.calbox,.item.svt,.wkcard,.trcard,.trsoon,.cxpick,.gsum,.prentry,.gitem,.mufold,.plan,.plan.guide,.cxhead,.prmode,.htile,.hcore,.nppath:not(.main)){background-color:var(--sitecard)!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap :is(details.chsec,.chsec,.chmorebtn,.wnew,.setcard,.addcard,.calbox,.item.svt,.wkcard,.trcard,.trsoon,.cxpick,.gsum,.prentry,.gitem,.mufold,.plan,.plan.guide,.cxhead,.prmode,.htile,.hcore,.nppath:not(.main)){background-color:var(--sitesoft)!important}
+/* cards inside cards: no second shadow */
+:root:not(#_ch):not(#_lg) .mainwrap :is(details.chsec,.chsec,.plan,.wkcard,.trcard,.evteam,.chcalc,.gitem) :is(.plan,.prob-row,.vcard,.corerow,.gyou,.setcard,.htile){box-shadow:none!important;background-color:var(--sitesoft)!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap :is(details.chsec,.chsec,.plan,.wkcard,.trcard,.evteam,.chcalc,.gitem) :is(.plan,.prob-row,.vcard,.corerow,.gyou,.setcard,.htile){background-color:var(--chc)!important}
+/* list rows that were boxed: a hairline divider instead */
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chtr,.boxchip,.tcb,.lo):not(.on){border-color:var(--siteline)!important}
+/* ---------- labels: sentence case, no tracking, readable size ---------- */
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chk,.chtag,.tag:not(.mega):not(.ico),.sev,.st,.tgn,.evpl,.npchip,.mono,.vsub,.lbl,.chboxn,.bslbl,.archchip,.lsvl,.lstyl,.nppath small,.nppath .k),
+:root:not(#_ch):not(#_lg) .mainwrap .chk *,:root:not(#_ch):not(#_lg) .mainwrap :is(.chghost,.btn,.chprimary,.linkbtn,.chmorebtn,.seg button,.typebtn,.tcb,.sdcopy){text-transform:none!important;letter-spacing:0!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chk{font:700 13px/1.35 Archivo,system-ui,sans-serif!important}
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chtag,.tag:not(.mega):not(.ico),.sev,.st,.tgn,.evpl,.npchip){font-family:Archivo,system-ui,sans-serif!important;font-weight:700!important}
+/* ---------- buttons: secondary pills quiet, the yellow one flat ---------- */
+:root:not(#_ch):not(#_lg) .mainwrap .chghost{border-width:1.5px!important;box-shadow:none!important;font:700 14px/1 Archivo,system-ui,sans-serif!important}
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chprimary,.nppath.main,.btn.primary){box-shadow:none!important;border:0!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chprimary{font:800 16px/1 Archivo,system-ui,sans-serif!important;text-transform:none!important;letter-spacing:0!important;border-radius:27px!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chprimary:active{transform:none}
+/* ---------- the small page header (pages without a hero) ---------- */
+:root:not(#_ch):not(#_lg) .mainwrap .chpghead{margin:4px 0 14px}
+:root:not(#_ch):not(#_lg) .mainwrap .chpgt{font:400 30px/1.02 Anton,Impact,sans-serif!important;text-transform:uppercase;letter-spacing:.01em;color:var(--chink)!important;text-shadow:none!important}
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chpgt,.chhtop h3,.chhtools h3,.chh1) :is(.hl,span.hl,em){background:none!important;color:inherit!important;padding:0!important;box-shadow:none!important;-webkit-text-stroke:0!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chpgs{font:500 15px/1.45 Archivo,system-ui,sans-serif;color:var(--chink2);margin-top:6px}
+/* section titles in Anton, no shadows or boxes */
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chdisp,.chhtop h3,.chhtools h3,h2.chdisp){text-shadow:none!important}
+/* ---------- the stage on Home ---------- */
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard{border:0!important;border-radius:28px!important;background-image:none!important;box-shadow:none!important;position:relative;overflow:hidden;isolation:isolate}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard.you.stgcard{background-color:var(--stg)!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap .chmcard.you.stgcard{background-color:var(--stgd)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard.them{background-color:#A81E30!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap .chmcard.them{background-color:#951A2B!important}
+.chmcard>.stg-pat{z-index:-1}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chmct{font:400 32px/1 Anton,Impact,sans-serif!important;text-transform:uppercase!important;letter-spacing:.01em!important;color:#fff!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chk{color:rgba(255,255,255,.9)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chk :is(.wxchip,.chtag,span){background:none!important;border:0!important;color:inherit!important;padding:0!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chmmon{border:0!important;box-shadow:none!important;background:rgba(255,255,255,.12)!important;border-radius:16px!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chmmon b{text-transform:none!important;letter-spacing:0!important;font:700 14px/1.2 Archivo,system-ui,sans-serif!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chmmon .chtag{border:0!important;background:rgba(255,255,255,.18)!important;color:#fff!important;font:700 12px/1.2 Archivo,system-ui,sans-serif!important;padding:2px 7px!important;border-radius:999px!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chmmon .chtag.lead{background:#fff!important;color:#15171C!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .chghost{border-color:rgba(255,255,255,.85)!important;color:#fff!important}
+/* ---------- top-rated cards: a small stage in the Pokémon's own type ---------- */
+:root:not(#_ch):not(#_lg) .mainwrap .chhot.stgmini{border:0!important;box-shadow:none!important;border-radius:22px!important;background:var(--stg)!important;color:#fff!important;overflow:hidden;isolation:isolate}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap .chhot.stgmini{background:var(--stgd)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chhot.stgmini::before,:root:not(#_ch):not(#_lg) .mainwrap .chhot.stgmini::after{display:none!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chhot.stgmini :is(.n,.nm,.st,.st *,.chrk){color:#fff!important;text-shadow:none!important;-webkit-text-stroke:0!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chhot.stgmini .n{font-family:Archivo,system-ui,sans-serif!important;font-weight:900!important;font-stretch:125%;font-variation-settings:"wdth" 125;letter-spacing:-.02em}
+:root:not(#_ch):not(#_lg) .mainwrap .chhot.stgmini .nm{font-family:Anton,Impact,sans-serif!important;text-transform:uppercase}
+:root:not(#_ch):not(#_lg) .mainwrap .chhot.stgmini img{filter:drop-shadow(0 6px 8px rgba(8,6,40,.28))!important}
+
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .wxchip{color:#fff!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chmcard .wxchip .wxfx{display:none!important}
+
+/* the pen notes ("Tied for #1!", "same six as yours!") in the body font: no handwriting (Sim, Nov 3) */
+:root:not(#_ch):not(#_lg) .mainwrap .chpen{font:700 13px/1.3 Archivo,system-ui,sans-serif!important;transform:none!important;letter-spacing:0!important;text-transform:none!important}
+/* coloured hero cards keep their colour, as a stage: rounded, no outline, no dot texture */
+:root:not(#_ch):not(#_lg) .mainwrap :is(.chcalc,.abhero,.chband,.chhero){border:0!important;box-shadow:none!important;border-radius:28px!important;background-image:none!important}
+/* Popular sets: the hero on its stage; the bars in one colour (the stage's), the best one darker */
+:root:not(#_ch):not(#_lg) .mainwrap .sethead.stgset{position:relative;isolation:isolate;overflow:hidden;border:0!important;box-shadow:none!important;border-radius:28px!important;background:var(--stg)!important;color:#fff!important;padding:16px!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap .sethead.stgset{background:var(--stgd)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .sethead.stgset::before,:root:not(#_ch):not(#_lg) .mainwrap .sethead.stgset::after{display:none!important}
+.sethead.stgset>.stg-pat{z-index:-1}
+:root:not(#_ch):not(#_lg) .mainwrap .sethead.stgset .sl-name{color:#fff!important;font-family:Anton,Impact,sans-serif!important;text-transform:uppercase!important;text-shadow:none!important}
+:root:not(#_ch):not(#_lg) .mainwrap .sethead.stgset img{filter:drop-shadow(0 6px 8px rgba(8,6,40,.3))}
+:root:not(#_ch):not(#_lg) .mainwrap [data-pane="sets"] .smv i{background:linear-gradient(90deg,var(--stg,#3533A1) var(--w),var(--stgsoft) var(--w))!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap [data-pane="sets"] .smv i{background:linear-gradient(90deg,color-mix(in srgb,var(--stgd,#2E2C8C) 60%,#fff) var(--w),var(--chc) var(--w))!important}
+:root:not(#_ch):not(#_lg) .mainwrap :is(.stat h4,.lsec h4,.setcard h4){font:700 13px/1.35 Archivo,system-ui,sans-serif!important;text-transform:none!important;letter-spacing:0!important;color:var(--chink2)!important}
+/* contrast fixes (contrast.mjs with My team included): the "updating" state no longer fades text to 45% (it read at 2:1);
+   it stays readable, can't be tapped, and says it is updating. Type chart: the picked type's pill in its deep stage
+   tone (white text 6.8:1+), the group labels in ink-strength colours (no red outside opponents). */
+:root:not(#_ch) .planstale{opacity:1!important;position:relative}
+:root:not(#_ch) .planstale::after{content:'Updating…';position:absolute;top:6px;right:10px;font:700 12px/1 Archivo,system-ui,sans-serif;color:var(--chink2);background:var(--chc);padding:4px 8px;border-radius:999px}
+:root:not(#_ch):not(#_lg) .tcb.on{text-shadow:none!important;color:#fff!important}
+:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Normal"]{background:#625B3F!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Fire"]{background:#A03D04!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Water"]{background:#2158B0!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Electric"]{background:#775403!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Grass"]{background:#28681A!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Ice"]{background:#0E6460!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Fighting"]{background:#8B491D!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Poison"]{background:#5B2A86!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Ground"]{background:#7D5024!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Flying"]{background:#3533A1!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Psychic"]{background:#A7206C!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Bug"]{background:#525F11!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Rock"]{background:#715526!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Ghost"]{background:#6B3FBD!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Dragon"]{background:#6138D9!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Dark"]{background:#423A4A!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Steel"]{background:#445B7E!important}:root:not(#_ch):not(#_lg) .tcb.on[data-tcatk="Fairy"]{background:#A31F7B!important}
+:root:not(#_ch):not(#_lg):not([data-look="dark"]) .tcg.se .chk{color:#146234!important}
+:root:not(#_ch):not(#_lg) .tcg.nve .chk{color:var(--chink2)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .chband.you.stgcard{background:var(--stg)!important;position:relative;isolation:isolate}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap .chband.you.stgcard{background:var(--stgd)!important}
+.chband.stgcard>.stg-pat{z-index:-1}
+/* headline numbers (the sweep marks big Anton numbers): the wide heavy numerals, like the stage */
+:root:not(#_ch):not(#_lg) .mainwrap .sitenum{font-family:Archivo,system-ui,sans-serif!important;font-weight:900!important;font-stretch:125%;font-variation-settings:"wdth" 125;letter-spacing:-.02em!important;text-shadow:none!important}
+/* what the sweep (69-site.js) marks */
+:root:not(#_ch):not(#_lg) .mainwrap .sitecard{border:0!important;border-radius:20px!important;box-shadow:var(--stgshadow)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .sitecard.sitebg{background-color:var(--sitecard)!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap .sitecard.sitebg{background-color:var(--sitesoft)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .sitecard .sitecard{box-shadow:none!important}
+:root:not(#_ch):not(#_lg) .mainwrap .sitecard .sitecard.sitebg{background-color:var(--sitesoft)!important}
+:root:not(#_ch):not(#_lg)[data-look="dark"] .mainwrap .sitecard .sitecard.sitebg{background-color:var(--chc)!important}
+:root:not(#_ch):not(#_lg) .mainwrap .siteflat{box-shadow:none!important}
+:root:not(#_ch):not(#_lg) .mainwrap .sitelbl{text-transform:none!important;letter-spacing:0!important;font-family:Archivo,system-ui,sans-serif!important}
+:root:not(#_ch):not(#_lg) #typeChart th[title]{color:var(--chink)!important}#typeChart th[title="Normal"]{box-shadow:inset 0 -4px #aba88a}#typeChart th[title="Fire"]{box-shadow:inset 0 -4px #f06428}#typeChart th[title="Water"]{box-shadow:inset 0 -4px #3d82f2}#typeChart th[title="Electric"]{box-shadow:inset 0 -4px #f7c815}#typeChart th[title="Grass"]{box-shadow:inset 0 -4px #46b62e}#typeChart th[title="Ice"]{box-shadow:inset 0 -4px #5ed6d0}#typeChart th[title="Fighting"]{box-shadow:inset 0 -4px #d0352b}#typeChart th[title="Poison"]{box-shadow:inset 0 -4px #a83fc2}#typeChart th[title="Ground"]{box-shadow:inset 0 -4px #e2b14a}#typeChart th[title="Flying"]{box-shadow:inset 0 -4px #8b8af2}#typeChart th[title="Psychic"]{box-shadow:inset 0 -4px #f24f80}#typeChart th[title="Bug"]{box-shadow:inset 0 -4px #9eb81b}#typeChart th[title="Rock"]{box-shadow:inset 0 -4px #c6a53a}#typeChart th[title="Ghost"]{box-shadow:inset 0 -4px #7452b3}#typeChart th[title="Dragon"]{box-shadow:inset 0 -4px #6a3cee}#typeChart th[title="Dark"]{box-shadow:inset 0 -4px #5f4536}#typeChart th[title="Steel"]{box-shadow:inset 0 -4px #9db0cc}#typeChart th[title="Fairy"]{box-shadow:inset 0 -4px #f28cc0}:root:not(#_ch):not(#_lg):not([data-look="dark"]) #typeChart .m.m2{color:#A11729!important}
