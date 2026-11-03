@@ -30,7 +30,7 @@
 .stg .wx-sun i,.stg .wx-psy i{display:none}
 /* ---- My team ---- */
 .stgteam{display:grid;gap:0;margin:0 0 6px}
-.stgteam .stg-team{height:438px}
+.stgteam .stg-team{height:420px}
 .stg-figs{position:absolute;inset:0;z-index:4}
 .pk{position:absolute;display:block;padding:0;margin:0;border:0;background:none;cursor:pointer;transition:transform .35s cubic-bezier(.2,.8,.2,1);-webkit-tap-highlight-color:transparent}
 .pk img{position:absolute;max-width:none;height:auto;z-index:2;filter:drop-shadow(0 6px 8px rgba(8,6,40,.28));pointer-events:none}

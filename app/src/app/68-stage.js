@@ -117,8 +117,8 @@ STG.layout = (W, H, lead, back, o) => { o = o || {}; const top = o.top || 100, f
 STG.overlap = (W, H, a, b) => { const G = STG.grid(W, H), A = STG.cells(G, a.sh, a.x, a.y, a.w, a.h, 0), B = STG.cells(G, b.sh, b.x, b.y, b.w, b.h, 0); let n = 0; for (const i of A) if (B.has(i)) n++; return n; };
 /* ---------- My team ---------- */
 STG.img = (p, cls, style) => { const s = typeof sprite === 'function' ? sprite(p, cls) : ''; return s ? s.replace('<img ', `<img style="${style || ''}" `) : ''; };
-STG.H = () => (typeof matchMedia === 'function' && matchMedia('(min-width:1000px)').matches ? 470 : 438);
-STG.place = st => { if (!st || !st.isConnected) return; const W = st.clientWidth; if (!W) return; const H = STG.H(), ms = members(); if (!ms.length) return;
+STG.H = () => (typeof matchMedia === 'function' && matchMedia('(min-width:1000px)').matches ? 470 : 420);
+STG.place = st => { if (!st || !st.isConnected) return; const W = st.clientWidth; if (!W) return; const H = +st.dataset.h || STG.H(), ms = members(); if (!ms.length) return;
   const L = STG.lineup(ms), head = st.querySelector('.stg-head'), top = head ? Math.max(96, head.offsetHeight + 12) : 100;
   const pos = STG.layout(W, H, L.lead.map(m => m.p), L.back.map(m => m.p), {top});
   for (const q of pos) { const b = st.querySelector(`.pk[data-stgpk="${CSS.escape(q.p.n)}"]`); if (!b) continue; const sh = q.sh, S = q.h / (sh.y1 - sh.y0);
