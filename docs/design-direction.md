@@ -24,7 +24,7 @@ From Pictogram (used with restraint):
 
 - Reuse one roster component everywhere (same tile, skew, feet line, P1 cursor).
 - Roster + selected panel where picking a Pokémon is the point: Meta, Build, Battle opponent picker, team preview practice.
-- Calm list mode for dense tools (damage calc, speed tiers, battle log, compare teams, events, teams, cores): upright rows, no skewed tiles, italic caps only in the page title.
+- Dense tools (damage calc, speed tiers, battle log, compare teams, events, teams, cores) keep colour and character (Sim: "those are the defining features"): sprites, type stripes, magenta, italic titles and VS-style layouts stay; only the numbers themselves are set upright and tabular so they read easily.
 - Italic caps for page titles and the VS moment only. Magenta means selected / your team / main action, nothing else.
 - Type symbols at least 16px.
 - Phone: roster 3 wide, selected panel becomes a slide-up sheet.
