@@ -6,7 +6,8 @@
    - right: the Info / Meta / Rating tabs, each laid out in columns for the width (styles in theme/desktop-sheet.css; swap both files for the chosen direction).
    The phone keeps exactly the DOM it had: this only runs when the desktop media query matches, after every other builder
    (61 hero numbers, 67 tabs, 71 manga hero). It only moves existing nodes into two wrappers and groups the Meta lists, so no
-   control, text or handler is lost. .lspanel stays the one scroll container (tab no-jump logic, sticky tab bar, tests).
+   control, text or handler is lost. On desktop the panel fits the window and never scrolls: the right column (.lsbody) scrolls
+   inside it, under its sticky tab bar, while the hero column and the close button stay put.
    If the window crosses 1024px while the sheet is open, the sheet is rebuilt for the new size. */
 const DSK = {mq: (() => { try { return matchMedia('(min-width:1024px)'); } catch (e) { return null; } })()};
 DSK.on = () => !!(DSK.mq && DSK.mq.matches);
@@ -22,7 +23,10 @@ DSK.layout = () => { const sh = $('lairSheet'); if (!sh) return; sh.classList.to
   if (data && !data.querySelector('.lsgrp')) { let g = null; for (const k of [...data.children]) {
       if (k.classList.contains('chk')) { g = document.createElement('div'); g.className = 'lsgrp'; k.before(g);
         const t = k.textContent; g.classList.add(/^Moves/.test(t) ? 'lsg-mv' : /^Items/.test(t) ? 'lsg-it' : /^Brought/.test(t) ? 'lsg-bw' : 'lsg-x'); }
-      if (g) g.append(k); } }
+      if (g) g.append(k); }
+    /* "Items: Ability: Unburden 88%" -> "Items" and, under it, "Most used ability: Unburden 88%" */
+    const ih = data.querySelector('.lsg-it>.chk'); if (ih && !ih.querySelector('.lsabn')) { const m = /^Items\s*(?:·|:)\s*Ability: (.+)$/.exec(ih.textContent.trim());
+      if (m) { ih.textContent = 'Items'; const n = document.createElement('span'); n.className = 'lsabn'; n.append('Most used ability: '); const bb = document.createElement('b'); bb.textContent = m[1]; n.append(bb); ih.append(n); } } }
   /* Info: stats and abilities side by side, matchups and Speed under them */
   const info = body.querySelector('.lstp-info'); if (info) info.classList.add('lsgrid2');
   const rate = body.querySelector('.lstp-rating'); if (rate) rate.classList.add('lsgrid2');

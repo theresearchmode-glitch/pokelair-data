@@ -1,6 +1,9 @@
-/* ===== Info sheet, desktop layout: FIRST PASS (Nov 4). Self-contained and swappable: this file + src/app/73-desktop-sheet.js.
-   Sim is choosing between 3 desktop mockups; replace both files with the chosen direction. Everything is scoped to
-   #lairSheet.lsdesk inside min-width:1024px, so removing the two files restores the old centred sheet and the phone is untouched. */
+/* ===== Info sheet, desktop layout (Nov 4, Sim: the phone sheet centred on PC was "lazy work"). With src/app/73-desktop-sheet.js.
+   1024px and up: a panel that fits the window (never taller), two columns. Left: the manga hero (number top left, the Pokemon on
+   the right, tier caption along the bottom), name, types, the three numbers, the actions, Report a mistake; it never scrolls away.
+   Right: Info / Meta / Rating under a sticky tab bar; only this column scrolls. 1024-1279 one readable column on the right,
+   1280-1699 two columns, 1700+ a wider panel with three. Everything is scoped to #lairSheet.lsdesk inside min-width queries,
+   so the phone (390) is untouched. */
 /* ---------- Info sheet: a large two-column panel (73-desktop-sheet.js adds .lsdesk, .lsside, .lsxd, .lsgrp) ---------- */
 @media (min-width:1024px){
   @R #lairSheet.lsdesk{--dsh:min(calc(100vh - 48px),1040px);align-items:center!important;justify-content:center!important;padding:24px 32px}
@@ -8,20 +11,23 @@
   @R #lairSheet.lsdesk .lsback{background:rgba(20,20,20,.52)!important;opacity:1!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
   @R[data-look="dark"] #lairSheet.lsdesk .lsback{background:rgba(0,0,0,.74)!important}
   @R #lairSheet.lsdesk .lspanel{display:grid;grid-template-columns:clamp(380px,37%,500px) minmax(0,1fr);align-items:start;width:min(1320px,100%);height:var(--dsh);max-height:none;
-    overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr)!important;background:var(--mgpaper)!important;animation:none}
+    grid-template-rows:minmax(0,1fr);overflow:hidden;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr)!important;background:var(--mgpaper)!important;animation:none}
   @R #lairSheet.lsdesk .lspanel:focus,@R #lairSheet.lsdesk .lspanel:focus-visible{outline:none!important}
   @R #lairSheet.lsdesk .lspanel::before{display:none!important}
   /* left: the hero column, sticky while the tabs scroll */
-  @R #lairSheet.lsdesk .lsside{grid-column:1;grid-row:1;position:sticky;top:0;align-self:start;box-sizing:border-box;height:calc(var(--dsh) - 2 * var(--mgbw));overflow-y:auto;scrollbar-width:thin;
+  @R #lairSheet.lsdesk .lsside{grid-column:1;grid-row:1;position:relative;align-self:stretch;box-sizing:border-box;height:100%;min-height:0;overflow-y:auto;scrollbar-width:thin;
     display:flex;flex-direction:column;gap:18px;padding:24px 24px 22px;border-right:var(--mgbw) solid var(--mgink);background:var(--mgpaper)}
   @R #lairSheet.lsdesk .lsside>*{flex-shrink:0}
   @R #lairSheet.lsdesk .lsside .lshead.mghead{padding:0!important;margin:0!important;background:none!important}
-  @R #lairSheet.lsdesk .lsside .mghero{height:clamp(250px,calc(var(--dsh) - 430px),460px);margin:0!important;--cx:30%}
+  /* hero: square-ish, never taller than the column leaves room for; number and tier caption top left, the Pokémon bottom right
+     clear of the caption (the caption wraps in a narrow column instead of running over the art) */
+  @R #lairSheet.lsdesk .lsside .mghero{height:clamp(280px,calc(var(--dsh) - 440px),480px);margin:0!important;--cx:30%}
   @R #lairSheet.lsdesk .lsside .mghero .mgbig{font-size:104px;left:18px;top:14px}
   @R #lairSheet.lsdesk .lsside .mghero .mgmis{text-shadow:4px 3px 0 var(--mc,var(--chblue))}
   @R[data-look="dark"] #lairSheet.lsdesk .lsside .mghero .mgmis{text-shadow:4px 3px 0 var(--MC,var(--chblue))}
-  @R #lairSheet.lsdesk .lsside .mghero .mgcapq{top:128px;left:18px;font-size:16px;padding:7px 12px 8px!important}
-  @R #lairSheet.lsdesk .lsside .mghero .mgmon{width:54%;height:64%;right:2%}
+  @R #lairSheet.lsdesk .lsside .mghero .mgcapq{top:auto!important;bottom:14px;left:18px;font-size:16px;line-height:1.35;padding:7px 12px 8px!important;max-width:calc(100% - 36px);white-space:normal;display:block}
+  @R #lairSheet.lsdesk .lsside .mghero .mgcapq .tipq{display:inline-grid;vertical-align:-4px;margin-left:6px}
+  @R #lairSheet.lsdesk .lsside .mghero .mgmon{width:56%;height:calc(100% - 82px);right:4%;bottom:66px}
   @R #lairSheet.lsdesk .lsside .lshead.mghead>.lsname{padding:18px 0 0!important}
   @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname h3{font-size:clamp(36px,3.2vw,48px)!important;max-width:none}
   @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname .chips{margin-top:8px;gap:12px}
@@ -40,9 +46,10 @@
   @R #lairSheet.lsdesk .tipq{width:22px!important;height:22px!important;font-size:14px!important}
   /* close: a fixed corner of the panel, beside the tab bar */
   @R #lairSheet.lsdesk .lsxd{grid-column:2;grid-row:1;justify-self:end;align-self:start;position:sticky!important;top:10px;right:auto!important;left:auto!important;z-index:8;
-    width:48px;height:48px;margin:0 18px 0 0;display:grid;place-items:center;font-size:20px;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr2,4px)!important;background:var(--mgpanel)!important;color:var(--chink)!important;box-shadow:none!important}
+    width:48px!important;height:48px!important;margin:0 18px 0 0;display:grid;place-items:center;font-size:20px;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr2,4px)!important;background:var(--mgpanel)!important;color:var(--chink)!important;box-shadow:none!important}
   /* right: the tabs and their content */
-  @R #lairSheet.lsdesk .lsbody{grid-column:2;grid-row:1;min-width:0;display:block;padding:0 32px 40px}
+  /* the right column is the scroller (the panel itself never scrolls), so the hero column and the close button stay put */
+  @R #lairSheet.lsdesk .lsbody{grid-column:2;grid-row:1;min-width:0;min-height:0;height:100%;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;display:block;padding:0 32px 40px}
   @R #lairSheet.lsdesk .lstabs{margin:0 -32px!important;padding:0 92px 0 32px!important;top:0}
   @R #lairSheet.lsdesk .lstabs [role=tab]{min-height:68px;padding:10px 8px}
   @R #lairSheet.lsdesk .lstabs [role=tab] b{font-size:19px}
@@ -66,7 +73,7 @@
   @R #lairSheet.lsdesk .lsbody .lsvr :is(.lsvl,.lsvn,.lsvo){font-size:15px!important}
   @R #lairSheet.lsdesk .lsbody .lsvr .lsvl{font-weight:700}
   @R #lairSheet.lsdesk .lsbody .lsvr b{font-size:22px!important}
-  @R #lairSheet.lsdesk .lsbody .chbar{font-size:16px;min-height:34px}
+  @R #lairSheet.lsdesk .lsbody .chbar{font-size:16px;min-height:34px;grid-template-columns:minmax(0,1.25fr) minmax(48px,1fr) 3.4em!important;column-gap:12px}
   @R #lairSheet.lsdesk .lsbody .chbar :is(span,b){font-size:16px!important}
   @R #lairSheet.lsdesk .lsbody .lset{font-size:16px!important;row-gap:8px}
   @R #lairSheet.lsdesk .lsbody .lset :is(span,b){font-size:16px!important}
@@ -122,4 +129,54 @@
   @R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:has(.levs){grid-column:2}
   @R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:has(.lout){grid-column:2}
   @R #lairSheet.lsdesk .lstp-rating .lout{grid-template-columns:minmax(0,1fr)}
+}
+/* the items heading carries the most used ability on the phone ("Items: Ability: X 88%"); on desktop the ability sits on its own line */
+@media (min-width:1024px){
+  @R #lairSheet.lsdesk .lsg-it .chk .lsabn{display:block!important;margin-top:4px;background:none!important;border:0!important;padding:0!important;box-shadow:none!important;font:500 15px/1.4 var(--body);color:var(--chmuted,inherit)}
+  @R #lairSheet.lsdesk .lsg-it .chk .lsabn b{font-weight:700;color:var(--chink)}
+}
+/* 1024-1279: narrower hero column, everything in the right column stacks in one readable column */
+@media (min-width:1024px) and (max-width:1279px){
+  @R #lairSheet.lsdesk .lspanel{grid-template-columns:340px minmax(0,1fr)}
+  @R #lairSheet.lsdesk .lsside{padding:20px 20px 18px;gap:16px}
+  @R #lairSheet.lsdesk .lsside .mghero .mgbig{font-size:84px;top:12px;left:14px}
+  @R #lairSheet.lsdesk .lsside .mghero .mgcapq{left:14px;bottom:12px;font-size:15px}
+  @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname h3{font-size:34px!important}
+  @R #lairSheet.lsdesk .lsbody{padding:0 28px 36px}
+  @R #lairSheet.lsdesk .lstabs{margin:0 -28px!important;padding:0 84px 0 28px!important}
+  @R #lairSheet.lsdesk .lstpw{max-width:720px}
+  @R #lairSheet.lsdesk .lsg-bw .chbw{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+/* wide screens: a wider panel and three columns, so Info, Meta and Rating fit with little scrolling; columns stay ~400px so lines stay short */
+@media (min-width:1700px){
+  @R #lairSheet.lsdesk .lspanel{width:min(1560px,100%);grid-template-columns:520px minmax(0,1fr)}
+  @R #lairSheet.lsdesk .lsside{padding:28px 30px 24px;gap:20px}
+  @R #lairSheet.lsdesk .lsside .mghero .mgbig{font-size:120px}
+  @R #lairSheet.lsdesk .lsside .mghero .mgcapq{font-size:17px;bottom:18px;left:20px}
+  @R #lairSheet.lsdesk .lsside .mghero .mgmon{bottom:72px;height:calc(100% - 90px)}
+  @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname h3{font-size:52px!important}
+  @R #lairSheet.lsdesk .lsbody{padding:0 40px 44px}
+  @R #lairSheet.lsdesk .lstabs{margin:0 -40px!important;padding:0 100px 0 40px!important}
+  @R #lairSheet.lsdesk .lstp.lsgrid2:not([hidden]){grid-template-columns:repeat(3,minmax(0,1fr));column-gap:40px}
+  /* Info: stats over matchups | abilities | Speed */
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-st{grid-column:1;grid-row:1}
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ty{grid-column:1;grid-row:2}
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ab{grid-column:2;grid-row:1/span 2}
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-sp{grid-column:3;grid-row:1/span 2}
+  /* Meta: moves | items | typical set, then Brought with across */
+  @R #lairSheet.lsdesk .lstp-meta.lsgrid2>.chlsdata{display:contents!important}
+  @R #lairSheet.lsdesk .lstp-meta.lsgrid2 .lsg-mv{grid-column:1;grid-row:1}
+  @R #lairSheet.lsdesk .lstp-meta.lsgrid2 .lsg-it{grid-column:2;grid-row:1}
+  @R #lairSheet.lsdesk .lstp-meta.lsgrid2>.lsec{grid-column:3;grid-row:1;margin:0!important}
+  @R #lairSheet.lsdesk .lstp-meta.lsgrid2 .lsg-bw{grid-column:1/-1;grid-row:2}
+  @R #lairSheet.lsdesk .lstp-meta.lsgrid2 .lsg-x{grid-column:1/-1}
+  @R #lairSheet.lsdesk .lstp-meta .lset{grid-template-columns:auto 1fr}
+  @R #lairSheet.lsdesk .lsg-bw .chbw{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2{grid-template-rows:auto 1fr}
+  /* Rating: why it rates (col 1) | what the data says as two columns of cards */
+  @R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:first-child{grid-column:1;grid-row:span 3}
+  @R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:has(.levs),@R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:has(.lout){grid-column:2/span 2}
+  @R #lairSheet.lsdesk .lstp-rating .levs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+  @R #lairSheet.lsdesk .lstp-rating .lev{align-content:start}
+  @R #lairSheet.lsdesk .lstp-rating .lout{grid-template-columns:repeat(2,minmax(0,1fr))}
 }

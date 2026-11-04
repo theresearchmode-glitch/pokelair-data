@@ -1,3 +1,56 @@
 /* ===== Desktop layouts (Sim, Nov 4 after go-live: "not formatted and optimized for pc ... lazy work") =====
    Everything here is inside min-width media queries, so the phone (Sim approved it) is untouched.
    Same colour manga language: ink frames at --mgbw, 6px panels, paper columns, one hero with art per view, text on clean paper. */
+
+/* ---------- Wide screens (1600px and up): the page column grows from 1120 to 1400px instead of leaving 400px of paper each side.
+   Grids and panels are fluid, so they take the room; running text keeps its own measure (below). ---------- */
+@media (min-width:1600px){
+  @R .band .inner,@R .mainwrap main .inner,@R main>.inner,@R .legal .inner{max-width:1400px}
+}
+/* running text never runs past ~80 characters, whatever the column width */
+@media (min-width:1001px){
+  @R main :is(p.t2,p.hint,.chs,.lsnote,.chpg>p,.view>p){max-width:78ch}
+}
+
+/* ---------- Readable text on desktop (Sim: "tiny text on PC"). The phone sizes (12-13px) stay on the phone; from 1001px up the
+   notes, captions and labels step up one size. Dense data cells (type chart grid, calc rolls) keep their size. ---------- */
+@media (min-width:1001px){
+  @R :is(.t2,.vsub,.basis,.hint,.linkbtn,.chs,.chghost,.fbanon,.fbctx,.adesc){font-size:14px}
+  @R .chk{font-size:14px}
+  @R :is(.ty,.tag:not(.ico),.lbl,.archchip,.tgn,.tgmk,.wrv,.lts,.ltm,.ltd,.ltg,.sev,.dbdt,.who,.gpwho,.qwhy,.warnline,.wk,.hmn,.hcw,.nm,.tr,.rtier,.kind,.calcd,.cxbadge,.sgl,.jk,.jhint,.mgrole,.hmrk){font-size:13.5px}
+  @R :is(.btn,.seg>button,.sub){font-size:14px}
+}
+
+/* ---------- My team (1280px and up): the stage and the selected set side by side. On the phone the set panel sits under the stage;
+   on a wide screen that left 40% of the head empty. Now: name and grade across the top, the stage (lead / back / bench) on the
+   left, and the record, checks, the tapped Pokémon's set and the team actions in a column on the right. Same nodes, CSS only. ---------- */
+@media (min-width:1280px){
+  @R #chTeam .chthead>div:has(>.mgstage){display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,34%);column-gap:28px;align-items:start;grid-auto-rows:min-content}
+  @R #chTeam .chthead>div:has(>.mgstage)>*{grid-column:1/-1;min-width:0}
+  @R #chTeam .chthead>div:has(>.mgstage)>.mgstage{grid-column:1;grid-row:3/span 6;margin-top:4px}
+  @R #chTeam .chthead>div:has(>.mgstage)>:is(#chGwhy,.wdstats,.chpills,#rzSet,#chActs,.chacts2){grid-column:2}
+  /* "Why B?" opens its explanation right under the grade, at the top of the right column */
+  @R #chTeam .chthead>div:has(>.mgstage)>#chGwhy{grid-row:3;margin:4px 0 12px}
+  @R #chTeam .chthead>div:has(>.mgstage)>.wdstats{grid-row:4;margin-top:4px}
+  @R #chTeam .chthead>div:has(>.mgstage)>.chpills{grid-row:5}
+  @R #chTeam .chthead>div:has(>.mgstage)>#rzSet{grid-row:6;margin-top:14px}
+  @R #chTeam .chthead>div:has(>.mgstage)>:is(#chActs,.chacts2){grid-row:7;flex-wrap:wrap;margin-top:14px}
+  @R #chTeam .chthead>div:has(>.mgstage) #rzSet .rzsetd,@R #chTeam .chthead>div:has(>.mgstage) #rzSet .rzsetm{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @R #chTeam .chthead>div:has(>.mgstage)>.chpills .chpill{font-size:13.5px}
+}
+@media (min-width:1280px){
+  @R #chTeam .chthead>div:has(>.mgstage)>.mgstage{max-width:none;width:auto}
+  @R #chTeam .chthead>div:has(>.mgstage)>.mgtrow{align-items:flex-end}
+  @R #chTeam .chthead>div:has(>.mgstage)>.mgtrow>.nm{font:400 30px/1.15 var(--display);align-self:flex-end;margin-bottom:6px}
+}
+
+/* ---------- Overlays on desktop: a little wider and one size up, so they read as dialogs, not phone sheets ---------- */
+@media (min-width:1001px){
+  @R .fbbox{width:min(600px,100%);padding:22px 24px 24px}
+  @R .fbbox :is(.fbh b,#fbT){font-size:22px}
+  @R .fbbox textarea{min-height:140px}
+  @R .jbox{width:min(720px,100%)}
+  @R .jbox input{font-size:18px;padding:18px 20px}
+  @R .jbox li{font-size:16px}
+  @R #side :is(.sgl,.sr,.tc){font-size:14px}
+}
