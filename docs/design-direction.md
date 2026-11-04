@@ -2,7 +2,9 @@
 
 Decided by Sim (Simran), Nov 4 2026, after four rounds of mockups (21 concepts). Follow this for any visual work on NastyPlot.
 
-## The direction: Character Select + Pictogram
+## The direction: Character Select + Pictogram ("light touch")
+
+Sim picked the light-touch blend (mockup 21A): Character Select almost unchanged, with Pictogram's type symbols replacing text type labels and lowercase mono labels. Balanced and Strong blends were rejected.
 
 The site is built around a fighting-game **character select** screen, done with modern restraint, with small elements borrowed from the **Pictogram** concept.
 
@@ -15,8 +17,17 @@ From Character Select (the core identity):
 
 From Pictogram (used with restraint):
 - 18 flat geometric type symbols (45°/90° construction on a 24px grid, one ink colour) as the site's icon set: type chips, filters, coverage grid, nav.
-- Pastel type colours in small doses: stripes, chips, the selected panel's tint.
+- Pastel type colours only in thin stripes and chips.
 - Strict 12-column grid and lowercase mono labels.
+
+## Scaling across the site
+
+- Reuse one roster component everywhere (same tile, skew, feet line, P1 cursor).
+- Roster + selected panel where picking a Pokémon is the point: Meta, Build, Battle opponent picker, team preview practice.
+- Calm list mode for dense tools (damage calc, speed tiers, battle log, compare teams, events, teams, cores): upright rows, no skewed tiles, italic caps only in the page title.
+- Italic caps for page titles and the VS moment only. Magenta means selected / your team / main action, nothing else.
+- Type symbols at least 16px.
+- Phone: roster 3 wide, selected panel becomes a slide-up sheet.
 
 ## Sim's rules
 
