@@ -1,0 +1,125 @@
+/* ===== Info sheet, desktop layout: FIRST PASS (Nov 4). Self-contained and swappable: this file + src/app/73-desktop-sheet.js.
+   Sim is choosing between 3 desktop mockups; replace both files with the chosen direction. Everything is scoped to
+   #lairSheet.lsdesk inside min-width:1024px, so removing the two files restores the old centred sheet and the phone is untouched. */
+/* ---------- Info sheet: a large two-column panel (73-desktop-sheet.js adds .lsdesk, .lsside, .lsxd, .lsgrp) ---------- */
+@media (min-width:1024px){
+  @R #lairSheet.lsdesk{--dsh:min(calc(100vh - 48px),1040px);align-items:center!important;justify-content:center!important;padding:24px 32px}
+  /* the page behind is dimmed, never blurred */
+  @R #lairSheet.lsdesk .lsback{background:rgba(20,20,20,.52)!important;opacity:1!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  @R[data-look="dark"] #lairSheet.lsdesk .lsback{background:rgba(0,0,0,.74)!important}
+  @R #lairSheet.lsdesk .lspanel{display:grid;grid-template-columns:clamp(380px,37%,500px) minmax(0,1fr);align-items:start;width:min(1320px,100%);height:var(--dsh);max-height:none;
+    overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr)!important;background:var(--mgpaper)!important;animation:none}
+  @R #lairSheet.lsdesk .lspanel:focus,@R #lairSheet.lsdesk .lspanel:focus-visible{outline:none!important}
+  @R #lairSheet.lsdesk .lspanel::before{display:none!important}
+  /* left: the hero column, sticky while the tabs scroll */
+  @R #lairSheet.lsdesk .lsside{grid-column:1;grid-row:1;position:sticky;top:0;align-self:start;box-sizing:border-box;height:calc(var(--dsh) - 2 * var(--mgbw));overflow-y:auto;scrollbar-width:thin;
+    display:flex;flex-direction:column;gap:18px;padding:24px 24px 22px;border-right:var(--mgbw) solid var(--mgink);background:var(--mgpaper)}
+  @R #lairSheet.lsdesk .lsside>*{flex-shrink:0}
+  @R #lairSheet.lsdesk .lsside .lshead.mghead{padding:0!important;margin:0!important;background:none!important}
+  @R #lairSheet.lsdesk .lsside .mghero{height:clamp(250px,calc(var(--dsh) - 430px),460px);margin:0!important;--cx:30%}
+  @R #lairSheet.lsdesk .lsside .mghero .mgbig{font-size:104px;left:18px;top:14px}
+  @R #lairSheet.lsdesk .lsside .mghero .mgmis{text-shadow:4px 3px 0 var(--mc,var(--chblue))}
+  @R[data-look="dark"] #lairSheet.lsdesk .lsside .mghero .mgmis{text-shadow:4px 3px 0 var(--MC,var(--chblue))}
+  @R #lairSheet.lsdesk .lsside .mghero .mgcapq{top:128px;left:18px;font-size:16px;padding:7px 12px 8px!important}
+  @R #lairSheet.lsdesk .lsside .mghero .mgmon{width:54%;height:64%;right:2%}
+  @R #lairSheet.lsdesk .lsside .lshead.mghead>.lsname{padding:18px 0 0!important}
+  @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname h3{font-size:clamp(36px,3.2vw,48px)!important;max-width:none}
+  @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname .chips{margin-top:8px;gap:12px}
+  @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname .ty{font-size:17px!important}
+  @R #lairSheet.lsdesk .lsside .chlstats{margin:0!important}
+  @R #lairSheet.lsdesk .lsside .chlstats>div{padding:14px 14px 12px!important}
+  @R #lairSheet.lsdesk .lsside .chlstats b{font-size:clamp(26px,2.3vw,34px)!important}
+  @R #lairSheet.lsdesk .lsside .chlstats span,@R #lairSheet.lsdesk .lsside .chlstats i{font-size:15px!important}
+  @R #lairSheet.lsdesk .lsside :is(.mgadd,.lsact){margin:0!important}
+  @R #lairSheet.lsdesk .lsside .mgadd [data-laddteam]{min-height:56px;font-size:18px}
+  @R #lairSheet.lsdesk .lsside .lsact{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  @R #lairSheet.lsdesk .lsside .lsact .btn{flex:1 1 0;min-height:48px!important;font-size:16px}
+  @R #lairSheet.lsdesk .lsside .lsact .t2{flex:1 0 100%;font-size:15px}
+  @R #lairSheet.lsdesk .lsside .lsmis{margin:auto 0 0!important;justify-content:flex-start}
+  @R #lairSheet.lsdesk .lsside .fbmis{font-size:15px}
+  @R #lairSheet.lsdesk .tipq{width:22px!important;height:22px!important;font-size:14px!important}
+  /* close: a fixed corner of the panel, beside the tab bar */
+  @R #lairSheet.lsdesk .lsxd{grid-column:2;grid-row:1;justify-self:end;align-self:start;position:sticky!important;top:10px;right:auto!important;left:auto!important;z-index:8;
+    width:48px;height:48px;margin:0 18px 0 0;display:grid;place-items:center;font-size:20px;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr2,4px)!important;background:var(--mgpanel)!important;color:var(--chink)!important;box-shadow:none!important}
+  /* right: the tabs and their content */
+  @R #lairSheet.lsdesk .lsbody{grid-column:2;grid-row:1;min-width:0;display:block;padding:0 32px 40px}
+  @R #lairSheet.lsdesk .lstabs{margin:0 -32px!important;padding:0 92px 0 32px!important;top:0}
+  @R #lairSheet.lsdesk .lstabs [role=tab]{min-height:68px;padding:10px 8px}
+  @R #lairSheet.lsdesk .lstabs [role=tab] b{font-size:19px}
+  @R #lairSheet.lsdesk .lstabs [role=tab] span{font-size:14px}
+  @R #lairSheet.lsdesk .lstpw{padding-top:24px}
+  @R #lairSheet.lsdesk :is(h3,h4,.lssec,.chk,[id]){scroll-margin-top:84px}
+  /* readable sizes: headings, rows, notes (nothing under 14px) */
+  @R #lairSheet.lsdesk .lsbody :is(.lsi,.lsec)>h4{font-size:20px!important;line-height:1.2;margin:0 0 14px!important}
+  @R #lairSheet.lsdesk .lsbody .chk{font-size:18px!important;font-weight:700;margin:0 0 10px!important;line-height:1.3}
+  @R #lairSheet.lsdesk .lsbody :is(.t2,.lsnote,.lbarhd,.chlsnote){font-size:15px!important;line-height:1.5}
+  @R #lairSheet.lsdesk .lsbody .basis{font-size:14px!important}
+  @R #lairSheet.lsdesk .lsbody .lstr{min-height:26px;font-size:16px}
+  @R #lairSheet.lsdesk .lsbody .lstr :is(span,b){font-size:16px!important}
+  @R #lairSheet.lsdesk .lsbody .lstr .lstd{font-size:14px!important}
+  @R #lairSheet.lsdesk .lsbody .lstats{gap:6px!important}
+  @R #lairSheet.lsdesk .lsbody .lsab :is(b){font-size:17px!important}
+  @R #lairSheet.lsdesk .lsbody .lsab p{font-size:15px!important;line-height:1.5}
+  @R #lairSheet.lsdesk .lsbody :is(.lsabu,.lsabs){font-size:14px!important}
+  @R #lairSheet.lsdesk .lsbody .lstyl{font-size:15px!important}
+  @R #lairSheet.lsdesk .lsbody .lsty .ty{font-size:15px!important}
+  @R #lairSheet.lsdesk .lsbody .lsvr :is(.lsvl,.lsvn,.lsvo){font-size:15px!important}
+  @R #lairSheet.lsdesk .lsbody .lsvr .lsvl{font-weight:700}
+  @R #lairSheet.lsdesk .lsbody .lsvr b{font-size:22px!important}
+  @R #lairSheet.lsdesk .lsbody .chbar{font-size:16px;min-height:34px}
+  @R #lairSheet.lsdesk .lsbody .chbar :is(span,b){font-size:16px!important}
+  @R #lairSheet.lsdesk .lsbody .lset{font-size:16px!important;row-gap:8px}
+  @R #lairSheet.lsdesk .lsbody .lset :is(span,b){font-size:16px!important}
+  @R #lairSheet.lsdesk .lsbody .lbar :is(span,b){font-size:16px!important}
+  @R #lairSheet.lsdesk .lsbody .lbar em{font-size:15px!important}
+  @R #lairSheet.lsdesk .lsbody .lev :is(span,b){font-size:16px!important}
+  @R #lairSheet.lsdesk .lsbody .lev em{font-size:15px!important}
+  @R #lairSheet.lsdesk .lsbody .lo :is(span,em){font-size:15px!important}
+  @R #lairSheet.lsdesk .lsbody .lprof summary{font-size:16px}
+  @R #lairSheet.lsdesk .lsbody :is(.nplink,.rzmorebtn){font-size:16px!important}
+  @R #lairSheet.lsdesk .lsbody .chbw button .bwn{font-size:15px!important}
+  @R #lairSheet.lsdesk .lsbody .lsempty{font-size:16px}
+  /* Meta: the three lists as columns */
+  @R #lairSheet.lsdesk .lstabs{box-shadow:none!important}
+  /* Rating bars: label and number on one line, the bar under them, the note under that (reads well in a half column) */
+  @R #lairSheet.lsdesk .lsbody .lbar{grid-template-columns:minmax(0,1fr) auto;row-gap:6px;margin:0 0 16px}
+  @R #lairSheet.lsdesk .lsbody .lbar>span{grid-column:1;grid-row:1;font-weight:700}
+  @R #lairSheet.lsdesk .lsbody .lbar>b{grid-column:2;grid-row:1;font-family:var(--display);font-weight:400;font-size:20px!important}
+  @R #lairSheet.lsdesk .lsbody .lbar>i{grid-column:1/-1;grid-row:2;height:10px}
+  @R #lairSheet.lsdesk .lsbody .lbar>em{grid-column:1/-1;grid-row:3;margin:0}
+  /* What the data says: source, figure, then the detail, stacked */
+  @R #lairSheet.lsdesk .lsbody .lev{grid-template-columns:minmax(0,1fr);row-gap:2px;padding:12px 14px}
+  @R #lairSheet.lsdesk .lsbody .lev b{text-align:left}
+  @R #lairSheet.lsdesk .lsbody .levs{gap:10px}
+  /* Brought with: bigger Pokémon and readable names */
+  @R #lairSheet.lsdesk .lsbody .chbw{gap:12px!important}
+  @R #lairSheet.lsdesk .lsbody .chbw button{padding:12px 6px 10px;min-height:150px}
+  @R #lairSheet.lsdesk .lsbody .chbw .spr{width:84px;height:84px}
+  @R #lairSheet.lsdesk .lsbody .chbw .bwn{font-size:16px!important;margin-top:6px}
+  @R #lairSheet.lsdesk .lsbody .chbw b{font-size:16px!important}
+  @R #lairSheet.lsdesk .lsbody .chbw span{font-size:14px!important}
+  @R #lairSheet.lsdesk .lsgrp{min-width:0}
+  @R #lairSheet.lsdesk .lsgrp>.chk{margin-top:0!important}
+  @R #lairSheet.lsdesk .chlsdata{display:grid!important;grid-template-columns:minmax(0,1fr);gap:28px}
+  @R #lairSheet.lsdesk .lsg-bw .chbw{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  @R #lairSheet.lsdesk .lstp-meta>.lsec{margin-top:28px}
+}
+@media (min-width:1280px){
+  /* Info, Meta and Rating each use two columns */
+  @R #lairSheet.lsdesk .lstp.lsgrid2:not([hidden]){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px;row-gap:32px;align-items:start}
+  @R #lairSheet.lsdesk .lstp.lsgrid2>*{margin:0!important;padding-top:0!important;min-width:0}
+  /* Info: two independent stacks (stats over matchups, abilities over Speed) so a short section leaves no hole */
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-st{grid-column:1;grid-row:1}
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ty{grid-column:1;grid-row:2/span 3}
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ab{grid-column:2;grid-row:1/span 2}
+  @R #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-sp{grid-column:2;grid-row:3/span 2}
+  @R #lairSheet.lsdesk .lstp-meta.lsgrid2>:is(.chlsdata,.lsempty,.lsec){grid-column:1/-1}
+  @R #lairSheet.lsdesk .chlsdata{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px}
+  @R #lairSheet.lsdesk .lsg-bw{grid-column:1/-1}
+  @R #lairSheet.lsdesk .lstp-meta .lset{grid-template-columns:auto 1fr}
+  @R #lairSheet.lsdesk .lstp-rating.lsgrid2>*{grid-column:1/-1}
+  @R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:first-child{grid-column:1;grid-row:span 3}
+  @R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:has(.levs){grid-column:2}
+  @R #lairSheet.lsdesk .lstp-rating.lsgrid2>.lsec:has(.lout){grid-column:2}
+  @R #lairSheet.lsdesk .lstp-rating .lout{grid-template-columns:minmax(0,1fr)}
+}

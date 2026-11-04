@@ -6,6 +6,8 @@
  "src/theme/riso.css",
  "src/theme/riso2.css",
  "src/theme/manga.css",
+ "src/theme/desktop.css",
+ "src/theme/desktop-sheet.css",
  "src/body.html",
  "src/data/data.js",
  "src/data/move-acc.js",
@@ -87,6 +89,7 @@
  "src/app/70-riso2.js",
  "src/app/71-manga.js",
  "src/app/72-keep-place.js",
+ "src/app/73-desktop-sheet.js",
  "src/app/98-proposals.js",
  "src/app/99-start.js",
  "src/foot.html"
