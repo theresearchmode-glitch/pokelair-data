@@ -10,3 +10,10 @@ The artifact is built from these files: `node app/build.mjs` joins the parts lis
 - `sp/*.webp`: inked Pokémon sprites (256×256, colour manga), published next to the page as `sp/<id>.webp` (ids in `SPRITE_ID`)
 
 `node app/test/run.mjs` builds the page and tests every view on desktop and phone with the data in `out/`. GitHub runs it on every change to `app/`.
+
+## NastyPlot Redesign (separate page)
+
+`node app/build-redesign.mjs` builds `dist/redesign.html`: the same app plus the Light touch Character Select layer
+(`src/redesign/select.css`, `src/redesign/select.js`, listed in `parts-redesign.json`), Pictogram type glyphs and the
+redesign fonts. The live page (`node app/build.mjs` → `dist/page.html`) is unchanged. Published as "NastyPlot Redesign";
+its database was seeded once from `out/` the same way the morning refresh fills the live page. See `docs/design-direction.md`.

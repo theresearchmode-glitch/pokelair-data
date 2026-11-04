@@ -1,0 +1,279 @@
+/* ===== NastyPlot Redesign: Light touch Character Select (Sim, Nov 4) =====
+   Loaded after manga.css in the redesign build only (parts-redesign.json). @R is the strong :root prefix.
+   Identity: italic condensed caps display (Saira Extra Condensed), Onest body, JetBrains Mono labels and numbers; one bold
+   accent (magenta); calm off-white ground; Pictogram type glyphs as the icon set; pastel type colour only in thin stripes,
+   chips and tints. Colour and character stay on every page; numbers are upright and tabular. */
+
+/* ---------- tokens ---------- */
+@R{--rd-bg:#f6f6f8;--rd-panel:#ffffff;--rd-ink:#121320;--rd-mute:#5d6072;--rd-faint:#9a9caa;--rd-line:#e2e3ea;--rd-cell:#eceef3;
+  --rd-acc:#e0157f;--rd-acc2:#c80f70;--rd-acc-ink:#ffffff;--rd-acc-soft:#fde6f2;--rd-good:#14845a;--rd-bad:#c4314b;
+  --rd-display:"Saira Extra Condensed","Arial Narrow",system-ui,sans-serif;--rd-body:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;--rd-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  /* map the app's older tokens onto the redesign */
+  --court:var(--rd-bg);--card:var(--rd-panel);--card2:var(--rd-cell);--ink:var(--rd-ink);--mute:var(--rd-mute);--faint:var(--rd-faint);--line:var(--rd-line);--line2:#cfd1db;
+  --navy:var(--rd-ink);--deep:var(--rd-ink);--navyt:var(--rd-ink);--navy-ink:#fff;--volt:var(--rd-acc);--volt2:var(--rd-acc2);--volt-ink:#fff;--accent:var(--rd-acc);--soft:var(--rd-acc-soft);
+  --good:var(--rd-good);--bad:var(--rd-bad);--display:var(--rd-display);--body:var(--rd-body);--mono:var(--rd-mono);
+  --chp:var(--rd-bg);--chp2:var(--rd-cell);--chc:var(--rd-panel);--chink:var(--rd-ink);--chink2:var(--rd-mute);--chline:var(--rd-line);
+  --chbar:var(--rd-ink);--chhdr:var(--rd-ink);--chbtnInk:var(--rd-ink);--btn:var(--rd-ink);--chshadow:transparent;--chyel:var(--rd-acc);--chred:var(--rd-acc);
+  --tr-bw:1px;--tr-r:0px;--tr-title-bg:var(--rd-ink);--tr-lines:var(--rd-line);--mgpaper:var(--rd-bg);--mgpanel:var(--rd-panel);--mgink:var(--rd-ink);--mgbw:1px;
+  color-scheme:light}
+@R:not([data-look="dark"]){--rd-bg:#f6f6f8;--rd-panel:#ffffff;--rd-ink:#121320;--rd-mute:#5d6072;--rd-faint:#9a9caa;--rd-line:#e2e3ea;--rd-cell:#eceef3;
+  --rd-acc:#e0157f;--rd-acc2:#c80f70;--rd-acc-ink:#ffffff;--rd-acc-soft:#fde6f2;--rd-good:#14845a;--rd-bad:#c4314b;
+  --rd-display:"Saira Extra Condensed","Arial Narrow",system-ui,sans-serif;--rd-body:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;--rd-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  /* map the app's older tokens onto the redesign */
+  --court:var(--rd-bg);--card:var(--rd-panel);--card2:var(--rd-cell);--ink:var(--rd-ink);--mute:var(--rd-mute);--faint:var(--rd-faint);--line:var(--rd-line);--line2:#cfd1db;
+  --navy:var(--rd-ink);--deep:var(--rd-ink);--navyt:var(--rd-ink);--navy-ink:#fff;--volt:var(--rd-acc);--volt2:var(--rd-acc2);--volt-ink:#fff;--accent:var(--rd-acc);--soft:var(--rd-acc-soft);
+  --good:var(--rd-good);--bad:var(--rd-bad);--display:var(--rd-display);--body:var(--rd-body);--mono:var(--rd-mono);
+  --chp:var(--rd-bg);--chp2:var(--rd-cell);--chc:var(--rd-panel);--chink:var(--rd-ink);--chink2:var(--rd-mute);--chline:var(--rd-line);
+  --chbar:var(--rd-ink);--chhdr:var(--rd-ink);--chbtnInk:var(--rd-ink);--btn:var(--rd-ink);--chshadow:transparent;--chyel:var(--rd-acc);--chred:var(--rd-acc);
+  --tr-bw:1px;--tr-r:0px;--tr-title-bg:var(--rd-ink);--tr-lines:var(--rd-line);--mgpaper:var(--rd-bg);--mgpanel:var(--rd-panel);--mgink:var(--rd-ink);--mgbw:1px;
+  color-scheme:light}
+@R:not([data-look="dark"]) body,@R[data-look="dark"] body{background-color:var(--rd-bg)!important}
+@R[data-look="dark"]:not(#_c){--rd-bg:#0d0e14;--rd-panel:#16171f;--rd-ink:#f1f1f5;--rd-mute:#a3a5b4;--rd-faint:#6c6f80;--rd-line:#262836;--rd-cell:#1d1f2a;
+  --rd-acc:#ff3d9e;--rd-acc2:#ff63b1;--rd-acc-ink:#14020b;--rd-acc-soft:#3a1028;--rd-good:#4cc68d;--rd-bad:#ff6b81;--line2:#33364a;--navy-ink:#0d0e14;--volt-ink:#14020b;color-scheme:dark}
+
+/* ---------- base ---------- */
+@R body{background:var(--rd-bg);color:var(--rd-ink);font-family:var(--rd-body)}
+@R body::before{background:var(--rd-bg)}
+@R :focus-visible{outline:2px solid var(--rd-acc);outline-offset:2px}
+@R .vsub,@R .lbl,@R .t2 .num,@R .eyebrow,@R .chk,@R .hsk{font-family:var(--rd-mono)}
+@R .eyebrow,@R .lbl,@R .chk,@R .hsk,@R .hhk{text-transform:lowercase;letter-spacing:.02em;font-weight:500;color:var(--rd-mute)}
+@R h1,@R h2,@R h3,@R .chdisp,@R .chh1,@R .mgpt,@R .hht,@R .chpt,@R .lshead h2{font-family:var(--rd-display);font-style:italic;font-weight:900;text-transform:uppercase;letter-spacing:.005em;color:var(--rd-ink)}
+@R main h2,@R .view h2{font-size:clamp(26px,3.4vw,34px);line-height:1}
+@R main h2::before{display:none}
+@R .chdisp.chh1,@R .hht{font-size:clamp(48px,8vw,104px);line-height:.86}
+@R .chh1 em,@R .hht em{font-style:italic;color:var(--rd-acc)}
+@R .circ{display:none}
+@R .tnum,@R [class*="score"],@R .num{font-variant-numeric:tabular-nums}
+
+/* ---------- header and nav ---------- */
+@R header.band{background:color-mix(in srgb,var(--rd-bg) 94%,transparent);color:var(--rd-ink);border-bottom:1px solid var(--rd-line);box-shadow:none}
+@R header.band::after,@R header.band .stage,@R header.band .bstripe,@R header .hmark{display:none}
+@R header.band .eyebrow{display:none}
+@R .rdlogo{display:inline-flex;align-items:center;gap:8px;font:900 italic 28px/1 var(--rd-display);text-transform:uppercase;color:var(--rd-ink);letter-spacing:.01em;white-space:nowrap}
+@R .rdlogo i{width:13px;height:20px;background:var(--rd-acc);transform:skewX(-14deg);display:block}
+@R header .brand .nplk{display:none}
+@R .tabs,@R .mgtabs{background:transparent;box-shadow:none}
+@R .tabs button,@R .mgtabs button{font:800 italic 17px/1 var(--rd-display);letter-spacing:.04em;text-transform:uppercase;color:var(--rd-mute);background:transparent;clip-path:none;border-radius:0;padding:10px 12px;box-shadow:none}
+@R .tabs button[aria-selected="true"],@R .mgtabs button[aria-selected="true"]{color:var(--rd-ink);background:transparent;box-shadow:inset 0 -3px 0 var(--rd-acc)}
+@R .tabs button[aria-selected="true"]::before,@R .tabs button[aria-selected="true"]::after{display:none}
+@R .tabs .tc,@R #tabCount{font:700 11px var(--rd-mono);color:var(--rd-acc);background:transparent;border:0;padding:0;margin-left:5px}
+@R .tabs .tc:empty{display:none}
+@R .jumpbtn{border:1px solid var(--rd-line);background:var(--rd-panel);border-radius:0;color:var(--rd-mute);box-shadow:none}
+@R .jumpbtn kbd,@R .jbk{font:600 11px var(--rd-mono);border:1px solid var(--rd-line);border-radius:0;background:transparent}
+/* phone bottom bar */
+@R .bnav{background:var(--rd-panel);border-top:1px solid var(--rd-line);box-shadow:none}
+@R .bnav button{font:800 italic 13px/1 var(--rd-display);letter-spacing:.04em;text-transform:uppercase;color:var(--rd-mute)}
+@R .bnav button[aria-selected="true"]{color:var(--rd-ink)}
+@R .bnav button[aria-selected="true"]::before{background:var(--rd-acc);height:3px;border-radius:0}
+@R .bnav svg{color:inherit}
+/* side menu / more sheet */
+@R .side{background:var(--rd-panel);border-color:var(--rd-line)}
+@R .side .sgl{font:500 11.5px var(--rd-mono);text-transform:lowercase;color:var(--rd-mute)}
+@R .side button[data-view] .nl{font:800 italic 17px/1 var(--rd-display);text-transform:uppercase;letter-spacing:.03em}
+@R .side button[aria-selected="true"]{background:var(--rd-acc-soft);color:var(--rd-ink);box-shadow:inset 3px 0 0 var(--rd-acc)}
+
+/* sub-section tabs (Pokémon · Tournaments etc.) */
+@R .subnav button,@R .chsubtabs button,@R .seg button{font:800 italic 15px/1 var(--rd-display);letter-spacing:.04em;text-transform:uppercase;border-radius:0}
+@R .subnav button[aria-pressed="true"],@R .subnav button[aria-selected="true"],@R .seg button[aria-pressed="true"]{background:var(--rd-acc);color:var(--rd-acc-ink);border-color:var(--rd-acc);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+@R .seg{border-radius:0;background:var(--rd-panel);border-color:var(--rd-line)}
+
+/* ---------- buttons ---------- */
+@R .btn{border-radius:0;border:1px solid var(--rd-ink);background:var(--rd-panel);color:var(--rd-ink);box-shadow:none;font-weight:700}
+@R .btn:hover{border-color:var(--rd-acc);color:var(--rd-ink)}
+@R .btn.primary,@R .chprimary,@R .mgyel,@R .btn.go,@R .chbtn.primary{background:var(--rd-acc);color:var(--rd-acc-ink);border-color:var(--rd-acc);font:800 italic 17px/1 var(--rd-display);letter-spacing:.05em;text-transform:uppercase;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);border-radius:0;box-shadow:none;text-shadow:none}
+@R .btn.primary:hover,@R .chprimary:hover,@R .mgyel:hover{background:var(--rd-acc2);color:var(--rd-acc-ink)}
+@R .chghost{border-radius:0;box-shadow:none;border:1px solid var(--rd-ink);background:var(--rd-panel);color:var(--rd-ink);font:800 italic 16px/1 var(--rd-display);letter-spacing:.04em;text-transform:uppercase}
+@R .linkbtn{color:var(--rd-acc)}
+@R .field,@R input.field,@R select.field,@R textarea{border-radius:0;border-color:var(--rd-line);background:var(--rd-panel);color:var(--rd-ink);box-shadow:none}
+@R .field:focus{border-color:var(--rd-acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--rd-acc) 18%,transparent)}
+
+/* ---------- panels: 1px lines, square corners, no ink shadows ---------- */
+@R .slot,@R .vcard,@R .gpcard,@R .chblock,@R .chsec>.chbox,@R .panel,@R .card,@R .tile,@R .mrow,@R .prob-row,@R .lspanel,@R .chcard{border-radius:0;box-shadow:none}
+@R [class*="mg"][style*="--mgbw"]{border-width:1px}
+
+/* ---------- type chips: Pictogram glyph + lowercase mono label on a pastel tint ---------- */
+@R .ty{border-radius:0;font:600 11.5px/1.75 var(--rd-mono);letter-spacing:.01em;text-transform:lowercase;text-shadow:none;color:var(--rd-ink)!important;background:color-mix(in srgb,var(--tc,#999) 26%,var(--rd-panel))!important;box-shadow:inset 0 -2px 0 var(--tc,#999)}
+@R .ty .tic,@R .tic{width:14px;height:14px;color:var(--tc,currentColor)}
+@R .ty .tic{color:color-mix(in srgb,var(--tc,#666) 70%,var(--rd-ink))}
+
+/* ---------- manga art layer: textures off, tints kept calm ---------- */
+@R .mgdots,@R .mgburst,@R .mglines,@R .mgwash{display:none!important}
+@R .mgtone{opacity:.55}
+
+/* ---------- sprites: feet on the floor ---------- */
+@R img.rdspr{object-fit:contain;object-position:50% 100%;translate:0 calc(var(--pad,0) * 100%)}
+
+/* ================= Home: Character Select ================= */
+@R .rdhome{display:flex;flex-direction:column;gap:34px;padding-bottom:24px}
+@R .rdhero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px 32px;align-items:end;padding-top:6px}
+@R .rdk{font:500 11.5px/1.3 var(--rd-mono);text-transform:lowercase;color:var(--rd-mute);letter-spacing:.02em}
+@R .rdtitle{font:900 italic clamp(54px,9vw,112px)/.84 var(--rd-display);text-transform:uppercase;margin:10px 0 0;letter-spacing:-.005em;text-wrap:balance}
+@R .rdtitle em{font-style:italic;color:var(--rd-acc)}
+@R .rdlede{margin:0 0 14px;color:var(--rd-mute);font-size:16px;max-width:46ch}
+@R .rdlede b{color:var(--rd-ink)}
+@R .rdacts{display:flex;flex-wrap:wrap;gap:10px}
+@R .rdbtn{display:inline-flex;align-items:center;gap:8px;font:800 italic 18px/1 var(--rd-display);letter-spacing:.05em;text-transform:uppercase;padding:12px 22px;border:0;cursor:pointer;color:var(--rd-ink);background:var(--rd-panel);box-shadow:inset 0 0 0 1px var(--rd-ink);clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%)}
+@R .rdbtn.p{background:var(--rd-acc);color:var(--rd-acc-ink);box-shadow:none}
+@R .rdbtn:hover{box-shadow:inset 0 0 0 2px var(--rd-acc)}
+@R .rdbtn.p:hover{background:var(--rd-acc2)}
+@R .rdstats{display:flex;gap:26px;margin-top:16px}
+@R .rdstats b{display:block;font:900 italic 30px/1 var(--rd-display);font-variant-numeric:tabular-nums}
+
+/* the stage: selected panel + roster */
+@R .rdstage{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:22px;border-top:1px solid var(--rd-line);padding-top:22px}
+@R .rdsel{display:flex;flex-direction:column;gap:12px;min-width:0}
+@R .rdport{position:relative;aspect-ratio:1/1;max-height:340px;background:var(--rd-panel);border:1px solid var(--rd-line);overflow:hidden;display:grid;place-items:end center}
+@R .rdport::before{content:"";position:absolute;inset:auto -10% 0 -10%;height:46%;background:color-mix(in srgb,var(--ta,#ccc) 30%,transparent);transform:skewY(-8deg);transform-origin:left}
+@R .rdport .ghost{position:absolute;top:14px;left:14px;right:8px;font:900 italic clamp(40px,5vw,62px)/.9 var(--rd-display);text-transform:uppercase;color:color-mix(in srgb,var(--rd-ink) 8%,transparent);overflow:hidden;white-space:nowrap}
+@R .rdport img{position:relative;width:min(300px,82%);height:auto;aspect-ratio:1/1;margin-bottom:6%}
+@R .rdp1{position:absolute;top:0;left:0;font:900 italic 15px/1 var(--rd-display);background:var(--rd-acc);color:var(--rd-acc-ink);padding:5px 9px 4px;clip-path:polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+@R .rdselname{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@R .rdselname b{font:900 italic clamp(30px,3.4vw,40px)/.9 var(--rd-display);text-transform:uppercase}
+@R .rdchips{display:flex;gap:4px;flex-wrap:wrap}
+@R .rdbars{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 12px;align-items:center;font:500 12px var(--rd-mono);color:var(--rd-mute)}
+@R .rdbar{height:8px;background:var(--rd-cell);position:relative}
+@R .rdbar i{position:absolute;inset:0 auto 0 0;background:var(--rd-ink)}
+@R .rdbar.a i{background:var(--rd-acc)}
+@R .rdbars output{color:var(--rd-ink);font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+@R .rdselfoot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+@R .rdrhead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+@R .rdh2{font:900 italic clamp(26px,3vw,34px)/1 var(--rd-display);text-transform:uppercase;margin:0}
+@R .rdroster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 6px;padding-left:6px}
+@R .rdcell{position:relative;aspect-ratio:1/1.08;border:0;padding:0;background:var(--rd-cell);transform:skewX(-8deg);cursor:pointer;color:var(--rd-ink);min-width:0;box-shadow:inset 0 -3px 0 var(--ta,#ccc)}
+@R .rdcell>.in{position:absolute;inset:0;transform:skewX(8deg);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:20px 6px 8px}
+@R .rdcell img{width:72%;height:auto;aspect-ratio:1/1;flex:none}
+@R .rdcell .nm{font:800 italic 14px/1 var(--rd-display);letter-spacing:.04em;text-transform:uppercase;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@R .rdcell .tg{display:flex;gap:3px;margin-top:4px;height:14px}
+@R .rdcell .tg svg{width:12px;height:12px}
+@R .rdcell .pc{position:absolute;top:6px;left:9px;font:600 10.5px var(--rd-mono);color:var(--rd-mute);font-variant-numeric:tabular-nums}
+@R .rdcell .rk{position:absolute;top:4px;right:9px;font:900 italic 17px/1 var(--rd-display);color:var(--rd-faint)}
+@R .rdcell .mine{position:absolute;top:22px;right:9px;width:8px;height:8px;background:var(--rd-acc);transform:rotate(45deg)}
+@R .rdcell:hover{background:color-mix(in srgb,var(--ta,#ccc) 22%,var(--rd-cell))}
+@R .rdcell[aria-pressed="true"]{background:var(--rd-acc-soft);box-shadow:inset 0 0 0 3px var(--rd-acc)}
+@R .rdcell[aria-pressed="true"]::after{content:"P1";position:absolute;top:-10px;left:-4px;transform:skewX(8deg);font:900 italic 12px/1 var(--rd-display);background:var(--rd-acc);color:var(--rd-acc-ink);padding:3px 6px}
+@R .rdkey{margin-top:10px;display:flex;gap:16px;flex-wrap:wrap}
+
+/* your six: team-order slot bar */
+@R .rdteam{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px;align-items:center;border-top:1px solid var(--rd-line);border-bottom:1px solid var(--rd-line);padding-block:16px}
+@R .rdteam .tt b{display:block;font:900 italic 26px/1 var(--rd-display);text-transform:uppercase}
+@R .rdslots{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding-left:6px}
+@R .rdslot{position:relative;height:96px;transform:skewX(-8deg);background:var(--rd-cell);border:0;padding:0;cursor:pointer;color:var(--rd-ink);box-shadow:inset 0 3px 0 var(--ta,#ccc)}
+@R .rdslot.lead{background:var(--rd-ink);color:var(--rd-bg)}
+@R .rdslot>.in{position:absolute;inset:0;transform:skewX(8deg);display:grid;grid-template-columns:52px minmax(0,1fr);align-items:end;padding:8px 10px 8px 6px;gap:2px 6px}
+@R .rdslot img{width:52px;height:52px;grid-row:1/3;align-self:end}
+@R .rdslot .no{font:900 italic 22px/1 var(--rd-display);text-align:right;color:var(--rd-acc)}
+@R .rdslot .rl{font:600 10px var(--rd-mono);text-transform:lowercase;text-align:right;opacity:.75}
+@R .rdslot .nm{grid-column:1/-1;font:800 italic 14px/1 var(--rd-display);letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+@R .rdslot.empty{background:transparent;box-shadow:inset 0 0 0 1px var(--rd-line)}
+@R .rdgrade{display:flex;align-items:center;gap:10px;background:none;border:0;cursor:pointer;color:var(--rd-ink);padding:0}
+@R .rdgrade b{font:900 italic 54px/1 var(--rd-display);color:var(--rd-acc);font-variant-numeric:tabular-nums}
+
+/* VS splash */
+@R .rdvs{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:end;min-height:260px;background:linear-gradient(105deg,color-mix(in srgb,var(--rd-acc) 7%,var(--rd-panel)) 0 50%,var(--rd-cell) 50%);border:1px solid var(--rd-line);overflow:hidden;padding:0 18px}
+@R .rdvs .side2{display:flex;gap:6px;align-items:flex-end;justify-content:center;padding:44px 0 20px;min-width:0}
+@R .rdvs .side2 img{width:min(150px,45%);height:auto;aspect-ratio:1/1}
+@R .rdvs .tag{position:absolute;top:12px;font:900 italic 14px/1 var(--rd-display);text-transform:uppercase;padding:5px 9px 4px;letter-spacing:.04em}
+@R .rdvs .tag.y{left:12px;background:var(--rd-acc);color:var(--rd-acc-ink)}
+@R .rdvs .tag.t{right:12px;background:var(--rd-ink);color:var(--rd-bg)}
+@R .rdvs .vs{align-self:center;font:900 italic clamp(60px,9vw,110px)/1 var(--rd-display);color:var(--rd-ink);position:relative;padding:0 6px}
+@R .rdvs .vs::before{content:"";position:absolute;left:50%;top:-40%;bottom:-40%;width:3px;background:var(--rd-acc);transform:rotate(14deg)}
+@R .rdvs .cap{position:absolute;bottom:10px;left:0;right:0;text-align:center}
+
+/* ranking + tools */
+@R .rdsec{display:flex;flex-direction:column;gap:12px}
+@R .rdrank{display:flex;flex-direction:column}
+@R .rdrow{display:grid;grid-template-columns:34px 46px minmax(0,1.2fr) minmax(0,2fr) 64px 64px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rd-line);background:none;border-left:0;border-right:0;border-top:0;text-align:left;cursor:pointer;color:var(--rd-ink);width:100%;font:inherit}
+@R .rdrow:hover{background:color-mix(in srgb,var(--rd-acc) 5%,transparent)}
+@R .rdrow .r{font:900 italic 22px/1 var(--rd-display);color:var(--rd-faint)}
+@R .rdrow.mine .r{color:var(--rd-acc)}
+@R .rdrow img{width:44px;height:44px}
+@R .rdrow .n{font:800 italic 19px/1 var(--rd-display);text-transform:uppercase;letter-spacing:.02em;display:flex;flex-direction:column;gap:4px}
+@R .rdrow .n .tg{display:flex;gap:4px;height:4px}
+@R .rdrow .n .tg i{flex:0 0 22px;height:4px}
+@R .rdrow .b{height:10px;background:var(--rd-cell);position:relative}
+@R .rdrow .b i{position:absolute;inset:0 auto 0 0}
+@R .rdrow output{font:700 14px var(--rd-mono);text-align:right;font-variant-numeric:tabular-nums}
+@R .rdrow output.hi{color:var(--rd-good)}
+@R .rdrhd{display:grid;grid-template-columns:34px 46px minmax(0,1.2fr) minmax(0,2fr) 64px 64px;gap:10px;border-bottom:2px solid var(--rd-ink);padding-bottom:6px}
+@R .rdrhd span:nth-child(n+5){text-align:right}
+@R .rdtools{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1px;background:var(--rd-line);border:1px solid var(--rd-line)}
+@R .rdtool{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 12px;align-items:start;padding:14px;background:var(--rd-panel);border:0;text-align:left;cursor:pointer;color:var(--rd-ink);font:inherit}
+@R .rdtool svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;grid-row:1/3}
+@R .rdtool b{font:800 italic 18px/1 var(--rd-display);text-transform:uppercase;letter-spacing:.03em}
+@R .rdtool span{font-size:13px;color:var(--rd-mute)}
+@R .rdtool:hover{box-shadow:inset 3px 0 0 var(--rd-acc)}
+@R .rdtool:hover svg{color:var(--rd-acc)}
+@R .rdwin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;border:1px solid var(--rd-line);background:var(--rd-panel);padding:16px}
+@R .rdwin .sp{display:flex;gap:2px}
+@R .rdwin .sp img{width:56px;height:56px}
+
+@media (max-width:860px){
+  @R .rdhero{grid-template-columns:1fr}
+  @R .rdstage{grid-template-columns:1fr}
+  @R .rdport{max-height:260px;aspect-ratio:auto;height:240px}
+  @R .rdroster{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @R .rdteam{grid-template-columns:1fr}
+  @R .rdslots{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @R .rdrow,@R .rdrhd{grid-template-columns:28px 38px minmax(0,1fr) 54px 54px}
+  @R .rdrow .bw,@R .rdrhd .bw{display:none}
+  @R .rdrow img{width:38px;height:38px}
+  @R .rdwin{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){@R .rdcell,@R .rdslot{transition:none}}
+
+/* display type: always uppercase italic (the old layer rewrites ALL-CAPS text to title case, so CSS does the caps) */
+@R .rdtitle,@R .rdh2,@R .rdlogo,@R .rdbtn,@R .rdcell .nm,@R .rdslot .nm,@R .rdrow .n,@R .rdtool b,@R .rdselname b,@R .rdport .ghost,@R .rdteam .tt b,@R .rdvs .vs,@R .rdvs .tag,@R h1,@R h2,@R .chdisp,@R .mgpt,@R .tabs button,@R .bnav button,@R .btn.primary,@R .chprimary,@R .chghost{text-transform:uppercase!important}
+@R .rdtitle{display:block!important}
+@R .rdtitle em{display:inline!important}
+@R .rdtitle em{text-transform:uppercase!important}
+@R .tabs .tc,@R #tabCount,@R .bnav .tc{background:transparent!important;color:var(--rd-acc)!important;border:0!important;box-shadow:none!important;padding:0!important;font:700 11px var(--rd-mono)!important}
+@R .rdteam{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"tt gr" "sl sl"}
+@R .rdteam .tt{grid-area:tt}@R .rdteam .rdslots{grid-area:sl}@R .rdteam>.rdgrade,@R .rdteam>.rdbtn{grid-area:gr}
+@R .rdport img{max-height:92%;width:auto}
+@media (max-width:860px){
+  @R .rdport{height:250px}
+  @R .rdport img{height:230px;width:230px;max-height:none}
+  @R .rdcell img{width:58%}
+  @R .rdcell>.in{padding:18px 4px 6px}
+  @R .rdcell .nm{font-size:12.5px}
+  @R .rdteam{grid-template-areas:"tt gr" "sl sl"}
+}
+
+/* ---------- page titles and display text: always the heavy italic ---------- */
+@R .chdisp,@R .chpgt,@R .mgtitle .chdisp,@R .mgtrow .nm,@R .mgmis,@R .chpghead .chdisp,@R .lshead h2,@R .chh2{font-family:var(--rd-display)!important;font-weight:900!important;font-style:italic!important;text-transform:uppercase!important;letter-spacing:.005em}
+@R .chpgt,@R .mgtitle .chdisp{font-size:clamp(40px,6vw,72px)!important;line-height:.88!important}
+@R .chpgt em,@R .chdisp em{color:var(--rd-acc);font-style:italic}
+@R .mgtdots,@R .mgdiv i{display:none!important}
+@R .mgdiv{border-top:1px solid var(--rd-line)!important;margin-right:0!important;height:1px!important}
+@R .abhero,@R .chabhero{background-image:none!important}
+/* folds: the old logo chevrons become a plain + / − */
+@R .chtog svg{display:none!important}
+@R .chtog{width:26px;height:26px;display:grid;place-items:center;border:1px solid var(--rd-line);background:var(--rd-panel)}
+@R .chtog::before{content:"+";font:700 16px/1 var(--rd-mono);color:var(--rd-acc)}
+@R details[open]>summary .chtog::before{content:"−"}
+@R .cht{font:800 italic 18px/1.05 var(--rd-display)!important;text-transform:uppercase!important;letter-spacing:.03em;border:0!important;background:none!important;padding:0!important;box-shadow:none!important}
+@R .chs{color:var(--rd-mute)}
+/* old wordmark anywhere (footer, menus): replaced by the italic wordmark */
+@R .nplk{display:none!important}
+@R .rdlogo.sm{font-size:20px}@R .rdlogo.sm i{width:9px;height:14px}
+
+/* display-font text the older layers set upright or light: heavy italic everywhere */
+@R .dcbig,@R .dcbig small,@R .nm,@R .mgmis,@R .rk,@R .sc,@R .chtier,@R .svname,@R .npletter,@R .pt,@R .ix,@R .vtitle,@R .sl-name,@R .mgtitle,@R .mgtitle *,@R [data-pane] .n:not(.rdrow .n),@R .chpghead *{font-style:italic;font-weight:900}
+@R .dcbig{font-size:clamp(56px,7vw,88px)!important;line-height:.9!important;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+@R .dcbig small{font-size:.32em!important;color:var(--rd-mute);font-style:normal;font-weight:500;font-family:var(--rd-mono)}
+@R .mgmis,@R .sc{font-variant-numeric:tabular-nums}
+@R .mgtitle em,@R h1 em,@R .chpgt em{color:var(--rd-acc)}
+/* selected toggles: magenta, never the old blue */
+@R{--chblue:var(--rd-ink);--chblueT:var(--rd-ink)}
+@R main button[aria-pressed="true"]:not(.rdcell),@R main [role="tab"][aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--rd-acc)!important;border-color:var(--rd-ink)!important;color:var(--rd-ink)!important;background:var(--rd-panel)!important}
+@R main .subnav button[aria-pressed="true"],@R main .subnav button[aria-selected="true"]{background:var(--rd-acc)!important;color:var(--rd-acc-ink)!important;border-color:var(--rd-acc)!important;box-shadow:none!important}
+/* My team stage: captions as italic caps names with a mono role */
+@R .mgcap{border:0!important;background:color-mix(in srgb,var(--rd-panel) 88%,transparent)!important;box-shadow:inset 3px 0 0 var(--rd-acc)!important}
+@R .mgcap b,@R .mgcap .mgnm{font:900 italic 20px/1 var(--rd-display)!important;text-transform:uppercase!important;color:var(--rd-ink)!important}
+@R .mgcap span,@R .mgcap small,@R .mgrole{font:500 11px var(--rd-mono)!important;text-transform:lowercase!important;color:var(--rd-mute)!important}
+@R .mgtone{opacity:.38}
+@R .chbmt,@R .chbmt *{font-family:var(--rd-display)!important;font-weight:900!important;font-style:italic!important;text-transform:uppercase!important}
+@R .chdisp em,@R .chpgt em,@R .chbmt em,@R .mgtitle em{color:var(--rd-acc)!important;font-style:italic!important}
+@R{--chredT:var(--rd-acc)}
+html{background:var(--rd-bg,#f6f6f8)}

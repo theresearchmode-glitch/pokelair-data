@@ -1,6 +1,8 @@
 // Builds the PokéLair page from src/ (parts.json lists the order). Output: dist/page.html, published as the artifact.
 import fs from 'node:fs';
-const parts = JSON.parse(fs.readFileSync(new URL('./parts.json', import.meta.url)));
+// `--parts=<file>` and `--out=<file>` (Nov 4) build the separate redesign page (parts-redesign.json → dist/redesign.html); defaults unchanged.
+const argOf = k => (process.argv.find(a => a.startsWith(`--${k}=`)) || '').slice(k.length + 3);
+const parts = JSON.parse(fs.readFileSync(new URL('./' + (argOf('parts') || 'parts.json'), import.meta.url)));
 import {fileURLToPath} from 'node:url';
 // fileURLToPath works on Windows too (URL.pathname gives "/C:/..." there)
 const dir = fileURLToPath(new URL('.', import.meta.url));
@@ -17,7 +19,7 @@ const asJsonParse = (src) => process.argv.includes('--no-json-parse') ? src : sr
 // Colour manga theme (Nov 4, Sim approved): src/theme/*.css are appended after polish.css inside the same <style> block.
 // They write `@R` for a selector prefix strong enough to win over the older light/dark blocks without !important.
 const themeCss = s => s.replace(/@R/g, ':root:not(#_a):not(#_b)');
-let out = parts.map(p => { const s = fs.readFileSync(dir + p, 'utf8').replace(/\n$/, ''); return /^src\/data\/.*\.js$/.test(p) ? asJsonParse(s) : /^src\/theme\/.*\.css$/.test(p) ? themeCss(s) : s; }).join('\n');
+let out = parts.map(p => { const s = fs.readFileSync(dir + p, 'utf8').replace(/\n$/, ''); return /^src\/data\/.*\.js$/.test(p) ? asJsonParse(s) : /^src\/(theme|redesign)\/.*\.css$/.test(p) ? themeCss(s) : s; }).join('\n');
 // Smaller page (Nov 1, load speed): whole-line // comments inside the app's plain <script> blocks are dropped, about 150 KB
 // (57 KB gzipped, 10% of the download) that the phone no longer downloads or parses. Only lines that are nothing but a comment
 // go; code, strings and the battle-log text block (<script type="text/plain">) are untouched. Checked by comparing an
@@ -28,5 +30,6 @@ if (!process.argv.includes('--keep-comments')) {
   out = out.replace(/<script>([\s\S]*?)<\/script>/g, (m, code) => '<script>' + code.split('\n').filter(l => { const c = /^\s*\/\/[^\n]*$/.test(l); if (c) dropped++; return !c; }).join('\n') + '</script>');
   out = out.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + css.replace(/\/\*[\s\S]*?\*\//g, () => { dropped++; return ''; }) + '</style>'); }
 fs.mkdirSync(dir + 'dist', {recursive: true});
-fs.writeFileSync(dir + 'dist/page.html', out);
-console.log(`built dist/page.html (${(out.length / 1024).toFixed(0)} KB from ${parts.length} parts${dropped ? `, ${dropped} comment lines dropped` : ''})`);
+const outFile = argOf('out') || 'dist/page.html';
+fs.writeFileSync(dir + outFile, out);
+console.log(`built ${outFile} (${(out.length / 1024).toFixed(0)} KB from ${parts.length} parts${dropped ? `, ${dropped} comment lines dropped` : ''})`);
