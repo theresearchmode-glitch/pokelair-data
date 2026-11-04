@@ -17,12 +17,12 @@
 @media (min-width:1001px){
   @R :is(.t2,.vsub,.basis,.hint,.linkbtn,.chs,.chghost,.fbanon,.fbctx,.adesc){font-size:14px}
   @R .chk{font-size:14px}
-  @R :is(.ty,.tag:not(.ico),.lbl,.archchip,.tgn,.tgmk,.wrv,.lts,.ltm,.ltd,.ltg,.sev,.dbdt,.who,.gpwho,.qwhy,.warnline,.wk,.hmn,.hcw,.nm,.tr,.rtier,.kind,.calcd,.cxbadge,.sgl,.jk,.jhint,.mgrole,.hmrk){font-size:13.5px}
+  @R :is(.ty,.tag:not(.ico),.lbl,.archchip,.tgn,.tgmk,.wrv,.lts,.ltm,.ltd,.ltg,.sev,.dbdt,.who,.gpwho,.qwhy,.warnline,.wk,.hmn,.hcw,.tr,.rtier,.kind,.calcd,.cxbadge,.sgl,.jk,.jhint,.mgrole,.hmrk){font-size:13.5px}
   @R :is(.btn,.seg>button,.sub){font-size:14px}
 }
 
 /* ---------- My team (1280px and up): the stage and the selected set side by side. On the phone the set panel sits under the stage;
-   on a wide screen that left 40% of the head empty. Now: name and grade across the top, the stage (lead / back / bench) on the
+   on a wide screen that left 40% of the head empty. Now: the big display team name (main's size) and the grade across the top, the stage (lead / back / bench) on the
    left, and the record, checks, the tapped Pokémon's set and the team actions in a column on the right. Same nodes, CSS only. ---------- */
 @media (min-width:1280px){
   @R #chTeam .chthead>div:has(>.mgstage){display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,34%);column-gap:28px;align-items:start;grid-auto-rows:min-content}
@@ -40,8 +40,6 @@
 }
 @media (min-width:1280px){
   @R #chTeam .chthead>div:has(>.mgstage)>.mgstage{max-width:none;width:auto}
-  @R #chTeam .chthead>div:has(>.mgstage)>.mgtrow{align-items:flex-end}
-  @R #chTeam .chthead>div:has(>.mgstage)>.mgtrow>.nm{font:400 30px/1.15 var(--display);align-self:flex-end;margin-bottom:6px}
 }
 
 /* ---------- Overlays on desktop: a little wider and one size up, so they read as dialogs, not phone sheets ---------- */
