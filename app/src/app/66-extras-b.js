@@ -63,7 +63,7 @@ function posterFacts(ms, name) { const RD = ms.length ? prepOf(ms) : null; let c
 async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length) return null; ms = ms.slice(0, 6);
   const dark = (opt.dark != null ? opt.dark : (CH.shareMode || document.documentElement.dataset.look) === 'dark');
   const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#D9D0C2', pen: '#7CC4FF', line: '#4A4541', card: '#2C2A28'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', pen: '#005A90', line: '#D8CCB6', card: '#FBF6EC'};
-  try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Space Mono"', '400 40px "Permanent Marker"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
+  try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
   const f = posterFacts(ms, opt.name), {W, H} = PO, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.textBaseline = 'alphabetic';
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   /* the banner: the team's type colours, a diagonal hem, halftone dots */
@@ -75,7 +75,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   x.restore();
   /* text on the banner: ink or white, whichever reads better on both colours */
   const ink = '#1D2140', TX = Math.min(PO.cr('#ffffff', c1), PO.cr('#ffffff', c2)) >= Math.min(PO.cr(ink, c1), PO.cr(ink, c2)) ? '#ffffff' : ink, SH = TX === '#ffffff' ? 'rgba(20,16,40,.55)' : 'rgba(255,255,255,.7)';
-  x.font = '700 24px "Space Mono", monospace'; x.fillStyle = TX; x.fillText('MY TEAM · POKÉMON CHAMPIONS · REG M-C DOUBLES', 56, 78);
+  x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = TX; x.fillText('MY TEAM · POKÉMON CHAMPIONS · REG M-C DOUBLES', 56, 78);
   /* the name: as big as fits, up to two lines */
   /* a " · " stays with the word before it, so no line starts with a dot */
   const title = f.name.toUpperCase(), words = title.replace(/ · /g, '\u00a0· ').split(/ +/); let fz = 132, lines = [title];
@@ -106,11 +106,11 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   if (f.G) { const L = f.G.letter, bc = CH.gcol(L), lc = PO.cr(bc, '#1D2140') >= PO.cr(bc, '#ffffff') ? '#1D2140' : '#ffffff';
     x.fillStyle = bc; x.beginPath(); x.arc(150, gy, 92, 0, 7); x.fill();
     x.save(); x.translate(150, gy); x.rotate(-.12); x.strokeStyle = P.pen; x.lineWidth = 6; x.beginPath(); x.ellipse(0, 0, 112, 104, 0, .3, Math.PI * 2 + .05); x.stroke(); x.restore();
-    x.fillStyle = lc; x.textAlign = 'center'; x.font = '400 118px "Permanent Marker", cursive'; x.fillText(L, 150, gy + 42); x.textAlign = 'left';
-    x.font = '700 24px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('GRADE', 282, gy - 52);
+    x.fillStyle = lc; x.textAlign = 'center'; x.font = '400 118px "Instrument Sans",system-ui,sans-serif'; x.fillText(L, 150, gy + 42); x.textAlign = 'left';
+    x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('GRADE', 282, gy - 52);
     x.font = '400 112px Anton, Impact, sans-serif'; x.fillStyle = bc; const nw = x.measureText(String(f.G.s)).width; x.fillStyle = P.ink; x.fillText(String(f.G.s), 282, gy + 62);
     x.fillStyle = bc; x.fillRect(282, gy + 76, nw, 8); }
-  else { x.font = '700 24px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText(`${ms.length} OF 6 POKÉMON`, 56, gy - 30); x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText('Grade comes with a full six', 56, gy + 20); }
+  else { x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText(`${ms.length} OF 6 POKÉMON`, 56, gy - 30); x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText('Grade comes with a full six', 56, gy + 20); }
   if (f.hd) { const rx = 640, r = 74, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
     x.lineWidth = 18; x.strokeStyle = P.line; x.beginPath(); x.arc(rx, gy, r, 0, 7); x.stroke();
     x.strokeStyle = dark ? '#3DBE78' : '#1E8E4E'; x.lineCap = 'round'; x.beginPath(); x.arc(rx, gy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fr); x.stroke(); x.lineCap = 'butt';
@@ -120,8 +120,8 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   x.fillStyle = P.line; x.fillRect(56, 1236, W - 112, 3);
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']);
   await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 50, 1252, 300, 300 * 196 / 761.34); } catch (e) {}
-  x.textAlign = 'right'; x.font = '400 50px "Permanent Marker", cursive'; x.fillStyle = P.pen; x.fillText('Plot your win.', W - 56, 1302);
-  x.font = '700 18px "Space Mono", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', W - 56, 1332); x.textAlign = 'left';
+  x.textAlign = 'right'; x.font = '400 50px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Plot your win.', W - 56, 1302);
+  x.font = '700 18px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', W - 56, 1332); x.textAlign = 'left';
   return c; }
 /* My team's Share: "Team card" (the wide card, as before) or "Team poster" (portrait) */
 CH.shareKind = 'card';

@@ -35,7 +35,10 @@ function evSourceText(x) { x = String(x || ''); const m = x.match(/Limitless \((
   return m ? `online events with ${m[1]}+ players from the last ${m[2]} days (top ${m[3]})${o ? ` and official events (top ${o[1]})` : ''}` : x; }
 function renderEvents() {
   const el = $('evOut'); if (!el) return; const E = META.events;
-  const src = $('evSource'); if (src) src.textContent = E ? `${E.events.length} events · ${evSourceText(E.source)}` : '';
+  /* round words: the counts as labelled number cells; which events count (online player floor, last N days, top cut) is behind "?", unchanged */
+  const src = $('evSource'); if (src) { if (!E) src.textContent = ''; else { const on = E.events.filter(e => e.src !== 'official').length, off = E.events.length - on, rule = evSourceText(E.source);
+    const cell = (v, l) => `<span class="wdc"><b>${v.toLocaleString('en-US')}</b><small>${l}</small></span>`;
+    src.classList.add('wdstats'); src.innerHTML = `<span class="wdrow" role="group" aria-label="Events counted">${cell(E.events.length, 'events')}${off ? cell(on, 'online') + cell(off, 'official') : ''}${typeof tipText === 'function' && rule ? `<span class="wdq">${tipText('evsrc', 'What counts as an event', `${rule[0].toUpperCase() + rule.slice(1)}.`)}</span>` : ''}</span>`; } }
   if (!E) { el.innerHTML = '<div class="empty-note">Tournament results appear here after the next data refresh.</div>'; return; }
   const ev = evUi.open && E.events.find(e => e.id === evUi.open);
   if (ev) {
@@ -84,12 +87,12 @@ function renderTeamSearch() {
   if (!pool.length) { box.innerHTML = ''; out.innerHTML = ''; if (list) list.hidden = false; return; }
   const label = f => f.k === 'mon' ? (byName.get(f.v) || {}).d || f.v : f.v;
   box.innerHTML = `<div class="tsrow"><div class="cb tsin"><input class="field" id="tsIn" placeholder="Search winning teams" aria-label="Search ${pool.length} winning teams by Pokémon, item, move or ability" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Search winning teams"></div></div>
-    ${tsUi.f.length ? `<div class="tschips">${tsUi.f.map((f, i) => `<span class="corechip">${f.k === 'mon' ? sprite(byName.get(f.v), 'tiny') : `<i class="tsk">${TS_KIND[f.k]}</i>`}${esc(label(f))}<button type="button" data-tsx="${i}" aria-label="Remove">×</button></span>`).join('')}<button type="button" class="linkbtn" data-tsx="*">Clear</button></div>` : ''}`;
+    ${tsUi.f.length ? `<div class="tschips">${tsUi.f.map((f, i) => `<span class="corechip">${f.k === 'mon' ? sprite(byName.get(f.v), 'tiny') : (typeof kindTag === 'function' ? kindTag(f.k, 'tsk') : `<i class="tsk">${TS_KIND[f.k]}</i>`)}${esc(label(f))}<button type="button" data-tsx="${i}" aria-label="Remove">×</button></span>`).join('')}<button type="button" class="linkbtn" data-tsx="*">Clear</button></div>` : ''}`;
   const inp = $('tsIn');
   if (inp) { const run = () => { const q = norm(inp.value); if (!q) { closeMenu(); return; }
       const have = new Set(tsUi.f.map(f => f.k + ':' + f.v));
       const r = tsTerms().filter(x => !have.has(x.k + ':' + x.v) && norm(x.label).includes(q)).sort((a, b) => (norm(b.label).startsWith(q) ? 1 : 0) - (norm(a.label).startsWith(q) ? 1 : 0) || b.c - a.c).slice(0, 8);
-      openMenu(inp, r, x => `${x.k === 'mon' ? sprite(byName.get(x.v), 'tiny') : ''}<span class="on">${esc(x.label)}</span><span class="tag">${TS_KIND[x.k].toUpperCase()}</span><span class="uso">${x.c} team${x.c === 1 ? '' : 's'}</span>`,
+      openMenu(inp, r, x => `${x.k === 'mon' ? sprite(byName.get(x.v), 'tiny') : ''}<span class="on">${esc(x.label)}</span>${x.k === 'mon' || typeof kindTag !== 'function' ? `<span class="tag">${TS_KIND[x.k]}</span>` : kindTag(x.k)}<span class="uso">${x.c} team${x.c === 1 ? '' : 's'}</span>`,
         x => { tsUi.f.push({k: x.k, v: x.v}); tsUi.more = 0; renderTeamSearch(); const n = $('tsIn'); if (n) n.focus(); }, 'Nothing in the winning teams matches that.'); };
     inp.addEventListener('input', run); inp.addEventListener('focus', () => { if (inp.value) run(); }); inp.addEventListener('keydown', kb);
     inp.addEventListener('blur', () => setTimeout(() => { if (cbState && cbState.input === inp) closeMenu(); }, 120)); }

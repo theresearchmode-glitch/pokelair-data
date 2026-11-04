@@ -1,0 +1,836 @@
+/* NastyPlot redesign: colour manga (approved Nov 4, mockups v5/v6). Loaded after riso.css and riso2.css.
+   Paper and black ink; 3px ink frames, square corners, plain-paper gutters. Colour comes from the Pokémon: each hero panel is toned in
+   its type colour(s) (both types, OKLCH-matched), set by 71-manga.js as CSS variables. Rules:
+   - art only in hero panels (Home cover / 6v6 spread, My team stage, info sheet hero, The read); every other page is the calm layer;
+   - one texture per panel: dots OR a burst (wash + speed lines), never both; text, numbers and buttons always sit on clean paper;
+   - dark mode is true black and the tones are half strength; no idle motion, a short lift on tap only, none under reduced motion. */
+
+/* ---------- tokens ---------- */
+@R{--chp:#FBFAF7;--chp2:#F1EFEA;--chc:#FFFFFF;--chink:#141414;--chink2:#4F546F;--chline:#141414;--line:#DCD8D0;--line2:#C5C0B6;--soft:#F1EFEA;--card2:#F6F4EF;
+  --chbar:#141414;--chhdr:#141414;--chbtnInk:#141414;--navy:#141414;--deep:#141414;--navyt:#141414;--btn:#141414;--chshadow:#141414;
+  --tr-bw:3px;--tr-r:0px;--tr-title-bg:#141414;--tr-lines:#141414;--mgpaper:#FBFAF7;--mgpanel:#FFFFFF;--mgink:#141414}
+@R[data-look="dark"]{--chp:#0B0B0C;--chp2:#18181A;--chc:#111113;--chink:#F4F1EC;--chink2:#A8A6AE;--chline:#E9E6E0;--line:#2A2A2F;--line2:#3B3B42;
+  --chbar:#111113;--chhdr:#111113;--chbtnInk:#0B0B0C;--navy:#111113;--deep:#0B0B0C;--btn:#F4F1EC;--chshadow:#000;--tr-title-bg:#111113;--tr-lines:rgba(255,255,255,.2);
+  --mgpaper:#0B0B0C;--mgpanel:#0B0B0C;--mgink:#E9E6E0}
+/* plain paper: no grain, no glow, square ink */
+@R body{background-image:none!important;background-color:var(--chp)}
+@R .tabs{border-bottom-width:3px}
+
+/* ---------- the panel ---------- */
+@R .mgpn{position:relative;display:block;border:var(--mgbw) solid var(--mgink);background:var(--mgpanel);padding:0;margin:0;text-align:left;color:var(--chink);font:inherit;border-radius:0;min-width:0;overflow:hidden;box-shadow:none}
+@R button.mgpn{cursor:pointer}
+@R button.mgpn:focus-visible{outline:3px solid var(--chblue);outline-offset:3px}
+@R .mgin{position:absolute;inset:0;display:block;overflow:hidden}
+/* burst: a soft wash in the two type colours and speed lines (two inks, matched tints) radiating from behind the Pokémon; the top-left stays clean paper */
+@R .mgwash{position:absolute;inset:0;background:linear-gradient(170deg,var(--mgpanel) 24%,var(--w1) 60%,var(--w2))}
+@R .mglines{position:absolute;inset:0;background:repeating-conic-gradient(from 2deg at var(--lx,72%) var(--ly,62%),transparent 0 5deg,var(--l1) 5deg 6deg,transparent 6deg 11deg,var(--l2) 11deg 12deg,transparent 12deg 18deg);
+  -webkit-mask:linear-gradient(100deg,transparent 0 var(--cx,40%),#000 calc(var(--cx,40%) + 14%));mask:linear-gradient(100deg,transparent 0 var(--cx,40%),#000 calc(var(--cx,40%) + 14%))}
+/* tone: dots in the two type colours, fading up from the floor; text stays above them on paper */
+@R .mgdots{position:absolute;inset:0;background:linear-gradient(90deg,var(--d1),var(--d2));
+  -webkit-mask:radial-gradient(#000 1.5px,transparent 1.75px) 0 0/6px 6px,linear-gradient(to top,#000 10%,transparent var(--dt,42%));-webkit-mask-composite:source-in;
+  mask:radial-gradient(#000 1.5px,transparent 1.75px) 0 0/6px 6px,linear-gradient(to top,#000 10%,transparent var(--dt,42%));mask-composite:intersect}
+@R[data-look="dark"] .mgwash{background:linear-gradient(170deg,var(--mgpanel) 24%,var(--W1) 60%,var(--W2))}
+@R[data-look="dark"] .mglines{background:repeating-conic-gradient(from 2deg at var(--lx,72%) var(--ly,62%),transparent 0 5deg,var(--L1) 5deg 6deg,transparent 6deg 11deg,var(--L2) 11deg 12deg,transparent 12deg 18deg);opacity:.6}
+@R[data-look="dark"] .mgdots{background:linear-gradient(90deg,var(--D1),var(--D2));opacity:.6}
+/* caption box: paper, ink frame; role in blue (you) or pink (them) */
+@R .mgcap{position:absolute;left:10px;top:10px;z-index:3;display:flex;flex-direction:column;gap:1px;background:var(--mgpanel);border:2.5px solid var(--mgink);padding:5px 9px 6px;max-width:calc(100% - 20px);line-height:1.2}
+@R .mgcap b{font:400 16px/1.15 var(--display);color:var(--chink);white-space:nowrap}
+@R .mgcap>span{font-size:13px;color:var(--chink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@R .mgcap .mgrole{font:700 13px/1.2 var(--body)}
+@R .mgrole.you{color:var(--chblueT)}@R .mgrole.them{color:var(--chredT)}
+@R .mgmon{position:absolute;right:4px;bottom:0;z-index:2;width:62%;height:78%;display:flex;align-items:flex-end;justify-content:flex-end;pointer-events:none}
+@R .mgmon img,@R .mgmon svg{width:auto;height:100%;max-width:100%;object-fit:contain;object-position:right bottom;display:block}
+@R .mgaura{overflow:visible}
+@R .mgaura .mgstroke{stroke:var(--mgpanel);stroke-width:3px;stroke-linejoin:round;paint-order:stroke}
+/* misprint: big numbers are black ink with one type-colour offset (3px, 2px) */
+@R .mgmis{text-shadow:3px 2px 0 var(--mc,var(--chblue))}
+@R[data-look="dark"] .mgmis{text-shadow:3px 2px 0 var(--MC,var(--chblue))}
+@R .mgpic{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:square;flex:none}
+@R .mgpic .f{fill:currentColor;stroke:none}
+/* the only motion: a short lift on tap */
+@R .mglift{transform:translateY(-4px);transition:transform .2s ease-out}
+@media (prefers-reduced-motion:reduce){@R .mglift{transform:none;transition:none}}
+
+/* ---------- Home cover (phone) ---------- */
+@R .mgcover{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:262px 150px;gap:6px;margin:4px 0 0}
+@R .mgcover .mgc1{grid-column:1/3;--cx:44%}
+@R .mgbig{position:absolute;left:12px;top:10px;z-index:3;font:400 56px/1 var(--display);color:var(--chink);white-space:nowrap}
+@R .mgbig small{font-size:32px}
+@R .mgcapq{top:auto;position:absolute}
+@R .mgc1 .mgcapq{top:82px;left:14px}
+@R .mgc1 .mgmon{width:58%;height:92%;right:-6px}
+@R .mgc2 .mgn{position:absolute;left:12px;top:10px;z-index:3;font:400 26px/1 var(--display)}
+@R .mgc2 .mgnm{position:absolute;left:12px;top:42px;z-index:3;font-weight:700;font-size:15px}
+@R .mgc2 .mgmon{width:60%;height:66%}
+@R .mgsrc{margin:8px 0 0;font-size:13px;color:var(--chink2)}
+@R .trph{display:none}
+/* three action panels; the main one is yellow */
+@R .mgacts{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:6px;margin-top:14px}
+@R .mgact{display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:96px;padding:10px;border:var(--mgbw) solid var(--mgink)!important;border-radius:0!important;background:var(--mgpanel)!important;color:var(--chink)!important;text-align:left;box-shadow:none!important;cursor:pointer}
+@R .mgact b{font:400 16px/1.1 var(--display)}
+@R .mgact.mgyel{background:var(--chyel)!important;color:#141414!important}
+@R .mgact:nth-child(2) .mgpic{color:var(--chblue)}@R .mgact:nth-child(3) .mgpic{color:var(--chred)}
+@R .mgact.mgyel .mgpic{color:#141414}
+@R .chmhero .chdisp.sub,@R .chmhero>p{display:none}
+@R .mgphc{margin:0 0 8px}
+/* header buttons: plain ink icons, no boxes */
+@R .band .iconbtn,@R .band .jumpbtn.icon,@R header .hbtn{border-color:transparent!important;background:none!important}
+
+/* ---------- Home (desktop): headline + actions, cover, then the spread ---------- */
+@R .trbanner.mgban{background:none!important;border:0!important;padding:0!important;margin-top:8px;box-shadow:none!important}
+@R .trbanner.mgban .chmid{background:none!important;color:var(--chink)!important;border:0!important;padding:6px 0!important;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:28px;box-shadow:none!important}
+@R .trbanner.mgban .chmid>*{grid-column:1}
+@R .trbanner.mgban .chmid>.mgacts{grid-column:2;grid-row:1/4;align-self:center;margin:0;grid-template-columns:repeat(3,auto)}
+@R .trbanner.mgban .mgact{min-height:0;flex-direction:row;align-items:center;padding:12px 18px}
+@R .trbanner.mgban .chmid p,@R .trbanner.mgban .chmid p *{color:var(--chink2)!important;background:none!important;-webkit-text-fill-color:currentColor!important}
+@R .mgdeskcov{margin:30px 0 10px}@R .mgdeskcov .mgcover{grid-template-columns:2fr 1fr 1fr;grid-template-rows:300px}@R .mgdeskcov .mgc1{grid-column:auto}
+@R .mgdeskcov .mgpt{margin-bottom:12px}
+@R .trbanner.mgban .chmid .chk,@R .trbanner.mgban .chmid .sub{display:none}
+@R .trbanner.mgban .chmid p{color:var(--chink2)}
+@R .trbanner.mgban .chh1{font-size:64px;color:var(--chink)}
+@R .mgcover.mgdesk{grid-template-rows:290px 170px;margin:0}
+@R .mgdesk .mgbig{font-size:72px}@R .mgdesk .mgc1 .mgcapq{top:98px}
+@R .chsplit.mgold{display:none!important}
+@R .mgspread{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);gap:0;margin:34px 0 10px;align-items:start}
+@R .mgpage{min-width:0}
+@R .mgph{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px}
+@R .mgpt{font:400 34px/1.05 var(--display);margin:0;color:var(--chink)}
+@R .mgps{margin:4px 0 0;font-weight:700;font-size:15px}
+@R .mgps.you{color:var(--chblueT)}@R .mgps.them{color:var(--chredT)}
+@R .mggr{text-align:right;flex:none}
+@R .mggr b{display:block;font:400 64px/.9 var(--display);color:var(--chink)}
+@R .mggr span{font-weight:700;font-size:15px}
+@R .mggrid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:290px 220px 180px;gap:8px}
+@R .mgsp .mgmon{width:60%;height:62%}
+@R .mgsp.mgburst .mgmon{width:66%;height:72%}
+@R .mgempty{border-style:dashed}
+@R .mgvs{align-self:center;display:flex;justify-content:center;margin-top:300px}
+@R .mgvs span{font:400 40px/1 var(--display);color:var(--chink);position:relative;padding:14px 4px}
+@R .mgvs span::before,@R .mgvs span::after{content:"";position:absolute;left:50%;width:3px;height:12px;background:var(--chink);transform:translateX(-50%)}
+@R .mgvs span::before{top:-8px}@R .mgvs span::after{bottom:-8px}
+@R .mgrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+@R .mgrow .chwl{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+@media (max-width:899px){@R .mgspread{display:none}}
+
+/* ---------- My team: the stage ---------- */
+@R .rzsix[hidden]{display:none!important}
+@R .mgstage{margin:14px 0 6px}
+@R .mgstg{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:214px 160px;gap:6px}
+@R .mgst .mgmon{width:70%;height:70%}
+@R .mgst.mgback .mgcap b{font-size:15px}
+@R .mgst.mgon{border-width:5px}
+@R .mgst.mgon .mgin{inset:-2px}
+@R .mgbench{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:var(--mgbw) solid var(--mgink);background:var(--mgpanel);padding:6px 10px;margin-top:6px}
+@R .mgbl{font-weight:700;font-size:13px;color:var(--chblueT)}
+@R .mgbn{display:flex;align-items:center;gap:6px;background:none;border:0;padding:4px;min-height:44px;color:var(--chink);font:600 15px var(--body);cursor:pointer;border-bottom:3px solid transparent}
+@R .mgbn[aria-pressed="true"]{border-bottom-color:var(--chink)}
+@R .mgbn img,@R .mgbn svg{width:40px;height:40px}
+@R .rzgrade .rzgn{font:400 64px/.9 var(--display)!important;text-shadow:3px 2px 0 var(--chblue)}
+@media (min-width:900px){@R .mgstg{grid-template-rows:280px 210px}}
+
+/* ---------- info sheet hero ---------- */
+@R .lshead.mghead{display:block!important;position:relative;padding:0 0 4px!important;background:var(--chc)!important;border:0!important;min-height:0!important;height:auto!important;overflow:visible!important;color:var(--chink)!important}
+@R .lshead.mghead::before,@R .lshead.mghead::after{display:none!important}
+@R .lshead.mghead>.lsring,@R .lshead.mghead>.chlsk{display:none!important}
+@R .lshead.mghead>.lsname{position:static!important;padding:14px 16px 2px!important;color:var(--chink)!important;background:none!important;text-shadow:none!important}
+@R .lshead.mghead>.lsname *{color:inherit;text-shadow:none!important}
+@R .lshead.mghead .lsname b,@R .lshead.mghead .lsname h2,@R .lshead.mghead .lsname h3{font:400 34px/1.05 var(--display)!important;color:var(--chink)!important}
+@R .lshead.mghead{padding-bottom:14px!important}
+@R .lshead.mghead>img.lsspr{display:none}
+@R .mghero{height:300px;margin:52px 12px 0;--cx:36%}
+@R .mghero .mgbig{font-size:72px}
+@R .mghero .mgcapq{top:92px;left:14px}
+@R .mghero .mgmon{width:66%;height:94%;right:-4px}
+@R .lshead.mghead .lsx{position:absolute;right:12px;top:0;z-index:5}
+
+/* ---------- Battle: The read ---------- */
+@R .mgread{border:0!important;background:none!important;padding:0!important}
+@R .mgread h2{font:400 26px/1.1 var(--display);margin:0 0 10px}
+@R .mgstrip{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 170px;gap:6px}
+@R .mgr1{grid-column:1/3;--cx:44%}
+@R .mgread .mgcapq{top:10px;left:10px;flex-direction:row;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--chink);max-width:calc(100% - 20px);white-space:normal}
+@R .mgread .mgcapq>span{white-space:normal;color:var(--chink);font-size:14px}
+@R .mgread .mgcapq em{display:block;font-style:normal;color:var(--chink2);font-size:13px}
+@R .mgm2{gap:2px;width:70%}
+@R .mgm2 img,@R .mgm2 svg{height:100%;width:50%}
+@R .mgr2 .mgmon{height:58%;width:70%}
+@R .mgr1 .mgmon{height:70%}
+@R .mgfo{margin:8px 0 0;font-size:14px;color:var(--chink2)}
+@R .mghero .mgmon img,@R .mghero .mgmon svg{width:auto!important;height:100%!important;max-width:100%!important;position:static!important;transform:none!important;filter:none!important;opacity:1!important;margin:0!important}
+@R .lspanel{box-shadow:none!important}
+@R .lshead.mghead{box-shadow:none!important}
+@R .lshead.mghead .lsx{top:8px!important;right:14px!important;border:var(--mgbw) solid var(--mgink)!important;border-radius:0!important;background:var(--mgpanel)!important;color:var(--chink)!important;box-shadow:none!important}
+@R .mghero{margin-top:60px!important}
+@R .chlsr.mgmoved{display:none!important}
+@R .mghero .mgcapq{flex-direction:row;align-items:center;gap:6px;pointer-events:auto}
+@R .mghero .tipq{position:relative!important} /* Nov 4: static let its 40px tap ring (::after) cover a seventh of the hero */
+/* calm layer: the sheet's numbers sit in one ink strip, square */
+@R .chlstats{border:var(--mgbw) solid var(--mgink)!important;border-radius:0!important;box-shadow:none!important;background:var(--mgpanel)!important;margin-left:12px!important;margin-right:12px!important}
+@R .chlstats>div{border-radius:0!important;box-shadow:none!important}
+@R .lshead.mghead{padding-top:58px!important}
+@R .mghero{margin-top:0!important}
+@R #lairSheet .lshead.mghead::before,@R #lairSheet .lshead.mghead::after{display:none!important;content:none!important;background:none!important}
+@R #lairSheet .lshead.mghead .lsname::before,@R #lairSheet .lshead.mghead .lsname::after{display:none!important;content:none!important}
+/* types under the name: a dot in the type colour and the name, not a filled chip */
+@R #lairSheet .lshead.mghead .lsname .ty{background:none!important;color:var(--chink)!important;padding:0 10px 0 0!important;font:700 14px var(--body)!important;border:0!important;box-shadow:none!important}
+
+/* ---------- calm layer: no screentone outside the hero panels; a type colour is a thin stripe or a small dot ---------- */
+@R .hmini::before,@R[data-look="dark"] .hmini::before{height:5px!important;border-bottom:0!important;background:linear-gradient(90deg,var(--ta,#888),var(--tb,var(--ta,#888)))!important}
+@R .hmini{padding:10px 0 10px!important}
+@R .hmini .hmspr{width:88px!important;height:88px!important;margin:2px auto 4px!important}
+@R :is(.tgm,.boxchip,.svm,.stm,.wktm).tyacc,@R[data-look="dark"] :is(.tgm,.boxchip,.svm,.stm,.wktm).tyacc{background-image:none!important;background-color:var(--chc)!important;box-shadow:inset 0 4px 0 var(--ta,#888)!important}
+@R .chhot.typed,@R[data-look="dark"] .chhot.typed{background-image:none!important;background-color:var(--chc)!important;box-shadow:inset 0 5px 0 var(--t1,#888)!important}
+/* turn one in move order: straight panels on paper (no dots, no slanted edges), blue top rule for you, pink for them */
+@R .rzbeat,@R .rzbeat.them,@R[data-look="dark"] .rzbeat,@R[data-look="dark"] .rzbeat.them{background:var(--chc)!important;clip-path:none!important;margin-inline:0!important;padding:12px 14px 14px!important;border:var(--mgbw) solid var(--mgink)!important;border-top:6px solid var(--chblue)!important}
+@R .rzbeat.them,@R[data-look="dark"] .rzbeat.them{border-top-color:var(--chred)!important}
+@R .rzbeats{gap:6px!important}
+@R .rzbeat img{background:none!important}
+/* headline: nothing clipped */
+@R .chh1,@R .chdisp{overflow:visible!important;text-indent:0!important;padding-left:0!important;margin-left:0!important}
+@R .mgdeskcov .mgcover.mgdesk{grid-template-rows:300px}
+@R .trbanner.mgban .chmid .chh1{white-space:nowrap}
+@R .trbanner.mgban,@R .trbanner.mgban *{clip-path:none!important}
+@R .trbanner.mgban .chmid{margin-left:0!important}
+
+@media (max-width:899px){@R .trbanner.mgban,@R .mgdeskcov{display:none!important}}
+@media (min-width:900px){@R .trbanner.mgban{display:block!important}@R .mgphc{display:none}}
+@R .tyacc,@R[data-look="dark"] .tyacc{background-color:var(--chc)!important;box-shadow:inset 4px 0 0 var(--ta,#888)!important}
+/* one shape language: square ink, like the panels (pills, segment buttons, fields, header buttons) */
+@R :is(button,input,select,textarea,summary,.seg,.chpill,.chtag,.chghost,.btn,.linkbtn,.jumpbtn,.themeseg,.npmore,.chmorebtn){border-radius:0!important}
+@R .themeseg button{border-radius:0!important}
+@R .mgbench{flex-wrap:wrap;row-gap:0}
+@R .mgbn{flex:none}
+@media (min-width:900px){@R .mgstage{max-width:780px}}
+@R .mgbl{flex-basis:100%;padding-top:2px}
+@R .mgstage+.rzset{margin-top:6px}
+@R :is(.mmpop,.myrec,.chsugs,.prob-row,.qpick,.vcard,.verdict,.chpair4,.hempty,.empty-note,.lhsrc,.ltier,.calbox,.gsum,.prepcell,.nprscroll,.rzset,.chsec,.chfold,.card,.plan,.welcome,.hfb,.htile,.chblock,.chpanel,.lspanel){border-radius:0!important}
+@R table tr,@R main tr{border-radius:0!important}
+@R .ty.lt,@R[data-look="dark"] .ty.lt{color:#141414!important}
+@R .dcsta{color:var(--chink)!important}
+@R .tag.mega.ico{overflow:visible!important;text-overflow:clip!important;width:auto!important;max-width:none!important}
+
+/* ===================== Round 2 (outside review): the whole site in one language ===================== */
+/* true black in dark */
+@R[data-look="dark"]{--chp:#000;--mgpaper:#000;--mgpanel:#000;--chc:#0A0A0B}
+/* logo: PLOT oval in blue, no yellow shadow (as the mockups) */
+@R .nplk{--chpen:var(--chblue)!important;--chyel:transparent!important}
+/* ---- header (phone): logo left, two bare icons right; no eyebrow; no gap before the title ---- */
+@R .band .eyebrow{display:none!important}
+@R .band .inner{padding:12px 16px 8px!important;min-height:0!important}
+@R .band .titlerow{display:flex!important;align-items:center!important;gap:6px!important;min-height:0!important}
+@R .band .titlerow>div:first-child{flex:1 1 auto;min-width:0}
+@R .band .vtrow{margin:0!important;min-height:0!important}
+@R .band .vt,@R .band .hmark{display:none!important}
+@R .band .chmenubtn,@R .band .jumpbtn{border:0!important;background:none!important;box-shadow:none!important;color:var(--chink)!important}
+@R .band .chmenubtn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@R main,@R .main,@R #main{padding-top:4px!important}
+@R [data-pane]{margin-top:0!important}
+@media (max-width:899px){@R .band .jumpbtn .jbt,@R .band .jumpbtn .jbk{display:none!important}@R .band .jumpbtn{width:44px;min-width:44px;padding:0!important;justify-content:center}
+  @R nav.tabs.mgtabs{display:none!important}}
+/* ---- header (desktop): one row — logo, nav, search, ⋯ ---- */
+@media (min-width:900px){
+  @R nav.tabs.mgtabs{position:static!important;border:0!important;background:none!important;margin:0 0 0 28px!important;padding:0!important;flex:1 1 auto;box-shadow:none!important}
+  @R nav.tabs.mgtabs .inner{padding:0!important;max-width:none!important;margin:0!important;display:flex;gap:4px;align-items:center}
+  @R .band{border-bottom:var(--mgbw) solid var(--mgink)!important}
+  @R .band .titlerow>div:first-child{flex:0 0 auto}
+  @R .band .jumpbtn{border:var(--mgbw) solid var(--mgink)!important;min-width:300px}
+  @R .chhome .trbanner.mgban{margin-top:14px!important}
+  @R .trbanner.mgban .chh1{font-size:52px!important}
+  @R .mgspread{margin-top:18px!important}}
+/* the theme controls live in the ⋯ menu */
+@R .mgtheme{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px!important}
+@R .mgtheme .sgl{flex-basis:100%}
+@R .mgtheme .themeseg{display:inline-flex!important}
+@R .mgtheme .chthm{display:inline-flex!important;position:static!important}
+/* ---- bottom bar: line folder for My team, pink top bar on the current tab ---- */
+@R .bnav [data-view="report"]>svg{display:none!important}
+@R .bnav .chfab{display:block!important;position:static!important;width:24px!important;height:24px!important;margin:0 auto!important;background:none!important;border:0!important;box-shadow:none!important;transform:none!important;color:inherit!important}
+@R .bnav .chfab svg{width:24px!important;height:24px!important;display:block}
+@R .bnav{border-top:var(--mgbw) solid var(--mgink)!important;background:var(--mgpaper)!important}
+@R .bnav button{position:relative}
+@R .bnav button[aria-selected="true"]::before{content:""!important;display:block!important;position:absolute;top:0;left:30%;right:30%;height:5px;background:var(--chred)!important;transform:skewX(-24deg);clip-path:none!important}
+@R .bnav button[aria-selected="true"]{color:var(--chink)!important;font-weight:700}
+/* ---- My team: no frame around the title/grade/stage; the grade big beside the name; selection = heavier ink only ---- */
+@R #chTeam,@R #chTeam .chthead{border:0!important;box-shadow:none!important;background:none!important;padding-left:0!important;padding-right:0!important}
+@R #chTeam .chthead .nm{border:0!important}
+@R .mgtrow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+@R .mgtrow .nm{flex:1 1 auto;min-width:0}
+@R .mgtgr{flex:none;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+@R .mgtgr b{font:400 64px/.9 var(--display);color:var(--chink)}
+@R .mgtgr>span{font-weight:700;font-size:15px}
+@R .mgtgr .rzwhy{margin-top:2px;font-size:14px}
+@R .rzgrade.mgmoved{display:none!important}
+@R .mgst:focus:not(:focus-visible){outline:none!important}
+@R .mgst.mgon{border-width:6px!important;box-shadow:none!important;outline:none}
+@R .mgst.mgon .mgin{inset:0!important}
+/* ---- info sheet: solid paper (black in dark), grab handle, square ink tabs, flat bars ---- */
+@R .lsback{background:var(--mgpaper)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;opacity:1!important}
+@R .lspanel{border-radius:0!important;border-top:var(--mgbw) solid var(--mgink)!important}
+@R .lspanel::before{content:"";position:absolute;left:50%;top:10px;width:44px;height:5px;margin-left:-22px;background:var(--mgink);z-index:6}
+@R .chlstats{display:grid!important;grid-template-columns:repeat(3,1fr)!important;margin:12px!important;width:auto!important;max-width:none!important}
+@R .chlstats>div{padding:10px!important;border:0!important;border-left:var(--mgbw) solid var(--mgink)!important;background:none!important}
+@R .chlstats>div:first-of-type,@R .chlstats>.chlsr.mgmoved+div{border-left:0!important}
+@R .chlstats b{font:400 26px/1 var(--display)!important;color:var(--chink)!important}
+@R .chlstats span{font-size:13px!important;color:var(--chink2)!important}
+@R .chlstats i{display:block;font-style:normal;font-size:12px;color:var(--chink2)}
+@R #lairSheet .lsact{margin:0 12px 12px!important}
+@R #lairSheet .lsact [data-laddteam]{width:100%;background:var(--chyel)!important;color:#141414!important;border:var(--mgbw) solid var(--mgink)!important;min-height:52px;font-weight:700;font-size:17px}
+@R .lstabs{background:none!important;border:0!important;border-bottom:var(--mgbw) solid var(--mgink)!important;padding:0!important;margin:0 12px!important;border-radius:0!important;gap:0!important}
+@R .lstabs [role=tab]{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;color:var(--chink2)!important}
+@R .lstabs [role=tab][aria-selected="true"]{color:var(--chink)!important;box-shadow:inset 0 -5px 0 var(--chink)!important}
+@R .lstabs [role=tab]::before,@R .lstabs [role=tab] i,@R .lstabs .dot,@R .lstabmark{display:none!important}
+@R .lstabs [role=tab] small,@R .lstabs [role=tab] span{color:inherit!important}
+@R #lairSheet .lstats .bar i,@R #lairSheet .lstats .bar span,@R #lairSheet .lstr .bar>*,@R #lairSheet .lstr i{background:var(--chink)!important;background-image:none!important}
+@R #lairSheet .lstr .bar,@R #lairSheet .lstats .bar{background:var(--chp2)!important;border-radius:0!important}
+/* ---- Battle: calm calc, their six with likely lead marked, no tinted tiles ---- */
+@R .chbmhead .chbmt{font:400 34px/1.05 var(--display)!important}
+@R .mgvsarch{font:600 15px/1.3 var(--body)!important;color:var(--chink2)!important;margin:4px 0 0}
+@R .mgvsarch *{font:inherit!important;color:inherit!important}
+@R .bmslot.mgllead{box-shadow:inset 0 -5px 0 var(--chred)!important}
+@R .mgll{display:block;font-weight:700;font-size:13px;color:var(--chredT)}
+@R .chcalc,@R #chCalcCard,@R .chcalcrow>*,@R .chcalcdef,@R .chcalc *{background-image:none!important}
+@R .chcalcrow>*,@R .chcalcrow button{background:var(--mgpanel)!important}
+@R .dcside,@R .dcatk,@R .dcdef,@R .chcalc .you,@R .chcalc .them,@R [class*="calcatk"],@R .dcpanel{background:var(--mgpanel)!important;background-image:none!important}
+@R[data-look="dark"] .bmslot img,@R[data-look="dark"] .bmslot .spr{filter:none!important;opacity:1!important}
+
+/* ---- one shape and border spec: square corners everywhere; boxes and controls are 3px ink ---- */
+@R main *:not(img):not(svg):not(svg *),@R #lairSheet *:not(img):not(svg):not(svg *),@R #side *:not(img):not(svg):not(svg *),@R .bnav *,@R header *:not(img):not(svg):not(svg *){border-radius:0!important}
+@R :is(.btn,.chghost,.chback,.sub,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.chthm,.gpractice,.ltile,.evcard,.cxhead,.chrm,.x,label.btn,summary.btn,select.field,input.field,textarea.field,.field,.seg>button,.chmenubtn.on,.sdcopy,.bmslot,.boxchip,.npmore,.chmorebtn){border:var(--mgbw) solid var(--mgink)!important;border-style:solid!important;box-shadow:none!important}
+@R :is(.chpair4,.hempty,.mmpop,.myrec,.empty-note,.vcard,.abhero,.chabhero,.abw,.corerow,.chcalcdef,.bmw,.nprscroll,.gsum,.gyou,.addcard,.lhsrc,.chhotrows,.ltier,.mrow,.ttyours,.calbox,.setcard,.sethead,.item.svt,.svsix,.wkcard,.trcard,.trsoon,.trearly,.nplegend,.cxpick,.abthero,.gkey,.lhstat,.calday,.provnote,.prepcell,.pin,.chsec,.chfold,.chblock,.plan,.welcome,.chpanel,.rzset,.chsheet,.chtools button,.htile,.hcore,.trow,.prob-row,.chhr,.wkrow,.wkev,.calrow,.trmon,.chtr,.gprow,.gitem,.npaths .nppath,.chbring,.bmcard,.chbmside,.verdict,.qpick,.nprlane,.abtsrc,li.main,.ok,.mid,.sh,.no){border:var(--mgbw) solid var(--mgink)!important;border-style:solid!important;box-shadow:none!important;background-image:none!important}
+@R :is(.abhero,.chabhero,.abthero,.wkcard,.trcard,.setcard,.sethead,.item.svt,.ttyours,.cxpick,.gyou,.addcard,.calbox,.vcard,.myrec,.mmpop,.chhotrows,.lhstat,.gkey,.nplegend,.trsoon,.trearly){background:var(--mgpanel)!important;color:var(--chink)!important}
+@R[data-look="dark"] :is(.abhero,.chabhero,.abthero){background:var(--mgpanel)!important}
+@R :is(.abtic,.abhero .ic,.abthero .ic){background:none!important;border:var(--mgbw) solid var(--mgink)!important;color:var(--chink)!important}
+/* a row inside a boxed list keeps a single rule between rows, not a box in a box */
+@R :is(.chhotrows,.calbox,.gsum)>*{border-left:0!important;border-right:0!important}
+/* dark: selected states are an ink outline + accent underline, never a white fill */
+@R[data-look="dark"] :is(.seg>button,.sub,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.btn,button)[aria-pressed="true"],@R[data-look="dark"] :is(.seg>button,.sub,button)[aria-selected="true"]:not(.bnav button):not([role=tab]),@R[data-look="dark"] :is(.typebtn.on,.logpick.on,.chmenubtn.on,.btn.primary,.btn.go){background:var(--mgpanel)!important;color:var(--chink)!important;border-color:var(--mgink)!important;box-shadow:inset 0 -5px 0 var(--chblue)!important}
+@R[data-look="dark"] :is(.npchip,.sbchip,.chboxn,.abtlic,span.n){background:none!important;color:var(--chink)!important}
+/* light: selected segment = ink fill is fine; keep it ink */
+/* ---- no filled chips or pills: plain text ---- */
+@R :is(.rchip,.archchip,.tsd,.calcd,.sbchip,.chboxn,.wkar,.wkst,.ck,.chtier,.rtier,.npchip,.chedi,.lts,.npgl,.abtlic,.chpill,.tag:not(.mega):not(.box)){background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;padding:0!important;color:var(--chink)!important;font-weight:700!important;min-width:0!important;width:auto!important;height:auto!important}
+@R :is(.rtier,.chtier){color:var(--chink)!important}
+@R .npgl{display:inline!important;font:700 15px var(--body)!important}
+@R :is(.chpill){margin-right:10px!important}
+/* ---- names never wrap or cut ---- */
+@R :is(.chcalcrow,.bmopp,.svsix,.item.svt) :is(span,b,div):not(.mgll){white-space:nowrap}
+@R .chcalcrow button,@R .bmslot{font-size:12.5px!important;letter-spacing:-.01em}
+@R .item.svt .nm,@R .item.svt b{white-space:normal}
+/* ---- Home phone: hero number and sprite as v6, action icons left ---- */
+@R .mgcover .mgc1 .mgbig{font-size:58px}
+@R .mgcover .mgc1 .mgmon{width:62%;height:96%}
+@R .mgact{align-items:flex-start}
+@R .mgact .mgpic{align-self:flex-start}
+/* no idle animation and no art outside the hero panels: the weather layers are off (the weather name stays as text) */
+@R .wxfx{display:none!important}
+@R .wxchip{background:none!important;border:0!important;padding:0!important}
+@R .chmhero>.chk{display:none!important}
+@R .chmhero{padding-top:6px!important;margin-top:0!important}
+@R .chmhero .chh1{margin-top:0!important}
+@R main>.inner{padding-top:6px!important}
+@media (max-width:899px){@R .band .inner{padding:8px 12px 4px!important}}
+@R .chlstats>div{min-width:0}
+@R .chlstats span{line-height:1.25}
+@media (min-width:900px){@R .band .titlerow{flex-wrap:nowrap!important}@R .band .jumpbtn{min-width:260px!important;flex:none}}
+@R .bmslot input,@R .bmslot .field,@R .bmslot select{border:0!important;box-shadow:none!important;background:none!important}
+@R .item.svt :is(h3,h4,.svn,.nm,b,.svname){white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+@R .svsix :is(span,b,div){font-size:12px!important;white-space:nowrap;letter-spacing:-.01em}
+@R :is(.svopen,.svtag,.abtags span,.abthero .chips span,.abtpill,.abthero li,.abthero ul span){background:none!important;border:0!important;padding:0!important;color:var(--chink)!important;font-weight:700}
+@R :is(.chrow,.asm,.cxhead.empty,.ltile.more,.trsoon,.nprlane,.hempty,.empty-note){border-style:solid!important}
+@R :is(.asm,.abtchips span,.sev){background:none!important;border:0!important;padding:0!important;font-weight:700;color:var(--chink)!important}
+@R :is(.btn.ghost,.chmoreideas,.btn){border-radius:0!important}
+@R :is(.setfoot,.abtlicense,li){border-color:var(--line)!important}
+@R .mgadd{margin:0 12px 12px}
+@R .mgadd [data-laddteam]{width:100%;background:var(--chyel)!important;color:#141414!important;border:var(--mgbw) solid var(--mgink)!important;min-height:52px;font-weight:700;font-size:17px}
+@R .wxchip,@R .wxchip *{color:var(--chink)!important}
+@R .ltn{letter-spacing:-.01em}
+@R .ltile{padding-left:8px!important;padding-right:8px!important}@R .ltn{font-size:14px!important}
+/* desktop: the ⋯ menu exists there too (it holds the theme and every page), as a sheet from the right */
+@media (min-width:1001px){
+  @R .band #moreBtn.chmenubtn{display:inline-flex!important;align-items:center;justify-content:center;width:44px;height:44px}
+  @R .side.open{display:flex!important;left:auto!important;right:0!important;width:340px!important;transform:none!important;background:var(--mgpaper)!important;color:var(--chink)!important;border-left:var(--mgbw) solid var(--mgink)!important;z-index:90}
+  @R .scrim:not([hidden]){display:block!important}}
+@R .side{background:var(--mgpaper)!important;color:var(--chink)!important}
+@R .side .sidenav button,@R .side .sgl{color:var(--chink)!important}
+@R .ltile{padding-left:6px!important;padding-right:6px!important}@R .ltn{font-size:13px!important}
+@media (min-width:900px){@R .chhome .trbanner.mgban{margin-top:0!important;padding-top:0!important}@R .chhome{padding-top:0!important;margin-top:0!important}@R main>.inner{padding-top:10px!important}}
+@R #lairSheet .lstr i{background:var(--chp2)!important;border-radius:0!important}
+@R #lairSheet .lstr i em{background:var(--chink)!important;border-radius:0!important}
+@R #lairSheet .lstr.best i em{background:var(--chblue)!important}
+@R .bmslot .x{border:0!important;background:none!important}
+@R .mgpn,@R .mgpn:focus{outline:none!important}
+@R .mgpn:focus-visible{outline:3px solid var(--chblue)!important;outline-offset:3px}
+@R .mgst.mgon{border-width:5px!important;border-color:var(--mgink)!important;outline:none!important;box-shadow:none!important}
+@R #chTeam .chthead{padding-top:0!important;margin-top:0!important}@R .chmhero{padding-top:0!important}@R .chmh{padding-top:0!important}
+
+/* ===================== Round 3 (Sim on her iPhone): soften a little, fix the rough edges ===================== */
+/* one border weight and two radii, site-wide: frames 2.5px; panels and boxes 6px; controls, captions, tags 4px */
+@R{--mgbw:2.5px;--mgr:6px;--mgr2:4px;--tr-bw:2.5px;--tr-r:6px}
+@R .mgpn{border-width:var(--mgbw)!important;border-radius:var(--mgr)!important}
+@R .mgpn .mgin{border-radius:calc(var(--mgr) - 2px)}
+@R .mgcap{border-width:2px;border-radius:var(--mgr2)}
+@R .mgst.mgon{border-width:4.5px!important}
+@R main *:not(img):not(svg):not(svg *),@R #lairSheet *:not(img):not(svg):not(svg *),@R #side *:not(img):not(svg):not(svg *),@R header *:not(img):not(svg):not(svg *),@R #chEdit *:not(img):not(svg):not(svg *){border-radius:0!important}
+@R :is(.mgpn,.mgbench,.mgact,.chpair4,.hempty,.mmpop,.myrec,.empty-note,.vcard,.abhero,.chabhero,.abw,.corerow,.chcalcdef,.bmw,.nprscroll,.gsum,.gyou,.addcard,.lhsrc,.chhotrows,.ltier,.mrow,.ttyours,.calbox,.setcard,.sethead,.item.svt,.svsix,.wkcard,.trcard,.trsoon,.trearly,.nplegend,.cxpick,.abthero,.gkey,.lhstat,.calday,.provnote,.prepcell,.pin,.chsec,.chfold,.chblock,.plan,.welcome,.chpanel,.rzset,.chsheet,.htile,.hcore,.trow,.prob-row,.chhr,.wkrow,.wkev,.calrow,.trmon,.chtr,.gprow,.gitem,.chbring,.bmcard,.chbmside,.verdict,.qpick,.abtsrc,.chlstats,.lspanel,.mgread .mgstrip>*,.bmopp,.chdcband,.dccol,.chcalc,.evcard,.ltile,.hmini,.sgroup,.mgadd [data-laddteam],.lsact [data-laddteam],.slot,.chedslot,.mvset,.itemrow,.natrow,.rzbeat,.chsugs,.side.open){border-radius:var(--mgr)!important}
+@R .lspanel{border-radius:var(--mgr) var(--mgr) 0 0!important}
+@R .side.open{border-radius:var(--mgr) 0 0 var(--mgr)!important}
+@R :is(button,input,select,textarea,summary,.btn,.chghost,.chback,.sub,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.chrm,.seg,.seg>button,.sdcopy,.bmslot,.boxchip,.field,.mgcap,.lstabs,.themeseg,.themeseg button,.jumpbtn,.ty,.tag,.chip,.lockbtn,.chst,.chedit .done){border-radius:var(--mgr2)!important}
+@R :is(.mgpn,.mgact,.mgbn) button,@R button.mgpn{border-radius:var(--mgr)!important}
+@R .bnav button,@R .bnav *{border-radius:0!important}
+@R .mgbn{border-radius:var(--mgr2)!important}
+/* every remaining 3px frame is 2.5px */
+@R :is(.btn,.chghost,.chback,.sub,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.chthm,.gpractice,.ltile,.evcard,.cxhead,.chrm,label.btn,summary.btn,select.field,input.field,textarea.field,.field,.seg>button,.chmenubtn.on,.sdcopy,.bmslot,.boxchip,.npmore,.chmorebtn,.chpair4,.hempty,.mmpop,.myrec,.empty-note,.vcard,.abhero,.chabhero,.abw,.corerow,.chcalcdef,.bmw,.nprscroll,.gsum,.gyou,.addcard,.lhsrc,.chhotrows,.ltier,.mrow,.ttyours,.calbox,.setcard,.sethead,.item.svt,.svsix,.wkcard,.trcard,.trsoon,.trearly,.nplegend,.cxpick,.abthero,.gkey,.lhstat,.calday,.provnote,.prepcell,.pin,.chsec,.chfold,.chblock,.plan,.welcome,.chpanel,.rzset,.chsheet,.chtools button,.htile,.hcore,.trow,.prob-row,.chhr,.wkrow,.wkev,.calrow,.trmon,.chtr,.gprow,.gitem,.chbring,.bmcard,.chbmside,.verdict,.qpick,.abtsrc,.mgbench,.mgact,.chlstats,.rzbeat,.jumpbtn,.mgadd [data-laddteam],#lairSheet .lsact [data-laddteam],.lsx,#chTeam .chthead){border-width:var(--mgbw)!important}
+@R .chlstats>div{border-left-width:var(--mgbw)!important}
+@R .rzbeat{border-top-width:5px!important}
+
+/* bottom bar: higher above the home indicator (the in-app viewer can report a 0 inset), softer top rule */
+@R .bnav{padding-bottom:max(14px,calc(env(safe-area-inset-bottom) + 8px))!important;height:auto!important;min-height:0!important;border-top:1.5px solid color-mix(in srgb,var(--chink) 35%,transparent)!important;box-shadow:none!important}
+@R .bnav button{padding-top:8px!important;padding-bottom:2px!important}
+@R main,@R .mainwrap{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}
+@media (min-width:1001px){@R main,@R .mainwrap{padding-bottom:24px!important}}
+@R .bnav button[aria-selected="true"]::before{height:4px!important;top:-1px!important;border-radius:0 0 2px 2px}
+
+/* the ⋯ menu: one theme control, no starfield specks, no glow, solid behind it */
+@R #thmBtn.mgdup{display:none!important}
+@R .side::before{display:none!important;background:none!important}
+@R .side::after{background:var(--chink)!important;opacity:.45}
+@R .side .sidenav button[aria-selected="true"]{background:none!important;box-shadow:inset 4px 0 0 var(--chred)!important;color:var(--chink)!important;font-weight:700}
+@R .side .sidenav button{box-shadow:none!important;text-shadow:none!important}
+@R .scrim,@R .lsback{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:var(--mgpaper)!important;opacity:1!important}
+@R .scrim:not([hidden]){background:color-mix(in srgb,var(--mgpaper) 88%,transparent)!important}
+@R .sgroup{border-width:var(--mgbw)!important}
+/* footer links: spacing, not dots */
+@R .lglinks{display:flex;flex-wrap:wrap;gap:6px 22px}
+@R .lgsp{display:none}
+
+/* edit set sheet: true black / paper, one input style, no dashes, no tinted slab */
+@R #chEdit :is(.chedh,.chedstrip){border-style:solid!important;border-color:var(--line2)!important;border-width:0 0 1px!important}
+@R #chEdit .slot,@R #chEdit .chedslot,@R #chEdit .tyacc,@R #chEdit [class*="slot"]:not(.slots){background:var(--mgpanel)!important;background-image:none!important;box-shadow:inset 0 4px 0 var(--ta,var(--chblue))!important}
+@R #chEdit :is(.itemrow,.natrow,.sprow,.mvset,.spreadrow,.nature){background:none!important;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr2)!important}
+@R #chEdit .mvset{border-width:0 0 0 4px!important;border-left-color:var(--ta,var(--mgink))!important;background:none!important}
+@R #chEdit .chst{background:var(--mgpanel)!important}
+@R #chEdit .chst.on{border-color:var(--mgink)!important;box-shadow:inset 0 -4px 0 var(--chblue)!important}
+@R #chEdit .tag.box{background:none!important}
+@R #chEdit .tag.mega.ico{min-width:22px!important;padding:0 4px!important;overflow:visible!important}
+/* type tags everywhere: small soft tag (tint of the type colour, 4px radius), not a filled pill */
+@R .ty,@R .ty.lt{background:color-mix(in srgb,var(--tc,currentColor) 20%,var(--mgpanel))!important;color:var(--chink)!important;border:0!important;padding:1px 7px!important;box-shadow:inset 3px 0 0 var(--tc,currentColor)!important}
+@R[data-look="dark"] .ty{background:color-mix(in srgb,var(--tc,currentColor) 22%,#000)!important}
+
+/* damage calc: black/paper panels with a thin blue (attacker) or pink (defender) top accent; one frame, not three */
+@R .chdcband{background:var(--mgpanel)!important;background-image:none!important;border:0!important;border-top:4px solid var(--chblue)!important;box-shadow:none!important}
+@R .chdcband.def,@R .chdcband.them,@R .chdcband:not(.atk){border-top-color:var(--chred)!important}
+@R .chdcband .sub,@R .chdcband .nm{border:0!important;background:none!important;padding:0!important;overflow:visible!important;white-space:normal!important}
+@R .dccol{border-width:var(--mgbw)!important}
+@R .dccol .chdcband{margin:0!important}
+@R[data-look="dark"]{--tr-you-field:#000;--tr-them-field:#000}
+@R .dcstick{background:var(--mgpanel)!important;border-width:var(--mgbw)!important}
+@R #chEdit .trow,@R #chEdit .thead{border:0!important;background:none!important;box-shadow:none!important;padding:0!important}
+@R #chEdit .tnum{font:400 22px var(--display)}
+@R #chEdit .slot{box-shadow:inset 0 4px 0 var(--t1,var(--chblue))!important}
+@R .mgtheme .themeseg~.themeseg{display:none!important}
+@R .dccol{border:0!important;padding:0!important;background:none!important}
+@R .chdcband{border:var(--mgbw) solid var(--mgink)!important;border-top:5px solid var(--chblue)!important;border-radius:var(--mgr)!important}
+@R .chdcband:not(.atk){border-top-color:var(--chred)!important}
+/* sweep fixes */
+@R header.band::before,@R header.band::after,@R .band .bstripe{display:none!important;background:none!important}
+@R .provnote{background:none!important}
+@R :is(.sev,.st,.chrm,.x){padding-left:6px!important;padding-right:6px!important}
+@R :is(.lsty,.lsvr,.lsty *,.lsvr *){border-style:solid!important}
+@R :is(.jump,.bnav,.chfab,.jbox,.toast,.side,.lspanel,#chEdit,.chedit){backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@R .bnav{background:var(--mgpaper)!important;border-radius:0!important}
+@R :is(.sgroup,.mgtheme,.jbox,.toast,.chedit,#chEdit,li.tyacc){border-radius:var(--mgr)!important}
+@R #chEdit,@R .chedit{border-radius:var(--mgr) var(--mgr) 0 0!important}
+@R .themeseg,@R .themeseg button{border-radius:var(--mgr2)!important}
+@R .jbox{border-width:var(--mgbw)!important}
+@R .side.open{border-left-width:var(--mgbw)!important}
+@R .band{border-bottom-width:var(--mgbw)!important}
+@R span:is(.sev,.st){padding-left:8px!important;padding-right:6px!important}
+@R :is(.lstyl,.lsvo,.lsvl,.lsvn,.lstyr,.lsvr>span,.lsty>span){padding-left:8px!important}
+@R .lstats b,@R .lsvr b,@R .lsty b{padding-left:8px!important}
+@R .sgroup.mgtheme{border-radius:var(--mgr)!important}
+@R .ty.lt,@R[data-look="dark"] .ty.lt,@R .ty{color:var(--chink)!important}
+@R #side .sgroup,@R #side .mgtheme{border-radius:var(--mgr)!important}
+@R #side .themeseg,@R #side .themeseg button{border-radius:var(--mgr2)!important}
+
+/* ===================== Round 4 (live QA on iPhone 15 Pro + 1280) ===================== */
+/* focus ring only for keyboards */
+@R :focus:not(:focus-visible){outline:none!important}
+@R :focus-visible{outline:3px solid var(--chblue)!important;outline-offset:2px}
+/* one selected style in both themes: panel, ink text, blue under-bar (yellow main buttons keep yellow) */
+@R main :is(button,.btn,.sub,.seg>button,.typebtn,.logpick,.cxopt,.prmode,.abmode,[role=tab])[aria-pressed="true"]:not(.mgpn):not(.mgbn):not(.chprimary):not(.mgyel):not(#saveBtn),
+@R main :is(.typebtn.on,.logpick.on,.chmenubtn.on),@R #side .themeseg button[aria-pressed="true"]{background:var(--mgpanel)!important;color:var(--chink)!important;border-color:var(--mgink)!important;box-shadow:inset 0 -5px 0 var(--chblue)!important}
+@R main :is(button,.sub,.seg>button)[aria-pressed="true"] *:not(svg):not(svg *){color:inherit!important}
+@R #side .themeseg button svg,@R #side .themeseg button svg *{stroke:currentColor!important;fill:none!important}
+@R #side .themeseg button[data-thm="auto"] svg path{fill:currentColor!important}
+@R #saveBtn,@R .chprimary,@R .mgyel,@R .btn.primary,@R .btn.go{box-shadow:none!important}
+/* ⋯ menu: no cream edge, no orphan heading, spacing between groups */
+@R .side,@R .side.open{box-shadow:none!important}
+@media (max-width:1000px){@R .side,@R .side.open{border-right:0!important;border-left:0!important}}
+@R #side .sgroup{margin:0 12px 12px!important}
+@R #side .sgroup.mgempty{display:none!important}
+@R #side .sidecred{padding:8px 16px 24px}
+/* bottom bar: equal label baselines; labels end ~30px above the bottom when the inset is 0 */
+@R .bnav{padding-bottom:max(22px,calc(env(safe-area-inset-bottom) + 12px))!important}
+@R .bnav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important}
+@R .bnav button>svg,@R .bnav .chfab{width:24px!important;height:24px!important;flex:none;margin:0!important}
+@R .bnav button>span:not(.chfab){line-height:16px!important;height:16px;font-size:13px!important;margin:0!important;padding:0!important;position:static!important;transform:none!important}
+/* info sheet: solid sticky tabs; headings clear them */
+@R #lairSheet .lstabs{background:var(--mgpaper)!important;z-index:4}
+@R[data-look="dark"] #lairSheet .lstabs{background:var(--mgpaper)!important}
+@R #lairSheet :is(h3,h4,.lssec,.chk,[id]){scroll-margin-top:64px}
+/* the tabs themselves sit inside the sticky bar: no clearance, or a tap focus scrolls the sheet 64px (Nov 4) */
+@R #lairSheet .lstabs [role=tab]{scroll-margin-top:0}
+@R #lairSheet .lstp>*:first-child{padding-top:10px}
+/* info sheet Speed and type rows: plain rows with rules, no frames inside */
+@R #lairSheet :is(.lsvr,.lsty){border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:8px 0!important}
+@R #lairSheet :is(.lsvr,.lsty) *{border:0!important;box-shadow:none!important;background:none!important;border-radius:0!important}
+@R #lairSheet :is(.lsvr,.lsty) :is(span,b){padding-left:0!important}
+@R #lairSheet .lsvr b{padding-right:4px}
+@R #lairSheet .lsvd{border:0!important;background:none!important;padding:0!important}
+/* edit set sheet */
+@R #chEdit .slot{border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr)!important;padding:12px 14px 14px!important}
+@R #chEdit .thead{margin-bottom:6px!important}
+@R #chEdit .tnum{color:var(--chink)!important}
+@R #chEdit .lockbtn{border:2px solid var(--mgink)!important;border-radius:var(--mgr2)!important;background:none!important;color:var(--chink)!important;padding:4px 10px!important;margin:2px!important}
+@R #chEdit :is(select,input,.field,.itemrow,.natrow){border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr2)!important;background:var(--mgpanel)!important}
+@R #chEdit .itemrow{padding:9px 12px!important}
+@R #chEdit .slbody{padding:0!important}
+/* type tags everywhere: no muddy fill; the type colour is the icon and a thin left bar */
+@R .ty,@R .ty.lt,@R[data-look="dark"] .ty{background:none!important;color:var(--chink)!important;box-shadow:inset 3px 0 0 var(--tc,currentColor)!important;border-radius:var(--mgr2)!important;padding:1px 7px 1px 9px!important}
+@R .ty svg,@R .ty svg *,@R .ty i{color:var(--tc)!important;fill:var(--tc)!important}
+/* Home: blocks have padding; "How it works" sits in the gutter */
+@R .chblock.chhtop,@R .chblock.chhtools{padding:14px!important}
+@R .chpad .welcome{margin:14px 16px 0!important}
+@media (min-width:900px){@R .chpad .welcome{margin:14px 0 0!important}}
+/* My team: 16px gutter, nothing touching an edge */
+@media (max-width:899px){@R #chTeam .chthead{margin:0 16px!important}@R #chTeam .mgtgr{padding-right:4px}}
+@R .mgst .mgmon{right:8px!important;left:auto!important;max-width:calc(100% - 16px)}
+@R .mgst .mgmon svg,@R .mgst .mgmon img{max-width:100%!important}
+@R #rzSet{padding:14px!important}
+@R #rzSet :is(dd,dt,li){padding-left:2px}
+/* My team threats: rows, plain coloured status, no frames inside frames */
+@R .chtr{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:6px 2px!important}
+@R .chtr .st,@R .chtr .tx span{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;font-weight:700!important;white-space:nowrap!important;overflow:visible!important}
+@R .chtr .st.ok{color:var(--good)!important}@R .chtr .st.mid{color:var(--ok)!important}@R .chtr .st.sh,@R .chtr .st.shaky{color:var(--warn)!important}@R .chtr .st.un,@R .chtr .st.no{color:var(--bad)!important}
+@R .chtr .tx{min-width:0}
+/* Battle: one frame each */
+@R .chbmside{border:0!important;padding:0!important}
+@R .chbmside .chsec{margin:0!important}
+@R .bmt1.chpanel{padding:14px!important}
+@R .bmt1 .rzt1,@R .bmt1 .t1plan{border:0!important;padding:0!important;background:none!important}
+@R .rzorder{padding:10px 0 0!important;margin-top:8px!important;border-top:1px solid var(--line)}
+@R .rzbeats{margin-top:10px!important}
+/* their six: the clear button sits inside the field without covering text */
+@R .bmslot .clrw{position:relative;display:block}
+@R .bmslot input.field{padding-right:30px!important;padding-left:8px!important;width:100%!important;min-width:0!important}
+@R .bmslot .clrx{position:absolute!important;right:4px!important;top:50%!important;transform:translateY(-50%)!important;width:24px;height:24px;border:0!important;background:none!important;padding:0!important}
+/* damage calc grid: black cells, one KO label + %, full move name */
+@R .dctab td{background:var(--mgpanel)!important;background-image:none!important;position:relative;vertical-align:top;padding:22px 4px 6px!important;white-space:normal!important}
+@R .dctab td span{display:block;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:11.5px!important;line-height:1.2;word-break:break-word;color:var(--chink2)}
+@R .dctab td::after,@R .dctab td[data-ko]::after{position:absolute!important;top:4px!important;left:4px!important;right:auto!important;background:none!important;border:0!important;padding:0!important;font:700 12px/1 var(--body)!important;color:var(--chink2)!important}
+@R .dctab td:is(.k1,.k1m)::after{color:var(--good)!important}
+@R .dctab td:is(.k2,.k2m)::after{color:var(--warn)!important}
+@R .dctab td .dctile{display:none!important}
+@R .dctab td::before{display:none!important}
+/* ratings top cards: one frame, text never under the sprite; no halos behind sprites */
+@R .chhot{box-shadow:none!important;position:relative;padding-right:92px!important}
+@R .chhot img{position:absolute!important;right:6px!important;bottom:6px!important;width:84px!important;height:84px!important;margin:0!important}
+@R main img.spr:not(.mgpn img),@R #lairSheet img.spr{background:none!important;background-image:none!important;box-shadow:none!important}
+@R .halo{display:none!important}
+/* compare: two head cards fill the row; the list doesn't repeat the heading */
+@R .cxheads{grid-template-columns:1fr 1fr!important;margin-left:0!important;padding-left:0!important}
+@R .cxheads::before,@R .cxheads::after{display:none!important}
+@R .cxpick .cxpickh{display:none!important}
+/* gauntlet: the readiness chip is plain text; panels have space between them */
+@R .gtop .sev,@R .sev{clip-path:none!important;transform:none!important}
+@R [data-pane="gauntlet"] .chsec+.gsum,@R [data-pane="gauntlet"] .gsum{margin-top:12px!important}
+/* Home desktop: no tick marks around "vs" */
+@R .mgvs span::before,@R .mgvs span::after{display:none!important}
+/* search: neutral black scrim, one frame on the field */
+@R .jump{background:color-mix(in srgb,var(--mgpaper) 92%,transparent)!important}
+@R .jbox :is(input,.field){border:0!important;box-shadow:none!important;background:none!important}
+/* back links: a plain link */
+@R .chback{border:0!important;box-shadow:none!important;background:none!important;padding:6px 0!important;width:auto!important;min-height:44px;color:var(--chblueT)!important;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+/* no dot texture left in the Battle calc panel */
+@R .chcalc::before,@R .chcalc::after,@R #chCalcCard::before,@R #chCalcCard::after{display:none!important;background:none!important}
+/* Home team chips: names on one line */
+@R :is(.chmmon,.hmini) :is(b,.hmn){white-space:nowrap!important;font-size:12.5px!important;letter-spacing:-.01em}
+/* less empty space above the footer on phones */
+@media (max-width:899px){@R main,@R .mainwrap{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}@R footer.legal{margin-top:16px!important;padding-top:16px!important}@R [data-pane]>:last-child{margin-bottom:0!important}}
+@R .bnav .chfab{height:28px!important;width:28px!important;display:flex!important;align-items:center;justify-content:center}
+@R .bnav .chfab svg{width:24px!important;height:24px!important}
+@R .chtl10 .chtr,@R [data-pane] .chtl10 button.chtr{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+@R #side .themeseg button svg{width:16px!important;height:16px!important;display:inline-block!important;color:currentColor!important;opacity:1!important}
+@R #side .themeseg button[data-thm="auto"] svg circle{stroke:currentColor!important;stroke-width:2;fill:none!important}
+@R div.chbmside.chbmside{border:0!important;padding:0!important;background:none!important}
+@R button.chback.chback{border:0!important;box-shadow:none!important;background:none!important;padding:6px 0!important;width:auto!important;color:var(--chblueT)!important;font-weight:700;text-decoration:underline;text-underline-offset:3px;display:inline-flex}
+@R button.chhot.chhot{outline:0!important}
+@R button.chhot.chhot:focus-visible{outline:3px solid var(--chblue)!important}
+@R button.chback.chback[aria-selected]{border:0!important;box-shadow:none!important;background:none!important}
+@R .gtop .sev,@R .gtop span.sev{border:0!important;box-shadow:none!important;padding:0!important;background:none!important;color:var(--chink)!important;font-weight:700}
+@R div.gtop span.sev.sev{border:0!important;box-shadow:none!important;padding:0 10px 0 0!important;background:none!important;color:var(--chink)!important;font-weight:700}
+@R .dctab td::after,@R .dctab td[data-ko]::after{position:static!important;display:block!important;white-space:normal!important;font-size:11px!important;line-height:1.15!important;margin:-16px 0 4px!important}
+@R .dctab td{padding-top:20px!important}
+@R .dctab[data-tiles] td{display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px 4px!important}
+@R .dctab td::after,@R .dctab td[data-ko]::after{order:-1;margin:0 0 4px!important}
+@R .bnav{padding-bottom:max(18px,calc(env(safe-area-inset-bottom) + 10px))!important}
+@R .logpick .logord,@R .logpick[aria-pressed="true"] .logord,@R .logpick.on .logord{color:var(--chink)!important;background:none!important}
+@R .dctab td span{font-size:12px!important}
+@R .dcstick{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+
+/* ===================== Round 5 (QA round 3) ===================== */
+/* ⋯ menu: the leftover "Appearance" label goes (its control lives in Theme) */
+@R #side .sidefoot .sgl{display:none!important}
+/* info sheet: the sticky tab bar spans the whole sheet */
+@R #lairSheet .lstabs{margin:0 -16px!important;padding:0 16px!important;width:auto!important;border-bottom-width:var(--mgbw)!important}
+/* no text shadows on tags */
+@R :is(.ty,.tag,.chip,.ty *,.tag *){text-shadow:none!important}
+/* Battle, their six: plain names, padded, one baseline */
+@R .bmslot{display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px 8px 6px!important}
+@R .bmslot .bmn{background:none!important;padding:0!important;margin-top:4px;min-height:2.4em;display:flex;align-items:flex-start;justify-content:center;text-align:center;line-height:1.2;font-size:13px!important;white-space:normal!important}
+@R .bmslot img{height:56px!important;width:56px!important;object-fit:contain}
+/* damage grid on phones: each cell names the opponent again (small sprite) */
+@R .dctab td .dctile{display:block!important;position:static!important;width:28px!important;height:28px!important;margin:0 auto 2px!important;background:none!important;border:0!important}
+@R .dctab td .dctile img{width:28px!important;height:28px!important;position:static!important}
+/* ratings top cards: stats under the name with room, sprite in its corner */
+@R .chhot{padding-right:12px!important;padding-bottom:12px!important;min-height:220px}
+@R .chhot .st{display:block!important;max-width:60%;white-space:normal;line-height:1.35}
+@R .chhot .st br{display:none}
+@R .chhot .st>*{display:block}
+@R .chhot img{width:72px!important;height:72px!important}
+/* ratings rows: rules, not frames inside the list frame; scores padded */
+@R .chhotrows>.chhr{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;margin:0!important;padding:8px 12px!important;box-shadow:inset 4px 0 0 var(--ta,transparent)!important}
+@R .chhotrows>.chhr:last-child{border-bottom:0!important}
+/* gauntlet: no inset bar on the readiness label */
+@R div.gtop span.sev.sev{box-shadow:none!important;padding:2px 10px 2px 0!important}
+/* speed race track: true black lanes, thin blue / pink accents, numbers inside, names as text */
+@R .nprscroll{background:var(--mgpanel)!important}
+@R .nprlane,@R .nprlane.me{background:var(--mgpanel)!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;box-shadow:inset 3px 0 0 var(--chred)!important}
+@R .nprlane.me{box-shadow:inset 3px 0 0 var(--chblue)!important}
+@R .nprm b,@R .nprm.me b{background:none!important;color:var(--chink)!important;padding:0 2px!important;border:0!important;font-weight:700}
+@R .nprm.me b{color:var(--chblueT)!important}
+@R .nprm i{position:relative;z-index:2;background:var(--mgpanel);padding:0 3px}
+@R .nprtrack{padding-bottom:10px!important}
+/* this week: names never break inside a word */
+@R .wktm span,@R .wktm b,@R [data-pane="weekly"] .wktm span{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;white-space:nowrap!important;font-size:12px!important;letter-spacing:-.01em}
+@R .wktm{min-width:0}
+
+@R #spdOut .nprlane.nprlane{background:var(--mgpanel)!important;background-image:none!important}
+@R #gauntOut .gtop span.sev.sev{box-shadow:none!important;padding:2px 10px 2px 0!important;background:none!important}
+@R .chhot .st{max-width:100%!important}
+@R .chhot img{width:56px!important;height:56px!important;top:12px!important;bottom:auto!important;right:8px!important}
+@R .chhot{min-height:0!important}
+@R #spdOut .nprm{margin-top:-4px}
+@R #spdOut .nprlane.nprlane{border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;box-shadow:inset 3px 0 0 var(--chred)!important}@R #spdOut .nprlane.nprlane.me{box-shadow:inset 3px 0 0 var(--chblue)!important}
+
+/* ===================== Light paper (Sim: "not too bright, colours really coming through") ===================== */
+@R:not([data-look="dark"]){--chp:#EFEAE0;--mgpaper:#EFEAE0;--chp2:#E6E0D4;--chc:#F8F5EF;--mgpanel:#F8F5EF;--card2:#F3EFE7;--soft:#E6E0D4;--line:#D3CCBF;--line2:#BDB5A6;
+  --chink:#141414;--chink2:#454A63;--faint:#5E6275;--chblue:#0068AD;--chblueT:#005185;--chred:#E6359B;--chredT:#A10C6D;--chyel:#FFE100}
+@R:not([data-look="dark"]) body{background-color:var(--chp)!important}
+@R:not([data-look="dark"]) .mgwash{background:linear-gradient(170deg,var(--mgpanel) 18%,var(--w1) 55%,var(--w2))}
+/* captions: consistent inner padding; long names wrap at spaces instead of touching the border */
+@R .mgcap{padding:6px 10px 7px!important}
+@R .mgcap b{white-space:normal!important;overflow-wrap:normal;word-break:normal;font-size:clamp(13px,3.6vw,16px)}
+@R .mgst .mgcap{max-width:calc(100% - 20px)}
+
+/* ===================== Compact bottom bar (Sim: "takes up a lot of space") =====================
+   Native-iOS style: 6px top padding, 22px icons, 12px labels, 2px gap, bar ~52px + the safe area (never inset + extra).
+   --sa-bottom lets tests simulate an inset; on devices it is env(safe-area-inset-bottom). */
+@R .bnav{padding:6px 0 max(var(--sa-bottom,env(safe-area-inset-bottom,0px)),10px)!important;min-height:0!important;height:auto!important;align-items:flex-start!important}
+@R .bnav button{padding:0!important;gap:2px!important;min-height:44px!important;justify-content:flex-start!important}
+@R .bnav button>svg,@R .bnav .chfab,@R .bnav .chfab svg{width:22px!important;height:22px!important}
+@R .bnav button>span:not(.chfab){font-size:12px!important;line-height:14px!important;height:14px!important}
+@R .bnav button[aria-selected="true"]::before{left:50%!important;right:auto!important;width:30px!important;margin-left:-15px!important;top:-7.5px!important;height:4px!important;transform:skewX(-24deg)!important;border-radius:0!important}
+@media (max-width:899px){@R main,@R .mainwrap{padding-bottom:calc(64px + max(var(--sa-bottom,env(safe-area-inset-bottom,0px)),10px))!important}}
+@R .bnav{grid-auto-rows:auto!important;align-content:start!important}
+@R .bnav button{height:auto!important;max-height:none!important;flex:none}
+@R .bnav button>svg{width:22px!important;height:22px!important;min-height:0!important}
+@R .bnav [data-view="report"] .chfab{width:22px!important;height:22px!important}
+@R .bnav button:not(#_z)>svg:not(#_z){width:22px!important;height:22px!important}
+@R .bnav button:not(#_z)>svg:not(#_z){padding:0!important}
+
+/* ===================== Ratings hero: the top two ===================== */
+@R .chhot.mgrh{position:relative;overflow:visible!important;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr)!important;box-shadow:none!important;background:var(--mgpanel)!important;padding:14px 12px 14px!important;min-height:236px!important;display:flex!important;flex-direction:column;align-items:flex-start!important;text-align:left;--cx:30%;--lx:76%;--ly:40%}
+@R .chhot.mgrh .mgin{position:absolute;inset:0;border-radius:calc(var(--mgr) - 2px);overflow:hidden;z-index:0}
+@R .chhot.mgrh>*:not(.mgin):not(.mgrmon){position:relative;z-index:2}
+@R .chhot.mgrh .n{font:400 58px/1 var(--display)!important;color:var(--chink)!important;background:none!important;text-shadow:3px 2px 0 var(--mc)!important;margin:0!important}
+@R[data-look="dark"] .chhot.mgrh .n{text-shadow:3px 2px 0 var(--MC)!important}
+@R .chhot.mgrh .mgrcap{position:relative!important;left:auto;top:auto;margin:6px 0 6px;font-weight:700;font-size:13px;padding:3px 8px!important}
+@R .chhot.mgrh .nm{font:400 20px/1.1 var(--display)!important;color:var(--chink)!important;background:var(--mgpanel);padding:0 4px 0 0;margin:0 0 4px!important}
+@R .mgrst{display:flex;flex-direction:column;gap:1px;background:var(--mgpanel);padding:2px 6px 2px 0;border-radius:var(--mgr2)}
+@R .mgrrow{display:block;white-space:nowrap;font-size:13.5px;font-weight:700;color:var(--chink);line-height:1.35}
+@R .mgrrow .basis{font-weight:500;color:var(--chink2)}
+@R .mgrmon{position:absolute;right:-6px;top:-22px;width:58%;height:auto;z-index:1;pointer-events:none}
+@R .mgrmon svg,@R .mgrmon img{width:100%!important;height:auto!important;display:block}
+@R .chhot2{gap:8px!important;margin-top:18px!important}
+@R .chhot.mgrh .mgwash{background:linear-gradient(170deg,var(--mgpanel) 30%,var(--w1) 62%,var(--w2))}
+@R .chhot.mgrh .mglines{-webkit-mask:linear-gradient(100deg,transparent 0 46%,#000 62%);mask:linear-gradient(100deg,transparent 0 46%,#000 62%)}
+@R[data-look="dark"] .chhot.mgrh .mgwash{background:linear-gradient(170deg,var(--mgpanel) 30%,var(--W1) 62%,var(--W2))}
+
+/* ===================== A little more manga on calm pages ===================== */
+/* 1 page titles: soft dot fade from the right edge (stops well before the text) + a slanted ink stroke */
+@R .mgtitle{position:relative;padding:4px 0 12px;margin-bottom:6px}
+@R .mgtdots{position:absolute;top:0;right:0;bottom:10px;width:42%;background:radial-gradient(var(--d1) 1.5px,transparent 1.75px) 0 0/7px 7px;-webkit-mask:linear-gradient(270deg,#000,transparent);mask:linear-gradient(270deg,#000,transparent);z-index:0;pointer-events:none;border-radius:var(--mgr)}
+@R[data-look="dark"] .mgtdots{background:radial-gradient(var(--D1) 1.5px,transparent 1.75px) 0 0/7px 7px}
+@R .mgtitle>*:not(.mgtdots){position:relative;z-index:1}
+@R .mgtitle .chpgt{margin-bottom:0!important}
+@R .mgtstroke{display:block;width:46px;height:5px;margin-top:8px;background:var(--chred);transform:skewX(-24deg)}
+/* 2 section headings: a small caption box */
+@R [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.chk,h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht){display:inline-block;border:1.5px solid var(--mgink);border-radius:var(--mgr2);background:var(--mgpanel);padding:3px 9px!important;font:700 14px/1.3 var(--body)!important;color:var(--chink)!important;margin:4px 0 8px!important}
+@R .chsec>summary .cht{margin:0!important}
+/* 3 one divider before the page's foot folds: an ink rule ending in three tapered flicks */
+@R .mgdiv{position:relative;height:16px;margin:22px 0 14px;border-top:1.5px solid var(--mgink);margin-right:34px}
+@R .mgdiv i{position:absolute;right:-30px;height:2px;background:var(--mgink);border-radius:2px;transform-origin:left center;clip-path:polygon(0 0,100% 40%,100% 60%,0 100%)}
+@R .mgdiv i:nth-child(1){top:-9px;width:22px;transform:rotate(-24deg)}
+@R .mgdiv i:nth-child(2){top:-2px;width:28px}
+@R .mgdiv i:nth-child(3){top:5px;width:22px;transform:rotate(24deg)}
+/* 4 grouped panels: subtly slanted gutters (text kept straight) */
+@R :is(.chtoolsg,.htiles,.evgrid,.evlist)>:is(button,.htile,.evcard){transform:skewX(-1.5deg)}
+@R :is(.chtoolsg,.htiles,.evgrid,.evlist)>:is(button,.htile,.evcard)>*{transform:skewX(1.5deg)}
+/* 5 tap feedback: a brief ink impact flick */
+@R .mgimp{position:relative}
+@R .mgimp::after{content:"";position:absolute;inset:-8px;pointer-events:none;z-index:9;background:repeating-conic-gradient(from 0deg,var(--mgink) 0 3deg,transparent 3deg 30deg);-webkit-mask:radial-gradient(closest-side,transparent 78%,#000 80%,#000 96%,transparent 100%);mask:radial-gradient(closest-side,transparent 78%,#000 80%,#000 96%,transparent 100%);animation:mgimp .15s ease-out forwards}
+@keyframes mgimp{from{opacity:.9;transform:scale(.92)}to{opacity:0;transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){@R .mgimp::after{display:none}}
+/* 6 empty states: one small panel with an inked Pokémon and the line as a caption */
+@R .mgempty{display:flex!important;align-items:center;gap:12px;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr)!important;background:var(--mgpanel)!important;padding:12px 14px!important;text-align:left}
+@R .mgeart{flex:none;width:64px;height:64px}
+@R .mgeart img{width:64px!important;height:64px!important}
+@R .mgrmon{width:48%!important;right:-8px!important;top:-18px!important}
+@R .chhot.mgrh .n{font-size:50px!important;max-width:52%}
+@media (min-width:900px){@R .mgrmon{width:40%!important}@R .chhot.mgrh .n{font-size:64px!important}}
+
+/* ===== Round words (Sim: "some of our pages can be very wordy"): numbers and labels instead of sentences ===== */
+/* a stat row: a small label line, then cells of big number over a short label, split by thin ink rules, on plain paper */
+@R .wdstats{display:block;margin:10px 0 2px;font-size:inherit}
+@R .wdstats .wdsum{font-size:15px;margin-bottom:2px}
+@R .wdrow{display:flex;flex-wrap:wrap;align-items:stretch;margin-top:8px}
+@R .wdrow:first-child{margin-top:0}
+@R .wdl{flex:0 0 100%;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--chink2);margin-bottom:3px}
+@R .wdc{flex:0 1 auto;min-width:0;display:flex;align-items:baseline;gap:4px;padding:0 9px;border-left:2px solid var(--line2);line-height:1.2}
+@R .wdl+.wdc{border-left:0;padding-left:0}
+@R .wdc b{font:400 20px/1.1 var(--display);color:var(--chink);white-space:nowrap}
+@R .wdc b i{font:700 13px/1 "Instrument Sans",system-ui,sans-serif;font-style:normal;color:var(--chink2)}
+@R .wdc small{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--chink2);white-space:nowrap}
+@R .wdc .tipq,.wdl .tipq{margin:0;align-self:center}
+@R .wdl{margin-bottom:1px}
+@R .wdrow{margin-top:6px}
+/* a short line under a title, with its fine print behind "?" */
+@R .wdsub{display:block}
+@R .wdsub .tipq{vertical-align:middle;margin:0 0 0 6px}
+/* a row whose label sits on the left of its cells ("This week  1,751 teams | 55 events") */
+@R .wdrow.wdin{flex-wrap:nowrap;align-items:baseline}
+@R .wdrow.wdin>.wdl{flex:0 0 7.2em;margin:0}
+@R .wdrow.wdin>.wdc:nth-child(2){flex:0 0 8.6em}
+@R .wdrow>.wdc:first-child{border-left:0;padding-left:0}
+@R .wdq{display:inline-flex;align-items:center;margin-left:8px}
+
+/* weekly rows: names wrap at word breaks, badge never overlaps */
+@R [data-pane="weekly"] .wkrow{display:flex!important;align-items:center;gap:10px}
+@R [data-pane="weekly"] .wkn{flex:1 1 auto;min-width:0;white-space:normal!important}
+@R [data-pane="weekly"] .wkn>b{white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none}
+@R [data-pane="weekly"] .wkar{flex:none!important;white-space:nowrap!important;margin-left:6px}
+
+/* ===== Round words, phase 2 ===== */
+/* Fix suggestions: the damage-calc reason on its own short line under "Covers X: A -> B" (calc shorthand, same numbers) */
+@R .thcalc{display:block;font-size:13px;line-height:1.35;color:var(--chink2);margin-top:1px}
+/* screen-reader-only words (the Home pick names, already shown as Lead / Back tags) */
+@R .wdsr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+/* How we calculate: the "Built from" cells under the title */
+@R .npstats{margin-top:10px}
+/* Damage calc: the set readout, attacker line then defender line */
+@R .dcset>span{display:block}
+@R .thcond{display:block}
+
+/* ===== Kind of option (Sim, Nov 4): Move / Item / Ability / Nature, one marker site-wide =====
+   a line-drawn icon (2px round stroke, like the nav icons) + the word, in the kind's colour; the option name stays ink with a
+   kind-colour underline. No fill, no pill. Colour is never the only signal (icon shape + word). Label text 4.5:1+ on paper and card. */
+@R{--kd-m:#0d6a87;--kd-i:#8f5300;--kd-a:#7436b8;--kd-n:#2b7530}
+@R[data-look="dark"]{--kd-m:#4fc3e8;--kd-i:#f2b544;--kd-a:#c49cff;--kd-n:#7ed482}
+@R .kd-m{--kd:var(--kd-m)} @R .kd-i{--kd:var(--kd-i)} @R .kd-a{--kd:var(--kd-a)} @R .kd-n{--kd:var(--kd-n)}
+@R .kind{display:inline-flex;align-items:center;gap:4px;font:700 12.5px/1.2 "Instrument Sans",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:var(--kd);background:none;border:0;padding:0;white-space:nowrap}
+@R .kdic{width:15px;height:15px;flex:none;fill:none;stroke:var(--kd,currentColor);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@R .kdopt{text-decoration:underline;text-decoration-color:var(--kd);text-decoration-thickness:3px;text-underline-offset:4px;text-decoration-skip-ink:none}
+/* This week, New tech: the kind sits on its own short line above the option */
+@R [data-pane="weekly"] .wktech .wkn>.kind{display:flex;margin-bottom:2px}
+@R .wkteaser .kind{margin-right:4px}
+/* Popular sets: the same icons on the Moves / Item / Ability / Nature headings (each heading keeps its own ink colour) */
+@R .kdh{display:flex;align-items:center;gap:5px}
+@R .kdh .kdic{width:14px;height:14px}
+/* Events team search: kind word inside the filter chip / menu row */
+@R .corechip .kind.tsk{font-style:normal;margin-right:4px}
+@R .kdopt{text-decoration-thickness:2.5px;text-underline-offset:3px}
+@R [data-pane="weekly"] .wktech .wkn>b{line-height:1.38}
+
+/* ===== Overlap sweep (round words 2) ===== */
+/* Saved teams: long names ("Mega Charizard Y") wrap at a word break inside the tile instead of running past its edge */
+@R .svm span{white-space:normal!important;text-wrap:balance;overflow-wrap:normal!important;word-break:normal!important;hyphens:none}
+/* Home, your six (phone strip): the Lead / Back / Bench tag sat on top of the name (the name was nowrap and ran under the filled tag).
+   Now the name wraps at a word break and the tag is plain text on its own line under it: Lead in blue with a blue underline, Back / Bench grey. */
+@R .chmcard .chmgrid.npstrip .chmmon{grid-template-columns:40px minmax(0,1fr)!important}
+@R .chmcard .chmgrid.npstrip .chmmon b{white-space:normal!important;text-wrap:balance;overflow-wrap:normal!important;word-break:normal!important}
+@R .chmcard .chmgrid.npstrip .chmmon .chtag,@R .chmcard .chmgrid.npstrip .chmmon .chtag.lead{grid-column:2!important;grid-row:2!important;justify-self:start;align-self:start;background:none!important;padding:0!important;border:0!important;font:700 12px/1.3 "Instrument Sans",system-ui,sans-serif!important;color:var(--chink2)!important}
+@R .chmcard .chmgrid.npstrip .chmmon .chtag.lead{color:var(--chblueT)!important;text-decoration:underline;text-decoration-color:var(--chblue);text-decoration-thickness:2px;text-underline-offset:3px}
+
+/* New tech: Pokemon name always on its own line, so every row reads the same */
+@R [data-pane="weekly"] .wktech .wkn>b i{display:block;margin-top:4px}
+/* Nov 4 sweep: "Why A?" and "Info sheet ›" on My team are 14–15px tall text links (all:unset dropped their tap ring): a 40px ring */
+@R .rzwhy,@R .rzlink{position:relative!important}
+@R .rzwhy::after,@R .rzlink::after{content:"";position:absolute;left:-6px;right:-6px;top:-12px;bottom:-12px}
+/* Nov 4 sweep: All suggestions showed a one-line "Working out the best swaps…" note, then the swaps (about a screen tall) pushed
+   everything under them down a frame later (layout shift 0.6). The note now keeps the space the swaps will take. */
+@R #recList > .abbusy:only-child{min-height:70vh;align-items:flex-start}
+
+/* ===== Tap targets (Nov 4, Sim: "whatever you think is best, do it") =====
+   Goal: every control 44x44 to tap on a phone, measured by hit-testing (tools/tapsize.mjs).
+   Text links and "?" keep their look and get an invisible ring (a ::after inside the control, so a tap on it is a tap on the control).
+   A ring sits against the padding box, so it reaches (ring - border) past the drawn edge.
+   Rings never reach a neighbour: chip rows get a gap the rings exactly fill, buttons in rows just get taller. */
+/* invisible rings, every width */
+@R .tipq::after{inset:-15px!important}
+@R :is(.linkbtn,.hlink)::after{left:-10px!important;right:-10px!important;top:-15px!important;bottom:-15px!important}
+@R .rzwhy::after,@R .rzlink::after{top:-15px!important;bottom:-15px!important}
+@R .rzmorebtn{position:relative}
+@R .rzmorebtn::after{content:"";position:absolute;left:-8px;right:-8px;top:-15px;bottom:-15px}
+/* a control right under a paragraph that ends in "More" (the sheet's Profile fold) starts below that ring */
+@R :is(p,div):has(> .rzmorebtn) + :is(details,button,.btn){margin-top:14px!important}
+/* links in the same paragraph sit above that ring, so the ring only takes taps that would land on plain text */
+@R :is(p,div):has(> .rzmorebtn) a{position:relative;z-index:1}
+/* About: the data source names (18px links, one per list item) */
+/* team rows: Load team, Sets, Practice against: 20px apart so the link rings don't meet */
+@R .evbtns{column-gap:20px!important}
+@R .abtsn a{position:relative}
+@R .abtsn a::after{content:"";position:absolute;left:-4px;right:-4px;top:-13px;bottom:-13px}
+/* footer links are already 40px boxes: a 2px ring is enough there, so it can't reach "Send feedback" on the line above */
+@R .lglinks :is(.linkbtn,.hlink)::after{top:-2px!important;bottom:-2px!important}
+@R .calsrc a{position:relative}
+@R .calsrc a::after{content:"";position:absolute;left:-4px;right:-4px;top:-13px;bottom:-13px}
+@R .chrm::after{inset:-8px!important}
+/* (.lsx and the box "×" are already absolutely placed; only the static ones get a containing block) */
+@R :is(.fbx,.sideclose){position:relative}
+@R .fbx::after{content:"";position:absolute;inset:-6px}
+@R .lsx::after{content:"";position:absolute;inset:-4px}
+@R .sideclose::after{content:"";position:absolute;inset:-8px}
+@R #boxList .boxchip .x::after{content:"";position:absolute;inset:-4px}
+/* chip rows (Ratings types and flags, Type chart): 36px chips, 8px between rows; the 6px ring reaches 4px past each edge, so rows of rings touch, never overlap */
+@R :is(.ltypes,.lflags,.tcpick){row-gap:8px!important}
+@R :is(.ltype,.lflag,.tcb){min-height:36px!important}
+@R :is(.ltype,.lflag,.tcb)::after{top:-6.5px!important;bottom:-6.5px!important}
+/* the flag row scrolls sideways on phones, which clips anything outside it: 4px of room above and below for the rings, same place on the page */
+@media (max-width:899px){@R .lflags{padding-top:4px!important;padding-bottom:4px!important;margin-top:-2px!important;margin-bottom:4px!important}}
+/* phone: buttons, segmented controls, toggles, fields and folds are 44px tall (same type, a little more air) */
+@media (max-width:899px){
+  @R :is(.btn,.chghost,summary.btn,.seg>button,.sub,.typebtn,.ttmon,.dbdt,.nplink,.fbmis,.sdcopy,input.field,select.field,.chwhy>summary,.wkfoot>summary,summary.wnh,.themeseg button,[data-fbk],.logpick){min-height:44px!important}
+  @R #chActs :is(.btn,.chghost,details.moremenu>summary){min-height:44px!important}
+  @R .ltypes{padding-top:4px!important;margin-top:-2px!important}
+  @R :is(.seg>button,summary.btn,.typebtn,.tcb){min-width:44px!important}
+  @R :is(.trow,label.toggle){min-height:44px!important}
+  @R :is(.btn,.seg>button,.sub,.typebtn,.dbdt,.themeseg button,[data-fbk]){display:inline-flex;align-items:center;justify-content:center}
+}
+/* desktop (mouse): the same controls stay a little smaller, 40px, which is still easy to hit */
+@media (min-width:900px){
+  @R :is(.btn,.chghost,summary.btn,.seg>button,.sub,.typebtn,.ttmon,.dbdt,.nplink,.fbmis,.sdcopy,input.field,select.field,.chwhy>summary,.wkfoot>summary,summary.wnh,.themeseg button,[data-fbk],.logpick){min-height:40px!important}
+  @R #chActs :is(.btn,.chghost,details.moremenu>summary){min-height:40px!important}
+  @R :is(.btn,.seg>button,.themeseg button,[data-fbk]){display:inline-flex;align-items:center;justify-content:center}
+  /* one-line folds (threats, matchup prep, the sheet's profile) were 21-23px tall: a little padding, same look */
+  @R :is(.thrg,.gprep,.lprof,.replaybox,.lhsrc)>summary{padding-top:10px!important;padding-bottom:10px!important}
+}

@@ -34,7 +34,7 @@ function myInsights(G) { if (!G || G.n < MYREC_MIN) return null; const out = [],
   return out; }
 ui.ql = ui.ql || {open: false, leads: [], opp: [], last: null};
 function myRecCard(ms) { const G = myGames(ms), ins = myInsights(G), q = ui.ql;
-  const head = `<div class="myrech"><div style="min-width:0"><div class="chk">Your games · this six</div>${G ? `<div class="myrecn"><b>${G.w}–${G.l}</b><span class="t2">${G.n} game${G.n === 1 ? '' : 's'} you logged</span></div>` : '<div class="myrecn"><span class="t2">None logged yet. After a game, two taps: Log a game, then Win or Loss.</span></div>'}</div>
+  const head = `<div class="myrech"><div style="min-width:0"><div class="chk">Your games · this six</div>${G ? `<div class="myrecn"><b>${G.w}–${G.l}</b><span class="t2">${G.n} game${G.n === 1 ? '' : 's'} you logged</span></div>` : '<div class="myrecn"><span class="t2">None logged yet. After a game: Log a game, then Win or Loss.</span></div>'}</div>
     <button type="button" class="chghost" data-qlopen="1" aria-expanded="${q.open}">${q.open ? 'Close' : 'Log a game'}</button></div>`;
   const last = q.last && S.log.some(x => x.t === q.last.t) ? `<div class="qllast" role="status">${q.last.r === 'W' ? 'Win' : 'Loss'} logged.<button type="button" class="linkbtn" data-qlundo="${q.last.t}">Undo</button></div>` : '';
   const insight = G ? (ins ? `<ul class="myins">${ins.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : `<p class="t2 myins0">Log ${MYREC_MIN - G.n} more game${MYREC_MIN - G.n === 1 ? '' : 's'} with this six to see who you lose to most and how your leads do.</p>`) : '';

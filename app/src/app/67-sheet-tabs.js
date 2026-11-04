@@ -49,7 +49,7 @@ LST.info = p => { const st = (() => { try { return setFor(p) || {}; } catch (e) 
     <div class="lstr lstot"><span>Total</span><i></i><b>${tot}</b>${bf ? dif(tot, btot) || '<em class="lstd"></em>' : ''}</div></div>${bf ? `<p class="t2 lsnote">Mega Evolved stats. The small numbers are the change from ${esc(bf.d)} (total ${btot}).</p>` : ''}`;
   /* abilities: every one it can have, the one players use most marked with its share (popular sets data) */
   const abSh = new Map((st.ab || []).map(([n, v]) => [n, v])), top = (st.ab || [])[0], sb = (() => { try { return setBasis(p, st, 'ab'); } catch (e) { return null; } })();
-  const abl = [...new Set(p.a)].map(a => { const v = abSh.get(a), isTop = top && top[0] === a && p.a.length > 1;
+  /* trial v2: most-used ability first */ const abl = [...new Set(p.a)].sort((x, y) => (+(abSh.get(y) ?? -1)) - (+(abSh.get(x) ?? -1))).map(a => { const v = abSh.get(a), isTop = top && top[0] === a && p.a.length > 1;
     return `<div class="lsab${isTop ? ' top' : ''}"><div class="lsabh"><b>${esc(a)}</b>${isTop ? `<span class="lsabu">Most used${v != null ? ' · ' + pctFmt(+v) : ''}</span>` : v != null && p.a.length > 1 ? `<span class="lsabs">${pctFmt(+v)}</span>` : ''}</div>${LST.abDesc(a) ? `<p>${esc(LST.abDesc(a))}</p>` : ''}</div>`; }).join('');
   const abNote = p.m && bf ? `<p class="t2 lsnote">The Mega's ability. Before Mega Evolving, ${esc(bf.d)} has ${[...new Set(bf.a)].map(esc).join(' or ')}.</p>`
     : p.a.length === 1 ? '<p class="t2 lsnote">Its only ability.</p>' : top && abSh.size ? `<p class="t2 lsnote">Share of players' sets with each ability${sb ? ' · ' + sb.html : ''}.</p>` : '<p class="t2 lsnote">No set data yet, so no ability is marked as most used.</p>';
@@ -69,12 +69,19 @@ LST.info = p => { const st = (() => { try { return setFor(p) || {}; } catch (e) 
 /* show one tab: only `hidden` and aria flip; the hero, its sprite and the other panels stay as they are */
 LST.show = (k, o) => { o = o || {}; const sh = $('lairSheet'); if (!sh || !LST.ok(k)) return; const bar = sh.querySelector('.lstabs'); if (!bar) return;
   const was = LST.cur; LST.cur = k; if (o.save !== false) LS.set('cc2.lstab', k);
+  /* keep the tab bar where it was on screen (Sim, Nov 4: a tab tap jumped the sheet back to its top). The old code measured
+     .lstabmark, which the manga theme hides (display:none, so offsetTop is 0) and so reset scrollTop to 0. Now: measure the
+     panels' wrapper with getBoundingClientRect; give the wrapper a min-height so a shorter tab can't pull the bar down;
+     if the bar was stuck at the top, the new tab opens at its own start right under the bar; otherwise nothing moves. */
+  const panel = sh.querySelector('.lspanel'), wrap = sh.querySelector('.lstpw');
+  /* where the sticky bar sits in the sheet's content when it is not stuck (read with sticky switched off for one layout read) */
+  const natTop = () => { const ps = bar.style.position; bar.style.position = 'relative'; const pr = panel.getBoundingClientRect(), y = bar.getBoundingClientRect().top - pr.top - panel.clientTop + panel.scrollTop; bar.style.position = ps; return y; };
+  const st0 = panel ? panel.scrollTop : 0, n0 = panel && wrap ? natTop() : null, stuck = n0 != null && st0 > n0 + 1;
+  if (panel && wrap) wrap.style.minHeight = Math.max(0, panel.clientHeight - bar.offsetHeight) + 'px';
   bar.querySelectorAll('[role=tab]').forEach(b => { const on = b.dataset.lstab === k; b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
   sh.querySelectorAll('.lstp').forEach(pn => { const on = pn.dataset.lstp === k; pn.hidden = !on; pn.classList.toggle('lsfade', on && !!o.anim && was !== k); });
   bar.dataset.on = k;
-  /* keep the scroll sensible: if the tab bar has scrolled above view, bring the panel's top (right under the bar) back */
-  const panel = sh.querySelector('.lspanel'), mark = sh.querySelector('.lstabmark');
-  if (o.anim && panel && mark && panel.scrollTop > mark.offsetTop) panel.scrollTop = mark.offsetTop;
+  if (n0 != null) { if (stuck) panel.scrollTop = Math.max(0, natTop()); else if (panel.scrollTop !== st0) panel.scrollTop = st0; }
   if (o.focus) { const b = bar.querySelector(`[data-lstab="${k}"]`); if (b) try { b.focus({preventScroll: true}); } catch (e) {} } };
 CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = n && byName.get(n); if (!sh || sh.hidden || !p) return; const body = sh.querySelector('.lsbody'); if (!body || body.querySelector('.lstabs')) return;
   const stats = body.querySelector(':scope > .chlstats'), data = body.querySelector(':scope > .chlsdata'), act = body.querySelector(':scope > .lsact');

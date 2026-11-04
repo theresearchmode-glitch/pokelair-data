@@ -102,9 +102,18 @@ function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
 function tsTitle(base,t){return `${base.score}% → ${t.score}% ready for the top 30 threats (each threat weighted by how often it makes top cut)`}
 function tsChip(team){const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
   return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">${readyDelta(d)}</span>`}
+// round words 2: the damage-calc reason in calc shorthand. Only the wording changes; every number, move and condition stays
+// ("Mega Charizard Y moves first and OHKOs with Weather Ball, 212–249% of HP" -> "Mega Charizard Y: moves first, OHKO with Weather Ball, 212–249% HP").
+// The full sentence stays as the line's title.
+function calcShort(w){return String(w||'')
+  .replace(/ moves first( \([^)]*\))? and OHKOs with /,(m,t)=>`: moves first${t||''}, OHKO with `)
+  .replace(/ survives its (.+?) \(at most (\d+)% of HP\) and OHKOs back with /,': survives $1 (≤$2% HP), OHKO back with ')
+  .replace(/ takes at most (\d+)% of HP from (.+?) and 2HKOs with /,': takes ≤$1% HP from $2, 2HKO with ')
+  .replace(/ is immune to its attacks and 2HKOs with /,': immune to its attacks, 2HKO with ')
+  .replace(/% of HP/g,'% HP').replace(/ \(only if your (.+?) isn't up: leave its setter out\)/,'\nNot in your $1: leave its setter out')}
 // What a change does to the team's preparation, threat by threat, in plain words: [{up, html}] (best gains first, then losses)
 function threatDiff(baseTeam,team,max=3){const A=prepOf(baseTeam),B=prepOf(team);if(!A||!B||A.rows.length!==B.rows.length)return [];
   const up=[],dn=[];A.rows.forEach((ra,j)=>{const rb=B.rows[j];if(!rb||ra.t.n!==rb.t.n)return;
-    if(rb.level>ra.level)up.push({w:ra.t.w,html:`<b>Covers ${esc(rb.t.d)}</b>: ${ra.label} → ${rb.label} (${esc(THR.evidence(rb))})`});
+    if(rb.level>ra.level){const ev=THR.evidence(rb);up.push({w:ra.t.w,html:`<b>Covers ${esc(rb.t.d)}</b>: ${ra.label} → ${rb.label}<span class="thcalc" title="${esc(ev)}">${calcShort(ev).split('\n').map((x,i)=>i?`<span class="thcond">${esc(x)}</span>`:esc(x)).join('')}</span>`})}
     else if(rb.level<ra.level)dn.push({w:ra.t.w,html:`<span class="warnline">Loses ${esc(rb.t.d)}</span>: ${ra.label} → ${rb.label}`})});
   up.sort((x,y)=>y.w-x.w);dn.sort((x,y)=>y.w-x.w);return [...up.slice(0,max).map(x=>({up:true,html:x.html})),...dn.slice(0,max).map(x=>({up:false,html:x.html}))]}

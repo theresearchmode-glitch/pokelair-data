@@ -1,0 +1,293 @@
+/* NastyPlot Trial Redesign: Riso Manga, made for daily use.
+   One system for every page:
+   - Paper and ink. Light: warm paper #F7F2EE, navy ink #1D2140. Dark: true black #0B0B0C, graphite panels, off-white ink.
+   - Inks with jobs: blue = you, fluorescent pink = them, yellow = the one recommended action and the top tier.
+   - Type: Dela Gothic One for headings (sentence case, never shouting), Instrument Sans for everything you read,
+     Shantell Sans only for hand-written notes.
+   - Structure: square-ish panels (4px), one ink border weight (2.5px), one gap rhythm (8 / 12 / 16 / 24 / 40px).
+   - Art lives only on cover moments (Home banner, turn one strip). Working pages stay calm.
+   Selectors use :root:not(#_ch):not(#_tr) so they outrank the app's own theme blocks without !important. */
+
+@font-face{font-family:"TR Display";font-style:normal;font-weight:100 900;font-display:swap;size-adjust:80%;
+  src:url(https://fonts.gstatic.com/s/delagothicone/v19/hESp6XxvMDRA-2eD0lXpDa6QkBA2QkEI.woff2) format("woff2")}
+
+
+/* ---------- tokens: light ---------- */
+:root:not(#_ch):not(#_tr){
+  --chp:#F7F2EE;--chp2:#EEE6E0;--chc:#FFFCF9;--chink:#1D2140;--chink2:#555A79;--chline:#1D2140;
+  --chblue:#0078BF;--chblueT:#005E97;--chred:#FF48B0;--chredT:#B30F7B;--chredB:#FF48B0;--chyel:#FFE800;--chpen:#B30F7B;
+  --chbar:#1D2140;--chbarInk:#F7F2EE;--chhdr:#1D2140;--chbtnInk:#1D2140;--chshadow:#1D2140;
+  --chok:#00955A;--chmid:#0078BF;--chshaky:#B77900;--chbad:#D81E3A;
+  --court:var(--chp);--card:var(--chc);--card2:#F3ECE6;--ink:var(--chink);--mute:var(--chink2);--faint:#7A7E96;--line:#DDD3CB;--line2:#C9BEB5;--soft:#EEE6E0;
+  --navy:var(--chink);--deep:#141733;--navy-ink:#F7F2EE;--navyt:var(--chink);--btn:var(--chink);
+  --volt:var(--chblue);--volt2:#4AAEF5;--volt-ink:#ffffff;--accent:var(--chblueT);--gold:#B77900;--gold-soft:#FFF6C2;--gold-ink:#5C4300;
+  --good:#00804D;--ok:#0067A3;--warn:#946000;--bad:#C4162F;--good-soft:#DCF1E6;--warn-soft:#FBEFC8;--bad-soft:#FBDDE2;--mega-soft:#FCE3F0;--mega-ink:#B30F7B;
+  --display:"TR Display","Arial Black",system-ui,sans-serif;--body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Instrument Sans",system-ui,sans-serif;--code:ui-monospace,Menlo,monospace;
+  --day:var(--chp);--day2:var(--chp2);--dink:var(--chink);--dmute:var(--chink2);--dline:var(--line);--pinksh:transparent;
+  --tr-you-field:#DDEBF6;--tr-them-field:#FCE3F0;--tr-r:4px;--tr-bw:2.5px;
+  --tr-title-bg:#1D2140;--tr-title-fg:#F7F2EE;--tr-lines:#1D2140;--tr-dot:rgba(0,120,191,.42);
+  color-scheme:light}
+/* ---------- tokens: dark (true black, no navy) ---------- */
+:root:not(#_ch):not(#_tr)[data-look="dark"]{
+  --chp:#0B0B0C;--chp2:#1D1D20;--chc:#141416;--chink:#F4F1EC;--chink2:#A8A6AE;--chline:#3B3B42;
+  --chblue:#3AA6FF;--chblueT:#8CCBFF;--chred:#FF52B9;--chredT:#FF9AD2;--chredB:#FF52B9;--chyel:#FFE800;--chpen:#FF9AD2;
+  --chbar:#141416;--chbarInk:#F4F1EC;--chhdr:#141416;--chbtnInk:#0B0B0C;--chshadow:#000;
+  --chok:#3FD08A;--chmid:#3AA6FF;--chshaky:#F2B728;--chbad:#FF5C70;
+  --card2:#1A1A1D;--faint:#7E7C85;--line:#2A2A2F;--line2:#3B3B42;--soft:#1D1D20;--deep:#0B0B0C;--navy:#141416;--navy-ink:#F4F1EC;--navyt:#F4F1EC;--btn:#F4F1EC;
+  --volt-ink:#0B0B0C;--accent:#8CCBFF;--gold:#FFD34D;--gold-soft:#2A2412;--gold-ink:#FFE38A;
+  --good:#4FD995;--ok:#6CC0FF;--warn:#FFC94D;--bad:#FF6B7E;--good-soft:#10241A;--warn-soft:#2A2412;--bad-soft:#2A1418;--mega-soft:#231420;--mega-ink:#FF9AD2;
+  --tr-you-field:#111922;--tr-them-field:#1C1419;--tr-title-bg:#141416;--tr-title-fg:#F4F1EC;--tr-lines:rgba(255,255,255,.2);--tr-dot:rgba(58,166,255,.45);
+  --shadow:none;color-scheme:dark}
+
+/* ---------- type: one voice ---------- */
+html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+:root:not(#_tr) body{font-family:var(--body)}
+/* no shouting: every label and heading is sentence case, no faux italics, no tracked-out caps */
+:root:not(#_tr) body *:not(svg):not(svg *){text-transform:none!important;letter-spacing:normal!important;font-style:normal}
+:root:not(#_tr) body em,:root:not(#_tr) body i:not([class]){font-style:normal}
+
+/* ======================= shared surfaces ======================= */
+@R body{background-color:var(--chp);color:var(--chink)}
+@R body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .12 0 0 0 0 .12 0 0 0 0 .25 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@R[data-look="dark"] body{background-image:none}
+@R body::before{background:var(--chp)}
+
+/* header: paper, ink, the real logo */
+@R .band{background:var(--chp);color:var(--chink)}
+@R .band::before,@R .band::after,@R .band .stage{display:none}
+@R .band .inner{padding-block:16px 12px}
+@R h1,@R #viewTitle{font:400 34px/1.1 var(--display);color:var(--chink);text-shadow:none}
+@R .eyebrow{font:500 13px/1.3 var(--body);color:var(--chink2);margin-bottom:6px}
+@R .eyebrow .datadate{color:var(--chink2)}
+@R .jumpbtn{background:var(--chc);color:var(--chink2);border:var(--tr-bw) solid var(--chline);border-radius:10px;box-shadow:none;min-height:44px}
+@R .jumpbtn kbd,@R kbd{background:var(--chp2);color:var(--chink2);border:0;border-radius:5px;font:600 12px/1 var(--body);box-shadow:none}
+
+/* page tabs: one ink rule, the current page marked with a pink ink stroke */
+@R .tabs{background:var(--chp);box-shadow:none;border-bottom:4px solid var(--chline)}
+@R[data-look="dark"] .tabs{border-bottom-color:var(--chline)}
+@R .tabs button{clip-path:none;background:none;color:var(--chink2);font:600 16px/1 var(--body);padding:12px 14px 14px;position:relative;border-radius:0}
+@R .tabs button:hover{color:var(--chink);background:none}
+@R .tabs button[aria-selected="true"]{background:none;color:var(--chink)}
+@R .tabs button[aria-selected="true"]::after{content:"";position:absolute;left:8px;right:8px;bottom:-4px;height:8px;background:var(--chred);clip-path:polygon(0 30%,100% 0,97% 100%,2% 80%)}
+@R .tabs .tc{font:600 12px/1 var(--body);padding:4px 6px;border-radius:5px;background:var(--chblue);color:#fff;opacity:1;margin-left:6px}
+@R .themeseg{background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:10px;padding:3px;box-shadow:none}
+@R .themeseg button{border-radius:7px;color:var(--chink2);background:none}
+@R .themeseg button[aria-pressed="true"],@R .tabs .themeseg button[aria-pressed="true"]{background:var(--chink)!important;background-color:var(--chink)!important;color:var(--chp)!important;box-shadow:none!important}
+@R .tabs .themeseg button::after{display:none}
+
+/* type scale: page 34, section 26, card 20, body 16, secondary 14, meta 13 */
+@R h2,@R h3,@R .chdisp,@R .chcolt,@R .chmct{font-family:var(--display);font-weight:400;letter-spacing:-.01em;line-height:1.12;text-shadow:none}
+@R .chblock>h3,@R .chhead h3,@R .view h2{font-size:26px;color:var(--chink)}
+@R .hl{background:none!important;color:inherit!important;padding:0!important;box-shadow:none!important}
+@R .chk{font:500 13px/1.35 var(--body);color:var(--chink2)}
+@R .t2,@R p.t2{color:var(--chink2)}
+@R .chpen{font-family:"Instrument Sans",system-ui,sans-serif;color:var(--chpen)}
+
+/* buttons: yellow is the one main action, outline for the rest, blue links */
+@R .chprimary,@R .btn.primary{background:var(--chyel);color:#1D2140;border:0;border-radius:10px;box-shadow:none;font:600 16px/1 var(--body);min-height:48px;padding:0 20px;clip-path:none}
+@R .chprimary:hover{background:#FFF15A}
+@R .chghost,@R .btn,@R .chbtn{border-radius:10px;font-weight:600;clip-path:none;box-shadow:none}
+@R .chghost{background:transparent;color:var(--chink);border:var(--tr-bw) solid var(--chink);min-height:44px}
+@R .chghost:hover{background:var(--chp2)}
+@R .chghost.onblue,@R .chghost.onred{color:var(--chink);border-color:var(--chink);background:var(--chc)}
+@R .linkbtn{color:var(--chblueT);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;font-weight:600}
+@R .seg button{border-radius:8px;font-weight:600;box-shadow:inset 0 0 0 2px var(--line)}
+@R .seg button[aria-pressed="true"],@R .seg button[aria-selected="true"]{background:var(--chink);color:var(--chp);box-shadow:none}
+@R .chtag{font:600 12px/1 var(--body);padding:5px 7px;border-radius:4px;background:var(--chp2);color:var(--chink2);border:0}
+@R .chtag.lead{background:var(--chblue);color:#fff}
+
+/* panels: one ink border, square corners, no shadows */
+@R .chsec,@R .chfold,@R .card,@R .plan,@R .welcome,@R .hfb,@R .htile,@R .hmini{border-radius:var(--tr-r);box-shadow:none}
+@R .chsec,@R .chfold,@R .welcome,@R .hfb{background:var(--chc);border:var(--tr-bw) solid var(--chline)}
+@R .sprite,@R img.spr{image-rendering:auto}
+
+/* ======================= HOME: cover banner ======================= */
+@R .trbanner{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:12px;margin-bottom:16px}
+@R .trart{position:relative;min-height:320px;isolation:isolate}
+@R .trcut{position:absolute;inset:0;overflow:hidden;background:var(--chc);border:var(--tr-bw) solid var(--chline);border-width:4px;clip-path:polygon(0 0,100% 0,calc(100% - 40px) 100%,0 100%)}
+@R .trcut::after{content:"";position:absolute;inset:0;border:4px solid var(--chline);clip-path:inherit;pointer-events:none}
+@R .trsun{position:absolute;left:54%;top:52%;width:56%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:var(--chyel);z-index:1}
+@R .trrays{position:absolute;inset:-20%;z-index:0;background:repeating-conic-gradient(from 2deg at 54% 52%,var(--tr-lines) 0 .7deg,transparent .7deg 3.4deg,var(--tr-lines) 3.4deg 3.7deg,transparent 3.7deg 7.5deg);-webkit-mask:radial-gradient(circle at 54% 52%,transparent 30%,#000 64%);mask:radial-gradient(circle at 54% 52%,transparent 30%,#000 64%)}
+@R .trdots{position:absolute;inset:auto 0 0 0;height:45%;z-index:0;background-image:radial-gradient(circle,var(--tr-dot) 2px,transparent 2.4px);background-size:9px 9px;-webkit-mask:linear-gradient(0deg,#000,transparent);mask:linear-gradient(0deg,#000,transparent)}
+@R :is(.trbanner,.trph) .trmon{position:absolute;z-index:3;left:12%;right:6%;bottom:-14px;height:106%;pointer-events:none;display:flex;justify-content:center;align-items:flex-end}
+@R :is(.trbanner,.trph) .trmon img{width:auto!important;height:100%!important;max-width:none;object-fit:contain}
+@R .trstat{position:absolute;z-index:4;left:16px;top:16px;background:var(--chc);border:var(--tr-bw) solid var(--chline);padding:6px 10px;font:500 14px/1.2 var(--body);color:var(--chink)}
+@R .trstat b{font:400 16px/1 var(--display);color:var(--chredT)}
+@R .trbanner .chmid{position:relative;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:28px 32px 28px 52px;background:var(--tr-title-bg);color:var(--tr-title-fg);border:4px solid var(--chline);clip-path:polygon(24px 0,100% 0,100% 100%,0 100%);text-align:left;align-items:flex-start;min-width:0}
+@R .trbanner .chmid .chk{color:var(--tr-title-fg);opacity:.8}
+@R .trbanner .chmid .chh1{font:400 44px/1.05 var(--display);color:var(--tr-title-fg);margin:0}
+@R .trbanner .chmid .sub{font:400 44px/1.05 var(--display);color:var(--chred);margin:-10px 0 0}
+@R .trbanner .chmid p{margin:0;font-size:17px;color:var(--tr-title-fg);opacity:.92}
+@R .trbanner .chmid .ch64,@R .trbanner .chmid .chfour,@R .trbanner .chmid .chk[style]{display:none}
+@R .trbanner .chacts{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start;margin-top:4px}
+@R .trbanner .chacts .chghost{color:var(--tr-title-fg);border-color:var(--tr-title-fg);background:transparent;min-height:48px;padding:0 18px;font-size:16px}
+@R .trbanner .chacts .chghost:hover{background:rgba(127,127,127,.18)}
+@R .trph{display:none}
+
+/* ======================= HOME: your six vs the champion's six ======================= */
+@R .chsplit.trvs{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:none;border:0;border-radius:0;box-shadow:none;overflow:visible;padding:0}
+@R .trvs .chband{position:relative;background:var(--chc);color:var(--chink);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);padding:0 0 16px;display:flex;flex-direction:column;gap:10px;text-align:left;width:auto;min-width:0}
+@R .trvs .chband::before,@R .trvs .chband::after{display:none}
+@R .trvs .chband>.chk{order:0;margin:0;padding:12px 16px 0;color:var(--chink2);text-align:left!important}
+@R .trvs .chband .chcolt{order:-1;font:400 22px/1.15 var(--display);text-align:left!important;padding:12px 16px;margin:0;border-bottom:var(--tr-bw) solid var(--chline)}
+@R .trvs .chband.you .chcolt{background:var(--tr-you-field);color:var(--chblueT);box-shadow:inset 0 4px 0 var(--chblue)}
+@R .trvs .chband.them .chcolt{background:var(--tr-them-field);color:var(--chredT);box-shadow:inset 0 4px 0 var(--chred)}
+@R .trvs .chband .chwho{padding:0 16px;font-size:14px;color:var(--chink2);text-align:left!important}
+@R .trvs .chband .chwho b{color:var(--chink)}
+@R .trvs .chband .chwho .chpen{color:var(--chink)!important;background:var(--chyel);color:#1D2140!important;font:600 12px/1 var(--body);padding:5px 7px;border-radius:4px}
+@R .trvs .chlist6{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px}
+@R .trvs .chhr2{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 10px 6px 4px;border-radius:var(--tr-r);background:var(--chc);border:0;box-shadow:inset 0 0 0 2px var(--line);color:var(--chink);text-align:left;flex-direction:row}
+@R .trvs .chhr2.r{direction:ltr}
+@R .trvs .chhr2 img{width:56px!important;height:56px!important;margin:-6px -4px -6px -6px;order:0}
+@R .trvs .chhr2 .chbd2{order:1;text-align:left;min-width:0}
+@R .trvs .chhr2 .chbd2 b{display:block;font:600 15px/1.2 var(--body);color:var(--chink)}
+@R .trvs .chhr2 .chbd2 span{display:block;font-size:13px;color:var(--chink2);line-height:1.3}
+@R .trvs .chhr2 .chtag{order:2}
+@R .trvs .chwl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-start!important;padding:4px 16px 0;margin-top:auto}
+@R .trvs .wxchip{display:none}
+@R .trvs .chghost{min-height:42px;padding:0 14px;font-size:15px}
+@R .tabs button,@R .tabs button[aria-selected="true"]{box-shadow:none;text-shadow:none;outline-offset:-2px}
+@R .themeseg button[aria-pressed="true"] svg{color:var(--chp)}
+@R .trbanner .chmid p b{color:var(--tr-title-fg)}
+@R .trvs .chhr2 .chtag{background:var(--chp2);color:var(--chink2)}
+@R .trvs .chhr2 .chtag.lead{background:var(--chblue);color:#fff}
+@R .sdcopy{background:transparent;color:var(--chink);border:var(--tr-bw) solid var(--chink);border-radius:10px;min-height:42px;padding:0 14px;font:600 15px/1 var(--body);box-shadow:none}
+@R .sdcopy svg{color:currentColor}
+@R .chpad{padding:0}
+@R .welcome{padding:20px 22px}
+@R .welcome .wnum,@R .welcome ol li::before{border-radius:4px;transform:none;background:var(--chink);color:var(--chp)}
+
+/* ======================= HOME: ratings tiles and tools ======================= */
+@R .hmini{position:relative;overflow:hidden;border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);background:var(--chc);box-shadow:none;padding:0 0 10px;gap:2px}
+@R .hmini::before{content:"";position:absolute;inset:0 0 auto 0;height:96px;border-bottom:var(--tr-bw) solid var(--chline);background:radial-gradient(circle,color-mix(in srgb,var(--ta,#888) 55%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,color-mix(in srgb,var(--ta,#888) 22%,var(--chc));z-index:0}
+@R[data-look="dark"] .hmini::before{background:radial-gradient(circle,color-mix(in srgb,var(--ta,#888) 45%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,color-mix(in srgb,var(--ta,#888) 16%,var(--chc))}
+@R .hmini>*{position:relative;z-index:1}
+@R .hmini .hmspr{width:104px!important;height:104px!important;margin:-6px auto -14px;align-self:center}
+@R .hmini .hmn{padding:0 12px;font:600 15px/1.2 var(--body);color:var(--chink);margin-top:4px}
+@R .hmini .hms{padding:0 12px;font-size:13px;color:var(--chink2);display:flex;gap:6px;align-items:center}
+@R .hmini .hms b{color:var(--chink);font-weight:600}
+@R .rtier{border-radius:4px!important;font:600 11px/1 var(--body)!important;padding:3px 5px!important;min-width:0!important;height:auto!important;box-shadow:none!important}
+@R .htile{border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);background:var(--chc);box-shadow:none;transition:background-color .15s ease-out}
+@R .htile:hover{background:var(--chp2);transform:none}
+@R .htile b{font:600 16px/1.25 var(--body);color:var(--chink)}
+@R .htile svg{color:var(--chblue)}
+@R .htile .hld,@R .htile .hsd{color:var(--chink2);font-size:14px}
+@R .npmore,@R .chmorebtn{border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);font:600 15px/1 var(--body)}
+
+/* ======================= type colour: one flat treatment everywhere =======================
+   Rows get a 4px type stripe on the left and a faint tint. Cards get the stripe on top, a tint and halftone dots.
+   No gradients, no rainbows. */
+@R .tyacc,@R[data-look="dark"] .tyacc{background-image:none!important;background-color:color-mix(in srgb,var(--ta,#888) 12%,var(--chc))!important;box-shadow:inset 4px 0 0 var(--ta,#888)!important}
+@R[data-look="dark"] .tyacc{background-color:color-mix(in srgb,var(--ta,#888) 10%,var(--chc))!important}
+@R :is(.tgm,.boxchip,.svm,.stm,.wktm).tyacc,@R[data-look="dark"] :is(.tgm,.boxchip,.svm,.stm,.wktm).tyacc{background-image:radial-gradient(circle,color-mix(in srgb,var(--ta,#888) 40%,transparent) 1.4px,transparent 1.8px)!important;background-size:7px 7px!important;background-color:color-mix(in srgb,var(--ta,#888) 16%,var(--chc))!important;box-shadow:inset 0 4px 0 var(--ta,#888),inset 0 0 0 2px var(--line)!important;border-radius:var(--tr-r)!important}
+@R .mrow>summary.tyacc{box-shadow:inset 4px 0 0 var(--ta,#888)!important}
+/* the two top-rated hero cards */
+@R .chhot.typed,@R[data-look="dark"] .chhot.typed{background-image:radial-gradient(circle,color-mix(in srgb,var(--t1) 45%,transparent) 2px,transparent 2.4px)!important;background-size:9px 9px!important;background-color:color-mix(in srgb,var(--t1) 22%,var(--chc))!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;border-radius:var(--tr-r)!important;box-shadow:inset 0 5px 0 var(--t1)!important}
+@R[data-look="dark"] .chhot.typed{background-color:color-mix(in srgb,var(--t1) 16%,var(--chc))!important}
+@R .chhot.typed .n,@R .chhot.typed .nm,@R .chhot.typed .st{text-shadow:none!important;color:var(--chink)!important}
+@R .chhot .basis{color:var(--chink2)}
+/* rows and cards that used soft gradients */
+@R .slot.tcard,@R .slots.grid .slot.tcard{background:color-mix(in srgb,var(--t1) 14%,var(--chc));border:2px solid var(--line);border-radius:var(--tr-r);box-shadow:inset 0 4px 0 var(--t1)}
+@R .lshead{background:color-mix(in srgb,var(--ta) 22%,var(--chc));color:var(--chink);box-shadow:inset 0 5px 0 var(--ta)}
+/* S tier: a yellow ink frame instead of the rainbow foil */
+@R :is(.chhot,.ltier,.chlsr).nps::after{display:none!important}
+@R .chhot.nps{outline:3px solid var(--chyel);outline-offset:2px}
+
+/* ======================= BATTLE MODE (working layer) ======================= */
+@R .chbmhead .chbmt{font-size:34px;line-height:1.12}
+@R .chbmhead .chbmt em{color:var(--chredT)}
+@R .chbmhead .chbmt small{background:var(--chink);color:var(--chp);font:600 13px/1 var(--body);padding:5px 7px;border-radius:4px}
+/* their six: their ink */
+@R .bmopp.chhalf,@R .bmopp{background:var(--tr-them-field);border:var(--tr-bw) solid var(--chline);border-top:5px solid var(--chred);border-radius:var(--tr-r);padding:12px;box-shadow:none;gap:8px}
+@R .bmslot{background:var(--chc);border:2px solid var(--chline);border-radius:var(--tr-r);box-shadow:none}
+@R .bmslot .bmn{font:600 14px/1.2 var(--body);color:var(--chink)}
+@R .bmslot input{background:transparent;border:0;color:var(--chink)}
+@R .chbmk{font:400 20px/1.1 var(--display);color:var(--chredT)}
+/* cards */
+@R .plan,@R .bmcard,@R .chpanel,@R .bmt1,@R .chbmfold>*{background:var(--chc)!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;background-image:none!important}
+@R .bmt1 *{color:inherit}
+@R .bmt1 .t2,@R .bmt1 small{color:var(--chink2)!important}
+@R .plan .ph .pt,@R .bmt1 h3,@R .bmt1 .pt{font:400 20px/1.15 var(--display);color:var(--chink)}
+@R .chbringt{font-size:30px;line-height:1.1}
+@R .bmpicks .bmpick,@R .bmpick{background:var(--tr-you-field);border:2px solid var(--line);border-radius:var(--tr-r);box-shadow:none}
+@R .bmpick.lead{box-shadow:inset 0 0 0 3px var(--chyel);border-color:var(--chline)}
+@R .bmpick .tag{background:var(--chblue);color:#fff;border-radius:4px;font:600 12px/1 var(--body);clip-path:none;padding:5px 7px}
+/* the damage calc band becomes a calm card */
+@R .chcalc{background:var(--chc)!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;background-image:none!important}
+@R .chcalc *{color:inherit}
+@R .chcalc .t2{color:var(--chink2)!important}
+@R .chcalc button:not(.chprimary){background:var(--tr-you-field)!important;border:2px solid var(--line)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;color:var(--chink)!important}
+@R .chcalc button[aria-pressed="true"]:not(.chprimary){background:var(--tr-them-field)!important;border-color:var(--chred)!important}
+/* speed bars: blue yours, pink theirs */
+@R .bmsb{background:var(--chp2);border-radius:2px;height:14px}
+@R .bmsb i{border-radius:2px;background:var(--chred)}
+@R .bmsr.me .bmsb i{background:var(--chblue)}
+@R .bmsn,@R .bmsv{font:600 15px/1.25 var(--body);color:var(--chink)}
+@R .bmsr .bmsn{color:var(--chredT)}@R .bmsr.me .bmsn{color:var(--chblueT)}
+@R .tag.spdtie,@R .spdtie{background:var(--chyel)!important;color:#1D2140!important}
+/* damage grid */
+@R .bmdt td{background:var(--chp2);border-radius:3px}
+@R .bmdt th span{font:600 13px/1.2 var(--body);color:var(--chink)}
+@R .oppquick select,@R select.field,@R input.field,@R .field{background:var(--chc);color:var(--chink);border:2px solid var(--chline);border-radius:8px;box-shadow:none}
+@R .prentry{background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);box-shadow:none}
+@R .prentry .prei{background:var(--chblue);color:#fff;border-radius:4px}
+/* damage grid: your hit in blue, theirs in pink, the hit count as one small tag. OHKO is a filled tag, 2HKO an outline */
+@R :is(.bo,.bd){background:var(--chc)!important;border-radius:3px!important;font:600 14px/1.25 var(--body)!important;padding:20px 4px 4px!important;margin:2px 0!important;box-shadow:inset 0 0 0 1.5px var(--line)!important}
+@R .bo{color:var(--chblueT)!important}@R .bd{color:var(--chredT)!important}
+@R :is(.bo,.bd) i{display:block;font:500 12px/1.2 var(--body);color:var(--chink2);font-style:normal}
+@R :is(.bo,.bd)[data-ko]:not([data-ko=""])::after,@R :is(.bo,.bd):is(.k1,.k1m,.k2,.k2m)::after{top:4px!important;font:700 11px/1 var(--body)!important;padding:3px 5px!important;border-radius:3px!important;background:transparent!important;color:var(--chink)!important;border:0!important;box-shadow:inset 0 0 0 1.5px var(--chink2)!important}
+@R :is(.bo,.bd):is(.k1,.k1m)::after{background:var(--chink)!important;color:var(--chp)!important;box-shadow:none!important}
+@R .bo:is(.k1,.k1m){box-shadow:inset 0 0 0 2.5px var(--chblue)!important}
+@R .bd:is(.k1,.k1m){box-shadow:inset 0 0 0 2.5px var(--chred)!important}
+@R .bmdt td{background:transparent;border-bottom:1.5px solid var(--line)}
+@R .bmdt tbody th{background:var(--chc)}
+@R .chcalc .chprimary{color:#1D2140!important}
+@R .chcalc h3,@R .chcalc .chcalch b,@R .chcalc .chcalch .chdisp{color:var(--chink)!important}
+@R .chcalcdef{background:var(--tr-them-field)!important;border:2.5px solid var(--chred)!important;border-radius:var(--tr-r)!important;color:var(--chink)!important;box-shadow:none!important}
+@R .chcalcdef span{color:var(--chink)!important}
+
+/* ======================= phone ======================= */
+@media (max-width:899px){
+  @R .trph{display:block;min-height:240px;margin:12px 0 4px}
+  @R .trph .trcut{clip-path:polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%)}
+  @R .trph .trmon{left:18%;right:4%;height:104%}
+}
+/* bottom bar: flat, full width, one ink rule on top, the current page marked with the pink stroke */
+@media (max-width:899px){
+  @R .bnav{left:0!important;right:0!important;bottom:0!important;border-radius:0!important;background:var(--chc)!important;border-top:3px solid var(--chline)!important;box-shadow:none!important;backdrop-filter:none!important;padding:2px max(6px,env(safe-area-inset-left,0px)) calc(2px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-right,0px))!important}
+  @R .bnav button{color:var(--chink2)!important;border-radius:0!important;min-height:56px}
+  @R .bnav button span{font:600 12px/1.1 var(--body)}
+  @R .bnav svg{background:none!important;padding:2px!important}
+  @R .bnav button[aria-selected="true"]{color:var(--chink)!important}
+  @R .bnav button[aria-selected="true"] svg{background:none!important;color:var(--chink)!important}
+  @R .bnav button[aria-selected="true"]::before{top:-3px!important;height:6px!important;background:var(--chred)!important;box-shadow:none!important;border-radius:0!important;clip-path:polygon(0 0,100% 0,96% 100%,4% 100%)}
+  @R .bnav .chfab{width:auto!important;height:auto!important;background:none!important;box-shadow:none!important;border:0!important;margin:0!important;transform:none!important;color:inherit!important}
+  @R .bnav .chfab svg{width:22px!important;height:22px!important;fill:none;stroke:currentColor}
+}
+/* fixes found in the full pass */
+@R select.field,@R select{background-repeat:no-repeat!important}
+@R[data-look="dark"] .chthead .wxfx{opacity:.25}
+@R .chthead{background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);box-shadow:none}
+@R .chpart,@R .chpartb{box-shadow:none}
+@R .nprm.me .nprs{box-shadow:0 0 0 2.5px var(--chblue)}
+/* damage calc: attacker on your ink, defender on theirs, same card shape */
+@R .chdcband{background:var(--tr-you-field)!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;border-top:5px solid var(--chblue)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;background-image:none!important}
+@R .chdcband.def,@R .chdcband:not(.atk){background:var(--tr-them-field)!important;border-top-color:var(--chred)!important}
+@R .chdcband *{color:inherit!important}
+@R .chdcband .sub,@R .chdcband .chk{color:var(--chink2)!important}
+@R .chdcband .nm{font:400 20px/1.15 var(--display)}
+@R select.field,@R select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23555A79' stroke-width='2' stroke-linecap='round'/></svg>")!important;background-position:right 14px center!important;background-size:12px 8px!important;padding-right:38px!important}
+@R[data-look="dark"] select.field,@R[data-look="dark"] select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23A8A6AE' stroke-width='2' stroke-linecap='round'/></svg>")!important}
+@R .dccol,@R .dcres,@R .gitem,@R .tablewrap,@R .chshow,@R .chwin,@R .chsheet,@R .chside,@R .chready,@R .chbring{border:var(--tr-bw) solid var(--chline)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;background-image:none!important;outline:0!important}
+@R .dccol,@R .dcres,@R .gitem,@R .chshow,@R .chwin,@R .chsheet,@R .chside,@R .chready,@R .chbring{background-color:var(--chc)!important}
+@R[data-look="dark"] .chthead .wxfx{display:none}
+@R .tabs,@R .abhero,@R .hhero,@R .thero{background-color:var(--chp)!important}
+@R .bmslot,@R .corerow,@R .evcard,@R .bmdt tbody th{background-color:var(--chc)!important}
+@R .wave{display:none!important}
+@R .tabs button[aria-selected="true"]::after{bottom:0!important;height:6px}
+@R .band,@R .tabs{background:transparent!important;background-color:transparent!important}
+@R .tabs{position:relative}
+@R .tabs button{overflow:visible!important}
+@R .tabs .inner{overflow:visible}
+@media (max-width:899px){@R .tabs .inner{overflow-x:auto}}
+@R .tabs button[aria-selected="true"]::after{display:block!important;width:auto!important}

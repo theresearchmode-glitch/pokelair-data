@@ -69,8 +69,12 @@ setTimeout(()=>{try{const kick=()=>{clearTimeout(ovSync._t);ovSync._t=setTimeout
   mo.observe(document.body,{attributes:true,subtree:true,attributeFilter:['hidden','class'],childList:true})}catch(e){}},0);
 addEventListener('popstate',e=>{if(OV_SKIP){OV_SKIP--;return}const o=overlayOpen();
   if(o){overlayClose(o);return}
-  const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v)}finally{NAV_POP=false}});
+  const v=e.state&&e.state.npv;if(!v||v===view)return;NAV_POP=true;try{setView(v,false)}finally{NAV_POP=false}
+  /* back lands where you were on that page (Nov 4 sweep: it went to the top); the page may fill in a frame later, so twice */
+  const y=VIEW_SCROLL[v]||0,put=()=>{if(view===v)try{window.scrollTo(0,y)}catch(e){}};put();requestAnimationFrame(()=>setTimeout(put,80))});
+const VIEW_SCROLL={};
 function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-pane="${v}"]`))v='home';
+  if(typeof view!=='undefined'&&view&&v!==view)VIEW_SCROLL[view]=window.scrollY||0;
   // motion (Nov 1): a page switch fades the new page in (polish.css, html.np-sw); not on the first page at load
   if(v!==view&&document.body&&document.body.dataset.npReady){const r=document.documentElement;r.classList.add('np-sw');clearTimeout(setView.sw);setView.sw=setTimeout(()=>r.classList.remove('np-sw'),260)}
   view=v;LS.set('cc2.view',v);

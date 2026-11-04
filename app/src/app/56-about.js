@@ -54,7 +54,7 @@ function abtSec(key, tone, title, sub, body) {
 function renderAbout() { const el = $('aboutOut'); if (!el) return; if (el.dataset.done) return; el.dataset.done = '1';
   const src = DATA_SOURCES.map(s => `<li class="abtsrc"><div class="abtsn"><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.name)}</a>${s.note ? ` <span class="abtlic">${esc(s.note)}</span>` : ''}</div><div class="abtuse">${esc(s.use)}</div><div class="abtterm"><span aria-hidden="true">✓</span> ${esc(s.terms)}</div></li>`).join('');
   el.innerHTML = `<div class="abthero"><div class="chk">About &amp; legal</div><h2 class="chdisp">Made by fans, for doubles players</h2>
-      <p>NastyPlot is a free team builder for Pokémon Champions VGC doubles. Unofficial and fan-made.</p>
+      <p>A team builder for Pokémon Champions VGC doubles.</p>
       <div class="abtchips"><span>Free</span><span>No ads</span><span>Fan-made</span><span>Unofficial</span></div></div>
     ${abtSec('what', 'b', 'What NastyPlot is', 'A free fan tool for Champions VGC doubles',
       `<p>NastyPlot helps you build and check teams for Pokémon Champions VGC doubles (${esc(REG_NAME)}): what to bring, which threats you're ready for, damage, speed and the current meta from real tournament results.</p>

@@ -8,9 +8,9 @@ const CH = {};
 CH.basis = basis; CH.thin = thinFor; CH.basisText = basisText;
 CH.chev = (x, y, c) => { const p = (dy, col) => `<path d="M${x + 2} ${y + 22 + dy} L${x + 18} ${y + 8 + dy} L${x + 34} ${y + 22 + dy}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`; return p(3, '#FFE800') + p(0, c) + p(13, '#FFE800') + p(10, c); };
 // the logo: two +2 chevrons (blue = you, red = them) over the back two slots
-CH.logo = (s = 34, tile = '#1D2140') => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="${tile}"/>${CH.chev(12, 22, '#0078BF')}${CH.chev(52, 22, '#FF4C65')}<rect x="20" y="64" width="22" height="18" rx="6" fill="none" stroke="#F1E9DA" stroke-width="6"/><rect x="58" y="64" width="22" height="18" rx="6" fill="#F1E9DA"/></svg>`;
+CH.logo = (s = 34, tile = '#1D2140') => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="${tile}"/>${CH.chev(12, 22, '#0078BF')}${CH.chev(52, 22, '#FF52B9')}<rect x="20" y="64" width="22" height="18" rx="6" fill="none" stroke="#F1E9DA" stroke-width="6"/><rect x="58" y="64" width="22" height="18" rx="6" fill="#F1E9DA"/></svg>`;
 // the final logo's two chevrons (blue under red): up = closed, flipped = open. Exactly two chevrons, always.
-CH.chev2 = (cls = '') => `<svg class="`+cls+`" viewBox="124 72 264 293" aria-hidden="true"><path d="M144 284.64L256 172.64L368 284.64L368 345.12L256 233.12L144 345.12Z" fill="var(--chblue,#0078BF)"/><path d="M144 204L256 92L368 204L368 264.48L256 152.48L144 264.48Z" fill="var(--chred,#E8364F)"/></svg>`;
+CH.chev2 = (cls = '') => `<svg class="`+cls+`" viewBox="124 72 264 293" aria-hidden="true"><path d="M144 284.64L256 172.64L368 284.64L368 345.12L256 233.12L144 345.12Z" fill="var(--chblue,#0078BF)"/><path d="M144 204L256 92L368 204L368 264.48L256 152.48L144 264.48Z" fill="var(--chred,#FF48B0)"/></svg>`;
 CH.tog = () => `<span class="chtog" aria-hidden="true">${CH.chev2()}</span>`;
 // the logo: full lockup (Home), compact header lockup (top bar, menu, footer); light and Warm charcoal
 // each copy gets its own mask ids: a hidden copy (the closed menu) would otherwise break the mask for every other copy
@@ -69,8 +69,18 @@ CH.gradeBadge = (G, RD) => { if (!G || !RD) return ''; const h = CH.handTxt(RD, 
   const sub = G.rec ? `won ${winFmt(G.rec.wr * 100)} of ${CH.n(G.rec.g)} games` : G.partial ? `${RD.score}% ready so far` : h ? `${h} top threats` : CH.gradeSumS(G, RD);
   const tt = G.rec ? `Grade ${G.letter} comes from these six's tournament record. Our own check: ${RD.score}% ready, ${CH.handTxt(RD)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. The team ${CH.handTxt(RD)}.`;
   return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(tt)}"><b class="npgl">${G.letter}</b><span class="npgt"><b>${G.rec ? 'Real record' : `Grade ${G.s}${G.partial ? ' so far' : ''}`}</b><small${!G.rec && !G.partial && h ? ' class="dbhand"' : ''}>${!G.rec && !G.partial && h ? hRing(CH.hand(RD), 18) : ''}${sub}</small></span></span>`; };
-CH.gradeWhy = G => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
+/* round words (Sim, Nov 4): the record and readiness as labelled number cells instead of a sentence, each figure once.
+   Record row only with 30+ real games (the grade then comes from it); "Our check" is NastyPlot's own readiness check. */
+CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><b>${v}</b><small>${l}${t || ''}</small></span>`;
+  const tp = k => typeof tip === 'function' ? tip(k) : '';
+  const rec = G && G.rec ? `<div class="wdrow" role="group" aria-label="Tournament record"><span class="wdl">Tournament record${tp('numbers')}</span>${cell(Math.round(G.rec.wr * 100) + '%', 'wins')}${cell(G.rec.g.toLocaleString('en-US'), 'games')}${cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div>` : '';
+  const sum = G && !G.partial && !G.rec ? `<div class="wdsum">${CH.gradeSum(G, RD)}</div>` : '';
+  const ready = sum ? '' : cell(RD.score + '%', 'ready', tp('readiness'));
+  const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'unanswered') : ''}</div>`;
+  return `<div class="rd wdstats">${sum}${rec}${chk}</div>`; };
+CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '';
+  if (G.rec && o && o.short) return `<div class="chgwhy" id="chGwhy">${L} comes from the real record below${CH.thin(G.rec.g, 'record') ? ' ' + CH.basis(G.rec.g, 'game', 'record', {pre: '·'}) : ''}: ${CH.REC_MIN}+ games count more than our check.<br><span class="t2">A 60%+ wins, B 55%+, C 50%+, D 45%+. 50% is an average team.</span></div>`;
   if (G.rec) return `<div class="chgwhy" id="chGwhy">${L}: these exact six won about ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'})${CH.thin(G.rec.g, 'record') ? ' ' + CH.basis(G.rec.g, 'game', 'record', {pre: '·'}) : ''}. With ${CH.REC_MIN}+ real games, the grade comes from real results: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team).<br><span class="t2">Our own check, for reference: ${G.r}% ready for the top 30 threats${hd}, ${n - G.miss.length}/${n} team checks. Real results count more.</span></div>`;
   const mp = G.mp != null ? Math.round(G.mp) : null;
   return `<div class="chgwhy" id="chGwhy">${L} · grade ${G.s}${G.partial ? ' so far' : ''}. It starts from ${G.r}% ready for the top 30 threats${hd}${G.CK ? `; ${n - G.miss.length}/${n} team checks` : ''}.`
@@ -162,7 +172,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const them = `<div class="chband them chhalf"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div role="button" tabindex="0" data-lt="${esc(p.n)}" aria-label="${esc(p.d)}: open its info">${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
   const mid = `<div class="chmid">
     ${F ? `<div class="ch64"><span class="n b">6</span><span class="chk">bring</span><span style="font-size:26px" aria-hidden="true">→</span><span class="n r">4</span><span class="chk">pick</span><span class="chpen" style="margin-left:auto;transform:rotate(-3deg)">your four vs the meta's six <span class="chup">↑</span><span class="chdn">↓</span></span></div>
-    <div class="chfour">${[...fl, ...fb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'LEAD' : 'BACK'}</div></div>`).join('')}</div>` : ''}
+    <div class="chfour">${[...fl, ...fb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'Lead' : 'Back'}</div></div>`).join('')}</div>` : ''}
     </div>`;
   // 01 latest winner
   const E = META.events; let ev = null, t = null;
@@ -219,12 +229,12 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const midH = `<div class="chmid"><div class="chk">Team preview · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="sub">Before turn one.</div>
     <p>From <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>. See their six, pick your four.</p>
     ${F2 && cl.length ? `<div class="ch64"><span class="n b">6</span><span class="chk">bring</span><span style="font-size:26px" aria-hidden="true">→</span><span class="n r">4</span><span class="chk">pick</span></div>
-    <div class="chk" style="margin:2px 0 6px">NastyPlot's four vs ${foe}</div><div class="chfour">${[...cl, ...cb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'LEAD' : 'BACK'}</div></div>`).join('')}</div>` : ''}
+    <div class="chk" style="margin:2px 0 6px">NastyPlot's four vs ${foe}</div><div class="chfour">${[...cl, ...cb].map((m, i) => `<div>${sprite(m.p) || ''}<div class="lab${i < 2 ? ' lead' : ''}">${i < 2 ? 'Lead' : 'Back'}</div></div>`).join('')}</div>` : ''}
     <div class="chacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="report">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></div>`;
   // phone Home: one story top to bottom. What this is + the one button, then the latest champion, then your six.
   // each Pokémon opens its info sheet (Oct 30, Sim)
   const mon = (p, sub, tg) => `<button type="button" class="chmmon" data-lt="${esc(p.n)}" aria-label="${esc(p.d)}: open its info">${sprite(p) || ''}<b>${esc(p.d)}</b>${sub ? `<span>${esc(sub)}</span>` : ''}${tg || ''}</button>`;
-  const pickLine = F2 && cl.length && cb.length ? `<div class="chmwho">NastyPlot's pick vs ${foe}: lead <b>${cl.map(m => esc(m.d)).join(' + ')}</b>, back ${cb.map(m => esc(m.d)).join(' + ')}</div>` : '';
+  const pickLine = F2 && cl.length && cb.length ? `<div class="chmwho">NastyPlot's pick vs ${foe}<span class="wdsr">: lead ${cl.map(m => esc(m.d)).join(' + ')}, back ${cb.map(m => esc(m.d)).join(' + ')}</span></div>` : '';
   const phoneH = `<div class="chmh">
     <section class="chmhero"><div class="chk">Pokémon Champions · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Plot your win.</div><div class="chdisp sub">Before turn one.</div>
       <p>Teams, sets and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>${dataDateText() ? `<span class="chasof"> · ${esc(dataDateText().replace(/^Data as of/, 'data as of'))}</span>` : ''}.</p>
@@ -237,7 +247,10 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
       ${ms.length ? `${pickLine}<div class="chmgrid">${ord2.map(m => mon(m.p, '', tag2(m))).join('')}</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="report">Open my team</button>${FC && !sameSix ? `<button type="button" class="linkbtn" data-evvs="${esc(ev.id)}#${ev.top.indexOf(t)}">Prep vs the champion ›</button>` : ''}</div>`
         : `<div class="chmwho">Add six Pokémon and NastyPlot scouts the top threats for you.</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="build">Add your six</button></div>`}</section>
   </div>`;
-  const topH = phoneH + `<div class="chsplit chdesk">${youH}${midH}${themH}</div>`;  el.innerHTML = topH + `
+  // Trial Redesign: one short cover banner (the most used Pokémon, inked, over the riso sun) beside the headline, then your six vs the champion's
+  const star = six && six[0], starU = star ? U(star) : 0;
+  const art = star ? `<div class="trart" aria-hidden="true"><div class="trcut"><div class="trsun"></div><div class="trrays"></div><div class="trdots"></div></div><div class="trmon">${sprite(star) || ''}</div>${starU ? `<span class="trstat"><b>${Math.round(starU)}%</b> bring ${esc(star.d)}</span>` : ''}</div>` : '';
+  const topH = phoneH.replace('</section>', '</section>' + art.replace('class="trart"', 'class="trart trph"')) + `<div class="trbanner chdesk">${art}${midH}</div><div class="chsplit chdesk trvs">${youH}${themH}</div>`;  el.innerHTML = topH + `
     <div class="chpad">${typeof welcomeCard === 'function' ? welcomeCard() : ''}${typeof whatsNewCard === 'function' ? whatsNewCard() : ''}</div>
     <section class="chblock chhtop"><div class="chk">${ui.homeGems && gems.length ? 'Hidden gems · rarely used, winning more than expected' : `NastyPlot ratings · from ${RES && +RES.teams > 0 ? basisNum(RES.teams) + ' ' : 'real '}tournament teams`}</div><h3>Top of the <span class="hl">meta.</span></h3>${topMeta}</section>
     <section class="chblock chhtools"><div class="chk">Everything NastyPlot does</div><h3>All ${HOME_TILES.length} <span class="hl">tools.</span></h3>${tools}</section>
@@ -277,7 +290,7 @@ function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'
   b2.append(Object.assign(document.createElement('div'), {innerHTML: CH.seg('thr', [['top', 'Top 10'], ['grid', 'vs top 12'], ['all', 'All 30']], on2)}).firstElementChild);
   b2.append(panel('thr', 'top', [Object.assign(document.createElement('div'), {id: 'chThrTop'})], on2), panel('thr', 'grid', [Object.assign(document.createElement('div'), {id: 'chVsOut'})], on2), panel('thr', 'all', [$('thrCard'), flat('thrSec')], on2));
   // 3 · How your team plays: the game plan, then what you hit hard and what hits you
-  const p3 = CH.part('chP3', '3', 'How your team plays', 'Leads, what to bring, what you hit and what hits you'); const b3 = p3.querySelector('.chpartb'), on3 = LS.get('cc2.seg.types', 'off');
+  const p3 = CH.part('chP3', '3', 'How your team plays', 'Game plan and types'); const b3 = p3.querySelector('.chpartb'), on3 = LS.get('cc2.seg.types', 'off');
   const gp = rep.querySelector('.gpcard'); if (gp) { const g = mk('rgplan', 'Game plan', false); g.id = 'chfGplan'; g.querySelector('.chbody').append(gp); b3.append(g); }
   // Types sits in a fold like Game plan, so My team fits in about three phone screens
   { const ty = mk('rtypes', 'Types', false); ty.id = 'chfTypes'; ty.querySelector('.chs').textContent = 'What you hit and what hits you'; const tb = ty.querySelector('.chbody');
@@ -337,12 +350,14 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
   const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event.">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
-      ${RD ? `<div class="rd">${G && G.rec ? `<b>Grade ${G.letter}</b>: these six won ${Math.round(G.rec.wr * 100)}% of ${G.rec.g.toLocaleString('en-US')} real games · our own check: ${RD.score}% ready for the top 30 threats` : G && !G.partial ? CH.gradeSum(G, RD) : `<b>${RD.score}% ready</b> for the top 30 threats`}${typeof tip === 'function' && !(G && !G.partial && !G.rec) ? tip('readiness') : ''}<br>${hd ? `<span class="nw dbhand">${hRing(hd, 26)}Handles ${hd.x} of the top ${hd.n}</span>` : ''}${c[1] ? ` · <span class="nw">${c[1]} shaky</span>` : ''}${c[0] ? ` · <span class="nw">${c[0]} unanswered</span>` : ''}</div>` : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
+      ${G ? `<div class="rzgrade" data-band="${G.letter}"><span class="rzgn">${G.rec ? Math.round(G.rec.wr * 100) + '<small>%</small>' : esc(String(G.s))}</span><span class="rzgl">Grade ${G.letter}</span><span class="rzgc">${G.rec ? `win rate in ${G.rec.g.toLocaleString('en-US')} real games` : 'out of 100'}</span><button type="button" class="rzwhy" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${G.letter}?</button></div>` : ''}
+      ${RD ? CH.recStats(G, RD, hd, c) : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
       <div class="chpills">${legal}${ck}</div>
-      ${ms.length ? `<div class="chsix6">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chedit="${i}" aria-label="Edit ${esc(m.d)}">${sprite(m.p) || esc(m.d)}</button>`).join('')}</div>` : ''}
+      ${ms.length ? `<div class="chsix6 rzsix" role="group" aria-label="Your six: tap one to see its set">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chset="${i}" aria-pressed="${ui.rzSet === i ? 'true' : 'false'}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set">${sprite(m.p) || ''}<span>${esc(m.d)}</span></button>`).join('')}</div>` : ''}
       <div class="chacts2" id="chActs"><button type="button" class="chghost" data-view="teams">Saved teams</button><button type="button" class="chghost" data-view="box">My box</button>${ms.length ? '<button type="button" class="chghost" data-cxgo="cur|">Compare with…</button>' : ''}${ms.length && typeof sdBtn === 'function' ? sdBtn('mine') : ''}</div></div>
-    ${G ? `<button type="button" class="chring gc" style="--gc:${CH.gcol(G.letter)}" data-band="${G.letter}" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy" aria-label="Grade ${G.letter}: why" title="Why this grade"><span class="chrl">${G.letter}</span><small>${G.rec ? Math.round(G.rec.wr * 100) + '% wins' : G.s}</small></button>` : ''}</div>
-    ${G ? CH.gradeWhy(G).replace('id="chGwhy"', `id="chGwhy"${ui.gwhy ? '' : ' hidden'}`) : ''}
+    </div>
+    ${ms.length ? `<div id="rzSet" class="rzset" aria-live="polite"${ui.rzSet != null && all[ui.rzSet] && all[ui.rzSet].m ? '' : ' hidden'}>${typeof rzSetHtml === 'function' && ui.rzSet != null && all[ui.rzSet] && all[ui.rzSet].m ? rzSetHtml(all[ui.rzSet].m, ui.rzSet) : ''}</div>` : ''}
+    ${G ? CH.gradeWhy(G, {short: 1}).replace('id="chGwhy"', `id="chGwhy"${ui.gwhy ? '' : ' hidden'}`) : ''}
     ${ms.length ? '' : `<div class="chempty2"><button type="button" class="chprimary" data-chedit="0">Add your first Pokémon <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="auto">Build me a team</button></div>`}`;
   if (CH.acts) $('chActs').append(CH.acts);
   safe('grade motion', () => CH.gradeMotion(head, G, RD));
@@ -359,7 +374,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   // part 2: threats
   { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}<div class="chlegk">${CH.legendRow(RD)}</div></div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
   // part 4: the sheet, every slot (empty ones say Add)
-  { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">REG M-C · BRING 6 PICK 4</span></div>${all.map(row).join('')}</div>`; }
+  { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">Reg M-C, bring 6, pick 4</span></div>${all.map(row).join('')}</div>`; }
   if (!$('chScout').hidden) chScoutRender(); try { chEditStrip(); } catch (e) {} }
 // the Teams ▾ menu
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#chTeamsBtn'), m = $('chTeamsMenu'); if (!m) return;

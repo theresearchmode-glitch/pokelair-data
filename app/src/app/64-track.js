@@ -40,8 +40,10 @@ function trLines(T) { const W = new Map(); for (const e of T.ev) { const k = trW
 function trMonRow(m, text) { const p = byName.get(m.n); return `<button type="button" class="trmon" data-lt="${esc(m.n)}">${sprite(p, 'tiny') || ''}<span class="trmb"><b>${esc(p.d)}</b><span>${text}</span></span><span class="trr" style="--tc:${lTier(m.r).c}"${bandAt(m.r)}>${RS(m.r)}</span></button>`; }
 function renderTrack() { const el = $('trackOut'); if (!el) return; const T = META.track;
   const head = CH.head('Ratings · checked against later events', 'Track record', 'How right have our ratings been?');
-  const how = `<div class="trflow" aria-label="How the check works"><span><b>1</b>Every morning, every rating is saved</span><span><b>2</b>An event is played after that</span><span><b>3</b>We compare its top 8 with what we'd rated</span></div>
-    <p class="t2">The ratings couldn't have seen these events, so it's a fair test. Events: online ones with 32+ players and official ones; each uses the newest ratings saved before its day.</p>`;
+  /* round words 2: three short steps, the full method behind "?" (moved, not cut) */
+  const howTip = typeof tipText === 'function' ? ' ' + tipText('trhow', 'How the check works', "Every morning, every rating is saved. An event is played after that. We compare its top 8 with what we'd rated. The ratings couldn't have seen these events, so it's a fair test. Events: online ones with 32+ players and official ones; each uses the newest ratings saved before its day.") : '';
+  const how = `<div class="trflow" aria-label="How the check works"><span><b>1</b>Ratings saved each morning</span><span><b>2</b>An event is played</span><span><b>3</b>Its top 8 compared</span></div>
+    <p class="t2 wdsub">A fair test: the ratings never saw these events${howTip}</p>`;
   if (!T) { el.innerHTML = head + how + `<div class="trcard trempty"><b>Collecting</b><p>The first results appear here after the next morning's data refresh.</p></div><div class="nprow">${npLink('rating', 'How ratings work')}</div>`; return; }
   const E = T.ev.length, early = E < TR_MIN.verdict, days = Math.max(1, Math.round((Date.parse(T.last + 'T12:00:00Z') - Date.parse(T.since + 'T12:00:00Z')) / 864e5) + 1);
   const stats = `<div class="trstats"><span><b>${npDay(T.since)}</b>tracking since</span><span><b>${days}</b>day${days === 1 ? '' : 's'} of ratings saved</span><span><b>${E}</b>event${E === 1 ? '' : 's'} checked so far</span></div>`;
@@ -49,7 +51,7 @@ function renderTrack() { const el = $('trackOut'); if (!el) return; const T = ME
   if (!E) main = `<div class="trcard trempty"><b>Collecting</b><p>No event has been played after the first saved ratings yet. The first check appears the morning after one finishes.</p></div>`;
   else { const r = trRates(T.ev), ratio = r[0] && r[3] ? r[0] / r[3] : null;
     main = `<div class="trcard"><div class="chk">Top-8 teams, by the rating we gave</div><div class="trsub">How often each Pokémon was on a top-8 team, on average · ${E} event${E === 1 ? '' : 's'}, ${CH.n(T.ev.reduce((a, e) => a + e.teams, 0))} top-8 teams</div>
-      ${early ? `<div class="trearly"><b>Early:</b> only ${E} event${E === 1 ? '' : 's'}. Too few to judge yet, so these numbers will move. A verdict appears after ${TR_MIN.verdict} events.</div>` : ''}
+      ${early ? `<div class="trearly wdsub"><b>Early:</b> only ${E} event${E === 1 ? "" : "s"} so far${typeof tipText === 'function' ? ' ' + tipText('trearly', 'What early means here', `Only ${E} event${E === 1 ? '' : 's'}. Too few to judge yet, so these numbers will move. A verdict appears after ${TR_MIN.verdict} events.`) : ''}</div>` : ''}
       ${trBars(T)}${!early && ratio && isFinite(ratio) ? `<p class="trverdict">Pokémon we rated ${TR_BANDS[0]} were on top-8 teams <b>${ratio >= 20 ? 'more than 20×' : ratio >= 10 ? Math.round(ratio) + '×' : ratio.toFixed(1) + '×'}</b> as often as Pokémon we rated ${TR_BANDS[3].toLowerCase()}.</p>` : ''}</div>`; }
   // hits and misses: average of the ratings saved before each event
   const ms = T.mons, hits = ms.filter(m => m.r >= 70 && m.c > 0).sort((a, b) => b.c - a.c || b.r - a.r).slice(0, 3);

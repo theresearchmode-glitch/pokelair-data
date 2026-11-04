@@ -1,0 +1,323 @@
+/* ===================== Trial Redesign v2: improvements on top of riso.css =====================
+   1. My team: grade as plain type (no ring), your six as a tappable row, the set panel.
+   2. Battle: "The read" bar, turn one as a strip in move order.
+   3. Yellow only for the one main action; "you" tags blue, "them" pink.
+   4. Text: a clear voice for labels and numbers, "More" for long paragraphs, no grey walls.
+   5. Per-page polish for the pages that only had the global pass. */
+
+/* ---------- 4. text voice (global) ---------- */
+/* labels: heavier and in ink, not light grey */
+@R .chk,@R [data-pane] .eyebrow,@R .vsub,@R .lab,@R .k{font:600 13px/1.35 var(--body);color:var(--chink)}
+@R .chpghead .chk:first-child{display:flex;align-items:center;gap:8px}
+@R .chpghead .chk:first-child::before{content:"";width:18px;height:6px;background:var(--chred);clip-path:polygon(0 30%,100% 0,96% 100%,3% 85%);flex:none}
+/* running text stays readable: 15px, ink, a shade lighter only for genuinely secondary notes */
+@R [data-pane] p{font-size:15px;line-height:1.5}
+@R .t2,@R p.t2,@R .vsub{color:var(--chink2)}
+@R [data-pane] p.t2{font-size:14px}
+/* the "More" toggle for long paragraphs: a blue ink link, same voice as the rest of the links */
+@R .rzmorebtn{all:unset;cursor:pointer;color:var(--chblueT);font:600 14px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;white-space:nowrap}
+@R .rzmorebtn:focus-visible{outline:2.5px solid var(--chblue);outline-offset:2px;border-radius:3px}
+/* numbers: the display face, on a riso tint where they are the point */
+/* fold rows (the chevron rows used all over): title in the display face, subtitle one line in ink */
+@R details.chfold>summary b,@R .chfold>summary .chst,@R .nprow b{font:400 19px/1.15 var(--display);color:var(--chink)}
+@R details.chfold>summary .chs,@R details.chfold>summary span:not(.n):not([aria-hidden]){color:var(--chink2);font-weight:500}
+
+/* ---------- 3. yellow discipline ---------- */
+@R .trvs .chband .chwho .chpen{background:var(--chblue)!important;color:#fff!important}
+@R .bmpick.lead{box-shadow:inset 0 0 0 3px var(--chblue)}
+@R .tag.spdtie,@R .spdtie{background:var(--chink)!important;color:var(--chp)!important}
+@R .chhot.nps{outline-color:var(--chink)}
+/* gauntlet "You: ready for N of their 6": about you, so no red and no yellow. Ink on paper, a coloured bar says how ready */
+@R .gitem .gtop .sev{background:var(--chp2)!important;color:var(--chink)!important;border:0!important;border-radius:4px!important;box-shadow:inset 4px 0 0 var(--chink2)!important;padding:5px 8px 5px 10px!important;font:600 13px/1.2 var(--body)!important}
+@R .gitem .gtop .sev.ok,@R .gitem .gtop .sev.good{box-shadow:inset 4px 0 0 var(--chok)!important}
+@R .gitem .gtop .sev.mid{box-shadow:inset 4px 0 0 var(--chblue)!important}
+@R .gitem .gtop .sev.hi,@R .gitem .gtop .sev.bad{box-shadow:inset 4px 0 0 var(--chink)!important}
+
+/* ---------- navy/purple fields (light and dark): about hero, track-record card ---------- */
+@R .abthero,@R[data-look="dark"] .abthero{background:var(--tr-you-field)!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;border-top:5px solid var(--chblue)!important;box-shadow:none!important;background-image:none!important}
+@R .abthero *{color:inherit!important}
+@R .abthero .chpill,@R .abthero span[class]{background:var(--chc)!important;border:2px solid var(--chline)!important;color:var(--chink)!important}
+/* "How right have our ratings been?" link card: a plain panel with a blue top band, no purple gradient */
+@R .nptrack,@R[data-look="dark"] .nptrack{background:var(--chc)!important;background-image:none!important;border:var(--tr-bw) solid var(--chline)!important;border-top:5px solid var(--chblue)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;color:var(--chink)!important}
+@R .nptrack b{font:400 22px/1.15 var(--display)!important;color:var(--chink)!important}
+@R .nptrack span{color:var(--chink2)!important}
+
+/* ---------- 1. My team ---------- */
+@R .chthead{position:relative}
+@R .rzgrade{flex:none;display:grid;grid-template-columns:auto;justify-items:end;gap:2px;text-align:right;padding:4px 2px 0 12px;align-self:flex-start}
+@R .rzgn{font:400 54px/.95 var(--display);color:var(--chink);letter-spacing:-.02em}
+@R .rzgn small{font-size:24px;margin-left:2px}
+@R .rzgl{font:600 15px/1.25 var(--body);color:var(--chink)}
+@R .rzgrade[data-band="A"] .rzgl,@R .rzgrade[data-band="B"] .rzgl{color:var(--chblueT)}
+@R .rzwhy{all:unset;cursor:pointer;margin-top:4px;color:var(--chblueT);font:600 14px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
+@R .rzwhy:focus-visible{outline:2.5px solid var(--chblue);outline-offset:3px;border-radius:3px}
+@R .chsix6.rzsix{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:12px 0 4px}
+@R .rzsix button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px 6px;border-radius:var(--tr-r);box-shadow:inset 0 0 0 2px var(--line);background:var(--chc);min-width:0}
+@R .rzsix button img{width:56px!important;height:56px!important;margin:-4px 0 -2px}
+@R .rzsix button span{font:600 12px/1.15 var(--body);color:var(--chink);text-align:center;max-width:100%}
+@R .rzsix button:hover{background:var(--chp2)}
+@R .rzsix button[aria-pressed="true"]{background:var(--tr-you-field);box-shadow:inset 0 0 0 2.5px var(--chblue),inset 0 -5px 0 var(--chblue)}
+@media (max-width:899px){
+  @R .chsix6.rzsix{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @R .rzsix button img{width:52px!important;height:52px!important}
+  @R .rzsix button span{font-size:13px}
+  @R .chthead>div:first-of-type{min-width:0}
+}
+@R .rzsix button:focus-visible{outline:2.5px solid var(--chblue);outline-offset:2px}
+@R .rzset{margin:10px 0 0;padding:14px 16px;background:var(--chc);border:var(--tr-bw) solid var(--chline);border-top:5px solid var(--chblue);border-radius:var(--tr-r)}
+@R .rzset.in{animation:rzin .22s ease-out}
+@keyframes rzin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@R .rzseth{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+@R .rzseth img{width:64px!important;height:64px!important;margin:-8px -4px -8px -8px}
+@R .rzsetn b{display:block;font:400 22px/1.1 var(--display);color:var(--chink)}
+@R .rzsetn span{font:600 13px/1.3 var(--body);color:var(--chink2)}
+@R .rzsetr{text-align:right}
+@R .rzsetr b{display:block;font:400 30px/1 var(--display);color:var(--chink)}
+@R .rzsetr span{font:600 12px/1.2 var(--body);color:var(--chink2)}
+@R .rzsetd{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 8px}
+@R .rzsetd div{padding:8px 10px;border-radius:var(--tr-r);background:var(--tr-you-field)}
+@R .rzsetd dt{font:600 12px/1.2 var(--body);color:var(--chink2)}
+@R .rzsetd dd{margin:2px 0 0;font:600 15px/1.25 var(--body);color:var(--chink)}
+@R .rzsetm{list-style:none;margin:0 0 10px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@R .rzsetm li{font:600 15px/1.2 var(--body);color:var(--chink);padding:8px 10px;border-radius:var(--tr-r);box-shadow:inset 3px 0 0 var(--chblue),inset 0 0 0 1.5px var(--line)}
+@R .rzseta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+@R .rzlink{all:unset;cursor:pointer;color:var(--chblueT);font:600 15px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
+@R .rzlink:focus-visible{outline:2.5px solid var(--chblue);outline-offset:3px;border-radius:3px}
+@R .chring{display:none!important}
+/* the header text: the grade line reads as data, not a paragraph */
+@R .chthead .rd{font-size:15px;line-height:1.45;color:var(--chink)}
+@R .chthead .rd b{font-weight:700}
+
+/* ---------- 2. Battle: The read ---------- */
+@R .rzread{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;align-items:center;margin:12px 0;padding:12px 16px;background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r)}
+@R .rzread h2{font:400 20px/1.1 var(--display)!important;margin:0;color:var(--chink)}
+@R .rzread ul{list-style:none;margin:0;padding:0;display:flex;gap:10px 22px;flex-wrap:wrap}
+@R .rzread li{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:600 15px/1.2 var(--body);color:var(--chink);padding-left:10px;box-shadow:inset 3px 0 0 var(--line)}
+@R .rzread li.you{box-shadow:inset 3px 0 0 var(--chblue)}
+@R .rzread li.them{box-shadow:inset 3px 0 0 var(--chred)}
+@R .rzread li .k{font:600 13px/1.2 var(--body);color:var(--chink2);width:100%}
+@R .rzread li i{color:var(--chink2);font-style:normal}
+@R .rzread li em{font-style:normal;color:var(--chredT);font-weight:700}
+@R .rzmini{display:inline-flex;align-items:center;gap:4px}
+@R .rzmini img{width:34px!important;height:34px!important;margin:-6px -2px}
+@R .rzmini b{font-weight:700}
+@R .rzn{font:400 22px/1 var(--display)!important;color:inherit}
+@R .rzread li.them .rzn{color:var(--chredT)}
+@R .rzlive{grid-column:1/-1;font:600 12px/1.2 var(--body);color:var(--chink2)}
+
+/* ---------- 2. Battle: turn one as a strip in move order ---------- */
+@R .rzt1 .ph .pt{font:400 20px/1.15 var(--display)}
+@R .rzbeats{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+@R .rzbeat{position:relative;display:flex;flex-direction:column;gap:8px;min-height:250px;padding:12px 26px 14px;margin-inline:-7px;
+  background:radial-gradient(circle,color-mix(in srgb,var(--tc) 55%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,var(--tr-you-field);
+  clip-path:polygon(20px 0,100% 0,calc(100% - 20px) 100%,0 100%);border-top:5px solid var(--chblue)}
+@R .rzbeat.them{border-top-color:var(--chred);background:radial-gradient(circle,color-mix(in srgb,var(--tc) 55%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,var(--tr-them-field)}
+@R :is(.plan,.bmt1,.chpanel) .rzt1{border:0!important;padding:0!important;background:transparent!important}
+@R .rzbeat:first-child{margin-left:0;padding-left:14px;clip-path:polygon(0 0,100% 0,calc(100% - 20px) 100%,0 100%)}
+@R .rzbeat:last-child{margin-right:0;padding-right:14px;clip-path:polygon(20px 0,100% 0,100% 100%,0 100%)}
+@R[data-look="dark"] .rzbeat{background:radial-gradient(circle,color-mix(in srgb,var(--tc) 40%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,var(--tr-you-field)}
+@R[data-look="dark"] .rzbeat.them{background:radial-gradient(circle,color-mix(in srgb,var(--tc) 40%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,var(--tr-them-field)}
+@R .rzbn{display:grid;place-items:center;width:30px;height:30px;background:var(--chink);color:var(--chp);font:400 15px/1 var(--display)}
+@R .rzbeat img{width:96px!important;height:96px!important;align-self:center;margin:-6px 0 -10px}
+@R .rzbt{display:flex;flex-direction:column;gap:6px}
+@R .rzbwho{font:600 13px/1.2 var(--body);color:var(--chink)}
+@R .rzbwho small{font-weight:500;color:var(--chink2);font-size:12px}
+@R .rzmove{align-self:flex-start;display:inline-block;padding:7px 12px;border-radius:6px;transform:skewX(-8deg);font:400 16px/1.15 var(--display);color:#fff;background:var(--chblue);box-shadow:0 0 0 2px var(--chline)}
+@R .rzbeat.them .rzmove{background:var(--chred);color:#1D2140}
+@R .rzbeat .t2{font-size:14px;line-height:1.35;color:var(--chink)!important;background:var(--chc);padding:6px 8px;border:1.5px solid var(--line);border-radius:4px}
+@R .rzwarn{margin:12px 0 0;padding:8px 12px;border-left:4px solid var(--chred);background:var(--tr-them-field);font-size:15px;color:var(--chink)}
+@R .rzwarn b{font:400 15px/1 var(--display);color:var(--chredT);margin-right:6px}
+@R .rzfield{margin:8px 0 0;font-size:14px;color:var(--chink)}
+@R .rzfield .k{display:inline-block;margin-right:6px;padding:4px 7px;border-radius:4px;background:var(--chp2);font:600 12px/1 var(--body)}
+@media (max-width:899px){
+  @R .rzread{grid-template-columns:1fr}
+  @R .rzbeats{grid-template-columns:1fr;gap:8px}
+  @R .rzbeat,@R .rzbeat:first-child,@R .rzbeat:last-child{min-height:0;margin:0;padding:10px 12px;clip-path:none;display:grid;grid-template-columns:30px 64px 1fr;align-items:start;gap:4px 10px;border-top:0;border-left:5px solid var(--chblue);border-radius:var(--tr-r)}
+  @R .rzbeat.them{border-left-color:var(--chred)}
+  @R .rzbeat img{width:64px!important;height:64px!important;margin:-6px -4px}
+}
+
+/* ---------- 5. per-page polish ---------- */
+/* page headers on every page: same rhythm as Home and Battle */
+@R .chpghead{padding-bottom:4px}
+@R .chpghead h2,@R .chpghead .chdisp{font:400 32px/1.1 var(--display)!important}
+/* stat blocks (gauntlet 1 / 17 / 2, track record, weekly): number in the display face, label under it */
+@R :is(.gstat,.trstat2,.npstat,.gsum>div){background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);box-shadow:none}
+/* lists of events / teams / archetypes: one row style with a type stripe, names in ink, details one line */
+@R :is(.evcard,.gitem,.archrow,.corerow,.teamrow,.wkrow){border-radius:var(--tr-r)!important;box-shadow:none!important}
+/* type chart: the row headers in the display face, cells calm */
+@R .typetbl th,@R .tchart th{font:400 14px/1.1 var(--display);color:var(--chink)}
+/* coverage and sets: move and item bars in blue (yours), labels in ink */
+@R :is(.svbar,.covbar,.setbar) i{background:var(--chblue)!important}
+/* box: owned Pokémon grid tiles, quiet with the type stripe on top */
+@R .boxchip{border-radius:var(--tr-r)!important}
+/* footer: smaller and calmer so the page ends quietly */
+@R footer p,@R .foot p{font-size:13px!important;line-height:1.5}
+
+/* ---------- Home on phones: your team and the champion's six as panels (no full blue or pink fields) ---------- */
+@R .chmcard,@R .chmcard.them,@R .chmcard.you,@R[data-look="dark"] .chmcard.them,@R[data-look="dark"] .chmcard.you{background:var(--chc)!important;background-image:none!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;padding:0 0 14px!important}
+@R .chmcard>.chk{order:0;padding:12px 14px 0;color:var(--chink2)!important}
+@R .chmcard .chmct{font:400 22px/1.15 var(--display)!important;margin:0;padding:12px 14px;border-bottom:var(--tr-bw) solid var(--chline);text-shadow:none!important}
+@R .chmcard{display:flex;flex-direction:column;gap:10px}
+@R .chmcard .chmct{order:-1}
+@R .chmcard.you .chmct{background:var(--tr-you-field);color:var(--chblueT)!important;box-shadow:inset 0 4px 0 var(--chblue)}
+@R .chmcard.them .chmct{background:var(--tr-them-field);color:var(--chredT)!important;box-shadow:inset 0 4px 0 var(--chred)}
+@R .chmcard .chmwho,@R .chmcard .chmrow,@R .chmcard .chmgrid,@R .chmcard .chmpick,@R .chmcard>p{padding-inline:14px;color:var(--chink)!important}
+@R .chmcard .chmwho b{color:var(--chink)!important}
+@R .chmcard .chpen{background:var(--chblue)!important;color:#fff!important;font:600 12px/1 var(--body)!important;padding:5px 7px;border-radius:4px}
+@R .chmcard .chmmon,@R .chmcard.npcompact .chmgrid.npstrip .chmmon{background:var(--chc)!important;color:var(--chink)!important;border:0!important;box-shadow:inset 0 0 0 2px var(--line)!important;border-radius:var(--tr-r)!important}
+@R .chmcard .chmmon *{color:var(--chink)!important}
+@R .chmcard .chmmon span,@R .chmcard .chmmon small{color:var(--chink2)!important}
+@R .chmcard .chghost,@R .chmcard .sdcopy{background:transparent!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chink)!important}
+@R .chmcard .sdcopy *{color:var(--chink)!important}
+@R .chmcard .linkbtn{color:var(--chblueT)!important}
+@R .chmcard .chtag,@R .chmcard .chtag.lead{background:var(--chp2)!important;color:var(--chink)!important;border:0!important}
+@R .chmcard .chtag.lead{background:var(--chblue)!important;color:#fff!important}
+
+/* ---------- contrast fixes found by the readability check ---------- */
+@R .seg button[aria-pressed="true"] *,@R .chseg button[aria-pressed="true"] *,@R .abpool button[aria-pressed="true"] *{color:inherit!important}
+@R :is(.abpool,.abctl) button[aria-pressed="true"] span{color:var(--chp)!important;opacity:.9}
+@R .m.mh,@R .sev.ok,@R .tag.box,@R .conf.hi,@R .abtterm,@R .abtterm span{color:var(--chink)!important}
+@R .who span{color:var(--chink2)!important}
+@R .corerk{color:var(--chink)!important}
+@R .st.ok,@R .st.mid{color:#006B45!important}
+@R[data-look="dark"] :is(.st.ok,.st.mid){color:#4FD995!important}
+@R .g-ok{color:#0B0B0C!important}
+@R .gok{color:#006B45!important}@R[data-look="dark"] .gok{color:#4FD995!important}
+@R .who span{opacity:1!important}
+@R .npmeth em,@R [data-pane="method"] em{color:var(--chink)!important}
+@R .sev.mid{color:var(--chink)!important;background:var(--chp2)!important}
+@R .pmain,@R .pmain span,@R .qnone,@R .t2.provnote,@R .needsmore,@R .regnote,@R .hfoot{color:var(--chink)!important;opacity:1!important}
+@R .ty.lt{color:#1D2140!important}
+@R .bmpick .tag,@R[data-look="dark"] .bmpick .tag{color:#fff!important;background:#005E97!important}
+@R[data-look="dark"] .rzmove{background:#8CCBFF;color:#0B0B0C}
+@R[data-look="dark"] .rzbeat.them .rzmove{background:#FF9AD2;color:#0B0B0C}
+@R .asm{color:var(--chink)!important;border-color:var(--chink2)!important}
+@R .tcb.on{color:#1D2140!important}
+@R .abtlic{color:var(--chink)!important}
+@R .tipq{color:var(--chink)!important;border-color:var(--chink2)!important}
+@R b:is(.rchip b),@R .rchip b{color:var(--chink)!important}
+@R .abctl .chprimary,@R[data-look="dark"] .abctl .chprimary{color:#1D2140!important}
+@R .chk{opacity:1!important}
+
+@R [data-absrc][aria-pressed="true"] b,@R [data-absrc][aria-pressed="true"] span{color:var(--chp)!important}
+/* type chart headers: ink letters with a type-coloured underline (coloured letters were unreadable) */
+@R th[title][style*="color"]{color:var(--chink)!important;box-shadow:inset 0 -4px 0 currentColor}
+@R th[title="Normal"][style*="color"]{box-shadow:inset 0 -4px 0 #aba88a!important}
+@R th[title="Fire"][style*="color"]{box-shadow:inset 0 -4px 0 #f06428!important}
+@R th[title="Water"][style*="color"]{box-shadow:inset 0 -4px 0 #3d82f2!important}
+@R th[title="Electric"][style*="color"]{box-shadow:inset 0 -4px 0 #f7c815!important}
+@R th[title="Grass"][style*="color"]{box-shadow:inset 0 -4px 0 #46b62e!important}
+@R th[title="Ice"][style*="color"]{box-shadow:inset 0 -4px 0 #5ed6d0!important}
+@R th[title="Fighting"][style*="color"]{box-shadow:inset 0 -4px 0 #d0352b!important}
+@R th[title="Poison"][style*="color"]{box-shadow:inset 0 -4px 0 #a83fc2!important}
+@R th[title="Ground"][style*="color"]{box-shadow:inset 0 -4px 0 #e2b14a!important}
+@R th[title="Flying"][style*="color"]{box-shadow:inset 0 -4px 0 #8b8af2!important}
+@R th[title="Psychic"][style*="color"]{box-shadow:inset 0 -4px 0 #f24f80!important}
+@R th[title="Bug"][style*="color"]{box-shadow:inset 0 -4px 0 #9eb81b!important}
+@R th[title="Rock"][style*="color"]{box-shadow:inset 0 -4px 0 #c6a53a!important}
+@R th[title="Ghost"][style*="color"]{box-shadow:inset 0 -4px 0 #7452b3!important}
+@R th[title="Dragon"][style*="color"]{box-shadow:inset 0 -4px 0 #6a3cee!important}
+@R th[title="Dark"][style*="color"]{box-shadow:inset 0 -4px 0 #5f4536!important}
+@R th[title="Steel"][style*="color"]{box-shadow:inset 0 -4px 0 #9db0cc!important}
+@R th[title="Fairy"][style*="color"]{box-shadow:inset 0 -4px 0 #f28cc0!important}
+@R .tabs .tc,@R[data-look="dark"] .tabs .tc{background:#005E97!important;color:#fff!important}
+@R .chtag.lead,@R .chmcard .chtag.lead,@R .trvs .chhr2 .chtag.lead,@R .chpen:is(.chwho .chpen,.chmwho .chpen){background:#005E97!important;color:#fff!important}
+@R[data-look="dark"] .asm{color:var(--chink)!important;background:transparent!important}
+@R .prentry .prei,@R[data-look="dark"] .prentry .prei{background:#005E97!important;color:#fff!important}
+@R[data-look="dark"] .logacts .btn.logwin,@R[data-look="dark"] .logacts .btn.logloss{color:#0B0B0C!important}
+
+@R .bmgrid>.bmt1.rzwide{grid-column:1/-1}
+@R .rzread ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px}
+
+/* page intros: one short lede in ink, bigger than body, the rest behind "More" */
+@R .chpgs,@R .chpghead+p,@R .chpghead+div>p:first-child,@R .npmeth>p:first-of-type{font-size:17px!important;line-height:1.45;color:var(--chink)!important}
+@R footer.legal p{color:var(--chink2)}
+@R footer.legal p:first-of-type{color:var(--chink)}
+
+/* yellow: one main action per page. Secondary "primary" buttons (Swap out, battle log, saved teams) are ink */
+@R .btn.primary{background:var(--chink)!important;color:var(--chp)!important;border:0!important}
+@R #saveBtn.btn.primary{background:var(--chyel)!important;color:#1D2140!important}
+/* Home on phones: the three starting paths are quiet panels; the yellow stays on "Build me a team" */
+@R .nppath.main,@R .nppath{background:var(--chc)!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;box-shadow:none!important}
+@R .nppath.main{box-shadow:inset 5px 0 0 var(--chblue)!important}
+@R .nppath *{color:var(--chink)!important}
+@R .nppath .npi,@R .nppath .npic{background:var(--chblue)!important;color:#fff!important}
+@R .nppath .npi *,@R .nppath .npic *{color:#fff!important}
+/* small text floor */
+@R .rtier{font-size:12px!important}
+@R i:where([class=""],:not([class])){font-size:max(12px,1em)}
+@R .corepct i,@R [data-pane="auto"] i{font-size:12px}
+/* names never cut in the damage grids */
+@R :is(.k1,.k2,.k3,.k1m,.k2m)>*{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+@R .chprimary.chapply{background:var(--chink)!important;color:var(--chp)!important}
+@R .dctab th span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere}
+@R .planstale{opacity:.8!important}
+@R .chwho .chpen,@R .chmwho .chpen{background:#005E97!important;color:#fff!important}
+/* speed race track: your lanes blue, their lanes pink (no teal / navy / purple fields) */
+@R .nprlane.l0,@R .nprlane.l1,@R .nprlane.l2,@R .nprlane.l3{background:color-mix(in srgb,var(--chred) 9%,var(--chc))!important}
+@R .nprlane.l1,@R .nprlane.l3{background:color-mix(in srgb,var(--chred) 5%,var(--chc))!important}
+@R .nprlane.me{background:color-mix(in srgb,var(--chblue) 14%,var(--chc))!important}
+@R .nprlane.me.l1{background:color-mix(in srgb,var(--chblue) 8%,var(--chc))!important}
+/* compare: team A blue, team B ink (no purple) */
+@R{--cxb:var(--chink)}
+@R .cxbadge.b{background:var(--chink)!important;color:var(--chp)!important}
+@R .cxpick{border-radius:var(--tr-r)!important}
+@R .cxpickh b{font:400 18px/1.15 var(--display)!important}
+
+/* ===================== round 3 (coordinator review): rows, not tiles ===================== */
+/* grade: big plain type under the team name */
+@R .rzgrade{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:4px 12px;text-align:left;justify-items:start;padding:8px 0 10px;margin:4px 0 8px;border-top:var(--tr-bw) solid var(--chline);border-bottom:1.5px solid var(--line)}
+@R .rzgn{font:400 64px/1 var(--display)!important}
+@R .rzgn small{font-size:28px}
+@R .rzgl{font:400 30px/1 var(--display)!important;color:var(--chblueT)!important}
+@R .rzgc{flex-basis:100%;font:600 14px/1.3 var(--body);color:var(--chink2)}
+@R .rzwhy{margin:0}
+/* your six: a list of rows split by rules */
+@R .chsix6.rzsix{gap:0!important;border-top:1.5px solid var(--line);margin:10px 0 8px}
+@R .rzsix button{flex-direction:row!important;justify-content:flex-start!important;gap:6px!important;padding:4px 8px 4px 2px!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;border-bottom:1.5px solid var(--line)}
+@R .rzsix button img{width:46px!important;height:46px!important;margin:-4px -2px!important;flex:none}
+@R .rzsix button span{text-align:left!important;font:600 14px/1.2 var(--body)!important;white-space:nowrap;overflow:visible}
+@R .rzsix button[aria-pressed="true"]{background:var(--tr-you-field)!important;box-shadow:inset 4px 0 0 var(--chblue)!important}
+@R .chsix6.rzsix{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+@media (max-width:899px){@R .chsix6.rzsix{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* set panel: no boxed cells */
+@R .rzset{border:0!important;border-top:5px solid var(--chblue)!important;border-bottom:var(--tr-bw) solid var(--chline)!important;border-radius:0!important;padding:12px 2px!important;background:transparent!important}
+@R .rzsetd div{background:transparent!important;border-radius:0!important;padding:6px 0!important;border-bottom:1.5px solid var(--line)}
+@R .rzsetm li{box-shadow:none!important;border-radius:0!important;padding:7px 0 7px 10px!important;border-bottom:1.5px solid var(--line);border-left:3px solid var(--chblue)}
+/* Home: three starting paths as ruled rows */
+@R .npaths{gap:0!important;border-top:var(--tr-bw) solid var(--chline)}
+@R .nppath,@R .nppath.main{border:0!important;border-bottom:1.5px solid var(--line)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding-left:2px!important}
+@R .nppath.main{box-shadow:inset 4px 0 0 var(--chblue)!important;padding-left:10px!important}
+/* Battle: the four you bring, unboxed */
+@R .bmpicks .bmpick,@R .bmpick,@R .bmpick.lead{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;border-bottom:var(--tr-bw) solid var(--line)!important}
+@R .bmpick.lead{border-bottom-color:var(--chblue)!important}
+@R .bmpick .tag,@R[data-look="dark"] .bmpick .tag{background:transparent!important;color:var(--chblueT)!important;font:400 16px/1 var(--display)!important;padding:4px 0!important}
+@R .bmpick:not(.lead) .tag{color:var(--chink2)!important}
+/* their six: names on one line */
+@R .bmslot .bmn{font-size:13px!important;white-space:nowrap;letter-spacing:-.01em!important}
+@R .bmslot{padding-inline:4px!important}
+/* info sheet abilities: ruled list */
+@R .lsab,@R .lsab.top{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;border-bottom:1.5px solid var(--line)!important;padding:10px 2px!important}
+@R .lsab.top{border-left:4px solid var(--chblue)!important;padding-left:10px!important}
+@R .lsab .lsabh b{font:400 18px/1.2 var(--display)}
+@R .lsabu{background:transparent!important;color:var(--chblueT)!important;font:700 13px/1 var(--body)!important;padding:0!important;border:0!important}
+/* turn one: ruled rows, a coloured stroke for who moves, the move as a slanted ink label (no filled box) */
+@R .rzbeat,@R .rzbeat.them,@R[data-look="dark"] .rzbeat,@R[data-look="dark"] .rzbeat.them{background:transparent!important;clip-path:none!important;margin:0!important;border-top:0!important;border-bottom:1.5px solid var(--line)}
+@R .rzbeats{gap:0 18px!important}
+@R .rzbeat{border-top:5px solid var(--chblue)!important;padding:12px 4px 14px!important;min-height:0!important}
+@R .rzbeat.them{border-top-color:var(--chred)!important}
+@R .rzmove,@R .rzbeat.them .rzmove,@R[data-look="dark"] .rzmove,@R[data-look="dark"] .rzbeat.them .rzmove{background:none!important;box-shadow:none!important;padding:0 0 4px!important;border-radius:0!important;transform:skewX(-8deg);color:var(--chblueT)!important;font:400 19px/1.15 var(--display)!important;border-bottom:4px solid var(--chblue)}
+@R .rzbeat.them .rzmove,@R[data-look="dark"] .rzbeat.them .rzmove{color:var(--chredT)!important;border-bottom-color:var(--chred)}
+@R .rzbeat .t2{background:transparent!important;border:0!important;padding:0!important;color:var(--chink)!important}
+@R .rzbeat img{background:radial-gradient(circle,color-mix(in srgb,var(--tc) 50%,transparent) 1.6px,transparent 2px) 0 0/8px 8px;border-radius:50%}
+@media (max-width:899px){
+  @R .rzbeat,@R .rzbeat:first-child,@R .rzbeat:last-child{border-top:0!important;border-left:5px solid var(--chblue)!important;border-radius:0!important;padding:10px 8px!important}
+  @R .rzbeat.them{border-left-color:var(--chred)!important}
+}
+/* Home banner sun: halftone, so it reads as art and never as a second yellow button */
+@R .trsun{background:radial-gradient(circle,var(--chyel) 3.2px,transparent 3.6px) 0 0/9px 9px!important}
+@R .rzbeat img{background:none!important}
+/* their six: unboxed, a pink rule under each */
+@R .bmslot,@R .bmslot.on{border:0!important;border-radius:0!important;background:transparent!important;border-bottom:2px solid var(--chred)!important;box-shadow:none!important}
+@R .bmopp.chhalf,@R .bmopp{background:var(--chc)!important}

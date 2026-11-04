@@ -5,21 +5,27 @@ const TIPS = {
   readiness: ['Ready for the top threats', 'Of the 30 Pokémon that make top cut most often (weighted by how often), the share your team is prepared for. Well handled counts in full, Handled 80%, Shaky 40% and Unanswered 0. For each one we run real damage calcs with your sets against the set most players run: a Pokémon of yours that moves first and OHKOs it, survives and OHKOs back, or walls it and 2HKOs it is a solid answer; Intimidate, Will-O-Wisp, Wide Guard or Taunt are partial answers. Support Pokémon (Trick Room, screens, Follow Me) are judged by answers to what they do: Taunt, screen breakers, Fake Out, spread attacks, KOing the setter. Well handled = 2+ solid answers, Handled = 1, Shaky = partial only, Unanswered = none (one level lower if fewer than 3 of your six hold up against it, since you bring 4). It measures how many top threats your team has answers for. It is preparation, not a forecast: the player still decides the game.'],
   spread: ['Spread', 'How the 66 stat points are split across HP / Attack / Defense / Sp. Atk / Sp. Def / Speed (up to 32 each). We show the spread players use most for this Pokémon.'],
   /* Nov 2: the rating reads like a school grade; the scale, the rank and the "?" in plain words, no multipliers */
-  rating: ['What a rating means', 'Ratings read like school grades: S 90+, A 80s, B 70s, C 60s, D 50s, F under 50. They come from real tournament results, mostly how often a Pokémon is on teams that make top cut and how often strong players pick it. “#20 of 313” is its rank among the Pokémon with results. A “?” means few games so far, so treat it as an estimate.'],
-  bars: ['What the bars mean', 'Each bar ranks this Pokémon among all Pokémon with results: 94 means it beats 94% of them, so it is in the top 6%. The colours are the same grade bands as the rating.'],
+  rating: ['What a rating means', 'Ratings read like school grades: S 90+, A 80s, B 70s, C 60s, D 50s, F under 50. They come from real tournament results, mostly how often a Pokémon is on teams that make top cut and how often strong players pick it. “#20 of N” is its rank among the N Pokémon with tournament results. A “?” means few games so far, so treat it as an estimate.'],
+  bars: ['What the bars mean', 'Each bar ranks this Pokémon among the Pokémon with tournament results: 94 means it beats 94% of them, so it is in the top 6%. The colours are the same grade bands as the rating.'],
   tiers: ['Tiers', 'Each tier is a grade band: S 90+, A 80s, B 70s, C 60s, D 50s, F under 50. The number is the rating; tap a Pokémon for its rank and the full breakdown.'],
   numbers: ['How to read our numbers', 'Numbers read like school grades. Pokémon ratings: S 90+, A 80s, B 70s, C 60s, D 50s, F under 50. Team grades: A 90+, B 80s, C 70s, D 60s, F under 60. Bars are a rank among all Pokémon (94 = better than 94% of them). A % always says what it is of: % of teams, % wins, % ready. A team grade is % ready, plus or minus team strength, minus missed checks.'],
   checklist: ['Checklist', 'The things most winning tournament teams have: speed control, spread damage, lead support (Fake Out, Intimidate or redirection), a Mega, no big shared weakness, items that work, and readiness for the top threats. ~ means partly there and is not counted as passed.'],
 
 };
-const tip = k => TIPS[k] ? `<button type="button" class="tipq" data-tip="${k}" aria-label="${/^(What|How)\b/.test(TIPS[k][0]) ? esc(TIPS[k][0]) : `What is ${esc(TIPS[k][0])}?`}">?</button>` : '';
-function closeTip() { const p = $('tipPop'); if (p) p.remove(); }
+/* the rating tip names the real count (it was a fixed "#20 of 313", Nov 4): read when the "?" opens, from the same rank as the sheet */
+{ const base = TIPS.rating; Object.defineProperty(TIPS, 'rating', {configurable: true, enumerable: true, get() { let n = null; try { const k = lairRank(lairRows()[0].p); n = k && k.of; } catch (e) {}
+  return n ? [base[0], base[1].replace(/N\b/g, String(n))] : [base[0], base[1].replace('“#20 of N” is its rank among the N Pokémon', '“#20 of …” is its rank among the Pokémon')]; }, set(v) { Object.defineProperty(TIPS, 'rating', {value: v, writable: true, configurable: true, enumerable: true}); }}); }
+const tip = k => TIPS[k] ? `<button type="button" class="tipq" data-tip="${k}" aria-expanded="false" aria-label="${/^(What|How)\b/.test(TIPS[k][0]) ? esc(TIPS[k][0]) : `What is ${esc(TIPS[k][0])}?`}">?</button>` : '';
+/* round words (Sim: "some of our pages can be very wordy"): fine print built from live data (sources, rules, thresholds) goes behind the
+   same "?" as the fixed tips. tipText registers the text under a key and returns the button; the text is not shortened, only moved. */
+const tipText = (k, title, body) => { TIPS[k] = [title, body]; return tip(k); };
+function closeTip() { const p = $('tipPop'); if (p) p.remove(); document.querySelectorAll('[data-tip][aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false')); }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-tip]');
   if (!b) { if (!(e.target.closest && e.target.closest('#tipPop'))) closeTip(); return; }
   e.preventDefault(); e.stopPropagation(); const open = $('tipPop'); if (open && open.dataset.k === b.dataset.tip) { closeTip(); return; } closeTip();
   const [t, d] = TIPS[b.dataset.tip] || []; if (!t) return;
   const p = document.createElement('div'); p.id = 'tipPop'; p.className = 'tippop'; p.dataset.k = b.dataset.tip; p.setAttribute('role', 'dialog');
-  p.innerHTML = `<b>${esc(t)}</b><p>${esc(d)}</p>${typeof methodTipLink === 'function' ? methodTipLink(b.dataset.tip) : ''}`; document.body.appendChild(p);
+  p.innerHTML = `<b>${esc(t)}</b><p>${esc(d)}</p>${typeof methodTipLink === 'function' ? methodTipLink(b.dataset.tip) : ''}`; document.body.appendChild(p); b.setAttribute('aria-expanded', 'true');
   const r = b.getBoundingClientRect(), w = Math.min(300, innerWidth - 24); p.style.width = w + 'px';
   const left = Math.max(12, Math.min(innerWidth - w - 12, r.left + r.width / 2 - w / 2)); p.style.left = left + 'px';
   const below = r.bottom + 8 + p.offsetHeight < innerHeight - 90; p.style.top = (below ? r.bottom + 8 : Math.max(12, r.top - 8 - p.offsetHeight)) + scrollY + 'px'; }, true);

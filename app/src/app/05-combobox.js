@@ -18,7 +18,7 @@ function moveSel(d){if(!cbState||!cbState.items.length)return;cbState.idx=(cbSta
 let useCacheV=-1,useMap=null;
 function pickUse(p){if(useCacheV!==metaVersion){useCacheV=metaVersion;useMap=new Map();const d=META.doubles_tour;if(d)[...(d.top||[]),...(d.more||[])].forEach(t=>{if(typeof t.u==='number')useMap.set(t.n,t.u)})}
   if(S.format==='doubles'&&useMap.size)return useMap.get(p.n)||0;try{return U(p)}catch(e){return 0}}
-const monOpt=p=>{const u=pickUse(p);return `${sprite(p,'optspr')}<span class="on">${esc(p.d)}</span><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${inBox(p)?'<span class="tag box ico" title="In your box">BOX</span>':''}<span class="uso" title="Share of tournament teams">${u>=.1?u.toFixed(u>=10?0:1)+'%':u>0?'<0.1%':'–'}</span>`};
+const monOpt=p=>{const u=pickUse(p);return `${sprite(p,'optspr')}<span class="on">${esc(p.d)}</span><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${inBox(p)?'<span class="tag box ico" title="In your box">Box</span>':''}<span class="uso" title="Share of tournament teams">${u>=.1?u.toFixed(u>=10?0:1)+'%':u>0?'<0.1%':'–'}</span>`};
 function bindMonInput(input,onPick,pool){
   const run=()=>{if(!input.value.trim()){closeMenu();return}const all=searchMon(input.value,40),r=all.filter(p=>!pool||pool(p)).slice(0,8);
     openMenu(input,r,monOpt,onPick,all.length&&!r.length?(all.length===1?all[0].d+' is already here':'Those are already here'):null)};

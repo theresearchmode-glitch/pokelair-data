@@ -1,9 +1,9 @@
 // ---------- Coverage: best additions ----------
 // What a Pokémon does for the team, in one word.
 function monRole(m) { const r = k => relMove(m, ROLE[k])[0];
-  if (WEATHER_OF[m.ability]) return ARCH[WEATHER_OF[m.ability]].name.toUpperCase(); if (r('tw') >= .5) return 'TAILWIND'; if (r('tr') >= .5) return 'TRICK ROOM';
-  if (r('fake') >= .5) return 'FAKE OUT'; if (r('redir') >= .5) return 'REDIRECT';
-  if (r('prio') >= .5) return 'PRIORITY'; if (r('boost') >= .5) return 'SETUP'; return 'ATTACKER'; }
+  if (WEATHER_OF[m.ability]) return ARCH[WEATHER_OF[m.ability]].name; if (r('tw') >= .5) return 'Tailwind'; if (r('tr') >= .5) return 'Trick Room';
+  if (r('fake') >= .5) return 'Fake Out'; if (r('redir') >= .5) return 'Redirect';
+  if (r('prio') >= .5) return 'Priority'; if (r('boost') >= .5) return 'Setup'; return 'Attacker'; }
 // The team-building principles, each checked against tournament teams (377 teams, 2,459 games):
 // speed control (Tailwind teams won 56.6% vs 51.7%), no stacked weakness (51% vs 55%), at most one type hitting 3+ (50% vs 55.5%),
 // 17+ of 18 types hit super effectively (the bottom quarter of tournament teams hits 17), answers to 23+ of the 30 most-used Pokémon (the median),
@@ -111,7 +111,7 @@ function renderRecs() {
     const rest = pl.team.filter(m => m.p !== p); let pair = null; for (const t of rest) { const v = pairSyn({p}, t) + tourSyn({p}, t); if (v >= 8 && (!pair || v > pair.v)) pair = {t, v}; }
     const thr = threatDiff(ms, pl.team, 2).map(x => x.html);
     const why = [gpUp.length ? 'Adds ' + gpUp.join(', ').toLowerCase() : '', pair ? `often paired with ${pair.t.d}` : '', x.out ? `replaces ${x.out.d}` : ''].filter(Boolean).join(' · ');
-    return `<div class="addcard${soft ? ' soft' : ''}"><div class="rtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${confChip(p)}${p.m ? '<span class="tag mega ico" title="Mega Evolution">MEGA</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">BOX</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}<span class="tag role">${esc(monRole(mem))}</span>${(pl.gem ? '<span class="tag offmeta">HIDDEN GEM</span>' : (pl.alt ? '<span class="tag sidegrade">SIDE-GRADE</span>' : '') + ideaTag(p)) + ratingTag(p)}</div>
+    return `<div class="addcard${soft ? ' soft' : ''}"><div class="rtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${confChip(p)}${p.m ? '<span class="tag mega ico" title="Mega Evolution">Mega</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">Box</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}<span class="tag role">${esc(monRole(mem))}</span>${(pl.gem ? '<span class="tag offmeta">HIDDEN GEM</span>' : (pl.alt ? '<span class="tag sidegrade">SIDE-GRADE</span>' : '') + ideaTag(p)) + ratingTag(p)}</div>
       ${pl.gem ? `<div class="qwhy gemline">Hidden gem: ${esc(evidenceLine(p))}. It fits this team as cleanly as the usual picks.</div>` : pl.alt ? `<div class="qwhy gemline">A different look that keeps every check and stays close on the numbers.</div>` : ''}
       <div class="dchips">${tsChip(pl.team)}${[A.ex !== B.ex ? delta('Weak', A.ex, B.ex, A.ex < B.ex, v => v) : '', A.un !== B.un ? delta('Unresisted', A.un, B.un, A.un < B.un, v => v) : '', A.off !== B.off ? delta('Offense', A.off, B.off, A.off > B.off, v => v + '/18') : ''].join('')}</div>
       ${(pl.gap ? pl.gap.why : []).map(w => `<div class="qwhy gapwhy"><b>${esc(w)}</b></div>`).join('')}${thr.map(l => `<div class="qwhy">${l}</div>`).join('')}

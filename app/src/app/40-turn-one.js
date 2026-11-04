@@ -39,9 +39,17 @@ function turnOnePlan(mine, theirs, r) {
   const oPr = o => (o.moves || []).some(x => x && x.name === 'Fake Out') ? 3 : 0;
   const order = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0}; })
     .sort((a, b) => b.p - a.p || a.st - b.st || b.s - a.s);
-  return `<div class="plan t1plan"><div class="ph"><span class="pt">Turn 1</span><span class="vsub">your ${esc(L[0].d)} + ${esc(L[1].d)} vs their likely ${esc(opp[0].d)} + ${esc(opp[1].d)}</span></div>
-    ${lines.map(([m, act, why]) => `<div class="t1row"><b>${esc(m.d)}</b><span class="t1act">${act}</span><span class="t2">${why}</span></div>`).join('')}
-    ${warn.length ? `<p class="t2 t1warn">Watch: ${warn.join('; ')}. Consider Protect.</p>` : ''}
-    ${F0.weather || F.terrain ? `<p class="t2" style="margin:0">Field on turn 1: ${esc(fieldWords(F0))}${F0.wBy ? ` (${esc(F0.wBy.d)})` : ''}${F0.negated && F0.weather ? ', but Cloud Nine / Air Lock cancels the weather while it\'s out' : ''}${F0.traced ? '. A Trace user may copy a weather or terrain ability and change this' : ''}. Damage above includes it.</p>` : ''}
-    <p class="t2" style="margin:0">Turn order: ${order.map(o => `<span class="${o.me ? 't1me' : ''}">${esc(o.x.d)} ${o.s}${o.p ? ` (${o.p > 0 ? '+' : '−'}${Math.abs(o.p)}${!o.me ? ' if Fake Out' : ''})` : ''}</span>`).join(' › ')}</p></div>`;
+  /* trial v2: turn one told as a strip in move order. Your moves on blue, their threat on pink; the why stays one short line */
+  const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = oPr(o) === 3;
+    return [fo ? 'Fake Out (if they have it)' : `${esc(d.worst.h.mv.name)} into ${esc(d.worst.on.d)}`, fo ? `then ${esc(d.worst.h.mv.name)}: up to ${dmgP(100 * d.worst.pct)}% of ${esc(d.worst.on.d)}'s HP` : `up to ${dmgP(100 * d.worst.pct)}% of its HP (${koShort(d.worst.h.r)})`]; };
+  const tc = x => { try { return TC[x.p.t[0]] || '#888'; } catch (e) { return '#888'; } };
+  const beats = order.map((o, k) => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
+    const act = ln ? ln[1] : th ? th[0] : 'Unknown move', why = ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads';
+    return `<li class="rzbeat ${o.me ? 'you' : 'them'}" style="--tc:${tc(o.x)}"><span class="rzbn" aria-hidden="true">${k + 1}</span>${sprite(o.x.p, 'rzbspr') || ''}
+      <div class="rzbt"><span class="rzbwho">${o.me ? 'You' : 'Them'} · ${esc(o.x.d)} <small>${o.s} Speed${o.p ? ` · ${o.p > 0 ? '+' : '−'}${Math.abs(o.p)}` : ''}</small></span><b class="rzmove">${act}</b><span class="t2">${why}</span></div></li>`; }).join('');
+  return `<div class="plan t1plan rzt1"><div class="ph"><span class="pt">Turn one, in move order</span><span class="vsub">your ${esc(L[0].d)} + ${esc(L[1].d)} vs their likely ${esc(opp[0].d)} + ${esc(opp[1].d)}</span></div>
+    <ol class="rzbeats">${beats}</ol>
+    ${warn.length ? `<p class="rzwarn"><b>Watch</b> ${warn.join('; ')}. Consider Protect.</p>` : ''}
+    ${F0.weather || F.terrain ? `<p class="rzfield"><span class="k">Field on turn 1</span> ${esc(fieldWords(F0))}${F0.wBy ? ` (${esc(F0.wBy.d)})` : ''}${F0.negated && F0.weather ? ', cancelled by Cloud Nine / Air Lock while it\'s out' : ''}${F0.traced ? '. A Trace user may copy it' : ''}</p>` : ''}
+    <p class="t2 rzorder" style="margin:0">Turn order: ${order.map(o => `<span class="${o.me ? 't1me' : ''}">${esc(o.x.d)} ${o.s}${o.p ? ` (${o.p > 0 ? '+' : '−'}${Math.abs(o.p)}${!o.me ? ' if Fake Out' : ''})` : ''}</span>`).join(' › ')}</p></div>`;
 }

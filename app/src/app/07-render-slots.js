@@ -37,7 +37,7 @@ function slotHtml(s,i,useA,clash){{const m=memberOf(s,i);
         <div class="trow"><span class="tnum">${i+1}</span><span class="tgap"></span><button class="lockbtn" type="button" data-lock="${i}" aria-pressed="${!!s.lock}" title="Locked Pokémon are never swapped out by fix plans">${s.lock?'LOCKED':'LOCK'}</button><button class="x" type="button" data-clear="${i}" aria-label="Remove ${esc(p.d)}">×</button></div>
         ${sprite(p,'tspr')||ticon(p.t[0],'wm')}
         <span class="sl-name" title="${esc(p.d)}">${esc(p.d)}</span>
-        <div class="sl-sub"><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">MEGA</span>':''}${inBox(p)?'<span class="tag box ico" title="In your box">BOX</span>':''}${ratingTag(p)}</div>
+        <div class="sl-sub"><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">Mega</span>':''}${inBox(p)?'<span class="tag box ico" title="In your box">Box</span>':''}${ratingTag(p)}</div>
         ${u?`<div class="tuse" title="${u.toFixed(1)}% of ${S.format} teams"><span class="tbar"><i style="--w:${Math.min(100,u*2).toFixed(0)}%"></i></span><span class="vsub">${u.toFixed(1)}%<span class="tus"> of teams</span><span class="tug"> use</span></span></div>`:''}
         ${m.item?`<div class="titem${m.heldItem?' mine':p.m?'':' asmb'}"${m.heldItem||p.m?'':' title="Assumed: you haven\'t set an item, so this is the one most players run"'}>${esc(m.item)}</div>`:''}${s.lock?'<span class="tlock" title="Locked">LOCKED</span>':''}
       </div>

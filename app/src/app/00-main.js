@@ -7,7 +7,7 @@ const TC={Normal:'#aba88a',Fire:'#f06428',Water:'#3d82f2',Electric:'#f7c815',Gra
 // types whose colour reads better with dark ink than white, worked out from the colour itself (no darkening overlays)
 const LIGHT=new Set(Object.keys(TC).filter(t=>{const L=h=>{const v=parseInt(h,16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)},c=TC[t],l=.2126*L(c.slice(1,3))+.7152*L(c.slice(3,5))+.0722*L(c.slice(5,7)),ink=.0168;return (l+.05)/(ink+.05)>=1.05/(l+.05)}));
 const ticon=(t,cls='tic')=>`<svg class="${cls}" aria-hidden="true"><use href="#ti-${t}"/></svg>`;
-const chip=(t,extra='')=>`<span class="ty${LIGHT.has(t)?' lt':''}" style="background:${TC[t]}">${ticon(t)}${t}${extra}</span>`;
+const chip=(t,extra='')=>`<span class="ty${LIGHT.has(t)?' lt':''}" style="background:${TC[t]};--tc:${TC[t]}">${ticon(t)}${t}${extra}</span>`;
 const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[’']/g,'').replace(/[^a-z0-9]/g,'');
 const REG={Alola:'Alolan',Galar:'Galarian',Hisui:'Hisuian',Paldea:'Paldean'};
 function disp(n){

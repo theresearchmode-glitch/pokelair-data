@@ -37,7 +37,7 @@ function renderTypes() {
 }
 function renderTypeChart() {
   const el = $('typeChart'); if (!el || el.dataset.done) return; el.dataset.done = '1';
-  const ab = t => t.slice(0, 3).toUpperCase();
+  const ab = t => t.slice(0, 3);
   el.innerHTML = `<tr><th class="t">Atk ↓ Def →</th>${TYPES.map(t => `<th title="${t}" style="color:${TC[t]}">${ab(t)}</th>`).join('')}</tr>` +
     TYPES.map(a => `<tr><td class="t">${chip(a)}</td>${TYPES.map(d => { const x = EFF[a][d]; return `<td><span class="m ${x === 0 ? 'm0' : x >= 2 ? 'mq' : x < 1 ? 'm2' : ''}">${x === 0 ? '0' : x === .5 ? '½' : x === 2 ? '2' : ''}</span></td>`; }).join('')}</tr>`).join('');
   renderTypeRow();

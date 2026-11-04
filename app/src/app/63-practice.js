@@ -44,19 +44,19 @@ function prReveal() { const t = prTarget(), s = prScore(); pr.step = 'reveal'; p
 const prN = n => (+n || 0).toLocaleString('en-US'), prPc = (a, b) => b ? Math.round(100 * a / b) : 0;
 const prDay = t => { try { return new Date(t * 1000).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) { return ''; } };
 function prMon(n, cls, inner) { const p = byName.get(n); return p ? `<div class="prm ${cls || ''}">${sprite(p) || ''}<span class="prmn">${esc(p.d)}</span>${inner || ''}</div>` : ''; }
-function prFour(four, lead) { return `<div class="prfour">${[...lead, ...four.filter(n => !lead.some(l => prBase(l) === prBase(n)))].map(n => prMon(n, '', lead.some(l => prBase(l) === prBase(n)) ? '<i class="prtag lead">LEAD</i>' : '<i class="prtag">BACK</i>')).join('')}</div>`; }
+function prFour(four, lead) { return `<div class="prfour">${[...lead, ...four.filter(n => !lead.some(l => prBase(l) === prBase(n)))].map(n => prMon(n, '', lead.some(l => prBase(l) === prBase(n)) ? '<i class="prtag lead">Lead</i>' : '<i class="prtag">Back</i>')).join('')}</div>`; }
 function prTheirs(o, sm) { return `<div class="prband them${sm ? " sm" : ""}"><div class="chk">Their six · as seen at team preview</div><div class="prsix">${o.six.map(n => prMon(n)).join('')}</div></div>`; }
 function renderPractice() { const el = $('prOut'); if (!el) return; const sec = $('practice');
   if (typeof CH === 'object' && CH.pagehead) CH.pagehead(sec, 'Battle · team preview practice', 'Pick your <span style="color:var(--chblueT)">four.</span>', '');
   const P = META.practice, s = prScore();
   if (!P) { el.innerHTML = '<div class="empty-note">Practice games appear after the next data refresh.</div>'; return; }
   const range = P.from && P.to ? ` (${prDay(P.from)} – ${prDay(P.to)})` : '';
-  const foot = `<p class="t2 prsrc">From ${esc(P.source || 'recent Showdown ladder games')}${range}. "Strong players" are ladder players rated ${prN(P.minR)}+. A similar team is the same six, or five of the six the same.</p>`;
+  const foot = `<p class="t2 prsrc wdsub">From the Showdown ladder${range}${typeof tipText === 'function' ? ' ' + tipText('prsrc', 'How practice picks its games', `From ${P.source || 'recent Showdown ladder games'}${range}. "Strong players" are ladder players rated ${prN(P.minR)}+. A similar team is the same six, or five of the six the same.`) : ''}</p>`;
   const score = s.played ? `<div class="prscore" aria-label="Your practice score"><span><b>${s.streak}</b> in a row</span><span><b>${s.best}</b> best</span><span><b>${s.matched}</b> of ${s.played} matched</span></div>` : '';
   const ms = members();
   if (pr.step === 'start' || !P.opp[pr.oi]) {
     const can = ms.length === 6, mode = pr.mode || (can ? 'mine' : 'real');
-    el.innerHTML = `<div class="prstart"><p class="prlede">A real team from the ladder appears. Pick <b>four</b> to bring and <b>two</b> to lead, then see what strong players chose against it.</p>
+    el.innerHTML = `<div class="prstart"><p class="prlede wdsub">Pick <b>four</b> and <b>two</b> leads against a real ladder team${typeof tipText === 'function' ? ' ' + tipText('prhow', 'How practice works', 'A real team from the ladder appears. Pick four to bring and two to lead, then see what strong players chose against it.') : ''}</p>
       <div class="prmodes" role="radiogroup" aria-label="Which six to practice with">
         <button type="button" role="radio" class="prmode" data-prmode="mine" aria-checked="${mode === 'mine'}"${can ? '' : ' disabled'}><b>Use my team</b><span>${can ? esc(teamTitleFor(ms)) + ' against real teams' : `Add six Pokémon on My team to use it${ms.length ? ` (you have ${ms.length})` : ''}`}</span>${can ? `<span class="prmini">${ms.map(m => sprite(m.p, 'mini') || '').join('')}</span>` : ''}</button>
         <button type="button" role="radio" class="prmode" data-prmode="real" aria-checked="${mode === 'real'}"><b>Practice with a real team</b><span>A strong player's six from the same game: compare your pick with theirs</span></button></div>
@@ -67,7 +67,7 @@ function renderPractice() { const el = $('prOut'); if (!el) return; const sec = 
   if (pr.step === 'pick') {
     const nP = pr.pick.length, nL = pr.lead.length, stage = nP < 4 ? 1 : 2;
     const card = n => { const p = byName.get(n); if (!p) return ''; const on = pr.pick.includes(n), ld = pr.lead.includes(n);
-      return `<button type="button" class="prpick${on ? ' on' : ''}${ld ? ' ld' : ''}" data-prpick="${esc(n)}" aria-pressed="${on}" aria-label="${esc(p.d)}${on ? (ld ? ': bringing, leading' : ': bringing') : ''}">${sprite(p) || ''}<span class="prmn">${esc(p.d)}</span>${ld ? '<i class="prtag lead">LEAD</i>' : on ? '<i class="prtag">BRING</i>' : ''}</button>`; };
+      return `<button type="button" class="prpick${on ? ' on' : ''}${ld ? ' ld' : ''}" data-prpick="${esc(n)}" aria-pressed="${on}" aria-label="${esc(p.d)}${on ? (ld ? ': bringing, leading' : ': bringing') : ''}">${sprite(p) || ''}<span class="prmn">${esc(p.d)}</span>${ld ? '<i class="prtag lead">Lead</i>' : on ? '<i class="prtag">BRING</i>' : ''}</button>`; };
     el.innerHTML = `${score}${prTheirs(o)}${who}
       <div class="prband you"><div class="prsteps"><span class="prst${stage === 1 ? ' on' : ' done'}">1 · Bring four <b>${nP}/4</b></span><span class="prst${stage === 2 ? ' on' : ''}">2 · Lead two <b>${nL}/2</b></span></div>
         <div class="prhint" aria-live="polite">${stage === 1 ? 'Tap the four you would bring.' : nL < 2 ? 'Now tap two of your four to lead.' : 'Ready. Tap a lead again to change it.'}</div>

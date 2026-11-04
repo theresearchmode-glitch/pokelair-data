@@ -65,7 +65,7 @@ function renderBattle() {
   else {
     const r = planMatchup(mine, theirs, true), C = r.chosen.map(i => mine[i]);
     bmUi.four = [...r.lead, ...r.back].map(i => mine[i].p.n);
-    const card = (i, tag) => `<div class="bmpick${tag === 'Lead' ? ' lead' : ''}">${sprite(mine[i].p, 'bmpspr')}<span class="bmpn">${escName(mine[i].d)}</span><span class="tag">${tag.toUpperCase()}</span></div>`;
+    const card = (i, tag) => `<div class="bmpick${tag === 'Lead' ? ' lead' : ''}">${sprite(mine[i].p, 'bmpspr')}<span class="bmpn">${escName(mine[i].d)}</span><span class="tag">${tag}</span></div>`;
     const ll = r.B && theirs.length >= 2 ? likelyLead(theirs, r.B) : [];
     const bring = `<div class="plan bmcard" data-t="plan"><div class="ph"><span class="pt">Bring</span><span class="vsub">${dbl ? 'lead 2, back 2' : 'lead 1'}</span></div>
       <div class="bmpicks">${r.lead.map(i => card(i, 'Lead')).join('')}${r.back.map(i => card(i, 'Back')).join('')}</div>
@@ -92,7 +92,7 @@ function renderBattle() {
     const speed = `<div class="plan bmcard" data-t="speed"><div class="ph"><span class="pt">Speed</span><span class="vsub">${bmUi.tr ? 'slowest moves first' : 'fastest first'}</span></div>
       <div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', spDrop.length ? `Them −1 (after your ${esc(spDrop[0])})` : 'Them −1')}${tog('par', 'They\'re paralyzed')}${tog('tr', 'Trick Room')}</div>${wNow ? `<p class="t2" style="margin:0">Weather: ${esc(wNow)} (set it under Damage).</p>` : ''}
       <div class="bmspd">${rows.map((q, i) => { const tie = rows.some((o, j) => j !== i && o.v === q.v && o.me !== q.me);
-        return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">TIE</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}${q.wxUp ? `<em> ${esc(q.ab)}</em>` : ''}${q.unb ? `<em> → ${q.unb} after item</em>` : ''}</span></div>`; }).join('')}</div>
+        return `<div class="bmsr${q.me ? ' me' : ''}"><span class="bmsn">${esc(q.x.d)}${tie ? ' <span class="tag spdtie">Tie</span>' : ''}</span><span class="bmsb"><i style="width:${Math.max(4, 100 * q.v / mx).toFixed(1)}%"></i></span><span class="bmsv">${q.v}${q.s.scarf ? '<em>Scarf</em>' : ''}${q.wxUp ? `<em> ${esc(q.ab)}</em>` : ''}${q.unb ? `<em> → ${q.unb} after item</em>` : ''}</span></div>`; }).join('')}</div>
       ${prioList.length ? `<p class="t2" style="margin:0">Moves that skip the Speed order (higher bracket goes first, Speed only breaks ties inside a bracket): ${prioList.join(', ')}.</p>` : ''}
       <p class="t2" style="margin:0">Your side: your items (and your spreads where you set them). Their side <span class="asm" title="Their real spreads and items are hidden until the battle shows them">assumed</span>: the most common spreads, natures and items. Ties are a coin flip.</p></div>`;
     // damage both ways
