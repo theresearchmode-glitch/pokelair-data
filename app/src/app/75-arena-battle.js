@@ -198,7 +198,7 @@ ARBAT.types = () => { document.querySelectorAll('[data-pane="types"] .ttmon[data
   document.querySelectorAll('#typeChart th[title]:not([style*="--tc"])').forEach(t => { const c = TC[t.title]; if (c) t.style.setProperty('--tc', c); });
   document.querySelectorAll('[data-pane="types"] .typebtn:not(.ar-ty2)').forEach(b => { b.classList.add('ar-ty2'); const t = b.dataset.type; if (t) b.style.setProperty('--on-t', AR.onType(t)); });
   /* the arena type colours (the app's Dark is a brown): type buttons, attacking-type buttons and the chart heads */
-  document.querySelectorAll('[data-pane="types"] :is(.typebtn[data-type],.tcb[data-tcatk]):not([data-artc]), #typeChart th[title]:not([data-artc])').forEach(b => { b.dataset.artc = 1;
+  document.querySelectorAll('[data-pane="types"] :is(.typebtn[data-type],.tcb[data-tcatk]):not(.ar-tc), #typeChart th[title]:not(.ar-tc)').forEach(b => { b.classList.add("ar-tc");
     const t = b.dataset.type || b.dataset.tcatk || b.title; if (AR.TC[t]) b.style.setProperty('--tc', AR.TC[t]); }); };
 CH.wrap('renderTypes', () => ARBAT.parts());
 
