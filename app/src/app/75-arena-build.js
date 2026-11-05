@@ -45,7 +45,9 @@ ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = 
   col.querySelectorAll('.row > .sdcopy').forEach(b => b.classList.add('ar-btn')); };
 
 /* team sheet cards (recent winners) on Build: each Pokémon on its own type field */
-ARBLD.sheets = root => { root.querySelectorAll('.evteam .tgm:not(.arb-t)').forEach(t => { const p = ARBLD.mon(t.getAttribute('title')); t.classList.add('arb-t'); if (p) t.setAttribute('style', AR.tv(p)); });
+ARBLD.sheets = root => { root.querySelectorAll('.evteam .tgm:not(.arb-t)').forEach(t => { const p = ARBLD.mon(t.getAttribute('title')); t.classList.add('arb-t'); if (!p) return; t.setAttribute('style', AR.tv(p));
+    /* Megas read "Mega Charizard Y" with the power-up contour, as on Home and My team (no "M" square) */
+    if (AR.isMega(p)) t.classList.add('is-mega'); const n = t.querySelector('.tgn'); if (n) n.innerHTML = AR.nm(p.d); });
   root.querySelectorAll('.evteam .evbtns > button.btn, .evteam .evbtns > .sdcopy').forEach(b => b.classList.add('ar-btn'));
   root.querySelectorAll('.evteam .evbtns > button.linkbtn').forEach(b => b.classList.add('ar-link')); };
 
