@@ -21,6 +21,6 @@ function regInfo() { const r = META.perf && META.perf.reg; if (!r || typeof r !=
 const regDay = d => { try { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}); } catch (e) { return d; } };
 function renderReg() { const el = $('regBar'); if (!el) return; const r = regInfo(); let h = '';
   if (r && r.now) h = `<b>New regulation (Reg ${esc(r.now.id)}) started ${esc(regDay(r.now.since))}</b> — data is rebuilding; numbers below are from Reg ${esc(r.id)} until there's enough.`
-    + `<span class="t2">${r.now.events ? `${r.now.events.toLocaleString('en-US')} Reg ${esc(r.now.id)} event${r.now.events === 1 ? '' : 's'} so far${r.now.need ? ` · switches at ${r.now.need}` : ''}` : `Seen on the Showdown ladder; no Reg ${esc(r.now.id)} tournaments yet`}. The two are never mixed.</span>`;
+    + `<span class="t2">${r.now.events ? `${r.now.events.toLocaleString('en-US')} Reg ${esc(r.now.id)} event${r.now.events === 1 ? '' : 's'} so far${r.now.need ? `, switches at ${r.now.need}` : ''}` : `Seen on the Showdown ladder; no Reg ${esc(r.now.id)} tournaments yet`}. The two are never mixed.</span>`;
   else if (r && r.id !== PAGE_REG) h = `<b>Numbers are from Reg ${esc(r.id)}</b>${r.since ? ` (started ${esc(regDay(r.since))})` : ''}.<span class="t2">Reg ${esc(PAGE_REG)} results are no longer counted. Anything new in Reg ${esc(r.id)} may be missing until NastyPlot is updated for it.</span>`;
   el.hidden = !h; el.innerHTML = h; }
