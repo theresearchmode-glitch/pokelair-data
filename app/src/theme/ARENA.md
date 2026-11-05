@@ -240,7 +240,7 @@ These are the shared patterns after the two final reviews. `arena.css` sections 
 - **One page-title size.** `--ar-fs-page` is 36px (31px under 360px, `clamp(46px,4.4vw,64px)` from 1001px). Every `.chpghead .chpgt` uses it; section 28 enforces it with one extra id. Only the landing heroes (Home, My team, Build me a team's `.chabhero`) are larger. The tab sits on the title's first line.
 - **Back links.** Every sub-page starts with a `.chback` arena link (`32-views.js` adds most; `74-arena.js` adds "← Meta" on This week, How we calculate and About). Don't add a second one.
 - **Names.** `AR.nm(name)` is the only display-name helper. It always prints "Mega Charizard Y" (an id such as `Charizard-Mega-Y` or a short `M-Charizard Y` becomes "Mega Charizard Y") and keeps the last part with the name ("Charizard&nbsp;Y", "Indeedee&nbsp;(F)"). `AR.mega(name)` is the same without HTML escaping. `74-arena.js` also rewrites the older tables' and charts' `M-` labels (`th span`, `svg text`).
-- **Art-tile names never break inside a word.** `AR.fit()` (runs after every render, on resize and when fonts load) steps a name down 1px at a time, to 14px at the smallest, until its longest word fits (`--nmf`). A name on the art that still takes two lines marks the tile `.is-nm2`, and the sprite shrinks to 78% so the name keeps clear of it. Names under the art (`.ar-below`) are always left-aligned (section 28 enforces this).
+- **Art-tile names never break inside a word.** `AR.fit()` (runs after every render, on resize and when fonts load) first sets the narrower cut of the face (`data-ns`), then steps a name down 1px at a time, to 15px at the smallest, until its longest word fits (`--nmf`); a name that still does not fit takes the tile's full width (`.is-nmw`). Never under 15px. A name on the art that still takes two lines marks the tile `.is-nm2`, and the sprite shrinks to 78% so the name keeps clear of it. Names under the art (`.ar-below`) are always left-aligned (section 28 enforces this).
 - **Hover.** Every raised button, strip, segment and fold summary gets the same hover: its slanted `::before` goes a shade deeper (`brightness(.95)`, `1.3` in dark). Don't add a different hover; delete page hover rules that only re-tint the plate.
 - **Fields.** Every text input, search box, number input, select and textarea in `main` gets the arena field baseline: sheet fill (`#1E1D22` in dark), a 2px underline that turns the section colour on focus, radius `--ar-r-m`, 48px tall, 16/17px text. No frame, no grey box. A locked value is shown with a lock tag beside it, not a different box.
 - **The header count badge** draws nothing while it is empty.
@@ -250,7 +250,7 @@ These are the shared patterns after the two final reviews. `arena.css` sections 
 
 | Job | The one pattern | Notes |
 |---|---|---|
-| Page head | `.chpghead`: `.chk` kicker, then `.chpgt` at `--ar-fs-page` with the slanted section tab on its first line, then `.chpgs` | The kicker goes above the title. A page switcher (`.subnav` / `.ar-seg`) sits above the kicker on every page of a group. |
+| Page head | `.chpghead`: `.chk` kicker, then `.chpgt` at `--ar-fs-page` with the slanted section tab on its first line (one size everywhere: 26px wide, 32px from 1001px, .82em tall), then `.chpgs` | The kicker goes above the title. A page switcher (`.subnav` / `.ar-seg`) sits above the kicker on every page of a group. |
 | Back link | `.chback`, first in the pane | "← My team", "← Battle", "← Meta", "← Pokémon ratings" |
 | Section head | `.ar-shead` with one `.ar-tab` beside the first line | One tab per head. Never two. Never beside the last line. |
 | Numbered steps | `.ar-step` (slanted section plate, display numeral) | Only for real sequences. No round discs, no plain italic numerals. |
@@ -263,7 +263,7 @@ These are the shared patterns after the two final reviews. `arena.css` sections 
 | Fields | The arena field baseline above | |
 | Overlay | Phones: a bottom sheet (`--ar-r-xl` top corners) with the round 44px `.ar-x` close at the top right and a head of title (display italic) and optional tab. Desktop: the same head in a centred dialog. | "Done" only where it commits changes (Edit team). |
 | Hover | The section 28 rule | |
-| Small text | 15px minimum (`--ar-fs-small`); 13px only for nav labels | |
+| Small text | 15px minimum (`--ar-fs-small`), "?" tips and legend glyphs included; 13px only for nav labels | |
 
 ### What each group file must change
 
@@ -318,3 +318,19 @@ These are the shared patterns after the two final reviews. `arena.css` sections 
 8. P-N7: Usage: the Showdown ladder segment never wraps alone; the search field is full width as on Ratings. P-N10: the "In your box" mark on the tier board is not clipped.
 9. About: its head uses `.chpghead` (title at `--ar-fs-page`, the tab, no hero kicker) like its Meta siblings.
 10. The info sheet's Info tab small text is now forced to 15px by `arena-p1.css`; delete the 12–14px rules for `.lsvl`, `.lsvn`, `.lsvo` and `.lstd`.
+
+### Polish pass (Nov 5, after the recheck)
+
+- **Gold is never text in light mode.** `--ar-gold-ink` (and color.css `--secT` on the gold pages, the old `--gold-ink`) is the
+  page ink in light mode: a gold dark enough for text reads brown on cream, and brown is banned. Gold stays as an edge, a tab,
+  an underline (links on the gold pages are ink on a gold underline), a low marker behind a warning line, or a slanted tick
+  before a status word ("Shaky"). Dark mode keeps its light gold text (#FFD166). `arena.css` section 29.
+- **One section-tab size** on every page title: 26px wide (32px from 1001px), .82em tall, on the first line. Meta pages and
+  About use it too.
+- **No orphans.** `AR.glue` (74-arena.js) glues a "?" tip and a "More" toggle to the word before them, and keeps hyphenated
+  words and number ranges whole. Event names and wrapped labels use `text-wrap:balance`. A switcher's segments fill their rows
+  on phones.
+- **Empty slots** say "Add a Pokémon", or "Add" where that would wrap on a narrow tile (the button keeps the full name).
+- **Punctuation never floats after a tag**: a line that ends on a type tag has no full stop.
+- **Focus rings follow the slant** on every slanted control (menu rows, Log a game's leads): the ring is on the `::before` or
+  the field, never an upright outline on the button.
