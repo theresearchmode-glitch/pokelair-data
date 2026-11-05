@@ -193,7 +193,7 @@
   drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A) drop-shadow(0 10px 8px rgba(30,10,40,.22))}
 @A .ar-art.ar-s.is-mega :is(img.ar-spr,svg.ar-spr),@A .ar-mega-s{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a))
   drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A)}
-@A .ar-art .ar-nm{position:absolute;left:14px;right:8px;bottom:12px;z-index:3;display:block;color:var(--ar-art-text);font:italic 800 18px/1.08 var(--ar-display);font-stretch:108%;text-wrap:balance;overflow-wrap:anywhere}
+@A .ar-art .ar-nm{position:absolute;left:14px;right:8px;bottom:12px;z-index:3;display:block;color:var(--ar-art-text);font:italic 800 18px/1.08 var(--ar-display);font-stretch:108%;text-wrap:balance;overflow-wrap:break-word;hyphens:none}
 @A .ar-art .ar-nm small{display:block;font:600 var(--ar-fs-small)/1.25 var(--ar-body);font-style:normal;margin-top:3px}
 /* dark mode: a name set on the art sits on a slanted ink plate (the dark fields range from mid to light, so the plate keeps it 15:1) */
 @A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm{left:10px;right:auto;max-width:calc(100% - 20px);padding:5px 12px 6px;color:#fff;isolation:isolate}
@@ -331,11 +331,11 @@
 /* ---------- 19. retire the old box look (manga ink frames, the colour pass's second "print" outline, raised offset buttons,
    paper box panels). Behaviour and layout stay; until phase 2 restyles a page, its panels become calm paper-2 fields with
    no frame and no offset. Arena components (.ar-*) are untouched by this block. ---------- */
-@A :is(details.chsec,.chblock,.chpanel,.htile,.mgact,.mgbench,.chhotrows,.chmcard,.mgempty,.hempty,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.chpair4,.verdict,.chcalcdef,.dcres,.bmw,.chsugs,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.mmpop,.chabhero,.abw,.corerow,.nprscroll,.addcard,.lhsrc,.mrow,.ttyours,.sethead,.svsix,.trsoon,.trearly,.nplegend,.abthero,.gkey,.lhstat,.calday,.provnote,.prepcell,.pin,.sgroup,.chlstats,.rzbeat,.chdcband){
+@A :where(details.chsec,.chblock,.chpanel,.htile,.mgact,.mgbench,.chhotrows,.chmcard,.mgempty,.hempty,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.chpair4,.verdict,.chcalcdef,.dcres,.bmw,.chsugs,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.mmpop,.chabhero,.abw,.corerow,.nprscroll,.addcard,.lhsrc,.mrow,.ttyours,.sethead,.svsix,.trsoon,.trearly,.nplegend,.abthero,.gkey,.lhstat,.calday,.provnote,.prepcell,.pin,.sgroup,.chlstats,.rzbeat,.chdcband){
   border-color:transparent!important;box-shadow:none!important}
-@A :is(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){
+@A :where(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){
   background-color:var(--ar-paper-2)!important;border-radius:var(--ar-r-l)!important}
-@A[data-look="dark"] :is(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){background-color:var(--ar-paper-2)!important}
+@A[data-look="dark"] :where(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){background-color:var(--ar-paper-2)!important}
 /* the old raised secondary buttons: a soft lift, no flat colour offset, no ink frame */
 @A main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.ar-seg>button):not(.chprimary):not(.mgyel):not(#saveBtn){
   border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-m)!important;background-color:var(--ar-sheet)!important}
@@ -386,3 +386,14 @@
    Fire, Ground or Electric tag reads brown. ---------- */
 @A[data-look="dark"] .ar-ty{color:#fff!important;padding-left:13px}
 @A[data-look="dark"] .ar-ty::before{background:linear-gradient(var(--t),var(--t)) 0 0/5px 100% no-repeat,#2A2930}
+
+/* ---------- 24. narrow grids: tile names step down in width, never break inside a word ---------- */
+@media (max-width:379px){@A .ar-art .ar-nm{font-stretch:100%;letter-spacing:-.01em}@A .ar-art.ar-below .ar-nm{font-size:15px}}
+
+/* ---------- 25. the pressed menu strip (after phase 1): <button class="ar-strip" aria-pressed="true"> (or .on, or
+   aria-selected="true"): a yellow ring on the slanted strip, a check mark before the label and bold text, so the state is shown
+   by shape as well as colour ---------- */
+@A .ar-strip:is([aria-pressed="true"],[aria-selected="true"],.on){font-weight:700!important}
+@A .ar-strip:is([aria-pressed="true"],[aria-selected="true"],.on)::before{box-shadow:0 0 0 3px var(--ar-yellow),var(--ar-shadow-s)}
+@A .ar-strip:is([aria-pressed="true"],[aria-selected="true"],.on)::after{content:"";flex:none;order:-1;width:11px;height:6px;margin:-3px 8px 0 0;border:solid currentColor;border-width:0 0 2.5px 2.5px;transform:rotate(-45deg)}
+@A button.ar-strip{cursor:pointer;width:100%}

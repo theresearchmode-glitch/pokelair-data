@@ -32,6 +32,9 @@ The phase 1 review fixes (Nov 5) changed these shared tokens and components. Pha
 - **`.ar-ty` in dark mode (section 23).** A neutral `#2A2930` tag with a 5px type-colour edge and white text. A filled dark-mode Fire, Ground or Electric tag reads brown.
 - **`.ar-seg` on-state.** In a row whose buttons use `aria-pressed`, only `aria-pressed="true"` (or `.on`) is on. `32-views.js` leaves `aria-selected` on a section's first page tab. Section 19's sheet lift no longer applies to `.ar-seg>button`, which was causing a rectangle behind the slanted plate.
 - **Dark `.ar-empty .ar-empty-art`** is neutral dark grey with a section-colour edge, not the section colour mixed into black.
+- **Section 19 (retiring the old box look) uses `:where()`** for its class lists, so a page file's single-class override wins. It no longer lifts `.ar-seg>button` or `.ar-chip`.
+- **Tile names never break inside a word.** `.ar-art .ar-nm` uses `overflow-wrap: break-word` plus balance, not `anywhere`. Below 380px names narrow (`font-stretch` 100%) rather than break.
+- **The pressed menu strip (section 25), new.** `button.ar-strip` with `aria-pressed="true"`, `aria-selected="true"` or `.on` gets a 3px yellow ring on the slanted strip, a check mark before the label and bold text. Use it for picks in a strip list, such as Battle's leads or a move choice.
 - **`.rzmorebtn` ("More" toggles)** has a 44px tap height. Its negative margins keep the line height.
 
 ## Files
