@@ -23,9 +23,9 @@ ARM.run = () => { ARM.mark(); const roots = document.querySelectorAll(ARM.SCOPE)
     /* anything that names its Pokémon */
     r.querySelectorAll('[data-lt]:not([data-arm]),[data-setmon]:not([data-arm])').forEach(el => ARM.paint(el, byName.get(el.dataset.lt || el.dataset.setmon)));
     /* type-coloured rows and tiles without a name attribute: their sprite says who they are */
-    r.querySelectorAll('.tyacc:not([data-arm]),.svm:not([data-arm])').forEach(el => { const i = el.querySelector('img.spr'); ARM.paint(el, i && ARM.bySrc(i.getAttribute('src'))); });
+    r.querySelectorAll('.tyacc:not([data-arm]),.svm:not([data-arm]),.gyou:not([data-arm]),.trmon:not([data-arm])').forEach(el => { const i = el.querySelector('img.spr'); ARM.paint(el, i && ARM.bySrc(i.getAttribute('src'))); });
     /* bare sprites in a row (an event's winning six, an archetype's key Pokémon): each stands on its own small field */
-    r.querySelectorAll(':is(.evwin,.gkm,.calrow) > img.spr:not([data-arm])').forEach(i => ARM.paint(i, ARM.bySrc(i.getAttribute('src'))));
+    r.querySelectorAll(':is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span) > img.spr:not([data-arm])').forEach(i => ARM.paint(i, ARM.bySrc(i.getAttribute('src'))));
     /* the arena controls, on the elements the app drew (same handlers) */
     r.querySelectorAll('.seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
     r.querySelectorAll(':is(.ltype,.lflag,.dbdt,.ttmon):not(.ar-chip)').forEach(b => b.classList.add('ar-chip'));
