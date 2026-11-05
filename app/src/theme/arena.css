@@ -354,3 +354,35 @@
 @A :is(.ar-btn,.ar-seg>button,.ar-chip,#homeOut.ar-on .htile,.ar-tacts #chActs>button,.ar-tacts #chActs>.row>button,.ar-tacts #chActs .moremenu>summary,details.chsec>summary,#homeOut.ar-on .wnew>summary,[data-pane="report"] .chapply,#lairSheet .lstabs .lstab):focus-visible::before{outline:3px solid var(--ar-focus)!important;outline-offset:3px!important}
 @A .ar-art:focus-visible{outline:none!important}
 @A .ar-art:focus-visible .ar-f{outline:3px solid var(--ar-focus)!important;outline-offset:4px!important}
+
+/* ---------- 21. the shared sub-page head (after phase 1): every page drawn with CH.head / CH.pagehead gets the My team title
+   style: the kicker, then the italic display title on a slanted section tab; the back link (.chback) is an arena link ---------- */
+@A .chpghead{margin:6px 0 10px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .chpghead .mgtitle{display:block;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .chpghead .mgtstroke{display:none!important}
+@A .chpghead .chk{display:block!important;margin:0!important;font:600 15px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A .chpghead .chk::before{content:none!important;display:none!important}
+@A .chpghead .chpgt{position:relative;display:flex!important;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin:6px 0 0!important;padding:0 0 0 40px!important;background:none!important;border:0!important;box-shadow:none!important;
+  font:italic 800 36px/1.02 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.015em!important;text-transform:none!important;color:var(--ar-ink)!important;text-wrap:balance}
+@A .chpghead .chpgt::before{content:""!important;display:block!important;position:absolute!important;left:2px;top:.12em;width:26px;height:.82em;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A .chpghead .chpgt::after{content:none!important;display:none!important}
+@A .chpghead .chpgs{margin:10px 0 0!important;font:400 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:62ch}
+@A .chback{display:inline-flex!important;align-items:center;gap:8px;min-height:44px;padding:0 2px!important;margin:6px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;
+  font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@media (max-width:359px){@A .chpghead .chpgt{font-size:31px!important}}
+@media (min-width:1001px){@A .chpghead .chpgt{font-size:clamp(46px,4.4vw,64px)!important;padding-left:52px!important}@A .chpghead .chpgt::before{width:32px}}
+
+/* ---------- 22. .ar-mini: a small slanted type field behind a list sprite (after phase 1)
+   <span class="ar-mini" style="${AR.tv(p)}"><img class="spr"></span>, or AR.mini(p). The field is the ::before layer, so the
+   sprite stays upright; it breaks out of the field's top. --mw/--mh size the field, --ms the sprite. ---------- */
+@A .ar-mini{position:relative;isolation:isolate;display:inline-block;flex:none;width:var(--mw,56px);height:var(--mh,40px);margin:var(--mt,12px) 4px 0;vertical-align:middle}
+@A .ar-mini::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);
+  background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--a,var(--ar-sec)) var(--ar-field-mix),var(--ar-sheet)) 10%,color-mix(in oklch,var(--b,var(--a,var(--ar-sec))) var(--ar-field-mix),var(--ar-sheet)) 90%)}
+@A[data-look="dark"] .ar-mini::before{background:linear-gradient(in oklch 125deg,var(--da,#3A3940) 10%,var(--dm,var(--da,#3A3940)) 50%,var(--db,var(--da,#3A3940)) 90%)}
+@A .ar-mini :is(img,svg){position:absolute!important;left:50%;bottom:-2px;width:var(--ms,60px)!important;height:var(--ms,60px)!important;max-width:none;margin:0!important;transform:translateX(-50%)}
+@A .ar-mini.is-mega :is(img,svg){filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b,var(--a))) drop-shadow(0 1.5px 0 var(--b,var(--a))) drop-shadow(0 -1.5px 0 var(--a)) drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A)}
+
+/* ---------- 23. type tags in dark mode (after phase 1): a neutral tag with a type-colour edge, white text. A filled dark-mode
+   Fire, Ground or Electric tag reads brown. ---------- */
+@A[data-look="dark"] .ar-ty{color:#fff!important;padding-left:13px}
+@A[data-look="dark"] .ar-ty::before{background:linear-gradient(var(--t),var(--t)) 0 0/5px 100% no-repeat,#2A2930}

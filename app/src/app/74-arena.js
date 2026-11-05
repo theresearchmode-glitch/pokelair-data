@@ -31,6 +31,8 @@ AR.on = da => { const l = AR.lum(da), w = AR.cr(1, l), k = AR.cr(AR.lum('#16141A
 /* text on a filled type tag: white where it reaches 4.5:1, ink otherwise */
 AR.lum = h => { const c = [1, 3, 5].map(i => { const v = parseInt(h.slice(i, i + 2), 16) / 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
 AR.onType = t => { const L = AR.lum(AR.TC[t] || TC.Normal); return 1.05 / (L + .05) >= 4.5 ? '#fff' : '#16141A'; };
+/* a list sprite on a small slanted type field (.ar-mini in arena.css) */
+AR.mini = (p, cls) => `<span class="ar-mini${AR.isMega(p) ? ' is-mega' : ''}${cls ? ' ' + cls : ''}" style="${AR.tv(p)}" aria-hidden="true">${sprite(p) || ''}</span>`;
 AR.tag = t => `<span class="ar-ty" style="--t:${AR.TC[t] || TC.Normal};color:${AR.onType(t)}"><span>${esc(t)}</span></span>`;
 /* move name -> type (the moves table: [name, type index, ...]) */
 AR.mt = null;

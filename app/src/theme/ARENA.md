@@ -27,6 +27,11 @@ The phase 1 review fixes (Nov 5) changed these shared tokens and components. Pha
 - **Dark name plates on art hug the name.** `AR.fit()` sets `--nw` to the longest line, so a two-line name is one tidy plate.
 - **The wordmark** is now the mockup's `.ar-logo` (Unbounded "Nasty", then "Plot" on a slanted blue plate with a red offset). It is used in the header, the menu and the footer. The old lockups stay in the markup but are hidden. Screen readers get the `.sr` text.
 - **The footer and page end:** the footer is 15px (16px on desktop) with 44px links. On phones the page ends 96px plus the safe area below the footer, and `main` has a 24px bottom pad.
+- **The shared sub-page head (`arena.css` section 21).** Every page drawn with `CH.head` or `CH.pagehead` uses it: `.chpghead` is the kicker (`.chk`), then the title (`.chpgt`) in italic display on a slanted section tab, then `.chpgs`. `.chback` is the back link, styled as an arena link. Group files no longer need their own copy; a pane-scoped rule still overrides it.
+- **`.ar-mini` (section 22), new.** A small slanted type field behind a list sprite. Use `AR.mini(p)` or `<span class="ar-mini" style="${AR.tv(p)}"><img></span>`. `--mw`, `--mh` and `--ms` set the field and sprite sizes. In dark mode it uses `--da`, `--dm` and `--db`, and `.is-mega` adds the contour.
+- **`.ar-ty` in dark mode (section 23).** A neutral `#2A2930` tag with a 5px type-colour edge and white text. A filled dark-mode Fire, Ground or Electric tag reads brown.
+- **`.ar-seg` on-state.** In a row whose buttons use `aria-pressed`, only `aria-pressed="true"` (or `.on`) is on. `32-views.js` leaves `aria-selected` on a section's first page tab. Section 19's sheet lift no longer applies to `.ar-seg>button`, which was causing a rectangle behind the slanted plate.
+- **Dark `.ar-empty .ar-empty-art`** is neutral dark grey with a section-colour edge, not the section colour mixed into black.
 - **`.rzmorebtn` ("More" toggles)** has a 44px tap height. Its negative margins keep the line height.
 
 ## Files
