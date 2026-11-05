@@ -30,7 +30,7 @@ ARB.stage = col => { if (col.querySelector('.arb-stage')) return; const use = co
     stats = `<div class="ar-trio arb-trio">${AR.cell(RD.score + '%', 'ready')}${h ? AR.cell(h.x, 'handled') : ''}${c[1] ? AR.cell(c[1], 'shaky') : ''}${c[0] ? AR.cell(c[0], 'unanswered') : ''}</div>`; }
   const ck = tm.grade, pips = ck ? `<div class="arb-checks"><b>${ck.pass}/${ck.n}</b><span>winning-team checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span></div>` : '';
   const st = document.createElement('div'); st.className = 'arb-stage';
-  st.innerHTML = `<div class="arb-sthead"><div><p class="ar-kick">${esc(kind)}</p><h2 class="ar-h2">${esc(tm.label || 'Your six')}</h2>${optT ? `<p class="arb-opt">${esc(optT.charAt(0).toUpperCase() + optT.slice(1))}</p>` : ''}</div>${score}</div>
+  st.innerHTML = `<div class="arb-sthead"><div><p class="ar-kick">${esc(kind)}</p><h2 class="ar-h2">${esc(String(tm.label || 'Your six').split(/\s*·\s*/).join(', '))}</h2>${optT ? `<p class="arb-opt">${esc(optT.charAt(0).toUpperCase() + optT.slice(1))}</p>` : ''}</div>${score}</div>
     <div class="ar-six">${tiles}</div><div class="arb-nums">${stats}${pips}</div>`;
   (old || head || col.firstChild).before(st); if (old) old.remove();
   /* the checks line ("missing: …", the full list in its tooltip) moves under the pips */
@@ -38,6 +38,7 @@ ARB.stage = col => { if (col.querySelector('.arb-stage')) return; const use = co
   if (head) head.classList.add('arb-hidehead');
   /* the six in the fold: each sprite on its small type field */
   col.querySelectorAll('.abmons .abmon').forEach((r, i) => { const m = tm.mons[i], p = m && byName.get(m.n), img = r.querySelector(':scope > img.spr'); if (!p || !img || img.parentElement.classList.contains('ar-row-f')) return;
+    const ch = r.querySelector(':scope > .chips'); if (ch && !ch.dataset.arb) { ch.dataset.arb = '1'; ch.innerHTML = (p.t || []).map(AR.tag).join(''); }
     const f = document.createElement('span'); f.className = 'ar-row-f ar-field arb-rf'; f.setAttribute('style', AR.tv(p)); f.setAttribute('aria-hidden', 'true'); img.before(f); f.append(img); });
   /* the actions: Use this team is the one yellow button once a team is built */
   col.querySelectorAll('.row > button.btn').forEach(b => { b.classList.add('ar-btn'); if (b.dataset.abuse) { b.classList.add('ar-primary'); if (!b.querySelector('.ar-go')) b.insertAdjacentHTML('beforeend', AR.ICON.go); } });
@@ -62,6 +63,7 @@ ARB.cores = () => { const el = $('coreOut'); if (!el) return; const sec = $('cor
   el.querySelectorAll('.corerow:not(.arb-row)').forEach(r => { r.classList.add('arb-row'); const key = (r.dataset.dbbox || '').replace(/^core:/, ''), ns = key.split('|');
     const imgs = r.querySelectorAll('.coresprs > img'); imgs.forEach((img, i) => { const p = byName.get(ns[i]); const f = document.createElement('span'); f.className = 'arb-cf' + (p && AR.isMega(p) ? ' is-mega' : '');
       if (p) f.setAttribute('style', AR.tv(p)); f.innerHTML = '<span class="arb-cff ar-field" aria-hidden="true"></span>'; img.before(f); f.append(img); });
+    if (r.classList.contains('chcbig') && !r.querySelector('.coretags')) { const m = r.querySelector('.coremain'); if (m) m.insertAdjacentHTML('beforeend', '<div class="coretags arb-notags" aria-hidden="true"></div>'); }
     r.querySelectorAll('.corebtns > button.btn').forEach(b => b.classList.add('ar-btn')); r.querySelectorAll('.corebtns > .sdcopy').forEach(b => b.classList.add('ar-btn'));
     r.querySelectorAll('.corebtns > button.linkbtn').forEach(b => b.classList.add('ar-link')); });
   el.querySelectorAll('.morebar > button.btn').forEach(b => b.classList.add('ar-btn'));
@@ -95,9 +97,30 @@ ARB.dlg = () => { const fb = document.querySelector('#fbSheet .fbbox:not(.arb-d)
 ARB.home = () => { const w = $('welcomeCard'); if (w && !w.dataset.arb) { w.dataset.arb = '1';
     w.querySelectorAll('.wsteps > li').forEach((li, i) => { if (!li.querySelector('.ar-step')) li.insertAdjacentHTML('afterbegin', `<span class="ar-step" aria-hidden="true"><span>${i + 1}</span></span>`); });
     w.querySelectorAll('.row > button').forEach(b => { if (b.dataset.welcomex) b.classList.add('ar-link'); else { b.classList.add('ar-btn'); b.style.setProperty('--edge', b.dataset.view === 'auto' ? 'var(--ar-gold)' : 'var(--ar-purple)'); } }); }
-  const n = $('wnewCard'); if (n && !n.dataset.arb) { n.dataset.arb = '1'; const x = n.querySelector('[data-wnewx]'); if (x) x.classList.add('ar-x'); }
   const sb = $('sharedBar'); if (sb && !sb.dataset.arb) { sb.dataset.arb = '1'; sb.querySelectorAll('button').forEach(b => b.classList.add(b.dataset.sharedx ? 'ar-link' : 'ar-btn')); }
   document.querySelectorAll('footer.legal button.linkbtn:not(.ar-link)').forEach(b => b.classList.add('ar-link')); };
+
+/* ======================= keyboard and phones: overlays take, keep and give back focus ======================= */
+/* the menu, Jump search, Copy for Showdown and Feedback: on open, focus moves in (the current page's row in the menu); Tab and
+   Shift+Tab stay inside; on close, focus goes back to the control that opened it */
+ARB.OV = [['side', () => { const s = $('side'); return !!(s && s.classList.contains('open')); }, s => s.querySelector('.sidenav [aria-selected="true"]') || $('sideClose')],
+  ['jump', () => { const j = $('jump'); return !!(j && !j.hidden); }, () => $('jumpIn')],
+  ['sdSheet', () => { const j = $('sdSheet'); return !!(j && !j.hidden); }, () => $('sdText')],
+  ['fbSheet', () => { const j = $('fbSheet'); return !!(j && !j.hidden); }, () => $('fbText')]];
+ARB.was = {}; ARB.opener = {}; ARB.last = null;
+document.addEventListener('focusin', e => { const t = e.target; if (t && t.closest && !t.closest('#side,#jump,#sdSheet,#fbSheet')) ARB.last = t; }, true);
+ARB.tabbable = el => [...el.querySelectorAll('button,[href],input,select,textarea,summary,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled && x.tabIndex >= 0 && x.getClientRects().length && getComputedStyle(x).visibility !== 'hidden');
+ARB.focusTick = () => { for (const [id, open, first] of ARB.OV) { const on = open(), el = $(id);
+    if (on && !ARB.was[id]) { ARB.opener[id] = ARB.last; const f = first(el); if (f && !el.contains(document.activeElement)) setTimeout(() => { try { f.focus({preventScroll: true}); } catch (e) {} }, 40); }
+    if (!on && ARB.was[id]) { const o = ARB.opener[id], a = document.activeElement; if (o && o.isConnected && o.getClientRects().length && (!a || a === document.body || (el && el.contains(a)))) try { o.focus({preventScroll: true}); } catch (e) {} ARB.opener[id] = null; }
+    ARB.was[id] = on; } };
+new MutationObserver(() => ARB.focusTick()).observe(document.body, {attributes: true, attributeFilter: ['hidden', 'class'], subtree: true, childList: true});
+document.addEventListener('keydown', e => { if (e.key !== 'Tab' || e.defaultPrevented) return; const o = ARB.OV.find(([, open]) => open()); if (!o) return; const el = $(o[0]); if (!el) return;
+  const L = ARB.tabbable(el); if (!L.length) return; const i = L.indexOf(document.activeElement);
+  if (e.shiftKey && (i <= 0)) { e.preventDefault(); L[L.length - 1].focus(); } else if (!e.shiftKey && (i === -1 || i === L.length - 1)) { e.preventDefault(); L[0].focus(); } });
+/* phones: a Pokémon field (Build around, cores) moves up when focused, so its suggestions open above the bottom bar */
+document.addEventListener('focusin', e => { const t = e.target; if (!t || !t.matches || !t.matches('#abAroundIn,#coreMonIn') || innerWidth > 1000) return;
+  setTimeout(() => { const r = t.getBoundingClientRect(); if (r.top > innerHeight * .3) { const rm = matchMedia('(prefers-reduced-motion: reduce)').matches; scrollBy({top: r.top - Math.max(80, innerHeight * .14), behavior: rm ? 'auto' : 'smooth'}); } }, 60); });
 
 /* run after the app draws (the same observer pattern as 74-arena.js) */
 { let q = false; const run = () => { q = false; for (const f of [ARB.side, ARB.dlg, ARB.home]) try { f(); } catch (e) {} };

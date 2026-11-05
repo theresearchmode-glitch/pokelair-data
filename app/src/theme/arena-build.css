@@ -124,20 +124,8 @@
 @A [data-pane="auto"] .abcol>.row .ar-btn[disabled]{opacity:.55;cursor:not-allowed}
 @A [data-pane="auto"] .abcol>.row .sdcopy svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2}
 /* the six in the fold: typographic rows (sprite on a small type field, the name and item, the facts in one line) */
-@A [data-pane="auto"] .abmons{display:block!important;background:none!important;border:0!important;padding:0!important}
-@A [data-pane="auto"] .abmon{display:grid!important;grid-template-columns:64px minmax(0,1fr);column-gap:14px;row-gap:6px;align-items:center;padding:12px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
-@A [data-pane="auto"] .abmon>.ar-row-f{grid-row:1/4;align-self:start;margin-top:8px}
-@A [data-pane="auto"] .abmon>.ar-row-f img{width:58px!important;height:58px!important}
-@A [data-pane="auto"] .abmon>:not(.ar-row-f){grid-column:2;margin:0!important}
 @A [data-pane="auto"] .abname{font:700 var(--ar-fs-body)/1.25 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A [data-pane="auto"] .abname .abit{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A [data-pane="auto"] .abmon :is(.chips,.abright){display:flex!important;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:0!important;position:static!important}
-@A [data-pane="auto"] .abmon .ty{font:700 14px/1.3 var(--ar-body)!important;padding:3px 10px!important;border-radius:3px!important;transform:skewX(var(--ar-slant))}
-@A [data-pane="auto"] .abmon .ty{color:#fff!important}
-@A [data-pane="auto"] .abmon .ty.lt{color:#16141A!important}
-@A [data-pane="auto"] .abmon :is(.tag,.conf){font:600 14px/1.3 var(--ar-body)!important;padding:3px 9px!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-s)!important;background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
-@A [data-pane="auto"] .abmon .tag.catch{background:color-mix(in oklch,var(--ar-gold) 30%,transparent)!important}
-@A [data-pane="auto"] .abmon .tag.rating{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;color:var(--ar-ink)!important}
 
 /* ---------- start from a recent winner: team sheets with each Pokémon on its own type field ---------- */
 @A [data-pane="auto"] .abwinhead{display:none!important}
@@ -261,7 +249,6 @@
   @A [data-pane="auto"] .abstart>details[data-chf="abhow"]{grid-column:1;grid-row:1}
   @A [data-pane="auto"] .abstart>details[data-chf="abwin"]{grid-column:2;grid-row:1}
   @A [data-pane="auto"] .abstart>#cores{grid-row:2}
-  @A [data-pane="auto"] .abstart>details[data-chf="abwin"][open]{grid-column:1/-1;grid-row:3}
   @A [data-pane="auto"] #cores{margin-top:64px!important}
   @A [data-pane="auto"] .corelist{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:40px}
   @A [data-pane="auto"] .corelist .corerow.arb-row:not(.chcbig){grid-column:1/-1}
@@ -350,7 +337,7 @@
 @A :is(#fbSheet .fbbox,#sdSheet .sdbox){position:relative;width:min(560px,100%)!important;max-height:calc(100vh - 24px);overflow:auto;padding:22px 20px 20px 26px!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;font-family:var(--ar-body)}
 @A[data-look="dark"] :is(#fbSheet .fbbox,#sdSheet .sdbox){background:#1A191D!important}
 /* a gold spine down the left edge: the dialog's one colour mark */
-@A :is(#fbSheet .fbbox,#sdSheet .sdbox)::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:6px;background:var(--ar-gold);border-radius:0 3px 3px 0}
+@A :is(#fbSheet .fbbox,#sdSheet .sdbox)::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:6px;background:var(--ar-sec);border-radius:0 3px 3px 0}
 @A :is(#fbSheet .fbh,#sdSheet .sdh){display:flex!important;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px!important;padding:0!important;background:none!important;border:0!important}
 @A :is(#fbSheet .fbh>b,#sdSheet .sdh>b){font:italic 800 var(--ar-fs-h3)/1.15 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important}
 @A :is(#fbSheet .fbx,#sdSheet .sdx).ar-x{flex:none;font-size:22px!important;position:relative}
@@ -359,7 +346,7 @@
 @A #fbSheet .fbkind.ar-seg>button{min-height:44px!important}
 @A #fbSheet textarea,@A #sdSheet textarea{display:block;width:100%;min-height:110px;padding:12px 14px!important;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;background:var(--ar-paper-2)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important;resize:vertical}
 @A[data-look="dark"] :is(#fbSheet,#sdSheet) textarea{background:#24232A!important}
-@A #fbSheet textarea:focus,@A #sdSheet textarea:focus{box-shadow:inset 0 -3px 0 var(--ar-gold)!important}
+@A #fbSheet textarea:focus,@A #sdSheet textarea:focus{box-shadow:inset 0 -3px 0 var(--ar-sec)!important}
 @A #sdSheet textarea{font:500 15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;min-height:240px}
 @A #fbSheet .fbanon{margin:10px 0 0!important;font-size:15px!important;line-height:1.45;color:var(--ar-ink-2)!important}
 @A #fbSheet .fbfoot{display:flex!important;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap;margin-top:18px!important;background:none!important;border:0!important}
@@ -373,7 +360,7 @@
 @A #fbSheet .fbctx>b{display:block;margin-bottom:4px;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A #sdSheet .sdnote{margin:12px 0 0!important}
 @A #sdSheet .row{display:flex!important;flex-wrap:wrap;gap:12px 14px;margin-top:18px!important}
-@A #sdSheet .row .ar-btn{--edge:var(--ar-gold)}
+@A #sdSheet .row .ar-btn{--edge:var(--ar-sec)}
 @media (max-width:759px){
   /* phones: the dialog is a bottom sheet with rounded top corners */
   @A #fbSheet .fbbox{width:100%!important;border-radius:var(--ar-r-xl) var(--ar-r-xl) 0 0!important;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
@@ -400,23 +387,7 @@
   @A #welcomeCard.welcome{margin:48px 0 0!important;padding:40px 40px 42px!important}
   @A #welcomeCard .wsteps{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
 }
-/* What's new: a fold strip like the others (pink, Home's colour), the list upright under it */
-@A #homeOut.ar-on #wnewCard.wnew{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:40px 0 0!important}
-@A #wnewCard>summary.wnh{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:60px;padding:8px 8px 8px 24px!important;margin-left:6px;cursor:pointer;list-style:none;background:none!important;border:0!important;box-shadow:none!important}
-@A #wnewCard>summary.wnh::-webkit-details-marker{display:none}
-@A #wnewCard>summary.wnh::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);width:auto!important;height:auto!important;
-  background:linear-gradient(var(--ar-pink),var(--ar-pink)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-pink) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
-@A[data-look="dark"] #wnewCard>summary.wnh::before{background:linear-gradient(var(--ar-pink),var(--ar-pink)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
-@A #wnewCard>summary.wnh::after{content:none!important}
-@A #wnewCard .wk{flex:none;font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
-@A #wnewCard .wns{flex:1 1 auto;min-width:0;font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@A #wnewCard .fbx.ar-x{flex:none;margin-left:auto;font-size:20px!important}
-@A #wnewCard>ul{list-style:none!important;margin:18px 0 0!important;padding:0 4px 0 8px!important;display:grid;gap:14px}
-@A #wnewCard>ul>li{position:relative;padding-left:22px;font:500 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A #wnewCard>ul>li::before{content:"";position:absolute;left:2px;top:5px;width:8px;height:13px;background:var(--ar-pink);transform:skewX(var(--ar-slant));border-radius:2px}
-@A #wnewCard>ul>li>b{color:var(--ar-ink)!important;font-weight:700}
-@media (max-width:599px){@A #wnewCard .wns{display:none}}
-@media (min-width:1001px){@A #wnewCard>ul{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px}}
+/* What's new: styled with Home in arena-p1.css (the coordinator's arena strip); nothing here */
 
 /* ======================= toasts ======================= */
 /* a slanted ink plate (light ink plate in dark mode), the text upright; Undo is a yellow link */
@@ -503,3 +474,144 @@
 @media (min-width:600px) and (max-width:1000px){@A #side.open{left:0!important;right:0!important;margin:0 auto!important;max-width:520px!important;width:auto!important}}
 /* Report a mistake: long context scrolls inside its field */
 @A #fbSheet .fbctx{max-height:9.6em;overflow:auto!important}
+
+/* =====================================================================================================================
+   Review fixes (reviewA/FINDINGS.md, R1 to R27). Later rules here win over the first pass above.
+   ===================================================================================================================== */
+/* R1: Sets and roles: one row per Pokémon (sprite on its type field, the name and item, then the facts on one wrapped line);
+   arena type tags (AR.tag), the count, box, catch and role tags sized to their text with the icon inline */
+@A [data-pane="auto"] .abmons{display:block!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="auto"] .abmon{position:relative;display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;min-height:80px;padding:12px 0 14px 80px!important;margin:0!important;
+  background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
+@A [data-pane="auto"] .abmon>.ar-row-f{position:absolute!important;left:6px;top:20px;margin:0!important}
+@A [data-pane="auto"] .abmon>.ar-row-f img{width:58px!important;height:58px!important}
+@A [data-pane="auto"] .abmon>.abname{flex:1 1 100%;margin:0 0 2px!important;font:700 var(--ar-fs-body)/1.25 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .abmon .abname .abit{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .abmon>.chips{display:inline-flex!important;flex-wrap:wrap;gap:6px 10px;margin:0 4px 0 6px!important;position:static!important}
+@A [data-pane="auto"] .abmon .ar-ty{font-size:15px}
+@A [data-pane="auto"] .abmon>.abright{display:contents!important}
+@A [data-pane="auto"] .abmon :is(.tag,.conf){display:inline-flex!important;align-items:center;gap:6px;width:auto!important;height:auto!important;min-height:28px;margin:0!important;padding:2px 10px!important;
+  font:600 15px/1.2 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;white-space:nowrap;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-s)!important;position:static!important;vertical-align:middle}
+@A [data-pane="auto"] .abmon :is(.tag:not(.rating),.conf){background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .abmon .tag.ico::before{flex:none;width:14px;height:14px;position:static!important}
+@A [data-pane="auto"] .abmon .tag.box{background:color-mix(in oklch,var(--ar-green) 16%,transparent)!important;color:var(--ar-green-ink)!important}
+@A [data-pane="auto"] .abmon .tag.catch{background:color-mix(in oklch,var(--ar-gold-plate) 42%,transparent)!important;color:#16141A!important}
+@A[data-look="dark"] [data-pane="auto"] .abmon :is(.tag:not(.rating),.conf){background:#2A2930!important;color:var(--ar-ink)!important}
+@A[data-look="dark"] [data-pane="auto"] .abmon .tag.box{background:#2A2930!important;color:var(--ar-green-ink)!important}
+@A[data-look="dark"] [data-pane="auto"] .abmon .tag.catch{background:#2A2930!important;color:var(--ar-gold-ink)!important;box-shadow:inset 3px 0 0 var(--ar-gold)!important}
+
+/* R2: the six share a top edge (a two-line name no longer lifts its art) */
+@A .arb-stage .ar-six{align-items:start}
+
+/* R3: the menu's second theme heading ("Appearance") stays hidden; the theme head matches the others */
+@A #side .sidefoot .sgl{display:none!important}
+@A #side .mgtheme .sgl::before{background:var(--ar-ink)}
+
+/* R4: toasts: one ink plate across the bottom on phones, sized to the message on desktop; never slanted behind text,
+   a slanted yellow edge marks it */
+@A #toast.toast{left:16px!important;right:16px!important;transform:none!important;translate:none!important;width:auto!important;max-width:none!important;margin:0!important;animation:none!important;
+  padding:12px 18px 12px 30px!important;background:#16141A!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;justify-content:space-between}
+@A #toast.toast::before{inset:10px auto 10px 12px!important;width:6px;border-radius:2px;background:var(--ar-yellow);box-shadow:none}
+@A[data-look="dark"] #toast.toast{background:#F4F1EC!important}
+@A[data-look="dark"] #toast.toast::before{background:var(--ar-orange-plate)}
+@media (min-width:1001px){@A #toast.toast{left:0!important;right:0!important;margin:0 auto!important;width:fit-content!important;max-width:min(560px,calc(100vw - 64px))!important}}
+
+/* R6: the "More" text button in running text (footer, How cores are ranked): a section-ink link at the text's size, its tap area
+   from an inset, not from a taller box */
+@A :is(footer.legal,[data-pane="auto"]) .rzmorebtn{position:relative;display:inline!important;padding:0 2px!important;margin:0 0 0 4px!important;min-height:0!important;height:auto!important;width:auto!important;
+  background:none!important;border:0!important;box-shadow:none!important;font-size:15px!important;font-weight:600!important;line-height:inherit!important;font-family:var(--ar-body)!important;
+  color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px;cursor:pointer}
+@A :is(footer.legal,[data-pane="auto"]) .rzmorebtn::after{content:""!important;position:absolute;left:-8px;right:-8px;top:50%;height:44px;transform:translateY(-50%);background:none!important}
+@media (min-width:1001px){@A footer.legal .rzmorebtn{font-size:16px!important}}
+
+/* R7: short links in the team sheets keep a 44px tap width */
+@A [data-pane="auto"] .evteam .evbtns .ar-link{min-width:44px;justify-content:center}
+
+/* R8: Details on a core is a text link next to the numbers, not a box */
+@A [data-pane="auto"] #cores #coreOut .corerow .corestat .dbdt{display:inline-flex!important;align-items:center;min-height:44px!important;min-width:44px;padding:0 2px!important;margin:4px 0 0!important;
+  background:none!important;background-color:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;
+  font:600 15px/1.2 var(--ar-body)!important;color:var(--ar-gold-ink)!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@A [data-pane="auto"] #cores #coreOut .corerow .corestat .dbdt::before{content:none!important}
+
+/* R9: light: the stage reads gold; dark: black with a gold L-shaped edge (no brown wash), the colour in the art and the edge.
+   The welcome stage does the same in pink; the bars and the mistake context take a coloured spine. */
+@A .arb-stage::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-gold-plate) 62%,var(--ar-paper)),color-mix(in oklch,var(--ar-gold-plate) 28%,var(--ar-paper)))}
+@A[data-look="dark"] .arb-stage::before{background:#121114}
+@A[data-look="dark"] .arb-stage::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-gold);clip-path:polygon(0 3%,100% 0,100% 6px,8px calc(3% + 6px),8px 100%,0 100%)}
+@media (min-width:1001px){@A[data-look="dark"] .arb-stage::after{clip-path:polygon(0 4%,100% 0,100% 6px,8px calc(4% + 6px),8px 100%,0 100%)}}
+@A[data-look="dark"] #welcomeCard.welcome::before{background:#121114}
+@A[data-look="dark"] #welcomeCard.welcome::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-pink);clip-path:polygon(0 4%,100% 0,100% 6px,8px calc(4% + 6px),8px 100%,0 100%)}
+@A[data-look="dark"] main #healthBar.healthbar{background:#141316!important;box-shadow:inset 6px 0 0 var(--ar-gold)!important}
+@A[data-look="dark"] main #regBar.regbar{background:#141316!important;box-shadow:inset 6px 0 0 var(--ar-blue)!important}
+@A[data-look="dark"] #fbSheet .fbctx::before{width:6px}
+
+/* R10: the top three cores share rows: the tag row is kept even when empty, names reserve two lines */
+@media (min-width:600px){
+  @A [data-pane="auto"] .corerow.chcbig .coretags{min-height:30px}
+  @A [data-pane="auto"] .corerow.chcbig .corenames{min-height:2.4em}
+}
+/* R21: tablets show the top three as three columns too */
+@media (min-width:600px) and (max-width:1000px){
+  @A [data-pane="auto"] .corelist{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:24px}
+  @A [data-pane="auto"] .corelist .corerow.arb-row:not(.chcbig){grid-column:1/-1}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist .corerow.arb-row{grid-column:auto}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist>.morebar{grid-column:1/-1}
+  @A [data-pane="auto"] .corerow.chcbig .arb-cf{width:80px;height:52px}
+  @A [data-pane="auto"] .corerow.chcbig .arb-cf img{width:78px!important;height:78px!important}
+}
+
+/* R11: the shared-link bar: Load it is the filled blue plate, Not now is quiet; on desktop it sits under the header */
+@A #sharedBar [data-sharedload].ar-btn{color:#fff!important}
+@A #sharedBar [data-sharedload].ar-btn::before{background:var(--ar-blue-plate)!important}
+@A #sharedBar [data-sharedx].ar-link{color:var(--ar-ink-2)!important}
+@media (min-width:1001px){@A #sharedBar.sharedbar{top:96px!important}}
+
+/* R12: the stage's numbers never touch */
+@A .arb-trio{column-gap:16px!important}
+@media (max-width:380px){@A .arb-trio .ar-num{font-size:28px}}
+
+/* R14: phones: the go button comes right after the two choices that shape the build; Build around (optional) follows it;
+   a one-line title and tighter controls keep the button above the bottom bar */
+@A [data-pane="auto"] .abctl>.srcseg{order:1}
+@A [data-pane="auto"] .abctl>.megactl{order:2}
+@A [data-pane="auto"] .abctl>#abBtn{order:3}
+@A [data-pane="auto"] .abctl>#abAround{order:4}
+@media (max-width:1000px){
+  @A [data-pane="auto"] .chabhero .chpgt{font-size:min(var(--ar-fs-h1),10.4vw)!important;white-space:nowrap}
+  @A [data-pane="auto"] .abctl{gap:18px!important;margin-top:20px!important}
+  @A [data-pane="auto"] .srcseg>button{min-height:64px}
+  @A [data-pane="auto"] .chabhero .chpgs{margin-top:8px!important}
+}
+
+/* R16: opening a fold on desktop never moves it: each stays in its own column */
+/* R17: full teams: room for the second row's sprites */
+@A [data-pane="auto"] .corerow.six .coresprs{row-gap:28px}
+
+/* R18: the clear × in Pokémon fields and Jump: the round arena button, 44px to tap */
+@A :is(#jump,[data-pane="auto"]) .clrx{width:34px!important;height:34px!important;right:7px!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:600 18px/1 var(--ar-body)!important;border-radius:50%!important}
+@A[data-look="dark"] :is(#jump,[data-pane="auto"]) .clrx{background:#2A2930!important}
+@A :is(#jump,[data-pane="auto"]) .clrx::after{inset:-5px!important}
+
+/* R19: Jump on phones: the line under each result wraps to two lines; the kind column gives its room to it */
+@media (max-width:700px){
+  @A #jump #jumpList .jl span{white-space:normal!important;overflow:hidden;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  @A #jump #jumpList .jk{display:none!important}
+  @A #jump #jumpList li[data-jo]{grid-template-columns:56px minmax(0,1fr)!important}
+  @A #jump #jumpList li.arb-tool{grid-template-columns:minmax(0,1fr)!important}
+}
+@A #jump #jumpList .jk{font-size:15px!important}
+
+/* R20: team sheets: fields keep their slant (no clipping), names never break inside a word */
+@A [data-pane="auto"] .evteam .tgm{overflow:visible!important}
+@A [data-pane="auto"] .evteam .tgm .tgn{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;font-stretch:100%!important}
+@media (max-width:370px){@A [data-pane="auto"] .evteam .tgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* R22: no orphaned last words */
+@A [data-pane="auto"] :is(#cores>.chpghead .chpgt,.arb-sthead .ar-h2,.chabhero .chpgt),@A #welcomeCard .wt{text-wrap:balance}
+@A [data-pane="auto"] :is(#cores>.chpghead .chk,.abwhy li,.abw p,.chabhero .chpgs,.coreintro,.empty-note),@A #welcomeCard .wsteps span,@A #welcomeCard>.t2{text-wrap:pretty}
+
+/* R23: 15px text in tags and item lines */
+@A .arb-stage .ar-art.ar-below .ar-nm small{font-size:15px!important}
+@A [data-pane="auto"] :is(.corerow .coretags .tag,.evteam .archchip,.evteam .evpl){font-size:15px!important}
+@A [data-pane="auto"] .evteam .tgm .tgmk{font-size:13px!important}
