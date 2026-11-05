@@ -852,7 +852,7 @@ a.calrow:hover .calmain b{text-decoration:underline}
   /* the grade ring pops in (it keeps its tilt) */
   .chring.np-pop{animation:np-pop .2s cubic-bezier(.3,1.5,.5,1)}
   /* tap feedback on tiles and cards: a quick press-in */
-  :is(.htile,.hmini,.hcore,.chmmon,.chtr,.chrow,.chhr,.ltile,.chhot,.evcard,.stm,.logpick,.chsug,.chsec,.chring,.boxchip,.tgm):active{transform:scale(.97);transition:transform .08s ease-out}
+  :is(.htile,.hmini,.hcore,.chmmon,.chtr,.chrow,.chhr,.ltile,.chhot,.evcard,.stm,.logpick,.chsug,.chsec>summary,.chring,.boxchip,.tgm):active{transform:scale(.97);transition:transform .08s ease-out}
   :is(.htile,.hmini,.hcore,.chmmon,.chtr,.chrow,.chhr,.ltile,.chhot,.evcard,.stm,.logpick,.chsug,.chsec,.boxchip,.tgm){transition:transform .14s ease-out}
   .chring:active{transform:rotate(-8deg) scale(.94)}
 }

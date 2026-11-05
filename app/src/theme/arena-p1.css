@@ -864,3 +864,5 @@
 @media (pointer:coarse),(max-width:1100px){@A :is(.ar-btn,.nplink,.fbmis,.fbbtn,.chghost,summary.wnh,.ar-mpg summary,#chP1 summary){min-height:44px!important}}
 /* Pokémon sheet: the hero sprite bleeds a little past the right edge, which let phones drag the sheet sideways. Up and down only. */
 @A #lairSheet .lspanel{overflow-x:hidden!important;overscroll-behavior-x:none}
+/* Sim (Nov 5): touching inside an open section no longer flashes or presses the whole box; only its title bar reacts */
+@A details.chsec{-webkit-tap-highlight-color:transparent}
