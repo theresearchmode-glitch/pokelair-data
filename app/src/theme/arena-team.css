@@ -982,3 +982,5 @@
 @A [data-pane="compare"] .cxsix .ar-art>.ar-f{display:block!important}
 @A [data-pane="compare"] .cxsix .ar-art>.ar-nm{display:block!important;text-align:left}
 @A [data-pane="compare"] .cxsix .ar-art>.ar-spr{max-width:none!important}
+@A [data-pane="compare"] .cxopt[aria-disabled="true"]{cursor:default}
+@A [data-pane="compare"] .cxopt .arb-already{font-weight:600!important;color:var(--ar-ink-2)!important}

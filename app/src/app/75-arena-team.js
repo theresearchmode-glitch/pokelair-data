@@ -42,7 +42,11 @@ CH.wrap('renderBox', () => ARB.box());
 /* ===== Compare: the two sixes as art tiles, the picker's teams as small type fields ===== */
 ARB.compare = () => { const el = $('cxOut'); if (!el) return;
   el.querySelectorAll('.cxsix > span').forEach(s => { const p = ARB.pOf(s.querySelector('img')); if (p && !s.classList.contains('ar-art')) { s.insertAdjacentHTML('beforeend', `<span class="ar-nm">${AR.nm(p.d)}</span>`); ARB.tile(s, p, 's', s.querySelector('.ar-nm')); } });
-  el.querySelectorAll('.cxos img.spr, .cxthr img.spr').forEach(ARB.mini); };
+  el.querySelectorAll('.cxos img.spr, .cxthr img.spr').forEach(ARB.mini);
+  /* the team already on the other side can't be picked again (it compared a team with itself; main does the same) */
+  el.querySelectorAll('.cxopt.dim:not([aria-disabled])').forEach(o => { const side = (o.dataset.cxset || '').split('|')[0], other = side === 'A' ? 'B' : 'A'; o.setAttribute('aria-disabled', 'true'); o.tabIndex = -1;
+    const t = o.querySelector('.cxot'); if (t) t.insertAdjacentHTML('beforeend', `<span class="t2 arb-already">Already team ${other}</span>`); }); };
+document.addEventListener('click', e => { const o = e.target && e.target.closest && e.target.closest('#cxOut .cxopt[aria-disabled="true"]'); if (o) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 CH.wrap('renderCompare', () => ARB.compare());
 
 /* ===== All suggestions: each suggested Pokémon on its own type field ===== */
