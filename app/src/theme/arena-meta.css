@@ -979,3 +979,30 @@
 @A:not(#amw) .ar-mpg[data-pane="about"] details>summary .abtic{display:none!important}
 /* N10: the "In your box" mark is not clipped */
 @A:not(#amw) .ar-mpg #lairBody .ltile .ltf .ltb{overflow:visible!important;max-width:none!important;width:auto!important}
+
+/* =====================================================================================================================
+   Polish pass (recheck FINDINGS). Later rules here win over the passes above.
+   ===================================================================================================================== */
+/* P-F22: the tier plate carries no text shadow at all (the old layer put one on .ltl itself) */
+@A:not(#amw) .ar-mpg #lairBody .ltier .ltl{text-shadow:none!important}
+/* P-N10: the tile's corner marks (the gem, the box dot) are never clipped by the field */
+@A:not(#amw) .ar-mpg #lairBody .ltile .ltf{overflow:visible!important}
+/* NEW-01: the legend is a row of keys (75-arena-meta.js drops the separators and the retired Mega key) */
+@A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 22px;font-size:var(--ar-fs-small)!important}
+@A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg .lng{gap:8px}
+@A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg .tipq{margin-left:2px}
+@A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg .ltb{width:12px!important;height:12px!important;border-radius:50%!important;background:var(--ar-blue)!important;border:0!important}
+/* NEW-09: one section-tab size on every page title: 26px wide (32px on desktop), .82em tall, on the first line (arena.css 21) */
+@A:not(#amw) .ar-mpg .chpghead .chpgt::before,@A:not(#amw) .ar-mpg #aboutOut .abthero>h2::before{content:""!important;display:block!important;flex:none;width:26px!important;height:.82em!important;margin:.1em 0 0!important;
+  background:var(--ar-sec)!important;-webkit-mask:none!important;mask:none!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@media (min-width:1001px){@A:not(#amw) .ar-mpg .chpghead .chpgt::before,@A:not(#amw) .ar-mpg #aboutOut .abthero>h2::before{width:32px!important}}
+/* D-F25: About's head is the shared page head with its section tab (the content:none from an older layer is overruled above) */
+@A:not(#amw) .ar-mpg #aboutOut .abthero>h2{display:flex!important;align-items:flex-start;gap:14px}
+/* NEW-07: Popular sets' "Your team" picker: the six as small art tiles (3 by 2 on phones, one row of six from 600px) */
+@A:not(#amw) .ar-mpg #setQuick.ar-setq{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 12px!important;max-width:560px;padding:0 4px 0 6px!important}
+@A:not(#amw) .ar-mpg #setQuick.ar-setq>.lbl{grid-column:1/-1}
+@A:not(#amw) .ar-mpg #setQuick.ar-setq>.ar-art{margin:0!important;min-width:0}
+@A:not(#amw) .ar-mpg #setQuick.ar-setq>.ar-art .ar-nm{font-size:15px!important;min-height:0!important}
+@media (min-width:600px){@A:not(#amw) .ar-mpg #setQuick.ar-setq{grid-template-columns:repeat(6,minmax(0,1fr));max-width:820px}}
+/* the set head's types: the arena type tags */
+@A:not(#amw) .ar-mpg #setOut .sethead .chips.ar-tys{display:flex!important;flex-wrap:wrap;gap:8px;background:none!important;border:0!important;padding:0!important}

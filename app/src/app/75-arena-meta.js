@@ -47,8 +47,24 @@ ARM.run = () => { ARM.mark(); const roots = document.querySelectorAll(ARM.SCOPE)
   /* This week's "How we decide what changed" is the fold strip like every other fold (same <details> and content) */
   document.querySelectorAll('[data-pane="weekly"] details.wkfoot:not(.chsec)').forEach(d => { const s = d.querySelector(':scope > summary'); if (!s) return; d.classList.add('chsec', 'ar-wkfold');
     const t = s.textContent.trim(); s.innerHTML = `${CH.tog()}<span class="cht">${esc(t)}</span>`; });
+  ARM.polish();
   const sh = document.querySelector('#lairSheet');
   if (sh) { const p = sh.querySelector('.ar-shero'); if (p) sh.querySelectorAll('.lstp-meta,.lstp-rating').forEach(t => { if (!t.classList.contains('ar-tv')) { t.classList.add('ar-tv'); t.setAttribute('style', p.getAttribute('style') || ''); } }); } };
+/* polish pass: (1) the Ratings legend is a list of keys with no separators (the retired "M Mega" key goes with its comma, so a
+   hidden key never leaves a stray ", ,"); (2) Popular sets' "Your team" picker is the six as small art tiles, like every other
+   team picker (same buttons, same data-setmon handler); (3) the set head's types are the arena type tags */
+ARM.polish = () => {
+  document.querySelectorAll('#lairBody .lnote:not(.ar-lg)').forEach(n => { n.classList.add('ar-lg');
+    n.querySelectorAll(':scope > .lng').forEach(k => { if (k.querySelector('.ltm')) k.remove(); });
+    [...n.childNodes].forEach(c => { if (c.nodeType === 3) c.remove(); }); });
+  const q = document.getElementById('setQuick');
+  if (q && q.querySelector('button.ttmon')) { q.classList.add('ar-setq');
+    q.querySelectorAll('button.ttmon').forEach(b => { const p = byName.get(b.dataset.setmon); if (!p) return; const on = b.classList.contains('on');
+      const t = document.createElement('template'); t.innerHTML = AR.art(p, {size: 's', below: 1, sel: on, attrs: `data-setmon="${esc(p.n)}" aria-pressed="${on}" aria-label="${esc(AR.mega(p.d))}: show its sets"`});
+      const a = t.content.firstElementChild; if (on) a.classList.add('on'); b.replaceWith(a); });
+    try { AR.fit(); } catch (e) {} }
+  document.querySelectorAll('#setOut .sethead .chips:not(.ar-tys)').forEach(ch => { const p = byName.get(ch.closest('[data-setmon]') ? ch.closest('[data-setmon]').dataset.setmon : '') || byName.get(ui.setMon); if (!p) return;
+    ch.classList.add('ar-tys'); ch.innerHTML = (p.t || ['Normal']).map(AR.tag).join(''); }); };
 /* run after the app draws (the same observer pattern as 74-arena.js) */
 { let q = false; const go = () => { q = false; try { ARM.run(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(go); } }).observe(document.body, {childList: true, subtree: true}); }
