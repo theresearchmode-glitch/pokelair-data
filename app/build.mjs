@@ -16,7 +16,8 @@ const asJsonParse = (src) => process.argv.includes('--no-json-parse') ? src : sr
   return `const ${m[1]}=JSON.parse(${lit});`; }).join('\n');
 // Colour manga theme (Nov 4, Sim approved): src/theme/*.css are appended after polish.css inside the same <style> block.
 // They write `@R` for a selector prefix strong enough to win over the older light/dark blocks without !important.
-const themeCss = s => s.replace(/@R/g, ':root:not(#_a):not(#_b)');
+// `@C` (color.css) is one step stronger again, so the colour pass wins over manga.css without more !important.
+const themeCss = s => s.replace(/@C/g, '@R:not(#_c)').replace(/@R/g, ':root:not(#_a):not(#_b)');
 let out = parts.map(p => { const s = fs.readFileSync(dir + p, 'utf8').replace(/\n$/, ''); return /^src\/data\/.*\.js$/.test(p) ? asJsonParse(s) : /^src\/theme\/.*\.css$/.test(p) ? themeCss(s) : s; }).join('\n');
 // Smaller page (Nov 1, load speed): whole-line // comments inside the app's plain <script> blocks are dropped, about 150 KB
 // (57 KB gzipped, 10% of the download) that the phone no longer downloads or parses. Only lines that are nothing but a comment

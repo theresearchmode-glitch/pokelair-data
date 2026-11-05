@@ -19,6 +19,8 @@ document.addEventListener('click', e => {
   document.querySelectorAll('[data-chset]').forEach(x => x.setAttribute('aria-pressed', String(+x.dataset.chset === ui.rzSet)));
   if (!box) return;
   if (ui.rzSet == null || !m) { box.hidden = true; box.innerHTML = ''; return; }
+  // type-colour edge for the shown Pokémon (theme/color.css .tyx)
+  box.style.cssText = tyVars(m.p); box.classList.add('tyx');
   box.innerHTML = rzSetHtml(m, i); box.hidden = false; box.classList.remove('in'); void box.offsetWidth; box.classList.add('in');
 });
 

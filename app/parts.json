@@ -6,6 +6,7 @@
  "src/theme/riso.css",
  "src/theme/riso2.css",
  "src/theme/manga.css",
+ "src/theme/color.css",
  "src/theme/desktop.css",
  "src/theme/desktop-sheet.css",
  "src/body.html",

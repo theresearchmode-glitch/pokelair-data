@@ -1,0 +1,119 @@
+/* NastyPlot colour pass "vivid" (Sim picked it, Nov 4; mockups in flair/out2). Loaded after manga.css.
+   @C = @R:not(#_c): one step stronger than manga.css, so these win without more !important wars (build.mjs expands it).
+   Section colours by page (Home pink, Build gold, My team blue, Battle red-orange, Meta purple), a flat second "print" outline
+   on cards, type washes on every team slot, type edges on Pokémon chips/rows (templates set --ta/--tb and class tyx),
+   raised secondary buttons, coloured section numbers.
+   Rules kept: no all-caps, no glows, no blur, no navy/maroon/brown fills, one texture per panel, text never on dots or lines,
+   colour never the only signal (every coloured state also has a shape: bar, edge, weight, raised vs flat). */
+
+/* ---------- 1. section colours (from the logo + type palette), picked by the page the user is on (html[data-pg]) ---------- */
+@C{--sec:#E6359B;--secT:#A10C6D;--secTint:var(--sec);--fx-sel:20%;--fx-wash:14%;--fx-dots:85%;--fx-slant:-6deg;--fx-stroke:64px;--fx-edge:6px;
+  --fx-reg:color-mix(in oklab,var(--sec) 80%,var(--mgpaper))}
+@C[data-pg="home"]{--sec:#E6359B;--secT:#A10C6D}
+@C:is([data-pg="auto"],[data-pg="cores"]){--sec:#DB9600;--secT:#7A5300;--secTint:#FFD400}
+@C:is([data-pg="report"],[data-pg="coverage"],[data-pg="teams"],[data-pg="compare"],[data-pg="box"]){--sec:#0068AD;--secT:#005185}
+@C:is([data-pg="matchup"],[data-pg="practice"],[data-pg="gauntlet"],[data-pg="speed"],[data-pg="calc"],[data-pg="types"]){--sec:#E2531E;--secT:#A33A0C}
+@C:is([data-pg="weekly"],[data-pg="ratings"],[data-pg="meta"],[data-pg="sets"],[data-pg="top"],[data-pg="events"],[data-pg="arch"],[data-pg="track"],[data-pg="method"]){--sec:#7B4FD6;--secT:#5B2FB5}
+@C[data-pg="about"]{--sec:#454A63;--secT:#454A63}
+/* dark: the same hues, lighter, on true black */
+@C[data-look="dark"]{--sec:#FF5CBE;--secT:#FF8FD2;--fx-sel:26%;--fx-wash:22%;--fx-reg:color-mix(in oklab,var(--sec) 75%,#000)}
+@C[data-look="dark"]:is([data-pg="auto"],[data-pg="cores"]){--sec:#FFC233;--secT:#FFD166;--secTint:transparent} /* a yellow tint on black reads as olive: bar only */
+@C[data-look="dark"]:is([data-pg="report"],[data-pg="coverage"],[data-pg="teams"],[data-pg="compare"],[data-pg="box"]){--sec:#4AAEF5;--secT:#8CCBFF}
+@C[data-look="dark"]:is([data-pg="matchup"],[data-pg="practice"],[data-pg="gauntlet"],[data-pg="speed"],[data-pg="calc"],[data-pg="types"]){--sec:#FF7A45;--secT:#FFA27D}
+@C[data-look="dark"]:is([data-pg="weekly"],[data-pg="ratings"],[data-pg="meta"],[data-pg="sets"],[data-pg="top"],[data-pg="events"],[data-pg="arch"],[data-pg="track"],[data-pg="method"]){--sec:#B391FF;--secT:#C9B0FF}
+@C[data-look="dark"][data-pg="about"]{--sec:#A8A6AE;--secT:#A8A6AE}
+
+/* ---------- 2. wayfinding: page-title strip, nav markers, selected tabs ---------- */
+@C .mgtstroke{background:var(--sec);width:var(--fx-stroke)}
+/* the screentone is narrowed to the right 30% so the title and eyebrow sit on the flat band */
+@C .mgtdots{width:30%;bottom:6px;background:radial-gradient(color-mix(in oklab,var(--sec) var(--fx-dots),var(--mgpaper)) 1.5px,transparent 1.75px) 0 0/7px 7px}
+@C[data-look="dark"] .mgtdots{background:radial-gradient(color-mix(in oklab,var(--sec) var(--fx-dots),#000) 1.5px,transparent 1.75px) 0 0/7px 7px}
+/* a flat section-colour band behind the title (16% over paper) */
+@C .mgtitle{isolation:isolate}
+@C .mgtitle::before{content:"";position:absolute;inset:-6px -10px 2px -10px;z-index:-1;border-radius:var(--mgr);
+  background:linear-gradient(90deg,color-mix(in oklab,var(--secTint,var(--sec)) 16%,var(--mgpaper)) 55%,color-mix(in oklab,var(--secTint,var(--sec)) 8%,var(--mgpaper)))}
+@C[data-look="dark"] .mgtitle::before{background:linear-gradient(90deg,color-mix(in oklab,var(--sec) 22%,#000) 55%,color-mix(in oklab,var(--sec) 10%,#000))}
+/* Home headline gets the same stroke (drawn in the gap under it, takes no space) */
+@C .chmhero .chh1{position:relative}
+@C .chmhero .chh1::after{content:"";position:absolute;left:2px;bottom:-9px;width:var(--fx-stroke);height:5px;background:var(--sec);transform:skewX(-24deg)}
+@C .bnav button[aria-selected="true"]::before{background:var(--sec)!important}
+@C .bnav button[aria-selected="true"]>svg,@C .bnav button[aria-selected="true"] .chfab{color:var(--secT)!important}
+@C nav.tabs [role=tab][aria-selected="true"]::after{background:var(--sec)!important}
+/* selected segment / filter / tab: sits flat, with a tint of the section colour and the bar (text stays ink) */
+@C main :is(button,.btn,.sub,.seg>button,.typebtn,.logpick,.cxopt,.prmode,.abmode,.ltype,.lflag)[aria-pressed="true"]:not(.mgpn):not(.mgbn):not(.chprimary):not(.mgyel):not(#saveBtn),
+@C main .seg>button[aria-selected="true"],@C main :is(.typebtn.on,.logpick.on){background:color-mix(in oklab,var(--secTint,var(--sec)) var(--fx-sel),var(--mgpanel))!important;box-shadow:inset 0 -5px 0 var(--sec)!important;color:var(--chink)!important}
+@C #lairSheet .lstabs [role=tab][aria-selected="true"]{box-shadow:inset 0 -5px 0 var(--sec)!important}
+@C #chEdit .chst.on{box-shadow:inset 0 -4px 0 var(--sec)!important}
+/* unselected secondary buttons sit raised on a flat 3px section-colour offset (yellow main button and Apply unchanged) */
+/* the page sub-tabs row scrolls sideways (overflow auto), which cut the raised offset off its last button and its bottom edge:
+   room for it inside the row, given back by the margin so nothing below moves */
+@C .view>nav.subnav{padding:2px 4px 5px 0!important;margin-bottom:-17px!important}
+/* the same for the phone's sideways-scrolling filter rows on Ratings (only their scroll width grows) */
+@media (max-width:620px){@C :is(.ltypes,.lflags){padding-right:4px!important}}
+@C main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn):not(.chprimary):not(.mgyel):not(#saveBtn):not(.primary):not(.go):not([aria-pressed="true"]):not([aria-selected="true"]):not(.on){box-shadow:3px 3px 0 var(--sec)!important}
+
+/* ---------- 3. section caption boxes: section-colour left edge, slightly slanted frame (text stays straight) ---------- */
+@C [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.chk:not(.chdcband>h3),h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht){border-color:transparent!important;background:none!important;isolation:isolate}
+@C [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht,h3.chk:not(.chdcband>h3)){position:relative}
+@C [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.chk:not(.chdcband>h3),h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht)::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  border:1.5px solid var(--mgink);border-radius:var(--mgr2);background:var(--mgpanel);box-shadow:inset 4px 0 0 var(--sec);transform:skewX(var(--fx-slant))}
+
+/* ---------- 4. second print outline: every card and box gets a flat outline 4px down-right in the section colour (no blur, no fill) ---------- */
+@C :is(details.chsec,.chblock,.chpanel,.rzset,.htile,.mgact:not(.mgyel),.mgbench,.chhotrows,.chmcard,.mgempty,.hempty,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.chpair4,.verdict,.chcalcdef,.dcres,.bmw,.chsugs,.myrec,.cxpick,.gyou,.chbring,.bmcard){box-shadow:4px 4px 0 var(--fx-reg)!important}
+/* the two Home team cards keep their roles: them = pink, you = blue */
+@C .chmcard.them{--fx-reg:color-mix(in oklab,var(--chred) 80%,var(--mgpaper))}
+@C .chmcard:not(.them){--fx-reg:color-mix(in oklab,var(--chblue) 80%,var(--mgpaper))}
+@C[data-look="dark"] .chmcard.them{--fx-reg:color-mix(in oklab,var(--chred) 75%,#000)}
+@C[data-look="dark"] .chmcard:not(.them){--fx-reg:color-mix(in oklab,var(--chblue) 75%,#000)}
+/* Pokémon panels print their second outline in the Pokémon's own colour; the selected stage slot in its second type at 5px */
+@C .mgpn,@C .chhot.mgrh{box-shadow:4px 4px 0 var(--l1,var(--fx-reg))!important}
+@C[data-look="dark"] .mgpn,@C[data-look="dark"] .chhot.mgrh{box-shadow:4px 4px 0 var(--L1,var(--fx-reg))!important}
+@C .mgst.mgon{box-shadow:5px 5px 0 var(--l2)!important}
+/* every slot gets its own soft dual-type wash (on dots panels too: the wash is a flat tint, the dots stay the one texture) */
+@C .mgpn.mgtone .mgin{background:linear-gradient(170deg,var(--mgpanel) 30%,var(--w1) 72%,var(--w2))}
+@C[data-look="dark"] .mgpn.mgtone .mgin{background:linear-gradient(170deg,var(--mgpanel) 30%,var(--W1) 72%,var(--W2))}
+
+/* ---------- 5. type colour ---------- */
+/* typed rows: a soft dual-type edge (both colours, blended) and a faint wash from that edge */
+@C :is(.tyacc,.chhotrows>.chhr.tyacc,.ltile){box-shadow:none!important;
+  background-image:linear-gradient(var(--ta,#888),var(--tb,var(--ta,#888))),linear-gradient(90deg,color-mix(in oklab,var(--ta,#888) var(--fx-wash),transparent),transparent 42%)!important;
+  background-size:var(--fx-edge) 100%,100% 100%!important;background-repeat:no-repeat!important;background-position:left top,left top!important}
+@C .ltile{background-color:var(--mgpanel)}
+/* the in-hand type tags: same bar language */
+@C .ty{box-shadow:inset 3px 0 0 var(--tc,currentColor)!important}
+/* Pokémon chips, team-sheet slots, bench, set card, their-six slots: a 6px dual-type edge + wash (templates set --ta/--tb and class tyx) */
+@C .tyx{background-image:linear-gradient(var(--ta),var(--tb,var(--ta))),linear-gradient(90deg,color-mix(in oklab,var(--ta) var(--fx-wash),transparent),transparent 55%)!important;
+  background-size:var(--fx-edge) 100%,100% 100%!important;background-repeat:no-repeat!important}
+/* threat rows: the rank number sits at the left edge, so their type line runs along the bottom rule instead */
+@C .tyx.chtr{background-image:linear-gradient(90deg,var(--ta),var(--tb,var(--ta))),linear-gradient(90deg,color-mix(in oklab,var(--ta) var(--fx-wash),transparent),transparent 70%)!important;background-size:100% 3px,100% 100%!important;background-position:left bottom,left top!important}
+/* "Well handled" green fell to about 4.1:1 on the warmer washes (Electric, Fire): one step darker on typed rows keeps it over 5:1 */
+@C:not([data-look="dark"]) .tyx.chtr .st.ok{color:#006B40!important}
+
+/* ---------- 6. misprint on the page's big numbers, in the section colour (hero numbers keep their Pokémon colour) ---------- */
+@C :is(.dcbig,.chhotrows .chhr .sc,.rzsetr b,.mgtgr b){text-shadow:3px 2px 0 var(--sec)}
+/* My team part numbers: the box in the section's text colour, white numeral (6.6–8.6:1), misprint in the bright section colour */
+@C .chparth .n{background:var(--secT)!important;color:#fff!important;box-shadow:3px 3px 0 var(--sec)!important;text-shadow:none}
+@C[data-look="dark"] .chparth .n{background:var(--sec)!important;color:#000!important;box-shadow:3px 3px 0 color-mix(in oklab,var(--sec) 45%,#000)!important}
+/* the small eyebrow dash on section heads follows the section too */
+@C .chpghead>.chk::before{background:var(--sec)!important}
+
+/* ---------- 7. character, rare and small ---------- */
+/* a hand-inked star beside the S tier (decorative; the "S" and the "90+" text still say it) */
+@C .chhothead .chtier{position:relative}
+@C .chhothead .chtier[style*="ffb400"]::after{content:"";position:absolute;left:50%;top:-15px;margin-left:-6px;width:17px;height:17px;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.6l2.9 6.6 7.2.5-5.5 4.6 1.8 7.1L12.1 16.5 5.8 20.6l1.9-7.2L2.1 8.8l7.3-.6z' fill='%23FFE100' stroke='%23141414' stroke-width='1.7' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+/* one manga sound word on the Home cover and on The read: in the clean corner, outside the speed lines; hidden from screen readers */
+@C :is(.mgcover .mgc1,.mgstrip .mgr1)::before{content:"Zoom!"/"";position:absolute;left:14px;bottom:12px;z-index:3;pointer-events:none;
+  font:400 25px/1 var(--display);color:var(--l1);text-shadow:2px 2px 0 var(--mgink);transform:rotate(-8deg);transform-origin:left bottom}
+@C[data-look="dark"] :is(.mgcover .mgc1,.mgstrip .mgr1)::before{color:var(--l1);text-shadow:2px 2px 0 #000}
+
+/* ---------- 8. Home teaches the map: each tool tile's icon is in the colour of the section it opens (label stays ink) ---------- */
+@C .htile:is([data-view="auto"],[data-view="cores"])>svg{color:#A87300}
+@C .htile:is([data-view="report"],[data-view="coverage"],[data-view="teams"],[data-view="compare"],[data-view="box"])>svg{color:#0068AD}
+@C .htile:is([data-view="matchup"],[data-view="practice"],[data-view="gauntlet"],[data-view="speed"],[data-view="calc"],[data-view="types"])>svg{color:#C2440F}
+@C .htile:is([data-view="weekly"],[data-view="ratings"],[data-view="meta"],[data-view="sets"],[data-view="top"],[data-view="events"],[data-view="arch"],[data-view="track"],[data-view="method"])>svg{color:#6E3FCF}
+@C[data-look="dark"] .htile:is([data-view="auto"],[data-view="cores"])>svg{color:#FFC233}
+@C[data-look="dark"] .htile:is([data-view="report"],[data-view="coverage"],[data-view="teams"],[data-view="compare"],[data-view="box"])>svg{color:#4AAEF5}
+@C[data-look="dark"] .htile:is([data-view="matchup"],[data-view="practice"],[data-view="gauntlet"],[data-view="speed"],[data-view="calc"],[data-view="types"])>svg{color:#FF7A45}
+@C[data-look="dark"] .htile:is([data-view="weekly"],[data-view="ratings"],[data-view="meta"],[data-view="sets"],[data-view="top"],[data-view="events"],[data-view="arch"],[data-view="track"],[data-view="method"])>svg{color:#B391FF}
+@C .htile>svg{stroke:currentColor!important}

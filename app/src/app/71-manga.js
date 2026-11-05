@@ -113,7 +113,7 @@ MG.team = () => { const head = $('chTeam'); if (!head) return; const six = head.
   const L = MG.lineup(ms), sel = ui.rzSet;
   const btn = (m, g) => { const on = sel === m.i, role = {lead: 'Lead', back: 'Back'}[g];
     return MG.panel({p: m.p, mode: on ? 'lines' : 'dots', cls: 'mgst mg' + g + (on ? ' mgon' : ''), tag: 'button', attrs: `type="button" data-chset="${m.i}" aria-pressed="${on}" aria-controls="rzSet" aria-label="${esc(m.d)}, ${role.toLowerCase()}: show its set"`, cap: {role, side: 'you', name: m.d}}); };
-  const bench = L.home.length ? `<div class="mgbench" role="group" aria-label="Bench"><span class="mgbl">Bench</span>${L.home.map(m => `<button type="button" class="mgbn${sel === m.i ? ' mgon' : ''}" data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}, bench: show its set">${MG.aura(m.p)}<span>${escName(m.d)}</span></button>`).join('')}</div>` : '';
+  const bench = L.home.length ? `<div class="mgbench" role="group" aria-label="Bench"><span class="mgbl">Bench</span>${L.home.map(m => `<button type="button" class="mgbn tyx${sel === m.i ? ' mgon' : ''}" style="${tyVars(m.p)}" data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}, bench: show its set">${MG.aura(m.p)}<span>${escName(m.d)}</span></button>`).join('')}</div>` : '';
   const st = document.createElement('div'); st.className = 'mgstage'; st.setAttribute('role', 'group'); st.setAttribute('aria-label', 'Your six: tap one to see its set');
   st.innerHTML = `<div class="mgstg">${L.lead.map(m => btn(m, 'lead')).join('')}${L.back.map(m => btn(m, 'back')).join('')}</div>${bench}`;
   six.dataset.mg = '1'; six.hidden = true; six.after(st);

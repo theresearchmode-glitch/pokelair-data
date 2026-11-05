@@ -4,6 +4,8 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 // type colours: bright and clean, each type keeping its own hue (Oct 31: Sim "i hate dull" — the old greys, browns and muted
 // purples were lifted; neutral types stay neutral so Normal never reads as Electric or Steel as Flying)
 const TC={Normal:'#aba88a',Fire:'#f06428',Water:'#3d82f2',Electric:'#f7c815',Grass:'#46b62e',Ice:'#5ed6d0',Fighting:'#d0352b',Poison:'#a83fc2',Ground:'#e2b14a',Flying:'#8b8af2',Psychic:'#f24f80',Bug:'#9eb81b',Rock:'#c6a53a',Ghost:'#7452b3',Dragon:'#6a3cee',Dark:'#5f4536',Steel:'#9db0cc',Fairy:'#f28cc0'};
+// Type-colour edge on Pokémon chips, rows and slots (colour pass, theme/color.css .tyx): style value with the form's own two types.
+const tyVars=p=>p&&p.t&&p.t.length?`--ta:${TC[p.t[0]]};--tb:${TC[p.t[1]||p.t[0]]}`:'';
 // types whose colour reads better with dark ink than white, worked out from the colour itself (no darkening overlays)
 const LIGHT=new Set(Object.keys(TC).filter(t=>{const L=h=>{const v=parseInt(h,16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)},c=TC[t],l=.2126*L(c.slice(1,3))+.7152*L(c.slice(3,5))+.0722*L(c.slice(5,7)),ink=.0168;return (l+.05)/(ink+.05)>=1.05/(l+.05)}));
 const ticon=(t,cls='tic')=>`<svg class="${cls}" aria-hidden="true"><use href="#ti-${t}"/></svg>`;
