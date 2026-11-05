@@ -229,7 +229,8 @@
   background:none!important;box-shadow:none!important;list-style:none}
 @A .ar-strip::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);
   background:linear-gradient(var(--m,var(--ar-sec)),var(--m,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--m,var(--ar-sec)) 34%,var(--ar-sheet)),color-mix(in oklch,var(--m,var(--ar-sec)) 12%,var(--ar-sheet)))}
-@A[data-look="dark"] .ar-strip::before{background:linear-gradient(var(--m,var(--ar-sec)),var(--m,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklab,var(--m,var(--ar-sec)) 18%,#24232A),#1E1D22)}
+/* dark: neutral strip, the move type in its edge only (a warm type mixed into black reads brown) */
+@A[data-look="dark"] .ar-strip::before{background:linear-gradient(var(--m,var(--ar-sec)),var(--m,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,#2C2B32,#1E1D22)}
 @A .ar-strips{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin:0;padding:0 0 0 4px;list-style:none}
 
 /* ---------- 12. typographic list rows ----------
