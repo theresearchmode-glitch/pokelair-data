@@ -31,6 +31,8 @@ AR.on = da => { const l = AR.lum(da), w = AR.cr(1, l), k = AR.cr(AR.lum('#16141A
 /* text on a filled type tag: white where it reaches 4.5:1, ink otherwise */
 AR.lum = h => { const c = [1, 3, 5].map(i => { const v = parseInt(h.slice(i, i + 2), 16) / 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
 AR.onType = t => { const L = AR.lum(AR.TC[t] || TC.Normal); return 1.05 / (L + .05) >= 4.5 ? '#fff' : '#16141A'; };
+/* a list sprite on a small slanted type field (.ar-mini in arena.css) */
+AR.mini = (p, cls) => `<span class="ar-mini${AR.isMega(p) ? ' is-mega' : ''}${cls ? ' ' + cls : ''}" style="${AR.tv(p)}" aria-hidden="true">${sprite(p) || ''}</span>`;
 AR.tag = t => `<span class="ar-ty" style="--t:${AR.TC[t] || TC.Normal};color:${AR.onType(t)}"><span>${esc(t)}</span></span>`;
 /* move name -> type (the moves table: [name, type index, ...]) */
 AR.mt = null;
@@ -165,6 +167,8 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   const acts = $('chActs'); if (acts) sec.querySelector('.ar-tacts').append(acts);
   /* first visit: the first lead's set is open (a tap anywhere else moves it) */
   if (ui.rzSet === undefined && ms.length && !AR.pre) { AR.pre = 1; const f = sec.querySelector('[data-chset]'); if (f) setTimeout(() => f.click(), 0); } };
+/* dismissing What's new removes its wrapper too (the app's own handler removes the card) */
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-wnew > [data-wnewx]'); if (b) setTimeout(() => { const w = b.closest('.ar-wnew'); if (w && !w.querySelector('#wnewCard')) w.remove(); }, 0); });
 /* the tapped tile: yellow ring and cursor follow ui.rzSet (the app's own handler in 70-riso2.js fills #rzSet) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-team [data-chset]'); if (!b) return;
   setTimeout(() => document.querySelectorAll('.ar-team .ar-art[data-chset]').forEach(t => { const on = +t.dataset.chset === ui.rzSet; t.classList.toggle('is-sel', on);
@@ -189,10 +193,20 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
+  /* What's new: the dismiss x is its own button next to the fold, not inside its <summary> (a button in a summary has no tap
+     area or focus of its own); the card and the x share a wrapper */
+  const wn = $('wnewCard'); if (wn && !wn.parentElement.classList.contains('ar-wnew')) { const x = wn.querySelector('summary [data-wnewx]');
+    if (x) { const w = document.createElement('div'); w.className = 'ar-wnew'; wn.before(w); w.append(wn, x); } }
+  /* Fix it: the suggestion list never gets shorter while the same team is shown (a new "Suggest from" choice works the plans out
+     again and can bring back a shorter list a second later), so the folds under it never jump up under a finger. A new team
+     starts afresh. */
+  const so = $('chSugOut'); if (so) { let k = ''; try { k = members().map(m => m.p.n).join(','); } catch (e) {}
+    if (so.dataset.ark !== k) { so.dataset.ark = k; so.dataset.arh = 0; so.style.minHeight = ''; }
+    const h = so.offsetHeight; if (h > +so.dataset.arh) so.dataset.arh = h; if (+so.dataset.arh > 0) so.style.minHeight = so.dataset.arh + 'px'; }
   /* the older secondary buttons and text links on these pages take the arena menu-strip and link styles (same elements, same handlers) */
   document.querySelectorAll('[data-pane="report"] :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn):not(.chapply), #homeOut.ar-on :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn), #lairSheet .lsact button.btn:not(.ar-btn)').forEach(b => {
-    if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick')) return; b.classList.add('ar-btn'); });
-  document.querySelectorAll('[data-pane="report"] button.linkbtn:not(.ar-link), #homeOut.ar-on button.linkbtn:not(.ar-link):not(.npmore)').forEach(b => b.classList.add('ar-link')); };
+    if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick,#welcomeCard') || b.matches('[data-welcomex]')) return; b.classList.add('ar-btn'); });
+  document.querySelectorAll('[data-pane="report"] button.linkbtn:not(.ar-link), #homeOut.ar-on button.linkbtn:not(.ar-link):not(.npmore)').forEach(b => { if (!b.closest('#welcomeCard') && !b.matches('[data-welcomex]')) b.classList.add('ar-link'); }); };
 
 
 /* names on the art (dark mode puts them on an ink plate): the plate hugs the longest line, so a two-line name is one tidy

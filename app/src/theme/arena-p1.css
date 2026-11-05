@@ -96,8 +96,9 @@
   min-height:96px;height:100%;padding:14px 12px 14px 20px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left;--edge:var(--ar-sec)}
 @A #homeOut.ar-on .htile::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklch,var(--edge) 22%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 6%,var(--ar-sheet)) 75%)!important}
-/* dark: the tile keeps its section tint all the way across (not a black-grey strip) */
-@A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklab,var(--edge) 30%,#1E1D22),color-mix(in oklab,var(--edge) 16%,#1A191D) 80%)!important}
+@A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#2A2930,#1C1B20 80%)!important}
+/* dark: the colour is in the edge, the icon and the title (the section inks), never a gold or orange mixed into black (brown) */
+@A[data-look="dark"] #homeOut.ar-on .htile b{color:var(--edge-ink,var(--ar-ink))!important}
 @A #homeOut.ar-on .htile::after{display:none!important}
 @A #homeOut.ar-on .htile>svg{grid-row:1;grid-column:1;width:24px!important;height:24px!important;color:var(--edge-ink,var(--edge))!important;stroke:currentColor!important}
 @A #homeOut.ar-on .htile b{grid-row:2;grid-column:1;font:italic 800 min(17px,4.4vw)/1.15 var(--ar-display)!important;font-stretch:104%!important;color:var(--ar-ink)!important;white-space:nowrap}
@@ -463,7 +464,7 @@
 @A #homeOut.ar-on .wnew>summary{position:relative;isolation:isolate;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 6px 6px 22px;margin-left:6px}
 @A #homeOut.ar-on .wnew>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;-webkit-mask:none!important;mask:none!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
-@A[data-look="dark"] #homeOut.ar-on .wnew>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklab,var(--ar-sec) 18%,#1E1D22),#1E1D22 70%)!important}
+@A[data-look="dark"] #homeOut.ar-on .wnew>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
 @A #homeOut.ar-on .wnew .wk{font:italic 800 17px/1.15 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;white-space:nowrap}
 @A #homeOut.ar-on .wnew .wns{font-size:15px!important;color:var(--ar-ink-2)!important;line-height:1.3}
 @A #homeOut.ar-on .wnew .fbx{position:relative;flex:none;width:44px!important;height:44px!important;display:grid;place-items:center;border-radius:50%!important;color:var(--ar-ink-2)!important;background:none!important}
@@ -484,7 +485,7 @@
 /* empty six (no team yet): faint section-blue tiles with a "+", each opens Build */
 @A .ar-art.is-empty{cursor:pointer}
 @A .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 6%,var(--ar-sheet)))!important;box-shadow:var(--ar-shadow-s)!important}
-@A[data-look="dark"] .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklab,var(--ar-sec) 26%,#1A191D),color-mix(in oklab,var(--ar-sec) 10%,#141316))!important}
+@A[data-look="dark"] .ar-art.is-empty .ar-f{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#2A2930,#1C1B20)!important}
 @A .ar-art .ar-plus{position:absolute;left:50%;top:calc(var(--lift,22px) + var(--h,112px) / 2);z-index:2;width:44px;height:44px;margin:-22px 0 0 -22px;display:grid;place-items:center;border-radius:50%;
   background:var(--ar-sheet)!important;color:var(--ar-sec-ink)!important;box-shadow:var(--ar-shadow-s);font:700 26px/1 var(--ar-body);border-radius:50%!important;border:0!important}
 @A .ar-art.is-empty .ar-nm{color:var(--ar-ink-2)!important;font-family:var(--ar-body)!important;font-style:normal!important;font-weight:600!important;font-stretch:100%!important}
@@ -628,3 +629,13 @@
 @media (min-width:1001px){@A .band .jumpbtn .jbt{font-size:15px!important}@A .band .jumpbtn .jbk{font-size:13px!important}}
 /* rating rows: a straight hairline (a radius on the row bent its ends into a card-like curve) */
 @A #homeOut.ar-on .hmini{border-radius:0!important}
+/* Fix it's list changes height when new plans come in: the browser anchors the scroll on what's below it, not on the list, so
+   the folds under it stay put */
+@A [data-pane="report"] :is(#chSugOut,.chsugs,#chP1 .chpartb){overflow-anchor:none}
+/* What's new: the dismiss x sits beside the fold's summary, a 44px button of its own */
+@A .ar-wnew{position:relative;margin-top:32px}
+@A #homeOut.ar-on .ar-wnew>.wnew{margin-top:0!important}
+@A #homeOut.ar-on .wnew>summary{padding-right:56px}
+@A .ar-wnew>.fbx{position:absolute;right:6px;top:6px;z-index:2;width:44px!important;height:44px!important;display:grid;place-items:center;border:0!important;border-radius:50%!important;background:none!important;color:var(--ar-ink-2)!important;font-size:24px;line-height:1;cursor:pointer}
+@A .ar-wnew>.fbx::after{display:none}
+@media (hover:hover){@A .ar-wnew>.fbx:hover{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important}}

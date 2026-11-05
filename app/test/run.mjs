@@ -416,6 +416,8 @@ for (const width of [1280, 390]) {
   await pg.evaluate(() => { const T = window.__PL, S0 = T.getS(); window.__keep = S0.slots;
     S0.slots = T.normSlots(T.parsePaste('Garchomp @ Life Orb\nAbility: Rough Skin\nJolly Nature\n- Earthquake\n- Dragon Claw').slots); T.render(); });
   await go(pg, 'report'); await pg.waitForTimeout(400);
+  /* the hidden set editors are redrawn in idle moments, which can take a few seconds on a busy machine: wait for slot 0's */
+  await pg.waitForFunction(() => { const c = document.getElementById('slot0'); return c && [...c.querySelectorAll('.asm')].some(x => x.textContent === 'assumed'); }, null, {timeout: 8000}).catch(() => {});
   const tag = await pg.evaluate(() => { const c = document.getElementById('slot0'); return c ? [...c.querySelectorAll('.asm')].map(x => x.textContent) : null; });
   ok(tag && tag.includes('assumed'), `team card: the team sheet's spread is tagged assumed (${tag})`);
   const clk = s => pg.evaluate(s => document.querySelector(s).click(), s), put = (s, v) => pg.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; }, [s, v]);
