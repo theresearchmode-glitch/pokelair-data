@@ -761,3 +761,5 @@
 /* "Use NastyPlot's pick" under your own game plan */
 @A .ar-leadreset{display:inline-flex;align-items:center;min-height:44px;margin-top:2px;font:600 15px/1.2 var(--ar-body);color:var(--ar-sec-ink)!important;background:none!important;border:0!important;padding:0!important;
   text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;cursor:pointer}
+/* Sim (Nov 5): no champion's six on the phone Home (tablet and PC keep it); the winning teams stay one tap away in Meta, Events */
+@media (max-width:599px){@A #homeOut section[aria-labelledby="arChamp"]{display:none!important}}
