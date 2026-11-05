@@ -73,7 +73,12 @@ AR.BURST = '<svg class="ar-lines" viewBox="0 0 400 350" preserveAspectRatio="non
   + ['400 20', '400 70', '400 120', '400 180', '400 240', '400 300', '330 0', '370 0', '260 0', '220 0', '190 30', '350 350', '280 350', '220 350', '190 300'].map(e => `<path d="M300 150 L${e}"/>`).join('') + '</g></svg>';
 /* "A + B" from a list of members */
 /* a display name that never strands its last part: "Mega Charizard Y", "Indeedee (F)" */
-AR.nm = n => escName(n).replace(/ \(([FMfm])\)/g, '\u00a0($1)');
+/* AR.nm is the one display-name helper: always "Mega X", never the old short "M-X" (a roster id such as "Charizard-Mega-Y" is
+   turned into "Mega Charizard Y" too), and the last part never stands alone ("Mega Charizard&nbsp;Y", "Indeedee&nbsp;(F)").
+   AR.mega(n) is the same without the HTML escaping. */
+AR.mega = n => { n = String(n == null ? '' : n).trim(); const id = /^([A-Za-z.' ]+?)-Mega(?:-([XYZ]))?$/.exec(n); if (id) { const p = byName && byName.get && byName.get(n); return p && p.d ? p.d : `Mega ${id[1]}${id[2] ? ' ' + id[2] : ''}`; }
+  return n.replace(/^M-(?=\S)/, 'Mega '); };
+AR.nm = n => escName(AR.mega(n)).replace(/ \(([FMfm])\)/g, '\u00a0($1)');
 AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
 AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
@@ -170,10 +175,14 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : 'in team order') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
-  else stage = `<div class="ar-empty"><span class="ar-empty-art" aria-hidden="true">${(CH.metaSix()[0] && sprite(CH.metaSix()[0])) || ''}</span><div><p>Add your six and NastyPlot scouts the top 30 threats for you. Start with one, or let NastyPlot build six from real winning teams.</p>
+  else { /* no team yet: the line and the two actions, then the same stage as a full team, six add tiles (as Home's empty six) */
+    const tiles = [0, 1, 2, 3, 4, 5].map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
+    stats = `<div class="ar-empty ar-tempty"><span class="ar-empty-art" aria-hidden="true">${(CH.metaSix()[0] && sprite(CH.metaSix()[0])) || ''}</span><div><p>Add your six and NastyPlot scouts the top 30 threats for you. Start with one, or let NastyPlot build six from real winning teams.</p>
     <div class="ar-acts"><button type="button" class="ar-btn ar-primary" data-chedit="0"><span>Add your first Pokémon</span>${AR.ICON.go}</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div></div>`;
-  const sec = document.createElement('section'); sec.className = 'ar-team'; sec.setAttribute('aria-label', 'My team');
-  sec.innerHTML = `<div class="ar-thead"><p class="ar-kick">My team: <b>${ms.length} of 6</b>${wx}</p><div class="ar-titlerow"><div class="ar-h1 ar-tname" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>${score}</div></div>
+    stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
+      <div class="ar-six ar-two" role="group" aria-label="Your six: tap a slot to add a Pokémon">${tiles}</div></section>`; }
+  const sec = document.createElement('section'); sec.className = 'ar-team' + (ms.length ? '' : ' is-empty'); sec.setAttribute('aria-label', 'My team');
+  sec.innerHTML = `<div class="ar-thead"><p class="ar-kick">My team: <b>${ms.length} of 6</b>${wx}</p><div class="ar-titlerow"><div class="ar-h1 ar-tname" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet').replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2').replace(/ \(([FM])\)/g, '\u00a0($1)')}</div>${score}</div></div>
     <div class="ar-tgrid">${stats}${stage}<div class="ar-tacts"></div></div>`;
   head.prepend(sec); head.classList.add('ar-on');
   /* the existing nodes move in, handlers and ids intact */
@@ -208,6 +217,8 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
+  /* the older damage tables and chart labels print the short "M-Charizard Y"; one naming everywhere: "Mega Charizard Y" */
+  document.querySelectorAll('main th span, main svg text, #lairSheet th span').forEach(e => { const t = e.firstChild; if (t && t.nodeType === 3 && /^M-\S/.test(t.textContent)) t.textContent = AR.mega(t.textContent).replace(/ ([XYZ])$/, '\u00a0$1'); });
   /* What's new: the dismiss x is its own button next to the fold, not inside its <summary> (a button in a summary has no tap
      area or focus of its own); the card and the x share a wrapper */
   const wn = $('wnewCard'); if (wn && !wn.parentElement.classList.contains('ar-wnew')) { const x = wn.querySelector('summary [data-wnewx]');
@@ -224,11 +235,18 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   document.querySelectorAll('[data-pane="report"] button.linkbtn:not(.ar-link), #homeOut.ar-on button.linkbtn:not(.ar-link):not(.npmore)').forEach(b => { if (!b.closest('#welcomeCard') && !b.matches('[data-welcomex]')) b.classList.add('ar-link'); }); };
 
 
-/* names on the art (dark mode puts them on an ink plate): the plate hugs the longest line, so a two-line name is one tidy
-   plate, not a box out to the tile's edge */
-AR.fit = all => { document.querySelectorAll(all ? '.ar-art:not(.ar-below) .ar-nm' : '.ar-art:not(.ar-below) .ar-nm:not([style*="--nw"])').forEach(n => { const t = n.firstChild; if (!t || t.nodeType !== 3) return;
-  const r = document.createRange(); r.selectNodeContents(n); const L = [...r.getClientRects()]; if (!L.length) return;
-  const w = Math.ceil(Math.max(...L.map(x => x.width))), cur = n.style.getPropertyValue('--nw'); if (w > 0 && cur !== w + 'px') n.style.setProperty('--nw', w + 'px'); }); };
+/* names on the art. A name never breaks inside a word: while its longest word is wider than the name box, the size steps down
+   1px at a time (to 14px at most; --nmf, arena-p1.css). A name on the art that still takes two lines marks its tile .is-nm2,
+   which shrinks the sprite so the name keeps clear of it. In dark mode the name sits on an ink plate that hugs its longest
+   line (--nw), so a two-line name is one tidy plate, not a box out to the tile's edge. */
+AR.fit = all => { document.querySelectorAll(all ? '.ar-art .ar-nm' : '.ar-art .ar-nm:not([data-nf])').forEach(n => { if (!n.getClientRects().length) return;
+  const t = n.firstChild, tile = n.closest('.ar-art'), on = tile && !tile.classList.contains('ar-below'); if (!t || t.nodeType !== 3 || !t.textContent.trim()) return;
+  n.dataset.nf = 1; n.style.removeProperty('--nmf'); if (on) n.style.removeProperty('--nw');
+  let f = parseFloat(getComputedStyle(n).fontSize), k = 0;
+  while (n.scrollWidth > n.clientWidth + 1 && f > 14 && k++ < 8) { f -= 1; n.style.setProperty('--nmf', f + 'px'); }
+  const r = document.createRange(); r.selectNodeContents(t); const L = [...r.getClientRects()].filter(x => x.width > 1); if (!L.length) return;
+  if (on) { tile.classList.toggle('is-nm2', new Set(L.map(x => Math.round(x.top))).size > 1);
+    const w = Math.ceil(Math.max(...L.map(x => x.width))); if (w > 0) n.style.setProperty('--nw', w + 'px'); } }); };
 addEventListener('resize', () => { clearTimeout(AR._ft); AR._ft = setTimeout(() => AR.fit(1), 120); });
 try { document.fonts.ready.then(() => AR.fit(1)); } catch (e) {}
 

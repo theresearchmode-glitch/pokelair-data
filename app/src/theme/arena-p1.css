@@ -639,3 +639,62 @@
 @A .ar-wnew>.fbx{position:absolute;right:6px;top:6px;z-index:2;width:44px!important;height:44px!important;display:grid;place-items:center;border:0!important;border-radius:50%!important;background:none!important;color:var(--ar-ink-2)!important;font-size:24px;line-height:1;cursor:pointer}
 @A .ar-wnew>.fbx::after{display:none}
 @media (hover:hover){@A .ar-wnew>.fbx:hover{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important}}
+
+/* =====================================================================================================================
+   Final fixes (final review, phone + desktop, Nov 5)
+   ===================================================================================================================== */
+/* header: an empty team count draws nothing (no grey dash next to "My team") */
+@A :is(nav.tabs.mgtabs,#side .sidenav,.bnav) .tc:empty{display:none!important}
+/* Home "All 11 tools": the last tile takes two cells, so 2, 3 and 4 columns all end on a full row (no hole) */
+@A #homeOut.ar-on .htiles>.htile:last-child{grid-column:span 2!important}
+/* Home hero and runners: the focus ring follows the slanted field (an outline on a clip-path shape is cut off, so the ring is a
+   slightly larger copy of the field behind it) */
+@A .ar-hero,@A .ar-runner{isolation:isolate}
+@A :is(.ar-hero,.ar-runner):focus-visible{outline:none!important}
+@A .ar-hero:focus-visible::after{content:"";position:absolute;left:-5px;right:-5px;top:39px;bottom:-5px;z-index:-1;background:var(--ar-focus);clip-path:polygon(0 12%,100% 0,100% 84%,0 100%)}
+@A .ar-runner:focus-visible::after{content:"";position:absolute;inset:-5px;z-index:-1;background:var(--ar-focus);clip-path:polygon(4% 0,100% 0,96% 100%,0 100%);border-radius:8px}
+@media (min-width:1001px){@A .ar-hero:focus-visible::after{top:35px;clip-path:polygon(0 10%,100% 0,94% 88%,0 100%)}}
+
+/* My team with no Pokémon (F19 phone, F16 desktop): the line and the two actions, then the stage with six add tiles (as Home),
+   then the secondary actions in one row with "⋯" at its end */
+@A .ar-team.is-empty .ar-tempty{margin-top:18px}
+@A .ar-team.is-empty .ar-stage{margin-top:24px}
+@A .ar-team.is-empty .ar-tacts :is(#chActs>button,#chActs>.row>button){flex:1 1 0!important}
+@A .ar-team.is-empty .ar-tacts #chActs .moremenu{flex:0 0 52px!important}
+@media (min-width:1001px){@A .ar-tgrid>.ar-tempty{grid-column:2;grid-row:1;margin-top:16px}@A .ar-team.is-empty .ar-tgrid>.ar-stage{margin-top:12px}}
+/* a part head whose number is hidden (Sets and team sheet with an empty team) still gets the section tab */
+@A [data-pane="report"] .chparth:has(>.n[hidden])::before{content:"";flex:none;width:28px;height:28px;margin-top:2px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+
+/* names on the art (F01 360, F30 dark 1024): 74-arena.js steps a name's size down until its longest word fits (--nmf), so a
+   name never breaks inside a word; a two-line name on the art (F09, "Mega / Dragonite") shrinks the sprite so the name keeps
+   clear of it */
+@A .ar-art .ar-nm{overflow-wrap:normal!important;word-break:normal!important}
+@A .ar-art .ar-nm[style*="--nmf"]{font-size:var(--nmf)!important}
+@A .ar-art.is-nm2:not(.ar-below) :is(img.ar-spr,svg.ar-spr,.ar-spr img,.ar-spr svg){width:calc(var(--s,140px) * .78)!important;height:calc(var(--s,140px) * .78)!important}
+
+/* the stat row under the title (F02 360, F22 1024): four numerals never touch; 2 by 2 on narrow phones, a step smaller on small
+   desktops */
+@media (max-width:399px){@A .ar-tstats.ar-c4 .ar-trio{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:12px}@A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:32px}}
+@media (min-width:1001px) and (max-width:1279px){@A .ar-tstats:is(.ar-c4,.ar-c5) .ar-trio{column-gap:16px}@A .ar-tstats:is(.ar-c4,.ar-c5) .ar-trio .ar-num{font-size:26px}@A .ar-tstats.ar-c3 .ar-trio .ar-num{font-size:34px}}
+
+/* "Your games": the band's top edge rises to the right, so its Close button sits fully on the field */
+@A [data-pane="report"] #myRec::before{clip-path:polygon(0 8%,100% 0,100% 92%,0 100%)}
+
+/* the open team sheet (F5 desktop): every row starts at the top, names share one line per row, "Edit" left under the set; two
+   columns until 1440px so the set lines don't wrap word by word */
+@A [data-pane="report"] .chsheet .chrow:not(.empty){align-items:start}
+@A [data-pane="report"] .chsheet .chrow:not(.empty) .ix{align-self:start;margin-top:26px}
+@A [data-pane="report"] .chsheet .chrow:not(.empty)::before{top:30px!important;margin-top:0!important}
+@A [data-pane="report"] .chsheet .chrow:not(.empty) img{align-self:start;margin-top:-4px!important}
+@A [data-pane="report"] .chsheet .chrow .chedi{justify-self:start!important;text-align:left!important;margin-top:6px!important}
+@A [data-pane="report"] .chsheet .chrow .chrm{align-self:start!important}
+@media (min-width:1001px) and (max-width:1439px){@A [data-pane="report"] .chsheet{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+/* the info sheet at 1024 to 1279 (F21): a smaller sprite that keeps clear of the rating numeral, and three stat numerals sized to
+   their content with a 16px gap ("53.0%" and "231" never touch) */
+@media (min-width:1024px) and (max-width:1279px){
+  @A #lairSheet .ar-shero .ar-shero-mon{width:196px!important;height:196px!important;right:-12px;top:8px}
+  @A #lairSheet .chlstats{grid-template-columns:repeat(3,max-content)!important;column-gap:18px!important;justify-content:start}
+  @A #lairSheet .chlstats b{font-size:21px!important}}
+/* the info sheet's small text (F14): 15px everywhere, the tab sub-labels included */
+@A #lairSheet :is(.lsvl,.lsvn,.lsvo,.lstd,.lsact .t2,.fbmis,.lstabs .lstab span,.chleg,.lsvr>span){font-size:15px!important}
