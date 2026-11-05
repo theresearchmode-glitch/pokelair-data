@@ -132,7 +132,7 @@
 @A [data-pane="matchup"] .bmopp .bmslot:not(.on)::before{content:""!important;display:block!important;position:absolute!important;left:0;right:0;top:12px;height:72px;inset:12px 0 auto 0!important;z-index:0;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l);
   background:color-mix(in oklch,var(--ar-ink) 6%,var(--ar-paper))!important;border:0!important;box-shadow:none!important}
 @A[data-look="dark"] [data-pane="matchup"] .bmopp .bmslot:not(.on)::before{background:#16151A!important}
-@A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{position:relative;z-index:1;width:100%!important;height:72px;display:flex;align-items:center;padding:0 12px 0 8px}
+@A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{position:relative;z-index:1;width:100%!important;height:72px!important;margin:0!important;display:flex!important;align-items:center;padding:0 12px 0 8px}
 @A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb>*{flex:1 1 auto;width:100%!important;min-width:0}
 @A [data-pane="matchup"] .bmopp .bmslot:not(.on) input.field{width:100%;min-height:44px;text-align:center;font:600 16px/1.2 var(--ar-body)!important}
 /* "The read": Battle's one hero. The lead pair breaks out of a diagonal band with the page's one burst; their lead and their
@@ -285,16 +285,17 @@
 @A [data-pane="matchup"] .bmdt .bd:is(.k1,.k1m){background:color-mix(in oklch,var(--ar-pink) 30%,var(--ar-paper))!important}
 @A [data-pane="matchup"] .bmdt .bd:is(.k2,.k2m){background:color-mix(in oklch,var(--ar-pink) 14%,var(--ar-paper))!important}
 @A[data-look="dark"] [data-pane="matchup"] .bmdt :is(.bo,.bd){background:#16151A!important}
-@A[data-look="dark"] [data-pane="matchup"] .bmdt .bo:is(.k1,.k1m){background:color-mix(in oklab,var(--ar-blue) 42%,#16151A)!important}
-@A[data-look="dark"] [data-pane="matchup"] .bmdt .bo:is(.k2,.k2m){background:color-mix(in oklab,var(--ar-blue) 22%,#16151A)!important}
-@A[data-look="dark"] [data-pane="matchup"] .bmdt .bd:is(.k1,.k1m){background:color-mix(in oklab,var(--ar-pink) 42%,#16151A)!important}
-@A[data-look="dark"] [data-pane="matchup"] .bmdt .bd:is(.k2,.k2m){background:color-mix(in oklab,var(--ar-pink) 22%,#16151A)!important}
+/* dark: no blue or pink washes on black (they read navy and maroon); a neutral cell, and the edge grows with the hit (KO: 10px) */
+@A[data-look="dark"] [data-pane="matchup"] .bmdt :is(.bo,.bd):is(.k1,.k1m,.k2,.k2m){background:#24232A!important}
+@A[data-look="dark"] [data-pane="matchup"] .bmdt .bo:is(.k1,.k1m){box-shadow:inset 10px 0 0 var(--ar-blue)!important;padding-left:16px!important}
+@A[data-look="dark"] [data-pane="matchup"] .bmdt .bd:is(.k1,.k1m){box-shadow:inset 10px 0 0 var(--ar-pink)!important;padding-left:16px!important}
 @A [data-pane="matchup"] .bmleg{margin-top:12px!important}
 @A [data-pane="matchup"] .bmleg :is(.bo,.bd){display:inline-block;padding:0 6px;border-radius:3px;font-weight:700;color:var(--ar-ink)!important;background:color-mix(in oklch,var(--ar-blue) 22%,var(--ar-paper))!important;border:0!important;box-shadow:none!important}
 @A [data-pane="matchup"] .bmleg .bd{background:color-mix(in oklch,var(--ar-pink) 22%,var(--ar-paper))!important}
-@A[data-look="dark"] [data-pane="matchup"] .bmleg .bo{background:color-mix(in oklab,var(--ar-blue) 40%,#16151A)!important}
-@A[data-look="dark"] [data-pane="matchup"] .bmleg .bd{background:color-mix(in oklab,var(--ar-pink) 40%,#16151A)!important}
+@A[data-look="dark"] [data-pane="matchup"] .bmleg :is(.bo,.bd){background:#24232A!important;box-shadow:inset 4px 0 0 var(--ar-blue)!important;padding-left:8px!important}
+@A[data-look="dark"] [data-pane="matchup"] .bmleg .bd{box-shadow:inset 4px 0 0 var(--ar-pink)!important}
 @A [data-pane="matchup"] .bmleg :is(.bo,.bd)::before{content:none!important}
+@A [data-pane="matchup"] .bmleg :is(.bo,.bd)::after{display:inline!important;position:static!important;margin:0 0 0 4px!important;padding:0!important;border:0!important;background:none!important;font:700 13px/1 var(--ar-body)!important;color:var(--ar-ink)!important}
 /* the damage calc card: your six (small art), the arrow, their Pokémon (small art); the yellow strip opens the calc */
 @A [data-pane="matchup"] #chCalcCard{margin:34px 0 0!important}
 @A [data-pane="matchup"] .chcalc{padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
@@ -346,8 +347,8 @@
 @A [data-pane="matchup"] #mu .tablewrap td .m:is(.mh,.mq){background:color-mix(in oklch,var(--ar-blue) 24%,var(--ar-paper))!important}
 @A [data-pane="matchup"] #mu .tablewrap td .m:is(.m2,.m4){background:color-mix(in oklch,var(--ar-pink) 24%,var(--ar-paper))!important}
 @A[data-look="dark"] [data-pane="matchup"] #mu .tablewrap td .m{background:#16151A!important}
-@A[data-look="dark"] [data-pane="matchup"] #mu .tablewrap td .m:is(.mh,.mq){background:color-mix(in oklab,var(--ar-blue) 38%,#16151A)!important}
-@A[data-look="dark"] [data-pane="matchup"] #mu .tablewrap td .m:is(.m2,.m4){background:color-mix(in oklab,var(--ar-pink) 38%,#16151A)!important}
+@A[data-look="dark"] [data-pane="matchup"] #mu .tablewrap td .m:is(.mh,.mq){background:#24232A!important;color:var(--ar-blue-ink)!important;box-shadow:inset 0 -3px 0 var(--ar-blue)!important}
+@A[data-look="dark"] [data-pane="matchup"] #mu .tablewrap td .m:is(.m2,.m4){background:#24232A!important;color:var(--ar-pink-ink)!important;box-shadow:inset 0 -3px 0 var(--ar-pink)!important}
 @A [data-pane="matchup"] #mu .tablewrap :is(th,td){padding:8px 6px!important;font-size:var(--ar-fs-small)!important}
 /* more ways to prep: four tool strips with the section edge, as Home's tool tiles */
 @A [data-pane="matchup"] #chTools{margin:36px 0 0!important;padding:0!important;background:none!important;border:0!important}
@@ -387,7 +388,7 @@
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,var(--ar-sheet)!important}
 @A [data-pane="calc"] .dcstick .dcsta{color:var(--ar-sec-ink)!important}
 @A [data-pane="calc"] .dcstick b{font:italic 900 18px/1.1 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
-@A [data-pane="calc"] .dcstick .dcstx span{color:var(--ar-ink-2)!important;font-size:var(--ar-fs-small)!important}
+@A [data-pane="calc"] .dcstick .dcstx span{color:var(--ar-ink-2)!important;font-size:var(--ar-fs-small)!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 /* the two sides: each stands on its own type field, facing the other across the slanted "vs" rule */
 @A [data-pane="calc"] .dcgrid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;align-items:start;background:none!important;border:0!important;padding:0!important}
 @A [data-pane="calc"] .dccol{min-width:0;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;display:flex;flex-direction:column;gap:12px}
@@ -412,7 +413,11 @@
 @A [data-pane="calc"] .ar-dcband :is(.nm,.sub){position:relative;z-index:3;max-width:calc(100% - 170px);margin-left:26px!important}
 @A [data-pane="calc"] .ar-dcband .nm{margin-top:84px!important;font:italic 800 24px/1.05 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;overflow-wrap:anywhere;text-wrap:balance}
 @A [data-pane="calc"] .ar-dcband .sub{margin-top:4px!important;padding-bottom:16px;font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
-@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub){color:var(--on,#fff)!important}
+/* dark mode: the name and the set sit on a slanted ink plate, as names on the art do (the dark fields run from mid to light) */
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub){color:#fff!important;isolation:isolate;width:fit-content;padding:3px 12px 4px!important}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub)::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband .sub{margin-top:0!important;margin-bottom:16px}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband.def :is(.nm,.sub){margin-left:auto!important}
 /* on the right-hand side (the defender) the picture stands on the left, so the two face each other */
 @A [data-pane="calc"] .ar-dcband.def .dcspr{right:auto;left:12px}
 @A [data-pane="calc"] .ar-dcband.def :is(.nm,.sub){margin-left:170px!important;margin-right:20px!important;max-width:none;text-align:right}
@@ -431,7 +436,7 @@
 @A [data-pane="calc"] .ar-dcmoves .ar-strip span{min-width:0;overflow-wrap:anywhere}
 @A [data-pane="calc"] .ar-dcmoves .ar-strip[aria-pressed="true"]{font-weight:700}
 @A [data-pane="calc"] .ar-dcmoves .ar-strip[aria-pressed="true"]::before{background:linear-gradient(var(--m),var(--m)) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--m) 62%,var(--ar-sheet)),color-mix(in oklch,var(--m) 34%,var(--ar-sheet)));box-shadow:0 0 0 3px var(--ar-yellow),var(--ar-shadow-s)}
-@A[data-look="dark"] [data-pane="calc"] .ar-dcmoves .ar-strip[aria-pressed="true"]::before{background:linear-gradient(var(--m),var(--m)) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklab,var(--m) 40%,#24232A),color-mix(in oklab,var(--m) 22%,#1E1D22))}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcmoves .ar-strip[aria-pressed="true"]::before{background:linear-gradient(var(--m),var(--m)) 0 0/10px 100% no-repeat,#2E2D35}
 @A [data-pane="calc"] .ar-dcmoves .ar-strip[aria-pressed="true"]::after{content:"";order:-1;flex:none;width:11px;height:6px;margin:-3px 8px 0 0;border:solid currentColor;border-width:0 0 2.5px 2.5px;transform:rotate(-45deg)}
 @A [data-pane="calc"] :is(.dccol,.dcgrid) label{display:flex;flex-direction:column;gap:6px;font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A [data-pane="calc"] .dc2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 12px}
@@ -461,8 +466,8 @@
 @A [data-pane="calc"] .dctab td>span{display:block;margin-top:4px;font:500 14px/1.15 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
 @A [data-pane="calc"] .dctab td:is(.k1,.k1m){background:color-mix(in oklch,var(--ar-sec) 26%,var(--ar-paper))!important}
 @A [data-pane="calc"] .dctab td:is(.k2,.k2m){background:color-mix(in oklch,var(--ar-sec) 12%,var(--ar-paper))!important}
-@A[data-look="dark"] [data-pane="calc"] .dctab td:is(.k1,.k1m){background:color-mix(in oklab,var(--ar-sec) 40%,#000)!important}
-@A[data-look="dark"] [data-pane="calc"] .dctab td:is(.k2,.k2m){background:color-mix(in oklab,var(--ar-sec) 20%,#000)!important}
+@A[data-look="dark"] [data-pane="calc"] .dctab td:is(.k1,.k1m){background:#24232A!important;box-shadow:inset 0 -4px 0 var(--ar-sec)!important}
+@A[data-look="dark"] [data-pane="calc"] .dctab td:is(.k2,.k2m){background:#1B1A1F!important;box-shadow:inset 0 -2px 0 var(--ar-sec)!important}
 @A [data-pane="calc"] .dctab td[data-ko]::before{content:attr(data-ko)!important;display:block!important;position:static!important;font:700 13px/1.2 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink)!important;background:none!important;border:0!important;margin:0 0 4px!important;padding:0!important;width:auto!important;height:auto!important;transform:none!important}
 @A [data-pane="calc"] .dctab .dctile{display:block!important;margin:0 auto 2px!important;background:none!important;border:0!important;box-shadow:none!important}
 @media (min-width:1001px){
@@ -495,14 +500,17 @@
 @A [data-pane="speed"] .nprscroll{background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-l)!important}
 @A [data-pane="speed"] .nprtrack{background:none!important}
 /* lanes: your two lanes washed blue, theirs pink, no rules between them */
-@A [data-pane="speed"] .nprlane{background:color-mix(in oklch,var(--ar-pink) 7%,var(--ar-paper))!important;border:0!important;box-shadow:none!important}
+@A [data-pane="speed"] .nprlane{background:color-mix(in oklch,var(--ar-pink) 7%,var(--ar-paper))!important;border:0!important}
 @A [data-pane="speed"] .nprlane:is(.l1,.l3):not(.me){background:color-mix(in oklch,var(--ar-pink) 12%,var(--ar-paper))!important}
 @A [data-pane="speed"] .nprlane.me{background:color-mix(in oklch,var(--ar-blue) 9%,var(--ar-paper))!important}
 @A [data-pane="speed"] .nprlane.me.l1{background:color-mix(in oklch,var(--ar-blue) 15%,var(--ar-paper))!important}
-@A[data-look="dark"] [data-pane="speed"] .nprlane{background:color-mix(in oklab,var(--ar-pink) 9%,#121114)!important}
-@A[data-look="dark"] [data-pane="speed"] .nprlane:is(.l1,.l3):not(.me){background:color-mix(in oklab,var(--ar-pink) 14%,#121114)!important}
-@A[data-look="dark"] [data-pane="speed"] .nprlane.me{background:color-mix(in oklab,var(--ar-blue) 12%,#121114)!important}
-@A[data-look="dark"] [data-pane="speed"] .nprlane.me.l1{background:color-mix(in oklab,var(--ar-blue) 18%,#121114)!important}
+/* dark: neutral lanes (a pink or blue wash on black reads maroon or navy); the side shows in the lane's edge and the names */
+@A[data-look="dark"] [data-pane="speed"] .nprlane{background:#141317!important}
+@A[data-look="dark"] [data-pane="speed"] .nprlane:is(.l1,.l3):not(.me){background:#1B1A1F!important}
+@A[data-look="dark"] [data-pane="speed"] .nprlane.me{background:#1E1D23!important}
+@A[data-look="dark"] [data-pane="speed"] .nprlane.me.l1{background:#25242B!important}
+@A [data-pane="speed"] .nprlane{box-shadow:inset 4px 0 0 var(--ar-pink)!important}
+@A [data-pane="speed"] .nprlane.me{box-shadow:inset 4px 0 0 var(--ar-blue)!important}
 @A [data-pane="speed"] .nprhead{background:none!important;border:0!important}
 @A [data-pane="speed"] .nprhead span{font:700 14px/1.2 var(--ar-body)!important;color:var(--ar-pink-ink)!important;text-transform:none!important;letter-spacing:0!important;background:var(--ar-paper)!important;padding:0 6px!important}
 @A [data-pane="speed"] .nprhead.me span{color:var(--ar-blue-ink)!important}
@@ -594,7 +602,7 @@
 @A [data-pane="practice"] .prmode::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);background:linear-gradient(var(--ar-rule-2),var(--ar-rule-2)) 0 0/6px 100% no-repeat,var(--ar-sheet)!important}
 @A[data-look="dark"] [data-pane="practice"] .prmode::before{background:linear-gradient(var(--ar-rule-2),var(--ar-rule-2)) 0 0/6px 100% no-repeat,#24232A!important}
 @A [data-pane="practice"] .prmode[aria-checked="true"]::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/8px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 24%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 10%,var(--ar-sheet)) 70%)!important}
-@A[data-look="dark"] [data-pane="practice"] .prmode[aria-checked="true"]::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/8px 100% no-repeat,linear-gradient(100deg,color-mix(in oklab,var(--ar-sec) 30%,#24232A),#1E1D22 75%)!important}
+@A[data-look="dark"] [data-pane="practice"] .prmode[aria-checked="true"]::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/8px 100% no-repeat,linear-gradient(100deg,color-mix(in oklab,var(--ar-sec) 22%,#24232A),#1E1D22 75%)!important}
 @A [data-pane="practice"] .prmode>b{display:inline-flex;align-items:center;gap:8px;font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%;color:var(--ar-ink)!important}
 @A [data-pane="practice"] .prmode b::after{content:none!important;display:none!important}
 @A [data-pane="practice"] .prmode[aria-checked="true"]>b::before{content:"";flex:none;width:11px;height:6px;margin-top:-4px;border:solid var(--ar-sec-ink);border-width:0 0 2.5px 2.5px;transform:rotate(-45deg)}
@@ -732,8 +740,8 @@
 @A [data-pane="types"] #typeChart .m.mq{background:color-mix(in oklch,var(--ar-green) 34%,var(--ar-paper))!important}
 @A [data-pane="types"] #typeChart .m.m2{background:color-mix(in oklch,var(--ar-pink) 22%,var(--ar-paper))!important}
 @A [data-pane="types"] #typeChart .m.m0{background:var(--ar-ink)!important;color:var(--ar-paper)!important}
-@A[data-look="dark"] [data-pane="types"] #typeChart .m.mq{background:color-mix(in oklab,var(--ar-green) 40%,#000)!important}
-@A[data-look="dark"] [data-pane="types"] #typeChart .m.m2{background:color-mix(in oklab,var(--ar-pink) 34%,#000)!important}
+@A[data-look="dark"] [data-pane="types"] #typeChart .m.mq{background:#24232A!important;color:var(--ar-green-ink)!important;box-shadow:inset 0 -3px 0 var(--ar-green)!important}
+@A[data-look="dark"] [data-pane="types"] #typeChart .m.m2{background:#24232A!important;color:var(--ar-pink-ink)!important;box-shadow:inset 0 -3px 0 var(--ar-pink)!important}
 @A [data-pane="types"] details.foot{margin-top:28px!important}
 @A [data-pane="types"] details.foot>p{color:var(--ar-ink-2);font-size:var(--ar-fs-small)}
 
@@ -757,7 +765,7 @@
   @A [data-pane="matchup"] .bmopp .bmslot.ar-art{--h:96px;--s:112px;--lift:16px}
   @A [data-pane="matchup"] .bmopp .bmslot.ar-art .ar-nm{font-size:17px!important}
   @A [data-pane="matchup"] .bmopp .bmslot:not(.on)::before{height:96px}
-  @A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{height:96px}
+  @A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{height:96px!important}
   @A [data-pane="matchup"] .ar-bmhead .chbmt{padding-left:46px}
   @A [data-pane="matchup"] .ar-bmhead .chbmt::before{width:32px;height:32px}
   @A [data-pane="matchup"] .ar-bmhead :is(.mgvsarch,.chpgs,.bmbar){margin-left:46px!important}
