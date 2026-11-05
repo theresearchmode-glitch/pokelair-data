@@ -120,11 +120,21 @@ ARB.score = (G) => !G ? null : G.rec ? {num: (G.rec.wr * 100).toFixed(1) + '%', 
 ARB.numeral = (x, P, txt, X, Y, size, align) => { ARB.fnt(x, `italic 900 ${size}px Archivo, sans-serif`, true); x.textAlign = align || 'left'; const o = size * .05;
   x.fillStyle = P.mis; x.fillText(txt, X + o, Y + o * .8); x.fillStyle = P.ink; x.fillText(txt, X, Y); x.textAlign = 'left'; };
 ARB.tab = (x, P, X, Y, s) => { x.fillStyle = P.blue; ARB.para(x, X + s / 2, Y - s, s, s, 4); x.fill(); };
-ARB.logo = async (x, dark, X, Y, w) => { const lg = new Image(); lg.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']); await new Promise(r => { lg.onload = r; lg.onerror = r; }); try { x.drawImage(lg, X, Y, w, w * 196 / 761.34); } catch (e) {} };
+/* the arena wordmark (the header's .ar-logo): Unbounded "Nasty", then "Plot" on a slanted blue plate with a red offset; h is
+   the cap size, X/Y the top left */
+ARB.logo = async (x, dark, X, Y, w) => { const fs = w / 6.2; try { await document.fonts.load(`900 ${fs}px Unbounded`, 'NastyPlot'); } catch (e) {}
+  x.save(); x.textBaseline = 'alphabetic'; ARB.fnt(x, `900 ${fs}px Unbounded, "Archivo", sans-serif`); x.fillStyle = dark ? '#F4F1EC' : '#16141A'; const by = Y + fs * 1.05;
+  x.fillText('Nasty', X, by); const nw = x.measureText('Nasty').width, pw = x.measureText('Plot').width, px = X + nw + fs * .18, ph = fs * 1.28, py = by - fs * .98, padL = fs * .45, padR = fs * .55;
+  const plate = dx => { x.beginPath(); const k = Math.tan(14 * Math.PI / 180) * ph / 2, L = px + dx, R = px + padL + pw + padR + dx, T = py + dx, B = py + ph + dx; x.moveTo(L + k, T); x.lineTo(R + k, T); x.lineTo(R - k, B); x.lineTo(L - k, B); x.closePath(); x.fill(); };
+  x.fillStyle = '#C41E35'; plate(fs * .14); x.fillStyle = '#0078BF'; plate(0); x.fillStyle = '#fff'; x.fillText('Plot', px + padL, by); x.restore(); };
 ARB.imgs = ms => { const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp'; return Promise.all(ms.map(m => { const id = typeof SPRITE_ID === 'object' && SPRITE_ID ? SPRITE_ID[m.p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); })); };
 ARB.fonts = async () => { try { await Promise.all(['italic 800 40px Archivo', 'italic 900 40px Archivo', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"'].map(f => document.fonts.load(f, 'Aa0123%'))); } catch (e) {} };
 ARB.lines = (x, text, max) => { if (x.measureText(text).width <= max) return [text]; const w = text.split(' '); let best = null;
   for (let i = 1; i < w.length; i++) { const L = [w.slice(0, i).join(' '), w.slice(i).join(' ')], m = Math.max(...L.map(l => x.measureText(l).width)); if (m <= max && (!best || m < best.m)) best = {L, m}; } return best ? best.L : null; };
+/* greedy wrap into at most n lines that fit max, or null */
+ARB.wrapN = (x, text, max, n) => { const w = text.split(' '), L = []; let cur = '';
+  for (const word of w) { const t = cur ? cur + ' ' + word : word; if (x.measureText(t).width <= max) cur = t; else { if (!cur) return null; L.push(cur); cur = word; if (x.measureText(cur).width > max) return null; } }
+  if (cur) L.push(cur); return L.length <= n ? L : null; };
 ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length) return null; const dark = (CH.shareMode || document.documentElement.dataset.look) === 'dark', P = ARB.PAL(dark); await ARB.fonts();
   const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.textBaseline = 'alphabetic'; x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   const f = ARB.facts(ms), sc = ARB.score(f.G), RD = f.RD;
@@ -133,8 +143,9 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
     if (sc) { ARB.fnt(x, '700 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(`${sc.top}, ${sc.num} ${sc.basis}`, W - 60, 202); } x.textAlign = 'left'; }
   /* the title on its slanted tab: one line as big as fits, else two lines (never cut off) */
   let fz = 70, TL = null; for (; fz >= 34; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); if (x.measureText(f.name).width <= 640) { TL = [f.name]; break; } if (fz <= 50) { const L2 = ARB.lines(x, f.name, 640); if (L2) { TL = L2; break; } } }
-  if (!TL) { fz = 34; ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); TL = ARB.lines(x, f.name, 640) || [scFit(x, f.name, 640)]; }
-  const ty0 = TL.length > 1 ? 84 : 116; ARB.tab(x, P, 56, ty0, 40); x.fillStyle = P.ink; TL.forEach((l, i) => x.fillText(l, 112, ty0 + i * fz * 1.02));
+  if (!TL) for (fz = 40; fz >= 26 && !TL; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); TL = ARB.wrapN(x, f.name, 640, 3); }
+  if (!TL) { fz = 26; TL = [scFit(x, f.name, 640)]; }
+  const ty0 = TL.length > 2 ? 64 : TL.length > 1 ? 84 : 116; ARB.tab(x, P, 56, ty0, 40); x.fillStyle = P.ink; TL.forEach((l, i) => x.fillText(l, 112, ty0 + i * fz * 1.02));
   const sy = ty0 + (TL.length - 1) * fz * 1.02 + 40;
   ARB.fnt(x, '500 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('Pokémon Champions, VGC doubles, Reg M-C, bring 6 pick 4', 58, sy);
   if (f.arch && f.arch !== f.name) { ARB.fnt(x, '700 22px "Instrument Sans", sans-serif'); const t = scFit(x, f.arch, 520), w = x.measureText(t).width + 36; x.fillStyle = P.plate; ARB.para(x, 58 + w / 2, sy + 18, w, 40, 6); x.fill(); x.fillStyle = '#fff'; x.fillText(t, 76, sy + 45); }
@@ -160,7 +171,8 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
   ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('My team, Pokémon Champions, Reg M-C doubles', 60, 86);
   /* the name, as big as fits, up to two lines, on its slanted tab */
   let fz = 104, L = null; for (; fz >= 52; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); L = ARB.lines(x, f.name, W - 190); if (L && (L.length === 1 || fz <= 92)) break; }
-  if (!L) L = [scFit(x, f.name, W - 190)]; let ty = 110 + fz * .9; ARB.tab(x, P, 60, ty - fz * .12, fz * .62); for (const l of L) { x.fillStyle = P.ink; x.fillText(l, 60 + fz * .78, ty); ty += fz * 1.02; }
+  if (!L) for (fz = 60; fz >= 40 && !L; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); L = ARB.wrapN(x, f.name, W - 190, 3); }
+  if (!L) { fz = 40; L = [scFit(x, f.name, W - 190)]; } let ty = 110 + fz * .9; ARB.tab(x, P, 60, ty - fz * .12, fz * .62); for (const l of L) { x.fillStyle = P.ink; x.fillText(l, 60 + fz * .78, ty); ty += fz * 1.02; }
   if (f.arch && f.arch !== f.name) { ARB.fnt(x, '700 28px "Instrument Sans", sans-serif'); const t = scFit(x, f.arch, 700), w = x.measureText(t).width + 44, yy = ty - fz * 1.02 + 30; x.fillStyle = P.plate; ARB.para(x, 64 + w / 2, yy, w, 48, 6); x.fill(); x.fillStyle = '#fff'; x.fillText(t, 86, yy + 33); }
   /* the six: 3 by 2 art tiles */
   const imgs = await ARB.imgs(ms), cw = (W - 120) / 3, rows = [470, 760], ns = ARB.nameSize(x, ms, cw - 40, 32);
