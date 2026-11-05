@@ -248,7 +248,7 @@
 @media (hover:hover){@A :is(.ar-mpg,#lairSheet .lstp-meta) :is(button.stm,button.wktm,.chbw>button):hover::before{transform:skewX(var(--ar-slant)) translateY(-2px)!important}}
 @media (prefers-reduced-motion:no-preference){@A :is(.ar-mpg,#lairSheet .lstp-meta) :is(button.stm,button.wktm,.chbw>button)::before{transition:transform .16s ease-out}}
 /* the little M flag on a Mega tile: the power-up contour says it, and the name says "Mega" in the alt text of the row */
-@A .ar-mpg :is(.tgm,.svm) .tgmk{position:absolute!important;right:4px!important;top:calc(var(--lift) + 6px)!important;left:auto!important;z-index:2;display:grid!important;place-items:center;width:22px!important;height:20px!important;padding:0!important;
+@A :is(.ar-mpg,#lairSheet .lstp-meta) :is(.tgm,.svm)>.tgmk{position:absolute!important;right:4px!important;top:calc(var(--lift) + 6px)!important;left:auto!important;z-index:2;display:grid!important;place-items:center;width:22px!important;height:20px!important;padding:0!important;
   font:800 12px/1 var(--ar-body)!important;color:#fff!important;background-color:#16141A!important;border:0!important;border-radius:3px!important;box-shadow:none!important}
 
 /* ---------- 5. Usage ---------- */
@@ -642,7 +642,8 @@
 @A .ar-mpg #trackOut .trevs li span{display:block;font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #trackOut details.chsec{margin-top:40px!important}
 @media (min-width:700px){@A .ar-mpg #trackOut .trflow{grid-template-columns:repeat(3,minmax(0,1fr))!important}@A .ar-mpg #trackOut .trhm{grid-template-columns:1fr 1fr!important}}
-@media (min-width:1001px){@A .ar-mpg #trackOut .trstats b{font-size:48px!important}@A .ar-mpg #trackOut{max-width:none}}
+@media (min-width:1001px){@A .ar-mpg #trackOut .trstats b{font-size:48px!important}}
+@media (min-width:1001px){@A .ar-mpg #trackOut{max-width:none}}
 
 /* ---------- 13. How we calculate ---------- */
 @A .ar-mpg #methodOut .npstats{margin-top:12px!important}
@@ -814,3 +815,9 @@
 @A #homeOut .wkhome .calchip b{font:700 16px/1.3 var(--ar-body)}
 @A #homeOut .wkhome .calchip .calcd{font:600 15px var(--ar-body);color:var(--ar-ink-2)}
 @A #homeOut .wkhome .wkteb .wkst>img.spr.ar-tv{background:none!important}
+@media (max-width:599px){@A .ar-mpg #setOut .sethead{grid-template-columns:118px minmax(0,1fr);column-gap:16px;min-height:128px}
+  @A .ar-mpg #setOut .sethead::before{width:108px!important;height:84px!important;top:34px!important}
+  @A .ar-mpg #setOut .sethead>img.spr.big{width:116px!important;height:116px!important}
+  @A .ar-mpg #setOut .sethead .sl-name{font-size:min(28px,7vw)!important;overflow-wrap:normal}
+  @A .ar-mpg #setOut .sethead .tag.tier{grid-column:1/-1;margin-top:6px}}
+@media (max-width:1000px){@A .ar-mpg #trackOut .trstats b{font-size:min(34px,8vw)!important;white-space:nowrap}}
