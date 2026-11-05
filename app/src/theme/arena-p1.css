@@ -857,3 +857,7 @@
 /* phones: the four check numbers in one compact row; the record's two side by side */
 @media (max-width:599px){@A .ar-tstats{gap:14px;margin-top:14px}@A .ar-tstats.ar-c4 .ar-trio{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-trio .ar-num{font-size:26px}
   @A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:24px}@A .ar-trio .ar-unit{font-size:15px}}
+/* Size pass (Sim, Nov 5): finger-sized taps on every touch screen, including big iPads */
+@A .tipq{position:relative}
+@A .tipq::after{content:"";position:absolute;inset:-8px;border-radius:50%}
+@media (pointer:coarse),(max-width:1100px){@A :is(.ar-btn,.nplink,.fbmis,.fbbtn,.chghost,summary.wnh,.ar-mpg summary,#chP1 summary){min-height:44px!important}}

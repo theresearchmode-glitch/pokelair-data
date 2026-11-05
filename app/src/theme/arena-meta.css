@@ -1038,3 +1038,6 @@
   @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon img{grid-row:1/span 3;width:76px!important;height:76px!important;margin:0!important}
   @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon b{font-size:17px}@A .ar-mpg #chHot .ar-tie3 .ar-tie-ln br{display:none}
   @A .ar-mpg #chHot .ar-tie3 .ar-tie-ln{white-space:normal}}
+/* tablets: keep the slanted tie card inside the screen */
+@media (min-width:600px){@A .ar-mpg #chHot .ar-tie{margin-inline:34px}}
+@media (min-width:1001px){@A .ar-mpg #chHot .ar-tie{margin-inline:42px}}
