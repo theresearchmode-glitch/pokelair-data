@@ -9,12 +9,25 @@ AR.TC = Object.assign({}, TC, {Dark: '#5E5068'});
 /* dark-mode field colours (true black): every type at the same vivid chroma, cool and red hues at a mid lightness, the
    orange-to-yellow hues (Fire, Electric, Ground, Rock, Normal...) lighter, because a dark orange or yellow reads brown (Sim:
    no brown fills). --on is the text colour that reads on the first type's dark field (white or ink, whichever is 4.5:1+). */
-AR._d = new Map();
+AR._d = new Map(); AR._k = new Map();
 AR.dark = t => { if (AR._d.has(t)) return AR._d.get(t); let v = TC.Normal;
-  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = h >= 70 && h < 118 ? .76 : h >= 38 && h < 70 ? .64 : .5; v = MG.hex(L, Math.max(Math.min(C, .17), Math.min(C, .05)), H); } catch (e) {}
+  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = h >= 70 && h < 130 ? .76 : h >= 38 && h < 70 ? .64 : .5, c = Math.max(Math.min(C, .17), Math.min(C, .05));
+    v = MG.hex(L, c, H); AR._k.set(t, {L, c, h}); } catch (e) {}
   AR._d.set(t, v); return v; };
-AR.tv = p => { const t = (p && p.t) || ['Normal'], a = t[0], b = t[1] || t[0], da = AR.dark(a);
-  return `--a:${AR.TC[a] || TC.Normal};--b:${AR.TC[b] || TC.Normal};--da:${da};--db:${AR.dark(b)};--on:${1.05 / (AR.lum(da) + .05) >= 4.5 ? '#fff' : '#16141A'}`; };
+/* the middle stop of a dark dual-type field. A straight blend can cross the brown zone (a warm hue, orange to olive, at a mid
+   lightness): Grass to Fairy the short way round passes olive, Ground to Steel through taupe. The middle takes the short way
+   round the hue circle unless that lands in the warm zone, then the long way; a warm middle that is still left is lifted to a
+   light gold or orange (L .72), which never reads brown. */
+AR.mid = (a, b) => { if (a === b) return AR.dark(a); AR.dark(a); AR.dark(b); const A = AR._k.get(a), B = AR._k.get(b); if (!A || !B) return AR.dark(a);
+  const warm = h => { h = (h + 360) % 360; return h >= 30 && h < 135; }, d = ((B.h - A.h + 540) % 360) - 180, h1 = A.h + d / 2, h2 = h1 + 180;
+  let L = (A.L + B.L) / 2, h = !warm(h1) ? h1 : !warm(h2) ? h2 : h1; if (warm(h)) L = Math.max(L, .72);
+  try { return MG.hex(L, Math.max(.1, (A.c + B.c) / 2), (h + 360) % 360); } catch (e) { return AR.dark(a); } };
+AR.tv = p => { const t = (p && p.t) || ['Normal'], a = t[0], b = t[1] || t[0], da = AR.dark(a), db = AR.dark(b);
+  return `--a:${AR.TC[a] || TC.Normal};--b:${AR.TC[b] || TC.Normal};--da:${da};--dm:${AR.mid(a, b)};--db:${db};--on:${AR.on(da)}`; };
+/* the text colour on the first type's dark field: white or ink, whichever has the better contrast. Text on a hero field sits
+   on the first type only (the hero fields hold --da across their text half, then blend to --db behind the sprite) */
+AR.cr = (x, y) => (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
+AR.on = da => { const l = AR.lum(da), w = AR.cr(1, l), k = AR.cr(AR.lum('#16141A'), l); return w >= 4.5 || w >= k ? '#fff' : '#16141A'; };
 /* text on a filled type tag: white where it reaches 4.5:1, ink otherwise */
 AR.lum = h => { const c = [1, 3, 5].map(i => { const v = parseInt(h.slice(i, i + 2), 16) / 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
 AR.onType = t => { const L = AR.lum(AR.TC[t] || TC.Normal); return 1.05 / (L + .05) >= 4.5 ? '#fff' : '#16141A'; };
@@ -47,6 +60,12 @@ AR.champ = () => { const E = META.events; if (!E || !Array.isArray(E.events)) re
   return null; };
 
 /* ======================= Home ======================= */
+/* the Top of the meta rows: one naming everywhere ("Mega Charizard Y", not "M-Charizard Y"), the Mega contour on the small
+   sprite, and the sprite loads with the page (a lazy sprite far down Home could show an empty field) */
+{ const hm = homeMini; homeMini = function (p, r, extra) { let h = hm(p, r, extra); if (!p) return h;
+  h = h.replace(/<span class="hmn">[^<]*<\/span>/, `<span class="hmn">${escName(p.d)}</span>`).replace(/ loading="lazy" decoding="async"/, '');
+  if (AR.isMega(p)) h = h.replace('class="spr hmspr"', `class="spr hmspr ar-mega-s" style="${AR.tv(p)}"`);
+  return h; }; }
 AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scope > .ar-home')) return;
   const ms = members(), six = CH.metaSix(), C = AR.champ();
   /* hero: the most-used Pokémon; the next two as runner strips */
@@ -187,4 +206,4 @@ MG.sheet = n => AR.sheet(n);
 /* run after the app draws (the same observer pattern as the other theme layers) */
 { let q = false; const run = () => { q = false; try { AR.parts(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); }
-if (window.__PL_TEST) window.__AR = AR;
+if (window.__PL_TEST) { window.__AR = AR; window.__ARX = {TC, ROSTER, SPRITE_ID, lairSheet, lairClose}; }

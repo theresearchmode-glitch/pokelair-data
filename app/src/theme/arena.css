@@ -92,7 +92,7 @@
    Set --a and --b (the two type colours) on the element or a parent. Light mode mixes them into the sheet colour; dark mode
    brings both to the same mid lightness so dual types never drift brown on black. */
 @A .ar-field{background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--a) var(--ar-field-mix),var(--ar-sheet)) 10%,color-mix(in oklch,var(--b,var(--a)) var(--ar-field-mix),var(--ar-sheet)) 90%)!important}
-@A[data-look="dark"] .ar-field{background:linear-gradient(in oklab 125deg,var(--da,oklch(from var(--a) .5 calc(c * .85) h)) 10%,var(--db,var(--da,oklch(from var(--b,var(--a)) .5 calc(c * .85) h))) 90%)!important}
+@A[data-look="dark"] .ar-field{background:linear-gradient(in oklch 125deg,var(--da,oklch(from var(--a) .5 calc(c * .85) h)) 10%,var(--dm,var(--da,oklch(from var(--a) .5 calc(c * .85) h))) 50%,var(--db,var(--da,oklch(from var(--b,var(--a)) .5 calc(c * .85) h))) 90%)!important}
 @A .ar-field-strong{background:linear-gradient(in oklch 125deg,var(--a),var(--b,var(--a)))!important}
 
 /* How slanted controls are drawn: the element stays upright (so its text, icons and any bare text nodes stay upright) and its
@@ -100,11 +100,13 @@
    every slanted control (plates, buttons, tabs, chips, strips, step plates) uses it. Never slant a paragraph. */
 
 /* ---------- 4. slanted ink name plate ----------
-   <span class="ar-plate" style="--a:..;--b:..">bring Sneasler</span>. Takes its type gradient at a dark, even lightness
-   (white text 5:1+), or the section plate without --a. Labels only, never sentences. */
-@A .ar-plate{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;color:#fff!important;font:600 var(--ar-fs-body)/1.15 var(--ar-body);white-space:nowrap;background:none!important;border:0!important}
+   <span class="ar-plate" style="--a:..;--b:..">bring Sneasler</span>. With --a it is an ink plate (#16141A, white text 17:1)
+   with a type-colour edge in both types: a type gradient darkened enough for white text lands on brown, maroon or olive for
+   the warm types (Fire, Ground, Electric, Normal...), so the colour stays in the edge. Without --a it is the section plate.
+   Labels only, never sentences. */
+@A .ar-plate{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px 0 22px;color:#fff!important;font:600 var(--ar-fs-body)/1.15 var(--ar-body);white-space:nowrap;background:none!important;border:0!important}
 @A .ar-plate::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);box-shadow:var(--ar-shadow-s)}
-@A .ar-plate[style*="--a"]::before{background:linear-gradient(in oklch 100deg,oklch(from var(--a) .44 c h),oklch(from var(--b,var(--a)) .44 c h))}
+@A .ar-plate[style*="--a"]::before{background:linear-gradient(180deg,var(--a),var(--b,var(--a))) 0 0/7px 100% no-repeat,#16141A}
 @A .ar-plate.ar-sm{min-height:32px;padding:0 12px;font-size:var(--ar-fs-small)}
 
 /* ---------- 5. section head: slanted tab + italic display ----------
@@ -177,8 +179,12 @@
 @A[data-look="dark"] .ar-art .ar-f::before{opacity:.55}
 @A .ar-art :is(img.ar-spr,svg.ar-spr,.ar-spr img,.ar-spr svg){position:absolute;left:50%;top:0;width:var(--s,140px)!important;height:var(--s,140px)!important;max-width:none;transform:translateX(-50%);z-index:2;pointer-events:none;
   filter:drop-shadow(0 10px 8px rgba(30,10,40,.22))}
-@A .ar-art.is-mega :is(img.ar-spr,svg.ar-spr){filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b,var(--a))) drop-shadow(0 2px 0 var(--b,var(--a))) drop-shadow(0 -2px 0 var(--a)) drop-shadow(0 10px 8px rgba(30,10,40,.22))}
-@A .ar-art.ar-s.is-mega :is(img.ar-spr,svg.ar-spr){filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a))}
+/* the Mega power-up contour: the two type colours, then a thin ink line outside them, so the contour still reads on a field
+   of its own colour (Mega Raichu Y's yellow on yellow) */
+@A .ar-art.is-mega :is(img.ar-spr,svg.ar-spr){filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b,var(--a))) drop-shadow(0 2px 0 var(--b,var(--a))) drop-shadow(0 -2px 0 var(--a))
+  drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A) drop-shadow(0 10px 8px rgba(30,10,40,.22))}
+@A .ar-art.ar-s.is-mega :is(img.ar-spr,svg.ar-spr),@A .ar-mega-s{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a))
+  drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A)}
 @A .ar-art .ar-nm{position:absolute;left:14px;right:8px;bottom:12px;z-index:3;display:block;color:var(--ar-art-text);font:italic 800 18px/1.08 var(--ar-display);font-stretch:108%;text-wrap:balance;overflow-wrap:anywhere}
 @A .ar-art .ar-nm small{display:block;font:600 var(--ar-fs-small)/1.25 var(--ar-body);font-style:normal;margin-top:3px}
 /* dark mode: a name set on the art sits on a slanted ink plate (the dark fields range from mid to light, so the plate keeps it 15:1) */
@@ -239,7 +245,9 @@
   clip-path:polygon(0 0,calc(100% - 30px) 0,100% 30px,100% 100%,0 100%);
   background:linear-gradient(in oklch 160deg,color-mix(in oklch,var(--a,var(--ar-sec)) 16%,var(--ar-sheet)),color-mix(in oklch,var(--b,var(--a,var(--ar-sec))) 12%,var(--ar-sheet)) 60%,var(--ar-sheet))!important}
 @A .ar-sheet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:linear-gradient(in oklch 180deg,var(--a,var(--ar-sec)),var(--b,var(--a,var(--ar-sec))))}
-@A[data-look="dark"] .ar-sheet{background:linear-gradient(in oklab 160deg,color-mix(in oklab,var(--a,var(--ar-sec)) 18%,#1A191D),#1A191D 62%)!important}
+/* dark: a neutral sheet (a vivid colour mixed into near-black turns maroon, brown or navy); the colour is the spine, the
+   avatar field, the tags and the strips */
+@A[data-look="dark"] .ar-sheet{background:linear-gradient(160deg,#222127,#1A191D 62%)!important}
 /* slanted type tags */
 @A .ar-ty{position:relative;isolation:isolate;display:inline-block;font:700 14px/1.3 var(--ar-body);padding:3px 10px;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-ty::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--t);transform:skewX(var(--ar-slant));border-radius:3px}
