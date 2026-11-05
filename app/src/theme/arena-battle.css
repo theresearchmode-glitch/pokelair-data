@@ -980,3 +980,5 @@
 @A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm thead th{vertical-align:top!important}
 @A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm th>img.ar-dmimg{z-index:2}
 @A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm th .ar-dmf{z-index:0}
+/* the headline's numbers are part of the headline (the line rule for spans must not reach inside it) */
+@A:not(#arcw) [data-pane="calc"] .dcstick .dcstx>b *{font:inherit!important;font-size:inherit!important;color:inherit!important;letter-spacing:inherit!important}
