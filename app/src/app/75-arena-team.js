@@ -61,7 +61,7 @@ ARB.nbIn = els => els.forEach(e => { const n = [...e.childNodes].find(x => x.nod
 ARB.fit = (el, min) => { if (!el || !el.clientWidth) return; el.style.removeProperty('font-size'); let f = parseFloat(getComputedStyle(el).fontSize), n = 0;
   while (el.scrollWidth > el.clientWidth + 1 && f > min && n++ < 16) { f -= 1; el.style.setProperty('font-size', f + 'px', 'important'); } };
 /* a Pokémon name inside a team title ("Sun with Mega Charizard Y and Trick Room") keeps its form letter with it */
-ARB.nbTitle = t => String(t).replace(/\b(Mega \S+|Charizard|Mewtwo|Raichu) ([XY])\b/g, '$1 $2').replace(/ \(([FMfm])\)/g, ' ($1)');
+ARB.nbTitle = t => String(t).replace(/\b(Mega \S+|Charizard|Mewtwo|Raichu) ([XY])\b/g, '$1 $2').replace(/ \(([FMfm])\)/g, ' ($1)').replace(/ (and|or|vs) (?=\S)/g, ' $1 ');
 /* icon-only Mega, box and catch chips spelled out as quiet tags (the info sheet does the same) */
 ARB.marks = root => root && root.querySelectorAll('.tag.ico').forEach(e => { e.classList.remove('ico'); e.classList.add('ar-mark');
   e.textContent = e.classList.contains('box') ? 'In your box' : e.classList.contains('mega') ? 'Mega' : e.classList.contains('catch') ? 'To catch' : e.textContent; });

@@ -761,13 +761,7 @@
 @A [data-pane="report"] .chparts table .gnm{display:block;font-size:14px;line-height:1.2;color:var(--ar-ink-2);max-width:72px;margin:2px auto 0;overflow-wrap:anywhere}
 @A [data-pane="report"] .chparts .m{display:inline-grid!important;place-items:center;min-width:34px;height:26px;padding:0 5px!important;border:0!important;border-radius:4px!important;font:700 14px/1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important}
 @A [data-pane="report"] .chparts .m:empty{min-width:0;padding:0!important}
-@A [data-pane="report"] .chparts .m.m2{background:color-mix(in oklch,var(--ar-pink) 26%,var(--ar-sheet))!important}
-@A [data-pane="report"] .chparts .m.m4{background:var(--ar-pink-plate)!important;color:#fff!important}
-@A [data-pane="report"] .chparts .m:is(.mh,.mq){background:color-mix(in oklch,var(--ar-green) 22%,var(--ar-sheet))!important}
-@A [data-pane="report"] .chparts .m.m0{background:color-mix(in oklch,var(--ar-blue) 22%,var(--ar-sheet))!important}
-@A[data-look="dark"] [data-pane="report"] .chparts .m.m2{background:color-mix(in oklab,var(--ar-pink) 34%,#24232A)!important}
-@A[data-look="dark"] [data-pane="report"] .chparts .m:is(.mh,.mq){background:color-mix(in oklab,var(--ar-green) 30%,#24232A)!important}
-@A[data-look="dark"] [data-pane="report"] .chparts .m.m0{background:color-mix(in oklab,var(--ar-blue) 34%,#24232A)!important}
+@A [data-pane="report"] .chparts .m.m4{color:#fff!important}
 @A [data-pane="report"] .chparts .net{font-weight:700!important}
 @A [data-pane="report"] .chparts .net.pos{color:var(--ar-green-ink)!important}
 @A [data-pane="report"] .chparts .net.neg{color:var(--ar-pink-ink)!important}
@@ -874,7 +868,6 @@
 
 /* ======================= review B fixes ======================= */
 /* M2: the app's Dark type colour is a brown: its tags take the arena Dark (#5E5068) */
-@A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty:is([style*="#5f4536"],[style*="#5F4536"]){--tc:#5E5068!important}
 /* M2: trade-off chips in dark: a neutral chip with a gold edge (a gold mixed into near-black reads brown) */
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill){padding-left:13px!important}
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill)::before{background:linear-gradient(var(--ar-gold),var(--ar-gold)) 0 0/4px 100% no-repeat,#2A2930}
@@ -1035,5 +1028,45 @@
 @A:not(#arbw) :is([data-pane="report"],[data-pane="coverage"],#chEdit,#chScout) :is(table th,.chleg,.chleg i){font-size:15px!important}
 @A:not(#arbw) [data-pane="coverage"] .plan :is(ul li,ul li b){font-size:15px!important;line-height:1.45!important}
 @A:not(#arbw) #chEdit .mvset .caret{font-size:15px!important}
+/* F15 (phone): one type tag: the older .ty chips on these pages draw as AR.tag (.ar-ty): the raw type colour on the slanted
+   tag, white or ink text by contrast, no icon; dark keeps the neutral tag with the type edge */
+@A:not(#arbw) :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty{color:#fff!important;padding:2px 10px!important}
+@A:not(#arbw) :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty.lt{color:#16141A!important}
+@A:not(#arbw) :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty::before{background:var(--tc)!important}
+@A:not(#arbw) :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty svg{display:none!important}
+@A:not(#arbw)[data-look="dark"] :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty{color:#fff!important;padding-left:13px!important}
+@A:not(#arbw)[data-look="dark"] :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty::before{background:linear-gradient(var(--tc),var(--tc)) 0 0/5px 100% no-repeat,#2A2930!important}
+/* the status tags (.sev): the slanted neutral tag with the status colour as its edge, ink text */
+@A:not(#arbw) :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev{--sc:var(--ar-blue);color:var(--ar-ink)!important;padding:2px 10px 2px 15px!important;background:none!important;border:0!important;box-shadow:none!important}
+@A:not(#arbw) :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) :is(.sev.hi,.sev.bad){--sc:var(--ar-pink)}
+@A:not(#arbw) :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev.mid{--sc:var(--ar-gold)}
+@A:not(#arbw) :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev.ok{--sc:var(--ar-green)}
+@A:not(#arbw) :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev.lo{--sc:var(--ar-ink-3)}
+@A:not(#arbw) :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:3px!important;
+  background:linear-gradient(var(--sc),var(--sc)) 0 0/5px 100% no-repeat,color-mix(in oklch,var(--ar-ink) 7%,var(--ar-sheet))!important}
+@A:not(#arbw)[data-look="dark"] :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev::before{background:linear-gradient(var(--sc),var(--sc)) 0 0/5px 100% no-repeat,#2A2930!important}
+/* dark editor move strips: neutral graphite with the move-type edge only (a Fire or Ground wash into graphite reads brown) */
+@A[data-look="dark"]:not(#arbw) #chEdit .mvset::before{background:linear-gradient(var(--tc,var(--ar-sec)),var(--tc,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,#2A2930,#1E1D22)!important}
+/* P-N8: Fix it's "Why? 13 reasons": open, the count leaves no hole (the chevron follows "Why?"), and the reasons sit in the fold
+   body on the paper (no paper-2 panel), each with a small slanted blue tick */
+@A:not(#arbw) [data-pane="report"] .chwhy[open]>summary .n{display:none!important}
+@A:not(#arbw) [data-pane="report"] .chwhy>ul{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;margin:6px 0 0!important;padding:4px 0 0 4px!important;list-style:none!important;display:grid;gap:10px}
+@A:not(#arbw) [data-pane="report"] .chwhy>ul>li{position:relative;padding-left:22px!important;list-style:none!important}
+@A:not(#arbw) [data-pane="report"] .chwhy>ul>li::before{content:"";position:absolute;left:3px;top:.32em;width:7px;height:13px;background:var(--ar-blue);transform:skewX(var(--ar-slant));border-radius:2px}
+@A:not(#arbw) [data-pane="report"] .chwhy>ul>li::marker{content:none}
+/* P-F17: editor fields match the system field baseline (dark #1E1D22); the fixed Mega stone is the same field, marked by a lock
+   tag (not a flat grey box) */
+@A[data-look="dark"] #chEdit .field{background:#1E1D22!important}
+@A:not(#arbw) #chEdit .itfixed{position:relative;display:flex!important;align-items:center;gap:10px;min-height:48px;padding:0 14px!important;border:0!important;border-radius:var(--ar-r-m)!important;
+  background:var(--ar-sheet)!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A[data-look="dark"]:not(#arbw) #chEdit .itfixed{background:#1E1D22!important}
+@A:not(#arbw) #chEdit .itfixed::after{content:"Locked";margin-left:auto;position:relative;padding:2px 10px 2px 26px;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2);
+  background:no-repeat 9px 50%/12px 13px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 13'><rect x='1' y='5.5' width='10' height='7' rx='1.5' fill='%236B6570'/><path d='M3.5 5.5V4a2.5 2.5 0 0 1 5 0v1.5' fill='none' stroke='%236B6570' stroke-width='1.6'/></svg>"),color-mix(in oklch,var(--ar-ink) 7%,transparent);border-radius:var(--ar-r-s)}
+/* D-F29: one sort control: a "Sort" label, then the segment, left-aligned on its own row (as My box) */
+@A:not(#arbw) [data-pane="teams"] #saved>.head{flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important}
+@A:not(#arbw) [data-pane="teams"] #saved>.head .seg{display:flex!important;align-items:center;flex-wrap:wrap}
+@A:not(#arbw) [data-pane="teams"] #saved>.head .seg::before{content:"Sort";flex:none;margin-right:12px;font:600 var(--ar-fs-small)/1.2 var(--ar-body);color:var(--ar-ink-2)}
+/* D-F24: names under art are left-aligned everywhere (section 28); Log a game's leads no longer centre theirs */
+@A [data-pane="report"] .myrec .qllead>span:not(.arb-f){text-align:left!important;justify-self:start}
 /* F2 (desktop): "Your games": the Close button sits wholly inside the band, below its slanted top edge */
 @media (min-width:1001px){@A [data-pane="report"] .myrec .myrech{align-items:flex-start!important}@A [data-pane="report"] .myrec .myrech>button{margin-top:30px!important}}
