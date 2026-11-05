@@ -197,11 +197,11 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
 
 /* names on the art (dark mode puts them on an ink plate): the plate hugs the longest line, so a two-line name is one tidy
    plate, not a box out to the tile's edge */
-AR.fit = () => { document.querySelectorAll('.ar-art:not(.ar-below) .ar-nm').forEach(n => { const t = n.firstChild; if (!t || t.nodeType !== 3) return;
+AR.fit = all => { document.querySelectorAll(all ? '.ar-art:not(.ar-below) .ar-nm' : '.ar-art:not(.ar-below) .ar-nm:not([style*="--nw"])').forEach(n => { const t = n.firstChild; if (!t || t.nodeType !== 3) return;
   const r = document.createRange(); r.selectNodeContents(n); const L = [...r.getClientRects()]; if (!L.length) return;
   const w = Math.ceil(Math.max(...L.map(x => x.width))), cur = n.style.getPropertyValue('--nw'); if (w > 0 && cur !== w + 'px') n.style.setProperty('--nw', w + 'px'); }); };
-addEventListener('resize', () => { clearTimeout(AR._ft); AR._ft = setTimeout(AR.fit, 120); });
-try { document.fonts.ready.then(() => AR.fit()); } catch (e) {}
+addEventListener('resize', () => { clearTimeout(AR._ft); AR._ft = setTimeout(() => AR.fit(1), 120); });
+try { document.fonts.ready.then(() => AR.fit(1)); } catch (e) {}
 
 /* ======================= Info sheet: the hero ======================= */
 /* a diagonal type band with the Pokémon breaking out of it and the sheet's one speed-line burst; the rating as a big numeral and
