@@ -58,11 +58,11 @@
 @A .ar-home .wkhome{margin-top:40px}
 @A #homeOut.ar-on .wnew{background:var(--ar-sheet)!important;border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-l)!important;margin-top:32px!important}
 /* the rest of Home (ratings, tools, folds) in arena dress */
-@A #homeOut.ar-on>:is(.chpad,.chhtop,.chhtools,.chfolds){margin-left:var(--ar-gutter)!important;margin-right:var(--ar-gutter)!important}
-@A #homeOut.ar-on>.chhtop,@A #homeOut.ar-on>.chhtools{background:none!important;padding:0!important;margin-top:48px!important;border:0!important}
+@A #homeOut.ar-on>:is(.chpad,.chhtop,.chfolds){margin-left:var(--ar-gutter)!important;margin-right:var(--ar-gutter)!important}
+@A #homeOut.ar-on>.chhtop{background:none!important;padding:0!important;margin-top:48px!important;border:0!important}
 @A #homeOut.ar-on :is(.chhtop,.chhtools)>.chk{order:0;font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:8px 0 0!important}
-@A #homeOut.ar-on :is(.chhtop,.chhtools)>h3{order:-1;display:flex;align-items:flex-end;gap:12px;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;margin:0!important}
-@A #homeOut.ar-on :is(.chhtop,.chhtools)>h3::before{content:"";width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
+@A #homeOut.ar-on :is(.chhtop,.chhtools)>h3{order:-1;display:block;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;margin:0!important}
+@A #homeOut.ar-on :is(.chhtop,.chhtools)>h3::before{content:"";display:inline-block;vertical-align:-3px;margin-right:12px;width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
 @A #homeOut.ar-on :is(.chhtop,.chhtools)>h3 .hl{color:inherit!important;background:none!important;box-shadow:none!important;padding:0!important}
 @A #homeOut.ar-on .hpick{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:16px 0 4px}
 @A #homeOut.ar-on .hpick .t2{font-size:15px!important;color:var(--ar-ink-2)!important;margin:0}
@@ -84,20 +84,28 @@
 @A #homeOut.ar-on .hmini .hmrk{font-style:normal;font-size:15px!important;color:var(--ar-ink-2)!important}
 @A #homeOut.ar-on .chhtop>.linkbtn{margin-top:8px}
 /* all tools: menu strips, each edged in the colour of the section it opens */
-@A #homeOut.ar-on .htiles{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin-top:16px;padding-left:6px}
-@A #homeOut.ar-on .htile{grid-column:auto!important;position:relative;isolation:isolate;display:grid!important;grid-template-columns:28px minmax(0,1fr);column-gap:12px;align-items:center;min-height:56px;padding:8px 16px 8px 22px!important;
-  background:none!important;border:0!important;box-shadow:none!important;text-align:left;--edge:var(--ar-sec)}
-@A #homeOut.ar-on .htile::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
-  background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge) 16%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 5%,var(--ar-sheet)) 70%)}
-@A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)}
-@A #homeOut.ar-on .htile>svg{grid-row:1/3;width:24px;height:24px;color:var(--edge)!important}
-@A #homeOut.ar-on .htile b{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
-@A #homeOut.ar-on .htile :is(.hsd,.hld){font-size:15px!important;color:var(--ar-ink-2)!important}
-@A #homeOut.ar-on .htile:is([data-view="auto"],[data-view="cores"]){--edge:var(--ar-gold)}
-@A #homeOut.ar-on .htile:is([data-view="report"],[data-view="coverage"],[data-view="teams"],[data-view="compare"],[data-view="box"]){--edge:var(--ar-blue)}
-@A #homeOut.ar-on .htile:is([data-view="matchup"],[data-view="practice"],[data-view="gauntlet"],[data-view="speed"],[data-view="calc"],[data-view="types"]){--edge:var(--ar-orange)}
-@A #homeOut.ar-on .htile:is([data-view="weekly"],[data-view="ratings"],[data-view="meta"],[data-view="sets"],[data-view="top"],[data-view="events"],[data-view="arch"],[data-view="track"],[data-view="method"]){--edge:var(--ar-purple)}
-@A #homeOut.ar-on .chhtools .npmore{margin-top:14px!important}
+/* all tools: Home's tool grid, high on the page (moved up under the hero by 74-arena.js). Game-menu tiles: a slanted paper
+   tile edged in the colour of the section it opens, the icon in that colour, the name, its one line. 2 columns on phones,
+   3 on tablets, 4 on desktop. Every tile is the app's own button (data-view), so each opens exactly what it did. */
+@A #homeOut.ar-on .ar-home>.chhtools{margin:56px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A #homeOut.ar-on .htiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px 14px!important;margin-top:18px;padding:0 4px 0 6px}
+@A #homeOut.ar-on .htile,@A #homeOut.ar-on .htile[hidden]{grid-column:auto!important;position:relative;isolation:isolate;display:grid!important;grid-template-columns:26px minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:10px;row-gap:6px;align-items:center;align-content:start;
+  min-height:96px;padding:14px 12px 14px 20px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left;--edge:var(--ar-sec)}
+@A #homeOut.ar-on .htile::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklch,var(--edge) 22%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 6%,var(--ar-sheet)) 75%)!important}
+@A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklab,var(--edge) 22%,#24232A),#1E1D22 75%)!important}
+@A #homeOut.ar-on .htile::after{display:none!important}
+@A #homeOut.ar-on .htile>svg{grid-row:1;grid-column:1;width:24px!important;height:24px!important;color:var(--edge-ink,var(--edge))!important;stroke:currentColor!important}
+@A #homeOut.ar-on .htile b{grid-row:1;grid-column:2;font:italic 800 17px/1.15 var(--ar-display)!important;font-stretch:108%!important;color:var(--ar-ink)!important}
+@A #homeOut.ar-on .htile :is(.hsd,.hld){grid-row:2;grid-column:1/-1;align-self:start;font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A #homeOut.ar-on .htile:active::before{translate:0 1px}
+@media (hover:hover){@A #homeOut.ar-on .htile:hover::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklch,var(--edge) 32%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 10%,var(--ar-sheet)) 75%)!important}}
+/* all eleven are on show, so the "All 11 tools" reveal button has nothing left to reveal */
+@A #homeOut.ar-on .chhtools .npmore{display:none!important}
+@A #homeOut.ar-on .htile:is([data-view="auto"],[data-view="cores"]){--edge:var(--ar-gold);--edge-ink:var(--ar-gold-ink)}
+@A #homeOut.ar-on .htile:is([data-view="report"],[data-view="coverage"],[data-view="teams"],[data-view="compare"],[data-view="box"]){--edge:var(--ar-blue);--edge-ink:var(--ar-blue-ink)}
+@A #homeOut.ar-on .htile:is([data-view="matchup"],[data-view="practice"],[data-view="gauntlet"],[data-view="speed"],[data-view="calc"],[data-view="types"]){--edge:var(--ar-orange);--edge-ink:var(--ar-orange-ink)}
+@A #homeOut.ar-on .htile:is([data-view="weekly"],[data-view="ratings"],[data-view="meta"],[data-view="sets"],[data-view="top"],[data-view="events"],[data-view="arch"],[data-view="track"],[data-view="method"]){--edge:var(--ar-purple);--edge-ink:var(--ar-purple-ink)}
 
 /* ---------- folds (Home's "More on Home", My team's folds): a slanted strip you tap, the body upright under it ---------- */
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:14px}
@@ -146,10 +154,12 @@
   @A .ar-side .ar-art .ar-nm{font-size:18px}
   @A .ar-ev{font-size:20px}
   @A .ar-gameplan{font-size:16px}
-  @A #homeOut.ar-on>:is(.chpad,.chhtop,.chhtools,.chfolds){margin-left:0!important;margin-right:0!important}
-  @A #homeOut.ar-on>.chhtop,@A #homeOut.ar-on>.chhtools{margin-top:72px!important}
+  @A #homeOut.ar-on>:is(.chpad,.chhtop,.chfolds){margin-left:0!important;margin-right:0!important}
+  @A #homeOut.ar-on>.chhtop{margin-top:72px!important}
+  @A #homeOut.ar-on .ar-home>.chhtools{margin-top:64px!important}
   @A #homeOut.ar-on .hrow{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:40px!important}
-  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px 18px!important}
+  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px 22px!important}
+  @A #homeOut.ar-on .htile{min-height:108px;padding:16px 16px 16px 24px!important}
 }
 @media (min-width:600px) and (max-width:1000px){
   @A .ar-hero{height:420px}
@@ -161,7 +171,7 @@
   @A .ar-tools .ar-btn.ar-primary{grid-column:auto}
   @A .ar-side .ar-art.ar-m{--h:140px;--s:146px;--lift:16px}
   @A #homeOut.ar-on .hrow{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:32px!important}
-  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 
 /* ---------- My team ---------- */

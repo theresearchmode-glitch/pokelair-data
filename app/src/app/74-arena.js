@@ -84,8 +84,10 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
     <div class="ar-deck-side"><div class="ar-runners">${ru.map(runner).join('')}</div><p class="ar-caption">${esc(MG.srcLine())}</p>${tools}</div></div>
     <div class="ar-versus">${them}${them ? '<div class="ar-vs" aria-hidden="true"><span class="ar-num ar-mp">vs</span></div>' : ''}${you}</div></div>`;
   out.insertAdjacentHTML('afterbegin', html); out.classList.add('ar-on');
+  /* All 11 tools (Sim, Nov 5: "a very big part of our site") moves up, right under the hero and the three main buttons */
+  const home = out.querySelector('.ar-home'), tl = out.querySelector(':scope > .chhtools'); if (tl) home.querySelector('.ar-deck').after(tl);
   /* the weekly teaser lives in the old phone column (hidden now): it moves under the two sixes */
-  const wk = out.querySelector('.chmh .wkhome'); if (wk) out.querySelector('.ar-home').append(wk); };
+  const wk = out.querySelector('.chmh .wkhome'); if (wk) home.append(wk); };
 CH.wrap('renderHome', () => AR.home());
 
 /* ======================= My team ======================= */
