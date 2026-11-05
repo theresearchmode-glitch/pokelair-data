@@ -909,3 +909,5 @@
 @A .ar-mpg #lairBody .ltile .lts.dash{font:italic 900 26px/1 var(--ar-display)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #aboutOut :is(.abtlic,.abtlicense){font-size:var(--ar-fs-small)!important;line-height:1.5}
 @A .ar-mpg #aboutOut pre.abtlicense{white-space:pre-wrap;color:var(--ar-ink-2)!important;font-family:var(--ar-body)!important}
+@A .ar-mpg #wkOut .wkhead .wdrow.wdin{grid-template-columns:minmax(84px,auto) max-content max-content!important;column-gap:16px!important}
+@media (max-width:399px){@A .ar-mpg #wkOut .wkhead .wdrow.wdin{grid-template-columns:max-content max-content!important;row-gap:0}@A .ar-mpg #wkOut .wkhead .wdrow.wdin>.wdl{grid-column:1/-1}}
