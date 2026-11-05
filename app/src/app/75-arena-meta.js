@@ -41,11 +41,6 @@ ARM.run = () => { ARM.mark(); const roots = document.querySelectorAll(ARM.SCOPE)
     r.querySelectorAll(':is(.ltype,.lflag,.dbdt,.ttmon):not(.ar-chip)').forEach(b => b.classList.add('ar-chip'));
     r.querySelectorAll(':is(button.btn,button.chghost,button.sdcopy):not(.ar-btn):not(.chprimary)').forEach(b => b.classList.add('ar-btn'));
     r.querySelectorAll(':is(button.linkbtn,button.nplink):not(.ar-link):not(.rzmorebtn)').forEach(b => b.classList.add('ar-link')); });
-  /* one head order on every Meta sub-page: the page switcher ("Winning teams / Events / Archetypes", "Rating / Usage / Sets")
-     sits above the title, as on Ratings and Archetypes (Winning teams and Events drew it under the lede). The node is moved,
-     not redrawn, so its buttons and handlers stay. */
-  ARM.PANES.forEach(v => { const pane = document.querySelector(`.view[data-pane="${v}"]`); if (!pane) return;
-    pane.querySelectorAll('.seg.teamsw').forEach(sw => { let h = sw.previousElementSibling; while (h && !h.classList.contains('chpghead')) h = h.previousElementSibling; if (h) h.before(sw); }); });
   /* the one main action on a Meta page ("Share this week"): the yellow strip with the arena go disc, as on every other page */
   document.querySelectorAll(`${ARM.PANES.map(v => `[data-pane="${v}"]`).join(',')}`).forEach(p => p.querySelectorAll('button.chprimary:not(.ar-primary)').forEach(b => { b.classList.add('ar-btn', 'ar-primary');
     b.querySelectorAll(':scope > span[aria-hidden="true"]').forEach(s => { if (/[➜→›]/.test(s.textContent)) s.hidden = true; }); if (!b.querySelector('.ar-go')) b.insertAdjacentHTML('beforeend', AR.ICON.go); }));

@@ -940,6 +940,9 @@
 @A[data-look="dark"]:not(#amw) .ar-mpg #aboutOut pre.abtlicense{background:#1A191D!important}
 /* F22 (phone): no glows: "Tied for #1!" and the tier board's labels carry no text shadow */
 @A:not(#amw) .ar-mpg #chHot .chpen,@A:not(#amw) .ar-mpg #lairBody .ltile .ltf .ltg,@A:not(#amw) .ar-mpg #lairBody .ltier .ltl span{text-shadow:none!important}
+/* F9 (desktop): one head order on every Meta sub-page: the page switcher sits above the title (Winning teams and Events draw
+   it under the head). Done with order in the flex section, so no node moves and nothing shifts after a redraw. */
+@A:not(#amw) .ar-mpg section.chpg>.seg.teamsw{order:-1}
 /* F18 (desktop): the Pokémon / Tournaments tabs: the focus ring is a rounded ring around the word, not a square upright box */
 @A:not(#amw) .ar-mpg>.subnav>.sub:focus-visible{outline:3px solid var(--ar-focus)!important;outline-offset:2px!important;border-radius:var(--ar-r-s)!important}
 @A:not(#amw) .ar-mpg>.subnav>.sub:focus:not(:focus-visible){outline:none!important}
