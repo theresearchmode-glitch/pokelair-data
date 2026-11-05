@@ -270,9 +270,9 @@
     font:600 17px/1 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important}
   @A nav.tabs.mgtabs [role=tab]::after{content:none!important;display:none!important}
   @A nav.tabs.mgtabs [role=tab][aria-selected="true"]{color:var(--ar-sec-on)!important;font-weight:700!important}
-  @A nav.tabs.mgtabs [role=tab][aria-selected="true"]::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:8px!important;box-shadow:var(--ar-shadow-s)}
+  @A nav.tabs.mgtabs [role=tab][aria-selected="true"]::before{content:""!important;position:absolute;inset:0;z-index:-1;opacity:1!important;background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant));border-radius:8px!important;box-shadow:var(--ar-shadow-s)}
   @A nav.tabs.mgtabs [role=tab] .tc{background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;color:inherit!important;border:0!important;border-radius:var(--ar-r-s)!important;font:700 13px/1 var(--ar-body)!important;padding:3px 6px!important}
-  @A nav.tabs.mgtabs [role=tab][aria-selected="true"] .tc{background:rgba(255,255,255,.22)!important}
+  @A nav.tabs.mgtabs [role=tab][aria-selected="true"] .tc{background:rgba(0,0,0,.28)!important;color:#fff!important}
   @media (hover:hover){@A nav.tabs.mgtabs [role=tab]:not([aria-selected="true"]):hover{color:var(--ar-ink)!important}}
 }
 
@@ -318,6 +318,8 @@
 @A main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.chprimary):not(.mgyel):not(#saveBtn){
   border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-m)!important;background-color:var(--ar-sheet)!important}
 @A[data-look="dark"] main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.chprimary):not(.mgyel):not(#saveBtn){background-color:#24232A!important}
+/* without their frames a few small old controls lost a pixel or two: they keep a full tap size */
+@A main :is(.typebtn,.dbdt){min-width:44px!important;min-height:44px!important}
 /* the old caption-box headings and page-title strips: no frame, no dot field */
 @A :is(.mgtdots,.mgdots,.mgdiv){display:none!important}
 @A .mgtitle::before{background:none!important}

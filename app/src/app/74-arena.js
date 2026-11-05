@@ -118,7 +118,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats">${rec}${chk}${leg}</div>`; }
-  else stats = `<div class="ar-tstats"><p class="ar-lede">Add your six and NastyPlot scouts the top 30 threats for you.</p></div>`;
+  else stats = '';
   /* the stage: all six as equal art tiles (no roles on the art), the game plan line under them */
   let stage = '';
   if (ms.length) { const L = AR.lineup(ms), ord = [...L.lead, ...L.back, ...L.bench], sel = ui.rzSet;
@@ -126,7 +126,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : '(team order)') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
-  else stage = `<div class="ar-empty"><span class="ar-empty-art" aria-hidden="true">${(CH.metaSix()[0] && sprite(CH.metaSix()[0])) || ''}</span><div><p>No Pokémon yet. Add your first, or let NastyPlot build six from real winning teams.</p>
+  else stage = `<div class="ar-empty"><span class="ar-empty-art" aria-hidden="true">${(CH.metaSix()[0] && sprite(CH.metaSix()[0])) || ''}</span><div><p>Add your six and NastyPlot scouts the top 30 threats for you. Start with one, or let NastyPlot build six from real winning teams.</p>
     <div class="ar-acts"><button type="button" class="ar-btn ar-primary" data-chedit="0"><span>Add your first Pokémon</span>${AR.ICON.go}</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div></div>`;
   const sec = document.createElement('section'); sec.className = 'ar-team'; sec.setAttribute('aria-label', 'My team');
   sec.innerHTML = `<div class="ar-thead"><p class="ar-kick">My team: <b>${ms.length} of 6</b>${wx}</p><div class="ar-titlerow"><div class="ar-h1 ar-tname" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>${score}</div></div>
