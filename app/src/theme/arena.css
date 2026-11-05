@@ -338,11 +338,11 @@
   background-color:var(--ar-paper-2)!important;border-radius:var(--ar-r-l)!important}
 @A[data-look="dark"] :where(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){background-color:var(--ar-paper-2)!important}
 /* the old raised secondary buttons: a soft lift, no flat colour offset, no ink frame */
-@A main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.ar-seg>button):not(.chprimary):not(.mgyel):not(#saveBtn){
+@A main :where(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(:where(.ar-btn,.ar-chip,.ar-seg>button,.chprimary,.mgyel,#saveBtn)){
   border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-m)!important;background-color:var(--ar-sheet)!important}
-@A[data-look="dark"] main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.ar-seg>button):not(.chprimary):not(.mgyel):not(#saveBtn){background-color:#24232A!important}
+@A[data-look="dark"] main :where(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(:where(.ar-btn,.ar-chip,.ar-seg>button,.chprimary,.mgyel,#saveBtn)){background-color:#24232A!important}
 /* without their frames a few small old controls lost a pixel or two: they keep a full tap size */
-@A main :is(.typebtn,.dbdt){min-width:44px!important;min-height:44px!important}
+@A main :where(.typebtn,.dbdt){min-width:44px!important;min-height:44px!important}
 /* the old caption-box headings and page-title strips: no frame, no dot field */
 @A :is(.mgtdots,.mgdots,.mgdiv){display:none!important}
 @A .mgtitle::before{background:none!important}
