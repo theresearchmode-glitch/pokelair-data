@@ -341,7 +341,7 @@
 @A .ar-mpg #setOut .sbchips{display:flex!important;flex-wrap:wrap;gap:6px 16px}
 @A .ar-mpg #setOut .sbchip{padding:0!important;background:none!important;border:0!important;box-shadow:none!important;font:500 16px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #setOut .sbchip.top{font-weight:700!important;color:var(--ar-ink)!important}
-@A .ar-mpg #setOut .sbchip em{font-style:normal;color:var(--ar-ink-2);font-weight:500}
+@A .ar-mpg #setOut .sbchip em{font-style:normal;color:var(--ar-ink-2);font-weight:500;font-size:15px!important}
 @A .ar-mpg #setOut .stms{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px 12px!important;margin-top:4px}
 @A .ar-mpg #setOut .stm{--h:66px;--s:90px;--lift:14px}
 @A .ar-mpg #setOut .stm>span{font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
@@ -820,4 +820,4 @@
   @A .ar-mpg #setOut .sethead>img.spr.big{width:116px!important;height:116px!important}
   @A .ar-mpg #setOut .sethead .sl-name{font-size:min(28px,7vw)!important;overflow-wrap:normal}
   @A .ar-mpg #setOut .sethead .tag.tier{grid-column:1/-1;margin-top:6px}}
-@media (max-width:1000px){@A .ar-mpg #trackOut .trstats b{font-size:min(34px,8vw)!important;white-space:nowrap}}
+@media (max-width:1000px){@A .ar-mpg #trackOut .trstats{grid-template-columns:1.4fr 1fr 1fr!important}@A .ar-mpg #trackOut .trstats b{font-size:min(34px,6.6vw)!important;white-space:nowrap}}
