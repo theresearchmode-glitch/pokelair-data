@@ -1,0 +1,227 @@
+/* =====================================================================================================================
+   Champions arena, phase 2 group D: the Meta pages (purple). Ratings, Usage, Popular sets, Winning teams, Events, Archetypes,
+   This week, Track record, How we calculate, About and legal, Home's weekly teaser, and the info sheet's Meta and Rating tabs.
+   Built from the components in arena.css (ARENA.md); this file only lays them out on the app's own markup.
+   Scope: every rule starts at .ar-mpg (the ten Meta views, marked by 75-arena-meta.js), #lairSheet .lstp-meta / .lstp-rating,
+   or #homeOut .wkhome. 75-arena-meta.js puts each Pokémon's arena colours on its row or tile (--a, --b, and --da, --db for the
+   dark-mode field) and marks Megas (.ar-ismega); the old --ta / --tb are the fallback.
+   ===================================================================================================================== */
+
+/* ---------- 1. the page head every Meta view shares ---------- */
+@A .ar-mpg{--fa:color-mix(in oklch,var(--a,var(--ta,var(--ar-sec))) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--tb,var(--a,var(--ta,var(--ar-sec))))) var(--ar-field-mix),var(--ar-sheet))}
+@A[data-look="dark"] .ar-mpg{--fa:var(--da,oklch(from var(--ta,var(--ar-sec)) .56 calc(c * .9) h));--fb:var(--db,var(--da,oklch(from var(--tb,var(--ta,var(--ar-sec))) .56 calc(c * .9) h)))}
+/* the field colours follow the element that carries the Pokémon's colours (custom properties resolve where they are used) */
+@A .ar-mpg :is([data-arm],.tyacc,[style*="--ta"]){--fa:color-mix(in oklch,var(--a,var(--ta)) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--tb,var(--a,var(--ta)))) var(--ar-field-mix),var(--ar-sheet))}
+@A[data-look="dark"] .ar-mpg :is([data-arm],.tyacc,[style*="--ta"]){--fa:var(--da,oklch(from var(--ta) .56 calc(c * .9) h));--fb:var(--db,var(--da,oklch(from var(--tb,var(--ta)) .56 calc(c * .9) h)))}
+
+@A .ar-mpg>.subnav{margin:6px 0 2px!important;padding-left:4px!important;border:0!important;background:none!important;box-shadow:none!important}
+@A .ar-mpg>.subnav::after{display:none!important}
+@A .ar-mpg section>.seg.teamsw{margin:14px 0 0!important}
+@A .ar-mpg .chpghead{margin:26px 0 8px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg .chpghead .mgtitle{display:flex;flex-direction:column;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg .chpghead .mgtitle::before,@A .ar-mpg .chpghead .mgtstroke{display:none!important}
+@A .ar-mpg .chpghead .chpgt{order:1;display:flex!important;align-items:flex-end;gap:14px;margin:0!important;font:italic 800 min(var(--ar-fs-h1),10.6vw)/1.02 var(--ar-display)!important;font-stretch:120%!important;letter-spacing:-.015em!important;color:var(--ar-ink)!important;text-wrap:balance}
+@A .ar-mpg .chpghead .chpgt::before{content:"";flex:none;width:30px;height:30px;margin-bottom:.12em;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A .ar-mpg .chpghead .chpgt .tipq{align-self:center;margin-left:0}
+@A .ar-mpg .chpghead .mgtitle>.chk{order:2;display:block!important;margin:10px 0 0!important;font:500 var(--ar-fs-small)/1.4 var(--ar-body)!important;color:var(--ar-ink-2)!important;letter-spacing:0!important;text-transform:none!important}
+@A .ar-mpg .chpghead .mgtitle>.chk::before{display:none!important}
+@A .ar-mpg .chpghead .chpgs,@A .ar-mpg .npmeth .chpgs{margin:10px 0 0!important;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg .head{margin:0 0 4px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg .head p.hint,@A .ar-mpg .head .hint{font:500 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:68ch}
+@A .ar-mpg :is(.t2,.hint){color:var(--ar-ink-2)}
+@A .ar-mpg .mgdiv{display:none!important}
+/* the "x events / y online" numbers line (Events, This week, How we calculate): stat numerals, no rules between */
+@A .ar-mpg .wdstats .wdc b{font:italic 900 22px/1 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.02em;color:var(--ar-ink)!important}
+@A .ar-mpg .wdstats .wdc small{font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg .wdstats .wdc{border:0!important;box-shadow:none!important}
+@A .ar-mpg .wdstats .wdl{font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+/* search fields: arena field (arena.css section 16), full width up to a readable size */
+@A .ar-mpg :is(.lsearch,.chmetaq,#tsBox,.cb){max-width:520px}
+@A .ar-mpg .clrw .field{min-height:48px!important;font-size:16px!important;padding-left:14px!important}
+
+/* ---------- 2. folds on the Meta pages: phase 1's slanted strip you tap, the body upright under it ---------- */
+@A .ar-mpg details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:16px!important}
+@A .ar-mpg details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:60px;padding:10px 16px 10px 22px!important;margin-left:6px;
+  background:none!important;border:0!important;box-shadow:none!important;cursor:pointer;list-style:none}
+@A .ar-mpg details.chsec>summary::-webkit-details-marker{display:none}
+@A .ar-mpg details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important;width:auto!important;height:auto!important;opacity:1!important}
+@A[data-look="dark"] .ar-mpg details.chsec>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A .ar-mpg details.chsec>summary .cht{display:block;font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;text-transform:none!important}
+@A .ar-mpg details.chsec>summary .cht::before,@A .ar-mpg details.chsec>summary .cht::after{display:none!important}
+@A .ar-mpg details.chsec>summary .chs{font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:3px!important}
+@A .ar-mpg details.chsec>summary .chtog{color:var(--ar-sec-ink)!important;flex:none}
+@A .ar-mpg details.chsec>summary .chtog svg{color:var(--ar-sec-ink)!important}
+@A .ar-mpg details.chsec>.chbody{padding:20px 4px 8px!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg .rzmorebtn{color:var(--ar-sec-ink)!important;font-weight:600!important;text-decoration:underline;text-underline-offset:3px;background:none!important;border:0!important;box-shadow:none!important}
+
+/* ---------- 3. Pokémon ratings ---------- */
+/* the controls: search, type chips (the type icon keeps its colour), filters */
+@A .ar-mpg #lair .lctl{margin-top:28px!important;gap:12px}
+@A .ar-mpg #lair :is(.ltypes,.lflags){display:flex!important;flex-wrap:wrap;gap:10px 10px!important;margin:16px 0 0!important;padding:0 0 0 4px!important;background:none!important;border:0!important}
+@A .ar-mpg #lair .ltype{padding:0 14px 0 12px!important}
+@A .ar-mpg #lair .ltype .tic{width:16px!important;height:16px!important;flex:none}
+@A .ar-mpg #lair .lcount{margin-top:10px!important;font-size:15px!important}
+/* "About the ratings": the four numbers as stat numerals */
+@A .ar-mpg #lairHero{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:18px 16px;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:18px!important}
+@A .ar-mpg #lairHero .lhstat{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A .ar-mpg #lairHero .lhstat b{display:block;font:italic 900 34px/1 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important}
+@A .ar-mpg #lairHero .lhstat span{display:block;margin-top:6px;font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg #lairHero details.lhsrc{grid-column:1/-1;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A .ar-mpg #lairHero details.lhsrc>summary{min-height:44px;display:flex;align-items:center;font:600 16px var(--ar-body);color:var(--ar-sec-ink);cursor:pointer}
+@A .ar-mpg #lairHero details.lhsrc li{font-size:15px;line-height:1.45;color:var(--ar-ink-2);margin:6px 0}
+@A .ar-mpg #lair .chbody p{font-size:15px!important;line-height:1.5;color:var(--ar-ink-2)!important;max-width:68ch}
+
+/* tier heads: a slanted section plate holding the tier letter, then the band in display italic */
+@A .ar-mpg #chHot{margin-top:34px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A .ar-mpg #chHot .chhothead{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 18px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #chHot :is(.chtier,.chtier.sm){position:relative;isolation:isolate;display:grid!important;place-items:center;flex:none;width:44px!important;height:44px!important;margin:0 4px 0 0!important;padding:0!important;
+  font:italic 900 26px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+@A .ar-mpg #chHot :is(.chtier,.chtier.sm)::before{content:""!important;position:absolute;inset:0;z-index:-1;display:block!important;background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);width:auto!important;height:auto!important}
+@A .ar-mpg #chHot :is(.chtier,.chtier.sm)::after{display:none!important}
+@A .ar-mpg #chHot .chhothead>.chk,@A .ar-mpg #chHot .chtierdiv>.chk{flex:1 1 160px;font:600 16px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
+@A .ar-mpg #chHot .chhothead .chpen{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-sec-ink)!important}
+@A .ar-mpg #chHot .chtierdiv{grid-column:1/-1;display:flex!important;align-items:center;gap:12px;margin:34px 0 8px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #chHot .chhothead::before,@A .ar-mpg #chHot .chtierdiv::before,@A .ar-mpg #chHot .chhothead::after,@A .ar-mpg #chHot .chtierdiv::after{display:none!important}
+
+/* the top two: the page's hero. Each Pokémon on a slanted type field on the right, breaking out of its top edge; the rating
+   as a big numeral and everything else on paper to its left (never text on the field). S tier keeps its foil, inside the field. */
+@A .ar-mpg #chHot .chhot2{display:grid!important;grid-template-columns:1fr!important;gap:18px!important;margin:0 0 10px!important;background:none!important;border:0!important;padding:0!important}
+@A .ar-mpg #chHot .chhot.mgrh{position:relative;isolation:isolate;display:block!important;height:236px;min-height:0!important;padding:0!important;margin:0!important;overflow:visible!important;
+  background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;outline:0!important;border-radius:0!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
+@A .ar-mpg #chHot .chhot.mgrh::before{display:none!important}
+@A .ar-mpg #chHot .chhot.mgrh::after{display:none!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgin{position:absolute!important;inset:40px 3% 6px 46%!important;z-index:-1!important;display:block!important;overflow:hidden!important;border-radius:var(--ar-r-l)!important;transform:skewX(var(--ar-slant));
+  background:linear-gradient(in oklch 125deg,var(--fa) 10%,var(--fb) 90%)!important;box-shadow:var(--ar-shadow)!important;opacity:1!important;filter:none!important;mask:none!important;-webkit-mask:none!important;clip-path:none!important}
+@A[data-look="dark"] .ar-mpg #chHot .chhot.mgrh .mgin{background:linear-gradient(in oklab 125deg,var(--fa) 10%,var(--fb) 90%)!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgin>*{display:none!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgin::before{content:"";position:absolute;left:0;right:0;top:0;height:62%;pointer-events:none;
+  background:linear-gradient(118deg,transparent 0 46%,rgba(255,255,255,.42) 46% 53%,transparent 53% 58%,rgba(255,255,255,.26) 58% 61%,transparent 61% 66%,rgba(255,255,255,.18) 66% 67.5%,transparent 67.5%);
+  -webkit-mask:linear-gradient(#000 55%,transparent);mask:linear-gradient(#000 55%,transparent)}
+@A[data-look="dark"] .ar-mpg #chHot .chhot.mgrh .mgin::before{opacity:.55}
+/* S tier: the trading-card foil (66-extras-a.js feeds --hx, --hy), hue only, inside the field */
+@A .ar-mpg #chHot .chhot.mgrh.nps .mgin::after{content:"";position:absolute;inset:-60%;pointer-events:none;
+  background:repeating-linear-gradient(115deg,transparent 0 70px,#ff4f8b 86px,#ffb400 100px,#46e0a2 114px,#3fa9ff 128px,#b45cff 142px,transparent 158px 250px);
+  mix-blend-mode:color;opacity:.32;translate:calc((var(--hx,.5) - .5) * -30%) calc((var(--hy,.5) - .5) * -30%)}
+@media (prefers-reduced-motion:no-preference){@A .ar-mpg #chHot .chhot.mgrh.nps .mgin::after{transition:translate .35s cubic-bezier(.2,.7,.3,1)}
+  @supports (animation-timeline:view()){@A .ar-mpg #chHot .chhot.mgrh.nps .mgin::after{animation:np-foil linear both;animation-timeline:view()}}}
+@A .ar-mpg #chHot .chhot.mgrh .mgrmon{position:absolute!important;right:2%;top:-6px;left:auto!important;bottom:auto!important;width:172px!important;height:172px!important;z-index:1;display:block!important;margin:0!important;transform:none!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgrmon :is(img,svg){position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;margin:0!important;transform:none!important;background:none!important;border-radius:0!important;
+  filter:drop-shadow(0 14px 12px rgba(40,10,50,.26))}
+@A .ar-mpg #chHot .chhot.mgrh.ar-ismega .mgrmon img{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a)) drop-shadow(0 14px 12px rgba(40,10,50,.26))}
+@A .ar-mpg #chHot .chhot.mgrh .n.mgmis{position:relative!important;display:block;margin:2px 0 0 2px!important;padding:0!important;font:italic 900 76px/.9 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em!important;
+  color:var(--ar-ink)!important;text-shadow:.05em .04em 0 var(--ar-misprint)!important;background:none!important;-webkit-text-stroke:0!important}
+@A .ar-mpg #chHot .chhot.mgrh .n.mgmis::before,@A .ar-mpg #chHot .chhot.mgrh .n.mgmis::after{display:none!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgcap.mgrcap{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:32px;max-width:54%;margin:12px 0 0 4px!important;padding:2px 12px!important;
+  font:600 15px/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;transform:none!important;white-space:normal}
+@A .ar-mpg #chHot .chhot.mgrh .mgcap.mgrcap::before{content:""!important;position:absolute;inset:0;z-index:-1;display:block!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(in oklch 100deg,oklch(from var(--a,var(--ar-sec-plate)) .44 c h),oklch(from var(--b,var(--a,var(--ar-sec-plate))) .44 c h))!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgcap.mgrcap::after{display:none!important}
+@A .ar-mpg #chHot .chhot.mgrh .nm{display:block;max-width:46%;margin:12px 0 0 2px!important;font:italic 800 22px/1.08 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;padding:0!important;overflow-wrap:anywhere}
+@A .ar-mpg #chHot .chhot.mgrh .mgrst{display:flex!important;flex-direction:column;gap:1px;max-width:46%;margin:6px 0 0 2px!important;background:none!important;padding:0!important;box-shadow:none!important;border:0!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgrrow{display:block!important;font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;padding:0!important;box-shadow:none!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgrrow :is(b,.wrv){color:var(--ar-ink)!important;font-weight:700!important}
+@A .ar-mpg #chHot .chhot.mgrh .mgrrow .mgrrow{display:block!important}
+@A .ar-mpg #chHot .chhot.mgrh .basis{color:var(--ar-ink-2)!important;font-size:15px!important}
+@media (hover:hover){@A .ar-mpg #chHot .chhot.mgrh:hover .mgin{transform:skewX(var(--ar-slant)) translateY(-2px)}}
+@media (prefers-reduced-motion:no-preference){@A .ar-mpg #chHot .chhot.mgrh .mgin{transition:transform .16s ease-out}}
+
+/* the hot rows: typographic rows (rank, sprite on a small slanted type field, name and line, a slim bar, the rating) */
+@A .ar-mpg #chHot .chhotrows{display:grid!important;grid-template-columns:1fr!important;gap:0!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A .ar-mpg #chHot .chhr{position:relative;isolation:isolate;display:grid!important;grid-template-columns:40px 72px minmax(0,1fr) auto;grid-template-rows:auto;align-items:center;column-gap:10px;min-height:76px;width:100%;padding:10px 0!important;margin:0!important;
+  background:none!important;background-image:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
+@A .ar-mpg #chHot .chhr::before{content:""!important;position:absolute!important;left:54px!important;top:50%!important;right:auto!important;bottom:auto!important;width:58px!important;height:42px!important;margin-top:-14px!important;z-index:-1;display:block!important;opacity:1!important;
+  transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-s)!important;background:linear-gradient(in oklch 125deg,var(--fa),var(--fb))!important;box-shadow:none!important}
+@A[data-look="dark"] .ar-mpg #chHot .chhr::before{background:linear-gradient(in oklab 125deg,var(--fa),var(--fb))!important}
+@A .ar-mpg #chHot .chhr::after{display:none!important}
+@A .ar-mpg #chHot .chhr .rk{grid-column:1;font:italic 900 19px/1 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink-2)!important;background:none!important;text-align:right;padding:0!important}
+@A .ar-mpg #chHot .chhr>img.spr{grid-column:2;position:relative!important;width:64px!important;height:64px!important;margin:-16px 0 0 4px!important;background:none!important;border-radius:0!important;filter:drop-shadow(0 4px 4px rgba(30,10,40,.2))}
+@A .ar-mpg #chHot .chhr.ar-ismega>img.spr{filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b,var(--a))) drop-shadow(0 2px 0 var(--b,var(--a))) drop-shadow(0 -2px 0 var(--a))}
+@A .ar-mpg #chHot .chhr .chbd{grid-column:3;min-width:0;display:flex;flex-direction:column;gap:2px}
+@A .ar-mpg #chHot .chhr .chbd>b{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A .ar-mpg #chHot .chhr .chbd>span{font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg #chHot .chhr .chbd .wrv{color:var(--ar-ink)!important;font-weight:700!important}
+@A .ar-mpg .dbbar{display:block!important;height:7px!important;margin-top:5px!important;max-width:220px;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:2px!important;overflow:hidden;border:0!important;box-shadow:none!important}
+@A .ar-mpg .dbbar>em{display:block;height:100%!important;background:linear-gradient(90deg,var(--a,var(--ta,var(--ar-sec))),var(--b,var(--tb,var(--a,var(--ar-sec)))))!important;border-radius:2px!important}
+@A .ar-mpg #chHot .chhr .sc{grid-column:4;font:italic 900 34px/.9 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em!important;color:var(--ar-ink)!important;background:none!important;-webkit-text-stroke:0!important;text-shadow:none!important;padding:0 2px 0 6px!important}
+
+/* the tier board ("Every Pokémon, by tier"): per tier a slanted plate with the letter, the band's line, then typographic rows */
+@A .ar-mpg #lairBody .lnote{display:block!important;font:500 15px/1.4 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:0 0 18px!important}
+@A .ar-mpg #lairBody .lnote .lng{display:inline-flex;align-items:center;gap:6px;margin-right:2px;white-space:nowrap}
+@A .ar-mpg #lairBody .lboard{display:grid!important;gap:30px!important;background:none!important;border:0!important;padding:0!important}
+@A .ar-mpg #lairBody .ltier{position:relative;display:grid!important;grid-template-columns:52px minmax(0,1fr);column-gap:14px;align-items:start;padding:0!important;margin:0!important;
+  background:none!important;border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
+@A .ar-mpg #lairBody .ltier::after,@A .ar-mpg #lairBody .ltier::before{display:none!important}
+@A .ar-mpg #lairBody .ltier .ltl{position:sticky;top:12px;isolation:isolate;overflow:hidden;display:flex!important;flex-direction:column;align-items:center;justify-content:center;width:52px!important;height:64px!important;padding:0!important;margin:2px 0 0!important;
+  background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A .ar-mpg #lairBody .ltier .ltl::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)}
+@A .ar-mpg #lairBody .ltier.nps .ltl::after{content:"";position:absolute;inset:-60%;z-index:-1;pointer-events:none;
+  background:repeating-linear-gradient(115deg,transparent 0 30px,#ff4f8b 38px,#ffb400 44px,#46e0a2 50px,#3fa9ff 56px,#b45cff 62px,transparent 70px 110px);mix-blend-mode:color;opacity:.5;translate:calc((var(--hx,.5) - .5) * -30%) calc((var(--hy,.5) - .5) * -30%)}
+@A .ar-mpg #lairBody .ltier .ltl b{font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+@A .ar-mpg #lairBody .ltier .ltl span{font:600 14px/1.2 var(--ar-body)!important;color:#fff!important;margin-top:3px;text-shadow:none!important}
+@A .ar-mpg #lairBody .ltbody{min-width:0;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #lairBody .ltd{font:italic 800 19px/1.2 var(--ar-display)!important;font-stretch:110%!important;color:var(--ar-ink)!important;padding:4px 0 6px!important;margin:0!important;border:0!important;background:none!important}
+@A .ar-mpg #lairBody .ltgrid{display:grid!important;grid-template-columns:1fr!important;gap:0!important;padding:0!important;margin:0!important}
+@A .ar-mpg #lairBody .ltile{position:relative;isolation:isolate;display:grid!important;grid-template-columns:66px minmax(0,1fr) auto;grid-template-rows:auto;align-items:center;column-gap:12px;min-height:60px;width:100%;padding:6px 2px 6px 0!important;margin:0!important;
+  background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;color:var(--ar-ink)!important;text-align:left;cursor:pointer;overflow:visible!important}
+@A .ar-mpg #lairBody .ltile::before,@A .ar-mpg #lairBody .ltile::after{display:none!important}
+@A .ar-mpg #lairBody .ltile .ltf{grid-row:1;grid-column:1;position:relative!important;inset:auto!important;display:block!important;width:56px!important;height:36px!important;margin:10px 0 0 6px!important;padding:0!important;
+  transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;background:linear-gradient(in oklch 125deg,var(--fa),var(--fb))!important;border:0!important;box-shadow:none!important}
+@A[data-look="dark"] .ar-mpg #lairBody .ltile .ltf{background:linear-gradient(in oklab 125deg,var(--fa),var(--fb))!important}
+@A .ar-mpg #lairBody .ltile>img.ltspr{grid-row:1;grid-column:1;position:relative!important;inset:auto!important;justify-self:center;align-self:end;width:52px!important;height:52px!important;margin:0 0 2px 4px!important;transform:none!important;z-index:1;filter:drop-shadow(0 3px 3px rgba(30,10,40,.2))}
+@A .ar-mpg #lairBody .ltile.ar-ismega>img.ltspr{filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b,var(--a))) drop-shadow(0 1.5px 0 var(--b,var(--a))) drop-shadow(0 -1.5px 0 var(--a))}
+@A .ar-mpg #lairBody .ltile .ltf :is(.ltm,.ltg,.ltb){position:absolute!important;transform:skewX(var(--ar-unslant))}
+@A .ar-mpg #lairBody .ltile .ltf .ltm{display:none!important}
+@A .ar-mpg #lairBody .ltile .ltf .ltg{left:-4px!important;top:-6px!important;width:auto!important;height:auto!important;font-size:12px!important;color:var(--ar-ink)!important;background:var(--ar-sheet)!important;border-radius:3px!important;padding:1px 3px!important;line-height:1!important}
+@A .ar-mpg #lairBody .ltile .ltf .ltb{right:-3px!important;left:auto!important;bottom:-3px!important;top:auto!important;width:10px!important;height:10px!important;border-radius:50%!important;background:var(--ar-blue)!important;border:2px solid var(--ar-paper)!important;box-shadow:none!important}
+@A .ar-mpg #lairBody .ltile :is(.ltn,.ltn.sm,.ltn.xs){grid-row:1;grid-column:2;position:static!important;display:block!important;font:700 16px/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;background:none!important;padding:0!important;margin:0!important;text-align:left!important;text-shadow:none!important;-webkit-text-stroke:0!important;align-self:center!important;top:auto!important;left:auto!important;bottom:auto!important;transform:none!important}
+@A .ar-mpg #lairBody .ltile.ar-ismega .ltn::before{content:"Mega ";font-weight:700}
+@A .ar-mpg #lairBody .ltile .lts{grid-row:1;grid-column:3;position:static!important;align-self:center!important;transform:none!important;font:italic 900 26px/1 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em!important;color:var(--ar-ink)!important;
+  background:none!important;border:0!important;box-shadow:none!important;padding:0!important;text-shadow:none!important;width:auto!important;height:auto!important;min-width:0!important}
+@A .ar-mpg #lairBody .ltile.unsure .lts{color:var(--ar-ink-2)!important}
+@A .ar-mpg #lairBody .ltile.unsure .lts::after{content:"?";font-size:.6em;margin-left:2px}
+@A .ar-mpg #lairBody .ltile.more{display:flex!important;align-items:center;min-height:48px;padding:0 2px!important;border-bottom:0!important;font:600 16px var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@media (min-width:600px){
+  @A .ar-mpg #chHot .chhot2{grid-template-columns:1fr 1fr!important;gap:24px!important}
+  @A .ar-mpg #chHot .chhotrows{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:36px!important}
+  @A .ar-mpg #lairBody .ltgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:28px!important}
+}
+@media (min-width:600px) and (max-width:1000px){@A .ar-mpg #chHot .chhot.mgrh .mgrmon{width:150px!important;height:150px!important;top:10px}@A .ar-mpg #chHot .chhot.mgrh .n.mgmis{font-size:64px!important}}
+@media (min-width:1001px){
+  @A .ar-mpg #chHot .chhot.mgrh{height:300px}
+  @A .ar-mpg #chHot .chhot.mgrh .mgin{inset:46px 2% 8px 42%!important}
+  @A .ar-mpg #chHot .chhot.mgrh .mgrmon{width:clamp(200px,19vw,268px)!important;height:clamp(200px,19vw,268px)!important;right:3%;top:-14px}
+  @A .ar-mpg #chHot .chhot.mgrh .n.mgmis{font-size:clamp(84px,8vw,112px)!important}
+  @A .ar-mpg #chHot .chhot.mgrh .nm{font-size:28px!important}
+  @A .ar-mpg #chHot .chhot.mgrh .mgcap.mgrcap{font-size:16px!important}
+  @A .ar-mpg #chHot .chhotrows{column-gap:56px!important}
+  @A .ar-mpg #lairBody .ltgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:32px!important}
+  @A .ar-mpg #lairBody .ltier{grid-template-columns:64px minmax(0,1fr);column-gap:20px}
+  @A .ar-mpg #lairBody .ltier .ltl{width:60px!important;height:72px!important}
+}
+
+/* ratings: the hidden board / map switch stays hidden (style.css), the links row, the type chips scroll sideways on phones */
+@A .ar-mpg #lair .lmodes{display:none!important}
+@A .ar-mpg :is(.nplinks,.nprow){display:flex!important;flex-wrap:wrap;gap:4px 22px;margin:14px 0 0!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #lair>.seg.teamsw{margin-top:10px!important}
+@A .ar-mpg #lair details.chfold{margin-top:22px!important}
+@media (max-width:1000px){
+  @A .ar-mpg #lair .ltypes{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin-left:calc(-1 * var(--ar-gutter))!important;margin-right:calc(-1 * var(--ar-gutter))!important;padding:6px var(--ar-gutter) 10px calc(var(--ar-gutter) + 4px)!important}
+  @A .ar-mpg #lair .ltypes::-webkit-scrollbar{display:none}
+  @A .ar-mpg #lair .lflags{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;margin-left:calc(-1 * var(--ar-gutter))!important;margin-right:calc(-1 * var(--ar-gutter))!important;padding:6px var(--ar-gutter) 10px calc(var(--ar-gutter) + 4px)!important;margin-top:4px!important}
+  @A .ar-mpg #lair .lflags::-webkit-scrollbar{display:none}
+}
+/* the Meta sub-sections (Pokémon, Tournaments): the level above the page's own tabs, so they read as section words, not
+   chips: italic display, the open one in ink over a slanted purple bar, the other in ink-2 */
+@A .ar-mpg>.subnav{display:flex!important;gap:4px 22px!important;margin:4px 0 0!important;padding:0 0 0 2px!important;overflow:visible!important}
+@A .ar-mpg>.subnav>.sub:not(#_m1):not(#_m2){position:relative;display:inline-flex!important;align-items:center;min-height:48px!important;padding:0 2px!important;margin:0!important;font:italic 800 21px/1 var(--ar-display)!important;font-stretch:112%!important;
+  color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;opacity:1!important}
+@A .ar-mpg>.subnav>.sub::before{content:none!important;display:none!important}
+@A .ar-mpg>.subnav>.sub[aria-selected="true"]{color:var(--ar-ink)!important}
+@A .ar-mpg>.subnav>.sub[aria-selected="true"]::after{content:""!important;display:block!important;position:absolute!important;left:2px!important;right:2px!important;bottom:4px!important;top:auto!important;height:5px!important;width:auto!important;
+  background:var(--ar-sec)!important;transform:skewX(-24deg);border-radius:2px!important;opacity:1!important}
+@A .ar-mpg>.subnav>.sub:not([aria-selected="true"])::after{display:none!important}
+@media (hover:hover){@A .ar-mpg>.subnav>.sub:not([aria-selected="true"]):hover{color:var(--ar-ink)!important}}
+/* arena.css section 19 gives the old .seg buttons a sheet fill and shadow on the element itself; under .ar-seg the shape is the
+   ::before layer, so the element stays clear (two ids to beat that rule's :not(#saveBtn)) */
+@A .ar-mpg .ar-seg>button:not(#_m1):not(#_m2){background:none!important;box-shadow:none!important}
