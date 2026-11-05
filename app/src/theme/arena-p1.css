@@ -763,3 +763,15 @@
   text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;cursor:pointer}
 /* Sim (Nov 5): no champion's six on the phone Home (tablet and PC keep it); the winning teams stay one tap away in Meta, Events */
 @media (max-width:599px){@A #homeOut section[aria-labelledby="arChamp"]{display:none!important}}
+/* Sim (Nov 5): Top of the meta on the phone Home shows the top 5 (All ratings has the rest) */
+@media (max-width:599px){@A #homeOut .chhtop .hrow>.hmini:nth-child(n+6){display:none!important}}
+/* the footer's sources sit in a "Sources and credits" fold */
+@A footer.legal .lgsrcd{margin:4px 0 0}
+@A footer.legal .lgsrcd>summary{display:inline-flex;align-items:center;min-height:44px;cursor:pointer;list-style:none;font:600 15px/1.2 var(--ar-body);color:var(--ar-sec-ink);
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@A footer.legal .lgsrcd>summary::-webkit-details-marker{display:none}
+@A footer.legal .lgsrcd>summary::after{content:"";width:8px;height:8px;margin-left:10px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px)}
+@A footer.legal .lgsrcd[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
+@A footer.legal .lgsrcd .lgsrcin{margin:4px 0 8px!important}
+@A footer.legal p.lgsrc:not(.lgsrcin){margin:0!important}
+@media (min-width:1001px){@A footer.legal .lgsrcd>summary{font-size:16px}}

@@ -84,9 +84,13 @@ const WHATS_NEW = {id: '2026-10-28b', items: [
   ['Feedback', 'Tell us what\'s off with the Feedback button at the bottom of any page.']]};
 function whatsNewCard() { let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
   if (!welcomed) { try { LS.set('cc2.seenNew', WHATS_NEW.id); } catch (e) {} return ''; }
-  if (seen === WHATS_NEW.id) return '';
+  // shown for the visit right after an update only (Sim, Nov 5): the first Home of that visit marks it seen, and it stays for
+  // the rest of that visit (sessionStorage), then it's gone until the next update
+  let sess = ''; try { sess = sessionStorage.getItem('np.wnew') || ''; } catch (e) {}
+  if (seen === WHATS_NEW.id && sess !== WHATS_NEW.id) return '';
+  try { LS.set('cc2.seenNew', WHATS_NEW.id); sessionStorage.setItem('np.wnew', WHATS_NEW.id); } catch (e) {}
   // a one-line fold: the list opens on tap (Oct 29, so Home fits in about three phone screens)
   return `<details class="wnew" id="wnewCard"><summary class="wnh"><span class="wk">What's new</span><span class="wns">${WHATS_NEW.items.length} updates: ${WHATS_NEW.items.slice(0, 2).map(([t]) => esc(t)).join(', ')}…</span><button type="button" class="fbx" data-wnewx="1" aria-label="Dismiss">×</button></summary>
     <ul>${WHATS_NEW.items.map(([t, d]) => `<li><b>${esc(t)}</b> <span>${esc(d)}</span></li>`).join('')}</ul></details>`; }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-wnewx]'); if (!b) return; e.preventDefault();
-  try { LS.set('cc2.seenNew', WHATS_NEW.id); } catch (er) {} const c = $('wnewCard'); if (c) c.remove(); });
+  try { LS.set('cc2.seenNew', WHATS_NEW.id); sessionStorage.removeItem('np.wnew'); } catch (er) {} const c = $('wnewCard'); if (c) c.remove(); });
