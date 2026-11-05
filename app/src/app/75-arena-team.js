@@ -42,4 +42,15 @@ CH.wrap('renderCompare', () => ARB.compare());
 ARB.recs = () => { document.querySelectorAll('#recList .addcard .rtop img.spr, #sugs .plan .swap img.spr').forEach(i => ARB.mini(i, 'arb-lg')); };
 CH.wrap('renderRecs', () => ARB.recs()); CH.wrap('renderPlans', () => ARB.recs());
 
+/* ===== the overlays: the editor's strip and set card, the threat sheet, Log a game (they redraw often, so one watcher) ===== */
+ARB.field = (el, p) => { if (!el || !p || el.querySelector(':scope > .arb-f')) return; el.style.cssText += ';' + AR.tv(p); if (AR.isMega(p)) el.classList.add('is-mega');
+  el.insertAdjacentHTML('afterbegin', '<span class="arb-f ar-field" aria-hidden="true"></span>'); };
+ARB.overlays = () => { const ed = $('chEdit');
+  if (ed && !ed.hidden) { ed.querySelectorAll('.chst').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img'))));
+    ed.querySelectorAll('.tcard .thead > img.tspr').forEach(i => ARB.mini(i, 'arb-xl')); }
+  const sc = $('chScout'); if (sc && !sc.hidden) sc.querySelectorAll('.chdet img.spr, .chrowx img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
+  document.querySelectorAll('.myrec .qlog .logpick, .myrec .qlog [data-qllead]').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img')))); };
+{ let q = false; const run = () => { q = false; try { ARB.overlays(); } catch (e) {} };
+  new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']}); }
+
 if (window.__PL_TEST) window.__ARB = {setView: v => setView(v), edit: i => chEditOpen(i), scout: n => chScoutOpen(n), share: () => openShareCard(), members: () => members(), S: () => S, ARB};

@@ -216,10 +216,10 @@
 @A [data-pane="compare"] .cxpick>.row{display:flex;gap:12px;margin-top:4px}
 @A [data-pane="compare"] .cxpaste{min-height:132px;width:100%}
 /* small type fields behind sprites in lists (picker rows, threat chips) */
-@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,[data-pane="report"]) .arb-mf{position:relative;display:inline-block;flex:none;width:30px;height:24px;vertical-align:middle}
-@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,[data-pane="report"]) .arb-mf-f{position:absolute;inset:4px 1px 0;transform:skewX(var(--ar-slant));border-radius:3px!important}
-@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,[data-pane="report"]) .arb-mf img{position:absolute!important;left:50%;bottom:-1px;width:34px!important;height:34px!important;max-width:none;margin:0!important;transform:translateX(-50%)}
-@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,[data-pane="report"]) .arb-mf.is-mega img{filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b,var(--a)))}
+@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) .arb-mf{position:relative;display:inline-block;flex:none;width:30px;height:24px;vertical-align:middle}
+@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) .arb-mf-f{position:absolute;inset:4px 1px 0;transform:skewX(var(--ar-slant));border-radius:3px!important}
+@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) .arb-mf img{position:absolute!important;left:50%;bottom:-1px;width:34px!important;height:34px!important;max-width:none;margin:0!important;transform:translateX(-50%)}
+@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) .arb-mf.is-mega img{filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b,var(--a)))}
 /* what's different */
 @A [data-pane="compare"] .cxsum{margin:26px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="compare"] .cxsum>.chk{display:flex;align-items:flex-end;gap:12px;margin:0 0 10px!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:-.01em!important}
@@ -398,5 +398,118 @@
 /* sentence case for the older generated labels: the plan settings "Edit / Done" cue and the best plan's tag */
 @A [data-pane="coverage"] .plset>summary::after{font:600 15px/1 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px}
 @A [data-pane="coverage"] #sugs .plan{position:relative}
-@A [data-pane="coverage"] #sugs .plan:first-child::before{content:"Best fit"!important;top:18px!important;right:0!important;padding:2px 10px!important;font:700 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:#16141A!important;background:var(--ar-gold-plate)!important;clip-path:none!important;transform:skewX(var(--ar-slant));border-radius:3px}
+@A [data-pane="coverage"] #sugs .plan:first-child::before{content:"Best fit"!important;top:18px!important;right:0!important;padding:2px 10px!important;font:700 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:#16141A!important;background:var(--ar-gold-plate)!important;clip-path:none!important;border-radius:3px}
 @A [data-pane="coverage"] #sugs .plan:first-child .ph{padding-right:96px!important}
+
+/* ---------- the team editor and Edit set (#chEdit): a sheet that rises from the bottom (a centred dialog on desktop); the six as
+   small art tiles to switch between; the set as the cut-corner sheet washed in its types, the moves as battle-menu strips ---------- */
+@A #chEdit.chedit{background:var(--ar-sheet)!important;color:var(--ar-ink);border:0!important;border-radius:var(--ar-r-xl) var(--ar-r-xl) 0 0!important;box-shadow:var(--ar-shadow-nav)!important;padding:0 16px!important;backdrop-filter:none!important}
+@A #chEditScrim:not([hidden]){background:color-mix(in srgb,var(--ar-paper) 88%,transparent)!important;backdrop-filter:none!important}
+@A #chEdit .chedh{display:flex!important;align-items:center;gap:12px;padding:16px 2px 10px!important;margin:0!important;background:none!important;border:0!important}
+@A #chEdit .chedh b{flex:1;min-width:0;font:italic 800 26px/1.05 var(--ar-display)!important;font-stretch:115%!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--ar-ink)!important;overflow-wrap:break-word}
+@A #chEdit #chEditDone{position:relative;isolation:isolate;flex:none;min-height:44px!important;min-width:88px;padding:0 20px!important;font:700 var(--ar-fs-body)/1 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important}
+@A #chEdit #chEditDone::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;background:var(--ar-blue-plate)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);width:auto!important;height:auto!important}
+/* the six: small type fields with the sprite; the one being edited takes the yellow ring */
+@A #chEdit .chedstrip{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px!important;padding:6px 6px 14px!important;margin:0!important;border:0!important;background:none!important}
+@A #chEdit .chst{all:unset;box-sizing:border-box;position:relative;isolation:isolate;display:grid!important;place-items:end center;height:58px!important;padding:0 0 2px!important;cursor:pointer;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A #chEdit .chst .arb-f{position:absolute;inset:14px 2px 0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)}
+@A #chEdit .chst img{position:relative;width:50px!important;height:50px!important;object-fit:contain;margin:0!important;filter:drop-shadow(0 4px 4px rgba(30,10,40,.2))}
+@A #chEdit .chst.is-mega img{filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b,var(--a))) drop-shadow(0 4px 4px rgba(30,10,40,.2))}
+@A #chEdit .chst.on .arb-f{box-shadow:0 0 0 3px var(--ar-yellow),var(--ar-shadow-s)}
+@A #chEdit .chst.on::after{content:"";position:absolute;left:50%;top:-4px;margin-left:-9px;width:18px;height:13px;background:var(--ar-yellow);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 1.5px 0 #16141A);z-index:2}
+@A #chEdit .chst.add{place-items:center;color:var(--ar-sec-ink)!important;font:700 26px/1 var(--ar-body)!important}
+@A #chEdit .chst.add::before{content:"";position:absolute;inset:14px 2px 0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);background:color-mix(in oklch,var(--ar-ink) 7%,transparent)}
+@A #chEdit .chst.add span{padding-top:12px}
+@A #chEdit .chst:focus-visible{outline-offset:2px!important}
+@A #chEdit.chadd .chst{height:46px!important}
+@A #chEdit.chadd .chst img{width:40px!important;height:40px!important}
+@A #chEdit .chedb{padding-top:6px!important;background:none!important}
+@A #chEdit #team{background:none!important;border:0!important;padding:0!important;box-shadow:none!important}
+@A #chEdit .slots{gap:22px!important;background:none!important}
+/* the set: the cut-corner sheet in the Pokémon's types (a spine on the left, the top-right corner cut) */
+@A #chEdit .slot.tcard{--a:var(--t1);--b:var(--t2,var(--t1));position:relative;padding:0!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:none!important;overflow:visible!important;color:var(--ar-ink);
+  clip-path:polygon(0 0,calc(100% - 30px) 0,100% 30px,100% 100%,0 100%);
+  background:linear-gradient(in oklch 160deg,color-mix(in oklch,var(--a) 18%,var(--ar-paper-2)),color-mix(in oklch,var(--b) 10%,var(--ar-paper-2)) 50%,var(--ar-paper-2) 80%)!important}
+@A[data-look="dark"] #chEdit .slot.tcard{background:linear-gradient(in oklab 160deg,color-mix(in oklab,var(--a) 22%,#121114),#121114 62%)!important}
+@A #chEdit .slot.tcard::before{content:""!important;display:block!important;position:absolute!important;left:0;top:0;bottom:0;width:8px;z-index:3;background:linear-gradient(in oklch 180deg,var(--a),var(--b))!important;border:0!important;border-radius:0!important;transform:none!important}
+@A #chEdit .slot.tcard::after{content:none!important}
+@A #chEdit .thead{display:grid!important;grid-template-columns:minmax(0,1fr) 116px;grid-template-rows:auto auto auto auto 1fr;column-gap:12px;min-height:0!important;padding:16px 18px 12px 26px!important;background:none!important}
+@A #chEdit .thead>.trow{grid-column:1/-1;display:flex!important;align-items:center;gap:10px;margin:0 30px 0 0!important;padding:0!important;background:none!important;border:0!important}
+@A #chEdit .thead .tnum{font:600 15px/1 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important;text-shadow:none!important}
+@A #chEdit .thead .tnum::before{content:"Slot "}
+@A #chEdit .thead .arb-mf.arb-xl{grid-column:2;grid-row:2/6;align-self:start;position:relative!important;width:112px;height:92px;margin-top:4px}
+@A #chEdit .thead .arb-mf.arb-xl .arb-mf-f{inset:22px 4px 0;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)}
+@A #chEdit .thead .arb-mf.arb-xl img{position:absolute!important;left:50%!important;right:auto!important;top:auto!important;bottom:-6px;width:118px!important;height:118px!important;transform:translateX(-50%)!important;filter:drop-shadow(0 8px 6px rgba(30,10,40,.22))}
+@A #chEdit .thead .arb-mf.arb-xl.is-mega img{filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b,var(--a))) drop-shadow(0 2px 0 var(--b,var(--a))) drop-shadow(0 -2px 0 var(--a)) drop-shadow(0 8px 6px rgba(30,10,40,.22))}
+@A #chEdit .thead>img.tspr{position:static!important;grid-column:2;grid-row:2/6;width:112px!important;height:112px!important}
+@A #chEdit .thead .sl-name{grid-column:1;display:block;margin:10px 0 0!important;padding:0!important;font:italic 800 28px/1.02 var(--ar-display)!important;font-stretch:115%!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--ar-ink)!important;overflow-wrap:break-word;text-wrap:balance}
+@A #chEdit .thead .sl-sub{grid-column:1;display:flex!important;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:10px 0 0!important;padding:0!important}
+@A #chEdit .thead .tuse{grid-column:1;display:flex!important;align-items:center;gap:10px;margin:12px 0 0!important;padding:0!important}
+@A #chEdit .thead .tbar{flex:0 1 120px;height:10px!important;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:3px!important;overflow:hidden;border:0!important}
+@A #chEdit .thead .tbar i{display:block;height:100%;width:var(--w);background:var(--ar-blue)!important;border-radius:3px!important}
+@A #chEdit .thead .tuse .vsub{font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;white-space:nowrap}
+/* Lock: a chip that fills blue when on; × removes */
+@A #chEdit .lockbtn{position:relative;isolation:isolate;min-height:40px!important;padding:0 14px!important;margin-left:auto!important;font:600 15px/1 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important}
+@A #chEdit .lockbtn::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);background:var(--ar-sheet);box-shadow:var(--ar-shadow-s)}
+@A[data-look="dark"] #chEdit .lockbtn::before{background:#2A2930}
+@A #chEdit .lockbtn[aria-pressed="true"]{color:#fff!important;font-weight:700!important}
+@A #chEdit .lockbtn[aria-pressed="true"]::before{background:var(--ar-blue-plate)}
+@A #chEdit .thead .x{width:44px!important;height:44px!important;display:grid;place-items:center;padding:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;border:0!important;color:var(--ar-ink)!important;opacity:1!important;font:600 20px/1 var(--ar-body)!important}
+/* the set's fields */
+@A #chEdit .slbody{display:grid!important;gap:14px;padding:6px 18px 20px 26px!important;background:none!important}
+@A #chEdit .itemrow{display:grid!important;grid-template-columns:72px minmax(0,1fr);align-items:baseline;gap:4px 10px;padding:0!important;background:none!important;border:0!important;border-radius:0!important;font:500 var(--ar-fs-small)/1.4 var(--ar-body)!important;color:var(--ar-ink)}
+@A #chEdit :is(.itemrow,.lblrow) .lbl{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
+@A #chEdit .itemrow .iname{font-weight:700;color:var(--ar-ink)}
+@A #chEdit .itemrow .ialt,@A #chEdit .itemrow .vsub{font-size:15px!important;color:var(--ar-ink-2)!important}
+@A #chEdit .asm{font:600 14px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;border:0!important;border-radius:var(--ar-r-s)!important;padding:1px 6px!important}
+@A #chEdit .linkbtn{display:inline-flex!important;align-items:center;min-height:44px;padding:0 2px!important;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@A #chEdit .abil{display:grid;gap:6px}
+@A #chEdit .lblrow{display:flex!important;align-items:center;flex-wrap:wrap;gap:8px}
+@A #chEdit .tag.rec{font-size:14px!important}
+@A #chEdit .field{min-height:48px;padding:0 14px!important;font:500 var(--ar-fs-body)/1.3 var(--ar-body)!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important}
+@A[data-look="dark"] #chEdit .field{background:#24232A!important}
+@A #chEdit .field:focus{box-shadow:inset 0 -3px 0 var(--ar-sec)!important}
+@A #chEdit .itfixed{display:flex;align-items:center;min-height:48px;padding:0 14px;font:700 var(--ar-fs-body)/1.3 var(--ar-body);color:var(--ar-ink);background:color-mix(in oklch,var(--ar-ink) 5%,transparent);border-radius:var(--ar-r-m)}
+/* moves: battle-menu strips with the move type's edge; the whole strip opens the move list */
+@A #chEdit .moves{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px!important;padding:0 0 0 6px}
+@A #chEdit .mvset{position:relative;isolation:isolate;display:flex!important;flex-direction:column;justify-content:center;gap:4px;min-height:64px;padding:8px 26px 8px 20px!important;margin:0!important;background:none!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:none!important;outline:0!important}
+@A #chEdit .mvset::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--tc,var(--ar-sec)),var(--tc,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--tc,var(--ar-sec)) 30%,var(--ar-sheet)),color-mix(in oklch,var(--tc,var(--ar-sec)) 10%,var(--ar-sheet)))}
+@A[data-look="dark"] #chEdit .mvset::before{background:linear-gradient(var(--tc,var(--ar-sec)),var(--tc,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklab,var(--tc,var(--ar-sec)) 20%,#24232A),#1E1D22)}
+@A #chEdit .mvset:focus-within::before{box-shadow:0 0 0 3px var(--ar-focus),var(--ar-shadow-s)}
+@A #chEdit .mvset.empty::before{background:color-mix(in oklch,var(--ar-ink) 6%,transparent);box-shadow:none}
+@A #chEdit .mvset .nm{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;white-space:normal!important;overflow:visible!important}
+@A #chEdit .mvset .mi{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0!important;overflow:visible!important;white-space:normal!important}
+@A #chEdit .mvset .mi .ty{padding:1px 8px 1px 7px!important;font-size:13px!important}
+@A #chEdit .mvset .bp{font:500 14px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A #chEdit .mvset .caret{top:50%!important;right:12px!important;margin-top:-8px;font-size:14px!important;color:var(--ar-ink-2)!important}
+/* weak and resists */
+@A #chEdit .slmore{border:0!important;border-top:1px solid var(--ar-rule)!important;padding-top:10px!important;background:none!important}
+@A #chEdit .slmore>summary{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;min-height:44px;font-size:15px!important;color:var(--ar-ink-2)!important}
+@A #chEdit .slmore>summary::after{font:600 15px/1.2 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px}
+@A #chEdit:focus{outline:none!important}
+@A #chEdit .slmore .sumw,@A #chEdit .slmore .chips{display:flex!important;flex-wrap:wrap;gap:6px}
+@A #chEdit .slmore .ty b{font-weight:800;margin-left:2px}
+@A #chEdit .slmore .wr{display:grid;gap:6px}
+@A #chEdit .adesc{font-size:var(--ar-fs-small);line-height:1.45;color:var(--ar-ink-2)}
+@A #chEdit .adesc b{color:var(--ar-ink)}
+@A #chEdit .chedrm{display:flex!important;align-items:center;justify-content:center;width:100%;min-height:48px!important;margin:18px 0 6px!important;font:600 var(--ar-fs-body)/1 var(--ar-body)!important;color:var(--ar-pink-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-decoration:underline;text-underline-offset:4px}
+@A #chEdit .chedrm[hidden]{display:none!important}
+/* adding a Pokémon: the name box */
+@A #chEdit input.field[id^="pk"]{font-size:var(--ar-fs-body)!important}
+@media (min-width:900px){
+  @A #chEdit.chedit{width:min(860px,92vw)!important;border-radius:var(--ar-r-xl)!important;padding:0 24px!important;bottom:24px}
+  @A #chEdit .chedh{padding-top:22px!important}
+  @A #chEdit .chedh b{font-size:32px!important}
+  @A #chEdit .chedstrip{gap:14px!important}
+  @A #chEdit .chst{height:76px!important}
+  @A #chEdit .chst img{width:66px!important;height:66px!important}
+  @A #chEdit .chst .arb-f{inset:20px 4px 0}
+  @A #chEdit .thead{grid-template-columns:minmax(0,1fr) 168px;padding:22px 28px 14px 34px!important}
+  @A #chEdit .thead .arb-mf.arb-xl{width:160px;height:132px}
+  @A #chEdit .thead .arb-mf.arb-xl img{width:168px!important;height:168px!important}
+  @A #chEdit .thead .sl-name{font-size:36px!important}
+  @A #chEdit .slbody{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;padding:8px 28px 26px 34px!important}
+  @A #chEdit .slbody>:is(div:has(>.moves),.slmore){grid-column:1/-1}
+  @A #chEdit .moves{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
