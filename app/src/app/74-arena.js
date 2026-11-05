@@ -9,12 +9,25 @@ AR.TC = Object.assign({}, TC, {Dark: '#5E5068'});
 /* dark-mode field colours (true black): every type at the same vivid chroma, cool and red hues at a mid lightness, the
    orange-to-yellow hues (Fire, Electric, Ground, Rock, Normal...) lighter, because a dark orange or yellow reads brown (Sim:
    no brown fills). --on is the text colour that reads on the first type's dark field (white or ink, whichever is 4.5:1+). */
-AR._d = new Map();
+AR._d = new Map(); AR._k = new Map();
 AR.dark = t => { if (AR._d.has(t)) return AR._d.get(t); let v = TC.Normal;
-  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = h >= 70 && h < 118 ? .76 : h >= 38 && h < 70 ? .64 : .5; v = MG.hex(L, Math.max(Math.min(C, .17), Math.min(C, .05)), H); } catch (e) {}
+  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = h >= 70 && h < 130 ? .76 : h >= 38 && h < 70 ? .64 : .5, c = Math.max(Math.min(C, .17), Math.min(C, .05));
+    v = MG.hex(L, c, H); AR._k.set(t, {L, c, h}); } catch (e) {}
   AR._d.set(t, v); return v; };
-AR.tv = p => { const t = (p && p.t) || ['Normal'], a = t[0], b = t[1] || t[0], da = AR.dark(a);
-  return `--a:${AR.TC[a] || TC.Normal};--b:${AR.TC[b] || TC.Normal};--da:${da};--db:${AR.dark(b)};--on:${1.05 / (AR.lum(da) + .05) >= 4.5 ? '#fff' : '#16141A'}`; };
+/* the middle stop of a dark dual-type field. A straight blend can cross the brown zone (a warm hue, orange to olive, at a mid
+   lightness): Grass to Fairy the short way round passes olive, Ground to Steel through taupe. The middle takes the short way
+   round the hue circle unless that lands in the warm zone, then the long way; a warm middle that is still left is lifted to a
+   light gold or orange (L .72), which never reads brown. */
+AR.mid = (a, b) => { if (a === b) return AR.dark(a); AR.dark(a); AR.dark(b); const A = AR._k.get(a), B = AR._k.get(b); if (!A || !B) return AR.dark(a);
+  const warm = h => { h = (h + 360) % 360; return h >= 30 && h < 135; }, d = ((B.h - A.h + 540) % 360) - 180, h1 = A.h + d / 2, h2 = h1 + 180;
+  let L = (A.L + B.L) / 2, h = !warm(h1) ? h1 : !warm(h2) ? h2 : h1; if (warm(h)) L = Math.max(L, .72);
+  try { return MG.hex(L, Math.max(.1, (A.c + B.c) / 2), (h + 360) % 360); } catch (e) { return AR.dark(a); } };
+AR.tv = p => { const t = (p && p.t) || ['Normal'], a = t[0], b = t[1] || t[0], da = AR.dark(a), db = AR.dark(b);
+  return `--a:${AR.TC[a] || TC.Normal};--b:${AR.TC[b] || TC.Normal};--da:${da};--dm:${AR.mid(a, b)};--db:${db};--on:${AR.on(da)}`; };
+/* the text colour on the first type's dark field: white or ink, whichever has the better contrast. Text on a hero field sits
+   on the first type only (the hero fields hold --da across their text half, then blend to --db behind the sprite) */
+AR.cr = (x, y) => (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
+AR.on = da => { const l = AR.lum(da), w = AR.cr(1, l), k = AR.cr(AR.lum('#16141A'), l); return w >= 4.5 || w >= k ? '#fff' : '#16141A'; };
 /* text on a filled type tag: white where it reaches 4.5:1, ink otherwise */
 AR.lum = h => { const c = [1, 3, 5].map(i => { const v = parseInt(h.slice(i, i + 2), 16) / 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
 AR.onType = t => { const L = AR.lum(AR.TC[t] || TC.Normal); return 1.05 / (L + .05) >= 4.5 ? '#fff' : '#16141A'; };
@@ -27,8 +40,11 @@ AR.spr = (p, cls) => sprite(p, 'ar-spr' + (cls ? ' ' + cls : '')) || '';
 /* one art tile; o: {tag, size, below, name, sub, attrs, sel} */
 AR.art = (p, o = {}) => { const tag = o.tag || 'button', cls = `ar-art ar-${o.size || 'm'}${o.below ? ' ar-below' : ''}${AR.isMega(p) ? ' is-mega' : ''}${o.sel ? ' is-sel' : ''}`;
   return `<${tag} ${tag === 'button' ? 'type="button" ' : ''}class="${cls}" style="${AR.tv(p)}" ${o.attrs || ''}><span class="ar-f ar-field" aria-hidden="true"></span>${AR.spr(p)}${o.sel ? '<span class="ar-cursor" aria-hidden="true"></span>' : ''}`
-    + `<span class="ar-nm">${escName(o.name || p.d)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></${tag}>`; };
-AR.emptyArt = size => `<div class="ar-art ar-${size || 'm'} ar-below is-empty" aria-hidden="true"><span class="ar-f"></span><span class="ar-nm">&nbsp;</span></div>`;
+    + `<span class="ar-nm">${AR.nm(o.name || p.d)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></${tag}>`; };
+/* an open slot: with o.attrs a button (a faint section field, a "+", "Add a Pokémon" under it) that opens what attrs say;
+   without, a quiet placeholder */
+AR.emptyArt = (size, o = {}) => o.attrs ? `<button type="button" class="ar-art ar-${size || 'm'} ar-below is-empty" ${o.attrs}><span class="ar-f" aria-hidden="true"></span><span class="ar-plus" aria-hidden="true">+</span><span class="ar-nm">${o.label || 'Add a Pokémon'}</span></button>`
+  : `<div class="ar-art ar-${size || 'm'} ar-below is-empty" aria-hidden="true"><span class="ar-f"></span><span class="ar-nm">&nbsp;</span></div>`;
 AR.ICON = {
   grade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
   build: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>',
@@ -39,14 +55,22 @@ AR.ICON = {
 AR.BURST = '<svg class="ar-lines" viewBox="0 0 400 350" preserveAspectRatio="none" aria-hidden="true"><g stroke="#fff" stroke-width="3" stroke-linecap="round">'
   + ['400 20', '400 70', '400 120', '400 180', '400 240', '400 300', '330 0', '370 0', '260 0', '220 0', '190 30', '350 350', '280 350', '220 350', '190 300'].map(e => `<path d="M300 150 L${e}"/>`).join('') + '</g></svg>';
 /* "A + B" from a list of members */
-AR.pair = L => L.map(m => escName(m.d)).join(' + ');
-AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan ${vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
+/* a display name that never strands its last part: "Mega Charizard Y", "Indeedee (F)" */
+AR.nm = n => escName(n).replace(/ \(([FMfm])\)/g, '\u00a0($1)');
+AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
+AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
 AR.champ = () => { const E = META.events; if (!E || !Array.isArray(E.events)) return null;
   for (const e of E.events) { const t = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (t) return {ev: e, t, n: E.events.length, six: t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''}))}; }
   return null; };
 
 /* ======================= Home ======================= */
+/* the Top of the meta rows: one naming everywhere ("Mega Charizard Y", not "M-Charizard Y"), the Mega contour on the small
+   sprite, and the sprite loads with the page (a lazy sprite far down Home could show an empty field) */
+{ const hm = homeMini; homeMini = function (p, r, extra) { let h = hm(p, r, extra); if (!p) return h;
+  h = h.replace(/<span class="hmn">[^<]*<\/span>/, `<span class="hmn">${escName(p.d)}</span>`).replace(/ loading="lazy" decoding="async"/, '');
+  if (AR.isMega(p)) h = h.replace('class="spr hmspr"', `class="spr hmspr ar-mega-s" style="${AR.tv(p)}"`);
+  return h; }; }
 AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scope > .ar-home')) return;
   const ms = members(), six = CH.metaSix(), C = AR.champ();
   /* hero: the most-used Pokémon; the next two as runner strips */
@@ -76,7 +100,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   let title = ms.length ? teamTitleFor(ms) : 'Your six goes here', wx = ''; try { const k = wxKeyOf(ms); if (k) wx = ` ${esc(wxName(k))}`; } catch (e) {}
   const you = `<section class="ar-side ar-blue" aria-labelledby="arYours"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arYours">${esc(title)}</h2></div>
     <div class="ar-winner">${ms.length ? `<p class="ar-meta">Your team: <b>${ms.length}/6</b>${wx}</p>` : '<p class="ar-meta">Add six Pokémon and NastyPlot scouts the top threats for you.</p>'}</div>
-    <div class="ar-six">${ms.length ? ord.map(m => AR.art(m.p, {size: 'm', below: 1, name: m.d, attrs: `data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info"`})).join('') : Array.from({length: 6}, () => AR.emptyArt('m')).join('')}</div>
+    <div class="ar-six">${ms.length ? ord.map(m => AR.art(m.p, {size: 'm', below: 1, name: m.d, attrs: `data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info"`})).join('') : Array.from({length: 6}, (_, i) => AR.emptyArt('m', {attrs: `data-view="build" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('')}</div>
     ${AR.plan(lead, back, bench, vs)}
     <div class="ar-acts">${ms.length ? `<button type="button" class="ar-btn" data-view="report">Open my team</button>${C && FC && !sameSix ? `<button type="button" class="ar-link" data-evvs="${esc(C.ev.id)}#${C.ev.top.indexOf(C.t)}">Prep vs the champion ›</button>` : ''}`
       : '<button type="button" class="ar-btn" data-view="build">Add your six</button>'}</div></section>`;
@@ -106,24 +130,27 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
      rate (one decimal, so 59.6% never reads as an A's "60%"); otherwise it is the grade out of 100 (Sim: "93, Grade A"). */
   let score = '';
   if (G) { const why = `<button type="button" class="ar-link ar-why" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${esc(G.letter)}?</button>`;
-    score = G.rec ? `<div class="ar-score"><span class="ar-num ar-mp">${(G.rec.wr * 100).toFixed(1)}<small>%</small></span><span class="ar-grade">Grade ${esc(G.letter)}</span><span class="ar-basis">tournament win rate</span>${why}</div>`
+    score = G.rec ? `<div class="ar-score"><span class="ar-num ar-mp">${(G.rec.wr * 100).toFixed(1)}<small>%</small></span><span class="ar-grade">Grade ${esc(G.letter)}</span><span class="ar-basis">tournament win&nbsp;rate</span>${why}</div>`
       : `<div class="ar-score"><span class="ar-num ar-mp">${G.s}</span><span class="ar-grade">Grade ${esc(G.letter)}${G.partial ? ' so far' : ''}</span><span class="ar-basis">out of 100</span>${why}</div>`; }
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
-  if (RD) { const rec = G && G.rec ? `<div class="ar-st" role="group" aria-label="Tournament record"><h3 class="ar-sth">Tournament record${tp('numbers')}</h3><div class="ar-trio">${AR.cell(G.rec.g.toLocaleString('en-US'), 'games')}${AR.cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div></div>` : '';
-    const sc = G && G.rec ? AR.cell(G.s, 'score') : '';
+  if (RD) { const sc = G && G.rec ? AR.cell(G.s, 'score') : '';
+    const cells = [sc, `<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready${tp('readiness')}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
+    const rec = G && G.rec ? `<div class="ar-st" role="group" aria-label="Tournament record"><h3 class="ar-sth">Tournament record${tp('numbers')}</h3><div class="ar-trio">${AR.cell(G.rec.g.toLocaleString('en-US'), 'games')}${AR.cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div></div>` : '';
     const chk = `<div class="ar-st" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><h3 class="ar-sth">Our check, top ${hd ? hd.n : 30} threats${G && !G.rec ? tp('numbers') : ''}</h3>
-      <div class="ar-trio${sc ? ' ar-four' : ''}">${sc}<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready${tp('readiness')}</span></div>${hd ? AR.cell(hd.x, 'handled') : ''}${c[1] ? AR.cell(c[1], 'shaky') : ''}${c[0] ? AR.cell(c[0], 'unanswered') : ''}</div>
+      <div class="ar-trio">${cells.join('')}</div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>${G && !G.rec && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
-    stats = `<div class="ar-tstats">${rec}${chk}${leg}</div>`; }
+    stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
   else stats = '';
   /* the stage: all six as equal art tiles (no roles on the art), the game plan line under them */
   let stage = '';
   if (ms.length) { const L = AR.lineup(ms), ord = [...L.lead, ...L.back, ...L.bench], sel = ui.rzSet;
-    const tiles = ord.map(m => AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})).join('');
-    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : '(team order)') : '';
+    const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
+    const tiles = ord.map(m => AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})).join('')
+      + open.map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
+    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : 'in team order') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
   else stage = `<div class="ar-empty"><span class="ar-empty-art" aria-hidden="true">${(CH.metaSix()[0] && sprite(CH.metaSix()[0])) || ''}</span><div><p>Add your six and NastyPlot scouts the top 30 threats for you. Start with one, or let NastyPlot build six from real winning teams.</p>
@@ -150,7 +177,7 @@ rzSetHtml = function (m, i) {
   const role = L && L.lead.length ? `<p class="ar-role">${AR.roleOf(m, L)}${L.by === 'meta' ? ` ${AR.VS_META}` : ''}</p>` : '';
   const mv = (m.moves || []).filter(Boolean).map(x => `<li class="ar-strip" style="--m:${AR.TC[AR.moveType(x.name)] || TC.Normal}"><span>${esc(x.name)}</span></li>`).join('');
   return `<div class="ar-sethd"><span class="ar-av" style="${AR.tv(m.p)}" aria-hidden="true"><span class="ar-av-f ar-field"></span>${sprite(m.p, 'rzsetspr') || ''}</span>
-      <div class="ar-setti"><h3 class="ar-h2 ar-setname">${escName(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
+      <div class="ar-setti"><h3 class="ar-h2 ar-setname">${AR.nm(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
     <div class="ar-setia">${r != null ? `<div class="ar-setr"><span class="ar-num ar-mp">${Math.round(r)}</span><small>${AR.ICON.star}${tier ? esc(tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div></div>
     ${mv ? `<ul class="ar-strips" aria-label="Moves">${mv}</ul>` : ''}
     <div class="ar-setacts"><button type="button" class="ar-btn" data-chedit="${i}">Edit set</button><button type="button" class="ar-link" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`; };
@@ -159,11 +186,22 @@ MG.home = () => {}; /* the manga cover and spread are replaced by the arena Home
 CH.wrap('chTeamRender', () => AR.team());
 /* the My team parts below the fold: numbered step plates and arena controls on the existing markup (CSS does the rest) */
 AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:not(.ar-step)').forEach(n => { n.classList.add('ar-step'); if (!n.querySelector('span')) n.innerHTML = `<span>${esc(n.textContent)}</span>`; });
+  document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
+  AR.fit();
   /* the older secondary buttons and text links on these pages take the arena menu-strip and link styles (same elements, same handlers) */
   document.querySelectorAll('[data-pane="report"] :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn):not(.chapply), #homeOut.ar-on :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn), #lairSheet .lsact button.btn:not(.ar-btn)').forEach(b => {
     if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick')) return; b.classList.add('ar-btn'); });
   document.querySelectorAll('[data-pane="report"] button.linkbtn:not(.ar-link), #homeOut.ar-on button.linkbtn:not(.ar-link):not(.npmore)').forEach(b => b.classList.add('ar-link')); };
+
+
+/* names on the art (dark mode puts them on an ink plate): the plate hugs the longest line, so a two-line name is one tidy
+   plate, not a box out to the tile's edge */
+AR.fit = all => { document.querySelectorAll(all ? '.ar-art:not(.ar-below) .ar-nm' : '.ar-art:not(.ar-below) .ar-nm:not([style*="--nw"])').forEach(n => { const t = n.firstChild; if (!t || t.nodeType !== 3) return;
+  const r = document.createRange(); r.selectNodeContents(n); const L = [...r.getClientRects()]; if (!L.length) return;
+  const w = Math.ceil(Math.max(...L.map(x => x.width))), cur = n.style.getPropertyValue('--nw'); if (w > 0 && cur !== w + 'px') n.style.setProperty('--nw', w + 'px'); }); };
+addEventListener('resize', () => { clearTimeout(AR._ft); AR._ft = setTimeout(() => AR.fit(1), 120); });
+try { document.fonts.ready.then(() => AR.fit(1)); } catch (e) {}
 
 /* ======================= Info sheet: the hero ======================= */
 /* a diagonal type band with the Pokémon breaking out of it and the sheet's one speed-line burst; the rating as a big numeral and
@@ -175,16 +213,29 @@ AR.sheet = n => { const sh = $('lairSheet'), p = n && byName.get(n); if (!sh || 
     + `${r ? `<span class="ar-shero-copy"><span class="ar-num ar-mp ar-shero-big">${RS(r.total)}</span>${cap ? `<span class="ar-shero-cap"><span class="ar-plate ar-sm" style="${AR.tv(p)}"><span>${esc(cap)}</span></span></span>` : ''}</span>` : ''}</div>`);
   head.classList.add('ar-head', 'mghead');
   const cell = sh.querySelector('.chlsr'), tq = cell && cell.querySelector('.tipq'), cq = head.querySelector('.ar-shero-cap');
-  if (cell && cq) { if (tq) cq.append(tq); cell.hidden = true; cell.classList.add('mgmoved'); }
+  if (cell && cq) { if (tq) cq.prepend(tq); cell.hidden = true; cell.classList.add('mgmoved'); }
   const stats = sh.querySelector('.chlstats');
   if (stats && !stats.querySelector('.mgspd')) { let r0 = null; try { r0 = LST.speeds(p).find(x => x.main) || null; } catch (e) {}
-    if (r0) stats.insertAdjacentHTML('beforeend', `<div class="mgspd"><b>${r0.v}</b><span>Speed at level 50</span></div>`); }
+    if (r0) stats.insertAdjacentHTML('beforeend', `<div class="mgspd"><b>${r0.v}</b><span>Speed at level&nbsp;50</span></div>`); }
   const add = sh.querySelector('.lsact [data-laddteam]'); if (stats && add && !sh.querySelector('.mgadd')) { const w = document.createElement('div'); w.className = 'mgadd'; stats.after(w); w.append(add); }
   const x = sh.querySelector('.lsx'); if (x) x.classList.add('ar-x');
+  /* the name: a smaller title for long names (no "Indeedee / (F)" or "Mega / Charizard Y" orphans), the name ends kept together */
+  const nm = sh.querySelector('.lsname'), h3 = nm && nm.querySelector('h3');
+  if (h3) { h3.innerHTML = AR.nm(p.d); nm.classList.toggle('ar-long', p.d.length > 11); }
+  /* the types as the slanted type tags the set card uses; Mega and box marks spelled out as quiet tags (no icon-only chips) */
+  const ch = nm && nm.querySelector('.chips');
+  if (ch && !ch.querySelector('.ar-ty')) { ch.querySelectorAll('.ty').forEach(e => e.remove());
+    ch.insertAdjacentHTML('afterbegin', (p.t || ['Normal']).map(AR.tag).join(''));
+    ch.querySelectorAll('.tag.ico').forEach(e => { e.classList.remove('ico'); e.classList.add('ar-mark'); e.textContent = e.classList.contains('box') ? 'In your box' : e.classList.contains('mega') ? 'Mega' : e.textContent; });
+    ch.classList.add('ar-tys'); }
+  /* Meta tab (phones too): "Items: Ability: Rough Skin 98%" reads as one run; the label is "Items", the ability its own line
+     (the same split the desktop sheet makes) */
+  sh.querySelectorAll('.lstp-meta .chlsdata .chk').forEach(ih => { if (ih.querySelector('.lsabn')) return; const m = /^Items\s*(?:·|:)\s*Ability: (.+)$/.exec(ih.textContent.trim()); if (!m) return;
+    ih.textContent = 'Items'; const a = document.createElement('span'); a.className = 'lsabn'; a.append('Most used ability: '); const bb = document.createElement('b'); bb.textContent = m[1]; a.append(bb); ih.append(a); });
   const t = p.t || ['Normal']; sh.style.setProperty('--ar-ta', AR.TC[t[0]] || TC.Normal); sh.style.setProperty('--ar-tb', AR.TC[t[1] || t[0]] || TC.Normal); };
 MG.sheet = n => AR.sheet(n);
 
 /* run after the app draws (the same observer pattern as the other theme layers) */
 { let q = false; const run = () => { q = false; try { AR.parts(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); }
-if (window.__PL_TEST) window.__AR = AR;
+if (window.__PL_TEST) { window.__AR = AR; window.__ARX = {TC, ROSTER, SPRITE_ID, lairSheet, lairClose}; }

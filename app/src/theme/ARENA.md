@@ -8,6 +8,27 @@ Sim picked direction C, "Champions arena", on Nov 5. NastyPlot reads like a Pok√
 
 This file is the reference for every page. Read it before you style anything.
 
+## Changes after phase 1
+
+The phase 1 review fixes (Nov 5) changed these shared tokens and components. Phase 2 groups: check your pages against them.
+
+- **`.ar-plate` with type colours is now an ink plate.** `#16141A` with white text (17:1) and a 7px type-colour edge (`--a` to `--b`). The old type gradient at L .44 turned brown, maroon or olive for warm types. Without `--a` it is still the section plate. Padding is now `0 18px 0 22px`, to clear the edge.
+- **`AR.tv(p)` also sets `--dm`**, a middle stop for dark dual-type fields. A straight blend can cross the brown zone, for example Grass to Fairy (olive) or Ground to Steel (taupe). `--dm` takes the shorter way round the hue circle unless that lands on a warm hue, then the long way round. A warm middle that remains is lifted to L .72.
+- **Dark `.ar-field` is a three-stop gradient `in oklch`:** `--da` 10%, `--dm` 50%, `--db` 90%. The hero fields (`.ar-hero-bg`, `.ar-shero-bg`) hold `--da` to 48%, so text on the left half sits on one colour.
+- **`--on` is the text colour for `--da`.** Any numeral or text set on a dark field takes `color: var(--on)`. It is ink on Fire, Electric, Ground, Rock, Normal and Bug, and white on the rest. Bug now sits in the light band (L .76); at L .5 it was olive.
+- **`.ar-ty` (type tags) is 15px** (was 14px), so it meets the body minimum.
+- **`.ar-shead` aligns its tab with the head's first line** (`align-items: flex-start`), including when the head wraps.
+- **`.ar-six` uses `align-items: start`.** Every tile in a row shares one field top. `.ar-below .ar-nm` keeps two lines of room.
+- **`AR.emptyArt(size, {attrs, label})`.** With `attrs` it is a button: a faint section field, a round "+", and "Add a Pok√©mon" under it. Use it for open slots, for example `data-chedit="3"` or `data-view="build"`. Without `attrs` it is still a quiet placeholder.
+- **`AR.nm(name)`.** A display name with non-breaking ends ("Mega Charizard&nbsp;Y", "Indeedee&nbsp;(F)"). `AR.art`, `AR.pair` and the set card use it.
+- **Mega contour:** the two type colours, then a 1px ink line outside them, so it reads on a field of its own colour. `.ar-mega-s` is the S version for a bare sprite (it needs `--a`/`--b` on the image).
+- **Focus rings follow the slant.** Slanted controls draw the ring on their `::before` layer. Art tiles draw it on `.ar-f`. See `arena.css` section 20; add your own slanted control to that list if its `::before` is always present.
+- **Dark surfaces are neutral.** The dark `.ar-sheet` is `#222127` to `#1A191D` with no type wash, because a colour mixed into near-black reads maroon, brown or navy. The colour lives in the spine, the avatar field, the tags and the strips. The dark My team stage band is neutral too, with a 6px blue edge.
+- **Dark name plates on art hug the name.** `AR.fit()` sets `--nw` to the longest line, so a two-line name is one tidy plate.
+- **The wordmark** is now the mockup's `.ar-logo` (Unbounded "Nasty", then "Plot" on a slanted blue plate with a red offset). It is used in the header, the menu and the footer. The old lockups stay in the markup but are hidden. Screen readers get the `.sr` text.
+- **The footer and page end:** the footer is 15px (16px on desktop) with 44px links. On phones the page ends 96px plus the safe area below the footer, and `main` has a 24px bottom pad.
+- **`.rzmorebtn` ("More" toggles)** has a 44px tap height. Its negative margins keep the line height.
+
 ## Files
 
 | File | What it holds |
@@ -85,7 +106,7 @@ Each entry gives the markup, then the rules.
 
 ### Slanted ink name plate: `.ar-plate`
 `<span class="ar-plate" style="${AR.tv(p)}"><span>bring Sneasler</span></span>`
-- Uses its type gradient at L .44 (white text, 5:1 or more), or the section plate when there is no `--a`.
+- An ink plate (`#16141A`, white text 17:1) with a 7px edge in its type colours, or the section plate when there is no `--a`. (Until the phase 1 review it was the type gradient at L .44, which turned brown for warm types.)
 - `.ar-sm` is the 32px version.
 - Labels only, such as "bring Sneasler" or "S tier, #1 of 313".
 - In dark mode, a name set on art sits on an ink plate automatically.
