@@ -930,8 +930,9 @@
 @A [data-pane="report"] .chparts .pmain{text-wrap:pretty}
 /* minor 10: the set sheet's sprite sits below Lock and ×; the box × sits by the name, off the art */
 @A #chEdit .thead .arb-mf.arb-xl{margin-top:30px!important}
-@A [data-pane="box"] .boxchip .ar-nm{padding-right:40px!important}
-@A [data-pane="box"] .boxchip .x{top:auto!important;bottom:-12px!important;right:-8px!important}
+@A [data-pane="box"] .boxchip .x{top:-16px!important;bottom:auto!important;right:-14px!important}
+@A [data-pane="box"] .boxchip.ar-art{--s:78px!important;--lift:26px!important}
+@media (min-width:1001px){@A [data-pane="box"] .boxchip.ar-art{--s:104px!important}}
 /* minor 11: saved team actions: one tidy left-aligned grid at every width; Open is a strip like the others (one fill per screen is enough) */
 @A [data-pane="teams"] .svacts{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 52px;gap:12px 12px!important;padding-left:6px;justify-items:stretch}
 @A [data-pane="teams"] .svacts>*{width:100%;min-width:0!important}
@@ -984,3 +985,10 @@
 @A [data-pane="compare"] .cxsix .ar-art>.ar-spr{max-width:none!important}
 @A [data-pane="compare"] .cxopt[aria-disabled="true"]{cursor:default}
 @A [data-pane="compare"] .cxopt .arb-already{font-weight:600!important;color:var(--ar-ink-2)!important}
+@A [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby){white-space:normal!important;flex-wrap:wrap;text-align:left;column-gap:10px;row-gap:2px}
+@A [data-pane="coverage"] .morebar .chmoreideas .vsub{flex:1 1 200px;min-width:0}
+/* Log a game's leads: the focus ring follows the slanted field */
+@A [data-pane="report"] .myrec .qllead:focus-visible{outline:none!important}
+@A [data-pane="report"] .myrec .qllead:focus-visible .arb-f{outline:3px solid var(--ar-focus)!important;outline-offset:3px}
+@A #chEdit .chst:focus-visible,@A #chScout .chtile:focus-visible{outline:none!important}
+@A #chEdit .chst:focus-visible .arb-f,@A #chScout .chtile:focus-visible .arb-f{outline:3px solid var(--ar-focus)!important;outline-offset:3px}

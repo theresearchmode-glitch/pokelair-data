@@ -218,7 +218,9 @@ ARB.shareFocus = () => { const box = $('shareBox'), inn = box && !box.hidden && 
   inn.setAttribute('tabindex', '-1'); try { inn.focus({preventScroll: true}); } catch (e) {} };
 new MutationObserver(rs => { if (rs.some(r => r.target.nodeType === 1 && (r.target.id === 'shareBox' || r.target.closest('#shareBox')))) setTimeout(ARB.shareFocus, 0); }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']});
 /* Log a game: opening it moves focus to the first lead; closing it puts focus back on its button */
-CH.wrap('renderMyRec', () => { const a = document.activeElement; if (a && a !== document.body && a.isConnected) return; const q = ui.ql || {};
+ARB.kb = false; document.addEventListener('keydown', e => { if (e.key === 'Tab' || e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') ARB.kb = true; }, true);
+document.addEventListener('pointerdown', () => { ARB.kb = false; }, true);
+CH.wrap('renderMyRec', () => { const a = document.activeElement; if (!ARB.kb || (a && a !== document.body && a.isConnected)) return; const q = ui.ql || {};
   const t = document.querySelector(q.open ? '.myrec .qlog [data-qllead], .myrec .qlog button' : '.myrec [data-qlopen]'); if (t) try { t.focus({preventScroll: true}); } catch (e) {} });
 /* the threat sheet redraws in place: focus that the redraw dropped goes back into it; on close, back to the threat that opened it */
 CH.wrap('chScoutRender', () => { const sc = $('chScout'), a = document.activeElement; if (sc && !sc.hidden && (!a || a === document.body)) { const x = sc.querySelector('[aria-pressed="true"]') || sc.querySelector('.x'); if (x) try { x.focus({preventScroll: true}); } catch (e) {} } });
