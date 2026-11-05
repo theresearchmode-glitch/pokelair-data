@@ -866,3 +866,8 @@
 @A #lairSheet .lspanel{overflow-x:hidden!important;overscroll-behavior-x:none}
 /* Sim (Nov 5): touching inside an open section no longer flashes or presses the whole box; only its title bar reacts */
 @A details.chsec{-webkit-tap-highlight-color:transparent}
+/* Sim (Nov 5): the full-width Winning cores tile sits centred on phones and tablets */
+@media (max-width:1000px){@A #homeOut.ar-on .chhtools .htiles>.htile:last-child{justify-content:center!important;text-align:center}
+  @A #homeOut.ar-on .chhtools .htiles>.htile:last-child b{flex:0 1 auto!important}}
+@media (min-width:600px) and (max-width:1000px){@A #homeOut.ar-on .chhtools .htiles>.htile:last-child{align-items:center!important}
+  @A #homeOut.ar-on .chhtools .htiles>.htile:last-child svg{position:static!important;display:block;align-self:center!important;margin-left:auto!important;margin-right:auto!important}}
