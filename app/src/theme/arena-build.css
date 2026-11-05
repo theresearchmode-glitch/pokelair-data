@@ -644,3 +644,13 @@
 @A [data-pane="auto"] .evteam .tgm.is-mega img{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a))
   drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A) drop-shadow(0 6px 6px rgba(30,10,40,.2))}
 @A [data-pane="auto"] .evteam .tgm .tgn{text-wrap:balance}
+/* P-F18: Copy for Showdown on phones is a bottom sheet like Feedback (rounded top corners, the round × at the top right);
+   its text box shows focus with the field underline, not a ring */
+@media (max-width:759px){
+  @A #sdSheet.sdsheet:not([hidden]){align-items:flex-end!important;padding:0!important}
+  @A #sdSheet .sdbox{width:100%!important;border-radius:var(--ar-r-xl) var(--ar-r-xl) 0 0!important;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
+}
+@A :is(#fbSheet,#sdSheet) textarea:focus-visible{outline:none!important}
+@A :is(#fbSheet .fbbox,#sdSheet .sdbox):focus{outline:none!important}
+/* the Sand archetype's tan (#C99A4A) reads khaki as a wash and as a dark-mode edge: archetype tags use the arena gold for it */
+@A .archchip:is([style*="c99a4a" i],[style*="C99A4A"]){--ac:var(--ar-gold)!important}

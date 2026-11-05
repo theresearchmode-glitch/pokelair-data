@@ -230,7 +230,10 @@ new MutationObserver(() => { const h = ARB.held, a = document.activeElement; if 
   const cs = closeShare; closeShare = function () { const b = $('shareBox'), was = b && !b.hidden, r = cs.apply(this, arguments); const t = ARB.back.share;
     const g = was && !(b && !b.hidden) && ARB.again(t); if (g) { ARB.back.share = null; try { g.focus({preventScroll: true}); } catch (e) {} } return r; }; }
 /* the share card draws its box late (the image is async): focus moves in once it shows */
-ARB.shareFocus = () => { const box = $('shareBox'), inn = box && !box.hidden && box.querySelector('.sharein'); if (!inn || inn.contains(document.activeElement)) return; inn.dataset.arbf = 1;
+ARB.shareFocus = () => { const box = $('shareBox'), inn = box && !box.hidden && box.querySelector('.sharein'); if (!inn) return;
+  /* the head's Close is the overlay's round × (the one overlay head); same element, data attribute and handler */
+  const x = inn.querySelector('.sharehd [data-shareclose]:not(.ar-x)'); if (x) { x.className = 'ar-x'; x.textContent = '×'; x.setAttribute('aria-label', 'Close'); }
+  if (inn.contains(document.activeElement)) return; inn.dataset.arbf = 1;
   inn.setAttribute('tabindex', '-1'); try { inn.focus({preventScroll: true}); } catch (e) {} };
 new MutationObserver(rs => { if (rs.some(r => r.target.nodeType === 1 && (r.target.id === 'shareBox' || r.target.closest('#shareBox')))) setTimeout(ARB.shareFocus, 0); }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']});
 /* Log a game: opening it moves focus to the first lead; closing it puts focus back on its button */

@@ -1045,6 +1045,14 @@
 @A:not(#arbw) :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:3px!important;
   background:linear-gradient(var(--sc),var(--sc)) 0 0/5px 100% no-repeat,color-mix(in oklch,var(--ar-ink) 7%,var(--ar-sheet))!important}
 @A:not(#arbw)[data-look="dark"] :is([data-pane="report"] .chparts,[data-pane="coverage"],#chScout) .sev::before{background:linear-gradient(var(--sc),var(--sc)) 0 0/5px 100% no-repeat,#2A2930!important}
+/* P-F18 / P-N9: the share overlay: the round × close, no focus ring around the whole dialog (it takes focus by script so the
+   keyboard starts inside it), and on phones the same bottom sheet as the other overlays */
+@A #shareBox .sharein:focus,@A #shareBox .sharein:focus-visible{outline:none!important}
+@A #shareBox .sharehd .ar-x{flex:none;font-size:22px!important}
+@media (max-width:759px){
+  @A #shareBox.sharebox:not([hidden]){align-items:flex-end!important;padding:0!important}
+  @A #shareBox .sharein{width:100%!important;max-height:calc(100vh - 24px);overflow:auto;border-radius:var(--ar-r-xl) var(--ar-r-xl) 0 0!important;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))!important}
+}
 /* dark editor move strips: neutral graphite with the move-type edge only (a Fire or Ground wash into graphite reads brown) */
 @A[data-look="dark"]:not(#arbw) #chEdit .mvset::before{background:linear-gradient(var(--tc,var(--ar-sec)),var(--tc,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,#2A2930,#1E1D22)!important}
 /* P-N8: Fix it's "Why? 13 reasons": open, the count leaves no hole (the chevron follows "Why?"), and the reasons sit in the fold
