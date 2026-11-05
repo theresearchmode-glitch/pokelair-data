@@ -782,3 +782,4 @@
 @A #lairSheet .lstp-meta .lsgrp>.chk .lsabn+*,@A #lairSheet .lstp-meta .lsgrp>.chk b{font-family:var(--ar-body)}
 @A #lairSheet .lstp-meta .lsgrp:first-child>.chk,@A #lairSheet .lstp-meta .lsgrp.lsg-it>.chk{margin-top:6px!important}
 @media (min-width:1001px){@A .ar-mpg .npmeth{max-width:1080px!important}@A .ar-mpg #methodOut .chbody{max-width:880px}}
+@A .ar-mpg :is(.wkt,.trcard>.chk,.nplegend>.chk,#ttList h3.lbl,.setcard>.ph .pt,.chpgt){text-wrap:balance}
