@@ -911,3 +911,42 @@
 @A .ar-mpg #aboutOut pre.abtlicense{white-space:pre-wrap;color:var(--ar-ink-2)!important;font-family:var(--ar-body)!important}
 @A .ar-mpg #wkOut .wkhead .wdrow.wdin{grid-template-columns:minmax(84px,auto) max-content max-content!important;column-gap:16px!important}
 @media (max-width:399px){@A .ar-mpg #wkOut .wkhead .wdrow.wdin{grid-template-columns:max-content max-content!important;row-gap:0}@A .ar-mpg #wkOut .wkhead .wdrow.wdin>.wdl{grid-column:1/-1}}
+
+/* =====================================================================================================================
+   Final review fixes (final_phone / final_desktop FINDINGS). Later rules here win over the passes above.
+   ===================================================================================================================== */
+/* F14 (desktop) / F12 (phone): How we calculate: the 7 checks and the data sources are arena rows (hairlines, no boxes); the
+   check numbers are the purple slanted step tabs (as Track record's 1-2-3); the figures are Meta purple; 15px text throughout */
+@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc){list-style:none!important;margin:14px 0 6px!important;padding:0!important;display:grid!important;gap:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc)>li{position:relative;display:grid!important;gap:3px;margin:0!important;padding:14px 4px 14px 52px!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;
+  border-radius:0!important;box-shadow:none!important;outline:0!important;font:400 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc)>li:first-child{border-top:1px solid var(--ar-rule)!important}
+@A:not(#amw) .ar-mpg ul.npsrc>li{padding-left:24px!important}
+@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc)>li>b{font:italic 800 18px/1.2 var(--ar-display)!important;font-stretch:108%!important;color:var(--ar-ink)!important}
+@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc)>li :is(span,em,.t2,i){font-size:var(--ar-fs-small)!important;line-height:1.45!important}
+@A:not(#amw) .ar-mpg ol.npchecks>li em{font-style:normal!important;font-weight:600!important;color:var(--ar-ink-2)!important}
+@A:not(#amw) .ar-mpg ol.npchecks>li::before{content:counter(ck)!important;position:absolute!important;left:4px;top:14px;display:grid!important;place-items:center;width:32px!important;height:28px!important;margin:0!important;
+  background:none!important;border-radius:0!important;box-shadow:none!important;font:italic 900 17px/1 var(--ar-display)!important;font-stretch:120%!important;color:#fff!important;z-index:1}
+@A:not(#amw) .ar-mpg ol.npchecks>li::after{content:""!important;position:absolute!important;left:4px;top:14px;width:32px;height:28px;z-index:0;background:var(--ar-purple-plate)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A:not(#amw) .ar-mpg ol.npchecks>li>*{position:relative;z-index:1}
+/* a source: a slanted purple tick before its name; the figures in Meta purple ink */
+@A:not(#amw) .ar-mpg ul.npsrc>li::before{content:""!important;position:absolute!important;left:4px;top:18px;width:8px;height:18px;background:var(--ar-purple)!important;transform:skewX(var(--ar-slant));border-radius:2px;box-shadow:none!important;border:0!important}
+@A:not(#amw) .ar-mpg ul.npsrc>li .npnum{font:700 var(--ar-fs-small)/1.4 var(--ar-body)!important;color:var(--ar-purple-ink)!important}
+@A:not(#amw) .ar-mpg ul.npsrc>li .t2{color:var(--ar-ink-3)!important}
+@media (min-width:1001px){@A:not(#amw) .ar-mpg ul.npsrc{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px}@A:not(#amw) .ar-mpg ul.npsrc>li:nth-child(2){border-top:1px solid var(--ar-rule)!important}}
+/* About: the MIT licence is quiet text on a soft field with a purple spine (no outline) */
+@A:not(#amw) .ar-mpg #aboutOut pre.abtlicense{position:relative;border:0!important;outline:0!important;box-shadow:none!important;border-radius:var(--ar-r-l)!important;padding:16px 18px 16px 24px!important;background:var(--ar-paper-2)!important}
+@A:not(#amw) .ar-mpg #aboutOut pre.abtlicense::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;background:var(--ar-purple);border-radius:0 3px 3px 0}
+@A[data-look="dark"]:not(#amw) .ar-mpg #aboutOut pre.abtlicense{background:#1A191D!important}
+/* F22 (phone): no glows: "Tied for #1!" and the tier board's labels carry no text shadow */
+@A:not(#amw) .ar-mpg #chHot .chpen,@A:not(#amw) .ar-mpg #lairBody .ltile .ltf .ltg,@A:not(#amw) .ar-mpg #lairBody .ltier .ltl span{text-shadow:none!important}
+/* F18 (desktop): the Pokémon / Tournaments tabs: the focus ring is a rounded ring around the word, not a square upright box */
+@A:not(#amw) .ar-mpg>.subnav>.sub:focus-visible{outline:3px solid var(--ar-focus)!important;outline-offset:2px!important;border-radius:var(--ar-r-s)!important}
+@A:not(#amw) .ar-mpg>.subnav>.sub:focus:not(:focus-visible){outline:none!important}
+/* N7: Usage: the source switch wraps as a set (never one segment alone on a row) and the search field is full width, as on Ratings */
+@A:not(#amw) .ar-mpg[data-pane="meta"] .seg.ar-seg:not(.teamsw){flex-wrap:wrap}
+@media (max-width:599px){@A:not(#amw) .ar-mpg[data-pane="meta"] .seg.ar-seg:not(.teamsw)>button{flex:1 1 auto!important;justify-content:center}}
+@A:not(#amw) .ar-mpg[data-pane="meta"] .clrw:has(#chMetaQ){display:block!important;width:100%!important;flex:1 1 100%!important;max-width:none!important}
+@A:not(#amw) .ar-mpg[data-pane="meta"] input.field[type="search"],@A:not(#amw) .ar-mpg[data-pane="meta"] #chMetaQ{width:100%!important;max-width:none!important}
+/* N10: the "In your box" mark is not clipped */
+@A:not(#amw) .ar-mpg #lairBody .ltile .ltf .ltb{overflow:visible!important;max-width:none!important;width:auto!important}

@@ -41,6 +41,11 @@ ARM.run = () => { ARM.mark(); const roots = document.querySelectorAll(ARM.SCOPE)
     r.querySelectorAll(':is(.ltype,.lflag,.dbdt,.ttmon):not(.ar-chip)').forEach(b => b.classList.add('ar-chip'));
     r.querySelectorAll(':is(button.btn,button.chghost,button.sdcopy):not(.ar-btn):not(.chprimary)').forEach(b => b.classList.add('ar-btn'));
     r.querySelectorAll(':is(button.linkbtn,button.nplink):not(.ar-link):not(.rzmorebtn)').forEach(b => b.classList.add('ar-link')); });
+  /* one head order on every Meta sub-page: the page switcher ("Winning teams / Events / Archetypes", "Rating / Usage / Sets")
+     sits above the title, as on Ratings and Archetypes (Winning teams and Events drew it under the lede). The node is moved,
+     not redrawn, so its buttons and handlers stay. */
+  ARM.PANES.forEach(v => { const pane = document.querySelector(`.view[data-pane="${v}"]`); if (!pane) return;
+    pane.querySelectorAll('.seg.teamsw').forEach(sw => { let h = sw.previousElementSibling; while (h && !h.classList.contains('chpghead')) h = h.previousElementSibling; if (h) h.before(sw); }); });
   const sh = document.querySelector('#lairSheet');
   if (sh) { const p = sh.querySelector('.ar-shero'); if (p) sh.querySelectorAll('.lstp-meta,.lstp-rating').forEach(t => { if (!t.classList.contains('ar-tv')) { t.classList.add('ar-tv'); t.setAttribute('style', p.getAttribute('style') || ''); } }); } };
 /* run after the app draws (the same observer pattern as 74-arena.js) */
