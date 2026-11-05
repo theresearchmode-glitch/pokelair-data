@@ -578,7 +578,7 @@
 @A [data-pane="auto"] .abctl>#abBtn{order:3}
 @A [data-pane="auto"] .abctl>#abAround{order:4}
 @media (max-width:1000px){
-  @A [data-pane="auto"] .chabhero .chpgt{font-size:min(var(--ar-fs-h1),10.4vw)!important;white-space:nowrap}
+  @A [data-pane="auto"] .chabhero .chpgt{font-size:min(var(--ar-fs-h1),9.4vw)!important;white-space:nowrap}
   @A [data-pane="auto"] .abctl{gap:18px!important;margin-top:20px!important}
   @A [data-pane="auto"] .srcseg>button{min-height:64px}
   @A [data-pane="auto"] .chabhero .chpgs{margin-top:8px!important}
