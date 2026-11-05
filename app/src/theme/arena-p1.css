@@ -871,3 +871,7 @@
   @A #homeOut.ar-on .chhtools .htiles>.htile:last-child b{flex:0 1 auto!important}}
 @media (min-width:600px) and (max-width:1000px){@A #homeOut.ar-on .chhtools .htiles>.htile:last-child{align-items:center!important}
   @A #homeOut.ar-on .chhtools .htiles>.htile:last-child svg{position:static!important;display:block;align-self:center!important;margin-left:auto!important;margin-right:auto!important}}
+/* Smooth desktop scrolling (Sim, Nov 5): the sprite outline is a stack of drop-shadows, costly to repaint. On mouse-and-trackpad
+   screens each sprite keeps its own layer so the outline is drawn once and scrolling just moves it (same pixels). Phones skip
+   this: they scroll fine and Safari limits layers. */
+@media (hover:hover) and (pointer:fine){@A .spr{will-change:transform}}

@@ -153,15 +153,17 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
   {const c=LS.get('np.ckwin',null);if(c&&c.k===skey&&c.v&&c.v.rates){ckWin=Object.assign({},c.v,{key,busy:false,track:ckWin.track||null});safe('checklist claims',()=>bgRender());return}}
   const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
   ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0;
-  const step=()=>{const t0=Date.now();try{while(i<list.length&&Date.now()-t0<12){const t=list[i++];
+  // runs only while the browser is idle, in short slices, so it never competes with scrolling (Nov 5)
+  const later=f=>typeof requestIdleCallback==='function'?requestIdleCallback(f,{timeout:1500}):setTimeout(f,30);
+  const step=dl=>{const t0=Date.now(),budget=dl&&dl.timeRemaining?Math.max(3,Math.min(8,dl.timeRemaining()-1)):6;try{while(i<list.length&&Date.now()-t0<budget){const t=list[i++];
       // each winner read with its own moves and held item, as registered
       const ms=assignItems(t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}}));
       if(typeof tsOf==='function'){const t=tsOf(ms);if(t!=null)wts.push(t)}
       const CK=proChecks(ms,true);if(!CK)continue;n++;if(CK.PG&&isFinite(CK.PG.se2))se2s.push(CK.PG.se2);for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
     catch(e){ckWin.busy=false;return}
-    if(i<list.length){setTimeout(step,30);return}
+    if(i<list.length){later(step);return}
     wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,wq75:wts.length>=20?wts[Math.floor(wts.length*.75)]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};try{LS.set('np.ckwin',{k:skey,v:{rates:ckWin.rates,two:ckWin.two,wmed:ckWin.wmed,wq75:ckWin.wq75,se2med:ckWin.se2med}})}catch(e){}safe('checklist claims',()=>bgRender())};
-  setTimeout(step,400)}
+  setTimeout(()=>later(step),400)}
 /* One rounding rule for every printed percentage (Nov 2, "numbers read like school grades"): 10 or more → whole number,
    under 10 → one decimal, under 0.1 → "<0.1". v is already a percentage (12.6, not .126); sign=false drops the "%".
    (11-game-plan.js keeps its own local pctTxt for a different job, so this one is pctFmt.) */
