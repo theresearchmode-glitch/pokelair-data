@@ -619,3 +619,12 @@
 @media (max-width:599px){@A .ar-hero-mon{right:-40px;width:256px!important;height:256px!important}}
 @A #lairSheet .lsabn{display:block;margin-top:4px;font:500 15px/1.4 var(--ar-body);color:var(--ar-ink-2)}
 @A #lairSheet .lsabn b{font-weight:700;color:var(--ar-ink)}
+
+/* 15px minimum, second pass (review 1, M11): the sheet's Info tab and the remaining My team fold text */
+@A #lairSheet .lstp-info :is(.lstr>span,.lsab p,.lsabu,.lsabs,.t2,.basis,.lstyl,.ty,.hint,p){font-size:15px!important}
+@A #lairSheet .chlstats span i{font-size:15px!important}
+@A #lairSheet .lstabs .lstab span{font-size:14px!important}
+@A [data-pane="report"] :is(td.who,td.who span,.none,.archchip,.empty-note,.qnone,.ck,th,.ty,.m,.kv span,.chk){font-size:15px!important}
+@media (min-width:1001px){@A .band .jumpbtn .jbt{font-size:15px!important}@A .band .jumpbtn .jbk{font-size:13px!important}}
+/* rating rows: a straight hairline (a radius on the row bent its ends into a card-like curve) */
+@A #homeOut.ar-on .hmini{border-radius:0!important}
