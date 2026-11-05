@@ -775,3 +775,15 @@
 @A footer.legal .lgsrcd .lgsrcin{margin:4px 0 8px!important}
 @A footer.legal p.lgsrc:not(.lgsrcin){margin:0!important}
 @media (min-width:1001px){@A footer.legal .lgsrcd>summary{font-size:16px}}
+/* Sim (Nov 5): the tools sit by colour, Battle orange and Build gold on the left, Meta purple on the right. Phones and tablets:
+   two columns, the list alternates (28-home.js), so each column is one colour; Type chart, the odd one, takes the left cell
+   only. Desktop (four columns): the two left columns are orange and gold, the two right ones purple. */
+@A #homeOut.ar-on .htiles>.htile:last-child{grid-column:auto!important}
+@media (min-width:600px) and (max-width:1000px){@A #homeOut.ar-on .htiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (min-width:1001px){
+  @A #homeOut.ar-on .htile[data-view="matchup"]{order:1}@A #homeOut.ar-on .htile[data-view="cores"]{order:2}
+  @A #homeOut.ar-on .htile[data-view="top"]{order:3}@A #homeOut.ar-on .htile[data-view="ratings"]{order:4}
+  @A #homeOut.ar-on .htile[data-view="calc"]{order:5}@A #homeOut.ar-on .htile[data-view="gauntlet"]{order:6}
+  @A #homeOut.ar-on .htile[data-view="events"]{order:7}@A #homeOut.ar-on .htile[data-view="sets"]{order:8}
+  @A #homeOut.ar-on .htile[data-view="speed"]{order:9}@A #homeOut.ar-on .htile[data-view="types"]{order:10}
+  @A #homeOut.ar-on .htile[data-view="arch"]{order:11}}
