@@ -398,3 +398,8 @@
 @A .ar-strip:is([aria-pressed="true"],[aria-selected="true"],.on)::before{box-shadow:0 0 0 3px var(--ar-yellow),var(--ar-shadow-s)}
 @A .ar-strip:is([aria-pressed="true"],[aria-selected="true"],.on)::after{content:"";flex:none;order:-1;width:11px;height:6px;margin:-3px 8px 0 0;border:solid currentColor;border-width:0 0 2.5px 2.5px;transform:rotate(-45deg)}
 @A button.ar-strip{cursor:pointer;width:100%}
+
+/* ---------- 26. the fold chevron (CH.chev2) takes the current section ink everywhere, one colour, not the old pink and blue
+   pair ---------- */
+@A svg[viewBox="124 72 264 293"] path{fill:currentColor!important}
+@A .chtog{color:var(--ar-sec-ink)!important}

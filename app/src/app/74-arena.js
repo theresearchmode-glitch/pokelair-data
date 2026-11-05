@@ -167,6 +167,8 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   const acts = $('chActs'); if (acts) sec.querySelector('.ar-tacts').append(acts);
   /* first visit: the first lead's set is open (a tap anywhere else moves it) */
   if (ui.rzSet === undefined && ms.length && !AR.pre) { AR.pre = 1; const f = sec.querySelector('[data-chset]'); if (f) setTimeout(() => f.click(), 0); } };
+/* dismissing What's new removes its wrapper too (the app's own handler removes the card) */
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-wnew > [data-wnewx]'); if (b) setTimeout(() => { const w = b.closest('.ar-wnew'); if (w && !w.querySelector('#wnewCard')) w.remove(); }, 0); });
 /* the tapped tile: yellow ring and cursor follow ui.rzSet (the app's own handler in 70-riso2.js fills #rzSet) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-team [data-chset]'); if (!b) return;
   setTimeout(() => document.querySelectorAll('.ar-team .ar-art[data-chset]').forEach(t => { const on = +t.dataset.chset === ui.rzSet; t.classList.toggle('is-sel', on);
@@ -191,6 +193,10 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
+  /* What's new: the dismiss x is its own button next to the fold, not inside its <summary> (a button in a summary has no tap
+     area or focus of its own); the card and the x share a wrapper */
+  const wn = $('wnewCard'); if (wn && !wn.parentElement.classList.contains('ar-wnew')) { const x = wn.querySelector('summary [data-wnewx]');
+    if (x) { const w = document.createElement('div'); w.className = 'ar-wnew'; wn.before(w); w.append(wn, x); } }
   /* Fix it: the suggestion list never gets shorter while the same team is shown (a new "Suggest from" choice works the plans out
      again and can bring back a shorter list a second later), so the folds under it never jump up under a finger. A new team
      starts afresh. */

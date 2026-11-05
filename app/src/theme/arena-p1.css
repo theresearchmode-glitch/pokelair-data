@@ -632,3 +632,10 @@
 /* Fix it's list changes height when new plans come in: the browser anchors the scroll on what's below it, not on the list, so
    the folds under it stay put */
 @A [data-pane="report"] :is(#chSugOut,.chsugs,#chP1 .chpartb){overflow-anchor:none}
+/* What's new: the dismiss x sits beside the fold's summary, a 44px button of its own */
+@A .ar-wnew{position:relative;margin-top:32px}
+@A #homeOut.ar-on .ar-wnew>.wnew{margin-top:0!important}
+@A #homeOut.ar-on .wnew>summary{padding-right:56px}
+@A .ar-wnew>.fbx{position:absolute;right:6px;top:6px;z-index:2;width:44px!important;height:44px!important;display:grid;place-items:center;border:0!important;border-radius:50%!important;background:none!important;color:var(--ar-ink-2)!important;font-size:24px;line-height:1;cursor:pointer}
+@A .ar-wnew>.fbx::after{display:none}
+@media (hover:hover){@A .ar-wnew>.fbx:hover{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important}}
