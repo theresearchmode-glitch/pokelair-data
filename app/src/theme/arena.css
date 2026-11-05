@@ -111,8 +111,9 @@
 
 /* ---------- 5. section head: slanted tab + italic display ----------
    <div class="ar-shead"><span class="ar-tab"></span><h2 class="ar-h2">The champion's six</h2></div> */
-@A .ar-shead{display:flex;align-items:flex-end;gap:12px;margin:0 0 14px}
-@A .ar-tab{width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;margin-bottom:2px}
+/* the tab sits beside the head's first line, also when the head wraps to two lines */
+@A .ar-shead{display:flex;align-items:flex-start;gap:12px;margin:0 0 14px}
+@A .ar-tab{width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;margin-top:max(0px,calc((var(--ar-fs-h2) * 1.05 - 28px) / 2 + 1px))}
 @A .ar-shead>div{min-width:0}
 @A .ar-shead p{color:var(--ar-ink-2);font-size:var(--ar-fs-small);margin:4px 0 0}
 
@@ -190,14 +191,14 @@
 /* dark mode: a name set on the art sits on a slanted ink plate (the dark fields range from mid to light, so the plate keeps it 15:1) */
 @A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm{left:10px;right:auto;max-width:calc(100% - 20px);padding:5px 12px 6px;color:#fff;isolation:isolate}
 @A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
-@A .ar-art.ar-below .ar-nm{position:static;margin-top:8px;padding-left:2px;color:var(--ar-ink);font-size:16px}
+@A .ar-art.ar-below .ar-nm{position:static;margin-top:8px;padding-left:2px;color:var(--ar-ink);font-size:16px;min-height:calc(2em * 1.08)}
 @A .ar-art.ar-below .ar-nm small{color:var(--ar-ink-2)}
 @A .ar-art.ar-below .ar-f::after{display:none}
 @A .ar-art.is-sel .ar-f{box-shadow:0 0 0 4px var(--ar-yellow),var(--ar-shadow)!important}
 @A .ar-cursor{position:absolute;left:78%;top:calc(var(--lift,22px) - 16px);margin-left:-15px;z-index:4;width:30px;height:22px;background:var(--ar-yellow);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 2px 0 #16141A);pointer-events:none}
 @A .ar-art.is-empty .ar-f{background:color-mix(in oklch,var(--ar-ink) 6%,var(--ar-paper))!important;box-shadow:none!important}
 @A .ar-art.is-empty .ar-f::before,@A .ar-art.is-empty .ar-f::after{display:none}
-@A .ar-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 10px}
+@A .ar-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 10px;align-items:start}
 @A .ar-six.ar-two{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px}
 @media (max-width:359px){@A .ar-six:not(.ar-two){grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (hover:hover){@A button.ar-art:hover .ar-f{transform:skewX(var(--ar-slant)) translateY(-2px)}}

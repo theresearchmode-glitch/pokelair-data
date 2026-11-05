@@ -41,7 +41,10 @@ AR.spr = (p, cls) => sprite(p, 'ar-spr' + (cls ? ' ' + cls : '')) || '';
 AR.art = (p, o = {}) => { const tag = o.tag || 'button', cls = `ar-art ar-${o.size || 'm'}${o.below ? ' ar-below' : ''}${AR.isMega(p) ? ' is-mega' : ''}${o.sel ? ' is-sel' : ''}`;
   return `<${tag} ${tag === 'button' ? 'type="button" ' : ''}class="${cls}" style="${AR.tv(p)}" ${o.attrs || ''}><span class="ar-f ar-field" aria-hidden="true"></span>${AR.spr(p)}${o.sel ? '<span class="ar-cursor" aria-hidden="true"></span>' : ''}`
     + `<span class="ar-nm">${escName(o.name || p.d)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></${tag}>`; };
-AR.emptyArt = size => `<div class="ar-art ar-${size || 'm'} ar-below is-empty" aria-hidden="true"><span class="ar-f"></span><span class="ar-nm">&nbsp;</span></div>`;
+/* an open slot: with o.attrs a button (a faint section field, a "+", "Add a Pokémon" under it) that opens what attrs say;
+   without, a quiet placeholder */
+AR.emptyArt = (size, o = {}) => o.attrs ? `<button type="button" class="ar-art ar-${size || 'm'} ar-below is-empty" ${o.attrs}><span class="ar-f" aria-hidden="true"></span><span class="ar-plus" aria-hidden="true">+</span><span class="ar-nm">${o.label || 'Add a Pokémon'}</span></button>`
+  : `<div class="ar-art ar-${size || 'm'} ar-below is-empty" aria-hidden="true"><span class="ar-f"></span><span class="ar-nm">&nbsp;</span></div>`;
 AR.ICON = {
   grade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
   build: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>',
@@ -95,7 +98,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   let title = ms.length ? teamTitleFor(ms) : 'Your six goes here', wx = ''; try { const k = wxKeyOf(ms); if (k) wx = ` ${esc(wxName(k))}`; } catch (e) {}
   const you = `<section class="ar-side ar-blue" aria-labelledby="arYours"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arYours">${esc(title)}</h2></div>
     <div class="ar-winner">${ms.length ? `<p class="ar-meta">Your team: <b>${ms.length}/6</b>${wx}</p>` : '<p class="ar-meta">Add six Pokémon and NastyPlot scouts the top threats for you.</p>'}</div>
-    <div class="ar-six">${ms.length ? ord.map(m => AR.art(m.p, {size: 'm', below: 1, name: m.d, attrs: `data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info"`})).join('') : Array.from({length: 6}, () => AR.emptyArt('m')).join('')}</div>
+    <div class="ar-six">${ms.length ? ord.map(m => AR.art(m.p, {size: 'm', below: 1, name: m.d, attrs: `data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info"`})).join('') : Array.from({length: 6}, (_, i) => AR.emptyArt('m', {attrs: `data-view="build" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('')}</div>
     ${AR.plan(lead, back, bench, vs)}
     <div class="ar-acts">${ms.length ? `<button type="button" class="ar-btn" data-view="report">Open my team</button>${C && FC && !sameSix ? `<button type="button" class="ar-link" data-evvs="${esc(C.ev.id)}#${C.ev.top.indexOf(C.t)}">Prep vs the champion ›</button>` : ''}`
       : '<button type="button" class="ar-btn" data-view="build">Add your six</button>'}</div></section>`;

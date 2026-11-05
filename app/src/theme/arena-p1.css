@@ -59,7 +59,6 @@
 @A .ar-acts{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:26px;padding-left:6px}
 @A .ar-vs{display:none}
 @A .ar-home .wkhome{margin-top:40px}
-@A #homeOut.ar-on .wnew{background:var(--ar-sheet)!important;border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-l)!important;margin-top:32px!important}
 /* the rest of Home (ratings, tools, folds) in arena dress */
 @A #homeOut.ar-on>:is(.chpad,.chhtop,.chfolds){margin-left:var(--ar-gutter)!important;margin-right:var(--ar-gutter)!important}
 @A #homeOut.ar-on>.chhtop{background:none!important;padding:0!important;margin-top:48px!important;border:0!important}
@@ -91,17 +90,18 @@
    tile edged in the colour of the section it opens, the icon in that colour, the name, its one line. 2 columns on phones,
    3 on tablets, 4 on desktop. Every tile is the app's own button (data-view), so each opens exactly what it did. */
 @A #homeOut.ar-on .ar-home>.chhtools{margin:56px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
-@A #homeOut.ar-on .htiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px 14px!important;margin-top:18px;padding:0 4px 0 6px}
-@A #homeOut.ar-on .htile,@A #homeOut.ar-on .htile[hidden]{grid-column:auto!important;position:relative;isolation:isolate;display:grid!important;grid-template-columns:26px minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:10px;row-gap:6px;align-items:center;align-content:start;
-  min-height:96px;padding:14px 12px 14px 20px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left;--edge:var(--ar-sec)}
+/* every tile: the icon on its own line, the title on one line under it, then its line; rows of equal height */
+@A #homeOut.ar-on .htiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:1fr;gap:14px 14px!important;margin-top:18px;padding:0 4px 0 6px}
+@A #homeOut.ar-on .htile,@A #homeOut.ar-on .htile[hidden]{grid-column:auto!important;position:relative;isolation:isolate;display:grid!important;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto 1fr;row-gap:6px;align-items:start;align-content:start;
+  min-height:96px;height:100%;padding:14px 12px 14px 20px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left;--edge:var(--ar-sec)}
 @A #homeOut.ar-on .htile::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklch,var(--edge) 22%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 6%,var(--ar-sheet)) 75%)!important}
 /* dark: the tile keeps its section tint all the way across (not a black-grey strip) */
 @A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklab,var(--edge) 30%,#1E1D22),color-mix(in oklab,var(--edge) 16%,#1A191D) 80%)!important}
 @A #homeOut.ar-on .htile::after{display:none!important}
 @A #homeOut.ar-on .htile>svg{grid-row:1;grid-column:1;width:24px!important;height:24px!important;color:var(--edge-ink,var(--edge))!important;stroke:currentColor!important}
-@A #homeOut.ar-on .htile b{grid-row:1;grid-column:2;font:italic 800 17px/1.15 var(--ar-display)!important;font-stretch:108%!important;color:var(--ar-ink)!important}
-@A #homeOut.ar-on .htile :is(.hsd,.hld){grid-row:2;grid-column:1/-1;align-self:start;font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A #homeOut.ar-on .htile b{grid-row:2;grid-column:1;font:italic 800 min(17px,4.4vw)/1.15 var(--ar-display)!important;font-stretch:104%!important;color:var(--ar-ink)!important;white-space:nowrap}
+@A #homeOut.ar-on .htile :is(.hsd,.hld){grid-row:3;grid-column:1;align-self:start;font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-wrap:pretty}
 @A #homeOut.ar-on .htile:active::before{translate:0 1px}
 @media (hover:hover){@A #homeOut.ar-on .htile:hover::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklch,var(--edge) 32%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 10%,var(--ar-sheet)) 75%)!important}}
 /* all eleven are on show, so the "All 11 tools" reveal button has nothing left to reveal */
@@ -126,7 +126,7 @@
 
 /* ---------- Home on desktop: the hero band on the left 55%, runners and tools on the right; then a true 6v6 ---------- */
 @media (min-width:1001px){
-  @A .ar-home{padding:0}
+  @A .ar-home{padding:0;overflow-x:visible}
   @A .ar-deck{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0 48px;align-items:start}
   @A .ar-hh{padding-top:22px;font-size:clamp(52px,5.4vw,76px)!important}
   @A .ar-hero{width:calc(100% + var(--ar-gutter));height:480px;margin:0 0 0 calc(-1 * var(--ar-gutter))}
@@ -148,8 +148,10 @@
   @A .ar-tools{padding-top:30px;gap:14px 16px}
   @A .ar-tools .ar-btn{min-height:60px}
   @A .ar-tools .ar-btn.ar-primary{min-height:80px;font-size:24px}
-  @A .ar-versus{display:grid;grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);margin-top:64px;align-items:start}
-  @A .ar-side{padding:0}
+  @A .ar-versus{display:grid;grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);grid-template-rows:repeat(5,auto);margin-top:64px;align-items:start}
+  @A .ar-side{padding:0;display:grid;grid-row:1/span 5;grid-template-rows:subgrid;align-content:start}
+  @A .ar-side>*{min-width:0}
+  @A .ar-vs{grid-row:1/span 5}
   @A .ar-vs{position:relative;display:grid;place-items:center;align-self:stretch}
   @A .ar-vs::before{content:"";position:absolute;top:150px;bottom:60px;left:50%;width:3px;background:linear-gradient(var(--ar-pink),var(--ar-blue));transform:skewX(-10deg);border-radius:2px;opacity:.6}
   @A .ar-vs span{position:relative;font-size:48px;background:var(--ar-paper);padding:10px 0;color:var(--ar-ink)}
@@ -164,6 +166,8 @@
   @A #homeOut.ar-on .hrow{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:40px!important}
   @A #homeOut.ar-on .htiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px 22px!important}
   @A #homeOut.ar-on .htile{min-height:108px;padding:16px 16px 16px 24px!important}
+  @A #homeOut.ar-on .htile :is(.hsd,.hld){font-size:var(--ar-fs-body)!important}
+  @A #homeOut.ar-on .htile b{font-size:19px!important}
 }
 @media (min-width:600px) and (max-width:1000px){
   @A .ar-hero{height:420px}
@@ -438,3 +442,68 @@
 @A [data-pane="report"] .chleg i.g-mid{background:#0068AD!important;color:#fff!important}
 @A [data-pane="report"] .chleg i.g-ok{background:#16693B!important;color:#fff!important}
 @A #lairSheet .ty{color:var(--ar-ink)!important}
+
+/* =====================================================================================================================
+   Review 1 fixes, Home (phase 1 reviewer, Nov 5)
+   ===================================================================================================================== */
+/* What's new: an arena strip (slanted sheet strip, section edge), not a white box; 15px text; a 44px dismiss */
+@A #homeOut.ar-on .wnew{position:relative;isolation:isolate;margin-top:32px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A #homeOut.ar-on .wnew>summary{position:relative;isolation:isolate;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 6px 6px 22px;margin-left:6px}
+@A #homeOut.ar-on .wnew>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;-webkit-mask:none!important;mask:none!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
+@A[data-look="dark"] #homeOut.ar-on .wnew>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklab,var(--ar-sec) 18%,#1E1D22),#1E1D22 70%)!important}
+@A #homeOut.ar-on .wnew .wk{font:italic 800 17px/1.15 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;white-space:nowrap}
+@A #homeOut.ar-on .wnew .wns{font-size:15px!important;color:var(--ar-ink-2)!important;line-height:1.3}
+@A #homeOut.ar-on .wnew .fbx{position:relative;flex:none;width:44px!important;height:44px!important;display:grid;place-items:center;border-radius:50%!important;color:var(--ar-ink-2)!important;background:none!important}
+@A #homeOut.ar-on .wnew .fbx::after{display:none}
+@A #homeOut.ar-on .wnew ul{padding:16px 4px 0 10px!important;gap:12px!important}
+@A #homeOut.ar-on .wnew li{font-size:15px!important;line-height:1.45}
+@A #homeOut.ar-on .wnew li b{font-weight:700;color:var(--ar-ink)}
+@A #homeOut.ar-on .wnew li span{color:var(--ar-ink-2)!important}
+/* the rest of Home's older text (the folds, What changed, cores, battles) never below 15px */
+@A #homeOut.ar-on :is(.chbody,.hsec,.hfb) :is(.chk,.nm,.t2,.basis,h4,.tn,.tr,.vsub,.hcn,.hcw,p,span:not([class])){font-size:15px!important}
+@A #homeOut.ar-on .chbody .chk{font:600 16px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
+/* "Rankings ›": an arena link with a full tap area */
+@A #homeOut.ar-on .hlink{display:inline-flex;align-items:center;min-height:44px;padding:0 2px;font:600 15px/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;background:none!important;border:0!important;
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+/* the champion's actions: both strips the same height, side by side on phones (the events link under them) */
+@A .ar-side .ar-acts .ar-btn{min-height:48px!important}
+@media (max-width:599px){@A .ar-side .ar-acts .ar-btn{font-size:15px;padding:0 12px 0 16px;gap:8px}@A .ar-side .ar-acts{gap:12px}}
+/* empty six (no team yet): faint section-blue tiles with a "+", each opens Build */
+@A .ar-art.is-empty{cursor:pointer}
+@A .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklch,var(--ar-sec) 20%,var(--ar-paper)),color-mix(in oklch,var(--ar-sec) 9%,var(--ar-paper)))!important;box-shadow:none!important}
+@A[data-look="dark"] .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklab,var(--ar-sec) 26%,#1A191D),color-mix(in oklab,var(--ar-sec) 10%,#141316))!important}
+@A .ar-art .ar-plus{position:absolute;left:50%;top:calc(var(--lift,22px) + var(--h,112px) / 2);z-index:2;width:44px;height:44px;margin:-22px 0 0 -22px;display:grid;place-items:center;border-radius:50%;
+  background:var(--ar-sheet);color:var(--ar-sec-ink);box-shadow:var(--ar-shadow-s);font:700 26px/1 var(--ar-body)}
+@A .ar-art.is-empty .ar-nm{color:var(--ar-ink-2)!important;font-family:var(--ar-body)!important;font-style:normal!important;font-weight:600!important;font-stretch:100%!important}
+@media (hover:hover){@A button.ar-art.is-empty:hover .ar-f{transform:skewX(var(--ar-slant)) translateY(-2px)}}
+/* hover: the hero and the runners lift like the art tiles */
+@media (hover:hover){@A .ar-hero:hover .ar-hero-bg,@A .ar-runner:hover .ar-runner-f{transform:translateY(-3px)}
+  @A .ar-hero:hover .ar-hero-mon,@A .ar-runner:hover .ar-runner-mon{translate:0 -3px}}
+@media (prefers-reduced-motion:no-preference){@A :is(.ar-hero-bg,.ar-runner-f,.ar-hero-mon,.ar-runner-mon){transition:transform .16s ease-out,translate .16s ease-out}}
+
+/* ---------- the wordmark (the approved C mockup): Unbounded "Nasty", then "Plot" on a slanted blue plate with a red offset.
+   One mark in the header, the menu and the footer; the older lockups stay in the markup (scripts add them) but hide. The name
+   is read from the .sr text next to it. ---------- */
+@A :is(.band .brand,.sidetop .logo,.lgbrand) :is(.nplk,.np){display:none!important}
+@A .ar-logo{display:inline-flex;align-items:center;font:900 22px/1 "Unbounded",var(--ar-display);font-style:normal;letter-spacing:-.02em;white-space:nowrap;text-transform:none}
+@A .ar-logo-n{color:var(--ar-ink)}
+@A .ar-logo-p{position:relative;isolation:isolate;margin-left:4px;padding:4px 12px 5px 10px;color:#fff}
+@A .ar-logo-p::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-blue);transform:skewX(-14deg);border-radius:3px;box-shadow:3px 3px 0 #C41E35}
+@A .band .brand{display:inline-flex!important;align-items:center;min-height:44px}
+@A .lgbrand .ar-logo{font-size:20px}
+@A .sidetop .logo .ar-logo{font-size:22px}
+@media (min-width:1001px){@A .band .ar-logo{font-size:27px}@A .lgbrand .ar-logo{font-size:22px}}
+
+/* ---------- the footer: 15px text (16px on desktop), 44px links, no leading gap before "Send feedback"; the page ends at the
+   footer plus the room the floating bar needs (bar 66 + 14 above the safe area + 16), not 200px of blank paper ---------- */
+@A footer.legal{margin-top:32px!important}
+@A footer.legal :is(p,.lgtag){font-size:15px!important;line-height:1.55!important}
+@A footer.legal .linkbtn{display:inline-flex;align-items:center;min-height:44px!important;padding:0!important;margin:0!important;font-size:15px!important;color:var(--ar-sec-ink)!important;
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@A footer.legal .lgsrc .fbbtn:not([hidden]){display:flex;width:max-content;margin-top:4px!important}
+@A footer.legal .lglinks{gap:0 24px!important}
+@A footer.legal .lgsp{display:none}
+@media (min-width:1001px){@A footer.legal :is(p,.lgtag,.linkbtn){font-size:16px!important}}
+@media (max-width:1000px){@A main{padding-bottom:40px!important}@A .mainwrap{padding-bottom:0!important}
+  @A footer.legal{padding-bottom:16px!important}@A body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}}
