@@ -1084,3 +1084,8 @@
 /* P-N8: no empty band between "Your games" and "1 Fix it": the parts follow the team block at one section gap */
 @A:not(#arbw) [data-pane="report"] #chTeam{margin-bottom:0!important}
 @A:not(#arbw) [data-pane="report"] #chTeam~.chparts{margin-top:12px!important}
+/* NEW-12: coverage's list label ("Closest options, with their trade-offs") at the 15px floor */
+@A:not(#arbw) [data-pane="coverage"] #recList>.lbl,@A:not(#arbw) [data-pane="coverage"] .recgrid .lbl{font-size:15px!important}
+/* NEW-10: Log a game's leads: the focus ring (and the selected ring) follow the slanted field, never an upright box */
+@A:not(#arbw):not(#arbx) [data-pane="report"] .myrec .qllead:is(:focus,:focus-visible){outline:none!important;box-shadow:none!important}
+@A:not(#arbw):not(#arbx) [data-pane="report"] .myrec .qllead:focus-visible .arb-f{outline:3px solid var(--ar-focus)!important;outline-offset:3px!important}
