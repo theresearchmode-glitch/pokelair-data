@@ -403,3 +403,9 @@
    pair ---------- */
 @A svg[viewBox="124 72 264 293"] path{fill:currentColor!important}
 @A .chtog{color:var(--ar-sec-ink)!important}
+
+/* ---------- 27. the two retired type colours (final fix 1): the app's TC now holds the arena Dark (#5E5068, a slate violet,
+   not the old brown #5F4536) and Normal (#A6A2AE, a cool lilac-grey, not khaki #ABA88A), set by 74-arena.js before anything
+   renders. These are the older layers' hard-coded copies. ---------- */
+@A th[title="Normal"][style*="color"]{box-shadow:inset 0 -4px 0 #A6A2AE!important}
+@A th[title="Dark"][style*="color"]{box-shadow:inset 0 -4px 0 #5E5068!important}

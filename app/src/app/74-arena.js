@@ -4,24 +4,39 @@
 // colours. Controls keep the attributes the app's handlers listen for (data-lt, data-view, data-chset, data-chgrade,
 // data-chedit, data-evload, data-evvs, data-sdcopy), and the moved nodes (#rzSet, #chGwhy, #chActs) keep their handlers.
 const AR = {};
-/* arena type palette: the app's type colours, except Dark, which reads brown on a field (Sim: no brown fills) */
-AR.TC = Object.assign({}, TC, {Dark: '#5E5068'});
+/* arena type palette: the app's type colours, except two. Dark (#5F4536) reads brown and Normal (#ABA88A) reads khaki on a field
+   (Sim: no brown, olive or khaki fills). Dark becomes a slate violet and Normal a cool lilac-grey. The app's own TC is changed
+   too, before anything renders, so every older page part (Home's rating rows, the Type chart, tables, the share card) draws
+   the same two colours as the arena components. */
+AR.TC_FIX = {Dark: '#5E5068', Normal: '#A6A2AE'};
+try { Object.assign(TC, AR.TC_FIX); } catch (e) {}
+AR.TC = Object.assign({}, TC, AR.TC_FIX);
 /* dark-mode field colours (true black): every type at the same vivid chroma, cool and red hues at a mid lightness, the
    orange-to-yellow hues (Fire, Electric, Ground, Rock, Normal...) lighter, because a dark orange or yellow reads brown (Sim:
    no brown fills). --on is the text colour that reads on the first type's dark field (white or ink, whichever is 4.5:1+). */
 AR._d = new Map(); AR._k = new Map();
 AR.dark = t => { if (AR._d.has(t)) return AR._d.get(t); let v = TC.Normal;
-  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = h >= 70 && h < 130 ? .76 : h >= 38 && h < 70 ? .64 : .5, c = Math.max(Math.min(C, .17), Math.min(C, .05));
+  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = C < .03 ? .7 : h >= 70 && h < 130 ? .76 : h >= 38 && h < 70 ? .64 : .5, c = Math.max(Math.min(C, .17), Math.min(C, .05));
     v = MG.hex(L, c, H); AR._k.set(t, {L, c, h}); } catch (e) {}
   AR._d.set(t, v); return v; };
-/* the middle stop of a dark dual-type field. A straight blend can cross the brown zone (a warm hue, orange to olive, at a mid
-   lightness): Grass to Fairy the short way round passes olive, Ground to Steel through taupe. The middle takes the short way
-   round the hue circle unless that lands in the warm zone, then the long way; a warm middle that is still left is lifted to a
-   light gold or orange (L .72), which never reads brown. */
+/* the middle stop of a dark dual-type field. It always lies between the two types' hues, the short way round the hue circle,
+   so a field never shows a colour that belongs to neither type (Indeedee was crimson, blue, then khaki). Three guards keep it
+   off brown, olive and khaki:
+   - a near-neutral type (Normal, C < .03) has no hue of its own: the middle takes the other type's hue (pink to grey stays
+     pink, then greys out), and a warm partner simply holds its own colour to the middle (a dimmed orange or gold is tan);
+   - a middle that lands on a warm hue (orange to yellow-green, 30 to 135) is lifted to L .78 and kept vivid (C .13 or more),
+     a light gold, never a brown or a khaki;
+   - two hues exactly opposite (180 apart) go round through the cooler side. */
+AR.warm = h => { h = (h + 360) % 360; return h >= 30 && h < 135; };
 AR.mid = (a, b) => { if (a === b) return AR.dark(a); AR.dark(a); AR.dark(b); const A = AR._k.get(a), B = AR._k.get(b); if (!A || !B) return AR.dark(a);
-  const warm = h => { h = (h + 360) % 360; return h >= 30 && h < 135; }, d = ((B.h - A.h + 540) % 360) - 180, h1 = A.h + d / 2, h2 = h1 + 180;
-  let L = (A.L + B.L) / 2, h = !warm(h1) ? h1 : !warm(h2) ? h2 : h1; if (warm(h)) L = Math.max(L, .72);
-  try { return MG.hex(L, Math.max(.1, (A.c + B.c) / 2), (h + 360) % 360); } catch (e) { return AR.dark(a); } };
+  try { const nA = A.c < .03, nB = B.c < .03;
+    if (nA && nB) return MG.hex((A.L + B.L) / 2, (A.c + B.c) / 2, A.h);
+    if (nA || nB) { const V = nA ? B : A, N = nA ? A : B; if (AR.warm(V.h)) return AR.dark(nA ? b : a);
+      return MG.hex((V.L * 2 + N.L) / 3, V.c, V.h); }
+    let d = ((B.h - A.h + 540) % 360) - 180; if (Math.abs(Math.abs(d) - 180) < 1e-6) { const m1 = A.h + 90, m2 = A.h - 90; d = AR.warm(m1) && !AR.warm(m2) ? -180 : 180; }
+    const h = (A.h + d / 2 + 360) % 360; let L = (A.L + B.L) / 2, c = Math.max(.1, (A.c + B.c) / 2);
+    if (AR.warm(h)) { L = Math.max(L, .78); c = Math.max(c, .13); }
+    return MG.hex(L, c, h); } catch (e) { return AR.dark(a); } };
 AR.tv = p => { const t = (p && p.t) || ['Normal'], a = t[0], b = t[1] || t[0], da = AR.dark(a), db = AR.dark(b);
   return `--a:${AR.TC[a] || TC.Normal};--b:${AR.TC[b] || TC.Normal};--da:${da};--dm:${AR.mid(a, b)};--db:${db};--on:${AR.on(da)}`; };
 /* the text colour on the first type's dark field: white or ink, whichever has the better contrast. Text on a hero field sits
