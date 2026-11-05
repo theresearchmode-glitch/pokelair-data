@@ -873,3 +873,5 @@
 @A [data-pane="compare"] .cxsix .ar-art .ar-nm{opacity:0}
 @A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) :is(.thcalc,.thcond){font-size:15px!important;line-height:1.45}
 @A [data-pane="compare"] .cxl.dbhand svg{display:none!important}
+/* Your games band: its full-bleed margin never wider than the space beside the column (it ran 16px past the page at 1024) */
+@media (min-width:1001px) and (max-width:1279px){@A [data-pane="report"] #myRec{margin-left:calc(-1 * min(var(--ar-gutter), (100vw - 100%) / 2))!important;margin-right:calc(-1 * min(var(--ar-gutter), (100vw - 100%) / 2))!important}}
