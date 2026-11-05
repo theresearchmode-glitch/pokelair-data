@@ -697,4 +697,4 @@
   @A #lairSheet .chlstats{grid-template-columns:repeat(3,max-content)!important;column-gap:18px!important;justify-content:start}
   @A #lairSheet .chlstats b{font-size:21px!important}}
 /* the info sheet's small text (F14): 15px everywhere, the tab sub-labels included */
-@A #lairSheet :is(.lsvl,.lsvn,.lsvo,.lstd,.lsact .t2,.fbmis,.lstabs .lstab span,.chleg,.lsvr>span){font-size:15px!important}
+@A #lairSheet :is(.lsvl,.lsvn,.lsvo,.lstd,.lsact .t2,.fbmis,.lstabs .lstab span,.chleg,.lsvr>span,.nplink){font-size:15px!important}

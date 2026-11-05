@@ -281,7 +281,7 @@ These are the shared patterns after the two final reviews. `arena.css` sections 
 11. D-F10: give `[data-pane="teams"] .mmpop .danger` the same weight as the generic button rule (`:not(#arbz):not(#arby)`), so Delete keeps its pink ink and hairline.
 12. D-F11, P-N5: Saved team cards: one left edge for the title, record and actions.
 13. D-F20, P-N6: dark Saved teams cards and the compare picks: the neutral dark band (`#16151A` to `#121114`) with the 6–8px blue edge, no navy.
-14. D-F24: delete the centring of `.ar-below .ar-nm` on My box, Log a game leads and the share card (section 28 now forces left).
+14. D-F24: delete the centring of `.ar-below .ar-nm` on My box and the share card (section 28 now forces left), and left-align Log a game's lead names (`.qllead > span`, not an `.ar-art`, so section 28 does not reach it).
 15. D-F29: Saved teams and My box sort: "Sort" label then `.ar-seg`, left-aligned on its own row.
 16. P-N8: "Why? 13 reasons ⌄": the chevron sits right after the label; the open reasons use the fold body, not a paper-2 panel; close the empty gap under "Your games".
 17. The `.ty:is([style*="#5f4536"])` remap (line ~877) is now dead: the app's TC holds `#5E5068`. Delete it.
