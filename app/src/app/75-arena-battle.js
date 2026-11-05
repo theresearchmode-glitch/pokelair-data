@@ -116,7 +116,10 @@ CH.wrap('renderGauntlet', () => ARB.parts());
 ARB.practice = () => { const pane = document.querySelector('[data-pane="practice"]'); if (!pane) return;
   pane.querySelectorAll('.prm:not(.ar-art)').forEach(m => { const p = ARB.pOfImg(m.querySelector('img.spr')); if (p) ARB.artify(m, p, 's', '.prmn'); });
   pane.querySelectorAll('.prpick:not(.ar-art)').forEach(b => { const p = byName.get(b.dataset.prpick); if (p) ARB.artify(b, p, 'm', '.prmn'); if (b.classList.contains('on')) b.classList.add('is-sel'); });
-  pane.querySelectorAll('.prmini img.spr, .prrate img.spr').forEach(i => ARB.bf(i, ARB.pOfImg(i))); };
+  pane.querySelectorAll('.prmini img.spr, .prrate img.spr').forEach(i => ARB.bf(i, ARB.pOfImg(i)));
+  /* the two steps ("1 · Bring four"): the number becomes a numeral of its own, the words stay */
+  pane.querySelectorAll('.prst:not(.ar-st)').forEach(st => { const t = st.firstChild, m = t && t.nodeType === 3 && /^\s*(\d)\s*[·,:]\s*/.exec(t.nodeValue); st.classList.add('ar-st'); if (!m) return;
+    t.nodeValue = t.nodeValue.slice(m[0].length); st.insertAdjacentHTML('afterbegin', `<span class="ar-stn">${m[1]}</span>`); }); };
 CH.wrap('renderPractice', () => ARB.parts());
 
 /* ======================= Type chart: your team as small art buttons ======================= */

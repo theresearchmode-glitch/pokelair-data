@@ -12,6 +12,9 @@
 @A .arb .chback{display:inline-flex!important;align-items:center;gap:8px;min-height:44px;padding:0 2px!important;margin:0 0 6px!important;color:var(--ar-sec-ink)!important;font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;
   text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
 @A .arb .chback span{font-size:inherit!important;color:inherit!important}
+/* arena.css section 19 gives the old raised buttons an upright sheet fill and shadow through a selector with seven ids. On these
+   pages every one of them draws its shape in ::before, so the upright box goes (two extra :not(#id) beat that selector). */
+@A .arb :is(.ar-seg>button,.ar-chip,.typebtn,.prmode,.tcb,.chback,.ttmon,.dcswap):not(#_g):not(#_h){background-color:transparent!important;background-image:none!important;box-shadow:none!important;border:0!important}
 /* the Speed / Calc / Type chart switch sits on the paper above the title */
 @A .arb .toolsw{margin:2px 0 18px!important}
 /* page title: a slanted section tab, then the italic display face; the kicker sits above it as a quiet line */
@@ -37,6 +40,8 @@
 @A .arb :is(.ph .pt,h3.chsub3)::before{content:""!important;display:block!important;position:static!important;flex:none;width:20px;height:20px;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant))!important;border-radius:3px!important;inset:auto!important}
 /* old panels on these pages: no frame, no box, just paper and spacing */
 @A .arb :is(.plan,.bmcard,.chpanel,.chblock,.vcard,.prcard,.prband,.gitem,.gsum,.prstart,.fixcol),@A [data-pane="types"] .mucols>div{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding-left:0!important;padding-right:0!important}
+/* arena.css section 19 paints these paper-2 in dark mode with a stronger selector: Battle's pages keep them on the page */
+@A[data-look="dark"] .arb :is(.plan,.bmcard,.chpanel,.chblock,.vcard,.prcard,.prband,.gitem,.gsum,.prstart,.fixcol,.chcalcdef,.bmw,.empty-note,.chbring,.dccol,.chdcband,.dcres:not(.ar-sheet)){background:none!important;background-color:transparent!important}
 @A .arb :is(.plan,.bmcard,.chpanel,.chblock,.prcard,.prband,.gitem)::before{content:none!important;display:none!important}
 /* folds: a slanted strip you tap, the body upright under it (as My team's folds) */
 @A .arb details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:16px 0 0!important;border-radius:0!important}
@@ -75,6 +80,9 @@
 @A .arb .empty-note .mgeart img{position:absolute!important;left:50%;bottom:0;width:92px!important;height:92px!important;max-width:none;transform:translateX(-50%) skewX(var(--ar-unslant))!important;filter:none!important}
 @A .arb .empty-note>div{grid-column:2;margin-top:0!important}
 @A .arb .empty-note:not(:has(.mgeart))>div{grid-column:1}
+/* names under the art break between words only, and step down a size in the three-column grids on small phones */
+@A .arb .ar-art .ar-nm{overflow-wrap:break-word;hyphens:manual}
+@media (max-width:420px){@A .arb :is(.bmopp,.prsix:not(.mine),.chcalcatk,.prfour) .ar-art .ar-nm{font-size:clamp(14px,4vw,16px)!important}}
 /* small type field behind a lone sprite (75-arena-battle.js ARB.bf) */
 @A .arb .ar-bf{position:relative;display:inline-block;flex:none;width:52px;height:34px;margin:14px 4px 0 2px;vertical-align:bottom}
 @A .arb .ar-bf>.ar-field{position:absolute;inset:0;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
@@ -124,7 +132,8 @@
 @A [data-pane="matchup"] .bmopp .bmslot:not(.on)::before{content:""!important;display:block!important;position:absolute!important;left:0;right:0;top:12px;height:72px;inset:12px 0 auto 0!important;z-index:0;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l);
   background:color-mix(in oklch,var(--ar-ink) 6%,var(--ar-paper))!important;border:0!important;box-shadow:none!important}
 @A[data-look="dark"] [data-pane="matchup"] .bmopp .bmslot:not(.on)::before{background:#16151A!important}
-@A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{position:relative;z-index:1;height:72px;display:flex;align-items:center;padding:0 10px}
+@A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{position:relative;z-index:1;width:100%!important;height:72px;display:flex;align-items:center;padding:0 12px 0 8px}
+@A [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb>*{flex:1 1 auto;width:100%!important;min-width:0}
 @A [data-pane="matchup"] .bmopp .bmslot:not(.on) input.field{width:100%;min-height:44px;text-align:center;font:600 16px/1.2 var(--ar-body)!important}
 /* "The read": Battle's one hero. The lead pair breaks out of a diagonal band with the page's one burst; their lead and their
    biggest threat are the two runner strips (as Home's runners-up); Fake Out on their side is a plain numeral. */
@@ -419,8 +428,9 @@
 @A [data-pane="calc"] .dcfield .ar-seg{margin:0!important}
 /* the result: the cut-corner sheet, the range as a big numeral, a slanted HP bar under it, the KO chance in words */
 @A [data-pane="calc"] .ar-dcwrap{margin:8px 0 0}
+@A[data-look="dark"] [data-pane="calc"] .dcres.ar-sheet{background:linear-gradient(in oklab 160deg,color-mix(in oklab,var(--a,var(--ar-sec)) 10%,#1A191D),#1A191D 62%)!important}
 @A [data-pane="calc"] .dcres.ar-sheet{padding:22px 22px 18px 30px!important;margin:0!important;min-height:0}
-@A [data-pane="calc"] .dcbig.ar-num{display:block;margin:0!important;font-size:min(68px,16vw)!important;line-height:.95!important;color:var(--ar-ink)!important;background:none!important;-webkit-text-stroke:0!important}
+@A [data-pane="calc"] .dcbig.ar-num{display:block;margin:0!important;font-size:min(68px,13vw)!important;white-space:nowrap;line-height:.95!important;color:var(--ar-ink)!important;background:none!important;-webkit-text-stroke:0!important}
 @A [data-pane="calc"] .dcbig small{display:block;margin:8px 0 0!important;font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;font-style:normal!important;letter-spacing:0!important;color:var(--ar-ink-2)!important;text-shadow:none!important}
 @A [data-pane="calc"] .dcbar{display:flex!important;height:18px!important;margin:16px 4px 14px!important;max-width:none;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:3px!important;overflow:hidden;border:0!important;box-shadow:none!important}
 @A [data-pane="calc"] .dcbar span{display:block;height:100%!important;margin:0!important;border:0!important;border-radius:0!important}
@@ -581,7 +591,7 @@
 @A [data-pane="practice"] .prmini{display:flex!important;flex-wrap:wrap;gap:2px 4px;margin-top:6px!important;background:none!important}
 @A [data-pane="practice"] .prmini .ar-bf{width:40px;height:26px;margin:14px 2px 0 0}
 @A [data-pane="practice"] .prmini .ar-bf>img{width:42px!important;height:42px!important}
-@A [data-pane="practice"] .prgo{width:auto!important;min-width:min(280px,calc(100% - 12px));margin:4px 0 0 6px!important}
+@A [data-pane="practice"] .prgo{width:auto!important;max-width:calc(100% - 12px);min-width:min(280px,calc(100% - 12px));margin:4px 0 0 6px!important;white-space:normal!important;text-align:left;padding-top:8px!important;padding-bottom:8px!important}
 @A [data-pane="practice"] .prsrc{margin-top:18px!important}
 /* the score: three numerals */
 @A [data-pane="practice"] .prscore{display:flex!important;flex-wrap:wrap;gap:12px 28px;margin:0 0 20px!important;padding:0!important;background:none!important;border:0!important}
@@ -612,6 +622,7 @@
 @A [data-pane="practice"] .prst.on{color:#fff!important;font-weight:700!important}
 @A [data-pane="practice"] .prst.on::before{background:var(--ar-blue-plate)}
 @A [data-pane="practice"] .prst b{color:inherit!important}
+@A [data-pane="practice"] .prst .ar-stn{font:italic 900 18px/1 var(--ar-display);font-stretch:120%;margin-right:2px}
 @A [data-pane="practice"] .prhint{margin:0 0 14px 4px!important;font:600 var(--ar-fs-body)/1.35 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A [data-pane="practice"] .prwho{margin:-8px 0 20px!important}
 @A [data-pane="practice"] .prrow{display:flex!important;flex-wrap:wrap;gap:4px 20px;margin-top:10px!important}
@@ -630,8 +641,9 @@
 @media (min-width:1001px){@A [data-pane="practice"] .prgrid2{grid-template-columns:repeat(2,minmax(0,1fr));gap:36px!important}}
 @A [data-pane="practice"] .prcard{padding:0!important;margin:0 0 20px!important}
 @A [data-pane="practice"] .prcard>.chk{margin:0 0 10px!important;font:italic 800 18px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
-@A [data-pane="practice"] .prfour{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px 8px!important;padding:0 2px 0 6px!important;margin:0 0 6px!important}
-@A [data-pane="practice"] .prfour .prm.ar-art .ar-nm{font-size:15px!important}
+@A [data-pane="practice"] .prfour{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px 8px!important;padding:0 2px 0 6px!important;margin:0 0 6px!important}
+@A [data-pane="practice"] .prfour .prm.ar-art .ar-nm{font-size:16px!important}
+@media (min-width:600px){@A [data-pane="practice"] .prfour{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @A [data-pane="practice"] .prpair{color:var(--ar-ink-2);margin:6px 0 12px!important}
 @A [data-pane="practice"] .prrates{display:block!important}
 @A [data-pane="practice"] .prrate{display:grid!important;grid-template-columns:60px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important}
