@@ -992,3 +992,46 @@
 @A [data-pane="report"] .myrec .qllead:focus-visible .arb-f{outline:3px solid var(--ar-focus)!important;outline-offset:3px}
 @A #chEdit .chst:focus-visible,@A #chScout .chtile:focus-visible{outline:none!important}
 @A #chEdit .chst:focus-visible .arb-f,@A #chScout .chtile:focus-visible .arb-f{outline:3px solid var(--ar-focus)!important;outline-offset:3px}
+
+/* =====================================================================================================================
+   Final review fixes (final_phone / final_desktop FINDINGS). Later rules here win over the passes above. The extra
+   :not(#…) ids match the weight of this file's button rules, so these overrides hold.
+   ===================================================================================================================== */
+/* F10 (desktop): Saved teams ⋯ menu: quiet rows with no edge in either theme; Delete in pink ink under a hairline */
+@A[data-look] :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby):not(#arbw)::before{background:none!important;box-shadow:none!important;transform:none!important}
+@media (hover:hover){@A[data-look] :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby):not(#arbw):hover::before{background:color-mix(in oklch,var(--ar-sec) 12%,transparent)!important}}
+@A[data-look] [data-pane="teams"] .mmpop .btn.danger:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby):not(#arbw){color:var(--ar-pink-ink)!important;margin-top:6px!important;border-top:1px solid var(--ar-rule-2)!important;border-radius:0 0 var(--ar-r-m) var(--ar-r-m)!important}
+/* F20 (desktop) / N6: the dark cards are neutral, like the My team stage; the open team keeps a 6px blue edge, a picked one a yellow edge */
+@A[data-look="dark"] [data-pane="teams"] .svt::before{background:linear-gradient(110deg,#141316,#0E0E10)}
+@A[data-look="dark"] [data-pane="teams"] .svt.on::before{background:linear-gradient(var(--ar-blue),var(--ar-blue)) 0 0/6px 100% no-repeat,linear-gradient(110deg,#1A191D,#121114)}
+@A[data-look="dark"] [data-pane="teams"] .svt.cmpon::before{background:linear-gradient(var(--ar-yellow),var(--ar-yellow)) 0 0/6px 100% no-repeat,linear-gradient(110deg,#1A191D,#121114)}
+/* F11 (desktop) / N5: a card's actions start on the same left edge as its name and grade */
+@A [data-pane="teams"] .svacts{justify-self:stretch!important;margin-left:0!important;padding-left:6px!important;width:auto!important;max-width:460px}
+@A [data-pane="teams"] .svfoot{justify-items:start}
+@A [data-pane="teams"] .svfoot>.svacts{justify-self:stretch!important}
+/* "Open now" at the body minimum */
+@A [data-pane="teams"] .svhd .tag{font-size:15px!important}
+/* F07 (phone): Compare picker: the sprite cluster keeps its own column, so the event text never runs under it */
+@A [data-pane="compare"] .cxopt{grid-template-columns:minmax(0,1fr) max-content!important}
+@A [data-pane="compare"] .cxos{width:max-content!important;min-width:max-content!important;justify-self:end}
+@A [data-pane="compare"] .cxot{min-width:0;overflow-wrap:break-word}
+/* F1 (desktop): the threat sheet's small sprites stand on their slanted field only (no old round avatar ring) */
+@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) :is(.arb-mf,.arb-mf-f){border:0!important;box-shadow:none;outline:0}
+@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) .arb-mf{border-radius:0!important;background:none!important}
+/* F11 (phone): the Megas note on My team's Fix it (and the coverage gap note) is the arena note: a sheet with a gold spine, no outline */
+@A :is([data-pane="report"],[data-pane="coverage"]) :is(.chgapnote,p.gapnote){margin:10px 0 0!important;padding:12px 16px 12px 20px!important;position:relative;background:var(--ar-sheet)!important;border:0!important;outline:0!important;
+  border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;font:500 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A :is([data-pane="report"],[data-pane="coverage"]) :is(.chgapnote,p.gapnote)::before{content:""!important;display:block!important;position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-gold)!important;border-radius:0 3px 3px 0}
+@A[data-look="dark"] :is([data-pane="report"],[data-pane="coverage"]) :is(.chgapnote,p.gapnote){background:#1A191D!important}
+/* F16 (phone): "Paste its log" sits in the line at the text's size; its 44px tap area comes from an inset */
+@A .myrec .qlog [data-qlreplay]{position:relative;display:inline!important;min-height:0!important;height:auto!important;padding:0 2px!important;margin:0!important;line-height:inherit!important;vertical-align:baseline}
+@A .myrec .qlog [data-qlreplay]::after{content:""!important;position:absolute;left:-6px;right:-6px;top:50%;height:44px;transform:translateY(-50%);background:none!important}
+/* F23 (phone): editor slot titles never break inside a word: whole words only, the size steps down to fit (75-arena-team.js) */
+@A #chEdit .thead .sl-name{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important}
+@media (max-width:419px){@A #chEdit .thead .sl-name{font-size:24px!important;font-stretch:108%!important}}
+/* F3/F4 (desktop) and F14 (phone): tags, chips, table heads and small marks at the 15px minimum on My team's folds, All
+   suggestions, the editor and the threat sheet */
+@A:not(#arbw) :is([data-pane="report"],[data-pane="coverage"],#chEdit,#chScout) :is(.sev,.ty,.tag,.archchip,.conf,.asm,.bp,.rchip,.m,.ck,.ckpro,.gnm){font-size:15px!important}
+@A:not(#arbw) :is([data-pane="report"],[data-pane="coverage"],#chEdit,#chScout) :is(table th,.chleg,.chleg i){font-size:15px!important}
+@A:not(#arbw) [data-pane="coverage"] .plan :is(ul li,ul li b){font-size:15px!important;line-height:1.45!important}
+@A:not(#arbw) #chEdit .mvset .caret{font-size:15px!important}

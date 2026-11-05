@@ -24,7 +24,8 @@ ARB.saved = () => { const L = $('savedList'); if (!L) return;
     const t = id && S.teams.find(x => x.id === id); if (!t) return; let ms = []; try { ms = teamRating(t.slots).ms; } catch (e) {}
     six.classList.add('arb-six', 'ar-six'); six.setAttribute('role', 'group');
     six.innerHTML = ms.map(m => AR.art(m.p, {tag: 'div', size: 's', below: 1, name: ARB.nb(m.d), attrs: `title="${esc(m.d)}"`})).join('') + Array.from({length: Math.max(0, 6 - ms.length)}, () => AR.emptyArt('s')).join('');
-    card.querySelectorAll('.svacts .btn.primary[data-load]').forEach(b => b.classList.add('arb-open')); });
+    card.querySelectorAll('.svacts .btn.primary[data-load]').forEach(b => b.classList.add('arb-open'));
+    const nm = card.querySelector('.svname'); if (nm && nm.children.length === 0) nm.textContent = ARB.nbTitle(nm.textContent); });
   const none = L.querySelector(':scope > .empty-note'); if (none && !none.classList.contains('ar-empty')) { const top = CH.metaSix()[0];
     none.className = 'empty-note ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${(top && sprite(top)) || ''}</span><div><p>No saved teams yet. Open My team and tap Save team, or let NastyPlot build six for you.</p><div class="ar-acts"><button type="button" class="ar-btn" data-view="report">Open My team</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div>`; }
   const h = L.querySelector('.cmphint'); if (h && /^Tap /.test(h.firstChild && h.firstChild.textContent || '') && matchMedia('(hover:hover) and (pointer:fine)').matches) h.firstChild.textContent = h.firstChild.textContent.replace(/^Tap /, 'Click '); };
@@ -56,6 +57,11 @@ CH.wrap('renderRecs', () => ARB.recs()); CH.wrap('renderPlans', () => ARB.recs()
 /* a name never breaks before its last short part ("Mega Charizard Y", "Indeedee (F)") */
 ARB.nb = t => String(t).replace(/ (\S{1,2}|\([A-Za-z]\))$/, '\u00a0$1');
 ARB.nbIn = els => els.forEach(e => { const n = [...e.childNodes].find(x => x.nodeType === 3 && x.textContent.trim()); if (n && !/\u00a0/.test(n.textContent)) n.textContent = ARB.nb(n.textContent); });
+/* shrink an element's font a pixel at a time (to min) until its longest word fits its width; it never breaks inside a word */
+ARB.fit = (el, min) => { if (!el || !el.clientWidth) return; el.style.removeProperty('font-size'); let f = parseFloat(getComputedStyle(el).fontSize), n = 0;
+  while (el.scrollWidth > el.clientWidth + 1 && f > min && n++ < 16) { f -= 1; el.style.setProperty('font-size', f + 'px', 'important'); } };
+/* a Pokémon name inside a team title ("Sun with Mega Charizard Y and Trick Room") keeps its form letter with it */
+ARB.nbTitle = t => String(t).replace(/\b(Mega \S+|Charizard|Mewtwo|Raichu) ([XY])\b/g, '$1 $2').replace(/ \(([FMfm])\)/g, ' ($1)');
 /* icon-only Mega, box and catch chips spelled out as quiet tags (the info sheet does the same) */
 ARB.marks = root => root && root.querySelectorAll('.tag.ico').forEach(e => { e.classList.remove('ico'); e.classList.add('ar-mark');
   e.textContent = e.classList.contains('box') ? 'In your box' : e.classList.contains('mega') ? 'Mega' : e.classList.contains('catch') ? 'To catch' : e.textContent; });
@@ -67,7 +73,9 @@ ARB.overlays = () => { const ed = $('chEdit');
     ed.querySelectorAll('.tcard .thead > img.tspr').forEach(i => ARB.mini(i, 'arb-xl'));
     /* the set sheet takes the arena type colours (the app's Dark is a brown) for its spine */
     ed.querySelectorAll('.tcard[data-tcard]:not([data-arb])').forEach(c => { const sl = S.slots[+c.dataset.tcard], p = sl && byName.get(sl.n); c.dataset.arb = 1; if (p) c.style.cssText += ';' + AR.tv(p); });
-    ARB.marks(ed); const t = $('chEditT'); if (t && !/\u00a0/.test(t.textContent)) t.textContent = ARB.nb(t.textContent); }
+    ARB.marks(ed); const t = $('chEditT'); if (t && !/\u00a0/.test(t.textContent)) t.textContent = ARB.nb(t.textContent);
+    /* slot titles: "Mega Charizard Y" keeps its Y; a word that is wider than its column steps the size down instead of breaking */
+    ed.querySelectorAll('.thead .sl-name').forEach(n => { ARB.nbIn([n]); ARB.fit(n, 18); }); }
   const sc = $('chScout'); if (sc && !sc.hidden) { ARB.marks(sc); sc.querySelectorAll('.chdet img.spr, .chlist .it > img.spr, .chbest img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
     sc.querySelectorAll('.chtile[data-chthr]').forEach(b => ARB.field(b, byName.get(b.dataset.chthr)));
     const d = sc.querySelector('.chdet'), p = d && CH.sel && byName.get(CH.sel); if (d && p && !d.dataset.arb) { d.dataset.arb = 1; d.style.cssText += ';' + AR.tv(p); } }
