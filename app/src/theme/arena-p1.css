@@ -790,3 +790,42 @@
   @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden]) svg{width:24px!important;height:24px!important;margin:0!important;position:static!important;flex:none}
   @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden]) b{font-size:16px!important;line-height:1.15!important;white-space:normal!important;text-wrap:balance;flex:1 1 auto;min-width:0;overflow-wrap:normal}
 }
+/* This week in the ratings: a label and up to four tappable moves under the most-used caption */
+@A .ar-week{margin:14px 0 4px}
+@A .ar-weekk{display:block;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2);margin-bottom:6px}
+@A .ar-mvs{display:flex;flex-wrap:wrap;gap:8px}
+@A .ar-mv{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:0!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;
+  border-radius:8px;box-shadow:var(--ar-shadow-s);font:600 15px/1.2 var(--ar-body);cursor:pointer;transform:skewX(var(--ar-slant))}
+@A .ar-mv>*{transform:skewX(calc(-1 * var(--ar-slant)))}
+@A .ar-mv b{font-weight:700}
+@A .ar-mvd{font-weight:700;font-variant-numeric:tabular-nums}
+@A .ar-mvd.up{color:#00663C}@A .ar-mvd.dn{color:#B3261E}
+@A[data-look="dark"] .ar-mvd.up{color:#7FDCA4}@A[data-look="dark"] .ar-mvd.dn{color:#FF9A90}
+/* Switch team: a quiet fold under the My team title */
+@A .ar-tswitch{margin:6px 0 0}
+@A .ar-tswitch>summary{display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;list-style:none;font:600 15px/1.2 var(--ar-body);color:var(--ar-sec-ink);
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@A .ar-tswitch>summary::-webkit-details-marker{display:none}
+@A .ar-tswn{font-weight:500;color:var(--ar-ink-2);text-decoration:none!important;display:inline-block}
+@A .ar-tswitch>summary{text-decoration:none!important}@A .ar-tswitch>summary .ar-tswt{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@A .ar-tswl{display:flex;flex-direction:column;gap:8px;margin:6px 0 10px;max-width:560px}
+@A .ar-tsw{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 16px;border:0!important;border-radius:8px;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;
+  box-shadow:var(--ar-shadow-s);text-align:left;cursor:pointer;font:600 15px/1.25 var(--ar-body)}
+@A .ar-tswm{display:flex;flex:none}
+@A .ar-tswm img{width:34px!important;height:34px!important;margin:0 -6px 0 0!important}
+@A .ar-tsw b{min-width:0;overflow-wrap:anywhere}
+@media (max-width:420px){@A .ar-tswm img{width:28px!important;height:28px!important;margin-right:-8px!important}}
+/* My team jump links: four slanted chips in one row; the parts leave room for the header when jumped to */
+@A .ar-jumps{display:flex;gap:8px;margin:14px 0 2px;padding:2px 2px 6px}
+@A .ar-jumps::-webkit-scrollbar{display:none}
+@A .ar-jump{flex:1 1 auto;min-width:0;white-space:nowrap;min-height:44px;padding:0 10px;border:0!important;border-radius:8px;background:color-mix(in oklch,var(--ar-sec) 12%,var(--ar-sheet))!important;color:var(--ar-ink)!important;
+  font:600 15px/1 var(--ar-body);cursor:pointer;transform:skewX(var(--ar-slant));box-shadow:var(--ar-shadow-s)}
+@A #chP1,@A #chP2,@A #chP3,@A #chP4{scroll-margin-top:84px}
+@media (min-width:1001px){@A .ar-jumps{display:none}}
+/* Battle mode: recent opponents as one-tap chips of six small sprites */
+@A .ar-recent{margin:12px 0 28px}
+@A .ar-recentk{display:block;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2);margin-bottom:6px}
+@A .ar-recentl{display:flex;flex-direction:column;gap:8px}
+@A .ar-rcopp{display:flex;align-items:center;justify-content:flex-start;gap:0;min-height:48px;padding:4px 14px;border:0!important;border-radius:8px;background:var(--ar-sheet)!important;
+  box-shadow:var(--ar-shadow-s);cursor:pointer;width:100%;max-width:420px}
+@A .ar-rcopp img{width:40px!important;height:40px!important;margin:0 2px 0 0!important}

@@ -79,6 +79,24 @@ AR.BURST = '<svg class="ar-lines" viewBox="0 0 400 350" preserveAspectRatio="non
 AR.mega = n => { n = String(n == null ? '' : n).trim(); const id = /^([A-Za-z.' ]+?)-Mega(?:-([XYZ]))?$/.exec(n); if (id) { const p = byName && byName.get && byName.get(n); return p && p.d ? p.d : `Mega ${id[1]}${id[2] ? ' ' + id[2] : ''}`; }
   return n.replace(/^M-(?=\S)/, 'Mega '); };
 AR.nm = n => escName(AR.mega(n)).replace(/ \(([FMfm])\)/g, '\u00a0($1)');
+/* This week in the ratings (Sim, Nov 5): the week's biggest real rating moves from the daily snapshots (track.mjs mv), each a
+   tap into its info sheet; nothing shows until the data has them */
+AR.week = () => { const M = META.track && META.track.mv; if (!M || !M.list || !M.list.length) return '';
+  const it = M.list.map(m => { const p = byName.get(m.n); if (!p) return ''; const up = m.d > 0;
+    return `<button type="button" class="ar-mv" data-lt="${esc(m.n)}" aria-label="${esc(p.d)}, rating ${m.r}, ${up ? 'up' : 'down'} ${Math.abs(m.d)} this week"><b>${AR.nm(p.d)}</b><span class="ar-mvd ${up ? 'up' : 'dn'}" aria-hidden="true">${up ? '▲' : '▼'} ${Math.abs(m.d)}</span></button>`; }).join('');
+  return it ? `<div class="ar-week"><span class="ar-weekk">This week in the ratings</span><div class="ar-mvs">${it}</div></div>` : ''; };
+/* Quick team switch (Sim, Nov 5): a "Switch team" fold under the My team title lists your other saved teams; each opens with
+   the same data-load action as Saved teams' Open (34-events.js), Undo included */
+AR.switcher = () => { const ts = (S.teams || []).filter(t => t && t.id !== S.loadedId && Array.isArray(t.slots) && t.slots.some(x => x && x.n)).slice(0, 8);
+  if (!ts.length) return '';
+  const row = t => { const ns = t.slots.filter(x => x && x.n).map(x => byName.get(x.n)).filter(Boolean);
+    return `<button type="button" class="ar-tsw" data-load="${esc(t.id)}"><span class="ar-tswm" aria-hidden="true">${ns.slice(0, 6).map(p => sprite(p, 'tiny') || '').join('')}</span><b>${esc(t.name || 'Saved team')}</b></button>`; };
+  return `<details class="ar-tswitch"><summary><span class="ar-tswt">Switch team</span> <span class="ar-tswn">${ts.length} saved</span></summary><div class="ar-tswl">${ts.map(row).join('')}</div></details>`; };
+/* Jump links (Sim, Nov 5): My team is long on phones, so a row under the head goes straight to each numbered part */
+AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to"><button type="button" class="ar-jump" data-arjump="chP1">Fix it</button><button type="button" class="ar-jump" data-arjump="chP2">Threats</button><button type="button" class="ar-jump" data-arjump="chP3">Game plan</button><button type="button" class="ar-jump" data-arjump="chP4">Sets</button></nav>`;
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arjump]'); if (!b) return; const t = $(b.dataset.arjump); if (!t) return;
+  t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+  const h = t.querySelector('h2,h3,summary,button'); if (h && h.focus) setTimeout(() => h.focus({preventScroll: true}), 400); });
 AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
 AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
@@ -128,7 +146,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
     <div class="ar-acts">${ms.length ? `<button type="button" class="ar-btn" data-view="report">Open my team</button>${C && FC && !sameSix ? `<button type="button" class="ar-link" data-evvs="${esc(C.ev.id)}#${C.ev.top.indexOf(C.t)}">Prep vs the champion ›</button>` : ''}`
       : '<button type="button" class="ar-btn" data-view="build">Add your six</button>'}</div></section>`;
   const html = `<div class="ar-home"><div class="ar-deck"><div class="ar-deck-main"><div class="ar-h1 ar-hh" role="heading" aria-level="2">Plot your win.</div>${hero}</div>
-    <div class="ar-deck-side"><div class="ar-runners">${ru.map(runner).join('')}</div><p class="ar-caption">${esc(MG.srcLine())}</p>${tools}</div></div>
+    <div class="ar-deck-side"><div class="ar-runners">${ru.map(runner).join('')}</div><p class="ar-caption">${esc(MG.srcLine())}</p>${AR.week()}${tools}</div></div>
     <div class="ar-versus">${them}${them ? '<div class="ar-vs" aria-hidden="true"><span class="ar-num ar-mp">vs</span></div>' : ''}${you}</div></div>`;
   out.insertAdjacentHTML('afterbegin', html); out.classList.add('ar-on');
   /* All 11 tools (Sim, Nov 5: "a very big part of our site") moves up, right under the hero and the three main buttons */
@@ -195,7 +213,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap a slot to add a Pokémon">${tiles}</div></section>`; }
   const sec = document.createElement('section'); sec.className = 'ar-team' + (ms.length ? '' : ' is-empty'); sec.setAttribute('aria-label', 'My team');
-  sec.innerHTML = `<div class="ar-thead"><p class="ar-kick">My team: <b>${ms.length} of 6</b>${wx}</p><div class="ar-titlerow"><div class="ar-h1 ar-tname" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet').replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2').replace(/ \(([FM])\)/g, '\u00a0($1)')}</div>${score}</div></div>
+  sec.innerHTML = `<div class="ar-thead"><p class="ar-kick">My team: <b>${ms.length} of 6</b>${wx}</p><div class="ar-titlerow"><div class="ar-h1 ar-tname" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet').replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2').replace(/ \(([FM])\)/g, '\u00a0($1)')}</div>${score}</div>${AR.switcher()}</div>${ms.length ? AR.jumps() : ''}
     <div class="ar-tgrid">${stats}${stage}<div class="ar-tacts"></div></div>`;
   head.prepend(sec); head.classList.add('ar-on');
   /* the existing nodes move in, handlers and ids intact */
@@ -332,3 +350,18 @@ if (window.__PL_TEST) { window.__AR = AR; window.__ARX = {TC, ROSTER, SPRITE_ID,
 document.addEventListener('toggle', e => { const d = e.target; if (!d || d.id !== 'chfFix' || !d.open) return;
   const first = [...d.querySelectorAll('details')].find(x => x.querySelector('button[data-rec], .qact button, button.primary'));
   if (first && ![...d.querySelectorAll('details')].some(x => x.open)) first.open = true; }, true);
+/* Recent opponents (Sim, Nov 5): every full six typed or loaded into Battle mode is remembered (the last five, newest first,
+   S.recentOpp), and shows as one-tap chips under "Their six", so a rematch doesn't mean typing six Pokémon again. */
+(() => { if (typeof persist !== 'function' || typeof CH !== 'object' || !CH.wrap) return;
+  const keyOf = a => a.slice().sort().join('|');
+  const op = persist; persist = function () { try { const o = (S.opp || []).filter(Boolean);
+    if (o.length === 6 && o.every(n => byName.has(n))) { const k = keyOf(o), R = (S.recentOpp || []).filter(x => Array.isArray(x) && keyOf(x) !== k); R.unshift(o.slice()); S.recentOpp = R.slice(0, 5); } } catch (e) {}
+    return op.apply(this, arguments); };
+  CH.wrap('renderBattle', () => { try { const out = $('bmOut'), at = out && (out.querySelector('.bmopp') || $('oppSlots')); if (!at) return;
+      const old = out.parentElement.querySelector('.ar-recent'); if (old) old.remove();
+      const cur = keyOf((S.opp || []).filter(Boolean)), R = (S.recentOpp || []).filter(x => Array.isArray(x) && x.length === 6 && x.every(n => byName.has(n)) && keyOf(x) !== cur).slice(0, 4);
+      if (R.length) at.insertAdjacentHTML('afterend', `<div class="ar-recent"><span class="ar-recentk">Recent opponents</span><div class="ar-recentl">${R.map(x => {
+        const ps = x.map(n => byName.get(n)); return `<button type="button" class="ar-rcopp" data-arrecent="${esc(x.join('|'))}" aria-label="Load ${esc(ps.map(p => p.d).join(', '))}">${ps.map(p => sprite(p, 'tiny') || '').join('')}</button>`; }).join('')}</div></div>`); } catch (e) {} }); })();
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arrecent]'); if (!b) return;
+  const six = b.dataset.arrecent.split('|').filter(n => byName.has(n)); if (six.length !== 6) return;
+  S.opp = six.slice(); ui.oppFrom = null; persist(); renderMatchup(); if (typeof renderBattle === 'function') safe('battle', renderBattle); toast('Recent opponent loaded'); });
