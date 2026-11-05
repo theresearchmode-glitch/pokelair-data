@@ -736,3 +736,28 @@
 @A:not(#_p1) :is(.ar-winner .ar-ev,.chmcard .chk,.chband .chk,.evname,.ar-champ .ar-ev){text-wrap:balance}
 /* D-F23: an empty slot on a narrow tile says "Add" (74-arena.js marks it when "Add a Pokémon" would wrap) */
 @A .ar-art.is-empty .ar-nm.is-short .ar-addr{display:none}
+
+/* =====================================================================================================================
+   Lean pass (Sim, Nov 5): Home on phones gets to the tools sooner, calmer runner fields in dark mode
+   ===================================================================================================================== */
+@media (max-width:599px){
+  @A .ar-hero{height:292px}
+  @A .ar-hero-bg{top:36px}
+  @A .ar-hero-mon{top:-2px;right:-34px;width:218px!important;height:218px!important}
+  @A .ar-hero-rank{top:62px}
+  @A .ar-hero-copy{top:90px}
+  @A .ar-hero .ar-plate{margin-top:10px}
+  @A .ar-hero:focus-visible::after{top:31px}
+  /* the two runners-up side by side: name and number on the left, the sprite riding the top-right corner */
+  @A .ar-runners{flex-direction:row;gap:10px;margin-top:-18px}
+  @A .ar-runner,@A .ar-runner:nth-child(2){flex:1 1 0;min-width:0;width:auto;height:96px;margin-left:0}
+  @A .ar-runner-in{align-self:flex-end;padding:0 0 12px 18px}
+  @A .ar-runner-nm{font-size:15px}
+  @A .ar-runner .ar-num{font-size:30px!important}
+  @A .ar-runner-mon{right:0;top:-40px;bottom:auto;width:80px!important;height:80px!important}
+  @A[data-look="dark"] .ar-runner-in{margin-left:10px;padding:4px 10px 6px;margin-bottom:8px}
+}
+@A[data-look="dark"] .ar-runner-f{filter:saturate(.72) brightness(.86)}
+/* "Use NastyPlot's pick" under your own game plan */
+@A .ar-leadreset{display:inline-flex;align-items:center;min-height:44px;margin-top:2px;font:600 15px/1.2 var(--ar-body);color:var(--ar-sec-ink)!important;background:none!important;border:0!important;padding:0!important;
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;cursor:pointer}

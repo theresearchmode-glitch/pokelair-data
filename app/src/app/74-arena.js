@@ -117,6 +117,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   /* your six: ordered lead, back, bench for the plan shown under it (vs the champion's six, or the meta's six without one) */
   let F = FC, vs = C ? `vs ${esc(C.t.player)}'s six` : '';
   if (!F && ms.length >= 4) { try { F = CH.four(ms); vs = "vs the meta's top six"; } catch (e) { F = null; } }
+  const UL = AR.userLeads(ms); if (UL && F) { F = {lead: UL.map(m => m.p.n), back: F.lead.concat(F.back).filter(n => !UL.some(m => m.p.n === n)).slice(0, 2)}; vs = vs ? vs + ', your leads' : 'your leads'; }
   const byN = n => ms.find(m => m.p.n === n), lead = F ? F.lead.map(byN).filter(Boolean) : [], back = F ? F.back.map(byN).filter(Boolean).filter(m => !lead.includes(m)) : [];
   const bench = ms.filter(m => !lead.includes(m) && !back.includes(m)), ord = [...lead, ...back, ...bench].slice(0, 6);
   let title = ms.length ? teamTitleFor(ms) : 'Your six goes here', wx = ''; try { const k = wxKeyOf(ms); if (k) wx = ` ${esc(wxName(k))}`; } catch (e) {}
@@ -138,7 +139,18 @@ CH.wrap('renderHome', () => AR.home());
 
 /* ======================= My team ======================= */
 /* the lineup the stage and the set card use: the planner's four vs the meta's six (CH.four), the rest on the bench */
-AR.lineup = ms => { const L = MG.lineup(ms); return {lead: L.lead, back: L.back, bench: L.home, by: L.by}; };
+/* your lead pick (Sim, Nov 5): S.leads holds two names you chose with "Set as lead"; it wins over NastyPlot's pick while both
+   are on the team. "Use NastyPlot's pick" clears it. */
+AR.userLeads = ms => { const U = (S.leads || []).map(n => ms.find(m => m.p.n === n)).filter(Boolean); return U.length === 2 && U[0] !== U[1] ? U : null; };
+AR.lineup = ms => { const L = MG.lineup(ms), U = AR.userLeads(ms);
+  if (U) { const rest = [...L.lead, ...L.back, ...L.home].filter(m => !U.includes(m)); return {lead: U, back: rest.slice(0, 2), bench: rest.slice(2), by: 'you'}; }
+  return {lead: L.lead, back: L.back, bench: L.home, by: L.by}; };
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arlead]'); if (!b) return;
+  const ms = members(), n = b.dataset.arlead;
+  if (n === '') S.leads = null;
+  else { const L = AR.lineup(ms), base = L.lead.map(m => m.p.n); if (base.includes(n)) return; S.leads = [n, base[0]]; }
+  persist(); safe('my team', chTeamRender); safe('home', () => typeof render === 'function' && render());
+  const pk = n && ms.find(m => m.p.n === n); toast(pk ? `${pk.d} now leads` : "Back to NastyPlot's lead pick"); });
 AR.roleOf = (m, L) => { const has = g => g.some(x => x.i === m.i), other = g => g.filter(x => x.i !== m.i).map(x => escName(x.d)).join(' + ');
   if (has(L.lead)) return `Leads with ${other(L.lead) || 'its partner'}`; if (has(L.back)) return `In the back with ${other(L.back) || 'its partner'}`; return 'On the bench'; };
 AR.VS_META = "vs the meta's top six";
@@ -172,7 +184,8 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
     const tiles = ord.map(m => AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})).join('')
       + open.map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
-    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : 'in team order') : '';
+    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : L.by === 'you' ? 'your pick' : 'in team order')
+      + (L.by === 'you' ? `<button type="button" class="ar-link ar-leadreset" data-arlead="">Use NastyPlot's pick</button>` : '') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
   else { /* no team yet: the line and the two actions, then the same stage as a full team, six add tiles (as Home's empty six) */
@@ -208,7 +221,7 @@ rzSetHtml = function (m, i) {
       <div class="ar-setti"><h3 class="ar-h2 ar-setname">${AR.nm(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
     <div class="ar-setia">${r != null ? `<div class="ar-setr"><span class="ar-num ar-mp">${Math.round(r)}</span><small>${AR.ICON.star}${tier ? esc(tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div></div>
     ${mv ? `<ul class="ar-strips" aria-label="Moves">${mv}</ul>` : ''}
-    <div class="ar-setacts"><button type="button" class="ar-btn" data-chedit="${i}">Edit set</button><button type="button" class="ar-link" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`; };
+    <div class="ar-setacts"><button type="button" class="ar-btn" data-chedit="${i}">Edit set</button>${L && L.lead.length && !L.lead.some(x => x.i === m.i) ? `<button type="button" class="ar-btn" data-arlead="${esc(m.p.n)}">Set as lead</button>` : ''}<button type="button" class="ar-link" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`; };
 MG.team = () => {}; /* the manga stage is replaced by the arena stage */
 MG.home = () => {}; /* the manga cover and spread are replaced by the arena Home */
 CH.wrap('chTeamRender', () => AR.team());
@@ -314,3 +327,8 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 { let q = false; const run = () => { q = false; try { AR.parts(); } catch (e) {} try { AR.glue(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); }
 if (window.__PL_TEST) { window.__AR = AR; window.__ARX = {TC, ROSTER, SPRITE_ID, lairSheet, lairClose}; }
+/* Buried actions (Sim, Nov 5): opening "Problems and checklist" also opens the first problem that has a fix button, so a
+   fix like "Swap out Whimsicott" is one tap away, not two folds deep. */
+document.addEventListener('toggle', e => { const d = e.target; if (!d || d.id !== 'chfFix' || !d.open) return;
+  const first = [...d.querySelectorAll('details')].find(x => x.querySelector('button[data-rec], .qact button, button.primary'));
+  if (first && ![...d.querySelectorAll('details')].some(x => x.open)) first.open = true; }, true);

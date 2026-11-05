@@ -45,7 +45,7 @@
   --ar-focus:#0078BF;
 }
 @A[data-look="dark"]{
-  --ar-paper:#000;--ar-paper-2:#121114;--ar-sheet:#1A191D;--ar-nav:#151417;
+  --ar-paper:#0F0E11;--ar-paper-2:#16151A;--ar-sheet:#1C1B20;--ar-nav:#18171B;
   --ar-ink:#F4F1EC;--ar-ink-2:#C9C3CC;--ar-ink-3:#A39CA6;--ar-rule:rgba(255,255,255,.12);--ar-rule-2:rgba(255,255,255,.22);
   --ar-pink-ink:#FF6F86;--ar-gold-ink:#FFD166;--ar-blue-ink:#4FB2F0;--ar-orange-ink:#FFA27D;--ar-purple-ink:#C9B0FF;--ar-green-ink:#5FD08F;
   --ar-misprint:#E8364F;

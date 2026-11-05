@@ -33,3 +33,5 @@ if (!process.argv.includes('--keep-comments')) {
 fs.mkdirSync(dir + 'dist', {recursive: true});
 fs.writeFileSync(dir + 'dist/page.html', out);
 console.log(`built dist/page.html (${(out.length / 1024).toFixed(0)} KB from ${parts.length} parts${dropped ? `, ${dropped} comment lines dropped` : ''})`);
+// Lighter page (Sim, Nov 5): drop CSS that can never match and minify (see slim.mjs). `--no-slim` skips it.
+if (!process.argv.includes('--no-slim')) await import('./slim.mjs');
