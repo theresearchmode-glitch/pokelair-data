@@ -216,7 +216,6 @@
   @A [data-pane="auto"] .corerow.arb-row:not(.chcbig) .corestat{flex-direction:column;flex-wrap:nowrap;align-items:flex-end;text-align:right;padding-top:12px}
   @A [data-pane="auto"] .corerow.arb-row:not(.chcbig) .corestat>b{flex-basis:auto}
   @A [data-pane="auto"] .corerow.arb-row:not(.chcbig) .corestat>b i{display:block!important;margin:6px 0 0}
-  @A [data-pane="auto"] .evteam .tgrid{grid-template-columns:repeat(6,minmax(0,1fr))}
   @A .arb-stage .ar-six{grid-template-columns:repeat(3,minmax(0,1fr))}
   @A .arb-nums{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:end;column-gap:32px}
   @A [data-pane="auto"] .abcol>.row>[data-abuse]{flex:0 1 auto;min-width:240px}
@@ -622,3 +621,6 @@
   @A [data-pane="auto"] .corerow.chcbig .coretags{min-height:68px}
   @A [data-pane="auto"] .corerow.chcbig{column-gap:8px}
 }
+/* R20 (desktop): the recent winners open in a half-width column there, so their six sit 3 by 2 and every name fits whole */
+@media (min-width:1001px){@A [data-pane="auto"] .abstart .evteam .tgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:700px) and (max-width:1000px){@A [data-pane="auto"] .evteam .tgrid{grid-template-columns:repeat(6,minmax(0,1fr))}}
