@@ -865,3 +865,4 @@
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .mgempty>div{grid-column:2;margin:8px 0 0!important}
 @A [data-pane="box"] #boxList>.none{display:block;grid-column:1/-1;padding:18px 0 18px 20px!important;position:relative;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="box"] #boxList>.none::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:5px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:2px}
+@media (min-width:600px){@A #chScout .chtiles{grid-template-columns:repeat(10,minmax(0,1fr))!important;gap:16px 10px!important}}
