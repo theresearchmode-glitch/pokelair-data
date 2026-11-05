@@ -13,8 +13,8 @@ ARB.tile = (el, p, size, name) => { if (!el || !p || el.classList.contains('ar-a
   el.style.cssText += ';' + AR.tv(p); const img = el.querySelector('img'); if (img) img.classList.add('ar-spr');
   el.insertAdjacentHTML('afterbegin', '<span class="ar-f ar-field" aria-hidden="true"></span>'); if (name) name.classList.add('ar-nm'); };
 /* a sprite in a list: a small slanted type field behind it (the .ar-row field, sized for strips and chips) */
-ARB.mini = img => { if (!img || img.parentNode.classList.contains('arb-mf')) return; const p = ARB.pOf(img); if (!p) return;
-  const w = document.createElement('span'); w.className = 'arb-mf' + (AR.isMega(p) ? ' is-mega' : ''); w.style.cssText = AR.tv(p); w.setAttribute('aria-hidden', 'true');
+ARB.mini = (img, cls) => { if (!img || !img.parentNode || img.parentNode.classList.contains('arb-mf')) return; const p = ARB.pOf(img); if (!p) return;
+  const w = document.createElement('span'); w.className = 'arb-mf' + (cls ? ' ' + cls : '') + (AR.isMega(p) ? ' is-mega' : ''); w.style.cssText = AR.tv(p); w.setAttribute('aria-hidden', 'true');
   w.innerHTML = '<span class="arb-mf-f ar-field"></span>'; img.before(w); w.append(img); };
 
 /* ===== Saved teams: each six as art tiles ===== */
@@ -37,5 +37,9 @@ ARB.compare = () => { const el = $('cxOut'); if (!el) return;
   el.querySelectorAll('.cxsix > span').forEach(s => { const p = ARB.pOf(s.querySelector('img')); if (p && !s.classList.contains('ar-art')) { s.insertAdjacentHTML('beforeend', `<span class="ar-nm">${escName(p.d)}</span>`); ARB.tile(s, p, 's', s.querySelector('.ar-nm')); } });
   el.querySelectorAll('.cxos img.spr, .cxthr img.spr').forEach(ARB.mini); };
 CH.wrap('renderCompare', () => ARB.compare());
+
+/* ===== All suggestions: each suggested Pokémon on its own type field ===== */
+ARB.recs = () => { document.querySelectorAll('#recList .addcard .rtop img.spr, #sugs .plan .swap img.spr').forEach(i => ARB.mini(i, 'arb-lg')); };
+CH.wrap('renderRecs', () => ARB.recs()); CH.wrap('renderPlans', () => ARB.recs());
 
 if (window.__PL_TEST) window.__ARB = {setView: v => setView(v), edit: i => chEditOpen(i), scout: n => chScoutOpen(n), share: () => openShareCard(), members: () => members(), S: () => S, ARB};

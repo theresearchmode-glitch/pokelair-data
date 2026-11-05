@@ -63,6 +63,9 @@
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) textarea.field{padding:12px 14px!important;font-family:var(--ar-body)!important;line-height:1.45!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .field::placeholder{color:var(--ar-ink-3);opacity:1}
 
+/* the older panels (arena.css section 19 gives them a paper-2 field) carry no field on these pages: the arena layout draws its own */
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.cxpick,.addcard,.empty-note,.svsix,.plan,.verdict,.chsugs,.svt,.cxhead,.gsum){background-color:transparent!important}
+
 /* ---------- Saved teams ---------- */
 @A [data-pane="teams"] #saved>.head>div:first-child{display:contents}
 @A [data-pane="teams"] #saved>.head{display:flex!important;flex-direction:column;align-items:flex-start;gap:16px}
@@ -75,7 +78,7 @@
 @A [data-pane="teams"] .svt::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 9%,var(--ar-paper)),color-mix(in oklch,var(--ar-blue) 3%,var(--ar-paper)));clip-path:polygon(0 4%,100% 0,100% 96%,0 100%)}
 @A [data-pane="teams"] .svt.on::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 22%,var(--ar-paper)),color-mix(in oklch,var(--ar-blue) 8%,var(--ar-paper)))}
 @A[data-look="dark"] [data-pane="teams"] .svt::before{background:linear-gradient(in oklch 110deg,#121114,#0B0B0D)}
-@A[data-look="dark"] [data-pane="teams"] .svt.on::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 16%,#0E0E10),#0E0E10)}
+@A[data-look="dark"] [data-pane="teams"] .svt.on::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 22%,#0E0E10),#0E0E10)}
 @A [data-pane="teams"] .svt.cmpon::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-yellow) 26%,var(--ar-paper)),color-mix(in oklch,var(--ar-yellow) 8%,var(--ar-paper)))}
 @A[data-look="dark"] [data-pane="teams"] .svt.cmpon::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-yellow) 14%,#0E0E10),#0E0E10)}
 @A [data-pane="teams"] .svhd{display:flex!important;align-items:flex-start;justify-content:space-between;gap:12px;margin:0!important;padding:0!important;background:none!important;border:0!important}
@@ -207,7 +210,7 @@
 @A [data-pane="compare"] .cxot{display:flex;flex-direction:column;gap:2px;min-width:0}
 @A [data-pane="compare"] .cxot b{font:700 var(--ar-fs-body)/1.25 var(--ar-body);color:inherit}
 @A [data-pane="compare"] .cxot .t2{font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A [data-pane="compare"] .cxos{display:grid!important;grid-template-columns:repeat(3,30px);gap:4px 6px;align-content:center}
+@A [data-pane="compare"] .cxos{display:grid!important;grid-template-columns:repeat(3,32px);gap:6px 8px;align-content:center}
 @A [data-pane="compare"] .cxpick .t2{font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
 @A [data-pane="compare"] .cxpick .cxmore{justify-self:start;margin-top:6px!important}
 @A [data-pane="compare"] .cxpick>.row{display:flex;gap:12px;margin-top:4px}
@@ -288,3 +291,112 @@
 }
 @A [data-pane="compare"] .basis{display:inline;padding:1px 6px!important;border:0!important;border-radius:var(--ar-r-s)!important;background:color-mix(in oklch,var(--ar-gold) 22%,transparent)!important;color:var(--ar-ink)!important;font-size:14px}
 @A [data-pane="compare"] .basis i{font-style:normal;font-weight:700}
+
+/* ---------- shared small parts on group B's pages and overlays: type tags, soft tags, change chips ---------- */
+/* type tags (.ty, with --tc): a slanted tag tinted in the type colour, ink text (always 4.5:1+), the type icon kept */
+@A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;gap:4px;padding:2px 9px 2px 8px!important;margin:0!important;
+  font:700 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;background:color-mix(in oklch,var(--tc) 38%,var(--ar-sheet))!important;transform:skewX(var(--ar-slant));border-radius:3px!important;border:0!important;width:auto!important;height:auto!important}
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty::before{background:color-mix(in oklab,var(--tc) 42%,#24232A)!important}
+@A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty svg{width:13px!important;height:13px!important;flex:none;color:var(--ar-ink)!important;fill:currentColor}
+/* soft tags (teams count, box, role, catch): a quiet slanted tag; the rating tag is the gold tier plate */
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) :is(.tag:not(.ico),.conf){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;padding:2px 9px!important;margin:0!important;
+  font:600 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;white-space:nowrap}
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) :is(.tag:not(.ico),.conf)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;background:color-mix(in oklch,var(--ar-ink) 9%,transparent)!important;transform:skewX(var(--ar-slant));border-radius:3px!important;width:auto!important;height:auto!important;animation:none!important}
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.rating{font-weight:700!important;color:#16141A!important}
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.rating::before{background:var(--ar-gold-plate)!important}
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.ico{background-color:transparent!important;border:0!important;box-shadow:none!important}
+/* +points ready, and the change chips (Weak 1 → 2): green for better, gold for a trade-off */
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .tsd{display:inline-flex!important;align-items:center;padding:2px 0!important;font:700 15px/1.3 var(--ar-body)!important;color:var(--ar-green-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
+@A :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;gap:4px;padding:2px 9px!important;font:600 14px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill)::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in oklch,var(--ar-gold) 26%,var(--ar-sheet));transform:skewX(var(--ar-slant));border-radius:3px}
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill)::before{background:color-mix(in oklab,var(--ar-gold) 26%,#24232A)}
+@A :is([data-pane="coverage"],[data-pane="report"] .chparts) .dchip.up::before{background:color-mix(in oklch,var(--ar-green) 24%,var(--ar-sheet))}
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) .dchip.up::before{background:color-mix(in oklab,var(--ar-green) 30%,#24232A)}
+@A :is([data-pane="coverage"],[data-pane="report"] .chparts) .dchip b{font-weight:700}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .warnline{color:var(--ar-gold-ink)!important;font-weight:700!important;background:none!important}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .thcalc{display:block;color:var(--ar-ink-2)!important;font-weight:400}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .thcond{display:block;color:var(--ar-ink-2)!important;font-style:italic}
+/* the larger list avatar: a suggestion's sprite on its own slanted type field */
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .arb-mf.arb-lg{width:64px;height:48px}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .arb-mf.arb-lg .arb-mf-f{inset:8px 2px 0;border-radius:var(--ar-r-s)!important}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .arb-mf.arb-lg img{width:66px!important;height:66px!important;bottom:-4px}
+
+/* ---------- All suggestions ---------- */
+@A [data-pane="coverage"] #recs>.head{display:flex!important;flex-direction:column;align-items:flex-start;gap:14px}
+@A [data-pane="coverage"] #recs>.head h2{display:none!important}
+@A [data-pane="coverage"] #recs>.head>.row{display:flex!important;flex-wrap:wrap;align-items:center;gap:14px 24px;margin:0!important;background:none!important}
+@A [data-pane="coverage"] .megactl{display:inline-flex!important;align-items:center;flex-wrap:wrap;gap:10px;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important}
+@A [data-pane="coverage"] .toggle{font:500 var(--ar-fs-small)/1.3 var(--ar-body);color:var(--ar-ink);display:inline-flex;align-items:center;gap:8px;min-height:44px}
+@A [data-pane="coverage"] .toggle input[type=checkbox]{width:22px;height:22px;accent-color:var(--ar-blue)}
+/* section heads: a slanted tab and the display face */
+@A [data-pane="coverage"] .chswk{display:flex!important;align-items:flex-end;gap:12px;margin:34px 0 6px!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.01em!important;color:var(--ar-ink)!important;text-transform:none!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] .chswk::before{content:""!important;display:block!important;width:26px;height:26px;flex:none;margin-bottom:2px;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A [data-pane="coverage"] .chgapnote{margin:10px 0 0!important;padding:12px 16px 12px 20px!important;position:relative;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;font-size:var(--ar-fs-small);color:var(--ar-ink)}
+@A [data-pane="coverage"] .chgapnote::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-gold);border-radius:0 3px 3px 0}
+@A [data-pane="coverage"] .recgrid{display:block!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] #recList{display:grid!important;gap:0!important;background:none!important;border:0!important;padding:0!important}
+/* one suggestion: no card; the Pokémon on its field and its name, the tags, what changes, then the swap button; a hairline under it */
+@A [data-pane="coverage"] .addcard{display:block!important;padding:20px 0 22px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
+@A [data-pane="coverage"] .addcard .rtop{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px!important;padding:0!important;background:none!important}
+@A [data-pane="coverage"] .addcard .rtop>.arb-mf{margin:0 4px 0 2px}
+@A [data-pane="coverage"] .addcard .qname{font:italic 800 22px/1.1 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;margin-right:4px}
+@A [data-pane="coverage"] .addcard .chips{display:inline-flex;flex-wrap:wrap;gap:6px}
+@A [data-pane="coverage"] .addcard .dchips{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px!important}
+@A [data-pane="coverage"] .addcard .qwhy{margin:0 0 8px!important;padding:0!important;font:400 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important}
+@A [data-pane="coverage"] .addcard .qwhy b{font-weight:700;color:var(--ar-ink)}
+@A [data-pane="coverage"] .addcard>.row{display:flex!important;flex-wrap:wrap;gap:12px;margin:14px 0 0!important;padding-left:6px}
+@A [data-pane="coverage"] .morebar{margin:20px 0 0!important;background:none!important;border:0!important}
+@A [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button){flex-direction:column;align-items:flex-start!important;gap:2px;min-height:60px!important;padding:8px 22px!important}
+@A [data-pane="coverage"] .chmoreideas b{font:italic 800 19px/1.15 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
+@A [data-pane="coverage"] .chmoreideas .vsub{font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+/* bigger plans: the arena fold strip; its settings as plain rows; each plan like a suggestion */
+@A [data-pane="coverage"] #planSec{margin-top:36px!important;background:none!important}
+@A [data-pane="coverage"] #planSec .mgdiv{display:none!important}
+@A [data-pane="coverage"] details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:14px 0 0!important}
+@A [data-pane="coverage"] details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;padding:8px 16px 8px 22px!important;margin-left:6px;list-style:none;background:none!important;border:0!important;box-shadow:none!important;cursor:pointer}
+@A [data-pane="coverage"] details.chsec>summary::-webkit-details-marker{display:none}
+@A [data-pane="coverage"] details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
+@A[data-look="dark"] [data-pane="coverage"] details.chsec>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A [data-pane="coverage"] details.chsec>summary .cht{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] details.chsec>summary .chs{font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="coverage"] details.chsec>summary .chtog{color:var(--ar-sec-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="coverage"] details.chsec>.chbody{padding:18px 4px 6px!important;background:none!important;border:0!important}
+@A [data-pane="coverage"] details.chsec details.chsec>summary{min-height:52px}
+@A [data-pane="coverage"] .fixcol{background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] .pin{display:grid!important;gap:18px;background:none!important;border:0!important;padding:0!important;box-shadow:none!important}
+@A [data-pane="coverage"] .poolrow{display:grid;gap:6px}
+@A [data-pane="coverage"] :is(.poolrow .lbl,.lblrow .lbl){font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="coverage"] .controls{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 22px}
+@A [data-pane="coverage"] .excl{display:grid;gap:8px}
+@A [data-pane="coverage"] .lblrow{display:flex;gap:10px;align-items:baseline}
+@A [data-pane="coverage"] .lblrow .vsub{font-size:15px!important;color:var(--ar-ink-2)!important}
+@A [data-pane="coverage"] .exlist{display:flex;flex-wrap:wrap;gap:8px}
+@A [data-pane="coverage"] .exchip{display:inline-flex;align-items:center;gap:2px;padding:0 0 0 12px!important;font:600 15px var(--ar-body);color:var(--ar-ink);background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;border:0!important;border-radius:var(--ar-r-m)!important}
+@A [data-pane="coverage"] .exchip .x{width:44px;height:44px;background:none!important;border:0!important;color:var(--ar-ink)!important;font-size:18px}
+@A [data-pane="coverage"] #sugs{display:grid!important;gap:0!important;margin-top:8px!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] .plan{display:block!important;padding:20px 0 22px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
+@A [data-pane="coverage"] .plan .ph{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] .plan .pt{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="coverage"] .plan .ph .row{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:15px;color:var(--ar-ink-2)}
+@A [data-pane="coverage"] .plan .swap{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:4px 0 10px!important;font:500 var(--ar-fs-small)/1.3 var(--ar-body);color:var(--ar-ink-2);background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] .plan .swap .out{color:var(--ar-ink-2);text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--ar-pink)}
+@A [data-pane="coverage"] .plan .swap .in{font:italic 800 20px/1.1 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
+@A [data-pane="coverage"] .plan .swap .vsub{flex-basis:100%;font-size:15px!important;color:var(--ar-ink-2)!important}
+@A [data-pane="coverage"] :is(.planwhy,.chwhy){margin:4px 0 10px!important;background:none!important;border:0!important;padding:0!important;box-shadow:none!important}
+@A [data-pane="coverage"] .planwhy>summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;font:600 15px var(--ar-body)!important;color:var(--ar-sec-ink)!important;background:none!important;border:0!important;cursor:pointer}
+@A [data-pane="coverage"] .planwhy ul{margin:4px 0 0;padding:0 0 0 18px;display:grid;gap:6px;font-size:var(--ar-fs-small);line-height:1.45;color:var(--ar-ink)}
+@A [data-pane="coverage"] .plan.chdup{opacity:1}
+@A [data-pane="coverage"] details.foot{margin-top:28px!important}
+@media (min-width:1001px){
+  @A [data-pane="coverage"] #recs>.head{flex-direction:row;align-items:flex-end;justify-content:space-between}
+  @A [data-pane="coverage"] #recList,@A [data-pane="coverage"] #sugs{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:48px!important}
+  @A [data-pane="coverage"] .morebar,@A [data-pane="coverage"] #planSec details.chsec{max-width:none}
+  @A [data-pane="coverage"] #planSec>details.chsec>summary,@A [data-pane="coverage"] .morebar{max-width:560px}
+}
+/* sentence case for the older generated labels: the plan settings "Edit / Done" cue and the best plan's tag */
+@A [data-pane="coverage"] .plset>summary::after{font:600 15px/1 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px}
+@A [data-pane="coverage"] #sugs .plan{position:relative}
+@A [data-pane="coverage"] #sugs .plan:first-child::before{content:"Best fit"!important;top:18px!important;right:0!important;padding:2px 10px!important;font:700 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:#16141A!important;background:var(--ar-gold-plate)!important;clip-path:none!important;transform:skewX(var(--ar-slant));border-radius:3px}
+@A [data-pane="coverage"] #sugs .plan:first-child .ph{padding-right:96px!important}
