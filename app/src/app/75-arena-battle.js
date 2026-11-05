@@ -31,6 +31,7 @@ ARBAT.artify = (el, p, size, nameSel) => { if (!el || !p || el.classList.contain
 ARBAT.bf = (img, p) => { if (!img || !p || (img.parentElement && img.parentElement.classList.contains('ar-mini'))) return; const w = document.createElement('span');
   w.className = 'ar-mini ar-bf' + (AR.isMega(p) ? ' is-mega' : ''); w.setAttribute('style', AR.tv(p)); w.setAttribute('aria-hidden', 'true'); img.before(w); w.append(img); };
 
+ARBAT.nbs = v => String(v).replace(/\b(Mega \S+|Charizard|Mewtwo|Raichu) ([XYZ])\b/g, '$1 $2').replace(/ \(([FMfm])\)/g, ' ($1)');
 /* ======================= shared: arena controls on the old markup ======================= */
 ARBAT.parts = () => { const P = ARBAT.SEL;
   document.querySelectorAll(`:is(${P}) .seg:not(.ar-seg)`).forEach(s => s.classList.add('ar-seg'));
@@ -45,6 +46,8 @@ ARBAT.parts = () => { const P = ARBAT.SEL;
   /* hover notes on table cells read as plain phrases (no middle dots) */
   document.querySelectorAll(`:is(${P}) :is(.bmdt,.dctab) [title*=" · "]`).forEach(e => { e.title = e.title.replace(/ · /g, '; '); });
   document.querySelectorAll(`:is(${P}) label.btn:not(.ar-btn)`).forEach(b => b.classList.add('ar-btn'));
+  /* tile names keep a form letter with its name ("Mega Charizard Y", "Indeedee (F)") */
+  document.querySelectorAll(`:is(${P}) .ar-art .ar-nm:not([data-arnb])`).forEach(n => { n.dataset.arnb = 1; if (n.children.length) return; const v = n.textContent, w = ARBAT.nbs(v); if (w !== v) n.textContent = w; });
   ARBAT.opp(); ARBAT.gauntlet(); ARBAT.practice(); ARBAT.types(); ARBAT.speed(); ARBAT.log(); };
 
 /* ======================= Battle mode ======================= */
@@ -89,10 +92,31 @@ ARBAT.battle = () => { const sec = $('matchup'), head = sec && sec.querySelector
   /* the damage calc card: your six and their Pokémon as small art */
   const cc = $('chCalcCard'); if (cc) { cc.querySelectorAll('.chcalcatk [data-dcgo]:not(.ar-art)').forEach(b => { const p = byName.get(b.dataset.dcgo.split('|')[0]); if (p) ARBAT.artify(b, p, 's', ':scope > span:not(.ar-f)'); });
     const d = cc.querySelector('.chcalcdef:not(.ar-art)'), pd = d && ARBAT.pOfImg(d.querySelector('img.spr')); if (pd) ARBAT.artify(d, pd, 's', ':scope > span:not(.ar-f)'); }
+  ARBAT.dmg(); ARBAT.head();
   /* the battle log's pick buttons are toggle chips */
   document.querySelectorAll('[data-pane="matchup"] .logpick:not(.ar-chip)').forEach(b => b.classList.add('ar-chip'));
   ARBAT.parts(); };
 CH.wrap('renderBattle', () => ARBAT.battle());
+
+/* "Damage both ways": every Pokémon on its own small type field, full names ("Mega Charizard Y", never "M-"), and each cell
+   carries the name of the Pokémon it is against, so on phones the grid becomes one block per Pokémon of yours (arena-battle.css) */
+/* the head sprite stays where the app put it (moving a sprite node trips the app's no-flicker sprite reuse); an empty field is
+   drawn before it and the sprite sits on that field (CSS) */
+ARBAT.dmf = (img, p) => { if (!img || !p || img.classList.contains('ar-dmimg')) return; img.classList.add('ar-dmimg'); if (AR.isMega(p)) img.classList.add('ar-mega-s'); img.setAttribute('style', AR.tv(p));
+  img.insertAdjacentHTML('beforebegin', `<span class="ar-mini ar-bf ar-dmf" style="${AR.tv(p)}" aria-hidden="true"></span>`); };
+ARBAT.dmg = () => document.querySelectorAll('[data-pane="matchup"] table.bmdt:not(.ar-dm)').forEach(t => { t.classList.add('ar-dm');
+  const opp = [...t.querySelectorAll('thead th')].slice(1).map(th => { const img = th.querySelector('img'), p = ARBAT.pOfImg(img), nm = th.getAttribute('title') || (p ? p.d : '');
+    const sp = th.querySelector(':scope > span'); if (sp) sp.innerHTML = AR.nm(nm); ARBAT.dmf(img, p); return {p, nm}; });
+  t.querySelectorAll('tbody tr').forEach(tr => { const th = tr.querySelector(':scope > th'), img = th && th.querySelector('img'), p = ARBAT.pOfImg(img); ARBAT.dmf(img, p);
+    const sp = th && th.querySelector(':scope > span'); if (sp) sp.innerHTML = AR.nm(sp.textContent);
+    tr.querySelectorAll(':scope > td').forEach((td, i) => { const o = opp[i]; if (!o || td.querySelector('.ar-dvs')) return;
+      td.insertAdjacentHTML('afterbegin', `<span class="ar-dvs" aria-hidden="true">${o.p ? AR.mini(o.p, 'ar-bf ar-dvsf') : ''}<b>vs ${AR.nm(o.nm)}</b></span>`); }); }); });
+
+/* the head: a long matchup ("Sun with Mega Charizard Y and Trick Room vs Psychic Terrain, Trick Room") takes a smaller display
+   size, so it stays two or three lines; form letters stay with their name */
+ARBAT.head = () => { const t = document.querySelector('[data-pane="matchup"] .ar-bmhead .chbmt'); if (!t) return;
+  t.querySelectorAll(':scope > :is(span,em)').forEach(s => { if (s.children.length) return; const v = s.textContent, w = v.replace(/\b(Mega \S+|Charizard|Mewtwo|Raichu) ([XY])\b/g, '$1 $2').replace(/ \(([FMfm])\)/g, ' ($1)'); if (w !== v) s.textContent = w; });
+  const n = t.textContent.replace(/\s+/g, ' ').trim().length; t.classList.toggle('ar-bmlong', n > 30); t.classList.toggle('ar-bmxl', n > 52); };
 
 /* the battle log: the four you brought are toggle chips; their order (Lead 1, Back 3...) is one line under them, not on the
    Pokémon (Sim: no Lead / Back on a Pokémon) */
@@ -107,6 +131,11 @@ CH.wrap('renderLog', () => ARBAT.log());
 NPR.laneH = 76;
 NPR.textW = (t, me) => { try { if (!NPR.ctx) NPR.ctx = document.createElement('canvas').getContext('2d');
     NPR.ctx.font = `${me ? 800 : 700} 15px "Instrument Sans", system-ui, sans-serif`; return Math.ceil(NPR.ctx.measureText(t).width) + 2; } catch (e) { return t.length * 9; } };
+
+/* on a wide screen the track has room for more lanes, so it packs your six and the threats into the column instead of
+   stretching sideways behind a scroller; where it still scrolls, a mouse is told to scroll, a finger to swipe */
+{ const o = spdTrackHtml; spdTrackHtml = function (rows, cw) { const wide = innerWidth >= 1001; NPR.meMax = wide ? 3 : 2; NPR.thMax = wide ? 6 : 4;
+    const h = o.apply(this, arguments); return matchMedia('(hover:hover) and (pointer:fine)').matches ? h.replace('Swipe the track', 'Scroll the track') : h; }; }
 
 /* ======================= Damage calc ======================= */
 /* attacker and defender stand on their type fields, facing each other across a slanted "vs" rule; the attacker's set moves are
@@ -164,7 +193,10 @@ CH.wrap('renderPractice', () => ARBAT.parts());
 ARBAT.types = () => { document.querySelectorAll('[data-pane="types"] .ttmon[data-typesmon]:not(.ar-tt)').forEach(b => { const p = byName.get(b.dataset.typesmon); b.classList.add('ar-tt'); if (!p) return;
   b.setAttribute('style', AR.tv(p)); b.insertAdjacentHTML('afterbegin', `<span class="ar-mini ar-bf${AR.isMega(p) ? ' is-mega' : ''}" style="${AR.tv(p)}" aria-hidden="true">${sprite(p) || ''}</span>`); });
   document.querySelectorAll('#typeChart th[title]:not([style*="--tc"])').forEach(t => { const c = TC[t.title]; if (c) t.style.setProperty('--tc', c); });
-  document.querySelectorAll('[data-pane="types"] .typebtn:not(.ar-ty2)').forEach(b => { b.classList.add('ar-ty2'); const t = b.dataset.type; if (t) b.style.setProperty('--on-t', AR.onType(t)); }); };
+  document.querySelectorAll('[data-pane="types"] .typebtn:not(.ar-ty2)').forEach(b => { b.classList.add('ar-ty2'); const t = b.dataset.type; if (t) b.style.setProperty('--on-t', AR.onType(t)); });
+  /* the arena type colours (the app's Dark is a brown): type buttons, attacking-type buttons and the chart heads */
+  document.querySelectorAll('[data-pane="types"] :is(.typebtn[data-type],.tcb[data-tcatk]):not([data-artc]), #typeChart th[title]:not([data-artc])').forEach(b => { b.dataset.artc = 1;
+    const t = b.dataset.type || b.dataset.tcatk || b.title; if (AR.TC[t]) b.style.setProperty('--tc', AR.TC[t]); }); };
 CH.wrap('renderTypes', () => ARBAT.parts());
 
 /* run after the app draws (the same observer pattern as the other theme layers) */

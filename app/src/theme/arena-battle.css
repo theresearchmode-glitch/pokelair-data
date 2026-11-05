@@ -851,3 +851,85 @@
 @A [data-pane="types"] #typeMon [data-typesmonx]{min-height:44px}
 /* M5 small phones: the log chips go one column, so long names ("Mega Charizard Y") stay on one line */
 @media (max-width:420px){@A [data-pane="matchup"] .logpicks{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}}
+
+/* =====================================================================================================================
+   Final review fixes (final_phone / final_desktop FINDINGS). Later rules here win over the passes above.
+   ===================================================================================================================== */
+/* F20 (phone) / F34 (desktop): Battle's head: the tab on the title's first line, the lede and buttons on the gutter, a long
+   matchup a size smaller so it stays two or three lines */
+@A [data-pane="matchup"] .ar-bmhead .chbmt{padding-left:40px!important}
+@A [data-pane="matchup"] .ar-bmhead .chbmt::before{top:.16em!important;bottom:auto!important;width:26px!important;height:.72em!important;left:2px}
+@A [data-pane="matchup"] .ar-bmhead :is(.mgvsarch,.chpgs,.bmbar){margin-left:0!important}
+@A [data-pane="matchup"] .ar-bmhead .chbmt.ar-bmlong{font-size:30px!important;line-height:1.06!important}
+@A [data-pane="matchup"] .ar-bmhead .chbmt.ar-bmxl{font-size:26px!important}
+@media (min-width:1001px){
+  @A [data-pane="matchup"] .ar-bmhead .chbmt{padding-left:52px!important}
+  @A [data-pane="matchup"] .ar-bmhead .chbmt::before{width:32px!important}
+  @A [data-pane="matchup"] .ar-bmhead .chbmt.ar-bmlong{font-size:clamp(38px,3.3vw,50px)!important}
+  @A [data-pane="matchup"] .ar-bmhead .chbmt.ar-bmxl{font-size:clamp(34px,2.8vw,42px)!important}
+}
+/* F31 (desktop): empty "Their six" slots reserve their field's height, so the message under them stays clear */
+@A:not(#arcw) [data-pane="matchup"] .bmopp .bmslot:not(.on){min-height:84px!important}
+@A:not(#arcw) [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{height:72px!important;min-height:72px!important}
+@media (min-width:1001px){@A:not(#arcw) [data-pane="matchup"] .bmopp .bmslot:not(.on){min-height:108px!important}@A:not(#arcw) [data-pane="matchup"] .bmopp .bmslot:not(.on) .cb{height:96px!important;min-height:96px!important}}
+
+/* F13 + F33 (desktop), F21 (phone): "Damage both ways" in the arena style. Every Pokémon on its small type field with its full
+   name; no cell boxes: each result is a short line marked by a slanted tick (blue you, pink them; the tick fills with the hit:
+   strong for a KO, soft for 2 hits, grey beyond), hairlines between rows. Phones: one block per Pokémon of yours. */
+@A [data-pane="matchup"] table.bmdt.ar-dm{table-layout:fixed;width:100%;min-width:0!important}
+@A [data-pane="matchup"] table.bmdt.ar-dm thead th:first-child{width:clamp(150px,16%,200px)}
+@A [data-pane="matchup"] table.bmdt.ar-dm :is(thead,tbody) th{vertical-align:bottom}
+@A [data-pane="matchup"] table.bmdt.ar-dm thead th{padding:4px 6px 10px!important;text-align:left!important}
+@A [data-pane="matchup"] table.bmdt.ar-dm th{position:relative}
+@A [data-pane="matchup"] table.bmdt.ar-dm thead th{padding-top:26px!important}
+@A [data-pane="matchup"] table.bmdt.ar-dm th .ar-dmf{--mw:56px;--mh:36px;display:block;margin:0 0 6px 6px!important}
+/* the sprite on its field: 56px, its foot 2px under the field's bottom edge, centred on it */
+@A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm th>img.ar-dmimg{position:absolute!important;display:block!important;width:56px!important;height:56px!important;margin:0!important;left:calc(var(--px,0px) + 6px);top:calc(var(--py,0px) - 18px);pointer-events:none}
+@A [data-pane="matchup"] table.bmdt.ar-dm thead th{--px:6px;--py:26px}
+@A [data-pane="matchup"] table.bmdt.ar-dm tbody th{--px:0px;--py:30px}
+@A [data-pane="matchup"] table.bmdt.ar-dm tbody th .ar-dmf{margin-top:18px!important}
+@A [data-pane="matchup"] table.bmdt.ar-dm th>span{display:block;padding:0 0 0 2px!important;margin:0!important;font:italic 800 15px/1.15 var(--ar-display)!important;font-stretch:104%!important;color:var(--ar-ink)!important;overflow-wrap:normal;hyphens:none;text-wrap:balance}
+@A [data-pane="matchup"] table.bmdt.ar-dm tbody th{vertical-align:top;padding:12px 10px 12px 0!important}
+@A [data-pane="matchup"] table.bmdt.ar-dm td{min-width:0!important;padding:12px 6px!important;vertical-align:top}
+@A [data-pane="matchup"] table.bmdt.ar-dm .ar-dvs{display:none}
+/* F13 (phone): Type chart in dark mode: a type colour washed into graphite reads brown or olive, so the buttons are neutral
+   graphite with the type-colour edge only (as the dark type tags); the colours are AR.TC (Dark is #5E5068, 75-arena-battle.js) */
+@A[data-look="dark"] [data-pane="types"] .typebtn:not(.on)::before{background:linear-gradient(var(--tc),var(--tc)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 80%)!important}
+@A[data-look="dark"] [data-pane="types"] .tcb.on::before{background:linear-gradient(var(--tc),var(--tc)) 0 0/8px 100% no-repeat,#2A2930!important}
+@A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm :is(.bo,.bd){position:relative;margin:0 0 10px!important;padding:0 0 0 16px!important;background:none!important;box-shadow:none!important;border:0!important;border-radius:0!important;
+  font:italic 900 17px/1.1 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;overflow-wrap:normal}
+@A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm :is(.bo,.bd):last-child{margin-bottom:0!important}
+@A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm :is(.bo,.bd) i{max-width:none!important;white-space:normal!important;margin:2px 0 0!important;padding:0!important;text-indent:0!important;font:500 15px/1.25 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A:not(#arcw) [data-pane="matchup"] table.bmdt.ar-dm :is(.bo,.bd)[data-ko]::before{font:700 15px/1.2 var(--ar-body)!important}
+@A:not(#arcw) :is([data-pane="matchup"] table.bmdt.ar-dm,[data-pane="matchup"] .bmleg) :is(.bo,.bd)::after{content:""!important;display:block!important;position:absolute!important;left:2px;top:1px;bottom:auto;height:17px;width:6px;margin:0!important;
+  transform:skewX(var(--ar-slant));border-radius:2px;background:var(--ar-rule-2)!important}
+@A:not(#arcw) :is([data-pane="matchup"] table.bmdt.ar-dm,[data-pane="matchup"] .bmleg) .bo:is(.k1,.k1m)::after{background:var(--ar-blue)!important;width:8px}
+@A:not(#arcw) :is([data-pane="matchup"] table.bmdt.ar-dm,[data-pane="matchup"] .bmleg) .bo:is(.k2,.k2m)::after{background:color-mix(in oklch,var(--ar-blue) 55%,var(--ar-paper))!important}
+@A:not(#arcw) :is([data-pane="matchup"] table.bmdt.ar-dm,[data-pane="matchup"] .bmleg) .bd:is(.k1,.k1m)::after{background:var(--ar-pink)!important;width:8px}
+@A:not(#arcw) :is([data-pane="matchup"] table.bmdt.ar-dm,[data-pane="matchup"] .bmleg) .bd:is(.k2,.k2m)::after{background:color-mix(in oklch,var(--ar-pink) 55%,var(--ar-paper))!important}
+@A:not(#arcw)[data-look="dark"] :is([data-pane="matchup"] table.bmdt.ar-dm,[data-pane="matchup"] .bmleg) .bo:is(.k2,.k2m)::after{background:color-mix(in oklch,var(--ar-blue) 55%,#8A8590)!important}
+@A:not(#arcw)[data-look="dark"] :is([data-pane="matchup"] table.bmdt.ar-dm,[data-pane="matchup"] .bmleg) .bd:is(.k2,.k2m)::after{background:color-mix(in oklch,var(--ar-pink) 55%,#8A8590)!important}
+/* the legend: the same ticks, inline */
+@A:not(#arcw) [data-pane="matchup"] .bmleg :is(.bo,.bd){position:relative;display:inline-block!important;padding:0 2px 0 14px!important;background:none!important;box-shadow:none!important;font-weight:700}
+@media (max-width:699px){
+  @A [data-pane="matchup"] .bmdmg .tablewrap:has(.ar-dm){overflow:visible!important;margin:0!important}
+  @A [data-pane="matchup"] table.bmdt.ar-dm,@A [data-pane="matchup"] table.bmdt.ar-dm tbody{display:block!important;width:100%}
+  @A [data-pane="matchup"] table.bmdt.ar-dm thead{display:none!important}
+  @A [data-pane="matchup"] table.bmdt.ar-dm tr{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px;padding:4px 0 14px;border-bottom:1px solid var(--ar-rule)}
+  @A [data-pane="matchup"] table.bmdt.ar-dm tr :is(th,td){border:0!important}
+  @A [data-pane="matchup"] table.bmdt.ar-dm tbody th{grid-column:1/-1;display:flex!important;align-items:flex-end;gap:10px;padding:6px 0 4px!important}
+  @A [data-pane="matchup"] table.bmdt.ar-dm tbody th .ar-bf{display:inline-block;margin:12px 2px 0 6px!important}
+  @A [data-pane="matchup"] table.bmdt.ar-dm tbody th{--px:0px;--py:18px}
+  @A [data-pane="matchup"] table.bmdt.ar-dm tbody th>span{font-size:19px!important;padding-bottom:4px}
+  @A [data-pane="matchup"] table.bmdt.ar-dm td{display:block!important;padding:10px 0 4px!important}
+  @A [data-pane="matchup"] table.bmdt.ar-dm .ar-dvs{display:flex;align-items:flex-end;gap:6px;margin:0 0 8px;font:600 15px/1.2 var(--ar-body);color:var(--ar-ink-2)}
+  @A [data-pane="matchup"] table.bmdt.ar-dm .ar-dvs .ar-bf{--mw:40px;--mh:26px;--ms:42px;--mt:12px;margin:var(--mt) 0 0 4px}
+  @A [data-pane="matchup"] table.bmdt.ar-dm .ar-dvs b{font-weight:600;min-width:0;overflow-wrap:normal;white-space:normal!important;text-wrap:balance}
+}
+/* F24 (phone, 768): the calc's attacker picker: names never break inside a word (smaller name, wrapping at spaces only) */
+@A [data-pane="matchup"] .chcalcatk .ar-art .ar-nm{overflow-wrap:normal!important;hyphens:none!important;text-wrap:balance}
+@media (min-width:600px) and (max-width:1000px){@A:not(#arcw) [data-pane="matchup"] .chcalcatk .ar-art .ar-nm{font-size:15px!important;font-stretch:100%!important}}
+/* the arrow between the picker and its target: no box behind it */
+@A [data-pane="matchup"] .chcalcrow :is(.chcalcarr,.arr,[aria-hidden="true"]):not(.ar-f):not(.ar-field):not(img){background:none!important;box-shadow:none!important;border:0!important}
+/* N12: the "?" tip stays with the end of its sentence */
+@A [data-pane="matchup"] .chcalchint .tipq,@A [data-pane="matchup"] .chpgs .tipq{vertical-align:middle}
