@@ -615,3 +615,10 @@
 @A .arb-stage .ar-art.ar-below .ar-nm small{font-size:15px!important}
 @A [data-pane="auto"] :is(.corerow .coretags .tag,.evteam .archchip,.evteam .evpl){font-size:15px!important}
 @A [data-pane="auto"] .evteam .tgm .tgmk{font-size:13px!important}
+/* R21 (tablets): narrower columns: a smaller numeral with its unit under it, two rows kept for the tags */
+@media (min-width:600px) and (max-width:1000px){
+  @A [data-pane="auto"] .corerow.chcbig .corestat>b{font-size:30px!important}
+  @A [data-pane="auto"] .corerow.chcbig .corestat>b i{display:block!important;margin:6px 0 0!important}
+  @A [data-pane="auto"] .corerow.chcbig .coretags{min-height:68px}
+  @A [data-pane="auto"] .corerow.chcbig{column-gap:8px}
+}
