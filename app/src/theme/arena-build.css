@@ -492,11 +492,11 @@
 @A [data-pane="auto"] .abmon>.abright{display:contents!important}
 @A [data-pane="auto"] .abmon :is(.tag,.conf){display:inline-flex!important;align-items:center;gap:6px;width:auto!important;height:auto!important;min-height:28px;margin:0!important;padding:2px 10px!important;
   font:600 15px/1.2 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;white-space:nowrap;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-s)!important;position:static!important;vertical-align:middle}
-@A [data-pane="auto"] .abmon :is(.tag:not(.rating),.conf){background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .abmon :is(.tag,.conf){background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;color:var(--ar-ink)!important}
 @A [data-pane="auto"] .abmon .tag.ico::before{flex:none;width:14px;height:14px;position:static!important}
 @A [data-pane="auto"] .abmon .tag.box{background:color-mix(in oklch,var(--ar-green) 16%,transparent)!important;color:var(--ar-green-ink)!important}
 @A [data-pane="auto"] .abmon .tag.catch{background:color-mix(in oklch,var(--ar-gold-plate) 42%,transparent)!important;color:#16141A!important}
-@A[data-look="dark"] [data-pane="auto"] .abmon :is(.tag:not(.rating),.conf){background:#2A2930!important;color:var(--ar-ink)!important}
+@A[data-look="dark"] [data-pane="auto"] .abmon :is(.tag,.conf){background:#2A2930!important;color:var(--ar-ink)!important}
 @A[data-look="dark"] [data-pane="auto"] .abmon .tag.box{background:#2A2930!important;color:var(--ar-green-ink)!important}
 @A[data-look="dark"] [data-pane="auto"] .abmon .tag.catch{background:#2A2930!important;color:var(--ar-gold-ink)!important;box-shadow:inset 3px 0 0 var(--ar-gold)!important}
 
@@ -608,8 +608,8 @@
 @media (max-width:370px){@A [data-pane="auto"] .evteam .tgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* R22: no orphaned last words */
-@A [data-pane="auto"] :is(#cores>.chpghead .chpgt,.arb-sthead .ar-h2,.chabhero .chpgt),@A #welcomeCard .wt{text-wrap:balance}
-@A [data-pane="auto"] :is(#cores>.chpghead .chk,.abwhy li,.abw p,.chabhero .chpgs,.coreintro,.empty-note),@A #welcomeCard .wsteps span,@A #welcomeCard>.t2{text-wrap:pretty}
+@A [data-pane="auto"] :is(#cores>.chpghead .chpgt,.arb-sthead .ar-h2,.chabhero .chpgt),@A #welcomeCard .wt{text-wrap-style:balance}
+@A [data-pane="auto"] :is(#cores>.chpghead .chk,.abwhy li,.abw p,.chabhero .chpgs,.coreintro,.empty-note),@A #welcomeCard .wsteps span,@A #welcomeCard>.t2{text-wrap-style:pretty}
 
 /* R23: 15px text in tags and item lines */
 @A .arb-stage .ar-art.ar-below .ar-nm small{font-size:15px!important}

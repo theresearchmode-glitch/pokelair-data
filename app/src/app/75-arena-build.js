@@ -107,12 +107,19 @@ ARB.OV = [['side', () => { const s = $('side'); return !!(s && s.classList.conta
   ['jump', () => { const j = $('jump'); return !!(j && !j.hidden); }, () => $('jumpIn')],
   ['sdSheet', () => { const j = $('sdSheet'); return !!(j && !j.hidden); }, () => $('sdText')],
   ['fbSheet', () => { const j = $('fbSheet'); return !!(j && !j.hidden); }, () => $('fbText')]];
-ARB.was = {}; ARB.opener = {}; ARB.last = null;
-document.addEventListener('focusin', e => { const t = e.target; if (t && t.closest && !t.closest('#side,#jump,#sdSheet,#fbSheet')) ARB.last = t; }, true);
+ARB.was = {}; ARB.opener = {}; ARB.hist = [];
+/* the last few focused controls outside the overlays (a copy fallback focuses a throwaway textarea, so the newest may be gone) */
+document.addEventListener('focusin', e => { const t = e.target; if (t && t.closest && !t.closest('#side,#jump,#sdSheet,#fbSheet')) { try { t._arbKey = ARB.key(t); } catch (er) {} ARB.hist.push(t); if (ARB.hist.length > 6) ARB.hist.shift(); } }, true);
+/* a control the page redrew meanwhile is found again by its id or its first data-* attribute */
+ARB.key = o => { if (!o || !o.attributes) return null; if (o.id) return '#' + CSS.escape(o.id); const d = [...o.attributes].find(x => x.name.startsWith('data-')); return d ? `${o.tagName.toLowerCase()}[${d.name}="${CSS.escape(d.value)}"]` : null; };
+ARB.back = (id, list) => { for (let i = list.length - 1; i >= 0; i--) { let o = list[i]; if (!o || o === document.body) continue;
+    if (!o.isConnected) { const k = o._arbKey; o = k ? [...document.querySelectorAll(k)].find(x => x.getClientRects().length) : null; }
+    if (o && o.isConnected && o.getClientRects().length) return o; }
+  return id === 'jump' ? [...document.querySelectorAll('[data-jumpbtn]')].find(x => x.getClientRects().length) : id === 'side' ? [...document.querySelectorAll('#moreBtn')].find(x => x.getClientRects().length) : null; };
 ARB.tabbable = el => [...el.querySelectorAll('button,[href],input,select,textarea,summary,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled && x.tabIndex >= 0 && x.getClientRects().length && getComputedStyle(x).visibility !== 'hidden');
 ARB.focusTick = () => { for (const [id, open, first] of ARB.OV) { const on = open(), el = $(id);
-    if (on && !ARB.was[id]) { ARB.opener[id] = ARB.last; const f = first(el); if (f && !el.contains(document.activeElement)) setTimeout(() => { try { f.focus({preventScroll: true}); } catch (e) {} }, 40); }
-    if (!on && ARB.was[id]) { const o = ARB.opener[id], a = document.activeElement; if (o && o.isConnected && o.getClientRects().length && (!a || a === document.body || (el && el.contains(a)))) try { o.focus({preventScroll: true}); } catch (e) {} ARB.opener[id] = null; }
+    if (on && !ARB.was[id]) { ARB.opener[id] = ARB.hist.slice(); const f = first(el); if (f && !el.contains(document.activeElement)) setTimeout(() => { try { f.focus({preventScroll: true}); } catch (e) {} }, 40); }
+    if (!on && ARB.was[id]) { const o = ARB.back(id, ARB.opener[id] || []), a = document.activeElement; if (o && (!a || a === document.body || (el && el.contains(a)))) try { o.focus({preventScroll: true}); } catch (e) {} ARB.opener[id] = null; }
     ARB.was[id] = on; } };
 new MutationObserver(() => ARB.focusTick()).observe(document.body, {attributes: true, attributeFilter: ['hidden', 'class'], subtree: true, childList: true});
 document.addEventListener('keydown', e => { if (e.key !== 'Tab' || e.defaultPrevented) return; const o = ARB.OV.find(([, open]) => open()); if (!o) return; const el = $(o[0]); if (!el) return;
