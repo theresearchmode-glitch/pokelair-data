@@ -40,7 +40,7 @@ AR.spr = (p, cls) => sprite(p, 'ar-spr' + (cls ? ' ' + cls : '')) || '';
 /* one art tile; o: {tag, size, below, name, sub, attrs, sel} */
 AR.art = (p, o = {}) => { const tag = o.tag || 'button', cls = `ar-art ar-${o.size || 'm'}${o.below ? ' ar-below' : ''}${AR.isMega(p) ? ' is-mega' : ''}${o.sel ? ' is-sel' : ''}`;
   return `<${tag} ${tag === 'button' ? 'type="button" ' : ''}class="${cls}" style="${AR.tv(p)}" ${o.attrs || ''}><span class="ar-f ar-field" aria-hidden="true"></span>${AR.spr(p)}${o.sel ? '<span class="ar-cursor" aria-hidden="true"></span>' : ''}`
-    + `<span class="ar-nm">${escName(o.name || p.d)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></${tag}>`; };
+    + `<span class="ar-nm">${AR.nm(o.name || p.d)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></${tag}>`; };
 /* an open slot: with o.attrs a button (a faint section field, a "+", "Add a Pokémon" under it) that opens what attrs say;
    without, a quiet placeholder */
 AR.emptyArt = (size, o = {}) => o.attrs ? `<button type="button" class="ar-art ar-${size || 'm'} ar-below is-empty" ${o.attrs}><span class="ar-f" aria-hidden="true"></span><span class="ar-plus" aria-hidden="true">+</span><span class="ar-nm">${o.label || 'Add a Pokémon'}</span></button>`
@@ -55,8 +55,10 @@ AR.ICON = {
 AR.BURST = '<svg class="ar-lines" viewBox="0 0 400 350" preserveAspectRatio="none" aria-hidden="true"><g stroke="#fff" stroke-width="3" stroke-linecap="round">'
   + ['400 20', '400 70', '400 120', '400 180', '400 240', '400 300', '330 0', '370 0', '260 0', '220 0', '190 30', '350 350', '280 350', '220 350', '190 300'].map(e => `<path d="M300 150 L${e}"/>`).join('') + '</g></svg>';
 /* "A + B" from a list of members */
-AR.pair = L => L.map(m => escName(m.d)).join(' + ');
-AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan ${vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
+/* a display name that never strands its last part: "Mega Charizard Y", "Indeedee (F)" */
+AR.nm = n => escName(n).replace(/ \(([FMfm])\)/g, '\u00a0($1)');
+AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
+AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
 AR.champ = () => { const E = META.events; if (!E || !Array.isArray(E.events)) return null;
   for (const e of E.events) { const t = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (t) return {ev: e, t, n: E.events.length, six: t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''}))}; }
@@ -128,24 +130,27 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
      rate (one decimal, so 59.6% never reads as an A's "60%"); otherwise it is the grade out of 100 (Sim: "93, Grade A"). */
   let score = '';
   if (G) { const why = `<button type="button" class="ar-link ar-why" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${esc(G.letter)}?</button>`;
-    score = G.rec ? `<div class="ar-score"><span class="ar-num ar-mp">${(G.rec.wr * 100).toFixed(1)}<small>%</small></span><span class="ar-grade">Grade ${esc(G.letter)}</span><span class="ar-basis">tournament win rate</span>${why}</div>`
+    score = G.rec ? `<div class="ar-score"><span class="ar-num ar-mp">${(G.rec.wr * 100).toFixed(1)}<small>%</small></span><span class="ar-grade">Grade ${esc(G.letter)}</span><span class="ar-basis">tournament win&nbsp;rate</span>${why}</div>`
       : `<div class="ar-score"><span class="ar-num ar-mp">${G.s}</span><span class="ar-grade">Grade ${esc(G.letter)}${G.partial ? ' so far' : ''}</span><span class="ar-basis">out of 100</span>${why}</div>`; }
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
-  if (RD) { const rec = G && G.rec ? `<div class="ar-st" role="group" aria-label="Tournament record"><h3 class="ar-sth">Tournament record${tp('numbers')}</h3><div class="ar-trio">${AR.cell(G.rec.g.toLocaleString('en-US'), 'games')}${AR.cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div></div>` : '';
-    const sc = G && G.rec ? AR.cell(G.s, 'score') : '';
+  if (RD) { const sc = G && G.rec ? AR.cell(G.s, 'score') : '';
+    const cells = [sc, `<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready${tp('readiness')}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
+    const rec = G && G.rec ? `<div class="ar-st" role="group" aria-label="Tournament record"><h3 class="ar-sth">Tournament record${tp('numbers')}</h3><div class="ar-trio">${AR.cell(G.rec.g.toLocaleString('en-US'), 'games')}${AR.cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div></div>` : '';
     const chk = `<div class="ar-st" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><h3 class="ar-sth">Our check, top ${hd ? hd.n : 30} threats${G && !G.rec ? tp('numbers') : ''}</h3>
-      <div class="ar-trio${sc ? ' ar-four' : ''}">${sc}<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready${tp('readiness')}</span></div>${hd ? AR.cell(hd.x, 'handled') : ''}${c[1] ? AR.cell(c[1], 'shaky') : ''}${c[0] ? AR.cell(c[0], 'unanswered') : ''}</div>
+      <div class="ar-trio">${cells.join('')}</div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>${G && !G.rec && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
-    stats = `<div class="ar-tstats">${rec}${chk}${leg}</div>`; }
+    stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
   else stats = '';
   /* the stage: all six as equal art tiles (no roles on the art), the game plan line under them */
   let stage = '';
   if (ms.length) { const L = AR.lineup(ms), ord = [...L.lead, ...L.back, ...L.bench], sel = ui.rzSet;
-    const tiles = ord.map(m => AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})).join('');
-    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : '(team order)') : '';
+    const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
+    const tiles = ord.map(m => AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})).join('')
+      + open.map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
+    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : 'in team order') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
   else stage = `<div class="ar-empty"><span class="ar-empty-art" aria-hidden="true">${(CH.metaSix()[0] && sprite(CH.metaSix()[0])) || ''}</span><div><p>Add your six and NastyPlot scouts the top 30 threats for you. Start with one, or let NastyPlot build six from real winning teams.</p>
@@ -172,7 +177,7 @@ rzSetHtml = function (m, i) {
   const role = L && L.lead.length ? `<p class="ar-role">${AR.roleOf(m, L)}${L.by === 'meta' ? ` ${AR.VS_META}` : ''}</p>` : '';
   const mv = (m.moves || []).filter(Boolean).map(x => `<li class="ar-strip" style="--m:${AR.TC[AR.moveType(x.name)] || TC.Normal}"><span>${esc(x.name)}</span></li>`).join('');
   return `<div class="ar-sethd"><span class="ar-av" style="${AR.tv(m.p)}" aria-hidden="true"><span class="ar-av-f ar-field"></span>${sprite(m.p, 'rzsetspr') || ''}</span>
-      <div class="ar-setti"><h3 class="ar-h2 ar-setname">${escName(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
+      <div class="ar-setti"><h3 class="ar-h2 ar-setname">${AR.nm(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
     <div class="ar-setia">${r != null ? `<div class="ar-setr"><span class="ar-num ar-mp">${Math.round(r)}</span><small>${AR.ICON.star}${tier ? esc(tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div></div>
     ${mv ? `<ul class="ar-strips" aria-label="Moves">${mv}</ul>` : ''}
     <div class="ar-setacts"><button type="button" class="ar-btn" data-chedit="${i}">Edit set</button><button type="button" class="ar-link" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`; };
@@ -181,11 +186,22 @@ MG.home = () => {}; /* the manga cover and spread are replaced by the arena Home
 CH.wrap('chTeamRender', () => AR.team());
 /* the My team parts below the fold: numbered step plates and arena controls on the existing markup (CSS does the rest) */
 AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:not(.ar-step)').forEach(n => { n.classList.add('ar-step'); if (!n.querySelector('span')) n.innerHTML = `<span>${esc(n.textContent)}</span>`; });
+  document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
+  AR.fit();
   /* the older secondary buttons and text links on these pages take the arena menu-strip and link styles (same elements, same handlers) */
   document.querySelectorAll('[data-pane="report"] :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn):not(.chapply), #homeOut.ar-on :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn), #lairSheet .lsact button.btn:not(.ar-btn)').forEach(b => {
     if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick')) return; b.classList.add('ar-btn'); });
   document.querySelectorAll('[data-pane="report"] button.linkbtn:not(.ar-link), #homeOut.ar-on button.linkbtn:not(.ar-link):not(.npmore)').forEach(b => b.classList.add('ar-link')); };
+
+
+/* names on the art (dark mode puts them on an ink plate): the plate hugs the longest line, so a two-line name is one tidy
+   plate, not a box out to the tile's edge */
+AR.fit = () => { document.querySelectorAll('.ar-art:not(.ar-below) .ar-nm').forEach(n => { const t = n.firstChild; if (!t || t.nodeType !== 3) return;
+  const r = document.createRange(); r.selectNodeContents(n); const L = [...r.getClientRects()]; if (!L.length) return;
+  const w = Math.ceil(Math.max(...L.map(x => x.width))), cur = n.style.getPropertyValue('--nw'); if (w > 0 && cur !== w + 'px') n.style.setProperty('--nw', w + 'px'); }); };
+addEventListener('resize', () => { clearTimeout(AR._ft); AR._ft = setTimeout(AR.fit, 120); });
+try { document.fonts.ready.then(() => AR.fit()); } catch (e) {}
 
 /* ======================= Info sheet: the hero ======================= */
 /* a diagonal type band with the Pokémon breaking out of it and the sheet's one speed-line burst; the rating as a big numeral and

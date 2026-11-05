@@ -188,13 +188,18 @@
 @A .ar-kick{margin:10px 0 0;font-size:15px;font-weight:600;color:var(--ar-ink-2)}
 @A .ar-kick b{color:var(--ar-sec-ink)}
 @A .ar-titlerow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-top:4px}
-@A .ar-tname{flex:1;min-width:0;font-size:36px!important;font-stretch:115%!important;line-height:1.02!important;overflow-wrap:break-word;hyphens:manual}
+@A .ar-tname{flex:1;min-width:0;font-size:36px!important;font-stretch:115%!important;line-height:1.02!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important}
 /* a record grade: the win rate is wider than a two-digit grade, so on phones the score sits under the name, side by side */
 @media (max-width:1000px){@A .ar-titlerow:has(.ar-num small){flex-direction:column;align-items:stretch;gap:10px}
   @A .ar-titlerow:has(.ar-num small) .ar-score{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:16px;align-items:start;text-align:left;margin-top:4px}
   @A .ar-titlerow:has(.ar-num small) .ar-score>.ar-num{grid-row:1/4;align-self:center}
   @A .ar-titlerow:has(.ar-num small) .ar-score>:not(.ar-num){justify-self:start;margin:0}
   @A .ar-titlerow:has(.ar-num small) .ar-grade{margin-top:4px}}
+@media (max-width:419px){@A .ar-titlerow{flex-direction:column;align-items:stretch;gap:10px}
+  @A .ar-titlerow .ar-score{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:16px;align-items:start;text-align:left;margin-top:4px}
+  @A .ar-titlerow .ar-score>.ar-num{grid-row:1/4;align-self:center}
+  @A .ar-titlerow .ar-score>:not(.ar-num){justify-self:start;margin:0}
+  @A .ar-titlerow .ar-grade{margin-top:4px}}
 @A .ar-score{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right;margin-top:-4px}
 @A .ar-score .ar-num{font-size:84px;color:var(--ar-ink)}
 @A .ar-score .ar-num:has(small){font-size:64px}
@@ -205,10 +210,13 @@
 @A .ar-thead #chGwhy::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;background:var(--ar-sec);border-radius:0 3px 3px 0}
 @A .ar-tstats{display:grid;gap:20px;margin-top:20px}
 @A .ar-sth{display:flex;align-items:center;gap:2px;margin:0;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2)}
-@A .ar-trio{display:grid;grid-template-columns:1.25fr 1fr 1fr;margin-top:6px}
-@A .ar-trio.ar-four{grid-template-columns:repeat(4,minmax(0,1fr))}
-@A .ar-trio .ar-num{font-size:34px;color:var(--ar-ink)}
-@A .ar-trio.ar-four .ar-num{font-size:25px}
+@A .ar-trio{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));column-gap:16px;margin-top:8px}
+@A .ar-tstats.ar-c4{--cols:4}@A .ar-tstats.ar-c5{--cols:5}
+@A .ar-trio .ar-num{font-size:32px;color:var(--ar-ink);white-space:nowrap}
+@A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:28px}
+@A .ar-tstats .ar-bar{max-width:none}
+@media (max-width:599px){@A .ar-tstats.ar-c5 .ar-trio{grid-template-columns:repeat(6,minmax(0,1fr))}@A .ar-tstats.ar-c5 .ar-trio>.ar-stat{grid-column:span 2}
+  @A .ar-tstats.ar-c5 .ar-trio>.ar-stat:nth-child(n+4){grid-column:span 3;margin-top:12px}}
 @A .ar-trio .ar-unit .tipq{margin-left:2px}
 @A .ar-sum{margin:10px 0 0;font-size:15px;color:var(--ar-ink-2);line-height:1.45}
 @A .ar-sum b{color:var(--ar-ink)}
@@ -235,11 +243,13 @@
 @A .ar-setname{font-size:26px!important;line-height:1!important;margin:0!important}
 @A .ar-sethd .ar-tys{margin-top:8px}
 @A .ar-role{margin:8px 0 0;font-size:15px;color:var(--ar-ink-2)}
-@A .ar-setia{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin:16px 0 14px;align-items:end}
-@A .ar-setia span{display:block;font-size:14px;font-weight:600;color:var(--ar-ink-2)}
+@A .ar-setia{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin:16px 0 14px;align-items:start}
+@A .ar-setia>div:not(.ar-setr){align-self:end}
+@A .ar-setia>div:not(.ar-setr) b{display:block;min-height:calc(2em * 1.25);line-height:1.25}
+@A .ar-setia span{display:block;font-size:15px;font-weight:600;color:var(--ar-ink-2)}
 @A .ar-setia b{font-size:17px;font-weight:700;color:var(--ar-ink)}
 @A .ar-setr .ar-num{display:block;font-size:44px;color:var(--ar-ink)}
-@A .ar-setr small{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:14px;font-weight:600;color:var(--ar-ink-2);white-space:nowrap}
+@A .ar-setr small{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:15px;font-weight:600;color:var(--ar-ink-2);white-space:nowrap}
 @A .ar-setr small svg{width:15px;height:15px;fill:var(--ar-gold)}
 @A .ar-setacts{display:flex;align-items:center;gap:16px;margin-top:18px;padding-left:4px}
 /* team actions: the app's own buttons (save, share, saved teams, box, compare, Showdown, ⋯) as menu strips */
@@ -264,7 +274,8 @@
 @A [data-pane="report"] #myRec{position:relative;isolation:isolate;margin:34px calc(-1 * var(--ar-gutter)) 0!important;padding:26px var(--ar-gutter)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A [data-pane="report"] #myRec::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in oklch,var(--ar-blue) 10%,var(--ar-paper));clip-path:polygon(0 0,100% 10%,100% 100%,0 90%)}
 @A[data-look="dark"] [data-pane="report"] #myRec::before{background:#141316}
-@A [data-pane="report"] #myRec .chk{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] #myRec .chk{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-wrap:balance}
+@media (min-width:1001px){@A [data-pane="report"] #myRec{margin:40px 0 0!important;padding:28px 32px!important}}
 @A [data-pane="report"] #myRec .t2{font-size:15px!important;color:var(--ar-ink-2)!important}
 /* the numbered parts below the fold */
 @A [data-pane="report"] .chparth{display:flex!important;gap:14px!important;align-items:flex-start!important;margin-bottom:18px!important}
@@ -335,8 +346,9 @@
   @A .ar-tgrid>.ar-tstats{grid-column:2;grid-row:1;margin-top:16px}
   @A .ar-tgrid>.ar-tacts{grid-column:2;grid-row:2}
   @A .ar-stage .ar-art.ar-l{--h:clamp(150px,13vw,190px);--s:clamp(140px,12vw,176px)}
+  @A .ar-trio{column-gap:24px}
   @A .ar-trio .ar-num{font-size:40px}
-  @A .ar-trio.ar-four .ar-num{font-size:34px}
+  @A .ar-tstats.ar-c4 .ar-trio .ar-num,@A .ar-tstats.ar-c5 .ar-trio .ar-num{font-size:34px}
   @A [data-pane="report"] .chparts{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:48px!important}
   @A [data-pane="report"] .chsheet{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
@@ -471,10 +483,10 @@
 @media (max-width:599px){@A .ar-side .ar-acts .ar-btn{font-size:15px;padding:0 12px 0 16px;gap:8px}@A .ar-side .ar-acts{gap:12px}}
 /* empty six (no team yet): faint section-blue tiles with a "+", each opens Build */
 @A .ar-art.is-empty{cursor:pointer}
-@A .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklch,var(--ar-sec) 20%,var(--ar-paper)),color-mix(in oklch,var(--ar-sec) 9%,var(--ar-paper)))!important;box-shadow:none!important}
+@A .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 6%,var(--ar-sheet)))!important;box-shadow:var(--ar-shadow-s)!important}
 @A[data-look="dark"] .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklab,var(--ar-sec) 26%,#1A191D),color-mix(in oklab,var(--ar-sec) 10%,#141316))!important}
 @A .ar-art .ar-plus{position:absolute;left:50%;top:calc(var(--lift,22px) + var(--h,112px) / 2);z-index:2;width:44px;height:44px;margin:-22px 0 0 -22px;display:grid;place-items:center;border-radius:50%;
-  background:var(--ar-sheet);color:var(--ar-sec-ink);box-shadow:var(--ar-shadow-s);font:700 26px/1 var(--ar-body)}
+  background:var(--ar-sheet)!important;color:var(--ar-sec-ink)!important;box-shadow:var(--ar-shadow-s);font:700 26px/1 var(--ar-body);border-radius:50%!important;border:0!important}
 @A .ar-art.is-empty .ar-nm{color:var(--ar-ink-2)!important;font-family:var(--ar-body)!important;font-style:normal!important;font-weight:600!important;font-stretch:100%!important}
 @media (hover:hover){@A button.ar-art.is-empty:hover .ar-f{transform:skewX(var(--ar-slant)) translateY(-2px)}}
 /* hover: the hero and the runners lift like the art tiles */
@@ -497,7 +509,7 @@
 
 /* ---------- the footer: 15px text (16px on desktop), 44px links, no leading gap before "Send feedback"; the page ends at the
    footer plus the room the floating bar needs (bar 66 + 14 above the safe area + 16), not 200px of blank paper ---------- */
-@A footer.legal{margin-top:32px!important}
+@A footer.legal{margin-top:24px!important}
 @A footer.legal :is(p,.lgtag){font-size:15px!important;line-height:1.55!important}
 @A footer.legal .linkbtn{display:inline-flex;align-items:center;min-height:44px!important;padding:0!important;margin:0!important;font-size:15px!important;color:var(--ar-sec-ink)!important;
   text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
@@ -505,5 +517,71 @@
 @A footer.legal .lglinks{gap:0 24px!important}
 @A footer.legal .lgsp{display:none}
 @media (min-width:1001px){@A footer.legal :is(p,.lgtag,.linkbtn){font-size:16px!important}}
-@media (max-width:1000px){@A main{padding-bottom:40px!important}@A .mainwrap{padding-bottom:0!important}
+@media (max-width:1000px){@A main{padding-bottom:24px!important}@A .mainwrap{padding-bottom:0!important}
   @A footer.legal{padding-bottom:16px!important}@A body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}}
+
+
+/* =====================================================================================================================
+   Review 1 fixes, My team
+   ===================================================================================================================== */
+/* dark: a name on the art sits on one slanted ink plate that hugs its longest line (74-arena.js sets --nw) */
+@A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm{width:calc(var(--nw,100%) + 26px);max-width:calc(100% - 20px)}
+/* the team actions: menu strips that wrap in pairs; Copy for Showdown always on one line; "⋯" a small square at a row's end */
+@A .ar-tacts #chActs{display:flex!important;flex-wrap:wrap;gap:12px 14px}
+@A .ar-tacts :is(#chActs>button,#chActs>.row>button){flex:1 1 calc(50% - 7px)!important;width:auto!important;min-width:0;white-space:nowrap!important}
+@A .ar-tacts #chActs #saveBtn{flex-basis:100%!important}
+@A .ar-tacts #chActs .sdcopy{order:5}
+@A .ar-tacts #chActs #shareBtn{order:4}
+@A .ar-tacts #chActs .moremenu{order:6;flex:0 0 52px!important}
+@A .ar-tacts #chActs .moremenu>summary{width:52px!important;min-height:48px!important}
+@A .ar-tacts #chActs .sdcopy{flex:1 1 calc(100% - 66px)!important}
+@media (max-width:359px){@A .ar-tacts :is(#chActs>button,#chActs>.row>button){font-size:14.5px!important;padding:0 10px 0 16px!important}}
+/* "More" text toggles: a full tap height without growing the line */
+@A .rzmorebtn{display:inline-flex!important;align-items:center;min-height:44px;min-width:44px;margin:-14px 0!important;padding:0 4px!important;vertical-align:middle;
+  font:600 15px var(--ar-body)!important;color:var(--ar-sec-ink)!important;background:none!important;border:0!important;text-decoration:underline;text-underline-offset:3px}
+/* Fix it: 15px everywhere, the "Why?" disclosure starts on the content's left edge */
+@A [data-pane="report"] .chsug .txt b{font-size:16px!important}
+@A [data-pane="report"] .chsug :is(.for,.dl){font-size:15px!important}
+@A [data-pane="report"] .chwhy{margin-left:0!important;padding-left:0!important}
+@A [data-pane="report"] .chwhy>summary{padding-left:0!important;margin-left:0!important}
+@A [data-pane="report"] .chwhy>summary :is(.q,.n){font-size:15px!important}
+@A [data-pane="report"] .chwhy :is(li,.thcalc,.warnline){font-size:15px!important;line-height:1.45}
+@A [data-pane="report"] :is(.chsugs,#chSugOut) .chmsg,@A [data-pane="report"] .chsugload{background:none!important;box-shadow:none!important;font-size:15px!important}
+/* the older fold contents on My team: body text at 15px (tables and type chips keep their compact sizes) */
+@A [data-pane="report"] :is(.t2,.gpwho,.gplbl,.qwhy,.pmain,.provnote,.vsub,.k,.ckpro,.qlbl,.qfit,.fixn,.sev,.hint,dt,dd,.rchip,h3.lbl){font-size:15px!important}
+@A [data-pane="report"] .vcard b{font-size:16px!important}
+/* threat legend: a 2 by 2 grid on phones, so no status sits alone on a line */
+@media (max-width:599px){@A [data-pane="report"] .chleg{display:grid!important;grid-template-columns:repeat(2,max-content);gap:8px 20px}}
+@A [data-pane="report"] .chleg i{min-width:22px;height:22px;font-size:13px!important}
+/* the next 20: their labels at 15px */
+@A #chThrTop .chtiles .chtile :is(span,b,small,.nm,.st){font-size:15px!important}
+/* the "Why B?" fold: an arena tip line, no box: a slanted section edge, the letter in display italic */
+@A .ar-thead #chGwhy{background:none!important;box-shadow:none!important;border-radius:0!important;padding:4px 0 4px 26px!important}
+@A .ar-thead #chGwhy::before{left:4px!important;top:4px!important;bottom:4px!important;width:6px!important;border-radius:2px!important;transform:skewX(var(--ar-slant))}
+@A .ar-thead #chGwhy .npgw{font:italic 900 1.6em/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-ink)!important;margin-right:2px}
+
+/* the open team sheet: typographic rows (a slanted type field behind the sprite, name, set lines, Edit), one hairline each,
+   no cards; the remove control is a quiet 44px "−"; open slots are slanted "+ Add a Pokémon" strips */
+@A [data-pane="report"] .chsheet{gap:0!important}
+@A [data-pane="report"] .chsheet>.hd{padding-bottom:10px!important}
+@A [data-pane="report"] .chsheet .chrow{grid-template-columns:22px 76px minmax(0,1fr) 44px;column-gap:10px;min-height:88px;padding:12px 0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important}
+@A [data-pane="report"] .chsheet .chrow::before{inset:auto!important;left:30px!important;top:50%!important;width:64px;height:46px;margin-top:-20px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;box-shadow:none!important;
+  background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--ta) var(--ar-field-mix),var(--ar-sheet)),color-mix(in oklch,var(--tb,var(--ta)) var(--ar-field-mix),var(--ar-sheet)))!important}
+@A[data-look="dark"] [data-pane="report"] .chsheet .chrow::before{background:linear-gradient(in oklch 125deg,oklch(from var(--ta) .58 calc(c * .9) h),oklch(from var(--tb,var(--ta)) .58 calc(c * .9) h))!important}
+@A [data-pane="report"] .chsheet .chrow .ix{font-size:20px!important;align-self:center}
+@A [data-pane="report"] .chsheet .chrow img{width:72px!important;height:72px!important;margin:-14px 0 0 2px!important;position:relative!important;z-index:1}
+@A [data-pane="report"] .chsheet .chrow .chrm{position:static!important;grid-column:4;grid-row:1;align-self:start;width:44px!important;height:44px!important;background:none!important;box-shadow:none!important;color:var(--ar-ink-2)!important;font-size:22px!important}
+@media (hover:hover){@A [data-pane="report"] .chsheet .chrow .chrm:hover{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important}}
+@A [data-pane="report"] .chsheet .chrow .chbd{grid-column:3;grid-row:1}
+@A [data-pane="report"] .chsheet .chrow .chedi{grid-column:3!important}
+@A [data-pane="report"] .chsheet .chrow.empty{grid-template-columns:22px minmax(0,1fr);min-height:72px;border-bottom:1px solid var(--ar-rule)!important}
+@A [data-pane="report"] .chsheet .chrow.empty::before{display:none!important}
+@A [data-pane="report"] .chsheet .chrow.empty>.chadd{position:absolute!important;left:40px;top:50%;margin-top:-26px;z-index:1;width:44px!important;height:52px!important;font-size:26px!important}
+@A [data-pane="report"] .chsheet .chrow.empty .chbd{position:relative;isolation:isolate;grid-column:2;display:flex;align-items:center;min-height:52px;padding:0 16px 0 64px;margin-left:8px}
+@A [data-pane="report"] .chsheet .chrow.empty .chbd::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 16%,var(--ar-sheet)),var(--ar-sheet) 70%)}
+@A[data-look="dark"] [data-pane="report"] .chsheet .chrow.empty .chbd::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)}
+@media (min-width:600px){@A [data-pane="report"] .chsheet{column-gap:32px}}
+/* the empty L tiles on the stage: their "Add a Pokémon" sits on the field, like the names on the other tiles */
+@A .ar-stage .ar-art.ar-l.is-empty .ar-nm{position:absolute;left:16px;bottom:12px;margin:0;min-height:0;color:var(--ar-ink-2)!important}
+@A .ar-stage .ar-art.ar-l.is-empty{padding-top:var(--lift)}
