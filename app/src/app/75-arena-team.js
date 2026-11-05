@@ -55,6 +55,8 @@ ARB.overlays = () => { const ed = $('chEdit');
   document.querySelectorAll('[data-pane="report"] #chVsOut .chchart img.spr').forEach(i => ARB.mini(i));
   document.querySelectorAll('[data-pane="report"] #thrCard .thrrow > summary > img.spr, [data-pane="report"] .pfix .qtop > img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
   document.querySelectorAll('.myrec .qlog .logpick, .myrec .qlog [data-qllead]').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img')))); };
+/* the editor's strip is redrawn on every open and switch: decorate it right away too */
+CH.wrap('chEditStrip', () => ARB.overlays()); CH.wrap('chScoutRender', () => ARB.overlays());
 /* only mutations inside these parts matter; the work is queued once, after the app's own redraw (not every frame, so the app's
    idle-time drawing still gets its idle moments) */
 ARB.WATCH = '#chEdit,#chScout,.myrec,#chVsOut,#thrCard,#needs';
