@@ -4,8 +4,6 @@
 // own handlers: data-lt opens the Pokémon sheet, data-view switches page, data-evload loads an event team.
 const RD = {sel: null};
 /* logo: italic caps wordmark with the magenta skew mark */
-try { document.querySelectorAll('.nplk').forEach(n => { if (!n.closest('header') && !(n.previousElementSibling && n.previousElementSibling.classList.contains('rdlogo'))) n.insertAdjacentHTML('beforebegin', '<span class="rdlogo sm" aria-hidden="true"><i></i>NASTYPLOT</span>'); }); } catch (e) {}
-try { document.querySelectorAll('header .brand').forEach(b => { if (!b.querySelector('.rdlogo')) b.insertAdjacentHTML('afterbegin', '<span class="rdlogo" aria-hidden="true"><i></i>NASTYPLOT</span>'); }); } catch (e) {}
 /* feet on the floor: measure each sprite's empty rows at the bottom once (same-origin canvas), then shift it down by that much */
 RD.pad = new Map();
 RD.measure = img => { const src = img.getAttribute('src'); if (!src) return; if (RD.pad.has(src)) { img.style.setProperty('--pad', RD.pad.get(src)); return; }
@@ -70,7 +68,7 @@ function rdHome() { const el = $('homeOut'); if (!el) return; const pane = docum
   <section class="rdsec"><div class="rdrhead"><h2 class="rdh2">Every tool</h2><span class="rdk">${HOME_TILES.length} tools · menu has the rest</span></div>
     <div class="rdtools">${HOME_TILES.map(([vw, t, d, ic]) => `<button type="button" class="rdtool" data-view="${vw}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><b>${esc(t)}</b><span>${esc(d)}</span></button>`).join('')}</div></section>`;
   RD.feet(el); }
-renderHome = rdHome;
+/* Nov 5 (Sim): keep the original Home layout; rdHome is no longer used */
 /* roster: tap or arrow keys move the P1 cursor; the selected panel updates in place */
 document.addEventListener('click', e => { const c = e.target.closest && e.target.closest('[data-rdsel]'); if (!c) return; RD.pick(c.dataset.rdsel, c); });
 RD.pick = (n, c) => { RD.sel = n; const wrap = c.closest('.rdroster'); if (wrap) wrap.querySelectorAll('.rdcell').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
@@ -80,3 +78,20 @@ document.addEventListener('keydown', e => { const c = e.target.closest && e.targ
 /* every other page: sprites that render later get feet-aligned too (cheap: only new rdspr images) */
 try { new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) { if (n.matches && n.matches('img.rdspr')) RD.measure(n); else if (n.querySelectorAll) n.querySelectorAll('img.rdspr').forEach(RD.measure); } }).observe(document.body, {childList: true, subtree: true}); } catch (e) {}
 document.documentElement.classList.add('rd');
+/* ---------- Nov 5 (Sim): your six as six art panels; no lead/back/bench labels on pictures ---------- */
+try {
+  const mgPanel0 = MG.panel;
+  MG.panel = o => mgPanel0(o && o.cap ? Object.assign({}, o, {cap: Object.assign({}, o.cap, {role: ''})}) : o);
+  const mgLine0 = MG.lineup;
+  MG.lineup = ms => { const L = mgLine0(ms); const order = [...L.lead, ...L.back, ...L.home]; return {lead: order.slice(0, 2), back: order.slice(2, 6), home: [], by: L.by}; };
+} catch (e) {}
+/* Nov 5 (Sim: "plain black or white backgrounds are the laziest approach"): any flat near-black or near-white block in the page
+   becomes a soft rounded tint (big blocks) or clear (small ones). Runs after each render, debounced. */
+RD.soften = () => { try { const main = document.querySelector('main'); if (!main) return;
+  main.querySelectorAll('div,section,article,li,button,a,details,table').forEach(e => { if (e.classList.contains('rdsoft') || e.classList.contains('rdclear') || e.closest('.mgpn,.rdcell') ) return;
+    if (/\b(btn|chprimary|mgyel|mgact|primary|go)\b/.test(e.className)) return;
+    const c = getComputedStyle(e).backgroundColor, m = c.match(/[\d.]+/g); if (!m) return; const [r, g, b, a = 1] = m.map(Number); if (a < .5) return;
+    const s = r + g + b; if (s > 60 && s < 735) return; const box = e.getBoundingClientRect(); if (!box.width) return;
+    e.classList.add(box.width > 220 && box.height > 70 ? 'rdsoft' : 'rdclear'); }); } catch (e) {} };
+RD.softT = 0; try { new MutationObserver(() => { clearTimeout(RD.softT); RD.softT = setTimeout(RD.soften, 120); }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'data-look']}); } catch (e) {}
+setTimeout(RD.soften, 600);

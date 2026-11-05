@@ -42,16 +42,16 @@
 @R main h2::before{display:none}
 @R .chdisp.chh1,@R .hht{font-size:clamp(48px,8vw,104px);line-height:.86}
 @R .chh1 em,@R .hht em{font-style:italic;color:var(--rd-acc)}
-@R .circ{display:none}
+/*removed*/
 @R .tnum,@R [class*="score"],@R .num{font-variant-numeric:tabular-nums}
 
 /* ---------- header and nav ---------- */
 @R header.band{background:color-mix(in srgb,var(--rd-bg) 94%,transparent);color:var(--rd-ink);border-bottom:1px solid var(--rd-line);box-shadow:none}
-@R header.band::after,@R header.band .stage,@R header.band .bstripe,@R header .hmark{display:none}
-@R header.band .eyebrow{display:none}
+@R header.band::after,@R header.band .stage,@R header.band .bstripe{display:none}
+/*removed*/
 @R .rdlogo{display:inline-flex;align-items:center;gap:8px;font:900 italic 28px/1 var(--rd-display);text-transform:uppercase;color:var(--rd-ink);letter-spacing:.01em;white-space:nowrap}
 @R .rdlogo i{width:13px;height:20px;background:var(--rd-acc);transform:skewX(-14deg);display:block}
-@R header .brand .nplk{display:none}
+/*removed*/
 @R .tabs,@R .mgtabs{background:transparent;box-shadow:none}
 @R .tabs button,@R .mgtabs button{font:800 italic 17px/1 var(--rd-display);letter-spacing:.04em;text-transform:uppercase;color:var(--rd-mute);background:transparent;clip-path:none;border-radius:0;padding:10px 12px;box-shadow:none}
 @R .tabs button[aria-selected="true"],@R .mgtabs button[aria-selected="true"]{color:var(--rd-ink);background:transparent;box-shadow:inset 0 -3px 0 var(--rd-acc)}
@@ -97,8 +97,8 @@
 @R .ty .tic{color:color-mix(in srgb,var(--tc,#666) 70%,var(--rd-ink))}
 
 /* ---------- manga art layer: textures off, tints kept calm ---------- */
-@R .mgdots,@R .mgburst,@R .mglines,@R .mgwash{display:none!important}
-@R .mgtone{opacity:.55}
+/*removed*/
+/*removed*/
 
 /* ---------- sprites: feet on the floor ---------- */
 @R img.rdspr{object-fit:contain;object-position:50% 100%;translate:0 calc(var(--pad,0) * 100%)}
@@ -255,7 +255,7 @@
 @R .cht{font:800 italic 18px/1.05 var(--rd-display)!important;text-transform:uppercase!important;letter-spacing:.03em;border:0!important;background:none!important;padding:0!important;box-shadow:none!important}
 @R .chs{color:var(--rd-mute)}
 /* old wordmark anywhere (footer, menus): replaced by the italic wordmark */
-@R .nplk{display:none!important}
+/*removed*/
 @R .rdlogo.sm{font-size:20px}@R .rdlogo.sm i{width:9px;height:14px}
 
 /* display-font text the older layers set upright or light: heavy italic everywhere */
@@ -272,8 +272,216 @@
 @R .mgcap{border:0!important;background:color-mix(in srgb,var(--rd-panel) 88%,transparent)!important;box-shadow:inset 3px 0 0 var(--rd-acc)!important}
 @R .mgcap b,@R .mgcap .mgnm{font:900 italic 20px/1 var(--rd-display)!important;text-transform:uppercase!important;color:var(--rd-ink)!important}
 @R .mgcap span,@R .mgcap small,@R .mgrole{font:500 11px var(--rd-mono)!important;text-transform:lowercase!important;color:var(--rd-mute)!important}
-@R .mgtone{opacity:.38}
+/*removed*/
 @R .chbmt,@R .chbmt *{font-family:var(--rd-display)!important;font-weight:900!important;font-style:italic!important;text-transform:uppercase!important}
 @R .chdisp em,@R .chpgt em,@R .chbmt em,@R .mgtitle em{color:var(--rd-acc)!important;font-style:italic!important}
 @R{--chredT:var(--rd-acc)}
 html{background:var(--rd-bg,#f6f6f8)}
+
+/* =====================================================================
+   Nov 5 art pass (Sim: "boxy, plain, no character; only the Pokémon bring colour")
+   - grounds are never flat black/white: violet night / lilac day with soft brand glows and a faint chevron texture
+   - surfaces are tinted, corner-cut (character-select feel), no hard 1px boxes
+   - every Pokémon panel gets its type-coloured wash; your six are the showcase
+   ===================================================================== */
+@R:not(#_c){--rd-bg:#f4f1fa;--rd-panel:#ffffff;--rd-cell:#ece7f6;--rd-line:#ddd6ec;--rd-ink:#17132b;--rd-mute:#5f5878;--rd-faint:#9a93b2;
+  --rd-acc:#e3197f;--rd-acc2:#c80f6d;--rd-acc-soft:#fde4f1;--rd-blue:#1f7fe0;--rd-blue-soft:#e2efff;
+  --chblue:var(--rd-acc);--chblueT:var(--rd-acc);--chred:var(--rd-blue);--chredT:var(--rd-blue);--chyel:var(--rd-acc)}
+@R[data-look="dark"]:not(#_c):not(#_d){--rd-bg:#110e22;--rd-panel:#1b1733;--rd-cell:#241f40;--rd-line:#332c55;--rd-ink:#f3f0fb;--rd-mute:#aaa3c4;--rd-faint:#756e92;
+  --rd-acc:#ff3d9e;--rd-acc2:#ff69b4;--rd-acc-soft:#3b1430;--rd-blue:#4ea3ff;--rd-blue-soft:#14284a;
+  --chblue:var(--rd-acc);--chblueT:var(--rd-acc);--chred:var(--rd-blue);--chredT:var(--rd-blue);--chyel:var(--rd-acc)}
+/* the ground: soft pink and blue glows from the logo colours, plus a faint chevron texture */
+@R body{background-color:var(--rd-bg)!important;background-image:
+  radial-gradient(900px 520px at 8% -6%,color-mix(in srgb,var(--rd-acc) 16%,transparent),transparent 70%),
+  radial-gradient(900px 600px at 98% 4%,color-mix(in srgb,var(--rd-blue) 14%,transparent),transparent 70%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M12 30l12-12 12 12' fill='none' stroke='%23888' stroke-opacity='.09' stroke-width='3'/%3E%3C/svg%3E")!important;
+  background-attachment:fixed,fixed,scroll}
+@R header.band{background:color-mix(in srgb,var(--rd-bg) 80%,transparent)!important;backdrop-filter:blur(10px)}
+/* logo back: the original chevron wordmark */
+@R header .brand .nplk{display:inline-flex!important}
+@R .rdlogo{display:none!important}
+/* tabs badge 6/6: a readable pink pill */
+@R .tabs .tc,@R #tabCount{background:var(--rd-acc)!important;color:#fff!important;border-radius:999px!important;padding:2px 7px!important;font:700 11px/1.3 var(--rd-mono)!important;margin-left:6px!important;letter-spacing:0}
+/* selected toggles everywhere: pink, never blue */
+@R:not(#_z) main button[aria-pressed="true"]:not(.rdcell):not(.mgpn),@R:not(#_z) main [role="tab"][aria-selected="true"]{box-shadow:inset 0 -4px 0 var(--rd-acc)!important;border-color:var(--rd-acc)!important;background:var(--rd-acc-soft)!important;color:var(--rd-ink)!important}
+
+/* ---------- surfaces: tinted, corner-cut, no hard boxes ---------- */
+@R .chblock,@R .chsec,@R .abhero,@R .chabhero,@R .vcard,@R .gpcard,@R .lspanel,@R .chcard,@R .mrow,@R .slot,@R .prob-row,@R .abstart>details,@R .chtip,@R .rzset,@R #rzSet,@R .mgbench,@R .hsec,@R .htiles>*,@R .npaths .nppath,@R .chmorebtn{
+  background:linear-gradient(160deg,color-mix(in srgb,var(--rd-panel) 96%,var(--rd-acc)) ,var(--rd-panel) 60%)!important;border:0!important;box-shadow:0 1px 0 color-mix(in srgb,var(--rd-ink) 6%,transparent),0 10px 30px -18px color-mix(in srgb,var(--rd-acc) 40%,transparent)!important;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);border-radius:0!important}
+@R .abhero,@R .chabhero{background:linear-gradient(120deg,color-mix(in srgb,var(--rd-acc) 22%,var(--rd-panel)) 0%,var(--rd-panel) 45%,color-mix(in srgb,var(--rd-blue) 20%,var(--rd-panel)) 100%)!important}
+@R .abhero::before,@R .abhero::after,@R .chabhero::before,@R .chabhero::after{display:none!important}
+@R .srcseg button,@R .abmeg button,@R main .seg button,@R main .chpill{background:color-mix(in srgb,var(--rd-panel) 70%,var(--rd-cell))!important;border:1px solid var(--rd-line)!important;color:var(--rd-ink)!important}
+@R .field,@R input.field,@R select.field,@R textarea,@R main input[type="text"],@R main input[type="search"],@R main select{background:color-mix(in srgb,var(--rd-panel) 80%,var(--rd-cell))!important;border:1px solid var(--rd-line)!important}
+
+/* ---------- buttons: one family. Primary = pink skew; others = soft skew ---------- */
+@R .mgact{border:0!important;box-shadow:none!important;background:color-mix(in srgb,var(--rd-panel) 75%,var(--rd-cell))!important;color:var(--rd-ink)!important;clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);font:800 italic 18px/1 var(--rd-display)!important;text-transform:uppercase!important;letter-spacing:.04em;padding:13px 22px!important}
+@R .mgact.chprimary,@R .mgact.mgyel{background:var(--rd-acc)!important;color:#fff!important}
+@R .mgact b{font:inherit!important}
+@R .mgact .mgpic{width:18px;height:18px}
+@R .chghost,@R .btn{clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%);border:0!important;background:color-mix(in srgb,var(--rd-panel) 70%,var(--rd-cell))!important;color:var(--rd-ink)!important}
+
+/* ---------- Pokémon art panels: always in their type colours ---------- */
+@R .mgpn{border:0!important;border-radius:0!important;clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px));box-shadow:none!important;
+  background:linear-gradient(150deg,var(--l1) 0%,var(--w1) 46%,var(--w2) 64%,var(--l2) 100%)!important}
+@R[data-look="dark"] .mgpn{background:linear-gradient(150deg,var(--D1) 0%,color-mix(in srgb,var(--D1) 45%,#141029) 48%,color-mix(in srgb,var(--D2) 45%,#141029) 62%,var(--D2) 100%)!important}
+@R .mgpn .mgin{background:transparent!important}
+@R .mgpn .mgdots{opacity:.35}
+@R .mgpn .mgwash{opacity:.55}
+@R .mgpn img{filter:drop-shadow(0 10px 14px rgb(0 0 0 / .28))}
+@R .mgpn:hover{transform:translateY(-2px);transition:transform .15s}
+@R .mgpn.mgon,@R .mgpn[aria-pressed="true"]{outline:3px solid var(--rd-acc)!important;outline-offset:-3px}
+@media (prefers-reduced-motion:reduce){@R .mgpn:hover{transform:none}}
+/* captions: name only, crisp, on a glass strip */
+@R .mgcap{background:color-mix(in srgb,var(--rd-panel) 82%,transparent)!important;backdrop-filter:blur(6px);box-shadow:inset 4px 0 0 var(--rd-acc)!important;border:0!important;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+@R .mgrole{display:none!important}
+@R .mgcap b,@R .mgnm{color:var(--rd-ink)!important;font:900 italic 21px/1 var(--rd-display)!important;text-transform:uppercase!important}
+@R .mgcap span{font:600 11.5px/1.35 var(--rd-mono)!important;text-transform:none!important;color:var(--rd-mute)!important}
+/* your six: three across, all six as showcase panels (Home spread and My team stage) */
+@R .mgpage.you .mggrid,@R .mgstg{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+@R .mgpage.you .mggrid>*,@R .mgstg>*{grid-column:auto!important;grid-row:auto!important;min-height:250px!important;aspect-ratio:auto!important}
+@R .mgbench{display:none!important}
+@R .mgpn .mgmon img{width:min(78%,250px)!important;height:auto!important}
+/* grade number */
+@R .mggr b,@R .mgtgr b,@R .mgmis{color:var(--rd-acc)!important;-webkit-text-stroke:0!important;text-shadow:none!important}
+@media (max-width:760px){
+  @R .mgpage.you .mggrid,@R .mgstg{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  @R .mgpage.you .mggrid>*,@R .mgstg>*{min-height:180px!important}
+  @R .mgcap b,@R .mgnm{font-size:17px!important}
+}
+
+/* dark mode: no flat black anywhere (the old layer paints these #000 with strong selectors) */
+@R:not(#_y) :is(.mmpop,.myrec,.vcard,.chcalcatk,.empty-note,.nprscroll,.nprlane,.chdcband,.lhstat,.chhotrows,.sethead,.setcard,.calbox,.gyou,.gkey,.trcard,.nplegend,.item.svt,.cxpick,.addcard,.abthero,.abhero,.chabhero,.chblock,.chsec,.gpcard,.lspanel,.chcard,.mrow,.slot,.hsec,.chtip,#rzSet,.rzset){
+  background:linear-gradient(160deg,color-mix(in srgb,var(--rd-panel) 92%,var(--rd-acc)),var(--rd-panel) 55%,color-mix(in srgb,var(--rd-panel) 94%,var(--rd-blue)))!important;border-color:transparent!important;color:var(--rd-ink)}
+@R:not(#_y) :is(.abhero,.chabhero,.abthero){background:linear-gradient(115deg,color-mix(in srgb,var(--rd-acc) 26%,var(--rd-panel)) 0%,var(--rd-panel) 48%,color-mix(in srgb,var(--rd-blue) 24%,var(--rd-panel)) 100%)!important}
+@R:not(#_y) .nprlane.me{background:linear-gradient(90deg,color-mix(in srgb,var(--rd-acc) 16%,var(--rd-panel)),var(--rd-panel))!important}
+@R:not(#_y) :is(.btn.go,.btn.primary,.chprimary,.mgyel){background:var(--rd-acc)!important;color:#fff!important;border:0!important}
+@R:not(#_y) :is(.chback,button.sub,.btn:not(.primary):not(.go)){background:color-mix(in srgb,var(--rd-panel) 70%,var(--rd-cell))!important;color:var(--rd-ink)!important}
+@R:not(#_y) main button.sub[aria-selected="true"],@R:not(#_y) main button.sub[aria-pressed="true"]{background:var(--rd-acc)!important;color:#fff!important;box-shadow:none!important}
+/* team stage: full width, sprites centred and whole */
+@R .mgstage,@R .mgspread .mgpage.you{width:100%!important;max-width:none!important}
+@R .mgpn .mgin{position:relative;display:flex!important;flex-direction:column;justify-content:space-between;height:100%;min-height:inherit}
+@R .mgpn .mgmon{position:relative!important;inset:auto!important;display:flex!important;justify-content:center;align-items:flex-end;flex:1;margin-top:6px}
+@R .mgpn .mgmon img,@R .mgpn .mgmon svg{position:relative!important;inset:auto!important;transform:none!important;max-height:190px}
+@R .mgcap{max-width:calc(100% - 20px);position:relative!important;inset:auto!important;margin:12px 0 0 12px;align-self:flex-start}
+@R .mgcap b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:clamp(15px,1.6vw,20px)!important;line-height:1.02!important}
+
+/* ---------- Home on every width: hero, actions, your six (art), the champion's six, then Most used ---------- */
+@R:not(#_y) .mgspread.chdesk{display:grid!important}
+@R:not(#_y) .mgdeskcov.chdesk{display:block!important}
+@R:not(#_y) :is(.chmcard.you,.chmcard.them,.mgphc .mgcover,.mgphc .mgsrc){display:none!important}
+@R .mgphc{display:block!important;margin-top:4px}
+@media (max-width:860px){
+  @R:not(#_y) .mgspread.chdesk{grid-template-columns:minmax(0,1fr)!important;gap:18px!important}
+  @R .mgvs{justify-self:center;padding:0!important}
+  @R .mgpage .mggrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  @R .mgpage .mggrid>*{min-height:190px!important}
+  @R .mgacts{display:grid!important;grid-template-columns:1fr 1fr 1fr;gap:6px!important}
+  @R .mgact{padding:12px 10px!important;font-size:15px!important;flex-direction:column;align-items:flex-start;min-height:0!important}
+  @R .chmhero .chh1,@R .chmhero .chdisp{font-size:44px!important}
+}
+/* names never clipped */
+@R .mgcap{max-width:calc(100% - 34px)!important;padding:7px 10px 7px 12px!important}
+@R .mgcap b{font-size:clamp(14px,1.35vw,19px)!important;word-break:normal;hyphens:auto}
+@R .mgpn{min-width:0}
+/* Most used: the big number and its label stack, never overlap */
+@R .mgc1 .mgin{justify-content:flex-start}
+@R .mgbig{position:relative!important;inset:auto!important;display:block;margin:14px 0 0 14px!important;font:900 italic clamp(44px,6vw,74px)/.9 var(--rd-display)!important;color:var(--rd-ink)!important}
+@R .mgbig small{font-size:.45em}
+@R .mgcapq{position:relative!important;inset:auto!important;margin:8px 0 0 14px!important}
+@R .mgc2 .mgn{font:900 italic 26px/1 var(--rd-display)!important;margin:12px 0 0 12px;display:block}
+@R .mgc2 .mgnm{margin:4px 0 0 12px;display:block}
+@R .mgpage.them .mggr b{color:var(--rd-blue)!important}
+@R .mgps.them{color:var(--rd-blue)!important}
+
+/* =====================================================================
+   Nov 5 (Sim): "I want the boxiness in everything gone." No frames, no cut corners, no flat panels.
+   Sections are separated by space and type; Pokémon float on soft type-colour glows; controls are soft pills.
+   ===================================================================== */
+@R:not(#_x) :is(.chblock,.chsec,.abhero,.chabhero,.abthero,.vcard,.gpcard,.lspanel,.chcard,.mrow,.slot,.prob-row,.chtip,.rzset,#rzSet,.mgbench,.hsec,.htiles>*,.npaths .nppath,.chmorebtn,.mmpop,.myrec,.chcalcatk,.empty-note,.nprscroll,.nprlane,.chdcband,.lhstat,.chhotrows,.sethead,.setcard,.calbox,.gyou,.gkey,.trcard,.nplegend,.item.svt,.cxpick,.addcard,.welcome,.chpad,.slmore,.chfold,details){
+  background:none!important;border:0!important;box-shadow:none!important;clip-path:none!important;border-radius:0!important;outline:0}
+/* where a group needs a ground (forms, the calc sides), a soft rounded wash, never a box */
+@R:not(#_x) :is(.abhero,.chabhero,.chdcband,.chcalcatk,.welcome,#rzSet,.rzset,.cxpick){background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--rd-acc) 14%,transparent),transparent 60%),radial-gradient(120% 140% at 100% 100%,color-mix(in srgb,var(--rd-blue) 12%,transparent),transparent 60%)!important;border-radius:28px!important;padding:22px!important}
+/* separators: a thin fading rule between sections instead of frames */
+@R:not(#_x) :is(.chblock,.chsec.chfold,.hsec)+:is(.chblock,.chsec,.hsec){border-top:1px solid color-mix(in srgb,var(--rd-line) 60%,transparent)!important;padding-top:22px!important}
+/* pills, not boxes */
+@R:not(#_x) :is(.btn,.chghost,.mgact,.rdbtn,.chback,button.sub,.srcseg button,.abmeg button,main .seg button,main .chpill,.sdcopy,.linkbtn.pill,.subnav button,.chsubtabs button){clip-path:none!important;border-radius:999px!important;border:0!important;box-shadow:none!important}
+@R:not(#_x) :is(.btn.primary,.btn.go,.chprimary,.mgyel,.mgact.chprimary){border-radius:999px!important;box-shadow:0 8px 22px -10px var(--rd-acc)!important}
+@R:not(#_x) :is(.field,input.field,select.field,textarea,main input[type="text"],main input[type="search"],main select,.jumpbtn){border-radius:14px!important;border:1px solid transparent!important;background:color-mix(in srgb,var(--rd-ink) 7%,transparent)!important}
+@R:not(#_x) main button[aria-pressed="true"]:not(.rdcell):not(.mgpn),@R:not(#_x) main [role="tab"][aria-selected="true"]{background:var(--rd-acc)!important;color:#fff!important;box-shadow:none!important}
+@R .ty{border-radius:999px!important;box-shadow:none!important;padding:1px 9px!important}
+@R .chtog{border:0!important;border-radius:999px;background:color-mix(in srgb,var(--rd-acc) 16%,transparent)}
+
+/* Pokémon art: no rectangle. A soft glow in the Pokémon's two type colours, the Pokémon large on top, its name beneath. */
+@R:not(#_x) .mgpn{background:none!important;clip-path:none!important;outline:0!important;overflow:visible!important;position:relative}
+@R:not(#_x) .mgpn::before{content:"";position:absolute;left:6%;right:6%;top:18%;bottom:4%;border-radius:50%;z-index:0;filter:blur(18px);opacity:.75;
+  background:radial-gradient(closest-side at 38% 45%,var(--l1),transparent),radial-gradient(closest-side at 64% 60%,var(--l2),transparent)}
+@R[data-look="dark"]:not(#_x) .mgpn::before{opacity:.55}
+@R:not(#_x) .mgpn .mgdots,@R:not(#_x) .mgpn .mgwash{display:none!important}
+@R:not(#_x) .mgpn .mglines{opacity:.35;-webkit-mask-image:radial-gradient(closest-side,#000 30%,transparent);mask-image:radial-gradient(closest-side,#000 30%,transparent)}
+@R:not(#_x) .mgpn .mgin{position:relative;z-index:1;flex-direction:column-reverse!important;justify-content:flex-end!important}
+@R:not(#_x) .mgpn .mgmon{flex:0 0 auto!important;margin:0!important}
+@R:not(#_x) .mgpn .mgmon img{width:min(92%,230px)!important;max-height:230px!important}
+@R:not(#_x) .mgpn .mgcap{background:none!important;box-shadow:none!important;backdrop-filter:none!important;clip-path:none!important;margin:2px 0 0!important;padding:0!important;max-width:100%!important;align-self:center!important;text-align:center}
+@R:not(#_x) .mgpn .mgcap b{font-size:clamp(16px,1.6vw,21px)!important}
+@R:not(#_x) .mgpn .mgcap span{display:block}
+@R:not(#_x) .mgpn.mgon .mgcap b,@R:not(#_x) .mgpn[aria-pressed="true"] .mgcap b{color:var(--rd-acc)!important}
+@R:not(#_x) .mgpn.mgon::after,@R:not(#_x) .mgpn[aria-pressed="true"]::after{content:"";position:absolute;left:30%;right:30%;bottom:-6px;height:4px;border-radius:4px;background:var(--rd-acc)}
+@R .mgpage .mggrid>*,@R .mgstg>*{min-height:0!important}
+@R .mgpage .mggrid,@R .mgstg{row-gap:18px!important}
+/* Most used: big number beside the Pokémon, no frames */
+@R:not(#_x) .mgcover .mgpn .mgin{flex-direction:column!important}
+@R:not(#_x) .mgc1 .mgmon img{width:min(80%,320px)!important;max-height:320px!important}
+
+/* team and spread: no dead space, stacks cleanly, real gutters on phone */
+@R .mgspread{align-items:start!important;grid-auto-rows:auto!important}
+@R .mgpage{height:auto!important;min-height:0!important}
+@media (max-width:860px){
+  @R .mgspread,@R .mgdeskcov{padding-inline:0!important;margin-inline:0!important}
+  @R .mgpage .mggrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+  @R:not(#_x) .mgpn .mgmon img{max-height:120px!important}
+  @R:not(#_x) .mgpn .mgcap b{font-size:13.5px!important}
+  @R:not(#_x) .mgpn .mgcap span{display:none}
+  @R .mgph{padding-inline:2px}
+}
+/* consistent sprite size in every team panel; feet on one line */
+@R:not(#_x):not(#_w) .mgpage .mgpn .mgmon img,@R:not(#_x):not(#_w) .mgstg .mgpn .mgmon img{width:auto!important;height:170px!important;max-height:none!important;aspect-ratio:1/1;object-fit:contain;object-position:50% 100%}
+@R:not(#_x):not(#_w) .mgpage .mggrid,@R:not(#_x):not(#_w) .mgstg{grid-template-rows:none!important;grid-auto-rows:auto!important}
+@R:not(#_x):not(#_w) .mgcover .mgin{justify-content:flex-start!important}
+@R:not(#_x):not(#_w) .mgcover .mgbig{order:-2}
+@R:not(#_x):not(#_w) .mgcover .mgcapq{order:-1}
+@media (max-width:860px){
+  @R:not(#_x):not(#_w) .mgspread{display:flex!important;flex-direction:column;gap:22px!important;min-height:0!important;height:auto!important}
+  @R:not(#_x):not(#_w) .chhome{margin-inline:0!important}
+  @R:not(#_x):not(#_w) .mgpage .mggrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px 6px!important}
+  @R:not(#_x):not(#_w) .mgpage .mgpn .mgmon img,@R:not(#_x):not(#_w) .mgstg .mgpn .mgmon img{height:96px!important}
+  @R:not(#_x):not(#_w) .mgstg{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  @R .mgvs{margin:0!important}
+}
+/* every art panel: one sprite box size, whether plain img or Mega aura wrapper */
+@R:not(#_x):not(#_w) .mgpn .mgmon{width:auto!important;height:auto!important}
+@R:not(#_x):not(#_w) .mgpn .mgmon>*{width:170px!important;height:170px!important;max-width:100%!important;position:relative!important;inset:auto!important;transform:none!important}
+@R:not(#_x):not(#_w) .mgpn .mgmon>* img,@R:not(#_x):not(#_w) .mgpn .mgmon>img{width:100%!important;height:100%!important;object-fit:contain;object-position:50% 100%}
+@R:not(#_x):not(#_w) .mgcover{grid-template-rows:auto!important;align-items:end}
+@R:not(#_x):not(#_w) .mgcover .mgc1 .mgmon>*{width:280px!important;height:280px!important}
+@media (max-width:860px){
+  @R:not(#_x):not(#_w) .mgpn .mgmon>*{width:96px!important;height:96px!important}
+  @R:not(#_x):not(#_w) .mgcover{grid-template-columns:1fr 1fr!important}
+  @R:not(#_x):not(#_w) .mgcover .mgc1 .mgmon>*{width:200px!important;height:200px!important}
+  @R:not(#_x):not(#_w) .mgcover .mgc2 .mgmon>*{width:120px!important;height:120px!important}
+  @R:not(#_x):not(#_w) .mgcover .mgc2 .mgn{font-size:24px!important}
+}
+@R:not(#_x):not(#_w) .mgpage.them .mggrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+@R:not(#_x):not(#_w) .mgcover .mgc2 .mgnm{margin-bottom:14px!important}
+@R:not(#_x):not(#_w) .mgcover .mgc2 .mgmon>*{width:200px!important;height:200px!important}
+@R:not(#_x):not(#_w) .mgcover .mgcapq{margin-bottom:10px!important}
+@media (max-width:860px){@R:not(#_x):not(#_w) .mgcover .mgc2 .mgmon>*{width:120px!important;height:120px!important}}
+/* no hard frames anywhere in page content; anything that needs a ground gets a soft rounded tint (set by select.js) */
+@R:not(#_x):not(#_w) main :is(div,section,article,li,a,label,details,summary,table,td,th):not(.mgpn):not(.rdbar):not(.rdbar *){border-color:transparent!important;box-shadow:none!important}
+@R:not(#_x):not(#_w) main button:not(.mgpn):not(.rdcell){border-color:transparent!important}
+@R .rdsoft{background:color-mix(in srgb,var(--rd-ink) 6%,transparent)!important;border-radius:18px!important;clip-path:none!important}
+@R .rdclear{background:transparent!important}
+/* Nov 5 (Sim: "I hate navy backgrounds"): neutral soft black in dark, neutral off-white in light; chevron wallpaper kept, no glows */
+@R:not(#_c):not(#_v){--rd-bg:#f6f6f4;--rd-panel:#ffffff;--rd-cell:#ececea;--rd-line:#deded9;--rd-ink:#151515;--rd-mute:#5f5f63;--rd-faint:#9a9a9f}
+@R[data-look="dark"]:not(#_c):not(#_d):not(#_v){--rd-bg:#151515;--rd-panel:#1d1d1f;--rd-cell:#242426;--rd-line:#2e2e31;--rd-ink:#f2f2f3;--rd-mute:#a6a6ab;--rd-faint:#6f6f74}
+@R:not(#_v) body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M12 30l12-12 12 12' fill='none' stroke='%23888' stroke-opacity='.09' stroke-width='3'/%3E%3C/svg%3E")!important;background-attachment:scroll!important}

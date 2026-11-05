@@ -42,3 +42,13 @@ From Pictogram (used with restraint):
 ## Rejected, for reference
 
 Device (hardware), Arcana (cards), and the off-topic round-2 ideas (Score, Forecast, Weave, Lanes). The previous site look (cream boxes, black outlines, yellow buttons, manga speed lines) felt lazy and templated.
+
+## Nov 5 feedback (Sim, on the first full redesign)
+- Keep Sim's own logo (chevron A, "PLOT" circled in pink). Never replace it.
+- No boxiness: no hard 1px frames, cut-corner tiles or flat pure black/white panels everywhere. The theme is a style, not a cage: vary shapes.
+- Dark mode is a soft neutral black (around #151515), never navy, blue or violet. Light mode is a neutral off-white. The faint mini-chevron wallpaper stays.
+- No dead space: fill it with information, images or design, never filler.
+- No lead/back/bench labels on pictures. Your six are the showcase: six big pictures in the art style.
+- Never clip names; no boxes around numbers; the nav "6/6" must be easy to read.
+- Keep the original Home order: hero and actions, your six with grade, most used / top of the meta, how it works, tools.
+- Use the sharp 512px sprites (app/sp-redesign).
