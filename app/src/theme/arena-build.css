@@ -624,3 +624,9 @@
 /* R20 (desktop): the recent winners open in a half-width column there, so their six sit 3 by 2 and every name fits whole */
 @media (min-width:1001px){@A [data-pane="auto"] .abstart .evteam .tgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:700px) and (max-width:1000px){@A [data-pane="auto"] .evteam .tgrid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* R22 (narrow phones): the stage title gets the full width; the grade sits under it on one line */
+@media (max-width:419px){
+  @A .arb-sthead{flex-direction:column;gap:10px}
+  @A .arb-score{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:4px 12px;text-align:left}
+  @A .arb-score .arb-grade,@A .arb-score .arb-basis{margin-top:0}
+}
