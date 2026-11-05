@@ -956,6 +956,12 @@
 @A:not(#amw) .ar-mpg #aboutOut .abthero>.chk{color:var(--ar-ink-2)!important;font:600 15px/1.3 var(--ar-body)!important}
 @A:not(#amw) .ar-mpg #aboutOut .abthero>h2{font-size:var(--ar-fs-page)!important;line-height:1.02!important;font-stretch:120%!important}
 @A:not(#amw) .ar-mpg #aboutOut .abthero>h2::before{content:"";flex:none;width:30px;height:30px;margin-top:calc((1.02em - 30px) / 2);background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+/* D-F27: Archetypes' "How to beat it" numbers are the purple step plates (as the 7 checks and Track record), not bare italics */
+@A:not(#amw) .ar-mpg #guideOut .gbeat li{grid-template-columns:32px minmax(0,1fr)!important;column-gap:14px!important;align-items:start!important;position:relative}
+@A:not(#amw) .ar-mpg #guideOut .gbeat li::before{position:relative;z-index:1;display:grid!important;place-items:center;width:32px;height:28px;margin-top:-2px;font:italic 900 17px/1 var(--ar-display)!important;font-stretch:120%!important;color:#fff!important;text-align:center!important;
+  background:none!important}
+@A:not(#amw) .ar-mpg #guideOut .gbeat li::after{content:"";position:absolute;left:0;top:4px;width:32px;height:28px;z-index:0;background:var(--ar-purple-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A:not(#amw) .ar-mpg #guideOut .gbeat li>*{position:relative;z-index:1}
 /* D-F28: This week's "How we decide what changed" is the fold strip (75-arena-meta.js gives it the chevron and title) */
 @A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>summary{position:relative!important;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;max-width:560px;padding:8px 16px 8px 22px!important;margin:0 0 0 6px!important;
   background:none!important;border:0!important;box-shadow:none!important;cursor:pointer;list-style:none;color:var(--ar-ink)!important}
