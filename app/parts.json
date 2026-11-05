@@ -11,6 +11,7 @@
  "src/theme/desktop-sheet.css",
  "src/theme/arena.css",
  "src/theme/arena-p1.css",
+ "src/theme/arena-battle.css",
  "src/body.html",
  "src/data/data.js",
  "src/data/move-acc.js",
@@ -94,6 +95,7 @@
  "src/app/72-keep-place.js",
  "src/app/73-desktop-sheet.js",
  "src/app/74-arena.js",
+ "src/app/75-arena-battle.js",
  "src/app/98-proposals.js",
  "src/app/99-start.js",
  "src/foot.html"
