@@ -191,10 +191,12 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
-  /* Fix it: while the plans are worked out again (a new "Suggest from" choice), the list keeps its height, so the folds under
-     it don't jump up and back down */
-  const so = $('chSugOut'); if (so) { if (so.querySelector('.chsugw')) { so.dataset.arh = so.offsetHeight; so.style.minHeight = ''; }
-    else if (so.dataset.arh && so.querySelector('.empty-note')) so.style.minHeight = so.dataset.arh + 'px'; else so.style.minHeight = ''; }
+  /* Fix it: the suggestion list never gets shorter while the same team is shown (a new "Suggest from" choice works the plans out
+     again and can bring back a shorter list a second later), so the folds under it never jump up under a finger. A new team
+     starts afresh. */
+  const so = $('chSugOut'); if (so) { let k = ''; try { k = members().map(m => m.p.n).join(','); } catch (e) {}
+    if (so.dataset.ark !== k) { so.dataset.ark = k; so.dataset.arh = 0; so.style.minHeight = ''; }
+    const h = so.offsetHeight; if (h > +so.dataset.arh) so.dataset.arh = h; if (+so.dataset.arh > 0) so.style.minHeight = so.dataset.arh + 'px'; }
   /* the older secondary buttons and text links on these pages take the arena menu-strip and link styles (same elements, same handlers) */
   document.querySelectorAll('[data-pane="report"] :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn):not(.chapply), #homeOut.ar-on :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn), #lairSheet .lsact button.btn:not(.ar-btn)').forEach(b => {
     if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick,#welcomeCard') || b.matches('[data-welcomex]')) return; b.classList.add('ar-btn'); });
