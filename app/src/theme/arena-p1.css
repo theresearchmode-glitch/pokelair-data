@@ -247,6 +247,7 @@
 @A[data-look="dark"] .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
 @A .ar-tacts #chActs #saveBtn{grid-column:1/-1;order:-1;min-height:60px!important;font:italic 800 19px/1.1 var(--ar-display)!important;font-stretch:115%!important;color:#16141A!important;justify-content:flex-start;padding-left:24px!important}
 @A .ar-tacts #chActs #saveBtn::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:0 12px 22px -12px rgba(190,140,0,.75),0 2px 4px -2px rgba(0,0,0,.2)!important}
+@A[data-look="dark"] .ar-tacts #chActs #saveBtn::before{box-shadow:0 10px 18px -10px rgba(0,0,0,.9)!important}
 @A .ar-tacts #chActs .sdcopy svg{width:18px;height:18px;flex:none}
 @A .ar-tacts #chActs .moremenu{position:relative;margin:0!important;border:0!important;background:none!important;box-shadow:none!important}
 @A .ar-tacts #chActs .moremenu>summary{justify-content:center!important;padding:0!important;font-size:20px!important;list-style:none}
