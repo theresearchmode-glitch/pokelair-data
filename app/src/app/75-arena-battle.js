@@ -28,13 +28,13 @@ ARB.artify = (el, p, size, nameSel) => { if (!el || !p || el.classList.contains(
   const nm = nameSel && el.querySelector(nameSel); if (nm) nm.classList.add('ar-nm'); };
 
 /* a small slanted type field behind a lone sprite (list rows, turn one, matchup prep), in place */
-ARB.bf = (img, p) => { if (!img || !p || (img.parentElement && img.parentElement.classList.contains('ar-bf'))) return; const w = document.createElement('span');
-  w.className = 'ar-bf' + (AR.isMega(p) ? ' is-mega' : ''); w.setAttribute('style', AR.tv(p)); w.setAttribute('aria-hidden', 'true'); w.innerHTML = '<span class="ar-field"></span>'; img.before(w); w.append(img); };
+ARB.bf = (img, p) => { if (!img || !p || (img.parentElement && img.parentElement.classList.contains('ar-mini'))) return; const w = document.createElement('span');
+  w.className = 'ar-mini ar-bf' + (AR.isMega(p) ? ' is-mega' : ''); w.setAttribute('style', AR.tv(p)); w.setAttribute('aria-hidden', 'true'); img.before(w); w.append(img); };
 
 /* ======================= shared: arena controls on the old markup ======================= */
 ARB.parts = () => { const P = ARB.SEL;
   document.querySelectorAll(`:is(${P}) .seg:not(.ar-seg)`).forEach(s => s.classList.add('ar-seg'));
-  document.querySelectorAll(`:is(${P}) :is(button.btn,button.chghost,button.sdcopy):not(.ar-btn):not(.chprimary):not(.dcswap)`).forEach(b => b.classList.add('ar-btn'));
+  document.querySelectorAll(`:is(${P}) :is(button.btn,button.chghost,button.sdcopy):not(.ar-btn):not(.ar-link):not(.chprimary):not(.dcswap)`).forEach(b => b.classList.add(b.matches('[data-typesmonx]') ? 'ar-link' : 'ar-btn'));
   document.querySelectorAll(`:is(${P}) :is(button.linkbtn,button.nplink):not(.ar-link)`).forEach(b => b.classList.add('ar-link'));
   /* the one main action per page: the yellow strip with the black go-chevron */
   document.querySelectorAll(`:is(${P}) button.chprimary:not(.ar-btn)`).forEach(b => { b.classList.add('ar-btn', 'ar-primary');
@@ -42,7 +42,10 @@ ARB.parts = () => { const P = ARB.SEL;
     if (!b.querySelector('.ar-go')) b.insertAdjacentHTML('beforeend', AR.ICON.go); });
   /* page titles: the word the old layer coloured in blue reads in ink like the rest of the title */
   document.querySelectorAll(`:is(${P}) .chpgt span[style]`).forEach(s => s.removeAttribute('style'));
-  ARB.opp(); ARB.gauntlet(); ARB.practice(); ARB.types(); ARB.speed(); };
+  /* hover notes on table cells read as plain phrases (no middle dots) */
+  document.querySelectorAll(`:is(${P}) :is(.bmdt,.dctab) [title*=" · "]`).forEach(e => { e.title = e.title.replace(/ · /g, '; '); });
+  document.querySelectorAll(`:is(${P}) label.btn:not(.ar-btn)`).forEach(b => b.classList.add('ar-btn'));
+  ARB.opp(); ARB.gauntlet(); ARB.practice(); ARB.types(); ARB.speed(); ARB.log(); };
 
 /* ======================= Battle mode ======================= */
 /* their six: art tiles (S), the remove button on the corner, "Likely lead" as a slanted tag under the name */
@@ -64,11 +67,11 @@ rzReadHtml = function () {
   try { const W = bmWatch(C, theirs); const hi = W.find(w => w.out.some(o => o[0] === 'hi')) || W[0]; if (hi) threat = {o: hi.o, t: (hi.out.find(o => o[0] === 'hi') || hi.out[0])[1]}; } catch (e) {}
   const fo = theirs.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out')).length;
   const mega = p => AR.isMega(p) ? ' is-mega' : '';
-  const hero = lead.length === 2 ? `<div class="ar-rhero" style="${ARB.pairVars(lead[0].p, lead[1].p)}"><span class="ar-rhero-bg ar-field" aria-hidden="true">${AR.BURST}</span>
+  const hero = lead.length === 2 ? `<div class="ar-rhero" style="${AR.tv(lead[0].p)}"><span class="ar-rhero-bg ar-field" aria-hidden="true">${AR.BURST}</span>
       <span class="ar-rhero-mons" aria-hidden="true"><span class="ar-rmon${mega(lead[0].p)}" style="${AR.tv(lead[0].p)}">${AR.spr(lead[0].p)}</span><span class="ar-rmon${mega(lead[1].p)}" style="${AR.tv(lead[1].p)}">${AR.spr(lead[1].p)}</span></span>
       <span class="ar-rhero-copy"><span class="ar-rk">Your lead</span><span class="ar-rnm">${AR.nm(lead[0].d)}</span><span class="ar-rnm"><i>+</i> ${AR.nm(lead[1].d)}</span></span></div>` : '';
   const strip = (cls, vars, lab, nm, sub, mons) => `<div class="ar-rstrip ${cls}" style="${vars}"><span class="ar-rstrip-f ar-field" aria-hidden="true"></span><span class="ar-rstrip-in"><span class="ar-rk">${lab}</span><span class="ar-rstrip-nm">${nm}</span>${sub ? `<span class="ar-rstrip-sub">${sub}</span>` : ''}</span><span class="ar-rstrip-mons" aria-hidden="true">${mons}</span></div>`;
-  const them = ll.length === 2 ? strip('them', ARB.pairVars(ll[0].p, ll[1].p), 'Their likely lead', `${AR.nm(ll[0].d)} + ${AR.nm(ll[1].d)}`, '', AR.spr(ll[0].p) + AR.spr(ll[1].p)) : '';
+  const them = ll.length === 2 ? strip('them', AR.tv(ll[0].p), 'Their likely lead', `${AR.nm(ll[0].d)} + ${AR.nm(ll[1].d)}`, '', AR.spr(ll[0].p) + AR.spr(ll[1].p)) : '';
   const thr = threat ? strip('threat', AR.tv(threat.o.p), 'Biggest threat', AR.nm(threat.o.d), threat.o.d.toLowerCase().includes(String(threat.t).toLowerCase()) ? '' : esc(String(threat.t)), AR.spr(threat.o.p)) : '';
   return `<div class="rzread ar-read" role="region" aria-labelledby="arReadH"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arReadH">The read</h2></div>
     <div class="ar-rdeck">${hero}<div class="ar-rside">${them}${thr}<div class="ar-rfo"><div class="ar-stat"><span class="ar-num">${fo}</span><span class="ar-unit">Fake Out on their side</span></div><span class="rzlive">Updates as you type their six</span></div></div></div></div>`; };
@@ -84,12 +87,26 @@ ARB.battle = () => { const sec = $('matchup'), head = sec && sec.querySelector('
   /* turn one: each beat's Pokémon on a small type field */
   out.querySelectorAll('img.rzbspr, img.bmwspr').forEach(i => ARB.bf(i, ARB.pOfImg(i)));
   /* the damage calc card: your six and their Pokémon as small art */
-  const cc = $('chCalcCard'); if (cc) { cc.querySelectorAll('.chcalcatk [data-dcgo]:not(.ar-art)').forEach(b => { const p = byName.get(b.dataset.dcgo.split('|')[0]); if (p) ARB.artify(b, p, 's', 'span'); });
-    const d = cc.querySelector('.chcalcdef:not(.ar-art)'), pd = d && ARB.pOfImg(d.querySelector('img.spr')); if (pd) ARB.artify(d, pd, 's', 'span'); }
+  const cc = $('chCalcCard'); if (cc) { cc.querySelectorAll('.chcalcatk [data-dcgo]:not(.ar-art)').forEach(b => { const p = byName.get(b.dataset.dcgo.split('|')[0]); if (p) ARB.artify(b, p, 's', ':scope > span:not(.ar-f)'); });
+    const d = cc.querySelector('.chcalcdef:not(.ar-art)'), pd = d && ARB.pOfImg(d.querySelector('img.spr')); if (pd) ARB.artify(d, pd, 's', ':scope > span:not(.ar-f)'); }
   /* the battle log's pick buttons are toggle chips */
   document.querySelectorAll('[data-pane="matchup"] .logpick:not(.ar-chip)').forEach(b => b.classList.add('ar-chip'));
   ARB.parts(); };
 CH.wrap('renderBattle', () => ARB.battle());
+
+/* the battle log: the four you brought are toggle chips; their order (Lead 1, Back 3...) is one line under them, not on the
+   Pokémon (Sim: no Lead / Back on a Pokémon) */
+ARB.log = () => { document.querySelectorAll('[data-pane="matchup"] .logpicks').forEach(bx => { const o = [...bx.querySelectorAll('.logpick')].map(b => { const k = b.querySelector('.logord'), n = b.querySelector('span');
+    const m = k && /^(Lead|Back)\s*(\d)/i.exec(k.textContent.trim()); return m ? {r: m[1].toLowerCase(), i: +m[2], n: n ? n.textContent.trim() : ''} : null; }).filter(Boolean).sort((a, b) => a.i - b.i);
+  const L = o.filter(x => x.r === 'lead').map(x => esc(x.n)), B = o.filter(x => x.r === 'back').map(x => esc(x.n));
+  const txt = L.length || B.length ? `Order: ${L.length ? `lead <b>${L.join(' + ')}</b>` : ''}${L.length && B.length ? ', ' : ''}${B.length ? `back <b>${B.join(' + ')}</b>` : ''}.` : '';
+  let ln = bx.nextElementSibling; if (!(ln && ln.classList.contains('ar-llline'))) { if (!txt) return; bx.insertAdjacentHTML('afterend', '<p class="ar-llline ar-logord"></p>'); ln = bx.nextElementSibling; }
+  if (!txt) { ln.remove(); return; } if (ln.dataset.t !== txt) { ln.dataset.t = txt; ln.innerHTML = txt; } }); };
+CH.wrap('renderLog', () => ARB.log());
+/* the race track's names are 15px (body minimum): measure them at that size and give each lane room for name and number */
+NPR.laneH = 76;
+NPR.textW = (t, me) => { try { if (!NPR.ctx) NPR.ctx = document.createElement('canvas').getContext('2d');
+    NPR.ctx.font = `${me ? 800 : 700} 15px "Instrument Sans", system-ui, sans-serif`; return Math.ceil(NPR.ctx.measureText(t).width) + 2; } catch (e) { return t.length * 9; } };
 
 /* ======================= Damage calc ======================= */
 /* attacker and defender stand on their type fields, facing each other across a slanted "vs" rule; the attacker's set moves are
@@ -104,7 +121,9 @@ ARB.calc = () => { const el = $('dcOut'); if (!el) return;
   const mv = $('dcMv'), lab = mv && mv.closest('label');
   if (mv && lab && !el.querySelector('.ar-dcmoves')) { const set = [...mv.querySelectorAll('optgroup[label="Its set"] option')].map(o => o.value || o.textContent);
     if (set.length) lab.insertAdjacentHTML('beforebegin', `<div class="ar-dcmoves" role="group" aria-label="Its set: pick a move"><ul class="ar-strips">${set.map(n => `<li><button type="button" class="ar-strip" data-ardcmv="${esc(n)}" aria-pressed="${n === mv.value}" style="--m:${AR.TC[AR.moveType(n)] || TC.Normal}"><span>${esc(n)}</span></button></li>`).join('')}</ul></div>`);
-    lab.classList.add('ar-dcmvsel'); }
+    lab.classList.add('ar-dcmvsel');
+    /* the strips are its set; the select below stays for any other move it can learn */
+    if (set.length) { const t = [...lab.childNodes].find(n => n.nodeType === 3 && n.nodeValue.trim()); if (t) t.nodeValue = 'Other moves'; } }
   const res = el.querySelector('.dcres'); if (res && !res.closest('.ar-sheetwrap')) { const w = document.createElement('div'); w.className = 'ar-sheetwrap ar-dcwrap'; res.before(w); w.append(res); res.classList.add('ar-sheet');
     const pd = byName.get(($('dcD') || {}).value || ''), pa = byName.get(($('dcA') || {}).value || ''); if (pa && pd) res.setAttribute('style', ARB.pairVars(pa, pd)); }
   const big = el.querySelector('.dcbig'); if (big) big.classList.add('ar-num', 'ar-mp');
@@ -143,7 +162,7 @@ CH.wrap('renderPractice', () => ARB.parts());
 
 /* ======================= Type chart: your team as small art buttons ======================= */
 ARB.types = () => { document.querySelectorAll('[data-pane="types"] .ttmon[data-typesmon]:not(.ar-tt)').forEach(b => { const p = byName.get(b.dataset.typesmon); b.classList.add('ar-tt'); if (!p) return;
-  b.setAttribute('style', AR.tv(p)); b.insertAdjacentHTML('afterbegin', `<span class="ar-bf${AR.isMega(p) ? ' is-mega' : ''}" aria-hidden="true"><span class="ar-field"></span>${sprite(p, 'ar-spr') || ''}</span>`); });
+  b.setAttribute('style', AR.tv(p)); b.insertAdjacentHTML('afterbegin', `<span class="ar-mini ar-bf${AR.isMega(p) ? ' is-mega' : ''}" style="${AR.tv(p)}" aria-hidden="true">${sprite(p) || ''}</span>`); });
   document.querySelectorAll('#typeChart th[title]:not([style*="--tc"])').forEach(t => { const c = TC[t.title]; if (c) t.style.setProperty('--tc', c); });
   document.querySelectorAll('[data-pane="types"] .typebtn:not(.ar-ty2)').forEach(b => { b.classList.add('ar-ty2'); const t = b.dataset.type; if (t) b.style.setProperty('--on-t', AR.onType(t)); }); };
 CH.wrap('renderTypes', () => ARB.parts());
