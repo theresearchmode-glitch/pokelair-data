@@ -51,6 +51,9 @@ ARB.overlays = () => { const ed = $('chEdit');
   const sc = $('chScout'); if (sc && !sc.hidden) { sc.querySelectorAll('.chdet img.spr, .chlist .it > img.spr, .chbest img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
     sc.querySelectorAll('.chtile[data-chthr]').forEach(b => ARB.field(b, byName.get(b.dataset.chthr)));
     const d = sc.querySelector('.chdet'), p = d && CH.sel && byName.get(CH.sel); if (d && p && !d.dataset.arb) { d.dataset.arb = 1; d.style.cssText += ';' + AR.tv(p); } }
+  /* My team's fold bodies: the vs-top-12 chart's sprites and the All 30 rows on small type fields */
+  document.querySelectorAll('[data-pane="report"] #chVsOut .chchart img.spr').forEach(i => ARB.mini(i));
+  document.querySelectorAll('[data-pane="report"] #thrCard .thrrow > summary > img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
   document.querySelectorAll('.myrec .qlog .logpick, .myrec .qlog [data-qllead]').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img')))); };
 { let q = false; const run = () => { q = false; try { ARB.overlays(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']}); }
