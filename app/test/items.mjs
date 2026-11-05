@@ -94,6 +94,8 @@ ok(pr.k.some(x => x.startsWith('scarftr:Hydreigon')), 'Choice Scarf under own Tr
 ok(pr.row === false, 'checklist shows a failing Items row');
 ok(/Psychic Seed never activates/.test(pr.terr), 'game plan terrain row names the dead seed');
 await ev("setView('build');render()"); await pg.waitForTimeout(2500);
+/* the fix plans come in the background; on a busy machine that can take longer than 2.5s, so wait for them */
+await pg.waitForFunction(() => window.__ev('(ui.planList||[]).length') > 0, null, {timeout: 20000}).catch(() => {});
 const card = await ev(`(()=>{const c=document.querySelector('#sugs .itemfix');return c?{n:c.querySelectorAll('[data-itfix]').length,t:c.innerText}:null})()`);
 ok(card && card.n >= 2, `item fix card with one-tap fixes (${card ? card.n : 0})`);
 const plansU = await ev(`(ui.planList||[]).map(pl=>({ip:itemProblemCount(pl.team),ch:pl.ch.map(x=>(x.out?x.out.p.n:'+')+'>'+x.c.p.n)}))`);
