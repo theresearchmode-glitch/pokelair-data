@@ -187,17 +187,33 @@ buildShareCard = function () { return CH.shareKind === 'poster' && !SHARE_KIND ?
 ARB.FOC = 'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])';
 ARB.dlg = () => ['shareBox', 'chEdit', 'chScout'].map(id => $(id)).find(d => d && !d.hidden && d.getClientRects().length);
 ARB.back = {};
+/* the control that opened a dialog, or (when the page redrew it) the same control again */
+ARB.again = t => { if (!t) return null; if (t.isConnected && t.getClientRects().length) return t; const k = ['data-chedit', 'data-chset', 'data-lt', 'id'].find(a => t.getAttribute && t.getAttribute(a) != null);
+  if (!k) return null; const v = t.getAttribute(k); return [...document.querySelectorAll(k === 'id' ? '#' + CSS.escape(v) : `[${k}="${CSS.escape(v)}"]`)].find(x => x.getClientRects().length && !x.closest('#chEdit,#chScout,#shareBox')) || null; };
 { const oe = chEditOpen; chEditOpen = function () { const ed = $('chEdit'); if (ed && ed.hidden) ARB.back.chEdit = document.activeElement; return oe.apply(this, arguments); };
   const ce = chEditClose; chEditClose = function () { const ed = $('chEdit'), was = ed && !ed.hidden, r = ce.apply(this, arguments); const t = ARB.back.chEdit; ARB.back.chEdit = null;
-    if (was && t && t.isConnected && t.getClientRects().length) try { t.focus({preventScroll: true}); } catch (e) {} return r; };
+    const g = was && ARB.again(t); if (g) try { g.focus({preventScroll: true}); } catch (e) {} return r; };
   const os = openShareCard; openShareCard = async function () { const b = $('shareBox'); if (!b || b.hidden) ARB.back.share = document.activeElement; const r = await os.apply(this, arguments);
     const box = $('shareBox'), inn = box && !box.hidden && box.querySelector('.sharein'); if (inn && !inn.contains(document.activeElement)) { inn.setAttribute('tabindex', '-1'); inn.setAttribute('aria-modal', 'true'); try { inn.focus({preventScroll: true}); } catch (e) {} } return r; };
   const cs = closeShare; closeShare = function () { const b = $('shareBox'), was = b && !b.hidden, r = cs.apply(this, arguments); const t = ARB.back.share;
-    if (was && t && t.isConnected && t.getClientRects().length && !(b && !b.hidden)) { ARB.back.share = null; try { t.focus({preventScroll: true}); } catch (e) {} } return r; }; }
+    const g = was && !(b && !b.hidden) && ARB.again(t); if (g) { ARB.back.share = null; try { g.focus({preventScroll: true}); } catch (e) {} } return r; }; }
+/* the share card draws its box late (the image is async): focus moves in once it shows */
+ARB.shareFocus = () => { const box = $('shareBox'), inn = box && !box.hidden && box.querySelector('.sharein'); if (!inn || inn.contains(document.activeElement)) return; inn.dataset.arbf = 1;
+  inn.setAttribute('tabindex', '-1'); try { inn.focus({preventScroll: true}); } catch (e) {} };
+new MutationObserver(rs => { if (rs.some(r => r.target.nodeType === 1 && (r.target.id === 'shareBox' || r.target.closest('#shareBox')))) setTimeout(ARB.shareFocus, 0); }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']});
+/* Log a game: opening it moves focus to the first lead; closing it puts focus back on its button */
+CH.wrap('renderMyRec', () => { const a = document.activeElement; if (a && a !== document.body && a.isConnected) return; const q = ui.ql || {};
+  const t = document.querySelector(q.open ? '.myrec .qlog [data-qllead], .myrec .qlog button' : '.myrec [data-qlopen]'); if (t) try { t.focus({preventScroll: true}); } catch (e) {} });
+/* the threat sheet redraws in place: focus that the redraw dropped goes back into it; on close, back to the threat that opened it */
+CH.wrap('chScoutRender', () => { const sc = $('chScout'), a = document.activeElement; if (sc && !sc.hidden && (!a || a === document.body)) { const x = sc.querySelector('[aria-pressed="true"]') || sc.querySelector('.x'); if (x) try { x.focus({preventScroll: true}); } catch (e) {} } });
+{ const sc0 = chScoutClose; chScoutClose = function () { const sh = $('chScout'), was = sh && !sh.hidden, last = CH.last, r = sc0.apply(this, arguments); const a = document.activeElement;
+    if (was && (!a || a === document.body)) { const g = ARB.again(last) || (last && last.dataset && last.dataset.chthr && [...document.querySelectorAll(`[data-chthr="${CSS.escape(last.dataset.chthr)}"]`)].find(x => x.getClientRects().length && !x.closest('#chScout'))); if (g) try { g.focus({preventScroll: true}); } catch (e) {} } return r; }; }
+/* a ⋯ menu closes when focus leaves it */
+document.addEventListener('focusout', e => { const d = e.target && e.target.closest && e.target.closest('details.moremenu[open]'); if (!d) return; setTimeout(() => { if (!d.contains(document.activeElement)) d.open = false; }, 0); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Tab') { const d = ARB.dlg(); if (!d) return; const f = [...d.querySelectorAll(ARB.FOC)].filter(x => x.getClientRects().length && !x.closest('[hidden],details:not([open])>:not(summary)')); if (!f.length) return;
     const a = document.activeElement, i = f.indexOf(a);
-    if (!d.contains(a) || (e.shiftKey && i <= 0) || (!e.shiftKey && i === f.length - 1)) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); } return; }
+    if (!d.contains(a) || i < 0 || (e.shiftKey && i === 0) || (!e.shiftKey && i === f.length - 1)) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); } return; }
   if (e.key !== 'Escape') return;
   const mm = document.activeElement && document.activeElement.closest && document.activeElement.closest('details.moremenu[open]');
   if (mm) { mm.open = false; const s = mm.querySelector(':scope > summary'); if (s) s.focus(); return; }
