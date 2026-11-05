@@ -482,7 +482,7 @@
 @A #chEdit .mvset.empty::before{background:color-mix(in oklch,var(--ar-ink) 6%,transparent);box-shadow:none}
 @A #chEdit .mvset .nm{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;white-space:normal!important;overflow:visible!important}
 @A #chEdit .mvset .mi{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0!important;overflow:visible!important;white-space:normal!important}
-@A #chEdit .mvset .mi .ty{padding:1px 8px 1px 7px!important;font-size:13px!important}
+@A #chEdit .mvset .mi .ty{padding:1px 8px 1px 7px!important;font-size:14px!important}
 @A #chEdit .mvset .bp{font:500 14px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A #chEdit .mvset .caret{top:50%!important;right:12px!important;margin-top:-8px;font-size:14px!important;color:var(--ar-ink-2)!important}
 /* weak and resists */
@@ -758,7 +758,7 @@
 @A [data-pane="report"] .chparts table td.who{font-size:15px;color:var(--ar-ink)}
 @A [data-pane="report"] .chparts table td.who span{opacity:1!important;color:var(--ar-ink-2)}
 @A [data-pane="report"] .chparts table .gmon img{width:40px!important;height:40px!important;display:block;margin:0 auto}
-@A [data-pane="report"] .chparts table .gnm{display:block;font-size:13px;line-height:1.2;color:var(--ar-ink-2);max-width:72px;margin:2px auto 0;overflow-wrap:anywhere}
+@A [data-pane="report"] .chparts table .gnm{display:block;font-size:14px;line-height:1.2;color:var(--ar-ink-2);max-width:72px;margin:2px auto 0;overflow-wrap:anywhere}
 @A [data-pane="report"] .chparts .m{display:inline-grid!important;place-items:center;min-width:34px;height:26px;padding:0 5px!important;border:0!important;border-radius:4px!important;font:700 14px/1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important}
 @A [data-pane="report"] .chparts .m:empty{min-width:0;padding:0!important}
 @A [data-pane="report"] .chparts .m.m2{background:color-mix(in oklch,var(--ar-pink) 26%,var(--ar-sheet))!important}
@@ -866,3 +866,10 @@
 @A [data-pane="box"] #boxList>.none{display:block;grid-column:1/-1;padding:18px 0 18px 20px!important;position:relative;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="box"] #boxList>.none::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:5px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:2px}
 @media (min-width:600px){@A #chScout .chtiles{grid-template-columns:repeat(10,minmax(0,1fr))!important;gap:16px 10px!important}}
+/* vs top 12 on wider screens: the threat's name in full (never cut off), the six cells share what is left */
+@media (min-width:900px){@A [data-pane="report"] #chVsOut .chcr{grid-template-columns:minmax(170px,1.9fr) repeat(6,minmax(0,1fr))!important}
+  @A [data-pane="report"] #chVsOut .chcr .th i{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.15!important}}
+/* the compare sixes' names are for screen readers only (the art and the tooltip carry them) */
+@A [data-pane="compare"] .cxsix .ar-art .ar-nm{opacity:0}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) :is(.thcalc,.thcond){font-size:15px!important;line-height:1.45}
+@A [data-pane="compare"] .cxl.dbhand svg{display:none!important}
