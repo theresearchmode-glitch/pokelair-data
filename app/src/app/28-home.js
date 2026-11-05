@@ -3,7 +3,7 @@
 const HOME_TILES = [
   ['matchup', 'Battle mode', 'Their six in, your four, the leads and turn 1 out', '<circle cx="12" cy="13" r="7.5"/><path d="M12 13V9M10 2.8h4M18.5 6.5l1.5-1.5"/>'],
   ['top', 'Teams', 'Search every winning team by Pokémon, item or move', '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/>'],
-  ['cores', 'Winning cores', 'Pairs and trios that win the most', '<circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="16" r="4"/>'],
+  ['types', 'Type chart', 'What hits what, and your team against every type', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/>'],
   ['ratings', 'Ratings', 'Every legal Pokémon on one tier board', '<path d="m12 3.2 2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/>'],
   ['calc', 'Damage calc', 'Real damage with stats, items and spread moves', '<path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2M8 18h2M12 18h4"/>'],
   ['events', 'Events', 'Every recent tournament, top cut and full sets', '<path d="M4 6h16v14H4z"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/><path d="m10 15 1.5 1.5 3-3"/>'],
@@ -11,7 +11,7 @@ const HOME_TILES = [
   ['sets', 'Popular sets', 'Moves, items and natures players run', '<path d="M5 4h14v16H5z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>'],
   ['speed', 'Speed tiers', 'Who moves first, with Tailwind and Trick Room', '<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-6"/>'],
   ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>'],
-  ['types', 'Type chart', 'What hits what, and your team against every type', '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/>']];
+  ['cores', 'Winning cores', 'Pairs and trios that win the most', '<circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="16" r="4"/>']];
 function homeMini(p, r, extra) { return `<button type="button" class="hmini" data-lt="${esc(p.n)}" style="--ta:${TC[p.t[0]]};--tb:${TC[p.t[1] || p.t[0]]}" title="${esc(p.d)}">${sprite(p, 'hmspr') || ''}<span class="hmn">${esc(p.d.replace(/^Mega /, 'M-'))}</span><span class="hms">${tierChip(lTier(r.total))}<b${bandAt(r.total)}>${RS(r.total)}</b>${rankTxt(p) ? `<i class="hmrk">${rankTxt(p, 1)}</i>` : ''}${extra || ''}</span></button>`; }
 // Desktop hero, right side: the newest event winner (one tap to load it) and how ready your team is for the top threats.
 function homeSide(v) { const E = META.events; let ev = null, t = null;
