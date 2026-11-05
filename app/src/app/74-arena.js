@@ -293,7 +293,8 @@ MG.sheet = n => AR.sheet(n);
 /* run after the app draws (the same observer pattern as the other theme layers) */
 /* polish pass: a "?" tip never wraps alone onto a line: it is glued to the last word before it (the button is moved, not
    rebuilt, so its handler and label stay); a hyphenated word in a sentence ("double-targeting") never splits at its hyphen */
-AR.glue = () => { document.querySelectorAll('main .tipq:not([data-gl])').forEach(b => { b.dataset.gl = 1; const t = b.previousSibling;
+AR._gl = new WeakSet(); /* elements already glued (a WeakSet, not a data attribute: controls keep their attributes) */
+AR.glue = () => { document.querySelectorAll('main .tipq').forEach(b => { if (AR._gl.has(b)) return; AR._gl.add(b); const t = b.previousSibling;
     if (!t || t.nodeType !== 3 || b.parentElement.closest('.ar-nobr') || /flex|grid/.test(getComputedStyle(b.parentElement).display)) return; const m = /(\S+)(\s*)$/.exec(t.nodeValue); if (!m) return;
     t.nodeValue = t.nodeValue.slice(0, m.index); const w = document.createElement('span'); w.className = 'ar-nobr'; t.after(w); w.append(m[1] + (m[2] ? '\u00a0' : ''), b); });
   /* a "More" toggle stays on the line of the word before it (no lone "More" under a sentence) */
@@ -301,10 +302,10 @@ AR.glue = () => { document.querySelectorAll('main .tipq:not([data-gl])').forEach
      accessible name) */
   document.querySelectorAll('.ar-art.is-empty .ar-nm:has(.ar-addr)').forEach(n => { if (!n.getClientRects().length) return; n.classList.remove('is-short');
     const r = n.querySelector('.ar-addl').getBoundingClientRect(), e = n.querySelector('.ar-addr').getClientRects(); if (e.length && Math.abs(e[e.length - 1].bottom - r.bottom) > 4) n.classList.add('is-short'); });
-  document.querySelectorAll('.rzmorebtn:not([data-gl])').forEach(b => { b.dataset.gl = 1; let t = b.previousSibling; if (t && t.nodeType === 3 && /^\s+$/.test(t.nodeValue)) { const s = t; t = t.previousSibling; s.remove(); }
+  document.querySelectorAll('.rzmorebtn').forEach(b => { if (AR._gl.has(b)) return; AR._gl.add(b); let t = b.previousSibling; if (t && t.nodeType === 3 && /^\s+$/.test(t.nodeValue)) { const s = t; t = t.previousSibling; s.remove(); }
     if (!t || t.nodeType !== 3) return; const m = /(\S+)(\s*)$/.exec(t.nodeValue); if (!m) return; t.nodeValue = t.nodeValue.slice(0, m.index);
     const w = document.createElement('span'); w.className = 'ar-nobr ar-moreg'; b.before(w); w.append(m[1] + '\u00a0', b); });
-  document.querySelectorAll('main :is(.prob-row>div,.wdsub,.chpgs,.hint,.empty-note,.mgempty,.pmain,.ltd,.cht,p,li,dd,b,a,span.t2,span:not([class])):not([data-hy])').forEach(e => { e.dataset.hy = 1;
+  document.querySelectorAll('main :is(.prob-row>div,.wdsub,.chpgs,.hint,.empty-note,.mgempty,.pmain,.ltd,.cht,p,li,dd,b,a,span.t2,span:not([class]))').forEach(e => { if (AR._gl.has(e)) return; AR._gl.add(e);
     const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), L = []; let n; while ((n = tw.nextNode())) if (/\w[-\u2013]\w/.test(n.nodeValue) && !n.parentElement.closest('.ar-nobr,svg,textarea,script,style')) L.push(n);
     L.forEach(n => { const f = document.createElement('span'); f.innerHTML = esc(n.nodeValue).replace(/([A-Za-z0-9(]+(?:[-\u2013][A-Za-z0-9)%]+)+)/g, '<span class="ar-nobr">$1</span>'); n.replaceWith(...f.childNodes); }); }); };
 /* the glued "More" toggle opens the text that follows its glue span (70-riso2.js looks for it right after the button) */
