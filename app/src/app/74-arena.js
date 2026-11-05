@@ -213,12 +213,25 @@ AR.sheet = n => { const sh = $('lairSheet'), p = n && byName.get(n); if (!sh || 
     + `${r ? `<span class="ar-shero-copy"><span class="ar-num ar-mp ar-shero-big">${RS(r.total)}</span>${cap ? `<span class="ar-shero-cap"><span class="ar-plate ar-sm" style="${AR.tv(p)}"><span>${esc(cap)}</span></span></span>` : ''}</span>` : ''}</div>`);
   head.classList.add('ar-head', 'mghead');
   const cell = sh.querySelector('.chlsr'), tq = cell && cell.querySelector('.tipq'), cq = head.querySelector('.ar-shero-cap');
-  if (cell && cq) { if (tq) cq.append(tq); cell.hidden = true; cell.classList.add('mgmoved'); }
+  if (cell && cq) { if (tq) cq.prepend(tq); cell.hidden = true; cell.classList.add('mgmoved'); }
   const stats = sh.querySelector('.chlstats');
   if (stats && !stats.querySelector('.mgspd')) { let r0 = null; try { r0 = LST.speeds(p).find(x => x.main) || null; } catch (e) {}
-    if (r0) stats.insertAdjacentHTML('beforeend', `<div class="mgspd"><b>${r0.v}</b><span>Speed at level 50</span></div>`); }
+    if (r0) stats.insertAdjacentHTML('beforeend', `<div class="mgspd"><b>${r0.v}</b><span>Speed at level&nbsp;50</span></div>`); }
   const add = sh.querySelector('.lsact [data-laddteam]'); if (stats && add && !sh.querySelector('.mgadd')) { const w = document.createElement('div'); w.className = 'mgadd'; stats.after(w); w.append(add); }
   const x = sh.querySelector('.lsx'); if (x) x.classList.add('ar-x');
+  /* the name: a smaller title for long names (no "Indeedee / (F)" or "Mega / Charizard Y" orphans), the name ends kept together */
+  const nm = sh.querySelector('.lsname'), h3 = nm && nm.querySelector('h3');
+  if (h3) { h3.innerHTML = AR.nm(p.d); nm.classList.toggle('ar-long', p.d.length > 11); }
+  /* the types as the slanted type tags the set card uses; Mega and box marks spelled out as quiet tags (no icon-only chips) */
+  const ch = nm && nm.querySelector('.chips');
+  if (ch && !ch.querySelector('.ar-ty')) { ch.querySelectorAll('.ty').forEach(e => e.remove());
+    ch.insertAdjacentHTML('afterbegin', (p.t || ['Normal']).map(AR.tag).join(''));
+    ch.querySelectorAll('.tag.ico').forEach(e => { e.classList.remove('ico'); e.classList.add('ar-mark'); e.textContent = e.classList.contains('box') ? 'In your box' : e.classList.contains('mega') ? 'Mega' : e.textContent; });
+    ch.classList.add('ar-tys'); }
+  /* Meta tab (phones too): "Items: Ability: Rough Skin 98%" reads as one run; the label is "Items", the ability its own line
+     (the same split the desktop sheet makes) */
+  sh.querySelectorAll('.lstp-meta .chlsdata .chk').forEach(ih => { if (ih.querySelector('.lsabn')) return; const m = /^Items\s*(?:·|:)\s*Ability: (.+)$/.exec(ih.textContent.trim()); if (!m) return;
+    ih.textContent = 'Items'; const a = document.createElement('span'); a.className = 'lsabn'; a.append('Most used ability: '); const bb = document.createElement('b'); bb.textContent = m[1]; a.append(bb); ih.append(a); });
   const t = p.t || ['Normal']; sh.style.setProperty('--ar-ta', AR.TC[t[0]] || TC.Normal); sh.style.setProperty('--ar-tb', AR.TC[t[1] || t[0]] || TC.Normal); };
 MG.sheet = n => AR.sheet(n);
 
