@@ -227,3 +227,94 @@ These are two different matchups, so the leads can differ. The wording says whic
 **The grade.** The big number is always what the letter comes from:
 - With 30+ real games, the letter comes from the record's win rate (already pulled toward the field for small samples). The number is shown with one decimal (59.9%), so it never reads as an A's 60%. NastyPlot's own score (94) appears as "score" under "Our check".
 - Otherwise the big number is the grade out of 100, and the grade sum line explains it.
+
+## Final consistency rules (final fix 1, Nov 5)
+
+These are the shared patterns after the two final reviews. `arena.css` sections 19, 27 and 28, `arena-p1.css` (Final fixes) and `74-arena.js` implement what can live in the system files. The lists under each group file say exactly what that file must change. Finding IDs are from the final phone (P) and desktop (D) reviews.
+
+### System changes every page now gets
+
+- **Section 19 no longer paints controls you restyle.** Its raised-button list is wrapped in `:where()` (with `:not(:where(…, #saveBtn))`), so its specificity is only `@A main`. Any page rule that draws a slanted `::before` plate and resets the element's background now wins. Never re-add an id or class chain to that list.
+- **Type colours.** `74-arena.js` changes the app's own `TC` before anything renders: Dark is `#5E5068` (slate violet, not the brown `#5F4536`) and Normal is `#A6A2AE` (a cool lilac-grey, not the khaki `#ABA88A`). `TC`, `AR.TC`, `tyVars`, `chip()`, Home's rows, the Type chart and the share card all get them. In dark mode a near-neutral type (Normal) sits at L .70.
+- **The dark dual-type middle stop (`--dm`, `AR.mid`)** always lies between the two hues the short way round. A neutral partner takes the other type's hue (Indeedee: crimson, pink, then grey). A warm middle is lifted to L .78 and C .13 or more (a light gold, never brown, olive or khaki). Never build your own middle stop; use `AR.tv(p)`.
+- **One page-title size.** `--ar-fs-page` is 36px (31px under 360px, `clamp(46px,4.4vw,64px)` from 1001px). Every `.chpghead .chpgt` uses it; section 28 enforces it with one extra id. Only the landing heroes (Home, My team, Build me a team's `.chabhero`) are larger. The tab sits on the title's first line.
+- **Back links.** Every sub-page starts with a `.chback` arena link (`32-views.js` adds most; `74-arena.js` adds "← Meta" on This week, How we calculate and About). Don't add a second one.
+- **Names.** `AR.nm(name)` is the only display-name helper. It always prints "Mega Charizard Y" (an id such as `Charizard-Mega-Y` or a short `M-Charizard Y` becomes "Mega Charizard Y") and keeps the last part with the name ("Charizard&nbsp;Y", "Indeedee&nbsp;(F)"). `AR.mega(name)` is the same without HTML escaping. `74-arena.js` also rewrites the older tables' and charts' `M-` labels (`th span`, `svg text`).
+- **Art-tile names never break inside a word.** `AR.fit()` (runs after every render, on resize and when fonts load) steps a name down 1px at a time, to 14px at the smallest, until its longest word fits (`--nmf`). A name on the art that still takes two lines marks the tile `.is-nm2`, and the sprite shrinks to 78% so the name keeps clear of it. Names under the art (`.ar-below`) are always left-aligned (section 28 enforces this).
+- **Hover.** Every raised button, strip, segment and fold summary gets the same hover: its slanted `::before` goes a shade deeper (`brightness(.95)`, `1.3` in dark). Don't add a different hover; delete page hover rules that only re-tint the plate.
+- **Fields.** Every text input, search box, number input, select and textarea in `main` gets the arena field baseline: sheet fill (`#1E1D22` in dark), a 2px underline that turns the section colour on focus, radius `--ar-r-m`, 48px tall, 16/17px text. No frame, no grey box. A locked value is shown with a lock tag beside it, not a different box.
+- **The header count badge** draws nothing while it is empty.
+- **The info sheet** text is 15px or more everywhere (Speed at level 50 rows, stat deltas, actions, "Report a mistake", tab sub-labels).
+
+### One pattern per job
+
+| Job | The one pattern | Notes |
+|---|---|---|
+| Page head | `.chpghead`: `.chk` kicker, then `.chpgt` at `--ar-fs-page` with the slanted section tab on its first line, then `.chpgs` | The kicker goes above the title. A page switcher (`.subnav` / `.ar-seg`) sits above the kicker on every page of a group. |
+| Back link | `.chback`, first in the pane | "← My team", "← Battle", "← Meta", "← Pokémon ratings" |
+| Section head | `.ar-shead` with one `.ar-tab` beside the first line | One tab per head. Never two. Never beside the last line. |
+| Numbered steps | `.ar-step` (slanted section plate, display numeral) | Only for real sequences. No round discs, no plain italic numerals. |
+| Fold / disclosure | The fold strip: a slanted sheet strip with a 6px section edge, the title in display italic 19px, the `CH.chev2` chevron | No bare-text disclosures, no extra icon squares. |
+| Type tag | `AR.tag(type)` / `.ar-ty` (15px, slanted, filled in light, neutral with a type edge in dark) | No pastel rounded `.ty` chips with icons, no thin bar-plus-glyph variant. Put punctuation inside the sentence, not after a chip. |
+| Status tag | A slanted tag like `.ar-ty` with the status ink edge (`--ar-pink/gold/blue/green`) and the word | No pastel pills. |
+| Sort control | A "Sort" label (15px ink-2) then an `.ar-seg`, left-aligned on its own row under the lede or field | Same on Saved teams and My box. |
+| Art-tile names | Left-aligned under the field (`.ar-below`), or on the art (dark: ink plate) | Never centred. |
+| Side gutter | `--ar-gutter` (16px on phones, 32px on desktop) on the pane | No page sets its own side padding. |
+| Fields | The arena field baseline above | |
+| Overlay | Phones: a bottom sheet (`--ar-r-xl` top corners) with the round 44px `.ar-x` close at the top right and a head of title (display italic) and optional tab. Desktop: the same head in a centred dialog. | "Done" only where it commits changes (Edit team). |
+| Hover | The section 28 rule | |
+| Small text | 15px minimum (`--ar-fs-small`); 13px only for nav labels | |
+
+### What each group file must change
+
+**arena-team (css + js)**
+1. Dark `.chparts .m` chips (lines ~768–770): the dark `background` on the element beats the line ~967 reset, so an upright box shows behind the slanted chip. Set only `--mc` in dark, never `background`.
+2. P-F11: give `.chgapnote` the arena note (sheet, gold left spine, no outline) everywhere, not only under `[data-pane="coverage"]`. Its dark version is a khaki brown (rgb 58,49,34): use the neutral `#1A191D` sheet with the gold spine.
+3. P-F14, D-F3, D-F4: raise every 12–14px text to 15px: `.sev`, `.ty`, `.tag`, table `th`, `.m` chips, `.ckpro`, `.gnm`, the legend glyphs, editor tags (`#chEdit .tag.rec`, `.mvset .mi .ty`, `.bp`, `.asm`), `#chScout .chleg` (12px), coverage plan lines (13px), add-card tags and `.conf`.
+4. P-F15: every type mention uses `AR.tag` (`.ar-ty`); `.sev` becomes the slanted status tag; no "from Ice ." (the full stop goes inside the sentence).
+5. P-F23: editor slot titles (`.sl-name`) never break inside a word: step down to 22–24px below 400px, or run the same fit as `AR.fit` (measure `scrollWidth > clientWidth`).
+6. P-F07: Compare picker: a fixed sprite column so the text never runs under the 3×2 cluster.
+7. P-F08: after "Update saved team" closes, return focus to its opener (the page must not move).
+8. P-F16: the inline "Paste its log" link takes its 44px tap area from an `::after` inset, so the line height stays normal.
+9. P-F17: drop the custom field styles in the editor, Box and Log a game (the system baseline covers them); the locked Mega stone shows a lock tag, not a grey box. Hide the native `▼` only if you draw the arena chevron.
+10. D-F1: remove the round grey ring (`.mf` avatar) behind the scout detail sprites; keep only the slanted field.
+11. D-F10: give `[data-pane="teams"] .mmpop .danger` the same weight as the generic button rule (`:not(#arbz):not(#arby)`), so Delete keeps its pink ink and hairline.
+12. D-F11, P-N5: Saved team cards: one left edge for the title, record and actions.
+13. D-F20, P-N6: dark Saved teams cards and the compare picks: the neutral dark band (`#16151A` to `#121114`) with the 6–8px blue edge, no navy.
+14. D-F24: delete the centring of `.ar-below .ar-nm` on My box, Log a game leads and the share card (section 28 now forces left).
+15. D-F29: Saved teams and My box sort: "Sort" label then `.ar-seg`, left-aligned on its own row.
+16. P-N8: "Why? 13 reasons ⌄": the chevron sits right after the label; the open reasons use the fold body, not a paper-2 panel; close the empty gap under "Your games".
+17. The `.ty:is([style*="#5f4536"])` remap (line ~877) is now dead: the app's TC holds `#5E5068`. Delete it.
+18. D-F5 (team sheet) and P-F19/D-F16 (empty My team) are done in `arena-p1.css` / `74-arena.js`; don't restyle `.chsheet .chrow` or `#chActs` for them.
+
+**arena-build (css + js)**
+1. P-F03, D-F25: one tab on "Build around a core": drop the `.chpgt::before` or the `.chpghead::before`, keep one, on the first line.
+2. P-F04: the Build pane uses `--ar-gutter` (16px on phones), not 32px; the title then fits at 360.
+3. D-F7: recent-winner tiles use `AR.nm` names ("Mega Charizard Y") and `AR.art` (the `.is-mega` contour); drop the black "M" square.
+4. D-F8: "How it works" steps stack as rows (step plate, title, line) in the half column, or the fold takes the full width.
+5. P-F18, P-N9: Share and Copy for Showdown are phone bottom sheets with the round `.ar-x` at the top right and the overlay head; the focus ring never draws around the whole dialog or upright around a slanted menu row (ring on the `::before`, see section 20).
+6. The dark `.archchip.dk` "Sand" chip is a tan (rgb 201,154,74): use the neutral dark tag with a gold edge.
+7. P-F17: drop the custom favourite-Pokémon field style (the system field baseline covers it).
+
+**arena-battle (css + js)**
+1. P-F13: dark Type chart `.typebtn.ar-ty2` and `.tcb` type buttons: neutral `#2A2930` with the type colour as a 5–6px edge only (like dark `.ar-ty`); no type wash into graphite (Ground, Rock and Electric read brown, Bug olive).
+2. P-F20, D-F34: the matchup head: one tab on the first line, the title flush with the kicker on the 16px gutter, the team names on a smaller line under one display line.
+3. P-F21, D-F13, D-F33: "Damage both ways": the tile treatment of the best-hit grid (sprite on `.ar-mini`, 15px+ names via `AR.nm`, slanted or hairline result chips, move flush with the KO label), with a scroll cue or a layout that fits 360–390. The system already rewrites the `M-` labels, but print `AR.nm` names yourself.
+4. P-F24: check the calc picker at 768 after `AR.fit` (it now steps names down); if a name still breaks, use two rows of tiles at tablet width.
+5. `.ar-rstrip-nm` and `.bmslot .bmn`: print names with `AR.nm` (no "Indeedee (/F)" or "Basculegio/n" breaks).
+6. D-F15: the speed race track on desktop fits the column (or wraps), and says "Scroll", not "Swipe", on pointer devices.
+7. D-F31: the empty Battle slot row reserves the field height; the empty-state line and art sit clear below it.
+8. D-F28: Gauntlet's bare "⌄ Matchup prep" becomes the fold strip.
+9. P-N12: the "?" tip stays on the sentence's last line. The arrow before Rillaboom has no beige square behind it.
+
+**arena-meta (css + js)**
+1. D-F14, P-F12: How we calculate: the 7 checks and the sources are arena rows (hairline-separated, no outlined boxes), numbers as `.ar-step` purple plates (no round blue discs), figures in `--ar-sec-ink`, the winners line 15px ink-2. About's MIT licence `pre`: no outline (a paper-2 field).
+2. P-F22: `text-shadow:none` on `#chHot .chpen`, `.ltl` and `.ltg`.
+3. P-F05: delete the `.ar-mpg .chpghead .chpgt` font size (`min(var(--ar-fs-h1),10.6vw)`): section 28 sets `--ar-fs-page`. Keep the flex tab, sized 26–30px, on the first line. The kicker goes above the title on This week, Track record and How we calculate as on every other page.
+4. D-F9: the page switcher sits above the title on every Meta sub-page (Winning teams and Events too).
+5. D-F18: the Pokémon / Tournaments group tabs get a rounded `--ar-r-s` ring (or the ring on their `::before`).
+6. D-F26: back links now exist on This week, How we calculate and About (added by `74-arena.js`); don't add your own.
+7. D-F27, D-F28: Archetypes' "How to beat it" numbers and Track record use `.ar-step`; This week's "How we decide what changed" and About's folds use the fold strip, with no second icon square.
+8. P-N7: Usage: the Showdown ladder segment never wraps alone; the search field is full width as on Ratings. P-N10: the "In your box" mark on the tier board is not clipped.
+9. About: its head uses `.chpghead` (title at `--ar-fs-page`, the tab, no hero kicker) like its Meta siblings.
+10. The info sheet's Info tab small text is now forced to 15px by `arena-p1.css`; delete the 12–14px rules for `.lsvl`, `.lsvn`, `.lsvo` and `.lstd`.
