@@ -1035,3 +1035,5 @@
 @A:not(#arbw) :is([data-pane="report"],[data-pane="coverage"],#chEdit,#chScout) :is(table th,.chleg,.chleg i){font-size:15px!important}
 @A:not(#arbw) [data-pane="coverage"] .plan :is(ul li,ul li b){font-size:15px!important;line-height:1.45!important}
 @A:not(#arbw) #chEdit .mvset .caret{font-size:15px!important}
+/* F2 (desktop): "Your games": the Close button sits wholly inside the band, below its slanted top edge */
+@media (min-width:1001px){@A [data-pane="report"] .myrec .myrech{align-items:flex-start!important}@A [data-pane="report"] .myrec .myrech>button{margin-top:30px!important}}
