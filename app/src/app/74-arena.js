@@ -191,8 +191,8 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   AR.fit();
   /* the older secondary buttons and text links on these pages take the arena menu-strip and link styles (same elements, same handlers) */
   document.querySelectorAll('[data-pane="report"] :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn):not(.chapply), #homeOut.ar-on :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn), #lairSheet .lsact button.btn:not(.ar-btn)').forEach(b => {
-    if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick')) return; b.classList.add('ar-btn'); });
-  document.querySelectorAll('[data-pane="report"] button.linkbtn:not(.ar-link), #homeOut.ar-on button.linkbtn:not(.ar-link):not(.npmore)').forEach(b => b.classList.add('ar-link')); };
+    if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick,#welcomeCard') || b.matches('[data-welcomex]')) return; b.classList.add('ar-btn'); });
+  document.querySelectorAll('[data-pane="report"] button.linkbtn:not(.ar-link), #homeOut.ar-on button.linkbtn:not(.ar-link):not(.npmore)').forEach(b => { if (!b.closest('#welcomeCard') && !b.matches('[data-welcomex]')) b.classList.add('ar-link'); }); };
 
 
 /* names on the art (dark mode puts them on an ink plate): the plate hugs the longest line, so a two-line name is one tidy

@@ -163,6 +163,13 @@
 @A :is(.ar-seg>button,.ar-chip):is([aria-pressed="true"],[aria-selected="true"],.on)::after{content:""!important;display:block!important;position:static!important;order:-1;width:11px!important;height:6px!important;margin:-3px 2px 0 0!important;background:none!important;
   border:solid currentColor!important;border-width:0 0 2.5px 2.5px!important;border-radius:0!important;transform:rotate(-45deg)!important;box-shadow:none!important}
 
+/* a row that uses aria-pressed decides by aria-pressed alone: 32-views.js keeps aria-selected on a section's first page tab
+   even while another page of the section is open, which made two tabs look on */
+@A .ar-seg:has(>button[aria-pressed])>button[aria-selected="true"]:not([aria-pressed="true"]):not(.on){color:var(--ar-ink)!important;font-weight:600!important}
+@A .ar-seg:has(>button[aria-pressed])>button[aria-selected="true"]:not([aria-pressed="true"]):not(.on)::before{background:var(--ar-sheet)!important}
+@A[data-look="dark"] .ar-seg:has(>button[aria-pressed])>button[aria-selected="true"]:not([aria-pressed="true"]):not(.on)::before{background:#24232A!important}
+@A .ar-seg:has(>button[aria-pressed])>button[aria-selected="true"]:not([aria-pressed="true"]):not(.on)::after{content:none!important;display:none!important}
+
 /* ---------- 9. type art tiles (S, M, L) ----------
    <button class="ar-art ar-m" style="--a:..;--b:.."><span class="ar-f ar-field"></span><img class="ar-spr"><span class="ar-nm">Name<small>item</small></span></button>
    The field is a slanted parallelogram; light streaks sit in its top 60% only, so the name stays on smooth colour; the
@@ -315,6 +322,9 @@
 @A .ar-empty{position:relative;display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;padding:16px 0}
 @A .ar-empty .ar-empty-art{position:relative;height:72px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l)!important;background:color-mix(in oklch,var(--ar-sec) 22%,var(--ar-sheet))}
 @A .ar-empty .ar-empty-art img{position:absolute;left:50%;bottom:0;width:92px!important;height:92px!important;max-width:none;transform:translateX(-50%) skewX(var(--ar-unslant))}
+/* dark: a section colour mixed into black reads brown (gold) or maroon (pink); the field is a neutral dark grey with a
+   section-colour edge instead */
+@A[data-look="dark"] .ar-empty .ar-empty-art{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#2A2930,#1E1D22)!important}
 @A .ar-empty p{margin:0 0 10px;color:var(--ar-ink-2)}
 @A .ar-empty p b{color:var(--ar-ink)}
 
@@ -327,9 +337,9 @@
   background-color:var(--ar-paper-2)!important;border-radius:var(--ar-r-l)!important}
 @A[data-look="dark"] :is(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){background-color:var(--ar-paper-2)!important}
 /* the old raised secondary buttons: a soft lift, no flat colour offset, no ink frame */
-@A main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.chprimary):not(.mgyel):not(#saveBtn){
+@A main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.ar-seg>button):not(.chprimary):not(.mgyel):not(#saveBtn){
   border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-m)!important;background-color:var(--ar-sheet)!important}
-@A[data-look="dark"] main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.chprimary):not(.mgyel):not(#saveBtn){background-color:#24232A!important}
+@A[data-look="dark"] main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.ar-seg>button):not(.chprimary):not(.mgyel):not(#saveBtn){background-color:#24232A!important}
 /* without their frames a few small old controls lost a pixel or two: they keep a full tap size */
 @A main :is(.typebtn,.dbdt){min-width:44px!important;min-height:44px!important}
 /* the old caption-box headings and page-title strips: no frame, no dot field */
