@@ -1,0 +1,379 @@
+/* =====================================================================================================================
+   Champions arena, phase 1 pages: the chrome (header, nav), Home, My team and the info sheet. Built from the components in
+   arena.css (see ARENA.md); this file only lays them out and maps the app's existing markup onto them.
+   Phone first; the desktop layouts start at 1001px (where the bottom bar gives way to the top nav).
+   ===================================================================================================================== */
+
+/* ---------- chrome ---------- */
+@media (max-width:1000px){@A nav.tabs.mgtabs{display:none!important}}
+@A .band .inner{padding-top:10px!important;padding-bottom:6px!important}
+@media (min-width:1001px){@A .band .inner{padding-top:16px!important;padding-bottom:10px!important}}
+
+/* ---------- Home ---------- */
+@A #homeOut.ar-on>:is(.chmh,.trbanner,.chsplit,.mgspread,.mgdeskcov){display:none!important}
+@A .ar-home{padding:0 var(--ar-gutter);overflow-x:clip}
+@A .ar-hh{display:block;padding:14px 0 0;font-size:var(--ar-fs-h1)!important;letter-spacing:-.02em!important;white-space:nowrap}
+@media (max-width:359px){@A .ar-hh{white-space:normal}}
+/* the hero: a full-bleed diagonal band in the top Pokémon's types; the Pokémon breaks out of its top edge */
+@A .ar-hero{position:relative;display:block;width:calc(100% + 2 * var(--ar-gutter));height:368px;margin:6px calc(-1 * var(--ar-gutter)) 0;padding:0;border:0!important;background:none!important;box-shadow:none!important;text-align:left;color:var(--ar-ink);cursor:pointer;font:inherit}
+@A .ar-hero-bg{position:absolute;left:0;right:0;top:44px;bottom:0;display:block;clip-path:polygon(0 12%,100% 0,100% 84%,0 100%)}
+@A .ar-lines{position:absolute;inset:0;width:100%;height:100%;clip-path:polygon(44% 0,100% 0,100% 100%,44% 100%);opacity:.55}
+@A .ar-hero-mon{position:absolute;right:-56px;top:-4px;width:276px!important;height:276px!important;max-width:none;z-index:1;filter:drop-shadow(0 18px 18px rgba(60,10,60,.28))}
+@A .ar-hero-rank{position:absolute;left:var(--ar-gutter);top:80px;z-index:2;font-weight:600;font-size:15px;color:var(--ar-ink-2)}
+@A .ar-hero-rank b{color:var(--ar-ink)}
+@A .ar-hero-copy{position:absolute;left:var(--ar-gutter);top:112px;z-index:2;display:flex;flex-direction:column;align-items:flex-start}
+@A .ar-hero-big{font-size:var(--ar-fs-hero);color:var(--ar-ink)}
+@A .ar-hero-of{font-size:15px;font-weight:600;color:var(--ar-ink-2);margin-top:6px}
+@A .ar-hero .ar-plate{margin-top:14px;font-size:17px;min-height:46px}
+@A[data-look="dark"] :is(.ar-hero-rank,.ar-hero-rank b,.ar-hero-of){color:#fff}
+/* the runners-up: two staggered slanted strips that overlap the hero's lower edge */
+@A .ar-runners{position:relative;z-index:3;display:flex;flex-direction:column;gap:12px;margin-top:-26px}
+@A .ar-runner{position:relative;display:flex;align-items:center;width:100%;height:84px;padding:0;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-art-text);cursor:pointer;text-align:left;font:inherit;
+  filter:drop-shadow(0 10px 12px rgba(40,20,40,.22))}
+@A[data-look="dark"] .ar-runner{filter:none}
+@A .ar-runner:nth-child(2){margin-left:28px;width:calc(100% - 28px)}
+@A .ar-runner-f{position:absolute;inset:0;clip-path:polygon(4% 0,100% 0,96% 100%,0 100%);border-radius:6px}
+@A .ar-runner-in{position:relative;z-index:1;display:flex;flex-direction:column;gap:2px;padding-left:30px}
+@A .ar-runner-nm{font-weight:700;font-size:17px;line-height:1.1}
+@A .ar-runner .ar-num{font-size:38px}
+@A .ar-runner-mon{position:absolute;right:14px;bottom:-4px;width:104px!important;height:104px!important;max-width:none;z-index:1}
+@A .ar-caption{margin:14px 0 0;color:var(--ar-ink-2);font-size:15px;line-height:1.45}
+/* start here: the one yellow button, then two menu strips */
+@A .ar-tools{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;padding:26px 4px 0 6px}
+@A .ar-tools .ar-btn{min-height:56px;font-size:16px;padding:0 10px 0 18px;gap:8px;white-space:nowrap}
+@A .ar-tools .ar-btn.ar-primary{grid-column:1/-1;min-height:68px;font-size:20px;padding-left:24px}
+@A .ar-tools .ar-btn:not(.ar-primary) svg{color:var(--edge)}
+@A .ar-tools .ar-primary>svg{width:26px;height:26px}
+/* the two sixes: the champion's (pink) then yours (blue) on phones; face to face across a "vs" rule on desktop */
+@A .ar-side{padding:44px 0 0;min-width:0}
+@A .ar-winner{margin:0 0 24px}
+@A .ar-ev{font-weight:700;font-size:18px;line-height:1.3;margin:2px 0 0;color:var(--ar-ink)}
+@A .ar-winner .ar-meta{margin-top:4px}
+@A .ar-side .ar-six{padding:0 4px 0 6px}
+@A .ar-gameplan{margin:18px 0 0;color:var(--ar-ink-2);font-size:15px;line-height:1.5;max-width:62ch}
+@A .ar-gameplan b{color:var(--ar-ink);font-weight:700}
+@A .ar-acts{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:26px;padding-left:6px}
+@A .ar-vs{display:none}
+@A .ar-home .wkhome{margin-top:40px}
+@A #homeOut.ar-on .wnew{background:var(--ar-sheet)!important;border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-l)!important;margin-top:32px!important}
+/* the rest of Home (ratings, tools, folds) in arena dress */
+@A #homeOut.ar-on>:is(.chpad,.chhtop,.chhtools,.chfolds){margin-left:var(--ar-gutter)!important;margin-right:var(--ar-gutter)!important}
+@A #homeOut.ar-on>.chhtop,@A #homeOut.ar-on>.chhtools{background:none!important;padding:0!important;margin-top:48px!important;border:0!important}
+@A #homeOut.ar-on :is(.chhtop,.chhtools)>.chk{order:0;font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:8px 0 0!important}
+@A #homeOut.ar-on :is(.chhtop,.chhtools)>h3{order:-1;display:flex;align-items:flex-end;gap:12px;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;margin:0!important}
+@A #homeOut.ar-on :is(.chhtop,.chhtools)>h3::before{content:"";width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
+@A #homeOut.ar-on :is(.chhtop,.chhtools)>h3 .hl{color:inherit!important;background:none!important;box-shadow:none!important;padding:0!important}
+@A #homeOut.ar-on .hpick{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:16px 0 4px}
+@A #homeOut.ar-on .hpick .t2{font-size:15px!important;color:var(--ar-ink-2)!important;margin:0}
+/* top of the meta: typographic rows (sprite on a small slanted type field, name, big numeral, hairline) */
+@A #homeOut.ar-on .hrow{display:grid!important;grid-template-columns:1fr!important;gap:0!important;margin-top:8px}
+@A #homeOut.ar-on .hmini{position:relative;display:grid!important;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:14px;min-height:72px;width:100%;padding:10px 0!important;
+  background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important;text-align:left;isolation:isolate}
+@A #homeOut.ar-on .hmini::before{content:""!important;display:block!important;position:absolute!important;left:6px!important;right:auto!important;top:50%!important;bottom:auto!important;width:58px!important;height:42px!important;margin-top:-17px!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-s)!important;opacity:1!important;
+  background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--ta) var(--ar-field-mix),var(--ar-sheet)),color-mix(in oklch,var(--tb,var(--ta)) var(--ar-field-mix),var(--ar-sheet)))}
+@A[data-look="dark"] #homeOut.ar-on .hmini::before{background:linear-gradient(in oklch 125deg,oklch(from var(--ta) .46 calc(c * .85) h),oklch(from var(--tb,var(--ta)) .46 calc(c * .85) h))}
+@A #homeOut.ar-on .hmini::after{display:none!important}
+@A #homeOut.ar-on .hmini .hmspr{grid-row:1/3;width:64px!important;height:64px!important;margin:-14px 0 0 4px!important;position:relative!important}
+@A #homeOut.ar-on .hmini .hmn{grid-column:2;font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;white-space:normal!important;overflow:visible!important}
+@A #homeOut.ar-on .hmini .hms{grid-column:2;font-size:15px!important;color:var(--ar-ink-2)!important;gap:8px;align-items:center}
+@A #homeOut.ar-on .hmini .hms b{position:absolute;right:6px;top:50%;transform:translateY(-50%);font:italic 900 34px/1 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important}
+@A #homeOut.ar-on .hmini .hmn{padding-right:80px}
+@A #homeOut.ar-on .hmini .hms .rtier{background:none!important;color:var(--ar-ink-2)!important;font-weight:700!important;padding:0!important;border:0!important;box-shadow:none!important;font-size:15px!important}
+@A #homeOut.ar-on .hmini .hms .rtier::after{content:" tier"}
+@A #homeOut.ar-on .hmini .hmrk{font-style:normal;font-size:15px!important;color:var(--ar-ink-2)!important}
+@A #homeOut.ar-on .chhtop>.linkbtn{margin-top:8px}
+/* all tools: menu strips, each edged in the colour of the section it opens */
+@A #homeOut.ar-on .htiles{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin-top:16px;padding-left:6px}
+@A #homeOut.ar-on .htile{grid-column:auto!important;position:relative;isolation:isolate;display:grid!important;grid-template-columns:28px minmax(0,1fr);column-gap:12px;align-items:center;min-height:56px;padding:8px 16px 8px 22px!important;
+  background:none!important;border:0!important;box-shadow:none!important;text-align:left;--edge:var(--ar-sec)}
+@A #homeOut.ar-on .htile::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge) 16%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 5%,var(--ar-sheet)) 70%)}
+@A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)}
+@A #homeOut.ar-on .htile>svg{grid-row:1/3;width:24px;height:24px;color:var(--edge)!important}
+@A #homeOut.ar-on .htile b{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A #homeOut.ar-on .htile :is(.hsd,.hld){font-size:15px!important;color:var(--ar-ink-2)!important}
+@A #homeOut.ar-on .htile:is([data-view="auto"],[data-view="cores"]){--edge:var(--ar-gold)}
+@A #homeOut.ar-on .htile:is([data-view="report"],[data-view="coverage"],[data-view="teams"],[data-view="compare"],[data-view="box"]){--edge:var(--ar-blue)}
+@A #homeOut.ar-on .htile:is([data-view="matchup"],[data-view="practice"],[data-view="gauntlet"],[data-view="speed"],[data-view="calc"],[data-view="types"]){--edge:var(--ar-orange)}
+@A #homeOut.ar-on .htile:is([data-view="weekly"],[data-view="ratings"],[data-view="meta"],[data-view="sets"],[data-view="top"],[data-view="events"],[data-view="arch"],[data-view="track"],[data-view="method"]){--edge:var(--ar-purple)}
+@A #homeOut.ar-on .chhtools .npmore{margin-top:14px!important}
+
+/* ---------- folds (Home's "More on Home", My team's folds): a slanted strip you tap, the body upright under it ---------- */
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:14px}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;padding:8px 16px 8px 22px!important;margin-left:6px;
+  background:none!important;border:0!important;box-shadow:none!important;cursor:pointer}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
+@A[data-look="dark"] :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .cht{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .chs{font-size:15px!important;color:var(--ar-ink-2)!important}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .chtog{color:var(--ar-sec-ink)!important}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>.chbody{padding:18px 4px 6px!important;background:none!important}
+@A #homeOut.ar-on .hfb{background:none!important;border:0!important;box-shadow:none!important;border-top:1px solid var(--ar-rule)!important;border-radius:0!important;margin-top:32px!important;padding:16px 0 0!important}
+
+/* ---------- Home on desktop: the hero band on the left 55%, runners and tools on the right; then a true 6v6 ---------- */
+@media (min-width:1001px){
+  @A .ar-home{padding:0}
+  @A .ar-deck{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0 48px;align-items:start}
+  @A .ar-hh{padding-top:22px}
+  @A .ar-hero{width:calc(100% + var(--ar-gutter));height:480px;margin:0 0 0 calc(-1 * var(--ar-gutter))}
+  @A .ar-hero-bg{top:40px;clip-path:polygon(0 10%,100% 0,94% 88%,0 100%)}
+  @A .ar-hero-mon{width:clamp(320px,31vw,430px)!important;height:clamp(320px,31vw,430px)!important;right:0;top:-24px}
+  @A .ar-hero-rank{left:calc(var(--ar-gutter) + 8px);top:138px;font-size:17px}
+  @A .ar-hero-copy{left:calc(var(--ar-gutter) + 8px);top:176px}
+  @A .ar-hero-big{font-size:clamp(84px,8.4vw,120px)}
+  @A .ar-hero-of{font-size:16px}
+  @A .ar-hero .ar-plate{font-size:19px;min-height:52px;padding:0 24px}
+  @A .ar-deck-side{padding-top:56px}
+  @A .ar-runners{margin:0;gap:16px}
+  @A .ar-runner{height:110px}
+  @A .ar-runner:nth-child(2){margin-left:36px;width:calc(100% - 36px)}
+  @A .ar-runner .ar-num{font-size:52px}
+  @A .ar-runner-nm{font-size:21px}
+  @A .ar-runner-mon{width:136px!important;height:136px!important}
+  @A .ar-caption{padding:2px 0 0;font-size:16px}
+  @A .ar-tools{padding-top:30px;gap:14px 16px}
+  @A .ar-tools .ar-btn{min-height:60px}
+  @A .ar-tools .ar-btn.ar-primary{min-height:80px;font-size:24px}
+  @A .ar-versus{display:grid;grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);margin-top:64px;align-items:start}
+  @A .ar-side{padding:0}
+  @A .ar-vs{position:relative;display:grid;place-items:center;align-self:stretch}
+  @A .ar-vs::before{content:"";position:absolute;top:150px;bottom:60px;left:50%;width:3px;background:linear-gradient(var(--ar-pink),var(--ar-blue));transform:skewX(-10deg);border-radius:2px;opacity:.6}
+  @A .ar-vs span{position:relative;font-size:48px;background:var(--ar-paper);padding:10px 0;color:var(--ar-ink)}
+  @A .ar-side .ar-six{gap:30px 16px}
+  @A .ar-side .ar-art.ar-m{--h:clamp(120px,10.5vw,150px);--s:clamp(124px,11vw,156px);--lift:16px}
+  @A .ar-side .ar-art .ar-nm{font-size:18px}
+  @A .ar-ev{font-size:20px}
+  @A .ar-gameplan{font-size:16px}
+  @A #homeOut.ar-on>:is(.chpad,.chhtop,.chhtools,.chfolds){margin-left:0!important;margin-right:0!important}
+  @A #homeOut.ar-on>.chhtop,@A #homeOut.ar-on>.chhtools{margin-top:72px!important}
+  @A #homeOut.ar-on .hrow{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:40px!important}
+  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px 18px!important}
+}
+@media (min-width:600px) and (max-width:1000px){
+  @A .ar-hero{height:420px}
+  @A .ar-hero-mon{width:340px!important;height:340px!important;right:0}
+  @A .ar-runners{flex-direction:row;margin-top:-30px}
+  @A .ar-runner,@A .ar-runner:nth-child(2){margin-left:0;width:auto;flex:1}
+  @A .ar-runner:nth-child(2){margin-top:28px}
+  @A .ar-tools{grid-template-columns:1fr 1fr 1fr}
+  @A .ar-tools .ar-btn.ar-primary{grid-column:auto}
+  @A .ar-side .ar-art.ar-m{--h:140px;--s:146px;--lift:16px}
+  @A #homeOut.ar-on .hrow{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:32px!important}
+  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+/* ---------- My team ---------- */
+@A #chTeam.ar-on>:is(.chthead,.chempty2){display:none!important}
+@A .ar-team{padding-bottom:8px}
+@A .ar-kick{margin:10px 0 0;font-size:15px;font-weight:600;color:var(--ar-ink-2)}
+@A .ar-kick b{color:var(--ar-sec-ink)}
+@A .ar-titlerow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-top:4px}
+@A .ar-tname{flex:1;min-width:0;font-size:36px!important;font-stretch:115%!important;line-height:1.02!important;overflow-wrap:break-word;hyphens:manual}
+/* a record grade: the win rate is wider than a two-digit grade, so on phones the score sits under the name, side by side */
+@media (max-width:1000px){@A .ar-titlerow:has(.ar-num small){flex-direction:column;align-items:stretch;gap:10px}
+  @A .ar-titlerow:has(.ar-num small) .ar-score{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:16px;align-items:start;text-align:left;margin-top:4px}
+  @A .ar-titlerow:has(.ar-num small) .ar-score>.ar-num{grid-row:1/4;align-self:center}
+  @A .ar-titlerow:has(.ar-num small) .ar-score>:not(.ar-num){justify-self:start;margin:0}
+  @A .ar-titlerow:has(.ar-num small) .ar-grade{margin-top:4px}}
+@A .ar-score{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right;margin-top:-4px}
+@A .ar-score .ar-num{font-size:84px;color:var(--ar-ink)}
+@A .ar-score .ar-num:has(small){font-size:64px}
+@A .ar-grade{font-weight:700;font-size:18px;margin-top:6px;color:var(--ar-ink)}
+@A .ar-basis{font-size:15px;color:var(--ar-ink-2);margin-top:2px}
+@A .ar-why{min-height:40px}
+@A .ar-thead #chGwhy{margin:12px 0 0!important;padding:14px 16px 14px 20px!important;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;position:relative;font-size:15px;line-height:1.5;color:var(--ar-ink)}
+@A .ar-thead #chGwhy::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;background:var(--ar-sec);border-radius:0 3px 3px 0}
+@A .ar-tstats{display:grid;gap:20px;margin-top:20px}
+@A .ar-sth{display:flex;align-items:center;gap:2px;margin:0;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2)}
+@A .ar-trio{display:grid;grid-template-columns:1.25fr 1fr 1fr;margin-top:6px}
+@A .ar-trio.ar-four{grid-template-columns:repeat(4,minmax(0,1fr))}
+@A .ar-trio .ar-num{font-size:34px;color:var(--ar-ink)}
+@A .ar-trio.ar-four .ar-num{font-size:25px}
+@A .ar-trio .ar-unit .tipq{margin-left:2px}
+@A .ar-sum{margin:10px 0 0;font-size:15px;color:var(--ar-ink-2);line-height:1.45}
+@A .ar-sum b{color:var(--ar-ink)}
+@A .ar-legal{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:15px;color:var(--ar-ink-2)}
+@A .ar-legal b{font-size:16px;color:var(--ar-ink)}
+@A .ar-legal .ar-pips{margin-left:auto}
+@A .ar-legal.is-bad b{color:var(--ar-pink-ink)}
+/* the stage: a slanted blue wash behind the six */
+@A .ar-stage{position:relative;isolation:isolate;margin:30px calc(-1 * var(--ar-gutter)) 0;padding:24px var(--ar-gutter) 28px}
+@A .ar-stage::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 22%,var(--ar-paper)),color-mix(in oklch,var(--ar-blue) 8%,var(--ar-paper)));clip-path:polygon(0 3%,100% 0,100% 97%,0 100%)}
+@A[data-look="dark"] .ar-stage::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 26%,#000),color-mix(in oklch,var(--ar-blue) 10%,#000))}
+@A .ar-stage .ar-shead{margin-bottom:6px}
+@A .ar-stage .ar-six{padding:0 6px}
+@A .ar-stage .ar-gameplan{margin-top:18px}
+@A .ar-setwrap{margin-top:18px}
+@A .ar-setwrap:empty,@A .ar-setwrap:not(:has(#rzSet:not([hidden]))){display:none}
+/* the set card */
+@A #rzSet.ar-sheet{--a:var(--ta,var(--ar-blue));--b:var(--tb,var(--a));display:block;margin:0!important;padding:18px 18px 18px 26px!important;animation:none}
+@A .ar-sethd{display:flex;gap:14px;align-items:center}
+@A .ar-av{position:relative;flex:none;width:80px;height:80px}
+@A .ar-av-f{position:absolute;inset:14px 4px 2px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)}
+@A .ar-av img{position:relative!important;width:80px!important;height:80px!important;max-width:none;margin:0!important}
+@A .ar-setname{font-size:26px!important;line-height:1!important;margin:0!important}
+@A .ar-sethd .ar-tys{margin-top:8px}
+@A .ar-role{margin:8px 0 0;font-size:15px;color:var(--ar-ink-2)}
+@A .ar-setia{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin:16px 0 14px;align-items:end}
+@A .ar-setia span{display:block;font-size:14px;font-weight:600;color:var(--ar-ink-2)}
+@A .ar-setia b{font-size:17px;font-weight:700;color:var(--ar-ink)}
+@A .ar-setr .ar-num{display:block;font-size:44px;color:var(--ar-ink)}
+@A .ar-setr small{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:14px;font-weight:600;color:var(--ar-ink-2);white-space:nowrap}
+@A .ar-setr small svg{width:15px;height:15px;fill:var(--ar-gold)}
+@A .ar-setacts{display:flex;align-items:center;gap:16px;margin-top:18px;padding-left:4px}
+/* team actions: the app's own buttons (save, share, saved teams, box, compare, Showdown, ⋯) as menu strips */
+@A .ar-tacts{margin-top:28px}
+@A .ar-tacts #chActs{display:grid!important;grid-template-columns:1fr 1fr;gap:12px 14px;padding:0 4px 0 6px;margin:0!important}
+@A .ar-tacts #chActs>.row{display:contents!important}
+@A .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary){position:relative;isolation:isolate;display:flex!important;align-items:center;justify-content:flex-start;gap:8px;min-height:48px!important;width:100%;padding:0 14px 0 20px!important;margin:0!important;
+  font:600 15px/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;white-space:normal;text-align:left}
+@A .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important}
+@A[data-look="dark"] .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A .ar-tacts #chActs #saveBtn{grid-column:1/-1;order:-1;min-height:60px!important;font:italic 800 19px/1.1 var(--ar-display)!important;font-stretch:115%!important;color:#16141A!important;justify-content:flex-start;padding-left:24px!important}
+@A .ar-tacts #chActs #saveBtn::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:0 12px 22px -12px rgba(190,140,0,.75),0 2px 4px -2px rgba(0,0,0,.2)!important}
+@A .ar-tacts #chActs .sdcopy svg{width:18px;height:18px;flex:none}
+@A .ar-tacts #chActs .moremenu{position:relative;margin:0!important;border:0!important;background:none!important;box-shadow:none!important}
+@A .ar-tacts #chActs .moremenu>summary{justify-content:center!important;padding:0!important;font-size:20px!important;list-style:none}
+@A .ar-tacts #chActs .moremenu>summary::-webkit-details-marker{display:none}
+@A .ar-tacts #chActs .mmpop{right:0;left:auto;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;padding:8px!important}
+@A .ar-tacts #chActs .mmpop button{min-height:44px;background:none!important;box-shadow:none!important;border:0!important;color:var(--ar-ink)!important;text-align:left;justify-content:flex-start;font:600 15px var(--ar-body)!important}
+/* your games */
+@A [data-pane="report"] #myRec{position:relative;isolation:isolate;margin:34px calc(-1 * var(--ar-gutter)) 0!important;padding:26px var(--ar-gutter)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A [data-pane="report"] #myRec::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in oklch,var(--ar-blue) 10%,var(--ar-paper));clip-path:polygon(0 0,100% 10%,100% 100%,0 90%)}
+@A[data-look="dark"] [data-pane="report"] #myRec::before{background:color-mix(in oklch,var(--ar-blue) 14%,#000)}
+@A [data-pane="report"] #myRec .chk{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] #myRec .t2{font-size:15px!important;color:var(--ar-ink-2)!important}
+/* the numbered parts below the fold */
+@A [data-pane="report"] .chparth{display:flex!important;gap:14px!important;align-items:flex-start!important;margin-bottom:18px!important}
+@A [data-pane="report"] .chparth h2{font:italic 800 28px/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] .chparth p{font-size:15px!important;color:var(--ar-ink-2)!important;margin-top:2px!important}
+@A [data-pane="report"] .chpart{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A [data-pane="report"] .chparts{gap:44px!important;margin-top:40px!important}
+@A [data-pane="report"] :is(.chsugs,#chSugOut,.chpartb){background:none!important;border:0!important;box-shadow:none!important;padding-left:0!important;padding-right:0!important}
+@A [data-pane="report"] .chpoolrow{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+@A [data-pane="report"] .chpoolrow>.chk{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+/* suggestions: no box; an Apply strip; "Why?" as a quiet disclosure */
+@A [data-pane="report"] :is(.chsugw,.chsug){background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="report"] .chsugw{padding:16px 0 4px!important;border-bottom:1px solid var(--ar-rule)!important}
+@A [data-pane="report"] .chapply{position:relative;isolation:isolate;min-height:44px!important;padding:0 18px!important;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 15px var(--ar-body)!important}
+@A [data-pane="report"] .chapply::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,var(--ar-sheet)}
+@A[data-look="dark"] [data-pane="report"] .chapply::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,#2A2930}
+@A [data-pane="report"] .chwhy{background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="report"] .chwhy>summary{min-height:44px;display:inline-flex;align-items:center;gap:8px;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-sec-ink)!important;font-weight:600}
+/* threat rows: typographic rows (rank, sprite on a small slanted type field, name and how it is handled), hairlines */
+@A #chThrTop .chside,@A #chThrTop .chtl10{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A #chThrTop .chtl10{display:grid!important;grid-template-columns:1fr!important;gap:0!important}
+@A #chThrTop .chtr{position:relative;isolation:isolate;display:grid!important;grid-template-columns:30px 70px minmax(0,1fr);align-items:center;column-gap:10px;min-height:64px;padding:8px 0!important;
+  background:none!important;background-image:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important;border-radius:0!important;text-align:left}
+@A #chThrTop .chtr::before{content:"";position:absolute;left:44px;top:50%;width:54px;height:38px;margin-top:-15px;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);
+  background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--ta) var(--ar-field-mix),var(--ar-sheet)),color-mix(in oklch,var(--tb,var(--ta)) var(--ar-field-mix),var(--ar-sheet)))}
+@A[data-look="dark"] #chThrTop .chtr::before{background:linear-gradient(in oklch 125deg,oklch(from var(--ta) .46 calc(c * .85) h),oklch(from var(--tb,var(--ta)) .46 calc(c * .85) h))}
+@A #chThrTop .chtr::after{display:none!important}
+@A #chThrTop .chtr .rk{font:italic 900 22px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important;background:none!important;text-align:right}
+@A #chThrTop .chtr img{width:60px!important;height:60px!important;margin:-14px 0 0 2px!important;position:relative!important}
+@A #chThrTop .chtr .tx b{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A #chThrTop .chtr .tx .st{font-size:15px!important;font-weight:600!important}
+/* the open team sheet: one row per slot, menu-strip style, the type edge on the left */
+@A [data-pane="report"] .chsheet{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;display:grid!important;gap:12px!important;grid-template-columns:1fr!important}
+@A [data-pane="report"] .chsheet>.hd{background:none!important;color:var(--ar-ink-2)!important;padding:0 0 2px!important;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;border:0!important}
+@A [data-pane="report"] .chsheet>.hd .chdisp{font:italic 800 19px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] .chsheet>.hd .mono{font:500 15px var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="report"] .chsheet .chrow{position:relative;isolation:isolate;display:grid!important;grid-template-columns:28px 64px minmax(0,1fr);align-items:center;column-gap:10px;min-height:84px;padding:12px 56px 12px 18px!important;margin:0 4px 0 6px!important;
+  background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;text-align:left!important}
+@A [data-pane="report"] .chsheet .chrow::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(-6deg);border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ta),var(--tb,var(--ta))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--ta) 20%,var(--ar-sheet)),var(--ar-sheet) 60%)}
+@A[data-look="dark"] [data-pane="report"] .chsheet .chrow::before{background:linear-gradient(var(--ta),var(--tb,var(--ta))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--ta) 22%,#1A191D),#1A191D 60%)}
+@A [data-pane="report"] .chsheet .chrow .ix{grid-row:1/3;font:italic 900 22px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important;background:none!important;position:static!important}
+@A [data-pane="report"] .chsheet .chrow img{width:64px!important;height:64px!important;position:static!important;margin:0!important}
+@A [data-pane="report"] .chsheet .chrow .chbd{text-align:left!important;min-width:0}
+@A [data-pane="report"] .chsheet .chrow .nm{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] .chsheet .chrow .mono{font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="report"] .chsheet .chrow .chpen{font-size:15px!important;color:var(--ar-sec-ink)!important}
+@A [data-pane="report"] .chsheet .chrow .chbd .mv{display:block!important}
+@A [data-pane="report"] .chsheet .chrow .chedi{display:block!important;grid-column:3;justify-self:start;margin-top:4px;position:static!important;font:600 15px var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:3px}
+@A [data-pane="report"] .chsheet .chrow .chrm{position:absolute!important;right:8px;top:8px;width:40px!important;height:40px!important;display:grid;place-items:center;border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;color:var(--ar-ink)!important;font-size:20px!important;z-index:2}
+@A [data-pane="report"] .chsheet .chrow.empty{grid-template-columns:28px 64px minmax(0,1fr)}
+@A [data-pane="report"] .chsheet .chrow.empty .chadd{display:grid;place-items:center;width:52px;height:52px;font-size:28px;color:var(--ar-sec-ink);background:none!important;border:0!important}
+@A [data-pane="report"] .chhow{margin-top:40px!important}
+@A [data-pane="report"] .chlegk,@A [data-pane="report"] .chleg{background:none!important;border:0!important}
+
+/* My team on tablets and desktop */
+@media (min-width:600px){
+  @A .ar-stage .ar-six.ar-two{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @A [data-pane="report"] .chsheet{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  @A [data-pane="report"] .chsheet>.hd{grid-column:1/-1}
+}
+@media (min-width:1001px){
+  @A .ar-tname{font-size:clamp(44px,4.6vw,64px)}
+  @A .ar-score .ar-num{font-size:96px}
+  @A .ar-score .ar-num:has(small){font-size:72px}
+  @A .ar-tgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,38%);column-gap:40px;align-items:start;margin-top:8px}
+  @A .ar-tgrid>.ar-stage{grid-column:1;grid-row:1/span 3;margin:12px 0 0;padding:28px 28px 32px}
+  @A .ar-tgrid>.ar-tstats{grid-column:2;grid-row:1;margin-top:16px}
+  @A .ar-tgrid>.ar-tacts{grid-column:2;grid-row:2}
+  @A .ar-stage .ar-art.ar-l{--h:clamp(150px,13vw,190px);--s:clamp(140px,12vw,176px)}
+  @A .ar-trio .ar-num{font-size:40px}
+  @A .ar-trio.ar-four .ar-num{font-size:34px}
+  @A [data-pane="report"] .chparts{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:48px!important}
+  @A [data-pane="report"] .chsheet{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+
+/* ---------- the info sheet (phone bottom sheet; the desktop two-column dialog keeps its desktop-sheet.css layout) ---------- */
+@A #lairSheet .lspanel{background:var(--ar-sheet)!important;border:0!important;box-shadow:var(--ar-shadow)!important;border-radius:var(--ar-r-xl) var(--ar-r-xl) 0 0!important}
+@A #lairSheet .lsback{background:color-mix(in srgb,var(--ar-paper) 88%,transparent)!important}
+@A #lairSheet .lshead.ar-head{background:none!important;background-image:none!important;padding:0!important;border:0!important;box-shadow:none!important}
+@A #lairSheet .lshead.ar-head::before,@A #lairSheet .lshead.ar-head::after{display:none!important}
+@A #lairSheet .lshead>.mghero{display:none!important}
+@A .ar-shero{position:relative;height:300px;margin:0 0 4px;overflow:visible}
+@A .ar-shero-bg{position:absolute;left:0;right:0;top:56px;bottom:0;display:block;clip-path:polygon(0 14%,100% 0,100% 86%,0 100%)}
+@A .ar-shero .ar-shero-mon{position:absolute!important;right:-8px;top:0;width:250px!important;height:250px!important;max-width:none;z-index:1;filter:drop-shadow(0 16px 16px rgba(60,10,60,.28))}
+@A .ar-shero.is-mega .ar-shero-mon{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b)) drop-shadow(0 2.5px 0 var(--b)) drop-shadow(0 -2.5px 0 var(--a)) drop-shadow(0 16px 16px rgba(60,10,60,.28))}
+@A .ar-shero-copy{position:absolute;left:18px;top:104px;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+@A .ar-shero-big{font-size:84px;color:var(--ar-ink)}
+@A .ar-shero-cap{display:flex;align-items:center;gap:4px}
+@A .ar-shero-cap .ar-plate{font-weight:600}
+@A #lairSheet .lsx.ar-x{position:absolute!important;top:10px!important;right:12px!important;z-index:5;width:44px!important;height:44px!important;border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;color:var(--ar-ink)!important}
+@A #lairSheet .lsname{background:none!important;padding:8px 18px 4px!important}
+@A #lairSheet .lsname h3{font:italic 800 34px/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
+/* the three numbers under the name: stat numerals, no boxes */
+@A #lairSheet .chlstats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px 18px 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A #lairSheet .chlstats>div{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A #lairSheet .chlstats b{font:italic 900 26px/1 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important}
+@A #lairSheet .chlstats span{font-size:15px!important;color:var(--ar-ink-2)!important;margin-top:6px;display:block}
+@A #lairSheet .chlstats span i{font-size:14px!important;color:var(--ar-ink-2)!important;font-style:normal}
+@A #lairSheet .mgadd{margin:16px 18px 0}
+/* tabs: segmented, the open one a filled section plate */
+@A #lairSheet .lstabs{background:var(--ar-sheet)!important;border:0!important;box-shadow:0 1px 0 var(--ar-rule)!important;padding:10px 14px!important;gap:8px!important}
+@A #lairSheet .lstabs .lstab{position:relative;isolation:isolate;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink)!important;min-height:52px}
+@A #lairSheet .lstabs .lstab::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);background:color-mix(in oklch,var(--ar-ink) 6%,var(--ar-sheet));box-shadow:none;height:auto!important;width:auto!important}
+@A #lairSheet .lstabs .lstab::after{display:none!important}
+@A #lairSheet .lstabs .lstab[aria-selected="true"]{color:var(--ar-sec-on)!important;box-shadow:none!important}
+@A #lairSheet .lstabs .lstab[aria-selected="true"]::before{background:var(--ar-sec-plate)!important;box-shadow:var(--ar-shadow-s)}
+@A #lairSheet .lstabs .lstab span{color:inherit!important;opacity:.9;font-size:13px!important}
+@A #lairSheet .lsi h4{display:flex;align-items:flex-end;gap:10px;font:italic 800 19px/1.1 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A #lairSheet .lsi h4::before{content:""!important;display:block!important;width:20px!important;height:20px!important;flex:none;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:3px!important;margin:0!important;position:static!important}
+/* base stats: six slanted bars with numerals */
+@A #lairSheet .lstr>i{height:12px!important;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:3px!important;overflow:hidden;border:0!important}
+@A #lairSheet .lstr>i>em{height:100%!important;border-radius:3px!important}
+@A #lairSheet .lstr>b{font:italic 900 20px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important}
+@A #lairSheet .lstr>span{font-weight:600;color:var(--ar-ink-2)!important}
+@A #lairSheet .lsab{background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important}
+@A #lairSheet .lsab.top{box-shadow:inset 5px 0 0 var(--ar-sec)!important;padding-left:14px!important}
+@A #lairSheet .lsty{border-color:var(--ar-rule)!important}
+@A #lairSheet .lsact .btn,@A #lairSheet .mgadd .btn,@A #lairSheet .mgadd button{position:relative;isolation:isolate;min-height:48px;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 16px var(--ar-body)!important;padding:0 18px 0 22px!important}
+@A #lairSheet :is(.lsact .btn,.mgadd button)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important}
+@A[data-look="dark"] #lairSheet :is(.lsact .btn,.mgadd button)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A #lairSheet .mgadd [data-laddteam]{color:#16141A!important;font:italic 800 18px/1.1 var(--ar-display)!important;font-stretch:115%!important}
+@A #lairSheet .mgadd [data-laddteam]::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important}
+@media (min-width:1024px){
+  @A #lairSheet .lspanel{border-radius:var(--ar-r-l)!important}
+  @A .ar-shero{height:340px}
+  @A .ar-shero .ar-shero-mon{width:290px!important;height:290px!important}
+  @A .ar-shero-copy{top:120px;left:22px}
+  @A .ar-shero-big{font-size:104px}
+}
+
+@media (max-width:599px){@A .ar-side .ar-art.ar-below .ar-nm{font-size:15px;font-stretch:100%}}

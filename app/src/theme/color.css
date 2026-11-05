@@ -44,31 +44,9 @@
 @C main .seg>button[aria-selected="true"],@C main :is(.typebtn.on,.logpick.on){background:color-mix(in oklab,var(--secTint,var(--sec)) var(--fx-sel),var(--mgpanel))!important;box-shadow:inset 0 -5px 0 var(--sec)!important;color:var(--chink)!important}
 @C #lairSheet .lstabs [role=tab][aria-selected="true"]{box-shadow:inset 0 -5px 0 var(--sec)!important}
 @C #chEdit .chst.on{box-shadow:inset 0 -4px 0 var(--sec)!important}
-/* unselected secondary buttons sit raised on a flat 3px section-colour offset (yellow main button and Apply unchanged) */
-/* the page sub-tabs row scrolls sideways (overflow auto), which cut the raised offset off its last button and its bottom edge:
-   room for it inside the row, given back by the margin so nothing below moves */
-@C .view>nav.subnav{padding:2px 4px 5px 0!important;margin-bottom:-17px!important}
-/* the same for the phone's sideways-scrolling filter rows on Ratings (only their scroll width grows) */
-@media (max-width:620px){@C :is(.ltypes,.lflags){padding-right:4px!important}}
-@C main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn):not(.chprimary):not(.mgyel):not(#saveBtn):not(.primary):not(.go):not([aria-pressed="true"]):not([aria-selected="true"]):not(.on){box-shadow:3px 3px 0 var(--sec)!important}
+/* Retired Nov 5 (Champions arena, theme/arena.css): the raised offset buttons, the slanted caption-box headings, the second
+   "print" outline on cards and panels, and the "Zoom!" sound word. Arena's retire block (arena.css section 19) replaces them. */
 
-/* ---------- 3. section caption boxes: section-colour left edge, slightly slanted frame (text stays straight) ---------- */
-@C [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.chk:not(.chdcband>h3),h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht){border-color:transparent!important;background:none!important;isolation:isolate}
-@C [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht,h3.chk:not(.chdcband>h3)){position:relative}
-@C [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.chk:not(.chdcband>h3),h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht)::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-  border:1.5px solid var(--mgink);border-radius:var(--mgr2);background:var(--mgpanel);box-shadow:inset 4px 0 0 var(--sec);transform:skewX(var(--fx-slant))}
-
-/* ---------- 4. second print outline: every card and box gets a flat outline 4px down-right in the section colour (no blur, no fill) ---------- */
-@C :is(details.chsec,.chblock,.chpanel,.rzset,.htile,.mgact:not(.mgyel),.mgbench,.chhotrows,.chmcard,.mgempty,.hempty,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.chpair4,.verdict,.chcalcdef,.dcres,.bmw,.chsugs,.myrec,.cxpick,.gyou,.chbring,.bmcard){box-shadow:4px 4px 0 var(--fx-reg)!important}
-/* the two Home team cards keep their roles: them = pink, you = blue */
-@C .chmcard.them{--fx-reg:color-mix(in oklab,var(--chred) 80%,var(--mgpaper))}
-@C .chmcard:not(.them){--fx-reg:color-mix(in oklab,var(--chblue) 80%,var(--mgpaper))}
-@C[data-look="dark"] .chmcard.them{--fx-reg:color-mix(in oklab,var(--chred) 75%,#000)}
-@C[data-look="dark"] .chmcard:not(.them){--fx-reg:color-mix(in oklab,var(--chblue) 75%,#000)}
-/* Pokémon panels print their second outline in the Pokémon's own colour; the selected stage slot in its second type at 5px */
-@C .mgpn,@C .chhot.mgrh{box-shadow:4px 4px 0 var(--l1,var(--fx-reg))!important}
-@C[data-look="dark"] .mgpn,@C[data-look="dark"] .chhot.mgrh{box-shadow:4px 4px 0 var(--L1,var(--fx-reg))!important}
-@C .mgst.mgon{box-shadow:5px 5px 0 var(--l2)!important}
 /* every slot gets its own soft dual-type wash (on dots panels too: the wash is a flat tint, the dots stay the one texture) */
 @C .mgpn.mgtone .mgin{background:linear-gradient(170deg,var(--mgpanel) 30%,var(--w1) 72%,var(--w2))}
 @C[data-look="dark"] .mgpn.mgtone .mgin{background:linear-gradient(170deg,var(--mgpanel) 30%,var(--W1) 72%,var(--W2))}
@@ -102,10 +80,6 @@
 @C .chhothead .chtier{position:relative}
 @C .chhothead .chtier[style*="ffb400"]::after{content:"";position:absolute;left:50%;top:-15px;margin-left:-6px;width:17px;height:17px;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.6l2.9 6.6 7.2.5-5.5 4.6 1.8 7.1L12.1 16.5 5.8 20.6l1.9-7.2L2.1 8.8l7.3-.6z' fill='%23FFE100' stroke='%23141414' stroke-width='1.7' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
-/* one manga sound word on the Home cover and on The read: in the clean corner, outside the speed lines; hidden from screen readers */
-@C :is(.mgcover .mgc1,.mgstrip .mgr1)::before{content:"Zoom!"/"";position:absolute;left:14px;bottom:12px;z-index:3;pointer-events:none;
-  font:400 25px/1 var(--display);color:var(--l1);text-shadow:2px 2px 0 var(--mgink);transform:rotate(-8deg);transform-origin:left bottom}
-@C[data-look="dark"] :is(.mgcover .mgc1,.mgstrip .mgr1)::before{color:var(--l1);text-shadow:2px 2px 0 #000}
 
 /* ---------- 8. Home teaches the map: each tool tile's icon is in the colour of the section it opens (label stays ink) ---------- */
 @C .htile:is([data-view="auto"],[data-view="cores"])>svg{color:#A87300}

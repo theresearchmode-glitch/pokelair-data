@@ -1,0 +1,322 @@
+/* =====================================================================================================================
+   NastyPlot "Champions arena" design system (Sim picked direction C, Nov 5). Loaded last, after desktop-sheet.css.
+   Reference: app/src/theme/ARENA.md (every token and component, with usage rules). Page files: arena-*.css.
+
+   @A expands (build.mjs) to :root:not(#_a):not(#_b):not(#_c):not(#_d):not(#_e):not(#_f), three ids stronger than @C (color.css),
+   so arena wins over the older manga / colour layers, even their rules that name an id. The older layers mark many rules !important; arena repeats !important only
+   on the properties those layers contest (background, border, border-radius, box-shadow, colour).
+
+   Rules (from Sim): slant plates, fields and buttons, never paragraphs; one slant angle; one hero burst per screen;
+   text never on streaks or dots; no outlines, no offset "print" shadows; no all-caps; no middle dots; contrast 4.5:1;
+   taps 44px on phones, 40px on desktop; colour never the only signal.
+   ===================================================================================================================== */
+
+/* ---------- 1. tokens ---------- */
+@A{
+  /* paper and ink (warm, not white; true black in dark) */
+  --ar-paper:#ECE7E0;--ar-paper-2:#F6F2EC;--ar-sheet:#FBF8F4;--ar-nav:#FBF8F4;
+  --ar-ink:#16141A;--ar-ink-2:#4A4550;--ar-ink-3:#6B6570;--ar-rule:rgba(22,20,26,.12);--ar-rule-2:rgba(22,20,26,.2);
+  /* section colours: --x bright (edges, tabs, bars; never text), --x-plate (a filled plate under white text, 5:1+),
+     --x-ink (text on paper, 5:1+) */
+  --ar-pink:#E8364F;--ar-pink-plate:#D42445;--ar-pink-ink:#B81E3A;
+  --ar-gold:#E9A800;--ar-gold-plate:#FFC21A;--ar-gold-ink:#7A5300;
+  --ar-blue:#0078BF;--ar-blue-plate:#0068AD;--ar-blue-ink:#005E96;
+  --ar-orange:#F05A28;--ar-orange-plate:#C8401A;--ar-orange-ink:#A33A0C;
+  --ar-purple:#7B4BD6;--ar-purple-plate:#7B4BD6;--ar-purple-ink:#5B2FB5;
+  --ar-yellow:#FFD21F;--ar-yellow-2:#F2B705;--ar-green:#2E9E5B;--ar-green-ink:#16693B;--ar-misprint:#FF5C8A;
+  /* the page's section (set per page below): --ar-sec, --ar-sec-plate, --ar-sec-on (text on the plate), --ar-sec-ink */
+  --ar-sec:var(--ar-pink);--ar-sec-plate:var(--ar-pink-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-pink-ink);
+  /* type: Archivo Expanded italic for display and numerals, Instrument Sans for everything else */
+  --ar-display:"Archivo","Instrument Sans",system-ui,sans-serif;--ar-body:"Instrument Sans",system-ui,sans-serif;
+  --ar-fs-hero:64px;--ar-fs-h1:46px;--ar-fs-h2:26px;--ar-fs-h3:20px;--ar-fs-body:16px;--ar-fs-small:15px;--ar-fs-label:13px;
+  /* spacing (4px steps) */
+  --ar-s1:4px;--ar-s2:8px;--ar-s3:12px;--ar-s4:16px;--ar-s5:24px;--ar-s6:32px;--ar-s7:48px;--ar-s8:64px;--ar-gutter:16px;
+  /* the one slant, and its inverse for the content inside a slanted shape */
+  --ar-slant:-12deg;--ar-unslant:12deg;
+  /* radii: small (plates, tags, pips), medium (buttons, strips), large (art tiles, sheet), nav bar */
+  --ar-r-s:4px;--ar-r-m:6px;--ar-r-l:10px;--ar-r-xl:18px;
+  /* shadows: soft, warm, never a glow, never an offset outline */
+  --ar-shadow:0 14px 28px -16px rgba(40,20,40,.45),0 3px 8px -4px rgba(40,20,40,.18);
+  --ar-shadow-s:0 8px 16px -10px rgba(40,20,40,.42),0 2px 4px -2px rgba(40,20,40,.14);
+  --ar-shadow-nav:0 18px 34px -14px rgba(40,20,40,.45),0 2px 6px rgba(40,20,40,.1);
+  /* type fields: how much of the type colour goes into the light-mode field */
+  --ar-field-mix:58%;--ar-art-text:#16141A;
+  /* focus */
+  --ar-focus:#0078BF;
+}
+@A[data-look="dark"]{
+  --ar-paper:#000;--ar-paper-2:#121114;--ar-sheet:#1A191D;--ar-nav:#151417;
+  --ar-ink:#F4F1EC;--ar-ink-2:#C9C3CC;--ar-ink-3:#A39CA6;--ar-rule:rgba(255,255,255,.12);--ar-rule-2:rgba(255,255,255,.22);
+  --ar-pink-ink:#FF6F86;--ar-gold-ink:#FFD166;--ar-blue-ink:#4FB2F0;--ar-orange-ink:#FFA27D;--ar-purple-ink:#C9B0FF;--ar-green-ink:#5FD08F;
+  --ar-misprint:#E8364F;
+  --ar-shadow:0 14px 28px -14px rgba(0,0,0,.9);--ar-shadow-s:0 8px 16px -10px rgba(0,0,0,.9);--ar-shadow-nav:0 18px 34px -14px rgba(0,0,0,.9);
+  --ar-field-mix:30%;--ar-art-text:#fff;--ar-focus:#4FB2F0;
+}
+/* section per page (html[data-pg]): Home pink, Build gold, My team blue, Battle red-orange, Meta purple */
+@A:is([data-pg="auto"],[data-pg="cores"]){--ar-sec:var(--ar-gold);--ar-sec-plate:var(--ar-gold-plate);--ar-sec-on:#16141A;--ar-sec-ink:var(--ar-gold-ink)}
+@A:is([data-pg="report"],[data-pg="build"],[data-pg="coverage"],[data-pg="teams"],[data-pg="compare"],[data-pg="box"]){--ar-sec:var(--ar-blue);--ar-sec-plate:var(--ar-blue-plate);--ar-sec-ink:var(--ar-blue-ink)}
+@A:is([data-pg="matchup"],[data-pg="practice"],[data-pg="gauntlet"],[data-pg="speed"],[data-pg="calc"],[data-pg="types"]){--ar-sec:var(--ar-orange);--ar-sec-plate:var(--ar-orange-plate);--ar-sec-ink:var(--ar-orange-ink)}
+@A:is([data-pg="weekly"],[data-pg="ratings"],[data-pg="meta"],[data-pg="sets"],[data-pg="top"],[data-pg="events"],[data-pg="arch"],[data-pg="track"],[data-pg="method"],[data-pg="about"]){--ar-sec:var(--ar-purple);--ar-sec-plate:var(--ar-purple-plate);--ar-sec-ink:var(--ar-purple-ink)}
+/* a block can switch section locally (Home's two sixes: the champion pink, yours blue) */
+@A .ar-pink{--ar-sec:var(--ar-pink);--ar-sec-plate:var(--ar-pink-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-pink-ink)}
+@A .ar-blue{--ar-sec:var(--ar-blue);--ar-sec-plate:var(--ar-blue-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-blue-ink)}
+@A .ar-gold{--ar-sec:var(--ar-gold);--ar-sec-plate:var(--ar-gold-plate);--ar-sec-on:#16141A;--ar-sec-ink:var(--ar-gold-ink)}
+@A .ar-orange{--ar-sec:var(--ar-orange);--ar-sec-plate:var(--ar-orange-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-orange-ink)}
+@A .ar-purple{--ar-sec:var(--ar-purple);--ar-sec-plate:var(--ar-purple-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-purple-ink)}
+@media (min-width:1001px){@A{--ar-fs-hero:120px;--ar-fs-h1:76px;--ar-fs-h2:34px;--ar-fs-h3:22px;--ar-fs-body:17px;--ar-fs-small:16px;--ar-gutter:32px}}
+@media (max-width:359px){@A{--ar-fs-hero:54px;--ar-fs-h1:40px;--ar-fs-h2:24px}}
+
+/* the older layers read these: point them at arena paper and ink so every page sits on the same paper */
+@A{--chp:var(--ar-paper);--chp2:var(--ar-paper-2);--mgpaper:var(--ar-paper);--mgpanel:var(--ar-sheet);--chc:var(--ar-sheet);--card2:var(--ar-paper-2);--soft:var(--ar-paper-2);
+  --chink:var(--ar-ink);--chink2:var(--ar-ink-2);--mgink:var(--ar-ink);--mgbw:0px}
+
+/* ---------- 2. base ---------- */
+@A body{background:var(--ar-paper)!important;background-image:none!important;color:var(--ar-ink)}
+@A html{background:var(--ar-paper)}
+/* display and numeral faces (utility classes) */
+@A .ar-disp{font-family:var(--ar-display);font-stretch:118%;font-weight:800;font-style:italic;letter-spacing:-.01em}
+@A .ar-num{font-family:var(--ar-display);font-stretch:125%;font-weight:900;font-style:italic;letter-spacing:-.03em;line-height:.9;font-variant-numeric:tabular-nums}
+@A .ar-num.ar-mp{text-shadow:.05em .04em 0 var(--ar-misprint)}
+@A .ar-num small{font-size:.48em;margin-left:.04em;letter-spacing:0}
+@A .ar-h1{font:italic 800 var(--ar-fs-h1)/1 var(--ar-display);font-stretch:122%;letter-spacing:-.015em;color:var(--ar-ink);margin:0;text-wrap:balance}
+@A .ar-h2{font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display);font-stretch:118%;letter-spacing:-.01em;color:var(--ar-ink);margin:0;text-wrap:balance}
+@A .ar-lede{color:var(--ar-ink-2);font-size:var(--ar-fs-body);line-height:1.45;margin:0}
+@A .ar-lede b{color:var(--ar-ink);font-weight:700}
+@A .ar-meta{color:var(--ar-ink-2);font-size:var(--ar-fs-small);line-height:1.4;margin:0}
+@A .ar-meta b{color:var(--ar-ink);font-weight:700}
+/* focus ring: one ring everywhere, outside the shape */
+@A :focus-visible:not([tabindex="-1"]){outline:3px solid var(--ar-focus)!important;outline-offset:3px!important}
+@A :is(.ar-art,.ar-btn,.ar-strip,.ar-row,.ar-runner,.ar-hero):focus-visible{outline-offset:4px!important}
+
+/* ---------- 3. type fields (dual types blended in OKLCH) ----------
+   Set --a and --b (the two type colours) on the element or a parent. Light mode mixes them into the sheet colour; dark mode
+   brings both to the same mid lightness so dual types never drift brown on black. */
+@A .ar-field{background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--a) var(--ar-field-mix),var(--ar-sheet)) 10%,color-mix(in oklch,var(--b,var(--a)) var(--ar-field-mix),var(--ar-sheet)) 90%)!important}
+@A[data-look="dark"] .ar-field{background:linear-gradient(in oklch 125deg,oklch(from var(--a) .46 calc(c * .85) h) 10%,oklch(from var(--b,var(--a)) .46 calc(c * .85) h) 90%)!important}
+@A .ar-field-strong{background:linear-gradient(in oklch 125deg,var(--a),var(--b,var(--a)))!important}
+
+/* How slanted controls are drawn: the element stays upright (so its text, icons and any bare text nodes stay upright) and its
+   slanted shape is a ::before layer behind it (isolation keeps the layer inside the element). One rule set, .ar-skew, below;
+   every slanted control (plates, buttons, tabs, chips, strips, step plates) uses it. Never slant a paragraph. */
+
+/* ---------- 4. slanted ink name plate ----------
+   <span class="ar-plate" style="--a:..;--b:..">bring Sneasler</span>. Takes its type gradient at a dark, even lightness
+   (white text 5:1+), or the section plate without --a. Labels only, never sentences. */
+@A .ar-plate{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;color:#fff!important;font:600 var(--ar-fs-body)/1.15 var(--ar-body);white-space:nowrap;background:none!important;border:0!important}
+@A .ar-plate::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);box-shadow:var(--ar-shadow-s)}
+@A .ar-plate[style*="--a"]::before{background:linear-gradient(in oklch 100deg,oklch(from var(--a) .44 c h),oklch(from var(--b,var(--a)) .44 c h))}
+@A .ar-plate.ar-sm{min-height:32px;padding:0 12px;font-size:var(--ar-fs-small)}
+
+/* ---------- 5. section head: slanted tab + italic display ----------
+   <div class="ar-shead"><span class="ar-tab"></span><h2 class="ar-h2">The champion's six</h2></div> */
+@A .ar-shead{display:flex;align-items:flex-end;gap:12px;margin:0 0 14px}
+@A .ar-tab{width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;margin-bottom:2px}
+@A .ar-shead>div{min-width:0}
+@A .ar-shead p{color:var(--ar-ink-2);font-size:var(--ar-fs-small);margin:4px 0 0}
+
+/* ---------- 6. numbered step plate (only for real sequences: Fix it, Threats...) ----------
+   <div class="ar-stephead"><span class="ar-step"><span>1</span></span><div><h2 class="ar-h2">Fix it</h2><p>..</p></div></div> */
+@A .ar-stephead{display:flex;gap:14px;align-items:flex-start}
+@A .ar-step{position:relative;isolation:isolate;flex:none;width:52px!important;height:52px!important;display:grid!important;place-items:center;background:none!important;border:0!important;box-shadow:none!important;
+  font:italic 900 30px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-on)!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+@A .ar-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
+@A .ar-step>span{font:inherit;color:inherit}
+
+/* ---------- 7. game-menu buttons ----------
+   .ar-btn: a slanted paper strip with a coloured left edge (--edge, default the section) and a soft shadow.
+   .ar-btn.ar-primary: the yellow strip with a black edge and the black go-chevron (<span class="ar-go"><svg/></span>). One per screen.
+   .ar-link: the tertiary text link (underlined, section ink). */
+@A .ar-btn{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px 0 22px;font:600 var(--ar-fs-body)/1.15 var(--ar-body);text-decoration:none;white-space:nowrap;cursor:pointer;
+  color:var(--ar-ink)!important;border:0!important;background:none!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important}
+@A .ar-btn::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important;
+  background:linear-gradient(var(--edge,var(--ar-sec)),var(--edge,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge,var(--ar-sec)) 20%,var(--ar-sheet)),color-mix(in oklch,var(--edge,var(--ar-sec)) 6%,var(--ar-sheet)) 70%)!important}
+@A .ar-btn svg{width:20px;height:20px;flex:none}
+@A[data-look="dark"] .ar-btn:not(.ar-primary)::before{background:linear-gradient(var(--edge,var(--ar-sec)),var(--edge,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A .ar-btn.ar-primary{color:#16141A!important;font:italic 800 20px/1.1 var(--ar-display);font-stretch:115%;min-height:60px;padding-left:24px}
+@A .ar-btn.ar-primary::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:0 12px 22px -12px rgba(190,140,0,.75),0 2px 4px -2px rgba(0,0,0,.2)!important}
+@A .ar-go{margin-left:auto;display:grid;place-items:center;width:36px;height:36px;border-radius:50%!important;background:#16141A;color:var(--ar-yellow);flex:none}
+@A .ar-go svg{width:18px;height:18px}
+@A .ar-btn:active::before{translate:0 1px}
+@media (hover:hover){@A .ar-btn:not(.ar-primary):hover::before{background:linear-gradient(var(--edge,var(--ar-sec)),var(--edge,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge,var(--ar-sec)) 30%,var(--ar-sheet)),color-mix(in oklch,var(--edge,var(--ar-sec)) 12%,var(--ar-sheet)) 70%)!important}
+  @A .ar-btn.ar-primary:hover::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,#FFDA45!important}}
+@A .ar-link{display:inline-flex;align-items:center;min-height:44px;padding:0 2px;font:600 var(--ar-fs-body)/1.2 var(--ar-body);color:var(--ar-sec-ink)!important;background:none!important;border:0!important;box-shadow:none!important;
+  text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;cursor:pointer}
+@media (min-width:1001px){@A .ar-link,@A .ar-btn{min-height:44px}@A .ar-btn.ar-primary{min-height:64px}}
+
+/* ---------- 8. segmented tabs and filter chips ----------
+   .ar-seg > button[aria-pressed|aria-selected]: a row of slanted strips; the one that is on is a filled section plate with bold text
+   and a check mark (shape and colour, never colour alone). .ar-chip: the same, single, wraps. Works on bare-text buttons. */
+@A .ar-seg{display:inline-flex!important;flex-wrap:wrap;gap:8px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0 0 0 4px!important;overflow:visible!important}
+@A :is(.ar-seg>button,.ar-chip){position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:44px!important;padding:0 16px!important;margin:0!important;font:600 var(--ar-fs-small)/1.1 var(--ar-body)!important;
+  color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;cursor:pointer;flex:none!important}
+@A :is(.ar-seg>button,.ar-chip)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;
+  background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;width:auto!important;height:auto!important}
+@A[data-look="dark"] :is(.ar-seg>button,.ar-chip)::before{background:#24232A!important}
+@A :is(.ar-seg>button,.ar-chip):is([aria-pressed="true"],[aria-selected="true"],.on){color:var(--ar-sec-on)!important;font-weight:700!important}
+@A :is(.ar-seg>button,.ar-chip):is([aria-pressed="true"],[aria-selected="true"],.on)::before{background:var(--ar-sec-plate)!important}
+@A :is(.ar-seg>button,.ar-chip):is([aria-pressed="true"],[aria-selected="true"],.on)::after{content:""!important;display:block!important;position:static!important;order:-1;width:11px!important;height:6px!important;margin:-3px 2px 0 0!important;background:none!important;
+  border:solid currentColor!important;border-width:0 0 2.5px 2.5px!important;border-radius:0!important;transform:rotate(-45deg)!important;box-shadow:none!important}
+
+/* ---------- 9. type art tiles (S, M, L) ----------
+   <button class="ar-art ar-m" style="--a:..;--b:.."><span class="ar-f ar-field"></span><img class="ar-spr"><span class="ar-nm">Name<small>item</small></span></button>
+   The field is a slanted parallelogram; light streaks sit in its top 60% only, so the name stays on smooth colour; the
+   sprite breaks out of the top edge. .ar-below puts the name under the art (Home's 3 columns). .is-mega adds the
+   two-colour power-up contour. .is-sel (the tapped one) adds a yellow ring and the .ar-cursor. */
+@A .ar-art{position:relative;display:block;width:100%;padding:var(--lift,22px) 0 0;margin:0;border:0!important;background:none!important;box-shadow:none!important;text-align:left;color:var(--ar-art-text);font:inherit;cursor:pointer;min-width:0}
+@A .ar-art.ar-s{--h:72px;--s:80px;--lift:12px}
+@A .ar-art.ar-m{--h:112px;--s:112px;--lift:14px}
+@A .ar-art.ar-l{--h:168px;--s:150px;--lift:20px}
+@A .ar-art .ar-f{position:relative;display:block;height:var(--h,156px);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l)!important;overflow:hidden;box-shadow:var(--ar-shadow)!important}
+@A .ar-art .ar-f::before{content:"";position:absolute;left:0;right:0;top:0;height:62%;pointer-events:none;
+  background:linear-gradient(118deg,transparent 0 46%,rgba(255,255,255,.42) 46% 53%,transparent 53% 58%,rgba(255,255,255,.26) 58% 61%,transparent 61% 66%,rgba(255,255,255,.18) 66% 67.5%,transparent 67.5%);
+  -webkit-mask:linear-gradient(#000 55%,transparent);mask:linear-gradient(#000 55%,transparent)}
+@A .ar-art .ar-f::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(transparent,color-mix(in oklch,var(--b,var(--a)) 22%,transparent))}
+@A[data-look="dark"] .ar-art .ar-f::before{opacity:.55}
+@A .ar-art :is(img.ar-spr,svg.ar-spr,.ar-spr img,.ar-spr svg){position:absolute;left:50%;top:0;width:var(--s,140px)!important;height:var(--s,140px)!important;max-width:none;transform:translateX(-50%);z-index:2;pointer-events:none;
+  filter:drop-shadow(0 10px 8px rgba(30,10,40,.22))}
+@A .ar-art.is-mega :is(img.ar-spr,svg.ar-spr){filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b,var(--a))) drop-shadow(0 2px 0 var(--b,var(--a))) drop-shadow(0 -2px 0 var(--a)) drop-shadow(0 10px 8px rgba(30,10,40,.22))}
+@A .ar-art.ar-s.is-mega :is(img.ar-spr,svg.ar-spr){filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a))}
+@A .ar-art .ar-nm{position:absolute;left:14px;right:8px;bottom:12px;z-index:3;display:block;color:var(--ar-art-text);font:italic 800 18px/1.08 var(--ar-display);font-stretch:108%;text-wrap:balance;overflow-wrap:anywhere}
+@A .ar-art .ar-nm small{display:block;font:600 var(--ar-fs-small)/1.25 var(--ar-body);font-style:normal;margin-top:3px}
+@A .ar-art.ar-below .ar-nm{position:static;margin-top:8px;padding-left:2px;color:var(--ar-ink);font-size:16px}
+@A .ar-art.ar-below .ar-nm small{color:var(--ar-ink-2)}
+@A .ar-art.ar-below .ar-f::after{display:none}
+@A .ar-art.is-sel .ar-f{box-shadow:0 0 0 4px var(--ar-yellow),var(--ar-shadow)!important}
+@A .ar-cursor{position:absolute;left:78%;top:calc(var(--lift,22px) - 16px);margin-left:-15px;z-index:4;width:30px;height:22px;background:var(--ar-yellow);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 2px 0 #16141A);pointer-events:none}
+@A .ar-art.is-empty .ar-f{background:color-mix(in oklch,var(--ar-ink) 6%,var(--ar-paper))!important;box-shadow:none!important}
+@A .ar-art.is-empty .ar-f::before,@A .ar-art.is-empty .ar-f::after{display:none}
+@A .ar-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 10px}
+@A .ar-six.ar-two{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px}
+@media (max-width:359px){@A .ar-six:not(.ar-two){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (hover:hover){@A button.ar-art:hover .ar-f{transform:skewX(var(--ar-slant)) translateY(-2px)}}
+@media (prefers-reduced-motion:no-preference){@A button.ar-art .ar-f{transition:transform .16s ease-out}}
+
+/* ---------- 10. stat numerals with a slanted bar ----------
+   <div class="ar-stat"><span class="ar-num">82%</span><span class="ar-unit">ready</span></div> and
+   <span class="ar-bar"><i style="--v:82%"></i></span> (--c sets the fill). Units are sentence case, never all caps. */
+@A .ar-stat{display:flex;flex-direction:column;min-width:0}
+@A .ar-stat .ar-num{font-size:36px}
+@A .ar-unit{display:flex;align-items:center;gap:6px;font:500 var(--ar-fs-small)/1.2 var(--ar-body);color:var(--ar-ink-2);margin-top:6px;min-height:28px}
+@A .ar-bar{display:block;height:12px;margin-top:8px;max-width:320px;background:color-mix(in oklch,var(--ar-ink) 10%,transparent);transform:skewX(-20deg);border-radius:3px!important;overflow:hidden}
+@A .ar-bar i{display:block;height:100%;width:var(--v,0%);background:var(--c,var(--ar-sec));border-radius:3px!important}
+@A .ar-pips{display:inline-flex;gap:5px}
+@A .ar-pips i{width:16px;height:16px;background:var(--ar-green);transform:skewX(-20deg);border-radius:2px!important}
+@A .ar-pips i.off{background:color-mix(in oklch,var(--ar-ink) 14%,transparent)}
+
+/* ---------- 11. menu strips (moves, options): a slanted strip with a type edge ----------
+   <li class="ar-strip" style="--m:#6a3cee">Dragon Claw</li>; as a button it is the same. */
+@A .ar-strip{position:relative;isolation:isolate;display:flex;align-items:center;min-height:48px;padding:0 14px 0 20px;font:600 var(--ar-fs-body)/1.2 var(--ar-body);color:var(--ar-ink)!important;border:0!important;text-align:left;
+  background:none!important;box-shadow:none!important;list-style:none}
+@A .ar-strip::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);
+  background:linear-gradient(var(--m,var(--ar-sec)),var(--m,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--m,var(--ar-sec)) 34%,var(--ar-sheet)),color-mix(in oklch,var(--m,var(--ar-sec)) 12%,var(--ar-sheet)))}
+@A[data-look="dark"] .ar-strip::before{background:linear-gradient(var(--m,var(--ar-sec)),var(--m,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--m,var(--ar-sec)) 34%,#1A191D),color-mix(in oklch,var(--m,var(--ar-sec)) 12%,#1A191D))}
+@A .ar-strips{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin:0;padding:0 0 0 4px;list-style:none}
+
+/* ---------- 12. typographic list rows ----------
+   <button class="ar-row" style="--a;--b"><span class="ar-row-f ar-field"><img></span><span class="ar-row-nm">Name<small>..</small></span>
+   <span class="ar-num">97</span><span class="ar-bar"><i></i></span></button>. No row boxes: spacing and one hairline. */
+@A .ar-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:14px;align-items:center;width:100%;min-height:64px;padding:10px 0 12px;
+  border:0!important;border-bottom:1px solid var(--ar-rule)!important;background:none!important;box-shadow:none!important;color:var(--ar-ink);text-align:left;font:inherit;cursor:pointer}
+@A .ar-row-f{grid-row:1/3;position:relative;width:56px;height:40px;margin-left:4px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;overflow:visible}
+@A .ar-row-f img,@A .ar-row-f svg{position:absolute;left:50%;bottom:-2px;width:60px!important;height:60px!important;max-width:none;transform:translateX(-50%) skewX(var(--ar-unslant))}
+@A .ar-row-nm{font:700 var(--ar-fs-body)/1.2 var(--ar-body);min-width:0}
+@A .ar-row-nm small{display:block;font-weight:500;font-size:var(--ar-fs-small);color:var(--ar-ink-2)}
+@A .ar-row .ar-num{grid-row:1/3;grid-column:3;font-size:34px}
+@A .ar-row .ar-bar{grid-column:2;margin-top:6px;height:8px;max-width:none}
+
+/* ---------- 13. the cut-corner sheet: the only real panel ----------
+   <div class="ar-sheetwrap"><div class="ar-sheet" style="--a;--b">..</div></div>. Washed in its Pokémon's type colours,
+   a type-gradient spine on the left, the top-right corner cut. The wrapper carries the shadow (clip-path cuts shadows). */
+@A .ar-sheetwrap{position:relative;filter:drop-shadow(0 16px 22px rgba(30,40,80,.22)) drop-shadow(0 2px 3px rgba(30,40,80,.12))}
+@A[data-look="dark"] .ar-sheetwrap{filter:none}
+@A .ar-sheet{position:relative;padding:18px 18px 18px 26px;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:none!important;color:var(--ar-ink);
+  clip-path:polygon(0 0,calc(100% - 30px) 0,100% 30px,100% 100%,0 100%);
+  background:linear-gradient(in oklch 160deg,color-mix(in oklch,var(--a,var(--ar-sec)) 16%,var(--ar-sheet)),color-mix(in oklch,var(--b,var(--a,var(--ar-sec))) 12%,var(--ar-sheet)) 60%,var(--ar-sheet))!important}
+@A .ar-sheet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:linear-gradient(in oklch 180deg,var(--a,var(--ar-sec)),var(--b,var(--a,var(--ar-sec))))}
+@A[data-look="dark"] .ar-sheet{background:linear-gradient(in oklch 160deg,color-mix(in oklch,var(--a,var(--ar-sec)) 22%,#1A191D),color-mix(in oklch,var(--b,var(--a,var(--ar-sec))) 14%,#1A191D) 60%,#1A191D)!important}
+/* slanted type tags */
+@A .ar-ty{position:relative;isolation:isolate;display:inline-block;font:700 14px/1.3 var(--ar-body);padding:3px 10px;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-ty::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--t);transform:skewX(var(--ar-slant));border-radius:3px}
+@A .ar-tys{display:flex;flex-wrap:wrap;gap:6px}
+
+/* ---------- 14. bottom nav (phones): a floating bar, a skewed plate behind the active page in its section colour ---------- */
+@media (max-width:1000px){
+  @A .bnav{display:flex!important;position:fixed!important;left:12px!important;right:12px!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;top:auto!important;height:66px!important;min-height:0!important;
+    padding:6px!important;gap:0!important;align-items:stretch!important;justify-content:space-between!important;background:var(--ar-nav)!important;border:0!important;border-radius:var(--ar-r-xl)!important;box-shadow:var(--ar-shadow-nav)!important;z-index:45}
+  @A .bnav>button{flex:1 1 0!important;position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;min-height:54px!important;padding:0 2px!important;
+    background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink-2)!important;font:600 13px/16px var(--ar-body)!important;isolation:isolate;border-radius:10px!important}
+  @A .bnav>button>span:not(.chfab){font-size:13px!important;line-height:16px!important;height:auto!important;color:inherit!important}
+  @A .bnav>button svg{width:22px!important;height:22px!important;color:inherit!important}
+  @A .bnav>button::before{content:none!important;display:none!important}
+  @A .bnav>button[aria-selected="true"]{color:var(--ar-sec-on)!important;font-weight:700!important}
+  @A .bnav>button[aria-selected="true"]::before{content:""!important;display:block!important;position:absolute!important;inset:0 2px!important;top:0!important;bottom:0!important;left:2px!important;right:2px!important;width:auto!important;height:auto!important;margin:0!important;z-index:-1;
+    background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant))!important;border-radius:10px!important;box-shadow:var(--ar-shadow-s)!important;clip-path:none!important}
+  @A .bnav>button[aria-selected="true"] :is(svg,.chfab){color:var(--ar-sec-on)!important}
+  @A .bnav .chfab{background:none!important;border:0!important;box-shadow:none!important;color:inherit!important;width:24px!important;height:24px!important}
+  @A main,@A .mainwrap{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))!important}
+}
+@media (min-width:1001px){@A .bnav{display:none!important}}
+
+/* ---------- 15. header and desktop top nav ---------- */
+@A header.band{background:none!important;border:0!important;box-shadow:none!important}
+@A header.band .stage,@A header.band .bstripe,@A svg.wave{display:none!important}
+@A .band .chmenubtn,@A .band .jumpbtn{color:var(--ar-ink)!important;min-width:44px;min-height:44px}
+@media (min-width:1001px){
+  @A nav.tabs.mgtabs .inner{gap:6px!important}
+  @A nav.tabs.mgtabs [role=tab]{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 18px!important;margin:0!important;
+    font:600 17px/1 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important}
+  @A nav.tabs.mgtabs [role=tab]::after{content:none!important;display:none!important}
+  @A nav.tabs.mgtabs [role=tab][aria-selected="true"]{color:var(--ar-sec-on)!important;font-weight:700!important}
+  @A nav.tabs.mgtabs [role=tab][aria-selected="true"]::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:8px!important;box-shadow:var(--ar-shadow-s)}
+  @A nav.tabs.mgtabs [role=tab] .tc{background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;color:inherit!important;border:0!important;border-radius:var(--ar-r-s)!important;font:700 13px/1 var(--ar-body)!important;padding:3px 6px!important}
+  @A nav.tabs.mgtabs [role=tab][aria-selected="true"] .tc{background:rgba(255,255,255,.22)!important}
+  @media (hover:hover){@A nav.tabs.mgtabs [role=tab]:not([aria-selected="true"]):hover{color:var(--ar-ink)!important}}
+}
+
+/* ---------- 16. search, inputs and selects ---------- */
+@A :is(input.field,select.field,textarea.field,.field){border:0!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border-radius:var(--ar-r-m)!important}
+@A :is(input.field,select.field,textarea.field,.field):focus{box-shadow:inset 0 -3px 0 var(--ar-sec)!important}
+@media (min-width:1001px){@A .band .jumpbtn{position:relative;isolation:isolate;min-height:44px;padding:0 14px!important;gap:10px;background:none!important;box-shadow:none!important}
+  @A .band .jumpbtn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sheet);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
+  @A .band .jumpbtn .jbk{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;border:0!important;border-radius:var(--ar-r-s)!important;color:var(--ar-ink-2)!important}}
+@media (max-width:1000px){@A .band .jumpbtn{background:none!important;box-shadow:none!important}}
+@A .jbox{background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important}
+
+/* ---------- 17. popovers ("?" tips) and dialogs ---------- */
+@A .tipq{display:inline-grid!important;place-items:center;width:28px!important;height:28px!important;min-width:28px;padding:0!important;margin:0 0 0 6px;vertical-align:middle;position:relative;
+  border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:700 14px/1 var(--ar-body)!important}
+@A .tipq::after{content:"";position:absolute;inset:-8px}
+@A .tippop{background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;padding:14px 16px 14px 20px!important;font-size:15px}
+@A .tippop::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-sec);border-radius:0 3px 3px 0}
+@A .tippop b{font:italic 800 17px/1.2 var(--ar-display);font-stretch:112%}
+@A .tippop p{color:var(--ar-ink-2);margin:6px 0 0}
+/* dialogs: the panel takes the sheet surface; the scrim is plain paper at 88% (no blur, no dark wash) */
+@A .ar-dialog{background:var(--ar-sheet)!important;color:var(--ar-ink);border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important}
+@A :is(.scrim,.chscrim):not([hidden]){background:color-mix(in srgb,var(--ar-paper) 88%,transparent)!important;backdrop-filter:none!important}
+/* the round close button used by every dialog */
+@A .ar-x{display:grid;place-items:center;width:44px;height:44px;border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:600 20px/1 var(--ar-body);cursor:pointer}
+
+/* ---------- 18. empty states: a faint slanted field with a sprite and one line, then the action ---------- */
+@A .ar-empty{position:relative;display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;padding:16px 0}
+@A .ar-empty .ar-empty-art{position:relative;height:72px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l)!important;background:color-mix(in oklch,var(--ar-sec) 18%,var(--ar-paper))}
+@A .ar-empty .ar-empty-art img{position:absolute;left:50%;bottom:0;width:92px!important;height:92px!important;max-width:none;transform:translateX(-50%) skewX(var(--ar-unslant))}
+@A .ar-empty p{margin:0 0 10px;color:var(--ar-ink-2)}
+@A .ar-empty p b{color:var(--ar-ink)}
+
+/* ---------- 19. retire the old box look (manga ink frames, the colour pass's second "print" outline, raised offset buttons,
+   paper box panels). Behaviour and layout stay; until phase 2 restyles a page, its panels become calm paper-2 fields with
+   no frame and no offset. Arena components (.ar-*) are untouched by this block. ---------- */
+@A :is(details.chsec,.chblock,.chpanel,.htile,.mgact,.mgbench,.chhotrows,.chmcard,.mgempty,.hempty,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.chpair4,.verdict,.chcalcdef,.dcres,.bmw,.chsugs,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.mmpop,.chabhero,.abw,.corerow,.nprscroll,.addcard,.lhsrc,.mrow,.ttyours,.sethead,.svsix,.trsoon,.trearly,.nplegend,.abthero,.gkey,.lhstat,.calday,.provnote,.prepcell,.pin,.sgroup,.chlstats,.rzbeat,.chdcband){
+  border-color:transparent!important;box-shadow:none!important}
+@A :is(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){
+  background-color:var(--ar-paper-2)!important;border-radius:var(--ar-r-l)!important}
+@A[data-look="dark"] :is(details.chsec,.chblock,.chpanel,.chmcard,.chsheet,.calbox,.gsum,.vcard,.wkcard,.setcard,.trcard,.abhero,.evcard,.ltier,.verdict,.chcalcdef,.dcres,.bmw,.myrec,.cxpick,.gyou,.chbring,.bmcard,.welcome,.plan,.empty-note,.chabhero,.abw,.nprscroll,.addcard,.mrow,.ttyours,.svsix,.calday,.chlstats,.rzbeat,.chdcband){background-color:var(--ar-paper-2)!important}
+/* the old raised secondary buttons: a soft lift, no flat colour offset, no ink frame */
+@A main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.linkbtn.npmore,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.chprimary):not(.mgyel):not(#saveBtn){
+  border:0!important;box-shadow:var(--ar-shadow-s)!important;border-radius:var(--ar-r-m)!important;background-color:var(--ar-sheet)!important}
+@A[data-look="dark"] main :is(.btn,.chghost,button.sub,.seg>button,.typebtn,.ltype,.lflag,.logpick,.cxopt,.prmode,.dbdt,.chmoreideas,.gpractice,.sdcopy,.rzbtns button,.chtools button,.lockbtn,.chmorebtn):not(.ar-btn):not(.ar-chip):not(.chprimary):not(.mgyel):not(#saveBtn){background-color:#24232A!important}
+/* the old caption-box headings and page-title strips: no frame, no dot field */
+@A :is(.mgtdots,.mgdots,.mgdiv){display:none!important}
+@A .mgtitle::before{background:none!important}
+@A .mgcap{border:0!important;box-shadow:var(--ar-shadow-s)!important}
+@A .ty{border:0!important}
