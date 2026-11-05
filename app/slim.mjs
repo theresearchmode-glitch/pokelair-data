@@ -43,9 +43,15 @@ const prune = css => { let out = '', i = 0;
     i = j; }
   return out; };
 html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + prune(css) + '</style>');
+// 1b. The specificity prefix (":root:not(#_a):not(#_b)…", from @A/@R/@C in build.mjs) written short: ":root:not(#_#_…)" with the
+//     same number of ids gives the identical specificity and still always matches (nothing has id "_"), at about a third of
+//     the bytes (Nov 5, debloat).
+let prefixSaved = 0;
+html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + css.replace(/:root((?::not\(#_[A-Za-z0-9]+\))+)/g, (all, nots) => {
+  const n = (nots.match(/:not\(/g) || []).length, out = ':root:not(' + '#_'.repeat(n) + ')'; prefixSaved += all.length - out.length; return out; }) + '</style>');
 const afterPrune = html.length;
 // minify
 html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + esbuild.transformSync(css, {loader: 'css', minify: true}).code.trim() + '</style>');
 html = html.replace(/<script>([\s\S]*?)<\/script>/g, (m, js) => '<script>' + esbuild.transformSync(js, {loader: 'js', minifyWhitespace: true, target: 'es2020'}).code.trim() + '</script>');
 fs.writeFileSync(file, html);
-console.log(`slim: ${(before / 1024 | 0)} KB -> ${(html.length / 1024 | 0)} KB (dead CSS ${(before - afterPrune) / 1024 | 0} KB: ${removedRules} rules, ${removedSels} selectors)`);
+console.log(`slim: ${(before / 1024 | 0)} KB -> ${(html.length / 1024 | 0)} KB (dead CSS ${(before - afterPrune) / 1024 | 0} KB: ${removedRules} rules, ${removedSels} selectors; short prefix ${prefixSaved / 1024 | 0} KB)`);
