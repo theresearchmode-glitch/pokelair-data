@@ -725,3 +725,8 @@
 @A[data-look="dark"]:not(#_p1) #lairSheet.lsdesk .lsside,@A[data-look="dark"]:not(#_p1) #lairSheet .lsdesk .lsside,@A[data-look="dark"]:not(#_p1) #lairSheet .lspanel>.lsside{background:#131216!important}
 @A:not(#_p1) [data-pane="report"] .chsheet .chrow:not(.empty)>:is(img,.ix,.chrm){grid-row:1 / 3!important}
 @A:not(#_p1) [data-pane="report"] .chsheet .chrow:not(.empty){grid-template-rows:auto 1fr!important}
+/* N3: event names (Home's winner line, the team cards' kickers) wrap as balanced lines, never one word alone ("… Shiny /
+   Prizing") */
+@A:not(#_p1) :is(.ar-winner .ar-ev,.chmcard .chk,.chband .chk,.evname,.ar-champ .ar-ev){text-wrap:balance}
+/* D-F23: an empty slot on a narrow tile says "Add" (74-arena.js marks it when "Add a Pokémon" would wrap) */
+@A .ar-art.is-empty .ar-nm.is-short .ar-addr{display:none}

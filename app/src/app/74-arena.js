@@ -60,7 +60,7 @@ AR.art = (p, o = {}) => { const tag = o.tag || 'button', cls = `ar-art ar-${o.si
     + `<span class="ar-nm">${AR.nm(o.name || p.d)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></${tag}>`; };
 /* an open slot: with o.attrs a button (a faint section field, a "+", "Add a Pokémon" under it) that opens what attrs say;
    without, a quiet placeholder */
-AR.emptyArt = (size, o = {}) => o.attrs ? `<button type="button" class="ar-art ar-${size || 'm'} ar-below is-empty" ${o.attrs}><span class="ar-f" aria-hidden="true"></span><span class="ar-plus" aria-hidden="true">+</span><span class="ar-nm">${o.label || 'Add a Pokémon'}</span></button>`
+AR.emptyArt = (size, o = {}) => o.attrs ? `<button type="button" class="ar-art ar-${size || 'm'} ar-below is-empty" ${/aria-label=/.test(o.attrs) ? '' : 'aria-label="Add a Pokémon" '}${o.attrs}><span class="ar-f" aria-hidden="true"></span><span class="ar-plus" aria-hidden="true">+</span><span class="ar-nm">${o.label || '<span class="ar-addl">Add</span><span class="ar-addr"> a Pokémon</span>'}</span></button>`
   : `<div class="ar-art ar-${size || 'm'} ar-below is-empty" aria-hidden="true"><span class="ar-f"></span><span class="ar-nm">&nbsp;</span></div>`;
 AR.ICON = {
   grade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
@@ -255,7 +255,7 @@ AR.fit = all => { document.querySelectorAll(all ? '.ar-art .ar-nm' : '.ar-art .a
   const r = document.createRange(); r.selectNodeContents(t); const L = [...r.getClientRects()].filter(x => x.width > 1); if (!L.length) return;
   if (on) { tile.classList.toggle('is-nm2', new Set(L.map(x => Math.round(x.top))).size > 1);
     const w = Math.ceil(Math.max(...L.map(x => x.width))); if (w > 0) n.style.setProperty('--nw', w + 'px'); } }); };
-addEventListener('resize', () => { clearTimeout(AR._ft); AR._ft = setTimeout(() => AR.fit(1), 120); });
+addEventListener('resize', () => { clearTimeout(AR._ft); AR._ft = setTimeout(() => { AR.fit(1); try { AR.glue(); } catch (e) {} }, 120); });
 try { document.fonts.ready.then(() => AR.fit(1)); } catch (e) {}
 
 /* ======================= Info sheet: the hero ======================= */
@@ -296,9 +296,20 @@ MG.sheet = n => AR.sheet(n);
 AR.glue = () => { document.querySelectorAll('main .tipq:not([data-gl])').forEach(b => { b.dataset.gl = 1; const t = b.previousSibling;
     if (!t || t.nodeType !== 3 || b.parentElement.closest('.ar-nobr') || /flex|grid/.test(getComputedStyle(b.parentElement).display)) return; const m = /(\S+)(\s*)$/.exec(t.nodeValue); if (!m) return;
     t.nodeValue = t.nodeValue.slice(0, m.index); const w = document.createElement('span'); w.className = 'ar-nobr'; t.after(w); w.append(m[1] + (m[2] ? '\u00a0' : ''), b); });
+  /* a "More" toggle stays on the line of the word before it (no lone "More" under a sentence) */
+  /* an empty slot says "Add a Pokémon"; where that would take two lines on a narrow tile it says "Add" (its button keeps the full
+     accessible name) */
+  document.querySelectorAll('.ar-art.is-empty .ar-nm:has(.ar-addr)').forEach(n => { if (!n.getClientRects().length) return; n.classList.remove('is-short');
+    const r = n.querySelector('.ar-addl').getBoundingClientRect(), e = n.querySelector('.ar-addr').getClientRects(); if (e.length && Math.abs(e[e.length - 1].bottom - r.bottom) > 4) n.classList.add('is-short'); });
+  document.querySelectorAll('.rzmorebtn:not([data-gl])').forEach(b => { b.dataset.gl = 1; let t = b.previousSibling; if (t && t.nodeType === 3 && /^\s+$/.test(t.nodeValue)) { const s = t; t = t.previousSibling; s.remove(); }
+    if (!t || t.nodeType !== 3) return; const m = /(\S+)(\s*)$/.exec(t.nodeValue); if (!m) return; t.nodeValue = t.nodeValue.slice(0, m.index);
+    const w = document.createElement('span'); w.className = 'ar-nobr ar-moreg'; b.before(w); w.append(m[1] + '\u00a0', b); });
   document.querySelectorAll('main :is(.prob-row>div,.wdsub,.chpgs,.hint):not([data-hy])').forEach(e => { e.dataset.hy = 1;
     const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), L = []; let n; while ((n = tw.nextNode())) if (/\w-\w/.test(n.nodeValue)) L.push(n);
     L.forEach(n => { const f = document.createElement('span'); f.innerHTML = esc(n.nodeValue).replace(/([A-Za-z]+(?:-[A-Za-z]+)+)/g, '<span class="ar-nobr">$1</span>'); n.replaceWith(...f.childNodes); }); }); };
+/* the glued "More" toggle opens the text that follows its glue span (70-riso2.js looks for it right after the button) */
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-moreg > .rzmorebtn'); if (!b) return;
+  const rest = b.parentElement.nextElementSibling; if (!rest || !rest.classList.contains('rzrest')) return; const open = rest.hidden; rest.hidden = !open; b.setAttribute('aria-expanded', String(open)); b.textContent = open ? 'Less' : 'More'; });
 { let q = false; const run = () => { q = false; try { AR.parts(); } catch (e) {} try { AR.glue(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); }
 if (window.__PL_TEST) { window.__AR = AR; window.__ARX = {TC, ROSTER, SPRITE_ID, lairSheet, lairClose}; }
