@@ -48,7 +48,9 @@ ARB.field = (el, p) => { if (!el || !p || el.querySelector(':scope > .arb-f')) r
 ARB.overlays = () => { const ed = $('chEdit');
   if (ed && !ed.hidden) { ed.querySelectorAll('.chst').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img'))));
     ed.querySelectorAll('.tcard .thead > img.tspr').forEach(i => ARB.mini(i, 'arb-xl')); }
-  const sc = $('chScout'); if (sc && !sc.hidden) sc.querySelectorAll('.chdet img.spr, .chrowx img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
+  const sc = $('chScout'); if (sc && !sc.hidden) { sc.querySelectorAll('.chdet img.spr, .chlist .it > img.spr, .chbest img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
+    sc.querySelectorAll('.chtile[data-chthr]').forEach(b => ARB.field(b, byName.get(b.dataset.chthr)));
+    const d = sc.querySelector('.chdet'), p = d && CH.sel && byName.get(CH.sel); if (d && p && !d.dataset.arb) { d.dataset.arb = 1; d.style.cssText += ';' + AR.tv(p); } }
   document.querySelectorAll('.myrec .qlog .logpick, .myrec .qlog [data-qllead]').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img')))); };
 { let q = false; const run = () => { q = false; try { ARB.overlays(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']}); }
