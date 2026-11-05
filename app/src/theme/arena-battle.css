@@ -414,7 +414,7 @@
 @A [data-pane="calc"] .ar-dcband .nm{margin-top:84px!important;font:italic 800 24px/1.05 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;overflow-wrap:anywhere;text-wrap:balance}
 @A [data-pane="calc"] .ar-dcband .sub{margin-top:4px!important;padding-bottom:16px;font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 /* dark mode: the name and the set sit on a slanted ink plate, as names on the art do (the dark fields run from mid to light) */
-@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub){color:#fff!important;isolation:isolate;width:fit-content;padding:3px 12px 4px!important}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub){display:block!important;color:#fff!important;isolation:isolate;width:fit-content;padding:3px 12px 4px!important}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub)::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband .sub{margin-top:0!important;margin-bottom:16px}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband.def :is(.nm,.sub){margin-left:auto!important}
@@ -558,10 +558,10 @@
 @A [data-pane="gauntlet"] .gtop .sev{margin-left:4px!important}
 @A [data-pane="gauntlet"] .gtop .vsub:last-child{flex-basis:100%}
 @A [data-pane="gauntlet"] .gwho{order:-1;flex-basis:100%;font:italic 800 21px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;margin-bottom:4px}
-@A [data-pane="gauntlet"] .gmons{display:flex!important;flex-wrap:wrap;gap:10px 8px;margin:14px 0 12px!important;padding:0 0 0 6px!important}
-@A [data-pane="gauntlet"] .gm.ar-gm{position:relative;display:block!important;width:62px;height:58px;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+@A [data-pane="gauntlet"] .gmons{display:grid!important;grid-template-columns:repeat(6,minmax(0,62px));gap:10px 6px;margin:14px 0 12px!important;padding:0 0 0 6px!important}
+@A [data-pane="gauntlet"] .gm.ar-gm{position:relative;display:block!important;width:100%;height:58px;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important}
 @A [data-pane="gauntlet"] .gm.ar-gm>.ar-field{position:absolute;left:0;right:0;bottom:0;height:40px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
-@A [data-pane="gauntlet"] .gm.ar-gm img{position:absolute!important;left:50%;bottom:-2px;width:58px!important;height:58px!important;max-width:none;margin:0!important;transform:translateX(-50%)!important;background:none!important;border:0!important;box-shadow:none!important;filter:drop-shadow(0 4px 4px rgba(30,10,40,.2))!important;outline:0!important}
+@A [data-pane="gauntlet"] .gm.ar-gm img{position:absolute!important;left:50%;bottom:-2px;width:min(58px,100%)!important;height:auto!important;aspect-ratio:1;max-width:none;margin:0!important;transform:translateX(-50%)!important;background:none!important;border:0!important;box-shadow:none!important;filter:drop-shadow(0 4px 4px rgba(30,10,40,.2))!important;outline:0!important}
 @A [data-pane="gauntlet"] .gm.ar-gm.is-mega img{filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b)) drop-shadow(0 2px 0 var(--b)) drop-shadow(0 -2px 0 var(--a))!important}
 /* one of theirs you have no answer to: a pink "!" plate on its corner (the title says which) */
 @A [data-pane="gauntlet"] .gm.ar-gm.loose::after{content:"!"!important;position:absolute!important;right:-6px;top:4px;z-index:3;display:grid!important;place-items:center;width:22px;height:22px;inset:4px -6px auto auto!important;
@@ -703,8 +703,9 @@
 @A [data-pane="types"] .ttmon .ar-bf>img{width:44px!important;height:44px!important}
 /* results: "Taking hits as" and "attacks" heads; each group a row with a label tag and type tags, a hairline between */
 @A [data-pane="types"] .mucols{gap:28px!important}
-@A [data-pane="types"] h3.lbl{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 10px!important;font:italic 800 var(--ar-fs-h3)/1.2 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
-@A [data-pane="types"] h3.lbl::before{content:"";flex:none;width:20px;height:20px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:3px}
+@A [data-pane="types"] h3.lbl{display:block!important;line-height:1.5!important;margin:0 0 10px!important;font:italic 800 var(--ar-fs-h3)/1.2 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="types"] h3.lbl::before{content:"";display:inline-block;width:20px;height:20px;margin:0 12px 0 2px;vertical-align:-2px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:3px}
+@A [data-pane="types"] h3.lbl .ty{margin:2px 0 2px 8px!important;vertical-align:middle}
 @A [data-pane="types"] .problems{display:block!important;background:none!important;border:0!important;padding:0!important}
 @A [data-pane="types"] .prob-row{grid-template-columns:96px minmax(0,1fr)!important;align-items:center;gap:10px!important}
 @A [data-pane="types"] .prob-row .chips{display:flex;flex-wrap:wrap;gap:8px 6px}
@@ -773,7 +774,8 @@
   @A [data-pane="matchup"] .bmgrid{column-gap:44px!important;row-gap:36px!important}
   @A [data-pane="gauntlet"] .gsum{max-width:760px}
   @A [data-pane="gauntlet"] .gsum b{font-size:60px!important}
-  @A [data-pane="gauntlet"] .gm.ar-gm{width:84px;height:76px}
+  @A [data-pane="gauntlet"] .gmons{grid-template-columns:repeat(6,84px)}
+  @A [data-pane="gauntlet"] .gm.ar-gm{height:76px}
   @A [data-pane="gauntlet"] .gm.ar-gm>.ar-field{height:52px}
   @A [data-pane="gauntlet"] .gm.ar-gm img{width:76px!important;height:76px!important}
   @A [data-pane="gauntlet"] .gmons{gap:12px 12px}
