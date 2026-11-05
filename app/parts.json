@@ -14,6 +14,7 @@
  "src/theme/arena-build.css",
  "src/theme/arena-team.css",
  "src/theme/arena-battle.css",
+ "src/theme/arena-meta.css",
  "src/body.html",
  "src/data/data.js",
  "src/data/move-acc.js",
@@ -100,6 +101,7 @@
  "src/app/75-arena-build.js",
  "src/app/75-arena-team.js",
  "src/app/75-arena-battle.js",
+ "src/app/75-arena-meta.js",
  "src/app/98-proposals.js",
  "src/app/99-start.js",
  "src/foot.html"
