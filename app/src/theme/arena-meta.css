@@ -11,8 +11,8 @@
 @A .ar-mpg{--fa:color-mix(in oklch,var(--a,var(--ta,var(--ar-sec))) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--tb,var(--a,var(--ta,var(--ar-sec))))) var(--ar-field-mix),var(--ar-sheet))}
 @A[data-look="dark"] .ar-mpg{--fa:var(--da,oklch(from var(--ta,var(--ar-sec)) .56 calc(c * .9) h));--fb:var(--db,var(--da,oklch(from var(--tb,var(--ta,var(--ar-sec))) .56 calc(c * .9) h)))}
 /* the field colours follow the element that carries the Pokémon's colours (custom properties resolve where they are used) */
-@A :is(.ar-mpg,#lairSheet .lstp-meta) :is([data-arm],.tyacc,[style*="--ta"]){--fa:color-mix(in oklch,var(--a,var(--ta)) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--tb,var(--a,var(--ta)))) var(--ar-field-mix),var(--ar-sheet))}
-@A[data-look="dark"] :is(.ar-mpg,#lairSheet .lstp-meta) :is([data-arm],.tyacc,[style*="--ta"]){--fa:var(--da,oklch(from var(--ta) .56 calc(c * .9) h));--fb:var(--db,var(--da,oklch(from var(--tb,var(--ta)) .56 calc(c * .9) h)))}
+@A :is(.ar-mpg,#lairSheet .lstp-meta) :is(.ar-tv,.tyacc,[style*="--ta"]){--fa:color-mix(in oklch,var(--a,var(--ta)) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--tb,var(--a,var(--ta)))) var(--ar-field-mix),var(--ar-sheet))}
+@A[data-look="dark"] :is(.ar-mpg,#lairSheet .lstp-meta) :is(.ar-tv,.tyacc,[style*="--ta"]){--fa:var(--da,oklch(from var(--ta) .56 calc(c * .9) h));--fb:var(--db,var(--da,oklch(from var(--tb,var(--ta)) .56 calc(c * .9) h)))}
 
 @A .ar-mpg>.subnav{margin:6px 0 2px!important;padding-left:4px!important;border:0!important;background:none!important;box-shadow:none!important}
 @A .ar-mpg>.subnav::after{display:none!important}
@@ -412,13 +412,13 @@
    its own small slanted type field, drawn as the picture's own background (no new element: the sprite-reuse observer in
    15-visual-helpers.js keeps working). The field is the lower 58% of the picture box; the slant comes from paper-coloured
    wedges at both ends of the same angle as every other slant. ---------- */
-@A :is(.ar-mpg,#homeOut) :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr[data-arm]{
+@A :is(.ar-mpg,#homeOut) :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr.ar-tv{
   background:linear-gradient(102deg,var(--ar-paper) 0 13%,transparent 13% 87%,var(--ar-paper) 87%) 0 100%/100% 58% no-repeat,linear-gradient(in oklch 125deg,var(--fa),var(--fb)) 0 100%/100% 58% no-repeat!important;
   border-radius:0!important;box-shadow:none!important;border:0!important;object-fit:contain;filter:none!important;padding:0!important}
-@A[data-look="dark"] :is(.ar-mpg,#homeOut) :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr[data-arm]{
+@A[data-look="dark"] :is(.ar-mpg,#homeOut) :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr.ar-tv{
   background:linear-gradient(102deg,var(--ar-paper) 0 13%,transparent 13% 87%,var(--ar-paper) 87%) 0 100%/100% 58% no-repeat,linear-gradient(in oklab 125deg,var(--fa),var(--fb)) 0 100%/100% 58% no-repeat!important}
-@A .ar-mpg :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr[data-arm]{--fa:color-mix(in oklch,var(--a) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--a)) var(--ar-field-mix),var(--ar-sheet))}
-@A[data-look="dark"] .ar-mpg :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr[data-arm]{--fa:var(--da);--fb:var(--db,var(--da))}
+@A .ar-mpg :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr.ar-tv{--fa:color-mix(in oklch,var(--a) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--a)) var(--ar-field-mix),var(--ar-sheet))}
+@A[data-look="dark"] .ar-mpg :is(.evwin,.gkm,.wksix,.wkteb .wkst,.npspr>span)>img.spr.ar-tv{--fa:var(--da);--fb:var(--db,var(--da))}
 @A .ar-mpg :is(.evwin,.gkm,.wksix){display:flex!important;flex-wrap:wrap;gap:6px 4px!important;align-items:flex-end}
 @A .ar-mpg :is(.evwin,.gkm,.wksix)>img.spr{position:static!important;width:50px!important;height:50px!important;margin:0!important;transform:none!important}
 
@@ -783,3 +783,34 @@
 @A #lairSheet .lstp-meta .lsgrp:first-child>.chk,@A #lairSheet .lstp-meta .lsgrp.lsg-it>.chk{margin-top:6px!important}
 @media (min-width:1001px){@A .ar-mpg .npmeth{max-width:1080px!important}@A .ar-mpg #methodOut .chbody{max-width:880px}}
 @A .ar-mpg :is(.wkt,.trcard>.chk,.nplegend>.chk,#ttList h3.lbl,.setcard>.ph .pt,.chpgt){text-wrap:balance}
+
+/* ---------- 16. readable sizes: no text under 15px on these pages (nav labels aside), taps 44px ---------- */
+@A .ar-mpg .wrv,@A #lairSheet :is(.lstp-meta,.lstp-rating) .wrv{font-size:inherit!important}
+@A .ar-mpg #metaList .mbody .stat>div[style]{font-size:15px!important;line-height:1.5;color:var(--ar-ink-2)}
+@A .ar-mpg #metaList .mbody .stat .vsub{font-size:15px!important;color:var(--ar-ink)!important;font-weight:700}
+@A .ar-mpg #evCal .calday span,@A .ar-mpg :is(#wkOut,#evOut) .tag.evoff,@A .ar-mpg #guideOut details.guide>summary>.vsub .basis,@A .ar-mpg #wkOut .wkar small,@A .ar-mpg #wkOut .wkn .kind,@A .ar-mpg #wkOut .wkstyles .wkst i,
+@A .ar-mpg #methodOut .npchip small,@A .ar-mpg #methodOut .chbody :is(span,small,div):not(.npop):not(.npchip):not(.npbands):not(.npspr):not(.nplev):not(.npeq):not(.npmini),@A .ar-mpg #aboutOut :is(.abtuse,.abtterm,.abtterm span),@A .ar-mpg #metaList .mrow .pc .basis,@A .ar-mpg #metaList .mrow .nm .trend{font-size:15px!important}
+@A .ar-mpg .rzmorebtn,@A #lairSheet :is(.lstp-meta,.lstp-rating) .rzmorebtn{position:relative;font-size:15px!important}
+@A .ar-mpg .rzmorebtn::after,@A #lairSheet :is(.lstp-meta,.lstp-rating) .rzmorebtn::after{content:"";position:absolute;inset:-15px -6px}
+
+/* ---------- 17. Home's weekly teaser (off until Sim turns it on, 63-weekly.js WK_HOME): a purple-edged menu strip with the
+   week's movers on small type fields ---------- */
+@A #homeOut .wkhome{display:grid;gap:14px}
+@A #homeOut .wkhome :is(.wkteaser,.calchip){position:relative;isolation:isolate;display:flex!important;flex-direction:column;align-items:flex-start;gap:10px;width:calc(100% - 6px);margin:0 0 0 6px!important;padding:16px 18px 16px 24px!important;
+  text-align:left;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;cursor:pointer;--edge:var(--ar-purple)}
+@A #homeOut .wkhome :is(.wkteaser,.calchip)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge) 16%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
+@A[data-look="dark"] #homeOut .wkhome :is(.wkteaser,.calchip)::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A #homeOut .wkhome :is(.wkteaser,.calchip) .chk{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
+@A #homeOut .wkhome .wkteb{display:flex;flex-wrap:wrap;gap:6px 16px}
+@A #homeOut .wkhome .wkteb .wkst{display:inline-flex;align-items:center;gap:6px;font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A #homeOut .wkhome .wkteb .wkst>img.spr{width:44px!important;height:44px!important;margin:0!important}
+@A #homeOut .wkhome .wkteb .wkst>img.spr.ar-tv{--fa:color-mix(in oklch,var(--a) var(--ar-field-mix),var(--ar-sheet));--fb:color-mix(in oklch,var(--b,var(--a)) var(--ar-field-mix),var(--ar-sheet))}
+@A[data-look="dark"] #homeOut .wkhome .wkteb .wkst>img.spr.ar-tv{--fa:var(--da);--fb:var(--db,var(--da))}
+@A #homeOut .wkhome .wkteb .wkst i{font-style:normal;font-weight:700}
+@A #homeOut .wkhome .wkteb .wkst.up i{color:var(--ar-green-ink)}
+@A #homeOut .wkhome .wkteb .wkst.dn i{color:var(--ar-blue-ink)}
+@A #homeOut .wkhome .linkbtn{font:600 16px var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px}
+@A #homeOut .wkhome .calchip b{font:700 16px/1.3 var(--ar-body)}
+@A #homeOut .wkhome .calchip .calcd{font:600 15px var(--ar-body);color:var(--ar-ink-2)}
+@A #homeOut .wkhome .wkteb .wkst>img.spr.ar-tv{background:none!important}
