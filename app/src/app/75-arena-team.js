@@ -208,12 +208,19 @@ CH.wrap('renderMyRec', () => { const a = document.activeElement; if (a && a !== 
 CH.wrap('chScoutRender', () => { const sc = $('chScout'), a = document.activeElement; if (sc && !sc.hidden && (!a || a === document.body)) { const x = sc.querySelector('[aria-pressed="true"]') || sc.querySelector('.x'); if (x) try { x.focus({preventScroll: true}); } catch (e) {} } });
 { const sc0 = chScoutClose; chScoutClose = function () { const sh = $('chScout'), was = sh && !sh.hidden, last = CH.last, r = sc0.apply(this, arguments); const a = document.activeElement;
     if (was && (!a || a === document.body)) { const g = ARB.again(last) || (last && last.dataset && last.dataset.chthr && [...document.querySelectorAll(`[data-chthr="${CSS.escape(last.dataset.chthr)}"]`)].find(x => x.getClientRects().length && !x.closest('#chScout'))); if (g) try { g.focus({preventScroll: true}); } catch (e) {} } return r; }; }
+/* the editor redraws a set while you move through it: focus the redraw dropped goes back to the same control */
+document.addEventListener('focusin', e => { const t = e.target; if (t && t.closest && t.closest('#chEdit')) ARB.edFoc = t.id || (t.getAttribute('aria-label') ? '[aria-label="' + CSS.escape(t.getAttribute('aria-label')) + '"]' : ''); }, true);
+new MutationObserver(() => { const ed = $('chEdit'), a = document.activeElement; if (!ed || ed.hidden || (a && a !== document.body) || !ARB.edFoc) return;
+  const k = ARB.edFoc, x = k.startsWith('[') ? ed.querySelector(k) : document.getElementById(k); if (x && ed.contains(x)) try { x.focus({preventScroll: true}); } catch (er) {} })
+  .observe(document.body, {childList: true, subtree: true});
 /* a ⋯ menu closes when focus leaves it */
 document.addEventListener('focusout', e => { const d = e.target && e.target.closest && e.target.closest('details.moremenu[open]'); if (!d) return; setTimeout(() => { if (!d.contains(document.activeElement)) d.open = false; }, 0); });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Tab') { const d = ARB.dlg(); if (!d) return; const f = [...d.querySelectorAll(ARB.FOC)].filter(x => x.getClientRects().length && !x.closest('[hidden],details:not([open])>:not(summary)')); if (!f.length) return;
+  if (e.key === 'Tab') ARB.trap(e); }, true);
+ARB.trap = e => { const d = ARB.dlg(); if (!d) return; const f = [...d.querySelectorAll(ARB.FOC)].filter(x => x.getClientRects().length && !x.closest('[hidden],details:not([open])>:not(summary)')); if (!f.length) return;
     const a = document.activeElement, i = f.indexOf(a);
-    if (!d.contains(a) || i < 0 || (e.shiftKey && i === 0) || (!e.shiftKey && i === f.length - 1)) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); } return; }
+    if (!d.contains(a) || i < 0 || (e.shiftKey && i === 0) || (!e.shiftKey && i === f.length - 1)) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); } };
+document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   const mm = document.activeElement && document.activeElement.closest && document.activeElement.closest('details.moremenu[open]');
   if (mm) { mm.open = false; const s = mm.querySelector(':scope > summary'); if (s) s.focus(); return; }
