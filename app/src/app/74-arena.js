@@ -239,14 +239,19 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
 
 
 /* names on the art. A name never breaks inside a word: while its longest word is wider than the name box, the size steps down
-   1px at a time (to 14px at most; --nmf, arena-p1.css). A name on the art that still takes two lines marks its tile .is-nm2,
+   after the narrower cut of the face, 1px at a time (never under 15px; --nmf, arena-p1.css), and a name that still does not
+   fit takes the tile's full width (.is-nmw). A name on the art that still takes two lines marks its tile .is-nm2,
    which shrinks the sprite so the name keeps clear of it. In dark mode the name sits on an ink plate that hugs its longest
    line (--nw), so a two-line name is one tidy plate, not a box out to the tile's edge. */
 AR.fit = all => { document.querySelectorAll(all ? '.ar-art .ar-nm' : '.ar-art .ar-nm:not([data-nf])').forEach(n => { if (!n.getClientRects().length) return;
   const t = n.firstChild, tile = n.closest('.ar-art'), on = tile && !tile.classList.contains('ar-below'); if (!t || t.nodeType !== 3 || !t.textContent.trim()) return;
-  n.dataset.nf = 1; n.style.removeProperty('--nmf'); if (on) n.style.removeProperty('--nw');
+  n.dataset.nf = 1; n.style.removeProperty('--nmf'); delete n.dataset.ns; if (tile) tile.classList.remove('is-nmw'); if (on) n.style.removeProperty('--nw');
+  const over = () => n.scrollWidth > n.clientWidth + 1;
+  /* 1: the narrower cut of the display face; 2: one px at a time, never under 15px; 3: the name takes the tile's full width */
+  if (over()) n.dataset.ns = 1;
   let f = parseFloat(getComputedStyle(n).fontSize), k = 0;
-  while (n.scrollWidth > n.clientWidth + 1 && f > 14 && k++ < 8) { f -= 1; n.style.setProperty('--nmf', f + 'px'); }
+  while (over() && f > 15 && k++ < 8) { f = Math.max(15, f - 1); n.style.setProperty('--nmf', f + 'px'); }
+  if (over() && tile) tile.classList.add('is-nmw');
   const r = document.createRange(); r.selectNodeContents(t); const L = [...r.getClientRects()].filter(x => x.width > 1); if (!L.length) return;
   if (on) { tile.classList.toggle('is-nm2', new Set(L.map(x => Math.round(x.top))).size > 1);
     const w = Math.ceil(Math.max(...L.map(x => x.width))); if (w > 0) n.style.setProperty('--nw', w + 'px'); } }); };
@@ -286,6 +291,14 @@ AR.sheet = n => { const sh = $('lairSheet'), p = n && byName.get(n); if (!sh || 
 MG.sheet = n => AR.sheet(n);
 
 /* run after the app draws (the same observer pattern as the other theme layers) */
-{ let q = false; const run = () => { q = false; try { AR.parts(); } catch (e) {} };
+/* polish pass: a "?" tip never wraps alone onto a line: it is glued to the last word before it (the button is moved, not
+   rebuilt, so its handler and label stay); a hyphenated word in a sentence ("double-targeting") never splits at its hyphen */
+AR.glue = () => { document.querySelectorAll('main .tipq:not([data-gl])').forEach(b => { b.dataset.gl = 1; const t = b.previousSibling;
+    if (!t || t.nodeType !== 3 || b.parentElement.closest('.ar-nobr') || /flex|grid/.test(getComputedStyle(b.parentElement).display)) return; const m = /(\S+)(\s*)$/.exec(t.nodeValue); if (!m) return;
+    t.nodeValue = t.nodeValue.slice(0, m.index); const w = document.createElement('span'); w.className = 'ar-nobr'; t.after(w); w.append(m[1] + (m[2] ? '\u00a0' : ''), b); });
+  document.querySelectorAll('main :is(.prob-row>div,.wdsub,.chpgs,.hint):not([data-hy])').forEach(e => { e.dataset.hy = 1;
+    const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), L = []; let n; while ((n = tw.nextNode())) if (/\w-\w/.test(n.nodeValue)) L.push(n);
+    L.forEach(n => { const f = document.createElement('span'); f.innerHTML = esc(n.nodeValue).replace(/([A-Za-z]+(?:-[A-Za-z]+)+)/g, '<span class="ar-nobr">$1</span>'); n.replaceWith(...f.childNodes); }); }); };
+{ let q = false; const run = () => { q = false; try { AR.parts(); } catch (e) {} try { AR.glue(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); }
 if (window.__PL_TEST) { window.__AR = AR; window.__ARX = {TC, ROSTER, SPRITE_ID, lairSheet, lairClose}; }

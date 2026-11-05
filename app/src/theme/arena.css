@@ -446,3 +446,8 @@
    brown-looking text colour */
 @A #chThrTop .chtr :is(.st.shaky,.st.part,.st.l1){color:var(--ar-ink)!important;position:relative;padding-left:14px!important}
 @A #chThrTop .chtr :is(.st.shaky,.st.part,.st.l1)::before{content:""!important;position:absolute;left:2px;top:50%;width:6px;height:14px;margin-top:-7px;background:var(--ar-gold)!important;transform:skewX(var(--ar-slant));border-radius:2px}
+
+/* ---------- 30. small glyphs and glue (polish pass): the "?" tip is 15px like all small text and is glued to the word before it
+   (74-arena.js AR.glue), so it never wraps alone; a hyphenated word never splits at its hyphen ---------- */
+@A .ar-nobr{white-space:nowrap}
+@A main .tipq,@A #lairSheet .tipq{font-size:15px!important}

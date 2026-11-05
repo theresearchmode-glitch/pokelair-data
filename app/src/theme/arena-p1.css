@@ -698,3 +698,11 @@
   @A #lairSheet .chlstats b{font-size:21px!important}}
 /* the info sheet's small text (F14): 15px everywhere, the tab sub-labels included */
 @A #lairSheet :is(.lsvl,.lsvn,.lsvo,.lstd,.lsact .t2,.fbmis,.lstabs .lstab span,.chleg,.lsvr>span,.nplink){font-size:15px!important}
+
+/* polish pass, NEW-02: an art-tile name never goes under 15px. 74-arena.js first sets the narrower cut of the face (data-ns),
+   then steps the size down to 15px at the smallest, then lets the name use the tile's full width (.is-nmw) */
+@A .ar-art .ar-nm[data-ns]{font-stretch:100%!important;letter-spacing:-.015em!important}
+@A .ar-art.is-nmw:not(.ar-below) .ar-nm{left:6px!important;right:2px!important}
+@A[data-look="dark"] .ar-art.is-nmw:not(.ar-below) .ar-nm{left:4px!important;max-width:calc(100% - 6px)!important;padding-left:8px!important;padding-right:8px!important}
+@A[data-look="dark"] .ar-art.is-nmw:not(.ar-below) .ar-nm{width:calc(var(--nw,100%) + 16px)}
+@A .ar-art.is-nmw.ar-below .ar-nm{margin-right:-6px}
