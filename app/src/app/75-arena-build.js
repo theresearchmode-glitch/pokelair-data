@@ -3,11 +3,11 @@
 // What's new, toasts, the shared-link bar, the health and regulation bars and the footer (theme/arena-build.css, ARENA.md).
 // It calls AR.* helpers (74-arena.js) and never redefines them. Every control keeps its element, id, data-* and handler; the
 // only nodes replaced are drawings without controls (the built team's old halftone card).
-const ARB = {};
-ARB.byD = new Map();
+const ARBLD = {};
+ARBLD.byD = new Map();
 /* a Pokémon from its shown name (team sheet tiles carry the name in their title) */
-ARB.mon = d => { if (!d) return null; if (byName.get(d)) return byName.get(d); if (!ARB.byD.size) ROSTER.forEach(p => ARB.byD.set(p.d, p)); return ARB.byD.get(d) || null; };
-ARB.cls = (sel, c) => document.querySelectorAll(sel).forEach(b => b.classList.add(...c.split(' ')));
+ARBLD.mon = d => { if (!d) return null; if (byName.get(d)) return byName.get(d); if (!ARBLD.byD.size) ROSTER.forEach(p => ARBLD.byD.set(p.d, p)); return ARBLD.byD.get(d) || null; };
+ARBLD.cls = (sel, c) => document.querySelectorAll(sel).forEach(b => b.classList.add(...c.split(' ')));
 
 /* ======================= Build for me ======================= */
 /* the main button: the arena go chevron instead of the arrow glyph (its text and handler are the app's) */
@@ -17,7 +17,7 @@ CH.wrap('abAroundRender', () => { const go = $('abBtn'); if (!go) return; go.cla
   const lk = ui.abLock && byName.get(ui.abLock), chip = document.querySelector('#abAround .abchip'); if (chip && lk) chip.setAttribute('style', AR.tv(lk)); });
 
 /* a built team: the six as equal art tiles on a gold stage, the grade as a big numeral, the checks as pips */
-ARB.stage = col => { if (col.querySelector('.arb-stage')) return; const use = col.querySelector('[data-abuse]'), fmt = use ? use.dataset.abuse : 'doubles';
+ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = col.querySelector('[data-abuse]'), fmt = use ? use.dataset.abuse : 'doubles';
   let tm = null; try { tm = abTeam(fmt); } catch (e) {} if (!tm) return;
   const head = col.querySelector('.abhead'), old = col.querySelector('.chabsix');
   const kind = tm.fresh ? 'Fresh take' : tm.proven ? (tm.proven.swapped ? 'Proven team, 1 swap' : 'Proven team') : 'Your build';
@@ -45,20 +45,20 @@ ARB.stage = col => { if (col.querySelector('.arb-stage')) return; const use = co
   col.querySelectorAll('.row > .sdcopy').forEach(b => b.classList.add('ar-btn')); };
 
 /* team sheet cards (recent winners) on Build: each Pokémon on its own type field */
-ARB.sheets = root => { root.querySelectorAll('.evteam .tgm:not(.arb-t)').forEach(t => { const p = ARB.mon(t.getAttribute('title')); t.classList.add('arb-t'); if (p) t.setAttribute('style', AR.tv(p)); });
+ARBLD.sheets = root => { root.querySelectorAll('.evteam .tgm:not(.arb-t)').forEach(t => { const p = ARBLD.mon(t.getAttribute('title')); t.classList.add('arb-t'); if (p) t.setAttribute('style', AR.tv(p)); });
   root.querySelectorAll('.evteam .evbtns > button.btn, .evteam .evbtns > .sdcopy').forEach(b => b.classList.add('ar-btn'));
   root.querySelectorAll('.evteam .evbtns > button.linkbtn').forEach(b => b.classList.add('ar-link')); };
 
-ARB.build = () => { const sec = $('autobuild'), pane = document.querySelector('[data-pane="auto"]'); if (!sec || !pane) return;
+ARBLD.build = () => { const sec = $('autobuild'), pane = document.querySelector('[data-pane="auto"]'); if (!sec || !pane) return;
   const out = $('abOut'), built = !!(out && out.querySelector('[data-abuse]'));
   sec.classList.toggle('arb-has', built); pane.classList.add('arb-pane');
   const go = $('abBtn'); if (go) { go.classList.add('ar-btn', 'arb-go'); go.classList.toggle('ar-primary', !built); }
   sec.querySelectorAll('.abhero .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
-  if (out) { out.querySelectorAll('.abcol').forEach(c => { try { ARB.stage(c); } catch (e) {} }); ARB.sheets(out); } };
-CH.wrap('renderAutoBuild', () => ARB.build());
+  if (out) { out.querySelectorAll('.abcol').forEach(c => { try { ARBLD.stage(c); } catch (e) {} }); ARBLD.sheets(out); } };
+CH.wrap('renderAutoBuild', () => ARBLD.build());
 
 /* ======================= Build around a core ======================= */
-ARB.cores = () => { const el = $('coreOut'); if (!el) return; const sec = $('cores'); if (sec) sec.classList.add('arb-cores');
+ARBLD.cores = () => { const el = $('coreOut'); if (!el) return; const sec = $('cores'); if (sec) sec.classList.add('arb-cores');
   el.querySelectorAll('.seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   el.querySelectorAll('.corerow:not(.arb-row)').forEach(r => { r.classList.add('arb-row'); const key = (r.dataset.dbbox || '').replace(/^core:/, ''), ns = key.split('|');
     const imgs = r.querySelectorAll('.coresprs > img'); imgs.forEach((img, i) => { const p = byName.get(ns[i]); const f = document.createElement('span'); f.className = 'arb-cf' + (p && AR.isMega(p) ? ' is-mega' : '');
@@ -68,11 +68,11 @@ ARB.cores = () => { const el = $('coreOut'); if (!el) return; const sec = $('cor
     r.querySelectorAll('.corebtns > button.linkbtn').forEach(b => b.classList.add('ar-link')); });
   el.querySelectorAll('.morebar > button.btn').forEach(b => b.classList.add('ar-btn'));
   const lk = coreUi.mon && byName.get(coreUi.mon), chip = el.querySelector('.corefind .corechip'); if (chip && lk) chip.setAttribute('style', AR.tv(lk)); };
-CH.wrap('renderCores', () => ARB.cores());
+CH.wrap('renderCores', () => ARBLD.cores());
 
 /* ======================= the ⋯ menu ======================= */
 /* each group takes its section colour (Build gold, My team blue, Battle red-orange, Meta purple) */
-ARB.side = () => { const side = $('side'); if (!side || side.dataset.arb) return; side.dataset.arb = '1';
+ARBLD.side = () => { const side = $('side'); if (!side || side.dataset.arb) return; side.dataset.arb = '1';
   const map = {Build: 'ar-gold', 'My team': 'ar-blue', Battle: 'ar-orange', Meta: 'ar-purple', Info: 'ar-purple'};
   side.querySelectorAll('.sidenav .sgroup').forEach(g => { const l = g.querySelector('.sgl'), t = l ? l.textContent.trim() : ''; g.classList.add(map[t] || 'ar-pink', 'arb-g'); });
   side.querySelectorAll('.themeseg').forEach(s => s.classList.add('ar-seg'));
@@ -86,7 +86,7 @@ CH.wrap('jumpRender', () => { const el = $('jumpList'); if (!el) return;
   const h = document.querySelector('#jump .jhint'); if (h && !h.dataset.arb) { h.dataset.arb = '1'; h.innerHTML = '<span><kbd>↑</kbd><kbd>↓</kbd> to move</span><span><kbd>Enter</kbd> to open</span><span><kbd>Esc</kbd> to close</span>'; } });
 
 /* ======================= Feedback, Copy for Showdown: arena dialogs ======================= */
-ARB.dlg = () => { const fb = document.querySelector('#fbSheet .fbbox:not(.arb-d)');
+ARBLD.dlg = () => { const fb = document.querySelector('#fbSheet .fbbox:not(.arb-d)');
   if (fb) { fb.classList.add('arb-d'); fb.querySelectorAll('.seg').forEach(s => s.classList.add('ar-seg')); const x = fb.querySelector('.fbx'); if (x) x.classList.add('ar-x');
     const s = $('fbSend'); if (s) { s.classList.add('ar-btn', 'ar-primary'); if (!s.querySelector('.ar-go')) s.insertAdjacentHTML('beforeend', AR.ICON.go); }
     const C = typeof FB === 'object' && FB.ctx, p = C && C.mon && byName.get(C.mon), cx = fb.querySelector('.fbctx'); if (cx && p) { cx.setAttribute('style', AR.tv(p)); cx.classList.add('arb-ctx'); } }
@@ -94,7 +94,7 @@ ARB.dlg = () => { const fb = document.querySelector('#fbSheet .fbbox:not(.arb-d)
   if (sd) { sd.classList.add('arb-d'); const x = sd.querySelector('.sdx'); if (x) x.classList.add('ar-x'); sd.querySelectorAll('.row > button.btn').forEach(b => b.classList.add('ar-btn')); } };
 
 /* ======================= welcome card, What's new, shared link, footer ======================= */
-ARB.home = () => { const w = $('welcomeCard'); if (w && !w.dataset.arb) { w.dataset.arb = '1';
+ARBLD.home = () => { const w = $('welcomeCard'); if (w && !w.dataset.arb) { w.dataset.arb = '1';
     w.querySelectorAll('.wsteps > li').forEach((li, i) => { if (!li.querySelector('.ar-step')) li.insertAdjacentHTML('afterbegin', `<span class="ar-step" aria-hidden="true"><span>${i + 1}</span></span>`); });
     w.querySelectorAll('.row > button').forEach(b => { if (b.dataset.welcomex) b.classList.add('ar-link'); else { b.classList.add('ar-btn'); b.style.setProperty('--edge', b.dataset.view === 'auto' ? 'var(--ar-gold)' : 'var(--ar-purple)'); } }); }
   const sb = $('sharedBar'); if (sb && !sb.dataset.arb) { sb.dataset.arb = '1'; sb.querySelectorAll('button').forEach(b => b.classList.add(b.dataset.sharedx ? 'ar-link' : 'ar-btn')); }
@@ -103,35 +103,35 @@ ARB.home = () => { const w = $('welcomeCard'); if (w && !w.dataset.arb) { w.data
 /* ======================= keyboard and phones: overlays take, keep and give back focus ======================= */
 /* the menu, Jump search, Copy for Showdown and Feedback: on open, focus moves in (the current page's row in the menu); Tab and
    Shift+Tab stay inside; on close, focus goes back to the control that opened it */
-ARB.OV = [['side', () => { const s = $('side'); return !!(s && s.classList.contains('open')); }, s => s.querySelector('.sidenav [aria-selected="true"]') || $('sideClose')],
+ARBLD.OV = [['side', () => { const s = $('side'); return !!(s && s.classList.contains('open')); }, s => s.querySelector('.sidenav [aria-selected="true"]') || $('sideClose')],
   ['jump', () => { const j = $('jump'); return !!(j && !j.hidden); }, () => $('jumpIn')],
   ['sdSheet', () => { const j = $('sdSheet'); return !!(j && !j.hidden); }, () => $('sdText')],
   ['fbSheet', () => { const j = $('fbSheet'); return !!(j && !j.hidden); }, () => $('fbText')]];
-ARB.was = {}; ARB.opener = {}; ARB.hist = [];
+ARBLD.was = {}; ARBLD.opener = {}; ARBLD.hist = [];
 /* the last few focused controls outside the overlays (a copy fallback focuses a throwaway textarea, so the newest may be gone) */
-document.addEventListener('focusin', e => { const t = e.target; if (t && t.closest && !t.closest('#side,#jump,#sdSheet,#fbSheet')) { try { t._arbKey = ARB.key(t); } catch (er) {} ARB.hist.push(t); if (ARB.hist.length > 6) ARB.hist.shift(); } }, true);
+document.addEventListener('focusin', e => { const t = e.target; if (t && t.closest && !t.closest('#side,#jump,#sdSheet,#fbSheet')) { try { t._arbKey = ARBLD.key(t); } catch (er) {} ARBLD.hist.push(t); if (ARBLD.hist.length > 6) ARBLD.hist.shift(); } }, true);
 /* a control the page redrew meanwhile is found again by its id or its first data-* attribute */
-ARB.key = o => { if (!o || !o.attributes) return null; if (o.id) return '#' + CSS.escape(o.id); const d = [...o.attributes].find(x => x.name.startsWith('data-')); return d ? `${o.tagName.toLowerCase()}[${d.name}="${CSS.escape(d.value)}"]` : null; };
-ARB.back = (id, list) => { for (let i = list.length - 1; i >= 0; i--) { let o = list[i]; if (!o || o === document.body) continue;
+ARBLD.key = o => { if (!o || !o.attributes) return null; if (o.id) return '#' + CSS.escape(o.id); const d = [...o.attributes].find(x => x.name.startsWith('data-')); return d ? `${o.tagName.toLowerCase()}[${d.name}="${CSS.escape(d.value)}"]` : null; };
+ARBLD.back = (id, list) => { for (let i = list.length - 1; i >= 0; i--) { let o = list[i]; if (!o || o === document.body) continue;
     if (!o.isConnected) { const k = o._arbKey; o = k ? [...document.querySelectorAll(k)].find(x => x.getClientRects().length) : null; }
     if (o && o.isConnected && o.getClientRects().length) return o; }
   return id === 'jump' ? [...document.querySelectorAll('[data-jumpbtn]')].find(x => x.getClientRects().length) : id === 'side' ? [...document.querySelectorAll('#moreBtn')].find(x => x.getClientRects().length) : null; };
-ARB.tabbable = el => [...el.querySelectorAll('button,[href],input,select,textarea,summary,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled && x.tabIndex >= 0 && x.getClientRects().length && getComputedStyle(x).visibility !== 'hidden');
-ARB.focusTick = () => { for (const [id, open, first] of ARB.OV) { const on = open(), el = $(id);
-    if (on && !ARB.was[id]) { ARB.opener[id] = ARB.hist.slice(); const f = first(el); if (f && !el.contains(document.activeElement)) setTimeout(() => { try { f.focus({preventScroll: true}); } catch (e) {} }, 40); }
-    if (!on && ARB.was[id]) { const o = ARB.back(id, ARB.opener[id] || []), a = document.activeElement; if (o && (!a || a === document.body || (el && el.contains(a)))) try { o.focus({preventScroll: true}); } catch (e) {} ARB.opener[id] = null; }
-    ARB.was[id] = on; } };
-new MutationObserver(() => ARB.focusTick()).observe(document.body, {attributes: true, attributeFilter: ['hidden', 'class'], subtree: true, childList: true});
-document.addEventListener('keydown', e => { if (e.key !== 'Tab' || e.defaultPrevented) return; const o = ARB.OV.find(([, open]) => open()); if (!o) return; const el = $(o[0]); if (!el) return;
-  const L = ARB.tabbable(el); if (!L.length) return; const i = L.indexOf(document.activeElement);
+ARBLD.tabbable = el => [...el.querySelectorAll('button,[href],input,select,textarea,summary,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled && x.tabIndex >= 0 && x.getClientRects().length && getComputedStyle(x).visibility !== 'hidden');
+ARBLD.focusTick = () => { for (const [id, open, first] of ARBLD.OV) { const on = open(), el = $(id);
+    if (on && !ARBLD.was[id]) { ARBLD.opener[id] = ARBLD.hist.slice(); const f = first(el); if (f && !el.contains(document.activeElement)) setTimeout(() => { try { f.focus({preventScroll: true}); } catch (e) {} }, 40); }
+    if (!on && ARBLD.was[id]) { const o = ARBLD.back(id, ARBLD.opener[id] || []), a = document.activeElement; if (o && (!a || a === document.body || (el && el.contains(a)))) try { o.focus({preventScroll: true}); } catch (e) {} ARBLD.opener[id] = null; }
+    ARBLD.was[id] = on; } };
+new MutationObserver(() => ARBLD.focusTick()).observe(document.body, {attributes: true, attributeFilter: ['hidden', 'class'], subtree: true, childList: true});
+document.addEventListener('keydown', e => { if (e.key !== 'Tab' || e.defaultPrevented) return; const o = ARBLD.OV.find(([, open]) => open()); if (!o) return; const el = $(o[0]); if (!el) return;
+  const L = ARBLD.tabbable(el); if (!L.length) return; const i = L.indexOf(document.activeElement);
   if (e.shiftKey && (i <= 0)) { e.preventDefault(); L[L.length - 1].focus(); } else if (!e.shiftKey && (i === -1 || i === L.length - 1)) { e.preventDefault(); L[0].focus(); } });
 /* phones: a Pokémon field (Build around, cores) moves up when focused, so its suggestions open above the bottom bar */
 document.addEventListener('focusin', e => { const t = e.target; if (!t || !t.matches || !t.matches('#abAroundIn,#coreMonIn') || innerWidth > 1000) return;
   setTimeout(() => { const r = t.getBoundingClientRect(); if (r.top > innerHeight * .3) { const rm = matchMedia('(prefers-reduced-motion: reduce)').matches; scrollBy({top: r.top - Math.max(80, innerHeight * .14), behavior: rm ? 'auto' : 'smooth'}); } }, 60); });
 
 /* run after the app draws (the same observer pattern as 74-arena.js) */
-{ let q = false; const run = () => { q = false; for (const f of [ARB.side, ARB.dlg, ARB.home]) try { f(); } catch (e) {} };
+{ let q = false; const run = () => { q = false; for (const f of [ARBLD.side, ARBLD.dlg, ARBLD.home]) try { f(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); run(); }
 
-if (window.__PL_TEST) window.__ARB = {ARB, setView, jumpOpen, fbOpen, fbMistake, sdSheetOpen, exportPaste, SD_NOTE_BUILT, toast, keepUndo, teamCode, renderHealth, DATA_AT, META,
+if (window.__PL_TEST) window.__ARBLD = {ARBLD, setView, jumpOpen, fbOpen, fbMistake, sdSheetOpen, exportPaste, SD_NOTE_BUILT, toast, keepUndo, teamCode, renderHealth, DATA_AT, META,
   renderAutoBuild, abAroundRender, renderCores, get ui() { return ui; }, get S() { return S; }};
