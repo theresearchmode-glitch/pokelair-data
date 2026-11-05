@@ -135,13 +135,16 @@ ARB.drawTile = (x, P, dark, m, im, cx, y, w, h, sz, nameSize, sub) => { const t 
   if (sub) { const sz2 = Math.max(20, Math.round(nameSize * .82)); ARB.fnt(x, `600 ${sz2}px "Instrument Sans", sans-serif`); x.fillStyle = P.ink2; x.fillText(scFit(x, sub, w + 12), cx, y + h + nameSize * 1.25 + sz2 * 1.25); }
   x.textAlign = 'left'; };
 /* the score as on My team: the record's win rate with 30+ games, else the grade out of 100 */
-ARB.score = (G) => !G ? null : G.rec ? {num: (G.rec.wr * 100).toFixed(1) + '%', top: `Grade ${G.letter}`, basis: 'tournament win rate'} : {num: String(G.s), top: `Grade ${G.letter}${G.partial ? ' so far' : ''}`, basis: 'out of 100'};
+ARB.score = (G) => { if (!G) return null; // grade first: a big "63.0%" beside "Grade A" read like a contradiction (Sim, Nov 5)
+  const so = G.partial ? ' so far' : '', wr = G.rec ? pctFmt(G.rec.wr * 100) : '', av = pctFmt(100 * ((typeof RES !== 'undefined' && RES && +RES.base) || .5));
+  return G.rec ? {num: G.letter, top: 'Grade' + so, basis: `Wins ${wr} of games, average team ${av}`, line: `Grade ${G.letter}: wins ${wr} of games (average team ${av})`}
+    : {num: G.letter, top: 'Grade' + so, basis: `Score ${G.s} out of 100`, line: `Grade ${G.letter}${so}: score ${G.s} out of 100`}; };
 ARB.numeral = (x, P, txt, X, Y, size, align) => { ARB.fnt(x, `italic 900 ${size}px Archivo, sans-serif`, true); x.textAlign = align || 'left'; const o = size * .05;
   x.fillStyle = P.mis; x.fillText(txt, X + o, Y + o * .8); x.fillStyle = P.ink; x.fillText(txt, X, Y); x.textAlign = 'left'; };
 ARB.tab = (x, P, X, Y, s) => { x.fillStyle = P.blue; ARB.para(x, X + s / 2, Y - s, s, s, 4); x.fill(); };
 /* the logo on share cards; X/Y the top left, w the width */
 ARB.logo = async (x, dark, X, Y, w) => { /* Sim (Nov 5): the original logo, N(chevron)STY with the circled PLOT */
-  const im = new Image(); im.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']);
+  const im = new Image(); im.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { im.onload = r; im.onerror = r; }); try { x.drawImage(im, X, Y, w, w * 196 / 761.34); } catch (e) {} };
 ARB.imgs = ms => { const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp'; return Promise.all(ms.map(m => { const id = typeof SPRITE_ID === 'object' && SPRITE_ID ? SPRITE_ID[m.p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); })); };
 ARB.fonts = async () => { try { await Promise.all(['italic 800 40px Archivo', 'italic 900 40px Archivo', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"'].map(f => document.fonts.load(f, 'Aa0123%'))); } catch (e) {} };
@@ -156,7 +159,7 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
   const f = ARB.facts(ms), sc = ARB.score(f.G), RD = f.RD;
   /* readiness, top right */
   if (RD) { ARB.numeral(x, P, RD.score + '%', W - 60, 132, 104, 'right'); x.textAlign = 'right'; ARB.fnt(x, '600 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('ready for the top 30 threats', W - 60, 168);
-    if (sc) { ARB.fnt(x, '700 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(`${sc.top}, ${sc.num} ${sc.basis}`, W - 60, 202); } x.textAlign = 'left'; }
+    if (sc) { ARB.fnt(x, '700 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(sc.line, W - 60, 202); } x.textAlign = 'left'; }
   /* the title on its slanted tab: one line as big as fits, else two lines (never cut off) */
   let fz = 70, TL = null; for (; fz >= 34; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); if (x.measureText(f.name).width <= 640) { TL = [f.name]; break; } if (fz <= 50) { const L2 = ARB.lines(x, f.name, 640); if (L2) { TL = L2; break; } } }
   if (!TL) for (fz = 40; fz >= 26 && !TL; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); TL = ARB.wrapN(x, f.name, 640, 3); }

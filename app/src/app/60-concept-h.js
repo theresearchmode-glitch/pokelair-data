@@ -15,6 +15,12 @@ CH.tog = () => `<span class="chtog" aria-hidden="true">${CH.chev2()}</span>`;
 // the logo: full lockup (Home), compact header lockup (top bar, menu, footer); light and Warm charcoal
 // each copy gets its own mask ids: a hidden copy (the closed menu) would otherwise break the mask for every other copy
 CH._lk = 0; CH.uniq = svg => { const n = ++CH._lk; return svg.replace(/id="(np[^"]+)"/g, (m, id) => `id="${id}-${n}"`).replace(/url\(#(np[^)]+)\)/g, (m, id) => `url(#${id}-${n})`); };
+/* Share images draw the stored logo SVG as a picture, where the site's colour overrides (blue PLOT circle, no yellow shadow)
+   never reach it. This fills each var(--x, fallback) in it with the value the live header logo uses, so every share card
+   matches the logo on the site in both looks (Sim, Nov 5: "our share card still uses our old logo"). */
+function npLogoSvg(dark) { const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
+  const el = [...document.querySelectorAll('.nplk')].find(e => e.getClientRects().length) || document.querySelector('.nplk'); if (!el) return raw;
+  const cs = getComputedStyle(el); return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => { const x = cs.getPropertyValue(v).trim(); return x || fb; }); }
 CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
 // readiness grade: preparation for the top 30 threats, never a win chance
 CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';

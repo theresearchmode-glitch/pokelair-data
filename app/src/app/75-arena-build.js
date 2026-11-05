@@ -25,7 +25,8 @@ ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = 
   const tiles = tm.mons.map(m => { const p = byName.get(m.n); return p ? AR.art(p, {size: 'm', below: 1, name: m.d, sub: m.it, attrs: `data-lt="${esc(p.n)}" aria-label="${esc(m.d)}${m.it ? ', ' + esc(m.it) : ''}: open its info"`}) : ''; }).join('');
   const G = tm._g, RD = tm._rdv; let score = '', stats = '';
   if (G) { const tt = head && head.querySelector('.npgb'), title = tt ? tt.getAttribute('title') : '';
-    score = `<div class="arb-score"${title ? ` title="${esc(title)}"` : ''}><span class="ar-num ar-mp">${G.rec ? (G.rec.wr * 100).toFixed(1) + '<small>%</small>' : G.s}</span><span class="arb-grade">Grade ${esc(G.letter)}${G.partial ? ' so far' : ''}</span><span class="arb-basis">${G.rec ? 'tournament win rate' : 'out of 100'}</span></div>`; }
+    // grade first, the win rate under it with the average for scale (Sim, Nov 5: "63.0% Grade A" was confusing)
+    score = `<div class="arb-score arb-gfirst"${title ? ` title="${esc(title)}"` : ''}><span class="arb-grade">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp">${esc(G.letter)}</span><span class="arb-basis">${G.rec ? `Wins <b>${pctFmt(G.rec.wr * 100)}</b> of games<br>(the average team wins ${pctFmt(100 * ((typeof RES !== 'undefined' && RES && +RES.base) || .5))})` : `Score <b>${G.s}</b> out of 100`}</span></div>`; }
   if (RD) { const c = CH.lvCount(RD), h = CH.hand(RD);
     stats = `<div class="ar-trio arb-trio">${AR.cell(RD.score + '%', 'ready')}${h ? AR.cell(h.x, 'handled') : ''}${c[1] ? AR.cell(c[1], 'shaky') : ''}${c[0] ? AR.cell(c[0], 'unanswered') : ''}</div>`; }
   const ck = tm.grade, pips = ck ? `<div class="arb-checks"><b>${ck.pass}/${ck.n}</b><span>winning-team checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span></div>` : '';

@@ -118,7 +118,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
     x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText(`Handles ${f.hd.x} of`, 744, gy - 8); x.fillText(`the top ${f.hd.n} threats`, 744, gy + 34); }
   /* footer: the logo and the line */
   x.fillStyle = P.line; x.fillRect(56, 1236, W - 112, 3);
-  const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']);
+  const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 50, 1252, 300, 300 * 196 / 761.34); } catch (e) {}
   x.textAlign = 'right'; x.font = '400 50px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Plot your win.', W - 56, 1302);
   x.font = '700 18px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', W - 56, 1332); x.textAlign = 'left';

@@ -662,3 +662,13 @@
    plate (drawn on its ::before), never an upright rectangle around it */
 @A:not(#abw) #side button[role=tab]:focus-visible,@A:not(#abw) #side .sgroup button:focus-visible{outline:none!important;box-shadow:none!important}
 @A:not(#abw) #side button[role=tab]:focus-visible::before,@A:not(#abw) #side .sgroup button:focus-visible::before{outline:3px solid var(--ar-focus)!important;outline-offset:2px!important}
+/* Grade first (Sim, Nov 5): the label, the big letter, then the win rate with the 50% average for scale */
+@A .arb-score.arb-gfirst .arb-grade{order:0;margin:0 0 -4px;font-size:16px;color:var(--ar-ink-2)}
+@A .arb-score.arb-gfirst .ar-num{order:1;font-size:96px;line-height:.95}
+@A .arb-score.arb-gfirst .arb-basis{order:2;margin-top:6px;font-size:15px;line-height:1.35;color:var(--ar-ink-2)}
+@A .arb-score.arb-gfirst .arb-basis b{color:var(--ar-ink);font-weight:700}
+@media (min-width:1001px){@A .arb-score.arb-gfirst .ar-num{font-size:112px}}
+@media (max-width:599px){@A .arb-score.arb-gfirst{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:14px;align-items:center;text-align:left}
+  @A .arb-score.arb-gfirst .ar-num{grid-column:1;grid-row:1 / 3;font-size:76px}
+  @A .arb-score.arb-gfirst .arb-grade{grid-column:2;grid-row:1;align-self:end;margin:0}
+  @A .arb-score.arb-gfirst .arb-basis{grid-column:2;grid-row:2;align-self:start;margin-top:2px}}

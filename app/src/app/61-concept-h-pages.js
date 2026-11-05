@@ -158,7 +158,7 @@ CH.wrap('renderMeta', () => { const el = $('metaList'); if (!el) return; const r
     all.filter(p => !el.contains(p) && fresh.length).forEach(p => p.remove()); (fresh.length ? fresh : all).forEach(p => { p.hidden = !ui.chMetaAll; if (ui.chMetaAll) el.after(p); else b.after(p); }); } });
 CH.wrap('renderMeta', () => CH.pagehead($('meta'), 'Usage · how often each Pokémon is picked', 'Usage', ''));// ---------- Cores: the top three as big cards, the explainer folded ----------
 CH.wrap('renderCores', () => { const el = $('coreOut'); if (!el) return; const sec = $('cores'); if (sec) sec.classList.add('chcores');
-  const intro = el.querySelector('.coreintro'); if (intro) CH.foldNode(intro, 'coreabout', 'How cores are ranked', 'Win rate pulled toward the average, from real tournament teams', false);
+  // the cores intro is one plain line with a "?" now (48-cores.js), no fold
   const rows = [...el.querySelectorAll('.corelist .corerow')]; rows.forEach((r, i) => { if (i < 3) r.classList.add('chcbig'); });
   if (rows.length > 4) { const rest = document.createElement('div'); rest.className = 'corelist'; rows.slice(3).forEach(r => rest.append(r)); const mb = el.querySelector(':scope > .morebar'); if (mb) rest.append(mb); const w = document.createElement('div'); w.innerHTML = CH.fold('coremore', `More cores`, `#4 to #${rows.length}${mb ? ' and Show more' : ''}`, '', false); const d = w.firstElementChild; d.querySelector('.chbody').append(rest); el.querySelector('.corelist').after(d); } });
 // ---------- shared: show the first n of a long list, the rest one tap away (rows stay in place) ----------
@@ -238,7 +238,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   if (dark) { const g = x.createRadialGradient(600, -120, 0, 600, -120, 760); g.addColorStop(0, 'rgba(255,232,0,.10)'); g.addColorStop(1, 'rgba(255,232,0,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
   // logo tile + wordmark
-  const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']);
+  const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, 290, 290 * 196 / 761.34); } catch (e) {}
   x.textBaseline = 'alphabetic';
   // readiness, top right

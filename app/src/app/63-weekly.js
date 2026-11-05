@@ -105,7 +105,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
   const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp', img = p => { const id = p && typeof SPRITE_ID === 'object' ? SPRITE_ID[p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); };
   const draw = (im, cx, cy, s) => { if (!im) return; const k = Math.min(s / im.width, s / im.height); x.drawImage(im, cx - im.width * k / 2, cy - im.height * k / 2, im.width * k, im.height * k); };
   const txt = (s, font, col, X, Y, max, al) => { x.font = font; x.fillStyle = col; x.textAlign = al || 'left'; let t = String(s); while (max && t.length > 3 && x.measureText(t).width > max) t = t.slice(0, -2) + '…'; x.fillText(t, X, Y); x.textAlign = 'left'; };
-  const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']);
+  const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, 250, 250 * 196 / 761.34); } catch (e) {}
   txt('Pokémon Champions, VGC doubles, Reg M-C', '700 20px "Instrument Sans", monospace', P.mute, 1156, 66, 0, 'right');
   txt('This week', '400 112px Anton, Impact, sans-serif', P.blue, 62, 238); txt('This week', '400 112px Anton, Impact, sans-serif', P.ink, 56, 232);
