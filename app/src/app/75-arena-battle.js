@@ -67,6 +67,8 @@ rzReadHtml = function () {
 ARB.battle = () => { const sec = $('matchup'), head = sec && sec.querySelector(':scope > .chbmhead'), out = $('bmOut'); if (!head || !out) return;
   if (sec.firstElementChild !== head) sec.prepend(head);
   head.classList.add('ar-bmhead');
+  /* the empty states take the arena empty field (a faint slanted field with the most-used Pokémon), as the other Battle pages do */
+  out.querySelectorAll('.empty-note:not(.mgempty)').forEach(e => { const q = CH.metaSix()[0]; e.classList.add('mgempty'); if (q) e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${sprite(q) || ''}</span>`); });
   /* the plan's four: art tiles with Lead / Back under the name (this is the plan, not the team showcase) */
   out.querySelectorAll('.bmpick:not(.ar-art)').forEach(b => { const p = ARB.pOfImg(b.querySelector('img.spr')); if (p) ARB.artify(b, p, 'm', '.bmpn'); });
   /* turn one: each beat's Pokémon on a small type field */
@@ -125,6 +127,7 @@ CH.wrap('renderPractice', () => ARB.parts());
 /* ======================= Type chart: your team as small art buttons ======================= */
 ARB.types = () => { document.querySelectorAll('[data-pane="types"] .ttmon[data-typesmon]:not(.ar-tt)').forEach(b => { const p = byName.get(b.dataset.typesmon); b.classList.add('ar-tt'); if (!p) return;
   b.setAttribute('style', AR.tv(p)); b.insertAdjacentHTML('afterbegin', `<span class="ar-bf${AR.isMega(p) ? ' is-mega' : ''}" aria-hidden="true"><span class="ar-field"></span>${sprite(p, 'ar-spr') || ''}</span>`); });
+  document.querySelectorAll('#typeChart th[title]:not([style*="--tc"])').forEach(t => { const c = TC[t.title]; if (c) t.style.setProperty('--tc', c); });
   document.querySelectorAll('[data-pane="types"] .typebtn:not(.ar-ty2)').forEach(b => { b.classList.add('ar-ty2'); const t = b.dataset.type; if (t) b.style.setProperty('--on-t', AR.onType(t)); }); };
 CH.wrap('renderTypes', () => ARB.parts());
 
