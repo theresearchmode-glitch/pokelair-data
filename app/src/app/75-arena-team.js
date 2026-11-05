@@ -23,40 +23,57 @@ ARB.saved = () => { const L = $('savedList'); if (!L) return;
     const k = card.querySelector('[data-load],[data-delok],[data-rnok],[data-cmp]'), id = k && (k.dataset.load || k.dataset.delok || k.dataset.rnok || k.dataset.cmp);
     const t = id && S.teams.find(x => x.id === id); if (!t) return; let ms = []; try { ms = teamRating(t.slots).ms; } catch (e) {}
     six.classList.add('arb-six', 'ar-six'); six.setAttribute('role', 'group');
-    six.innerHTML = ms.map(m => AR.art(m.p, {tag: 'div', size: 's', below: 1, name: m.d, attrs: `title="${esc(m.d)}"`})).join('') + Array.from({length: Math.max(0, 6 - ms.length)}, () => AR.emptyArt('s')).join('');
-    card.querySelectorAll('.svacts .btn.primary[data-load]').forEach(b => b.classList.add('arb-open')); }); };
+    six.innerHTML = ms.map(m => AR.art(m.p, {tag: 'div', size: 's', below: 1, name: ARB.nb(m.d), attrs: `title="${esc(m.d)}"`})).join('') + Array.from({length: Math.max(0, 6 - ms.length)}, () => AR.emptyArt('s')).join('');
+    card.querySelectorAll('.svacts .btn.primary[data-load]').forEach(b => b.classList.add('arb-open')); });
+  const none = L.querySelector(':scope > .empty-note'); if (none && !none.classList.contains('ar-empty')) { const top = CH.metaSix()[0];
+    none.className = 'empty-note ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${(top && sprite(top)) || ''}</span><div><p>No saved teams yet. Open My team and tap Save team, or let NastyPlot build six for you.</p><div class="ar-acts"><button type="button" class="ar-btn" data-view="report">Open My team</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div>`; }
+  const h = L.querySelector('.cmphint'); if (h && /^Tap /.test(h.firstChild && h.firstChild.textContent || '') && matchMedia('(hover:hover) and (pointer:fine)').matches) h.firstChild.textContent = h.firstChild.textContent.replace(/^Tap /, 'Click '); };
 CH.wrap('renderSaved', () => ARB.saved());
 
 /* ===== My box: every Pokémon you own as an art tile, its remove button on the tile ===== */
 ARB.box = () => { const L = $('boxList'); if (!L) return;
-  L.querySelectorAll('.boxchip').forEach(c => { const x = c.querySelector('[data-unbox]'), p = x && byName.get(x.dataset.unbox); if (p) ARB.tile(c, p, 's', c.querySelector(':scope > b')); }); };
+  L.querySelectorAll('.boxchip').forEach(c => { const x = c.querySelector('[data-unbox]'), p = x && byName.get(x.dataset.unbox); if (p) ARB.tile(c, p, 's', c.querySelector(':scope > b')); });
+  ARB.nbIn(L.querySelectorAll('.boxchip > b'));
+  const none = L.querySelector(':scope > .none'); if (none && !none.querySelector('.ar-empty-art')) { const top = CH.metaSix()[0];
+    none.className = 'none ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${(top && sprite(top)) || ''}</span><div><p>Your box is empty. Add the Pokémon you own, and Build for me and the suggestions pick from them.</p><div class="ar-acts"><button type="button" class="ar-btn" data-arbfocus="boxAdd">Add a Pokémon</button></div></div>`; } };
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arbfocus]'); if (!b) return; const f = $(b.dataset.arbfocus); if (f) { f.scrollIntoView({block: 'center'}); f.focus(); } });
 CH.wrap('renderBox', () => ARB.box());
 
 /* ===== Compare: the two sixes as art tiles, the picker's teams as small type fields ===== */
 ARB.compare = () => { const el = $('cxOut'); if (!el) return;
-  el.querySelectorAll('.cxsix > span').forEach(s => { const p = ARB.pOf(s.querySelector('img')); if (p && !s.classList.contains('ar-art')) { s.insertAdjacentHTML('beforeend', `<span class="ar-nm">${escName(p.d)}</span>`); ARB.tile(s, p, 's', s.querySelector('.ar-nm')); } });
+  el.querySelectorAll('.cxsix > span').forEach(s => { const p = ARB.pOf(s.querySelector('img')); if (p && !s.classList.contains('ar-art')) { s.insertAdjacentHTML('beforeend', `<span class="ar-nm">${AR.nm(p.d)}</span>`); ARB.tile(s, p, 's', s.querySelector('.ar-nm')); } });
   el.querySelectorAll('.cxos img.spr, .cxthr img.spr').forEach(ARB.mini); };
 CH.wrap('renderCompare', () => ARB.compare());
 
 /* ===== All suggestions: each suggested Pokémon on its own type field ===== */
-ARB.recs = () => { document.querySelectorAll('#recList .addcard .rtop img.spr, #sugs .plan .swap img.spr').forEach(i => ARB.mini(i, 'arb-lg')); };
+ARB.recs = () => { document.querySelectorAll('#recList .addcard .rtop img.spr, #sugs .plan .swap img.spr').forEach(i => ARB.mini(i, 'arb-lg')); ARB.marks($('recs')); ARB.marks($('planSec')); };
 CH.wrap('renderRecs', () => ARB.recs()); CH.wrap('renderPlans', () => ARB.recs());
 
+/* a name never breaks before its last short part ("Mega Charizard Y", "Indeedee (F)") */
+ARB.nb = t => String(t).replace(/ (\S{1,2}|\([A-Za-z]\))$/, '\u00a0$1');
+ARB.nbIn = els => els.forEach(e => { const n = [...e.childNodes].find(x => x.nodeType === 3 && x.textContent.trim()); if (n && !/\u00a0/.test(n.textContent)) n.textContent = ARB.nb(n.textContent); });
+/* icon-only Mega, box and catch chips spelled out as quiet tags (the info sheet does the same) */
+ARB.marks = root => root && root.querySelectorAll('.tag.ico').forEach(e => { e.classList.remove('ico'); e.classList.add('ar-mark');
+  e.textContent = e.classList.contains('box') ? 'In your box' : e.classList.contains('mega') ? 'Mega' : e.classList.contains('catch') ? 'To catch' : e.textContent; });
 /* ===== the overlays: the editor's strip and set card, the threat sheet, Log a game (they redraw often, so one watcher) ===== */
 ARB.field = (el, p) => { if (!el || !p || el.querySelector(':scope > .arb-f')) return; el.style.cssText += ';' + AR.tv(p); if (AR.isMega(p)) el.classList.add('is-mega');
   el.insertAdjacentHTML('afterbegin', '<span class="arb-f ar-field" aria-hidden="true"></span>'); };
 ARB.overlays = () => { const ed = $('chEdit');
   if (ed && !ed.hidden) { ed.querySelectorAll('.chst').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img'))));
-    ed.querySelectorAll('.tcard .thead > img.tspr').forEach(i => ARB.mini(i, 'arb-xl')); }
-  const sc = $('chScout'); if (sc && !sc.hidden) { sc.querySelectorAll('.chdet img.spr, .chlist .it > img.spr, .chbest img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
+    ed.querySelectorAll('.tcard .thead > img.tspr').forEach(i => ARB.mini(i, 'arb-xl'));
+    /* the set sheet takes the arena type colours (the app's Dark is a brown) for its spine */
+    ed.querySelectorAll('.tcard[data-tcard]:not([data-arb])').forEach(c => { const sl = S.slots[+c.dataset.tcard], p = sl && byName.get(sl.n); c.dataset.arb = 1; if (p) c.style.cssText += ';' + AR.tv(p); });
+    ARB.marks(ed); const t = $('chEditT'); if (t && !/\u00a0/.test(t.textContent)) t.textContent = ARB.nb(t.textContent); }
+  const sc = $('chScout'); if (sc && !sc.hidden) { ARB.marks(sc); sc.querySelectorAll('.chdet img.spr, .chlist .it > img.spr, .chbest img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
     sc.querySelectorAll('.chtile[data-chthr]').forEach(b => ARB.field(b, byName.get(b.dataset.chthr)));
     const d = sc.querySelector('.chdet'), p = d && CH.sel && byName.get(CH.sel); if (d && p && !d.dataset.arb) { d.dataset.arb = 1; d.style.cssText += ';' + AR.tv(p); } }
   /* My team's fold bodies: the vs-top-12 chart's sprites and the All 30 rows on small type fields */
   document.querySelectorAll('[data-pane="report"] #chVsOut .chchart img.spr').forEach(i => ARB.mini(i));
+  ARB.nbIn(document.querySelectorAll('[data-pane="report"] #chVsOut .chcr .th i')); ARB.marks(document.querySelector('[data-pane="report"] .chparts'));
   document.querySelectorAll('[data-pane="report"] #thrCard .thrrow > summary > img.spr, [data-pane="report"] .pfix .qtop > img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
   document.querySelectorAll('.myrec .qlog .logpick, .myrec .qlog [data-qllead]').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img')))); };
 /* the editor's strip is redrawn on every open and switch: decorate it right away too */
-CH.wrap('chEditStrip', () => ARB.overlays()); CH.wrap('chScoutRender', () => ARB.overlays());
+CH.wrap('chEditStrip', () => ARB.overlays()); CH.wrap('renderMyRec', () => ARB.overlays()); CH.wrap('chScoutRender', () => ARB.overlays());
 /* only mutations inside these parts matter; the work is queued once, after the app's own redraw (not every frame, so the app's
    idle-time drawing still gets its idle moments) */
 ARB.WATCH = '#chEdit,#chScout,.myrec,#chVsOut,#thrCard,#needs';
@@ -96,7 +113,7 @@ ARB.drawTile = (x, P, dark, m, im, cx, y, w, h, sz, nameSize, sub) => { const t 
     x.save(); x.shadowColor = 'rgba(30,10,40,.25)'; x.shadowBlur = 10; x.shadowOffsetY = 8; x.drawImage(im, dx, dy, dw, dh); x.restore(); }
   x.textAlign = 'center'; x.fillStyle = P.ink; const nm = m.d || m.p.d; let f = nameSize; do { ARB.fnt(x, `italic 800 ${f}px Archivo, "Instrument Sans", sans-serif`, true); } while (x.measureText(nm).width > w + 10 && --f > 14);
   x.fillText(nm, cx - ARB.SK * 0, y + h + nameSize * 1.25);
-  if (sub) { ARB.fnt(x, `600 ${Math.round(nameSize * .7)}px "Instrument Sans", sans-serif`); x.fillStyle = P.ink2; x.fillText(scFit(x, sub, w + 6), cx, y + h + nameSize * 1.25 + nameSize * .95); }
+  if (sub) { const sz2 = Math.max(20, Math.round(nameSize * .82)); ARB.fnt(x, `600 ${sz2}px "Instrument Sans", sans-serif`); x.fillStyle = P.ink2; x.fillText(scFit(x, sub, w + 12), cx, y + h + nameSize * 1.25 + sz2 * 1.25); }
   x.textAlign = 'left'; };
 /* the score as on My team: the record's win rate with 30+ games, else the grade out of 100 */
 ARB.score = (G) => !G ? null : G.rec ? {num: (G.rec.wr * 100).toFixed(1) + '%', top: `Grade ${G.letter}`, basis: 'tournament win rate'} : {num: String(G.s), top: `Grade ${G.letter}${G.partial ? ' so far' : ''}`, basis: 'out of 100'};
@@ -114,17 +131,19 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
   /* readiness, top right */
   if (RD) { ARB.numeral(x, P, RD.score + '%', W - 60, 132, 104, 'right'); x.textAlign = 'right'; ARB.fnt(x, '600 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('ready for the top 30 threats', W - 60, 168);
     if (sc) { ARB.fnt(x, '700 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(`${sc.top}, ${sc.num} ${sc.basis}`, W - 60, 202); } x.textAlign = 'left'; }
-  /* the title on its slanted tab */
-  let fz = 70; do { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); } while (x.measureText(f.name).width > 640 && --fz > 38);
-  const tt = scFit(x, f.name, 660); ARB.tab(x, P, 56, 116, 40); x.fillStyle = P.ink; x.fillText(tt, 112, 116);
-  ARB.fnt(x, '500 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('Pokémon Champions, VGC doubles, Reg M-C, bring 6 pick 4', 58, 160);
-  if (f.arch && f.arch !== f.name) { ARB.fnt(x, '700 22px "Instrument Sans", sans-serif'); const t = scFit(x, f.arch, 520), w = x.measureText(t).width + 36; x.fillStyle = P.plate; ARB.para(x, 58 + w / 2, 182, w, 40, 6); x.fill(); x.fillStyle = '#fff'; x.fillText(t, 76, 209); }
+  /* the title on its slanted tab: one line as big as fits, else two lines (never cut off) */
+  let fz = 70, TL = null; for (; fz >= 34; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); if (x.measureText(f.name).width <= 640) { TL = [f.name]; break; } if (fz <= 50) { const L2 = ARB.lines(x, f.name, 640); if (L2) { TL = L2; break; } } }
+  if (!TL) { fz = 34; ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); TL = ARB.lines(x, f.name, 640) || [scFit(x, f.name, 640)]; }
+  const ty0 = TL.length > 1 ? 84 : 116; ARB.tab(x, P, 56, ty0, 40); x.fillStyle = P.ink; TL.forEach((l, i) => x.fillText(l, 112, ty0 + i * fz * 1.02));
+  const sy = ty0 + (TL.length - 1) * fz * 1.02 + 40;
+  ARB.fnt(x, '500 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('Pokémon Champions, VGC doubles, Reg M-C, bring 6 pick 4', 58, sy);
+  if (f.arch && f.arch !== f.name) { ARB.fnt(x, '700 22px "Instrument Sans", sans-serif'); const t = scFit(x, f.arch, 520), w = x.measureText(t).width + 36; x.fillStyle = P.plate; ARB.para(x, 58 + w / 2, sy + 18, w, 40, 6); x.fill(); x.fillStyle = '#fff'; x.fillText(t, 76, sy + 45); }
   /* the six */
   const imgs = await ARB.imgs(ms), cw = (W - 112) / 6, ns = ARB.nameSize(x, ms, cw - 26, 25);
   for (let i = 0; i < 6; i++) { const cx = 56 + cw * i + cw / 2, m = ms[i];
     if (!m) { x.fillStyle = P.bar; ARB.para(x, cx, 330, cw - 26, 150, 14); x.fill(); continue; }
     const ti = typeof topItems === 'function' ? topItems(m.p) : null, item = m.item || (ti && ti.it && ti.it[0] ? ti.it[0][0] : '');
-    ARB.drawTile(x, P, dark, m, imgs[i], cx, 330, cw - 26, 150, 172, ns, item); }
+    ARB.drawTile(x, P, dark, m, imgs[i], cx, 322, cw - 26, 146, 168, ns, item); }
   /* footer */
   x.fillStyle = P.rule; x.fillRect(56, 586, W - 112, 2); await ARB.logo(x, dark, 50, 604, 200);
   x.textAlign = 'right'; ARB.fnt(x, 'italic 800 30px Archivo, sans-serif', true); x.fillStyle = P.blue; x.fillText('Plot your win.', W - 56, 640);
@@ -136,7 +155,8 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   /* a soft slanted blue stage behind the six (the My team stage) */
   x.save(); x.beginPath(); x.moveTo(0, 360); x.lineTo(W, 330); x.lineTo(W, 1010); x.lineTo(0, 1040); x.closePath(); const sg = x.createLinearGradient(0, 330, W, 1040);
-  sg.addColorStop(0, dark ? ARB.mixc('#0E0E10', '#0078BF', .2) : ARB.mixc('#ECE7E0', '#0078BF', .22)); sg.addColorStop(1, dark ? '#0E0E10' : ARB.mixc('#ECE7E0', '#0078BF', .08)); x.fillStyle = sg; x.fill(); x.restore();
+  sg.addColorStop(0, dark ? '#16151A' : ARB.mixc('#ECE7E0', '#0078BF', .22)); sg.addColorStop(1, dark ? '#121114' : ARB.mixc('#ECE7E0', '#0078BF', .08)); x.fillStyle = sg; x.fill();
+  if (dark) { x.fillStyle = '#0078BF'; x.beginPath(); x.moveTo(0, 360); x.lineTo(0, 1040); x.lineTo(8, 1040); x.lineTo(8, 360); x.fill(); } x.restore();
   ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('My team, Pokémon Champions, Reg M-C doubles', 60, 86);
   /* the name, as big as fits, up to two lines, on its slanted tab */
   let fz = 104, L = null; for (; fz >= 52; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); L = ARB.lines(x, f.name, W - 190); if (L && (L.length === 1 || fz <= 92)) break; }
@@ -161,5 +181,30 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
   return c; };
 buildTeamPoster = ARB.poster;
 buildShareCard = function () { return CH.shareKind === 'poster' && !SHARE_KIND ? buildTeamPoster(members()) : ARB.card(); };
+
+/* ===== keyboard: the editor, the threat sheet and the share card keep focus inside while open, Escape closes them, and focus
+   goes back to the control that opened them; Log a game closes on Escape; the ⋯ menus move focus to their first item ===== */
+ARB.FOC = 'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])';
+ARB.dlg = () => ['shareBox', 'chEdit', 'chScout'].map(id => $(id)).find(d => d && !d.hidden && d.getClientRects().length);
+ARB.back = {};
+{ const oe = chEditOpen; chEditOpen = function () { const ed = $('chEdit'); if (ed && ed.hidden) ARB.back.chEdit = document.activeElement; return oe.apply(this, arguments); };
+  const ce = chEditClose; chEditClose = function () { const ed = $('chEdit'), was = ed && !ed.hidden, r = ce.apply(this, arguments); const t = ARB.back.chEdit; ARB.back.chEdit = null;
+    if (was && t && t.isConnected && t.getClientRects().length) try { t.focus({preventScroll: true}); } catch (e) {} return r; };
+  const os = openShareCard; openShareCard = async function () { const b = $('shareBox'); if (!b || b.hidden) ARB.back.share = document.activeElement; const r = await os.apply(this, arguments);
+    const box = $('shareBox'), inn = box && !box.hidden && box.querySelector('.sharein'); if (inn && !inn.contains(document.activeElement)) { inn.setAttribute('tabindex', '-1'); inn.setAttribute('aria-modal', 'true'); try { inn.focus({preventScroll: true}); } catch (e) {} } return r; };
+  const cs = closeShare; closeShare = function () { const b = $('shareBox'), was = b && !b.hidden, r = cs.apply(this, arguments); const t = ARB.back.share;
+    if (was && t && t.isConnected && t.getClientRects().length && !(b && !b.hidden)) { ARB.back.share = null; try { t.focus({preventScroll: true}); } catch (e) {} } return r; }; }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Tab') { const d = ARB.dlg(); if (!d) return; const f = [...d.querySelectorAll(ARB.FOC)].filter(x => x.getClientRects().length && !x.closest('[hidden],details:not([open])>:not(summary)')); if (!f.length) return;
+    const a = document.activeElement, i = f.indexOf(a);
+    if (!d.contains(a) || (e.shiftKey && i <= 0) || (!e.shiftKey && i === f.length - 1)) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); } return; }
+  if (e.key !== 'Escape') return;
+  const mm = document.activeElement && document.activeElement.closest && document.activeElement.closest('details.moremenu[open]');
+  if (mm) { mm.open = false; const s = mm.querySelector(':scope > summary'); if (s) s.focus(); return; }
+  if (ARB.dlg()) return; /* the app's own handlers close the dialogs */
+  const q = document.querySelector('.myrec .qlog'); if (q && ui.ql && ui.ql.open) { const b = document.querySelector('.myrec [data-qlopen]'); if (b) { b.click(); const nb = document.querySelector('.myrec [data-qlopen]'); if (nb) nb.focus(); } } });
+/* a ⋯ menu opened from the keyboard: focus moves to its first item */
+document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matches || !d.matches('details.moremenu') || !d.open) return; const s = d.querySelector(':scope > summary');
+  if (document.activeElement !== s) return; const f = d.querySelector('.mmpop button'); if (f) setTimeout(() => { try { f.focus(); } catch (x) {} }, 0); }, true);
 
 if (window.__PL_TEST) window.__ARB = {setView: v => setView(v), edit: i => chEditOpen(i), scout: n => chScoutOpen(n), share: () => openShareCard(), members: () => members(), S: () => S, ARB};

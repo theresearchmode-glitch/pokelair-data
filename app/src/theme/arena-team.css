@@ -36,16 +36,16 @@
   border:solid currentColor!important;border-width:0 0 2.5px 2.5px!important;border-radius:0!important;transform:rotate(-45deg)!important;box-shadow:none!important}
 
 /* buttons on these pages: the arena strips (the element and its handler stay) */
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost,.sdcopy,button.sub):not(.x):not(.clrx):not(.seg>button){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:44px!important;padding:0 18px 0 20px!important;margin:0!important;
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost,.sdcopy,button.sub):not(.x):not(.clrx):not(.seg>button):not(#arbz){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:44px!important;padding:0 18px 0 20px!important;margin:0!important;
   font:600 var(--ar-fs-small)/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;background-color:transparent!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;opacity:1!important;white-space:nowrap;text-decoration:none!important}
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost,.sdcopy,button.sub):not(.x):not(.clrx):not(.seg>button)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important;
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost,.sdcopy,button.sub):not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important;
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important;width:auto!important;height:auto!important;opacity:1!important}
-@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost,.sdcopy,button.sub):not(.x):not(.clrx):not(.seg>button)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost,.sdcopy,button.sub):not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
 /* the main action of a card (Open, Swap out, Apply): a filled blue plate, white text */
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .btn.primary:not(.x):not(.clrx):not(.seg>button){color:#fff!important;font-weight:700!important}
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .btn.primary:not(.x):not(.clrx):not(.seg>button)::before{background:var(--ar-sec-plate)!important}
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost):not(.x):not(.clrx):not(.seg>button):disabled{color:var(--ar-ink-2)!important;cursor:default}
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost):not(.x):not(.clrx):not(.seg>button):disabled::before{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;box-shadow:none!important}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .btn.primary:not(.x):not(.clrx):not(.seg>button):not(#arbz){color:#fff!important;font-weight:700!important}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .btn.primary:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:var(--ar-sec-plate)!important}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost):not(.x):not(.clrx):not(.seg>button):not(#arbz):disabled{color:var(--ar-ink-2)!important;cursor:default}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.btn,.chghost):not(.x):not(.clrx):not(.seg>button):not(#arbz):disabled::before{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;box-shadow:none!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .sdcopy svg{width:18px;height:18px;flex:none}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .btn.danger:not(.x){color:var(--ar-pink-ink)!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .btn.danger:not(.x){--ar-sec:var(--ar-pink)}
@@ -56,9 +56,9 @@
 @A :is([data-pane="teams"],[data-pane="coverage"]) details.moremenu>summary{list-style:none;min-width:48px;font-size:20px!important}
 @A :is([data-pane="teams"],[data-pane="coverage"]) details.moremenu>summary::-webkit-details-marker{display:none}
 @A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop{position:absolute;right:0;bottom:calc(100% + 8px);top:auto;z-index:20;display:grid;gap:2px;min-width:200px;padding:8px!important;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important}
-@A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button){justify-content:flex-start!important;width:100%;padding:0 12px!important}
-@A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button)::before{background:none!important;box-shadow:none!important;transform:none!important}
-@media (hover:hover){@A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):hover::before{background:color-mix(in oklch,var(--ar-sec) 10%,transparent)!important}}
+@A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):not(#arbz){justify-content:flex-start!important;width:100%;padding:0 12px!important}
+@A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:none!important;box-shadow:none!important;transform:none!important}
+@media (hover:hover){@A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):not(#arbz):hover::before{background:color-mix(in oklch,var(--ar-sec) 10%,transparent)!important}}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .field{min-height:48px;font:500 var(--ar-fs-body)/1.3 var(--ar-body)!important;padding:0 14px!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) textarea.field{padding:12px 14px!important;font-family:var(--ar-body)!important;line-height:1.45!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .field::placeholder{color:var(--ar-ink-3);opacity:1}
@@ -108,8 +108,8 @@
 @A [data-pane="teams"] .svacts{display:flex!important;flex-wrap:wrap;align-items:center;gap:12px 14px;padding-left:6px}
 @A [data-pane="teams"] .svacts .arb-open{order:-1;min-width:112px}
 @A [data-pane="teams"] .inline-confirm{display:flex!important;flex-wrap:wrap;align-items:center;gap:12px;font:600 var(--ar-fs-body)/1.3 var(--ar-body);color:var(--ar-ink);background:none!important;border:0!important;padding:0!important}
-@A [data-pane="teams"] .inline-confirm .btn.danger:not(.x):not(.clrx):not(.seg>button){color:#fff!important}
-@A [data-pane="teams"] .inline-confirm .btn.danger:not(.x):not(.clrx):not(.seg>button)::before{background:var(--ar-pink-plate)!important}
+@A [data-pane="teams"] .inline-confirm .btn.danger:not(.x):not(.clrx):not(.seg>button):not(#arbz){color:#fff!important}
+@A [data-pane="teams"] .inline-confirm .btn.danger:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:var(--ar-pink-plate)!important}
 @A [data-pane="teams"] .cmpbox{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:14px 16px 14px 20px!important;position:relative;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;font-size:var(--ar-fs-small);color:var(--ar-ink)}
 @A [data-pane="teams"] .cmpbox::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-yellow);border-radius:0 3px 3px 0}
 @A [data-pane="teams"] .cmpbox b{font:italic 800 18px/1.2 var(--ar-display);font-stretch:112%}
@@ -144,7 +144,7 @@
 @A [data-pane="box"] .boxchip .x{position:absolute!important;top:calc(var(--lift) - 14px);right:-6px;z-index:5;display:grid!important;place-items:center;width:44px!important;height:44px!important;padding:0!important;margin:0!important;
   font:600 20px/1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;opacity:1!important;cursor:pointer}
 @A [data-pane="box"] .boxchip .x::before{content:"";position:absolute;inset:8px;z-index:-1;border-radius:50%;background:var(--ar-sheet);box-shadow:var(--ar-shadow-s)}
-@A [data-pane="box"] #boxList>.none{grid-column:1/-1;font-size:var(--ar-fs-body);color:var(--ar-ink-2)}
+
 @A [data-pane="box"] #boxList~.npmore,@A [data-pane="box"] .chmorebtn{margin-top:22px!important}
 @media (min-width:600px){@A [data-pane="box"] #boxList{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media (min-width:800px){@A [data-pane="box"] #boxList{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
@@ -349,7 +349,7 @@
 @A [data-pane="coverage"] .addcard .qwhy b{font-weight:700;color:var(--ar-ink)}
 @A [data-pane="coverage"] .addcard>.row{display:flex!important;flex-wrap:wrap;gap:12px;margin:14px 0 0!important;padding-left:6px}
 @A [data-pane="coverage"] .morebar{margin:20px 0 0!important;background:none!important;border:0!important}
-@A [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button){flex-direction:column;align-items:flex-start!important;gap:2px;min-height:60px!important;padding:8px 22px!important}
+@A [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button):not(#arbz){flex-direction:column;align-items:flex-start!important;gap:2px;min-height:60px!important;padding:8px 22px!important}
 @A [data-pane="coverage"] .chmoreideas b{font:italic 800 19px/1.15 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
 @A [data-pane="coverage"] .chmoreideas .vsub{font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 /* bigger plans: the arena fold strip; its settings as plain rows; each plan like a suggestion */
@@ -432,7 +432,7 @@
 @A #chEdit .slot.tcard{--a:var(--t1);--b:var(--t2,var(--t1));position:relative;padding:0!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:none!important;overflow:visible!important;color:var(--ar-ink);
   clip-path:polygon(0 0,calc(100% - 30px) 0,100% 30px,100% 100%,0 100%);
   background:linear-gradient(in oklch 160deg,color-mix(in oklch,var(--a) 18%,var(--ar-paper-2)),color-mix(in oklch,var(--b) 10%,var(--ar-paper-2)) 50%,var(--ar-paper-2) 80%)!important}
-@A[data-look="dark"] #chEdit .slot.tcard{background:linear-gradient(in oklab 160deg,color-mix(in oklab,var(--a) 9%,#18171B),#18171B 45%)!important}
+@A[data-look="dark"] #chEdit .slot.tcard{background:linear-gradient(160deg,#222127,#1A191D 62%)!important}
 @A #chEdit .slot.tcard::before{content:""!important;display:block!important;position:absolute!important;left:0;top:0;bottom:0;width:8px;z-index:3;background:linear-gradient(in oklch 180deg,var(--a),var(--b))!important;border:0!important;border-radius:0!important;transform:none!important}
 @A #chEdit .slot.tcard::after{content:none!important}
 @A #chEdit .thead{display:grid!important;grid-template-columns:minmax(0,1fr) 116px;grid-template-rows:auto auto auto auto 1fr;column-gap:12px;min-height:0!important;padding:16px 18px 12px 26px!important;background:none!important}
@@ -560,7 +560,7 @@
 @A #chScout .chdet{position:relative;margin:18px 0 6px!important;padding:16px 16px 16px 24px!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:none!important;color:var(--ar-ink);
   clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,0 100%);
   background:linear-gradient(in oklch 160deg,color-mix(in oklch,var(--a,var(--ar-sec)) 18%,var(--ar-paper-2)),color-mix(in oklch,var(--b,var(--a,var(--ar-sec))) 10%,var(--ar-paper-2)) 60%,var(--ar-paper-2))!important}
-@A[data-look="dark"] #chScout .chdet{background:linear-gradient(in oklab 160deg,color-mix(in oklab,var(--a,var(--ar-sec)) 10%,#232227),#232227 50%)!important}
+@A[data-look="dark"] #chScout .chdet{background:linear-gradient(160deg,#26252B,#1E1D22 62%)!important}
 @A #chScout .chdet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(in oklch 180deg,var(--a,var(--ar-sec)),var(--b,var(--a,var(--ar-sec))))}
 @A #chScout .chdet .top{display:flex!important;align-items:center;gap:12px;background:none!important;border:0!important;padding:0!important}
 @A #chScout .chdet .nm{font:italic 800 21px/1.1 var(--ar-display)!important;font-stretch:112%!important;text-transform:none!important;color:var(--ar-ink)!important}
@@ -863,8 +863,6 @@
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .mgempty .mgeart{background:color-mix(in oklch,var(--ar-sec) 22%,#0E0E10)!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .mgempty .mgeart img{position:absolute!important;left:50%;bottom:0;width:92px!important;height:92px!important;max-width:none;margin:0!important;transform:translateX(-50%) skewX(var(--ar-unslant))!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .mgempty>div{grid-column:2;margin:8px 0 0!important}
-@A [data-pane="box"] #boxList>.none{display:block;grid-column:1/-1;padding:18px 0 18px 20px!important;position:relative;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important}
-@A [data-pane="box"] #boxList>.none::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:5px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:2px}
 @media (min-width:600px){@A #chScout .chtiles{grid-template-columns:repeat(10,minmax(0,1fr))!important;gap:16px 10px!important}}
 /* vs top 12 on wider screens: the threat's name in full (never cut off), the six cells share what is left */
 @media (min-width:900px){@A [data-pane="report"] #chVsOut .chcr{grid-template-columns:minmax(170px,1.9fr) repeat(6,minmax(0,1fr))!important}
@@ -873,5 +871,106 @@
 @A [data-pane="compare"] .cxsix .ar-art .ar-nm{opacity:0}
 @A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) :is(.thcalc,.thcond){font-size:15px!important;line-height:1.45}
 @A [data-pane="compare"] .cxl.dbhand svg{display:none!important}
-/* Your games band: its full-bleed margin never wider than the space beside the column (it ran 16px past the page at 1024) */
-@media (min-width:1001px) and (max-width:1279px){@A [data-pane="report"] #myRec{margin-left:calc(-1 * min(var(--ar-gutter), (100vw - 100%) / 2))!important;margin-right:calc(-1 * min(var(--ar-gutter), (100vw - 100%) / 2))!important}}
+
+/* ======================= review B fixes ======================= */
+/* M2: the app's Dark type colour is a brown: its tags take the arena Dark (#5E5068) */
+@A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty:is([style*="#5f4536"],[style*="#5F4536"]){--tc:#5E5068!important}
+/* M2: trade-off chips in dark: a neutral chip with a gold edge (a gold mixed into near-black reads brown) */
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill){padding-left:13px!important}
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill)::before{background:linear-gradient(var(--ar-gold),var(--ar-gold)) 0 0/4px 100% no-repeat,#2A2930}
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) .dchip.up::before{background:linear-gradient(var(--ar-green),var(--ar-green)) 0 0/4px 100% no-repeat,#2A2930}
+@A[data-look="dark"] [data-pane="report"] .chparts :is(.sev.mid,.sev.ok)::before{background:linear-gradient(var(--sevc,var(--ar-gold)),var(--sevc,var(--ar-gold))) 0 0/4px 100% no-repeat,#2A2930}
+@A[data-look="dark"] [data-pane="report"] .chparts .sev.ok{--sevc:var(--ar-green)}
+@A[data-look="dark"] [data-pane="report"] .chparts :is(.sev.mid,.sev.ok){padding-left:13px!important}
+/* M5: dark primary plates keep their fill */
+@A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .btn.primary:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:var(--ar-blue-plate)!important}
+/* marks spelled out (Mega, In your box, To catch): quiet slanted tags; no rainbow */
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .ar-mark::after{content:none!important;display:none!important;animation:none!important}
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.mega.ar-mark::before{background:linear-gradient(90deg,var(--ar-purple),var(--ar-pink)) 0 0/4px 100% no-repeat,color-mix(in oklch,var(--ar-ink) 9%,transparent)!important}
+@A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.mega.ar-mark{padding-left:12px!important;overflow:visible!important}
+/* minor 1: All 30's answer lines in ink (the mark carries the status) */
+@A [data-pane="report"] #thrCard .thrd li{color:var(--ar-ink)!important;font-weight:400!important}
+/* minor 2: no misprint offset on a sentence */
+@A [data-pane="report"] .chparts .verdict .vtitle{text-shadow:none!important}
+/* minor 3: list sprites have no ring */
+@A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) .arb-mf img{border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important;outline:0!important}
+/* minor 4: the threat detail: the status tag goes under the name on phones, so the text has the width */
+@A #chScout .chdet .top{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:12px}
+@media (max-width:519px){@A #chScout .chdet .top{grid-template-columns:auto minmax(0,1fr)}@A #chScout .chdet .top>.chlv{grid-column:2;justify-self:start;margin-top:8px}}
+@A #chScout .chdet .nm .chk,@A #chScout .chlist .nm .chk{display:inline!important;white-space:nowrap}
+/* minor 5: All suggestions: More ideas is the same fold strip as Bigger plans; no dead gaps */
+@A [data-pane="coverage"] .morebar{margin:18px 0 0!important;padding:0!important;min-height:0!important}
+@A [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button):not(#arbz){display:flex!important;flex-direction:row;align-items:center!important;justify-content:flex-start!important;gap:12px;width:calc(100% - 6px);min-height:56px!important;margin:0 0 0 6px!important;padding:8px 16px 8px 22px!important}
+@A [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
+@A[data-look="dark"] [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A [data-pane="coverage"] .morebar .chmoreideas b{display:block}
+@A [data-pane="coverage"] .morebar .chmoreideas::after{content:"+";order:-1;font:700 22px/1 var(--ar-body);color:var(--ar-sec-ink);width:20px;text-align:center}
+@A [data-pane="coverage"] #planSec{margin-top:14px!important;padding:0!important}
+@A [data-pane="coverage"] #planSec>:empty,@A [data-pane="coverage"] .recgrid>.princ[hidden]{display:none!important}
+@A [data-pane="coverage"] .plset .psum,@A [data-pane="coverage"] details.chsec>summary .chs *{font-size:15px!important}
+/* minor 6: the ⋯ menus: a sheet with a blue edge; Clear team set apart under a hairline */
+@A :is(.ar-tacts #chActs,[data-pane="teams"],[data-pane="coverage"]) .mmpop{padding:8px 8px 8px 14px!important}
+@A :is(.ar-tacts #chActs,[data-pane="teams"],[data-pane="coverage"]) .mmpop::before{content:""!important;display:block!important;position:absolute!important;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-sec);border-radius:0 3px 3px 0}
+@A .ar-tacts #chActs .mmpop #clearTeam,@A [data-pane="teams"] .mmpop .danger{margin-top:6px!important;border-top:1px solid var(--ar-rule)!important;border-radius:0 0 var(--ar-r-m) var(--ar-r-m)!important;padding-top:4px!important}
+@A [data-pane="teams"] .mmpop .danger::before{border-radius:0!important}
+/* minor 7: empty states: hide the sort rows when there is nothing to sort; the arena empty state */
+@A [data-pane="teams"] #saved:has(#savedList>.empty-note)>.head .seg,@A [data-pane="box"] #box:has(#boxList>.none)>.boxsort{display:none!important}
+@A :is([data-pane="teams"],[data-pane="box"]) .ar-empty{grid-column:1/-1;display:grid!important;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;padding:16px 0!important;margin:8px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-align:left}
+@A :is([data-pane="teams"],[data-pane="box"]) .ar-empty p{margin:0 0 10px!important}
+@A :is([data-pane="teams"],[data-pane="box"]) .ar-empty .ar-acts{display:flex;flex-wrap:wrap;gap:12px 14px;padding-left:4px}
+@A :is([data-pane="teams"],[data-pane="box"]) .ar-empty .ar-empty-art{background:color-mix(in oklch,var(--ar-sec) 18%,var(--ar-paper))!important}
+@A[data-look="dark"] :is([data-pane="teams"],[data-pane="box"]) .ar-empty .ar-empty-art{background:#16151A!important;box-shadow:inset 4px 0 0 var(--ar-sec)}
+@A [data-pane="teams"] #savedList>.ar-empty::before,@A [data-pane="box"] #boxList>.ar-empty::before{content:none!important}
+/* minor 9: no orphans */
+@A [data-pane="coverage"] .chswk{align-items:flex-start!important;text-wrap:balance}
+@A [data-pane="coverage"] .chswk::before{margin:.12em 0 0!important}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(p,.hint,.t2,.cmphint,.qwhy,.pmain){text-wrap:pretty}
+@A #chEdit .chedh b{text-wrap:balance}
+@A [data-pane="report"] .chparts .pmain .ty{margin:0 4px 0 2px!important}
+@A [data-pane="report"] .chparts .pmain{text-wrap:pretty}
+/* minor 10: the set sheet's sprite sits below Lock and ×; the box × sits by the name, off the art */
+@A #chEdit .thead .arb-mf.arb-xl{margin-top:30px!important}
+@A [data-pane="box"] .boxchip .ar-nm{padding-right:40px!important}
+@A [data-pane="box"] .boxchip .x{top:auto!important;bottom:-12px!important;right:-8px!important}
+/* minor 11: saved team actions: one tidy left-aligned grid at every width; Open is a strip like the others (one fill per screen is enough) */
+@A [data-pane="teams"] .svacts{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 52px;gap:12px 12px!important;padding-left:6px;justify-items:stretch}
+@A [data-pane="teams"] .svacts>*{width:100%;min-width:0!important}
+@A [data-pane="teams"] .svacts .arb-open{order:-2;grid-column:1}
+@A [data-pane="teams"] .svacts [data-cmp]{order:-1;grid-column:2}
+@A [data-pane="teams"] .svacts .svmore{grid-column:3;grid-row:1}
+@A [data-pane="teams"] .svacts .sdcopy{grid-column:1/3}
+@A [data-pane="teams"] .svacts .svmore>summary{width:100%;padding:0!important}
+@A [data-pane="teams"] .svacts .btn.primary.arb-open:not(.x):not(.clrx):not(.seg>button):not(#arbz){color:var(--ar-ink)!important}
+@A [data-pane="teams"] .svacts .btn.primary.arb-open:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important}
+@A[data-look="dark"] [data-pane="teams"] .svacts .btn.primary.arb-open:not(.x):not(.clrx):not(.seg>button):not(#arbz)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A [data-pane="teams"] .svacts .inline-confirm{grid-column:1/-1}
+@media (min-width:600px) and (max-width:1000px){@A [data-pane="teams"] .svacts{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) 52px}@A [data-pane="teams"] .svacts .sdcopy{grid-column:3}@A [data-pane="teams"] .svacts .svmore{grid-column:4}}
+/* minor 12: the compare sixes show their names, 3 by 2 at every width */
+@A [data-pane="compare"] .cxsix .ar-art .ar-nm{position:static!important;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;opacity:1;margin-top:6px!important;font-size:15px!important;overflow-wrap:normal!important}
+@A [data-pane="compare"] .cxsix{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px 10px!important}
+@A [data-pane="compare"] .cxsix .ar-art{--h:56px!important;--s:74px!important;--lift:16px}
+@media (min-width:1001px){@A [data-pane="compare"] .cxsix .ar-art{--h:clamp(64px,5.4vw,90px)!important;--s:clamp(80px,6.4vw,108px)!important}}
+/* minor 13: no text under 15px */
+@A #chEdit :is(.slmore .lbl,.wr .lbl,.slmore>summary,.lblrow .vsub){font-size:15px!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="compare"] .cxthr>span{font-size:15px!important}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) :is(.warnline,.qwhy,.dchip,.pill,.vsub){font-size:15px!important}
+/* minor 14: 44px taps on phones (Lock) and a 44px checkbox */
+@media (max-width:1000px){@A #chEdit .lockbtn{min-height:44px!important}}
+@A [data-pane="coverage"] .toggle input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:none;width:44px!important;height:44px!important;margin:0 -10px 0 -11px!important;cursor:pointer;border:0!important;
+  background:center/22px 22px no-repeat linear-gradient(var(--ar-sheet),var(--ar-sheet))!important;box-shadow:none!important;border-radius:0!important;position:relative}
+@A [data-pane="coverage"] .toggle input[type=checkbox]{background:center/22px 22px no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'><rect x='1' y='1' width='20' height='20' rx='4' fill='%23FBF8F4' stroke='%234A4550' stroke-width='2'/></svg>")!important}
+@A [data-pane="coverage"] .toggle input[type=checkbox]:checked{background:center/22px 22px no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'><rect x='0' y='0' width='22' height='22' rx='4' fill='%230068AD'/><path d='M6 11.5l3.5 3.5L16 8' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>")!important}
+@A[data-look="dark"] [data-pane="coverage"] .toggle input[type=checkbox]:not(:checked){background:center/22px 22px no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'><rect x='1' y='1' width='20' height='20' rx='4' fill='%2324232A' stroke='%23C9C3CC' stroke-width='2'/></svg>")!important}
+@A [data-pane="coverage"] .toggle input[type=checkbox]:focus-visible{outline:3px solid var(--ar-focus)!important;outline-offset:-6px!important}
+/* minor 16: the type tables' multiplier chips are slanted like the tags beside them */
+@A [data-pane="report"] .chparts .m:not(:empty){position:relative;isolation:isolate;background:none!important;border-radius:0!important}
+@A [data-pane="report"] .chparts .m:not(:empty)::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:3px;background:var(--mc,transparent)}
+@A [data-pane="report"] .chparts .m.m2{--mc:color-mix(in oklch,var(--ar-pink) 26%,var(--ar-sheet))}
+@A [data-pane="report"] .chparts .m.m4{--mc:var(--ar-pink-plate)}
+@A [data-pane="report"] .chparts .m:is(.mh,.mq){--mc:color-mix(in oklch,var(--ar-green) 22%,var(--ar-sheet))}
+@A [data-pane="report"] .chparts .m.m0{--mc:color-mix(in oklch,var(--ar-blue) 22%,var(--ar-sheet))}
+@A[data-look="dark"] [data-pane="report"] .chparts .m.m2{--mc:color-mix(in oklab,var(--ar-pink) 34%,#24232A)}
+@A[data-look="dark"] [data-pane="report"] .chparts .m:is(.mh,.mq){--mc:color-mix(in oklab,var(--ar-green) 30%,#24232A)}
+@A[data-look="dark"] [data-pane="report"] .chparts .m.m0{--mc:color-mix(in oklab,var(--ar-blue) 34%,#24232A)}
+/* nit: the compare kicker repeated the intro line */
+@A [data-pane="compare"] .chpghead .chk{display:none!important}
