@@ -628,3 +628,6 @@
 @media (min-width:1001px){@A .band .jumpbtn .jbt{font-size:15px!important}@A .band .jumpbtn .jbk{font-size:13px!important}}
 /* rating rows: a straight hairline (a radius on the row bent its ends into a card-like curve) */
 @A #homeOut.ar-on .hmini{border-radius:0!important}
+/* Fix it's list changes height when new plans come in: the browser anchors the scroll on what's below it, not on the list, so
+   the folds under it stay put */
+@A [data-pane="report"] :is(#chSugOut,.chsugs,#chP1 .chpartb){overflow-anchor:none}
