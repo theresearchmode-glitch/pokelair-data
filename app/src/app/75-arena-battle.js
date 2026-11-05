@@ -13,7 +13,12 @@ ARB.pOfImg = img => { if (!img) return null; if (!ARB._bySrc) { ARB._bySrc = new
   const m = /sp\/(\d+)\.webp/.exec(img.getAttribute('src') || ''); const n = m && ARB._bySrc.get(m[1]); return n ? byName.get(n) || null : null; };
 /* two Pokémon on one field: the first type of each, blended like a dual type */
 ARB.pairVars = (a, b) => { const ta = ((a && a.t) || ['Normal'])[0], tb = ((b && b.t) || ['Normal'])[0];
-  const da = AR.dark(ta); return `--a:${AR.TC[ta] || TC.Normal};--b:${AR.TC[tb] || TC.Normal};--da:${da};--db:${AR.dark(tb)};--on:${1.05 / (AR.lum(da) + .05) >= 4.5 ? '#fff' : '#16141A'}`; };
+  const da = AR.dark(ta); return `--a:${AR.TC[ta] || TC.Normal};--b:${AR.TC[tb] || TC.Normal};--da:${da};--dm:${AR.mid(ta, tb)};--db:${AR.dark(tb)};--on:${AR.on(da)}`; };
+/* Sim: no Lead / Back / Bench on the art. A plan's four splits into two small groups under headings ("Lead", "Back"); the tags
+   inside the tiles stay in the markup, hidden. isLead(tile) says which group a tile goes in. */
+ARB.groups = (box, tiles, isLead, cls) => { if (!box || box.classList.contains('ar-grouped') || !tiles.length) return; box.classList.add('ar-grouped');
+  const mk = (h, list) => { if (!list.length) return null; const g = document.createElement('div'); g.className = 'ar-pgrp ' + cls; g.innerHTML = `<h4 class="ar-pgh">${h}</h4><div class="ar-pgrid"></div>`; list.forEach(t => g.lastChild.append(t)); return g; };
+  const L = tiles.filter(isLead), B = tiles.filter(t => !isLead(t)); [mk('Lead', L), mk('Back', B)].forEach(g => g && box.append(g)); };
 /* turn an existing tile (button or div holding the sprite and a name) into an arena art tile, in place */
 ARB.artify = (el, p, size, nameSel) => { if (!el || !p || el.classList.contains('ar-art')) return;
   el.classList.add('ar-art', 'ar-' + (size || 's'), 'ar-below'); if (AR.isMega(p)) el.classList.add('is-mega');
@@ -43,7 +48,11 @@ ARB.parts = () => { const P = ARB.SEL;
 /* their six: art tiles (S), the remove button on the corner, "Likely lead" as a slanted tag under the name */
 ARB.opp = () => { document.querySelectorAll('[data-pane="matchup"] .bmopp .bmslot.on:not(.ar-art)').forEach(sl => {
   const x = sl.querySelector('[data-bmx]'), n = x ? S.opp[+x.dataset.bmx] : '', p = n && byName.get(n); if (!p) return;
-  ARB.artify(sl, p, 's', '.bmn'); sl.classList.remove('tyx'); }); };
+  ARB.artify(sl, p, 's', '.bmn'); sl.classList.remove('tyx'); });
+  /* their likely lead: one line under the six (MG.battle marks the slots; the tag on the art is hidden) */
+  document.querySelectorAll('[data-pane="matchup"] .bmopp').forEach(o => { const ll = [...o.querySelectorAll('.bmslot.mgllead .bmn')].map(n => n.textContent.trim()), nx = o.nextElementSibling;
+    const txt = ll.length === 2 ? `Their likely lead: <b>${esc(ll[0])}</b> + <b>${esc(ll[1])}</b>` : '';
+    if (nx && nx.classList.contains('ar-llline')) { if (!txt) nx.remove(); else if (nx.dataset.t !== txt) { nx.dataset.t = txt; nx.innerHTML = txt; } } else if (txt) { o.insertAdjacentHTML('afterend', '<p class="ar-llline"></p>'); o.nextElementSibling.dataset.t = txt; o.nextElementSibling.innerHTML = txt; } }); };
 /* "The read": Battle's one hero. Your lead pair breaks out of a diagonal band (the page's one burst); their likely lead and their
    biggest threat are the two runner strips; Fake Out on their side is a plain numeral. Same data as before (71-manga.js). */
 rzReadHtml = function () {
@@ -57,10 +66,10 @@ rzReadHtml = function () {
   const mega = p => AR.isMega(p) ? ' is-mega' : '';
   const hero = lead.length === 2 ? `<div class="ar-rhero" style="${ARB.pairVars(lead[0].p, lead[1].p)}"><span class="ar-rhero-bg ar-field" aria-hidden="true">${AR.BURST}</span>
       <span class="ar-rhero-mons" aria-hidden="true"><span class="ar-rmon${mega(lead[0].p)}" style="${AR.tv(lead[0].p)}">${AR.spr(lead[0].p)}</span><span class="ar-rmon${mega(lead[1].p)}" style="${AR.tv(lead[1].p)}">${AR.spr(lead[1].p)}</span></span>
-      <span class="ar-rhero-copy"><span class="ar-rk">Your lead</span><span class="ar-rnm">${escName(lead[0].d)}</span><span class="ar-rnm"><i>+</i> ${escName(lead[1].d)}</span></span></div>` : '';
+      <span class="ar-rhero-copy"><span class="ar-rk">Your lead</span><span class="ar-rnm">${AR.nm(lead[0].d)}</span><span class="ar-rnm"><i>+</i> ${AR.nm(lead[1].d)}</span></span></div>` : '';
   const strip = (cls, vars, lab, nm, sub, mons) => `<div class="ar-rstrip ${cls}" style="${vars}"><span class="ar-rstrip-f ar-field" aria-hidden="true"></span><span class="ar-rstrip-in"><span class="ar-rk">${lab}</span><span class="ar-rstrip-nm">${nm}</span>${sub ? `<span class="ar-rstrip-sub">${sub}</span>` : ''}</span><span class="ar-rstrip-mons" aria-hidden="true">${mons}</span></div>`;
-  const them = ll.length === 2 ? strip('them', ARB.pairVars(ll[0].p, ll[1].p), 'Their likely lead', `${escName(ll[0].d)} + ${escName(ll[1].d)}`, '', AR.spr(ll[0].p) + AR.spr(ll[1].p)) : '';
-  const thr = threat ? strip('threat', AR.tv(threat.o.p), 'Biggest threat', escName(threat.o.d), threat.o.d.toLowerCase().includes(String(threat.t).toLowerCase()) ? '' : esc(String(threat.t)), AR.spr(threat.o.p)) : '';
+  const them = ll.length === 2 ? strip('them', ARB.pairVars(ll[0].p, ll[1].p), 'Their likely lead', `${AR.nm(ll[0].d)} + ${AR.nm(ll[1].d)}`, '', AR.spr(ll[0].p) + AR.spr(ll[1].p)) : '';
+  const thr = threat ? strip('threat', AR.tv(threat.o.p), 'Biggest threat', AR.nm(threat.o.d), threat.o.d.toLowerCase().includes(String(threat.t).toLowerCase()) ? '' : esc(String(threat.t)), AR.spr(threat.o.p)) : '';
   return `<div class="rzread ar-read" role="region" aria-labelledby="arReadH"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arReadH">The read</h2></div>
     <div class="ar-rdeck">${hero}<div class="ar-rside">${them}${thr}<div class="ar-rfo"><div class="ar-stat"><span class="ar-num">${fo}</span><span class="ar-unit">Fake Out on their side</span></div><span class="rzlive">Updates as you type their six</span></div></div></div></div>`; };
 /* the page head comes first (the read and the plan sit under it), whatever order the older wraps left it in */
@@ -71,6 +80,7 @@ ARB.battle = () => { const sec = $('matchup'), head = sec && sec.querySelector('
   out.querySelectorAll('.empty-note:not(.mgempty)').forEach(e => { const q = CH.metaSix()[0]; e.classList.add('mgempty'); if (q) e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${sprite(q) || ''}</span>`); });
   /* the plan's four: art tiles with Lead / Back under the name (this is the plan, not the team showcase) */
   out.querySelectorAll('.bmpick:not(.ar-art)').forEach(b => { const p = ARB.pOfImg(b.querySelector('img.spr')); if (p) ARB.artify(b, p, 'm', '.bmpn'); });
+  out.querySelectorAll('.bmpicks:not(.ar-grouped)').forEach(bx => ARB.groups(bx, [...bx.querySelectorAll(':scope > .bmpick')], t => t.classList.contains('lead'), 'ar-pgm'));
   /* turn one: each beat's Pokémon on a small type field */
   out.querySelectorAll('img.rzbspr, img.bmwspr').forEach(i => ARB.bf(i, ARB.pOfImg(i)));
   /* the damage calc card: your six and their Pokémon as small art */
@@ -118,6 +128,13 @@ CH.wrap('renderGauntlet', () => ARB.parts());
 ARB.practice = () => { const pane = document.querySelector('[data-pane="practice"]'); if (!pane) return;
   pane.querySelectorAll('.prm:not(.ar-art)').forEach(m => { const p = ARB.pOfImg(m.querySelector('img.spr')); if (p) ARB.artify(m, p, 's', '.prmn'); });
   pane.querySelectorAll('.prpick:not(.ar-art)').forEach(b => { const p = byName.get(b.dataset.prpick); if (p) ARB.artify(b, p, 'm', '.prmn'); if (b.classList.contains('on')) b.classList.add('is-sel'); });
+  /* a four (yours, theirs, the strong players'): Lead and Back groups under headings, nothing printed on the art */
+  pane.querySelectorAll('.prfour:not(.ar-grouped)').forEach(bx => ARB.groups(bx, [...bx.querySelectorAll(':scope > .prm')], t => !!t.querySelector('.prtag.lead'), 'ar-pgs'));
+  /* your pick in progress: what you bring and who leads is one line under your six */
+  pane.querySelectorAll('.prsix.mine').forEach(sx => { const nm = b => (b.querySelector('.prmn') || {}).textContent || '', on = [...sx.querySelectorAll('.prpick.on')], ld = on.filter(b => b.classList.contains('ld'));
+    const txt = on.length ? `Bringing <b>${on.map(b => esc(nm(b))).join(', ')}</b>${ld.length ? `. Leading <b>${ld.map(b => esc(nm(b))).join(' + ')}</b>` : ''}.` : '';
+    let ln = sx.nextElementSibling; if (!(ln && ln.classList.contains('ar-llline'))) { if (!txt) return; sx.insertAdjacentHTML('afterend', '<p class="ar-llline" aria-live="polite"></p>'); ln = sx.nextElementSibling; }
+    if (ln.dataset.t !== txt) { ln.dataset.t = txt; ln.innerHTML = txt; } });
   pane.querySelectorAll('.prmini img.spr, .prrate img.spr').forEach(i => ARB.bf(i, ARB.pOfImg(i)));
   /* the two steps ("1 · Bring four"): the number becomes a numeral of its own, the words stay */
   pane.querySelectorAll('.prst:not(.ar-st)').forEach(st => { const t = st.firstChild, m = t && t.nodeType === 3 && /^\s*(\d)\s*[·,:]\s*/.exec(t.nodeValue); st.classList.add('ar-st'); if (!m) return;

@@ -194,8 +194,24 @@
 @A [data-pane="matchup"] .chbring>.chk{margin:0 0 6px!important}
 @A [data-pane="matchup"] .chbringt{margin:0 0 16px!important;font:italic 800 var(--ar-fs-h2)/1.08 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
 @A [data-pane="matchup"] .chbringt span{display:block;margin-top:4px;font:italic 800 var(--ar-fs-h3)/1.15 var(--ar-display)!important;color:var(--ar-ink-2)!important}
-@A [data-pane="matchup"] .bmpicks{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20px 14px!important;margin:0 0 16px!important;padding:0 2px 0 6px!important}
-@media (min-width:700px){@A [data-pane="matchup"] .bmpicks{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+/* Sim: no Lead / Back on the art. The four sit in two groups under small headings (75-arena-battle.js ARB.groups) */
+@A [data-pane="matchup"] .bmpicks{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px 24px!important;margin:0 0 16px!important;padding:0!important}
+@media (min-width:700px){@A [data-pane="matchup"] .bmpicks{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@A .arb .ar-pgrp{min-width:0}
+@A .arb .ar-pgh{display:flex;align-items:center;gap:10px;margin:0 0 4px!important;font:italic 800 17px/1.2 var(--ar-display)!important;font-stretch:112%;color:var(--ar-ink)!important}
+@A .arb .ar-pgh::before{content:"";flex:none;width:16px;height:16px;background:var(--ar-blue);transform:skewX(var(--ar-slant));border-radius:3px}
+@A .arb .ar-pgrp+.ar-pgrp .ar-pgh::before{background:color-mix(in oklch,var(--ar-blue) 30%,var(--ar-paper))}
+@A[data-look="dark"] .arb .ar-pgrp+.ar-pgrp .ar-pgh::before{background:#45434B}
+@A .arb .ar-pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 14px;padding:0 2px 0 6px}
+@A :is([data-pane="matchup"] .bmpick,[data-pane="practice"] .prfour .prm) :is(.tag,.prtag){display:none!important}
+@A [data-pane="practice"] .prpick .prtag{display:none!important}
+@A [data-pane="matchup"] .bmopp .mgll{display:none!important}
+/* one quiet line under a six: their likely lead (Battle mode), what you bring and lead (practice) */
+@A .arb .ar-llline{margin:-14px 0 24px 4px!important;font:400 var(--ar-fs-body)/1.45 var(--ar-body);color:var(--ar-ink-2)}
+@A .arb .ar-llline b{color:var(--ar-ink);font-weight:700}
+@A [data-pane="matchup"] .bmopp+.ar-llline b{color:var(--ar-pink-ink)}
+@A [data-pane="practice"] .prsix.mine+.ar-llline{margin:14px 0 10px 4px!important}
+@A [data-pane="practice"] .prsix.mine+.ar-llline b{color:var(--ar-blue-ink)}
 @A [data-pane="matchup"] .bmpick.ar-art{--h:96px;--s:104px;--lift:14px;min-height:0!important;margin:0!important;padding:var(--lift) 0 0!important;background:none!important;border:0!important;box-shadow:none!important;text-align:left}
 @A [data-pane="matchup"] .bmpick.ar-art .ar-nm{font-size:17px!important}
 @A [data-pane="matchup"] .bmpick .tag{position:relative;isolation:isolate;display:inline-flex;margin:6px 0 0 4px;padding:2px 10px!important;background:none!important;border:0!important;font:700 14px/1.25 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important}
@@ -446,7 +462,7 @@
 @A [data-pane="calc"] .dcfield .ar-seg{margin:0!important}
 /* the result: the cut-corner sheet, the range as a big numeral, a slanted HP bar under it, the KO chance in words */
 @A [data-pane="calc"] .ar-dcwrap{margin:8px 0 0}
-@A[data-look="dark"] [data-pane="calc"] .dcres.ar-sheet{background:linear-gradient(in oklab 160deg,color-mix(in oklab,var(--a,var(--ar-sec)) 10%,#1A191D),#1A191D 62%)!important}
+@A[data-look="dark"] [data-pane="calc"] .dcres.ar-sheet{background:linear-gradient(160deg,#222127,#1A191D 62%)!important}
 @A [data-pane="calc"] .dcres.ar-sheet{padding:22px 22px 18px 30px!important;margin:0!important;min-height:0}
 @A [data-pane="calc"] .dcbig.ar-num{display:block;margin:0!important;font-size:min(68px,13vw)!important;white-space:nowrap;line-height:.95!important;color:var(--ar-ink)!important;background:none!important;-webkit-text-stroke:0!important}
 @A [data-pane="calc"] .dcbig small{display:block;margin:8px 0 0!important;font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;font-style:normal!important;letter-spacing:0!important;color:var(--ar-ink-2)!important;text-shadow:none!important}
@@ -521,7 +537,7 @@
 @A [data-pane="speed"] .nprm.ar-nm2::before{content:""!important;display:block!important;position:absolute!important;left:50%!important;top:12px!important;width:42px!important;height:24px!important;margin-left:-21px;z-index:-1;inset:auto!important;
   transform:skewX(var(--ar-slant))!important;border-radius:3px!important;background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--a) var(--ar-field-mix),var(--ar-sheet)) 10%,color-mix(in oklch,var(--b,var(--a)) var(--ar-field-mix),var(--ar-sheet)) 90%)!important;border:0!important;box-shadow:none!important}
 @A [data-pane="speed"] .nprm.ar-nm2::before{left:calc(50% - 21px)!important;margin-left:0}
-@A[data-look="dark"] [data-pane="speed"] .nprm.ar-nm2::before{background:linear-gradient(in oklab 125deg,var(--da) 10%,var(--db,var(--da)) 90%)!important}
+@A[data-look="dark"] [data-pane="speed"] .nprm.ar-nm2::before{background:linear-gradient(in oklch 125deg,var(--da) 10%,var(--dm,var(--da)) 50%,var(--db,var(--da)) 90%)!important}
 @A [data-pane="speed"] .nprm .nprs{position:relative;z-index:1;filter:drop-shadow(0 2px 2px rgba(30,10,40,.2))}
 @A [data-pane="speed"] .nprm.is-mega .nprs{filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b)) drop-shadow(0 1.5px 0 var(--b)) drop-shadow(0 -1.5px 0 var(--a))}
 @A [data-pane="speed"] .nprm b{color:var(--ar-ink)!important;font-weight:700!important}
@@ -662,9 +678,9 @@
 @media (min-width:1001px){@A [data-pane="practice"] .prgrid2{grid-template-columns:repeat(2,minmax(0,1fr));gap:36px!important}}
 @A [data-pane="practice"] .prcard{padding:0!important;margin:0 0 20px!important}
 @A [data-pane="practice"] .prcard>.chk{margin:0 0 10px!important;font:italic 800 18px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
-@A [data-pane="practice"] .prfour{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px 8px!important;padding:0 2px 0 6px!important;margin:0 0 6px!important}
+@A [data-pane="practice"] .prfour{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:16px 8px!important;padding:0 2px 0 6px!important;margin:0 0 6px!important}
 @A [data-pane="practice"] .prfour .prm.ar-art .ar-nm{font-size:16px!important}
-@media (min-width:600px){@A [data-pane="practice"] .prfour{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media (min-width:600px){@A [data-pane="practice"] .prfour{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @A [data-pane="practice"] .prpair{color:var(--ar-ink-2);margin:6px 0 12px!important}
 @A [data-pane="practice"] .prrates{display:block!important}
 @A [data-pane="practice"] .prrate{display:grid!important;grid-template-columns:60px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important}
@@ -782,3 +798,7 @@
   @A [data-pane="types"] .prob-row{grid-template-columns:110px minmax(0,1fr)!important}
   @A [data-pane="practice"] .prsix.mine{grid-template-columns:repeat(6,minmax(0,1fr))!important}
 }
+
+/* ---------- 8. focus rings follow the slant (as arena.css section 20): Battle's own slanted controls draw the ring on ::before ---------- */
+@A .arb :is(.typebtn,.ttmon,.tcb,.prmode,.prst,.chtoolsg>button,#prEntry,.chmorebtn,.ar-strip,.dcswap,.dcstick,.gm):focus-visible{outline:none!important}
+@A .arb :is(.typebtn,.ttmon,.tcb,.prmode,.chtoolsg>button,#prEntry,.chmorebtn,.ar-strip,.dcswap,.dcstick):focus-visible::before{outline:3px solid var(--ar-focus)!important;outline-offset:3px!important}
