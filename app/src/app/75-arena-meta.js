@@ -46,6 +46,12 @@ ARM.run = () => { ARM.mark(); const roots = document.querySelectorAll(ARM.SCOPE)
      not redrawn, so its buttons and handlers stay. */
   ARM.PANES.forEach(v => { const pane = document.querySelector(`.view[data-pane="${v}"]`); if (!pane) return;
     pane.querySelectorAll('.seg.teamsw').forEach(sw => { let h = sw.previousElementSibling; while (h && !h.classList.contains('chpghead')) h = h.previousElementSibling; if (h) h.before(sw); }); });
+  /* the one main action on a Meta page ("Share this week"): the yellow strip with the arena go disc, as on every other page */
+  document.querySelectorAll(`${ARM.PANES.map(v => `[data-pane="${v}"]`).join(',')}`).forEach(p => p.querySelectorAll('button.chprimary:not(.ar-primary)').forEach(b => { b.classList.add('ar-btn', 'ar-primary');
+    b.querySelectorAll(':scope > span[aria-hidden="true"]').forEach(s => { if (/[➜→›]/.test(s.textContent)) s.hidden = true; }); if (!b.querySelector('.ar-go')) b.insertAdjacentHTML('beforeend', AR.ICON.go); }));
+  /* This week's "How we decide what changed" is the fold strip like every other fold (same <details> and content) */
+  document.querySelectorAll('[data-pane="weekly"] details.wkfoot:not(.chsec)').forEach(d => { const s = d.querySelector(':scope > summary'); if (!s) return; d.classList.add('chsec', 'ar-wkfold');
+    const t = s.textContent.trim(); s.innerHTML = `${CH.tog()}<span class="cht">${esc(t)}</span>`; });
   const sh = document.querySelector('#lairSheet');
   if (sh) { const p = sh.querySelector('.ar-shero'); if (p) sh.querySelectorAll('.lstp-meta,.lstp-rating').forEach(t => { if (!t.classList.contains('ar-tv')) { t.classList.add('ar-tv'); t.setAttribute('style', p.getAttribute('style') || ''); } }); } };
 /* run after the app draws (the same observer pattern as 74-arena.js) */

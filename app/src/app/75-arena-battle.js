@@ -168,6 +168,9 @@ CH.wrap('renderSpeed', () => ARBAT.parts());
 
 /* ======================= Gauntlet: each top team's six as small art ======================= */
 ARBAT.gauntlet = () => { document.querySelectorAll('[data-pane="gauntlet"] .prepcell img.spr').forEach(i => ARBAT.bf(i, ARBAT.pOfImg(i)));
+  /* "Matchup prep" is the fold strip (chevron, display title), not a bare text disclosure; same <details>, same content */
+  document.querySelectorAll('[data-pane="gauntlet"] details.gprep:not(.chsec)').forEach(d => { const s = d.querySelector(':scope > summary'); if (!s) return; d.classList.add('chsec', 'ar-gprep');
+    const t = s.textContent.trim(); s.innerHTML = `${CH.tog()}<span class="cht">${esc(t)}</span>`; });
   document.querySelectorAll('[data-pane="gauntlet"] .gmons .gm:not(.ar-gm)').forEach(g => { const p = ARBAT.pOfImg(g.querySelector('img')); g.classList.add('ar-gm'); if (!p) return;
   g.setAttribute('style', AR.tv(p)); if (AR.isMega(p)) g.classList.add('is-mega'); g.insertAdjacentHTML('afterbegin', '<span class="ar-field" aria-hidden="true"></span>'); }); };
 CH.wrap('renderGauntlet', () => ARBAT.parts());
