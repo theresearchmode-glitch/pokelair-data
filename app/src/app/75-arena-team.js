@@ -139,13 +139,10 @@ ARB.score = (G) => !G ? null : G.rec ? {num: (G.rec.wr * 100).toFixed(1) + '%', 
 ARB.numeral = (x, P, txt, X, Y, size, align) => { ARB.fnt(x, `italic 900 ${size}px Archivo, sans-serif`, true); x.textAlign = align || 'left'; const o = size * .05;
   x.fillStyle = P.mis; x.fillText(txt, X + o, Y + o * .8); x.fillStyle = P.ink; x.fillText(txt, X, Y); x.textAlign = 'left'; };
 ARB.tab = (x, P, X, Y, s) => { x.fillStyle = P.blue; ARB.para(x, X + s / 2, Y - s, s, s, 4); x.fill(); };
-/* the arena wordmark (the header's .ar-logo): Unbounded "Nasty", then "Plot" on a slanted blue plate with a red offset; h is
-   the cap size, X/Y the top left */
-ARB.logo = async (x, dark, X, Y, w) => { const fs = w / 6.2; try { await document.fonts.load(`900 ${fs}px Unbounded`, 'NastyPlot'); } catch (e) {}
-  x.save(); x.textBaseline = 'alphabetic'; ARB.fnt(x, `900 ${fs}px Unbounded, "Archivo", sans-serif`); x.fillStyle = dark ? '#F4F1EC' : '#16141A'; const by = Y + fs * 1.05;
-  x.fillText('Nasty', X, by); const nw = x.measureText('Nasty').width, pw = x.measureText('Plot').width, px = X + nw + fs * .18, ph = fs * 1.28, py = by - fs * .98, padL = fs * .45, padR = fs * .55;
-  const plate = dx => { x.beginPath(); const k = Math.tan(14 * Math.PI / 180) * ph / 2, L = px + dx, R = px + padL + pw + padR + dx, T = py + dx, B = py + ph + dx; x.moveTo(L + k, T); x.lineTo(R + k, T); x.lineTo(R - k, B); x.lineTo(L - k, B); x.closePath(); x.fill(); };
-  x.fillStyle = '#C41E35'; plate(fs * .14); x.fillStyle = '#0078BF'; plate(0); x.fillStyle = '#fff'; x.fillText('Plot', px + padL, by); x.restore(); };
+/* the logo on share cards; X/Y the top left, w the width */
+ARB.logo = async (x, dark, X, Y, w) => { /* Sim (Nov 5): the original logo, N(chevron)STY with the circled PLOT */
+  const im = new Image(); im.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(NP_SVG[dark ? 'hdrD' : 'hdrL']);
+  await new Promise(r => { im.onload = r; im.onerror = r; }); try { x.drawImage(im, X, Y, w, w * 196 / 761.34); } catch (e) {} };
 ARB.imgs = ms => { const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp'; return Promise.all(ms.map(m => { const id = typeof SPRITE_ID === 'object' && SPRITE_ID ? SPRITE_ID[m.p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); })); };
 ARB.fonts = async () => { try { await Promise.all(['italic 800 40px Archivo', 'italic 900 40px Archivo', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"'].map(f => document.fonts.load(f, 'Aa0123%'))); } catch (e) {} };
 ARB.lines = (x, text, max) => { if (x.measureText(text).width <= max) return [text]; const w = text.split(' '); let best = null;

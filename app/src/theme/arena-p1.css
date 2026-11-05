@@ -498,7 +498,13 @@
 /* ---------- the wordmark (the approved C mockup): Unbounded "Nasty", then "Plot" on a slanted blue plate with a red offset.
    One mark in the header, the menu and the footer; the older lockups stay in the markup (scripts add them) but hide. The name
    is read from the .sr text next to it. ---------- */
-@A :is(.band .brand,.sidetop .logo,.lgbrand) :is(.nplk,.np){display:none!important}
+/* Sim (Nov 5): bring back the original logo, N(chevron)STY with the two chevrons and the circled PLOT (CH.lockup('hdr'),
+   added by chBrand). The arena wordmark stays in the markup but hides. */
+@A :is(.band .brand,.sidetop .logo,.lgbrand) .np{display:none!important}
+@A :is(.band .brand,.sidetop .logo,.lgbrand) .ar-logo{display:none!important}
+@A :is(.band .brand,.sidetop .logo,.lgbrand) .nplk.hdr{display:inline-flex!important;height:34px!important}
+@A .lgbrand .nplk.hdr{height:34px!important}
+@media (min-width:1001px){@A .band .brand .nplk.hdr{height:42px!important}@A .sidetop .logo .nplk.hdr{height:38px!important}}
 @A .ar-logo{display:inline-flex;align-items:center;font:900 22px/1 "Unbounded",var(--ar-display);font-style:normal;letter-spacing:-.02em;white-space:nowrap;text-transform:none}
 @A .ar-logo-n{color:var(--ar-ink)}
 @A .ar-logo-p{position:relative;isolation:isolate;margin-left:4px;padding:4px 12px 5px 10px;color:#fff}
