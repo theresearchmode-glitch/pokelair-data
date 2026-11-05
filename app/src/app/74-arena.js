@@ -6,7 +6,15 @@
 const AR = {};
 /* arena type palette: the app's type colours, except Dark, which reads brown on a field (Sim: no brown fills) */
 AR.TC = Object.assign({}, TC, {Dark: '#5E5068'});
-AR.tv = p => { const t = (p && p.t) || ['Normal']; return `--a:${AR.TC[t[0]] || TC.Normal};--b:${AR.TC[t[1] || t[0]] || TC.Normal}`; };
+/* dark-mode field colours (true black): every type at the same vivid chroma, cool and red hues at a mid lightness, the
+   orange-to-yellow hues (Fire, Electric, Ground, Rock, Normal...) lighter, because a dark orange or yellow reads brown (Sim:
+   no brown fills). --on is the text colour that reads on the first type's dark field (white or ink, whichever is 4.5:1+). */
+AR._d = new Map();
+AR.dark = t => { if (AR._d.has(t)) return AR._d.get(t); let v = TC.Normal;
+  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = h >= 70 && h < 118 ? .76 : h >= 38 && h < 70 ? .64 : .5; v = MG.hex(L, Math.max(Math.min(C, .17), Math.min(C, .05)), H); } catch (e) {}
+  AR._d.set(t, v); return v; };
+AR.tv = p => { const t = (p && p.t) || ['Normal'], a = t[0], b = t[1] || t[0], da = AR.dark(a);
+  return `--a:${AR.TC[a] || TC.Normal};--b:${AR.TC[b] || TC.Normal};--da:${da};--db:${AR.dark(b)};--on:${1.05 / (AR.lum(da) + .05) >= 4.5 ? '#fff' : '#16141A'}`; };
 /* text on a filled type tag: white where it reaches 4.5:1, ink otherwise */
 AR.lum = h => { const c = [1, 3, 5].map(i => { const v = parseInt(h.slice(i, i + 2), 16) / 255; return v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
 AR.onType = t => { const L = AR.lum(AR.TC[t] || TC.Normal); return 1.05 / (L + .05) >= 4.5 ? '#fff' : '#16141A'; };
@@ -170,7 +178,8 @@ AR.sheet = n => { const sh = $('lairSheet'), p = n && byName.get(n); if (!sh || 
   if (stats && !stats.querySelector('.mgspd')) { let r0 = null; try { r0 = LST.speeds(p).find(x => x.main) || null; } catch (e) {}
     if (r0) stats.insertAdjacentHTML('beforeend', `<div class="mgspd"><b>${r0.v}</b><span>Speed at level 50</span></div>`); }
   const add = sh.querySelector('.lsact [data-laddteam]'); if (stats && add && !sh.querySelector('.mgadd')) { const w = document.createElement('div'); w.className = 'mgadd'; stats.after(w); w.append(add); }
-  const x = sh.querySelector('.lsx'); if (x) x.classList.add('ar-x'); };
+  const x = sh.querySelector('.lsx'); if (x) x.classList.add('ar-x');
+  const t = p.t || ['Normal']; sh.style.setProperty('--ar-ta', AR.TC[t[0]] || TC.Normal); sh.style.setProperty('--ar-tb', AR.TC[t[1] || t[0]] || TC.Normal); };
 MG.sheet = n => AR.sheet(n);
 
 /* run after the app draws (the same observer pattern as the other theme layers) */
