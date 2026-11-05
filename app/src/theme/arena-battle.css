@@ -941,5 +941,8 @@
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
 @A:not(#arcw)[data-look="dark"] [data-pane="gauntlet"] details.ar-gprep>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
 @A:not(#arcw) [data-pane="gauntlet"] details.ar-gprep>summary .cht{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+/* sweep: the read's runner names wrap at spaces only ("Indeedee (F)" stays whole); Deeper read's matchup lines are 15px */
+@A [data-pane="matchup"] .ar-rstrip-nm{overflow-wrap:normal!important;hyphens:none}
+@A:not(#arcw) .arb .prob-row>div,@A:not(#arcw) .arb .prob-row>div b{font-size:var(--ar-fs-small)!important;line-height:1.45}
 /* N12: the "?" tip stays with the end of its sentence */
 @A [data-pane="matchup"] .chcalchint .tipq,@A [data-pane="matchup"] .chpgs .tipq{vertical-align:middle}
