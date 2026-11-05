@@ -337,3 +337,10 @@
 @A .mgtitle::before{background:none!important}
 @A .mgcap{border:0!important;box-shadow:var(--ar-shadow-s)!important}
 @A .ty{border:0!important}
+
+/* ---------- 20. focus rings follow the slant (review 1): a slanted control draws its ring on its slanted ::before layer, an art
+   tile on its slanted field, so the ring is the shape's own outline, not an upright box around it ---------- */
+@A :is(.ar-btn,.ar-seg>button,.ar-chip,#homeOut.ar-on .htile,.ar-tacts #chActs>button,.ar-tacts #chActs>.row>button,.ar-tacts #chActs .moremenu>summary,details.chsec>summary,#homeOut.ar-on .wnew>summary,[data-pane="report"] .chapply,#lairSheet .lstabs .lstab):focus-visible{outline:none!important}
+@A :is(.ar-btn,.ar-seg>button,.ar-chip,#homeOut.ar-on .htile,.ar-tacts #chActs>button,.ar-tacts #chActs>.row>button,.ar-tacts #chActs .moremenu>summary,details.chsec>summary,#homeOut.ar-on .wnew>summary,[data-pane="report"] .chapply,#lairSheet .lstabs .lstab):focus-visible::before{outline:3px solid var(--ar-focus)!important;outline-offset:3px!important}
+@A .ar-art:focus-visible{outline:none!important}
+@A .ar-art:focus-visible .ar-f{outline:3px solid var(--ar-focus)!important;outline-offset:4px!important}
