@@ -608,3 +608,70 @@
 @A #chScout .chtile[aria-pressed="true"]{box-shadow:none!important;border:0!important;background:none!important}
 @A #chScout .chdet .top>div{text-align:left!important;min-width:0}
 @media (max-width:519px){@A #chScout .chdots{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}}
+
+/* ---------- the share card and team poster (#shareBox): a dialog on plain paper (no blur, no dark wash) ---------- */
+@A #shareBox.sharebox{background:color-mix(in srgb,var(--ar-paper) 88%,transparent)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+@A #shareBox .sharein{display:flex!important;flex-direction:column;gap:14px;width:min(860px,100%);padding:20px 20px 22px!important;background:var(--ar-sheet)!important;color:var(--ar-ink);border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important}
+@A #shareBox .sharehd{display:flex!important;align-items:center;justify-content:space-between;gap:12px;background:none!important;border:0!important;padding:0!important}
+@A #shareBox .sharehd b{display:flex;align-items:flex-end;gap:12px;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--ar-ink)!important}
+@A #shareBox .sharehd b::before{content:"";width:22px;height:22px;flex:none;margin-bottom:3px;background:var(--ar-blue);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A #shareBox .seg{display:inline-flex!important;flex-wrap:wrap;gap:8px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0 0 0 4px!important;overflow:visible!important;align-self:flex-start}
+@A #shareBox .seg>button{position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:44px!important;padding:0 16px!important;margin:0!important;font:600 var(--ar-fs-small)/1.1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;flex:none!important}
+@A #shareBox .seg>button::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;background:var(--ar-paper-2)!important;box-shadow:var(--ar-shadow-s)!important}
+@A[data-look="dark"] #shareBox .seg>button::before{background:#2A2930!important}
+@A #shareBox .seg>button[aria-pressed="true"]{color:#fff!important;font-weight:700!important}
+@A #shareBox .seg>button[aria-pressed="true"]::before{background:var(--ar-blue-plate)!important}
+@A #shareBox .seg>button[aria-pressed="true"]::after{content:""!important;display:block!important;position:static!important;order:-1;width:11px!important;height:6px!important;margin:-3px 2px 0 0!important;background:none!important;border:solid currentColor!important;border-width:0 0 2.5px 2.5px!important;border-radius:0!important;transform:rotate(-45deg)!important;box-shadow:none!important}
+@A #shareBox .shareimg{border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;border:0!important}
+@A #shareBox .sharerow{display:flex!important;flex-wrap:wrap;align-items:center;gap:12px 14px;padding-left:4px}
+@A #shareBox .t2{font-size:15px!important;line-height:1.45;color:var(--ar-ink-2)!important;flex-basis:100%}
+@A #shareBox :is(.btn,.chghost){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:48px!important;padding:0 20px 0 22px!important;margin:0!important;font:600 var(--ar-fs-body)/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-transform:none!important;letter-spacing:0!important}
+@A #shareBox :is(.btn,.chghost)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-blue),var(--ar-blue)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-blue) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-blue) 5%,var(--ar-sheet)) 70%)!important}
+@A[data-look="dark"] #shareBox :is(.btn,.chghost)::before{background:linear-gradient(var(--ar-blue),var(--ar-blue)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A #shareBox .btn.go{color:#16141A!important;font:italic 800 19px/1.1 var(--ar-display)!important;font-stretch:115%!important;min-height:56px!important;padding-left:26px!important}
+@A #shareBox .btn.go::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:var(--ar-shadow-s)!important}
+@A #shareBox .sharehd .btn{min-height:44px!important;padding:0 16px!important;font-size:15px!important}
+@A #shareBox .sharehd .btn::before{background:var(--ar-paper-2)!important}
+@A[data-look="dark"] #shareBox .sharehd .btn::before{background:#2A2930!important}
+
+/* ---------- Log a game (.myrec .qlog): your six as small art tiles to pick the two leads; Win and Loss as two big strips ---------- */
+@A [data-pane="report"] .myrec .myrech{display:flex!important;align-items:center;gap:14px;justify-content:space-between}
+@A [data-pane="report"] .myrec .qlog{display:flex!important;flex-direction:column;align-items:stretch;gap:12px;margin-top:18px!important;padding:18px 0 0!important;border:0!important;border-top:1px solid var(--ar-rule)!important;background:none!important}
+@A [data-pane="report"] .myrec .qlog>.chk{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;margin:6px 0 0!important}
+@A [data-pane="report"] .myrec .qlleads{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px!important;padding:6px 4px 0!important}
+@A [data-pane="report"] .myrec .qllead{position:relative;isolation:isolate;display:grid!important;grid-template-rows:64px auto;justify-items:center;align-items:end;gap:6px;min-height:0!important;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;color:var(--ar-ink)!important;cursor:pointer}
+@A [data-pane="report"] .myrec .qllead .arb-f{position:absolute;left:2px;right:2px;top:14px;height:50px;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)}
+@A [data-pane="report"] .myrec .qllead img{grid-row:1;width:66px!important;height:66px!important;margin:0 0 -2px!important;filter:drop-shadow(0 5px 4px rgba(30,10,40,.22))}
+@A [data-pane="report"] .myrec .qllead.is-mega img{filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b,var(--a))) drop-shadow(0 5px 4px rgba(30,10,40,.22))}
+@A [data-pane="report"] .myrec .qllead>span:not(.arb-f){grid-row:2;font:italic 800 15px/1.15 var(--ar-display)!important;font-stretch:100%!important;text-align:center;color:var(--ar-ink)!important;overflow-wrap:normal!important;text-wrap:balance}
+@A [data-pane="report"] .myrec .qllead:is(.on,[aria-pressed="true"]) .arb-f{box-shadow:0 0 0 4px var(--ar-yellow),var(--ar-shadow-s)}
+@A [data-pane="report"] .myrec .qllead:is(.on,[aria-pressed="true"])::after{content:"";position:absolute;left:50%;top:-2px;margin-left:-10px;width:20px;height:14px;background:var(--ar-yellow);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 1.5px 0 #16141A)}
+@A [data-pane="report"] .myrec .qlopp{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px}
+@A [data-pane="report"] .myrec .qlopp .cb{flex:1 1 220px}
+@A [data-pane="report"] .myrec .qlopp .field{width:100%;min-height:48px;padding:0 14px!important;font:500 var(--ar-fs-body) var(--ar-body)!important}
+@A [data-pane="report"] .myrec .qlopp .corechip{display:inline-flex;align-items:center;gap:2px;padding-left:4px!important;font:600 15px var(--ar-body);color:var(--ar-ink);background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important}
+@A [data-pane="report"] .myrec .qlopp .corechip button{min-width:44px!important;min-height:44px!important;background:none!important;border:0!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] .myrec .qlres{display:grid!important;grid-template-columns:1fr 1fr;gap:14px!important;margin-top:4px;padding-left:6px}
+@A [data-pane="report"] .myrec .qlres .btn.ar-btn{justify-content:center;min-height:56px!important;font:italic 800 21px/1 var(--ar-display)!important;font-stretch:115%!important}
+@A [data-pane="report"] .myrec .qlres .qlwin{--edge:var(--ar-green)}
+@A [data-pane="report"] .myrec .qlres .qlloss{--edge:var(--ar-pink)}
+@A [data-pane="report"] .myrec .qlog>p.t2{font-size:15px!important;color:var(--ar-ink-2)!important;line-height:1.45;margin:4px 0 0}
+@A [data-pane="report"] .myrec .myrecn{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+@A [data-pane="report"] .myrec .myrecn b{font:italic 900 34px/1 var(--ar-display);font-stretch:125%;color:var(--ar-ink)}
+@media (min-width:600px){@A [data-pane="report"] .myrec .qlleads{grid-template-columns:repeat(6,minmax(0,1fr))}@A [data-pane="report"] .myrec .qlres{max-width:520px}}
+
+/* ---------- My team's ⋯ menu: a sheet, its items as quiet rows with a hover wash ---------- */
+@A .ar-tacts #chActs .mmpop{display:grid!important;gap:2px;min-width:220px;padding:8px!important;z-index:30}
+@A .ar-tacts #chActs .mmpop button:not(.ar-btn):not(#saveBtn):not(.chprimary){position:relative;display:flex!important;align-items:center;width:100%;min-height:44px!important;padding:0 14px!important;margin:0!important;border-radius:var(--ar-r-m)!important;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;box-shadow:none!important;border:0!important;text-align:left}
+@A .ar-tacts #chActs .mmpop button::before,@A .ar-tacts #chActs .mmpop button::after{content:none!important;display:none!important}
+@media (hover:hover){@A .ar-tacts #chActs .mmpop button:not(.ar-btn):not(#saveBtn):not(.chprimary):hover{background:color-mix(in oklch,var(--ar-blue) 10%,transparent)!important}}
+@A .ar-tacts #chActs .mmpop button:is(#clearTeam,.danger){color:var(--ar-pink-ink)!important}
+@A[data-look="dark"] .ar-tacts #chActs .mmpop{background:#24232A!important}
+@A[data-look="dark"] .ar-tacts #chActs .mmpop button:not(.ar-btn):not(#saveBtn):not(.chprimary){background:none!important}
+@media (min-width:1001px){
+  @A #shareBox .sharein:has(.shareimg.poster){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:32px;align-content:start;width:min(980px,100%)}
+  @A #shareBox .sharein:has(.shareimg.poster)>:not(.shareimg){grid-column:1}
+  @A #shareBox .sharein:has(.shareimg.poster)>.shareimg{grid-column:2;grid-row:1/span 8;max-height:min(78vh,760px)!important;justify-self:center}
+  @A #shareBox .sharein{padding:26px 28px 28px!important}
+}
