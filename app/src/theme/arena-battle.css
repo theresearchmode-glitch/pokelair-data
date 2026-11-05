@@ -487,7 +487,7 @@
   font:700 15px/1.2 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink)!important;width:auto!important;height:auto!important;transform:none!important}
 @A [data-pane="calc"] .dctab td>span{order:2;display:block!important;max-width:none!important;margin:0!important;font:500 15px/1.2 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important;
   white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;text-align:left!important}
-@A [data-pane="calc"] .dctab .dctile{order:-1;display:block!important;margin:0 0 2px!important;background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="calc"] .dctab .dctile{order:-1;display:block!important;margin:0 0 6px!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="calc"] .dctab .dctile img{width:40px!important;height:40px!important}
 @A [data-pane="calc"] .dctab td:is(.k1,.k1m){background:color-mix(in oklch,var(--ar-sec) 26%,var(--ar-paper))!important}
 @A [data-pane="calc"] .dctab td:is(.k2,.k2m){background:color-mix(in oklch,var(--ar-sec) 12%,var(--ar-paper))!important}
@@ -849,3 +849,5 @@
 @A [data-pane="types"] #typeChart td.t .ty{font-size:15px!important}
 /* n5 the second "Clear" (the Pokémon you looked up) is a quiet link beside its line */
 @A [data-pane="types"] #typeMon [data-typesmonx]{min-height:44px}
+/* M5 small phones: the log chips go one column, so long names ("Mega Charizard Y") stay on one line */
+@media (max-width:420px){@A [data-pane="matchup"] .logpicks{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}}
