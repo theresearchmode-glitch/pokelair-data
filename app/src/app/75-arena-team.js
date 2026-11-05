@@ -93,6 +93,13 @@ ARB.WATCH = '#chEdit,#chScout,.myrec,#chVsOut,#thrCard,#needs';
   new MutationObserver(rs => { if (q) return; for (const r of rs) { const t = r.target; if (t.nodeType === 1 && (t.matches(ARB.WATCH) || t.closest(ARB.WATCH))) { q = setTimeout(run, 30); return; } } })
     .observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']}); }
 
+/* polish pass (P-F15): a type tag ends a short line ("Garchomp takes 4× from [Ice]"), so the full stop that followed the old chip
+   is dropped rather than left floating after the slanted tag */
+ARB.stops = () => document.querySelectorAll('main :is(.ty,.ar-ty)').forEach(t => { const n = t.nextSibling;
+  if (n && n.nodeType === 3 && /^\s*\.\s*$/.test(n.nodeValue) && !t.nextElementSibling) n.nodeValue = ''; });
+{ let q = false; const go = () => { q = false; try { ARB.stops(); } catch (e) {} };
+  new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(go); } }).observe(document.body, {childList: true, subtree: true}); }
+
 /* ===== the share card (1200x675) and the team poster (1080x1350), drawn in the arena style ======
    Paper, ink and the section blue; each Pokémon on its own slanted type field with the light streaks, the sprite breaking out of
    the top, Megas with the two-colour contour; the name in Archivo italic under the art; the headline numeral with the misprint

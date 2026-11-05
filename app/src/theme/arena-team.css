@@ -1076,3 +1076,11 @@
 @A [data-pane="report"] .myrec .qllead>span:not(.arb-f){text-align:left!important;justify-self:start}
 /* F2 (desktop): "Your games": the Close button sits wholly inside the band, below its slanted top edge */
 @media (min-width:1001px){@A [data-pane="report"] .myrec .myrech{align-items:flex-start!important}@A [data-pane="report"] .myrec .myrech>button{margin-top:30px!important}}
+/* =====================================================================================================================
+   Polish pass (recheck FINDINGS)
+   ===================================================================================================================== */
+/* P-F15: no green tip box over the problems list (the grade and record already say the team has won) */
+@A:not(#arbw) .provnote{display:none!important}
+/* P-N8: no empty band between "Your games" and "1 Fix it": the parts follow the team block at one section gap */
+@A:not(#arbw) [data-pane="report"] #chTeam{margin-bottom:0!important}
+@A:not(#arbw) [data-pane="report"] #chTeam~.chparts{margin-top:12px!important}

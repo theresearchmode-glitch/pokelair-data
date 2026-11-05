@@ -654,3 +654,11 @@
 @A :is(#fbSheet .fbbox,#sdSheet .sdbox):focus{outline:none!important}
 /* the Sand archetype's tan (#C99A4A) reads khaki as a wash and as a dark-mode edge: archetype tags use the arena gold for it */
 @A .archchip:is([style*="c99a4a" i],[style*="C99A4A"]){--ac:var(--ar-gold)!important}
+
+/* =====================================================================================================================
+   Polish pass (recheck FINDINGS)
+   ===================================================================================================================== */
+/* P-N9: the menu's rows (the current page included, which takes focus when the menu opens): the focus ring follows the slanted
+   plate (drawn on its ::before), never an upright rectangle around it */
+@A:not(#abw) #side button[role=tab]:focus-visible,@A:not(#abw) #side .sgroup button:focus-visible{outline:none!important;box-shadow:none!important}
+@A:not(#abw) #side button[role=tab]:focus-visible::before,@A:not(#abw) #side .sgroup button:focus-visible::before{outline:3px solid var(--ar-focus)!important;outline-offset:2px!important}
