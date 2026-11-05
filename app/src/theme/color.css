@@ -10,7 +10,7 @@
 @C{--sec:#E6359B;--secT:#A10C6D;--secTint:var(--sec);--fx-sel:20%;--fx-wash:14%;--fx-dots:85%;--fx-slant:-6deg;--fx-stroke:64px;--fx-edge:6px;
   --fx-reg:color-mix(in oklab,var(--sec) 80%,var(--mgpaper))}
 @C[data-pg="home"]{--sec:#E6359B;--secT:#A10C6D}
-@C:is([data-pg="auto"],[data-pg="cores"]){--sec:#DB9600;--secT:#7A5300;--secTint:#FFD400}
+@C:is([data-pg="auto"],[data-pg="cores"]){--sec:#DB9600;--secT:#16141A;--secTint:#FFD400} /* gold is never text in light: ink (arena.css 29) */
 @C:is([data-pg="report"],[data-pg="coverage"],[data-pg="teams"],[data-pg="compare"],[data-pg="box"]){--sec:#0068AD;--secT:#005185}
 @C:is([data-pg="matchup"],[data-pg="practice"],[data-pg="gauntlet"],[data-pg="speed"],[data-pg="calc"],[data-pg="types"]){--sec:#E2531E;--secT:#A33A0C}
 @C:is([data-pg="weekly"],[data-pg="ratings"],[data-pg="meta"],[data-pg="sets"],[data-pg="top"],[data-pg="events"],[data-pg="arch"],[data-pg="track"],[data-pg="method"]){--sec:#7B4FD6;--secT:#5B2FB5}
