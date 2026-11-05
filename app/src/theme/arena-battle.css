@@ -41,7 +41,7 @@
 /* old panels on these pages: no frame, no box, just paper and spacing */
 @A .arb :is(.plan,.bmcard,.chpanel,.chblock,.vcard,.prcard,.prband,.gitem,.gsum,.prstart,.fixcol),@A [data-pane="types"] .mucols>div{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding-left:0!important;padding-right:0!important}
 /* arena.css section 19 paints these paper-2 in dark mode with a stronger selector: Battle's pages keep them on the page */
-@A[data-look="dark"] .arb :is(.plan,.bmcard,.chpanel,.chblock,.vcard,.prcard,.prband,.gitem,.gsum,.prstart,.fixcol,.chcalcdef,.bmw,.empty-note,.chbring,.dccol,.chdcband,.dcres:not(.ar-sheet)){background:none!important;background-color:transparent!important}
+@A[data-look="dark"] .arb :is(.plan,.bmcard,.chpanel,.chblock,.vcard,.prcard,.prband,.gitem,.gsum,.prstart,.fixcol,.chcalcdef,.bmw,.empty-note,.chbring,.dccol,.chdcband,.rzbeat,.dcres:not(.ar-sheet)){background:none!important;background-color:transparent!important}
 @A .arb :is(.plan,.bmcard,.chpanel,.chblock,.prcard,.prband,.gitem)::before{content:none!important;display:none!important}
 /* folds: a slanted strip you tap, the body upright under it (as My team's folds) */
 @A .arb details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:16px 0 0!important;border-radius:0!important}
