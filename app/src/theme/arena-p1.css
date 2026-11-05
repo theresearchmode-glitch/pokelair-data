@@ -405,12 +405,12 @@
 @media (min-width:1024px){@A #lairSheet .ar-shero .ar-shero-mon{right:-24px;width:250px!important;height:250px!important}@A #lairSheet .ar-shero-big{font-size:88px}}
 
 /* hidden controls stay hidden (Save, Share, Export and Clear hide while the team is empty) */
-@A .ar-tacts #chActs [hidden]{display:none!important}
+@A .ar-tacts #chActs [hidden],@A .ar-tacts #chActs :is(#saveBtn,#shareBtn,#exportBtn,#clearTeam)[hidden]{display:none!important}
 /* My team with no Pokémon: the art and the line, then the two actions full width */
 @A .ar-team .ar-empty{grid-template-columns:96px minmax(0,1fr);margin-top:18px}
 @A .ar-team .ar-empty .ar-acts{grid-column:1/-1;flex-direction:column;align-items:stretch;margin-top:16px;padding-left:6px}
 @A .ar-team .ar-empty>div{display:contents}
-@A .ar-team .ar-empty .ar-btn{white-space:normal;justify-content:flex-start}
+@A .ar-team .ar-empty .ar-btn{white-space:normal;justify-content:flex-start;text-align:left}
 /* the sheet panel takes focus by script when it opens (the close button keeps its ring) */
 @A #lairSheet :is(.lspanel,.lsheet):focus{outline:none!important}
 @A #lairSheet:focus{outline:none!important}

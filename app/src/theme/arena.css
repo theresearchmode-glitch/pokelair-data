@@ -121,6 +121,7 @@
   font:italic 900 30px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-on)!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
 @A .ar-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
 @A .ar-step>span{font:inherit;color:inherit}
+@A .ar-step[hidden]{display:none!important}
 
 /* ---------- 7. game-menu buttons ----------
    .ar-btn: a slanted paper strip with a coloured left edge (--edge, default the section) and a soft shadow.
