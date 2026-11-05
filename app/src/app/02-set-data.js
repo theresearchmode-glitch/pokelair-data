@@ -112,4 +112,4 @@ function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';
   return 'Data as of '+new Date(last).toLocaleDateString('en-US',{month:'short',day:'numeric'})+(days>2?' ('+days+' days old)':'')}
 function showDataDate(){try{if(typeof renderHealth==='function')renderHealth()}catch(e){}const t=dataDateText();if(!t)return;const el=document.getElementById('eyebrow');
   if(el&&!el.querySelector('.datadate')){const sp=document.createElement('span');sp.className='datadate';el.append(' · ',sp)}
-  if(el)el.querySelector('.datadate').textContent=t;const sf=document.getElementById('sideFoot');if(sf)sf.textContent='Pokémon Champions · Reg M-C · '+t}
+  if(el)el.querySelector('.datadate').textContent=t;const sf=document.getElementById('sideFoot');if(sf)sf.textContent='Pokémon Champions, Reg M-C, '+t}

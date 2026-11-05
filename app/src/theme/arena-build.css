@@ -1,0 +1,632 @@
+/* =====================================================================================================================
+   Champions arena, phase 2 group A: Build (gold) and the site-wide overlays. Built from the components in arena.css (ARENA.md);
+   this file lays them out and maps the app's existing markup onto them. Markup additions are in app/75-arena-build.js.
+   Every rule is scoped to the Build pane ([data-pane="auto"], which also holds #cores) or to its overlay's id.
+   Phone first; the desktop layouts start at 1001px.
+   ===================================================================================================================== */
+
+/* ======================= Build for me ======================= */
+/* the page head: no panel; the kicker, the italic display title and the lede sit on the paper */
+@A [data-pane="auto"] .chabhero{background:none!important;border:0!important;box-shadow:none!important;padding:6px var(--ar-gutter) 0!important;margin:0!important;display:block!important}
+@A [data-pane="auto"] .chabhero .mgtitle{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
+@A [data-pane="auto"] .chabhero :is(.mgtdots,.mgtstroke){display:none!important}
+@A [data-pane="auto"] .chabhero .chk{margin:10px 0 0!important;font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;letter-spacing:0!important;text-transform:none!important}
+@A [data-pane="auto"] .chabhero .chpgt{margin:4px 0 0!important;font:italic 800 var(--ar-fs-h1)/1 var(--ar-display)!important;font-stretch:122%!important;letter-spacing:-.015em!important;color:var(--ar-ink)!important;text-wrap:balance}
+@media (max-width:1000px){@A [data-pane="auto"] .chabhero .chpgt{font-size:min(var(--ar-fs-h1),11.2vw)!important}}
+@A [data-pane="auto"] .chabhero .chpgs{margin:12px 0 0!important;max-width:46ch;color:var(--ar-ink-2)!important;font-size:var(--ar-fs-body)!important;line-height:1.45!important}
+/* the controls: where to build from (two slanted plates), Megas on team (a segmented row), Build around, the go button */
+@A [data-pane="auto"] .abctl{display:flex!important;flex-direction:column;align-items:stretch!important;gap:22px!important;margin-top:24px!important;padding:0 4px 0 6px;background:none!important;border:0!important}
+@A [data-pane="auto"] .srcseg{display:grid!important;grid-template-columns:1fr 1fr;gap:12px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
+@A [data-pane="auto"] .srcseg>button{position:relative;isolation:isolate;display:flex!important;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:72px;padding:10px 14px 10px 22px!important;margin:0!important;text-align:left;cursor:pointer;
+  color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important}
+@A [data-pane="auto"] .srcseg>button::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important;background:var(--ar-sheet)!important;border:0!important}
+@A[data-look="dark"] [data-pane="auto"] .srcseg>button::before{background:#24232A!important}
+@A [data-pane="auto"] .srcseg>button::after{content:none!important;display:none!important}
+@A [data-pane="auto"] .srcseg>button b{font:italic 800 19px/1.1 var(--ar-display)!important;font-stretch:112%!important;color:inherit!important}
+@A [data-pane="auto"] .srcseg>button span{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .srcseg>button[aria-pressed="true"]{color:#16141A!important}
+@A [data-pane="auto"] .srcseg>button[aria-pressed="true"]::before{background:var(--ar-gold-plate)!important}
+@A [data-pane="auto"] .srcseg>button[aria-pressed="true"] span{color:#16141A!important}
+/* the on plate also says it by shape: a check before the title */
+@A [data-pane="auto"] .srcseg>button[aria-pressed="true"] b::before{content:"";display:inline-block;width:11px;height:6px;margin:0 8px 4px 0;border:solid currentColor;border-width:0 0 2.5px 2.5px;transform:rotate(-45deg)}
+@A [data-pane="auto"] .megactl{display:flex!important;align-items:center;gap:14px;flex-wrap:wrap;font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;padding:0!important;margin:0!important}
+@A [data-pane="auto"] .megactl .ar-seg>button{min-width:52px;justify-content:center}
+@A [data-pane="auto"] .abaround{margin:0!important;padding:0!important;background:none!important;border:0!important}
+@A [data-pane="auto"] .ablab{font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;margin:0 0 8px!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="auto"] .ablab span{font-weight:500;color:var(--ar-ink-2)!important;margin-left:6px}
+@A [data-pane="auto"] :is(#abAroundIn,#coreMonIn){min-height:48px;font-size:var(--ar-fs-body)!important;padding:0 40px 0 14px!important;width:100%}
+@A [data-pane="auto"] .abaround .cb,@A [data-pane="auto"] .corefind .cb{max-width:420px}
+/* a picked Pokémon: its sprite on its own slanted type field, the name, a round × */
+@A [data-pane="auto"] .corechip{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;gap:10px;min-height:52px;padding:0 6px 0 64px!important;margin:4px 0 0 6px;font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="auto"] .corechip::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:54px;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);
+  background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--a,var(--ar-gold)) var(--ar-field-mix),var(--ar-sheet)) 10%,color-mix(in oklch,var(--b,var(--a,var(--ar-gold))) var(--ar-field-mix),var(--ar-sheet)) 90%)}
+@A[data-look="dark"] [data-pane="auto"] .corechip::before{background:linear-gradient(in oklab 125deg,var(--da,#555) 10%,var(--db,var(--da,#555)) 90%)}
+@A [data-pane="auto"] .corechip img{position:absolute;left:-2px;bottom:4px;width:56px!important;height:56px!important;margin:0!important}
+@A [data-pane="auto"] .corechip button{display:grid;place-items:center;width:44px;height:44px;margin-left:4px;border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:600 20px/1 var(--ar-body)!important;cursor:pointer}
+/* the go button (the yellow primary until a team is built; then "Use this team" is the yellow one and this is a gold-edged strip) */
+@A [data-pane="auto"] #abBtn{align-self:flex-start;width:100%;max-width:460px;margin:2px 0 0!important;justify-content:flex-start}
+@A [data-pane="auto"] #abBtn:not(.ar-primary){--edge:var(--ar-gold);font:600 var(--ar-fs-body)/1.15 var(--ar-body)!important;min-height:52px}
+@A [data-pane="auto"] #abBtn:not(.ar-primary) .ar-go{width:30px;height:30px;background:var(--ar-gold-plate);color:#16141A}
+@A [data-pane="auto"] #abBtn[disabled]{opacity:.6;cursor:progress}
+@A [data-pane="auto"] #abBtn.ar-primary{min-height:64px}
+
+/* the area under the controls */
+@A [data-pane="auto"] #abOut{margin-top:32px;padding:0 var(--ar-gutter)}
+@A [data-pane="auto"] :is(.abstart>.mgdiv,.abcol>.mgdiv){display:none!important}
+/* building: a calm status line with the gold spinner */
+@A [data-pane="auto"] .abbusy{display:flex!important;align-items:center;gap:14px;min-height:64px;padding:0 6px!important;background:none!important;border:0!important;box-shadow:none!important;font:600 var(--ar-fs-body)/1.4 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .abbusy .abspin{width:26px;height:26px;border-width:4px;border-color:var(--ar-gold);border-right-color:transparent;opacity:1}
+@A [data-pane="auto"] .empty-note{background:none!important;border:0!important;box-shadow:none!important;padding:8px 0 8px 22px!important;position:relative;font-size:var(--ar-fs-body)!important;line-height:1.5;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .empty-note::before{content:"";position:absolute;left:4px;top:10px;width:10px;height:20px;background:var(--ar-gold);transform:skewX(var(--ar-slant));border-radius:2px}
+
+/* folds on Build (How it works, Sets and roles, How cores are ranked, More cores, Start from a recent winner): the same
+   slanted strip as My team's folds, in gold */
+@A [data-pane="auto"] details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:14px 0 0!important}
+@A [data-pane="auto"] details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;padding:8px 16px 8px 22px!important;margin-left:6px;background:none!important;border:0!important;box-shadow:none!important;cursor:pointer;list-style:none}
+@A [data-pane="auto"] details.chsec>summary::-webkit-details-marker{display:none}
+@A [data-pane="auto"] details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(var(--ar-gold),var(--ar-gold)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-gold) 16%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
+@A[data-look="dark"] [data-pane="auto"] details.chsec>summary::before{background:linear-gradient(var(--ar-gold),var(--ar-gold)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A [data-pane="auto"] details.chsec>summary .cht{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;border:0!important;background:none!important;padding:0!important;box-shadow:none!important}
+@A [data-pane="auto"] details.chsec>summary .chs{font-size:15px!important;line-height:1.35!important;color:var(--ar-ink-2)!important;margin-top:2px}
+@A [data-pane="auto"] details.chsec>summary .chtog{color:var(--ar-gold-ink)!important}
+@A [data-pane="auto"] details.chsec>.chbody{padding:18px 4px 6px!important;background:none!important;border:0!important}
+
+/* How it works: three short points with a small gold tab (not numbered steps: they are not a sequence) */
+@A [data-pane="auto"] .abwhat{display:grid!important;gap:16px;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="auto"] .abw{display:grid!important;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A [data-pane="auto"] .abwn{width:14px!important;height:22px!important;margin:2px 0 0 6px;font-size:0!important;color:transparent!important;background:var(--ar-gold)!important;border:0!important;box-shadow:none!important;transform:skewX(var(--ar-slant));border-radius:2px!important}
+@A [data-pane="auto"] .abw b{display:block;font:700 var(--ar-fs-body)/1.3 var(--ar-body);color:var(--ar-ink)}
+@A [data-pane="auto"] .abw p{margin:2px 0 0!important;font-size:var(--ar-fs-small)!important;line-height:1.45;color:var(--ar-ink-2)!important}
+
+/* ---------- a built team: the six on a gold stage ---------- */
+@A [data-pane="auto"] .abgrid{display:block!important;margin:0!important}
+@A [data-pane="auto"] .abcol{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;border-radius:0!important}
+@A [data-pane="auto"] .abhead.arb-hidehead{display:none!important}
+@A .arb-stage{position:relative;isolation:isolate;margin:0 calc(-1 * var(--ar-gutter));padding:28px var(--ar-gutter) 30px}
+@A .arb-stage::before{content:"";position:absolute;inset:0;z-index:-1;clip-path:polygon(0 3%,100% 0,100% 97%,0 100%);
+  background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-gold) 30%,var(--ar-paper)),color-mix(in oklch,var(--ar-gold) 10%,var(--ar-paper)))}
+/* dark: a gold wash on black reads brown (Sim: no brown fills), so the stage is graphite; the tiles carry the colour */
+@A[data-look="dark"] .arb-stage::before{background:linear-gradient(110deg,#1E1D22,#0E0E10)}
+@A .arb-sthead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px}
+@A .arb-sthead .ar-kick{margin:0 0 6px}
+@A .arb-opt{margin:8px 0 0;font:500 15px/1.3 var(--ar-body);color:var(--ar-ink-2)}
+@A .arb-sthead .ar-h2{font-size:clamp(24px,7vw,var(--ar-fs-h2))}
+@A .arb-score{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+@A .arb-score .ar-num{font-size:64px;color:var(--ar-ink)}
+@A .arb-score .ar-num:has(small){font-size:48px}
+@A .arb-grade{font-weight:700;font-size:17px;margin-top:6px;color:var(--ar-ink)}
+@A .arb-basis{font-size:15px;color:var(--ar-ink-2);margin-top:2px}
+@A .arb-stage .ar-six{padding:0 4px 0 6px}
+@A .arb-nums{display:grid;gap:18px;margin-top:26px;padding:0 4px 0 6px}
+@A .arb-trio{grid-template-columns:repeat(auto-fit,minmax(78px,1fr))!important;margin:0!important}
+@A .arb-trio .ar-num{font-size:32px}
+@A .arb-checks{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;font-size:15px;color:var(--ar-ink-2)}
+@A .arb-checks>b{font:700 16px var(--ar-body);color:var(--ar-ink)}
+@A .arb-checks .ar-pips{margin-left:auto}
+/* the old checks line moves here: the "missing" note only (the count is the pips) */
+@A .arb-checks .minick{flex-basis:100%;display:block!important;font-size:0!important;background:none!important;border:0!important;padding:0!important;color:var(--ar-ink-2)!important;text-align:left!important}
+@A .arb-checks .minick b{display:none!important}
+@A .arb-checks .minick i{display:block;font:500 15px/1.4 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
+@A .arb-checks .minick i::first-letter{text-transform:uppercase}
+/* the plan words and the reasons */
+@A [data-pane="auto"] .abgp{display:flex!important;flex-wrap:wrap;gap:8px 10px;margin:22px 0 0!important;padding:0 4px 0 8px}
+@A [data-pane="auto"] .abgp .sev{position:relative;isolation:isolate;display:inline-flex;align-items:center;min-height:30px;padding:0 12px!important;font:600 15px/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="auto"] .abgp .sev::before{content:""!important;display:block!important;position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);background:color-mix(in oklch,var(--ar-gold) 24%,var(--ar-sheet))!important;width:auto!important;height:auto!important;margin:0!important}
+@A[data-look="dark"] [data-pane="auto"] .abgp .sev::before{background:linear-gradient(var(--ar-gold),var(--ar-gold)) 0 0/3px 100% no-repeat,#2A2930!important}
+@A [data-pane="auto"] .gemline{margin:16px 0 0 6px!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .abwhy{margin:18px 0 0!important;padding:0 0 0 6px!important;list-style:none!important;display:grid;gap:10px}
+@A [data-pane="auto"] .abwhy li{position:relative;padding-left:22px;font-size:var(--ar-fs-small);line-height:1.45;color:var(--ar-ink-2)}
+@A [data-pane="auto"] .abwhy li::before{content:"";position:absolute;left:2px;top:6px;width:8px;height:12px;background:var(--ar-gold);transform:skewX(var(--ar-slant));border-radius:2px}
+@A [data-pane="auto"] .abcol>.row{display:flex!important;flex-wrap:wrap;gap:12px 14px;align-items:center;margin:24px 0 0!important;padding:0 4px 0 6px}
+@A [data-pane="auto"] .abcol>.row>[data-abuse]{flex:1 1 100%;max-width:460px}
+@A [data-pane="auto"] .abcol>.row .ar-btn:not(.ar-primary){--edge:var(--ar-gold)}
+@A [data-pane="auto"] .abcol>.row .ar-btn[disabled]{opacity:.55;cursor:not-allowed}
+@A [data-pane="auto"] .abcol>.row .sdcopy svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2}
+/* the six in the fold: typographic rows (sprite on a small type field, the name and item, the facts in one line) */
+@A [data-pane="auto"] .abname{font:700 var(--ar-fs-body)/1.25 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .abname .abit{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+
+/* ---------- start from a recent winner: team sheets with each Pokémon on its own type field ---------- */
+@A [data-pane="auto"] .abwinhead{display:none!important}
+@A [data-pane="auto"] .evteam{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:18px 0 22px!important;margin:0!important;border-bottom:1px solid var(--ar-rule)!important}
+@A [data-pane="auto"] .evteam .ttwho .pt{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .evteam .evpl{position:relative;isolation:isolate;font:700 14px/1 var(--ar-body)!important;font-style:normal!important;padding:5px 9px!important;color:#16141A!important;background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="auto"] .evteam .evpl::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-gold-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A [data-pane="auto"] .evteam .ttwho .vsub{font:600 15px var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .evteam .ttwho .t2{margin-top:4px;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .evteam .tgrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px!important;margin:16px 0 0!important;padding:0 4px 0 6px!important;background:none!important;border:0!important}
+@A [data-pane="auto"] .evteam .tgm{position:relative;display:block!important;padding:30px 0 0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;min-width:0;text-align:left}
+@A [data-pane="auto"] .evteam .tgm::before{content:"";position:absolute;left:0;right:0;top:30px;height:52px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l);box-shadow:var(--ar-shadow-s);
+  background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--a,var(--ta)) var(--ar-field-mix),var(--ar-sheet)) 10%,color-mix(in oklch,var(--b,var(--tb,var(--a))) var(--ar-field-mix),var(--ar-sheet)) 90%)}
+@A[data-look="dark"] [data-pane="auto"] .evteam .tgm::before{background:linear-gradient(in oklab 125deg,var(--da,#444) 10%,var(--db,var(--da,#444)) 90%)}
+@A [data-pane="auto"] .evteam .tgm img{position:relative;z-index:1;display:block;width:76px!important;height:76px!important;margin:-26px auto 0!important;filter:drop-shadow(0 6px 6px rgba(30,10,40,.2))}
+@A [data-pane="auto"] .evteam .tgm .tgn{display:block;margin-top:8px;padding-left:2px;font:italic 800 15px/1.15 var(--ar-display)!important;font-stretch:104%!important;color:var(--ar-ink)!important;white-space:normal!important;overflow-wrap:anywhere;text-align:left!important;position:static!important;background:none!important}
+@A [data-pane="auto"] .evteam .tgm .tgmk{position:absolute;right:6px;top:34px;z-index:2;display:grid;place-items:center;width:22px;height:22px;font:800 12px/1 var(--ar-body)!important;font-style:normal!important;color:#fff!important;background:none!important;border:0!important;isolation:isolate}
+@A [data-pane="auto"] .evteam .tgm .tgmk::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:3px}
+@A [data-pane="auto"] .evteam .ttmeta{margin:16px 0 0!important;padding-left:6px}
+@A [data-pane="auto"] .evteam .archchip{position:relative;isolation:isolate;font:600 14px/1.2 var(--ar-body)!important;padding:4px 10px!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-transform:none!important}
+@A [data-pane="auto"] .evteam .archchip::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);background:color-mix(in oklch,var(--ac,var(--ar-gold)) 26%,var(--ar-sheet))}
+@A[data-look="dark"] [data-pane="auto"] .evteam .archchip::before{background:linear-gradient(var(--ac,var(--ar-gold)),var(--ac,var(--ar-gold))) 0 0/3px 100% no-repeat,#2A2930}
+@A [data-pane="auto"] .evteam .evbtns{display:flex!important;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:16px 0 0!important;padding-left:6px}
+@A [data-pane="auto"] .evteam .evbtns .ar-btn{--edge:var(--ar-gold)}
+@A [data-pane="auto"] .evteam .evbtns .sdcopy svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+@A [data-pane="auto"] .evteam .evbtns .ar-link{min-height:44px}
+
+/* ======================= Build around a core ======================= */
+@A [data-pane="auto"]>#cores{padding:0 var(--ar-gutter)!important}
+@A [data-pane="auto"] #cores{margin:52px 0 0!important;padding:0;background:none!important;border:0!important}
+@A [data-pane="auto"] #cores>.head{display:none!important}
+@A [data-pane="auto"] #cores>.chpghead{display:flex;flex-direction:column-reverse;align-items:flex-start;padding:0 0 0 46px!important;margin:0 0 6px!important;position:relative;background:none!important;border:0!important}
+@A [data-pane="auto"] #cores>.chpghead::before{content:"";position:absolute;left:4px;top:4px;width:28px;height:28px;background:var(--ar-gold);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A [data-pane="auto"] #cores>.chpghead .chpgt{font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.01em!important;color:var(--ar-ink)!important;margin:0!important}
+@A [data-pane="auto"] #cores>.chpghead .chk::before,@A [data-pane="auto"] #cores>.chpghead .chk::after{content:none!important;display:none!important}
+@A [data-pane="auto"] #cores>.chpghead .chk{margin:6px 0 0!important;font:500 var(--ar-fs-small)/1.4 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="auto"] #cores>.chpghead .chk::first-letter{text-transform:uppercase}
+@A [data-pane="auto"] .corectl{display:flex!important;flex-wrap:wrap;gap:12px 18px;align-items:center;margin:18px 0 0!important;padding:0 4px 0 2px;background:none!important;border:0!important}
+@A [data-pane="auto"] .corefind{flex:1 1 260px;min-width:0}
+@A [data-pane="auto"] .corelist{display:grid!important;gap:0;margin-top:12px!important;background:none!important;border:0!important}
+/* a core: its Pokémon each on a small slanted type field, the names, the win rate as a big numeral, one hairline */
+@A [data-pane="auto"] .corerow.arb-row{display:grid!important;grid-template-columns:30px minmax(0,1fr);grid-template-areas:"rk main" "rk stat" "rk btns";column-gap:12px;row-gap:14px;align-items:start;
+  padding:22px 0 20px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
+@A [data-pane="auto"] .corerow.arb-row::before,@A [data-pane="auto"] .corerow.arb-row::after{content:none!important;display:none!important}
+@A [data-pane="auto"] .corerow .corerk{grid-area:rk;position:static!important;padding-top:12px;font:italic 900 24px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important;background:none!important;border:0!important}
+@A [data-pane="auto"] .corerow .coremain{grid-area:main;min-width:0}
+@A [data-pane="auto"] .corerow .coresprs{display:flex!important;gap:10px;padding:16px 0 0 4px;margin:0!important}
+/* a full team: its six as a 3 by 2 block of small fields */
+@A [data-pane="auto"] .corerow.six .coresprs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 8px;max-width:330px}
+@A [data-pane="auto"] .corerow.six .arb-cf,@A [data-pane="auto"] .corerow.six.chcbig .arb-cf{width:auto;height:44px}
+@A [data-pane="auto"] .corerow.six .arb-cf img,@A [data-pane="auto"] .corerow.six.chcbig .arb-cf img{width:62px!important;height:62px!important}
+@A [data-pane="auto"] .arb-cf{position:relative;display:block;width:68px;height:44px;flex:none}
+@A [data-pane="auto"] .arb-cf .arb-cff{position:absolute;inset:0;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;box-shadow:var(--ar-shadow-s)}
+@A [data-pane="auto"] .arb-cf img{position:absolute!important;left:50%;bottom:0;width:64px!important;height:64px!important;max-width:none;margin:0!important;transform:translateX(-50%);z-index:1;filter:drop-shadow(0 4px 4px rgba(30,10,40,.2))}
+@A [data-pane="auto"] .arb-cf.is-mega img{filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b,var(--a))) drop-shadow(0 2px 0 var(--b,var(--a))) drop-shadow(0 -2px 0 var(--a))}
+@A [data-pane="auto"] .corerow.chcbig .arb-cf{width:96px;height:62px}
+@A [data-pane="auto"] .corerow.chcbig .arb-cf img{width:92px!important;height:92px!important}
+@A [data-pane="auto"] .corerow .corenames{margin-top:12px;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .corerow.chcbig .corenames{font:italic 800 19px/1.2 var(--ar-display)!important;font-stretch:108%!important}
+@A [data-pane="auto"] .corerow .coretags{display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px}
+@A [data-pane="auto"] .corerow .coretags .tag{position:relative;isolation:isolate;font:600 14px/1.2 var(--ar-body)!important;padding:4px 10px!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="auto"] .corerow .coretags .tag::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);background:color-mix(in oklch,var(--ar-gold) 24%,var(--ar-sheet))}
+@A[data-look="dark"] [data-pane="auto"] .corerow .coretags .tag::before{background:linear-gradient(var(--ar-gold),var(--ar-gold)) 0 0/3px 100% no-repeat,#2A2930}
+@A [data-pane="auto"] .corerow .corestat{grid-area:stat;display:flex!important;flex-wrap:wrap;align-items:baseline;column-gap:14px;row-gap:2px;text-align:left;padding:0;background:none!important;border:0!important;min-width:0}
+@A [data-pane="auto"] .corerow .corestat>b{flex-basis:100%}
+@A [data-pane="auto"] .corerow .corestat>b i{display:inline!important;margin-left:8px}
+@A [data-pane="auto"] .corerow .corestat .dbdt{flex-basis:auto}
+@A [data-pane="auto"] .corerow .corestat>b{font:italic 900 34px/.95 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important;font-variant-numeric:tabular-nums;white-space:nowrap}
+@A [data-pane="auto"] .corerow.chcbig .corestat>b{font-size:40px!important;text-shadow:.05em .04em 0 var(--ar-misprint)}
+@A [data-pane="auto"] .corerow .corestat>b i{font:500 15px/1.2 var(--ar-body)!important;font-style:normal!important;letter-spacing:0;color:var(--ar-ink-2)!important;text-shadow:none}
+@A [data-pane="auto"] .corerow .corestat>span{font:700 15px/1.3 var(--ar-body)!important}
+@A [data-pane="auto"] .corerow .corestat>span.up{color:var(--ar-green-ink)!important}
+@A [data-pane="auto"] .corerow .corestat>span.dn{color:var(--ar-pink-ink)!important}
+@A [data-pane="auto"] .corerow .corestat>small{font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .corerow .corestat .dbdt{margin-top:6px;min-height:44px!important;padding:0 14px!important;font:600 15px var(--ar-body)!important}
+@A [data-pane="auto"] .corerow .corebtns{grid-area:btns;display:flex!important;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:0!important;padding-left:2px}
+@A [data-pane="auto"] .corerow .corebtns .ar-btn{--edge:var(--ar-gold)}
+@A [data-pane="auto"] .corerow .corebtns .ar-btn[data-sure]{--edge:var(--ar-pink)}
+@A [data-pane="auto"] .corerow .corebtns .sdcopy svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+@A [data-pane="auto"] .corerow .inline-confirm{flex-basis:100%;font:600 var(--ar-fs-small)/1.4 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .morebar{margin:18px 0 0!important;padding-left:6px;background:none!important;border:0!important}
+@A [data-pane="auto"] .morebar .ar-btn{--edge:var(--ar-gold)}
+@A [data-pane="auto"] .coreintro{font-size:var(--ar-fs-small)!important;line-height:1.5!important;color:var(--ar-ink-2)!important;max-width:70ch}
+
+/* Build on tablets and desktop */
+@media (min-width:600px){
+  @A [data-pane="auto"] .corerow.arb-row:not(.chcbig){grid-template-columns:30px minmax(0,1fr) auto;grid-template-areas:"rk main stat" "rk btns btns"}
+  @A [data-pane="auto"] .corerow.arb-row:not(.chcbig) .corestat{flex-direction:column;flex-wrap:nowrap;align-items:flex-end;text-align:right;padding-top:12px}
+  @A [data-pane="auto"] .corerow.arb-row:not(.chcbig) .corestat>b{flex-basis:auto}
+  @A [data-pane="auto"] .corerow.arb-row:not(.chcbig) .corestat>b i{display:block!important;margin:6px 0 0}
+  @A .arb-stage .ar-six{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @A .arb-nums{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:end;column-gap:32px}
+  @A [data-pane="auto"] .abcol>.row>[data-abuse]{flex:0 1 auto;min-width:240px}
+}
+@media (min-width:1001px){
+  /* the head and the controls side by side, the result or the start content below at full width */
+  @A [data-pane="auto"] .chabhero{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(400px,520px);column-gap:56px;align-items:start;padding-top:18px!important}
+  @A [data-pane="auto"] .chabhero .chpgt{font-size:clamp(52px,4.8vw,76px)!important}
+  @A [data-pane="auto"] .abctl{margin-top:0!important}
+  @A [data-pane="auto"] #abOut{margin-top:48px}
+  @A .arb-stage{margin:0;padding:34px 36px 38px}
+  @A .arb-stage::before{clip-path:polygon(0 4%,100% 0,100% 96%,0 100%)}
+  @A .arb-stage .ar-six{grid-template-columns:repeat(6,minmax(0,1fr));gap:24px 16px}
+  @A .arb-stage .ar-art.ar-m{--h:clamp(104px,8.6vw,132px);--s:clamp(112px,9.4vw,142px)}
+  @A .arb-score .ar-num{font-size:84px}
+  @A .arb-score .ar-num:has(small){font-size:64px}
+  @A .arb-sthead .ar-h2{font-size:var(--ar-fs-h2)}
+  @A .arb-nums{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  @A [data-pane="auto"] .abcol{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:48px;align-items:start}
+  @A [data-pane="auto"] .abcol>:is(.arb-stage,.row,.gemline){grid-column:1/-1}
+  @A [data-pane="auto"] .abcol>.row{order:1;margin-top:28px!important}
+  @A [data-pane="auto"] .abcol>.arb-stage{order:0}
+  @A [data-pane="auto"] .abcol>details.chsec{order:3;grid-column:2;margin-top:32px!important}
+  @A [data-pane="auto"] .abcol>.abgp{order:2;grid-column:1;margin-top:32px!important}
+  @A [data-pane="auto"] .abcol>.abwhy{order:3;grid-column:1}
+  @A [data-pane="auto"] .abcol>.gemline{order:2}
+  /* start content: How it works and the recent winners side by side, the cores under them */
+  @A [data-pane="auto"] .abstart{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:48px;align-items:start}
+  @A [data-pane="auto"] .abstart>*{grid-column:1/-1}
+  @A [data-pane="auto"] .abstart>details[data-chf="abhow"]{grid-column:1;grid-row:1}
+  @A [data-pane="auto"] .abstart>details[data-chf="abwin"]{grid-column:2;grid-row:1}
+  @A [data-pane="auto"] .abstart>#cores{grid-row:2}
+  @A [data-pane="auto"] #cores{margin-top:64px!important}
+  @A [data-pane="auto"] .corelist{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:40px}
+  @A [data-pane="auto"] .corelist .corerow.arb-row:not(.chcbig){grid-column:1/-1}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist .corerow.arb-row{grid-column:auto}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist>.morebar{grid-column:1/-1}
+  /* the top three as columns: art first, the numbers under it */
+}
+
+/* ======================= the ⋯ menu (#side) ======================= */
+@A #side{background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;box-shadow:var(--ar-shadow-nav)!important;font-family:var(--ar-body)}
+@A[data-look="dark"] #side{background:#141316!important}
+@A #side::after{background:var(--ar-ink-3)!important;opacity:.5}
+@A #side .sidetop{background:none!important;border:0!important;padding:14px 16px 6px!important}
+@A #side .sideclose.ar-x{display:grid!important;font-size:22px!important;margin-left:auto}
+/* each group: a small slanted tab in its section colour, then its pages as calm rows */
+@A #side :is(.sgroup,.mgtheme){background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:6px 12px 10px!important;margin:0!important}
+@A #side .sgl{display:flex!important;align-items:center;gap:10px;margin:10px 0 4px 6px!important;font:italic 800 17px/1.2 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important}
+@A #side .sgl::before{content:"";flex:none;width:16px;height:16px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:3px}
+@A #side .mgtheme .sgl::before{background:var(--ar-ink-3)}
+@A #side .sidenav button[role=tab]{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;width:100%;min-height:48px;padding:0 14px 0 18px!important;margin:2px 0 0!important;
+  font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left}
+@A #side .sidenav button[role=tab]::before{content:none!important;display:none!important}
+@A #side .sidenav button[role=tab]::after{content:none!important}
+@A #side .sidenav button[role=tab] .nic{width:22px!important;height:22px!important;flex:none;color:var(--ar-sec-ink)!important;stroke:currentColor}
+@A #side .sidenav button[role=tab] .tc{margin-left:auto;font:700 14px/1 var(--ar-body)!important;padding:4px 7px!important;background:color-mix(in oklch,var(--ar-ink) 9%,transparent)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-s)!important}
+@media (hover:hover){@A #side .sidenav button[role=tab]:not([aria-selected="true"]):hover::before{content:""!important;display:block!important;position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);background:color-mix(in oklch,var(--ar-sec) 12%,transparent)!important}}
+/* the page you are on: the filled section plate, bold, a check */
+@A #side .sidenav button[role=tab][aria-selected="true"]{color:var(--ar-sec-on)!important;font-weight:700!important}
+@A #side .sidenav button[role=tab][aria-selected="true"]::before{content:""!important;display:block!important;position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);background:var(--ar-sec-plate)!important;box-shadow:var(--ar-shadow-s)!important;width:auto!important;height:auto!important}
+@A #side .sidenav button[role=tab][aria-selected="true"] :is(.nic,.tc){color:var(--ar-sec-on)!important}
+@A #side .sidenav button[role=tab][aria-selected="true"] .tc{background:rgba(0,0,0,.2)!important}
+@A #side .sgroup:not(:has(.sgl)) button[role=tab]{--ar-sec:var(--ar-pink);--ar-sec-plate:var(--ar-pink-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-pink-ink)}
+/* the theme switch: arena segmented strips */
+@A #side .mgtheme{display:block!important}
+@A #side .mgtheme .themeseg~.themeseg{display:none!important}
+@A #side .themeseg.ar-seg{display:flex!important;width:auto!important;border:0!important;background:none!important;margin:6px 0 4px 6px!important;padding:0 0 0 4px!important;--ar-sec:var(--ar-ink);--ar-sec-plate:#16141A;--ar-sec-on:#fff}
+@A[data-look="dark"] #side .themeseg.ar-seg{--ar-sec-plate:#F4F1EC;--ar-sec-on:#16141A}
+@A #side .themeseg.ar-seg>button{flex:1 1 0!important;justify-content:center}
+@A #side .themeseg.ar-seg>button svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2}
+@A #side .themeseg.ar-seg>button[aria-pressed="true"]::after{display:none!important}
+@A #side .themeseg.ar-seg>button .sr{position:static!important;width:auto!important;height:auto!important;clip:auto!important;overflow:visible!important;white-space:nowrap}
+@A #side .sidefoot{background:none!important;border:0!important;padding:8px 18px 24px!important}
+@A #side .sidecred{font:500 15px/1.4 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@media (max-width:1000px){
+  @A #side.open{border-radius:var(--ar-r-xl) var(--ar-r-xl) 0 0!important}
+}
+@media (min-width:1001px){
+  @A #side.open{width:360px!important;border-radius:var(--ar-r-xl) 0 0 var(--ar-r-xl)!important}
+  @A #side .sidenav button[role=tab]{min-height:44px}
+}
+
+/* ======================= Jump search (Ctrl K) ======================= */
+@A #jump.jump{background:color-mix(in srgb,var(--ar-paper) 88%,transparent)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@A #jump .jbox{width:min(640px,100%)!important;max-height:min(78vh,720px);display:flex;flex-direction:column;padding:10px 10px 6px!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;overflow:hidden}
+@A[data-look="dark"] #jump .jbox{background:#1A191D!important}
+@A #jump #jumpIn{flex:none;min-height:56px;padding:0 16px 0 18px!important;font:600 18px/1.2 var(--ar-body)!important;background:var(--ar-paper-2)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:inset 0 -3px 0 var(--ar-sec)!important;outline:0}
+@A[data-look="dark"] #jump #jumpIn{background:#24232A!important}
+@A #jump #jumpIn::placeholder{color:var(--ar-ink-3)}
+@A #jump #jumpList{flex:1 1 auto;min-height:0;overflow:auto;margin:8px 0 0!important;padding:4px 4px 6px 8px!important;list-style:none;background:none!important;border:0!important}
+@A #jump #jumpList li[data-jo]{position:relative;isolation:isolate;display:grid!important;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;column-gap:14px;min-height:60px;padding:6px 12px 6px 8px!important;margin:0!important;cursor:pointer;
+  background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;color:var(--ar-ink)!important}
+@A #jump #jumpList li[data-jo]::after{content:none!important}
+@A #jump #jumpList li.arb-tool{grid-template-columns:minmax(0,1fr) auto;padding-left:18px!important}
+@A #jump #jumpList li.arb-tool::after{content:""!important;display:block!important;position:absolute;left:4px;top:50%;width:8px;height:20px;margin-top:-10px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:2px}
+@A #jump .arb-jf{position:relative;display:block;width:52px;height:36px;margin-left:4px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important}
+@A #jump .arb-jf img{position:absolute!important;left:50%;bottom:-2px;width:54px!important;height:54px!important;max-width:none;margin:0!important;transform:translateX(-50%) skewX(var(--ar-unslant))}
+@A #jump #jumpList .jl{min-width:0}
+@A #jump #jumpList .jl b{display:block;font:700 var(--ar-fs-body)/1.25 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A #jump #jumpList .jl span{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@A #jump #jumpList .jk{font:600 14px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;text-transform:none!important;letter-spacing:0!important}
+/* the highlighted result: the section colour wash behind it, drawn as a slanted strip */
+@A #jump #jumpList li[aria-selected="true"]{border-bottom-color:transparent!important}
+@A #jump #jumpList li[aria-selected="true"]::before{content:""!important;display:block!important;position:absolute;inset:2px 0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,color-mix(in oklch,var(--ar-sec) 16%,var(--ar-sheet))!important}
+@A[data-look="dark"] #jump #jumpList li[aria-selected="true"]::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,color-mix(in oklab,var(--ar-sec) 20%,#24232A)!important}
+@media (hover:hover){@A #jump #jumpList li[data-jo]:not([aria-selected="true"]):hover{background:color-mix(in oklch,var(--ar-ink) 5%,transparent)!important}}
+@A #jump #jumpList .jnone{padding:18px 12px 18px 22px!important;position:relative;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important}
+@A #jump #jumpList .jnone::before{content:"";position:absolute;left:6px;top:22px;width:8px;height:18px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:2px}
+@A #jump .jhint{display:flex;flex-wrap:wrap;gap:6px 18px;padding:8px 10px 6px!important;margin:0!important;border-top:1px solid var(--ar-rule);font:500 15px/1.4 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important}
+@A #jump .jhint kbd{display:inline-block;min-width:24px;margin-right:4px;padding:1px 6px;text-align:center;font:600 14px/1.4 var(--ar-body);color:var(--ar-ink);background:color-mix(in oklch,var(--ar-ink) 8%,transparent);border-radius:var(--ar-r-s)}
+@media (max-width:700px){@A #jump .jhint{display:none!important}@A #jump.jump{padding:12px 12px 0!important}@A #jump .jbox{max-height:calc(100vh - 120px)}}
+
+/* ======================= Feedback, Report a mistake, Copy for Showdown: arena dialogs ======================= */
+@A :is(#fbSheet.fbwrap,#sdSheet.sdsheet):not([hidden]){background:color-mix(in srgb,var(--ar-paper) 88%,transparent)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@A :is(#fbSheet .fbbox,#sdSheet .sdbox){position:relative;width:min(560px,100%)!important;max-height:calc(100vh - 24px);overflow:auto;padding:22px 20px 20px 26px!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;font-family:var(--ar-body)}
+@A[data-look="dark"] :is(#fbSheet .fbbox,#sdSheet .sdbox){background:#1A191D!important}
+/* a gold spine down the left edge: the dialog's one colour mark */
+@A :is(#fbSheet .fbbox,#sdSheet .sdbox)::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:6px;background:var(--ar-sec);border-radius:0 3px 3px 0}
+@A :is(#fbSheet .fbh,#sdSheet .sdh){display:flex!important;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px!important;padding:0!important;background:none!important;border:0!important}
+@A :is(#fbSheet .fbh>b,#sdSheet .sdh>b){font:italic 800 var(--ar-fs-h3)/1.15 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important}
+@A :is(#fbSheet .fbx,#sdSheet .sdx).ar-x{flex:none;font-size:22px!important;position:relative}
+@A :is(#fbSheet,#sdSheet) .t2{font-size:var(--ar-fs-small)!important;line-height:1.5!important;color:var(--ar-ink-2)!important;margin:0 0 14px!important}
+@A #fbSheet .fbkind.ar-seg{margin:0 0 16px!important}
+@A #fbSheet .fbkind.ar-seg>button{min-height:44px!important}
+@A #fbSheet textarea,@A #sdSheet textarea{display:block;width:100%;min-height:110px;padding:12px 14px!important;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;background:var(--ar-paper-2)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important;resize:vertical}
+@A[data-look="dark"] :is(#fbSheet,#sdSheet) textarea{background:#24232A!important}
+@A #fbSheet textarea:focus,@A #sdSheet textarea:focus{box-shadow:inset 0 -3px 0 var(--ar-sec)!important}
+@A #sdSheet textarea{font:500 15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;min-height:240px}
+@A #fbSheet .fbanon{margin:10px 0 0!important;font-size:15px!important;line-height:1.45;color:var(--ar-ink-2)!important}
+@A #fbSheet .fbfoot{display:flex!important;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap;margin-top:18px!important;background:none!important;border:0!important}
+@A #fbSheet .fbfoot #fbMsg{margin:0!important;flex:1 1 160px}
+@A #fbSheet #fbSend.ar-primary{min-height:56px;min-width:150px;font-size:19px}
+/* Report a mistake: what was on screen, on a soft field washed in that Pokémon's types */
+@A #fbSheet .fbctx{display:block;margin:0 0 14px!important;padding:12px 14px 12px 20px!important;white-space:pre-line;font:500 15px/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;position:relative;
+  background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--a,var(--ar-gold)) 14%,var(--ar-paper-2)),var(--ar-paper-2) 70%)!important}
+@A[data-look="dark"] #fbSheet .fbctx{background:#24232A!important}
+@A #fbSheet .fbctx::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:0 3px 3px 0;background:linear-gradient(in oklch 180deg,var(--a,var(--ar-gold)),var(--b,var(--a,var(--ar-gold))))}
+@A #fbSheet .fbctx>b{display:block;margin-bottom:4px;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A #sdSheet .sdnote{margin:12px 0 0!important}
+@A #sdSheet .row{display:flex!important;flex-wrap:wrap;gap:12px 14px;margin-top:18px!important}
+@A #sdSheet .row .ar-btn{--edge:var(--ar-sec)}
+@media (max-width:759px){
+  /* phones: the dialog is a bottom sheet with rounded top corners */
+  @A #fbSheet .fbbox{width:100%!important;border-radius:var(--ar-r-xl) var(--ar-r-xl) 0 0!important;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
+  @A #sdSheet .sdbox{max-height:calc(100vh - 32px)}
+}
+
+/* ======================= welcome card and What's new (Home) ======================= */
+/* welcome: a pink stage (Home's colour), the three steps as numbered plates (they are a real sequence) */
+@A #welcomeCard.welcome{position:relative;isolation:isolate;margin:40px calc(-1 * var(--ar-gutter)) 0!important;padding:32px calc(var(--ar-gutter) + 6px) 34px!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;color:var(--ar-ink)!important}
+@A #welcomeCard.welcome::before{content:"";position:absolute;inset:0;z-index:-1;clip-path:polygon(0 4%,100% 0,100% 96%,0 100%);background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-pink) 13%,var(--ar-paper)),color-mix(in oklch,var(--ar-pink) 4%,var(--ar-paper)))}
+/* dark: a pink wash on black reads maroon (Sim: no maroon fills): graphite, the step plates carry the pink */
+@A[data-look="dark"] #welcomeCard.welcome::before{background:linear-gradient(110deg,#1E1D22,#0E0E10)}
+@A #welcomeCard .wk{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important;margin:0!important}
+@A #welcomeCard .wt{margin:4px 0 0!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
+@A #welcomeCard .wsteps{list-style:none!important;margin:22px 0 0!important;padding:0!important;display:grid;gap:18px;counter-reset:none}
+@A #welcomeCard .wsteps>li{display:grid!important;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto auto;column-gap:14px;align-items:start;margin:0!important;padding:0!important;background:none!important;border:0!important}
+@A #welcomeCard .wsteps>li::before{content:none!important;display:none!important}
+@A #welcomeCard .wsteps>li>.ar-step{grid-row:1/3;--ar-sec-plate:var(--ar-pink-plate);--ar-sec-on:#fff;width:44px!important;height:44px!important;font-size:24px!important}
+@A #welcomeCard .wsteps>li>b{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;align-self:end}
+@A #welcomeCard .wsteps>li>span:not(.ar-step){font:500 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:2px}
+@A #welcomeCard>.t2{margin:22px 0 0!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
+@A #welcomeCard>.row{display:flex!important;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:20px!important;padding-left:4px}
+@media (min-width:1001px){
+  @A #welcomeCard.welcome{margin:48px 0 0!important;padding:40px 40px 42px!important}
+  @A #welcomeCard .wsteps{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+}
+/* What's new: styled with Home in arena-p1.css (the coordinator's arena strip); nothing here */
+
+/* ======================= toasts ======================= */
+/* a slanted ink plate (light ink plate in dark mode), the text upright; Undo is a yellow link */
+@A #toast.toast{isolation:isolate;max-width:min(520px,calc(100vw - 32px));min-height:48px;display:flex;align-items:center;gap:12px;padding:10px 22px!important;font:600 var(--ar-fs-small)/1.35 var(--ar-body)!important;color:#fff!important;
+  background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;clip-path:none!important;text-align:left}
+@A #toast.toast[hidden]{display:none!important}
+@A #toast.toast::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow)}
+@A[data-look="dark"] #toast.toast{color:#16141A!important}
+@A[data-look="dark"] #toast.toast::before{background:#F4F1EC}
+@A #toast .tundo{flex:none;min-height:36px;padding:0 4px!important;margin:0!important;font:700 var(--ar-fs-small)/1 var(--ar-body)!important;color:var(--ar-yellow)!important;background:none!important;border:0!important;box-shadow:none!important;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px;cursor:pointer;position:relative}
+@A #toast .tundo::after{content:"";position:absolute;inset:-6px -8px}
+@A[data-look="dark"] #toast .tundo{color:#005E96!important}
+@media (max-width:1000px){@A #toast.toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}}
+@media (min-width:1001px){@A #toast.toast{bottom:32px!important}}
+
+/* ======================= the shared-link bar ======================= */
+@A #sharedBar.sharedbar{width:min(600px,calc(100% - 24px))!important}
+@A #sharedBar .sbin{position:relative;isolation:isolate;display:flex!important;align-items:center;flex-wrap:wrap;gap:10px 14px;padding:14px 16px 14px 26px!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important}
+@A[data-look="dark"] #sharedBar .sbin{background:#1A191D!important}
+@A #sharedBar .sbin::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:6px;background:var(--ar-blue);border-radius:0 3px 3px 0}
+@A #sharedBar .sbin>div{flex:1 1 180px;min-width:0}
+@A #sharedBar .sbin>div b{display:block;font:italic 800 18px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A #sharedBar .sbin>div span{display:block;margin-top:2px;font:500 15px/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A #sharedBar .ar-btn{--edge:var(--ar-blue);font-weight:700}
+
+/* ======================= the health and regulation bars (Home and the Meta pages) ======================= */
+/* no frame: a soft field with a slanted tab in its colour (gold for older data, blue for a new regulation), the text upright */
+@A main :is(#healthBar.healthbar,#regBar.regbar){position:relative;margin:14px var(--ar-gutter) 0!important;padding:14px 16px 14px 44px!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-l)!important;
+  font:500 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A main #healthBar.healthbar{background:color-mix(in oklch,var(--ar-gold) 20%,var(--ar-paper-2))!important}
+@A main #regBar.regbar{background:color-mix(in oklch,var(--ar-blue) 13%,var(--ar-paper-2))!important}
+@A[data-look="dark"] main #healthBar.healthbar{background:#1A191D!important}
+@A[data-look="dark"] main #regBar.regbar{background:#1A191D!important}
+@A main :is(#healthBar,#regBar)::before{content:""!important;position:absolute;left:16px;top:16px;width:14px;height:20px;border-radius:3px!important;box-shadow:none!important;transform:skewX(var(--ar-slant));background:var(--ar-gold)!important}
+@A main #regBar::before{background:var(--ar-blue)!important}
+@A main :is(#healthBar,#regBar) b{font-weight:700;color:var(--ar-ink)!important}
+@A main :is(#healthBar,#regBar) .t2{display:block;margin-top:4px;font-size:15px!important;color:var(--ar-ink-2)!important}
+@A main :is(#healthBar,#regBar)[hidden]{display:none!important}
+@media (min-width:1001px){@A main :is(#healthBar.healthbar,#regBar.regbar){margin:16px var(--ar-gutter) 0!important}}
+
+/* ======================= the footer ======================= */
+@A footer.legal{background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink-2)!important;margin-top:56px!important}
+@A footer.legal .inner{position:relative;padding:28px var(--ar-gutter) 32px!important;border-top:1px solid var(--ar-rule)!important;background:none!important}
+@A footer.legal .lgbrand{display:flex!important;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px!important}
+@A footer.legal .lgtag{font:italic 800 18px/1.1 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important;letter-spacing:-.01em}
+@A footer.legal p{max-width:72ch;margin:0 0 12px!important;font:500 15px/1.55 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A footer.legal .lglinks{display:flex!important;flex-wrap:wrap;gap:0 24px;margin-top:12px!important}
+@A footer.legal .lgsp{display:none!important}
+@A footer.legal .ar-link{font-size:15px!important;min-height:44px}
+@A footer.legal .lgsrc .ar-link{display:inline-flex;margin-left:4px}
+@media (min-width:1001px){
+  @A footer.legal .inner{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);column-gap:48px;padding:36px var(--ar-gutter) 44px!important}
+  @A footer.legal .lgbrand{grid-row:1/4;flex-direction:column;align-items:flex-start;gap:12px}
+  @A footer.legal .ar-link{min-height:40px}
+}
+
+/* "Got it" is a text link (the app's .btn class also gives it the strip; the link wins here) */
+@A #welcomeCard button[data-welcomex]{padding:0 2px!important;min-height:44px;color:var(--ar-pink-ink)!important}
+@A #welcomeCard button[data-welcomex]::before{content:none!important;display:none!important}
+/* the older layers paint these as paper-2 panels in dark mode with a stronger selector; on Build they sit on the paper */
+@A[data-look] [data-pane="auto"] :is(.abhero.chabhero,.abw,.evteam.plan,.empty-note,.abcol,.corerow.arb-row){background:none!important;background-color:transparent!important}
+/* phones: names on the six stay whole words (smaller, narrower face); the narrowest phones get two columns */
+@media (max-width:599px){@A .arb-stage .ar-art.ar-below .ar-nm{font-size:15px;font-stretch:100%;overflow-wrap:normal}@A .arb-stage .ar-art.ar-below .ar-nm small{font-size:14px}}
+@media (max-width:380px){@A .arb-stage .ar-six{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Build's empty and busy states (the app adds a sprite, .mgeart): the arena empty state, a faint slanted gold field with the
+   sprite on it, then the line that says what happened and what to do */
+@A [data-pane="auto"] .empty-note.mgempty{display:flex!important;align-items:center;gap:16px;padding:12px 0!important;min-height:96px}
+@A [data-pane="auto"] .empty-note.mgempty::before{content:none!important;display:none!important}
+@A [data-pane="auto"] .empty-note.mgempty .mgeart{order:-1;position:relative!important;flex:none;width:92px;height:68px;margin:0 0 0 8px!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l)!important;background:color-mix(in oklch,var(--ar-gold) 24%,var(--ar-paper))!important;border:0!important;box-shadow:none!important;inset:auto!important;opacity:1!important}
+@A[data-look="dark"] [data-pane="auto"] .empty-note.mgempty .mgeart{background:#24232A!important}
+@A [data-pane="auto"] .empty-note.mgempty .mgeart img{position:absolute!important;left:50%;bottom:0;width:88px!important;height:88px!important;max-width:none;margin:0!important;transform:translateX(-50%) skewX(var(--ar-unslant))!important;opacity:1!important;filter:none!important}
+@A [data-pane="auto"] .abbusy.mgempty .abspin{order:0}
+@A [data-pane="auto"] .abfmt{margin:0 0 4px 6px!important;font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-gold-ink)!important;text-transform:none!important;letter-spacing:0!important;background:none!important;border:0!important}
+/* a long label ("Build around Basculegion") wraps inside the strip instead of running past it */
+@A [data-pane="auto"] #abBtn{white-space:normal!important;text-align:left}
+@A [data-pane="auto"] #abBtn.ar-primary{font-size:min(20px,5.2vw)!important;padding-right:12px!important}
+/* the app's small-button and link rules shrink these; they keep a full tap size and never overlap the row below */
+@A [data-pane="auto"] :is(.corebtns,.evbtns,.abcol>.row,.morebar) .ar-btn{min-height:48px!important;height:auto!important}
+@A [data-pane="auto"] :is(.corebtns,.evbtns) .ar-link{margin:0!important;min-height:44px!important}
+@media (min-width:1001px){@A [data-pane="auto"] :is(.corebtns,.evbtns,.abcol>.row,.morebar) .ar-btn{min-height:44px!important}}
+@A [data-pane="auto"] :is(.corebtns,.evbtns){row-gap:18px!important}
+@A #jump #jumpList li[aria-selected="true"] .jk{color:var(--ar-ink)!important}
+/* tablets: the menu sheet keeps a phone-like width, centred, instead of stretching across the screen */
+@media (min-width:600px) and (max-width:1000px){@A #side.open{left:0!important;right:0!important;margin:0 auto!important;max-width:520px!important;width:auto!important}}
+/* Report a mistake: long context scrolls inside its field */
+@A #fbSheet .fbctx{max-height:9.6em;overflow:auto!important}
+
+/* =====================================================================================================================
+   Review fixes (reviewA/FINDINGS.md, R1 to R27). Later rules here win over the first pass above.
+   ===================================================================================================================== */
+/* R1: Sets and roles: one row per Pokémon (sprite on its type field, the name and item, then the facts on one wrapped line);
+   arena type tags (AR.tag), the count, box, catch and role tags sized to their text with the icon inline */
+@A [data-pane="auto"] .abmons{display:block!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="auto"] .abmon{position:relative;display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;min-height:80px;padding:12px 0 14px 80px!important;margin:0!important;
+  background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
+@A [data-pane="auto"] .abmon>.ar-row-f{position:absolute!important;left:6px;top:20px;margin:0!important}
+@A [data-pane="auto"] .abmon>.ar-row-f img{width:58px!important;height:58px!important}
+@A [data-pane="auto"] .abmon>.abname{flex:1 1 100%;margin:0 0 2px!important;font:700 var(--ar-fs-body)/1.25 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .abmon .abname .abit{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="auto"] .abmon>.chips{display:inline-flex!important;flex-wrap:wrap;gap:6px 10px;margin:0 4px 0 6px!important;position:static!important}
+@A [data-pane="auto"] .abmon .ar-ty{font-size:15px}
+@A [data-pane="auto"] .abmon>.abright{display:contents!important}
+@A [data-pane="auto"] .abmon :is(.tag,.conf){display:inline-flex!important;align-items:center;gap:6px;width:auto!important;height:auto!important;min-height:28px;margin:0!important;padding:2px 10px!important;
+  font:600 15px/1.2 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;white-space:nowrap;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-s)!important;position:static!important;vertical-align:middle}
+@A [data-pane="auto"] .abmon :is(.tag,.conf){background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;color:var(--ar-ink)!important}
+@A [data-pane="auto"] .abmon .tag.ico::before{flex:none;width:14px;height:14px;position:static!important}
+@A [data-pane="auto"] .abmon .tag.box{background:color-mix(in oklch,var(--ar-green) 16%,transparent)!important;color:var(--ar-green-ink)!important}
+@A [data-pane="auto"] .abmon .tag.catch{background:color-mix(in oklch,var(--ar-gold-plate) 42%,transparent)!important;color:#16141A!important}
+@A[data-look="dark"] [data-pane="auto"] .abmon :is(.tag,.conf){background:#2A2930!important;color:var(--ar-ink)!important}
+@A[data-look="dark"] [data-pane="auto"] .abmon .tag.box{background:#2A2930!important;color:var(--ar-green-ink)!important}
+@A[data-look="dark"] [data-pane="auto"] .abmon .tag.catch{background:#2A2930!important;color:var(--ar-gold-ink)!important;box-shadow:inset 3px 0 0 var(--ar-gold)!important}
+
+/* R2: the six share a top edge (a two-line name no longer lifts its art) */
+@A .arb-stage .ar-six{align-items:start}
+
+/* R3: the menu's second theme heading ("Appearance") stays hidden; the theme head matches the others */
+@A #side .sidefoot .sgl{display:none!important}
+@A #side .mgtheme .sgl::before{background:var(--ar-ink)}
+
+/* R4: toasts: one ink plate across the bottom on phones, sized to the message on desktop; never slanted behind text,
+   a slanted yellow edge marks it */
+@A #toast.toast{left:16px!important;right:16px!important;transform:none!important;translate:none!important;width:auto!important;max-width:none!important;margin:0!important;animation:none!important;
+  padding:12px 18px 12px 30px!important;background:#16141A!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;justify-content:space-between}
+@A #toast.toast::before{inset:10px auto 10px 12px!important;width:6px;border-radius:2px;background:var(--ar-yellow);box-shadow:none}
+@A[data-look="dark"] #toast.toast{background:#F4F1EC!important}
+@A[data-look="dark"] #toast.toast::before{background:var(--ar-orange-plate)}
+@media (min-width:1001px){@A #toast.toast{left:0!important;right:0!important;margin:0 auto!important;width:fit-content!important;max-width:min(560px,calc(100vw - 64px))!important}}
+
+/* R6: the "More" text button in running text (footer, How cores are ranked): a section-ink link at the text's size, its tap area
+   from an inset, not from a taller box */
+@A :is(footer.legal,[data-pane="auto"]) .rzmorebtn{position:relative;display:inline!important;padding:0 2px!important;margin:0 0 0 4px!important;min-height:0!important;height:auto!important;width:auto!important;
+  background:none!important;border:0!important;box-shadow:none!important;font-size:15px!important;font-weight:600!important;line-height:inherit!important;font-family:var(--ar-body)!important;
+  color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px;cursor:pointer}
+@A :is(footer.legal,[data-pane="auto"]) .rzmorebtn::after{content:""!important;position:absolute;left:-8px;right:-8px;top:50%;height:44px;transform:translateY(-50%);background:none!important}
+@media (min-width:1001px){@A footer.legal .rzmorebtn{font-size:16px!important}}
+
+/* R7: short links in the team sheets keep a 44px tap width */
+@A [data-pane="auto"] .evteam .evbtns .ar-link{min-width:44px;justify-content:center}
+
+/* R8: Details on a core is a text link next to the numbers, not a box */
+@A [data-pane="auto"] #cores #coreOut .corerow .corestat .dbdt{display:inline-flex!important;align-items:center;min-height:44px!important;min-width:44px;padding:0 2px!important;margin:4px 0 0!important;
+  background:none!important;background-color:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;
+  font:600 15px/1.2 var(--ar-body)!important;color:var(--ar-gold-ink)!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
+@A [data-pane="auto"] #cores #coreOut .corerow .corestat .dbdt::before{content:none!important}
+
+/* R9: light: the stage reads gold; dark: black with a gold L-shaped edge (no brown wash), the colour in the art and the edge.
+   The welcome stage does the same in pink; the bars and the mistake context take a coloured spine. */
+@A .arb-stage::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-gold-plate) 62%,var(--ar-paper)),color-mix(in oklch,var(--ar-gold-plate) 28%,var(--ar-paper)))}
+@A[data-look="dark"] .arb-stage::before{background:#121114}
+@A[data-look="dark"] .arb-stage::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-gold);clip-path:polygon(0 3%,100% 0,100% 6px,8px calc(3% + 6px),8px 100%,0 100%)}
+@media (min-width:1001px){@A[data-look="dark"] .arb-stage::after{clip-path:polygon(0 4%,100% 0,100% 6px,8px calc(4% + 6px),8px 100%,0 100%)}}
+@A[data-look="dark"] #welcomeCard.welcome::before{background:#121114}
+@A[data-look="dark"] #welcomeCard.welcome::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-pink);clip-path:polygon(0 4%,100% 0,100% 6px,8px calc(4% + 6px),8px 100%,0 100%)}
+@A[data-look="dark"] main #healthBar.healthbar{background:#141316!important;box-shadow:inset 6px 0 0 var(--ar-gold)!important}
+@A[data-look="dark"] main #regBar.regbar{background:#141316!important;box-shadow:inset 6px 0 0 var(--ar-blue)!important}
+@A[data-look="dark"] #fbSheet .fbctx::before{width:6px}
+
+/* R10: the top three cores share rows: the tag row is kept even when empty, names reserve two lines */
+@media (min-width:600px){
+  @A [data-pane="auto"] .corerow.chcbig .coretags{min-height:30px}
+  @A [data-pane="auto"] .corerow.chcbig .corenames{min-height:2.4em}
+}
+/* R21: tablets show the top three as three columns too */
+@media (min-width:600px) and (max-width:1000px){
+  @A [data-pane="auto"] .corelist{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:24px}
+  @A [data-pane="auto"] .corelist .corerow.arb-row:not(.chcbig){grid-column:1/-1}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist .corerow.arb-row{grid-column:auto}
+  @A [data-pane="auto"] details[data-chf="coremore"] .corelist>.morebar{grid-column:1/-1}
+  @A [data-pane="auto"] .corerow.chcbig .arb-cf{width:80px;height:52px}
+  @A [data-pane="auto"] .corerow.chcbig .arb-cf img{width:78px!important;height:78px!important}
+}
+
+/* R11: the shared-link bar: Load it is the filled blue plate, Not now is quiet; on desktop it sits under the header */
+@A #sharedBar [data-sharedload].ar-btn{color:#fff!important}
+@A #sharedBar [data-sharedload].ar-btn::before{background:var(--ar-blue-plate)!important}
+@A #sharedBar [data-sharedx].ar-link{color:var(--ar-ink-2)!important}
+@media (min-width:1001px){@A #sharedBar.sharedbar{top:96px!important}}
+
+/* R12: the stage's numbers never touch */
+@A .arb-trio{column-gap:16px!important}
+@media (max-width:380px){@A .arb-trio .ar-num{font-size:28px}}
+
+/* R14: phones: the go button comes right after the two choices that shape the build; Build around (optional) follows it;
+   a one-line title and tighter controls keep the button above the bottom bar */
+@A [data-pane="auto"] .abctl>.srcseg{order:1}
+@A [data-pane="auto"] .abctl>.megactl{order:2}
+@A [data-pane="auto"] .abctl>#abBtn{order:3}
+@A [data-pane="auto"] .abctl>#abAround{order:4}
+@media (max-width:1000px){
+  @A [data-pane="auto"] .chabhero .chpgt{font-size:min(var(--ar-fs-h1),9.4vw)!important;white-space:nowrap}
+  @A [data-pane="auto"] .abctl{gap:18px!important;margin-top:20px!important}
+  @A [data-pane="auto"] .srcseg>button{min-height:64px}
+  @A [data-pane="auto"] .chabhero .chpgs{margin-top:8px!important}
+}
+
+/* R16: opening a fold on desktop never moves it: each stays in its own column */
+/* R17: full teams: room for the second row's sprites */
+@A [data-pane="auto"] .corerow.six .coresprs{row-gap:28px}
+
+/* R18: the clear × in Pokémon fields and Jump: the round arena button, 44px to tap */
+@A :is(#jump,[data-pane="auto"]) .clrx{width:34px!important;height:34px!important;right:7px!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:600 18px/1 var(--ar-body)!important;border-radius:50%!important}
+@A[data-look="dark"] :is(#jump,[data-pane="auto"]) .clrx{background:#2A2930!important}
+@A :is(#jump,[data-pane="auto"]) .clrx::after{inset:-5px!important}
+
+/* R19: Jump on phones: the line under each result wraps to two lines; the kind column gives its room to it */
+@media (max-width:700px){
+  @A #jump #jumpList .jl span{white-space:normal!important;overflow:hidden;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  @A #jump #jumpList .jk{display:none!important}
+  @A #jump #jumpList li[data-jo]{grid-template-columns:56px minmax(0,1fr)!important}
+  @A #jump #jumpList li.arb-tool{grid-template-columns:minmax(0,1fr)!important}
+}
+@A #jump #jumpList .jk{font-size:15px!important}
+
+/* R20: team sheets: fields keep their slant (no clipping), names never break inside a word */
+@A [data-pane="auto"] .evteam .tgm{overflow:visible!important}
+@A [data-pane="auto"] .evteam .tgm .tgn{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;font-stretch:100%!important}
+@media (max-width:370px){@A [data-pane="auto"] .evteam .tgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* R22: no orphaned last words */
+@A [data-pane="auto"] :is(#cores>.chpghead .chpgt,.arb-sthead .ar-h2,.chabhero .chpgt),@A #welcomeCard .wt{text-wrap-style:balance}
+@A [data-pane="auto"] :is(#cores>.chpghead .chk,.abwhy li,.abw p,.chabhero .chpgs,.coreintro,.empty-note),@A #welcomeCard .wsteps span,@A #welcomeCard>.t2{text-wrap-style:pretty}
+
+/* R23: 15px text in tags and item lines */
+@A .arb-stage .ar-art.ar-below .ar-nm small{font-size:15px!important}
+@A [data-pane="auto"] :is(.corerow .coretags .tag,.evteam .archchip,.evteam .evpl){font-size:15px!important}
+@A [data-pane="auto"] .evteam .tgm .tgmk{font-size:13px!important}
+/* R21 (tablets): narrower columns: a smaller numeral with its unit under it, two rows kept for the tags */
+@media (min-width:600px) and (max-width:1000px){
+  @A [data-pane="auto"] .corerow.chcbig .corestat>b{font-size:30px!important}
+  @A [data-pane="auto"] .corerow.chcbig .corestat>b i{display:block!important;margin:6px 0 0!important}
+  @A [data-pane="auto"] .corerow.chcbig .coretags{min-height:68px}
+  @A [data-pane="auto"] .corerow.chcbig{column-gap:8px}
+}
+/* R20 (desktop): the recent winners open in a half-width column there, so their six sit 3 by 2 and every name fits whole */
+@media (min-width:1001px){@A [data-pane="auto"] .abstart .evteam .tgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:700px) and (max-width:1000px){@A [data-pane="auto"] .evteam .tgrid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* R22 (narrow phones): the stage title gets the full width; the grade sits under it on one line */
+@media (max-width:419px){
+  @A .arb-sthead{flex-direction:column;gap:10px}
+  @A .arb-score{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:4px 12px;text-align:left}
+  @A .arb-score .arb-grade,@A .arb-score .arb-basis{margin-top:0}
+}
