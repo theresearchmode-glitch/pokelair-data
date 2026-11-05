@@ -1008,3 +1008,33 @@
 @A:not(#amw) .ar-mpg #setOut .sethead .chips.ar-tys{display:flex!important;flex-wrap:wrap;gap:8px;background:none!important;border:0!important;padding:0!important}
 /* NEW-12: the legend's "few games" dash mark at the 15px floor */
 @A:not(#amw) .ar-mpg #lairBody .lnote .lts.dash{font-size:15px!important}
+
+/* Ratings hero (Sim, Nov 5): a tie for #1 shares one card. One big number and the tie line, then two or three Pokémon side
+   by side, each a tap into its info sheet. A lone #1 keeps the single art card (#chHot .chhot2 above). */
+@A .ar-mpg #chHot .ar-tie{position:relative;isolation:isolate;margin:6px 0 16px;padding:18px 18px 16px 22px}
+@A .ar-mpg #chHot .ar-tie-bg{position:absolute;inset:0;z-index:-1;border-radius:var(--ar-r-l);transform:skewX(var(--ar-slant));box-shadow:var(--ar-shadow-m,0 10px 24px rgba(30,10,40,.16));
+  background:linear-gradient(in oklch 120deg,color-mix(in oklch,var(--ta) 30%,var(--ar-sheet)),color-mix(in oklch,var(--tb) 30%,var(--ar-sheet)) 55%,color-mix(in oklch,var(--tc) 26%,var(--ar-sheet)))}
+@A[data-look="dark"] .ar-mpg #chHot .ar-tie-bg{background:linear-gradient(in oklch 120deg,color-mix(in oklch,var(--ta) 34%,#1C1B20),color-mix(in oklch,var(--tb) 34%,#1C1B20) 55%,color-mix(in oklch,var(--tc) 30%,#1C1B20))}
+@A .ar-mpg #chHot .ar-tie-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+@A .ar-mpg #chHot .ar-tie-n{font-size:68px;line-height:.9;color:var(--ar-ink)}
+@A .ar-mpg #chHot .ar-tie-cap{font:700 16px/1.3 var(--ar-body);color:var(--ar-ink)}
+@A .ar-mpg #chHot .ar-tie-mons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+@A .ar-mpg #chHot .ar-tie3 .ar-tie-mons{grid-template-columns:repeat(3,minmax(0,1fr))}
+@A .ar-mpg #chHot .ar-tie-mon{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;min-height:44px;padding:0;border:0!important;background:none!important;color:var(--ar-ink)!important;text-align:left;cursor:pointer;font:inherit}
+@A .ar-mpg #chHot .ar-tie-mon img{width:120px!important;height:120px!important;margin:-6px 0 2px -6px!important;max-width:none}
+@A .ar-mpg #chHot .ar-tie3 .ar-tie-mon img{width:92px!important;height:92px!important}
+@A .ar-mpg #chHot .ar-tie-mon b{font:800 19px/1.15 var(--ar-display);font-stretch:108%;overflow-wrap:normal;text-wrap:balance}
+@A .ar-mpg #chHot .ar-tie3 .ar-tie-mon b{font-size:16px}
+@A .ar-mpg #chHot .ar-tie-ln{font:500 15px/1.35 var(--ar-body);color:var(--ar-ink)}
+@A .ar-mpg #chHot .ar-tie-mon:focus-visible{outline:3px solid var(--ar-focus);outline-offset:4px;border-radius:6px}
+@media (min-width:1001px){@A .ar-mpg #chHot .ar-tie{padding:22px 28px 20px 32px}@A .ar-mpg #chHot .ar-tie-n{font-size:96px}
+  @A .ar-mpg #chHot .ar-tie-mon img{width:160px!important;height:160px!important}@A .ar-mpg #chHot .ar-tie3 .ar-tie-mon img{width:132px!important;height:132px!important}
+  @A .ar-mpg #chHot .ar-tie-mon b{font-size:24px}@A .ar-mpg #chHot .ar-tie3 .ar-tie-mon b{font-size:21px}@A .ar-mpg #chHot .ar-tie-ln{font-size:16px}}
+@A .ar-mpg #chHot .ar-tie{margin:6px 8px 16px 4px}
+@A .ar-mpg #chHot .ar-tie-mon b{font-style:normal}
+/* narrow phones: a three-way tie stacks as three rows (sprite, then name and numbers), so nothing wraps word by word */
+@media (max-width:440px){@A .ar-mpg #chHot .ar-tie3 .ar-tie-mons{grid-template-columns:1fr;gap:6px}
+  @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center}
+  @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon img{grid-row:1/span 3;width:76px!important;height:76px!important;margin:0!important}
+  @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon b{font-size:17px}@A .ar-mpg #chHot .ar-tie3 .ar-tie-ln br{display:none}
+  @A .ar-mpg #chHot .ar-tie3 .ar-tie-ln{white-space:normal}}

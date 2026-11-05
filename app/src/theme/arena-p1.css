@@ -680,7 +680,7 @@
 
 /* the stat row under the title (F02 360, F22 1024): four numerals never touch; 2 by 2 on narrow phones, a step smaller on small
    desktops */
-@media (max-width:399px){@A .ar-tstats.ar-c4 .ar-trio{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:12px}@A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:32px}}
+@media (max-width:399px){@A .ar-tstats.ar-c4 .ar-trio{column-gap:10px}@A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:24px}}
 @media (min-width:1001px) and (max-width:1279px){@A .ar-tstats:is(.ar-c4,.ar-c5) .ar-trio{column-gap:16px}@A .ar-tstats:is(.ar-c4,.ar-c5) .ar-trio .ar-num{font-size:26px}@A .ar-tstats.ar-c3 .ar-trio .ar-num{font-size:34px}}
 
 /* "Your games": the band's top edge rises to the right, so its Close button sits fully on the field */
@@ -829,3 +829,31 @@
 @A .ar-rcopp{display:flex;align-items:center;justify-content:flex-start;gap:0;min-height:48px;padding:4px 14px;border:0!important;border-radius:8px;background:var(--ar-sheet)!important;
   box-shadow:var(--ar-shadow-s);cursor:pointer;width:100%;max-width:420px}
 @A .ar-rcopp img{width:40px!important;height:40px!important;margin:0 2px 0 0!important}
+
+/* =====================================================================================================================
+   Design pass (Sim, Nov 5)
+   ===================================================================================================================== */
+/* #4 long team names stay one or two tidy lines on phones (16+ characters get a smaller, narrower cut) */
+@media (max-width:599px){
+  @A #arYours.ar-long{font-size:22px!important;font-stretch:104%!important}
+  @A .ar-tname.ar-long{font-size:29px!important;font-stretch:104%!important}
+  @A [data-pane="matchup"] .ar-bmhead .chbmt.ar-bmlong{font-size:25px!important;font-stretch:104%!important}
+}
+/* #5 italic is for headlines and big numbers; Pokémon names on art and tool names are upright bold */
+@A .ar-art .ar-nm,@A #homeOut.ar-on :is(.htile,.htile[hidden]) b,@A .ar-jump{font-style:normal!important}
+@A .ar-art .ar-nm{font-weight:800}
+/* #6 the sample note: a soft section-coloured strip with one action */
+@A .ar-sample{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:10px 0 14px;padding:12px 16px 12px 20px;position:relative;isolation:isolate;max-width:640px}
+@A .ar-sample::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:8px;transform:skewX(var(--ar-slant));
+  background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/5px 100% no-repeat,color-mix(in oklch,var(--ar-sec) 10%,var(--ar-sheet))}
+@A .ar-sample p{margin:0;flex:1 1 220px;font:500 15px/1.4 var(--ar-body);color:var(--ar-ink)}
+@media (min-width:1001px){@A .ar-sample p{font-size:16px}}
+/* #2 My team: the grade letter is the hero; the basis line says what it comes from */
+@A .ar-gscore .ar-glabel{font:700 18px/1.1 var(--ar-body);color:var(--ar-ink)}
+@A .ar-gscore .ar-num.ar-gletter{font-size:92px!important;line-height:.95;color:var(--ar-ink)}
+@A .ar-gscore .ar-basis{max-width:16ch;line-height:1.35}
+@A .ar-gscore .ar-basis b{color:var(--ar-ink);font-weight:700}
+@media (min-width:1001px){@A .ar-gscore .ar-num.ar-gletter{font-size:120px!important}}
+/* phones: the four check numbers in one compact row; the record's two side by side */
+@media (max-width:599px){@A .ar-tstats{gap:14px;margin-top:14px}@A .ar-tstats.ar-c4 .ar-trio{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-trio .ar-num{font-size:26px}
+  @A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:24px}@A .ar-trio .ar-unit{font-size:15px}}

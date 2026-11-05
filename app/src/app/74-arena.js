@@ -97,6 +97,9 @@ AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to"><button type="butto
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arjump]'); if (!b) return; const t = $(b.dataset.arjump); if (!t) return;
   t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
   const h = t.querySelector('h2,h3,summary,button'); if (h && h.focus) setTimeout(() => h.focus({preventScroll: true}), 400); });
+/* the sample team (Sim, Nov 5): first-time visitors see NastyPlot's sample six, so it says so, with one way to start their own */
+AR.isSample = t => /\(sample\)\s*$/i.test(String(t || ''));
+AR.sampleNote = () => `<div class="ar-sample"><p>This is a sample team, here to show how NastyPlot works.</p><button type="button" class="ar-btn" data-view="build">Build your own</button></div>`;
 AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
 AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
@@ -139,8 +142,8 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   const byN = n => ms.find(m => m.p.n === n), lead = F ? F.lead.map(byN).filter(Boolean) : [], back = F ? F.back.map(byN).filter(Boolean).filter(m => !lead.includes(m)) : [];
   const bench = ms.filter(m => !lead.includes(m) && !back.includes(m)), ord = [...lead, ...back, ...bench].slice(0, 6);
   let title = ms.length ? teamTitleFor(ms) : 'Your six goes here', wx = ''; try { const k = wxKeyOf(ms); if (k) wx = ` ${esc(wxName(k))}`; } catch (e) {}
-  const you = `<section class="ar-side ar-blue" aria-labelledby="arYours"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arYours">${esc(title)}</h2></div>
-    <div class="ar-winner">${ms.length ? `<p class="ar-meta">Your team: <b>${ms.length}/6</b>${wx}</p>` : '<p class="ar-meta">Add six Pokémon and NastyPlot scouts the top threats for you.</p>'}</div>
+  const you = `<section class="ar-side ar-blue" aria-labelledby="arYours"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2${title.length > 16 ? ' ar-long' : ''}" id="arYours">${esc(title)}</h2></div>
+    <div class="ar-winner">${ms.length && AR.isSample(title) ? AR.sampleNote() : ''}${ms.length ? `<p class="ar-meta">Your team: <b>${ms.length}/6</b>${wx}</p>` : '<p class="ar-meta">Add six Pokémon and NastyPlot scouts the top threats for you.</p>'}</div>
     <div class="ar-six">${ms.length ? ord.map(m => AR.art(m.p, {size: 'm', below: 1, name: m.d, attrs: `data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info"`})).join('') : Array.from({length: 6}, (_, i) => AR.emptyArt('m', {attrs: `data-view="build" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('')}</div>
     ${AR.plan(lead, back, bench, vs)}
     <div class="ar-acts">${ms.length ? `<button type="button" class="ar-btn" data-view="report">Open my team</button>${C && FC && !sameSix ? `<button type="button" class="ar-link" data-evvs="${esc(C.ev.id)}#${C.ev.top.indexOf(C.t)}">Prep vs the champion ›</button>` : ''}`
@@ -182,8 +185,9 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
      rate (one decimal, so 59.6% never reads as an A's "60%"); otherwise it is the grade out of 100 (Sim: "93, Grade A"). */
   let score = '';
   if (G) { const why = `<button type="button" class="ar-link ar-why" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${esc(G.letter)}?</button>`;
-    score = G.rec ? `<div class="ar-score"><span class="ar-num ar-mp">${(G.rec.wr * 100).toFixed(1)}<small>%</small></span><span class="ar-grade">Grade ${esc(G.letter)}</span><span class="ar-basis">tournament win&nbsp;rate</span>${why}</div>`
-      : `<div class="ar-score"><span class="ar-num ar-mp">${G.s}</span><span class="ar-grade">Grade ${esc(G.letter)}${G.partial ? ' so far' : ''}</span><span class="ar-basis">out of 100</span>${why}</div>`; }
+    /* the grade is the hero (Sim, Nov 5): the big letter, then what it's based on in words, so a win rate is never read as a score */
+    score = G.rec ? `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis">from a <b>${(G.rec.wr * 100).toFixed(1)}%</b> tournament win&nbsp;rate</span>${why}</div>`
+      : `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis">score <b>${G.s}</b> out of 100</span>${why}</div>`; }
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
   if (RD) { const sc = G && G.rec ? AR.cell(G.s, 'score') : '';
@@ -213,7 +217,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap a slot to add a Pokémon">${tiles}</div></section>`; }
   const sec = document.createElement('section'); sec.className = 'ar-team' + (ms.length ? '' : ' is-empty'); sec.setAttribute('aria-label', 'My team');
-  sec.innerHTML = `<div class="ar-thead"><p class="ar-kick">My team: <b>${ms.length} of 6</b>${wx}</p><div class="ar-titlerow"><div class="ar-h1 ar-tname" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet').replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2').replace(/ \(([FM])\)/g, '\u00a0($1)')}</div>${score}</div>${AR.switcher()}</div>${ms.length ? AR.jumps() : ''}
+  sec.innerHTML = `<div class="ar-thead">${ms.length && AR.isSample(teamTitleFor(ms)) ? AR.sampleNote() : ''}<p class="ar-kick">My team: <b>${ms.length} of 6</b>${wx}</p><div class="ar-titlerow"><div class="ar-h1 ar-tname${ms.length && teamTitleFor(ms).length > 16 ? ' ar-long' : ''}" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet').replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2').replace(/ \(([FM])\)/g, '\u00a0($1)')}</div>${score}</div>${AR.switcher()}</div>${ms.length ? AR.jumps() : ''}
     <div class="ar-tgrid">${stats}${stage}<div class="ar-tacts"></div></div>`;
   head.prepend(sec); head.classList.add('ar-on');
   /* the existing nodes move in, handlers and ids intact */
