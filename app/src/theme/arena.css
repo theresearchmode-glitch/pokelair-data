@@ -28,7 +28,7 @@
   --ar-sec:var(--ar-pink);--ar-sec-plate:var(--ar-pink-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-pink-ink);
   /* type: Archivo Expanded italic for display and numerals, Instrument Sans for everything else */
   --ar-display:"Archivo","Instrument Sans",system-ui,sans-serif;--ar-body:"Instrument Sans",system-ui,sans-serif;
-  --ar-fs-hero:64px;--ar-fs-h1:46px;--ar-fs-h2:26px;--ar-fs-h3:20px;--ar-fs-body:16px;--ar-fs-small:15px;--ar-fs-label:13px;
+  --ar-fs-hero:64px;--ar-fs-h1:46px;--ar-fs-page:36px;--ar-fs-h2:26px;--ar-fs-h3:20px;--ar-fs-body:16px;--ar-fs-small:15px;--ar-fs-label:13px;
   /* spacing (4px steps) */
   --ar-s1:4px;--ar-s2:8px;--ar-s3:12px;--ar-s4:16px;--ar-s5:24px;--ar-s6:32px;--ar-s7:48px;--ar-s8:64px;--ar-gutter:16px;
   /* the one slant, and its inverse for the content inside a slanted shape */
@@ -63,8 +63,8 @@
 @A .ar-gold{--ar-sec:var(--ar-gold);--ar-sec-plate:var(--ar-gold-plate);--ar-sec-on:#16141A;--ar-sec-ink:var(--ar-gold-ink)}
 @A .ar-orange{--ar-sec:var(--ar-orange);--ar-sec-plate:var(--ar-orange-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-orange-ink)}
 @A .ar-purple{--ar-sec:var(--ar-purple);--ar-sec-plate:var(--ar-purple-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-purple-ink)}
-@media (min-width:1001px){@A{--ar-fs-hero:120px;--ar-fs-h1:76px;--ar-fs-h2:34px;--ar-fs-h3:22px;--ar-fs-body:17px;--ar-fs-small:16px;--ar-gutter:32px}}
-@media (max-width:359px){@A{--ar-fs-hero:54px;--ar-fs-h1:40px;--ar-fs-h2:24px}}
+@media (min-width:1001px){@A{--ar-fs-hero:120px;--ar-fs-h1:76px;--ar-fs-page:clamp(46px,4.4vw,64px);--ar-fs-h2:34px;--ar-fs-h3:22px;--ar-fs-body:17px;--ar-fs-small:16px;--ar-gutter:32px}}
+@media (max-width:359px){@A{--ar-fs-hero:54px;--ar-fs-h1:40px;--ar-fs-page:31px;--ar-fs-h2:24px}}
 
 /* the older layers read these: point them at arena paper and ink so every page sits on the same paper */
 @A{--chp:var(--ar-paper);--chp2:var(--ar-paper-2);--mgpaper:var(--ar-paper);--mgpanel:var(--ar-sheet);--chc:var(--ar-sheet);--card2:var(--ar-paper-2);--soft:var(--ar-paper-2);
@@ -409,3 +409,25 @@
    renders. These are the older layers' hard-coded copies. ---------- */
 @A th[title="Normal"][style*="color"]{box-shadow:inset 0 -4px 0 #A6A2AE!important}
 @A th[title="Dark"][style*="color"]{box-shadow:inset 0 -4px 0 #5E5068!important}
+
+/* ---------- 28. one pattern per job across every page (final fix 1, cross-page consistency). ARENA.md "Final consistency rules"
+   lists each pattern and what each page file must drop. The few rules here that must beat the page files carry one more id
+   (:not(#_g)); everything else is a low-specificity baseline that a page's own arena rule still refines. ---------- */
+/* page title: one size on every sub-page (--ar-fs-page: 36px, 31px under 360px, 46 to 64px on desktop). Only the section
+   landing heroes (Home, My team, Build me a team) are larger. */
+@A:not(#_g) .chpghead .chpgt:not(.chabhero *):not(#cores *){font-size:var(--ar-fs-page)!important;line-height:1.02!important}
+/* art-tile names under the art: always left-aligned under the slanted field (the mockup), on every page */
+@A:not(#_g) .ar-art.ar-below .ar-nm{text-align:left!important}
+@A:not(#_g) .ar-art.ar-below{text-align:left!important}
+/* hover: every raised button, strip and segment answers the pointer the same way, its slanted plate a shade deeper (lighter in
+   dark mode); the shape itself never moves */
+@media (hover:hover){
+  @A main :where(.btn,.chghost,button.sub,.seg>button,.sdcopy,.chmorebtn,.cxopt,.logpick,.prmode,.chapply,.ar-seg>button,.ar-chip,button.ar-strip,.ar-tacts #chActs>button,.ar-tacts #chActs>.row>button,.ar-tacts #chActs .moremenu>summary,details.chsec>summary):not(:disabled):not([aria-pressed="true"]):not([aria-selected="true"]):hover::before{filter:brightness(.95) saturate(1.15)}
+  @A[data-look="dark"] main :where(.btn,.chghost,button.sub,.seg>button,.sdcopy,.chmorebtn,.cxopt,.logpick,.prmode,.chapply,.ar-seg>button,.ar-chip,button.ar-strip,.ar-tacts #chActs>button,.ar-tacts #chActs>.row>button,.ar-tacts #chActs .moremenu>summary,details.chsec>summary):not(:disabled):not([aria-pressed="true"]):not([aria-selected="true"]):hover::before{filter:brightness(1.3)}
+  @A .ar-tacts #chActs #saveBtn:hover::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,#FFDA45!important}}
+/* fields: every text input, search box and select is the arena field (sheet fill, 2px underline, the section colour on focus,
+   radius --ar-r-m, 48px tall), on every page; a page's own arena rule may refine it */
+@A main :where(input[type="text"],input[type="search"],input:not([type]),input[type="number"],select,textarea):not(:where([type="checkbox"],[type="radio"],[type="range"])){
+  border:0!important;border-radius:var(--ar-r-m)!important;background-color:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important;min-height:48px;font:500 var(--ar-fs-body)/1.3 var(--ar-body)}
+@A main :where(input,select,textarea):focus{box-shadow:inset 0 -3px 0 var(--ar-sec)!important}
+@A[data-look="dark"] main :where(input[type="text"],input[type="search"],input:not([type]),input[type="number"],select,textarea){background-color:#1E1D22!important}

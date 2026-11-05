@@ -217,6 +217,9 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
+  /* every sub-page has a back link (32-views.js adds most; This week, How we calculate and About were the ones without) */
+  [['weekly', 'ratings', 'Meta'], ['method', 'ratings', 'Meta'], ['about', 'ratings', 'Meta']].forEach(([v, to, name]) => { const pane = document.querySelector(`[data-pane="${v}"]`);
+    if (pane && !pane.querySelector(':scope > .chback')) pane.insertAdjacentHTML('afterbegin', `<button type="button" class="chback" data-view="${to}"><span aria-hidden="true">←</span> ${name}</button>`); });
   /* the older damage tables and chart labels print the short "M-Charizard Y"; one naming everywhere: "Mega Charizard Y" */
   document.querySelectorAll('main th span, main svg text, #lairSheet th span').forEach(e => { const t = e.firstChild; if (t && t.nodeType === 3 && /^M-\S/.test(t.textContent)) t.textContent = AR.mega(t.textContent).replace(/ ([XYZ])$/, '\u00a0$1'); });
   /* What's new: the dismiss x is its own button next to the fold, not inside its <summary> (a button in a summary has no tap
