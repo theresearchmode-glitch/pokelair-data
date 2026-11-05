@@ -155,7 +155,9 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
   ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0;
   // runs only while the browser is idle, in short slices, so it never competes with scrolling (Nov 5)
   const later=f=>typeof requestIdleCallback==='function'?requestIdleCallback(f,{timeout:1500}):setTimeout(f,30);
-  const step=dl=>{const t0=Date.now(),budget=dl&&dl.timeRemaining?Math.max(3,Math.min(8,dl.timeRemaining()-1)):6;try{while(i<list.length&&Date.now()-t0<budget){const t=list[i++];
+  // and waits while the page is being scrolled
+  if(!ckWin.scrollHook){ckWin.scrollHook=1;addEventListener('scroll',()=>{ckWin.lastScroll=Date.now()},{passive:true})}
+  const step=dl=>{if(Date.now()-(ckWin.lastScroll||0)<500){setTimeout(()=>later(step),300);return}const t0=Date.now(),budget=dl&&dl.timeRemaining?Math.max(3,Math.min(8,dl.timeRemaining()-1)):6;try{while(i<list.length&&Date.now()-t0<budget){const t=list[i++];
       // each winner read with its own moves and held item, as registered
       const ms=assignItems(t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}}));
       if(typeof tsOf==='function'){const t=tsOf(ms);if(t!=null)wts.push(t)}
