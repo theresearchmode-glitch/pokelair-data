@@ -451,3 +451,8 @@
    (74-arena.js AR.glue), so it never wraps alone; a hyphenated word never splits at its hyphen ---------- */
 @A .ar-nobr{white-space:nowrap}
 @A main .tipq,@A #lairSheet .tipq{font-size:15px!important}
+
+/* ---------- 31. bottom nav (polish pass, N1): My team's icon sits in a .chfab wrapper; it is the same 22px box as the other
+   icons, so its label shares their baseline ---------- */
+@media (max-width:1000px){@A .bnav>button>.chfab{display:block!important;width:22px!important;height:22px!important;min-height:0!important;margin:0!important;padding:0!important;line-height:0!important;background:none!important;box-shadow:none!important;border:0!important;transform:none!important}
+  @A .bnav>button>.chfab>svg{display:block;margin:0!important}}
