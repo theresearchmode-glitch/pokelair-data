@@ -304,9 +304,9 @@ AR.glue = () => { document.querySelectorAll('main .tipq:not([data-gl])').forEach
   document.querySelectorAll('.rzmorebtn:not([data-gl])').forEach(b => { b.dataset.gl = 1; let t = b.previousSibling; if (t && t.nodeType === 3 && /^\s+$/.test(t.nodeValue)) { const s = t; t = t.previousSibling; s.remove(); }
     if (!t || t.nodeType !== 3) return; const m = /(\S+)(\s*)$/.exec(t.nodeValue); if (!m) return; t.nodeValue = t.nodeValue.slice(0, m.index);
     const w = document.createElement('span'); w.className = 'ar-nobr ar-moreg'; b.before(w); w.append(m[1] + '\u00a0', b); });
-  document.querySelectorAll('main :is(.prob-row>div,.wdsub,.chpgs,.hint,.empty-note,.mgempty,.pmain,p,li,dd,b,a,span.t2):not([data-hy])').forEach(e => { e.dataset.hy = 1;
-    const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), L = []; let n; while ((n = tw.nextNode())) if (/\w-\w/.test(n.nodeValue) && !n.parentElement.closest('.ar-nobr,svg,textarea,script,style')) L.push(n);
-    L.forEach(n => { const f = document.createElement('span'); f.innerHTML = esc(n.nodeValue).replace(/([A-Za-z0-9]+(?:-[A-Za-z0-9]+)+)/g, '<span class="ar-nobr">$1</span>'); n.replaceWith(...f.childNodes); }); }); };
+  document.querySelectorAll('main :is(.prob-row>div,.wdsub,.chpgs,.hint,.empty-note,.mgempty,.pmain,.ltd,.cht,p,li,dd,b,a,span.t2,span:not([class])):not([data-hy])').forEach(e => { e.dataset.hy = 1;
+    const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), L = []; let n; while ((n = tw.nextNode())) if (/\w[-\u2013]\w/.test(n.nodeValue) && !n.parentElement.closest('.ar-nobr,svg,textarea,script,style')) L.push(n);
+    L.forEach(n => { const f = document.createElement('span'); f.innerHTML = esc(n.nodeValue).replace(/([A-Za-z0-9(]+(?:[-\u2013][A-Za-z0-9)%]+)+)/g, '<span class="ar-nobr">$1</span>'); n.replaceWith(...f.childNodes); }); }); };
 /* the glued "More" toggle opens the text that follows its glue span (70-riso2.js looks for it right after the button) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-moreg > .rzmorebtn'); if (!b) return;
   const rest = b.parentElement.nextElementSibling; if (!rest || !rest.classList.contains('rzrest')) return; const open = rest.hidden; rest.hidden = !open; b.setAttribute('aria-expanded', String(open)); b.textContent = open ? 'Less' : 'More'; });
