@@ -779,6 +779,7 @@
    two columns, the list alternates (28-home.js): five orange on the left, five purple on the right, gold Winning cores alone
    at the bottom. Desktop (four columns): the two left columns are orange and gold, the two right ones purple. */
 @A #homeOut.ar-on .htiles>.htile:last-child{grid-column:auto!important}
+@media (max-width:1000px){@A #homeOut.ar-on .htiles>.htile:last-child{grid-column:1 / -1!important}}
 @media (min-width:600px) and (max-width:1000px){@A #homeOut.ar-on .htiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media (min-width:1001px){
   @A #homeOut.ar-on .htile[data-view="matchup"]{order:1}@A #homeOut.ar-on .htile[data-view="types"]{order:2}@A #homeOut.ar-on .htile[data-view="top"]{order:3}@A #homeOut.ar-on .htile[data-view="ratings"]{order:4}@A #homeOut.ar-on .htile[data-view="calc"]{order:5}@A #homeOut.ar-on .htile[data-view="gauntlet"]{order:6}@A #homeOut.ar-on .htile[data-view="events"]{order:7}@A #homeOut.ar-on .htile[data-view="sets"]{order:8}@A #homeOut.ar-on .htile[data-view="speed"]{order:9}@A #homeOut.ar-on .htile[data-view="cores"]{order:10}@A #homeOut.ar-on .htile[data-view="arch"]{order:11}}
