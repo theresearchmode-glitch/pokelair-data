@@ -55,8 +55,12 @@ ARB.overlays = () => { const ed = $('chEdit');
   document.querySelectorAll('[data-pane="report"] #chVsOut .chchart img.spr').forEach(i => ARB.mini(i));
   document.querySelectorAll('[data-pane="report"] #thrCard .thrrow > summary > img.spr, [data-pane="report"] .pfix .qtop > img.spr').forEach(i => ARB.mini(i, 'arb-lg'));
   document.querySelectorAll('.myrec .qlog .logpick, .myrec .qlog [data-qllead]').forEach(b => ARB.field(b, ARB.pOf(b.querySelector('img')))); };
-{ let q = false; const run = () => { q = false; try { ARB.overlays(); } catch (e) {} };
-  new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']}); }
+/* only mutations inside these parts matter; the work is queued once, after the app's own redraw (not every frame, so the app's
+   idle-time drawing still gets its idle moments) */
+ARB.WATCH = '#chEdit,#chScout,.myrec,#chVsOut,#thrCard,#needs';
+{ let q = 0; const run = () => { q = 0; try { ARB.overlays(); } catch (e) {} };
+  new MutationObserver(rs => { if (q) return; for (const r of rs) { const t = r.target; if (t.nodeType === 1 && (t.matches(ARB.WATCH) || t.closest(ARB.WATCH))) { q = setTimeout(run, 30); return; } } })
+    .observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['hidden']}); }
 
 /* ===== the share card (1200x675) and the team poster (1080x1350), drawn in the arena style ======
    Paper, ink and the section blue; each Pokémon on its own slanted type field with the light streaks, the sprite breaking out of
