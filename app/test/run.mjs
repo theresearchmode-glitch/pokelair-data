@@ -422,10 +422,12 @@ for (const width of [1280, 390]) {
   ok(tag && tag.includes('assumed'), `team card: the team sheet's spread is tagged assumed (${tag})`);
   const clk = s => pg.evaluate(s => document.querySelector(s).click(), s), put = (s, v) => pg.evaluate(([s, v]) => { const e = document.querySelector(s); e.value = v; }, [s, v]);
   /* the hidden set editors are drawn in idle moments (Oct 31), so wait for this one instead of racing it (Nov) */
-  await clk('[data-spedit="0"]'); await pg.waitForSelector('#spv0', {state: 'attached', timeout: 5000}); await put('#spv0', '40/0/0/0/0/32'); await clk('[data-spsave="0"]');
+  /* Nov 6: Edit set has a Nature dropdown and six stat point boxes (data-spi="slot:stat"), saved with data-spsave2 */
+  const pts = v => pg.evaluate(v => v.forEach((x, j) => { document.querySelector(`[data-spi="0:${j}"]`).value = String(x); }), v);
+  await pg.waitForSelector('[data-spi="0:0"]', {state: 'attached', timeout: 5000}); await pts([40, 0, 0, 0, 0, 32]); await clk('[data-spsave2="0"]');
   const bad = await pg.evaluate(() => (document.getElementById('spmsg0') || {}).textContent || '');
   ok(/0-32/.test(bad), `spread editor refuses a stat over 32 ("${bad}")`);
-  await put('#spv0', '2/32/0/0/0/32'); await put('#spn0', 'Adamant'); await clk('[data-spsave="0"]'); await pg.waitForTimeout(200);
+  await pts([2, 32, 0, 0, 0, 32]); await put('[data-spnat="0"]', 'Adamant'); await clk('[data-spsave2="0"]'); await pg.waitForTimeout(200);
   const set = await pg.evaluate(() => { const m = window.__PL.members()[0]; return m.spread && [m.spread.nat, m.spread.atk, m.spread.spe, !!m.spread.assumed, document.getElementById('slot0').querySelectorAll('.asm').length]; });
   ok(set && set[0] === 'Adamant' && set[1] === 32 && set[2] === 32 && !set[3], `spread editor: your spread is saved and used (${set})`);
   const ex = await pg.evaluate(() => window.__PL.exportPaste());
