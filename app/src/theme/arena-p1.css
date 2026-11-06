@@ -899,3 +899,7 @@
 @A #lairSheet .lsab p{margin:4px 0 0!important}
 /* Typical set: the ability's share sits quietly after it */
 @A #lairSheet .lsetp{font-weight:600;color:var(--ar-ink-2)}
+/* Sim (Nov 7, polish check): the open team sheet's remove button had no position, so its enlarged tap area covered the whole
+   row: tapping a Pokémon's name or moves removed it. The tap area now hugs the button. */
+@A .chrm,@A [data-pane="report"] .chsheet .chrow .chrm{position:relative!important}
+@A [data-pane="report"] .chsheet .chrow .chrm{top:auto!important;right:auto!important;left:auto!important;bottom:auto!important}

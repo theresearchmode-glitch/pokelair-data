@@ -115,5 +115,5 @@ function calcShort(w){return String(w||'')
 function threatDiff(baseTeam,team,max=3){const A=prepOf(baseTeam),B=prepOf(team);if(!A||!B||A.rows.length!==B.rows.length)return [];
   const up=[],dn=[];A.rows.forEach((ra,j)=>{const rb=B.rows[j];if(!rb||ra.t.n!==rb.t.n)return;
     if(rb.level>ra.level){const ev=THR.evidence(rb);up.push({w:ra.t.w,html:`<b>Covers ${esc(rb.t.d)}</b>: ${ra.label} → ${rb.label}<span class="thcalc" title="${esc(ev)}">${calcShort(ev).split('\n').map((x,i)=>i?`<span class="thcond">${esc(x)}</span>`:esc(x)).join('')}</span>`})}
-    else if(rb.level<ra.level)dn.push({w:ra.t.w,html:`<span class="warnline">Loses ${esc(rb.t.d)}</span>: ${ra.label} → ${rb.label}`})});
+    else if(rb.level<ra.level)dn.push({w:ra.t.w,html:`<span class="warnline">Loses ${esc(rb.t.d)}:</span> ${ra.label} → ${rb.label}`})});
   up.sort((x,y)=>y.w-x.w);dn.sort((x,y)=>y.w-x.w);return [...up.slice(0,max).map(x=>({up:true,html:x.html})),...dn.slice(0,max).map(x=>({up:false,html:x.html}))]}
