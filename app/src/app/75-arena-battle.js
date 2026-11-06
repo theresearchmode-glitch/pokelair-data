@@ -143,7 +143,9 @@ NPR.textW = (t, me) => { try { if (!NPR.ctx) NPR.ctx = document.createElement('c
 ARBAT.calc = () => { const el = $('dcOut'); if (!el) return;
   el.querySelectorAll('.chdcband:not(.ar-dcband)').forEach(b => { const sel = $(b.classList.contains('atk') ? 'dcA' : 'dcD'), p = sel && byName.get(sel.value); b.classList.add('ar-dcband'); if (!p) return;
     b.setAttribute('style', AR.tv(p)); if (AR.isMega(p)) b.classList.add('is-mega');
-    b.insertAdjacentHTML('afterbegin', '<span class="ar-dcf ar-field" aria-hidden="true"></span>'); const img = b.querySelector('.dcspr'); if (img) img.classList.add('ar-spr'); });
+    b.insertAdjacentHTML('afterbegin', '<span class="ar-dcf ar-field" aria-hidden="true"></span>'); const img = b.querySelector('.dcspr'); if (img) img.classList.add('ar-spr');
+    /* name and set share one plate (Sim, Nov 7: two boxes of different widths looked unpolished) */
+    const nm = b.querySelector(':scope > .nm'), sub = b.querySelector(':scope > .sub'); if (nm) { const w = document.createElement('div'); w.className = 'ar-dccopy'; nm.before(w); w.append(nm); if (sub) w.append(sub); } });
   const grid = el.querySelector('.dcgrid'), sw = $('dcSwap');
   if (grid && sw && !grid.querySelector('.ar-dcvs')) { const a = $('dcA'), d = $('dcD'), pa = a && byName.get(a.value), pd = d && byName.get(d.value);
     const v = document.createElement('div'); v.className = 'ar-dcvs'; if (pa && pd) v.setAttribute('style', ARBAT.pairVars(pa, pd)); v.innerHTML = '<span class="ar-num ar-mp" aria-hidden="true">vs</span>'; sw.before(v); v.append(sw); }

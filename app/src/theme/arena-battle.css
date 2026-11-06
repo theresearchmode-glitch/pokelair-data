@@ -1010,3 +1010,14 @@
    (the type colour mixed into the dark), so it blends in and the text stays readable on the pale end of the band */
 @A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy)::before{background:color-mix(in oklch,var(--b,var(--a)) 34%,#16141A)!important;opacity:.82}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub)::before{background:color-mix(in oklch,var(--b,var(--a)) 34%,#16141A)!important;opacity:.82}
+/* Calc band (Sim, Nov 7): the name and its set sit in ONE solid plate with even padding, in the band's own colour */
+@A [data-pane="calc"] .ar-dcband .ar-dccopy{position:relative;z-index:3;isolation:isolate;width:fit-content;max-width:calc(100% - 170px);margin:84px 0 18px 22px;padding:12px 18px 13px}
+@A [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub){max-width:none!important;margin:0!important;padding:0!important;width:auto!important}
+@A [data-pane="calc"] .ar-dcband .ar-dccopy .sub{margin-top:6px!important;padding-bottom:0!important;min-height:0!important}
+@A [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub)::before{content:none!important;display:none!important}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy{color:#fff}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);
+  background:color-mix(in oklch,var(--b,var(--a)) 30%,#141218);box-shadow:0 10px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)}
+@A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub){color:#fff!important}
+/* the read boxes: solid, not see-through, same finish */
+@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy)::before{background:color-mix(in oklch,var(--b,var(--a)) 30%,#141218)!important;opacity:1!important;box-shadow:0 10px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)}
