@@ -1006,18 +1006,18 @@
 @media (max-width:599px){@A [data-pane="matchup"] .ar-rhero{min-height:178px}@A [data-pane="matchup"] .ar-rhero-copy{margin-top:60px}}
 @media (min-width:600px) and (max-width:1000px){@A [data-pane="matchup"] .ar-rhero{min-height:236px}@A [data-pane="matchup"] .ar-rhero-copy{margin-top:84px}}
 @media (min-width:1001px){@A [data-pane="matchup"] .ar-rhero{min-height:400px}@A [data-pane="matchup"] .ar-rhero-copy{margin-top:206px}}
-/* Sim (Nov 7): in dark mode the near-black text boxes on the read bands looked heavy. Each box takes its band's own colour
-   (the type colour mixed into the dark), so it blends in and the text stays readable on the pale end of the band */
-@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy)::before{background:color-mix(in oklch,var(--b,var(--a)) 34%,#16141A)!important;opacity:.82}
-@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub)::before{background:color-mix(in oklch,var(--b,var(--a)) 34%,#16141A)!important;opacity:.82}
 /* Calc band (Sim, Nov 7): the name and its set sit in ONE solid plate with even padding, in the band's own colour */
 @A [data-pane="calc"] .ar-dcband .ar-dccopy{position:relative;z-index:3;isolation:isolate;width:fit-content;max-width:calc(100% - 170px);margin:84px 0 18px 22px;padding:12px 18px 13px}
 @A [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub){max-width:none!important;margin:0!important;padding:0!important;width:auto!important}
 @A [data-pane="calc"] .ar-dcband .ar-dccopy .sub{margin-top:6px!important;padding-bottom:0!important;min-height:0!important}
 @A [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub)::before{content:none!important;display:none!important}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy{color:#fff}
-@A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);
-  background:color-mix(in oklch,var(--b,var(--a)) 30%,#141218);box-shadow:0 10px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub){color:#fff!important}
-/* the read boxes: solid, not see-through, same finish */
-@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy)::before{background:color-mix(in oklch,var(--b,var(--a)) 30%,#141218)!important;opacity:1!important;box-shadow:0 10px 24px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)}
+/* Sim (Nov 7, option A): in dark mode the words sit right on the band, no box. A soft dark fade across the band's left end
+   (inside the band's own shape) and a gentle shadow keep white text readable on the pale end */
+@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy)::before,@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub,.ar-dccopy)::before{content:none!important;display:none!important}
+@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy),@A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy{text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 12px rgba(0,0,0,.35)}
+@A[data-look="dark"] :is([data-pane="matchup"] .ar-rstrip-f,[data-pane="matchup"] .ar-rhero-bg,[data-pane="calc"] .ar-dcf){isolation:isolate}
+@A[data-look="dark"] :is([data-pane="matchup"] .ar-rstrip-f,[data-pane="matchup"] .ar-rhero-bg,[data-pane="calc"] .ar-dcf)::after{content:""!important;display:block!important;position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,rgba(14,12,18,.74) 0%,rgba(14,12,18,.5) 36%,rgba(14,12,18,0) 62%)!important;opacity:1!important}
+@media (max-width:599px){@A[data-look="dark"] [data-pane="matchup"] .ar-rhero-copy{margin-top:92px}}
