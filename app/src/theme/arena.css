@@ -456,3 +456,11 @@
    icons, so its label shares their baseline ---------- */
 @media (max-width:1000px){@A .bnav>button>.chfab{display:block!important;width:22px!important;height:22px!important;min-height:0!important;margin:0!important;padding:0!important;line-height:0!important;background:none!important;box-shadow:none!important;border:0!important;transform:none!important}
   @A .bnav>button>.chfab>svg{display:block;margin:0!important}}
+
+/* ---------- Nov 7: comfortable line length. Running text stops at about 70 characters on iPad and desktop
+   (help text in folds, notes, sources), so long lines are easy to follow; narrower boxes are unaffected ---------- */
+@A main :is(.chsec .chbody>p,.chbody>.hint,.chbody>.t2,.vcard>.t2,.gpwho>.t2,.gpwho,.replaybox>.t2,.hfoot,#ratingTrack),
+@A footer.legal :is(.lgsrc,.lgsrcin){max-width:36em!important}
+/* wide screens: a fold that is only paragraphs (How scoring works) flows into two even columns instead of one short column */
+@media (min-width:1001px){@A main .chsec .chbody:not(:has(>:not(p))){column-count:2;column-gap:48px;column-rule:1px solid var(--ar-rule)}
+  @A main .chsec .chbody:not(:has(>:not(p)))>p{max-width:none!important;break-inside:avoid;margin-top:0}}
