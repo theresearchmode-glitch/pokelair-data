@@ -876,3 +876,7 @@
    chose to drop them on mouse screens except the big feature sprites: Home hero, Pokémon sheet hero, Ratings tie card.
    Phones and tablets keep the full glow (they scroll smoothly). */
 @media (hover:hover) and (pointer:fine){@A :is(img,svg).spr:not(.ar-hero-mon):not(.ar-shero-mon):not(.ar-tie-mon img),@A .ar-mega-s:not(.ar-hero-mon):not(.ar-shero-mon){filter:none!important}}
+/* Sim (Nov 6): desktop tools are symmetrical: bottom row Speed tiers | Winning cores (two columns wide, centred) | Archetypes,
+   so Archetypes sits under Popular sets, orange stays left, purple right, gold in the middle */
+@media (min-width:1001px){@A #homeOut.ar-on .htiles>.htile[data-view="cores"]{grid-column:span 2!important;align-items:center!important;text-align:center}
+  @A #homeOut.ar-on .htiles>.htile[data-view="cores"] svg{position:static!important;display:block;align-self:center!important;margin-left:auto!important;margin-right:auto!important}}
