@@ -55,7 +55,7 @@
 @R .mgcover{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:262px 150px;gap:6px;margin:4px 0 0}
 @R .mgcover .mgc1{grid-column:1/3;--cx:44%}
 @R .mgbig{position:absolute;left:12px;top:10px;z-index:3;font:400 56px/1 var(--display);color:var(--chink);white-space:nowrap}
-@R .mgbig small{font-size:32px}
+@R .mgbig small{font-size:34px}
 @R .mgcapq{top:auto;position:absolute}
 @R .mgc1 .mgcapq{top:82px;left:14px}
 @R .mgc1 .mgmon{width:58%;height:92%;right:-6px}
@@ -67,7 +67,7 @@
 /* three action panels; the main one is yellow */
 @R .mgacts{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:6px;margin-top:14px}
 @R .mgact{display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:96px;padding:10px;border:var(--mgbw) solid var(--mgink)!important;border-radius:0!important;background:var(--mgpanel)!important;color:var(--chink)!important;text-align:left;box-shadow:none!important;cursor:pointer}
-@R .mgact b{font:400 16px/1.1 var(--display)}
+@R .mgact b{font:400 16px/1.15 var(--display)}
 @R .mgact.mgyel{background:var(--chyel)!important;color:#141414!important}
 @R .mgact:nth-child(2) .mgpic{color:var(--chblue)}@R .mgact:nth-child(3) .mgpic{color:var(--chred)}
 @R .mgact.mgyel .mgpic{color:#141414}
@@ -145,17 +145,17 @@
 
 /* ---------- Battle: The read ---------- */
 @R .mgread{border:0!important;background:none!important;padding:0!important}
-@R .mgread h2{font:400 26px/1.1 var(--display);margin:0 0 10px}
+@R .mgread h2{font:400 26px/1.15 var(--display);margin:0 0 10px}
 @R .mgstrip{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 170px;gap:6px}
 @R .mgr1{grid-column:1/3;--cx:44%}
-@R .mgread .mgcapq{top:10px;left:10px;flex-direction:row;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--chink);max-width:calc(100% - 20px);white-space:normal}
-@R .mgread .mgcapq>span{white-space:normal;color:var(--chink);font-size:14px}
+@R .mgread .mgcapq{top:10px;left:10px;flex-direction:row;align-items:center;gap:8px;font-weight:600;font-size:15px;color:var(--chink);max-width:calc(100% - 20px);white-space:normal}
+@R .mgread .mgcapq>span{white-space:normal;color:var(--chink);font-size:15px}
 @R .mgread .mgcapq em{display:block;font-style:normal;color:var(--chink2);font-size:13px}
 @R .mgm2{gap:2px;width:70%}
 @R .mgm2 img,@R .mgm2 svg{height:100%;width:50%}
 @R .mgr2 .mgmon{height:58%;width:70%}
 @R .mgr1 .mgmon{height:70%}
-@R .mgfo{margin:8px 0 0;font-size:14px;color:var(--chink2)}
+@R .mgfo{margin:8px 0 0;font-size:15px;color:var(--chink2)}
 @R .mghero .mgmon img,@R .mghero .mgmon svg{width:auto!important;height:100%!important;max-width:100%!important;position:static!important;transform:none!important;filter:none!important;opacity:1!important;margin:0!important}
 @R .lspanel{box-shadow:none!important}
 @R .lshead.mghead{box-shadow:none!important}
@@ -172,7 +172,7 @@
 @R #lairSheet .lshead.mghead::before,@R #lairSheet .lshead.mghead::after{display:none!important;content:none!important;background:none!important}
 @R #lairSheet .lshead.mghead .lsname::before,@R #lairSheet .lshead.mghead .lsname::after{display:none!important;content:none!important}
 /* types under the name: a dot in the type colour and the name, not a filled chip */
-@R #lairSheet .lshead.mghead .lsname .ty{background:none!important;color:var(--chink)!important;padding:0 10px 0 0!important;font:700 14px var(--body)!important;border:0!important;box-shadow:none!important}
+@R #lairSheet .lshead.mghead .lsname .ty{background:none!important;color:var(--chink)!important;padding:0 10px 0 0!important;font:700 15px var(--body)!important;border:0!important;box-shadow:none!important}
 
 /* ---------- calm layer: no screentone outside the hero panels; a type colour is a thin stripe or a small dot ---------- */
 @R .hmini::before,@R[data-look="dark"] .hmini::before{height:5px!important;border-bottom:0!important;background:linear-gradient(90deg,var(--ta,#888),var(--tb,var(--ta,#888)))!important}
@@ -258,7 +258,7 @@
 @R .mgtgr{flex:none;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
 @R .mgtgr b{font:400 64px/.9 var(--display);color:var(--chink)}
 @R .mgtgr>span{font-weight:700;font-size:15px}
-@R .mgtgr .rzwhy{margin-top:2px;font-size:14px}
+@R .mgtgr .rzwhy{margin-top:2px;font-size:15px}
 @R .rzgrade.mgmoved{display:none!important}
 @R .mgst:focus:not(:focus-visible){outline:none!important}
 @R .mgst.mgon{border-width:6px!important;box-shadow:none!important;outline:none}
@@ -272,7 +272,7 @@
 @R .chlstats>div:first-of-type,@R .chlstats>.chlsr.mgmoved+div{border-left:0!important}
 @R .chlstats b{font:400 26px/1 var(--display)!important;color:var(--chink)!important}
 @R .chlstats span{font-size:13px!important;color:var(--chink2)!important}
-@R .chlstats i{display:block;font-style:normal;font-size:12px;color:var(--chink2)}
+@R .chlstats i{display:block;font-style:normal;font-size:13px;color:var(--chink2)}
 @R #lairSheet .lsact{margin:0 12px 12px!important}
 @R #lairSheet .lsact [data-laddteam]{width:100%;background:var(--chyel)!important;color:#141414!important;border:var(--mgbw) solid var(--mgink)!important;min-height:52px;font-weight:700;font-size:17px}
 @R .lstabs{background:none!important;border:0!important;border-bottom:var(--mgbw) solid var(--mgink)!important;padding:0!important;margin:0 12px!important;border-radius:0!important;gap:0!important}
@@ -313,7 +313,7 @@
 @R :is(.chpill){margin-right:10px!important}
 /* ---- names never wrap or cut ---- */
 @R :is(.chcalcrow,.bmopp,.svsix,.item.svt) :is(span,b,div):not(.mgll){white-space:nowrap}
-@R .chcalcrow button,@R .bmslot{font-size:12.5px!important;letter-spacing:-.01em}
+@R .chcalcrow button,@R .bmslot{font-size:13px!important;letter-spacing:-.01em}
 @R .item.svt .nm,@R .item.svt b{white-space:normal}
 /* ---- Home phone: hero number and sprite as v6, action icons left ---- */
 @R .mgcover .mgc1 .mgbig{font-size:58px}
@@ -329,11 +329,11 @@
 @R main>.inner{padding-top:6px!important}
 @media (max-width:899px){@R .band .inner{padding:8px 12px 4px!important}}
 @R .chlstats>div{min-width:0}
-@R .chlstats span{line-height:1.25}
+@R .chlstats span{line-height:1.2}
 @media (min-width:900px){@R .band .titlerow{flex-wrap:nowrap!important}@R .band .jumpbtn{min-width:260px!important;flex:none}}
 @R .bmslot input,@R .bmslot .field,@R .bmslot select{border:0!important;box-shadow:none!important;background:none!important}
 @R .item.svt :is(h3,h4,.svn,.nm,b,.svname){white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
-@R .svsix :is(span,b,div){font-size:12px!important;white-space:nowrap;letter-spacing:-.01em}
+@R .svsix :is(span,b,div){font-size:13px!important;white-space:nowrap;letter-spacing:-.01em}
 @R :is(.svopen,.svtag,.abtags span,.abthero .chips span,.abtpill,.abthero li,.abthero ul span){background:none!important;border:0!important;padding:0!important;color:var(--chink)!important;font-weight:700}
 @R :is(.chrow,.asm,.cxhead.empty,.ltile.more,.trsoon,.nprlane,.hempty,.empty-note){border-style:solid!important}
 @R :is(.asm,.abtchips span,.sev){background:none!important;border:0!important;padding:0!important;font-weight:700;color:var(--chink)!important}
@@ -343,7 +343,7 @@
 @R .mgadd [data-laddteam]{width:100%;background:var(--chyel)!important;color:#141414!important;border:var(--mgbw) solid var(--mgink)!important;min-height:52px;font-weight:700;font-size:17px}
 @R .wxchip,@R .wxchip *{color:var(--chink)!important}
 @R .ltn{letter-spacing:-.01em}
-@R .ltile{padding-left:8px!important;padding-right:8px!important}@R .ltn{font-size:14px!important}
+@R .ltile{padding-left:8px!important;padding-right:8px!important}@R .ltn{font-size:15px!important}
 /* desktop: the ⋯ menu exists there too (it holds the theme and every page), as a sheet from the right */
 @media (min-width:1001px){
   @R .band #moreBtn.chmenubtn{display:inline-flex!important;align-items:center;justify-content:center;width:44px;height:44px}
@@ -526,7 +526,7 @@
 /* damage calc grid: black cells, one KO label + %, full move name */
 @R .dctab td{background:var(--mgpanel)!important;background-image:none!important;position:relative;vertical-align:top;padding:22px 4px 6px!important;white-space:normal!important}
 @R .dctab td span{display:block;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:11.5px!important;line-height:1.2;word-break:break-word;color:var(--chink2)}
-@R .dctab td::after,@R .dctab td[data-ko]::after{position:absolute!important;top:4px!important;left:4px!important;right:auto!important;background:none!important;border:0!important;padding:0!important;font:700 12px/1 var(--body)!important;color:var(--chink2)!important}
+@R .dctab td::after,@R .dctab td[data-ko]::after{position:absolute!important;top:4px!important;left:4px!important;right:auto!important;background:none!important;border:0!important;padding:0!important;font:700 13px/1 var(--body)!important;color:var(--chink2)!important}
 @R .dctab td:is(.k1,.k1m)::after{color:var(--good)!important}
 @R .dctab td:is(.k2,.k2m)::after{color:var(--warn)!important}
 @R .dctab td .dctile{display:none!important}
@@ -553,7 +553,7 @@
 /* no dot texture left in the Battle calc panel */
 @R .chcalc::before,@R .chcalc::after,@R #chCalcCard::before,@R #chCalcCard::after{display:none!important;background:none!important}
 /* Home team chips: names on one line */
-@R :is(.chmmon,.hmini) :is(b,.hmn){white-space:nowrap!important;font-size:12.5px!important;letter-spacing:-.01em}
+@R :is(.chmmon,.hmini) :is(b,.hmn){white-space:nowrap!important;font-size:13px!important;letter-spacing:-.01em}
 /* less empty space above the footer on phones */
 @media (max-width:899px){@R main,@R .mainwrap{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}@R footer.legal{margin-top:16px!important;padding-top:16px!important}@R [data-pane]>:last-child{margin-bottom:0!important}}
 @R .bnav .chfab{height:28px!important;width:28px!important;display:flex!important;align-items:center;justify-content:center}
@@ -574,7 +574,7 @@
 @R .dctab td::after,@R .dctab td[data-ko]::after{order:-1;margin:0 0 4px!important}
 @R .bnav{padding-bottom:max(18px,calc(env(safe-area-inset-bottom) + 10px))!important}
 @R .logpick .logord,@R .logpick[aria-pressed="true"] .logord,@R .logpick.on .logord{color:var(--chink)!important;background:none!important}
-@R .dctab td span{font-size:12px!important}
+@R .dctab td span{font-size:13px!important}
 @R .dcstick{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 
 /* ===================== Round 5 (QA round 3) ===================== */
@@ -593,7 +593,7 @@
 @R .dctab td .dctile img{width:28px!important;height:28px!important;position:static!important}
 /* ratings top cards: stats under the name with room, sprite in its corner */
 @R .chhot{padding-right:12px!important;padding-bottom:12px!important;min-height:220px}
-@R .chhot .st{display:block!important;max-width:60%;white-space:normal;line-height:1.35}
+@R .chhot .st{display:block!important;max-width:60%;white-space:normal;line-height:1.3}
 @R .chhot .st br{display:none}
 @R .chhot .st>*{display:block}
 @R .chhot img{width:72px!important;height:72px!important}
@@ -611,7 +611,7 @@
 @R .nprm i{position:relative;z-index:2;background:var(--mgpanel);padding:0 3px}
 @R .nprtrack{padding-bottom:10px!important}
 /* this week: names never break inside a word */
-@R .wktm span,@R .wktm b,@R [data-pane="weekly"] .wktm span{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;white-space:nowrap!important;font-size:12px!important;letter-spacing:-.01em}
+@R .wktm span,@R .wktm b,@R [data-pane="weekly"] .wktm span{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;white-space:nowrap!important;font-size:13px!important;letter-spacing:-.01em}
 @R .wktm{min-width:0}
 
 @R #spdOut .nprlane.nprlane{background:var(--mgpanel)!important;background-image:none!important}
@@ -638,7 +638,7 @@
 @R .bnav{padding:6px 0 max(var(--sa-bottom,env(safe-area-inset-bottom,0px)),10px)!important;min-height:0!important;height:auto!important;align-items:flex-start!important}
 @R .bnav button{padding:0!important;gap:2px!important;min-height:44px!important;justify-content:flex-start!important}
 @R .bnav button>svg,@R .bnav .chfab,@R .bnav .chfab svg{width:22px!important;height:22px!important}
-@R .bnav button>span:not(.chfab){font-size:12px!important;line-height:14px!important;height:14px!important}
+@R .bnav button>span:not(.chfab){font-size:13px!important;line-height:14px!important;height:14px!important}
 @R .bnav button[aria-selected="true"]::before{left:50%!important;right:auto!important;width:30px!important;margin-left:-15px!important;top:-7.5px!important;height:4px!important;transform:skewX(-24deg)!important;border-radius:0!important}
 @media (max-width:899px){@R main,@R .mainwrap{padding-bottom:calc(64px + max(var(--sa-bottom,env(safe-area-inset-bottom,0px)),10px))!important}}
 @R .bnav{grid-auto-rows:auto!important;align-content:start!important}
@@ -655,9 +655,9 @@
 @R .chhot.mgrh .n{font:400 58px/1 var(--display)!important;color:var(--chink)!important;background:none!important;text-shadow:3px 2px 0 var(--mc)!important;margin:0!important}
 @R[data-look="dark"] .chhot.mgrh .n{text-shadow:3px 2px 0 var(--MC)!important}
 @R .chhot.mgrh .mgrcap{position:relative!important;left:auto;top:auto;margin:6px 0 6px;font-weight:700;font-size:13px;padding:3px 8px!important}
-@R .chhot.mgrh .nm{font:400 20px/1.1 var(--display)!important;color:var(--chink)!important;background:var(--mgpanel);padding:0 4px 0 0;margin:0 0 4px!important}
+@R .chhot.mgrh .nm{font:400 20px/1.15 var(--display)!important;color:var(--chink)!important;background:var(--mgpanel);padding:0 4px 0 0;margin:0 0 4px!important}
 @R .mgrst{display:flex;flex-direction:column;gap:1px;background:var(--mgpanel);padding:2px 6px 2px 0;border-radius:var(--mgr2)}
-@R .mgrrow{display:block;white-space:nowrap;font-size:13.5px;font-weight:700;color:var(--chink);line-height:1.35}
+@R .mgrrow{display:block;white-space:nowrap;font-size:13px;font-weight:700;color:var(--chink);line-height:1.3}
 @R .mgrrow .basis{font-weight:500;color:var(--chink2)}
 @R .mgrmon{position:absolute;right:-6px;top:-22px;width:58%;height:auto;z-index:1;pointer-events:none}
 @R .mgrmon svg,@R .mgrmon img{width:100%!important;height:auto!important;display:block}
@@ -675,7 +675,7 @@
 @R .mgtitle .chpgt{margin-bottom:0!important}
 @R .mgtstroke{display:block;width:46px;height:5px;margin-top:8px;background:var(--chred);transform:skewX(-24deg)}
 /* 2 section headings: a small caption box */
-@R [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.chk,h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht){display:inline-block;border:1.5px solid var(--mgink);border-radius:var(--mgr2);background:var(--mgpanel);padding:3px 9px!important;font:700 14px/1.3 var(--body)!important;color:var(--chink)!important;margin:4px 0 8px!important}
+@R [data-pane]:not([data-pane="home"]):not([data-pane="report"]) :is(h3.chk,h3.wkt,h2.chsub3,h3.chsub3,.chsec>summary .cht){display:inline-block;border:1.5px solid var(--mgink);border-radius:var(--mgr2);background:var(--mgpanel);padding:3px 9px!important;font:700 15px/1.3 var(--body)!important;color:var(--chink)!important;margin:4px 0 8px!important}
 @R .chsec>summary .cht{margin:0!important}
 /* 3 one divider before the page's foot folds: an ink rule ending in three tapered flicks */
 @R .mgdiv{position:relative;height:16px;margin:22px 0 14px;border-top:1.5px solid var(--mgink);margin-right:34px}
@@ -708,9 +708,9 @@
 @R .wdl{flex:0 0 100%;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--chink2);margin-bottom:3px}
 @R .wdc{flex:0 1 auto;min-width:0;display:flex;align-items:baseline;gap:4px;padding:0 9px;border-left:2px solid var(--line2);line-height:1.2}
 @R .wdl+.wdc{border-left:0;padding-left:0}
-@R .wdc b{font:400 20px/1.1 var(--display);color:var(--chink);white-space:nowrap}
+@R .wdc b{font:400 20px/1.15 var(--display);color:var(--chink);white-space:nowrap}
 @R .wdc b i{font:700 13px/1 "Instrument Sans",system-ui,sans-serif;font-style:normal;color:var(--chink2)}
-@R .wdc small{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--chink2);white-space:nowrap}
+@R .wdc small{display:inline-flex;align-items:center;gap:4px;font-size:15px;color:var(--chink2);white-space:nowrap}
 @R .wdc .tipq,.wdl .tipq{margin:0;align-self:center}
 @R .wdl{margin-bottom:1px}
 @R .wdrow{margin-top:6px}
@@ -732,7 +732,7 @@
 
 /* ===== Round words, phase 2 ===== */
 /* Fix suggestions: the damage-calc reason on its own short line under "Covers X: A -> B" (calc shorthand, same numbers) */
-@R .thcalc{display:block;font-size:13px;line-height:1.35;color:var(--chink2);margin-top:1px}
+@R .thcalc{display:block;font-size:13px;line-height:1.3;color:var(--chink2);margin-top:1px}
 /* screen-reader-only words (the Home pick names, already shown as Lead / Back tags) */
 @R .wdsr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 /* How we calculate: the "Built from" cells under the title */
@@ -747,7 +747,7 @@
 @R{--kd-m:#0d6a87;--kd-i:#8f5300;--kd-a:#7436b8;--kd-n:#2b7530}
 @R[data-look="dark"]{--kd-m:#4fc3e8;--kd-i:#f2b544;--kd-a:#c49cff;--kd-n:#7ed482}
 @R .kd-m{--kd:var(--kd-m)} @R .kd-i{--kd:var(--kd-i)} @R .kd-a{--kd:var(--kd-a)} @R .kd-n{--kd:var(--kd-n)}
-@R .kind{display:inline-flex;align-items:center;gap:4px;font:700 12.5px/1.2 "Instrument Sans",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:var(--kd);background:none;border:0;padding:0;white-space:nowrap}
+@R .kind{display:inline-flex;align-items:center;gap:4px;font:700 13px/1.2 "Instrument Sans",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:var(--kd);background:none;border:0;padding:0;white-space:nowrap}
 @R .kdic{width:15px;height:15px;flex:none;fill:none;stroke:var(--kd,currentColor);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 @R .kdopt{text-decoration:underline;text-decoration-color:var(--kd);text-decoration-thickness:3px;text-underline-offset:4px;text-decoration-skip-ink:none}
 /* This week, New tech: the kind sits on its own short line above the option */
@@ -768,7 +768,7 @@
    Now the name wraps at a word break and the tag is plain text on its own line under it: Lead in blue with a blue underline, Back / Bench grey. */
 @R .chmcard .chmgrid.npstrip .chmmon{grid-template-columns:40px minmax(0,1fr)!important}
 @R .chmcard .chmgrid.npstrip .chmmon b{white-space:normal!important;text-wrap:balance;overflow-wrap:normal!important;word-break:normal!important}
-@R .chmcard .chmgrid.npstrip .chmmon .chtag,@R .chmcard .chmgrid.npstrip .chmmon .chtag.lead{grid-column:2!important;grid-row:2!important;justify-self:start;align-self:start;background:none!important;padding:0!important;border:0!important;font:700 12px/1.3 "Instrument Sans",system-ui,sans-serif!important;color:var(--chink2)!important}
+@R .chmcard .chmgrid.npstrip .chmmon .chtag,@R .chmcard .chmgrid.npstrip .chmmon .chtag.lead{grid-column:2!important;grid-row:2!important;justify-self:start;align-self:start;background:none!important;padding:0!important;border:0!important;font:700 13px/1.3 "Instrument Sans",system-ui,sans-serif!important;color:var(--chink2)!important}
 @R .chmcard .chmgrid.npstrip .chmmon .chtag.lead{color:var(--chblueT)!important;text-decoration:underline;text-decoration-color:var(--chblue);text-decoration-thickness:2px;text-underline-offset:3px}
 
 /* New tech: Pokemon name always on its own line, so every row reads the same */

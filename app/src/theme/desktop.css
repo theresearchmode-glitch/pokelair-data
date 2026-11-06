@@ -15,10 +15,10 @@
 /* ---------- Readable text on desktop (Sim: "tiny text on PC"). The phone sizes (12-13px) stay on the phone; from 1001px up the
    notes, captions and labels step up one size. Dense data cells (type chart grid, calc rolls) keep their size. ---------- */
 @media (min-width:1001px){
-  @R :is(.t2,.vsub,.basis,.hint,.linkbtn,.chs,.chghost,.fbanon,.fbctx,.adesc){font-size:14px}
-  @R .chk{font-size:14px}
-  @R :is(.ty,.tag:not(.ico),.lbl,.archchip,.tgn,.tgmk,.wrv,.lts,.ltm,.ltd,.ltg,.sev,.dbdt,.who,.gpwho,.qwhy,.warnline,.wk,.hmn,.hcw,.tr,.rtier,.kind,.calcd,.cxbadge,.sgl,.jk,.jhint,.mgrole,.hmrk){font-size:13.5px}
-  @R :is(.btn,.seg>button,.sub){font-size:14px}
+  @R :is(.t2,.vsub,.basis,.hint,.linkbtn,.chs,.chghost,.fbanon,.fbctx,.adesc){font-size:15px}
+  @R .chk{font-size:15px}
+  @R :is(.ty,.tag:not(.ico),.lbl,.archchip,.tgn,.tgmk,.wrv,.lts,.ltm,.ltd,.ltg,.sev,.dbdt,.who,.gpwho,.qwhy,.warnline,.wk,.hmn,.hcw,.tr,.rtier,.kind,.calcd,.cxbadge,.sgl,.jk,.jhint,.mgrole,.hmrk){font-size:13px}
+  @R :is(.btn,.seg>button,.sub){font-size:15px}
 }
 
 /* ---------- My team (1280px and up): the stage and the selected set side by side. On the phone the set panel sits under the stage;
@@ -36,7 +36,7 @@
   @R #chTeam .chthead>div:has(>.mgstage)>#rzSet{grid-row:6;margin-top:14px}
   @R #chTeam .chthead>div:has(>.mgstage)>:is(#chActs,.chacts2){grid-row:7;flex-wrap:wrap;margin-top:14px}
   @R #chTeam .chthead>div:has(>.mgstage) #rzSet .rzsetd,@R #chTeam .chthead>div:has(>.mgstage) #rzSet .rzsetm{grid-template-columns:repeat(2,minmax(0,1fr))}
-  @R #chTeam .chthead>div:has(>.mgstage)>.chpills .chpill{font-size:13.5px}
+  @R #chTeam .chthead>div:has(>.mgstage)>.chpills .chpill{font-size:13px}
 }
 @media (min-width:1280px){
   @R #chTeam .chthead>div:has(>.mgstage)>.mgstage{max-width:none;width:auto}
@@ -48,7 +48,7 @@
   @R .fbbox :is(.fbh b,#fbT){font-size:22px}
   @R .fbbox textarea{min-height:140px}
   @R .jbox{width:min(720px,100%)}
-  @R .jbox input{font-size:18px;padding:18px 20px}
+  @R .jbox input{font-size:17px;padding:18px 20px}
   @R .jbox li{font-size:16px}
-  @R #side :is(.sgl,.sr,.tc){font-size:14px}
+  @R #side :is(.sgl,.sr,.tc){font-size:15px}
 }

@@ -7,19 +7,19 @@
 
 /* ---------- 4. text voice (global) ---------- */
 /* labels: heavier and in ink, not light grey */
-@R .chk,@R [data-pane] .eyebrow,@R .vsub,@R .lab,@R .k{font:600 13px/1.35 var(--body);color:var(--chink)}
+@R .chk,@R [data-pane] .eyebrow,@R .vsub,@R .lab,@R .k{font:600 13px/1.3 var(--body);color:var(--chink)}
 @R .chpghead .chk:first-child{display:flex;align-items:center;gap:8px}
 @R .chpghead .chk:first-child::before{content:"";width:18px;height:6px;background:var(--chred);clip-path:polygon(0 30%,100% 0,96% 100%,3% 85%);flex:none}
 /* running text stays readable: 15px, ink, a shade lighter only for genuinely secondary notes */
 @R [data-pane] p{font-size:15px;line-height:1.5}
 @R .t2,@R p.t2,@R .vsub{color:var(--chink2)}
-@R [data-pane] p.t2{font-size:14px}
+@R [data-pane] p.t2{font-size:15px}
 /* the "More" toggle for long paragraphs: a blue ink link, same voice as the rest of the links */
-@R .rzmorebtn{all:unset;cursor:pointer;color:var(--chblueT);font:600 14px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;white-space:nowrap}
+@R .rzmorebtn{all:unset;cursor:pointer;color:var(--chblueT);font:600 15px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;white-space:nowrap}
 @R .rzmorebtn:focus-visible{outline:2.5px solid var(--chblue);outline-offset:2px;border-radius:3px}
 /* numbers: the display face, on a riso tint where they are the point */
 /* fold rows (the chevron rows used all over): title in the display face, subtitle one line in ink */
-@R details.chfold>summary b,@R .chfold>summary .chst,@R .nprow b{font:400 19px/1.15 var(--display);color:var(--chink)}
+@R details.chfold>summary b,@R .chfold>summary .chst,@R .nprow b{font:400 20px/1.15 var(--display);color:var(--chink)}
 @R details.chfold>summary .chs,@R details.chfold>summary span:not(.n):not([aria-hidden]){color:var(--chink2);font-weight:500}
 
 /* ---------- 3. yellow discipline ---------- */
@@ -47,14 +47,14 @@
 @R .rzgrade{flex:none;display:grid;grid-template-columns:auto;justify-items:end;gap:2px;text-align:right;padding:4px 2px 0 12px;align-self:flex-start}
 @R .rzgn{font:400 54px/.95 var(--display);color:var(--chink);letter-spacing:-.02em}
 @R .rzgn small{font-size:24px;margin-left:2px}
-@R .rzgl{font:600 15px/1.25 var(--body);color:var(--chink)}
+@R .rzgl{font:600 15px/1.2 var(--body);color:var(--chink)}
 @R .rzgrade[data-band="A"] .rzgl,@R .rzgrade[data-band="B"] .rzgl{color:var(--chblueT)}
-@R .rzwhy{all:unset;cursor:pointer;margin-top:4px;color:var(--chblueT);font:600 14px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
+@R .rzwhy{all:unset;cursor:pointer;margin-top:4px;color:var(--chblueT);font:600 15px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
 @R .rzwhy:focus-visible{outline:2.5px solid var(--chblue);outline-offset:3px;border-radius:3px}
 @R .chsix6.rzsix{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:12px 0 4px}
 @R .rzsix button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px 6px;border-radius:var(--tr-r);box-shadow:inset 0 0 0 2px var(--line);background:var(--chc);min-width:0}
 @R .rzsix button img{width:56px!important;height:56px!important;margin:-4px 0 -2px}
-@R .rzsix button span{font:600 12px/1.15 var(--body);color:var(--chink);text-align:center;max-width:100%}
+@R .rzsix button span{font:600 13px/1.15 var(--body);color:var(--chink);text-align:center;max-width:100%}
 @R .rzsix button:hover{background:var(--chp2)}
 @R .rzsix button[aria-pressed="true"]{background:var(--tr-you-field);box-shadow:inset 0 0 0 2.5px var(--chblue),inset 0 -5px 0 var(--chblue)}
 @media (max-width:899px){
@@ -69,15 +69,15 @@
 @keyframes rzin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @R .rzseth{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
 @R .rzseth img{width:64px!important;height:64px!important;margin:-8px -4px -8px -8px}
-@R .rzsetn b{display:block;font:400 22px/1.1 var(--display);color:var(--chink)}
+@R .rzsetn b{display:block;font:400 22px/1.15 var(--display);color:var(--chink)}
 @R .rzsetn span{font:600 13px/1.3 var(--body);color:var(--chink2)}
 @R .rzsetr{text-align:right}
-@R .rzsetr b{display:block;font:400 30px/1 var(--display);color:var(--chink)}
-@R .rzsetr span{font:600 12px/1.2 var(--body);color:var(--chink2)}
+@R .rzsetr b{display:block;font:400 28px/1 var(--display);color:var(--chink)}
+@R .rzsetr span{font:600 13px/1.2 var(--body);color:var(--chink2)}
 @R .rzsetd{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 8px}
 @R .rzsetd div{padding:8px 10px;border-radius:var(--tr-r);background:var(--tr-you-field)}
-@R .rzsetd dt{font:600 12px/1.2 var(--body);color:var(--chink2)}
-@R .rzsetd dd{margin:2px 0 0;font:600 15px/1.25 var(--body);color:var(--chink)}
+@R .rzsetd dt{font:600 13px/1.2 var(--body);color:var(--chink2)}
+@R .rzsetd dd{margin:2px 0 0;font:600 15px/1.2 var(--body);color:var(--chink)}
 @R .rzsetm{list-style:none;margin:0 0 10px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
 @R .rzsetm li{font:600 15px/1.2 var(--body);color:var(--chink);padding:8px 10px;border-radius:var(--tr-r);box-shadow:inset 3px 0 0 var(--chblue),inset 0 0 0 1.5px var(--line)}
 @R .rzseta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
@@ -85,12 +85,12 @@
 @R .rzlink:focus-visible{outline:2.5px solid var(--chblue);outline-offset:3px;border-radius:3px}
 @R .chring{display:none!important}
 /* the header text: the grade line reads as data, not a paragraph */
-@R .chthead .rd{font-size:15px;line-height:1.45;color:var(--chink)}
+@R .chthead .rd{font-size:15px;line-height:1.5;color:var(--chink)}
 @R .chthead .rd b{font-weight:700}
 
 /* ---------- 2. Battle: The read ---------- */
 @R .rzread{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;align-items:center;margin:12px 0;padding:12px 16px;background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r)}
-@R .rzread h2{font:400 20px/1.1 var(--display)!important;margin:0;color:var(--chink)}
+@R .rzread h2{font:400 20px/1.15 var(--display)!important;margin:0;color:var(--chink)}
 @R .rzread ul{list-style:none;margin:0;padding:0;display:flex;gap:10px 22px;flex-wrap:wrap}
 @R .rzread li{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:600 15px/1.2 var(--body);color:var(--chink);padding-left:10px;box-shadow:inset 3px 0 0 var(--line)}
 @R .rzread li.you{box-shadow:inset 3px 0 0 var(--chblue)}
@@ -103,7 +103,7 @@
 @R .rzmini b{font-weight:700}
 @R .rzn{font:400 22px/1 var(--display)!important;color:inherit}
 @R .rzread li.them .rzn{color:var(--chredT)}
-@R .rzlive{grid-column:1/-1;font:600 12px/1.2 var(--body);color:var(--chink2)}
+@R .rzlive{grid-column:1/-1;font:600 13px/1.2 var(--body);color:var(--chink2)}
 
 /* ---------- 2. Battle: turn one as a strip in move order ---------- */
 @R .rzt1 .ph .pt{font:400 20px/1.15 var(--display)}
@@ -121,14 +121,14 @@
 @R .rzbeat img{width:96px!important;height:96px!important;align-self:center;margin:-6px 0 -10px}
 @R .rzbt{display:flex;flex-direction:column;gap:6px}
 @R .rzbwho{font:600 13px/1.2 var(--body);color:var(--chink)}
-@R .rzbwho small{font-weight:500;color:var(--chink2);font-size:12px}
+@R .rzbwho small{font-weight:500;color:var(--chink2);font-size:13px}
 @R .rzmove{align-self:flex-start;display:inline-block;padding:7px 12px;border-radius:6px;transform:skewX(-8deg);font:400 16px/1.15 var(--display);color:#fff;background:var(--chblue);box-shadow:0 0 0 2px var(--chline)}
 @R .rzbeat.them .rzmove{background:var(--chred);color:#1D2140}
-@R .rzbeat .t2{font-size:14px;line-height:1.35;color:var(--chink)!important;background:var(--chc);padding:6px 8px;border:1.5px solid var(--line);border-radius:4px}
+@R .rzbeat .t2{font-size:15px;line-height:1.3;color:var(--chink)!important;background:var(--chc);padding:6px 8px;border:1.5px solid var(--line);border-radius:4px}
 @R .rzwarn{margin:12px 0 0;padding:8px 12px;border-left:4px solid var(--chred);background:var(--tr-them-field);font-size:15px;color:var(--chink)}
 @R .rzwarn b{font:400 15px/1 var(--display);color:var(--chredT);margin-right:6px}
-@R .rzfield{margin:8px 0 0;font-size:14px;color:var(--chink)}
-@R .rzfield .k{display:inline-block;margin-right:6px;padding:4px 7px;border-radius:4px;background:var(--chp2);font:600 12px/1 var(--body)}
+@R .rzfield{margin:8px 0 0;font-size:15px;color:var(--chink)}
+@R .rzfield .k{display:inline-block;margin-right:6px;padding:4px 7px;border-radius:4px;background:var(--chp2);font:600 13px/1 var(--body)}
 @media (max-width:899px){
   @R .rzread{grid-template-columns:1fr}
   @R .rzbeats{grid-template-columns:1fr;gap:8px}
@@ -140,13 +140,13 @@
 /* ---------- 5. per-page polish ---------- */
 /* page headers on every page: same rhythm as Home and Battle */
 @R .chpghead{padding-bottom:4px}
-@R .chpghead h2,@R .chpghead .chdisp{font:400 32px/1.1 var(--display)!important}
+@R .chpghead h2,@R .chpghead .chdisp{font:400 34px/1.15 var(--display)!important}
 /* stat blocks (gauntlet 1 / 17 / 2, track record, weekly): number in the display face, label under it */
 @R :is(.gstat,.trstat2,.npstat,.gsum>div){background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);box-shadow:none}
 /* lists of events / teams / archetypes: one row style with a type stripe, names in ink, details one line */
 @R :is(.evcard,.gitem,.archrow,.corerow,.teamrow,.wkrow){border-radius:var(--tr-r)!important;box-shadow:none!important}
 /* type chart: the row headers in the display face, cells calm */
-@R .typetbl th,@R .tchart th{font:400 14px/1.1 var(--display);color:var(--chink)}
+@R .typetbl th,@R .tchart th{font:400 15px/1.15 var(--display);color:var(--chink)}
 /* coverage and sets: move and item bars in blue (yours), labels in ink */
 @R :is(.svbar,.covbar,.setbar) i{background:var(--chblue)!important}
 /* box: owned Pokémon grid tiles, quiet with the type stripe on top */
@@ -164,7 +164,7 @@
 @R .chmcard.them .chmct{background:var(--tr-them-field);color:var(--chredT)!important;box-shadow:inset 0 4px 0 var(--chred)}
 @R .chmcard .chmwho,@R .chmcard .chmrow,@R .chmcard .chmgrid,@R .chmcard .chmpick,@R .chmcard>p{padding-inline:14px;color:var(--chink)!important}
 @R .chmcard .chmwho b{color:var(--chink)!important}
-@R .chmcard .chpen{background:var(--chblue)!important;color:#fff!important;font:600 12px/1 var(--body)!important;padding:5px 7px;border-radius:4px}
+@R .chmcard .chpen{background:var(--chblue)!important;color:#fff!important;font:600 13px/1 var(--body)!important;padding:5px 7px;border-radius:4px}
 @R .chmcard .chmmon,@R .chmcard.npcompact .chmgrid.npstrip .chmmon{background:var(--chc)!important;color:var(--chink)!important;border:0!important;box-shadow:inset 0 0 0 2px var(--line)!important;border-radius:var(--tr-r)!important}
 @R .chmcard .chmmon *{color:var(--chink)!important}
 @R .chmcard .chmmon span,@R .chmcard .chmmon small{color:var(--chink2)!important}
@@ -231,7 +231,7 @@
 @R .rzread ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px}
 
 /* page intros: one short lede in ink, bigger than body, the rest behind "More" */
-@R .chpgs,@R .chpghead+p,@R .chpghead+div>p:first-child,@R .npmeth>p:first-of-type{font-size:17px!important;line-height:1.45;color:var(--chink)!important}
+@R .chpgs,@R .chpghead+p,@R .chpghead+div>p:first-child,@R .npmeth>p:first-of-type{font-size:17px!important;line-height:1.5;color:var(--chink)!important}
 @R footer.legal p{color:var(--chink2)}
 @R footer.legal p:first-of-type{color:var(--chink)}
 
@@ -245,9 +245,9 @@
 @R .nppath .npi,@R .nppath .npic{background:var(--chblue)!important;color:#fff!important}
 @R .nppath .npi *,@R .nppath .npic *{color:#fff!important}
 /* small text floor */
-@R .rtier{font-size:12px!important}
+@R .rtier{font-size:13px!important}
 @R i:where([class=""],:not([class])){font-size:max(12px,1em)}
-@R .corepct i,@R [data-pane="auto"] i{font-size:12px}
+@R .corepct i,@R [data-pane="auto"] i{font-size:13px}
 /* names never cut in the damage grids */
 @R :is(.k1,.k2,.k3,.k1m,.k2m)>*{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 @R .chprimary.chapply{background:var(--chink)!important;color:var(--chp)!important}
@@ -263,21 +263,21 @@
 @R{--cxb:var(--chink)}
 @R .cxbadge.b{background:var(--chink)!important;color:var(--chp)!important}
 @R .cxpick{border-radius:var(--tr-r)!important}
-@R .cxpickh b{font:400 18px/1.15 var(--display)!important}
+@R .cxpickh b{font:400 17px/1.15 var(--display)!important}
 
 /* ===================== round 3 (coordinator review): rows, not tiles ===================== */
 /* grade: big plain type under the team name */
 @R .rzgrade{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:4px 12px;text-align:left;justify-items:start;padding:8px 0 10px;margin:4px 0 8px;border-top:var(--tr-bw) solid var(--chline);border-bottom:1.5px solid var(--line)}
 @R .rzgn{font:400 64px/1 var(--display)!important}
 @R .rzgn small{font-size:28px}
-@R .rzgl{font:400 30px/1 var(--display)!important;color:var(--chblueT)!important}
-@R .rzgc{flex-basis:100%;font:600 14px/1.3 var(--body);color:var(--chink2)}
+@R .rzgl{font:400 28px/1 var(--display)!important;color:var(--chblueT)!important}
+@R .rzgc{flex-basis:100%;font:600 15px/1.3 var(--body);color:var(--chink2)}
 @R .rzwhy{margin:0}
 /* your six: a list of rows split by rules */
 @R .chsix6.rzsix{gap:0!important;border-top:1.5px solid var(--line);margin:10px 0 8px}
 @R .rzsix button{flex-direction:row!important;justify-content:flex-start!important;gap:6px!important;padding:4px 8px 4px 2px!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;border-bottom:1.5px solid var(--line)}
 @R .rzsix button img{width:46px!important;height:46px!important;margin:-4px -2px!important;flex:none}
-@R .rzsix button span{text-align:left!important;font:600 14px/1.2 var(--body)!important;white-space:nowrap;overflow:visible}
+@R .rzsix button span{text-align:left!important;font:600 15px/1.2 var(--body)!important;white-space:nowrap;overflow:visible}
 @R .rzsix button[aria-pressed="true"]{background:var(--tr-you-field)!important;box-shadow:inset 4px 0 0 var(--chblue)!important}
 @R .chsix6.rzsix{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 @media (max-width:899px){@R .chsix6.rzsix{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
@@ -300,14 +300,14 @@
 /* info sheet abilities: ruled list */
 @R .lsab,@R .lsab.top{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;border-bottom:1.5px solid var(--line)!important;padding:10px 2px!important}
 @R .lsab.top{border-left:4px solid var(--chblue)!important;padding-left:10px!important}
-@R .lsab .lsabh b{font:400 18px/1.2 var(--display)}
+@R .lsab .lsabh b{font:400 17px/1.2 var(--display)}
 @R .lsabu{background:transparent!important;color:var(--chblueT)!important;font:700 13px/1 var(--body)!important;padding:0!important;border:0!important}
 /* turn one: ruled rows, a coloured stroke for who moves, the move as a slanted ink label (no filled box) */
 @R .rzbeat,@R .rzbeat.them,@R[data-look="dark"] .rzbeat,@R[data-look="dark"] .rzbeat.them{background:transparent!important;clip-path:none!important;margin:0!important;border-top:0!important;border-bottom:1.5px solid var(--line)}
 @R .rzbeats{gap:0 18px!important}
 @R .rzbeat{border-top:5px solid var(--chblue)!important;padding:12px 4px 14px!important;min-height:0!important}
 @R .rzbeat.them{border-top-color:var(--chred)!important}
-@R .rzmove,@R .rzbeat.them .rzmove,@R[data-look="dark"] .rzmove,@R[data-look="dark"] .rzbeat.them .rzmove{background:none!important;box-shadow:none!important;padding:0 0 4px!important;border-radius:0!important;transform:skewX(-8deg);color:var(--chblueT)!important;font:400 19px/1.15 var(--display)!important;border-bottom:4px solid var(--chblue)}
+@R .rzmove,@R .rzbeat.them .rzmove,@R[data-look="dark"] .rzmove,@R[data-look="dark"] .rzbeat.them .rzmove{background:none!important;box-shadow:none!important;padding:0 0 4px!important;border-radius:0!important;transform:skewX(-8deg);color:var(--chblueT)!important;font:400 20px/1.15 var(--display)!important;border-bottom:4px solid var(--chblue)}
 @R .rzbeat.them .rzmove,@R[data-look="dark"] .rzbeat.them .rzmove{color:var(--chredT)!important;border-bottom-color:var(--chred)}
 @R .rzbeat .t2{background:transparent!important;border:0!important;padding:0!important;color:var(--chink)!important}
 @R .rzbeat img{background:radial-gradient(circle,color-mix(in srgb,var(--tc) 50%,transparent) 1.6px,transparent 2px) 0 0/8px 8px;border-radius:50%}

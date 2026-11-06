@@ -16,7 +16,7 @@
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chpghead .chpgt::before{content:"";position:absolute;left:2px;top:.12em;width:26px;height:.82em;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="box"] .chboxn{font:600 15px/1.2 var(--ar-body)!important;font-style:normal!important;letter-spacing:0!important;text-transform:none!important;padding:0!important;background:none!important;border:0!important;color:var(--ar-ink-2)!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chpghead~.head{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 4px!important}
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chpghead~.head .hint{font:400 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:10px 0 0!important;max-width:62ch}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chpghead~.head .hint{font:400 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:10px 0 0!important;max-width:62ch}
 /* the back link to My team */
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"])>.chback{display:inline-flex!important;align-items:center;gap:8px;min-height:44px;padding:0 2px!important;margin:6px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;
   font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
@@ -27,7 +27,7 @@
 /* the sort and filter rows on these pages: arena segmented strips */
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .seg{display:inline-flex!important;flex-wrap:wrap;gap:8px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0 0 0 4px!important;overflow:visible!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .seg>button{position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:44px!important;min-width:44px;justify-content:center;padding:0 16px!important;margin:0!important;
-  font:600 var(--ar-fs-small)/1.1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;background-color:transparent!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;cursor:pointer;flex:none!important}
+  font:600 var(--ar-fs-small)/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;background-color:transparent!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;cursor:pointer;flex:none!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .seg>button::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;width:auto!important;height:auto!important}
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .seg>button::before{background:#24232A!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .seg>button[aria-pressed="true"]{color:var(--ar-sec-on)!important;font-weight:700!important}
@@ -60,7 +60,7 @@
 @A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby)::before{background:none!important;box-shadow:none!important;transform:none!important}
 @media (hover:hover){@A :is([data-pane="teams"],[data-pane="coverage"]) .mmpop .btn:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby):hover::before{background:color-mix(in oklch,var(--ar-sec) 10%,transparent)!important}}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .field{min-height:48px;font:500 var(--ar-fs-body)/1.3 var(--ar-body)!important;padding:0 14px!important}
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) textarea.field{padding:12px 14px!important;font-family:var(--ar-body)!important;line-height:1.45!important}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) textarea.field{padding:12px 14px!important;font-family:var(--ar-body)!important;line-height:1.5!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .field::placeholder{color:var(--ar-ink-3);opacity:1}
 
 /* the older panels (arena.css section 19 gives them a paper-2 field) carry no field on these pages: the arena layout draws its own */
@@ -81,7 +81,7 @@
 @A [data-pane="teams"] .svt.cmpon::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-yellow) 26%,var(--ar-paper)),color-mix(in oklch,var(--ar-yellow) 8%,var(--ar-paper)))}
 @A [data-pane="teams"] .svhd{display:flex!important;align-items:flex-start;justify-content:space-between;gap:12px;margin:0!important;padding:0!important;background:none!important;border:0!important}
 @A [data-pane="teams"] .svname{font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.01em;color:var(--ar-ink)!important;min-width:0;overflow-wrap:anywhere;text-wrap:balance}
-@A [data-pane="teams"] .svhd .tag{position:relative;isolation:isolate;flex:none;margin-top:4px;padding:5px 12px!important;font:700 14px/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;white-space:nowrap}
+@A [data-pane="teams"] .svhd .tag{position:relative;isolation:isolate;flex:none;margin-top:4px;padding:5px 12px!important;font:700 15px/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;white-space:nowrap}
 @A [data-pane="teams"] .svhd .tag::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-blue-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="teams"] .svrn{display:flex!important;flex-wrap:wrap;gap:10px;align-items:center}
 @A [data-pane="teams"] .svrn .field{flex:1 1 220px}
@@ -89,7 +89,7 @@
 @A [data-pane="teams"] .svsix.arb-six{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px 10px!important;margin:4px 0 0!important;padding:0 6px 0 4px!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A [data-pane="teams"] .svsix .ar-art{--h:66px;--s:84px;--lift:18px}
 @A [data-pane="teams"] .svsix .ar-art .ar-nm{font-size:15px!important;line-height:1.15}
-@media (max-width:359px){@A [data-pane="teams"] .svsix.arb-six{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px 8px!important}@A [data-pane="teams"] .svsix .ar-art .ar-nm{font-size:14px!important}}
+@media (max-width:359px){@A [data-pane="teams"] .svsix.arb-six{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px 8px!important}@A [data-pane="teams"] .svsix .ar-art .ar-nm{font-size:15px!important}}
 /* the grade, checks and your games */
 @A [data-pane="teams"] .svfoot{display:grid!important;gap:14px;margin:0!important;padding:0!important;background:none!important;border:0!important}
 @A [data-pane="teams"] .svstats{display:flex!important;flex-wrap:wrap;align-items:center;gap:10px 18px}
@@ -110,7 +110,7 @@
 @A [data-pane="teams"] .inline-confirm .btn.danger:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby)::before{background:var(--ar-pink-plate)!important}
 @A [data-pane="teams"] .cmpbox{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:14px 16px 14px 20px!important;position:relative;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;font-size:var(--ar-fs-small);color:var(--ar-ink)}
 @A [data-pane="teams"] .cmpbox::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-yellow);border-radius:0 3px 3px 0}
-@A [data-pane="teams"] .cmpbox b{font:italic 800 18px/1.2 var(--ar-display);font-stretch:112%}
+@A [data-pane="teams"] .cmpbox b{font:italic 800 17px/1.2 var(--ar-display);font-stretch:112%}
 @A [data-pane="teams"] .cmpbox .t2{color:var(--ar-ink-2)!important}
 /* no saved teams yet */
 @A [data-pane="teams"] #savedList>.empty-note{background:none!important;padding:8px 0!important;font-size:var(--ar-fs-body)!important;color:var(--ar-ink-2)!important}
@@ -160,7 +160,7 @@
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chmorebtn::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chmorebtn::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
-@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chmorebtn .cht{display:block;font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chmorebtn .cht{display:block;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chmorebtn .chs{display:block;font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chmorebtn .chtog{color:var(--ar-sec-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
 @media (min-width:1001px){@A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .chmorebtn{max-width:520px}}
@@ -168,7 +168,7 @@
 /* ---------- Compare teams: team A blue (you), team B pink (them), facing each other; rows as hairline lists ---------- */
 @A [data-pane="compare"] #compare{--cxa:var(--ar-blue);--cxb:var(--ar-pink)}
 @A [data-pane="compare"] #compare>.head h2{display:none!important}
-@A [data-pane="compare"] .cxbadge{position:relative;isolation:isolate;display:inline-grid!important;place-items:center;width:36px!important;height:32px!important;margin:0!important;font:italic 900 19px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;background:none!important;border:0!important;border-radius:0!important;vertical-align:middle}
+@A [data-pane="compare"] .cxbadge{position:relative;isolation:isolate;display:inline-grid!important;place-items:center;width:36px!important;height:32px!important;margin:0!important;font:italic 900 20px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;background:none!important;border:0!important;border-radius:0!important;vertical-align:middle}
 @A [data-pane="compare"] .cxbadge::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-blue-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="compare"] .cxbadge.b::before{background:var(--ar-pink-plate)}
 @A [data-pane="compare"] .cxheads{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;margin:22px 0 8px!important;padding:0!important}
@@ -181,8 +181,8 @@
 @A[data-look="dark"] [data-pane="compare"] .cxhead::before{background:linear-gradient(var(--cxa),var(--cxa)) 0 0/6px 100% no-repeat,linear-gradient(110deg,#16151A,#121114)!important}
 @A[data-look="dark"] [data-pane="compare"] .cxhead.b::before{background:linear-gradient(var(--cxb),var(--cxb)) 0 0/6px 100% no-repeat,linear-gradient(110deg,#16151A,#121114)!important}
 @A [data-pane="compare"] .cxhead>.cxbadge{grid-row:1/3}
-@A [data-pane="compare"] .cxhead .cxnm{grid-column:2;font:italic 800 21px/1.1 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;min-width:0;overflow-wrap:anywhere}
-@A [data-pane="compare"] .cxhead .t2{grid-column:2;font:500 var(--ar-fs-small)/1.35 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="compare"] .cxhead .cxnm{grid-column:2;font:italic 800 22px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;min-width:0;overflow-wrap:anywhere}
+@A [data-pane="compare"] .cxhead .t2{grid-column:2;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A [data-pane="compare"] .cxhead .cxchg{grid-column:3;grid-row:1/3;align-self:center}
 @A [data-pane="compare"] .cxhead.empty{grid-template-columns:auto minmax(0,1fr);min-height:84px!important;cursor:pointer}
 @A [data-pane="compare"] .cxhead.empty .cxnm{font-size:20px!important}
@@ -196,7 +196,7 @@
 /* the picker */
 @A [data-pane="compare"] .cxpick{display:grid!important;gap:10px;margin:18px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="compare"] .cxpickh{display:flex!important;align-items:center;gap:12px;margin-bottom:2px}
-@A [data-pane="compare"] .cxpickh b{font:italic 800 var(--ar-fs-h3)/1.1 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
+@A [data-pane="compare"] .cxpickh b{font:italic 800 var(--ar-fs-h3)/1.15 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
 @A [data-pane="compare"] .cxpick>.chk{margin:14px 0 2px!important;font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
 @A [data-pane="compare"] .cxopt{position:relative;isolation:isolate;display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;min-height:64px;padding:8px 14px 8px 22px!important;margin:0!important;
   background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;color:var(--ar-ink)!important;text-align:left;cursor:pointer;opacity:1!important}
@@ -206,7 +206,7 @@
 @A [data-pane="compare"] .cxopt.dim{color:var(--ar-ink-2)!important}
 @A [data-pane="compare"] .cxopt.dim::before{box-shadow:none;background:color-mix(in oklch,var(--ar-ink) 6%,transparent)}
 @A [data-pane="compare"] .cxot{display:flex;flex-direction:column;gap:2px;min-width:0}
-@A [data-pane="compare"] .cxot b{font:700 var(--ar-fs-body)/1.25 var(--ar-body);color:inherit}
+@A [data-pane="compare"] .cxot b{font:700 var(--ar-fs-body)/1.2 var(--ar-body);color:inherit}
 @A [data-pane="compare"] .cxot .t2{font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A [data-pane="compare"] .cxos{display:grid!important;grid-template-columns:repeat(3,32px);gap:6px 8px;align-content:center}
 @A [data-pane="compare"] .cxpick .t2{font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
@@ -223,7 +223,7 @@
 @A [data-pane="compare"] .cxsum>.chk{display:flex;align-items:flex-end;gap:12px;margin:0 0 10px!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:-.01em!important}
 @A [data-pane="compare"] .cxsum>.chk::before{content:"";width:24px;height:24px;flex:none;margin-bottom:2px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="compare"] .cxsum ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
-@A [data-pane="compare"] .cxsum li{position:relative;padding-left:20px;font-size:var(--ar-fs-body);line-height:1.45;color:var(--ar-ink)}
+@A [data-pane="compare"] .cxsum li{position:relative;padding-left:20px;font-size:var(--ar-fs-body);line-height:1.5;color:var(--ar-ink)}
 @A [data-pane="compare"] .cxsum li::before{content:"";position:absolute;left:2px;top:.55em;width:8px;height:8px;background:var(--ar-ink-3);transform:skewX(var(--ar-slant))}
 @A [data-pane="compare"] .cxtm{display:inline!important;padding:0!important;margin:0!important;border:0!important;font-weight:700;color:var(--ar-blue-ink)!important;background:none!important}
 @A [data-pane="compare"] .cxtm.b{color:var(--ar-pink-ink)!important}
@@ -231,7 +231,7 @@
 @A [data-pane="compare"] .cxgrid{display:block!important;margin:22px 0 0!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
 @A [data-pane="compare"] .cxrow{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:14px!important;row-gap:8px;padding:16px 0!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;background:none!important}
 @A [data-pane="compare"] .cxlab{grid-column:1/-1!important;margin:0!important;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
-@A [data-pane="compare"] .cxc{position:relative;display:flex!important;flex-direction:column;gap:3px;padding:0 0 0 14px!important;border:0!important;font:500 var(--ar-fs-small)/1.4 var(--ar-body)!important;color:var(--ar-ink)!important;overflow-wrap:break-word!important}
+@A [data-pane="compare"] .cxc{position:relative;display:flex!important;flex-direction:column;gap:3px;padding:0 0 0 14px!important;border:0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink)!important;overflow-wrap:break-word!important}
 @A [data-pane="compare"] .cxc::before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:4px;background:var(--cxa);border-radius:2px}
 @A [data-pane="compare"] .cxc.b::before{background:var(--cxb)}
 @A [data-pane="compare"] .cxc .t2{color:var(--ar-ink-2)!important;font-size:15px!important}
@@ -239,18 +239,18 @@
 @A [data-pane="compare"] .cxgr{font:italic 900 40px/.95 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important;text-shadow:.05em .04em 0 var(--ar-misprint)}
 @A [data-pane="compare"] .cxgs{color:var(--ar-ink-2);font-size:15px}
 @A [data-pane="compare"] .cxl svg{width:16px;height:16px;vertical-align:-3px;margin-right:4px}
-@A [data-pane="compare"] .cxck{font:700 18px/1 var(--ar-body);color:var(--ar-green-ink)!important;background:none!important}
+@A [data-pane="compare"] .cxck{font:700 17px/1 var(--ar-body);color:var(--ar-green-ink)!important;background:none!important}
 @A [data-pane="compare"] .cxck:not(.ok){color:var(--ar-pink-ink)!important}
 @A [data-pane="compare"] .cxthr{display:flex!important;flex-direction:column;gap:6px}
 @A [data-pane="compare"] .cxthr>span{display:flex;align-items:center;gap:8px;font-weight:600;background:none!important;border:0!important;padding:0!important}
 @A [data-pane="compare"] .archchips{display:flex;flex-wrap:wrap;gap:6px}
-@A [data-pane="compare"] .archchip{position:relative;isolation:isolate;padding:4px 10px!important;font:700 14px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
+@A [data-pane="compare"] .archchip{position:relative;isolation:isolate;padding:4px 10px!important;font:700 15px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="compare"] .archchip::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in oklch,var(--ac) 30%,var(--ar-sheet));transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A[data-look="dark"] [data-pane="compare"] .archchip::before{background:color-mix(in oklab,var(--ac) 30%,#24232A)}
 /* the two folds (why these grades, same on both): the arena fold strip */
 @A [data-pane="compare"] :is(.cxwhy,.cxsame){margin:22px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="compare"] :is(.cxwhy,.cxsame)>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:10px;min-height:56px;padding:8px 16px 8px 22px!important;margin-left:6px;list-style:none;cursor:pointer;
-  font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
+  font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="compare"] :is(.cxwhy,.cxsame)>summary::-webkit-details-marker{display:none}
 @A [data-pane="compare"] :is(.cxwhy,.cxsame)>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
@@ -287,13 +287,13 @@
   @A [data-pane="compare"] .cxlab{grid-column:auto!important}
   @A [data-pane="compare"] .cxsum ul{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px}
 }
-@A [data-pane="compare"] .basis{display:inline;padding:1px 6px!important;border:0!important;border-radius:var(--ar-r-s)!important;background:color-mix(in oklch,var(--ar-gold) 22%,transparent)!important;color:var(--ar-ink)!important;font-size:14px}
+@A [data-pane="compare"] .basis{display:inline;padding:1px 6px!important;border:0!important;border-radius:var(--ar-r-s)!important;background:color-mix(in oklch,var(--ar-gold) 22%,transparent)!important;color:var(--ar-ink)!important;font-size:15px}
 @A [data-pane="compare"] .basis i{font-style:normal;font-weight:700}
 
 /* ---------- shared small parts on group B's pages and overlays: type tags, soft tags, change chips ---------- */
 /* type tags (.ty, with --tc): a slanted tag tinted in the type colour, ink text (always 4.5:1+), the type icon kept */
 @A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;gap:4px;padding:2px 9px 2px 8px!important;margin:0!important;
-  font:700 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+  font:700 15px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;background:color-mix(in oklch,var(--tc) 38%,var(--ar-sheet))!important;transform:skewX(var(--ar-slant));border-radius:3px!important;border:0!important;width:auto!important;height:auto!important}
 /* dark: a neutral tag with the type colour as its edge (a dark orange or yellow fill reads brown) */
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty{padding-left:12px!important}
@@ -301,14 +301,14 @@
 @A :is([data-pane="coverage"],[data-pane="compare"],#chScout,#chEdit,[data-pane="report"] .chparts) .ty svg{width:13px!important;height:13px!important;flex:none;color:var(--ar-ink)!important;fill:currentColor}
 /* soft tags (teams count, box, role, catch): a quiet slanted tag; the rating tag is the gold tier plate */
 @A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) :is(.tag:not(.ico),.conf){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;padding:2px 9px!important;margin:0!important;
-  font:600 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;white-space:nowrap}
+  font:600 15px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;white-space:nowrap}
 @A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) :is(.tag:not(.ico),.conf)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;background:color-mix(in oklch,var(--ar-ink) 9%,transparent)!important;transform:skewX(var(--ar-slant));border-radius:3px!important;width:auto!important;height:auto!important;animation:none!important}
 @A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.rating{font-weight:700!important;color:#16141A!important}
 @A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.rating::before{background:var(--ar-gold-plate)!important}
 @A :is([data-pane="coverage"],#chScout,#chEdit,[data-pane="report"] .chparts) .tag.ico{background-color:transparent!important;border:0!important;box-shadow:none!important}
 /* +points ready, and the change chips (Weak 1 → 2): green for better, gold for a trade-off */
 @A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .tsd{display:inline-flex!important;align-items:center;padding:2px 0!important;font:700 15px/1.3 var(--ar-body)!important;color:var(--ar-green-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
-@A :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;gap:4px;padding:2px 9px!important;font:600 14px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;gap:4px;padding:2px 9px!important;font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill)::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in oklch,var(--ar-gold) 26%,var(--ar-sheet));transform:skewX(var(--ar-slant));border-radius:3px}
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="report"] .chparts) :is(.dchip,.pill)::before{background:color-mix(in oklab,var(--ar-gold) 26%,#24232A)}
 @A :is([data-pane="coverage"],[data-pane="report"] .chparts) .dchip.up::before{background:color-mix(in oklch,var(--ar-green) 24%,var(--ar-sheet))}
@@ -340,15 +340,15 @@
 @A [data-pane="coverage"] .addcard{display:block!important;padding:20px 0 22px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
 @A [data-pane="coverage"] .addcard .rtop{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px!important;padding:0!important;background:none!important}
 @A [data-pane="coverage"] .addcard .rtop>.arb-mf{margin:0 4px 0 2px}
-@A [data-pane="coverage"] .addcard .qname{font:italic 800 22px/1.1 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;margin-right:4px}
+@A [data-pane="coverage"] .addcard .qname{font:italic 800 22px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;margin-right:4px}
 @A [data-pane="coverage"] .addcard .chips{display:inline-flex;flex-wrap:wrap;gap:6px}
 @A [data-pane="coverage"] .addcard .dchips{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px!important}
-@A [data-pane="coverage"] .addcard .qwhy{margin:0 0 8px!important;padding:0!important;font:400 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important}
+@A [data-pane="coverage"] .addcard .qwhy{margin:0 0 8px!important;padding:0!important;font:400 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important}
 @A [data-pane="coverage"] .addcard .qwhy b{font-weight:700;color:var(--ar-ink)}
 @A [data-pane="coverage"] .addcard>.row{display:flex!important;flex-wrap:wrap;gap:12px;margin:14px 0 0!important;padding-left:6px}
 @A [data-pane="coverage"] .morebar{margin:20px 0 0!important;background:none!important;border:0!important}
 @A [data-pane="coverage"] .morebar .chmoreideas:not(.x):not(.clrx):not(.seg>button):not(#arbz):not(#arby){flex-direction:column;align-items:flex-start!important;gap:2px;min-height:60px!important;padding:8px 22px!important}
-@A [data-pane="coverage"] .chmoreideas b{font:italic 800 19px/1.15 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
+@A [data-pane="coverage"] .chmoreideas b{font:italic 800 20px/1.15 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
 @A [data-pane="coverage"] .chmoreideas .vsub{font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 /* bigger plans: the arena fold strip; its settings as plain rows; each plan like a suggestion */
 @A [data-pane="coverage"] #planSec{margin-top:36px!important;background:none!important}
@@ -359,7 +359,7 @@
 @A [data-pane="coverage"] details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
 @A[data-look="dark"] [data-pane="coverage"] details.chsec>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
-@A [data-pane="coverage"] details.chsec>summary .cht{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;border:0!important;padding:0!important}
+@A [data-pane="coverage"] details.chsec>summary .cht{font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;border:0!important;padding:0!important}
 @A [data-pane="coverage"] details.chsec>summary .chs{font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A [data-pane="coverage"] details.chsec>summary .chtog{color:var(--ar-sec-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="coverage"] details.chsec>.chbody{padding:18px 4px 6px!important;background:none!important;border:0!important}
@@ -374,19 +374,19 @@
 @A [data-pane="coverage"] .lblrow .vsub{font-size:15px!important;color:var(--ar-ink-2)!important}
 @A [data-pane="coverage"] .exlist{display:flex;flex-wrap:wrap;gap:8px}
 @A [data-pane="coverage"] .exchip{display:inline-flex;align-items:center;gap:2px;padding:0 0 0 12px!important;font:600 15px var(--ar-body);color:var(--ar-ink);background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;border:0!important;border-radius:var(--ar-r-m)!important}
-@A [data-pane="coverage"] .exchip .x{width:44px;height:44px;background:none!important;border:0!important;color:var(--ar-ink)!important;font-size:18px}
+@A [data-pane="coverage"] .exchip .x{width:44px;height:44px;background:none!important;border:0!important;color:var(--ar-ink)!important;font-size:17px}
 @A [data-pane="coverage"] #sugs{display:grid!important;gap:0!important;margin-top:8px!important;background:none!important;border:0!important;padding:0!important}
 @A [data-pane="coverage"] .plan{display:block!important;padding:20px 0 22px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
 @A [data-pane="coverage"] .plan .ph{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px!important;background:none!important;border:0!important;padding:0!important}
-@A [data-pane="coverage"] .plan .pt{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="coverage"] .plan .pt{font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
 @A [data-pane="coverage"] .plan .ph .row{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:15px;color:var(--ar-ink-2)}
 @A [data-pane="coverage"] .plan .swap{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:4px 0 10px!important;font:500 var(--ar-fs-small)/1.3 var(--ar-body);color:var(--ar-ink-2);background:none!important;border:0!important;padding:0!important}
 @A [data-pane="coverage"] .plan .swap .out{color:var(--ar-ink-2);text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--ar-pink)}
-@A [data-pane="coverage"] .plan .swap .in{font:italic 800 20px/1.1 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
+@A [data-pane="coverage"] .plan .swap .in{font:italic 800 20px/1.15 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
 @A [data-pane="coverage"] .plan .swap .vsub{flex-basis:100%;font-size:15px!important;color:var(--ar-ink-2)!important}
 @A [data-pane="coverage"] :is(.planwhy,.chwhy){margin:4px 0 10px!important;background:none!important;border:0!important;padding:0!important;box-shadow:none!important}
 @A [data-pane="coverage"] .planwhy>summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;font:600 15px var(--ar-body)!important;color:var(--ar-sec-ink)!important;background:none!important;border:0!important;cursor:pointer}
-@A [data-pane="coverage"] .planwhy ul{margin:4px 0 0;padding:0 0 0 18px;display:grid;gap:6px;font-size:var(--ar-fs-small);line-height:1.45;color:var(--ar-ink)}
+@A [data-pane="coverage"] .planwhy ul{margin:4px 0 0;padding:0 0 0 18px;display:grid;gap:6px;font-size:var(--ar-fs-small);line-height:1.5;color:var(--ar-ink)}
 @A [data-pane="coverage"] .plan.chdup{opacity:1}
 @A [data-pane="coverage"] details.foot{margin-top:28px!important}
 @media (min-width:1001px){
@@ -398,7 +398,7 @@
 /* sentence case for the older generated labels: the plan settings "Edit / Done" cue and the best plan's tag */
 @A [data-pane="coverage"] .plset>summary::after{font:600 15px/1 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px}
 @A [data-pane="coverage"] #sugs .plan{position:relative}
-@A [data-pane="coverage"] #sugs .plan:first-child::before{content:"Best fit"!important;top:18px!important;right:0!important;padding:2px 10px!important;font:700 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:#16141A!important;background:var(--ar-gold-plate)!important;clip-path:none!important;border-radius:3px}
+@A [data-pane="coverage"] #sugs .plan:first-child::before{content:"Best fit"!important;top:18px!important;right:0!important;padding:2px 10px!important;font:700 15px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:#16141A!important;background:var(--ar-gold-plate)!important;clip-path:none!important;border-radius:3px}
 @A [data-pane="coverage"] #sugs .plan:first-child .ph{padding-right:96px!important}
 
 /* ---------- the team editor and Edit set (#chEdit): a sheet that rises from the bottom (a centred dialog on desktop); the six as
@@ -457,15 +457,15 @@
 @A #chEdit .thead .x{width:44px!important;height:44px!important;display:grid;place-items:center;padding:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;border:0!important;color:var(--ar-ink)!important;opacity:1!important;font:600 20px/1 var(--ar-body)!important}
 /* the set's fields */
 @A #chEdit .slbody{display:grid!important;gap:14px;padding:6px 18px 20px 26px!important;background:none!important}
-@A #chEdit .itemrow{display:grid!important;grid-template-columns:72px minmax(0,1fr);align-items:baseline;gap:4px 10px;padding:0!important;background:none!important;border:0!important;border-radius:0!important;font:500 var(--ar-fs-small)/1.4 var(--ar-body)!important;color:var(--ar-ink)}
+@A #chEdit .itemrow{display:grid!important;grid-template-columns:72px minmax(0,1fr);align-items:baseline;gap:4px 10px;padding:0!important;background:none!important;border:0!important;border-radius:0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink)}
 @A #chEdit :is(.itemrow,.lblrow) .lbl{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
 @A #chEdit .itemrow .iname{font-weight:700;color:var(--ar-ink)}
 @A #chEdit .itemrow .ialt,@A #chEdit .itemrow .vsub{font-size:15px!important;color:var(--ar-ink-2)!important}
-@A #chEdit .asm{font:600 14px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;border:0!important;border-radius:var(--ar-r-s)!important;padding:1px 6px!important}
+@A #chEdit .asm{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;border:0!important;border-radius:var(--ar-r-s)!important;padding:1px 6px!important}
 @A #chEdit .linkbtn{display:inline-flex!important;align-items:center;min-height:44px;padding:0 2px!important;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
 @A #chEdit .abil{display:grid;gap:6px}
 @A #chEdit .lblrow{display:flex!important;align-items:center;flex-wrap:wrap;gap:8px}
-@A #chEdit .tag.rec{font-size:14px!important}
+@A #chEdit .tag.rec{font-size:15px!important}
 @A #chEdit .field{min-height:48px;padding:0 14px!important;font:500 var(--ar-fs-body)/1.3 var(--ar-body)!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important}
 @A[data-look="dark"] #chEdit .field{background:#24232A!important}
 @A #chEdit .field:focus{box-shadow:inset 0 -3px 0 var(--ar-sec)!important}
@@ -480,9 +480,9 @@
 @A #chEdit .mvset.empty::before{background:color-mix(in oklch,var(--ar-ink) 6%,transparent);box-shadow:none}
 @A #chEdit .mvset .nm{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;white-space:normal!important;overflow:visible!important}
 @A #chEdit .mvset .mi{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0!important;overflow:visible!important;white-space:normal!important}
-@A #chEdit .mvset .mi .ty{padding:1px 8px 1px 7px!important;font-size:14px!important}
-@A #chEdit .mvset .bp{font:500 14px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A #chEdit .mvset .caret{top:50%!important;right:12px!important;margin-top:-8px;font-size:14px!important;color:var(--ar-ink-2)!important}
+@A #chEdit .mvset .mi .ty{padding:1px 8px 1px 7px!important;font-size:15px!important}
+@A #chEdit .mvset .bp{font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A #chEdit .mvset .caret{top:50%!important;right:12px!important;margin-top:-8px;font-size:15px!important;color:var(--ar-ink-2)!important}
 /* weak and resists */
 @A #chEdit .slmore{border:0!important;border-top:1px solid var(--ar-rule)!important;padding-top:10px!important;background:none!important}
 @A #chEdit .slmore>summary{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;min-height:44px;font-size:15px!important;color:var(--ar-ink-2)!important}
@@ -491,7 +491,7 @@
 @A #chEdit .slmore .sumw,@A #chEdit .slmore .chips{display:flex!important;flex-wrap:wrap;gap:6px}
 @A #chEdit .slmore .ty b{font-weight:800;margin-left:2px}
 @A #chEdit .slmore .wr{display:grid;gap:6px}
-@A #chEdit .adesc{font-size:var(--ar-fs-small);line-height:1.45;color:var(--ar-ink-2)}
+@A #chEdit .adesc{font-size:var(--ar-fs-small);line-height:1.5;color:var(--ar-ink-2)}
 @A #chEdit .adesc b{color:var(--ar-ink)}
 @A #chEdit .chedrm{display:flex!important;align-items:center;justify-content:center;width:100%;min-height:48px!important;margin:18px 0 6px!important;font:600 var(--ar-fs-body)/1 var(--ar-body)!important;color:var(--ar-pink-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-decoration:underline;text-underline-offset:4px}
 @A #chEdit .chedrm[hidden]{display:none!important}
@@ -500,7 +500,7 @@
 @media (min-width:900px){
   @A #chEdit.chedit{width:min(860px,92vw)!important;border-radius:var(--ar-r-xl)!important;padding:0 24px!important;bottom:24px}
   @A #chEdit .chedh{padding-top:22px!important}
-  @A #chEdit .chedh b{font-size:32px!important}
+  @A #chEdit .chedh b{font-size:34px!important}
   @A #chEdit .chedstrip{gap:14px!important}
   @A #chEdit .chst{height:76px!important}
   @A #chEdit .chst img{width:66px!important;height:66px!important}
@@ -523,18 +523,18 @@
 @A #chScout>.x{width:44px!important;height:44px!important;display:grid;place-items:center;padding:0!important;border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;color:var(--ar-ink)!important;font:600 20px/1 var(--ar-body)!important;outline-offset:3px}
 @A[data-look="dark"] #chScout>.x{background:#2A2930!important}
 @A #chScout .chk{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
-@A #chScout .chh{margin:6px 0 0!important;font:italic 800 30px/1.02 var(--ar-display)!important;font-stretch:115%!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--ar-ink)!important;text-shadow:none!important;text-wrap:balance}
+@A #chScout .chh{margin:6px 0 0!important;font:italic 800 28px/1.02 var(--ar-display)!important;font-stretch:115%!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--ar-ink)!important;text-shadow:none!important;text-wrap:balance}
 @A #chScout .chh em{font-style:inherit!important;color:inherit!important}
 /* the grade: the big italic letter with the misprint, its basis under it */
 @A #chScout .chring{display:flex!important;flex-direction:column;align-items:flex-end;width:auto!important;height:auto!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A #chScout .chring::before,@A #chScout .chring::after{content:none!important;display:none!important}
 @A #chScout .chring .chrl{font:italic 900 56px/.9 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important;text-shadow:.05em .04em 0 var(--ar-misprint)!important;background:none!important}
 @A #chScout .chring small{font:600 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:4px;white-space:nowrap;text-transform:none!important;letter-spacing:0!important}
-@A #chScout>div[style*="font-size:14px"]{font-size:var(--ar-fs-small)!important;line-height:1.5!important;color:var(--ar-ink-2)!important;margin-top:10px!important}
+@A #chScout>div[style*="font-size:15px"]{font-size:var(--ar-fs-small)!important;line-height:1.5!important;color:var(--ar-ink-2)!important;margin-top:10px!important}
 /* the legend and status marks (the same inks as My team's threat list) */
 @A #chScout .chleg{display:flex!important;flex-wrap:wrap;gap:8px 16px;margin:14px 0 0!important;background:none!important;border:0!important}
 @A #chScout .chleg>span{display:inline-flex;align-items:center;gap:6px;font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A #chScout :is(.chleg,.chdots) i{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 3px;border-radius:4px!important;font:700 12px/1 var(--ar-body)!important;font-style:normal!important;border:0!important}
+@A #chScout :is(.chleg,.chdots) i{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 3px;border-radius:4px!important;font:700 13px/1 var(--ar-body)!important;font-style:normal!important;border:0!important}
 @A #chScout :is(.chleg,.chdots) i.g-bad{background:#C41E35!important;color:#fff!important}
 @A #chScout :is(.chleg,.chdots) i.g-part{background:#F2B705!important;color:#16141A!important}
 @A #chScout :is(.chleg,.chdots) i.g-mid{background:#0068AD!important;color:#fff!important}
@@ -561,11 +561,11 @@
 @A[data-look="dark"] #chScout .chdet{background:linear-gradient(160deg,#26252B,#1E1D22 62%)!important}
 @A #chScout .chdet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(in oklch 180deg,var(--a,var(--ar-sec)),var(--b,var(--a,var(--ar-sec))))}
 @A #chScout .chdet .top{display:flex!important;align-items:center;gap:12px;background:none!important;border:0!important;padding:0!important}
-@A #chScout .chdet .nm{font:italic 800 21px/1.1 var(--ar-display)!important;font-stretch:112%!important;text-transform:none!important;color:var(--ar-ink)!important}
+@A #chScout .chdet .nm{font:italic 800 22px/1.15 var(--ar-display)!important;font-stretch:112%!important;text-transform:none!important;color:var(--ar-ink)!important}
 @A #chScout .chdet .nm .chk{font-style:normal!important;font-stretch:100%!important}
-@A #chScout :is(.chdet,.chlist) .t2{font:400 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:4px}
+@A #chScout :is(.chdet,.chlist) .t2{font:400 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:4px}
 @A #chScout .chdots{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;margin-top:14px!important;background:none!important;border:0!important}
-@A #chScout .chdots>span{display:flex!important;align-items:center;gap:6px;min-width:0;padding:0!important;font:500 15px/1.25 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A #chScout .chdots>span{display:flex!important;align-items:center;gap:6px;min-width:0;padding:0!important;font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A #chScout .chdots .arb-mf.arb-lg{width:46px;height:36px}
 @A #chScout .chdots .arb-mf.arb-lg img{width:48px!important;height:48px!important}
 /* the status word: one ink per status, with its mark */
@@ -579,7 +579,7 @@
 @A #chScout .chlist{display:grid!important;gap:0!important;margin-top:10px!important;background:none!important;border:0!important}
 @A #chScout .chlist .it{display:flex!important;align-items:center;gap:12px;padding:12px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
 @A #chScout .chlist .it:last-child{border-bottom:0!important}
-@A #chScout .chlist .nm{font:700 var(--ar-fs-body)/1.25 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A #chScout .chlist .nm{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A #chScout .chlist .nm .chk{font-size:15px!important}
 @A #chScout>.chk{margin-top:18px!important}
 /* the best fix and the closing actions */
@@ -614,7 +614,7 @@
 @A #shareBox .sharehd b{display:flex;align-items:flex-end;gap:12px;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--ar-ink)!important}
 @A #shareBox .sharehd b::before{content:"";width:22px;height:22px;flex:none;margin-bottom:3px;background:var(--ar-blue);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A #shareBox .seg{display:inline-flex!important;flex-wrap:wrap;gap:8px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0 0 0 4px!important;overflow:visible!important;align-self:flex-start}
-@A #shareBox .seg>button{position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:44px!important;padding:0 16px!important;margin:0!important;font:600 var(--ar-fs-small)/1.1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;flex:none!important}
+@A #shareBox .seg>button{position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:44px!important;padding:0 16px!important;margin:0!important;font:600 var(--ar-fs-small)/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;flex:none!important}
 @A #shareBox .seg>button::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;background:var(--ar-paper-2)!important;box-shadow:var(--ar-shadow-s)!important}
 @A[data-look="dark"] #shareBox .seg>button::before{background:#2A2930!important}
 @A #shareBox .seg>button[aria-pressed="true"]{color:#fff!important;font-weight:700!important}
@@ -622,12 +622,12 @@
 @A #shareBox .seg>button[aria-pressed="true"]::after{content:""!important;display:block!important;position:static!important;order:-1;width:11px!important;height:6px!important;margin:-3px 2px 0 0!important;background:none!important;border:solid currentColor!important;border-width:0 0 2.5px 2.5px!important;border-radius:0!important;transform:rotate(-45deg)!important;box-shadow:none!important}
 @A #shareBox .shareimg{border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;border:0!important}
 @A #shareBox .sharerow{display:flex!important;flex-wrap:wrap;align-items:center;gap:12px 14px;padding-left:4px}
-@A #shareBox .t2{font-size:15px!important;line-height:1.45;color:var(--ar-ink-2)!important;flex-basis:100%}
+@A #shareBox .t2{font-size:15px!important;line-height:1.5;color:var(--ar-ink-2)!important;flex-basis:100%}
 @A #shareBox :is(.btn,.chghost){position:relative;isolation:isolate;display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:48px!important;padding:0 20px 0 22px!important;margin:0!important;font:600 var(--ar-fs-body)/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-transform:none!important;letter-spacing:0!important}
 @A #shareBox :is(.btn,.chghost)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-blue),var(--ar-blue)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-blue) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-blue) 5%,var(--ar-sheet)) 70%)!important}
 @A[data-look="dark"] #shareBox :is(.btn,.chghost)::before{background:linear-gradient(var(--ar-blue),var(--ar-blue)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
-@A #shareBox .btn.go{color:#16141A!important;font:italic 800 19px/1.1 var(--ar-display)!important;font-stretch:115%!important;min-height:56px!important;padding-left:26px!important}
+@A #shareBox .btn.go{color:#16141A!important;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:115%!important;min-height:56px!important;padding-left:26px!important}
 @A #shareBox .btn.go::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:var(--ar-shadow-s)!important}
 @A #shareBox .sharehd .btn{min-height:44px!important;padding:0 16px!important;font-size:15px!important}
 @A #shareBox .sharehd .btn::before{background:var(--ar-paper-2)!important}
@@ -636,7 +636,7 @@
 /* ---------- Log a game (.myrec .qlog): your six as small art tiles to pick the two leads; Win and Loss as two big strips ---------- */
 @A [data-pane="report"] .myrec .myrech{display:flex!important;align-items:center;gap:14px;justify-content:space-between}
 @A [data-pane="report"] .myrec .qlog{display:flex!important;flex-direction:column;align-items:stretch;gap:12px;margin-top:18px!important;padding:18px 0 0!important;border:0!important;border-top:1px solid var(--ar-rule)!important;background:none!important}
-@A [data-pane="report"] .myrec .qlog>.chk{font:italic 800 19px/1.15 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;margin:6px 0 0!important}
+@A [data-pane="report"] .myrec .qlog>.chk{font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;margin:6px 0 0!important}
 @A [data-pane="report"] .myrec .qlleads{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px!important;padding:6px 4px 0!important}
 @A [data-pane="report"] .myrec .qllead{position:relative;isolation:isolate;display:grid!important;grid-template-rows:64px auto;justify-items:center;align-items:end;gap:6px;min-height:0!important;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;color:var(--ar-ink)!important;cursor:pointer}
 @A [data-pane="report"] .myrec .qllead .arb-f{position:absolute;left:2px;right:2px;top:14px;height:50px;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)}
@@ -651,10 +651,10 @@
 @A [data-pane="report"] .myrec .qlopp .corechip{display:inline-flex;align-items:center;gap:2px;padding-left:4px!important;font:600 15px var(--ar-body);color:var(--ar-ink);background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important}
 @A [data-pane="report"] .myrec .qlopp .corechip button{min-width:44px!important;min-height:44px!important;background:none!important;border:0!important;color:var(--ar-ink)!important}
 @A [data-pane="report"] .myrec .qlres{display:grid!important;grid-template-columns:1fr 1fr;gap:14px!important;margin-top:4px;padding-left:6px}
-@A [data-pane="report"] .myrec .qlres .btn.ar-btn{justify-content:center;min-height:56px!important;font:italic 800 21px/1 var(--ar-display)!important;font-stretch:115%!important}
+@A [data-pane="report"] .myrec .qlres .btn.ar-btn{justify-content:center;min-height:56px!important;font:italic 800 22px/1 var(--ar-display)!important;font-stretch:115%!important}
 @A [data-pane="report"] .myrec .qlres .qlwin{--edge:var(--ar-green)}
 @A [data-pane="report"] .myrec .qlres .qlloss{--edge:var(--ar-pink)}
-@A [data-pane="report"] .myrec .qlog>p.t2{font-size:15px!important;color:var(--ar-ink-2)!important;line-height:1.45;margin:4px 0 0}
+@A [data-pane="report"] .myrec .qlog>p.t2{font-size:15px!important;color:var(--ar-ink-2)!important;line-height:1.5;margin:4px 0 0}
 @A [data-pane="report"] .myrec .myrecn{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
 @A [data-pane="report"] .myrec .myrecn b{font:italic 900 34px/1 var(--ar-display);font-stretch:125%;color:var(--ar-ink)}
 @media (min-width:600px){@A [data-pane="report"] .myrec .qlleads{grid-template-columns:repeat(6,minmax(0,1fr))}@A [data-pane="report"] .myrec .qlres{max-width:520px}}
@@ -680,10 +680,10 @@
 @A[data-look="dark"] [data-pane="report"] .chparts :is(.vcard,.gpcard,.fixcol,.verdict,.problems,#offense,#defSec,#thrSec){background-color:transparent!important}
 @A [data-pane="report"] .chparts :is(.vcard,.gpcard,.verdict)+:is(.vcard,.gpcard,.verdict,section){margin-top:26px!important}
 @A [data-pane="report"] .chparts :is(.vcard .vtx,.ckhead){display:block!important;background:none!important;border:0!important;padding:0!important;margin:0 0 10px!important}
-@A [data-pane="report"] .chparts :is(.vcard .k,.gpt){display:flex!important;align-items:flex-end;gap:10px;font:italic 800 21px/1.1 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:-.005em!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;margin:0!important}
+@A [data-pane="report"] .chparts :is(.vcard .k,.gpt){display:flex!important;align-items:flex-end;gap:10px;font:italic 800 22px/1.15 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:-.005em!important;text-transform:none!important;color:var(--ar-ink)!important;background:none!important;margin:0!important}
 @A [data-pane="report"] .chparts :is(.vcard .k,.gpt)::before{content:"";width:18px;height:18px;flex:none;margin-bottom:2px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:3px}
-@A [data-pane="report"] .chparts .vcard .v{margin:6px 0 0!important;font:700 var(--ar-fs-body)/1.35 var(--ar-body)!important;color:var(--ar-ink)!important}
-@A [data-pane="report"] .chparts :is(.vcard,.gpcard,.verdict,.problems,.fixcol,#offense,#defSec,#thrSec) :is(.vsub,.t2,.hint){font-size:15px!important;line-height:1.45!important;color:var(--ar-ink-2)!important}
+@A [data-pane="report"] .chparts .vcard .v{margin:6px 0 0!important;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] .chparts :is(.vcard,.gpcard,.verdict,.problems,.fixcol,#offense,#defSec,#thrSec) :is(.vsub,.t2,.hint){font-size:15px!important;line-height:1.5!important;color:var(--ar-ink-2)!important}
 @A [data-pane="report"] .chparts .vcard .vtx .vsub{display:block;margin-top:4px}
 @A [data-pane="report"] .chparts :is(.vcard>.t2,.ckhead+.t2){margin:6px 0 0!important;max-width:68ch}
 @A [data-pane="report"] .chparts .none{font:500 15px var(--ar-body);color:var(--ar-ink-2)}
@@ -694,14 +694,14 @@
 @media (min-width:600px){@A [data-pane="report"] .chparts .vcard .kv{grid-template-columns:auto minmax(0,1fr);align-items:center}@A [data-pane="report"] .chparts .vcard .kv>span{margin:0}}
 /* Problems and checklist: problems as rows with a severity tag */
 @A [data-pane="report"] #chfFix .fixcol>.head{display:block!important;background:none!important;border:0!important;padding:0!important;margin:0 0 6px!important}
-@A [data-pane="report"] #chfFix #needsSub{font:italic 800 21px/1.1 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] #chfFix #needsSub{font:italic 800 22px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
 @A [data-pane="report"] .chparts .provnote{margin:4px 0 8px!important;padding:10px 14px 10px 18px!important;position:relative;background:color-mix(in oklch,var(--ar-green) 10%,var(--ar-paper))!important;border:0!important;border-radius:var(--ar-r-m)!important;color:var(--ar-ink)!important}
 @A [data-pane="report"] .chparts .provnote::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:4px;background:var(--ar-green);border-radius:0 2px 2px 0}
 @A[data-look="dark"] [data-pane="report"] .chparts .provnote{background:#141F18!important}
 @A [data-pane="report"] .chparts .prob-row{display:grid!important;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:4px 12px;padding:14px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
-@A [data-pane="report"] .chparts .prob-row .pmain{font:500 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A [data-pane="report"] .chparts .prob-row .pmain{font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A [data-pane="report"] .chparts .prob-row .qnone{margin-top:4px;font-size:15px;color:var(--ar-ink-2)}
-@A [data-pane="report"] .chparts .sev{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;padding:2px 10px!important;font:700 14px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;white-space:nowrap;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A [data-pane="report"] .chparts .sev{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;padding:2px 10px!important;font:700 15px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;white-space:nowrap;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A [data-pane="report"] .chparts .sev::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:3px;background:color-mix(in oklch,var(--ar-ink) 9%,transparent)}
 @A [data-pane="report"] .chparts .sev.mid::before{background:color-mix(in oklch,var(--ar-gold) 34%,var(--ar-sheet))}
 @A [data-pane="report"] .chparts :is(.sev.hi,.sev.bad)::before{background:var(--ar-pink-plate)}
@@ -714,8 +714,8 @@
 @A [data-pane="report"] .chparts .cklist{display:grid!important;gap:0!important;margin:12px 0 0!important;padding:0!important;list-style:none}
 @A [data-pane="report"] .chparts .cklist li{display:grid!important;grid-template-columns:28px minmax(0,1fr);gap:12px;align-items:start;padding:12px 0!important;margin:0!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;background:none!important}
 @A [data-pane="report"] .chparts .cklist b{font:700 var(--ar-fs-body)/1.3 var(--ar-body);color:var(--ar-ink)}
-@A [data-pane="report"] .chparts .cklist .ckpro{font-size:14px;color:var(--ar-ink-3)}
-@A [data-pane="report"] .chparts .ck{display:grid!important;place-items:center;width:24px!important;height:24px!important;margin-top:1px;border-radius:5px!important;font:700 14px/1 var(--ar-body)!important;background:color-mix(in oklch,var(--ar-ink) 12%,transparent)!important;color:var(--ar-ink)!important;border:0!important}
+@A [data-pane="report"] .chparts .cklist .ckpro{font-size:15px;color:var(--ar-ink-3)}
+@A [data-pane="report"] .chparts .ck{display:grid!important;place-items:center;width:24px!important;height:24px!important;margin-top:1px;border-radius:5px!important;font:700 15px/1 var(--ar-body)!important;background:color-mix(in oklch,var(--ar-ink) 12%,transparent)!important;color:var(--ar-ink)!important;border:0!important}
 @A [data-pane="report"] .chparts .ck.ok{background:#16693B!important;color:#fff!important}
 @A [data-pane="report"] .chparts .ck:is(.part,.mid){background:#F2B705!important;color:#16141A!important}
 @A [data-pane="report"] .chparts .ck:is(.no,.bad,.miss){background:#C41E35!important;color:#fff!important}
@@ -723,41 +723,41 @@
 @A [data-pane="report"] .chparts .verdict .vhead{display:flex!important;align-items:flex-start;gap:10px;background:none!important;padding:0!important;border:0!important}
 @A [data-pane="report"] .chparts .verdict .vdot{flex:none;width:14px!important;height:14px!important;margin-top:5px;border-radius:2px!important;transform:skewX(var(--ar-slant));background:var(--ar-green)!important;border:0!important;box-shadow:none!important}
 @A [data-pane="report"] .chparts .verdict:not(.good) .vdot{background:var(--ar-gold)!important}
-@A [data-pane="report"] .chparts .verdict .vtitle{font:italic 800 19px/1.2 var(--ar-display)!important;font-stretch:110%!important;color:var(--ar-ink)!important;text-transform:none!important}
+@A [data-pane="report"] .chparts .verdict .vtitle{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:110%!important;color:var(--ar-ink)!important;text-transform:none!important}
 @A [data-pane="report"] .chparts .rchips{display:flex!important;flex-wrap:wrap;gap:12px 26px;margin:14px 0 6px!important}
 @A [data-pane="report"] .chparts .rchip{display:inline-flex!important;align-items:baseline;gap:6px;padding:0!important;font:500 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="report"] .chparts .rchip b{font:italic 900 26px/1 var(--ar-display);font-stretch:125%;color:var(--ar-ink)}
 @A [data-pane="report"] .chparts .rchip.ok b{color:var(--ar-green-ink)}
 @A [data-pane="report"] .chparts .verdict dl{display:grid;grid-template-columns:minmax(0,1fr);margin:8px 0 0;padding:0}
 @A [data-pane="report"] .chparts .verdict dt{margin:0;padding:12px 0 2px;border-top:1px solid var(--ar-rule);font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
-@A [data-pane="report"] .chparts .verdict dd{margin:0;padding:0 0 10px;font:500 var(--ar-fs-small)/1.45 var(--ar-body);color:var(--ar-ink)}
+@A [data-pane="report"] .chparts .verdict dd{margin:0;padding:0 0 10px;font:500 var(--ar-fs-small)/1.5 var(--ar-body);color:var(--ar-ink)}
 @media (min-width:600px){@A [data-pane="report"] .chparts .verdict dl{grid-template-columns:150px minmax(0,1fr);column-gap:16px}
   @A [data-pane="report"] .chparts .verdict dd{padding:12px 0 10px;border-top:1px solid var(--ar-rule)}}
 @A [data-pane="report"] .chparts .regnote{margin:12px 0 0!important;font-size:15px!important;color:var(--ar-ink-2)!important}
 /* the game plan: one row per job, the job, its status tag, who does it */
 @A [data-pane="report"] .chparts .gphead{display:flex!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px!important;background:none!important;border:0!important;padding:0!important}
 @A [data-pane="report"] .chparts .archchips{display:flex;flex-wrap:wrap;gap:6px}
-@A [data-pane="report"] .chparts .archchip{position:relative;isolation:isolate;padding:3px 10px!important;font:700 14px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="report"] .chparts .archchip{position:relative;isolation:isolate;padding:3px 10px!important;font:700 15px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-transform:none!important;letter-spacing:0!important}
 @A [data-pane="report"] .chparts .archchip::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in oklch,var(--ac) 30%,var(--ar-sheet));transform:skewX(var(--ar-slant));border-radius:3px}
 @A[data-look="dark"] [data-pane="report"] .chparts .archchip::before{background:linear-gradient(var(--ac),var(--ac)) 0 0/4px 100% no-repeat,#2A2930}
 @A [data-pane="report"] .chparts .gplan{display:grid!important;gap:0!important;background:none!important;border:0!important;padding:0!important}
 @A [data-pane="report"] .chparts .gprow{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:14px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important}
 @A [data-pane="report"] .chparts .gplbl{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
-@A [data-pane="report"] .chparts .gpwho{grid-column:1/-1;font:400 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="report"] .chparts .gpwho{grid-column:1/-1;font:400 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A [data-pane="report"] .chparts .sev.lo::before{background:color-mix(in oklch,var(--ar-ink) 9%,transparent)}
 /* Types: the segmented switch, then the summary, then the full tables in the nested fold */
 @A [data-pane="report"] #chfTypes .chseg{margin-bottom:18px!important}
 @A [data-pane="report"] .chparts #offense>.hint,@A [data-pane="report"] .chparts #defSec>.hint{margin:16px 0 0!important}
 @A [data-pane="report"] .chparts .tablewrap{margin:12px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow-x:auto}
-@A [data-pane="report"] .chparts table{width:100%;border-collapse:collapse!important;border:0!important;background:none!important;font:500 15px/1.35 var(--ar-body)}
+@A [data-pane="report"] .chparts table{width:100%;border-collapse:collapse!important;border:0!important;background:none!important;font:500 15px/1.3 var(--ar-body)}
 @A [data-pane="report"] .chparts table :is(th,td){padding:9px 6px!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;background:none!important;color:var(--ar-ink);vertical-align:middle}
-@A [data-pane="report"] .chparts table th{font:600 14px/1.25 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important;text-align:center}
+@A [data-pane="report"] .chparts table th{font:600 15px/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important;text-align:center}
 @A [data-pane="report"] .chparts table :is(th.t,td.t){text-align:left;position:sticky;left:0;z-index:1;background:var(--ar-paper)!important}
 @A [data-pane="report"] .chparts table td.who{font-size:15px;color:var(--ar-ink)}
 @A [data-pane="report"] .chparts table td.who span{opacity:1!important;color:var(--ar-ink-2)}
 @A [data-pane="report"] .chparts table .gmon img{width:40px!important;height:40px!important;display:block;margin:0 auto}
-@A [data-pane="report"] .chparts table .gnm{display:block;font-size:14px;line-height:1.2;color:var(--ar-ink-2);max-width:72px;margin:2px auto 0;overflow-wrap:anywhere}
-@A [data-pane="report"] .chparts .m{display:inline-grid!important;place-items:center;min-width:34px;height:26px;padding:0 5px!important;border:0!important;border-radius:4px!important;font:700 14px/1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important}
+@A [data-pane="report"] .chparts table .gnm{display:block;font-size:15px;line-height:1.2;color:var(--ar-ink-2);max-width:72px;margin:2px auto 0;overflow-wrap:anywhere}
+@A [data-pane="report"] .chparts .m{display:inline-grid!important;place-items:center;min-width:34px;height:26px;padding:0 5px!important;border:0!important;border-radius:4px!important;font:700 15px/1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important}
 @A [data-pane="report"] .chparts .m:empty{min-width:0;padding:0!important}
 @A [data-pane="report"] .chparts .m.m4{color:#fff!important}
 @A [data-pane="report"] .chparts .net{font-weight:700!important}
@@ -793,7 +793,7 @@
 @A [data-pane="report"] #thrCard .thrg>summary::-webkit-details-marker{display:none}
 @A [data-pane="report"] #thrCard .thrg>summary::after{content:"";width:9px;height:9px;margin-left:4px;border:solid var(--ar-sec-ink);border-width:0 2.5px 2.5px 0;transform:rotate(45deg);translate:0 -2px}
 @A [data-pane="report"] #thrCard .thrg[open]>summary::after{transform:rotate(-135deg);translate:0 2px}
-@A [data-pane="report"] #thrCard .thrl{position:relative;isolation:isolate;padding:3px 12px!important;font:700 15px/1.25 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;text-transform:none!important;letter-spacing:0!important}
+@A [data-pane="report"] #thrCard .thrl{position:relative;isolation:isolate;padding:3px 12px!important;font:700 15px/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;text-transform:none!important;letter-spacing:0!important}
 @A [data-pane="report"] #thrCard .thrl::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:3px;background:#0068AD}
 @A [data-pane="report"] #thrCard .thrl.l0::before{background:#C41E35}
 @A [data-pane="report"] #thrCard .thrl.l1{color:#16141A!important}@A [data-pane="report"] #thrCard .thrl.l1::before{background:#F2B705}
@@ -803,9 +803,9 @@
 @A [data-pane="report"] #thrCard .thrrow>summary::-webkit-details-marker{display:none}
 @A [data-pane="report"] #thrCard .thrrow>summary>.arb-mf{grid-row:1/3}
 @A [data-pane="report"] #thrCard .thrn{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
-@A [data-pane="report"] #thrCard .thrn b{font:700 var(--ar-fs-body)/1.25 var(--ar-body);color:var(--ar-ink)}
-@A [data-pane="report"] #thrCard .thre{grid-column:2;font:400 15px/1.4 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A [data-pane="report"] #thrCard .thrd{margin:0 0 12px!important;padding:0 0 0 76px!important;list-style:none;display:grid;gap:6px;font:400 15px/1.45 var(--ar-body);color:var(--ar-ink)}
+@A [data-pane="report"] #thrCard .thrn b{font:700 var(--ar-fs-body)/1.2 var(--ar-body);color:var(--ar-ink)}
+@A [data-pane="report"] #thrCard .thre{grid-column:2;font:400 15px/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A [data-pane="report"] #thrCard .thrd{margin:0 0 12px!important;padding:0 0 0 76px!important;list-style:none;display:grid;gap:6px;font:400 15px/1.5 var(--ar-body);color:var(--ar-ink)}
 @A [data-pane="report"] #thrCard .thrd li{position:relative;padding-left:16px}
 @A [data-pane="report"] #thrCard .thrd li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;transform:skewX(var(--ar-slant));background:var(--ar-ink-3)}
 @A [data-pane="report"] #thrCard .thrd li.part::before{background:#F2B705}
@@ -841,8 +841,8 @@
 @A [data-pane="report"] .chparts .pfix :is(.qa,.qpicks,.qpick){background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
 @A [data-pane="report"] .chparts .pfix .qlbl{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important;margin-bottom:6px}
 @A [data-pane="report"] .chparts .pfix .qtop{display:flex!important;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:8px}
-@A [data-pane="report"] .chparts .pfix .qname{font:italic 800 19px/1.1 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
-@A [data-pane="report"] .chparts .pfix .qwhy{font-size:15px!important;line-height:1.45;color:var(--ar-ink)!important;margin-bottom:6px;background:none!important}
+@A [data-pane="report"] .chparts .pfix .qname{font:italic 800 20px/1.15 var(--ar-display);font-stretch:112%;color:var(--ar-ink)}
+@A [data-pane="report"] .chparts .pfix .qwhy{font-size:15px!important;line-height:1.5;color:var(--ar-ink)!important;margin-bottom:6px;background:none!important}
 @A [data-pane="report"] .chparts .pfix .qact{display:flex!important;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:10px;padding-left:4px}
 @A [data-pane="report"] .chparts .pfix .qfit{font:700 15px var(--ar-body);color:var(--ar-green-ink)!important;background:none!important}
 @A [data-pane="report"] .chparts .pfix .btn.primary.ar-btn{color:#fff!important}
@@ -850,7 +850,7 @@
 
 /* ---------- empty states on these pages: the arena empty state (a faint slanted section field with a sprite, one line, the action) ---------- */
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) :is(.empty-note.mgempty,#savedList>.empty-note){position:relative;display:grid!important;grid-template-columns:96px minmax(0,1fr);gap:4px 16px;align-items:center;padding:16px 0!important;margin:8px 0 0!important;
-  background:none!important;border:0!important;box-shadow:none!important;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-align:left!important}
+  background:none!important;border:0!important;box-shadow:none!important;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-align:left!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .mgempty .mgeart{grid-row:1/3;position:relative;display:block!important;width:96px!important;height:72px!important;margin:0!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-l)!important;background:color-mix(in oklch,var(--ar-sec) 18%,var(--ar-paper))!important;border:0!important;box-shadow:none!important}
 @A[data-look="dark"] :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .mgempty .mgeart{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,#24232A!important}
 @A :is([data-pane="coverage"],[data-pane="teams"],[data-pane="box"],[data-pane="compare"]) .mgempty .mgeart img{position:absolute!important;left:50%;bottom:0;width:92px!important;height:92px!important;max-width:none;margin:0!important;transform:translateX(-50%) skewX(var(--ar-unslant))!important}
@@ -861,7 +861,7 @@
   @A [data-pane="report"] #chVsOut .chcr .th i{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.15!important}}
 /* the compare sixes' names are for screen readers only (the art and the tooltip carry them) */
 @A [data-pane="compare"] .cxsix .ar-art .ar-nm{opacity:0}
-@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) :is(.thcalc,.thcond){font-size:15px!important;line-height:1.45}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) :is(.thcalc,.thcond){font-size:15px!important;line-height:1.5}
 @A [data-pane="compare"] .cxl.dbhand svg{display:none!important}
 
 /* ======================= review B fixes ======================= */
@@ -906,7 +906,7 @@
 @A [data-pane="teams"] .mmpop .danger::before{border-radius:0!important}
 /* minor 7: empty states: hide the sort rows when there is nothing to sort; the arena empty state */
 @A [data-pane="teams"] #saved:has(#savedList>.empty-note)>.head .seg,@A [data-pane="box"] #box:has(#boxList>.none)>.boxsort{display:none!important}
-@A :is([data-pane="teams"],[data-pane="box"]) .ar-empty{grid-column:1/-1;display:grid!important;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;padding:16px 0!important;margin:8px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;font:500 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-align:left}
+@A :is([data-pane="teams"],[data-pane="box"]) .ar-empty{grid-column:1/-1;display:grid!important;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;padding:16px 0!important;margin:8px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-align:left}
 @A :is([data-pane="teams"],[data-pane="box"]) .ar-empty p{margin:0 0 10px!important}
 @A :is([data-pane="teams"],[data-pane="box"]) .ar-empty .ar-acts{display:flex;flex-wrap:wrap;gap:12px 14px;padding-left:4px}
 @A :is([data-pane="teams"],[data-pane="box"]) .ar-empty .ar-empty-art{background:color-mix(in oklch,var(--ar-sec) 18%,var(--ar-paper))!important}
@@ -966,7 +966,7 @@
 @A[data-look="dark"] [data-pane="report"] .chparts .m.m0{--mc:color-mix(in oklab,var(--ar-blue) 34%,#24232A)}
 /* nit: the compare kicker repeated the intro line */
 @A [data-pane="compare"] .chpghead .chk{display:none!important}
-@A [data-pane="compare"] .cxsix .ar-art .ar-nm{height:auto!important;min-height:0!important;line-height:1.12!important;padding:0 0 0 2px!important;background:none!important;border:0!important}
+@A [data-pane="compare"] .cxsix .ar-art .ar-nm{height:auto!important;min-height:0!important;line-height:1.15!important;padding:0 0 0 2px!important;background:none!important;border:0!important}
 @A [data-pane="compare"] .cxsix>span.ar-art{height:auto!important;width:auto!important;padding-top:var(--lift)!important}
 /* the old empty-note art (another layer adds it) gives way to the arena empty state's own art */
 @A :is([data-pane="teams"],[data-pane="box"]) .ar-empty>.mgeart{display:none!important}
@@ -1011,7 +1011,7 @@
 @A :is([data-pane="compare"],[data-pane="coverage"],#chScout,#chEdit,[data-pane="report"],.myrec) .arb-mf{border-radius:0!important;background:none!important}
 /* F11 (phone): the Megas note on My team's Fix it (and the coverage gap note) is the arena note: a sheet with a gold spine, no outline */
 @A :is([data-pane="report"],[data-pane="coverage"]) :is(.chgapnote,p.gapnote){margin:10px 0 0!important;padding:12px 16px 12px 20px!important;position:relative;background:var(--ar-sheet)!important;border:0!important;outline:0!important;
-  border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;font:500 var(--ar-fs-small)/1.45 var(--ar-body)!important;color:var(--ar-ink)!important}
+  border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A :is([data-pane="report"],[data-pane="coverage"]) :is(.chgapnote,p.gapnote)::before{content:""!important;display:block!important;position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-gold)!important;border-radius:0 3px 3px 0}
 @A[data-look="dark"] :is([data-pane="report"],[data-pane="coverage"]) :is(.chgapnote,p.gapnote){background:#1A191D!important}
 /* F16 (phone): "Paste its log" sits in the line at the text's size; its 44px tap area comes from an inset */
@@ -1024,7 +1024,7 @@
    suggestions, the editor and the threat sheet */
 @A:not(#arbw) :is([data-pane="report"],[data-pane="coverage"],#chEdit,#chScout) :is(.sev,.ty,.tag,.archchip,.conf,.asm,.bp,.rchip,.m,.ck,.ckpro,.gnm){font-size:15px!important}
 @A:not(#arbw) :is([data-pane="report"],[data-pane="coverage"],#chEdit,#chScout) :is(table th,.chleg,.chleg i){font-size:15px!important}
-@A:not(#arbw) [data-pane="coverage"] .plan :is(ul li,ul li b){font-size:15px!important;line-height:1.45!important}
+@A:not(#arbw) [data-pane="coverage"] .plan :is(ul li,ul li b){font-size:15px!important;line-height:1.5!important}
 @A:not(#arbw) #chEdit .mvset .caret{font-size:15px!important}
 /* F15 (phone): one type tag: the older .ty chips on these pages draw as AR.tag (.ar-ty): the raw type colour on the slanted
    tag, white or ink text by contrast, no icon; dark keeps the neutral tag with the type edge */

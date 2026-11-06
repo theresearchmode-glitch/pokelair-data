@@ -80,9 +80,9 @@
 @A .ar-num small{font-size:.48em;margin-left:.04em;letter-spacing:0}
 @A .ar-h1{font:italic 800 var(--ar-fs-h1)/1 var(--ar-display);font-stretch:122%;letter-spacing:-.015em;color:var(--ar-ink);margin:0;text-wrap:balance}
 @A .ar-h2{font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display);font-stretch:118%;letter-spacing:-.01em;color:var(--ar-ink);margin:0;text-wrap:balance}
-@A .ar-lede{color:var(--ar-ink-2);font-size:var(--ar-fs-body);line-height:1.45;margin:0}
+@A .ar-lede{color:var(--ar-ink-2);font-size:var(--ar-fs-body);line-height:1.5;margin:0}
 @A .ar-lede b{color:var(--ar-ink);font-weight:700}
-@A .ar-meta{color:var(--ar-ink-2);font-size:var(--ar-fs-small);line-height:1.4;margin:0}
+@A .ar-meta{color:var(--ar-ink-2);font-size:var(--ar-fs-small);line-height:1.5;margin:0}
 @A .ar-meta b{color:var(--ar-ink);font-weight:700}
 /* focus ring: one ring everywhere, outside the shape */
 @A :focus-visible:not([tabindex="-1"]){outline:3px solid var(--ar-focus)!important;outline-offset:3px!important}
@@ -121,7 +121,7 @@
    <div class="ar-stephead"><span class="ar-step"><span>1</span></span><div><h2 class="ar-h2">Fix it</h2><p>..</p></div></div> */
 @A .ar-stephead{display:flex;gap:14px;align-items:flex-start}
 @A .ar-step{position:relative;isolation:isolate;flex:none;width:52px!important;height:52px!important;display:grid!important;place-items:center;background:none!important;border:0!important;box-shadow:none!important;
-  font:italic 900 30px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-on)!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+  font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-on)!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
 @A .ar-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
 @A .ar-step>span{font:inherit;color:inherit}
 @A .ar-step[hidden]{display:none!important}
@@ -136,7 +136,7 @@
   background:linear-gradient(var(--edge,var(--ar-sec)),var(--edge,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge,var(--ar-sec)) 20%,var(--ar-sheet)),color-mix(in oklch,var(--edge,var(--ar-sec)) 6%,var(--ar-sheet)) 70%)!important}
 @A .ar-btn svg{width:20px;height:20px;flex:none}
 @A[data-look="dark"] .ar-btn:not(.ar-primary)::before{background:linear-gradient(var(--edge,var(--ar-sec)),var(--edge,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
-@A .ar-btn.ar-primary{color:#16141A!important;font:italic 800 20px/1.1 var(--ar-display);font-stretch:115%;min-height:60px;padding-left:24px}
+@A .ar-btn.ar-primary{color:#16141A!important;font:italic 800 20px/1.15 var(--ar-display);font-stretch:115%;min-height:60px;padding-left:24px}
 @A .ar-btn.ar-primary::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:0 12px 22px -12px rgba(190,140,0,.75),0 2px 4px -2px rgba(0,0,0,.2)!important}
 /* no coloured glow on black: the yellow strip's shadow is plain black in dark mode */
 @A[data-look="dark"] .ar-btn.ar-primary::before{box-shadow:0 10px 18px -10px rgba(0,0,0,.9)!important}
@@ -153,7 +153,7 @@
    .ar-seg > button[aria-pressed|aria-selected]: a row of slanted strips; the one that is on is a filled section plate with bold text
    and a check mark (shape and colour, never colour alone). .ar-chip: the same, single, wraps. Works on bare-text buttons. */
 @A .ar-seg{display:inline-flex!important;flex-wrap:wrap;gap:8px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0 0 0 4px!important;overflow:visible!important}
-@A :is(.ar-seg>button,.ar-chip){position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:44px!important;padding:0 16px!important;margin:0!important;font:600 var(--ar-fs-small)/1.1 var(--ar-body)!important;
+@A :is(.ar-seg>button,.ar-chip){position:relative!important;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:44px!important;padding:0 16px!important;margin:0!important;font:600 var(--ar-fs-small)/1.15 var(--ar-body)!important;
   color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;cursor:pointer;flex:none!important}
 @A :is(.ar-seg>button,.ar-chip)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;
   background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;width:auto!important;height:auto!important}
@@ -193,8 +193,8 @@
   drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A) drop-shadow(0 10px 8px rgba(30,10,40,.22))}
 @A .ar-art.ar-s.is-mega :is(img.ar-spr,svg.ar-spr),@A .ar-mega-s{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a))
   drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A)}
-@A .ar-art .ar-nm{position:absolute;left:14px;right:8px;bottom:12px;z-index:3;display:block;color:var(--ar-art-text);font:italic 800 18px/1.08 var(--ar-display);font-stretch:108%;text-wrap:balance;overflow-wrap:break-word;hyphens:none}
-@A .ar-art .ar-nm small{display:block;font:600 var(--ar-fs-small)/1.25 var(--ar-body);font-style:normal;margin-top:3px}
+@A .ar-art .ar-nm{position:absolute;left:14px;right:8px;bottom:12px;z-index:3;display:block;color:var(--ar-art-text);font:italic 800 17px/1.15 var(--ar-display);font-stretch:108%;text-wrap:balance;overflow-wrap:break-word;hyphens:none}
+@A .ar-art .ar-nm small{display:block;font:600 var(--ar-fs-small)/1.2 var(--ar-body);font-style:normal;margin-top:3px}
 /* dark mode: a name set on the art sits on a slanted ink plate (the dark fields range from mid to light, so the plate keeps it 15:1) */
 @A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm{left:10px;right:auto;max-width:calc(100% - 20px);padding:5px 12px 6px;color:#fff;isolation:isolate}
 @A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
@@ -307,7 +307,7 @@
 
 /* ---------- 17. popovers ("?" tips) and dialogs ---------- */
 @A .tipq{display:inline-grid!important;place-items:center;width:28px!important;height:28px!important;min-width:28px;padding:0!important;margin:0 0 0 6px;vertical-align:middle;position:relative;
-  border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:700 14px/1 var(--ar-body)!important}
+  border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:700 15px/1 var(--ar-body)!important}
 @A .tipq::after{content:"";position:absolute;inset:-8px}
 @A .tippop{background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;padding:14px 16px 14px 20px!important;font-size:15px}
 @A .tippop::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-sec);border-radius:0 3px 3px 0}
@@ -367,10 +367,10 @@
   font:italic 800 36px/1.02 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.015em!important;text-transform:none!important;color:var(--ar-ink)!important;text-wrap:balance}
 @A .chpghead .chpgt::before{content:""!important;display:block!important;position:absolute!important;left:2px;top:.12em;width:26px;height:.82em;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A .chpghead .chpgt::after{content:none!important;display:none!important}
-@A .chpghead .chpgs{margin:10px 0 0!important;font:400 var(--ar-fs-body)/1.45 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:62ch}
+@A .chpghead .chpgs{margin:10px 0 0!important;font:400 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:62ch}
 @A .chback{display:inline-flex!important;align-items:center;gap:8px;min-height:44px;padding:0 2px!important;margin:6px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;
   font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
-@media (max-width:359px){@A .chpghead .chpgt{font-size:31px!important}}
+@media (max-width:359px){@A .chpghead .chpgt{font-size:34px!important}}
 @media (min-width:1001px){@A .chpghead .chpgt{font-size:clamp(46px,4.4vw,64px)!important;padding-left:52px!important}@A .chpghead .chpgt::before{width:32px}}
 
 /* ---------- 22. .ar-mini: a small slanted type field behind a list sprite (after phase 1)
