@@ -1089,3 +1089,14 @@
 /* NEW-10: Log a game's leads: the focus ring (and the selected ring) follow the slanted field, never an upright box */
 @A:not(#arbw):not(#arbx) [data-pane="report"] .myrec .qllead:is(:focus,:focus-visible){outline:none!important;box-shadow:none!important}
 @A:not(#arbw):not(#arbx) [data-pane="report"] .myrec .qllead:focus-visible .arb-f{outline:3px solid var(--ar-focus)!important;outline-offset:3px!important}
+/* Edit set: Nature dropdown and six stat point boxes (Sim, Nov 6) */
+@A #chEdit .spnew{display:grid;gap:8px;margin:0 0 18px}
+@A #chEdit .spnew .lblrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+@A #chEdit .spnew .sptot{margin-left:auto;font-weight:600}
+@A #chEdit .spnew .sptot.over{color:var(--ar-red,#C41E35)}
+@A #chEdit .spgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (min-width:600px){@A #chEdit .spgrid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@A #chEdit .spgrid label{display:grid;gap:4px;font:600 15px/1.2 var(--ar-body);color:var(--ar-ink-2)}
+@A #chEdit .spgrid .field{width:100%;text-align:center;padding:0 6px!important;-moz-appearance:textfield}
+@A #chEdit .spgrid .field::-webkit-inner-spin-button,@A #chEdit .spgrid .field::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+@A #chEdit .spacts{display:flex;align-items:center;gap:12px;flex-wrap:wrap}

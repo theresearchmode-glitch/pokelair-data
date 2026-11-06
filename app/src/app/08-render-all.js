@@ -261,16 +261,32 @@ function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.n
   return `<div class="itemrow">${it?line('Item',it.it,it.src):''}${mineN||(na?line('Nature',na,st.src.na):'')}${spr}</div>`}
 // The spread a team member is played with, and where it comes from: yours (paste, link or set here), assumed (a team sheet
 // gave a nature but no points, so the most common spread), or the most common one. One tap opens a small editor.
-function spreadBlock(s,i,m){const cs=m.spread||(typeof commonSpread==='function'?commonSpread(m.p):null);
-  const src=m.spread&&m.spread.assumed?'assumed':m.spread?'yours':'common';
-  const tag=src==='assumed'?'<span class="asm" title="The team sheet had no stat points: this is the most common spread with your nature">assumed</span>':src==='yours'?'<span class="vsub">yours</span>':'<span class="asm" title="Most common spread on the Showdown ladder (1630+), so its nature can differ from the tournament natures above; set your own if yours differs">ladder usual</span>';
-  const v=cs?`${cs.hp}/${cs.atk}/${cs.def}/${cs.spa}/${cs.spd}/${cs.spe}`:'';
-  const open=ui.spEdit===i;
-  const ed=open?`<div class="spedit"><input class="field" id="spv${i}" value="${esc(v)}" placeholder="HP/Atk/Def/SpA/SpD/Spe" inputmode="numeric" aria-label="Stat points for ${esc(m.p.d)}, HP/Atk/Def/SpA/SpD/Spe (0-32 each, ${SP_TOTAL} total)">
-    <select class="field" id="spn${i}" aria-label="Nature">${NATURES.map(n=>`<option${cs&&cs.nat===n?' selected':''}>${n}</option>`).join('')}</select>
-    <button class="btn sm primary" type="button" data-spsave="${i}">Save</button>${m.spread?`<button class="linkbtn" type="button" data-spclear="${i}">Use common</button>`:''}<button class="linkbtn" type="button" data-spedit="">Cancel</button><span class="vsub" id="spmsg${i}"></span></div>`:'';
-  if(!cs&&!open)return '';
-  return `<div class="itemrow"><span class="lbl">Spread</span><div>${cs?`<span class="iname">${v}</span> <span class="vsub">${esc(cs.nat||'')}</span> ${tag}`:'<span class="none">None</span>'} ${open?'':`<button class="linkbtn" type="button" data-spedit="${i}" aria-expanded="false">Set</button>`}</div>${ed}</div>`}
+// Nature and stat points in Edit set (Sim, Nov 6: "i dont even know where to look"): a nature dropdown like Ability (players'
+// share and the stat it raises and lowers, ★ most run) that saves on pick, and six labelled stat point boxes with a live total.
+function natFx(n){const u=Object.keys(NAT_UP).find(k=>NAT_UP[k].includes(n)),d=Object.keys(NAT_DN).find(k=>NAT_DN[k].includes(n));return u&&d?`+${u} −${d}`:'no change'}
+function spreadBlock(s,i,m){const p=m.p,cs=typeof commonSpread==='function'?commonSpread(p):null,own=s.sp&&s.sp[S.format],mine=m.spread;
+  let na=[];try{na=setFor(p).na||[]}catch(e){}const pc=new Map(na.map(x=>[x[0],x[1]])),top=(na[0]&&na[0][0])||(cs&&cs.nat)||null;
+  const nat=(own&&own.nat)||top||'Hardy',ownNat=!!(own&&own.nat&&own.nat!==top),ownPts=!!(own&&!own.assumed&&own.v);
+  const pts=ownPts?{hp:own.v[0],atk:own.v[1],def:own.v[2],spa:own.v[3],spd:own.v[4],spe:own.v[5]}:cs,K=['hp','atk','def','spa','spd','spe'],L=['HP','Atk','Def','SpA','SpD','Spe'];
+  const v=K.map(k=>pts?pts[k]:0),sum=v.reduce((a,b)=>a+b,0);
+  const order=[...na.map(x=>x[0]).filter(n=>NATURES.includes(n)),...NATURES.filter(n=>!pc.has(n)).sort()];
+  const opt=n=>`<option value="${esc(n)}"${n===nat?' selected':''}>${esc(n)} · ${natFx(n)}${pc.has(n)?` (${(+pc.get(n)).toFixed(pc.get(n)<1?1:0)}%)`:''}${n===top?' ★':''}</option>`;
+  return `<div class="spnew"><div class="lblrow"><span class="lbl">Nature</span>${ownNat?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-spnatreset="${i}">Use ${esc(top||'most run')}</button>`:top?'<span class="tag rec">MOST RUN</span>':''}</div>
+    <select class="field" data-spnat="${i}" aria-label="Nature for ${esc(p.d)}">${order.map(opt).join('')}</select>
+    <div class="lblrow"><span class="lbl">Stat points</span>${ownPts?`<span class="tag mine">YOURS</span><button class="linkbtn" type="button" data-spptsreset="${i}">Use most common</button>`:cs?'<span class="tag rec">MOST COMMON</span>':''}<span class="vsub sptot" id="sptot${i}">${sum} of ${SP_TOTAL}</span></div>
+    <div class="spgrid">${L.map((l,j)=>`<label><span>${l}</span><input class="field" type="number" min="0" max="32" step="1" inputmode="numeric" data-spi="${i}:${j}" value="${v[j]}" aria-label="${l} stat points for ${esc(p.d)}"></label>`).join('')}</div>
+    <div class="spacts"><button class="btn sm primary" type="button" data-spsave2="${i}">Save stat points</button><span class="vsub" id="spmsg${i}" role="status"></span></div></div>`}
+document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('[data-spnat]'))return;const i=+t.dataset.spnat,s=S.slots[i];if(!s||!natOK(t.value))return;
+  const own=s.sp&&s.sp[S.format];s.sp=Object.assign({},s.sp,{[S.format]:own&&!own.assumed&&own.v?{nat:t.value,v:own.v}:{nat:t.value,assumed:true}});render();toast('Nature saved')});
+document.addEventListener('input',e=>{const t=e.target;if(!t.matches||!t.matches('[data-spi]'))return;const i=t.dataset.spi.split(':')[0];
+  const v=[...document.querySelectorAll(`[data-spi^="${i}:"]`)].map(x=>+x.value||0),tot=v.reduce((a,b)=>a+b,0),el=$('sptot'+i);if(el){el.textContent=`${tot} of ${SP_TOTAL}`;el.classList.toggle('over',tot>SP_TOTAL)}});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-spsave2],[data-spnatreset],[data-spptsreset]');if(!b)return;
+  if(b.dataset.spnatreset!=null){const s=S.slots[+b.dataset.spnatreset],own=s&&s.sp&&s.sp[S.format];if(!own)return;if(own.v&&!own.assumed){let top=null;try{top=(setFor(byName.get(s.n)).na[0]||[])[0]}catch(x){}s.sp[S.format]={nat:top||own.nat,v:own.v}}else delete s.sp[S.format];render();toast('Using the nature most players run');return}
+  if(b.dataset.spptsreset!=null){const s=S.slots[+b.dataset.spptsreset],own=s&&s.sp&&s.sp[S.format];if(!own)return;let top=null;try{top=(setFor(byName.get(s.n)).na[0]||[])[0]}catch(x){}
+    if(own.nat&&own.nat!==top)s.sp[S.format]={nat:own.nat,assumed:true};else delete s.sp[S.format];render();toast('Using the most common stat points');return}
+  const i=+b.dataset.spsave2,s=S.slots[i],v=[...document.querySelectorAll(`[data-spi^="${i}:"]`)].map(x=>x.value===''?0:Number(x.value)),msg=$('spmsg'+i),sel=document.querySelector(`[data-spnat="${i}"]`),nat=sel?sel.value:null;
+  const tot=v.reduce((a,b)=>a+b,0),bad=v.length!==6||v.some(n=>!Number.isInteger(n)||n<0||n>32)?'Each box takes a whole number from 0 to 32':tot>SP_TOTAL?`That's ${tot} points; Champions allows ${SP_TOTAL}`:!natOK(nat)?'Pick a nature':'';
+  if(bad){if(msg)msg.textContent=bad;return}s.sp=Object.assign({},s.sp,{[S.format]:{nat,v}});render();toast('Stat points saved')});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-spedit],[data-spsave],[data-spclear]');if(!b)return;
   if(b.dataset.spedit!=null){ui.spEdit=b.dataset.spedit===''?null:+b.dataset.spedit;renderSlots();const f=$('spv'+ui.spEdit);if(f)f.focus();return}
   if(b.dataset.spclear!=null){const s=S.slots[+b.dataset.spclear];if(s&&s.sp)delete s.sp[S.format];ui.spEdit=null;render();toast('Using the most common spread');return}
