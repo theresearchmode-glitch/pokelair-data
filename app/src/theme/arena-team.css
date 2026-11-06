@@ -1107,3 +1107,6 @@
 @A #chEdit .abil>.lblrow,@A #chEdit .slbody>div>.lblrow:first-child{min-height:30px}
 /* move tiles: titles line up across the row (short details were centred lower) */
 @A #chEdit .mvset{justify-content:flex-start!important}
+/* Nov 7: the team sheet fold says "Open team sheet" in its own header, so the sheet's matching title row is hidden inside it */
+@A details.ar-sheetfold .chsheet>.hd{display:none!important}
+@A details.ar-sheetfold>.chbody{padding-top:8px}

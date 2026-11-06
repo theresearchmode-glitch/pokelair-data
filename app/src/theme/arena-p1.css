@@ -915,3 +915,19 @@
 @A #lairSheet .lsqm{font:500 var(--ar-fs-small)/1.5 var(--ar-body);color:var(--ar-ink-2)}
 @A #lairSheet .lsqgo{grid-column:2;justify-self:start;min-height:36px;font-weight:700}
 @media (min-width:1024px){@A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-quick{grid-column:1/-1!important;grid-row:auto!important}}
+
+/* ---------- Nov 7, usability 4: phone Home is shorter and the main buttons are on the first screen. Under the hero come
+   Grade my team / Build / Plan a match first, then the source note and This week; Your team is a compact card: six small
+   sprites in one row (names for screen readers and in each info sheet), the game plan and Open my team. iPad and desktop
+   are unchanged ---------- */
+@media (max-width:599px){
+  @A .ar-deck-side{display:flex;flex-direction:column}
+  @A .ar-deck-side>.ar-runners{order:0}
+  @A .ar-deck-side>:is(.ar-tools,.ar-imp){order:1}
+  @A .ar-deck-side>.ar-tools{margin-top:20px}
+  @A .ar-deck-side>.ar-caption{order:2}
+  @A .ar-deck-side>:not(.ar-runners,.ar-tools,.ar-imp,.ar-caption){order:3}
+  @A #homeOut .ar-side.ar-blue .ar-six{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px 4px!important;padding:0!important;margin-top:8px}
+  @A #homeOut .ar-side.ar-blue .ar-art.ar-m{--h:52px;--s:56px;--lift:4px}
+  @A #homeOut .ar-side.ar-blue .ar-art.ar-m .ar-nm{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}

@@ -97,6 +97,7 @@ AR.switcher = () => { const ts = (S.teams || []).filter(t => t && t.id !== S.loa
 /* Jump links (Sim, Nov 5): My team is long on phones, so a row under the head goes straight to each numbered part */
 AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to"><button type="button" class="ar-jump" data-arjump="chP1">Fix it</button><button type="button" class="ar-jump" data-arjump="chP2">Threats</button><button type="button" class="ar-jump" data-arjump="chP3">Game plan</button><button type="button" class="ar-jump" data-arjump="chP4">Sets</button></nav>`;
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arjump]'); if (!b) return; const t = $(b.dataset.arjump); if (!t) return;
+  t.querySelectorAll('details.ar-sheetfold:not([open])').forEach(d => { d.open = true; });
   t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
   const h = t.querySelector('h2,h3,summary,button'); if (h && h.focus) setTimeout(() => h.focus({preventScroll: true}), 400); });
 /* the sample team (Sim, Nov 5): first-time visitors see NastyPlot's sample six, so it says so, with one way to start their own */
@@ -264,6 +265,11 @@ CH.wrap('chTeamRender', () => AR.team());
 /* the My team parts below the fold: numbered step plates and arena controls on the existing markup (CSS does the rest) */
 AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:not(.ar-step)').forEach(n => { n.classList.add('ar-step'); if (!n.querySelector('span')) n.innerHTML = `<span>${esc(n.textContent)}</span>`; });
   document.querySelectorAll('#chTeam ~ .chparts .chparth h2').forEach(h => { if (h.textContent.trim() === 'Your six') h.textContent = 'Sets and team sheet'; });
+  /* usability 5 (Nov 7): on phones the full team sheet (about a screen of text) is a fold; each set is also one tap away on
+     the Pokémon above. Open on iPad and desktop; the choice is remembered, and the Sets jump link opens it */
+  { const so = $('chSheetOut'); if (so && !so.closest('details.ar-sheetfold')) { const n = (members() || []).length, w = document.createElement('div');
+      w.innerHTML = CH.fold('sheet', 'Open team sheet', `${n ? n + ' sets, ' : ''}Reg M-C, bring 6, pick 4`, '', !PHONE()); const d = w.firstElementChild;
+      d.classList.add('ar-sheetfold'); so.before(d); d.querySelector('.chbody').append(so); } }
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
   /* every sub-page has a back link (32-views.js adds most; This week, How we calculate and About were the ones without) */
