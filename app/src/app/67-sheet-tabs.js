@@ -88,11 +88,11 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = n && byName.get(n); i
   const P = {}; for (const [k] of LST.tabs) { const d = document.createElement('div'); d.className = 'lstp lstp-' + k; d.dataset.lstp = k; d.id = 'lstp-' + k; d.setAttribute('role', 'tabpanel'); d.setAttribute('aria-labelledby', 'lstb-' + k); d.tabIndex = -1; P[k] = d; }
   /* Info: new */
   P.info.innerHTML = LST.info(p);
-  /* Meta: the moves / items / brought-with block, then the typical set; Rating: the rest, unfolded (the tabs already separate them) */
+  /* Meta: the typical set first (Nov 7), then moves / items / brought-with; Rating: the rest, unfolded (the tabs already separate them) */
   if (data) P.meta.append(data);
   const kids = [...body.children].filter(x => x !== stats && x !== act && !x.classList.contains('lsmis'));
   for (const x of kids) { if (x.matches('details.chsec')) { const t = (x.querySelector('summary .cht') || {}).textContent || '', s = x.querySelector('.chbody > .lsec');
-      if (s) { s.insertAdjacentHTML('afterbegin', `<h4>${esc(t)}</h4>`); (/^Typical set/.test(t) ? P.meta : P.rating).append(s); } x.remove(); }
+      if (s) { s.insertAdjacentHTML('afterbegin', `<h4>${esc(t)}</h4>`); if (/^Typical set/.test(t)) { s.classList.add('lstyp'); P.meta.prepend(s); } else P.rating.append(s); } /* Sim (Nov 7): the typical set is what players want first, so it leads the Meta tab */ x.remove(); }
     else if (x.classList.contains('lsec')) P.rating.append(x); }
   { const st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })(), hasBw = !!(data && data.querySelector('.chbw'));
     if (!(st.mv && st.mv.length) && !(st.it && st.it.length) && !hasBw) P.meta.insertAdjacentHTML('afterbegin', `<p class="lsempty"><b>No tournament or ladder sets yet</b>Nobody has brought ${escName(p.d)} to the events and ladders we read, so the typical set below is a starting guess, not real teams.</p>`); }
