@@ -66,6 +66,8 @@ AR.ICON = {
   grade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
   build: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>',
   battle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg>',
+  /* Plan a match (Sim, Nov 6: the plain X read as a clear button): a clipboard with a checklist, same line style */
+  plan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16.5" rx="2"/><path d="M9 3h6v3H9z"/><path d="m8.5 11.5 1.5 1.5 2.5-2.5M14.5 12h1.5M8.5 17h7"/></svg>',
   go: '<span class="ar-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>',
   star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>'};
 /* the page's one speed-line burst, white, from behind the hero Pokémon (drawn on the sprite's half only) */
@@ -126,7 +128,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
     + `<span class="ar-runner-in"><span class="ar-runner-nm">${escName(p.d)}</span><span class="ar-num">${pct(p)}%</span></span>${AR.spr(p, 'ar-runner-mon')}</button>`;
   const has = ms.length > 0, b = (v, cls, ic, l, edge) => `<button type="button" class="ar-btn${cls}" data-view="${v}"${edge ? ` style="--edge:${edge}"` : ''}>${ic}<span>${l}</span>${cls ? AR.ICON.go : ''}</button>`;
   const tools = `<nav class="ar-tools" aria-label="Start here">${has ? b('report', ' ar-primary', AR.ICON.grade, 'Grade my team') + b('auto', '', AR.ICON.build, 'Build a team', 'var(--ar-gold)')
-    : b('auto', ' ar-primary', AR.ICON.build, 'Build me a team') + b('report', '', AR.ICON.grade, 'Grade my team', 'var(--ar-blue)')}${b('matchup', '', AR.ICON.battle, 'Plan a match', 'var(--ar-orange)')}</nav>`;
+    : b('auto', ' ar-primary', AR.ICON.build, 'Build me a team') + b('report', '', AR.ICON.grade, 'Grade my team', 'var(--ar-blue)')}${b('matchup', '', AR.ICON.plan, 'Plan a match', 'var(--ar-orange)')}</nav>`;
   /* the champion's six */
   let them = '', FC = null, sameSix = false;
   if (C) { const {ev, t} = C, key = esc(ev.id) + '#' + ev.top.indexOf(t); sameSix = ms.length === 6 && t.mons.every(m => ms.some(x => x.p.n === m.n));
