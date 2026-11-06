@@ -60,18 +60,18 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .eyebrow{font:500 13px/1.3 var(--body);color:var(--chink2);margin-bottom:6px}
 @R .eyebrow .datadate{color:var(--chink2)}
 @R .jumpbtn{background:var(--chc);color:var(--chink2);border:var(--tr-bw) solid var(--chline);border-radius:10px;box-shadow:none;min-height:44px}
-@R .jumpbtn kbd,@R kbd{background:var(--chp2);color:var(--chink2);border:0;border-radius:5px;font:600 13px/1 var(--body);box-shadow:none}
+@R .jumpbtn kbd,@R kbd{background:var(--chp2);color:var(--chink2);border:0;border-radius:6px;font:600 13px/1 var(--body);box-shadow:none}
 
 /* page tabs: one ink rule, the current page marked with a pink ink stroke */
 @R .tabs{background:var(--chp);box-shadow:none;border-bottom:4px solid var(--chline)}
 @R[data-look="dark"] .tabs{border-bottom-color:var(--chline)}
-@R .tabs button{clip-path:none;background:none;color:var(--chink2);font:600 16px/1 var(--body);padding:12px 14px 14px;position:relative;border-radius:0}
+@R .tabs button{clip-path:none;background:none;color:var(--chink2);font:600 16px/1 var(--body);padding:12px 16px 16px;position:relative;border-radius:0}
 @R .tabs button:hover{color:var(--chink);background:none}
 @R .tabs button[aria-selected="true"]{background:none;color:var(--chink)}
 @R .tabs button[aria-selected="true"]::after{content:"";position:absolute;left:8px;right:8px;bottom:-4px;height:8px;background:var(--chred);clip-path:polygon(0 30%,100% 0,97% 100%,2% 80%)}
-@R .tabs .tc{font:600 13px/1 var(--body);padding:4px 6px;border-radius:5px;background:var(--chblue);color:#fff;opacity:1;margin-left:6px}
-@R .themeseg{background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:10px;padding:3px;box-shadow:none}
-@R .themeseg button{border-radius:7px;color:var(--chink2);background:none}
+@R .tabs .tc{font:600 13px/1 var(--body);padding:4px 6px;border-radius:6px;background:var(--chblue);color:#fff;opacity:1;margin-left:6px}
+@R .themeseg{background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:10px;padding:4px;box-shadow:none}
+@R .themeseg button{border-radius:6px;color:var(--chink2);background:none}
 @R .themeseg button[aria-pressed="true"],@R .tabs .themeseg button[aria-pressed="true"]{background:var(--chink)!important;background-color:var(--chink)!important;color:var(--chp)!important;box-shadow:none!important}
 @R .tabs .themeseg button::after{display:none}
 
@@ -91,9 +91,9 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .chghost:hover{background:var(--chp2)}
 @R .chghost.onblue,@R .chghost.onred{color:var(--chink);border-color:var(--chink);background:var(--chc)}
 @R .linkbtn{color:var(--chblueT);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;font-weight:600}
-@R .seg button{border-radius:8px;font-weight:600;box-shadow:inset 0 0 0 2px var(--line)}
+@R .seg button{border-radius:10px;font-weight:600;box-shadow:inset 0 0 0 2px var(--line)}
 @R .seg button[aria-pressed="true"],@R .seg button[aria-selected="true"]{background:var(--chink);color:var(--chp);box-shadow:none}
-@R .chtag{font:600 13px/1 var(--body);padding:5px 7px;border-radius:4px;background:var(--chp2);color:var(--chink2);border:0}
+@R .chtag{font:600 13px/1 var(--body);padding:4px 8px;border-radius:4px;background:var(--chp2);color:var(--chink2);border:0}
 @R .chtag.lead{background:var(--chblue);color:#fff}
 
 /* panels: one ink border, square corners, no shadows */
@@ -111,7 +111,7 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .trdots{position:absolute;inset:auto 0 0 0;height:45%;z-index:0;background-image:radial-gradient(circle,var(--tr-dot) 2px,transparent 2.4px);background-size:9px 9px;-webkit-mask:linear-gradient(0deg,#000,transparent);mask:linear-gradient(0deg,#000,transparent)}
 @R :is(.trbanner,.trph) .trmon{position:absolute;z-index:3;left:12%;right:6%;bottom:-14px;height:106%;pointer-events:none;display:flex;justify-content:center;align-items:flex-end}
 @R :is(.trbanner,.trph) .trmon img{width:auto!important;height:100%!important;max-width:none;object-fit:contain}
-@R .trstat{position:absolute;z-index:4;left:16px;top:16px;background:var(--chc);border:var(--tr-bw) solid var(--chline);padding:6px 10px;font:500 15px/1.2 var(--body);color:var(--chink)}
+@R .trstat{position:absolute;z-index:4;left:16px;top:16px;background:var(--chc);border:var(--tr-bw) solid var(--chline);padding:6px 8px;font:500 15px/1.2 var(--body);color:var(--chink)}
 @R .trstat b{font:400 16px/1 var(--display);color:var(--chredT)}
 @R .trbanner .chmid{position:relative;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:28px 32px 28px 52px;background:var(--tr-title-bg);color:var(--tr-title-fg);border:4px solid var(--chline);clip-path:polygon(24px 0,100% 0,100% 100%,0 100%);text-align:left;align-items:flex-start;min-width:0}
 @R .trbanner .chmid .chk{color:var(--tr-title-fg);opacity:.8}
@@ -119,14 +119,14 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .trbanner .chmid .sub{font:400 44px/1.05 var(--display);color:var(--chred);margin:-10px 0 0}
 @R .trbanner .chmid p{margin:0;font-size:17px;color:var(--tr-title-fg);opacity:.92}
 @R .trbanner .chmid .ch64,@R .trbanner .chmid .chfour,@R .trbanner .chmid .chk[style]{display:none}
-@R .trbanner .chacts{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-start;margin-top:4px}
-@R .trbanner .chacts .chghost{color:var(--tr-title-fg);border-color:var(--tr-title-fg);background:transparent;min-height:48px;padding:0 18px;font-size:16px}
+@R .trbanner .chacts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start;margin-top:4px}
+@R .trbanner .chacts .chghost{color:var(--tr-title-fg);border-color:var(--tr-title-fg);background:transparent;min-height:48px;padding:0 16px;font-size:16px}
 @R .trbanner .chacts .chghost:hover{background:rgba(127,127,127,.18)}
 @R .trph{display:none}
 
 /* ======================= HOME: your six vs the champion's six ======================= */
 @R .chsplit.trvs{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:none;border:0;border-radius:0;box-shadow:none;overflow:visible;padding:0}
-@R .trvs .chband{position:relative;background:var(--chc);color:var(--chink);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);padding:0 0 16px;display:flex;flex-direction:column;gap:10px;text-align:left;width:auto;min-width:0}
+@R .trvs .chband{position:relative;background:var(--chc);color:var(--chink);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);padding:0 0 16px;display:flex;flex-direction:column;gap:8px;text-align:left;width:auto;min-width:0}
 @R .trvs .chband::before,@R .trvs .chband::after{display:none}
 @R .trvs .chband>.chk{order:0;margin:0;padding:12px 16px 0;color:var(--chink2);text-align:left!important}
 @R .trvs .chband .chcolt{order:-1;font:400 22px/1.15 var(--display);text-align:left!important;padding:12px 16px;margin:0;border-bottom:var(--tr-bw) solid var(--chline)}
@@ -134,9 +134,9 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .trvs .chband.them .chcolt{background:var(--tr-them-field);color:var(--chredT);box-shadow:inset 0 4px 0 var(--chred)}
 @R .trvs .chband .chwho{padding:0 16px;font-size:15px;color:var(--chink2);text-align:left!important}
 @R .trvs .chband .chwho b{color:var(--chink)}
-@R .trvs .chband .chwho .chpen{color:var(--chink)!important;background:var(--chyel);color:#1D2140!important;font:600 13px/1 var(--body);padding:5px 7px;border-radius:4px}
+@R .trvs .chband .chwho .chpen{color:var(--chink)!important;background:var(--chyel);color:#1D2140!important;font:600 13px/1 var(--body);padding:4px 8px;border-radius:4px}
 @R .trvs .chlist6{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px}
-@R .trvs .chhr2{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 10px 6px 4px;border-radius:var(--tr-r);background:var(--chc);border:0;box-shadow:inset 0 0 0 2px var(--line);color:var(--chink);text-align:left;flex-direction:row}
+@R .trvs .chhr2{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 8px 6px 4px;border-radius:var(--tr-r);background:var(--chc);border:0;box-shadow:inset 0 0 0 2px var(--line);color:var(--chink);text-align:left;flex-direction:row}
 @R .trvs .chhr2.r{direction:ltr}
 @R .trvs .chhr2 img{width:56px!important;height:56px!important;margin:-6px -4px -6px -6px;order:0}
 @R .trvs .chhr2 .chbd2{order:1;text-align:left;min-width:0}
@@ -145,20 +145,20 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .trvs .chhr2 .chtag{order:2}
 @R .trvs .chwl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-start!important;padding:4px 16px 0;margin-top:auto}
 @R .trvs .wxchip{display:none}
-@R .trvs .chghost{min-height:42px;padding:0 14px;font-size:15px}
+@R .trvs .chghost{min-height:42px;padding:0 16px;font-size:15px}
 @R .tabs button,@R .tabs button[aria-selected="true"]{box-shadow:none;text-shadow:none;outline-offset:-2px}
 @R .themeseg button[aria-pressed="true"] svg{color:var(--chp)}
 @R .trbanner .chmid p b{color:var(--tr-title-fg)}
 @R .trvs .chhr2 .chtag{background:var(--chp2);color:var(--chink2)}
 @R .trvs .chhr2 .chtag.lead{background:var(--chblue);color:#fff}
-@R .sdcopy{background:transparent;color:var(--chink);border:var(--tr-bw) solid var(--chink);border-radius:10px;min-height:42px;padding:0 14px;font:600 15px/1 var(--body);box-shadow:none}
+@R .sdcopy{background:transparent;color:var(--chink);border:var(--tr-bw) solid var(--chink);border-radius:10px;min-height:42px;padding:0 16px;font:600 15px/1 var(--body);box-shadow:none}
 @R .sdcopy svg{color:currentColor}
 @R .chpad{padding:0}
-@R .welcome{padding:20px 22px}
+@R .welcome{padding:20px 24px}
 @R .welcome .wnum,@R .welcome ol li::before{border-radius:4px;transform:none;background:var(--chink);color:var(--chp)}
 
 /* ======================= HOME: ratings tiles and tools ======================= */
-@R .hmini{position:relative;overflow:hidden;border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);background:var(--chc);box-shadow:none;padding:0 0 10px;gap:2px}
+@R .hmini{position:relative;overflow:hidden;border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);background:var(--chc);box-shadow:none;padding:0 0 8px;gap:2px}
 @R .hmini::before{content:"";position:absolute;inset:0 0 auto 0;height:96px;border-bottom:var(--tr-bw) solid var(--chline);background:radial-gradient(circle,color-mix(in srgb,var(--ta,#888) 55%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,color-mix(in srgb,var(--ta,#888) 22%,var(--chc));z-index:0}
 @R[data-look="dark"] .hmini::before{background:radial-gradient(circle,color-mix(in srgb,var(--ta,#888) 45%,transparent) 1.6px,transparent 2px) 0 0/8px 8px,color-mix(in srgb,var(--ta,#888) 16%,var(--chc))}
 @R .hmini>*{position:relative;z-index:1}
@@ -166,7 +166,7 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .hmini .hmn{padding:0 12px;font:600 15px/1.2 var(--body);color:var(--chink);margin-top:4px}
 @R .hmini .hms{padding:0 12px;font-size:13px;color:var(--chink2);display:flex;gap:6px;align-items:center}
 @R .hmini .hms b{color:var(--chink);font-weight:600}
-@R .rtier{border-radius:4px!important;font:600 11px/1 var(--body)!important;padding:3px 5px!important;min-width:0!important;height:auto!important;box-shadow:none!important}
+@R .rtier{border-radius:4px!important;font:600 11px/1 var(--body)!important;padding:4px 4px!important;min-width:0!important;height:auto!important;box-shadow:none!important}
 @R .htile{border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);background:var(--chc);box-shadow:none;transition:background-color .15s ease-out}
 @R .htile:hover{background:var(--chp2);transform:none}
 @R .htile b{font:600 16px/1.2 var(--body);color:var(--chink)}
@@ -196,7 +196,7 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 /* ======================= BATTLE MODE (working layer) ======================= */
 @R .chbmhead .chbmt{font-size:34px;line-height:1.15}
 @R .chbmhead .chbmt em{color:var(--chredT)}
-@R .chbmhead .chbmt small{background:var(--chink);color:var(--chp);font:600 13px/1 var(--body);padding:5px 7px;border-radius:4px}
+@R .chbmhead .chbmt small{background:var(--chink);color:var(--chp);font:600 13px/1 var(--body);padding:4px 8px;border-radius:4px}
 /* their six: their ink */
 @R .bmopp.chhalf,@R .bmopp{background:var(--tr-them-field);border:var(--tr-bw) solid var(--chline);border-top:5px solid var(--chred);border-radius:var(--tr-r);padding:12px;box-shadow:none;gap:8px}
 @R .bmslot{background:var(--chc);border:2px solid var(--chline);border-radius:var(--tr-r);box-shadow:none}
@@ -211,7 +211,7 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .chbringt{font-size:28px;line-height:1.15}
 @R .bmpicks .bmpick,@R .bmpick{background:var(--tr-you-field);border:2px solid var(--line);border-radius:var(--tr-r);box-shadow:none}
 @R .bmpick.lead{box-shadow:inset 0 0 0 3px var(--chyel);border-color:var(--chline)}
-@R .bmpick .tag{background:var(--chblue);color:#fff;border-radius:4px;font:600 13px/1 var(--body);clip-path:none;padding:5px 7px}
+@R .bmpick .tag{background:var(--chblue);color:#fff;border-radius:4px;font:600 13px/1 var(--body);clip-path:none;padding:4px 8px}
 /* the damage calc band becomes a calm card */
 @R .chcalc{background:var(--chc)!important;color:var(--chink)!important;border:var(--tr-bw) solid var(--chline)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;background-image:none!important}
 @R .chcalc *{color:inherit}
@@ -219,23 +219,23 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .chcalc button:not(.chprimary){background:var(--tr-you-field)!important;border:2px solid var(--line)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;color:var(--chink)!important}
 @R .chcalc button[aria-pressed="true"]:not(.chprimary){background:var(--tr-them-field)!important;border-color:var(--chred)!important}
 /* speed bars: blue yours, pink theirs */
-@R .bmsb{background:var(--chp2);border-radius:2px;height:14px}
-@R .bmsb i{border-radius:2px;background:var(--chred)}
+@R .bmsb{background:var(--chp2);border-radius:4px;height:14px}
+@R .bmsb i{border-radius:4px;background:var(--chred)}
 @R .bmsr.me .bmsb i{background:var(--chblue)}
 @R .bmsn,@R .bmsv{font:600 15px/1.2 var(--body);color:var(--chink)}
 @R .bmsr .bmsn{color:var(--chredT)}@R .bmsr.me .bmsn{color:var(--chblueT)}
 @R .tag.spdtie,@R .spdtie{background:var(--chyel)!important;color:#1D2140!important}
 /* damage grid */
-@R .bmdt td{background:var(--chp2);border-radius:3px}
+@R .bmdt td{background:var(--chp2);border-radius:4px}
 @R .bmdt th span{font:600 13px/1.2 var(--body);color:var(--chink)}
-@R .oppquick select,@R select.field,@R input.field,@R .field{background:var(--chc);color:var(--chink);border:2px solid var(--chline);border-radius:8px;box-shadow:none}
+@R .oppquick select,@R select.field,@R input.field,@R .field{background:var(--chc);color:var(--chink);border:2px solid var(--chline);border-radius:10px;box-shadow:none}
 @R .prentry{background:var(--chc);border:var(--tr-bw) solid var(--chline);border-radius:var(--tr-r);box-shadow:none}
 @R .prentry .prei{background:var(--chblue);color:#fff;border-radius:4px}
 /* damage grid: your hit in blue, theirs in pink, the hit count as one small tag. OHKO is a filled tag, 2HKO an outline */
-@R :is(.bo,.bd){background:var(--chc)!important;border-radius:3px!important;font:600 15px/1.2 var(--body)!important;padding:20px 4px 4px!important;margin:2px 0!important;box-shadow:inset 0 0 0 1.5px var(--line)!important}
+@R :is(.bo,.bd){background:var(--chc)!important;border-radius:4px!important;font:600 15px/1.2 var(--body)!important;padding:20px 4px 4px!important;margin:2px 0!important;box-shadow:inset 0 0 0 1.5px var(--line)!important}
 @R .bo{color:var(--chblueT)!important}@R .bd{color:var(--chredT)!important}
 @R :is(.bo,.bd) i{display:block;font:500 13px/1.2 var(--body);color:var(--chink2);font-style:normal}
-@R :is(.bo,.bd)[data-ko]:not([data-ko=""])::after,@R :is(.bo,.bd):is(.k1,.k1m,.k2,.k2m)::after{top:4px!important;font:700 11px/1 var(--body)!important;padding:3px 5px!important;border-radius:3px!important;background:transparent!important;color:var(--chink)!important;border:0!important;box-shadow:inset 0 0 0 1.5px var(--chink2)!important}
+@R :is(.bo,.bd)[data-ko]:not([data-ko=""])::after,@R :is(.bo,.bd):is(.k1,.k1m,.k2,.k2m)::after{top:4px!important;font:700 11px/1 var(--body)!important;padding:4px 4px!important;border-radius:4px!important;background:transparent!important;color:var(--chink)!important;border:0!important;box-shadow:inset 0 0 0 1.5px var(--chink2)!important}
 @R :is(.bo,.bd):is(.k1,.k1m)::after{background:var(--chink)!important;color:var(--chp)!important;box-shadow:none!important}
 @R .bo:is(.k1,.k1m){box-shadow:inset 0 0 0 2.5px var(--chblue)!important}
 @R .bd:is(.k1,.k1m){box-shadow:inset 0 0 0 2.5px var(--chred)!important}
@@ -276,7 +276,7 @@ html:not(#_tr){-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:graysc
 @R .chdcband *{color:inherit!important}
 @R .chdcband .sub,@R .chdcband .chk{color:var(--chink2)!important}
 @R .chdcband .nm{font:400 20px/1.15 var(--display)}
-@R select.field,@R select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23555A79' stroke-width='2' stroke-linecap='round'/></svg>")!important;background-position:right 14px center!important;background-size:12px 8px!important;padding-right:38px!important}
+@R select.field,@R select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23555A79' stroke-width='2' stroke-linecap='round'/></svg>")!important;background-position:right 14px center!important;background-size:12px 8px!important;padding-right:40px!important}
 @R[data-look="dark"] select.field,@R[data-look="dark"] select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23A8A6AE' stroke-width='2' stroke-linecap='round'/></svg>")!important}
 @R .dccol,@R .dcres,@R .gitem,@R .tablewrap,@R .chshow,@R .chwin,@R .chsheet,@R .chside,@R .chready,@R .chbring{border:var(--tr-bw) solid var(--chline)!important;border-radius:var(--tr-r)!important;box-shadow:none!important;background-image:none!important;outline:0!important}
 @R .dccol,@R .dcres,@R .gitem,@R .chshow,@R .chwin,@R .chsheet,@R .chside,@R .chready,@R .chbring{background-color:var(--chc)!important}

@@ -6,15 +6,15 @@
 
 /* ---------- chrome ---------- */
 @media (max-width:1000px){@A nav.tabs.mgtabs{display:none!important}}
-@A .band .inner{padding-top:10px!important;padding-bottom:6px!important}
-@media (min-width:1001px){@A .band .inner{padding-top:16px!important;padding-bottom:10px!important}}
+@A .band .inner{padding-top:8px!important;padding-bottom:6px!important}
+@media (min-width:1001px){@A .band .inner{padding-top:16px!important;padding-bottom:8px!important}}
 /* small desktops: the search button folds to its icon so the header row fits beside the five tabs */
 @media (min-width:1001px) and (max-width:1279px){@A .band .jumpbtn{min-width:44px!important;width:44px;padding:0!important;justify-content:center}@A .band .jumpbtn :is(.jbt,.jbk){display:none!important}}
 
 /* ---------- Home ---------- */
 @A #homeOut.ar-on>:is(.chmh,.trbanner,.chsplit,.mgspread,.mgdeskcov){display:none!important}
 @A .ar-home{padding:0 var(--ar-gutter);overflow-x:clip}
-@A .ar-hh{display:block;padding:14px 0 0;font-size:var(--ar-fs-h1)!important;letter-spacing:-.02em!important;white-space:nowrap}
+@A .ar-hh{display:block;padding:16px 0 0;font-size:var(--ar-fs-h1)!important;letter-spacing:-.02em!important;white-space:nowrap}
 @media (max-width:1000px){@A .ar-hh{font-size:min(var(--ar-fs-h1),11.6vw)!important}}
 /* the hero: a full-bleed diagonal band in the top Pokémon's types; the Pokémon breaks out of its top edge */
 @A .ar-hero{position:relative;display:block;width:calc(100% + 2 * var(--ar-gutter));height:368px;margin:6px calc(-1 * var(--ar-gutter)) 0;padding:0;border:0!important;background:none!important;box-shadow:none!important;text-align:left;color:var(--ar-ink);cursor:pointer;font:inherit}
@@ -27,7 +27,7 @@
 @A .ar-hero-big{font-size:var(--ar-fs-hero);color:var(--ar-ink)}
 @media (max-width:599px){@A .ar-hero-big{font-size:min(var(--ar-fs-hero),15vw)}}
 @A .ar-hero-of{font-size:15px;font-weight:600;color:var(--ar-ink);margin-top:6px}
-@A .ar-hero .ar-plate{margin-top:14px;font-size:17px;min-height:46px}
+@A .ar-hero .ar-plate{margin-top:16px;font-size:17px;min-height:46px}
 @A[data-look="dark"] :is(.ar-hero-rank,.ar-hero-rank b,.ar-hero-of,.ar-hero-big){color:var(--on,#fff)}
 @A[data-look="dark"] .ar-runner{color:var(--on,#fff)}
 /* the runners-up: two staggered slanted strips that overlap the hero's lower edge */
@@ -37,14 +37,14 @@
 @A[data-look="dark"] .ar-runner{filter:none}
 @A .ar-runner:nth-child(2){margin-left:28px;width:calc(100% - 28px)}
 @A .ar-runner-f{position:absolute;inset:0;clip-path:polygon(4% 0,100% 0,96% 100%,0 100%);border-radius:6px}
-@A .ar-runner-in{position:relative;z-index:1;display:flex;flex-direction:column;gap:2px;padding-left:30px}
+@A .ar-runner-in{position:relative;z-index:1;display:flex;flex-direction:column;gap:2px;padding-left:32px}
 @A .ar-runner-nm{font-weight:700;font-size:17px;line-height:1.15}
 @A .ar-runner .ar-num{font-size:38px}
 @A .ar-runner-mon{position:absolute;right:14px;bottom:-4px;width:104px!important;height:104px!important;max-width:none;z-index:1}
-@A .ar-caption{margin:14px 0 0;color:var(--ar-ink-2);font-size:15px;line-height:1.5}
+@A .ar-caption{margin:16px 0 0;color:var(--ar-ink-2);font-size:15px;line-height:1.5}
 /* start here: the one yellow button, then two menu strips */
-@A .ar-tools{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;padding:26px 4px 0 6px}
-@A .ar-tools .ar-btn{min-height:56px;font-size:16px;padding:0 10px 0 18px;gap:8px;white-space:nowrap}
+@A .ar-tools{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;padding:24px 4px 0 6px}
+@A .ar-tools .ar-btn{min-height:56px;font-size:16px;padding:0 8px 0 16px;gap:8px;white-space:nowrap}
 @A .ar-tools .ar-btn.ar-primary{grid-column:1/-1;min-height:68px;font-size:20px;padding-left:24px}
 @A .ar-tools .ar-btn:not(.ar-primary) svg{color:var(--edge)}
 @A .ar-tools .ar-primary>svg{width:26px;height:26px}
@@ -54,9 +54,9 @@
 @A .ar-ev{font-weight:700;font-size:17px;line-height:1.3;margin:2px 0 0;color:var(--ar-ink)}
 @A .ar-winner .ar-meta{margin-top:4px}
 @A .ar-side .ar-six{padding:0 4px 0 6px}
-@A .ar-gameplan{margin:18px 0 0;color:var(--ar-ink-2);font-size:15px;line-height:1.5;max-width:62ch}
+@A .ar-gameplan{margin:16px 0 0;color:var(--ar-ink-2);font-size:15px;line-height:1.5;max-width:62ch}
 @A .ar-gameplan b{color:var(--ar-ink);font-weight:700}
-@A .ar-acts{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:26px;padding-left:6px}
+@A .ar-acts{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-top:24px;padding-left:6px}
 @A .ar-vs{display:none}
 @A .ar-home .wkhome{margin-top:40px}
 /* the rest of Home (ratings, tools, folds) in arena dress */
@@ -66,11 +66,11 @@
 @A #homeOut.ar-on :is(.chhtop,.chhtools)>h3{order:-1;display:block;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;margin:0!important}
 @A #homeOut.ar-on :is(.chhtop,.chhtools)>h3::before{content:"";display:inline-block;vertical-align:-3px;margin-right:12px;width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
 @A #homeOut.ar-on :is(.chhtop,.chhtools)>h3 .hl{color:inherit!important;background:none!important;box-shadow:none!important;padding:0!important}
-@A #homeOut.ar-on .hpick{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:16px 0 4px}
+@A #homeOut.ar-on .hpick{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:16px 0 4px}
 @A #homeOut.ar-on .hpick .t2{font-size:15px!important;color:var(--ar-ink-2)!important;margin:0}
 /* top of the meta: typographic rows (sprite on a small slanted type field, name, big numeral, hairline) */
 @A #homeOut.ar-on .hrow{display:grid!important;grid-template-columns:1fr!important;gap:0!important;margin-top:8px}
-@A #homeOut.ar-on .hmini{position:relative;display:grid!important;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:14px;min-height:72px;width:100%;padding:10px 0!important;
+@A #homeOut.ar-on .hmini{position:relative;display:grid!important;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:16px;min-height:72px;width:100%;padding:8px 0!important;
   background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important;text-align:left;isolation:isolate}
 @A #homeOut.ar-on .hmini::before{content:""!important;display:block!important;position:absolute!important;left:6px!important;right:auto!important;top:50%!important;bottom:auto!important;width:58px!important;height:42px!important;margin-top:-17px!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-s)!important;opacity:1!important;
   background:linear-gradient(in oklab 125deg,color-mix(in oklch,var(--ta) var(--ar-field-mix),var(--ar-sheet)),color-mix(in oklch,var(--tb,var(--ta)) var(--ar-field-mix),var(--ar-sheet)))}
@@ -91,9 +91,9 @@
    3 on tablets, 4 on desktop. Every tile is the app's own button (data-view), so each opens exactly what it did. */
 @A #homeOut.ar-on .ar-home>.chhtools{margin:56px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
 /* every tile: the icon on its own line, the title on one line under it, then its line; rows of equal height */
-@A #homeOut.ar-on .htiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:1fr;gap:14px 14px!important;margin-top:18px;padding:0 4px 0 6px}
+@A #homeOut.ar-on .htiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:1fr;gap:16px 16px!important;margin-top:16px;padding:0 4px 0 6px}
 @A #homeOut.ar-on .htile,@A #homeOut.ar-on .htile[hidden]{grid-column:auto!important;position:relative;isolation:isolate;display:grid!important;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto 1fr;row-gap:6px;align-items:start;align-content:start;
-  min-height:96px;height:100%;padding:14px 12px 14px 20px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left;--edge:var(--ar-sec)}
+  min-height:96px;height:100%;padding:16px 12px 16px 20px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left;--edge:var(--ar-sec)}
 @A #homeOut.ar-on .htile::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklch,var(--edge) 22%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 6%,var(--ar-sheet)) 75%)!important}
 @A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#2A2930,#1C1B20 80%)!important}
@@ -113,8 +113,8 @@
 @A #homeOut.ar-on .htile:is([data-view="weekly"],[data-view="ratings"],[data-view="meta"],[data-view="sets"],[data-view="top"],[data-view="events"],[data-view="arch"],[data-view="track"],[data-view="method"]){--edge:var(--ar-purple);--edge-ink:var(--ar-purple-ink)}
 
 /* ---------- folds (Home's "More on Home", My team's folds): a slanted strip you tap, the body upright under it ---------- */
-@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:14px}
-@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;padding:8px 16px 8px 22px!important;margin-left:6px;
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:16px}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;padding:8px 16px 8px 24px!important;margin-left:6px;
   background:none!important;border:0!important;box-shadow:none!important;cursor:pointer}
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
@@ -122,14 +122,14 @@
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .cht{font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .chs{font-size:15px!important;color:var(--ar-ink-2)!important}
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .chtog{color:var(--ar-sec-ink)!important}
-@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>.chbody{padding:18px 4px 6px!important;background:none!important}
+@A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>.chbody{padding:16px 4px 6px!important;background:none!important}
 @A #homeOut.ar-on .hfb{background:none!important;border:0!important;box-shadow:none!important;border-top:1px solid var(--ar-rule)!important;border-radius:0!important;margin-top:32px!important;padding:16px 0 0!important}
 
 /* ---------- Home on desktop: the hero band on the left 55%, runners and tools on the right; then a true 6v6 ---------- */
 @media (min-width:1001px){
   @A .ar-home{padding:0;overflow-x:visible}
   @A .ar-deck{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0 48px;align-items:start}
-  @A .ar-hh{padding-top:22px;font-size:clamp(52px,5.4vw,76px)!important}
+  @A .ar-hh{padding-top:24px;font-size:clamp(52px,5.4vw,76px)!important}
   @A .ar-hero{width:calc(100% + var(--ar-gutter));height:480px;margin:0 0 0 calc(-1 * var(--ar-gutter))}
   @A .ar-hero-bg{top:40px;clip-path:polygon(0 10%,100% 0,94% 88%,0 100%)}
   @A .ar-hero-mon{width:clamp(300px,27vw,420px)!important;height:clamp(300px,27vw,420px)!important;right:-40px;top:-24px}
@@ -146,7 +146,7 @@
   @A .ar-runner-nm{font-size:22px}
   @A .ar-runner-mon{width:136px!important;height:136px!important}
   @A .ar-caption{padding:2px 0 0;font-size:16px}
-  @A .ar-tools{padding-top:30px;gap:14px 16px}
+  @A .ar-tools{padding-top:32px;gap:16px 16px}
   @A .ar-tools .ar-btn{min-height:60px}
   @A .ar-tools .ar-btn.ar-primary{min-height:80px;font-size:24px}
   @A .ar-versus{display:grid;grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);grid-template-rows:repeat(5,auto);margin-top:64px;align-items:start}
@@ -154,9 +154,9 @@
   @A .ar-side>*{min-width:0}
   @A .ar-vs{grid-row:1/span 5}
   @A .ar-vs{position:relative;display:grid;place-items:center;align-self:stretch}
-  @A .ar-vs::before{content:"";position:absolute;top:150px;bottom:60px;left:50%;width:3px;background:linear-gradient(var(--ar-pink),var(--ar-blue));transform:skewX(-10deg);border-radius:2px;opacity:.6}
-  @A .ar-vs span{position:relative;font-size:48px;background:var(--ar-paper);padding:10px 0;color:var(--ar-ink)}
-  @A .ar-side .ar-six{gap:30px 16px}
+  @A .ar-vs::before{content:"";position:absolute;top:150px;bottom:60px;left:50%;width:3px;background:linear-gradient(var(--ar-pink),var(--ar-blue));transform:skewX(-10deg);border-radius:4px;opacity:.6}
+  @A .ar-vs span{position:relative;font-size:48px;background:var(--ar-paper);padding:8px 0;color:var(--ar-ink)}
+  @A .ar-side .ar-six{gap:32px 16px}
   @A .ar-side .ar-art.ar-m{--h:clamp(120px,10.5vw,150px);--s:clamp(124px,11vw,156px);--lift:16px}
   @A .ar-side .ar-art .ar-nm{font-size:17px}
   @A .ar-ev{font-size:20px}
@@ -165,7 +165,7 @@
   @A #homeOut.ar-on>.chhtop{margin-top:72px!important}
   @A #homeOut.ar-on .ar-home>.chhtools{margin-top:64px!important}
   @A #homeOut.ar-on .hrow{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:40px!important}
-  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px 22px!important}
+  @A #homeOut.ar-on .htiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px 24px!important}
   @A #homeOut.ar-on .htile{min-height:108px;padding:16px 16px 16px 24px!important}
   @A #homeOut.ar-on .htile :is(.hsd,.hld){font-size:var(--ar-fs-body)!important}
   @A #homeOut.ar-on .htile b{font-size:20px!important}
@@ -186,17 +186,17 @@
 /* ---------- My team ---------- */
 @A #chTeam.ar-on>:is(.chthead,.chempty2){display:none!important}
 @A .ar-team{padding-bottom:8px}
-@A .ar-kick{margin:10px 0 0;font-size:15px;font-weight:600;color:var(--ar-ink-2)}
+@A .ar-kick{margin:8px 0 0;font-size:15px;font-weight:600;color:var(--ar-ink-2)}
 @A .ar-kick b{color:var(--ar-sec-ink)}
 @A .ar-titlerow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-top:4px}
 @A .ar-tname{flex:1;min-width:0;font-size:36px!important;font-stretch:115%!important;line-height:1.02!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important}
 /* a record grade: the win rate is wider than a two-digit grade, so on phones the score sits under the name, side by side */
-@media (max-width:1000px){@A .ar-titlerow:has(.ar-num small){flex-direction:column;align-items:stretch;gap:10px}
+@media (max-width:1000px){@A .ar-titlerow:has(.ar-num small){flex-direction:column;align-items:stretch;gap:8px}
   @A .ar-titlerow:has(.ar-num small) .ar-score{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:16px;align-items:start;text-align:left;margin-top:4px}
   @A .ar-titlerow:has(.ar-num small) .ar-score>.ar-num{grid-row:1/4;align-self:center}
   @A .ar-titlerow:has(.ar-num small) .ar-score>:not(.ar-num){justify-self:start;margin:0}
   @A .ar-titlerow:has(.ar-num small) .ar-grade{margin-top:4px}}
-@media (max-width:419px){@A .ar-titlerow{flex-direction:column;align-items:stretch;gap:10px}
+@media (max-width:419px){@A .ar-titlerow{flex-direction:column;align-items:stretch;gap:8px}
   @A .ar-titlerow .ar-score{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:16px;align-items:start;text-align:left;margin-top:4px}
   @A .ar-titlerow .ar-score>.ar-num{grid-row:1/4;align-self:center}
   @A .ar-titlerow .ar-score>:not(.ar-num){justify-self:start;margin:0}
@@ -207,8 +207,8 @@
 @A .ar-grade{font-weight:700;font-size:17px;margin-top:6px;color:var(--ar-ink)}
 @A .ar-basis{font-size:15px;color:var(--ar-ink-2);margin-top:2px}
 @A .ar-why{min-height:44px}
-@A .ar-thead #chGwhy{margin:12px 0 0!important;padding:14px 16px 14px 20px!important;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;position:relative;font-size:15px;line-height:1.5;color:var(--ar-ink)}
-@A .ar-thead #chGwhy::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;background:var(--ar-sec);border-radius:0 3px 3px 0}
+@A .ar-thead #chGwhy{margin:12px 0 0!important;padding:16px 16px 16px 20px!important;background:var(--ar-sheet)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow-s)!important;position:relative;font-size:15px;line-height:1.5;color:var(--ar-ink)}
+@A .ar-thead #chGwhy::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;background:var(--ar-sec);border-radius:0 4px 4px 0}
 @A .ar-tstats{display:grid;gap:20px;margin-top:20px}
 @A .ar-sth{display:flex;align-items:center;gap:2px;margin:0;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2)}
 @A .ar-trio{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));column-gap:16px;margin-top:8px}
@@ -219,7 +219,7 @@
 @media (max-width:599px){@A .ar-tstats.ar-c5 .ar-trio{grid-template-columns:repeat(6,minmax(0,1fr))}@A .ar-tstats.ar-c5 .ar-trio>.ar-stat{grid-column:span 2}
   @A .ar-tstats.ar-c5 .ar-trio>.ar-stat:nth-child(n+4){grid-column:span 3;margin-top:12px}}
 @A .ar-trio .ar-unit .tipq{margin-left:2px}
-@A .ar-sum{margin:10px 0 0;font-size:15px;color:var(--ar-ink-2);line-height:1.5}
+@A .ar-sum{margin:8px 0 0;font-size:15px;color:var(--ar-ink-2);line-height:1.5}
 @A .ar-sum b{color:var(--ar-ink)}
 @A .ar-legal{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:15px;color:var(--ar-ink-2)}
 @A .ar-legal b{font-size:16px;color:var(--ar-ink)}
@@ -232,19 +232,19 @@
 @A[data-look="dark"] .ar-stage::before{background:linear-gradient(110deg,#1A191D,#111013);box-shadow:inset 6px 0 0 var(--ar-blue)}
 @A .ar-stage .ar-shead{margin-bottom:6px}
 @A .ar-stage .ar-six{padding:0 6px}
-@A .ar-stage .ar-gameplan{margin-top:18px}
-@A .ar-setwrap{margin-top:18px}
+@A .ar-stage .ar-gameplan{margin-top:16px}
+@A .ar-setwrap{margin-top:16px}
 @A .ar-setwrap:empty,@A .ar-setwrap:not(:has(#rzSet:not([hidden]))){display:none}
 /* the set card */
-@A #rzSet.ar-sheet{--a:var(--ta,var(--ar-blue));--b:var(--tb,var(--a));display:block;margin:0!important;padding:18px 18px 18px 26px!important;animation:none}
-@A .ar-sethd{display:flex;gap:14px;align-items:center}
+@A #rzSet.ar-sheet{--a:var(--ta,var(--ar-blue));--b:var(--tb,var(--a));display:block;margin:0!important;padding:16px 16px 16px 24px!important;animation:none}
+@A .ar-sethd{display:flex;gap:16px;align-items:center}
 @A .ar-av{position:relative;flex:none;width:80px;height:80px}
 @A .ar-av-f{position:absolute;inset:14px 4px 2px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)}
 @A .ar-av img{position:relative!important;width:80px!important;height:80px!important;max-width:none;margin:0!important}
 @A .ar-setname{font-size:26px!important;line-height:1!important;margin:0!important}
 @A .ar-sethd .ar-tys{margin-top:8px}
 @A .ar-role{margin:8px 0 0;font-size:15px;color:var(--ar-ink-2)}
-@A .ar-setia{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin:16px 0 14px;align-items:start}
+@A .ar-setia{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;margin:16px 0 16px;align-items:start}
 @A .ar-setia>div:not(.ar-setr){align-self:end}
 @A .ar-setia>div:not(.ar-setr) b{display:block;min-height:calc(2em * 1.25);line-height:1.2}
 @A .ar-setia span{display:block;font-size:15px;font-weight:600;color:var(--ar-ink-2)}
@@ -252,12 +252,12 @@
 @A .ar-setr .ar-num{display:block;font-size:44px;color:var(--ar-ink)}
 @A .ar-setr small{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:15px;font-weight:600;color:var(--ar-ink-2);white-space:nowrap}
 @A .ar-setr small svg{width:15px;height:15px;fill:var(--ar-gold)}
-@A .ar-setacts{display:flex;align-items:center;gap:16px;margin-top:18px;padding-left:4px}
+@A .ar-setacts{display:flex;align-items:center;gap:16px;margin-top:16px;padding-left:4px}
 /* team actions: the app's own buttons (save, share, saved teams, box, compare, Showdown, ⋯) as menu strips */
 @A .ar-tacts{margin-top:28px}
-@A .ar-tacts #chActs{display:grid!important;grid-template-columns:1fr 1fr;gap:12px 14px;padding:0 4px 0 6px;margin:0!important}
+@A .ar-tacts #chActs{display:grid!important;grid-template-columns:1fr 1fr;gap:12px 16px;padding:0 4px 0 6px;margin:0!important}
 @A .ar-tacts #chActs>.row{display:contents!important}
-@A .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary){position:relative;isolation:isolate;display:flex!important;align-items:center;justify-content:flex-start;gap:8px;min-height:48px!important;width:100%;padding:0 14px 0 20px!important;margin:0!important;
+@A .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary){position:relative;isolation:isolate;display:flex!important;align-items:center;justify-content:flex-start;gap:8px;min-height:48px!important;width:100%;padding:0 16px 0 20px!important;margin:0!important;
   font:600 15px/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;white-space:normal;text-align:left}
 @A .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important}
@@ -279,18 +279,18 @@
 @media (min-width:1001px){@A [data-pane="report"] #myRec{margin:40px 0 0!important;padding:28px 32px!important}}
 @A [data-pane="report"] #myRec .t2{font-size:15px!important;color:var(--ar-ink-2)!important}
 /* the numbered parts below the fold */
-@A [data-pane="report"] .chparth{display:flex!important;gap:14px!important;align-items:flex-start!important;margin-bottom:18px!important}
+@A [data-pane="report"] .chparth{display:flex!important;gap:16px!important;align-items:flex-start!important;margin-bottom:16px!important}
 @A [data-pane="report"] .chparth h2{font:italic 800 28px/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
 @A [data-pane="report"] .chparth p{font-size:15px!important;color:var(--ar-ink-2)!important;margin-top:2px!important}
 @A [data-pane="report"] .chpart{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 @A [data-pane="report"] .chparts{gap:44px!important;margin-top:40px!important}
 @A [data-pane="report"] :is(.chsugs,#chSugOut,.chpartb){background:none!important;border:0!important;box-shadow:none!important;padding-left:0!important;padding-right:0!important}
-@A [data-pane="report"] .chpoolrow{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+@A [data-pane="report"] .chpoolrow{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 @A [data-pane="report"] .chpoolrow>.chk{font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 /* suggestions: no box; an Apply strip; "Why?" as a quiet disclosure */
 @A [data-pane="report"] :is(.chsugw,.chsug){background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="report"] .chsugw{padding:16px 0 4px!important;border-bottom:1px solid var(--ar-rule)!important}
-@A [data-pane="report"] .chapply{position:relative;isolation:isolate;min-height:44px!important;padding:0 18px!important;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 15px var(--ar-body)!important}
+@A [data-pane="report"] .chapply{position:relative;isolation:isolate;min-height:44px!important;padding:0 16px!important;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 15px var(--ar-body)!important}
 @A [data-pane="report"] .chapply::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,var(--ar-sheet)}
 @A[data-look="dark"] [data-pane="report"] .chapply::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,#2A2930}
 @A [data-pane="report"] .chwhy{background:none!important;border:0!important;box-shadow:none!important}
@@ -298,7 +298,7 @@
 /* threat rows: typographic rows (rank, sprite on a small slanted type field, name and how it is handled), hairlines */
 @A #chThrTop .chside,@A #chThrTop .chtl10{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 @A #chThrTop .chtl10{display:grid!important;grid-template-columns:1fr!important;gap:0!important}
-@A #chThrTop .chtr{position:relative;isolation:isolate;display:grid!important;grid-template-columns:30px 70px minmax(0,1fr);align-items:center;column-gap:10px;min-height:64px;padding:8px 0!important;
+@A #chThrTop .chtr{position:relative;isolation:isolate;display:grid!important;grid-template-columns:30px 70px minmax(0,1fr);align-items:center;column-gap:8px;min-height:64px;padding:8px 0!important;
   background:none!important;background-image:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important;border-radius:0!important;text-align:left}
 @A #chThrTop .chtr::before{content:"";position:absolute;left:44px;top:50%;width:54px;height:38px;margin-top:-15px;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);
   background:linear-gradient(in oklab 125deg,color-mix(in oklch,var(--ta) var(--ar-field-mix),var(--ar-sheet)),color-mix(in oklch,var(--tb,var(--ta)) var(--ar-field-mix),var(--ar-sheet)))}
@@ -310,10 +310,10 @@
 @A #chThrTop .chtr .tx .st{font-size:15px!important;font-weight:600!important}
 /* the open team sheet: one row per slot, menu-strip style, the type edge on the left */
 @A [data-pane="report"] .chsheet{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;display:grid!important;gap:12px!important;grid-template-columns:1fr!important}
-@A [data-pane="report"] .chsheet>.hd{background:none!important;color:var(--ar-ink-2)!important;padding:0 0 2px!important;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;border:0!important}
+@A [data-pane="report"] .chsheet>.hd{background:none!important;color:var(--ar-ink-2)!important;padding:0 0 2px!important;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;border:0!important}
 @A [data-pane="report"] .chsheet>.hd .chdisp{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
 @A [data-pane="report"] .chsheet>.hd .mono{font:500 15px var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A [data-pane="report"] .chsheet .chrow{position:relative;isolation:isolate;display:grid!important;grid-template-columns:28px 64px minmax(0,1fr);align-items:center;column-gap:10px;min-height:84px;padding:12px 56px 12px 18px!important;margin:0!important;
+@A [data-pane="report"] .chsheet .chrow{position:relative;isolation:isolate;display:grid!important;grid-template-columns:28px 64px minmax(0,1fr);align-items:center;column-gap:8px;min-height:84px;padding:12px 56px 12px 16px!important;margin:0!important;
   background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;text-align:left!important}
 @A [data-pane="report"] .chsheet .chrow::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:var(--ar-r-l);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ta),var(--tb,var(--ta))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--ta) 20%,var(--ar-sheet)),var(--ar-sheet) 60%)}
@@ -374,17 +374,17 @@
 @A .ar-shero-cap{display:flex;align-items:center;gap:4px}
 @A .ar-shero-cap .ar-plate{font-weight:600}
 @A #lairSheet .lsx.ar-x{position:absolute!important;top:10px!important;right:12px!important;z-index:5;width:44px!important;height:44px!important;border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;box-shadow:var(--ar-shadow-s)!important;color:var(--ar-ink)!important}
-@A #lairSheet .lsname{background:none!important;padding:8px 18px 4px!important}
+@A #lairSheet .lsname{background:none!important;padding:8px 16px 4px!important}
 @A #lairSheet .lsname h3{font:italic 800 34px/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
 /* the three numbers under the name: stat numerals, no boxes */
-@A #lairSheet .chlstats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px 18px 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A #lairSheet .chlstats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px 16px 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
 @A #lairSheet .chlstats>div{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 @A #lairSheet .chlstats b{font:italic 900 24px/1 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important}
 @A #lairSheet .chlstats span{font-size:15px!important;color:var(--ar-ink-2)!important;margin-top:6px;display:block}
 @A #lairSheet .chlstats span i{font-size:15px!important;color:var(--ar-ink-2)!important;font-style:normal}
-@A #lairSheet .mgadd{margin:16px 18px 0}
+@A #lairSheet .mgadd{margin:16px 16px 0}
 /* tabs: segmented, the open one a filled section plate */
-@A #lairSheet .lstabs{background:var(--ar-sheet)!important;border:0!important;box-shadow:0 1px 0 var(--ar-rule)!important;padding:10px 14px!important;gap:8px!important}
+@A #lairSheet .lstabs{background:var(--ar-sheet)!important;border:0!important;box-shadow:0 1px 0 var(--ar-rule)!important;padding:8px 16px!important;gap:8px!important}
 @A #lairSheet .lstabs .lstab{position:relative;isolation:isolate;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink)!important;min-height:52px}
 @A #lairSheet .lstabs .lstab::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);background:color-mix(in oklch,var(--ar-ink) 6%,var(--ar-sheet));box-shadow:none;height:auto!important;width:auto!important}
 @A #lairSheet .lstabs .lstab::after{display:none!important}
@@ -392,17 +392,17 @@
 @A #lairSheet .lstabs .lstab[aria-selected="true"]::before{opacity:1!important;background:var(--ar-sec-plate)!important;box-shadow:var(--ar-shadow-s)}
 @A #lairSheet .lstabs .lstab :is(b,span){color:inherit!important;opacity:1!important}
 @A #lairSheet .lstabs .lstab span{font-size:13px!important}
-@A #lairSheet .lsi h4{display:flex;align-items:flex-end;gap:10px;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
-@A #lairSheet .lsi h4::before{content:""!important;display:block!important;width:20px!important;height:20px!important;flex:none;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:3px!important;margin:0!important;position:static!important}
+@A #lairSheet .lsi h4{display:flex;align-items:flex-end;gap:8px;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
+@A #lairSheet .lsi h4::before{content:""!important;display:block!important;width:20px!important;height:20px!important;flex:none;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:4px!important;margin:0!important;position:static!important}
 /* base stats: six slanted bars with numerals */
-@A #lairSheet .lstr>i{height:12px!important;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:3px!important;overflow:hidden;border:0!important}
-@A #lairSheet .lstr>i>em{height:100%!important;border-radius:3px!important}
+@A #lairSheet .lstr>i{height:12px!important;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:4px!important;overflow:hidden;border:0!important}
+@A #lairSheet .lstr>i>em{height:100%!important;border-radius:4px!important}
 @A #lairSheet .lstr>b{font:italic 900 20px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important}
 @A #lairSheet .lstr>span{font-weight:600;color:var(--ar-ink-2)!important}
 @A #lairSheet .lsab{background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important}
-@A #lairSheet .lsab.top{box-shadow:inset 5px 0 0 var(--ar-sec)!important;padding-left:14px!important}
+@A #lairSheet .lsab.top{box-shadow:inset 5px 0 0 var(--ar-sec)!important;padding-left:16px!important}
 @A #lairSheet .lsty{border-color:var(--ar-rule)!important}
-@A #lairSheet .lsact .btn,@A #lairSheet .mgadd .btn,@A #lairSheet .mgadd button{position:relative;isolation:isolate;min-height:48px;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 16px var(--ar-body)!important;padding:0 18px 0 22px!important}
+@A #lairSheet .lsact .btn,@A #lairSheet .mgadd .btn,@A #lairSheet .mgadd button{position:relative;isolation:isolate;min-height:48px;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 16px var(--ar-body)!important;padding:0 16px 0 24px!important}
 @A #lairSheet :is(.lsact .btn,.mgadd button)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important}
 @A[data-look="dark"] #lairSheet :is(.lsact .btn,.mgadd button)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
@@ -423,7 +423,7 @@
 @A #chThrTop .chtiles .chtile.l0{--lv:var(--ar-pink)}@A #chThrTop .chtiles .chtile.l1{--lv:var(--ar-gold)}@A #chThrTop .chtiles .chtile.l2{--lv:var(--ar-blue)}@A #chThrTop .chtiles .chtile.l3{--lv:var(--ar-green)}
 @A #chThrTop .chtiles .chtile::before,@A #chThrTop .chtiles .chtile::after{display:none!important}
 /* "+5 points ready": a tinted tag, no outline */
-@A [data-pane="report"] .chsug .dl{border:0!important;border-radius:var(--ar-r-s)!important;padding:3px 8px!important;font:700 15px var(--ar-body)!important;background:color-mix(in oklch,var(--ar-green) 16%,transparent)!important;color:var(--ar-green-ink)!important}
+@A [data-pane="report"] .chsug .dl{border:0!important;border-radius:var(--ar-r-s)!important;padding:4px 8px!important;font:700 15px var(--ar-body)!important;background:color-mix(in oklch,var(--ar-green) 16%,transparent)!important;color:var(--ar-green-ink)!important}
 @A [data-pane="report"] .chsug .dl.dn{background:color-mix(in oklch,var(--ar-pink) 14%,transparent)!important;color:var(--ar-pink-ink)!important}
 /* base stats take the Pokémon's own type colours */
 @A #lairSheet .lstr>i>em{background:linear-gradient(in oklch 90deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec))))!important}
@@ -432,7 +432,7 @@
 /* hidden controls stay hidden (Save, Share, Export and Clear hide while the team is empty) */
 @A .ar-tacts #chActs [hidden],@A .ar-tacts #chActs :is(#saveBtn,#shareBtn,#exportBtn,#clearTeam)[hidden]{display:none!important}
 /* My team with no Pokémon: the art and the line, then the two actions full width */
-@A .ar-team .ar-empty{grid-template-columns:96px minmax(0,1fr);margin-top:18px}
+@A .ar-team .ar-empty{grid-template-columns:96px minmax(0,1fr);margin-top:16px}
 @A .ar-team .ar-empty .ar-acts{grid-column:1/-1;flex-direction:column;align-items:stretch;margin-top:16px;padding-left:6px}
 @A .ar-team .ar-empty>div{display:contents}
 @A .ar-team .ar-empty .ar-btn{white-space:normal;justify-content:flex-start;text-align:left}
@@ -440,7 +440,7 @@
 @A #lairSheet :is(.lspanel,.lsheet):focus{outline:none!important}
 @A #lairSheet:focus{outline:none!important}
 /* dark mode: the runners-up's name and share sit on a slanted ink plate (the two type colours can be light and dark at once) */
-@A[data-look="dark"] .ar-runner-in{color:#fff;padding:6px 16px 8px;margin-left:22px;isolation:isolate}
+@A[data-look="dark"] .ar-runner-in{color:#fff;padding:6px 16px 8px;margin-left:24px;isolation:isolate}
 @A[data-look="dark"] .ar-runner-in::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 /* threat status words and the legend: one ink per status, 15px, glyph squares with readable glyphs */
 @A #chThrTop .chtr .st.ok,@A #chThrTop .chtr .st.l3{color:var(--ar-green-ink)!important}
@@ -449,7 +449,7 @@
 @A #chThrTop .chtr :is(.st.bad,.st.l0){color:var(--ar-pink-ink)!important}
 @A [data-pane="report"] .chleg{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px}
 @A [data-pane="report"] .chleg>span{display:inline-flex;align-items:center;gap:6px;font:500 15px/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A [data-pane="report"] .chleg i{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 3px;border-radius:4px!important;font:700 13px/1 var(--ar-body)!important;font-style:normal!important}
+@A [data-pane="report"] .chleg i{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:4px!important;font:700 13px/1 var(--ar-body)!important;font-style:normal!important}
 @A [data-pane="report"] .chleg i.g-bad{background:#C41E35!important;color:#fff!important}
 @A [data-pane="report"] .chleg i.g-part{background:#F2B705!important;color:#16141A!important}
 @A [data-pane="report"] .chleg i.g-mid{background:#0068AD!important;color:#fff!important}
@@ -461,7 +461,7 @@
    ===================================================================================================================== */
 /* What's new: an arena strip (slanted sheet strip, section edge), not a white box; 15px text; a 44px dismiss */
 @A #homeOut.ar-on .wnew{position:relative;isolation:isolate;margin-top:32px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
-@A #homeOut.ar-on .wnew>summary{position:relative;isolation:isolate;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 6px 6px 22px;margin-left:6px}
+@A #homeOut.ar-on .wnew>summary{position:relative;isolation:isolate;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 6px 6px 24px;margin-left:6px}
 @A #homeOut.ar-on .wnew>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;-webkit-mask:none!important;mask:none!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
 @A[data-look="dark"] #homeOut.ar-on .wnew>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
@@ -469,7 +469,7 @@
 @A #homeOut.ar-on .wnew .wns{font-size:15px!important;color:var(--ar-ink-2)!important;line-height:1.3}
 @A #homeOut.ar-on .wnew .fbx{position:relative;flex:none;width:44px!important;height:44px!important;display:grid;place-items:center;border-radius:50%!important;color:var(--ar-ink-2)!important;background:none!important}
 @A #homeOut.ar-on .wnew .fbx::after{display:none}
-@A #homeOut.ar-on .wnew ul{padding:16px 4px 0 10px!important;gap:12px!important}
+@A #homeOut.ar-on .wnew ul{padding:16px 4px 0 8px!important;gap:12px!important}
 @A #homeOut.ar-on .wnew li{font-size:15px!important;line-height:1.5}
 @A #homeOut.ar-on .wnew li b{font-weight:700;color:var(--ar-ink)}
 @A #homeOut.ar-on .wnew li span{color:var(--ar-ink-2)!important}
@@ -507,8 +507,8 @@
 @media (min-width:1001px){@A .band .brand .nplk.hdr{height:42px!important}@A .sidetop .logo .nplk.hdr{height:38px!important}}
 @A .ar-logo{display:inline-flex;align-items:center;font:900 22px/1 "Unbounded",var(--ar-display);font-style:normal;letter-spacing:-.02em;white-space:nowrap;text-transform:none}
 @A .ar-logo-n{color:var(--ar-ink)}
-@A .ar-logo-p{position:relative;isolation:isolate;margin-left:4px;padding:4px 12px 5px 10px;color:#fff}
-@A .ar-logo-p::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-blue);transform:skewX(-14deg);border-radius:3px;box-shadow:3px 3px 0 #C41E35}
+@A .ar-logo-p{position:relative;isolation:isolate;margin-left:4px;padding:4px 12px 4px 8px;color:#fff}
+@A .ar-logo-p::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-blue);transform:skewX(-14deg);border-radius:4px;box-shadow:3px 3px 0 #C41E35}
 @A .band .brand{display:inline-flex!important;align-items:center;min-height:44px}
 @A .lgbrand .ar-logo{font-size:20px}
 @A .sidetop .logo .ar-logo{font-size:22px}
@@ -534,7 +534,7 @@
 /* dark: a name on the art sits on one slanted ink plate that hugs its longest line (74-arena.js sets --nw) */
 @A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm{width:calc(var(--nw,100%) + 26px);max-width:calc(100% - 20px)}
 /* the team actions: menu strips that wrap in pairs; Copy for Showdown always on one line; "⋯" a small square at a row's end */
-@A .ar-tacts #chActs{display:flex!important;flex-wrap:wrap;gap:12px 14px}
+@A .ar-tacts #chActs{display:flex!important;flex-wrap:wrap;gap:12px 16px}
 @A .ar-tacts :is(#chActs>button,#chActs>.row>button){flex:1 1 calc(50% - 7px)!important;width:auto!important;min-width:0;white-space:nowrap!important}
 @A .ar-tacts #chActs #saveBtn{flex-basis:100%!important}
 @A .ar-tacts #chActs .sdcopy{order:5}
@@ -542,7 +542,7 @@
 @A .ar-tacts #chActs .moremenu{order:6;flex:0 0 52px!important}
 @A .ar-tacts #chActs .moremenu>summary{width:52px!important;min-height:48px!important}
 @A .ar-tacts #chActs .sdcopy{flex:1 1 calc(100% - 66px)!important}
-@media (max-width:359px){@A .ar-tacts :is(#chActs>button,#chActs>.row>button){font-size:15px!important;padding:0 10px 0 16px!important}}
+@media (max-width:359px){@A .ar-tacts :is(#chActs>button,#chActs>.row>button){font-size:15px!important;padding:0 8px 0 16px!important}}
 /* "More" text toggles: a full tap height without growing the line */
 @A .rzmorebtn{display:inline-flex!important;align-items:center;min-height:44px;min-width:44px;margin:-14px 0!important;padding:0 4px!important;vertical-align:middle;
   font:600 15px var(--ar-body)!important;color:var(--ar-sec-ink)!important;background:none!important;border:0!important;text-decoration:underline;text-underline-offset:3px}
@@ -563,15 +563,15 @@
 /* the next 20: their labels at 15px */
 @A #chThrTop .chtiles .chtile :is(span,b,small,.nm,.st){font-size:15px!important}
 /* the "Why B?" fold: an arena tip line, no box: a slanted section edge, the letter in display italic */
-@A .ar-thead #chGwhy{background:none!important;box-shadow:none!important;border-radius:0!important;padding:4px 0 4px 26px!important}
-@A .ar-thead #chGwhy::before{left:4px!important;top:4px!important;bottom:4px!important;width:6px!important;border-radius:2px!important;transform:skewX(var(--ar-slant))}
+@A .ar-thead #chGwhy{background:none!important;box-shadow:none!important;border-radius:0!important;padding:4px 0 4px 24px!important}
+@A .ar-thead #chGwhy::before{left:4px!important;top:4px!important;bottom:4px!important;width:6px!important;border-radius:4px!important;transform:skewX(var(--ar-slant))}
 @A .ar-thead #chGwhy .npgw{font:italic 900 1.6em/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-ink)!important;margin-right:2px}
 
 /* the open team sheet: typographic rows (a slanted type field behind the sprite, name, set lines, Edit), one hairline each,
    no cards; the remove control is a quiet 44px "−"; open slots are slanted "+ Add a Pokémon" strips */
 @A [data-pane="report"] .chsheet{gap:0!important}
-@A [data-pane="report"] .chsheet>.hd{padding-bottom:10px!important}
-@A [data-pane="report"] .chsheet .chrow{grid-template-columns:22px 76px minmax(0,1fr) 44px;column-gap:10px;min-height:88px;padding:12px 0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important}
+@A [data-pane="report"] .chsheet>.hd{padding-bottom:8px!important}
+@A [data-pane="report"] .chsheet .chrow{grid-template-columns:22px 76px minmax(0,1fr) 44px;column-gap:8px;min-height:88px;padding:12px 0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important}
 @A [data-pane="report"] .chsheet .chrow::before{inset:auto!important;left:30px!important;top:50%!important;width:64px;height:46px;margin-top:-20px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;box-shadow:none!important;
   background:linear-gradient(in oklch 125deg,color-mix(in oklch,var(--ta) var(--ar-field-mix),var(--ar-sheet)),color-mix(in oklch,var(--tb,var(--ta)) var(--ar-field-mix),var(--ar-sheet)))!important}
 @A[data-look="dark"] [data-pane="report"] .chsheet .chrow::before{background:linear-gradient(in oklch 125deg,oklch(from var(--ta) .58 calc(c * .9) h),oklch(from var(--tb,var(--ta)) .58 calc(c * .9) h))!important}
@@ -604,9 +604,9 @@
 @A #lairSheet .lsname h3{text-wrap:balance}
 /* types as slanted tags; Mega and "In your box" as quiet ink tags with a type edge (no rainbow chip, no icon-only box) */
 @A #lairSheet .lsname .chips.ar-tys{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
-@A #lairSheet .lsname .chips .ar-mark{position:relative;isolation:isolate;display:inline-block;padding:3px 10px 3px 14px!important;font:700 15px/1.3 var(--ar-body)!important;color:#fff!important;
+@A #lairSheet .lsname .chips .ar-mark{position:relative;isolation:isolate;display:inline-block;padding:4px 8px 4px 16px!important;font:700 15px/1.3 var(--ar-body)!important;color:#fff!important;
   background:none!important;border:0!important;box-shadow:none!important;width:auto!important;height:auto!important;min-width:0!important;text-indent:0!important;overflow:visible!important}
-@A #lairSheet .lsname .chips .ar-mark::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:3px;
+@A #lairSheet .lsname .chips .ar-mark::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:4px;
   background:linear-gradient(180deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec)))) 0 0/5px 100% no-repeat,#16141A!important;width:auto!important;height:auto!important;-webkit-mask:none!important;mask:none!important}
 @A #lairSheet .lsname .chips .ar-mark::after{display:none!important}
 @A[data-look="dark"] #lairSheet .lsname .chips .ar-mark::before{background:linear-gradient(180deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec)))) 0 0/5px 100% no-repeat,#2E2D34!important}
@@ -658,12 +658,12 @@
 @A .ar-hero,@A .ar-runner{isolation:isolate}
 @A :is(.ar-hero,.ar-runner):focus-visible{outline:none!important}
 @A .ar-hero:focus-visible::after{content:"";position:absolute;left:-5px;right:-5px;top:39px;bottom:-5px;z-index:-1;background:var(--ar-focus);clip-path:polygon(0 12%,100% 0,100% 84%,0 100%)}
-@A .ar-runner:focus-visible::after{content:"";position:absolute;inset:-5px;z-index:-1;background:var(--ar-focus);clip-path:polygon(4% 0,100% 0,96% 100%,0 100%);border-radius:8px}
+@A .ar-runner:focus-visible::after{content:"";position:absolute;inset:-5px;z-index:-1;background:var(--ar-focus);clip-path:polygon(4% 0,100% 0,96% 100%,0 100%);border-radius:10px}
 @media (min-width:1001px){@A .ar-hero:focus-visible::after{top:35px;clip-path:polygon(0 10%,100% 0,94% 88%,0 100%)}}
 
 /* My team with no Pokémon (F19 phone, F16 desktop): the line and the two actions, then the stage with six add tiles (as Home),
    then the secondary actions in one row with "⋯" at its end */
-@A .ar-team.is-empty .ar-tempty{margin-top:18px}
+@A .ar-team.is-empty .ar-tempty{margin-top:16px}
 @A .ar-team.is-empty .ar-stage{margin-top:24px}
 @A .ar-team.is-empty .ar-tacts :is(#chActs>button,#chActs>.row>button){flex:1 1 0!important}
 @A .ar-team.is-empty .ar-tacts #chActs .moremenu{flex:0 0 52px!important}
@@ -680,7 +680,7 @@
 
 /* the stat row under the title (F02 360, F22 1024): four numerals never touch; 2 by 2 on narrow phones, a step smaller on small
    desktops */
-@media (max-width:399px){@A .ar-tstats.ar-c4 .ar-trio{column-gap:10px}@A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:24px}}
+@media (max-width:399px){@A .ar-tstats.ar-c4 .ar-trio{column-gap:8px}@A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:24px}}
 @media (min-width:1001px) and (max-width:1279px){@A .ar-tstats:is(.ar-c4,.ar-c5) .ar-trio{column-gap:16px}@A .ar-tstats:is(.ar-c4,.ar-c5) .ar-trio .ar-num{font-size:26px}@A .ar-tstats.ar-c3 .ar-trio .ar-num{font-size:34px}}
 
 /* "Your games": the band's top edge rises to the right, so its Close button sits fully on the field */
@@ -689,7 +689,7 @@
 /* the open team sheet (F5 desktop): every row starts at the top, names share one line per row, "Edit" left under the set; two
    columns until 1440px so the set lines don't wrap word by word */
 @A [data-pane="report"] .chsheet .chrow:not(.empty){align-items:start}
-@A [data-pane="report"] .chsheet .chrow:not(.empty) .ix{align-self:start;margin-top:26px}
+@A [data-pane="report"] .chsheet .chrow:not(.empty) .ix{align-self:start;margin-top:24px}
 @A [data-pane="report"] .chsheet .chrow:not(.empty)::before{top:30px!important;margin-top:0!important}
 @A [data-pane="report"] .chsheet .chrow:not(.empty) img{align-self:start;margin-top:-4px!important}
 @A [data-pane="report"] .chsheet .chrow .chedi{justify-self:start!important;text-align:left!important;margin-top:6px!important}
@@ -700,7 +700,7 @@
    their content with a 16px gap ("53.0%" and "231" never touch) */
 @media (min-width:1024px) and (max-width:1279px){
   @A #lairSheet .ar-shero .ar-shero-mon{width:196px!important;height:196px!important;right:-12px;top:8px}
-  @A #lairSheet .chlstats{grid-template-columns:repeat(3,max-content)!important;column-gap:18px!important;justify-content:start}
+  @A #lairSheet .chlstats{grid-template-columns:repeat(3,max-content)!important;column-gap:16px!important;justify-content:start}
   @A #lairSheet .chlstats b{font-size:22px!important}}
 /* the info sheet's small text (F14): 15px everywhere, the tab sub-labels included */
 @A #lairSheet :is(.lsvl,.lsvn,.lsvo,.lstd,.lsact .t2,.fbmis,.lstabs .lstab span,.chleg,.lsvr>span,.nplink){font-size:15px!important}
@@ -723,7 +723,7 @@
    (each label wraps inside its own third, "Speed at level 50" never reaches the column's edge) */
 @media (min-width:1001px) and (max-width:1279px){
   @A:not(#_p1) #lairSheet .ar-shero .ar-shero-mon{width:172px!important;height:172px!important;right:-26px!important;top:4px!important}
-  @A:not(#_p1) #lairSheet .chlstats{grid-template-columns:repeat(3,auto)!important;justify-content:start!important;column-gap:22px!important;padding-right:16px!important;box-sizing:border-box}
+  @A:not(#_p1) #lairSheet .chlstats{grid-template-columns:repeat(3,auto)!important;justify-content:start!important;column-gap:24px!important;padding-right:16px!important;box-sizing:border-box}
   @A:not(#_p1) #lairSheet .chlstats b{font-size:20px!important;white-space:nowrap}
   @A:not(#_p1) #lairSheet .chlstats>*>:not(b){display:block;max-width:6.6em;white-space:normal!important;overflow-wrap:normal}}
 /* NEW-05: dark desktop info sheet: the left column is the neutral dark sheet surface (not the page's black), so the dialog
@@ -746,16 +746,16 @@
   @A .ar-hero-mon{top:-2px;right:-34px;width:218px!important;height:218px!important}
   @A .ar-hero-rank{top:62px}
   @A .ar-hero-copy{top:90px}
-  @A .ar-hero .ar-plate{margin-top:10px}
+  @A .ar-hero .ar-plate{margin-top:8px}
   @A .ar-hero:focus-visible::after{top:31px}
   /* the two runners-up side by side: name and number on the left, the sprite riding the top-right corner */
-  @A .ar-runners{flex-direction:row;gap:10px;margin-top:-18px}
+  @A .ar-runners{flex-direction:row;gap:8px;margin-top:-18px}
   @A .ar-runner,@A .ar-runner:nth-child(2){flex:1 1 0;min-width:0;width:auto;height:96px;margin-left:0}
-  @A .ar-runner-in{align-self:flex-end;padding:0 0 12px 18px}
+  @A .ar-runner-in{align-self:flex-end;padding:0 0 12px 16px}
   @A .ar-runner-nm{font-size:15px}
   @A .ar-runner .ar-num{font-size:28px!important}
   @A .ar-runner-mon{right:0;top:-40px;bottom:auto;width:80px!important;height:80px!important}
-  @A[data-look="dark"] .ar-runner-in{margin-left:10px;padding:4px 10px 6px;margin-bottom:8px}
+  @A[data-look="dark"] .ar-runner-in{margin-left:8px;padding:4px 8px 6px;margin-bottom:8px}
 }
 @A[data-look="dark"] .ar-runner-f{filter:saturate(.72) brightness(.86)}
 /* "Use NastyPlot's pick" under your own game plan */
@@ -770,7 +770,7 @@
 @A footer.legal .lgsrcd>summary{display:inline-flex;align-items:center;min-height:44px;cursor:pointer;list-style:none;font:600 15px/1.2 var(--ar-body);color:var(--ar-sec-ink);
   text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
 @A footer.legal .lgsrcd>summary::-webkit-details-marker{display:none}
-@A footer.legal .lgsrcd>summary::after{content:"";width:8px;height:8px;margin-left:10px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px)}
+@A footer.legal .lgsrcd>summary::after{content:"";width:8px;height:8px;margin-left:8px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px)}
 @A footer.legal .lgsrcd[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
 @A footer.legal .lgsrcd .lgsrcin{margin:4px 0 8px!important}
 @A footer.legal p.lgsrc:not(.lgsrcin){margin:0!important}
@@ -785,18 +785,18 @@
   @A #homeOut.ar-on .htile[data-view="matchup"]{order:1}@A #homeOut.ar-on .htile[data-view="types"]{order:2}@A #homeOut.ar-on .htile[data-view="top"]{order:3}@A #homeOut.ar-on .htile[data-view="ratings"]{order:4}@A #homeOut.ar-on .htile[data-view="calc"]{order:5}@A #homeOut.ar-on .htile[data-view="gauntlet"]{order:6}@A #homeOut.ar-on .htile[data-view="events"]{order:7}@A #homeOut.ar-on .htile[data-view="sets"]{order:8}@A #homeOut.ar-on .htile[data-view="speed"]{order:9}@A #homeOut.ar-on .htile[data-view="cores"]{order:10}@A #homeOut.ar-on .htile[data-view="arch"]{order:11}}
 /* Sim (Nov 5): compact tools on phones: icon and name only (the line under each name is dropped there), two colour columns */
 @media (max-width:599px){
-  @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden])s{gap:10px!important}
-  @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden]){min-height:64px!important;height:auto!important;padding:10px 22px 10px 18px!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important}
+  @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden])s{gap:8px!important}
+  @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden]){min-height:64px!important;height:auto!important;padding:8px 24px 8px 16px!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important}
   @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden]) :is(.hsd,.hld){display:none!important}
   @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden]) svg{width:24px!important;height:24px!important;margin:0!important;position:static!important;flex:none}
   @A #homeOut.ar-on .chhtools :is(.htile,.htile[hidden]) b{font-size:16px!important;line-height:1.15!important;white-space:normal!important;text-wrap:balance;flex:1 1 auto;min-width:0;overflow-wrap:normal}
 }
 /* This week in the ratings: a label and up to four tappable moves under the most-used caption */
-@A .ar-week{margin:14px 0 4px}
+@A .ar-week{margin:16px 0 4px}
 @A .ar-weekk{display:block;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2);margin-bottom:6px}
 @A .ar-mvs{display:flex;flex-wrap:wrap;gap:8px}
-@A .ar-mv{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:0!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;
-  border-radius:8px;box-shadow:var(--ar-shadow-s);font:600 15px/1.2 var(--ar-body);cursor:pointer;transform:skewX(var(--ar-slant))}
+@A .ar-mv{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:0!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;
+  border-radius:10px;box-shadow:var(--ar-shadow-s);font:600 15px/1.2 var(--ar-body);cursor:pointer;transform:skewX(var(--ar-slant))}
 @A .ar-mv>*{transform:skewX(calc(-1 * var(--ar-slant)))}
 @A .ar-mv b{font-weight:700}
 @A .ar-mvd{font-weight:700;font-variant-numeric:tabular-nums}
@@ -804,22 +804,22 @@
 @A[data-look="dark"] .ar-mvd.up{color:#7FDCA4}@A[data-look="dark"] .ar-mvd.dn{color:#FF9A90}
 /* Switch team: a quiet fold under the My team title */
 @A .ar-tswitch{margin:6px 0 0}
-@A .ar-tswitch>summary{display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;list-style:none;font:600 15px/1.2 var(--ar-body);color:var(--ar-sec-ink);
+@A .ar-tswitch>summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font:600 15px/1.2 var(--ar-body);color:var(--ar-sec-ink);
   text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
 @A .ar-tswitch>summary::-webkit-details-marker{display:none}
 @A .ar-tswn{font-weight:500;color:var(--ar-ink-2);text-decoration:none!important;display:inline-block}
 @A .ar-tswitch>summary{text-decoration:none!important}@A .ar-tswitch>summary .ar-tswt{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
-@A .ar-tswl{display:flex;flex-direction:column;gap:8px;margin:6px 0 10px;max-width:560px}
-@A .ar-tsw{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 16px;border:0!important;border-radius:8px;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;
+@A .ar-tswl{display:flex;flex-direction:column;gap:8px;margin:6px 0 8px;max-width:560px}
+@A .ar-tsw{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 16px;border:0!important;border-radius:10px;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;
   box-shadow:var(--ar-shadow-s);text-align:left;cursor:pointer;font:600 15px/1.2 var(--ar-body)}
 @A .ar-tswm{display:flex;flex:none}
 @A .ar-tswm img{width:34px!important;height:34px!important;margin:0 -6px 0 0!important}
 @A .ar-tsw b{min-width:0;overflow-wrap:anywhere}
 @media (max-width:420px){@A .ar-tswm img{width:28px!important;height:28px!important;margin-right:-8px!important}}
 /* My team jump links: four slanted chips in one row; the parts leave room for the header when jumped to */
-@A .ar-jumps{display:flex;gap:8px;margin:14px 0 2px;padding:2px 2px 6px}
+@A .ar-jumps{display:flex;gap:8px;margin:16px 0 2px;padding:2px 2px 6px}
 @A .ar-jumps::-webkit-scrollbar{display:none}
-@A .ar-jump{flex:1 1 auto;min-width:0;white-space:nowrap;min-height:44px;padding:0 10px;border:0!important;border-radius:8px;background:color-mix(in oklch,var(--ar-sec) 12%,var(--ar-sheet))!important;color:var(--ar-ink)!important;
+@A .ar-jump{flex:1 1 auto;min-width:0;white-space:nowrap;min-height:44px;padding:0 8px;border:0!important;border-radius:10px;background:color-mix(in oklch,var(--ar-sec) 12%,var(--ar-sheet))!important;color:var(--ar-ink)!important;
   font:600 15px/1 var(--ar-body);cursor:pointer;transform:skewX(var(--ar-slant));box-shadow:var(--ar-shadow-s)}
 @A #chP1,@A #chP2,@A #chP3,@A #chP4{scroll-margin-top:84px}
 @media (min-width:1001px){@A .ar-jumps{display:none}}
@@ -827,7 +827,7 @@
 @A .ar-recent{margin:12px 0 28px}
 @A .ar-recentk{display:block;font:600 15px/1.3 var(--ar-body);color:var(--ar-ink-2);margin-bottom:6px}
 @A .ar-recentl{display:flex;flex-direction:column;gap:8px}
-@A .ar-rcopp{display:flex;align-items:center;justify-content:flex-start;gap:0;min-height:48px;padding:4px 14px;border:0!important;border-radius:8px;background:var(--ar-sheet)!important;
+@A .ar-rcopp{display:flex;align-items:center;justify-content:flex-start;gap:0;min-height:48px;padding:4px 16px;border:0!important;border-radius:10px;background:var(--ar-sheet)!important;
   box-shadow:var(--ar-shadow-s);cursor:pointer;width:100%;max-width:420px}
 @A .ar-rcopp img{width:40px!important;height:40px!important;margin:0 2px 0 0!important}
 
@@ -844,8 +844,8 @@
 @A .ar-art .ar-nm,@A #homeOut.ar-on :is(.htile,.htile[hidden]) b,@A .ar-jump{font-style:normal!important}
 @A .ar-art .ar-nm{font-weight:800}
 /* #6 the sample note: a soft section-coloured strip with one action */
-@A .ar-sample{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:10px 0 14px;padding:12px 16px 12px 20px;position:relative;isolation:isolate;max-width:640px}
-@A .ar-sample::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:8px;transform:skewX(var(--ar-slant));
+@A .ar-sample{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:8px 0 16px;padding:12px 16px 12px 20px;position:relative;isolation:isolate;max-width:640px}
+@A .ar-sample::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:10px;transform:skewX(var(--ar-slant));
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/5px 100% no-repeat,color-mix(in oklch,var(--ar-sec) 10%,var(--ar-sheet))}
 @A .ar-sample p{margin:0;flex:1 1 220px;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink)}
 @media (min-width:1001px){@A .ar-sample p{font-size:16px}}
@@ -856,7 +856,7 @@
 @A .ar-gscore .ar-basis b{color:var(--ar-ink);font-weight:700}
 @media (min-width:1001px){@A .ar-gscore .ar-num.ar-gletter{font-size:120px!important}}
 /* phones: the four check numbers in one compact row; the record's two side by side */
-@media (max-width:599px){@A .ar-tstats{gap:14px;margin-top:14px}@A .ar-tstats.ar-c4 .ar-trio{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-trio .ar-num{font-size:26px}
+@media (max-width:599px){@A .ar-tstats{gap:16px;margin-top:16px}@A .ar-tstats.ar-c4 .ar-trio{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-trio .ar-num{font-size:26px}
   @A .ar-tstats.ar-c4 .ar-trio .ar-num{font-size:24px}@A .ar-trio .ar-unit{font-size:15px}}
 /* Size pass (Sim, Nov 5): finger-sized taps on every touch screen, including big iPads */
 @A .tipq{position:relative}
@@ -881,7 +881,7 @@
 @media (min-width:1001px){@A #homeOut.ar-on .htiles>.htile[data-view="cores"]{grid-column:span 2!important;align-items:center!important;text-align:center}
   @A #homeOut.ar-on .htiles>.htile[data-view="cores"] svg{position:static!important;display:block;align-self:center!important;margin-left:auto!important;margin-right:auto!important}}
 /* Set card (Sim, Nov 6): rating on the left, then a 2x2 of Item, Ability, Nature, Stat points */
-@A .ar-setia:has(.ar-setnat){grid-template-columns:1.1fr 1fr 1fr;grid-auto-rows:auto;row-gap:14px}
+@A .ar-setia:has(.ar-setnat){grid-template-columns:1.1fr 1fr 1fr;grid-auto-rows:auto;row-gap:16px}
 @A .ar-setia:has(.ar-setnat) .ar-setr{grid-row:1 / span 2;align-self:center}
 @A .ar-setia:has(.ar-setnat):not(:has(.ar-setr)){grid-template-columns:1fr 1fr}
 @A .ar-setia .ar-setnat b{min-height:0!important}
@@ -890,7 +890,7 @@
 @A .ar-setia .ar-setnat i{display:block;margin-top:2px;font-style:normal;font-weight:600;font-size:15px;color:var(--ar-ink-2)}
 /* Pokémon sheet polish (Sim, Nov 7) */
 /* action row: the buttons share one even row; "Team full" / "On your team" is a quiet note under them */
-@A #lairSheet .lsact{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px 12px;align-items:stretch}
+@A #lairSheet .lsact{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px 12px;align-items:stretch}
 @A #lairSheet .lsact>.t2{grid-column:1/-1;order:9;margin:2px 0 0 4px!important;font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A #lairSheet .lsact>button{width:100%;justify-content:center}
 /* abilities: even spacing between entries */
@@ -906,10 +906,10 @@
 /* Import entry points (Sim, Nov 7) */
 @A #homeOut .ar-imp{margin:12px 0 0 4px;font:500 var(--ar-fs-small)/1.5 var(--ar-body);color:var(--ar-ink-2)}
 @A #homeOut .ar-imp .ar-link{display:inline;min-height:0;padding:0;font:inherit;font-weight:700}
-@A .ar-sample-acts{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:10px}
+@A .ar-sample-acts{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:8px}
 /* Info tab: the typical set at a glance (Sim, Nov 7) */
 @A #lairSheet .lsi-quick{margin:0 0 6px!important;padding:0!important}
-@A #lairSheet .lsq{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;padding:14px 16px;border-radius:var(--ar-r-m);background:color-mix(in oklch,var(--ar-tb,var(--ar-purple)) 10%,var(--ar-sheet))}
+@A #lairSheet .lsq{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;padding:16px 16px;border-radius:var(--ar-r-m);background:color-mix(in oklch,var(--ar-tb,var(--ar-purple)) 10%,var(--ar-sheet))}
 @A #lairSheet .lsqk{grid-row:1/3;font:600 var(--ar-fs-small)/1.3 var(--ar-body);color:var(--ar-ink-2)}
 @A #lairSheet .lsq b{font:700 var(--ar-fs-body)/1.3 var(--ar-body);color:var(--ar-ink)}
 @A #lairSheet .lsqm{font:500 var(--ar-fs-small)/1.5 var(--ar-body);color:var(--ar-ink-2)}

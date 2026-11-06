@@ -33,8 +33,8 @@
   @R #chTeam .chthead>div:has(>.mgstage)>#chGwhy{grid-row:3;margin:4px 0 12px}
   @R #chTeam .chthead>div:has(>.mgstage)>.wdstats{grid-row:4;margin-top:4px}
   @R #chTeam .chthead>div:has(>.mgstage)>.chpills{grid-row:5}
-  @R #chTeam .chthead>div:has(>.mgstage)>#rzSet{grid-row:6;margin-top:14px}
-  @R #chTeam .chthead>div:has(>.mgstage)>:is(#chActs,.chacts2){grid-row:7;flex-wrap:wrap;margin-top:14px}
+  @R #chTeam .chthead>div:has(>.mgstage)>#rzSet{grid-row:6;margin-top:16px}
+  @R #chTeam .chthead>div:has(>.mgstage)>:is(#chActs,.chacts2){grid-row:7;flex-wrap:wrap;margin-top:16px}
   @R #chTeam .chthead>div:has(>.mgstage) #rzSet .rzsetd,@R #chTeam .chthead>div:has(>.mgstage) #rzSet .rzsetm{grid-template-columns:repeat(2,minmax(0,1fr))}
   @R #chTeam .chthead>div:has(>.mgstage)>.chpills .chpill{font-size:13px}
 }
@@ -44,11 +44,11 @@
 
 /* ---------- Overlays on desktop: a little wider and one size up, so they read as dialogs, not phone sheets ---------- */
 @media (min-width:1001px){
-  @R .fbbox{width:min(600px,100%);padding:22px 24px 24px}
+  @R .fbbox{width:min(600px,100%);padding:24px 24px 24px}
   @R .fbbox :is(.fbh b,#fbT){font-size:22px}
   @R .fbbox textarea{min-height:140px}
   @R .jbox{width:min(720px,100%)}
-  @R .jbox input{font-size:17px;padding:18px 20px}
+  @R .jbox input{font-size:17px;padding:16px 20px}
   @R .jbox li{font-size:16px}
   @R #side :is(.sgl,.sr,.tc){font-size:15px}
 }

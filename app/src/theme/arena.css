@@ -104,7 +104,7 @@
    with a type-colour edge in both types: a type gradient darkened enough for white text lands on brown, maroon or olive for
    the warm types (Fire, Ground, Electric, Normal...), so the colour stays in the edge. Without --a it is the section plate.
    Labels only, never sentences. */
-@A .ar-plate{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px 0 22px;color:#fff!important;font:600 var(--ar-fs-body)/1.15 var(--ar-body);white-space:nowrap;background:none!important;border:0!important}
+@A .ar-plate{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px 0 24px;color:#fff!important;font:600 var(--ar-fs-body)/1.15 var(--ar-body);white-space:nowrap;background:none!important;border:0!important}
 @A .ar-plate::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);box-shadow:var(--ar-shadow-s)}
 @A .ar-plate[style*="--a"]::before{background:linear-gradient(180deg,var(--a),var(--b,var(--a))) 0 0/7px 100% no-repeat,#16141A}
 @A .ar-plate.ar-sm{min-height:32px;padding:0 12px;font-size:var(--ar-fs-small)}
@@ -112,14 +112,14 @@
 /* ---------- 5. section head: slanted tab + italic display ----------
    <div class="ar-shead"><span class="ar-tab"></span><h2 class="ar-h2">The champion's six</h2></div> */
 /* the tab sits beside the head's first line, also when the head wraps to two lines */
-@A .ar-shead{display:flex;align-items:flex-start;gap:12px;margin:0 0 14px}
+@A .ar-shead{display:flex;align-items:flex-start;gap:12px;margin:0 0 16px}
 @A .ar-tab{width:28px;height:28px;flex:none;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;margin-top:max(0px,calc((var(--ar-fs-h2) * 1.05 - 28px) / 2 + 1px))}
 @A .ar-shead>div{min-width:0}
 @A .ar-shead p{color:var(--ar-ink-2);font-size:var(--ar-fs-small);margin:4px 0 0}
 
 /* ---------- 6. numbered step plate (only for real sequences: Fix it, Threats...) ----------
    <div class="ar-stephead"><span class="ar-step"><span>1</span></span><div><h2 class="ar-h2">Fix it</h2><p>..</p></div></div> */
-@A .ar-stephead{display:flex;gap:14px;align-items:flex-start}
+@A .ar-stephead{display:flex;gap:16px;align-items:flex-start}
 @A .ar-step{position:relative;isolation:isolate;flex:none;width:52px!important;height:52px!important;display:grid!important;place-items:center;background:none!important;border:0!important;box-shadow:none!important;
   font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-on)!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
 @A .ar-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
@@ -130,7 +130,7 @@
    .ar-btn: a slanted paper strip with a coloured left edge (--edge, default the section) and a soft shadow.
    .ar-btn.ar-primary: the yellow strip with a black edge and the black go-chevron (<span class="ar-go"><svg/></span>). One per screen.
    .ar-link: the tertiary text link (underlined, section ink). */
-@A .ar-btn{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px 0 22px;font:600 var(--ar-fs-body)/1.15 var(--ar-body);text-decoration:none;white-space:nowrap;cursor:pointer;
+@A .ar-btn{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 20px 0 24px;font:600 var(--ar-fs-body)/1.15 var(--ar-body);text-decoration:none;white-space:nowrap;cursor:pointer;
   color:var(--ar-ink)!important;border:0!important;background:none!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important}
 @A .ar-btn::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important;
   background:linear-gradient(var(--edge,var(--ar-sec)),var(--edge,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge,var(--ar-sec)) 20%,var(--ar-sheet)),color-mix(in oklch,var(--edge,var(--ar-sec)) 6%,var(--ar-sheet)) 70%)!important}
@@ -194,9 +194,9 @@
 @A .ar-art.ar-s.is-mega :is(img.ar-spr,svg.ar-spr),@A .ar-mega-s{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a))
   drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A)}
 @A .ar-art .ar-nm{position:absolute;left:14px;right:8px;bottom:12px;z-index:3;display:block;color:var(--ar-art-text);font:italic 800 17px/1.15 var(--ar-display);font-stretch:108%;text-wrap:balance;overflow-wrap:break-word;hyphens:none}
-@A .ar-art .ar-nm small{display:block;font:600 var(--ar-fs-small)/1.2 var(--ar-body);font-style:normal;margin-top:3px}
+@A .ar-art .ar-nm small{display:block;font:600 var(--ar-fs-small)/1.2 var(--ar-body);font-style:normal;margin-top:4px}
 /* dark mode: a name set on the art sits on a slanted ink plate (the dark fields range from mid to light, so the plate keeps it 15:1) */
-@A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm{left:10px;right:auto;max-width:calc(100% - 20px);padding:5px 12px 6px;color:#fff;isolation:isolate}
+@A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm{left:10px;right:auto;max-width:calc(100% - 20px);padding:4px 12px 6px;color:#fff;isolation:isolate}
 @A[data-look="dark"] .ar-art:not(.ar-below) .ar-nm::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A .ar-art.ar-below .ar-nm{position:static;margin-top:8px;padding-left:2px;color:var(--ar-ink);font-size:16px;min-height:calc(2em * 1.08)}
 @A .ar-art.ar-below .ar-nm small{color:var(--ar-ink-2)}
@@ -205,8 +205,8 @@
 @A .ar-cursor{position:absolute;left:78%;top:calc(var(--lift,22px) - 16px);margin-left:-15px;z-index:4;width:30px;height:22px;background:var(--ar-yellow);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 2px 0 #16141A);pointer-events:none}
 @A .ar-art.is-empty .ar-f{background:color-mix(in oklch,var(--ar-ink) 6%,var(--ar-paper))!important;box-shadow:none!important}
 @A .ar-art.is-empty .ar-f::before,@A .ar-art.is-empty .ar-f::after{display:none}
-@A .ar-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 10px;align-items:start}
-@A .ar-six.ar-two{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px}
+@A .ar-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 8px;align-items:start}
+@A .ar-six.ar-two{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 16px}
 @media (max-width:359px){@A .ar-six:not(.ar-two){grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (hover:hover){@A button.ar-art:hover .ar-f{transform:skewX(var(--ar-slant)) translateY(-2px)}}
 @media (prefers-reduced-motion:no-preference){@A button.ar-art .ar-f{transition:transform .16s ease-out}}
@@ -217,26 +217,26 @@
 @A .ar-stat{display:flex;flex-direction:column;min-width:0}
 @A .ar-stat .ar-num{font-size:36px}
 @A .ar-unit{display:flex;align-items:center;gap:6px;font:500 var(--ar-fs-small)/1.2 var(--ar-body);color:var(--ar-ink-2);margin-top:6px;min-height:28px}
-@A .ar-bar{display:block;height:12px;margin-top:8px;max-width:320px;background:color-mix(in oklch,var(--ar-ink) 10%,transparent);transform:skewX(-20deg);border-radius:3px!important;overflow:hidden}
-@A .ar-bar i{display:block;height:100%;width:var(--v,0%);background:var(--c,var(--ar-sec));border-radius:3px!important}
-@A .ar-pips{display:inline-flex;gap:5px}
-@A .ar-pips i{width:16px;height:16px;background:var(--ar-green);transform:skewX(-20deg);border-radius:2px!important}
+@A .ar-bar{display:block;height:12px;margin-top:8px;max-width:320px;background:color-mix(in oklch,var(--ar-ink) 10%,transparent);transform:skewX(-20deg);border-radius:4px!important;overflow:hidden}
+@A .ar-bar i{display:block;height:100%;width:var(--v,0%);background:var(--c,var(--ar-sec));border-radius:4px!important}
+@A .ar-pips{display:inline-flex;gap:4px}
+@A .ar-pips i{width:16px;height:16px;background:var(--ar-green);transform:skewX(-20deg);border-radius:4px!important}
 @A .ar-pips i.off{background:color-mix(in oklch,var(--ar-ink) 14%,transparent)}
 
 /* ---------- 11. menu strips (moves, options): a slanted strip with a type edge ----------
    <li class="ar-strip" style="--m:#6a3cee">Dragon Claw</li>; as a button it is the same. */
-@A .ar-strip{position:relative;isolation:isolate;display:flex;align-items:center;min-height:48px;padding:0 14px 0 20px;font:600 var(--ar-fs-body)/1.2 var(--ar-body);color:var(--ar-ink)!important;border:0!important;text-align:left;
+@A .ar-strip{position:relative;isolation:isolate;display:flex;align-items:center;min-height:48px;padding:0 16px 0 20px;font:600 var(--ar-fs-body)/1.2 var(--ar-body);color:var(--ar-ink)!important;border:0!important;text-align:left;
   background:none!important;box-shadow:none!important;list-style:none}
 @A .ar-strip::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);
   background:linear-gradient(var(--m,var(--ar-sec)),var(--m,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--m,var(--ar-sec)) 34%,var(--ar-sheet)),color-mix(in oklch,var(--m,var(--ar-sec)) 12%,var(--ar-sheet)))}
 /* dark: neutral strip, the move type in its edge only (a warm type mixed into black reads brown) */
 @A[data-look="dark"] .ar-strip::before{background:linear-gradient(var(--m,var(--ar-sec)),var(--m,var(--ar-sec))) 0 0/6px 100% no-repeat,linear-gradient(90deg,#2C2B32,#1E1D22)}
-@A .ar-strips{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin:0;padding:0 0 0 4px;list-style:none}
+@A .ar-strips{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin:0;padding:0 0 0 4px;list-style:none}
 
 /* ---------- 12. typographic list rows ----------
    <button class="ar-row" style="--a;--b"><span class="ar-row-f ar-field"><img></span><span class="ar-row-nm">Name<small>..</small></span>
    <span class="ar-num">97</span><span class="ar-bar"><i></i></span></button>. No row boxes: spacing and one hairline. */
-@A .ar-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:14px;align-items:center;width:100%;min-height:64px;padding:10px 0 12px;
+@A .ar-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:16px;align-items:center;width:100%;min-height:64px;padding:8px 0 12px;
   border:0!important;border-bottom:1px solid var(--ar-rule)!important;background:none!important;box-shadow:none!important;color:var(--ar-ink);text-align:left;font:inherit;cursor:pointer}
 @A .ar-row-f{grid-row:1/3;position:relative;width:56px;height:40px;margin-left:4px;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;overflow:visible}
 @A .ar-row-f img,@A .ar-row-f svg{position:absolute;left:50%;bottom:-2px;width:60px!important;height:60px!important;max-width:none;transform:translateX(-50%) skewX(var(--ar-unslant))}
@@ -250,7 +250,7 @@
    a type-gradient spine on the left, the top-right corner cut. The wrapper carries the shadow (clip-path cuts shadows). */
 @A .ar-sheetwrap{position:relative;filter:drop-shadow(0 16px 22px rgba(30,40,80,.22)) drop-shadow(0 2px 3px rgba(30,40,80,.12))}
 @A[data-look="dark"] .ar-sheetwrap{filter:none}
-@A .ar-sheet{position:relative;padding:18px 18px 18px 26px;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:none!important;color:var(--ar-ink);
+@A .ar-sheet{position:relative;padding:16px 16px 16px 24px;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:none!important;color:var(--ar-ink);
   clip-path:polygon(0 0,calc(100% - 30px) 0,100% 30px,100% 100%,0 100%);
   background:linear-gradient(in oklch 160deg,color-mix(in oklch,var(--a,var(--ar-sec)) 16%,var(--ar-sheet)),color-mix(in oklch,var(--b,var(--a,var(--ar-sec))) 12%,var(--ar-sheet)) 60%,var(--ar-sheet))!important}
 @A .ar-sheet::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:linear-gradient(in oklch 180deg,var(--a,var(--ar-sec)),var(--b,var(--a,var(--ar-sec))))}
@@ -258,8 +258,8 @@
    avatar field, the tags and the strips */
 @A[data-look="dark"] .ar-sheet{background:linear-gradient(160deg,#222127,#1A191D 62%)!important}
 /* slanted type tags */
-@A .ar-ty{position:relative;isolation:isolate;display:inline-block;font:700 15px/1.3 var(--ar-body);padding:3px 10px;background:none!important;border:0!important;box-shadow:none!important}
-@A .ar-ty::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--t);transform:skewX(var(--ar-slant));border-radius:3px}
+@A .ar-ty{position:relative;isolation:isolate;display:inline-block;font:700 15px/1.3 var(--ar-body);padding:4px 8px;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-ty::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--t);transform:skewX(var(--ar-slant));border-radius:4px}
 @A .ar-tys{display:flex;flex-wrap:wrap;gap:6px}
 
 /* ---------- 14. bottom nav (phones): a floating bar, a skewed plate behind the active page in its section colour ---------- */
@@ -286,12 +286,12 @@
 @A .band .chmenubtn,@A .band .jumpbtn{color:var(--ar-ink)!important;min-width:44px;min-height:44px}
 @media (min-width:1001px){
   @A nav.tabs.mgtabs .inner{gap:6px!important}
-  @A nav.tabs.mgtabs [role=tab]{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 18px!important;margin:0!important;
+  @A nav.tabs.mgtabs [role=tab]{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 16px!important;margin:0!important;
     font:600 17px/1 var(--ar-body)!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important}
   @A nav.tabs.mgtabs [role=tab]::after{content:none!important;display:none!important}
   @A nav.tabs.mgtabs [role=tab][aria-selected="true"]{color:var(--ar-sec-on)!important;font-weight:700!important}
-  @A nav.tabs.mgtabs [role=tab][aria-selected="true"]::before{content:""!important;position:absolute;inset:0;z-index:-1;opacity:1!important;background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant));border-radius:8px!important;box-shadow:var(--ar-shadow-s)}
-  @A nav.tabs.mgtabs [role=tab] .tc{background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;color:inherit!important;border:0!important;border-radius:var(--ar-r-s)!important;font:700 13px/1 var(--ar-body)!important;padding:3px 6px!important}
+  @A nav.tabs.mgtabs [role=tab][aria-selected="true"]::before{content:""!important;position:absolute;inset:0;z-index:-1;opacity:1!important;background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant));border-radius:10px!important;box-shadow:var(--ar-shadow-s)}
+  @A nav.tabs.mgtabs [role=tab] .tc{background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;color:inherit!important;border:0!important;border-radius:var(--ar-r-s)!important;font:700 13px/1 var(--ar-body)!important;padding:4px 6px!important}
   @A nav.tabs.mgtabs [role=tab][aria-selected="true"] .tc{background:rgba(0,0,0,.28)!important;color:#fff!important}
   @media (hover:hover){@A nav.tabs.mgtabs [role=tab]:not([aria-selected="true"]):hover{color:var(--ar-ink)!important}}
 }
@@ -299,7 +299,7 @@
 /* ---------- 16. search, inputs and selects ---------- */
 @A :is(input.field,select.field,textarea.field,.field){border:0!important;box-shadow:inset 0 -2px 0 var(--ar-rule-2)!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border-radius:var(--ar-r-m)!important}
 @A :is(input.field,select.field,textarea.field,.field):focus{box-shadow:inset 0 -3px 0 var(--ar-sec)!important}
-@media (min-width:1001px){@A .band .jumpbtn{position:relative;isolation:isolate;min-height:44px;padding:0 14px!important;gap:10px;background:none!important;box-shadow:none!important}
+@media (min-width:1001px){@A .band .jumpbtn{position:relative;isolation:isolate;min-height:44px;padding:0 16px!important;gap:8px;background:none!important;box-shadow:none!important}
   @A .band .jumpbtn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sheet);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
   @A .band .jumpbtn .jbk{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;border:0!important;border-radius:var(--ar-r-s)!important;color:var(--ar-ink-2)!important}}
 @media (max-width:1000px){@A .band .jumpbtn{background:none!important;box-shadow:none!important}}
@@ -309,8 +309,8 @@
 @A .tipq{display:inline-grid!important;place-items:center;width:28px!important;height:28px!important;min-width:28px;padding:0!important;margin:0 0 0 6px;vertical-align:middle;position:relative;
   border:0!important;border-radius:50%!important;background:var(--ar-sheet)!important;color:var(--ar-ink)!important;box-shadow:var(--ar-shadow-s)!important;font:700 15px/1 var(--ar-body)!important}
 @A .tipq::after{content:"";position:absolute;inset:-8px}
-@A .tippop{background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;padding:14px 16px 14px 20px!important;font-size:15px}
-@A .tippop::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-sec);border-radius:0 3px 3px 0}
+@A .tippop{background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;padding:16px 16px 16px 20px!important;font-size:15px}
+@A .tippop::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;background:var(--ar-sec);border-radius:0 4px 4px 0}
 @A .tippop b{font:italic 800 17px/1.2 var(--ar-display);font-stretch:112%}
 @A .tippop p{color:var(--ar-ink-2);margin:6px 0 0}
 /* dialogs: the panel takes the sheet surface; the scrim is plain paper at 88% (no blur, no dark wash) */
@@ -326,7 +326,7 @@
 /* dark: a section colour mixed into black reads brown (gold) or maroon (pink); the field is a neutral dark grey with a
    section-colour edge instead */
 @A[data-look="dark"] .ar-empty .ar-empty-art{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#2A2930,#1E1D22)!important}
-@A .ar-empty p{margin:0 0 10px;color:var(--ar-ink-2)}
+@A .ar-empty p{margin:0 0 8px;color:var(--ar-ink-2)}
 @A .ar-empty p b{color:var(--ar-ink)}
 
 /* ---------- 19. retire the old box look (manga ink frames, the colour pass's second "print" outline, raised offset buttons,
@@ -358,16 +358,16 @@
 
 /* ---------- 21. the shared sub-page head (after phase 1): every page drawn with CH.head / CH.pagehead gets the My team title
    style: the kicker, then the italic display title on a slanted section tab; the back link (.chback) is an arena link ---------- */
-@A .chpghead{margin:6px 0 10px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .chpghead{margin:6px 0 8px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
 @A .chpghead .mgtitle{display:block;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
 @A .chpghead .mgtstroke{display:none!important}
 @A .chpghead .chk{display:block!important;margin:0!important;font:600 15px/1.3 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 @A .chpghead .chk::before{content:none!important;display:none!important}
-@A .chpghead .chpgt{position:relative;display:flex!important;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin:6px 0 0!important;padding:0 0 0 40px!important;background:none!important;border:0!important;box-shadow:none!important;
+@A .chpghead .chpgt{position:relative;display:flex!important;align-items:baseline;flex-wrap:wrap;gap:6px 16px;margin:6px 0 0!important;padding:0 0 0 40px!important;background:none!important;border:0!important;box-shadow:none!important;
   font:italic 800 36px/1.02 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.015em!important;text-transform:none!important;color:var(--ar-ink)!important;text-wrap:balance}
 @A .chpghead .chpgt::before{content:""!important;display:block!important;position:absolute!important;left:2px;top:.12em;width:26px;height:.82em;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A .chpghead .chpgt::after{content:none!important;display:none!important}
-@A .chpghead .chpgs{margin:10px 0 0!important;font:400 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:62ch}
+@A .chpghead .chpgs{margin:8px 0 0!important;font:400 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:62ch}
 @A .chback{display:inline-flex!important;align-items:center;gap:8px;min-height:44px;padding:0 2px!important;margin:6px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;
   font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px}
 @media (max-width:359px){@A .chpghead .chpgt{font-size:34px!important}}
@@ -385,7 +385,7 @@
 
 /* ---------- 23. type tags in dark mode (after phase 1): a neutral tag with a type-colour edge, white text. A filled dark-mode
    Fire, Ground or Electric tag reads brown. ---------- */
-@A[data-look="dark"] .ar-ty{color:#fff!important;padding-left:13px}
+@A[data-look="dark"] .ar-ty{color:#fff!important;padding-left:12px}
 @A[data-look="dark"] .ar-ty::before{background:linear-gradient(var(--t),var(--t)) 0 0/5px 100% no-repeat,#2A2930}
 
 /* ---------- 24. narrow grids: tile names step down in width, never break inside a word ---------- */
@@ -444,8 +444,8 @@
   -webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 2px}
 /* a "Shaky" status (threats list): the word in ink after a slanted gold tick, so the state reads by shape and word, not by a
    brown-looking text colour */
-@A #chThrTop .chtr :is(.st.shaky,.st.part,.st.l1){color:var(--ar-ink)!important;position:relative;padding-left:14px!important}
-@A #chThrTop .chtr :is(.st.shaky,.st.part,.st.l1)::before{content:""!important;position:absolute;left:2px;top:50%;width:6px;height:14px;margin-top:-7px;background:var(--ar-gold)!important;transform:skewX(var(--ar-slant));border-radius:2px}
+@A #chThrTop .chtr :is(.st.shaky,.st.part,.st.l1){color:var(--ar-ink)!important;position:relative;padding-left:16px!important}
+@A #chThrTop .chtr :is(.st.shaky,.st.part,.st.l1)::before{content:""!important;position:absolute;left:2px;top:50%;width:6px;height:14px;margin-top:-7px;background:var(--ar-gold)!important;transform:skewX(var(--ar-slant));border-radius:4px}
 
 /* ---------- 30. small glyphs and glue (polish pass): the "?" tip is 15px like all small text and is glued to the word before it
    (74-arena.js AR.glue), so it never wraps alone; a hyphenated word never splits at its hyphen ---------- */

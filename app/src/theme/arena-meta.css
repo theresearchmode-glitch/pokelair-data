@@ -16,16 +16,16 @@
 
 @A .ar-mpg>.subnav{margin:6px 0 2px!important;padding-left:4px!important;border:0!important;background:none!important;box-shadow:none!important}
 @A .ar-mpg>.subnav::after{display:none!important}
-@A .ar-mpg section>.seg.teamsw{margin:14px 0 0!important}
-@A .ar-mpg .chpghead{margin:26px 0 8px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg section>.seg.teamsw{margin:16px 0 0!important}
+@A .ar-mpg .chpghead{margin:24px 0 8px!important;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg .chpghead .mgtitle{display:flex;flex-direction:column;padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-mpg .chpghead .mgtitle::before,@A .ar-mpg .chpghead .mgtstroke{display:none!important}
-@A .ar-mpg .chpghead .chpgt{order:1;display:flex!important;align-items:flex-start;gap:14px;margin:0!important;font-family:var(--ar-display)!important;font-style:italic!important;font-weight:800!important;font-size:var(--ar-fs-page)!important;line-height:1.02!important;font-stretch:120%!important;letter-spacing:-.015em!important;color:var(--ar-ink)!important;text-wrap:balance}
+@A .ar-mpg .chpghead .chpgt{order:1;display:flex!important;align-items:flex-start;gap:16px;margin:0!important;font-family:var(--ar-display)!important;font-style:italic!important;font-weight:800!important;font-size:var(--ar-fs-page)!important;line-height:1.02!important;font-stretch:120%!important;letter-spacing:-.015em!important;color:var(--ar-ink)!important;text-wrap:balance}
 @A .ar-mpg .chpghead .chpgt::before{content:"";flex:none;width:30px;height:30px;margin-bottom:.12em;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A .ar-mpg .chpghead .chpgt .tipq{align-self:center;margin-left:0}
-@A .ar-mpg .chpghead .mgtitle>.chk{order:2;display:block!important;margin:10px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;letter-spacing:0!important;text-transform:none!important}
+@A .ar-mpg .chpghead .mgtitle>.chk{order:2;display:block!important;margin:8px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;letter-spacing:0!important;text-transform:none!important}
 @A .ar-mpg .chpghead .mgtitle>.chk::before{display:none!important}
-@A .ar-mpg .chpghead .chpgs,@A .ar-mpg .npmeth .chpgs{margin:10px 0 0!important;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg .chpghead .chpgs,@A .ar-mpg .npmeth .chpgs{margin:8px 0 0!important;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg .head{margin:0 0 4px!important;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg .head p.hint,@A .ar-mpg .head .hint{font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:68ch}
 @A .ar-mpg :is(.t2,.hint){color:var(--ar-ink-2)}
@@ -37,11 +37,11 @@
 @A .ar-mpg .wdstats .wdl{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 /* search fields: arena field (arena.css section 16), full width up to a readable size */
 @A .ar-mpg :is(.lsearch,.chmetaq,#tsBox,.cb){max-width:520px}
-@A .ar-mpg .clrw .field{min-height:48px!important;font-size:var(--ar-fs-body)!important;padding-left:14px!important}
+@A .ar-mpg .clrw .field{min-height:48px!important;font-size:var(--ar-fs-body)!important;padding-left:16px!important}
 
 /* ---------- 2. folds on the Meta pages: phase 1's slanted strip you tap, the body upright under it ---------- */
 @A .ar-mpg details.chsec{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:16px!important}
-@A .ar-mpg details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:60px;padding:10px 16px 10px 22px!important;margin-left:6px;
+@A .ar-mpg details.chsec>summary{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:60px;padding:8px 16px 8px 24px!important;margin-left:6px;
   background:none!important;border:0!important;box-shadow:none!important;cursor:pointer;list-style:none}
 @A .ar-mpg details.chsec>summary::-webkit-details-marker{display:none}
 @A .ar-mpg details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
@@ -49,7 +49,7 @@
 @A[data-look="dark"] .ar-mpg details.chsec>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
 @A .ar-mpg details.chsec>summary .cht{display:block;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;text-transform:none!important}
 @A .ar-mpg details.chsec>summary .cht::before,@A .ar-mpg details.chsec>summary .cht::after{display:none!important}
-@A .ar-mpg details.chsec>summary .chs{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:3px!important}
+@A .ar-mpg details.chsec>summary .chs{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:4px!important}
 @A .ar-mpg details.chsec>summary .chtog{color:var(--ar-sec-ink)!important;flex:none}
 @A .ar-mpg details.chsec>summary .chtog svg{color:var(--ar-sec-ink)!important}
 @A .ar-mpg details.chsec>.chbody{padding:20px 4px 8px!important;background:none!important;border:0!important;box-shadow:none!important}
@@ -58,12 +58,12 @@
 /* ---------- 3. Pokémon ratings ---------- */
 /* the controls: search, type chips (the type icon keeps its colour), filters */
 @A .ar-mpg #lair .lctl{margin-top:28px!important;gap:12px}
-@A .ar-mpg #lair :is(.ltypes,.lflags){display:flex!important;flex-wrap:wrap;gap:10px 10px!important;margin:16px 0 0!important;padding:0 0 0 4px!important;background:none!important;border:0!important}
-@A .ar-mpg #lair .ltype{padding:0 14px 0 12px!important}
+@A .ar-mpg #lair :is(.ltypes,.lflags){display:flex!important;flex-wrap:wrap;gap:8px 8px!important;margin:16px 0 0!important;padding:0 0 0 4px!important;background:none!important;border:0!important}
+@A .ar-mpg #lair .ltype{padding:0 16px 0 12px!important}
 @A .ar-mpg #lair .ltype .tic{width:16px!important;height:16px!important;flex:none}
-@A .ar-mpg #lair .lcount{margin-top:10px!important;font-size:var(--ar-fs-small)!important}
+@A .ar-mpg #lair .lcount{margin-top:8px!important;font-size:var(--ar-fs-small)!important}
 /* "About the ratings": the four numbers as stat numerals */
-@A .ar-mpg #lairHero{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:18px 16px;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:18px!important}
+@A .ar-mpg #lairHero{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:16px 16px;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:16px!important}
 @A .ar-mpg #lairHero .lhstat{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 @A .ar-mpg #lairHero .lhstat b{display:block;font:italic 900 34px/1 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important}
 @A .ar-mpg #lairHero .lhstat span{display:block;margin-top:6px;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
@@ -73,20 +73,20 @@
 @A .ar-mpg #lair .chbody p{font-size:var(--ar-fs-small)!important;line-height:1.5;color:var(--ar-ink-2)!important;max-width:68ch}
 
 /* tier heads: a slanted section plate holding the tier letter, then the band in display italic */
-@A .ar-mpg #chHot{margin-top:34px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
-@A .ar-mpg #chHot .chhothead{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 18px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #chHot{margin-top:32px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+@A .ar-mpg #chHot .chhothead{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 16px!important;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg #chHot :is(.chtier,.chtier.sm){position:relative;isolation:isolate;display:grid!important;place-items:center;flex:none;width:44px!important;height:44px!important;margin:0 4px 0 0!important;padding:0!important;
   font:italic 900 26px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
 @A .ar-mpg #chHot :is(.chtier,.chtier.sm)::before{content:""!important;position:absolute;inset:0;z-index:-1;display:block!important;background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);width:auto!important;height:auto!important}
 @A .ar-mpg #chHot :is(.chtier,.chtier.sm)::after{display:none!important}
 @A .ar-mpg #chHot .chhothead>.chk,@A .ar-mpg #chHot .chtierdiv>.chk{flex:1 1 160px;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
 @A .ar-mpg #chHot .chhothead .chpen{font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-sec-ink)!important}
-@A .ar-mpg #chHot .chtierdiv{grid-column:1/-1;display:flex!important;align-items:center;gap:12px;margin:34px 0 8px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #chHot .chtierdiv{grid-column:1/-1;display:flex!important;align-items:center;gap:12px;margin:32px 0 8px!important;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg #chHot .chhothead::before,@A .ar-mpg #chHot .chtierdiv::before,@A .ar-mpg #chHot .chhothead::after,@A .ar-mpg #chHot .chtierdiv::after{display:none!important}
 
 /* the top two: the page's hero. Each Pokémon on a slanted type field on the right, breaking out of its top edge; the rating
    as a big numeral and everything else on paper to its left (never text on the field). S tier keeps its foil, inside the field. */
-@A .ar-mpg #chHot .chhot2{display:grid!important;grid-template-columns:1fr!important;gap:18px!important;margin:0 0 10px!important;background:none!important;border:0!important;padding:0!important}
+@A .ar-mpg #chHot .chhot2{display:grid!important;grid-template-columns:1fr!important;gap:16px!important;margin:0 0 8px!important;background:none!important;border:0!important;padding:0!important}
 @A .ar-mpg #chHot .chhot.mgrh{position:relative;isolation:isolate;display:block!important;height:236px;min-height:0!important;padding:0!important;margin:0!important;overflow:visible!important;
   background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;outline:0!important;border-radius:0!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
 @A .ar-mpg #chHot .chhot.mgrh::before{display:none!important}
@@ -128,7 +128,7 @@
 
 /* the hot rows: typographic rows (rank, sprite on a small slanted type field, name and line, a slim bar, the rating) */
 @A .ar-mpg #chHot .chhotrows{display:grid!important;grid-template-columns:1fr!important;gap:0!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
-@A .ar-mpg #chHot .chhr{position:relative;isolation:isolate;display:grid!important;grid-template-columns:40px 72px minmax(0,1fr) auto;grid-template-rows:auto;align-items:center;column-gap:10px;min-height:76px;width:100%;padding:10px 0!important;margin:0!important;
+@A .ar-mpg #chHot .chhr{position:relative;isolation:isolate;display:grid!important;grid-template-columns:40px 72px minmax(0,1fr) auto;grid-template-rows:auto;align-items:center;column-gap:8px;min-height:76px;width:100%;padding:8px 0!important;margin:0!important;
   background:none!important;background-image:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
 @A .ar-mpg #chHot .chhr::before{content:""!important;position:absolute!important;left:54px!important;top:50%!important;right:auto!important;bottom:auto!important;width:58px!important;height:42px!important;margin-top:-14px!important;z-index:-1;display:block!important;opacity:1!important;
   transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-s)!important;background:linear-gradient(in oklch 125deg,var(--fa),var(--fb))!important;box-shadow:none!important}
@@ -141,15 +141,15 @@
 @A .ar-mpg #chHot .chhr .chbd>b{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #chHot .chhr .chbd>span{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #chHot .chhr .chbd .wrv{color:var(--ar-ink)!important;font-weight:700!important}
-@A .ar-mpg .dbbar{display:block!important;height:7px!important;margin-top:5px!important;max-width:220px;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:2px!important;overflow:hidden;border:0!important;box-shadow:none!important}
-@A .ar-mpg .dbbar>em{display:block;height:100%!important;background:linear-gradient(90deg,var(--a,var(--ta,var(--ar-sec))),var(--b,var(--tb,var(--a,var(--ar-sec)))))!important;border-radius:2px!important}
+@A .ar-mpg .dbbar{display:block!important;height:7px!important;margin-top:4px!important;max-width:220px;background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;transform:skewX(-20deg);border-radius:4px!important;overflow:hidden;border:0!important;box-shadow:none!important}
+@A .ar-mpg .dbbar>em{display:block;height:100%!important;background:linear-gradient(90deg,var(--a,var(--ta,var(--ar-sec))),var(--b,var(--tb,var(--a,var(--ar-sec)))))!important;border-radius:4px!important}
 @A .ar-mpg #chHot .chhr .sc{grid-column:4;font:italic 900 34px/.9 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em!important;color:var(--ar-ink)!important;background:none!important;-webkit-text-stroke:0!important;text-shadow:none!important;padding:0 2px 0 6px!important}
 
 /* the tier board ("Every Pokémon, by tier"): per tier a slanted plate with the letter, the band's line, then typographic rows */
-@A .ar-mpg #lairBody .lnote{display:block!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:0 0 18px!important}
+@A .ar-mpg #lairBody .lnote{display:block!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:0 0 16px!important}
 @A .ar-mpg #lairBody .lnote .lng{display:inline-flex;align-items:center;gap:6px;margin-right:2px;white-space:nowrap}
-@A .ar-mpg #lairBody .lboard{display:grid!important;gap:30px!important;background:none!important;border:0!important;padding:0!important}
-@A .ar-mpg #lairBody .ltier{position:relative;display:grid!important;grid-template-columns:52px minmax(0,1fr);column-gap:14px;align-items:start;padding:0!important;margin:0!important;
+@A .ar-mpg #lairBody .lboard{display:grid!important;gap:32px!important;background:none!important;border:0!important;padding:0!important}
+@A .ar-mpg #lairBody .ltier{position:relative;display:grid!important;grid-template-columns:52px minmax(0,1fr);column-gap:16px;align-items:start;padding:0!important;margin:0!important;
   background:none!important;border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
 @A .ar-mpg #lairBody .ltier::after,@A .ar-mpg #lairBody .ltier::before{display:none!important}
 @A .ar-mpg #lairBody .ltier .ltl{position:sticky;top:12px;isolation:isolate;overflow:hidden;display:flex!important;flex-direction:column;align-items:center;justify-content:center;width:52px!important;height:64px!important;padding:0!important;margin:2px 0 0!important;
@@ -158,21 +158,21 @@
 @A .ar-mpg #lairBody .ltier.nps .ltl::after{content:"";position:absolute;inset:-60%;z-index:-1;pointer-events:none;
   background:repeating-linear-gradient(115deg,transparent 0 30px,#ff4f8b 38px,#ffb400 44px,#46e0a2 50px,#3fa9ff 56px,#b45cff 62px,transparent 70px 110px);mix-blend-mode:color;opacity:.5;translate:calc((var(--hx,.5) - .5) * -30%) calc((var(--hy,.5) - .5) * -30%)}
 @A .ar-mpg #lairBody .ltier .ltl b{font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
-@A .ar-mpg #lairBody .ltier .ltl span{font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:#fff!important;margin-top:3px;text-shadow:none!important}
+@A .ar-mpg #lairBody .ltier .ltl span{font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:#fff!important;margin-top:4px;text-shadow:none!important}
 @A .ar-mpg #lairBody .ltbody{min-width:0;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg #lairBody .ltd{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:110%!important;color:var(--ar-ink)!important;padding:4px 0 6px!important;margin:0!important;border:0!important;background:none!important}
 @A .ar-mpg #lairBody .ltgrid{display:grid!important;grid-template-columns:1fr!important;gap:0!important;padding:0!important;margin:0!important}
 @A .ar-mpg #lairBody .ltile{position:relative;isolation:isolate;display:grid!important;grid-template-columns:66px minmax(0,1fr) auto;grid-template-rows:auto;align-items:center;column-gap:12px;min-height:60px;width:100%;padding:6px 2px 6px 0!important;margin:0!important;
   background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;color:var(--ar-ink)!important;text-align:left;cursor:pointer;overflow:visible!important}
 @A .ar-mpg #lairBody .ltile::before,@A .ar-mpg #lairBody .ltile::after{display:none!important}
-@A .ar-mpg #lairBody .ltile .ltf{grid-row:1;grid-column:1;position:relative!important;inset:auto!important;display:block!important;width:56px!important;height:36px!important;margin:10px 0 0 6px!important;padding:0!important;
+@A .ar-mpg #lairBody .ltile .ltf{grid-row:1;grid-column:1;position:relative!important;inset:auto!important;display:block!important;width:56px!important;height:36px!important;margin:8px 0 0 6px!important;padding:0!important;
   transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)!important;background:linear-gradient(in oklch 125deg,var(--fa),var(--fb))!important;border:0!important;box-shadow:none!important}
 @A[data-look="dark"] .ar-mpg #lairBody .ltile .ltf{background:linear-gradient(in oklch 125deg,var(--fa) 10%,var(--fm) 50%,var(--fb) 90%)!important}
 @A .ar-mpg #lairBody .ltile>img.ltspr{grid-row:1;grid-column:1;position:relative!important;inset:auto!important;justify-self:center;align-self:end;width:52px!important;height:52px!important;margin:0 0 2px 4px!important;transform:none!important;z-index:1;filter:drop-shadow(0 3px 3px rgba(30,10,40,.2))}
 @A .ar-mpg #lairBody .ltile.ar-ismega>img.ltspr{filter:drop-shadow(1.5px 0 0 var(--a)) drop-shadow(-1.5px 0 0 var(--b,var(--a))) drop-shadow(0 1.5px 0 var(--b,var(--a))) drop-shadow(0 -1.5px 0 var(--a)) drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A)}
 @A .ar-mpg #lairBody .ltile .ltf :is(.ltm,.ltg,.ltb){position:absolute!important;transform:skewX(var(--ar-unslant))}
 @A .ar-mpg #lairBody .ltile .ltf .ltm{display:none!important}
-@A .ar-mpg #lairBody .ltile .ltf .ltg{left:-4px!important;top:-6px!important;width:auto!important;height:auto!important;font-size:13px!important;color:var(--ar-ink)!important;background:var(--ar-sheet)!important;border-radius:3px!important;padding:1px 3px!important;line-height:1!important}
+@A .ar-mpg #lairBody .ltile .ltf .ltg{left:-4px!important;top:-6px!important;width:auto!important;height:auto!important;font-size:13px!important;color:var(--ar-ink)!important;background:var(--ar-sheet)!important;border-radius:4px!important;padding:1px 4px!important;line-height:1!important}
 @A .ar-mpg #lairBody .ltile .ltf .ltb{right:-3px!important;left:auto!important;bottom:-3px!important;top:auto!important;width:10px!important;height:10px!important;border-radius:50%!important;background:var(--ar-blue)!important;border:2px solid var(--ar-paper)!important;box-shadow:none!important}
 @A .ar-mpg #lairBody .ltile :is(.ltn,.ltn.sm,.ltn.xs){grid-row:1;grid-column:2;position:static!important;display:block!important;font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;background:none!important;padding:0!important;margin:0!important;text-align:left!important;text-shadow:none!important;-webkit-text-stroke:0!important;align-self:center!important;top:auto!important;left:auto!important;bottom:auto!important;transform:none!important}
 @A .ar-mpg #lairBody .ltile.ar-ismega .ltn::before{content:"Mega ";font-weight:700}
@@ -202,9 +202,9 @@
 
 /* ratings: the hidden board / map switch stays hidden (style.css), the links row, the type chips scroll sideways on phones */
 @A .ar-mpg #lair .lmodes{display:none!important}
-@A .ar-mpg :is(.nplinks,.nprow){display:flex!important;flex-wrap:wrap;gap:4px 22px;margin:14px 0 0!important;padding:0!important;background:none!important;border:0!important}
-@A .ar-mpg #lair>.seg.teamsw{margin-top:10px!important}
-@A .ar-mpg #lair details.chfold{margin-top:22px!important}
+@A .ar-mpg :is(.nplinks,.nprow){display:flex!important;flex-wrap:wrap;gap:4px 24px;margin:16px 0 0!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #lair>.seg.teamsw{margin-top:8px!important}
+@A .ar-mpg #lair details.chfold{margin-top:24px!important}
 @media (max-width:1000px){
   @A .ar-mpg #lair .ltypes{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin-left:calc(-1 * var(--ar-gutter))!important;margin-right:calc(-1 * var(--ar-gutter))!important;padding:6px var(--ar-gutter) 10px calc(var(--ar-gutter) + 4px)!important}
   @A .ar-mpg #lair .ltypes::-webkit-scrollbar{display:none}
@@ -213,13 +213,13 @@
 }
 /* the Meta sub-sections (Pokémon, Tournaments): the level above the page's own tabs, so they read as section words, not
    chips: italic display, the open one in ink over a slanted purple bar, the other in ink-2 */
-@A .ar-mpg>.subnav{display:flex!important;gap:4px 22px!important;margin:4px 0 0!important;padding:0 0 0 2px!important;overflow:visible!important}
+@A .ar-mpg>.subnav{display:flex!important;gap:4px 24px!important;margin:4px 0 0!important;padding:0 0 0 2px!important;overflow:visible!important}
 @A .ar-mpg>.subnav>.sub:not(#_m1):not(#_m2){position:relative;display:inline-flex!important;align-items:center;min-height:48px!important;padding:0 2px!important;margin:0!important;font:italic 800 22px/1 var(--ar-display)!important;font-stretch:112%!important;
   color:var(--ar-ink-2)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;opacity:1!important}
 @A .ar-mpg>.subnav>.sub::before{content:none!important;display:none!important}
 @A .ar-mpg>.subnav>.sub[aria-selected="true"]{color:var(--ar-ink)!important}
 @A .ar-mpg>.subnav>.sub[aria-selected="true"]::after{content:""!important;display:block!important;position:absolute!important;left:2px!important;right:2px!important;bottom:4px!important;top:auto!important;height:5px!important;width:auto!important;
-  background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:2px!important;opacity:1!important}
+  background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:4px!important;opacity:1!important}
 @A .ar-mpg>.subnav>.sub:not([aria-selected="true"])::after{display:none!important}
 @media (hover:hover){@A .ar-mpg>.subnav>.sub:not([aria-selected="true"]):hover{color:var(--ar-ink)!important}}
 /* arena.css section 19 gives the old .seg buttons a sheet fill and shadow on the element itself; under .ar-seg the shape is the
@@ -228,7 +228,7 @@
 
 /* ---------- 4. shared pieces: type names, art tiles, menu-strip bars ---------- */
 /* type names: the type icon and the word, upright, no box (the same as the info sheet) */
-@A .ar-mpg .ty{display:inline-flex!important;align-items:center;gap:5px;padding:0!important;margin:0 10px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;height:auto!important}
+@A .ar-mpg .ty{display:inline-flex!important;align-items:center;gap:4px;padding:0!important;margin:0 8px 0 0!important;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;height:auto!important}
 @A .ar-mpg .ty::before,@A .ar-mpg .ty::after{display:none!important}
 @A .ar-mpg .ty .tic{width:14px!important;height:14px!important;flex:none}
 /* art tiles on the existing markup (teammates, winning-team sixes, key Pokémon, most used this week): the slanted type field
@@ -249,15 +249,15 @@
 @media (prefers-reduced-motion:no-preference){@A :is(.ar-mpg,#lairSheet .lstp-meta) :is(button.stm,button.wktm,.chbw>button)::before{transition:transform .16s ease-out}}
 /* the little M flag on a Mega tile: the power-up contour says it, and the name says "Mega" in the alt text of the row */
 @A :is(.ar-mpg,#lairSheet .lstp-meta) :is(.tgm,.svm)>.tgmk{position:absolute!important;right:4px!important;top:calc(var(--lift) + 6px)!important;left:auto!important;z-index:2;display:grid!important;place-items:center;width:22px!important;height:20px!important;padding:0!important;
-  font:800 13px/1 var(--ar-body)!important;color:#fff!important;background-color:#16141A!important;border:0!important;border-radius:3px!important;box-shadow:none!important}
+  font:800 13px/1 var(--ar-body)!important;color:#fff!important;background-color:#16141A!important;border:0!important;border-radius:4px!important;box-shadow:none!important}
 
 /* ---------- 5. Usage ---------- */
-@A .ar-mpg #meta #srcSeg{margin:14px 0 0!important}
-@A .ar-mpg #meta .metastatus:not(:empty){margin-top:10px;font-size:var(--ar-fs-small);color:var(--ar-ink-2)}
-@A .ar-mpg #meta .chmetaq{margin-top:18px!important}
+@A .ar-mpg #meta #srcSeg{margin:16px 0 0!important}
+@A .ar-mpg #meta .metastatus:not(:empty){margin-top:8px;font-size:var(--ar-fs-small);color:var(--ar-ink-2)}
+@A .ar-mpg #meta .chmetaq{margin-top:16px!important}
 @A .ar-mpg #metaList{display:grid!important;grid-template-columns:1fr!important;gap:0!important;margin-top:20px!important;background:none!important;border:0!important;padding:0!important}
 @A .ar-mpg #metaList details.mrow{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;border-bottom:1px solid var(--ar-rule)!important}
-@A .ar-mpg #metaList details.mrow>summary{position:relative;isolation:isolate;display:grid!important;grid-template-columns:36px 70px minmax(0,1fr) auto 22px;align-items:center;column-gap:10px;min-height:78px;padding:10px 0!important;margin:0!important;
+@A .ar-mpg #metaList details.mrow>summary{position:relative;isolation:isolate;display:grid!important;grid-template-columns:36px 70px minmax(0,1fr) auto 22px;align-items:center;column-gap:8px;min-height:78px;padding:8px 0!important;margin:0!important;
   background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;list-style:none;cursor:pointer;color:var(--ar-ink)}
 @A .ar-mpg #metaList details.mrow>summary::-webkit-details-marker{display:none}
 @A .ar-mpg #metaList details.mrow>summary::before{content:""!important;position:absolute!important;left:50px!important;top:50%!important;right:auto!important;width:58px!important;height:42px!important;margin-top:-14px!important;z-index:-1!important;display:block!important;opacity:1!important;
@@ -278,15 +278,15 @@
 @A .ar-mpg #metaList .mrow .pc .dbbar{width:90px;margin:4px 0 0 auto!important}
 @A .ar-mpg #metaList .mrow .pc .basis{font:500 var(--ar-fs-small)/1.2 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
 /* the open row: the set, upright on paper, the bars as slim slanted bars under each name */
-@A .ar-mpg #metaList .mbody{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))!important;gap:22px 32px!important;padding:8px 4px 24px 50px!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg #metaList .mbody{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))!important;gap:24px 32px!important;padding:8px 4px 24px 48px!important;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-mpg :is(#metaList .mbody,#setOut) .stat{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;min-width:0}
 @A .ar-mpg :is(#metaList .mbody,#setOut) .stat>h4{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0 0 8px!important;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
 @A .ar-mpg :is(#metaList .mbody,#setOut) .stat>h4 .basis{font:500 var(--ar-fs-small) var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #metaList .mbody .bar{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:12px;min-height:34px;padding:0!important;margin:0!important;background:none!important;border:0!important}
-@A .ar-mpg #metaList .mbody .bar .bn{position:relative;display:block;padding:0 0 9px!important;font:500 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;white-space:normal!important;overflow:visible!important}
-@A .ar-mpg #metaList .mbody .bar .bn::before{content:""!important;position:absolute!important;left:0!important;top:auto!important;bottom:0!important;width:var(--w)!important;height:5px!important;background:linear-gradient(90deg,var(--ar-sec),color-mix(in oklch,var(--ar-sec) 55%,var(--ar-pink)))!important;transform:skewX(-20deg);border-radius:2px!important;z-index:0!important}
-@A .ar-mpg #metaList .mbody .bar .bn::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:color-mix(in oklch,var(--ar-ink) 9%,transparent);transform:skewX(-20deg);border-radius:2px;z-index:-1}
-@A .ar-mpg #metaList .mbody .bar .bv{font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;padding-bottom:7px;font-variant-numeric:tabular-nums}
+@A .ar-mpg #metaList .mbody .bar .bn{position:relative;display:block;padding:0 0 8px!important;font:500 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;white-space:normal!important;overflow:visible!important}
+@A .ar-mpg #metaList .mbody .bar .bn::before{content:""!important;position:absolute!important;left:0!important;top:auto!important;bottom:0!important;width:var(--w)!important;height:5px!important;background:linear-gradient(90deg,var(--ar-sec),color-mix(in oklch,var(--ar-sec) 55%,var(--ar-pink)))!important;transform:skewX(-20deg);border-radius:4px!important;z-index:0!important}
+@A .ar-mpg #metaList .mbody .bar .bn::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:color-mix(in oklch,var(--ar-ink) 9%,transparent);transform:skewX(-20deg);border-radius:4px;z-index:-1}
+@A .ar-mpg #metaList .mbody .bar .bv{font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;padding-bottom:8px;font-variant-numeric:tabular-nums}
 @A .ar-mpg #metaList .mbody .pc{font:italic 900 28px/1 var(--ar-display)!important;font-stretch:122%!important;color:var(--ar-ink)!important}
 @A .ar-mpg #metaList .mbody>div:last-child:has(>button){grid-column:1/-1}
 @A .ar-mpg #metaList .mbody .vsub{color:var(--ar-ink-2)!important}
@@ -295,12 +295,12 @@
 
 /* ---------- 6. Popular sets ---------- */
 @A .ar-mpg #sets>.row{margin-top:16px!important}
-@A .ar-mpg #setQuick{display:flex!important;flex-wrap:wrap;align-items:center;gap:10px!important;padding-left:4px!important}
+@A .ar-mpg #setQuick{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px!important;padding-left:4px!important}
 @A .ar-mpg #setQuick .lbl{flex-basis:100%;font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
 /* the Pokémon: its sprite on a big slanted type field, the name in display italic, its types, Mega and box flags, its rating
    on a plate in its own type colours */
-@A .ar-mpg #setOut{margin-top:30px!important;background:none!important}
-@A .ar-mpg #setOut .sethead{position:relative;isolation:isolate;display:grid!important;grid-template-columns:150px minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:22px;row-gap:8px;align-items:center;min-height:150px;padding:6px 0 4px!important;margin:0!important;
+@A .ar-mpg #setOut{margin-top:32px!important;background:none!important}
+@A .ar-mpg #setOut .sethead{position:relative;isolation:isolate;display:grid!important;grid-template-columns:150px minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:24px;row-gap:8px;align-items:center;min-height:150px;padding:6px 0 4px!important;margin:0!important;
   background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A .ar-mpg #setOut .sethead::before{content:""!important;position:absolute!important;left:8px!important;top:38px!important;width:136px!important;height:104px!important;right:auto!important;bottom:auto!important;z-index:-1!important;display:block!important;opacity:1!important;
   transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-l)!important;box-shadow:var(--ar-shadow)!important;border:0!important;
@@ -312,21 +312,21 @@
 @A .ar-mpg #setOut .sethead .sl-name{grid-column:2;align-self:end;font:italic 800 28px/1.02 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important;overflow-wrap:anywhere}
 @A .ar-mpg #setOut .sethead .chips{grid-column:2;display:inline-flex!important;flex-wrap:wrap;align-items:center}
 @A .ar-mpg #setOut .sethead .chips~.tag.ico{grid-column:2;grid-row:2;justify-self:end;align-self:center}
-@A .ar-mpg #setOut .sethead .chips~.tag.ico+.tag.ico{margin-right:30px}
-@A .ar-mpg #setOut .sethead .tag.tier{grid-column:2;justify-self:start;position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:32px;max-width:100%;padding:3px 12px!important;white-space:normal!important;
+@A .ar-mpg #setOut .sethead .chips~.tag.ico+.tag.ico{margin-right:32px}
+@A .ar-mpg #setOut .sethead .tag.tier{grid-column:2;justify-self:start;position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:32px;max-width:100%;padding:4px 12px!important;white-space:normal!important;
   font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A .ar-mpg #setOut .sethead .tag.tier::before{content:""!important;position:absolute!important;inset:0!important;z-index:-1;display:block!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);box-shadow:var(--ar-shadow-s);
   background:var(--ar-sec-plate)!important;width:auto!important;height:auto!important}
-@A .ar-mpg #setOut .setmine{margin:22px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:70ch}
+@A .ar-mpg #setOut .setmine{margin:24px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;max-width:70ch}
 @A .ar-mpg #setOut .setmine b{color:var(--ar-ink)!important}
 /* the set: no box; a head with the source tabs, the moves as bars, item, ability and nature, then the teammates as art */
-@A .ar-mpg #setOut .mucols{margin-top:22px!important;gap:40px!important}
+@A .ar-mpg #setOut .mucols{margin-top:24px!important;gap:40px!important}
 @A .ar-mpg #setOut .setcard{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important}
-@A .ar-mpg #setOut .setcard>.ph{display:flex!important;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin:0 0 18px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #setOut .setcard>.ph{display:flex!important;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin:0 0 16px!important;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg #setOut .setcard>.ph .pt{display:flex;align-items:flex-start;gap:12px;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important}
 @A .ar-mpg #setOut .setcard>.ph .pt::before{content:"";flex:none;width:26px;height:26px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
 @A .ar-mpg #setOut .setcard>.ph .t2{margin-top:6px;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
-@A .ar-mpg #setOut .setgrid2{gap:26px 40px!important}
+@A .ar-mpg #setOut .setgrid2{gap:24px 40px!important}
 @A .ar-mpg #setOut .kdh{display:flex!important;align-items:center;gap:6px;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important;margin:0 0 8px!important}
 @A .ar-mpg #setOut .kdh .kdic{width:16px!important;height:16px!important;color:var(--kd)!important}
 @A .ar-mpg #setOut .smvs{display:grid!important;gap:12px!important}
@@ -334,19 +334,19 @@
 @A .ar-mpg #setOut .smvt{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 @A .ar-mpg #setOut .smvt b{font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #setOut .smvt span{font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;font-variant-numeric:tabular-nums}
-@A .ar-mpg #setOut .smv i{height:8px!important;border-radius:2px!important;transform:skewX(-20deg);background:color-mix(in oklch,var(--ar-ink) 9%,transparent)!important;margin:0 3px}
-@A .ar-mpg #setOut .smv i::before{border-radius:2px!important;background:linear-gradient(90deg,var(--a,var(--ta,var(--ar-sec))),var(--b,var(--tb,var(--a,var(--ar-sec)))))!important}
-@A .ar-mpg #setOut .sbuilds{display:grid!important;gap:18px!important;align-content:start}
+@A .ar-mpg #setOut .smv i{height:8px!important;border-radius:4px!important;transform:skewX(-20deg);background:color-mix(in oklch,var(--ar-ink) 9%,transparent)!important;margin:0 4px}
+@A .ar-mpg #setOut .smv i::before{border-radius:4px!important;background:linear-gradient(90deg,var(--a,var(--ta,var(--ar-sec))),var(--b,var(--tb,var(--a,var(--ar-sec)))))!important}
+@A .ar-mpg #setOut .sbuilds{display:grid!important;gap:16px!important;align-content:start}
 @A .ar-mpg #setOut .sbuild .chk{margin:0 0 6px!important}
 @A .ar-mpg #setOut .sbchips{display:flex!important;flex-wrap:wrap;gap:6px 16px}
 @A .ar-mpg #setOut .sbchip{padding:0!important;background:none!important;border:0!important;box-shadow:none!important;font:500 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #setOut .sbchip.top{font-weight:700!important;color:var(--ar-ink)!important}
 @A .ar-mpg #setOut .sbchip em{font-style:normal;color:var(--ar-ink-2);font-weight:500;font-size:var(--ar-fs-small)!important}
-@A .ar-mpg #setOut .stms{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px 12px!important;margin-top:4px}
+@A .ar-mpg #setOut .stms{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:24px 12px!important;margin-top:4px}
 @A .ar-mpg #setOut .stm{--h:66px;--s:90px;--lift:14px}
 @A .ar-mpg #setOut .stm>span{font:500 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #setOut .stm:disabled{opacity:.7}
-@A .ar-mpg #setOut .setfoot{margin-top:22px!important;padding-top:14px!important;border-top:1px solid var(--ar-rule)!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg #setOut .setfoot{margin-top:24px!important;padding-top:16px!important;border-top:1px solid var(--ar-rule)!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
 @media (min-width:640px){@A .ar-mpg #setOut .stms{grid-template-columns:repeat(6,minmax(0,1fr))!important}}
 @media (min-width:1001px){@A .ar-mpg #setOut .sethead{grid-template-columns:190px minmax(0,1fr);min-height:184px}
   @A .ar-mpg #setOut .sethead::before{width:176px!important;height:130px!important;top:48px!important}
@@ -355,42 +355,42 @@
   @A .ar-mpg #setOut .stm{--h:84px;--s:112px}}
 
 /* ---------- 7. Winning teams ---------- */
-@A .ar-mpg #topteams #tsBox{margin-top:18px!important}
+@A .ar-mpg #topteams #tsBox{margin-top:16px!important}
 @A .ar-mpg #ttList{display:grid!important;gap:0!important;margin-top:24px!important;background:none!important}
-@A .ar-mpg #ttList .ttyours{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center;padding:16px 18px 16px 24px!important;margin:0 0 8px!important;position:relative;isolation:isolate;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg #ttList .ttyours{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:16px 16px 16px 24px!important;margin:0 0 8px!important;position:relative;isolation:isolate;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-mpg #ttList .ttyours::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:var(--ar-r-l);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-blue),var(--ar-blue)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-blue) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)}
 @A[data-look="dark"] .ar-mpg #ttList .ttyours::before{background:linear-gradient(var(--ar-blue),var(--ar-blue)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklab,var(--ar-blue) 16%,#1E1D22),#1E1D22 70%)}
 @A .ar-mpg #ttList .ttyours .lbl{font:italic 800 17px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
 @A .ar-mpg #ttList .ttyours .t2{margin-top:4px;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important;line-height:1.5}
-@A .ar-mpg #ttList h3.lbl{display:flex;align-items:flex-start;gap:12px;margin:34px 0 4px!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
+@A .ar-mpg #ttList h3.lbl{display:flex;align-items:flex-start;gap:12px;margin:32px 0 4px!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
 @A .ar-mpg #ttList h3.lbl::before{content:"";flex:none;width:26px;height:26px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
 @A .ar-mpg #ttList h3.lbl .vsub{font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-left:2px}
 /* one winning team: the player in display italic, the event, the six as art tiles, its style and checks, then the actions */
-@A .ar-mpg #ttList .ttcard{padding:26px 0 28px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;border-bottom:1px solid var(--ar-rule)!important}
+@A .ar-mpg #ttList .ttcard{padding:24px 0 28px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;border-bottom:1px solid var(--ar-rule)!important}
 @A .ar-mpg #ttList .ttwho .pt{font:italic 800 24px/1.15 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important}
 @A .ar-mpg #ttList .ttwho .pt .vsub{font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;font-style:normal!important;color:var(--ar-sec-ink)!important;margin-left:6px}
 @A .ar-mpg #ttList .ttwho .t2{margin-top:4px;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
-@A .ar-mpg #ttList .tgrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:22px 10px!important;margin:20px 0 0!important;padding:0 2px 0 4px!important}
+@A .ar-mpg #ttList .tgrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:24px 8px!important;margin:20px 0 0!important;padding:0 2px 0 4px!important}
 @A .ar-mpg #ttList .tgm{--h:64px;--s:86px;--lift:14px}
 @A .ar-mpg #ttList .tgm .tgn{font-size:var(--ar-fs-small)!important}
-@A .ar-mpg #ttList .ttmeta{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:18px!important}
+@A .ar-mpg #ttList .ttmeta{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:16px!important}
 @A .ar-mpg #ttList .ttck{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #ttList .ttck b{color:var(--ar-ink)!important;font-weight:700}
 @A .ar-mpg #ttList .ttck.all b{color:var(--ar-green-ink)!important}
 @A .ar-mpg :is(#ttList,#evOut,#wkOut) .archchips{display:inline-flex!important;flex-wrap:wrap;gap:6px}
-@A .ar-mpg :is(#ttList,#evOut,#wkOut) .archchip{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:28px;padding:2px 10px!important;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg :is(#ttList,#evOut,#wkOut) .archchip{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:28px;padding:2px 8px!important;font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-mpg :is(#ttList,#evOut,#wkOut) .archchip::before{content:""!important;position:absolute;inset:0;z-index:-1;display:block!important;background:color-mix(in oklch,var(--ar-sec) 16%,var(--ar-sheet))!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A[data-look="dark"] .ar-mpg :is(#ttList,#evOut,#wkOut) .archchip::before{background:color-mix(in oklab,var(--ar-sec) 30%,#1E1D22)!important}
 @A .ar-mpg #ttList .ttright{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 @A .ar-mpg #ttList .minick{font:500 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important;text-align:right;background:none!important;border:0!important}
 @A .ar-mpg #ttList .minick b{display:block;font:italic 900 26px/1 var(--ar-display)!important;font-stretch:122%!important;color:var(--ar-ink)!important}
 @A .ar-mpg #ttList .minick.all b{color:var(--ar-green-ink)!important}
-@A .ar-mpg :is(#ttList,#evOut) .evbtns{display:flex!important;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:20px!important;padding-left:6px}
+@A .ar-mpg :is(#ttList,#evOut) .evbtns{display:flex!important;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:20px!important;padding-left:6px}
 @A .ar-mpg :is(#ttList,#evOut) .evbtns .ar-link{min-height:44px}
 @A .ar-mpg #ttList .ttcard.chhid{display:none!important}
-@A .ar-mpg #topteams details.chsec{margin-top:26px!important}
-@media (min-width:700px){@A .ar-mpg #ttList .tgrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:22px 14px!important}}
+@A .ar-mpg #topteams details.chsec{margin-top:24px!important}
+@media (min-width:700px){@A .ar-mpg #ttList .tgrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:24px 16px!important}}
 @media (min-width:1001px){@A .ar-mpg #ttList .tgm{--h:84px;--s:112px}@A .ar-mpg #ttList .ttwho .pt{font-size:28px!important}}
 /* 32-views.js marks the section's first view button aria-selected for the nav; on these page tabs only aria-pressed says which is open */
 @A .ar-mpg .ar-seg>button[aria-pressed="false"][aria-selected="true"]{color:var(--ar-ink)!important;font-weight:600!important}
@@ -398,14 +398,14 @@
 @A[data-look="dark"] .ar-mpg .ar-seg>button[aria-pressed="false"][aria-selected="true"]::before{background:#24232A!important}
 @A .ar-mpg .ar-seg>button[aria-pressed="false"][aria-selected="true"]::after{display:none!important}
 /* "Ranks 11–60", "More winning teams": buttons drawn like a fold, so they take the same slanted strip */
-@A .ar-mpg button.chsec{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;width:calc(100% - 6px);min-height:60px;padding:10px 16px 10px 22px!important;margin:20px 0 0 6px!important;text-align:left;
+@A .ar-mpg button.chsec{position:relative;isolation:isolate;display:flex!important;align-items:center;gap:12px;width:calc(100% - 6px);min-height:60px;padding:8px 16px 8px 24px!important;margin:20px 0 0 6px!important;text-align:left;
   background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;color:var(--ar-ink)!important;cursor:pointer}
 @A .ar-mpg button.chsec::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important;width:auto!important;height:auto!important}
 @A[data-look="dark"] .ar-mpg button.chsec::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
 @A .ar-mpg button.chsec::after{display:none!important}
 @A .ar-mpg button.chsec .cht{display:block;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
-@A .ar-mpg button.chsec .chs{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:3px}
+@A .ar-mpg button.chsec .chs{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin-top:4px}
 @A .ar-mpg button.chsec .chtog,@A .ar-mpg button.chsec .chtog svg{color:var(--ar-sec-ink)!important;flex:none}
 
 /* ---------- 8. small sprites in a row (an event's winning six, an archetype's key Pokémon, the weekly winners, the top 10
@@ -426,11 +426,11 @@
 /* ---------- 9. This week ---------- */
 @A .ar-mpg #weekly .chpghead{margin-top:16px!important}
 @A .ar-mpg #wkOut{background:none!important}
-@A .ar-mpg #wkOut .wkhead{display:grid!important;gap:18px;margin:6px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
-@A .ar-mpg #wkOut .wkhead .wdrow{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:4px 18px;margin-top:6px}
+@A .ar-mpg #wkOut .wkhead{display:grid!important;gap:16px;margin:6px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg #wkOut .wkhead .wdrow{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin-top:6px}
 @A .ar-mpg #wkOut .wkhead .wdrow .wdl{min-width:96px}
 /* Share this week: the page's one yellow primary */
-@A .ar-mpg #wkShare{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;justify-content:flex-start;gap:12px;width:auto!important;max-width:100%;min-height:60px!important;padding:0 22px 0 26px!important;margin:4px 0 0 6px!important;justify-self:start;
+@A .ar-mpg #wkShare{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;justify-content:flex-start;gap:12px;width:auto!important;max-width:100%;min-height:60px!important;padding:0 24px 0 24px!important;margin:4px 0 0 6px!important;justify-self:start;
   font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:115%!important;color:#16141A!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important}
 @A .ar-mpg #wkShare::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);
   background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:0 12px 22px -12px rgba(190,140,0,.75),0 2px 4px -2px rgba(0,0,0,.2)!important;width:auto!important;height:auto!important}
@@ -439,15 +439,15 @@
 @A .ar-mpg #wkShare>span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#16141A;color:var(--ar-yellow);font:700 var(--ar-fs-body)/1 var(--ar-body);font-style:normal}
 @media (hover:hover){@A .ar-mpg #wkShare:hover::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,#FFDA45!important}}
 /* each part of the week: no box, a section head, rows on paper */
-@A .ar-mpg #wkOut .wkcard{margin:46px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A .ar-mpg #wkOut .wkcard{margin:48px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A .ar-mpg #wkOut .wkcard>.dbhd{display:flex!important;align-items:flex-end;justify-content:space-between;gap:12px;margin:0!important;padding:0!important;background:none!important;border:0!important}
-@A .ar-mpg #wkOut .wkcap{margin:10px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A .ar-mpg #wkOut .wkcols{display:grid!important;grid-template-columns:1fr!important;gap:22px 40px!important;margin-top:16px!important}
+@A .ar-mpg #wkOut .wkcap{margin:8px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg #wkOut .wkcols{display:grid!important;grid-template-columns:1fr!important;gap:24px 40px!important;margin-top:16px!important}
 @A .ar-mpg #wkOut .wkh{display:flex;align-items:center;gap:6px;margin:0 0 2px!important;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;text-transform:none!important;letter-spacing:0!important}
 @A .ar-mpg #wkOut .wkh.up{color:var(--ar-green-ink)!important}
 @A .ar-mpg #wkOut .wkh.dn{color:var(--ar-blue-ink)!important}
 /* a row: the sprite on its small slanted type field, the name and the move in share, the change as a numeral */
-@A .ar-mpg #wkOut :is(.wkrow,.wkfr){position:relative;isolation:isolate;display:grid!important;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;column-gap:12px;width:100%;min-height:72px;padding:10px 0!important;margin:0!important;
+@A .ar-mpg #wkOut :is(.wkrow,.wkfr){position:relative;isolation:isolate;display:grid!important;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;column-gap:12px;width:100%;min-height:72px;padding:8px 0!important;margin:0!important;
   background:none!important;background-image:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
 @A .ar-mpg #wkOut :is(.wkrow,.wkfr)::before{content:""!important;position:absolute!important;left:6px!important;top:50%!important;right:auto!important;bottom:auto!important;width:58px!important;height:42px!important;margin-top:-14px!important;z-index:-1;display:block!important;opacity:1!important;
   transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-s)!important;border:0!important;box-shadow:none!important;background:linear-gradient(in oklch 125deg,var(--fa),var(--fb))!important}
@@ -463,88 +463,88 @@
 @A .ar-mpg #wkOut .wkn .kind{margin:0 0 2px!important;font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important}
 @A .ar-mpg #wkOut .wkn .kdopt{font-weight:700!important}
 @A .ar-mpg #wkOut .wkar{grid-column:3;font:italic 900 26px/1 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.02em;white-space:nowrap;background:none!important;border:0!important;padding:0 2px 0 0!important}
-@A .ar-mpg #wkOut .wkar small{font:600 var(--ar-fs-small) var(--ar-body)!important;font-style:normal!important;margin-left:3px;color:var(--ar-ink-2)!important}
+@A .ar-mpg #wkOut .wkar small{font:600 var(--ar-fs-small) var(--ar-body)!important;font-style:normal!important;margin-left:4px;color:var(--ar-ink-2)!important}
 @A .ar-mpg #wkOut .wkar.up{color:var(--ar-green-ink)!important}
 @A .ar-mpg #wkOut .wkar.dn{color:var(--ar-blue-ink)!important}
 /* most used this week: five small art tiles, the share as a numeral */
-@A .ar-mpg #wkOut .wktop{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px 8px!important;margin:26px 0 0!important;padding:0 2px 0 4px!important;background:none!important;overflow:visible!important}
+@A .ar-mpg #wkOut .wktop{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px 8px!important;margin:24px 0 0!important;padding:0 2px 0 4px!important;background:none!important;overflow:visible!important}
 @A .ar-mpg #wkOut .wktm{--h:46px;--s:62px;--lift:12px}
 @A .ar-mpg #wkOut .wktm>b{font:italic 900 20px/1 var(--ar-display)!important;font-stretch:118%!important;margin-top:2px!important}
 @A .ar-mpg #wkOut .wktm>span{font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 /* winners this week: the event, then its winning six on small fields */
-@A .ar-mpg #wkOut .wkev{display:block!important;width:100%;padding:16px 0 18px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
+@A .ar-mpg #wkOut .wkev{display:block!important;width:100%;padding:16px 0 16px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
 @A .ar-mpg #wkOut .wkev::before,@A .ar-mpg #wkOut .wkev::after{display:none!important}
-@A .ar-mpg #wkOut .wkevt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+@A .ar-mpg #wkOut .wkevt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
 @A .ar-mpg #wkOut .wkevt>b{font:700 17px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
-@A .ar-mpg :is(#wkOut,#evOut) .tag.evoff{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:26px;padding:1px 10px!important;font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg :is(#wkOut,#evOut) .tag.evoff{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:26px;padding:1px 8px!important;font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-mpg :is(#wkOut,#evOut) .tag.evoff::before{content:""!important;position:absolute;inset:0;z-index:-1;display:block!important;background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A .ar-mpg #wkOut .wkev>.t2{display:block;margin-top:4px;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #wkOut .wkev>.t2 b{color:var(--ar-ink)!important}
 @A .ar-mpg #wkOut .wksix{margin-top:12px}
 /* team styles: each style a name, its share as a numeral, and the change */
-@A .ar-mpg #wkOut .wkstyles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin-top:14px!important;background:none!important;padding:0!important}
-@A .ar-mpg #wkOut .wkstyles .wkst{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:2px 10px;min-height:52px;padding:10px 0!important;border-bottom:1px solid var(--ar-rule)!important;font:italic 900 22px/1 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;background:none!important}
+@A .ar-mpg #wkOut .wkstyles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin-top:16px!important;background:none!important;padding:0!important}
+@A .ar-mpg #wkOut .wkstyles .wkst{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:2px 8px;min-height:52px;padding:8px 0!important;border-bottom:1px solid var(--ar-rule)!important;font:italic 900 22px/1 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;background:none!important}
 @A .ar-mpg #wkOut .wkstyles .wkst b{order:-1;flex:1 1 auto;font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink)!important}
 @A .ar-mpg #wkOut .wkstyles .wkst i{flex-basis:100%;font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;font-style:normal!important}
 @A .ar-mpg #wkOut .wkstyles .wkst.dn i{color:var(--ar-blue-ink)!important}
 @A .ar-mpg #wkOut .wkstyles .wkst.up i{color:var(--ar-green-ink)!important}
-@A .ar-mpg #wkOut .wkfresh{display:grid!important;grid-template-columns:1fr;gap:0 40px;margin-top:10px!important}
+@A .ar-mpg #wkOut .wkfresh{display:grid!important;grid-template-columns:1fr;gap:0 40px;margin-top:8px!important}
 @A .ar-mpg #wkOut details.wkfoot{margin-top:40px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
-@A .ar-mpg #wkOut details.wkfoot>summary{display:inline-flex!important;align-items:center;gap:10px;min-height:44px;padding:0 0 0 2px!important;font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;cursor:pointer;list-style:none;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg #wkOut details.wkfoot>summary{display:inline-flex!important;align-items:center;gap:8px;min-height:44px;padding:0 0 0 2px!important;font:600 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-sec-ink)!important;cursor:pointer;list-style:none;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-mpg #wkOut details.wkfoot>summary::-webkit-details-marker{display:none}
 @A .ar-mpg #wkOut details.wkfoot>summary::before{content:""!important;position:static!important;display:block!important;width:8px!important;height:8px!important;margin:0 2px!important;border:solid currentColor!important;border-width:0 2.5px 2.5px 0!important;transform:translateY(-2px) rotate(45deg)!important;background:none!important}
 @A .ar-mpg #wkOut details.wkfoot[open]>summary::before{transform:translateY(2px) rotate(-135deg)!important}
 @A .ar-mpg #wkOut details.wkfoot>p{margin:8px 0 0!important;font-size:var(--ar-fs-small)!important;line-height:1.5;color:var(--ar-ink-2)!important;max-width:68ch}
 @media (min-width:700px){@A .ar-mpg #wkOut .wkcols{grid-template-columns:1fr 1fr!important}@A .ar-mpg #wkOut .wkfresh{grid-template-columns:1fr 1fr}@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(3,minmax(0,1fr))}
-  @A .ar-mpg #wkOut .wktop{gap:22px 18px!important}@A .ar-mpg #wkOut .wktm{--h:70px;--s:96px}}
+  @A .ar-mpg #wkOut .wktop{gap:24px 16px!important}@A .ar-mpg #wkOut .wktm{--h:70px;--s:96px}}
 @media (min-width:1001px){@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-mpg #wkOut .wkevs,@A .ar-mpg #wkOut .wkcard:has(.wkev){display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:32px}
   @A .ar-mpg #wkOut .wkcard:has(.wkev)>.wkt{grid-column:1/-1;margin-bottom:6px!important}}
 
 /* ---------- 10. Events ---------- */
 @A .ar-mpg #events .head{margin-top:2px!important}
-@A .ar-mpg #events .wdrow{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 18px}
-@A .ar-mpg #events .wdc{display:inline-flex!important;align-items:baseline;gap:5px;padding:0!important}
+@A .ar-mpg #events .wdrow{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 16px}
+@A .ar-mpg #events .wdc{display:inline-flex!important;align-items:baseline;gap:4px;padding:0!important}
 /* next events: the calendar. Each date on a slanted purple plate (the day as a numeral, the month under it), the event and place,
    the countdown on the right */
-@A .ar-mpg #evCal{margin-top:30px!important}
+@A .ar-mpg #evCal{margin-top:32px!important}
 @A .ar-mpg #evCal .calbox{padding:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
-@A .ar-mpg #evCal .calhd{display:flex!important;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px 16px;margin:0 0 10px!important;padding:0!important;background:none!important;border:0!important}
+@A .ar-mpg #evCal .calhd{display:flex!important;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px 16px;margin:0 0 8px!important;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg #evCal .calhd>.t2{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A .ar-mpg #evCal .calrow{position:relative;display:grid!important;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;column-gap:16px;min-height:76px;padding:10px 0!important;margin:0!important;
+@A .ar-mpg #evCal .calrow{position:relative;display:grid!important;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;column-gap:16px;min-height:76px;padding:8px 0!important;margin:0!important;
   background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;color:var(--ar-ink)!important;text-decoration:none!important}
 @A .ar-mpg #evCal .calrow::before,@A .ar-mpg #evCal .calrow::after{display:none!important}
 @A .ar-mpg #evCal .calday{position:relative;isolation:isolate;display:flex!important;flex-direction:column;align-items:center;justify-content:center;width:54px!important;height:56px!important;margin:0 0 0 4px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A .ar-mpg #evCal .calday::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
 @A .ar-mpg #evCal .calday b{font:italic 900 24px/1 var(--ar-display)!important;font-stretch:122%!important;color:#fff!important;text-shadow:none!important}
 @A .ar-mpg #evCal .calday span{font:600 var(--ar-fs-small)/1.15 var(--ar-body)!important;color:#fff!important;margin-top:2px;text-transform:none!important;letter-spacing:0!important}
-@A .ar-mpg #evCal .calmain{min-width:0;display:flex;flex-direction:column;gap:3px}
+@A .ar-mpg #evCal .calmain{min-width:0;display:flex;flex-direction:column;gap:4px}
 @A .ar-mpg #evCal .calmain b{font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #evCal .calmain span{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #evCal .calcd{font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;text-align:right;white-space:nowrap;background:none!important;border:0!important;padding:0!important}
 @A .ar-mpg #evCal .calcd.soon{color:var(--ar-sec-ink)!important}
 @A .ar-mpg #evCal .calmore{margin-top:6px!important}
-@A .ar-mpg #evCal .calpast{display:flex!important;flex-wrap:wrap;align-items:center;gap:0 18px;margin-top:8px!important}
+@A .ar-mpg #evCal .calpast{display:flex!important;flex-wrap:wrap;align-items:center;gap:0 16px;margin-top:8px!important}
 @A .ar-mpg #evCal .calpast>.t2{font:600 var(--ar-fs-small) var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A .ar-mpg #evCal .calsrc{margin-top:10px!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg #evCal .calsrc{margin-top:8px!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #evCal .calsrc a{color:var(--ar-sec-ink)!important;text-decoration:underline;text-underline-offset:3px}
 /* recent events: no cards; the name, the date and winner, the winning six on small fields; a hairline between */
 @A .ar-mpg #evOut{margin-top:44px!important}
 @A .ar-mpg #evOut .evlist{display:grid!important;grid-template-columns:1fr!important;gap:0 40px!important;margin-top:16px!important;background:none!important}
-@A .ar-mpg #evOut .evcard{position:relative;display:block!important;width:100%!important;padding:16px 2px 18px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer;transform:none!important}
+@A .ar-mpg #evOut .evcard{position:relative;display:block!important;width:100%!important;padding:16px 2px 16px!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer;transform:none!important}
 @A .ar-mpg #evOut .evcard::before,@A .ar-mpg #evOut .evcard::after{display:none!important}
-@A .ar-mpg #evOut .evct{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+@A .ar-mpg #evOut .evct{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 8px}
 @A .ar-mpg #evOut .evname{font:700 17px/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #evOut .evcard>.t2{margin-top:4px;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #evOut .evcard>.t2 b{color:var(--ar-ink)!important}
 @A .ar-mpg #evOut .evwin{margin-top:12px!important}
-@A .ar-mpg #evOut .morebar{margin-top:22px!important;padding-left:6px}
+@A .ar-mpg #evOut .morebar{margin-top:24px!important;padding-left:6px}
 @media (min-width:1001px){@A .ar-mpg #evOut .evlist{grid-template-columns:1fr 1fr!important}@A .ar-mpg #evCal .calrows,@A .ar-mpg #evCal .calbox{max-width:none}}
 
 /* ---------- 11. Archetypes ---------- */
 @A .ar-mpg #guideOut{margin-top:6px!important}
-@A .ar-mpg #guideOut>p.t2{font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important;margin:10px 0 14px!important}
+@A .ar-mpg #guideOut>p.t2{font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important;margin:8px 0 16px!important}
 @A .ar-mpg #guideOut details.guide{margin:0!important;padding:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
-@A .ar-mpg #guideOut details.guide>summary{position:relative;display:grid!important;grid-template-columns:minmax(0,1fr) 22px;grid-template-areas:"t c" "s c";align-items:center;row-gap:10px;column-gap:12px;min-height:72px;padding:16px 2px 18px!important;margin:0!important;
+@A .ar-mpg #guideOut details.guide>summary{position:relative;display:grid!important;grid-template-columns:minmax(0,1fr) 22px;grid-template-areas:"t c" "s c";align-items:center;row-gap:8px;column-gap:12px;min-height:72px;padding:16px 2px 16px!important;margin:0!important;
   background:none!important;border:0!important;box-shadow:none!important;cursor:pointer;list-style:none}
 @A .ar-mpg #guideOut details.guide>summary::-webkit-details-marker{display:none}
 @A .ar-mpg #guideOut details.guide>summary::before{display:none!important}
@@ -554,13 +554,13 @@
 @A .ar-mpg #guideOut details.guide>summary>.vsub{grid-area:t;justify-self:end;align-self:center;font:italic 900 24px/1 var(--ar-display)!important;font-stretch:120%!important;color:var(--ar-ink)!important;white-space:nowrap;margin-right:4px}
 @A .ar-mpg #guideOut details.guide>summary>.vsub .basis{display:block;margin-top:4px;font:500 var(--ar-fs-small)/1.2 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important;text-align:right}
 @A .ar-mpg #guideOut details.guide>summary>.gkm{grid-area:s;margin:0!important}
-@A .ar-mpg #guideOut .gbody{padding:0 2px 26px!important;background:none!important;border:0!important}
+@A .ar-mpg #guideOut .gbody{padding:0 2px 24px!important;background:none!important;border:0!important}
 @A .ar-mpg #guideOut .gwhat{font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink)!important;max-width:68ch;margin:0!important}
-@A .ar-mpg #guideOut .gsec{margin-top:22px!important;background:none!important;border:0!important;padding:0!important}
-@A .ar-mpg #guideOut .gsec>.chk{margin:0 0 10px!important;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
-@A .ar-mpg #guideOut .gkey{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 10px!important;padding:0 2px 0 4px!important;background:none!important;border:0!important;box-shadow:none!important}
+@A .ar-mpg #guideOut .gsec{margin-top:24px!important;background:none!important;border:0!important;padding:0!important}
+@A .ar-mpg #guideOut .gsec>.chk{margin:0 0 8px!important;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
+@A .ar-mpg #guideOut .gkey{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 8px!important;padding:0 2px 0 4px!important;background:none!important;border:0!important;box-shadow:none!important}
 @A .ar-mpg #guideOut .gkey .svm{--h:56px;--s:76px;--lift:12px}
-@A .ar-mpg #guideOut .gbeat{margin:0!important;padding:0 0 0 22px!important;display:grid;gap:8px}
+@A .ar-mpg #guideOut .gbeat{margin:0!important;padding:0 0 0 24px!important;display:grid;gap:8px}
 @A .ar-mpg #guideOut .gbeat li{font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink)!important;padding-left:4px;background:none!important;border:0!important;min-height:0!important}
 @A .ar-mpg #guideOut .gbeat li::marker{font:italic 900 17px var(--ar-display);color:var(--ar-sec-ink)}
 @A .ar-mpg #guideOut .gbody :is(button.ar-btn,button.ar-link){margin-top:6px}
@@ -568,7 +568,7 @@
 @media (min-width:1001px){@A .ar-mpg #guideOut .gbody{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:48px;align-items:start}@A .ar-mpg #guideOut .gbody>.gwhat{grid-column:1/-1}
   @A .ar-mpg #guideOut .gkey{grid-template-columns:repeat(3,minmax(0,1fr))}@A .ar-mpg #guideOut .gkey .svm{--h:64px;--s:88px}}
 @A .ar-mpg #guideOut .gbeat{list-style:none!important;padding:0!important;gap:4px!important}
-@A .ar-mpg #guideOut .gbeat li{display:grid!important;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:baseline;padding:6px 0!important}
+@A .ar-mpg #guideOut .gbeat li{display:grid!important;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:baseline;padding:6px 0!important}
 @A .ar-mpg #guideOut .gbeat li::before{font:italic 900 20px/1 var(--ar-display)!important;font-stretch:118%;color:var(--ar-sec-ink)!important;text-align:right}
 /* what your team has against it: rows, the sprite on its small slanted type field, the answer, a tick or a cross */
 @A .ar-mpg #guideOut .gyours{display:grid!important;gap:0!important}
@@ -593,8 +593,8 @@
 @A .ar-mpg #trackOut .trstats>span{padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important;gap:6px!important}
 @A .ar-mpg #trackOut .trstats b{font:italic 900 34px/1 var(--ar-display)!important;font-stretch:122%!important;letter-spacing:-.02em;color:var(--ar-ink)!important}
 /* how the test works: three real steps, so numbered step plates */
-@A .ar-mpg #trackOut .trflow{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin:26px 0 0!important}
-@A .ar-mpg #trackOut .trflow>span{display:flex!important;align-items:center;gap:14px;min-height:40px;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
+@A .ar-mpg #trackOut .trflow{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin:24px 0 0!important}
+@A .ar-mpg #trackOut .trflow>span{display:flex!important;align-items:center;gap:16px;min-height:40px;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #trackOut .trflow b{position:relative!important;inset:auto!important;isolation:isolate;flex:none;display:grid!important;place-items:center;width:38px!important;height:38px!important;margin:0 0 0 4px!important;border-radius:0!important;background:none!important;
   font:italic 900 22px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
 @A .ar-mpg #trackOut .trflow b::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);box-shadow:var(--ar-shadow-s)}
@@ -603,19 +603,19 @@
 @A .ar-mpg #trackOut .trcard{margin:44px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A .ar-mpg #trackOut .trcard>.chk{display:flex!important;align-items:flex-start;gap:12px;margin:0!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
 @A .ar-mpg #trackOut .trcard>.chk::before{content:""!important;display:block!important;position:static!important;flex:none;width:26px!important;height:26px!important;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
-@A .ar-mpg #trackOut .trsub{margin:10px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A .ar-mpg #trackOut .trbars{display:grid!important;gap:18px!important;margin-top:22px!important}
+@A .ar-mpg #trackOut .trsub{margin:8px 0 0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg #trackOut .trbars{display:grid!important;gap:16px!important;margin-top:24px!important}
 @A .ar-mpg #trackOut .trbl{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;align-items:baseline}
 @A .ar-mpg #trackOut .trbl b{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #trackOut .trbl span{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #trackOut .trbt{display:flex!important;align-items:center;gap:12px;margin-top:6px}
-@A .ar-mpg #trackOut .trbt i{height:16px!important;transform:skewX(-20deg);border-radius:3px!important;margin-left:4px}
+@A .ar-mpg #trackOut .trbt i{height:16px!important;transform:skewX(-20deg);border-radius:4px!important;margin-left:4px}
 @A .ar-mpg #trackOut .trbt em{font:italic 900 20px/1 var(--ar-display)!important;font-stretch:118%!important;font-style:italic!important;color:var(--ar-ink)!important}
-@A .ar-mpg #trackOut .trverdict{margin:26px 0 0!important;padding:0 0 0 18px!important;position:relative;font:500 17px/1.5 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;max-width:60ch}
-@A .ar-mpg #trackOut .trverdict::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:6px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:2px}
+@A .ar-mpg #trackOut .trverdict{margin:24px 0 0!important;padding:0 0 0 16px!important;position:relative;font:500 17px/1.5 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;max-width:60ch}
+@A .ar-mpg #trackOut .trverdict::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:6px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:4px}
 @A .ar-mpg #trackOut .trverdict b{font-weight:800}
 @A .ar-mpg #trackOut .trhm{display:grid!important;grid-template-columns:1fr!important;gap:0 48px!important;background:none!important;margin:0!important;padding:0!important}
-@A .ar-mpg #trackOut .trmon{position:relative;isolation:isolate;display:grid!important;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;column-gap:12px;width:100%;min-height:76px;padding:10px 0!important;margin:0!important;
+@A .ar-mpg #trackOut .trmon{position:relative;isolation:isolate;display:grid!important;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;column-gap:12px;width:100%;min-height:76px;padding:8px 0!important;margin:0!important;
   background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;text-align:left;color:var(--ar-ink)!important;cursor:pointer}
 @A .ar-mpg #trackOut .trmon:first-of-type{margin-top:12px!important}
 @A .ar-mpg #trackOut .trmon::before{content:""!important;position:absolute!important;left:6px!important;top:50%!important;width:56px!important;height:40px!important;margin-top:-13px!important;z-index:-1;display:block!important;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-s)!important;
@@ -627,12 +627,12 @@
 @A .ar-mpg #trackOut .trmb span{display:block;margin-top:2px;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #trackOut .trr{font:italic 900 34px/1 var(--ar-display)!important;font-stretch:122%!important;letter-spacing:-.03em;color:var(--ar-ink)!important;background:none!important;padding:0 2px 0 4px!important}
 @A .ar-mpg #trackOut>p.t2{margin-top:16px!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
-@A .ar-mpg #trackOut .trsoon{margin-top:16px!important;padding:2px 0 2px 18px!important;position:relative;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
-@A .ar-mpg #trackOut .trsoon::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:6px;background:color-mix(in oklch,var(--ar-sec) 45%,var(--ar-paper));transform:skewX(var(--ar-slant));border-radius:2px}
+@A .ar-mpg #trackOut .trsoon{margin-top:16px!important;padding:2px 0 2px 16px!important;position:relative;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A .ar-mpg #trackOut .trsoon::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:6px;background:color-mix(in oklch,var(--ar-sec) 45%,var(--ar-paper));transform:skewX(var(--ar-slant));border-radius:4px}
 @A .ar-mpg #trackOut .trsoon b{display:block;font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
 @A .ar-mpg #trackOut .trsoon span{display:block;margin-top:4px;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #trackOut .trevs{margin:0!important;padding:0!important;list-style:none}
-@A .ar-mpg #trackOut .trevs li{padding:10px 0!important;border-bottom:1px solid var(--ar-rule);background:none!important}
+@A .ar-mpg #trackOut .trevs li{padding:8px 0!important;border-bottom:1px solid var(--ar-rule);background:none!important}
 @A .ar-mpg #trackOut .trevs li b{display:block;font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #trackOut .trevs li span{display:block;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #trackOut details.chsec{margin-top:40px!important}
@@ -645,10 +645,10 @@
 @A .ar-mpg #methodOut .npstats .wdrow{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:4px 20px}
 @A .ar-mpg #methodOut .npstats .wdl{flex-basis:100%;display:flex;align-items:center;gap:4px}
 @A .ar-mpg #methodOut .npintro{margin:16px 0 0!important;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink)!important;max-width:64ch}
-@A .ar-mpg #methodOut .nplegend{margin:34px 0 10px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+@A .ar-mpg #methodOut .nplegend{margin:32px 0 8px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A .ar-mpg #methodOut .nplegend>.chk{display:flex!important;align-items:flex-start;gap:12px;margin:0 0 16px!important;font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display)!important;font-stretch:118%!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
 @A .ar-mpg #methodOut .nplegend>.chk::before{content:""!important;display:block!important;position:static!important;flex:none;width:26px!important;height:26px!important;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);margin-bottom:2px}
-@A .ar-mpg #methodOut .nplrow{display:grid!important;grid-template-columns:1fr;gap:8px;margin:0 0 14px!important}
+@A .ar-mpg #methodOut .nplrow{display:grid!important;grid-template-columns:1fr;gap:8px;margin:0 0 16px!important}
 @A .ar-mpg #methodOut .nplrow>b{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #methodOut .npbands{display:flex!important;flex-wrap:wrap;gap:8px 8px!important;margin:0!important;padding-left:4px}
 @A .ar-mpg #methodOut .npbands>span{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;gap:6px;min-height:32px;padding:0 12px!important;border:0!important;border-radius:0!important;background:none!important;
@@ -662,8 +662,8 @@
 @A .ar-mpg #methodOut .npdots li::marker{color:var(--ar-sec)}
 @A .ar-mpg #methodOut .npdots li b{color:var(--ar-ink)!important}
 /* inside the folds: the formula as slanted tinted plates, the steps, the four answer levels */
-@A .ar-mpg #methodOut .npeq{display:flex!important;flex-wrap:wrap;align-items:center;gap:10px 10px!important;margin:4px 0 18px!important;padding-left:6px}
-@A .ar-mpg #methodOut .npchip{position:relative;isolation:isolate;min-height:52px!important;padding:6px 14px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+@A .ar-mpg #methodOut .npeq{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 8px!important;margin:4px 0 16px!important;padding-left:6px}
+@A .ar-mpg #methodOut .npchip{position:relative;isolation:isolate;min-height:52px!important;padding:6px 16px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important}
 @A .ar-mpg #methodOut .npchip::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--npc,var(--ar-sec)),var(--npc,var(--ar-sec))) 0 0/5px 100% no-repeat,color-mix(in oklch,var(--npc,var(--ar-sec)) 14%,var(--ar-sheet))}
 @A[data-look="dark"] .ar-mpg #methodOut .npchip::before{background:linear-gradient(var(--npc,var(--ar-sec)),var(--npc,var(--ar-sec))) 0 0/5px 100% no-repeat,color-mix(in oklab,var(--npc,var(--ar-sec)) 22%,#1E1D22)}
@@ -674,20 +674,20 @@
 @A .ar-mpg #methodOut .npop{font:italic 900 22px/1 var(--ar-display)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #methodOut .chbody :is(p,li){font-size:var(--ar-fs-small)!important;line-height:1.5!important;color:var(--ar-ink-2)!important;max-width:68ch}
 @A .ar-mpg #methodOut .chbody :is(p,li) b{color:var(--ar-ink)!important}
-@A .ar-mpg #methodOut .npsteps{padding-left:22px!important;display:grid;gap:10px;margin:14px 0!important}
+@A .ar-mpg #methodOut .npsteps{padding-left:24px!important;display:grid;gap:8px;margin:16px 0!important}
 @A .ar-mpg #methodOut .npsteps li::marker{font:italic 900 17px var(--ar-display);color:var(--ar-sec-ink)}
-@A .ar-mpg #methodOut .nplive{padding:2px 0 2px 18px!important;position:relative;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink)!important}
-@A .ar-mpg #methodOut .nplive::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:6px;background:var(--ar-blue);transform:skewX(var(--ar-slant));border-radius:2px}
-@A .ar-mpg #methodOut .nplev{gap:14px 16px!important;margin:16px 0!important}
+@A .ar-mpg #methodOut .nplive{padding:2px 0 2px 16px!important;position:relative;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-ink)!important}
+@A .ar-mpg #methodOut .nplive::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:6px;background:var(--ar-blue);transform:skewX(var(--ar-slant));border-radius:4px}
+@A .ar-mpg #methodOut .nplev{gap:16px 16px!important;margin:16px 0!important}
 @A .ar-mpg #methodOut .nplev>div{padding:2px 0 2px 16px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;position:relative}
-@A .ar-mpg #methodOut .nplev>div::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:6px;background:var(--lc);transform:skewX(var(--ar-slant));border-radius:2px}
+@A .ar-mpg #methodOut .nplev>div::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:6px;background:var(--lc);transform:skewX(var(--ar-slant));border-radius:4px}
 @A .ar-mpg #methodOut .nplev b{font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #methodOut .nplev span{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #methodOut .nplev em{font:italic 900 20px/1 var(--ar-display)!important;font-style:italic!important;color:var(--ar-ink)!important;margin-top:4px}
 @A .ar-mpg #methodOut .npmini>.chk{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;margin-bottom:8px!important}
 @A .ar-mpg #methodOut .npspr{display:flex!important;flex-wrap:wrap;gap:4px!important}
 /* the way to the track record: a menu strip */
-@A .ar-mpg #methodOut .nptrack{position:relative;isolation:isolate;display:flex!important;flex-direction:column;gap:4px;width:calc(100% - 8px)!important;margin:30px 0 0 6px!important;padding:16px 64px 18px 26px!important;border:0!important;border-radius:var(--ar-r-m)!important;background:none!important;box-shadow:none!important;cursor:pointer;text-align:left}
+@A .ar-mpg #methodOut .nptrack{position:relative;isolation:isolate;display:flex!important;flex-direction:column;gap:4px;width:calc(100% - 8px)!important;margin:32px 0 0 6px!important;padding:16px 64px 16px 24px!important;border:0!important;border-radius:var(--ar-r-m)!important;background:none!important;box-shadow:none!important;cursor:pointer;text-align:left}
 @A .ar-mpg #methodOut .nptrack::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)}
 @A[data-look="dark"] .ar-mpg #methodOut .nptrack::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)}
@@ -698,11 +698,11 @@
 @media (min-width:700px){@A .ar-mpg #methodOut .nplrow{grid-template-columns:150px minmax(0,1fr);align-items:center}}
 
 /* ---------- 14. About and legal ---------- */
-@A .ar-mpg #aboutOut .abthero{position:relative;margin:22px 0 14px!important;padding:0!important;background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;color:var(--ar-ink)!important}
+@A .ar-mpg #aboutOut .abthero{position:relative;margin:24px 0 16px!important;padding:0!important;background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;color:var(--ar-ink)!important}
 @A .ar-mpg #aboutOut .abthero::before,@A .ar-mpg #aboutOut .abthero::after{display:none!important}
 @A .ar-mpg #aboutOut .abthero>.chk{order:2;margin:0 0 8px!important;font:600 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-sec-ink)!important;text-transform:none!important}
-@A .ar-mpg #aboutOut .abthero>h2{display:flex;align-items:flex-start;gap:14px;margin:0!important;font:italic 800 min(var(--ar-fs-h1),10vw)/1.02 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.015em;color:var(--ar-ink)!important;text-wrap:balance;text-shadow:none!important}
-@A .ar-mpg #aboutOut .abthero>p{margin:14px 0 0!important;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
+@A .ar-mpg #aboutOut .abthero>h2{display:flex;align-items:flex-start;gap:16px;margin:0!important;font:italic 800 min(var(--ar-fs-h1),10vw)/1.02 var(--ar-display)!important;font-stretch:118%!important;letter-spacing:-.015em;color:var(--ar-ink)!important;text-wrap:balance;text-shadow:none!important}
+@A .ar-mpg #aboutOut .abthero>p{margin:16px 0 0!important;font:500 var(--ar-fs-body)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A .ar-mpg #aboutOut .abtchips{display:flex!important;flex-wrap:wrap;gap:8px!important;margin:16px 0 0!important;padding-left:4px}
 @A .ar-mpg #aboutOut .abtchips span{position:relative;isolation:isolate;display:inline-flex;align-items:center;min-height:30px;padding:0 12px!important;font:600 var(--ar-fs-small)/1 var(--ar-body)!important;letter-spacing:0!important;text-transform:none!important;color:#fff!important;background:none!important;border:0!important;border-radius:0!important}
 @A .ar-mpg #aboutOut .abtchips span::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
@@ -716,28 +716,28 @@
    Info: display-italic heads after a slanted tab, slim slanted bars in the Pokémon's own type colours, rows on hairlines,
    teammates as art tiles, no boxes) ---------- */
 @A #lairSheet :is(.lstp-meta,.lstp-rating){color:var(--ar-ink)}
-@A #lairSheet :is(.lstp-meta :is(.chlsdata,.lsgrp)>.chk,.lstp-meta .lsec>h4,.lstp-rating .lsec>h4){display:block!important;margin:26px 0 10px!important;padding:0!important;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;
+@A #lairSheet :is(.lstp-meta :is(.chlsdata,.lsgrp)>.chk,.lstp-meta .lsec>h4,.lstp-rating .lsec>h4){display:block!important;margin:24px 0 8px!important;padding:0!important;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;
   color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important;background:none!important;border:0!important}
-@A #lairSheet :is(.lstp-meta :is(.chlsdata,.lsgrp)>.chk,.lstp-meta .lsec>h4,.lstp-rating .lsec>h4)::before{content:""!important;display:inline-block!important;width:20px!important;height:20px!important;margin:0 10px 0 2px!important;vertical-align:-3px!important;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:3px!important;vertical-align:baseline}
+@A #lairSheet :is(.lstp-meta :is(.chlsdata,.lsgrp)>.chk,.lstp-meta .lsec>h4,.lstp-rating .lsec>h4)::before{content:""!important;display:inline-block!important;width:20px!important;height:20px!important;margin:0 8px 0 2px!important;vertical-align:-3px!important;background:var(--ar-sec)!important;transform:skewX(var(--ar-slant));border-radius:4px!important;vertical-align:baseline}
 @A #lairSheet .lstp-meta :is(.chlsdata,.lsgrp)>.chk:first-child,@A #lairSheet :is(.lstp-meta,.lstp-rating)>.lsec:first-child>h4{margin-top:6px!important}
 @A #lairSheet .lstp-meta :is(.chlsdata,.lsgrp)>.chk .basis{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important;margin-left:2px}
 @A #lairSheet :is(.lstp-meta,.lstp-rating) .lsec{margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
 /* moves and items: name, a slim slanted bar in the Pokémon's types, the share */
 @A #lairSheet .lstp-meta .chbar{display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) 52px;align-items:center;gap:12px;min-height:36px;font:500 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A #lairSheet .lstp-meta .chbar>span{white-space:normal!important;overflow:visible!important}
-@A #lairSheet .lstp-meta .chbar>i{height:9px!important;border-radius:2px!important;transform:skewX(-20deg);background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;margin:0 3px}
-@A #lairSheet .lstp-meta .chbar>i>em{border-radius:2px!important;background:linear-gradient(in oklch 90deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec))))!important}
+@A #lairSheet .lstp-meta .chbar>i{height:9px!important;border-radius:4px!important;transform:skewX(-20deg);background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;margin:0 4px}
+@A #lairSheet .lstp-meta .chbar>i>em{border-radius:4px!important;background:linear-gradient(in oklch 90deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec))))!important}
 @A #lairSheet .lstp-meta .chbar>b{font:italic 900 17px/1 var(--ar-display)!important;font-stretch:115%!important;color:var(--ar-ink)!important;text-align:right}
 /* brought with: four art tiles */
-@A #lairSheet .lstp-meta .chbw{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 10px!important;margin:6px 0 0!important;padding:0 2px 0 4px}
+@A #lairSheet .lstp-meta .chbw{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 8px!important;margin:6px 0 0!important;padding:0 2px 0 4px}
 @A #lairSheet .lstp-meta .chbw>button{--h:50px;--s:72px;--lift:12px;cursor:pointer;min-height:44px}
 @A #lairSheet .lstp-meta .chbw>button>.bwn{font:700 var(--ar-fs-small)/1.2 var(--ar-body)!important;text-transform:none!important;letter-spacing:0!important}
 @A #lairSheet .lstp-meta .chbw>button>b{font:italic 900 20px/1.15 var(--ar-display)!important;font-stretch:115%!important;margin-top:2px!important}
 @A #lairSheet .lstp-meta .chbw>button>span{font:500 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:var(--ar-ink-2)!important}
-@A #lairSheet :is(.lstp-meta,.lstp-rating) p.t2{font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:10px 0 0!important}
+@A #lairSheet :is(.lstp-meta,.lstp-rating) p.t2{font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important;margin:8px 0 0!important}
 /* the typical set: label and value on hairlines */
 @A #lairSheet .lstp-meta .lset{display:grid!important;grid-template-columns:auto minmax(0,1fr);gap:0 16px!important;font-size:var(--ar-fs-body)!important}
-@A #lairSheet .lstp-meta .lset>:is(span,b){padding:10px 0;border-bottom:1px solid var(--ar-rule)}
+@A #lairSheet .lstp-meta .lset>:is(span,b){padding:8px 0;border-bottom:1px solid var(--ar-rule)}
 @A #lairSheet .lstp-meta .lset>span{font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A #lairSheet .lstp-meta .lset>b{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 /* why it rates N: each part a label, a slim slanted bar in the Pokémon's types and its numeral, the reading under it */
@@ -746,18 +746,18 @@
 @A #lairSheet .lstp-rating .lbar{display:grid!important;grid-template-columns:minmax(0,1fr) 62px;grid-template-rows:auto auto auto;column-gap:12px;row-gap:6px;align-items:center;margin:0!important;padding:12px 0!important;border-bottom:1px solid var(--ar-rule);font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important}
 @A #lairSheet .lstp-rating .lbar>span{grid-column:1;grid-row:1;color:var(--ar-ink)!important}
 @A #lairSheet .lstp-rating .lbar>b{grid-column:2;grid-row:1/3;align-self:center;text-align:right;font:italic 900 26px/1 var(--ar-display)!important;font-stretch:122%!important;color:var(--ar-ink)!important}
-@A #lairSheet .lstp-rating .lbar>i{grid-column:1;grid-row:2;height:10px!important;border-radius:3px!important;transform:skewX(-20deg);background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;margin:0 4px;overflow:hidden}
-@A #lairSheet .lstp-rating .lbar>i::after{border-radius:3px!important;background:linear-gradient(in oklch 90deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec))))!important}
+@A #lairSheet .lstp-rating .lbar>i{grid-column:1;grid-row:2;height:10px!important;border-radius:4px!important;transform:skewX(-20deg);background:color-mix(in oklch,var(--ar-ink) 10%,transparent)!important;margin:0 4px;overflow:hidden}
+@A #lairSheet .lstp-rating .lbar>i::after{border-radius:4px!important;background:linear-gradient(in oklch 90deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec))))!important}
 @A #lairSheet .lstp-rating .lbar>em{grid-column:1/-1;grid-row:3;margin:0!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
 @A #lairSheet .lstp-rating .lbar>em strong{color:var(--ar-ink)!important}
-@A #lairSheet .lstp-rating details.lprof{margin:14px 0 0!important;background:none!important;border:0!important;padding:0!important}
-@A #lairSheet .lstp-rating details.lprof>summary{display:flex;align-items:center;gap:10px;min-height:44px;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-sec-ink)!important;cursor:pointer;list-style:none}
+@A #lairSheet .lstp-rating details.lprof{margin:16px 0 0!important;background:none!important;border:0!important;padding:0!important}
+@A #lairSheet .lstp-rating details.lprof>summary{display:flex;align-items:center;gap:8px;min-height:44px;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-sec-ink)!important;cursor:pointer;list-style:none}
 @A #lairSheet .lstp-rating details.lprof>summary::-webkit-details-marker{display:none}
 @A #lairSheet .lstp-rating details.lprof>summary::before{content:""!important;position:static!important;display:block!important;flex:none;width:8px!important;height:8px!important;margin:0 4px!important;border:solid currentColor!important;border-width:0 2.5px 2.5px 0!important;transform:translateY(-2px) rotate(45deg)!important;background:none!important}
 @A #lairSheet .lstp-rating details.lprof[open]>summary::before{transform:translateY(2px) rotate(-135deg)!important}
 /* what the data says: hairline rows, the source in bold, the reading as the numeral side */
 @A #lairSheet .lstp-rating .levs{display:grid!important;gap:0!important}
-@A #lairSheet .lstp-rating .lev{display:grid!important;grid-template-columns:minmax(0,1fr);gap:3px!important;padding:12px 0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
+@A #lairSheet .lstp-rating .lev{display:grid!important;grid-template-columns:minmax(0,1fr);gap:4px!important;padding:12px 0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important}
 @A #lairSheet .lstp-rating .lev>span{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A #lairSheet .lstp-rating .lev>b{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-align:left}
 @A #lairSheet .lstp-rating .lev>em{grid-column:1/-1;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
@@ -765,12 +765,12 @@
 @media (max-width:420px){@A #lairSheet .lstp-rating .lev{grid-template-columns:1fr}@A #lairSheet .lstp-rating .lev>b{text-align:left}}
 /* other tier lists: the letter on a slanted plate, the list's name and line, no box */
 @A #lairSheet .lstp-rating .lout{display:grid!important;gap:0!important}
-@A #lairSheet .lstp-rating .lo{display:grid!important;grid-template-columns:48px minmax(0,1fr);column-gap:14px;align-items:center;min-height:64px;padding:10px 0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;color:var(--ar-ink)!important;text-decoration:none!important}
+@A #lairSheet .lstp-rating .lo{display:grid!important;grid-template-columns:48px minmax(0,1fr);column-gap:16px;align-items:center;min-height:64px;padding:8px 0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;border-radius:0!important;box-shadow:none!important;color:var(--ar-ink)!important;text-decoration:none!important}
 @A #lairSheet .lstp-rating .lo b.lot{position:relative;isolation:isolate;width:42px!important;height:42px!important;margin-left:4px;background:none!important;border-radius:0!important;font:italic 900 22px/1 var(--ar-display)!important;color:#fff!important}
 @A #lairSheet .lstp-rating .lo b.lot::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)}
 @A #lairSheet .lstp-rating .lo>span{font:700 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A #lairSheet .lstp-rating .lo>em{grid-column:2;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
-@A #lairSheet .lstp-rating .lslinks{display:flex!important;flex-wrap:wrap;gap:4px 22px;margin-top:18px!important}
+@A #lairSheet .lstp-rating .lslinks{display:flex!important;flex-wrap:wrap;gap:4px 24px;margin-top:16px!important}
 @media (max-width:499px){@A #lairSheet .lstp-meta .chbw{grid-template-columns:repeat(2,minmax(0,1fr))}@A #lairSheet .lstp-meta .chbw>button{--h:60px;--s:86px}}
 @A #lairSheet .lstp-meta .lsgrp>.chk .lsabn{display:block;margin-top:6px;font:500 var(--ar-fs-small)/1.3 var(--ar-body)!important;font-style:normal!important;color:var(--ar-ink-2)!important}
 @A #lairSheet .lstp-meta .lsgrp>.chk .lsabn+*,@A #lairSheet .lstp-meta .lsgrp>.chk b{font-family:var(--ar-body)}
@@ -789,8 +789,8 @@
 
 /* ---------- 17. Home's weekly teaser (off until Sim turns it on, 63-weekly.js WK_HOME): a purple-edged menu strip with the
    week's movers on small type fields ---------- */
-@A #homeOut .wkhome{display:grid;gap:14px}
-@A #homeOut .wkhome :is(.wkteaser,.calchip){position:relative;isolation:isolate;display:flex!important;flex-direction:column;align-items:flex-start;gap:10px;width:calc(100% - 6px);margin:0 0 0 6px!important;padding:16px 18px 16px 24px!important;
+@A #homeOut .wkhome{display:grid;gap:16px}
+@A #homeOut .wkhome :is(.wkteaser,.calchip){position:relative;isolation:isolate;display:flex!important;flex-direction:column;align-items:flex-start;gap:8px;width:calc(100% - 6px);margin:0 0 0 6px!important;padding:16px 16px 16px 24px!important;
   text-align:left;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;cursor:pointer;--edge:var(--ar-purple)}
 @A #homeOut .wkhome :is(.wkteaser,.calchip)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--edge) 16%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
@@ -849,9 +849,9 @@
 /* minor 3: the stats lines on a grid (label, then each number), no inherited separators */
 @A .ar-mpg .wdstats .wdc{padding:0!important;margin:0!important;border:0!important}
 @A .ar-mpg .wdstats .wdc::before,@A .ar-mpg .wdstats .wdc::after{display:none!important}
-@A .ar-mpg #wkOut .wkhead .wdrow.wdin{display:grid!important;grid-template-columns:100px auto auto;justify-content:start;column-gap:22px;align-items:baseline}
+@A .ar-mpg #wkOut .wkhead .wdrow.wdin{display:grid!important;grid-template-columns:100px auto auto;justify-content:start;column-gap:24px;align-items:baseline}
 @A .ar-mpg #wkOut .wkhead .wdstats>.wdl,@A .ar-mpg .wdsub,@A .ar-mpg .chpgs{text-wrap:balance}
-@A .ar-mpg #methodOut .npstats .wdrow{display:flex!important;flex-wrap:wrap;gap:4px 22px!important}
+@A .ar-mpg #methodOut .npstats .wdrow{display:flex!important;flex-wrap:wrap;gap:4px 24px!important}
 @A .ar-mpg #methodOut .npstats .wdl{flex-basis:100%}
 /* minor 4 and orphans in general: no lone last word */
 @A .ar-mpg :is(p,.t2,.chbd>span,.wkn>span,.trmb>span,.calmain>span,.ttwho .t2,.evcard>.t2){text-wrap:pretty}
@@ -859,7 +859,7 @@
 @A .ar-mpg #ttList .evbtns .ar-link{order:2}
 @A .ar-mpg #ttList .evbtns::after{content:"";order:1;flex-basis:100%;height:0}
 /* minor 6: the numbers and their "?" stay on one line */
-@media (min-width:380px){@A .ar-mpg #events .wdrow{flex-wrap:nowrap!important;gap:4px 14px!important}}
+@media (min-width:380px){@A .ar-mpg #events .wdrow{flex-wrap:nowrap!important;gap:4px 16px!important}}
 /* minor 7: team styles: always the name over its share, the change under it on one line */
 @A .ar-mpg #wkOut .wkstyles .wkst{display:grid!important;grid-template-columns:1fr;row-gap:4px;align-content:start}
 @A .ar-mpg #wkOut .wkstyles .wkst b{order:0}
@@ -880,12 +880,12 @@
 /* minor 12: desktop sheet Rating tab: both column heads on one line */
 @A #lairSheet .lstp-rating.lsgrid2>.lsec>h4{margin-top:6px!important}
 /* minor 13: Popular sets head: the name, then its types and the Mega and box tags in one line, then the rating plate */
-@A .ar-mpg #setOut .sethead{display:flex!important;flex-wrap:wrap;align-items:center;align-content:center;gap:8px 12px;padding-left:170px!important;min-height:150px}
+@A .ar-mpg #setOut .sethead{display:flex!important;flex-wrap:wrap;align-items:center;align-content:center;gap:8px 12px;padding-left:168px!important;min-height:150px}
 @A .ar-mpg #setOut .sethead>img.spr.big{position:absolute!important;left:4px;top:0;margin:0!important}
 @A .ar-mpg #setOut .sethead::before{top:40px!important}
 @A .ar-mpg #setOut .sethead .sl-name{flex-basis:100%}
 @A .ar-mpg #setOut .sethead .tag.tier{flex-basis:auto;margin-top:4px}
-@A .ar-mpg #setOut .sethead .chips~.tag.ico{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;width:auto!important;height:auto!important;min-height:28px;padding:0 10px!important;margin:0!important;
+@A .ar-mpg #setOut .sethead .chips~.tag.ico{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;width:auto!important;height:auto!important;min-height:28px;padding:0 8px!important;margin:0!important;
   font:600 var(--ar-fs-small)/1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;text-indent:0!important;overflow:visible!important}
 @A .ar-mpg #setOut .sethead .chips~.tag.ico::before{content:""!important;position:absolute;inset:0;z-index:-1;display:block!important;background:color-mix(in oklch,var(--ar-sec) 16%,var(--ar-sheet))!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);width:auto!important;height:auto!important}
 @A[data-look="dark"] .ar-mpg #setOut .sethead .chips~.tag.ico::before{background:#2A2930!important}
@@ -894,9 +894,9 @@
 @A .ar-mpg #setOut .sethead .tag.box.ico{font-size:0!important}
 @A .ar-mpg #setOut .sethead .tag.box.ico::after{content:"In your box"!important;display:inline!important;position:static!important;font:600 var(--ar-fs-small)/1 var(--ar-body);background:none!important;width:auto!important;height:auto!important}
 @media (max-width:599px){@A .ar-mpg #setOut .sethead{padding-left:132px!important;min-height:128px}}
-@media (min-width:1001px){@A .ar-mpg #setOut .sethead{padding-left:214px!important;min-height:184px}}
+@media (min-width:1001px){@A .ar-mpg #setOut .sethead{padding-left:216px!important;min-height:184px}}
 /* minor 14: Track record's three numbers stack on the narrowest phones */
-@media (max-width:379px){@A .ar-mpg #trackOut .trstats{grid-template-columns:1fr!important;gap:10px!important}@A .ar-mpg #trackOut .trstats>span{flex-direction:row!important;align-items:baseline;gap:12px!important}}
+@media (max-width:379px){@A .ar-mpg #trackOut .trstats{grid-template-columns:1fr!important;gap:8px!important}@A .ar-mpg #trackOut .trstats>span{flex-direction:row!important;align-items:baseline;gap:12px!important}}
 /* nit 2: the "by rating" bars as one purple ramp, strongest for the top band */
 @A .ar-mpg #trackOut .trbar:nth-child(1) .trbt i{background:var(--ar-purple)!important}
 @A .ar-mpg #trackOut .trbar:nth-child(2) .trbt i{background:color-mix(in oklch,var(--ar-purple) 70%,var(--ar-paper))!important}
@@ -917,8 +917,8 @@
    ===================================================================================================================== */
 /* F14 (desktop) / F12 (phone): How we calculate: the 7 checks and the data sources are arena rows (hairlines, no boxes); the
    check numbers are the purple slanted step tabs (as Track record's 1-2-3); the figures are Meta purple; 15px text throughout */
-@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc){list-style:none!important;margin:14px 0 6px!important;padding:0!important;display:grid!important;gap:0!important;background:none!important;border:0!important;box-shadow:none!important}
-@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc)>li{position:relative;display:grid!important;gap:3px;margin:0!important;padding:14px 4px 14px 52px!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;
+@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc){list-style:none!important;margin:16px 0 6px!important;padding:0!important;display:grid!important;gap:0!important;background:none!important;border:0!important;box-shadow:none!important}
+@A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc)>li{position:relative;display:grid!important;gap:4px;margin:0!important;padding:16px 4px 16px 52px!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;
   border-radius:0!important;box-shadow:none!important;outline:0!important;font:400 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-ink-2)!important}
 @A:not(#amw) .ar-mpg :is(ol.npchecks,ul.npsrc)>li:first-child{border-top:1px solid var(--ar-rule)!important}
 @A:not(#amw) .ar-mpg ul.npsrc>li{padding-left:24px!important}
@@ -930,13 +930,13 @@
 @A:not(#amw) .ar-mpg ol.npchecks>li::after{content:""!important;position:absolute!important;left:4px;top:14px;width:32px;height:28px;z-index:0;background:var(--ar-purple-plate)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A:not(#amw) .ar-mpg ol.npchecks>li>*{position:relative;z-index:1}
 /* a source: a slanted purple tick before its name; the figures in Meta purple ink */
-@A:not(#amw) .ar-mpg ul.npsrc>li::before{content:""!important;position:absolute!important;left:4px;top:18px;width:8px;height:18px;background:var(--ar-purple)!important;transform:skewX(var(--ar-slant));border-radius:2px;box-shadow:none!important;border:0!important}
+@A:not(#amw) .ar-mpg ul.npsrc>li::before{content:""!important;position:absolute!important;left:4px;top:18px;width:8px;height:18px;background:var(--ar-purple)!important;transform:skewX(var(--ar-slant));border-radius:4px;box-shadow:none!important;border:0!important}
 @A:not(#amw) .ar-mpg ul.npsrc>li .npnum{font:700 var(--ar-fs-small)/1.5 var(--ar-body)!important;color:var(--ar-purple-ink)!important}
 @A:not(#amw) .ar-mpg ul.npsrc>li .t2{color:var(--ar-ink-3)!important}
 @media (min-width:1001px){@A:not(#amw) .ar-mpg ul.npsrc{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px}@A:not(#amw) .ar-mpg ul.npsrc>li:nth-child(2){border-top:1px solid var(--ar-rule)!important}}
 /* About: the MIT licence is quiet text on a soft field with a purple spine (no outline) */
-@A:not(#amw) .ar-mpg #aboutOut pre.abtlicense{position:relative;border:0!important;outline:0!important;box-shadow:none!important;border-radius:var(--ar-r-l)!important;padding:16px 18px 16px 24px!important;background:var(--ar-paper-2)!important}
-@A:not(#amw) .ar-mpg #aboutOut pre.abtlicense::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;background:var(--ar-purple);border-radius:0 3px 3px 0}
+@A:not(#amw) .ar-mpg #aboutOut pre.abtlicense{position:relative;border:0!important;outline:0!important;box-shadow:none!important;border-radius:var(--ar-r-l)!important;padding:16px 16px 16px 24px!important;background:var(--ar-paper-2)!important}
+@A:not(#amw) .ar-mpg #aboutOut pre.abtlicense::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:5px;background:var(--ar-purple);border-radius:0 4px 4px 0}
 @A[data-look="dark"]:not(#amw) .ar-mpg #aboutOut pre.abtlicense{background:#1A191D!important}
 /* F22 (phone): no glows: "Tied for #1!" and the tier board's labels carry no text shadow */
 @A:not(#amw) .ar-mpg #chHot .chpen,@A:not(#amw) .ar-mpg #lairBody .ltile .ltf .ltg,@A:not(#amw) .ar-mpg #lairBody .ltier .ltl span{text-shadow:none!important}
@@ -960,13 +960,13 @@
 @A:not(#amw) .ar-mpg #aboutOut .abthero>h2{font-size:var(--ar-fs-page)!important;line-height:1.02!important;font-stretch:120%!important}
 @A:not(#amw) .ar-mpg #aboutOut .abthero>h2::before{content:"";flex:none;width:30px;height:30px;margin-top:calc((1.02em - 30px) / 2);background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 /* D-F27: Archetypes' "How to beat it" numbers are the purple step plates (as the 7 checks and Track record), not bare italics */
-@A:not(#amw) .ar-mpg #guideOut .gbeat li{grid-template-columns:32px minmax(0,1fr)!important;column-gap:14px!important;align-items:start!important;position:relative}
+@A:not(#amw) .ar-mpg #guideOut .gbeat li{grid-template-columns:32px minmax(0,1fr)!important;column-gap:16px!important;align-items:start!important;position:relative}
 @A:not(#amw) .ar-mpg #guideOut .gbeat li::before{position:relative;z-index:1;display:grid!important;place-items:center;width:32px;height:28px;margin-top:-2px;font:italic 900 17px/1 var(--ar-display)!important;font-stretch:120%!important;color:#fff!important;text-align:center!important;
   background:none!important}
 @A:not(#amw) .ar-mpg #guideOut .gbeat li::after{content:"";position:absolute;left:0;top:4px;width:32px;height:28px;z-index:0;background:var(--ar-purple-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A:not(#amw) .ar-mpg #guideOut .gbeat li>*{position:relative;z-index:1}
 /* D-F28: This week's "How we decide what changed" is the fold strip (75-arena-meta.js gives it the chevron and title) */
-@A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>summary{position:relative!important;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;max-width:560px;padding:8px 16px 8px 22px!important;margin:0 0 0 6px!important;
+@A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>summary{position:relative!important;isolation:isolate;display:flex!important;align-items:center;gap:12px;min-height:56px;max-width:560px;padding:8px 16px 8px 24px!important;margin:0 0 0 6px!important;
   background:none!important;border:0!important;box-shadow:none!important;cursor:pointer;list-style:none;color:var(--ar-ink)!important}
 @A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>summary::after{content:none!important;display:none!important}
 @A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border:0!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s)!important;
@@ -974,7 +974,7 @@
 @A:not(#amw)[data-look="dark"] .ar-mpg #wkOut details.ar-wkfold>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
 @A:not(#amw) .ar-mpg #wkOut details.ar-wkfold[open]>summary::before{transform:skewX(var(--ar-slant))!important}
 @A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>summary .cht{font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
-@A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>p{margin:14px 0 0 8px!important}
+@A:not(#amw) .ar-mpg #wkOut details.ar-wkfold>p{margin:16px 0 0 8px!important}
 /* D-F28: About's folds carry the one fold chevron, no second icon square; This week's fold is the fold strip (75-arena-meta.js) */
 @A:not(#amw) .ar-mpg[data-pane="about"] details>summary .abtic{display:none!important}
 /* N10: the "In your box" mark is not clipped */
@@ -988,7 +988,7 @@
 /* P-N10: the tile's corner marks (the gem, the box dot) are never clipped by the field */
 @A:not(#amw) .ar-mpg #lairBody .ltile .ltf{overflow:visible!important}
 /* NEW-01: the legend is a row of keys (75-arena-meta.js drops the separators and the retired Mega key) */
-@A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 22px;font-size:var(--ar-fs-small)!important}
+@A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg{display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 24px;font-size:var(--ar-fs-small)!important}
 @A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg .lng{gap:8px}
 @A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg .tipq{margin-left:2px}
 @A:not(#amw) .ar-mpg #lairBody .lnote.ar-lg .ltb{width:12px!important;height:12px!important;border-radius:50%!important;background:var(--ar-blue)!important;border:0!important}
@@ -997,9 +997,9 @@
   background:var(--ar-sec)!important;-webkit-mask:none!important;mask:none!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @media (min-width:1001px){@A:not(#amw) .ar-mpg .chpghead .chpgt::before,@A:not(#amw) .ar-mpg #aboutOut .abthero>h2::before{width:32px!important}}
 /* D-F25: About's head is the shared page head with its section tab (the content:none from an older layer is overruled above) */
-@A:not(#amw) .ar-mpg #aboutOut .abthero>h2{display:flex!important;align-items:flex-start;gap:14px}
+@A:not(#amw) .ar-mpg #aboutOut .abthero>h2{display:flex!important;align-items:flex-start;gap:16px}
 /* NEW-07: Popular sets' "Your team" picker: the six as small art tiles (3 by 2 on phones, one row of six from 600px) */
-@A:not(#amw) .ar-mpg #setQuick.ar-setq{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 12px!important;max-width:560px;padding:0 4px 0 6px!important}
+@A:not(#amw) .ar-mpg #setQuick.ar-setq{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 12px!important;max-width:560px;padding:0 4px 0 6px!important}
 @A:not(#amw) .ar-mpg #setQuick.ar-setq>.lbl{grid-column:1/-1}
 @A:not(#amw) .ar-mpg #setQuick.ar-setq>.ar-art{margin:0!important;min-width:0}
 @A:not(#amw) .ar-mpg #setQuick.ar-setq>.ar-art .ar-nm{font-size:15px!important;min-height:0!important}
@@ -1011,14 +1011,14 @@
 
 /* Ratings hero (Sim, Nov 5): a tie for #1 shares one card. One big number and the tie line, then two or three Pokémon side
    by side, each a tap into its info sheet. A lone #1 keeps the single art card (#chHot .chhot2 above). */
-@A .ar-mpg #chHot .ar-tie{position:relative;isolation:isolate;margin:6px 0 16px;padding:18px 18px 16px 22px}
+@A .ar-mpg #chHot .ar-tie{position:relative;isolation:isolate;margin:6px 0 16px;padding:16px 16px 16px 24px}
 @A .ar-mpg #chHot .ar-tie-bg{position:absolute;inset:0;z-index:-1;border-radius:var(--ar-r-l);transform:skewX(var(--ar-slant));box-shadow:var(--ar-shadow-m,0 10px 24px rgba(30,10,40,.16));
   background:linear-gradient(in oklch 120deg,color-mix(in oklch,var(--ta) 30%,var(--ar-sheet)),color-mix(in oklch,var(--tb) 30%,var(--ar-sheet)) 55%,color-mix(in oklch,var(--tc) 26%,var(--ar-sheet)))}
 @A[data-look="dark"] .ar-mpg #chHot .ar-tie-bg{background:linear-gradient(in oklch 120deg,color-mix(in oklch,var(--ta) 34%,#1C1B20),color-mix(in oklch,var(--tb) 34%,#1C1B20) 55%,color-mix(in oklch,var(--tc) 30%,#1C1B20))}
-@A .ar-mpg #chHot .ar-tie-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+@A .ar-mpg #chHot .ar-tie-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 16px}
 @A .ar-mpg #chHot .ar-tie-n{font-size:68px;line-height:.9;color:var(--ar-ink)}
 @A .ar-mpg #chHot .ar-tie-cap{font:700 16px/1.3 var(--ar-body);color:var(--ar-ink)}
-@A .ar-mpg #chHot .ar-tie-mons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+@A .ar-mpg #chHot .ar-tie-mons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
 @A .ar-mpg #chHot .ar-tie3 .ar-tie-mons{grid-template-columns:repeat(3,minmax(0,1fr))}
 @A .ar-mpg #chHot .ar-tie-mon{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;min-height:44px;padding:0;border:0!important;background:none!important;color:var(--ar-ink)!important;text-align:left;cursor:pointer;font:inherit}
 @A .ar-mpg #chHot .ar-tie-mon img{width:120px!important;height:120px!important;margin:-6px 0 2px -6px!important;max-width:none}
@@ -1027,20 +1027,20 @@
 @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon b{font-size:16px}
 @A .ar-mpg #chHot .ar-tie-ln{font:500 15px/1.3 var(--ar-body);color:var(--ar-ink)}
 @A .ar-mpg #chHot .ar-tie-mon:focus-visible{outline:3px solid var(--ar-focus);outline-offset:4px;border-radius:6px}
-@media (min-width:1001px){@A .ar-mpg #chHot .ar-tie{padding:22px 28px 20px 32px}@A .ar-mpg #chHot .ar-tie-n{font-size:96px}
+@media (min-width:1001px){@A .ar-mpg #chHot .ar-tie{padding:24px 28px 20px 32px}@A .ar-mpg #chHot .ar-tie-n{font-size:96px}
   @A .ar-mpg #chHot .ar-tie-mon img{width:160px!important;height:160px!important}@A .ar-mpg #chHot .ar-tie3 .ar-tie-mon img{width:132px!important;height:132px!important}
   @A .ar-mpg #chHot .ar-tie-mon b{font-size:24px}@A .ar-mpg #chHot .ar-tie3 .ar-tie-mon b{font-size:22px}@A .ar-mpg #chHot .ar-tie-ln{font-size:16px}}
 @A .ar-mpg #chHot .ar-tie{margin:6px 8px 16px 4px}
 @A .ar-mpg #chHot .ar-tie-mon b{font-style:normal}
 /* narrow phones: a three-way tie stacks as three rows (sprite, then name and numbers), so nothing wraps word by word */
 @media (max-width:440px){@A .ar-mpg #chHot .ar-tie3 .ar-tie-mons{grid-template-columns:1fr;gap:6px}
-  @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center}
+  @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center}
   @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon img{grid-row:1/span 3;width:76px!important;height:76px!important;margin:0!important}
   @A .ar-mpg #chHot .ar-tie3 .ar-tie-mon b{font-size:17px}@A .ar-mpg #chHot .ar-tie3 .ar-tie-ln br{display:none}
   @A .ar-mpg #chHot .ar-tie3 .ar-tie-ln{white-space:normal}}
 /* tablets: keep the slanted tie card inside the screen */
-@media (min-width:600px){@A .ar-mpg #chHot .ar-tie{margin-inline:34px}}
-@media (min-width:1001px){@A .ar-mpg #chHot .ar-tie{margin-inline:42px}}
+@media (min-width:600px){@A .ar-mpg #chHot .ar-tie{margin-inline:32px}}
+@media (min-width:1001px){@A .ar-mpg #chHot .ar-tie{margin-inline:40px}}
 /* Sim (Nov 7): a lone #1 on phones with wider text spilled into the next row and broke "Sneas ler". The card grows with its
    text (the art field is pinned to its edges, so it stretches with it), names break only between words */
 @A .ar-mpg #chHot .chhot.mgrh{height:auto!important;min-height:236px!important;padding-bottom:6px!important}
@@ -1048,11 +1048,11 @@
 @A .ar-mpg #chHot .chhot.mgrh .mgrst{max-width:50%}
 /* Meta, list first (Sim, Nov 7): search and Filter share one row; the type chips and flags open under it */
 @A #lair:not(.ar-lfopen) :is(#lairTypes,#lairFlags){display:none!important}
-@A #lair>.lctl{display:flex!important;align-items:center;gap:10px}
+@A #lair>.lctl{display:flex!important;align-items:center;gap:8px}
 @A #lair>.lctl>:not(.ar-lfilt){flex:1 1 auto;min-width:0}
-@A #lair .ar-lfilt{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;--edge:var(--ar-purple)}
+@A #lair .ar-lfilt{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 16px;--edge:var(--ar-purple)}
 @A #lair .ar-lfilt svg{width:20px;height:20px}
-@A #lair .ar-lfilt .ar-lfn{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--ar-purple);color:#fff;font:700 13px/1 var(--ar-body)}
+@A #lair .ar-lfilt .ar-lfn{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:10px;background:var(--ar-purple);color:#fff;font:700 13px/1 var(--ar-body)}
 @A #lair>.lctl{flex-wrap:nowrap!important}
 @A #lair>.lctl>.lsearch{flex:1 1 auto!important;width:auto!important;min-width:0}
 /* tighter rhythm above the list so it reaches the first screen on phones */
