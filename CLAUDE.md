@@ -15,6 +15,12 @@ makes it heavy, and a lighter option if one exists. Background computer time (a 
 - She tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
   screens except feature sprites, for smooth scrolling; never give filtered sprites their own layers (will-change), it made it worse.
 - She has a sharp eye for symmetry and small details; keep layouts even and labels clear.
+- Using space well is very, very important to her, on every page and every screen size: no empty strips beside text,
+  no half-filled rows. Prefer even columns or side-by-side layouts over narrowing content.
+- Seamless and clean, in light AND dark mode: no boxes stacked inside boxes in different shades (page > card > cell
+  should be at most page + one card colour), dividers are thin soft rules (--ar-rule), not heavy dark lines.
+- Design scale (Nov 7): text 13/15/16/17/20/22/24/26/28/34 (+ display), spacing on a 4px grid (1/2/6 allowed),
+  corners 4/6/10/18/round, paragraphs line-height 1.5.
 
 ## Privacy and safety
 - COPPA: no names or emails collected; feedback stays anonymous.

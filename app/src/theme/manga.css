@@ -9,9 +9,9 @@
 @R{--chp:#FBFAF7;--chp2:#F1EFEA;--chc:#FFFFFF;--chink:#141414;--chink2:#4F546F;--chline:#141414;--line:#DCD8D0;--line2:#C5C0B6;--soft:#F1EFEA;--card2:#F6F4EF;
   --chbar:#141414;--chhdr:#141414;--chbtnInk:#141414;--navy:#141414;--deep:#141414;--navyt:#141414;--btn:#141414;--chshadow:#141414;
   --tr-bw:3px;--tr-r:0px;--tr-title-bg:#141414;--tr-lines:#141414;--mgpaper:#FBFAF7;--mgpanel:#FFFFFF;--mgink:#141414}
-@R[data-look="dark"]{--chp:#0B0B0C;--chp2:#18181A;--chc:#111113;--chink:#F4F1EC;--chink2:#A8A6AE;--chline:#E9E6E0;--line:#2A2A2F;--line2:#3B3B42;
-  --chbar:#111113;--chhdr:#111113;--chbtnInk:#0B0B0C;--navy:#111113;--deep:#0B0B0C;--btn:#F4F1EC;--chshadow:#000;--tr-title-bg:#111113;--tr-lines:rgba(255,255,255,.2);
-  --mgpaper:#0B0B0C;--mgpanel:#0B0B0C;--mgink:#E9E6E0}
+@R[data-look="dark"]{--chp:#171718;--chp2:#242426;--chc:#1D1D1F;--chink:#F4F1EC;--chink2:#A8A6AE;--chline:#E9E6E0;--line:#36363B;--line2:#3B3B42;
+  --chbar:#1D1D1F;--chhdr:#1D1D1F;--chbtnInk:#171718;--navy:#1D1D1F;--deep:#171718;--btn:#F4F1EC;--chshadow:#0C0C0C;--tr-title-bg:#1D1D1F;--tr-lines:rgba(255,255,255,.2);
+  --mgpaper:#171718;--mgpanel:#171718;--mgink:#E9E6E0}
 /* plain paper: no grain, no glow, square ink */
 @R body{background-image:none!important;background-color:var(--chp)}
 @R .tabs{border-bottom-width:3px}
@@ -205,13 +205,13 @@
 @R .mgstage+.rzset{margin-top:6px}
 @R :is(.mmpop,.myrec,.chsugs,.prob-row,.qpick,.vcard,.verdict,.chpair4,.hempty,.empty-note,.lhsrc,.ltier,.calbox,.gsum,.prepcell,.nprscroll,.rzset,.chsec,.chfold,.card,.plan,.welcome,.hfb,.htile,.chblock,.chpanel,.lspanel){border-radius:0!important}
 @R table tr,@R main tr{border-radius:0!important}
-@R .ty.lt,@R[data-look="dark"] .ty.lt{color:#141414!important}
+@R .ty.lt,@R[data-look="dark"] .ty.lt{color:#202020!important}
 @R .dcsta{color:var(--chink)!important}
 @R .tag.mega.ico{overflow:visible!important;text-overflow:clip!important;width:auto!important;max-width:none!important}
 
 /* ===================== Round 2 (outside review): the whole site in one language ===================== */
 /* true black in dark */
-@R[data-look="dark"]{--chp:#000;--mgpaper:#000;--mgpanel:#000;--chc:#0A0A0B}
+@R[data-look="dark"]{--chp:#0C0C0C;--mgpaper:#0C0C0C;--mgpanel:#0C0C0C;--chc:#161617}
 /* logo: PLOT oval in blue, no yellow shadow (as the mockups) */
 @R .nplk{--chpen:var(--chblue)!important;--chyel:transparent!important}
 /* ---- header (phone): logo left, two bare icons right; no eyebrow; no gap before the title ---- */
@@ -413,7 +413,7 @@
 @R #chEdit .tag.mega.ico{min-width:22px!important;padding:0 4px!important;overflow:visible!important}
 /* type tags everywhere: small soft tag (tint of the type colour, 4px radius), not a filled pill */
 @R .ty,@R .ty.lt{background:color-mix(in srgb,var(--tc,currentColor) 20%,var(--mgpanel))!important;color:var(--chink)!important;border:0!important;padding:1px 8px!important;box-shadow:inset 3px 0 0 var(--tc,currentColor)!important}
-@R[data-look="dark"] .ty{background:color-mix(in srgb,var(--tc,currentColor) 22%,#000)!important}
+@R[data-look="dark"] .ty{background:color-mix(in srgb,var(--tc,currentColor) 22%,#0C0C0C)!important}
 
 /* damage calc: black/paper panels with a thin blue (attacker) or pink (defender) top accent; one frame, not three */
 @R .chdcband{background:var(--mgpanel)!important;background-image:none!important;border:0!important;border-top:4px solid var(--chblue)!important;box-shadow:none!important}
@@ -421,7 +421,7 @@
 @R .chdcband .sub,@R .chdcband .nm{border:0!important;background:none!important;padding:0!important;overflow:visible!important;white-space:normal!important}
 @R .dccol{border-width:var(--mgbw)!important}
 @R .dccol .chdcband{margin:0!important}
-@R[data-look="dark"]{--tr-you-field:#000;--tr-them-field:#000}
+@R[data-look="dark"]{--tr-you-field:#0C0C0C;--tr-them-field:#0C0C0C}
 @R .dcstick{background:var(--mgpanel)!important;border-width:var(--mgbw)!important}
 @R #chEdit .trow,@R #chEdit .thead{border:0!important;background:none!important;box-shadow:none!important;padding:0!important}
 @R #chEdit .tnum{font:400 22px var(--display)}
@@ -624,7 +624,7 @@
 
 /* ===================== Light paper (Sim: "not too bright, colours really coming through") ===================== */
 @R:not([data-look="dark"]){--chp:#EFEAE0;--mgpaper:#EFEAE0;--chp2:#E6E0D4;--chc:#F8F5EF;--mgpanel:#F8F5EF;--card2:#F3EFE7;--soft:#E6E0D4;--line:#D3CCBF;--line2:#BDB5A6;
-  --chink:#141414;--chink2:#454A63;--faint:#5E6275;--chblue:#0068AD;--chblueT:#005185;--chred:#E6359B;--chredT:#A10C6D;--chyel:#FFE100}
+  --chink:#202020;--chink2:#454A63;--faint:#5E6275;--chblue:#0068AD;--chblueT:#005185;--chred:#E6359B;--chredT:#A10C6D;--chyel:#FFE100}
 @R:not([data-look="dark"]) body{background-color:var(--chp)!important}
 @R:not([data-look="dark"]) .mgwash{background:linear-gradient(170deg,var(--mgpanel) 18%,var(--w1) 55%,var(--w2))}
 /* captions: consistent inner padding; long names wrap at spaces instead of touching the border */

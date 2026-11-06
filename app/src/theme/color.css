@@ -16,7 +16,7 @@
 @C:is([data-pg="weekly"],[data-pg="ratings"],[data-pg="meta"],[data-pg="sets"],[data-pg="top"],[data-pg="events"],[data-pg="arch"],[data-pg="track"],[data-pg="method"]){--sec:#7B4FD6;--secT:#5B2FB5}
 @C[data-pg="about"]{--sec:#454A63;--secT:#454A63}
 /* dark: the same hues, lighter, on true black */
-@C[data-look="dark"]{--sec:#FF5CBE;--secT:#FF8FD2;--fx-sel:26%;--fx-wash:22%;--fx-reg:color-mix(in oklab,var(--sec) 75%,#000)}
+@C[data-look="dark"]{--sec:#FF5CBE;--secT:#FF8FD2;--fx-sel:26%;--fx-wash:22%;--fx-reg:color-mix(in oklab,var(--sec) 75%,#0C0C0C)}
 @C[data-look="dark"]:is([data-pg="auto"],[data-pg="cores"]){--sec:#FFC233;--secT:#FFD166;--secTint:transparent} /* a yellow tint on black reads as olive: bar only */
 @C[data-look="dark"]:is([data-pg="report"],[data-pg="coverage"],[data-pg="teams"],[data-pg="compare"],[data-pg="box"]){--sec:#4AAEF5;--secT:#8CCBFF}
 @C[data-look="dark"]:is([data-pg="matchup"],[data-pg="practice"],[data-pg="gauntlet"],[data-pg="speed"],[data-pg="calc"],[data-pg="types"]){--sec:#FF7A45;--secT:#FFA27D}
@@ -27,12 +27,12 @@
 @C .mgtstroke{background:var(--sec);width:var(--fx-stroke)}
 /* the screentone is narrowed to the right 30% so the title and eyebrow sit on the flat band */
 @C .mgtdots{width:30%;bottom:6px;background:radial-gradient(color-mix(in oklab,var(--sec) var(--fx-dots),var(--mgpaper)) 1.5px,transparent 1.75px) 0 0/7px 7px}
-@C[data-look="dark"] .mgtdots{background:radial-gradient(color-mix(in oklab,var(--sec) var(--fx-dots),#000) 1.5px,transparent 1.75px) 0 0/7px 7px}
+@C[data-look="dark"] .mgtdots{background:radial-gradient(color-mix(in oklab,var(--sec) var(--fx-dots),#0C0C0C) 1.5px,transparent 1.75px) 0 0/7px 7px}
 /* a flat section-colour band behind the title (16% over paper) */
 @C .mgtitle{isolation:isolate}
 @C .mgtitle::before{content:"";position:absolute;inset:-6px -10px 2px -10px;z-index:-1;border-radius:var(--mgr);
   background:linear-gradient(90deg,color-mix(in oklab,var(--secTint,var(--sec)) 16%,var(--mgpaper)) 55%,color-mix(in oklab,var(--secTint,var(--sec)) 8%,var(--mgpaper)))}
-@C[data-look="dark"] .mgtitle::before{background:linear-gradient(90deg,color-mix(in oklab,var(--sec) 22%,#000) 55%,color-mix(in oklab,var(--sec) 10%,#000))}
+@C[data-look="dark"] .mgtitle::before{background:linear-gradient(90deg,color-mix(in oklab,var(--sec) 22%,#0C0C0C) 55%,color-mix(in oklab,var(--sec) 10%,#0C0C0C))}
 /* Home headline gets the same stroke (drawn in the gap under it, takes no space) */
 @C .chmhero .chh1{position:relative}
 @C .chmhero .chh1::after{content:"";position:absolute;left:2px;bottom:-9px;width:var(--fx-stroke);height:5px;background:var(--sec);transform:skewX(-24deg)}
@@ -71,7 +71,7 @@
 @C :is(.dcbig,.chhotrows .chhr .sc,.rzsetr b,.mgtgr b){text-shadow:3px 2px 0 var(--sec)}
 /* My team part numbers: the box in the section's text colour, white numeral (6.6–8.6:1), misprint in the bright section colour */
 @C .chparth .n{background:var(--secT)!important;color:#fff!important;box-shadow:3px 3px 0 var(--sec)!important;text-shadow:none}
-@C[data-look="dark"] .chparth .n{background:var(--sec)!important;color:#000!important;box-shadow:3px 3px 0 color-mix(in oklab,var(--sec) 45%,#000)!important}
+@C[data-look="dark"] .chparth .n{background:var(--sec)!important;color:#0C0C0C!important;box-shadow:3px 3px 0 color-mix(in oklab,var(--sec) 45%,#0C0C0C)!important}
 /* the small eyebrow dash on section heads follows the section too */
 @C .chpghead>.chk::before{background:var(--sec)!important}
 

@@ -96,7 +96,7 @@
   min-height:96px;height:100%;padding:16px 12px 16px 20px!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;text-align:left;--edge:var(--ar-sec)}
 @A #homeOut.ar-on .htile::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,color-mix(in oklch,var(--edge) 22%,var(--ar-sheet)),color-mix(in oklch,var(--edge) 6%,var(--ar-sheet)) 75%)!important}
-@A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#2A2930,#1C1B20 80%)!important}
+@A[data-look="dark"] #homeOut.ar-on .htile::before{background:linear-gradient(var(--edge),var(--edge)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#36353C,#28272C 80%)!important}
 /* dark: the colour is in the edge, the icon and the title (the section inks), never a gold or orange mixed into black (brown) */
 @A[data-look="dark"] #homeOut.ar-on .htile b{color:var(--edge-ink,var(--ar-ink))!important}
 @A #homeOut.ar-on .htile::after{display:none!important}
@@ -118,7 +118,7 @@
   background:none!important;border:0!important;box-shadow:none!important;cursor:pointer}
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
-@A[data-look="dark"] :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A[data-look="dark"] :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#36353C,#2A292E 70%)!important}
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .cht{font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important}
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .chs{font-size:15px!important;color:var(--ar-ink-2)!important}
 @A :is(#homeOut.ar-on,[data-pane="report"]) details.chsec>summary .chtog{color:var(--ar-sec-ink)!important}
@@ -229,7 +229,7 @@
 @A .ar-stage{position:relative;isolation:isolate;margin:30px calc(-1 * var(--ar-gutter)) 0;padding:24px var(--ar-gutter) 28px}
 @A .ar-stage::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 22%,var(--ar-paper)),color-mix(in oklch,var(--ar-blue) 8%,var(--ar-paper)));clip-path:polygon(0 3%,100% 0,100% 97%,0 100%)}
 /* dark: neutral greys, no blue cast (Sim: true black, no navy); the blue stays in the tab, the cursor ring and the edge */
-@A[data-look="dark"] .ar-stage::before{background:linear-gradient(110deg,#1A191D,#111013);box-shadow:inset 6px 0 0 var(--ar-blue)}
+@A[data-look="dark"] .ar-stage::before{background:linear-gradient(110deg,#262529,#1D1C1F);box-shadow:inset 6px 0 0 var(--ar-blue)}
 @A .ar-stage .ar-shead{margin-bottom:6px}
 @A .ar-stage .ar-six{padding:0 6px}
 @A .ar-stage .ar-gameplan{margin-top:16px}
@@ -261,7 +261,7 @@
   font:600 15px/1.15 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:var(--ar-r-m)!important;white-space:normal;text-align:left}
 @A .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important}
-@A[data-look="dark"] .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A[data-look="dark"] .ar-tacts :is(#chActs>button,#chActs>.row>button,#chActs .moremenu>summary)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#36353C,#2A292E 70%)!important}
 @A .ar-tacts #chActs #saveBtn{grid-column:1/-1;order:-1;min-height:60px!important;font:italic 800 20px/1.15 var(--ar-display)!important;font-stretch:115%!important;color:#16141A!important;justify-content:flex-start;padding-left:24px!important}
 @A .ar-tacts #chActs #saveBtn::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important;box-shadow:0 12px 22px -12px rgba(190,140,0,.75),0 2px 4px -2px rgba(0,0,0,.2)!important}
 @A[data-look="dark"] .ar-tacts #chActs #saveBtn::before{box-shadow:0 10px 18px -10px rgba(0,0,0,.9)!important}
@@ -274,7 +274,7 @@
 /* your games */
 @A [data-pane="report"] #myRec{position:relative;isolation:isolate;margin:34px calc(-1 * var(--ar-gutter)) 0!important;padding:26px var(--ar-gutter)!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
 @A [data-pane="report"] #myRec::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in oklch,var(--ar-blue) 10%,var(--ar-paper));clip-path:polygon(0 0,100% 10%,100% 100%,0 90%)}
-@A[data-look="dark"] [data-pane="report"] #myRec::before{background:#141316}
+@A[data-look="dark"] [data-pane="report"] #myRec::before{background:#201F22}
 @A [data-pane="report"] #myRec .chk{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:112%!important;color:var(--ar-ink)!important;text-wrap:balance}
 @media (min-width:1001px){@A [data-pane="report"] #myRec{margin:40px 0 0!important;padding:28px 32px!important}}
 @A [data-pane="report"] #myRec .t2{font-size:15px!important;color:var(--ar-ink-2)!important}
@@ -292,7 +292,7 @@
 @A [data-pane="report"] .chsugw{padding:16px 0 4px!important;border-bottom:1px solid var(--ar-rule)!important}
 @A [data-pane="report"] .chapply{position:relative;isolation:isolate;min-height:44px!important;padding:0 16px!important;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 15px var(--ar-body)!important}
 @A [data-pane="report"] .chapply::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,var(--ar-sheet)}
-@A[data-look="dark"] [data-pane="report"] .chapply::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,#2A2930}
+@A[data-look="dark"] [data-pane="report"] .chapply::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,#36353C}
 @A [data-pane="report"] .chwhy{background:none!important;border:0!important;box-shadow:none!important}
 @A [data-pane="report"] .chwhy>summary{min-height:44px;display:inline-flex;align-items:center;gap:8px;background:none!important;border:0!important;box-shadow:none!important;color:var(--ar-sec-ink)!important;font-weight:600}
 /* threat rows: typographic rows (rank, sprite on a small slanted type field, name and how it is handled), hairlines */
@@ -317,7 +317,7 @@
   background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;text-align:left!important}
 @A [data-pane="report"] .chsheet .chrow::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:var(--ar-r-l);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ta),var(--tb,var(--ta))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--ta) 20%,var(--ar-sheet)),var(--ar-sheet) 60%)}
-@A[data-look="dark"] [data-pane="report"] .chsheet .chrow::before{background:linear-gradient(var(--ta),var(--tb,var(--ta))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--ta) 22%,#1A191D),#1A191D 60%)}
+@A[data-look="dark"] [data-pane="report"] .chsheet .chrow::before{background:linear-gradient(var(--ta),var(--tb,var(--ta))) 0 0/6px 100% no-repeat,linear-gradient(90deg,color-mix(in oklch,var(--ta) 22%,#262529),#262529 60%)}
 @A [data-pane="report"] .chsheet .chrow .ix{grid-row:1/3;font:italic 900 22px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-ink)!important;background:none!important;position:static!important}
 @A [data-pane="report"] .chsheet .chrow img{width:64px!important;height:64px!important;position:static!important;margin:0!important}
 @A [data-pane="report"] .chsheet .chrow .chbd{text-align:left!important;min-width:0}
@@ -405,7 +405,7 @@
 @A #lairSheet .lsact .btn,@A #lairSheet .mgadd .btn,@A #lairSheet .mgadd button{position:relative;isolation:isolate;min-height:48px;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-ink)!important;font:600 16px var(--ar-body)!important;padding:0 16px 0 24px!important}
 @A #lairSheet :is(.lsact .btn,.mgadd button)::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 5%,var(--ar-sheet)) 70%)!important}
-@A[data-look="dark"] #lairSheet :is(.lsact .btn,.mgadd button)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A[data-look="dark"] #lairSheet :is(.lsact .btn,.mgadd button)::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#36353C,#2A292E 70%)!important}
 @A #lairSheet .mgadd [data-laddteam]{color:#16141A!important;font:italic 800 17px/1.15 var(--ar-display)!important;font-stretch:115%!important}
 @A #lairSheet .mgadd [data-laddteam]::before{background:linear-gradient(#16141A,#16141A) 0 0/6px 100% no-repeat,var(--ar-yellow)!important}
 @media (min-width:1024px){
@@ -441,7 +441,7 @@
 @A #lairSheet:focus{outline:none!important}
 /* dark mode: the runners-up's name and share sit on a slanted ink plate (the two type colours can be light and dark at once) */
 @A[data-look="dark"] .ar-runner-in{color:#fff;padding:6px 16px 8px;margin-left:24px;isolation:isolate}
-@A[data-look="dark"] .ar-runner-in::before{content:"";position:absolute;inset:0;z-index:-1;background:#16141A;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
+@A[data-look="dark"] .ar-runner-in::before{content:"";position:absolute;inset:0;z-index:-1;background:#222026;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 /* threat status words and the legend: one ink per status, 15px, glyph squares with readable glyphs */
 @A #chThrTop .chtr .st.ok,@A #chThrTop .chtr .st.l3{color:var(--ar-green-ink)!important}
 @A #chThrTop .chtr .st.mid,@A #chThrTop .chtr .st.l2{color:var(--ar-blue-ink)!important}
@@ -464,7 +464,7 @@
 @A #homeOut.ar-on .wnew>summary{position:relative;isolation:isolate;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 6px 6px 24px;margin-left:6px}
 @A #homeOut.ar-on .wnew>summary::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;margin:0!important;-webkit-mask:none!important;mask:none!important;z-index:-1;transform:skewX(var(--ar-slant))!important;border-radius:var(--ar-r-m)!important;box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 14%,var(--ar-sheet)),var(--ar-sheet) 70%)!important}
-@A[data-look="dark"] #homeOut.ar-on .wnew>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)!important}
+@A[data-look="dark"] #homeOut.ar-on .wnew>summary::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#36353C,#2A292E 70%)!important}
 @A #homeOut.ar-on .wnew .wk{font:italic 800 17px/1.15 var(--ar-display)!important;font-stretch:112%!important;letter-spacing:0!important;text-transform:none!important;color:var(--ar-ink)!important;white-space:nowrap}
 @A #homeOut.ar-on .wnew .wns{font-size:15px!important;color:var(--ar-ink-2)!important;line-height:1.3}
 @A #homeOut.ar-on .wnew .fbx{position:relative;flex:none;width:44px!important;height:44px!important;display:grid;place-items:center;border-radius:50%!important;color:var(--ar-ink-2)!important;background:none!important}
@@ -485,7 +485,7 @@
 /* empty six (no team yet): faint section-blue tiles with a "+", each opens Build */
 @A .ar-art.is-empty{cursor:pointer}
 @A .ar-art.is-empty .ar-f{background:linear-gradient(120deg,color-mix(in oklch,var(--ar-sec) 18%,var(--ar-sheet)),color-mix(in oklch,var(--ar-sec) 6%,var(--ar-sheet)))!important;box-shadow:var(--ar-shadow-s)!important}
-@A[data-look="dark"] .ar-art.is-empty .ar-f{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#2A2930,#1C1B20)!important}
+@A[data-look="dark"] .ar-art.is-empty .ar-f{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(120deg,#36353C,#28272C)!important}
 @A .ar-art .ar-plus{position:absolute;left:50%;top:calc(var(--lift,22px) + var(--h,112px) / 2);z-index:2;width:44px;height:44px;margin:-22px 0 0 -22px;display:grid;place-items:center;border-radius:50%;
   background:var(--ar-sheet)!important;color:var(--ar-sec-ink)!important;box-shadow:var(--ar-shadow-s);font:700 26px/1 var(--ar-body);border-radius:50%!important;border:0!important}
 @A .ar-art.is-empty .ar-nm{color:var(--ar-ink-2)!important;font-family:var(--ar-body)!important;font-style:normal!important;font-weight:600!important;font-stretch:100%!important}
@@ -587,7 +587,7 @@
 @A [data-pane="report"] .chsheet .chrow.empty .chbd{position:relative;isolation:isolate;grid-column:2;display:flex;align-items:center;min-height:52px;padding:0 16px 0 64px;margin-left:8px}
 @A [data-pane="report"] .chsheet .chrow.empty .chbd::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);
   background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,color-mix(in oklch,var(--ar-sec) 16%,var(--ar-sheet)),var(--ar-sheet) 70%)}
-@A[data-look="dark"] [data-pane="report"] .chsheet .chrow.empty .chbd::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#2A2930,#1E1D22 70%)}
+@A[data-look="dark"] [data-pane="report"] .chsheet .chrow.empty .chbd::before{background:linear-gradient(var(--ar-sec),var(--ar-sec)) 0 0/6px 100% no-repeat,linear-gradient(100deg,#36353C,#2A292E 70%)}
 @media (min-width:600px){@A [data-pane="report"] .chsheet{column-gap:32px}}
 /* the empty L tiles on the stage: their "Add a Pokémon" sits on the field, like the names on the other tiles */
 @A .ar-stage .ar-art.ar-l.is-empty .ar-nm{position:absolute;left:16px;bottom:12px;margin:0;min-height:0;color:var(--ar-ink-2)!important}
@@ -609,7 +609,7 @@
 @A #lairSheet .lsname .chips .ar-mark::before{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1;transform:skewX(var(--ar-slant));border-radius:4px;
   background:linear-gradient(180deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec)))) 0 0/5px 100% no-repeat,#16141A!important;width:auto!important;height:auto!important;-webkit-mask:none!important;mask:none!important}
 @A #lairSheet .lsname .chips .ar-mark::after{display:none!important}
-@A[data-look="dark"] #lairSheet .lsname .chips .ar-mark::before{background:linear-gradient(180deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec)))) 0 0/5px 100% no-repeat,#2E2D34!important}
+@A[data-look="dark"] #lairSheet .lsname .chips .ar-mark::before{background:linear-gradient(180deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec)))) 0 0/5px 100% no-repeat,#3A3940!important}
 /* base stats: numerals stay inside the gutter, the Total row has no empty track, room above the head under the sticky tabs */
 @A #lairSheet .lstats{padding-right:2px}
 @A #lairSheet .lstr{grid-template-columns:64px minmax(0,1fr) auto auto!important;column-gap:8px}
@@ -728,7 +728,7 @@
   @A:not(#_p1) #lairSheet .chlstats>*>:not(b){display:block;max-width:6.6em;white-space:normal!important;overflow-wrap:normal}}
 /* NEW-05: dark desktop info sheet: the left column is the neutral dark sheet surface (not the page's black), so the dialog
    reads as one card, as it does in light */
-@A[data-look="dark"]:not(#_p1) #lairSheet.lsdesk .lsside,@A[data-look="dark"]:not(#_p1) #lairSheet .lsdesk .lsside,@A[data-look="dark"]:not(#_p1) #lairSheet .lspanel>.lsside{background:#131216!important}
+@A[data-look="dark"]:not(#_p1) #lairSheet.lsdesk .lsside,@A[data-look="dark"]:not(#_p1) #lairSheet .lsdesk .lsside,@A[data-look="dark"]:not(#_p1) #lairSheet .lspanel>.lsside{background:#1F1E22!important}
 @A:not(#_p1) [data-pane="report"] .chsheet .chrow:not(.empty)>:is(img,.ix,.chrm){grid-row:1 / 3!important}
 @A:not(#_p1) [data-pane="report"] .chsheet .chrow:not(.empty){grid-template-rows:auto 1fr!important}
 /* N3: event names (Home's winner line, the team cards' kickers) wrap as balanced lines, never one word alone ("… Shiny /

@@ -190,8 +190,8 @@
 @R .pmain,@R .pmain span,@R .qnone,@R .t2.provnote,@R .needsmore,@R .regnote,@R .hfoot{color:var(--chink)!important;opacity:1!important}
 @R .ty.lt{color:#1D2140!important}
 @R .bmpick .tag,@R[data-look="dark"] .bmpick .tag{color:#fff!important;background:#005E97!important}
-@R[data-look="dark"] .rzmove{background:#8CCBFF;color:#0B0B0C}
-@R[data-look="dark"] .rzbeat.them .rzmove{background:#FF9AD2;color:#0B0B0C}
+@R[data-look="dark"] .rzmove{background:#8CCBFF;color:#171718}
+@R[data-look="dark"] .rzbeat.them .rzmove{background:#FF9AD2;color:#171718}
 @R .asm{color:var(--chink)!important;border-color:var(--chink2)!important}
 @R .tcb.on{color:#1D2140!important}
 @R .abtlic{color:var(--chink)!important}
@@ -225,7 +225,7 @@
 @R .chtag.lead,@R .chmcard .chtag.lead,@R .trvs .chhr2 .chtag.lead,@R .chpen:is(.chwho .chpen,.chmwho .chpen){background:#005E97!important;color:#fff!important}
 @R[data-look="dark"] .asm{color:var(--chink)!important;background:transparent!important}
 @R .prentry .prei,@R[data-look="dark"] .prentry .prei{background:#005E97!important;color:#fff!important}
-@R[data-look="dark"] .logacts .btn.logwin,@R[data-look="dark"] .logacts .btn.logloss{color:#0B0B0C!important}
+@R[data-look="dark"] .logacts .btn.logwin,@R[data-look="dark"] .logacts .btn.logloss{color:#171718!important}
 
 @R .bmgrid>.bmt1.rzwide{grid-column:1/-1}
 @R .rzread ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px 16px}
