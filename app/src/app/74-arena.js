@@ -407,3 +407,9 @@ CH.wrap('renderLair', () => { const sec = $('lair'); if (!sec) return;
    import panel from Home and from the sample-team note. */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arimport]'); if (!b) return; e.preventDefault();
   setView('report'); setTimeout(() => { const i = $('importBtn'); if (i) i.click(); }, 60); });
+/* Sim (Nov 7): light/dark is one tap from every page. The sun/moon button (61-concept-h-pages.js) sits in the header right
+   before the ⋯ menu, on phone and desktop: a moon while dark mode shows, a sun while light shows, each tap switches.
+   Auto / Light / Dark stays in the ⋯ menu for following the device */
+safe('theme button in header', () => { const t = $('thmBtn'), band = document.querySelector('.band'); if (!t || !band) return;
+  const dots = [...band.querySelectorAll('button')].find(b => /moreBtn|chmenubtn/.test(b.id + ' ' + b.className) && b !== t);
+  if (dots && t.nextElementSibling !== dots) dots.before(t); t.classList.add('ar-thm'); });

@@ -479,3 +479,9 @@
 @A .chpair4>button:nth-child(n+3){border-top-width:1px!important;border-top-style:solid!important}
 @media (max-width:599px){@A .chpair4>button:nth-child(odd){border-right-width:0!important}@A .chpair4>button+button{border-top-width:1px!important;border-top-style:solid!important}}
 @A .chpair4>button:hover{background:var(--ar-paper)!important}
+/* Nov 7: the header sun/moon button, styled like the search and ⋯ buttons beside it, on every screen size */
+@A .band #thmBtn.ar-thm{all:unset;box-sizing:border-box;display:inline-flex!important;position:static!important;align-items:center;justify-content:center;flex:none;width:44px;height:44px;margin:0 4px;border-radius:50%!important;color:var(--ar-ink);cursor:pointer;background:none!important;border:0!important;box-shadow:none!important}
+@A .band #thmBtn.ar-thm svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@A[data-look="dark"] .band #thmBtn.ar-thm svg{fill:currentColor;stroke:none}
+@A .band #thmBtn.ar-thm:focus-visible{outline:3px solid var(--ar-focus);outline-offset:2px}
+@media (hover:hover){@A .band #thmBtn.ar-thm:hover{background:var(--ar-rule)!important}}
