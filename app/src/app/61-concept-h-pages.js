@@ -261,7 +261,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
     if (im) { const s = Math.min(176 / im.width, 176 / im.height); x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetX = 3; x.shadowOffsetY = 4; x.drawImage(im, cx - im.width * s / 2, by + 246 - im.height * s, im.width * s, im.height * s); x.restore(); }
     x.textAlign = 'center'; x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowOffsetY = 2; x.shadowBlur = 4; x.fillStyle = '#fff'; let f2 = 24; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Archivo, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
     if (m.item) { let f3 = 18; do { x.font = `700 ${f3}px "Instrument Sans", monospace`; } while (x.measureText(m.item).width > cw - 12 && --f3 > 12); x.fillStyle = '#fff'; x.fillText(m.item, cx, by + 305); } x.restore(); x.textAlign = 'left'; });
-  x.font = '400 32px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Plot your win.', 58, 656);
+  x.font = '400 32px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Sharply raise your win rate.', 58, 656);
   x.textAlign = 'right'; x.font = '700 19px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', 1144, 652); x.textAlign = 'left';
   return c; };
 CH.wrap('openShareCard', () => { const box = $('shareBox'); if (!box || box.hidden || box.querySelector('.chshmode')) return; const hd = box.querySelector('.sharehd'); if (!hd) return;

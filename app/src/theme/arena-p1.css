@@ -931,3 +931,9 @@
   @A #homeOut .ar-side.ar-blue .ar-art.ar-m{--h:52px;--s:56px;--lift:4px}
   @A #homeOut .ar-side.ar-blue .ar-art.ar-m .ar-nm{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 }
+/* ---------- Nov 7: the tagline (Sim chose B) is set in the logo's font, Unbounded Black, slanted like NASTY in the logo,
+   on exactly two lines, with "your win rate." in the logo's PLOT blue ---------- */
+@A .ar-hh.ar-tag{font-family:"Unbounded",var(--ar-display)!important;font-style:normal!important;font-weight:900!important;font-stretch:100%!important;letter-spacing:-.03em!important;word-spacing:.1em;line-height:1.04!important;white-space:nowrap!important;font-size:min(44px,8.2vw)!important;transform:skewX(-8deg);transform-origin:left bottom;padding-left:4px}
+@A .ar-hh.ar-tag .ar-tag2{color:var(--ar-blue-ink,var(--ar-blue))}
+@media (min-width:600px) and (max-width:1000px){@A .ar-hh.ar-tag{font-size:min(56px,7.4vw)!important}}
+@media (min-width:1001px){@A .ar-hh.ar-tag{font-size:clamp(40px,3.6vw,58px)!important}}

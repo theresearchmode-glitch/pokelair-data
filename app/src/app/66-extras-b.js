@@ -39,7 +39,7 @@ CH.wrap('renderHome', () => { const k = wxKeyOf(members()); if (!k) return; cons
 /* ===== Team poster =====
    A 1080x1350 portrait image of the six for social posts: a bold banner in the team's own type colours, big sprites,
    the team name, the archetype, the grade (letter in its band colour + the number) and how many of the top 30 threats it
-   handles, with the NastyPlot logo and "Plot your win." Light or Warm charcoal, like the share card. No win-chance words.
+   handles, with the NastyPlot logo and "Sharply raise your win rate." Light or Warm charcoal, like the share card. No win-chance words.
    Sprites come from sp/ on the same origin, so the canvas stays exportable. */
 const PO = {W: 1080, H: 1350};
 PO.hex = h => { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
@@ -120,7 +120,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   x.fillStyle = P.line; x.fillRect(56, 1236, W - 112, 3);
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 50, 1252, 300, 300 * 196 / 761.34); } catch (e) {}
-  x.textAlign = 'right'; x.font = '400 50px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Plot your win.', W - 56, 1302);
+  x.textAlign = 'right'; x.font = '400 50px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Sharply raise your win rate.', W - 56, 1302);
   x.font = '700 18px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', W - 56, 1332); x.textAlign = 'left';
   return c; }
 /* My team's Share: "Team card" (the wide card, as before) or "Team poster" (portrait) */

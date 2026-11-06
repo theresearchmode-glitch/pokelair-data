@@ -152,7 +152,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
     ${AR.plan(lead, back, bench, vs)}
     <div class="ar-acts">${ms.length ? `<button type="button" class="ar-btn" data-view="report">Open my team</button>${C && FC && !sameSix ? `<button type="button" class="ar-link" data-evvs="${esc(C.ev.id)}#${C.ev.top.indexOf(C.t)}">Prep vs the champion ›</button>` : ''}`
       : '<button type="button" class="ar-btn" data-view="build">Add your six</button>'}</div></section>`;
-  const html = `<div class="ar-home"><div class="ar-deck"><div class="ar-deck-main"><div class="ar-h1 ar-hh" role="heading" aria-level="2">Plot your win.</div>${hero}</div>
+  const html = `<div class="ar-home"><div class="ar-deck"><div class="ar-deck-main"><div class="ar-h1 ar-hh ar-tag" role="heading" aria-level="2">Sharply raise <br><span class="ar-tag2">your win rate.</span></div>${hero}</div>
     <div class="ar-deck-side"><div class="ar-runners">${ru.map(runner).join('')}</div><p class="ar-caption">${esc(MG.srcLine())}</p>${AR.week()}${tools}</div></div>
     <div class="ar-versus">${them}${them ? '<div class="ar-vs" aria-hidden="true"><span class="ar-num ar-mp">vs</span></div>' : ''}${you}</div></div>`;
   out.insertAdjacentHTML('afterbegin', html); out.classList.add('ar-on');

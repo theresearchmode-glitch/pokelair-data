@@ -176,7 +176,7 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
     ARB.drawTile(x, P, dark, m, imgs[i], cx, 322, cw - 26, 146, 168, ns, item); }
   /* footer */
   x.fillStyle = P.rule; x.fillRect(56, 586, W - 112, 2); await ARB.logo(x, dark, 50, 604, 200);
-  x.textAlign = 'right'; ARB.fnt(x, 'italic 800 30px Archivo, sans-serif', true); x.fillStyle = P.blue; x.fillText('Plot your win.', W - 56, 640);
+  x.textAlign = 'right'; ARB.fnt(x, 'italic 800 30px Archivo, sans-serif', true); x.fillStyle = P.blue; x.fillText('Sharply raise your win rate.', W - 56, 640);
   ARB.fnt(x, '600 17px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('NastyPlot, unofficial fan tool', W - 56, 662); x.textAlign = 'left';
   return c; };
 ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) return null; ms = ms.slice(0, 6);
@@ -207,7 +207,7 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
     if (bw > 80) { x.fillStyle = P.bar; ARB.para(x, tx + bw / 2, ry - 18, bw, 14, 3); x.fill(); x.save(); ARB.para(x, tx + bw / 2, ry - 18, bw, 14, 3); x.clip(); x.fillStyle = P.green; x.fillRect(tx - 10, ry - 18, (bw + 10) * fr, 14); x.restore(); } }
   /* footer */
   x.fillStyle = P.rule; x.fillRect(60, 1240, W - 120, 2); await ARB.logo(x, dark, 54, 1258, 260);
-  x.textAlign = 'right'; ARB.fnt(x, 'italic 800 40px Archivo, sans-serif', true); x.fillStyle = P.blue; x.fillText('Plot your win.', W - 60, 1300);
+  x.textAlign = 'right'; ARB.fnt(x, 'italic 800 40px Archivo, sans-serif', true); x.fillStyle = P.blue; x.fillText('Sharply raise your win rate.', W - 60, 1300);
   ARB.fnt(x, '600 20px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('NastyPlot, unofficial fan tool', W - 60, 1330); x.textAlign = 'left';
   return c; };
 buildTeamPoster = ARB.poster;

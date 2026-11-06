@@ -139,7 +139,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
     txt(`${t.player}, ${evDate(w0.date)}, ${CH.n(w0.players)} players`, '800 26px Archivo, sans-serif', '#fff', 56, by + 72, 1090);
     const ims = await Promise.all(t.mons.map(m => img(byName.get(m.n)))); ims.forEach((im, i) => { if (!im) return; x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetY = 4; draw(im, 110 + i * 196, by + 154, 132); x.restore(); }); }
   else txt('No big event finished this week', '800 28px Archivo, sans-serif', '#fff', 56, by + 120);
-  txt('Plot your win.', '400 32px "Instrument Sans",system-ui,sans-serif', P.pen, 58, H - 28);
+  txt('Sharply raise your win rate.', '400 32px "Instrument Sans",system-ui,sans-serif', P.pen, 58, H - 28);
   txt('NastyPlot, unofficial fan tool', '700 19px "Instrument Sans", monospace', P.mute, 1144, H - 32, 0, 'right');
   return c; }
 
