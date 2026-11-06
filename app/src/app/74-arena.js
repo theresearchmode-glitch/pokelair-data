@@ -334,7 +334,7 @@ AR.sheet = n => { const sh = $('lairSheet'), p = n && byName.get(n); if (!sh || 
   /* Meta tab (phones too): "Items: Ability: Rough Skin 98%" reads as one run; the label is "Items", the ability its own line
      (the same split the desktop sheet makes) */
   sh.querySelectorAll('.lstp-meta .chlsdata .chk').forEach(ih => { if (ih.querySelector('.lsabn')) return; const m = /^Items\s*(?:·|:)\s*Ability: (.+)$/.exec(ih.textContent.trim()); if (!m) return;
-    ih.textContent = 'Items'; const a = document.createElement('span'); a.className = 'lsabn'; a.append('Most used ability: '); const bb = document.createElement('b'); bb.textContent = m[1]; a.append(bb); ih.append(a); });
+    ih.textContent = 'Items'; /* Nov 7: the ability line moved to the Typical set (it read as an item) */ });
   const t = p.t || ['Normal']; sh.style.setProperty('--ar-ta', AR.TC[t[0]] || TC.Normal); sh.style.setProperty('--ar-tb', AR.TC[t[1] || t[0]] || TC.Normal); };
 MG.sheet = n => AR.sheet(n);
 
