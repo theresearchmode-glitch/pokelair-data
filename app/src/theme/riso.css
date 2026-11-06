@@ -22,7 +22,7 @@
   --navy:var(--chink);--deep:#141733;--navy-ink:#F7F2EE;--navyt:var(--chink);--btn:var(--chink);
   --volt:var(--chblue);--volt2:#4AAEF5;--volt-ink:#ffffff;--accent:var(--chblueT);--gold:#B77900;--gold-soft:#FFF6C2;--gold-ink:#5C4300;
   --good:#00804D;--ok:#0067A3;--warn:#946000;--bad:#C4162F;--good-soft:#DCF1E6;--warn-soft:#FBEFC8;--bad-soft:#FBDDE2;--mega-soft:#FCE3F0;--mega-ink:#B30F7B;
-  --display:"TR Display","Arial Black",system-ui,sans-serif;--body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Instrument Sans",system-ui,sans-serif;--code:ui-monospace,Menlo,monospace;
+  --display:"Unbounded","Instrument Sans",system-ui,sans-serif;--body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Instrument Sans",system-ui,sans-serif;--code:ui-monospace,Menlo,monospace;
   --day:var(--chp);--day2:var(--chp2);--dink:var(--chink);--dmute:var(--chink2);--dline:var(--line);--pinksh:transparent;
   --tr-you-field:#DDEBF6;--tr-them-field:#FCE3F0;--tr-r:4px;--tr-bw:2.5px;
   --tr-title-bg:#1D2140;--tr-title-fg:#F7F2EE;--tr-lines:#1D2140;--tr-dot:rgba(0,120,191,.42);

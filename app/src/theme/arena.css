@@ -23,11 +23,11 @@
   --ar-blue:#0078BF;--ar-blue-plate:#0068AD;--ar-blue-ink:#005E96;
   --ar-orange:#F05A28;--ar-orange-plate:#C8401A;--ar-orange-ink:#A33A0C;
   --ar-purple:#7B4BD6;--ar-purple-plate:#7B4BD6;--ar-purple-ink:#5B2FB5;
-  --ar-yellow:#FFD21F;--ar-yellow-2:#F2B705;--ar-green:#2E9E5B;--ar-green-ink:#16693B;--ar-misprint:#FF5C8A;
+  --ar-yellow:#FFD21F;--ar-yellow-2:#F2B705;--ar-green:#2E9E5B;--ar-green-ink:#16693B;--ar-misprint:transparent;
   /* the page's section (set per page below): --ar-sec, --ar-sec-plate, --ar-sec-on (text on the plate), --ar-sec-ink */
   --ar-sec:var(--ar-pink);--ar-sec-plate:var(--ar-pink-plate);--ar-sec-on:#fff;--ar-sec-ink:var(--ar-pink-ink);
   /* type: Archivo Expanded italic for display and numerals, Instrument Sans for everything else */
-  --ar-display:"Archivo","Instrument Sans",system-ui,sans-serif;--ar-body:"Instrument Sans",system-ui,sans-serif;
+  --ar-display:"Unbounded","Instrument Sans",system-ui,sans-serif;--ar-body:"Instrument Sans",system-ui,sans-serif;
   --ar-fs-hero:64px;--ar-fs-h1:46px;--ar-fs-page:36px;--ar-fs-h2:26px;--ar-fs-h3:20px;--ar-fs-body:16px;--ar-fs-small:15px;--ar-fs-label:13px;
   /* spacing (4px steps) */
   --ar-s1:4px;--ar-s2:8px;--ar-s3:12px;--ar-s4:16px;--ar-s5:24px;--ar-s6:32px;--ar-s7:48px;--ar-s8:64px;--ar-gutter:16px;
@@ -48,7 +48,7 @@
   --ar-paper:#1B1A1D;--ar-paper-2:#222126;--ar-sheet:#28272C;--ar-nav:#242327;
   --ar-ink:#ECE8E2;--ar-ink-2:#C9C3CC;--ar-ink-3:#A39CA6;--ar-rule:rgba(255,255,255,.12);--ar-rule-2:rgba(255,255,255,.22);
   --ar-pink-ink:#FF6F86;--ar-gold-ink:#FFD166;--ar-blue-ink:#4FB2F0;--ar-orange-ink:#FFA27D;--ar-purple-ink:#C9B0FF;--ar-green-ink:#5FD08F;
-  --ar-misprint:#E8364F;
+  --ar-misprint:transparent;
   --ar-shadow:0 14px 28px -14px rgba(0,0,0,.9);--ar-shadow-s:0 8px 16px -10px rgba(0,0,0,.9);--ar-shadow-nav:0 18px 34px -14px rgba(0,0,0,.9);
   --ar-field-mix:30%;--ar-art-text:#fff;--ar-focus:#4FB2F0;
 }
@@ -485,3 +485,7 @@
 @A[data-look="dark"] .band #thmBtn.ar-thm svg{fill:currentColor;stroke:none}
 @A .band #thmBtn.ar-thm:focus-visible{outline:3px solid var(--ar-focus);outline-offset:2px}
 @media (hover:hover){@A .band #thmBtn.ar-thm:hover{background:var(--ar-rule)!important}}
+/* Nov 7, coordinated type: the logo font (Unbounded) is wide, so two small spots get room. Meta's sub-tabs step down a size on
+   narrow phones, and the tiny name labels in team tiles use the bold body font (labels, not headlines) */
+@media (max-width:400px){@A .subnav>.sub:not(#_n1):not(#_n2):not(#_n3){font-size:19px!important;letter-spacing:-.02em!important}}
+@A :is(.tgn.sm,.tgn.xs):not(#_t1):not(#_t2):not(#_t3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}

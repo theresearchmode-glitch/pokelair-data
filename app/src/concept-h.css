@@ -12,7 +12,7 @@
   --navy:var(--chink);--deep:#14172E;--navy-ink:#F1E9DA;--navyt:var(--chink);--btn:var(--chink);
   --volt:var(--chblue);--volt2:#4AAEF5;--volt-ink:#ffffff;--accent:var(--chblueT);--gold:#C98A00;--gold-soft:#FFF4C2;--gold-ink:#5C4300;
   --good:#1E7E46;--ok:#1F6F9E;--warn:#9A5E00;--bad:#B30F7B;--good-soft:#DDEFD9;--warn-soft:#FBEBC6;--bad-soft:#F9DADD;--mega-soft:#F9DADD;--mega-ink:#9E1B2E;
-  --display:"TR Display","Impact","Arial Narrow",sans-serif;--body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Instrument Sans",ui-monospace,Menlo,monospace;
+  --display:"Unbounded","Instrument Sans",system-ui,sans-serif;--body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Instrument Sans",ui-monospace,Menlo,monospace;
   --day:var(--chp);--day2:var(--chp2);--dink:var(--chink);--dmute:var(--chink2);--dline:var(--line);--pinksh:transparent;
   color-scheme:light}
 :root:not(#_ch)[data-look="dark"]{
@@ -25,7 +25,7 @@
   --good:#5BD28F;--ok:#5AB8E8;--warn:#FFC94D;--bad:#FF6B80;--good-soft:#1F3328;--warn-soft:#3A3122;--bad-soft:#3E2427;--mega-soft:#3E2427;--mega-ink:#FF9AA2;
   --shadow:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}
 /* no faux italics or bold on the display face: Anton is upright, one weight */
-html:not(#_ch){font-synthesis:none}
+html:not(#_ch){font-synthesis:style}
 :root:not(#_ch) body{background-color:var(--chp);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .4  0 0 0 0 .35  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");color:var(--chink);font-family:var(--body)}
 :root:not(#_ch) body::before{background:var(--chp)}
 :root:not(#_ch) h1,:root:not(#_ch) h2,:root:not(#_ch) h3{font-family:var(--display);font-style:normal;font-weight:400;letter-spacing:.01em}

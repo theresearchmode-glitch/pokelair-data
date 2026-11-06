@@ -8,7 +8,7 @@
   --soft:#efe9fb; --accent:#6a35e8;
   --good:#118a5b; --ok:#2a8a86; --warn:#b86e00; --bad:#d63a40;
   --shadow:0 1px 2px rgba(20,24,56,.04);
-  --display:"Sofia Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --display:"Unbounded","Instrument Sans",system-ui,sans-serif;
   --body:"Sofia Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
   --slant:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);

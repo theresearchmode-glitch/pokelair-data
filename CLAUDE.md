@@ -19,6 +19,9 @@ makes it heavy, and a lighter option if one exists. Background computer time (a 
   no half-filled rows. Prefer even columns or side-by-side layouts over narrowing content.
 - Seamless and clean, in light AND dark mode: no boxes stacked inside boxes in different shades (page > card > cell
   should be at most page + one card colour), dividers are thin soft rules (--ar-rule), not heavy dark lines.
+- Type system (Nov 7, Sim chose): every headline, big number and the tagline use the logo's font, Unbounded, slanted
+  (synthetic italic, font-synthesis: style), no pink offset "misprint" shadow; body and small labels use Instrument Sans.
+  Tagline: "Sharply raise your win rate." with "your win rate." in the logo's PLOT blue.
 - Design scale (Nov 7): text 13/15/16/17/20/22/24/26/28/34 (+ display), spacing on a 4px grid (1/2/6 allowed),
   corners 4/6/10/18/round, paragraphs line-height 1.5.
 
