@@ -880,3 +880,11 @@
    so Archetypes sits under Popular sets, orange stays left, purple right, gold in the middle */
 @media (min-width:1001px){@A #homeOut.ar-on .htiles>.htile[data-view="cores"]{grid-column:span 2!important;align-items:center!important;text-align:center}
   @A #homeOut.ar-on .htiles>.htile[data-view="cores"] svg{position:static!important;display:block;align-self:center!important;margin-left:auto!important;margin-right:auto!important}}
+/* Set card (Sim, Nov 6): rating on the left, then a 2x2 of Item, Ability, Nature, Stat points */
+@A .ar-setia:has(.ar-setnat){grid-template-columns:1.1fr 1fr 1fr;grid-auto-rows:auto;row-gap:14px}
+@A .ar-setia:has(.ar-setnat) .ar-setr{grid-row:1 / span 2;align-self:center}
+@A .ar-setia:has(.ar-setnat):not(:has(.ar-setr)){grid-template-columns:1fr 1fr}
+@A .ar-setia .ar-setnat b{min-height:0!important}
+@A .ar-setia:has(.ar-setnat)>div:not(.ar-setr){align-self:start}
+@A .ar-setia:has(.ar-setnat)>div:not(.ar-setr) b{min-height:0}
+@A .ar-setia .ar-setnat i{display:block;margin-top:2px;font-style:normal;font-weight:600;font-size:14.5px;color:var(--ar-ink-2)}
