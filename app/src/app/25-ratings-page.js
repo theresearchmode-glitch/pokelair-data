@@ -145,7 +145,11 @@ function lairSheet(n) {
       ${(() => { const O = pf0 && pf0.outside; if (!O || !O.lists.length) return ''; // other sites' lists, fetched daily (perf.mjs); left out when not current
         return `<div class="lsec"><h4>Other tier lists</h4><div class="lout">${O.lists.map(L => { const v = O.data[L.k] && O.data[L.k][p.n];
         return `<a class="lo" href="${esc(L.url)}" target="_blank" rel="noopener"><b class="lot${v ? ' t' + esc(L.tiers[v]) : ''}">${v ? esc(L.tiers[v]) : '–'}</b><span>${esc(L.name)}</span><em>${v ? esc(L.how) : 'not listed · ' + esc(L.note)} · ${esc(perfDateText(L.date))}</em></a>`; }).join('')}</div><p class="t2">Shown for comparison, not counted in the score.</p></div>`; })()}
-      <div class="lsec"><h4>Typical set</h4><div class="lset"><span>Ability</span><b>${esc(ab || '–')}</b>${ti ? `<span>Item</span><b>${ti.it.map(x => esc(x[0])).join(' / ')}</b>` : ''}${mv.length ? `<span>Moves</span><b>${mv.map(esc).join(' · ')}</b>` : ''}</div></div>
+      <div class="lsec"><h4>Typical set</h4><div class="lset"><span>Ability</span><b>${esc(ab || '–')}</b>${ti ? `<span>Item</span><b>${ti.it.map(x => esc(x[0])).join(' / ')}</b>` : ''}${(() => { /* nature and stat points most players run (Sim, Nov 6) */
+        let na = null, cs = null; try { const st = setFor(p); na = st.na && st.na.length ? st.na.slice(0, 2).map(x => x[0]) : null; } catch (e) {} try { cs = commonSpread(p); } catch (e) {}
+        if (!na && cs && cs.nat) na = [cs.nat]; const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+        const w = cs ? K.map((k, j) => [cs[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]}\u00a0${x[1]}`).join(', ') : '';
+        return (na ? `<span>Nature</span><b>${na.map(esc).join(' / ')}</b>` : '') + (w ? `<span>Stat points</span><b>${esc(w)}</b>` : ''); })()}${mv.length ? `<span>Moves</span><b>${mv.map(esc).join(' · ')}</b>` : ''}</div></div>
       <div class="lsact">${onTeam ? `<span class="t2">${onT.p.n === p.n ? 'On your team' : esc(onT.d) + ' is already on your team (one per species)'}</span>` : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-abaround="${esc(p.n)}">Build around it</button><button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
     </div></div>`;
   sh.hidden = false; ui.lsheet = p.n; try { document.body.classList.add('lsopen'); } catch (e) {}
