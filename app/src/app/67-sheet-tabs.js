@@ -65,7 +65,14 @@ LST.info = p => { const st = (() => { try { return setFor(p) || {}; } catch (e) 
     <p class="t2 lsnote">Level 50, as in Pokémon Champions: base Speed ${p.st[5]}, Speed points 0–32 add 1 each, a Speed nature adds 10%. "Top 30" = the 30 biggest threats at their usual Speed.</p>
     <button type="button" class="nplink" data-view="speed">Speed tiers <span aria-hidden="true">→</span></button>`;
   const sec = (k, t, h) => `<section class="lsi lsi-${k}"><h4>${t}</h4>${h}</section>`;
-  return sec('st', 'Base stats', stats) + sec('ab', p.a.length > 1 ? 'Abilities' : 'Ability', abl + abNote) + sec('ty', 'Type matchups', ty) + sec('sp', 'Speed at level 50', spd); };
+  /* Usability (Sim, Nov 7): the typical set at a glance on the first tab; the full breakdown stays on Meta */
+  const quick = (() => { try { const ti = topItems(p), na = (st.na || [])[0], cs = commonSpread(p), mv = (popularMoves(p) || []).slice(0, 4).map(m => m.name);
+    const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+    const pts = cs ? K.map((k, j) => [cs[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]}\u00a0${x[1]}`).join(', ') : '';
+    const bits = [ti && ti.it && ti.it[0] ? ti.it[0][0] : null, na ? na[0] : null, pts || null].filter(Boolean);
+    if (!bits.length && !mv.length) return '';
+    return `<section class="lsi lsi-quick"><div class="lsq"><span class="lsqk">Usually</span><b>${bits.map(esc).join(' · ')}</b>${mv.length ? `<span class="lsqm">${mv.map(esc).join(' · ')}</span>` : ''}<button type="button" class="ar-link lsqgo" data-lstabgo="1">Full set ›</button></div></section>`; } catch (e) { return ''; } })();
+  return quick + sec('st', 'Base stats', stats) + sec('ab', p.a.length > 1 ? 'Abilities' : 'Ability', abl + abNote) + sec('ty', 'Type matchups', ty) + sec('sp', 'Speed at level 50', spd); };
 /* show one tab: only `hidden` and aria flip; the hero, its sprite and the other panels stay as they are */
 LST.show = (k, o) => { o = o || {}; const sh = $('lairSheet'); if (!sh || !LST.ok(k)) return; const bar = sh.querySelector('.lstabs'); if (!bar) return;
   const was = LST.cur; LST.cur = k; if (o.save !== false) LS.set('cc2.lstab', k);
@@ -125,3 +132,5 @@ document.addEventListener('touchend', e => { const s = LST.sw; LST.sw = null; if
   try { const sel = getSelection(); if (sel && String(sel).trim()) return; } catch (x) {}
   const ks = LST.tabs.map(x => x[0]), i = ks.indexOf(LST.cur), j = dx < 0 ? i + 1 : i - 1; if (j < 0 || j >= ks.length) return; LST.show(ks[j], {anim: true}); }, {passive: true});
 document.addEventListener('touchcancel', () => { LST.sw = null; }, {passive: true});
+
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-lstabgo]'); if (!b) return; const t = document.querySelectorAll('#lairSheet .lstab')[+b.dataset.lstabgo]; if (t) t.click(); });

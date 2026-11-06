@@ -101,7 +101,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   const h = t.querySelector('h2,h3,summary,button'); if (h && h.focus) setTimeout(() => h.focus({preventScroll: true}), 400); });
 /* the sample team (Sim, Nov 5): first-time visitors see NastyPlot's sample six, so it says so, with one way to start their own */
 AR.isSample = t => /\(sample\)\s*$/i.test(String(t || ''));
-AR.sampleNote = () => `<div class="ar-sample"><p>This is a sample team, here to show how NastyPlot works.</p><button type="button" class="ar-btn" data-view="build">Build your own</button></div>`;
+AR.sampleNote = () => `<div class="ar-sample"><p>This is a sample team, here to show how NastyPlot works.</p><div class="ar-sample-acts"><button type="button" class="ar-btn" data-view="build">Build your own</button><button type="button" class="ar-btn" data-arimport>Import a team</button></div></div>`;
 AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
 AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
@@ -128,7 +128,8 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
     + `<span class="ar-runner-in"><span class="ar-runner-nm">${escName(p.d)}</span><span class="ar-num">${pct(p)}%</span></span>${AR.spr(p, 'ar-runner-mon')}</button>`;
   const has = ms.length > 0, b = (v, cls, ic, l, edge) => `<button type="button" class="ar-btn${cls}" data-view="${v}"${edge ? ` style="--edge:${edge}"` : ''}>${ic}<span>${l}</span>${cls ? AR.ICON.go : ''}</button>`;
   const tools = `<nav class="ar-tools" aria-label="Start here">${has ? b('report', ' ar-primary', AR.ICON.grade, 'Grade my team') + b('auto', '', AR.ICON.build, 'Build a team', 'var(--ar-gold)')
-    : b('auto', ' ar-primary', AR.ICON.build, 'Build me a team') + b('report', '', AR.ICON.grade, 'Grade my team', 'var(--ar-blue)')}${b('matchup', '', AR.ICON.plan, 'Plan a match', 'var(--ar-orange)')}</nav>`;
+    : b('auto', ' ar-primary', AR.ICON.build, 'Build me a team') + b('report', '', AR.ICON.grade, 'Grade my team', 'var(--ar-blue)')}${b('matchup', '', AR.ICON.plan, 'Plan a match', 'var(--ar-orange)')}</nav>`
+    + `<p class="ar-imp">Already have a team? <button type="button" class="ar-link" data-arimport>Import from Showdown</button></p>`;
   /* the champion's six */
   let them = '', FC = null, sameSix = false;
   if (C) { const {ev, t} = C, key = esc(ev.id) + '#' + ev.top.indexOf(t); sameSix = ms.length === 6 && t.mons.every(m => ms.some(x => x.p.n === m.n));
@@ -382,3 +383,21 @@ document.addEventListener('toggle', e => { const d = e.target; if (!d || d.id !=
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arrecent]'); if (!b) return;
   const six = b.dataset.arrecent.split('|').filter(n => byName.has(n)); if (six.length !== 6) return;
   S.opp = six.slice(); ui.oppFrom = null; persist(); renderMatchup(); if (typeof renderBattle === 'function') safe('battle', renderBattle); toast('Recent opponent loaded'); });
+
+/* Usability (Sim, Nov 7): on Meta the ratings list comes first. "About the ratings" moves under the list, and the 18 type chips
+   and the Megas / hidden gems flags sit behind one Filter button next to the search (open while any filter is on, with a count). */
+CH.wrap('renderLair', () => { const sec = $('lair'); if (!sec) return;
+  const about = [...sec.querySelectorAll(':scope > details.chsec.chfold')].find(d => /About the ratings/.test(d.textContent)), hot = $('chHot');
+  if (about && hot && (about.compareDocumentPosition(hot) & Node.DOCUMENT_POSITION_FOLLOWING)) hot.after(about);
+  const ty = $('lairTypes'), fl = $('lairFlags'), ctl = sec.querySelector(':scope > .lctl'); if (!ty || !fl || !ctl) return;
+  const n = (ui.lty || []).length + Object.values(ui.lf || {}).filter(Boolean).length;
+  let btn = ctl.querySelector('.ar-lfilt');
+  if (!btn) { btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ar-btn ar-lfilt'; btn.setAttribute('aria-controls', 'lairTypes lairFlags'); ctl.append(btn);
+    btn.addEventListener('click', () => { AR.lfOpen = !sec.classList.contains('ar-lfopen'); sec.classList.toggle('ar-lfopen', AR.lfOpen); btn.setAttribute('aria-expanded', String(AR.lfOpen)); }); }
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filter${n ? ` <b class="ar-lfn">${n}</b>` : ''}`;
+  const open = !!AR.lfOpen || n > 0; sec.classList.toggle('ar-lfopen', open); btn.setAttribute('aria-expanded', String(open)); });
+
+/* Usability (Sim, Nov 7): importing a Showdown team was three screens down, inside My team's ⋯ menu. These buttons open the same
+   import panel from Home and from the sample-team note. */
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arimport]'); if (!b) return; e.preventDefault();
+  setView('report'); setTimeout(() => { const i = $('importBtn'); if (i) i.click(); }, 60); });

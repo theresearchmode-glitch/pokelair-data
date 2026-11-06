@@ -1046,3 +1046,14 @@
 @A .ar-mpg #chHot .chhot.mgrh{height:auto!important;min-height:236px!important;padding-bottom:6px!important}
 @A .ar-mpg #chHot .chhot.mgrh .nm{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;max-width:50%}
 @A .ar-mpg #chHot .chhot.mgrh .mgrst{max-width:50%}
+/* Meta, list first (Sim, Nov 7): search and Filter share one row; the type chips and flags open under it */
+@A #lair:not(.ar-lfopen) :is(#lairTypes,#lairFlags){display:none!important}
+@A #lair>.lctl{display:flex!important;align-items:center;gap:10px}
+@A #lair>.lctl>:not(.ar-lfilt){flex:1 1 auto;min-width:0}
+@A #lair .ar-lfilt{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;--edge:var(--ar-purple)}
+@A #lair .ar-lfilt svg{width:20px;height:20px}
+@A #lair .ar-lfilt .ar-lfn{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--ar-purple);color:#fff;font:700 13px/1 var(--ar-body)}
+@A #lair>.lctl{flex-wrap:nowrap!important}
+@A #lair>.lctl>.lsearch{flex:1 1 auto!important;width:auto!important;min-width:0}
+/* tighter rhythm above the list so it reaches the first screen on phones */
+@media (max-width:599px){@A #lair>.lctl{margin-top:16px!important}@A #lair>#chHot{margin-top:20px!important}@A #lair>.nplinks{margin-top:6px!important}}

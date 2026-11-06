@@ -903,3 +903,15 @@
    row: tapping a Pokémon's name or moves removed it. The tap area now hugs the button. */
 @A .chrm,@A [data-pane="report"] .chsheet .chrow .chrm{position:relative!important}
 @A [data-pane="report"] .chsheet .chrow .chrm{top:auto!important;right:auto!important;left:auto!important;bottom:auto!important}
+/* Import entry points (Sim, Nov 7) */
+@A #homeOut .ar-imp{margin:12px 0 0 4px;font:500 var(--ar-fs-small)/1.4 var(--ar-body);color:var(--ar-ink-2)}
+@A #homeOut .ar-imp .ar-link{display:inline;min-height:0;padding:0;font:inherit;font-weight:700}
+@A .ar-sample-acts{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:10px}
+/* Info tab: the typical set at a glance (Sim, Nov 7) */
+@A #lairSheet .lsi-quick{margin:0 0 6px!important;padding:0!important}
+@A #lairSheet .lsq{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;padding:14px 16px;border-radius:var(--ar-r-m);background:color-mix(in oklch,var(--ar-tb,var(--ar-purple)) 10%,var(--ar-sheet))}
+@A #lairSheet .lsqk{grid-row:1/3;font:600 var(--ar-fs-small)/1.3 var(--ar-body);color:var(--ar-ink-2)}
+@A #lairSheet .lsq b{font:700 var(--ar-fs-body)/1.35 var(--ar-body);color:var(--ar-ink)}
+@A #lairSheet .lsqm{font:500 var(--ar-fs-small)/1.4 var(--ar-body);color:var(--ar-ink-2)}
+@A #lairSheet .lsqgo{grid-column:2;justify-self:start;min-height:36px;font-weight:700}
+@media (min-width:1024px){@A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-quick{grid-column:1/-1!important;grid-row:auto!important}}

@@ -182,9 +182,10 @@
 }
 /* Sim (Nov 7): balance the Info tab's two columns (the right ran long with Abilities + Speed, the left ended early) */
 @media (min-width:1280px) and (max-width:1699px){
-  @A #lairSheet.lsdesk .lstp-info.lsgrid2{grid-template-rows:auto auto 1fr!important}
-  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-st{grid-column:1!important;grid-row:1!important}
-  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ty{grid-column:1!important;grid-row:2!important}
-  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ab{grid-column:1!important;grid-row:3!important}
-  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-sp{grid-column:2!important;grid-row:1/span 3!important}
+  @A #lairSheet.lsdesk .lstp-info.lsgrid2{grid-template-rows:auto auto auto auto 1fr!important}
+  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-quick{grid-column:1/-1!important;grid-row:1!important}
+  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-st{grid-column:1!important;grid-row:2!important}
+  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ty{grid-column:1!important;grid-row:3!important}
+  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-ab{grid-column:1!important;grid-row:4!important}
+  @A #lairSheet.lsdesk .lstp-info.lsgrid2>.lsi-sp{grid-column:2!important;grid-row:2/span 4!important}
 }
