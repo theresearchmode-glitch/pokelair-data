@@ -1041,3 +1041,8 @@
 /* tablets: keep the slanted tie card inside the screen */
 @media (min-width:600px){@A .ar-mpg #chHot .ar-tie{margin-inline:34px}}
 @media (min-width:1001px){@A .ar-mpg #chHot .ar-tie{margin-inline:42px}}
+/* Sim (Nov 7): a lone #1 on phones with wider text spilled into the next row and broke "Sneas ler". The card grows with its
+   text (the art field is pinned to its edges, so it stretches with it), names break only between words */
+@A .ar-mpg #chHot .chhot.mgrh{height:auto!important;min-height:236px!important;padding-bottom:6px!important}
+@A .ar-mpg #chHot .chhot.mgrh .nm{overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;max-width:50%}
+@A .ar-mpg #chHot .chhot.mgrh .mgrst{max-width:50%}

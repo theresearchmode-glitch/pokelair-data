@@ -444,9 +444,8 @@
   @A footer.legal .ar-link{min-height:40px}
 }
 
-/* "Got it" is a text link (the app's .btn class also gives it the strip; the link wins here) */
-@A #welcomeCard button[data-welcomex]{padding:0 2px!important;min-height:44px;color:var(--ar-pink-ink)!important}
-@A #welcomeCard button[data-welcomex]::before{content:none!important;display:none!important}
+/* "Got it" (Sim, Nov 7: the text link looked off theme): the same slanted strip as the two buttons above, full width under them */
+@A #welcomeCard button[data-welcomex]{flex:1 0 100%;justify-content:center}
 /* the older layers paint these as paper-2 panels in dark mode with a stronger selector; on Build they sit on the paper */
 @A[data-look] [data-pane="auto"] :is(.abhero.chabhero,.abw,.evteam.plan,.empty-note,.abcol,.corerow.arb-row){background:none!important;background-color:transparent!important}
 /* phones: names on the six stay whole words (smaller, narrower face); the narrowest phones get two columns */

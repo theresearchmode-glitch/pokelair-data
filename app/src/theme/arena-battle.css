@@ -999,3 +999,10 @@
   @A [data-pane="matchup"] .ar-rmon:last-child{right:10px;top:60px;width:170px;height:170px}
   @A [data-pane="matchup"] .ar-rhero-copy{top:84px}
 }
+/* Sim (Nov 7): long lead pairs ("Gholdengo + Mega Raichu Y") ran past the fixed-height read band and were cut by the next one.
+   The band now grows with its words: same spots and sizes as before, the copy in the flow instead of pinned */
+@A [data-pane="matchup"] .ar-rhero{height:auto!important;min-height:300px;padding-bottom:26px}
+@A [data-pane="matchup"] .ar-rhero-copy{position:relative!important;top:auto!important;margin-top:140px}
+@media (max-width:599px){@A [data-pane="matchup"] .ar-rhero{min-height:178px}@A [data-pane="matchup"] .ar-rhero-copy{margin-top:60px}}
+@media (min-width:600px) and (max-width:1000px){@A [data-pane="matchup"] .ar-rhero{min-height:236px}@A [data-pane="matchup"] .ar-rhero-copy{margin-top:84px}}
+@media (min-width:1001px){@A [data-pane="matchup"] .ar-rhero{min-height:400px}@A [data-pane="matchup"] .ar-rhero-copy{margin-top:206px}}

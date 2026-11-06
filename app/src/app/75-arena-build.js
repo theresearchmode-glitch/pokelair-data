@@ -99,7 +99,7 @@ ARBLD.dlg = () => { const fb = document.querySelector('#fbSheet .fbbox:not(.arb-
 /* ======================= welcome card, What's new, shared link, footer ======================= */
 ARBLD.home = () => { const w = $('welcomeCard'); if (w && !w.dataset.arb) { w.dataset.arb = '1';
     w.querySelectorAll('.wsteps > li').forEach((li, i) => { if (!li.querySelector('.ar-step')) li.insertAdjacentHTML('afterbegin', `<span class="ar-step" aria-hidden="true"><span>${i + 1}</span></span>`); });
-    w.querySelectorAll('.row > button').forEach(b => { if (b.dataset.welcomex) b.classList.add('ar-link'); else { b.classList.add('ar-btn'); b.style.setProperty('--edge', b.dataset.view === 'auto' ? 'var(--ar-gold)' : 'var(--ar-purple)'); } }); }
+    w.querySelectorAll('.row > button').forEach(b => { /* Got it is a strip too, in the card's pink (Sim, Nov 7: the link looked off theme) */ b.classList.add('ar-btn'); b.style.setProperty('--edge', b.dataset.welcomex ? 'var(--ar-pink)' : b.dataset.view === 'auto' ? 'var(--ar-gold)' : 'var(--ar-purple)'); }); }
   const sb = $('sharedBar'); if (sb && !sb.dataset.arb) { sb.dataset.arb = '1'; sb.querySelectorAll('button').forEach(b => b.classList.add(b.dataset.sharedx ? 'ar-link' : 'ar-btn')); }
   document.querySelectorAll('footer.legal button.linkbtn:not(.ar-link)').forEach(b => b.classList.add('ar-link')); };
 
