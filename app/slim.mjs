@@ -52,6 +52,22 @@ html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + css.r
 const afterPrune = html.length;
 // minify
 html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + esbuild.transformSync(css, {loader: 'css', minify: true}).code.trim() + '</style>');
+// 3. Old-layer rules that never applied anywhere (css-drop.json, from a full usage map, Nov 6): dropped by exact match of their
+//    media chain and selector after minifying, so any rule edited since is kept. Arena, hover/focus, print and motion rules
+//    were never candidates.
+let dropped3 = 0, dropBytes = 0;
+{ const crypto = R('node:crypto'); let keys = new Set(); try { keys = new Set(JSON.parse(fs.readFileSync(dir + 'css-drop.json', 'utf8')).keys); } catch (e) {}
+  const key = (m, s) => crypto.createHash('sha1').update(m.join('|') + '||' + s).digest('hex').slice(0, 16);
+  const drop = (css, media) => { let out = '', i = 0;
+    while (i < css.length) { const ob = css.indexOf('{', i); if (ob < 0) { out += css.slice(i); break; }
+      const head = css.slice(i, ob); let d = 1, j = ob + 1; while (j < css.length && d) { if (css[j] === '{') d++; else if (css[j] === '}') d--; j++; }
+      const hT = head.trim(), body = css.slice(ob + 1, j - 1);
+      if (hT.startsWith('@')) { if (/^@(media|supports|layer|container)\b/.test(hT)) { const inner = drop(body, [...media, hT]); if (inner.trim()) out += head + '{' + inner + '}'; } else out += head + '{' + body + '}'; }
+      else if (keys.has(key(media, hT))) { dropped3++; dropBytes += j - i; }
+      else out += head + '{' + body + '}';
+      i = j; }
+    return out; };
+  if (keys.size) html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + drop(css, []) + '</style>'); }
 html = html.replace(/<script>([\s\S]*?)<\/script>/g, (m, js) => '<script>' + esbuild.transformSync(js, {loader: 'js', minifyWhitespace: true, target: 'es2020'}).code.trim() + '</script>');
 fs.writeFileSync(file, html);
-console.log(`slim: ${(before / 1024 | 0)} KB -> ${(html.length / 1024 | 0)} KB (dead CSS ${(before - afterPrune) / 1024 | 0} KB: ${removedRules} rules, ${removedSels} selectors; short prefix ${prefixSaved / 1024 | 0} KB)`);
+console.log(`slim: ${(before / 1024 | 0)} KB -> ${(html.length / 1024 | 0)} KB (dead CSS ${(before - afterPrune) / 1024 | 0} KB: ${removedRules} rules, ${removedSels} selectors; short prefix ${prefixSaved / 1024 | 0} KB; never-used old rules ${dropped3} = ${dropBytes / 1024 | 0} KB)`);
