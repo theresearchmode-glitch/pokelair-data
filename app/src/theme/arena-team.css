@@ -1100,3 +1100,10 @@
 @A #chEdit .spgrid .field{width:100%;text-align:center;padding:0 6px!important;-moz-appearance:textfield}
 @A #chEdit .spgrid .field::-webkit-inner-spin-button,@A #chEdit .spgrid .field::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 @A #chEdit .spacts{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+/* Edit set (Sim, Nov 7): every cell keeps its natural height (the Ability box stretched to the tall stat block), labels line up */
+@A #chEdit .slbody>*{align-self:start}
+@A #chEdit .spnew{margin:0!important}
+@A #chEdit .spnew>.lblrow:first-child{margin-top:0;min-height:30px}
+@A #chEdit .abil>.lblrow,@A #chEdit .slbody>div>.lblrow:first-child{min-height:30px}
+/* move tiles: titles line up across the row (short details were centred lower) */
+@A #chEdit .mvset{justify-content:flex-start!important}
