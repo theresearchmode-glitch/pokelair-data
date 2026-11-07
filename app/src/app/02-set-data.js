@@ -13,11 +13,11 @@ function findIn(d,p,exact){if(!d||!d.top)return null;const t=d.top.find(t=>t.n==
   return d.top.find(t=>t.n===gameKey(p)&&hasSet(t))||null}
 const pairsOf=(a,f)=>{const o=[];for(let i=0;i+1<a.length;i+=2){const n=f(a[i]);if(n!=null&&a[i+1]>0)o.push([n,a[i+1]])}return o};
 let gameCache=new Map();
-function gameRow(p,fmt){const k=FK(fmt)+'|'+p.n;if(gameCache.has(k))return gameCache.get(k);
+function gameRow(p,fmt){if(!builtinOk())return null;const k=FK(fmt)+'|'+p.n;if(gameCache.has(k))return gameCache.get(k);
   const r=typeof SETS==='object'&&SETS[FK(fmt)][gameKey(p)];let o=null;
   if(r)o={n:gameKey(p),partial:!!r[5],mv:r[5]?[]:pairsOf(r[0],i=>MV[i]?MV[i].name:null),it:pairsOf(r[1],i=>SETS.IT[i]),ab:pairsOf(r[2],x=>x),na:pairsOf(r[3],i=>SETS.NAT[i]),tm:r[4].map(i=>ROSTER[i]?[ROSTER[i].n,null]:null).filter(Boolean),shared:!!SHARED[p.n]};
   gameCache.set(k,o);return o}
-function sdRow(p,fmt){const k='M'+FK(fmt)+'|'+p.n;if(gameCache.has(k))return gameCache.get(k);
+function sdRow(p,fmt){if(!builtinOk())return null;const k='M'+FK(fmt)+'|'+p.n;if(gameCache.has(k))return gameCache.get(k);
   const r=typeof SETS==='object'&&SETS['M'+FK(fmt)][p.n];let o=null;
   if(r)o={n:p.n,mv:pairsOf(r[0],i=>MV[i]?MV[i].name:null),na:r[1].map(i=>[SETS.NAT[i],null]),tm:r[2].map(i=>ROSTER[i]?[ROSTER[i].n,null]:null).filter(Boolean),it:[],ab:[],u:r[3],raw:r[4],cut:r[5]};
   gameCache.set(k,o);return o}

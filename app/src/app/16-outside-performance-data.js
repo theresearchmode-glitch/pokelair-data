@@ -88,6 +88,11 @@ function perfFromRaw(raw) {
 // "2026-10-30" -> "Oct 30", "2026-09" -> "Sep 2026" (the one date format used for data dates)
 function perfDateText(d) { const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], s = String(d || ''); let m;
   if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return `${M[+m[2] - 1]} ${+m[3]}`; if ((m = s.match(/^(\d{4})-(\d{2})$/))) return `${M[+m[2] - 1]} ${m[1]}`; return s; }
+/* Nov 7: the backups built into the page (PERF_RAW ratings inputs, RESULTS teams/cores, SETS in-game snapshot) were made
+   from Reg M-C. They are only used while M-C is the active regulation; once the data job switches to a newer one, a thin
+   first day of new data must not be topped up with the old regulation's numbers (the page says data is rebuilding). */
+const BUILTIN_REG = 'M-C';
+function builtinOk() { try { const r = META && ((META.perf && META.perf.reg) || META.reg); return !(r && typeof r === 'object' && /^[A-Z]-[A-Z]$/.test(r.id) && r.id !== BUILTIN_REG); } catch (e) { return true; } }
 const PERF_KEYS = ['tour', 'adj', 'ingame', 'official', 'smogon', 'ladder', 'outside'], PERF_MAXAGE = {tour: 3, adj: 3, ingame: 4, official: 4, smogon: 40, ladder: 4, outside: 4}, PERF_FROZEN_MAXAGE = 28;
 function perfDate(raw, k) { const x = raw && raw[k]; if (!x) return ''; return String(x.updated || raw.updated || '').slice(0, 10); }
 function perfAgeDays(d) { const s = String(d || ''); let t;
@@ -102,7 +107,7 @@ function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of
 // (no database), the built-in snapshot is used as it is, and its dates are shown.
 let perfCache = {key: null, val: null};
 function activePerf() { const key = metaVersion; if (perfCache.key === key) return perfCache.val;
-  let v = null; try { const raw = META.perf; if (raw) { const fresh = Object.assign({}, typeof PERF_RAW === 'object' ? perfFreshParts(PERF_RAW) : {}, perfFreshParts(raw));
+  let v = null; try { const raw = META.perf; if (raw) { const fresh = Object.assign({}, typeof PERF_RAW === 'object' && builtinOk() ? perfFreshParts(PERF_RAW) : {}, perfFreshParts(raw));
       if (fresh.tour) { for (const k of PERF_KEYS) if (fresh[k] && !fresh[k].updated) fresh[k] = Object.assign({}, fresh[k], {updated: perfDate(raw[k] ? raw : PERF_RAW, k)}); v = perfFromRaw(Object.assign({updated: raw.updated}, fresh)); } } } catch (e) { v = null; }
-  if (!v) { try { v = typeof PERF_RAW === 'object' ? perfFromRaw(PERF_RAW) : null; } catch (e) { v = null; } }
+  if (!v) { try { v = typeof PERF_RAW === 'object' && builtinOk() ? perfFromRaw(PERF_RAW) : null; } catch (e) { v = null; } }
   perfCache = {key, val: v}; return v; }
