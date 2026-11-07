@@ -1,4 +1,4 @@
-# Reg M-D game plan (Nov 7, 2026) — for Sim's review, nothing built yet
+# Reg M-D game plan (Nov 7, 2026) — reviewed by Sim; Phase 0 not started
 
 ## 1. What we know (research, Nov 7)
 | Fact | Status | Source |
@@ -57,10 +57,26 @@
 **Phase 3, first two weeks:**
 - Daily check of names, sets and ratings; retrain the team-strength model once there are enough M-D games; refresh in-game sets; re-run all audits on real M-D teams.
 
-## 5. Decisions for Sim (before Phase 0 starts)
-1. **When the page switches to M-D**: (a) keep the automatic rule (20 events + 1,200 players, about 12 days last time), (b) switch the page on launch day with clear "early data, N events so far" labels, or (c) a lower bar (e.g. 8 events + 400 players, about 3-4 days).
-2. **Keep M-C visible after the switch?** (a) no, the new regulation only, as now; (b) a read-only "Last regulation (M-C)" view of the final numbers.
-3. **Mega Heatran's unknown ability**: show "not announced yet" (recommended) or wait to add it.
+## 5. Sim's decisions (Nov 7)
+1. **Switch on launch day.** Showing M-C numbers for ~12 days into M-D would make the site wrong for two weeks, which is
+   unacceptable. The page switches to M-D on the day it starts (by date, not by event count) and says plainly that the data is
+   very thin and based on our own numbers, ratings, tests and data so far ("Day N of Reg M-D: X events, Y players so far").
+   - **Faster data during the first one to two weeks:** the data job and the page refresh run several times a day (e.g. every
+     4 hours) instead of once, then go back to daily. The repo is public, so GitHub's runs cost nothing; Limitless's limit
+     (50 requests / 5 minutes) is far above what one run needs.
+   - Day one may have no finished M-D tournaments: every page must read well with zero M-D results (ratings fall back to the
+     formula, sets to "no M-D sets yet", threats to the ladder) and fill in as events finish.
+2. **M-D only after the switch.** The public launch is early January, when M-C is long past; no "last regulation" view.
+3. **Mega Heatran's ability: "not announced yet"** until it is official; real stats and typing, nothing guesses its effect.
+
+**Launch timing note:** NastyPlot's public launch is planned for early January 2027, about a month into M-D.
+
+## 4b. Extra Phase 0 work from these decisions
+- 0.7 Date-based switch: the regulation profile carries M-D's start date; on that date the page and the daily job switch
+  (REG_AUTO_SWITCH and the event-count rule stay as the backstop if the date slips, e.g. the game update is late).
+- 0.8 "Thin data" labelling on every page that shows numbers, driven by how many M-D events and players exist.
+- 0.9 Launch-window schedule: a ready-to-flip setting for the data job and the refresh (every 4 hours for 14 days, then daily),
+  plus a daily health summary during that window.
 
 ## 6. Size
 Phase 0: medium (scripts and a practice run; most checking runs on its own). Phase 1: light to medium on roster day. Phases 2-3: light daily checks.
