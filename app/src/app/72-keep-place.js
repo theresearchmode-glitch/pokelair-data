@@ -42,8 +42,9 @@ addEventListener('click', e => { const el = e.target && e.target.closest && e.ta
   const w = KP.w = {t0}; KP.last = {el, s, t0}; let y = y0; const fix = () => { if (document.documentElement.dataset.pg !== pg0 || (!ov0 && KP.overlay()) || KP.userAt > t0 || KP.w !== w) return false;
     if (KP.appAt >= t0 && Math.abs(KP.appTo - y0) > 2) return false; // the app scrolled somewhere on purpose (a "jump to" link)
     const n = KP.find(el, s); if (!n) return null; if (KP.pinned(n)) return false; const d = n.getBoundingClientRect().top - top; if (Math.abs(d) <= 4) return true;
-    const opened = n.getAttribute('aria-expanded') === 'true' || (n.tagName === 'SUMMARY' && n.parentElement && n.parentElement.open);
-    if (d > 0 && (opened || KP.MORE.test(KP.txt(n)) || KP.MORE.test(s.txt))) return false; // "more" opened content above itself: leave it
+    // a "more" button opened rows above itself: leave it (the rows appear where you're looking). A Details button that opens a
+    // line above itself stays under the finger (Nov 7 shake sweep)
+    if (d > 0 && (KP.MORE.test(KP.txt(n)) || KP.MORE.test(s.txt))) return false;
     KP.own = true; try { scrollBy(0, d); } finally { KP.own = false; } KP.movedAt = Date.now(); y = scrollY; return true; };
   /* checked on every frame for the first 0.8 s, before the screen is painted (Nov 7 shake sweep): a page that redraws in pieces
      (the Undo bar first, the list a moment later) used to show each piece's push for a frame or more before being corrected */
