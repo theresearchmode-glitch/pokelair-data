@@ -24,6 +24,12 @@ KP.appAt = 0; KP.appTo = 0; KP.own = false;
 KP.redrawBars = (() => { let t = 0; const go = () => { t = 0; for (const n of document.querySelectorAll('.bnav,.topbar,header.top')) { const v = n.style.transform; n.style.transform = 'translateZ(0)'; void n.offsetHeight; requestAnimationFrame(() => { n.style.transform = v; }); } };
   return () => { clearTimeout(t); t = setTimeout(go, 220); }; })();
 addEventListener('scroll', () => { if (Date.now() - KP.appAt < 1500 || KP.ownAt && Date.now() - KP.ownAt < 1500) KP.redrawBars(); }, {passive: true});
+// also once the page has loaded (fonts in, first redraws done) and whenever the visible screen changes size (the app's own bars
+// showing or hiding, rotation): the same redraw (Sim, Nov 7: the bar was below the screen on first opening)
+addEventListener('load', () => { KP.redrawBars(); setTimeout(KP.redrawBars, 1500); });
+try { document.fonts && document.fonts.ready.then(() => KP.redrawBars()); } catch (e) {}
+try { if (window.visualViewport) visualViewport.addEventListener('resize', () => KP.redrawBars()); } catch (e) {}
+addEventListener('resize', () => KP.redrawBars());
 { const W = window, sTo = W.scrollTo.bind(W), sBy = W.scrollBy.bind(W), sIV = Element.prototype.scrollIntoView;
   const note = to => { if (!KP.own) { KP.appAt = Date.now(); KP.appTo = to; } };
   W.scrollTo = function (a, b) { note(typeof a === 'object' && a ? (a.top != null ? +a.top : scrollY) : +b); return sTo.apply(null, arguments); };

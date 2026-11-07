@@ -82,9 +82,11 @@ function fitHomeTiles() { document.querySelectorAll('#homeOut .htiles').forEach(
 function fitHomeGrid(g) {
   const bs = [...g.querySelectorAll('.htile b')].filter(b => b.offsetParent && b.clientWidth); if (!bs.length) return;
   const f = parseFloat(getComputedStyle(bs[0]).fontSize); let k = 1;
-  // measured with a hidden copy outside the cards (same font settings), so measuring doesn't count as a change to the cards
+  // measured with a hidden copy outside the cards (same font settings), so measuring doesn't count as a change to the cards; an
+  // ordinary hidden element at the page's top-left, never a fixed one: on iPhone a fixed element far off-screen can leave the
+  // bottom bar drawn below the screen (Sim, Nov 7)
   const cs = getComputedStyle(bs[0]), m = document.createElement('span'); m.setAttribute('aria-hidden', 'true');
-  m.style.cssText = `position:fixed;left:-9999px;top:0;visibility:hidden;white-space:nowrap;font-family:${cs.fontFamily};font-size:${cs.fontSize};font-weight:${cs.fontWeight};font-style:${cs.fontStyle};font-stretch:${cs.fontStretch};letter-spacing:${cs.letterSpacing};font-synthesis:${cs.fontSynthesis || 'style'}`;
+  m.style.cssText = `position:absolute;left:0;top:0;visibility:hidden;pointer-events:none;white-space:nowrap;font-family:${cs.fontFamily};font-size:${cs.fontSize};font-weight:${cs.fontWeight};font-style:${cs.fontStyle};font-stretch:${cs.fontStretch};letter-spacing:${cs.letterSpacing};font-synthesis:${cs.fontSynthesis || 'style'}`;
   document.body.append(m);
   for (const b of bs) { const w = b.clientWidth; for (const word of (b.textContent || '').trim().split(/\s+/)) { m.textContent = word; const ww = m.getBoundingClientRect().width; if (ww > w - 2) k = Math.min(k, (w - 3) / ww); } }
   m.remove();
