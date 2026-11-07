@@ -5,7 +5,7 @@
 // between two graded teams: did the higher-graded team win? And over teams with enough future games: do higher grades win more?
 // Each part of the grade is measured on its own too (readiness, missed checks, team strength, past record), so we know which
 // parts carry the prediction. Known leak, small: readiness is measured against today's top 30 threats.
-// Usage: node experiments/grade-check.mjs   (writes out/grade_check.json; read-only otherwise)
+// Usage: node experiments/grade-check.mjs   (read-only; GRADE_CHECK_OUT=file saves the numbers)
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), APP = ROOT + 'app/', OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
@@ -54,7 +54,7 @@ const wcorr = (xs, ys, ws) => { const W = ws.reduce((a, b) => a + b, 0), mx = xs
 for (const [name, f] of Object.entries(P)) { const xs = T.map(([t]) => f(t)), ys = T.map(([, o]) => o.w / o.g), ws = T.map(([, o]) => o.g);
   const idx = xs.map((x, i) => i).sort((a, c) => xs[a] - xs[c]), third = Math.floor(idx.length / 3), wr = ix => { let w = 0, g = 0; for (const i of ix) { w += ys[i] * ws[i]; g += ws[i]; } return g ? w / g : 0; };
   res.teams[name] = {corr: +wcorr(xs, ys, ws).toFixed(2), bottomThirdWins: +(wr(idx.slice(0, third)) * 100).toFixed(1), topThirdWins: +(wr(idx.slice(-third)) * 100).toFixed(1)}; }
-fs.writeFileSync(OUT + 'grade_check.json', JSON.stringify(res, null, 1));
+if (process.env.GRADE_CHECK_OUT) fs.writeFileSync(process.env.GRADE_CHECK_OUT, JSON.stringify(res, null, 1));
 console.log(`\nFuture games used: ${res.gamesUsed} (both teams graded) · teams with 10+ future games: ${res.teamsUsed} · cut ${cutDate}\n`);
 console.log('In each future game, did the higher-scoring team win?  (coin flip = 50%)');
 for (const [k, v] of Object.entries(res.games)) console.log(`  ${String(v.acc).padStart(5)}%  ${k}  (${v.decided} games, ${v.ties} ties)`);
