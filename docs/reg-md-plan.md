@@ -1,4 +1,4 @@
-# Reg M-D game plan (Nov 7, 2026) — approved by Sim; Phase 0 starts Wed Nov 11 (when her usage resets)
+# Reg M-D game plan (Nov 7, 2026) — approved by Sim; Phase 0 starts Wed Nov 11, done in one go (not split)
 
 ## 1. What we know (research, Nov 7)
 | Fact | Status | Source |
