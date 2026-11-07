@@ -41,7 +41,7 @@ addEventListener('click', e => { const el = e.target && e.target.closest && e.ta
     const n = KP.find(el, s); if (!n || KP.pinned(n)) return false; const d = n.getBoundingClientRect().top - top; if (Math.abs(d) <= 4) return true;
     const opened = n.getAttribute('aria-expanded') === 'true' || (n.tagName === 'SUMMARY' && n.parentElement && n.parentElement.open);
     if (d > 0 && (opened || KP.MORE.test(KP.txt(n)) || KP.MORE.test(s.txt))) return false; // "more" opened content above itself: leave it
-    KP.own = true; try { scrollBy(0, d); } finally { KP.own = false; } y = scrollY; return true; };
+    KP.own = true; try { scrollBy(0, d); } finally { KP.own = false; } KP.movedAt = Date.now(); y = scrollY; return true; };
   requestAnimationFrame(() => setTimeout(() => { if (fix()) { setTimeout(fix, 120); setTimeout(fix, 420); } }, 0)); }, true);
 /* dropdown menus ("⋯" on My team and Saved teams): an outside tap or Escape closes them (they used to stay open over the page) */
 document.addEventListener('click', e => { const open = document.querySelectorAll('details.moremenu[open]'); if (!open.length) return;

@@ -210,7 +210,8 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   let stage = '';
   if (ms.length) { const L = AR.lineup(ms), ord = [...L.lead, ...L.back, ...L.bench], sel = ui.rzSet;
     const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
-    const tiles = ord.map(m => AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})).join('')
+    /* each one has a small X to take it off the team in one tap (Sim, Nov 7); it uses the same remove as the editor, with Undo */
+    const tiles = ord.map(m => `<div class="ar-slot">${AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})}<button type="button" class="ar-rmx" data-chrm="${m.i}" aria-label="Remove ${esc(m.d)} from your team"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>`).join('')
       + open.map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
     const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : L.by === 'you' ? 'your pick' : 'in team order')
       + (L.by === 'you' ? `<button type="button" class="ar-link ar-leadreset" data-arlead="">Use NastyPlot's pick</button>` : '') : '';
