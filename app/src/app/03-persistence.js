@@ -16,7 +16,7 @@ const fieldJ=o=>{const r={};for(const k in o)r[k]=JSON.stringify(o[k]===undefine
 async function flush(){if(!docRef)return;if(writing){pending=true;return}
   const o=snapObj(),J=fieldJ(o),patch={};for(const k in J)if(saved[k]!==J[k])patch[k]=o[k]===undefined?null:o[k];
   if(!Object.keys(patch).length)return;
-  writing=docExists?docRef.update(patch):docRef.set(o);
+  writing=docExists&&typeof docRef.update==='function'?docRef.update(patch):docRef.set(o);
   try{await writing;docExists=true;for(const k in patch)saved[k]=J[k];lastJson=snapshot();syncNote('saved')}
   catch(e){if(e&&e.code==='quota_exceeded')toast('Storage is full. Delete a saved team.');else if(e&&e.code==='invalid_argument'&&docExists){docExists=false;pending=true}else if(e&&e.code==='unavailable'){setTimeout(flush,1500+Math.random()*1000)}}
   finally{writing=null;if(pending){pending=false;flush()}}}

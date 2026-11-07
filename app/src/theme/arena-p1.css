@@ -955,3 +955,9 @@
 @A #box .boxlinkin label.hint{display:block}
 /* the add field and Reset box share one row on phones too (no button left alone on its own row) */
 @A [data-pane="box"] #box .row #boxCb{flex:1 1 160px}
+/* box names stay inside their own tile: they may wrap at a space ("Basculegion" / "(F)") and shrink to 13px (AR.fit) */
+@A [data-pane="box"] .boxchip .ar-nm{max-width:100%!important;white-space:normal!important;overflow-wrap:normal}
+@A [data-pane="box"] .boxchip.is-nmw .ar-nm{max-width:100%!important}
+/* box names are labels: the body face, like the team strips' names (Nov 7, type system: labels in Instrument Sans), so every name
+   fits its 3-across phone tile */
+@A [data-pane="box"] .boxchip .ar-nm:not(#_b1):not(#_b2):not(#_b3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}

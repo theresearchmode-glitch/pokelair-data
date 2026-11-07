@@ -138,7 +138,7 @@
 @A [data-pane="box"] .boxchip.ar-art{--h:70px;--s:86px;--lift:20px;display:block!important;min-height:0!important;padding:var(--lift) 0 0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;cursor:default}
 @A [data-pane="box"] .boxchip.ar-art[hidden]{display:none!important}
 @A [data-pane="box"] .boxchip.ar-art::before,@A [data-pane="box"] .boxchip.ar-art::after{content:none!important;display:none!important}
-@A [data-pane="box"] .boxchip .ar-nm{font-size:15px!important;line-height:1.15;padding-right:2px}
+@A [data-pane="box"] .boxchip .ar-nm{font-size:var(--nmf,15px)!important;line-height:1.15;padding-right:2px}
 @A [data-pane="box"] .boxchip .x{position:absolute!important;top:calc(var(--lift) - 14px);right:-6px;z-index:5;display:grid!important;place-items:center;width:44px!important;height:44px!important;padding:0!important;margin:0!important;
   font:600 20px/1 var(--ar-body)!important;color:var(--ar-ink)!important;background:none!important;border:0!important;box-shadow:none!important;opacity:1!important;cursor:pointer}
 @A [data-pane="box"] .boxchip .x::before{content:"";position:absolute;inset:8px;z-index:-1;border-radius:50%;background:var(--ar-sheet);box-shadow:var(--ar-shadow-s)}
@@ -148,7 +148,7 @@
 @media (min-width:800px){@A [data-pane="box"] #boxList{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
 @media (min-width:1001px){@A [data-pane="box"] #boxList{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;gap:24px 16px!important}
   @A [data-pane="box"] .boxchip.ar-art{--h:96px;--s:116px}
-  @A [data-pane="box"] .boxchip .ar-nm{font-size:16px!important}
+  @A [data-pane="box"] .boxchip .ar-nm{font-size:var(--nmf,16px)!important}
   @A [data-pane="box"] #box>.row{max-width:720px}}
 
 /* tile names on these pages break between words only (never "Basculegio n"); a slightly narrower cut keeps long names on one line */

@@ -13,7 +13,7 @@ function sprite(p, cls) { const id = p && SPRITE_ID[p.n]; if (!id) return ''; co
 // When a redraw removes a sprite and adds the same one back, the old, already-decoded picture is put back in place of the
 // new copy before the screen paints (observer callbacks run before paint), taking the new copy's class and attributes.
 if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') {
-  document.addEventListener('load', e => { const t = e.target; if (t && t.classList && t.classList.contains('spr')) SPR_SEEN.add(t.getAttribute('src')); }, true);
+  document.addEventListener('load', e => { const t = e.target; if (t && t.classList && t.classList.contains('spr')) SPR_SEEN.add((t.getAttribute('src') || '').replace(/\?r=\d+$/, '')); }, true);
   // pictures removed in the last second stay available, for sections that clear first and refill a moment later
   let sprRecent = new Map(), sprT = 0;
   const sprMO = new MutationObserver(recs => { const pool = new Map(), all = sprRecent, added = [], put = (m, k, v) => (m.get(k) || m.set(k, []).get(k)).push(v);
@@ -30,7 +30,13 @@ if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') 
     sprMO.takeRecords(); }); // drop the records of our own swaps, so they never trigger more swaps
   sprMO.observe(document.documentElement, {childList: true, subtree: true}); }
 // a sprite that fails to load becomes an empty box of the same size, so grid rows (speed tiers, hit tables) keep their columns
-if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('error', e => { const t = e.target; if (t && t.classList && t.classList.contains('spr')) { const s = document.createElement('span'); s.className = t.className + ' sprx'; s.setAttribute('aria-hidden', 'true'); t.replaceWith(s); } }, true);
+// (Nov 7, Sim: a first visit on another account showed most box sprites blank) a picture that fails is tried again 3 times,
+// about 1.5, 4 and 10 seconds later (a first visit asks for dozens at once, and the file server can refuse some of them);
+// only after that does it become the empty box
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('error', e => { const t = e.target; if (!t || !t.classList || !t.classList.contains('spr')) return;
+  const n = +(t.dataset.retry || 0), base = (t.getAttribute('src') || '').replace(/\?r=\d+$/, '');
+  if (n < 3 && base) { t.dataset.retry = n + 1; setTimeout(() => { if (t.isConnected) t.setAttribute('src', base + '?r=' + (n + 1)); }, [1500, 4000, 10000][n]); return; }
+  const s = document.createElement('span'); s.className = t.className + ' sprx'; s.setAttribute('aria-hidden', 'true'); t.replaceWith(s); }, true);
 // rating badge: the shown (school-scale) rating with its tier letter, in the tier's colour (Nov 2: it printed the internal
 // score in a gold/silver/bronze palette of its own; now the same LTIERS colours and numbers as everywhere else)
 function ratingTag(p) { const r = rating(p), t = RS(r.total), T = lTier(r.total), rk = typeof rankTxt === 'function' ? rankTxt(p) : '';
