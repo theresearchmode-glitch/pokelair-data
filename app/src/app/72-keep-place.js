@@ -49,7 +49,11 @@ addEventListener('click', e => { const el = e.target && e.target.closest && e.ta
   /* checked on every frame for the first 0.8 s, before the screen is painted (Nov 7 shake sweep): a page that redraws in pieces
      (the Undo bar first, the list a moment later) used to show each piece's push for a frame or more before being corrected */
   const t0f = performance.now(), loop = () => { if (fix() === false) return; if (performance.now() - t0f < 800) requestAnimationFrame(loop); };
-  KP.lastFix = fix; requestAnimationFrame(loop); }, true);
+  KP.lastFix = fix; requestAnimationFrame(loop);
+  /* and whenever the page changes size in that time: a resize is reported after the page is laid out and before it is drawn,
+     so a redraw that runs late in a frame (after the check above) is caught in the same frame (Nov 7 shake sweep) */
+  try { if (KP.ro) KP.ro.disconnect(); const pane = document.querySelector('[data-pane]:not([hidden])') || document.body; let stop = false;
+    KP.ro = new ResizeObserver(() => { if (stop || performance.now() - t0f > 1200 || fix() === false) { stop = true; KP.ro && KP.ro.disconnect(); } }); KP.ro.observe(pane); } catch (e) {} }, true);
 /* a redraw that lands later (the suggestions finish working out): the tapped control is put back at once, before the screen is
    drawn, and watched for another 0.8 s */
 KP.hold = () => { const f = KP.lastFix; if (!f || !KP.recent()) return false; if (f() === false) return false; const t = performance.now(), loop = () => { if (f() === false) return; if (performance.now() - t < 800) requestAnimationFrame(loop); }; requestAnimationFrame(loop); return true; };

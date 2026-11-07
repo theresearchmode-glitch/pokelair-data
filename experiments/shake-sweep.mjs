@@ -60,8 +60,10 @@ async function tapWatch(c) {
     return {x: r.left + Math.min(r.width / 2, 20), y: r.top + r.height / 2, pg: document.documentElement.dataset.pg}; }, c.sig);
   if (!pre || pre.covered || pre.y < 0) return {skip: 1};
   await pg.waitForTimeout(150);
-  await pg.evaluate(sig => { const e0 = window.__skFind(sig), find = () => (e0 && e0.isConnected && e0.getBoundingClientRect().width > 2) ? e0 : window.__skFind(sig);
-    window.__sk = []; const t0 = performance.now(); const f = () => { const e = find(); window.__sk.push([scrollY, e ? e.getBoundingClientRect().top : null, document.documentElement.scrollHeight, Math.round(performance.now() - t0)]); if (performance.now() - t0 < 1500) requestAnimationFrame(g); }, g = () => setTimeout(f, 0); requestAnimationFrame(g); }, c.sig);
+  // each frame is read at the very end, after the page's own corrections and just before it is drawn: a size watcher on a
+  // sentinel that changes size every frame (made after the tap, so it reports after the page's own watchers)
+  await pg.evaluate(() => { let sn = document.getElementById('__sksn'); if (!sn) { sn = document.createElement('div'); sn.id = '__sksn'; sn.style.cssText = 'position:fixed;left:0;top:0;height:1px;width:1px;opacity:0;pointer-events:none'; document.body.append(sn); }
+    window.__skOn = true; const tick = () => { sn.style.width = sn.style.width === '1px' ? '2px' : '1px'; if (window.__skOn) requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
   const a0 = await pg.evaluate(() => [window.__ev('KP.appAt'), scrollY]);
   await pg.evaluate(() => { window.__tapAt = performance.now(); });
   if (process.env.SKONLY && new RegExp(process.env.SKONLY).test(c.txt)) await pg.evaluate(sig => { const t = window.__skFind(sig), pane = document.querySelector(`[data-pane="${document.documentElement.dataset.pg}"]`), y0 = t.getBoundingClientRect().top;
@@ -70,7 +72,10 @@ async function tapWatch(c) {
     const blocks = () => { const out = []; for (const a of pane.children) { out.push(a); for (const b of a.children) { out.push(b); for (const c of b.children) out.push(c); } } return out.filter(e => { const r = e.getBoundingClientRect(); return r.height > 0 && r.top < t.getBoundingClientRect().top - 1; }); };
     let prev = new Map(blocks().map(e => [nm(e) + '|' + [...e.parentElement.children].indexOf(e), Math.round(e.getBoundingClientRect().height)]));
     const t0 = performance.now(), f = () => { const cur = new Map(blocks().map(e => [nm(e) + '|' + [...e.parentElement.children].indexOf(e), Math.round(e.getBoundingClientRect().height)])); for (const [k, h] of cur) if (prev.has(k) && Math.abs(prev.get(k) - h) > 3) window.__log.push([performance.now(), 'block ' + k + ' ' + prev.get(k) + '→' + h, '']); prev = cur; if (performance.now() - t0 < 1500) requestAnimationFrame(f); }; requestAnimationFrame(f); }, c.sig);
-  await tapAt(pre.x, pre.y); await pg.waitForTimeout(1600);
+  await tapAt(pre.x, pre.y);
+  await pg.evaluate(sig => { const e0 = window.__skFind(sig), find = () => (e0 && e0.isConnected && e0.getBoundingClientRect().width > 2) ? e0 : window.__skFind(sig), t0 = performance.now(); window.__sk = [];
+    const sn = document.getElementById('__sksn'), ro = new ResizeObserver(() => { const e = find(); window.__sk.push([scrollY, e ? e.getBoundingClientRect().top : null, document.documentElement.scrollHeight, Math.round(performance.now() - t0)]); if (performance.now() - t0 > 1500) { ro.disconnect(); window.__skOn = false; } }); ro.observe(sn); }, c.sig);
+  await pg.waitForTimeout(1600);
   // the app scrolled somewhere on purpose (a "jump to" button: scrollIntoView, or a scroll to another place); a scroll back to
   // where the reader was (holding the place during a redraw) is not on purpose and is still watched
   if (await pg.evaluate(([t, y]) => window.__ev(`KP.appAt > ${t} && (KP.appTo === -1e9 || Math.abs(KP.appTo - ${y}) > 40)`), a0)) return {away: 1};
@@ -90,6 +95,7 @@ for (const team of [false, true]) for (const v of VIEWS) {
   for (const c of ctrls) {
     if (changed) { await open(team, v); await listCtrls(); changed = false; }
     let r; try { r = await tapWatch(c); } catch (e) { continue; }
+    if (process.env.SKONLY && new RegExp(process.env.SKONLY).test(c.txt)) console.log('  control:', JSON.stringify(c.sig));
     if (process.env.SKDBG) console.log(team ? 'T' : '-', v, JSON.stringify(c.txt), JSON.stringify(r));
     if (r.skip) continue; if (r.away) { changed = true; continue; } R.tapped++;
     if (team && /apply/i.test(c.txt)) changed = true;
