@@ -198,10 +198,19 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   if (RD) {
     const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready for the top ${hd ? hd.n : 30}${tp('readiness')}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
     const rec = '';
+    /* matchups get their own verdict (Sim, Nov 7: "98 and 6 shaky?"): the grade says how strong the team is, this says what can
+       still beat it, named, worst first, with a jump to Threats */
+    const wn = l => CH.order(RD).filter(r => r.level === l).slice(0, 3).map(r => esc(r.t.d)), lst = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0] || '';
+    const go = `<button type="button" class="ar-link" data-arjump="chP2">See threats</button>`;
+    const muV = c[0] ? `<b>${c[0]} with no answer yet</b>${c[1] ? `, ${c[1]} shaky` : ''}: ${c[0] > 3 ? wn(0).join(', ') + ' and more' : lst(wn(0))}. ${go}`
+      : c[1] ? `<b>${c[1]} shaky matchup${c[1] === 1 ? '' : 's'} worth fixing</b>: ${c[1] > 3 ? wn(1).join(', ') + ' and more' : lst(wn(1))}. ${go}`
+      : `<b>No weak matchups</b> against the top ${hd ? hd.n : 30}.`;
     /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
     const chk = `<div class="ar-st" role="group" aria-label="What's behind this grade"><h3 class="ar-sth">What’s behind this grade</h3>
       ${G && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}
-      ${G && G.v === 2 ? `<h3 class="ar-sth ar-muh">Matchups</h3><p class="ar-mus">What beats this team, and how well it covers the meta. Counted in the grade at the weight real results support.</p>` : ''}
+      </div>
+    <div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3><p class="ar-muv${c[0] ? ' is-bad' : c[1] ? ' is-warn' : ' is-ok'}">${muV}</p>
+      <p class="ar-mus">Separate from the grade: the grade is how strong the team is overall, this is what can still beat it. Even an A team can have matchups worth fixing.</p>
       <div class="ar-trio">${cells.join('')}</div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';

@@ -998,3 +998,8 @@
 /* My Team: Matchups, its own heading under the grade's parts (grade v2, Nov 7) */
 @A .ar-st .ar-sth.ar-muh{margin-top:16px}
 @A .ar-st .ar-mus{margin:4px 0 8px;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink-2)}
+@A .ar-st .ar-muv{margin:4px 0 0;font:500 16px/1.5 var(--ar-body);color:var(--ar-ink)}
+@A .ar-st .ar-muv b{font-weight:700}
+@A .ar-st .ar-muv .ar-link{display:inline;margin:0 0 0 4px;padding:0;min-height:0!important;height:auto!important;line-height:inherit!important;vertical-align:baseline;position:relative}
+@A .ar-st .ar-muv .ar-link::after{content:"";position:absolute;inset:-10px -6px}
+@A .ar-tstats .ar-mu .ar-sth.ar-muh{margin-top:0}
