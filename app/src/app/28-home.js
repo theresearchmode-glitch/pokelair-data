@@ -72,3 +72,24 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
 
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#homeAllBtn'); if (!b) return; ui.homeAll = !ui.homeAll; keepScroll(() => renderHome()); });
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-hgems]'); if (!b) return; ui.homeGems = b.dataset.hgems === '1'; keepScroll(() => renderHome()); });
+/* Tool card titles fit their card (Sim, Nov 7: "Archetypes" ran into the card's slanted edge on phones). A one-word title can't
+   wrap like "Speed tiers", so every title in the grid gets the size that fits its longest word: the same size on every card,
+   at most what the design sets and never under 13px. Checked after each redraw and when the screen changes width. */
+function fitHomeTiles() { document.querySelectorAll('#homeOut .htiles').forEach(g => { g.style.removeProperty('--htfs'); delete g.dataset.stack; fitHomeGrid(g);
+  /* still too long at 13px (narrow phones, the icon beside the title): the icon goes above the title on every card, and the
+     title gets the card's full width */
+  if (g.dataset.small) { delete g.dataset.small; g.style.removeProperty('--htfs'); g.dataset.stack = '1'; fitHomeGrid(g); delete g.dataset.small; } }); }
+function fitHomeGrid(g) {
+  const bs = [...g.querySelectorAll('.htile b')].filter(b => b.offsetParent && b.clientWidth); if (!bs.length) return;
+  const f = parseFloat(getComputedStyle(bs[0]).fontSize); let k = 1;
+  // measured with a hidden copy outside the cards (same font settings), so measuring doesn't count as a change to the cards
+  const cs = getComputedStyle(bs[0]), m = document.createElement('span'); m.setAttribute('aria-hidden', 'true');
+  m.style.cssText = `position:fixed;left:-9999px;top:0;visibility:hidden;white-space:nowrap;font-family:${cs.fontFamily};font-size:${cs.fontSize};font-weight:${cs.fontWeight};font-style:${cs.fontStyle};font-stretch:${cs.fontStretch};letter-spacing:${cs.letterSpacing};font-synthesis:${cs.fontSynthesis || 'style'}`;
+  document.body.append(m);
+  for (const b of bs) { const w = b.clientWidth; for (const word of (b.textContent || '').trim().split(/\s+/)) { m.textContent = word; const ww = m.getBoundingClientRect().width; if (ww > w - 2) k = Math.min(k, (w - 3) / ww); } }
+  m.remove();
+  if (f * k < 13) g.dataset.small = '1';
+  if (k < 1) g.style.setProperty('--htfs', Math.max(13, Math.floor(f * k * 2) / 2) + 'px'); }
+{ let t = 0; const later = () => { cancelAnimationFrame(t); t = requestAnimationFrame(() => { try { fitHomeTiles(); } catch (e) {} }); };
+  const go = () => { const h = document.getElementById('homeOut'); if (!h) return setTimeout(go, 200); new MutationObserver(later).observe(h, {childList: true, subtree: true}); addEventListener('resize', later); try { document.fonts && document.fonts.ready.then(later); } catch (e) {} later(); };
+  go(); }
