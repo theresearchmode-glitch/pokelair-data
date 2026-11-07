@@ -69,14 +69,17 @@ function plansDraw({ms,a,tRows,useA,covered},plans){
   planFresh($('needs'));planFresh($('sugs'));safe('problems',()=>renderProblems(ms,a,tRows,useA,plans));
   if(ui.vProven){const nd=$('needs');if(nd&&nd.innerHTML&&nd.insertAdjacentHTML)nd.insertAdjacentHTML('afterbegin','<div class="t2 provnote">This exact team has won at real events. Treat these as optional tweaks, not problems.</div>')}
   safe('plan cards',()=>renderPlans(ms,a,plans,useA,covered))}
-// the plans are ready: redraw, keeping what's on screen where it is if the plans above it grew or shrank
+// the plans are ready: redraw, keeping what's on screen where it is if the plans above it grew or shrank (the button you just
+// tapped, if you tapped one in the last few seconds; otherwise the first thing on screen)
 function planDone(){if(typingNow()){bgRender();return}
   const pane=document.querySelector('[data-pane]:not([hidden])'),c=[];
-  try{if(pane&&(window.scrollY||0)>0)for(const el of pane.querySelectorAll('[id]')){const r=el.getBoundingClientRect();if(r.height&&r.top>=0){c.push([el,r.top]);if(c.length>=8)break}}}catch(e){}
+  let tap=null;try{tap=typeof KP==='object'&&KP.recent?KP.recent():null}catch(e){}
+  try{if(!tap&&pane&&(window.scrollY||0)>0)for(const el of pane.querySelectorAll('[id]')){const r=el.getBoundingClientRect();if(r.height&&r.top>=0){c.push([el,r.top]);if(c.length>=8)break}}}catch(e){}
   // nothing else changed since the last redraw (same team and settings): only the parts drawn from the plans are redrawn
   const x=ui.planCtx;if(x&&x.key===planCache.key&&ui.plans&&ui.plans.pending){ui.plans=planCache.plans;plansDraw(x,ui.plans);
     if(typeof CH!=='undefined'){if(view==='build'||view==='report'){CH.stale=false;safe('concept h team',chTeamRender)}else CH.stale=true}}
   else render();
+  if(tap){try{if(KP.hold())return}catch(e){}}
   try{for(const [el,top] of c)if(el.isConnected&&el.getClientRects().length){const d=el.getBoundingClientRect().top-top;if(Math.abs(d)>1)window.scrollBy(0,d);break}}catch(e){}}
 // Parts of the page that aren't showing (another page, a closed tab) are redrawn when they show, not on every edit: each edit
 // used to redraw every page (Oct 31). lazy() runs a part now if it shows, else marks it; lazyFlush() (on a page or tab switch)

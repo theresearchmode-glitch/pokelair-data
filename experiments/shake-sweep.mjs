@@ -23,8 +23,14 @@ await ctx.addInitScript(D => { localStorage.setItem('cc2.welcomed', '"1"'); wind
   // a control is found again by what it is (tag, data-* / id / aria-label, text), so a redraw between taps doesn't lose it
   window.__skSig = e => ({tag: e.tagName, at: [...e.attributes].filter(a => (/^data-/.test(a.name) && !/^data-(swid|ctj|pm)$/.test(a.name)) || a.name === 'id' || a.name === 'aria-label').map(a => [a.name, a.value]), txt: (e.textContent || e.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 40)});
   window.__skFind = s => { const all = [...document.querySelectorAll(s.tag)].filter(x => x.getBoundingClientRect().width > 2), t = x => (x.textContent || x.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 40);
-    return (s.at.length && all.find(x => s.at.every(([k, v]) => x.getAttribute(k) === v) && t(x) === s.txt)) || (s.at.length && all.find(x => s.at.every(([k, v]) => x.getAttribute(k) === v))) || all.find(x => t(x) === s.txt) || null; };
+    const nt = x => x.replace(/\\d+/g, '#'); return (s.at.length && all.find(x => s.at.every(([k, v]) => x.getAttribute(k) === v) && nt(t(x)) === nt(s.txt))) || all.find(x => t(x) === s.txt) || null; };
   window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
+if (process.env.SKONLY) await ctx.addInitScript(() => { window.__log = []; const st = () => (new Error().stack || '').split('\n').slice(2, 7).map(x => x.trim().replace(/\(?file:.*\.html:/, '@').replace(/\)$/, '')).join(' < ');
+  const W = window; addEventListener('DOMContentLoaded', () => { const sTo = W.scrollTo, sBy = W.scrollBy, sIV = Element.prototype.scrollIntoView;
+    W.scrollTo = function () { __log.push([performance.now(), 'scrollTo ' + JSON.stringify([...arguments]), st()]); return sTo.apply(this, arguments); };
+    W.scrollBy = function () { __log.push([performance.now(), 'scrollBy ' + JSON.stringify([...arguments]), st()]); return sBy.apply(this, arguments); };
+    Element.prototype.scrollIntoView = function () { __log.push([performance.now(), 'scrollIntoView ' + (this.id || this.className), st()]); return sIV.apply(this, arguments); }; });
+  let y = 0; addEventListener('scroll', () => { __log.push([performance.now(), `scroll ${y} → ${Math.round(scrollY)} h${document.documentElement.scrollHeight}`, '']); y = Math.round(scrollY); }); });
 const pg = await ctx.newPage(), errs = [];
 pg.on('pageerror', e => errs.push(e.message.slice(0, 160)));
 const tapAt = (x, y) => PHONE ? pg.touchscreen.tap(x, y) : pg.mouse.click(x, y);
@@ -34,6 +40,7 @@ async function open(team, v) {
   await pg.goto('file://' + page); await pg.waitForTimeout(2200);
   if (team) await pg.evaluate(t => window.__ev(`S.slots=${JSON.stringify(t)}.map(n=>({n,lock:false}));fixSlots();render()`), TEAM);
   const got = await pg.evaluate(v => window.__ev(`setView(${JSON.stringify(v)});document.documentElement.dataset.pg`), v).catch(() => null);
+  if (process.env.SKONLY) await pg.evaluate(() => window.__ev("{const f0=KP.find;KP.find=(el,s)=>{const n=f0(el,s);window.__log&&window.__log.push([performance.now(),'find '+(n===el?'same':'OTHER')+' top='+(n?Math.round(n.getBoundingClientRect().top):'-')+' '+(n?n.tagName+'.'+n.className+' in .'+n.parentElement.className+' '+(n.textContent||'').trim().slice(0,20):''),''])\n;return n}}")).catch(() => {});
   await pg.waitForTimeout(1800); return got; }
 // the controls on the page that change something in place (not links to other pages, not destructive ones)
 const listCtrls = () => pg.evaluate(() => { const pane = document.querySelector(`[data-pane="${document.documentElement.dataset.pg}"]`) || document.body, seen = new Set(), out = [];
@@ -56,6 +63,13 @@ async function tapWatch(c) {
   await pg.evaluate(sig => { const e0 = window.__skFind(sig), find = () => (e0 && e0.isConnected && e0.getBoundingClientRect().width > 2) ? e0 : window.__skFind(sig);
     window.__sk = []; const t0 = performance.now(); const f = () => { const e = find(); window.__sk.push([scrollY, e ? e.getBoundingClientRect().top : null, document.documentElement.scrollHeight, Math.round(performance.now() - t0)]); if (performance.now() - t0 < 1500) requestAnimationFrame(g); }, g = () => setTimeout(f, 0); requestAnimationFrame(g); }, c.sig);
   const a0 = await pg.evaluate(() => [window.__ev('KP.appAt'), scrollY]);
+  await pg.evaluate(() => { window.__tapAt = performance.now(); });
+  if (process.env.SKONLY && new RegExp(process.env.SKONLY).test(c.txt)) await pg.evaluate(sig => { const t = window.__skFind(sig), pane = document.querySelector(`[data-pane="${document.documentElement.dataset.pg}"]`), y0 = t.getBoundingClientRect().top;
+    const nm = e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).slice(0, 2).join('.') : '');
+    // live: the blocks above the control, two levels down from the page, re-found every frame
+    const blocks = () => { const out = []; for (const a of pane.children) { out.push(a); for (const b of a.children) { out.push(b); for (const c of b.children) out.push(c); } } return out.filter(e => { const r = e.getBoundingClientRect(); return r.height > 0 && r.top < t.getBoundingClientRect().top - 1; }); };
+    let prev = new Map(blocks().map(e => [nm(e) + '|' + [...e.parentElement.children].indexOf(e), Math.round(e.getBoundingClientRect().height)]));
+    const t0 = performance.now(), f = () => { const cur = new Map(blocks().map(e => [nm(e) + '|' + [...e.parentElement.children].indexOf(e), Math.round(e.getBoundingClientRect().height)])); for (const [k, h] of cur) if (prev.has(k) && Math.abs(prev.get(k) - h) > 3) window.__log.push([performance.now(), 'block ' + k + ' ' + prev.get(k) + '→' + h, '']); prev = cur; if (performance.now() - t0 < 1500) requestAnimationFrame(f); }; requestAnimationFrame(f); }, c.sig);
   await tapAt(pre.x, pre.y); await pg.waitForTimeout(1600);
   // the app scrolled somewhere on purpose (a "jump to" button: scrollIntoView, or a scroll to another place); a scroll back to
   // where the reader was (holding the place during a redraw) is not on purpose and is still watched
@@ -66,7 +80,7 @@ async function tapWatch(c) {
   const shake = xs => { xs = xs.filter(x => x != null); let lo = xs[0], hi = xs[0], dir = 0, flips = 0, amp = 0;
     for (const x of xs) { if (dir >= 0 && x < hi - 6) { if (dir > 0) { flips++; amp = Math.max(amp, hi - x); } dir = -1; lo = x; } else if (dir <= 0 && x > lo + 6) { if (dir < 0) { flips++; amp = Math.max(amp, x - lo); } dir = 1; hi = x; }
       hi = Math.max(hi, x); lo = Math.min(lo, x); } return {flips, amp: Math.round(amp)}; };
-  if (process.env.SKONLY && new RegExp(process.env.SKONLY).test(c.txt)) { let last = ''; for (const f of s.fr) { const k = f.slice(0, 3).map(Math.round).join(); if (k !== last) console.log('    ', f.map(x => x == null ? '-' : Math.round(x)).join('\t')); last = k; } }
+  if (process.env.SKONLY && new RegExp(process.env.SKONLY).test(c.txt)) { for (const r of await pg.evaluate(t => window.__log.filter(x => x[0] > t - 200).map(x => [Math.round(x[0] - t), x[1], x[2]]), await pg.evaluate(() => window.__tapAt || 0))) console.log('   ', r[0] + 'ms', r[1], r[2] ? '\n        ' + r[2] : ''); let last = ''; for (const f of s.fr) { const k = f.slice(0, 3).map(Math.round).join(); if (k !== last) console.log('    ', f.map(x => x == null ? '-' : Math.round(x)).join('\t')); last = k; } }
   const sy = shake(s.fr.map(f => f[0])), ct = shake(s.fr.map(f => f[1])), tops = s.fr.map(f => f[1]).filter(x => x != null);
   return {shake: Math.max(sy.flips, ct.flips), amp: Math.max(sy.amp, ct.amp), jump: tops.length ? Math.round(tops[tops.length - 1] - tops[0]) : null, scroll: [s.fr[0][0], s.fr[s.fr.length - 1][0]].map(Math.round)}; }
 const R = {width: +w, found: [], tapped: 0};

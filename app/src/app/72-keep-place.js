@@ -28,7 +28,10 @@ KP.sig = el => ({tag: el.tagName, at: [...el.attributes].filter(a => (/^data-/.t
 KP.vis = el => { const r = el.getBoundingClientRect(); return r.width > 1 && r.height > 1; };
 KP.find = (el, s) => { if (el.isConnected && KP.vis(el)) return el;
   const all = [...document.querySelectorAll(s.tag)].filter(KP.vis);
-  if (s.at.length) { const m = all.find(x => s.at.every(([k, v]) => x.getAttribute(k) === v)); if (m) return m; }
+  /* the same control redrawn: same attributes and the same label (numbers in it may change, "Show more (450 left)"); a
+     different card that took its place ("Swap out Delphox" where "Swap out Salamence" was) is not it (Nov 7 shake sweep) */
+  const nt = t => t.replace(/\d+/g, '#'), st = nt(s.txt);
+  if (s.at.length) { const m = all.find(x => s.at.every(([k, v]) => x.getAttribute(k) === v) && nt(KP.txt(x)) === st); if (m) return m; }
   return all.find(x => KP.txt(x) === s.txt) || null; };
 KP.pinned = el => { for (let x = el; x && x !== document.body; x = x.parentElement) { const p = getComputedStyle(x).position; if (p === 'fixed' || p === 'sticky') return true; } return false; };
 KP.overlay = () => ['chEdit', 'chScout', 'lairSheet', 'jump', 'fbSheet', 'shareBox'].some(id => { const x = document.getElementById(id); return x && !x.hidden; });
@@ -36,7 +39,7 @@ KP.overlay = () => ['chEdit', 'chScout', 'lairSheet', 'jump', 'fbSheet', 'shareB
 addEventListener('click', e => { const el = e.target && e.target.closest && e.target.closest(KP.CTRL); if (!el || el.closest(KP.SKIP) || !document.body.contains(el)) return;
   if (KP.pinned(el)) return;
   const s = KP.sig(el), top = el.getBoundingClientRect().top, y0 = scrollY, t0 = Date.now(), pg0 = document.documentElement.dataset.pg, ov0 = KP.overlay();
-  const w = KP.w = {t0}; let y = y0; const fix = () => { if (document.documentElement.dataset.pg !== pg0 || (!ov0 && KP.overlay()) || KP.userAt > t0 || KP.w !== w) return false;
+  const w = KP.w = {t0}; KP.last = {el, s, t0}; let y = y0; const fix = () => { if (document.documentElement.dataset.pg !== pg0 || (!ov0 && KP.overlay()) || KP.userAt > t0 || KP.w !== w) return false;
     if (KP.appAt >= t0 && Math.abs(KP.appTo - y0) > 2) return false; // the app scrolled somewhere on purpose (a "jump to" link)
     const n = KP.find(el, s); if (!n) return null; if (KP.pinned(n)) return false; const d = n.getBoundingClientRect().top - top; if (Math.abs(d) <= 4) return true;
     const opened = n.getAttribute('aria-expanded') === 'true' || (n.tagName === 'SUMMARY' && n.parentElement && n.parentElement.open);
@@ -45,7 +48,13 @@ addEventListener('click', e => { const el = e.target && e.target.closest && e.ta
   /* checked on every frame for the first 0.8 s, before the screen is painted (Nov 7 shake sweep): a page that redraws in pieces
      (the Undo bar first, the list a moment later) used to show each piece's push for a frame or more before being corrected */
   const t0f = performance.now(), loop = () => { if (fix() === false) return; if (performance.now() - t0f < 800) requestAnimationFrame(loop); };
-  requestAnimationFrame(loop); }, true);
+  KP.lastFix = fix; requestAnimationFrame(loop); }, true);
+/* a redraw that lands later (the suggestions finish working out): the tapped control is put back at once, before the screen is
+   drawn, and watched for another 0.8 s */
+KP.hold = () => { const f = KP.lastFix; if (!f || !KP.recent()) return false; if (f() === false) return false; const t = performance.now(), loop = () => { if (f() === false) return; if (performance.now() - t < 800) requestAnimationFrame(loop); }; requestAnimationFrame(loop); return true; };
+/* the control tapped in the last 4 s, as it is on the page now (null once the reader has scrolled): a redraw that finishes
+   later (the suggestions working out) keeps this in place rather than the first thing on screen (Nov 7 shake sweep) */
+KP.recent = () => { const L = KP.last; if (!L || Date.now() - L.t0 > 4000 || KP.userAt > L.t0) return null; const n = KP.find(L.el, L.s); return n && !KP.pinned(n) ? n : null; };
 /* dropdown menus ("⋯" on My team and Saved teams): an outside tap or Escape closes them (they used to stay open over the page) */
 document.addEventListener('click', e => { const open = document.querySelectorAll('details.moremenu[open]'); if (!open.length) return;
   for (const d of open) if (!d.contains(e.target)) d.open = false; }, true);

@@ -46,7 +46,7 @@ function myRecCard(ms) { const G = myGames(ms), ins = myInsights(G), q = ui.ql;
       <div class="qlopp">${q.opp.map((n, i) => `<span class="corechip">${sprite(byName.get(n), 'tiny') || ''}${esc((byName.get(n) || {}).d || n)}<button type="button" data-qloppx="${i}" aria-label="Remove ${esc((byName.get(n) || {}).d || n)}">×</button></span>`).join('')}
         ${q.opp.length < 6 ? `<div class="cb qlin"><input class="field" id="qlOppIn" placeholder="Add their Pokémon" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Add one of their Pokémon"></div>` : ''}</div>
       ${so.length && !q.opp.length ? `<button type="button" class="linkbtn" data-qlbm="1">Use their ${so.length} from Battle mode: ${esc(so.slice(0, 3).map(n => byName.get(n).d).join(', '))}${so.length > 3 ? '…' : ''}</button>` : ''}
-      <div class="qlres"><button type="button" class="btn qlwin" data-qlres="W">Win</button><button type="button" class="btn qlloss" data-qlres="L">Loss</button></div>
+      <div class="qlres"><button type="button" class="btn ar-btn qlwin" data-qlres="W">Win</button><button type="button" class="btn ar-btn qlloss" data-qlres="L">Loss</button></div>
       <p class="t2">Have a Showdown replay? <button type="button" class="linkbtn" data-qlreplay="1">Paste its log</button> and the leads and their six are filled in for you.</p></div>`; }
   return `<div class="myrec" id="myRec">${head}${last}${panel}${q.open ? "" : insight}</div>`; }
 function renderMyRec() { const head = $('chTeam'); if (!head) return; const old = $('myRec'); const ms = members();
