@@ -19,6 +19,9 @@ function abScore0(team) { const v = teamValue(team); let s = v.score - .5 * v.gp
   if (team.length >= 4 && wxSetsOf(team).length === 1) { const n = wxNet(team); if (n <= 0) s -= 12 - 4 * n; }
   // a weather with no teammate using it steers the search toward adding a user (Sim, Oct 30)
   if (team.length >= 5 && wxIdle(team).length) s -= 25;
+  // the same setup flaws the suggestions never add (Nov 7 audit): a second terrain, Psychic Terrain over the team's own priority,
+  // Trick Room with no slow attacker, an attacker its own weather weakens, a weather only its setter is there for
+  if (team.length >= 4) { let f = []; try { f = teamFlaws(team, v.gp); } catch (e) {} s -= 30 * f.length; }
   // aim for the grades too: fewer defense points, more of the meta hit by 2+ members (a secondary goal next to proven cores and pillars)
   if (team.length >= 5) { const g = proGrades(team, true); if (g) s += -g.dp * 8 + (g.se2 - .67) * 60 - Math.max(0, g.og - 1) * 18 - Math.max(0, g.dg - 1) * 18; }
   if (OFFMETA) { const mc = team.filter(m => isMetaPick(m.p)).length; s -= Math.max(0, mc - 2) * 30; }
@@ -153,10 +156,13 @@ function* buildBestGen_() {
     const out = [];
     // speed control above all (audit, Oct 30): teams with Tailwind, Trick Room or weather speed come first; one without is kept
     // only when nothing else is left
+    const flawsOf = r => { if (r._fl === undefined) { try { r._fl = teamFlaws(r.t); } catch (e) { r._fl = []; } } return r._fl; };
     const spOK = t => { const r = gamePlan(t).rows.find(x => x.k === 'speed'); return !r || r.st !== 'miss'; };
     // (each kept team differs from the others by 3+ Pokémon; if that leaves fewer than 3, by 2+)
-    for (const [pass, same, idleOK] of [[true, 3, false], [false, 3, false], [false, 4, false], [false, 4, true]]) for (const r of ranked) { if (out.length >= 3) break; if (out.includes(r) || megaCount(r.t) !== goal || wxConflict(r.t) || wxUnmet(r.t).length || (!idleOK && wxIdle(r.t).length)) continue; if (pass && !spOK(r.t)) continue;
+    for (const [pass, same, idleOK] of [[true, 3, false], [false, 3, false], [false, 4, false], [false, 4, true]]) for (const r of ranked) { if (out.length >= 3) break; if (out.includes(r) || megaCount(r.t) !== goal || wxConflict(r.t) || wxUnmet(r.t).length || flawsOf(r).length || (!idleOK && wxIdle(r.t).length)) continue; if (pass && !spOK(r.t)) continue;
       if (out.some(o => o.t.filter(m => r.t.some(x => x.p.b === m.p.b)).length > same)) continue; out.push(r); }
+    // fewer good teams beat a flawed third one (Nov 7 audit); a flawed team only when nothing else can be built
+    if (!out.length) { const r = ranked.find(r => megaCount(r.t) === goal && !wxConflict(r.t) && !wxUnmet(r.t).length); if (r) out.push(r); }
     if (!out.length) return {fmt, teams: [], noMega: goal};
     return {fmt, teams: out.map(r => abDescribe(r.t))};
   } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, list: null}; }

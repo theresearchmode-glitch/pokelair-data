@@ -39,12 +39,17 @@ function planMatchup(mine, theirs, useA) {
   const A = dbl ? teamArchetype(mine) : null, B = dbl ? teamArchetype(theirs) : null;
   const fieldLinks = A ? A.field.filter(f => f.active).map(f => ({set: f.setters.map(m => mine.indexOf(m)).filter(i => i >= 0), use: f.abusers.map(m => mine.indexOf(m)).filter(i => i >= 0)})) : [];
   const psyThem = B && B.terrain.includes('psy');
+  const slowIx = mine.map((m, i) => i).filter(i => isSlow(mine[i].p) && !roles[i].tr);
   const archBonus = c => { if (!A) return 0; let v = 0; const has = f => c.some(i => roles[i][f]);
     if (B.speed === 'tr' || B.speed === 'hardtr' || B.speed === 'tailroom') v += has('anti') ? 1.2 : has('tr') ? 1 : 0;
     if (B.speed === 'tw' || B.speed === 'tailroom') v += has('tr') ? 1.2 : has('tw') ? .8 : 0;
     if (B.perish) v += c.some(i => roles[i].ghost || roles[i].chop) ? 1.2 : 0;
     if (A.perish) v += A.trappers.some(m => c.includes(mine.indexOf(m))) ? 2 : -2;
-    for (const f of fieldLinks) { const s = f.set.some(i => c.includes(i)), u = f.use.filter(i => c.includes(i)).length; if (s && u) v += .8; else if (u && !s) v -= .6 * u; }
+    for (const f of fieldLinks) { const s = f.set.some(i => c.includes(i)), u = f.use.filter(i => c.includes(i)).length; if (s && u) v += .8; else if (u && !s) v -= .6 * u;
+      // (Nov 7 audit) a setter brought while everything that uses its field stays on the bench (Pelipper without Archaludon)
+      else if (s && !u && f.use.length) v -= 1; }
+    // a Trick Room setter brought with every slow attacker left on the bench
+    if (slowIx.length && c.some(i => roles[i].tr) && !c.some(i => slowIx.includes(i) && !roles[i].tr)) v -= 1;
     return v; };
   let best = null;
   for (const c of combos(mine.length, bring)) {
@@ -65,6 +70,8 @@ function planMatchup(mine, theirs, useA) {
       if (B && (B.speed === 'tr' || B.speed === 'hardtr') && (roles[a].anti || roles[b].anti)) v += .8;
       if (A && A.perish && A.trappers.some(m => [a, b].includes(mine.indexOf(m)))) v += 2;
       if (mine[a].mega && mine[b].mega) v -= 3; // only one can Mega Evolve, so leading both wastes one
+      // two different weather (or terrain) setters in one lead cancel each other: the slower one's replaces the faster one's (Nov 7 audit)
+      { const wa = WEATHER_OF[mine[a].ability], wb = WEATHER_OF[mine[b].ability], ta = TERRAIN_OF[mine[a].ability], tb = TERRAIN_OF[mine[b].ability]; if ((wa && wb && wa !== wb) || (ta && tb && ta !== tb)) v -= 6; }
       if (!bl || v > bl.v) bl = {p: [a, b], v}; }
     lead = bl.p;
   } else if (chosen.length) { lead = [chosen.reduce((b, i) => (theirs.reduce((s, o, j) => s + h.M[i][j], 0) > theirs.reduce((s, o, j) => s + h.M[b][j], 0) ? i : b), chosen[0])]; }

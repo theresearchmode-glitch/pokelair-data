@@ -95,14 +95,26 @@ function gapEffect(team0,gp0,team,gp){const fix=[],why=[],st=k=>(gp.rows.find(r=
 const wxLone=gp=>!!(gp&&gp.rows.some(r=>r.k==='weather'&&r.lone));
 // a plan may never leave a support setter's weather with nobody to use it, or bring one in that nobody uses
 // and never adds a second weather to a team that already sets one (sun next to Pelipper's rain: each cancels the other)
-// and never brings an attacker the team's own working rain or sun weakens (Volcarona into rain, Basculegion into sun); Fake Out and
-// Intimidate users (Incineroar on rain) are there for support, so they stay allowed
-const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||r.st!=='ok'||!pl.team)return false;const w=wxSetsOf(pl.team);if(w.length!==1||!['rain','sun'].includes(w[0]))return false;
-  const dn=w[0]==='rain'?'Fire':'Water';return pl.ch.some(x=>{const m=x.c.mem,t=m.types||x.c.p.t;if(!t.includes(dn)||WEATHER_OF[m.ability])return false;let mv=[];try{mv=mvNames(m)}catch(e){}return !(m.ability==='Intimidate'||mv.includes('Fake Out'))})};
-// (Nov 7 audit) Psychic Terrain from an incoming Indeedee stops the team's own priority moves (Fake Out, Sucker Punch, Quick Attack…)
-// against grounded targets: how many teammates it would switch off
-const psyHit=pl=>{if(!pl.team||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]==='psy')||pl.team.some(m=>!pl.ch.some(x=>x.c.p===m.p)&&TERRAIN_OF[m.ability]==='psy'))return 0;
-  const P=new Set([...ROLE.prio,'Fake Out']);return pl.team.filter(m=>TERRAIN_OF[m.ability]!=='psy'&&mvNames(m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves}).some(n=>P.has(n))).length};
+// Team setup flaws (Nov 7 audit), shared by the suggestions and Build for me. A pairing real players have run on 100+ tournament
+// teams with a better-than-average win rate is never called a flaw (Basculegion with Mega Charizard Y: its Last Respects
+// doesn't care about sun; 359 teams, 55%). Indeedee-F with Rillaboom (163 teams, 47.5%) still is.
+const provenPair=(a,b)=>{const r=pairRes(a,b);return !!(r&&r[0]>=100&&r[1]>=((RES&&RES.base)||.5))};
+const mvsOf=m=>{try{return mvNames(m._mv&&m._mv.length||m.moves&&m.moves.length?m:{...m,_mv:memberMoves(m).moves})}catch(e){return []}};
+// teammates whose priority (Fake Out, Sucker Punch, Grassy Glide…) a Psychic Terrain setter on the team switches off
+function psyBlocked(team){const ps=team.filter(m=>TERRAIN_OF[m.ability]==='psy');if(!ps.length)return [];const P=new Set([...ROLE.prio,'Fake Out']);
+  return team.filter(m=>TERRAIN_OF[m.ability]!=='psy'&&mvsOf(m).some(n=>P.has(n))&&!ps.some(x=>provenPair(x,m)))}
+// attackers the team's own working rain or sun weakens (Fire in rain, Water in sun); Fake Out and Intimidate users are support
+function wxHurtT(team){const w=wxSetsOf(team);if(w.length!==1||!['rain','sun'].includes(w[0]))return [];const dn=w[0]==='rain'?'Fire':'Water',set=team.filter(m=>WEATHER_OF[m.ability]);
+  return team.filter(m=>{if(WEATHER_OF[m.ability])return false;const t=m.types||m.p.t;if(!t.includes(dn))return false;const mv=mvsOf(m);return !(m.ability==='Intimidate'||mv.includes('Fake Out'))&&!set.some(x=>provenPair(x,m))})}
+// a team's flaws in words (Build for me never makes a team with any; the suggestions never add one)
+function teamFlaws(team,gp){gp=gp||gamePlan(team.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves}));const row=k=>gp.rows.find(r=>r.k===k)||{},f=[];
+  if(row('weather').lone)f.push('weather nobody uses');if(new Set(team.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size>1)f.push('two terrains');
+  if(psyBlocked(team).length>=2)f.push('Psychic Terrain blocks its own priority');if(row('trfit').st==='miss')f.push('Trick Room with no slow attacker');
+  if(wxHurtT(team).length)f.push('its weather weakens its own attacker');return f}
+// and never brings an attacker the team's own working rain or sun weakens (Volcarona into rain)
+const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||r.st!=='ok'||!pl.team)return false;return wxHurtT(pl.team).some(m=>pl.ch.some(x=>x.c.p===m.p))};
+// Psychic Terrain from an incoming Indeedee: how many teammates' priority it would switch off
+const psyHit=pl=>{if(!pl.team||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]==='psy')||pl.team.some(m=>!pl.ch.some(x=>x.c.p===m.p)&&TERRAIN_OF[m.ability]==='psy'))return 0;return psyBlocked(pl.team).length};
 // a Trick Room setter brought into a team with no slow attackers for it (and a team that had no Trick Room before)
 const trNew=(gp0,pl)=>{const r=pl.gp&&pl.gp.rows.find(r=>r.k==='trfit');return r&&!gp0.rows.some(r=>r.k==='trfit')?r.st:null};
 const wxLoneBad=(gp0,pl)=>psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));

@@ -2,6 +2,8 @@
 // weather user (Swift Swim, Sand Rush, Sand Force…) without its setter, or a Choice Scarf next to the team's own Trick Room;
 // new teams come with speed control; a Swift Swim Pokémon is never suggested onto a sun team; Megas on team 0 with a Mega in
 // explains itself; Add to my team on a full team names exactly who it replaces; and a normal build takes under a second here.
+// Nov 7: and no built team has a setup flaw (teamFlaws: a weather only its setter uses, two terrains, Psychic Terrain over
+// its own priority, Trick Room with no slow attacker, an attacker its own weather weakens), unless it is the only team left.
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
@@ -17,9 +19,9 @@ const build = (lock, src, mg, box) => ev(`(async()=>{S.megaGoal=${mg};ui.abSrc='
   const t0=performance.now();const res=await abRun();const ms=Math.round(performance.now()-t0);
   return {ms,teams:(res.teams||[]).map(t=>{const mem=t.mons.map(m=>abMember(byName.get(m.n))),tA=assignItems(mem);
     return {names:t.mons.map(m=>m.d).join(', '),proven:!!t.proven,sets:wxSetsOf(mem),unmet:wxUnmet(mem),clash:wxConflict(mem),
-      scarfTR:mem.some(m=>setsTR(m))&&tA.some(m=>m.item==='Choice Scarf'),speed:(gamePlan(mem).rows.find(r=>r.k==='speed')||{}).st}})}})()`);
+      scarfTR:mem.some(m=>setsTR(m))&&tA.some(m=>m.item==='Choice Scarf'),flaws:teamFlaws(mem),speed:(gamePlan(mem).rows.find(r=>r.k==='speed')||{}).st}})}})()`);
 const cases = [['Alolan Ninetales', 'Ninetales-Alola', 'all', 2], ['Tyranitar', 'Tyranitar', 'all', 1], ['Excadrill', 'Excadrill', 'all', 1], ['Mega Abomasnow', 'Abomasnow-Mega', 'all', 2],
-  ['Politoed', 'Politoed', 'all', 1], ['Hatterene', 'Hatterene', 'all', 1], ['Farigiraf', 'Farigiraf', 'all', 1], ['whole roster, 0 Megas', null, 'all', 0], ['my box, 2 Megas', null, 'box', 2],
+  ['Politoed', 'Politoed', 'all', 1], ['Pelipper', 'Pelipper', 'all', 1], ['Indeedee-F', 'Indeedee-F', 'all', 1], ['Torkoal', 'Torkoal', 'box', 1], ['Hippowdon', 'Hippowdon', 'all', 2], ['Kanto Ninetales', 'Ninetales', 'all', 1], ['Mega Floette', 'Floette-Mega', 'all', 1], ['Mega Tyranitar', 'Tyranitar-Mega', 'all', 1], ['Hatterene', 'Hatterene', 'all', 1], ['Farigiraf', 'Farigiraf', 'all', 1], ['whole roster, 0 Megas', null, 'all', 0], ['my box, 2 Megas', null, 'box', 2],
   ['small box (Pelipper + Charizard), 2 Megas', null, 'box', 2, ['Incineroar', 'Garchomp', 'Pelipper', 'Basculegion', 'Whimsicott', 'Sylveon', 'Kingambit', 'Charizard']]];
 for (const [label, lock, src, mg, box] of cases) {
   const r = await build(lock, src, mg, box), made = r.teams.filter(t => !t.proven);
@@ -27,6 +29,7 @@ for (const [label, lock, src, mg, box] of cases) {
   ok(!made.some(t => t.clash), `${label}: no built team has two weathers or a weather user switched off by the team's own${made.filter(t => t.clash).map(t => ` (${t.names}: ${t.sets})`).join('')}`);
   ok(!made.some(t => t.unmet.length), `${label}: no built team has a weather user without its setter${made.filter(t => t.unmet.length).map(t => ` (${t.names}: needs ${t.unmet})`).join('')}`);
   ok(!r.teams.some(t => t.scarfTR), `${label}: no Choice Scarf next to the team's own Trick Room${r.teams.filter(t => t.scarfTR).map(t => ` (${t.names})`).join('')}`);
+  ok(!made.some(t => t.flaws.length) || r.teams.length === 1, `${label}: no built team has a setup flaw (a weather only its setter uses, two terrains, Psychic Terrain over its own priority, Trick Room with no slow attacker, an attacker its own weather weakens)${made.filter(t => t.flaws.length).map(t => ` (${t.names}: ${t.flaws.join(', ')})`).join('')}`);
   ok(!made.some(t => t.speed === 'miss'), `${label}: every newly built team has speed control${made.filter(t => t.speed === 'miss').map(t => ` (${t.names})`).join('')}`); }
 // timing: a normal build here (unthrottled desktop) stays under a second
 { const r = await build(null, 'box', 2); console.log(`  info build time (my box, 2 Megas, unthrottled): ${r.ms} ms`); ok(r.ms < 1500, `a normal build finishes in under 1.5 s unthrottled (${r.ms} ms)`); }
