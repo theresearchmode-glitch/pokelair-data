@@ -41,7 +41,7 @@ function computeRecs(ms, useA) {
   for (const pl of order) { const x = pl.ch[0], b = x.c.p.b; if (seen.has(b) && !useTS) continue;
     // never a weather that works against the team's own (a sun setter next to Swift Swim), and never a swap that takes away
     // the team's lead support, Trick Room attackers, terrain or weather (the same guard as Fix it)
-    if ((pl.gap && pl.gap.clash) || (pl.gp && gpWorse(res.basePl.gp, pl.gp).length)) continue;
+    if ((pl.gap && pl.gap.clash) || (pl.gp && (gpWorse(res.basePl.gp, pl.gp).length || wxLoneBad(res.basePl.gp, pl)))) continue;
     const A = teamProfile(pl.team, useA); pl.prof = A; pl.gain = gains(A, pl) + (gapFix(pl) ? 6 * pl.gap.fix.length : 0);
     const t = tsOK(pl);
     if (t != null) { const fits = A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && pl.megaShort <= shortB;

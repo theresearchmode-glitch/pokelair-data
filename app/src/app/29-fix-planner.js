@@ -70,14 +70,18 @@ function gapEffect(team0,gp0,team,gp){const fix=[],why=[],st=k=>(gp.rows.find(r=
   // clash: an added weather while the team still has a Pokémon that needs a different one (rain next to Chlorophyll Venusaur)
   const need0=weatherNeeds(team0),needT=weatherNeeds(team),set0=new Set(weatherSets(team0)),added=weatherSets(team).filter(w=>!set0.has(w)),clash=added.some(w=>needT.some(n=>n!==w)),need=need0;
   const newM=team.filter(m=>!team0.some(x=>x.p===m.p));
-  for(const k of gpGaps(gp0)){if(GP_RANK[st(k)||'miss']<=GP_RANK[st0(k)])continue;
+  for(const k of gpGaps(gp0)){
+    // a support setter whose weather nothing else uses (Pelipper with no rain partners): swapping it out also clears the gap
+    if(k==='weather'&&wxLone(gp0)&&!weatherSets(team).length&&!needT.length){const out=team0.filter(m=>WEATHER_OF[m.ability]&&!team.some(x=>x.p===m.p));
+      if(out.length){why.push(`Swaps out ${out.map(m=>m.d).join(', ')}, whose ${ARCH[WEATHER_OF[out[0].ability]].name.toLowerCase()} nothing on your team uses`);fix.push(k)}continue}
+    if(GP_RANK[st(k)||'miss']<=GP_RANK[st0(k)])continue;
     // weather counts only when the change sets the weather a Pokémon needs (or gives a used-by-nobody weather a user while
     // keeping its setter): swapping out the Pokémon that needs it is not a fix
     if(k==='weather'){if(clash)continue;const w=added.find(x=>need.includes(x)&&needT.includes(x));
       if(!w&&(st0(k)==='miss'||weatherSets(team).length<set0.size))continue;
       if(w){const setter=newM.find(m=>WEATHER_OF[m.ability]===w),users=team.filter(m=>ARCH[w].abAb.includes(m.ability)&&WEATHER_SPEED[m.ability]);
         why.push(`Sets ${ARCH[w].name.toLowerCase()} for ${users.map(m=>`${m.d} (${m.ability})`).join(', ')}${setter?` with ${setter.ability}`:''}`)}
-      else why.push('Gives your weather a Pokémon that uses it')}
+      else{const w0=weatherSets(team)[0];why.push(w0?`Gives your ${ARCH[w0].name.toLowerCase()} a Pokémon that uses it`:'Gives your weather a Pokémon that uses it')}}
     else if(k==='trfit')why.push('Slow attacker for your Trick Room');
     else if(k==='terrain')why.push('Fixes your terrain: '+String((gp0.rows.find(r=>r.k==='terrain')||{}).note||'').replace(/\.$/,'').replace(/^./,c=>c.toLowerCase()));
     else if(k==='support')why.push('Adds lead support (Fake Out, Intimidate or redirection)');
@@ -87,6 +91,15 @@ function gapEffect(team0,gp0,team,gp){const fix=[],why=[],st=k=>(gp.rows.find(r=
 // what a change must not make worse (Oct 30 sweep): lead support (swapping out the only Fake Out / Intimidate), Trick Room
 // attackers, terrain and weather (taking away the Pokémon that uses the team's sand, or adding a second weather), and speed
 // control (swapping out the only Tailwind setter). Returns the keys that got worse.
+// the team sets a weather only a support setter is there for, with nothing else using it (Nov 7)
+const wxLone=gp=>!!(gp&&gp.rows.some(r=>r.k==='weather'&&r.lone));
+// a plan may never leave a support setter's weather with nobody to use it, or bring one in that nobody uses
+// and never adds a second weather to a team that already sets one (sun next to Pelipper's rain: each cancels the other)
+// and never brings an attacker the team's own working rain or sun weakens (Volcarona into rain, Basculegion into sun); Fake Out and
+// Intimidate users (Incineroar on rain) are there for support, so they stay allowed
+const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||r.st!=='ok'||!pl.team)return false;const w=wxSetsOf(pl.team);if(w.length!==1||!['rain','sun'].includes(w[0]))return false;
+  const dn=w[0]==='rain'?'Fire':'Water';return pl.ch.some(x=>{const m=x.c.mem,t=m.types||x.c.p.t;if(!t.includes(dn)||WEATHER_OF[m.ability])return false;let mv=[];try{mv=mvNames(m)}catch(e){}return !(m.ability==='Intimidate'||mv.includes('Fake Out'))})};
+const wxLoneBad=(gp0,pl)=>wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
 const GUARD_KEYS=['speed','support','trfit','terrain','weather'];
 function gpWorse(gp0,gp){return GUARD_KEYS.filter(k=>{const o=(gp0.rows.find(r=>r.k===k)||{}).st;if(!o)return false;const n=(gp.rows.find(r=>r.k===k)||{}).st;return GP_RANK[n||'miss']<GP_RANK[o]})}
 // the gap the first two suggestions must cover: the most serious one they leave open (missing before partial, then weather,
@@ -126,7 +139,7 @@ function* planFixesG(ms,pool,useA,opts){
   const evalPlan=pl=>{const tv=teamValue(pl.team,useA);let s=-tv.score+typeEmphasis(tv.st.a)+megaShort(pl.team)*35+Math.max(0,pl.team.filter(m=>m.mega).length-maxMega)*35+pillarCost(pl.team,tv.gp);
     // the team's own rain or sun: a change that brings in what it hurts (a Water attacker into sun, Primarina's Liquid Voice) or a
     // weather nobody uses (Pelipper next to Fire attackers) costs a little (audit, Oct 30)
-    {const n0=wxNet(ms),n1=wxNet(pl.team);if(n1<n0)s+=(n0-n1)*5;if(wxSetsOf(pl.team).length>wxSetsOf(ms).length&&n1<=0)s+=12}pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
+    {const n0=wxNet(ms),n1=wxNet(pl.team);if(n1<n0)s+=(n0-n1)*12;if(wxSetsOf(pl.team).length>wxSetsOf(ms).length&&n1<=0)s+=12}pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
     for(const a of rolesBase.arch)if(a.active&&a.key!=='tw'&&!pl.roles.arch.some(b=>b.key===a.key&&b.active))s+=20;
     for(const x of pl.ch){const rest=pl.team.filter(m=>m.p!==x.c.p);const v=viability(x.c.p);x.v=v;if(v<12&&!OFFMETA)s+=15;if(OFFMETA&&isMetaPick(x.c.p))s+=10;
       const f=archFit(x.c.p,x.c.mem.ability,rest,rolesBase);x.why=f.why;s-=f.s*.2;x.syn=synergy(x.c.p,rest);
@@ -156,7 +169,7 @@ function* planFixesG(ms,pool,useA,opts){
   // a plan must never make the type rating worse, and must beat the current team by a clear margin
   // and must never take away the team's speed control or start a weather clash
   const gpst=(pl,k)=>(pl.gp.rows.find(r=>r.k===k)||{}).st;
-  const keepsPlan=pl=>!(gpst(basePl,'speed')==='ok'&&gpst(pl,'speed')!=='ok')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss')&&!(pl.gap&&pl.gap.clash)&&!(pl.gp&&gpWorse(gp0,pl.gp).length);
+  const keepsPlan=pl=>!(gpst(basePl,'speed')==='ok'&&gpst(pl,'speed')!=='ok')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss')&&!(pl.gap&&pl.gap.clash)&&!(pl.gp&&gpWorse(gp0,pl.gp).length)&&!wxLoneBad(gp0,pl);
     let all=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(!full||((pl.st.a.excess<=base.a.excess)&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<basePl.score-(clean?25:10)))).sort((x,y)=>x.score-y.score);
   // Readiness decides (Oct 28): every plan that ends in a full six is judged by the share of the top-30 threats it's ready for.
   // Item problems come first; then a plan must raise readiness by 2+, the highest leads, and an extra change has to earn 2 more.
@@ -254,7 +267,7 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
     const syn=pl.ch.map(x=>{const t=metaEntry(x.c.p);const mates=(t&&t.tm||[]).map(([n])=>byName.get(n)).filter(q=>q&&pl.team.some(m=>m.base===q.b&&m.p!==x.c.p)).map(q=>q.d);return mates.length?`${esc(x.c.p.d)} is often paired with ${esc(mates.slice(0,2).join(' and '))}`:''}).filter(Boolean);
     const roleLines=gpDiff(plans.gp,pl.gp),thrLines=pl.team.length===6&&ms.length===6&&k<plans.length+6?threatDiff(ms,pl.team,3).map(x=>x.html):[];
     const archLines=pl.ch.flatMap(x=>(x.why||[]).map(w=>`${esc(x.c.p.d)}: ${w}`));
-    const lines=[...(pl.gap?pl.gap.why:[]).map(w=>`<b>${esc(w)}</b>`),...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
+    const cw=[...thrLines,...roleLines].some(l=>String(l).includes('Covers weather')),lines=[...(pl.gap?pl.gap.why:[]).filter(w=>!(cw&&/^Gives your /.test(w))).map(w=>`<b>${esc(w)}</b>`),...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
       newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
       st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
     // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
