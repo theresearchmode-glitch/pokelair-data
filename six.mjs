@@ -4,12 +4,12 @@
 //   P(A wins) = σ( calib·(xA + δA − xB − δB) + sA − sB )
 // with x the shipped team model (held fixed), s each player's skill and δ the six's own deviation, both shrunk toward 0
 // (δ ~ N(0, 0.35²), s ~ N(0, 0.6²)), so a few games barely move a six and hundreds of games move it a lot.
-// Adds to out/model.json: sixes = {"Mon1|Mon2|…" (sorted): [δ, games]} for sixes with 5+ games. The page adds δ to its own
+// Adds to out/model.json: sixes = {"Mon1|Mon2|…" (sorted): [δ, games]} for sixes with 10+ games. The page adds δ to its own
 // team strength for that exact six; every other team is graded on the model alone.
 import fs from 'node:fs';
 const M = JSON.parse(fs.readFileSync('out/matches.json', 'utf8')), MD = JSON.parse(fs.readFileSync('out/model.json', 'utf8'));
 if (!MD.ships || !MD.mons) { console.log('six: model not shipped, nothing added'); process.exit(0); }
-const TAU = .35, SIG_S = .6, ITERS = 300, MIN_G = 5, calib = MD.calib;
+const TAU = .35, SIG_S = .6, ITERS = 300, MIN_G = 10, calib = MD.calib; // 10+ games: keeps meta/model under the 256 KB the page database takes per write
 const teams = M.teams.map(k => k.split('|'));
 const spF = new Map(); for (const f of Object.keys(MD.sets || {})) { const sp = f.split(/[@:]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
 const xOf = (t, d) => { const m = teams[t]; let v = 0; for (const n of m) v += MD.mons[n] || 0;
