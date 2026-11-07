@@ -286,7 +286,8 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
      starts afresh. */
   const so = $('chSugOut'); if (so) { let k = ''; try { k = members().map(m => m.p.n).join(','); } catch (e) {}
     if (so.dataset.ark !== k) { so.dataset.ark = k; so.dataset.arh = 0; so.style.minHeight = ''; }
-    const h = so.offsetHeight; if (h > +so.dataset.arh) so.dataset.arh = h; if (+so.dataset.arh > 0) so.style.minHeight = so.dataset.arh + 'px'; }
+    // (Nov 7) not while the old list is still showing for a new team (it is being worked out): that height belongs to the old team
+    const h = so.classList.contains('planstale') ? 0 : so.offsetHeight; if (h > +so.dataset.arh) so.dataset.arh = h; if (+so.dataset.arh > 0) so.style.minHeight = so.dataset.arh + 'px'; }
   /* the older secondary buttons and text links on these pages take the arena menu-strip and link styles (same elements, same handlers) */
   document.querySelectorAll('[data-pane="report"] :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn):not(.chapply), #homeOut.ar-on :is(button.chghost,button.btn,button.sdcopy):not(.ar-btn), #lairSheet .lsact button.btn:not(.ar-btn)').forEach(b => {
     if (b.closest('#chActs,.mmpop,.chsheet,.wnew,.hpick,#welcomeCard') || b.matches('[data-welcomex]')) return; b.classList.add('ar-btn'); });

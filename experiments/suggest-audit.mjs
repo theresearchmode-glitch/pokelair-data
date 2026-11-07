@@ -7,7 +7,8 @@
 //   - bring an attacker the team's own rain or sun weakens (Volcarona into rain)
 //   - bring Indeedee's Psychic Terrain onto 2+ teammates whose priority it blocks (Fake Out, Sucker Punch…)
 //   - bring a Trick Room setter with no slow attacker to use it, or take away the team's speed control
-//   - repeat a species, or cost more than 3 readiness points (2 for a "different look" swap)
+//   - repeat a species, or cost more than 3 readiness points or 3 grade points (2 each for a "different look" swap; Nov 7:
+//     the grade is the big number on My team and the cards are labelled with it)
 // and a team whose weather nothing uses gets a fix for it (a user for the weather, or the setter swapped out) in its first two.
 // and tapping Apply must never go round in circles (a team you already had comes back).
 // Also: none of the 300 most-run tournament teams may be called a weather nobody uses (the rule must not flag real teams).
@@ -43,7 +44,8 @@ const STEP = `(()=>{fixSlots();planCache={key:null,plans:[]};const ms=members(),
     if(trNew(g0,{gp:g})==='miss')f('a Trick Room setter with no slow attacker');
     if(row(g0,'speed').st==='ok'&&row(g,'speed').st!=='ok')f('loses speed control');
     if(new Set(t.map(m=>m.p.b)).size<t.length)f('a repeated species');
-    let ts=pl._ts;if(ts===undefined&&t.length===6){try{ts=tsOf(t)}catch(e){ts=null}}if(ts!=null&&base!=null&&ts<base-(side?2:3))f((ts-base)+' readiness points');});
+    let ts=pl._ts;if(ts===undefined&&t.length===6){try{ts=tsOf(t)}catch(e){ts=null}}if(ts!=null&&base!=null&&ts<base-(side?2:3))f((ts-base)+' readiness points');
+    const gb=ms.length===6?gradeTeam(ms):null,gp=planGrade(pl);if(gb!=null&&gp!=null&&gp<gb-(side?2:3))f('grade '+gb+' → '+gp);});
   if(row(g0,'weather').lone&&!plans.slice(0,2).some(pl=>pl.gap&&pl.gap.fix.includes('weather')))flags.push('nothing in the first two suggestions fixes the weather nobody uses');
   const top=L[0];if(top){if(!ui.swOut||ui.swKey!==S.slots.map(x=>x.n||'').join())ui.swOut=new Set();top.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
     top.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability||null,lock:false}});ui.swKey=S.slots.map(x=>x.n||'').join()}

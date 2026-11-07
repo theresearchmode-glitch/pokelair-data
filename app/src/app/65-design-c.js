@@ -81,9 +81,9 @@ const NP_RANK = {A: 5, B: 4, C: 3, D: 2, F: 1, E: 1};
     if (!up) return; ring.classList.remove('np-spark'); void ring.offsetWidth; ring.classList.add('np-spark');
     setTimeout(() => ring.classList.remove('np-spark'), 700); }; }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-plan]'); if (!b) return;
-  let before = null; try { const ms = members(); before = ms.length ? prepOf(ms).score : null; } catch (x) {}
+  let before = null; try { const ms = members(); before = ms.length === 6 ? gradeTeam(ms) : null; } catch (x) {}
   if (before == null) return;
-  setTimeout(() => { let after = null; try { const ms = members(); after = ms.length ? prepOf(ms).score : null; } catch (x) {}
-    const t = $('toast'); if (after == null || !(after > before) || !t || t.hidden || t.querySelector('.npgain')) return;
-    const u = t.querySelector('.tundo'), s = document.createElement('span'); s.className = 'npgain'; s.textContent = readyDelta(after - before);
+  setTimeout(() => { let after = null; try { const ms = members(); after = ms.length === 6 ? gradeTeam(ms) : null; } catch (x) {}
+    const t = $('toast'); if (after == null || after === before || !t || t.hidden || t.querySelector('.npgain')) return;
+    const u = t.querySelector('.tundo'), s = document.createElement('span'); s.className = 'npgain'; s.textContent = `Grade ${before} → ${after}`;
     if (u) u.before(s); else t.append(s); }, 80); }, true);

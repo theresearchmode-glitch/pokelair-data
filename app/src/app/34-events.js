@@ -47,19 +47,20 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(d.clear!==undefined){const was=byName.get(S.slots[+d.clear].n);keepUndo();S.slots[+d.clear]=blank();render();if(was)toast(`Removed ${was.d}`,true)}
   else if(b.id==='abBtn'){runAutoBuild()} // keeps the Build around pick (shown as a chip with × above the button)
   else if(d.recsrc){ui.recSrc=d.recsrc==='all'?'all':'box';LS.set('cc2.recsrc',ui.recSrc);renderRecs()}
-  else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
+  else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.absrc){ui.abSrc=d.absrc==='all'?'all':'box';LS.set('cc2.absrc',ui.abSrc);renderPoolCtl();if(ui.ab&&!ui.ab.busy)runAutoBuild()}
   else if(d.abnext){abNext(d.abnext)}
   else if(d.abuse){const t=abTeam(d.abuse);if(!t)return;keepUndo();S.format='doubles';S.slots=t.mons.map(m=>({n:m.n,a:null,lock:false}));S.loadedId=null;render();setView('build');toast(`Using the built team. Fix it and the game plan now describe it.`,true)}
   else if(d.absave){const t=abTeam(d.absave);if(!t||S.teams.length>=10)return;{const key=t.mons.map(m=>m.n).sort().join('|'),dup=S.teams.find(x=>x.slots.map(s=>s.n).filter(Boolean).sort().join('|')===key);if(dup){toast(`Already saved as "${dup.name}"`);return}}const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
     const name=`${t.label||'Built team'}`.slice(0,40);S.teams.push({id,name,slots:t.mons.map(m=>({n:m.n,a:null,lock:false})),format:d.absave,saved:Date.now()});render();toast(`Saved "${name}"`)}
-  else if(d.qa!==undefined){const pl=(ui.quick||[])[+d.qa];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};
+  else if(d.qa!==undefined){const pl=(ui.quick||[])[+d.qa];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);
     keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;keepUndo();
     // what Apply swapped out: no suggestion offers it straight back while you keep applying suggestions (swOutNow, 29-fix-planner.js) (Nov 7 audit: Sylveon for Primarina, then Primarina for Sylveon)
     if(!ui.swOut)ui.swOut=new Set();pl.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false}});
     ui.swKey=S.slots.map(x=>x.n||'').join();
+    undoMark(pl.ch.map(x=>x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`).join(', '));
     keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`,true)}
   else if(d.lock!==undefined){const s=S.slots[+d.lock];s.lock=!s.lock;render()}
   else if(d.unbox!==undefined){ui.boxUndo=S.box.slice();S.box=S.box.filter(x=>x!==d.unbox);render();const q=byName.get(d.unbox);toastBox(`Removed ${q?q.d:d.unbox} from your box`)}

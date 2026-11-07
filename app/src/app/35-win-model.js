@@ -100,7 +100,25 @@ var TS_GAIN=2;
 function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
 function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
 function tsTitle(base,t){return `${base.score}% → ${t.score}% ready for the top 30 threats (each threat weighted by how often it makes top cut)`}
-function tsChip(team){const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
+// A team's grade, the big number on My team (readiness + team strength − missed checks), for any six (Nov 7, Sim: "it says +2
+// ready but my score went from 93 to 91"). Suggestions are judged and labelled by it, so the card matches what Apply does.
+const gradeMemo=new Map();
+function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
+  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+':'+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')).sort().join('|');
+  if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
+  try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
+    // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade
+    if(g!=null&&G.rec&&G.rec.wr<((RES&&RES.base)||.5))g=Math.min(g,40)}catch(e){}
+  if(gradeMemo.size>500)gradeMemo.clear();gradeMemo.set(k,g);return g}
+function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g===undefined)pl._g=gradeTeam(pl.team);return pl._g}
+// "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
+function gradeChip(g0,g1,cls,team){if(g0==null||g1==null)return '';const d=g1-g0;
+  // a six that is a real tournament team shows its real win rate on My team instead of a grade; the card says the same
+  let rec=null;try{rec=team&&team.length===6&&CH.recOf?CH.recOf(team):null}catch(e){}
+  if(rec)return `<span class="${cls||'tsd'} ${rec.wr>=((RES&&RES.base)||.5)?'up':'dn'}" title="This six is a real tournament team: My team shows its win rate in ${rec.g.toLocaleString('en-US')} real games">Real team: ${Math.round(rec.wr*100)}% wins</span>`;
+  return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="Your grade now ${g0}; with this change ${g1}">Grade ${g0} → ${g1}</span>`}
+function tsChip(team){let ms=null;try{ms=members()}catch(e){}const g0=ms&&ms.length===6?gradeTeam(ms):null,g1=gradeTeam(team);if(g0!=null&&g1!=null)return gradeChip(g0,g1,null,team);
+  const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
   return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">${readyDelta(d)}</span>`}
 // round words 2: the damage-calc reason in calc shorthand. Only the wording changes; every number, move and condition stays
 // ("Mega Charizard Y moves first and OHKOs with Weather Ball, 212–249% of HP" -> "Mega Charizard Y: moves first, OHKO with Weather Ball, 212–249% HP").

@@ -937,3 +937,10 @@
 @A .ar-hh.ar-tag .ar-tag2{color:var(--ar-blue-ink,var(--ar-blue))}
 @media (min-width:600px) and (max-width:1000px){@A .ar-hh.ar-tag{font-size:min(56px,7.4vw)!important}}
 @media (min-width:1001px){@A .ar-hh.ar-tag{font-size:clamp(40px,3.6vw,58px)!important}}
+
+/* Undo bar (Nov 7, Sim): after a suggestion is applied, one tap reverts it. A single row above the suggestions, no box of its own:
+   the page colour, a thin rule under it, body type, the usual secondary button */
+@A .chundohost:empty{display:none}
+@A .chundo{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;margin:0 0 4px;border-bottom:1px solid var(--ar-rule);font:400 15px/1.5 var(--ar-body,inherit);color:var(--ar-ink)}
+@A .chundo .t{min-width:0;overflow-wrap:anywhere}
+@A .chundo .chundob{flex:none;min-height:40px;padding:0 16px}

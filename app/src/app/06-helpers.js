@@ -120,6 +120,16 @@ function teamRating(slots){const m0=slots.map(memberOf).filter(Boolean),ms=typeo
 function toast(t,undo){const el=$('toast');el.innerHTML=esc(t)+(undo&&ui.undo?' <button type="button" class="tundo" id="toastUndo">Undo</button>':'');el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,undo?6000:2200)}
 // remember the team before a change, so Undo can put it back
 function keepUndo(){ui.undo={slots:JSON.parse(JSON.stringify(S.slots)),loadedId:S.loadedId}}
+// Undo bar (Nov 7, Sim: "I should be able to revert a suggestion in 1 click"): every suggestion applied is kept (up to 8), and
+// a bar above the suggestions offers Undo for the last one until the team is changed some other way. Undo again steps back further.
+const slotsKey=()=>S.slots.map(x=>x.n||'').join();
+function undoMark(label){if(!ui.undo)return;const st=ui.undoStack||(ui.undoStack=[]);if(st.length&&st[st.length-1].after!==slotsKey()&&st[st.length-1].after!==ui.undo.slots.map(x=>x.n||'').join())st.length=0;
+  st.push({slots:ui.undo.slots,loadedId:ui.undo.loadedId,label,after:slotsKey()});if(st.length>8)st.shift()}
+function undoTop(){const st=ui.undoStack;if(!st||!st.length)return null;const t=st[st.length-1];if(t.after!==slotsKey()){ui.undoStack=[];return null}return t}
+function undoBarHtml(){const t=undoTop();return t?`<div class="chundo" role="status"><span class="t">Applied <b>${esc(t.label)}</b></span><button type="button" class="chghost chundob" data-undobar>Undo</button></div>`:''}
+function undoBarSync(){document.querySelectorAll('.chundohost').forEach(h=>{const x=undoBarHtml();if(h.innerHTML!==x)h.innerHTML=x})}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-undobar]');if(!b)return;const t=undoTop();if(!t)return;ui.undoStack.pop();
+  S.slots=JSON.parse(JSON.stringify(t.slots));fixSlots();S.loadedId=t.loadedId;ui.undo=null;keepScroll(()=>render());toast(`Undone: ${t.label}`)});
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#toastUndo');if(!b||!ui.undo)return;const u=ui.undo;ui.undo=null;
   S.slots=u.slots;fixSlots();S.loadedId=u.loadedId;keepScroll(()=>render());toast('Change undone')});
 

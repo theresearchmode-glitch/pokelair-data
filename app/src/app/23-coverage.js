@@ -32,6 +32,8 @@ function computeRecs(ms, useA) {
   // Readiness decides when the pick completes a six: it must ready the team for more of the top threats, and the most
   // prepared result goes first. The type rules relax to "at most one more weakness or unresisted type, no new stack".
   const useTS = useTSPick() && ms.length >= 5, baseTS = useTS && ms.length === 6 ? tsOf(ms) : null; let tsN = 0;
+  // judged by the grade (the big number on My team), like Fix it (Nov 7, Sim)
+  const gB = baseTS != null ? gradeTeam(ms) : null;
   const tsOK = pl => { if (!useTS || pl.team.length !== 6) return null; if (pl._ts === undefined) { if (tsN >= 120) return null; tsN++; pl._ts = tsOf(pl.team); } return pl._ts; };
   // the readiness checks go to the planner's best 60
   // plus the best picks that close a game-plan gap (rain for Swift Swim Mega Swampert, Trick Room attackers…; Oct 30)
@@ -47,7 +49,7 @@ function computeRecs(ms, useA) {
     if (t != null) { const fits = A.ex <= B.ex + 1 && A.un <= B.un + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && pl.megaShort <= shortB;
       // one card per Pokémon: the swap that leaves the team ready for the most top threats (a gap fix may cost up to 3)
       // and never lowers the winning-team checklist score (Fix it follows the same rule)
-      if (fits && (baseTS == null || t >= baseTS + TS_GAIN || (gapFix(pl) && t >= baseTS - 3)) && (proChecks(pl.team, useA) || {pass: 0}).pass >= passB0) { const j = clean.findIndex(y => y.ch[0].c.p.b === b); if (j < 0) { seen.add(b); clean.push(pl); } else if (t > clean[j]._ts) clean[j] = pl; }
+      if (fits && (baseTS == null || (gB != null && planGrade(pl) != null ? t >= baseTS - 3 && (pl._g >= gB + TS_GAIN || (gapFix(pl) && pl._g >= gB - 3)) : t >= baseTS + TS_GAIN || (gapFix(pl) && t >= baseTS - 3))) && (proChecks(pl.team, useA) || {pass: 0}).pass >= passB0) { const j = clean.findIndex(y => y.ch[0].c.p.b === b); if (j < 0) { seen.add(b); clean.push(pl); } else if (t > clean[j]._ts) clean[j] = pl; }
       else if (soft.length < 3 && fits && !seen.has(b) && !soft.some(y => y.ch[0].c.p.b === b)) soft.push(pl);
       continue; }
     const megaFix = pl.megaShort < shortB && A.ex <= B.ex + 1 && A.sh.maxStack <= Math.max(2, B.sh.maxStack) && A.off >= B.off - 1;
@@ -57,7 +59,7 @@ function computeRecs(ms, useA) {
   // Strength floor: suggestions have to be good Pokémon, not just a type fit. Whole roster asks for a rating of 50+,
   // your own box 35+ (it's what you have). Then rank by rating plus how much the pick improves the team.
   const floor = OFFMETA ? 35 : ui.recSrc === 'all' ? 50 : 35, strong = pl => OFFMETA || ui.recSrc !== 'all' ? ratingLoose(pl.ch[0].c.p) >= floor : rating(pl.ch[0].c.p).total >= floor;
-  const rank = pl => (pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + pl.gain * 4;
+  const rank = pl => (gB != null && pl._g != null ? pl._g * 1000 : pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + pl.gain * 4;
   for (let k = clean.length - 1; k >= 0; k--) if (!strong(clean[k])) clean.splice(k, 1);
   clean.sort((x, y) => rank(y) - rank(x));
   // an open game-plan gap: the best pick that closes it sits in the first two (Fix it does the same)
