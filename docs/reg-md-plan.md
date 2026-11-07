@@ -1,4 +1,4 @@
-# Reg M-D game plan (Nov 7, 2026) — reviewed by Sim; Phase 0 not started
+# Reg M-D game plan (Nov 7, 2026) — approved by Sim; Phase 0 starts Wed Nov 11 (when her usage resets)
 
 ## 1. What we know (research, Nov 7)
 | Fact | Status | Source |
@@ -39,7 +39,7 @@
 7. **Rollback**: docs/undo-plan.md (page, data, hold the switch with REG_AUTO_SWITCH=0).
 
 ## 4. Phases
-**Phase 0, groundwork (now to about Nov 21, preview only, nothing live):**
+**Phase 0, groundwork (Wed Nov 11 to about Nov 21, preview only, nothing live). Includes 0.7-0.9 and G1-G12 below:**
 - 0.1 Regulation profile: one place for the name, Showdown id, dates and rules; every "Reg M-C" text reads from it.
 - 0.2 Roster generator from Showdown's champions data. Proof: it rebuilds today's data.js identically (except fixes we approve).
 - 0.3 Sprite script: PokéAPI to inked webp to `SPRITE_ID`, for any new Pokémon in one command.
@@ -81,7 +81,7 @@
 ## 6. Size
 Phase 0: medium (scripts and a practice run; most checking runs on its own). Phase 1: light to medium on roster day. Phases 2-3: light daily checks.
 
-## 7. Gaps found in the final pre-Phase-0 check (Nov 7) — proposed, for Sim's approval
+## 7. Gaps found in the final pre-Phase-0 check (Nov 7) — all approved by Sim as part of Phase 0
 **Would show wrong or mixed numbers on launch day:**
 - G1 Outside sources still point at M-C by name: Pikalytics (`sources.mjs`, gen9championsvgc2026regmc), Showdowntier
   (`formats/dmc`), official events (`official.mjs`, REG 'M-C' and start date 2026-09-01). After the switch they would keep
