@@ -85,5 +85,5 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   if (before == null) return;
   setTimeout(() => { let after = null; try { const ms = members(); after = ms.length === 6 ? gradeTeam(ms) : null; } catch (x) {}
     const t = $('toast'); if (after == null || after === before || !t || t.hidden || t.querySelector('.npgain')) return;
-    const u = t.querySelector('.tundo'), s = document.createElement('span'); s.className = 'npgain'; s.textContent = `Grade ${before} → ${after}`;
+    const u = t.querySelector('.tundo'), s = document.createElement('span'); s.className = 'npgain'; s.textContent = CH.gradeMove(before, after);
     if (u) u.before(s); else t.append(s); }, 80); }, true);

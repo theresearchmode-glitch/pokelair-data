@@ -9,9 +9,9 @@ const TCASE = {
   SMALL: new Set(['a', 'an', 'the', 'and', 'but', 'or', 'nor', 'for', 'so', 'yet', 'as', 'at', 'by', 'in', 'of', 'off', 'on', 'per', 'to', 'up', 'via', 'vs', 'vs.', 'with', 'from', 'into', 'over']),
   // headings and names; and what is never changed
   SEL: 'h1,h2,h3,h4,.chdisp,.cht,.ar-h2,.ar-sth,.wkt,.lbl,.ltd,.chpgt,.sgl,.nl,.htile b,.trcard>.chk,.nplegend>.chk,.abth,.chswk,.chsub3,.wk,.chparth,.ar-glabel',
-  SKIP: '.ar-tname,.svname,.myteamsw,.lgtag,.ar-tag2,.ar-h1,.seg,.gwho,.evteam,.ttcard,.cxnm,[data-notc],input,textarea,select,[contenteditable]',
+  SKIP: '.ar-tname,.svname,.myteamsw,.ar-mus,.lgtag,.ar-tag2,.ar-h1,.seg,.gwho,.evteam,.ttcard,.cxnm,[data-notc],input,textarea,select,[contenteditable]',
   // a page name is changed anywhere it stands alone, also on a switch between pages (Speed Tiers · Damage Calc · Type Chart)
-  NSKIP: '.ar-tname,.svname,.myteamsw,.lgtag,.gwho,.evteam,.ttcard,.cxnm,[data-notc],input,textarea,select,[contenteditable]',
+  NSKIP: '.ar-tname,.svname,.myteamsw,.ar-mus,.lgtag,.gwho,.evteam,.ttcard,.cxnm,[data-notc],input,textarea,select,[contenteditable]',
   names: null,
   word(w, first) { if (!/[a-z]/.test(w)) return w; const core = w.replace(/^[^A-Za-zÀ-ÿ]+/, '');
     if (/[A-Z]/.test(core.slice(1)) || /\d/.test(core)) return w;            // STAB, NastyPlot, 2HKO, Top-8

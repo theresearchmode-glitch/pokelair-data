@@ -190,8 +190,9 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   let score = '';
   if (G) { const why = `<button type="button" class="ar-link ar-why" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${esc(G.letter)}?</button>`;
     /* the grade is the hero (Sim, Nov 5): the big letter, then what it's based on in words, so a win rate is never read as a score */
-    /* one grade (Nov 7, Sim): the letter, the grade out of 100, and the real win rate (or "Not played in tournaments yet") */
-    score = `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis"><b>${G.s}</b> / 100</span><span class="ar-basis ar-recl">${esc(CH.recLine(G))}</span>${why}</div>`; }
+    /* grade v2 (Nov 7, Sim): the letter, the expected win rate against today's field, and the rank among real teams with what
+       it rests on (its own real games, or our estimate) */
+    score = `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis">${G.v === 2 ? `<b>${G.e}%</b> expected win rate` : `<b>${G.s}</b> / 100`}</span><span class="ar-basis ar-recl">${esc(CH.recLine(G))}</span>${why}</div>`; }
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
   if (RD) {
@@ -200,6 +201,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
     const chk = `<div class="ar-st" role="group" aria-label="What's behind this grade"><h3 class="ar-sth">What’s behind this grade</h3>
       ${G && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}
+      ${G && G.v === 2 ? `<h3 class="ar-sth ar-muh">Matchups</h3><p class="ar-mus">What beats this team. Shown on its own, not part of the grade.</p>` : ''}
       <div class="ar-trio">${cells.join('')}</div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';

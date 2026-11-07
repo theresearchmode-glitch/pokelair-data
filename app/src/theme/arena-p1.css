@@ -991,3 +991,7 @@
 @A .ar-rmx svg{position:relative;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
 @media (hover:hover){@A .ar-rmx:hover::before{background:var(--ar-red,#d33)}}
 @A .ar-rmx:focus-visible{outline:3px solid var(--ar-focus)!important;outline-offset:-4px;border-radius:50%}
+
+/* My Team: Matchups, its own heading under the grade's parts (grade v2, Nov 7) */
+@A .ar-st .ar-sth.ar-muh{margin-top:16px}
+@A .ar-st .ar-mus{margin:4px 0 8px;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink-2)}

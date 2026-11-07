@@ -26,7 +26,7 @@ ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = 
   const G = tm._g, RD = tm._rdv; let score = '', stats = '';
   if (G) { const tt = head && head.querySelector('.npgb'), title = tt ? tt.getAttribute('title') : '';
     // grade first, the win rate under it with the average for scale (Sim, Nov 5: "63.0% Grade A" was confusing)
-    score = `<div class="arb-score arb-gfirst"${title ? ` title="${esc(title)}"` : ''}><span class="arb-grade">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp">${esc(G.letter)}</span><span class="arb-basis"><b>${G.s}</b> / 100<br>${esc(CH.recLine(G))}</span></div>`; }
+    score = `<div class="arb-score arb-gfirst"${title ? ` title="${esc(title)}"` : ''}><span class="arb-grade">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp">${esc(G.letter)}</span><span class="arb-basis">${G.v === 2 ? `<b>${G.e}%</b> expected win rate` : `<b>${G.s}</b> / 100`}<br>${esc(CH.recLine(G))}</span></div>`; }
   if (RD) { const c = CH.lvCount(RD), h = CH.hand(RD);
     stats = `<div class="ar-trio arb-trio">${AR.cell(RD.score + '%', 'ready')}${h ? AR.cell(h.x, 'handled') : ''}${c[1] ? AR.cell(c[1], 'shaky') : ''}${c[0] ? AR.cell(c[0], 'unanswered') : ''}</div>`; }
   const ck = tm.grade, pips = ck ? `<div class="arb-checks"><b>${ck.pass}/${ck.n}</b><span>winning-team checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span></div>` : '';
