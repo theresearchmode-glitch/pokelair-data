@@ -111,6 +111,9 @@ function gapTarget(gp0,top){const order=['weather','trfit','terrain','support'],
 // The fix planner. planFixes works the plans out at once; planFixesG is the same search as a generator that pauses between
 // candidate plans, so the page can work them out in small slices between frames (an edit then paints at once: about 3 s of
 // frozen page per edit on a mid-range phone before, Oct 31). Both run exactly the same code, so the plans are identical.
+// Pokémon that Apply just swapped out (Nov 7 audit: suggestion loops, Sylveon for Primarina then Primarina for Sylveon). They stay
+// out of the suggestions while the team is the one Apply left; any other change to the team (an edit, a loaded team) clears them.
+function swOutNow(){if(!ui.swOut||!ui.swOut.size)return null;if(ui.swKey!==S.slots.map(x=>x.n||'').join()){ui.swOut=null;return null}return ui.swOut}
 function planFixes(ms,pool,useA,opts){const g=planFixesG(ms,pool,useA,opts);let r;do r=g.next();while(!r.done);return r.value}
 function* planFixesG(ms,pool,useA,opts){
   const maxMega=megaGoal();const full=ms.length===6;
@@ -122,7 +125,7 @@ function* planFixesG(ms,pool,useA,opts){
   // evidence floor (Oct 28 audit): suggestions come from Pokémon real players actually run, unless you ask for off-meta.
   // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ for Pokémon in your box, whichever pool is
   // picked (sweep, Oct 31: Box + catch dropped your own box Pokémon that My box offered, so the bigger pool gave worse plans).
-  const cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
+  const swo=swOutNow(),cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&!(swo&&swo.has(p.b))&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
     return {p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}}});
   // never more Megas than the goal, or (when the team is already over it: Megas on team 0 with a Mega in) than it has now
   const mega0=ms.filter(m=>m.mega).length,legal=(team)=>{const n=team.filter(m=>m.mega).length;return n<=maxMega||n<=mega0};

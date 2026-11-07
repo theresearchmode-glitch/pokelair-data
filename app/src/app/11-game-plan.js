@@ -44,7 +44,7 @@ function wxUses(m, w) { if (!m || !w) return false; if ((WX_AB_USE[w] || []).inc
 // setter weathers with nobody else on the team using them
 // the setter itself counts only through a move made for the weather (Alolan Ninetales' Aurora Veil, Pelipper's Hurricane), not its own type
 const wxMoveUse = (m, w) => (m.moves || []).some(x => x && (WX_MV_USE[w] || []).includes(x.name || x));
-function wxIdle(team) { return wxSetsOf(team).filter(w => !team.some(m => m && (WEATHER_OF[m.ability] !== w ? wxUses(m, w) : !WX_PARTNER.has(m.p.b || m.p.n) && wxMoveUse(m, w)))); }
+function wxIdle(team) { return wxSetsOf(team).filter(w => !team.some(m => m && (WEATHER_OF[m.ability] !== w ? wxUses(m, w) : !WX_PARTNER.has(m.p.n) && wxMoveUse(m, w)))); }
 // how much the team's own weather helps vs hurts its non-setters: Water attackers in rain (+), Fire in rain (-), and the reverse in sun
 function wxNet(team) { const s = wxSetsOf(team); if (s.length !== 1 || !(s[0] === 'rain' || s[0] === 'sun')) return 0; const up = s[0] === 'rain' ? 'Water' : 'Fire', dn = s[0] === 'rain' ? 'Fire' : 'Water';
   let n = 0; for (const m of team) { if (!m || WEATHER_OF[m.ability]) continue; const t = m.types || m.p.t; if (WEATHER_NEED[m.ability] === s[0]) n += 2; if (t.includes(up)) n++; if (t.includes(dn)) n--; } return n; }
@@ -117,7 +117,7 @@ function gamePlan(team) {
     // a support setter (Pelipper, Politoed, Ninetales, Hippowdon) is there for its partners: its own Hurricane or Water moves alone
     // don't make it a weather team (Nov 7, Sim: Pelipper suggested with nothing on the team using the rain). Attacking setters
     // (Mega Charizard Y, Torkoal, Tyranitar, the snow Megas) still count as using their own weather.
-    const lone = !others0.length && setters.every(x => WX_PARTNER.has(x.m.p.b || x.m.p.n)), ab = lone ? [] : ab0;
+    const lone = !others0.length && setters.every(x => WX_PARTNER.has(x.m.p.n)), ab = lone ? [] : ab0;
     const hurt = team.filter(m => !WEATHER_OF[m.ability] && (m.types || m.p.t).includes(kinds[0] === 'rain' ? 'Fire' : kinds[0] === 'sun' ? 'Water' : '_'));
     rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', lone, who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
       return `${sn.join(', ')} ${self && !others.length ? 'sets and uses ' + w : 'sets ' + w}${others.length ? ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : ''}`; })(), note: ab.length ? '' : `Nothing else on the team uses the ${w0}${hurt.length ? `, and it weakens ${wxAnd(hurt.map(m => m.d))}'s ${kinds[0] === 'rain' ? 'Fire' : 'Water'} moves` : ''}.`});

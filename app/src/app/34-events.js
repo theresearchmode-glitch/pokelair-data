@@ -56,7 +56,10 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.qa!==undefined){const pl=(ui.quick||[])[+d.qa];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};
     keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;keepUndo();
+    // what Apply swapped out: no suggestion offers it straight back while you keep applying suggestions (swOutNow, 29-fix-planner.js) (Nov 7 audit: Sylveon for Primarina, then Primarina for Sylveon)
+    if(!ui.swOut)ui.swOut=new Set();pl.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false}});
+    ui.swKey=S.slots.map(x=>x.n||'').join();
     keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`,true)}
   else if(d.lock!==undefined){const s=S.slots[+d.lock];s.lock=!s.lock;render()}
   else if(d.unbox!==undefined){ui.boxUndo=S.box.slice();S.box=S.box.filter(x=>x!==d.unbox);render();const q=byName.get(d.unbox);toastBox(`Removed ${q?q.d:d.unbox} from your box`)}

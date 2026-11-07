@@ -148,7 +148,14 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
 // the first suggestion shows; Show more opens the next two in place, then See all goes to the Suggestions page (Nov 7, Sim)
 CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum && ui.vsum.RD ? ui.vsum.RD.score : null;
   // nothing makes the team readier: show the side-grades (different picks that keep every check) instead of a dead end
-  if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { L = ui.planList = ui.plans.more.slice(0, 3); side = true; }
+  // (Nov 7 audit) only ones about as ready as now (at most 2 points less) and never a Pokémon you just swapped out with Apply,
+  // so following them can't go round in circles or drift downhill
+  if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { side = true;
+    const ok = []; for (const pl of ui.plans.more) { if (ok.length >= 3) break; if (pl.ch.some(x => (swOutNow() || new Set()).has(x.c.p.b))) continue;
+      if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } }
+      if (base != null && pl._ts != null && pl._ts < base - 2) continue; ok.push(pl); }
+    L = ui.planList = ok;
+    if (!ok.length) return `<section class="chsugs" aria-label="Suggestions"><p class="t2 chsidek">Nothing makes this team readier for the top threats right now, and every other swap would leave it less ready.</p><button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; }
   const top = L.slice(0, 3); let tk = ''; try { tk = members().map(m => m.p.n).join(','); } catch (e) {} const open = ui.sugMore === tk, hid = top.length - 1; const gapN = ui.plans && ui.plans.gapNote ? `<p class="chgapnote">${esc(ui.plans.gapNote)}</p>` : ''; // a game-plan gap nothing in this pool can fix
   if (!top.length) return gapN ? `<section class="chsugs" aria-label="Suggestions">${gapN}</section>` : ''; // top 2 here; All suggestions has the rest
   return `<section class="chsugs${open ? ' is-more' : ''}" aria-label="Suggestions">${gapN}${side ? '<p class="t2 chsidek">Nothing makes this team readier for the top threats. These swaps keep every check and give it a different look:</p>' : ''}

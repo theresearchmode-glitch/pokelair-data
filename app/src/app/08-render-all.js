@@ -13,7 +13,7 @@ let bgWait=false;function bgRender(){if(!typingNow()){render();return}if(bgWait)
 // Run one part of the page; if it throws, log it and keep the rest of the page working.
 function safe(name,fn){try{fn()}catch(err){try{console.error('Champions Team Coverage: '+name+' failed',err)}catch(e){}}}
 // what the fix plans depend on: the team, pool, settings, box, saved teams and meta data
-function planKeyOf(useA){return JSON.stringify([OFFMETA,S.slots,ui.pool,S.format,megaGoal(),$('swapMega').checked,useA,ui.metaSrc,metaVersion,S.box.join(),S.excl.join(),S.teams.map(t=>t.format+t.slots.map(x=>x.n).join()).join()])}
+function planKeyOf(useA){const so=swOutNow();return JSON.stringify([so?[...so].join():'',OFFMETA,S.slots,ui.pool,S.format,megaGoal(),$('swapMega').checked,useA,ui.metaSrc,metaVersion,S.box.join(),S.excl.join(),S.teams.map(t=>t.format+t.slots.map(x=>x.n).join()).join()])}
 // plans for the last few teams (Undo, or editing back and forth, reuses them)
 const planLRU=new Map();
 function planKeep(key,plans){planLRU.delete(key);planLRU.set(key,plans);while(planLRU.size>8)planLRU.delete(planLRU.keys().next().value)}
