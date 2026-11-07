@@ -385,7 +385,17 @@
     <div class="head"><div><h2>My box <span class="vsub" id="boxCount"></span></h2><p class="hint">Build for me and the suggestions pick from these when set to "My box".</p></div></div>
     <div class="row">
       <div class="cb" id="boxCb"></div>
-      <button class="btn" id="boxReset" type="button">Reset to default</button>
+      <button class="btn" id="boxReset" type="button" aria-label="Reset my box to the default Pokémon">Reset box</button>
+    </div>
+    <div class="boxlink" id="boxLinkRow">
+      <p class="hint" id="boxSync">Saved in this browser.</p>
+      <div class="row boxlinkbtns"><button class="btn" id="boxLinkCopy" type="button">Copy box link</button><button class="btn" id="boxLinkOpen" type="button" aria-expanded="false" aria-controls="boxLinkIn">Open a box link</button></div>
+      <div class="boxlinkin" id="boxLinkIn" hidden>
+        <label class="hint" for="boxLinkField">Paste a box link or code from another device, account or friend</label>
+        <input class="field" id="boxLinkField" type="text" autocomplete="off" spellcheck="false" placeholder="Box link or code">
+        <div class="row boxlinkbtns"><button class="btn go" id="boxLinkAdd" type="button">Add to my box</button><button class="btn" id="boxLinkReplace" type="button">Replace my box</button></div>
+        <p class="hint" id="boxLinkMsg" role="status"></p>
+      </div>
     </div>
     <div class="seg segwrap boxsort" id="boxSort" role="group" aria-label="Sort your box"><span class="bslbl">Sort</span><button type="button" data-boxsort="az">A–Z</button><button type="button" data-boxsort="type">Type</button><button type="button" data-boxsort="new">Newest</button><button type="button" data-boxsort="old">Oldest</button><button type="button" data-boxsort="rating">Rating</button></div>
     <div class="boxlist" id="boxList"></div>

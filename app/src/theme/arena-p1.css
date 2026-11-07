@@ -944,3 +944,14 @@
 @A .chundo{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;margin:0 0 4px;border-bottom:1px solid var(--ar-rule);font:400 15px/1.5 var(--ar-body,inherit);color:var(--ar-ink)}
 @A .chundo .t{min-width:0;overflow-wrap:anywhere}
 @A .chundo .chundob{flex:none;min-height:40px;padding:0 16px}
+
+/* My box: where the box is saved, and the box link (Nov 7, Sim). No box of its own: a thin rule above, body type, the usual buttons */
+@A #box .boxlink{margin:16px 0 8px;padding-top:12px;border-top:1px solid var(--ar-rule)}
+@A #box .boxlink .hint{margin:0 0 8px;font-size:15px;line-height:1.5}
+@A #box .boxlinkbtns{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+@A #box .boxlinkin{margin-top:8px}
+@A #box .boxlinkin .field{width:100%;margin:0 0 8px}
+@A #box .boxlinkin #boxLinkMsg:empty{display:none}
+@A #box .boxlinkin label.hint{display:block}
+/* the add field and Reset box share one row on phones too (no button left alone on its own row) */
+@A [data-pane="box"] #box .row #boxCb{flex:1 1 160px}

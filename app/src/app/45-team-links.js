@@ -51,3 +51,36 @@ function checkSharedLink() { let raw = ''; try { raw = (location.hash || '') + '
   bar.innerHTML = `<div class="sbin"><div><b>Shared team</b><span>${esc(x.n || x.slots.map(s => (byName.get(s.n) || {}).d || s.n).slice(0, 3).join(', ') + (x.slots.length > 3 ? ' …' : ''))}</span></div><button type="button" class="btn go sm" data-sharedload="1">Load it</button><button type="button" class="btn ghost sm" data-sharedx="1">Not now</button></div>`;
   bar.onclick = e => { const t = e.target.closest('button'); if (!t) return; if (t.dataset.sharedload) applyShared(x); bar.remove(); try { history.replaceState(history.state, '', location.pathname); } catch (er) {} }; }
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#shareLink,[data-copylink]'); if (b) copyTeamLink(b); });
+
+// ---------- box links (Nov 7, Sim) ----------
+// Your whole box in one link or code, to move it to another device or Claude account, share it, or keep a backup.
+// Looks like <site>#box=<code>; opening one never changes your box until you choose Add or Replace (both can be undone).
+function boxCode() { const b = (S.box || []).filter(n => byName.get(n)); return b.length ? tlB64(JSON.stringify({v: 1, b})) : ''; }
+function boxLink() { const c = boxCode(); return c ? teamLinkBase() + '#box=' + c : ''; }
+// accepts a full link, "box=<code>" or the bare code; returns the Pokémon names (base forms you can own), or null
+function decodeBox(text) { const t = String(text || '').trim(); if (!t) return null;
+  const m = t.match(/box=([A-Za-z0-9_-]{8,})/) || (/^[A-Za-z0-9_-]{12,}$/.test(t) ? [0, t] : null); if (!m) return null;
+  let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; } if (!o || o.v !== 1 || !Array.isArray(o.b)) return null;
+  const seen = new Set(), out = []; for (const n of o.b.slice(0, 400)) { const p = typeof n === 'string' && byName.get(n); if (!p || p.m || seen.has(p.n)) continue; seen.add(p.n); out.push(p.n); }
+  return {names: out, skipped: o.b.length - out.length}; }
+async function copyText(t) { let ok = false; try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {}
+  if (!ok) { try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }
+  return ok; }
+function applyBox(x, mode) { ui.boxUndo = S.box.slice(); const before = S.box.length;
+  if (mode === 'replace') S.box = x.names.slice(); else { const have = new Set(S.box); for (const n of x.names) if (!have.has(n)) S.box.push(n); }
+  render(); const added = mode === 'replace' ? S.box.length : S.box.length - before;
+  toastBox(mode === 'replace' ? `Your box is now the ${S.box.length} Pokémon from the link` : added ? `Added ${added} Pokémon to your box` : 'Everything in that link is already in your box'); }
+document.addEventListener('click', async e => { const b = e.target && e.target.closest && e.target.closest('#boxLinkCopy,#boxLinkOpen,#boxLinkAdd,#boxLinkReplace'); if (!b) return;
+  const msg = $('boxLinkMsg');
+  if (b.id === 'boxLinkCopy') { const l = boxLink(); if (!l) { toast('Add some Pokémon to your box first'); return; }
+    const ok = await copyText(l); if (ok) toast(`Box link copied (${S.box.length} Pokémon)`); else { const p = $('boxLinkIn'); if (p) p.hidden = false; const f = $('boxLinkField'); if (f) { f.value = l; f.select(); } if (msg) msg.textContent = 'Copy the link above.'; } return; }
+  if (b.id === 'boxLinkOpen') { const p = $('boxLinkIn'); if (!p) return; p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden)); if (!p.hidden) { const f = $('boxLinkField'); if (f) f.focus(); } return; }
+  const f = $('boxLinkField'), x = decodeBox(f && f.value);
+  if (!x || !x.names.length) { if (msg) msg.textContent = 'That doesn’t look like a box link. Copy it again with Copy box link, then paste the whole thing.'; return; }
+  applyBox(x, b.id === 'boxLinkReplace' ? 'replace' : 'add'); if (f) f.value = ''; if (msg) msg.textContent = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C'}, so they were left out.` : '';
+  const p = $('boxLinkIn'); if (p && !x.skipped) p.hidden = true; const o = $('boxLinkOpen'); if (o && !x.skipped) o.setAttribute('aria-expanded', 'false'); });
+// a box link opened directly (outside Claude): offer it in the paste box, never applied silently
+function checkBoxLink() { let raw = ''; try { raw = location.hash || ''; } catch (e) {} if (!/box=/.test(raw)) return; const x = decodeBox(raw); if (!x || !x.names.length) return;
+  const p = $('boxLinkIn'), f = $('boxLinkField'), m = $('boxLinkMsg'); if (p) p.hidden = false; if (f) f.value = raw.replace(/^#/, ''); if (m) m.textContent = `A box link with ${x.names.length} Pokémon. Add them to your box, or replace your box with them.`;
+  try { setView('box'); } catch (e) {} }
+setTimeout(() => { try { checkBoxLink(); } catch (e) {} }, 0);
