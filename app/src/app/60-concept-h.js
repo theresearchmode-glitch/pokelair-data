@@ -314,7 +314,7 @@ function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'
   const head = document.createElement('div'); head.id = 'chTeam'; head.className = 'chteam'; rp.prepend(head);
   // 1 · Fix it: suggestions, then everything still to look at (problems, checklist, legal and items)
   const p1 = CH.part('chP1', '1', 'Fix it', 'What to change, best first'); const b1 = p1.querySelector('.chpartb');
-  b1.innerHTML = '<div class="chpoolrow"><span class="chk">Suggest from</span><div class="seg chpool" role="group" aria-label="Suggest from"><button type="button" data-chpool="box">My box</button><button type="button" data-chpool="boxfill">Box + catch</button><button type="button" data-chpool="all">Whole roster</button></div></div><div id="chSugOut"></div>'; if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
+  b1.innerHTML = '<div class="chpoolrow"><span class="chk">Suggest from</span><div class="seg chpool" role="group" aria-label="Suggest from"><button type="button" data-chpool="box">My box</button><button type="button" data-chpool="boxfill">Box + catch</button><button type="button" data-chpool="all">Whole roster</button></div></div>'+/* the Mega choices, here as well as in Plan settings (Sim, Nov 7: they had only stayed on All suggestions and Build) */'<div class="chmegarow"><div class="chpoolrow"><span class="chk">Megas on team</span><div class="seg chpool" role="group" aria-label="Megas on the team"><button type="button" data-megas="0">0</button><button type="button" data-megas="1">1</button><button type="button" data-megas="2">2</button></div></div><div class="chpoolrow"><span class="chk">Swap my Mega?</span><div class="seg chpool" role="group" aria-label="Suggestions can swap out my Mega"><button type="button" data-chswapm="0">No</button><button type="button" data-chswapm="1">Yes</button></div></div></div><div id="chSugOut"></div>'; if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
   const fx = mk('rfix', 'Problems and checklist', false); fx.id = 'chfFix'; const fb = fx.querySelector('.chbody'); [cols[0], $('chkCard'), $('verdict')].filter(Boolean).forEach(n => fb.append(n)); b1.append(fx);
   // 2 · Threats: one section, three views of the same 30 threats
   const p2 = CH.part('chP2', '2', 'Threats', 'Who beats you, and who handles them'); const b2 = p2.querySelector('.chpartb'), on2 = LS.get('cc2.seg.thr', 'top');
@@ -397,6 +397,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   ['saveBtn', 'shareBtn', 'exportBtn', 'clearTeam'].forEach(id => { const x = $(id); if (x) x.hidden = !ms.length; });
   { const n = document.querySelector('#chP4 .chparth .n'); if (n) n.hidden = !ms.length; const q = document.querySelector('#chP4 .chparth p'); if (q) q.textContent = ms.length ? 'Tap a Pokémon to edit its set' : 'Tap a slot to add a Pokémon'; }
   document.querySelectorAll('[data-chpool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.chpool === ui.pool));
+  { const sw = $('swapMega'); document.querySelectorAll('[data-chswapm]').forEach(b => b.setAttribute('aria-pressed', String(!!(sw && sw.checked) === (b.dataset.chswapm === '1')))); }
   // part 1: suggestions
   { const o = $('chSugOut'); if (o && !o.previousElementSibling?.classList.contains('chundohost')) { const u = document.createElement('div'); u.className = 'chundohost'; o.before(u); } undoBarSync(); }
   { const o = $('chSugOut'); if (o && ms.length && ui.plans && ui.plans.pending) planStale(o, PLAN_WAIT.replace('the best fixes', 'suggestions')); else if (o) { planFresh(o); o.innerHTML = ms.length ? (CH.sugs() || '<p class="t2">No single change from this pool raises the team’s grade. Try another pool above, or see Threats below for what to watch.</p>') : ''; } }
@@ -458,6 +459,9 @@ const chSetViewOld = setView;
 setView = function (v) { chSetViewOld.apply(this, arguments); if ((view === 'build' || view === 'report') && CH.stale) { CH.stale = false; safe('concept h team', chTeamRender); } };
 if (window.__PL_TEST) window.__CH = {open: chScoutOpen, close: chScoutClose, four: CH.four, grade: CH.grade};
 
+// Can swap out my Mega (My team): the same setting as Plan settings › Let plans swap my Mega
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chswapm]'); if (!b) return; const sw = $('swapMega'), on = b.dataset.chswapm === '1'; if (!sw || sw.checked === on) return;
+  sw.checked = on; sw.dispatchEvent(new Event('change', {bubbles: true})); });
 // Suggest from (My team): the same setting as Plan settings › Pick from
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chpool]'); if (!b) return; const v = b.dataset.chpool; if (v === ui.pool) return;
   ui.pool = v; LS.set('cc2.pool', v); const sel = $('poolSel'); if (sel) sel.value = v; render();
