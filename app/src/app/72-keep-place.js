@@ -38,11 +38,14 @@ addEventListener('click', e => { const el = e.target && e.target.closest && e.ta
   const s = KP.sig(el), top = el.getBoundingClientRect().top, y0 = scrollY, t0 = Date.now(), pg0 = document.documentElement.dataset.pg, ov0 = KP.overlay();
   const w = KP.w = {t0}; let y = y0; const fix = () => { if (document.documentElement.dataset.pg !== pg0 || (!ov0 && KP.overlay()) || KP.userAt > t0 || KP.w !== w) return false;
     if (KP.appAt >= t0 && Math.abs(KP.appTo - y0) > 2) return false; // the app scrolled somewhere on purpose (a "jump to" link)
-    const n = KP.find(el, s); if (!n || KP.pinned(n)) return false; const d = n.getBoundingClientRect().top - top; if (Math.abs(d) <= 4) return true;
+    const n = KP.find(el, s); if (!n) return null; if (KP.pinned(n)) return false; const d = n.getBoundingClientRect().top - top; if (Math.abs(d) <= 4) return true;
     const opened = n.getAttribute('aria-expanded') === 'true' || (n.tagName === 'SUMMARY' && n.parentElement && n.parentElement.open);
     if (d > 0 && (opened || KP.MORE.test(KP.txt(n)) || KP.MORE.test(s.txt))) return false; // "more" opened content above itself: leave it
     KP.own = true; try { scrollBy(0, d); } finally { KP.own = false; } KP.movedAt = Date.now(); y = scrollY; return true; };
-  requestAnimationFrame(() => setTimeout(() => { if (fix()) { setTimeout(fix, 120); setTimeout(fix, 420); } }, 0)); }, true);
+  /* checked on every frame for the first 0.8 s, before the screen is painted (Nov 7 shake sweep): a page that redraws in pieces
+     (the Undo bar first, the list a moment later) used to show each piece's push for a frame or more before being corrected */
+  const t0f = performance.now(), loop = () => { if (fix() === false) return; if (performance.now() - t0f < 800) requestAnimationFrame(loop); };
+  requestAnimationFrame(loop); }, true);
 /* dropdown menus ("⋯" on My team and Saved teams): an outside tap or Escape closes them (they used to stay open over the page) */
 document.addEventListener('click', e => { const open = document.querySelectorAll('details.moremenu[open]'); if (!open.length) return;
   for (const d of open) if (!d.contains(e.target)) d.open = false; }, true);

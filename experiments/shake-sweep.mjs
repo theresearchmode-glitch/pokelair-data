@@ -3,7 +3,7 @@
 // after each tap: the scroll position and where the tapped control sits on screen. It flags
 //   - a shake: the page (or the control on screen) moves one way and then back the other way by more than 6px;
 //   - a jump: the control ends more than 40px from where it was (it moved away from under the finger).
-// One move that keeps the tapped spot in place is fine; going to another page, opening a sheet or a "more" list is skipped.
+// Each frame is read just after it is drawn (what the reader saw). One move that keeps the tapped spot in place is fine; going to another page, opening a sheet or a "more" list is skipped.
 // Uses the real data in out/ and a made-up team (never anyone's saved data). Writes nothing outside the temporary test page.
 // Usage: node experiments/shake-sweep.mjs [390|1280] [views,comma] [out.json]      exit code 1 when anything shakes
 import fs from 'node:fs'; import {createRequire} from 'node:module';
@@ -15,7 +15,7 @@ const VIEWS = only ? only.split(',') : ['home', 'report', 'recs', 'auto', 'cover
 const TEAM = ['Annihilape', 'Salamence', 'Rillaboom', 'Glimmora', 'Kingambit', 'Delphox'];
 const L = rd('limitless.json');
 const D = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/teams': rd('teams.json'), 'meta/events': rd('events.json'), 'meta/weekly': rd('weekly.json'), 'meta/track': rd('track.json'), 'meta/practice': rd('practice.json')};
-const page = ROOT + 'app/shake-sweep.html';
+const page = ROOT + `app/shake-sweep-${w}-${process.pid}.html`;
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch();
 const ctx = PHONE ? await b.newContext({...devices['iPhone 13'], colorScheme: 'dark'}) : await b.newContext({viewport: {width: 1280, height: 860}, colorScheme: 'dark'});
@@ -54,7 +54,7 @@ async function tapWatch(c) {
   if (!pre || pre.covered || pre.y < 0) return {skip: 1};
   await pg.waitForTimeout(150);
   await pg.evaluate(sig => { const e0 = window.__skFind(sig), find = () => (e0 && e0.isConnected && e0.getBoundingClientRect().width > 2) ? e0 : window.__skFind(sig);
-    window.__sk = []; const t0 = performance.now(); const f = () => { const e = find(); window.__sk.push([scrollY, e ? e.getBoundingClientRect().top : null]); if (performance.now() - t0 < 1500) requestAnimationFrame(f); }; requestAnimationFrame(f); }, c.sig);
+    window.__sk = []; const t0 = performance.now(); const f = () => { const e = find(); window.__sk.push([scrollY, e ? e.getBoundingClientRect().top : null, document.documentElement.scrollHeight, Math.round(performance.now() - t0)]); if (performance.now() - t0 < 1500) requestAnimationFrame(g); }, g = () => setTimeout(f, 0); requestAnimationFrame(g); }, c.sig);
   const a0 = await pg.evaluate(() => [window.__ev('KP.appAt'), scrollY]);
   await tapAt(pre.x, pre.y); await pg.waitForTimeout(1600);
   // the app scrolled somewhere on purpose (a "jump to" button: scrollIntoView, or a scroll to another place); a scroll back to
@@ -66,6 +66,7 @@ async function tapWatch(c) {
   const shake = xs => { xs = xs.filter(x => x != null); let lo = xs[0], hi = xs[0], dir = 0, flips = 0, amp = 0;
     for (const x of xs) { if (dir >= 0 && x < hi - 6) { if (dir > 0) { flips++; amp = Math.max(amp, hi - x); } dir = -1; lo = x; } else if (dir <= 0 && x > lo + 6) { if (dir < 0) { flips++; amp = Math.max(amp, x - lo); } dir = 1; hi = x; }
       hi = Math.max(hi, x); lo = Math.min(lo, x); } return {flips, amp: Math.round(amp)}; };
+  if (process.env.SKONLY && new RegExp(process.env.SKONLY).test(c.txt)) { let last = ''; for (const f of s.fr) { const k = f.slice(0, 3).map(Math.round).join(); if (k !== last) console.log('    ', f.map(x => x == null ? '-' : Math.round(x)).join('\t')); last = k; } }
   const sy = shake(s.fr.map(f => f[0])), ct = shake(s.fr.map(f => f[1])), tops = s.fr.map(f => f[1]).filter(x => x != null);
   return {shake: Math.max(sy.flips, ct.flips), amp: Math.max(sy.amp, ct.amp), jump: tops.length ? Math.round(tops[tops.length - 1] - tops[0]) : null, scroll: [s.fr[0][0], s.fr[s.fr.length - 1][0]].map(Math.round)}; }
 const R = {width: +w, found: [], tapped: 0};
@@ -80,6 +81,10 @@ for (const team of [false, true]) for (const v of VIEWS) {
     if (team && /apply/i.test(c.txt)) changed = true;
     const where = `${team ? 'with a team' : 'no team'} · ${v} · "${c.txt}"`;
     if (r.shake) R.found.push({where, what: `shakes: ${r.shake} back-and-forth move${r.shake > 1 ? 's' : ''}, up to ${r.amp}px`, scroll: r.scroll});
+    // a "more" button opening rows: the new rows appear where you're looking and the button moves down with them (intended);
+    // a close × takes its card away
+    else if (r.jump != null && r.jump > 40 && /\bmore\b|show all|^\+\d|^ranks \d|showing \d/i.test(c.txt)) continue;
+    else if (/^(×|✕|close)$/i.test(c.txt.trim())) continue;
     else if (r.jump != null && Math.abs(r.jump) > 40) R.found.push({where, what: `jumps ${r.jump}px away from the finger`, scroll: r.scroll});
   } }
 await b.close(); fs.unlinkSync(page);
