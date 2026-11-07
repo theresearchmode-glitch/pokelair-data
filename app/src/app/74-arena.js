@@ -196,7 +196,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   let stats = '';
   if (RD) { const sc = G && G.rec ? AR.cell(G.s, 'score') : '';
     const cells = [sc, `<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready${tp('readiness')}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
-    const rec = G && G.rec ? `<div class="ar-st" role="group" aria-label="Tournament record"><h3 class="ar-sth">Tournament record${tp('numbers')}</h3><div class="ar-trio">${AR.cell(G.rec.g.toLocaleString('en-US'), 'games')}${AR.cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div></div>` : '';
+    const rec = G && G.rec ? `<div class="ar-st" role="group" aria-label="Tournament record"><h3 class="ar-sth">Tournament record${tp('numbers')}</h3><div class="ar-trio">${AR.cell(G.rec.g.toLocaleString('en-US'), 'games')}${AR.cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div>${AR.recWhy(G)}</div>` : '';
     const chk = `<div class="ar-st" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><h3 class="ar-sth">Our check, top ${hd ? hd.n : 30} threats${G && !G.rec ? tp('numbers') : ''}</h3>
       <div class="ar-trio">${cells.join('')}</div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>${G && !G.rec && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}</div>`;
@@ -307,7 +307,7 @@ AR.fit = all => { document.querySelectorAll(all ? '.ar-art .ar-nm' : '.ar-art .a
   if (over()) n.dataset.ns = 1;
   let f = parseFloat(getComputedStyle(n).fontSize), k = 0;
   // the box's 3-across phone tiles are narrower: there a name may go down to 13px, the smallest size on the scale (Nov 7, Sim)
-  const fmin = tile && tile.closest('[data-pane="box"]') ? 13 : 15;
+  const fmin = tile && (tile.closest('[data-pane="box"]') || !on) ? 13 : 15;
   while (over() && f > fmin && k++ < 8) { f = Math.max(fmin, f - 1); n.style.setProperty('--nmf', f + 'px'); }
   if (over() && tile) tile.classList.add('is-nmw');
   const r = document.createRange(); r.selectNodeContents(t); const L = [...r.getClientRects()].filter(x => x.width > 1); if (!L.length) return;
@@ -416,3 +416,9 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 safe('theme button in header', () => { const t = $('thmBtn'), band = document.querySelector('.band'); if (!t || !band) return;
   const dots = [...band.querySelectorAll('button')].find(b => /moreBtn|chmenubtn/.test(b.id + ' ' + b.className) && b !== t);
   if (dots && t.nextElementSibling !== dots) dots.before(t); t.classList.add('ar-thm'); });
+
+/* (Nov 7, Sim: "what is going on with our grading") a six that real players took to tournaments 30+ times is graded by how it
+   actually did, not by our own check; say so in one line, with where its win rate sits among real teams */
+AR.recWhy = G => { if (!G || !G.rec) return ''; let med = null; try { const w = (CH.recList() || []).filter(r => +r[3] >= CH.REC_MIN).map(r => +r[2]).sort((a, b) => a - b); if (w.length > 20) med = w[Math.floor(w.length / 2)]; } catch (e) {}
+  const pct = x => Math.round(x * 1000) / 10 + '%', own = G.s != null ? Math.min(100, G.s) : null;
+  return `<p class="ar-sum">Real games come first: this exact six won <b>${pct(G.rec.wr)}</b> of ${G.rec.g.toLocaleString('en-US')} tournament games, a ${esc(G.letter)}${med != null ? ` (the typical real team wins ${pct(med)})` : ''}.${own != null ? ` Our own check alone would give it ${own} (${CH.grade(own)}).` : ''}</p>`; };

@@ -960,7 +960,14 @@
 @A [data-pane="box"] .boxchip.is-nmw .ar-nm{max-width:100%!important}
 /* box names are labels: the body face, like the team strips' names (Nov 7, type system: labels in Instrument Sans), so every name
    fits its 3-across phone tile */
-@A [data-pane="box"] .boxchip .ar-nm:not(#_b1):not(#_b2):not(#_b3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}
+@A :is([data-pane="box"] .boxchip,.ar-art.ar-below) .ar-nm:not(#_b1):not(#_b2):not(#_b3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}
+/* every grid of tiles with the name under the picture (Battle's six, Home, cores…): the same rule as the box (Nov 7, Sim: names ran
+   into each other), so a name stays inside its own tile */
+@A .ar-art.ar-below .ar-nm{max-width:100%!important;white-space:normal!important;overflow-wrap:normal}
 /* (Nov 7, Sim: "30 more in your box" did nothing) the tiles' display:block!important beat the list's "hide the rest" class, so the
    whole box always showed and the button only changed its own words */
-@A [data-pane="box"] .boxchip.ar-art.chhid:not(#_h1){display:none!important}
+/* (and "2 more swaps" did nothing for the same reason) every "show the rest" list on the site: hidden means hidden */
+@A .chhid:not(#_h1):not(#_h2):not(#_h3){display:none!important}
+/* when the name-fit (AR.fit) has to shrink a name, its size wins over every page's fixed name size (Nov 7, Sim: names ran into
+   each other on Battle; Basculegion (F) keeps "(F)" with its name, so it must shrink rather than wrap) */
+@A .ar-art .ar-nm[style*="--nmf"]:not(#_f1):not(#_f2):not(#_f3):not(#_f4){font-size:var(--nmf)!important}

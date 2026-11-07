@@ -53,7 +53,7 @@ CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'fu
 // 'Ready for the top threats' is itself the readiness score, so it isn't charged again as a missed check (sweep, Oct 31: it
 // made a 7-point cliff between 74% and 75% ready). The letter comes from the score as shown, rounded.
 CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && x.k !== 'reach') : [], mp = CH.modelPts(ms), s = RD.score - CH.GMISS * miss.length + (mp || 0), rec = CH.recOf(ms);
-  const sr = Math.max(0, Math.round(s)), illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok));
+  const sr = Math.min(100, Math.max(0, Math.round(s))), /* a grade is out of 100 (Nov 7: a 101 next to a C confused) */ illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok));
   return {s: sr, letter: rec ? CH.recLetter(rec.wr) : CH.grade(sr), illegal, partial: !ms || ms.length < 6, miss, CK, rec, mp, h: CH.hand(RD)}; };
 // Grade line (Sim, Nov 2: numbers must read like school grades): "Grade 92 = 85% ready + 7 team strength − 6 (1 missed check)".
 // The team-strength part is the remainder, so the shown parts always add up to the shown grade.

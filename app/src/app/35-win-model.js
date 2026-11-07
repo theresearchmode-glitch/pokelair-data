@@ -103,20 +103,24 @@ function tsTitle(base,t){return `${base.score}% → ${t.score}% ready for the to
 // A team's grade, the big number on My team (readiness + team strength − missed checks), for any six (Nov 7, Sim: "it says +2
 // ready but my score went from 93 to 91"). Suggestions are judged and labelled by it, so the card matches what Apply does.
 const gradeMemo=new Map();
+const recScore=wr=>Math.min(100,Math.max(0,Math.round(70+(wr-.5)*200)));
 function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
   const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+':'+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')).sort().join('|');
   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade
-    if(g!=null&&G.rec&&G.rec.wr<((RES&&RES.base)||.5))g=Math.min(g,40)}catch(e){}
+    // (Nov 7, Sim: the top suggestion took a 93 (A) to a C) a six that is a real tournament team is graded by its real win rate
+    // on My team, so it is judged on that same scale here: 60% wins = 90 (A), 55% = 80 (B), 50% = 70 (C), 45% = 60 (D)
+    if(g!=null&&G.rec)g=recScore(G.rec.wr)}catch(e){}
   if(gradeMemo.size>500)gradeMemo.clear();gradeMemo.set(k,g);return g}
 function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g===undefined)pl._g=gradeTeam(pl.team);return pl._g}
 // "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
 function gradeChip(g0,g1,cls,team){if(g0==null||g1==null)return '';const d=g1-g0;
-  // a six that is a real tournament team shows its real win rate on My team instead of a grade; the card says the same
-  let rec=null;try{rec=team&&team.length===6&&CH.recOf?CH.recOf(team):null}catch(e){}
-  if(rec)return `<span class="${cls||'tsd'} ${rec.wr>=((RES&&RES.base)||.5)?'up':'dn'}" title="This six is a real tournament team: My team shows its win rate in ${rec.g.toLocaleString('en-US')} real games">Real team: ${Math.round(rec.wr*100)}% wins</span>`;
-  return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="Your grade now ${g0}; with this change ${g1}">Grade ${g0} → ${g1}</span>`}
+  // each side as My team shows it: a real tournament team by its letter from real games, any other six by its grade
+  let r1=null,r0=null;try{r1=team&&team.length===6&&CH.recOf?CH.recOf(team):null;const ms=members();r0=ms.length===6&&CH.recOf?CH.recOf(ms):null}catch(e){}
+  const side=(g,r)=>r?`${CH.recLetter(r.wr)} (real team, ${Math.round(r.wr*1000)/10}% wins)`:String(g);
+  const tip=`Your grade now ${r0?CH.recLetter(r0.wr)+', from '+Math.round(r0.wr*1000)/10+'% wins in real games (counts as '+g0+')':g0}; with this change ${r1?CH.recLetter(r1.wr)+', from '+Math.round(r1.wr*1000)/10+'% wins in '+r1.g.toLocaleString('en-US')+' real games (counts as '+g1+')':g1}`;
+  return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="${esc(tip)}">Grade ${side(g0,r0)} → ${side(g1,r1)}</span>`}
 function tsChip(team){let ms=null;try{ms=members()}catch(e){}const g0=ms&&ms.length===6?gradeTeam(ms):null,g1=gradeTeam(team);if(g0!=null&&g1!=null)return gradeChip(g0,g1,null,team);
   const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
   return `<span class="tsd ${d>0?'up':d<0?'dn':''}" title="${esc(tsTitle(base,t))}">${readyDelta(d)}</span>`}
