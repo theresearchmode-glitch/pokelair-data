@@ -9,7 +9,7 @@
 // at 3+ standard errors, and (4) it survives dropping the single event that pushes it most (one big event can't make a trend).
 // The page shows the counts with every line, and its footnote reads the thresholds from TH below. Run after update.mjs and rk9.mjs.
 import fs from 'node:fs';
-import {offFormat, oddEvents} from './formats.mjs';
+import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
 import {lkey, lmap, reportUnknown} from './names.mjs';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const DAY = 864e5, CAP = 250 * 1024;
@@ -31,9 +31,12 @@ const MEGA_AB = {}; try { const s = fs.readFileSync('app/src/data/data.js', 'utf
 const styles = (ns, dk) => { const s = new Set(); dk.forEach((m, i) => { const mv = new Set(m.mv || []); if (mv.has('Trick Room')) s.add('tr'); if (mv.has('Tailwind')) s.add('tw');
   const a = SET_AB[m.a] || SET_AB[MEGA_AB[ns[i]]]; if (a) s.add(a); }); return s; };
 
-// 1) every standard Reg M-C Limitless event, as the other steps choose them
+// 1) every standard Limitless event of the active regulation, as the other steps choose them
 const index = readJSON('data/index.json', {tournaments: {}});
-const ids0 = Object.keys(index.tournaments).filter(id => !offFormat(index.tournaments[id].name)), odd = oddEvents(ids0, id => readJSON(`data/t/${id}.json`, null), () => {});
+// Nov 7: only the active regulation's events, like update.mjs and events.mjs (this step alone didn't filter, so the first week of
+// a new regulation would have been compared with the old one's)
+const RGW = activeReg();
+const ids0 = Object.keys(index.tournaments).filter(id => sameReg(index.tournaments[id], RGW.id) && !offFormat(index.tournaments[id].name)), odd = oddEvents(ids0, id => readJSON(`data/t/${id}.json`, null), () => {});
 const EV = ids0.filter(id => !odd.has(id)).map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T && T.d ? {id, name: T.name || '', day: evDay(T.d), p: T.p || 0, e: T.e || []} : null; }).filter(Boolean);
 if (!EV.length) { console.log('::warning::weekly: no tournament sheets found; out/weekly.json left unchanged'); process.exit(0); }
 const end = Math.max(...EV.map(T => dayN(T.day))), inA = n => n > end - 7 && n <= end, inB = n => n > end - 14 && n <= end - 7;
