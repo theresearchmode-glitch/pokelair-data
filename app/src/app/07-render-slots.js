@@ -1,7 +1,8 @@
 // ---------- render: slots ----------
 // a redraw while someone is typing in a name box must not drop their focus (on phones that closes the keyboard)
-function renderSlots(flush){const ae=document.activeElement,fid=ae&&ae.id&&ae.tagName==='INPUT'?ae.id:null,ss=fid?ae.selectionStart:null,se=fid?ae.selectionEnd:null;
-  try{renderSlots_(flush)}finally{if(fid&&document.activeElement!==document.getElementById(fid)){const x=document.getElementById(fid);if(x&&x.offsetParent!==null){try{x.focus({preventScroll:true});if(ss!=null)x.setSelectionRange(ss,se)}catch(e){}}}}}
+// nor what they've typed so far: a name box redrawn while it has text gets the text back, and its list of matches (Nov 7)
+function renderSlots(flush){const ae=document.activeElement,fid=ae&&ae.id&&ae.tagName==='INPUT'?ae.id:null,ss=fid?ae.selectionStart:null,se=fid?ae.selectionEnd:null,val=fid?ae.value:'';
+  try{renderSlots_(flush)}finally{const x=fid&&document.getElementById(fid);if(x&&x!==ae&&x.offsetParent!==null){try{if(val&&!x.value){x.value=val}x.focus({preventScroll:true});if(ss!=null)x.setSelectionRange(ss,se);if(val)x.dispatchEvent(new Event('input',{bubbles:true}))}catch(e){}}}}
 // The six set editors live in the edit panel, which shows one of them at a time (or all six for import, export and saving).
 // Each redraw draws only the ones showing; the others are drawn when the panel opens on them (slotsFlush), with the team as
 // it is then, so an edit redraws one editor instead of six (Oct 31: the six were a third of each edit's time on phones).
