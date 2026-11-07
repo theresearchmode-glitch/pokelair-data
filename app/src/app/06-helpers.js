@@ -28,6 +28,11 @@ function clashText(c){const n=a=>a.map(m=>esc(m.d)).join(', ');const self=c.sc.l
 function slotMoves(s,p){const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name));const c=s.mv&&s.mv[S.format];
   if(c){const names=c.map(x=>learn.has(x)?x:'');if(names.some(Boolean))return {names,moves:names.map(x=>mvByName.get(x)).filter(Boolean),custom:true}}
   const pm=popularMoves(p).slice(0,4);const names=pm.map(m=>m.name);while(names.length<4)names.push('');return {names,moves:pm,custom:false}}
+// Nov 7: a team member the current regulation doesn't have (after a regulation change) is kept in storage, in case it comes
+// back, but left out of every page. goneNote() says so instead of letting it vanish silently.
+const goneOf=slots=>(slots||[]).filter(s=>s&&s.n&&!byName.get(s.n)).map(s=>String(s.n).replace(/-/g,' '));
+const goneNote=slots=>{const g=goneOf(slots);if(!g.length)return '';const one=g.length===1,reg=typeof REG_NAME==='string'?REG_NAME:'this regulation';
+  return `${esc(g.join(', '))} ${one?"isn't":"aren't"} legal in ${esc(reg)}, so ${one?'it is':'they are'} left out of this team. ${one?'It stays':'They stay'} saved in case ${one?'it comes':'they come'} back.`};
 const members=()=>{const ms=S.slots.map(memberOf).filter(Boolean);return typeof assignItems==='function'?assignItems(ms):ms};
 // The team as it can actually play for the type chart: only one Mega Evolves per battle, so with 2+ Megas every Mega but the
 // chosen one (ui.megaPick, else the first) is read in its base form (types and ability). Moves and items stay.

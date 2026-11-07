@@ -1110,3 +1110,5 @@
 /* Nov 7: the team sheet fold says "Open team sheet" in its own header, so the sheet's matching title row is hidden inside it */
 @A details.ar-sheetfold .chsheet>.hd{display:none!important}
 @A details.ar-sheetfold>.chbody{padding-top:8px}
+/* Nov 7: the note for a team member the current regulation doesn't have */
+@A .ar-gone,@A .svgone{margin:8px 0 0!important;padding:8px 12px!important;border-left:4px solid var(--ar-gold)!important;background:var(--ar-sheet)!important;border-radius:var(--ar-r-s)!important;color:var(--ar-ink)!important;font:500 var(--ar-fs-small)/1.5 var(--ar-body)!important}

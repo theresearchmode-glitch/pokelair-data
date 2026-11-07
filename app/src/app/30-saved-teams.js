@@ -18,7 +18,7 @@ function renderSaved(){
     const actions=ui.confirmDel===t.id?`<div class="inline-confirm">Delete ${esc(t.name)}?<button class="btn sm danger" data-delok="${t.id}" type="button">Delete</button><button class="btn sm" data-delx="1" type="button">Keep</button></div>`
       :`<button class="btn sm${ui.cmp.includes(t.id)?' on':''}" data-cmp="${t.id}" type="button" aria-pressed="${ui.cmp.includes(t.id)}" aria-label="Compare ${esc(t.name)}">${ui.cmp.includes(t.id)?'Picked ✓':'Compare'}</button><button class="btn sm primary" data-load="${t.id}" type="button">Open</button>${sdBtn('saved:'+t.id)}<details class="moremenu svmore"><summary class="btn sm" aria-label="More for ${esc(t.name)}">⋯</summary><div class="mmpop">
         <button class="btn ghost" data-rn="${t.id}" type="button">Rename</button><button class="btn ghost danger" data-del="${t.id}" type="button">Delete</button></div></details>`;
-    return `<div class="item svt${isLoaded?' on':''}${ui.cmp.includes(t.id)?' cmpon':''}">${nameCell}${six}<div class="svfoot">${stats}<div class="svacts">${actions}</div></div></div>`}).join('');
+    return `<div class="item svt${isLoaded?' on':''}${ui.cmp.includes(t.id)?' cmpon':''}">${nameCell}${six}${goneNote(t.slots)?`<p class="t2 svgone">${goneNote(t.slots)}</p>`:''}<div class="svfoot">${stats}<div class="svacts">${actions}</div></div></div>`}).join('');
 }
 // ---------- compare two teams side by side ----------
 // Pick two saved teams (or one and the team you have open) and the Compare page opens with both (63-compare.js: grade,
