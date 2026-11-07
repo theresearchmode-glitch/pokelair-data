@@ -200,19 +200,19 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     const rec = '';
     /* matchups get their own verdict (Sim, Nov 7: "98 and 6 shaky?"): the grade says how strong the team is, this says what can
        still beat it, named, worst first, with a jump to Threats */
-    const wn = l => CH.order(RD).filter(r => r.level === l).slice(0, 3).map(r => esc(r.t.d)), lst = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0] || '';
-    const go = `<button type="button" class="ar-link" data-arjump="chP2">See threats</button>`;
-    const muV = c[0] ? `<b>${c[0]} with no answer yet</b>${c[1] ? `, ${c[1]} shaky` : ''}: ${c[0] > 3 ? wn(0).join(', ') + ' and more' : lst(wn(0))}. ${go}`
-      : c[1] ? `<b>${c[1]} shaky matchup${c[1] === 1 ? '' : 's'} worth fixing</b>: ${c[1] > 3 ? wn(1).join(', ') + ' and more' : lst(wn(1))}. ${go}`
-      : `<b>No weak matchups</b> against the top ${hd ? hd.n : 30}.`;
+    /* matchups as one compact block (Sim, Nov 7: no stack of paragraphs): the numbers, the bar, then the worst few as small
+       Pokémon chips that jump to Threats. Why it's separate from the grade is told in Why A? */
+    const worst = CH.order(RD).filter(r => r.level < 2).slice(0, 3), more = c[0] + c[1] - worst.length;
+    const muRow = worst.length ? `<div class="ar-murow"><div class="ar-muhd"><span class="ar-mulab">${c[0] ? 'No answer yet' : 'Fix first'}</span>${more > 0 ? `<button type="button" class="ar-link ar-mumore" data-arjump="chP2">+${more} more</button>` : ''}</div><div class="ar-mugrid">${worst.map(r => { const p = byName.get(r.t.n);
+      return `<button type="button" class="ar-much${r.level ? '' : ' l0'}" data-arjump="chP2" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${p ? sprite(p) : ''}<span>${esc(r.t.d)}</span></button>`; }).join('')}</div></div>`
+      : `<p class="ar-muok">No weak matchups against the top ${hd ? hd.n : 30}.</p>`;
     /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
     const chk = `<div class="ar-st" role="group" aria-label="What's behind this grade"><h3 class="ar-sth">What’s behind this grade</h3>
       ${G && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}
       </div>
-    <div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3><p class="ar-muv${c[0] ? ' is-bad' : c[1] ? ' is-warn' : ' is-ok'}">${muV}</p>
-      <p class="ar-mus">Separate from the grade: the grade is how strong the team is overall, this is what can still beat it. Even an A team can have matchups worth fixing.</p>
+    <div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3>
       <div class="ar-trio">${cells.join('')}</div>
-      <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
+      <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>${muRow}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
