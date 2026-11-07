@@ -196,7 +196,7 @@ function* planFixesG(ms,pool,useA,opts){
   // Item problems come first; then a plan must raise readiness by 2+, the highest leads, and an extra change has to earn 2 more.
   // The planner's own score only shortlists (the 70 most promising) and breaks ties; the type rules relax to "at most one more
   // weakness, no new stack".
-  const tsBase=useTSPick()&&full?tsOf(ms):null;let tsOn=false;const gBase=useTSPick()&&full?gradeTeam(ms):null,gOK=pl=>gBase==null||planGrade(pl)==null||pl._g>=gBase-3;
+  const tsBase=useTSPick()&&full?tsOf(ms):null;let tsOn=false;const gBase=useTSPick()&&full?gradeTeam(ms):null,gOK=pl=>gBase==null||planGrade(pl)==null||pl._g>=gBase||(ipOf(pl)<ip0&&pl._g>=gBase-3);/* a suggestion never lowers the grade (Sim, Nov 7: a red 'Win rate 59.9% → 59.1%' card); only fixing an illegal item may cost a little */
   if(useTSPick()){const sh0=typeShape(base.a).maxStack;
     const short0=[...singles,...doubles].filter(pl=>pl.team.length===6&&keepsPlan(pl)&&pl.st.a.excess<=base.a.excess+1&&pl.st.a.unresisted.length<=base.a.unresisted.length+1&&typeShape(pl.st.a).maxStack<=Math.max(2,sh0)&&megaShort(pl.team)<=megaShort(ms)).sort((x,y)=>x.score-y.score);
     const short=tsShortlist(short0,70);
@@ -211,7 +211,7 @@ function* planFixesG(ms,pool,useA,opts){
     if(short.some(pl=>pl._ts!=null)){tsOn=true;
       const fixOf=pl=>ipOf(pl)<ip0||pl.gap.fix.length,gKey=pl=>pl._g!=null?pl._g-(pl.ch.length-1)*2:-1e9;
       const qual=pl=>{if(pl._ts==null)return false;if(tsBase==null)return true;
-        if(gBase!=null&&pl._g!=null)return pl._ts>=tsBase-3&&(pl._g>=gBase+TS_GAIN||(fixOf(pl)&&pl._g>=gBase-3));
+        if(gBase!=null&&pl._g!=null)return pl._ts>=tsBase-3&&(pl._g>=gBase+TS_GAIN||(fixOf(pl)&&pl._g>=gBase)||(ipOf(pl)<ip0&&pl._g>=gBase-3));
         return pl._ts>=tsBase+TS_GAIN||(fixOf(pl)&&pl._ts>=tsBase-3)};
       const ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
