@@ -5,7 +5,7 @@
 // between two graded teams: did the higher-graded team win? And over teams with enough future games: do higher grades win more?
 // Each part of the grade is measured on its own too (readiness, missed checks, team strength, past record), so we know which
 // parts carry the prediction. Known leak, small: readiness is measured against today's top 30 threats.
-// Usage: node experiments/grade-check.mjs   (read-only; GRADE_CHECK_OUT=file saves the numbers)
+// Usage: node experiments/grade-check.mjs   (read-only; GRADE_CHECK_OUT=file saves the numbers, GRADE_CHECK_COMP=file the parts)
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), APP = ROOT + 'app/', OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
@@ -31,6 +31,7 @@ for (let i = 0; i < need.length; i += 100) {
   Object.assign(comp, JSON.parse(r)); if (i % 500 === 0) process.stdout.write(`  graded ${Object.keys(comp).length}\r`);
 }
 await b.close(); fs.unlinkSync(page);
+if (process.env.GRADE_CHECK_COMP) fs.writeFileSync(process.env.GRADE_CHECK_COMP, JSON.stringify(comp)); // the graded parts, for experiments/grade-fit.mjs
 // the parts and the grade as the site makes it (past record only, the same blend: weight g/(g+100) from 30 games)
 const GMISS = 6, K = 100, rs = wr => Math.min(100, Math.max(0, 70 + (wr - .5) * 200)), clamp = v => Math.min(100, Math.max(0, v));
 const pr = t => { const p = past.get(t); return p && p.g >= 30 ? p : null; };
