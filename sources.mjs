@@ -39,8 +39,8 @@ await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/f
 // Pikalytics (Reg M-C): tournament teams from about the last two weeks (its own size threshold). The AI index is a
 // markdown table of the top 50 (usage %, game win %, W-L record); each /ai/ Pokémon page lists items and moves.
 await tryIt('pika', async () => { const F = 'gen9championsvgc2026regmc', h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
-  for (const m of h.matchAll(/^\| (\d+) \| \*\*(.+?)\*\* \| ([\d.]+)% \| ([\d.]+)% \| (\d+)-(\d+) \|/gm)) { const n = norm(m[2]); if (!n) { miss.push(m[2]); continue; }
-    rows.push({n, raw: m[2], u: +m[3], wr: +m[4], g: +m[5] + +m[6]}); }
+  for (const m of h.matchAll(/^\| (\d+) \| \*\*(.+?)\*\* \| ([\d.]+)% \| ([\d.]+)% \| (\d+)-(\d+)(?:-\d+)? \|/gm)) { const n = norm(m[2]); if (!n) { miss.push(m[2]); continue; }
+    rows.push({n, raw: m[2], u: +m[3], wr: +m[4], g: +m[5] + +m[6]}); } // wins-losses, and since Nov 2026 sometimes -ties
   if (rows.length < 30) return null;
   const scope = (h.match(/## Tournament Sample Scope\n\n([^\n]+)/) || [])[1] || '';
   const sets = {}; let date = null;

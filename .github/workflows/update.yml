@@ -70,7 +70,7 @@ jobs:
       # when the list of problems changes, so a repeat doesn't email again), closed with a note on the first healthy run.
       - name: Daily data problem issue
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           HEALTH_REPORT: ${{ runner.temp }}/health.md
           JOB_STATUS: ${{ job.status }}

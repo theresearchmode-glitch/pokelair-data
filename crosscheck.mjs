@@ -17,6 +17,12 @@ function bySpecies(rows) { const D = {};
   for (const r of rows || []) { const k = spec(r[0]), o = D[k] = D[k] || {u: 0, wins: 0, g: 0}; o.u += +r[1] || 0; if (r[2] != null && r[3]) { o.wins += r[2] / 100 * r[3]; o.g += +r[3]; } }
   for (const k in D) { const o = D[k]; D[k] = {u: +o.u.toFixed(2), w: o.g ? +(100 * o.wins / o.g).toFixed(1) : null, g: Math.round(o.g)}; } return D; }
 const metaRows = M => M ? [...(M.top || []), ...(M.more || [])] : [];
+// sets per species with every form counted together, each weighted by its usage (the way the official team sheets count:
+// Garchomp's top item there is Garchompite Z because Mega Garchomp Z and plain Garchomp are one species; Nov 7)
+const setsOfAll = M => { const A = {}; for (const r of metaRows(M)) { const k = spec(r.n), u = r.u || 0, o = A[k] = A[k] || {u: 0, it: {}, mv: {}}; o.u += u;
+    for (const [x, pc] of r.it || []) o.it[x] = (o.it[x] || 0) + u * pc; for (const [x, pc] of r.mv || []) o.mv[x] = (o.mv[x] || 0) + u * pc; }
+  const rank = o => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([x]) => x);
+  return Object.fromEntries(Object.entries(A).map(([k, o]) => [k, {u: o.u, it: rank(o.it), mv: rank(o.mv)}])); };
 const setsOf = M => { const D = {}; for (const r of metaRows(M)) { const k = spec(r.n), u = r.u || 0; if (!D[k] || u > D[k].u) D[k] = {u, it: (r.it || []).map(x => x[0]), mv: (r.mv || []).map(x => x[0])}; } return D; };
 const lc = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const checks = [];
@@ -66,7 +72,7 @@ if (MT && OF) { const T = {}; for (const e of OF.events || []) for (const t of e
   const N = (OF.events || []).reduce((a, e) => a + (e.teams || []).length, 0) || 1, top = o => Object.entries(o).sort((a, b) => b[1] - a[1]);
   const theirs = Object.fromEntries(Object.entries(T).map(([k, o]) => [k, {u: +(100 * o.c / N).toFixed(1)}])), sets = Object.fromEntries(Object.entries(T).filter(([, o]) => o.c >= 15).map(([k, o]) => [k, {it: top(o.it).slice(0, 3).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)]), mv: top(o.mv).slice(0, 6).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)])}]));
   compare({id: 'tour-sets-vs-official-top64', ours: mtSp, theirs, oursName: MT.source, theirsName: `${OF.source || 'Official events'} (${N} teams)`,
-    known: 'Usage is not comparable (top 64 of big events vs every Limitless team), so only sets are judged: the top item and top move should agree for staples.', tolU: [100, 1], sets: {ours: setsOf(MT), theirs: sets}}); }
+    known: 'Usage is not comparable (top 64 of big events vs every Limitless team), so only sets are judged: the top item and top move should agree for staples. Both sides count every form of a species together (Mega and plain), as the team sheets do.', tolU: [100, 1], sets: {ours: setsOfAll(MT), theirs: sets}}); }
 // 6. Official events: Victory Road's standings and team sheets against Liquipedia (placements, player count, start date)
 //    and against Victory Road's own event page (the six Pokémon on the page vs the team sheet). official.mjs does the
 //    work and stores it in out/official.json "checks"; here each event is one row.
