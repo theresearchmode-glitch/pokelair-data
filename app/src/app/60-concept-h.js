@@ -66,7 +66,7 @@ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.
   return {s, letter: CH.grade(s), chk, real, w, r: RD.score, illegal, partial: !ms || ms.length < 6, miss, CK, rec, mp, h: CH.hand(RD)}; };
 // the third line under every grade: the real win rate, or that there is none yet
 const pct1 = x => Math.round(x * 1000) / 10 + '%';
-CH.recLine = (G, short) => !G ? '' : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'No tournament games yet' : 'Not played in tournaments yet');
+CH.recLine = (G, short) => !G ? '' : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
 // checks, and real results (how far the real win rate moved it).
 CH.gradeParts = (G, RD) => { const nm = G.miss ? G.miss.length : 0, chk = G.chk != null ? G.chk : G.s; return {nm, ts: chk - RD.score + CH.GMISS * nm, ra: G.s - chk}; };
