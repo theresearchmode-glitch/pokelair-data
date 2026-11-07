@@ -866,6 +866,9 @@
 @A .ar-gscore .ar-num.ar-gletter{font-size:92px!important;line-height:.95;color:var(--ar-ink)}
 @A .ar-gscore .ar-basis{max-width:16ch;line-height:1.3}
 @A .ar-gscore .ar-basis b{color:var(--ar-ink);font-weight:700}
+/* the 0–100 rating beside the letter (Sim, Nov 7): big and alone; the "top N% · based on N games" line lives in Why */
+@A .ar-gscore .ar-gnum{max-width:none;font:italic 800 34px/1 var(--ar-display);font-synthesis:style;color:var(--ar-ink-2)}
+@A .ar-gscore .ar-gnum b{font-weight:800}
 @media (min-width:1001px){@A .ar-gscore .ar-num.ar-gletter{font-size:120px!important}}
 /* phones: the four check numbers in one compact row; the record's two side by side */
 @media (max-width:599px){@A .ar-tstats{gap:16px;margin-top:16px}@A .ar-tstats.ar-c4 .ar-trio{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-trio .ar-num{font-size:26px}
