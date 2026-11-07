@@ -1008,3 +1008,8 @@
 @A .ar-much span{max-width:100%;overflow-wrap:anywhere;font-size:13px}
 @A .ar-mumore{font-size:15px}
 @A .ar-muok{margin:12px 0 0;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink-2)}
+/* Why A? (Sim, Nov 7): the one place that explains the grade; three short lines that add up to the rating */
+@A .chgwhy .chgwl{list-style:none;margin:8px 0 12px;padding:0;display:grid;gap:8px}
+@A .chgwhy .chgwl li{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:baseline;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink-2)}
+@A .chgwhy .chgwl li b{font:italic 800 17px/1.2 var(--ar-display);font-synthesis:style;color:var(--ar-ink);text-align:right}
+@A .chgwhy .chgwl li:not(:has(b)){grid-template-columns:1fr}

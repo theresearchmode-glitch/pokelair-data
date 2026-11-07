@@ -99,8 +99,8 @@ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.
 // the third line under every grade: the real win rate, or that there is none yet
 const pct1 = x => Math.round(x * 1000) / 10 + '%';
 // v2: where the six ranks among real teams, and what the grade rests on (its own games, or our estimate)
-CH.pctTxt = G => { const p = Math.round(G.s); return p >= 99 ? 'Top 1% of tournament teams' : p >= 50 ? `Top ${100 - p}% of tournament teams` : `Better than ${p}% of tournament teams`; };
-CH.pctShort = G => { const p = Math.round(G.s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Better than ${p}%`; };
+CH.pctTxt = G => { const p = Math.round(G.s); return p >= 99 ? 'Top 1% of tournament teams' : p > 50 ? `Top ${100 - p}% of tournament teams` : `Better than ${p}% of tournament teams`; };
+CH.pctShort = G => { const p = Math.round(G.s); return p >= 99 ? 'Top 1%' : p > 50 ? `Top ${100 - p}%` : `Better than ${p}%`; };
 // a grade number (a rank among real teams) as its expected win rate, for explanations
 CH.eOfS = s => { const q = META.model && META.model.dist && META.model.dist.q; if (s == null || !Array.isArray(q) || q.length !== 101) return null; const i = Math.max(0, Math.min(99, Math.floor(s))), f = Math.max(0, Math.min(1, s - i)), y = q[i] + (q[i + 1] - q[i]) * f, e = CH.fieldWin(y); return e == null ? null : Math.round(e * 1000) / 10; };
 /* a change, on suggestion cards and after Apply (Sim, Nov 7: "giving win percentage is so weird… seems arbitrary"): the grade
@@ -150,10 +150,12 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.v === 2) { const L2 = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu), m = b - a, r = t - b, pts = v => `${Math.abs(v)} point${Math.abs(v) === 1 ? '' : 's'}`;
     const own = G.six ? ` This exact six has ${G.six.g.toLocaleString('en-US')} real tournament games. With its players' skill and its opponents' strength taken out, those results ${r > 0 ? `add ${pts(r)}` : r < 0 ? `take off ${pts(r)}` : 'change it by less than a point'}; the more games, the more they count.` : ' This exact six hasn’t been played in tournaments yet, so this is our estimate from how its Pokémon, pairs and sets do in real games.';
     const top = `${L2} · team rating ${t} of 100: ${CH.pctTxt(G).toLowerCase().replace(/^top/, 'in the top')}.`;
-    if (o && o.short) return `<div class="chgwhy" id="chGwhy">${top}${own}<br><span class="t2">${CH.LETTERS}</span></div>`;
-    return `<div class="chgwhy" id="chGwhy">${top} Its Pokémon, pairs and sets alone rate ${a}, from how teams like it do in real games with each player's skill taken out.${own}`
-      + `${m ? ` Its matchups (${G.r}% ready for the top 30 threats, offense and defense) ${m > 0 ? 'add' : 'take off'} ${pts(m)}: they count at the weight real results support, so covering the meta well helps, but it can't outweigh how the Pokémon actually do.` : ' Its matchups are about average for a tournament team, so they don’t move it.'}`
-      + ` Against today's tournament field, a team rated ${t} wins about ${G.e}% of its games. Matchups are shown on their own under the grade: even an A team can have a few worth fixing.${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
+    /* short (Sim, Nov 7: "just what they should and need to"): what the number means, the three things it's made of, the letters */
+    const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
+    return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
+      + `<li><b>${sg(m)}</b> for its matchups (${G.r}% ready for the top 30). They count a little, since players often play around a shaky matchup</li>`
+      + (G.six ? `<li><b>${sg(r)}</b> from this exact six's own ${G.six.g.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
+      + `</ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '', mp = G.mp != null ? Math.round(G.mp) : null;
   const realTxt = G.rec ? ` These exact six also won ${pct1(G.rec.wr)} of ${G.rec.g.toLocaleString('en-US')} real tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}), which counts as ${G.real}; with that many games, real results make up ${Math.round(G.w * 100)}% of the grade (more games, more weight).` : ' This exact six hasn\u2019t been played in tournaments yet, so the grade is our own check alone.';
   if (o && o.short) return `<div class="chgwhy" id="chGwhy">${L} · ${G.s} out of 100.${realTxt}<br><span class="t2">A 90+, B 80+, C 70+, D 60+.</span></div>`;

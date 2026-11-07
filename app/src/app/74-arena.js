@@ -207,10 +207,8 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
       return `<button type="button" class="ar-much${r.level ? '' : ' l0'}" data-arjump="chP2" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${p ? sprite(p) : ''}<span>${esc(r.t.d)}</span></button>`; }).join('')}</div></div>`
       : `<p class="ar-muok">No weak matchups against the top ${hd ? hd.n : 30}.</p>`;
     /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
-    const chk = `<div class="ar-st" role="group" aria-label="What's behind this grade"><h3 class="ar-sth">What’s behind this grade</h3>
-      ${G && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}
-      </div>
-    <div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3>
+    /* one place to learn about the grade (Sim, Nov 7): "Why A?" under the letter. The breakdown that used to sit here lives there */
+    const chk = `<div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3>
       <div class="ar-trio">${cells.join('')}</div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>${muRow}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
