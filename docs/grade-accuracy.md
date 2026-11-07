@@ -33,3 +33,17 @@ trained on events before ~Oct 22; real records from past games only); then check
 - The team-strength model, the only part learned from real games, is the best of the check's parts (53.4%).
 - Ceiling: who plays a team matters more than the six; a team-only prediction tops out around 56-57% of single games.
 - Next (step 2): learn the grade's weights from real results, and test changes to readiness itself, judged by this check.
+
+## Step 2 (Lite), Nov 7: set the 4 dials from real results
+
+`experiments/grade-fit.mjs` tried 7,056 settings of the dials. The dials are: readiness weight, points off per missed check, team-strength weight, how fast the real record takes over (K), and the fewest games before the record counts. It chose the dials on one half of the later games (by date) and scored them on the other half, both ways round.
+
+| Chosen on | Dials picked | Higher grade won (other half) | Log-loss (other half) |
+|---|---|---|---|
+| Half A | readiness ×0, −9 per check, strength ×0.5, K 10, from 10 games | 52.7% now → 53.4% | .6899 → .6921 (worse) |
+| Half B | readiness ×0.25, −0 per check, strength ×0.5, K 400, from 10 games | 54.4% now → 54.1% | .6863 → .6860 (same) |
+
+**Result:**
+- The two halves pick opposite dials, and neither set beats today's dials on games it wasn't chosen on.
+- Today's hand-set dials are about as good as any setting. The parts carry too little signal for re-weighting to help.
+- **Decision:** keep the live grade as is. Gains must come from better parts (a better readiness) and more real games (step 3), not from the dials.
