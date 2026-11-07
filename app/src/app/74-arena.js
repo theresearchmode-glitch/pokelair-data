@@ -201,7 +201,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
     const chk = `<div class="ar-st" role="group" aria-label="What's behind this grade"><h3 class="ar-sth">What’s behind this grade</h3>
       ${G && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}
-      ${G && G.v === 2 ? `<h3 class="ar-sth ar-muh">Matchups</h3><p class="ar-mus">What beats this team. Shown on its own, not part of the grade.</p>` : ''}
+      ${G && G.v === 2 ? `<h3 class="ar-sth ar-muh">Matchups</h3><p class="ar-mus">What beats this team, and how well it covers the meta. Counted in the grade at the weight real results support.</p>` : ''}
       <div class="ar-trio">${cells.join('')}</div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';

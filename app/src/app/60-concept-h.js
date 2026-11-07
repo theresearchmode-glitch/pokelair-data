@@ -39,10 +39,21 @@ CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms
 // win chance against today's field: the average over real tournament teams (the shipped percentiles)
 CH.fieldWin = y => { const q = META.model && META.model.dist && META.model.dist.q; if (!Array.isArray(q) || q.length !== 101) return null; const c = calibK(); let t = 0; for (const v of q) t += sig(c * (y - v)); return t / q.length; };
 // strength, rank among real teams (0-100) and expected win rate, with and without the six's own record
-CH.strengthOf = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
-  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < 6) return null; const xs = strengthX(names, ms); if (!xs || !isFinite(xs.xRaw)) return null;
-  const six = CH.sixOf(ms), y = xs.xRaw + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
-  return {x: xs.xRaw, y, six, pct, pct0: strengthPct(xs.xRaw), e, e0: CH.fieldWin(xs.xRaw)}; } catch (e) { return null; } };
+/* Sim, Nov 7: "I don't want it to be the case just because the team isn't a tournament team it gets discredited too much if the
+   six Pokémon are all strong picks and cover the meta". Tested on later games (experiments/grade-v2.mjs):
+   - matchups (readiness against the top 30: offense and defense calcs) help a little on top of strength, at a small weight
+     (more makes predictions worse): CH.MU_K per point of readiness above or below the average real team (79%), about ±0.7 of
+     expected win rate between a team that covers the meta like the top tenth and one with the holes of the bottom tenth;
+   - the 7 team checks added nothing, so they are checklist advice only, no longer a discount on strength;
+   - the caution for sixes whose pairs are rarely seen together made no measurable difference, so it is eased: at most a quarter
+     of above-average strength is held back for a never-seen combination (it was half). */
+CH.MU_K = .003; CH.MU_AVG = 79;
+CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
+  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < 6) return null; const xs = strengthX(names, ms); if (!xs || !isFinite(xs.x0)) return null;
+  const M = META.model, mx = M.meanX || 0, k = typeof testedPairs === 'function' ? testedPairs(names) : null, cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
+  const dv = xs.x0 - mx, x = mx + (dv > 0 ? dv * cr : dv), mu = ready == null ? 0 : CH.MU_K * (ready - CH.MU_AVG);
+  const six = CH.sixOf(ms), y0 = x + mu, y = y0 + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
+  return {x, y, six, mu, pct, pct0: strengthPct(x), e, e0: CH.fieldWin(x), eMu: CH.fieldWin(y0)}; } catch (e) { return null; } };
 // The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
 // Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
 // letters in the same order as the teams' finishes most often. Weather and Taunt/Encore aren't checks: teams without them won
@@ -79,8 +90,8 @@ CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'fu
 CH.REC_K = 100;
 CH.recScore = wr => Math.min(100, Math.max(0, Math.round(70 + (wr - .5) * 200)));
 CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
-  const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? null : CH.strengthOf(ms);
-  if (st) { const s = Math.round(st.pct * 10) / 10; return {v: 2, s, letter: CH.grade(s), e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, pct0: st.pct0, six: st.six, st, r: RD.score, illegal, partial: false, miss, CK, rec, mp, h: CH.hand(RD)}; }
+  const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? null : CH.strengthOf(ms, RD.score);
+  if (st) { const s = Math.round(st.pct * 10) / 10; return {v: 2, s, letter: CH.grade(s), e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.pct0, six: st.six, st, r: RD.score, illegal, partial: false, miss, CK, rec, mp, h: CH.hand(RD)}; }
   // fewer than six (or the model not loaded yet): the old check, marked so far
   const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
   let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
@@ -99,12 +110,13 @@ CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.pctShor
 // checks, and real results (how far the real win rate moved it).
 CH.gradeParts = (G, RD) => { const nm = G.miss ? G.miss.length : 0, chk = G.chk != null ? G.chk : G.s; return {nm, ts: chk - RD.score + CH.GMISS * nm, ra: G.s - chk}; };
 CH.gradeSum = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
-  if (G.v === 2) { const r = Math.round((G.e - G.e0) * 10) / 10; return `<b>Expected win rate <span data-band="${G.letter}">${G.e}%</span></b> = ${G.e0}% from its Pokémon, pairs and sets${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
+  if (G.v === 2) { const m = Math.round((G.eMu - G.e0) * 10) / 10, r = Math.round((G.e - G.eMu) * 10) / 10;
+    return `<b>Expected win rate <span data-band="${G.letter}">${G.e}%</span></b> = ${G.e0}% from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% ready for the top 30)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
   const {nm, ts, ra} = CH.gradeParts(G, RD);
   return `<b>Grade <span data-band="${G.letter}">${G.s}</span></b> = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; };
 /* the same sum, short, for cards and table cells: "92 = 85 ready + 7 strength − 6 checks" */
 CH.gradeSumS = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
-  if (G.v === 2) { const r = Math.round((G.e - G.e0) * 10) / 10; return `${G.e}% expected wins = ${G.e0}% from its Pokémon and sets${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from its own games` : ''}`; }
+  if (G.v === 2) { const m = Math.round((G.eMu - G.e0) * 10) / 10, r = Math.round((G.e - G.eMu) * 10) / 10; return `${G.e}% expected wins = ${G.e0}% from its Pokémon and sets${m ? ` ${sg(m)} ${Math.abs(m)} matchups` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from its own games` : ''}`; }
   const {nm, ts, ra} = CH.gradeParts(G, RD);
   return `${G.s} = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} strength` : ''}${nm ? ` − ${CH.GMISS * nm} for ${nm} missed check${nm === 1 ? '' : 's'}` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}`; };
 /* grade letters in the rating band colours (A = the A colour, ...), one source: LTIERS */
@@ -134,7 +146,7 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     const top = `${L2} · expected to win ${G.e}% of games against today's tournament field: ${CH.pctTxt(G).toLowerCase().replace(/^top/, 'in the top')}.`;
     if (o && o.short) return `<div class="chgwhy" id="chGwhy">${top}${own}<br><span class="t2">${CH.LETTERS}</span></div>`;
     return `<div class="chgwhy" id="chGwhy">${top} Teams with these Pokémon, pairs and sets win ${G.e0}% against the field in real games, with each player's skill taken out.${own}`
-      + ` Matchups below show what beats this team: they explain the grade, they aren't added to it.${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
+      + `${Math.round((G.eMu - G.e0) * 10) ? ` Its matchups (${G.r}% ready for the top 30 threats, offense and defense) ${G.eMu > G.e0 ? 'add' : 'take off'} ${Math.abs(Math.round((G.eMu - G.e0) * 10) / 10)}: they count at the weight real results support, so covering the meta well helps, but it can't outweigh how the Pokémon actually do.` : ' Its matchups are about average for a tournament team, so they don\u2019t move it.'}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '', mp = G.mp != null ? Math.round(G.mp) : null;
   const realTxt = G.rec ? ` These exact six also won ${pct1(G.rec.wr)} of ${G.rec.g.toLocaleString('en-US')} real tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}), which counts as ${G.real}; with that many games, real results make up ${Math.round(G.w * 100)}% of the grade (more games, more weight).` : ' This exact six hasn\u2019t been played in tournaments yet, so the grade is our own check alone.';
   if (o && o.short) return `<div class="chgwhy" id="chGwhy">${L} · ${G.s} out of 100.${realTxt}<br><span class="t2">A 90+, B 80+, C 70+, D 60+.</span></div>`;
@@ -143,7 +155,7 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     + (mp != null ? ` ${mp === 0 ? 'Teams with these Pokémon and sets do about average in real games (±0).' : `Teams with these Pokémon and sets do ${mp > 0 ? 'better' : 'worse'} than average in real games (${mp > 0 ? '+' : '−'}${Math.abs(mp)}).`}` : '')
     + realTxt + ` A 90+, B 80+, C 70+, D 60+.${G.partial ? ' The grade settles once all six are in.' : ''}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
-CH.LEGEND = 'Grade = how often this six should win against today\'s tournament field: its Pokémon, pairs and sets in real games, plus its own record (players\' skill taken out). A top 10% of real teams · B next 20% · C middle 40% · D next 20% · F bottom 10%. Matchups show what beats it.';
+CH.LEGEND = 'Grade = how often this six should win against today\'s tournament field: its Pokémon, pairs and sets in real games, its matchups against the top threats, and its own record (players\' skill taken out). A top 10% of real teams · B next 20% · C middle 40% · D next 20% · F bottom 10%.';
 CH.LV = ['Unanswered', 'Shaky', 'Handled', 'Well handled'];
 // Motion (Nov 1): when the grade first shows or changes, the ring pops in and the "% ready" counts up from the last number,
 // 200 ms, transform/opacity only for the ring; the number is tabular so nothing moves. Off with reduced motion, and only on

@@ -67,4 +67,20 @@ for (const [k, f] of Object.entries(P)) { const a = score(f, fut.A), bb = score(
 // τ chosen on one half, scored on the other
 for (const [fitH, testH] of [['A', 'B'], ['B', 'A']]) { let best = null; for (const tau of Object.keys(fits)) { const k = `NEW: x + own record, skill taken out (τ=${tau})`, s = res.rows[k][fitH]; if (!best || s.ll < best.s.ll) best = {tau, s, k}; }
   console.log(`τ chosen on half ${fitH}: ${best.tau} → on half ${testH}: ${res.rows[best.k][testH].acc.toFixed(1)}%, ll ${res.rows[best.k][testH].ll.toFixed(4)}`); res['tau_' + fitH] = +best.tau; }
+// ---- Sim, Nov 7: "if the six Pokémon are all strong picks and cover the meta… weaknesses, offense, defense… factor as well"
+// (1) the page's caution discount for untested sixes: above-average strength is trimmed to 50-100% when few of its pairs have
+//     been seen together (credit = .5 + .5·min(1, tested pairs / 6)). Does trimming help or hurt?
+// (2) matchups: readiness against the top 30 (offense and defense calcs) and the 7 team checks, added on top of strength with a
+//     weight chosen on one half and scored on the other.
+const tested = new Set(MT.tested || []), credit = t => { const m = teams[t]; let k = 0; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) if (tested.has(m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i])) k++; return .5 + .5 * Math.min(1, k / (MT.supK || 6)); };
+const xCred = (t, d) => { const x = xOf(t, d), dv = x - MT.meanX; return MT.meanX + (dv > 0 ? dv * credit(t) : dv); };
+const TAU = '0.35', base = (t, d) => xOf(t, d) + fits[TAU].dl[t], baseC = (t, d) => xCred(t, d) + fits[TAU].dl[t];
+const extra = {'NEW, with the caution discount (as the page does now)': baseC, 'NEW, no caution discount': base};
+if (comp) { const ok = t => comp[t] != null, rbar = Object.values(comp).reduce((a, c) => a + c.ready, 0) / Object.keys(comp).length;
+  for (const k of [.002, .005, .01, .02]) extra[`NEW + matchups (readiness ×${k}/pt)`] = (t, d) => ok(t) ? base(t, d) + k * (comp[t].ready - rbar) : NaN;
+  for (const k of [.01, .03]) extra[`NEW + team checks (−${k} per miss)`] = (t, d) => ok(t) ? base(t, d) - k * comp[t].miss : NaN; }
+console.log('\nSim\'s question: caution discount and matchups (only games where both sixes have matchup numbers count for the matchup rows)');
+const both = gs => comp ? gs.filter(g => comp[g[0]] && comp[g[1]]) : gs;
+for (const [k, f] of Object.entries(extra)) { const a = score(f, both(fut.A)), bb = score(f, both(fut.B)), all = score(f, both([...fut.A, ...fut.B]));
+  res.rows[k] = {A: a, B: bb, all}; console.log(`  ${all.acc.toFixed(1)}%  ll ${all.ll.toFixed(4)}  (A ${a.acc.toFixed(1)}% / B ${bb.acc.toFixed(1)}%)  ${k}`); }
 if (process.env.GRADE_V2_OUT) fs.writeFileSync(process.env.GRADE_V2_OUT, JSON.stringify(res, null, 1));
