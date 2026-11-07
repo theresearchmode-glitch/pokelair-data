@@ -961,3 +961,6 @@
 /* box names are labels: the body face, like the team strips' names (Nov 7, type system: labels in Instrument Sans), so every name
    fits its 3-across phone tile */
 @A [data-pane="box"] .boxchip .ar-nm:not(#_b1):not(#_b2):not(#_b3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}
+/* (Nov 7, Sim: "30 more in your box" did nothing) the tiles' display:block!important beat the list's "hide the rest" class, so the
+   whole box always showed and the button only changed its own words */
+@A [data-pane="box"] .boxchip.ar-art.chhid:not(#_h1){display:none!important}
