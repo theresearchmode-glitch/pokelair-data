@@ -116,7 +116,13 @@ function setView(v,scroll){v=VIEW_ALIAS[v]||v;if(!document.querySelector(`[data-
   if(v==='track'&&typeof renderTrack==='function')safe('track record',renderTrack);
   if(v==='compare')safe('compare',renderCompare);
   if(v==='about')safe('about',renderAbout);
-  if(scroll!==false){try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}}}
+  /* a new page opens at its top, straight away (Sim, Nov 7: See all suggestions landed at the bottom: a smooth glide up from far
+     down the old page stops on iPhone when the new page finishes drawing). Put back once the page has drawn, unless the reader
+     has scrolled or the app has scrolled somewhere on purpose since (a "jump to" after opening the page). */
+  if(scroll!==false){const v1=v;let t1=0;const top=()=>{try{if(view!==v1||userScrollAt>t1||(typeof KP==='object'&&KP.appAt>t1)||(window.scrollY||0)<2)return;KP.own=true;window.scrollTo(0,0)}catch(e){}finally{try{KP.own=false}catch(e){}}};
+    try{window.scrollTo({top:0,behavior:'instant'})}catch(e){try{window.scrollTo(0,0)}catch(x){}}
+    t1=Date.now();
+    try{requestAnimationFrame(()=>{top();setTimeout(top,120);setTimeout(top,450)})}catch(e){}}}
 // Tab stays inside an open sheet or editor (they're modal), wrapping from the last control to the first (sweep, Oct 31)
 document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const o=overlayOpen();if(!o||o==='side'||o==='jump')return;const box=$(o);if(!box)return;
   const f=[...box.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),summary')].filter(x=>x.offsetParent!==null);if(!f.length)return;

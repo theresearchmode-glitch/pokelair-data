@@ -22,11 +22,12 @@ bindMonInput($('boxAdd'),p=>{if(!inBox(p)){S.box.push(p.n);toast(p.d+' added to 
 // Hold the reader where they were: pin the page height during the render, then restore the scroll position.
 // If the reader scrolls on their own in that moment, stop correcting so the page never fights them. And once 'keep your
 // place' (72-keep-place.js) has moved the page to keep the tapped button under the finger, it wins: the two used to take turns
-// and the page bounced up and down after Apply (Sim, Nov 7).
+// and the page bounced up and down after Apply (Sim, Nov 7). Not after going to another page either: the old page's place
+// used to be put back on the new page (See all suggestions landed near the bottom).
 let userScrollAt=0;['wheel','touchmove','keydown'].forEach(t=>{try{window.addEventListener(t,()=>{userScrollAt=Date.now()},{passive:true})}catch(e){}});
-function keepScroll(fn){const y=window.scrollY||0,b=document.body,t0=Date.now();const pin=v=>{try{if(b)b.style.minHeight=v}catch(e){}};
+function keepScroll(fn){const y=window.scrollY||0,b=document.body,t0=Date.now(),v0=typeof view!=='undefined'?view:'';const pin=v=>{try{if(b)b.style.minHeight=v}catch(e){}};
   try{pin((b?b.offsetHeight:0)+'px')}catch(e){}
-  try{fn()}finally{const back=()=>{try{if(userScrollAt<t0&&!(KP.movedAt>=t0)&&Math.abs((window.scrollY||0)-y)>2)window.scrollTo(0,y)}catch(e){}};back();
+  try{fn()}finally{const back=()=>{try{if(userScrollAt<t0&&!(KP.movedAt>=t0)&&view===v0&&Math.abs((window.scrollY||0)-y)>2)window.scrollTo(0,y)}catch(e){}};back();
     try{requestAnimationFrame(()=>{back();setTimeout(()=>{back();pin('')},350)})}catch(e){pin('')}}}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-boxsort]');if(!b)return;ui.boxSort=b.dataset.boxsort;LS.set('cc2.boxSort',ui.boxSort);renderBox()});
 // box changes can be undone too (Oct 30 audit: Reset and × had no way back)
