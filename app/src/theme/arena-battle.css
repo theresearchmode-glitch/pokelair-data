@@ -1021,3 +1021,10 @@
 @A[data-look="dark"] :is([data-pane="matchup"] .ar-rstrip-f,[data-pane="matchup"] .ar-rhero-bg,[data-pane="calc"] .ar-dcf)::after{content:""!important;display:block!important;position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(100deg,rgba(14,12,18,.74) 0%,rgba(14,12,18,.5) 36%,rgba(14,12,18,0) 62%)!important;opacity:1!important}
 @media (max-width:599px){@A[data-look="dark"] [data-pane="matchup"] .ar-rhero-copy{margin-top:92px}}
+/* Nov 7 (Sim): on phone and iPad the lead pair's name could start above the coloured band. Cause: the text's top margin
+   (margin-top 60/84/208px above) collapsed through .ar-rhero, so it moved the whole hero down instead of moving the text down
+   inside it, and the text sat at the hero's top edge, above the band. flow-root keeps the margin inside the hero */
+@A [data-pane="matchup"] .ar-rhero{display:flow-root!important}
+/* the runner strips below tuck up into the band (-22px phone, -34px iPad), so the band leaves room for them under the text */
+@media (max-width:599px){@A [data-pane="matchup"] .ar-rhero{padding-bottom:44px!important}}
+@media (min-width:600px) and (max-width:1000px){@A [data-pane="matchup"] .ar-rhero{padding-bottom:56px!important}}
