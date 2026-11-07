@@ -30,6 +30,21 @@ addEventListener('load', () => { KP.redrawBars(); setTimeout(KP.redrawBars, 1500
 try { document.fonts && document.fonts.ready.then(() => KP.redrawBars()); } catch (e) {}
 try { if (window.visualViewport) visualViewport.addEventListener('resize', () => KP.redrawBars()); } catch (e) {}
 addEventListener('resize', () => KP.redrawBars());
+/* Sim, Nov 7 (V111 screenshot): on a fresh load in the Claude iPhone app the bottom bar sat just below the screen. The app had
+   made the page's frame taller than the part it shows (the frame runs on under the bottom of the screen), so a bar pinned to the
+   frame's bottom is cut off; a reload re-measures the frame. Watch how much of the frame's bottom is really on screen (a hidden
+   full-height marker, measured against the app's own screen) and lift the bar by the part that's cut off. Nothing moves when
+   the whole frame is visible. */
+try { if ('IntersectionObserver' in window && window.top !== window) {
+  const mk = document.createElement('div'); mk.setAttribute('aria-hidden', 'true');
+  mk.style.cssText = 'position:fixed;left:0;top:0;bottom:0;width:1px;visibility:hidden;pointer-events:none;z-index:-1';
+  KP.hostCut = 0; const th = []; for (let i = 0; i <= 100; i++) th.push(i / 100);
+  const io = new IntersectionObserver(es => { const e = es[es.length - 1], b = e.boundingClientRect, r = e.intersectionRect;
+    let cut = e.isIntersecting && r.height > 100 ? Math.round(b.bottom - r.bottom) : 0; if (cut < 2 || cut > b.height * .5) cut = 0;
+    if (cut === KP.hostCut) return; KP.hostCut = cut; document.documentElement.style.setProperty('--hostcut', cut + 'px');
+    for (const n of document.querySelectorAll('.bnav')) n.style.translate = cut ? `0 -${cut}px` : ''; }, {threshold: th});
+  const go = () => { document.body.appendChild(mk); io.observe(mk); };
+  document.body ? go() : addEventListener('DOMContentLoaded', go); } } catch (e) {}
 { const W = window, sTo = W.scrollTo.bind(W), sBy = W.scrollBy.bind(W), sIV = Element.prototype.scrollIntoView;
   const note = to => { if (!KP.own) { KP.appAt = Date.now(); KP.appTo = to; } };
   W.scrollTo = function (a, b) { note(typeof a === 'object' && a ? (a.top != null ? +a.top : scrollY) : +b); return sTo.apply(null, arguments); };
