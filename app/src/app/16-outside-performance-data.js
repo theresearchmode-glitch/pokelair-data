@@ -93,7 +93,10 @@ function perfDate(raw, k) { const x = raw && raw[k]; if (!x) return ''; return S
 function perfAgeDays(d) { const s = String(d || ''); let t;
   if (/^\d{4}-\d{2}$/.test(s)) { const [y, m] = s.split('-').map(Number); t = Date.UTC(y, m, 1); } else t = Date.parse(s.length === 10 ? s + 'T12:00:00Z' : s);
   return isNaN(t) ? Infinity : (Date.now() - t) / 864e5; }
-function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of PERF_KEYS) if (raw[k] && perfAgeDays(perfDate(raw, k)) <= (raw[k].frozen ? PERF_FROZEN_MAXAGE : PERF_MAXAGE[k])) o[k] = raw[k]; return o; }
+/* Nov 7: frozen parts (the RK9 official-events table, read before Nov 1) are never used. RK9's terms forbid automated
+   extraction, so since Nov 1 the data job leaves it out; the page's built-in snapshot still had it, and topped the ratings up
+   with it until 28 days after its newest event. Now it's left out everywhere. */
+function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of PERF_KEYS) if (raw[k] && !raw[k].frozen && perfAgeDays(perfDate(raw, k)) <= (raw[k].frozen ? PERF_FROZEN_MAXAGE : PERF_MAXAGE[k])) o[k] = raw[k]; return o; }
 // The performance data in use: today's refresh (meta/perf), each part only while it is current, topped up with the
 // snapshot built into the page (PERF_RAW) where that part of the snapshot is still current. Without the refresh at all
 // (no database), the built-in snapshot is used as it is, and its dates are shown.

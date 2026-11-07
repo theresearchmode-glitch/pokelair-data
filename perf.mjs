@@ -30,7 +30,7 @@ if (process.env.SHOW_RK9_FROZEN === '1' && O && Array.isArray(O.rows) && O.rows.
   const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], md = d => `${M[+d.slice(5, 7) - 1]} ${+d.slice(8, 10)}`;
   out.official = {label: `RK9 (read before Nov 1, now frozen) · ${evs.length} official VGC events (${ds.length ? `${md(ds[0])} – ${md(asOf)}` : ''}), all ${Number(O.teams).toLocaleString('en-US')} Masters teams, ${Number(O.matches).toLocaleString('en-US')} matches`,
     rows: O.rows, megas: [], split: true, teams: O.teams, matches: O.matches, events: evs, frozen: true, asOf, updated: asOf}; }
-else console.log('::warning::perf: no official-events table (official_perf.json); official left out');
+else console.log('perf: official-events table retired (RK9, Nov 1); left out as planned');
 if (Lad && Lad.usage1760 && Array.isArray(Lad.usage1760.rows) && Lad.usage1760.rows.length >= 30) out.smogon = {label: `Smogon usage stats · 1760+ rating, ${Lad.usage1760.month} (${Number(Lad.usage1760.battles || 0).toLocaleString('en-US')} battles)`, rows: Lad.usage1760.rows, updated: Lad.usage1760.month};
 else console.log('::warning::perf: no Smogon 1760+ usage (meta_ladder.json usage1760); smogon left out');
 if (S.sdt) out.ladder = {label: `Showdowntier · ${Number(S.sdt.battles || 0).toLocaleString('en-US')} ladder battles, ${S.sdt.from} – ${S.sdt.to}`, rows: S.sdt.rows.map(r => [r.n, r.u, r.w, r.r]), updated: S.sdt.date || S.sdt.to};

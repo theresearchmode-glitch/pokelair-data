@@ -488,4 +488,4 @@
 /* Nov 7, coordinated type: the logo font (Unbounded) is wide, so two small spots get room. Meta's sub-tabs step down a size on
    narrow phones, and the tiny name labels in team tiles use the bold body font (labels, not headlines) */
 @media (max-width:400px){@A .subnav>.sub:not(#_n1):not(#_n2):not(#_n3){font-size:19px!important;letter-spacing:-.02em!important}}
-@A :is(.tgn.sm,.tgn.xs):not(#_t1):not(#_t2):not(#_t3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}
+@A .tgn:not(#_t1):not(#_t2):not(#_t3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}

@@ -56,7 +56,7 @@ for (const [file, label, days, dateOf, [lo, hi], shape] of FILES) {
 // every part of the ratings inputs, by the date of its own data
 const PF = rd('perf.json');
 if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win shares', 2], ingame: ['op.gg order', 3], official: ['Official events table (frozen)', 28], smogon: ['Smogon 1760+ usage', 40], ladder: ['Showdowntier ladder', 3]};
-  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official') console.log('::warning::Ratings inputs: the frozen official-events table is gone (expired or missing); ratings run without it'); else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
+  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official') {} /* retired Nov 1 (RK9 terms): expected to be absent, no warning (Nov 7) */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
     if (k === 'official' && PF[k].frozen) { const a = age(PF[k].asOf || PF[k].updated); if (a > 21) console.log(`::warning::Ratings inputs: the frozen official-events table (newest event ${PF[k].asOf}) leaves the page in ${Math.max(0, Math.ceil(28 - a))} days; no permitted whole-field source yet`); continue; }
     old(`Ratings inputs, ${label}`, PF[k].updated, days); }
   for (const L of (PF.outside && PF.outside.lists) || []) old(`Outside tier list ${L.name}`, L.date, 3);

@@ -8,7 +8,10 @@
 import fs from 'node:fs';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
-const R = createRequire(import.meta.url); const esbuild = R('esbuild');
+const R = createRequire(import.meta.url);
+/* esbuild is optional (Nov 7): the daily data job builds the page without it (ratings snapshot); then step 2 is skipped and
+   the page is the same, only a little bigger. Before this, a missing esbuild failed the whole build there. */
+let esbuild = null; try { esbuild = R('esbuild'); } catch (e) { console.log('slim: esbuild not installed, minify step skipped'); }
 const dir = fileURLToPath(new URL('.', import.meta.url)), file = dir + 'dist/page.html';
 let html = fs.readFileSync(file, 'utf8'); const before = html.length;
 
@@ -51,7 +54,7 @@ html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + css.r
   const n = (nots.match(/:not\(/g) || []).length, out = ':root:not(' + '#_'.repeat(n) + ')'; prefixSaved += all.length - out.length; return out; }) + '</style>');
 const afterPrune = html.length;
 // minify
-html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + esbuild.transformSync(css, {loader: 'css', minify: true}).code.trim() + '</style>');
+if (esbuild) html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + esbuild.transformSync(css, {loader: 'css', minify: true}).code.trim() + '</style>');
 // 3. Old-layer rules that never applied anywhere (css-drop.json, from a full usage map, Nov 6): dropped by exact match of their
 //    media chain and selector after minifying, so any rule edited since is kept. Arena, hover/focus, print and motion rules
 //    were never candidates.
@@ -68,6 +71,6 @@ let dropped3 = 0, dropBytes = 0;
       i = j; }
     return out; };
   if (keys.size) html = html.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + drop(css, []) + '</style>'); }
-html = html.replace(/<script>([\s\S]*?)<\/script>/g, (m, js) => '<script>' + esbuild.transformSync(js, {loader: 'js', minifyWhitespace: true, target: 'es2020'}).code.trim() + '</script>');
+if (esbuild) html = html.replace(/<script>([\s\S]*?)<\/script>/g, (m, js) => '<script>' + esbuild.transformSync(js, {loader: 'js', minifyWhitespace: true, target: 'es2020'}).code.trim() + '</script>');
 fs.writeFileSync(file, html);
 console.log(`slim: ${(before / 1024 | 0)} KB -> ${(html.length / 1024 | 0)} KB (dead CSS ${(before - afterPrune) / 1024 | 0} KB: ${removedRules} rules, ${removedSels} selectors; short prefix ${prefixSaved / 1024 | 0} KB; never-used old rules ${dropped3} = ${dropBytes / 1024 | 0} KB)`);
