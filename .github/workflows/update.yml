@@ -16,10 +16,10 @@ jobs:
         with:
           node-version: '22'
       # which regulation the newest events are played under (out/reg.json): every step below counts only that regulation
-      - run: node reg.mjs || echo "::warning::regulation check skipped"
-      - run: node replays.mjs || echo "::warning::replays skipped"   # first, so today's bring/lead rates reach the ratings (was a day behind)
+      - run: node reg.mjs || node skip.mjs "regulation check skipped"
+      - run: node replays.mjs || node skip.mjs "replays skipped"   # first, so today's bring/lead rates reach the ratings (was a day behind)
       # team preview practice: a few hundred real games and what strong players brought (out/practice.json, page key meta/practice)
-      - run: node practice.mjs || echo "::warning::practice skipped"
+      - run: node practice.mjs || node skip.mjs "practice skipped"
       - run: node update.mjs
         env:
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
@@ -28,25 +28,25 @@ jobs:
       # edited events, every paste read once. If anything fails or disagrees with yesterday's file, out/official.json is kept.
       # (RK9 was read here until Nov 1; its terms, rk9.gg/terms 5.3, forbid automated extraction, so rk9.mjs and
       # rk9-field.mjs were removed. The whole-field table they made is kept frozen in out/official_perf.json.)
-      - run: node official.mjs || echo "::warning::official events skipped (previous out/official.json kept)"
-      - run: node events.mjs || echo "::warning::events skipped"
+      - run: node official.mjs || node skip.mjs "official events skipped (previous out/official.json kept)"
+      - run: node events.mjs || node skip.mjs "events skipped"
       # this week vs last week from the team sheets already on disk (out/weekly.json; no network)
-      - run: node weekly.mjs || echo "::warning::weekly digest skipped"
+      - run: node weekly.mjs || node skip.mjs "weekly digest skipped"
       # upcoming official VGC events from Victory Road's season calendar (out/calendar.json; keeps yesterday's file on failure)
-      - run: node calendar.mjs || echo "::warning::calendar skipped"
-      - run: node model.mjs || echo "::warning::model skipped"
-      - run: node ladder.mjs || echo "::warning::ladder stats skipped"
+      - run: node calendar.mjs || node skip.mjs "calendar skipped"
+      - run: node model.mjs || node skip.mjs "model skipped"
+      - run: node ladder.mjs || node skip.mjs "ladder stats skipped"
       # other sites' numbers: Showdowntier, Pikalytics (rating inputs, tier lists, cross-check)
-      - run: node sources.mjs || echo "::warning::outside sources skipped"
-      - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || echo "::warning::op.gg skipped"
+      - run: node sources.mjs || node skip.mjs "outside sources skipped"
+      - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || node skip.mjs "op.gg skipped"
       # the ratings' daily inputs (all of out/perf.json) for the morning refresh; checked by health.mjs
-      - run: node perf.mjs || echo "::warning::perf skipped"
+      - run: node perf.mjs || node skip.mjs "perf skipped"
       # our numbers against the outside sources (out/crosscheck.json; summary and warnings in the Data health step)
-      - run: node crosscheck.mjs || echo "::warning::crosscheck skipped"
-      - run: node ratings-snapshot.mjs || echo "::warning::ratings snapshot skipped"
-      - run: node scoreboard.mjs || echo "::warning::scoreboard skipped"
+      - run: node crosscheck.mjs || node skip.mjs "crosscheck skipped"
+      - run: node ratings-snapshot.mjs || node skip.mjs "ratings snapshot skipped"
+      - run: node scoreboard.mjs || node skip.mjs "scoreboard skipped"
       # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
-      - run: node track.mjs || echo "::warning::track record skipped"
+      - run: node track.mjs || node skip.mjs "track record skipped"
       - name: Commit
         run: |
           git config user.name "pokelair-bot"

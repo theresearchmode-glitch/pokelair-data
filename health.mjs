@@ -75,6 +75,12 @@ if (X) for (const c of X.checks || []) { if (c.skipped) { console.log(`cross-che
     if (c.staplesFlagged.length) console.log(`::warning::Official events: Liquipedia disagrees with Victory Road on placements or dates (${c.staplesFlagged.join(', ')}). See out/crosscheck.json.`); continue; }
   console.log(`cross-check ${c.id}: ${c.flagged} of ${c.rows.length} beyond tolerance${c.staplesFlagged.length ? ` · staples: ${c.staplesFlagged.join(', ')}` : ''}`);
   if (c.staplesFlagged.length > 3) console.log(`::warning::Cross-check ${c.id}: ${c.staplesFlagged.length} of the 12 most used Pokémon disagree with ${c.theirs} (${c.staplesFlagged.join(', ')}). Known differences: ${c.known}`); }
+// steps skipped two runs in a row (Nov 7): skip.mjs records every skipped step in out/skips.json. One flaky day stays quiet;
+// the same step skipped today and yesterday is a step that has stopped working, so it raises the "Daily data problem" issue
+// (the ratings snapshot failed quietly on Nov 6 because a skipped step only printed a warning).
+{ const SK = rd('skips.json'), today = new Date(now).toISOString().slice(0, 10), yday = new Date(now - DAY).toISOString().slice(0, 10);
+  const on = d => new Set(((SK && SK.runs) || []).filter(r => r.day === d).flatMap(r => r.steps || []));
+  const t = on(today), y = on(yday); for (const st of t) if (y.has(st)) problems.push(`Daily job: the "${st}" step was skipped two days in a row (${yday} and ${today}); see the run log for why`); }
 // the report: what's wrong first, then every file with its data date
 const day = new Date(now).toISOString().slice(0, 10), ICON = {ok: '✅', stale: '🟠 stale', missing: '❌ missing', broken: '❌ broken'};
 const md = [problems.length ? `## ❌ Daily data problem (${day})\n\nThe page keeps showing the last good data and says so on Home and Meta, but these need a look:\n\n${problems.map(p => `- ${p}`).join('\n')}\n`
