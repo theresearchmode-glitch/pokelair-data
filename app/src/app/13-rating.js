@@ -3,7 +3,9 @@
 // with meta evidence (usage and real tournament win rate), so a strong Pokémon few people use still rates well.
 const RT_MOVES = {
   doubles: {'Fake Out': 8, 'Tailwind': 8, 'Trick Room': 7, 'Follow Me': 7, 'Rage Powder': 7, 'Spore': 6, 'Icy Wind': 4, 'Electroweb': 4, 'Parting Shot': 4, 'Sleep Powder': 4,
-    'Wide Guard': 3, 'Taunt': 3, 'Encore': 3, 'Helping Hand': 2, 'Will-O-Wisp': 2, 'Thunder Wave': 2, 'Snarl': 2, 'U-turn': 2, 'Quick Guard': 2, 'Coaching': 2, 'Pollen Puff': 2}};
+    'Wide Guard': 3, 'Taunt': 3, 'Encore': 3, 'Helping Hand': 2, 'Will-O-Wisp': 2, 'Thunder Wave': 2, 'Snarl': 2, 'U-turn': 2, 'Quick Guard': 2, 'Coaching': 2, 'Pollen Puff': 2,
+    // Nov 7 (Sim): support moves real teams use that weren't counted: Yawn ~6% of teams, Perish Song ~8%, Imprison ~4%, Life Dew ~3%
+    'Yawn': 3, 'Perish Song': 3, 'Imprison': 2, 'Life Dew': 2}};
 const RT_SETUP = ['Swords Dance', 'Dragon Dance', 'Nasty Plot', 'Calm Mind', 'Quiver Dance', 'Shell Smash', 'Bulk Up', 'Shift Gear', 'Belly Drum', 'Victory Dance', 'Coil', 'Tidy Up'];
 const RT_ABIL = {'Intimidate': 10, 'Huge Power': 9, 'Pure Power': 9, 'Drizzle': 8, 'Drought': 8, 'Grassy Surge': 8, 'Prankster': 7, 'Psychic Surge': 7, 'Sand Stream': 6, 'Electric Surge': 6,
   'Speed Boost': 6, 'Good as Gold': 6, 'Shadow Tag': 6, 'Snow Warning': 5, 'Unburden': 5, 'Multiscale': 5, 'Adaptability': 5, 'Aerilate': 5, 'Pixilate': 5, 'Regenerator': 5, 'Armor Tail': 5,

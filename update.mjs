@@ -10,6 +10,7 @@ import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
 import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
 import {politeFetch} from './http.mjs';
+import {lkey, lmap, reportUnknown} from './names.mjs';
 // the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
 const RG = activeReg();
 const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
@@ -35,7 +36,7 @@ async function get(path) {
   throw new Error(path + ' kept hitting the rate limit');
 }
 // mega form from the held item: "Raichunite X" -> "Raichu|MX"
-const key = m => { const it = m.item || ''; const z = it.match(/^(.*)ite( [XYZ])?$/); return z && it !== 'Eviolite' ? m.name + '|M' + (z[2] ? z[2].trim() : '') : m.name; };
+const key = lkey; // shared with weekly.mjs and events.mjs (names.mjs)
 
 // 1) tournament list, then standings for new ones and for anything from the last 3 days (results can still change)
 const list = [];
@@ -103,15 +104,8 @@ const B = fit(30, 500);
 
 // 4) Limitless names -> PokéLair names
 const ROSTER = readJSON('roster.json', []), names = new Set(ROSTER), REG = {Hisuian: 'Hisui', Alolan: 'Alola', Galarian: 'Galar', Paldean: 'Paldea'};
-function lmap(k) { let [n, mega] = k.split('|'); if (/^Eternal Flower Floette$/.test(n) && mega == null) return 'Floette-Eternal'; n = n.replace(/^Eternal Flower /, '');
-  { const r = n.match(/^(Wash|Heat|Frost|Fan|Mow) Rotom$/); if (r) n = 'Rotom-' + r[1]; }
-  n = n.replace(/'/g, '’').replace(/^Lycanroc (Dusk|Midnight)$/, 'Lycanroc-$1').replace(/^Low Key Toxtricity$/, 'Toxtricity-Low-Key').replace(/^Paldean Tauros (Aqua|Blaze|Combat) Breed$/, 'Tauros-Paldea-$1');
-  let m = n.match(/^(Hisuian|Alolan|Galarian|Paldean) (.*)$/); if (m) n = m[2] + '-' + REG[m[1]];
-  n = n.replace(/ ♀$/, '-F').replace(/ ♂$/, '');
-  m = n.match(/^(.*?) \((.*)\)$/); if (m) n = m[1] + ({'Dusk Form': '-Dusk', 'Midnight Form': '-Midnight', 'Low Key Form': '-Low-Key'}[m[2]] || '');
-  if (mega != null) { const s = mega.slice(1); for (const c of [n + '-Mega' + (s ? '-' + s : ''), n.replace(/-F$/, '') + '-F-Mega', n + '-Mega']) if (names.has(c)) return c; return null; }
-  if (names.has(n)) return n; const b = n.split('-')[0]; return names.has(b) ? b : null; }
-const nm = keys.map(lmap);
+/* lmap() now lives in names.mjs (shared) */
+const nm = keys.map(lmap); reportUnknown('update');
 
 // 5) per-Pokémon numbers, pairs (25+ teams), cores (40+ teams), proven team lists
 const shrink = (w, g, K) => Math.round(1000 * (w + K * base) / (g + K)) / 1000;

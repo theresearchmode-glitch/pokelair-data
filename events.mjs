@@ -3,21 +3,15 @@
 // VR Pastes via official.mjs). Compact on purpose: the page keeps it in one document (256 KiB cap). Run after update.mjs and official.mjs.
 import fs from 'node:fs';
 import {offFormat, oddEvents, activeReg, sameReg, inRegWindow} from './formats.mjs';
+import {lkey, lmap, reportUnknown} from './names.mjs';
 const RG = activeReg(); // one regulation only (formats.mjs)
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
 const DAY = 864e5, LIM_TOP = +(process.env.EV_TOP || 8), OFF_TOP = 16, DAYS = 30, MIN_PLAYERS = 32, CAP = 240 * 1024;
 // Limitless names -> NastyPlot names: the same rules as update.mjs (key() reads the Mega from the item, lmap() the form)
 const REG = {Hisuian: 'Hisui', Alolan: 'Alola', Galarian: 'Galar', Paldean: 'Paldea'}, names = ROSTER;
-const key = m => { const it = m.item || ''; const z = it.match(/^(.*)ite( [XYZ])?$/); return z && it !== 'Eviolite' ? m.name + '|M' + (z[2] ? z[2].trim() : '') : m.name; };
-function lmap(k) { let [n, mega] = k.split('|'); if (/^Eternal Flower Floette$/.test(n) && mega == null) return 'Floette-Eternal'; n = n.replace(/^Eternal Flower /, '');
-  { const r = n.match(/^(Wash|Heat|Frost|Fan|Mow) Rotom$/); if (r) n = 'Rotom-' + r[1]; }
-  n = n.replace(/'/g, '’').replace(/^Lycanroc (Dusk|Midnight)$/, 'Lycanroc-$1').replace(/^Low Key Toxtricity$/, 'Toxtricity-Low-Key').replace(/^Paldean Tauros (Aqua|Blaze|Combat) Breed$/, 'Tauros-Paldea-$1');
-  let m = n.match(/^(Hisuian|Alolan|Galarian|Paldean) (.*)$/); if (m) n = m[2] + '-' + REG[m[1]];
-  n = n.replace(/ ♀$/, '-F').replace(/ ♂$/, '');
-  m = n.match(/^(.*?) \((.*)\)$/); if (m) n = m[1] + ({'Dusk Form': '-Dusk', 'Midnight Form': '-Midnight', 'Low Key Form': '-Low-Key'}[m[2]] || '');
-  if (mega != null) { const s = mega.slice(1); for (const c of [n + '-Mega' + (s ? '-' + s : ''), n.replace(/-F$/, '') + '-F-Mega', n + '-Mega']) if (names.has(c)) return c; return null; }
-  if (names.has(n)) return n; const b = n.split('-')[0]; return names.has(b) ? b : null; }
+const key = lkey; // shared (names.mjs)
+/* lmap() now lives in names.mjs (shared) */
 // the event's own calendar day: Limitless times are UTC, and evening events in the Americas start after midnight UTC
 // (sweep, Oct 31: 72 of 379 showed the next day). Six hours back puts them on the day they were played.
 const evDay = d => { const t = new Date(d).getTime(); return isFinite(t) ? new Date(t - 6 * 3600e3).toISOString().slice(0, 10) : String(d).slice(0, 10); };
@@ -60,3 +54,5 @@ while (Buffer.byteLength(JSON.stringify(doc)) > CAP && doc.events.length > 10) {
   if (n0 >= 10 && doc.events.length < n0 * .5) { console.log(`::error::events: only ${doc.events.length} events (had ${n0}); kept the existing file`); process.exit(1); } }
 fs.writeFileSync('out/events.json', JSON.stringify(doc));
 console.log(`events: ${doc.events.length} (${doc.events.filter(e => e.src === 'official').length} official), ${Math.round(Buffer.byteLength(JSON.stringify(doc)) / 1024)} KiB`);
+
+reportUnknown('events');

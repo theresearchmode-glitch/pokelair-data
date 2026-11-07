@@ -2,6 +2,7 @@
 // how that compares with how often it's brought (conversion), and its win rate. Recent events count more (21-day
 // half-life) and bigger events count more for top cut. The page turns this into the 0-100 rating (13-rating.js).
 // Used by update.mjs (daily) and runnable alone to patch out/limitless.json: node topcut.mjs
+import {lkey, lmap} from './names.mjs';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 // top cut by event size (Limitless conventions: top 8 for most events, bigger cuts for big ones)
@@ -59,16 +60,8 @@ export function coBring(REP, min = 40) { const N = new Map(), K = new Map();
 // team-preview species key for bring/lead rates: Megas fold into their species (the page looks Pokémon up the same way)
 export const brKey = n => n === 'Floette-Mega' ? 'Floette-Eternal' : n.replace(/-Mega(-[XYZ])?$/, '');
 // Limitless set -> page name (same rules as update.mjs), from roster.json
-export function makeNameOf(ROSTER) { const names = new Set(ROSTER), REG = {Hisuian: 'Hisui', Alolan: 'Alola', Galarian: 'Galar', Paldean: 'Paldea'};
-  const key = m => { const it = m.i || ''; const z = it.match(/^(.*)ite( [XYZ])?$/); return z && it !== 'Eviolite' ? m.n + '|M' + (z[2] ? z[2].trim() : '') : m.n; };
-  const lmap = k => { let [n, mega] = k.split('|'); if (/^Eternal Flower Floette$/.test(n) && mega == null) return 'Floette-Eternal'; n = n.replace(/^Eternal Flower /, '');
-    { const r = n.match(/^(Wash|Heat|Frost|Fan|Mow) Rotom$/); if (r) n = 'Rotom-' + r[1]; }
-    n = n.replace(/'/g, '’').replace(/^Lycanroc (Dusk|Midnight)$/, 'Lycanroc-$1').replace(/^Low Key Toxtricity$/, 'Toxtricity-Low-Key').replace(/^Paldean Tauros (Aqua|Blaze|Combat) Breed$/, 'Tauros-Paldea-$1');
-    let m = n.match(/^(Hisuian|Alolan|Galarian|Paldean) (.*)$/); if (m) n = m[2] + '-' + REG[m[1]];
-    n = n.replace(/ ♀$/, '-F').replace(/ ♂$/, ''); m = n.match(/^(.*?) \((.*)\)$/); if (m) n = m[1] + ({'Dusk Form': '-Dusk', 'Midnight Form': '-Midnight', 'Low Key Form': '-Low-Key'}[m[2]] || '');
-    if (mega != null) { const s = mega.slice(1); for (const c of [n + '-Mega' + (s ? '-' + s : ''), n.replace(/-F$/, '') + '-F-Mega', n + '-Mega']) if (names.has(c)) return c; return null; }
-    if (names.has(n)) return n; const b = n.split('-')[0]; return names.has(b) ? b : null; };
-  const nameOf = m => lmap(key(m)); nameOf.lmap = lmap; return nameOf; }
+// Nov 7: the shared copy in names.mjs (same rules; the roster comes from roster.json there too, so ROSTER is not needed)
+export function makeNameOf(ROSTER) { const nameOf = m => lmap(lkey({name: m.n, item: m.i})); nameOf.lmap = lmap; return nameOf; }
 // standalone: rebuild from data/t2 and patch out/limitless.json (results.tc)
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const rd = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };

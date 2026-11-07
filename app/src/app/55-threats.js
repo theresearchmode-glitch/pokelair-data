@@ -27,7 +27,7 @@ const THR = (() => {
   const TAUNT_BLOCK = new Set(['Oblivious', 'Aroma Veil', 'Magic Bounce', 'Good as Gold']);
   const SCREENS = ['Reflect', 'Light Screen', 'Aurora Veil'], REDIR = ['Follow Me', 'Rage Powder'];
   const SCREEN_BREAK = ['Brick Break', 'Psychic Fangs', 'Raging Bull', 'Defog'];
-  const SUPPORT = new Set(['Trick Room', 'Reflect', 'Light Screen', 'Aurora Veil', 'Follow Me', 'Rage Powder', 'Helping Hand', 'Tailwind', 'Fake Out', 'Parting Shot', 'Spore', 'Sleep Powder', 'Thunder Wave', 'Encore', 'Taunt', 'Will-O-Wisp', 'Pollen Puff', 'Wide Guard', 'Ally Switch', 'Coaching']);
+  const SUPPORT = new Set(['Trick Room', 'Reflect', 'Light Screen', 'Aurora Veil', 'Follow Me', 'Rage Powder', 'Helping Hand', 'Tailwind', 'Fake Out', 'Parting Shot', 'Spore', 'Sleep Powder', 'Thunder Wave', 'Encore', 'Taunt', 'Will-O-Wisp', 'Pollen Puff', 'Wide Guard', 'Ally Switch', 'Coaching', 'Yawn', 'Perish Song', 'Imprison', 'Life Dew']);
   const grounded = s => s.item === 'Iron Ball' || (!s.p.t.includes('Flying') && s.ability !== 'Levitate' && s.item !== 'Air Balloon');
   // abilities that block priority moves aimed at their side (Prankster status moves included), and flinch blockers
   const PRIO_BLOCK = new Set(['Armor Tail', 'Queenly Majesty', 'Dazzling']), FLINCH_BLOCK = new Set(['Inner Focus', 'Shield Dust']);

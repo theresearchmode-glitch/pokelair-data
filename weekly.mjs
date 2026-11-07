@@ -10,20 +10,14 @@
 // The page shows the counts with every line, and its footnote reads the thresholds from TH below. Run after update.mjs and rk9.mjs.
 import fs from 'node:fs';
 import {offFormat, oddEvents} from './formats.mjs';
+import {lkey, lmap, reportUnknown} from './names.mjs';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const DAY = 864e5, CAP = 250 * 1024;
 const TH = {teams: 200, z: 3, pts: 2, monTeams: 60, techPts: 6, techMin: 12, cutPlayers: 32, cut: 8};
 // Limitless names -> NastyPlot names: the same rules as update.mjs and events.mjs (key() reads the Mega from the item, lmap() the form)
 const ROSTER = new Set(readJSON('roster.json', [])), names = ROSTER, REG = {Hisuian: 'Hisui', Alolan: 'Alola', Galarian: 'Galar', Paldean: 'Paldea'};
-const key = m => { const it = m.item || ''; const z = it.match(/^(.*)ite( [XYZ])?$/); return z && it !== 'Eviolite' ? m.name + '|M' + (z[2] ? z[2].trim() : '') : m.name; };
-function lmap(k) { let [n, mega] = k.split('|'); if (/^Eternal Flower Floette$/.test(n) && mega == null) return 'Floette-Eternal'; n = n.replace(/^Eternal Flower /, '');
-  { const r = n.match(/^(Wash|Heat|Frost|Fan|Mow) Rotom$/); if (r) n = 'Rotom-' + r[1]; }
-  n = n.replace(/'/g, '’').replace(/^Lycanroc (Dusk|Midnight)$/, 'Lycanroc-$1').replace(/^Low Key Toxtricity$/, 'Toxtricity-Low-Key').replace(/^Paldean Tauros (Aqua|Blaze|Combat) Breed$/, 'Tauros-Paldea-$1');
-  let m = n.match(/^(Hisuian|Alolan|Galarian|Paldean) (.*)$/); if (m) n = m[2] + '-' + REG[m[1]];
-  n = n.replace(/ ♀$/, '-F').replace(/ ♂$/, '');
-  m = n.match(/^(.*?) \((.*)\)$/); if (m) n = m[1] + ({'Dusk Form': '-Dusk', 'Midnight Form': '-Midnight', 'Low Key Form': '-Low-Key'}[m[2]] || '');
-  if (mega != null) { const s = mega.slice(1); for (const c of [n + '-Mega' + (s ? '-' + s : ''), n.replace(/-F$/, '') + '-F-Mega', n + '-Mega']) if (names.has(c)) return c; return null; }
-  if (names.has(n)) return n; const b = n.split('-')[0]; return names.has(b) ? b : null; }
+const key = lkey; // shared (names.mjs)
+/* lmap() now lives in names.mjs (shared) */
 const lname = m => lmap(key({name: m.n, item: m.i}));
 // the event's own calendar day (Limitless times are UTC; evening events in the Americas start after midnight UTC), as events.mjs
 const evDay = d => { const t = new Date(d).getTime(); return isFinite(t) ? new Date(t - 6 * 3600e3).toISOString().slice(0, 10) : String(d).slice(0, 10); };
@@ -116,3 +110,5 @@ if (enough && (nA < nB * .35 || nB < nA * .35)) { doc.enough = false; doc.up = [
 const s = JSON.stringify(doc); if (Buffer.byteLength(s) > CAP) { console.log('::error::weekly: out/weekly.json over 250 KB; left unchanged'); process.exit(1); }
 fs.writeFileSync('out/weekly.json', s);
 console.log(`weekly: ${doc.a.from}–${doc.a.to} (${nA} teams, ${doc.a.ev} events) vs ${doc.b.from}–${doc.b.to} (${nB} teams, ${doc.b.ev} events); up ${up.length}, down ${down.length}, tech ${techOut.length}, styles +${sty.up.length}/-${sty.down.length}, new in top cut ${freshOut.length}; ${Math.round(s.length / 1024)} KiB`);
+
+reportUnknown('weekly');
