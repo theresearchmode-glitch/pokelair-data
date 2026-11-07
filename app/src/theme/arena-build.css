@@ -261,6 +261,8 @@
 /* ======================= the ⋯ menu (#side) ======================= */
 @A #side{background:var(--ar-sheet)!important;color:var(--ar-ink)!important;border:0!important;box-shadow:var(--ar-shadow-nav)!important;font-family:var(--ar-body)}
 @A[data-look="dark"] #side{background:#201F22!important}
+/* the menu scrolls when it is taller than the window, on every screen (Sim, Nov 7: on desktop it was stuck; it only scrolled on phones) */
+@A #side{overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin}
 @A #side::after{background:var(--ar-ink-3)!important;opacity:.5}
 @A #side .sidetop{background:none!important;border:0!important;padding:16px 16px 6px!important}
 @A #side .sideclose.ar-x{display:grid!important;font-size:22px!important;margin-left:auto}

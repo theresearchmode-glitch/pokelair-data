@@ -440,7 +440,9 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   const pct=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
   const bar=pct?`<div class="dcbar"><span style="width:${Math.min(100,pct[0]).toFixed(1)}%" class="lo"></span><span style="width:${Math.max(0,Math.min(100,pct[1])-Math.min(100,pct[0])).toFixed(1)}%" class="hi"></span></div>`:'';
   // phones: the result rides along at the top while you change the inputs below
-  const stick=pct&&r&&r.max>0?`<button type="button" class="dcstick" id="dcStick" aria-label="Jump to the full result">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>${dmgP(pct[0])}–${dmgP(pct[1])}% of HP</b><span>${esc(koText(r))} · ${esc(dc.mv)}</span></span></button>`:mv&&r&&r.max===0?`<button type="button" class="dcstick" id="dcStick">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>No effect</b><span>${esc(dc.mv)}</span></span></button>`:'';
+  /* the result no longer pins to the top while scrolling (Sim, Nov 7: it covered the moves and sets under it); the full
+     result stays where it is in the page */
+  const stick=false&&pct&&r&&r.max>0?`<button type="button" class="dcstick" id="dcStick" aria-label="Jump to the full result">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>${dmgP(pct[0])}–${dmgP(pct[1])}% of HP</b><span>${esc(koText(r))} · ${esc(dc.mv)}</span></span></button>`:mv&&r&&r.max===0?`<button type="button" class="dcstick" id="dcStick">${sprite(A.p,'dcsts')}<span class="dcsta">→</span>${sprite(D.p,'dcsts')}<span class="dcstx"><b>No effect</b><span>${esc(dc.mv)}</span></span></button>`:'';
   el.innerHTML=stick+`<div class="dcgrid">
     <div class="dccol"><h3>Attacker ${dcSrc(A)}</h3>${sprite(A.p,'dcspr')}
       <label>Pokémon<select class="field" id="dcA">${monOptions(dc.a)}</select></label>

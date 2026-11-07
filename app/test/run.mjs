@@ -313,7 +313,7 @@ for (const width of [1280, 390]) {
     const ts = await pg.evaluate(() => ({n: document.querySelectorAll('#tsOut .evteam').length, hidden: document.getElementById('ttList').hidden})); ok(ts.n >= 3 && ts.hidden, `team search: ${ts.n} teams with Choice Scarf`);
     await go(pg, 'calc'); await pg.waitForTimeout(400);
     if (width < 700) { await pg.evaluate(() => scrollTo(0, 360)); await pg.waitForTimeout(300); const st = await pg.evaluate(() => { const x = document.getElementById('dcStick'); if (!x) return null; const r = x.getBoundingClientRect(); return {vis: getComputedStyle(x).opacity > .5 && r.top >= 0 && r.top < 120, txt: x.textContent}; });
-      ok(st && st.vis && /%/.test(st.txt), 'calc: result pinned on phone'); await pg.evaluate(() => scrollTo(0, 0)); }
+      ok(!st || !st.vis, 'calc: the result stays in the page, not pinned over the moves (Sim, Nov 7)'); await pg.evaluate(() => scrollTo(0, 0)); }
     // names fit: no cut-off Pokémon names on ratings tiles or team grids
     for (const [v, sel] of [['ratings', '.ltn'], ['top', '.tgn'], ['auto', '.tgn']]) { await go(pg, v); await pg.waitForTimeout(400);
       const cut = await pg.evaluate(sel => [...document.querySelectorAll(`[data-pane]:not([hidden]) ${sel}`)].filter(x => x.offsetParent && (x.scrollWidth > x.clientWidth + 1 || x.scrollHeight > x.clientHeight + 1)).map(x => x.textContent), sel);
