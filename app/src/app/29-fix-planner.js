@@ -99,7 +99,13 @@ const wxLone=gp=>!!(gp&&gp.rows.some(r=>r.k==='weather'&&r.lone));
 // Intimidate users (Incineroar on rain) are there for support, so they stay allowed
 const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||r.st!=='ok'||!pl.team)return false;const w=wxSetsOf(pl.team);if(w.length!==1||!['rain','sun'].includes(w[0]))return false;
   const dn=w[0]==='rain'?'Fire':'Water';return pl.ch.some(x=>{const m=x.c.mem,t=m.types||x.c.p.t;if(!t.includes(dn)||WEATHER_OF[m.ability])return false;let mv=[];try{mv=mvNames(m)}catch(e){}return !(m.ability==='Intimidate'||mv.includes('Fake Out'))})};
-const wxLoneBad=(gp0,pl)=>wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
+// (Nov 7 audit) Psychic Terrain from an incoming Indeedee stops the team's own priority moves (Fake Out, Sucker Punch, Quick Attack…)
+// against grounded targets: how many teammates it would switch off
+const psyHit=pl=>{if(!pl.team||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]==='psy')||pl.team.some(m=>!pl.ch.some(x=>x.c.p===m.p)&&TERRAIN_OF[m.ability]==='psy'))return 0;
+  const P=new Set([...ROLE.prio,'Fake Out']);return pl.team.filter(m=>TERRAIN_OF[m.ability]!=='psy'&&mvNames(m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves}).some(n=>P.has(n))).length};
+// a Trick Room setter brought into a team with no slow attackers for it (and a team that had no Trick Room before)
+const trNew=(gp0,pl)=>{const r=pl.gp&&pl.gp.rows.find(r=>r.k==='trfit');return r&&!gp0.rows.some(r=>r.k==='trfit')?r.st:null};
+const wxLoneBad=(gp0,pl)=>psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
 const GUARD_KEYS=['speed','support','trfit','terrain','weather'];
 function gpWorse(gp0,gp){return GUARD_KEYS.filter(k=>{const o=(gp0.rows.find(r=>r.k===k)||{}).st;if(!o)return false;const n=(gp.rows.find(r=>r.k===k)||{}).st;return GP_RANK[n||'miss']<GP_RANK[o]})}
 // the gap the first two suggestions must cover: the most serious one they leave open (missing before partial, then weather,
@@ -142,7 +148,7 @@ function* planFixesG(ms,pool,useA,opts){
   const evalPlan=pl=>{const tv=teamValue(pl.team,useA);let s=-tv.score+typeEmphasis(tv.st.a)+megaShort(pl.team)*35+Math.max(0,pl.team.filter(m=>m.mega).length-maxMega)*35+pillarCost(pl.team,tv.gp);
     // the team's own rain or sun: a change that brings in what it hurts (a Water attacker into sun, Primarina's Liquid Voice) or a
     // weather nobody uses (Pelipper next to Fire attackers) costs a little (audit, Oct 30)
-    {const n0=wxNet(ms),n1=wxNet(pl.team);if(n1<n0)s+=(n0-n1)*12;if(wxSetsOf(pl.team).length>wxSetsOf(ms).length&&n1<=0)s+=12}pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
+    {const n0=wxNet(ms),n1=wxNet(pl.team);if(n1<n0)s+=(n0-n1)*12;s+=psyHit(pl)*10;if(trNew(gp0,{gp:tv.gp})==='part')s+=15;if(wxSetsOf(pl.team).length>wxSetsOf(ms).length&&n1<=0)s+=12}pl.megaShort=megaShort(pl.team);pl.tv=tv;pl.st=tv.st;pl.gp=tv.gp;pl.roles=teamRoles(pl.team);
     for(const a of rolesBase.arch)if(a.active&&a.key!=='tw'&&!pl.roles.arch.some(b=>b.key===a.key&&b.active))s+=20;
     for(const x of pl.ch){const rest=pl.team.filter(m=>m.p!==x.c.p);const v=viability(x.c.p);x.v=v;if(v<12&&!OFFMETA)s+=15;if(OFFMETA&&isMetaPick(x.c.p))s+=10;
       const f=archFit(x.c.p,x.c.mem.ability,rest,rolesBase);x.why=f.why;s-=f.s*.2;x.syn=synergy(x.c.p,rest);
