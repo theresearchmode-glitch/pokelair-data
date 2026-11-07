@@ -80,3 +80,39 @@
 
 ## 6. Size
 Phase 0: medium (scripts and a practice run; most checking runs on its own). Phase 1: light to medium on roster day. Phases 2-3: light daily checks.
+
+## 7. Gaps found in the final pre-Phase-0 check (Nov 7) — proposed, for Sim's approval
+**Would show wrong or mixed numbers on launch day:**
+- G1 Outside sources still point at M-C by name: Pikalytics (`sources.mjs`, gen9championsvgc2026regmc), Showdowntier
+  (`formats/dmc`), official events (`official.mjs`, REG 'M-C' and start date 2026-09-01). After the switch they would keep
+  feeding M-C numbers into the cross-checks. Fix: every source reads the regulation profile; a source with no M-D page yet
+  says "not available yet" instead of falling back to M-C.
+- G2 The "restricted event" detector (formats.mjs staples alarm) learns which Pokémon are staples from the current
+  regulation's events. With only a handful of M-D events it could wrongly throw out normal events (or keep themed ones).
+  Fix: a minimum event count before it judges, and a test on day-one-sized data.
+- G3 Team-strength model (part of the grade): trained on games of the active regulation; with few M-D games it may not pass
+  its own quality test and would keep the M-C model, whose numbers don't fit M-D. Fix: an explicit rule for the first weeks
+  (no team strength until the M-D model passes its test, labelled), so grades don't silently mix regulations.
+- G4 Ratings track record and scoreboard: M-C rating snapshots must never be graded against M-D tournaments. Fix: snapshots
+  carry their regulation; the record restarts (or shows "since M-D began").
+
+**Will look empty or odd for a while:**
+- G5 Smogon's monthly ladder stats only exist after a month ends: M-D's first numbers arrive in early January. The ladder
+  view uses Showdown replays and Showdowntier until then, labelled.
+- G6 "Since yesterday", weekly digest and trend arrows would compare M-D's first day with M-C's last day. Fix: reset at the
+  switch ("new regulation, no comparison yet").
+- G7 Your games log (games you logged on My team): keep the history, tag each game with its regulation, show M-D games by
+  default.
+
+**Things to have ready, not build:**
+- G8 Official source of truth for the roster on launch day: the official announcement / patch notes (first), then Serebii and
+  Bulbapedia, with Showdown's data used for the actual numbers. A watcher checks daily from Nov 20: Showdown M-D format,
+  Limitless M-D events, official news, and opens a GitHub issue the moment any appears, so the switch never waits on someone
+  noticing.
+- G9 Exact start time and time zone of M-D (the game updates at a set hour). The date-based switch uses it; until it's known,
+  the switch also waits for the first M-D event.
+- G10 Existing Pokémon may change too (a stat, ability or move change in the update). The roster script's change report lists
+  changes to existing Pokémon, not only additions and removals.
+- G11 Tests on switch day: the daily data commit runs the GitHub tests, and several audits use top tournament teams, which
+  will be empty. They need M-D fixture teams so they test something real instead of passing on nothing.
+- G12 Announcing the switch on the site: a short "Reg M-D is here" note in What's new, linking to how the early numbers work.
