@@ -18,6 +18,12 @@ const KP = {userAt: 0, CTRL: 'button,summary,[role=tab],[role=button],label,inpu
 /* the app's own scrolls (scrollTo / scrollBy / scrollIntoView) are recorded, so a deliberate "jump to the result" is left alone;
    the browser's scroll anchoring and clamping are not scrolls the app asked for */
 KP.appAt = 0; KP.appTo = 0; KP.own = false;
+/* iPhone (Sim, Nov 7: "the menu bar is stuck under the page", fine again after a reload): when the page scrolls itself while the
+   reader's finger or momentum is scrolling it, iOS can leave a fixed bar drawn in the wrong place. After any scroll the page
+   makes itself, the bottom bar and the top bar are redrawn once the scrolling settles (a one-frame layer refresh, nothing moves). */
+KP.redrawBars = (() => { let t = 0; const go = () => { t = 0; for (const n of document.querySelectorAll('.bnav,.topbar,header.top')) { const v = n.style.transform; n.style.transform = 'translateZ(0)'; void n.offsetHeight; requestAnimationFrame(() => { n.style.transform = v; }); } };
+  return () => { clearTimeout(t); t = setTimeout(go, 220); }; })();
+addEventListener('scroll', () => { if (Date.now() - KP.appAt < 1500 || KP.ownAt && Date.now() - KP.ownAt < 1500) KP.redrawBars(); }, {passive: true});
 { const W = window, sTo = W.scrollTo.bind(W), sBy = W.scrollBy.bind(W), sIV = Element.prototype.scrollIntoView;
   const note = to => { if (!KP.own) { KP.appAt = Date.now(); KP.appTo = to; } };
   W.scrollTo = function (a, b) { note(typeof a === 'object' && a ? (a.top != null ? +a.top : scrollY) : +b); return sTo.apply(null, arguments); };
@@ -45,7 +51,7 @@ addEventListener('click', e => { const el = e.target && e.target.closest && e.ta
     // a "more" button opened rows above itself: leave it (the rows appear where you're looking). A Details button that opens a
     // line above itself stays under the finger (Nov 7 shake sweep)
     if (d > 0 && (KP.MORE.test(KP.txt(n)) || KP.MORE.test(s.txt))) return false;
-    KP.own = true; try { scrollBy(0, d); } finally { KP.own = false; } KP.movedAt = Date.now(); y = scrollY; return true; };
+    KP.own = true; try { scrollBy(0, d); } finally { KP.own = false; } KP.movedAt = KP.ownAt = Date.now(); y = scrollY; return true; };
   /* checked on every frame for the first 0.8 s, before the screen is painted (Nov 7 shake sweep): a page that redraws in pieces
      (the Undo bar first, the list a moment later) used to show each piece's push for a frame or more before being corrected */
   const t0f = performance.now(), loop = () => { if (fix() === false) return; if (performance.now() - t0f < 800) requestAnimationFrame(loop); };
