@@ -75,7 +75,7 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'); if (!sh || sh.hidden) ret
 const NP_RANK = {A: 5, B: 4, C: 3, D: 2, F: 1, E: 1};
 { const gm = CH.gradeMotion; CH.gradeMotion = (head, G, RD) => { const prev = CH.npG; gm(head, G, RD);
     const ring = head.querySelector('.chring'); if (ring) ring.classList.toggle('npA', !!G && G.letter === 'A');
-    const cur = G ? {L: G.letter, n: G.rec ? Math.round(G.rec.wr * 100) : G.partial ? RD.score : G.s, part: !!G.partial, rec: !!G.rec} : null; CH.npG = cur;
+    const cur = G ? {L: G.letter, n: G.partial ? RD.score : G.s, part: !!G.partial, rec: !!G.rec} : null; CH.npG = cur;
     if (!ring || !cur || !prev || CH.reduced() || head.closest('[hidden]')) return;
     const up = (NP_RANK[cur.L] || 0) > (NP_RANK[prev.L] || 0) || (cur.L === prev.L && cur.part === prev.part && cur.rec === prev.rec && cur.n > prev.n);
     if (!up) return; ring.classList.remove('np-spark'); void ring.offsetWidth; ring.classList.add('np-spark');

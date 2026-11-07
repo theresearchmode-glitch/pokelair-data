@@ -137,8 +137,8 @@ ARB.drawTile = (x, P, dark, m, im, cx, y, w, h, sz, nameSize, sub) => { const t 
 /* the score as on My team: the record's win rate with 30+ games, else the grade out of 100 */
 ARB.score = (G) => { if (!G) return null; // grade first: a big "63.0%" beside "Grade A" read like a contradiction (Sim, Nov 5)
   const so = G.partial ? ' so far' : '', wr = G.rec ? pctFmt(G.rec.wr * 100) : '', av = pctFmt(100 * ((typeof RES !== 'undefined' && RES && +RES.base) || .5));
-  return G.rec ? {num: G.letter, top: 'Grade' + so, basis: `Wins ${wr} of games, average team ${av}`, line: `Grade ${G.letter}: wins ${wr} of games (average team ${av})`}
-    : {num: G.letter, top: 'Grade' + so, basis: `Score ${G.s} out of 100`, line: `Grade ${G.letter}${so}: score ${G.s} out of 100`}; };
+  /* one grade (Nov 7): the letter, the grade out of 100, the real win rate or none yet */
+  return {num: G.letter, top: 'Grade' + so, basis: `${G.s} / 100 · ${CH.recLine(G, true)}`, line: `Grade ${G.letter}${so}: ${G.s} / 100 · ${CH.recLine(G)}`}; };
 ARB.numeral = (x, P, txt, X, Y, size, align) => { ARB.fnt(x, `italic 900 ${size}px Archivo, sans-serif`, true); x.textAlign = align || 'left'; const o = size * .05;
   x.fillStyle = P.mis; x.fillText(txt, X + o, Y + o * .8); x.fillStyle = P.ink; x.fillText(txt, X, Y); x.textAlign = 'left'; };
 ARB.tab = (x, P, X, Y, s) => { x.fillStyle = P.blue; ARB.para(x, X + s / 2, Y - s, s, s, 4); x.fill(); };

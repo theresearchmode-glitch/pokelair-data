@@ -30,9 +30,8 @@ const npOp = s => `<span class="npop" aria-hidden="true">${s}</span>`;
 // the grade, live for your own six when it can be worked out (the same functions My team uses)
 function npGradeLive() { try { const ms = members(); if (ms.length !== 6) return '';
     const RD = prepOf(ms); if (!RD) return ''; const CK = proChecks(ms, $('useAbil') ? $('useAbil').checked : true), G = CH.gradeOf(RD, CK, ms); if (!G) return '';
-    if (G.rec) return `<p class="nplive"><b>Your team</b> has its own record: these six won about ${Math.round(G.rec.wr * 100)}% of ${CH.n(G.rec.g)} tournament games, so the grade is <b>${G.letter}</b>.</p>`;
     const mp = G.mp != null ? Math.round(G.mp) : null;
-    return `<p class="nplive"><b>Your team:</b> ${RD.score} ready − ${CH.GMISS} × ${G.miss.length} missed${mp != null ? ` ${mp < 0 ? '−' : '+'} ${Math.abs(mp)} real games` : ''} = <b>${G.s}</b> → <b class="npletter">${G.letter}</b></p>`; } catch (e) { return ''; } }
+    return `<p class="nplive"><b>Your team:</b> ${CH.gradeSumS(G, RD)} → <b class="npletter">${G.letter}</b>. ${esc(CH.recLine(G))}.</p>`; } catch (e) { return ''; } }
 // sections: [key, title, one-line summary, body()]
 const NP_SECTIONS = [
   // 60-concept-h.js: CH.gradeOf, CH.GMISS, CH.GMODEL, CH.modelPts, CH.recOf/REC_MIN/recLetter, CH.grade
@@ -42,7 +41,7 @@ const NP_SECTIONS = [
       <ol class="npsteps"><li><b>Start</b> with how ready the team is for the top 30 threats (next section).</li>
       <li><b>Take off ${CH.GMISS} points</b> for each team check it misses. "Ready for the top threats" is a check too, but it's already the starting number, so it isn't charged twice. On 904 tournament teams with records, each missed check cost about 1% of games won, and ${CH.GMISS} points per miss put the letters in the same order as the teams' finishes most often.</li>
       <li><b>Add or take off up to 25 points</b> from the team-strength model${g ? `, trained on ${CH.n(g)} real tournament games` : ''} with each player's skill taken out. It scores these Pokémon, pairs and sets against real tournament teams: a team in the middle of the pack gets 0, and each standard deviation above or below it is ${CH.GMODEL} points.</li>
-      <li><b>Real record first.</b> When these exact six have ${CH.REC_MIN}+ tournament games of their own, the letter comes from how often they won instead: A 60%+, B 55%+, C 50%+, D 45%+ (50% is an average team; small samples are pulled toward the field).</li></ol>
+      <li><b>Real results, blended in.</b> When these exact six have ${CH.REC_MIN}+ tournament games of their own, their win rate counts too, on the same scale (60% wins = 90, 55% = 80, 50% = 70, 45% = 60). The more games, the more it counts: about a quarter of the grade at 30 games, 60% at 150, 80% at 400. The grade stays one number out of 100, and its letter comes from that number.</li></ol>
       <p class="t2">Weather and Taunt or Encore aren't checks: many event winners run neither, and teams without them win just as often. A team with an item problem is marked not legal. The grade describes preparation; it isn't a prediction, because the player decides each game.</p>`; }],
   // 55-threats.js: threatList, vsIn (check/counter/immune/soft), vsThreat (levels, overloaded), PTS, SURE; 46-onboarding.js TIPS.readiness
   ['ready', 'Ready for the top threats', 'Real damage calcs against the 30 Pokémon that make top cut most', () => { const tc = RES && RES.tc && RES.tc.rows;

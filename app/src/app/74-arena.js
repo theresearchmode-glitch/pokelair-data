@@ -190,16 +190,18 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   let score = '';
   if (G) { const why = `<button type="button" class="ar-link ar-why" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${esc(G.letter)}?</button>`;
     /* the grade is the hero (Sim, Nov 5): the big letter, then what it's based on in words, so a win rate is never read as a score */
-    score = G.rec ? `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis">from a <b>${(G.rec.wr * 100).toFixed(1)}%</b> tournament win&nbsp;rate</span>${why}</div>`
-      : `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis">score <b>${G.s}</b> out of 100</span>${why}</div>`; }
+    /* one grade (Nov 7, Sim): the letter, the grade out of 100, and the real win rate (or "Not played in tournaments yet") */
+    score = `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis"><b>${G.s}</b> / 100</span><span class="ar-basis ar-recl">${esc(CH.recLine(G))}</span>${why}</div>`; }
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
-  if (RD) { const sc = G && G.rec ? AR.cell(G.s, 'score') : '';
-    const cells = [sc, `<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready${tp('readiness')}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
-    const rec = G && G.rec ? `<div class="ar-st" role="group" aria-label="Tournament record"><h3 class="ar-sth">Tournament record${tp('numbers')}</h3><div class="ar-trio">${AR.cell(G.rec.g.toLocaleString('en-US'), 'games')}${AR.cell(G.rec.n.toLocaleString('en-US'), G.rec.n === 1 ? 'player' : 'players')}</div>${AR.recWhy(G)}</div>` : '';
-    const chk = `<div class="ar-st" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><h3 class="ar-sth">Our check, top ${hd ? hd.n : 30} threats${G && !G.rec ? tp('numbers') : ''}</h3>
+  if (RD) {
+    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready for the top ${hd ? hd.n : 30}${tp('readiness')}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
+    const rec = '';
+    /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
+    const chk = `<div class="ar-st" role="group" aria-label="What's behind this grade"><h3 class="ar-sth">What’s behind this grade</h3>
+      ${G && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}
       <div class="ar-trio">${cells.join('')}</div>
-      <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>${G && !G.rec && !G.partial ? `<p class="ar-sum">${CH.gradeSum(G, RD)}</p>` : ''}</div>`;
+      <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
@@ -416,9 +418,3 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 safe('theme button in header', () => { const t = $('thmBtn'), band = document.querySelector('.band'); if (!t || !band) return;
   const dots = [...band.querySelectorAll('button')].find(b => /moreBtn|chmenubtn/.test(b.id + ' ' + b.className) && b !== t);
   if (dots && t.nextElementSibling !== dots) dots.before(t); t.classList.add('ar-thm'); });
-
-/* (Nov 7, Sim: "what is going on with our grading") a six that real players took to tournaments 30+ times is graded by how it
-   actually did, not by our own check; say so in one line, with where its win rate sits among real teams */
-AR.recWhy = G => { if (!G || !G.rec) return ''; let med = null; try { const w = (CH.recList() || []).filter(r => +r[3] >= CH.REC_MIN).map(r => +r[2]).sort((a, b) => a - b); if (w.length > 20) med = w[Math.floor(w.length / 2)]; } catch (e) {}
-  const pct = x => Math.round(x * 1000) / 10 + '%', own = G.s != null ? Math.min(100, G.s) : null;
-  return `<p class="ar-sum">Real games come first: this exact six won <b>${pct(G.rec.wr)}</b> of ${G.rec.g.toLocaleString('en-US')} tournament games, a ${esc(G.letter)}${med != null ? ` (the typical real team wins ${pct(med)})` : ''}.${own != null ? ` Our own check alone would give it ${own} (${CH.grade(own)}).` : ''}</p>`; };
