@@ -1,4 +1,4 @@
-<title>NastyPlot Foundation Plan</title>
+<title>NastyPlot Plans</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
@@ -54,15 +54,29 @@ input:checked + .st b{text-decoration:line-through;text-decoration-color:var(--m
 .done-when{border-top:1px solid var(--rule);padding-top:12px;font-size:15px}
 .done-when b{color:var(--blue-ink);font-weight:600}
 .status{font-size:13px;color:var(--mute)}
+.jump{display:flex;flex-wrap:wrap;gap:8px}
+.jump a{font-size:15px;font-weight:600;color:var(--blue-ink);text-decoration:none;padding:6px 12px;border-radius:18px;background:var(--card);font-variant-numeric:tabular-nums}
+.jump a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+#plans{display:flex;flex-direction:column;gap:40px}
+.plan{display:flex;flex-direction:column;gap:16px;scroll-margin-top:16px}
+.plan-head{display:flex;flex-direction:column;gap:8px}
+.plan-head h2{font-size:26px;font-weight:800}
+.plan-head p{color:var(--mute);max-width:62ch}
+.plan-bar{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums}
+.plan-bar .bar{max-width:240px}
+section.phase h3{font-family:var(--head);font-synthesis:style;font-style:italic;font-size:20px;font-weight:600;margin:0;text-wrap:balance}
+.never{font-size:15px;border-top:1px solid var(--rule);padding-top:12px}
+.never b{color:var(--mute);font-weight:600}
 @media (max-width:480px){h1{font-size:28px}section.phase,.rule-box{padding:20px 16px}}
 @media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
 </style>
 
 <div class="wrap">
   <header style="display:flex;flex-direction:column;gap:12px">
-    <span class="label">Grades · Suggestions · Build for Me</span>
-    <h1>The foundation <em>plan.</em></h1>
-    <p class="lede">One tested grade becomes the only measure of "good". Build for Me, suggestions and Fix it all rank by it, and every part gets an automatic pass/fail check so it can never quietly get worse.</p>
+    <span class="label">Every plan, one checklist</span>
+    <h1>NastyPlot <em>plans.</em></h1>
+    <p class="lede">Every plan we make lives here as a checklist, so we always know where we are and no idea gets lost. Ticks save for both of us.</p>
+    <nav class="jump" id="jump" aria-label="Plans on this page"></nav>
   </header>
 
   <div class="overall">
@@ -72,7 +86,7 @@ input:checked + .st b{text-decoration:line-through;text-decoration-color:var(--m
   </div>
 
   <div class="rule-box">
-    <span class="label">How we work</span>
+    <span class="label">How we work on the foundation plan</span>
     <p><b>One phase at a time.</b> Each builds on the last.</p>
     <p><b>Sealed test set.</b> Recent tournaments we never tune on; used only to confirm each phase.</p>
     <p><b>A change is kept only if it clearly beats today</b> on the sealed set, by more than normal chance variation. Otherwise the simpler version stays.</p>
@@ -80,22 +94,25 @@ input:checked + .st b{text-decoration:line-through;text-decoration-color:var(--m
     <p><b>Sim approves every grade change</b> and every phase before it goes live, with before-and-after examples.</p>
   </div>
 
-  <div id="phases"></div>
+  <div id="plans"></div>
 </div>
 
 <script>
-const PLAN = [
+const PLANS = [
+{id:"foundation", short:"Foundation", name:"Foundation: grades, suggestions, Build for Me", about:"One tested grade becomes the only measure of \"good\". Build for Me, suggestions and Fix it all rank by it, and every part gets an automatic pass/fail check so it can never quietly get worse.", phases:[
  {id:"p0", name:"Phase 0 · Foundations", goal:"Measure properly before changing anything.", done:"today's numbers recorded, the sealed set locked, the data audit clean and the known-answer teams written.", steps:[
   ["p0-seal","Seal a test set","Lock away recent tournaments that are never used for tuning."],
   ["p0-rule","Set the improvement rule","How big a gain must be on the sealed set before we keep a change."],
   ["p0-audit","Audit the match data","Duplicates, misread teams, ladder vs tournament weighting, events with missing results."],
-  ["p0-golden","Write the known-answer teams","Top-cut teams grade A/B, a broken team grades F, illegal items get flagged, strong teams get no swaps."],
+  ["p0-golden","Write the known-answer teams","Top-cut teams grade A/B, a broken team grades F, illegal items get flagged, strong teams get no worse ideas."],
   ["p0-base","Record today's starting point","Accuracy, calibration, letter spread, swap test, Build for Me scores and phone speed."],
-  ["p0-log","Start the decision log","Every test, result and decision written down in the grade-accuracy notes."]]},
+  ["p0-log","Start the decision log","Every test, result and decision written down in the grade-accuracy notes."],
+  ["p0-live","Push the data fixes live","Repeat pairings, self-pairings and MonoRegion cups filtered in the daily job (after Sim's go)."]]},
  {id:"p1", name:"Phase 1 · The grade", goal:"Make the grade the one trusted measure.", done:"the new grade is at least as accurate as today's on the sealed set, overall and on teams nobody has played, with honest confidence.", steps:[
   ["p1-calc","Settle the calc-based matchup piece","Test with it, without it, and with real-results matchups in its place."],
   ["p1-partial","One scale for every team","Partial teams (under 6) move onto the same formula as full teams."],
   ["p1-unplayed","Test on unplayed teams","Accuracy and calibration on new mixes; tune caution for untested pairs."],
+  ["p1-topcut","Fair to real top-cut teams","Known-answer case: 75%+ of recent top-4 teams grade B or better (62% today; a 9-1 winner gets a 47)."],
   ["p1-calib","Calibration","When the grade says 60%, teams win about 60%."],
   ["p1-letters","Sharpen A vs B vs C","Letters mean noticeably different strength."],
   ["p1-thin","Too little data and new formats","Low confidence and \"not enough games yet\" for rare Pokémon and new regs like M-D."],
@@ -103,6 +120,7 @@ const PLAN = [
   ["p1-ok","Sim reviews and approves the grade change",""]]},
  {id:"p2", name:"Phase 2 · Build for Me", goal:"Rank by the grade everywhere, and never hand out a weak team.", done:"every setting is within 3 points of the best real team possible under the same limits, and the gate passes.", steps:[
   ["p2-search","Search path ranks by the grade","Box-only builds, \"build around a Pokémon\" and new ideas."],
+  ["p2-zero","0 Megas builds strong teams","Known-answer case: today it builds 33 / 58 / 17 and takes about 5 s on a phone."],
   ["p2-cautious","Rank by how good we're sure it is","The grade minus a penalty when unsure, so it can't game blind spots."],
   ["p2-sets","Sets, not just six Pokémon","Items, moves and Abilities match proven sets or score at least as well."],
   ["p2-box","Box mode, honestly","Best team your box allows, plus the one or two Pokémon that would lift it to an A."],
@@ -113,6 +131,7 @@ const PLAN = [
   ["p2-ok","Sim's blind review and approval","About 10 before-and-after cases."]]},
  {id:"p3", name:"Phase 3 · Suggestions", goal:"Every suggestion comes from the grade.", done:"all gates pass and before-and-after examples look right to Sim.", steps:[
   ["p3-gen","Ideas from grade gains","Every realistic one-Pokémon swap and the best two-Pokémon swaps, with the 75%-sure rule."],
+  ["p3-more","\"More ideas\" never makes a team worse","Known-answer case: on strong teams 37 of 39 ideas there lower the grade today."],
   ["p3-sets","Item, move and Ability suggestions","Same rules as Pokémon swaps."],
   ["p3-cards","One measure on the cards","\"Grade B → A, rating 74 → 86\"; readiness only as background."],
   ["p3-fixes","Problem fixes stay honest","Illegal items, unused weather, Trick Room gaps: may not drop the grade more than a stated amount."],
@@ -125,31 +144,82 @@ const PLAN = [
   ["p4-battle","Battle and Threats under the same checks",""],
   ["p4-monthly","Monthly accuracy check","Fresh tournaments; catch drift."],
   ["p4-page","Update How Our Numbers Work","Plain words, exactly what the site does."]]}
+]},
+{id:"mascot", short:"Shady Paw", name:"Shady Paw on the site", about:"Our mascot, used sparingly and only where he helps. Nothing of him goes live until Sim has seen exactly how it looks and is 100% happy.", phases:[
+ {id:"m1", name:"Final art", goal:"One finished Shady Paw in the styles Sim picked: side profile, bold lines and sketch, in ink plus one site colour.", steps:[
+  ["m1-mock","Last two mock-ups","Bold lines in an empty Saved Teams; sketch on Home."],
+  ["m1-brief","Illustrator brief","Poses, expressions, sizes and colours for clean final art."],
+  ["m1-art","Clean final drawings","Every pose needed below, crisp at phone and desktop sizes, light and dark."],
+  ["m1-ok","Sim is 100% happy with the art",""]]},
+ {id:"m2", name:"Where he goes", goal:"Each spot shown to Sim as an image of exactly how it looks before it goes live.", never:"Your Six, Add a Pokémon, the Battle preview, or beside grades, ratings or any data.", steps:[
+  ["m2-myteam","Empty My Team","When there's no team yet: he invites you to add your first Pokémon."],
+  ["m2-empty","Other empty screens","Saved Teams with nothing saved, a search with no results, Gauntlet before a run."],
+  ["m2-notice","Small notices","\"Team saved\", \"Grade went up\": a small head next to the message."],
+  ["m2-tips","Tip bubbles","Short tips (\"Tap a Pokémon to see its sets\")."],
+  ["m2-load","Loading","While Build for Me or the day's data loads."],
+  ["m2-preview","Approval images for every spot","Phone, iPad and desktop, light and dark."]]},
+ {id:"m3", name:"Go live", steps:[
+  ["m3-check","Checks","Light and dark, iPhone / iPad / Windows, reduced motion, nothing shifts the layout."],
+  ["m3-ok","Sim says go",""],
+  ["m3-live","Live",""]]}
+]},
+{id:"launch", short:"Launch", name:"Ready for the January 2027 launch", about:"Everything besides the public website itself (on hold until Sim says).", phases:[
+ {id:"l1", name:"Before launch", steps:[
+  ["l1-health","Daily health check","The daily data job reports problems on its own."],
+  ["l1-first","First-visit experience","A brand-new visitor with no saved teams gets a clean start."],
+  ["l1-sweep","Devices, speed, accessibility, bug sweep",""],
+  ["l1-pages","Fan-site and privacy pages","No names or emails collected; contact email behind \"Show email\"."],
+  ["l1-beta","Beta with a few players",""],
+  ["l1-check","Launch checklist",""]]}
+]},
+{id:"regmd", short:"Reg M-D", name:"Regulation M-D", about:"Starts soon, not yet (Sim's call). The foundation checks will run on M-D the same way.", phases:[
+ {id:"r1", name:"Preparation (preview only)", steps:[
+  ["r1-profile","Regulation profile","Legal Pokémon, items and rules."],
+  ["r1-roster","Roster rebuild script",""],
+  ["r1-switch","Test switch","Try M-D on a preview without touching the live site."],
+  ["r1-cold","Too-little-data mode","Honest Low confidence while M-D games build up."]]}
+]},
+{id:"ideas", short:"Ideas", name:"Ideas, not scheduled yet", about:"Everything worth doing that isn't in a plan yet, so nothing gets lost. Tick one when it's done or moved into a plan.", phases:[
+ {id:"i1", name:"Parking lot", steps:[
+  ["i-reviewer","A trusted player for blind reviews","A second opinion next to Sim's at the end of Phases 2 and 3."],
+  ["i-complaints","Player complaints into the known-answer teams","Any team players say we grade wrong becomes a test case."],
+  ["i-ladder","Showdown ladder games","Tested Nov 8: no gain for the grade; revisit for Reg M-D when tournament data is thin."]]}
+]}
 ];
 const state = {};
 const $ = id => document.getElementById(id);
 function render(){
-  const host = $("phases"); host.textContent = "";
+  const host = $("plans"); host.textContent = ""; const jump = $("jump"); jump.textContent = "";
   let all = 0, done = 0;
-  for (const ph of PLAN){
-    const sec = document.createElement("section"); sec.className = "phase"; sec.style.marginBottom = "16px";
-    const n = ph.steps.filter(s => state[s[0]]?.done).length; all += ph.steps.length; done += n;
-    sec.innerHTML = `<div class="ph-top"><h2></h2><span class="ph-count ${n===ph.steps.length?'done':''}">${n} of ${ph.steps.length}</span></div><p class="goal"></p><ul></ul><p class="done-when"><b>Done when</b> </p>`;
-    sec.querySelector("h2").textContent = ph.name;
-    sec.querySelector(".goal").textContent = ph.goal;
-    sec.querySelector(".done-when").append(ph.done);
-    const ul = sec.querySelector("ul");
-    for (const [id, t, d] of ph.steps){
-      const li = document.createElement("li"), s = state[id] || {};
-      li.innerHTML = `<label class="step"><input type="checkbox" id="${id}"><div class="st"><b></b>${d?'<span></span>':''}${s.at?'<span class="when"></span>':''}</div></label>`;
-      li.querySelector("b").textContent = t;
-      if (d) li.querySelector(".st span").textContent = d;
-      if (s.at) li.querySelector(".when").textContent = "Done " + s.at + (s.note ? " · " + s.note : "");
-      const cb = li.querySelector("input"); cb.checked = !!s.done; cb.disabled = !db;
-      cb.addEventListener("change", () => toggle(id, cb.checked, cb));
-      ul.append(li);
+  for (const P of PLANS){
+    const wrap = document.createElement("div"); wrap.className = "plan"; wrap.id = P.id;
+    const steps = P.phases.flatMap(ph => ph.steps), n = steps.filter(s => state[s[0]]?.done).length; all += steps.length; done += n;
+    const pp = steps.length ? Math.round(n / steps.length * 100) : 0;
+    wrap.innerHTML = `<div class="plan-head"><h2></h2><p></p><div class="plan-bar"><div class="bar" aria-hidden="true"><i style="width:${pp}%"></i></div><span>${n} of ${steps.length} done</span></div></div>`;
+    wrap.querySelector("h2").textContent = P.name; wrap.querySelector("p").textContent = P.about;
+    const a = document.createElement("a"); a.href = "#" + P.id; a.textContent = `${P.short} · ${pp}%`; jump.append(a);
+    for (const ph of P.phases){
+      const sec = document.createElement("section"); sec.className = "phase";
+      const k = ph.steps.filter(s => state[s[0]]?.done).length;
+      sec.innerHTML = `<div class="ph-top"><h3></h3><span class="ph-count ${k===ph.steps.length?'done':''}">${k} of ${ph.steps.length}</span></div>${ph.goal?'<p class="goal"></p>':''}<ul></ul>${ph.done?'<p class="done-when"><b>Done when</b> </p>':''}${ph.never?'<p class="never"><b>Never</b> </p>':''}`;
+      sec.querySelector("h3").textContent = ph.name;
+      if (ph.goal) sec.querySelector(".goal").textContent = ph.goal;
+      if (ph.done) sec.querySelector(".done-when").append(ph.done);
+      if (ph.never) sec.querySelector(".never").append(ph.never);
+      const ul = sec.querySelector("ul");
+      for (const [id, t, d] of ph.steps){
+        const li = document.createElement("li"), s = state[id] || {};
+        li.innerHTML = `<label class="step"><input type="checkbox" id="${id}"><div class="st"><b></b>${d?'<span class="d"></span>':''}${s.at?'<span class="when"></span>':''}</div></label>`;
+        li.querySelector("b").textContent = t;
+        if (d) li.querySelector(".d").textContent = d;
+        if (s.at) li.querySelector(".when").textContent = "Done " + s.at + (s.note ? " · " + s.note : "");
+        const cb = li.querySelector("input"); cb.checked = !!s.done; cb.disabled = !db;
+        cb.addEventListener("change", () => toggle(id, cb.checked, cb));
+        ul.append(li);
+      }
+      wrap.append(sec);
     }
-    host.append(sec);
+    host.append(wrap);
   }
   const p = all ? Math.round(done / all * 100) : 0;
   $("pct").textContent = p + "%"; $("bar").style.width = p + "%";

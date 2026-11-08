@@ -25,6 +25,12 @@ makes it heavy, and a lighter option if one exists. Background computer time (a 
 - Design scale (Nov 7): text 13/15/16/17/20/22/24/26/28/34 (+ display), spacing on a 4px grid (1/2/6 allowed),
   corners 4/6/10/18/round, paragraphs line-height 1.5.
 
+## Plans are always checklists (Sim, Nov 8)
+Every plan made for Sim lives as a checklist on the NastyPlot Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ,
+source docs/foundation-plan.html; ticks are in its db collection "progress"). Add each new plan there as its own section,
+tick steps as they're done (with the date and a short note), and put every idea that isn't scheduled yet in "Ideas, not
+scheduled yet" so nothing gets lost. Keep the page current at all times.
+
 ## Public launch (Sim, Nov 8)
 NastyPlot launches to the public sometime in January 2027, as a normal public website (not only the private Claude page).
 Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on

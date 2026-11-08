@@ -81,3 +81,44 @@ Date split: learned from games before Oct 29, scored on the ~4,000 tournament ga
 None beats the shipped model beyond noise, so nothing changed: the model already converges at 250 steps, its settings are
 already near the best, and ladder games add nothing tournaments don't (casual ones slightly hurt). The finer grid looked
 better on the model's own validation slice and worse on later games: the scoreboard is what decides.
+
+## Foundation plan, Phase 0 (Nov 8): the starting point every later change must beat
+Plan and checklist: https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ (source docs/foundation-plan.html).
+
+**Rules from now on**
+- Sealed test set: tournaments from Nov 9 on (experiments/sealed.json). Never used for tuning; board.mjs and swap-pairs.mjs
+  refuse to score them without SEALED=1. Scored once at the end of each phase, with a model trained on games before Nov 9.
+- Day-to-day experiments: MATCHES=out/matches_dev.json (node experiments/sealed.mjs), model trained before Oct 27
+  (TEST_DATE=2026-10-27 TRAIN_ONLY=1 MODEL_OUT=out/model_dev.json), scored with BOARD_DATE=2026-10-27.
+- Improvement rule (experiments/compare.mjs): resample whole tournaments 2,000 times; KEEP a change only if the 95% range of
+  the log-loss gap is entirely on the better side. Otherwise "no difference": keep the simpler version.
+- A known-answer test (experiments/golden.mjs) and the data audit (experiments/data-audit.mjs) run before any grade change.
+
+**Data audit**: 39,352 games, 420 events (Sep 12 – Nov 7). 5 repeated pairings, 3 self-pairings and 1 team listing a Pokémon
+twice: now skipped in update.mjs. 3.5% of games have no winner (left out of every test). One themed "MonoRegion" cup slipped
+past the format filter: formats.mjs now also skips Monoregion/Monocolor events. 12 events have no usable games (no sheets).
+
+**Starting point (dev split, 6,270 later games in 88 tournaments)**
+
+| measure | today |
+|---|---|
+| picks the later winner (grade as on the site, minus matchups) | 56.5% |
+| log-loss | .6811 |
+| calibration gap | 0.4 pts (said 62% → won 62%) |
+| later win rate by letter | A 55.8 · B 52.9 · C 53.0 · D 49.8 · F 46.0 |
+| the better player alone / grade + player | 59.6% / 60.5% |
+| swap pairs (sixes one Pokémon apart, 5+ later games, 389 called) | 54.0% (±5) |
+| player swaps between events (48 called) | 52% (too few to judge) |
+
+Findings already: (1) adding sets beats Pokémon + pairs beyond chance (+1.3 pts, KEEP); (2) the six's own record adds nothing
+beyond chance on top of sets (+0.2 pts, range −0.6 to +1.1): Phase 1 checks whether it earns its place; (3) B and C letters
+are not separated (52.9 vs 53.0).
+
+**Known-answer cases (4 of 7 pass)**
+- FAIL top-cut teams: 36 of 58 recent top-4 teams grade B+ (62%, needs 75%); a 9-1 event winner grades 47 (Phase 1)
+- ok   six weakest Pokémon grade 1 (F) · ok two Sitrus Berries flagged as not legal
+- FAIL "More ideas" on strong teams: 37 of 39 lower the grade (the first-shown suggestions never do) (Phase 3)
+- FAIL Build for Me, 0 Megas: 33 / 58 / 17 (no real 0-Mega team exists to copy) (Phase 2)
+- ok   Build for Me 1 Mega 99.2 = best real team; 2 Megas 99.9 = best real team
+
+**Phone speed (CPU slowed 4×)**: Build for Me 0.9 s (1 Mega), 1.0 s (2 Megas), 5.4 s (0 Megas).
