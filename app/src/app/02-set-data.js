@@ -74,6 +74,9 @@ function metaEntry(p){return setFor(p)}
 let DEFSET_ON=true; /* false: the old way (the Meta page's source), for before/after checks */
 const DEF_SRC=()=>S.format==='doubles'&&DEFSET_ON?'tour':undefined;
 function defSet(p){return setFor(p,S.format,DEF_SRC())}
+/* the most common COMPLETE tournament set (Sim, Nov 8: "the most popular moveset"): one real build players run, item + Ability +
+   all four moves together (meta_tour cs, from update.mjs). Defaults use it first; separate top picks fill any gap. */
+function csOf(p){if(!DEFSET_ON||S.format!=='doubles')return null;const T=META.doubles_tour;if(!T)return null;const r=[...(T.top||[]),...(T.more||[])].find(x=>x.n===p.n);return r&&r.cs&&Array.isArray(r.cs.mv)&&r.cs.mv.length?r.cs:null}
 const FMT=f=>f==='singles'?'Singles':'Doubles';
 const megaGoal=()=>[0,1,2].includes(S.megaGoal)?S.megaGoal:2;
 const megaCount=t=>t.filter(m=>m.mega).length;

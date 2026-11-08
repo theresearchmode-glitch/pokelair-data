@@ -52,7 +52,7 @@ function deadItems(ms) { const F = teamField(ms), tr = trMain(ms), out = [];
 function itemProblems(ms) { const out = itemClash(ms).map(c => ({k: 'clause', ms: c.ms, item: c.item, why: `${c.ms.map(m => m.d).join(' and ')} both hold ${c.item}. VGC's Item Clause allows each item only once per team, so this team can't be registered.`}));
   for (const d of deadItems(ms)) out.push({k: d.item === 'Choice Scarf' ? 'scarftr' : 'dead', ms: [d.m], item: d.item, why: d.why}); return out; }
 // Items players run on a Pokémon, most used first (never Mega Stones, never "nothing")
-function itemOptions(p) { try { return (defSet(p).it || []).filter(([n]) => n && typeof n === 'string' && notStone(n) && !/^(nothing|other|none|no item)$/i.test(n)); } catch (e) { return []; } }
+function itemOptions(p) { try { const cs = csOf(p), c = cs && cs.it && !p.m ? (typeof canonItem === 'function' ? canonItem(cs.it) : cs.it) : null, all = defSet(p).it || []; return (c ? [all.find(([n]) => n === c) || [c, null], ...all.filter(([n]) => n !== c)] : all).filter(([n]) => n && typeof n === 'string' && notStone(n) && !/^(nothing|other|none|no item)$/i.test(n)); } catch (e) { return []; } }
 // The best item for m that's free on this team and can work here (the "fix" for a problem item, or a default)
 function bestFreeItem(m, ms, used, F, tr) { const ok = n => n && !used.has(n) && !itemDeadWhy(m, n, ms, F, tr);
   const o = itemOptions(m.p).find(([n]) => ok(n)); if (o) return o[0];

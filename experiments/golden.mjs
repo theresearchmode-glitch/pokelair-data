@@ -8,7 +8,7 @@
 //   5. Build for Me       whole roster, 0 / 1 / 2 Megas: the first team is within 3 points of the best real team possible
 //                         under the same limit (the best-graded exact six with 30+ games or 3+ players)
 // Usage: node experiments/golden.mjs [out.json]     (exit code 1 if a case fails; build the page first)
-import fs from 'node:fs'; import {createRequire} from 'node:module';
+import fs from 'node:fs'; import {createRequire} from 'node:module'; import {offFormat} from '../formats.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json');
@@ -76,6 +76,7 @@ R.boxes = await run(`(()=>{ const out = []; let seed = 11; const rnd = () => (se
 await b.close(); fs.unlinkSync(page);
 // ---- verdicts
 const C = [], add = (name, pass, detail) => C.push({name, pass, detail});
+R.top = R.top.filter(t => !offFormat(t.ev)); // themed cups (MonoRegion…) are left out of the data, so out of this check too
 { const n = R.top.length, good = R.top.filter(t => t.g >= 70).length, med = R.top.map(t => t.g).sort((a, c) => a - c)[n >> 1];
   add('top-cut teams grade B or better (75%+ of them)', n >= 10 && good / n >= .75, `${good} of ${n} graded 70+ (${Math.round(good / n * 100)}%), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
 add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 10, `${R.weak.g} (${R.weak.mons.join(', ')})`);

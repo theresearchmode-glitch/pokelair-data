@@ -32,9 +32,10 @@ tick steps as they're done (with the date and a short note), and put every idea 
 scheduled yet" so nothing gets lost. Keep the page current at all times.
 
 ## Sets on teams (Sim, Nov 8)
-Most players don't know what moves to run. Any team the site builds or that a player types in uses the MOST POPULAR TOURNAMENT
-set for each Pokémon (moves, item, Ability from Limitless team sheets), and the grade judges exactly the sets shown. When a player
-changes anything, the grade re-judges what they chose, not the popular set. Our popular-set numbers must agree with established
+Most players don't know what moves to run. Any team the site builds or that a player types in SHOWS each Pokémon's most common
+COMPLETE tournament set (item + Ability + four moves that real players run together, update.mjs `cs`). In the grade, a set the
+player hasn't changed counts as a typical build of that Pokémon (Sim chose this Nov 8 after a test: typical build predicted
+winners 55.3% vs 54.5-54.8% for grading the exact popular set). Whatever the player changes is graded exactly as they chose. Our popular-set numbers must agree with established
 sites (Pikalytics tournaments, Pokémon Zone, MetaVGC, PokéBase); crosscheck.mjs checks this daily, and any disagreement gets
 explained, not ignored.
 

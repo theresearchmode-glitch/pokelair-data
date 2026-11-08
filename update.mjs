@@ -149,13 +149,16 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
 { const S = new Map(); let nT = 0;
   for (const T of V2) { if (lastD - new Date(T.d) > 28 * DAY) continue;
     for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue; nT++;
-      p.dk.forEach((m, i) => { const n = ns[i]; let o = S.get(n); if (!o) S.set(n, o = {t: 0, w: 0, g: 0, mv: new Map(), it: new Map(), ab: new Map(), tm: new Map(), na: new Map()});
+      p.dk.forEach((m, i) => { const n = ns[i]; let o = S.get(n); if (!o) S.set(n, o = {t: 0, w: 0, g: 0, mv: new Map(), it: new Map(), ab: new Map(), tm: new Map(), na: new Map(), cs: new Map()});
         o.t++; o.w += p.w; o.g += p.w + p.l; if (m.nt) o.na.set(m.nt, (o.na.get(m.nt) || 0) + 1);
         for (const x of new Set(m.mv)) o.mv.set(x, (o.mv.get(x) || 0) + 1);
         if (m.i) o.it.set(m.i, (o.it.get(m.i) || 0) + 1); if (m.a) o.ab.set(m.a, (o.ab.get(m.a) || 0) + 1);
+        /* the most common COMPLETE set (Sim, Nov 8: show the most popular moveset as one real build, not separate top picks) */
+        { const mv = [...new Set(m.mv)].sort(); if (mv.length === 4) { const k = JSON.stringify([m.i || '', m.a || '', mv]); o.cs.set(k, (o.cs.get(k) || 0) + 1); } }
         ns.forEach((q, j) => { if (j !== i) o.tm.set(q, (o.tm.get(q) || 0) + 1); }); }); } }
   const rows = [...S].sort((a, b) => b[1].t - a[1].t).map(([n, o], i) => ({r: i + 1, n, u: Math.round(1000 * o.t / nT) / 10, teams: o.t, w: o.g ? Math.round(1000 * o.w / o.g) / 10 : null,
-    mv: pct(o.mv, o.t, 12), it: pct(o.it, o.t, 6), ab: pct(o.ab, o.t, 4), na: pct(o.na, o.t, 4), tm: pct(o.tm, o.t, 10)}));
+    mv: pct(o.mv, o.t, 12), it: pct(o.it, o.t, 6), ab: pct(o.ab, o.t, 4), na: pct(o.na, o.t, 4), tm: pct(o.tm, o.t, 10),
+    cs: (() => { const b = [...o.cs].sort((x, y) => y[1] - x[1])[0]; if (!b) return undefined; const [it, ab, mv] = JSON.parse(b[0]); return {it, ab, mv, pct: Math.round(1000 * b[1] / o.t) / 10}; })()}));
   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
   fs.writeFileSync('out/meta_tour.json', JSON.stringify({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
     period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', updated: new Date().toISOString(), note: 'Moves, items, abilities and natures as players registered them.',
