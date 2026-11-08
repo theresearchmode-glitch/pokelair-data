@@ -16,3 +16,7 @@ app/phone-*.html
 out/matches_rp*.json
 out/matches_dev.json
 out/model_dev.json
+out/matches_train.json
+out/model_dev_site.json
+out/matches_train28.json
+out/model_d28.json

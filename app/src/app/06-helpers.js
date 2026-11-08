@@ -6,7 +6,7 @@ function pctTxt(v){return ptsTxt(v)+'%'}
 // a change in readiness, in points (Nov 2: "-2% ready" read like 2% of something): "+3 points ready", "−1 point ready", "no change"
 function readyDelta(d){d=Math.round(+d||0);return d===0?'no change in ready':`${d>0?'+':'−'}${Math.abs(d)} point${Math.abs(d)===1?'':'s'} ready`}
 function memberOf(s,i){const p=byName.get(s.n);if(!p)return null;const ab=s.a&&p.a.includes(s.a)?s.a:(metaAbility(p)||bestAbility(p));
-  const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi,spread:slotSpread(s,p)}}
+  const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,abChosen:!!(s.a&&p.a.includes(s.a)),mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi,spread:slotSpread(s,p)}}
 // Your nature and stat points (from a paste or link), in the same shape as commonSpread(): {nat,hp,atk,def,spa,spd,spe,mine:true}
 function slotSpread(s,p){const x=s.sp&&s.sp[S.format];if(!x)return null;const cs=typeof commonSpread==='function'?commonSpread(p):null;
   // a team sheet gives a nature but no stat points: your nature on the most common spread, marked as assumed

@@ -9,10 +9,17 @@ let spFeatCache={m:null,map:null};
 function spFeats(){const m=META.model;if(spFeatCache.m===m)return spFeatCache.map;const map=new Map();
   for(const k of Object.keys((m&&m.sets)||{})){const sp=k.split(/[@:#]/)[0];if(!map.has(sp))map.set(sp,[]);map.get(sp).push(k)}spFeatCache={m,map};return map}
 function setX(ms){return (ms||[]).reduce((a,m)=>a+setOne(m),0)}
+/* Sets you didn't enter count as an average build (Nov 8, foundation plan Phase 1, experiments/site-board.mjs): the page's default
+   sets come from in-game usage and often miss what tournament players run (Garchomp without Stomping Tantrum, which 77% of
+   tournament Garchomp run), so grading a typed-in team on those guesses cost it up to ~20 rank points. On 6,270 later games,
+   counting an unknown item, Ability or move set as average predicted results better than the default sets, beyond chance.
+   Known = an item you picked (or a Mega Stone), moves you edited or pasted, an Ability you chose. SET_UNKNOWN_AVG=false: old way. */
+let SET_UNKNOWN_AVG=true;
 function setOne(m){const M=META.model,sets=M&&M.sets;if(!sets||!m)return 0;let x=0;const ms=[m];const center=!!M.center,fq=M.setFreq||{},F=center?spFeats():null;
   for(const m of ms){const p=m.p;if(!p)continue;let it='';try{it=p.m?stoneFor(p):m._deadItem?'':(m.heldItem||m.item||(topItem(p)||[])[0]||'')}catch(e){}
     if(center){const mv=new Set((m.moves||[]).map(v=>v&&v.name).filter(Boolean));
-      let u=0;const ab=String(m.ability||'').toLowerCase();for(const k of (F.get(p.n)||[])){const c=k[p.n.length],v=k.slice(p.n.length+1),has=c==='@'?v===it:c==='#'?v.toLowerCase()===ab:mv.has(v);u+=sets[k]*((has?1:0)-(fq[k]||0))}
+      const kn=SET_UNKNOWN_AVG?{'@':!!(p.m||m.heldItem||m._deadItem),'#':!!m.abChosen,':':!!m.custom}:{'@':1,'#':1,':':1};
+      let u=0;const ab=String(m.ability||'').toLowerCase();for(const k of (F.get(p.n)||[])){const c=k[p.n.length];if(!kn[c])continue;const v=k.slice(p.n.length+1),has=c==='@'?v===it:c==='#'?v.toLowerCase()===ab:mv.has(v);u+=sets[k]*((has?1:0)-(fq[k]||0))}
       // a build only counts as much as real builds of this Pokémon have shown (10th-90th percentile of real decks)
       const r=M.setRange&&M.setRange[p.n];x+=r?Math.max(r[0],Math.min(r[1],u)):u;continue}
     if(it)x+=sets[p.n+'@'+it]||0;for(const mv of (m.moves||[]))if(mv&&mv.name)x+=sets[p.n+':'+mv.name]||0}
@@ -104,7 +111,7 @@ function tsTitle(base,t){return `${base.score}% → ${t.score}% ready for the to
 // ready but my score went from 93 to 91"). Suggestions are judged and labelled by it, so the card matches what Apply does.
 const gradeMemo=new Map();
 function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
-  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+':'+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')).sort().join('|');
+  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')).sort().join('|');
   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade

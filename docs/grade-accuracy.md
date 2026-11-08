@@ -115,7 +115,7 @@ beyond chance on top of sets (+0.2 pts, range −0.6 to +1.1): Phase 1 checks wh
 are not separated (52.9 vs 53.0).
 
 **Known-answer cases (4 of 7 pass)**
-- FAIL top-cut teams: 36 of 58 recent top-4 teams grade B+ (62%, needs 75%); a 9-1 event winner grades 47 (Phase 1)
+- FAIL top-cut teams: 41 of 58 recent top-4 teams grade B+ (71%, needs 75%; B is 70+ since Grade v2, first written up with the old 80 line); a 9-1 event winner grades 47, from the default sets the page fills in (Phase 1)
 - ok   six weakest Pokémon grade 1 (F) · ok two Sitrus Berries flagged as not legal
 - FAIL "More ideas" on strong teams: 37 of 39 lower the grade (the first-shown suggestions never do) (Phase 3)
 - FAIL Build for Me, 0 Megas: 33 / 58 / 17 (no real 0-Mega team exists to copy) (Phase 2)

@@ -1,7 +1,8 @@
 // Known-answer teams (Nov 8, foundation plan Phase 0). Cases with an obvious right answer that the grade, Fix it and
 // Build for Me must always get right. Runs the built page (app/dist/page.html) with today's data.
-//   1. top-cut teams      recent Limitless top-4 teams (32+ player events) grade B or better (80+): at least 75% of them
-//   2. broken team        six of the weakest Pokémon in the roster grade F (under 60)
+//   1. top-cut teams      recent Limitless top-4 teams (32+ player events) grade B or better (70+): at least 75% of them
+//   2. broken team        six of the weakest Pokémon in the roster grade F (under 10)
+//   (letters as the site gives them, CH.grade: A 90+, B 70+, C 30+, D 10+, F under 10, i.e. the rank among real teams)
 //   3. illegal items      two members holding the same item: flagged as not legal
 //   4. no worse ideas     for strong (A) real teams, no suggestion leads to a lower grade
 //   5. Build for Me       whole roster, 0 / 1 / 2 Megas: the first team is within 3 points of the best real team possible
@@ -54,14 +55,14 @@ for (const k of [0, 1, 2]) {
 await b.close(); fs.unlinkSync(page);
 // ---- verdicts
 const C = [], add = (name, pass, detail) => C.push({name, pass, detail});
-{ const n = R.top.length, good = R.top.filter(t => t.g >= 80).length, med = R.top.map(t => t.g).sort((a, c) => a - c)[n >> 1];
-  add('top-cut teams grade B or better (75%+ of them)', n >= 10 && good / n >= .75, `${good} of ${n} graded 80+ (${Math.round(good / n * 100)}%), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
-add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 60, `${R.weak.g} (${R.weak.mons.join(', ')})`);
+{ const n = R.top.length, good = R.top.filter(t => t.g >= 70).length, med = R.top.map(t => t.g).sort((a, c) => a - c)[n >> 1];
+  add('top-cut teams grade B or better (75%+ of them)', n >= 10 && good / n >= .75, `${good} of ${n} graded 70+ (${Math.round(good / n * 100)}%), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
+add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 10, `${R.weak.g} (${R.weak.mons.join(', ')})`);
 add('two of the same item reads as not legal', R.illegal.flagged, `${R.illegal.clause} item clash${R.illegal.clause === 1 ? '' : 'es'} found`);
 { const s = R.sugg.filter(x => !x.err), worse = s.reduce((a, x) => a + x.worse, 0), tot = s.reduce((a, x) => a + x.n, 0);
   add('no suggestion lowers the grade of a strong (A) team', s.length > 0 && worse === 0, `${s.length} A teams, ${tot} suggestions (${s.reduce((a, x) => a + x.main, 0)} shown first), ${worse} would lower the grade (${s.reduce((a, x) => a + x.worseMain, 0)} of those shown first)${R.sugg.some(x => x.err) ? ' · errors: ' + R.sugg.filter(x => x.err).map(x => x.err).join('; ') : ''}`); }
 for (const B of R.build) { const top = B.teams[0], gap = top && B.best ? B.best.g - top.g : null;
-  add(`Build for Me, whole roster, ${B.megas} Mega${B.megas === 1 ? '' : 's'}: ${B.best ? 'within 3 of the best real team' : 'no real team to compare, so the first team must grade B (80+)'}`, B.best ? gap != null && gap <= 3 : !!top && top.g >= 80, `built ${B.teams.map(t => t.g).join(' / ')} · best real team ${B.best ? B.best.g : '—'}${gap != null ? ` · gap ${gap.toFixed(1)}` : ''} · ${(B.ms / 1000).toFixed(1)} s`); }
+  add(`Build for Me, whole roster, ${B.megas} Mega${B.megas === 1 ? '' : 's'}: ${B.best ? 'within 3 of the best real team' : 'no real team to compare, so the first team must grade B (70+)'}`, B.best ? gap != null && gap <= 3 : !!top && top.g >= 70, `built ${B.teams.map(t => t.g).join(' / ')} · best real team ${B.best ? B.best.g : '—'}${gap != null ? ` · gap ${gap.toFixed(1)}` : ''} · ${(B.ms / 1000).toFixed(1)} s`); }
 if (errs.length) add('no page errors', false, errs.slice(0, 3).join(' | '));
 for (const c of C) console.log(`${c.pass ? '  ok  ' : '  FAIL'} ${c.name}\n         ${c.detail}`);
 console.log(`\n${C.filter(c => c.pass).length} of ${C.length} known-answer cases pass`);
