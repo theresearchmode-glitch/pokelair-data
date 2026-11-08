@@ -28,6 +28,12 @@ for (const g of G) for (const [t, d] of [[g[0], g[7]], [g[1], g[8]]]) { const k 
   for (const n of teams[t]) set[n] = {it: null, ab: null, mv: []};
   for (const f of fs_) { const m = f.match(/^(.*?)([@#:])(.*)$/); if (!m || !set[m[1]]) continue; if (m[2] === '@') set[m[1]].it = m[3]; else if (m[2] === '#') set[m[1]].ab = m[3]; else set[m[1]].mv.push(m[3]); }
   need.set(k, {k, ns: teams[t], set}); }
+// each species' most common COMPLETE set (item + Ability + its moves, as one build) on team sheets before the scored games
+const COMMON = (() => { const trainE = new Set(M.events.map((e, i) => [e, i]).filter(([e]) => e[1] < FROM).map(([, i]) => i)), cnt = new Map(), seenD = new Set();
+  for (const g of M.m) { if (!trainE.has(g[3])) continue; for (const [t, d] of [[g[0], g[7]], [g[1], g[8]]]) { if (d == null || !M.decks[d] || seenD.has(t + ':' + d)) continue; seenD.add(t + ':' + d);
+    const per = {}; for (const f of M.decks[d].map(f => M.feats[f])) { const m = f.match(/^(.*?)([@#:])(.*)$/); if (!m) continue; (per[m[1]] = per[m[1]] || []).push(m[2] + m[3]); }
+    for (const [sp, fs] of Object.entries(per)) { const k = fs.sort().join('~'); if (!cnt.has(sp)) cnt.set(sp, new Map()); const c = cnt.get(sp); c.set(k, (c.get(k) || 0) + 1); } } }
+  const out = {}; for (const [sp, c] of cnt) { const [k] = [...c].sort((a, b) => b[1] - a[1])[0]; const o = {it: null, ab: null, mv: []}; for (const f of k.split('~')) { if (f[0] === '@') o.it = f.slice(1); else if (f[0] === '#') o.ab = f.slice(1); else o.mv.push(f.slice(1)); } out[sp] = o; } return out; })();
 // ---- the page
 const L = rd('limitless.json');
 const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': MD, 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
@@ -38,15 +44,16 @@ await pg.addInitScript(D => { localStorage.setItem('cc2.welcomed', '"1"'); windo
 await pg.goto('file://' + page); await pg.waitForTimeout(4000);
 const P = {}, list = [...need.values()], t0 = Date.now();
 for (let i = 0; i < list.length; i += 60) { const ch = list.slice(i, i + 60);
-  const r = await pg.evaluate(ch => window.__ev(`(()=>{ const out = {}; const M = META.model, mx = M.meanX || 0;
+  const r = await pg.evaluate(([ch, COMMON]) => window.__ev(`(()=>{ const COMMON = ${JSON.stringify(COMMON)}; const out = {}; const M = META.model, mx = M.meanX || 0;
     for (const T of ${JSON.stringify(ch)}) { try { const ps = T.ns.map(n => byName.get(n)); if (ps.some(p => !p)) { out[T.k] = {miss: 1}; continue; }
       const ms = ps.map(p => { const s = T.set[p.n] || {}, m = abMember(p), mv = (s.mv || []).map(x => mvByName.get(x)).filter(Boolean);
         return {...m, ...(s.it && !p.m ? {item: s.it, heldItem: s.it} : {}), ...(s.ab ? {ability: s.ab, abChosen: true} : {}), ...(mv.length ? {moves: mv, _mv: mv, custom: true} : {})}; });
       const xs = strengthX(T.ns, ms), k = testedPairs(T.ns), cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
       const RD = THR.teamReport(ms), six = CH.sixOf(ms), st = CH.strengthOf(ms, RD ? RD.score : null);
+      const cms = ps.map(p => { const s = COMMON[p.n], m = abMember(p); if (!s) return m; const mv = (s.mv || []).map(x => mvByName.get(x)).filter(Boolean); return {...m, ...(s.it && !p.m ? {item: s.it, heldItem: s.it} : {}), ...(s.ab ? {ability: s.ab, abChosen: true} : {}), ...(mv.length ? {moves: mv, _mv: mv, custom: true} : {})}; }), xc = strengthX(T.ns, cms).x0, RDc = THR.teamReport(cms);
       const dms = ps.map(p => abMember(p)); SET_UNKNOWN_AVG = false; const xd = strengthX(T.ns, dms).x0; SET_UNKNOWN_AVG = true; const xn = teamX(T.ns, null), RDd = THR.teamReport(dms);
-      out[T.k] = {x0: xs.x0, xd, xn, readyD: RDd ? RDd.score : null, sd: CH.sdOf(ms), sure: (CH.sureOf(ms, six) || {}).w || null, cr, ready: RD ? RD.score : null, six: six ? six.d : 0, sixG: six ? six.g : 0, y: st ? st.y : null, pct: st ? st.pct : null, mx}; } catch (e) { out[T.k] = {err: String(e.message).slice(0, 80)}; } }
-    return JSON.stringify(out); })()`), ch);
+      out[T.k] = {x0: xs.x0, xd, xn, xc, readyC: RDc ? RDc.score : null, readyD: RDd ? RDd.score : null, sd: CH.sdOf(ms), sure: (CH.sureOf(ms, six) || {}).w || null, cr, ready: RD ? RD.score : null, six: six ? six.d : 0, sixG: six ? six.g : 0, y: st ? st.y : null, pct: st ? st.pct : null, mx}; } catch (e) { out[T.k] = {err: String(e.message).slice(0, 80)}; } }
+    return JSON.stringify(out); })()`), [ch, COMMON]);
   Object.assign(P, JSON.parse(r)); if (i % 1200 === 0) process.stdout.write(`  ${Object.keys(P).length} / ${list.length} teams · ${Math.round((Date.now() - t0) / 1000)}s\r`);
 }
 await b.close(); fs.unlinkSync(page);
@@ -74,6 +81,7 @@ const V = {
   // a team typed in without its sets (how most people use My Team): the page fills in default sets today
   'no sheet: default sets (as the page does today)': p => adj({...p, x0: p.xd}, 1) + MU({...p, ready: p.readyD}, .003) + p.six,
   'no sheet: unknown set counts as an average build': p => adj({...p, x0: p.xn}, 1) + MU({...p, ready: p.readyD}, .003) + p.six,
+  'no sheet: each Pokémon\'s most common complete set': p => adj({...p, x0: p.xc}, 1) + MU({...p, ready: p.readyC}, .003) + p.six,
 };
 const both = []; for (const g of G) { const A = P[keyOf(g[0], g[7])], B = P[keyOf(g[1], g[8])]; if (!A || !B || A.y == null || B.y == null) continue; both.push({g, A, B}); }
 const calib = MD.calib, sig = z => 1 / (1 + Math.exp(-z));
