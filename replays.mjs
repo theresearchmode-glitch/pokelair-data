@@ -7,7 +7,11 @@ import fs from 'node:fs';
 import {politeFetch} from './http.mjs';
 import {activeReg} from './formats.mjs';
 // the active regulation's Showdown format (formats.mjs); Reg M-C is gen9championsvgc2026regmc
-export const FMT = activeReg().sd;
+// REPLAY_FMT=bo3 collects Showdown's best-of-3 Champions format instead (forced open team sheets; each game is still ONE
+// game, Sim Nov 8: single games first) into out/replays_bo3.json, with each side's full sets from the team sheet.
+const BO3 = process.env.REPLAY_FMT === 'bo3';
+export const FMT = activeReg().sd + (BO3 ? 'bo3' : '');
+const FILE = BO3 ? 'out/replays_bo3.json' : 'out/replays.json';
 const BASE = 'https://replay.pokemonshowdown.com', KEEP = 20000, MAX_NEW = +(process.env.MAX_REPLAYS || 600), PAUSE = 350;
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
@@ -19,13 +23,15 @@ const side = s => String(s).slice(0, 2), species = d => String(d).split(',')[0].
 // Parse one replay log (Showdown battle protocol). Returns null for logs we can't use (not 4-of-6 doubles, unknown Pokémon, no winner).
 export function parseLog(log) {
   const L = String(log).split('\n'), names = {}, rating = {}, team = {p1: [], p2: []}, brought = {p1: [], p2: []}, leads = {p1: [], p2: []}, mega = {p1: null, p2: null};
-  let started = false, winner = null, doubles = false, preview = 0;
+  let started = false, winner = null, doubles = false, preview = 0; const sets = {p1: null, p2: null};
   const bring = (sd, sp) => { const n = mapMon(sp); if (!n || !brought[sd]) return; const base = n.replace(/-Mega.*$/, '');
     if (!brought[sd].some(x => x.replace(/-Mega.*$/, '') === base)) { brought[sd].push(n); if (!started && leads[sd].length < 2) leads[sd].push(n); } };
   for (const line of L) { const p = line.split('|'); const t = p[1];
     if (t === 'gametype') doubles = p[2] === 'doubles';
     else if (t === 'player' && p[2] && p[3]) { names[p[2]] = p[3]; if (p[5] && /^\d+$/.test(p[5])) rating[p[2]] = +p[5]; }
     else if (t === 'poke' && team[p[2]]) team[p[2]].push(species(p[3]));
+    // open team sheet (packed team): NICK|SPECIES|ITEM|ABILITY|MOVES|NATURE|… per Pokémon, Pokémon separated by ]
+    else if (t === 'showteam' && sets[p[2]] !== undefined) sets[p[2]] = p.slice(3).join('|').split(']').map(x => { const f = x.split('|'); return {n: mapMon(f[1] || f[0]), i: f[2] || '', a: f[3] || '', mv: (f[4] || '').split(',').filter(Boolean), nt: f[5] || ''}; });
     else if (t === 'teampreview') preview = +p[2] || 4;
     else if (t === 'switch' || t === 'drag') bring(side(p[2]), species(p[3]));
     else if (t === 'detailschange' && /-Mega/.test(p[3] || '')) { const sd = side(p[2]), n = mapMon(species(p[3])); if (n) mega[sd] = n; }
@@ -38,7 +44,7 @@ export function parseLog(log) {
     if (mega[sd]) { const base = mega[sd].replace(/-Mega.*$/, ''); six = six.map(x => x === base ? mega[sd] : x); brought[sd] = brought[sd].map(x => x === base ? mega[sd] : x); leads[sd] = leads[sd].map(x => x === base ? mega[sd] : x); }
     out[sd] = {team: six.sort(), brought: brought[sd], leads: leads[sd], mega: mega[sd], rating: rating[sd] || null}; }
   const w = winner === names.p1 ? 0 : winner === names.p2 ? 1 : null; if (w == null) return null;
-  return {p: [out.p1.team, out.p2.team], b: [out.p1.brought, out.p2.brought], l: [out.p1.leads, out.p2.leads], m: [out.p1.mega, out.p2.mega], r: [out.p1.rating, out.p2.rating], w}; }
+  const o = {p: [out.p1.team, out.p2.team], b: [out.p1.brought, out.p2.brought], l: [out.p1.leads, out.p2.leads], m: [out.p1.mega, out.p2.mega], r: [out.p1.rating, out.p2.rating], w}; if (sets.p1 && sets.p2) o.s = [sets.p1, sets.p2]; return o; }
 async function get(url) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
   try { const r = await politeFetch(url, {signal: c.signal}); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -50,10 +56,10 @@ const BACKFILL = process.env.BACKFILL === '1', MAX_PAGES = BACKFILL ? 100000 : 6
 function save(prev, fresh) {
   const byId = new Map(); for (const g of [...fresh, ...prev.games]) if (!byId.has(g.id)) byId.set(g.id, g);
   const games = [...byId.values()].sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, KEEP);
-  fs.writeFileSync('out/replays.json', JSON.stringify({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games}));
+  fs.writeFileSync(FILE, JSON.stringify({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games}));
   return games.length; }
 async function main() {
-  const prev = readJSON('out/replays.json', {games: []});
+  const prev = readJSON(FILE, {games: []});
   // a different regulation's games are never kept alongside this one's: after a switch the file starts over
   if (prev.format && prev.format !== FMT) { console.log(`replays: regulation changed (${prev.format} → ${FMT}); starting a new file`); prev.games = []; }
   const seen = new Set(prev.games.map(g => g.id)), fresh = [];

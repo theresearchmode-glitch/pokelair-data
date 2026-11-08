@@ -167,3 +167,13 @@ e.g. Xperience Play $500: Swiss BO1, top cut BO3; Talon's Fight Club: all BO3). 
   sets are known, so Mega Stones and items can be tested properly.
 - Showdown's Champions "(Bo3)" format forces open team sheets; each game is still one game, with full sets and stronger players.
 - Papers on the same problem: pre-game win modelling for League of Legends maps (2026), drafted deck strength in Magic (2026).
+
+### Megas with team sheets (VGC-Bench, Nov 8)
+11,028 Champions Showdown games with open team sheets (Reg M-A single games 6,861; M-B single 324; M-B best-of-3 games
+3,843; the 550 MB M-A best-of-3 file not used yet). Each game counted once. Mega Stone = item ending in "-ite".
+- Sides with 0 stones: only 110 (0.5%), won 45.5% (±9: too few to tell). 1 stone 48.9% (9,912), 2 stones **51.0%** (11,915),
+  3 stones 40.3% (119, too few). Two Mega options do a little better than one, which fits Wolfey's "second Mega for a matchup".
+- Stone vs no stone head to head: 106 games, 54.7%: too few to tell.
+- 14% of teams holding a stone never Mega Evolved in that game, which confirms our ladder replays can't test Megas.
+- So no-Mega teams are rare everywhere; the main evidence stays the tournament rounds (34% over 264 rounds).
+Older regulations, so for methods and for factors that don't depend on which Pokémon are legal.
