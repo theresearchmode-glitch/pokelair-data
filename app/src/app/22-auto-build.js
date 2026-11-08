@@ -18,6 +18,8 @@ const tsB = t => { if (!tsMemoB) return tsOf(t); const k = t.map(m => m.p.n).sor
    as an average build, as on My Team), minus CAUT_K × its uncertainty (CH.sdOf), so the search can't chase a lucky, little-played
    mix. abGradeC: the full grade (with matchups) under the same caution, for the final order. */
 let CAUT_K = .5; const abYMemo = new Map();
+// Phase 2 is a draft until Sim approves it: false keeps today's Build for Me (Nov 8)
+let AB_GRADE_V2 = false;
 function abY(t) { if (!t || t.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = t.map(m => m.p.n), k = metaVersion + '#' + CAUT_K + '#' + names.slice().sort().join('|');
   if (abYMemo.has(k)) return abYMemo.get(k); let v = null;
   try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = CH.sdOf(t) || 0; v = teamX(names, null) + (six ? six.d : 0) - CAUT_K * sd; } } catch (e) {}
@@ -105,7 +107,7 @@ function* buildBestGen0() {
   { const pr = yield* provenBuildGen();
     /* Phase 2: proven real teams and searched teams compete in one list, ranked by the cautious grade (a real six's own record
        narrows its uncertainty, so a well-played team keeps its edge), three different teams (no more than 3 Pokémon shared) */
-    if (pr && !ui.abLock && useTSPick() && modelOK()) { const res0 = yield* buildBestGen_(); const all = [...pr.teams, ...(res0.teams || [])], out = [];
+    if (AB_GRADE_V2 && pr && !ui.abLock && useTSPick() && modelOK()) { const res0 = yield* buildBestGen_(); const all = [...pr.teams, ...(res0.teams || [])], out = [];
       for (const d of all) { yield; const G = d._ms ? abGradeC(d._ms) : null; d._gc = G ? G.c : null; }
       all.sort((a, b) => (b._gc ?? -1) - (a._gc ?? -1));
       for (const d of all) { if (out.length >= 3) break; const ns = d.mons.map(m => m.n); if (out.some(o => o.mons.filter(m => ns.includes(m.n)).length > 3)) continue; out.push(d); }
@@ -142,7 +144,7 @@ function* buildBestGen_() {
       seeds = [...seeds.filter(has), ...extra]; if (!legal([], lockP)) return {fmt, teams: [], noMega: goal}; }
     const key = t => t.map(m => m.p.n).sort().join('|'); const seen = new Set(); seeds = seeds.filter(t => { const k = key(t); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 14);
     // candidates: strongest Pokémon plus everything that pairs well with the seeds
-    const GR = useTSPick() && typeof modelOK === 'function' && modelOK(); // rank by the grade when the model is loaded
+    const GR = AB_GRADE_V2 && useTSPick() && typeof modelOK === 'function' && modelOK(); // rank by the grade when the model is loaded (Phase 2)
     // candidates: the strongest by pick value, plus (when ranking by the grade) the 25 the model rates highest
     const mvv = p => (META.model && META.model.mons ? META.model.mons[p.n] || 0 : 0);
     const cand = [...new Set([...byV.slice(0, OFFMETA ? 70 : 45), ...(GR ? pool.slice().sort((a, b) => mvv(b) - mvv(a)).slice(0, 25) : [])])].map(p => M.get(p.n));
