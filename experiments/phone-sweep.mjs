@@ -1,6 +1,7 @@
 // iPhone sweep (Nov 8, list item 7): every page at 375 / 390 / 430 px wide, light and dark, with a full team and an opponent.
 // Flags: the page scrolling sideways, an element sticking out past the screen edge, and text cut off inside its box
-// (overflow hidden with more text than fits). Usage: node experiments/phone-sweep.mjs [page.html]
+// (overflow hidden with more text than fits). Skips screen-reader-only labels (a few px wide) and anything inside a box
+// that clips or scrolls on its own (art bleeding off a card, sideways strips); only what reaches the page edge counts. Usage: node experiments/phone-sweep.mjs [page.html]
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => JSON.parse(fs.readFileSync(OUT + f, 'utf8')), SRC = process.argv[2] || ROOT + 'app/dist/page.html';
@@ -20,8 +21,9 @@ for (const look of ['light', 'dark']) for (const w of [375, 390, 430]) {
       if (document.documentElement.scrollWidth > W + 1) out.push('page scrolls sideways (' + document.documentElement.scrollWidth + 'px)');
       for (const e of document.querySelectorAll('body *')) { const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || e.closest('[hidden],details:not([open]) > :not(summary)')) continue; const rc = e.getBoundingClientRect(); if (!rc.width || !rc.height) continue;
         if (cs.position === 'fixed') continue;
-        if ((rc.right > W + 1 || rc.left < -1) && !e.closest('.tablewrap,[style*="overflow"],.seg,.ar-jumps,.hscroll,table') && !seen.has(e.parentElement)) { seen.add(e); out.push('sticks out: ' + lab(e) + ' ' + Math.round(rc.left) + '…' + Math.round(rc.right)); }
-        if (e.children.length === 0 && (e.innerText || '').trim() && (cs.overflow === 'hidden' || cs.textOverflow === 'ellipsis') && e.scrollWidth > e.clientWidth + 2) out.push('text cut off: ' + lab(e)); }
+        const clipped = (() => { for (let a = e.parentElement; a && a !== document.body; a = a.parentElement) { const o = getComputedStyle(a).overflowX; if (o !== 'visible') return true; } return false; })();
+        if ((rc.right > W + 1 || rc.left < -1) && !clipped && !e.closest('table') && !seen.has(e.parentElement)) { seen.add(e); out.push('sticks out: ' + lab(e) + ' ' + Math.round(rc.left) + '…' + Math.round(rc.right)); }
+        if (e.children.length === 0 && e.clientWidth > 4 && (e.innerText || '').trim() && (cs.overflow === 'hidden' || cs.textOverflow === 'ellipsis') && e.scrollWidth > e.clientWidth + 2) out.push('text cut off: ' + lab(e)); }
       return out.slice(0, 6); });
     for (const x of r) found.push(`${look} ${w}px · ${v}: ${x}`); }
   if (errs.length) found.push(`${look} ${w}px · page error: ${errs[0].slice(0, 120)}`);
