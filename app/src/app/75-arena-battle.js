@@ -83,7 +83,7 @@ ARBAT.battle = () => { const sec = $('matchup'), head = sec && sec.querySelector
   if (sec.firstElementChild !== head) sec.prepend(head);
   head.classList.add('ar-bmhead');
   /* the empty states take the arena empty field (a faint slanted field with the most-used Pokémon), as the other Battle pages do */
-  out.querySelectorAll('.empty-note:not(.mgempty)').forEach(e => { const q = CH.metaSix()[0]; e.classList.add('mgempty'); if (q) e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${sprite(q) || ''}</span>`); });
+  out.querySelectorAll('.empty-note:not(.mgempty)').forEach(e => { const q = CH.metaSix()[0]; e.classList.add('mgempty'); if (q) e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${typeof spArt === 'function' ? spArt('sleep', 92) : sprite(q) || ''}</span>`); });
   /* the plan's four: art tiles with Lead / Back under the name (this is the plan, not the team showcase) */
   out.querySelectorAll('.bmpick:not(.ar-art)').forEach(b => { const p = ARBAT.pOfImg(b.querySelector('img.spr')); if (p) ARBAT.artify(b, p, 'm', '.bmpn'); });
   out.querySelectorAll('.bmpicks:not(.ar-grouped)').forEach(bx => ARBAT.groups(bx, [...bx.querySelectorAll(':scope > .bmpick')], t => t.classList.contains('lead'), 'ar-pgm'));

@@ -237,7 +237,7 @@ MG.flair = () => { document.querySelectorAll('[data-pane]').forEach(pane => { co
     const f = pane.querySelector('.chsec.chfold, .chfolds'); if (f && !(f.previousElementSibling && f.previousElementSibling.classList.contains('mgdiv'))) f.insertAdjacentHTML('beforebegin', '<div class="mgdiv" aria-hidden="true"><i></i><i></i><i></i></div>');
     /* empty states: one small panel, an inked Pokémon and a caption */
     pane.querySelectorAll('.empty-note:not(.mgempty), .hempty:not(.mgempty)').forEach(e => { if (!e.offsetParent || e.querySelector('.mgeart')) return; e.classList.add('mgempty');
-      const six = CH.metaSix(), q = six[(v.length) % Math.max(1, six.length)]; if (q) e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${sprite(q) || ''}</span>`); }); }); };
+      const six = CH.metaSix(), q = six[(v.length) % Math.max(1, six.length)]; if (q || typeof spArt === 'function') e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${typeof spArt === 'function' ? spArt('sleep', 92) : sprite(q) || ''}</span>`); /* Shady Paw (Nov 8) */ }); }); };
 /* tap feedback: a 150ms ink impact flick on main buttons and tappable Pokémon (none with reduced motion) */
 document.addEventListener('pointerdown', e => { if (CH.reduced()) return; const b = e.target && e.target.closest && e.target.closest('.chprimary,.mgyel,#saveBtn,[data-lt],[data-chset],.mgact'); if (!b) return;
   b.classList.remove('mgimp'); void b.offsetWidth; b.classList.add('mgimp'); setTimeout(() => b.classList.remove('mgimp'), 160); }, {passive: true});
