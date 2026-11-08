@@ -214,3 +214,8 @@ Joint model (all factors + the 15 most common Pokémon + rating gap), ranges gro
   priority, Wide Guard, Protect, spread, Scarf, Sash: each within about ±2 of zero, i.e. the grade isn't missing them by
   more than ~2 pts, but sets are guessed here.
 **Team-sheet single games (Showdown best-of-3 format): 500 so far, far too few (ranges ±8 to ±20). Collecting more.**
+
+### Tournament data quality (Nov 8)
+6,333 teams that played: every name is on the M-C roster (0 misread), 1 team lists the same species twice (filtered by the
+grade's duplicate check), Mega options per team: 0 = 56, 1 = 1,545, 2 = 4,690, 3+ = 42 (legal: different Mega Stones).
+Mega forms come from the team sheet (the stone held), not from play, so tournament data has no Mega leak.
