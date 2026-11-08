@@ -142,3 +142,28 @@ e.g. Xperience Play $500: Swiss BO1, top cut BO3; Talon's Fight Club: all BO3). 
 - Mega forms only show when used, and items aren't recorded, so an unused Mega Stone is invisible.
 - Skill: 16,214 games have both players rated; 4,054 have both 1400+, 2,421 both 1500+. Most games are mid-ladder.
 - 47 mirror games (same six on both sides), likely rental teams.
+
+## Step 3 · First single-game results (Nov 8, experiments/deep-factors.mjs)
+20,000 Showdown ladder games (Oct 22 – Nov 8), never used to train the grade, so an independent test.
+- **The grade barely predicts single ladder games: right 52.3% of the time** (coin flip 50%). For comparison the higher-rated
+  player wins only 54.7%, so single ladder games are very noisy. On tournament rounds the grade gets about 56%.
+- **The grade is about twice too sure for one game.** Best-fit confidence 0.41 vs the 0.87 the page uses (fitted on
+  tournament rounds, mostly best of 3). Before the refit its log-loss was worse than a coin flip (0.6934 vs 0.6931).
+- Factors, after refitting confidence (side with it vs without, two date slices, ± = 95% range):
+  - Wide Guard: **underrated** in both slices (+2.0, +2.4; 1400+: +3.1).
+  - Spore answer (Grass, Overcoat, Goggles): **overrated** in both (−1.4, −1.4; 1400+: −3.0). Likely stands for common Grass
+    types, not Spore itself; needs a closer look.
+  - Within about ±1.5 pts of right in both slices: speed control, lead support, Fake Out, Intimidate, two Fake Out users,
+    redirection, Tailwind, Trick Room, priority, Protect on 4+.
+  - Leaning one way but not in both slices: Tailwind AND Trick Room on one team (−3.0, −1.6), two weather setters (+0.6, +5.6),
+    5+ physical attackers (−1.1, −3.5), spread damage (+1.4, +3.3).
+  - **Mega can't be tested with these replays**: they only show a Mega when it was used, so "has a Mega" really means
+    "Mega Evolved this game". Needs data with team sheets.
+- Limits: mostly mid-ladder players; typical sets assumed (replays don't show items); factors judged on the six, not the 4 brought.
+
+## Outside help found (Nov 8)
+- **VGC-Bench** (UT Austin, Stone lab; arXiv 2506.10326): 88,905 Champions Showdown games (Reg M-A, M-B) with OPEN TEAM SHEETS
+  (full items, Abilities and moves) on Hugging Face (cameronangliss/vgc-battle-logs, MIT licence). Older regulations, but
+  sets are known, so Mega Stones and items can be tested properly.
+- Showdown's Champions "(Bo3)" format forces open team sheets; each game is still one game, with full sets and stronger players.
+- Papers on the same problem: pre-game win modelling for League of Legends maps (2026), drafted deck strength in Magic (2026).
