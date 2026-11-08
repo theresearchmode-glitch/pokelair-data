@@ -13,6 +13,17 @@ function abPool() {
 let abMemo = null, tsMemoB = null;
 // readiness for a six, remembered for the length of one build
 const tsB = t => { if (!tsMemoB) return tsOf(t); const k = t.map(m => m.p.n).sort().join('|'); if (tsMemoB.has(k)) return tsMemoB.get(k); const v = tsOf(t); tsMemoB.set(k, v); return v; };
+/* Phase 2 (Nov 8, foundation plan): Build for Me ranks by the grade itself, held back where the evidence is thin.
+   abY: the grade's strength for a six as fast as possible (Pokémon + pairs + this six's own record; sets you haven't picked count
+   as an average build, as on My Team), minus CAUT_K × its uncertainty (CH.sdOf), so the search can't chase a lucky, little-played
+   mix. abGradeC: the full grade (with matchups) under the same caution, for the final order. */
+let CAUT_K = .5; const abYMemo = new Map();
+function abY(t) { if (!t || t.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = t.map(m => m.p.n), k = metaVersion + '#' + CAUT_K + '#' + names.slice().sort().join('|');
+  if (abYMemo.has(k)) return abYMemo.get(k); let v = null;
+  try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = CH.sdOf(t) || 0; v = teamX(names, null) + (six ? six.d : 0) - CAUT_K * sd; } } catch (e) {}
+  if (abYMemo.size > 20000) abYMemo.clear(); abYMemo.set(k, v); return v; }
+function abGradeC(t) { try { const ms = typeof assignItems === 'function' ? assignItems(t) : t, RD = THR.teamReport(ms), st = CH.strengthOf(ms, RD ? RD.score : null); if (!st) return null;
+  const sd = CH.sdOf(ms) || 0; return {g: st.pct, c: strengthPct(st.y - CAUT_K * sd)}; } catch (e) { return null; } }
 function abScore(team) { if (abMemo) { const k = team.map(m => m.p.n).sort().join('|') + (OFFMETA ? '#o' : ''); let v = abMemo.get(k); if (v === undefined) { v = abScore0(team); abMemo.set(k, v); } return v; } return abScore0(team); }
 function abScore0(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.penalty - (team.length >= 4 ? typeEmphasis(v.st.a) : 0) - pillarCost(team, v.gp);
   // a rain or sun that helps nobody (Pelipper next to only Fire attackers) costs a little
@@ -91,7 +102,15 @@ function* buildBestGen0() {
   // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below
   // fills the rest, so a rare sleeper still gets three good teams
   let keepPr = null;
-  { const pr = yield* provenBuildGen(); if (pr && !ui.abLock) return pr;
+  { const pr = yield* provenBuildGen();
+    /* Phase 2: proven real teams and searched teams compete in one list, ranked by the cautious grade (a real six's own record
+       narrows its uncertainty, so a well-played team keeps its edge), three different teams (no more than 3 Pokémon shared) */
+    if (pr && !ui.abLock && useTSPick() && modelOK()) { const res0 = yield* buildBestGen_(); const all = [...pr.teams, ...(res0.teams || [])], out = [];
+      for (const d of all) { yield; const G = d._ms ? abGradeC(d._ms) : null; d._gc = G ? G.c : null; }
+      all.sort((a, b) => (b._gc ?? -1) - (a._gc ?? -1));
+      for (const d of all) { if (out.length >= 3) break; const ns = d.mons.map(m => m.n); if (out.some(o => o.mons.filter(m => ns.includes(m.n)).length > 3)) continue; out.push(d); }
+      return {...pr, teams: out}; }
+    if (pr && !ui.abLock) return pr;
     if (pr && ui.abLock) { yield; const good = pr.teams.filter(t => { try { const tm = t.mons.map(m => abMember(byName.get(m.n))); if ((tsB(tm) ?? 0) < 50) return false; const gp = gamePlan(tm.map(m => ({...m, _mv: memberMoves(m).moves}))), sp = gp && gp.rows.find(r => r.k === 'speed'); return !sp || sp.st !== 'miss'; } catch (e) { return false; } }); /* same bar as built teams: 50+ ready and some speed control */ if (good.length >= 3) return {...pr, teams: good}; keepPr = good; } }
   const res0 = yield* buildBestGen_();
   if (keepPr && keepPr.length) { const fresh = (res0.teams || []).filter(t => !keepPr.some(k => k.mons.filter(m => t.mons.some(x => x.n === m.n)).length > 3)); return {...res0, teams: [...keepPr, ...fresh].slice(0, 3)}; }
@@ -123,14 +142,17 @@ function* buildBestGen_() {
       seeds = [...seeds.filter(has), ...extra]; if (!legal([], lockP)) return {fmt, teams: [], noMega: goal}; }
     const key = t => t.map(m => m.p.n).sort().join('|'); const seen = new Set(); seeds = seeds.filter(t => { const k = key(t); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 14);
     // candidates: strongest Pokémon plus everything that pairs well with the seeds
-    const cand = byV.slice(0, OFFMETA ? 70 : 45).map(p => M.get(p.n));
+    const GR = useTSPick() && typeof modelOK === 'function' && modelOK(); // rank by the grade when the model is loaded
+    // candidates: the strongest by pick value, plus (when ranking by the grade) the 25 the model rates highest
+    const mvv = p => (META.model && META.model.mons ? META.model.mons[p.n] || 0 : 0);
+    const cand = [...new Set([...byV.slice(0, OFFMETA ? 70 : 45), ...(GR ? pool.slice().sort((a, b) => mvv(b) - mvv(a)).slice(0, 25) : [])])].map(p => M.get(p.n));
     const finals = [];
     for (const seed of seeds) { yield;
       let beam = [seed];
       while (beam[0].length < 6) { yield;
         const next = [];
         for (const t of beam) { const scored = [];
-          for (const c of cand) { if (!legal(t, c.p)) continue; scored.push([abScore([...t, c]), [...t, c]]); }
+          for (const c of cand) { if (!legal(t, c.p)) continue; const nt = [...t, c]; scored.push([GR && nt.length === 6 ? abY(nt) : abScore(nt), nt]); }
           scored.sort((a, b) => b[0] - a[0]); next.push(...scored.slice(0, 3)); }
         const nk = new Set(); beam = next.sort((a, b) => b[0] - a[0]).filter(([, t]) => { const k = key(t); if (nk.has(k)) return false; nk.add(k); return true; }).slice(0, 3).map(x => x[1]);
         if (!beam.length) break;
@@ -138,15 +160,20 @@ function* buildBestGen_() {
       for (const t of beam) if (t.length === 6) finals.push({t, lock: seed.length});
     }
     // polish: try swapping each non-core member for each candidate once (the seed core stays, so options stay different)
-    const polish = (t, lock) => { let best = t, bs = abScore(t);
-      for (let i = lock; i < 6; i++) for (const c of cand) { const rest = best.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const s = abScore(nt); if (s > bs + 1) { best = nt; bs = s; } }
+    const sc = t => GR ? (abY(t) ?? -1e9) : abScore(t), eps = GR ? .002 : 1;
+    // up to 3 rounds (grade mode), each taking the single swap outside the seed core that raises the score most
+    const polish = (t, lock) => { let best = t, bs = sc(t);
+      for (let round = 0; round < (GR ? 3 : 1); round++) { let imp = false;
+        for (let i = lock; i < 6; i++) for (const c of cand) { const rest = best.filter((_, j) => j !== i); if (!legal(rest, c.p)) continue; const nt = [...rest.slice(0, i), c, ...rest.slice(i)]; const v = sc(nt); if (v > bs + eps) { best = nt; bs = v; imp = true; } }
+        if (!imp) break; }
       return {t: best, s: bs}; };
-    let ranked = finals.map(f => ({...f, s: abScore(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12); for (let i = 0; i < ranked.length; i++) { yield; ranked[i] = {...polish(ranked[i].t, ranked[i].lock), lock: ranked[i].lock}; } ranked.sort((a, b) => b.s - a.s);
+    let ranked = finals.map(f => ({...f, s: sc(f.t)})).sort((a, b) => b.s - a.s).slice(0, 12); for (let i = 0; i < ranked.length; i++) { yield; ranked[i] = {...polish(ranked[i].t, ranked[i].lock), lock: ranked[i].lock}; } ranked.sort((a, b) => b.s - a.s);
     // Readiness decides the order: the search above only shortlists. Each shortlisted team then gets one round of polish:
     // the single swap (outside its seed core) that readies it for the most top threats.
     // Candidates for the polish: the 25 strongest by pick value plus the 15 the win model rates highest (so a Pokémon the
     // model likes is tried even if it's rarely picked). Up to 3 rounds, each taking the single swap that raises it most.
-    if (useTSPick()) { const mv = p => (META.model.mons[p.n] || 0), cTS = [...new Set([...cand.slice(0, 25), ...pool.slice().sort((a, b) => mv(b) - mv(a)).slice(0, 15).map(p => M.get(p.n))])];
+    if (GR) { for (const r of ranked) { yield; const G = abGradeC(r.t); r.gc = G ? G.c : null; r.g = G ? G.g : null; } ranked.sort((a, b) => (b.gc ?? -1) - (a.gc ?? -1) || b.s - a.s); }
+    else if (useTSPick()) { const mv = p => (META.model.mons[p.n] || 0), cTS = [...new Set([...cand.slice(0, 25), ...pool.slice().sort((a, b) => mv(b) - mv(a)).slice(0, 15).map(p => M.get(p.n))])];
       // every swap is checked for readiness (accuracy over speed, Sim Oct 30); a six already checked is never checked twice
       const tsM = tsB;
       for (const r of ranked.slice(0, 8)) { r.ts = tsM(r.t); if (r.ts == null) continue;
