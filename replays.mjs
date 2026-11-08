@@ -11,8 +11,8 @@ import {activeReg} from './formats.mjs';
 // game, Sim Nov 8: single games first) into out/replays_bo3.json, with each side's full sets from the team sheet.
 const BO3 = process.env.REPLAY_FMT === 'bo3';
 export const FMT = activeReg().sd + (BO3 ? 'bo3' : '');
-const FILE = BO3 ? 'out/replays_bo3.json' : 'out/replays.json';
-const BASE = 'https://replay.pokemonshowdown.com', KEEP = 20000, MAX_NEW = +(process.env.MAX_REPLAYS || 600), PAUSE = 350;
+const FILE = process.env.REPLAY_FILE || (BO3 ? 'out/replays_bo3.json' : 'out/replays.json');
+const BASE = 'https://replay.pokemonshowdown.com', KEEP = +(process.env.REPLAY_KEEP || 20000), MAX_NEW = +(process.env.MAX_REPLAYS || 600), PAUSE = 350;
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const ROSTER = new Set(readJSON('roster.json', []));
 // Showdown species -> roster name (the roster mostly uses Showdown's own spelling)
