@@ -10,7 +10,7 @@
 // Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
 // team against real tournament teams instead of a fixed range that any odd team could max out.
 import fs from 'node:fs'; import {pilotTest} from './pilot.mjs';
-const M = JSON.parse(fs.readFileSync('out/matches.json', 'utf8'));
+const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')); // MATCHES=file: experiments (e.g. out/matches_ab.json)
 const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
 const monIx = new Map(), mons = [];
 teams.flat().forEach(n => { if (!monIx.has(n)) { monIx.set(n, mons.length); mons.push(n); } });
@@ -29,9 +29,9 @@ if (hasSets) { const cnt = new Map(), used = new Set(); for (const g of G) { use
   const keep = new Map([...cnt].filter(([, n]) => n >= 40).map(([f], i) => [f, i])); setNames = [...keep.keys()].map(f => M.feats[f]);
   deckF = M.decks.map(fs_ => fs_.map(f => keep.get(f)).filter(j => j != null)); }
 // centering: how often each kept feature appears among decks that carry its species
-const featSp = setNames.map(f => f.split(/[@:]/)[0]), spFeats = new Map(), freq = new Float64Array(setNames.length);
+const featSp = setNames.map(f => f.split(/[@:#]/)[0]), spFeats = new Map(), freq = new Float64Array(setNames.length);
 if (hasSets) { const spDecks = new Map(), fd = new Float64Array(setNames.length), used = new Set(); for (const g of G) { used.add(g[7]); used.add(g[8]); }
-  for (const d of used) { for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1); for (const j of deckF[d]) fd[j]++; }
+  for (const d of used) { for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1); for (const j of deckF[d]) fd[j]++; }
   setNames.forEach((f, j) => { freq[j] = fd[j] / (spDecks.get(featSp[j]) || 1); if (!spFeats.has(featSp[j])) spFeats.set(featSp[j], []); spFeats.get(featSp[j]).push(j); }); }
 const nP = M.players;
 // time split: last 20% of events (by date) held out
@@ -134,16 +134,17 @@ let meanX = 0; if (F) { let n = 0; for (const [A, B, , , , , , dA, dB] of GF) { 
 // calibration on the held-out events: how far the train-only model's edges should be stretched or shrunk (1 = right as is)
 const calib = (() => { const pts = test.map(([A, B, r, , , , , dA, dB]) => [full.x(A, dA) - full.x(B, dB), r]); let w = 1;
   for (let k = 0; k < 30; k++) { let g = 0, h = 0; for (const [e, r] of pts) { const p = 1 / (1 + Math.exp(-w * e)); g += (p - r) * e; h += p * (1 - p) * e * e; } w -= g / (h || 1); } return w; })();
-// how far a build can move a Pokémon. Down: to the 10th percentile of its real decks. Up: only as far as the best build that
-// real players actually run (a build on 20+ decks, or 5% of them); hand-picking the four moves with the biggest numbers
+// how far a build can move a Pokémon. Down: to its weakest real deck. Up: only as far as the best build that real players
+// actually run on 5+ decks (Nov 8 scoreboard: the old 10th-percentile floor and 20-deck ceiling threw away real signal;
+// this range scored as well as no cap at all at three date cut-offs); hand-picking the four moves with the biggest numbers
 // can't beat that. The page clamps every build to this range, and the real-team spread below uses the same clamp.
 const setRange = (() => { if (!F || !useSets) return {}; const vals = new Map(), sig = new Map(), seenTD = new Set();
   for (const [A, B, , , , , , dA, dB] of GF) for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k) || d == null) continue; seenTD.add(k); const has = new Set(deckF[d]);
     for (const n of teams[t]) { const fj = spFeats.get(n) || []; let v = 0; for (const j of fj) v += F.c[j] * ((has.has(j) ? 1 : 0) - freq[j]);
       if (!vals.has(n)) { vals.set(n, []); sig.set(n, new Map()); } vals.get(n).push(v); const key = fj.filter(j => has.has(j)).join(','); const g = sig.get(n).get(key) || {c: 0, v}; g.c++; sig.get(n).set(key, g); } }
-  const out = {}; for (const [n, a] of vals) { if (!spFeats.has(n)) continue; a.sort((x, y) => x - y); const builds = [...sig.get(n).values()], need = Math.max(20, .05 * a.length);
+  const out = {}; for (const [n, a] of vals) { if (!spFeats.has(n)) continue; a.sort((x, y) => x - y); const builds = [...sig.get(n).values()], need = 5;
     const common = builds.filter(b => b.c >= need); const top = (common.length ? common : [builds.sort((x, y) => y.c - x.c)[0]]).reduce((m, b) => Math.max(m, b.v), -1e9);
-    const lo = a.length >= 10 ? a[Math.floor(.1 * (a.length - 1))] : Math.min(0, top); out[n] = [+Math.min(lo, top).toFixed(4), +top.toFixed(4)]; } return out; })();
+    const lo = a.length ? a[0] : Math.min(0, top); out[n] = [+Math.min(lo, top).toFixed(4), +top.toFixed(4)]; } return out; })();
 // tested pairs: two Pokémon brought together on 15+ distinct tournament teams. A team whose pairs are mostly untested gets
 // its above-average edge cut: the model knows each Pokémon's results, but not how an untried mix plays together.
 // (Only upside is cut; a weak team is not pulled up.)
@@ -171,6 +172,6 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)])) : {},
   // the "same players without it" test for each Pokémon (pilot.mjs): [games with, win % with, games without, win % without, players]
   pilot: TRAIN_ONLY ? {} : pilotTest(M)};
-fs.writeFileSync(TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json', JSON.stringify(out));
+fs.writeFileSync(process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'), JSON.stringify(out));
 console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);

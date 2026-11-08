@@ -2,17 +2,17 @@
 function modelOK(){const m=META.model;return !!(m&&m.ships&&m.mons&&Object.keys(m.mons).length)}
 function modelX(names){const m=META.model;let x=0;for(const n of names)x+=m.mons[n]||0;
   for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){const a=names[i]<names[j]?names[i]+'|'+names[j]:names[j]+'|'+names[i];x+=m.pairs[a]||0}return x}
-// Set features (item and moves per Pokémon), when the model kept them: each member's usual item (or Mega Stone) and its 4 moves.
+// Set features (item, Ability and moves per Pokémon; Abilities as "Sneasler#Unburden" once the model ships them, Nov 8), when the model kept them: each member's usual item (or Mega Stone) and its 4 moves.
 // v2 models center them within the species: a feature counts (1 − how often that species runs it) when the set has it and
 // (− how often) when it doesn't, so the usual set adds about nothing and a Pokémon's strength sits in its own shrunk number.
 let spFeatCache={m:null,map:null};
 function spFeats(){const m=META.model;if(spFeatCache.m===m)return spFeatCache.map;const map=new Map();
-  for(const k of Object.keys((m&&m.sets)||{})){const sp=k.split(/[@:]/)[0];if(!map.has(sp))map.set(sp,[]);map.get(sp).push(k)}spFeatCache={m,map};return map}
+  for(const k of Object.keys((m&&m.sets)||{})){const sp=k.split(/[@:#]/)[0];if(!map.has(sp))map.set(sp,[]);map.get(sp).push(k)}spFeatCache={m,map};return map}
 function setX(ms){return (ms||[]).reduce((a,m)=>a+setOne(m),0)}
 function setOne(m){const M=META.model,sets=M&&M.sets;if(!sets||!m)return 0;let x=0;const ms=[m];const center=!!M.center,fq=M.setFreq||{},F=center?spFeats():null;
   for(const m of ms){const p=m.p;if(!p)continue;let it='';try{it=p.m?stoneFor(p):m._deadItem?'':(m.heldItem||m.item||(topItem(p)||[])[0]||'')}catch(e){}
     if(center){const mv=new Set((m.moves||[]).map(v=>v&&v.name).filter(Boolean));
-      let u=0;for(const k of (F.get(p.n)||[])){const i=k.indexOf('@')===p.n.length,has=i?k.slice(p.n.length+1)===it:mv.has(k.slice(p.n.length+1));u+=sets[k]*((has?1:0)-(fq[k]||0))}
+      let u=0;const ab=String(m.ability||'').toLowerCase();for(const k of (F.get(p.n)||[])){const c=k[p.n.length],v=k.slice(p.n.length+1),has=c==='@'?v===it:c==='#'?v.toLowerCase()===ab:mv.has(v);u+=sets[k]*((has?1:0)-(fq[k]||0))}
       // a build only counts as much as real builds of this Pokémon have shown (10th-90th percentile of real decks)
       const r=M.setRange&&M.setRange[p.n];x+=r?Math.max(r[0],Math.min(r[1],u)):u;continue}
     if(it)x+=sets[p.n+'@'+it]||0;for(const mv of (m.moves||[]))if(mv&&mv.name)x+=sets[p.n+':'+mv.name]||0}

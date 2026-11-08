@@ -11,7 +11,7 @@ const M = JSON.parse(fs.readFileSync('out/matches.json', 'utf8')), MD = JSON.par
 if (!MD.ships || !MD.mons) { console.log('six: model not shipped, nothing added'); process.exit(0); }
 const TAU = .35, SIG_S = .6, ITERS = 300, MIN_G = 10, calib = MD.calib; // 10+ games: keeps meta/model under the 256 KB the page database takes per write
 const teams = M.teams.map(k => k.split('|'));
-const spF = new Map(); for (const f of Object.keys(MD.sets || {})) { const sp = f.split(/[@:]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
+const spF = new Map(); for (const f of Object.keys(MD.sets || {})) { const sp = f.split(/[@:#]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
 const xOf = (t, d) => { const m = teams[t]; let v = 0; for (const n of m) v += MD.mons[n] || 0;
   for (let i = 0; i < m.length; i++) for (let j = i + 1; j < m.length; j++) { const k = m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i]; v += (MD.pairs || {})[k] || 0; }
   if (d == null || !M.decks || !M.decks[d]) return v; const has = new Set(M.decks[d].map(f => M.feats[f]));

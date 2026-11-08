@@ -13,16 +13,16 @@
 // Usage: node experiments/board.mjs [out.json]      (read-only)
 import fs from 'node:fs';
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/';
-const M = JSON.parse(fs.readFileSync(OUT + 'matches.json', 'utf8')), MT = JSON.parse(fs.readFileSync(process.env.BOARD_MT || OUT + 'model_train.json', 'utf8'));
+const M = JSON.parse(fs.readFileSync(process.env.MATCHES || OUT + 'matches.json', 'utf8')), MT = JSON.parse(fs.readFileSync(process.env.BOARD_MT || OUT + 'model_train.json', 'utf8'));
 // BOARD_MT=file BOARD_CUT=.6 : score a model trained on the first 60% instead (more later games and swaps to test on)
 const CUTF = +(process.env.BOARD_CUT || .8);
 const teams = M.teams.map(k => k.split('|')), calib = MT.calib, sig = z => 1 / (1 + Math.exp(-z));
 // ---- team strength as the page computes it: species + pairs (+ each member's set, centered and clamped, when the deck is known)
-const spF = new Map(); for (const f of Object.keys(MT.sets || {})) { const sp = f.split(/[@:]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
+const spF = new Map(); for (const f of Object.keys(MT.sets || {})) { const sp = f.split(/[@:#]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
 const pairX = t => { const m = teams[t]; let v = 0; for (const n of m) v += MT.mons[n] || 0;
   for (let i = 0; i < m.length; i++) for (let j = i + 1; j < m.length; j++) { const k = m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i]; v += (MT.pairs || {})[k] || 0; } return v; };
-const setX = (t, d, noClamp) => { if (d == null || !M.decks || !M.decks[d]) return 0; const has = new Set(M.decks[d].map(f => M.feats[f])); let v = 0;
-  for (const n of teams[t]) { let u = 0; for (const f of spF.get(n) || []) u += MT.sets[f] * ((has.has(f) ? 1 : 0) - ((MT.setFreq || {})[f] || 0)); const r = noClamp ? null : (MT.setRange || {})[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; }
+const setX = (t, d, noClamp, RG) => { if (d == null || !M.decks || !M.decks[d]) return 0; const has = new Set(M.decks[d].map(f => M.feats[f])); let v = 0;
+  for (const n of teams[t]) { let u = 0; for (const f of spF.get(n) || []) u += MT.sets[f] * ((has.has(f) ? 1 : 0) - ((MT.setFreq || {})[f] || 0)); const r = noClamp ? null : (RG || MT.setRange || {})[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; }
   return v; };
 // ---- the date split
 const ev = M.events, ord = [...ev.keys()].sort((a, b) => ev[a][1] < ev[b][1] ? -1 : 1), lo = Math.floor(ord.length * CUTF), futE = new Set(ord.slice(lo)), cutDate = ev[ord[lo]][1];
@@ -45,6 +45,15 @@ V['Pokémon + pairs only (no sets)'] = (t, d) => pairX(t);
 V['+ the most common sets only'] = (t, d) => pairX(t);            // centered sets: the usual set adds 0, so this equals the line above
 V['+ its own sets (items, moves)'] = (t, d) => pairX(t) + setX(t, d);
 V['+ its own sets, no cap on how much a set can count'] = (t, d) => pairX(t) + setX(t, d, true);
+// (a) where should the cap sit? Ranges built from past decks only: each species' build values and how many decks ran each build
+{ const vals = new Map(), seen = new Set(); for (const g of past) for (const [t, d] of [[g[0], g[7]], [g[1], g[8]]]) { if (d == null || !M.decks[d] || seen.has(t + ',' + d)) continue; seen.add(t + ',' + d);
+    const has = new Set(M.decks[d].map(f => M.feats[f])); for (const n of teams[t]) { let u = 0; const key = []; for (const f of spF.get(n) || []) { u += MT.sets[f] * ((has.has(f) ? 1 : 0) - ((MT.setFreq || {})[f] || 0)); if (has.has(f)) key.push(f); }
+      if (!vals.has(n)) vals.set(n, {a: [], b: new Map()}); const o = vals.get(n); o.a.push(u); const k = key.join(','), b = o.b.get(k) || {c: 0, v: u}; b.c++; o.b.set(k, b); } }
+  const mk = (loF, minC) => { const R = {}; for (const [n, o] of vals) { const a = o.a.slice().sort((x, y) => x - y), bs = [...o.b.values()].filter(b => b.c >= minC);
+      const top = bs.length ? Math.max(...bs.map(b => b.v)) : Math.max(...a), lo = loF == null ? a[0] : a[Math.floor(loF * (a.length - 1))]; R[n] = [Math.min(lo, top), top]; } return R; };
+  const RG = {'floor: lowest real build · ceiling: best build on 20+ decks': mk(null, 20), 'floor: 10th pct · ceiling: best build on 5+ decks': mk(.1, 5),
+    'floor: lowest real build · ceiling: best build on 5+ decks': mk(null, 5), 'floor: lowest real build · ceiling: best build on 2+ decks': mk(null, 2)};
+  for (const [k, R] of Object.entries(RG)) V['+ own sets, cap ' + k] = (t, d) => pairX(t) + setX(t, d, false, R); }
 process.stdout.write('fitting each six\'s own record on past games…\r');
 const dlS = fitSix((t, d) => pairX(t) + setX(t, d));
 V['+ own sets + this six\'s own record  [site today, minus matchups]'] = (t, d) => pairX(t) + setX(t, d) + dlS(t);
