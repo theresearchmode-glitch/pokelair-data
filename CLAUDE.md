@@ -33,6 +33,9 @@ Claude-only features without a plan for the public site; kids play Pokémon, so 
 ## Mascot (Sim, Nov 8)
 Shady Paw is the chosen mascot, but nothing of him goes on the site until Sim is 100% happy with the design. Always show her
 images of exactly how it would look for approval first; a placeholder drawing lost his character and was taken down.
+Sim liked the mock-up integration (side profile / bold lines / sketch styles, ink plus one site accent) but wants him used
+sparingly: NOT in Your Six, Add a Pokémon or the Battle preview, and never beside grades, ratings or data. Allowed spots:
+an empty My Team (no team yet), other empty screens, small notices (saved, grade went up), tip bubbles, loading.
 
 ## Privacy and safety
 - COPPA: no names or emails collected; feedback stays anonymous.
