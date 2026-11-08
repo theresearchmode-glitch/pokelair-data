@@ -201,3 +201,16 @@ No code bugs found (winner index checked against the replays). Problems with how
 7. Wording overclaimed and ~19 factors were tested with no correction for testing that many. Fix: report "not proven" and
    use a stricter bar when many factors are tested at once.
 Also: replays feed bring/lead rates into limitless.json, so they aren't 100% separate from the page's data (not who won).
+
+## Step 3 v2 · Rebuilt measurement (experiments/deep-factors2.mjs, Nov 8)
+Joint model (all factors + the 15 most common Pokémon + rating gap), ranges grouped by team, halves split by team, strict bar.
+**Ladder, 20,000 single games, typical sets, no Mega information (LADDER=1):**
+- Confidence that fits: **0.71 ±0.30** (page 0.87). Most of the earlier 0.41 came from the Mega leak and the missing rating.
+  Together with best-of-1 tournament rounds (0.60× page, ±0.37): the page is somewhat too sure for one game; best of 3 fine.
+- Player rating matters a lot: **6.8 win-chance pts per 100 rating.** The grade can't see the player, so single games will
+  always be noisy for a team grade (picks the winner 52.1%).
+- **No factor is proven to be missed by the grade** in ladder single games. Leaning (not proven): two Fake Out users −2.7 ±2.4,
+  Tailwind AND Trick Room −1.8 ±1.4, 5+ physical attackers −3.1 ±2.4. Fake Out, Intimidate, redirection, Tailwind, Trick Room,
+  priority, Wide Guard, Protect, spread, Scarf, Sash: each within about ±2 of zero, i.e. the grade isn't missing them by
+  more than ~2 pts, but sets are guessed here.
+**Team-sheet single games (Showdown best-of-3 format): 500 so far, far too few (ranges ±8 to ±20). Collecting more.**

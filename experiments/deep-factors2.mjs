@@ -13,7 +13,11 @@ import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => JSON.parse(fs.readFileSync(OUT + f, 'utf8'));
 const SRC = process.argv[2] || OUT + 'replays_bo3.json';
-const R = JSON.parse(fs.readFileSync(SRC, 'utf8')).games.filter(g => g.s && g.s[0].length === 6 && g.s[1].length === 6 && (g.w === 0 || g.w === 1));
+// LADDER=1: ladder replays (no team sheets). Each side becomes its six base species with typical sets and NO Mega
+// information (what shows in a replay depends on how the game went), and the rating gap is an extra input.
+const LADDER = process.env.LADDER === '1';
+const R = JSON.parse(fs.readFileSync(SRC, 'utf8')).games.map(g => LADDER && g.p ? {...g, s: g.p.map(t => t.map(n => ({n: n.replace(/-Mega.*$/, ''), i: '', a: '', mv: [], nt: ''})))} : g)
+  .filter(g => g.s && g.s[0].length === 6 && g.s[1].length === 6 && (g.w === 0 || g.w === 1));
 const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
 const page = ROOT + `app/df2-${process.pid}.html`;
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
@@ -21,7 +25,7 @@ const b = await chromium.launch(), pg = await (await b.newContext()).newPage();
 await pg.addInitScript(D => { localStorage.setItem('cc2.welcomed', '"1"'); window.__PL_TEST = 1; window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
 await pg.goto('file://' + page); await pg.waitForTimeout(4000);
 // a side's team sheet as Showdown paste text (the page's own importer then reads it)
-const paste = s => s.map(x => `${x.n}${x.i ? ' @ ' + x.i : ''}\nAbility: ${x.a}\n${x.nt ? x.nt + ' Nature\n' : ''}${x.mv.map(m => '- ' + m).join('\n')}`).join('\n\n');
+const paste = s => s.map(x => `${x.n}${x.i ? ' @ ' + x.i : ''}\n${x.a ? 'Ability: ' + x.a + '\n' : ''}${x.nt ? x.nt + ' Nature\n' : ''}${x.mv.map(m => '- ' + m).join('\n')}`).join('\n\n');
 const sideKey = s => s.map(x => [x.n, x.i, x.a, [...x.mv].sort().join(',')].join('/')).sort().join('|');
 const sides = new Map(); for (const g of R) for (const s of g.s) sides.set(sideKey(s), paste(s));
 const code = ch => `(()=>{const o={};const PRI=new Set(['Sucker Punch','Extreme Speed','Aqua Jet','Grassy Glide','Bullet Punch','Ice Shard','Shadow Sneak','Mach Punch','Quick Attack','Vacuum Wave','Jet Punch','First Impression','Accelerock','Thunderclap']);
@@ -42,15 +46,15 @@ const code = ch => `(()=>{const o={};const PRI=new Set(['Sucker Punch','Extreme 
 const F = {}, all = [...sides];
 for (let i = 0; i < all.length; i += 100) Object.assign(F, JSON.parse(await pg.evaluate(c => window.__ev(c), code(all.slice(i, i + 100)))));
 await b.close(); fs.unlinkSync(page);
-const G = R.map(g => { const A = F[sideKey(g.s[0])], B = F[sideKey(g.s[1])]; if (!A || !B) return null; return {z: A[0] - B[0], y: g.w === 0 ? 1 : 0, A, B, ka: A[1].slice().sort().join('|'), kb: B[1].slice().sort().join('|')}; }).filter(Boolean);
-const FN = Object.keys(Object.values(F)[0][2]);
+const G = R.map(g => { const A = F[sideKey(g.s[0])], B = F[sideKey(g.s[1])]; if (!A || !B) return null; return {z: A[0] - B[0], rg: LADDER && g.r && g.r[0] && g.r[1] ? (g.r[0] - g.r[1]) / 100 : 0, y: g.w === 0 ? 1 : 0, A, B, ka: A[1].slice().sort().join('|'), kb: B[1].slice().sort().join('|')}; }).filter(Boolean);
+const FN = Object.keys(Object.values(F)[0][2]).filter(f => !LADDER || !/Mega/.test(f));
 // the 15 most common Pokémon as their own inputs
 const cnt = new Map(); for (const d of G) for (const n of [...d.A[1], ...d.B[1]]) { const base = n.replace(/-Mega.*$/, ''); cnt.set(base, (cnt.get(base) || 0) + 1); }
 const TOP = [...cnt].sort((a, b) => b[1] - a[1]).slice(0, 15).map(([n]) => n);
 const hasMon = (s, n) => s[1].some(x => x.replace(/-Mega.*$/, '') === n) ? 1 : 0;
 const sig = z => 1 / (1 + Math.exp(-z));
 // design: [grade gap, factor gaps..., top-Pokémon gaps...]
-const X = d => [d.z, ...FN.map(f => d.A[2][f] - d.B[2][f]), ...TOP.map(n => hasMon(d.A, n) - hasMon(d.B, n))];
+const X = d => [d.z, ...(LADDER ? [d.rg] : []), ...FN.map(f => d.A[2][f] - d.B[2][f]), ...TOP.map(n => hasMon(d.A, n) - hasMon(d.B, n))];
 function fitJoint(rows) { const p = X(rows[0]).length, w = new Float64Array(p), lam = 1;
   for (let it = 0; it < 25; it++) { const g = new Float64Array(p), H = Array.from({length: p}, () => new Float64Array(p));
     for (const d of rows) { const x = X(d), q = sig(x.reduce((s, v, j) => s + v * w[j], 0)); for (let a = 0; a < p; a++) { g[a] += (d.y - q) * x[a]; for (let c = 0; c < p; c++) H[a][c] += q * (1 - q) * x[a] * x[c]; } }
@@ -75,8 +79,10 @@ console.log(`${G.length} single games with team sheets (${SRC.split('/').pop()})
 const J = fitJoint(G), H0 = half[0].length > 200 ? fitJoint(half[0]) : null, H1 = half[1].length > 200 ? fitJoint(half[1]) : null;
 console.log(`grade confidence that fits these games: ${J.w[0].toFixed(2)} ±${(1.96 * J.se[0]).toFixed(2)} (page uses ${(+rd('model.json').calib).toFixed(2)})`);
 console.log(`\neffect of each factor BEYOND the grade, all fitted together, in win-chance points (± = 95% range grouped by team); halves split by team (${half[0].length} / ${half[1].length} games)`);
-FN.forEach((f, i) => { const j = i + 1, e = pts(J.w[j]), r = pts(1.96 * J.se[j]), zz = J.w[j] / (J.se[j] || 1e9), share = prev(f);
+if (LADDER) console.log(`rating gap: ${pts(J.w[1]).toFixed(1)} win-chance pts per 100 rating`);
+const OFF = LADDER ? 2 : 1;
+FN.forEach((f, i) => { const j = i + OFF, e = pts(J.w[j]), r = pts(1.96 * J.se[j]), zz = J.w[j] / (J.se[j] || 1e9), share = prev(f);
   const v = share < 3 || share > 97 ? 'too few teams differ to tell' : Math.abs(zz) > 3 ? (e > 0 ? 'GRADE UNDERRATES IT' : 'GRADE OVERRATES IT') : Math.abs(zz) > 1.96 ? 'leaning, not proven' : 'not proven either way';
   const hs = [H0, H1].map(H => H ? (pts(H.w[j]) >= 0 ? '+' : '') + pts(H.w[j]).toFixed(1) : '—').join(' / ');
   console.log(`  ${f.padEnd(40)} on ${share.toFixed(0).padStart(3)}% of teams   ${(e >= 0 ? '+' : '') + e.toFixed(1)} ±${r.toFixed(1)}   halves ${hs}   ${v}`); });
-console.log('\npopular Pokémon beyond the grade (context): ' + TOP.map((n, i) => `${n} ${(pts(J.w[1 + FN.length + i]) >= 0 ? '+' : '') + pts(J.w[1 + FN.length + i]).toFixed(1)}`).join(', '));
+console.log('\npopular Pokémon beyond the grade (context): ' + TOP.map((n, i) => `${n} ${(pts(J.w[OFF + FN.length + i]) >= 0 ? '+' : '') + pts(J.w[OFF + FN.length + i]).toFixed(1)}`).join(', '));
