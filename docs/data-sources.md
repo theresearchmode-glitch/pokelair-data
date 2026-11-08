@@ -13,15 +13,18 @@ Checked by visiting each source; "unsure" means I couldn't confirm it.
 | VGC-Bench (Hugging Face) | 88,905 Champions games with team sheets, Reg M-A/M-B | older regulations |
 
 ## Found today, worth adding
-1. **Smogon "chaos" stats (smogon.com/stats/2026-10/chaos/)**: per Pokémon at 0/1500/1630/1760+: **stat-point spreads**
-   (e.g. Incineroar "Adamant:32/14/10/0/10/0"), items, Abilities, moves, teammates, checks & counters; also a file for the
-   best-of-3 (open team sheet) format. Correction: I said earlier we have no stat points anywhere; this has them (ladder).
-2. **pokedata.ovh**: open team sheets and results of real-life Regionals: 9 events, 23,478 battles (per Pokémon Zone and
+1. **Smogon "chaos" stats (smogon.com/stats/2026-10/chaos/)**: per Pokémon at 0/1500/1630/1760+: stat-point spreads, items,
+   Abilities, moves, teammates, checks & counters; also a best-of-3 (open team sheet) file. **Correction (checked in code):
+   we already read these** (ladder.mjs → meta_ladder.json `sp`, `tm`, `cc`), and the damage calc and speed checks already use
+   the most common 1760+ spread (commonSpread, 39-damage-calc-speed.js). I was wrong twice: we do have stat points, and speed
+   comparisons don't use guessed spreads. What's true: the GRADE model doesn't use stat points (tournament sheets lack them).
+2. **pokedata.ovh** (decision Nov 8: NOT used for now): open team sheets and results of real-life Regionals: 9 events, 23,478 battles (per Pokémon Zone and
    MetaPulse). The full field, not just top cut. **Unsure** where pokedata gets it (possibly RK9, which our rules say we
-   don't scrape) and what its terms allow. Needs Sim's call before we use it.
+   don't scrape) and what its terms allow. Checked its pages (home, standingsVGC): no stated data source, no terms, no contact; it has a page named
+   "ptcglrk9", which suggests RK9 data. With our no-RK9 rule and no terms, we don't use it unless its owner confirms.
 3. **MetaPulse (metapulse.minim-labs.app)**: built from Showdown replays every 10 min (best-of-1 and best-of-3): win rates,
-   leads, most-revealed sets, teams that win most (50+ games). Same raw source as ours, so good as a cross-check. No API
-   mentioned (unsure).
+   leads, most-revealed sets, teams that win most (50+ games). Same raw source as ours, so good as a cross-check. Its pages load by script,
+   so I couldn't read its numbers automatically (unsure how to cross-check without manual reading).
 4. **championsbattledata.com**: daily ranked usage, sets, teammates, stat spreads; says it has API access. **Unsure** where
    its data comes from; not checked further.
 
