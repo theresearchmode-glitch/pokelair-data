@@ -72,3 +72,8 @@ looked at real teams, where nearly everyone already has a Mega. To stop gaps lik
 - Test where the grade is used: real teams AND the teams Build for Me and suggestions make AND deliberately broken teams
   (remove the Mega, speed control, Protect, Fake Out/Intimidate: the grade must drop about as much as real results say).
 - Never tell Sim something is done or doesn't matter without these. The Deep Check plan on the Plans page comes first.
+
+## Single games first (Sim, Nov 8)
+Pokémon Champions ranked play and online competitions are single games (best of 1). Get the grade right for ONE game
+first: build and test on single-game data (Showdown ladder replays, best-of-1 tournament rounds). Best-of-3 VGC events
+(Regionals, Worlds, most Limitless events) are a later, separate step; don't mix their round results in as if they were games.

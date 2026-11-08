@@ -118,7 +118,7 @@ with guessed sizes that can only shrink a strong team's edge. This is why the "c
 | Popular complete sets (`cs`) | Most common full set per Pokémon | First daily run Nov 9 |
 
 Gaps found in our data:
-1. **Each "game" is really a round.** Limitless gives one winner per round, so a best-of-3 counts as one result and we
+1. **Each "game" is really a round.** (Sim, Nov 8: focus on single games first; Champions ranked is best of 1.) Limitless gives one winner per round, so a best-of-3 counts as one result and we
    don't know the game score (2-0 vs 2-1). We've been calling these "games". The grade's sureness should account for it.
 2. **1,369 rounds (3.5%) have no winner** (draws, no-shows or missing results). They're treated as half a win each.
 3. **Tiny events count the same as big ones.** Half of events have 29 players or fewer, some as few as 3. Small online
