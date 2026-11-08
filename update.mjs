@@ -181,9 +181,10 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   fs.writeFileSync('out/history.json', JSON.stringify({days})); console.log(`history: ${days.length} days`); }
 // 4) game-level results: every pairing with both teams known (for the team model and player skill)
 { const teamIx = new Map(), teams = [], players = new Map(), plist = [], M = [], featIx = new Map(), feats = [], deckIx = new Map(), decks = [];
-  // each player's exact sets as features ("Garchomp@Choice Scarf", "Garchomp:Earthquake") for the win model
+  // each player's exact sets as features ("Garchomp@Choice Scarf", "Garchomp#Rough Skin", "Garchomp:Earthquake") for the win model;
+  // Abilities added Nov 8 (scoreboard: a small, steady gain at all three date cut-offs)
   const fix = f => { if (!featIx.has(f)) { featIx.set(f, feats.length); feats.push(f); } return featIx.get(f); };
-  const dix = (ns, dk) => { const f = []; dk.forEach((m, i) => { if (m.i) f.push(fix(ns[i] + '@' + m.i)); for (const x of new Set(m.mv)) f.push(fix(ns[i] + ':' + x)); }); const k = f.sort((a, b) => a - b).join(','); if (!deckIx.has(k)) { deckIx.set(k, decks.length); decks.push(f); } return deckIx.get(k); };
+  const dix = (ns, dk) => { const f = []; dk.forEach((m, i) => { if (m.i) f.push(fix(ns[i] + '@' + m.i)); if (m.a) f.push(fix(ns[i] + '#' + m.a.replace(/\b\w/g, c => c.toUpperCase()))); for (const x of new Set(m.mv)) f.push(fix(ns[i] + ':' + x)); }); const k = f.sort((a, b) => a - b).join(','); if (!deckIx.has(k)) { deckIx.set(k, decks.length); decks.push(f); } return deckIx.get(k); };
   const tix = ns => { const k = [...ns].sort().join('|'); if (!teamIx.has(k)) { teamIx.set(k, teams.length); teams.push(k); } return teamIx.get(k); };
   const pix = k => { if (!players.has(k)) { players.set(k, plist.length); plist.push(k); } return players.get(k); };
   V2.forEach((T, ti) => { const P = readJSON(`data/p/${T.id}.json`, []); if (!P.length) return; const by = new Map();

@@ -57,6 +57,7 @@ V['+ its own sets, no cap on how much a set can count'] = (t, d) => pairX(t) + s
 process.stdout.write('fitting each six\'s own record on past games…\r');
 const dlS = fitSix((t, d) => pairX(t) + setX(t, d));
 V['+ own sets + this six\'s own record  [site today, minus matchups]'] = (t, d) => pairX(t) + setX(t, d) + dlS(t);
+for (const tau of (process.env.BOARD_TAUS || '').split(',').filter(Boolean).map(Number)) { const f = fitSix((t, d) => pairX(t) + setX(t, d), tau); V[`+ own sets + own record, gentler (τ ${tau})`] = (t, d) => pairX(t) + setX(t, d) + f(t); }
 // ---- scoring
 const games = fut, scale = f => { const d = games.map(g => [f(g[0], g[7]) - f(g[1], g[8]), g[2] === 1 ? 1 : 0]);
   const ll = b => d.reduce((a, [x, y]) => { const p = Math.min(1 - 1e-9, Math.max(1e-9, sig(b * x))); return a - (y ? Math.log(p) : Math.log(1 - p)); }, 0) / d.length;

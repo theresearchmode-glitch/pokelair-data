@@ -77,7 +77,7 @@ function winVs(a,b,ma,mb){if(!modelOK())return null;return sig(calibK()*(strengt
 function strengthPct(x){const d=META.model&&META.model.dist,q=d&&Array.isArray(d.q)&&d.q.length===101?d.q:null;if(!q)return null;
   if(x<=q[0])return 0;if(x>=q[100])return 100;let i=0;while(i<99&&q[i+1]<x)i++;const lo=q[i],hi=q[i+1];return i+(hi>lo?(x-lo)/(hi-lo):0)}
 function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,t=e.model_teams_only,r=e.raw_win_rates;
-  return `Trained on ${(m.games||0).toLocaleString('en-US')} real games with player skill taken out. ${m.sets&&Object.keys(m.sets).length?'It reads items and moves too. ':''}On ${e.test_games.toLocaleString('en-US')} held-out games it called ${(t.acc*100).toFixed(1)}% of winners (raw win rates: ${(r.acc*100).toFixed(1)}%).`}
+  return `Trained on ${(m.games||0).toLocaleString('en-US')} real games with player skill taken out. ${m.sets&&Object.keys(m.sets).length?'It reads items, Abilities and moves too. ':''}On ${e.test_games.toLocaleString('en-US')} held-out games it called ${(t.acc*100).toFixed(1)}% of winners (raw win rates: ${(r.acc*100).toFixed(1)}%).`}
 
 
 // ---- team preparation: what every suggestion, build and saved team is judged by (Oct 28) ----
