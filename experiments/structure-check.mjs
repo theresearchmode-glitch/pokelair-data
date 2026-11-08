@@ -20,6 +20,8 @@ const ROLE = {
   'redirection': n => has(n, 'mv', 'Follow Me') || has(n, 'mv', 'Rage Powder'),
   'Tailwind': n => has(n, 'mv', 'Tailwind'),
   'Trick Room': n => has(n, 'mv', 'Trick Room'),
+  'terrain setter': n => ['Grassy Surge', 'Psychic Surge', 'Electric Surge', 'Misty Surge'].some(a => has(n, 'ab', a)),
+  'weather setter': n => ['Drought', 'Drizzle', 'Sand Stream', 'Snow Warning'].some(a => has(n, 'ab', a)),
 };
 const side = ns => { const o = {}; for (const [k, f] of Object.entries(ROLE)) o[k] = ns.some(f) ? 1 : 0; o['Fake Out + Intimidate core'] = o['Fake Out'] && o['Intimidate'] ? 1 : 0; o['speed control (Tailwind or Trick Room)'] = o['Tailwind'] || o['Trick Room'] ? 1 : 0; return o; };
 const row = P.rows[Object.keys(P.rows).find(k => /^site today/.test(k))], logit = p => Math.log(p / (1 - p)), sig = z => 1 / (1 + Math.exp(-z));

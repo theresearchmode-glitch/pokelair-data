@@ -190,7 +190,11 @@ function* planFixesG(ms,pool,useA,opts){
   // a plan must never make the type rating worse, and must beat the current team by a clear margin
   // and must never take away the team's speed control or start a weather clash
   const gpst=(pl,k)=>(pl.gp.rows.find(r=>r.k===k)||{}).st;
-  const keepsPlan=pl=>!(gpst(basePl,'speed')==='ok'&&gpst(pl,'speed')!=='ok')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss')&&!(pl.gap&&pl.gap.clash)&&!(pl.gp&&gpWorse(gp0,pl.gp).length)&&!wxLoneBad(gp0,pl);
+  /* Phase 3 (Nov 8): only the rules a player would call logical stay: never leave the team with no speed control, never break a
+     weather it relies on, never a clash. The other game-plan rows (terrain, lead support…) blocked the best swaps (a 62 team kept
+     from 99 for losing Grassy Terrain) and, tested on 6,270 later games (experiments/structure-check.mjs), none of those roles adds
+     anything beyond the grade: terrain +0.3, Fake Out −1.8, Intimidate +0.6, redirection +0.2 pts, all within chance. */
+  const keepsPlan=pl=>!(gpst(basePl,'speed')!=='miss'&&gpst(pl,'speed')==='miss')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss')&&!(pl.gap&&pl.gap.clash)&&!wxLoneBad(gp0,pl);
     let all=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(!full||((pl.st.a.excess<=base.a.excess)&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<basePl.score-(clean?25:10)))).sort((x,y)=>x.score-y.score);
   // Readiness decides (Oct 28): every plan that ends in a full six is judged by the share of the top-30 threats it's ready for.
   // Item problems come first; then a plan must raise readiness by 2+, the highest leads, and an extra change has to earn 2 more.
@@ -198,8 +202,15 @@ function* planFixesG(ms,pool,useA,opts){
   // weakness, no new stack".
   const tsBase=useTSPick()&&full?tsOf(ms):null;let tsOn=false;const gBase=useTSPick()&&full?gradeTeam(ms):null,gOK=pl=>gBase==null||planGrade(pl)==null||pl._g>=gBase||(ipOf(pl)<ip0&&pl._g>=gBase-3);/* a suggestion never lowers the grade (Sim, Nov 7: a red 'Win rate 59.9% → 59.1%' card); only fixing an illegal item may cost a little */
   if(useTSPick()){const sh0=typeShape(base.a).maxStack;
-    const short0=[...singles,...doubles].filter(pl=>pl.team.length===6&&keepsPlan(pl)&&pl.st.a.excess<=base.a.excess+1&&pl.st.a.unresisted.length<=base.a.unresisted.length+1&&typeShape(pl.st.a).maxStack<=Math.max(2,sh0)&&megaShort(pl.team)<=megaShort(ms)).sort((x,y)=>x.score-y.score);
+    /* Phase 3 (Nov 8): the type-chart rules "at most one more weakness" and "at most one more unresisted type" blocked the best swap
+       on 9 of 30 real teams and predict nothing beyond the grade (experiments/type-check.mjs, 6,270 later games: +0.1, −0.1 and 0.0 pts,
+       all tight). Kept only as a guard players would call logical: no swap leaves 4+ Pokémon weak to the same type. */
+    const short0=[...singles,...doubles].filter(pl=>pl.team.length===6&&keepsPlan(pl)&&typeShape(pl.st.a).maxStack<=Math.max(3,sh0)&&megaShort(pl.team)<=megaShort(ms)).sort((x,y)=>x.score-y.score);
     const short=tsShortlist(short0,70);
+    /* Phase 3 (Nov 8): ideas from grade gains. The shortlist above ranks by the planner's own score, so the grade never saw some of
+       the best swaps (on 30 real teams the best single swap beat the planner's best idea by 3+ points for 15, and 6 got no idea at
+       all). The 20 candidates the grade's fast strength rates highest join the shortlist; every rule below still applies. */
+    if(full&&typeof abY==='function'){const gy=short0.filter(pl=>pl.team.length===6&&!short.includes(pl)).map(pl=>[abY(pl.team),pl]).filter(x=>x[0]!=null).sort((a,b)=>b[0]-a[0]).slice(0,20);for(const [,pl] of gy)short.push(pl)}
     // plans that fix an item problem are always checked, and qualify without the usual readiness gain (they may not lower it by more than 3)
     if(ip0>0)for(const pl of short0.filter(pl=>ipOf(pl)<ip0).slice(0,12))if(!short.includes(pl))short.push(pl);
     // so are the best plans that close a game-plan gap (rain for Swift Swim, Trick Room attackers…)
@@ -212,7 +223,8 @@ function* planFixesG(ms,pool,useA,opts){
       const fixOf=pl=>ipOf(pl)<ip0||pl.gap.fix.length,gKey=pl=>pl._g!=null?pl._g-(pl.ch.length-1)*2:-1e9;
       const qual=pl=>{if(pl._ts==null)return false;if(tsBase==null)return true;
         if(gBase!=null&&pl._g!=null){if(pl._sure===undefined)pl._sure=swapSure(ms,pl.team);/* step 6 (Nov 8): a grade-raising swap must also be 75%+ sure to help, from how much real evidence backs the parts that change; fixes for real problems are exempt */
-          return pl._ts>=tsBase-3&&((pl._g>=gBase+TS_GAIN&&(pl._sure==null||pl._sure>=SWAP_MIN))||(fixOf(pl)&&pl._g>=gBase)||(ipOf(pl)<ip0&&pl._g>=gBase-3));}
+          /* matchups are already inside the grade, so readiness is only a guard against a collapse (was −3, Phase 3 Nov 8) */
+          return pl._ts>=tsBase-8&&((pl._g>=gBase+TS_GAIN&&(pl._sure==null||pl._sure>=SWAP_MIN))||(fixOf(pl)&&pl._g>=gBase)||(ipOf(pl)<ip0&&pl._g>=gBase-3));}
         return pl._ts>=tsBase+TS_GAIN||(fixOf(pl)&&pl._ts>=tsBase-3)};
       const ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
