@@ -122,3 +122,37 @@ are not separated (52.9 vs 53.0).
 - ok   Build for Me 1 Mega 99.2 = best real team; 2 Megas 99.9 = best real team
 
 **Phone speed (CPU slowed 4×)**: Build for Me 0.9 s (1 Mega), 1.0 s (2 Megas), 5.4 s (0 Megas).
+
+## Foundation plan, Phase 1 (Nov 8): the grade, scored exactly as the site computes it
+experiments/site-board.mjs runs the built page's own grade (CH.strengthOf) on every later tournament game, with each side's real
+sets from its sheet. Model trained before Oct 27 (out/model_dev_site.json: model.mjs TEST_DATE=2026-10-27 TRAIN_ONLY=1, then
+six.mjs and ctr.mjs on out/matches_train.json, calib .872 as shipped); scored on 6,270 games in 88 tournaments from Oct 27.
+Decisions by experiments/compare.mjs (tournaments resampled 2,000×; KEEP only if the 95% log-loss range is on the better side).
+
+| version | picks | log-loss | verdict vs the site |
+|---|---|---|---|
+| site today (sets + matchups .003 + own record) | 56.63% | .68007 | |
+| − matchups (calc readiness) | 56.38% | .68059 | REJECT: worse beyond chance, so matchups stay |
+| matchups ×2 | 56.60% | .67981 | no difference: weight stays |
+| learned matchups vs the field in place of calc matchups | 55.87% | .68112 | REJECT: worse |
+| − own record | 56.57% | .67996 | no difference (Sim to decide) |
+| − caution for untried pairs | identical | | the caution never triggers on real teams |
+| learned matchups vs THIS opponent (Battle, not the grade) | 57.56% | .67880 | +0.9 pts, just short of significant: re-test on sealed data |
+
+**Sets you didn't enter.** The page's default sets come from in-game usage and miss tournament sets (Garchomp without Stomping
+Tantrum, run by 77% of tournament Garchomp, +.20; Volcarona as Rage Powder support without Quiver Dance). Graded on those
+guesses, typed-in teams lost up to ~20 rank points (a 9-1 event winner: 47). The same later teams graded without their
+sheets: default sets 54.85% / .68620, unknown set = average build 55.26% / .68448: KEEP (beyond chance). Implemented
+(SET_UNKNOWN_AVG in 35-win-model.js): an item you picked, moves you edited or pasted, an Ability you chose count; the rest
+counts as average. Known-answer top-cut case now passes (76% B or better, was 71%).
+
+**Partial teams** (1-5 Pokémon) moved onto the same 0-100 scale (CH.partialOf): known Pokémon, pairs and sets as for a full
+six, each empty slot an average tournament pick, matchups and own record once all six are in, "so far" shown.
+
+**Teams never played before**: 1,604 games between two sixes with no earlier record: picks 58.1% (all games 56.6%).
+**Calibration**: within 0.3 pts (said 62.1% → won 62.4%).
+**Letters**, every side and game (a 5+-games filter favours teams that kept winning and made B-F look 5-9 pts too low):
+A 54.3% (expected 55.9) · B 53.4% (51.1) · C 47.2% (46.9) · D 44.7% (43.3) · F 37.2% (41.0). In order; A and B sit
+closer than the grade expects (0.9 vs 4.8 pts, within chance at ±1.5-1.8): watch on the sealed set.
+**How sure**: High-sure games are predicted better than the grade claims (edge scale 1.38), Medium about right (0.94),
+Low too rare to judge (275 games). The word never overclaims.
