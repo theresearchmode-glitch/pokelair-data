@@ -33,6 +33,11 @@ const C = new Float64Array(K * K); { const m1 = new Float64Array(K * K), v1 = ne
 const v = []; for (let a = 0; a < K; a++) for (let b = a + 1; b < K; b++) v.push(Math.round(C[a * K + b] * 1000));
 MD.ctr = {sp, v, lam: LAM, games: G.length};
 MD.ctrNote = 'matchups learned from real games (ctr.mjs): c[a][b] in thousandths of a logit for each pair a<b (row by row), c[b][a] = −c[a][b]; used only against a known opponent';
+// size guard: the page database takes at most 256 KB per write. If the model grows past 245 KB, the least-played sixes' own
+// records go first (they count least: a six's record is shrunk hard toward 0 when it has few games)
+{ let js = JSON.stringify(MD); if (js.length > 245 * 1024 && MD.sixes) { const e = Object.entries(MD.sixes).sort((a, b) => a[1][1] - b[1][1]); let dropped = 0;
+    while (js.length > 245 * 1024 && e.length) { for (let i = 0; i < 50 && e.length; i++) { delete MD.sixes[e.shift()[0]]; dropped++; } js = JSON.stringify(MD); }
+    console.log(`ctr: size guard dropped the ${dropped} least-played sixes' own records to stay under the 256 KB page limit`); } }
 fs.writeFileSync(MF, JSON.stringify(MD));
 const top = []; for (let a = 0; a < K; a++) for (let b = 0; b < K; b++) if (C[a * K + b] > 0) top.push([sp[a], sp[b], C[a * K + b]]); top.sort((x, y) => y[2] - x[2]);
 console.log(`ctr: ${K} Pokémon, ${v.length} pairs from ${G.length} games; model now ${(JSON.stringify(MD).length / 1024).toFixed(0)} KB; strongest: ${top.slice(0, 4).map(([a, b, c]) => `${a} > ${b} +${(sig(c) * 100 - 50).toFixed(1)}pt`).join(', ')}`);
