@@ -165,3 +165,9 @@ Low too rare to judge (275 games). The word never overclaims.
   40% by 5+, 19% changed letter. With settings locked: 1.7 points typically, 5.9% by 5+, 6.3% changed letter (mostly teams on
   a letter line). Locked in model-settings.json at production's Nov 8 values (shrink 10, half-life 14, skill 1, sets 60);
   RETUNE=1 for the monthly check, changed only on a compare.mjs KEEP.
+
+**Phase 1 live (Version 122, Nov 8), Sim approved:** default sets on built and typed-in teams are the most popular TOURNAMENT
+sets (were in-game usage), and the grade judges exactly the sets shown; partial teams are rated on the same scale ("so far");
+the grade shows as a rank ("Top 23% of tournament teams", bottom half "Bottom 12%") instead of "77 / 100"; each six's own
+record stays as is (Sim). Daily crosscheck now compares sets with Pikalytics tournament stats (39/39 items, 39/39 Abilities,
+37/39 move sets agree). Known-answer cases: 5 of 7 (the two open ones are Phase 2 and Phase 3). 339/339 site checks pass.
