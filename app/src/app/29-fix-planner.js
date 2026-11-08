@@ -246,10 +246,13 @@ function* planFixesG(ms,pool,useA,opts){
   // over the Mega goal (Megas on team 0 with a Mega in, audit Oct 30): say so, and say why no plan drops it
   if(mega0>maxMega&&!out.some(pl=>pl.team.filter(m=>m.mega).length<mega0)){const t=`Your team has ${mega0} Mega${mega0===1?'':'s'} and Megas on team is set to ${maxMega}. ${$('swapMega').checked?'No swap without '+(mega0===1?'it':'them')+' keeps your game plan, so these plans keep '+(mega0===1?'it':'them')+'.':'Turn on "Let plans swap my Mega" to see swaps without '+(mega0===1?'it':'them')+'.'}`;out.gapNote=(out.gapNote?out.gapNote+' ':'')+t}
   // More ideas: further plans with new incoming Pokémon, then (for a full team) side-grades that keep the type rating and speed control
+  /* Phase 3 (Nov 8): an idea in More ideas never lowers the grade (a strong team had 37 of 39 ideas there that made it worse:
+     side-grades were picked by type rating alone). Every idea is checked against the grade; rounding allows half a point. */
+  const notWorse=pl=>gBase==null||pl.team.length<6||(planGrade(pl)??-1)>=gBase-.5;
   const more=[],inSeen=new Set(out.flatMap(pl=>pl.ch.map(x=>x.c.p.b)));
-  for(const pl of all){if(more.length>=12)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>inSeen.has(b)))continue;ins.forEach(b=>inSeen.add(b));more.push(pl)}
+  for(const pl of all){if(more.length>=12)break;const ins=pl.ch.map(x=>x.c.p.b);if(ins.some(b=>inSeen.has(b))||!notWorse(pl))continue;ins.forEach(b=>inSeen.add(b));more.push(pl)}
   if(full){const side=singles.filter(pl=>keepsPlan(pl)&&pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<=basePl.score+60&&megaShort(pl.team)<=megaShort(ms)&&(OFFMETA||ui.pool==='box'?ratingLoose(pl.ch[0].c.p)>=35:rating(pl.ch[0].c.p).total>=50)).sort((x,y)=>(x.score-rating(x.ch[0].c.p).total*.3)-(y.score-rating(y.ch[0].c.p).total*.3));
-    for(const pl of side){if(more.length>=18)break;const b=pl.ch[0].c.p.b;if(inSeen.has(b))continue;inSeen.add(b);pl.side=pl.score>=basePl.score-(clean?25:10);more.push(pl)}}
+    for(const pl of side){if(more.length>=18)break;const b=pl.ch[0].c.p.b;if(inSeen.has(b)||!notWorse(pl))continue;inSeen.add(b);pl.side=pl.score>=basePl.score-(clean?25:10);more.push(pl)}}
   // item problems now: make sure one plan fixes them (the item card above the plans offers the direct item swap too)
   if(ip0>0&&!out.some(pl=>ipOf(pl)<ip0)){const fix=[...singles,...doubles].filter(pl=>ipOf(pl)<ip0&&keepsPlan(pl)&&gOK(pl)&&(!tsOn||tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-3)).sort((x,y)=>ipOf(x)-ipOf(y)||x.score-y.score)[0];
     if(fix){if(out.length>=3)out.pop();out.unshift(fix)}}
