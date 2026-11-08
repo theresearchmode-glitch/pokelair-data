@@ -18,6 +18,8 @@ const b = await chromium.launch(), pg = await (await b.newContext()).newPage(), 
 pg.on('pageerror', e => errs.push(e.message));
 await pg.addInitScript(D => { localStorage.setItem('cc2.welcomed', '"1"'); window.__PL_TEST = 1; window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
 await pg.goto('file://' + page); await pg.waitForTimeout(4000);
+// GOLDEN_CPU=4: slow the processor 4x (roughly a phone) so the Build for Me times read like phone times
+if (+process.env.GOLDEN_CPU > 1) { const cdp = await pg.context().newCDPSession(pg); await cdp.send('Emulation.setCPUThrottlingRate', {rate: +process.env.GOLDEN_CPU}); }
 const run = code => pg.evaluate(c => window.__ev(c), code).then(s => JSON.parse(s));
 const R = {};
 // 1 + 3 + 2: grade checks
@@ -40,15 +42,14 @@ R.sugg = await run(`(()=>{ const out = []; const A = ${JSON.stringify(R.top.filt
 // 5: Build for Me against the best real team under the same Mega limit
 R.build = [];
 for (const k of [0, 1, 2]) {
-  const t0 = Date.now();
   R.build.push({...await run(`(()=>{ S.megaGoal = ${k}; S.maxMega = Math.max(1, ${k}); ui.abSrc = 'all'; ui.abLock = null;
-    const res = buildBest(), mk = ns => ns.map(n => abMember(byName.get(n))), gr = ns => { try { return gradeTeam(mk(ns)); } catch (e) { return null; } };
+    const T0 = performance.now(), res = buildBest(), buildMs = performance.now() - T0, mk = ns => ns.map(n => abMember(byName.get(n))), gr = ns => { try { return gradeTeam(mk(ns)); } catch (e) { return null; } };
     const teams = (res.teams || []).map(t => ({mons: t.mons.map(m => m.n), g: gr(t.mons.map(m => m.n))}));
     let best = null; const seen = new Set();
     for (const [names, n, wr, g] of [...(RES.proven || []), ...(RES.records || [])]) { const key = names.slice().sort().join('|'); if (seen.has(key)) continue; seen.add(key);
       if (!(n >= 3 || (g != null && g >= 30))) continue; const ps = names.map(x => byName.get(x)); if (ps.some(p => !p || isExcl(p))) continue; if (ps.filter(p => p.m).length !== ${k}) continue;
       const v = gr(names); if (v != null && (!best || v > best.g)) best = {mons: names, g: v}; }
-    return JSON.stringify({megas: ${k}, teams, best}); })()`), ms: Date.now() - t0});
+    return JSON.stringify({megas: ${k}, teams, best, ms: buildMs}); })()`)});
 }
 await b.close(); fs.unlinkSync(page);
 // ---- verdicts
