@@ -51,5 +51,5 @@ function turnOnePlan(mine, theirs, r) {
     <ol class="rzbeats">${beats}</ol>
     ${warn.length ? `<p class="rzwarn"><b>Watch</b> ${warn.join('; ')}. Consider Protect.</p>` : ''}
     ${F0.weather || F.terrain ? `<p class="rzfield"><span class="k">Field on turn 1</span> ${esc(fieldWords(F0))}${F0.wBy ? ` (${esc(F0.wBy.d)})` : ''}${F0.negated && F0.weather ? ', cancelled by Cloud Nine / Air Lock while it\'s out' : ''}${F0.traced ? '. A Trace user may copy it' : ''}</p>` : ''}
-    <p class="t2 rzorder" style="margin:0">Turn order: ${order.map(o => `<span class="${o.me ? 't1me' : ''}">${esc(o.x.d)} ${o.s}${o.p ? ` (${o.p > 0 ? '+' : '−'}${Math.abs(o.p)}${!o.me ? ' if Fake Out' : ''})` : ''}</span>`).join(' › ')}</p></div>`;
+    ${''/* Turn order line removed (Nov 8): the numbered beats above already run in move order with each speed */}</div>`;
 }

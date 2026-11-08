@@ -51,7 +51,7 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
   const ord = n => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th';
   const head = document.createElement('div'); head.className = 'chbmhead';
   head.innerHTML = `<div class="chk">${on ? 'Their real open team sheet' : 'Team preview'}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span>${esc(title)}</span> <small>vs</small> <em>${arch ? esc(arch) : 'their six'}</em></div>
-    ${on ? `<p class="chpgs"><b>${esc(on.who)}</b>${on.rec ? ` went <b>${esc(on.rec)}</b>${on.place ? ` and finished ${ord(on.place)}` : ''}` : on.place ? ` finished ${ord(on.place)}` : ' played this team'} at ${esc(on.ev.name)}${on.ev.players ? ` (${on.ev.players} players)` : ''}.</p>` :'<p class="chpgs">Type their six as you see them at team preview.</p>'}`;
+    ${on ? `<p class="chpgs"><b>${esc(on.who)}</b>${on.rec ? ` went <b>${esc(on.rec)}</b>${on.place ? ` and finished ${ord(on.place)}` : ''}` : on.place ? ` finished ${ord(on.place)}` : ' played this team'} at ${esc(on.ev.name)}${on.ev.players ? ` (${on.ev.players} players)` : ''}.</p>` :S.opp.filter(Boolean).length >= 6 ? '' : '<p class="chpgs">Type their six as you see them at team preview.</p>'}`; /* gone once all six are in (Sim, Nov 8: less on every page) */
   const bar = el.querySelector('.bmbar'); if (bar) head.append(bar);
   // the heading first, then the opponent picker, then their six (the picker lives outside the redrawn area)
   const oq = $('oppQuick'); if (oq && sec) { sec.querySelectorAll(':scope > .chbmhead').forEach(x => x.remove()); oq.before(head); } else el.prepend(head);
@@ -322,7 +322,7 @@ function chCalcCard() { const ms = members(), opp = S.opp.map(n => byName.get(n)
   const top = (() => { try { const r = lairRows(); return r[0] ? r[0].p : null; } catch (e) { return null; } })();
   const def = opp[0] || top || byName.get('Incineroar'); if (!def) return '';
   const atk = ms.length ? ms.slice(0, 6).map(m => m.p) : [byName.get('Garchomp')].filter(Boolean);
-  return `<section class="chcalc" aria-label="Damage calc"><div class="chcalch"><div><div class="chk">Real level-50 doubles damage</div><div class="chdisp chcalct">Damage calc</div></div><button type="button" class="chprimary chcalcgo" data-dcgo="${esc((atk[0] || {}).n || '')}|${esc(def.n)}">Open damage calc <span aria-hidden="true">➜</span></button></div>
+  return `<section class="chcalc" aria-label="Damage calc"><div class="chcalch"><div><div class="chk">Real level-50 doubles damage</div><div class="chdisp chcalct">Damage calc</div></div></div>
     <p class="t2 wdsub">Pick an attacker to hit ${opp[0] ? 'their' : 'the most-used'} <b>${esc(def.d)}</b>${typeof tipText === 'function' ? ' ' + tipText('mucalc', 'What the calc counts', 'Spreads, items, abilities, weather, terrain, screens, Intimidate and spread moves.') : ''}</p>
     <div class="chcalcrow"><div class="chcalcatk">${atk.map(p => `<button type="button" data-dcgo="${esc(p.n)}|${esc(def.n)}" aria-label="${esc(p.d)} into ${esc(def.d)}">${sprite(p) || ''}<span>${esc(p.d)}</span></button>`).join('')}</div>
       <span class="chcalcvs" aria-hidden="true">→</span><div class="chcalcdef">${sprite(def) || ''}<span>${esc(def.d)}</span></div></div></section>`; }

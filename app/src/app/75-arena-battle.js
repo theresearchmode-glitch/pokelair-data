@@ -57,7 +57,7 @@ ARBAT.opp = () => { document.querySelectorAll('[data-pane="matchup"] .bmopp .bms
   ARBAT.artify(sl, p, 's', '.bmn'); sl.classList.remove('tyx'); });
   /* their likely lead: one line under the six (MG.battle marks the slots; the tag on the art is hidden) */
   document.querySelectorAll('[data-pane="matchup"] .bmopp').forEach(o => { const ll = [...o.querySelectorAll('.bmslot.mgllead .bmn')].map(n => n.textContent.trim()), nx = o.nextElementSibling;
-    const txt = ll.length === 2 ? `Their likely lead: <b>${esc(ll[0])}</b> + <b>${esc(ll[1])}</b>` : '';
+    const txt = ll.length === 2 && members().length < 4 /* The Read names it when your team is in (Nov 8: said once) */ ? `Their likely lead: <b>${esc(ll[0])}</b> + <b>${esc(ll[1])}</b>` : '';
     if (nx && nx.classList.contains('ar-llline')) { if (!txt) nx.remove(); else if (nx.dataset.t !== txt) { nx.dataset.t = txt; nx.innerHTML = txt; } } else if (txt) { o.insertAdjacentHTML('afterend', '<p class="ar-llline"></p>'); o.nextElementSibling.dataset.t = txt; o.nextElementSibling.innerHTML = txt; } }); };
 /* "The read": Battle's one hero. Your lead pair breaks out of a diagonal band (the page's one burst); their likely lead and their
    biggest threat are the two runner strips; Fake Out on their side is a plain numeral. Same data as before (71-manga.js). */
@@ -77,7 +77,7 @@ rzReadHtml = function () {
   const them = ll.length === 2 ? strip('them', AR.tv(ll[0].p), 'Their likely lead', `${AR.nm(ll[0].d)} + ${AR.nm(ll[1].d)}`, '', AR.spr(ll[0].p) + AR.spr(ll[1].p)) : '';
   const thr = threat ? strip('threat', AR.tv(threat.o.p), 'Biggest threat', AR.nm(threat.o.d), threat.o.d.toLowerCase().includes(String(threat.t).toLowerCase()) ? '' : esc(String(threat.t)), AR.spr(threat.o.p)) : '';
   return `<div class="rzread ar-read" role="region" aria-labelledby="arReadH"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arReadH">The read</h2></div>
-    <div class="ar-rdeck">${hero}<div class="ar-rside">${them}${thr}<div class="ar-rfo"><div class="ar-stat"><span class="ar-num">${fo}</span><span class="ar-unit">Fake Out on their side</span></div><span class="rzlive">Updates as you type their six</span></div></div></div></div>`; };
+    <div class="ar-rdeck">${hero}<div class="ar-rside">${them}${thr}<div class="ar-rfo"><div class="ar-stat"><span class="ar-num">${fo}</span><span class="ar-unit">Fake Out on their side</span></div></div></div></div></div>`; };
 /* the page head comes first (the read and the plan sit under it), whatever order the older wraps left it in */
 ARBAT.battle = () => { const sec = $('matchup'), head = sec && sec.querySelector(':scope > .chbmhead'), out = $('bmOut'); if (!head || !out) return;
   if (sec.firstElementChild !== head) sec.prepend(head);

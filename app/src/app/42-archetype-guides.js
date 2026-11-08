@@ -47,7 +47,7 @@ function renderGuides() { const el = $('guideOut'); if (!el) return;
       (t.types || []).forEach(ty => { if (m.types.includes(ty) && !why.includes(ty + ' type')) why.push(ty + ' type'); });
       if (why.length) out.push({m, why: why.slice(0, 3)}); }
     return out; };
-  el.innerHTML = `<p class="t2">${n ? `Read from the latest ${n} top tournament teams.` : 'Usage numbers appear once top teams load.'} Tap a guide to see how to play into it.</p>` + GUIDE_ORDER.slice().sort((x, y) => (counts[y] || 0) - (counts[x] || 0)).map(k => { const g = GUIDE[k], c = counts[k] || 0, km = keyMons(k), y = ms.length ? yours(k) : null;
+  el.innerHTML = `<p class="t2">${n ? `From the latest ${n} top tournament teams.` : 'Usage numbers appear once top teams load.'}</p>` + /* the page hint already says what a guide is for (Nov 8: said once) */ GUIDE_ORDER.slice().sort((x, y) => (counts[y] || 0) - (counts[x] || 0)).map(k => { const g = GUIDE[k], c = counts[k] || 0, km = keyMons(k), y = ms.length ? yours(k) : null;
     return `<details class="plan guide"><summary><span class="pt">${esc(ARCH[k].name)}</span>${n ? `<span class="vsub">${Math.round(100 * c / n)}% · ${basis(n, 'top team', 'arch', {pre: c + ' of', tip: `${c} of the latest ${n} top tournament teams`})}</span>` : ''}<span class="gkm">${km.slice(0, 5).map(p => sprite(p, 'mini') || '').join('')}</span></summary>
       <div class="gbody"><p class="gwhat">${esc(g.what)}</p>
       ${km.length ? `<div class="gsec"><div class="chk">Key Pokémon</div><div class="gkey">${km.map(p => `<div class="svm">${sprite(p) || ''}<span>${esc(p.d)}</span></div>`).join('')}</div></div>` : ''}
