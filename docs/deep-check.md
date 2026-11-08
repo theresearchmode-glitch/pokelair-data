@@ -326,3 +326,12 @@ Rolled-back engine still picks 4/7-check teams: stays off.
 4. Speed control / Fake Out "a bit harsh": real later rounds show teams without speed control doing as the grade expects
    (+0.6, range −3.8 to +5.0). Not proven wrong; no change made on a guess.
 Tests: ALL PASSED. Preview republished (Version 2).
+
+### Step 4 · "Careful and honest on unusual teams" (Nov 8)
+- Checked first: on later real rounds, games where a side's grade was "Low" sureness (289) were predicted BETTER than the grade
+  claimed (picked 66.4%, best edge scale 1.55×). An extra penalty for unusual teams isn't supported, so none was added.
+- Build for Me's live engine returns real proven sixes first (graded, own record shrunk); its teams are within −0.5 (box, with a
+  Mega) to +3.7 (whole roster) of how similar real teams did.
+- Plain warning added: under the grade, only when "how sure" is Low: "Few real games back this mix yet, so it's a best guess".
+  Checked on a phone-size page (rare six → shown; well-known six → not shown). Tests: ALL PASSED.
+Step 4 is complete except Sim's review (d4-ok).
