@@ -25,20 +25,23 @@ const tf = teams.map(m => { const f = m.map(n => monIx.get(n)), p = [];
 const hasSets = Array.isArray(M.decks) && G.length && G[0].length >= 9;
 let setNames = [], deckF = [];
 if (hasSets) { const cnt = new Map(), used = new Set(); for (const g of G) { used.add(g[7]); used.add(g[8]); }
-  for (const d of used) for (const f of M.decks[d]) cnt.set(f, (cnt.get(f) || 0) + 1);
+  for (const d of used) if (d != null && M.decks[d]) for (const f of M.decks[d]) cnt.set(f, (cnt.get(f) || 0) + 1);
   const keep = new Map([...cnt].filter(([, n]) => n >= 40).map(([f], i) => [f, i])); setNames = [...keep.keys()].map(f => M.feats[f]);
   deckF = M.decks.map(fs_ => fs_.map(f => keep.get(f)).filter(j => j != null)); }
 // centering: how often each kept feature appears among decks that carry its species
 const featSp = setNames.map(f => f.split(/[@:#]/)[0]), spFeats = new Map(), freq = new Float64Array(setNames.length);
 if (hasSets) { const spDecks = new Map(), fd = new Float64Array(setNames.length), used = new Set(); for (const g of G) { used.add(g[7]); used.add(g[8]); }
-  for (const d of used) { for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1); for (const j of deckF[d]) fd[j]++; }
+  for (const d of used) { if (d == null || !M.decks[d]) continue; for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1); for (const j of deckF[d]) fd[j]++; }
   setNames.forEach((f, j) => { freq[j] = fd[j] / (spDecks.get(featSp[j]) || 1); if (!spFeats.has(featSp[j])) spFeats.set(featSp[j], []); spFeats.get(featSp[j]).push(j); }); }
 const nP = M.players;
 // time split: last 20% of events (by date) held out
 const evDates = M.events.map(e => e[1]); const order = [...evDates.keys()].sort((a, b) => evDates[a] < evDates[b] ? -1 : 1);
 // TEST_FROM / TEST_TO (experiments only): hold out an earlier slice instead, training only on events before it
 const TF = +(process.env.TEST_FROM || .8), TT = +(process.env.TEST_TO || 1), lo = Math.floor(order.length * TF), hi = Math.floor(order.length * TT);
-const cut = new Set(order.slice(lo, hi)), before = new Set(order.slice(0, lo));
+// TEST_DATE (experiments, Nov 8 item 5): split by date instead; held out = tournament events on or after it, trained on every
+// event before it. Ladder-game "events" (id sd-…, experiments/matches-rp.mjs) are never held out, and those after it are dropped.
+const TD = process.env.TEST_DATE, isSD = i => String(M.events[i][0]).startsWith('sd-');
+const cut = TD ? new Set(order.filter(i => evDates[i] >= TD && !isSD(i))) : new Set(order.slice(lo, hi)), before = TD ? new Set(order.filter(i => evDates[i] < TD)) : new Set(order.slice(0, lo));
 const train = G.filter(g => before.has(g[3])), test = G.filter(g => cut.has(g[3]));
 // v3 (Oct 27): recent games count more. A game's weight halves every `half` days before the newest game in the fit
 // (0 = all games equal); the half-life is picked on the validation slice. Tested on held-out events: recency plus
@@ -92,7 +95,7 @@ function rawBaseline(games) { const w = new Float64Array(mons.length), g = new F
   const lg = j => Math.log((w[j] + 10) / (g[j] - w[j] + 10)); return {x: t => tf[t].f.reduce((a, j) => a + lg(j), 0) / 2, s: new Float64Array(nP)}; }
 const t0 = Date.now();
 // pick the shrinkage on a validation slice (the latest 15% of training events), never on the test events
-const trEv = [...new Set(train.map(g => g[3]))].sort((a, b) => evDates[a] < evDates[b] ? -1 : 1), vcut = new Set(trEv.slice(Math.floor(trEv.length * .85)));
+const trEv = [...new Set(train.map(g => g[3]))].filter(i => !isSD(i)).sort((a, b) => evDates[a] < evDates[b] ? -1 : 1), vcut = new Set(trEv.slice(Math.floor(trEv.length * .85)));
 const fitPart = train.filter(g => !vcut.has(g[3])), val = train.filter(g => vcut.has(g[3]));
 // FAST=K,HALF,SKILL,SETS (experiments): skip the validation grid and use these settings
 const FAST = process.env.FAST ? process.env.FAST.split(',').map(Number) : null;

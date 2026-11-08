@@ -25,7 +25,7 @@ const setX = (t, d, noClamp, RG) => { if (d == null || !M.decks || !M.decks[d]) 
   for (const n of teams[t]) { let u = 0; for (const f of spF.get(n) || []) u += MT.sets[f] * ((has.has(f) ? 1 : 0) - ((MT.setFreq || {})[f] || 0)); const r = noClamp ? null : (RG || MT.setRange || {})[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; }
   return v; };
 // ---- the date split
-const ev = M.events, ord = [...ev.keys()].sort((a, b) => ev[a][1] < ev[b][1] ? -1 : 1), lo = Math.floor(ord.length * CUTF), futE = new Set(ord.slice(lo)), cutDate = ev[ord[lo]][1];
+const ev = M.events, ord = [...ev.keys()].sort((a, b) => ev[a][1] < ev[b][1] ? -1 : 1), lo = Math.floor(ord.length * CUTF), futE = process.env.BOARD_DATE ? new Set(ord.filter(i => ev[i][1] >= process.env.BOARD_DATE && !String(ev[i][0]).startsWith('sd-'))) : new Set(ord.slice(lo)), cutDate = process.env.BOARD_DATE || ev[ord[lo]][1]; // BOARD_DATE=YYYY-MM-DD: later games = tournament events on or after it
 const evRank = new Map(ord.map((e, i) => [e, i]));
 const G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6), past = G.filter(g => !futE.has(g[3])), fut = G.filter(g => futE.has(g[3]));
 // ---- each six's own record and each player's skill, fitted on past games only (as six.mjs does on all games)
