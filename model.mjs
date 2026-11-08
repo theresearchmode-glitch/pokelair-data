@@ -54,7 +54,7 @@ const day = s => new Date(s + 'T00:00:00Z').getTime() / 864e5;
 // high-number Pokémon (Annihilape, Kommo-o, Scrafty, Mega Venusaur, Hydreigon, Mega Charizard Y) fell from 68 to 28.
 // EVID_K / EVID_KP env vars override (0 = off).
 const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ?? 300);
-function fit(games, opt) { const {useSkill = true, usePairs = true, useSets = false, iters = 250, lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
+function fit(games, opt) { const {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
   const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length);
   const P = [b, q, s, c], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length)), L = [lb, lp, ls, lc];
   // weights are scaled to average 1, so the shrinkage means the same thing with or without recency
@@ -98,8 +98,9 @@ const t0 = Date.now();
 const trEv = [...new Set(train.map(g => g[3]))].filter(i => !isSD(i)).sort((a, b) => evDates[a] < evDates[b] ? -1 : 1), vcut = new Set(trEv.slice(Math.floor(trEv.length * .85)));
 const fitPart = train.filter(g => !vcut.has(g[3])), val = train.filter(g => vcut.has(g[3]));
 // FAST=K,HALF,SKILL,SETS (experiments): skip the validation grid and use these settings
+// ITERS=n (training steps per fit, default 250) and K_GRID=1,3,5,… (shrink values to try): Nov 8 "train our models more" tests
 const FAST = process.env.FAST ? process.env.FAST.split(',').map(Number) : null;
-let bestL = FAST ? {k: FAST[0], sc: 0} : null; if (!FAST) for (const k of [1, 3, 10, 30, 100]) { const m = fit(fitPart, {lb: 4 * k, lp: 15 * k, ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
+let bestL = FAST ? {k: FAST[0], sc: 0} : null; if (!FAST) for (const k of (process.env.K_GRID ? process.env.K_GRID.split(',').map(Number) : [1, 3, 10, 30, 100])) { const m = fit(fitPart, {lb: 4 * k, lp: 15 * k, ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
 // recency half-life, picked on the validation slice (0 = no recency, kept if nothing beats it)
 let bestH = {half: FAST ? FAST[1] : 0, sc: bestL.sc}; if (!FAST) for (const half of [14, 21, 30]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k, half}); const sc = score(m, val, false).logloss; console.log('recency half-life', half, sc); if (sc < bestH.sc) bestH = {half, sc}; }
 // v4 (Oct 27): how much of a result to put down to the player rather than the team, picked on the validation slice.
