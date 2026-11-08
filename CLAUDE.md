@@ -36,11 +36,11 @@ images of exactly how it would look for approval first; a placeholder drawing lo
 Sim liked the mock-up integration (side profile / bold lines / sketch styles, ink plus one site accent) but wants him used
 sparingly: NOT in Your Six, Add a Pokémon or the Battle preview, and never beside grades, ratings or data. Allowed spots:
 an empty My Team (no team yet), other empty screens, small notices (saved, grade went up), tip bubbles, loading.
-Shady Paw design (Sim, Nov 8, still being finalised): a black street cat in a hoodie, hood up with his ears through it, a crown
-tag above his head, the NP tag sprayed on the hoodie and an NP spray can; site pink and PLOT blue accents, never loose arrows.
-Sim's favourites: the hand-drawn anime cat's face and expression (the most emotion), the WHITE hoodie, and the mid-century
-risograph look (least AI-looking). She dislikes glossy, airbrushed, "AI generated" art. What works: generate, edit only the
-part that changes (keep his face), then run a real print process (ink separation, halftone, off-register, grain).
+Shady Paw design (Sim, Nov 8): HER OWN art is the design and "still the best": side-profile black cat, dark charcoal hoodie
+with a white hood edge and his ears through it, white-and-black eyes, gritty greyscale sketch ink (cross-hatching, grain,
+splatter), a thin neon pink rim, a pink "NP" spray tag beside him and a black NP spray can. Never redraw him from a text
+prompt: every redraw drifted (white hoodie, blue eyes, clean/cute) and lost his style. Use her image as-is; any new pose or fix
+must be an image EDIT of her art that keeps the style. She dislikes glossy, airbrushed, "AI generated" art.
 Lock the character before drawing poses.
 
 ## Privacy and safety
