@@ -77,3 +77,9 @@ looked at real teams, where nearly everyone already has a Mega. To stop gaps lik
 Pokémon Champions ranked play and online competitions are single games (best of 1). Get the grade right for ONE game
 first: build and test on single-game data (Showdown ladder replays, best-of-1 tournament rounds). Best-of-3 VGC events
 (Regionals, Worlds, most Limitless events) are a later, separate step; don't mix their round results in as if they were games.
+
+## How we work together (Sim, Nov 8)
+Sim and Claude are partners: Sim brings the ideas, Claude does the research and the proper work, and each helps the other in
+both. Be 100% frank. If unsure, say "I'm unsure" and why; never fill a gap with a guess presented as fact, never a made-up
+answer. If something seems missing, say so plainly, unasked. Do the due diligence at every step (check sources, check the
+code, test before claiming); no shortcuts. Correct earlier wrong statements as soon as they're found.
