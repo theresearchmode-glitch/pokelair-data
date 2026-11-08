@@ -99,6 +99,40 @@ section.phase h3{font-family:var(--head);font-synthesis:style;font-style:italic;
 
 <script>
 const PLANS = [
+{id:"deep", short:"Deep Check", name:"Deep Check: nothing basic missed", about:"Started Nov 8 after a no-Mega team graded 98 while real no-Mega teams win only 34% of games. The grade only ever counted Pokémon, pairs, sets and matchups, never the team as a whole, and our tests only looked at real teams, so nobody noticed. This plan finds every gap in what we know and what our data holds, measures each one, fixes the real ones, and changes how we test so a gap this big can't slip through again. Build for Me, suggestions and making the site easier to read all wait on it.", phases:[
+ {id:"d0", name:"Step 0 · New ways of working", goal:"Rules that would have caught today's mistake, written into the project notes so every session follows them.", never:"Never say a factor \"doesn't matter\" when there weren't enough teams without it to tell. Never test only on real teams when the tool will grade teams nobody plays.", steps:[
+  ["d0-game","Start from the game, not the data","Before changing the grade, list what decides real battles (from expert guides, top players and Sim), then check the grade can see each one."],
+  ["d0-could","A test only counts if it could have failed","Every result says what it could and couldn't detect. Too few teams to tell = \"unknown\", not \"no effect\"."],
+  ["d0-where","Test where the grade is used","Real teams, plus the teams Build for Me and suggestions make, plus deliberately broken teams."],
+  ["d0-notes","Write the rules into the project notes","So they hold in every future session."]]},
+ {id:"d1", name:"Step 1 · Research: what decides a battle", goal:"One master list of every factor, from the people who know the game.", done:"Sim agrees the list is complete.", steps:[
+  ["d1-expert","Expert team-building guides","VGC Guide, Victory Road, MetaVGC, Pikalytics, top players' team reports: speed control, Fake Out, Intimidate, redirection, Protect on 4+ members, spread moves, win condition, 4-of-6 flexibility, island Pokémon, playstyle and pace, Bo1 vs Bo3."],
+  ["d1-rules","The format's rules","Reg M-C: bring 6 pick 4, item clause, species clause, level 50, Megas incl. Z Megas, timers. Confirm one Mega per battle. What changes for M-D."],
+  ["d1-models","How others grade teams","Research on predicting wins from a team lineup (synergy, counters, team-wide traits) and on why picking the top score finds a model's mistakes (optimizer's curse) and the known fixes."],
+  ["d1-sim","Sim adds what a player knows","Anything from real play that's missing or wrong."],
+  ["d1-table","\"What can the grade see?\" table","Every factor marked counted / partly / not counted, checked in the code, not from memory."]]},
+ {id:"d2", name:"Step 2 · Our data: what we have and what's missing", goal:"Know exactly what each data source can and can't tell us.", steps:[
+  ["d2-have","List every source","39k tournament games (teams, sets, players), 20k ladder replays (the 4 brought, leads, which Mega was used, ratings), usage stats, popular sets."],
+  ["d2-missing","List what's missing","Which 4 were brought in tournament games, game-by-game Bo3 results, stat points and natures for most teams. Look for sources."],
+  ["d2-quality","Check each source for mistakes","Misread names, duplicates, wrong winners, forms (Mega vs base), ladder vs tournament differences."]]},
+ {id:"d3", name:"Step 3 · Measure every factor", goal:"For every factor on the master list, how much it really matters and whether the grade already gets it right.", done:"every factor has a result in plain words, with what the test could and couldn't see, and Sim has read it.", steps:[
+  ["d3-each","Grade vs reality for every factor","Teams with and without each factor: what the grade expected vs how they really did, on two separate sets of games. Real only if both agree."],
+  ["d3-break","Broken-team tests","Take strong real teams and remove one basic (the Mega, speed control, Protect, Fake Out / Intimidate…). The grade must drop about as much as real results say."],
+  ["d3-count","Counting mistakes","Benched Pokémon getting credit (checked with replays), two Megas both credited, Bo3 games, who you beat."],
+  ["d3-unusual","Unusual teams","How accurate the grade is on teams unlike real ones, the kind Build for Me makes."],
+  ["d3-built","The teams our tools make","Grade Build for Me and suggestion teams on the same tests, including Sim's box."]]},
+ {id:"d4", name:"Step 4 · Fix what's real", goal:"Every real gap counted, sized by real results.", done:"accuracy on later games is no worse overall, every factor group lines up with reality, the broken-team tests pass, and Sim approves.", steps:[
+  ["d4-team","Count the team as a whole","Mega count, speed control, turn-1 support, Protect, plan and clashing plans, and whatever else Step 3 shows matters."],
+  ["d4-bench","Credit only Pokémon that were brought","Where we know the 4."],
+  ["d4-mega","One Mega per game","A team listing two Mega Stones isn't credited for both."],
+  ["d4-rare","Careful and honest on unusual teams","A careful grade plus a plain warning; Build for Me can't wander into teams the grade can't judge."],
+  ["d4-check","Re-run every test","Two slices, the broken-team tests, then the sealed set once at the end."],
+  ["d4-ok","Sim reviews and approves","Before anything goes live."]]},
+ {id:"d5", name:"Step 5 · Then the tools", goal:"Only after Step 4 passes.", steps:[
+  ["d5-build","Build for Me (Foundation Phase 2)","Rebuilt on the fixed grade and tested on Sim's box."],
+  ["d5-sugg","Suggestions (Foundation Phase 3)","Including \"checks become tips\"."],
+  ["d5-plain","Make the site easy to read","Plain words, one number per card, one name per idea; details behind a tap. Sim approves the word list first."]]}
+]},
 {id:"foundation", short:"Foundation", name:"Foundation: grades, suggestions, Build for Me", about:"One tested grade becomes the only measure of \"good\". Build for Me, suggestions and Fix it all rank by it, and every part gets an automatic pass/fail check so it can never quietly get worse.", phases:[
  {id:"p0", name:"Phase 0 · Foundations", goal:"Measure properly before changing anything.", done:"today's numbers recorded, the sealed set locked, the data audit clean and the known-answer teams written.", steps:[
   ["p0-seal","Seal a test set","Lock away recent tournaments that are never used for tuning."],
@@ -124,18 +158,7 @@ const PLANS = [
   ["p1-stable","Day-to-day stability","An unchanged team stays within about 2 points from one day to the next."],
   ["p1-rank","Show the grade as a rank","Sim, Nov 8: \"77 for a 9-1 team seems so low\". The number is a rank among real tournament teams, so it shows as \"Top 23% of tournament teams\" (bottom half: \"Bottom 12%\"), not \"77 / 100\"."],
   ["p1-ok","Sim reviews and approves the grade change",""]]},
- {id:"pg", name:"Phase 1b · Gaps in what the grade knows", goal:"Find every important battle factor the grade doesn't count, and count it.", done:"every gap is measured, the real ones are counted in the grade and pass a check on later games the grade never saw, and Sim agrees nothing basic is missing. Phase 2 waits on this.", steps:[
-  ["pg-found","Found the gap (Sim, Nov 8)","A no-Mega team graded 98, but real no-Mega teams win only 34% of games (264 games). The grade counts Pokémon, pairs, sets and matchups, never the team as a whole."],
-  ["pg-list","List every possible gap","Team basics (Mega, speed control, Fake Out / Intimidate, Protect, redirection, a clear plan, clashing plans, setters and the Pokémon that need them, physical/special mix, spread moves), counting mistakes (benched Pokémon get credit, two Megas both counted, best-of-3 games, who you beat), unusual teams, thin data, speed vs the meta, set fit, meta changes."],
-  ["pg-sim","Sim adds what a player knows","Anything from real play that's missing or wrong on the list."],
-  ["pg-audit","Measure each gap","For teams with each gap: what the grade expected vs how they really did, on two separate slices of games. A gap is real only if both slices agree."],
-  ["pg-team","Count the team-wide basics","Learned from the same battles, sized by real results, not guessed."],
-  ["pg-bench","Credit only Pokémon that were brought","Where replays show the four brought."],
-  ["pg-mega","Count only one Mega per game","A team listing two Mega Stones isn't credited for both."],
-  ["pg-rare","Be cautious and honest on unusual teams","Teams unlike real ones get a careful grade and a plain warning."],
-  ["pg-check","Check on later games","Overall accuracy must not get worse, and every gap group must line up with reality."],
-  ["pg-ok","Sim reviews and approves","Before anything goes live."]]},
- {id:"p2", name:"Phase 2 · Build for Me", goal:"Rank by the grade everywhere, and never hand out a weak team.", done:"every setting is within 3 points of the best real team possible under the same limits, and the gate passes.", steps:[
+ {id:"p2", name:"Phase 2 · Build for Me", goal:"(Waits for the Deep Check plan above.) Rank by the grade everywhere, and never hand out a weak team.", done:"every setting is within 3 points of the best real team possible under the same limits, and the gate passes.", steps:[
   ["p2-search","Search path ranks by the grade","Box-only builds, \"build around a Pokémon\" and new ideas."],
   ["p2-zero","0 Megas builds strong teams","Known-answer case: today it builds 33 / 58 / 17 (C, C, D) and takes about 5 s on a phone."],
   ["p2-cautious","Rank by how good we're sure it is","The grade minus a penalty when unsure, so it can't game blind spots."],

@@ -61,3 +61,14 @@ an empty My Team (no team yet), other empty screens, small notices (saved, grade
 - COPPA: no names or emails collected; feedback stays anonymous.
 - The contact email is shown only after "Show email". No RK9 scraping.
 - No model identifiers in commits.
+
+## How we test (Sim, Nov 8, after the no-Mega 98)
+A no-Mega team graded 98 while real no-Mega teams win 34%: the grade never counted the team as a whole, and every test only
+looked at real teams, where nearly everyone already has a Mega. To stop gaps like this:
+- Start from the game, not the data: before changing the grade, list what decides real battles (expert guides, top players,
+  Sim) and check in the CODE that the grade can see each one. Keep the "What can the grade see?" table current.
+- A test only counts if it could have failed. Say what it could and couldn't detect. Too few teams to tell = "unknown",
+  never "no effect" or "doesn't matter".
+- Test where the grade is used: real teams AND the teams Build for Me and suggestions make AND deliberately broken teams
+  (remove the Mega, speed control, Protect, Fake Out/Intimidate: the grade must drop about as much as real results say).
+- Never tell Sim something is done or doesn't matter without these. The Deep Check plan on the Plans page comes first.
