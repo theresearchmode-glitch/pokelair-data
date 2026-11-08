@@ -1,0 +1,4 @@
+{"from": "2026-11-09",
+ "rule": "Tournament events on or after 'from' are the sealed test set (foundation plan, Phase 0, Nov 8). No tuning, dial-setting or idea-testing may look at them. They are scored only at the end of a phase, with SEALED=1, against a model trained only on games before 'from' (model.mjs TEST_DATE=<from>). Tuning uses out/matches_dev.json (node experiments/sealed.mjs), which leaves them out.",
+ "devTestFrom": "2026-10-27",
+ "devNote": "Day-to-day experiments score on dev events from devTestFrom up to the day before 'from' (BOARD_DATE=2026-10-27 MATCHES=out/matches_dev.json). These were already used in Nov 7-8 tuning, which is why they are not the sealed set."}

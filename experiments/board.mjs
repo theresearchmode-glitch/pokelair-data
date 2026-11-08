@@ -26,6 +26,10 @@ const setX = (t, d, noClamp, RG) => { if (d == null || !M.decks || !M.decks[d]) 
   return v; };
 // ---- the date split
 const ev = M.events, ord = [...ev.keys()].sort((a, b) => ev[a][1] < ev[b][1] ? -1 : 1), lo = Math.floor(ord.length * CUTF), futE = process.env.BOARD_DATE ? new Set(ord.filter(i => ev[i][1] >= process.env.BOARD_DATE && !String(ev[i][0]).startsWith('sd-'))) : new Set(ord.slice(lo)), cutDate = process.env.BOARD_DATE || ev[ord[lo]][1]; // BOARD_DATE=YYYY-MM-DD: later games = tournament events on or after it
+// sealed test set (Phase 0, Nov 8): scoring on sealed events needs SEALED=1 (end-of-phase checks only); see experiments/sealed.json
+{ const SL = JSON.parse(fs.readFileSync(ROOT + 'experiments/sealed.json', 'utf8')).from, n = [...futE].filter(i => ev[i][1] >= SL && !String(ev[i][0]).startsWith('sd-')).length;
+  if (n && process.env.SEALED !== '1') { console.error(`refusing: ${n} sealed events (from ${SL}) are in the scored set. Tune on MATCHES=out/matches_dev.json; use SEALED=1 only for an end-of-phase check.`); process.exit(2); }
+  if (process.env.SEALED === '1') console.log(`SEALED CHECK: scoring ${n} sealed events`); }
 const evRank = new Map(ord.map((e, i) => [e, i]));
 const G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6), past = G.filter(g => !futE.has(g[3])), fut = G.filter(g => futE.has(g[3]));
 // ---- each six's own record and each player's skill, fitted on past games only (as six.mjs does on all games)
@@ -102,4 +106,6 @@ for (const [k, f] of Object.entries(V)) { const B = board(f), sw = swapScore(f, 
   res.player = pk(g => sk[g[4]] - sk[g[5]]); res.both = pk(g => calib * (best(g[0], g[7]) - best(g[1], g[8])) + sk[g[4]] - sk[g[5]]);
   console.log(`\ncontext: the better player (by past results) won ${res.player}% of later games; team grade + player together ${res.both}%`); }
 if (process.env.BOARD_SWAPS) fs.writeFileSync(process.env.BOARD_SWAPS, JSON.stringify(Object.fromEntries(Object.entries(V).map(([k, f]) => [k, swaps(f).map(o => ({...o, pred: o.pred * scale(f).b}))]))));
+// BOARD_PRED=file: every version's win chance per scored game (same games, same order) for experiments/compare.mjs
+if (process.env.BOARD_PRED) fs.writeFileSync(process.env.BOARD_PRED, JSON.stringify({cutDate, ev: games.map(g => g[3]), y: games.map(g => g[2] === 1 ? 1 : 0), rows: Object.fromEntries(Object.entries(V).map(([k, f]) => { const {d, b} = scale(f); return [k, d.map(([x]) => +sig(b * x).toFixed(5))]; }))}));
 if (process.argv[2]) fs.writeFileSync(process.argv[2], JSON.stringify(res, null, 1));

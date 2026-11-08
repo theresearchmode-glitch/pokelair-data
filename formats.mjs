@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 // Events played under extra rules (themed or restricted cups) aren't standard Reg M-C: their teams would skew usage, win rates
 // and the team model (sweep, Oct 31: Spooky Cup had Incineroar at 0%, Monotype events are 72–100% single-type teams).
+// Nov 8 data audit: also Monoregion/Monocolor cups (a MonoRegion event put Volcarona + Vanilluxe teams in a top-4 list).
 // Every pipeline step skips them by name. The raw files stay in data/ so nothing is lost if a name is matched by mistake.
-export const OFF_FORMAT = /off[ -]?meta|spooky|mono ?type|small pok[eé]mon|ultra beast|draft|\bbst\b|-\s?1\s?%|under \d+\s?%|little cup|\bnfe\b/i;
+export const OFF_FORMAT = /off[ -]?meta|spooky|mono ?(?:type|region|color|colour)|small pok[eé]mon|ultra beast|draft|\bbst\b|-\s?1\s?%|under \d+\s?%|little cup|\bnfe\b/i;
 export const offFormat = name => OFF_FORMAT.test(String(name || ''));
 
 // The alarm for themed events whose names the filter above doesn't catch (Oct 31). Staples (Pokémon on 20%+ of all standard

@@ -188,8 +188,9 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   const tix = ns => { const k = [...ns].sort().join('|'); if (!teamIx.has(k)) { teamIx.set(k, teams.length); teams.push(k); } return teamIx.get(k); };
   const pix = k => { if (!players.has(k)) { players.set(k, plist.length); plist.push(k); } return players.get(k); };
   V2.forEach((T, ti) => { const P = readJSON(`data/p/${T.id}.json`, []); if (!P.length) return; const by = new Map();
-    for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue; by.set(p.id, {t: tix(ns), pl: pix(p.id ? 'id:' + String(p.id).toLowerCase() : p.nm.toLowerCase().trim()) /* the Limitless account, not the display name (sweep, Oct 31: 517 accounts showed under 2+ names) */, d: dix(ns, p.dk)}); }
-    for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B) continue; const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
+    for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n) || new Set(ns).size !== 6) continue; /* data audit Nov 8: a sheet listed a Pokémon twice */ by.set(p.id, {t: tix(ns), pl: pix(p.id ? 'id:' + String(p.id).toLowerCase() : p.nm.toLowerCase().trim()) /* the Limitless account, not the display name (sweep, Oct 31: 517 accounts showed under 2+ names) */, d: dix(ns, p.dk)}); }
+    const seenG = new Set(); /* data audit Nov 8: skip repeated pairings (same round, same two players) and self-pairings */
+    for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
   fs.writeFileSync('out/matches.json', JSON.stringify({updated: new Date().toISOString(), events: V2.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}));
   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
 // 5) top-cut evidence for the ratings (top-cut share, conversion, win rate, rating-weighted usage, bring/lead rates

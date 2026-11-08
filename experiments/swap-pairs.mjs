@@ -11,6 +11,10 @@ const CUTF = +(process.env.BOARD_CUT || .8), MING = +(process.argv[2] || 8), tea
 const spF = new Map(); for (const f of Object.keys(MT.sets || {})) { const sp = f.split(/[@:#]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
 const xMon = m => { let v = 0; for (const n of m) v += MT.mons[n] || 0; for (let i = 0; i < m.length; i++) for (let j = i + 1; j < m.length; j++) { const k = m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i]; v += (MT.pairs || {})[k] || 0; } return v; };
 const ev = M.events, ord = [...ev.keys()].sort((a, b) => ev[a][1] < ev[b][1] ? -1 : 1), lo = Math.floor(ord.length * CUTF), futE = new Set(ord.slice(lo));
+// sealed test set (Phase 0, Nov 8): scoring on sealed events needs SEALED=1 (end-of-phase checks only); see experiments/sealed.json
+{ const SL = JSON.parse(fs.readFileSync(ROOT + 'experiments/sealed.json', 'utf8')).from, n = [...futE].filter(i => ev[i][1] >= SL && !String(ev[i][0]).startsWith('sd-')).length;
+  if (n && process.env.SEALED !== '1') { console.error(`refusing: ${n} sealed events (from ${SL}) are in the scored set. Tune on MATCHES=out/matches_dev.json; use SEALED=1 only for an end-of-phase check.`); process.exit(2); }
+  if (process.env.SEALED === '1') console.log(`SEALED CHECK: scoring ${n} sealed events`); }
 const G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6), past = G.filter(g => !futE.has(g[3])), fut = G.filter(g => futE.has(g[3]));
 // player skill from earlier games (team strength held fixed at the model's value)
 const S = new Float64Array(M.players); { const X = past.map(g => calib * (xMon(teams[g[0]]) - xMon(teams[g[1]]))), m1 = new Float64Array(M.players), v1 = new Float64Array(M.players), gs = new Float64Array(M.players);

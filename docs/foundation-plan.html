@@ -1,0 +1,174 @@
+<title>NastyPlot Foundation Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column; phases as sections, steps as tickable rows; progress bar per phase. NastyPlot type and colours. */
+:root{
+  --paper:#ECE7E0; --card:#FBF8F4; --ink:#16141A; --mute:#5C5862; --rule:rgba(22,20,26,.12);
+  --blue:#0078BF; --blue-ink:#005E96; --green:#2E9E5B; --green-ink:#16693B; --gold:#E9A800;
+  --head:"Unbounded",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#1B1A1D; --card:#242327; --ink:#ECE8E2; --mute:#A7A2AB; --rule:rgba(236,232,226,.12);
+  --blue:#4FB2F0; --blue-ink:#4FB2F0; --green:#5FD08F; --green-ink:#5FD08F; --gold:#FFD166; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#1B1A1D; --card:#242327; --ink:#ECE8E2; --mute:#A7A2AB; --rule:rgba(236,232,226,.12);
+  --blue:#4FB2F0; --blue-ink:#4FB2F0; --green:#5FD08F; --green-ink:#5FD08F; --gold:#FFD166; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 64px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1,h2,.big{font-family:var(--head);font-synthesis:style;font-style:italic;text-wrap:balance;margin:0}
+h1{font-size:34px;line-height:1.15;font-weight:800}
+h1 em{color:var(--blue);font-style:italic}
+h2{font-size:22px;line-height:1.25;font-weight:600}
+p{margin:0}
+.lede{font-size:17px;color:var(--mute);max-width:62ch}
+.overall{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.big{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.bar{flex:1;min-width:160px;height:6px;border-radius:6px;background:var(--rule);overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+.rule-box{background:var(--card);border-radius:18px;padding:20px 24px;display:flex;flex-direction:column;gap:6px}
+.rule-box b{font-weight:600}
+.label{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:600}
+section.phase{background:var(--card);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.ph-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ph-count{font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums}
+.ph-count.done{color:var(--green-ink);font-weight:600}
+.goal{color:var(--mute);font-size:15px}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+li{border-top:1px solid var(--rule)}
+li:first-child{border-top:0}
+label.step{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:12px 0;cursor:pointer;align-items:start}
+label.step input{appearance:none;width:22px;height:22px;margin:1px 0 0;border:2px solid var(--mute);border-radius:6px;cursor:pointer;display:grid;place-items:center;background:transparent}
+label.step input:checked{background:var(--green);border-color:var(--green)}
+label.step input:checked::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+label.step input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+label.step input:disabled{cursor:default;opacity:.6}
+.st{min-width:0;display:flex;flex-direction:column;gap:2px}
+.st b{font-weight:600}
+.st span{color:var(--mute);font-size:15px}
+input:checked + .st b{text-decoration:line-through;text-decoration-color:var(--mute)}
+.when{font-size:13px;color:var(--green-ink);font-weight:600}
+.done-when{border-top:1px solid var(--rule);padding-top:12px;font-size:15px}
+.done-when b{color:var(--blue-ink);font-weight:600}
+.status{font-size:13px;color:var(--mute)}
+@media (max-width:480px){h1{font-size:28px}section.phase,.rule-box{padding:20px 16px}}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <span class="label">Grades · Suggestions · Build for Me</span>
+    <h1>The foundation <em>plan.</em></h1>
+    <p class="lede">One tested grade becomes the only measure of "good". Build for Me, suggestions and Fix it all rank by it, and every part gets an automatic pass/fail check so it can never quietly get worse.</p>
+  </header>
+
+  <div class="overall">
+    <span class="big" id="pct">0%</span>
+    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+    <span class="status" id="status">Loading progress…</span>
+  </div>
+
+  <div class="rule-box">
+    <span class="label">How we work</span>
+    <p><b>One phase at a time.</b> Each builds on the last.</p>
+    <p><b>Sealed test set.</b> Recent tournaments we never tune on; used only to confirm each phase.</p>
+    <p><b>A change is kept only if it clearly beats today</b> on the sealed set, by more than normal chance variation. Otherwise the simpler version stays.</p>
+    <p><b>Honest targets.</b> Picking match winners from teams alone tops out in the high 50s%. We aim for not worse, well calibrated (60% means 60%), and letters that clearly differ.</p>
+    <p><b>Sim approves every grade change</b> and every phase before it goes live, with before-and-after examples.</p>
+  </div>
+
+  <div id="phases"></div>
+</div>
+
+<script>
+const PLAN = [
+ {id:"p0", name:"Phase 0 · Foundations", goal:"Measure properly before changing anything.", done:"today's numbers recorded, the sealed set locked, the data audit clean and the known-answer teams written.", steps:[
+  ["p0-seal","Seal a test set","Lock away recent tournaments that are never used for tuning."],
+  ["p0-rule","Set the improvement rule","How big a gain must be on the sealed set before we keep a change."],
+  ["p0-audit","Audit the match data","Duplicates, misread teams, ladder vs tournament weighting, events with missing results."],
+  ["p0-golden","Write the known-answer teams","Top-cut teams grade A/B, a broken team grades F, illegal items get flagged, strong teams get no swaps."],
+  ["p0-base","Record today's starting point","Accuracy, calibration, letter spread, swap test, Build for Me scores and phone speed."],
+  ["p0-log","Start the decision log","Every test, result and decision written down in the grade-accuracy notes."]]},
+ {id:"p1", name:"Phase 1 · The grade", goal:"Make the grade the one trusted measure.", done:"the new grade is at least as accurate as today's on the sealed set, overall and on teams nobody has played, with honest confidence.", steps:[
+  ["p1-calc","Settle the calc-based matchup piece","Test with it, without it, and with real-results matchups in its place."],
+  ["p1-partial","One scale for every team","Partial teams (under 6) move onto the same formula as full teams."],
+  ["p1-unplayed","Test on unplayed teams","Accuracy and calibration on new mixes; tune caution for untested pairs."],
+  ["p1-calib","Calibration","When the grade says 60%, teams win about 60%."],
+  ["p1-letters","Sharpen A vs B vs C","Letters mean noticeably different strength."],
+  ["p1-thin","Too little data and new formats","Low confidence and \"not enough games yet\" for rare Pokémon and new regs like M-D."],
+  ["p1-stable","Day-to-day stability","An unchanged team stays within about 2 points from one day to the next."],
+  ["p1-ok","Sim reviews and approves the grade change",""]]},
+ {id:"p2", name:"Phase 2 · Build for Me", goal:"Rank by the grade everywhere, and never hand out a weak team.", done:"every setting is within 3 points of the best real team possible under the same limits, and the gate passes.", steps:[
+  ["p2-search","Search path ranks by the grade","Box-only builds, \"build around a Pokémon\" and new ideas."],
+  ["p2-cautious","Rank by how good we're sure it is","The grade minus a penalty when unsure, so it can't game blind spots."],
+  ["p2-sets","Sets, not just six Pokémon","Items, moves and Abilities match proven sets or score at least as well."],
+  ["p2-box","Box mode, honestly","Best team your box allows, plus the one or two Pokémon that would lift it to an A."],
+  ["p2-rules","Keep the rules that matter","Mega count, weather that's used, legal items, three genuinely different teams."],
+  ["p2-later","Check against later results","Teams like the ones it builds really did well when players used them."],
+  ["p2-gate","Grade gate for every setting","0/1/2 Megas, whole roster, sample boxes, ten \"build around\" picks."],
+  ["p2-speed","Phone speed","Under 3 seconds on iPhone."],
+  ["p2-ok","Sim's blind review and approval","About 10 before-and-after cases."]]},
+ {id:"p3", name:"Phase 3 · Suggestions", goal:"Every suggestion comes from the grade.", done:"all gates pass and before-and-after examples look right to Sim.", steps:[
+  ["p3-gen","Ideas from grade gains","Every realistic one-Pokémon swap and the best two-Pokémon swaps, with the 75%-sure rule."],
+  ["p3-sets","Item, move and Ability suggestions","Same rules as Pokémon swaps."],
+  ["p3-cards","One measure on the cards","\"Grade B → A, rating 74 → 86\"; readiness only as background."],
+  ["p3-fixes","Problem fixes stay honest","Illegal items, unused weather, Trick Room gaps: may not drop the grade more than a stated amount."],
+  ["p3-gates","Gates","Never lowers the grade · swap test 56%+ · always legal · Apply gives exactly what the card promised."],
+  ["p3-ok","Sim's blind review and approval",""]]},
+ {id:"p4", name:"Phase 4 · Lock it in", goal:"Make it impossible to quietly get worse.", done:"every check runs on its own and a failed check blocks going live.", steps:[
+  ["p4-same","Same team, same grade everywhere","My Team, cards, Compare, Build for Me, Saved Teams."],
+  ["p4-auto","All gates run automatically","A failed gate blocks the change from going live."],
+  ["p4-guard","Daily model guard","If tomorrow's model is clearly worse, keep yesterday's and flag it."],
+  ["p4-battle","Battle and Threats under the same checks",""],
+  ["p4-monthly","Monthly accuracy check","Fresh tournaments; catch drift."],
+  ["p4-page","Update How Our Numbers Work","Plain words, exactly what the site does."]]}
+];
+const state = {};
+const $ = id => document.getElementById(id);
+function render(){
+  const host = $("phases"); host.textContent = "";
+  let all = 0, done = 0;
+  for (const ph of PLAN){
+    const sec = document.createElement("section"); sec.className = "phase"; sec.style.marginBottom = "16px";
+    const n = ph.steps.filter(s => state[s[0]]?.done).length; all += ph.steps.length; done += n;
+    sec.innerHTML = `<div class="ph-top"><h2></h2><span class="ph-count ${n===ph.steps.length?'done':''}">${n} of ${ph.steps.length}</span></div><p class="goal"></p><ul></ul><p class="done-when"><b>Done when</b> </p>`;
+    sec.querySelector("h2").textContent = ph.name;
+    sec.querySelector(".goal").textContent = ph.goal;
+    sec.querySelector(".done-when").append(ph.done);
+    const ul = sec.querySelector("ul");
+    for (const [id, t, d] of ph.steps){
+      const li = document.createElement("li"), s = state[id] || {};
+      li.innerHTML = `<label class="step"><input type="checkbox" id="${id}"><div class="st"><b></b>${d?'<span></span>':''}${s.at?'<span class="when"></span>':''}</div></label>`;
+      li.querySelector("b").textContent = t;
+      if (d) li.querySelector(".st span").textContent = d;
+      if (s.at) li.querySelector(".when").textContent = "Done " + s.at + (s.note ? " · " + s.note : "");
+      const cb = li.querySelector("input"); cb.checked = !!s.done; cb.disabled = !db;
+      cb.addEventListener("change", () => toggle(id, cb.checked, cb));
+      ul.append(li);
+    }
+    host.append(sec);
+  }
+  const p = all ? Math.round(done / all * 100) : 0;
+  $("pct").textContent = p + "%"; $("bar").style.width = p + "%";
+}
+let db = null;
+async function toggle(id, on, cb){
+  const at = on ? new Date().toISOString().slice(0, 10) : null;
+  try { await db.collection("progress").doc(id).set({done: on, at, note: on ? (state[id]?.note || "") : ""}); }
+  catch (e) { cb.checked = !on; $("status").textContent = "Couldn't save that tick. Check you're signed in with edit access."; }
+}
+render();
+(async () => {
+  try { db = await claude.use("db"); } catch (e) { db = null; }
+  if (!db){ $("status").textContent = "Sign in to see and save progress."; render(); return; }
+  db.collection("progress").onSnapshot(snap => {
+    for (const k in state) delete state[k];
+    for (const d of snap.docs) if (d.exists) state[d.id] = d.data();
+    $("status").textContent = "Saved for everyone who opens this page.";
+    render();
+  }, () => { $("status").textContent = "Progress couldn't load right now."; });
+})();
+</script>
