@@ -70,12 +70,18 @@ function fit(games, opt) { const {useSkill = true, usePairs = true, useSets = fa
     const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
     for (let k = 0; k < 4; k++) { const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
       for (let j = 0; j < a.length; j++) { const gg = g[j] + 2 * L[k] * a[j]; m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg; a[j] -= .03 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8); } } }
+  // how sure each number is (Nov 8, step 5 "show how sure the grade is"): the spread a ridge fit implies, 1/(Σ w·p(1−p) + 2λ)
+  // over the games it appears in (the diagonal of the curvature; partners' overlap is ignored, so it is checked on later games)
+  const hb = new Float64Array(b.length), hq = new Float64Array(q.length);
+  for (let gi = 0; gi < games.length; gi++) { const [A, B, , , pa, pb, , dA, dB] = games[gi], eta = x(A, dA) - x(B, dB) + (useSkill ? s[pa] - s[pb] : 0), pp = 1 / (1 + Math.exp(-eta)), h = pp * (1 - pp) * W[gi] * Wn;
+    for (const t of [A, B]) { for (const j of tf[t].f) hb[j] += h; if (usePairs) for (const j of tf[t].p) hq[j] += h; } }
+  const vb = Array.from(hb, (h, j) => 1 / (h + 2 * lb)), vq = Array.from(hq, (h, j) => 1 / (h + 2 * lp));
   // evidence shrink: each Pokémon's / pair's effect scaled by n/(n+K), n = its team appearances in the games fitted
   if (EVID_K > 0 || EVID_KP > 0) { const nb = new Float64Array(mons.length), nq = new Float64Array(pairs.length);
     for (const [A, B] of games) for (const t of [A, B]) { for (const j of tf[t].f) nb[j]++; for (const j of tf[t].p) nq[j]++; }
     if (EVID_K > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + EVID_K);
     if (EVID_KP > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + EVID_KP); }
-  return {b, q, s, c, x, useSets}; }
+  return {b, q, s, c, x, useSets, vb, vq}; }
 function score(model, games, skillToo) { let ll = 0, acc = 0;
   for (const [A, B, r, , pa, pb, , dA, dB] of games) { const eta = model.x(A, dA) - model.x(B, dB) + (skillToo ? model.s[pa] - model.s[pb] : 0), p = 1 / (1 + Math.exp(-eta));
     ll -= r * Math.log(p) + (1 - r) * Math.log(1 - p); acc += (p > .5) === (r === 1) ? 1 : 0; }
@@ -169,6 +175,10 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
   mons: F ? Object.fromEntries(mons.map((n, j) => [n, +F.b[j].toFixed(4)])) : {},
   pairs: F ? Object.fromEntries(pairs.map((k, j) => [k, +F.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)) : {},
+  // spread of each Pokémon's and each shipped pair's number (standard deviation, model units), for the grade's likely range
+  monSd: F ? Object.fromEntries(mons.map((n, j) => [n, +Math.sqrt(F.vb[j]).toFixed(3)])) : {},
+  pairSd0: F ? +Math.sqrt(1 / (2 * LAM.lp)).toFixed(3) : null, // spread of a pair with no shipped number (little or no evidence)
+  pairSd: F ? Object.fromEntries(pairs.map((k, j) => [k, Math.abs(F.q[j]) >= .005 ? +Math.sqrt(F.vq[j]).toFixed(3) : null]).filter(([, v]) => v != null)) : {},
   sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)])) : {},
   // the "same players without it" test for each Pokémon (pilot.mjs): [games with, win % with, games without, win % without, players]
   pilot: TRAIN_ONLY ? {} : pilotTest(M)};

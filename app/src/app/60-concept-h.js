@@ -36,6 +36,16 @@ CH.grade = s => s >= 90 ? 'A' : s >= 70 ? 'B' : s >= 30 ? 'C' : s >= 10 ? 'D' : 
 CH.gradeOld = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
 // this exact six's own record (δ in team-strength units, and its games), from model.sixes
 CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms.length !== 6) return null; const v = S[ms.map(m => (m.p || m).n).sort().join('|')]; return Array.isArray(v) ? {d: +v[0] || 0, g: +v[1] || 0} : null; };
+// how sure the rating is (Nov 8, step 5): the spread of the team's strength from how much real evidence stands behind each of
+// its Pokémon and pairs (model.monSd / pairSd), widened by CH.SD_K, the factor that made those spreads match later results
+// (experiments/unsure.mjs); a six's own record narrows it. Shown as an 80% range on the 0-100 rating.
+CH.SD_K = 1;
+CH.sdOf = ms => { const M = META.model; if (!M || !M.monSd || !ms || ms.length !== 6) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...Object.values(M.monSd)), p0 = +M.pairSd0 || .05;
+  let v = 0; for (const n of ns) v += (M.monSd[n] ?? mx) ** 2;
+  for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = ns[i] < ns[j] ? ns[i] + '|' + ns[j] : ns[j] + '|' + ns[i]; v += ((M.pairSd || {})[k] ?? p0) ** 2; }
+  return Math.sqrt(v) * CH.SD_K; };
+CH.rangeOf = (ms, y) => { const sd = CH.sdOf(ms); if (sd == null || y == null) return null; const a = strengthPct(y - 1.2816 * sd), b = strengthPct(y + 1.2816 * sd);
+  return a == null || b == null ? null : [Math.round(a), Math.round(b)]; };
 // win chance against today's field: the average over real tournament teams (the shipped percentiles)
 CH.fieldWin = y => { const q = META.model && META.model.dist && META.model.dist.q; if (!Array.isArray(q) || q.length !== 101) return null; const c = calibK(); let t = 0; for (const v of q) t += sig(c * (y - v)); return t / q.length; };
 // strength, rank among real teams (0-100) and expected win rate, with and without the six's own record
@@ -53,7 +63,7 @@ CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof mode
   const M = META.model, mx = M.meanX || 0, k = typeof testedPairs === 'function' ? testedPairs(names) : null, cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
   const dv = xs.x0 - mx, x = mx + (dv > 0 ? dv * cr : dv), mu = ready == null ? 0 : CH.MU_K * (ready - CH.MU_AVG);
   const six = CH.sixOf(ms), y0 = x + mu, y = y0 + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
-  return {x, y, six, mu, pct, pct0: strengthPct(x), pMu: strengthPct(y0), e, e0: CH.fieldWin(x), eMu: CH.fieldWin(y0)}; } catch (e) { return null; } };
+  return {x, y, six, mu, pct, pct0: strengthPct(x), pMu: strengthPct(y0), e, e0: CH.fieldWin(x), eMu: CH.fieldWin(y0), rg: CH.rangeOf(ms, y)}; } catch (e) { return null; } };
 // The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
 // Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
 // letters in the same order as the teams' finishes most often. Weather and Taunt/Encore aren't checks: teams without them won
@@ -149,7 +159,7 @@ CH.LETTERS = 'A: top 10% of real tournament teams · B: next 20% · C: middle 40
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.v === 2) { const L2 = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu), m = b - a, r = t - b, pts = v => `${Math.abs(v)} point${Math.abs(v) === 1 ? '' : 's'}`;
     const own = G.six ? ` This exact six has ${G.six.g.toLocaleString('en-US')} real tournament games. With its players' skill and its opponents' strength taken out, those results ${r > 0 ? `add ${pts(r)}` : r < 0 ? `take off ${pts(r)}` : 'change it by less than a point'}; the more games, the more they count.` : ' This exact six hasn’t been played in tournaments yet, so this is our estimate from how its Pokémon, pairs and sets do in real games.';
-    const top = `${L2} · team rating ${t} of 100: ${CH.pctTxt(G).toLowerCase().replace(/^top/, 'in the top')}.`;
+    const rg = G.st && G.st.rg, top = `${L2} · team rating ${t} of 100${rg && rg[1] - rg[0] >= 2 ? `, likely ${rg[0]}–${rg[1]}` : ''}: ${CH.pctTxt(G).toLowerCase().replace(/^top/, 'in the top')}.`;
     /* short (Sim, Nov 7: "just what they should and need to"): what the number means, the three things it's made of, the letters */
     const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
     return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
