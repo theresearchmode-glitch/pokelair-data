@@ -171,3 +171,10 @@ sets (were in-game usage), and the grade judges exactly the sets shown; partial 
 the grade shows as a rank ("Top 23% of tournament teams", bottom half "Bottom 12%") instead of "77 / 100"; each six's own
 record stays as is (Sim). Daily crosscheck now compares sets with Pikalytics tournament stats (39/39 items, 39/39 Abilities,
 37/39 move sets agree). Known-answer cases: 5 of 7 (the two open ones are Phase 2 and Phase 3). 339/339 site checks pass.
+
+**Phase 2 blind review and structure check (Nov 8).** Sim picked the new Build for Me team in 3 of 10 blind cases, mostly
+preferring a Rillaboom + Incineroar support core or a Trick Room plan. experiments/structure-check.mjs, on the 6,270 dev games
+with the site's own win chance as the starting point, effect of each role beyond the grade: Fake Out + Intimidate core −0.3
+(−1.9 to +1.3), Fake Out −1.8 (−3.7 to +0.2), Intimidate +0.6, redirection +0.2, Tailwind −0.3, speed control −0.8, **Trick Room
++2.2 (+0.4 to +3.9)**. Support cores are graded right. Trick Room is a candidate blind spot, one of 7 tests, so it is
+PRE-REGISTERED here and will be checked on the sealed set (Nov 9+) before the grade changes.
