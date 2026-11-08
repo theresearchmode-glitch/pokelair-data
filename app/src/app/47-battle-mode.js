@@ -106,8 +106,14 @@ function renderBattle() {
       <div class="seg segwrap" role="group" aria-label="Weather">${wseg}</div>
       <div class="seg segwrap" role="group" aria-label="Intimidate"><button type="button" data-bmi="intMe" aria-pressed="${bmUi.intMe}">You're Intimidated</button><button type="button" data-bmi="intThem" aria-pressed="${bmUi.intThem}">They're Intimidated</button></div>
       ${grid}<p class="t2 bmleg" style="margin:0"><span class="bo k2">%</span> your best hit on them · <span class="bd k2">%</span> their best hit on you. Top roll as % of HP, each side's usual set, tagged with how many hits it takes: OHKO, 2HKO, 3HKO (a % = only that share of rolls do it); on their side, red and pink cells mean they can do the same to you.</p></div>`;
+    /* from real games (Sim, Nov 8: "absolutely go with the real results"): how six-vs-six matchups like this one have gone in
+       real tournaments, in words, and the Pokémon pairs that move it most. No percentage: the verdict is the point. */
+    let real = ''; try { const R = realMatch(mine, theirs); if (R) { const nm = n => esc((byName.get(n) || {}).d || n);
+      real = `<div class="plan bmcard bmreal" data-t="plan"><div class="ph"><span class="pt">From real games</span><span class="vsub">${(R.games || 0).toLocaleString('en-US')} tournament games</span></div>
+        <p class="bmrv"><b>${R.word}</b>${R.full ? '' : ' so far'}</p>
+        ${R.key.length ? `<ul class="bmrk">${R.key.map(k => `<li><span class="${k.v > 0 ? 'up' : 'dn'}">${k.v > 0 ? 'Helps you' : 'Hurts you'}</span> Your ${nm(k.a)} vs their ${nm(k.b)}</li>`).join('')}</ul>` : '<p class="t2" style="margin:0">No Pokémon pairing here stands out in real results.</p>'}</div>`; } } catch (e) {}
     let t1 = ''; if (dbl) { try { t1 = turnOnePlan(mine, theirs, r); } catch (e) {} }
-    body = `<div class="seg bmtabs" role="group" aria-label="Show">${[['plan', 'Plan'], ['speed', 'Speed'], ['dmg', 'Damage']].map(([k, t]) => `<button type="button" data-bmt="${k}" aria-pressed="${bmUi.tab === k}">${t}</button>`).join('')}</div><div class="bmgrid" data-tab="${bmUi.tab}">${bring}${watch}${speed}${t1 ? `<div class="bmt1" data-t="plan">${t1}</div>` : ''}${dmgCard}</div>`; }
+    body = `<div class="seg bmtabs" role="group" aria-label="Show">${[['plan', 'Plan'], ['speed', 'Speed'], ['dmg', 'Damage']].map(([k, t]) => `<button type="button" data-bmt="${k}" aria-pressed="${bmUi.tab === k}">${t}</button>`).join('')}</div><div class="bmgrid" data-tab="${bmUi.tab}">${bring}${real}${watch}${speed}${t1 ? `<div class="bmt1" data-t="plan">${t1}</div>` : ''}${dmgCard}</div>`; }
   el.innerHTML = top + body;
   safe('log', () => renderLog());
   S.opp.forEach((n, i) => { const inp = $('bmOpp' + i); if (inp) bindMonInput(inp, p => { S.opp[i] = p.n; persist(); renderMatchup(); const nx = S.opp.findIndex(x => !byName.get(x)); const f = nx >= 0 && $('bmOpp' + nx); if (f) f.focus(); }, p => !S.opp.includes(p.n)); });

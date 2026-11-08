@@ -135,4 +135,16 @@ function threatDiff(baseTeam,team,max=3){const A=prepOf(baseTeam),B=prepOf(team)
   const up=[],dn=[];A.rows.forEach((ra,j)=>{const rb=B.rows[j];if(!rb||ra.t.n!==rb.t.n)return;
     if(rb.level>ra.level){const ev=THR.evidence(rb);up.push({w:ra.t.w,html:`<b>Covers ${esc(rb.t.d)}</b>: ${ra.label} → ${rb.label}<span class="thcalc" title="${esc(ev)}">${calcShort(ev).split('\n').map((x,i)=>i?`<span class="thcond">${esc(x)}</span>`:esc(x)).join('')}</span>`})}
     else if(rb.level<ra.level)dn.push({w:ra.t.w,html:`<span class="warnline">Loses ${esc(rb.t.d)}:</span> ${ra.label} → ${rb.label}`})});
-  up.sort((x,y)=>y.w-x.w);dn.sort((x,y)=>y.w-x.w);return [...up.slice(0,max).map(x=>({up:true,html:x.html})),...dn.slice(0,max).map(x=>({up:false,html:x.html}))]}
+  up.sort((x,y)=>y.w-x.w);dn.sort((x,y)=>y.w-x.w);return [...up.slice(0,max).map(x=>({up:true,html:x.html})),...dn.slice(0,max).map(x=>({up:false,html:x.html}))]}// ---------- matchups learned from real games (ctr.mjs, Nov 8): which Pokémon do well against which, once each team's strength
+// and each player's skill are taken out. Only used against a known opponent (Battle: Plan a Match); averaged over the whole
+// field it added nothing to the grade, so the grade never uses it.
+let ctrCache={m:null,ix:null,K:0};
+function ctrVal(a,b){const C=META.model&&META.model.ctr;if(!C||!Array.isArray(C.sp)||!Array.isArray(C.v))return null;
+  if(ctrCache.m!==C)ctrCache={m:C,ix:new Map(C.sp.map((n,i)=>[n,i])),K:C.sp.length};const {ix,K}=ctrCache,i=ix.get(a),j=ix.get(b);if(i==null||j==null||i===j)return null;
+  const lo=Math.min(i,j),hi=Math.max(i,j),k=lo*K-lo*(lo+1)/2+(hi-lo-1),v=(C.v[k]||0)/1000;return i<j?v:-v}
+// your six against theirs: a verdict in words, and the pairs that move it most
+function realMatch(mine,theirs){if(!modelOK()||!META.model.ctr)return null;const A=mine.map(m=>m.p.n),B=theirs.map(o=>o.p.n);if(A.length<4||B.length<4)return null;
+  let mt=0;const pr=[];for(const a of A)for(const b of B){const v=ctrVal(a,b);if(v==null)continue;mt+=v;pr.push({a,b,v})}
+  let base=0,full=false;try{if(A.length===6&&B.length===6){base=calibK()*(teamX(A,mine)-teamX(B,null));full=true}}catch(e){}
+  const z=base+mt,p=sig(z),word=p>=.58?'Favored':p>=.53?'Slight edge':p>.47?'Even':p>.42?'Slightly behind':'Behind';
+  pr.sort((x,y)=>Math.abs(y.v)-Math.abs(x.v));return {p,word,full,key:pr.filter(x=>Math.abs(x.v)>=.02).slice(0,3),games:META.model.ctr.games||0}}

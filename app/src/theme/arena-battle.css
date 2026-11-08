@@ -1028,3 +1028,9 @@
 /* the runner strips below tuck up into the band (-22px phone, -34px iPad), so the band leaves room for them under the text */
 @media (max-width:599px){@A [data-pane="matchup"] .ar-rhero{padding-bottom:44px!important}}
 @media (min-width:600px) and (max-width:1000px){@A [data-pane="matchup"] .ar-rhero{padding-bottom:56px!important}}
+/* From real games (Nov 8): a word verdict in the display font, then up to three pairs that move it */
+@A .bmreal .bmrv{margin:4px 0 8px;font:italic 800 26px/1.1 var(--ar-display);font-synthesis:style;color:var(--ar-ink)}
+@A .bmreal .bmrk{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+@A .bmreal .bmrk li{display:flex;align-items:baseline;gap:8px;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink)}
+@A .bmreal .bmrk li span{flex:none;min-width:84px;font:700 13px/1.3 var(--ar-body);color:var(--ar-ink-2)}
+@A .bmreal .bmrk li span.up{color:var(--ar-green,#2E9E5B)}

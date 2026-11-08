@@ -37,6 +37,8 @@ jobs:
       - run: node model.mjs || node skip.mjs "model skipped"
       # each six's own record with player skill and opponents taken out, added to out/model.json for grade v2 (Nov 7)
       - run: node six.mjs || node skip.mjs "six records skipped"
+      # which Pokémon beat which in real games, added to out/model.json for Plan a Match (Nov 8)
+      - run: node ctr.mjs || node skip.mjs "learned matchups skipped"
       - run: node ladder.mjs || node skip.mjs "ladder stats skipped"
       # other sites' numbers: Showdowntier, Pikalytics (rating inputs, tier lists, cross-check)
       - run: node sources.mjs || node skip.mjs "outside sources skipped"
