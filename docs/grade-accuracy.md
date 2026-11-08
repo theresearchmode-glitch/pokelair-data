@@ -178,3 +178,9 @@ with the site's own win chance as the starting point, effect of each role beyond
 (−1.9 to +1.3), Fake Out −1.8 (−3.7 to +0.2), Intimidate +0.6, redirection +0.2, Tailwind −0.3, speed control −0.8, **Trick Room
 +2.2 (+0.4 to +3.9)**. Support cores are graded right. Trick Room is a candidate blind spot, one of 7 tests, so it is
 PRE-REGISTERED here and will be checked on the sealed set (Nov 9+) before the grade changes.
+
+**Phase 2 live (Version 123, Nov 8), Sim approved:** Build for Me ranks every build by the cautious grade (strength minus 0.5 ×
+uncertainty, a six's own games narrowing it; compared on strength, not the 0-100 rank, which runs out of room at the top);
+proven and searched teams in one list; one weather setter per built team; box mode names the one catch that reaches an A.
+Defaults show each Pokémon's most common complete tournament set (from the daily job's `cs`, first produced Nov 9); unchanged
+sets count as a typical build. 339/339 site checks, 8/9 known-answer cases (the open one is Phase 3).
