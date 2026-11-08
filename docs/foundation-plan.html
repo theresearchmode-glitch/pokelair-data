@@ -118,6 +118,7 @@ const PLANS = [
   ["d2-bo1","Single games first (Sim, Nov 8)","Pokémon Champions ranked and online competitions are single games. Build and test on single-game data first: ladder replays (each one game) and best-of-1 tournament rounds. Best-of-3 (Regionals, Worlds) comes later."],
   ["d2-quality","Check each source for mistakes","Misread names, duplicates, wrong winners, forms (Mega vs base), ladder vs tournament differences."]]},
  {id:"d3", name:"Step 3 · Measure every factor", goal:"For every factor on the master list, how much it really matters and whether the grade already gets it right.", done:"every factor has a result in plain words, with what the test could and couldn't see, and Sim has read it.", steps:[
+  ["d3-method","Better measuring (from the independent review)","Moves actually used in each game, ranges grouped by team, one joint model with rating and popular Pokémon, no Mega leak, confidence fitted on single-game rounds, stricter bar when testing many factors."],
   ["d3-each","Grade vs reality for every factor","Teams with and without each factor: what the grade expected vs how they really did, on two separate sets of games. Real only if both agree."],
   ["d3-break","Broken-team tests","Take strong real teams and remove one basic (the Mega, speed control, Protect, Fake Out / Intimidate…). The grade must drop about as much as real results say."],
   ["d3-count","Counting mistakes","Benched Pokémon getting credit (checked with replays), two Megas both credited, Bo3 games, who you beat."],

@@ -150,10 +150,9 @@ e.g. Xperience Play $500: Swiss BO1, top cut BO3; Talon's Fight Club: all BO3). 
 - **The grade is about twice too sure for one game.** Best-fit confidence 0.41 vs the 0.87 the page uses (fitted on
   tournament rounds, mostly best of 3). Before the refit its log-loss was worse than a coin flip (0.6934 vs 0.6931).
 - Factors, after refitting confidence (side with it vs without, two date slices, ± = 95% range):
-  - Wide Guard: **underrated** in both slices (+2.0, +2.4; 1400+: +3.1).
-  - Spore answer (Grass, Overcoat, Goggles): **overrated** in both (−1.4, −1.4; 1400+: −3.0). Likely stands for common Grass
-    types, not Spore itself; needs a closer look.
-  - Within about ±1.5 pts of right in both slices: speed control, lead support, Fake Out, Intimidate, two Fake Out users,
+  - ~~Wide Guard: underrated~~ **WITHDRAWN after independent review**: 70% of 'Wide Guard' sides are just Pelipper, and with ranges grouped by six it fails the later slice.
+  - ~~Spore answer: overrated~~ **WITHDRAWN**: no Spore users exist in these games at all; it was really 'has a Grass type' (Rillaboom, Whimsicott, Sinistcha) and disappears in a joint model.
+  - Not proven either way (a ±1.5 range still allows a real 3-point effect; 'not significant' is not 'about right'): speed control, lead support, Fake Out, Intimidate, two Fake Out users,
     redirection, Tailwind, Trick Room, priority, Protect on 4+.
   - Leaning one way but not in both slices: Tailwind AND Trick Room on one team (−3.0, −1.6), two weather setters (+0.6, +5.6),
     5+ physical attackers (−1.1, −3.5), spread damage (+1.4, +3.3).
@@ -184,3 +183,21 @@ By rounds: **5,323 rounds (13.5%) are single games, 34,029 (86.5%) are best of 3
 from best-of-3 rounds, which explains why it's too confident for one game. Saved per event in data/tour-modes.json
 ([phase type, rounds, mode]). Single-game data for the grade: ladder replays, best-of-1 rounds, and individual games from
 Showdown's best-of-3 format (being collected, with team sheets).
+
+## Independent review (helper agent, Nov 8) and what changes
+No code bugs found (winner index checked against the replays). Problems with how I read the results, all accepted:
+1. Factors were guessed from each species' typical set; replays hold no moves or items. Fix: read the moves actually used in
+   each game's log, and use team-sheet games (best-of-3 Showdown, VGC-Bench) where sets are known.
+2. ± ranges too narrow: the same rental sixes appear up to ~500 times. Fix: ranges grouped by six (cluster-robust) by default.
+3. The two date slices share 42% of their sixes. Fix: split by six (each six in one half only), or test on later games.
+4. One factor at a time misleads. Fix: one joint model with the grade, the rating difference (7 pts per 100 rating, a big
+   effect) and the most popular Pokémon as inputs, as the standard check. In it, two Fake Out users come out −2.3 to −3.4 pts:
+   follow up, along with Tailwind + Trick Room.
+5. Which Mega shows in a replay depends on how the game went (the loser's back row is forced out), and that leaked into the
+   grade's own input. Fix: grade replay sixes with no Mega information, the same for both sides.
+6. Confidence: 0.41 is real for the ladder but the ladder is a different crowd. Fix: fit it on tournament single-game rounds.
+   Done (dev set, later games): best-of-1 rounds (945) want 0.60× the page's confidence (±0.37), best-of-3 rounds (5,325)
+   1.08× (±0.17). So for one game the page is too sure (about 0.5 instead of 0.87); for best of 3 it's about right.
+7. Wording overclaimed and ~19 factors were tested with no correction for testing that many. Fix: report "not proven" and
+   use a stricter bar when many factors are tested at once.
+Also: replays feed bring/lead rates into limitless.json, so they aren't 100% separate from the page's data (not who won).
