@@ -236,11 +236,11 @@ function teamScore({wv}){if(!wv)return null;const cl=x=>Math.max(0,Math.min(100,
 let pmCache=new Map();
 // The 4 moves a Pokémon is graded and planned with: its 4 most-used moves, the same 4 its team card shows.
 function runMoves(p){const pm=popularMoves(p),r=pm.slice(0,4);r.src=pm.src;r.pct=pm.pct;return r}
-function popularMoves(p){const key=S.format+'|'+ui.metaSrc+'|'+metaVersion+'|'+p.n;if(pmCache.has(key))return pmCache.get(key);const r=popularMoves_(p);pmCache.set(key,r);return r}
+function popularMoves(p){const key=S.format+'|def|'+metaVersion+'|'+p.n;if(pmCache.has(key))return pmCache.get(key);const r=popularMoves_(p);pmCache.set(key,r);return r}
 const AWKWARD=new Set(['Hyper Beam','Giga Impact','Explosion','Self-Destruct','Focus Punch','Solar Beam','Solar Blade','Sky Attack','Meteor Beam','Dream Eater','Belch','Last Resort','Steel Beam','Mind Blown','Head Smash','Blast Burn','Hydro Cannon','Frenzy Plant','Rock Wrecker','Roar of Time','Prismatic Laser','Eternabeam','Shell Trap','Future Sight','Doom Desire','Synchronoise','Burn Up','Double Shock','Outrage','Thrash','Petal Dance','Raging Fury']);
 // Most-used moves for p in doubles (see setFor), else its singles set (live fallback: OTHER() is 'singles'), else its strongest attacks.
 function popularMoves_(p){const toMoves=a=>a.map(([n])=>mvByName.get(n)).filter(Boolean).slice(0,6);
-  const st=setFor(p);let r=toMoves(st.mv);if(r.length){r.src=st.src.mv;r.pct=new Map(st.mv);return r}
+  const st=defSet(p);let r=toMoves(st.mv);if(r.length){r.src=st.src.mv;r.pct=new Map(st.mv);return r}
   const o=setFor(p,OTHER());r=toMoves(o.mv);if(r.length){r.src='other';r.pct=new Map();return r}
   const learnIdx=LEARN[p.n]||[];const ng=p.a.includes('No Guard');const atk=learnIdx.map(k=>MV[k]).filter(m=>m&&isCoverage(m)&&m.bp>0&&m.bp<=160&&!AWKWARD.has(m.name)&&(ng||!LOW_ACC.has(m.name)));const pow=m=>m.bp*(p.t.includes(m.type)?1.5:1);
   const out=[];for(const t of p.t){const m=atk.filter(x=>x.type===t).sort((x,y)=>y.bp-x.bp)[0];if(m)out.push(m)}
@@ -248,9 +248,9 @@ function popularMoves_(p){const toMoves=a=>a.map(([n])=>mvByName.get(n)).filter(
   out.src='guess';out.pct=new Map();return out}
 // The format whose sets fill in when doubles has none. The page is doubles only, so this is always singles.
 const OTHER=()=>'singles';
-function abilityPct(p,a){const x=setFor(p).ab.find(([n])=>n===a);return x?x[1]:null}
+function abilityPct(p,a){const x=defSet(p).ab.find(([n])=>n===a);return x?x[1]:null}
 // Held items players run: a Mega holds its stone; otherwise the top items in doubles.
-function topItems(p){const st=setFor(p);return st.it.length?{src:st.src.it,it:st.it.slice(0,2)}:null}
+function topItems(p){const st=defSet(p);return st.it.length?{src:st.src.it,it:st.it.slice(0,2)}:null}
 function pcTxt(v){return v!=null?` <span class="vsub">${(+v).toFixed(0)}%</span>`:''}
 // Item and nature most players run, shown on the card.
 function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.na.length?st.na.slice(0,2):null;

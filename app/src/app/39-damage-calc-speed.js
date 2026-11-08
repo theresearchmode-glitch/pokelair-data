@@ -5,7 +5,7 @@ const STAT_IX={HP:0,Atk:1,Def:2,SpA:3,SpD:4,Spe:5};
 function natMul(nat,stat){if(!nat)return 1;if((NAT_UP[stat]||[]).includes(nat))return 1.1;if((NAT_DN[stat]||[]).includes(nat))return .9;return 1}
 function calcStat(p,stat,sp,mul){const b=p.st[STAT_IX[stat]];if(stat==='HP')return b+75+sp;return Math.floor((b+20+sp)*mul)}
 function topNature(p){try{const st=setFor(p,'doubles');return st.na&&st.na.length?st.na[0][0]:null}catch(e){return null}}
-function topItem(p){try{const st=setFor(p,'doubles');return st.it&&st.it.length?st.it[0]:null}catch(e){return null}}
+function topItem(p){try{const st=setFor(p,'doubles','tour');return st.it&&st.it.length?st.it[0]:null}catch(e){return null}}
 const BOOST=s=>s>=0?(2+s)/2:2/(2-s);
 // Likely speed from what players run: a +Spe nature means full speed, a −Spe nature means none, else full speed if fast, none if slow.
 // The most common real spread for p on the Showdown ladder (Smogon stats): {nat, hp, atk, def, spa, spd, spe, pct}

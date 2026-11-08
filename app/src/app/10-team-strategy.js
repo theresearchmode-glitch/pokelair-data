@@ -117,7 +117,7 @@ function canonMove(n, p) { if (!n || typeof n !== 'string') return n; const k = 
   const learn = p && typeof LEARN === 'object' && LEARN[p.n] ? new Set(LEARN[p.n].map(i => MV[i] && MV[i].name)) : null;
   const pick = list => { const near = list.map(x => [x, lev(kn, k(x))]).filter(([, d]) => d <= 2).sort((a, b) => a[1] - b[1]); return near.length && (near.length === 1 || near[0][1] < near[1][1]) ? near[0][0] : null; };
   return (learn && pick([...learn].filter(Boolean))) || pick([...C.values()]) || n.trim(); }
-function metaAbility(p) { const t = metaEntry(p); if (!t || !t.ab || !t.ab.length) return null;
+function metaAbility(p) { const t = defSet(p); if (!t || !t.ab || !t.ab.length) return null;
   // the most-used ability, with every spelling of it merged
   const tot = new Map(); for (const [a, pct] of t.ab) { const c = canonAbility(a, p); if (p.a.includes(c)) tot.set(c, (tot.get(c) || 0) + (+pct || 0)); }
   const best = [...tot].sort((x, y) => y[1] - x[1])[0]; return best ? best[0] : null; }

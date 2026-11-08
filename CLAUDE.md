@@ -31,6 +31,13 @@ source docs/foundation-plan.html; ticks are in its db collection "progress"). Ad
 tick steps as they're done (with the date and a short note), and put every idea that isn't scheduled yet in "Ideas, not
 scheduled yet" so nothing gets lost. Keep the page current at all times.
 
+## Sets on teams (Sim, Nov 8)
+Most players don't know what moves to run. Any team the site builds or that a player types in uses the MOST POPULAR TOURNAMENT
+set for each Pokémon (moves, item, Ability from Limitless team sheets), and the grade judges exactly the sets shown. When a player
+changes anything, the grade re-judges what they chose, not the popular set. Our popular-set numbers must agree with established
+sites (Pikalytics tournaments, Pokémon Zone, MetaVGC, PokéBase); crosscheck.mjs checks this daily, and any disagreement gets
+explained, not ignored.
+
 ## Public launch (Sim, Nov 8)
 NastyPlot launches to the public sometime in January 2027, as a normal public website (not only the private Claude page).
 Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on

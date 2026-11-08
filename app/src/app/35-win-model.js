@@ -14,7 +14,7 @@ function setX(ms){return (ms||[]).reduce((a,m)=>a+setOne(m),0)}
    tournament Garchomp run), so grading a typed-in team on those guesses cost it up to ~20 rank points. On 6,270 later games,
    counting an unknown item, Ability or move set as average predicted results better than the default sets, beyond chance.
    Known = an item you picked (or a Mega Stone), moves you edited or pasted, an Ability you chose. SET_UNKNOWN_AVG=false: old way. */
-let SET_UNKNOWN_AVG=true;
+let SET_UNKNOWN_AVG=false; /* Sim, Nov 8: replaced by tournament default sets (defSet in 02-set-data.js): the grade judges exactly the sets shown */
 function setOne(m){const M=META.model,sets=M&&M.sets;if(!sets||!m)return 0;let x=0;const ms=[m];const center=!!M.center,fq=M.setFreq||{},F=center?spFeats():null;
   for(const m of ms){const p=m.p;if(!p)continue;let it='';try{it=p.m?stoneFor(p):m._deadItem?'':(m.heldItem||m.item||(topItem(p)||[])[0]||'')}catch(e){}
     if(center){const mv=new Set((m.moves||[]).map(v=>v&&v.name).filter(Boolean));

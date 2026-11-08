@@ -38,7 +38,10 @@ await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/f
   return rows.length >= 30 ? {date: up ? `${up[3]}-${up[1].padStart(2, '0')}-${up[2].padStart(2, '0')}` : null, from: rng ? us(rng[1]) : null, to: rng ? us(rng[2]) : null, battles: bat ? +(bat[1] || bat[2]).replace(/,/g, '') : null, rows, miss} : null; });
 // Pikalytics (Reg M-C): tournament teams from about the last two weeks (its own size threshold). The AI index is a
 // markdown table of the top 50 (usage %, game win %, W-L record); each /ai/ Pokémon page lists items and moves.
-await tryIt('pika', async () => { const F = 'gen9championsvgc2026regmc', h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
+// Nov 8 (Sim: our popular sets must agree with established sites): Pikalytics' TOURNAMENT stats ('championstournaments',
+// built from Limitless events). The 'gen9championsvgc2026regmc' format we read before is its Showdown LADDER data, a different
+// population, which made 14 of 40 top items look like conflicts (Rillaboom: Life Orb there, Miracle Seed 75.5% in tournaments).
+await tryIt('pika', async () => { const F = 'championstournaments', h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
   for (const m of h.matchAll(/^\| (\d+) \| \*\*(.+?)\*\* \| ([\d.]+)% \| ([\d.]+)% \| (\d+)-(\d+)(?:-\d+)? \|/gm)) { const n = norm(m[2]); if (!n) { miss.push(m[2]); continue; }
     rows.push({n, raw: m[2], u: +m[3], wr: +m[4], g: +m[5] + +m[6]}); } // wins-losses, and since Nov 2026 sometimes -ties
   if (rows.length < 30) return null;

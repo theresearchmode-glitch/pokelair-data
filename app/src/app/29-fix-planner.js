@@ -330,7 +330,7 @@ function renderMeta(){
     return `<details class="mrow${t.r<=3?' medal md'+t.r:''}"><summary${p?` class="tyacc" style="${tyv(p)}"`:''}><span class="rk">${t.r}</span>${(p&&sprite(p,'mini'))||'<span class="spr mini"></span>'}<span class="nm">${esc(p?p.d:t.n)}${(()=>{const tr=trendFor(t.n,t.r);return tr?`<span class="trend ${tr.cls}" title="${esc(tr.long?`${tr.long}. Daily ranks, ${META.history?META.history.days.length:0} days kept.`:`New in the usage ranks this week`)}">${tr.txt}${tr.cls!=='new'?rankSpark(t.n):''}</span>`:''})()} <span class="chips" style="display:inline-flex;vertical-align:middle">${p?p.t.map(x=>chip(x)).join(''):''}</span></span><span class="pc">${t.teams?`${t.u!=null?(+t.u).toFixed(1)+'%'+ubar(t.u,umx):''}${basis(t.teams,'team','teams',{cls:'blk'})}`:u?u.toFixed(1)+'%'+ubar(u,umx):''}</span></summary><div class="mbody">${sets||'<div class="none">No set details for this one yet.</div>'}${add?`<div>${add}</div>`:''}</div></details>`}).join('')+(d.more&&d.more.length?`<div class="t2" style="padding:4px 2px">Also ranked ${d.more[0].r}–${d.more[d.more.length-1].r}: ${d.more.slice(0,40).map(m=>{const q=byName.get(m.n);return esc(q?q.d:m.n)}).join(', ')}${d.more.length>40?` and ${d.more.length-40} more`:''}</div>`:'')+(d.note?`<div class="t2" style="padding:0 2px">${esc(d.note)}</div>`:'')||'<div class="empty-note">No Pokémon in this list.</div>';
 }
 // Ability picker: says plainly which ability most players run and whether you changed it.
-function abilBlock(s,i,m){const p=m.p,meta=metaAbility(p),rec=meta||bestAbility(p),st=setFor(p);
+function abilBlock(s,i,m){const p=m.p,meta=metaAbility(p),rec=meta||bestAbility(p),st=defSet(p);
   const mine=s.a&&p.a.includes(s.a)&&s.a!==rec;
   const tag=mine?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-abreset="${i}">Use ${esc(rec)}</button>`
     :p.a.length===1?`<span class="tag rec soft">${p.m?'MEGA ABILITY':'ONLY ABILITY'}</span>`
@@ -348,7 +348,7 @@ function itemBlock(s,i,m,clash){const p=m.p;
   const same=x=>x.p.n===p.n;
   const warn=clash&&clash.sc.some(same)?`<div class="itwarn" role="note"><b>Clashes with Trick Room.</b> ${clash.tr.length===1&&same(clash.tr[0])?'It sets Trick Room itself':'Your team sets Trick Room'}, and under it the Scarf makes ${esc(m.d)} move later.</div>`:'';
   if(p.m)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(m.item||'Mega Stone')}</div></div>`;
-  const pop=(setFor(p).it||[]).filter(([n])=>n&&notStone(n)).slice(0,8),popN=new Set(pop.map(([n])=>n)),def=defaultItem(p);
+  const pop=(defSet(p).it||[]).filter(([n])=>n&&notStone(n)).slice(0,8),popN=new Set(pop.map(([n])=>n)),def=defaultItem(p);
   const rest=itemPool().filter(n=>!popN.has(n));if(m.item&&!popN.has(m.item)&&!rest.includes(m.item))rest.unshift(m.item);
   // with no item picked, show the item it actually holds: Item Clause can move the usual item to a teammate (Oct 30 audit)
   let shown=m.item;if(!m.heldItem){try{const k=JSON.stringify(S.slots)+'|'+metaVersion;if(itemBlock._k!==k){itemBlock._k=k;itemBlock._a=new Map((typeof assignItems==='function'?assignItems(members()):[]).map(x=>[x.i,x.item]))}const a=itemBlock._a.get(m.i);if(a)shown=a}catch(e){}}

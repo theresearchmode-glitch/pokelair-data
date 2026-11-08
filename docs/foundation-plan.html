@@ -110,7 +110,8 @@ const PLANS = [
   ["p0-live","Push the data fixes live","Repeat pairings, self-pairings and MonoRegion cups filtered in the daily job (after Sim's go)."]]},
  {id:"p1", name:"Phase 1 · The grade", goal:"Make the grade the one trusted measure.", done:"the new grade is at least as accurate as today's on the sealed set, overall and on teams nobody has played, with honest confidence.", steps:[
   ["p1-exact","Score exactly what the site shows","A scoreboard that runs the page's own grade on every later game (experiments/site-board.mjs)."],
-  ["p1-sets","Fair grade when sets aren't entered","Default sets come from in-game usage and miss tournament sets (Garchomp without Stomping Tantrum, 77% of tournament Garchomp run it), costing teams up to ~20 rank points."],
+  ["p1-sets","Teams use the most popular tournament sets","Sim, Nov 8: built and typed-in teams get the most popular tournament moves, item and Ability; the grade judges exactly what's shown; anything a player changes is re-judged on their choice."],
+  ["p1-agree","Our popular sets agree with established sites","Checked Nov 8 against Pikalytics (tournaments): top item 39/39, top Ability 39/39, top-4 moves 37/39 (both gaps explained). The daily check had been comparing against its Showdown ladder page by mistake; fixed."],
   ["p1-calc","Settle the calc-based matchup piece","Test with it, without it, and with real-results matchups in its place."],
   ["p1-record","Does each six's own record earn its place?","Phase 0: adds nothing beyond chance on top of sets."],
   ["p1-partial","One scale for every team","Partial teams (under 6) move onto the same formula as full teams."],

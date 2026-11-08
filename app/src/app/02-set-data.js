@@ -67,6 +67,13 @@ function setFor(p,fmt,pref){fmt=fmt||S.format;pref=fmt==='singles'?'ingame':(pre
 function srcWord(src,fmt){return {live:'in-game',game:'in-game',sd:'Showdown 1630+',tour:'tournament',ladder:'Showdown ladder',mega:'',other:(fmt||OTHER())}[src]||''}
 // Kept for callers that want "the meta row": the merged set.
 function metaEntry(p){return setFor(p)}
+/* Default sets (Sim, Nov 8): "a lot of people don't know what moves they want… use the most popular moveset, items and
+   everything… and if the person changes anything, rejudge it on what they chose". A team member you haven't edited gets the
+   most popular TOURNAMENT moves, item and Ability (Limitless team sheets), not the in-game usage the Meta page may be showing,
+   and the grade judges exactly what is shown. */
+let DEFSET_ON=true; /* false: the old way (the Meta page's source), for before/after checks */
+const DEF_SRC=()=>S.format==='doubles'&&DEFSET_ON?'tour':undefined;
+function defSet(p){return setFor(p,S.format,DEF_SRC())}
 const FMT=f=>f==='singles'?'Singles':'Doubles';
 const megaGoal=()=>[0,1,2].includes(S.megaGoal)?S.megaGoal:2;
 const megaCount=t=>t.filter(m=>m.mega).length;
