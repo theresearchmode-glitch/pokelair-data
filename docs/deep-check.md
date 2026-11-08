@@ -227,3 +227,40 @@ Rillaboom, Mega Charizard Y, Mega Raichu Y) 69. Same readiness (88% vs 86%), 7/7
 Rillaboom −0.082, the most negative). The model's own held-out test: with pairs 56.9% / log-loss 0.6802, without pairs
 57.2% / 0.6800. Pairs spread real teams' grades by sd 0.089 (Pokémon part 0.135) without adding accuracy. Proposed test:
 grade without / with shrunk pairs on independent data (later rounds, best-of-1 rounds, ladder). Waiting for Sim's OK.
+
+## Step 3 results from the three helpers + pair test (Nov 8)
+
+**Correction (verified in code): the grade applies NO basics cut at all.** CH.strengthOf (60-concept-h.js:66) uses
+strengthX(...).x0, the strength BEFORE structCredit; the Nov 7 change made the 7 checks "advice only" after a test on real
+teams (the flawed kind). structCredit only reaches winVs / winVsField. The "Partly" rows above for Mega, speed control,
+lead support and spread are wrong: those are "No" in the grade.
+
+**Broken-team tests** (experiments/broken-teams.mjs; 30 strong real teams, one basic removed; real cost from 37,691 rounds,
+controlling for player and the six's strength; ranges grouped by team):
+| Removed | Grade change (win pts) | Real cost (win pts) | Verdict |
+|---|---|---|---|
+| Mega | −7.4 (−3.4 without own record) | −13.7 [−21, −5] | too soft, 2–4× |
+| Protect on ≤2 | −0.7 (10 of 30 went UP) | −4.1 [−6.1, −2.1] | too soft |
+| any speed control | −3.5 | +1.1 [−0.7, +2.9] | too harsh |
+| Tailwind / Trick Room | −1.5 | +0.1 | about right |
+| turn-1 support | −1.1 | −0.9 | about right |
+| Fake Out | −1.4 | +1.4 [0, +2.8] | slightly harsh |
+| spread | −1.1 | +0.1 | about right |
+Also: a six's own record is looked up by names only, so it keeps its bonus whatever moves change; Protect is valued per
+Pokémon with some negative values (Rillaboom −0.085); the model has no Abilities (sheets lack them); one sheet has genders
+read as items ("Charizard@m").
+
+**Counting** (experiments/counting-checks.mjs): benched Pokémon: strength of the often-brought half of a six predicts
+winners (+0.48 ±0.26), the rarely-brought half predicts nothing (−0.04 ±0.29), so their credit looks wasted; simple
+bring-rate weighting +1.5 ±1.7 (not proven). Look inflated: Venusaur, Kingambit, Delphox, Sinistcha, Aegislash, Mawile.
+Two Megas: 2-Mega sides beat 1-Mega sides by +3.2 ±2.6 beyond the grade; today's rule about right. Bo1 vs Bo3 strengths:
+no shift visible at this size; confidence is the real difference. "Who you beat": unknown.
+
+**Our tools' teams** (experiments/built-teams.mjs): no-Mega builds graded 98.1 and 97.9; tools' teams overshoot their real
+5-of-6 neighbours by +5 to +11 win pts (real top cut +3.7); grade vs neighbours' real win rate r = 0.09 at the top; builds have
+half the spread users of real teams; v2 box builds run Tailwind + Trick Room on 56% (real 28%); "none would improve it":
+33 of 49 real teams with an unmet check got no fixing suggestion (cause: plans must raise the grade by 2, gOK).
+
+**Pair bonuses** (dev models, 6,270 later rounds, compare.mjs): no pairs −0.0001 log-loss / +0.15 pick (no difference);
+pairs shrunk 4× +0.0002 / +0.14 (no difference). Pairs add no accuracy either way. Sim's saved teams (dev models):
+D3 88 / 84 / 87 and d4 75 / 89 / 82 (now / no pairs / shrunk 4×).

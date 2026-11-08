@@ -54,7 +54,9 @@ const day = s => new Date(s + 'T00:00:00Z').getTime() / 864e5;
 // high-number Pokémon (Annihilape, Kommo-o, Scrafty, Mega Venusaur, Hydreigon, Mega Charizard Y) fell from 68 to 28.
 // EVID_K / EVID_KP env vars override (0 = off).
 const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ?? 300);
-function fit(games, opt) { const {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
+function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
+  // experiments (Deep Check, Nov 8): NO_PAIRS=1 fits without pair bonuses; PAIR_SHRINK=k pulls pair bonuses k× harder toward 0
+  if (process.env.NO_PAIRS === '1') usePairs = false; lp *= +(process.env.PAIR_SHRINK || 1);
   const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length);
   const P = [b, q, s, c], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length)), L = [lb, lp, ls, lc];
   // weights are scaled to average 1, so the shrinkage means the same thing with or without recency

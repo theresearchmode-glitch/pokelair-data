@@ -29,7 +29,7 @@ const paste = s => s.map(x => `${x.n}${x.i ? ' @ ' + x.i : ''}\n${x.a ? 'Ability
 const sideKey = s => s.map(x => [x.n, x.i, x.a, [...x.mv].sort().join(',')].join('/')).sort().join('|');
 const sides = new Map(); for (const g of R) for (const s of g.s) sides.set(sideKey(s), paste(s));
 const code = ch => `(()=>{const o={};const PRI=new Set(['Sucker Punch','Extreme Speed','Aqua Jet','Grassy Glide','Bullet Punch','Ice Shard','Shadow Sneak','Mach Punch','Quick Attack','Vacuum Wave','Jet Punch','First Impression','Accelerock','Thunderclap']);
- const WX=new Set(['Drought','Drizzle','Sand Stream','Snow Warning']);const SPREAD=new Set(Object.values(MV).filter(m=>m&&m.spread&&m.cat!=='Status').map(m=>m.name));
+ const WX=new Set(['Drought','Drizzle','Sand Stream','Snow Warning']);const SPREAD=new Set(Object.values(MV).filter(m=>m&&m.spread&&m.cat!==0).map(m=>m.name));
  for(const [k,txt] of ${JSON.stringify(ch)}){try{const P=parsePaste(txt);if(P.slots.length!==6)continue;S.slots=P.slots;const ms=members();if(ms.length!==6)continue;const ns=ms.map(m=>m.p.n);
   const x=strengthX(ns,ms).xRaw;const mv=ms.map(m=>(m.moves||[]).map(z=>z&&(z.name||z)).filter(Boolean));const has=n=>mv.some(L=>L.includes(n));const cnt=n=>mv.filter(L=>L.includes(n)).length;
   const phys=ms.filter(m=>m.p.st&&m.p.st[1]>m.p.st[3]).length;const wx=new Set(ms.map(m=>m.ability).filter(a=>WX.has(a)));const megas=ms.filter(m=>m.p.m).length;
