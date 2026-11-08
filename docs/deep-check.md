@@ -33,6 +33,13 @@ Mega Evolved twice; 17% of sides didn't Mega at all.
 | 16 | Speed tiers and stat points | Outspeed or survive what matters; Champions uses stat points |
 | 17 | Pace | Hyper offense (≤8 turns), bulky offense (8–12), defensive (10–15, timer risk) |
 | 18 | Bo1 vs Bo3 | Bo3 rewards adaptable teams; surprise factor |
+| 19 | Pivoting | Parting Shot, U-turn, switching to reuse Fake Out and Intimidate |
+| 20 | Backups for key roles | Two Fake Out users, a second Tailwind setter, a way to flip Trick Room back |
+| 21 | Answers to Fake Out | Inner Focus, Psychic Terrain, Covert Cloak, ghosts |
+
+19–21 from a YouTube transcript (Champions team-building guide for beginners, b7VisU9fDLI). Note: its example team uses
+Reg F Pokémon, so it shows general doubles thinking, not M-C specifics. YouTube transcripts can be read (not the video
+itself); top players' Champions videos are a source for Step 1 and later checks.
 
 Research on grading lineups: draft-prediction work for team games (DOTA 2, League of Legends) models each pick, pairs
 (synergy) and counters (opposition), and reports gains from team-wide traits. "Optimizer's curse" (Smith & Winkler):
@@ -75,3 +82,25 @@ app/src/app/35-win-model.js (teamX, mixCredit, structCredit, strengthX).
 
 Correction (Nov 8): I told Sim earlier that the grade counted none of the team basics. Wrong, from memory: it counts some,
 with guessed sizes that can only shrink a strong team's edge. This is why the "check in the code" rule exists.
+
+## Step 2 · Our data: what we have and what's missing (Nov 8)
+
+| Source | What it holds | Can't tell us |
+|---|---|---|
+| Limitless tournaments (out/matches.json) | 420 events, 5,440 players, 39,352 results, full team sheets (Pokémon, item, Ability, 4 moves, nature) | Which 4 were brought or led; stat points; game-by-game results |
+| Victory Road official events (official.json) | Top-cut teams of official events | Full results of every round |
+| Showdown ladder replays (out/replays.json) | 20,000 games: both sixes, the 4 brought, leads, which Mega was used, ratings, winner | Items (so whether a Pokémon that didn't Mega held a Mega Stone); the players are mostly not tournament level (median rating 1264) |
+| Usage stats (meta_tour, meta_ladder, meta_ingame) | How often each Pokémon, move, item, Ability and nature is used | Why; anything about results |
+| Popular complete sets (`cs`) | Most common full set per Pokémon | First daily run Nov 9 |
+
+Gaps found in our data:
+1. **Each "game" is really a round.** Limitless gives one winner per round, so a best-of-3 counts as one result and we
+   don't know the game score (2-0 vs 2-1). We've been calling these "games". The grade's sureness should account for it.
+2. **1,369 rounds (3.5%) have no winner** (draws, no-shows or missing results). They're treated as half a win each.
+3. **Tiny events count the same as big ones.** Half of events have 29 players or fewer, some as few as 3. Small online
+   events may be weaker or more casual.
+4. **No bring data for tournaments.** Only ladder replays show the 4 brought, and ladder play is a different level.
+5. **No stat points anywhere.** Speed comparisons use guessed spreads.
+6. **Ladder replays can't show Mega Stones that weren't used.** A team that held a stone but didn't Mega looks like a
+   no-Mega team there.
+7. **The ladder sample is mostly mid-level players** (median 1264, top tenth above 1594; 7,572 sides unrated).
