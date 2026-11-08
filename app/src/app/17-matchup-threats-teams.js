@@ -30,6 +30,8 @@ function headToHead(mine, theirs, useA) {
 }
 const combos = (n, k) => { const out = []; const rec = (s, a) => { if (a.length === k) { out.push(a.slice()); return; } for (let i = s; i < n; i++) { a.push(i); rec(i + 1, a); a.pop(); } }; rec(0, []); return out; };
 
+// weight of the learned lead values in the lead pick (tuned on later replays in experiments/plan-test.mjs)
+var LEAD_W = 100; // Nov 8: learned on replays before Oct 28, tested on later ones: led-with-our-pair +4.0 pts vs ratings at 120, +1.3 with no lead values
 function planMatchup(mine, theirs, useA) {
   const dbl = S.format === 'doubles', bring = Math.min(dbl ? 4 : 3, mine.length);
   const h = headToHead(mine, theirs, useA);
@@ -70,6 +72,8 @@ function planMatchup(mine, theirs, useA) {
       if (B && (B.speed === 'tr' || B.speed === 'hardtr') && (roles[a].anti || roles[b].anti)) v += .8;
       if (A && A.perish && A.trappers.some(m => [a, b].includes(mine.indexOf(m)))) v += 2;
       if (mine[a].mega && mine[b].mega) v -= 3; // only one can Mega Evolve, so leading both wastes one
+      // what real games say about leading with each (leads.mjs, Nov 8: rule-based leads alone showed no effect on wins)
+      { const LV = META.model && META.model.leads; if (LV && LEAD_W) { const lv = m => LV[m.p.n.replace(/-Mega.*$/, '')] || 0; v += LEAD_W * (lv(mine[a]) + lv(mine[b])); } }
       // two different weather (or terrain) setters in one lead cancel each other: the slower one's replaces the faster one's (Nov 7 audit)
       { const wa = WEATHER_OF[mine[a].ability], wb = WEATHER_OF[mine[b].ability], ta = TERRAIN_OF[mine[a].ability], tb = TERRAIN_OF[mine[b].ability]; if ((wa && wb && wa !== wb) || (ta && tb && ta !== tb)) v -= 6; }
       if (!bl || v > bl.v) bl = {p: [a, b], v}; }

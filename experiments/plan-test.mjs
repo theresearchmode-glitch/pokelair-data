@@ -9,10 +9,10 @@
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
-const MAX = +(process.argv[2] || 20000), MIN = +(process.argv[3] || 0);
+const MAX = +(process.argv[2] || 20000), MIN = +(process.argv[3] || 0), FROM = +(process.env.PLAN_FROM || 0); // PLAN_FROM=<unix s>: only later games; PLAN_MODEL: model file; PLAN_LEADW: lead weight
 const L = rd('limitless.json'), R = rd('replays.json');
-const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
-const games = R.games.filter(g => Array.isArray(g.r) && Math.min(...g.r) >= MIN && g.p[0].length === 6 && g.p[1].length === 6 && g.b[0].length === 4 && g.b[1].length === 4 && (g.w === 0 || g.w === 1)).slice(0, MAX);
+const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.PLAN_MODEL ? JSON.parse(fs.readFileSync(process.env.PLAN_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
+const games = R.games.filter(g => g.t >= FROM && Array.isArray(g.r) && Math.min(...g.r) >= MIN && g.p[0].length === 6 && g.p[1].length === 6 && g.b[0].length === 4 && g.b[1].length === 4 && (g.w === 0 || g.w === 1)).slice(0, MAX);
 // popularity baseline: bring rate of each Pokémon when it is on the team (whole sample)
 const on = new Map(), br = new Map(), ld = new Map();
 for (const g of games) for (const s of [0, 1]) { for (const x of g.p[s]) on.set(x, (on.get(x) || 0) + 1); for (const x of g.b[s]) br.set(x, (br.get(x) || 0) + 1); for (const x of g.l[s] || []) ld.set(x, (ld.get(x) || 0) + 1); }
@@ -22,6 +22,7 @@ fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync
 const b = await chromium.launch(), pg = await (await b.newContext()).newPage();
 await pg.addInitScript(D => { localStorage.setItem('cc2.welcomed', '"1"'); window.__PL_TEST = 1; window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
 await pg.goto('file://' + page); await pg.waitForTimeout(4000);
+if (process.env.PLAN_LEADW != null) await pg.evaluate(w => window.__ev(`LEAD_W = ${w}`), +process.env.PLAN_LEADW);
 const rows = []; const t0 = Date.now();
 for (let i = 0; i < games.length; i += 250) {
   const chunk = games.slice(i, i + 250).map((g, j) => [i + j, g.p, g.b, g.l, g.r, g.w]);
