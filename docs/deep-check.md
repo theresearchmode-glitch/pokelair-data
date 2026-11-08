@@ -219,3 +219,11 @@ Joint model (all factors + the 15 most common Pokémon + rating gap), ranges gro
 6,333 teams that played: every name is on the M-C roster (0 misread), 1 team lists the same species twice (filtered by the
 grade's duplicate check), Mega options per team: 0 = 56, 1 = 1,545, 2 = 4,690, 3+ = 42 (legal: different Mega Stones).
 Mega forms come from the team sheet (the stone held), not from play, so tournament data has no Mega leak.
+
+### Sim's D3 vs d4 (Nov 8): pair bonuses drive grades but don't predict
+D3 (Basculegion, Kingambit, Mega Gengar, Mega Dragonite, Farigiraf, Rillaboom) 95 vs d4 (Garchomp, Dragonite, Kingambit,
+Rillaboom, Mega Charizard Y, Mega Raichu Y) 69. Same readiness (88% vs 86%), 7/7 checks both, Pokémon strengths summed 0.44 vs
+0.45. The whole gap is pair bonuses: +0.31 vs +0.05 (Basculegion + Kingambit +0.138, the largest; Mega Charizard Y +
+Rillaboom −0.082, the most negative). The model's own held-out test: with pairs 56.9% / log-loss 0.6802, without pairs
+57.2% / 0.6800. Pairs spread real teams' grades by sd 0.089 (Pokémon part 0.135) without adding accuracy. Proposed test:
+grade without / with shrunk pairs on independent data (later rounds, best-of-1 rounds, ladder). Waiting for Sim's OK.
