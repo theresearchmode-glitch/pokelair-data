@@ -47,3 +47,21 @@ trained on events before ~Oct 22; real records from past games only); then check
 - The two halves pick opposite dials, and neither set beats today's dials on games it wasn't chosen on.
 - Today's hand-set dials are about as good as any setting. The parts carry too little signal for re-weighting to help.
 - **Decision:** keep the live grade as is. Gains must come from better parts (a better readiness) and more real games (step 3), not from the dials.
+
+## Scoreboard (Nov 8): experiments/board.mjs, three date cut-offs (60/70/80% of events learned, the rest scored)
+
+| version | picks the winner (60 / 70 / 80) | log-loss (80) |
+|---|---|---|
+| Pokémon + pairs only | 54.6 / 55.0 / 54.9 | .6861 |
+| + its own items and moves (today, capped) | 55.8 / 55.8 / 55.4 | .6832 |
+| + its own items and moves, no cap | 55.9 / 56.4 / 55.7 | .6813 |
+| + own sets + the six's own record (site today, before matchups) | 56.1 / 55.8 / 56.3 | .6826 |
+| context: the better player by past results | 58.7 / 58.5 / 59.8 | |
+| context: team grade + player together | 59.8 / 60.0 / 60.0 | |
+
+- Calibration is good everywhere (said vs won within about 1 point).
+- Letters separate the bottom well (F wins ~43-45%) but A, B and C sit close (A ~55-56%, B ~54%, C ~51-53%).
+- Uncapping sets wins on log-loss at all three cut-offs: the cap (10th-90th percentile of real builds) throws away real signal.
+- Swap test (a player changes one Pokémon between events, 327 cases pooled): no version calls the direction better than
+  chance (47-53%, ±3.5). Results per event vary too much (sd .21 in win rate) for 327 swaps to show the small real effect;
+  this test can't judge suggestions yet.
