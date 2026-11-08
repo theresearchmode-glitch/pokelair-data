@@ -73,6 +73,20 @@ R.boxes = await run(`(()=>{ const out = []; let seed = 11; const rnd = () => (se
       if (!(n >= 3 || (g != null && g >= 30))) continue; const ps = names.map(x => byName.get(x)); if (ps.some(p => !p || !inBox(p) || isExcl(p)) || ps.filter(p => p.m).length !== 1) continue; const v = gr(names); if (v != null && (!best || v > best.g)) best = {mons: names, g: v}; }
     out.push({box: k + 1, team: t, g: t ? gr(t) : null, inBox: t ? t.every(n => inBox(byName.get(n))) : false, best, ms}); }
   S.box = keep; ui.abSrc = 'all'; return JSON.stringify(out); })()`);
+// 8: Apply gives exactly what the card promised: load real mid-grade teams, read the first suggestion card's promised grade, tap Apply,
+// read the grade My Team then shows (both as the page prints them)
+R.apply = [];
+{ const M = JSON.parse(fs.readFileSync(OUT + 'matches.json', 'utf8')), cnt = new Map(); for (const g of M.m) for (const t of [g[0], g[1]]) cnt.set(t, (cnt.get(t) || 0) + 1);
+  const pool = [...cnt].sort((a, b) => b[1] - a[1]).map(([t]) => M.teams[t].split('|')).filter(t => t.length === 6).slice(0, 120);
+  for (const ns of pool) { if (R.apply.length >= 6) break;
+    const r = await run(`(()=>{ if (${JSON.stringify(ns)}.some(n => !byName.get(n))) return JSON.stringify(null); S.format = 'doubles'; S.slots = normSlots(${JSON.stringify(ns)}.map(n => ({n, a: null, lock: false}))); const g = gradeTeam(members());
+      if (g == null || g < 30 || g > 85) return JSON.stringify(null); setView('coverage'); render(); return JSON.stringify({g}); })()`);
+    if (!r) continue; await pg.waitForTimeout(3500);
+    const card = await run(`(()=>{ const c = document.querySelector('#sugs .plan'); if (!c) return JSON.stringify(null); const t = c.innerText.replace(/\\s+/g, ' '); const m = t.match(/→ (Top \\d+%|Bottom \\d+%)/); return JSON.stringify(m ? m[1] : null); })()`);
+    if (!card) continue;
+    await pg.evaluate(() => { const b = document.querySelector('#sugs .plan [data-plan="0"]'); if (b) b.click(); }); await pg.waitForTimeout(2500);
+    const after = await run(`(()=>{ const ms = members(), g = gradeTeam(ms); return JSON.stringify(g == null ? null : CH.rankShort(g)); })()`);
+    R.apply.push({mons: ns, before: r.g, promised: card, after}); } }
 await b.close(); fs.unlinkSync(page);
 // ---- verdicts
 const C = [], add = (name, pass, detail) => C.push({name, pass, detail});
@@ -89,6 +103,8 @@ for (const B of R.build) { const top = B.teams[0], gap = top && B.best ? B.best.
   add('Build around a Pokémon (10 picks): holds it, within 3 of the best real team with it', A.length >= 8 && !bad.length, A.map(a => `${a.lock} ${a.g == null ? '—' : a.g.toFixed(0)}${a.best ? '/' + a.best.g.toFixed(0) : ''}${a.has ? '' : ' (missing!)'}`).join(' · ') + ` · slowest ${(Math.max(...A.map(a => a.ms)) / 1000).toFixed(1)} s`); }
 { const B = R.boxes, bad = B.filter(b => !b.inBox || b.g == null || (b.best && b.g < b.best.g - 3));
   add('Build for Me from a 40-Pokémon box (3 boxes): only box Pokémon, within 3 of the best real team in the box', B.length === 3 && !bad.length, B.map(b => `box ${b.box}: ${b.g == null ? '—' : b.g.toFixed(0)}${b.best ? ' vs best real ' + b.best.g.toFixed(0) : ' (no real team fits)'}${b.inBox ? '' : ' OUTSIDE BOX'}`).join(' · ')); }
+{ const A = R.apply, bad = A.filter(a => a.promised !== a.after);
+  add('Apply gives exactly the grade the suggestion card promised', A.length >= 4 && !bad.length, A.map(a => `${a.promised} → ${a.after}`).join(' · ')); }
 if (errs.length) add('no page errors', false, errs.slice(0, 3).join(' | '));
 for (const c of C) console.log(`${c.pass ? '  ok  ' : '  FAIL'} ${c.name}\n         ${c.detail}`);
 console.log(`\n${C.filter(c => c.pass).length} of ${C.length} known-answer cases pass`);
