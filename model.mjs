@@ -99,7 +99,10 @@ const trEv = [...new Set(train.map(g => g[3]))].filter(i => !isSD(i)).sort((a, b
 const fitPart = train.filter(g => !vcut.has(g[3])), val = train.filter(g => vcut.has(g[3]));
 // FAST=K,HALF,SKILL,SETS (experiments): skip the validation grid and use these settings
 // ITERS=n (training steps per fit, default 250) and K_GRID=1,3,5,… (shrink values to try): Nov 8 "train our models more" tests
-const FAST = process.env.FAST ? process.env.FAST.split(',').map(Number) : null;
+// Settings are LOCKED (model-settings.json, Nov 8: stability): the daily run uses them as is. RETUNE=1 (or K_GRID) searches the
+// grid again, for the monthly check; FAST=… still overrides for experiments.
+const LOCK = (() => { if (process.env.RETUNE === '1' || process.env.K_GRID) return null; try { const L = JSON.parse(fs.readFileSync('model-settings.json', 'utf8')); return [L.shrink, L.half, L.skill, L.sets]; } catch (e) { return null; } })();
+const FAST = process.env.FAST ? process.env.FAST.split(',').map(Number) : LOCK;
 let bestL = FAST ? {k: FAST[0], sc: 0} : null; if (!FAST) for (const k of (process.env.K_GRID ? process.env.K_GRID.split(',').map(Number) : [1, 3, 10, 30, 100])) { const m = fit(fitPart, {lb: 4 * k, lp: 15 * k, ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
 // recency half-life, picked on the validation slice (0 = no recency, kept if nothing beats it)
 let bestH = {half: FAST ? FAST[1] : 0, sc: bestL.sc}; if (!FAST) for (const half of [14, 21, 30]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k, half}); const sc = score(m, val, false).logloss; console.log('recency half-life', half, sc); if (sc < bestH.sc) bestH = {half, sc}; }

@@ -156,3 +156,12 @@ A 54.3% (expected 55.9) · B 53.4% (51.1) · C 47.2% (46.9) · D 44.7% (43.3) ·
 closer than the grade expects (0.9 vs 4.8 pts, within chance at ±1.5-1.8): watch on the sealed set.
 **How sure**: High-sure games are predicted better than the grade claims (edge scale 1.38), Medium about right (0.94),
 Low too rare to judge (275 games). The word never overclaims.
+
+**Day-to-day stability** (experiments/stability.mjs: 490 common sixes, typed in without sets, graded under models one day apart).
+- The first one-day-later model was NOT shipped: it lost to raw win rates on uncalibrated log-loss by .0006 (.6838 vs .6832)
+  while picking 56.4% vs 54.9%. In production that day every grade would have fallen back to the old check. Fixed in
+  model.mjs: the gate uses the calibrated log-loss (as the page uses the model), and a failed model never replaces a working one.
+- With a shipped model, re-picking settings daily (shrink 10→3, set shrink 200→60 in one day) moved grades 4.0 points typically,
+  40% by 5+, 19% changed letter. With settings locked: 1.7 points typically, 5.9% by 5+, 6.3% changed letter (mostly teams on
+  a letter line). Locked in model-settings.json at production's Nov 8 values (shrink 10, half-life 14, skill 1, sets 60);
+  RETUNE=1 for the monthly check, changed only on a compare.mjs KEEP.
