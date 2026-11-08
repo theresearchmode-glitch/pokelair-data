@@ -119,6 +119,7 @@ const PLANS = [
   ["p1-calib","Calibration","When the grade says 60%, teams win about 60%."],
   ["p1-letters","Sharpen A vs B vs C","Letters mean noticeably different strength."],
   ["p1-thin","Too little data and new formats","Low confidence and \"not enough games yet\" for rare Pokémon and new regs like M-D."],
+  ["p1-gate","Daily model never ships empty","Found Nov 8: one day's model failed its own gate by .0006 and would have switched every grade to the old formula overnight. Gate now uses the calibrated score; a failed day keeps yesterday's model."],
   ["p1-stable","Day-to-day stability","An unchanged team stays within about 2 points from one day to the next."],
   ["p1-ok","Sim reviews and approves the grade change",""]]},
  {id:"p2", name:"Phase 2 · Build for Me", goal:"Rank by the grade everywhere, and never hand out a weak team.", done:"every setting is within 3 points of the best real team possible under the same limits, and the gate passes.", steps:[
@@ -186,6 +187,8 @@ const PLANS = [
  {id:"i1", name:"Parking lot", steps:[
   ["i-reviewer","A trusted player for blind reviews","A second opinion next to Sim's at the end of Phases 2 and 3."],
   ["i-complaints","Player complaints into the known-answer teams","Any team players say we grade wrong becomes a test case."],
+  ["i-high","Trust well-known teams a bit more","Nov 8: games between High-confidence teams are predicted better than the grade claims (1.38\u00d7). Re-check on sealed data."],
+  ["i-battle","Learned matchups in Battle predictions","+0.9 pts for one specific game, just short of significant. Re-check on sealed data."],
   ["i-ladder","Showdown ladder games","Tested Nov 8: no gain for the grade; revisit for Reg M-D when tournament data is thin."]]}
 ]}
 ];

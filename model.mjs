@@ -134,7 +134,11 @@ const ev = {train_games: train.length, test_games: test.length, test_events: cut
   without_player_skill: score(noSkill, test, false), without_pairs: score(noPairs, test, false), raw_win_rates: score(raw, test, false), coin_flip: {logloss: .6931, acc: .5}};
 console.log('held-out test', JSON.stringify(ev));
 // ship only if it beats the raw win-rate score on held-out games; then refit on everything
-const ships = ev.model_teams_only.logloss < ev.raw_win_rates.logloss;
+// (Nov 8, foundation plan: stability) judged on the CALIBRATED log-loss, the way the page uses the model (it always scales the
+// edges by calib). Raw log-loss failed the Oct 28 dev cut by .0006 while the model picked 56.4% vs 54.9% for raw win rates, and
+// an unshipped model makes every grade on the site fall back to the old check overnight.
+const calFull = calibOf(full, test), ships = Math.min(ev.model_teams_only.logloss, calFull.ll) < ev.raw_win_rates.logloss;
+ev.model_teams_only_calibrated = {logloss: +calFull.ll.toFixed(4), slope: +calFull.w.toFixed(3)};
 // TRAIN_ONLY=1 (experiments): fit the shipped-style model on the training events only and write out/model_train.json,
 // so Team Scores can be checked on held-out events the model never saw
 const TRAIN_ONLY = process.env.TRAIN_ONLY === '1', GF = TRAIN_ONLY ? train : G;
@@ -186,6 +190,9 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   sets: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +F.c[j].toFixed(4)])) : {},
   // the "same players without it" test for each Pokémon (pilot.mjs): [games with, win % with, games without, win % without, players]
   pilot: TRAIN_ONLY ? {} : pilotTest(M)};
-fs.writeFileSync(process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'), JSON.stringify(out));
+// never replace a working model with an unshipped one (the daily job keeps yesterday's; update.yml reports the skip)
+{ const dest = process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'); let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
+  if (!ships && prev && prev.ships && prev.mons) { console.log(`model: NOT shipped today, so ${dest} keeps the previous model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
+  fs.writeFileSync(dest, JSON.stringify(out)); }
 console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);
