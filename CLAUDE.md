@@ -39,6 +39,12 @@ winners 55.3% vs 54.5-54.8% for grading the exact popular set). Whatever the pla
 sites (Pikalytics tournaments, Pokémon Zone, MetaVGC, PokéBase); crosscheck.mjs checks this daily, and any disagreement gets
 explained, not ignored.
 
+## When a phase counts as done (Sim, Nov 8)
+A phase is done only when it passes a check that is INDEPENDENT of the thing being changed: real later results, and Sim's own
+review. Never judge a change with the same score that drove it (Build for Me picked teams by the grade and was then "checked" with
+the grade, so it passed while Sim found it worse). If Sim's review or real use disagrees with the numbers, the phase stays open
+until the disagreement is explained and fixed. Never start the next phase while an earlier one has an open problem.
+
 ## Public launch (Sim, Nov 8)
 NastyPlot launches to the public sometime in January 2027, as a normal public website (not only the private Claude page).
 Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on

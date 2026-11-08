@@ -9,7 +9,8 @@ import fs from 'node:fs';
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/';
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || OUT + 'matches_dev.json', 'utf8')), P = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const FROM = process.env.BOARD_DATE || '2026-10-27', teams = M.teams.map(k => k.split('|')), isSD = i => String(M.events[i][0]).startsWith('sd-');
-const futE = new Set(M.events.map((e, i) => [e, i]).filter(([e, i]) => e[1] >= FROM && !isSD(i)).map(([, i]) => i));
+const UNTIL = process.env.BOARD_UNTIL || '9999'; // BOARD_UNTIL=YYYY-MM-DD: score only games before it (a separate earlier slice)
+const futE = new Set(M.events.map((e, i) => [e, i]).filter(([e, i]) => e[1] >= FROM && e[1] < UNTIL && !isSD(i)).map(([, i]) => i));
 const G = M.m.filter(g => futE.has(g[3]) && g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6);
 if (G.length !== P.y.length) { console.error(`game count differs (${G.length} vs ${P.y.length}); run with the same MATCHES/BOARD_DATE as site-board`); process.exit(2); }
 const T = JSON.parse(fs.readFileSync(OUT + 'meta_tour.json', 'utf8')), rows = [...T.top, ...(T.more || [])], R = new Map(rows.map(r => [r.n, r]));

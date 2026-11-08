@@ -18,7 +18,8 @@ const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, 
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || OUT + 'matches_dev.json', 'utf8')), MF = process.env.SB_MODEL || OUT + 'model_dev_site.json', MD = JSON.parse(fs.readFileSync(MF, 'utf8'));
 const FROM = process.env.BOARD_DATE || '2026-10-27', SL = JSON.parse(fs.readFileSync(ROOT + 'experiments/sealed.json', 'utf8')).from;
 const teams = M.teams.map(k => k.split('|')), isSD = i => String(M.events[i][0]).startsWith('sd-');
-const futE = new Set(M.events.map((e, i) => [e, i]).filter(([e, i]) => e[1] >= FROM && !isSD(i)).map(([, i]) => i));
+const UNTIL = process.env.BOARD_UNTIL || '9999'; // BOARD_UNTIL=YYYY-MM-DD: score only games before it (a separate earlier slice)
+const futE = new Set(M.events.map((e, i) => [e, i]).filter(([e, i]) => e[1] >= FROM && e[1] < UNTIL && !isSD(i)).map(([, i]) => i));
 { const n = [...futE].filter(i => M.events[i][1] >= SL).length; if (n && process.env.SEALED !== '1') { console.error(`refusing: ${n} sealed events in the scored set (use out/matches_dev.json, or SEALED=1 for an end-of-phase check)`); process.exit(2); } }
 const G = M.m.filter(g => futE.has(g[3]) && g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6);
 // each (team, deck) once: names plus the sets on its sheet

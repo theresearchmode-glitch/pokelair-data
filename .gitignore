@@ -29,3 +29,5 @@ app/plan-*.html
 app/stress-*.html
 out/model_d28f.json
 out/model_next.json
+out/model_d17.json
+out/matches_train17.json
