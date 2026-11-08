@@ -489,8 +489,3 @@
    narrow phones, and the tiny name labels in team tiles use the bold body font (labels, not headlines) */
 @media (max-width:400px){@A .subnav>.sub:not(#_n1):not(#_n2):not(#_n3){font-size:19px!important;letter-spacing:-.02em!important}}
 @A .tgn:not(#_t1):not(#_t2):not(#_t3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}
-/* Shady Paw in empty states (Nov 8): sits on the slanted field like the sprite did, a little taller; his line in the display face */
-@A .ar-empty .ar-empty-art .sp-art{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%) skewX(var(--ar-unslant))}
-@A .ar-tempty{grid-template-columns:120px minmax(0,1fr)}
-@A .ar-tempty .ar-empty-art{height:84px}
-@A .ar-empty p b.sp-line{display:block;margin:0 0 6px;font:italic 800 17px/1.3 var(--ar-display);font-synthesis:style;color:var(--ar-ink)}

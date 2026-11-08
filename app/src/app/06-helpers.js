@@ -117,7 +117,7 @@ const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.so
 // same item assignment as the open team (members()), so a saved team shows the same checks as when it's open
 function teamRating(slots){const m0=slots.map(memberOf).filter(Boolean),ms=typeof assignItems==='function'?assignItems(m0):m0;return {ms,a:analyze(ms,true)}}
 // toast(text, true) adds an Undo button (and stays up longer) for changes that replace team members
-function toast(t,undo){const el=$('toast');el.innerHTML=(typeof spArt==='function'?`<span class="sp-toast">${spArt('smirk',30)}</span>`:'')+esc(t)+(undo&&ui.undo?' <button type="button" class="tundo" id="toastUndo">Undo</button>':'');el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,undo?6000:2200)}
+function toast(t,undo){const el=$('toast');el.innerHTML=esc(t)+(undo&&ui.undo?' <button type="button" class="tundo" id="toastUndo">Undo</button>':'');el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,undo?6000:2200)}
 // remember the team before a change, so Undo can put it back
 function keepUndo(){ui.undo={slots:JSON.parse(JSON.stringify(S.slots)),loadedId:S.loadedId}}
 // Undo bar (Nov 7, Sim: "I should be able to revert a suggestion in 1 click"): every suggestion applied is kept (up to 8), and

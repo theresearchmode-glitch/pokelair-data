@@ -27,7 +27,7 @@ ARB.saved = () => { const L = $('savedList'); if (!L) return;
     card.querySelectorAll('.svacts .btn.primary[data-load]').forEach(b => b.classList.add('arb-open'));
     const nm = card.querySelector('.svname'); if (nm && nm.children.length === 0) nm.textContent = ARB.nbTitle(nm.textContent); });
   const none = L.querySelector(':scope > .empty-note'); if (none && !none.classList.contains('ar-empty')) { const top = CH.metaSix()[0];
-    none.className = 'empty-note ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${typeof spArt === 'function' ? spArt('sleep', 92) : (top && sprite(top)) || ''}</span><div><p>No saved teams yet. Open My team and tap Save team, or let NastyPlot build six for you.</p><div class="ar-acts"><button type="button" class="ar-btn" data-view="report">Open My team</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div>`; }
+    none.className = 'empty-note ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${(top && sprite(top)) || ''}</span><div><p>No saved teams yet. Open My team and tap Save team, or let NastyPlot build six for you.</p><div class="ar-acts"><button type="button" class="ar-btn" data-view="report">Open My team</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div>`; }
   const h = L.querySelector('.cmphint'); if (h && /^Tap /.test(h.firstChild && h.firstChild.textContent || '') && matchMedia('(hover:hover) and (pointer:fine)').matches) h.firstChild.textContent = h.firstChild.textContent.replace(/^Tap /, 'Click '); };
 CH.wrap('renderSaved', () => ARB.saved());
 
