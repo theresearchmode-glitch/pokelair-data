@@ -27,3 +27,4 @@ app/stab-*.html
 app/thr-*.html
 app/plan-*.html
 app/stress-*.html
+out/model_d28f.json
