@@ -6,8 +6,8 @@ import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname, OUT = ROOT + 'out/', rd = f => JSON.parse(fs.readFileSync(OUT + f, 'utf8'));
 const BOXF = process.argv[2], DIR = process.argv[3] || '/tmp/built'; fs.mkdirSync(DIR, {recursive: true});
-const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
-const MODEL = rd('model.json'), MT = rd('matches.json'), TOP = rd('teams.json').teams, REP = rd('replays.json').games;
+const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.GRADE_MODEL ? JSON.parse(fs.readFileSync(process.env.GRADE_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
+const MODEL = process.env.GRADE_MODEL ? JSON.parse(fs.readFileSync(process.env.GRADE_MODEL, 'utf8')) : rd('model.json'), MT = rd('matches.json'), TOP = rd('teams.json').teams, REP = rd('replays.json').games;
 const BOX = JSON.parse(fs.readFileSync(BOXF, 'utf8')).b;
 
 // ---------- independent data (not the grade): real teams, pairs, games ----------

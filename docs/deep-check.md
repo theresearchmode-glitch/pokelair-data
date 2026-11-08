@@ -304,3 +304,15 @@ letters line up with real results in order. The like-for-like scale undid that (
 was dropped. Most of the downward swing comes from the Nov 8 14:34 set-range change already on main (the live model was built
 at 10:12), so the live site moves this way with the next daily run regardless.
 Build for Me, Sim's box, 2 Megas, preview grade: 90 (similar real teams 57.3%, 1,007 games), 87 (53.9%, 115), 84 (52.9%, 2,888).
+
+### Re-check of our tools with the preview grade (Nov 8, experiments/built-teams.mjs, GRADE_MODEL)
+| | before (live grade) | after (preview grade) |
+|---|---|---|
+| real teams with an unmet check and no fix offered | 33 of 49 | **2 of 49** (both the Nice winner's six, "w3") |
+| built / suggested teams, same | 10 of 21 | 1 of 22 (rolled-back engine) |
+| grade minus how similar real teams did: real top cut | +3.7 pts | **+0.9** |
+| Build for Me, box (live engine) | +5.3 | −4.6 (now a bit low; 9 teams) |
+| Build for Me, whole roster (live engine) | +10.7 | +3.7 |
+| suggestions | +3.4 | +1.9 |
+| no-Mega builds | 98 / 98 | 1 to 36 |
+Rolled-back engine still picks 4/7-check teams: stays off.
