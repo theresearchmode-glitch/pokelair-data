@@ -126,14 +126,14 @@ const NP_SECTIONS = [
    from CH.grade itself (probed, so they follow the code), each letter in the same colour everywhere. */
 function npLegend() { const col = k => (LTIERS.find(T => T.k === k) || LTIERS[LTIERS.length - 1]);
   let gb = []; try { const L = ['A', 'B', 'C', 'D']; gb = L.map(k => { for (let s = 0; s <= 100; s++) if (CH.grade(s) === k) return [k, s]; return null; }).filter(Boolean); } catch (e) { gb = []; }
-  const gl = gb.length ? `${gb.map(([k, s], i) => `<span>${tierChip(col(k))} ${i ? s + 's' : s + '+'}</span>`).join('')}<span>${tierChip(col('F'))} &lt;${gb[gb.length - 1][1]}</span>` : '';
+  const gl = gb.length ? `${gb.map(([k, s], i) => `<span>${tierChip(col(k))} ${i ? s + '–' + (gb[i - 1][1] - 1) : s + '+'}</span>`).join('')}<span>${tierChip(col('F'))} &lt;${gb[gb.length - 1][1]}</span>` : '';
   const rk = (() => { try { const k = lairRank(lairRows()[0].p); return k ? k.of : null; } catch (e) { return null; } })();
   return `<div class="nplegend" id="np-legend"><div class="chk">How to read our numbers</div>
-    <div class="nplrow"><b>Pokémon ratings</b><div class="npbands">${LTIERS.map(T => `<span>${tierChip(T)} ${T.k === 'S' ? '90+' : T.k === 'F' ? '&lt;' + LTIERS[LTIERS.length - 2].show : T.show + 's'}</span>`).join('')}</div></div>
-    ${gl ? `<div class="nplrow"><b>Team grades</b><div class="npbands">${gl}</div></div>` : ''}
+    <div class="nplrow"><b>Pokémon ratings<small data-notc>score out of 100</small></b><div class="npbands">${LTIERS.map(T => `<span>${tierChip(T)} ${T.k === 'S' ? '90+' : T.k === 'F' ? '&lt;' + LTIERS[LTIERS.length - 2].show : T.show + 's'}</span>`).join('')}</div></div>
+    ${gl ? `<div class="nplrow"><b>Team Grades<small data-notc>rank among tournament teams</small></b><div class="npbands">${gl}</div></div>` : ''}
     <ul class="npdots"><li><b>Bars</b> = rank among all Pokémon: 94 beats 94% of them (top 6%).</li>
       <li><b>#20${rk ? ' of ' + rk : ''}</b> = rank among ${rk ? 'the ' + rk + ' ' : ''}Pokémon with tournament results · <b>likely 80–88</b> = the range, from the games so far.</li>
-      <li><b>A % always says of what</b>: % of teams, % wins, % ready.</li><li><b>Grade</b> = % ready ± team strength − missed checks.</li></ul></div>`; }
+      <li><b>A % always says of what</b>: % of teams, % wins, % ready.</li><li><b>Team rating</b> = rank among real tournament teams: 70 beats 70% of them. Tap <b>Why</b> under a grade for what goes into it.</li></ul></div>`; }
 function renderMethod() { const el = $('methodOut'); if (!el) return; const g = META.model && META.model.games, teams = RES && RES.teams;
   const sub = [teams ? `Built from ${CH.n(teams)} tournament teams` : '', g ? `${CH.n(g)} games in the team model` : '', npFresh()].filter(Boolean).join(' · ');
   const T = META.track, tr = T ? `Tracking since ${npDay(T.since)} · ${T.ev.length} event${T.ev.length === 1 ? '' : 's'} checked` : 'Every rating is saved daily and checked against later events';

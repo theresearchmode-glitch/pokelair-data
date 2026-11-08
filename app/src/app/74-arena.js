@@ -196,7 +196,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
   if (RD) {
-    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready for the top ${hd ? hd.n : 30}${tp('readiness')}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
+    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready for the top ${hd ? hd.n : 30}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'unanswered') : ''].filter(Boolean);
     const rec = '';
     /* matchups get their own verdict (Sim, Nov 7: "98 and 6 shaky?"): the grade says how strong the team is, this says what can
        still beat it, named, worst first, with a jump to Threats */

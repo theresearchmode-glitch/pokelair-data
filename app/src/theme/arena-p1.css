@@ -576,7 +576,7 @@
 @A #chThrTop .chtiles .chtile :is(span,b,small,.nm,.st){font-size:15px!important}
 /* the "Why B?" fold: an arena tip line, no box: a slanted section edge, the letter in display italic */
 @A .ar-thead #chGwhy{background:none!important;box-shadow:none!important;border-radius:0!important;padding:4px 0 4px 24px!important}
-@A .ar-thead #chGwhy::before{left:4px!important;top:4px!important;bottom:4px!important;width:6px!important;border-radius:4px!important;transform:skewX(var(--ar-slant))}
+@A .ar-thead #chGwhy::before{left:4px!important;top:4px!important;bottom:4px!important;width:6px!important;border-radius:4px!important;transform:none /* a tall slanted stripe leaned into the letter (Sim, Nov 8) */}
 @A .ar-thead #chGwhy .npgw{font:italic 900 1.6em/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-ink)!important;margin-right:2px}
 
 /* the open team sheet: typographic rows (a slanted type field behind the sprite, name, set lines, Edit), one hairline each,

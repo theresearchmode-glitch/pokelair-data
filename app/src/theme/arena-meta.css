@@ -1057,3 +1057,5 @@
 @A #lair>.lctl>.lsearch{flex:1 1 auto!important;width:auto!important;min-width:0}
 /* tighter rhythm above the list so it reaches the first screen on phones */
 @media (max-width:599px){@A #lair>.lctl{margin-top:16px!important}@A #lair>#chHot{margin-top:20px!important}@A #lair>.nplinks{margin-top:6px!important}}
+@A .ar-mpg #methodOut .nplrow>b small{display:block;font:500 13px/1.3 var(--ar-body);color:var(--ar-ink-2)}
+.nplrow>b small{display:block;font-weight:500;opacity:.8}
