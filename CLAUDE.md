@@ -30,6 +30,10 @@ NastyPlot launches to the public sometime in January 2027, as a normal public we
 Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on
 Claude-only features without a plan for the public site; kids play Pokémon, so the privacy rules below are strict.
 
+## Mascot (Sim, Nov 8)
+Shady Paw is the chosen mascot, but nothing of him goes on the site until Sim is 100% happy with the design. Always show her
+images of exactly how it would look for approval first; a placeholder drawing lost his character and was taken down.
+
 ## Privacy and safety
 - COPPA: no names or emails collected; feedback stays anonymous.
 - The contact email is shown only after "Show email". No RK9 scraping.
