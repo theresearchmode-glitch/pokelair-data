@@ -41,6 +41,30 @@ Mega Evolved twice; 17% of sides didn't Mega at all.
 Reg F Pokémon, so it shows general doubles thinking, not M-C specifics. YouTube transcripts can be read (not the video
 itself); top players' Champions videos are a source for Step 1 and later checks.
 
+### From creators' videos (read from transcripts, Nov 8)
+Videos: WolfeyVGC with Disguised Toast "how to build a team" (FNQR-6pT8zE), Wolfey "Everything you need to know about
+Champions" (zkFbx0Y-LrI) and "How I became #1 ranked in Champions" (lKMl8qWVf1A), TheBattleRoom "A complete guide to team
+building in Champions" (I9bXHtYnzGY), Skraw "Team building basics for Champions" (X2irT53Dhhc), TheDelybird "The systematic
+approach to teambuilding" (YN718-hqrxw). Several examples are from older formats; the principles carry over.
+
+| # | Factor | Who says it |
+|---|---|---|
+| 22 | "Good teams have speed control and bad teams don't"; really it's about moving first: priority (Aqua Jet), Scarf, natural speed count too | Wolfey |
+| 23 | Something to do against the meta's most common core (Sneasler + Basculegion + Kingambit) | Wolfey |
+| 24 | Every Pokémon needs a job ("why do I even have Kingambit on this team?") | Wolfey |
+| 25 | Varied roles and attack types: not six of the same kind; physical AND special so one answer doesn't wall you | Wolfey, Skraw |
+| 26 | A second Mega is for a different matchup (Wolfey's #1 team: second Mega just for sun). Two Megas = options, not double strength | Wolfey |
+| 27 | Wide Guard against a spread-heavy format | Wolfey |
+| 28 | Team answers to each common archetype: sun, rain, Trick Room, bulky Floette | Wolfey, Delybird |
+| 29 | What hurts the meta: burns vs a mostly physical meta, Leech Seed + burn chip | Wolfey |
+| 30 | Redundant (backup) roles; tight synergy but enough flexibility | TheBattleRoom |
+| 31 | Defensive core and switching: Intimidate cycling, a switch-in for each common attack | Skraw |
+| 32 | Immunities: a Grass type or Safety Goggles vs Spore; a way around Rage Powder | Skraw, Delybird |
+| 33 | Second "modes" (reverse Trick Room, a second weather) for bad matchups | Delybird |
+| 34 | Stat points: bulk first (HP about Def + SpD); speed benchmarks vs common threats; in-game recruits are trained badly | Wolfey, Delybird |
+| 35 | Pokémon you never bring are dead slots; play-testing finds them (we can measure this from replays) | Delybird |
+| 36 | Items available in the format differ (M-A lacked Assault Vest, Choice Band, Life Orb) | Wolfey |
+
 Research on grading lineups: draft-prediction work for team games (DOTA 2, League of Legends) models each pick, pairs
 (synergy) and counters (opposition), and reports gains from team-wide traits. "Optimizer's curse" (Smith & Winkler):
 picking the top-scoring option from many lands on the ones the model overrates most; fixes are shrinking uncertain
