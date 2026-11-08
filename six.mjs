@@ -3,13 +3,15 @@
 // Runs after model.mjs. For every exact six seen in tournament games:
 //   P(A wins) = σ( calib·(xA + δA − xB − δB) + sA − sB )
 // with x the shipped team model (held fixed), s each player's skill and δ the six's own deviation, both shrunk toward 0
-// (δ ~ N(0, 0.35²), s ~ N(0, 0.6²)), so a few games barely move a six and hundreds of games move it a lot.
+// (δ ~ N(0, 0.1²), s ~ N(0, 0.6²); τ was .35 until Nov 8: with each set counted fully, the scoreboard found .1 as
+// good on log-loss as no record at all and a little better at picking winners, at all three date cut-offs), so a few games barely move a six and hundreds of games move it a lot.
 // Adds to out/model.json: sixes = {"Mon1|Mon2|…" (sorted): [δ, games]} for sixes with 10+ games. The page adds δ to its own
 // team strength for that exact six; every other team is graded on the model alone.
 import fs from 'node:fs';
-const M = JSON.parse(fs.readFileSync('out/matches.json', 'utf8')), MD = JSON.parse(fs.readFileSync('out/model.json', 'utf8'));
+const MF = process.env.MODEL_FILE || 'out/model.json'; // MATCHES / MODEL_FILE: experiments
+const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')), MD = JSON.parse(fs.readFileSync(MF, 'utf8'));
 if (!MD.ships || !MD.mons) { console.log('six: model not shipped, nothing added'); process.exit(0); }
-const TAU = .35, SIG_S = .6, ITERS = 300, MIN_G = 10, calib = MD.calib; // 10+ games: keeps meta/model under the 256 KB the page database takes per write
+const TAU = .1, SIG_S = .6, ITERS = 300, MIN_G = 10, calib = MD.calib; // 10+ games: keeps meta/model under the 256 KB the page database takes per write
 const teams = M.teams.map(k => k.split('|'));
 const spF = new Map(); for (const f of Object.keys(MD.sets || {})) { const sp = f.split(/[@:#]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
 const xOf = (t, d) => { const m = teams[t]; let v = 0; for (const n of m) v += MD.mons[n] || 0;
@@ -29,6 +31,6 @@ const per = new Map(); const ng = new Map(); for (const g of G) { ng.set(g[0], (
 for (const [t, n] of ng) { const k = teams[t].slice().sort().join('|'), o = per.get(k) || {g: 0, d: 0}; o.g += n; o.d += dl[t] * n; per.set(k, o); }
 const sixes = {}; for (const [k, o] of per) if (o.g >= MIN_G) sixes[k] = [+(o.d / o.g).toFixed(4), o.g];
 MD.sixes = sixes; MD.sixesNote = `each six's own record, player skill and opponents taken out (six.mjs): [δ, games]; page strength = model x + δ; τ ${TAU}, ${G.length} games`;
-fs.writeFileSync('out/model.json', JSON.stringify(MD));
+fs.writeFileSync(MF, JSON.stringify(MD));
 const top = Object.entries(sixes).sort((a, b) => b[1][1] - a[1][1]).slice(0, 3).map(([k, v]) => `${v[1]} games δ ${v[0]}`);
 console.log(`six: ${Object.keys(sixes).length} sixes with ${MIN_G}+ games added to out/model.json (most played: ${top.join(', ')})`);
