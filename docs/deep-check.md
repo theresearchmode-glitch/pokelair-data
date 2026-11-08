@@ -128,3 +128,17 @@ Gaps found in our data:
 6. **Ladder replays can't show Mega Stones that weren't used.** A team that held a stone but didn't Mega looks like a
    no-Mega team there.
 7. **The ladder sample is mostly mid-level players** (median 1264, top tenth above 1594; 7,572 sides unrated).
+
+### Single games first (Sim, Nov 8)
+Champions ranked (in-game) is matched by rank, one battle at a time (champions.pokemon.com: Ranked, Casual, Private modes).
+Showdown has a separate "(Bo3)" Champions format; our 20,000 replays come from the regular one, so each is ONE game.
+Official Regionals (Louisville, Frankfurt, Gdańsk…) are best of 3. Limitless events mix both, per phase (API "mode": BO1/BO3,
+e.g. Xperience Play $500: Swiss BO1, top cut BO3; Talon's Fight Club: all BO3). Fetching every event's mode (data/tour-details).
+
+### Replay data quality (Nov 8)
+- 20,000 games, no duplicates, Oct 22 – Nov 8 only: the file keeps the newest 20,000, so older games are thrown away.
+- "Brought" means *seen*: only 13,247 games (66%) show all 4 for both sides. If a game ended before the 4th came out, that
+  Pokémon looks benched. Bring rates from replays undercount the back line.
+- Mega forms only show when used, and items aren't recorded, so an unused Mega Stone is invisible.
+- Skill: 16,214 games have both players rated; 4,054 have both 1400+, 2,421 both 1500+. Most games are mid-ladder.
+- 47 mirror games (same six on both sides), likely rental teams.
