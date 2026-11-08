@@ -274,10 +274,11 @@ function* planFixesG(ms,pool,useA,opts){
   if(full){let CK0=null;try{CK0=proChecks(ms,true)}catch(e){}
     const unmet=CK0?CK0.items.filter(x=>!x.skip&&!x.ok&&x.k!=='items').map(x=>x.k):[];
     for(const k of unmet){if(out.some(pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}}))continue;
-      const cand=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(gBase==null||planGrade(pl)==null||pl._g>=gBase-3)).filter(pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}})
-        .sort((x,y)=>(planGrade(y)??0)-(planGrade(x)??0)||x.score-y.score)[0];
+      const meets=pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}},best=a=>a.sort((x,y)=>(planGrade(y)??0)-(planGrade(x)??0)||x.score-y.score)[0];
+      // within 3 grade points first; if every fix costs more, still show the cheapest one, with its honest cost (Sim: never "none")
+      const cand=best([...singles,...doubles].filter(pl=>keepsPlan(pl)&&(gBase==null||planGrade(pl)==null||pl._g>=gBase-3)).filter(meets))||best([...singles,...doubles].filter(pl=>planGrade(pl)!=null).filter(meets));
       if(cand){const lab=(CK0.items.find(x=>x.k===k)||{}).label||k,cost=gBase!=null&&cand._g!=null?gBase-cand._g:0;
-        cand.gap={...(cand.gap||{}),why:[...((cand.gap&&cand.gap.why)||[]),`Meets the "${lab}" check`+(cost>0.5?`, for ${Math.round(cost)} grade point${Math.round(cost)===1?'':'s'}`:'')]};
+        cand.gap={...(cand.gap||{}),why:[...((cand.gap&&cand.gap.why)||[]),`Meets the "${lab}" check`+(cost>0.5?`, for ${Math.round(cost)} grade point${Math.round(cost)===1?'':'s'}${cost>3?' (a real trade-off: your team is stronger without it)':''}`:'')]};
         if(!out.includes(cand)){if(out.length>=3)out.pop();out.push(cand)}}}}
   out.ip0=ip0;
   out.more=more;

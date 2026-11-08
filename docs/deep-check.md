@@ -316,3 +316,13 @@ Build for Me, Sim's box, 2 Megas, preview grade: 90 (similar real teams 57.3%, 1
 | suggestions | +3.4 | +1.9 |
 | no-Mega builds | 98 / 98 | 1 to 36 |
 Rolled-back engine still picks 4/7-check teams: stays off.
+
+### Open items closed (Nov 8)
+1. "Box builds graded ~5 low": an artifact. The 3 no-Mega builds were compared with real teams whose 6th Pokémon was the Mega.
+   Box builds WITH a Mega: −0.5 pts on average (spot on). No change.
+2. Two real teams with no fix: if every fix costs more than 3 grade points, the cheapest one is now shown with its cost and
+   "a real trade-off". Re-check: 0 of 49 real teams and 0 of 22 tool teams left without a fix (was 33 / 10).
+3. Rolled-back engine: stays off (not used).
+4. Speed control / Fake Out "a bit harsh": real later rounds show teams without speed control doing as the grade expects
+   (+0.6, range −3.8 to +5.0). Not proven wrong; no change made on a guess.
+Tests: ALL PASSED. Preview republished (Version 2).
