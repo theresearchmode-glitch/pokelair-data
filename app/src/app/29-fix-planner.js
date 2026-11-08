@@ -268,6 +268,17 @@ function* planFixesG(ms,pool,useA,opts){
   // item problems now: make sure one plan fixes them (the item card above the plans offers the direct item swap too)
   if(ip0>0&&!out.some(pl=>ipOf(pl)<ip0)){const fix=[...singles,...doubles].filter(pl=>ipOf(pl)<ip0&&keepsPlan(pl)&&gOK(pl)&&(!tsOn||tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-3)).sort((x,y)=>ipOf(x)-ipOf(y)||x.score-y.score)[0];
     if(fix){if(out.length>=3)out.pop();out.unshift(fix)}}
+  /* Deep Check, Nov 8 (Sim: "a 6/7 team and suggestions said none would improve it"): every unmet check gets one plan that
+     meets it, even on a high-grade team where nothing raises the grade, as long as the cost is 3 grade points or less. The
+     honest grade change shows on the card, with the check it fixes and its cost written out. */
+  if(full){let CK0=null;try{CK0=proChecks(ms,true)}catch(e){}
+    const unmet=CK0?CK0.items.filter(x=>!x.skip&&!x.ok&&x.k!=='items').map(x=>x.k):[];
+    for(const k of unmet){if(out.some(pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}}))continue;
+      const cand=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(gBase==null||planGrade(pl)==null||pl._g>=gBase-3)).filter(pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}})
+        .sort((x,y)=>(planGrade(y)??0)-(planGrade(x)??0)||x.score-y.score)[0];
+      if(cand){const lab=(CK0.items.find(x=>x.k===k)||{}).label||k,cost=gBase!=null&&cand._g!=null?gBase-cand._g:0;
+        cand.gap={...(cand.gap||{}),why:[...((cand.gap&&cand.gap.why)||[]),`Meets the "${lab}" check`+(cost>0.5?`, for ${Math.round(cost)} grade point${Math.round(cost)===1?'':'s'}`:'')]};
+        if(!out.includes(cand)){if(out.length>=3)out.pop();out.push(cand)}}}}
   out.ip0=ip0;
   out.more=more;
   out.base=base;out.rolesBase=rolesBase;out.gp=basePl.gp;out.basePl=basePl;out.baseA=basePl.st.a;out.full=full;out.tsBase=tsBase;out.gBase=gBase;out.tsOn=tsOn;

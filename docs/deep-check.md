@@ -277,3 +277,16 @@ model.mjs TEAM_FEATS=1 learns team-level terms from the same tournament rounds; 
 - Pairs: shrinking 4× in the fit barely shrinks well-proven pairs (Basculegion + Kingambit stays big); no pairs at all is
   equally accurate. Sim's saved teams (full models): live / basics + pairs ÷4 / basics + no pairs:
   Doubles 1 72 / 72 / 66 · Doubles 2 77 / 74 / 65 · D3 95 / 88 / 81 · d4 69 / 72 / 78.
+
+### Step 4 · more fixes (Nov 8, branch only)
+- One-game win chance (Battle, realMatch): edges × 0.7 (best-of-1 rounds fit 0.6×, ladder 0.8×).
+- A six's own record counts only for Pokémon on a set like the one real players ran (no move outside its 6 most-run, no
+  item outside its 3 most-run); imported real sheets keep it.
+- Suggestions: every unmet check gets one plan that meets it if it costs ≤3 grade points, with "Meets the … check, for N
+  grade points" written on the card (fixes "none would improve it").
+- "Teams without Megas" notice now says they're rare (≈1 in 100) and win about a third of games.
+- Data: genders read as items are dropped (update.mjs).
+- Not done (not proven or later): bring-rate weighting (+1.5 ±1.7), Build for Me ranking by real 5-of-6 neighbours,
+  per-Pokémon speed/Fake Out values still a bit harsh, Tailwind + Trick Room clash (leaning, not proven).
+**Sim's box with the new grade (live engine):** 1 Mega 89 / 89 / 84, 2 Megas 90 / 87 / 84, all 7/7 except one 6/7;
+0 Megas 11 / 5 / 5 (was 66 / 52 / 46; the rolled-back engine's 98 no-Mega team is gone). Tests: ALL PASSED.

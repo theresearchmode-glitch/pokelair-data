@@ -47,7 +47,7 @@ const has2 = id => { const T = readJSON(`data/t2/${id}.json`, null); return !!(T
 const todo = list.filter(t => !index.tournaments[t.id] || !has2(t.id) || (now - new Date(t.date)) < 3 * 864e5)
   .sort((a, b) => (index.tournaments[a.id] ? 1 : 0) - (index.tournaments[b.id] ? 1 : 0) || new Date(b.date) - new Date(a.date)).slice(0, MAX_FETCH);
 let fetched = 0, logged = false;
-const mv = m => ({n: m.name || '', i: m.item || '', a: m.ability || '', mv: Array.isArray(m.attacks) ? m.attacks.map(String) : Array.isArray(m.moves) ? m.moves.map(String) : [], t: m.tera || '', nt: m.nature || ''});
+const mv = m => ({n: m.name || '', i: /^[mfMF]$/.test(m.item || '') ? '' : (m.item || ''), /* data audit Nov 8: one sheet had genders in the item field */ a: m.ability || '', mv: Array.isArray(m.attacks) ? m.attacks.map(String) : Array.isArray(m.moves) ? m.moves.map(String) : [], t: m.tera || '', nt: m.nature || ''});
 for (const t of todo) {
   try { const s = await get(`/tournaments/${t.id}/standings`);
     // never replace standings we already have with an empty or much shorter list (a half-outage answers [] for a while)
