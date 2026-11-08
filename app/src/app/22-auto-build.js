@@ -22,10 +22,15 @@ let CAUT_K = .5; const abYMemo = new Map();
 let AB_GRADE_V2 = true;
 function abY(t) { if (!t || t.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = t.map(m => m.p.n), k = metaVersion + '#' + CAUT_K + '#' + names.slice().sort().join('|');
   if (abYMemo.has(k)) return abYMemo.get(k); let v = null;
-  try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = CH.sdOf(t) || 0; v = teamX(names, t) + (six ? six.d : 0) - CAUT_K * sd; } /* judged on the sets the team would get: the most popular tournament sets (Sim, Nov 8) */ } catch (e) {}
+  try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = abSd(t, six); v = teamX(names, t) + (six ? six.d : 0) - CAUT_K * sd; } /* judged on the sets the team would get: the most popular tournament sets (Sim, Nov 8) */ } catch (e) {}
   if (abYMemo.size > 20000) abYMemo.clear(); abYMemo.set(k, v); return v; }
+/* how unsure we are about a six: its parts' evidence (CH.sdOf), narrowed by its own real games (Nov 8 blind-review check: a
+   proven team played 98 times was treated as unsure as a never-played mix, so an invented team could edge it out at the same grade) */
+function abSd(t, six) { const sd = CH.sdOf(t) || 0, g = six ? six.g : 0; return sd / Math.sqrt(1 + g / 25); }
 function abGradeC(t) { try { const ms = typeof assignItems === 'function' ? assignItems(t) : t, RD = THR.teamReport(ms), st = CH.strengthOf(ms, RD ? RD.score : null); if (!st) return null;
-  const sd = CH.sdOf(ms) || 0; return {g: st.pct, c: strengthPct(st.y - CAUT_K * sd)}; } catch (e) { return null; } }
+  /* c is the cautious STRENGTH, not its 0-100 rank: at the top the rank runs out of room (99.4 vs 99.8) and stopped telling a
+     672-game proven team from a never-played mix */
+  const sd = abSd(ms, st.six); return {g: st.pct, c: st.y - CAUT_K * sd}; } catch (e) { return null; } }
 function abScore(team) { if (abMemo) { const k = team.map(m => m.p.n).sort().join('|') + (OFFMETA ? '#o' : ''); let v = abMemo.get(k); if (v === undefined) { v = abScore0(team); abMemo.set(k, v); } return v; } return abScore0(team); }
 function abScore0(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.penalty - (team.length >= 4 ? typeEmphasis(v.st.a) : 0) - pillarCost(team, v.gp);
   // a rain or sun that helps nobody (Pelipper next to only Fire attackers) costs a little
@@ -109,7 +114,7 @@ function* buildBestGen0() {
        narrows its uncertainty, so a well-played team keeps its edge), three different teams (no more than 3 Pokémon shared) */
     if (AB_GRADE_V2 && pr && !ui.abLock && useTSPick() && modelOK()) { const res0 = yield* buildBestGen_(); const all = [...pr.teams, ...(res0.teams || [])], out = [];
       for (const d of all) { yield; const G = d._ms ? abGradeC(d._ms) : null; d._gc = G ? G.c : null; }
-      all.sort((a, b) => (b._gc ?? -1) - (a._gc ?? -1));
+      all.sort((a, b) => (b._gc ?? -1e9) - (a._gc ?? -1e9));
       for (const d of all) { if (out.length >= 3) break; const ns = d.mons.map(m => m.n); if (out.some(o => o.mons.filter(m => ns.includes(m.n)).length > 3)) continue; out.push(d); }
       return {...pr, teams: out}; }
     if (pr && !ui.abLock) return pr;
@@ -176,7 +181,7 @@ function* buildBestGen_() {
     // the single swap (outside its seed core) that readies it for the most top threats.
     // Candidates for the polish: the 25 strongest by pick value plus the 15 the win model rates highest (so a Pokémon the
     // model likes is tried even if it's rarely picked). Up to 3 rounds, each taking the single swap that raises it most.
-    if (GR) { for (const r of ranked) { yield; const G = abGradeC(r.t); r.gc = G ? G.c : null; r.g = G ? G.g : null; } ranked.sort((a, b) => (b.gc ?? -1) - (a.gc ?? -1) || b.s - a.s); }
+    if (GR) { for (const r of ranked) { yield; const G = abGradeC(r.t); r.gc = G ? G.c : null; r.g = G ? G.g : null; } ranked.sort((a, b) => (b.gc ?? -1e9) - (a.gc ?? -1e9) || b.s - a.s); }
     else if (useTSPick()) { const mv = p => (META.model.mons[p.n] || 0), cTS = [...new Set([...cand.slice(0, 25), ...pool.slice().sort((a, b) => mv(b) - mv(a)).slice(0, 15).map(p => M.get(p.n))])];
       // every swap is checked for readiness (accuracy over speed, Sim Oct 30); a six already checked is never checked twice
       const tsM = tsB;
