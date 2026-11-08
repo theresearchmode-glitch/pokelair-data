@@ -82,7 +82,7 @@ R.apply = [];
     const r = await run(`(()=>{ if (${JSON.stringify(ns)}.some(n => !byName.get(n))) return JSON.stringify(null); S.format = 'doubles'; S.slots = normSlots(${JSON.stringify(ns)}.map(n => ({n, a: null, lock: false}))); const g = gradeTeam(members());
       if (g == null || g < 30 || g > 85) return JSON.stringify(null); setView('coverage'); render(); return JSON.stringify({g}); })()`);
     if (!r) continue; await pg.waitForTimeout(3500);
-    const card = await run(`(()=>{ const c = document.querySelector('#sugs .plan'); if (!c) return JSON.stringify(null); const t = c.innerText.replace(/\\s+/g, ' '); const m = t.match(/→ (Top \\d+%|Bottom \\d+%)/); return JSON.stringify(m ? m[1] : null); })()`);
+    const card = await pg.evaluate(() => { const c = document.querySelector('#sugs .plan'); if (!c) return null; const m = c.innerText.replace(/\s+/g, ' ').match(/→ (Top \d+%|Bottom \d+%)/); return m ? m[1] : null; });
     if (!card) continue;
     await pg.evaluate(() => { const b = document.querySelector('#sugs .plan [data-plan="0"]'); if (b) b.click(); }); await pg.waitForTimeout(2500);
     const after = await run(`(()=>{ const ms = members(), g = gradeTeam(ms); return JSON.stringify(g == null ? null : CH.rankShort(g)); })()`);
