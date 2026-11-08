@@ -52,6 +52,27 @@ for (const k of [0, 1, 2]) {
       const v = gr(names); if (v != null && (!best || v > best.g)) best = {mons: names, g: v}; }
     return JSON.stringify({megas: ${k}, teams, best, ms: buildMs}); })()`)});
 }
+// 6: "Build around a Pokémon" for ten picks (2 Megas allowed): the first team must hold the Pokémon and be within 3 of the best real
+// team that ran it (or grade B if no real team did)
+R.around = await run(`(()=>{ const out = []; const mk = ns => ns.map(n => abMember(byName.get(n))), gr = ns => { try { return gradeTeam(mk(ns)); } catch (e) { return null; } };
+  for (const L of ['Rillaboom','Sneasler','Incineroar','Kingambit','Gholdengo','Sinistcha','Volcarona','Dragonite-Mega','Torkoal','Arcanine-Hisui']) { if (!byName.get(L)) continue;
+    S.megaGoal = 2; S.maxMega = 2; ui.abSrc = 'all'; ui.abLock = L; const T0 = performance.now(); let res = null; try { res = buildBest(); } catch (e) {} const ms = performance.now() - T0;
+    const t = res && res.teams && res.teams[0] ? res.teams[0].mons.map(m => m.n) : null;
+    let best = null; const seen = new Set(); for (const [names, n, wr, g] of [...(RES.proven || []), ...(RES.records || [])]) { const key = names.slice().sort().join('|'); if (seen.has(key)) continue; seen.add(key);
+      if (!(n >= 3 || (g != null && g >= 30)) || !names.includes(L)) continue; const ps = names.map(x => byName.get(x)); if (ps.some(p => !p || isExcl(p)) || ps.filter(p => p.m).length > 2) continue; const v = gr(names); if (v != null && (!best || v > best.g)) best = {mons: names, g: v}; }
+    out.push({lock: L, team: t, g: t ? gr(t) : null, has: !!(t && t.includes(L)), best, ms}); }
+  ui.abLock = null; return JSON.stringify(out); })()`);
+// 7: sample boxes (40 Pokémon each, drawn with a fixed seed from the 100 most used): within 3 of the best real team inside the box
+R.boxes = await run(`(()=>{ const out = []; let seed = 11; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const mk = ns => ns.map(n => abMember(byName.get(n))), gr = ns => { try { return gradeTeam(mk(ns)); } catch (e) { return null; } };
+  const top = ((META.doubles_tour && META.doubles_tour.top) || []).concat((META.doubles_tour && META.doubles_tour.more) || []).map(r => byName.get(r.n)).filter(Boolean).slice(0, 100);
+  const keep = S.box.slice();
+  for (let k = 0; k < 3; k++) { const pick = top.slice().sort(() => rnd() - .5).slice(0, 40); S.box = [...new Set(pick.map(p => ownKey(p)))]; S.megaGoal = 1; S.maxMega = 1; ui.abSrc = 'box'; ui.abLock = null;
+    const T0 = performance.now(); let res = null; try { res = buildBest(); } catch (e) {} const ms = performance.now() - T0; const t = res && res.teams && res.teams[0] ? res.teams[0].mons.map(m => m.n) : null;
+    let best = null; const seen = new Set(); for (const [names, n, wr, g] of [...(RES.proven || []), ...(RES.records || [])]) { const key = names.slice().sort().join('|'); if (seen.has(key)) continue; seen.add(key);
+      if (!(n >= 3 || (g != null && g >= 30))) continue; const ps = names.map(x => byName.get(x)); if (ps.some(p => !p || !inBox(p) || isExcl(p)) || ps.filter(p => p.m).length !== 1) continue; const v = gr(names); if (v != null && (!best || v > best.g)) best = {mons: names, g: v}; }
+    out.push({box: k + 1, team: t, g: t ? gr(t) : null, inBox: t ? t.every(n => inBox(byName.get(n))) : false, best, ms}); }
+  S.box = keep; ui.abSrc = 'all'; return JSON.stringify(out); })()`);
 await b.close(); fs.unlinkSync(page);
 // ---- verdicts
 const C = [], add = (name, pass, detail) => C.push({name, pass, detail});
@@ -63,6 +84,10 @@ add('two of the same item reads as not legal', R.illegal.flagged, `${R.illegal.c
   add('no suggestion lowers the grade of a strong (A) team', s.length > 0 && worse === 0, `${s.length} A teams, ${tot} suggestions (${s.reduce((a, x) => a + x.main, 0)} shown first), ${worse} would lower the grade (${s.reduce((a, x) => a + x.worseMain, 0)} of those shown first)${R.sugg.some(x => x.err) ? ' · errors: ' + R.sugg.filter(x => x.err).map(x => x.err).join('; ') : ''}`); }
 for (const B of R.build) { const top = B.teams[0], gap = top && B.best ? B.best.g - top.g : null;
   add(`Build for Me, whole roster, ${B.megas} Mega${B.megas === 1 ? '' : 's'}: ${B.best ? 'within 3 of the best real team' : 'no real team to compare, so the first team must grade B (70+)'}`, B.best ? gap != null && gap <= 3 : !!top && top.g >= 70, `built ${B.teams.map(t => t.g).join(' / ')} · best real team ${B.best ? B.best.g : '—'}${gap != null ? ` · gap ${gap.toFixed(1)}` : ''} · ${(B.ms / 1000).toFixed(1)} s`); }
+{ const A = R.around, bad = A.filter(a => !a.has || a.g == null || (a.best ? a.g < a.best.g - 3 : a.g < 70));
+  add('Build around a Pokémon (10 picks): holds it, within 3 of the best real team with it', A.length >= 8 && !bad.length, A.map(a => `${a.lock} ${a.g == null ? '—' : a.g.toFixed(0)}${a.best ? '/' + a.best.g.toFixed(0) : ''}${a.has ? '' : ' (missing!)'}`).join(' · ') + ` · slowest ${(Math.max(...A.map(a => a.ms)) / 1000).toFixed(1)} s`); }
+{ const B = R.boxes, bad = B.filter(b => !b.inBox || b.g == null || (b.best && b.g < b.best.g - 3));
+  add('Build for Me from a 40-Pokémon box (3 boxes): only box Pokémon, within 3 of the best real team in the box', B.length === 3 && !bad.length, B.map(b => `box ${b.box}: ${b.g == null ? '—' : b.g.toFixed(0)}${b.best ? ' vs best real ' + b.best.g.toFixed(0) : ' (no real team fits)'}${b.inBox ? '' : ' OUTSIDE BOX'}`).join(' · ')); }
 if (errs.length) add('no page errors', false, errs.slice(0, 3).join(' | '));
 for (const c of C) console.log(`${c.pass ? '  ok  ' : '  FAIL'} ${c.name}\n         ${c.detail}`);
 console.log(`\n${C.filter(c => c.pass).length} of ${C.length} known-answer cases pass`);

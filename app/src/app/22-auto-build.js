@@ -14,15 +14,15 @@ let abMemo = null, tsMemoB = null;
 // readiness for a six, remembered for the length of one build
 const tsB = t => { if (!tsMemoB) return tsOf(t); const k = t.map(m => m.p.n).sort().join('|'); if (tsMemoB.has(k)) return tsMemoB.get(k); const v = tsOf(t); tsMemoB.set(k, v); return v; };
 /* Phase 2 (Nov 8, foundation plan): Build for Me ranks by the grade itself, held back where the evidence is thin.
-   abY: the grade's strength for a six as fast as possible (Pokémon + pairs + this six's own record; sets you haven't picked count
-   as an average build, as on My Team), minus CAUT_K × its uncertainty (CH.sdOf), so the search can't chase a lucky, little-played
+   abY: the grade's strength for a six as fast as possible (Pokémon + pairs + this six's own record + the sets it gets: the most
+   popular tournament sets, as on My Team), minus CAUT_K × its uncertainty (CH.sdOf), so the search can't chase a lucky, little-played
    mix. abGradeC: the full grade (with matchups) under the same caution, for the final order. */
 let CAUT_K = .5; const abYMemo = new Map();
 // Phase 2 is a draft until Sim approves it: false keeps today's Build for Me (Nov 8)
-let AB_GRADE_V2 = false;
+let AB_GRADE_V2 = true;
 function abY(t) { if (!t || t.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = t.map(m => m.p.n), k = metaVersion + '#' + CAUT_K + '#' + names.slice().sort().join('|');
   if (abYMemo.has(k)) return abYMemo.get(k); let v = null;
-  try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = CH.sdOf(t) || 0; v = teamX(names, null) + (six ? six.d : 0) - CAUT_K * sd; } } catch (e) {}
+  try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = CH.sdOf(t) || 0; v = teamX(names, t) + (six ? six.d : 0) - CAUT_K * sd; } /* judged on the sets the team would get: the most popular tournament sets (Sim, Nov 8) */ } catch (e) {}
   if (abYMemo.size > 20000) abYMemo.clear(); abYMemo.set(k, v); return v; }
 function abGradeC(t) { try { const ms = typeof assignItems === 'function' ? assignItems(t) : t, RD = THR.teamReport(ms), st = CH.strengthOf(ms, RD ? RD.score : null); if (!st) return null;
   const sd = CH.sdOf(ms) || 0; return {g: st.pct, c: strengthPct(st.y - CAUT_K * sd)}; } catch (e) { return null; } }
@@ -129,7 +129,9 @@ function* buildBestGen_() {
     const legal = (t, p) => { if (t.some(m => m.base === p.b)) return false; const mg = megaCount(t) + (p.m ? 1 : 0); if (!(mg <= goal && mg + (6 - t.length - 1) >= goal)) return false;
       // weather (audit, Oct 30): never two different setters, never a Pokémon whose ability needs a weather the team overrides,
       // and a full six never keeps a weather user (Swift Swim, Sand Rush, Sand Force…) without its setter
-      const nt = [...t, M.get(p.n) || abMember(p)]; if (wxConflict(nt)) return false; return nt.length < 6 || !wxUnmet(nt).length; };
+      const nt = [...t, M.get(p.n) || abMember(p)]; if (wxConflict(nt)) return false;
+      // one weather setter per built team (Phase 2, Nov 8: the search paired Pelipper with Politoed); real teams that run two keep them
+      if (nt.filter(m => m && WEATHER_OF[m.ability]).length > 1) return false; return nt.length < 6 || !wxUnmet(nt).length; };
     // seeds
     let seeds = [];
     if (RES && !OFFMETA) for (const c of RES.cores) { const ps = c.slice(0, 3).map(n => byName.get(n)); if (ps.every(p => p && M.has(p.n))) { const t = []; let okk = true; for (const p of ps) { if (!legal(t, p)) { okk = false; break; } t.push(M.get(p.n)); } if (okk) seeds.push(t); } if (seeds.length >= 10) break; }
@@ -198,7 +200,16 @@ function* buildBestGen_() {
     // fewer good teams beat a flawed third one (Nov 7 audit); a flawed team only when nothing else can be built
     if (!out.length) { const r = ranked.find(r => megaCount(r.t) === goal && !wxConflict(r.t) && !wxUnmet(r.t).length); if (r) out.push(r); }
     if (!out.length) return {fmt, teams: [], noMega: goal};
-    return {fmt, teams: out.map(r => abDescribe(r.t))};
+    const teamsOut = out.map(r => abDescribe(r.t));
+    /* box mode, honestly (Phase 2, Nov 8): when the best team your box allows is short of an A, say which one Pokémon to catch
+       (and which it replaces) to reach one. Shortlisted by the fast score, decided by the full grade. */
+    if (GR && ui.abSrc === 'box' && out[0]) { yield; const t = out[0].t, g0 = abGradeC(t); if (g0 && g0.g < 90) {
+      const sw = []; for (let i = 0; i < 6; i++) for (const p of ROSTER) { if (inBox(p) || isExcl(p) || isTrap(p) || !!p.m !== !!t[i].p.m || t.some(m => m.p.b === p.b)) continue;
+        const nt = [...t.slice(0, i), abMember(p), ...t.slice(i + 1)]; if (wxConflict(nt) || wxUnmet(nt).length) continue; const v = abY(nt); if (v != null) sw.push([v, nt, i, p]); }
+      sw.sort((a, b) => b[0] - a[0]); let best = null;
+      for (const [, nt, i, p] of sw.slice(0, 12)) { yield; const G = abGradeC(nt); if (G && G.g >= 90 && (!best || G.g > best.g)) best = {g: G.g, p, out: t[i].p}; }
+      if (best) teamsOut[0].why.push(`To reach an A: catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(best.g).toLowerCase()} of tournament teams (grade A)`); } }
+    return {fmt, teams: teamsOut};
   } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, list: null}; }
 }
 // Everything the card shows about one built team.
