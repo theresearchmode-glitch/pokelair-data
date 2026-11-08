@@ -200,17 +200,12 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     const rec = '';
     /* matchups get their own verdict (Sim, Nov 7: "98 and 6 shaky?"): the grade says how strong the team is, this says what can
        still beat it, named, worst first, with a jump to Threats */
-    /* matchups as one compact block (Sim, Nov 7: no stack of paragraphs): the numbers, the bar, then the worst few as small
-       Pokémon chips that jump to Threats. Why it's separate from the grade is told in Why A? */
-    const worst = CH.order(RD).filter(r => r.level < 2).slice(0, 3), more = c[0] + c[1] - worst.length;
-    const muRow = worst.length ? `<div class="ar-murow"><div class="ar-muhd"><span class="ar-mulab">${c[0] ? 'No answer yet' : 'Fix first'}</span>${more > 0 ? `<button type="button" class="ar-link ar-mumore" data-arjump="chP2">+${more} more</button>` : ''}</div><div class="ar-mugrid">${worst.map(r => { const p = byName.get(r.t.n);
-      return `<button type="button" class="ar-much${r.level ? '' : ' l0'}" data-arjump="chP2" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${p ? sprite(p) : ''}<span>${esc(r.t.d)}</span></button>`; }).join('')}</div></div>`
-      : `<p class="ar-muok">No weak matchups against the top ${hd ? hd.n : 30}.</p>`;
+    /* the Fix first tiles were removed (Sim, Nov 8: "i really dont like the fix first section"); Threats has the full list */
     /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
     /* one place to learn about the grade (Sim, Nov 7): "Why A?" under the letter. The breakdown that used to sit here lives there */
     const chk = `<div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3>
       <div class="ar-trio">${cells.join('')}</div>
-      <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>${muRow}</div>`;
+      <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
