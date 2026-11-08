@@ -177,3 +177,10 @@ e.g. Xperience Play $500: Swiss BO1, top cut BO3; Talon's Fight Club: all BO3). 
 - 14% of teams holding a stone never Mega Evolved in that game, which confirms our ladder replays can't test Megas.
 - So no-Mega teams are rare everywhere; the main evidence stays the tournament rounds (34% over 264 rounds).
 Older regulations, so for methods and for factors that don't depend on which Pokémon are legal.
+
+### How many tournament rounds are single games? (Limitless API, all 420 events, Nov 8)
+365 events are best of 3 throughout, 46 mix (usually best-of-1 Swiss, best-of-3 top cut), only 9 are all best of 1.
+By rounds: **5,323 rounds (13.5%) are single games, 34,029 (86.5%) are best of 3.** So the grade was learned almost entirely
+from best-of-3 rounds, which explains why it's too confident for one game. Saved per event in data/tour-modes.json
+([phase type, rounds, mode]). Single-game data for the grade: ladder replays, best-of-1 rounds, and individual games from
+Showdown's best-of-3 format (being collected, with team sheets).
