@@ -290,3 +290,17 @@ model.mjs TEAM_FEATS=1 learns team-level terms from the same tournament rounds; 
   per-Pokémon speed/Fake Out values still a bit harsh, Tailwind + Trick Room clash (leaning, not proven).
 **Sim's box with the new grade (live engine):** 1 Mega 89 / 89 / 84, 2 Megas 90 / 87 / 84, all 7/7 except one 6/7;
 0 Megas 11 / 5 / 5 (was 66 / 52 / 46; the rolled-back engine's 98 no-Mega team is gone). Tests: ALL PASSED.
+
+### Too lenient before, or too harsh now? (Nov 8, Sim)
+The grade is a rank among real tournament teams. Checked against how similar real teams (5+ of the same 6, 30+ games) did,
+for the 82 real top-cut teams in out/teams.json, graded by name with typical sets:
+| version | A | B | C or lower | grade vs real r |
+|---|---|---|---|---|
+| live | 57 teams, 55.5% | 10, 55.5% | 15, 52.0% | 0.42 |
+| preview (team basics, pairs ÷4) | 24, **56.6%** | 36, **54.7%** | 22, **53.3%** | **0.43** |
+| preview + "like for like" scale (typical builds) | 53, 55.6% | 12, 54.3% | 17, 53.1% | 0.39 |
+The live grade was too lenient: its A's and B's did exactly as well as each other, so "A" meant nothing extra. The preview's
+letters line up with real results in order. The like-for-like scale undid that (and on later rounds put D above C), so it
+was dropped. Most of the downward swing comes from the Nov 8 14:34 set-range change already on main (the live model was built
+at 10:12), so the live site moves this way with the next daily run regardless.
+Build for Me, Sim's box, 2 Megas, preview grade: 90 (similar real teams 57.3%, 1,007 games), 87 (53.9%, 115), 84 (52.9%, 2,888).
