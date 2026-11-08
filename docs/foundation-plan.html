@@ -124,6 +124,17 @@ const PLANS = [
   ["p1-stable","Day-to-day stability","An unchanged team stays within about 2 points from one day to the next."],
   ["p1-rank","Show the grade as a rank","Sim, Nov 8: \"77 for a 9-1 team seems so low\". The number is a rank among real tournament teams, so it shows as \"Top 23% of tournament teams\" (bottom half: \"Bottom 12%\"), not \"77 / 100\"."],
   ["p1-ok","Sim reviews and approves the grade change",""]]},
+ {id:"pg", name:"Phase 1b · Gaps in what the grade knows", goal:"Find every important battle factor the grade doesn't count, and count it.", done:"every gap is measured, the real ones are counted in the grade and pass a check on later games the grade never saw, and Sim agrees nothing basic is missing. Phase 2 waits on this.", steps:[
+  ["pg-found","Found the gap (Sim, Nov 8)","A no-Mega team graded 98, but real no-Mega teams win only 34% of games (264 games). The grade counts Pokémon, pairs, sets and matchups, never the team as a whole."],
+  ["pg-list","List every possible gap","Team basics (Mega, speed control, Fake Out / Intimidate, Protect, redirection, a clear plan, clashing plans, setters and the Pokémon that need them, physical/special mix, spread moves), counting mistakes (benched Pokémon get credit, two Megas both counted, best-of-3 games, who you beat), unusual teams, thin data, speed vs the meta, set fit, meta changes."],
+  ["pg-sim","Sim adds what a player knows","Anything from real play that's missing or wrong on the list."],
+  ["pg-audit","Measure each gap","For teams with each gap: what the grade expected vs how they really did, on two separate slices of games. A gap is real only if both slices agree."],
+  ["pg-team","Count the team-wide basics","Learned from the same battles, sized by real results, not guessed."],
+  ["pg-bench","Credit only Pokémon that were brought","Where replays show the four brought."],
+  ["pg-mega","Count only one Mega per game","A team listing two Mega Stones isn't credited for both."],
+  ["pg-rare","Be cautious and honest on unusual teams","Teams unlike real ones get a careful grade and a plain warning."],
+  ["pg-check","Check on later games","Overall accuracy must not get worse, and every gap group must line up with reality."],
+  ["pg-ok","Sim reviews and approves","Before anything goes live."]]},
  {id:"p2", name:"Phase 2 · Build for Me", goal:"Rank by the grade everywhere, and never hand out a weak team.", done:"every setting is within 3 points of the best real team possible under the same limits, and the gate passes.", steps:[
   ["p2-search","Search path ranks by the grade","Box-only builds, \"build around a Pokémon\" and new ideas."],
   ["p2-zero","0 Megas builds strong teams","Known-answer case: today it builds 33 / 58 / 17 (C, C, D) and takes about 5 s on a phone."],
