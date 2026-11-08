@@ -25,6 +25,11 @@ makes it heavy, and a lighter option if one exists. Background computer time (a 
 - Design scale (Nov 7): text 13/15/16/17/20/22/24/26/28/34 (+ display), spacing on a 4px grid (1/2/6 allowed),
   corners 4/6/10/18/round, paragraphs line-height 1.5.
 
+## Public launch (Sim, Nov 8)
+NastyPlot launches to the public sometime in January 2027, as a normal public website (not only the private Claude page).
+Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on
+Claude-only features without a plan for the public site; kids play Pokémon, so the privacy rules below are strict.
+
 ## Privacy and safety
 - COPPA: no names or emails collected; feedback stays anonymous.
 - The contact email is shown only after "Show email". No RK9 scraping.
