@@ -160,13 +160,14 @@ let ctrCache={m:null,ix:null,K:0};
 function ctrVal(a,b){const C=META.model&&META.model.ctr;if(!C||!Array.isArray(C.sp)||!Array.isArray(C.v))return null;
   if(ctrCache.m!==C)ctrCache={m:C,ix:new Map(C.sp.map((n,i)=>[n,i])),K:C.sp.length};const {ix,K}=ctrCache,i=ix.get(a),j=ix.get(b);if(i==null||j==null||i===j)return null;
   const lo=Math.min(i,j),hi=Math.max(i,j),k=lo*K-lo*(lo+1)/2+(hi-lo-1),v=(C.v[k]||0)/1000;return i<j?v:-v}
-const ONE_GAME_K=.7;
+const ONE_GAME_K=.85;
 // your six against theirs: a verdict in words, and the pairs that move it most
 function realMatch(mine,theirs){if(!modelOK()||!META.model.ctr)return null;const A=mine.map(m=>m.p.n),B=theirs.map(o=>o.p.n);if(A.length<4||B.length<4)return null;
   let mt=0;const pr=[];for(const a of A)for(const b of B){const v=ctrVal(a,b);if(v==null)continue;mt+=v;pr.push({a,b,v})}
   let base=0,full=false;try{if(A.length===6&&B.length===6){base=calibK()*(teamX(A,mine)-teamX(B,null));full=true}}catch(e){}
-  // ONE game, not a tournament round (Sim, Nov 8: single games first). The model learned from rounds, 86.5% best of 3; on
-  // single games its edges fit about 0.6× (best-of-1 rounds) to 0.8× (ladder) as strong (docs/deep-check.md), so 0.7.
+  // ONE game, not a tournament round (Sim, Nov 8: single games first). The model learned from rounds, 86.5% best of 3. On single
+  // games its edges fit 1.02× (5,250 team-sheet games, ±0.26), 0.82× (20,000 ladder games, ±0.35) and 0.6× (best-of-1 rounds,
+  // ±0.37); weighted by how sure each is, about 0.85 (docs/deep-check.md).
   const z=ONE_GAME_K*(base+mt),p=sig(z),word=p>=.58?'Favored':p>=.53?'Slight edge':p>.47?'Even':p>.42?'Slightly behind':'Behind';
   pr.sort((x,y)=>Math.abs(y.v)-Math.abs(x.v));return {p,word,full,key:pr.filter(x=>Math.abs(x.v)>=.02).slice(0,3),games:META.model.ctr.games||0}}
 // ---------- how sure a suggestion is to help (Nov 8, step 6): a swap changes only some Pokémon and pairs, so only their

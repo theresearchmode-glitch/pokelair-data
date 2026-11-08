@@ -335,3 +335,16 @@ Tests: ALL PASSED. Preview republished (Version 2).
 - Plain warning added: under the grade, only when "how sure" is Low: "Few real games back this mix yet, so it's a best guess".
   Checked on a phone-size page (rare six → shown; well-known six → not shown). Tests: ALL PASSED.
 Step 4 is complete except Sim's review (d4-ok).
+
+## Step 3 completed on team-sheet single games (Nov 8, 5,250 Showdown best-of-3-format games, each one game)
+Independent of the grade's training data, with real sets.
+| | live grade | preview grade |
+|---|---|---|
+| picks the winner | 54.5% | 54.5% |
+| log-loss at the page's confidence (lower = better) | 0.6851 | **0.6831** |
+| confidence that fits (page 0.87) | 0.88 ±0.27 | 0.89 ±0.23 |
+Preview slightly better (not tested for significance). No factor proven to be missed beyond the grade (joint model, ranges by
+team); "no Mega Stone" −21 ±16 but on ~0% of teams (too few to tell); leaning: 5+ physical attackers +6.0 ±5.9.
+**One-game confidence revised:** sheet games say the page's confidence is right for one game (1.02×, ±0.26); with the ladder
+(0.82×) and best-of-1 rounds (0.6×) weighted by precision, ≈0.87 → ONE_GAME_K 0.7 → 0.85.
+**Sealed set:** starts with events on Nov 9, so it has no games yet; Step 4's sealed check runs once 1–2 weeks of events exist.

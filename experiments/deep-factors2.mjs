@@ -18,7 +18,7 @@ const SRC = process.argv[2] || OUT + 'replays_bo3.json';
 const LADDER = process.env.LADDER === '1';
 const R = JSON.parse(fs.readFileSync(SRC, 'utf8')).games.map(g => LADDER && g.p ? {...g, s: g.p.map(t => t.map(n => ({n: n.replace(/-Mega.*$/, ''), i: '', a: '', mv: [], nt: ''})))} : g)
   .filter(g => g.s && g.s[0].length === 6 && g.s[1].length === 6 && (g.w === 0 || g.w === 1));
-const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
+const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.GRADE_MODEL ? JSON.parse(fs.readFileSync(process.env.GRADE_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
 const page = ROOT + `app/df2-${process.pid}.html`;
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), pg = await (await b.newContext()).newPage();
@@ -77,6 +77,7 @@ const pts = v => (sig(v) - .5) * 100, prev = f => (G.filter(d => d.A[2][f]).leng
 const acc = G.filter(d => (d.z > 0) === !!d.y && d.z !== 0).length / G.filter(d => d.z !== 0).length;
 console.log(`${G.length} single games with team sheets (${SRC.split('/').pop()}), ${Object.keys(F).length} distinct sheets; the grade picks the winner ${(acc * 100).toFixed(1)}%`);
 const J = fitJoint(G), H0 = half[0].length > 200 ? fitJoint(half[0]) : null, H1 = half[1].length > 200 ? fitJoint(half[1]) : null;
+{ const ll = G.reduce((a, d) => { const q = 1 / (1 + Math.exp(-(+rd('model.json').calib || .87) * d.z)); return a - Math.log(d.y ? q : 1 - q); }, 0) / G.length; console.log(`log-loss at the page's own confidence: ${ll.toFixed(4)} (coin flip 0.6931)`); }
 console.log(`grade confidence that fits these games: ${J.w[0].toFixed(2)} ±${(1.96 * J.se[0]).toFixed(2)} (page uses ${(+rd('model.json').calib).toFixed(2)})`);
 console.log(`\neffect of each factor BEYOND the grade, all fitted together, in win-chance points (± = 95% range grouped by team); halves split by team (${half[0].length} / ${half[1].length} games)`);
 if (LADDER) console.log(`rating gap: ${pts(J.w[1]).toFixed(1)} win-chance pts per 100 rating`);
