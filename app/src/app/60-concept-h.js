@@ -39,8 +39,8 @@ CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms
 // how sure the rating is (Nov 8, step 5): the spread of the team's strength from how much real evidence stands behind each of
 // its Pokémon and pairs (model.monSd / pairSd), widened by CH.SD_K, the factor that made those spreads match later results
 // (experiments/unsure.mjs); a six's own record narrows it. Shown as an 80% range on the 0-100 rating.
-CH.SD_K = 1;
-CH.sdOf = ms => { const M = META.model; if (!M || !M.monSd || !ms || ms.length !== 6) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...Object.values(M.monSd)), p0 = +M.pairSd0 || .05;
+CH.SD_K = 0; // 0 = range hidden until experiments/unsure.mjs has checked the spreads against later results
+CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...Object.values(M.monSd)), p0 = +M.pairSd0 || .05;
   let v = 0; for (const n of ns) v += (M.monSd[n] ?? mx) ** 2;
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = ns[i] < ns[j] ? ns[i] + '|' + ns[j] : ns[j] + '|' + ns[i]; v += ((M.pairSd || {})[k] ?? p0) ** 2; }
   return Math.sqrt(v) * CH.SD_K; };
