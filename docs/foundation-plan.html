@@ -122,6 +122,7 @@ const PLANS = [
   ["p1-thin","Too little data and new formats","Low confidence and \"not enough games yet\" for rare Pokémon and new regs like M-D."],
   ["p1-gate","Daily model never ships empty","Found Nov 8: one day's model failed its own gate by .0006 and would have switched every grade to the old formula overnight. Gate now uses the calibrated score; a failed day keeps yesterday's model."],
   ["p1-stable","Day-to-day stability","An unchanged team stays within about 2 points from one day to the next."],
+  ["p1-rank","Show the grade as a rank","Sim, Nov 8: \"77 for a 9-1 team seems so low\". The number is a rank among real tournament teams, so it shows as \"Top 23% of tournament teams\" (bottom half: \"Bottom 12%\"), not \"77 / 100\"."],
   ["p1-ok","Sim reviews and approves the grade change",""]]},
  {id:"p2", name:"Phase 2 · Build for Me", goal:"Rank by the grade everywhere, and never hand out a weak team.", done:"every setting is within 3 points of the best real team possible under the same limits, and the gate passes.", steps:[
   ["p2-search","Search path ranks by the grade","Box-only builds, \"build around a Pokémon\" and new ideas."],

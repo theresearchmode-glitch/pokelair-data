@@ -192,7 +192,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* the grade is the hero (Sim, Nov 5): the big letter, then what it's based on in words, so a win rate is never read as a score */
     /* grade v2 (Nov 7, Sim): the letter, the expected win rate against today's field, and the rank among real teams with what
        it rests on (its own real games, or our estimate) */
-    score = `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis ar-gnum"><b>${G.v === 2 ? Math.round(G.s) : G.s}</b> / 100</span>${why}</div>`; }
+    score = `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis ar-gnum">${G.v === 2 ? `<b>${CH.rankShort(G.s)}</b><small class="ar-gsub">of tournament teams</small>` : `<b>${G.s}</b> / 100`}</span>${why}</div>`; }
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
   if (RD) {

@@ -123,17 +123,20 @@ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.
 // the third line under every grade: the real win rate, or that there is none yet
 const pct1 = x => Math.round(x * 1000) / 10 + '%';
 // v2: where the six ranks among real teams, and what the grade rests on (its own games, or our estimate)
-CH.pctTxt = G => { const p = Math.round(G.s); return p >= 99 ? 'Top 1% of tournament teams' : p > 50 ? `Top ${100 - p}% of tournament teams` : `Better than ${p}% of tournament teams`; };
-CH.pctShort = G => { const p = Math.round(G.s); return p >= 99 ? 'Top 1%' : p > 50 ? `Top ${100 - p}%` : `Better than ${p}%`; };
+CH.pctTxt = G => CH.rankShort(G.s) + ' of tournament teams';
+CH.pctShort = G => CH.rankShort(G.s);
 // a grade number (a rank among real teams) as its expected win rate, for explanations
 CH.eOfS = s => { const q = META.model && META.model.dist && META.model.dist.q; if (s == null || !Array.isArray(q) || q.length !== 101) return null; const i = Math.max(0, Math.min(99, Math.floor(s))), f = Math.max(0, Math.min(1, s - i)), y = q[i] + (q[i + 1] - q[i]) * f, e = CH.fieldWin(y); return e == null ? null : Math.round(e * 1000) / 10; };
 /* a change, on suggestion cards and after Apply (Sim, Nov 7: "giving win percentage is so weird… seems arbitrary"): the grade
    letter and the team rating, the 0-100 rank among real tournament teams the letter comes from: "Grade C → B · rating 41 → 58",
    or "Grade C · rating 41 → 46" when the letter stays. A tiny win-rate change ("−0.6%") claimed more precision than there is. */
-CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.grade(g0), b = CH.grade(g1), r0 = Math.round(g0), r1 = Math.round(g1);
-  return a !== b ? `Grade ${a} → ${b} · rating ${r0} → ${r1}` : `Grade ${b} · rating ${r0} → ${r1}`; };
-CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} / 100${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
-CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.pctShort(G)} · ${CH.n(G.six.g)} real games` : `${CH.pctTxt(G)} · based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? `${CH.pctShort(G)} · our estimate` : `${CH.pctTxt(G)} · our estimate, not played in tournaments yet`)) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
+/* Shown as a rank (Sim, Nov 8: "77 for a 9-1 team seems so low"): the 0-100 number is where the six ranks among real tournament
+   teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
+CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
+CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.grade(g0), b = CH.grade(g1), r0 = CH.rankShort(g0), r1 = CH.rankShort(g1);
+  return a !== b ? `Grade ${a} → ${b} · ${r0} → ${r1}` : r0 === r1 ? `Grade ${b} · ${r1}` : `Grade ${b} · ${r0} → ${r1}`; };
+CH.gradeNum = G => !G ? '' : G.v === 2 ? `${CH.rankShort(G.s)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
+CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
 // checks, and real results (how far the real win rate moved it).
 CH.gradeParts = (G, RD) => { const nm = G.miss ? G.miss.length : 0, chk = G.chk != null ? G.chk : G.s; return {nm, ts: chk - RD.score + CH.GMISS * nm, ra: G.s - chk}; };
@@ -173,11 +176,11 @@ CH.LETTERS = 'A: top 10% of real tournament teams · B: next 20% · C: middle 40
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.v === 2) { const L2 = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu), m = b - a, r = t - b, pts = v => `${Math.abs(v)} point${Math.abs(v) === 1 ? '' : 's'}`;
     const own = G.six ? ` This exact six has ${G.six.g.toLocaleString('en-US')} real tournament games. With its players' skill and its opponents' strength taken out, those results ${r > 0 ? `add ${pts(r)}` : r < 0 ? `take off ${pts(r)}` : 'change it by less than a point'}; the more games, the more they count.` : ' This exact six hasn’t been played in tournaments yet, so this is our estimate from how its Pokémon, pairs and sets do in real games.';
-    const su = G.st && G.st.su, top = `${L2} · team rating ${t} of 100: ${CH.pctTxt(G).toLowerCase().replace(/^top/, 'in the top')}.`;
+    const su = G.st && G.st.su, top = `${L2} · ${CH.pctTxt(G)}${t > 50 && t < 99 ? ` (stronger than ${t}% of them)` : ''}.`;
     /* short (Sim, Nov 7: "just what they should and need to"): what the number means, the three things it's made of, the letters */
     const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
     if (G.partial) { const k = G.st && G.st.partialN || 0, e = 6 - k;
-      return `<div class="chgwhy" id="chGwhy">${L2} · team rating ${t} of 100 so far, with ${k} of 6 picked.<ul class="chgwl"><li><b>${t}</b> from how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
+      return `<div class="chgwhy" id="chGwhy">${L2} · ${CH.pctTxt(G)} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
     return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
       + `<li><b>${sg(m)}</b> for its matchups (${G.r}% ready for the top 30). They count a little, since players often play around a shaky matchup</li>`
       + (G.six ? `<li><b>${sg(r)}</b> from this exact six's own ${G.six.g.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
