@@ -11,3 +11,4 @@ shots-oct28/
 .claude/
 # check scripts save screenshots to C:/pl; on Linux that lands here
 C:/
+out/matches_ab.json
