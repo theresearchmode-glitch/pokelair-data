@@ -1016,3 +1016,6 @@
 /* step 6 (Nov 8): how sure a suggestion is to help, from the evidence behind the Pokémon and pairs it changes */
 @A .plsure,.plsure{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border:1px solid var(--ar-rule,rgba(128,128,128,.35));border-radius:999px;font:600 13px/1.2 var(--ar-body,inherit);color:var(--ar-ink-2,inherit);white-space:nowrap}
 @A .chgwhy .chsure{margin:0 0 12px;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink)}
+/* Threats (Nov 8): the real-results verdict leads; the damage-calc reading sits under it, quieter */
+.chtr .st.chcalcv,.chtr .tx .st.chcalcv{display:block;font-weight:500!important;font-size:13px!important;color:var(--ar-ink-2,inherit)!important;opacity:.9}
+.chthrsrc{margin:0 0 12px}
