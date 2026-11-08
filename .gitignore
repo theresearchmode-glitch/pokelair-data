@@ -20,3 +20,9 @@ out/matches_train.json
 out/model_dev_site.json
 out/matches_train28.json
 out/model_d28.json
+app/sb-*.html
+app/why-*.html
+app/golden-*.html
+app/stab-*.html
+app/thr-*.html
+app/plan-*.html
