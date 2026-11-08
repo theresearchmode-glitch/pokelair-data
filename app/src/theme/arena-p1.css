@@ -1013,3 +1013,5 @@
 @A .chgwhy .chgwl li{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:baseline;font:500 15px/1.5 var(--ar-body);color:var(--ar-ink-2)}
 @A .chgwhy .chgwl li b{font:italic 800 17px/1.2 var(--ar-display);font-synthesis:style;color:var(--ar-ink);text-align:right}
 @A .chgwhy .chgwl li:not(:has(b)){grid-template-columns:1fr}
+/* step 6 (Nov 8): how sure a suggestion is to help, from the evidence behind the Pokémon and pairs it changes */
+@A .plsure,.plsure{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border:1px solid var(--ar-rule,rgba(128,128,128,.35));border-radius:999px;font:600 13px/1.2 var(--ar-body,inherit);color:var(--ar-ink-2,inherit);white-space:nowrap}

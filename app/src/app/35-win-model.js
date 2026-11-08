@@ -148,3 +148,16 @@ function realMatch(mine,theirs){if(!modelOK()||!META.model.ctr)return null;const
   let base=0,full=false;try{if(A.length===6&&B.length===6){base=calibK()*(teamX(A,mine)-teamX(B,null));full=true}}catch(e){}
   const z=base+mt,p=sig(z),word=p>=.58?'Favored':p>=.53?'Slight edge':p>.47?'Even':p>.42?'Slightly behind':'Behind';
   pr.sort((x,y)=>Math.abs(y.v)-Math.abs(x.v));return {p,word,full,key:pr.filter(x=>Math.abs(x.v)>=.02).slice(0,3),games:META.model.ctr.games||0}}
+// ---------- how sure a suggestion is to help (Nov 8, step 6): a swap changes only some Pokémon and pairs, so only their
+// uncertainty counts. P(the new six is really stronger) from the change in strength and the spread of the parts that differ
+// (model.monSd / pairSd, scaled by SWAP_K: experiments/unsure.mjs found the raw spreads about 30% wide on later results).
+// Grade-raising suggestions need 75%+ (a third of strength-raising swaps qualify); fixes for real problems don't.
+var SWAP_K=.7,SWAP_MIN=.75;
+function swapSure(base,team){const M=META.model;if(!M||!M.monSd||!base||!team||base.length!==6||team.length!==6)return null;
+  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...Object.values(M.monSd)),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+  const pairs=ns=>{const s=new Set();for(let i=0;i<6;i++)for(let j=i+1;j<6;j++)s.add(pk(ns[i],ns[j]));return s},pa=pairs(A),pb=pairs(B);let v=0;
+  for(const n of A)if(!sb.has(n))v+=(M.monSd[n]??mx)**2;for(const n of B)if(!sa.has(n))v+=(M.monSd[n]??mx)**2;
+  for(const k of pa)if(!pb.has(k))v+=((M.pairSd||{})[k]??p0)**2;for(const k of pb)if(!pa.has(k))v+=((M.pairSd||{})[k]??p0)**2;
+  if(!(v>0))return null;let d;try{d=teamX(B,team)-teamX(A,base)}catch(e){return null}
+  const z=d/(Math.sqrt(v)*SWAP_K);return 1/(1+Math.exp(-1.702*z))} // normal CDF, logistic approximation
+function sureWord(p){return p==null?'':p>=.9?'Likely helps':p>=SWAP_MIN?'Probably helps':''}

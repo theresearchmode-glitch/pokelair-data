@@ -117,7 +117,10 @@ function gamePlan(team) {
     // a support setter (Pelipper, Politoed, Ninetales, Hippowdon) is there for its partners: its own Hurricane or Water moves alone
     // don't make it a weather team (Nov 7, Sim: Pelipper suggested with nothing on the team using the rain). Attacking setters
     // (Mega Charizard Y, Torkoal, Tyranitar, the snow Megas) still count as using their own weather.
-    const lone = !others0.length && setters.every(x => WX_PARTNER.has(x.m.p.n)), ab = lone ? [] : ab0;
+    // sand chips every Pokémon that isn't Rock, Ground or Steel each turn: a support Hippowdon with another sand-immune partner
+    // (Kingambit, Gholdengo…) is using it for that chip (Nov 8: a top-300 tournament team, Hippowdon + Kingambit, was flagged)
+    const sandChip = kinds[0] === 'sand' && team.filter(m => (m.types || m.p.t).some(t => t === 'Rock' || t === 'Ground' || t === 'Steel')).length >= 2;
+    const lone = !others0.length && !sandChip && setters.every(x => WX_PARTNER.has(x.m.p.n)), ab = lone ? [] : ab0;
     const hurt = team.filter(m => !WEATHER_OF[m.ability] && (m.types || m.p.t).includes(kinds[0] === 'rain' ? 'Fire' : kinds[0] === 'sun' ? 'Water' : '_'));
     rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', lone, who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
       return `${sn.join(', ')} ${self && !others.length ? 'sets and uses ' + w : 'sets ' + w}${others.length ? ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : ''}`; })(), note: ab.length ? '' : `Nothing else on the team uses the ${w0}${hurt.length ? `, and it weakens ${wxAnd(hurt.map(m => m.d))}'s ${kinds[0] === 'rain' ? 'Fire' : 'Water'} moves` : ''}.`});
