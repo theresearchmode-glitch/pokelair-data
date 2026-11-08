@@ -1,0 +1,2 @@
+{"shrink": 10, "half": 14, "skill": 1, "sets": 60,
+ "note": "Locked model settings (Nov 8, foundation plan Phase 1: stability). Re-picking them every day flipped shrink 10->3 and set shrink 200->60 between two consecutive days and moved an unchanged team's grade by 4 points typically (19% changed letter). Locked: 1.7 points, 6% changed letter (experiments/stability.mjs). Values are the ones production picked on Nov 8, so nothing changes on the site. Re-check monthly with RETUNE=1 node model.mjs and change only if experiments/compare.mjs says KEEP."}
