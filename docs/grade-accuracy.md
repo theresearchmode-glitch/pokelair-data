@@ -65,3 +65,19 @@ trained on events before ~Oct 22; real records from past games only); then check
 - Swap test (a player changes one Pokémon between events, 327 cases pooled): no version calls the direction better than
   chance (47-53%, ±3.5). Results per event vary too much (sd .21 in win rate) for 327 swaps to show the small real effect;
   this test can't judge suggestions yet.
+
+## More data and more training (Nov 8, items 5 and "train our models more")
+Date split: learned from games before Oct 29, scored on the ~4,000 tournament games after (experiments/board.mjs BOARD_DATE).
+
+| version | picks the later winner | log-loss |
+|---|---|---|
+| tournaments only (as shipped) | 56.8% | .6824 |
+| + Showdown ladder games, both players 1500+ (2,421) | 56.9% | .6824 |
+| + ladder games 1300+ (6,537) | 56.7% | .6824 |
+| + all 20,000 ladder games | 56.6% | .6825 |
+| 600 training steps instead of 250 | 56.9% | .6824 |
+| finer shrink grid (3/5/7/10/15; picked 5) | 56.7% | .6830 |
+
+None beats the shipped model beyond noise, so nothing changed: the model already converges at 250 steps, its settings are
+already near the best, and ladder games add nothing tournaments don't (casual ones slightly hurt). The finer grid looked
+better on the model's own validation slice and worse on later games: the scoreboard is what decides.
