@@ -39,7 +39,7 @@ const GRADE = list => `(()=>{const out=[];for(const T of ${JSON.stringify(list)}
   const RD=THR.teamReport(ms),Gr=CH.gradeOf(RD,proChecks(ms,true),ms),st=Gr&&Gr.st;if(!st){out.push(null);continue}const d6=st.six?st.six.d:0;
   out.push({s:Gr.s,e:st.e,y:st.y,x0:strengthX(T.ns,ms).x0,ready:RD?RD.score:null,six:d6,sixG:st.six?st.six.g:0,s0:strengthPct(st.y-d6),e0:CH.fieldWin(st.y-d6),letter:Gr.letter,miss:(Gr.miss||[]).map(x=>x.k)})}catch(e){out.push({err:String(e.message).slice(0,80)})}}return JSON.stringify(out)})()`;
 async function gradeAll(pg, list, step = 40) { const r = []; for (let i = 0; i < list.length; i += step) r.push(...await ev(pg, GRADE(list.slice(i, i + step)))); return r; }
-const pg = await openPage(rd('model.json'));
+const pg = await openPage(process.env.GRADE_MODEL ? JSON.parse(fs.readFileSync(process.env.GRADE_MODEL, 'utf8')) : rd('model.json'));
 // page facts: default Ability and Ability list per species, move facts
 const allN = [...new Set(teams.flat())];
 const INFO = await ev(pg, `(()=>{const ab={};for(const n of ${JSON.stringify(allN)}){const p=byName.get(n);if(!p)continue;ab[n]={def:abMember(p).ability,all:p.a||[],mega:!!p.m,base:p.b||p.n}}

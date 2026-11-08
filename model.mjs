@@ -34,6 +34,17 @@ if (hasSets) { const spDecks = new Map(), fd = new Float64Array(setNames.length)
   for (const d of used) { if (d == null || !M.decks[d]) continue; for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1); for (const j of deckF[d]) fd[j]++; }
   setNames.forEach((f, j) => { freq[j] = fd[j] / (spDecks.get(featSp[j]) || 1); if (!spFeats.has(featSp[j])) spFeats.set(featSp[j], []); spFeats.get(featSp[j]).push(j); }); }
 const nP = M.players;
+// v6 (Deep Check, Nov 8): team-wide basics, learned from the same rounds, so each one's size comes from real results.
+// Sim, Nov 8: a no-Mega team graded 98 while real no-Mega teams win 34%; the grade only ever counted Pokémon, pairs and sets.
+// TEAM_FEATS=1 while it is being tested. Move-based ones count only on sheets that list 16+ moves (else unknown = 0).
+// Kept: the two that expert guides AND real results agree on (broken-team tests, Nov 8). 'no speed control' and 'no Fake Out'
+// came out as small bonuses; the grade never rewards lacking a basic, so they're left out.
+const TEAMF = process.env.TEAM_FEATS === '1' ? ['noMega', 'protectLow'] : [];
+const deckTF = !TEAMF.length || !hasSets ? [] : M.decks.map(fs_ => { const nm = fs_.map(f => M.feats[f]), mv = nm.filter(n => n.includes(':'));
+  if (mv.length < 16) return null; const prot = mv.filter(n => /:Protect$/.test(n)).length;
+  return {protectLow: prot <= 2 ? 1 : 0, noSpeed: nm.some(n => /:(Tailwind|Trick Room|Icy Wind|Electroweb)$/.test(n) || /@Choice Scarf$/.test(n)) ? 0 : 1, noFakeOut: mv.some(n => /:Fake Out$/.test(n)) ? 0 : 1}; });
+const tvCache = new Map(), teamVec = (t, d) => { if (!TEAMF.length) return []; const key = t * 100000 + (d ?? 99999); let v = tvCache.get(key); if (v) return v;
+  v = TEAMF.map(k => k === 'noMega' ? (teams[t].some(n => /-Mega/.test(n)) ? 0 : 1) : (d != null && deckTF[d] ? deckTF[d][k] : 0)); tvCache.set(key, v); return v; };
 // time split: last 20% of events (by date) held out
 const evDates = M.events.map(e => e[1]); const order = [...evDates.keys()].sort((a, b) => evDates[a] < evDates[b] ? -1 : 1);
 // TEST_FROM / TEST_TO (experiments only): hold out an earlier slice instead, training only on events before it
@@ -57,23 +68,24 @@ const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ??
 function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
   // experiments (Deep Check, Nov 8): NO_PAIRS=1 fits without pair bonuses; PAIR_SHRINK=k pulls pair bonuses k× harder toward 0
   if (process.env.NO_PAIRS === '1') usePairs = false; lp *= +(process.env.PAIR_SHRINK || 1);
-  const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length);
-  const P = [b, q, s, c], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length)), L = [lb, lp, ls, lc];
+  const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length), T = new Float64Array(TEAMF.length);
+  const P = [b, q, s, c, T], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length)), L = [lb, lp, ls, lc, 1];
   // weights are scaled to average 1, so the shrinkage means the same thing with or without recency
   let last = -Infinity; for (const g of games) last = Math.max(last, day(evDates[g[3]]));
   const W = games.map(g => half ? Math.pow(.5, (last - day(evDates[g[3]])) / half) : 1), Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
   // a deck's set features as [feature, value]: 1 − freq when the deck has it, −freq when the species is there without it
   const dv = new Map(), deckVec = (t, d) => { if (!useSets || d == null) return []; const key = t * 100000 + d; let v = dv.get(key); if (v) return v; v = []; const has = new Set(deckF[d]);
     for (const n of teams[t]) for (const j of (spFeats.get(n) || [])) v.push([j, (has.has(j) ? 1 : 0) - freq[j]]); dv.set(key, v); return v; };
-  const x = (t, d) => { let v = 0; for (const j of tf[t].f) v += b[j]; if (usePairs) for (const j of tf[t].p) v += q[j]; for (const [j, w] of deckVec(t, d)) v += c[j] * w; return v; };
+  const x = (t, d) => { let v = 0; for (const j of tf[t].f) v += b[j]; if (usePairs) for (const j of tf[t].p) v += q[j]; for (const [j, w] of deckVec(t, d)) v += c[j] * w; const tv = teamVec(t, d); for (let k = 0; k < tv.length; k++) v += T[k] * tv[k]; return v; };
   for (let it = 1; it <= iters; it++) { const Gr = P.map(a => new Float64Array(a.length));
     for (let gi = 0; gi < games.length; gi++) { const [A, B, r, , pa, pb, , dA, dB] = games[gi]; const eta = x(A, dA) - x(B, dB) + (useSkill ? s[pa] - s[pb] : 0), d = (1 / (1 + Math.exp(-eta)) - r) * W[gi] * Wn;
       for (const j of tf[A].f) Gr[0][j] += d; for (const j of tf[B].f) Gr[0][j] -= d;
       if (usePairs) { for (const j of tf[A].p) Gr[1][j] += d; for (const j of tf[B].p) Gr[1][j] -= d; }
       if (useSkill) { Gr[2][pa] += d; Gr[2][pb] -= d; }
-      for (const [j, w] of deckVec(A, dA)) Gr[3][j] += d * w; for (const [j, w] of deckVec(B, dB)) Gr[3][j] -= d * w; }
+      for (const [j, w] of deckVec(A, dA)) Gr[3][j] += d * w; for (const [j, w] of deckVec(B, dB)) Gr[3][j] -= d * w;
+      if (TEAMF.length) { const ta = teamVec(A, dA), tb = teamVec(B, dB); for (let k = 0; k < ta.length; k++) Gr[4][k] += d * (ta[k] - tb[k]); } }
     const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
-    for (let k = 0; k < 4; k++) { const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
+    for (let k = 0; k < P.length; k++) { const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
       for (let j = 0; j < a.length; j++) { const gg = g[j] + 2 * L[k] * a[j]; m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg; a[j] -= .03 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8); } } }
   // how sure each number is (Nov 8, step 5 "show how sure the grade is"): the spread a ridge fit implies, 1/(Σ w·p(1−p) + 2λ)
   // over the games it appears in (the diagonal of the curvature; partners' overlap is ignored, so it is checked on later games)
@@ -86,7 +98,7 @@ function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = fals
     for (const [A, B] of games) for (const t of [A, B]) { for (const j of tf[t].f) nb[j]++; for (const j of tf[t].p) nq[j]++; }
     if (EVID_K > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + EVID_K);
     if (EVID_KP > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + EVID_KP); }
-  return {b, q, s, c, x, useSets, vb, vq}; }
+  return {b, q, s, c, T, x, useSets, vb, vq}; }
 function score(model, games, skillToo) { let ll = 0, acc = 0;
   for (const [A, B, r, , pa, pb, , dA, dB] of games) { const eta = model.x(A, dA) - model.x(B, dB) + (skillToo ? model.s[pa] - model.s[pb] : 0), p = 1 / (1 + Math.exp(-eta));
     ll -= r * Math.log(p) + (1 - r) * Math.log(1 - p); acc += (p > .5) === (r === 1) ? 1 : 0; }
@@ -174,7 +186,7 @@ const SUP_K = 6, tested = new Set(), teamSup = new Map();
 const supOf = t => { if (teamSup.has(t)) return teamSup.get(t); const m = teams[t]; let k = 0; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) if (tested.has(m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i])) k++; teamSup.set(t, k); return k; };
 const credit = t => .5 + .5 * Math.min(1, supOf(t) / SUP_K);
 // a team's x the way the page computes it: species + pairs + each member's set effect clamped to its real range
-const xClamp = (t, d) => { let v = 0; for (const j of tf[t].f) v += F.b[j]; for (const j of tf[t].p) v += F.q[j]; if (!useSets || d == null) return v; const has = new Set(deckF[d]);
+const xClamp = (t, d) => { let v = 0; for (const j of tf[t].f) v += F.b[j]; for (const j of tf[t].p) v += F.q[j]; { const tv = teamVec(t, d); for (let k = 0; k < tv.length; k++) v += F.T[k] * tv[k]; } if (!useSets || d == null) return v; const has = new Set(deckF[d]);
   for (const n of teams[t]) { let u = 0; for (const j of (spFeats.get(n) || [])) u += F.c[j] * ((has.has(j) ? 1 : 0) - freq[j]); const r = setRange[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; } return v; };
 // the average tournament team, measured the same way
 if (F) { let n = 0; meanX = 0; for (const [A, B, , , , , , dA, dB] of GF) { meanX += xClamp(A, dA) + xClamp(B, dB); n += 2; } meanX /= n; }
@@ -186,6 +198,8 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
   meanX: +meanX.toFixed(4), v: 3, half: HALF || null, center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
+  // team-wide basics (v6, TEAM_FEATS=1): added to x when the team lacks the basic
+  team: F && TEAMF.length ? Object.fromEntries(TEAMF.map((k, i) => [k, +F.T[i].toFixed(4)])) : {},
   mons: F ? Object.fromEntries(mons.map((n, j) => [n, +F.b[j].toFixed(4)])) : {},
   pairs: F ? Object.fromEntries(pairs.map((k, j) => [k, +F.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)) : {},
   // spread of each Pokémon's and each shipped pair's number (standard deviation, model units), for the grade's likely range

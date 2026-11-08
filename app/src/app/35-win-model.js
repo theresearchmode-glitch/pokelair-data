@@ -41,7 +41,16 @@ function teamX(names,ms){let x=modelX(names);const M=META.model,byN=new Map((ms|
   const megas=names.filter(n=>{const p=byName.get(n);return p&&p.m}).sort((a,b)=>val(b)-val(a));
   for(const n of megas.slice(2))x-=M.mons[n]||0;
   if(ms)for(const m of ms)if(!megas.slice(2).includes(m.p.n))x+=setOne(m);
-  return x}
+  return x+teamBasicsX(names,ms)}
+// team-wide basics (model v6, Deep Check Nov 8): each one's size is learned from real tournament rounds, added when the team
+// lacks it. Sim, Nov 8: a no-Mega team graded 98 while real no-Mega teams win 34%. Move-based ones need the sets (ms).
+function teamBasicsOf(names,ms){if(names.length!==6)return null;const o={noMega:names.some(n=>(byName.get(n)||{}).m)?0:1};
+  if(ms&&ms.length===6){const mv=ms.map(m=>((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(z=>z&&(z.name||z)).filter(Boolean)),has=n=>mv.some(L=>L.includes(n));
+    o.protectLow=mv.filter(L=>L.includes('Protect')).length<=2?1:0;
+    o.noSpeed=has('Tailwind')||has('Trick Room')||has('Icy Wind')||has('Electroweb')||ms.some(m=>/Choice Scarf/.test(m.heldItem||m.item||''))?0:1;
+    o.noFakeOut=has('Fake Out')?0:1}
+  return o}
+function teamBasicsX(names,ms){const T=META.model&&META.model.team;if(!T||!Object.keys(T).length)return 0;const o=teamBasicsOf(names,ms);if(!o)return 0;let x=0;for(const k in T)if(o[k])x+=T[k];return x}
 // tested pairs: how many of the team's 15 pairs real players brought together on 15+ tournament teams (shipped by the model)
 let testedCache={m:null,set:null};
 function testedPairs(names){const M=META.model;if(!M||!Array.isArray(M.tested))return null;if(testedCache.m!==M)testedCache={m:M,set:new Set(M.tested)};let k=0;

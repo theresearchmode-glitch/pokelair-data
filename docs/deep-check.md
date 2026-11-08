@@ -264,3 +264,16 @@ half the spread users of real teams; v2 box builds run Tailwind + Trick Room on 
 **Pair bonuses** (dev models, 6,270 later rounds, compare.mjs): no pairs −0.0001 log-loss / +0.15 pick (no difference);
 pairs shrunk 4× +0.0002 / +0.14 (no difference). Pairs add no accuracy either way. Sim's saved teams (dev models):
 D3 88 / 84 / 87 and d4 75 / 89 / 82 (now / no pairs / shrunk 4×).
+
+## Step 4 · First fix: team-wide basics learned inside the model (Nov 8, branch only)
+model.mjs TEAM_FEATS=1 learns team-level terms from the same tournament rounds; the page adds them in teamX
+(teamBasicsOf / teamBasicsX, 35-win-model.js) when the model ships a `team` block (old models: no change).
+- Learned (full data): **no Mega −0.49, Protect on ≤2 −0.16** (model units). In win chance ≈ −12 and −4 pts, matching the
+  independent broken-team estimates (−14 to −18; −4 to −7). 'No speed control' (+0.04) and 'no Fake Out' (+0.10) came out as
+  small bonuses: left out, the grade never rewards lacking a basic.
+- Later rounds (dev, compare.mjs): no difference in overall accuracy (expected: real teams nearly all have the basics).
+- **Broken-team test now passes for Mega and Protect**: removing the Mega costs −15.0 win pts (was −7.4), little Protect
+  −4.5 (was −0.7). Still too harsh: removing speed control −4.6 / Fake Out −2.8 vs real ≈ 0 (per-Pokémon set features).
+- Pairs: shrinking 4× in the fit barely shrinks well-proven pairs (Basculegion + Kingambit stays big); no pairs at all is
+  equally accurate. Sim's saved teams (full models): live / basics + pairs ÷4 / basics + no pairs:
+  Doubles 1 72 / 72 / 66 · Doubles 2 77 / 74 / 65 · D3 95 / 88 / 81 · d4 69 / 72 / 78.
