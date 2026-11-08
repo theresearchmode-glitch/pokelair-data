@@ -19,7 +19,7 @@ const tsB = t => { if (!tsMemoB) return tsOf(t); const k = t.map(m => m.p.n).sor
    mix. abGradeC: the full grade (with matchups) under the same caution, for the final order. */
 let CAUT_K = .5; const abYMemo = new Map();
 // Phase 2 is a draft until Sim approves it: false keeps today's Build for Me (Nov 8)
-let AB_GRADE_V2 = true;
+let AB_GRADE_V2 = false; // rolled back Nov 8 (Sim: My Box builds read worse; Phase 2 reopened)
 function abY(t) { if (!t || t.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = t.map(m => m.p.n), k = metaVersion + '#' + CAUT_K + '#' + names.slice().sort().join('|');
   if (abYMemo.has(k)) return abYMemo.get(k); let v = null;
   try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = abSd(t, six); v = teamX(names, t) + (six ? six.d : 0) - CAUT_K * sd; } /* judged on the sets the team would get: the most popular tournament sets (Sim, Nov 8) */ } catch (e) {}
