@@ -40,7 +40,10 @@ function* provenBuildGen() {
   const ok = p => p && !isExcl(p) && (all || inBox(p));
   const cands = [];
   // evidence first (Oct 28 audit): a "proven" team needs 3+ players who brought it, or 30+ games when the count is shipped
-  for (const [names, n, wr, g] of RES.proven) {
+  // every real six with a solid record, not only the winners' list (Nov 8, Sim: "it builds a 75/100 team… tells people even we
+  // can't build a good team"): RES.records holds every exact six with 30+ games, winning or not; the grade decides below
+  const seenK = new Set(), pool = [...RES.proven, ...(RES.records || [])].filter(r => { const k = r[0].slice().sort().join('|'); if (seenK.has(k)) return false; seenK.add(k); return true; });
+  for (const [names, n, wr, g] of pool) {
     if (!(n >= 3 || (g != null && g >= 30))) continue;
     const ps = names.map(x => byName.get(x)); if (ps.some(p => !p)) continue;
     if (ui.abLock && !names.includes(ui.abLock)) continue; // "Build around it": only real teams that ran this Pokémon
@@ -64,8 +67,10 @@ function* provenBuildGen() {
   // few players ran it, plus a little for more players; readiness only fills a missing slot and breaks near-ties
   const shrunk = c => { const k = 4; return (c.wr * c.n + (RES.base || .5) * k) / (c.n + k); };
   let scored = cands.map(c => ({...c, s: shrunk(c) + .006 * Math.log2(1 + c.n) - (c.missing ? .05 : 0) - (c.ps.filter(p => p.m).length !== goal ? .015 : 0)})).sort((a, b) => b.s - a.s);
-  if (useTSPick()) { scored = scored.slice(0, 15); for (const c of scored) { yield; c.t = fill(c); c.ts = c.t && c.t.length === 6 ? tsB(c.t) : null; }
-    scored.sort((a, b) => (b.s + .0004 * (b.ts ?? 50)) - (a.s + .0004 * (a.ts ?? 50))); }
+  /* ranked by the grade (Nov 8): a raw win rate still carries its players' skill, so the winners' list alone gave a 45 first; the
+     grade takes skill out and is what My team shows. The 40 best-evidenced candidates are graded; evidence breaks ties. */
+  scored = scored.slice(0, 40); for (const c of scored) { yield; c.t = fill(c); c.gr = c.t && c.t.length === 6 && typeof gradeTeam === 'function' ? gradeTeam(c.t) : null; }
+  scored.sort((a, b) => ((b.gr ?? -1) - (a.gr ?? -1)) || (b.s - a.s));
   const out = [];
   for (const c of scored) { if (out.length >= 3) break; const t = c.t !== undefined ? c.t : fill(c); if (!t || t.length !== 6) continue;
     if (wxIdle(t).length) continue; /* same weather rule as built teams: a setter comes with a teammate that uses it (sweep, Oct 31) */
