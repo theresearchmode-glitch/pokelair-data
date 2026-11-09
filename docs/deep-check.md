@@ -516,3 +516,18 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   team alone 53.7%, both 60.3%. (Team here = Pokémon only; the site's full grade picks 55.8% on its scoreboard.) Skill matters
   about twice as much as the six, which is why team gains are small next to game-to-game noise; it does not explain why
   suggestions help weak teams and not 60-85 ones (skill-adjusted test above).
+- Bigger run (measured, sugg-real.mjs on all 1,207 real teams with 10+ games; 408 Suggestion 1s with 30+ games both sides): the gap
+  is confirmed. Under 60: promises +4.8, real +2.6 (+1.8 to +3.5, 218). 60-85: promises +3.2, real -0.2 (-1.1 to +0.7, 169).
+  85+: promises +1.9, real -2.3 (-5.3 to +0.9, 21).
+- One vs two swaps on the bigger run: 60-85 one swap -0.0 (86), two swaps -0.4 (83): the earlier lead does not hold.
+- Matchups (same run): 60-85 suggestions that raise the matchup part -0.8 (50) vs unchanged +0.5 (28) vs lower -0.1 (91); under
+  60 raising it did worse (+0.9 vs +3.6). Matchup gains in suggestions don't show up in real results.
+- Real one-swap pairs (measured, experiments/real-swaps.mjs; 1,748 pairs of real sixes sharing 5 Pokémon; values + skill learned
+  on one half of the tournaments, judged on the other): the value gap picks the better six 55.1% (50.9 to 58.8); weakest third
+  of shared fives 55.3%, middle 56.6%, strongest 53.7% (all ranges ~±6). By size of the value gap: smallest quarter 51.6%
+  (43.8 to 59.9), others 55.9-57.0%.
+- Working explanation (partly measured, not proven): the grade can tell a weak Pokémon from a strong one, but not one strong
+  Pokémon from another. Weak teams get weak-for-strong swaps (real gains); 60-85 teams get strong-for-strong swaps (Rillaboom,
+  Gholdengo, Incineroar out; Kingambit, Basculegion in), where the grade's small value differences are about a coin flip, yet the
+  grade adds them up into +18 grade points. Next check: the same real-swap test with the site's own model (model.mjs trained on
+  one half), and the size of the 60-85 suggestions' value gaps.
