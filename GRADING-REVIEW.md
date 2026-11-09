@@ -63,6 +63,23 @@ Model training: `model.mjs` (repo root), output `out/model.json`.
 
 A suggestion's "+X" is simply score(after) − score(before); applying a suggestion gives exactly that score (tested).
 
+**Letters today.** Internally the score still has letters on 10-point bands (`CH.grade`: A 90+, B 80s, C 70s, D 60s, F under 60);
+they drive the band colours and the band words players see. Players see the number + band word, not the letter. A player's own
+team keeps its last-seen band until the score crosses the line by 1.5 points (`CH.STICKY`), so it doesn't flicker on a line.
+Under the score: a small rank line ("top N% of tournament teams") and an 80% likely range from the model's uncertainty
+(`CH.rangeOf`, Pokémon uncertainty `monSd`).
+
+**Other numbers the team page shows** (separate from the score):
+- **Matchups** vs the 30 most common threats, each one of Beats it / Handles it / Shaky / No answer, from damage calcs both
+  ways with *guessed* stat spreads (no stat points exist in any data). Shown as a count: "Ready for 24/30 top threats".
+- Under each threat: **Real games: Favoured / Even match / Unfavoured**, from the learned head-to-head values (`ctrVal`,
+  `model.json` `ctr`), threshold ±1.5 points.
+- **Team checks**: 4 basics counted (Mega, Protect, no major weak spot, weak spots spread out) and 3 notes not counted (speed
+  control, spread damage, lead support).
+- **Pokémon ratings** ("S tier", "A tier"…) are a separate system for single Pokémon (Ratings page, top-cut evidence,
+  `topcut.mjs`, checked by `stress-ratings.mjs`, `tier-overlap.mjs`, a live track record `track.mjs`). No open problems are
+  logged for it in our notes; it is not the subject of this review.
+
 Where real tournament sheets land (10,575 sheets): 10% 70.2 · 25% 74.9 · median 80.0 · 75% 84.3 · 90% 87.8 · 98% 92.2.
 
 ---
@@ -95,6 +112,34 @@ winner 59.5%, team alone 53.7%, both 60.3% (logit spread 0.90 vs 0.46). On the l
 ---
 
 ## 5. The struggles, in order
+
+### 5.0 How the number on screen has changed, and why (letters, 0–100, ranks)
+
+The same tension keeps coming back: **a number that's honest moves very little; a number that moves a lot over-promises.**
+Every display we've tried sits somewhere on that line (dates are 2026; commits in `git log`).
+
+| When | What players saw | Why we moved on |
+|---|---|---|
+| Before Nov 7 | "One grade out of 100": hand-weighted readiness + checklist cuts + real record blended in | Parts barely predicted wins (51.8%); signal came mostly from the six's own record (circular). §5.1 |
+| Nov 7–8 (Grade v2) | Expected win rate vs today's tournament field, e.g. "Win rate 52% → 54%"; letter by rank (A top 10%, B next 20%, C middle 40%, D next 20%, F bottom 10%) | The owner: tiny win-rate changes **felt arbitrary**; nobody feels a +2% |
+| Nov 8 | "Team rating" 0–100 = **rank** among real tournament teams ("C · 43 / 100"; suggestions "C → B · 43 → 79"), later shown as "Top 23%" | Felt good, but **exaggerated**: a small strength change jumps many teams (median **+17 to +19 points** shown on suggestions for mid teams, no real gain); swung day to day (typical 14.6 points, letter changed for 60% of teams on one model update) |
+| Nov 8 | Plus/minus letters on the rank: A+ 97, A 93, A− 90, B+ 85, B 78, B− 70, C+ 55, C 40, C− 30, D+ 23, D 16, D− 10, F | Finer letters than the data could separate (below) |
+| Nov 9 (now) | **Strength Score** = 80 + 122 × (win chance − 50%); 10-point bands with words; rank as small print | Steadier (typical daily move 3.5) and honest about size; but suggestions still show ~2.5× the real gain (§5.7) |
+
+**Letters never separated cleanly in the middle** (later games, each version measured):
+- Nov 8 baseline: A 55.8 · B 52.9 · **C 53.0** · D 49.8 · F 46.0 — B and C not separated.
+- Nov 8 every side once: A 54.3 · B 53.4 · C 47.2 · D 44.7 · F 37.2 — A and B 0.9 pts apart vs the 4.8 the grade expected.
+- Older run: C 51.4% vs D 52.2% — could not be told apart.
+- Top-cut letters were "too lenient": in the live grade A and B teams did exactly as well as each other (55.5% / 55.5%).
+- Strength Score bands (table in §4) are all in order, but **5-point bands overlap** (80–84 vs 85–89); only ~10-point bands are
+  clearly different. That's why bands are 10 wide.
+- Out of 10 was considered and dropped: 80% of real sheets land 70–88, so nearly every team would read 7, 8 or 9.
+
+**The top-cut bar kept moving** (share of top-4 teams graded B+/70+): 71% → 76% (after "unknown sets = average build") → 80% →
+72% the next day. Causes found: (1) the most recent 58 teams rotate (same grade read 72–81% day to day); (2) about 12 points of
+an earlier 86% came from teams' **own wins** (circular); (3) typed-in teams were graded with in-game default sets that miss
+tournament sets (a 9-1 event winner graded 47 until real sheets were used). Now: 187/188 top-4 teams score 70+, but 70 on the
+Strength Score is about the bottom quarter of real teams, so it's a much easier bar than the old one.
 
 ### 5.1 The early grade was a rank, and it mostly measured the wrong things (Nov 7)
 The first grade (`grade-check.mjs`) leaned on hand-set "readiness" and a checklist; on later games readiness alone picked 51.8%,
@@ -192,6 +237,54 @@ Adding learned matchups (`CTR_W` in `17-matchup-threats-teams.js`, off by defaul
 once on 4,031 later games: +2.0 (±1.8) vs +0.8 (±1.8) today. Right direction, not beyond chance; the lead got worse
 (2.5 → 0.9). Not shipped; re-judge on more games.
 
+### 5.9 Other known problems in the parts of the score
+- **Re-weighting doesn't help** (`grade-fit.mjs`, Nov 7): 7,056 dial settings; each half of the games picked opposite dials and
+  neither beat the hand-set ones on the other half. Gains must come from better inputs, not dials.
+- **More data didn't help either** (`board.mjs`): adding 2,421–20,000 ladder games, 600 training steps, a finer shrink grid: none
+  beat the shipped model beyond noise. The finer grid looked better on the model's own validation slice and worse on later games.
+- **Matchups / readiness**: damage calcs use guessed stat spreads (no stat points in any data). Removing readiness makes
+  predictions worse beyond chance, doubling its weight makes no difference, so it stays at a small weight (0.003). It is the
+  only check that adds beyond the Pokémon (+1.05 per 10 points), yet on its own it barely predicts (51.8%).
+- **Teams with rarely used Pokémon** (<150 earlier team-games): the score points the right way but is **too timid** (needs ~1.5×
+  bigger edges, 95% 1.15–2.1). Part of it is the evidence pull n/(n+1000); removing it improves later-game log-loss by 0.0009
+  (0.0002–0.0016) but then a made-up rare six (Scrafty, 25 teams) scores 89. Since Build for Me chases the highest score, noisy
+  high values on rare Pokémon are a real risk, so the pull stays (K=100 → 83, 300 → 75, 1000 → 62). Open: a per-Pokémon fix
+  instead of one dial.
+- **Too sure for one game**: the model learned from rounds, 86.5% best of 3. Best-of-1 rounds want 0.6× the confidence, ladder
+  0.8×, sheet games 1.02×; combined ≈0.87 → one-game confidence `ONE_GAME_K` 0.85 in Battle.
+- **The six's own record** (τ 0.1): adds nothing beyond chance (log-loss −0.0001, −0.0003 to +0.0001); kept because the owner's
+  rule is never remove functionality. A stronger version (τ 0.35) is clearly worse. A six's record can belong to one strong
+  player (a team at 72% over 65 games was one player at 77% over 52).
+- **Sets**: real signal (held out: 0.6853 without, 0.6813 with). Unknown sets count as an average build (beat grading the exact
+  popular set: 55.3% vs 54.5–54.8%).
+- **Benched Pokémon get full credit**: the often-brought half of a six predicts winners (+0.48 ±0.26), the rarely brought half
+  nothing (−0.04 ±0.29); bring-rate weighting +1.5 ±1.7 (not proven, not shipped).
+- **Pokémon that look inflated** (from bench analysis): Venusaur, Kingambit, Delphox, Sinistcha, Aegislash, Mawile.
+- **Trick Room blind spot (candidate)**: Trick Room +2.2 (+0.4 to +3.9) beyond the grade, one of 7 roles tested, so
+  pre-registered for the sealed set. "Trick Room with fewer than 2 slow teammates" as a penalty made predictions worse.
+- **Speed control / Fake Out**: removing them drops the score −4.6 / −2.8 win pts while real results show ≈0; but only ~8% of
+  teams lack speed control, so it can't be measured. Kept (owner: speed control must be worth something).
+- **Two Megas**: 2-Mega sides beat 1-Mega sides by +3.2 ±2.6 beyond the grade; only one can Mega per game, current rule about right.
+- **Build for Me** (picks teams by the score): early versions overshot real neighbours by +5 to +11 win pts; now within −0.5
+  (box, with a Mega) to +3.7 (whole roster). It ranks by a *cautious* score (strength − 0.5 × uncertainty). Owner's blind review
+  picked the new Build for Me team in only 3 of 10 cases (preferring a Rillaboom + Incineroar support core or a Trick Room plan).
+  Lesson that shaped our rules: it was "checked" with the same grade that picked its teams, so it passed while the owner found it worse.
+- **Suggestion variety**: Suggestion 1 was the same few Pokémon (Kingambit 20%, Basculegion 18%, Farigiraf 10%; top 3 = 48%).
+  Ties within 2 points are now shuffled per team (top 3 = 39%); a 3-point window cut the real gain, so 2 it is. Target <25% not met.
+- **What the score can't see at all**: which four get brought, synergy inside the four, stat points, player familiarity, pace,
+  pivoting, "island" Pokémon, a team collapsing without one Pokémon. Physical/special mix and 3+ of one type: measured only
+  alone (help/hurt), carried by the Pokémon once those are counted.
+
+### 5.10 Testing mistakes we made (so you can trust, and re-check, the rest)
+- Build for Me checked with the grade that built it (above).
+- Tests ran on data without complete sets for a day, so GitHub went red on the first real data (rows now name the set they test).
+- Walk-forward fitted its stretch on the week being scored plus one sealed event (fixed; each week now trains exactly like production).
+- A scoreboard row used τ 0.35 while the site uses 0.1; an "overconfident at the top" claim came from that row and was wrong.
+- I claimed the grade cut strength for missing speed control (structCredit); the code reads the strength *before* those cuts, so
+  they never affected the score.
+- Two check scripts kept reading the old letters after the switch to the Strength Score and turned CI red (`experiments/ci-local.sh` now runs everything first).
+- "Weak-for-strong swaps work, strong-for-strong don't" was stated as the reason for §5.7 and then failed when tested swap by swap.
+
 ---
 
 ## 6. Open questions where fresh eyes would help most
@@ -207,6 +300,11 @@ once on 4,031 later games: +2.0 (±1.8) vs +0.8 (±1.8) today. Right direction, 
    synergy inside the four, stat points, player familiarity with a Pokémon.
 5. **Speed control**: experts and top players say it matters; real data can't show it because nearly everyone runs it. How
    should a score treat factors like that?
+6. **Letters/bands in the middle**: 70s vs 80s are clearly different, but finer steps aren't. Is there a display that feels
+   like progress without implying precision we don't have?
+7. **Rarely used Pokémon**: how to stop the score being too timid on them without letting noisy high values fool Build for Me?
+8. **Pending checks**: the sealed set (events from Nov 9, untouched) gets one final look around Nov 16–23: the Strength Score,
+   the Trick Room candidate, and the Battle four-pick re-test.
 
 ## 7. How to reproduce
 
