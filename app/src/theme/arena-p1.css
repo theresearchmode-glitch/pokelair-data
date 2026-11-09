@@ -436,6 +436,9 @@
 @A #chThrTop .chtiles .chtile::before,@A #chThrTop .chtiles .chtile::after{display:none!important}
 /* "+5 points ready": a tinted tag, no outline */
 @A [data-pane="report"] .chsug .dl{border:0!important;border-radius:var(--ar-r-s)!important;padding:4px 8px!important;font:700 15px var(--ar-body)!important;background:color-mix(in oklch,var(--ar-green) 16%,transparent)!important;color:var(--ar-green-ink)!important}
+/* Different option (Nov 9): neutral, never the green "better" colour */
+@A [data-pane="report"] .chsug .dl.diffopt{background:color-mix(in oklch,var(--ar-ink) 8%,transparent)!important;color:var(--ar-ink-2)!important}
+@A :is([data-pane="coverage"],#chScout,[data-pane="report"] .chparts) .tsd.diffopt{color:var(--ar-ink-2)!important}
 @A [data-pane="report"] .chsug .dl.dn{background:color-mix(in oklch,var(--ar-pink) 14%,transparent)!important;color:var(--ar-pink-ink)!important}
 /* base stats take the Pokémon's own type colours */
 @A #lairSheet .lstr>i>em{background:linear-gradient(in oklch 90deg,var(--ar-ta,var(--ar-sec)),var(--ar-tb,var(--ar-ta,var(--ar-sec))))!important}
