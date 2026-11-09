@@ -99,7 +99,9 @@ One name per idea, everywhere on the site:
 
 ## Focus and honesty (Sim, Nov 9)
 After Claude's honest review, Sim agreed:
-- One thing at a time: at most ONE grade/model change and ONE site feature in progress. Finish (tested, reviewed, live or
+- No new features until what we have is finished and refined (Sim, Nov 9). Work = finishing, fixing and refining what
+  exists (Team Sheet, share image, Shady Paw's one spot on the Preview, the grade) and the process fixes.
+- One thing at a time: at most ONE grade/model change and ONE site item in progress. Finish (tested, reviewed, live or
   dropped) before starting the next. Small batches. Don't skip ahead of an open step on the Plans page.
 - Every claim to Sim is labelled: **measured** (with the number and the test) or **my guess, not yet tested**. No conclusions
   from partial runs.
