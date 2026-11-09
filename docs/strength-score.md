@@ -209,3 +209,6 @@ sugg-real.mjs on the Strength Score build, 400 real teams with 10+ games (whole 
   Mega Floette 7%; the top 3 Pokémon are 48% of every Suggestion 1. 43 different Pokémon appear across the top 3 suggestions.
 - Honesty: Suggestion 1 shows +4.6 score points on average (≈ +3.8 win-chance points); the closest real teams' win rate rises +1.5
   (95% 0.6 to 2.4). Real, but the shown gain is about 2.5× too big. Suggestions 1-3: shown +3.8, real +1.0 (0.3 to 1.6).
+- Variety v1 (ties within 2 score points, fixed shuffle per team), same 400 teams: top 3 share of Suggestion 1 48% → 39% (Kingambit
+  17%, Basculegion 13%, Farigiraf 10%); 32 different Pokémon as Suggestion 1 (was 24). Real gain kept: Suggestion 1 +1.2 (0.4 to
+  2.1) vs +1.5 before (ranges overlap). Shown gain median 4.2 → 3.6. Target (<25%) not reached; trying a 3-point window.
