@@ -10,9 +10,10 @@ const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const NG = +(process.argv[2] || 12000);
 const M = rd('matches.json'), L = rd('limitless.json');
-const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
+const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.THR_MODEL ? JSON.parse(fs.readFileSync(process.env.THR_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
 const teams = M.teams.map(k => k.split('|'));
-const G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6).slice(-NG);
+/* THR_FROM=YYYY-MM-DD (monthly check, Nov 9): only games from that date (scored by a model trained before it) */
+const G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6 && (!process.env.THR_FROM || M.events[g[3]][1] >= process.env.THR_FROM)).slice(-NG);
 const need = [...new Set(G.flatMap(g => [g[0], g[1]]))];
 const page = ROOT + `app/thr-${process.pid}.html`;
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
@@ -42,5 +43,6 @@ function fit(cols) { const X = rows.map(r => [1, r.dx, ...cols.map(c => r[c])]),
   return {w, se: inv.map((r, j) => Math.sqrt(r[j]))}; }
 const pts = c => ((sig(c) - .5) * 100);
 const f1 = fit(['dm']); console.log(`one level better on average vs the threats they actually brought (e.g. shaky → handled): ${pts(f1.w[2]) >= 0 ? '+' : ''}${pts(f1.w[2]).toFixed(1)} pts of win chance (±${pts(1.96 * f1.se[2]).toFixed(1)}, 95%), on top of team strength`);
+if (process.env.THR_OUT) fs.writeFileSync(process.env.THR_OUT, JSON.stringify({games: G.length, level: pts(f1.w[2]), level95: pts(1.96 * f1.se[2])}));
 const f2 = fit(['dbad']); console.log(`each extra shaky/unanswered threat the opponent brings: ${pts(-f2.w[2]) >= 0 ? '−' : '+'}${Math.abs(pts(f2.w[2])).toFixed(1)} pts (±${pts(1.96 * f2.se[2]).toFixed(1)})`);
 console.log(`(team strength gap coefficient ${f1.w[1].toFixed(2)}; 1.0 = the model's own scale)`);

@@ -1,0 +1,31 @@
+name: Monthly accuracy check
+# Foundation Phase 4 (Nov 9): on the 1st of each month, a model trained only on games before the last 30 days scores those 30
+# days the way the site works (grade, Battle's one-opponent chance, Threats verdicts). A failed check fails this run, and
+# GitHub emails the owner. Results are committed to out/monthly.json. See monthly-check.mjs for the limits.
+on:
+  schedule:
+    - cron: '23 10 1 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: node app/build.mjs
+      - run: node monthly-check.mjs
+      - name: Commit the result
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name "pokelair-bot"
+          git config user.email "pokelair-bot@users.noreply.github.com"
+          git add out/monthly.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "Monthly accuracy check $(date -u +%F)"
+          for i in 1 2 3; do git pull --rebase origin main && git push && exit 0; sleep 10; done
