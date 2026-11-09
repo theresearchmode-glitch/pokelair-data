@@ -459,3 +459,18 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   (Splitting by the "before" win rate is biased by regression to the mean; not used.)
 - Open problem, d5-sugg stays open: for mid-strength teams suggestions show big grade gains that real results don't back.
   My guess, not tested: picking the best of hundreds of swaps by the grade picks the swaps the grade overrates (as with Build for Me).
+
+### Nov 9 (night): which team checks help win? Three become notes (measured, experiments/checks-real.mjs)
+- Sim: "fake out is not something that is 100% essential for a team". The site's own proChecks on all 10,575 real team sheets,
+  38,513 games; one logistic fit of all checks plus each player's skill, 100 resamples by tournament (win-chance points):
+  ready for the top threats +3.5 (2.4 to 4.7), Mega +1.3 (0.6 to 1.6), weak spots spread out +1.3 (0.4 to 2.7), no major weak
+  spot +0.9 (0.1 to 2.3): help. Speed control -0.6 (-1.7 to +0.5), spread damage +0.1 (-1.1 to +1.4): no measurable benefit.
+  Lead support -1.6 (-2.6 to -0.4): slightly worse. Items: not testable this way (0 sheets with a problem).
+- What it can't see: whether these matter for the teams our tools build, or effects smaller than the ranges.
+- Sim approved: the three become notes. Shown under "Notes, not counted" with a neutral "i", not counted in "X of N checks",
+  never a fail mark; suggestions no longer add "fix a missing check" options for them, and a suggestion may now drop one.
+- CORRECTION (my earlier claim): I told Sim this was a grade change because structCredit (35-win-model.js) cuts strength for a
+  missing speed control / lead support / spread damage. Checked in the code and measured: the grade (CH.strengthOf) reads x0, the
+  strength BEFORE structCredit; structCredit only feeds winVsField/winVs, which nothing on the site calls. The exact-site
+  scoreboard with the penalty removed gave byte-identical predictions on all later games. So the grade is unchanged; this is a
+  site change only (counts, suggestions, Build for Me tie-breaks).

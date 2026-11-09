@@ -97,13 +97,18 @@ function proGrades(ms,useA){const th=metaThreats();if(!ms.length||!th.length)ret
   return {dg,og,se2,danger,dp,thin,full:ms.length===6}}
 // Winning-team checklist: plain yes/no checks for what recent event winners usually have (rates measured live, see proLine).
 // No check predicts wins on its own; they flag gaps, not quality.
+/* Notes, not checks (Sim, Nov 9: "fake out is not something that is 100% essential for a team"). experiments/checks-real.mjs ran
+   these checks on all 10,575 real team sheets: with player skill taken into account, passing speed control (-0.6 points, range
+   -1.7 to +0.5), spread damage (+0.1, -1.1 to +1.4) or lead support (-1.6, -2.6 to -0.4) didn't help teams win. They're still
+   shown, as notes: not counted in "X of N checks", never a fail mark, and suggestions don't chase them. */
+const CK_NOTE='Optional: in 38,513 real games, with player skill taken into account, teams with it won no more often.';
 function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms,useA);const a=analyze(playForm(ms),useA),sh=typeShape(a),out=[];
   const fullMs=ms.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves});
   {let gp=null;try{gp=gamePlan(fullMs)}catch(e){}const sp=gp&&gp.rows.find(r=>r.k==='speed')||{};
-    out.push({k:'speed',ok:sp.st==='ok',part:sp.st==='part',label:'Speed control',have:(sp.who||'')+(sp.st==='part'?' (only some sets run it)':''),miss:'No reliable way to change turn order: add Tailwind or Trick Room (or a weather speed core). Icy Wind and Electroweb help, but only as backup.',pro:proLine('speed','97% of event winners')});
-    const su=spreadUsers(fullMs);out.push({k:'spread',ok:su>=1,label:'Spread damage',have:su+' Pokémon with moves that hit both foes'+(su===1?' (most teams have 2)':''),miss:'No moves that hit both foes at once.',pro:proLine('spread','97% of event winners')});
+    out.push({k:'speed',note:true,ok:sp.st==='ok',part:sp.st==='part',label:'Speed control',have:(sp.who||'')+(sp.st==='part'?' (only some sets run it)':''),miss:'No Tailwind, Trick Room or weather speed core.',pro:CK_NOTE});
+    const su=spreadUsers(fullMs);out.push({k:'spread',note:true,ok:su>=1,label:'Spread damage',have:su+' Pokémon with moves that hit both foes'+(su===1?' (most teams have 2)':''),miss:'No moves that hit both foes at once.',pro:CK_NOTE});
     const fi=fullMs.filter(m=>m.ability==='Intimidate'||relMove(m,ROLE.fake)[0]>=.3||relMove(m,ROLE.redir)[0]>=.3).map(m=>m.d);
-    out.push({k:'fake',ok:fi.length>0,label:'Lead support',have:fi.join(', ')+' (Fake Out, Intimidate or redirection)',miss:'No Fake Out, Intimidate, Follow Me or Rage Powder to protect your attackers.',pro:proLine('fake','89% of event winners')});
+    out.push({k:'fake',note:true,ok:fi.length>0,label:'Lead support',have:fi.join(', ')+' (Fake Out, Intimidate or redirection)',miss:'No Fake Out, Intimidate, Follow Me or Rage Powder.',pro:CK_NOTE});
     const mc=megaCount(ms);if(opts&&opts.itemsUnknown&&!mc){const can=ms.filter(m=>ROSTER.some(q=>q.m&&q.b===m.p.b)).map(m=>m.d);
       out.push({k:'mega',skip:true,ok:false,label:'Mega Evolution',have:'',miss:can.length?`Held items aren't listed for this team, so we can't tell which Pokémon Mega Evolved. Could Mega: ${can.join(', ')}.`:'Held items aren\'t listed, and none of these Pokémon can Mega Evolve.',pro:'Not counted'})}
     else out.push({k:'mega',ok:mc>=Math.min(1,megaGoal())||megaGoal()===0,label:'Mega Evolution',have:mc+' Mega'+(mc===1?'':'s')+(mc>1?' (you can only Mega one per game)':''),miss:'No Mega.',pro:proLine('mega','100% of event winners (81% bring 2)')});}
@@ -117,8 +122,8 @@ function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms
   // items: Item Clause and items that can't work here (a row only when there's a problem, so clean teams keep the same checks)
   {let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}if(ip.length)out.push({k:'items',ok:false,label:'Items work',have:'',miss:ip.map(x=>x.why).join(' '),pro:'VGC rule: each item once per team'})}
   // partly there (Trick Room with too few slow attackers, priority instead of speed control…) shows as ~ and doesn't count as passed
-  const cnt=out.filter(x=>!x.skip);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
-const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
+  const cnt=out.filter(x=>!x.skip&&!x.note);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
+const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.note&&!x.ok?'<span class="ck note" aria-label="note">i</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
 // same item assignment as the open team (members()), so a saved team shows the same checks as when it's open
 function teamRating(slots){const m0=slots.map(memberOf).filter(Boolean),ms=typeof assignItems==='function'?assignItems(m0):m0;return {ms,a:analyze(ms,true)}}
 // toast(text, true) adds an Undo button (and stays up longer) for changes that replace team members

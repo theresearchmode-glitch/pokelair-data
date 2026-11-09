@@ -175,7 +175,7 @@ function gradeNames(names, itemsKnown) {
   } catch (e) { g = null; }
   if (ttGradeCache.size > 200) ttGradeCache.clear(); ttGradeCache.set(key, g); return g;
 }
-const miniGrades = c => c ? `<span class="minick${c.pass === c.n ? ' all' : ''}" title="${esc(c.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : x.part ? '~ ' : '✗ ') + x.label + (x.skip ? ' (items not listed)' : '')).join('\n'))}"><b>${c.pass}/${c.n}</b> checks${c.pass < c.n ? `<i>missing: ${esc(c.items.filter(x => !x.ok && !x.skip).map(x => x.label.toLowerCase()).join(', '))}</i>` : ''}${c.items.some(x => x.skip) ? '<i class="unkn">Mega not counted: items not listed</i>' : ''}</span>` : '';
+const miniGrades = c => c ? `<span class="minick${c.pass === c.n ? ' all' : ''}" title="${esc(c.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : x.note ? 'note: ' : x.part ? '~ ' : '✗ ') + x.label + (x.skip ? ' (items not listed)' : '')).join('\n'))}"><b>${c.pass}/${c.n}</b> checks${c.pass < c.n ? `<i>missing: ${esc(c.items.filter(x => !x.ok && !x.skip && !x.note).map(x => x.label.toLowerCase()).join(', '))}</i>` : ''}${c.items.some(x => x.skip) ? '<i class="unkn">Mega not counted: items not listed</i>' : ''}</span>` : '';
 // the raw source line is written for the data log; say it in plain words when it has the usual shape
 function ttSourceText(src) { src = String(src || ''); const on = src.match(/top (\d+) of Reg [A-Z]-[A-Z] events with (\d+)\+ players/), off = src.match(/official events \(top (\d+)\)/);
   if (!on) return src; return `Top ${on[1]} from online tournaments with ${on[2]}+ players${off ? `, top ${off[1]} from official events` : ''}`; }
@@ -191,10 +191,10 @@ function renderTopTeams() {
   el.innerHTML = yours + sections.map(sec => { const all = d.teams.map((t, k) => ({t, k})).filter(x => x.t.section === sec), cap = ui.ttMore[sec] ? all.length : 5;
     return `<h3 class="lbl" style="margin:8px 0 2px">${esc(sec)} <span class="vsub">${all.length}</span></h3>` + all.slice(0, cap).map(({t, k}) => {
     const confirm = ui.ttConfirm === k;
-    const g = gradeNames(t.mons), miss = g ? g.items.filter(x => !x.ok && !x.skip).map(x => x.label.toLowerCase()) : [];
+    const g = gradeNames(t.mons), miss = g ? g.items.filter(x => !x.ok && !x.skip && !x.note).map(x => x.label.toLowerCase()) : [];
     return `<div class="plan ttcard"><div class="ttwho"><div class="pt">${esc(t.player)} <span class="vsub">${esc(t.record)}</span></div><div class="t2">${esc(t.event)}</div></div>
       ${teamGrid(t.mons)}
-      <div class="ttmeta">${g ? `<span class="ttck${g.pass === g.n ? ' all' : ''}${miss.length ? ' wide' : ''}" title="${esc(g.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : '✗ ') + x.label).join('\n'))}"><b>${g.pass}/${g.n}</b> checks${miss.length ? ` · missing ${esc(miss.join(', '))}` : ''}</span>` : ''}<span class="archchips">${archChips(teamPlanLabel(t.mons))}</span></div>
+      <div class="ttmeta">${g ? `<span class="ttck${g.pass === g.n ? ' all' : ''}${miss.length ? ' wide' : ''}" title="${esc(g.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : x.note ? 'note: ' : '✗ ') + x.label).join('\n'))}"><b>${g.pass}/${g.n}</b> checks${miss.length ? ` · missing ${esc(miss.join(', '))}` : ''}</span>` : ''}<span class="archchips">${archChips(teamPlanLabel(t.mons))}</span></div>
       <div class="row evbtns">${confirm ? `<span class="inline-confirm" style="color:var(--ink)">Replace your current team?</span><button class="btn sm primary" type="button" data-ttload="${k}">Replace</button><button class="btn sm" type="button" data-ttx="1">Cancel</button>`
         : `<button class="btn sm" type="button" data-ttask="${k}">Load team</button><button class="linkbtn" type="button" data-ttvs="${k}">Practice against</button><button class="linkbtn" type="button" data-cxgo="cur|t:${k}">Compare</button>${sdBtn('tt:' + k)}`}</div></div>`; }).join('')
       + (all.length > cap ? `<button class="btn ttmore" type="button" data-ttmore="${esc(sec)}">Show ${all.length - cap} more</button>` : ''); }).join('');

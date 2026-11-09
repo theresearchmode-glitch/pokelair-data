@@ -275,7 +275,7 @@ function* planFixesG(ms,pool,useA,opts){
      meets it, even on a high-grade team where nothing raises the grade, as long as the cost is 3 grade points or less. The
      honest grade change shows on the card, with the check it fixes and its cost written out. */
   if(full){let CK0=null;try{CK0=proChecks(ms,true)}catch(e){}
-    const unmet=CK0?CK0.items.filter(x=>!x.skip&&!x.ok&&x.k!=='items').map(x=>x.k):[];
+    const unmet=CK0?CK0.items.filter(x=>!x.skip&&!x.ok&&!x.note&&x.k!=='items').map(x=>x.k):[];
     for(const k of unmet){if(out.some(pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}}))continue;
       const tsOK=pl=>tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-8;/* same readiness floor as every other plan (Phase 3 gates, Nov 9) */
       const meets=pl=>{if(!tsOK(pl))return false;try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}},best=a=>a.sort((x,y)=>(planGrade(y)??0)-(planGrade(x)??0)||x.score-y.score)[0];

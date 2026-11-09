@@ -106,7 +106,7 @@ function render(){
   const RDf=ms.length?prepOf(ms):null,RDd=RDf?{over:RDf.rows.filter(r=>r.losers.length>=3),hit:RDf.rows.filter(r=>r.rows.some(x=>x.du&&x.du.nM<=2)).length,noHit:RDf.rows.filter(r=>!r.rows.some(x=>x.du&&x.du.nM<=2)).sort((x,y)=>y.t.w-x.t.w)}:null;
   $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Team checks${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
      <div class="t2">What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. A ~ means only partly there, and doesn't count as passed.</div>
-     ${CK?`<ul class="cklist">${CK.items.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')}</ul>`:''}`;
+     ${CK?(L=>`<ul class="cklist">${L(CK.items.filter(x=>!x.note))}</ul>${CK.items.some(x=>x.note)?`<div class="cknotes"><b>Notes, not counted</b><span>In 38,513 real games, with player skill taken into account, teams with these won no more often.</span></div><ul class="cklist ckn3">${L(CK.items.filter(x=>x.note),1)}</ul>`:''}`)((a,nt)=>a.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro&&!nt?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')):''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
      <div class="vsub">${ms.length}/6 Pokémon${RDd?` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length?` (${RDd.over.slice(0,3).map(r=>esc(r.t.d)).join(', ')}${RDd.over.length>3?` and ${RDd.over.length-3} more`:''})`:''}`:''}</div></div>
@@ -157,7 +157,7 @@ function render(){
 // real results. Facts only: no win chance, no prediction (Oct 28).
 function renderVerdict(ms,a,PG,CK){
   const el=$('verdict');ui.vProven=false;ui.vsum=null;if(!el)return;if(!ms.length){el.innerHTML='';return}
-  const n=ms.length,miss=CK?CK.items.filter(x=>!x.ok&&!x.skip):[];
+  const n=ms.length,miss=CK?CK.items.filter(x=>!x.ok&&!x.skip&&!x.note):[];
   const rows=[];let best=null;
   // a real tournament team with 5+ of these six, brought by 3+ players (one player's team is a result, not a pattern)
   if(n>=5&&RES&&Array.isArray(RES.proven)){const names=new Set(ms.map(m=>m.p.n));

@@ -719,6 +719,13 @@
 @A [data-pane="report"] .chparts .ck.ok{background:#16693B!important;color:#fff!important}
 @A [data-pane="report"] .chparts .ck:is(.part,.mid){background:#F2B705!important;color:#16141A!important}
 @A [data-pane="report"] .chparts .ck:is(.no,.bad,.miss){background:#C41E35!important;color:#fff!important}
+/* notes, not checks (Nov 9): neutral "i" mark under their own small label, after the counted checks */
+@A [data-pane="report"] .chparts .ck.note{font-style:italic!important;font-family:Georgia,serif!important}
+@A [data-pane="report"] .chparts .cknotes{margin:8px 0 0;display:grid;gap:4px}
+@A [data-pane="report"] .chparts .cknotes b{font:700 13px/1.3 var(--ar-body);letter-spacing:.04em;text-transform:uppercase;color:var(--ar-ink-3)}
+@A [data-pane="report"] .chparts .cknotes span{font:400 15px/1.5 var(--ar-body);color:var(--ar-ink-3)}
+@A [data-pane="report"] .chparts .cklist.ckn3{margin-top:4px!important}
+@media (min-width:700px){@A [data-pane="report"] .chparts .cklist.ckn3{grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:24px!important}}
 /* the verdict: three figures, then a definition list on hairlines */
 @A [data-pane="report"] .chparts .verdict .vhead{display:flex!important;align-items:flex-start;gap:8px;background:none!important;padding:0!important;border:0!important}
 @A [data-pane="report"] .chparts .verdict .vdot{flex:none;width:14px!important;height:14px!important;margin-top:4px;border-radius:4px!important;transform:skewX(var(--ar-slant));background:var(--ar-green)!important;border:0!important;box-shadow:none!important}

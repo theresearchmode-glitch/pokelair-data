@@ -15,7 +15,7 @@ function teamProfile(ms, useA) {
 }
 // The Coverage tab shows the same winning-team checklist as the scouting report, so the two never disagree.
 function principles(P, ms) { const c = proChecks(ms, $('useAbil').checked); if (!c) return [];
-  return c.items.map(x => ({ok: x.skip ? 'part' : x.soft ? 'part' : x.ok ? 'ok' : 'miss', label: x.label, detail: (x.ok ? x.have : x.miss) + (x.pro ? ` · ${x.pro}` : '')})); }
+  return c.items.map(x => ({ok: x.skip ? 'part' : x.soft ? 'part' : x.ok ? 'ok' : x.note ? 'note' : 'miss', note: !!x.note, label: x.label, detail: (x.ok ? x.have : x.miss) + (x.pro ? ` · ${x.pro}` : '')})); }
 let recCache = {key: null, val: null};
 const recKey = useA => JSON.stringify([OFFMETA, S.slots, ui.recSrc, megaGoal(), useA, metaVersion, ui.metaSrc, S.box.join(), S.excl.join(), $('swapMega').checked]);
 function computeRecs(ms, useA) {
@@ -97,8 +97,8 @@ function renderRecs() {
   const useA = $('useAbil').checked, ms = members();
   if (ms.length < 2) { elP.innerHTML = ''; elL.innerHTML = '<div class="empty-note">Add at least two Pokémon on My team to get suggestions.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>'; return; }
   const r = computeRecs(ms, useA), B = r.B, pr = principles(B, ms);
-  const mark = {ok: '✓', part: '~', miss: '✕'};
-  { const head = `<span class="gpt">Team checks</span><span class="vsub">${pr.filter(x => x.ok !== 'miss').length} of ${pr.length} checks</span>`,
+  const mark = {ok: '✓', part: '~', miss: '✕', note: 'i'};
+  { const head = `<span class="gpt">Team checks</span><span class="vsub">${pr.filter(x => !x.note && x.ok !== 'miss').length} of ${pr.filter(x => !x.note).length} checks</span>`,
       rows = pr.map(x => `<div class="prow ${x.ok}"><span class="pm" aria-hidden="true">${mark[x.ok]}</span><div><div class="pl">${esc(x.label)}</div><div class="t2">${esc(x.detail)}</div></div></div>`).join('');
     const wasOpen = elP.querySelector && elP.querySelector('details[open]');
     elP.innerHTML = PHONE() ? `<details class="princfold"${wasOpen ? ' open' : ''}><summary class="princhead">${head}</summary>${rows}</details>` : `<div class="princhead">${head}</div>` + rows; }
