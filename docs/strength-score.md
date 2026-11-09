@@ -52,3 +52,24 @@ grade (measured Nov 9: removing them changed no prediction).
 - Pokémon strength separates weak from strong but not strong from strong, so among good teams the score should not swing much on
   Pokémon swaps alone.
 - Learned matchups help one game, not the grade; they belong in Battle (separate plan).
+
+## Design checklist: battle principles the score must respect (Sim, Nov 9)
+
+Sim: "make sure that our new grade keeps in mind the basic principles of pokemon battles and champions that we went over. megas and
+all those things." Rule for every item: its weight comes from real results; anything that doesn't hold up is shown as a note but
+does not move the score.
+
+Champions rules
+- [ ] Mega Evolution: only one Mega per game (a second stone never double-counts); no Mega is a big penalty (real no-Mega teams win 34%).
+- [ ] Bring 4 of 6: the six is a toolbox; a niche sixth Pokémon brought only for some matchups is not punished.
+- [ ] Single games first: built and tested on best-of-1 results (ranked play); best-of-3 later and separate.
+- [ ] Item Clause and items that work: no duplicate items; items that can't activate on this team don't count.
+- [ ] Sets as players run them: moves, item, Ability, stat points, nature; an unchanged set counts as the typical build.
+
+Team-building principles (guides, videos, our data)
+- [ ] Strong Pokémon and sets (counted today).
+- [ ] No major weak spot (+0.9 measured) and weak spots spread out (+1.3): not in today's number; candidates.
+- [ ] Ready for the top threats (+3.5 measured, the strongest): today a small weight; candidate for much more.
+- [ ] Protect on most of the team (counted today).
+- [ ] Speed control, spread damage, lead support: notes only (no win benefit measured), still shown.
+- [ ] Not measured yet (test before any weight): physical/special mix, 3+ of one type, a team that collapses without one Pokémon.
