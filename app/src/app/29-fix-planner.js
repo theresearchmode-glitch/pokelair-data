@@ -118,7 +118,9 @@ const psyHit=pl=>{if(!pl.team||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]==='psy
 // a Trick Room setter brought into a team with no slow attackers for it (and a team that had no Trick Room before)
 const trNew=(gp0,pl)=>{const r=pl.gp&&pl.gp.rows.find(r=>r.k==='trfit');return r&&!gp0.rows.some(r=>r.k==='trfit')?r.st:null};
 const wxLoneBad=(gp0,pl)=>psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
-const GUARD_KEYS=['speed','support','trfit','terrain','weather'];
+/* Nov 9 (Phase 3 gates): terrain and lead-support roles were tested on later real games on Nov 8 and add nothing beyond the grade
+   (commit f05576d), so they no longer block a suggestion; speed control, Trick Room attackers and weather stay guarded (no loss at all). */
+const GUARD_KEYS=['speed','trfit','weather'];
 function gpWorse(gp0,gp){return GUARD_KEYS.filter(k=>{const o=(gp0.rows.find(r=>r.k===k)||{}).st;if(!o)return false;const n=(gp.rows.find(r=>r.k===k)||{}).st;return GP_RANK[n||'miss']<GP_RANK[o]})}
 // the gap the first two suggestions must cover: the most serious one they leave open (missing before partial, then weather,
 // Trick Room attackers, terrain, lead support; speed control has its own rule). Partial lead support never forces a pick.
@@ -194,7 +196,8 @@ function* planFixesG(ms,pool,useA,opts){
      weather it relies on, never a clash. The other game-plan rows (terrain, lead support…) blocked the best swaps (a 62 team kept
      from 99 for losing Grassy Terrain) and, tested on 6,270 later games (experiments/structure-check.mjs), none of those roles adds
      anything beyond the grade: terrain +0.3, Fake Out −1.8, Intimidate +0.6, redirection +0.2 pts, all within chance. */
-  const keepsPlan=pl=>!(gpst(basePl,'speed')!=='miss'&&gpst(pl,'speed')==='miss')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss')&&!(pl.gap&&pl.gap.clash)&&!wxLoneBad(gp0,pl);
+  /* Phase 3 gates (Nov 9): a team with full speed control keeps it (was: only 'none' blocked; the Nov 7 audit rule, which GitHub had
+     stopped reaching, says any loss). */const keepsPlan=pl=>!(gpst(basePl,'speed')!=='miss'&&gpst(pl,'speed')==='miss')&&!(gpst(basePl,'speed')==='ok'&&gpst(pl,'speed')!=='ok')&&!(gpst(basePl,'weather')==='ok'&&gpst(pl,'weather')==='miss')&&!(pl.gap&&pl.gap.clash)&&!wxLoneBad(gp0,pl)&&!(pl.gp&&gpWorse(gp0,pl.gp).length);
     let all=[...singles,...doubles].filter(pl=>keepsPlan(pl)&&(!full||((pl.st.a.excess<=base.a.excess)&&pl.st.a.unresisted.length<=base.a.unresisted.length&&pl.score<basePl.score-(clean?25:10)))).sort((x,y)=>x.score-y.score);
   // Readiness decides (Oct 28): every plan that ends in a full six is judged by the share of the top-30 threats it's ready for.
   // Item problems come first; then a plan must raise readiness by 2+, the highest leads, and an extra change has to earn 2 more.
@@ -274,9 +277,10 @@ function* planFixesG(ms,pool,useA,opts){
   if(full){let CK0=null;try{CK0=proChecks(ms,true)}catch(e){}
     const unmet=CK0?CK0.items.filter(x=>!x.skip&&!x.ok&&x.k!=='items').map(x=>x.k):[];
     for(const k of unmet){if(out.some(pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}}))continue;
-      const meets=pl=>{try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}},best=a=>a.sort((x,y)=>(planGrade(y)??0)-(planGrade(x)??0)||x.score-y.score)[0];
+      const tsOK=pl=>tsBase==null||pl.team.length<6||(pl._ts!==undefined?pl._ts:(pl._ts=tsOf(pl.team)))==null||pl._ts>=tsBase-8;/* same readiness floor as every other plan (Phase 3 gates, Nov 9) */
+      const meets=pl=>{if(!tsOK(pl))return false;try{const c=proChecks(pl.team,true).items.find(x=>x.k===k);return c&&c.ok}catch(e){return false}},best=a=>a.sort((x,y)=>(planGrade(y)??0)-(planGrade(x)??0)||x.score-y.score)[0];
       // within 3 grade points first; if every fix costs more, still show the cheapest one, with its honest cost (Sim: never "none")
-      const cand=best([...singles,...doubles].filter(pl=>keepsPlan(pl)&&(gBase==null||planGrade(pl)==null||pl._g>=gBase-3)).filter(meets))||best([...singles,...doubles].filter(pl=>planGrade(pl)!=null).filter(meets));
+      const cand=best([...singles,...doubles].filter(pl=>keepsPlan(pl)&&(gBase==null||planGrade(pl)==null||pl._g>=gBase-3)).filter(meets))||best([...singles,...doubles].filter(pl=>keepsPlan(pl)&&planGrade(pl)!=null).filter(meets));/* the honest-cost fallback still keeps speed control, weather and Trick Room logic (Phase 3 gates, Nov 9) */
       if(cand){const lab=(CK0.items.find(x=>x.k===k)||{}).label||k,cost=gBase!=null&&cand._g!=null?gBase-cand._g:0;
         cand.gap={...(cand.gap||{}),why:[...((cand.gap&&cand.gap.why)||[]),`Meets the "${lab}" check`+(cost>0.5?`, for ${Math.round(cost)} grade point${Math.round(cost)===1?'':'s'}${cost>3?' (a real trade-off: your team is stronger without it)':''}`:'')]};
         if(!out.includes(cand)){if(out.length>=3)out.pop();out.push(cand)}}}}
@@ -328,9 +332,9 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
       st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
     // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
     pl._why=lines.filter(Boolean);pl._wk=a.excess===st.a.excess?null:[wsTxt(a),wsTxt(st.a)];
-    return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">${k>=plans.length?(pl.side?'Side-grade':'Idea'):'Plan'} ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span>${(()=>{const g0=plans.gBase,g1=planGrade(pl);return g0!=null&&g1!=null?gradeChip(g0,g1,null,pl.team):dT!=null?`<span class="tsd ${dT>0?'up':dT<0?'dn':''}" title="${esc(tsTitle(baseTS,{score:ts}))}">${readyDelta(dT)}</span>`:''})()}${(()=>{try{const w=sureWord(pl._sure!==undefined?pl._sure:(pl._sure=swapSure(members(),pl.team)));return w?`<span class="plsure">${w}</span>`:''}catch(e){return ''}})()}<span class="row">${a.excess===st.a.excess?`<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`:`<span class="pill ${RC(a.excess)}">${wsTxt(a)}</span>→<span class="pill ${RC(st.a.excess)}">${wsTxt(st.a)}</span>`}</span></div>
+    return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">${k>=plans.length?(pl.side?'Side-grade':'Idea'):'Plan'} ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span>${(()=>{const g0=plans.gBase,g1=planGrade(pl);return g0!=null&&g1!=null?gradeChip(g0,g1,null,pl.team):dT!=null?`<span class="tsd ${dT>0?'up':dT<0?'dn':''}" title="${esc(tsTitle(baseTS,{score:ts}))}">${readyDelta(dT)}</span>`:''})()}${(()=>{try{const w=sureWord(pl._sure!==undefined?pl._sure:(pl._sure=swapSure(members(),pl.team)));return w?`<span class="plsure">${w}</span>`:''}catch(e){return ''}})()}</div>
       ${pl.ch.map(x=>`<div class="swap">${x.out?`<span class="out">${esc(x.out.d)}</span> →`:'Add'} ${sprite(x.c.p,'mini')}<span class="in">${esc(x.c.p.d)}</span>${confChip(x.c.p)}<span class="chips">${x.c.p.t.map(t=>chip(t)).join('')}</span>${x.c.p.m?'<span class="tag mega ico" title="Mega Evolution">Mega</span>':''}${inBox(x.c.p)?'<span class="tag box ico" title="In your box">Box</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${ratingTag(x.c.p)}${isGem(x.c.p)?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(x.c.p)}<span class="vsub">${esc(x.c.mem.ability)}${(t=>t&&t.item?' @ '+esc(t.item):'')(tA.find(m=>m.p===x.c.p))}${U(x.c.p)?` · <span title="${esc(windowWords('tour'))}">${U(x.c.p).toFixed(1)}% usage</span>`:''}</span></div>`).join('')}
-      ${(()=>{const L=lines.filter(Boolean),ul=`<ul>${L.map(l=>`<li>${l}</li>`).join('')}</ul>`;return PHONE()&&L.length>2?`<details class="planwhy"><summary>${L.length} reasons</summary>${ul}</details>`:ul})()}
+      ${(()=>{const L=lines.filter(Boolean),ul=`<ul>${L.map(l=>`<li>${l}</li>`).join('')}</ul>`;if(L.length<=2)return ul;/* Phase 3: the grade is the headline; the first two reasons show, the rest (readiness, offense, weak spots) behind one tap */return `<ul>${L.slice(0,2).map(l=>`<li>${l}</li>`).join('')}</ul><details class="planwhy"><summary>${L.length-2} more reason${L.length-2===1?'':'s'}</summary><ul>${L.slice(2).map(l=>`<li>${l}</li>`).join('')}</ul></details>`})()}
       ${pl.side?'<p class="t2" style="margin:0">A different look: keeps your type rating and speed control without being clearly better.</p>':''}
       <div><button class="btn sm primary" type="button" data-plan="${k}">Apply ${k>=plans.length?'this':'plan '+(k+1)}</button></div></div>`});
   if(!none)el.innerHTML=itf+htmls.slice(0,list.length).join('')+moreBtn;

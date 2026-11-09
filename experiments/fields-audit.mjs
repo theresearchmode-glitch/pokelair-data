@@ -51,7 +51,8 @@ const noW = ROSTER.filter(p => !WT[p.n]).map(p => p.n), wDiff = ROSTER.filter(p 
 const NC = grab(/const NOT_COUNTED=(\{[\s\S]*?\});/, ENGINE); if (!NC) fail('NOT_COUNTED labels not found in the engine');
 const NOT_MODELLED = {...Object.fromEntries(Object.entries(NC || {}).map(([k, v]) => [k, v[0]])),
   Gluttony: 'only changes pinch berries (Figy, Wiki, Mago, Aguav, Iapapa), none of which are legal in Reg M-C',
-  Opportunist: 'copies stat boosts the opponent gains during the battle; calcs start from a fresh board'};
+  Opportunist: 'copies stat boosts the opponent gains during the battle; calcs start from a fresh board',
+  'Sweet Veil': 'stops sleep on its side (status, not damage); calcs and the grade do not model sleep (0.27% of slots, Nov 9)'};
 const NO_CALC_EFFECT = new Set(['No Item', 'Pressure', 'Keen Eye', 'Frisk', 'Synchronize', 'Cute Charm', 'Flame Body', 'Cursed Body', 'Healer', 'Shield Dust', 'Damp', 'Anticipation', 'Vital Spirit', 'Pickpocket', 'Cud Chew', 
   'Emergency Exit', 'Flower Veil', 'Static', 'Poison Point', 'Insomnia', 'Limber', 'Leaf Guard', 'Telepathy', 'Magician', 'Shed Skin', 'Immunity', 'Early Bird', 'Poison Heal', 'Toxic Debris', 'Spicy Spray', 'Trace', 'Illusion',
   'Moody', 'Anger Point', 'Steadfast', 'Magma Armor', 'Corrosion', 'Light Clay', 'Eject Button', 'Leppa Berry', 'Binding Band', 'Big Root', 'Red Card',

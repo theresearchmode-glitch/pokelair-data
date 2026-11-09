@@ -22,7 +22,7 @@ const swampert5 = ['Gholdengo', 'Swampert-Mega', 'Sylveon', 'Indeedee-F', 'Stara
 const noRain = (await pg.evaluate(() => window.__ev('DEFAULT_BOX'))).filter(n => !['Pelipper', 'Politoed'].includes(n));
 const clean = (label, r) => { const all = [...r.plans, ...r.recs];
   ok(!all.some(x => x.clash), `${label}: no suggestion adds a weather that works against the team's own`);
-  ok(!all.some(x => x.worse.length), `${label}: no suggestion takes away speed control, lead support, Trick Room attackers, terrain or weather${all.filter(x => x.worse.length).map(x => ` (${x.names}: ${x.worse})`).join('')}`);
+  ok(!all.some(x => x.worse.length), `${label}: no suggestion takes away speed control, Trick Room attackers or weather (terrain and lead support: see GUARD_KEYS, Nov 9)${all.filter(x => x.worse.length).map(x => ` (${x.names}: ${x.worse})`).join('')}`);
   ok(!all.some(x => x.ckDrop), `${label}: no suggestion lowers the checklist score${all.filter(x => x.ckDrop).map(x => ` (${x.names})`).join('')}`); };
 for (const [label, team, pool] of [['Mega Swampert, 5 Pokémon, my box', swampert5, 'box'], ['Mega Swampert, 6 Pokémon, my box', swampert6, 'box'], ['Mega Swampert, 6 Pokémon, whole roster', swampert6, 'all']]) {
   const r = await run(team, pool);

@@ -162,7 +162,8 @@ CH.eOfS = s => { const q = META.model && META.model.dist && META.model.dist.q; i
    teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
 CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
 CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.gradeFull(g0), b = CH.gradeFull(g1), r0 = CH.rankShort(g0), r1 = CH.rankShort(g1);
-  return a !== b ? `Grade ${a} → ${b} · ${r0} → ${r1}` : r0 === r1 ? `Grade ${b} · ${r1}` : `Grade ${b} · ${r0} → ${r1}`; };
+  // Phase 3 (Nov 9): one measure on cards, the letter. Ranks stay in the tooltip (gradeChip title), not on the card.
+  return a !== b ? `Grade ${a} → ${b}` : g1 > g0 ? `Grade ${b} · stronger` : g1 < g0 ? `Grade ${b} · weaker` : `Grade ${b}`; };
 CH.gradeNum = G => !G ? '' : G.v === 2 ? `${CH.rankShort(G.s)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
 CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
