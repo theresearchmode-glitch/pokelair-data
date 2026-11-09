@@ -65,6 +65,10 @@ sets, the 4 basics, readiness for the top threats, learned matchups, the team's 
 it beats": that may appear as a small line under the score, never as the score itself. It ships only if it predicts real wins at
 least as well as today's grade (walk-forward scoreboard, keep/drop rule, never-get-worse gate); otherwise back to the drawing board.
 Plan: "What we learned about matchups and synergy" > "Strength Score" on the Plans page.
+Design approved (Nov 9): 100 = has everything winning teams have and no weak spots; a solid tournament team about 80, the best-built
+90+, a missing basic drops clearly (60s), beginner 30-50; each factor moves it in proportion to its measured effect on real wins;
+team, not player (records count only after player skill is taken out); a small rank line underneath. Guiding principle (Sim): give the
+best team-building advice possible, and be honest that how players use the team and their skill matter a lot.
 
 ## Privacy and safety
 - COPPA: no names or emails collected; feedback stays anonymous.

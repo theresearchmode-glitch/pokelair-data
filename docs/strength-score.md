@@ -81,7 +81,11 @@ Types (Sim, Nov 9: "you are taking into mention type weaknesses / offenses / cov
 - [ ] Coverage of what you actually face: "ready for the top threats" = damage calcs both ways against the 30 most common threats
       (+3.5 measured, the strongest factor): candidate for a much bigger role.
 
-## Phase 1 · Design (draft for Sim, Nov 9; nothing decided yet)
+## Phase 1 · Design (APPROVED by Sim, Nov 9: "precisely")
+
+Guiding principle (Sim): "our goal is to give the best team building advice we possibly can and then from there we understand and
+players understand that how the players use the team and player skill matter alot." The score rates the team; the site says plainly
+that play and skill matter a lot too.
 
 Real examples (today's grade vs real results; typical sets; built page of Nov 9):
 | Team | Real | Today's grade | Ready for top threats | Checks failed |
