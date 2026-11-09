@@ -45,7 +45,7 @@ R.build = [];
 for (const k of [0, 1, 2]) {
   R.build.push({...await run(`(()=>{ S.megaGoal = ${k}; S.maxMega = Math.max(1, ${k}); ui.abSrc = 'all'; ui.abLock = null;
     const T0 = performance.now(), res = buildBest(), buildMs = performance.now() - T0, mk = ns => ns.map(n => abMember(byName.get(n))), gr = ns => { try { return gradeTeam(mk(ns)); } catch (e) { return null; } };
-    const teams = (res.teams || []).map(t => ({mons: t.mons.map(m => m.n), g: gr(t.mons.map(m => m.n))}));
+    const teams = (res.teams || []).map(t => ({mons: t.mons.map(m => m.n), g: gr(t.mons.map(m => m.n)), megas: t.mons.filter(m => byName.get(m.n) && byName.get(m.n).m).length}));
     let best = null; const seen = new Set();
     for (const [names, n, wr, g] of [...(RES.proven || []), ...(RES.records || [])]) { const key = names.slice().sort().join('|'); if (seen.has(key)) continue; seen.add(key);
       if (!(n >= 3 || (g != null && g >= 30))) continue; const ps = names.map(x => byName.get(x)); if (ps.some(p => !p || isExcl(p))) continue; if (ps.filter(p => p.m).length !== ${k}) continue;
@@ -97,7 +97,11 @@ add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 10, `$
 add('two of the same item reads as not legal', R.illegal.flagged, `${R.illegal.clause} item clash${R.illegal.clause === 1 ? '' : 'es'} found`);
 { const s = R.sugg.filter(x => !x.err), worse = s.reduce((a, x) => a + x.worse, 0), tot = s.reduce((a, x) => a + x.n, 0);
   add('no suggestion lowers the grade of a strong (A) team', s.length > 0 && worse === 0, `${s.length} A teams, ${tot} suggestions (${s.reduce((a, x) => a + x.main, 0)} shown first), ${worse} would lower the grade (${s.reduce((a, x) => a + x.worseMain, 0)} of those shown first)${R.sugg.some(x => x.err) ? ' · errors: ' + R.sugg.filter(x => x.err).map(x => x.err).join('; ') : ''}`); }
-for (const B of R.build) { const top = B.teams[0], gap = top && B.best ? B.best.g - top.g : null;
+/* 0 Megas (Sim's go, Nov 9): no real tournament team runs none, and real no-Mega teams win about a third of their games, so the old
+   "must grade B" expectation was wrong. Now: the build holds no Mega and grades clearly below the 1-Mega build (it can fail both ways). */
+{ const B0 = R.build.find(B => B.megas === 0), B1 = R.build.find(B => B.megas === 1), t0 = B0 && B0.teams[0], t1 = B1 && B1.teams[0];
+  if (B0 && !B0.best) add('Build for Me, whole roster, 0 Megas: holds no Mega and grades below the 1-Mega build', !!t0 && !!t1 && t0.megas === 0 && t0.g < t1.g, `built ${B0.teams.map(t => t.g + (t.megas ? ' (' + t.megas + ' Mega!)' : '')).join(' / ')} · 1-Mega build ${t1 ? t1.g : '—'} · ${(B0.ms / 1000).toFixed(1)} s`); }
+for (const B of R.build) { if (B.megas === 0 && !B.best) continue; const top = B.teams[0], gap = top && B.best ? B.best.g - top.g : null;
   add(`Build for Me, whole roster, ${B.megas} Mega${B.megas === 1 ? '' : 's'}: ${B.best ? 'within 3 of the best real team' : 'no real team to compare, so the first team must grade B (70+)'}`, B.best ? gap != null && gap <= 3 : !!top && top.g >= 70, `built ${B.teams.map(t => t.g).join(' / ')} · best real team ${B.best ? B.best.g : '—'}${gap != null ? ` · gap ${gap.toFixed(1)}` : ''} · ${(B.ms / 1000).toFixed(1)} s`); }
 { const A = R.around, bad = A.filter(a => !a.has || a.g == null || (a.best ? a.g < a.best.g - 3 : a.g < 70));
   add('Build around a Pokémon (10 picks): holds it, within 3 of the best real team with it', A.length >= 8 && !bad.length, A.map(a => `${a.lock} ${a.g == null ? '—' : a.g.toFixed(0)}${a.best ? '/' + a.best.g.toFixed(0) : ''}${a.has ? '' : ' (missing!)'}`).join(' · ') + ` · slowest ${(Math.max(...A.map(a => a.ms)) / 1000).toFixed(1)} s`); }
