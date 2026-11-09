@@ -229,7 +229,15 @@ function* planFixesG(ms,pool,useA,opts){
           /* matchups are already inside the grade, so readiness is only a guard against a collapse (was −3, Phase 3 Nov 8) */
           return pl._ts>=tsBase-8&&((pl._g>=gBase+TS_GAIN&&(pl._sure==null||pl._sure>=SWAP_MIN))||(fixOf(pl)&&pl._g>=gBase)||(ipOf(pl)<ip0&&pl._g>=gBase-3));}
         return pl._ts>=tsBase+TS_GAIN||(fixOf(pl)&&pl._ts>=tsBase-3)};
-      const ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
+      let ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
+      /* Variety (Sim, Nov 9: "it keeps suggesting the same pokemon"; Step D). On 400 real teams, Kingambit, Basculegion and Farigiraf
+         were 48% of every Suggestion 1, because many strong Pokémon are tied within the score's margin of error and the engine always
+         took the one a hair ahead (real one-swap pairs among viable Pokémon: 52.4%, a coin flip). Options within SUGG_TIE score points
+         of the best count as ties; among ties the order is a fixed shuffle per team (the same team always shows the same order), so
+         every tied Pokémon, rarely used ones included, gets a fair place. Real problems (item fixes) still come first. */
+      if(ranked.length>1){const T=PLAN_TIE,top=gKey(ranked[0]),ip=ipOf(ranked[0]),tied=ranked.filter(pl=>ipOf(pl)===ip&&gKey(pl)>=top-T),rest=ranked.filter(pl=>!tied.includes(pl));
+        const key=ms.map(m=>m.p.n).sort().join('|'),h=str=>{let x=2166136261;for(let i=0;i<str.length;i++){x^=str.charCodeAt(i);x=Math.imul(x,16777619)}return x>>>0};
+        const hk=pl=>h(key+'#'+pl.ch.map(x=>x.c.p.b).sort().join(','));tied.sort((x,y)=>hk(x)-hk(y));ranked=[...tied,...rest]}
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
   // a suggestion never lowers the winning-team checklist score (worked out only for the plans actually shown)
   let ck0=null;const ckDrop=pl=>{if(typeof proChecks!=='function')return false;if(ck0==null)ck0=(proChecks(ms,useA)||{pass:0}).pass;if(pl._ck===undefined)pl._ck=(proChecks(pl.team,useA)||{pass:0}).pass;return pl._ck<ck0};

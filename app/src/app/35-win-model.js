@@ -115,6 +115,7 @@ function tsShortlist(pls,n){return pls.slice(0,n)}
 function useTSPick(){return !OFFMETA}
 // What "improves the team" means everywhere (Fix plans, Quick add, Best additions): ready for at least this many more points
 var TS_GAIN=2;
+var PLAN_TIE=2; // Step D (Nov 9): suggestions within 2 Strength Score points of the best count as ties (see 29-fix-planner.js)
 // a plan's readiness, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
 function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
 function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
@@ -135,7 +136,7 @@ function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g
 // "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
 // "Grade 93 → 96" on a suggestion: the same one grade My team shows (Nov 7: one grade out of 100, real results blended in)
 function gradeChip(g0,g1,cls){if(g0==null||g1==null)return '';const d=g1-g0;
-  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(g0)}). With this change ${Math.round(g1)} (${CH.wordOf(g1)}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
+  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(g0)}). With this change ${Math.round(g1)} (${CH.wordOf(g1)}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams. In real games, teams that made a change like this won about 1 to 2 more games per 100: the score rates the team, your play decides the rest.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
   return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="${tt}">${CH.gradeMove(g0,g1)}</span>`}
 function tsChip(team){let ms=null;try{ms=members()}catch(e){}const g0=ms&&ms.length===6?gradeTeam(ms):null,g1=gradeTeam(team);if(g0!=null&&g1!=null)return gradeChip(g0,g1,null,team);
   const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
