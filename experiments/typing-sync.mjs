@@ -21,7 +21,11 @@ await pg.addInitScript(([D, TEAM]) => { localStorage.setItem('cc2.welcomed', '"1
 await pg.goto('file://' + page); await pg.waitForTimeout(3500);
 await pg.evaluate(() => window.__ev(`setView('report')`)); await pg.waitForTimeout(2500);
 /* Nov 9: wait (up to 10 s) until the element is drawn; GitHub's slower machine tapped before My Team had rendered */
-const tapSel = async sel => { await pg.waitForFunction(s => [...document.querySelectorAll(s)].some(x => x.getBoundingClientRect().height > 0), sel, {timeout: 10000}); const e = await pg.evaluateHandle(s => [...document.querySelectorAll(s)].find(x => x.getBoundingClientRect().height > 0), sel); await e.evaluate(x => x.scrollIntoView({block: 'center', behavior: 'instant'})); await pg.waitForTimeout(150); let bb = await e.boundingBox(); for (let i = 0; !bb && i < 20; i++) { await pg.waitForTimeout(250); bb = await e.boundingBox(); } await pg.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2); };
+const tapSel = async sel => { await pg.waitForFunction(s => [...document.querySelectorAll(s)].some(x => x.getBoundingClientRect().height > 0), sel, {timeout: 10000}); const e = await pg.evaluateHandle(s => [...document.querySelectorAll(s)].find(x => x.getBoundingClientRect().height > 0), sel); await e.evaluate(x => x.scrollIntoView({block: 'center', behavior: 'instant'})); await pg.waitForTimeout(150); let bb = await e.boundingBox();
+  /* Nov 9: a re-render can replace the element after it was found, leaving this handle detached (boundingBox null for good:
+     'Cannot read properties of null', 1 run in 6). Look it up again on each retry; fail with the selector if it never shows. */
+  for (let i = 0; !bb && i < 20; i++) { await pg.waitForTimeout(250); const f = await pg.evaluateHandle(s => [...document.querySelectorAll(s)].find(x => x.getBoundingClientRect().height > 0) || null, sel); const el = f.asElement(); if (el) { await el.evaluate(x => x.scrollIntoView({block: 'center', behavior: 'instant'})); bb = await el.boundingBox(); } }
+  if (!bb) throw new Error(`tap: ${sel} never became tappable`); await pg.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2); };
 await tapSel('.ar-rmx[data-chrm="4"]'); await pg.waitForTimeout(300);
 await tapSel('[data-chedit="4"]'); await pg.waitForTimeout(400);
 const seen = [];
