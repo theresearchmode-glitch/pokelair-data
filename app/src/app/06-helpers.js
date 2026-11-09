@@ -122,7 +122,10 @@ const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.so
 // same item assignment as the open team (members()), so a saved team shows the same checks as when it's open
 function teamRating(slots){const m0=slots.map(memberOf).filter(Boolean),ms=typeof assignItems==='function'?assignItems(m0):m0;return {ms,a:analyze(ms,true)}}
 // toast(text, true) adds an Undo button (and stays up longer) for changes that replace team members
-function toast(t,undo){const el=$('toast');el.innerHTML=esc(t)+(undo&&ui.undo?' <button type="button" class="tundo" id="toastUndo">Undo</button>':'');el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,undo?6000:2200)}
+/* Darkrai (Sim, Nov 9) on plain confirmations only (saved, copied, imported, opened, deleted, cleared), never on notices that
+   carry team data, grades or warnings; set by app/build.mjs as window.NP_MASCOT */
+const TOAST_DK=/^(Saved|Team link copied|Box link copied|Stat points saved|Spread saved|Nature saved|Imported|Opened|Deleted|Team cleared)\b/;
+function toast(t,undo){const el=$('toast');const dk=TOAST_DK.test(t)&&typeof AR==='object'&&AR.mascot?AR.mascot():null;el.innerHTML=(dk?`<img class="toastdk" src="${window.NP_MASCOT}" alt="" width="36" height="36">`:'')+(dk?`<span class="toastt">${esc(t)}</span>`:esc(t))+(undo&&ui.undo?' <button type="button" class="tundo" id="toastUndo">Undo</button>':'');el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,undo?6000:2200)}
 // remember the team before a change, so Undo can put it back
 function keepUndo(){ui.undo={slots:JSON.parse(JSON.stringify(S.slots)),loadedId:S.loadedId}}
 // Undo bar (Nov 7, Sim: "I should be able to revert a suggestion in 1 click"): every suggestion applied is kept (up to 8), and

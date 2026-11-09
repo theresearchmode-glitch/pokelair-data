@@ -532,7 +532,11 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   // part 2: threats
   { const o = $('chThrTop'); if (o) o.innerHTML = RD ? `<div class="chside">${CH.threats10(RD, 'data-chthr')}<div class="chlegk">${CH.legendRow(RD)}</div></div>` : ''; const g = $('chVsOut'); if (g) g.innerHTML = RD ? CH.chart(RD, ms) : ''; }
   // part 4: the sheet, every slot (empty ones say Add)
-  { const o = $('chSheetOut'); if (o) o.innerHTML = `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">Reg M-C, bring 6, pick 4</span></div>${all.map(row).join('')}</div>`; }
+  /* Sim, Nov 9: "we designed a new one and that should be everywhere we have team sheet": the fold shows the Team Sheet page's
+     cards (stats, stat points, nature), keeping the old rows' hint line, Edit (tap the card) and remove button */
+  { const o = $('chSheetOut'); if (o) o.innerHTML = typeof TS === 'object' && TS.card
+      ? `<div class="ts-in"><div class="ts-grid">${all.map(({m, i}) => m ? TS.card(m, {fold: true, note: note(m)}) : TS.addCard(i)).join('')}</div><p class="ts-key">Big number: the stat at level 50 · small number: stat points (0–32) · <b class="up">+</b>/<b class="dn">−</b> nature</p></div>`
+      : `<div class="chsheet"><div class="hd"><span class="chdisp">Open team sheet</span><span class="mono">Reg M-C, bring 6, pick 4</span></div>${all.map(row).join('')}</div>`; }
   if (!$('chScout').hidden) chScoutRender(); try { chEditStrip(); } catch (e) {} }
 // the Teams ▾ menu
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#chTeamsBtn'), m = $('chTeamsMenu'); if (!m) return;

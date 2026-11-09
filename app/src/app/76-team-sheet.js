@@ -9,19 +9,26 @@ Object.assign(VIEW_TITLE, {sheet: 'Team sheet'}); Object.assign(VIEW_PARENT, {sh
 const TS = {};
 TS.STATS = [['HP', 'hp'], ['Atk', 'atk'], ['Def', 'def'], ['SpA', 'spa'], ['SpD', 'spd'], ['Spe', 'spe']];
 TS.natBits = nat => { const up = Object.keys(NAT_UP).find(k => NAT_UP[k].includes(nat)), dn = Object.keys(NAT_DN).find(k => NAT_DN[k].includes(nat)); return {up, dn}; };
-TS.card = m => {
-  const p = m.p, {sp, nat, src} = memberSpread(m), nb = nat ? TS.natBits(nat) : {};
-  const stats = TS.STATS.map(([S_, k]) => { const pts = sp ? +sp[k] || 0 : null, val = sp ? calcStat(p, S_, pts, natMul(nat, S_)) : null,
+// the six stats: real value at level 50 (big), stat points (small), nature's + and −. Shared by this page and the
+// "Open team sheet" fold on My Team (Sim, Nov 9: one team sheet everywhere, with the stat spread in it)
+TS.stats = m => { const p = m.p, {sp, nat} = memberSpread(m), nb = nat ? TS.natBits(nat) : {};
+  return TS.STATS.map(([S_, k]) => { const pts = sp ? +sp[k] || 0 : null, val = sp ? calcStat(p, S_, pts, natMul(nat, S_)) : null,
       mk = nb.up === S_ ? ' up' : nb.dn === S_ ? ' dn' : '';
-    return `<div class="ts-st${mk}"><span class="ts-sl">${S_}${mk === ' up' ? '<i aria-label="raised by nature">+</i>' : mk === ' dn' ? '<i aria-label="lowered by nature">−</i>' : ''}</span><b class="ts-sv">${val == null ? '—' : val}</b><span class="ts-sp">${pts == null ? '' : pts}</span></div>`; }).join('');
+    return `<div class="ts-st${mk}"><span class="ts-sl">${S_}${mk === ' up' ? '<i aria-label="raised by nature">+</i>' : mk === ' dn' ? '<i aria-label="lowered by nature">−</i>' : ''}</span><b class="ts-sv">${val == null ? '—' : val}</b><span class="ts-sp">${pts == null ? '' : pts}</span></div>`; }).join(''); };
+// o (the "Open team sheet" fold on My Team, Nov 9): {fold: true, note: '<hint html>'} = tap opens the editor right there
+// (data-chedit), with the remove button and the one-line hint the old sheet rows had
+TS.card = (m, o = {}) => {
+  const p = m.p, {sp, nat, src} = memberSpread(m), nb = nat ? TS.natBits(nat) : {};
+  const stats = TS.stats(m);
   const mv = [0, 1, 2, 3].map(j => { const x = m.moves[j]; return x ? `<li style="--mt:${TC[x.type] || 'var(--ar-ink-3)'}">${esc(x.name)}</li>` : '<li class="none">No move</li>'; }).join('');
   const nl = nat ? `${esc(nat)}${nb.up && nb.dn && nb.up !== nb.dn ? ` <span class="ts-nb">+${nb.up} −${nb.dn}</span>` : ''}` : 'Nature unknown';
-  return `<article class="ts-card" role="button" tabindex="0" data-tsedit="${m.i}" style="${tyVars(p)}" aria-label="${esc(m.d)}: edit its set on My Team">
-    <header class="ts-hd">${sprite(p) || ''}<div class="ts-id"><h3 class="ts-nm">${esc(m.d)}</h3>
+  return `<article class="ts-card${o.fold ? ' ts-fold' : ''}" role="button" tabindex="0" ${o.fold ? `data-chedit="${m.i}"` : `data-tsedit="${m.i}"`} style="${tyVars(p)}" aria-label="${esc(m.d)}: edit its set${o.fold ? '' : ' on My Team'}">
+    ${o.fold ? `<button type="button" class="chrm ts-rm" data-chrm="${m.i}" aria-label="Remove ${esc(m.d)} from the team">−</button>` : ''}<header class="ts-hd">${sprite(p) || ''}<div class="ts-id"><h3 class="ts-nm">${esc(m.d)}</h3>
       <p class="ts-ia"><span><em>Item</em> ${esc(m.item || 'No item')}</span><span><em>Ability</em> ${esc(m.ability || '—')}</span></p></div></header>
-    <ul class="ts-mv">${mv}</ul>
+    <ul class="ts-mv">${mv}</ul>${o.note || ''}
     <div class="ts-spr"><p class="ts-nat"><b>${nl}</b><span class="ts-src">${src}</span></p><div class="ts-stats" role="group" aria-label="Stats at level 50, with stat points below">${stats}</div></div>
   </article>`; };
+TS.addCard = i => `<button type="button" class="ts-card ts-add" data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="ts-plus" aria-hidden="true">+</span><span>Add a Pokémon</span></button>`;
 function renderSheet() { const o = $('npSheetOut'); if (!o) return; const ms = members(), r = (typeof regInfo === 'function' && regInfo()) || {id: 'M-C'};
   const head = CH.head(`${ms.length ? esc(teamTitleFor(ms)) + ' · ' : ''}Reg ${esc(String(r.id).replace('-', '‑'))} doubles · level 50`, 'Team Sheet', '');
   if (!ms.length) { o.innerHTML = head + `<p class="ts-empty">No team yet. Add Pokémon on My Team and their full sets show here.</p><div class="ts-acts"><button type="button" class="ar-btn ar-primary" data-view="report"><span>Open My Team</span></button></div>`; return; }
