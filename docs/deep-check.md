@@ -581,3 +581,11 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   each attacker handles what the others hate. ZemTennar team preview guide: read the opponent's archetype, key synergies and
   threats to your core; "lead flexibly". All support Sim's idea: a strong six is a cohesive toolbox whose fours cover the meta.
   Ideas worth checking in the code later (not checked yet): physical/special mix, redundant types, single-win-condition teams.
+- Best four vs the opponent (measured, experiments/best-four.mjs; 38,513 real tournament games; Pokémon values, skill and
+  head-to-head results learned on one half of the tournaments, every game judged by a model that never saw its tournament):
+  base (Pokémon + skill) log-loss 0.66731, picks 58.99%. + how my six lines up against THEIR six (learned head-to-head):
+  -0.00144 (95% -0.00175 to -0.00112), BETTER beyond chance, picks 59.35%. + best four of my six vs their six: -0.00126,
+  also better than base, but slightly WORSE than all six (+0.00018, +0.00010 to +0.00026).
+  So (measured): how a team lines up against the specific opponent matters; picking the best four by adding up single
+  Pokémon matchups adds nothing beyond that. Limits: tournament data doesn't record which four were brought; this "best four"
+  ignores synergy inside the four (it just adds single matchups) and sets/moves.
