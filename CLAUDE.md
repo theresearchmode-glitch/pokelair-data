@@ -7,6 +7,9 @@ Before starting a task that will be heavy on usage, warn Sim first and let her d
 agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
 batches, or anything likely to take more than about an hour of active work. Give a rough size (light / medium / heavy), what
 makes it heavy, and a lighter option if one exists. Background computer time (a script running on its own) is cheap; say so.
+Ultracode (Sim, Nov 9): when Sim describes a task, say up front whether turning ultracode on (many helper agents plus skeptic
+agents) would really help it, with a rough usage multiple, so she can turn it on herself. Default: off; it mainly helps big look-only
+audits and research sweeps, not our one-change-at-a-time work.
 
 ## How Sim likes work done
 - Preview before live: nothing goes to the live artifact without her explicit go (unless she says "publish when done" for that change).
