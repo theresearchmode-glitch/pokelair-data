@@ -103,3 +103,27 @@ Decisions for Sim:
 3. How much each factor moves it: in proportion to its measured effect on real wins (one shared scale), never a guess.
 4. Team, not player: real records count only after player skill is taken out.
 5. Under the score, one small line: how it compares to today's tournament teams.
+
+## Phase 2 · Weights (Nov 9)
+
+Fit 1: every factor together, plus each player's skill (experiments/strength-fit.mjs), on 10,575 real team sheets, 38,513 tournament
+games, 100 resamples by tournament. The Pokémon + pairs + sets number (x0) comes from the model trained on these same games, so its
+size is too big (sizing only, not proof). Mega and Protect are already inside x0, so their rows here mean "extra beyond what x0 counts".
+
+| Factor | Win-chance points per unit | 95% range | Verdict |
+|---|---|---|---|
+| Pokémon + pairs + sets (per model unit) | +27.39 | 27.25 to 30.03 | helps (in-sample, sizing only) |
+| Ready for the top threats (per 10 points) | +1.05 | 0.38 to 1.76 | helps beyond chance, even on top of x0 |
+| Has a Mega (extra) | −3.97 | −13.43 to 8.09 | unknown |
+| No major weak spot | −0.50 | −1.67 to 1.10 | unknown |
+| Weak spots spread out | +0.82 | −0.40 to 2.39 | unknown |
+| Offensive coverage (per type hit super effectively) | +0.39 | −0.07 to 0.80 | unknown |
+| Types nobody resists (per type) | −0.36 | −0.79 to 0.12 | unknown |
+| Protect (extra, per member) | −0.09 | −0.55 to 0.33 | unknown |
+| An item problem | −0.52 | −2.50 to 1.13 | unknown |
+| 2+ physical and 2+ special attackers | +1.06 | −0.56 to 2.69 | unknown |
+| 3+ members sharing a type | −1.33 | −3.65 to 1.02 | unknown |
+
+Reading: once Pokémon, sets and player skill are counted, readiness for the top threats is the only factor that still adds beyond
+chance. The type checks measured alone earlier (+0.9, +1.3) overlap with what the Pokémon themselves already carry. "Unknown" is not
+"no effect". Fit 2 (each factor without x0) is running to see their sizes on their own.
