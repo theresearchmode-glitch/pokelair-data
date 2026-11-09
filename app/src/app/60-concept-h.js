@@ -126,9 +126,24 @@ CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'fu
    The real win rate itself is shown as its own line under the grade, never as a second grade. */
 CH.REC_K = 100;
 CH.recScore = wr => Math.min(100, Math.max(0, Math.round(70 + (wr - .5) * 200)));
+/* Letter buffer (Nov 9, Sim asked): the daily data update moves an unchanged team's grade by ~1-2 points, which with plus/minus
+   letters would flip a team sitting on a line (B / B+) with nothing changed. For the player's own teams (My Team and saved teams),
+   the letter they last saw is kept until the grade clearly crosses into another letter (by 1.5 points). Editing the team makes a new
+   key, so a real change shows at once. Kept in this browser only (a per-viewer convenience); without storage it just shows the plain letter. */
+CH.STICKY = 1.5;
+CH.letterBounds = L => { const T = [[97, 101, 'A+'], [93, 97, 'A'], [90, 93, 'A\u2212'], [85, 90, 'B+'], [78, 85, 'B'], [70, 78, 'B\u2212'], [55, 70, 'C+'], [40, 55, 'C'], [30, 40, 'C\u2212'], [23, 30, 'D+'], [16, 23, 'D'], [10, 16, 'D\u2212'], [-1, 10, 'F']].find(t => t[2] === L); return T ? [T[0], T[1]] : null; };
+CH.teamKey = ms => (ms || []).map(m => [m.p && m.p.n, m.heldItem || '', m.ability || '', (m.moves || []).map(x => x && x.name).join(',')].join('|')).sort().join(';');
+CH.ownKeys = () => { const sig = JSON.stringify(S.slots) + '#' + JSON.stringify((S.teams || []).map(t => t.slots)); if (CH._okC && CH._okC.sig === sig) return CH._okC.ks; const ks = new Set(); CH._okC = {sig, ks}; try { const cur = typeof members === 'function' ? members() : []; if (cur.length) ks.add(CH.teamKey(cur));
+  for (const t of S.teams || []) { const r = typeof teamRating === 'function' ? teamRating(t.slots) : null; if (r && r.ms && r.ms.length) ks.add(CH.teamKey(r.ms)); } } catch (e) {} return ks; };
+CH.sticky = (ms, s) => { const now = CH.gradeFull(s); let map; try { map = JSON.parse(localStorage.getItem('np.gl') || '{}') || {}; } catch (e) { return now; }
+  const k = CH.teamKey(ms); if (!k) return now; const prev = map[k]; let out = now;
+  if (prev && prev !== now) { const b = CH.letterBounds(prev); if (b && s >= b[0] - CH.STICKY && s < b[1] + CH.STICKY) out = prev; }
+  if (map[k] !== out && !CH._ownBusy) { CH._ownBusy = true; let own; try { own = CH.ownKeys(); } finally { CH._ownBusy = false; }
+    if (own.has(k)) { map[k] = out; const ks = Object.keys(map); if (ks.length > 60) delete map[ks[0]]; try { localStorage.setItem('np.gl', JSON.stringify(map)); } catch (e) {} } }
+  return out; };
 CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
   const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
-  if (st) { const s = Math.round(st.pct * 10) / 10; return {v: 2, s, letter: CH.gradeFull(s), band: CH.grade(s), e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.pct0, pMu: st.pMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
+  if (st) { const s = Math.round(st.pct * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.pct0, pMu: st.pMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
   // fewer than six (or the model not loaded yet): the old check, marked so far
   const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
   let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
