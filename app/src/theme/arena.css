@@ -489,3 +489,6 @@
    narrow phones, and the tiny name labels in team tiles use the bold body font (labels, not headlines) */
 @media (max-width:400px){@A .subnav>.sub:not(#_n1):not(#_n2):not(#_n3){font-size:19px!important;letter-spacing:-.02em!important}}
 @A .tgn:not(#_t1):not(#_t2):not(#_t3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}
+/* Darkrai in tip bubbles (Nov 9, Preview): small, in the top-right corner, inside the bubble (it was cut off when the bubble opened near the top of the screen); the title keeps clear of it */
+@A .tippop .tipdk{position:absolute;top:8px;right:8px;width:44px!important;height:44px!important;object-fit:contain;pointer-events:none}
+@A .tippop.hasdk > b{padding-right:44px}
