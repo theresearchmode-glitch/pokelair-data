@@ -1,7 +1,7 @@
 // Known-answer teams (Nov 8, foundation plan Phase 0). Cases with an obvious right answer that the grade, Fix it and
 // Build for Me must always get right. Runs the built page (app/dist/page.html) with today's data.
 //   1. top-cut teams      Limitless top-4 teams (32+ player events, last 30 days, before the sealed set, each player's own sheet) grade B or better (70+): at least 60% of them (twice chance); the forward comparison is accuracy-gate.mjs
-//   2. broken team        six of the weakest Pokémon in the roster grade F (under 10)
+//   2. broken team        six of the weakest Pokémon in the roster score under 60 (Strength Score band F)
 //   (letters as the site gives them, CH.grade: A 90+, B 70+, C 30+, D 10+, F under 10, i.e. the rank among real teams)
 //   3. illegal items      two members holding the same item: flagged as not legal
 //   4. no worse ideas     for strong (A) real teams, no suggestion leads to a lower grade
@@ -111,12 +111,12 @@ R.apply = [];
   const pool = [...cnt].sort((a, b) => b[1] - a[1]).map(([t]) => M.teams[t].split('|')).filter(t => t.length === 6).slice(0, 120);
   for (const ns of pool) { if (R.apply.length >= 6) break;
     const r = await run(`(()=>{ if (${JSON.stringify(ns)}.some(n => !byName.get(n))) return JSON.stringify(null); S.format = 'doubles'; S.slots = normSlots(${JSON.stringify(ns)}.map(n => ({n, a: null, lock: false}))); const g = gradeTeam(members());
-      if (g == null || g < 30 || g > 85) return JSON.stringify(null); setView('coverage'); render(); return JSON.stringify({g}); })()`);
+      if (g == null || g < 55 || g > 88) return JSON.stringify(null); setView('coverage'); render(); return JSON.stringify({g}); })()`);
     if (!r) continue; await pg.waitForTimeout(3500);
-    const card = await pg.evaluate(() => { const c = document.querySelector('#sugs .plan'); if (!c) return null; /* textContent: the list can sit in a closed panel, where innerText is empty (Nov 9) */ /* Nov 9: the card shows only the letter; the exact rank is in the chip's title. Both must match after Apply. */ const t = c.querySelector('[title*="With this change"]'), m = t && t.getAttribute('title').match(/With this change (\S+), ((?:top|bottom) \d+%)/i); return m ? m[1] + ' ' + m[2].toLowerCase() : null; });
+    const card = await pg.evaluate(() => { const c = document.querySelector('#sugs .plan'); if (!c) return null; /* textContent: the list can sit in a closed panel, where innerText is empty (Nov 9) */ /* Nov 9: the card shows only the letter; the exact rank is in the chip's title. Both must match after Apply. */ const t = c.querySelector('[title*="With this change"]'), m = t && t.getAttribute('title').match(/With this change (\d+) \(/); return m ? m[1] : null; /* Strength Score (Nov 9): the promised score */ });
     if (!card) continue;
     await pg.evaluate(() => { const b = document.querySelector('#sugs .plan [data-plan="0"]'); if (b) b.click(); }); await pg.waitForTimeout(2500);
-    const after = await run(`(()=>{ const ms = members(), g = gradeTeam(ms); return JSON.stringify(g == null ? null : CH.gradeFull(g) + ' ' + CH.rankShort(g).toLowerCase()); })()`);
+    const after = await run(`(()=>{ const ms = members(), g = gradeTeam(ms); return JSON.stringify(g == null ? null : String(Math.round(g))); })()`);
     R.apply.push({mons: ns, before: r.g, promised: card, after}); } }
 await b.close(); fs.unlinkSync(page);
 // ---- verdicts
@@ -127,7 +127,7 @@ R.top = R.top.filter(t => !offFormat(t.ev)); // themed cups (MonoRegion…) are 
      seen these games). Here: a floor only, twice chance; the real comparison is experiments/accuracy-gate.mjs (forward, vs the
      approved baseline). */
   add('top-cut teams, graded with their own team sheets, scoring 80+ (Tournament ready; Strength Score, Sim Nov 9) (60%+ of them, twice chance; the forward gate is accuracy-gate.mjs)', n >= 10 && good / n >= .6, `${good} of ${n} scored 80+ (${Math.round(good / n * 100)}%; ${R.top.filter(t => t.sheet).length} with their sheet; with default sets instead: ${R.top.filter(t => t.gDef >= 70).length}), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
-add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 10, `${R.weak.g} (${R.weak.mons.join(', ')})`);
+add('six of the weakest Pokémon score under 60 (Missing a basic)', R.weak.g != null && R.weak.g < 60, `${R.weak.g} (${R.weak.mons.join(', ')})`);
 add('two of the same item reads as not legal', R.illegal.flagged, `${R.illegal.clause} item clash${R.illegal.clause === 1 ? '' : 'es'} found`);
 { const s = R.sugg.filter(x => !x.err), worse = s.reduce((a, x) => a + x.worse, 0), tot = s.reduce((a, x) => a + x.n, 0);
   add('no suggestion lowers the grade of a strong (A) team', s.length > 0 && worse === 0, `${s.length} A teams, ${tot} suggestions (${s.reduce((a, x) => a + x.main, 0)} shown first), ${worse} would lower the grade (${s.reduce((a, x) => a + x.worseMain, 0)} of those shown first)${R.sugg.some(x => x.err) ? ' · errors: ' + R.sugg.filter(x => x.err).map(x => x.err).join('; ') : ''}`); }
