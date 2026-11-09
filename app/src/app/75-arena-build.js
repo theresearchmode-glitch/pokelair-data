@@ -26,7 +26,7 @@ ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = 
   const G = tm._g, RD = tm._rdv; let score = '', stats = '';
   if (G) { const tt = head && head.querySelector('.npgb'), title = tt ? tt.getAttribute('title') : '';
     // grade first, the win rate under it with the average for scale (Sim, Nov 5: "63.0% Grade A" was confusing)
-    score = `<div class="arb-score arb-gfirst"${title ? ` title="${esc(title)}"` : ''}><span class="arb-grade">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp">${esc(G.letter)}</span><span class="arb-basis">${G.v === 2 ? `<b>${CH.rankShort(G.s)}</b><small class="ar-gsub">of tournament teams</small>` : `<b>${G.s}</b> / 100`}</span>${G.st && G.st.su && G.st.su.w === 'Low' ? '<small class="ar-gsub">Few real games back this mix yet, so it\'s a best guess</small>' : ''}</div>`; }
+    score = `<div class="arb-score arb-gfirst"${title ? ` title="${esc(title)}"` : ''}><span class="arb-grade">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp">${esc(G.letter)}</span><span class="arb-basis">${G.v === 2 ? `<b>${CH.rankShort(CH.rkOf(G))}</b><small class="ar-gsub">of tournament teams</small>` : `<b>${G.s}</b> / 100`}</span>${G.st && G.st.su && G.st.su.w === 'Low' ? '<small class="ar-gsub">Few real games back this mix yet, so it\'s a best guess</small>' : ''}</div>`; }
   if (RD) { const c = CH.lvCount(RD), h = CH.hand(RD);
     /* plain words (Nov 9): one number, like My Team's Matchups box; what's left in a short line */
     const left = (c[0] || 0) + (c[1] || 0), muLine = left ? `${c[0] ? `${c[0]} with no answer${c[1] ? ', ' : ''}` : ''}${c[1] ? `${c[1]} shaky` : ''}` : 'Every top threat has an answer';

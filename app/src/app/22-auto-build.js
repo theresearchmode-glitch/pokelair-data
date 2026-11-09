@@ -30,7 +30,7 @@ function abSd(t, six) { const sd = CH.sdOf(t) || 0, g = six ? six.g : 0; return 
 function abGradeC(t) { try { const ms = typeof assignItems === 'function' ? assignItems(t) : t, RD = THR.teamReport(ms), st = CH.strengthOf(ms, RD ? RD.score : null); if (!st) return null;
   /* c is the cautious STRENGTH, not its 0-100 rank: at the top the rank runs out of room (99.4 vs 99.8) and stopped telling a
      672-game proven team from a never-played mix */
-  const sd = abSd(ms, st.six); return {g: st.pct, c: st.y - CAUT_K * sd}; } catch (e) { return null; } }
+  const sd = abSd(ms, st.six); return {g: st.ss, c: st.y - CAUT_K * sd}; } catch (e) { return null; } }
 function abScore(team) { if (abMemo) { const k = team.map(m => m.p.n).sort().join('|') + (OFFMETA ? '#o' : ''); let v = abMemo.get(k); if (v === undefined) { v = abScore0(team); abMemo.set(k, v); } return v; } return abScore0(team); }
 function abScore0(team) { const v = teamValue(team); let s = v.score - .5 * v.gp.penalty - (team.length >= 4 ? typeEmphasis(v.st.a) : 0) - pillarCost(team, v.gp);
   // a rain or sun that helps nobody (Pelipper next to only Fire attackers) costs a little
@@ -117,8 +117,8 @@ function* boxCatchGen(res) { const d = res.teams && res.teams[0]; if (!d || !d.m
   sw.sort((a, b) => b[0] - a[0]); let best = null;
   for (const [, i, p] of sw.slice(0, 12)) { yield; const nt = [...t.slice(0, i), abMember(p), ...t.slice(i + 1)]; if (megaCount(nt) !== megaCount(t) || wxConflict(nt) || wxUnmet(nt).length) continue; const g = gradeTeam(nt); if (g != null && (!best || g > best.g)) best = {g, p, out: t[i].p}; }
   if (!best || best.g < g0 + 3) return;
-  d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach an A: catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(best.g).toLowerCase()} of tournament teams`
-    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${CH.gradeFull(g0)} to ${CH.gradeFull(best.g)} (${CH.rankShort(best.g).toLowerCase()} of tournament teams)`);
+  d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach an A: catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams`
+    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${CH.gradeFull(g0)} to ${CH.gradeFull(best.g)} (${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams)`);
   d.boxCatch = {p: best.p.n, out: best.out.n, g0, g: best.g}; }
 function* buildBestGen0() {
   // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below
@@ -228,7 +228,7 @@ function* buildBestGen_() {
         const nt = [...t.slice(0, i), abMember(p), ...t.slice(i + 1)]; if (wxConflict(nt) || wxUnmet(nt).length) continue; const v = abY(nt); if (v != null) sw.push([v, nt, i, p]); }
       sw.sort((a, b) => b[0] - a[0]); let best = null;
       for (const [, nt, i, p] of sw.slice(0, 12)) { yield; const G = abGradeC(nt); if (G && G.g >= 90 && (!best || G.g > best.g)) best = {g: G.g, p, out: t[i].p}; }
-      if (best) teamsOut[0].why.push(`To reach an A: catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(best.g).toLowerCase()} of tournament teams (grade A)`); } }
+      if (best) teamsOut[0].why.push(`To reach an A: catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams (grade A)`); } }
     return {fmt, teams: teamsOut};
   } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, list: null}; }
 }

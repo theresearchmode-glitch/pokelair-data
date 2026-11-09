@@ -135,7 +135,7 @@ function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g
 // "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
 // "Grade 93 → 96" on a suggestion: the same one grade My team shows (Nov 7: one grade out of 100, real results blended in)
 function gradeChip(g0,g1,cls){if(g0==null||g1==null)return '';const d=g1-g0;
-  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Now ${CH.gradeFull(g0)}, ${CH.rankShort(g0).toLowerCase()} of real tournament teams. With this change ${CH.gradeFull(g1)}, ${CH.rankShort(g1).toLowerCase()}.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
+  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Now ${CH.gradeFull(g0)}, ${CH.rankShort(CH.rankOfS(g0)).toLowerCase()} of real tournament teams. With this change ${CH.gradeFull(g1)}, ${CH.rankShort(CH.rankOfS(g1)).toLowerCase()}.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
   return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="${tt}">${CH.gradeMove(g0,g1)}</span>`}
 function tsChip(team){let ms=null;try{ms=members()}catch(e){}const g0=ms&&ms.length===6?gradeTeam(ms):null,g1=gradeTeam(team);if(g0!=null&&g1!=null)return gradeChip(g0,g1,null,team);
   const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;

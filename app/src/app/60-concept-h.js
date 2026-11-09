@@ -32,11 +32,21 @@ CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><spa
    real tournament teams (0-100), and the letter comes from that rank: A top 10%, B next 20%, C middle 40%, D next 20%, F bottom
    10%. How the six handles the top threats is shown on its own, as Matchups: it explains what beats the team, it isn't part of
    the grade (it predicted wins far less well). A team of fewer than six keeps the old check, marked "so far". */
-CH.grade = s => s >= 90 ? 'A' : s >= 70 ? 'B' : s >= 30 ? 'C' : s >= 10 ? 'D' : 'F'; // the band (colours, data-band)
+/* STRENGTH SCORE (Sim, Nov 9; docs/strength-score.md). The 0-100 number says how strong the team is altogether, not where it ranks:
+   80 + 122 × (chance to beat today's tournament teams − 50%), the chance being CH.fieldWin (player skill taken out, recomputed daily
+   from real teams). A team that beats today's tournament teams half the time scores 80; the best 2% of real sheets about 92; no Mega
+   lands in the 50s. Same ranking as the old grade (scoreboard Nov 9: identical picks); each 10-point band won more than the one
+   below on later games. The rank among real teams is kept as G.rk (small print). Letters: one per 10 points (A 90+, B 80s, C 70s,
+   D 60s, F under 60) until the band words replace them (Step B). */
+CH.SS_MID = 80; CH.SS_K = 122;
+CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
+CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
+CH.wordOf = s => s == null ? '' : CH.WORDS.find(w => s >= w[0])[1];
+CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F'; // the band (colours, data-band)
 // Nov 9 (Sim chose: plus/minus on every letter, so players feel the difference inside a band): same ranking, finer labels.
 // Tested on later games: the top and bottom bands differ clearly; neighbouring steps differ by ~1-2 wins per 100 games, too small to
 // confirm with today's data, so a step is a rank (where the team sits), not a promise of more wins. F stays plain.
-CH.gradeFull = s => { const B = [[97, 'A+'], [93, 'A'], [90, 'A\u2212'], [85, 'B+'], [78, 'B'], [70, 'B\u2212'], [55, 'C+'], [40, 'C'], [30, 'C\u2212'], [23, 'D+'], [16, 'D'], [10, 'D\u2212']]; for (const [t, l] of B) if (s >= t) return l; return 'F'; };
+CH.gradeFull = s => CH.grade(s);
 CH.gradeOld = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
 // this exact six's own record (δ in team-strength units, and its games), from model.sixes
 CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms.length !== 6) return null; const v = S[ms.map(m => (m.p || m).n).sort().join('|')]; if (!Array.isArray(v)) return null;
@@ -62,7 +72,7 @@ CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || 
   let v = 0; for (const n of ns) v += (M.monSd[n] ?? mx) ** 2;
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = ns[i] < ns[j] ? ns[i] + '|' + ns[j] : ns[j] + '|' + ns[i]; v += ((M.pairSd || {})[k] ?? p0) ** 2; }
   return Math.sqrt(v) * CH.SD_K; };
-CH.rangeOf = (ms, y) => { const sd = CH.sdOf(ms); if (sd == null || y == null) return null; const a = strengthPct(y - 1.2816 * sd), b = strengthPct(y + 1.2816 * sd);
+CH.rangeOf = (ms, y) => { const sd = CH.sdOf(ms); if (sd == null || y == null) return null; const a = CH.ssOfE(CH.fieldWin(y - 1.2816 * sd)), b = CH.ssOfE(CH.fieldWin(y + 1.2816 * sd));
   return a == null || b == null ? null : [Math.round(a), Math.round(b)]; };
 // win chance against today's field: the average over real tournament teams (the shipped percentiles)
 CH.fieldWin = y => { const q = META.model && META.model.dist && META.model.dist.q; if (!Array.isArray(q) || q.length !== 101) return null; const c = calibK(); let t = 0; for (const v of q) t += sig(c * (y - v)); return t / q.length; };
@@ -81,7 +91,7 @@ CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof mode
   const M = META.model, mx = M.meanX || 0, k = typeof testedPairs === 'function' ? testedPairs(names) : null, cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
   const dv = xs.x0 - mx, x = mx + (dv > 0 ? dv * cr : dv), mu = ready == null ? 0 : CH.MU_K * (ready - CH.MU_AVG);
   const six = CH.sixOf(ms), y0 = x + mu, y = y0 + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
-  return {x, y, six, mu, pct, pct0: strengthPct(x), pMu: strengthPct(y0), e, e0: CH.fieldWin(x), eMu: CH.fieldWin(y0), rg: CH.rangeOf(ms, y), su: CH.sureOf(ms, six)}; } catch (e) { return null; } };
+  const e0 = CH.fieldWin(x), eMu = CH.fieldWin(y0); return {x, y, six, mu, pct, ss: CH.ssOfE(e), ss0: CH.ssOfE(e0), ssMu: CH.ssOfE(eMu), pct0: strengthPct(x), pMu: strengthPct(y0), e, e0, eMu, rg: CH.rangeOf(ms, y), su: CH.sureOf(ms, six)}; } catch (e) { return null; } };
 /* Partial teams on the same scale (Nov 8, foundation plan Phase 1): a team of 1-5 is rated as if each empty slot were an
    average tournament pick, so the number means the same thing as for a full six and each Pokémon you add moves it in a way
    you can follow. Known Pokémon, their pairs and their sets count as for a full team; an empty slot counts 1/6 of an average
@@ -90,7 +100,7 @@ CH.PARTIAL_V2 = true;
 CH.partialOf = ms => { try { if (!ms || !ms.length || ms.length >= 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
   if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < names.length) return null; const M = META.model, mx = M.meanX || 0;
   const xk = strengthX(names, ms).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
-  return {x: y, y, six: null, mu: 0, pct, pct0: pct, pMu: pct, e, e0: e, eMu: e, rg: null, su: null, partialN: names.length}; } catch (e) { return null; } };
+  const ss = CH.ssOfE(e); return {x: y, y, six: null, mu: 0, pct, ss, ss0: ss, ssMu: ss, pct0: pct, pMu: pct, e, e0: e, eMu: e, rg: null, su: null, partialN: names.length}; } catch (e) { return null; } };
 // The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
 // Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
 // letters in the same order as the teams' finishes most often. Weather and Taunt/Encore aren't checks: teams without them won
@@ -131,7 +141,7 @@ CH.recScore = wr => Math.min(100, Math.max(0, Math.round(70 + (wr - .5) * 200)))
    the letter they last saw is kept until the grade clearly crosses into another letter (by 1.5 points). Editing the team makes a new
    key, so a real change shows at once. Kept in this browser only (a per-viewer convenience); without storage it just shows the plain letter. */
 CH.STICKY = 1.5;
-CH.letterBounds = L => { const T = [[97, 101, 'A+'], [93, 97, 'A'], [90, 93, 'A\u2212'], [85, 90, 'B+'], [78, 85, 'B'], [70, 78, 'B\u2212'], [55, 70, 'C+'], [40, 55, 'C'], [30, 40, 'C\u2212'], [23, 30, 'D+'], [16, 23, 'D'], [10, 16, 'D\u2212'], [-1, 10, 'F']].find(t => t[2] === L); return T ? [T[0], T[1]] : null; };
+CH.letterBounds = L => { const T = [[90, 101, 'A'], [80, 90, 'B'], [70, 80, 'C'], [60, 70, 'D'], [-1, 60, 'F']].find(t => t[2] === L); return T ? [T[0], T[1]] : null; };
 CH.teamKey = ms => (ms || []).map(m => [m.p && m.p.n, m.heldItem || '', m.ability || '', (m.moves || []).map(x => x && x.name).join(',')].join('|')).sort().join(';');
 CH.ownKeys = () => { const sig = JSON.stringify(S.slots) + '#' + JSON.stringify((S.teams || []).map(t => t.slots)); if (CH._okC && CH._okC.sig === sig) return CH._okC.ks; const ks = new Set(); CH._okC = {sig, ks}; try { const cur = typeof members === 'function' ? members() : []; if (cur.length) ks.add(CH.teamKey(cur));
   for (const t of S.teams || []) { const r = typeof teamRating === 'function' ? teamRating(t.slots) : null; if (r && r.ms && r.ms.length) ks.add(CH.teamKey(r.ms)); } } catch (e) {} return ks; };
@@ -143,7 +153,7 @@ CH.sticky = (ms, s) => { const now = CH.gradeFull(s); let map; try { map = JSON.
   return out; };
 CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && !x.note && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
   const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
-  if (st) { const s = Math.round(st.pct * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.pct0, pMu: st.pMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
+  if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOf(s), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
   // fewer than six (or the model not loaded yet): the old check, marked so far
   const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
   let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
@@ -151,20 +161,24 @@ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.
 // the third line under every grade: the real win rate, or that there is none yet
 const pct1 = x => Math.round(x * 1000) / 10 + '%';
 // v2: where the six ranks among real teams, and what the grade rests on (its own games, or our estimate)
-CH.pctTxt = G => CH.rankShort(G.s) + ' of tournament teams';
-CH.pctShort = G => CH.rankShort(G.s);
+CH.rkOf = G => G.rk != null ? G.rk : CH.rankOfS(G.s);
+CH.pctTxt = G => CH.rankShort(CH.rkOf(G)) + ' of tournament teams';
+CH.pctShort = G => CH.rankShort(CH.rkOf(G));
 // a grade number (a rank among real teams) as its expected win rate, for explanations
-CH.eOfS = s => { const q = META.model && META.model.dist && META.model.dist.q; if (s == null || !Array.isArray(q) || q.length !== 101) return null; const i = Math.max(0, Math.min(99, Math.floor(s))), f = Math.max(0, Math.min(1, s - i)), y = q[i] + (q[i + 1] - q[i]) * f, e = CH.fieldWin(y); return e == null ? null : Math.round(e * 1000) / 10; };
+// a Strength Score as its chance to beat today's tournament teams (%), and as a rank among real teams (0-100)
+CH.eOfS = s => s == null || !(META.model && META.model.dist) ? null : Math.round((.5 + (s - CH.SS_MID) / CH.SS_K) * 1000) / 10;
+CH.rankOfS = s => { const q = META.model && META.model.dist && META.model.dist.q; if (s == null || !Array.isArray(q) || q.length !== 101) return null; const e = .5 + (s - CH.SS_MID) / CH.SS_K;
+  let lo = q[0] - 3, hi = q[100] + 3; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2, f = CH.fieldWin(m); if (f == null) return null; if (f < e) lo = m; else hi = m; } return strengthPct((lo + hi) / 2); };
 /* a change, on suggestion cards and after Apply (Sim, Nov 7: "giving win percentage is so weird… seems arbitrary"): the grade
    letter and the team rating, the 0-100 rank among real tournament teams the letter comes from: "Grade C → B · rating 41 → 58",
    or "Grade C · rating 41 → 46" when the letter stays. A tiny win-rate change ("−0.6%") claimed more precision than there is. */
 /* Shown as a rank (Sim, Nov 8: "77 for a 9-1 team seems so low"): the 0-100 number is where the six ranks among real tournament
    teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
 CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
-CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.gradeFull(g0), b = CH.gradeFull(g1), r0 = CH.rankShort(g0), r1 = CH.rankShort(g1);
+CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.gradeFull(g0), b = CH.gradeFull(g1), r0 = CH.rankShort(CH.rankOfS(g0)), r1 = CH.rankShort(CH.rankOfS(g1));
   // Phase 3 (Nov 9): one measure on cards, the letter. Ranks stay in the tooltip (gradeChip title), not on the card.
   return a !== b ? `Grade ${a} → ${b}` : g1 > g0 ? `Grade ${b} · stronger` : g1 < g0 ? `Grade ${b} · weaker` : `Grade ${b}`; };
-CH.gradeNum = G => !G ? '' : G.v === 2 ? `${CH.rankShort(G.s)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
+CH.gradeNum = G => !G ? '' : G.v === 2 ? `${CH.rankShort(CH.rkOf(G))}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
 CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
 // checks, and real results (how far the real win rate moved it).
@@ -202,11 +216,11 @@ CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><
   const ready = sum ? '' : cell(RD.score + '%', 'ready', tp('readiness'));
   const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'no answer') : ''}</div>`;
   return `<div class="rd wdstats">${sum}${rec}${chk}</div>`; };
-CH.LETTERS = 'A: top 10% of real tournament teams · B: next 20% · C: middle 40% · D: next 20% · F: bottom 10%.';
+CH.LETTERS = 'Strength Score: A 90+ · B 80s · C 70s · D 60s · F under 60. A team that beats today\u2019s tournament teams half the time scores 80.';
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.v === 2) { const L2 = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu), m = b - a, r = t - b, pts = v => `${Math.abs(v)} point${Math.abs(v) === 1 ? '' : 's'}`;
     const own = G.six ? ` This exact six has ${G.six.g.toLocaleString('en-US')} real tournament games. With its players' skill and its opponents' strength taken out, those results ${r > 0 ? `add ${pts(r)}` : r < 0 ? `take off ${pts(r)}` : 'change it by less than a point'}; the more games, the more they count.` : ' This exact six hasn’t been played in tournaments yet, so this is our estimate from how its Pokémon, pairs and sets do in real games.';
-    const su = G.st && G.st.su, top = `${L2} · ${CH.pctTxt(G)}${t > 50 && t < 99 ? ` (stronger than ${t}% of them)` : ''}.`;
+    const su = G.st && G.st.su, rk = Math.round(CH.rkOf(G)), top = `${L2} · ${CH.pctTxt(G)}${rk > 50 && rk < 99 ? ` (stronger than ${rk}% of them)` : ''}.`;
     /* short (Sim, Nov 7: "just what they should and need to"): what the number means, the three things it's made of, the letters */
     const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
     if (G.partial) { const k = G.st && G.st.partialN || 0, e = 6 - k;
