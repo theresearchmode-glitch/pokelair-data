@@ -76,6 +76,8 @@ const V = {
   '− own record': p => adj(p, 1) + MU(p, .003),
   '− caution for untried pairs': p => adj(p, 0) + MU(p, .003) + p.six,
   '− matchups − own record': p => adj(p, 1),
+  // Strength Score (Nov 9): matchup weight measured on real games (experiments/strength-fit.mjs, 1.05 points per 10 ÷ 27.39)
+  'Strength Score (matchups .0038)': p => adj(p, 1) + MU(p, .0038) + p.six,
   'matchups ×2 (.006)': p => adj(p, 1) + MU(p, .006) + p.six,
   'matchups ×4 (.012)': p => adj(p, 1) + MU(p, .012) + p.six,
   'learned matchups vs the field, in place of calc matchups': (p, ns) => adj(p, 1) + p.six + fieldMt(ns) / MD.calib,
