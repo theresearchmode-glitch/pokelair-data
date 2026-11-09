@@ -23,7 +23,14 @@ const run = (args, env) => execFileSync('node', args, {cwd: ROOT, env: {...proce
 const weeks = [];
 for (const cut of cuts) { const to = day(cut, 7), mt = DIR + `model-${cut}.json`;
   console.log(`week ${cut} → ${to}: training on events before ${cut}…`);
-  run(['model.mjs'], {TRAIN_ONLY: '1', TEST_DATE: cut, MODEL_OUT: mt});
+  // Nov 9 fix (found while checking calibration): TRAIN_ONLY + TEST_DATE fitted the model's stretch (calib) on every event on or
+  // after the cut, i.e. on the very week being scored (Nov 2 cut: 51 of its 52 held-out events) plus one sealed-set event. Now
+  // each week trains exactly like production on the data as it stood at the cut: games of events before the cut only, the
+  // stretch from production's own split (last 20% of those events). WF_OLD=1 runs the old way, to compare.
+  if (process.env.WF_OLD === '1') run(['model.mjs'], {TRAIN_ONLY: '1', TEST_DATE: cut, MODEL_OUT: mt});
+  else { const M = JSON.parse(fs.readFileSync(ROOT + 'out/matches.json', 'utf8')), mf = DIR + `matches-${cut}.json`;
+    M.m = M.m.filter(g => M.events[g[3]][1] < cut); fs.writeFileSync(mf, JSON.stringify(M));
+    run(['model.mjs'], {MATCHES: mf, MODEL_OUT: mt}); fs.unlinkSync(mf); }
   // WF_BREAK=shuffle (test of the gate only): scramble the Pokémon strengths after training, a deliberately broken grade
   if (process.env.WF_BREAK === 'shuffle') { const m = JSON.parse(fs.readFileSync(mt, 'utf8')), k = Object.keys(m.mons), v = k.map(x => m.mons[x]); let s = 11;
     for (let i = v.length - 1; i > 0; i--) { s = (s * 16807) % 2147483647; const j = s % (i + 1); [v[i], v[j]] = [v[j], v[i]]; } k.forEach((x, i) => { m.mons[x] = v[i]; }); fs.writeFileSync(mt, JSON.stringify(m)); }
