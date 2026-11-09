@@ -424,3 +424,12 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
 - Monthly check's first GitHub run: picks 54.74%, A 54.8% vs C 49.3%; threat matchups +0.7 +/-1.0 (unknown).
 - Type coverage (Sim's question, 20,000 ladder games): offense r = 0.003 (no effect); stacked weaknesses -1.4 +/-0.9 overall
   but one half only (not confirmed; idea to test).
+
+### Nov 9: the weekly scoreboard was flattered; re-measured honestly (measured)
+- Found while checking calibration: walk-forward trained each week with TRAIN_ONLY + TEST_DATE, which fits the model's stretch on
+  every event on or after the cut, i.e. on the very week being scored (Nov 2 cut: 51 of 52 events) plus one sealed-set event.
+- Fix: each week now trains exactly like production on the data as it stood at the cut (games of earlier events only).
+- Honest 4 weeks, 18,618 games: log-loss 0.6888 (was 0.6820), higher grade wins 54.7% (was 55.5%), calibration gap 1.55,
+  said 67% -> won 57.5% (504 games), said 73% -> won 68.9% (206), top-4 teams B or better 326/392 (was 271/392).
+- The live site was never affected (it has no future games); only our measuring stick was. Gate baseline re-recorded with the
+  honest numbers (Sim, Nov 9: "do what you believe is best to ensure the highest accuracy"); old numbers kept under "previous".
