@@ -212,6 +212,15 @@ const PLANS = [
   ["f1-rules","One thing at a time; every claim labelled measured or guess","Written into the project instructions (CLAUDE.md)."]]},
  {id:"f2", name:"Protect the live site", goal:"Untested daily data can't reach players.", steps:[
   ["f2-gate","Daily model goes live only if it passes the checks","Otherwise yesterday's model stays and Sim gets told."]]},
+ {id:"f2b", name:"Fix what the health inventory found (Nov 9)", goal:"Nothing failing or silently dead.", steps:[
+  ["f2b-dead","Remove the dead cross-check","'Our usage vs the official field' skipped 8+ days: it used RK9 data, retired Nov 1. Covered by the top-64 check."],
+  ["f2b-noise","Daily warning for a known difference","Smogon 1760+ vs Showdowntier (all ratings) can't agree by design: an info line, or compare like with like."],
+  ["f2b-pika","Explain the Pikalytics disagreement","1 Pok\u00e9mon flagged today; every disagreement gets explained."],
+  ["f2b-monthly","Run the monthly check once on GitHub","First scheduled run is Dec 1; prove it works now."],
+  ["f2b-issue","Close the stale Oct 28 GitHub issue",""]]},
+ {id:"f2c", name:"One daily health summary", goal:"One place that shows every job and check: green, amber or red.", steps:[
+  ["f2c-board","Daily health summary","Every job, check, data source and the live branch, with dates."],
+  ["f2c-alarm","Alarm on red AND on anything that silently stopped running",""]]},
  {id:"f3", name:"Split the tests", goal:"Red means a real code problem.", steps:[
   ["f3-frozen","Code tests on a frozen data snapshot",""],
   ["f3-data","Daily data checks separate, alert only",""]]},
