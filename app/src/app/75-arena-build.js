@@ -30,7 +30,7 @@ ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = 
   if (RD) { const c = CH.lvCount(RD), h = CH.hand(RD);
     /* plain words (Nov 9): one number, like My Team's Matchups box; what's left in a short line */
     const left = (c[0] || 0) + (c[1] || 0), muLine = left ? `${c[0] ? `${c[0]} with no answer${c[1] ? ', ' : ''}` : ''}${c[1] ? `${c[1]} shaky` : ''}` : 'Every top threat has an answer';
-    stats = `<div class="ar-trio arb-trio arb-mu">${AR.cell(RD.score + '%', 'ready')}<span class="ar-muline">${muLine}</span></div>`; }
+    stats = `<div class="ar-trio arb-trio arb-mu">${AR.cell(h ? h.x + '/' + h.n : RD.score + '%', 'ready for top threats')}<span class="ar-muline">${muLine}</span></div>`; }
   const ck = tm.grade, pips = ck ? `<div class="arb-checks"><b>${ck.pass}/${ck.n}</b><span>team checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span></div>` : '';
   const st = document.createElement('div'); st.className = 'arb-stage';
   st.innerHTML = `<div class="arb-sthead"><div><p class="ar-kick">${esc(kind)}</p><h2 class="ar-h2">${esc(String(tm.label || 'Your six').split(/\s*·\s*/).join(', '))}</h2>${optT ? `<p class="arb-opt">${esc(optT.charAt(0).toUpperCase() + optT.slice(1))}</p>` : ''}</div>${score}</div>

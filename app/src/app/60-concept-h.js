@@ -188,7 +188,7 @@ CH.gradeSum = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
   /* the parts in rating points (Sim, Nov 7: no tiny win-rate pieces): where its Pokémon, pairs and sets alone would rank it, what
      its matchups move, what its own games move */
   if (G.v === 2) { const a = Math.round(G.pct0), b = Math.round(G.pMu), t = Math.round(G.s), m = b - a, r = t - b;
-    return `<b>Strength Score <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% of the top 30 handled)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
+    return `<b>Strength Score <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (ready for ${G.h ? G.h.x + '/' + G.h.n : ''} top threats)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
   const {nm, ts, ra} = CH.gradeParts(G, RD);
   return `<b>Grade <span data-band="${G.band || String(G.letter)[0]}">${G.s}</span></b> = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; };
 /* the same sum, short, for cards and table cells: "92 = 85 ready + 7 strength − 6 checks" */
@@ -204,6 +204,10 @@ CH.GCOL = {A: '#0078BF', B: '#8b4fe0', C: '#77808f', D: '#b8740a', F: '#8d7b68'}
 CH.gcol = L => CH.GCOL[String(L || '')[0]] || '#8a90a6';
 /* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
 CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
+/* Sim, Nov 9: "a team getting a 90 then seeing 85% ready ... is contradictory". Readiness shows as a count everywhere: "Ready for
+   24/30 top threats" (Handles it or Beats it); the weighted % stays inside the calculations only. */
+CH.readyN = RD => { const h = CH.hand(RD); return h ? `${h.x}/${h.n}` : ''; };
+CH.readyTxt = RD => { const h = CH.hand(RD); return h ? `Ready for ${h.x}/${h.n} top threats` : ''; };
 CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
 /* a team's grade as a badge (Build me a team, Saved teams): the letter in its band colour, the grade number, and the sum
    underneath so "% ready" always reads as one part of the grade. A team with 30+ real games shows its record instead. */
@@ -218,7 +222,7 @@ CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><
   const tp = k => typeof tip === 'function' ? tip(k) : '';
   const rec = '';
   const sum = G && !G.partial ? `<div class="wdsum">${CH.gradeSum(G, RD)}</div>` : '';
-  const ready = sum ? '' : cell(RD.score + '%', 'ready', tp('readiness'));
+  const ready = sum ? '' : cell(CH.readyN(RD), 'ready', tp('readiness'));
   const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'no answer') : ''}</div>`;
   return `<div class="rd wdstats">${sum}${rec}${chk}</div>`; };
 CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. A team that beats today\u2019s tournament teams half the time scores 80.';
@@ -231,7 +235,7 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     if (G.partial) { const k = G.st && G.st.partialN || 0, e = 6 - k;
       return `<div class="chgwhy" id="chGwhy">${L2} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
     return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
-      + `<li><b>${sg(m)}</b> for its matchups (${G.r}% of the top 30 handled). They count a little, since players often play around a shaky matchup</li>`
+      + `<li><b>${sg(m)}</b> for its matchups (ready for ${G.h ? G.h.x + '/' + G.h.n : ''} top threats). They count a little, since players often play around a shaky matchup</li>`
       + (G.six ? `<li><b>${sg(r)}</b> from this exact six's own ${G.six.g.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
       + `</ul><p class="chsure">Tested on 6,270 later tournament games: teams scoring 90+ won 58.5%, the 80s 53-54%, the 70s 46-50%, the 60s 38-41%. Every 10 points really means more wins.</p>${su ? `<p class="chsure">How sure: <b>${su.w}</b>. ${su.t[0].toUpperCase() + su.t.slice(1)}.</p>` : ''}${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '', mp = G.mp != null ? Math.round(G.mp) : null;
@@ -581,7 +585,7 @@ function chScoutRender() { const sh = $('chScout'); if (!sh) return; const ms = 
   const best = b ? `<div class="chbest"><div class="chk">Best fix${b.g0 != null && b.g1 != null ? ` · ${CH.gradeMove(b.g0, b.g1)}` : b.d != null ? ` · ${readyDelta(b.d)}` : ''}</div><div class="sw">${b.pl.ch.map(x => `${x.out ? `${sprite(x.out.p, 'out') || ''}<span aria-hidden="true" style="color:var(--chyel);font-size:22px">→</span>` : '+'}${sprite(x.c.p) || ''}`).join(' ')}<span>${esc(b.txt)}</span></div><button type="button" class="chprimary" data-plan="0">Apply this fix <span aria-hidden="true">➜</span></button></div>` : '';
   sh.innerHTML = `<div class="grab"></div><button type="button" class="x" data-chclose aria-label="Close">×</button>
     <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm gc" style="--gc:${CH.gcol(G.letter)}" data-band="${G.band || String(G.letter)[0]}"><span class="chrl">${G.letter}</span><small>${G.rec ? Math.round(G.rec.wr * 100) + '% wins' : G.s}</small></div></div>
-    <div style="font-size:15px;color:var(--chink2);margin-top:6px"><span style="color:var(--chink)">${G.partial ? `<b>${RD.score}% ready</b> so far` : CH.gradeSum(G, RD)}</span> · ${CH.handTxt(RD)} · ${CH.LEGEND}</div>
+    <div style="font-size:15px;color:var(--chink2);margin-top:6px"><span style="color:var(--chink)">${G.partial ? `<b>${CH.readyTxt(RD)}</b> so far` : CH.gradeSum(G, RD)}</span> · ${CH.handTxt(RD)} · ${CH.LEGEND}</div>
     ${CH.legendRow(RD)}${CH.tiles(RD, 'data-chthr')}${det}
     ${list ? `<div class="chlist" style="margin-top:8px">${list}</div>` : ''}${ck}${best}
     <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap"><button type="button" class="chghost" data-chfull="">Full report</button><button type="button" class="chghost" data-chclose="">Close</button></div>`;

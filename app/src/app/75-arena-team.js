@@ -160,7 +160,7 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
   const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.textBaseline = 'alphabetic'; x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   const f = ARB.facts(ms), sc = ARB.score(f.G), RD = f.RD;
   /* readiness, top right */
-  if (RD) { ARB.numeral(x, P, RD.score + '%', W - 60, 132, 104, 'right'); x.textAlign = 'right'; ARB.fnt(x, '600 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('ready for the top 30 threats', W - 60, 168);
+  if (RD) { ARB.numeral(x, P, CH.readyN(RD) || RD.score + '%', W - 60, 132, 104, 'right'); x.textAlign = 'right'; ARB.fnt(x, '600 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('ready for top threats', W - 60, 168);
     if (sc) { ARB.fnt(x, '700 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(String(sc.line).split(' · ')[0], W - 60, 202); /* Nov 9, Sim: the grade only, no 'Our estimate…' note on the share card */ } x.textAlign = 'left'; }
   /* the title on its slanted tab: one line as big as fits, else two lines (never cut off) */
   let fz = 70, TL = null; for (; fz >= 34; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); if (x.measureText(f.name).width <= 640) { TL = [f.name]; break; } if (fz <= 50) { const L2 = ARB.lines(x, f.name, 640); if (L2) { TL = L2; break; } } }

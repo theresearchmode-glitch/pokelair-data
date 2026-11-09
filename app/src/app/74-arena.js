@@ -204,7 +204,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   let stats = '';
   if (RD) {
     /* plain words (Nov 9): one number here; the counts per level are in the Matchups section below. A short line names what's left. */
-    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready for the top ${hd ? hd.n : 30}</span></div>`];
+    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${hd ? hd.x + '/' + hd.n : RD.score + '%'}</span><span class="ar-unit">ready for top threats</span></div>`];
     const left = (c[0] || 0) + (c[1] || 0), muLine = left ? `${c[0] ? `${c[0]} with no answer${c[1] ? ', ' : ''}` : ''}${c[1] ? `${c[1]} shaky` : ''}` : 'Every top threat has an answer';
     const rec = '';
     /* matchups get their own verdict (Sim, Nov 7: "98 and 6 shaky?"): the grade says how strong the team is, this says what can

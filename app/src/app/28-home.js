@@ -22,7 +22,7 @@ function homeSide(v) { const E = META.events; let ev = null, t = null;
     <div class="t2">${esc(ev.name)} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>
     <div class="hsspr">${t.mons.map(m => sprite(byName.get(m.n), 'hsmon') || '').join('')}</div>
     <div class="row"><button class="btn sm" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t))}<button class="linkbtn" type="button" data-view="events">All events ›</button></div>` : ''}
-    ${v && v.RD ? `<button type="button" class="hsts" data-view="build"><b>${v.RD.score}%</b><span>Your team is ready for ${v.RD.score}% of the top 30 threats</span></button>` : ''}</aside>`; }
+    ${v && v.RD ? `<button type="button" class="hsts" data-view="build"><b>${CH.readyN(v.RD)}</b><span>Your team is ready for ${CH.readyN(v.RD)} top threats</span></button>` : ''}</aside>`; }
 function renderHome() { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
   const rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 4);
   const lineup = rows.filter(x => SPRITE_ID[x.p.n]).slice(0, 6);
@@ -48,7 +48,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
       <div class="htk"><span>Your team · ${mine.length}/6</span><span class="thbadge">${esc(shortHead(v.head))}</span></div>
       <div class="htn">${esc(teamTitleFor(ms))}</div>
       <div class="htl">${mine.map(x => sprite(x.p, 'htspr') || '').join('')}</div>
-      <div class="htf">${v.RD ? `<span><b>${v.RD.score}%</b> ready for top threats</span>` : ''}${v.tr ? `<span><b>${v.tr.w}–${v.tr.l}</b> your record</span>` : ''}${v.CK ? `<span><b>${v.CK.pass}/${v.CK.n}</b> checklist</span>` : ''}${v.best ? `<span><b>${Math.round(v.best.wr * 100)}%</b> at events</span>` : ''}<span class="htgo">Open ›</span></div></button>`
+      <div class="htf">${v.RD ? `<span><b>${CH.readyN(v.RD)}</b> ready for top threats</span>` : ''}${v.tr ? `<span><b>${v.tr.w}–${v.tr.l}</b> your record</span>` : ''}${v.CK ? `<span><b>${v.CK.pass}/${v.CK.n}</b> checklist</span>` : ''}${v.best ? `<span><b>${Math.round(v.best.wr * 100)}%</b> at events</span>` : ''}<span class="htgo">Open ›</span></div></button>`
     : `<div class="hstart"><div class="hsk">New here?</div><div class="hst">Three ways to start</div>
       <div class="startacts"><button class="startbtn" type="button" data-view="auto"><b>Build for me</b><span>A real winning team you can field from your box</span></button><button class="startbtn" type="button" data-view="top"><b>Copy a top team</b><span>Load a team that won and tweak it</span></button><button class="startbtn" type="button" data-view="build"><b>Start from scratch</b><span>Type any Pokémon into a slot</span></button></div></div>`}
   ${typeof sleepersSection === 'function' ? sleepersSection('home') : ''}
