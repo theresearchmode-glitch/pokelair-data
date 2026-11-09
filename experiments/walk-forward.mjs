@@ -29,8 +29,12 @@ for (const cut of cuts) { const to = day(cut, 7), mt = DIR + `model-${cut}.json`
   // stretch from production's own split (last 20% of those events). WF_OLD=1 runs the old way, to compare.
   if (process.env.WF_OLD === '1') run(['model.mjs'], {TRAIN_ONLY: '1', TEST_DATE: cut, MODEL_OUT: mt});
   else { const M = JSON.parse(fs.readFileSync(ROOT + 'out/matches.json', 'utf8')), mf = DIR + `matches-${cut}.json`;
-    M.m = M.m.filter(g => M.events[g[3]][1] < cut); fs.writeFileSync(mf, JSON.stringify(M));
-    run(['model.mjs'], {MATCHES: mf, MODEL_OUT: mt}); fs.unlinkSync(mf); }
+    // drop the later events too (renumbering the rest), or production's "newest 20% of events" check holds out empty events
+    const keep = M.events.map((e, i) => e[1] < cut ? i : -1).filter(i => i >= 0), nu = new Map(keep.map((o, n) => [o, n]));
+    M.m = M.m.filter(g => nu.has(g[3])).map(g => { const h = g.slice(); h[3] = nu.get(g[3]); return h; }); M.events = keep.map(i => M.events[i]);
+    fs.writeFileSync(mf, JSON.stringify(M)); run(['model.mjs'], {MATCHES: mf, MODEL_OUT: mt}); fs.unlinkSync(mf);
+    // guard: a week whose model didn't ship would be scored on the fallback formula, not the grade (happened once, Nov 9)
+    const md = JSON.parse(fs.readFileSync(mt, 'utf8')); if (!md.ships || !Object.keys(md.mons || {}).length) throw new Error(`week ${cut}: the model did not ship (ships ${md.ships}, ${Object.keys(md.mons || {}).length} Pokémon); refusing to score the fallback`); }
   // WF_BREAK=shuffle (test of the gate only): scramble the Pokémon strengths after training, a deliberately broken grade
   if (process.env.WF_BREAK === 'shuffle') { const m = JSON.parse(fs.readFileSync(mt, 'utf8')), k = Object.keys(m.mons), v = k.map(x => m.mons[x]); let s = 11;
     for (let i = v.length - 1; i > 0; i--) { s = (s * 16807) % 2147483647; const j = s % (i + 1); [v[i], v[j]] = [v[j], v[i]]; } k.forEach((x, i) => { m.mons[x] = v[i]; }); fs.writeFileSync(mt, JSON.stringify(m)); }

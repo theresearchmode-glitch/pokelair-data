@@ -1,27 +1,47 @@
 {
  "approved": "2026-11-09",
- "by": "Sim (Accuracy Lab: \"Lets go for it\")",
- "note": "Approved baseline for the never-get-worse gate (experiments/accuracy-gate.mjs): the last 2 walk-forward weeks before the sealed set, each scored by a model trained only on earlier events. Full 4-week baseline: 18618 games, log-loss 0.68195, higher grade wins 55.49%, calibration gap 1.86 pts, top-4 teams B or better 271/392. Re-record only with Sim's approval (and when the sealed set moves).",
+ "by": "Sim (Nov 9: \"do what you believe is best to ensure the highest accuracy\")",
+ "note": "Approved baseline for the never-get-worse gate (experiments/accuracy-gate.mjs): the last 2 walk-forward weeks before the sealed set. Re-recorded Nov 9 (evening) after two scoreboard fixes: each week now trains exactly like production on the data as it stood at the cut (the old runs fitted the stretch on the scored week and one sealed event), and the site row uses the site's own-record setting (six.mjs tau .1, was .35). Full 4-week scoreboard: 18618 games, log-loss 0.68083, higher grade wins 55.81%, calibration gap 1.07 pts, top-4 teams B or better 266/392. Old numbers under previous. Re-record only with Sim's approval (and when the sealed set moves).",
  "cuts": [
   "2026-10-26",
   "2026-11-02"
  ],
  "games": 7795,
- "ll": 0.68057,
+ "ll": 0.68046,
  "topCut": {
   "n": 188,
-  "good": 129,
-  "share": 0.6862
+  "good": 128,
+  "share": 0.6809
  },
  "full": {
   "games": 18618,
-  "ll": 0.68195,
-  "pick": 55.49,
-  "calGap": 1.86,
+  "ll": 0.68083,
+  "pick": 55.81,
+  "calGap": 1.07,
   "topCut": {
    "n": 392,
-   "good": 271,
-   "share": 0.6913
+   "good": 266,
+   "share": 0.6786
   }
+ },
+ "previous": {
+  "ll": 0.68057,
+  "topCut": {
+   "n": 188,
+   "good": 129,
+   "share": 0.6862
+  },
+  "full": {
+   "games": 18618,
+   "ll": 0.68195,
+   "pick": 55.49,
+   "calGap": 1.86,
+   "topCut": {
+    "n": 392,
+    "good": 271,
+    "share": 0.6913
+   }
+  },
+  "approved": "2026-11-09"
  }
 }

@@ -66,7 +66,10 @@ V['+ its own sets, no cap on how much a set can count'] = (t, d) => pairX(t, d) 
     'floor: lowest real build · ceiling: best build on 5+ decks': mk(null, 5), 'floor: lowest real build · ceiling: best build on 2+ decks': mk(null, 2)};
   for (const [k, R] of Object.entries(RG)) V['+ own sets, cap ' + k] = (t, d) => pairX(t, d) + setX(t, d, false, R); }
 process.stdout.write('fitting each six\'s own record on past games…\r');
-const dlS = fitSix((t, d) => pairX(t, d) + setX(t, d));
+// τ .1 = six.mjs's TAU, what the site ships (Nov 9 fix: this row used the default .35, a stronger own record than the site has,
+// and that row alone read "said 67%, won 62%"; the site's real τ .1 reads 67% -> 66%)
+const SIX_TAU = (() => { try { return +fs.readFileSync(new URL('../six.mjs', import.meta.url), 'utf8').match(/const TAU = ([\d.]+)/)[1]; } catch (e) { return .1; } })();
+const dlS = fitSix((t, d) => pairX(t, d) + setX(t, d), SIX_TAU);
 V['+ own sets + this six\'s own record  [site today, minus matchups]'] = (t, d) => pairX(t, d) + setX(t, d) + dlS(t);
 for (const tau of (process.env.BOARD_TAUS || '').split(',').filter(Boolean).map(Number)) { const f = fitSix((t, d) => pairX(t, d) + setX(t, d), tau); V[`+ own sets + own record, gentler (τ ${tau})`] = (t, d) => pairX(t, d) + setX(t, d) + f(t); }
 // ---- scoring
