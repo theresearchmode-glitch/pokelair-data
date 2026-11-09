@@ -10,13 +10,24 @@ concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  # Code tests (Sim, Nov 9, "split the tests"): every check runs on a FROZEN copy of the data (the out/ folder of commit
+  # TEST_DATA below: the last data on which everything passed), so red here means the CODE broke, not that today's data
+  # changed a result. Change TEST_DATA only on purpose (e.g. a new regulation), to a commit whose data passes every check.
   test:
+    name: code tests (frozen data)
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
       - name: Wait for the rest of a multi-commit change
         run: sleep 120
       - uses: actions/checkout@v5
+      - name: Use the frozen test data
+        env:
+          TEST_DATA: 0c992f6977bc1cecc4e03eb269969a82b99681cf
+        run: |
+          git fetch --depth=1 origin $TEST_DATA
+          git checkout $TEST_DATA -- out/
+          echo "code tests run on the out/ data of ${TEST_DATA:0:7}"
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -74,6 +85,30 @@ jobs:
         with:
           name: page
           path: app/dist/page.html
+  # Data checks (Sim, Nov 9): the checks that judge results, run on TODAY's data. Red here means today's data changed a
+  # result (Nov 9: complete sets flipped a Pelipper verdict, a lead and the grade checks). Still blocks the live branch.
+  data-checks:
+    name: data checks (today's data)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d && npx playwright install --with-deps chromium
+      - run: cd node_modules/pokemon-showdown && node build
+      - run: node app/build.mjs
+      - run: node app/test/run.mjs
+        if: ${{ !cancelled() }}
+      - run: node experiments/threat-check.mjs
+        if: ${{ !cancelled() }}
+      - run: node experiments/lead-logic.mjs
+        if: ${{ !cancelled() }}
+      - run: node experiments/golden.mjs
+        if: ${{ !cancelled() }}
   # Never-get-worse gate (Accuracy Lab, Nov 9, Sim approved): the last 2 walk-forward weeks before the sealed set, each scored
   # by a model trained only on earlier events, against the approved baseline (experiments/accuracy-baseline.json). Its own job,
   # so training the two models can't push the main test job past its time limit.
