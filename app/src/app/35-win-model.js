@@ -47,6 +47,7 @@ function teamX(names,ms){let x=modelX(names);const M=META.model,byN=new Map((ms|
 function teamBasicsOf(names,ms){if(names.length!==6)return null;const o={noMega:names.some(n=>(byName.get(n)||{}).m)?0:1};
   if(ms&&ms.length===6){const mv=ms.map(m=>((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(z=>z&&(z.name||z)).filter(Boolean)),has=n=>mv.some(L=>L.includes(n));
     o.protectLow=mv.filter(L=>L.includes('Protect')).length<=2?1:0;
+    {const trU=mv.map((L,i)=>L.includes('Trick Room')?i:-1).filter(i=>i>=0);o.trNoSlow=trU.length&&names.filter((n,i)=>!trU.includes(i)&&((byName.get(n)||{}).sp??100)<=60).length<2?1:0}
     o.noSpeed=has('Tailwind')||has('Trick Room')||has('Icy Wind')||has('Electroweb')||ms.some(m=>/Choice Scarf/.test(m.heldItem||m.item||''))?0:1;
     o.noFakeOut=has('Fake Out')?0:1}
   return o}

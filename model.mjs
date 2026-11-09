@@ -43,10 +43,16 @@ const nP = M.players;
 // on sheets that list 16+ moves (else unknown = 0).
 // Kept: the two that expert guides AND real results agree on (broken-team tests, Nov 8). 'no speed control' and 'no Fake Out'
 // came out as small bonuses; the grade never rewards lacking a basic, so they're left out.
-const TEAMF = process.env.TEAM_FEATS === '0' ? [] : ['noMega', 'protectLow'];
+const TEAMF = process.env.TEAM_FEATS === '0' ? [] : ['noMega', 'protectLow', ...(process.env.TR_FEAT === '0' ? [] : ['trNoSlow'])];
+// Nov 9 (Sim: Farigiraf kept being suggested for fast teams): Trick Room on the sheet but fewer than 2 slow teammates (base Speed
+// 60 or less, not counting the Trick Room users). Real Farigiraf-with-Trick-Room teams won 46.6% with 0 slow teammates, 49.1% with 1,
+// 50.8% with 2+. TR_FEAT=0 fits without it. Speeds from the site's roster (app/src/data/data.js).
+const SPD = (() => { try { const t = fs.readFileSync('app/src/data/data.js', 'utf8').match(/const ROSTER=(\[.*?\]);/s); return new Map(JSON.parse(t[1]).map(r => [r.n, r.sp])); } catch (e) { return new Map(); } })();
 const deckTF = !TEAMF.length || !hasSets ? [] : M.decks.map(fs_ => { const nm = fs_.map(f => M.feats[f]), mv = nm.filter(n => n.includes(':'));
   if (mv.length < 16) return null; const prot = mv.filter(n => /:Protect$/.test(n)).length;
-  return {protectLow: prot <= 2 ? 1 : 0, noSpeed: nm.some(n => /:(Tailwind|Trick Room|Icy Wind|Electroweb)$/.test(n) || /@Choice Scarf$/.test(n)) ? 0 : 1, noFakeOut: mv.some(n => /:Fake Out$/.test(n)) ? 0 : 1}; });
+  const trU = new Set(mv.filter(n => /:Trick Room$/.test(n)).map(n => n.slice(0, n.indexOf(':')))), deckMons = new Set(mv.map(n => n.slice(0, n.indexOf(':'))));
+  const slow = [...deckMons].filter(n => !trU.has(n) && (SPD.get(n) ?? 100) <= 60).length;
+  return {trNoSlow: trU.size && slow < 2 ? 1 : 0, protectLow: prot <= 2 ? 1 : 0, noSpeed: nm.some(n => /:(Tailwind|Trick Room|Icy Wind|Electroweb)$/.test(n) || /@Choice Scarf$/.test(n)) ? 0 : 1, noFakeOut: mv.some(n => /:Fake Out$/.test(n)) ? 0 : 1}; });
 const tvCache = new Map(), teamVec = (t, d) => { if (!TEAMF.length) return []; const key = t * 100000 + (d ?? 99999); let v = tvCache.get(key); if (v) return v;
   v = TEAMF.map(k => k === 'noMega' ? (teams[t].some(n => /-Mega/.test(n)) ? 0 : 1) : (d != null && deckTF[d] ? deckTF[d][k] : 0)); tvCache.set(key, v); return v; };
 // time split: last 20% of events (by date) held out
