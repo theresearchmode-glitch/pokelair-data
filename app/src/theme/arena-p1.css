@@ -1063,5 +1063,6 @@
 @A .ar-titlerow .ar-score.ar-ss,@A .ar-titlerow:has(.ar-num small) .ar-score.ar-ss{display:flex!important;flex-direction:column;align-items:flex-start;text-align:left;min-width:0}
 @A .ar-ss>*{justify-self:auto;margin-left:0}
 @A .ar-ss .ar-ssrow{flex-wrap:nowrap}
-@media (min-width:420px){@A .ar-titlerow .ar-score.ar-ss{flex:0 1 auto;max-width:min(520px,58%)}}
-@media (max-width:419px){@A .ar-titlerow .ar-score.ar-ss{width:100%}}
+/* the score block sits beside the name only when both fit (840px+); below that it goes under the name, full width (resize sweep, Nov 9) */
+@media (min-width:840px){@A .ar-titlerow .ar-score.ar-ss{flex:0 1 auto;max-width:min(520px,58%)}}
+@media (max-width:839px){@A .ar-titlerow:has(.ar-ss){flex-direction:column;align-items:stretch;gap:8px}@A .ar-titlerow .ar-score.ar-ss{width:100%}}
