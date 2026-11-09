@@ -59,6 +59,13 @@ My Team (no team yet), other empty screens, small notices, tip bubbles, loading.
 preview, and never beside grades, ratings or data. A real NastyPlot mascot is its own project that Sim will do in a separate chat
 later; don't start it here. Shady Paw files stay in docs/mascot/ as history; don't use them on the site.
 
+## The grade is a Strength Score (Sim, Nov 9)
+The 0-100 grade must say how strong the team is altogether, derived from all the factors we have studied and measured (Pokémon and
+sets, the 4 basics, readiness for the top threats, learned matchups, the team's own record...). NOT "what percentage of other teams
+it beats": that may appear as a small line under the score, never as the score itself. It ships only if it predicts real wins at
+least as well as today's grade (walk-forward scoreboard, keep/drop rule, never-get-worse gate); otherwise back to the drawing board.
+Plan: "What we learned about matchups and synergy" > "Strength Score" on the Plans page.
+
 ## Privacy and safety
 - COPPA: no names or emails collected; feedback stays anonymous.
 - The contact email is shown only after "Show email". No RK9 scraping.

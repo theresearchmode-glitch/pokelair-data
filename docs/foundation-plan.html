@@ -253,12 +253,14 @@ const PLANS = [
   ["m3-live","Live",""]]}
 ]},
 {id:"matchups", short:"Matchups", name:"What we learned about matchups and synergy", about:"Nov 9 (Sim): \"we have learned so much from our findings, it would be a waste to not use it on improving battle and also looking into if it can improve anything else on the site.\" Measured: how your Pok\u00e9mon line up against THIS opponent predicts the game (38,513 tournament games and 3,980 later ladder games, both beyond chance; Battle-style pick 56.7% \u2192 57.5%). Averaged over the whole meta it didn't make a better grade. Synergy inside a four: unknown (too little data). Details: docs/deep-check.md.", phases:[
- {id:"s1", name:"Suggestions: honest labels first", goal:"A swap the grade can't tell from a coin flip is shown as a Different option, not an upgrade.", steps:[
-  ["s1-rule","Pin down the coin-flip rule","Tested on real results before building."],
-  ["s1-build","Build on the Preview","Coin-flip swaps shown as Different option, without grade points."],
-  ["s1-check","Check on real results","Suggestions still shown as upgrades must show a real gain (sugg-real.mjs)."],
-  ["s1-live","Sim's OK, then live",""],
-  ["s1-size","Make the size of the gain match real results","Under 60 the grade promised +4.8 win-chance points on average; real teams got +2.6. A separate grade step, after this one."]]},
+ {id:"s1", name:"Strength Score: the 0-100 grade", goal:"Sim, Nov 9: \"a score derived from all of the factors we have studied\" that says how strong the team is altogether. Not \"what percentage of other teams it beats\" (that can be a small line under it). Ships ONLY if it predicts real wins at least as well as today's grade; if not, back to the drawing board.", steps:[
+  ["s1-labels","Undo the Different option labels","Done Nov 9: the Preview is back to match live. The label hid the problem instead of fixing it (Sim: a B \u2192 A jump after a 'Different option' makes no sense)."],
+  ["s1-factors","List every factor and its measured weight","From docs/deep-check.md: Pok\u00e9mon and sets, Mega, no major weak spot, weak spots spread out, ready for the top threats, items that work, matchups learned from real games, the team's own record; notes (speed control, spread, lead support) shown, not counted."],
+  ["s1-design","Design the score with Sim","What 100 means (has everything winning teams have, no weak spots), how big changes should move it, how it reads for a solid tournament team. Shown to Sim before building."],
+  ["s1-test","Test it as a predictor of wins","Walk-forward scoreboard + keep/drop rule + never-get-worse gate, on games it never saw. Also: real suggestion results (sugg-real.mjs) and broken teams (remove the Mega etc.). Must be at least as good as today's grade."],
+  ["s1-suggest","Suggestions use it","A suggestion's promised gain matches what real results show."],
+  ["s1-preview","Preview, Sim's review","Real teams, phone and desktop, light and dark."],
+  ["s1-live","Sim's OK, then live",""]]},
  {id:"s2", name:"Battle: matchups against this opponent", goal:"Battle predictions and which four to bring use how your Pok\u00e9mon really do against the opponent's.", steps:[
   ["s2-plan","Plan with Sim","What changes on the Battle page, and how it's shown."],
   ["s2-test","Test on later games","Win chance for one game, on games the model never saw; keep only if better beyond chance."],
