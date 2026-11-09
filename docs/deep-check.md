@@ -478,3 +478,16 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   with a "fill a missing check" option 48 -> 35. Real results unchanged within chance: Suggestion 1 +1.3 pts (+0.4 to +2.2,
   159 pairs; before +1.1); by starting grade: under 60 +3.0 (+1.7 to +4.3; before +2.9), 60-85 -0.3 (-1.5 to +0.9; before -0.4),
   85+ 7 teams (too few). No harm found; the 60-85 over-promise (median +19 grade shown, no real gain) is untouched: d5-sugg open.
+
+### Nov 9 (night): d5-sugg, why the 60-85 over-promise (measured, experiments/sugg-why.mjs on the 400-team run)
+- The grade's own promise for Suggestion 1, as expected win rate vs today's tournament teams (CH.gradeOf .e, before vs after),
+  159 teams, all rebuilt suggestions matched the run's grades: under 60 promises +5.0 win-chance points (real +3.0), 60-85
+  promises +3.2 (real -0.3, -1.5 to +0.9), 85+ 7 teams (too few). Caveat: the real measure (closest real teams, 5 of 6) shares
+  neighbours between before and after, so it is shrunk; compare bands, not promise vs real one-for-one.
+- Suggestions 2 and 3 for 60-85 teams: -0.4 and -0.7 (ranges cross 0). No rank delivers there, so "rank 1 is the overrated
+  pick" (optimizer's curse) is not the whole story.
+- By part of the grade: the promise is all Pokémon-and-pairs strength (60-85: +3.2 of +3.2); matchups -0.1, own record 0.0.
+- What is suggested: the same few well-measured Pokémon (60-85: Kingambit 22, Basculegion 22, Farigiraf 11, Mega Floette 9;
+  each with 5,000-29,000 real games). Not thin data.
+- My guess, not yet tested: diminishing returns. The strength model adds each Pokémon's and pair's value; a team that is already
+  solid may gain less from a strong Pokémon than a weak team does, and the model can't see that.
