@@ -212,3 +212,9 @@ sugg-real.mjs on the Strength Score build, 400 real teams with 10+ games (whole 
 - Variety v1 (ties within 2 score points, fixed shuffle per team), same 400 teams: top 3 share of Suggestion 1 48% → 39% (Kingambit
   17%, Basculegion 13%, Farigiraf 10%); 32 different Pokémon as Suggestion 1 (was 24). Real gain kept: Suggestion 1 +1.2 (0.4 to
   2.1) vs +1.5 before (ranges overlap). Shown gain median 4.2 → 3.6. Target (<25%) not reached; trying a 3-point window.
+- 3-point window, same 400 teams: top 3 share 35%, 36 different Suggestion 1s, but Suggestion 1's real gain fell to +0.8 (−0.1 to 1.6),
+  within chance. Keep/drop: back to 2 points (v1).
+- Going live (Nov 9): GitHub's first run on main failed in two check scripts (golden.mjs, same-grade.mjs) that still read letters and
+  ranks; the scores themselves were consistent. Both now read the Strength Score (same score on My Team, Saved Teams, Compare, an
+  event's Load team and Build for Me: all equal on 6 teams; Apply gives exactly the promised score). Lesson: run the full CI list
+  locally before pushing to main.

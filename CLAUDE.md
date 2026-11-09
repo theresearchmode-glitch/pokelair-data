@@ -132,4 +132,6 @@ After Claude's honest review, Sim agreed:
   from partial runs.
 - Live is protected: the daily data/model reaches the live site only if it passes the checks; otherwise yesterday's stays.
 - Code tests run on a frozen data snapshot (they fail only when code breaks); daily data checks run separately and alert.
+- Before pushing to main, run every check GitHub runs (.github/workflows: golden.mjs, same-grade.mjs, suggest-audit.mjs and the
+  rest), not only app/test/run.mjs (Nov 9: two check scripts still read the old letters and turned main red).
 - The January launch work is parked until Sim says.
