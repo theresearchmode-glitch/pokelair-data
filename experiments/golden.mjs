@@ -46,7 +46,7 @@ Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.
   /* Nov 9: the sample is every top-4 team of 32+ player online tournaments in the event data (last 30 days, each player's own
      sheet, read the way the site loads it: loadSheet), before the sealed test set. The 58 most recent teams swung 72-81% from day to
      day as teams rotated in and out with the same grade; pooling 14 days gave 76%. The sheet-from-matches sample is the fallback. */
-  const SEAL = ${JSON.stringify(SEAL_FROM)}, evTops = ((META.events && META.events.events) || []).filter(e => e.src === 'limitless' && e.players >= 32 && e.date < SEAL && e.date >= ${JSON.stringify(process.env.GOLDEN_FROM || '')})
+  const SEAL = ${JSON.stringify(SEAL_FROM)}, evTops = ((META.events && META.events.events) || []).filter(e => e.src === 'limitless' && e.players >= 32 && e.date < SEAL && e.date >= ${JSON.stringify(process.env.GOLDEN_FROM || '')} && e.date < ${JSON.stringify(process.env.GOLDEN_TO || '9999')})
     .flatMap(e => e.top.filter(t => t.place && t.place <= 4 && t.mons.length === 6).map(t => ({e, t})));
   const fromSheet = t => { try { return gradeTeam(t.mons.map((m, i) => { const p = byName.get(m.n), mv = m.mv.filter(x => mvByName.has(x)).slice(0, 4);
     return memberOf({n: m.n, a: p.a.includes(m.a) ? m.a : null, lock: false, ...(mv.length ? {mv: {doubles: mv}} : {}), ...(!p.m && m.i ? {it: {doubles: m.i}} : {})}, i); }).filter(Boolean)); } catch (e) { return null; } };
@@ -60,6 +60,10 @@ Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.
   return JSON.stringify({top: tg, weak: {mons: weak, g: g(weak)}, illegal: {clause: clause.length, flagged: !!(G && G.illegal) || clause.length > 0}}); })()`));
 // GOLDEN_DUMP=<file>: write each top-cut team's grade (sheet and default sets) and event, for looking into failures
 if (process.env.GOLDEN_DUMP) fs.writeFileSync(process.env.GOLDEN_DUMP, JSON.stringify(R.top));
+// GOLDEN_TOPCUT_ONLY=1 (walk-forward): print the top-cut tally as one JSON line and stop
+if (process.env.GOLDEN_TOPCUT_ONLY === '1') { const T = R.top.filter(t => !offFormat(t.ev)), n = T.length, good = T.filter(t => t.g >= 70).length;
+  console.log('TOPCUT ' + JSON.stringify({n, good, share: n ? +(good / n).toFixed(4) : null, median: n ? T.map(t => t.g).sort((a, c) => a - c)[n >> 1] : null}));
+  await b.close(); fs.unlinkSync(page); process.exit(0); }
 // 4: suggestions on strong real teams
 R.sugg = await run(`(()=>{ const out = []; const A = ${JSON.stringify(R.top.filter(t => t.g >= 90).slice(0, 8).map(t => t.mons))};
   for (const ns of A) { try { S.format = 'doubles'; S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); const ms = members(), base = gradeTeam(ms);

@@ -189,6 +189,33 @@ const PLANS = [
   ["p4-monthly","Monthly accuracy check","Fresh tournaments; catch drift."],
   ["p4-page","Update How Our Numbers Work","Plain words, exactly what the site does."]]}
 ]},
+{id:"accuracy", short:"Accuracy Lab", name:"Accuracy Lab: see real improvements", about:"Nov 9 (Sim: \"what's the best way to see actual improvements in our data and accuracy?\"). After the top-cut scare: one fixed number on a small, rotating sample swung 72-81% with the same grade, and the old 86% partly counted each team's own wins. From now on every change is judged by how well it predicts games it hasn't seen, the way the site uses it.", phases:[
+ {id:"a1", name:"Step 1 · Walk-forward scoreboard", goal:"One honest scoreboard for the grade.", done:"today's grade has a recorded baseline on it.", steps:[
+  ["a1-script","Walk-forward script","Several weekly cut dates; each time train only on earlier games, score the next week's real games."],
+  ["a1-main","Main measure: every later game","Log-loss and how often the higher grade wins, on thousands of games."],
+  ["a1-side","Side measures","Calibration (65% really wins ~65%), future top-cut teams at B or better, grade vs each team's later win rate (every team, not just top 4)."],
+  ["a1-base","Today's grade recorded as the baseline",""]]},
+ {id:"a2", name:"Step 2 · One rule for every change", goal:"No change kept on a hunch.", steps:[
+  ["a2-rule","Keep only if better beyond chance","Whole 95% range on the better side, resampled by tournament (compare.mjs); no side measure clearly worse."],
+  ["a2-log","Every decision in the decision log","docs/deep-check.md"]]},
+ {id:"a3", name:"Step 3 · Never-get-worse gate", goal:"GitHub stops a worse grade, not a different sample.", steps:[
+  ["a3-gate","Daily check: forward top-cut vs the approved baseline","Fails if clearly below the last approved version, and always below 60% (twice chance). Replaces the fixed 75% bar."],
+  ["a3-green","GitHub green again","Includes the Apply rank off-by-one fix."]]},
+ {id:"a4", name:"Step 4 · Weekly settings re-check", goal:"Close the blind spot: the daily build is locked and never re-checks its own settings.", steps:[
+  ["a4-weekly","Weekly full re-check report","Says whether any setting (set strength, shrink, recency) would now predict better. Suggests only; never changes anything by itself."]]},
+ {id:"a5", name:"Step 5 · Final word", steps:[
+  ["a5-sealed","Sealed set at the end of a phase only","Games from Nov 9 on stay untouched until then."],
+  ["a5-sim","Sim's review",""]]}
+]},
+{id:"sheet", short:"Team Sheet", name:"Team Sheet and sharing", about:"Nov 9 (Sim): see the whole team in one quick look, and share it in one image.", phases:[
+ {id:"t1", name:"Build (preview)", steps:[
+  ["t1-page","Team Sheet page","Item, Ability, nature (+/-), four moves, stats at level 50 with stat points, where each spread comes from. Desktop 3x2, iPad 2, phone 1."],
+  ["t1-nature","Nature on every team sheet","Page, My Team's sheet fold, share image."],
+  ["t1-share","Third Share option: Team sheet image","1080x1350, Light or Dark."]]},
+ {id:"t2", name:"Go live", steps:[
+  ["t2-ok","Sim says go",""],
+  ["t2-live","Live (with GitHub green)",""]]}
+]},
 {id:"mascot", short:"Shady Paw", name:"Shady Paw on the site", about:"Our mascot, used sparingly and only where he helps. Nothing of him goes live until Sim has seen exactly how it looks and is 100% happy.", phases:[
  {id:"m1", name:"Final art", goal:"One finished Shady Paw in the styles Sim picked: side profile, bold lines and sketch, in ink plus one site colour.", steps:[
   ["m1-mock","Last two mock-ups","Bold lines in an empty Saved Teams; sketch on Home."],
@@ -233,6 +260,7 @@ const PLANS = [
   ["i-tr","Trick Room may be underrated (check on sealed data)","Nov 8 structure check: Trick Room teams won +2.2 pts more than the grade expected (range +0.4 to +3.9; one of 7 roles tested). Written down before the sealed games arrive; if it holds there, the grade gets a Trick Room adjustment."],
   ["i-high","Trust well-known teams a bit more","Nov 8: games between High-confidence teams are predicted better than the grade claims (1.38\u00d7). Re-check on sealed data."],
   ["i-battle","Learned matchups in Battle predictions","+0.9 pts for one specific game, just short of significant. Re-check on sealed data."],
+  ["i-domain","Buy the NastyPlot domain sooner","Nov 9 (Sim): talk about buying it early so the public site (hosting, HTTPS, a data source that doesn't need Claude-only features, privacy pages) can be built and tested on it well before January."],
   ["i-ladder","Showdown ladder games","Tested Nov 8: no gain for the grade; revisit for Reg M-D when tournament data is thin."]]}
 ]}
 ];

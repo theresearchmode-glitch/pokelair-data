@@ -14,24 +14,31 @@
 import fs from 'node:fs';
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/';
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || OUT + 'matches.json', 'utf8')), MT = JSON.parse(fs.readFileSync(process.env.BOARD_MT || OUT + 'model_train.json', 'utf8'));
+// BOARD_DATE=<d> BOARD_TO=<d2>: score only events from d up to (not including) d2 (walk-forward windows)
 // BOARD_MT=file BOARD_CUT=.6 : score a model trained on the first 60% instead (more later games and swaps to test on)
 const CUTF = +(process.env.BOARD_CUT || .8);
 const teams = M.teams.map(k => k.split('|')), calib = MT.calib, sig = z => 1 / (1 + Math.exp(-z));
 // ---- team strength as the page computes it: species + pairs (+ each member's set, centered and clamped, when the deck is known)
 const spF = new Map(); for (const f of Object.keys(MT.sets || {})) { const sp = f.split(/[@:#]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
-const pairX = t => { const m = teams[t]; let v = 0; for (const n of m) v += MT.mons[n] || 0;
+/* Nov 9 (Accuracy Lab): the team rules the page adds (model.team: noMega, protectLow, as 35-win-model.js teamBasicsX and model.mjs
+   TEAMF): no Mega on the six; 2 or fewer Protect users when the deck is known (unknown deck: 0, as model.mjs) */
+const teamX = (t, d) => { const T = MT.team; if (!T) return 0; let v = 0; const m = teams[t];
+  if (T.noMega && !m.some(n => /-Mega/.test(n))) v += T.noMega;
+  if (T.protectLow && d != null && M.decks && M.decks[d]) { const f = M.decks[d].map(j => M.feats[j]); if (m.filter(n => f.includes(n + ':Protect')).length <= 2) v += T.protectLow; }
+  return v; };
+const pairX = (t, d) => { const m = teams[t]; let v = teamX(t, d); for (const n of m) v += MT.mons[n] || 0;
   for (let i = 0; i < m.length; i++) for (let j = i + 1; j < m.length; j++) { const k = m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i]; v += (MT.pairs || {})[k] || 0; } return v; };
 const setX = (t, d, noClamp, RG) => { if (d == null || !M.decks || !M.decks[d]) return 0; const has = new Set(M.decks[d].map(f => M.feats[f])); let v = 0;
   for (const n of teams[t]) { let u = 0; for (const f of spF.get(n) || []) u += MT.sets[f] * ((has.has(f) ? 1 : 0) - ((MT.setFreq || {})[f] || 0)); const r = noClamp ? null : (RG || MT.setRange || {})[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; }
   return v; };
 // ---- the date split
-const ev = M.events, ord = [...ev.keys()].sort((a, b) => ev[a][1] < ev[b][1] ? -1 : 1), lo = Math.floor(ord.length * CUTF), futE = process.env.BOARD_DATE ? new Set(ord.filter(i => ev[i][1] >= process.env.BOARD_DATE && !String(ev[i][0]).startsWith('sd-'))) : new Set(ord.slice(lo)), cutDate = process.env.BOARD_DATE || ev[ord[lo]][1]; // BOARD_DATE=YYYY-MM-DD: later games = tournament events on or after it
+const ev = M.events, ord = [...ev.keys()].sort((a, b) => ev[a][1] < ev[b][1] ? -1 : 1), lo = Math.floor(ord.length * CUTF), futE = process.env.BOARD_DATE ? new Set(ord.filter(i => ev[i][1] >= process.env.BOARD_DATE && (!process.env.BOARD_TO || ev[i][1] < process.env.BOARD_TO) && !String(ev[i][0]).startsWith('sd-'))) : new Set(ord.slice(lo)), cutDate = process.env.BOARD_DATE || ev[ord[lo]][1]; // BOARD_DATE=YYYY-MM-DD: later games = tournament events on or after it
 // sealed test set (Phase 0, Nov 8): scoring on sealed events needs SEALED=1 (end-of-phase checks only); see experiments/sealed.json
 { const SL = JSON.parse(fs.readFileSync(ROOT + 'experiments/sealed.json', 'utf8')).from, n = [...futE].filter(i => ev[i][1] >= SL && !String(ev[i][0]).startsWith('sd-')).length;
   if (n && process.env.SEALED !== '1') { console.error(`refusing: ${n} sealed events (from ${SL}) are in the scored set. Tune on MATCHES=out/matches_dev.json; use SEALED=1 only for an end-of-phase check.`); process.exit(2); }
   if (process.env.SEALED === '1') console.log(`SEALED CHECK: scoring ${n} sealed events`); }
 const evRank = new Map(ord.map((e, i) => [e, i]));
-const G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6), past = G.filter(g => !futE.has(g[3])), fut = G.filter(g => futE.has(g[3]));
+const G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1] && teams[g[0]].length === 6 && teams[g[1]].length === 6), past = G.filter(g => !futE.has(g[3]) && (!process.env.BOARD_DATE || ev[g[3]][1] < process.env.BOARD_DATE || String(ev[g[3]][0]).startsWith('sd-') && ev[g[3]][1] < process.env.BOARD_DATE)), fut = G.filter(g => futE.has(g[3]));
 // ---- each six's own record and each player's skill, fitted on past games only (as six.mjs does on all games)
 function fitSix(xf, tau = .35, sigS = .6, iters = 300) {
   const X = past.map(g => [xf(g[0], g[7]), xf(g[1], g[8])]), s = new Float64Array(M.players), dl = new Float64Array(M.teams.length);
@@ -45,10 +52,10 @@ function fitSix(xf, tau = .35, sigS = .6, iters = 300) {
   const f = t => { const o = per.get(teams[t].slice().sort().join('|')); return o && o.g >= 10 ? o.d / o.g : 0; }; f.s = s; return f; }
 // ---- the versions of the grade being compared
 const V = {};
-V['Pokémon + pairs only (no sets)'] = (t, d) => pairX(t);
-V['+ the most common sets only'] = (t, d) => pairX(t);            // centered sets: the usual set adds 0, so this equals the line above
-V['+ its own sets (items, moves)'] = (t, d) => pairX(t) + setX(t, d);
-V['+ its own sets, no cap on how much a set can count'] = (t, d) => pairX(t) + setX(t, d, true);
+V['Pokémon + pairs only (no sets)'] = (t, d) => pairX(t, d);
+V['+ the most common sets only'] = (t, d) => pairX(t, d);            // centered sets: the usual set adds 0, so this equals the line above
+V['+ its own sets (items, moves)'] = (t, d) => pairX(t, d) + setX(t, d);
+V['+ its own sets, no cap on how much a set can count'] = (t, d) => pairX(t, d) + setX(t, d, true);
 // (a) where should the cap sit? Ranges built from past decks only: each species' build values and how many decks ran each build
 { const vals = new Map(), seen = new Set(); for (const g of past) for (const [t, d] of [[g[0], g[7]], [g[1], g[8]]]) { if (d == null || !M.decks[d] || seen.has(t + ',' + d)) continue; seen.add(t + ',' + d);
     const has = new Set(M.decks[d].map(f => M.feats[f])); for (const n of teams[t]) { let u = 0; const key = []; for (const f of spF.get(n) || []) { u += MT.sets[f] * ((has.has(f) ? 1 : 0) - ((MT.setFreq || {})[f] || 0)); if (has.has(f)) key.push(f); }
@@ -57,13 +64,15 @@ V['+ its own sets, no cap on how much a set can count'] = (t, d) => pairX(t) + s
       const top = bs.length ? Math.max(...bs.map(b => b.v)) : Math.max(...a), lo = loF == null ? a[0] : a[Math.floor(loF * (a.length - 1))]; R[n] = [Math.min(lo, top), top]; } return R; };
   const RG = {'floor: lowest real build · ceiling: best build on 20+ decks': mk(null, 20), 'floor: 10th pct · ceiling: best build on 5+ decks': mk(.1, 5),
     'floor: lowest real build · ceiling: best build on 5+ decks': mk(null, 5), 'floor: lowest real build · ceiling: best build on 2+ decks': mk(null, 2)};
-  for (const [k, R] of Object.entries(RG)) V['+ own sets, cap ' + k] = (t, d) => pairX(t) + setX(t, d, false, R); }
+  for (const [k, R] of Object.entries(RG)) V['+ own sets, cap ' + k] = (t, d) => pairX(t, d) + setX(t, d, false, R); }
 process.stdout.write('fitting each six\'s own record on past games…\r');
-const dlS = fitSix((t, d) => pairX(t) + setX(t, d));
-V['+ own sets + this six\'s own record  [site today, minus matchups]'] = (t, d) => pairX(t) + setX(t, d) + dlS(t);
-for (const tau of (process.env.BOARD_TAUS || '').split(',').filter(Boolean).map(Number)) { const f = fitSix((t, d) => pairX(t) + setX(t, d), tau); V[`+ own sets + own record, gentler (τ ${tau})`] = (t, d) => pairX(t) + setX(t, d) + f(t); }
+const dlS = fitSix((t, d) => pairX(t, d) + setX(t, d));
+V['+ own sets + this six\'s own record  [site today, minus matchups]'] = (t, d) => pairX(t, d) + setX(t, d) + dlS(t);
+for (const tau of (process.env.BOARD_TAUS || '').split(',').filter(Boolean).map(Number)) { const f = fitSix((t, d) => pairX(t, d) + setX(t, d), tau); V[`+ own sets + own record, gentler (τ ${tau})`] = (t, d) => pairX(t, d) + setX(t, d) + f(t); }
 // ---- scoring
 const games = fut, scale = f => { const d = games.map(g => [f(g[0], g[7]) - f(g[1], g[8]), g[2] === 1 ? 1 : 0]);
+  /* BOARD_FIXCAL=1 (Accuracy Lab): the model's own trained stretch (model.calib), not one fitted on the scored games, so log-loss is honest */
+  if (process.env.BOARD_FIXCAL === '1') { const b = calib, ll = d.reduce((a, [x, y]) => { const p = Math.min(1 - 1e-9, Math.max(1e-9, sig(b * x))); return a - (y ? Math.log(p) : Math.log(1 - p)); }, 0) / d.length; return {d, b, ll}; }
   const ll = b => d.reduce((a, [x, y]) => { const p = Math.min(1 - 1e-9, Math.max(1e-9, sig(b * x))); return a - (y ? Math.log(p) : Math.log(1 - p)); }, 0) / d.length;
   let l = 0, h = 20; for (let i = 0; i < 60; i++) { const a = l + (h - l) / 3, c = h - (h - l) / 3; if (ll(a) < ll(c)) h = c; else l = a; } const b = (l + h) / 2; return {d, b, ll: ll(b)}; };
 function board(f) { const {d, b, ll} = scale(f);

@@ -58,7 +58,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;keepUndo();
     // what Apply swapped out: no suggestion offers it straight back while you keep applying suggestions (swOutNow, 29-fix-planner.js) (Nov 7 audit: Sylveon for Primarina, then Primarina for Sylveon)
     if(!ui.swOut)ui.swOut=new Set();pl.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
-    pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false}});
+    // Nov 9: the card graded the newcomer as a typical build (its Ability not "chosen", 35-win-model.js SET_UNKNOWN_AVG); writing that
+    // Ability as chosen made Apply grade it exactly, so the result missed the card by a rank point. Same Ability shown either way.
+    pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}});
     ui.swKey=S.slots.map(x=>x.n||'').join();
     undoMark(pl.ch.map(x=>x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`).join(', '));
     keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`,true)}
