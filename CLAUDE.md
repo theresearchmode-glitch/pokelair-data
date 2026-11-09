@@ -107,7 +107,7 @@ One name per idea, everywhere on the site:
   for its letter ("S tier", "A tier"), so a Pokémon's tier never reads like a team's score.
 - **Matchups**: how the team does against the top threats (not "readiness" / "ready for the top 30" / "Threats" as the idea's name).
   The four levels: **Beats it / Handles it / Shaky / No answer** (were Well handled / Handled / Shaky / Unanswered).
-- **Suggestions**, numbered "Suggestion 1" (not Fix it / plans / ideas); a side-grade is a **Different option**.
+- **Suggestions**, numbered "Suggestion 1" (not Fix it / plans / ideas). (The "Different option" label was removed Nov 9: Sim rejected it.)
 - **Team checks**: the 4 basics, plus 3 notes (not checklist / game plan / pillars). Sim, Nov 9: speed control, spread damage and
   lead support are notes, not counted (real games: teams with them won no more often, experiments/checks-real.mjs).
 - Plain words: player skill (not Elo), wins more than average (not win edge), reaches top cut more often than its use predicts (not
