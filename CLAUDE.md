@@ -117,6 +117,8 @@ One name per idea, everywhere on the site:
 After Claude's honest review, Sim agreed:
 - No new features until what we have is finished and refined (Sim, Nov 9). Work = finishing, fixing and refining what
   exists (Team Sheet, share image, Darkrai's one spot on the Preview, the grade) and the process fixes.
+- Multitask where it helps (Sim, Nov 9): look-only work (sweeps, measurements, background runs) can run alongside a change; always
+  tell Sim when we are multitasking. Changes themselves stay one at a time:
 - One thing at a time: at most ONE grade/model change and ONE site item in progress. Finish (tested, reviewed, live or
   dropped) before starting the next. Small batches. Don't skip ahead of an open step on the Plans page.
 - NO GUESSING (Sim, Nov 9): check before acting or claiming anything, including small things (where a file lives, how a
