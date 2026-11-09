@@ -1,0 +1,108 @@
+{
+ "date": "2026-11-09",
+ "locked": {
+  "shrink": 10,
+  "half": 14,
+  "skill": 1,
+  "sets": 60
+ },
+ "picked": {
+  "shrink": 3,
+  "half": 14,
+  "skill": 1,
+  "sets": 60
+ },
+ "grid": {
+  "shrink": [
+   [
+    1,
+    0.684
+   ],
+   [
+    3,
+    0.6829
+   ],
+   [
+    10,
+    0.6838
+   ],
+   [
+    30,
+    0.6854
+   ],
+   [
+    100,
+    0.6872
+   ]
+  ],
+  "half": [
+   [
+    14,
+    0.6824
+   ],
+   [
+    21,
+    0.6825
+   ],
+   [
+    30,
+    0.6826
+   ]
+  ],
+  "skill": [
+   [
+    0.3,
+    0.6835
+   ],
+   [
+    3,
+    0.682
+   ],
+   [
+    10,
+    0.6815
+   ],
+   [
+    0,
+    0.6813
+   ]
+  ],
+  "sets": [
+   [
+    20,
+    0.6814
+   ],
+   [
+    60,
+    0.6801
+   ],
+   [
+    200,
+    0.6803
+   ]
+  ]
+ },
+ "differ": [
+  "shrink"
+ ],
+ "verdict": "no difference beyond chance: keep the locked settings",
+ "walk": {
+  "locked": {
+   "ll": 0.68195,
+   "pick": 55.49,
+   "calGap": 1.86
+  },
+  "picked": {
+   "ll": 0.68209,
+   "pick": 55.63,
+   "calGap": 1.64
+  },
+  "games": 18618,
+  "compare": [
+   "B: + own sets + this six's own record  [site today, minus matchups]",
+   "log-loss B − A: 0.00014 (95% range -0.00029 to 0.00051; negative = B better)",
+   "pick rate B − A: +0.14 pts (95% range -0.17 to 0.45)",
+   "NO DIFFERENCE: the gap is within chance, keep the simpler version"
+  ]
+ }
+}
