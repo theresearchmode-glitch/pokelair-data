@@ -160,3 +160,25 @@ that big (real no-Mega teams win 34%).
 Sim, Nov 9: keep the score out of 100 (not out of 10: on real sheets 80% land 70-88, so out of 10 nearly all would read 7, 8 or 9).
 No Mega landing in the 50s (measured) instead of the draft "60s": Sim agreed. Letter bands to be set in Phase 3 so each letter
 really wins more than the one below (today C 51.4% vs D 52.2% couldn't be told apart).
+
+## Phase 3 · Proof (Nov 9)
+
+Exact-site scoreboard (built page, model trained only on games before Oct 27, 6,270 later games in 88 tournaments, no sealed games):
+- Today's grade: picks 56.68% · log-loss 0.68008. Strength Score number (matchups .0038): picks 56.68% · log-loss 0.68000.
+- Keep/drop rule (compare.mjs): log-loss −0.00009 (95% −0.00017 to 0.00003) → NO DIFFERENCE. So the matchup weight stays .003 (the
+  simpler version); the Strength Score predicts exactly as well as today's grade (bar met). The change is the scale and its meaning.
+- The 0-100 scale on later games, every side and game once (site-board.mjs, ssBands):
+
+| Score | Won | Expected | Teams | Games |
+|---|---|---|---|---|
+| under 60 | 22.0% (±15.3) | 38.8% | 13 | 41 |
+| 60-64 | 37.9% (±4.8) | 40.0% | 102 | 414 |
+| 65-69 | 40.9% (±3.1) | 42.7% | 231 | 994 |
+| 70-74 | 46.0% (±2.1) | 44.8% | 420 | 2,277 |
+| 75-79 | 49.8% (±1.9) | 48.4% | 440 | 2,542 |
+| 80-84 | 53.0% (±1.6) | 52.5% | 425 | 3,725 |
+| 85-89 | 54.4% (±2.2) | 56.4% | 193 | 1,988 |
+| 90+ | 58.5% (±4.1) | 60.1% | 34 | 559 |
+
+Every band won more than the one below, and each within its range of what it promised. Bands about 10 points apart are clearly
+different; 5 points apart are not always (80-84 vs 85-89 overlap). Letters should be about 10 points wide.

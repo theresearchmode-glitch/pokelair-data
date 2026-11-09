@@ -121,5 +121,13 @@ run('site + learned matchups against this opponent (one game, not a grade)', V[O
 console.log(`\nletters (site today), every side and game (fair: no selection on how far a team got):\n  ${Object.entries(lettersAll).map(([l, v]) => `${l} ${v}`).join('\n  ')}`);
 console.log(`letters, sides with 5+ later games only (favours teams that kept winning):\n  ${Object.entries(letters).map(([l, v]) => `${l} ${v}`).join('\n  ')}`);
 res.letters = letters; res.lettersAll = lettersAll;
+// Strength Score scale (Nov 9, draft): 80 + 122 × (chance to beat a typical team − 50%), chance = σ(calib × (y − median y)).
+// The median is taken over the scored sides (a location constant only). Each side and game once, by score band: does each band
+// really win more than the one below? (How many levels real results can tell apart.)
+{ const ys = []; both.forEach(({A, B}) => ys.push(A.y, B.y)); ys.sort((a, c) => a - c); const med = ys[ys.length >> 1], scr = y => Math.max(0, Math.min(100, 80 + 122 * (sig(calib * (y - med)) - .5)));
+  const BANDS = [[0, 60], [60, 65], [65, 70], [70, 75], [75, 80], [80, 85], [85, 90], [90, 101]], acc = BANDS.map(() => ({n: 0, w: 0, e: 0, t: new Set()}));
+  both.forEach(({g, A, B}, i) => { const pa = sig(site0.s * site0.d[i][0]); for (const [k, p, w, e] of [[keyOf(g[0], g[7]), A, g[2] === 1, pa], [keyOf(g[1], g[8]), B, g[2] !== 1, 1 - pa]]) { const v = scr(p.y), j = BANDS.findIndex(([a, c]) => v >= a && v < c); const o = acc[j]; o.n++; o.w += w ? 1 : 0; o.e += e; o.t.add(k); } });
+  console.log('\nStrength Score bands (draft scale), every side and game:'); BANDS.forEach(([a, c], j) => { const o = acc[j]; if (o.n) console.log(`  ${a}-${c - 1}: won ${(o.w / o.n * 100).toFixed(1)}% vs expected ${(o.e / o.n * 100).toFixed(1)}% (±${(Math.sqrt(.25 / o.n) * 196).toFixed(1)}, ${o.t.size} teams, ${o.n} games)`); });
+  res.ssBands = BANDS.map(([a, c], j) => ({a, c, n: acc[j].n, won: acc[j].n ? +(acc[j].w / acc[j].n * 100).toFixed(1) : null, exp: acc[j].n ? +(acc[j].e / acc[j].n * 100).toFixed(1) : null})); }
 if (process.argv[2]) fs.writeFileSync(process.argv[2], JSON.stringify(pred));
 if (process.argv[3]) fs.writeFileSync(process.argv[3], JSON.stringify(res, null, 1));
