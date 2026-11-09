@@ -31,6 +31,7 @@ function headToHead(mine, theirs, useA) {
 const combos = (n, k) => { const out = []; const rec = (s, a) => { if (a.length === k) { out.push(a.slice()); return; } for (let i = s; i < n; i++) { a.push(i); rec(i + 1, a); a.pop(); } }; rec(0, []); return out; };
 
 // weight of the learned lead values in the lead pick (tuned on later replays in experiments/plan-test.mjs)
+var CTR_W = 0; // Nov 9 test switch (Battle step 4): weight of matchups learned from real tournament games (ctrVal) in the bring-four pick; 0 = off
 var LEAD_W = 100; // Nov 8: learned on replays before Oct 28, tested on later ones: led-with-our-pair +4.0 pts vs ratings at 120, +1.3 with no lead values
 function planMatchup(mine, theirs, useA) {
   const dbl = S.format === 'doubles', bring = Math.min(dbl ? 4 : 3, mine.length);
@@ -59,6 +60,7 @@ function planMatchup(mine, theirs, useA) {
     theirs.forEach((o, j) => { const col = c.map(i => h.M[i][j]); v += Math.max(...col) + .25 * col.reduce((a, b) => a + b, 0) / col.length; });
     if (dbl) { if (c.some(i => roles[i].speed)) v += 1.5; if (c.some(i => roles[i].fake)) v += psyThem ? .3 : 1; v += archBonus(c); }
     if (c.filter(i => mine[i].mega).length > 1) v -= .5; // only one can Mega Evolve per battle
+    if (CTR_W && typeof ctrVal === 'function') { let t = 0; for (const i of c) for (const o of theirs) { const x = ctrVal(mine[i].p.n, o.p.n); if (x != null) t += x; } v += CTR_W * t / theirs.length; }
     if (!best || v > best.v) best = {c, v};
   }
   const chosen = best ? best.c : [];
