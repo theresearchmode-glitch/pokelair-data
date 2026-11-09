@@ -28,8 +28,10 @@ ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = 
     // grade first, the win rate under it with the average for scale (Sim, Nov 5: "63.0% Grade A" was confusing)
     score = `<div class="arb-score arb-gfirst"${title ? ` title="${esc(title)}"` : ''}><span class="arb-grade">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp">${esc(G.letter)}</span><span class="arb-basis">${G.v === 2 ? `<b>${CH.rankShort(G.s)}</b><small class="ar-gsub">of tournament teams</small>` : `<b>${G.s}</b> / 100`}</span>${G.st && G.st.su && G.st.su.w === 'Low' ? '<small class="ar-gsub">Few real games back this mix yet, so it\'s a best guess</small>' : ''}</div>`; }
   if (RD) { const c = CH.lvCount(RD), h = CH.hand(RD);
-    stats = `<div class="ar-trio arb-trio">${AR.cell(RD.score + '%', 'ready')}${h ? AR.cell(h.x, 'handled') : ''}${c[1] ? AR.cell(c[1], 'shaky') : ''}${c[0] ? AR.cell(c[0], 'unanswered') : ''}</div>`; }
-  const ck = tm.grade, pips = ck ? `<div class="arb-checks"><b>${ck.pass}/${ck.n}</b><span>winning-team checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span></div>` : '';
+    /* plain words (Nov 9): one number, like My Team's Matchups box; what's left in a short line */
+    const left = (c[0] || 0) + (c[1] || 0), muLine = left ? `${c[0] ? `${c[0]} with no answer${c[1] ? ', ' : ''}` : ''}${c[1] ? `${c[1]} shaky` : ''}` : 'Every top threat has an answer';
+    stats = `<div class="ar-trio arb-trio arb-mu">${AR.cell(RD.score + '%', 'ready')}<span class="ar-muline">${muLine}</span></div>`; }
+  const ck = tm.grade, pips = ck ? `<div class="arb-checks"><b>${ck.pass}/${ck.n}</b><span>team checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span></div>` : '';
   const st = document.createElement('div'); st.className = 'arb-stage';
   st.innerHTML = `<div class="arb-sthead"><div><p class="ar-kick">${esc(kind)}</p><h2 class="ar-h2">${esc(String(tm.label || 'Your six').split(/\s*·\s*/).join(', '))}</h2>${optT ? `<p class="arb-opt">${esc(optT.charAt(0).toUpperCase() + optT.slice(1))}</p>` : ''}</div>${score}</div>
     <div class="ar-six">${tiles}</div><div class="arb-nums">${stats}${pips}</div>`;

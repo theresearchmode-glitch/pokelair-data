@@ -111,7 +111,8 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
     x.font = '400 112px Anton, Impact, sans-serif'; x.fillStyle = bc; const nw = x.measureText(String(f.G.s)).width; x.fillStyle = P.ink; x.fillText(String(f.G.s), 282, gy + 62);
     x.fillStyle = bc; x.fillRect(282, gy + 76, nw, 8); }
   else { x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText(`${ms.length} OF 6 POKÉMON`, 56, gy - 30); x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText('Grade comes with a full six', 56, gy + 20); }
-  if (f.hd) { const rx = 640, r = 74, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
+  /* Nov 9, Sim: the poster doesn't need "handles x of the top 30 threats" (ring and words removed) */
+  if (false && f.hd) { const rx = 640, r = 74, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
     x.lineWidth = 18; x.strokeStyle = P.line; x.beginPath(); x.arc(rx, gy, r, 0, 7); x.stroke();
     x.strokeStyle = dark ? '#3DBE78' : '#1E8E4E'; x.lineCap = 'round'; x.beginPath(); x.arc(rx, gy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fr); x.stroke(); x.lineCap = 'butt';
     x.textAlign = 'center'; x.font = '400 70px Anton, Impact, sans-serif'; x.fillStyle = P.ink; x.fillText(String(f.hd.x), rx, gy + 25); x.textAlign = 'left';

@@ -221,8 +221,10 @@ MG.ratings = () => { document.querySelectorAll('[data-pane="ratings"] .chhot:not
   const rk = st && st.querySelector('.chrk'), rkT = rk ? rk.textContent.trim() : '';
   const lines = st ? st.innerHTML.split(/<br\s*\/?>/i).map(x => x.trim()).filter(Boolean) : [];
   const rows = lines.filter(x => !/chrk/.test(x)).map(x => `<span class="mgrrow">${x}</span>`).join('');
-  if (st) st.outerHTML = `<span class="mgrst">${rows}</span>`;
-  if (rkT) nm.insertAdjacentHTML('beforebegin', `<span class="mgcap mgrcap">${esc(rkT)}</span>`);
+  /* plain words (Nov 9): a stat line marked .dbsec stays behind Details here too, rank pill included */
+  const hid = !!(st && st.classList.contains('dbsec'));
+  if (st) st.outerHTML = `<span class="mgrst${hid ? ' dbsec' : ''}">${rows}</span>`;
+  if (rkT) nm.insertAdjacentHTML('beforebegin', `<span class="mgcap mgrcap${hid ? ' dbsec' : ''}">${esc(rkT)}</span>`);
   if (img) { const w = document.createElement('span'); w.className = 'mgrmon'; w.innerHTML = MG.aura(p); img.replaceWith(w); }
   h.insertAdjacentHTML('afterbegin', '<span class="mgin"><span class="mgwash"></span><span class="mglines"></span></span>'); }); };
 

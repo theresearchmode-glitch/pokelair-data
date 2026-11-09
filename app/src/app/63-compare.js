@@ -71,7 +71,7 @@ function cxRows(RA, RB, a, b) { const rows = [], NA = 'Team A', NB = 'Team B';
   add('grade', 'Grade', gl(a), gl(b), a.G && b.G && a.G.s !== b.G.s, a.G && b.G && a.G.s !== b.G.s ? `Grade: ${a.G.letter} (${CH.gradeNum(a.G)}) for ${NA}, ${b.G.letter} (${CH.gradeNum(b.G)}) for ${NB}.` : '');
   /* readiness */
   const lv = I => { const c = [0, 0]; for (const r of (I.RD ? I.RD.rows : [])) if (r.level < 2) c[r.level]++; return c; };
-  const rd = I => I.RD ? `<span class="cxl"><b>${I.RD.score}%</b> ready</span><span class="cxl dbhand">${hRing(CH.hand(I.RD), 24)}${CH.handTxt(I.RD, true)}</span><span class="t2 cxl">${lv(I)[1]} shaky · ${lv(I)[0]} unanswered</span>` : '—';
+  const rd = I => I.RD ? `<span class="cxl"><b>${I.RD.score}%</b> ready</span><span class="cxl dbhand">${hRing(CH.hand(I.RD), 24)}${CH.handTxt(I.RD, true)}</span><span class="t2 cxl">${lv(I)[1]} shaky · ${lv(I)[0]} with no answer</span>` : '—';
   add('ready', 'Ready for the top 30 threats', rd(a), rd(b), a.RD && b.RD && a.RD.score !== b.RD.score, a.RD && b.RD && Math.abs(a.RD.score - b.RD.score) >= 3 ? `${a.RD.score > b.RD.score ? NA : NB} is ready for more of the top 30 threats (${Math.max(a.RD.score, b.RD.score)}% vs ${Math.min(a.RD.score, b.RD.score)}% ready).` : '');
   /* threats one handles (Handled or better) and the other doesn't */
   const only = (X, Y) => X.RD && Y.RD ? X.RD.rows.filter(r => r.level >= 2 && (Y.thr.get(r.t.n) || {level: 0}).level < 2).sort((p, q) => q.t.w - p.t.w) : [];

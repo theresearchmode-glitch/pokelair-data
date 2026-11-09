@@ -56,7 +56,7 @@ function renderWeekly() {
   const sub = `<div class="wdl">Tournament teams, ${WK.range(A)} against ${WK.range(B)}</div><div class="wdrow wdin" role="group" aria-label="This week, ${WK.range(A)}"><span class="wdl">This week</span>${wc(CH.n(nA), 'teams')}${wc(A.ev, 'events')}</div><div class="wdrow wdin" role="group" aria-label="The week before, ${WK.range(B)}"><span class="wdl">Week before</span>${wc(CH.n(nB), 'teams')}${wc(B.ev, 'events')}</div>`;
   const tq = (k, t, b) => typeof tipText === 'function' ? ' ' + tipText(k, t, b) : '';
   const monRow = (r, up) => { const d = wkDelta(r.xa, nA, r.xb, nB);
-    return `<button type="button" class="wkrow tyacc" style="${tyv(r.p)}" data-lt="${esc(r.p.n)}" aria-label="${esc(r.p.d)}: ${up ? 'up' : 'down'} ${d} points, ${WK.pc1(r.xb, nB)}% to ${WK.pc1(r.xa, nA)}% of teams">${sprite(r.p, 'wkspr') || ''}<span class="wkn"><b>${esc(r.p.d)}</b><span>${WK.pc1(r.xb, nB)}% → <b>${WK.pc1(r.xa, nA)}%</b> of teams</span></span><span class="wkar ${up ? 'up' : 'dn'}">${up ? '▲' : '▼'}${d}<small> pts</small></span></button>`; };
+    return `<button type="button" class="wkrow tyacc" style="${tyv(r.p)}" data-lt="${esc(r.p.n)}" aria-label="${esc(r.p.d)}: ${up ? 'up' : 'down'} ${d} points, ${WK.pc1(r.xb, nB)}% to ${WK.pc1(r.xa, nA)}% of teams">${sprite(r.p, 'wkspr') || ''}<span class="wkn"><b>${esc(r.p.d)}</b><span>${WK.pc1(r.xb, nB)}% → <b>${WK.pc1(r.xa, nA)}%</b> of teams</span></span><span class="wkar ${up ? 'up' : 'dn'}">${up ? '▲' : '▼'}${d}<small> points</small></span></button>`; };
   const none = t => `<p class="wknone">${t}</p>`;
   const moves = W.enough ? `<div class="wkcols"><div><h4 class="wkh up">Rising</h4>${W.up.slice(0, 4).map(r => monRow(r, true)).join('') || none('No Pokémon rose enough to call it a trend.')}</div>
       <div><h4 class="wkh dn">Falling</h4>${W.down.slice(0, 4).map(r => monRow(r, false)).join('') || none('No Pokémon dropped enough to call it a trend.')}</div></div>`
@@ -64,11 +64,11 @@ function renderWeekly() {
   /* most used this week: context only, no arrows (a small change here is not a trend) */
   const top = W.top.length ? `<div class="wktop" aria-label="Most used this week">${W.top.slice(0, 5).map(r => `<button type="button" class="wktm tyacc" style="${tyv(r.p)}" data-lt="${esc(r.p.n)}" aria-label="${esc(r.p.d)}: ${WK.pc1(r.xa, nA)}% of teams this week">${sprite(r.p, 'wkspr') || ''}<b>${WK.pc1(r.xa, nA)}%</b><span>${esc(r.p.d)}</span></button>`).join('')}</div>
     <p class="t2 wkcap">Most used this week, % of teams.</p>` : '';
-  const techRow = t => `<button type="button" class="wkrow wktech tyacc" style="${tyv(t.p)}" data-lt="${esc(t.p.n)}" data-kind="${t.k}" aria-label="${KIND[t.k].w}: ${esc(t.o)}, on ${esc(t.p.d)}: up ${wkDelta(t.xa, t.ma, t.xb, t.mb)} points, ${WK.pc1(t.xb, t.mb)}% to ${WK.pc1(t.xa, t.ma)}% of ${esc(t.p.d)} teams">${sprite(t.p, 'wkspr') || ''}<span class="wkn">${kindTag(t.k)}<b><span class="kdopt kd-${t.k}">${esc(t.o)}</span> <i>${esc(t.p.d)}</i></b><span>${WK.pc1(t.xb, t.mb)}% → <b>${WK.pc1(t.xa, t.ma)}%</b> of its teams<span class="dbsec"> (${CH.n(t.ma)} ${esc(t.p.d)} teams this week, ${CH.n(t.mb)} the week before)</span></span></span><span class="wkar up">▲${wkDelta(t.xa, t.ma, t.xb, t.mb)}<small> pts</small></span></button>`;
+  const techRow = t => `<button type="button" class="wkrow wktech tyacc" style="${tyv(t.p)}" data-lt="${esc(t.p.n)}" data-kind="${t.k}" aria-label="${KIND[t.k].w}: ${esc(t.o)}, on ${esc(t.p.d)}: up ${wkDelta(t.xa, t.ma, t.xb, t.mb)} points, ${WK.pc1(t.xb, t.mb)}% to ${WK.pc1(t.xa, t.ma)}% of ${esc(t.p.d)} teams">${sprite(t.p, 'wkspr') || ''}<span class="wkn">${kindTag(t.k)}<b><span class="kdopt kd-${t.k}">${esc(t.o)}</span> <i>${esc(t.p.d)}</i></b><span>${WK.pc1(t.xb, t.mb)}% → <b>${WK.pc1(t.xa, t.ma)}%</b> of its teams<span class="dbsec"> (${CH.n(t.ma)} ${esc(t.p.d)} teams this week, ${CH.n(t.mb)} the week before)</span></span></span><span class="wkar up">▲${wkDelta(t.xa, t.ma, t.xb, t.mb)}<small> points</small></span></button>`;
   const tech = W.enough ? (W.tech.slice(0, 4).map(techRow).join('') || none('No item, move or ability jumped enough on any Pokémon this week.')) : none('Needs more teams this week.');
   const upS = new Set(W.sty.up.map(s => s.k)), dnS = new Set(W.sty.down.map(s => s.k));
   const styles = W.styAll.length ? `<div class="wkstyles">${W.styAll.map(s => { const c = upS.has(s.k) ? 'up' : dnS.has(s.k) ? 'dn' : '';
-      return `<span class="wkst ${c}"><b>${esc(WK.styName(s.k))}</b> ${WK.pc1(s.xa, nA)}%${c ? ` <i>${c === 'up' ? '▲ up' : '▼ down'} ${wkDelta(s.xa, nA, s.xb, nB)} pts from ${WK.pc1(s.xb, nB)}%</i>` : ''}</span>`; }).join('')}</div>
+      return `<span class="wkst ${c}"><b>${esc(WK.styName(s.k))}</b> ${WK.pc1(s.xa, nA)}%${c ? ` <i>${c === 'up' ? '▲ up' : '▼ down'} ${wkDelta(s.xa, nA, s.xb, nB)} points from ${WK.pc1(s.xb, nB)}%</i>` : ''}</span>`; }).join('')}</div>
     <p class="t2 wkcap wdsub">% of teams using each style${tq('wksty', 'What the team styles count', '% of teams with a Trick Room or Tailwind user, or a weather or terrain setter. Arrows only on real changes.')}</p>` : '';
   const ws = WK.winners(W);
   const winners = ws.length ? ws.map(e => { const w = e.top[0];
@@ -82,7 +82,7 @@ function renderWeekly() {
     <section class="wkcard"${dbAttr('wktech')}><div class="dbhd"><h3 class="wkt">New tech</h3>${dbBtn('wktech', 'team counts')}</div><p class="t2 wkcap wdsub">Rising items, moves and abilities, per Pokémon${tq('wktech', 'What counts as new tech', `An item, move or ability that jumped on one Pokémon (${T.monTeams}+ of its teams each week). Each row names its kind: Move (slash icon, teal), Item (tag icon, amber) or Ability (spark icon, violet).`)}</p>${tech}</section>
     <section class="wkcard"><h3 class="wkt">Winners this week</h3>${winners}</section>
     <section class="wkcard"><h3 class="wkt">Team styles</h3>${styles || none('No style data this week.')}</section>
-    <section class="wkcard"><h3 class="wkt">New in top cut</h3><p class="t2 wkcap wdsub">First top ${T.cut} this regulation${tq('wkfresh', 'What counts as new in top cut', `First time in a top ${T.cut} this regulation (online events with ${T.cutPlayers}+ players and official events).`)}</p>${fresh}</section>
+    <section class="wkcard"><h3 class="wkt">New in top cut</h3><p class="t2 wkcap wdsub">First top ${T.cut} this regulation${tq('wkfresh', 'What counts as new in top cut', `First time in a top ${T.cut} this regulation (online tournaments with ${T.cutPlayers}+ players and official events).`)}</p>${fresh}</section>
     <details class="wkfoot"><summary>How we decide what changed</summary><p>We compare the share of full teams at standard Reg M-C tournaments on Limitless (whole fields; themed and restricted cups left out) in the last 7 days against the 7 days before. A change is shown only when: each week has ${T.teams}+ teams; it moved at least ${T.pts} points (${T.techPts} for an item, move or ability, counted among that Pokémon's own teams, with ${T.monTeams}+ of them each week and ${T.techMin}+ using it); a two-proportion test puts it ${T.z}+ standard errors from no change; and it still holds with the single event that pushes it most left out, so one big event can't make a trend. Everything else is treated as noise.${W.updated ? ` Updated ${WK.d(W.updated.slice(0, 10))}.` : ''}</p></details>`;
 }
 CH.wrap('renderWeekly', () => CH.pagehead($('weekly'), 'Meta · last 7 days', 'This week', ''));
@@ -118,7 +118,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
     rows.forEach((r, i) => { const Y = 392 + i * 84; x.fillStyle = P.card; scRound(x, X, Y, 520, 72, 14); x.fill(); x.strokeStyle = P.line; x.lineWidth = 2; x.stroke();
       draw(ims[i], X + 42, Y + 34, 66); txt(r.p.d, '800 26px Archivo, sans-serif', P.ink, X + 86, Y + 33, 270);
       txt(`${WK.pc1(r.xb, nB)}% → ${WK.pc1(r.xa, nA)}% of teams`, '700 18px "Instrument Sans", monospace', P.mute, X + 86, Y + 58, 300);
-      const d = wkDelta(r.xa, nA, r.xb, nB); txt(`${isUp ? '▲' : '▼'}${d} pts`, '400 38px Anton, Impact, sans-serif', isUp ? P.up : P.dn, X + 500, Y + 50, 0, 'right'); }); };
+      const d = wkDelta(r.xa, nA, r.xb, nB); txt(`${isUp ? '▲' : '▼'}${d} points`, '400 38px Anton, Impact, sans-serif', isUp ? P.up : P.dn, X + 500, Y + 50, 0, 'right'); }); };
   col('Rising', up, iu, 56, true); col('Falling', dn, idn, 624, false);
   /* new tech */
   txt('New tech', '400 40px Anton, Impact, sans-serif', P.ink, 56, Y0); const it = await Promise.all(tech.map(t => img(t.p)));
@@ -131,7 +131,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
     x.font = '800 26px Archivo, sans-serif'; const ow = Math.min(x.measureText(t.o).width, 600);
     txt(`${t.o} ${t.p.d}`, '800 26px Archivo, sans-serif', P.ink, 168 + kw, Y + 17, 860 - kw); x.fillStyle = kc; x.fillRect(168 + kw, Y + 22, ow, 3);
     txt(`${WK.pc1(t.xb, t.mb)}% → ${WK.pc1(t.xa, t.ma)}% of ${t.p.d} teams (${CH.n(t.ma)} this week, ${CH.n(t.mb)} before)`, '700 18px "Instrument Sans", monospace', P.mute, 134, Y + 52, 1000);
-    txt(`▲${wkDelta(t.xa, t.ma, t.xb, t.mb)} pts`, '400 38px Anton, Impact, sans-serif', P.up, 1144, Y + 46, 0, 'right'); });
+    txt(`▲${wkDelta(t.xa, t.ma, t.xb, t.mb)} points`, '400 38px Anton, Impact, sans-serif', P.up, 1144, Y + 46, 0, 'right'); });
   /* the week's biggest winner, on the blue band */
   const w0 = WK.winners(W)[0];
   x.fillStyle = P.blue; x.fillRect(0, by, Wd, bh); x.fillStyle = 'rgba(255,255,255,.2)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < Wd; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.3, 0, 7); x.fill(); }
@@ -190,7 +190,7 @@ function homeWeekTeaser() { const W = META.weekly; if (!W || !W.enough) return '
   const bits = [...W.up.slice(0, 2).map(r => [r, 'up']), ...W.down.slice(0, 2).map(r => [r, 'dn'])];
   const t0 = W.tech[0];
   return `<button type="button" class="wkteaser" data-view="weekly"><span class="chk">This week · ${esc(WK.range(W.a))}</span>
-    <span class="wkteb">${bits.map(([r, k]) => `<span class="wkst ${k}">${sprite(r.p, 'wkspr') || ''}<b>${esc(r.p.d)}</b> <i>${k === 'up' ? '▲' : '▼'}${wkDelta(r.xa, nA, r.xb, nB)} pts</i></span>`).join('')}${t0 ? `<span class="wkst up">${sprite(t0.p, 'wkspr') || ''}${kindTag(t0.k)}<b>${esc(t0.o)} ${esc(t0.p.d)}</b> <i>▲${wkDelta(t0.xa, t0.ma, t0.xb, t0.mb)} pts</i></span>` : ''}</span>
+    <span class="wkteb">${bits.map(([r, k]) => `<span class="wkst ${k}">${sprite(r.p, 'wkspr') || ''}<b>${esc(r.p.d)}</b> <i>${k === 'up' ? '▲' : '▼'}${wkDelta(r.xa, nA, r.xb, nB)} points</i></span>`).join('')}${t0 ? `<span class="wkst up">${sprite(t0.p, 'wkspr') || ''}${kindTag(t0.k)}<b>${esc(t0.o)} ${esc(t0.p.d)}</b> <i>▲${wkDelta(t0.xa, t0.ma, t0.xb, t0.mb)} points</i></span>` : ''}</span>
     <span class="linkbtn">What changed ›</span></button>`; }
 function homeNextChip() { const C = META.calendar; if (!C) return ''; const t = CAL.today(), e = C.ev.find(x => x.e >= t && x.t !== 'national' && x.t !== 'online'); if (!e) return ''; const [k, w] = CAL.when(e);
   return `<button type="button" class="calchip" data-view="events"><span class="chk">Next event</span><b>${esc(e.n)}</b><span class="calcd ${k}">${w}</span></button>`; }

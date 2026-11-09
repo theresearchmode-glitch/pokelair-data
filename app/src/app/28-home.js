@@ -7,7 +7,7 @@ const HOME_TILES = [
   ['ratings', 'Ratings', 'Every legal Pokémon on one tier board', '<path d="m12 3.2 2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/>'],
   ['calc', 'Damage calc', 'Real damage with stats, items and spread moves', '<path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2M8 18h2M12 18h4"/>'],
   ['events', 'Events', 'Every recent tournament, top cut and full sets', '<path d="M4 6h16v14H4z"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/><path d="m10 15 1.5 1.5 3-3"/>'],
-  ['gauntlet', 'Gauntlet', 'Run your team into the top 20 tournament teams', '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>'],
+  ['gauntlet', 'Test run', 'Run your team into the top 20 tournament teams', '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>'],
   ['sets', 'Popular sets', 'Moves, items and natures players run', '<path d="M5 4h14v16H5z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/>'],
   ['speed', 'Speed tiers', 'Who moves first, with Tailwind and Trick Room', '<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-6"/>'],
   ['arch', 'Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', '<path d="M4 18 12 9l8 9"/><path d="M4 12 12 3l8 9"/>'],
@@ -67,7 +67,7 @@ function renderHome() { const el = $('homeOut'); if (!el) return; const pane = d
   ${ui.usageOwner ? `<details class="hsec usebox" id="usageBox"><summary><b>What people use</b> <span class="vsub">only you see this</span></summary><div id="usageOut"></div></details>
     <details class="hsec usebox" id="fbBox"><summary><b>Feedback</b> <span class="vsub">only you see this</span></summary><div id="fbOut"></div></details>` : ''}
   ${typeof FB !== 'undefined' && FB.ok ? '<div class="hfb"><span>Something off or missing?</span><button type="button" class="btn sm fbbtn" data-fbopen="1">Send feedback</button></div>' : ''}
-  <p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p>`; }
+  <p class="hfoot">${esc((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top cuts, top cut rate and wins at real tournaments.</p>`; }
 
 
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('#homeAllBtn'); if (!b) return; ui.homeAll = !ui.homeAll; keepScroll(() => renderHome()); });

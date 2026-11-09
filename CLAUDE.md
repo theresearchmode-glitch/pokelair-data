@@ -83,3 +83,16 @@ Sim and Claude are partners: Sim brings the ideas, Claude does the research and 
 both. Be 100% frank. If unsure, say "I'm unsure" and why; never fill a gap with a guess presented as fact, never a made-up
 answer. If something seems missing, say so plainly, unasked. Do the due diligence at every step (check sources, check the
 code, test before claiming); no shortcuts. Correct earlier wrong statements as soon as they're found.
+
+## Word list (Sim approved, Nov 9)
+One name per idea, everywhere on the site:
+- **Grade**: the team's letter (A+ to F). "Rating" is only for a single Pokémon, always with "tier" for its letter ("S tier", "A tier"),
+  so a Pokémon's tier never reads like a team's grade.
+- **Matchups**: how the team does against the top threats (not "readiness" / "ready for the top 30" / "Threats" as the idea's name).
+  The four levels: **Beats it / Handles it / Shaky / No answer** (were Well handled / Handled / Shaky / Unanswered).
+- **Suggestions**, numbered "Suggestion 1" (not Fix it / plans / ideas); a side-grade is a **Different option**.
+- **Team checks**: the 7 basics (not checklist / game plan / pillars).
+- Plain words: player skill (not Elo), wins more than average (not win edge), reaches top cut more often than its use predicts (not
+  conversion), today's tournament teams (not field), points (not pts), Test run (not Gauntlet); data sources are always Official events /
+  Online tournaments / Ranked ladder.
+- Kept as players know them: Archetypes, spread, top cut, usage, set, Mega, speed control, Tailwind, Trick Room, core, hidden gem, best guess.

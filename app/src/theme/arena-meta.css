@@ -1059,3 +1059,6 @@
 @media (max-width:599px){@A #lair>.lctl{margin-top:16px!important}@A #lair>#chHot{margin-top:20px!important}@A #lair>.nplinks{margin-top:6px!important}}
 @A .ar-mpg #methodOut .nplrow>b small{display:block;font:500 13px/1.3 var(--ar-body);color:var(--ar-ink-2)}
 .nplrow>b small{display:block;font-weight:500;opacity:.8}
+/* plain words (Nov 9): the #1 card's rank, usage, win rate and games wait behind Details like the rows (beats the hero's own display rules) */
+@A .ar-mpg #chHot [data-dbbox]:not([data-dbo]) .dbsec{display:none!important}
+@A .ar-mpg #chHot .chhot2[data-dbbox]:not([data-dbo]) .chhot.mgrh .dbsec,@A .ar-mpg #chHot .chhot2[data-dbbox]:not([data-dbo]) .chhot.mgrh .mgcap.dbsec{display:none!important}

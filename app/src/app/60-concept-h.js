@@ -173,7 +173,7 @@ CH.gradeSum = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
   /* the parts in rating points (Sim, Nov 7: no tiny win-rate pieces): where its Pokémon, pairs and sets alone would rank it, what
      its matchups move, what its own games move */
   if (G.v === 2) { const a = Math.round(G.pct0), b = Math.round(G.pMu), t = Math.round(G.s), m = b - a, r = t - b;
-    return `<b>Rating <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% ready for the top 30)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
+    return `<b>Rating <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% of the top 30 handled)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
   const {nm, ts, ra} = CH.gradeParts(G, RD);
   return `<b>Grade <span data-band="${G.band || String(G.letter)[0]}">${G.s}</span></b> = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; };
 /* the same sum, short, for cards and table cells: "92 = 85 ready + 7 strength − 6 checks" */
@@ -191,7 +191,8 @@ CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `h
 CH.gradeBadge = (G, RD) => { if (!G || !RD) return '';
   /* the same three lines as My team: the letter, the grade out of 100, the real win rate (or none yet); the sum is the tooltip */
   const tt = G.v === 2 ? `Grade ${G.letter}: ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.`;
-  return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(tt)}"><b class="npgl">${G.letter}</b><span class="npgt"><b>${CH.gradeNum(G)}</b><small>${esc(CH.recLine(G, true))}</small></span></span>`; };
+  /* plain words (Nov 9, Sim: no extra numbers next to the letter): the letter only; the rank and the record are in the hover text */
+  return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(`${CH.gradeNum(G)}. ${tt}`)}"><b class="npgl">${G.letter}</b></span>`; };
 /* round words (Sim, Nov 4): the record and readiness as labelled number cells instead of a sentence, each figure once.
    Record row only with 30+ real games (the grade then comes from it); "Our check" is NastyPlot's own readiness check. */
 CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><b>${v}</b><small>${l}${t || ''}</small></span>`;
@@ -199,7 +200,7 @@ CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><
   const rec = '';
   const sum = G && !G.partial ? `<div class="wdsum">${CH.gradeSum(G, RD)}</div>` : '';
   const ready = sum ? '' : cell(RD.score + '%', 'ready', tp('readiness'));
-  const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'unanswered') : ''}</div>`;
+  const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'no answer') : ''}</div>`;
   return `<div class="rd wdstats">${sum}${rec}${chk}</div>`; };
 CH.LETTERS = 'A: top 10% of real tournament teams · B: next 20% · C: middle 40% · D: next 20% · F: bottom 10%.';
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
@@ -211,7 +212,7 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     if (G.partial) { const k = G.st && G.st.partialN || 0, e = 6 - k;
       return `<div class="chgwhy" id="chGwhy">${L2} · ${CH.pctTxt(G)} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
     return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
-      + `<li><b>${sg(m)}</b> for its matchups (${G.r}% ready for the top 30). They count a little, since players often play around a shaky matchup</li>`
+      + `<li><b>${sg(m)}</b> for its matchups (${G.r}% of the top 30 handled). They count a little, since players often play around a shaky matchup</li>`
       + (G.six ? `<li><b>${sg(r)}</b> from this exact six's own ${G.six.g.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
       + `</ul><p class="chsure">Tested on later tournament games: teams graded A won about 56%, teams graded F about 44%.</p>${su ? `<p class="chsure">How sure: <b>${su.w}</b>. ${su.t[0].toUpperCase() + su.t.slice(1)}.</p>` : ''}${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '', mp = G.mp != null ? Math.round(G.mp) : null;
@@ -223,7 +224,7 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     + realTxt + ` A 90+, B 80+, C 70+, D 60+.${G.partial ? ' The grade settles once all six are in.' : ''}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
 CH.LEGEND = 'Grade = how often this six should win against today\'s tournament field: its Pokémon, pairs and sets in real games, its matchups against the top threats, and its own record (players\' skill taken out). A top 10% of real teams · B next 20% · C middle 40% · D next 20% · F bottom 10%.';
-CH.LV = ['Unanswered', 'Shaky', 'Handled', 'Well handled'];
+CH.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];
 // Motion (Nov 1): when the grade first shows or changes, the ring pops in and the "% ready" counts up from the last number,
 // 200 ms, transform/opacity only for the ring; the number is tabular so nothing moves. Off with reduced motion, and only on
 // the page that's showing (redraws with the same grade do nothing).
@@ -437,11 +438,11 @@ function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'
   const panel = (key, k, nodes, on) => { const d = document.createElement('div'); d.dataset.chsegp = key; d.dataset.chsegk = k; d.hidden = k !== on; nodes.filter(Boolean).forEach(n => d.append(n)); return d; };
   const head = document.createElement('div'); head.id = 'chTeam'; head.className = 'chteam'; rp.prepend(head);
   // 1 · Fix it: suggestions, then everything still to look at (problems, checklist, legal and items)
-  const p1 = CH.part('chP1', '1', 'Fix it', 'What to change, best first'); const b1 = p1.querySelector('.chpartb');
+  const p1 = CH.part('chP1', '1', 'Suggestions', 'What to change, best first'); const b1 = p1.querySelector('.chpartb');
   b1.innerHTML = '<div class="chpoolrow"><span class="chk">Suggest from</span><div class="seg chpool" role="group" aria-label="Suggest from"><button type="button" data-chpool="box">My box</button><button type="button" data-chpool="boxfill">Box + catch</button><button type="button" data-chpool="all">Whole roster</button></div></div>'+/* the Mega choices, here as well as in Plan settings (Sim, Nov 7: they had only stayed on All suggestions and Build) */'<div class="chmegarow"><div class="chpoolrow"><span class="chk">Megas on team</span><div class="seg chpool" role="group" aria-label="Megas on the team"><button type="button" data-megas="0">0</button><button type="button" data-megas="1">1</button><button type="button" data-megas="2">2</button></div></div><div class="chpoolrow"><span class="chk">Swap my Mega?</span><div class="seg chpool" role="group" aria-label="Suggestions can swap out my Mega"><button type="button" data-chswapm="0">No</button><button type="button" data-chswapm="1">Yes</button></div></div></div><div id="chSugOut"></div>'; if (cols[0]) { const h = cols[0].querySelector(':scope > .head h2'); if (h) h.remove(); }
-  const fx = mk('rfix', 'Problems and checklist', false); fx.id = 'chfFix'; const fb = fx.querySelector('.chbody'); [cols[0], $('chkCard'), $('verdict')].filter(Boolean).forEach(n => fb.append(n)); b1.append(fx);
+  const fx = mk('rfix', 'Problems and team checks', false); fx.id = 'chfFix'; const fb = fx.querySelector('.chbody'); [cols[0], $('chkCard'), $('verdict')].filter(Boolean).forEach(n => fb.append(n)); b1.append(fx);
   // 2 · Threats: one section, three views of the same 30 threats
-  const p2 = CH.part('chP2', '2', 'Threats', 'Who beats you, and who handles them'); const b2 = p2.querySelector('.chpartb'), on2 = LS.get('cc2.seg.thr', 'top');
+  const p2 = CH.part('chP2', '2', 'Matchups', 'Who beats you, and who handles them'); const b2 = p2.querySelector('.chpartb'), on2 = LS.get('cc2.seg.thr', 'top');
   b2.append(Object.assign(document.createElement('div'), {innerHTML: CH.seg('thr', [['top', 'Top 10'], ['grid', 'vs top 12'], ['all', 'All 30']], on2)}).firstElementChild);
   b2.append(panel('thr', 'top', [Object.assign(document.createElement('div'), {id: 'chThrTop'})], on2), panel('thr', 'grid', [Object.assign(document.createElement('div'), {id: 'chVsOut'})], on2), panel('thr', 'all', [$('thrCard'), flat('thrSec')], on2));
   // 3 · How your team plays: the game plan, then what you hit hard and what hits you

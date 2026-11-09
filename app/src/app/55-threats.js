@@ -287,7 +287,7 @@ const THR = (() => {
     let level = solid.length >= 2 ? 3 : solid.length === 1 ? 2 : softR.length ? 1 : 0;
     if (overloaded && level > 0 && !mode) level--;
     const warn = []; for (const r of R) for (const x of r.warn) if (!warn.some(y => y.m === x.m)) warn.push(x);
-    return {t, field: dShow.field, fields: fs, level, label: ['Unanswered', 'Shaky', 'Handled', 'Well handled'][level], solid, soft: softR, warn, losers, overloaded, holders, mode, rows: dShow.rows};
+    return {t, field: dShow.field, fields: fs, level, label: ['No answer', 'Shaky', 'Handles it', 'Beats it'][level], solid, soft: softR, warn, losers, overloaded, holders, mode, rows: dShow.rows};
   }
   function vsIn(team, t, modes, only, field) {
     const rows = [];
