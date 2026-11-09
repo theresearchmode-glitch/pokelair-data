@@ -531,3 +531,14 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   Gholdengo, Incineroar out; Kingambit, Basculegion in), where the grade's small value differences are about a coin flip, yet the
   grade adds them up into +18 grade points. Next check: the same real-swap test with the site's own model (model.mjs trained on
   one half), and the size of the 60-85 suggestions' value gaps.
+- Confirmed with the SITE's model (measured, experiments/real-swaps-site.mjs): model.mjs trained on even and on odd tournaments
+  (both shipped, 321 Pokémon each), each judging real one-swap pairs on the other half (skill-adjusted; value = Pokémon + pairs +
+  no-Mega term, sets left out). 1,562 pairs: it picks the better six 52.4% (48.7 to 56.4), barely above a coin flip. Weakest third
+  of shared fives 52.0%, middle 49.2%, strongest 55.6% (ranges ±6-8). The model's own uncertainty (monSd) doesn't help: when it is
+  "sure" (|z| 1.5+) it picks 51.4%.
+- So (measured): for the kind of swaps real players make, between Pokémon that are all viable, the grade's Pokémon-and-pairs
+  values can't tell which six is better. Suggestions for 60-85 teams are exactly such swaps, and picking the best of hundreds of
+  near-ties adds the noise up into +18 grade points. Weak teams gain because their suggestions swap out Pokémon real players
+  rarely use (outside what real swap pairs cover), where the grade's values do carry information (+2.6 real).
+- Fix direction (to discuss with Sim, not started): a swap the grade can't tell apart from a coin flip should not be shown as an
+  upgrade with grade points; the word list already has "Different option" for a side-grade.
