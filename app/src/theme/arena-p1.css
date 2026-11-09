@@ -1059,3 +1059,9 @@
 @A .ar-ss .ar-gsub{margin-top:0}
 @media (min-width:1001px){@A .ar-ss .ar-ringw{width:148px;height:148px}@A .ar-ss .ar-ssn{font-size:54px!important}@A .ar-ss .ar-ssword{font-size:26px}@A .ar-ss .ar-ssline{font-size:16px}}
 @media (max-width:420px){@A .ar-ss .ar-ringw{width:100px;height:100px}@A .ar-ss .ar-ssn{font-size:36px!important}@A .ar-ss .ar-ssword{font-size:20px}}
+/* the Strength Score block reads left to right at every width (ring, then its words); it never uses the old letter grid */
+@A .ar-titlerow .ar-score.ar-ss,@A .ar-titlerow:has(.ar-num small) .ar-score.ar-ss{display:flex!important;flex-direction:column;align-items:flex-start;text-align:left;min-width:0}
+@A .ar-ss>*{justify-self:auto;margin-left:0}
+@A .ar-ss .ar-ssrow{flex-wrap:nowrap}
+@media (min-width:420px){@A .ar-titlerow .ar-score.ar-ss{flex:0 1 auto;max-width:min(520px,58%)}}
+@media (max-width:419px){@A .ar-titlerow .ar-score.ar-ss{width:100%}}
