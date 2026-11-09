@@ -352,3 +352,15 @@ team); "no Mega Stone" −21 ±16 but on ~0% of teams (too few to tell); leaning
 ## Live (Nov 9, 00:2x UTC, Sim: "Put it live now")
 main 71a7abc; live page Version 125; live meta/model v25 (team basics, pairs ÷4, monSd). Sim's saved teams on the live data:
 D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily model now builds this way by default.
+
+## Foundation Phase 2 (Build for Me), Nov 9
+- Box mode, honestly: under the best box team, "To reach an A: catch X for Y" (or the best single catch if it adds 3+
+  points), decided by the real grade; now in the live engine (it only existed in the rolled-back one). Sim's box, 1 Mega:
+  "catch Garchomp for Hydreigon" (that six: 630 real games, 59%). Speed: rough pass on names, grade only 12 → +0.3 s.
+- Known-answer tests (experiments/golden.mjs) with the live grade: 8 of 10.
+  Fixed test flaws: build-around compared a 2-Mega build with 1-Mega real teams; the Apply check read hidden text (now
+  textContent): Apply = promised grade 6 of 6; build-around 10 of 10; boxes 3 of 3; 1 / 2 Megas within 0 of the best real team.
+  Still failing: (a) "0 Megas must grade B": the expectation predates the finding that no-Mega teams win 34%; needs Sim's OK
+  to change. (b) "75% of Limitless top-4 teams grade B+": 65%. 10 of the 19 low ones contain a Pokémon seen on under 1,500
+  team-games (new Megas: Drampa, Scovillain, Chandelure, Altaria; Araquanid, Floette-Eternal), vs 7 of 35 of the B+ ones.
+  Likely cause to test next: thin-data Pokémon are pulled toward average. Open problem on the grade, so Phase 2 stays open.

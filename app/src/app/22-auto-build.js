@@ -104,7 +104,22 @@ function* provenBuildGen() {
 // buildBest() runs it straight through for callers that need the result at once.
 const genRun = g => { let r; while (!(r = g.next()).done); return r.value; };
 function buildBest() { return genRun(buildBestGen()); }
-function* buildBestGen() { const own = !tsMemoB; if (own) tsMemoB = new Map(); try { return yield* buildBestGen0(); } finally { if (own) tsMemoB = null; } }
+function* buildBestGen() { const own = !tsMemoB; if (own) tsMemoB = new Map(); try { const r = yield* buildBestGen0(); if (r && ui.abSrc === 'box' && !ui.abLock) yield* boxCatchGen(r); return r; } finally { if (own) tsMemoB = null; } }
+/* Box mode, honestly (Foundation Phase 2, Nov 9; it lived only in the rolled-back engine before): under the best team your box
+   allows, say which Pokémon to catch (and which it replaces) to raise it, decided by the real grade. Shortlisted by team strength,
+   then graded; an A if one swap gets there, otherwise the single best catch if it adds 3+ grade points. */
+function* boxCatchGen(res) { const d = res.teams && res.teams[0]; if (!d || !d.mons || d.mons.length !== 6 || typeof gradeTeam !== 'function') return;
+  const t = d.mons.map(m => abMember(byName.get(m.n))); if (t.some(m => !m || !m.p)) return; const g0 = gradeTeam(t); if (g0 == null || g0 >= 90) return;
+  const goal = megaGoal(), sw = [];
+  for (let i = 0; i < 6; i++) { yield; for (const p of ROSTER) { if (inBox(p) || isExcl(p) || isTrap(p) || !!p.m !== !!t[i].p.m || t.some(m => m.p.b === p.b)) continue;
+    // rough pass on names only (Pokémon, pairs, team basics); the shortlist gets full members and the real grade
+    const ns = t.map(m => m.p.n); ns[i] = p.n; let v = null; try { v = teamX(ns, null); } catch (e) {} if (v != null) sw.push([v, i, p]); } }
+  sw.sort((a, b) => b[0] - a[0]); let best = null;
+  for (const [, i, p] of sw.slice(0, 12)) { yield; const nt = [...t.slice(0, i), abMember(p), ...t.slice(i + 1)]; if (megaCount(nt) !== megaCount(t) || wxConflict(nt) || wxUnmet(nt).length) continue; const g = gradeTeam(nt); if (g != null && (!best || g > best.g)) best = {g, p, out: t[i].p}; }
+  if (!best || best.g < g0 + 3) return;
+  d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach an A: catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(best.g).toLowerCase()} of tournament teams`
+    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${CH.grade(g0)} to ${CH.grade(best.g)} (${CH.rankShort(best.g).toLowerCase()} of tournament teams)`);
+  d.boxCatch = {p: best.p.n, out: best.out.n, g0, g: best.g}; }
 function* buildBestGen0() {
   // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below
   // fills the rest, so a rare sleeper still gets three good teams

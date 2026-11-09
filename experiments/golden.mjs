@@ -59,7 +59,7 @@ R.around = await run(`(()=>{ const out = []; const mk = ns => ns.map(n => abMemb
     S.megaGoal = 2; S.maxMega = 2; ui.abSrc = 'all'; ui.abLock = L; const T0 = performance.now(); let res = null; try { res = buildBest(); } catch (e) {} const ms = performance.now() - T0;
     const t = res && res.teams && res.teams[0] ? res.teams[0].mons.map(m => m.n) : null;
     let best = null; const seen = new Set(); for (const [names, n, wr, g] of [...(RES.proven || []), ...(RES.records || [])]) { const key = names.slice().sort().join('|'); if (seen.has(key)) continue; seen.add(key);
-      if (!(n >= 3 || (g != null && g >= 30)) || !names.includes(L)) continue; const ps = names.map(x => byName.get(x)); if (ps.some(p => !p || isExcl(p)) || ps.filter(p => p.m).length > 2) continue; const v = gr(names); if (v != null && (!best || v > best.g)) best = {mons: names, g: v}; }
+      if (!(n >= 3 || (g != null && g >= 30)) || !names.includes(L)) continue; const ps = names.map(x => byName.get(x)); if (ps.some(p => !p || isExcl(p)) || ps.filter(p => p.m).length !== 2) continue; /* same limit as the build (2 Megas): Nov 9 fix, it compared against 1-Mega teams */ const v = gr(names); if (v != null && (!best || v > best.g)) best = {mons: names, g: v}; }
     out.push({lock: L, team: t, g: t ? gr(t) : null, has: !!(t && t.includes(L)), best, ms}); }
   ui.abLock = null; return JSON.stringify(out); })()`);
 // 7: sample boxes (40 Pokémon each, drawn with a fixed seed from the 100 most used): within 3 of the best real team inside the box
@@ -82,7 +82,7 @@ R.apply = [];
     const r = await run(`(()=>{ if (${JSON.stringify(ns)}.some(n => !byName.get(n))) return JSON.stringify(null); S.format = 'doubles'; S.slots = normSlots(${JSON.stringify(ns)}.map(n => ({n, a: null, lock: false}))); const g = gradeTeam(members());
       if (g == null || g < 30 || g > 85) return JSON.stringify(null); setView('coverage'); render(); return JSON.stringify({g}); })()`);
     if (!r) continue; await pg.waitForTimeout(3500);
-    const card = await pg.evaluate(() => { const c = document.querySelector('#sugs .plan'); if (!c) return null; const m = c.innerText.replace(/\s+/g, ' ').match(/→ (Top \d+%|Bottom \d+%)/); return m ? m[1] : null; });
+    const card = await pg.evaluate(() => { const c = document.querySelector('#sugs .plan'); if (!c) return null; /* textContent: the list can sit in a closed panel, where innerText is empty (Nov 9) */ const m = c.textContent.replace(/\s+/g, ' ').match(/→ (Top \d+%|Bottom \d+%)/); return m ? m[1] : null; });
     if (!card) continue;
     await pg.evaluate(() => { const b = document.querySelector('#sugs .plan [data-plan="0"]'); if (b) b.click(); }); await pg.waitForTimeout(2500);
     const after = await run(`(()=>{ const ms = members(), g = gradeTeam(ms); return JSON.stringify(g == null ? null : CH.rankShort(g)); })()`);
