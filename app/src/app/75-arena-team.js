@@ -139,6 +139,7 @@ ARB.score = (G) => { if (!G) return null; // grade first: a big "63.0%" beside "
   const so = G.partial ? ' so far' : '', wr = G.rec ? pctFmt(G.rec.wr * 100) : '', av = pctFmt(100 * ((typeof RES !== 'undefined' && RES && +RES.base) || .5));
   /* one grade (Nov 7): the letter, the grade out of 100, the real win rate or none yet */
   const n = CH.gradeNum(G);
+  if (G.v === 2) { const w = CH.wordOfL(G.letter); return {num: String(Math.round(G.s)), top: 'Strength Score' + so, basis: `${w} \u00b7 ${CH.recLine(G, true)}`, line: `Strength Score ${Math.round(G.s)}${so}: ${w} \u00b7 ${CH.recLine(G)}`}; }
   return {num: G.letter, top: 'Grade' + so, basis: `${n} · ${CH.recLine(G, true)}`, line: `Grade ${G.letter}${so}: ${n} · ${CH.recLine(G)}`}; };
 ARB.numeral = (x, P, txt, X, Y, size, align) => { ARB.fnt(x, `italic 900 ${size}px Archivo, sans-serif`, true); x.textAlign = align || 'left'; const o = size * .05;
   x.fillStyle = P.mis; x.fillText(txt, X + o, Y + o * .8); x.fillStyle = P.ink; x.fillText(txt, X, Y); x.textAlign = 'left'; };

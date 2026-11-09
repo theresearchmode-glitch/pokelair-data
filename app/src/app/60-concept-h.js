@@ -176,10 +176,10 @@ CH.rankOfS = s => { const q = META.model && META.model.dist && META.model.dist.q
 /* Shown as a rank (Sim, Nov 8: "77 for a 9-1 team seems so low"): the 0-100 number is where the six ranks among real tournament
    teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
 CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
-CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.gradeFull(g0), b = CH.gradeFull(g1), r0 = CH.rankShort(CH.rankOfS(g0)), r1 = CH.rankShort(CH.rankOfS(g1));
-  // Phase 3 (Nov 9): one measure on cards, the letter. Ranks stay in the tooltip (gradeChip title), not on the card.
-  return a !== b ? `Grade ${a} → ${b}` : g1 > g0 ? `Grade ${b} · stronger` : g1 < g0 ? `Grade ${b} · weaker` : `Grade ${b}`; };
-CH.gradeNum = G => !G ? '' : G.v === 2 ? `${CH.rankShort(CH.rkOf(G))}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
+/* Strength Score (Nov 9): a change shows in score points, "+7 · 76 → 83", and the band word when it changes */
+CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
+  return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} \u00b7 ${r0} \u2192 ${r1}${w0 !== w1 ? ' \u00b7 ' + w1 : ''}`; };
+CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
 CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
 // checks, and real results (how far the real win rate moved it).
@@ -188,7 +188,7 @@ CH.gradeSum = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
   /* the parts in rating points (Sim, Nov 7: no tiny win-rate pieces): where its Pokémon, pairs and sets alone would rank it, what
      its matchups move, what its own games move */
   if (G.v === 2) { const a = Math.round(G.pct0), b = Math.round(G.pMu), t = Math.round(G.s), m = b - a, r = t - b;
-    return `<b>Rating <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% of the top 30 handled)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
+    return `<b>Strength Score <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% of the top 30 handled)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
   const {nm, ts, ra} = CH.gradeParts(G, RD);
   return `<b>Grade <span data-band="${G.band || String(G.letter)[0]}">${G.s}</span></b> = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; };
 /* the same sum, short, for cards and table cells: "92 = 85 ready + 7 strength − 6 checks" */
@@ -209,9 +209,9 @@ CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `h
    underneath so "% ready" always reads as one part of the grade. A team with 30+ real games shows its record instead. */
 CH.gradeBadge = (G, RD) => { if (!G || !RD) return '';
   /* the same three lines as My team: the letter, the grade out of 100, the real win rate (or none yet); the sum is the tooltip */
-  const tt = G.v === 2 ? `Grade ${G.letter}: ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.`;
+  const tt = G.v === 2 ? `Strength Score ${Math.round(G.s)}, ${CH.wordOfL(G.letter)}: ${CH.gradeSumS(G, RD)}. ${CH.pctTxt(G)}. ${CH.recLine(G)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.`;
   /* plain words (Nov 9, Sim: no extra numbers next to the letter): the letter only; the rank and the record are in the hover text */
-  return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(`${CH.gradeNum(G)}. ${tt}`)}"><b class="npgl">${G.letter}</b></span>`; };
+  return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(G.v === 2 ? tt : `${CH.gradeNum(G)}. ${tt}`)}"><b class="npgl">${G.v === 2 ? Math.round(G.s) : G.letter}</b></span>`; };
 /* round words (Sim, Nov 4): the record and readiness as labelled number cells instead of a sentence, each figure once.
    Record row only with 30+ real games (the grade then comes from it); "Our check" is NastyPlot's own readiness check. */
 CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><b>${v}</b><small>${l}${t || ''}</small></span>`;
@@ -221,19 +221,19 @@ CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><
   const ready = sum ? '' : cell(RD.score + '%', 'ready', tp('readiness'));
   const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'no answer') : ''}</div>`;
   return `<div class="rd wdstats">${sum}${rec}${chk}</div>`; };
-CH.LETTERS = 'Strength Score: A 90+ · B 80s · C 70s · D 60s · F under 60. A team that beats today\u2019s tournament teams half the time scores 80.';
+CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. A team that beats today\u2019s tournament teams half the time scores 80.';
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
-  if (G.v === 2) { const L2 = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu), m = b - a, r = t - b, pts = v => `${Math.abs(v)} point${Math.abs(v) === 1 ? '' : 's'}`;
+  if (G.v === 2) { const L2 = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}</b>`, t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu), m = b - a, r = t - b, pts = v => `${Math.abs(v)} point${Math.abs(v) === 1 ? '' : 's'}`;
     const own = G.six ? ` This exact six has ${G.six.g.toLocaleString('en-US')} real tournament games. With its players' skill and its opponents' strength taken out, those results ${r > 0 ? `add ${pts(r)}` : r < 0 ? `take off ${pts(r)}` : 'change it by less than a point'}; the more games, the more they count.` : ' This exact six hasn’t been played in tournaments yet, so this is our estimate from how its Pokémon, pairs and sets do in real games.';
-    const su = G.st && G.st.su, rk = Math.round(CH.rkOf(G)), top = `${L2} · ${CH.pctTxt(G)}${rk > 50 && rk < 99 ? ` (stronger than ${rk}% of them)` : ''}.`;
+    const su = G.st && G.st.su, rk = Math.round(CH.rkOf(G)), top = `${L2}. Teams scoring like this win about ${Math.round(G.e)}% against today\u2019s tournament teams (${CH.pctTxt(G).replace(/^Top/, 'top').replace(/^Bottom/, 'bottom')} by rank).`;
     /* short (Sim, Nov 7: "just what they should and need to"): what the number means, the three things it's made of, the letters */
     const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
     if (G.partial) { const k = G.st && G.st.partialN || 0, e = 6 - k;
-      return `<div class="chgwhy" id="chGwhy">${L2} · ${CH.pctTxt(G)} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
+      return `<div class="chgwhy" id="chGwhy">${L2} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
     return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
       + `<li><b>${sg(m)}</b> for its matchups (${G.r}% of the top 30 handled). They count a little, since players often play around a shaky matchup</li>`
       + (G.six ? `<li><b>${sg(r)}</b> from this exact six's own ${G.six.g.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
-      + `</ul><p class="chsure">Tested on later tournament games: teams graded A won about 56%, teams graded F about 44%.</p>${su ? `<p class="chsure">How sure: <b>${su.w}</b>. ${su.t[0].toUpperCase() + su.t.slice(1)}.</p>` : ''}${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
+      + `</ul><p class="chsure">Tested on 6,270 later tournament games: teams scoring 90+ won 58.5%, the 80s 53-54%, the 70s 46-50%, the 60s 38-41%. Every 10 points really means more wins.</p>${su ? `<p class="chsure">How sure: <b>${su.w}</b>. ${su.t[0].toUpperCase() + su.t.slice(1)}.</p>` : ''}${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '', mp = G.mp != null ? Math.round(G.mp) : null;
   const realTxt = G.rec ? ` These exact six also won ${pct1(G.rec.wr)} of ${G.rec.g.toLocaleString('en-US')} real tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}), which counts as ${G.real}; with that many games, real results make up ${Math.round(G.w * 100)}% of the grade (more games, more weight).` : ' This exact six hasn\u2019t been played in tournaments yet, so the grade is our own check alone.';
   if (o && o.short) return `<div class="chgwhy" id="chGwhy">${L} · ${G.s} out of 100.${realTxt}<br><span class="t2">A 90+, B 80+, C 70+, D 60+.</span></div>`;
@@ -242,7 +242,7 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     + (mp != null ? ` ${mp === 0 ? 'Teams with these Pokémon and sets do about average in real games (±0).' : `Teams with these Pokémon and sets do ${mp > 0 ? 'better' : 'worse'} than average in real games (${mp > 0 ? '+' : '−'}${Math.abs(mp)}).`}` : '')
     + realTxt + ` A 90+, B 80+, C 70+, D 60+.${G.partial ? ' The grade settles once all six are in.' : ''}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
-CH.LEGEND = 'Grade = how often this six should win against today\'s tournament field: its Pokémon, pairs and sets in real games, its matchups against the top threats, and its own record (players\' skill taken out). A top 10% of real teams · B next 20% · C middle 40% · D next 20% · F bottom 10%.';
+CH.LEGEND = 'Strength Score = how strong the team is altogether, from how its Pokémon, pairs and sets do in real games, its matchups against the top threats, and its own record (players\' skill taken out). 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic.';
 CH.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];
 // Motion (Nov 1): when the grade first shows or changes, the ring pops in and the "% ready" counts up from the last number,
 // 200 ms, transform/opacity only for the ring; the number is tabular so nothing moves. Off with reduced motion, and only on
@@ -525,7 +525,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
   const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event.">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
-      ${G ? `<div class="rzgrade" data-band="${G.band || String(G.letter)[0]}"><span class="rzgn">${esc(G.letter)}</span><span class="rzgl">${CH.gradeNum(G)}</span><button type="button" class="rzwhy" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${G.letter}?</button></div>` : ''}
+      ${G ? `<div class="rzgrade" data-band="${G.band || String(G.letter)[0]}"><span class="rzgn">${G.v === 2 ? Math.round(G.s) : esc(G.letter)}</span><span class="rzgl">${G.v === 2 ? esc(CH.wordOfL(G.letter)) + (G.partial ? ' so far' : '') : CH.gradeNum(G)}</span><button type="button" class="rzwhy" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">${G.v === 2 ? 'Why this score?' : `Why ${G.letter}?`}</button></div>` : ''}
       ${RD ? CH.recStats(G, RD, hd, c) : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
       <div class="chpills">${legal}${ck}</div>
       ${ms.length ? `<div class="chsix6 rzsix" role="group" aria-label="Your six: tap one to see its set">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chset="${i}" aria-pressed="${ui.rzSet === i ? 'true' : 'false'}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set">${sprite(m.p) || ''}<span>${esc(m.d)}</span></button>`).join('')}</div>` : ''}

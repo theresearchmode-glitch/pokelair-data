@@ -10,8 +10,9 @@
  "ll": 0.68046,
  "topCut": {
   "n": 188,
-  "good": 128,
-  "share": 0.6809
+  "good": 161,
+  "share": 0.8564,
+  "bar": "80+ (Strength Score, Sim Nov 9; was 'B or better' = top 30% by rank: 128/188)"
  },
  "full": {
   "games": 18618,

@@ -106,11 +106,14 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   if (f.G) { const L = f.G.letter, bc = CH.gcol(L), lc = PO.cr(bc, '#1D2140') >= PO.cr(bc, '#ffffff') ? '#1D2140' : '#ffffff';
     x.fillStyle = bc; x.beginPath(); x.arc(150, gy, 92, 0, 7); x.fill();
     x.save(); x.translate(150, gy); x.rotate(-.12); x.strokeStyle = P.pen; x.lineWidth = 6; x.beginPath(); x.ellipse(0, 0, 112, 104, 0, .3, Math.PI * 2 + .05); x.stroke(); x.restore();
-    x.fillStyle = lc; x.textAlign = 'center'; x.font = '400 118px "Instrument Sans",system-ui,sans-serif'; x.fillText(L, 150, gy + 42); x.textAlign = 'left';
-    x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('GRADE', 282, gy - 52);
-    x.font = '400 112px Anton, Impact, sans-serif'; x.fillStyle = bc; const nw = x.measureText(String(f.G.s)).width; x.fillStyle = P.ink; x.fillText(String(f.G.s), 282, gy + 62);
-    x.fillStyle = bc; x.fillRect(282, gy + 76, nw, 8); }
-  else { x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText(`${ms.length} OF 6 POKÉMON`, 56, gy - 30); x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText('Grade comes with a full six', 56, gy + 20); }
+    const v2 = f.G.v === 2, big = v2 ? String(Math.round(f.G.s)) : L, word = v2 ? CH.wordOfL(L) : String(f.G.s);
+    x.fillStyle = lc; x.textAlign = 'center'; x.font = `400 ${v2 ? 96 : 118}px "Instrument Sans",system-ui,sans-serif`; x.fillText(big, 150, gy + (v2 ? 34 : 42)); x.textAlign = 'left';
+    x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText(v2 ? 'STRENGTH SCORE' : 'GRADE', 282, gy - 52);
+    /* Strength Score (Nov 9): the band word big beside the circle, shrunk to fit the card */
+    let fs = v2 ? 84 : 112; do { x.font = `400 ${fs}px Anton, Impact, sans-serif`; } while (x.measureText(word).width > 1144 - 282 - 40 && --fs > 40);
+    const nw = x.measureText(word).width; x.fillStyle = P.ink; x.fillText(word, 282, gy + (v2 ? 44 : 62));
+    x.fillStyle = bc; x.fillRect(282, gy + (v2 ? 60 : 76), nw, 8); }
+  else { x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText(`${ms.length} OF 6 POKÉMON`, 56, gy - 30); x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText('The Strength Score comes with a full six', 56, gy + 20); }
   /* Nov 9, Sim: the poster doesn't need "handles x of the top 30 threats" (ring and words removed) */
   if (false && f.hd) { const rx = 640, r = 74, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
     x.lineWidth = 18; x.strokeStyle = P.line; x.beginPath(); x.arc(rx, gy, r, 0, 7); x.stroke();
