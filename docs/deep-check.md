@@ -439,3 +439,13 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
 - Matched stretch for the refit model (CAL_MATCH): no effect (0.68238 vs 0.68241 on the old row); the refit's edges are only
   ~2% wider. Dropped.
 - Gate baseline re-recorded on the corrected scoreboard (last 2 weeks: log-loss 0.68046, top-4 B+ 128/188); Sim approved.
+
+### Nov 9 (night): Build for Me on Sim's real box, closed (measured + Sim's review)
+- Sim's in-game box (63 Pokémon, read from the site; not stored in the repo). experiments/built-teams.mjs, 9 teams per engine.
+- Live engine vs grade-ranked rebuild (AB_GRADE_V2): exact six real 44% vs 22%; real 5-of-6 neighbour 100% vs 67%; neighbours'
+  real win rate 54% vs 54% (9 teams each: unknown, not "equal"); checks 6.0 vs 5.3 of 7; all checks pass 44% vs 22%; no-job
+  Pokémon 0.3 vs 0.7 (rebuild keeps picking Annihilape). Rebuild stays off.
+- Live engine, 1 Mega: #1 Basculegion / Mega Charizard Y / Garchomp / Kingambit / Sneasler / Whimsicott = a real six, 656 games 59%.
+- Sim reviewed the teams: "the teams look good to me". Deep Check d5-build closed.
+- Seen in passing for the suggestions step: suggested teams' grade says 55.5% where their real neighbours won 52% (+3.5 pts,
+  n=10, small sample) — check this first in d5-sugg.
