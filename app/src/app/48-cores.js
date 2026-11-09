@@ -81,11 +81,12 @@ function coreConfirmText(ns) { if (ns.length > 3) return 'Replace your team?'; c
   return `Replace ${andList(c.dropped)}?${c.megas > 2 ? ` Your team would have ${c.megas} Megas (only one can Mega Evolve per battle).` : ''}${wx}`; }
 function useCore(ns, sure) {
   const cur = S.slots.filter(s => byName.get(s.n)), have = new Set(cur.map(s => s.n));
-  if (ns.length > 3) { if (cur.length && !sure) return false; S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast('Loaded the team (doubles)'); return true; }
+  // Nov 9 (Sim: "pressed Load team and nothing happened, no pop up"): the in-row "Replace your team?" question was easy to miss,
+  // so the team now loads straight away, like "Use this team" in Build for Me, with Undo in the toast
+  if (ns.length > 3) { keepUndo(); S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast(cur.length ? 'Loaded the team (your old team is one tap away: Undo)' : 'Loaded the team', !!cur.length); return true; }
   const c = corePlan(ns);
-  if (c.dropped.length && !sure) return false;
-  S.slots = normSlots(c.next.slice(0, 6)); S.format = 'doubles'; render(); setView('build');
-  toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${c.dropped.length ? ' · removed ' + c.dropped.join(', ') : ''}${c.megas > 2 ? ` · ${c.megas} Megas on the team now` : ''}`); return true; }
+  keepUndo(); S.slots = normSlots(c.next.slice(0, 6)); S.format = 'doubles'; render(); setView('build');
+  toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${c.dropped.length ? ' · removed ' + c.dropped.join(', ') : ''}${c.megas > 2 ? ` · ${c.megas} Megas on the team now` : ''}`, true); return true; }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-corekind],[data-coresort],[data-corex],[data-coremore],[data-coreuse],[data-corecx],[data-corefind],[data-corepractice]'); if (!b) return; const d = b.dataset;
   if (d.corekind) { coreUi.kind = d.corekind; coreUi.more = 0; coreUi.confirm = null; }
   else if (d.coresort) { coreUi.sort = d.coresort; coreUi.more = 0; }
