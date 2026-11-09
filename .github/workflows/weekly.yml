@@ -1,0 +1,29 @@
+name: Weekly settings re-check
+# Accuracy Lab step 4 (Nov 9, Sim approved): the daily model runs on locked settings (model-settings.json) and never re-checks
+# them. Every Sunday a full retune says which settings would score best now; if any differ, both run through the walk-forward
+# scoreboard and the agreed rule (experiments/compare.mjs). It only reports (out/recheck.json); it never changes the settings.
+on:
+  schedule:
+    - cron: '17 11 * * 0'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: node weekly-recheck.mjs
+      - name: Commit the report
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name "pokelair-bot"
+          git config user.email "pokelair-bot@users.noreply.github.com"
+          git add out/recheck.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "Weekly settings re-check $(date -u +%F)"
+          for i in 1 2 3; do git pull --rebase origin main && git push && exit 0; sleep 10; done
