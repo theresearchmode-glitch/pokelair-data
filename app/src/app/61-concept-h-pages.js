@@ -186,7 +186,7 @@ CH.wrap('renderSpeed', () => { const el = $('spdOut'), sec = $('speedtiers'); if
     // the note under the list already says their spreads are the most common ones; each row stays one line
     if (/most common spread/.test(t.textContent)) t.innerHTML = t.innerHTML.replace(/ ?\(most common spread\)/g, ''); }); });
 // ---------- Gauntlet ----------
-CH.wrap('renderGauntlet', () => { const el = $('gauntOut'), sec = $('gauntlet'); if (!el) return; CH.pagehead(sec, 'Gauntlet · the latest top tournament teams', 'Run the gauntlet.', '');
+CH.wrap('renderGauntlet', () => { const el = $('gauntOut'), sec = $('gauntlet'); if (!el) return; CH.pagehead(sec, 'Test run · the latest top tournament teams', 'Take a test run.', '');
   const intro = el.querySelector(':scope > p.t2'); if (intro && !intro.closest('details.chsec')) CH.foldNode(intro, 'gintro', 'How it works', 'Same calcs as your scouting report, both ways', false);
   CH.more(el.querySelector('.glist'), ':scope > .gitem', 3, 'gaunt', 'teams'); });
 // ---------- Teams and Events: big-sprite team sheets, the first few shown ----------
@@ -204,10 +204,10 @@ CH.wrap('renderRecs', () => { const sec = $('recs'); CH.pagehead(sec, 'Every swa
 function chPlansDedup() { const el = $('sugs'); if (!el) return; const R = new Set((ui.recs || []).map(pl => { const x = pl.ch && pl.ch[0]; return x ? (x.out ? x.out.d : '') + '>' + x.c.p.d : ''; }));
   let j = 0; el.querySelectorAll(':scope > .plan').forEach(c => { const sw = c.querySelectorAll('.swap'); let dup = false;
     if (sw.length === 1) { const o = sw[0].querySelector('.out'), i = sw[0].querySelector('.in'); dup = R.has((o ? o.textContent : '') + '>' + (i ? i.textContent : '')); }
-    c.classList.toggle('chdup', dup); if (dup) return; j++; const pt = c.querySelector('.pt'); if (pt) pt.textContent = pt.textContent.replace(/^(Plan|Idea|Side-grade) \d+/, `$1 ${j}`);
-    const b = c.querySelector('[data-plan]'); if (b && /plan \d+/.test(b.textContent)) b.textContent = 'Apply plan ' + j; });
-  const t = $('sugTitle'); if (t && t.textContent === 'Fix plans') t.textContent = 'Bigger plans';
-  let n = $('chPlanNone'); if (!j && el.querySelector('.plan')) { if (!n) { n = document.createElement('p'); n.id = 'chPlanNone'; n.className = 't2'; el.prepend(n); } n.textContent = 'Every one-change plan is a swap above. Tap More ideas for plans with two or more changes.'; } else if (n) n.remove(); }
+    c.classList.toggle('chdup', dup); if (dup) return; j++; const pt = c.querySelector('.pt'); if (pt) pt.textContent = pt.textContent.replace(/^(Suggestion|Different option) \d+/, `$1 ${j}`);
+    const b = c.querySelector('[data-plan]'); if (b && /suggestion \d+/.test(b.textContent)) b.textContent = 'Apply suggestion ' + j; });
+  const t = $('sugTitle'); if (t && t.textContent === 'Suggestions') t.textContent = 'Bigger changes';
+  let n = $('chPlanNone'); if (!j && el.querySelector('.plan')) { if (!n) { n = document.createElement('p'); n.id = 'chPlanNone'; n.className = 't2'; el.prepend(n); } n.textContent = 'Every one-change suggestion is a swap above. Tap More suggestions for ones with two or more changes.'; } else if (n) n.remove(); }
 CH.wrap('renderPlans', () => safe('plans dedup', chPlansDedup));
 // All suggestions: the bigger plans sit in a fold under the swaps (Oct 29), so the page fits in about three phone screens
 CH.wrap('renderPlans', () => { const ps = $('planSec'), fc = ps && ps.querySelector(':scope > .fixcol'); if (!fc || fc.closest('details.chsec')) return;
@@ -282,7 +282,7 @@ safe('restyle folds', () => { CH.restyle($('muFold'), 'mufold', 'Deeper read', '
 safe('one page per job', () => {
   const ap = document.querySelector('[data-pane="auto"]'), cs = $('cores'); if (ap && cs && !ap.contains(cs)) ap.append(cs);
   const mu = $('matchup'); if (mu && !$('chTools')) { const d = document.createElement('div'); d.id = 'chTools'; d.className = 'chtools';
-    d.innerHTML = `<h3 class="chsub3">More ways to prep</h3><div class="chtoolsg">${[['calc', 'Damage calc', 'Any attacker into any defender'], ['gauntlet', 'Gauntlet', 'Your team against the latest top teams'], ['speed', 'Speed tiers', 'Who moves first across the meta'], ['types', 'Type chart', 'What hits what']].map(([v, t, s]) => `<button type="button" data-view="${v}"><b>${t}</b><span>${s}</span></button>`).join('')}</div>`;
+    d.innerHTML = `<h3 class="chsub3">More ways to prep</h3><div class="chtoolsg">${[['calc', 'Damage calc', 'Any attacker into any defender'], ['gauntlet', 'Test run', 'Your team against the latest top teams'], ['speed', 'Speed tiers', 'Who moves first across the meta'], ['types', 'Type chart', 'What hits what']].map(([v, t, s]) => `<button type="button" data-view="${v}"><b>${t}</b><span>${s}</span></button>`).join('')}</div>`;
     const bl = $('battlelog'); (bl ? bl.closest('details') || bl : mu).before(d); } });
 CH.wrap('renderAutoBuild', () => { const ap = document.querySelector('[data-pane="auto"]'); if (ap && !ap.hidden) safe('cores', renderCores); });
 CH.wrap('renderCores', () => CH.pagehead($('cores'), 'Pick a pair or trio that wins, then fill the rest', 'Build around a core', ''));

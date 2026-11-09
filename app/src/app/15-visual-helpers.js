@@ -40,7 +40,7 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
 // rating badge: the shown (school-scale) rating with its tier letter, in the tier's colour (Nov 2: it printed the internal
 // score in a gold/silver/bronze palette of its own; now the same LTIERS colours and numbers as everywhere else)
 function ratingTag(p) { const r = rating(p), t = RS(r.total), T = lTier(r.total), rk = typeof rankTxt === 'function' ? rankTxt(p) : '';
-  return `<span class="tag rating lt" style="background:${tierBg(T.c)};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${t} · ${T.k} tier${rk ? ' · ' + rk : ''} · ${esc(rRange(r))} · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t}, ${T.k} tier">${T.k} ${t}</span>`; }
+  return `<span class="tag rating lt" style="background:${tierBg(T.c)};color:${tierInk(T.c)};box-shadow:none" title="NastyPlot rating ${t} · ${T.k} tier${rk ? ' · ' + rk : ''} · ${esc(rRange(r))} · ${esc(evidenceLine(p))}" aria-label="NastyPlot rating ${t}, ${T.k} tier">${T.k} tier ${t}</span>`; }
 /* Design pass A (Nov 2, item 1): numbers wear their band colour. bandAt(total) = ' data-band="S"' for an internal rating total;
    winSpan(v) marks a win rate as above / below the 50% average (.wrv[data-wr]). Since the Nov 2 declutter neither is coloured
    (numbers are plain ink); the markup stays so a future style can use it. */

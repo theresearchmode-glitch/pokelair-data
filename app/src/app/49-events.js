@@ -32,7 +32,7 @@ function teamSheetCard(t, ev, key, hl) {
 function evTeam(key) { const E = META.events; if (!E) return null; const [id, k] = key.split('#'); const ev = E.events.find(e => e.id === id); return ev && ev.top[+k] ? {ev, t: ev.top[+k]} : null; }
 // plain words for the data line, when it has the usual shape
 function evSourceText(x) { x = String(x || ''); const m = x.match(/Limitless \((\d+)\+ players, last (\d+) days, top (\d+)\)/), o = x.match(/official events \(top (\d+)\)/);
-  return m ? `online events with ${m[1]}+ players from the last ${m[2]} days (top ${m[3]})${o ? ` and official events (top ${o[1]})` : ''}` : x; }
+  return m ? `online tournaments with ${m[1]}+ players from the last ${m[2]} days (top ${m[3]})${o ? ` and official events (top ${o[1]})` : ''}` : x; }
 function renderEvents() {
   const el = $('evOut'); if (!el) return; const E = META.events;
   /* round words: the counts as labelled number cells; which events count (online player floor, last N days, top cut) is behind "?", unchanged */

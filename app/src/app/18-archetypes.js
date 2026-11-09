@@ -135,7 +135,7 @@ function renderThreats(ms, useA) {
   el.innerHTML = rows.length ? rows.map(r => `<div class="item"><div style="min-width:0"><div class="t1">${esc(rdName(r.o.p.n, (byName.get(r.o.p.n) || r.o).d))} <span class="chips" style="display:inline-flex;vertical-align:middle">${r.o.types.map(t => chip(t)).join('')}</span></div>
       <div class="t2">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => esc(ms[i].d)).join(', ') : rdLv(r.o.p.n) >= 2 ? 'Answered by your scouting report (speed control, support or a combined KO), not 1-on-1' : '<span class="no">No clean answer</span>'}${(() => { try { let b = null; ms.forEach(m => { const x = bestHitOn(r.o.p, r.o.moves || [], m.p, null, m); if (x && (!b || x.r.max / x.r.hp > b.x.r.max / b.x.r.hp)) b = {x, m}; });
         return b ? `<br>Hardest hit: ${esc(b.x.mv.name)} does up to ${Math.round(100 * b.x.r.max / b.x.r.hp)}% to ${esc(b.m.d)}.` : ''; } catch (e) { return ''; } })()}</div></div>
-      ${(() => { const lv = rdLv(r.o.p.n); return lv != null ? `<span class="pill ${['b3', 'b2', 'b1', 'b1'][lv]}">${['Unanswered', 'Shaky', 'Handled', 'Well handled'][lv]}</span>` : `<span class="pill ${r.ans.length ? (r.hit.length >= 3 ? 'b2' : 'b1') : 'b3'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'Unanswered'}</span>`; })()}</div>`).join('')
+      ${(() => { const lv = rdLv(r.o.p.n); return lv != null ? `<span class="pill ${['b3', 'b2', 'b1', 'b1'][lv]}">${['No answer', 'Shaky', 'Handles it', 'Beats it'][lv]}</span>` : `<span class="pill ${r.ans.length ? (r.hit.length >= 3 ? 'b2' : 'b1') : 'b3'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'No answer'}</span>`; })()}</div>`).join('')
     : '<div class="empty-note">No top meta Pokémon hits several of yours super effectively while going unanswered. Nice.</div>';
   if (allRows > rows.length) el.innerHTML += `<div class="morebar"><button class="btn sm" type="button" id="threatsAllBtn">Show all ${allRows}</button></div>`;
 }
@@ -178,7 +178,7 @@ function gradeNames(names, itemsKnown) {
 const miniGrades = c => c ? `<span class="minick${c.pass === c.n ? ' all' : ''}" title="${esc(c.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : x.part ? '~ ' : '✗ ') + x.label + (x.skip ? ' (items not listed)' : '')).join('\n'))}"><b>${c.pass}/${c.n}</b> checks${c.pass < c.n ? `<i>missing: ${esc(c.items.filter(x => !x.ok && !x.skip).map(x => x.label.toLowerCase()).join(', '))}</i>` : ''}${c.items.some(x => x.skip) ? '<i class="unkn">Mega not counted: items not listed</i>' : ''}</span>` : '';
 // the raw source line is written for the data log; say it in plain words when it has the usual shape
 function ttSourceText(src) { src = String(src || ''); const on = src.match(/top (\d+) of Reg [A-Z]-[A-Z] events with (\d+)\+ players/), off = src.match(/official events \(top (\d+)\)/);
-  if (!on) return src; return `Top ${on[1]} from online events with ${on[2]}+ players${off ? `, top ${off[1]} from official events` : ''}`; }
+  if (!on) return src; return `Top ${on[1]} from online tournaments with ${on[2]}+ players${off ? `, top ${off[1]} from official events` : ''}`; }
 function renderTopTeams() {
   const el = $('ttList'); if (!el) return; const d = META.teams;
   $('ttSource').textContent = d ? `${ttSourceText(d.source)}${d.updated ? ' · updated ' + new Date(d.updated).toLocaleDateString([], {month: 'short', day: 'numeric'}) : ''}` : '';

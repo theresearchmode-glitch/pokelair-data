@@ -98,7 +98,7 @@ function renderRecs() {
   if (ms.length < 2) { elP.innerHTML = ''; elL.innerHTML = '<div class="empty-note">Add at least two Pokémon on My team to get suggestions.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>'; return; }
   const r = computeRecs(ms, useA), B = r.B, pr = principles(B, ms);
   const mark = {ok: '✓', part: '~', miss: '✕'};
-  { const head = `<span class="gpt">Winning-team checklist</span><span class="vsub">${pr.filter(x => x.ok !== 'miss').length} of ${pr.length} checks</span>`,
+  { const head = `<span class="gpt">Team checks</span><span class="vsub">${pr.filter(x => x.ok !== 'miss').length} of ${pr.length} checks</span>`,
       rows = pr.map(x => `<div class="prow ${x.ok}"><span class="pm" aria-hidden="true">${mark[x.ok]}</span><div><div class="pl">${esc(x.label)}</div><div class="t2">${esc(x.detail)}</div></div></div>`).join('');
     const wasOpen = elP.querySelector && elP.querySelector('details[open]');
     elP.innerHTML = PHONE() ? `<details class="princfold"${wasOpen ? ' open' : ''}><summary class="princhead">${head}</summary>${rows}</details>` : `<div class="princhead">${head}</div>` + rows; }
@@ -122,8 +122,8 @@ function renderRecs() {
   const where = ui.recSrc === 'all' ? 'the whole roster' : 'your box';
   // same list on phone and desktop (Oct 29): the page folds it to the first 3 on both, with the rest one tap away
   const ph = PHONE(), first = r.clean, page = ui.recMore || 0, pool2 = r.more, extra = pool2.slice(0, page * 6), left = pool2.length - extra.length;
-  const moreBtn = `<div class="morebar">${left > 0 ? `<button class="btn chmoreideas" type="button" id="recMoreBtn"><b>More ideas</b><span class="vsub">${left} more option${left === 1 ? '' : 's'}${ph ? '' : ', including rarely used picks and side-grades'}</span></button>` : pool2.length ? `<span class="vsub">That's every option from ${where} that keeps your checks.</span><button class="btn sm" type="button" id="recMoreReset">Back to the top picks</button>` : ''}</div>`;
-  const altHead = extra.length ? `<div class="lbl chaltk"><b>More ideas</b><span>Rarely used picks and side-grades</span></div>` : '';
+  const moreBtn = `<div class="morebar">${left > 0 ? `<button class="btn chmoreideas" type="button" id="recMoreBtn"><b>More suggestions</b><span class="vsub">${left} more option${left === 1 ? '' : 's'}${ph ? '' : ', including rarely used picks and side-grades'}</span></button>` : pool2.length ? `<span class="vsub">That's every option from ${where} that keeps your checks.</span><button class="btn sm" type="button" id="recMoreReset">Back to the top picks</button>` : ''}</div>`;
+  const altHead = extra.length ? `<div class="lbl chaltk"><b>More suggestions</b><span>Rarely used picks and different options</span></div>` : '';
   if (!r.clean.length && extra.length === 0 && r.more.length && !page) { ui.recMore = 1; return renderRecs(); }
   elL.innerHTML = (first.length || extra.length) ? first.map(pl => card(pl, false)).join('') + altHead + extra.map(pl => card(pl, false)).join('') + moreBtn
     : `<div class="empty-note">Nothing in ${where} improves this team without costing something${r.full ? ' (every swap gives up some defense, offense, readiness for a top threat or a game-plan job)' : ''}.${ui.recSrc === 'box' ? ' Try "Whole roster" to see what to catch.' : ''}</div>` + moreBtn + (r.soft.length ? `<div class="lbl" style="margin-top:6px">Closest options, with their trade-off</div>` + r.soft.map(pl => card(pl, true)).join('') : '');

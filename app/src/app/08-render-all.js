@@ -104,7 +104,7 @@ function render(){
   const CK=ms.length?proChecks(ms,useA):null;
   // threat preparation behind the defense and offense headlines (the same report as the threat card)
   const RDf=ms.length?prepOf(ms):null,RDd=RDf?{over:RDf.rows.filter(r=>r.losers.length>=3),hit:RDf.rows.filter(r=>r.rows.some(x=>x.du&&x.du.nM<=2)).length,noHit:RDf.rows.filter(r=>!r.rows.some(x=>x.du&&x.du.nM<=2)).sort((x,y)=>y.t.w-x.t.w)}:null;
-  $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Winning-team checklist${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
+  $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Team checks${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
      <div class="t2">What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. A ~ means only partly there, and doesn't count as passed.</div>
      ${CK?`<ul class="cklist">${CK.items.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')}</ul>`:''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
@@ -176,7 +176,7 @@ function renderVerdict(ms,a,PG,CK){
   // 2. threat preparation
   const RD=prepOf(ms);
   if(RD){const un=RD.rows.filter(r=>r.level===0),sh=RD.rows.filter(r=>r.level===1);
-    rows.push(['Not ready for',un.length?un.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(un.length>5?` and ${un.length-5} more`:''):'None of the top 30']);
+    rows.push(['No answer for',un.length?un.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(un.length>5?` and ${un.length-5} more`:''):'None of the top 30']);
     if(sh.length)rows.push(['Shaky against',sh.slice(0,5).map(r=>esc(r.t.d)).join(', ')+(sh.length>5?` and ${sh.length-5} more`:'')])}
   // 3. checklist, real results, your record, type balance
   if(CK)rows.push(['Checklist',`${CK.pass} of ${CK.n} checks`+(miss.length?` · not yet: ${miss.slice(0,2).map(x=>x.label.toLowerCase()).join(' and ')}`:'')]);
@@ -196,7 +196,7 @@ function megaPickHtml(ms){const megas=ms.filter(m=>m.p&&m.p.m);if(megas.length<2
   return `<div class="t2 megapick">Only one Mega Evolves per battle, so the chart reads <b>${esc(keep.d)}</b> as the Mega and the others in base form. Show: ${megas.map(m=>`<button type="button" class="linkbtn" data-megapick="${esc(m.p.n)}" aria-pressed="${m===keep}">${esc(m.d)}</button>`).join(' · ')}</div>`}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-megapick]');if(!b)return;ui.megaPick=b.dataset.megapick;keepScroll(()=>render())});
 // Threat preparation card: every top threat, grouped by how ready the team is, each with the calc behind the verdict.
-const THR_LV=[['Unanswered','l0'],['Shaky','l1'],['Handled','l2'],['Well handled','l3']];
+const THR_LV=[['No answer','l0'],['Shaky','l1'],['Handles it','l2'],['Beats it','l3']];
 function renderThreatCard(ms,RD){const el=$('thrCard');if(!el)return;if(!RD||!ms.length){el.innerHTML='';return}
   const pc=x=>Math.round(x*100),open=ui.thrOpen||{};
   const det=r=>{const L=[];for(const x of r.solid)L.push(`<li class="ok">${esc(x.why)}</li>`);for(const x of r.soft)L.push(`<li class="part">${esc(x.why)}</li>`);for(const x of r.warn)L.push(`<li class="no">${esc(x.why)}</li>`);
@@ -209,7 +209,7 @@ function renderThreatCard(ms,RD){const el=$('thrCard');if(!el)return;if(!RD||!ms
     return `<details class="thrg ${c}"${start?' open':''}><summary><span class="thrl ${c}">${lab}</span> <span class="vsub">${rs.length} threat${rs.length===1?'':'s'}</span></summary>${rs.map(row).join('')}</details>`};
   const un=RD.rows.filter(r=>r.level===0).length;
   el.innerHTML=`<div class="vtx"><div class="k">Threat preparation${ms.length<6?' · so far':''}</div><div class="v">Ready for ${RD.score}% of the top 30 threats</div>
-    <div class="vsub">${un?`${un} unanswered`:'No unanswered threats'} · weighted by how often each makes top cut</div></div>
+    <div class="vsub">${un?`${un} with no answer`:'Every threat has an answer'} · weighted by how often each makes top cut</div></div>
     ${grp(0,true)}${grp(1,true)}${grp(2,false)}${grp(3,false)}
     <p class="t2">Each verdict is a real damage calc with your sets against the set most players run (one-on-one, average rolls, no crits or misses), with the speed, weather, terrain, Tailwind and Trick Room your team actually has. Doubles adds partners and switches, so treat it as preparation, not a forecast.</p>`}
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.classList&&d.classList.contains('thrrow')){ui.thrOpen=ui.thrOpen||{};ui.thrOpen[d.dataset.thr]=d.open}},true);

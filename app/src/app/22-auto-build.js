@@ -245,7 +245,7 @@ function abDescribe(t) {
   else { let best = null; for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const s = pairSyn(t[i], t[j]); if (!best || s > best.s) best = {s, a: t[i], b: t[j]}; }
     if (best && best.s >= 8) why.push(`${best.a.d} and ${best.b.d} are often run together in ranked`); }
   // the same readiness report as My team, so the card and the team page never disagree (sweep, Oct 31)
-  let RD = null; try { RD = prepOf(t); } catch (e) {} if (RD && RD.rows) { const un = RD.rows.filter(r => r.level === 0).length, sh = RD.rows.filter(r => r.level === 1).length; why.push(`${RD.score}% ready for the top ${RD.rows.length} threats: handles ${RD.rows.length - un - sh}, ${sh} shaky, ${un} unanswered`); }
+  let RD = null; try { RD = prepOf(t); } catch (e) {} if (RD && RD.rows) { const un = RD.rows.filter(r => r.level === 0).length, sh = RD.rows.filter(r => r.level === 1).length; why.push(`${RD.score}% ready for the top ${RD.rows.length} threats: handles ${RD.rows.length - un - sh}, ${sh} shaky, ${un} with no answer`); }
   const gpl = gp.rows.filter(r => r.st === 'ok' && ['speed', 'weather', 'terrain', 'support', 'haz', 'pivot'].includes(r.k)).map(r => r.label.replace('Fake Out / redirection', 'Fake Out'));
   mons.filter(m => !m.box).forEach(m => why.push(`${m.d} isn't in your box: the best one to catch for this team`));
   // the team's plan in a few words: weather + speed mode, or how it wins without one
