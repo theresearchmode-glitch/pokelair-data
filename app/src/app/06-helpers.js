@@ -7,6 +7,11 @@ function pctTxt(v){return ptsTxt(v)+'%'}
 function readyDelta(d){d=Math.round(+d||0);return d===0?'no change in ready':`${d>0?'+':'−'}${Math.abs(d)} point${Math.abs(d)===1?'':'s'} ready`}
 function memberOf(s,i){const p=byName.get(s.n);if(!p)return null;const ab=s.a&&p.a.includes(s.a)?s.a:(metaAbility(p)||bestAbility(p));
   const sm=slotMoves(s,p),hi=slotItem(s,p);return {i,p,name:p.n,d:p.d,types:p.t,ability:ab,abChosen:!!(s.a&&p.a.includes(s.a)),mega:p.m,base:p.b,moves:sm.moves,custom:sm.custom,item:hi||defaultItem(p),heldItem:hi,spread:slotSpread(s,p)}}
+// Nature and spread a member is shown with (Sim, Nov 9: the team sheet, the sheet fold and the share image all show the nature):
+// your own spread, your nature on the most common points, or the most common spread; the nature falls back to the most common one.
+function memberSpread(m){const own=m.spread,sp=own||(typeof commonSpread==='function'?commonSpread(m.p):null);
+  let nat=sp&&sp.nat?sp.nat:'';if(!nat){try{nat=((setFor(m.p).na||[])[0]||[])[0]||''}catch(e){}}
+  return {sp,nat,src:own?(own.assumed?'Your nature, most common points':'Your spread'):sp?'Most common spread':'No spread data yet'}}
 // Your nature and stat points (from a paste or link), in the same shape as commonSpread(): {nat,hp,atk,def,spa,spd,spe,mine:true}
 function slotSpread(s,p){const x=s.sp&&s.sp[S.format];if(!x)return null;const cs=typeof commonSpread==='function'?commonSpread(p):null;
   // a team sheet gives a nature but no stat points: your nature on the most common spread, marked as assumed
