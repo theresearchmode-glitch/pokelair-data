@@ -1041,3 +1041,4 @@
 /* Matchups box (Nov 9, plain words): one number, then a short line naming what's left */
 @A .ar-mu .ar-trio{grid-template-columns:auto minmax(0,1fr);align-items:end;column-gap:24px}
 @A .ar-muline{display:block;text-align:right;font-size:var(--ar-fs-body,15px);line-height:1.5;color:var(--ar-ink-2);padding-bottom:4px}
+@A .arb-mu.ar-trio{grid-template-columns:auto minmax(0,1fr);align-items:end;column-gap:24px}
