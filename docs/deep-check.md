@@ -72,6 +72,9 @@ scores (Bayesian) and staying close to real, tested options.
 
 ## Step 1 · What can the grade see? (checked in the code, Nov 8)
 
+> Out of date since Nov 9: the grade no longer uses the "−15%" cuts (measured: removing them changed no prediction). The current
+> table is in docs/strength-score.md (Phase 0).
+
 Grade = species strength + pair strength (pairs on 30+ teams) + set features (items/moves on 40+ decks) − player skill,
 then the "upside needs proof" cuts below, then matchups (small) and the six's own record. Files: model.mjs,
 app/src/app/35-win-model.js (teamX, mixCredit, structCredit, strengthX).

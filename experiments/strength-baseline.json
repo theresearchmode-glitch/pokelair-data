@@ -1,0 +1,56 @@
+{
+ "made": "2026-11-09",
+ "what": "The bar the Strength Score must meet or beat (Sim, Nov 9: ships only if it predicts real wins at least as well as today's grade).",
+ "walkForward": {
+  "source": "experiments/accuracy-baseline.json (approved Nov 9)",
+  "fourWeeks": {
+   "games": 18618,
+   "logloss": 0.68083,
+   "pick": 55.81,
+   "calGap": 1.07,
+   "top4BorBetter": "266/392"
+  },
+  "lastTwoWeeks": {
+   "cuts": [
+    "2026-10-26",
+    "2026-11-02"
+   ],
+   "games": 7795,
+   "logloss": 0.68046,
+   "topCut": {
+    "n": 188,
+    "good": 128,
+    "share": 0.6809
+   }
+  }
+ },
+ "exactSite": {
+  "source": "experiments/site-board.mjs on out/matches_dev.json from 2026-10-27 (no sealed games), built page of Nov 9",
+  "games": 6270,
+  "row": "site today (sets + caution + matchups .003 + own record)",
+  "pick": 56.68,
+  "ll": 0.68008,
+  "gap": 0.42,
+  "newPick": 58.29,
+  "scale": 1.08,
+  "letters": {
+   "A": "won 56.3% vs expected 56.1% (±1.7, 232 teams, 3473 games)",
+   "B": "won 56.7% vs expected 51.3% (±1.9, 239 teams, 2778 games)",
+   "C": "won 51.4% vs expected 46.8% (±2.0, 306 teams, 2481 games)",
+   "D": "won 52.2% vs expected 43.2% (±3.0, 141 teams, 1038 games)",
+   "F": "won 46.2% vs expected 41.5% (±4.4, 78 teams, 487 games)"
+  }
+ },
+ "suggestions": {
+  "source": "experiments/sugg-real.mjs, all 1,207 real teams with 10+ games",
+  "suggestion1": "+1.2 points real (0.6 to 1.8), 408 teams",
+  "under60": "+2.6 (1.8 to 3.5)",
+  "from60": "-0.2 (-1.1 to 0.7) while promising +3.2"
+ },
+ "sealed": {
+  "from": "2026-11-09",
+  "eventsSoFar": 1,
+  "gamesSoFar": 94,
+  "note": "untouched; final check once a week or two of events exist"
+ }
+}
