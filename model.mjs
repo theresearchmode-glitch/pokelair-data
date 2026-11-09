@@ -33,13 +33,17 @@ const featSp = setNames.map(f => f.split(/[@:#]/)[0]), spFeats = new Map(), freq
 if (hasSets) { const spDecks = new Map(), fd = new Float64Array(setNames.length), used = new Set(); for (const g of G) { used.add(g[7]); used.add(g[8]); }
   for (const d of used) { if (d == null || !M.decks[d]) continue; for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1); for (const j of deckF[d]) fd[j]++; }
   setNames.forEach((f, j) => { freq[j] = fd[j] / (spDecks.get(featSp[j]) || 1); if (!spFeats.has(featSp[j])) spFeats.set(featSp[j], []); spFeats.get(featSp[j]).push(j); }); }
+// pair bonuses pulled 4× harder toward 0 (Deep Check, Nov 8: pairs add no accuracy on later games; Sim chose "shrunk"),
+// locked in model-settings.json like the other settings
+const PAIR_SHRINK_LOCK = (() => { try { return +JSON.parse(fs.readFileSync('model-settings.json', 'utf8')).pairShrink || 1; } catch (e) { return 1; } })();
 const nP = M.players;
 // v6 (Deep Check, Nov 8): team-wide basics, learned from the same rounds, so each one's size comes from real results.
 // Sim, Nov 8: a no-Mega team graded 98 while real no-Mega teams win 34%; the grade only ever counted Pokémon, pairs and sets.
-// TEAM_FEATS=1 while it is being tested. Move-based ones count only on sheets that list 16+ moves (else unknown = 0).
+// On by default since Sim approved the preview (Nov 9); TEAM_FEATS=0 turns them off for experiments. Move-based ones count only
+// on sheets that list 16+ moves (else unknown = 0).
 // Kept: the two that expert guides AND real results agree on (broken-team tests, Nov 8). 'no speed control' and 'no Fake Out'
 // came out as small bonuses; the grade never rewards lacking a basic, so they're left out.
-const TEAMF = process.env.TEAM_FEATS === '1' ? ['noMega', 'protectLow'] : [];
+const TEAMF = process.env.TEAM_FEATS === '0' ? [] : ['noMega', 'protectLow'];
 const deckTF = !TEAMF.length || !hasSets ? [] : M.decks.map(fs_ => { const nm = fs_.map(f => M.feats[f]), mv = nm.filter(n => n.includes(':'));
   if (mv.length < 16) return null; const prot = mv.filter(n => /:Protect$/.test(n)).length;
   return {protectLow: prot <= 2 ? 1 : 0, noSpeed: nm.some(n => /:(Tailwind|Trick Room|Icy Wind|Electroweb)$/.test(n) || /@Choice Scarf$/.test(n)) ? 0 : 1, noFakeOut: mv.some(n => /:Fake Out$/.test(n)) ? 0 : 1}; });
@@ -67,7 +71,7 @@ const day = s => new Date(s + 'T00:00:00Z').getTime() / 864e5;
 const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ?? 300);
 function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
   // experiments (Deep Check, Nov 8): NO_PAIRS=1 fits without pair bonuses; PAIR_SHRINK=k pulls pair bonuses k× harder toward 0
-  if (process.env.NO_PAIRS === '1') usePairs = false; lp *= +(process.env.PAIR_SHRINK || 1);
+  if (process.env.NO_PAIRS === '1') usePairs = false; lp *= +(process.env.PAIR_SHRINK || PAIR_SHRINK_LOCK);
   const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length), T = new Float64Array(TEAMF.length);
   const P = [b, q, s, c, T], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length)), L = [lb, lp, ls, lc, 1];
   // weights are scaled to average 1, so the shrinkage means the same thing with or without recency
@@ -198,7 +202,7 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
   meanX: +meanX.toFixed(4), v: 3, half: HALF || null, center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
-  // team-wide basics (v6, TEAM_FEATS=1): added to x when the team lacks the basic
+  // team-wide basics (v6): added to x when the team lacks the basic
   team: F && TEAMF.length ? Object.fromEntries(TEAMF.map((k, i) => [k, +F.T[i].toFixed(4)])) : {},
   mons: F ? Object.fromEntries(mons.map((n, j) => [n, +F.b[j].toFixed(4)])) : {},
   pairs: F ? Object.fromEntries(pairs.map((k, j) => [k, +F.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)) : {},
