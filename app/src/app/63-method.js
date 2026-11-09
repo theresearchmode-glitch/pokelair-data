@@ -131,7 +131,7 @@ function npLegend() { const col = k => (LTIERS.find(T => T.k === k) || LTIERS[LT
   const rk = (() => { try { const k = lairRank(lairRows()[0].p); return k ? k.of : null; } catch (e) { return null; } })();
   return `<div class="nplegend" id="np-legend"><div class="chk">How to read our numbers</div>
     <div class="nplrow"><b>Pokémon ratings<small data-notc>score out of 100</small></b><div class="npbands">${LTIERS.map(T => `<span>${tierChip(T)} ${T.k === 'S' ? '90+' : T.k === 'F' ? '&lt;' + LTIERS[LTIERS.length - 2].show : T.show + 's'}</span>`).join('')}</div></div>
-    ${gl ? `<div class="nplrow"><b>Team Grades<small data-notc>rank among tournament teams, each with + and \u2212 steps</small></b><div class="npbands">${gl}</div></div>` : ''}
+    ${typeof CH !== 'undefined' && CH.WORDS ? `<div class="nplrow"><b>Strength Score<small data-notc>how strong the team is, out of 100</small></b><div class="npbands">${CH.WORDS.map(([t, w], i) => `<span><b style="color:${CH.gcol('ABCDF'[i])}">${t < 0 ? 'under 60' : t === 90 ? '90+' : t + 's'}</b> ${w}</span>`).join('')}</div></div>` : gl ? `<div class="nplrow"><b>Team Grades<small data-notc>rank among tournament teams</small></b><div class="npbands">${gl}</div></div>` : ''}
     <ul class="npdots"><li><b>Bars</b> = rank among all Pokémon: 94 beats 94% of them (top 6%).</li>
       <li><b>#20${rk ? ' of ' + rk : ''}</b> = rank among ${rk ? 'the ' + rk + ' ' : ''}Pokémon with tournament results · <b>likely 80–88</b> = the range, from the games so far.</li>
       <li><b>A % always says of what</b>: % of teams, % wins, % ready.</li><li><b>Team rating</b> = rank among real tournament teams: 70 beats 70% of them. Tap <b>Why</b> under a grade for what goes into it.</li></ul></div>`; }

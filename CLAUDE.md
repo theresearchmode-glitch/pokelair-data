@@ -101,8 +101,10 @@ code, test before claiming); no shortcuts. Correct earlier wrong statements as s
 
 ## Word list (Sim approved, Nov 9)
 One name per idea, everywhere on the site:
-- **Grade**: the team's letter (A+ to F). "Rating" is only for a single Pokémon, always with "tier" for its letter ("S tier", "A tier"),
-  so a Pokémon's tier never reads like a team's grade.
+- **Strength Score** (was "Grade", Nov 9, Preview; final with Sim's review): the team's number out of 100, with its band word: 90+ Top tier,
+  80s Tournament ready, 70s Solid, 60s Needs work, under 60 Missing a basic (colours: blue, purple, neutral, amber, muted grey-brown;
+  never red). The rank among tournament teams is only the small line under it. "Rating" is only for a single Pokémon, always with "tier"
+  for its letter ("S tier", "A tier"), so a Pokémon's tier never reads like a team's score.
 - **Matchups**: how the team does against the top threats (not "readiness" / "ready for the top 30" / "Threats" as the idea's name).
   The four levels: **Beats it / Handles it / Shaky / No answer** (were Well handled / Handled / Shaky / Unanswered).
 - **Suggestions**, numbered "Suggestion 1" (not Fix it / plans / ideas); a side-grade is a **Different option**.
