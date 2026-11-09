@@ -376,3 +376,9 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   predictions worse (+0.0005 log-loss, 95% +0.0002..+0.0009). Farigiraf-TR teams with <2 slow teammates won 49.7% later vs 47.0% the grade
   expected (2+ slow: 51.1% vs 49.5%). Off by default (TR_FEAT=1). Farigiraf on fast teams is mostly Armor Tail (blocks Fake Out/priority).
 - Fixed (branch, not live): Load team on Full teams loads with Undo (the in-row question was missed); lock button on Your Six cards.
+- Top-4 test flaw found (Sim: "if top teams are not scoring well the grade is off"): it graded each team with default sets. With their
+  own team sheets 43/54 online top-4 teams grade B+ (80%, median 91.5); golden now 10/10. The lowest are sixes with long weak records
+  (Raichu-Y/Volcarona/Garchomp-Z six: 960-1169 over 2,129 games). Site fix: Full teams "Load team" uses a recent event's sheet for that six.
+- Evidence pull: keep 1000 for now. Full models: K=0 grades a made-up rare six 89 (Scrafty, 25 teams, valued like Sneasler), K=100 83,
+  K=300 75, 1000 62. Build for Me chases the highest grade, so noisy high values on rare Pokémon are a real risk; the later-game gain
+  (0.0004-0.0009) does not justify it yet. Revisit with a per-Pokémon check rather than one dial.

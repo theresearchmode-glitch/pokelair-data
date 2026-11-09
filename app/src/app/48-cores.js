@@ -83,6 +83,10 @@ function useCore(ns, sure) {
   const cur = S.slots.filter(s => byName.get(s.n)), have = new Set(cur.map(s => s.n));
   // Nov 9 (Sim: "pressed Load team and nothing happened, no pop up"): the in-row "Replace your team?" question was easy to miss,
   // so the team now loads straight away, like "Use this team" in Build for Me, with Undo in the toast
+  // a six that appears in a recent event loads with that player's moves and items (Nov 9: names alone gave every Pokémon its most
+  // common set, and some top teams then graded a C; with their own sheets 80% of online top-4 teams grade B or better)
+  if (ns.length > 3 && typeof loadSheet === 'function' && META.events && META.events.events) { const k = ns.slice().sort().join('|');
+    for (const ev of META.events.events) for (const t of ev.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.map(m => m.n).sort().join('|') === k) { loadSheet(t); return true; } }
   if (ns.length > 3) { keepUndo(); S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast(cur.length ? 'Loaded the team (your old team is one tap away: Undo)' : 'Loaded the team', !!cur.length); return true; }
   const c = corePlan(ns);
   keepUndo(); S.slots = normSlots(c.next.slice(0, 6)); S.format = 'doubles'; render(); setView('build');

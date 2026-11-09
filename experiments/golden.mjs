@@ -13,6 +13,15 @@ const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json');
 const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.GOLDEN_MODEL ? JSON.parse(fs.readFileSync(process.env.GOLDEN_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json'), 'meta/history': rd('history.json')};
+// Nov 9 (Sim: "if top teams are not scoring well the grade is off"): grade each top-4 team with ITS OWN team sheet (items, Abilities,
+// moves from its games in out/matches.json), as the site grades a team loaded from an event; default sets only when no sheet exists.
+const SHEETS = (() => { const M = rd('matches.json'); if (!M) return {}; const key = ns => ns.slice().sort().join('|'), out = {}, dk = new Map();
+  M.teams.forEach((k, i) => dk.set(i, new Map()));
+  for (const g of M.m) for (const [t, d] of [[g[0], g[7]], [g[1], g[8]]]) if (d != null) dk.get(t).set(d, (dk.get(t).get(d) || 0) + 1);
+  for (const t of ((rd('teams.json') || {}).teams || [])) { if (!t.mons || t.mons.length !== 6) continue; const i = M.teams.findIndex(k => key(k.split('|')) === key(t.mons)); if (i < 0) continue;
+    const best = [...dk.get(i)].sort((a, c) => c[1] - a[1])[0]; if (!best) continue; const set = {}; for (const n of t.mons) set[n] = {it: null, ab: null, mv: []};
+    for (const f of M.decks[best[0]].map(j => M.feats[j])) { const m = f.match(/^(.*?)([@#:])(.*)$/); if (!m || !set[m[1]]) continue; if (m[2] === '@') set[m[1]].it = m[3]; else if (m[2] === '#') set[m[1]].ab = m[3]; else set[m[1]].mv.push(m[3]); }
+    out[key(t.mons)] = set; } return out; })();
 const page = ROOT + `app/golden-${process.pid}.html`;
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), pg = await (await b.newContext()).newPage(), errs = [];
@@ -26,7 +35,9 @@ const R = {};
 // 1 + 3 + 2: grade checks
 Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.get(n))), g = ns => { try { return gradeTeam(mk(ns)); } catch (e) { return null; } };
   const tops = ((META.teams && META.teams.teams) || []).filter(t => t.section !== 'Official events' && t.mons && t.mons.length === 6 && t.mons.every(n => byName.get(n)));
-  const tg = tops.map(t => ({mons: t.mons, g: g(t.mons), ev: t.event, rec: t.record})).filter(x => x.g != null);
+  const SH = ${JSON.stringify(SHEETS)}, gs = ns => { const set = SH[ns.slice().sort().join('|')]; if (!set) return null; try { return gradeTeam(ns.map(n => { const p = byName.get(n), s = set[n] || {}, m = abMember(p), mv = (s.mv || []).map(x => mvByName.get(x)).filter(Boolean);
+    return {...m, ...(s.it && !p.m ? {item: s.it, heldItem: s.it} : {}), ...(s.ab ? {ability: s.ab, abChosen: true} : {}), ...(mv.length ? {moves: mv, _mv: mv, custom: true} : {})}; })); } catch (e) { return null; } };
+  const tg = tops.map(t => { const d = g(t.mons), sh = gs(t.mons); return {mons: t.mons, g: sh != null ? sh : d, gDef: d, sheet: sh != null, ev: t.event, rec: t.record}; }).filter(x => x.g != null);
   // the weakest six: lowest viability, no Megas, one per species
   const seen = new Set(), weak = ROSTER.filter(p => !p.m && !isExcl(p)).sort((a, b) => viability(a) - viability(b)).filter(p => !seen.has(p.b) && seen.add(p.b)).slice(0, 6).map(p => p.n);
   // illegal: a strong six with two Sitrus Berries
@@ -92,7 +103,7 @@ await b.close(); fs.unlinkSync(page);
 const C = [], add = (name, pass, detail) => C.push({name, pass, detail});
 R.top = R.top.filter(t => !offFormat(t.ev)); // themed cups (MonoRegion…) are left out of the data, so out of this check too
 { const n = R.top.length, good = R.top.filter(t => t.g >= 70).length, med = R.top.map(t => t.g).sort((a, c) => a - c)[n >> 1];
-  add('top-cut teams grade B or better (75%+ of them)', n >= 10 && good / n >= .75, `${good} of ${n} graded 70+ (${Math.round(good / n * 100)}%), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
+  add('top-cut teams, graded with their own team sheets, grade B or better (75%+ of them)', n >= 10 && good / n >= .75, `${good} of ${n} graded 70+ (${Math.round(good / n * 100)}%; ${R.top.filter(t => t.sheet).length} with their sheet; with default sets instead: ${R.top.filter(t => t.gDef >= 70).length}), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
 add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 10, `${R.weak.g} (${R.weak.mons.join(', ')})`);
 add('two of the same item reads as not legal', R.illegal.flagged, `${R.illegal.clause} item clash${R.illegal.clause === 1 ? '' : 'es'} found`);
 { const s = R.sugg.filter(x => !x.err), worse = s.reduce((a, x) => a + x.worse, 0), tot = s.reduce((a, x) => a + x.n, 0);
