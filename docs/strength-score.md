@@ -73,3 +73,10 @@ Team-building principles (guides, videos, our data)
 - [ ] Protect on most of the team (counted today).
 - [ ] Speed control, spread damage, lead support: notes only (no win benefit measured), still shown.
 - [ ] Not measured yet (test before any weight): physical/special mix, 3+ of one type, a team that collapses without one Pokémon.
+
+Types (Sim, Nov 9: "you are taking into mention type weaknesses / offenses / coverages too right?")
+- [ ] Defensive types: no major weak spot (+0.9 measured) and weak spots spread out (+1.3): candidates (see above).
+- [ ] Offensive coverage of all 18 types: no link to winning on 20,000 ladder games (r = 0.003); re-test on tournament games with
+      player skill taken out in Phase 2 before deciding.
+- [ ] Coverage of what you actually face: "ready for the top threats" = damage calcs both ways against the 30 most common threats
+      (+3.5 measured, the strongest factor): candidate for a much bigger role.
