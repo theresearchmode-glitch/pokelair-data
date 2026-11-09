@@ -43,10 +43,13 @@ const nP = M.players;
 // on sheets that list 16+ moves (else unknown = 0).
 // Kept: the two that expert guides AND real results agree on (broken-team tests, Nov 8). 'no speed control' and 'no Fake Out'
 // came out as small bonuses; the grade never rewards lacking a basic, so they're left out.
-const TEAMF = process.env.TEAM_FEATS === '0' ? [] : ['noMega', 'protectLow', ...(process.env.TR_FEAT === '0' ? [] : ['trNoSlow'])];
+const TEAMF = process.env.TEAM_FEATS === '0' ? [] : ['noMega', 'protectLow', ...(process.env.TR_FEAT === '1' ? ['trNoSlow'] : [])];
 // Nov 9 (Sim: Farigiraf kept being suggested for fast teams): Trick Room on the sheet but fewer than 2 slow teammates (base Speed
 // 60 or less, not counting the Trick Room users). Real Farigiraf-with-Trick-Room teams won 46.6% with 0 slow teammates, 49.1% with 1,
-// 50.8% with 2+. TR_FEAT=0 fits without it. Speeds from the site's roster (app/src/data/data.js).
+// 50.8% with 2+ (all games, in-sample). TESTED Nov 9 on later games (dev, before/after Oct 27): it made predictions worse (log-loss
+// +0.0005, 95% range +0.0002 to +0.0009, both halves); in those later games Farigiraf Trick Room teams with <2 slow teammates won 49.7%
+// while today's grade expected 47.0%, so the grade already rates them lower and real results don't support a bigger penalty.
+// Kept as an experiment only: TR_FEAT=1 turns it on. Speeds from the site's roster (app/src/data/data.js).
 const SPD = (() => { try { const t = fs.readFileSync('app/src/data/data.js', 'utf8').match(/const ROSTER=(\[.*?\]);/s); return new Map(JSON.parse(t[1]).map(r => [r.n, r.sp])); } catch (e) { return new Map(); } })();
 const deckTF = !TEAMF.length || !hasSets ? [] : M.decks.map(fs_ => { const nm = fs_.map(f => M.feats[f]), mv = nm.filter(n => n.includes(':'));
   if (mv.length < 16) return null; const prot = mv.filter(n => /:Protect$/.test(n)).length;
