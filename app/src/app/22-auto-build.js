@@ -118,7 +118,7 @@ function* boxCatchGen(res) { const d = res.teams && res.teams[0]; if (!d || !d.m
   for (const [, i, p] of sw.slice(0, 12)) { yield; const nt = [...t.slice(0, i), abMember(p), ...t.slice(i + 1)]; if (megaCount(nt) !== megaCount(t) || wxConflict(nt) || wxUnmet(nt).length) continue; const g = gradeTeam(nt); if (g != null && (!best || g > best.g)) best = {g, p, out: t[i].p}; }
   if (!best || best.g < g0 + 3) return;
   d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach an A: catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(best.g).toLowerCase()} of tournament teams`
-    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${CH.grade(g0)} to ${CH.grade(best.g)} (${CH.rankShort(best.g).toLowerCase()} of tournament teams)`);
+    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${CH.gradeFull(g0)} to ${CH.gradeFull(best.g)} (${CH.rankShort(best.g).toLowerCase()} of tournament teams)`);
   d.boxCatch = {p: best.p.n, out: best.out.n, g0, g: best.g}; }
 function* buildBestGen0() {
   // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below

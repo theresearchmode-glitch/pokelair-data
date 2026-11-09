@@ -1035,3 +1035,5 @@
 @A .settips-h{margin:0;font:600 16px/1.3 var(--ar-body,inherit)}
 @A .settip{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--ar-rule)}
 @A .settip-t{font-size:15px;line-height:1.5}
+/* plus/minus letters (Nov 9): the slanted "+" / "−" overhung the right margin by ~7px; pull the letter in so it lines up with "Top 12%" */
+@A .ar-gletter{padding-right:.06em}

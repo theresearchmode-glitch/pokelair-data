@@ -32,7 +32,11 @@ CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><spa
    real tournament teams (0-100), and the letter comes from that rank: A top 10%, B next 20%, C middle 40%, D next 20%, F bottom
    10%. How the six handles the top threats is shown on its own, as Matchups: it explains what beats the team, it isn't part of
    the grade (it predicted wins far less well). A team of fewer than six keeps the old check, marked "so far". */
-CH.grade = s => s >= 90 ? 'A' : s >= 70 ? 'B' : s >= 30 ? 'C' : s >= 10 ? 'D' : 'F';
+CH.grade = s => s >= 90 ? 'A' : s >= 70 ? 'B' : s >= 30 ? 'C' : s >= 10 ? 'D' : 'F'; // the band (colours, data-band)
+// Nov 9 (Sim chose: plus/minus on every letter, so players feel the difference inside a band): same ranking, finer labels.
+// Tested on later games: the top and bottom bands differ clearly; neighbouring steps differ by ~1-2 wins per 100 games, too small to
+// confirm with today's data, so a step is a rank (where the team sits), not a promise of more wins. F stays plain.
+CH.gradeFull = s => { const B = [[97, 'A+'], [93, 'A'], [90, 'A\u2212'], [85, 'B+'], [78, 'B'], [70, 'B\u2212'], [55, 'C+'], [40, 'C'], [30, 'C\u2212'], [23, 'D+'], [16, 'D'], [10, 'D\u2212']]; for (const [t, l] of B) if (s >= t) return l; return 'F'; };
 CH.gradeOld = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
 // this exact six's own record (δ in team-strength units, and its games), from model.sixes
 CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms.length !== 6) return null; const v = S[ms.map(m => (m.p || m).n).sort().join('|')]; if (!Array.isArray(v)) return null;
@@ -124,7 +128,7 @@ CH.REC_K = 100;
 CH.recScore = wr => Math.min(100, Math.max(0, Math.round(70 + (wr - .5) * 200)));
 CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
   const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
-  if (st) { const s = Math.round(st.pct * 10) / 10; return {v: 2, s, letter: CH.grade(s), e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.pct0, pMu: st.pMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
+  if (st) { const s = Math.round(st.pct * 10) / 10; return {v: 2, s, letter: CH.gradeFull(s), band: CH.grade(s), e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.pct0, pMu: st.pMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
   // fewer than six (or the model not loaded yet): the old check, marked so far
   const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
   let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
@@ -142,7 +146,7 @@ CH.eOfS = s => { const q = META.model && META.model.dist && META.model.dist.q; i
 /* Shown as a rank (Sim, Nov 8: "77 for a 9-1 team seems so low"): the 0-100 number is where the six ranks among real tournament
    teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
 CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
-CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.grade(g0), b = CH.grade(g1), r0 = CH.rankShort(g0), r1 = CH.rankShort(g1);
+CH.gradeMove = (g0, g1) => { if (CH.eOfS(g0) == null) return `Grade ${g0} → ${g1}`; const a = CH.gradeFull(g0), b = CH.gradeFull(g1), r0 = CH.rankShort(g0), r1 = CH.rankShort(g1);
   return a !== b ? `Grade ${a} → ${b} · ${r0} → ${r1}` : r0 === r1 ? `Grade ${b} · ${r1}` : `Grade ${b} · ${r0} → ${r1}`; };
 CH.gradeNum = G => !G ? '' : G.v === 2 ? `${CH.rankShort(G.s)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
 CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
@@ -153,16 +157,16 @@ CH.gradeSum = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
   /* the parts in rating points (Sim, Nov 7: no tiny win-rate pieces): where its Pokémon, pairs and sets alone would rank it, what
      its matchups move, what its own games move */
   if (G.v === 2) { const a = Math.round(G.pct0), b = Math.round(G.pMu), t = Math.round(G.s), m = b - a, r = t - b;
-    return `<b>Rating <span data-band="${G.letter}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% ready for the top 30)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
+    return `<b>Rating <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (${G.r}% ready for the top 30)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
   const {nm, ts, ra} = CH.gradeParts(G, RD);
-  return `<b>Grade <span data-band="${G.letter}">${G.s}</span></b> = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; };
+  return `<b>Grade <span data-band="${G.band || String(G.letter)[0]}">${G.s}</span></b> = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; };
 /* the same sum, short, for cards and table cells: "92 = 85 ready + 7 strength − 6 checks" */
 CH.gradeSumS = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
   if (G.v === 2) { const a = Math.round(G.pct0), b = Math.round(G.pMu), t = Math.round(G.s), m = b - a, r = t - b; return `Rating ${t} = ${a} from its Pokémon and sets${m ? ` ${sg(m)} ${Math.abs(m)} matchups` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from its own games` : ''}`; }
   const {nm, ts, ra} = CH.gradeParts(G, RD);
   return `${G.s} = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} strength` : ''}${nm ? ` − ${CH.GMISS * nm} for ${nm} missed check${nm === 1 ? '' : 's'}` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}`; };
 /* grade letters in the rating band colours (A = the A colour, ...), one source: LTIERS */
-CH.gcol = L => { const T = typeof LTIERS !== 'undefined' ? LTIERS.find(t => t.k === L) : null; return T ? T.c : '#8a90a6'; };
+CH.gcol = L => { L = String(L || '')[0]; const T = typeof LTIERS !== 'undefined' ? LTIERS.find(t => t.k === L) : null; return T ? T.c : '#8a90a6'; };
 /* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
 CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
 CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
@@ -485,7 +489,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms 
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass}/${v.CK.n} checks</span>` : '';
   const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event.">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
-      ${G ? `<div class="rzgrade" data-band="${G.letter}"><span class="rzgn">${esc(G.letter)}</span><span class="rzgl">${CH.gradeNum(G)}</span><button type="button" class="rzwhy" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${G.letter}?</button></div>` : ''}
+      ${G ? `<div class="rzgrade" data-band="${G.band || String(G.letter)[0]}"><span class="rzgn">${esc(G.letter)}</span><span class="rzgl">${CH.gradeNum(G)}</span><button type="button" class="rzwhy" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${G.letter}?</button></div>` : ''}
       ${RD ? CH.recStats(G, RD, hd, c) : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
       <div class="chpills">${legal}${ck}</div>
       ${ms.length ? `<div class="chsix6 rzsix" role="group" aria-label="Your six: tap one to see its set">${all.filter(x => x.m).map(({m, i}) => `<button type="button" data-chset="${i}" aria-pressed="${ui.rzSet === i ? 'true' : 'false'}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set">${sprite(m.p) || ''}<span>${esc(m.d)}</span></button>`).join('')}</div>` : ''}
@@ -536,7 +540,7 @@ function chScoutRender() { const sh = $('chScout'); if (!sh) return; const ms = 
   const b = chBestPlan();
   const best = b ? `<div class="chbest"><div class="chk">Best fix${b.g0 != null && b.g1 != null ? ` · ${CH.gradeMove(b.g0, b.g1)}` : b.d != null ? ` · ${readyDelta(b.d)}` : ''}</div><div class="sw">${b.pl.ch.map(x => `${x.out ? `${sprite(x.out.p, 'out') || ''}<span aria-hidden="true" style="color:var(--chyel);font-size:22px">→</span>` : '+'}${sprite(x.c.p) || ''}`).join(' ')}<span>${esc(b.txt)}</span></div><button type="button" class="chprimary" data-plan="0">Apply this fix <span aria-hidden="true">➜</span></button></div>` : '';
   sh.innerHTML = `<div class="grab"></div><button type="button" class="x" data-chclose aria-label="Close">×</button>
-    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm gc" style="--gc:${CH.gcol(G.letter)}" data-band="${G.letter}"><span class="chrl">${G.letter}</span><small>${G.rec ? Math.round(G.rec.wr * 100) + '% wins' : G.s}</small></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding-right:48px"><div style="flex:1"><div class="chk">Scouting report · top 30 threats</div><div class="chh" role="heading" aria-level="2">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} <em>a plan.</em>` : 'Ready for <em>every</em> top threat.'}</div></div><div class="chring sm gc" style="--gc:${CH.gcol(G.letter)}" data-band="${G.band || String(G.letter)[0]}"><span class="chrl">${G.letter}</span><small>${G.rec ? Math.round(G.rec.wr * 100) + '% wins' : G.s}</small></div></div>
     <div style="font-size:15px;color:var(--chink2);margin-top:6px"><span style="color:var(--chink)">${G.partial ? `<b>${RD.score}% ready</b> so far` : CH.gradeSum(G, RD)}</span> · ${CH.handTxt(RD)} · ${CH.LEGEND}</div>
     ${CH.legendRow(RD)}${CH.tiles(RD, 'data-chthr')}${det}
     ${list ? `<div class="chlist" style="margin-top:8px">${list}</div>` : ''}${ck}${best}
