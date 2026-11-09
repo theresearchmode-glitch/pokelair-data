@@ -236,16 +236,14 @@ const PLANS = [
   ["t2-ok","Sim says go",""],
   ["t2-live","Live (with GitHub green)",""]]}
 ]},
-{id:"mascot", short:"Shady Paw", name:"Shady Paw on the site", about:"Our mascot, used sparingly and only where he helps. Nothing of him goes live until Sim has seen exactly how it looks and is 100% happy.", phases:[
- {id:"m1", name:"Final art", goal:"One finished Shady Paw in the styles Sim picked: side profile, bold lines and sketch, in ink plus one site colour.", steps:[
-  ["m1-mock","Last two mock-ups","Bold lines in an empty Saved Teams; sketch on Home."],
-  ["m1-brief","Illustrator brief","Poses, expressions, sizes and colours for clean final art."],
-  ["m1-art","Clean final drawings","Every pose needed below, crisp at phone and desktop sizes, light and dark."],
-  ["m1-ok","Sim is 100% happy with the art",""]]},
- {id:"m2", name:"Where he goes", goal:"Each spot shown to Sim as an image of exactly how it looks before it goes live.", never:"Your Six, Add a Pokémon, the Battle preview, or beside grades, ratings or any data.", steps:[
-  ["m2-myteam","Empty My Team","When there's no team yet: he invites you to add your first Pokémon."],
+{id:"mascot", short:"Darkrai", name:"Darkrai on empty and loading screens", about:"Not a mascot: a Pokémon we like (it learns Nasty Plot and isn't in the Champions roster, so it can't be mistaken for team data), used to make empty space and loading screens better. Replaced the AI-drawn Shady Paw on Nov 9. Our own mascot is a separate project for later (see Ideas). Nothing goes live until Sim has seen exactly how it looks and says go.", phases:[
+ {id:"m1", name:"The picture", goal:"Darkrai in the same inked style as every other Pokémon on the site.", steps:[
+  ["m1-pick","Darkrai chosen instead of Shady Paw","Sim, Nov 9: a Pokémon instead of an AI-drawn character."],
+  ["m1-ok","Sim is happy with how it looks",""]]},
+ {id:"m2", name:"Where it goes", goal:"Each spot shown to Sim as an image of exactly how it looks before it goes live.", never:"Your Six, Add a Pokémon, the Battle preview, or beside grades, ratings or any data.", steps:[
+  ["m2-myteam","Empty My Team","When there's no team yet, beside the line that invites you to add your first Pokémon."],
   ["m2-empty","Other empty screens","Saved Teams with nothing saved, a search with no results, Gauntlet before a run."],
-  ["m2-notice","Small notices","\"Team saved\", \"Grade went up\": a small head next to the message."],
+  ["m2-notice","Small notices","\"Team saved\", \"Grade went up\": a small Darkrai next to the message."],
   ["m2-tips","Tip bubbles","Short tips (\"Tap a Pokémon to see its sets\")."],
   ["m2-load","Loading","While Build for Me or the day's data loads."],
   ["m2-preview","Approval images for every spot","Phone, iPad and desktop, light and dark."]]},
@@ -280,6 +278,7 @@ const PLANS = [
   ["i-tr","Trick Room may be underrated (check on sealed data)","Nov 8 structure check: Trick Room teams won +2.2 pts more than the grade expected (range +0.4 to +3.9; one of 7 roles tested). Written down before the sealed games arrive; if it holds there, the grade gets a Trick Room adjustment."],
   ["i-high","Trust well-known teams a bit more","Nov 8: games between High-confidence teams are predicted better than the grade claims (1.38\u00d7). Re-check on sealed data."],
   ["i-battle","Learned matchups in Battle predictions","+0.9 pts for one specific game, just short of significant. Re-check on sealed data."],
+  ["i-mascot","Our own NastyPlot mascot (separate chat)","Nov 9 (Sim): Darkrai is not a mascot, just a Pokémon we like on empty and loading screens. Creating a real mascot is its own process; Sim will do it in a separate chat later, if the brand takes off."],
   ["i-domain","Buy the NastyPlot domain sooner","Nov 9 (Sim): talk about buying it early so the public site (hosting, HTTPS, a data source that doesn't need Claude-only features, privacy pages) can be built and tested on it well before January."],
   ["i-ladder","Showdown ladder games","Tested Nov 8: no gain for the grade; revisit for Reg M-D when tournament data is thin."]]}
 ]}

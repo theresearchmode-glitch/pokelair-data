@@ -30,6 +30,11 @@ let dropped = 0;
 if (!process.argv.includes('--keep-comments')) {
   out = out.replace(/<script>([\s\S]*?)<\/script>/g, (m, code) => '<script>' + code.split('\n').filter(l => { const c = /^\s*\/\/[^\n]*$/.test(l); if (c) dropped++; return !c; }).join('\n') + '</script>');
   out = out.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + css.replace(/\/\*[\s\S]*?\*\//g, () => { dropped++; return ''; }) + '</style>'); }
+// Darkrai on empty and loading screens (Sim, Nov 9; "just a pokemon we like", not a mascot; approved for live Nov 9). One small
+// <script> sets window.NP_MASCOT to docs/mascot/darkrai.webp (PokeAPI HOME render 491, inked with app/sprite-ink.py); the app shows
+// it only where window.NP_MASCOT is set (74-arena.js: the empty My Team).
+{ const img = fs.readFileSync(dir + '../docs/mascot/darkrai.webp').toString('base64'), at = out.indexOf('<script');
+  if (at < 0) throw new Error('no <script> in page'); out = out.slice(0, at) + `<script>window.NP_MASCOT='data:image/webp;base64,${img}';</script>` + out.slice(at); }
 fs.mkdirSync(dir + 'dist', {recursive: true});
 fs.writeFileSync(dir + 'dist/page.html', out);
 console.log(`built dist/page.html (${(out.length / 1024).toFixed(0)} KB from ${parts.length} parts${dropped ? `, ${dropped} comment lines dropped` : ''})`);

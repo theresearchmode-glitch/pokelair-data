@@ -225,7 +225,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
   else { /* no team yet: the line and the two actions, then the same stage as a full team, six add tiles (as Home's empty six) */
     const tiles = [0, 1, 2, 3, 4, 5].map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
-    /* Mascot (Sim, Nov 9: Darkrai, was Shady Paw): only where window.NP_MASCOT is set, which is the preview build alone (app/preview-mascot.mjs); live keeps the sprite */
+    /* Darkrai (Sim, Nov 9; was Shady Paw): shown where window.NP_MASCOT is set, which app/build.mjs does; without it, the sprite */
     const paw = typeof window !== 'undefined' && window.NP_MASCOT;
     stats = `<div class="ar-empty ar-tempty${paw ? ' ar-haspaw' : ''}">${paw ? `<img class="ar-paw" src="${paw}" alt="" width="464" height="473" decoding="async">` : `<span class="ar-empty-art" aria-hidden="true">${(CH.metaSix()[0] && sprite(CH.metaSix()[0])) || ''}</span>`}<div><p>Add your six and NastyPlot scouts the top 30 threats for you. Start with one, or let NastyPlot build six from real winning teams.</p>
     <div class="ar-acts"><button type="button" class="ar-btn ar-primary" data-chedit="0"><span>Add your first Pokémon</span>${AR.ICON.go}</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div></div>`;

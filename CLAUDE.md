@@ -50,14 +50,14 @@ NastyPlot launches to the public sometime in January 2027, as a normal public we
 Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on
 Claude-only features without a plan for the public site; kids play Pokémon, so the privacy rules below are strict.
 
-## Mascot (Sim, Nov 9: Darkrai, replaces Shady Paw)
-Sim chose Darkrai as the mascot instead of the AI-drawn Shady Paw ("using a pokemon instead of an ai generated character would be
-better"). Why Darkrai: it learns Nasty Plot (checked on PokéAPI: by level-up from Platinum to Scarlet/Violet) and it is NOT in the
-Champions roster, so it can't be mistaken for team data. Our own mascot can come later if the brand takes off. Picture:
-docs/mascot/darkrai.webp (PokéAPI HOME render, inked like our sprites). It is on the Preview only (app/preview-mascot.mjs sets
-window.NP_MASCOT); nothing goes live until Sim says so. Same spots as before: an empty My Team (no team yet), other empty screens,
-small notices, tip bubbles, loading. NOT in Your Six, Add a Pokémon or the Battle preview, and never beside grades, ratings or data.
-Shady Paw files stay in docs/mascot/ as history; don't use them on the site.
+## Darkrai on empty and loading screens (Sim, Nov 9; replaces Shady Paw)
+Darkrai is NOT a mascot: it's "just a pokemon we like", there to make empty space and loading screens better. Sim chose it over the
+AI-drawn Shady Paw. Why Darkrai: it learns Nasty Plot (checked on PokéAPI: level-up from Platinum to Scarlet/Violet) and is NOT in
+the Champions roster, so it can't be mistaken for team data. Picture: docs/mascot/darkrai.webp (PokéAPI HOME render, inked like our
+sprites). Sim approved it for live on Nov 9 (empty My Team); app/build.mjs adds it (window.NP_MASCOT). Every new spot is shown to Sim first. Spots: an empty
+My Team (no team yet), other empty screens, small notices, tip bubbles, loading. NOT in Your Six, Add a Pokémon or the Battle
+preview, and never beside grades, ratings or data. A real NastyPlot mascot is its own project that Sim will do in a separate chat
+later; don't start it here. Shady Paw files stay in docs/mascot/ as history; don't use them on the site.
 
 ## Privacy and safety
 - COPPA: no names or emails collected; feedback stays anonymous.
@@ -102,7 +102,7 @@ One name per idea, everywhere on the site:
 ## Focus and honesty (Sim, Nov 9)
 After Claude's honest review, Sim agreed:
 - No new features until what we have is finished and refined (Sim, Nov 9). Work = finishing, fixing and refining what
-  exists (Team Sheet, share image, the mascot's (Darkrai's) one spot on the Preview, the grade) and the process fixes.
+  exists (Team Sheet, share image, Darkrai's one spot on the Preview, the grade) and the process fixes.
 - One thing at a time: at most ONE grade/model change and ONE site item in progress. Finish (tested, reviewed, live or
   dropped) before starting the next. Small batches. Don't skip ahead of an open step on the Plans page.
 - NO GUESSING (Sim, Nov 9): check before acting or claiming anything, including small things (where a file lives, how a
