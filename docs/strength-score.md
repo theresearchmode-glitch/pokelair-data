@@ -201,3 +201,11 @@ different; 5 points apart are not always (80-84 vs 85-89 overlap). Letters shoul
   baseline 0.68046 (identical, as expected: same ranking); GATE PASSED. Top-cut part: 187 of 188 top-4 teams scored 70+ ("Solid" or
   better) before their event. Not comparable with the old 68% bar: 70 on the old grade meant top 30% by rank, 70 on the Strength Score
   is about the bottom quarter of real teams. By rank, top-cut fairness is unchanged by construction (same ranking).
+
+## Step D · Suggestions (Nov 9, look only so far)
+
+sugg-real.mjs on the Strength Score build, 400 real teams with 10+ games (whole roster):
+- Repeats (Sim's concern, measured): over all Suggestion 1s, Kingambit 20%, Basculegion 18%, Farigiraf 10%, Sneasler 8%, Kommo-o 7%,
+  Mega Floette 7%; the top 3 Pokémon are 48% of every Suggestion 1. 43 different Pokémon appear across the top 3 suggestions.
+- Honesty: Suggestion 1 shows +4.6 score points on average (≈ +3.8 win-chance points); the closest real teams' win rate rises +1.5
+  (95% 0.6 to 2.4). Real, but the shown gain is about 2.5× too big. Suggestions 1-3: shown +3.8, real +1.0 (0.3 to 1.6).
