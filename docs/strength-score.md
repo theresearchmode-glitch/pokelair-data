@@ -156,3 +156,7 @@ Where real tournament sheets land (10,575): 2% 62.9 · 10% 70.2 · 25% 74.9 · m
 No Mega (55 sheets): median 52.3 (45-61). Readiness under 70 (1,731): median 76.8. 3+ sharing a type (815): median 75.3.
 Against Sim's anchors: typical 80 ✓, best 90+ ✓, no Mega lands in the 50s, lower than the "60s" draft, because the measured effect is
 that big (real no-Mega teams win 34%).
+
+Sim, Nov 9: keep the score out of 100 (not out of 10: on real sheets 80% land 70-88, so out of 10 nearly all would read 7, 8 or 9).
+No Mega landing in the 50s (measured) instead of the draft "60s": Sim agreed. Letter bands to be set in Phase 3 so each letter
+really wins more than the one below (today C 51.4% vs D 52.2% couldn't be told apart).
