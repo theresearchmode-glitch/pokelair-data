@@ -24,6 +24,9 @@ const weeks = [];
 for (const cut of cuts) { const to = day(cut, 7), mt = DIR + `model-${cut}.json`;
   console.log(`week ${cut} → ${to}: training on events before ${cut}…`);
   run(['model.mjs'], {TRAIN_ONLY: '1', TEST_DATE: cut, MODEL_OUT: mt});
+  // WF_BREAK=shuffle (test of the gate only): scramble the Pokémon strengths after training, a deliberately broken grade
+  if (process.env.WF_BREAK === 'shuffle') { const m = JSON.parse(fs.readFileSync(mt, 'utf8')), k = Object.keys(m.mons), v = k.map(x => m.mons[x]); let s = 11;
+    for (let i = v.length - 1; i > 0; i--) { s = (s * 16807) % 2147483647; const j = s % (i + 1); [v[i], v[j]] = [v[j], v[i]]; } k.forEach((x, i) => { m.mons[x] = v[i]; }); fs.writeFileSync(mt, JSON.stringify(m)); }
   run(['experiments/board.mjs', DIR + `board-${cut}.json`], {BOARD_MT: mt, BOARD_DATE: cut, BOARD_TO: to, BOARD_FIXCAL: '1', BOARD_PRED: DIR + `pred-${cut}.json`});
   const B = JSON.parse(fs.readFileSync(DIR + `board-${cut}.json`, 'utf8')), r = B.rows[ROW];
   let top = null; if (process.env.WF_TOPCUT !== '0') { const o = run(['experiments/golden.mjs'], {GOLDEN_FROM: cut, GOLDEN_TO: to, GOLDEN_MODEL: mt, GOLDEN_TOPCUT_ONLY: '1'}); const m = o.match(/TOPCUT (\{.*\})/); top = m ? JSON.parse(m[1]) : null; }

@@ -1,6 +1,6 @@
 // Known-answer teams (Nov 8, foundation plan Phase 0). Cases with an obvious right answer that the grade, Fix it and
 // Build for Me must always get right. Runs the built page (app/dist/page.html) with today's data.
-//   1. top-cut teams      Limitless top-4 teams (32+ player events, last 30 days, before the sealed set, each player's own sheet) grade B or better (70+): at least 75% of them
+//   1. top-cut teams      Limitless top-4 teams (32+ player events, last 30 days, before the sealed set, each player's own sheet) grade B or better (70+): at least 60% of them (twice chance); the forward comparison is accuracy-gate.mjs
 //   2. broken team        six of the weakest Pokémon in the roster grade F (under 10)
 //   (letters as the site gives them, CH.grade: A 90+, B 70+, C 30+, D 10+, F under 10, i.e. the rank among real teams)
 //   3. illegal items      two members holding the same item: flagged as not legal
@@ -123,7 +123,10 @@ await b.close(); fs.unlinkSync(page);
 const C = [], add = (name, pass, detail) => C.push({name, pass, detail});
 R.top = R.top.filter(t => !offFormat(t.ev)); // themed cups (MonoRegion…) are left out of the data, so out of this check too
 { const n = R.top.length, good = R.top.filter(t => t.g >= 70).length, med = R.top.map(t => t.g).sort((a, c) => a - c)[n >> 1];
-  add('top-cut teams, graded with their own team sheets, grade B or better (75%+ of them)', n >= 10 && good / n >= .75, `${good} of ${n} graded 70+ (${Math.round(good / n * 100)}%; ${R.top.filter(t => t.sheet).length} with their sheet; with default sets instead: ${R.top.filter(t => t.gDef >= 70).length}), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
+  /* Nov 9 (Sim, Accuracy Lab): the 75% bar was set on a number that partly counted each team's own wins (the shipped model has
+     seen these games). Here: a floor only, twice chance; the real comparison is experiments/accuracy-gate.mjs (forward, vs the
+     approved baseline). */
+  add('top-cut teams, graded with their own team sheets, grade B or better (60%+ of them, twice chance; the forward gate is accuracy-gate.mjs)', n >= 10 && good / n >= .6, `${good} of ${n} graded 70+ (${Math.round(good / n * 100)}%; ${R.top.filter(t => t.sheet).length} with their sheet; with default sets instead: ${R.top.filter(t => t.gDef >= 70).length}), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
 add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 10, `${R.weak.g} (${R.weak.mons.join(', ')})`);
 add('two of the same item reads as not legal', R.illegal.flagged, `${R.illegal.clause} item clash${R.illegal.clause === 1 ? '' : 'es'} found`);
 { const s = R.sugg.filter(x => !x.err), worse = s.reduce((a, x) => a + x.worse, 0), tot = s.reduce((a, x) => a + x.n, 0);
