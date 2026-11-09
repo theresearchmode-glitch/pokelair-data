@@ -348,3 +348,7 @@ team); "no Mega Stone" −21 ±16 but on ~0% of teams (too few to tell); leaning
 **One-game confidence revised:** sheet games say the page's confidence is right for one game (1.02×, ±0.26); with the ladder
 (0.82×) and best-of-1 rounds (0.6×) weighted by precision, ≈0.87 → ONE_GAME_K 0.7 → 0.85.
 **Sealed set:** starts with events on Nov 9, so it has no games yet; Step 4's sealed check runs once 1–2 weeks of events exist.
+
+## Live (Nov 9, 00:2x UTC, Sim: "Put it live now")
+main 71a7abc; live page Version 125; live meta/model v25 (team basics, pairs ÷4, monSd). Sim's saved teams on the live data:
+D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily model now builds this way by default.
