@@ -491,3 +491,9 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   each with 5,000-29,000 real games). Not thin data.
 - My guess, not yet tested: diminishing returns. The strength model adds each Pokémon's and pair's value; a team that is already
   solid may gain less from a strong Pokémon than a weak team does, and the model can't see that.
+- Diminishing returns tested (measured, experiments/diminishing.mjs, real games only, 38,513 games, 418 tournaments): additive
+  Pokémon model + player skill learned on one half of the tournaments, curvature fitted on the other half, both ways, 400
+  resamples by tournament. Curvature c = -0.006 (95% -0.021 to +0.008): within chance. A +0.5 SD upgrade is worth 2.7 win-chance
+  points for a 10th-percentile team and 2.4 for a 90th-percentile team. Even the most negative end of the range would cut an
+  upgrade's worth for a strong team by only ~20%, far short of the 60-85 gap (promise +3.2, real about 0). My guess is NOT
+  supported; the cause is still unknown. d5-sugg stays open.
