@@ -4,6 +4,13 @@ on:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
     paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml']
   workflow_dispatch:
+  # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
+  # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
+  # when those jobs finish; this route is allowed. It tests main as it stands then (the newly committed data included).
+  workflow_run:
+    workflows: ["Update Limitless data", "Weekly settings re-check", "Monthly accuracy check"]
+    types: [completed]
+    branches: [main]
 # Changes land as a few commits in a row; only the newest one is tested. An older run still going is cancelled
 # (cancelled runs send no failure email), so a half-uploaded change can't trigger a false alarm.
 concurrency:
