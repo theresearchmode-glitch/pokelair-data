@@ -602,3 +602,13 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   + learned matchups against this opponent 57.50% (ll 0.67883), better for predicting one game; learned matchups against the whole
   field, as a grade, 55.85% (ll 0.68111), worse. So matchups help game by game; averaged over the whole meta they don't make a
   better team grade yet.
+
+### Nov 9 (night): the coin-flip rule for suggestions (s1-rule, measured on the 1,207-team run)
+- Sim approved: coin-flip swaps are labelled Different option. Rule candidates, Suggestion 1, 408 teams with 30+ games both sides:
+  by the swapped-out Pokémon's tournament usage (under 3/5/8/12% = upgrade): upgrades +0.7 to +0.9, others +1.3 to +1.7. No
+  separation, so CORRECTION: my "weak-for-strong swaps work, strong-for-strong don't" explanation does not hold swap by swap.
+  By starting grade: under 60 +2.6 (+1.8 to +3.5, 218), 60+ -0.4 (-1.3 to +0.4, 190).
+- Independent check (the 807 teams not in the 400-team run where the band was found): under 60 +2.4 (+1.4 to +3.5, 134),
+  60+ -0.3 (-1.5 to +0.9, 115); Suggestions 1-3: +2.0 (+1.3 to +2.7) vs +0.4 (-0.4 to +1.3). The rule holds.
+- Rule chosen: starting grade under 60 → suggestions are upgrades with their grade gain; 60+ → shown as Different option, without
+  grade points. Why grade 60+ swaps don't pay off is still not fully explained (see the coin-flip finding above).
