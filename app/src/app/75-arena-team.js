@@ -200,11 +200,12 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
     if (!m) { x.fillStyle = P.bar; ARB.para(x, cx, y, cw - 40, 170, 16); x.fill(); continue; }
     ARB.drawTile(x, P, dark, m, imgs[i], cx, y, cw - 40, 170, 230, ns); }
   /* the grade and the threats */
-  const gy = 1128;
+  const gy = 1128 + 44 /* Nov 9: centred in the space the threats bar left */;
   if (sc) { const nz = sc.num.length > 3 ? 104 : 124; ARB.numeral(x, P, sc.num, 60, gy, nz); ARB.fnt(x, `italic 900 ${nz}px Archivo, sans-serif`, true); const nw = x.measureText(sc.num).width + 28;
-    ARB.fnt(x, '700 32px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(sc.top, 60 + nw, gy - 44); ARB.fnt(x, '500 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText(sc.basis, 60 + nw, gy - 8); }
+    ARB.fnt(x, '700 32px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(sc.top, 60 + nw, gy - 44); ARB.fnt(x, '500 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText(String(sc.basis).split(' · ')[0], 60 + nw, gy - 8); } /* Nov 9, Sim: no 'Our estimate' note on the poster */
   else { ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText(`${ms.length} of 6 Pokémon`, 60, gy - 50); ARB.fnt(x, 'italic 800 40px Archivo, sans-serif', true); x.fillStyle = P.ink; x.fillText('The grade comes with a full six', 60, gy); }
-  if (f.hd) { const ry = 1206; ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; const t = `Handles ${f.hd.x} of the top ${f.hd.n} threats`; x.fillText(t, 60, ry); const tx = 60 + x.measureText(t).width + 28, bw = W - 60 - tx, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
+  /* Nov 9, Sim: the poster doesn't need "handles x of the top 30 threats" */
+  if (false && f.hd) { const ry = 1206; ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; const t = `Handles ${f.hd.x} of the top ${f.hd.n} threats`; x.fillText(t, 60, ry); const tx = 60 + x.measureText(t).width + 28, bw = W - 60 - tx, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
     if (bw > 80) { x.fillStyle = P.bar; ARB.para(x, tx + bw / 2, ry - 18, bw, 14, 3); x.fill(); x.save(); ARB.para(x, tx + bw / 2, ry - 18, bw, 14, 3); x.clip(); x.fillStyle = P.green; x.fillRect(tx - 10, ry - 18, (bw + 10) * fr, 14); x.restore(); } }
   /* footer */
   x.fillStyle = P.rule; x.fillRect(60, 1240, W - 120, 2); await ARB.logo(x, dark, 54, 1258, 260);
