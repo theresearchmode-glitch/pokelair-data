@@ -93,10 +93,10 @@ R.apply = [];
     const r = await run(`(()=>{ if (${JSON.stringify(ns)}.some(n => !byName.get(n))) return JSON.stringify(null); S.format = 'doubles'; S.slots = normSlots(${JSON.stringify(ns)}.map(n => ({n, a: null, lock: false}))); const g = gradeTeam(members());
       if (g == null || g < 30 || g > 85) return JSON.stringify(null); setView('coverage'); render(); return JSON.stringify({g}); })()`);
     if (!r) continue; await pg.waitForTimeout(3500);
-    const card = await pg.evaluate(() => { const c = document.querySelector('#sugs .plan'); if (!c) return null; /* textContent: the list can sit in a closed panel, where innerText is empty (Nov 9) */ const m = c.textContent.replace(/\s+/g, ' ').match(/→ (Top \d+%|Bottom \d+%)/); return m ? m[1] : null; });
+    const card = await pg.evaluate(() => { const c = document.querySelector('#sugs .plan'); if (!c) return null; /* textContent: the list can sit in a closed panel, where innerText is empty (Nov 9) */ /* Nov 9: the card shows only the letter; the exact rank is in the chip's title. Both must match after Apply. */ const t = c.querySelector('[title*="With this change"]'), m = t && t.getAttribute('title').match(/With this change (\S+), ((?:top|bottom) \d+%)/i); return m ? m[1] + ' ' + m[2].toLowerCase() : null; });
     if (!card) continue;
     await pg.evaluate(() => { const b = document.querySelector('#sugs .plan [data-plan="0"]'); if (b) b.click(); }); await pg.waitForTimeout(2500);
-    const after = await run(`(()=>{ const ms = members(), g = gradeTeam(ms); return JSON.stringify(g == null ? null : CH.rankShort(g)); })()`);
+    const after = await run(`(()=>{ const ms = members(), g = gradeTeam(ms); return JSON.stringify(g == null ? null : CH.gradeFull(g) + ' ' + CH.rankShort(g).toLowerCase()); })()`);
     R.apply.push({mons: ns, before: r.g, promised: card, after}); } }
 await b.close(); fs.unlinkSync(page);
 // ---- verdicts
