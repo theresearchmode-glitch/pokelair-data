@@ -239,7 +239,11 @@ MG.flair = () => { document.querySelectorAll('[data-pane]').forEach(pane => { co
     const f = pane.querySelector('.chsec.chfold, .chfolds'); if (f && !(f.previousElementSibling && f.previousElementSibling.classList.contains('mgdiv'))) f.insertAdjacentHTML('beforebegin', '<div class="mgdiv" aria-hidden="true"><i></i><i></i><i></i></div>');
     /* empty states: one small panel, an inked Pokémon and a caption */
     pane.querySelectorAll('.empty-note:not(.mgempty), .hempty:not(.mgempty)').forEach(e => { if (!e.offsetParent || e.querySelector('.mgeart')) return; e.classList.add('mgempty');
-      const six = CH.metaSix(), q = six[(v.length) % Math.max(1, six.length)]; if (q) e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${sprite(q) || ''}</span>`); }); }); };
+      const six = CH.metaSix(), q = six[(v.length) % Math.max(1, six.length)]; /* Darkrai (Sim, Nov 9) instead of a meta Pokémon, only on the approved empty screens and loading: Saved Teams, My Box, Test run,
+         Build for Me, and the Events / Cores searches. Never the Battle preview or next to grades and data (they keep the meta Pokémon). */
+      const dk = MG.DK_PANES.has(pane.dataset && pane.dataset.pane) && typeof AR === 'object' && AR.mascot ? AR.mascot() : null;
+      if (dk || q) e.insertAdjacentHTML('afterbegin', `<span class="mgeart" aria-hidden="true">${dk || sprite(q) || ''}</span>`); }); }); };
+MG.DK_PANES = new Set(['teams', 'box', 'gauntlet', 'auto', 'events', 'cores']);
 /* tap feedback: a 150ms ink impact flick on main buttons and tappable Pokémon (none with reduced motion) */
 document.addEventListener('pointerdown', e => { if (CH.reduced()) return; const b = e.target && e.target.closest && e.target.closest('.chprimary,.mgyel,#saveBtn,[data-lt],[data-chset],.mgact'); if (!b) return;
   b.classList.remove('mgimp'); void b.offsetWidth; b.classList.add('mgimp'); setTimeout(() => b.classList.remove('mgimp'), 160); }, {passive: true});

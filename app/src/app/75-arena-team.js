@@ -27,7 +27,7 @@ ARB.saved = () => { const L = $('savedList'); if (!L) return;
     card.querySelectorAll('.svacts .btn.primary[data-load]').forEach(b => b.classList.add('arb-open'));
     const nm = card.querySelector('.svname'); if (nm && nm.children.length === 0) nm.textContent = ARB.nbTitle(nm.textContent); });
   const none = L.querySelector(':scope > .empty-note'); if (none && !none.classList.contains('ar-empty')) { const top = CH.metaSix()[0];
-    none.className = 'empty-note ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${(top && sprite(top)) || ''}</span><div><p>No saved teams yet. Open My team and tap Save team, or let NastyPlot build six for you.</p><div class="ar-acts"><button type="button" class="ar-btn" data-view="report">Open My team</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div>`; }
+    none.className = 'empty-note ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${AR.mascot() || (top && sprite(top)) || ''}</span><div><p>No saved teams yet. Open My team and tap Save team, or let NastyPlot build six for you.</p><div class="ar-acts"><button type="button" class="ar-btn" data-view="report">Open My team</button><button type="button" class="ar-btn" data-view="auto">Build me a team</button></div></div>`; }
   const h = L.querySelector('.cmphint'); if (h && /^Tap /.test(h.firstChild && h.firstChild.textContent || '') && matchMedia('(hover:hover) and (pointer:fine)').matches) h.firstChild.textContent = h.firstChild.textContent.replace(/^Tap /, 'Click '); };
 CH.wrap('renderSaved', () => ARB.saved());
 
@@ -36,7 +36,7 @@ ARB.box = () => { const L = $('boxList'); if (!L) return;
   L.querySelectorAll('.boxchip').forEach(c => { const x = c.querySelector('[data-unbox]'), p = x && byName.get(x.dataset.unbox); if (p) ARB.tile(c, p, 's', c.querySelector(':scope > b')); });
   ARB.nbIn(L.querySelectorAll('.boxchip > b'));
   const none = L.querySelector(':scope > .none'); if (none && !none.querySelector('.ar-empty-art')) { const top = CH.metaSix()[0];
-    none.className = 'none ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${(top && sprite(top)) || ''}</span><div><p>Your box is empty. Add the Pokémon you own, and Build for me and the suggestions pick from them.</p><div class="ar-acts"><button type="button" class="ar-btn" data-arbfocus="boxAdd">Add a Pokémon</button></div></div>`; } };
+    none.className = 'none ar-empty'; none.innerHTML = `<span class="ar-empty-art" aria-hidden="true">${AR.mascot() || (top && sprite(top)) || ''}</span><div><p>Your box is empty. Add the Pokémon you own, and Build for me and the suggestions pick from them.</p><div class="ar-acts"><button type="button" class="ar-btn" data-arbfocus="boxAdd">Add a Pokémon</button></div></div>`; } };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arbfocus]'); if (!b) return; const f = $(b.dataset.arbfocus); if (f) { f.scrollIntoView({block: 'center'}); f.focus(); } });
 CH.wrap('renderBox', () => ARB.box());
 

@@ -60,6 +60,8 @@ AR.art = (p, o = {}) => { const tag = o.tag || 'button', cls = `ar-art ar-${o.si
     + `<span class="ar-nm">${AR.nm(o.name || p.d)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></${tag}>`; };
 /* an open slot: with o.attrs a button (a faint section field, a "+", "Add a Pokémon" under it) that opens what attrs say;
    without, a quiet placeholder */
+/* Darkrai (Sim, Nov 9): the picture on empty screens, set by app/build.mjs as window.NP_MASCOT; null when it isn't set */
+AR.mascot = () => (typeof window !== 'undefined' && window.NP_MASCOT) ? `<img class="spr ar-darkrai" src="${window.NP_MASCOT}" alt="" width="464" height="473" decoding="async">` : null;
 AR.emptyArt = (size, o = {}) => o.attrs ? `<button type="button" class="ar-art ar-${size || 'm'} ar-below is-empty" ${/aria-label=/.test(o.attrs) ? '' : 'aria-label="Add a Pokémon" '}${o.attrs}><span class="ar-f" aria-hidden="true"></span><span class="ar-plus" aria-hidden="true">+</span><span class="ar-nm">${o.label || '<span class="ar-addl">Add</span><span class="ar-addr"> a Pokémon</span>'}</span></button>`
   : `<div class="ar-art ar-${size || 'm'} ar-below is-empty" aria-hidden="true"><span class="ar-f"></span><span class="ar-nm">&nbsp;</span></div>`;
 AR.ICON = {
