@@ -145,3 +145,14 @@ Fit 2: the same without x0 (each factor's size on its own, player skill still fi
 Reading (measured): on their own, the Mega, Protect on most of the team, typing (spread-out weak spots, no undefended attacking
 types, no 3+ shared type, offensive coverage) and readiness all go with winning. Once the Pokémon and sets are counted, only
 readiness still adds: the rest is mostly carried by WHICH Pokémon and sets a team uses. So adding them on top would count them twice.
+
+### Draft 0-100 scale (Nov 9, my proposal, not yet tested)
+
+Strength z = x0 + 0.0038 × (readiness − 79) (readiness weight from Fit 1: 1.05 points per 10 ÷ 27.39; today's grade uses 0.003, inside
+the measured range). Score = 80 + 122 × (chance to beat a typical tournament team − 50%), chance = σ(0.865 × (z − 0.349)), kept in 0-100.
+Monotone in z, so its win-prediction is that of z (Phase 3 tests it).
+
+Where real tournament sheets land (10,575): 2% 62.9 · 10% 70.2 · 25% 74.9 · median 80.0 · 75% 84.3 · 90% 87.8 · 98% 92.2.
+No Mega (55 sheets): median 52.3 (45-61). Readiness under 70 (1,731): median 76.8. 3+ sharing a type (815): median 75.3.
+Against Sim's anchors: typical 80 ✓, best 90+ ✓, no Mega lands in the 50s, lower than the "60s" draft, because the measured effect is
+that big (real no-Mega teams win 34%).
