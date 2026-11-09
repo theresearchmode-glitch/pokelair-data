@@ -118,7 +118,7 @@ size is too big (sizing only, not proof). Mega and Protect are already inside x0
 | No major weak spot | −0.50 | −1.67 to 1.10 | unknown |
 | Weak spots spread out | +0.82 | −0.40 to 2.39 | unknown |
 | Offensive coverage (per type hit super effectively) | +0.39 | −0.07 to 0.80 | unknown |
-| Types nobody resists (per type) | −0.36 | −0.79 to 0.12 | unknown |
+| Attacking types nothing on the team resists (per type) | −0.36 | −0.79 to 0.12 | unknown |
 | Protect (extra, per member) | −0.09 | −0.55 to 0.33 | unknown |
 | An item problem | −0.52 | −2.50 to 1.13 | unknown |
 | 2+ physical and 2+ special attackers | +1.06 | −0.56 to 2.69 | unknown |
@@ -126,4 +126,22 @@ size is too big (sizing only, not proof). Mega and Protect are already inside x0
 
 Reading: once Pokémon, sets and player skill are counted, readiness for the top threats is the only factor that still adds beyond
 chance. The type checks measured alone earlier (+0.9, +1.3) overlap with what the Pokémon themselves already carry. "Unknown" is not
-"no effect". Fit 2 (each factor without x0) is running to see their sizes on their own.
+"no effect". 
+Fit 2: the same without x0 (each factor's size on its own, player skill still fitted; 40 resamples):
+
+| Factor | Win-chance points per unit | 95% range | Verdict |
+|---|---|---|---|
+| Ready for the top threats (per 10 points) | +1.56 | 0.84 to 1.99 | helps |
+| Has a Mega | +19.69 | 10.75 to 27.12 | helps |
+| No major weak spot | −0.19 | −1.24 to 1.54 | unknown |
+| Weak spots spread out | +1.70 | 0.35 to 3.27 | helps |
+| Offensive coverage (per type hit super effectively) | +0.47 | 0.17 to 0.92 | helps |
+| Attacking types nothing on the team resists (per type) | −0.84 | −1.18 to −0.55 | hurts |
+| Protect (per member) | +1.00 | 0.46 to 1.44 | helps |
+| An item problem | +0.25 | −1.80 to 1.75 | unknown |
+| 2+ physical and 2+ special attackers | +0.68 | −1.13 to 2.53 | unknown |
+| 3+ members sharing a type | −3.27 | −5.73 to −1.67 | hurts |
+
+Reading (measured): on their own, the Mega, Protect on most of the team, typing (spread-out weak spots, no undefended attacking
+types, no 3+ shared type, offensive coverage) and readiness all go with winning. Once the Pokémon and sets are counted, only
+readiness still adds: the rest is mostly carried by WHICH Pokémon and sets a team uses. So adding them on top would count them twice.
