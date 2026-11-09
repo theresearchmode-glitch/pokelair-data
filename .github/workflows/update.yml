@@ -39,6 +39,9 @@ jobs:
       - run: node six.mjs || node skip.mjs "six records skipped"
       # which Pokémon beat which in real games, added to out/model.json for Plan a Match (Nov 8)
       - run: node ctr.mjs || node skip.mjs "learned matchups skipped"
+      # Phase 4 (Nov 9): if today's model is broken, less accurate on held-out games or reorders the most-played sixes, keep
+      # yesterday's (committed) model and flag it in the run and in out/skips.json
+      - run: node model-guard.mjs || node skip.mjs "new model skipped (model guard kept yesterday's model; reasons in this step's log)"
       # which Pokémon win more when they lead, from ladder replays, for Battle's lead pick (Nov 8)
       - run: node leads.mjs || node skip.mjs "lead values skipped"
       - run: node ladder.mjs || node skip.mjs "ladder stats skipped"
