@@ -197,3 +197,7 @@ different; 5 points apart are not always (80-84 vs 85-89 overlap). Letters shoul
   can't measure its worth; nearly universal use by top players says it is worth something. Sim, Nov 9: keep it counted through the
   Pokémon and sets as now, notes wording unchanged); turn-1 support −2.7 (−2.2 vs +2.5). Correction: "no Mega lands in the 50s" is for typical teams;
   strong teams without a Mega land about 65.
+- Never-get-worse gate (accuracy-gate.mjs, last 2 weeks, each trained only on earlier events, 7,795 games): log-loss 0.68046 =
+  baseline 0.68046 (identical, as expected: same ranking); GATE PASSED. Top-cut part: 187 of 188 top-4 teams scored 70+ ("Solid" or
+  better) before their event. Not comparable with the old 68% bar: 70 on the old grade meant top 30% by rank, 70 on the Strength Score
+  is about the bottom quarter of real teams. By rank, top-cut fairness is unchanged by construction (same ranking).
