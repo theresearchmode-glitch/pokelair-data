@@ -15,6 +15,8 @@ makes it heavy, and a lighter option if one exists. Background computer time (a 
 - She tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
   screens except feature sprites, for smooth scrolling; never give filtered sprites their own layers (will-change), it made it worse.
 - She has a sharp eye for symmetry and small details; keep layouts even and labels clear.
+- Every window size must look right (Sim, Nov 9): the layout has to survive any resize, including odd window shapes and dragging
+  the window while a page is open. Check odd widths, not only phone / tablet / desktop.
 - Using space well is very, very important to her, on every page and every screen size: no empty strips beside text,
   no half-filled rows. Prefer even columns or side-by-side layouts over narrowing content.
 - Seamless and clean, in light AND dark mode: no boxes stacked inside boxes in different shades (page > card > cell

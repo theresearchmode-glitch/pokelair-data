@@ -252,6 +252,18 @@ const PLANS = [
   ["m3-ok","Sim says go",""],
   ["m3-live","Live",""]]}
 ]},
+{id:"resize", short:"Resizing", name:"Every window size looks right", about:"Nov 9 (Sim): \"make sure the website and its look and formatting can withstand resizing. whenever i have a weird resize of window, our page formatting breaks and is attrocious haha.\" Queued as the next site item after the Strength Score (one site item at a time).", phases:[
+ {id:"r1", name:"Find every break", goal:"A list of what breaks, at which widths, on which pages.", steps:[
+  ["r1-sweep","Sweep every page at every width","Every page and the main states (empty, full team, open sheets) from 320 to 2560 px in small steps, plus odd shapes (very short, very wide, half-screen on Windows). Flag: horizontal scroll, overlaps, cut-off text, half-filled rows, jumps at breakpoints."],
+  ["r1-live","Live resize","Drag the window size while a page is open: nothing jumps, overlaps or stays stuck at the old layout."],
+  ["r1-list","Ranked list to Sim","Worst first, with screenshots."]]},
+ {id:"r2", name:"Fix", goal:"Layouts flow smoothly between sizes instead of snapping between a few fixed ones.", steps:[
+  ["r2-fix","Fix the list, worst first","Small batches, Preview first; even columns and no empty strips at every width."],
+  ["r2-test","A resize check in the page tests","The sweep runs with the tests, so a future change that breaks a size goes red."]]},
+ {id:"r3", name:"Go live", steps:[
+  ["r3-ok","Sim's review","iPhone, iPad, Windows with odd window sizes, light and dark."],
+  ["r3-live","Live",""]]}
+]},
 {id:"matchups", short:"Matchups", name:"What we learned about matchups and synergy", about:"Nov 9 (Sim): \"we have learned so much from our findings, it would be a waste to not use it on improving battle and also looking into if it can improve anything else on the site.\" Measured: how your Pok\u00e9mon line up against THIS opponent predicts the game (38,513 tournament games and 3,980 later ladder games, both beyond chance; Battle-style pick 56.7% \u2192 57.5%). Averaged over the whole meta it didn't make a better grade. Synergy inside a four: unknown (too little data). Details: docs/deep-check.md.", phases:[
  {id:"s1", name:"Strength Score: the big one", goal:"Sim, Nov 9: \"a score derived from all of the factors we have studied\" that says how strong the team is altogether (not \"what percentage of other teams it beats\"; that can be a small line under it). Ships ONLY if it predicts real wins at least as well as today's grade; if not, back to the drawing board. Then suggestions use it: honest gains, and real variety instead of the same few Pok\u00e9mon.", steps:[
   ["s1-labels","Undo the Different option labels","Done Nov 9: Preview matches live again."],
