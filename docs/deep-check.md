@@ -561,3 +561,14 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   leads used in 10%+ of games, 8 of the 15 possible pairs ever used. Caveat: a six can be played by several players, which spreads
   its leads; ladder only (tournament data has no leads). Mostly an assumption: players change leads by matchup, so how well many
   of a six's pairs work together matters.
+- Sim's team-synergy idea, research before building (Nov 9): (1) experts: VGC Guide (Wolfe Glick, "Cores and Modes"): a core's
+  synergy "is a defining factor of how your team plays"; modes that only work together "restrict your options during team
+  preview". Skraw (Champions team-building basics, 206k views): choosing 4 of 6 "fundamentally changes the way you think about
+  building your team"; cores of 3-4 cover each other's weaknesses; offensive synergy covers each other's checks. Wolfe Glick
+  (Champions build with Disguised Toast, 555k views): "not as simple as putting the top six Pokémon on a team"; after a loss
+  "we didn't have anything for [their] Archaludon ... the entire team", and "mixing two teams together is not as good as one
+  cohesive team". (2) our data so far: on-field pairs predict later ladder games, same-six pairs don't; "Ready for the top threats"
+  is the strongest team check (+3.5 points). (3) a rough data proxy (sixes that bring varied fours vs the same four, rating-
+  adjusted, 136 ladder sixes) showed no difference (-7.4 vs -6.4), but using many fours is not the same as being able to cover the
+  meta with them. Verdict: the idea is expert consensus and fits our measured results; not yet shown that a computed score of it
+  predicts results better than today's grade.
