@@ -497,3 +497,7 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   points for a 10th-percentile team and 2.4 for a 90th-percentile team. Even the most negative end of the range would cut an
   upgrade's worth for a strong team by only ~20%, far short of the 60-85 gap (promise +3.2, real about 0). My guess is NOT
   supported; the cause is still unknown. d5-sugg stays open.
+- Player skill in the real-side measure tested (measured, experiments/sugg-skill.mjs): each neighbour game counted as result minus
+  the chance from both players' skills (joint fit of skill + each Pokémon, all games). Raw numbers reproduced exactly. Skill-
+  adjusted Suggestion 1 change: under 60 +2.1 (+1.2 to +3.0), 60-85 -0.1 (-1.0 to +0.7), 85+ -0.9 (7 teams). Not a skill
+  artefact: suggestions really do help weak teams and show no gain for 60-85. Cause still unknown.
