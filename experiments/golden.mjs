@@ -10,7 +10,7 @@
 // Usage: node experiments/golden.mjs [out.json]     (exit code 1 if a case fails; build the page first)
 import fs from 'node:fs'; import {createRequire} from 'node:module'; import {offFormat} from '../formats.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = process.env.GOLDEN_OUT || ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json');
 const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.GOLDEN_MODEL ? JSON.parse(fs.readFileSync(process.env.GOLDEN_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json'), 'meta/history': rd('history.json')};
 // Nov 9 (Sim: "if top teams are not scoring well the grade is off"): grade each top-4 team with ITS OWN team sheet (items, Abilities,
@@ -35,8 +35,11 @@ const R = {};
 // 1 + 3 + 2: grade checks
 Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.get(n))), g = ns => { try { return gradeTeam(mk(ns)); } catch (e) { return null; } };
   const tops = ((META.teams && META.teams.teams) || []).filter(t => t.section !== 'Official events' && t.mons && t.mons.length === 6 && t.mons.every(n => byName.get(n)));
-  const SH = ${JSON.stringify(SHEETS)}, gs = ns => { const set = SH[ns.slice().sort().join('|')]; if (!set) return null; try { return gradeTeam(ns.map(n => { const p = byName.get(n), s = set[n] || {}, m = abMember(p), mv = (s.mv || []).map(x => mvByName.get(x)).filter(Boolean);
-    return {...m, ...(s.it && !p.m ? {item: s.it, heldItem: s.it} : {}), ...(s.ab ? {ability: s.ab, abChosen: true} : {}), ...(mv.length ? {moves: mv, _mv: mv, custom: true} : {})}; })); } catch (e) { return null; } };
+  const SH = ${JSON.stringify(SHEETS)}, gs = ns => { const set = SH[ns.slice().sort().join('|')]; if (!set) return null; try {
+    /* Nov 9: each member is built by the site's own loader (memberOf, as when a team is loaded), not forced: a sheet lists a Mega's
+       Ability before it Mega Evolves (Mega Swampert "Torrent", Mega Salamence "Intimidate"), and the site keeps only an Ability the
+       Pokémon can have, so the Mega keeps Swift Swim / Aerilate. Forcing the sheet's Ability graded rain teams without Swift Swim. */
+    return gradeTeam(ns.map((n, i) => { const s = set[n] || {}; return memberOf({n, a: s.ab || null, lock: false, it: s.it ? {doubles: s.it} : {}, mv: (s.mv || []).length ? {doubles: s.mv.slice(0, 4)} : {}}, i); }).filter(Boolean)); } catch (e) { return null; } };
   const tg = tops.map(t => { const d = g(t.mons), sh = gs(t.mons); return {mons: t.mons, g: sh != null ? sh : d, gDef: d, sheet: sh != null, ev: t.event, rec: t.record}; }).filter(x => x.g != null);
   // the weakest six: lowest viability, no Megas, one per species
   const seen = new Set(), weak = ROSTER.filter(p => !p.m && !isExcl(p)).sort((a, b) => viability(a) - viability(b)).filter(p => !seen.has(p.b) && seen.add(p.b)).slice(0, 6).map(p => p.n);
