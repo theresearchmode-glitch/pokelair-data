@@ -96,3 +96,13 @@ One name per idea, everywhere on the site:
   conversion), today's tournament teams (not field), points (not pts), Test run (not Gauntlet); data sources are always Official events /
   Online tournaments / Ranked ladder.
 - Kept as players know them: Archetypes, spread, top cut, usage, set, Mega, speed control, Tailwind, Trick Room, core, hidden gem, best guess.
+
+## Focus and honesty (Sim, Nov 9)
+After Claude's honest review, Sim agreed:
+- One thing at a time: at most ONE grade/model change and ONE site feature in progress. Finish (tested, reviewed, live or
+  dropped) before starting the next. Small batches. Don't skip ahead of an open step on the Plans page.
+- Every claim to Sim is labelled: **measured** (with the number and the test) or **my guess, not yet tested**. No conclusions
+  from partial runs.
+- Live is protected: the daily data/model reaches the live site only if it passes the checks; otherwise yesterday's stays.
+- Code tests run on a frozen data snapshot (they fail only when code breaks); daily data checks run separately and alert.
+- The January launch work is parked until Sim says.

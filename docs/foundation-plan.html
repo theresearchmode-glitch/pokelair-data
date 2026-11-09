@@ -207,6 +207,17 @@ const PLANS = [
   ["a5-sealed","Sealed set at the end of a phase only","Games from Nov 9 on stay untouched until then."],
   ["a5-sim","Sim's review",""]]}
 ]},
+{id:"process", short:"Process fixes", name:"Process fixes: focused and protected", about:"Nov 9, after Claude's honest review (Sim: \"you are correct in all areas ... work on all of this asap and be more focused\"). In this order, one at a time. January launch parked.", phases:[
+ {id:"f1", name:"Working rules", steps:[
+  ["f1-rules","One thing at a time; every claim labelled measured or guess","Written into the project instructions (CLAUDE.md)."]]},
+ {id:"f2", name:"Protect the live site", goal:"Untested daily data can't reach players.", steps:[
+  ["f2-gate","Daily model goes live only if it passes the checks","Otherwise yesterday's model stays and Sim gets told."]]},
+ {id:"f3", name:"Split the tests", goal:"Red means a real code problem.", steps:[
+  ["f3-frozen","Code tests on a frozen data snapshot",""],
+  ["f3-data","Daily data checks separate, alert only",""]]},
+ {id:"f4", name:"Measure what players feel", steps:[
+  ["f4-win","Do suggestions and Build for Me help players win more?","A bigger, honest test than today's swap test."]]}
+]},
 {id:"sheet", short:"Team Sheet", name:"Team Sheet and sharing", about:"Nov 9 (Sim): see the whole team in one quick look, and share it in one image.", phases:[
  {id:"t1", name:"Build (preview)", steps:[
   ["t1-page","Team Sheet page","Item, Ability, nature (+/-), four moves, stats at level 50 with stat points, where each spread comes from. Desktop 3x2, iPad 2, phone 1."],
