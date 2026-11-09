@@ -182,3 +182,12 @@ Exact-site scoreboard (built page, model trained only on games before Oct 27, 6,
 
 Every band won more than the one below, and each within its range of what it promised. Bands about 10 points apart are clearly
 different; 5 points apart are not always (80-84 vs 85-89 overlap). Letters should be about 10 points wide.
+
+### Phase 4 step A checks (Nov 9, built Preview page)
+
+- Page tests: ALL PASSED (engine, then with the My Team ring).
+- Day-to-day stability (stability.mjs, 490 teams typed without sets, the real Nov 8 → Nov 9 daily models; a big model day: the team
+  basics and shrunk pairs went live in between): Strength Score typical move 3.5 points (90% under 7.5, biggest 13.7), letter changed
+  for 20.8%. Today's grade on the same models and teams: typical 14.6 (90% under 34.2, biggest 56.6), letter changed for 60.4%.
+  The rank-based grade swings because a small strength change moves a team past many others; the score moves only as much as its win
+  chance does. About 4× steadier. (Own teams also keep the 1.5-point letter buffer.)
