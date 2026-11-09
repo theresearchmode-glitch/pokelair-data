@@ -474,3 +474,7 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   strength BEFORE structCredit; structCredit only feeds winVsField/winVs, which nothing on the site calls. The exact-site
   scoreboard with the penalty removed gave byte-identical predictions on all later games. So the grade is unchanged; this is a
   site change only (counts, suggestions, Build for Me tie-breaks).
+- Suggestions after the change (measured, same 400 real teams, same test): Suggestion 1 changed for 52 of 400 teams; teams
+  with a "fill a missing check" option 48 -> 35. Real results unchanged within chance: Suggestion 1 +1.3 pts (+0.4 to +2.2,
+  159 pairs; before +1.1); by starting grade: under 60 +3.0 (+1.7 to +4.3; before +2.9), 60-85 -0.3 (-1.5 to +0.9; before -0.4),
+  85+ 7 teams (too few). No harm found; the 60-85 over-promise (median +19 grade shown, no real gain) is untouched: d5-sugg open.
