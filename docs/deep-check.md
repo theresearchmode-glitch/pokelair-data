@@ -382,3 +382,30 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
 - Evidence pull: keep 1000 for now. Full models: K=0 grades a made-up rare six 89 (Scrafty, 25 teams, valued like Sneasler), K=100 83,
   K=300 75, 1000 62. Build for Me chases the highest grade, so noisy high values on rare Pokémon are a real risk; the later-game gain
   (0.0004-0.0009) does not justify it yet. Revisit with a per-Pokémon check rather than one dial.
+
+## Nov 9 (afternoon): the top-cut scare, complete sets, Accuracy Lab
+
+**What failed.** GitHub went red at 11:42 UTC, the first run on today's data, and the first data with complete tournament sets
+(update.mjs `cs`, added Nov 8 20:49). Every test since the complete-sets change had run on data without them: a test gap.
+- Pelipper's complete set has no Tailwind, so two threat rows flipped. Correct for that set (Zard Y faster, Ancient Power
+  86-102%). Rows now name the set they test; a new row checks the complete set is "soft".
+- Leads: +1.2 for Fake Out even next to the team's own Psychic Terrain. Now -1. Replays: led-with-our-pair +3.1 -> +3.2 pts
+  (~2,770 games), too few affected games to measure an effect.
+- Apply wrote the newcomer's Ability as "chosen" (graded exactly) while the card graded a typical build: rank off by a point.
+  Now unchosen unless the suggestion picked it.
+- Top-cut share 80% -> 72%. Investigated, not a worse grade:
+  - Same teams, either model: 80% / 80%. The 58 most recent teams rotate; the same grade read 72-81% day to day.
+  - 436 top-4 teams with the players' own sheets: old model 86%, Deep Check 72%, today 74%. Without each six's own record:
+    74 / 71 / 70%. About 12 points of the old 86% counted teams' own wins (circular).
+  - Forward (trained before Oct 25, 200 later top-4 teams): old model code 68%, today 70%.
+  - Sets are real signal (held out: 0.6853 without, 0.6813 with); set strength 60 beats 200 / 600 / 2000 (I first guessed
+    weaker sets would do as well: wrong). golden's sheets now load through the site's own memberOf (Mega Abilities).
+
+**Accuracy Lab (Sim: "what's the best way to see actual improvements?" ... "Lets go for it").**
+- experiments/walk-forward.mjs: 4 weekly cuts before the sealed set, each scored by a model trained only on earlier events,
+  as the site grades (board.mjs + team rules + the model's own stretch). Baseline: 18,618 games, log-loss 0.68195, higher
+  grade wins 55.49%, calibration gap 1.86 pts (said 67% -> won 62%), top-4 teams B or better 271/392 (69%).
+- experiments/accuracy-gate.mjs (own CI job) replaces the fixed 75% bar: last 2 weeks vs experiments/accuracy-baseline.json;
+  fails below baseline - 2 SE (61.9%) / 60%, or log-loss +0.005. Can fail: scrambled strengths -> 1/188 FAIL. Can't see: small
+  changes (use walk-forward + compare.mjs). Log-loss alone barely moved on the scrambled grade (own record soaks it up).
+- golden top-cut: 60% floor on 436 teams. Open: weekly settings re-check (step 4).
