@@ -572,3 +572,12 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   adjusted, 136 ladder sixes) showed no difference (-7.4 vs -6.4), but using many fours is not the same as being able to cover the
   meta with them. Verdict: the idea is expert consensus and fits our measured results; not yet shown that a computed score of it
   predicts results better than today's grade.
+- Three more Champions-era videos read (transcripts): TheBattleRoom "A COMPLETE Guide to Team Building in Pokémon Champions"
+  (140k views; a Worlds 3rd-place player): "the goal is always to have really good synergy tightly packed ... but a lot of
+  flexibility as well so that you can execute into different strategies"; pitfalls: redundant roles (3+ of one type), all
+  physical or all special, no speed control, too focused on one win condition, no meta awareness; build by patching each new
+  Pokémon's weaknesses and adding new threats ("glue" pieces like Incineroar). Skraw "Choose Your Battle Style" (133k): balance
+  is "the toolbox archetype" (tools to beat basically anything); weather teams keep a non-weather mode; hyper offense makes sure
+  each attacker handles what the others hate. ZemTennar team preview guide: read the opponent's archetype, key synergies and
+  threats to your core; "lead flexibly". All support Sim's idea: a strong six is a cohesive toolbox whose fours cover the meta.
+  Ideas worth checking in the code later (not checked yet): physical/special mix, redundant types, single-win-condition teams.
