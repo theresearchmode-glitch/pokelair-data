@@ -510,3 +510,9 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
 - Summary so far: the cause of the 60-85 gap is not found. Ruled out: rank-1 only, matchups/own record, thin data, diminishing
   returns, player skill, what is removed alone, breaking a proven pair. Limit: the real-side measure (closest real teams) is noisy
   and shrunk, so smaller causes can't be told apart with 68 teams.
+- Player vs team (measured, experiments/skill-vs-team.mjs; Sim asked "could it be that player skill just matters so much?"):
+  skill + each Pokémon learned on one half of the tournaments, judged on the other half (21,945 games where both players were
+  known). Spread of the gap: player skill 0.90 vs team 0.46 (logit SD), about twice as big. Picks the winner: skill alone 59.5%,
+  team alone 53.7%, both 60.3%. (Team here = Pokémon only; the site's full grade picks 55.8% on its scoreboard.) Skill matters
+  about twice as much as the six, which is why team gains are small next to game-to-game noise; it does not explain why
+  suggestions help weak teams and not 60-85 ones (skill-adjusted test above).
