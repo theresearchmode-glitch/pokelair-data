@@ -542,3 +542,16 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   rarely use (outside what real swap pairs cover), where the grade's values do carry information (+2.6 real).
 - Fix direction (to discuss with Sim, not started): a swap the grade can't tell apart from a coin flip should not be shown as an
   upgrade with grade points; the word list already has "Different option" for a side-grade.
+
+### Nov 9 (night): doubles synergy, the two on the field together (measured, experiments/lead-pairs.mjs)
+- Sim: "doubles is played with 2 pokemon out in the field at a time so the synergy between the two is a big factor". Checked in
+  the code first: the grade has team-level pairs (both on the six, 253 pairs, shrunk because they added no accuracy on Nov 8) and
+  single-Pokémon lead values; it has nothing for the two that are on the field together.
+- 19,836 Showdown ladder games (single games, Oct 22 - Nov 9) with both players' ratings, sixes and lead pairs. Learned on the
+  first 70%, judged on the last 30% (5,951 games); pair ridge chosen on a validation slice of the training games.
+  base (rating + six's Pokémon + each lead Pokémon alone): log-loss 0.71494, picks 53.72%.
+  + lead pairs (159 pairs led 30+ times): log-loss -0.00090 (95% -0.00163 to -0.00026), BETTER beyond chance.
+  + team pairs (1,724 pairs on the same six): +0.00078 (-0.00254 to +0.00406), no difference.
+- So the pair that matters is the one on the field together, not the one that merely shares a team: Sim's point holds. The effect
+  is small next to player rating, and a lead pair is chosen after seeing the opponent, so part of its value may be "a good choice
+  for this matchup" rather than the six's strength. Not yet used anywhere on the site.
