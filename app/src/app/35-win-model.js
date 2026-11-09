@@ -134,13 +134,6 @@ function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.grad
 function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g===undefined)pl._g=gradeTeam(pl.team);return pl._g}
 // "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
 // "Grade 93 → 96" on a suggestion: the same one grade My team shows (Nov 7: one grade out of 100, real results blended in)
-/* Different option (Sim, Nov 9; docs/deep-check.md "the coin-flip rule"): for teams graded 60 or more, suggestions showed big grade
-   gains that real results didn't back (closest real teams: -0.3 points on 807 teams the rule was never tuned on; under 60: +2.4).
-   There a suggestion is a Different option: same swaps and order, no grade-gain promise. */
-var SUGG_UP_BELOW=60;
-function suggUp(g0){return g0==null||g0<SUGG_UP_BELOW}
-const DIFF_TIP='Your team is already graded 60 or more. In real results, swaps for teams like this didn\u2019t win more on average, so this is a different option to try, not an upgrade.';
-function diffChip(cls){return `<span class="${cls||'tsd'} diffopt" title="${DIFF_TIP}">Different option</span>`}
 function gradeChip(g0,g1,cls){if(g0==null||g1==null)return '';const d=g1-g0;
   const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Now ${CH.gradeFull(g0)}, ${CH.rankShort(g0).toLowerCase()} of real tournament teams. With this change ${CH.gradeFull(g1)}, ${CH.rankShort(g1).toLowerCase()}.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
   return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="${tt}">${CH.gradeMove(g0,g1)}</span>`}
