@@ -67,7 +67,11 @@ function planMatchup(mine, theirs, useA) {
     let bl = null;
     for (const pr of combos(chosen.length, 2)) { const a = chosen[pr[0]], b = chosen[pr[1]];
       let v = theirs.reduce((s, o, j) => s + Math.max(h.M[a][j], h.M[b][j]), 0);
-      if (roles[a].fake || roles[b].fake) v += psyThem ? .3 : 1.2; if (roles[a].speed || roles[b].speed) v += 1;
+      /* Nov 9: your own Psychic Terrain (Indeedee's Psychic Surge) blocks your Fake Out on grounded targets, so a lead pairing them
+         gets no Fake Out bonus and a small cost (turn one's best move is wasted); it used to get the full +1.2 */
+      { const psyMine = TERRAIN_OF[mine[a].ability] === 'psy' || TERRAIN_OF[mine[b].ability] === 'psy';
+        if (roles[a].fake || roles[b].fake) v += psyMine ? -1 : psyThem ? .3 : 1.2; }
+      if (roles[a].speed || roles[b].speed) v += 1;
       if (fieldLinks.some(f => (f.set.includes(a) && f.use.includes(b)) || (f.set.includes(b) && f.use.includes(a)))) v += .8;
       if (B && (B.speed === 'tr' || B.speed === 'hardtr') && (roles[a].anti || roles[b].anti)) v += .8;
       if (A && A.perish && A.trappers.some(m => [a, b].includes(mine.indexOf(m)))) v += 2;

@@ -156,7 +156,8 @@ for (const width of [1280, 390]) {
   const r = await pg.evaluate(() => { const H = window.__PL.THR, five = [{n: 'Staraptor'}, {n: 'Emolga'}, {n: 'Garchomp-Mega-Z'}, {n: 'Dragonite-Mega'}, {n: 'Delphox-Mega'}], six = [...five, {n: 'Pelipper'}];
     const g5 = H.teamVs(five, {n: 'Gholdengo', top: true}), g6 = H.teamVs(six, {n: 'Gholdengo', top: true});
     const bas = H.teamVs([{n: 'Basculegion', ability: 'Swift Swim'}, {n: 'Pelipper'}], {n: 'Floette-Mega', top: true});
-    const pel = H.teamVs([{n: 'Pelipper'}, {n: 'Kingambit'}, {n: 'Incineroar'}], {n: 'Charizard-Mega-Y'});
+    /* Pelipper pinned to a Tailwind set (Nov 9): this checks that its own rain is never 'conditional', not which set the day's data picks */
+    const pel = H.teamVs([{n: 'Pelipper', ability: 'Drizzle', item: 'Damp Rock', moves: ['Hurricane', 'Weather Ball', 'Tailwind', 'Protect']}, {n: 'Kingambit'}, {n: 'Incineroar'}], {n: 'Charizard-Mega-Y'});
     // a small fixed property run: each team, then each team with one more Pokémon in a random slot
     const pool = ['Incineroar', 'Rillaboom', 'Pelipper', 'Torkoal', 'Kingambit', 'Sneasler', 'Farigiraf', 'Gholdengo', 'Charizard-Mega-Y', 'Basculegion', 'Archaludon', 'Whimsicott', 'Tyranitar', 'Excadrill', 'Venusaur', 'Indeedee-F', 'Garchomp', 'Sinistcha'];
     let s = 3; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647, pick = a => a[Math.floor(rnd() * a.length)];

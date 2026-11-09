@@ -44,6 +44,8 @@ Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.
   const ill = mk(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott']); ill[0] = {...ill[0], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'}; ill[1] = {...ill[1], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'};
   const clause = itemClause(ill), RD = THR.teamReport(ill), G = CH.gradeOf(RD, proChecks(ill, true), ill);
   return JSON.stringify({top: tg, weak: {mons: weak, g: g(weak)}, illegal: {clause: clause.length, flagged: !!(G && G.illegal) || clause.length > 0}}); })()`));
+// GOLDEN_DUMP=<file>: write each top-cut team's grade (sheet and default sets) and event, for looking into failures
+if (process.env.GOLDEN_DUMP) fs.writeFileSync(process.env.GOLDEN_DUMP, JSON.stringify(R.top));
 // 4: suggestions on strong real teams
 R.sugg = await run(`(()=>{ const out = []; const A = ${JSON.stringify(R.top.filter(t => t.g >= 90).slice(0, 8).map(t => t.mons))};
   for (const ns of A) { try { S.format = 'doubles'; S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); const ms = members(), base = gradeTeam(ms);

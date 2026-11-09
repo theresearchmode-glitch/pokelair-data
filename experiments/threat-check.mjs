@@ -46,7 +46,11 @@ const C = [
   ['Volcarona', 'Rillaboom', null, 'solid', 'Fire/Bug Heat Wave SE, faster, resists Grass'],
   ['Kingambit', 'Gholdengo', null, 'solid', 'Kowtow Cleave SE, Steel resists Make It Rain'],
   ['Gholdengo', 'Kingambit', null, 'none', 'Kingambit resists Steel and hits SE'],
-  ['Pelipper', 'Charizard-Mega-Y', [{n: 'Pelipper'}], 'solid', 'your rain: Weather Ball/Hydro SE on Zard'],
+  /* Nov 9: Pelipper's set is pinned. Its default became the most common complete tournament set (Helping Hand / Hurricane / Weather
+     Ball / Wide Guard, no Tailwind), so the unpinned row flipped with the data. With Tailwind it moves first and OHKOs; without it
+     Zard Y is faster and its Ancient Power does 86-102%, so a high roll KOs Pelipper first: soft */
+  [{n: 'Pelipper', ability: 'Drizzle', item: 'Damp Rock', moves: ['Hurricane', 'Weather Ball', 'Tailwind', 'Protect']}, 'Charizard-Mega-Y', [{n: 'Pelipper'}], 'solid', 'your rain: Weather Ball SE on Zard, Tailwind first'],
+  [{n: 'Pelipper', ability: 'Drizzle', item: 'Damp Rock', moves: ['Helping Hand', 'Hurricane', 'Weather Ball', 'Wide Guard']}, 'Charizard-Mega-Y', [{n: 'Pelipper'}], 'soft', 'no Tailwind: Zard faster, Ancient Power 86-102% can KO first'],
   ['Basculegion', 'Charizard-Mega-Y', null, 'solid', 'Wave Crash SE, Adaptability; usually faster'],
   ['Charizard-Mega-Y', 'Kingambit', null, 'solid', 'sun Heat Wave 2x on Steel, Zard faster'],
   ['Kingambit', 'Charizard-Mega-Y', null, 'none', 'Zard faster and KOs with Fire'],
