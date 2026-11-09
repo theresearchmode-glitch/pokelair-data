@@ -115,7 +115,7 @@ function tsShortlist(pls,n){return pls.slice(0,n)}
 function useTSPick(){return !OFFMETA}
 // What "improves the team" means everywhere (Fix plans, Quick add, Best additions): ready for at least this many more points
 var TS_GAIN=2;
-var PLAN_TIE=3; // Step D (Nov 9): suggestions within 2 Strength Score points of the best count as ties (see 29-fix-planner.js)
+var PLAN_TIE=2; // Step D (Nov 9): suggestions within 2 Strength Score points of the best count as ties (see 29-fix-planner.js)
 // a plan's readiness, less 2 per extra change and 10 if it would put Choice Scarf on a Trick Room team
 function tsKey(pl){let k=pl._ts-((pl.ch?pl.ch.length:1)-1)*2;try{if(scarfTrClash(pl.team))k-=10}catch(e){}return k}
 function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
