@@ -412,3 +412,15 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
 - **Decision (rule's first use, Nov 9):** the weekly re-check's full retune picked Pokémon shrink 3 over the locked 10 on
   validation games. Walk-forward, 18,618 later games in 221 tournaments: log-loss B − A +0.00014 (95% range −0.00029 to
   +0.00051), pick +0.14 pts (−0.17 to +0.45) → NO DIFFERENCE. Locked 10 kept; model-settings.json unchanged.
+
+## Nov 9 (late morning ET): live protection, watchdog, split tests, health fixes
+- Live branch: Promote moves `live` only after the full test run passes; the data refresh task reads live/out/.
+- Found: commits by GitHub's own jobs never start other workflows, so fresh data was never tested and live could not move.
+  test.yml now also runs when the daily data, weekly and monthly jobs finish. Proven: monthly finished 10:12 AM ET -> tests
+  started by themselves -> code tests (frozen data), data checks (today's data), accuracy gate all green -> live 0c992f6 -> e51c5c1.
+- Watchdog (12:47 UTC daily): red on failures AND jobs that silently stopped (proven with a 3-day time shift).
+- Health fixes: dead RK9 cross-check removed; skipped cross-checks/sources alarm on day 2; Pikalytics reader dropped Mega
+  Floette silently (N/A row, unknown name) -> 50/50 rows, 0/40 disagreements; by-design difference is information.
+- Monthly check's first GitHub run: picks 54.74%, A 54.8% vs C 49.3%; threat matchups +0.7 +/-1.0 (unknown).
+- Type coverage (Sim's question, 20,000 ladder games): offense r = 0.003 (no effect); stacked weaknesses -1.4 +/-0.9 overall
+  but one half only (not confirmed; idea to test).
