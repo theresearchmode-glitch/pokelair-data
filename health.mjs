@@ -74,6 +74,8 @@ if (X) for (const c of X.checks || []) { if (c.skipped) { console.log(`cross-che
   if (c.id === 'official-vs-liquipedia') { console.log(`cross-check ${c.id}: ${c.flagged} of ${c.rows.length} events with a disagreement${c.flagged ? ' · ' + c.rows.filter(r => r.flags.length).map(r => `${r.n}: ${r.flags.slice(0, 3).join('; ')}`).join(' | ') : ''}`);
     if (c.staplesFlagged.length) console.log(`::warning::Official events: Liquipedia disagrees with Victory Road on placements or dates (${c.staplesFlagged.join(', ')}). See out/crosscheck.json.`); continue; }
   console.log(`cross-check ${c.id}: ${c.flagged} of ${c.rows.length} beyond tolerance${c.staplesFlagged.length ? ` · staples: ${c.staplesFlagged.join(', ')}` : ''}`);
+  // infoOnly: two sources measuring different player groups (crosscheck.mjs) can't agree by design: information, not a warning
+  if (c.infoOnly) { if (c.staplesFlagged.length) console.log(`cross-check ${c.id} (information, different player groups by design): ${c.staplesFlagged.length} staples differ`); continue; }
   if (c.staplesFlagged.length > 3) console.log(`::warning::Cross-check ${c.id}: ${c.staplesFlagged.length} of the 12 most used Pokémon disagree with ${c.theirs} (${c.staplesFlagged.join(', ')}). Known differences: ${c.known}`); }
 // steps skipped two runs in a row (Nov 7): skip.mjs records every skipped step in out/skips.json. One flaky day stays quiet;
 // the same step skipped today and yesterday is a step that has stopped working, so it raises the "Daily data problem" issue
