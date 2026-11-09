@@ -22,7 +22,8 @@ export function norm(raw) { let n = dec(String(raw || '')).replace(/\s+/g, ' ').
   const m = n.match(/^Mega (.*?)(?: ([XYZ]))?$/); if (m) { const b = norm(m[1]); if (!b) return null; const fam = b.replace(/-Eternal$/, '');
     for (const c of [`${fam}-Mega${m[2] ? '-' + m[2] : ''}`, `${fam.split('-')[0]}-Mega${m[2] ? '-' + m[2] : ''}`]) if (ROSTER.has(c)) return c; return null; }
   if (/^Floette(-Eternal)?$/i.test(n)) return 'Floette-Eternal';
-  if (/-Mega/.test(n)) { const c = n.replace(/'/g, '’'); return ROSTER.has(c) ? c : null; }
+  // Nov 9: Pikalytics writes Mega Floette as "Floette-Eternal-Mega" (ours: Floette-Mega); it was dropped
+  if (/-Mega/.test(n)) { const c = n.replace(/'/g, '’'); if (ROSTER.has(c)) return c; const e = c.replace(/-Eternal(?=-Mega)/, ''); return ROSTER.has(e) ? e : null; }
   const r = mapMon(n.replace(/ \((.*)\)$/, ' [$1]')); if (r) return r;
   const d = n.replace(/ /g, '-'); return ROSTER.has(d) ? d : null; }
 const out = {updated: new Date().toISOString(), problems: []};
@@ -42,8 +43,13 @@ await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/f
 // built from Limitless events). The 'gen9championsvgc2026regmc' format we read before is its Showdown LADDER data, a different
 // population, which made 14 of 40 top items look like conflicts (Rillaboom: Life Orb there, Miracle Seed 75.5% in tournaments).
 await tryIt('pika', async () => { const F = 'championstournaments', h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
-  for (const m of h.matchAll(/^\| (\d+) \| \*\*(.+?)\*\* \| ([\d.]+)% \| ([\d.]+)% \| (\d+)-(\d+)(?:-\d+)? \|/gm)) { const n = norm(m[2]); if (!n) { miss.push(m[2]); continue; }
-    rows.push({n, raw: m[2], u: +m[3], wr: +m[4], g: +m[5] + +m[6]}); } // wins-losses, and since Nov 2026 sometimes -ties
+  // Nov 9: a row whose win rate or record is "N/A" (Mega Floette's) used to fail this pattern and vanish without a trace;
+  // win rate and record are optional now, and every table row is counted so a row that still can't be read is reported
+  const tableRows = (h.match(/^\| \d+ \| \*\*/gm) || []).length;
+  for (const m of h.matchAll(/^\| (\d+) \| \*\*(.+?)\*\* \| ([\d.]+)% \| (?:([\d.]+)%|N\/A) \| (?:(\d+)-(\d+)(?:-\d+)?|N\/A) \|/gm)) { const n = norm(m[2]); if (!n) { miss.push(m[2]); continue; }
+    rows.push({n, raw: m[2], u: +m[3], wr: m[4] != null ? +m[4] : null, g: m[5] != null ? +m[5] + +m[6] : null}); } // wins-losses, and since Nov 2026 sometimes -ties
+  if (rows.length + miss.length !== tableRows) out.problems.push(`pika: ${tableRows - rows.length - miss.length} of ${tableRows} table rows could not be read`);
+  if (miss.length) out.problems.push(`pika: names not on our roster: ${miss.join(', ')}`);
   if (rows.length < 30) return null;
   const scope = (h.match(/## Tournament Sample Scope\n\n([^\n]+)/) || [])[1] || '';
   const sets = {}; let date = null;
@@ -53,6 +59,9 @@ await tryIt('pika', async () => { const F = 'championstournaments', h = await ge
       sets[r.n] = {it: sec('Items').slice(0, 4), mv: sec('Moves').slice(0, 6), g: rec ? +rec[1] + +rec[2] : null}; } catch (e) {} }
   return {date: new Date().toISOString().slice(0, 10), dataDate: date, scope, rows, sets, miss}; });
 fs.writeFileSync('out/sources.json', JSON.stringify(out));
+// Nov 9 (no silent failures): each source problem is recorded like a skipped step (skip.mjs -> out/skips.json), so the same
+// source failing two days in a row raises the 'Daily data problem' alarm in health.mjs instead of one warning line a day
+{ const {execFileSync} = await import('node:child_process'); for (const k of new Set(out.problems.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${out.problems.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }
 for (const k of ['sdt', 'pika']) { const s = out[k];
   console.log(`sources: ${k} ${s ? `${s.rows.length} rows, dated ${s.date || s.dataDate || '?'}; top ${s.rows.slice(0, 3).map(r => `${r.n} ${r.u}%`).join(', ')}${s.miss && s.miss.length ? '; unmapped ' + s.miss.slice(0, 12).join(', ') : ''}` : 'missing'}`); }
 if (out.problems.length) console.log('::warning::sources: ' + out.problems.join(' | '));

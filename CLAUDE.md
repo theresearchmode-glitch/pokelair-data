@@ -103,6 +103,8 @@ After Claude's honest review, Sim agreed:
   exists (Team Sheet, share image, Shady Paw's one spot on the Preview, the grade) and the process fixes.
 - One thing at a time: at most ONE grade/model change and ONE site item in progress. Finish (tested, reviewed, live or
   dropped) before starting the next. Small batches. Don't skip ahead of an open step on the Plans page.
+- NO GUESSING (Sim, Nov 9): check before acting or claiming anything, including small things (where a file lives, how a
+  script loads its data, what a test needs). Read the code or run it first; "I think" is never enough.
 - Every claim to Sim is labelled: **measured** (with the number and the test) or **my guess, not yet tested**. No conclusions
   from partial runs.
 - Live is protected: the daily data/model reaches the live site only if it passes the checks; otherwise yesterday's stays.
