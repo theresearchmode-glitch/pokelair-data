@@ -80,3 +80,22 @@ Types (Sim, Nov 9: "you are taking into mention type weaknesses / offenses / cov
       player skill taken out in Phase 2 before deciding.
 - [ ] Coverage of what you actually face: "ready for the top threats" = damage calcs both ways against the 30 most common threats
       (+3.5 measured, the strongest factor): candidate for a much bigger role.
+
+## Phase 1 · Design (draft for Sim, Nov 9; nothing decided yet)
+
+Real examples (today's grade vs real results; typical sets; built page of Nov 9):
+| Team | Real | Today's grade | Ready for top threats | Checks failed |
+|---|---|---|---|---|
+| Dragonite / Mega Gengar / Incineroar / Rillaboom / Scrafty / Snorlax | 65 games, 72.3% (one player: 52 games at 77%; the other two players 7-6 combined) | 45.7 (C), expects 50% | 77% | none |
+| Archaludon / Farigiraf / Mega Garchomp Z / Mega Golisopod / Politoed / Sneasler | 154 games, 50.0% (20 players) | 52.4 (C), expects 50.9% | 81% | none |
+| Ceruledge / Dragonite / Mega Gardevoir / Indeedee-F / Mega Lopunny / Sneasler | 55 games, 30.9% | 21.4 (D), expects 45.8% | 58% | not ready for top threats |
+| Basculegion / Mega Gardevoir / Mega Golisopod / Indeedee-F / Pelipper / Sneasler | 141 games, 34.0% | 24.5 (D+), expects 46.4% | 71% | major weak spot; partly ready |
+Lesson: a six's record can belong to one strong player; the score must rate the team, with player skill taken out.
+
+Decisions for Sim:
+1. What 100 means. Draft: "has everything winning teams have and no weak spots: the strongest kind of team in today's meta".
+2. Where teams land. Draft: a solid, typical tournament team about 80; the best-built teams 90+; a team missing a basic (no Mega,
+   a big shared weakness, not ready for the top threats) drops clearly (60s); a beginner team 30-50.
+3. How much each factor moves it: in proportion to its measured effect on real wins (one shared scale), never a guess.
+4. Team, not player: real records count only after player skill is taken out.
+5. Under the score, one small line: how it compares to today's tournament teams.
