@@ -448,6 +448,10 @@
 @A .ar-team .ar-empty .ar-acts{grid-column:1/-1;flex-direction:column;align-items:stretch;margin-top:16px;padding-left:6px}
 @A .ar-team .ar-empty>div{display:contents}
 @A .ar-team .ar-empty .ar-btn{white-space:normal;justify-content:flex-start;text-align:left}
+/* Shady Paw on an empty My Team (preview only, see app/preview-mascot.mjs): the drawing sits beside the line, no tile behind him */
+@A .ar-team .ar-empty.ar-haspaw{grid-template-columns:128px minmax(0,1fr);gap:16px;align-items:center}
+@A .ar-team .ar-empty .ar-paw{display:block;width:100%;height:auto;margin:0}
+@media (min-width:1001px){@A .ar-team .ar-empty.ar-haspaw{grid-template-columns:152px minmax(0,1fr)}}
 /* the sheet panel takes focus by script when it opens (the close button keeps its ring) */
 @A #lairSheet :is(.lspanel,.lsheet):focus{outline:none!important}
 @A #lairSheet:focus{outline:none!important}
