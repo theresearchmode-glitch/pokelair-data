@@ -42,6 +42,7 @@ CH.SS_MID = 80; CH.SS_K = 122;
 CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
 CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
 CH.wordOf = s => s == null ? '' : CH.WORDS.find(w => s >= w[0])[1];
+CH.wordOfL = L => ({A: 'Top tier', B: 'Tournament ready', C: 'Solid', D: 'Needs work', F: 'Missing a basic'})[String(L || '')[0]] || '';
 CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F'; // the band (colours, data-band)
 // Nov 9 (Sim chose: plus/minus on every letter, so players feel the difference inside a band): same ranking, finer labels.
 // Tested on later games: the top and bottom bands differ clearly; neighbouring steps differ by ~1-2 wins per 100 games, too small to

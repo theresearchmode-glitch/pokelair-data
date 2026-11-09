@@ -190,11 +190,16 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   /* the score: the big number is always what the letter comes from. With 30+ real games the letter comes from the record's win
      rate (one decimal, so 59.6% never reads as an A's "60%"); otherwise it is the grade out of 100 (Sim: "93, Grade A"). */
   let score = '';
-  if (G) { const why = `<button type="button" class="ar-link ar-why" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">Why ${esc(G.letter)}?</button>`;
+  if (G) { const why = `<button type="button" class="ar-link ar-why" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">${G.v === 2 ? 'Why this score?' : `Why ${esc(G.letter)}?`}</button>`;
     /* the grade is the hero (Sim, Nov 5): the big letter, then what it's based on in words, so a win rate is never read as a score */
     /* grade v2 (Nov 7, Sim): the letter, the expected win rate against today's field, and the rank among real teams with what
        it rests on (its own real games, or our estimate) */
-    score = `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis ar-gnum">${G.v === 2 ? `<b>${CH.rankShort(CH.rkOf(G))}</b><small class="ar-gsub">of tournament teams</small>` : `<b>${G.s}</b> / 100`}</span>${G.st && G.st.su && G.st.su.w === 'Low' ? '<small class="ar-gsub">Few real games back this mix yet, so it\'s a best guess</small>' : ''}${why}</div>`; }
+    /* Strength Score (Nov 9, Preview): a ring filled to the score in its band colour, the number inside, the band word under it,
+       what it means in real games, and the rank as small print. The old block stays for the old check (model not loaded). */
+    if (G.v === 2) { const sc = Math.round(G.s), col = CH.gcol(G.letter), C = 2 * Math.PI * 44, fill = Math.max(0, Math.min(100, G.s)) / 100 * C;
+      const ring = `<svg class="ar-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" class="ar-ringbg"/><circle cx="50" cy="50" r="44" class="ar-ringfg" style="stroke:${col}" stroke-dasharray="${fill.toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 50 50)"/></svg>`;
+      score = `<div class="ar-score ar-gscore ar-ss" role="group" aria-label="Strength Score ${sc} out of 100${G.partial ? ' so far' : ''}: ${esc(CH.wordOfL(G.letter))}"><span class="ar-glabel">Strength Score${G.partial ? ' so far' : ''}</span><div class="ar-ssrow"><div class="ar-ringw">${ring}<span class="ar-num ar-mp ar-ssn">${sc}</span></div><div class="ar-ssw"><b class="ar-ssword" style="color:${col}">${esc(CH.wordOfL(G.letter))}</b><span class="ar-ssline">Teams scoring like this win about ${Math.round(G.e)}% against today\u2019s tournament teams</span><small class="ar-gsub">${CH.pctTxt(G)}</small></div></div>${G.st && G.st.su && G.st.su.w === 'Low' ? '<small class="ar-gsub">Few real games back this mix yet, so it\'s a best guess</small>' : ''}${why}</div>`; }
+    else score = `<div class="ar-score ar-gscore"><span class="ar-glabel">Grade${G.partial ? ' so far' : ''}</span><span class="ar-num ar-mp ar-gletter">${esc(G.letter)}</span><span class="ar-basis ar-gnum">${G.v === 2 ? `<b>${CH.rankShort(CH.rkOf(G))}</b><small class="ar-gsub">of tournament teams</small>` : `<b>${G.s}</b> / 100`}</span>${G.st && G.st.su && G.st.su.w === 'Low' ? '<small class="ar-gsub">Few real games back this mix yet, so it\'s a best guess</small>' : ''}${why}</div>`; }
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
   if (RD) {

@@ -1046,3 +1046,16 @@
 @A .ar-mu .ar-trio{grid-template-columns:auto minmax(0,1fr);align-items:end;column-gap:24px}
 @A .ar-muline{display:block;text-align:right;font-size:var(--ar-fs-body,15px);line-height:1.5;color:var(--ar-ink-2);padding-bottom:4px}
 @A .arb-mu.ar-trio{grid-template-columns:auto minmax(0,1fr);align-items:end;column-gap:24px}
+/* Strength Score on My Team (Nov 9, Preview): ring + number, the band word, what it means, the rank small */
+@A .ar-ss .ar-ssrow{display:flex;align-items:center;gap:16px;margin-top:6px}
+@A .ar-ss .ar-ringw{position:relative;flex:none;width:120px;height:120px}
+@A .ar-ss .ar-ring{position:absolute;inset:0;width:100%;height:100%}
+@A .ar-ss .ar-ringbg{fill:none;stroke:var(--ar-rule);stroke-width:8}
+@A .ar-ss .ar-ringfg{fill:none;stroke-width:8;stroke-linecap:round}
+@A .ar-ss .ar-ssn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px!important;line-height:1;color:var(--ar-ink);padding-right:.06em}
+@A .ar-ss .ar-ssw{display:flex;flex-direction:column;gap:4px;min-width:0}
+@A .ar-ss .ar-ssword{font:italic 800 24px/1.15 var(--ar-display);font-synthesis:style}
+@A .ar-ss .ar-ssline{font:500 15px/1.5 var(--ar-body);color:var(--ar-ink);max-width:32ch}
+@A .ar-ss .ar-gsub{margin-top:0}
+@media (min-width:1001px){@A .ar-ss .ar-ringw{width:148px;height:148px}@A .ar-ss .ar-ssn{font-size:54px!important}@A .ar-ss .ar-ssword{font-size:26px}@A .ar-ss .ar-ssline{font-size:16px}}
+@media (max-width:420px){@A .ar-ss .ar-ringw{width:100px;height:100px}@A .ar-ss .ar-ssn{font-size:36px!important}@A .ar-ss .ar-ssword{font-size:20px}}
