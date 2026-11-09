@@ -10,6 +10,8 @@ makes it heavy, and a lighter option if one exists. Background computer time (a 
 
 ## How Sim likes work done
 - Preview before live: nothing goes to the live artifact without her explicit go (unless she says "publish when done" for that change).
+- Every Preview or live publish must carry the 345 sprite files (sp/*.webp) beside the page; check the artifact's file list
+  (Artifact list, scope files) before sending Sim a link (Nov 9: a Preview went out with no sprites).
 - Real data only, never remove functionality, be careful. Ask when unsure.
 - Lean usage: no helper agents unless she agrees, minimal screenshots.
 - She tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
