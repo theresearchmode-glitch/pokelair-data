@@ -176,9 +176,9 @@ CH.rankOfS = s => { const q = META.model && META.model.dist && META.model.dist.q
 /* Shown as a rank (Sim, Nov 8: "77 for a 9-1 team seems so low"): the 0-100 number is where the six ranks among real tournament
    teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
 CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
-/* Strength Score (Nov 9): a change shows in score points, "+7 · 76 → 83", and the band word when it changes */
+/* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
 CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
-  return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} \u00b7 ${r0} \u2192 ${r1}${w0 !== w1 ? ' \u00b7 ' + w1 : ''}`; };
+  return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };
 CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
 CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
