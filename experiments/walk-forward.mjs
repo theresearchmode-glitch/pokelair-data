@@ -33,7 +33,7 @@ for (const cut of cuts) { const to = day(cut, 7), mt = DIR + `model-${cut}.json`
   weeks.push({cut, to, games: B.later, ll: r.ll, pick: r.pick, calGap: r.calGap, letters: r.letters, swaps: r.swaps, top});
   console.log(`  ${B.later} games · ll ${r.ll} · pick ${r.pick}% · calibration gap ${r.calGap} pts${top ? ` · top-4 teams B or better ${top.good}/${top.n}` : ''}`); }
 // pool the weeks: one prediction file over every scored game (for compare.mjs), and the pooled numbers
-const P = {cuts, ev: [], y: [], rows: {}};
+const P = {cuts, cutDate: cuts[0] + ' to ' + day(cuts[cuts.length - 1], 7) + ' (weekly)', ev: [], y: [], rows: {}};
 for (const w of weeks) { const p = JSON.parse(fs.readFileSync(DIR + `pred-${w.cut}.json`, 'utf8')); P.ev.push(...p.ev.map(e => w.cut + ':' + e)); P.y.push(...p.y);
   for (const [k, v] of Object.entries(p.rows)) (P.rows[k] = P.rows[k] || []).push(...v); }
 fs.writeFileSync(DIR + 'pred.json', JSON.stringify(P));

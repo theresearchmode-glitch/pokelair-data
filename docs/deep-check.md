@@ -409,3 +409,6 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   fails below baseline - 2 SE (61.9%) / 60%, or log-loss +0.005. Can fail: scrambled strengths -> 1/188 FAIL. Can't see: small
   changes (use walk-forward + compare.mjs). Log-loss alone barely moved on the scrambled grade (own record soaks it up).
 - golden top-cut: 60% floor on 436 teams. Open: weekly settings re-check (step 4).
+- **Decision (rule's first use, Nov 9):** the weekly re-check's full retune picked Pokémon shrink 3 over the locked 10 on
+  validation games. Walk-forward, 18,618 later games in 221 tournaments: log-loss B − A +0.00014 (95% range −0.00029 to
+  +0.00051), pick +0.14 pts (−0.17 to +0.45) → NO DIFFERENCE. Locked 10 kept; model-settings.json unchanged.
