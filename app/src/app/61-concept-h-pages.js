@@ -77,11 +77,11 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
     const h = bl.querySelector(':scope > .head h2, :scope > h2'); if (h) h.hidden = true; } });
 // ---------- Ratings: the hot list ----------
 function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; const top = rows.slice(0, PHONE() ? 16 : 20);
-  const tour = x => (x.r.src && x.r.src.tour) || null, line = x => { const t = tour(x); return t ? `${pctFmt(+t[0])} of teams · ${winSpan(+t[1])} wins` : `rated ${RS(x.r.total)}`; },
+  const tour = x => (x.r.src && x.r.src.tour) || null, /* plain words (Nov 9): one number per row; the win rate waits behind Details with the games */ line = x => { const t = tour(x); return t ? `${pctFmt(+t[0])} of teams<span class="dbsec"> · ${winSpan(+t[1])} wins</span>` : `rated ${RS(x.r.total)}`; },
     /* the data behind the line (trust pass): the games its win rate comes from, flagged when few */
     bas = x => { const t = tour(x); return t && +t[2] > 0 ? CH.basis(t[2], 'game', 'games', {short: true}) : ''; };
   // the top two take their own type colours (a blend for dual types), darkened a little so the white text stays readable
-  const big = (x, c) => `<button type="button" class="chhot ${c} chhalf typed" style="--t1:${TC[x.p.t[0]] || '#4E5068'};--t2:${TC[x.p.t[1] || x.p.t[0]] || TC[x.p.t[0]] || '#4E5068'}" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${RS(x.r.total)}"><span class="n"${bandAt(x.r.total)}>${RS(x.r.total)}</span><span class="nm">${esc(x.p.d)}</span><span class="st">${rankTxt(x.p) ? `<b class="chrk">${rankTxt(x.p, 'cap')}</b><br>` : ''}${line(x).replace(' · ', '<br>')}<span class="dbsec"><br>${bas(x)}</span></span>${sprite(x.p) || ''}</button>`;
+  const big = (x, c) => `<button type="button" class="chhot ${c} chhalf typed" style="--t1:${TC[x.p.t[0]] || '#4E5068'};--t2:${TC[x.p.t[1] || x.p.t[0]] || TC[x.p.t[0]] || '#4E5068'}" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${RS(x.r.total)}"><span class="n"${bandAt(x.r.total)}>${RS(x.r.total)}</span><span class="nm">${esc(x.p.d)}</span><span class="st dbsec">${rankTxt(x.p) ? `<b class="chrk">${rankTxt(x.p, 'cap')}</b><br>` : ''}${line(x).replace(' · ', '<br>')}<br>${bas(x)}</span>${sprite(x.p) || ''}</button>`;
   /* the rows: % of teams as a small bar against the most used of the list; the games count waits behind "Details" (design B) */
   const umax = Math.max(...top.map(x => { const t = tour(x); return t ? +t[0] || 0 : 0; })), ub = x => { const t = tour(x); return t ? ubar(+t[0], umax) : ''; };
   /* tier chips in their band colour, bands on the shown scale (Nov 2: the S head said "80+", the old internal number) */

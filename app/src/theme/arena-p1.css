@@ -1037,3 +1037,7 @@
 @A .settip-t{font-size:15px;line-height:1.5}
 /* plus/minus letters (Nov 9): the slanted "+" / "−" overhung the right margin by ~7px; pull the letter in so it lines up with "Top 12%" */
 @A .ar-gletter{padding-right:.06em}
+
+/* Matchups box (Nov 9, plain words): one number, then a short line naming what's left */
+@A .ar-mu .ar-trio{grid-template-columns:auto minmax(0,1fr);align-items:end;column-gap:24px}
+@A .ar-muline{display:block;text-align:right;font-size:var(--ar-fs-body,15px);line-height:1.5;color:var(--ar-ink-2);padding-bottom:4px}

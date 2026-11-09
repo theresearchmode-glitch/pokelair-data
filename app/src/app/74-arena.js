@@ -196,7 +196,9 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   /* the stats under the title: the record (when the grade comes from it), our check, legality */
   let stats = '';
   if (RD) {
-    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready for the top ${hd ? hd.n : 30}</span></div>`, hd ? AR.cell(hd.x, 'handled') : '', c[1] ? AR.cell(c[1], 'shaky') : '', c[0] ? AR.cell(c[0], 'no answer') : ''].filter(Boolean);
+    /* plain words (Nov 9): one number here; the counts per level are in the Matchups section below. A short line names what's left. */
+    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${RD.score}%</span><span class="ar-unit">ready for the top ${hd ? hd.n : 30}</span></div>`];
+    const left = (c[0] || 0) + (c[1] || 0), muLine = left ? `${c[0] ? `${c[0]} with no answer${c[1] ? ', ' : ''}` : ''}${c[1] ? `${c[1]} shaky` : ''}` : 'Every top threat has an answer';
     const rec = '';
     /* matchups get their own verdict (Sim, Nov 7: "98 and 6 shaky?"): the grade says how strong the team is, this says what can
        still beat it, named, worst first, with a jump to Threats */
@@ -204,7 +206,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* what's behind the grade (Nov 7, Sim): the parts that add up to it first, then readiness against the top threats */
     /* one place to learn about the grade (Sim, Nov 7): "Why A?" under the letter. The breakdown that used to sit here lives there */
     const chk = `<div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3>
-      <div class="ar-trio">${cells.join('')}</div>
+      <div class="ar-trio">${cells.join('')}<span class="ar-muline">${muLine}</span></div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;

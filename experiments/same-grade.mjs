@@ -24,7 +24,7 @@ const R = [];
 for (const t of picks) R.push({name: t.name, ev: t.ev, my: await myTeam(JSON.stringify(t.slots))});
 // Saved Teams page
 await ev(`setView('teams');1`); await wait(3000);
-const saved = JSON.parse(await ev(`(()=>{const o={};for(const t of S.teams){/* the row's own grade badge (.svstats), found from its Compare button; [data-load] also matches My Team's team switcher */const c=document.querySelector('[data-cmp="'+t.id+'"]');let el=c;for(let i=0;el&&i<10;i++){el=el.parentElement;const st=el&&el.querySelector('.svstats');if(st){const m=st.textContent.match(${RX});o[t.name]=m?m[1]+' '+m[2]:'(no grade: '+st.textContent.slice(0,40)+')';break}}}return JSON.stringify(o)})()`));
+const saved = JSON.parse(await ev(`(()=>{const o={};for(const t of S.teams){/* the row's own grade badge (.svstats), found from its Compare button; [data-load] also matches My Team's team switcher */const c=document.querySelector('[data-cmp="'+t.id+'"]');let el=c;for(let i=0;el&&i<10;i++){el=el.parentElement;const st=el&&el.querySelector('.svstats');if(st){const g=st.querySelector('.npgb'),m=g?((g.querySelector('.npgl')||{}).textContent+' '+g.getAttribute('title')).match(${RX}):st.textContent.match(${RX});o[t.name]=m?m[1]+' '+m[2]:'(no grade: '+st.textContent.slice(0,40)+')';break}}}return JSON.stringify(o)})()`));
 // Compare (pairs of saved teams) and an event's own Load team
 for (let i = 0; i < R.length; i++) { const A = picks[i], Bt = picks[(i + 1) % picks.length];
   await ev(`ui.cx.A='s:${A.id}';ui.cx.B='s:${Bt.id}';ui.cx.pick=null;setView('compare');renderCompare&&renderCompare();1`); await wait(3000);
