@@ -364,3 +364,15 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   to change. (b) "75% of Limitless top-4 teams grade B+": 65%. 10 of the 19 low ones contain a Pokémon seen on under 1,500
   team-games (new Megas: Drampa, Scovillain, Chandelure, Altaria; Araquanid, Floette-Eternal), vs 7 of 35 of the B+ ones.
   Likely cause to test next: thin-data Pokémon are pulled toward average. Open problem on the grade, so Phase 2 stays open.
+
+## Nov 9 (later): Sim's reports, thin-data check, Trick Room check
+- Golden case "0 Megas" changed (Sim: "do what you think is best"): the build must hold no Mega and grade below the 1-Mega build. 9/10 pass;
+  the open one is top-4 online teams B+ (65% vs 75%).
+- Thin-data teams (a Pokémon with <150 earlier team-games): on later games the grade points the right way but is too timid
+  (needs ~1.5x bigger edges; 95% range 1.15-2.1; both halves). Not caused by matchups, own record, untried-pair caution or sets.
+  The extra evidence pull (n/(n+1000)) is part of it: removing it (EVID_K=0) improves later-game log-loss by 0.0009 (95%: 0.0002-0.0016,
+  both halves, 54/88 events) and lines letters up better; the timidity only drops to ~1.45x. Not shipped: full-model checks pending.
+- Trick Room without 2 slow teammates (Sim: Farigiraf suggested to fast d7): tested as a team factor. Later games say NO: it made
+  predictions worse (+0.0005 log-loss, 95% +0.0002..+0.0009). Farigiraf-TR teams with <2 slow teammates won 49.7% later vs 47.0% the grade
+  expected (2+ slow: 51.1% vs 49.5%). Off by default (TR_FEAT=1). Farigiraf on fast teams is mostly Armor Tail (blocks Fake Out/priority).
+- Fixed (branch, not live): Load team on Full teams loads with Undo (the in-row question was missed); lock button on Your Six cards.
