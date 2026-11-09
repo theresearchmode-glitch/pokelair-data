@@ -1,0 +1,31 @@
+name: Promote to live
+# Protect the live site (Sim, Nov 9, "Process fixes" step 2). The live page's data refresh (a scheduled task, ~6:52 AM New York)
+# reads the data files from the `live` branch, not from main. This workflow moves `live` to a main commit ONLY after the full
+# test run ("Test NastyPlot page": page tests, threat/lead/grade checks and the never-get-worse accuracy gate) passed on exactly
+# that commit. If the tests fail, `live` stays on the last version that passed: players keep yesterday's data, and GitHub
+# emails the owner about the failed test run. (Nov 9: tests went red at 11:42 UTC and the refresh copied the new data at 11:52.)
+on:
+  workflow_run:
+    workflows: ["Test NastyPlot page"]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  promote:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Move live to the tested commit (only forward)
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          git fetch origin live || true
+          # never move live backwards: only if the tested commit is newer than (contains) what live points to
+          if git rev-parse --verify -q origin/live >/dev/null && ! git merge-base --is-ancestor origin/live "$SHA"; then
+            echo "live is already at a newer tested commit; nothing to do"; exit 0; fi
+          git push origin "$SHA:refs/heads/live"
+          echo "live -> $SHA"
