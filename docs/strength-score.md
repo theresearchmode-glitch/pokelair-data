@@ -191,3 +191,9 @@ different; 5 points apart are not always (80-84 vs 85-89 overlap). Letters shoul
   for 20.8%. Today's grade on the same models and teams: typical 14.6 (90% under 34.2, biggest 56.6), letter changed for 60.4%.
   The rank-based grade swings because a small strength change moves a team past many others; the score moves only as much as its win
   chance does. About 4× steadier. (Own teams also keep the 1.5-point letter buffer.)
+- Broken teams (broken-teams.mjs, 30 strong real teams, median score 88.5): removing the Mega −23.7 score points (win −19.4 vs real
+  −18.2 ✓; strong teams land ~65); Protect on 2 or fewer −5.4 (−4.4 vs real −6.8 ✓); spread −1.3 (−1.1 vs −1.5 ✓); Intimidate −0.2
+  (vs +0.2 ✓); speed control −5.6 (−4.6 vs real +0.7 ✗ too harsh); turn-1 support −2.7 (−2.2 vs +2.5, a little harsh). The speed
+  control gap comes from the team model (swapping Tailwind/Trick Room for another move makes an unusual set), the same as today's grade;
+  logged as a known issue for its own fix after the Strength Score. Correction: "no Mega lands in the 50s" is for typical teams;
+  strong teams without a Mega land about 65.
