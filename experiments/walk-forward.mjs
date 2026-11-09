@@ -42,7 +42,7 @@ for (const cut of cuts) { const to = day(cut, 7), mt = DIR + `model-${cut}.json`
   const B = JSON.parse(fs.readFileSync(DIR + `board-${cut}.json`, 'utf8')), r = B.rows[ROW];
   let top = null; if (process.env.WF_TOPCUT !== '0') { const o = run(['experiments/golden.mjs'], {GOLDEN_FROM: cut, GOLDEN_TO: to, GOLDEN_MODEL: mt, GOLDEN_TOPCUT_ONLY: '1'}); const m = o.match(/TOPCUT (\{.*\})/); top = m ? JSON.parse(m[1]) : null; }
   weeks.push({cut, to, games: B.later, ll: r.ll, pick: r.pick, calGap: r.calGap, letters: r.letters, swaps: r.swaps, top});
-  console.log(`  ${B.later} games · ll ${r.ll} · pick ${r.pick}% · calibration gap ${r.calGap} pts${top ? ` · top-4 teams B or better ${top.good}/${top.n}` : ''}`); }
+  console.log(`  ${B.later} games · ll ${r.ll} · pick ${r.pick}% · calibration gap ${r.calGap} pts${top ? ` · top-4 teams 80+ ${top.good}/${top.n}` : ''}`); }
 // pool the weeks: one prediction file over every scored game (for compare.mjs), and the pooled numbers
 const P = {cuts, cutDate: cuts[0] + ' to ' + day(cuts[cuts.length - 1], 7) + ' (weekly)', ev: [], y: [], rows: {}};
 for (const w of weeks) { const p = JSON.parse(fs.readFileSync(DIR + `pred-${w.cut}.json`, 'utf8')); P.ev.push(...p.ev.map(e => w.cut + ':' + e)); P.y.push(...p.y);
@@ -61,5 +61,5 @@ const S = {tag, made: new Date().toISOString(), row: ROW, cuts, games: p.length,
 fs.writeFileSync(DIR + 'summary.json', JSON.stringify(S, null, 1));
 console.log(`\n${tag}: ${p.length} later games over ${cuts.length} weeks · log-loss ${S.ll} (coin flip 0.6931) · higher grade wins ${S.pick}% · calibration gap ${S.calGap} pts`);
 console.log(`  calibration: ${cal.map(c => `said ${c.said}% → won ${c.won}% (${c.n})`).join(' · ')}`);
-if (S.topCut) console.log(`  top-4 teams graded B or better before their event: ${tg} of ${tn} (${Math.round(tg / tn * 100)}%)`);
+if (S.topCut) console.log(`  top-4 teams scoring 80+ (Tournament ready) before their event: ${tg} of ${tn} (${Math.round(tg / tn * 100)}%)`);
 console.log(`  saved ${DIR}summary.json and pred.json`);

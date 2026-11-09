@@ -61,7 +61,7 @@ Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.
 // GOLDEN_DUMP=<file>: write each top-cut team's grade (sheet and default sets) and event, for looking into failures
 if (process.env.GOLDEN_DUMP) fs.writeFileSync(process.env.GOLDEN_DUMP, JSON.stringify(R.top));
 // GOLDEN_TOPCUT_ONLY=1 (walk-forward): print the top-cut tally as one JSON line and stop
-if (process.env.GOLDEN_TOPCUT_ONLY === '1') { const T = R.top.filter(t => !offFormat(t.ev)), n = T.length, good = T.filter(t => t.g >= 70).length;
+if (process.env.GOLDEN_TOPCUT_ONLY === '1') { const T = R.top.filter(t => !offFormat(t.ev)), n = T.length, good = T.filter(t => t.g >= 80).length;
   console.log('TOPCUT ' + JSON.stringify({n, good, share: n ? +(good / n).toFixed(4) : null, median: n ? T.map(t => t.g).sort((a, c) => a - c)[n >> 1] : null}));
   await b.close(); fs.unlinkSync(page); process.exit(0); }
 // 4: suggestions on strong real teams
@@ -122,11 +122,11 @@ await b.close(); fs.unlinkSync(page);
 // ---- verdicts
 const C = [], add = (name, pass, detail) => C.push({name, pass, detail});
 R.top = R.top.filter(t => !offFormat(t.ev)); // themed cups (MonoRegion…) are left out of the data, so out of this check too
-{ const n = R.top.length, good = R.top.filter(t => t.g >= 70).length, med = R.top.map(t => t.g).sort((a, c) => a - c)[n >> 1];
+{ const n = R.top.length, good = R.top.filter(t => t.g >= 80).length, med = R.top.map(t => t.g).sort((a, c) => a - c)[n >> 1];
   /* Nov 9 (Sim, Accuracy Lab): the 75% bar was set on a number that partly counted each team's own wins (the shipped model has
      seen these games). Here: a floor only, twice chance; the real comparison is experiments/accuracy-gate.mjs (forward, vs the
      approved baseline). */
-  add('top-cut teams, graded with their own team sheets, grade B or better (60%+ of them, twice chance; the forward gate is accuracy-gate.mjs)', n >= 10 && good / n >= .6, `${good} of ${n} graded 70+ (${Math.round(good / n * 100)}%; ${R.top.filter(t => t.sheet).length} with their sheet; with default sets instead: ${R.top.filter(t => t.gDef >= 70).length}), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
+  add('top-cut teams, graded with their own team sheets, scoring 80+ (Tournament ready; Strength Score, Sim Nov 9) (60%+ of them, twice chance; the forward gate is accuracy-gate.mjs)', n >= 10 && good / n >= .6, `${good} of ${n} scored 80+ (${Math.round(good / n * 100)}%; ${R.top.filter(t => t.sheet).length} with their sheet; with default sets instead: ${R.top.filter(t => t.gDef >= 70).length}), median ${med}; lowest: ${R.top.slice().sort((a, c) => a.g - c.g).slice(0, 3).map(t => `${t.g} (${t.mons.join(', ')})`).join(' · ')}`); }
 add('six of the weakest Pokémon grade F', R.weak.g != null && R.weak.g < 10, `${R.weak.g} (${R.weak.mons.join(', ')})`);
 add('two of the same item reads as not legal', R.illegal.flagged, `${R.illegal.clause} item clash${R.illegal.clause === 1 ? '' : 'es'} found`);
 { const s = R.sugg.filter(x => !x.err), worse = s.reduce((a, x) => a + x.worse, 0), tot = s.reduce((a, x) => a + x.n, 0);

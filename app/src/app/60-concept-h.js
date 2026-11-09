@@ -197,7 +197,11 @@ CH.gradeSumS = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
   const {nm, ts, ra} = CH.gradeParts(G, RD);
   return `${G.s} = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} strength` : ''}${nm ? ` − ${CH.GMISS * nm} for ${nm} missed check${nm === 1 ? '' : 's'}` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}`; };
 /* grade letters in the rating band colours (A = the A colour, ...), one source: LTIERS */
-CH.gcol = L => { L = String(L || '')[0]; const T = typeof LTIERS !== 'undefined' ? LTIERS.find(t => t.k === L) : null; return T ? T.c : '#8a90a6'; };
+/* band colours follow the meaning (Sim, Nov 9): blue and purple for the top bands, neutral for Solid, amber for Needs work, muted
+   grey-brown for Missing a basic; never red (red is for opponents). Hex, so the share image (canvas) can use them; each is 3:1+ on
+   the light and dark page (large text). */
+CH.GCOL = {A: '#0078BF', B: '#8b4fe0', C: '#77808f', D: '#b8740a', F: '#8d7b68'};
+CH.gcol = L => CH.GCOL[String(L || '')[0]] || '#8a90a6';
 /* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
 CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
 CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
