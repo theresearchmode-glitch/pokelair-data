@@ -252,6 +252,22 @@ const PLANS = [
   ["m3-ok","Sim says go",""],
   ["m3-live","Live",""]]}
 ]},
+{id:"matchups", short:"Matchups", name:"What we learned about matchups and synergy", about:"Nov 9 (Sim): \"we have learned so much from our findings, it would be a waste to not use it on improving battle and also looking into if it can improve anything else on the site.\" Measured: how your Pok\u00e9mon line up against THIS opponent predicts the game (38,513 tournament games and 3,980 later ladder games, both beyond chance; Battle-style pick 56.7% \u2192 57.5%). Averaged over the whole meta it didn't make a better grade. Synergy inside a four: unknown (too little data). Details: docs/deep-check.md.", phases:[
+ {id:"s1", name:"Suggestions: honest labels first", goal:"A swap the grade can't tell from a coin flip is shown as a Different option, not an upgrade.", steps:[
+  ["s1-rule","Pin down the coin-flip rule","Tested on real results before building."],
+  ["s1-build","Build on the Preview","Coin-flip swaps shown as Different option, without grade points."],
+  ["s1-check","Check on real results","Suggestions still shown as upgrades must show a real gain (sugg-real.mjs)."],
+  ["s1-live","Sim's OK, then live",""]]},
+ {id:"s2", name:"Battle: matchups against this opponent", goal:"Battle predictions and which four to bring use how your Pok\u00e9mon really do against the opponent's.", steps:[
+  ["s2-plan","Plan with Sim","What changes on the Battle page, and how it's shown."],
+  ["s2-test","Test on later games","Win chance for one game, on games the model never saw; keep only if better beyond chance."],
+  ["s2-four","Which four to bring","Does suggesting the best four against this opponent match what winners brought? Ladder replays."],
+  ["s2-live","Sim's OK, then live",""]]},
+ {id:"s3", name:"Anything else it can improve", steps:[
+  ["s3-list","List every place matchups are used","Threat checks, Test run, Build for Me, archetypes."],
+  ["s3-synergy","Re-test synergy inside the four","When the ladder replays have grown enough to tell."],
+  ["s3-checks","Ideas from the expert videos","Check in the code: physical/special mix, 3+ of one type, one-win-condition teams."]]}
+]},
 {id:"launch", short:"Launch", name:"Ready for the January 2027 launch", about:"Everything besides the public website itself (on hold until Sim says).", phases:[
  {id:"l1", name:"Before launch", steps:[
   ["l1-health","Daily health check","The daily data job reports problems on its own."],
@@ -277,7 +293,7 @@ const PLANS = [
   ["i-twochange","Suggestions miss two-change paths (checked: not real)","Nov 9: the 98 team was built with 1 Mega; Sim's setting is 2 Megas. With her setting d7's suggestions already offer the best options (Farigiraf 96, Whimsicott 93, Garchomp 93); the best two-change plan is 92."],
   ["i-tr","Trick Room may be underrated (check on sealed data)","Nov 8 structure check: Trick Room teams won +2.2 pts more than the grade expected (range +0.4 to +3.9; one of 7 roles tested). Written down before the sealed games arrive; if it holds there, the grade gets a Trick Room adjustment."],
   ["i-high","Trust well-known teams a bit more","Nov 8: games between High-confidence teams are predicted better than the grade claims (1.38\u00d7). Re-check on sealed data."],
-  ["i-battle","Learned matchups in Battle predictions","+0.9 pts for one specific game, just short of significant. Re-check on sealed data."],
+  ["i-battle","Learned matchups in Battle predictions","Now a plan: see \"What we learned about matchups and synergy\" (Nov 9)."],
   ["i-mascot","Our own NastyPlot mascot (separate chat)","Nov 9 (Sim): Darkrai is not a mascot, just a Pokémon we like on empty and loading screens. Creating a real mascot is its own process; Sim will do it in a separate chat later, if the brand takes off."],
   ["i-domain","Buy the NastyPlot domain sooner","Nov 9 (Sim): talk about buying it early so the public site (hosting, HTTPS, a data source that doesn't need Claude-only features, privacy pages) can be built and tested on it well before January."],
   ["i-ladder","Showdown ladder games","Tested Nov 8: no gain for the grade; revisit for Reg M-D when tournament data is thin."]]}
