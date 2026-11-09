@@ -1,0 +1,50 @@
+name: Watchdog
+# Daily summary of every job that keeps the live site right (watchdog.mjs; Sim, Nov 9: "silent failures are the worst").
+# Runs after the morning refresh. Red when a job failed OR silently stopped running; opens one "NastyPlot watchdog" issue
+# (GitHub emails the owner), refreshes it while red (a comment only when the problems change), closes it once all green.
+on:
+  schedule:
+    - cron: '47 12 * * *'
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: read
+  issues: write
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Check every job
+        id: watch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WATCHDOG_REPORT: ${{ runner.temp }}/watchdog.md
+        run: node watchdog.mjs
+      - name: NastyPlot watchdog issue
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          WATCHDOG_REPORT: ${{ runner.temp }}/watchdog.md
+          OUTCOME: ${{ steps.watch.outcome }}
+        with:
+          script: |
+            const fs = require('fs'), title = 'NastyPlot watchdog';
+            let report = ''; try { report = fs.readFileSync(process.env.WATCHDOG_REPORT, 'utf8'); } catch (e) {}
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const open = (await github.paginate(github.rest.issues.listForRepo, {...context.repo, state: 'open', per_page: 100})).filter(i => !i.pull_request && i.title === title);
+            const issue = open[0];
+            if (process.env.OUTCOME === 'success') {
+              if (issue) { await github.rest.issues.createComment({...context.repo, issue_number: issue.number, body: `All green again. ${run}`});
+                await github.rest.issues.update({...context.repo, issue_number: issue.number, state: 'closed', state_reason: 'completed'}); }
+              return; }
+            const body = `${report || 'The watchdog itself could not run; see the run log.'}\n\nLast checked: ${run}`;
+            const list = b => (String(b || '').match(/^- .*$/gm) || []).join('\n');
+            if (!issue) { await github.rest.issues.create({...context.repo, title, body}); return; }
+            const changed = list(issue.body) !== list(body);
+            await github.rest.issues.update({...context.repo, issue_number: issue.number, body});
+            if (changed) await github.rest.issues.createComment({...context.repo, issue_number: issue.number, body: `The list of problems changed. ${run}`});
