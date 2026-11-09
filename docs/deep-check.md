@@ -555,3 +555,9 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
 - So the pair that matters is the one on the field together, not the one that merely shares a team: Sim's point holds. The effect
   is small next to player rating, and a lead pair is chosen after seeing the opponent, so part of its value may be "a good choice
   for this matchup" rather than the six's strength. Not yet used anywhere on the site.
+- Do players always lead with the same two? (measured, out/replays.json; Sim: "is that really the case or just an assumption?")
+  171 sixes with 20+ ladder games (13,469 games): the six's most common lead pair opens only 39% of its games at the median
+  (quarter below 29%, quarter above 52%; 42% overall). Only 10 of 171 lead with one pair 80%+ of the time. Median 3 different
+  leads used in 10%+ of games, 8 of the 15 possible pairs ever used. Caveat: a six can be played by several players, which spreads
+  its leads; ladder only (tournament data has no leads). Mostly an assumption: players change leads by matchup, so how well many
+  of a six's pairs work together matters.
