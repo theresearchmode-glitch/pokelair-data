@@ -2,7 +2,7 @@ name: Test NastyPlot page
 on:
   push:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', '.github/workflows/test.yml']
+    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml']
   workflow_dispatch:
 # Changes land as a few commits in a row; only the newest one is tested. An older run still going is cancelled
 # (cancelled runs send no failure email), so a half-uploaded change can't trigger a false alarm.
@@ -24,32 +24,52 @@ jobs:
       # Showdown's Champions mod with Reg M-C data (pinned GitHub commit; npm 0.11.11 stops at Reg M-B): build it once
       - run: cd node_modules/pokemon-showdown && node build
       - run: node app/test/run.mjs
+        if: ${{ !cancelled() }}
       - run: node experiments/replays-test.mjs
+        if: ${{ !cancelled() }}
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
       - run: node experiments/speed-check.mjs
+        if: ${{ !cancelled() }}
       - run: node experiments/calc-check.mjs 2000
+        if: ${{ !cancelled() }}
       # legality: species / items / stones on the page vs the Reg M-C lists (Watchog settled Oct 28: legal, listed as Patrat)
       - run: node experiments/legality-check.mjs
+        if: ${{ !cancelled() }}
       # threat preparation: 42 hand-checked verdicts + damage vs Smogon, support threats, real teams (user's team, regionals)
       - run: node experiments/threat-check.mjs
+        if: ${{ !cancelled() }}
       # game-mechanics completeness: every VGC field (accuracy, priority, targets, flags, secondaries, weights…) is in the
       # generated data, matches Showdown's champions mod, and is read by the engine (fails on any gap that changes answers)
       - run: node experiments/fields-audit.mjs
+        if: ${{ !cancelled() }}
       # suggestions close the team's own game-plan gaps (e.g. rain for Swift Swim) and never make the game plan worse
       - run: node experiments/suggest-gaps.mjs
+        if: ${{ !cancelled() }}
       # suggestions audit (Nov 7): no weather nothing uses, no second weather or terrain, no attacker its own weather weakens,
       # no Psychic Terrain on the team's own priority, no Trick Room without slow attackers, no loops when Apply is tapped again and again
       - run: node experiments/suggest-audit.mjs 30 5
+        if: ${{ !cancelled() }}
       # Build for me / Build around it: no clashing weathers, weather users with their setter, no Scarf under own Trick Room, speed control
       - run: node experiments/build-logic.mjs
+        if: ${{ !cancelled() }}
       # Battle leads (no two weather or terrain setters, no Psychic Terrain on own Fake Out, no Trick Room + Tailwind) and threat verdicts match real sets
       - run: node experiments/lead-logic.mjs
+        if: ${{ !cancelled() }}
       # several devices on one account: live updates, an older device never overwrites a newer box, box links (Nov 7)
       - run: node experiments/sync-logic.mjs
+        if: ${{ !cancelled() }}
       # typing in Add a Pokémon while the account sync is busy: the box keeps what you typed; old echoes of your own saves are ignored (Nov 7)
       - run: node experiments/typing-sync.mjs
+        if: ${{ !cancelled() }}
       # "Updated from your other device" only when another device really changed something; no back-and-forth saves (Nov 7)
       - run: node experiments/sync-quiet.mjs
+        if: ${{ !cancelled() }}
+      # Phase 4 (Nov 9): the known-answer teams (top-4 teams with their own sheets, Build for Me, Build around, boxes, Apply = promised)
+      - run: node experiments/golden.mjs
+        if: ${{ !cancelled() }}
+      # Phase 4 (Nov 9): the same team shows the same grade on My Team, Saved Teams, Compare, an event's Load team and Build for Me
+      - run: node experiments/same-grade.mjs
+        if: ${{ !cancelled() }}
       - uses: actions/upload-artifact@v4
         with:
           name: page
