@@ -589,3 +589,16 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   So (measured): how a team lines up against the specific opponent matters; picking the best four by adding up single
   Pokémon matchups adds nothing beyond that. Limits: tournament data doesn't record which four were brought; this "best four"
   ignores synergy inside the four (it just adds single matchups) and sets/moves.
+- Toolbox test on the ladder (measured, experiments/four-synergy.mjs; 13,265 single games where both brought fours are recorded;
+  learned on the first 9,285, judged on the last 3,980): base (rating + brought Pokémon + lead Pokémon) log-loss 0.71237.
+  + lead pair: +0.00003 (-0.00021 to +0.00026), no difference. + pairs inside the brought four (531 values): +0.00028 (-0.00061
+  to +0.00118), no difference. + my brought Pokémon vs theirs (828 values): -0.00110 (-0.00210 to -0.00004), BETTER beyond
+  chance. All three: -0.00070, no difference (too many values for 9,285 games).
+  CORRECTION to the lead-pair result above: once the base knows which four were brought, the lead pair adds nothing; its earlier
+  gain was mostly about which Pokémon were brought, not the pair on the field.
+- Consistent across both data sets: how your Pokémon line up against THIS opponent's Pokémon predicts the game. Synergy inside
+  the four: no measurable effect with this much data (unknown, not "no effect").
+- Same idea in the site's exact scoreboard (site-board.mjs, 6,270 later tournament games): site today picks 56.68% (ll 0.68008);
+  + learned matchups against this opponent 57.50% (ll 0.67883), better for predicting one game; learned matchups against the whole
+  field, as a grade, 55.85% (ll 0.68111), worse. So matchups help game by game; averaged over the whole meta they don't make a
+  better team grade yet.
