@@ -449,3 +449,13 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
 - Sim reviewed the teams: "the teams look good to me". Deep Check d5-build closed.
 - Seen in passing for the suggestions step: suggested teams' grade says 55.5% where their real neighbours won 52% (+3.5 pts,
   n=10, small sample) — check this first in d5-sugg.
+
+### Nov 9 (night): do suggestions help? (measured, experiments/sugg-real.mjs, 400 random real teams with 10+ games)
+- Independent of the grade: real win rate of the closest real teams (5 of 6 Pokémon), after minus before, leaving the starting
+  team out of both sides (a one-swap suggestion would otherwise count the starting team, with its own wins, as its neighbour).
+- Suggestion 1: +1.1 pts (95% +0.3 to +2.1, 162 pairs with 30+ games on both sides); Suggestions 1-3: +1.0 (+0.4 to +1.7, 345).
+- By starting grade (fair split, not picked on the outcome): under 60 +2.9 (+1.6 to +4.3, n 86); 60-85 -0.4 (-1.7 to +0.9, n 68:
+  unknown, no measurable gain) while Suggestion 1 shows a median +17 grade points there; 85+ only 8 teams (too few).
+  (Splitting by the "before" win rate is biased by regression to the mean; not used.)
+- Open problem, d5-sugg stays open: for mid-strength teams suggestions show big grade gains that real results don't back.
+  My guess, not tested: picking the best of hundreds of swaps by the grade picks the swaps the grade overrates (as with Build for Me).
