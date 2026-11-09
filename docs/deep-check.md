@@ -501,3 +501,12 @@ D3 88, d4 72, Doubles 1 72, Doubles 2 74 (same as the approved preview). Daily m
   the chance from both players' skills (joint fit of skill + each Pokémon, all games). Raw numbers reproduced exactly. Skill-
   adjusted Suggestion 1 change: under 60 +2.1 (+1.2 to +3.0), 60-85 -0.1 (-1.0 to +0.7), 85+ -0.9 (7 teams). Not a skill
   artefact: suggestions really do help weak teams and show no gain for 60-85. Cause still unknown.
+- Breaking a proven pair tested (measured, experiments/sugg-pairs.mjs, 64 one-swap Suggestion 1s): swaps that give up more pair
+  support (real sixes running the removed Pokémon with a kept one, minus the added one's) did no worse; 60-85: +1.2 (-0.6 to
+  +3.2, 18) vs 0.0 (-1.9 to +2.3, 15). Not supported.
+- One change vs two (measured, same rows; most Suggestion 1s change two Pokémon): 60-85 one swap real +0.7 (-0.6 to +2.2, 33;
+  promised +2.7), two swaps -1.2 (-3.1 to +0.6, 35; promised +3.6). Under 60: one swap +1.3 (24), two swaps +3.6 (60). Ranges
+  overlap; small groups. Possible lead (two-change suggestions for mid teams), not established.
+- Summary so far: the cause of the 60-85 gap is not found. Ruled out: rank-1 only, matchups/own record, thin data, diminishing
+  returns, player skill, what is removed alone, breaking a proven pair. Limit: the real-side measure (closest real teams) is noisy
+  and shrunk, so smaller causes can't be told apart with 68 teams.
