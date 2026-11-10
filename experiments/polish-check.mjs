@@ -40,7 +40,7 @@ const LAYOUT = () => { const vw = document.documentElement.clientWidth, out = {h
   const isBox = e => { const cs = getComputedStyle(e); return /^(button|a|label|summary)$/i.test(e.tagName) || (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && cs.backgroundColor !== 'transparent') || parseFloat(cs.borderTopWidth) > 0 || parseFloat(cs.borderLeftWidth) > 0; };
   // spill: a line of text past the edges of its nearest box
   for (const e of all) { if (!vis(e)) continue; for (const n of e.childNodes) { if (n.nodeType !== 3 || n.textContent.trim().length < 2) continue;
-      let box = e; while (box && box !== document.body && !isBox(box)) box = box.parentElement; if (!box || box === document.body) continue; const B = box.getBoundingClientRect(); if (B.width < 20 || B.width > vw * .98) continue;
+      let box = e; while (box && box !== document.body && !isBox(box)) box = box.parentElement; if (!box || box === document.body) continue; if (box.closest('.nprtrack')) continue; /* Speed Tiers: names float centred under each sprite on purpose */ const B = box.getBoundingClientRect(); if (B.width < 20 || B.width > vw * .98) continue;
       const cs = getComputedStyle(box); if (cs.overflow === 'hidden' && cs.textOverflow === 'ellipsis') continue;
       const rg = document.createRange(); rg.selectNodeContents(n); for (const r of rg.getClientRects()) { if (r.width < 2) continue; const over = Math.max(B.left - r.left, r.right - B.right, r.bottom - B.bottom - 2, B.top - r.top - 2); if (over > 2) { out.spill.push(`${where(box)} "${txt(box).slice(0, 24)}" +${Math.round(over)}px`); break; } } } }
   // uneven: siblings that are short labels (buttons, tabs, slider choices, tiles' titles) with different line counts

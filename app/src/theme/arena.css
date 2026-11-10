@@ -561,3 +561,7 @@
 /* Polish Batch 1 (Nov 10): the bottom menu's names stay on one line at every width ("My Team" broke in two at 320px) */
 @A .bnav>button>span:not(.chfab){white-space:nowrap!important}
 @media (max-width:359px){@A .bnav>button{padding-left:0!important;padding-right:0!important;min-width:0!important}}
+
+/* Polish Batch 1 (Nov 10): on the narrowest phones a slider's names use the body face's narrower width (Instrument Sans has a
+   width axis, now loaded), so "Suggestions" and "Winning Teams" fit their tile on one line at 13px instead of spilling. */
+@media (max-width:374px){@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button{font-stretch:85%!important}}
