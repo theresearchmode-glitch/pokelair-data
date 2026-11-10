@@ -40,6 +40,8 @@ const SLIDE = {
     flag: '<path d="M5 21V4M5 4h12l-2.5 4L17 12H5"/>',
     auto: '<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor" stroke="none"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
+    versus: '<path d="M3 8h12M11 4l4 4-4 4M21 16H9M13 12l-4 4 4 4"/>',
+    play: '<path d="M8 5v14l11-7z"/>',
     moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>'
   },
   /* each choice's name (lowercase, as the page writes it) to its icon; a name that starts with a key also matches it */
@@ -49,7 +51,8 @@ const SLIDE = {
     'all 30': 'list', 'offense': 'sword', 'defense': 'shield', 'pairs': 'dots2', 'trios': 'dots3', 'full teams': 'dots6', 'recent': 'clock',
     'name': 'az', 'readiness': 'gauge', 'in-game ranked': 'pad', 'tournaments': 'trophy', 'showdown ladder': 'ladder', 'showdown': 'ladder',
     'best data': 'spark', 'your hits on them': 'right', 'their hits on you': 'left', 'race track': 'flag', 'list view': 'list',
-    'auto': 'auto', 'light': 'sun', 'dark': 'moon'},
+    'auto': 'auto', 'light': 'sun', 'dark': 'moon',
+    'suggestions': 'spark', 'matchups': 'versus', 'how it plays': 'play'},
   icon(t) { t = t.trim().toLowerCase(); if (/^\d$/.test(t)) return {num: t};
     const k = SLIDE.N[t] ? t : Object.keys(SLIDE.N).find(k => t.startsWith(k + ':') || t.startsWith(k + ' ')); return k ? {svg: SLIDE.P[SLIDE.N[k]]} : null; },
   on: b => b.getAttribute('aria-pressed') === 'true' || b.getAttribute('aria-selected') === 'true' && !b.parentElement.querySelector(':scope > [aria-pressed]') || b.classList.contains('on'),
@@ -58,25 +61,30 @@ const SLIDE = {
   mem: {},
   key(s) { const bs = SLIDE.btns(s); if (bs.every(b => b.dataset.view)) return 'nav:' + bs.map(b => b.dataset.view).join(','); const p = s.closest('[data-pane]');
     return (p ? p.dataset.pane : 'side') + ':' + (s.getAttribute('aria-label') || bs.map(b => b.dataset.slt || b.textContent.trim()).join('/')); },
-  fits(s) { const bs = SLIDE.btns(s); if (bs.length < 2 || bs.length > 3 || s.querySelector(':scope > :not(button):not(.ar-slpill)')) return false;
+  fits(s) { const bs = SLIDE.btns(s); if (bs.length < 2 || bs.length > (s.classList.contains('ar-jumps') ? 4 : 3) || s.querySelector(':scope > :not(button):not(.ar-slpill)')) return false;
     if (bs.some(b => b.getAttribute('aria-pressed') === 'mixed')) return false; return bs.every(b => SLIDE.icon(b.dataset.slt || b.textContent)); },
   dress(b) { if (b.querySelector(':scope > .ar-slic')) return; const t = b.textContent.trim(), ic = SLIDE.icon(b.dataset.slt || t); if (!ic) return; b.dataset.slt = t;
     b.innerHTML = `<span class="ar-slic" aria-hidden="true">${ic.num ? `<b>${ic.num}</b>` : `<svg viewBox="0 0 24 24">${ic.svg}</svg>`}</span><span class="ar-sllb">${esc(t)}</span>`;
     try { TCASE.run(b); } catch (e) {} /* before Title Case has loaded (first draw) this throws; Title Case then fixes the whole page when it starts */ /* page names keep their Title Case (Speed Tiers), as on the plain buttons */ },
   reduce: () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
+  /* show the circle at `from` for one painted frame, then slide it to `to`. No forced layout: forcing one (the Nov 10 first
+     version) also froze every other redrawn slider's new circle at the first choice, so it jerked across (Sim's video, Build page) */
+  slideFrom(s, from, to) { s.classList.add('no-anim'); s.style.setProperty('--i', from);
+    requestAnimationFrame(() => { s.classList.remove('no-anim'); requestAnimationFrame(() => s.style.setProperty('--i', to)); }); },
   scan() { SLIDE.queued = false;
-    document.querySelectorAll(':is(.seg,.themeseg:not(.tabtheme)):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
-      s.classList.add('ar-slide'); if (bs.every(b => /^\d$/.test(b.textContent.trim()))) s.classList.add('ar-slnum');
-      s.style.setProperty('--n', bs.length); s.insertAdjacentHTML('afterbegin', '<i class="ar-slpill" aria-hidden="true"></i>'); });
-    document.querySelectorAll(':is(.seg,.themeseg).ar-slide').forEach(s => { const bs = SLIDE.btns(s); bs.forEach(SLIDE.dress); const i = bs.findIndex(SLIDE.on);
+    document.querySelectorAll(':is(.seg,.themeseg:not(.tabtheme),.ar-jumps):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
+      /* the new circle is placed where it belongs before it first shows, so it never slides in from the first choice */
+      const i = bs.findIndex(SLIDE.on); s.style.setProperty('--i', Math.max(0, i)); s.style.setProperty('--n', bs.length);
+      s.classList.add('ar-slide', 'no-anim'); if (bs.every(b => /^\d$/.test(b.textContent.trim()))) s.classList.add('ar-slnum');
+      s.insertAdjacentHTML('afterbegin', '<i class="ar-slpill" aria-hidden="true"></i>'); requestAnimationFrame(() => s.classList.remove('no-anim')); });
+    document.querySelectorAll(':is(.seg,.themeseg,.ar-jumps).ar-slide').forEach(s => { const bs = SLIDE.btns(s); bs.forEach(SLIDE.dress); const i = bs.findIndex(SLIDE.on);
       s.classList.toggle('ar-slnone', i < 0); if (i < 0) return;
       const vis = !!(s.offsetParent || s.getClientRects().length), k = SLIDE.key(s), m = SLIDE.mem[k];
       if (!vis) { if (s.style.getPropertyValue('--i') !== String(i)) s.style.setProperty('--i', i); delete s.dataset.sli; return; }
       if (s.dataset.sli === String(i)) return;
-      if (m != null && m !== i && !SLIDE.reduce()) { s.classList.add('no-anim'); s.style.setProperty('--i', m); void s.offsetWidth; s.classList.remove('no-anim');
-        requestAnimationFrame(() => requestAnimationFrame(() => s.style.setProperty('--i', i))); }
-      else s.style.setProperty('--i', i);
-      s.dataset.sli = i; SLIDE.mem[k] = i; }); },
+      const first = s.dataset.sli == null; s.dataset.sli = i; SLIDE.mem[k] = i;
+      /* first time on screen (a redraw, or the next page's switcher): slide from the last choice seen; otherwise the same circle simply moves */
+      if (first && m != null && m !== i && !SLIDE.reduce()) SLIDE.slideFrom(s, m, i); else s.style.setProperty('--i', i); }); },
   queue() { if (SLIDE.queued) return; SLIDE.queued = true; requestAnimationFrame(SLIDE.scan); }
 };
 safe('slide pickers', () => { SLIDE.scan(); new MutationObserver(SLIDE.queue).observe(document.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['aria-pressed', 'aria-selected', 'class', 'hidden']}); });

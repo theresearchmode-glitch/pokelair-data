@@ -97,8 +97,11 @@ AR.switcher = () => { const ts = (S.teams || []).filter(t => t && t.id !== S.loa
     return `<button type="button" class="ar-tsw" data-load="${esc(t.id)}"><span class="ar-tswm" aria-hidden="true">${ns.slice(0, 6).map(p => sprite(p, 'tiny') || '').join('')}</span><b>${esc(t.name || 'Saved team')}</b></button>`; };
   return `<details class="ar-tswitch"><summary><span class="ar-tswt">Switch team</span> <span class="ar-tswn">${ts.length} saved</span></summary><div class="ar-tswl">${ts.map(row).join('')}</div></details>`; };
 /* Jump links (Sim, Nov 5): My team is long on phones, so a row under the head goes straight to each numbered part */
-AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to"><button type="button" class="ar-jump" data-arjump="chP1">Suggestions</button><button type="button" class="ar-jump" data-arjump="chP2">Matchups</button><button type="button" class="ar-jump" data-arjump="chP3">How it plays</button><button type="button" class="ar-jump" data-arjump="chSets">Sets</button></nav>`;
+/* the jump bar is a sliding picker (Sim, Nov 10): the part you last jumped to keeps the circle, also after the page redraws */
+AR.jumpOn = null;
+AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to">${[['chP1', 'Suggestions'], ['chP2', 'Matchups'], ['chP3', 'How it plays'], ['chSets', 'Sets']].map(([id, t]) => `<button type="button" class="ar-jump${AR.jumpOn === id ? ' on' : ''}" data-arjump="${id}"${AR.jumpOn === id ? ' aria-current="true"' : ''}>${t}</button>`).join('')}</nav>`;
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arjump]'); if (!b) return; const t = $(b.dataset.arjump); if (!t) return;
+  if (b.classList.contains('ar-jump')) { AR.jumpOn = b.dataset.arjump; b.parentElement.querySelectorAll('.ar-jump').forEach(x => { const on = x === b; x.classList.toggle('on', on); if (on) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current'); }); }
   if (t.matches('details:not([open])')) t.open = true;
   t.querySelectorAll('details.ar-sheetfold:not([open])').forEach(d => { d.open = true; });
   t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
