@@ -1147,3 +1147,9 @@
 /* a locked Pokémon always shows its yellow lock, on every screen and whether or not its tile is chosen (Sim, Nov 10: "otherwise
    it's hard to tell without multiple clicks"); the lock is still the button, one tap unlocks. Remove stays on the chosen tile. */
 @A .ar-stage .ar-slot .ar-lockx.on{display:grid!important}
+/* the always-on lock (Sim, Nov 10: "not on Rillaboom's face"): on tiles you haven't chosen it is a small badge in the top-left corner,
+   the empty corner on every card (bottom-right squeezed the names). On the chosen tile lock and remove stay at the top, where you act on them. */
+@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on{top:calc(var(--lift,20px) - 14px)!important;bottom:auto!important;right:auto!important;left:18px!important;width:32px!important;height:32px!important}
+@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on::before{inset:4px}
+@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on svg{width:13px;height:13px}
+@media (max-width:599px){@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on{left:2px!important;top:calc(var(--lift,20px) - 26px)!important}}
