@@ -99,8 +99,11 @@ and every empty, loading and error state.
 
 ## What runs alongside
 
-- Data and grade work continues (Player IDs, the sealed test from Nov 16, Accuracy Lab). Reg M-D may arrive mid-rebuild;
-  it changes data, not design, and the logic is shared, so both builds get it.
+- Order of work (Sim, Nov 10): this rebuild first, then integrating Regulation M-D, then the launch plan. Reg M-D changes
+  data, not design, and the logic is shared, so if it goes live in the game mid-rebuild, the data side can still be
+  switched for both builds (Sim's call).
+- Small items already in flight wait for Sim's word: Player IDs (needs the NP_PID_KEY secret), the sealed-games check from
+  Nov 16, the rating display bug (89 vs 94) and the finished slant-and-shadow change.
 - At most one site item in progress at a time still holds: during the rebuild that item is the rebuild.
 
 ## Size and time (my guess, not yet tested)
