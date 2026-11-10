@@ -89,7 +89,7 @@ function renderMatchup() {
   renderOppSlots();
   { const q = $('oppQuick'), d = META.teams; if (q) { if (!d || !d.teams.length) q.innerHTML = '';
       else if (!q.dataset.ver || q.dataset.ver !== String(metaVersion)) { q.dataset.ver = String(metaVersion);
-        q.innerHTML = `<label class="lbl" for="oppTeamSel">Practice against a top team</label><select class="field" id="oppTeamSel"><option value="">Pick a tournament team…</option>${d.teams.map((t, i) => `<option value="${i}">${esc(t.player)} ${esc(t.record)} · ${esc(teamPlanLabel(t.mons))}</option>`).join('')}</select>`; } } }
+        q.innerHTML = `<label class="lbl" for="oppTeamSel">Practice against a top team</label><select class="field" id="oppTeamSel"><option value="">Pick a tournament team…</option>${d.teams.map((t, i) => `<option value="${i}">${esc(teamWho(t))} · ${esc(evShort(t.event))} · ${esc(teamPlanLabel(t.mons))}</option>`).join('')}</select>`; } } }
   const el = $('mu'); if (!el) return;
   const useA = $('useAbil').checked; const mine = members(); const theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
   if (!mine.length) { el.innerHTML = '<div class="empty-note">Build your team on the Build tab first.</div>'; if (view === 'matchup') safe('battle', renderBattle); return; }
@@ -192,7 +192,7 @@ function renderTopTeams() {
     return `<h3 class="lbl" style="margin:8px 0 2px">${esc(sec)} <span class="vsub">${all.length}</span></h3>` + all.slice(0, cap).map(({t, k}) => {
     const confirm = ui.ttConfirm === k;
     const g = gradeNames(t.mons), miss = g ? g.items.filter(x => !x.ok && !x.skip && !x.note).map(x => x.label.toLowerCase()) : [];
-    return `<div class="plan ttcard"><div class="ttwho"><div class="pt">${esc(t.player)} <span class="vsub">${esc(t.record)}</span></div><div class="t2">${esc(t.event)}</div></div>
+    return `<div class="plan ttcard"><div class="ttwho"><div class="pt">${esc(teamWho(t))}${/official/.test(t.record || '') ? ' <span class="vsub">official event</span>' : ''}</div><div class="t2">${esc(t.event)}</div></div>
       ${teamGrid(t.mons)}
       <div class="ttmeta">${g ? `<span class="ttck${g.pass === g.n ? ' all' : ''}${miss.length ? ' wide' : ''}" title="${esc(g.items.map(x => (x.skip ? '? ' : x.ok ? '✓ ' : x.note ? 'note: ' : '✗ ') + x.label).join('\n'))}"><b>${g.pass}/${g.n}</b> checks${miss.length ? ` · missing ${esc(miss.join(', '))}` : ''}</span>` : ''}<span class="archchips">${archChips(teamPlanLabel(t.mons))}</span></div>
       <div class="row evbtns">${confirm ? `<span class="inline-confirm" style="color:var(--ink)">Replace your current team?</span><button class="btn sm primary" type="button" data-ttload="${k}">Replace</button><button class="btn sm" type="button" data-ttx="1">Cancel</button>`
@@ -206,7 +206,7 @@ function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) r
   keepUndo();
   S.slots = normSlots(t.mons.map(n => ({n, a: null, lock: false})));
   // tournament teams are VGC doubles teams
-  S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`Loaded ${t.player}'s team`, true); }
+  S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`Team loaded (${teamWho(t)})`, true); }
 
 // Trends: compare each Pokémon's rank today with about a week ago.
 function cleanHistory(d) { if (!d || !Array.isArray(d.days)) return null;
@@ -234,4 +234,4 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // "Practice against": a top team becomes the opponent in Battle mode
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ttvs]'); if (!b) return;
   const t = META.teams && META.teams.teams[+b.dataset.ttvs]; if (!t) return;
-  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`${t.player}'s team is your opponent`); });
+  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${teamWho(t)} team`); });

@@ -142,11 +142,11 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   if (C) { const {ev, t} = C, key = esc(ev.id) + '#' + ev.top.indexOf(t); sameSix = ms.length === 6 && t.mons.every(m => ms.some(x => x.p.n === m.n));
     try { FC = ms.length >= 4 ? CH.fourVs(ms, C.six.map(x => x.p.n)) : null; } catch (e) { FC = null; }
     them = `<section class="ar-side ar-pink" aria-labelledby="arChamp"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arChamp">The champion's six</h2></div>
-      <div class="ar-winner"><p class="ar-meta">Latest winner</p><p class="ar-ev">${esc(evName(ev.name))}</p><p class="ar-meta"><b>${esc(t.player)}${t.record ? ', ' + esc(String(t.record).replace(/\s*·.*$/, '')) : ''}</b>, ${esc(evDate(ev.date))}${ev.players ? `, ${ev.players} players` : ''}</p>${sameSix ? '<p class="ar-meta"><b>Same six as yours</b></p>' : ''}</div>
+      <div class="ar-winner"><p class="ar-meta">Latest winner</p><p class="ar-ev">${esc(evName(ev.name))}</p><p class="ar-meta"><b>${esc(teamWho(t))}</b>, ${esc(evDate(ev.date))}${ev.players ? `, ${ev.players} players` : ''}</p>${sameSix ? '<p class="ar-meta"><b>Same six as yours</b></p>' : ''}</div>
       <div class="ar-six">${C.six.map(x => AR.art(x.p, {size: 'm', below: 1, sub: x.it, attrs: `data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}${x.it ? ', ' + esc(x.it) : ''}: open its info"`})).join('')}</div>
       <div class="ar-acts"><button type="button" class="ar-btn" data-evload="${key}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t), 'ar-btn')}<button type="button" class="ar-link" data-view="events">All ${C.n} events ›</button></div></section>`; }
   /* your six: ordered lead, back, bench for the plan shown under it (vs the champion's six, or the meta's six without one) */
-  let F = FC, vs = C ? `vs ${esc(C.t.player)}'s six` : '';
+  let F = FC, vs = C ? `vs the champion's six` : '';
   if (!F && ms.length >= 4) { try { F = CH.four(ms); vs = "vs the meta's top six"; } catch (e) { F = null; } }
   const UL = AR.userLeads(ms); if (UL && F) { F = {lead: UL.map(m => m.p.n), back: F.lead.concat(F.back).filter(n => !UL.some(m => m.p.n === n)).slice(0, 2)}; vs = vs ? vs + ', your leads' : 'your leads'; }
   const byN = n => ms.find(m => m.p.n === n), lead = F ? F.lead.map(byN).filter(Boolean) : [], back = F ? F.back.map(byN).filter(Boolean).filter(m => !lead.includes(m)) : [];

@@ -73,7 +73,7 @@ function renderWeekly() {
   const ws = WK.winners(W);
   const winners = ws.length ? ws.map(e => { const w = e.top[0];
     return `<button type="button" class="wkev" data-wkev="${esc(e.id)}"><span class="wkevt"><b>${esc(e.name)}</b>${e.src === 'official' ? '<span class="tag evoff">OFFICIAL</span>' : ''}</span>
-      <span class="t2">${evDate(e.date)} · ${CH.n(e.players)} players · won by <b>${esc(w.player)}</b></span><span class="wksix">${w.mons.map(m => sprH(byName.get(m.n), 'wkspr')).join('')}</span></button>`; }).join('')
+      <span class="t2">${evDate(e.date)} · ${CH.n(e.players)} players</span><span class="wksix">${w.mons.map(m => sprH(byName.get(m.n), 'wkspr')).join('')}</span></button>`; }).join('')
     : none(META.events ? 'No official event or 64+ player event finished this week.' : 'Event results appear after the next data refresh.');
   const fresh = W.fresh.length ? `<div class="wkfresh">${W.fresh.slice(0, 4).map(f => `<button type="button" class="wkfr tyacc" style="${tyv(f.p)}" data-lt="${esc(f.p.n)}">${sprite(f.p, 'wkspr') || ''}<span><b>${f.kind === 's' ? esc(f.i) + ' ' : ''}${esc(f.p.d)}</b><span>#${f.pl} · ${esc(f.ev)}${f.players ? ` · ${CH.n(f.players)} players` : ''}</span></span></button>`).join('')}</div>`
     : none('Nothing new reached a top 8 this week.');
@@ -136,7 +136,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
   const w0 = WK.winners(W)[0];
   x.fillStyle = P.blue; x.fillRect(0, by, Wd, bh); x.fillStyle = 'rgba(255,255,255,.2)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < Wd; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.3, 0, 7); x.fill(); }
   if (w0) { const t = w0.top[0]; txt(`Winner: ${w0.name}`, '700 20px "Instrument Sans", monospace', '#fff', 56, by + 38, 1090);
-    txt(`${t.player}, ${evDate(w0.date)}, ${CH.n(w0.players)} players`, '800 26px Archivo, sans-serif', '#fff', 56, by + 72, 1090);
+    txt(`Winning team, ${evDate(w0.date)}, ${CH.n(w0.players)} players`, '800 26px Archivo, sans-serif', '#fff', 56, by + 72, 1090);
     const ims = await Promise.all(t.mons.map(m => img(byName.get(m.n)))); ims.forEach((im, i) => { if (!im) return; x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetY = 4; draw(im, 110 + i * 196, by + 154, 132); x.restore(); }); }
   else txt('No big event finished this week', '800 28px Archivo, sans-serif', '#fff', 56, by + 120);
   txt('Sharply raise your win rate.', '400 32px "Instrument Sans",system-ui,sans-serif', P.pen, 58, H - 28);
