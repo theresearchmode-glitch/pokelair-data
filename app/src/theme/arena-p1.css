@@ -1144,3 +1144,6 @@
    chosen tile, and also while the pointer is over a tile or keyboard focus is in it, so each stays one tap or click away. */
 @media (min-width:600px){@A .ar-stage .ar-slot:not(.is-sel):not(:focus-within) :is(.ar-lockx,.ar-rmx){display:none}
   @media (hover:hover){@A .ar-stage .ar-slot:not(.is-sel):hover :is(.ar-lockx,.ar-rmx){display:grid}}}
+/* a locked Pokémon always shows its yellow lock, on every screen and whether or not its tile is chosen (Sim, Nov 10: "otherwise
+   it's hard to tell without multiple clicks"); the lock is still the button, one tap unlocks. Remove stays on the chosen tile. */
+@A .ar-stage .ar-slot .ar-lockx.on{display:grid!important}
