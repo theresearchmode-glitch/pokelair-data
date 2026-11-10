@@ -205,3 +205,7 @@ January 2027 launch, which would then launch on the new design.
 ## My Box (Sim, Nov 10)
 
 Sim chose the My Box concept drawn in the redesign chat (an in-game Pokémon box blended into the light design). Everything about it is in docs/redesign/box/ (NOTES.md, the render, its source). Build My Box from it; fix the rule breaks listed in NOTES.md.
+
+## Final suggestions (Nov 10)
+
+The redesign chat's last suggestions and Claude's decisions (Sim gave executive control): docs/rebuild/decisions-final-suggestions.md.
