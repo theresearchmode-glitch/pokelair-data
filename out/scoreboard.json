@@ -1,22 +1,22 @@
 {
- "updated": "2026-11-09T10:19:31.302Z",
+ "updated": "2026-11-10T10:30:47.674Z",
  "today": {
-  "date": "2026-11-09",
+  "date": "2026-11-10",
   "model": {
-   "heldOutAcc": 0.5633,
-   "calibratedLogloss": 0.68058,
-   "eventsBeatCoinFlip": "68/86",
-   "rawWinRateAcc": 0.5465,
-   "games": 38513
+   "heldOutAcc": 0.5608,
+   "calibratedLogloss": 0.68256,
+   "eventsBeatCoinFlip": "68/88",
+   "rawWinRateAcc": 0.543,
+   "games": 39052
   },
   "teamStrengthOnEvents": {
-   "acc": 0.5518,
-   "pairs": 4137,
-   "events": 115
+   "acc": 0.5507,
+   "pairs": 4080,
+   "events": 113
   },
   "replays": {
    "games": 20000,
-   "rated1300": 6510
+   "rated1300": 6600
   },
   "warnings": []
  },
@@ -300,6 +300,26 @@
    "replays": {
     "games": 20000,
     "rated1300": 6510
+   },
+   "warnings": []
+  },
+  {
+   "date": "2026-11-10",
+   "model": {
+    "heldOutAcc": 0.5608,
+    "calibratedLogloss": 0.68256,
+    "eventsBeatCoinFlip": "68/88",
+    "rawWinRateAcc": 0.543,
+    "games": 39052
+   },
+   "teamStrengthOnEvents": {
+    "acc": 0.5507,
+    "pairs": 4080,
+    "events": 113
+   },
+   "replays": {
+    "games": 20000,
+    "rated1300": 6600
    },
    "warnings": []
   }
