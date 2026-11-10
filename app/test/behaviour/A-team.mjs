@@ -122,3 +122,126 @@ t('HOME-15', 'More on Home fold: pairs, what changed, cores, "Log a game" → Ba
 t('HOME-16', 'Weather chip "Sun team" on Home\'s team card', async () => {
   const {ui} = await view('home', {team: TEAM}); ok(await ui.sees(/Your team: 6\/6 Sun team/), 'no "Sun team" weather chip');
   const r = await open({team: RAIN}); ok(await r.ui.sees(/Your team: 6\/6 Rain team/), 'Rain team shows no "Rain team" chip'); await r.close(); });
+
+// ================= 2. My Team =================
+t('TEAM-01', 'Header: "My team: N of 6, Sun team" and the team name as heading; "No team yet" when empty', async () => {
+  const r = await myTeam({team: TEAM, saved: SAVED}); let tx = await r.ui.text(); has(tx, /My team: 6 of 6, Sun team/);
+  ok(/Sun|Tailwind|Balance|Terrain/.test(await r.ui.teamHeading()), 'heading is not the archetype label: ' + await r.ui.teamHeading());
+  await r.ui.openFold('Switch team'); await r.ui.tapText(/^Rain test/, 2000); ok(await r.ui.teamHeading() === 'Rain test', 'heading after opening a saved team: ' + await r.ui.teamHeading());
+  has(await r.ui.text(), /My team: 6 of 6, Rain team/);
+  await r.ui.clearTeam(); tx = await r.ui.text(); has(tx, 'No team yet'); has(tx, 'My team: 0 of 6'); await r.close(); });
+
+t('TEAM-02', 'A Pokémon that left the regulation is kept but a note says it\'s left out', async () => {
+  const r = await myTeam(); await r.ui.retirePokemonInSlot(5, 'Mewtwo'); const tx = await r.ui.text();
+  ok(/Mewtwo/.test(tx) && /left out|isn't in|not in/i.test(tx), 'no note about the Pokémon left out'); ok(!(await r.ui.sixTiles()).some(n => /Mewtwo/.test(n)), 'retired Pokémon is drawn as a tile'); await r.close(); });
+
+t('TEAM-03', 'Strength Score: number + band word + win line + rank; "so far" for 1-5; none when empty', async () => {
+  const r = await myTeam({fresh: true}); let s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score', 'no Strength Score block');
+  ok(s.score === 93 && s.band === 'Top tier', `sample team scores ${s.score} ${s.band}, expected 93 Top tier`);
+  const tx = await r.ui.text(); has(tx, /Teams scoring like this win about \d+% against today.s tournament teams/); has(tx, /Top \d+% of tournament teams/); has(tx, 'Why this score?');
+  ok(!/\bGrade\b/.test(tx.slice(0, 400)), 'old "Grade" wording shown');
+  await r.ui.removeFromTeam('Kingambit'); s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score so far', 'five Pokémon not labelled "Strength Score so far"');
+  await r.ui.clearTeam(); ok(!(await r.ui.scoreBlock()) && !(await r.ui.sees(/Strength Score \d/)), 'a score shows with no team'); await r.close(); });
+
+t('TEAM-04', '"Why this score?" opens the breakdown; its parts add up to the score', async () => {
+  const r = await myTeam({fresh: true}); const s = await r.ui.scoreBlock(); ok(await r.ui.whyExpanded() === false, 'button not collapsed at first');
+  await r.ui.tapWhyScore(); ok(await r.ui.whyExpanded() === true, 'button not marked expanded'); const w = await r.ui.whyPanel(); ok(w, 'no breakdown panel');
+  const base = w.match(/(\d+) from how its Pokémon/); ok(base, 'no "N from how its Pokémon…" part: ' + w.slice(0, 200));
+  const adds = [...w.matchAll(/([+−-]\s?\d+) (?:for|from)/g)].map(m => +m[1].replace('−', '-').replace(/\s/g, ''));
+  const sum = +base[1] + adds.reduce((a, b) => a + b, 0); ok(Math.abs(sum - s.score) <= 1, `parts add to ${sum}, score is ${s.score} (${w.slice(0, 300)})`);
+  has(w, /How sure/); has(w, /How the grade works/); await r.ui.tapText('How the grade works', 900); ok(await r.ui.current() === 'method', 'link did not open How we calculate'); await r.close(); });
+
+t('TEAM-05', 'Switch team fold lists saved teams; tapping one opens it with an Undo toast', async () => {
+  const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), /Switch team \d+ saved/);
+  await r.ui.openFold('Switch team'); const f = await r.ui.foldText('Switch team'); has(f, 'Rain test', 'switch fold');
+  await r.ui.tapText(/^Rain test/, 2000); ok(await r.ui.teamHeading() === 'Rain test', 'heading did not change'); ok((await r.ui.team()).join() === RAIN.join(), 'team did not switch');
+  ok(await r.ui.waitToast(/Opened .Rain test/), 'no "Opened "Rain test"" toast'); ok(await r.ui.has('#toastUndo'), 'toast has no Undo'); await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not return'); await r.close(); });
+
+t('TEAM-06', '"Team Sheet" button opens the Team Sheet page with all six sets', async () => {
+  const r = await myTeam(); await r.ui.tapText(/^Team Sheet$/, 900); ok(await r.ui.current() === 'sheet', 'Team Sheet page did not open');
+  const tx = await r.ui.text(); has(tx, 'Team Sheet'); for (const n of ['Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler', 'Mega Charizard Y']) has(tx, n, 'Team Sheet'); await r.close(); });
+
+t('TEAM-07', 'Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Sets" scrolls to All Six Sets and opens the sheet', async () => {
+  const r = await myTeam({team: TEAM, width: 390}); const j = await r.ui.jumpBar(); ok(j.join('|') === 'Suggestions|Matchups|How it plays|Sets', 'jump bar: ' + j.join('|'));
+  await r.ui.jumpTo('Sets'); ok(await r.ui.inView(/All Six Sets/i), '"All Six Sets" not scrolled into view'); ok(await r.ui.foldOpen('Open Team Sheet') === true, 'team sheet fold not opened');
+  ok(await r.ui.chosen('Sets') === true, '"Sets" not kept highlighted'); ok(await r.ui.noSideScroll(), 'sideways scroll at 390'); await r.close();
+  const d = await myTeam({team: TEAM, width: 1280}); ok(!(await d.ui.jumpBar()).length, 'jump bar shows on desktop'); await d.close(); });
+
+t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set, tapping again hides it', async () => {
+  const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); has(await r.ui.text(), 'Your Six');
+  const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
+  ok(await r.ui.sees('Tap a Pokémon to see its set'), 'phone shows no "Tap a Pokémon to see its set" hint'); ok(!(await r.ui.setCard()), 'phone opened a set card before any tap');
+  await r.ui.tapTile('Garchomp'); let c = await r.ui.setCard(); ok(c && c.includes('Garchomp'), 'no set card for Garchomp'); ok(await r.ui.tilePressed('Garchomp'), 'tile not marked');
+  await r.ui.tapTile('Garchomp'); c = await r.ui.setCard(); ok(!c, 'second tap did not close the card'); await r.close();
+  const d = await myTeam({team: TEAM}); ok(await d.ui.setCard(), 'desktop did not open the first lead\'s set'); await d.close(); });
+
+t('TEAM-09', 'Lock and Remove on a tile: lock label flips; × removes with Undo', async () => {
+  const r = await myTeam(); ok(/^Lock Whimsicott/.test(await r.ui.tileLockLabel('Whimsicott') || (await r.ui.tapTile('Whimsicott'), await r.ui.tileLockLabel('Whimsicott'))), 'no "Lock Whimsicott…" control');
+  await r.ui.lockOnTile('Whimsicott'); ok(/^Unlock Whimsicott/.test(await r.ui.tileLockLabel('Whimsicott')), 'label after lock: ' + await r.ui.tileLockLabel('Whimsicott'));
+  ok(await r.ui.peek('S.slots[3].lock') === true, 'lock not kept'); await sleep(1000); const a = await r.acct(); ok(a.slots[3].lock === true, 'lock not saved to the account');
+  for (const c of await r.ui.suggestionCards()) ok(!/for Whimsicott/.test(c), 'a suggestion swaps out the locked Whimsicott: ' + c);
+  await r.ui.removeFromTeam('Rillaboom'); ok(await r.ui.waitToast(/Removed Rillaboom/), 'no "Removed Rillaboom" toast'); ok(!(await r.ui.team()).includes('Rillaboom'), 'not removed');
+  await r.ui.tapToastUndo(); ok(await r.ui.waitToast(/Change undone/), 'no "Change undone"'); ok((await r.ui.team()).includes('Rillaboom'), 'Undo did not bring it back'); await r.close(); });
+
+t('TEAM-10', 'Set card: plan role, rating, item, ability, nature, stat points, 4 moves; Edit set and Info sheet', async () => {
+  const r = await myTeam(); await r.ui.tapTile('Garchomp'); const c = await r.ui.setCard();
+  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, /Nature \w+ (most run|yours)/, /Stat points \d+ \w+, \d+ \w+/, /Edit set/, /Info sheet ›/]) has(c, s, 'set card');
+  const moves = await r.ui.pg.evaluate(() => [...document.querySelectorAll('#rzSet [class*=mv], #rzSet li')].filter(e => e.getClientRects().length && e.children.length <= 3).length); ok(moves >= 4, `${moves} move strips`);
+  await r.ui.tapText('Edit set', 900); let p = await r.ui.editPanel(); ok(p && /Edit Garchomp/.test(p.text), 'Edit set did not open "Edit Garchomp"'); await r.ui.closeEditPanel();
+  await r.ui.tapText('Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
+
+t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use NastyPlot\'s pick" goes back; Home follows', async () => {
+  const r = await myTeam(); await r.ui.tapTile('Sneasler'); has(await r.ui.setCard(), 'Set as lead'); await r.ui.tapText('Set as lead', 1200);
+  ok(await r.ui.waitToast(/Sneasler now leads/), 'no "Sneasler now leads" toast'); let pl = await r.ui.gamePlanLine(); ok(/your pick/.test(pl) && /lead (Sneasler \+|.+ \+ Sneasler)/.test(pl), 'plan line: ' + pl);
+  await sleep(1000); const a = await r.acct(); ok(a && Array.isArray(a.leads) && a.leads.includes('Sneasler'), 'lead pick not saved to the account: ' + JSON.stringify(a && a.leads));
+  await r.ui.go('Home'); ok(/your leads|Sneasler/.test(await r.ui.homePlanLine()), 'Home plan ignores the pick: ' + await r.ui.homePlanLine());
+  await r.ui.go('My Team', 1000); await r.ui.tapText("Use NastyPlot's pick", 1200); ok(await r.ui.waitToast(/Back to NastyPlot.s lead pick/), 'no "Back to NastyPlot\'s lead pick" toast');
+  pl = await r.ui.gamePlanLine(); ok(!/your pick/.test(pl), 'still "your pick": ' + pl); await r.close(); });
+
+t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => {
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(/^Game plan vs the meta's top six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\.$/.test(await ui.gamePlanLine() || ''), 'plan line: ' + await ui.gamePlanLine());
+  const r = await myTeam({team: ['Garchomp', 'Incineroar']}); ok(/in team order/.test(await r.ui.gamePlanLine() || ''), 'under 4: no "in team order" line'); await r.close(); });
+
+t('TEAM-13', 'Team actions row: Save/Update label, ⋯ menu; empty team keeps only Saved Teams, My Box, ⋯ Import', async () => {
+  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.openMoreActions(); const a = await r.ui.teamActions();
+  for (const s of ['Saved Teams', 'My Box', 'Compare with…', 'Copy for Showdown', 'Save team', 'Share', 'Import', 'Export', 'Clear team']) ok(a.includes(s), 'no action ' + s + ' in ' + a.join('|'));
+  await r.ui.tapText('Saved Teams', 900); ok(await r.ui.current() === 'teams', 'Saved Teams did not open'); await r.ui.go('My Team', 800);
+  await r.ui.tapText(/^My Box$/, 900); ok(await r.ui.current() === 'box', 'My Box did not open'); await r.ui.go('My Team', 800);
+  await r.ui.tapText('Compare with…', 900); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.go('My Team', 800);
+  await r.ui.openFold('Switch team'); await r.ui.tapText(/^Rain test/, 1800); ok((await r.ui.teamActions()).includes('Update saved team'), 'open saved team: no "Update saved team"');
+  await r.ui.clearTeam(); await r.ui.openMoreActions(); const e = await r.ui.teamActions();
+  for (const s of ['Save team', 'Update saved team', 'Share', 'Export', 'Clear team', 'Copy for Showdown', 'Compare with…']) ok(!e.includes(s), 'empty team still shows ' + s);
+  for (const s of ['Saved Teams', 'My Box', 'Import']) ok(e.includes(s), 'empty team lost ' + s); await r.close(); });
+
+t('TEAM-14', 'Clear team: "No team yet", toast "Team cleared"; Undo restores the six and the open saved team', async () => {
+  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.openFold('Switch team'); await r.ui.tapText(/^Rain test/, 1800);
+  await r.ui.clearTeam(); ok(await r.ui.waitToast(/Team cleared/), 'no "Team cleared" toast'); has(await r.ui.text(), 'No team yet'); ok(!(await r.ui.foldOpen('More team actions')), '⋯ menu stayed open');
+  await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === RAIN.join(), 'six not restored'); ok(await r.ui.teamHeading() === 'Rain test', 'open saved team not restored'); await r.close(); });
+
+t('TEAM-15', 'Matchups summary: Favoured/Even/Unfavoured add to 30 and match the Matchups legend', async () => {
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); const tx = await ui.text();
+  const m = tx.match(/Matchups (\d+) Favoured (\d+) Even (\d+) Unfavoured vs the top 30 threats in real games/); ok(m, 'no "N Favoured / N Even / N Unfavoured" summary');
+  ok(+m[1] + +m[2] + +m[3] === 30, 'numbers add to ' + (+m[1] + +m[2] + +m[3])); has(tx, /Damage calc: covers \d+ of 30/);
+  const l = tx.match(/Unfavoured (\d+) Even match (\d+) Favoured (\d+)/); ok(l && l[1] === m[3] && l[2] === m[2] && l[3] === m[1], 'header numbers differ from the Matchups legend'); });
+
+t('TEAM-16', 'Legal and "Team checks 4/4" badge with the rules tooltip', async () => {
+  const r = await myTeam({fresh: true}); const tx = await r.ui.text(); has(tx, /Legal Team checks 4\/4/);
+  ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] [title]')].some(e => /Based on our reading of the Reg M-C rules/.test(e.title))), 'no rules tooltip'); await r.close();
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); has(await ui.text(), /Legal Team checks 2\/4/); });
+
+t('TEAM-18', 'Weather backdrop behind a sun team\'s header', async () => {}, {skip: 'decorative animation on the old header, mostly covered by the arena layout (inventory unsure it shows); needs a visual check, not a behaviour test'});
+
+t('TEAM-19', 'Empty team: Darkrai, invitation, "Add your first Pokémon" opens the add box; six "+ Add a Pokémon"', async () => {
+  const r = await myTeam({team: []}); const tx = await r.ui.text();
+  has(tx, 'Add your six and NastyPlot scouts the top 30 threats for you.'); has(tx, 'Build me a team'); ok(await r.ui.emptyTiles() === 6, 'not six "+ Add a Pokémon" tiles');
+  ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai picture');
+  ok(!/Suggestions What to Change|Who Beats You/.test(tx), 'parts 1-3 still shown'); has(tx, /Tap a Slot to Add a Pokémon/i);
+  await r.ui.tapText('Add your first Pokémon', 900); const p = await r.ui.editPanel(); ok(p && /Add a Pokémon/.test(p.title + p.text), 'add panel did not open');
+  const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'name box not focused'); await r.ui.closeEditPanel();
+  await r.ui.tapText('Build me a team', 900); ok(await r.ui.current() === 'auto', 'Build me a team did not open Build'); await r.close(); });
+
+t('TEAM-20', 'Partial team: "so far" score, "+ X added" suggestions, no Your games, Save/Share available', async () => {
+  const r = await myTeam({team: ['Garchomp', 'Incineroar']}); const s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score so far', 'score not "so far"');
+  const c = await r.ui.suggestionCards(); ok(c.length && /\+ ?\S+.* added/.test(c[0]), 'first suggestion is not "+ X added": ' + c[0]);
+  ok(!(await r.ui.myGamesCard()), '"Your games" shows for 2 Pokémon'); const a = await r.ui.teamActions(); for (const x of ['Compare with…', 'Save team', 'Share']) ok(a.includes(x), 'no ' + x);
+  ok(await r.ui.emptyTiles() === 4, 'not four empty tiles'); await r.close(); });

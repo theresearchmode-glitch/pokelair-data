@@ -175,6 +175,8 @@ export default (ui, pg, o) => {
     boxSortBy: label => click(`[data-pane="box"] [data-boxsort]:text-is("${label}")`, 600),
     // the team the page holds (names; same as ui.team) and saved state helpers
     leadsSaved: () => ui.peek('S.leads||null'),
+    /** dev-only path: a slot holds a Pokémon that has since left the regulation (as after a roster change) */
+    retirePokemonInSlot: (i, name) => ui.peek(`S.slots[${i}]={n:${JSON.stringify(name)},a:null,lock:false};render()`).then(() => pg.waitForTimeout(1200)),
   };
   return H;
 };
