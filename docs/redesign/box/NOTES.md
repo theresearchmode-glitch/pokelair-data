@@ -32,7 +32,21 @@ captured it, for comparison).
 - Right: the selected Pokémon on a tilted ray panel in its own colours, "Rated 92 · S tier" plate, name, type chips,
   "On your team", three numbers (usage % of teams, win rate, base Speed), Open info sheet (filled slanted button),
   Build around it, Swap into my team, Remove from box.
-- Phone (described, not drawn): box full width, summary slides up from the bottom when you tap a Pokémon.
+
+## Phone (drawn Nov 10, 22:47-22:48, Sim asked "can you show me a concept for the phone as well?")
+Files: mybox-iphone.jpeg (the copy kept in that chat's record, 410x2000; the full-size 975x4753 render is only on Sim's PC,
+out/nastyplot-mybox-iphone.png in the concept folder), box-m.tpl.html (its source; rendered with box.cjs at 390x844 viewport).
+- Top: eyebrow, "My Box" with "36 Pokémon · 2 boxes" beside it, the Build for Me line, Add a Pokémon (slanted, +),
+  "Arrange by" in one row that scrolls sideways.
+- The box turns on its side: 5 across, 6 down (30 per box), each Pokémon big enough to tap with its name underneath.
+  Swipe left/right between boxes (arrows stay); header "Box 1 · 30 of 36 · A to S · swipe for Box 2"; slanted dots.
+- Tap a Pokémon: it lifts onto its white tile and a summary slides up from the bottom (floats over the screen, swipe down
+  to close; drawn under the box in the still). Summary: art on the tilted ray panel, name, types, "Rated 92 · S tier"
+  plate, three numbers (of teams, win rate, base Speed), three buttons: Info sheet (filled), Swap in, Remove.
+- "Your team" under the box: six portraits with Lead / Back / Bench (roles, not names), "hold and drag to swap".
+- Bottom: Copy box link, Open a box link, Reset box, the saved-where line, the "On your team" key, footer.
+- On purpose vs desktop: no names on team portraits; "Build around it" lives in the info sheet, not the phone summary.
+- Rough spot that chat named: longest names are tight at five across ("Meowscarada" nearly touches "Mimikyu").
 
 ## Changes from today's page (as that chat stated them)
 - Remove moved from an × on every tile to the selected Pokémon's panel (one extra tap).
@@ -40,7 +54,7 @@ captured it, for comparison).
 
 ## What the rebuild must still settle (main chat review)
 - Agreed rules it breaks, to fix when building: the sort choices, type labels and "On your team" tag are rounded pills
-  (R0: one slanted chip style, no rounded pills). Dark mode (Dusk) not drawn. Phone not drawn.
+  (R0: one slanted chip style, no rounded pills). Dark mode (Dusk) not drawn on either. Phone: the three summary buttons are outlined slanted boxes, fine; the arrange chips are rounded pills (same fix); long names at five across need a fix that keeps one size per kind of text (no shrinking one name).
 - Every feature My Box has today must survive: check against docs/rebuild/inventory/A-team.md (My Box entries) and the
   saved-data map (box order, sorting choice boxV, excluded list, box link #box=).
 - Drag needs a tap alternative (phones, keyboard) and must not fight scrolling.
