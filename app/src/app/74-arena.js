@@ -246,8 +246,20 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   const gw = $('chGwhy'); if (gw) sec.querySelector('.ar-thead').append(gw);
   const set = $('rzSet'), sw = sec.querySelector('.ar-setwrap'); if (set && sw) { set.classList.add('ar-sheet'); sw.append(set); }
   const acts = $('chActs'); if (acts) sec.querySelector('.ar-tacts').append(acts);
+  /* Nov 10: "Your games" sits in the team grid under the actions (it can be drawn before this grid exists) */
+  const mr = $('myRec'); if (mr) sec.querySelector('.ar-tgrid').append(mr);
+  AR.cols(sec);
   /* first visit: the first lead's set is open (a tap anywhere else moves it) */
   if (ui.rzSet === undefined && ms.length && !AR.pre) { AR.pre = 1; const f = sec.querySelector('[data-chset]'); if (f) setTimeout(() => f.click(), 0); } };
+/* Nov 10 (Sim: no empty strips): on desktop My Team is two balanced columns. Left: Your Six, then the actions (two across);
+   right: the numbers, the tapped Pokémon's set card beside the tiles, then Your games. Phones and tablets keep one column. */
+AR.colsMQ = typeof matchMedia === 'function' ? matchMedia('(min-width:1001px)') : null;
+AR.cols = sec => { const g = sec.querySelector('.ar-tgrid'); if (!g || !AR.colsMQ || !AR.colsMQ.matches || sec.classList.contains('is-empty')) return;
+  const st = g.querySelector(':scope>.ar-stage'), ts = g.querySelector(':scope>.ar-tstats'), ac = g.querySelector(':scope>.ar-tacts'); if (!st || !ts || !ac) return;
+  const L = document.createElement('div'), R = document.createElement('div'); L.className = 'ar-tcol ar-tcolL'; R.className = 'ar-tcol ar-tcolR';
+  const sw = sec.querySelector('.ar-setwrap'), mr = g.querySelector(':scope>#myRec');
+  L.append(st, ac); R.append(ts); if (sw) R.append(sw); if (mr) R.append(mr); g.append(L, R); g.classList.add('ar-cols'); };
+if (AR.colsMQ) AR.colsMQ.addEventListener('change', () => { if (typeof view !== 'undefined' && (view === 'report' || view === 'build')) safe('concept h team', chTeamRender); });
 /* dismissing What's new removes its wrapper too (the app's own handler removes the card) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-wnew > [data-wnewx]'); if (b) setTimeout(() => { const w = b.closest('.ar-wnew'); if (w && !w.querySelector('#wnewCard')) w.remove(); }, 0); });
 /* the tapped tile: yellow ring and cursor follow ui.rzSet (the app's own handler in 70-riso2.js fills #rzSet) */

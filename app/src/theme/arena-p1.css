@@ -1066,5 +1066,35 @@
 @A .ar-ss>*{justify-self:auto;margin-left:0}
 @A .ar-ss .ar-ssrow{flex-wrap:nowrap}
 /* the score block sits beside the name only when both fit (840px+); below that it goes under the name, full width (resize sweep, Nov 9) */
-@media (min-width:840px){@A .ar-titlerow .ar-score.ar-ss{flex:0 1 auto;max-width:min(520px,58%)}}
-@media (max-width:839px){@A .ar-titlerow:has(.ar-ss){flex-direction:column;align-items:stretch;gap:16px}@A .ar-titlerow .ar-score.ar-ss{width:100%}}
+@media (min-width:640px){@A .ar-titlerow .ar-score.ar-ss{flex:0 1 auto;max-width:min(520px,58%)}}
+@media (max-width:639px){@A .ar-titlerow:has(.ar-ss){flex-direction:column;align-items:stretch;gap:16px}@A .ar-titlerow .ar-score.ar-ss{width:100%}}
+
+/* Nov 10 (site critique): from 640px the team name and the Strength Score sit side by side, with Team Sheet under the name */
+@media (min-width:640px){
+  @A .ar-thead{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,min(520px,56%));column-gap:32px;align-items:start}
+  @A .ar-thead>*{grid-column:1/-1}
+  @A .ar-thead>.ar-titlerow{display:contents}
+  @A .ar-titlerow>.ar-tname{grid-column:1}
+  @A .ar-titlerow>.ar-score{grid-column:2;grid-row:span 2;max-width:none!important}
+  @A .ar-thead>.ar-trow2{grid-column:1}
+}
+/* ---------- Nov 10 (site critique; Sim: no empty strips beside text): My Team uses the space it has on desktop ----------
+   the Team Sheet link sits under the team name, beside the score; "Your games" fills the right column under the actions;
+   How Your Team Plays sits under Suggestions, beside the long Matchups list */
+@media (min-width:1001px){
+  @A .ar-tgrid>#myRec{grid-column:2;grid-row:3;margin:24px 0 0!important;padding:24px 24px 28px!important}
+  @A .ar-tgrid.ar-cols>.ar-tcol{display:flex;flex-direction:column;gap:24px;min-width:0;grid-row:1}
+  @A .ar-tgrid.ar-cols>.ar-tcolL{grid-column:1}
+  @A .ar-tgrid.ar-cols>.ar-tcolR{grid-column:2}
+  @A .ar-tcolL>.ar-stage{margin:12px 0 0;padding:28px 28px 32px}
+  @A .ar-tcolR>.ar-tstats{margin-top:16px}
+  @A .ar-tcolR>.ar-setwrap{margin-top:0}
+  @A .ar-tcolR>#myRec{margin:0!important;padding:24px 24px 28px!important}
+  @A .ar-tcolL .ar-tacts :is(#chActs>button,#chActs>.row>button){flex:1 1 calc(50% - 8px)!important}
+  @A .ar-tcolL .ar-tacts #chActs #saveBtn{flex-basis:100%!important}
+  @A .ar-tcolL .ar-tacts #chActs .sdcopy{flex:1 1 calc(100% - 68px)!important}
+  @A [data-pane="report"] .chparts>#chP1{grid-column:1;grid-row:1}
+  @A [data-pane="report"] .chparts>#chP2{grid-column:2;grid-row:1/span 2}
+  @A [data-pane="report"] .chparts>#chP3{grid-column:1;grid-row:2}
+  @A [data-pane="report"] .chparts>#chP4{grid-column:1/-1;grid-row:3}
+}

@@ -52,7 +52,8 @@ function myRecCard(ms) { const G = myGames(ms), ins = myInsights(G), q = ui.ql;
 function renderMyRec() { const head = $('chTeam'); if (!head) return; const old = $('myRec'); const ms = members();
   if (ms.length !== 6) { if (old) old.remove(); return; }
   const w = document.createElement('div'); w.innerHTML = myRecCard(ms); const card = w.firstElementChild;
-  if (old) old.replaceWith(card); else { const at = head.querySelector('.chgwhy') || head.querySelector('.chthead'); if (at) at.after(card); else head.append(card); }
+  const tg = head.querySelector('.ar-tcolR') || head.querySelector('.ar-tgrid'); /* Nov 10 (Sim: no empty strips): it sits in the team grid, under the actions */
+  if (old && (!tg || tg.contains(old))) old.replaceWith(card); else { if (old) old.remove(); const at = head.querySelector('.chgwhy') || head.querySelector('.chthead'); if (tg) tg.append(card); else if (at) at.after(card); else head.append(card); }
   const inp = $('qlOppIn'); if (inp) bindMonInput(inp, p => { if (!ui.ql.opp.includes(p.n) && ui.ql.opp.length < 6) ui.ql.opp.push(p.n); renderMyRec(); const n = $('qlOppIn'); if (n) n.focus(); }, p => !ui.ql.opp.includes(p.n)); }
 CH.wrap('chTeamRender', () => renderMyRec());
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-qlopen],[data-qllead],[data-qlres],[data-qlundo],[data-qloppx],[data-qlbm],[data-qlreplay]'); if (!b) return; const d = b.dataset, q = ui.ql;
