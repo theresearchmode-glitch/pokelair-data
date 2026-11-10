@@ -51,7 +51,7 @@
 /* the two sixes: the champion's (pink) then yours (blue) on phones; face to face across a "vs" rule on desktop */
 @A .ar-side{padding:44px 0 0;min-width:0}
 @A .ar-winner{margin:0 0 24px}
-@A .ar-ev{font-weight:700;font-size:17px;line-height:1.3;margin:2px 0 0;color:var(--ar-ink)}
+@A .ar-ev{font-weight:700;font-size:17px;line-height:1.5;margin:2px 0 0;color:var(--ar-ink)}
 @A .ar-winner .ar-meta{margin-top:4px}
 @A .ar-side .ar-six{padding:0 4px 0 6px}
 @A .ar-gameplan{margin:16px 0 0;color:var(--ar-ink-2);font-size:15px;line-height:1.5;max-width:62ch}
@@ -142,13 +142,13 @@
   @A .ar-hero-copy{left:calc(var(--ar-gutter) + 8px);top:176px}
   @A .ar-hero-big{font-size:clamp(76px,7.2vw,120px)}
   @A .ar-hero-of{font-size:16px}
-  @A .ar-hero .ar-plate{font-size:20px;min-height:52px;padding:0 24px}
+  @A .ar-hero .ar-plate{font:italic 800 20px/1.15 var(--ar-display);font-synthesis:style;font-stretch:112%;min-height:52px;padding:0 24px}
   @A .ar-deck-side{padding-top:56px}
   @A .ar-runners{margin:0;gap:16px}
   @A .ar-runner{height:110px}
   @A .ar-runner:nth-child(2){margin-left:36px;width:calc(100% - 36px)}
   @A .ar-runner .ar-num{font-size:52px}
-  @A .ar-runner-nm{font-size:22px}
+  @A .ar-runner-nm{font:italic 800 22px/1.1 var(--ar-display);font-synthesis:style;font-stretch:112%}
   @A .ar-runner-mon{width:136px!important;height:136px!important}
   @A .ar-caption{padding:2px 0 0;font-size:16px}
   @A .ar-tools{padding-top:32px;gap:16px 16px}
@@ -164,7 +164,7 @@
   @A .ar-side .ar-six{gap:32px 16px}
   @A .ar-side .ar-art.ar-m{--h:clamp(120px,10.5vw,150px);--s:clamp(124px,11vw,156px);--lift:16px}
   @A .ar-side .ar-art .ar-nm{font-size:17px}
-  @A .ar-ev{font-size:20px}
+  @A .ar-ev{font-size:17px}
   @A .ar-gameplan{font-size:16px}
   @A #homeOut.ar-on>:is(.chpad,.chhtop,.chfolds){margin-left:0!important;margin-right:0!important}
   @A #homeOut.ar-on>.chhtop{margin-top:72px!important}
@@ -855,7 +855,7 @@
 /* #4 long team names stay one or two tidy lines on phones (16+ characters get a smaller, narrower cut) */
 @media (max-width:599px){
   @A #arYours.ar-long{font-size:22px!important;font-stretch:104%!important}
-  @A .ar-tname.ar-long{font-size:29px!important;font-stretch:104%!important}
+  @A .ar-tname.ar-long{font-size:28px!important;font-stretch:104%!important}
   @A [data-pane="matchup"] .ar-bmhead .chbmt.ar-bmlong{font-size:26px!important;font-stretch:104%!important}
 }
 /* #5 italic is for headlines and big numbers; Pokémon names on art and tool names are upright bold */

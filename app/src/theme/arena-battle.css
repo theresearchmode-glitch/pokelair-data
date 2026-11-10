@@ -71,7 +71,7 @@
 @A .arb .empty-note:not(:has(.mgeart))>div{grid-column:1}
 /* names under the art break between words only, and step down a size in the three-column grids on small phones */
 @A .arb .ar-art .ar-nm{overflow-wrap:break-word;hyphens:manual}
-@media (max-width:420px){@A .arb :is(.bmopp,.prsix:not(.mine),.chcalcatk,.prfour) .ar-art .ar-nm{font-size:clamp(15px,4vw,16px)!important}}
+@media (max-width:420px){@A .arb :is(.bmopp,.prsix:not(.mine),.chcalcatk,.prfour) .ar-art .ar-nm{font-size:clamp(15px,calc(15px + (100vw - 400px) * 1000),16px)!important}}
 /* small type field behind a lone sprite (75-arena-battle.js ARB.bf) */
 @A .arb .ar-mini.ar-bf{--mw:52px;--mh:34px;--ms:52px;--mt:14px;margin-left:4px;margin-right:4px}
 /* tables on these pages: hairline rows, no grid of boxes */
@@ -89,7 +89,7 @@
 @media (min-width:1001px){@A [data-pane="matchup"] .ar-bmhead .chbmt{font-size:clamp(46px,4.4vw,64px)!important}}
 @A [data-pane="matchup"] .ar-bmhead .chbmt::before{content:"";position:absolute;left:0;bottom:.18em;width:28px;height:28px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="matchup"] .ar-bmhead .chbmt :is(span,em){font:inherit!important;color:inherit!important;background:none!important}
-@A [data-pane="matchup"] .ar-bmhead .chbmt small{display:inline-block;margin:0 .1em;padding:0!important;background:none!important;font:italic 800 .62em/1 var(--ar-display)!important;color:var(--ar-ink-3)!important;vertical-align:.12em}
+@A [data-pane="matchup"] .ar-bmhead .chbmt small{display:inline-block;margin:0 .1em;padding:0!important;background:none!important;font:italic 800 clamp(17px,calc(17px + (100vw - 1001px) * 1000),28px)/1 var(--ar-display)!important;color:var(--ar-ink-3)!important;vertical-align:.12em}
 @A [data-pane="matchup"] .ar-bmhead .mgvsarch{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:8px 0 0 40px;font:600 var(--ar-fs-body)/1.3 var(--ar-body);color:var(--ar-ink)}
 @A [data-pane="matchup"] .ar-bmhead .mgvsarch span{color:var(--ar-blue-ink)!important;font:inherit!important}
 @A [data-pane="matchup"] .ar-bmhead .mgvsarch small{font:italic 800 15px/1 var(--ar-display);color:var(--ar-ink-3)!important;background:none!important;padding:0!important}

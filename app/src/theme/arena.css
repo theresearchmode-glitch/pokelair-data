@@ -80,7 +80,7 @@
 /* Polish Batch 1 (Nov 10): the whole headline is slanted, not half. riso.css resets every element to upright (the "less italic"
    change), so a span inside a slanted headline ("your win rate.", "Tools.", the % of a big number, "First.") lost its slant.
    Text inside a headline now follows the headline. */
-:root:not(#_tr) body :is(.ar-h1,.ar-h2,.ar-disp,.ar-num,.chpgt,.chdisp,.cht,h1,h2,h3) *:not(svg):not(svg *){font-style:inherit}
+:root:not(#_tr) body :is(.ar-h1,.ar-h2,.ar-disp,.ar-num,.chpgt,.chdisp,.cht,.ar-plate,.ar-runner-nm,h1,h2,h3) *:not(svg):not(svg *){font-style:inherit}
 @A .ar-num small{font-size:.48em;margin-left:.04em;letter-spacing:0}
 @A .ar-h1{font:italic 800 var(--ar-fs-h1)/1 var(--ar-display);font-stretch:122%;letter-spacing:-.015em;color:var(--ar-ink);margin:0;text-wrap:balance}
 @A .ar-h2{font:italic 800 var(--ar-fs-h2)/1.05 var(--ar-display);font-stretch:118%;letter-spacing:-.01em;color:var(--ar-ink);margin:0;text-wrap:balance}
@@ -491,7 +491,10 @@
 @media (hover:hover){@A .band #thmBtn.ar-thm:hover{background:var(--ar-rule)!important}}
 /* Nov 7, coordinated type: the logo font (Unbounded) is wide, so two small spots get room. Meta's sub-tabs step down a size on
    narrow phones, and the tiny name labels in team tiles use the bold body font (labels, not headlines) */
-@media (max-width:400px){@A .subnav>.sub:not(#_n1):not(#_n2):not(#_n3){font-size:19px!important;letter-spacing:-.02em!important}}
+/* Polish Batch 1 (Nov 10): the page tabs stay on the type scale and inside the page margins at every phone width (at 320 the 19px
+   'Tournaments' ran to the window's edge): 22 above 400, 20 from 360, 17 below 360. */
+@media (max-width:359px){@A .subnav>.sub:not(#_n1):not(#_n2):not(#_n3):not(#_n4){font-size:17px!important}}
+@media (max-width:400px){@A .subnav>.sub:not(#_n1):not(#_n2):not(#_n3){font-size:20px!important;letter-spacing:-.02em!important}}
 @A .tgn:not(#_t1):not(#_t2):not(#_t3){font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;letter-spacing:0!important}
 /* Darkrai in tip bubbles (Nov 9, Preview): small, in the top-right corner, inside the bubble (it was cut off when the bubble opened near the top of the screen); the title keeps clear of it */
 @A .tippop .tipdk{position:absolute;top:8px;right:8px;width:44px!important;height:44px!important;object-fit:contain;pointer-events:none}
@@ -517,6 +520,9 @@
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic>svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic>b{font:italic 800 20px/1 var(--ar-display);font-synthesis:style}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-sllb{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;overflow-wrap:normal;word-break:normal;hyphens:none}
+/* Polish Batch 1 (Nov 10): when one label must wrap ("Tier board" beside "Meta map"), every label in the group breaks between its
+   words, so the names sit as an even set (76-slide.js SLIDE.even). Labels never shrink below 13px. */
+@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide.ar-slwrap .ar-sllb{width:min-content;min-width:0}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide.ar-slnum .ar-sllb{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide.ar-slnum{padding-bottom:10px!important;max-width:calc(var(--n) * 96px)!important}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button:is([aria-pressed="true"],.on) .ar-slic>:is(svg,b),@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide:not(:has(>[aria-pressed]))>button[aria-selected="true"] .ar-slic>:is(svg,b){color:var(--ar-sec-on,#fff)!important;transition-delay:.12s}
@@ -538,7 +544,7 @@
 /* the narrowest phones (under 375px): a little tighter so one-word names never break inside the word ("Suggestions" in four columns) */
 @media (max-width:374px){@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide{padding-left:2px!important;padding-right:2px!important}
   @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>.ar-slpill{left:2px;width:calc((100% - 4px) / var(--n))}
-  @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button{padding:0!important;font-size:12px!important;letter-spacing:-.01em!important}}
+  @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button{padding:0!important;font-size:13px!important;letter-spacing:-.01em!important}}
 /* Sliders in the site's own shapes (Sim, Nov 10: "match the boxy look, not so circular"): the track is a slanted card (the site's
    -12deg slant, 10px corners), each icon sits on a small slanted tile (6px corners) and the chosen tile in the page colour slides.
    Only the backgrounds slant; icons and names stay upright, as on the site's other buttons. */
@@ -548,3 +554,4 @@
 @A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic::before{border-radius:var(--ar-r-m);transform:skewX(var(--ar-slant))}
 @A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide>.ar-slpill::before{width:var(--cw);margin-left:calc(var(--cw) / -2);border-radius:var(--ar-r-m);transform:skewX(var(--ar-slant))}
 @A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic>b{font-size:19px}
+

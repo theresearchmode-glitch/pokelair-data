@@ -811,9 +811,9 @@
 @media (max-width:599px){@A .ar-mpg #setOut .sethead{grid-template-columns:118px minmax(0,1fr);column-gap:16px;min-height:128px}
   @A .ar-mpg #setOut .sethead::before{width:108px!important;height:84px!important;top:34px!important}
   @A .ar-mpg #setOut .sethead>img.spr.big{width:116px!important;height:116px!important}
-  @A .ar-mpg #setOut .sethead .sl-name{font-size:min(28px,7vw)!important;overflow-wrap:normal}
+  @A .ar-mpg #setOut .sethead .sl-name{font-size:clamp(26px,calc(26px + (100vw - 400px) * 1000),28px)!important;overflow-wrap:normal}
   @A .ar-mpg #setOut .sethead .tag.tier{grid-column:1/-1;margin-top:6px}}
-@media (max-width:1000px){@A .ar-mpg #trackOut .trstats{grid-template-columns:1.4fr 1fr 1fr!important}@A .ar-mpg #trackOut .trstats b{font-size:min(34px,6.6vw)!important;white-space:nowrap}}
+@media (max-width:1000px){@A .ar-mpg #trackOut .trstats{grid-template-columns:1.4fr 1fr 1fr!important}@A .ar-mpg #trackOut .trstats b{font-size:calc(clamp(24px,calc(24px + (100vw - 400px) * 1000),26px) + clamp(0px,calc((100vw - 515px) * 1000),8px))!important;white-space:nowrap}}
 
 /* ---------- 18. review D fixes ---------- */
 /* M1: the hero keeps its keyboard ring, drawn on its slanted field (arena.css section 20 style) */

@@ -34,7 +34,7 @@
   @R #lairSheet.lsdesk .lsside .lshead.mghead .lsname .ty{font-size:17px!important}
   @R #lairSheet.lsdesk .lsside .chlstats{margin:0!important}
   @R #lairSheet.lsdesk .lsside .chlstats>div{padding:16px 16px 12px!important}
-  @R #lairSheet.lsdesk .lsside .chlstats b{font-size:clamp(26px,2.3vw,34px)!important}
+  @R #lairSheet.lsdesk .lsside .chlstats b{font-size:calc(clamp(26px,calc(26px + (100vw - 1200px) * 1000),28px) + clamp(0px,calc((100vw - 1480px) * 1000),6px))!important}
   @R #lairSheet.lsdesk .lsside .chlstats span,@R #lairSheet.lsdesk .lsside .chlstats i{font-size:15px!important}
   @R #lairSheet.lsdesk .lsside :is(.mgadd,.lsact){margin:0!important}
   @R #lairSheet.lsdesk .lsside .mgadd [data-laddteam]{min-height:56px;font-size:17px}
