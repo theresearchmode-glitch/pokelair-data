@@ -41,7 +41,7 @@ try {
     const names = teamsArr[ti];
     let P; try { P = await ev(`(()=>{S.slots=${JSON.stringify(names)}.map(n=>({n,a:null,lock:false}));fixSlots();const ms=members();if(ms.length!==6)return JSON.stringify({err:'n'+ms.length});ui.pool='all';const P=planFixes(ms,suggestPool(),true);
       return JSON.stringify({gBase:P.gBase,top:P.slice(0,3).map(pl=>({names:pl.team.map(m=>m.p.n),ch:pl.ch.map(x=>(x.out?x.out.p.n:'(empty)')+' -> '+x.c.p.n),g:pl._g,why:(pl.gap&&pl.gap.why)||[],lane:pl._lane?pl._lane.k:null,shown:pl._lane?(pl._lane.k==='fix'?(pl._lane.fixes[0].pts||null):pl._lane.k==='swap'?pl._lane.real:null):null,fixk:pl._lane&&pl._lane.fixes?pl._lane.fixes[0].k:null})),nothing:!!P.nothing})})()`); } catch (e) { P = {err: String(e).slice(0, 80)}; }
-    const row = {ti, names, own: tGames.get(ti), err: P.err || null, gBase: P.gBase ?? null, sugg: []};
+    const row = {ti, names, own: tGames.get(ti), err: P.err || null, gBase: P.gBase ?? null, nothing: !!P.nothing, sugg: []};
     if (!P.err) { const skipT = new Set([ti]), before = hood(names, skipT);
       row.before = before;
       for (const [r, s] of (P.top || []).entries()) { const sx = exactIdx.get(s.names.slice().sort().join('|')), skip = new Set([ti]); if (sx != null) skip.add(sx);

@@ -38,15 +38,17 @@ const LANE = {
   line(pl) { const L = pl && pl._lane; if (!L) return '';
     if (L.k === 'fix') { const f = L.fixes[0], w = {clause: 'two of your Pokémon hold the same item, so the team can’t be registered; this frees it',
         mega: `adds a Mega: teams with no Mega won about ${L.fixes[0].pts} fewer games in 100`, reach: `makes the team ready for the top threats: teams that are win about ${Math.round(LANE.PTS.reach)} more in 100`}[f.k];
-      return `<span class="chlane fix"><b>Fix</b> ${w}</span>`; }
-    if (L.k === 'swap') return `<span class="chlane swap"><b>Small edge</b> about ${L.real} more win${L.real === 1 ? "" : "s"} in 100 games in real play</span>`;
-    return `<span class="chlane opt"><b>Option</b> covers a team note; real games show no clear edge either way</span>`; },
+      return `<span class="chlane ln-fix"><b>Fix</b> ${w}</span>`; }
+    if (L.k === 'swap') return `<span class="chlane ln-swap"><b>Small edge</b> about ${L.real} more win${L.real === 1 ? "" : "s"} in 100 games in real play</span>`;
+    const note = pl.gap && ((pl.gap.fix && pl.gap.fix.length) || (pl.gap.why || []).some(w => /^Meets the /.test(w)));
+    return note ? `<span class="chlane ln-opt"><b>Option</b> covers a team note; real games show no clear edge either way</span>`
+      : `<span class="chlane ln-opt"><b>Option</b> a small change: real games can’t tell it apart from what you have</span>`; },
   // too little Protect: a set fix, not a swap. Members whose popular set runs Protect but whose moves here don't.
   protFix(ms) { if (!ms || ms.length !== 6) return null; const n = LANE.protCount(ms); if (n > 2) return null;
     const who = ms.filter(m => !LANE.moves(m).slice(0, 4).some(x => LANE.PROT.has(x)) && (popularMoves(m.p) || []).slice(0, 4).some(x => LANE.PROT.has(x && (x.name || x))));
     return who.length ? {n, who: who.slice(0, 3 - n), pts: n <= 1 ? LANE.PTS.prot1 : LANE.PTS.prot2} : null; },
   protCard(ms) { const f = LANE.protFix(ms); if (!f) return '';
-    return `<div class="chlanecard fix"><p><span class="chlane fix"><b>Fix</b> only ${f.n} of your six run${f.n === 1 ? 's' : ''} Protect: teams with ${f.n <= 1 ? 'one or none' : 'two'} won about ${f.pts} fewer games in 100 than teams with three</span></p>
+    return `<div class="chlanecard fix"><p><span class="chlane ln-fix"><b>Fix</b> only ${f.n} of your six run${f.n === 1 ? 's' : ''} Protect: teams with ${f.n <= 1 ? 'one or none' : 'two'} won about ${f.pts} fewer games in 100 than teams with three</span></p>
       <p class="t2">Their usual sets run it: ${f.who.map(m => `<b>${esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="chghost" data-protfix>Add Protect</button></div>`; },
   // the move swapped out for Protect: the one its popular set runs least (else the last one)
   protApply(ms) { const f = LANE.protFix(ms); if (!f) return; for (const m of f.who) { const s = S.slots[m.i]; if (!s) continue;
