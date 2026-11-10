@@ -36,7 +36,8 @@ audits and research sweeps, not our one-change-at-a-time work.
 After many fast changes the formatting rules slipped (an outside polish review found half-slanted headlines, sizes off the
 scale, text falling out of boxes, lone tiles, empty desktop halves). The standard is a high-quality design studio: every tiny
 detail right. So:
-- Every site change runs experiments/polish-check.mjs (all pages, 320-2560 wide, light and dark) before it goes to the Preview,
+- Every site change runs experiments/polish-check.mjs (all pages, 320-2560 wide, light and dark) before it goes to the Preview
+  (Sim, Nov 10: a small one-spot fix only needs the page it touches checked, e.g. VIEWS=ratings, not the full sweep),
   and introduces no new finding. Look at the flagged spots with your own eyes; the check finds, it doesn't judge.
 - The rules it measures are the rules above: the type scale, the 4px grid, Unbounded slanted for every headline and big number
   (the whole headline, not half), line height 1.5, no text out of its box or wrapping unevenly beside its neighbours, no lone
