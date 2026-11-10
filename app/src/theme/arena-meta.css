@@ -497,9 +497,9 @@
 @A .ar-mpg #wkOut details.wkfoot>summary::before{content:""!important;position:static!important;display:block!important;width:8px!important;height:8px!important;margin:0 2px!important;border:solid currentColor!important;border-width:0 2.5px 2.5px 0!important;transform:translateY(-2px) rotate(45deg)!important;background:none!important}
 @A .ar-mpg #wkOut details.wkfoot[open]>summary::before{transform:translateY(2px) rotate(-135deg)!important}
 @A .ar-mpg #wkOut details.wkfoot>p{margin:8px 0 0!important;font-size:var(--ar-fs-small)!important;line-height:1.5;color:var(--ar-ink-2)!important;max-width:68ch}
-@media (min-width:700px){@A .ar-mpg #wkOut .wkcols{grid-template-columns:1fr 1fr!important}@A .ar-mpg #wkOut .wkfresh{grid-template-columns:1fr 1fr}@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (min-width:700px){@A .ar-mpg #wkOut .wkcols{grid-template-columns:1fr 1fr!important}@A .ar-mpg #wkOut .wkfresh{grid-template-columns:1fr 1fr}@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(var(--wkm,3),minmax(0,1fr))}
   @A .ar-mpg #wkOut .wktop{gap:24px 16px!important}@A .ar-mpg #wkOut .wktm{--h:70px;--s:96px}}
-@media (min-width:1001px){@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-mpg #wkOut .wkevs,@A .ar-mpg #wkOut .wkcard:has(.wkev){display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:32px}
+@media (min-width:1001px){@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(var(--wkd,4),minmax(0,1fr))}@A .ar-mpg #wkOut .wkevs,@A .ar-mpg #wkOut .wkcard:has(.wkev){display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:32px}
   @A .ar-mpg #wkOut .wkcard:has(.wkev)>.wkt{grid-column:1/-1;margin-bottom:6px!important}}
 
 /* ---------- 10. Events ---------- */
@@ -1075,3 +1075,6 @@
 @A .ar-mpg #chHot .chhot2s>.chhotside{grid-template-columns:1fr!important;align-content:center;min-width:0}
 @media (min-width:600px){@A .ar-mpg #chHot .chhot2.chhot2s{column-gap:36px!important}}
 @media (min-width:1001px){@A .ar-mpg #chHot .chhot2.chhot2s{column-gap:56px!important}}
+
+/* Weekly styles on phones (Batch 3): an odd last style spans both columns, so no half-filled row. */
+@media (max-width:699px){@A .ar-mpg #wkOut .wkstyles .wkst:last-child:nth-child(odd){grid-column:1/-1}}
