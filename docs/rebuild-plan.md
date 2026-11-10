@@ -158,7 +158,22 @@ concepts did and what the rebuild does instead.
   Add a Pokémon or the Battle preview. The redesign chat suggested bringing Shady Paw in; that conflicts with Sim's Nov 9
   decision. A real NastyPlot mascot is its own later project.
 
-## Open design decisions for R0
+## R0 decisions (Sim, Nov 10)
+
+1. Sprites: clean renders, no outline, on the colour panels; pale Pokémon get a slightly deeper panel tint.
+2. Sharper art: upscale all 345 with Real-ESRGAN's "anime" model (check the faint edge fringe on dark backgrounds first).
+3. Bench Pokémon: full-colour sprite on a muted panel, the grey Bench tag says it (benched, not disabled).
+4. Chips: one slanted chip style everywhere; no rounded pills. Sliders stay as they are.
+5. Dark mode: "dusk" on every page (warm charcoal, one soft light per Pokémon, no neon edges, no glow on text).
+6. Motion: a little and purposeful (sliders, sheets, bars, one signature hero moment); off for reduced motion; tested for
+   smooth scrolling.
+7. Home hero: trim one layer (keep Sneasler, the ray panel, the three stats and the buttons).
+8. Helper agents: yes, for the look-only jobs only (feature inventory, screenshot reviews); changes stay one at a time.
+9. Before/after sheets: not needed now; we compare on the real Preview later.
+Also: the rating display bug fixed on today's site before the freeze; the slant-and-shadow change dropped (reverted).
+Sim said go: the rebuild starts with R1.
+
+## The questions that were asked in R0
 
 1. Sprites in the new design: clean renders on the colour panels (as in the concepts) or the thin navy line.
 2. Sharper art: the result of the upscaling test from the redesign chat.
