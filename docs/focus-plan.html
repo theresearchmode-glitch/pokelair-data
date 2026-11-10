@@ -112,7 +112,12 @@ const PLANS = [
   ["f1-players","Score real players' teams","Ladder and beginner-style teams: where do everyday players land on the score? That tells us which kind of suggestion matters most."],
   ["f1-ratings","Re-check Ratings vs score","Do the Ratings page and the score really disagree about each Pokémon (friend measured 0.40)?"],
   ["f1-label","Check the leftover \"Different option\" label","Still in the suggestion code although Sim rejected it on Nov 9. Does it ever show?"],
+  ["f1-verdict","Matchups: which verdict is right more often?","Look-only. On later games against each threat, does the real-games verdict or the calc verdict predict better? Decides which one leads (Part 4)."],
+  ["f1-names","Find every place real player names show","Sim, Nov 10: no real player names on the site. Look-only first: list every page and data file that carries them."],
   ["f1-small","Small site fixes (one batch)","Capital letters; word-list terms (\"Grade my team\", \"Showdown ladder\"); Home banner off the edge at 1100px; small tap targets; Sneasler's sprite over its name in Damage calc; lock and remove buttons over sprites; tablet name spacing; \"Legal 3/4\"; Matchups tab names. Each checked first, then Preview."]]},
+ {id:"fb", name:"Alongside · Data in the background", goal:"Computer time running on its own; it doesn't touch the site.", steps:[
+  ["fb-logs","Collect battle logs from ladder replays","Sim, Nov 10: yes. Save a few facts per game (Tailwind or Trick Room went up, Fake Out used, who moved first) so speed control and Fake Out can be measured inside games, with ratings for skill. Public game data only."],
+  ["fb-sheets","Grow the open-sheet game data","5,750 single games with full sets and ratings today."]]},
  {id:"f2", name:"Part 2 · The big check (Nov 16–23)", goal:"The one judge we never tune on: tournaments from Nov 9 on.", steps:[
   ["f2-sealed","Sealed-set check","Does the Strength Score hold up on unseen results? Judged only by the pass rules written in Part 1."],
   ["f2-four","Re-test the Battle four-pick on more games","Nov 9: +2.0 (±1.8) with real-game matchups vs +0.8 (±1.8) today. Too close to call on 4,031 games."],
@@ -124,6 +129,7 @@ const PLANS = [
   ["f3-live","Preview, Sim's OK, live",""]]},
  {id:"f4", name:"Part 4 · Site cleanup (one at a time)", goal:"From the site critique. Nothing gets removed; things get combined and tidied.", steps:[
   ["f4-space","My Team empty space","Four spots: under the team name, under the action buttons, under the suggestion beside Matchups, and the right half at tablet width."],
+  ["f4-names","No real player names on the site","Replace them with neutral labels (for example \"1st place, Online tournament\"), keeping teams and results."],
   ["f4-match","Matchups: one clear verdict","Today a row can say \"Real games: Unfavoured\" and \"Calc: Handles it\" at once. Pick the main one, show the other clearly as secondary."],
   ["f4-short","My Team: shorter, no repeats","About 6 screens; Your Six appears twice and each set up to three times."],
   ["f4-heads","Shorter page headers","Ratings, Battle and Damage calc push the content off the first screen."]]},
@@ -144,8 +150,6 @@ const PLANS = [
 ]},
 {id:"later", short:"Later", name:"Later, not scheduled", about:"Worth doing, not now.", phases:[
  {id:"l", name:"Parking lot", steps:[
-  ["l-logs","Measure speed control and Fake Out inside games","Needs battle logs; our replay file keeps only teams, the four brought, leads, Mega, ratings and winner."],
-  ["l-sheets","Grow the open-sheet game data","5,750 single games with full sets and ratings: the only data with all three."],
   ["l-home","First-visit path and a shorter Home","Home is nearly 5 screens. Part of the January launch work (parked)."],
   ["l-rare","Rarely used Pokémon: score too timid","Keep the cautious pull for now; a per-Pokémon fix later."]]}
 ]}
