@@ -133,6 +133,11 @@ const PLANS = [
   ["f4-match","Matchups: one clear verdict","Today a row can say \"Real games: Unfavoured\" and \"Calc: Handles it\" at once. Pick the main one, show the other clearly as secondary."],
   ["f4-short","My Team: shorter, no repeats","About 6 screens; Your Six appears twice and each set up to three times."],
   ["f4-heads","Shorter page headers","Ratings, Battle and Damage calc push the content off the first screen."]]},
+ {id:"f6", name:"Part 4b · Player names out of the data (Sim, Nov 10)", goal:"Sim: no real names stored anywhere; each player gets a generated ID number. One change, Preview first.", done:"Same teams matched before and after, Strength Score unchanged, none of the real names in any saved or published file.", steps:[
+  ["f6-find","Find every place a name is stored","Look-only: daily data files, raw downloads in the GitHub repo, the page's daily data, battle replays (Showdown usernames), Test run and Practice."],
+  ["f6-ids","Names become ID numbers at download","A keyed number (\"Player 48213\") from a secret kept in GitHub's locked settings: same player, same number every day; no name list saved; can't be turned back into a name without the key."],
+  ["f6-test","Pass the checks","Same team matches before and after, score unchanged (same-grade, golden), a scan finds 0 real names in every saved or published file."],
+  ["f6-live","Preview, Sim's OK, live",""]]},
  {id:"f5", name:"Part 5 · The score itself (later)", goal:"Grade changes, one at a time, only after the sealed-set check.", done:"The same three checks as Part 3, and 90+ stays reachable.", steps:[
   ["f5-tiers","Pokémon values from the tiers","One value per Pokémon, so the score and the Ratings page agree."],
   ["f5-parts","Fewer, bigger, proven parts","Tier, Mega, Protect, Matchups and sets. Pair bonuses and the six's own record stay on the page as information (needs Sim's OK)."],
@@ -146,7 +151,8 @@ const PLANS = [
   ["q4-fail","If the lucky-pick test fails, back to the drawing board?","Rather than build two kinds of suggestions on a theory that didn't hold."],
   ["q5-verdict","Matchups: real games or the calc as the main verdict?",""],
   ["q6-batch","Small fixes as one batch?",""],
-  ["q7-names","Real player names: decide now or at launch?","The winning-teams data shows real players' names; kids use the site."]]}
+  ["q7-names","Real player names: decide now or at launch?","The winning-teams data shows real players' names; kids use the site."],
+  ["q8-repo","Old names in the GitHub repo's history: make the repo private, or rewrite the history?","Suggested: private (simplest; nothing on the site needs it public). Decide at Part 4b's last step."]]}
 ]},
 {id:"later", short:"Later", name:"Later, not scheduled", about:"Worth doing, not now.", phases:[
  {id:"l", name:"Parking lot", steps:[

@@ -15,6 +15,13 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      # No player names stored anywhere (Sim, Nov 10): every name in the saved data becomes an ID number ("P" + 10 digits,
+      # pid.mjs) made with a key kept only in this repository's secrets (Settings > Secrets and variables > Actions >
+      # NP_PID_KEY). The first run converts everything saved before the switch; after that it finds nothing to change.
+      # Without the key this step fails and the job stops, so yesterday's data stays and no name is ever saved.
+      - run: node scrub-names.mjs
+        env:
+          NP_PID_KEY: ${{ secrets.NP_PID_KEY }}
       # which regulation the newest events are played under (out/reg.json): every step below counts only that regulation
       - run: node reg.mjs || node skip.mjs "regulation check skipped"
       - run: node replays.mjs || node skip.mjs "replays skipped"   # first, so today's bring/lead rates reach the ratings (was a day behind)
@@ -25,6 +32,7 @@ jobs:
       - run: node practice.mjs || node skip.mjs "practice skipped"
       - run: node update.mjs
         env:
+          NP_PID_KEY: ${{ secrets.NP_PID_KEY }}
           MAX_FETCH: ${{ github.event_name == 'workflow_dispatch' && '400' || '40' }}
       # Official events (Reg M-C Regionals/Internationals, Masters top 64 open team sheets): Victory Road's event pages and
       # VR Pastes, checked against Liquipedia's API. Polite: one request a second per site, our User-Agent, only new or
@@ -32,6 +40,8 @@ jobs:
       # (RK9 was read here until Nov 1; its terms, rk9.gg/terms 5.3, forbid automated extraction, so rk9.mjs and
       # rk9-field.mjs were removed. The whole-field table they made is kept frozen in out/official_perf.json.)
       - run: node official.mjs || node skip.mjs "official events skipped (previous out/official.json kept)"
+        env:
+          NP_PID_KEY: ${{ secrets.NP_PID_KEY }}
       - run: node events.mjs || node skip.mjs "events skipped"
       # this week vs last week from the team sheets already on disk (out/weekly.json; no network)
       - run: node weekly.mjs || node skip.mjs "weekly digest skipped"
@@ -59,6 +69,11 @@ jobs:
       - run: node scoreboard.mjs || node skip.mjs "scoreboard skipped"
       # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
       - run: node track.mjs || node skip.mjs "track record skipped"
+      # last guard before saving: nothing that was a name may be committed (converts any straggler, then checks)
+      - name: No player names
+        run: node scrub-names.mjs && node scrub-names.mjs --check
+        env:
+          NP_PID_KEY: ${{ secrets.NP_PID_KEY }}
       - name: Commit
         run: |
           git config user.name "pokelair-bot"
