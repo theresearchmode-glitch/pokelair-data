@@ -524,7 +524,7 @@
    words, so the names sit as an even set (76-slide.js SLIDE.even). Labels never shrink below 13px. */
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide.ar-slwrap .ar-sllb{width:min-content;min-width:0}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide.ar-slnum .ar-sllb{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide.ar-slnum{padding-bottom:10px!important;max-width:calc(var(--n) * 96px)!important}
+@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide.ar-slnum{padding-bottom:8px!important;max-width:calc(var(--n) * 96px)!important}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button:is([aria-pressed="true"],.on) .ar-slic>:is(svg,b),@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide:not(:has(>[aria-pressed]))>button[aria-selected="true"] .ar-slic>:is(svg,b){color:var(--ar-sec-on,#fff)!important;transition-delay:.12s}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button:is([aria-pressed="true"],.on),@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide:not(:has(>[aria-pressed]))>button[aria-selected="true"]{color:var(--ar-ink)!important;font-weight:700!important}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button:active .ar-slic>:is(svg,b){transform:scale(.86)}

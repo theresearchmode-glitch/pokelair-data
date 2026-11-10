@@ -16,7 +16,7 @@
 @A .arb .toolsw{margin:0 0 16px!important}
 @A .arb section>.head{margin:0 0 16px!important;padding:0!important;background:none!important;border:0!important;align-items:flex-start;gap:12px}
 @A .arb section>.head h2{display:none}
-@A .arb section>.head .hint .ar-link{margin:-10px 0;vertical-align:baseline}
+@A .arb section>.head .hint .ar-link{margin:-8px 0;vertical-align:baseline}
 @A .arb section>.head .hint{margin:0!important;max-width:68ch;color:var(--ar-ink-2)!important;font:400 var(--ar-fs-body)/1.5 var(--ar-body)!important}
 @A .arb .t2,@A .arb .vsub{color:var(--ar-ink-2)!important;font-size:var(--ar-fs-small)!important;line-height:1.5}
 @A .arb .t2 b,@A .arb .vsub b{color:var(--ar-ink)!important}
