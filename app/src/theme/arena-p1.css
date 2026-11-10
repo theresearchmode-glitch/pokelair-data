@@ -1172,3 +1172,6 @@
 @A #homeOut.ar-on .chhtools .htiles :is(.htile,.htile[hidden]) b{flex:0 0 auto!important;width:auto!important;max-width:100%;text-align:center!important}
 @A #homeOut.ar-on .chhtools .htiles :is(.htile,.htile[hidden]) :is(.hsd,.hld){text-align:center!important;align-self:center!important}
 @media (max-width:359px){@A #homeOut.ar-on .chhtools .htiles :is(.htile,.htile[hidden]){padding-left:12px!important;padding-right:12px!important}}
+/* where the descriptions show (iPad, desktop), each tile's content starts at the top, so icons and names line up across a row
+   even when one description takes two lines and its neighbour one */
+@media (min-width:600px){@A #homeOut.ar-on .chhtools .htiles :is(.htile,.htile[hidden]):not(:last-child){justify-content:flex-start!important}}
