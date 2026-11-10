@@ -33,3 +33,4 @@ out/model_d17.json
 out/matches_train17.json
 app/*-[0-9]*.html
 out/wf/
+out/polish-check.json
