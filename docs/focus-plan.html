@@ -1,0 +1,208 @@
+<title>NastyPlot Focus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column, the current focus only; phases as sections, steps as tickable rows; progress bar per phase. NastyPlot type and colours. */
+:root{
+  --paper:#ECE7E0; --card:#FBF8F4; --ink:#16141A; --mute:#5C5862; --rule:rgba(22,20,26,.12);
+  --blue:#0078BF; --blue-ink:#005E96; --green:#2E9E5B; --green-ink:#16693B; --gold:#E9A800;
+  --head:"Unbounded",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#1B1A1D; --card:#242327; --ink:#ECE8E2; --mute:#A7A2AB; --rule:rgba(236,232,226,.12);
+  --blue:#4FB2F0; --blue-ink:#4FB2F0; --green:#5FD08F; --green-ink:#5FD08F; --gold:#FFD166; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#1B1A1D; --card:#242327; --ink:#ECE8E2; --mute:#A7A2AB; --rule:rgba(236,232,226,.12);
+  --blue:#4FB2F0; --blue-ink:#4FB2F0; --green:#5FD08F; --green-ink:#5FD08F; --gold:#FFD166; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 64px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1,h2,.big{font-family:var(--head);font-synthesis:style;font-style:italic;text-wrap:balance;margin:0}
+h1{font-size:34px;line-height:1.15;font-weight:800}
+h1 em{color:var(--blue);font-style:italic}
+h2{font-size:22px;line-height:1.25;font-weight:600}
+p{margin:0}
+.lede{font-size:17px;color:var(--mute);max-width:62ch}
+.overall{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.big{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.bar{flex:1;min-width:160px;height:6px;border-radius:6px;background:var(--rule);overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+.rule-box{background:var(--card);border-radius:18px;padding:20px 24px;display:flex;flex-direction:column;gap:6px}
+.rule-box b{font-weight:600}
+.label{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:600}
+section.phase{background:var(--card);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.ph-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ph-count{font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums}
+.ph-count.done{color:var(--green-ink);font-weight:600}
+.goal{color:var(--mute);font-size:15px}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+li{border-top:1px solid var(--rule)}
+li:first-child{border-top:0}
+label.step{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:12px 0;cursor:pointer;align-items:start}
+label.step input{appearance:none;width:22px;height:22px;margin:1px 0 0;border:2px solid var(--mute);border-radius:6px;cursor:pointer;display:grid;place-items:center;background:transparent}
+label.step input:checked{background:var(--green);border-color:var(--green)}
+label.step input:checked::after{content:"";width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+label.step input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+label.step input:disabled{cursor:default;opacity:.6}
+.st{min-width:0;display:flex;flex-direction:column;gap:2px}
+.st b{font-weight:600}
+.st span{color:var(--mute);font-size:15px}
+input:checked + .st b{text-decoration:line-through;text-decoration-color:var(--mute)}
+.when{font-size:13px;color:var(--green-ink);font-weight:600}
+.done-when{border-top:1px solid var(--rule);padding-top:12px;font-size:15px}
+.done-when b{color:var(--blue-ink);font-weight:600}
+.status{font-size:13px;color:var(--mute)}
+.jump{display:flex;flex-wrap:wrap;gap:8px}
+.jump a{font-size:15px;font-weight:600;color:var(--blue-ink);text-decoration:none;padding:6px 12px;border-radius:18px;background:var(--card);font-variant-numeric:tabular-nums}
+.jump a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+#plans{display:flex;flex-direction:column;gap:40px}
+.plan{display:flex;flex-direction:column;gap:16px;scroll-margin-top:16px}
+.plan-head{display:flex;flex-direction:column;gap:8px}
+.plan-head h2{font-size:26px;font-weight:800}
+.plan-head p{color:var(--mute);max-width:62ch}
+.plan-bar{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums}
+.plan-bar .bar{max-width:240px}
+section.phase h3{font-family:var(--head);font-synthesis:style;font-style:italic;font-size:20px;font-weight:600;margin:0;text-wrap:balance}
+.never{font-size:15px;border-top:1px solid var(--rule);padding-top:12px}
+.never b{color:var(--mute);font-weight:600}
+@media (max-width:480px){h1{font-size:28px}section.phase,.rule-box{padding:20px 16px}}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <span class="label">Every plan, one checklist</span>
+    <h1>NastyPlot <em>plans.</em></h1>
+    <p class="lede">Every plan we make lives here as a checklist, so we always know where we are and no idea gets lost. Ticks save for both of us.</p>
+    <nav class="jump" id="jump" aria-label="Plans on this page"></nav>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <span class="label">What we're working on now · from Nov 10</span>
+    <h1>NastyPlot <em>focus.</em></h1>
+    <p class="lede">Fix how we grade first, then clean up the site, one step at a time. Every step is tested, shown on the Preview, and goes live only on Sim's go. Ticks save for both of us.</p>
+    <nav class="jump" id="jump" aria-label="Parts of this plan"></nav>
+  </header>
+
+  <div class="overall">
+    <span class="big" id="pct">0%</span>
+    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+    <span class="status" id="status">Loading progress…</span>
+  </div>
+
+  <div class="rule-box">
+    <span class="label">Where this plan came from</span>
+    <p><b>An outside review of our grading.</b> A friend read GRADING-REVIEW.md in the repo and critiqued the whole site. The main finding: the Strength Score rates whole teams well, but it can't price a one-Pokémon swap (52.4% on real swaps, close to a coin flip), so suggestions over-promise.</p>
+    <p><b>The score stays frozen</b> until the sealed-set check (Nov 16–23).</p>
+    <p><b>Nothing changes on a guess.</b> Each change must pass a check it could fail, on real results it wasn't tuned on.</p>
+    <p><b>The older Plans page</b> keeps the full history and every earlier idea: <a href="https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ" target="_blank" rel="noopener" style="color:var(--blue-ink);font-weight:600">NastyPlot Plans</a>.</p>
+  </div>
+
+  <div id="plans"></div>
+</div>
+
+<script>
+const PLANS = [
+{id:"focus", short:"Focus", name:"The plan", about:"Five parts, in order. Part 1 is look-only work that can run alongside the small site fixes.", phases:[
+ {id:"f1", name:"Part 1 · Before the big check (now to Nov 16)", goal:"Look-only: nothing on the site changes, except the small fixes batch, which goes to the Preview first.", steps:[
+  ["f1-rules","Write the pass rules for the sealed-set check","Before we look at it, so the goalposts can't move afterwards."],
+  ["f1-luck","Lucky-pick test","Pick suggestions with a model trained on half the tournaments, price them with a model trained on the other half. If most of the gain disappears, the over-promise is luck: the top pick out of hundreds is the luckiest noise."],
+  ["f1-players","Score real players' teams","Ladder and beginner-style teams: where do everyday players land on the score? That tells us which kind of suggestion matters most."],
+  ["f1-ratings","Re-check Ratings vs score","Do the Ratings page and the score really disagree about each Pokémon (friend measured 0.40)?"],
+  ["f1-label","Check the leftover \"Different option\" label","Still in the suggestion code although Sim rejected it on Nov 9. Does it ever show?"],
+  ["f1-small","Small site fixes (one batch)","Capital letters; word-list terms (\"Grade my team\", \"Showdown ladder\"); Home banner off the edge at 1100px; small tap targets; Sneasler's sprite over its name in Damage calc; lock and remove buttons over sprites; tablet name spacing; \"Legal 3/4\"; Matchups tab names. Each checked first, then Preview."]]},
+ {id:"f2", name:"Part 2 · The big check (Nov 16–23)", goal:"The one judge we never tune on: tournaments from Nov 9 on.", steps:[
+  ["f2-sealed","Sealed-set check","Does the Strength Score hold up on unseen results? Judged only by the pass rules written in Part 1."],
+  ["f2-four","Re-test the Battle four-pick on more games","Nov 9: +2.0 (±1.8) with real-game matchups vs +0.8 (±1.8) today. Too close to call on 4,031 games."],
+  ["f2-tr","Trick Room check","Written down Nov 8: Trick Room teams won +2.2 points more than the grade expected. Does it hold?"]]},
+ {id:"f3", name:"Part 3 · Fix suggestions", goal:"Honest numbers that still feel like real upgrades.", done:"Predictions no worse, swaps picked better than 52.4%, and the promised gain matches the real gain.", steps:[
+  ["f3-lanes","Two kinds of suggestions","Fixes for real problems (no Mega, too little Protect, item problem, No answer to a top threat), with big true numbers. Other swaps only when real teams sharing 5 of 6 Pokémon back them up, with small honest points."],
+  ["f3-none","\"Nothing to fix\" for good teams","Point them to Battle and sets, where we have measured edge."],
+  ["f3-test","Pass the three checks","Tested on real results the change wasn't tuned on."],
+  ["f3-live","Preview, Sim's OK, live",""]]},
+ {id:"f4", name:"Part 4 · Site cleanup (one at a time)", goal:"From the site critique. Nothing gets removed; things get combined and tidied.", steps:[
+  ["f4-space","My Team empty space","Four spots: under the team name, under the action buttons, under the suggestion beside Matchups, and the right half at tablet width."],
+  ["f4-match","Matchups: one clear verdict","Today a row can say \"Real games: Unfavoured\" and \"Calc: Handles it\" at once. Pick the main one, show the other clearly as secondary."],
+  ["f4-short","My Team: shorter, no repeats","About 6 screens; Your Six appears twice and each set up to three times."],
+  ["f4-heads","Shorter page headers","Ratings, Battle and Damage calc push the content off the first screen."]]},
+ {id:"f5", name:"Part 5 · The score itself (later)", goal:"Grade changes, one at a time, only after the sealed-set check.", done:"The same three checks as Part 3, and 90+ stays reachable.", steps:[
+  ["f5-tiers","Pokémon values from the tiers","One value per Pokémon, so the score and the Ratings page agree."],
+  ["f5-parts","Fewer, bigger, proven parts","Tier, Mega, Protect, Matchups and sets. Pair bonuses and the six's own record stay on the page as information (needs Sim's OK)."],
+  ["f5-band","Maybe the band word as the headline","\"Tournament ready\" first, the number second. Keep 0–100 and the five band words."]]}
+]},
+{id:"decide", short:"Decisions", name:"Decisions for Sim", about:"Tick one when it's decided; the note says what was chosen.", phases:[
+ {id:"q", name:"Open questions", steps:[
+  ["q1-parts","Pairs and the six's own record: shown, but not counted in the score?","Measured: neither adds accuracy. Sim's rule is never remove functionality."],
+  ["q2-order","Fix suggestions before changing the score?","Suggested: yes, it fixes what players see without touching the score."],
+  ["q3-logs","Collect battle logs?","To measure speed control and Fake Out inside games. Public game data only; a new daily step."],
+  ["q4-fail","If the lucky-pick test fails, back to the drawing board?","Rather than build two kinds of suggestions on a theory that didn't hold."],
+  ["q5-verdict","Matchups: real games or the calc as the main verdict?",""],
+  ["q6-batch","Small fixes as one batch?",""],
+  ["q7-names","Real player names: decide now or at launch?","The winning-teams data shows real players' names; kids use the site."]]}
+]},
+{id:"later", short:"Later", name:"Later, not scheduled", about:"Worth doing, not now.", phases:[
+ {id:"l", name:"Parking lot", steps:[
+  ["l-logs","Measure speed control and Fake Out inside games","Needs battle logs; our replay file keeps only teams, the four brought, leads, Mega, ratings and winner."],
+  ["l-sheets","Grow the open-sheet game data","5,750 single games with full sets and ratings: the only data with all three."],
+  ["l-home","First-visit path and a shorter Home","Home is nearly 5 screens. Part of the January launch work (parked)."],
+  ["l-rare","Rarely used Pokémon: score too timid","Keep the cautious pull for now; a per-Pokémon fix later."]]}
+]}
+];
+const state = {};
+const $ = id => document.getElementById(id);
+function render(){
+  const host = $("plans"); host.textContent = ""; const jump = $("jump"); jump.textContent = "";
+  let all = 0, done = 0;
+  for (const P of PLANS){
+    const wrap = document.createElement("div"); wrap.className = "plan"; wrap.id = P.id;
+    const steps = P.phases.flatMap(ph => ph.steps), n = steps.filter(s => state[s[0]]?.done).length; all += steps.length; done += n;
+    const pp = steps.length ? Math.round(n / steps.length * 100) : 0;
+    wrap.innerHTML = `<div class="plan-head"><h2></h2><p></p><div class="plan-bar"><div class="bar" aria-hidden="true"><i style="width:${pp}%"></i></div><span>${n} of ${steps.length} done</span></div></div>`;
+    wrap.querySelector("h2").textContent = P.name; wrap.querySelector("p").textContent = P.about;
+    const a = document.createElement("a"); a.href = "#" + P.id; a.textContent = `${P.short} · ${pp}%`; jump.append(a);
+    for (const ph of P.phases){
+      const sec = document.createElement("section"); sec.className = "phase";
+      const k = ph.steps.filter(s => state[s[0]]?.done).length;
+      sec.innerHTML = `<div class="ph-top"><h3></h3><span class="ph-count ${k===ph.steps.length?'done':''}">${k} of ${ph.steps.length}</span></div>${ph.goal?'<p class="goal"></p>':''}<ul></ul>${ph.done?'<p class="done-when"><b>Done when</b> </p>':''}${ph.never?'<p class="never"><b>Never</b> </p>':''}`;
+      sec.querySelector("h3").textContent = ph.name;
+      if (ph.goal) sec.querySelector(".goal").textContent = ph.goal;
+      if (ph.done) sec.querySelector(".done-when").append(ph.done);
+      if (ph.never) sec.querySelector(".never").append(ph.never);
+      const ul = sec.querySelector("ul");
+      for (const [id, t, d] of ph.steps){
+        const li = document.createElement("li"), s = state[id] || {};
+        li.innerHTML = `<label class="step"><input type="checkbox" id="${id}"><div class="st"><b></b>${d?'<span class="d"></span>':''}${s.at?'<span class="when"></span>':''}</div></label>`;
+        li.querySelector("b").textContent = t;
+        if (d) li.querySelector(".d").textContent = d;
+        if (s.at) li.querySelector(".when").textContent = "Done " + s.at + (s.note ? " · " + s.note : "");
+        const cb = li.querySelector("input"); cb.checked = !!s.done; cb.disabled = !db;
+        cb.addEventListener("change", () => toggle(id, cb.checked, cb));
+        ul.append(li);
+      }
+      wrap.append(sec);
+    }
+    host.append(wrap);
+  }
+  const p = all ? Math.round(done / all * 100) : 0;
+  $("pct").textContent = p + "%"; $("bar").style.width = p + "%";
+}
+let db = null;
+async function toggle(id, on, cb){
+  const at = on ? new Date().toISOString().slice(0, 10) : null;
+  try { await db.collection("progress").doc(id).set({done: on, at, note: on ? (state[id]?.note || "") : ""}); }
+  catch (e) { cb.checked = !on; $("status").textContent = "Couldn't save that tick. Check you're signed in with edit access."; }
+}
+render();
+(async () => {
+  try { db = await claude.use("db"); } catch (e) { db = null; }
+  if (!db){ $("status").textContent = "Sign in to see and save progress."; render(); return; }
+  db.collection("progress").onSnapshot(snap => {
+    for (const k in state) delete state[k];
+    for (const d of snap.docs) if (d.exists) state[d.id] = d.data();
+    $("status").textContent = "Saved for everyone who opens this page.";
+    render();
+  }, () => { $("status").textContent = "Progress couldn't load right now."; });
+})();
+</script>

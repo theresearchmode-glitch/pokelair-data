@@ -33,6 +33,9 @@ audits and research sweeps, not our one-change-at-a-time work.
   corners 4/6/10/18/round, paragraphs line-height 1.5.
 
 ## Plans are always checklists (Sim, Nov 8)
+CURRENT FOCUS (Sim, Nov 10): the NastyPlot Focus page (https://claude.ai/artifact/1AgBoBNeSXHGRDu8kpYPGX, source
+docs/focus-plan.html; ticks in its own db collection "progress") is the plan we work from now: grading fixes from the outside
+review (GRADING-REVIEW.md), then site cleanup. Tick steps there. The older Plans page below keeps the full history and ideas.
 Every plan made for Sim lives as a checklist on the NastyPlot Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ,
 source docs/foundation-plan.html; ticks are in its db collection "progress"). Add each new plan there as its own section,
 tick steps as they're done (with the date and a short note), and put every idea that isn't scheduled yet in "Ideas, not
