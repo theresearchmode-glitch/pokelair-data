@@ -109,7 +109,9 @@
 @A .ar-mpg #chHot .chhot.mgrh .mgrmon :is(img,svg){position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;margin:0!important;transform:none!important;background:none!important;border-radius:0!important;
   filter:drop-shadow(0 14px 12px rgba(40,10,50,.26))}
 @A .ar-mpg #chHot .chhot.mgrh.ar-ismega .mgrmon img{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a)) drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A) drop-shadow(0 14px 12px rgba(40,10,50,.26))}
-@A .ar-mpg #chHot .chhot.mgrh .n.mgmis{position:relative!important;display:block;margin:2px 0 0 2px!important;padding:0!important;font:italic 900 76px/.9 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em!important;
+/* The big rating number is slanted as a shape (12deg, matched pixel for pixel to the browser's italic), not by the browser's made-up
+   italic: on iPhone (the Claude app and Safari) the made-up italic cut the top corner of the 7 (Sim, Nov 10). */
+@A .ar-mpg #chHot .chhot.mgrh .n.mgmis{position:relative!important;display:block;margin:2px 0 0 2px!important;padding:0!important;font:normal 900 76px/.9 var(--ar-display)!important;width:max-content;transform:skewX(-12deg);transform-origin:0 60%;font-stretch:125%!important;letter-spacing:-.03em!important;
   color:var(--ar-ink)!important;text-shadow:none!important;background:none!important;-webkit-text-stroke:0!important}
 @A .ar-mpg #chHot .chhot.mgrh .n.mgmis::before,@A .ar-mpg #chHot .chhot.mgrh .n.mgmis::after{display:none!important}
 @A .ar-mpg #chHot .chhot.mgrh .mgcap.mgrcap{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:32px;max-width:54%;margin:12px 0 0 4px!important;padding:2px 12px!important;
