@@ -37,3 +37,11 @@ after has none, and at 1x the art is just as sharp. Go ahead with step 3 (all 34
   every sprite, compare opaque area before vs after; list any that lose more than 3% and keep the un-eroded alpha for those
   (bleed only), so no detail disappears.
 - In the contact sheet, put those listed sprites first so they're easy to review.
+
+## Full upscale review (main chat, Nov 10)
+Reviewed commit 9f392f5: 346 of 346 present (docs/rebuild/art/up1024, 24 MB, 52 s on the 3080), contact sheet on light and
+Dusk. APPROVED for the rebuild. Side-by-side at the same size on Dusk (Garchomp 445): the new art is crisp with clean edges
+and no halo; today's 512 px inked sprite is softer with a faint rim. 48 thin-detail sprites kept the un-eroded edge (bleed
+only), as asked; none show a rim on the sheet. Design note taken into docs/rebuild/design-system.md: near-black Pokémon
+(10250-10252, 491, 823) vanish on Dusk without a panel. Today's live site keeps its current sprites; the new art ships with
+the rebuild (R3), not before.
