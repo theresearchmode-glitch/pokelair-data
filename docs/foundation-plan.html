@@ -301,6 +301,43 @@ const PLANS = [
   ["r1-switch","Test switch","Try M-D on a preview without touching the live site."],
   ["r1-cold","Too-little-data mode","Honest Low confidence while M-D games build up."]]}
 ]},
+{id:"rebuild", short:"Rebuild", name:"Rebuild into the new design", about:"Nov 10 (Sim): a full rebuild into the new 'flair' design (breathable, the Pok\u00e9mon carry it, plus NastyPlot's logo, slanted headlines, ray panels and the sliders), done once and cleanly: one design system, no stacked layers, zero features lost. Claude leads; Sim approves the direction, each page and the switch. Not started until Sim says go. Full plan: docs/rebuild-plan.md.", phases:[
+ {id:"rb0", name:"R0. Decide and freeze", steps:[
+  ["rb0-dir","Direction locked: the flair concept","Breathable layout + logo, Unbounded slanted, tilted ray panels, slanted plates, sliders."],
+  ["rb0-open","Open design questions settled","Sprites (clean or navy line), sharper art, bench look, one chip style, dark 'dusk', motion, Home hero, helper agents, before/after sheets."],
+  ["rb0-freeze","Look freeze on today's site","Bug fixes and data work only."],
+  ["rb0-go","Sim says go",""]]},
+ {id:"rb1", name:"R1. Inventory: nothing gets lost", steps:[
+  ["rb1-feat","Feature inventory with an ID per feature","Every page, button, tap, slider, tab, sheet, setting, shortcut, state, toast, share and export."],
+  ["rb1-data","Saved-data contract frozen","Every storage key and database document, so teams, box, settings and sync survive."],
+  ["rb1-tests","Behaviour tests pass on today's site","Written from what a player sees and taps, not class names, so they judge the new site too."],
+  ["rb1-base","Baselines measured","Page heights, scroll smoothness on Windows, load time, contrast, polish check."]]},
+ {id:"rb2", name:"R2. Design system and full mock-ups", steps:[
+  ["rb2-tokens","Tokens: colour (light, dusk dark), type, 4px spacing, corners, slant, shadows, motion",""],
+  ["rb2-comp","Components, one rule each","Buttons, links, one slanted chip, the slider, tabs, jump bar, tags, ray panel, score lockup, rows, table, sheet, toast, empty state, fields, search."],
+  ["rb2-mocks","Every page mocked (desktop, phone, light, dark)","Word list and real data; Sim approves section by section."]]},
+ {id:"rb3", name:"R3. New foundation (Preview only)", steps:[
+  ["rb3-build","Second build target beside today's site","Shares all logic; live stays on today's design."],
+  ["rb3-core","Tokens, base, components, sliders, sprites, shell",""],
+  ["rb3-guide","Living style guide page","Every component narrowest and widest, light and dark."],
+  ["rb3-guard","Guard rails in CI","Fails on !important, id-stacked selectors, off-scale sizes or colours; polish check rewritten."]]},
+ {id:"rb4", name:"R4. Pages, one at a time", steps:[
+  ["rb4-team","My Team (Team Sheet, saved teams, box, compare, share)",""],
+  ["rb4-sheet","Pok\u00e9mon info sheet",""],
+  ["rb4-home","Home",""],
+  ["rb4-build","Build pages",""],
+  ["rb4-battle","Battle pages",""],
+  ["rb4-meta","Meta pages",""],
+  ["rb4-rest","Method, About, legal, feedback, onboarding, all empty, loading and error states",""]]},
+ {id:"rb5", name:"R5. The switch", steps:[
+  ["rb5-parity","100% of the inventory ticked; all tests and 16 CI checks green",""],
+  ["rb5-sizes","Every width 320-2560, light and dark; speed and contrast at or above baseline",""],
+  ["rb5-devices","Sim uses the full Preview for a few days (iPhone, iPad, Windows)",""],
+  ["rb5-live","Sim says go; switch; rollback ready for two weeks",""]]},
+ {id:"rb6", name:"R6. Clean-up", steps:[
+  ["rb6-delete","Old stylesheets and theme modules deleted",""],
+  ["rb6-rules","CLAUDE.md design rules rewritten for the new system",""]]}
+]},
 {id:"ideas", short:"Ideas", name:"Ideas, not scheduled yet", about:"Everything worth doing that isn't in a plan yet, so nothing gets lost. Tick one when it's done or moved into a plan.", phases:[
  {id:"i1", name:"Parking lot", steps:[
   ["i-reviewer","A trusted player for blind reviews","A second opinion next to Sim's at the end of Phases 2 and 3."],
