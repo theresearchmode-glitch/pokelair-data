@@ -234,7 +234,7 @@ CH.shareMode = null;
 buildShareCard = async function () { const ms = members(); if (!ms.length) return null;
   const dark = (CH.shareMode || document.documentElement.dataset.look) === 'dark';
   const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#E6DDCD', blue: '#1E8FE8', red: '#FF3F5F', card: '#2C2A28', pen: '#7CC4FF', tile: '#171615', shadow: '#1E8FE8'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', red: '#FF48B0', card: '#FBF6EC', pen: '#005A90', tile: '#1D2140', shadow: '#0078BF'};
-  try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
+  try { await Promise.all(['400 80px Anton', '800 30px Unbounded', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
   const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   if (dark) { const g = x.createRadialGradient(600, -120, 0, 600, -120, 760); g.addColorStop(0, 'rgba(255,232,0,.10)'); g.addColorStop(1, 'rgba(255,232,0,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
@@ -260,7 +260,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   const cw = W / 6; ms.slice(0, 6).forEach((m, i) => { const cx = i * cw + cw / 2, im = imgs[i];
     x.fillStyle = 'rgba(0,0,0,.18)'; x.beginPath(); x.ellipse(cx, by + 238, 70, 12, 0, 0, 7); x.fill();
     if (im) { const s = Math.min(176 / im.width, 176 / im.height); x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetX = 3; x.shadowOffsetY = 4; x.drawImage(im, cx - im.width * s / 2, by + 246 - im.height * s, im.width * s, im.height * s); x.restore(); }
-    x.textAlign = 'center'; x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowOffsetY = 2; x.shadowBlur = 4; x.fillStyle = '#fff'; let f2 = 24; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Archivo, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
+    x.textAlign = 'center'; x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowOffsetY = 2; x.shadowBlur = 4; x.fillStyle = '#fff'; let f2 = 24; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Unbounded, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
     if (m.item) { let f3 = 18; do { x.font = `700 ${f3}px "Instrument Sans", monospace`; } while (x.measureText(m.item).width > cw - 12 && --f3 > 12); x.fillStyle = '#fff'; x.fillText(m.item, cx, by + 305); } x.restore(); x.textAlign = 'left'; });
   x.font = '400 32px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Sharply raise your win rate.', 58, 656);
   x.textAlign = 'right'; x.font = '700 19px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', 1144, 652); x.textAlign = 'left';

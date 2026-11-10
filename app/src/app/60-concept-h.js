@@ -19,6 +19,9 @@ CH._lk = 0; CH.uniq = svg => { const n = ++CH._lk; return svg.replace(/id="(np[^
    never reach it. This fills each var(--x, fallback) in it with the value the live header logo uses, so every share card
    matches the logo on the site in both looks (Sim, Nov 5: "our share card still uses our old logo"). */
 function npLogoSvg(dark) { const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
+  /* Polish (Nov 10): a share image in the other mode than the page uses that logo's own colours (a dark image made from the light
+     page drew NASTY in the light page's dark ink: invisible on black) */
+  if (!!dark !== (document.documentElement.dataset.look === 'dark')) return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => fb);
   const el = [...document.querySelectorAll('.nplk')].find(e => e.getClientRects().length) || document.querySelector('.nplk'); if (!el) return raw;
   const cs = getComputedStyle(el); return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => { const x = cs.getPropertyValue(v).trim(); return x || fb; }); }
 CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
