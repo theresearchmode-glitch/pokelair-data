@@ -209,3 +209,7 @@ Sim chose the My Box concept drawn in the redesign chat (an in-game Pokémon box
 ## Final suggestions (Nov 10)
 
 The redesign chat's last suggestions and Claude's decisions (Sim gave executive control): docs/rebuild/decisions-final-suggestions.md.
+
+## Timing vs Regulation M-D (Nov 10)
+
+M-D most likely starts Dec 2. Sim, Nov 10: aim to have the rebuild live before then ("cutting it super duper close ... lets keep our hopes up high"). Safety net (Claude): keep the M-D data switch (roster, regulation profile, daily data and tests on M-D) ready as its own small step; if the rebuild is not live by about Nov 28, switch today's site to M-D data so players never see last regulation's numbers. The deeper M-D work (re-checking the Strength Score and matchups on M-D games) comes after the rebuild either way.
