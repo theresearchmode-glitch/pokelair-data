@@ -15,6 +15,11 @@ export default (ui, pg) => {
   const pane = () => pg.evaluate(() => { const p = [...document.querySelectorAll('[data-pane]')].find(e => !e.hidden && e.getClientRects().length); return p ? p.dataset.pane : null; });
 
   const A = {
+    /** reload while signed in, as the same player on another visit: the fake account keeps what was saved (the kit's reload()
+     *  re-seeds the account from open()'s team). otherDevice: also wipe this browser's copy, so only the account can bring data back */
+    async reloadSignedIn(otherDevice = false, wait = 1500) { const acc = await pg.evaluate(() => window.__acct);
+      await pg.addInitScript(([a, wipe]) => { window.__acct = a; if (wipe) try { localStorage.removeItem('cc2.state'); } catch (e) {} }, [acc, otherDevice]);
+      await pg.reload(); await pg.waitForTimeout(wait); },
     /** visible page text without drop-down option lists */
     pageText: () => cleanText(),
     /** wait until the page shows this text (string: case-insensitive contains; RegExp) */
@@ -36,12 +41,12 @@ export default (ui, pg) => {
 
     // ---- navigation ----
     /** the highlighted main tab (bottom bar on phones, top tabs on wide screens) */
-    mainTab: () => pg.evaluate(() => { const e = [...document.querySelectorAll('[role=tab][aria-selected="true"][data-view]')].find(e => e.getClientRects().length); return e ? e.innerText.replace(/\s+/g, ' ').replace(/\s*\d+\/\d+$/, '').trim() : null; }),
+    mainTab: () => pg.evaluate(() => { const e = [...document.querySelectorAll('.tabs [data-view][aria-selected="true"], .bnav [data-view][aria-selected="true"]')].find(e => e.getClientRects().length); return e ? e.innerText.replace(/\s+/g, ' ').replace(/\s*\d+\/\d+$/, '').trim() : null; }),
     /** tap a main tab (Home / Build / My Team / Battle / Meta) */
-    async tapMainTab(name, wait = 700) { const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('[role=tab][data-view]')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim().toLowerCase().startsWith(n.toLowerCase())); if (!e) return false; e.click(); return true; }, name);
+    async tapMainTab(name, wait = 700) { const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('.tabs [data-view], .bnav [data-view]')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim().toLowerCase().startsWith(n.toLowerCase())); if (!e) return false; e.click(); return true; }, name);
       if (!ok) throw new Error('no main tab ' + name); await pg.waitForTimeout(wait); },
     /** open the "More pages and settings" menu */
-    async openMenu() { await clickSel('#moreBtn', 600); },
+    async openMenu() { if (await pg.evaluate(() => { const b = document.getElementById('moreBtn'); return b && b.getAttribute('aria-expanded') === 'true'; })) return; await clickSel('#moreBtn', 600); },
     /** entries of one menu group, in order (menu must be open) */
     menuGroup: name => pg.evaluate(n => { const g = [...document.querySelectorAll('.sgroup')].find(g => (g.innerText || '').trim().split('\n')[0].trim().toLowerCase() === n.toLowerCase());
       return g ? [...g.querySelectorAll('[data-view]')].map(e => e.innerText.replace(/\s+/g, ' ').replace(/\s*\d+\/\d+$/, '').trim()) : null; }, name),
@@ -79,6 +84,22 @@ export default (ui, pg) => {
     recentOpponents: () => pg.evaluate(() => [...document.querySelectorAll('[data-arrecent]')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),
     async loadRecentOpponent(i = 0) { const ok = await pg.evaluate(i => { const e = [...document.querySelectorAll('[data-arrecent]')].filter(e => e.getClientRects().length)[i]; if (!e) return false; e.click(); return true; }, i); if (!ok) throw new Error('no recent opponent ' + i); await pg.waitForTimeout(600); },
 
+    /** how many of their six show a picture (sprite art) on their tile */
+    opponentPictures: () => pg.evaluate(() => new Set([...document.querySelectorAll('[data-pane=matchup] [aria-label^="Remove "]')].filter(b => b.getClientRects().length).map(b => { let c = b.parentElement; for (let k = 0; k < 3 && c && !c.querySelector('img'); k++) c = c.parentElement; return c && c.querySelector('img') ? b.getAttribute('aria-label') : null; }).filter(Boolean)).size),
+    /** screen position (top, px) of a visible button in the current page by its exact text; scrollToMiddle puts it mid-screen first */
+    buttonTop: (label, scrollToMiddle = false) => pg.evaluate(([l, sc]) => { const p = [...document.querySelectorAll('[data-pane]')].find(e => !e.hidden && e.getClientRects().length); const b = [...p.querySelectorAll('button')].find(e => e.innerText.trim() === l && e.getClientRects().length);
+      if (!b) return null; if (sc) b.scrollIntoView({block: 'center'}); return b.getBoundingClientRect().top; }, [label, scrollToMiddle]),
+    /** two quick taps (150 ms apart) on a button in the current page */
+    async doubleTap(label) { for (let k = 0; k < 2; k++) { await pg.evaluate(l => { const p = [...document.querySelectorAll('[data-pane]')].find(e => !e.hidden && e.getClientRects().length); [...p.querySelectorAll('button')].find(e => e.innerText.trim() === l && e.getClientRects().length).click(); }, label); await pg.waitForTimeout(150); } await pg.waitForTimeout(300); },
+    /** number of drawn lines in the Track record week-by-week chart */
+    trackChartLines: () => pg.evaluate(() => Math.max(0, ...[...document.querySelectorAll('[data-pane=track] svg')].map(s => s.querySelectorAll('path,polyline').length))),
+    /** scroll to the bottom of the page */
+    scrollToEnd: async () => { await pg.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await pg.waitForTimeout(700); },
+    /** watch the clipboard: what the page copies next is kept for copiedText() (a copy sheet's text counts too) */
+    watchClipboard: () => pg.evaluate(() => { window.__copied = null; const c = navigator.clipboard; if (c) c.writeText = async s => { window.__copied = s; }; }),
+    copiedText: () => pg.evaluate(() => window.__copied || (document.querySelector('#sdSheet textarea') || {}).value || ''),
+    /** is the keyboard focus inside the open scouting sheet */
+    focusInSheet: () => pg.evaluate(() => { const s = document.getElementById('chScout'); return !!(s && s.contains(document.activeElement)); }),
     // ---- Battle: plan ----
     /** the Plan / Speed / Damage switch: is it on screen, and tap one */
     planSwitchShown: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane=matchup] [data-bmt]')].some(e => e.getClientRects().length && e.getBoundingClientRect().width > 0 && getComputedStyle(e).visibility !== 'hidden')),
@@ -117,18 +138,18 @@ export default (ui, pg) => {
     recentBattles: () => pg.evaluate(() => [...document.querySelectorAll('[data-logdel]')].filter(e => e.closest('details') ? true : e.getClientRects().length).map(e => (e.closest('li,tr,div') || e).innerText.replace(/\s+/g, ' ').trim())),
     async deleteBattle(i = 0) { await A.openFold('Recent battles'); const ok = await pg.evaluate(i => { const e = [...document.querySelectorAll('[data-logdel]')].filter(e => e.getClientRects().length)[i]; if (!e) return false; e.click(); return true; }, i); if (!ok) throw new Error('no battle row ' + i); await pg.waitForTimeout(600); },
     /** replay import: paste text, or give a file, then read the result line */
-    async pasteReplay(text) { await A.openFold('Log a game from a Showdown replay'); await pg.fill('#replayIn', text); await clickSel('#replayAdd', 700); },
-    async uploadReplay(path) { await A.openFold('Log a game from a Showdown replay'); await pg.setInputFiles('#replayFile', path); await pg.waitForTimeout(900); },
+    async pasteReplay(text) { await A.openFold('Battle log'); await A.openFold('Log a game from a Showdown replay'); await pg.fill('#replayIn', text); await clickSel('#replayAdd', 700); },
+    async uploadReplay(path) { await A.openFold('Battle log'); await A.openFold('Log a game from a Showdown replay'); await pg.setInputFiles('#replayFile', path); await pg.waitForTimeout(900); },
     replayMessage: () => pg.evaluate(() => { const e = document.getElementById('replayOut'); return e ? e.innerText.trim() : null; }),
     /** saved games (what the page holds; the rebuild maps this to its own log) */
     savedGames: () => ui.peek('(S.log||[]).map(g=>({r:g.r,b:g.b.slice(),o:(g.o||[]).slice()}))'),
 
     // ---- "Your games · this six" on My team ----
     async quickLogOpen() { await clickSel('[data-qlopen]', 500); },
-    async quickLogLead(name) { const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('[data-qllead]')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim().startsWith(n)); if (!e) return false; e.click(); return true; }, name); if (!ok) throw new Error('no lead chip ' + name); await pg.waitForTimeout(400); },
+    async quickLogLead(name) { const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('[data-qllead]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || e.innerText).replace(/\s+/g, ' ').trim() === n); if (!e) return false; e.click(); return true; }, name); if (!ok) throw new Error('no lead chip ' + name); await pg.waitForTimeout(400); },
     async quickLogResult(r) { await clickSel(`[data-qlres="${r}"]`, 700); },
     async quickLogUndo() { await clickSel('[data-qlundo]', 700); },
-    quickLogText: () => pg.evaluate(() => { const b = document.querySelector('[data-qlopen]'); let c = b; while (c && !/Your games/i.test(c.innerText.slice(0, 40))) c = c.parentElement; return c ? c.innerText.replace(/\s+/g, ' ').trim() : ''; }),
+    quickLogText: () => pg.evaluate(() => { const c = document.getElementById('myRec'); return c && c.getClientRects().length ? c.innerText.replace(/\s+/g, ' ').trim() : ''; }),
 
     // ---- Damage calc ----
     calcSides: () => pg.evaluate(() => ({a: document.querySelector('#dcA').selectedOptions[0].text, d: document.querySelector('#dcD').selectedOptions[0].text, move: document.querySelector('#dcMv').selectedOptions[0].text})),
@@ -176,10 +197,20 @@ export default (ui, pg) => {
     testRunCards: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane=gauntlet] [data-gaunt]')].filter(e => e.getClientRects().length).map(b => { let c = b; while (c && !/You: ready for/.test(c.innerText.slice(0, 40))) c = c.parentElement; return c ? c.innerText.replace(/\s+/g, ' ').trim() : ''; })),
     async testRunPractice(i = 0) { const ok = await pg.evaluate(i => { const e = [...document.querySelectorAll('[data-pane=gauntlet] [data-gaunt]')].filter(e => e.getClientRects().length)[i]; if (!e) return false; e.click(); return true; }, i); if (!ok) throw new Error('no test run card ' + i); await pg.waitForTimeout(900); },
     async testRunCopy(i = 0) { const ok = await pg.evaluate(i => { const e = [...document.querySelectorAll('[data-pane=gauntlet] [data-sdcopy]')].filter(e => e.getClientRects().length)[i]; if (!e) return false; e.click(); return true; }, i); if (!ok) throw new Error('no copy button ' + i); await pg.waitForTimeout(500); },
-    /** red "!" marks (Pokémon you have no answer to) on one card */
-    testRunNoAnswerMarks: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('[data-pane=gauntlet] [data-gaunt]')].filter(e => e.getClientRects().length)[i]; let c = b; while (c && !/You: ready for/.test(c.innerText.slice(0, 40))) c = c.parentElement; if (!c) return null;
-      return [...c.querySelectorAll('*')].filter(e => e.children.length === 0 && e.textContent.trim() === '!' && e.getClientRects().length).length; }, i),
-
+    /** Pokémon on one card marked as "no answer" (red "!"): their names */
+    testRunNoAnswer: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('[data-pane=gauntlet] [data-gaunt]')].filter(e => e.getClientRects().length)[i]; let c = b; while (c && !/You: ready for/.test(c.innerText.slice(0, 40))) c = c.parentElement; if (!c) return null;
+      return [...c.querySelectorAll('[title]')].filter(e => / No answer /.test(' ' + e.title.replace(/[:·]/g, ' ') + ' ') && e.closest('details') === null).map(e => e.title.split(':')[0]); }, i),
+    /** read only the result part of the calc (big %, KO line, notes) */
+    calcResultOnly: () => cleanText('#dcOut').then(t => t.split(/Your best hit on each|Each top threat's best hit/i)[0].split(/Critical hit/).slice(-1)[0].trim()),
+    /** "No effect" pinned mini bar: its text when shown, and tap it */
+    calcPinnedBar: () => pg.evaluate(() => { const e = document.getElementById('dcStick'); return e && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && getComputedStyle(e).display !== 'none' ? e.innerText.replace(/\s+/g, ' ').trim() : null; }),
+    async tapCalcPinnedBar() { await clickSel('#dcStick', 900); },
+    /** is the calc result on screen (in the viewport) */
+    calcResultOnScreen: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#dcOut *')].find(e => e.children.length === 0 && /^No effect/.test(e.textContent.trim())) || document.querySelector('#dcOut'); const r = e.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }),
+    /** start the page again with one shared data document missing (as before the first daily data); keeps the player's own data */
+    async reloadWithout(doc, wait = 1500) { await pg.addInitScript(d => { d = [].concat(d); const c = window.claude; if (!c) return; const use = c.use; window.claude = {use: async n => { const r = await use(n); if (n !== 'db' || !r) return r;
+        const doc = p => d.includes(p) ? {get: async () => ({exists: false, data: () => undefined}), set: async () => {}, update: async () => {}, onSnapshot: cb => { setTimeout(() => cb({exists: false, metadata: {}, data: () => undefined}), 5); return () => {}; }} : r.doc(p);
+        return {doc, collection: k => ({doc: x => doc(k + '/' + x)})}; }}; }, doc); await pg.reload(); await pg.waitForTimeout(wait); },
     // ---- Practice ----
     async practicePick(name) { const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('[data-prpick]')].find(e => e.getClientRects().length && (e.dataset.prpick === n || e.innerText.replace(/\s+/g, ' ').includes(n))); if (!e) return false; e.click(); return true; }, name); if (!ok) throw new Error('no practice tile ' + name); await pg.waitForTimeout(350); },
     practiceMine: () => pg.evaluate(() => [...document.querySelectorAll('[data-prpick]')].filter(e => e.getClientRects().length).map(e => e.dataset.prpick)),

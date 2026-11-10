@@ -9,7 +9,11 @@ export default (ui, pg) => {
   const click = async (sel, wait = 400) => { const ok = await pg.evaluate(s => { const e = [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')); if (e) { e.click(); return true; } return false; }, sel);
     if (!ok) throw new Error(`nothing visible: ${sel}`); await pg.waitForTimeout(wait); };
   const until = async (fn, ms = 8000, what = 'condition') => { const t0 = Date.now(); for (;;) { const v = await fn(); if (v) return v; if (Date.now() - t0 > ms) throw new Error(`timed out waiting for ${what}`); await pg.waitForTimeout(150); } };
+  const AREAS = {'built team': '#abOut', 'My team suggestions': '#chSugOut', 'cores': '#cores', 'info sheet': '#lairSheet', 'Bigger plans': '#planSec', 'Plan settings': '#plset',
+    'Build page': '[data-pane=auto]', 'All suggestions page': '[data-pane=coverage]', 'My team page': '[data-pane=report]', 'Popular sets page': '[data-pane=sets]'};
   const H = {
+    /** a named part of a page, for ui.tap(text, ui.area(name)) and the other `within` arguments */
+    area: name => { if (!AREAS[name]) throw new Error('unknown area ' + name); return AREAS[name]; },
     /** generic waiting: resolve when fn() is truthy (polls; no fixed sleeps) */
     until,
     /** wait until this text is visible somewhere on the page */
@@ -19,7 +23,7 @@ export default (ui, pg) => {
     /** wait for a toast whose text matches; returns its text */
     waitForToast: (m, ms = 6000) => until(async () => { const t = await txt('#toast'); return t && (m instanceof RegExp ? m.test(t) : t.toLowerCase().includes(String(m).toLowerCase())) ? t : ''; }, ms, `toast ${m}`),
     /** does the showing toast offer Undo? */
-    toastHasUndo: () => vis('#toastUndo'),
+    toastOffersUndo: () => vis('#toastUndo'),
     /** tap Undo in the toast */
     undoToast: () => click('#toastUndo', 600),
     /** is the visible control (button/tab) with this text pressed/selected? (aria-pressed) null if not found */
@@ -31,11 +35,9 @@ export default (ui, pg) => {
     unfold: async (m, within = 'body') => { const r = await pg.evaluate(([m, re, w]) => { const rx = re ? new RegExp(re[0], re[1]) : null; const root = document.querySelector(w) || document.body;
         const d = [...root.querySelectorAll('details')].find(d => { const s = d.querySelector(':scope > summary'); if (!s || !s.getClientRects().length || d.closest('[hidden]')) return false; const t = s.innerText.replace(/\s+/g, ' ');
           return rx ? rx.test(t) : t.toLowerCase().includes(m.toLowerCase()); });
-        if (!d) return null; if (!d.open) d.querySelector(':scope > summary').click(); return true; }, [String(m), RE(m), within]);
+        if (!d) return null; document.querySelectorAll('[data-bbfold]').forEach(x => x.removeAttribute('data-bbfold')); d.setAttribute('data-bbfold', '1'); if (!d.open) d.querySelector(':scope > summary').click(); return true; }, [String(m), RE(m), within]);
       if (!r) throw new Error(`no fold ${m}`); await pg.waitForTimeout(400);
-      return pg.evaluate(([m, re, w]) => { const rx = re ? new RegExp(re[0], re[1]) : null; const root = document.querySelector(w) || document.body;
-        const d = [...root.querySelectorAll('details')].find(d => { const s = d.querySelector(':scope > summary'); if (!s || !s.getClientRects().length) return false; const t = s.innerText.replace(/\s+/g, ' '); return rx ? rx.test(t) : t.toLowerCase().includes(m.toLowerCase()); });
-        return d ? d.innerText.replace(/\s+/g, ' ').trim() : ''; }, [String(m), RE(m), within]); },
+      return pg.evaluate(() => { const d = document.querySelector('[data-bbfold]'); return d ? d.innerText.replace(/\s+/g, ' ').trim() : ''; }); },
     /** is that fold open? (null if not shown) */
     isUnfolded: m => pg.evaluate(([m, re]) => { const rx = re ? new RegExp(re[0], re[1]) : null;
       const d = [...document.querySelectorAll('details')].find(d => { const s = d.querySelector(':scope > summary'); if (!s || !s.getClientRects().length) return false; const t = s.innerText.replace(/\s+/g, ' '); return rx ? rx.test(t) : t.toLowerCase().includes(m.toLowerCase()); });
@@ -47,13 +49,19 @@ export default (ui, pg) => {
     /** the sliding picker's circle position (0-based) of the visible Megas control */
     megasSliderPos: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-megas]')].find(e => e.getClientRects().length); const s = b && b.closest('.ar-slide'); return s ? +getComputedStyle(s).getPropertyValue('--i') : null; }),
     /** a choice button's icon count inside a sliding picker */
-    sliderHasIcons: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-megas]')].find(e => e.getClientRects().length); const s = b && b.closest('.ar-slide'); return s ? s.querySelectorAll('svg').length : 0; }),
+    sliderHasIcons: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-megas]')].find(e => e.getClientRects().length); const s = b && b.closest('.ar-slide'); return s ? [...s.querySelectorAll('button')].filter(x => x.querySelector('svg,.ar-slic')).length : 0; }),
     /** the screen-reader view of the visible Megas control: [{name, pressed}] */
     megasButtons: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-megas]')].find(e => e.getClientRects().length); const g = b && (b.closest('.ar-slide') || b.parentElement);
       return g ? [...g.querySelectorAll('button[aria-pressed]')].map(x => ({name: (x.getAttribute('data-slt') || x.innerText).trim(), pressed: x.getAttribute('aria-pressed')})) : []; }),
 
 
 
+    /** reload the page as the same player: what was saved (this browser and the account) survives, like a real reload */
+    reloadAsSamePlayer: async (wait = 1500) => {
+      if (!pg.__keepInit) { pg.__keepInit = true; await pg.addInitScript(() => { try { const k = sessionStorage.getItem('__keep'); if (!k) return; const v = JSON.parse(k);
+        for (const [key, val] of Object.entries(v.ls)) localStorage.setItem(key, val); if (v.acct) window.__acct = v.acct; } catch (e) {} }); }
+      await pg.evaluate(() => { const ls = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); ls[k] = localStorage.getItem(k); } sessionStorage.setItem('__keep', JSON.stringify({ls, acct: window.__acct})); });
+      await pg.reload(); await pg.waitForTimeout(wait); },
     // ---------------- misc for group B ----------------
     /** the anonymous usage counts this visit has saved (forces the save a page-hide would do) */
     usageCounts: async () => { await pg.evaluate(() => { try { Object.defineProperty(document, 'visibilityState', {configurable: true, get: () => 'hidden'}); } catch (e) {} document.dispatchEvent(new Event('visibilitychange')); });
@@ -65,13 +73,54 @@ export default (ui, pg) => {
     /** the built card's Save button: {disabled, title} */
     builtSaveButton: () => pg.evaluate(() => { const b = document.querySelector('#abOut [data-absave]'); return b ? {disabled: b.disabled || b.getAttribute('aria-disabled') === 'true', title: b.title || b.getAttribute('data-tipx') || b.getAttribute('aria-label') || ''} : null; }),
     /** the six on the n-th recent-winner card (by Pokémon id) */
-    winnerSix: (n = 0) => pg.evaluate(n => { const b = [...document.querySelectorAll('[data-pane=auto] [data-evload]')].filter(e => e.getClientRects().length)[n]; const c = b && b.closest('.evteam'); return c ? [...new Set([...c.querySelectorAll('[data-lt]')].map(e => e.getAttribute('data-lt')))] : []; }, n),
+    winnerSix: (n = 0) => pg.evaluate(n => { const b = [...document.querySelectorAll('[data-pane=auto] [data-evload]')].filter(e => e.getClientRects().length)[n]; const c = b && b.closest('.evteam'); return c ? [...c.querySelectorAll('.tgrid [title]')].filter(e => !e.matches('i')).map(e => e.getAttribute('title')) : []; }, n),
+    /** the player's team as the page names them (display names, e.g. "Mega Charizard Y") */
+    teamNames: () => pg.evaluate(() => window.__ev('S.slots.filter(s=>s.n).map(s=>byName.get(s.n).d)')),
     /** the text of the explanation opened by a ? button */
     openTipText: () => txt('#tipPop'),
     clearCoreFilter: () => click('#cores [data-corex]', 600),
     coreFilterChip: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#cores [data-corex]')].find(e => e.getClientRects().length); return b ? b.parentElement.innerText.trim() : ''; }),
-    /** the Battle opponents (ids) */
-    opponents: () => pg.evaluate(() => window.__ev('S.opp.slice()')),
+    /** the Battle battleOpponentIds (ids) */
+    battleOpponentIds: () => pg.evaluate(() => window.__ev('S.opp.slice()')),
+
+
+    // ---------------- My team pieces used by group B ----------------
+    /** tap the n-th mini sprite in the edit panel's strip */
+    tapEditStrip: i => click(`#chEdit [data-chedit="${i}"]`, 600),
+    /** tap the lock beside a Pokémon on My team (by its shown name) */
+    lockPokemon: async name => { const vis = () => pg.evaluate(n => [...document.querySelectorAll(`[aria-label^="Lock ${n}"]`)].some(e => e.getClientRects().length), name);
+      if (!(await vis())) await pg.evaluate(n => { const t = [...document.querySelectorAll('[data-pane=report] .ar-art')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim() === n); if (t) t.click(); }, name);
+      await pg.waitForTimeout(300); await click(`[aria-label^="Lock ${name}"]`, 600); },
+    /** open a problem row (My team › Problems and team checks) and tap its first Quick add pick; returns the pick's button text */
+    quickAddFromProblem: async title => { await H.unfold(/^Problems and Team Checks/i);
+      const r = await pg.evaluate(t => { const d = [...document.querySelectorAll('#needs details')].find(d => d.getClientRects().length && d.querySelector('summary').innerText.trim().startsWith(t)); if (!d) return null; if (!d.open) d.querySelector('summary').click();
+        const b = [...d.querySelectorAll('[data-qa]')][0]; if (!b) return {fixes: d.querySelector('summary').innerText}; const tx = b.innerText.trim(); b.click(); return {btn: tx, fixes: d.querySelector('summary').innerText.replace(/\s+/g, ' ')}; }, title);
+      await pg.waitForTimeout(900); return r; },
+    /** open the scouting sheet for a threat (My team › Matchups) */
+    openThreat: async id => { await pg.evaluate(id => [...document.querySelectorAll(`[data-chthr="${id}"]`)].find(e => e.getClientRects().length).click(), id); await pg.waitForTimeout(1200); },
+    threatSheetText: () => txt('#chScout'),
+    applyBestFix: () => click('#chScout [data-plan]', 1000),
+    /** Popular sets: the Pokémon whose sets are shown (its name in the set header) */
+    setsShownPokemonId: () => pg.evaluate(() => window.__ev('ui.setMon')),
+    findSetsFor: async typed => { await H.typeInto('Look up a Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(700); },
+    setsSource: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-setsrc][aria-pressed=true]')].find(e => e.getClientRects().length); return b ? (b.getAttribute('data-slt') || b.innerText).trim() : null; }),
+    /** the archetype guides in order: [{name, share, basis}] */
+    archGuides: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane=arch] details')].filter(d => d.getClientRects().length).map(d => { const t = d.querySelector('summary').innerText.replace(/\s+/g, ' ').trim(); const m = t.match(/^(.+?) (\d+)% (\d+ of \d+ top teams)/); return m ? {name: m[1], share: +m[2], basis: m[3]} : {name: t}; })),
+
+
+    /** are My team's suggestions in their working (faded, not tappable) state? */
+    suggestionsBusy: () => pg.evaluate(() => { const o = document.getElementById('chSugOut'); if (!o) return false; return !!(o.closest('[aria-busy=true]') || o.querySelector('[aria-busy=true]') || /Working out/.test(o.innerText)); }),
+    /** how many Apply buttons show in My team's suggestions / in Bigger plans */
+    mySuggestionCount: () => pg.evaluate(() => [...document.querySelectorAll('#chSugOut [data-plan]')].filter(e => e.getClientRects().length).length),
+    biggerPlanCount: () => pg.evaluate(() => [...document.querySelectorAll('#planSec [data-plan]')].filter(e => e.getClientRects().length).length),
+    /** remove a Pokémon with the × on its My team tile */
+    removeFromMyTeam: i => click(`[data-pane=report] [data-chrm="${i}"][aria-label^="Remove"]:not(.ar-rmx)`, 50),
+    /** tap "More" to read the rest of a shortened note inside `within` */
+    readMore: async within => { await pg.evaluate(w => { const b = [...document.querySelectorAll(`${w} .rzmorebtn`)].find(e => e.getClientRects().length); if (b) b.click(); }, within); await pg.waitForTimeout(300); },
+    /** Popular sets: choose the data source */
+    tapSetsSource: label => click(`[data-setsrc][data-slt="${label}"]`, 700),
+    /** where the top of the page being shown sits on screen (px) */
+    paneTop: () => pg.evaluate(() => { const p = [...document.querySelectorAll('[data-pane]')].find(e => !e.hidden && e.getClientRects().length); return p ? Math.round(p.getBoundingClientRect().top) : null; }),
 
     // ---------------- Pokémon name boxes ----------------
     /** type into a visible box found by its placeholder / label (retries if the page redraws under the finger) */
@@ -81,7 +130,7 @@ export default (ui, pg) => {
     /** is that box focused? */
     boxFocused: label => pg.evaluate(m => { const l = m.toLowerCase(), i = document.activeElement; return !!i && i.tagName === 'INPUT' && ((i.placeholder || '').toLowerCase().includes(l) || (i.getAttribute('aria-label') || '').toLowerCase().includes(l)); }, label),
     /** the × (Clear) inside that box: shown? */
-    clearShown: label => pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && (i.placeholder || '').toLowerCase().includes(l)); const b = i && i.parentElement.querySelector('[aria-label=Clear]'); return !!b && b.getClientRects().length > 0 && getComputedStyle(b).visibility !== 'hidden' && getComputedStyle(b).display !== 'none'; }, label),
+    clearButtonShown: label => pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && (i.placeholder || '').toLowerCase().includes(l)); const b = i && i.parentElement.querySelector('[aria-label=Clear]'); return !!b && b.getClientRects().length > 0 && getComputedStyle(b).visibility !== 'hidden' && getComputedStyle(b).display !== 'none'; }, label),
     tapClear: async label => { await pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && (i.placeholder || '').toLowerCase().includes(l)); const b = i.parentElement.querySelector('[aria-label=Clear]');
         b.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true})); b.dispatchEvent(new MouseEvent('mousedown', {bubbles: true, cancelable: true})); b.click(); }, label); await pg.waitForTimeout(400); },
     /** the name list (combobox) open under a box: its text, '' if closed */
@@ -111,7 +160,7 @@ export default (ui, pg) => {
     /** pick "Build around" Pokémon by typing part of its name and pressing Enter */
     buildAround: async typed => { await H.typeInto('favourite Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(500); },
     /** the Build-around chip text ('' if none) */
-    buildAroundChip: () => pg.evaluate(() => { const i = document.getElementById('abAroundIn'); const w = i && (i.closest('#abAround') || i.parentElement.parentElement); const c = w && [...w.querySelectorAll('[data-abaroundclr]')].find(e => e.getClientRects().length); return c ? (c.closest('span,div') || c).innerText.replace(/\s+/g, ' ').trim() + ' ' + (c.getAttribute('aria-label') || '') : ''; }),
+    buildAroundChip: () => pg.evaluate(() => { const c = [...document.querySelectorAll('[data-abaroundclr]')].find(e => e.getClientRects().length); return c ? c.parentElement.innerText.replace(/\s+/g, ' ').trim() + ' | ' + (c.getAttribute('aria-label') || '') : ''; }),
     clearBuildAround: () => click('[data-abaroundclr]', 500),
     /** the open Showdown text after tapping a Copy for Showdown button (the n-th visible one inside `within`) */
     copyForShowdown: async (within = 'body', n = 0) => { await pg.evaluate(() => { window.__copied = null; try { Object.defineProperty(navigator, 'clipboard', {configurable: true, value: {writeText: t => { window.__copied = t; return Promise.resolve(); }}}); } catch (e) {} });
@@ -143,14 +192,20 @@ export default (ui, pg) => {
     applySwap: (n = 0) => click(`#recList [data-rec="${n}"]`, 900),
     /** wait until the All suggestions list has finished working */
     waitSwaps: () => until(async () => !(await ui.sees('Working out the best swaps')) && (await pg.evaluate(() => document.querySelectorAll('#recList [data-rec]').length || /Add at least two|Nothing in your box|Nothing in this pool/i.test(document.getElementById('recs')?.innerText || ''))), 20000, 'swap cards'),
+    /** wait until the suggestion planner has finished its background work (and the page redrew) */
+    waitPlans: async () => { await until(() => pg.evaluate(() => window.__ev('planJob===null&&!ui.plansStale')), 30000, 'the planner'); await pg.waitForTimeout(400); },
+    /** the Bigger plans text right now, without waiting (for checking what shows while working) */
+    biggerPlansNow: async () => { await H.unfold(/^Bigger Plans/i); return txt('#planSec'); },
+    /** set My team's "Suggest from" slider */
+    setSuggestFrom: label => click(`[data-chpool][data-slt="${label}"]`, 700),
     /** My team's Suggestions part text */
     mySuggestions: () => txt('#chSugOut'),
     /** wait until My team's suggestions have finished working; returns their text */
-    waitMySuggestions: () => until(async () => { const t = await txt('#chSugOut'); return t && !/Working out/.test(t) && !(await pg.evaluate(() => !!document.querySelector('#chSugOut [aria-busy=true]'))) ? t : ''; }, 25000, 'suggestions'),
+    waitMySuggestions: async () => { await H.waitPlans(); return until(async () => { const t = await txt('#chSugOut'); return t && !/Working out/.test(t) && !(await pg.evaluate(() => !!document.querySelector('#chSugOut [aria-busy=true]'))) ? t : ''; }, 25000, 'suggestions'); },
     /** tap Apply on the n-th suggestion on My team */
     applyMySuggestion: (n = 0) => click(`#chSugOut [data-plan="${n}"]`, 900),
     /** "Bigger plans" text on All suggestions (opens the fold) */
-    biggerPlans: async () => { await H.unfold(/^Bigger Plans/i); return until(async () => { const t = await txt('#planSec'); return t && !/Working out/.test(t) ? t : ''; }, 25000, 'bigger plans'); },
+    biggerPlans: async () => { await H.unfold(/^Bigger Plans/i); await H.waitPlans(); return until(async () => { const t = await txt('#planSec'); return t && !/Working out/.test(t) && /Suggestion \d|No change from|Nothing to fix|Add at least one|no type problems|Every one-change|improves the team/.test(t) ? t : ''; }, 25000, 'bigger plans'); },
     /** apply the n-th plan inside Bigger plans */
     applyPlan: (n = 0) => click(`#planSec [data-plan="${n}"]`, 900),
     /** the Undo bar text where it shows ('' if none) */
@@ -186,8 +241,8 @@ export default (ui, pg) => {
     tapTeammate: n => click(`#sets [data-setmon="${n}"]:not(#setQuick *)`, 700),
     setsText: () => txt('[data-pane="sets"]'),
     archText: () => txt('[data-pane="arch"]'),
-    pageScrollY: () => pg.evaluate(() => Math.round(pageScrollY)),
-    scrollPageTo: y => pg.evaluate(y => window.scrollPageTo(0, y), y),
+    pageScrollY: () => pg.evaluate(() => Math.round(window.scrollY)),
+    scrollPageTo: y => pg.evaluate(y => window.scrollTo(0, y), y),
     back: async () => { await pg.goBack(); await pg.waitForTimeout(700); },
     focusedId: () => pg.evaluate(() => document.activeElement && (document.activeElement.id || document.activeElement.getAttribute('aria-label') || document.activeElement.tagName)),
     inputValue: id => pg.evaluate(id => (document.getElementById(id) || {}).value, id),

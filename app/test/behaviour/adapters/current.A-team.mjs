@@ -11,14 +11,25 @@ export default (ui, pg, o) => {
   const vis = sel => pg.evaluate(s => { const e = document.querySelector(s); return !!(e && !e.hidden && e.getClientRects().length); }, sel);
   const txt = sel => pg.evaluate(s => { const e = document.querySelector(s); return e && !e.hidden && e.getClientRects().length ? e.innerText.replace(/\s+/g, ' ').trim() : null; }, sel);
   // click the first visible element matching a CSS selector (real mouse click, so focus moves like a player's tap)
-  const click = async (sel, wait = 450) => { const loc = pg.locator(sel).filter({visible: true}).first();
-    if (!(await loc.count())) throw new Error('nothing visible: ' + sel); await loc.scrollIntoViewIfNeeded().catch(() => {}); await loc.click({timeout: 5000}); await pg.waitForTimeout(wait); };
+  // tap the element a finder returns: a real click first (focus moves like a tap); animated / covered controls fall back to
+  // focus + click. Fresh lookup on each try, so a redraw between finding and tapping can't break it.
+  const tapFound = async (finder, arg, what, wait = 500) => { for (let k = 0; k < 4; k++) { const h = await pg.evaluateHandle(finder, arg); const el = h.asElement();
+      if (!el) { if (k >= 2) throw new Error('nothing to tap: ' + what); await pg.waitForTimeout(400); continue; }
+      await el.scrollIntoViewIfNeeded({timeout: 1000}).catch(() => {});
+      let done = true; try { await el.click({timeout: 1500}); } catch (e) { done = await el.evaluate(x => { if (!x.isConnected) return false; try { x.focus({preventScroll: true}); } catch (y) {} x.click(); return true; }).catch(() => false); }
+      if (!done) continue; await pg.waitForTimeout(wait); return; } throw new Error('could not tap: ' + what); };
+  const click = (sel, wait = 450) => tapFound(s => [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')) || null, sel, sel, wait);
   const has = async sel => (await pg.locator(sel).filter({visible: true}).count()) > 0;
   const q = s => JSON.stringify(s);
   const waitFor = async (fn, ms = 8000, step = 150) => { const t0 = Date.now(); let v; while (Date.now() - t0 < ms) { v = await fn(); if (v) return v; await pg.waitForTimeout(step); } return v; };
   const H = {
     waitFor, vis, has,
     // ---------- generic ----------
+    /** wait until the page has finished redrawing (no DOM changes for quietMs, nothing "Working out…") */
+    settle: async (quietMs = 700, maxMs = 12000) => { await pg.evaluate(() => { if (window.__npMut) return; window.__npMut = Date.now(); new MutationObserver(() => { window.__npMut = Date.now(); }).observe(document.body, {childList: true, subtree: true, characterData: true}); });
+      const t0 = Date.now(); while (Date.now() - t0 < maxMs) { const q = await pg.evaluate(() => ({age: Date.now() - window.__npMut, busy: /Working out/.test(document.body.innerText)})); if (q.age > quietMs && !q.busy) return true; await pg.waitForTimeout(200); } return false; },
+    /** Switch team fold: open it and tap a saved team by name */
+    switchTeam: async name => { await H.openFold('Switch team'); await tapFound(n => [...document.querySelectorAll('[data-pane="report"] details [data-load]')].find(e => e.getClientRects().length && e.innerText.trim() === n) || null, name, 'switch to ' + name, 1800); },
     /** every toast message shown so far on this page (newest last) */
     toasts: () => pg.evaluate(() => (window.__npT || []).slice()),
     clearToasts: () => pg.evaluate(() => { window.__npT = []; }),
@@ -28,40 +39,36 @@ export default (ui, pg, o) => {
     tapToastUndo: () => click('#toastUndo'),
     press: async (k, wait = 400) => { await pg.keyboard.press(k); await pg.waitForTimeout(wait); },
     /** name / text of the control that has keyboard focus */
-    focused: () => pg.evaluate(() => { const e = document.activeElement; if (!e || e === document.body) return ''; return (e.getAttribute('aria-label') || e.innerText || e.value || e.placeholder || '').replace(/\s+/g, ' ').trim(); }),
+    focusName: () => pg.evaluate(() => { const e = document.activeElement; if (!e || e === document.body) return ''; return (e.getAttribute('aria-label') || e.innerText || e.value || e.placeholder || '').replace(/\s+/g, ' ').trim(); }),
     /** is a pressable choice (slider / switch button) with this label currently chosen? null if not found */
-    chosen: label => pg.evaluate(l => { const b = [...document.querySelectorAll('button[aria-pressed],[role=tab]')].filter(e => e.getClientRects().length).find(e => (e.dataset.slt || e.innerText.replace(/\s+/g, ' ').trim()) === l);
-      return b ? (b.getAttribute('aria-pressed') || b.getAttribute('aria-selected')) === 'true' : null; }, label),
+    chosen: label => pg.evaluate(l => { const b = [...document.querySelectorAll('button[aria-pressed],[role=tab],[data-arjump]')].filter(e => e.getClientRects().length).find(e => [e.dataset.slt, e.innerText.replace(/\s+/g, ' ').trim()].some(x => x && x.toLowerCase() === l.toLowerCase()));
+      return b ? (b.getAttribute('aria-pressed') || b.getAttribute('aria-selected') || b.getAttribute('aria-current')) === 'true' : null; }, label),
     /** tap a pressable choice by its exact label */
-    choose: async (label, wait = 700) => { const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('button[aria-pressed]')].filter(e => e.getClientRects().length).find(e => (e.dataset.slt || e.innerText.replace(/\s+/g, ' ').trim()) === l); if (b) b.click(); return !!b; }, label);
+    choose: async (label, wait = 700) => { const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('button[aria-pressed]')].filter(e => e.getClientRects().length).find(e => [e.dataset.slt, e.innerText.replace(/\s+/g, ' ').trim()].some(x => x && x.toLowerCase() === l.toLowerCase())); if (b) b.click(); return !!b; }, label);
       if (!ok) throw new Error('no choice labelled ' + label); await pg.waitForTimeout(wait); },
     /** open (or close) a fold whose title contains the text; returns its text once open */
     openFold: async (title, open = true, wait = 500) => { const ok = await pg.evaluate(([t, open]) => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); });
         if (!d) return false; if (d.open !== open) d.querySelector('summary').click(); return true; }, [title, open]); if (!ok) throw new Error('no fold titled ' + title); await pg.waitForTimeout(wait); },
     foldOpen: title => pg.evaluate(t => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); }); return d ? d.open : null; }, title),
-    foldText: title => pg.evaluate(t => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); }); return d ? d.innerText.replace(/\s+/g, ' ').trim() : null; }, title),
+    foldContent: title => pg.evaluate(t => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); }); return d ? d.innerText.replace(/\s+/g, ' ').trim() : null; }, title),
     /** tap a control found by its accessible label (aria-label contains text) */
-    tapLabel: async (label, wait = 500) => { const sel = await pg.evaluate(l => { const e = [...document.querySelectorAll('[aria-label]')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => e.getAttribute('aria-label').toLowerCase().includes(l.toLowerCase()));
-        if (!e) return null; e.setAttribute('data-np-t', '1'); return true; }, label); if (!sel) throw new Error('no control labelled ' + label);
-      await click('[data-np-t]', wait); await pg.evaluate(() => document.querySelectorAll('[data-np-t]').forEach(e => e.removeAttribute('data-np-t'))); },
+    tapLabel: (label, wait = 500) => tapFound(l => [...document.querySelectorAll('[aria-label]')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => e.getAttribute('aria-label').toLowerCase().includes(l.toLowerCase())) || null, label, 'label ' + label, wait),
     labelOf: label => pg.evaluate(l => { const e = [...document.querySelectorAll('[aria-label]')].filter(e => e.getClientRects().length).find(e => e.getAttribute('aria-label').toLowerCase().includes(l.toLowerCase())); return e ? e.getAttribute('aria-label') : null; }, label),
     /** real tap on a visible control whose text matches (moves focus like a finger/mouse) */
-    tapText: async (m, wait = 500) => { const ok = await pg.evaluate(([m, isRe]) => { const re = isRe ? new RegExp(m[0], m[1]) : null; const t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
-        const e = [...document.querySelectorAll('button,a,[role=button],summary')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => re ? re.test(t(e)) : t(e).toLowerCase().includes(m.toLowerCase()));
-        if (!e) return false; e.setAttribute('data-np-t', '1'); return true; }, [m instanceof RegExp ? [m.source, m.flags] : m, m instanceof RegExp]);
-      if (!ok) throw new Error('nothing to tap matching ' + m); await click('[data-np-t]', wait); await pg.evaluate(() => document.querySelectorAll('[data-np-t]').forEach(e => e.removeAttribute('data-np-t'))); },
+    tapText: (m, wait = 500) => tapFound(([m, isRe]) => { const re = isRe ? new RegExp(m[0], m[1]) : null; const t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
+        return [...document.querySelectorAll('button,a,[role=button],summary')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => re ? re.test(t(e)) : t(e).toLowerCase().includes(m.toLowerCase())) || null; },
+      [m instanceof RegExp ? [m.source, m.flags] : m, m instanceof RegExp], 'text ' + m, wait),
     setWidth: async (w, h = 900) => { await pg.setViewportSize({width: w, height: h}); await pg.waitForTimeout(700); },
-    scrollY: () => pg.evaluate(() => Math.round(window.scrollY)),
+    pageScrollY: () => pg.evaluate(() => Math.round(window.scrollY)),
     /** wait for a heavy page to finish its first drawing (text containing re appears) */
     waitText: (re, ms = 10000) => waitFor(async () => re.test(await ui.text()), ms),
     copied: () => pg.evaluate(() => navigator.clipboard.readText().catch(() => null)),
-    allowClipboard: () => pg.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {}),
+    grantClipboard: () => pg.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {}),
 
     // ---------- Pokémon info sheet ----------
     /** tap a Pokémon (tile, row, chip) by its name on the current page */
-    tapPokemon: async (name, within = '') => { const ok = await pg.evaluate(([n, w]) => { const r = w ? document.querySelector(w) : document; const e = [...(r || document).querySelectorAll('[data-lt]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('#lairSheet'))
-        .find(e => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase())); if (!e) return false; e.setAttribute('data-np-t', '1'); return true; }, [name, within]);
-      if (!ok) throw new Error('no Pokémon to tap named ' + name); await click('[data-np-t]', 800); await pg.evaluate(() => document.querySelectorAll('[data-np-t]').forEach(e => e.removeAttribute('data-np-t'))); },
+    tapPokemon: (name, within = '') => tapFound(([n, w]) => { const r = w ? document.querySelector(w) : document; return [...(r || document).querySelectorAll('[data-lt]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('#lairSheet'))
+        .find(e => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase())) || null; }, [name, within], 'Pokémon ' + name, 800),
     infoSheet: () => txt('#lairSheet'),
     closeInfoSheet: () => click('#lairSheet button[data-lclose]'),
     infoTab: name => click(`#lairSheet [data-lstab="${name.toLowerCase()}"]`, 600),
@@ -74,12 +81,12 @@ export default (ui, pg, o) => {
     homeTools: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .htile')].filter(e => e.getClientRects().length).map(e => e.innerText.split('\n')[0].trim())),
     tapTool: async name => { await pg.evaluate(n => { const e = [...document.querySelectorAll('[data-pane="home"] .htile')].find(e => e.innerText.split('\n')[0].trim() === n); e.click(); }, name); await pg.waitForTimeout(700); },
     ratingMoves: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .ar-mv')].filter(e => e.getClientRects().length).map(e => ({name: e.dataset.lt, text: e.innerText.replace(/\s+/g, ' ').trim(), label: e.getAttribute('aria-label')}))),
-    welcomeCard: () => pg.evaluate(() => { const e = [...document.querySelectorAll('[data-pane="home"] *')].find(e => e.getClientRects().length && /^New Here\?/i.test(e.innerText || '') && e.innerText.length < 800); return e ? e.innerText.replace(/\s+/g, ' ') : null; }),
-    dismissWhatsNew: () => click('[data-wnewx]'),
+    welcomeCardText: () => pg.evaluate(() => { const e = [...document.querySelectorAll('[data-pane="home"] *')].find(e => e.getClientRects().length && /^New Here\?/i.test(e.innerText || '') && e.innerText.length < 800); return e ? e.innerText.replace(/\s+/g, ' ') : null; }),
+    closeWhatsNew: () => click('[data-wnewx]'),
     homeTopRows: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .hmini')].filter(e => e.getClientRects().length).map(e => e.dataset.lt)),
 
     // ---------- My Team ----------
-    teamHeading: () => pg.evaluate(() => { const p = document.querySelector('[data-pane="report"]'); const h = p && [...p.querySelectorAll('h1,h2')].find(e => e.getClientRects().length); return h ? h.innerText.replace(/\s+/g, ' ').trim() : null; }),
+    teamHeading: () => pg.evaluate(() => { const p = document.querySelector('[data-pane="report"]'); const h = p && [...p.querySelectorAll('[role=heading][aria-level="1"],h1')].find(e => e.getClientRects().length); return h ? h.innerText.replace(/\s+/g, ' ').trim() : null; }),
     /** Strength Score block: {label, score, band} or null */
     scoreBlock: () => pg.evaluate(() => { const p = document.querySelector('[data-pane="report"]'); if (!p) return null; const t = p.innerText.replace(/\s+/g, ' ');
       const m = t.match(/(Strength Score(?: so far)?) (\d{1,3}) (Top tier|Tournament ready|Solid|Needs work|Missing a basic)/); return m ? {label: m[1], score: +m[2], band: m[3]} : null; }),
@@ -92,30 +99,40 @@ export default (ui, pg, o) => {
     tapTile: name => H.tapLabel(name + ': show its set', 700),
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('[data-pane="report"] [data-chset]')].find(e => (e.getAttribute('aria-label') || '').startsWith(n + ':')); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     setCard: () => txt('#rzSet'),
+    /** show a Pokémon's set card (tap its tile unless its card is already showing) */
+    showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     lockOnTile: async name => { if (!(await has(`[data-pane="report"] [data-lock][aria-label*="${name}"]`))) await H.tapTile(name); await click(`[data-pane="report"] [data-lock][aria-label*="${name}"]`, 700); },
     tileLockLabel: name => pg.evaluate(n => { const e = [...document.querySelectorAll('[data-pane="report"] [data-lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n)); return e ? e.getAttribute('aria-label') : null; }, name),
     removeFromTeam: async name => { if (!(await has(`[data-pane="report"] .ar-rmx[aria-label*="${name}"]`))) await H.tapTile(name); await click(`[data-pane="report"] .ar-rmx[aria-label*="${name}"]`, 800); },
-    gamePlanLine: () => pg.evaluate(() => { const m = (document.querySelector('[data-pane="report"]') || document.body).innerText.replace(/\s+/g, ' ').match(/Game plan [^.]*\./); return m ? m[0] : null; }),
-    homePlanLine: () => pg.evaluate(() => { const m = (document.querySelector('[data-pane="home"]') || document.body).innerText.replace(/\s+/g, ' ').match(/Game plan [^.]*\./); return m ? m[0] : null; }),
+    gamePlanLine: () => pg.evaluate(() => { const m = (document.querySelector('[data-pane="report"]') || document.body).innerText.replace(/\s+/g, ' ').match(/Game plan[^.]*\./); return m ? m[0] : null; }),
+    homePlanLine: () => pg.evaluate(() => { const m = (document.querySelector('[data-pane="home"]') || document.body).innerText.replace(/\s+/g, ' ').match(/Game plan[^.]*\./); return m ? m[0] : null; }),
     /** ⋯ team menu */
     openMoreActions: async () => { if (!(await pg.evaluate(() => { const s = document.querySelector('summary[aria-label="More team actions"]'); return s && s.parentElement.open; }))) await click('summary[aria-label="More team actions"]', 400); },
     teamActions: () => pg.evaluate(() => { const p = document.querySelector('#chActs') || document.querySelector('[data-pane="report"]'); return [...p.querySelectorAll('button,summary')].filter(e => e.getClientRects().length).map(e => (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim()).filter(Boolean); }),
     jumpBar: () => pg.evaluate(() => [...document.querySelectorAll('[data-arjump]')].filter(e => e.getClientRects().length).map(e => (e.dataset.slt || e.innerText).trim())),
     jumpTo: name => pg.evaluate(n => { const e = [...document.querySelectorAll('[data-arjump]')].filter(e => e.getClientRects().length).find(e => (e.dataset.slt || e.innerText).trim() === n); e.click(); }, name).then(() => pg.waitForTimeout(900)),
-    inView: re => pg.evaluate(([s, f]) => { const re = new RegExp(s, f); const e = [...document.querySelectorAll('[data-pane="report"] h1,[data-pane="report"] h2,[data-pane="report"] h3,[data-pane="report"] summary')].find(e => e.getClientRects().length && re.test(e.innerText)); if (!e) return null; const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }, [re.source, re.flags]),
+    onScreen: re => pg.evaluate(([s, f]) => { const re = new RegExp(s, f); const e = [...document.querySelectorAll('[data-pane="report"] *')].filter(e => e.getClientRects().length && e.innerText && e.innerText.length < 60 && re.test(e.innerText)).pop(); if (!e) return null; const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }, [re.source, re.flags]),
     // matchups
-    threatRows: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] .chtr[data-chthr]')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
+    topThreatRows: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] .chtl10 > .chtr[data-chthr]')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     tapThreat: name => click(`[data-pane="report"] [data-chthr="${name}"]`, 800),
     threatSheet: () => txt('#chScout'),
     tapThreatInSheet: name => click(`#chScout [data-chthr="${name}"]`, 600),
     threatPressedInSheet: () => pg.evaluate(() => { const e = document.querySelector('#chScout [data-chthr][aria-pressed="true"]'); return e ? e.dataset.chthr : null; }),
-    gridRows: () => pg.evaluate(() => { const t = [...document.querySelectorAll('[data-pane="report"] table')].find(e => e.getClientRects().length); return t ? [...t.querySelectorAll('tbody tr')].map(r => r.querySelectorAll('td').length) : null; }),
-    tapGridRow: i => pg.evaluate(i => { const t = [...document.querySelectorAll('[data-pane="report"] table')].find(e => e.getClientRects().length); const r = t.querySelectorAll('tbody tr')[i]; (r.querySelector('[data-chhthr],button') || r).click(); return r.innerText.split('\n')[0]; }, i),
+    /** Top 12 grid: cells per threat row (rows in order) */
+    gridRows: () => pg.evaluate(() => { const t = [...document.querySelectorAll('[data-pane="report"] [role=table]')].find(e => e.getClientRects().length); return t ? [...t.querySelectorAll('[data-chhthr]')].map(r => ({name: r.getAttribute('aria-label').split(':')[0], cells: r.querySelectorAll('[role=cell]').length})) : null; }),
+    tapGridRow: i => tapFound(i => { const t = [...document.querySelectorAll('[data-pane="report"] [role=table]')].find(e => e.getClientRects().length); return t ? t.querySelectorAll('[data-chhthr]')[i] : null; }, i, 'grid row ' + i, 900),
+    /** "?" explainer next to a term; the bubble that opens */
+    pickTypeChartMega: name => tapFound(n => [...document.querySelectorAll('[data-megapick]')].find(e => e.getClientRects().length && e.innerText.trim() === n) || null, name, 'Mega pick ' + name, 900),
+    tapTip: label => H.tapLabel(label, 500),
+    tipBubble: () => txt('#tipPop'),
+    /** shortcut for "edit this Pokémon's four moves" (the rebuild may do it through its edit panel) */
+    giveMoves: (name, moves) => ui.peek(`(()=>{const i=S.slots.findIndex(s=>s.n===${JSON.stringify(name)});S.slots[i].mv={doubles:${JSON.stringify(moves)}};render();return i})()`).then(() => pg.waitForTimeout(1500)),
+    movesOf: name => ui.peek(`(()=>{const m=members().find(m=>m.p&&m.p.n===${JSON.stringify(name)});return m?(m.mv||m.moves||null):null})()`),
     // suggestions
     suggestionCards: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] [data-plan]')].filter(e => e.getClientRects().length && !e.closest('#chScout')).map(b => { let c = b; for (let k = 0; k < 6 && c.parentElement && !/(for|added)/.test(c.innerText.split('Apply')[0]); k++) c = c.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); })),
-    applySuggestion: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('[data-pane="report"] [data-plan]')].filter(e => e.getClientRects().length && !e.closest('#chScout'))[i]; b.click(); }, i).then(() => pg.waitForTimeout(1500)),
+    applySuggestionCard: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('[data-pane="report"] [data-plan]')].filter(e => e.getClientRects().length && !e.closest('#chScout'))[i]; b.click(); }, i).then(() => pg.waitForTimeout(1500)),
     undoBar: () => pg.evaluate(() => { const e = [...document.querySelectorAll('[data-undobar]')].find(e => e.getClientRects().length); if (!e) return null; let c = e.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); }),
-    tapUndoBar: () => click('[data-undobar]', 1500),
+    undoLastApplied: () => click('[data-undobar]', 1500),
     // edit panel
     editPanel: () => pg.evaluate(() => { const e = document.querySelector('#chEdit'); if (!e || e.hidden || !e.getClientRects().length) return null; const h = e.querySelector('h1,h2,h3,b,strong'); return {title: (h ? h.innerText : '').replace(/\s+/g, ' ').trim(), text: e.innerText.replace(/\s+/g, ' ').trim()}; }),
     openEditPanel: async name => { await H.tapTile(name); await click('#rzSet [data-chedit]', 900); },
