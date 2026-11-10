@@ -136,7 +136,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
   const w0 = WK.winners(W)[0];
   x.fillStyle = P.blue; x.fillRect(0, by, Wd, bh); x.fillStyle = 'rgba(255,255,255,.2)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < Wd; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.3, 0, 7); x.fill(); }
   if (w0) { const t = w0.top[0]; txt(`Winner: ${w0.name}`, '700 20px "Instrument Sans", monospace', '#fff', 56, by + 38, 1090);
-    txt(`Winning team, ${evDate(w0.date)}, ${CH.n(w0.players)} players`, '800 26px Archivo, sans-serif', '#fff', 56, by + 72, 1090);
+    txt(`Champion, ${evDate(w0.date)}, ${CH.n(w0.players)} players`, '800 26px Archivo, sans-serif', '#fff', 56, by + 72, 1090);
     const ims = await Promise.all(t.mons.map(m => img(byName.get(m.n)))); ims.forEach((im, i) => { if (!im) return; x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetY = 4; draw(im, 110 + i * 196, by + 154, 132); x.restore(); }); }
   else txt('No big event finished this week', '800 28px Archivo, sans-serif', '#fff', 56, by + 120);
   txt('Sharply raise your win rate.', '400 32px "Instrument Sans",system-ui,sans-serif', P.pen, 58, H - 28);

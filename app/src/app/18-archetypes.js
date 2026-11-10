@@ -206,7 +206,7 @@ function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) r
   keepUndo();
   S.slots = normSlots(t.mons.map(n => ({n, a: null, lock: false})));
   // tournament teams are VGC doubles teams
-  S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`Team loaded (${teamWho(t)})`, true); }
+  S.format = 'doubles'; S.loadedId = null; ui.ttConfirm = null; render(); setView('build'); toast(`${teamWho(t).split(' · ')[0]}'s team loaded`, true); }
 
 // Trends: compare each Pokémon's rank today with about a week ago.
 function cleanHistory(d) { if (!d || !Array.isArray(d.days)) return null;
@@ -234,4 +234,4 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // "Practice against": a top team becomes the opponent in Battle mode
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ttvs]'); if (!b) return;
   const t = META.teams && META.teams.teams[+b.dataset.ttvs]; if (!t) return;
-  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${teamWho(t)} team`); });
+  S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${teamWho(t)}`); });

@@ -57,7 +57,7 @@ function renderEvents() {
     + (list.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-evmore="1">Show more (${list.length - cap} left)</button></div>` : ''); }
 function loadSheet(t) { keepUndo(); S.slots = normSlots(t.mons.map(m => { const p = byName.get(m.n); const mv = m.mv.filter(x => mvByName.has(x)); while (mv.length < 4) mv.push('');
     return {n: m.n, a: p.a.includes(m.a) ? m.a : null, lock: false, ...(mv.some(Boolean) ? {mv: {doubles: mv.slice(0, 4)}} : {}), ...(!p.m && m.i && typeof m.i === 'string' ? {it: {doubles: m.i}} : {})}; }));
-  S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast(`Team loaded with its moves and items${t.place ? ' (' + ordTxt(t.place) + ' place)' : ''}`, true); }
+  S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast(`${teamWho(t).split(' · ')[0]}'s team loaded with its moves and items`, true); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-evopen],[data-evback],[data-evf],[data-evmore],[data-evsets],[data-evload],[data-evvs]'); if (!b) return; const d = b.dataset;
   if (d.evopen) { evUi.open = d.evopen; renderEvents(); try { window.scrollTo({top: 0}); } catch (er) {} return; }
   if (d.evback) { evUi.open = null; renderEvents(); return; }
@@ -67,7 +67,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.evload || d.evvs) { const x = evTeam(d.evload || d.evvs); if (!x) return;
     if (d.evload) { const sure = ui.evSure && ui.evSure.k === d.evload && Date.now() - ui.evSure.t < 6000; /* kept in ui, so a redraw between taps doesn't reset it */
       if (members().length && !sure) { ui.evSure = {k: d.evload, t: Date.now()}; b.textContent = 'Tap again to replace your team'; return; } ui.evSure = null; loadSheet(x.t); return; }
-    S.opp = x.t.mons.map(m => m.n); ui.oppFrom = {who: x.t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${x.t.place ? ordTxt(x.t.place) + ' place ' : ''}team`); return; }
+    S.opp = x.t.mons.map(m => m.n); ui.oppFrom = {who: x.t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${teamWho(x.t)}`); return; }
   keepScroll(() => { if (view === 'top') renderTeamSearch(); else if (view === 'auto') renderAutoBuild(); else renderEvents(); }); });
 
 // ---- team search (Top teams) ----
