@@ -1062,3 +1062,9 @@
 /* plain words (Nov 9): the #1 card's rank, usage, win rate and games wait behind Details like the rows (beats the hero's own display rules) */
 @A .ar-mpg #chHot [data-dbbox]:not([data-dbo]) .dbsec{display:none!important}
 @A .ar-mpg #chHot .chhot2[data-dbbox]:not([data-dbo]) .chhot.mgrh .dbsec,@A .ar-mpg #chHot .chhot2[data-dbbox]:not([data-dbo]) .chhot.mgrh .mgcap.dbsec{display:none!important}
+/* f4-heads (Nov 10): shorter page heads on phones. Speed Tiers / Damage Calc / Type Chart sit in one even row of three (they wrapped
+   two plus one, uneven); a label may take two lines on the narrowest phones, all three the same. Ratings: search sits closer to the links. */
+@media (max-width:599px){@A:not(#amw) [data-pane] :is(#dmgcalc,#speedtiers,#types)>.seg.teamsw{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@A:not(#amw) [data-pane] :is(#dmgcalc,#speedtiers,#types)>.seg.teamsw>button{min-width:0!important;width:auto!important;max-width:none!important;padding:6px 8px!important;white-space:normal!important;text-align:center;justify-content:center;line-height:1.2;grid-column:auto!important}
+@A .ar-mpg #lair>.lctl{margin-top:16px!important}}
+@media (max-width:479px){@A:not(#amw) [data-pane] :is(#dmgcalc,#speedtiers,#types)>.seg.teamsw>button{word-spacing:100vw}}
