@@ -1,0 +1,90 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>NastyPlot home concept: the preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500..900&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{--bg:#060608;--ink:#F3F0EB;--ink2:#BDB8C1;--ink3:#8D8894;--rule:rgba(255,255,255,.1);--rule2:rgba(255,255,255,.2);
+  --pink:#FF5CBE;--gold:#FFC233;--blue:#4AAEF5;--orange:#FF7A45;--purple:#B391FF}
+/*BASE*/
+.hero{position:relative;height:990px;overflow:hidden;background:#060608}
+/* light: one cool key from above, the far wall falling to black */
+.wall{position:absolute;inset:0;background:
+  radial-gradient(700px 300px at 66% 43%,rgba(120,170,255,.16),transparent 70%),
+  radial-gradient(1200px 520px at 66% 0%,rgba(90,130,210,.12),transparent 70%)}
+.beam{position:absolute;top:-40px;width:520px;height:760px;transform-origin:50% 0;filter:blur(54px);opacity:.24;
+  background:linear-gradient(180deg,rgba(170,205,255,.34),rgba(170,205,255,.05) 70%,transparent);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%)}
+.floor{position:absolute;left:-400px;right:-400px;top:430px;height:900px;transform-origin:50% 0;transform:perspective(620px) rotateX(63deg);
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 1px,transparent 1px 140px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,transparent 1px 140px),
+    linear-gradient(180deg,rgba(74,120,200,.13),rgba(10,12,20,0) 55%);
+  -webkit-mask-image:radial-gradient(ellipse 30% 80% at 60% 16%,#000 25%,transparent 80%)}
+.horizon{position:absolute;left:520px;right:0;top:429px;height:1px;background:linear-gradient(90deg,transparent,rgba(190,215,255,.55) 30%,rgba(190,215,255,.55) 70%,transparent)}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse 70% 78% at 64% 52%,transparent 55%,rgba(0,0,0,.85) 100%);pointer-events:none}
+.grain{position:absolute;inset:0;opacity:.07;mix-blend-mode:screen;pointer-events:none;z-index:5}
+/* left column */
+.pitch{position:absolute;z-index:4;left:64px;top:168px;width:420px}
+.pitch h1{margin:22px 0}
+.pitch p{font-size:17px;color:var(--ink2);max-width:400px}.pitch p b{color:var(--ink);font-weight:600}
+.daily{margin-top:36px;padding-top:24px;border-top:1px solid var(--rule)}
+.daily h2{font-size:26px;line-height:1.15;margin:12px 0 10px}
+.daily h2 em{font-style:inherit;color:var(--pink)}
+.acts{display:flex;gap:12px;margin-top:28px}
+.from{position:absolute;z-index:4;left:64px;bottom:44px;font-size:13px;color:var(--ink3)}
+/* the stage */
+.row{position:absolute;z-index:3;display:flex;justify-content:space-between}
+.them{left:610px;width:690px;top:268px}.you{left:520px;width:870px;top:520px}
+.m{position:relative;text-align:center;flex:none}
+.m img.s{display:block;margin:0 auto;position:relative;z-index:2}
+.m .rf{position:absolute;left:50%;top:var(--h);transform:translateX(-50%) scaleY(-1);opacity:.28;z-index:1;-webkit-mask-image:linear-gradient(0deg,#000,transparent 62%);filter:blur(1.5px)}
+.m .pool{position:absolute;left:50%;top:var(--h);width:150%;height:30px;transform:translate(-50%,-55%);border-radius:50%;background:radial-gradient(closest-side,rgba(200,220,255,.3),transparent);z-index:0}
+.m b{display:block;position:relative;z-index:3;font:600 13px/1.2 var(--b);white-space:nowrap}.m b i{font-style:normal;color:var(--ink3);margin-left:5px}
+.them .m{width:96px;--h:92px}.them .m img.s{width:92px;height:92px;filter:brightness(.82)}.them .m .rf{width:92px;height:92px}.them .m b{margin-top:2px;color:var(--ink2)}
+.you .m{width:128px;--h:128px}.you .m img.s{width:128px;height:128px}.you .m .rf{width:128px;height:128px}
+.you .m b{font-size:15px;margin-top:48px}
+.you .m.off img.s{filter:brightness(.42) saturate(.55)}.you .m.off .rf{opacity:.1}.you .m.off .pool{opacity:.25}.you .m.off b{color:var(--ink3)}
+.you .m.on{z-index:4;--h:158px}.you .m.on img.s{transform:translateY(20px) scale(1.2)}.you .m.on .rf{transform:translateX(-50%) scaleY(-1) scale(1.2)}
+.you .m.on .pool{width:170%;height:40px;background:radial-gradient(closest-side,rgba(74,174,245,.75),rgba(74,174,245,.18) 60%,transparent)}
+.you .m.on img.s{filter:drop-shadow(0 0 18px rgba(120,180,255,.35))}.you .m.on .pool{transform:translate(-50%,-70%)}
+.tag{position:relative;z-index:3;display:inline-block;margin-top:5px;padding:3px 9px;border-radius:4px;font:700 13px/1.2 var(--b);border:1px solid var(--rule2);color:var(--ink)}
+.tag.lead{background:var(--pink);border-color:var(--pink);color:#12080E}
+.cap{position:absolute;z-index:4;display:flex;align-items:center;gap:14px;font-size:15px;color:var(--ink2);white-space:nowrap}
+.cap b{color:var(--ink);font-weight:600}.cap::before,.cap::after{content:"";height:1px;flex:1;background:var(--rule2)}
+.cap.t{left:610px;width:690px;top:212px}.cap.y{left:520px;width:870px;top:794px}
+/* pick bar */
+.pick{position:absolute;z-index:4;left:520px;width:870px;top:842px;display:grid;grid-template-columns:repeat(4,1fr) auto;gap:12px;align-items:center}
+.slot{height:52px;border-radius:6px;border:1px solid var(--rule2);display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;font-weight:600;white-space:nowrap}
+.slot small{font:700 13px/1 var(--b);color:var(--ink3)}.slot.lead small{color:var(--pink)}
+.slot.empty{border-style:dashed;color:var(--ink3)}
+.after{position:absolute;z-index:4;left:520px;width:870px;top:910px;font-size:13px;color:var(--ink3);text-align:right}.nums{position:absolute;z-index:4;left:64px;bottom:60px;display:flex;gap:44px}.nums b{display:block;font-size:26px;line-height:1.1}.nums span{font-size:13px;color:var(--ink3)}
+</style></head><body>
+<section class="hero">
+  <div class="wall"></div><div class="beam" style="left:560px;transform:rotate(9deg)"></div><div class="beam" style="left:700px"></div><div class="beam" style="left:860px;transform:rotate(-10deg)"></div>
+  <div class="floor"></div><div class="horizon"></div><div class="vig"></div>
+  <svg class="grain" width="1440" height="990"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <!--HEADER-->
+  <div class="pitch"><div class="eyebrow">Pokémon Champions · Reg M-C doubles</div>
+    <h1 class="dsp">Sharply raise<br><em>your win rate.</em></h1>
+    <p>Games are won at team preview. So NastyPlot opens on one: a real final, replayed every day.</p>
+    <div class="daily"><div class="eyebrow" id="ev"></div>
+      <h2 class="dsp">See their six.<br><em>Pick your four.</em></h2>
+      <p id="who"></p>
+      <div class="acts"><span class="btn g">Play it with my own six</span></div></div></div>
+  <div class="nums" id="from"></div>
+  <div class="cap t" id="capt"></div><div class="row them" id="them"></div>
+  <div class="row you" id="you"></div><div class="cap y" id="capy"></div>
+  <div class="pick" id="pick"></div>
+  <div class="after">Lock in to see NastyPlot's four, the leads it expects from them, and its plan for turn 1.</div>
+</section>
+<!--DOORS-->
+<script>
+/*DATA*/
+const $=id=>document.getElementById(id),ev=D.event.split(' · ');
+$('ev').textContent="Today's preview · "+ev[1];
+$('who').innerHTML=`You hold <b>${D.youP}'s six</b>, the team that won the ${ev[0].replace(' Pokémon','').replace('Championships','').trim()}. Across the table: <b>${D.themP}</b>, the other finalist.`;
+$('from').innerHTML=[[13342,'teams'],[420,'tournaments'],[75865,'games']].map(x=>`<div><b class="dsp">${x[0].toLocaleString('en-US')}</b><span>${x[1]}</span></div>`).join('');
+$('capt').innerHTML=`<span><b>${D.themP}</b> · their six</span>`;$('capy').innerHTML=`<span><b>You</b> · ${D.youP}'s six · 3 of 4 picked</span>`;
+$('them').innerHTML=D.them.map(m=>`<div class="m"><img class="s" src="${m.img}"><img class="rf" src="${m.img}"><span class="pool"></span><b>${m.d}<i>${m.r}</i></b></div>`).join('');
+const P={'Tyranitar-Mega':'Lead','Excadrill':'Lead','Milotic':'Back'};
+$('you').innerHTML=D.you.map(m=>`<div class="m ${P[m.n]?'on':'off'}"><img class="s" src="${m.img}"><img class="rf" src="${m.img}"><span class="pool"></span><b>${m.d}<i>${m.r}</i></b>${P[m.n]?`<span class="tag ${P[m.n]=='Lead'?'lead':''}">${P[m.n]}</span>`:''}</div>`).join('');
+const pk=D.you.filter(m=>P[m.n]).sort((a,b)=>(P[a.n]=='Lead'?0:1)-(P[b.n]=='Lead'?0:1));
+$('pick').innerHTML=pk.map(m=>`<div class="slot ${P[m.n]=='Lead'?'lead':''}"><small>${P[m.n]}</small>${m.d}</div>`).join('')+'<div class="slot empty"><small>Back</small>Pick one more</div><span class="btn p" style="opacity:.45">Lock in ➜</span>';
+</script></body></html>

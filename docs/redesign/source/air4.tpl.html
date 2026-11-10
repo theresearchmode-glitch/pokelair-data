@@ -1,0 +1,203 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>NastyPlot home concept: room to breathe, v2</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Unbounded:wght@300..900&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{--bg:#FBFAF7;--ink:#17161A;--ink2:#5B5862;--ink3:#8B8892;--rule:rgba(23,22,26,.1);--d:"Bricolage Grotesque",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--b);-webkit-font-smoothing:antialiased}
+.page{width:1440px;overflow:hidden;position:relative}
+section{position:relative}
+.wash{position:absolute;border-radius:50%;pointer-events:none;filter:blur(40px)}
+.eyebrow{font:500 13px/1 var(--b);letter-spacing:.08em;color:var(--ink3)}
+h1,h2,.num,.giant{font-family:var(--d);font-variation-settings:"opsz" 96;letter-spacing:-.04em}
+h1{font-size:104px;line-height:.95;font-weight:300}h1 b{font-weight:600;display:block}
+h2{font-size:62px;line-height:1;font-weight:300}h2 b{font-weight:600}
+p.lede{font-size:19px;line-height:1.5;color:var(--ink2);max-width:430px}p.lede b{color:var(--ink);font-weight:600}
+.pill{display:inline-flex;align-items:center;height:56px;padding:0 28px;border-radius:999px;background:var(--ink);color:var(--bg);font:600 16px/1 var(--b)}
+.link{font:600 16px/1 var(--b);color:var(--ink);border-bottom:1.5px solid currentColor;padding-bottom:3px}
+.acts{display:flex;align-items:center;gap:26px;margin-top:36px}
+.mon{position:absolute;display:block}
+.shadow{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(30,20,50,.34),transparent);filter:blur(3px)}
+.cap{position:absolute;font:600 14px/1.25 var(--b);text-align:center;white-space:nowrap;transform:translateX(-50%)}.cap i{font-style:normal;font-weight:500;color:var(--ink3);margin-left:5px}
+.cap small{display:block;font:500 13px/1.3 var(--b);color:var(--ink3)}
+.floor{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--rule) 12%,var(--rule) 88%,transparent)}
+.giant{position:absolute;z-index:1;font-weight:700;line-height:.8;letter-spacing:-.06em;-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.note{position:absolute;z-index:5;display:flex;align-items:center;gap:8px;font:500 13px/1 var(--b);color:var(--ink2);white-space:nowrap}
+.note::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+header{position:absolute;z-index:9;left:0;right:0;top:0;height:76px;display:flex;align-items:center;padding:0 96px}
+.wm{font:700 22px/1 var(--d);letter-spacing:-.04em}.wm span{font-weight:300}
+nav{display:flex;gap:38px;margin:0 auto}nav a{font:500 15px/1 var(--b);color:var(--ink2)}
+header .s{display:flex;align-items:center;gap:10px;color:var(--ink2);font:500 15px/1 var(--b)}
+/* hero */
+.hero{height:1030px}
+.hero .ground{position:absolute;left:0;right:0;top:770px;bottom:0}
+.hero .txt{position:absolute;z-index:5;left:96px;top:196px;width:640px}
+.hero h1{margin:26px 0 30px}
+.spec{position:absolute;z-index:5;left:1268px;width:170px}
+.spec .num{font-size:68px;line-height:1;font-weight:200}.spec .num small{font-size:30px;font-weight:300;margin-left:2px}
+.spec span{display:block;font-size:14px;line-height:1.35;color:var(--ink2);margin-top:6px}
+.spec::before{content:"";position:absolute;right:100%;top:35px;width:52px;height:1px;background:var(--ink);opacity:.35;margin-right:12px}
+.spec::after{content:"";position:absolute;right:100%;top:32px;width:7px;height:7px;border-radius:50%;background:var(--ink);margin-right:62px}
+.rail{position:absolute;z-index:5;left:96px;right:96px;top:900px;padding-top:22px;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
+.rail .lab{width:150px;font-size:14px;line-height:1.35;color:var(--ink2)}.rail .lab b{display:block;color:var(--ink);font-weight:600}
+.rail .it{position:relative;display:flex;align-items:center;gap:10px;font:600 14px/1.25 var(--b)}
+.rail .it .im{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(closest-side,var(--c),transparent)}.rail .it img{width:56px;height:56px}
+.rail .it small{display:block;font:500 13px/1.2 var(--b);color:var(--ink3)}
+.rail .it.on::after{content:"";position:absolute;left:0;right:0;bottom:-14px;height:2px;background:var(--ink)}
+/* grade */
+.grade{height:860px;text-align:center}
+.grade .head{position:absolute;z-index:5;left:0;right:0;top:96px}
+.grade h2{margin-top:22px}
+.badge{position:absolute;z-index:4;width:104px;height:104px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font:600 56px/1 var(--d);letter-spacing:-.04em}
+.facts{position:absolute;z-index:5;left:240px;right:240px;top:716px;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);padding-top:22px}
+.facts div{font-size:15px;color:var(--ink2);line-height:1.35}.facts b{display:block;font:300 44px/1.05 var(--d);letter-spacing:-.04em;color:var(--ink)}
+/* pairs */
+.pairs{height:830px}
+.pairs .txt{position:absolute;z-index:5;left:96px;top:230px;width:470px}.pairs h2{margin:22px 0 24px}
+.plus{position:absolute;z-index:4;width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;font:300 28px/1 var(--d);box-shadow:0 10px 30px -10px rgba(30,20,50,.35)}
+/* preview */
+.prev{height:880px}
+.prev .txt{position:absolute;z-index:5;left:96px;top:250px;width:440px}.prev h2{margin:22px 0 24px}
+.role{position:absolute;z-index:5;transform:translateX(-50%);font:600 13px/1 var(--b);letter-spacing:.08em;color:var(--ink3);white-space:nowrap}
+/* speed */
+.speed{height:700px}
+.speed .txt{position:absolute;z-index:5;left:96px;top:96px;right:96px;display:flex;justify-content:space-between;align-items:flex-end}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:rgba(23,22,26,.06);margin-top:18px}
+.seg span{height:36px;padding:0 16px;border-radius:999px;font:600 14px/36px var(--b);color:var(--ink2)}.seg span.on{background:#fff;color:var(--ink);box-shadow:0 4px 14px -6px rgba(30,20,50,.3)}
+.sp{position:absolute;z-index:5;transform:translateX(-50%);font:200 44px/1 var(--d);letter-spacing:-.04em}
+.tick{position:absolute;font:500 13px/1 var(--b);color:var(--ink3);transform:translateX(-50%)}
+/* week */
+.week{height:690px}
+.week .txt{position:absolute;z-index:5;left:96px;top:130px;width:420px}.week h2{margin:22px 0 24px}
+.week .v{position:absolute;font:300 36px/1 var(--d);letter-spacing:-.03em;text-align:center;width:160px;margin-left:-80px}
+.stem{position:absolute;width:1px;background:var(--ink);opacity:.35}
+/* tools */
+.tools{padding:110px 96px 120px;display:grid;grid-template-columns:repeat(4,1fr);gap:0 56px;border-top:1px solid var(--rule)}
+.tools .col img{width:96px;height:96px;margin-left:-10px}
+.tools h3{font:600 28px/1.1 var(--d);letter-spacing:-.03em;margin:10px 0 8px}
+.tools p{font-size:15px;line-height:1.45;color:var(--ink2);min-height:66px}
+.tools ul{list-style:none;margin-top:14px}.tools li{font-size:16px;font-weight:500;padding:11px 0;border-top:1px solid var(--rule);display:flex;justify-content:space-between}.tools li span{color:var(--ink3)}
+footer{display:flex;align-items:center;gap:40px;padding:0 96px;height:110px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink2)}
+footer .wm{font-size:20px;color:var(--ink)}footer .r{margin-left:auto;display:flex;gap:32px}
+html[data-theme=dark]{--bg:#17161C;--ink:#F3F1ED;--ink2:#B8B4C0;--ink3:#8A8693;--rule:rgba(255,255,255,.13)}
+[data-theme=dark] .shadow{background:radial-gradient(closest-side,rgba(255,255,255,.22),transparent)}
+[data-theme=dark] .plus{background:#2A2830;color:var(--ink);box-shadow:none}
+[data-theme=dark] .seg{background:rgba(255,255,255,.08)}[data-theme=dark] .seg span.on{background:#35333C;box-shadow:none}
+/* ---- NastyPlot's own voice, in small doses ---- */
+:root{--plot:#0078BF;--u:"Unbounded",system-ui,sans-serif}html[data-theme=dark]{--plot:#4AAEF5}
+h1,h2,.giant,.num,.facts b,.sp,.week .v,.tools h3{font-family:var(--u);font-style:italic;font-synthesis:style;font-variation-settings:normal}
+h1{font-size:70px;line-height:1.03;font-weight:900;letter-spacing:-.045em}h1 b{font-weight:900;color:var(--plot)!important}
+h2{font-size:44px;line-height:1.08;font-weight:900;letter-spacing:-.045em}h2 b{font-weight:900;color:var(--plot)}
+.giant{font-weight:900;letter-spacing:-.07em}
+.spec .num{font-size:50px;font-weight:500;letter-spacing:-.05em}.spec .num small{font-size:24px;font-weight:500}
+.facts b{font-size:36px;font-weight:500;letter-spacing:-.05em;margin-bottom:4px}.sp{font-size:32px;font-weight:500;letter-spacing:-.05em}.week .v{font-size:28px;font-weight:500;letter-spacing:-.05em}
+.tools h3{font-size:22px;font-weight:900;letter-spacing:-.04em}
+.eyebrow{display:flex;align-items:center;gap:10px}.grade .eyebrow{justify-content:center}
+.eyebrow::before{content:"";width:20px;height:7px;background:var(--sec,var(--plot));transform:skewX(-24deg)}
+.pill{border-radius:0;height:58px;padding:0 34px;font:800 15px/1 var(--u);font-style:italic;letter-spacing:-.01em;clip-path:polygon(16px 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.plate{position:absolute;z-index:6;height:40px;padding:0 22px;display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);font:800 13px/1 var(--u);font-style:italic;white-space:nowrap;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.plate i{font-style:normal;color:#FF4D6D}
+.badge{border-radius:0;width:112px;height:96px;clip-path:polygon(22px 0,100% 0,calc(100% - 22px) 100%,0 100%);font:900 52px/1 var(--u);font-style:italic}
+.panel{position:absolute;z-index:0;left:764px;top:176px;width:480px;height:540px;transform:skewY(-7deg);border-radius:6px;overflow:hidden}
+.panel::after{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(from 8deg at 50% 62%,rgba(255,255,255,.5) 0 1.6deg,transparent 1.6deg 15deg);-webkit-mask-image:radial-gradient(closest-side,transparent 26%,#000 60%,transparent 96%)}
+[data-theme=dark] .panel::after{opacity:.35}
+header .logo svg{height:40px;display:block}footer .logo svg{height:30px;display:block}
+</style></head><body><div class="page">
+<header><div class="logo">%LOGO%</div><nav><a>Build</a><a>My team</a><a>Battle</a><a>Meta</a></nav>
+  <div class="s"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search</span></div></header>
+<section class="hero" id="hero" style="--sec:#E8364F"></section><section class="grade" id="grade" style="--sec:#0078BF"></section><section class="pairs" id="pairs" style="--sec:#E9A800"></section>
+<section class="prev" id="prev" style="--sec:#F05A28"></section><section class="speed" id="speed" style="--sec:#F05A28"></section><section class="week" id="week" style="--sec:#7B4BD6"></section><section class="tools" id="tools"></section>
+<footer><div class="logo">%LOGO2%</div><span>Team building for Pokémon Champions, from real tournament results.</span><div class="r"><span>How the ratings work</span><span>About</span><span>Send feedback</span></div></footer>
+</div><script>
+/*DATA*/
+const DARK=document.documentElement.dataset.theme==='dark',K=DARK?.7:1;const N=n=>n.toLocaleString('en-US'),$=id=>document.getElementById(id);
+function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
+// read each render: its two main colours (every scene borrows them) and where its feet are (so everyone stands on the same floor)
+async function meta(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);let x0=S,x1=0,y0=S,y1=0;
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<60)continue;const px=(i/4)%S,py=Math.floor(i/4/S);x0=Math.min(x0,px);x1=Math.max(x1,px);y0=Math.min(y0,py);y1=Math.max(y1,py);if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
+  const o=B.map((b,i)=>({i,w:b[3],c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[205,205,215]})).sort((a,b)=>b.w-a.w),a=o[0],b2=o.find(q=>q.w>a.w*.12&&Math.min(Math.abs(q.i-a.i),18-Math.abs(q.i-a.i))>=3)||a;
+  return{a:a.c,b:b2.c,l:x0/S,r:(x1+1)/S,top:y0/S,bot:(y1+1)/S};}
+const rgb=(c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a})`,accent=c=>{const[h,s]=hsl(c[0],c[1],c[2]);return `hsl(${h.toFixed(0)} ${Math.round(Math.max(s,.62)*100)}% ${DARK?70:40}%)`;};
+const wash=(c,x,y,w,h,a)=>`<i class="wash" style="left:${x-w/2}px;top:${y-h/2}px;width:${w}px;height:${h}px;background:radial-gradient(closest-side,${rgb(c,a*K)},${rgb(c,0)})"></i>`;
+const img=(m,x,y,z,st='')=>`<img class="mon" src="${m.img}" style="left:${x}px;top:${y}px;width:${z}px;height:${z}px;${st}">`;
+const sh=(cx,cy,w,h,o=1)=>`<i class="shadow" style="left:${cx-w/2}px;top:${cy-h/2}px;width:${w}px;height:${h}px;opacity:${o}"></i>`;
+const M={};
+// stand a Pokemon with its feet on a floor line, centred on cx
+function stand(m,cx,fl,z,o={}){const k=M[m.n],mid=(k.l+k.r)/2,l=cx-z*(o.flip?1-mid:mid),t=fl-z*k.bot,w=z*(k.r-k.l),fx=o.flip?'scaleX(-1)':'';
+  return(o.noshadow?'':sh(cx,fl,w*.9,Math.max(12,w*.12),o.so||1))
+    +(o.refl?`<img class="mon" src="${m.img}" style="left:${l}px;top:${fl-z*(1-k.bot)}px;width:${z}px;height:${z}px;transform:scaleY(-1) ${fx};opacity:.17;-webkit-mask-image:linear-gradient(0deg,#000,transparent 46%);z-index:2">`:'')
+    +img(m,l,t,z,`z-index:${o.z||3};${fx?'transform:'+fx+';':''}${o.st||''}`);}
+(async()=>{
+  const all={};for(const m of[D.hero,...D.back,...D.extra,...D.rail,D.pair.a,D.pair.b,...D.team,...D.them,...D.speed,...D.up,...D.down,...D.doors])all[m.n]=m;
+  await Promise.all(Object.values(all).map(async m=>{M[m.n]=await meta(m.img);}));
+  // ---------- hero ----------
+  const H=D.hero,a=M[H.n].a,b=M[H.n].b,wh=D.extra[0],si=D.extra[1],whUp=D.up.find(x=>x.n===wh.n);
+  $('hero').innerHTML=wash(a,1010,470,1250,940,.36)+wash(b,1310,800,760,540,.36)+wash(a,200,980,760,420,.16)+`<div class="panel" style="background:linear-gradient(150deg,${rgb(a,.75*K)},${rgb(b,.6*K)})"></div><div class="plate" style="left:790px;top:258px"><i>▲▲</i>Rated #1 right now</div>`
+    +`<div class="ground" style="background:linear-gradient(180deg,${rgb(a,.14*K)},${rgb(a,0)} 70%)"></div>`
+    +stand(D.back[0],1120,560,270,{noshadow:1,z:1,st:'filter:blur(5px) saturate(.85) opacity(.42);'})+stand(D.back[1],690,690,250,{noshadow:1,z:1,st:'filter:blur(6px) saturate(.85) opacity(.42);'})
+    +stand(H,965,790,500,{refl:1})
+    +img(wh,560,84,124,'z-index:4;transform:rotate(-8deg)')+`<svg style="position:absolute;z-index:2;left:424px;top:112px" width="160" height="60"><path d="M4 50C40 10 96 60 150 20" fill="none" stroke="rgba(128,124,136,.7)" stroke-width="1.5" stroke-dasharray="1 7" stroke-linecap="round"/></svg>`
+    +`<div class="note" style="left:700px;top:132px;--c:${accent(M[wh.n].a)}">${wh.d} is up to something${whUp?`: +${whUp.v} this week`:''}</div>`
+    +stand(si,716,828,134,{refl:1,z:4})+`<div class="note" style="left:560px;top:842px;--c:${accent(M[si.n].a)}">${si.d}, rated ${si.r}</div>`
+    +`<div class="txt"><div class="eyebrow">Pokémon Champions · Reg M-C doubles</div><h1>Sharply raise<b style="color:${accent(a)}">your win rate.</b></h1>
+      <p class="lede">Every good team starts as a plot. NastyPlot hatches yours from <b>${N(D.teams)} real tournament teams</b>: who wins, who they win with, and what stops them cold.</p>
+      <div class="acts"><span class="pill">Build me a team ➜</span><span class="link">Check the team I have</span></div></div>`
+    +`<div class="cap" style="left:965px;top:812px;z-index:5;font-size:17px">${H.d}<small>${H.t.join(' · ')}</small></div>`
+    +[[H.r,'','NastyPlot rating. The highest of any Pokémon right now.',452],[H.u,'%',`of teams bring ${H.d}.`,586],[H.w,'%','of its games end in a win.',700]].map(s=>`<div class="spec" style="top:${s[3]}px"><div class="num">${s[0]}<small>${s[1]}</small></div><span>${s[2]}</span></div>`).join('')
+    +`<div class="rail"><div class="lab"><b>Top of the meta</b>Pick one and the room changes</div>${D.rail.map((m,i)=>`<div class="it ${i?'':'on'}"><span class="im" style="--c:${rgb(M[m.n].a,.6)}"><img src="${m.img}"></span><div>${m.d}<small>${m.r}</small></div></div>`).join('')}</div>`;
+  // ---------- grade: the site's own sample team and its real grade ----------
+  const G=D.sample,gx=i=>190+212*i,gz=[236,236,214,186,196,214];let g='';
+  g+=D.team.map((m,i)=>wash(M[m.n].a,gx(i),470,380,460,.5)).join('');
+  g+=`<div class="giant" style="left:0;right:0;top:250px;font-size:430px;text-align:center;background-image:linear-gradient(90deg,${D.team.map(m=>rgb(M[m.n].a,.62)).join(',')})">${G.score}</div>`;
+  g+=`<div class="badge" style="left:340px;top:236px">${G.letter}</div><div class="floor" style="left:96px;right:96px;top:640px"></div>`;
+  D.team.forEach((m,i)=>{g+=stand(m,gx(i),640,gz[i],{refl:1})+`<div class="cap" style="left:${gx(i)}px;top:660px">${m.d}<i>${m.r}</i></div>`;});
+  $('grade').innerHTML=g+`<div class="head"><div class="eyebrow">My team · The grade</div><h2>Your six, <b>graded out of 100.</b></h2></div>
+    <div class="facts"><div><b>${G.ready}%</b>ready for the top ${G.of} teams</div><div><b>${G.handled}</b>of those matchups handled</div><div><b>${G.shaky}</b>still shaky, with a fix for each</div></div>
+    <div style="position:absolute;z-index:5;left:0;right:0;top:816px;font-size:14px;color:var(--ink3)">Shown: NastyPlot's sample team, ${G.name}. <span class="link" style="font-size:14px;margin-left:10px">Grade my team</span></div>`;
+  // ---------- pairs ----------
+  const P=D.pair,pa=M[P.a.n].a,pb=M[P.b.n].a;
+  $('pairs').innerHTML=wash(pa,1180,400,780,720,.5)+wash(pb,770,430,780,720,.5)
+    +`<div class="giant" style="left:560px;width:820px;top:110px;font-size:300px;text-align:center;background-image:linear-gradient(90deg,${rgb(pb,.6)},${rgb(pa,.6)})">${P.w}</div>`
+    +`<div class="floor" style="left:600px;right:96px;top:660px"></div>`+stand(P.b,790,660,360,{flip:1,refl:1})+stand(P.a,1160,660,360,{refl:1})+`<div class="plus" style="left:952px;top:500px">+</div>`
+    +`<div class="cap" style="left:790px;top:680px">${P.b.d}<i>${P.b.r}</i></div><div class="cap" style="left:1160px;top:680px">${P.a.d}<i>${P.a.r}</i></div>`
+    +`<div class="txt"><div class="eyebrow">Build · Winning cores</div><h2>Doubles is played <b>in pairs.</b></h2>
+      <p class="lede">${P.a.d} and ${P.b.d} win <b>${P.w}%</b> of their games together, across ${N(P.n)} teams. The average team wins ${D.base}%. NastyPlot knows every pairing like this one.</p>
+      <div class="acts"><span class="link">Find the best partner for my six</span></div></div>`;
+  // ---------- preview: the sample team's real game plan against the six most-used Pokemon ----------
+  const tm=n=>D.team.find(m=>m.n===n),L1=tm(G.lead[0]),L2=tm(G.lead[1]),B1=tm(G.back[0]),B2=tm(G.back[1]),N1=tm(G.bench[0]),N2=tm(G.bench[1]);let pv='';
+  pv+=wash(M[L1.n].a,900,570,520,520,.5)+wash(M[L2.n].a,1112,570,520,520,.5)+wash(M[B1.n].a,700,520,360,360,.4)+wash(M[B2.n].a,1300,520,360,360,.4);
+  pv+=`<div class="floor" style="left:600px;right:60px;top:222px"></div><div class="role" style="left:990px;top:84px">THEIR SIX · THE META'S TOP SIX</div>`;
+  D.them.forEach((m,i)=>{const cx=650+136*i;pv+=stand(m,cx,222,104,{so:.7,st:'filter:saturate(.9);'})+`<div class="cap" style="left:${cx}px;top:234px;font-size:13px;font-weight:500;color:var(--ink2)">${m.d}</div>`;});
+  pv+=stand(N1,592,470,100,{so:.5,z:2,st:'filter:saturate(.35) opacity(.55);'})+stand(N2,1386,470,100,{so:.5,z:2,st:'filter:saturate(.35) opacity(.55);'});
+  pv+=stand(B1,706,640,180,{z:3,refl:1})+stand(B2,1296,640,160,{z:3,refl:1});
+  pv+=stand(L1,900,740,260,{z:4,refl:1})+stand(L2,1112,740,260,{z:4,refl:1});
+  pv+=`<div class="cap" style="left:900px;top:762px">${L1.d}<small>Lead</small></div><div class="cap" style="left:1112px;top:762px">${L2.d}<small>Lead</small></div>
+    <div class="cap" style="left:690px;top:662px">${B1.d}<small>Back</small></div><div class="cap" style="left:1310px;top:662px">${B2.d}<small>Back</small></div>
+    <div class="cap" style="left:592px;top:484px;color:var(--ink3);font-weight:500">${N1.d}<small>Bench</small></div><div class="cap" style="left:1386px;top:484px;color:var(--ink3);font-weight:500">${N2.d}<small>Bench</small></div>`;
+  $('prev').innerHTML=pv+`<div class="txt"><div class="eyebrow">Battle · Team preview</div><h2>See their six.<br><b>Pick your four.</b></h2>
+    <p class="lede">Against the meta's top six, NastyPlot brings four of the sample team: <b>${L1.d} and ${L2.d} lead</b>, ${B1.d} and ${B2.d} wait in the back, and two stay on the bench.</p>
+    <div class="acts"><span class="link">Open Battle mode</span></div></div>`;
+  // ---------- speed ----------
+  const sx=v=>170+(v-45)/(145-45)*(1270-170),SY=500;let sd=`<div class="floor" style="left:96px;right:96px;top:${SY}px"></div>`;
+  for(const v of[50,75,100,125])sd+=`<i class="stem" style="left:${sx(v)}px;top:${SY}px;height:8px"></i><div class="tick" style="left:${sx(v)}px;top:${SY+62}px">${v}</div>`;
+  sd+=`<div class="tick" style="left:${sx(145)}px;top:${SY+62}px">base Speed</div>`;
+  D.speed.forEach((m,i)=>{const cx=sx(m.sp),z=150,k=Math.max(0,(m.sp-70)/75);sd+=wash(M[m.n].a,cx,SY-70,300,300,.5);
+    if(k>0)sd+=`<svg style="position:absolute;z-index:2;left:${cx-70-170*k}px;top:${SY-118}px" width="${170*k}" height="80"><g stroke="${accent(M[m.n].a)}" stroke-width="2" stroke-linecap="round" opacity=".55"><path d="M0 12H${170*k}"/><path d="M${40*k} 40H${170*k}"/><path d="M${14*k} 68H${150*k}"/></g></svg>`;
+    sd+=stand(m,cx,SY,z)+`<div class="sp" style="left:${cx}px;top:${SY-z-58}px;color:${accent(M[m.n].a)}">${m.sp}</div><div class="cap" style="left:${cx}px;top:${SY+18}px">${m.d}</div>`;});
+  $('speed').innerHTML=sd+`<div class="txt"><div><div class="eyebrow">Battle · Speed tiers</div><h2 style="margin-top:22px">Who moves <b>first.</b></h2></div>
+    <div style="text-align:right"><p class="lede" style="max-width:400px;margin-left:auto">Six of the meta, lined up by Speed. Switch the field and watch the order change.</p><div class="seg"><span class="on">No field</span><span>Tailwind</span><span>Trick Room</span></div></div></div>`;
+  // ---------- week ----------
+  const mv=[...D.up,...D.down],BX=620,BW=126,BY=390;let wk='';
+  mv.forEach((m,i)=>{const cx=BX+BW*i+BW/2+(i>2?40:0),lift=m.v*17,z=122,cy=BY-lift,c=M[m.n].a;wk+=wash(c,cx,cy,280,280,.5)
+    +`<i class="stem" style="left:${cx}px;top:${Math.min(BY,cy)}px;height:${Math.abs(lift)}px"></i>`+img(m,cx-z/2,cy-z/2-(m.v>0?z*.5:-z*.5),z,'z-index:3')
+    +`<div class="v" style="left:${cx}px;top:${m.v>0?cy-z-48:cy+z+12}px;color:${accent(c)}">${m.v>0?'+':'−'}${Math.abs(m.v)}</div>`
+    +`<div class="cap" style="left:${cx}px;top:${m.v>0?BY+14:BY-34}px">${m.d}</div>`;});
+  const fd=s=>new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  $('week').innerHTML=wk+`<div class="floor" style="top:${BY}px;left:600px;right:96px"></div>
+    <div class="txt"><div class="eyebrow">Meta · ${fd(D.wk.from)} to ${fd(D.wk.to)}</div><h2>What moved <b>this week.</b></h2>
+    <p class="lede">Across ${N(D.wk.n)} teams, these six changed the most. The number is how many points of usage each one gained or lost.</p><div class="acts"><span class="link">See the whole meta</span></div></div>`;
+  // ---------- tools ----------
+  const T=[['Build','A full six drafted from real winning teams, or built your own way.',['Build me a team','Winning cores','Popular sets']],['My team','Your six graded out of 100, with the reasons and the fixes.',['Check my team','Coverage','Saved teams']],['Battle','Their six in. Your four, the leads and turn 1 out.',['Battle mode','Damage calc','Speed tiers','Gauntlet']],['Meta','Every recent tournament, every winning team, every Pokémon rated.',['Ratings','Teams','Events','Archetypes']]];
+  $('tools').innerHTML=T.map((t,i)=>`<div class="col"><img src="${D.doors[i].img}"><h3>${t[0]}</h3><p>${t[1]}</p><ul>${t[2].map((l,j)=>`<li>${l}<span>${j?'›':'➜'}</span></li>`).join('')}</ul></div>`).join('');
+  document.body.dataset.ready=1;
+})();
+</script></body></html>

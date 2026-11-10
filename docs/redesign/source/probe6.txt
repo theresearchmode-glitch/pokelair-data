@@ -1,0 +1,13 @@
+(() => { const b = document.querySelector('[data-lt="Garchomp"]') || document.querySelector('[data-lt]'); if (!b) return 'no data-lt'; b.click(); return 'opened ' + b.getAttribute('data-lt'); })()
+//---
+(() => { const s = document.getElementById('lairSheet') || document.querySelector('[role=dialog]'); if (!s) return 'no sheet'; const tabs = [...s.querySelectorAll('[role=tab]')].map(t => t.innerText.replace(/\s+/g, ' ').trim()); return JSON.stringify({tabs, txt: s.innerText.replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').slice(0, 3500)}); })()
+//---
+(() => { const s = document.getElementById('lairSheet'); const t = s && [...s.querySelectorAll('[role=tab]')]; if (!t || t.length < 2) return 'no tabs'; t[1].click(); return 'tab2'; })()
+//---
+(() => { const s = document.getElementById('lairSheet'); return s ? s.innerText.replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').slice(0, 3000) : 'none'; })()
+//---
+(() => { const s = document.getElementById('lairSheet'); const t = s && [...s.querySelectorAll('[role=tab]')]; if (!t || t.length < 3) return 'no tab3'; t[2].click(); return 'tab3'; })()
+//---
+(() => { const s = document.getElementById('lairSheet'); return s ? s.innerText.replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').slice(0, 3000) : 'none'; })()
+//---
+(() => { const s = document.getElementById('lairSheet'); const t = s && [...s.querySelectorAll('[role=tab]')]; if (t && t[0]) t[0].click(); return 'tab1'; })()

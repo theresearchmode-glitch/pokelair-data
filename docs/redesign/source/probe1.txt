@@ -1,0 +1,7 @@
+﻿JSON.stringify({S: typeof S !== 'undefined' ? Object.keys(S).slice(0, 40) : null, team: typeof S !== 'undefined' && S.team ? JSON.stringify(S.team).slice(0, 300) : null, fns: ['teamGrade','gradeTeam','chGrade','teamScore','scoreTeam','gradeOf','npGrade'].filter(f => { try { return typeof eval(f) === 'function'; } catch (e) { return false; } }), four: typeof CH !== 'undefined' ? Object.keys(CH).slice(0, 60) : null})
+//---
+(() => { const b = document.querySelector('[data-evload]'); return b ? (b.click(), 'clicked ' + b.getAttribute('data-evload')) : 'no evload button'; })()
+//---
+(() => { const b = document.querySelector('.sidenav [data-view="report"]') || document.querySelector('[data-view="report"]'); if (b) b.click(); return 'report'; })()
+//---
+JSON.stringify({team: JSON.stringify(S.team || S.ms || null).slice(0, 500), txt: (document.querySelector('main') || document.body).innerText.replace(/\s+/g, ' ').slice(0, 900)})
