@@ -74,6 +74,9 @@ jobs:
         run: node scrub-names.mjs && node scrub-names.mjs --check
         env:
           NP_PID_KEY: ${{ secrets.NP_PID_KEY }}
+      # page storage limit (Nov 10; after the name guard, so the parts are made from files with IDs only): any document the morning refresh writes that is over 200 KB is split into two parts in
+      # out/split/ (nothing dropped; the page joins them back). The refresh writes those parts instead of the whole file.
+      - run: node split-docs.mjs || node skip.mjs "page-size split skipped (a document too big even in two parts)"
       - name: Commit
         run: |
           git config user.name "pokelair-bot"
