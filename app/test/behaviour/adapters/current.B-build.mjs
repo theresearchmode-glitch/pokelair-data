@@ -53,6 +53,26 @@ export default (ui, pg) => {
       return g ? [...g.querySelectorAll('button[aria-pressed]')].map(x => ({name: (x.getAttribute('data-slt') || x.innerText).trim(), pressed: x.getAttribute('aria-pressed')})) : []; }),
 
 
+
+    // ---------------- misc for group B ----------------
+    /** the anonymous usage counts this visit has saved (forces the save a page-hide would do) */
+    usageCounts: async () => { await pg.evaluate(() => { try { Object.defineProperty(document, 'visibilityState', {configurable: true, get: () => 'hidden'}); } catch (e) {} document.dispatchEvent(new Event('visibilitychange')); });
+      await pg.waitForTimeout(500); return pg.evaluate(() => { const d = window.__acct['usage/u_test']; if (!d || !d.s) return null; const k = Object.keys(d.s)[0]; return k ? d.s[k].c : null; }); },
+    /** the label on a built-team tile */
+    builtTileLabel: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#abOut [data-lt]')].filter(e => e.getClientRects().length)[i]; return b ? b.innerText.replace(/\s+/g, ' ').trim() : ''; }, i),
+    /** open the info sheet of a Pokémon shown on the current page (tap its row / tile) */
+    openInfoSheetFor: async id => { await H.until(() => pg.evaluate(id => { const e = [...document.querySelectorAll(`[data-lt="${id}"]`)].find(e => e.getClientRects().length); if (e) { e.click(); return true; } return false; }, id), 8000, 'Pokémon ' + id); await pg.waitForTimeout(700); },
+    /** the built card's Save button: {disabled, title} */
+    builtSaveButton: () => pg.evaluate(() => { const b = document.querySelector('#abOut [data-absave]'); return b ? {disabled: b.disabled || b.getAttribute('aria-disabled') === 'true', title: b.title || b.getAttribute('data-tipx') || b.getAttribute('aria-label') || ''} : null; }),
+    /** the six on the n-th recent-winner card (by Pokémon id) */
+    winnerSix: (n = 0) => pg.evaluate(n => { const b = [...document.querySelectorAll('[data-pane=auto] [data-evload]')].filter(e => e.getClientRects().length)[n]; const c = b && b.closest('.evteam'); return c ? [...new Set([...c.querySelectorAll('[data-lt]')].map(e => e.getAttribute('data-lt')))] : []; }, n),
+    /** the text of the explanation opened by a ? button */
+    openTipText: () => txt('#tipPop'),
+    clearCoreFilter: () => click('#cores [data-corex]', 600),
+    coreFilterChip: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#cores [data-corex]')].find(e => e.getClientRects().length); return b ? b.parentElement.innerText.trim() : ''; }),
+    /** the Battle opponents (ids) */
+    opponents: () => pg.evaluate(() => window.__ev('S.opp.slice()')),
+
     // ---------------- Pokémon name boxes ----------------
     /** type into a visible box found by its placeholder / label (retries if the page redraws under the finger) */
     typeInto: async (label, text, enter = false) => { for (let k = 0; ; k++) { try { await ui.type(label, text, enter); return; } catch (e) { if (k >= 3 || !/not attached|detached/i.test(e.message)) throw e; await pg.waitForTimeout(500); } } },

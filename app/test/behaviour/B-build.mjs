@@ -209,8 +209,9 @@ t('AUTO-15', 'Start from a recent winner: three cards; Sets; Load team needs a s
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
     const f = await ui.unfold(/^Start from a Recent Winner/i); has(f, /3 winning teams, full sets, ready to load/, 'fold heading');
     expect((f.match(/Load team/g) || []).length === 3, 'not three winner cards: ' + f.slice(0, 300));
+    const want = await ui.winnerSix(0); expect(want.length === 6, 'winner card does not show six: ' + want);
     await ui.tap(/^Sets$/, '[data-pane=auto]'); await sleep(300); has(await ui.text(), /Hide sets/, 'Sets toggle'); has(await ui.text(), /Protect|Fake Out/, 'moves listed');
-    const want = await ui.winnerSix(0); await ui.tap(/^Load team/, '[data-pane=auto]'); has(await ui.text(), 'Tap again to replace your team', 'first tap');
+    await ui.tap(/^Load team/, '[data-pane=auto]'); has(await ui.text(), 'Tap again to replace your team', 'first tap');
     await ui.tap(/Tap again to replace your team/, '[data-pane=auto]', 900); const tt = await ui.waitForToast(/team loaded with its moves and items/);
     expect(await ui.toastHasUndo(), 'no Undo: ' + tt); expect(await ui.current() === 'report', 'My team did not open'); expect(same(await ui.team(), want), 'team is not the winner six');
     const s0 = await ui.slotSet(0); expect(s0.it && s0.it.doubles && s0.mv && s0.mv.doubles && s0.mv.doubles.length === 4, 'player items/moves not loaded: ' + JSON.stringify(s0)); await close(); }
