@@ -833,8 +833,8 @@
 /* n2 the Back heading's tab is a solid quieter ink, not a pale tint */
 @A .arb .ar-pgrp+.ar-pgrp .ar-pgh::before{background:var(--ar-ink-3)!important}
 /* m3 tap areas: the "?" tip is 36px with a 44px hit ring; "More" toggles are 44px tall */
-@A .arb .tipq{width:36px!important;height:36px!important;min-width:36px!important;overflow:visible!important}
-@A .arb .tipq::after{content:""!important;position:absolute!important;inset:-4px!important;border-radius:50%}
+@A .arb .tipq{width:28px!important;height:28px!important;min-width:28px!important;/* Polish Batch 1: one ? size sitewide (28, tap area 44) */overflow:visible!important}
+@A .arb .tipq::after{content:""!important;position:absolute!important;inset:-8px!important;border-radius:50%}
 @A .arb .rzmorebtn{position:relative;display:inline-flex!important;align-items:center;min-height:44px!important;padding:0 4px!important;margin:-14px 0!important;vertical-align:baseline;font-size:inherit!important}
 /* m2 the last small labels reach the 15px minimum */
 @A .arb .ar-btn.sm{font-size:var(--ar-fs-body)!important}

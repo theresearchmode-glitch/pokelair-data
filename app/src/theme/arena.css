@@ -555,3 +555,9 @@
 @A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide>.ar-slpill::before{width:var(--cw);margin-left:calc(var(--cw) / -2);border-radius:var(--ar-r-m);transform:skewX(var(--ar-slant))}
 @A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic>b{font-size:19px}
 
+/* Polish Batch 1 (Nov 10): paragraphs and multi-line labels breathe at line height 1.5 (the rule), found by the polish check:
+   card subtitles, calc labels, compare notes, event names, tool-tile descriptions, legend rows, section kickers, track notes. */
+:root:not(#_#_#_#_#_#_#_#_#_) :is(.chs,.chlane,.dccol>label,.cxot .t2,.vsub,.evname,.htile .hld,.nplrow>b,.chpghead>.chk,.trmb>span,.wdl,.wkevt>b,.wkn>span,.chhothead>.chk,.wkevt span,.sethead .tag.tier,.ttright .minick){line-height:1.5!important;text-wrap:balance}
+/* Polish Batch 1 (Nov 10): the bottom menu's names stay on one line at every width ("My Team" broke in two at 320px) */
+@A .bnav>button>span:not(.chfab){white-space:nowrap!important}
+@media (max-width:359px){@A .bnav>button{padding-left:0!important;padding-right:0!important;min-width:0!important}}

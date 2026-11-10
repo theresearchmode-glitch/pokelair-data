@@ -43,7 +43,7 @@
   @R #lairSheet.lsdesk .lsside .lsact .t2{flex:1 0 100%;font-size:15px}
   @R #lairSheet.lsdesk .lsside .lsmis{margin:auto 0 0!important;justify-content:flex-start}
   @R #lairSheet.lsdesk .lsside .fbmis{font-size:15px}
-  @R #lairSheet.lsdesk .tipq{width:22px!important;height:22px!important;font-size:15px!important}
+  @R #lairSheet.lsdesk .tipq{width:28px!important;height:28px!important;font-size:15px!important}
   /* close: a fixed corner of the panel, beside the tab bar */
   @R #lairSheet.lsdesk .lsxd{grid-column:2;grid-row:1;justify-self:end;align-self:start;position:sticky!important;top:10px;right:auto!important;left:auto!important;z-index:8;
     width:48px!important;height:48px!important;margin:0 16px 0 0;display:grid;place-items:center;font-size:20px;border:var(--mgbw) solid var(--mgink)!important;border-radius:var(--mgr2,4px)!important;background:var(--mgpanel)!important;color:var(--chink)!important;box-shadow:none!important}
