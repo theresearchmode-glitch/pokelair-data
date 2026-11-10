@@ -382,7 +382,7 @@ function abilBlock(s,i,m){const p=m.p,meta=metaAbility(p),rec=meta||bestAbility(
 var itemPoolCache;function notStone(n){return n==='Eviolite'||!STONE_RE.test(n)}
 function itemPool(){if(!itemPoolCache)itemPoolCache={v:-1,list:[]};if(itemPoolCache.v===metaVersion&&itemPoolCache.list.length)return itemPoolCache.list;const seen=new Map();
   for(const d of [META.doubles_ingame,META.doubles,META.singles,META.doubles_tour])if(d)for(const row of [...(d.top||[]),...(d.more||[])])for(const [n,v] of (row.it||[]))
-    if(n&&typeof n==='string'&&notStone(n)&&!/^(nothing|other|none)$/i.test(n))seen.set(n,(seen.get(n)||0)+(+v||0));
+    if(n&&typeof n==='string'&&notStone(n)&&!/^(nothing|other|none|no item|no held item)$/i.test(n))seen.set(n,(seen.get(n)||0)+(+v||0));
   const list=[...seen.keys()].sort((a,b)=>a.localeCompare(b));itemPoolCache={v:metaVersion,list};return list}
 // Item picker: the items most players run on it first (with %), then every other item. A Mega's stone can't change.
 function itemBlock(s,i,m,clash){const p=m.p;
