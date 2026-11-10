@@ -13,6 +13,8 @@ audits and research sweeps, not our one-change-at-a-time work.
 
 ## How Sim likes work done
 - Preview before live: nothing goes to the live artifact without her explicit go (unless she says "publish when done" for that change).
+- Faster flow (Sim, Nov 10, latest, overrides the line above for now): skip the Preview for today's site; send Sim screenshots
+  and put fixes live directly. The rebuild lives on its own artifact, "NastyPlot Full Redesign", until the switch.
 - Every Preview or live publish must carry the 345 sprite files (sp/*.webp) beside the page; check the artifact's file list
   (Artifact list, scope files) before sending Sim a link (Nov 9: a Preview went out with no sprites).
 - Real data only, never remove functionality, be careful. Ask when unsure.
