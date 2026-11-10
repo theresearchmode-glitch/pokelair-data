@@ -229,7 +229,7 @@
 @A [data-pane="matchup"] .rzbeat{display:grid!important;grid-template-columns:36px 64px minmax(0,1fr);column-gap:12px;align-items:start;padding:16px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important;border-radius:0!important}
 @A [data-pane="matchup"] .rzbeat::before,@A [data-pane="matchup"] .rzbeat::after{content:none!important;display:none!important}
 @A [data-pane="matchup"] .rzbn{position:relative;isolation:isolate;display:grid!important;place-items:center;width:36px!important;height:36px!important;margin-top:6px;background:none!important;border:0!important;box-shadow:none!important;
-  font:italic 900 20px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+  font:italic 900 20px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:none!important}
 @A [data-pane="matchup"] .rzbn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-blue-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="matchup"] .rzbeat.them .rzbn::before{background:var(--ar-pink-plate)}
 @A [data-pane="matchup"] .rzbeat .ar-bf{--mw:60px;--mh:40px;--ms:64px;--mt:16px;margin-left:0}

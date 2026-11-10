@@ -76,7 +76,7 @@
 /* display and numeral faces (utility classes) */
 @A .ar-disp{font-family:var(--ar-display);font-stretch:118%;font-weight:800;font-style:italic;letter-spacing:-.01em}
 @A .ar-num{font-family:var(--ar-display);font-stretch:125%;font-weight:900;font-style:italic;letter-spacing:-.03em;line-height:.9;font-variant-numeric:tabular-nums}
-@A .ar-num.ar-mp{text-shadow:.05em .04em 0 var(--ar-misprint)}
+@A .ar-num.ar-mp{text-shadow:none}
 /* Polish Batch 1 (Nov 10): the whole headline is slanted, not half. riso.css resets every element to upright (the "less italic"
    change), so a span inside a slanted headline ("your win rate.", "Tools.", the % of a big number, "First.") lost its slant.
    Text inside a headline now follows the headline. */
@@ -125,7 +125,7 @@
    <div class="ar-stephead"><span class="ar-step"><span>1</span></span><div><h2 class="ar-h2">Fix it</h2><p>..</p></div></div> */
 @A .ar-stephead{display:flex;gap:16px;align-items:flex-start}
 @A .ar-step{position:relative;isolation:isolate;flex:none;width:52px!important;height:52px!important;display:grid!important;place-items:center;background:none!important;border:0!important;box-shadow:none!important;
-  font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-on)!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+  font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:var(--ar-sec-on)!important;text-shadow:none!important}
 @A .ar-step::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s)}
 @A .ar-step>span{font:inherit;color:inherit}
 @A .ar-step[hidden]{display:none!important}

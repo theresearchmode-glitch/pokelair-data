@@ -78,7 +78,7 @@ const SLIDE = {
   slideFrom(s, from, to) { s.classList.add('no-anim'); s.style.setProperty('--i', from);
     requestAnimationFrame(() => { s.classList.remove('no-anim'); requestAnimationFrame(() => s.style.setProperty('--i', to)); }); },
   scan() { SLIDE.queued = false;
-    document.querySelectorAll(':is(.seg,.themeseg:not(.tabtheme),.ar-jumps):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
+    document.querySelectorAll(':is(.seg:not(.lmodes),.themeseg:not(.tabtheme),.ar-jumps):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
       /* the new circle is placed where it belongs before it first shows, so it never slides in from the first choice */
       const i = bs.findIndex(SLIDE.on); s.style.setProperty('--i', Math.max(0, i)); s.style.setProperty('--n', bs.length);
       s.classList.add('ar-slide', 'no-anim'); if (bs.every(b => /^\d$/.test(b.textContent.trim()))) s.classList.add('ar-slnum');

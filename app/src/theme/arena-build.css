@@ -195,7 +195,7 @@
 @A [data-pane="auto"] .corerow .corestat>b i{display:inline!important;margin-left:8px}
 @A [data-pane="auto"] .corerow .corestat .dbdt{flex-basis:auto}
 @A [data-pane="auto"] .corerow .corestat>b{font:italic 900 34px/.95 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important;font-variant-numeric:tabular-nums;white-space:nowrap}
-@A [data-pane="auto"] .corerow.chcbig .corestat>b{font-size:40px!important;text-shadow:.05em .04em 0 var(--ar-misprint)}
+@A [data-pane="auto"] .corerow.chcbig .corestat>b{font-size:40px!important;text-shadow:none}
 @A [data-pane="auto"] .corerow .corestat>b i{font:500 15px/1.2 var(--ar-body)!important;font-style:normal!important;letter-spacing:0;color:var(--ar-ink-2)!important;text-shadow:none}
 @A [data-pane="auto"] .corerow .corestat>span{font:700 15px/1.3 var(--ar-body)!important}
 @A [data-pane="auto"] .corerow .corestat>span.up{color:var(--ar-green-ink)!important}
