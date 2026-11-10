@@ -28,3 +28,12 @@ Sim chose (R0, Nov 10): clean sprites with no outline, all 345 upscaled with `re
    90, transparent, trimmed and centred the same way for all, to `docs/rebuild/art/up1024/<id>.webp`. Also make
    `docs/rebuild/art/contact-sheet.webp` (all 346 small, on light and on dark). Commit and push. Report: count done,
    time taken, total size, any that look wrong (list ids).
+
+## Edge check review (main chat, Nov 10)
+Reviewed docs/rebuild/art/edge-check.png (commit 2619980). APPROVED: use the "after" treatment (edge colour bled in from the
+body, alpha eroded 1 px, re-feathered 0.6 px). Before had a clear pale rim on Dusk (Sneasler, Charizard's wing, Darkrai);
+after has none, and at 1x the art is just as sharp. Go ahead with step 3 (all 346), with two additions:
+- Thin parts: the 1 px erosion can thin or erase very fine details (Kingambit's white wisps are the thinnest seen). For
+  every sprite, compare opaque area before vs after; list any that lose more than 3% and keep the un-eroded alpha for those
+  (bleed only), so no detail disappears.
+- In the contact sheet, put those listed sprites first so they're easy to review.
