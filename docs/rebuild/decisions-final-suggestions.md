@@ -32,7 +32,8 @@ first; no player names, real data only, nothing removed.
 
 ## Changes to the chat's own earlier ideas
 - Drop the first six concepts, the placeholder wordmark and Bricolage: YES. Our logo, Unbounded and Instrument Sans only.
-- Colour pools only on the Home hero and the Strength Score: YES (also cheaper for smooth scrolling).
+- Colour pools only on the Home hero and the Strength Score: REVERSED by Sim, Nov 10 ("the glow ... please make sure we dont
+  lose that"). Glow on every scene with Pokémon, built cheap enough for smooth scrolling (design-system.md 4b).
 - Its additions need a yes: decided here. Boxes of 30, drag to team (with a tap way to do the same), "Arrange by": YES,
   Sim chose the box concept. Speed rows on the info sheet ("outspeeds X% of the top 30"): YES, from our real speed data.
 - Shorter Home (hero, Strength Score, pairs, team preview, tool list; speed and This Week stay in Meta): YES. Same as R0

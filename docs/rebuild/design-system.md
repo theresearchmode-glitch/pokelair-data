@@ -76,6 +76,21 @@ mirror rule in light mode (a deep enough panel, the agreed "pale Pokémon stand 
 - Shadow: one lift shadow for "picked up" things (0 18px 30px -16px rgba(30,20,50,.5)); one soft contact shadow under
   standing Pokémon. No glows on mouse screens except feature sprites (smooth scrolling on Sim's Windows desktop).
 
+## 4b. Glow (Sim, Nov 10: "the glow ... is so gorgeous and eye catching. please make sure we dont lose that")
+The soft coloured light behind the Pokémon is a signature of the design, not decoration to trim. Reference: the dark Home
+concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, this week: each scene lit by its Pokémon).
+- Every scene with Pokémon in it gets its glow: large soft pools of the Pokémon's own borrowed colours behind and under
+  them, strongest in Dusk; in light mode the same pools as a gentle tint. The giant number (Strength Score) and the hero
+  carry the strongest glow. Pokémon stand in the light with a reflection/contact shadow.
+- This replaces the Nov 10 decision "colour pools only on the Home hero and the Strength Score": Sim's word wins.
+- Built so scrolling stays smooth on Sim's Windows desktop (the reason glow was limited before): pools are static
+  radial gradients painted once per scene (no CSS filter: blur, no backdrop-filter, no box-shadow glows on sprites, no
+  animation tied to scroll, no will-change on filtered sprites), each scene isolated (contain: paint). The old rule "sprite
+  glow off on mouse screens" was about drop-shadow FILTERS on every sprite and stays; scene glow is a different, cheap
+  technique. Measured against docs/rebuild/baseline.json before it ships; if a page scrolls worse, the pools get cheaper
+  (smaller, fewer stops), never removed.
+- Readability: text never sits on the brightest part of a pool; names and numbers on glow pass contrast (checked).
+
 ## 5. Motion
 - Durations 150 (state), 250 (slide, lift), 400 (sheet, box flip); easing cubic-bezier(.2,.8,.2,1).
 - Purposeful only: the slider pill sliding, a Pokémon lifting out of the box, the summary sheet sliding up, the box
