@@ -48,11 +48,12 @@ function rankLine(d, t) {
 function renderSets() {
   const out = $('setOut'); if (!out) return;
   const team = members();
-  $('setQuick').innerHTML = team.length ? `<span class="lbl">Your team</span>${team.map(m => `<button type="button" class="ttmon${m.p.n === ui.setMon ? ' on' : ''}" data-setmon="${esc(m.p.n)}">${esc(m.d)}</button>`).join('')}` : '';
   let p = byName.get(ui.setMon);
   if (!p && team.length) { p = team[0].p; ui.setMon = p.n; }
   // no team and nothing looked up yet: open on the most-used Pokémon rather than an empty page
   if (!p) { try { const r = lairRows(); p = r && r[0] ? r[0].p : null; } catch (e) {} if (p) ui.setMon = p.n; }
+  /* Nov 10 fix: drawn after the default is chosen, so the Pokémon shown is highlighted on first open */
+  $('setQuick').innerHTML = team.length ? `<span class="lbl">Your team</span>${team.map(m => `<button type="button" class="ttmon${m.p.n === ui.setMon ? ' on' : ''}" data-setmon="${esc(m.p.n)}">${esc(m.d)}</button>`).join('')}` : '';
   if (!p) { out.innerHTML = '<div class="empty-note">Look up a Pokémon to see its popular sets.</div>'; return; }
   if (!ui.setSrcLoaded) { ui.setSrcLoaded = true; try { const v = LS.get('cc2.setSrc', null); if (SET_SRC[v]) ui.setSrc = v; } catch (e) {} }
   const src = SET_SRC[ui.setSrc] ? ui.setSrc : 'ingame';
