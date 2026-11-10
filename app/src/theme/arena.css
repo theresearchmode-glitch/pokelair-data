@@ -36,8 +36,8 @@
   /* radii: small (plates, tags, pips), medium (buttons, strips), large (art tiles, sheet), nav bar */
   --ar-r-s:4px;--ar-r-m:6px;--ar-r-l:10px;--ar-r-xl:18px;
   /* shadows: soft, warm, never a glow, never an offset outline */
-  --ar-shadow:0 14px 28px -16px rgba(40,20,40,.45),0 3px 8px -4px rgba(40,20,40,.18);
-  --ar-shadow-s:0 8px 16px -10px rgba(40,20,40,.42),0 2px 4px -2px rgba(40,20,40,.14);
+  --ar-shadow:6px 6px 0 rgba(29,33,64,.13);
+  --ar-shadow-s:3px 3px 0 rgba(29,33,64,.13);
   --ar-shadow-nav:0 18px 34px -14px rgba(40,20,40,.45),0 2px 6px rgba(40,20,40,.1);
   /* type fields: how much of the type colour goes into the light-mode field */
   --ar-field-mix:58%;--ar-art-text:#16141A;
@@ -49,7 +49,7 @@
   --ar-ink:#ECE8E2;--ar-ink-2:#C9C3CC;--ar-ink-3:#A39CA6;--ar-rule:rgba(255,255,255,.12);--ar-rule-2:rgba(255,255,255,.22);
   --ar-pink-ink:#FF6F86;--ar-gold-ink:#FFD166;--ar-blue-ink:#4FB2F0;--ar-orange-ink:#FFA27D;--ar-purple-ink:#C9B0FF;--ar-green-ink:#5FD08F;
   --ar-misprint:transparent;
-  --ar-shadow:0 14px 28px -14px rgba(0,0,0,.9);--ar-shadow-s:0 8px 16px -10px rgba(0,0,0,.9);--ar-shadow-nav:0 18px 34px -14px rgba(0,0,0,.9);
+  --ar-shadow:6px 6px 0 rgba(0,0,0,.55);--ar-shadow-s:3px 3px 0 rgba(0,0,0,.55);--ar-shadow-nav:0 18px 34px -14px rgba(0,0,0,.9);
   --ar-field-mix:30%;--ar-art-text:#fff;--ar-focus:#4FB2F0;
 }
 /* section per page (html[data-pg]): Home pink, Build gold, My team blue, Battle red-orange, Meta purple */
@@ -565,3 +565,11 @@
 /* Polish Batch 1 (Nov 10): on the narrowest phones a slider's names use the body face's narrower width (Instrument Sans has a
    width axis, now loaded), so "Suggestions" and "Winning Teams" fit their tile on one line at 13px instead of spilling. */
 @media (max-width:374px){@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button{font-stretch:85%!important}}
+
+/* Batch 5 (Nov 10, outside review: "the slant is on everything, so nothing stands out"): the slant stays on the stars
+   (headlines, big numbers, sprite tiles, main and secondary buttons, sliders, the nav pill). Small controls and chips are
+   plain rectangles: header search, This week chips, Filter, Details, type chips, tags and level marks.
+   Shadows are print-style: a hard offset in one colour (tokens above), no blur. */
+@A .band .jumpbtn.jumpbtn::before{transform:none!important}
+@A :is(.ty,.tag,.sev,.ar-ty,.archchip,.vdot,.ar-lfilt.ar-lfilt,.dbdt.dbdt,.ar-chip.dbdt)::before{transform:none!important}
+@A .ar-mv.ar-mv,@A .ar-mv.ar-mv>*{transform:none}
