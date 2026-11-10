@@ -32,6 +32,17 @@ audits and research sweeps, not our one-change-at-a-time work.
 - Design scale (Nov 7): text 13/15/16/17/20/22/24/26/28/34 (+ display), spacing on a 4px grid (1/2/6 allowed),
   corners 4/6/10/18/round, paragraphs line-height 1.5.
 
+## Studio-level polish, every change (Sim, Nov 10)
+After many fast changes the formatting rules slipped (an outside polish review found half-slanted headlines, sizes off the
+scale, text falling out of boxes, lone tiles, empty desktop halves). The standard is a high-quality design studio: every tiny
+detail right. So:
+- Every site change runs experiments/polish-check.mjs (all pages, 320-2560 wide, light and dark) before it goes to the Preview,
+  and introduces no new finding. Look at the flagged spots with your own eyes; the check finds, it doesn't judge.
+- The rules it measures are the rules above: the type scale, the 4px grid, Unbounded slanted for every headline and big number
+  (the whole headline, not half), line height 1.5, no text out of its box or wrapping unevenly beside its neighbours, no lone
+  tile or half-filled row, no empty half on desktop, no boxes in boxes, one size per kind of control.
+- New components (sliders, chips, tiles) are checked at their narrowest and widest real size before they ship.
+
 ## Plans are always checklists (Sim, Nov 8)
 CURRENT FOCUS (Sim, Nov 10): the NastyPlot Focus page (https://claude.ai/artifact/1AgBoBNeSXHGRDu8kpYPGX, source
 docs/focus-plan.html; ticks in its own db collection "progress") is the plan we work from now: grading fixes from the outside
