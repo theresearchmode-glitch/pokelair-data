@@ -1038,3 +1038,17 @@
 @A .bmreal .bmrk li span.up{color:var(--ar-green,#2E9E5B)}
 /* f4-heads (Nov 10): the empty "type their Pokémon" note has no field of its own, so no padding above and below it (it left an empty band) */
 @A #bmOut>.empty-note.mgempty{padding-top:0!important;padding-bottom:0!important;margin-bottom:0!important}
+/* Polish Batch 3 (Nov 10): on desktop the practice team picker (was 520px wide) and Team Preview Practice (was 720px) sit side by
+   side as one practice row across the full width, instead of two short blocks with empty strips beside them. Tablets and phones keep the stack. */
+@media (min-width:1001px){
+  @A [data-pane="matchup"] section#matchup{display:grid!important;grid-template-columns:minmax(0,2fr) minmax(0,3fr);column-gap:32px;align-items:center}
+  @A [data-pane="matchup"] section#matchup>*{grid-column:1/-1;min-width:0}
+  @A [data-pane="matchup"] section#matchup>#oppQuick{grid-column:1;max-width:none;align-self:center}
+  @A [data-pane="matchup"] section#matchup>#prEntry{grid-column:2;max-width:none;margin-top:32px!important;align-self:center}
+}
+/* Polish Batch 3 (Nov 10): the 18 type chips sit as an even grid that always divides 18 (3, 6 or 9 across), so no row is left half
+   filled (was 12 + 6 on desktop, 8 + 8 + 2 on tablets) */
+@A [data-pane="types"] .typepick{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}
+@A [data-pane="types"] .typepick>*{width:100%;min-width:0;justify-content:center}
+@media (min-width:600px){@A [data-pane="types"] .typepick{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (min-width:1001px){@A [data-pane="types"] .typepick{grid-template-columns:repeat(9,minmax(0,1fr))}}

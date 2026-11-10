@@ -1071,3 +1071,7 @@
 @A .ar-mpg #lair>.chpghead>.chk{flex:0 1 auto;min-width:0;margin:0!important}
 @A .ar-mpg #lair>.chpghead>.chpgt.sr{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;margin:0!important;padding:0!important}
 @A .ar-mpg #lair>.chpghead>.mgtitle{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;margin:0!important;padding:0!important}
+/* Polish Batch 3 (Nov 10): a lone #1's card with the next ranks beside it (desktop) or under it (phones), styled as the list rows */
+@A .ar-mpg #chHot .chhot2s>.chhotside{grid-template-columns:1fr!important;align-content:center;min-width:0}
+@media (min-width:600px){@A .ar-mpg #chHot .chhot2.chhot2s{column-gap:36px!important}}
+@media (min-width:1001px){@A .ar-mpg #chHot .chhot2.chhot2s{column-gap:56px!important}}
