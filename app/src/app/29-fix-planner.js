@@ -294,6 +294,8 @@ function* planFixesG(ms,pool,useA,opts){
         if(!out.includes(cand)){if(out.length>=3)out.pop();out.push(cand)}}}}
   out.ip0=ip0;
   out.more=more;
+  /* Part 3 (Nov 10): fixes first, swaps only past the measured bar, honest sizes, "Nothing to fix" (36-lanes.js) */
+  if(full&&!(opts&&opts.singlesOnly))try{LANE.apply(out,ms,gBase)}catch(e){}
   out.base=base;out.rolesBase=rolesBase;out.gp=basePl.gp;out.basePl=basePl;out.baseA=basePl.st.a;out.full=full;out.tsBase=tsBase;out.gBase=gBase;out.tsOn=tsOn;
   out.singles=singles.filter(pl=>keepsPlan(pl)&&(full?(pl.st.a.excess<=base.a.excess&&pl.st.a.unresisted.length<=base.a.unresisted.length):pl.st.a.excess<=base.a.excess+1));return out;
 }

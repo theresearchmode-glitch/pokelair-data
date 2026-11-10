@@ -1166,3 +1166,11 @@
 @A #chSheetOut .ts-plus{font:700 26px/1 var(--ar-body)}
 @A #chSheetOut .ts-in > .ts-key{margin:12px 0 0;font:500 13px/1.5 var(--ar-body);color:var(--ar-ink-3)}
 @A #chSheetOut .ts-fold .ts-hd{padding-right:36px}
+/* Part 3 (Nov 10): the kind of suggestion and its honest size, one quiet line under the change; Fix / Nothing to fix cards */
+@A .chlane{display:block;margin-top:6px;font:500 var(--ar-fs-small,13px)/1.4 var(--ar-body);color:var(--ar-ink-2);font-style:normal}
+@A .chlane b{display:inline-block;margin-right:6px;font-weight:700;color:var(--ar-ink)}
+@A .chlane.fix b{color:var(--ar-sec-ink,var(--ar-ink))}
+@A .chlanecard{padding:16px 0;margin:0 0 8px;border-bottom:1px solid var(--ar-rule)}
+@A .chlanecard p{margin:0 0 6px;line-height:1.5}
+@A .chlanecard .chlane{margin:0;font-size:15px;color:var(--ar-ink)}
+@A .chlanecard .chlanebtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
