@@ -1136,7 +1136,7 @@
   @A .ar-stage .ar-slot:not(.is-sel) :is(.ar-lockx,.ar-rmx){display:none}
 }
 /* all six sets, now beside the set card */
-@A #chSets{margin-top:16px}
+@A #chSets{margin-top:0}
 @A .ar-tcolR>#chSets{margin-top:0}
 @media (min-width:1001px){@A .ar-stage #chSets .ts-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media (min-width:1001px) and (max-width:1199px){@A .ar-stage #chSets .ts-grid{grid-template-columns:minmax(0,1fr)!important}}

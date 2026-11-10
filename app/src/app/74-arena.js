@@ -311,12 +311,9 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   /* usability 5 (Nov 7): on phones the full team sheet (about a screen of text) is a fold; each set is also one tap away on
      the Pokémon above. Open on iPad and desktop; the choice is remembered, and the Sets jump link opens it */
   { const so = $('chSheetOut'); if (so && !so.closest('details.ar-sheetfold')) { const n = (members() || []).length, w = document.createElement('div');
-      w.innerHTML = CH.fold('sheet2', 'All six sets', `${n ? n + ' sets, ' : ''}Reg M-C, bring 6, pick 4`, '', false); const d = w.firstElementChild;
+      w.innerHTML = CH.fold('sheet2', 'Open team sheet', `${n ? n + ' sets, ' : ''}Reg M-C, bring 6, pick 4`, '', false); const d = w.firstElementChild;
       d.classList.add('ar-sheetfold'); d.id = 'chSets'; so.before(d); d.querySelector('.chbody').append(so); } }
-  /* Nov 10 (Sim: "merge section 4"): the all-sets fold sits with the set card, not in its own "Your six" part */
-  { const fd = $('chSets'), R = document.querySelector('.ar-team .ar-tcolR'), st = document.querySelector('.ar-team .ar-stage'), p4 = $('chP4');
-    if (fd && st && fd.parentElement !== st) st.append(fd); /* under the tiles (desktop: the left column, which keeps the two columns even) */
-    if (p4) p4.hidden = !!(fd && fd.closest('.ar-team')); }
+  /* Nov 10 (Sim): section 4 is back as its own compact part: "All Six Sets", one fold, closed until opened */
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
   /* every sub-page has a back link (32-views.js adds most; This week, How we calculate and About were the ones without) */

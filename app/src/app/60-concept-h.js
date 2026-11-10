@@ -482,7 +482,7 @@ function chTeamInit() { const rp = document.querySelector('[data-pane="report"]'
     tb.append(Object.assign(document.createElement('div'), {innerHTML: CH.seg('types', [['off', 'Offense: what you hit'], ['def', 'Defense: what hits you']], on3)}).firstElementChild);
     tb.append(panel('types', 'off', [$('offCard'), flat('offense', true)], on3), panel('types', 'def', [$('defCard'), flat('defSec', true)], on3)); b3.append(ty); }
   // 4 · Your six: the sheet; tap a row to edit that set
-  const p4 = CH.part('chP4', '4', 'Your six', 'Tap a Pokémon to edit its set'); p4.querySelector('.chpartb').innerHTML = '<div id="chSheetOut"></div>';
+  const p4 = CH.part('chP4', '4', 'All six sets', 'Every set in one place; tap a Pokémon above to edit it'); p4.querySelector('.chpartb').innerHTML = '<div id="chSheetOut"></div>';
   const grid = document.createElement('div'); grid.className = 'chparts'; grid.append(p1, p2, p3, p4); head.after(grid);
   // How scoring works: a small link at the bottom that opens the explainer
   const foot = document.querySelector('[data-pane="coverage"] details.foot'); if (foot) { grid.after(foot); foot.className = 'chsec chfold chhow'; foot.dataset.chf = 'rhow'; const s = foot.querySelector('summary'), body = document.createElement('div'); body.className = 'chbody';
