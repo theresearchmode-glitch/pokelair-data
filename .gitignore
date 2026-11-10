@@ -34,3 +34,6 @@ out/matches_train17.json
 app/*-[0-9]*.html
 out/wf/
 out/polish-check.json
+
+# Temporary probe scripts (created and deleted during checks)
+experiments/_*.mjs
