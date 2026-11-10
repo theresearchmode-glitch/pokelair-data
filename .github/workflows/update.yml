@@ -18,6 +18,9 @@ jobs:
       # which regulation the newest events are played under (out/reg.json): every step below counts only that regulation
       - run: node reg.mjs || node skip.mjs "regulation check skipped"
       - run: node replays.mjs || node skip.mjs "replays skipped"   # first, so today's bring/lead rates reach the ratings (was a day behind)
+      # open-team-sheet single games (Showdown's best-of-3 Champions format, each game counted once, with full sets and ratings;
+      # Focus plan, Sim Nov 10: grow the only data that has all three). Optional: if it fails, yesterday's file stays.
+      - run: REPLAY_FMT=bo3 node replays.mjs || node skip.mjs "open-sheet replays skipped"
       # team preview practice: a few hundred real games and what strong players brought (out/practice.json, page key meta/practice)
       - run: node practice.mjs || node skip.mjs "practice skipped"
       - run: node update.mjs
