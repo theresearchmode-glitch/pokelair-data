@@ -121,7 +121,7 @@ One name per idea, everywhere on the site:
   lead support are notes, not counted (real games: teams with them won no more often, experiments/checks-real.mjs).
 - Plain words: player skill (not Elo), wins more than average (not win edge), reaches top cut more often than its use predicts (not
   conversion), today's tournament teams (not field), points (not pts), Test run (not Gauntlet); data sources are always Official events /
-  Online tournaments / Ranked ladder.
+  Online tournaments / Ranked ladder (the in-game one) / Showdown ladder (Sim, Nov 10: a separate source, keep both names).
 - Kept as players know them: Archetypes, spread, top cut, usage, set, Mega, speed control, Tailwind, Trick Room, core, hidden gem, best guess.
 
 ## Focus and honesty (Sim, Nov 9)
