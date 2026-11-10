@@ -85,6 +85,79 @@ and every empty, loading and error state.
 - Delete the old stylesheets and theme modules, dead code and tests that only checked old class names.
 - Rewrite CLAUDE.md's design rules for the new system; record the decisions.
 
+## Must match what we already agreed (checked against the concept images, Nov 10)
+
+The concepts are the direction, not the spec. Where they break a rule Sim already set (CLAUDE.md), the rule wins. Every
+R2 mock-up and every R4 page passes this list before Sim sees it, and R5 re-checks all of it. Each line says what the
+concepts did and what the rebuild does instead.
+
+**Words (the word list)**
+- Concepts: "A" letter badge, "graded out of 100", "99 / 100". Rebuild: Strength Score with its band word (90+ Top tier,
+  80s Tournament ready, 70s Solid, 60s Needs work, under 60 Missing a basic; blue, purple, neutral, amber, muted grey-brown,
+  never red); the rank among tournament teams only as the small line under it. No letters for a team.
+- Concepts: "Threats", "83% ready for the top 30", "Handled / Well handled / unanswered". Rebuild: Matchups; the four levels
+  Beats it / Handles it / Shaky / No answer.
+- Concepts: no real-games verdicts. Rebuild: Favoured / Even match / Unfavoured leads each matchup row (Sim chose real games
+  first; measured 52.4% vs the calc's 49.0%), with one line saying the verdicts come from real games (no "Real games:"
+  prefix on each row).
+- Concepts: "Fix it", "a fix for each", "with the fixes". Rebuild: Suggestions, numbered "Suggestion 1".
+- Concepts: "Problems and checklist", "7/7 checks". Rebuild: Team checks (the 4 basics plus 3 notes).
+- Concepts: "NastyPlot rating ... 95" for a Pokémon. Rebuild: a Pokémon's number is a rating with its tier ("95, S tier"),
+  shown with the same displayed score everywhere (the RS() score, never the raw one).
+- Plain words everywhere: today's tournament teams, points, Test run, player skill; data sources named Official events /
+  Online tournaments / Ranked ladder / Showdown ladder, each with its date.
+
+**Data and privacy**
+- Real data only, from the site, never typed into a page. Every number names its source and date, and pages agree with each
+  other (the critique's "mixed sources and dates" point).
+- No real player names or handles anywhere, including mock-ups (version 1 printed one; the event winner is "the Champion",
+  others "Challenger").
+- Each Pokémon on a team shows its most common complete tournament set (item, Ability, four moves), as now.
+
+**Type and scale**
+- Every headline, big number and the tagline in Unbounded slanted (synthetic italic), the whole headline, never half; no
+  misprint shadow. Body and small labels in Instrument Sans. The early concepts used another grotesque and a placeholder
+  wordmark; the rebuild uses only these two faces and the real logo.
+- Tagline exactly "Sharply raise your win rate." with "your win rate." in the logo's PLOT blue.
+- Text sizes only 13/15/16/17/20/22/24/26/28/34 plus display; spacing on the 4px grid; corners 4/6/10/18/round; paragraphs
+  line height 1.5.
+- Headline spacing loose enough that words never run together (the concept's "Sharply raise" nearly read as one word).
+- Small grey labels dark enough to pass contrast in both modes (the concepts' "Bench", "Back", "Fighting · Poison",
+  captions were too faint).
+
+**Space and layout**
+- No empty halves or strips (the info sheet concept's empty left column), no half-filled rows, no lone tiles, even columns.
+- Every window size from 320 to 2560 and odd shapes, including dragging the window while a page is open.
+- Nothing runs off the edge (the sharp hero's stat column touched the page edge) and no labels collide (iPhone hero note,
+  "Basculegion · Bench").
+- Score and stat lines wrap cleanly (the My Team "22 handled · 8 / shaky" break).
+
+**Shapes and components**
+- One filled button, one secondary style, links, and one slanted chip style. No rounded pills (the concepts' Top 10 / vs
+  top 12, Box + catch, 0 1 2, No / Yes and the type pills).
+- The Apple-style sliders stay, as a first-class component, at their narrowest and widest real size.
+- No boxes inside boxes in different shades, in light or dark (page plus one card colour at most); dark-mode name plates on
+  tiles count as boxes in boxes.
+- Dividers are thin soft rules; fewer of them where spacing can do the job.
+- The Mega contour (the two type colours plus a thin ink line) stays on Mega sprites; the concepts dropped it.
+
+**Keep the WOW**
+- Bold colour fields, large sprites, slanted headlines and numbers, slanted shapes and the sliders stay as strong as in the
+  flair concept. When a fix could go plainer or stay bold, stay bold.
+- The colour carries down the page (the first My Team concept went grey below the top band).
+- Bench Pokémon look benched, not disabled; pale Pokémon get a deep enough panel to stand out.
+
+**Speed and devices**
+- Smooth scrolling on Sim's Windows desktop with a mouse wheel: glows, blurs and reflections are measured against the
+  baseline; sprite glow stays off on mouse screens except feature sprites; never give filtered sprites their own layers
+  (will-change).
+- Checked on iPhone, iPad and the Windows desktop app, light and dark; reduced motion respected for every animation.
+
+**Characters**
+- Darkrai (not Shady Paw) on empty and loading screens only, never beside grades, ratings or data, and never in Your Six,
+  Add a Pokémon or the Battle preview. The redesign chat suggested bringing Shady Paw in; that conflicts with Sim's Nov 9
+  decision. A real NastyPlot mascot is its own later project.
+
 ## Open design decisions for R0
 
 1. Sprites in the new design: clean renders on the colour panels (as in the concepts) or the thin navy line.

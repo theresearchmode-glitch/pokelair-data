@@ -46,6 +46,9 @@ the new design".
 
 ## Review notes from the main chat (still open)
 
+The full list of where the concepts break an agreed rule, and what the rebuild does instead, is in
+docs/rebuild-plan.md, "Must match what we already agreed". The notes below are the design-quality points.
+
 - Home hero is crowded (ray panel, rays, blurred ghosts, two floating extras, three notes, three big stats); trim a layer.
   In the sharp version the stat column's "%" runs to the right edge on desktop.
 - Too many button and chip styles: one filled button, one secondary, links, one slanted chip (no rounded pills).
