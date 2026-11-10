@@ -1107,3 +1107,12 @@
 @A .ar-mu3 .ar-num{display:flex;flex-direction:column;align-items:flex-start;line-height:1}
 @A .ar-mu3 .ar-num small{font:600 15px/1.2 var(--ar-body)!important;font-style:normal!important;font-stretch:100%!important;color:var(--ar-ink-2);margin-top:6px;letter-spacing:0}
 @A .ar-mu3 .ar-unit{flex-basis:100%}
+/* Nov 10 (Sim picked option 1): Matchups grid and legend in real-games colours (green favoured, grey even, amber unfavoured; never red) */
+@A #chThrTop .chtiles .chtile.rv-ok{--lv:var(--ar-green)}@A #chThrTop .chtiles .chtile.rv-mid{--lv:color-mix(in oklch,var(--ar-ink) 22%,transparent)}@A #chThrTop .chtiles .chtile.rv-bad{--lv:var(--ar-amber,#E9A800)}
+@A .chlegrv i{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}
+@A .chlegrv i.rv-ok{background:var(--ar-green)}@A .chlegrv i.rv-mid{background:color-mix(in oklch,var(--ar-ink) 22%,transparent)}@A .chlegrv i.rv-bad{background:var(--ar-amber,#E9A800)}
+@A .chlegcalc{margin:6px 0 0!important;font-size:15px}
+/* the row's real-games word in the same colours as the legend: Favoured green, Even match neutral, Unfavoured amber (never red) */
+@A #chThrTop .chtr .st.mid:not(.chcalcv){color:var(--ar-ink-2)!important}
+@A #chThrTop .chtr .st.bad:not(.chcalcv){color:#8A5A00!important}
+@A[data-look="dark"] #chThrTop .chtr .st.bad:not(.chcalcv){color:#F2B705!important}

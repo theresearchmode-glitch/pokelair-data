@@ -209,7 +209,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* Nov 10 (Sim: "show me all 3"): which verdict leads the headline. 1 = real games first, damage calc underneath;
        2 = the calc count named as such, with the real-games line beside it; 3 = as it was. Preview only until Sim picks. */
     let muBar = '';
-    const MH = typeof window !== 'undefined' && window.NP_MUHEAD || 3;
+    const MH = typeof window !== 'undefined' && window.NP_MUHEAD || 1; /* Sim picked option 1 (Nov 10) */
     if (MH !== 3 && hd) { const rv = RD.rows.map(r => ({r, R: CH.realVs(r.t.n, ms)})).filter(x => x.R), cnt = k => rv.filter(x => x.R.c === k).length, bad = rv.filter(x => x.R.c === 'bad').sort((p, q) => q.r.t.w - p.r.t.w).map(x => x.r.t.d);
       if (MH === 1 && rv.length) { cells = [`<div class="ar-stat ar-mu3"><span class="ar-num ar-mp">${cnt('ok')}<small>Favoured</small></span><span class="ar-num ar-mp">${cnt('mid')}<small>Even</small></span><span class="ar-num ar-mp">${cnt('bad')}<small>Unfavoured</small></span><span class="ar-unit">vs the top ${rv.length} threats in real games</span></div>`];
         muLine = `Damage calc: covers ${hd.x} of ${hd.n}`; muBar = `<span class="ar-bar ar-mubar3" aria-hidden="true"><i style="flex:${cnt('ok')}"></i><i style="flex:${cnt('mid')}"></i><i style="flex:${cnt('bad')}"></i></span>`; }
