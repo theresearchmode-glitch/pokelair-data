@@ -168,7 +168,8 @@ concepts did and what the rebuild does instead.
 6. Motion: a little and purposeful (sliders, sheets, bars, one signature hero moment); off for reduced motion; tested for
    smooth scrolling.
 7. Home hero: trim one layer (keep Sneasler, the ray panel, the three stats and the buttons).
-8. Helper agents: yes, for the look-only jobs only (feature inventory, screenshot reviews); changes stay one at a time.
+8. Helper agents: use them wherever they genuinely help, without asking; tell Sim when they're used (Sim, Nov 10,
+   updated). Changes still land one at a time.
 9. Before/after sheets: not needed now; we compare on the real Preview later.
 Also: the rating display bug fixed on today's site before the freeze; the slant-and-shadow change dropped (reverted).
 Sim said go: the rebuild starts with R1.

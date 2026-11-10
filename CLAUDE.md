@@ -53,8 +53,9 @@ ORDER OF WORK (Sim, Nov 10, latest): 1) the rebuild into the new design, 2) then
 launch plan. Rebuild plan: docs/rebuild-plan.md and the Plans page section "Rebuild into the new design" (Claude leads; Sim
 approves the direction, each page and the switch; nothing starts until she says go). What the redesign chat decided and made:
 docs/redesign/HANDOFF.md and docs/redesign/concepts/ (that chat is retired; everything runs through this one). Look polish on
-today's design is frozen; bug fixes continue. R0 decisions (Sim, Nov 10) are in docs/rebuild-plan.md; she allowed helper
-agents for the rebuild's look-only jobs (feature inventory, screenshot reviews) only.
+today's design is frozen; bug fixes continue. R0 decisions (Sim, Nov 10) are in docs/rebuild-plan.md; Helper agents (Sim, Nov 10, latest): for the
+rebuild, use them wherever they genuinely help, without asking first; just tell her when you do (she'll say if it's a problem).
+Changes to the site still land one at a time.
 Earlier focus (Nov 10): the NastyPlot Focus page (https://claude.ai/artifact/1AgBoBNeSXHGRDu8kpYPGX, source
 docs/focus-plan.html; ticks in its own db collection "progress"): grading fixes from the outside review (GRADING-REVIEW.md),
 then site cleanup. Tick steps there. The older Plans page below keeps the full history and ideas.
