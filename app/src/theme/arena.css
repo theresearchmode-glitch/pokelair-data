@@ -535,3 +535,12 @@
 @media (max-width:374px){@A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide{padding-left:2px!important;padding-right:2px!important}
   @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>.ar-slpill{left:2px;width:calc((100% - 4px) / var(--n))}
   @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>button{padding:0!important;font-size:12px!important;letter-spacing:-.01em!important}}
+/* Sliders in the site's own shapes (Sim, Nov 10: "match the boxy look, not so circular"): the track is a slanted card (the site's
+   -12deg slant, 10px corners), each icon sits on a small slanted tile (6px corners) and the chosen tile in the page colour slides.
+   Only the backgrounds slant; icons and names stay upright, as on the site's other buttons. */
+@A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide{--cw:54px;--c:44px;background:none!important;box-shadow:none!important;border-radius:0!important}
+@A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide::after{content:"";position:absolute;inset:0 7px;z-index:-1;border-radius:var(--ar-r-l);background:var(--ar-sheet);box-shadow:var(--ar-shadow-s);transform:skewX(var(--ar-slant));pointer-events:none}
+@A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic{width:var(--cw);border-radius:0}
+@A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic::before{border-radius:var(--ar-r-m);transform:skewX(var(--ar-slant))}
+@A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide>.ar-slpill::before{width:var(--cw);margin-left:calc(var(--cw) / -2);border-radius:var(--ar-r-m);transform:skewX(var(--ar-slant))}
+@A:not(#arcw):not(#arsl):not(#ars3):not(#ars5) :is(.seg,.themeseg,.ar-jumps).ar-slide .ar-slic>b{font-size:19px}
