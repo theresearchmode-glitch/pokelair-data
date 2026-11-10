@@ -77,6 +77,13 @@ if (X) for (const c of X.checks || []) { if (c.skipped) { console.log(`cross-che
   // infoOnly: two sources measuring different player groups (crosscheck.mjs) can't agree by design: information, not a warning
   if (c.infoOnly) { if (c.staplesFlagged.length) console.log(`cross-check ${c.id} (information, different player groups by design): ${c.staplesFlagged.length} staples differ`); continue; }
   if (c.staplesFlagged.length > 3) console.log(`::warning::Cross-check ${c.id}: ${c.staplesFlagged.length} of the 12 most used Pokémon disagree with ${c.theirs} (${c.staplesFlagged.join(', ')}). Known differences: ${c.known}`); }
+// page storage limit (Nov 10): every document the morning refresh writes must fit in 262,144 bytes. split-docs.mjs splits any
+// document over 200,000 bytes into two parts; alarm when a part (or an unsplit document) passes 240,000, before the refresh fails.
+{ const X = rd('split/index.json');
+  if (!X) problems.push('split-docs: out/split/index.json missing (the page-size guard did not run)');
+  else { for (const [doc, n] of Object.entries(X.sizes || {})) { const sp = X.split && X.split[doc]; const parts = sp ? sp.parts : [n];
+      parts.forEach((b, i) => { if (b > 240000) problems.push(`page storage: ${doc}${sp ? ' part ' + (i + 1) : ''} is ${b} bytes (limit 262,144; needs a third part or less data)`); }); }
+    rows.push({label: 'Page storage (' + (Object.keys(X.split || {}).length ? 'split in two: ' + Object.entries(X.split).map(([d, v]) => `${d} ${v.parts.map(b => Math.round(b / 1024) + ' KB').join(' + ')}`).join(', ') : 'every document fits in one part') + ')', file: 'split/index.json', date: String(X.made || '').slice(0, 10), age: 0, days: 2, status: problems.some(p => p.startsWith('page storage')) ? 'broken' : 'ok', why: ''}); } }
 // steps skipped two runs in a row (Nov 7): skip.mjs records every skipped step in out/skips.json. One flaky day stays quiet;
 // the same step skipped today and yesterday is a step that has stopped working, so it raises the "Daily data problem" issue
 // (the ratings snapshot failed quietly on Nov 6 because a skipped step only printed a warning).

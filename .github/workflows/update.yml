@@ -59,6 +59,9 @@ jobs:
       - run: node scoreboard.mjs || node skip.mjs "scoreboard skipped"
       # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
       - run: node track.mjs || node skip.mjs "track record skipped"
+      # page storage limit (Nov 10): any document the morning refresh writes that is over 200 KB is split into two parts in
+      # out/split/ (nothing dropped; the page joins them back). The refresh writes those parts instead of the whole file.
+      - run: node split-docs.mjs || node skip.mjs "page-size split skipped (a document too big even in two parts)"
       - name: Commit
         run: |
           git config user.name "pokelair-bot"
