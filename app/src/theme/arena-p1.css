@@ -1140,3 +1140,16 @@
 @A .ar-tcolR>#chSets{margin-top:0}
 @media (min-width:1001px){@A .ar-stage #chSets .ts-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media (min-width:1001px) and (max-width:1199px){@A .ar-stage #chSets .ts-grid{grid-template-columns:minmax(0,1fr)!important}}
+/* tablets and desktop (Nov 10, focus plan): lock and remove no longer sit over every Pokémon's art. As on phones they show on the
+   chosen tile, and also while the pointer is over a tile or keyboard focus is in it, so each stays one tap or click away. */
+@media (min-width:600px){@A .ar-stage .ar-slot:not(.is-sel):not(:focus-within) :is(.ar-lockx,.ar-rmx){display:none}
+  @media (hover:hover){@A .ar-stage .ar-slot:not(.is-sel):hover :is(.ar-lockx,.ar-rmx){display:grid}}}
+/* a locked Pokémon always shows its yellow lock, on every screen and whether or not its tile is chosen (Sim, Nov 10: "otherwise
+   it's hard to tell without multiple clicks"); the lock is still the button, one tap unlocks. Remove stays on the chosen tile. */
+@A .ar-stage .ar-slot .ar-lockx.on{display:grid!important}
+/* the always-on lock (Sim, Nov 10: "not on Rillaboom's face"): on tiles you haven't chosen it is a small badge in the top-left corner,
+   the empty corner on every card (bottom-right squeezed the names). On the chosen tile lock and remove stay at the top, where you act on them. */
+@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on{top:calc(var(--lift,20px) - 14px)!important;bottom:auto!important;right:auto!important;left:18px!important;width:32px!important;height:32px!important}
+@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on::before{inset:4px}
+@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on svg{width:13px;height:13px}
+@media (max-width:599px){@A .ar-stage .ar-slot:not(.is-sel) .ar-lockx.on{left:2px!important;top:calc(var(--lift,20px) - 26px)!important}}

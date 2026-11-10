@@ -202,3 +202,13 @@ function pctFmt(v,sign=true){if(v==null||v===''||!isFinite(+v))return '–';v=+v
 
 /* win rates keep one decimal (Sim, Nov 2): 51.6% and 52.0% must not both read 52%; every other % follows pctFmt */
 function winFmt(v){if(v==null||v===''||!isFinite(+v))return '–';return (+v).toFixed(1)+'%'}
+/* No real player names on the site (Sim, Nov 10; kids use it, launch is public): a tournament team is shown by its result instead,
+   "1st place", "1st place · 7-2", "Went 6-2". The data keeps the name only to match a team with its own sets (never shown). */
+function ordTxt(n) { n = +n; const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+/* Sim, Nov 10: in the Pokémon world's words, the team that won its event is the Champion and every other team a Challenger */
+function teamWho(t) { if (!t) return 'Challenger'; const r = String(t.record || ''), m = r.match(/#(\d+)/), place = +t.place || (m ? +m[1] : 0), wl = (r.match(/\b(\d+-\d+(?:-\d+)?)\b/) || [])[1];
+  if (place === 1) return `Champion${wl ? ' · ' + wl : ''}`;
+  return `Challenger${place ? ' · ' + ordTxt(place) + ' place' : ''}${wl ? ' · ' + wl : ''}`; }
+/* a short event name for tight lists ("2027 Gdańsk Pokémon Regional Championships · 758 players" -> "Gdańsk Regional") */
+function evShort(s) { s = String(s || '').split(' · ')[0].replace(/^\d{4}\s+/, '').replace(/\s*Pokémon\s+/, ' ').replace(/Regional Championships?/i, 'Regional').replace(/International Championships?/i, 'Internationals').replace(/World Championships?/i, 'Worlds').replace(/\s+/g, ' ').trim();
+  return s.length > 28 ? s.slice(0, 27).trim() + '…' : s; }

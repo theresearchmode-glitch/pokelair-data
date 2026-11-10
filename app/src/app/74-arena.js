@@ -97,8 +97,11 @@ AR.switcher = () => { const ts = (S.teams || []).filter(t => t && t.id !== S.loa
     return `<button type="button" class="ar-tsw" data-load="${esc(t.id)}"><span class="ar-tswm" aria-hidden="true">${ns.slice(0, 6).map(p => sprite(p, 'tiny') || '').join('')}</span><b>${esc(t.name || 'Saved team')}</b></button>`; };
   return `<details class="ar-tswitch"><summary><span class="ar-tswt">Switch team</span> <span class="ar-tswn">${ts.length} saved</span></summary><div class="ar-tswl">${ts.map(row).join('')}</div></details>`; };
 /* Jump links (Sim, Nov 5): My team is long on phones, so a row under the head goes straight to each numbered part */
-AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to"><button type="button" class="ar-jump" data-arjump="chP1">Suggestions</button><button type="button" class="ar-jump" data-arjump="chP2">Matchups</button><button type="button" class="ar-jump" data-arjump="chP3">How it plays</button><button type="button" class="ar-jump" data-arjump="chSets">Sets</button></nav>`;
+/* the jump bar is a sliding picker (Sim, Nov 10): the part you last jumped to keeps the circle, also after the page redraws */
+AR.jumpOn = null;
+AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to">${[['chP1', 'Suggestions'], ['chP2', 'Matchups'], ['chP3', 'How it plays'], ['chSets', 'Sets']].map(([id, t]) => `<button type="button" class="ar-jump${AR.jumpOn === id ? ' on' : ''}" data-arjump="${id}"${AR.jumpOn === id ? ' aria-current="true"' : ''}>${t}</button>`).join('')}</nav>`;
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arjump]'); if (!b) return; const t = $(b.dataset.arjump); if (!t) return;
+  if (b.classList.contains('ar-jump')) { AR.jumpOn = b.dataset.arjump; b.parentElement.querySelectorAll('.ar-jump').forEach(x => { const on = x === b; x.classList.toggle('on', on); if (on) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current'); }); }
   if (t.matches('details:not([open])')) t.open = true;
   t.querySelectorAll('details.ar-sheetfold:not([open])').forEach(d => { d.open = true; });
   t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
@@ -134,16 +137,16 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   const tools = `<nav class="ar-tools" aria-label="Start here">${has ? b('report', ' ar-primary', AR.ICON.grade, 'Score my team') + b('auto', '', AR.ICON.build, 'Build a team', 'var(--ar-gold)')
     : b('auto', ' ar-primary', AR.ICON.build, 'Build me a team') + b('report', '', AR.ICON.grade, 'Score my team', 'var(--ar-blue)')}${b('matchup', '', AR.ICON.plan, 'Plan a match', 'var(--ar-orange)')}</nav>`
     + `<p class="ar-imp">Already have a team? <button type="button" class="ar-link" data-arimport>Import from Showdown</button></p>`;
-  /* the champion's six */
+  /* the Champion's six */
   let them = '', FC = null, sameSix = false;
   if (C) { const {ev, t} = C, key = esc(ev.id) + '#' + ev.top.indexOf(t); sameSix = ms.length === 6 && t.mons.every(m => ms.some(x => x.p.n === m.n));
     try { FC = ms.length >= 4 ? CH.fourVs(ms, C.six.map(x => x.p.n)) : null; } catch (e) { FC = null; }
-    them = `<section class="ar-side ar-pink" aria-labelledby="arChamp"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arChamp">The champion's six</h2></div>
-      <div class="ar-winner"><p class="ar-meta">Latest winner</p><p class="ar-ev">${esc(evName(ev.name))}</p><p class="ar-meta"><b>${esc(t.player)}${t.record ? ', ' + esc(String(t.record).replace(/\s*·.*$/, '')) : ''}</b>, ${esc(evDate(ev.date))}${ev.players ? `, ${ev.players} players` : ''}</p>${sameSix ? '<p class="ar-meta"><b>Same six as yours</b></p>' : ''}</div>
+    them = `<section class="ar-side ar-pink" aria-labelledby="arChamp"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arChamp">The Champion's six</h2></div>
+      <div class="ar-winner"><p class="ar-meta">Latest winner</p><p class="ar-ev">${esc(evName(ev.name))}</p><p class="ar-meta"><b>${esc(teamWho(t))}</b>, ${esc(evDate(ev.date))}${ev.players ? `, ${ev.players} players` : ''}</p>${sameSix ? '<p class="ar-meta"><b>Same six as yours</b></p>' : ''}</div>
       <div class="ar-six">${C.six.map(x => AR.art(x.p, {size: 'm', below: 1, sub: x.it, attrs: `data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}${x.it ? ', ' + esc(x.it) : ''}: open its info"`})).join('')}</div>
       <div class="ar-acts"><button type="button" class="ar-btn" data-evload="${key}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t), 'ar-btn')}<button type="button" class="ar-link" data-view="events">All ${C.n} events ›</button></div></section>`; }
-  /* your six: ordered lead, back, bench for the plan shown under it (vs the champion's six, or the meta's six without one) */
-  let F = FC, vs = C ? `vs ${esc(C.t.player)}'s six` : '';
+  /* your six: ordered lead, back, bench for the plan shown under it (vs the Champion's six, or the meta's six without one) */
+  let F = FC, vs = C ? `vs the Champion's six` : '';
   if (!F && ms.length >= 4) { try { F = CH.four(ms); vs = "vs the meta's top six"; } catch (e) { F = null; } }
   const UL = AR.userLeads(ms); if (UL && F) { F = {lead: UL.map(m => m.p.n), back: F.lead.concat(F.back).filter(n => !UL.some(m => m.p.n === n)).slice(0, 2)}; vs = vs ? vs + ', your leads' : 'your leads'; }
   const byN = n => ms.find(m => m.p.n === n), lead = F ? F.lead.map(byN).filter(Boolean) : [], back = F ? F.back.map(byN).filter(Boolean).filter(m => !lead.includes(m)) : [];
@@ -153,7 +156,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
     <div class="ar-winner">${ms.length && AR.isSample(title) ? AR.sampleNote() : ''}${ms.length ? `<p class="ar-meta">Your team: <b>${ms.length}/6</b>${wx}</p>` : '<p class="ar-meta">Add six Pokémon and NastyPlot scouts the top threats for you.</p>'}</div>
     <div class="ar-six">${ms.length ? ord.map(m => AR.art(m.p, {size: 'm', below: 1, name: m.d, attrs: `data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info"`})).join('') : Array.from({length: 6}, (_, i) => AR.emptyArt('m', {attrs: `data-view="build" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('')}</div>
     ${AR.plan(lead, back, bench, vs)}
-    <div class="ar-acts">${ms.length ? `<button type="button" class="ar-btn" data-view="report">Open my team</button>${C && FC && !sameSix ? `<button type="button" class="ar-link" data-evvs="${esc(C.ev.id)}#${C.ev.top.indexOf(C.t)}">Prep vs the champion ›</button>` : ''}`
+    <div class="ar-acts">${ms.length ? `<button type="button" class="ar-btn" data-view="report">Open my team</button>${C && FC && !sameSix ? `<button type="button" class="ar-link" data-evvs="${esc(C.ev.id)}#${C.ev.top.indexOf(C.t)}">Prep vs the Champion ›</button>` : ''}`
       : '<button type="button" class="ar-btn" data-view="build">Add your six</button>'}</div></section>`;
   const html = `<div class="ar-home"><div class="ar-deck"><div class="ar-deck-main"><div class="ar-h1 ar-hh ar-tag" role="heading" aria-level="2">Sharply raise <br><span class="ar-tag2">your win rate.</span></div>${hero}</div>
     <div class="ar-deck-side"><div class="ar-runners">${ru.map(runner).join('')}</div><p class="ar-caption">${esc(MG.srcLine())}</p>${AR.week()}${tools}</div></div>

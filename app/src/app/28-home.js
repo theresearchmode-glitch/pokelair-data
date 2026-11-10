@@ -18,7 +18,7 @@ function homeSide(v) { const E = META.events; let ev = null, t = null;
   if (E && Array.isArray(E.events)) for (const e of E.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }
   if (!ev && !(v && v.RD)) return '';
   return `<aside class="hhside" aria-label="Latest winner">${ev ? `<div class="hsk">Latest winner</div>
-    <div class="hswho"><b>${esc(t.player)}</b>${t.record ? ` <span class="vsub">${esc(t.record)}</span>` : ''}</div>
+    <div class="hswho"><b>${esc(teamWho(t))}</b></div>
     <div class="t2">${esc(ev.name)} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>
     <div class="hsspr">${t.mons.map(m => sprite(byName.get(m.n), 'hsmon') || '').join('')}</div>
     <div class="row"><button class="btn sm" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t))}<button class="linkbtn" type="button" data-view="events">All events ›</button></div>` : ''}

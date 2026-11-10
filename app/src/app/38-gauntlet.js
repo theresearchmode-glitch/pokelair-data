@@ -1,6 +1,6 @@
 // ---------- Gauntlet: your team against real top tournament teams ----------
 let gauntCache={key:null,rows:null};
-function gauntletTeams(){const d=META.teams;if(d&&d.teams&&d.teams.length)return d.teams.slice(0,20).map(t=>({who:`${t.player} · ${t.record}`,player:t.player,ev:t.event,mons:t.mons}));
+function gauntletTeams(){const d=META.teams;if(d&&d.teams&&d.teams.length)return d.teams.slice(0,20).map(t=>({who:teamWho(t),player:t.player,ev:t.event,mons:t.mons}));
   const pv=RES&&Array.isArray(RES.proven)?RES.proven:[];return pv.slice(0,20).map(x=>({who:`Won ${pctTxt(x[2]*100)} of games across ${x[1]} entr${x[1]===1?"y":"ies"}`,ev:'Proven team list',mons:x[0]}))}
 function gauntletScore(mine,theirs,useA){const r=planMatchup(mine,theirs,useA);let s=0,n=0;for(const i of r.chosen)for(let j=0;j<theirs.length;j++){s+=r.h.M[i][j];n++}
   // their side: how many of their six your four can't handle

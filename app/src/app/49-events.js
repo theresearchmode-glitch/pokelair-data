@@ -23,7 +23,7 @@ let evUi = {open: null, filter: 'all', more: 0, sets: {}};
 // one team with its sets: sprites, then (folded) each Pokémon's item, ability, nature and moves
 function teamSheetCard(t, ev, key, hl) {
   const open = !!evUi.sets[key], H = x => hl && hl.has(x.toLowerCase()) ? ' class="hl"' : '';
-  return `<div class="plan evteam"><div class="ttwho"><div class="pt"><span class="evpl p${Math.min(t.place, 9)}">${t.place ? placeTxt(t.place) : ''}</span> ${esc(t.player)} ${t.record ? `<span class="vsub">${esc(t.record)}</span>` : ''}</div>${ev ? `<div class="t2">${esc(ev.name)} · ${evDate(ev.date)} · ${ev.players} players</div>` : ''}</div>
+  return `<div class="plan evteam"><div class="ttwho"><div class="pt"><span class="evpl p${Math.min(t.place, 9)}">${t.place ? placeTxt(t.place) : ''}</span> ${t.record ? `<span class="vsub">${esc(t.record)}</span>` : ''}</div>${ev ? `<div class="t2">${esc(ev.name)} · ${evDate(ev.date)} · ${ev.players} players</div>` : ''}</div>
     ${open ? '' : teamGrid(t.mons.map(m => m.n), hl)}
     <div class="ttmeta"><span class="archchips">${archChips(teamPlanLabel(t.mons.map(m => m.n)))}</span></div>
     ${open ? `<div class="evsets">${t.mons.map(m => { const p = byName.get(m.n); return `<div class="evset tyacc" style="${tyv(p)}">${sprite(p, 'evspr')}<div><b${H(p.d)}>${esc(p.d)}</b>${m.i ? ` <span class="t2">@</span> <span${H(m.i)}>${esc(m.i)}</span>` : ''}
@@ -52,12 +52,12 @@ function renderEvents() {
   const seg = `<div class="seg" role="group" aria-label="Which events">${[['all', 'All'], ['official', 'Official'], ['big', '100+ players']].map(([k, t]) => `<button type="button" data-evf="${k}" aria-pressed="${evUi.filter === k}">${t}</button>`).join('')}</div>`;
   el.innerHTML = seg + `<div class="evlist">${list.slice(0, cap).map(e => { const w = e.top[0];
     return `<button type="button" class="evcard" data-evopen="${esc(e.id)}"><div class="evct"><span class="evname">${esc(e.name)}</span>${e.src === 'official' ? '<span class="tag evoff">OFFICIAL</span>' : ''}</div>
-      <div class="t2">${evDate(e.date)} · ${e.players.toLocaleString('en-US')} players · won by <b>${esc(w.player)}</b></div>
+      <div class="t2">${evDate(e.date)} · ${e.players.toLocaleString('en-US')} players</div>
       <div class="evwin">${w.mons.map(m => sprH(byName.get(m.n), 'mini')).join('')}</div></button>`; }).join('') || '<div class="empty-note">No events here yet.</div>'}</div>`
     + (list.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-evmore="1">Show more (${list.length - cap} left)</button></div>` : ''); }
 function loadSheet(t) { keepUndo(); S.slots = normSlots(t.mons.map(m => { const p = byName.get(m.n); const mv = m.mv.filter(x => mvByName.has(x)); while (mv.length < 4) mv.push('');
     return {n: m.n, a: p.a.includes(m.a) ? m.a : null, lock: false, ...(mv.some(Boolean) ? {mv: {doubles: mv.slice(0, 4)}} : {}), ...(!p.m && m.i && typeof m.i === 'string' ? {it: {doubles: m.i}} : {})}; }));
-  S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast(`Loaded ${t.player}'s team with their moves and items`, true); }
+  S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast(`${teamWho(t).split(' · ')[0]}'s team loaded with its moves and items`, true); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-evopen],[data-evback],[data-evf],[data-evmore],[data-evsets],[data-evload],[data-evvs]'); if (!b) return; const d = b.dataset;
   if (d.evopen) { evUi.open = d.evopen; renderEvents(); try { window.scrollTo({top: 0}); } catch (er) {} return; }
   if (d.evback) { evUi.open = null; renderEvents(); return; }
@@ -67,7 +67,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.evload || d.evvs) { const x = evTeam(d.evload || d.evvs); if (!x) return;
     if (d.evload) { const sure = ui.evSure && ui.evSure.k === d.evload && Date.now() - ui.evSure.t < 6000; /* kept in ui, so a redraw between taps doesn't reset it */
       if (members().length && !sure) { ui.evSure = {k: d.evload, t: Date.now()}; b.textContent = 'Tap again to replace your team'; return; } ui.evSure = null; loadSheet(x.t); return; }
-    S.opp = x.t.mons.map(m => m.n); ui.oppFrom = {who: x.t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`${x.t.player}'s team is your opponent`); return; }
+    S.opp = x.t.mons.map(m => m.n); ui.oppFrom = {who: x.t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${teamWho(x.t)}`); return; }
   keepScroll(() => { if (view === 'top') renderTeamSearch(); else if (view === 'auto') renderAutoBuild(); else renderEvents(); }); });
 
 // ---- team search (Top teams) ----

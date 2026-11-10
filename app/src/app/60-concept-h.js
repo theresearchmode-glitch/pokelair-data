@@ -363,8 +363,8 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const E = META.events; let ev = null, t = null;
   if (E && Array.isArray(E.events)) for (const e of E.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }
   const sameSix = !!(t && ms.length === 6 && t.mons.every(m => ms.some(x => x.p.n === m.n)));
-  const win = ev ? `<div class="chwinwrap"><div class="chk">Latest winner · ${esc(evName(ev.name))}</div><div class="chwh">The champion brought ${sameSix ? '<span class="hl">your</span>' : 'these'} six.</div>
-    <div class="chwin"><div class="top">${t.record ? `<span class="rec">${esc(t.record)}</span>` : ''}<div><div class="who">${esc(t.player)}</div><div class="chk">${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>${sameSix ? '<div class="chpen">Same six as yours!</div>' : ''}</div></div>
+  const win = ev ? `<div class="chwinwrap"><div class="chk">Latest winner · ${esc(evName(ev.name))}</div><div class="chwh">The Champion brought ${sameSix ? '<span class="hl">your</span>' : 'these'} six.</div>
+    <div class="chwin"><div class="top">${t.record ? `<span class="rec">${esc(t.record)}</span>` : ''}<div><div class="who">${esc(teamWho(t))}</div><div class="chk">${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}</div>${sameSix ? '<div class="chpen">Same six as yours!</div>' : ''}</div></div>
     <div class="chwsix">${t.mons.map(m => `<span title="${esc(byName.get(m.n).d)}">${sprite(byName.get(m.n)) || esc(byName.get(m.n).d)}</span>`).join('')}</div>
     <div class="row"><button class="chghost" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t))}<button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div></div>` : '';
   // 02 your team: readiness, tiles worst first
@@ -398,7 +398,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   // the split hero: your six (blue) · plot your win (cream) · the latest champion's six (red), live from the events data
   const logo = CH.lockup('full');
   const champ = t ? t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''})).filter(x => x.p) : null;
-  const FC = champ && ms.length >= 4 ? CH.fourVs(ms, champ.map(x => x.p.n)) : null, foe = FC ? 'the champion\'s six' : 'the meta\'s six', F2 = FC || F;
+  const FC = champ && ms.length >= 4 ? CH.fourVs(ms, champ.map(x => x.p.n)) : null, foe = FC ? 'the Champion\'s six' : 'the meta\'s six', F2 = FC || F;
   const cl = F2 ? F2.lead.map(byN).filter(Boolean) : [], cb = F2 ? F2.back.map(byN).filter(Boolean) : [];
   const ord2 = F2 ? [...cl, ...cb, ...mine.filter(m => !cl.includes(m) && !cb.includes(m))] : mine;
   const tag2 = m => !F2 ? '' : cl.includes(m) ? '<span class="chtag lead">Lead</span>' : cb.includes(m) ? '<span class="chtag">Back</span>' : '<span class="chtag">Bench</span>';
@@ -407,8 +407,8 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
   const youH = `<div class="chband you chhalf chcol"><div class="chk">● You · ${ms.length ? 'pick 4' : 'your six'}</div><div class="chcolt">${ms.length ? esc(teamTitleFor(ms)) : 'Your six'}</div>
     ${ms.length ? `<div class="chlist6">${ord2.map(m => row(sprite(m.p) || '', m.d, [m.item, m.ability].filter(Boolean).join(' · '), tag2(m))).join('')}</div><div class="chwl" style="justify-content:flex-start"><button type="button" class="chghost onblue" data-view="report">Open my team</button></div>`
       : `<div class="chlist6 empty">${Array.from({length: 6}, () => '<div class="chhr2"><span class="emp"></span><div class="chbd2"><b>&nbsp;</b></div></div>').join('')}</div><button type="button" class="chghost onblue" data-view="build">Add your six</button>`}</div>`;
-  const themH = champ ? `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">Latest winner · ${esc(evName(ev.name))} ●</div><div class="chcolt" style="text-align:right">The champion's six</div>
-    <div class="chwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen" style="color:#fff">same six as yours!</span>' : ''}</div>
+  const themH = champ ? `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">Latest winner · ${esc(evName(ev.name))} ●</div><div class="chcolt" style="text-align:right">The Champion's six</div>
+    <div class="chwho">${esc(teamWho(t))} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen" style="color:#fff">same six as yours!</span>' : ''}</div>
     <div class="chlist6">${champ.map(x => row(sprite(x.p) || '', x.p.d, [x.it, x.ab].filter(Boolean).join(' · '), '', true)).join('')}</div>
     <div class="chwl"><button class="chghost onred" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t), 'onred')}<button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></div>` : `<div class="chband them chhalf chcol"><div class="chk" style="text-align:right">The meta's six · % of teams</div><div class="chsix">${six.map(p => `<div role="button" tabindex="0" data-lt="${esc(p.n)}" aria-label="${esc(p.d)}: open its info">${sprite(p) || ''}<div class="pc">${U(p).toFixed(1)}%</div></div>`).join('')}</div></div>`;
   const midH = `<div class="chmid"><div class="chk">Team preview · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Sharply raise your win rate.</div><div class="sub">Before turn one.</div>
@@ -424,15 +424,15 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
     <section class="chmhero"><div class="chk">Pokémon Champions · Reg M-C doubles</div><div class="chdisp chh1" role="heading" aria-level="2">Sharply raise your win rate.</div><div class="chdisp sub">Before turn one.</div>
       <p>Teams, sets and matchups from <b>${nTeams ? CH.n(nTeams) + ' real tournament teams' : 'real tournament results'}</b>${dataDateText() ? `<span class="chasof"> · ${esc(dataDateText().replace(/^Data as of/, 'data as of'))}</span>` : ''}.</p>
       <div class="chmacts"><button type="button" class="chprimary" data-view="auto">Build me a team <span aria-hidden="true">➜</span></button><button type="button" class="chghost" data-view="report">${ms.length ? 'Check my team' : 'Start from scratch'}</button></div></section>
-    ${champ ? `<section class="chmcard them"><div class="chk">Latest winner · ${esc(evName(ev.name))}</div><div class="chmct">The champion's six</div>
-      <div class="chmwho">${esc(t.player)}${t.record ? ` · <b>${esc(t.record)}</b>` : ''} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen">same six as yours!</span>' : ''}</div>
+    ${champ ? `<section class="chmcard them"><div class="chk">Latest winner · ${esc(evName(ev.name))}</div><div class="chmct">The Champion's six</div>
+      <div class="chmwho">${esc(teamWho(t))} · ${evDate(ev.date)}${ev.players ? ` · ${ev.players} players` : ''}${sameSix ? ' · <span class="chpen">same six as yours!</span>' : ''}</div>
       <div class="chmgrid">${champ.map(x => mon(x.p, x.it)).join('')}</div>
       <div class="chmrow"><button class="chghost onred" type="button" data-evload="${esc(ev.id)}#${ev.top.indexOf(t)}">Load this team</button>${sdBtn('ev:' + ev.id + '#' + ev.top.indexOf(t), 'onred')}<button class="linkbtn" type="button" data-view="events">All ${E.events.length} events ›</button></div></section>` : ''}
     <section class="chmcard you"><div class="chk">Your team${ms.length ? ` · ${ms.length}/6` : ''}</div><div class="chmct">${ms.length ? esc(teamTitleFor(ms)) : 'Your six goes here'}</div>
-      ${ms.length ? `${pickLine}<div class="chmgrid">${ord2.map(m => mon(m.p, '', tag2(m))).join('')}</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="report">Open my team</button>${FC && !sameSix ? `<button type="button" class="linkbtn" data-evvs="${esc(ev.id)}#${ev.top.indexOf(t)}">Prep vs the champion ›</button>` : ''}</div>`
+      ${ms.length ? `${pickLine}<div class="chmgrid">${ord2.map(m => mon(m.p, '', tag2(m))).join('')}</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="report">Open my team</button>${FC && !sameSix ? `<button type="button" class="linkbtn" data-evvs="${esc(ev.id)}#${ev.top.indexOf(t)}">Prep vs the Champion ›</button>` : ''}</div>`
         : `<div class="chmwho">Add six Pokémon and NastyPlot scouts the top threats for you.</div><div class="chmrow"><button type="button" class="chghost onblue" data-view="build">Add your six</button></div>`}</section>
   </div>`;
-  // Trial Redesign: one short cover banner (the most used Pokémon, inked, over the riso sun) beside the headline, then your six vs the champion's
+  // Trial Redesign: one short cover banner (the most used Pokémon, inked, over the riso sun) beside the headline, then your six vs the Champion's
   const star = six && six[0], starU = star ? U(star) : 0;
   const art = star ? `<div class="trart" aria-hidden="true"><div class="trcut"><div class="trsun"></div><div class="trrays"></div><div class="trdots"></div></div><div class="trmon">${sprite(star) || ''}</div>${starU ? `<span class="trstat"><b>${Math.round(starU)}%</b> bring ${esc(star.d)}</span>` : ''}</div>` : '';
   const topH = phoneH.replace('</section>', '</section>' + art.replace('class="trart"', 'class="trart trph"')) + `<div class="trbanner chdesk">${art}${midH}</div><div class="chsplit chdesk trvs">${youH}${themH}</div>`;  el.innerHTML = topH + `

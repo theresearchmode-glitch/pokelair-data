@@ -51,7 +51,7 @@ CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const se
   const ord = n => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th';
   const head = document.createElement('div'); head.className = 'chbmhead';
   head.innerHTML = `<div class="chk">${on ? 'Their real open team sheet' : 'Team preview'}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span data-notc>${esc(title)}</span> <small>vs</small> <em>${arch ? esc(arch) : 'their six'}</em></div>
-    ${on ? `<p class="chpgs"><b>${esc(on.who)}</b>${on.rec ? ` went <b>${esc(on.rec)}</b>${on.place ? ` and finished ${ord(on.place)}` : ''}` : on.place ? ` finished ${ord(on.place)}` : ' played this team'} at ${esc(on.ev.name)}${on.ev.players ? ` (${on.ev.players} players)` : ''}.</p>` :S.opp.filter(Boolean).length >= 6 ? '' : '<p class="chpgs">Type their six as you see them at team preview.</p>'}`; /* gone once all six are in (Sim, Nov 8: less on every page) */
+    ${on ? `<p class="chpgs">The ${on.place === 1 ? 'Champion' : 'Challenger'}${on.rec ? ` went <b>${esc(on.rec)}</b>${on.place ? ` and finished ${ord(on.place)}` : ''}` : on.place ? ` finished ${ord(on.place)}` : ' was played'} at ${esc(on.ev.name)}${on.ev.players ? ` (${on.ev.players} players)` : ''}.</p>` :(n => n >= 6 || n === 0 ? '' : '<p class="chpgs">Type their six as you see them at team preview.</p>')(S.opp.filter(Boolean).length)}`; /* gone once all six are in (Sim, Nov 8: less on every page); also gone while none are in, where the empty note below says the same (f4-heads, Nov 10) */
   const bar = el.querySelector('.bmbar'); if (bar) head.append(bar);
   // the heading first, then the opponent picker, then their six (the picker lives outside the redrawn area)
   const oq = $('oppQuick'); if (oq && sec) { sec.querySelectorAll(':scope > .chbmhead').forEach(x => x.remove()); oq.before(head); } else el.prepend(head);
@@ -100,7 +100,8 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
   if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     /* "How to read our numbers" from the page title's "?" (Nov 2) */
-    { const t = sec.querySelector(':scope > .chpghead .chpgt'); if (t && typeof tip === 'function') t.insertAdjacentHTML('beforeend', tip('numbers')); }
+    /* the big "Pokémon" title repeated the Pokémon tab right above it: it stays for screen readers only, and its "?" sits on the line above (Sim, Nov 10) */
+    { const t = sec.querySelector(':scope > .chpghead .chpgt'), k = sec.querySelector(':scope > .chpghead > .chk'); if (t) t.classList.add('sr'); if (k && typeof tip === 'function') k.insertAdjacentHTML('afterend', tip('numbers')); }
     const hero = $('lairHero'); const f = CH.foldNode(hero, 'lairabout', 'About the ratings', 'How they are made, sources and their track record', false);
     if (f) { const b = f.querySelector('.chbody'); sec.querySelectorAll('.head .hint, #ratingTrack').forEach(p => b.prepend(p)); }
     // search and filters first, then the top of the list
