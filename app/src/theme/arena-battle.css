@@ -1038,3 +1038,25 @@
 @A .bmreal .bmrk li span.up{color:var(--ar-green,#2E9E5B)}
 /* f4-heads (Nov 10): the empty "type their Pokémon" note has no field of its own, so no padding above and below it (it left an empty band) */
 @A #bmOut>.empty-note.mgempty{padding-top:0!important;padding-bottom:0!important;margin-bottom:0!important}
+/* Tool switch as a sliding control (Sim's trial, Nov 10, like the iPhone Control Center picker): one rounded track, an icon in a
+   circle above each name, the chosen circle in the Battle colour slides to the new tool. Layers: grey circles, then the sliding
+   circle, then the icons, so the slide passes over the others. */
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide{--i:0;--c:48px;position:relative;isolation:isolate;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:0!important;flex-wrap:nowrap!important;
+  width:100%;max-width:440px;padding:10px 6px 8px!important;margin:0 0 16px!important;background:var(--ar-sheet)!important;border:0!important;border-radius:28px!important;box-shadow:var(--ar-shadow-s);transform:none!important}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>.ar-slpill{position:absolute;left:6px;top:10px;width:calc((100% - 12px) / 3);height:var(--c);z-index:1;pointer-events:none;
+  transform:translateX(calc(var(--i) * 100%));transition:transform .34s cubic-bezier(.3,1.35,.5,1)}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>.ar-slpill::before{content:"";position:absolute;left:50%;top:0;width:var(--c);height:var(--c);margin-left:calc(var(--c) / -2);border-radius:50%;
+  background:var(--ar-sec-plate);box-shadow:0 4px 14px color-mix(in srgb,var(--ar-sec-plate) 40%,transparent)}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide.no-anim>.ar-slpill{transition:none}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>button{position:relative;z-index:auto!important;isolation:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:6px!important;
+  flex:none!important;width:auto!important;min-width:0!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0!important;padding:0 2px!important;background:none!important;border:0!important;box-shadow:none!important;
+  transform:none!important;color:var(--ar-ink-2)!important;font:600 13px/1.2 var(--ar-body)!important;letter-spacing:0!important;text-align:center;white-space:normal!important;word-spacing:normal!important;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>button::before,@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>button::after{content:none!important;display:none!important}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide .ar-slic{position:relative;display:grid;place-items:center;width:var(--c);height:var(--c);border-radius:50%;flex:none}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide .ar-slic::before{content:"";position:absolute;inset:0;border-radius:50%;background:var(--ar-paper-2);z-index:0}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide .ar-slic svg{position:relative;z-index:2;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--ar-ink)!important;transition:color .2s,transform .12s}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>button[aria-pressed="true"] .ar-slic svg{color:var(--ar-sec-on)!important;transition-delay:.12s}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>button[aria-pressed="true"]{color:var(--ar-ink)!important;font-weight:700!important}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>button:active .ar-slic svg{transform:scale(.86)}
+@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>button:focus-visible .ar-slic{outline:3px solid var(--ar-focus);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){@A:not(#arcw):not(#arsl) .arb .seg.toolsw.ar-slide>.ar-slpill{transition:none}}
