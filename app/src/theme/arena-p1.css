@@ -1130,7 +1130,9 @@
   /* Your Six three across with smaller art; lock and remove sit on the tapped tile only (each still one tap away) */
   @A .ar-stage .ar-six.ar-two{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px 8px!important}
   @A .ar-stage .ar-six>.ar-slot{grid-column:auto!important}
-  @A .ar-stage .ar-art.ar-l{--h:118px;--s:104px}
+  @A .ar-stage .ar-art.ar-l{--h:118px;--s:92px}
+  /* Nov 10 (Sim's screenshots): names stay inside the small cards, in the bold body face as on My Box's small tiles */
+  @A .ar-stage .ar-art .ar-nm:not(#_b1):not(#_b2){left:10px;right:6px;bottom:10px;font-family:var(--ar-body)!important;font-style:normal!important;font-weight:700!important;font-size:var(--nmf,15px)!important;letter-spacing:0!important;font-stretch:100%!important;line-height:1.15}
   @A .ar-stage .ar-slot:not(.is-sel) :is(.ar-lockx,.ar-rmx){display:none}
 }
 /* all six sets, now beside the set card */

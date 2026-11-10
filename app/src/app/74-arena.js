@@ -354,7 +354,7 @@ AR.fit = all => { document.querySelectorAll(all ? '.ar-art .ar-nm' : '.ar-art .a
   if (over()) n.dataset.ns = 1;
   let f = parseFloat(getComputedStyle(n).fontSize), k = 0;
   // the box's 3-across phone tiles are narrower: there a name may go down to 13px, the smallest size on the scale (Nov 7, Sim)
-  const fmin = tile && (tile.closest('[data-pane="box"]') || !on) ? 13 : 15;
+  const fmin = tile && (tile.closest('[data-pane="box"]') || !on || (tile.closest('.ar-stage') && matchMedia('(max-width:599px)').matches)) ? 13 : 15; /* Nov 10: My Team's 3-across phone tiles too */
   while (over() && f > fmin && k++ < 8) { f = Math.max(fmin, f - 1); n.style.setProperty('--nmf', f + 'px'); }
   if (over() && tile) tile.classList.add('is-nmw');
   const r = document.createRange(); r.selectNodeContents(t); const L = [...r.getClientRects()].filter(x => x.width > 1); if (!L.length) return;
