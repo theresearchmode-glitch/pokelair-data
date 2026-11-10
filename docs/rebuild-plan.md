@@ -201,3 +201,7 @@ Heavy. Roughly R1 1-2 sessions, R2 2-4, R3 2-3, R4 one to two sessions per page 
 15-25 working sessions. Background runs (sweeps, tests) are cheap. Helper agents would mainly speed up R1 and the
 screenshot reviews (about 3-5 times the usage of doing them alone, for those steps only). Aim: finished before the
 January 2027 launch, which would then launch on the new design.
+
+## My Box (Sim, Nov 10)
+
+Sim chose the My Box concept drawn in the redesign chat (an in-game Pokémon box blended into the light design). Everything about it is in docs/redesign/box/ (NOTES.md, the render, its source). Build My Box from it; fix the rule breaks listed in NOTES.md.

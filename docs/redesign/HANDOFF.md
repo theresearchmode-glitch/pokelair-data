@@ -60,3 +60,7 @@ docs/rebuild-plan.md, "Must match what we already agreed". The notes below are t
   Fix it). Sim, Nov 10: the data and words will come from the site; judge the design. The rebuild uses the word list.
 - Rating bug found through the concepts and confirmed on today's build: the My Team set card prints the raw rating (89)
   while Ratings shows the displayed score (94) (74-arena.js and 70-riso2.js use Math.round(r) instead of RS()).
+
+## My Box concept (Nov 10, 22:42-22:45)
+
+The last thing that chat made, and Sim chose it for My Box: docs/redesign/box/ (render, source, notes).
