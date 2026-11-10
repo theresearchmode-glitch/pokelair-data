@@ -62,7 +62,7 @@ const SLIDE = {
     if (bs.some(b => b.getAttribute('aria-pressed') === 'mixed')) return false; return bs.every(b => SLIDE.icon(b.dataset.slt || b.textContent)); },
   dress(b) { if (b.querySelector(':scope > .ar-slic')) return; const t = b.textContent.trim(), ic = SLIDE.icon(b.dataset.slt || t); if (!ic) return; b.dataset.slt = t;
     b.innerHTML = `<span class="ar-slic" aria-hidden="true">${ic.num ? `<b>${ic.num}</b>` : `<svg viewBox="0 0 24 24">${ic.svg}</svg>`}</span><span class="ar-sllb">${esc(t)}</span>`;
-    if (typeof TCASE !== 'undefined') TCASE.run(b); /* page names keep their Title Case (Speed Tiers), as on the plain buttons */ },
+    try { TCASE.run(b); } catch (e) {} /* before Title Case has loaded (first draw) this throws; Title Case then fixes the whole page when it starts */ /* page names keep their Title Case (Speed Tiers), as on the plain buttons */ },
   reduce: () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
   scan() { SLIDE.queued = false;
     document.querySelectorAll(':is(.seg,.themeseg:not(.tabtheme)):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
