@@ -42,6 +42,10 @@ detail right. So:
   (the whole headline, not half), line height 1.5, no text out of its box or wrapping unevenly beside its neighbours, no lone
   tile or half-filled row, no empty half on desktop, no boxes in boxes, one size per kind of control.
 - New components (sliders, chips, tiles) are checked at their narrowest and widest real size before they ship.
+- Keep the WOW (Sim, Nov 10: "hard to obtain and very easy to lose"). Polish fixes the details; it never flattens the look:
+  the big slanted Unbounded headlines and numbers, bold colour fields, large sprites, the slanted boxy shapes and the sliders
+  stay as strong as they are. When a fix could go "safer and plainer" or "right and just as bold", choose bold. Compare
+  before/after screenshots of each batch for impact, not only for rule-following.
 
 ## Plans are always checklists (Sim, Nov 8)
 CURRENT FOCUS (Sim, Nov 10): the NastyPlot Focus page (https://claude.ai/artifact/1AgBoBNeSXHGRDu8kpYPGX, source
