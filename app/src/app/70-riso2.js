@@ -7,7 +7,7 @@ function rzSetHtml(m, i) {
   try { r = rating(m.p).total; tier = lTier(r).k; } catch (e) {}
   const mv = (m.moves || []).filter(Boolean).map(x => `<li>${esc(x.name)}</li>`).join('');
   return `<div class="rzseth">${sprite(m.p, 'rzsetspr') || ''}<div class="rzsetn"><b>${esc(m.d)}</b><span>${(m.p.t || []).map(esc).join(' and ')} type</span></div>
-    ${r != null ? `<div class="rzsetr"><b>${Math.round(r)}</b><span>${tier ? esc(tier) + ' tier rating' : 'Rating'}</span></div>` : ''}</div>
+    ${r != null ? `<div class="rzsetr"><b>${RS(r)}</b><span>${tier ? esc(tier) + ' tier rating' : 'Rating'}</span></div>` : ''}</div>
     <dl class="rzsetd"><div><dt>Item</dt><dd>${esc(m.item || 'No item')}</dd></div><div><dt>Ability</dt><dd>${esc(m.ability || '–')}</dd></div></dl>
     ${mv ? `<ul class="rzsetm" aria-label="Moves">${mv}</ul>` : ''}
     <div class="rzseta"><button type="button" class="chghost" data-chedit="${i}">Edit set</button><button type="button" class="rzlink" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`;
