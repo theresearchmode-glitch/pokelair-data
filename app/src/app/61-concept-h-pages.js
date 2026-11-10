@@ -100,7 +100,8 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
   if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     /* "How to read our numbers" from the page title's "?" (Nov 2) */
-    { const t = sec.querySelector(':scope > .chpghead .chpgt'); if (t && typeof tip === 'function') t.insertAdjacentHTML('beforeend', tip('numbers')); }
+    /* the big "Pokémon" title repeated the Pokémon tab right above it: it stays for screen readers only, and its "?" sits on the line above (Sim, Nov 10) */
+    { const t = sec.querySelector(':scope > .chpghead .chpgt'), k = sec.querySelector(':scope > .chpghead > .chk'); if (t) t.classList.add('sr'); if (k && typeof tip === 'function') k.insertAdjacentHTML('afterend', tip('numbers')); }
     const hero = $('lairHero'); const f = CH.foldNode(hero, 'lairabout', 'About the ratings', 'How they are made, sources and their track record', false);
     if (f) { const b = f.querySelector('.chbody'); sec.querySelectorAll('.head .hint, #ratingTrack').forEach(p => b.prepend(p)); }
     // search and filters first, then the top of the list

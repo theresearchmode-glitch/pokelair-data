@@ -208,20 +208,3 @@ CH.wrap('renderTypes', () => ARBAT.parts());
 { let q = false; const run = () => { q = false; try { if (document.querySelector('[data-pane="calc"]:not([hidden]) .dcgrid')) ARBAT.calc(); ARBAT.battle(); ARBAT.parts(); } catch (e) {} };
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); }
 if (window.__PL_TEST) window.__ARBAT = ARBAT;
-/* ======================= Tool switch as a sliding control (Sim's trial, Nov 10) =======================
-   Speed Tiers / Damage Calc / Type Chart look and move like the iPhone Control Center picker: one rounded track, an icon in a
-   circle above each name, and the chosen one's coloured circle slides over to the new tool when you switch. The buttons stay the
-   same buttons (same names, data-view and aria-pressed), so taps, keyboard and tests work as before; only their look changes. */
-ARBAT.SLIC = {speed: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>', calc: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>',
-  types: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>'};
-ARBAT.slideSetup = () => document.querySelectorAll('.seg.toolsw:not(.ar-slide)').forEach(s => { s.classList.add('ar-slide'); s.insertAdjacentHTML('afterbegin', '<i class="ar-slpill" aria-hidden="true"></i>');
-  s.querySelectorAll(':scope > button').forEach(b => { const t = b.textContent.trim(); b.innerHTML = `<span class="ar-slic" aria-hidden="true"><svg viewBox="0 0 24 24">${ARBAT.SLIC[b.dataset.view] || ''}</svg></span><span class="ar-sllb">${esc(t)}</span>`; }); });
-ARBAT.slidePrev = null; /* the tool shown before this one (index), so the circle slides from there */
-CH.wrap('setView', () => { ARBAT.slideSetup(); const s = document.querySelector(`[data-pane="${view}"] .seg.toolsw.ar-slide`);
-  if (!s) { ARBAT.slidePrev = null; return; }
-  const bs = [...s.querySelectorAll(':scope > button')], i = Math.max(0, bs.findIndex(b => b.getAttribute('aria-pressed') === 'true'));
-  if (ARBAT.slidePrev != null && ARBAT.slidePrev !== i && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-    s.classList.add('no-anim'); s.style.setProperty('--i', ARBAT.slidePrev); void s.offsetWidth; s.classList.remove('no-anim');
-    requestAnimationFrame(() => requestAnimationFrame(() => s.style.setProperty('--i', i)));
-  } else s.style.setProperty('--i', i);
-  ARBAT.slidePrev = i; });
