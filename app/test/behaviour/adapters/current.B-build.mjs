@@ -52,11 +52,29 @@ export default (ui, pg) => {
     megasButtons: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-megas]')].find(e => e.getClientRects().length); const g = b && (b.closest('.ar-slide') || b.parentElement);
       return g ? [...g.querySelectorAll('button[aria-pressed]')].map(x => ({name: (x.getAttribute('data-slt') || x.innerText).trim(), pressed: x.getAttribute('aria-pressed')})) : []; }),
 
+
+    // ---------------- Pokémon name boxes ----------------
+    /** type into a visible box found by its placeholder / label (retries if the page redraws under the finger) */
+    typeInto: async (label, text, enter = false) => { for (let k = 0; ; k++) { try { await ui.type(label, text, enter); return; } catch (e) { if (k >= 3 || !/not attached|detached/i.test(e.message)) throw e; await pg.waitForTimeout(500); } } },
+    /** the value now in that box */
+    boxValue: label => pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && ((i.placeholder || '').toLowerCase().includes(l) || (i.getAttribute('aria-label') || '').toLowerCase().includes(l))); return i ? i.value : null; }, label),
+    /** is that box focused? */
+    boxFocused: label => pg.evaluate(m => { const l = m.toLowerCase(), i = document.activeElement; return !!i && i.tagName === 'INPUT' && ((i.placeholder || '').toLowerCase().includes(l) || (i.getAttribute('aria-label') || '').toLowerCase().includes(l)); }, label),
+    /** the × (Clear) inside that box: shown? */
+    clearShown: label => pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && (i.placeholder || '').toLowerCase().includes(l)); const b = i && i.parentElement.querySelector('[aria-label=Clear]'); return !!b && b.getClientRects().length > 0 && getComputedStyle(b).visibility !== 'hidden' && getComputedStyle(b).display !== 'none'; }, label),
+    tapClear: async label => { await pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && (i.placeholder || '').toLowerCase().includes(l)); const b = i.parentElement.querySelector('[aria-label=Clear]');
+        b.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true})); b.dispatchEvent(new MouseEvent('mousedown', {bubbles: true, cancelable: true})); b.click(); }, label); await pg.waitForTimeout(400); },
+    /** the name list (combobox) open under a box: its text, '' if closed */
+    nameList: () => txt('[role=listbox]'),
+    /** the box's top edge on screen (px) */
+    boxTop: label => pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && (i.placeholder || '').toLowerCase().includes(l)); return i ? Math.round(i.getBoundingClientRect().top) : null; }, label),
+    focusBox: async label => { await pg.evaluate(m => { const l = m.toLowerCase(); const i = [...document.querySelectorAll('input')].find(i => i.getClientRects().length && (i.placeholder || '').toLowerCase().includes(l)); i.focus(); }, label); await pg.waitForTimeout(900); },
+
     // ---------------- Build for Me ----------------
     /** the build result area text (after a build) */
     buildResult: () => txt('#abOut'),
     /** state of the main Build button: {disabled, busy, label} */
-    buildButton: () => pg.evaluate(() => { const b = document.getElementById('abBtn'); return b ? {disabled: b.disabled, busy: b.getAttribute('aria-busy') === 'true', label: b.innerText.trim(), primary: b.classList.contains('arb-go')} : null; }),
+    buildButton: () => pg.evaluate(() => { const b = document.getElementById('abBtn'); return b ? {disabled: b.disabled, busy: b.getAttribute('aria-busy') === 'true', label: b.innerText.trim(), primary: b.classList.contains('ar-primary')} : null; }),
     /** tap "Build me a team" and wait until a team or a no-result note shows; returns the result text */
     buildMeATeam: async (ms = 40000) => { await click('#abBtn', 100);
       return until(async () => { const b = await pg.evaluate(() => { const b = document.getElementById('abBtn'); return b && b.getAttribute('aria-busy') === 'true'; });
@@ -71,7 +89,7 @@ export default (ui, pg) => {
     useThisTeam: () => ui.tap(/^Use this team/, '#abOut', 800),
     saveBuiltTeam: () => ui.tap(/^Save$/, '#abOut', 600),
     /** pick "Build around" Pokémon by typing part of its name and pressing Enter */
-    buildAround: async typed => { await ui.type('favourite Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(500); },
+    buildAround: async typed => { await H.typeInto('favourite Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(500); },
     /** the Build-around chip text ('' if none) */
     buildAroundChip: () => pg.evaluate(() => { const i = document.getElementById('abAroundIn'); const w = i && (i.closest('#abAround') || i.parentElement.parentElement); const c = w && [...w.querySelectorAll('[data-abaroundclr]')].find(e => e.getClientRects().length); return c ? (c.closest('span,div') || c).innerText.replace(/\s+/g, ' ').trim() + ' ' + (c.getAttribute('aria-label') || '') : ''; }),
     clearBuildAround: () => click('[data-abaroundclr]', 500),
@@ -126,7 +144,7 @@ export default (ui, pg) => {
     toggleSetting: async (name) => { const id = {'Let plans swap my Mega': 'swapMega', 'Count abilities': 'useAbil'}[name]; await pg.evaluate(id => { const c = document.getElementById(id); c.click(); }, id); await pg.waitForTimeout(500); },
     settingOn: name => pg.evaluate(id => document.getElementById(id).checked, {'Let plans swap my Mega': 'swapMega', 'Count abilities': 'useAbil'}[name]),
     /** Never suggest: add a Pokémon */
-    neverSuggest: async typed => { await ui.type('Exclude a Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(600); },
+    neverSuggest: async typed => { await H.typeInto('Exclude a Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(600); },
     neverSuggestList: () => txt('#exclList'),
     allowAgain: name => click(`#exclList [aria-label*="${name}"]`, 600),
     /** the problem rows text (My team › Problems and team checks) */

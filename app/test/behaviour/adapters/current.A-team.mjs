@@ -63,12 +63,13 @@ export default (ui, pg, o) => {
         .find(e => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase())); if (!e) return false; e.setAttribute('data-np-t', '1'); return true; }, [name, within]);
       if (!ok) throw new Error('no Pokémon to tap named ' + name); await click('[data-np-t]', 800); await pg.evaluate(() => document.querySelectorAll('[data-np-t]').forEach(e => e.removeAttribute('data-np-t'))); },
     infoSheet: () => txt('#lairSheet'),
-    closeInfoSheet: () => click('#lairSheet [data-lclose]'),
+    closeInfoSheet: () => click('#lairSheet button[data-lclose]'),
     infoTab: name => click(`#lairSheet [data-lstab="${name.toLowerCase()}"]`, 600),
     infoTabNow: () => pg.evaluate(() => { const b = document.querySelector('#lairSheet [data-lstab][aria-selected="true"]'); return b ? b.dataset.lstab : null; }),
     infoTabText: () => pg.evaluate(() => { const p = [...document.querySelectorAll('#lairSheet [id^="lstp-"]')].find(e => !e.hidden && e.getClientRects().length); return p ? p.innerText.replace(/\s+/g, ' ').trim() : null; }),
 
     // ---------- Home ----------
+    homeHeadline: () => pg.evaluate(() => { const e = document.querySelector('[data-pane="home"] .ar-tag') || [...document.querySelectorAll('[data-pane="home"] h1')].find(e => e.getClientRects().length); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }),
     homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .ar-btn[data-view]')].filter(e => e.getClientRects().length && /score my team|build|plan a match/i.test(e.innerText)).map(e => e.innerText.trim())),
     homeTools: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .htile')].filter(e => e.getClientRects().length).map(e => e.innerText.split('\n')[0].trim())),
     tapTool: async name => { await pg.evaluate(n => { const e = [...document.querySelectorAll('[data-pane="home"] .htile')].find(e => e.innerText.split('\n')[0].trim() === n); e.click(); }, name); await pg.waitForTimeout(700); },

@@ -28,6 +28,9 @@ export default (ui, pg) => {
       if (!e) return null; return ['aria-pressed', 'aria-checked', 'aria-selected'].some(a => e.getAttribute(a) === 'true'); }, [String(label), RX(label)]),
     /** is a visible control with this label disabled */
     isDisabled: label => pg.evaluate(m => { const e = [...document.querySelectorAll('button')].filter(e => e.getClientRects().length).find(e => (e.innerText || '').replace(/\s+/g, ' ').trim().toLowerCase().startsWith(m.toLowerCase())); return e ? e.disabled || e.getAttribute('aria-disabled') === 'true' : null; }, label),
+    /** tap a "?" help button by its accessible name (e.g. "What the calc counts") and return the bubble's text */
+    async openHelp(name) { const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('[data-tip]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || '').toLowerCase().includes(n.toLowerCase())); if (!e) return false; e.click(); return true; }, name);
+      if (!ok) throw new Error('no help button ' + name); await pg.waitForTimeout(400); return pg.evaluate(() => { const p = document.getElementById('tipPop'); return p && p.getClientRects().length ? p.innerText.replace(/\s+/g, ' ').trim() : ''; }); },
     /** tap a visible control inside the page being shown (not the menu/nav), by its text */
     async tapIn(m, wait = 400) { const p = await pane(); return ui.tap(m, `[data-pane="${p}"]`, wait); },
 
