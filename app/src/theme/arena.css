@@ -503,7 +503,7 @@
    rounded track, an icon in a circle over each name, the chosen circle in the page's colour slides to the new choice. Layers: grey
    circles, then the sliding circle, then the icons, so the slide passes over the others. Names may take two lines, all the same. */
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide{--i:0;--n:3;--c:48px;position:relative;isolation:isolate;display:grid!important;grid-template-columns:repeat(var(--n),minmax(0,1fr))!important;align-items:start!important;gap:0!important;flex-wrap:nowrap!important;
-  width:100%!important;max-width:calc(var(--n) * 148px)!important;min-width:0!important;height:auto!important;padding:10px 6px 8px!important;background:var(--ar-sheet)!important;border:0!important;border-radius:28px!important;box-shadow:var(--ar-shadow-s)!important;transform:none!important;overflow:visible!important}
+  width:100%!important;max-width:calc(var(--n) * 148px)!important;min-width:0!important;height:auto!important;padding:8px 6px 8px!important;background:var(--ar-sheet)!important;border:0!important;border-radius:28px!important;box-shadow:var(--ar-shadow-s)!important;transform:none!important;overflow:visible!important}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>.ar-slpill{position:absolute;left:6px;top:10px;width:calc((100% - 12px) / var(--n));height:var(--c);z-index:1;pointer-events:none;
   transform:translateX(calc(var(--i) * 100%));transition:transform .34s cubic-bezier(.3,1.35,.5,1)}
 @A:not(#arcw):not(#arsl):not(#ars3) :is(.seg,.themeseg,.ar-jumps).ar-slide>.ar-slpill::before{content:"";position:absolute;left:50%;top:0;width:var(--c);height:var(--c);margin-left:calc(var(--c) / -2);border-radius:50%;

@@ -31,7 +31,7 @@
 @A[data-look="dark"] :is(.ar-hero-rank,.ar-hero-rank b,.ar-hero-of,.ar-hero-big){color:var(--on,#fff)}
 @A[data-look="dark"] .ar-runner{color:var(--on,#fff)}
 /* the runners-up: two staggered slanted strips that overlap the hero's lower edge */
-@A .ar-runners{position:relative;z-index:3;display:flex;flex-direction:column;gap:12px;margin-top:-26px}
+@A .ar-runners{position:relative;z-index:3;display:flex;flex-direction:column;gap:12px;margin-top:-24px}
 @A .ar-runner{position:relative;display:flex;align-items:center;width:100%;height:84px;padding:0;border:0!important;background:none!important;box-shadow:none!important;color:var(--ar-art-text);cursor:pointer;text-align:left;font:inherit;
   filter:drop-shadow(0 10px 12px rgba(40,20,40,.22))}
 @A[data-look="dark"] .ar-runner{filter:none}
@@ -767,7 +767,7 @@
   @A .ar-hero .ar-plate{margin-top:8px}
   @A .ar-hero:focus-visible::after{top:31px}
   /* the two runners-up side by side: name and number on the left, the sprite riding the top-right corner */
-  @A .ar-runners{flex-direction:row;gap:8px;margin-top:-18px}
+  @A .ar-runners{flex-direction:row;gap:8px;margin-top:-16px}
   @A .ar-runner,@A .ar-runner:nth-child(2){flex:1 1 0;min-width:0;width:auto;height:96px;margin-left:0}
   @A .ar-runner-in{align-self:flex-end;padding:0 0 12px 16px}
   @A .ar-runner-nm{font-size:15px}

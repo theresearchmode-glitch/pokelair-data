@@ -1018,7 +1018,7 @@
 /* Sim (Nov 7, option A): in dark mode the words sit right on the band, no box. A soft dark fade across the band's left end
    (inside the band's own shape) and a gentle shadow keep white text readable on the pale end */
 @A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy)::before,@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub,.ar-dccopy)::before{content:none!important;display:none!important}
-@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy),@A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy{text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 12px rgba(0,0,0,.35)}
+@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy){text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 12px rgba(0,0,0,.35)}
 @A[data-look="dark"] :is([data-pane="matchup"] .ar-rstrip-f,[data-pane="matchup"] .ar-rhero-bg,[data-pane="calc"] .ar-dcf){isolation:isolate}
 @A[data-look="dark"] :is([data-pane="matchup"] .ar-rstrip-f,[data-pane="matchup"] .ar-rhero-bg,[data-pane="calc"] .ar-dcf)::after{content:""!important;display:block!important;position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(100deg,rgba(14,12,18,.74) 0%,rgba(14,12,18,.5) 36%,rgba(14,12,18,0) 62%)!important;opacity:1!important}

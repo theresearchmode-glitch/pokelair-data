@@ -74,7 +74,7 @@
 @A [data-pane="teams"] .cmphint{margin:0!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
 @A [data-pane="teams"] .cmphint b{color:var(--ar-ink)}
 /* one saved team: no box; a soft slanted wash (stronger blue for the team that is open now), its name, the six, then the actions */
-@A [data-pane="teams"] .svt{position:relative;isolation:isolate;display:grid!important;gap:16px;padding:22px var(--ar-gutter) 24px!important;margin:0 calc(-1 * var(--ar-gutter))!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;grid-template-columns:minmax(0,1fr)!important}
+@A [data-pane="teams"] .svt{position:relative;isolation:isolate;display:grid!important;gap:16px;padding:24px var(--ar-gutter) 24px!important;margin:0 calc(-1 * var(--ar-gutter))!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;grid-template-columns:minmax(0,1fr)!important}
 @A [data-pane="teams"] .svt::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 9%,var(--ar-paper)),color-mix(in oklch,var(--ar-blue) 3%,var(--ar-paper)));clip-path:polygon(0 4%,100% 0,100% 96%,0 100%)}
 @A [data-pane="teams"] .svt.on::before{background:linear-gradient(in oklch 110deg,color-mix(in oklch,var(--ar-blue) 22%,var(--ar-paper)),color-mix(in oklch,var(--ar-blue) 8%,var(--ar-paper)))}
 @A[data-look="dark"] [data-pane="teams"] .svt::before{background:linear-gradient(in oklch 110deg,#1E1D20,#171719)}
@@ -1131,7 +1131,7 @@
 @A #npSheetOut .ts-key .dn,@A #npSheetOut .ts-st.dn .ts-sl i,@A #chSheetOut .ts-st.dn .ts-sl i,@A #chSheetOut .ts-key .dn{color:var(--ar-pink-ink);font-style:normal}
 @A #npSheetOut .ts-empty,@A #chSheetOut .ts-empty{font:400 var(--ar-fs-body)/1.5 var(--ar-body);color:var(--ar-ink-2);margin:12px 0}
 @A #npSheetOut .ts-grid,@A #chSheetOut .ts-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
-@A #npSheetOut .ts-card,@A #chSheetOut .ts-card{display:flex;flex-direction:column;gap:10px;padding:12px 16px 12px;border-radius:var(--ar-r-l);background:var(--ar-sheet);box-shadow:var(--ar-shadow-s);cursor:pointer;
+@A #npSheetOut .ts-card,@A #chSheetOut .ts-card{display:flex;flex-direction:column;gap:12px;padding:12px 16px 12px;border-radius:var(--ar-r-l);background:var(--ar-sheet);box-shadow:var(--ar-shadow-s);cursor:pointer;
   border-left:6px solid var(--ta,var(--ar-sec))}
 @A #npSheetOut .ts-card:focus-visible,@A #chSheetOut .ts-card:focus-visible{outline:3px solid var(--ar-focus);outline-offset:2px}
 @A #npSheetOut .ts-hd,@A #chSheetOut .ts-hd{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center}
@@ -1140,7 +1140,7 @@
 @A #npSheetOut .ts-ia,@A #chSheetOut .ts-ia{display:flex;flex-direction:column;gap:2px;margin:4px 0 0;font:500 15px/1.3 var(--ar-body);color:var(--ar-ink)}
 @A #npSheetOut .ts-ia em,@A #chSheetOut .ts-ia em{display:inline-block;min-width:52px;font:600 13px/1.3 var(--ar-body);font-style:normal;color:var(--ar-ink-3)}
 @A #npSheetOut .ts-mv,@A #chSheetOut .ts-mv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;padding:0;list-style:none}
-@A #npSheetOut .ts-mv li,@A #chSheetOut .ts-mv li{min-width:0;padding:5px 10px;border-radius:var(--ar-r-s);font:600 15px/1.25 var(--ar-body);color:var(--ar-ink);
+@A #npSheetOut .ts-mv li,@A #chSheetOut .ts-mv li{min-width:0;padding:6px 12px;border-radius:var(--ar-r-s);font:600 15px/1.25 var(--ar-body);color:var(--ar-ink);
   background:color-mix(in oklch,var(--mt) 16%,transparent);box-shadow:inset 4px 0 0 var(--mt);overflow-wrap:anywhere}
 @A #npSheetOut .ts-mv li.none,@A #chSheetOut .ts-mv li.none{color:var(--ar-ink-3);background:none;box-shadow:inset 0 0 0 1px var(--ar-rule)}
 @A #npSheetOut .ts-spr,@A #chSheetOut .ts-spr{border-top:1px solid var(--ar-rule);padding-top:10px}
