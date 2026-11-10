@@ -178,6 +178,9 @@
 /* Plan / Speed / Damage */
 @A [data-pane="matchup"] .bmtabs{margin:0 0 20px!important}
 @media (min-width:761px){@A [data-pane="matchup"] .bmtabs.ar-seg{display:none!important}}
+/* Nov 10 bug fix: the sliding picker (arena.css, display:grid with extra ids) out-ranked the rule above, so on desktop the
+   Plan / Speed / Damage switch showed but filtered nothing (desktop shows every card). Same weight as the slider, plus one. */
+@media (min-width:761px){@A:not(#arcw):not(#arsl):not(#ars3):not(#arbm) [data-pane="matchup"] .bmtabs.ar-slide{display:none!important}}
 @A [data-pane="matchup"] .bmgrid{gap:28px!important;background:none!important}
 @A [data-pane="matchup"] .bmgrid>*{margin:0!important}
 /* bring these four: the planner's pick, the four as art with Lead / Back under the name */
