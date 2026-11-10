@@ -61,13 +61,14 @@ const SLIDE = {
   fits(s) { const bs = SLIDE.btns(s); if (bs.length < 2 || bs.length > 3 || s.querySelector(':scope > :not(button):not(.ar-slpill)')) return false;
     if (bs.some(b => b.getAttribute('aria-pressed') === 'mixed')) return false; return bs.every(b => SLIDE.icon(b.dataset.slt || b.textContent)); },
   dress(b) { if (b.querySelector(':scope > .ar-slic')) return; const t = b.textContent.trim(), ic = SLIDE.icon(b.dataset.slt || t); if (!ic) return; b.dataset.slt = t;
-    b.innerHTML = `<span class="ar-slic" aria-hidden="true">${ic.num ? `<b>${ic.num}</b>` : `<svg viewBox="0 0 24 24">${ic.svg}</svg>`}</span><span class="ar-sllb">${esc(t)}</span>`; },
+    b.innerHTML = `<span class="ar-slic" aria-hidden="true">${ic.num ? `<b>${ic.num}</b>` : `<svg viewBox="0 0 24 24">${ic.svg}</svg>`}</span><span class="ar-sllb">${esc(t)}</span>`;
+    if (typeof TCASE !== 'undefined') TCASE.run(b); /* page names keep their Title Case (Speed Tiers), as on the plain buttons */ },
   reduce: () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
   scan() { SLIDE.queued = false;
-    document.querySelectorAll('.seg:not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
+    document.querySelectorAll(':is(.seg,.themeseg:not(.tabtheme)):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
       s.classList.add('ar-slide'); if (bs.every(b => /^\d$/.test(b.textContent.trim()))) s.classList.add('ar-slnum');
       s.style.setProperty('--n', bs.length); s.insertAdjacentHTML('afterbegin', '<i class="ar-slpill" aria-hidden="true"></i>'); });
-    document.querySelectorAll('.seg.ar-slide').forEach(s => { const bs = SLIDE.btns(s); bs.forEach(SLIDE.dress); const i = bs.findIndex(SLIDE.on);
+    document.querySelectorAll(':is(.seg,.themeseg).ar-slide').forEach(s => { const bs = SLIDE.btns(s); bs.forEach(SLIDE.dress); const i = bs.findIndex(SLIDE.on);
       s.classList.toggle('ar-slnone', i < 0); if (i < 0) return;
       const vis = !!(s.offsetParent || s.getClientRects().length), k = SLIDE.key(s), m = SLIDE.mem[k];
       if (!vis) { if (s.style.getPropertyValue('--i') !== String(i)) s.style.setProperty('--i', i); delete s.dataset.sli; return; }
