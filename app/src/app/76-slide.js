@@ -42,6 +42,10 @@ const SLIDE = {
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
     versus: '<path d="M3 8h12M11 4l4 4-4 4M21 16H9M13 12l-4 4 4 4"/>',
     play: '<path d="M8 5v14l11-7z"/>',
+    plan: '<rect x="5" y="4.5" width="14" height="16.5" rx="2"/><path d="M9 3h6v3H9zM8.5 11h7M8.5 15h5"/>',
+    card: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 15h6"/>',
+    poster: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h8"/>',
+    map: '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>',
     moon: '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>'
   },
   /* each choice's name (lowercase, as the page writes it) to its icon; a name that starts with a key also matches it */
@@ -52,7 +56,9 @@ const SLIDE = {
     'name': 'az', 'readiness': 'gauge', 'in-game ranked': 'pad', 'tournaments': 'trophy', 'showdown ladder': 'ladder', 'showdown': 'ladder',
     'best data': 'spark', 'your hits on them': 'right', 'their hits on you': 'left', 'race track': 'flag', 'list view': 'list',
     'auto': 'auto', 'light': 'sun', 'dark': 'moon',
-    'suggestions': 'spark', 'matchups': 'versus', 'how it plays': 'play'},
+    'suggestions': 'spark', 'matchups': 'versus', 'how it plays': 'play', 'plan': 'plan', 'speed': 'bolt', 'damage': 'aim',
+    'all': 'grid4', 'official': 'trophy', '100+ players': 'dots6', 'team card': 'card', 'team poster': 'poster', 'team sheet': 'list',
+    'full sets': 'list', 'grid': 'grid4', 'tier board': 'layers', 'meta map': 'map'},
   icon(t) { t = t.trim().toLowerCase(); if (/^\d$/.test(t)) return {num: t};
     const k = SLIDE.N[t] ? t : Object.keys(SLIDE.N).find(k => t.startsWith(k + ':') || t.startsWith(k + ' ')); return k ? {svg: SLIDE.P[SLIDE.N[k]]} : null; },
   on: b => b.getAttribute('aria-pressed') === 'true' || b.getAttribute('aria-selected') === 'true' && !b.parentElement.querySelector(':scope > [aria-pressed]') || b.classList.contains('on'),
