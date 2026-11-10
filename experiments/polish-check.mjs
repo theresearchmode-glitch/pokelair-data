@@ -72,11 +72,11 @@ const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {},
   const all = [...document.body.querySelectorAll('*')].filter(e => !e.closest('svg,script,style,template'));
   const bg = e => { const c = getComputedStyle(e).backgroundColor; return c === 'rgba(0, 0, 0, 0)' || c === 'transparent' || /, 0\)$/.test(c) ? null : c; };
   for (const e of all) { const r = vis(e); if (!r) continue; const cs = getComputedStyle(e);
-    if (own(e)) { const fs = parseFloat(cs.fontSize), fsr = Math.round(fs * 10) / 10;
+    if (own(e) && parseFloat(cs.fontSize) >= 1) { const fs = parseFloat(cs.fontSize), fsr = Math.round(fs * 10) / 10;
       if (!(SCALE.has(fsr) || fs >= 30.5)) add(out.size, fsr + 'px', where(e) + ' "' + e.textContent.trim().slice(0, 16) + '"');
       if (fs >= 19.5 && !disp(cs) && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.tagName) && e.textContent.trim().length > 1 /* not a lone × or ? */) add(out.bodyhead, fsr + 'px', where(e) + ' "' + e.textContent.trim().slice(0, 16) + '"');
       const lh = parseFloat(cs.lineHeight); if (!disp(cs) && lh && e.getClientRects().length && r.height > lh * 1.7 && lh / fs < 1.45 && e.textContent.trim().length > 40) add(out.lineh, (Math.round(lh / fs * 100) / 100) + '', where(e));
-      if (cs.textShadow && cs.textShadow !== 'none') out.glow.push(where(e) + ' "' + e.textContent.trim().slice(0, 20) + '"');
+      if (cs.textShadow && cs.textShadow !== 'none' && !/^(\s*(rgba\([^)]*,\s*0\)|transparent)[^,]*,?)+$/.test(cs.textShadow)) out.glow.push(where(e) + ' "' + e.textContent.trim().slice(0, 20) + '"');
       if (e.textContent.trim() === '?' && /^(BUTTON|A|SUMMARY)$/.test(e.tagName)) add(out.help, `${Math.round(r.width)}x${Math.round(r.height)}`, where(e)); }
     // half-slanted headline: display text whose slant differs from its display-font parent with text of its own
     if (own(e) && disp(cs) && e.parentElement) { const p = e.parentElement, pc = getComputedStyle(p); if (disp(pc) && own(p) && (pc.fontStyle === 'normal') !== (cs.fontStyle === 'normal')) out.slant.push(`${where(e)} "${e.textContent.trim().slice(0, 20)}" ${cs.fontStyle} inside ${pc.fontStyle} "${p.textContent.trim().slice(0, 24)}"`); }
