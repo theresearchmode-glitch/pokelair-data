@@ -41,7 +41,7 @@ const AD_NAME = process.env.ADAPTER || 'current';
 export const ADAPTER = (await import(`./adapters/${AD_NAME}.mjs`)).default;
 // extra page-group helpers live in adapters/<name>.<group>.mjs (default export: (A, pg) => ({...more functions})), merged in
 const EXTRAS = [];
-for (const f of fs.readdirSync(HERE + 'adapters').filter(f => f.startsWith(AD_NAME + '.') && f.endsWith('.mjs')).sort()) EXTRAS.push((await import(`./adapters/${f}`)).default);
+for (const f of fs.readdirSync(HERE + 'adapters').filter(f => f.startsWith(AD_NAME + '.') && f.endsWith('.mjs') && f !== AD_NAME + '.mjs').sort()) EXTRAS.push((await import(`./adapters/${f}`)).default);
 
 let browser = null;
 export async function closeAll() { if (browser) await browser.close(); browser = null; }

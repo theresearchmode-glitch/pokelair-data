@@ -1,20 +1,20 @@
 {
- "ran": "2026-11-10T23:16:26.544Z",
+ "ran": "2026-11-10T23:16:51.837Z",
  "adapter": "current",
  "res": [
   {
    "group": "Z-smoke",
    "id": "KIT-01",
    "title": "opens with a team, shows My Team with all six, no page errors",
-   "r": "FAIL",
-   "why": "X is not a function"
+   "r": "pass",
+   "why": ""
   },
   {
    "group": "Z-smoke",
    "id": "KIT-02",
    "title": "a change is saved to the fake account",
-   "r": "FAIL",
-   "why": "X is not a function"
+   "r": "pass",
+   "why": ""
   }
  ]
 }
