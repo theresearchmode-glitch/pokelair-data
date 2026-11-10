@@ -204,8 +204,17 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   let stats = '';
   if (RD) {
     /* plain words (Nov 9): one number here; the counts per level are in the Matchups section below. A short line names what's left. */
-    const cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${hd ? hd.x + '/' + hd.n : RD.score + '%'}</span><span class="ar-unit">ready for top threats</span></div>`];
-    const left = (c[0] || 0) + (c[1] || 0), muLine = left ? `${c[0] ? `${c[0]} with no answer${c[1] ? ', ' : ''}` : ''}${c[1] ? `${c[1]} shaky` : ''}` : 'Every top threat has an answer';
+    let cells = [`<div class="ar-stat"><span class="ar-num ar-mp">${hd ? hd.x + '/' + hd.n : RD.score + '%'}</span><span class="ar-unit">ready for top threats</span></div>`];
+    const left = (c[0] || 0) + (c[1] || 0); let muLine = left ? `${c[0] ? `${c[0]} with no answer${c[1] ? ', ' : ''}` : ''}${c[1] ? `${c[1]} shaky` : ''}` : 'Every top threat has an answer';
+    /* Nov 10 (Sim: "show me all 3"): which verdict leads the headline. 1 = real games first, damage calc underneath;
+       2 = the calc count named as such, with the real-games line beside it; 3 = as it was. Preview only until Sim picks. */
+    let muBar = '';
+    const MH = typeof window !== 'undefined' && window.NP_MUHEAD || 3;
+    if (MH !== 3 && hd) { const rv = RD.rows.map(r => ({r, R: CH.realVs(r.t.n, ms)})).filter(x => x.R), cnt = k => rv.filter(x => x.R.c === k).length, bad = rv.filter(x => x.R.c === 'bad').sort((p, q) => q.r.t.w - p.r.t.w).map(x => x.r.t.d);
+      if (MH === 1 && rv.length) { cells = [`<div class="ar-stat ar-mu3"><span class="ar-num ar-mp">${cnt('ok')}<small>Favoured</small></span><span class="ar-num ar-mp">${cnt('mid')}<small>Even</small></span><span class="ar-num ar-mp">${cnt('bad')}<small>Unfavoured</small></span><span class="ar-unit">vs the top ${rv.length} threats in real games</span></div>`];
+        muLine = `Damage calc: covers ${hd.x} of ${hd.n}`; muBar = `<span class="ar-bar ar-mubar3" aria-hidden="true"><i style="flex:${cnt('ok')}"></i><i style="flex:${cnt('mid')}"></i><i style="flex:${cnt('bad')}"></i></span>`; }
+      if (MH === 2) { cells = [`<div class="ar-stat ar-mu2"><span class="ar-num ar-mp">${hd.x}/${hd.n}</span><span class="ar-unit">covered in damage calcs</span></div>`];
+        muLine = rv.length ? (bad.length ? `Real games: Unfavoured vs ${bad.length} (${bad.slice(0, 3).map(esc).join(', ')}${bad.length > 3 ? ', …' : ''})` : 'Real games: no Unfavoured matchups') : muLine; } }
     const rec = '';
     /* matchups get their own verdict (Sim, Nov 7: "98 and 6 shaky?"): the grade says how strong the team is, this says what can
        still beat it, named, worst first, with a jump to Threats */
@@ -214,7 +223,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* one place to learn about the grade (Sim, Nov 7): "Why A?" under the letter. The breakdown that used to sit here lives there */
     const chk = `<div class="ar-st ar-mu" role="group" aria-label="Matchups"><h3 class="ar-sth ar-muh">Matchups</h3>
       <div class="ar-trio">${cells.join('')}<span class="ar-muline">${muLine}</span></div>
-      <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
+      ${muBar || `<span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>`}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
     const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }

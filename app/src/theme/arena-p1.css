@@ -1098,3 +1098,12 @@
   @A [data-pane="report"] .chparts>#chP3{grid-column:1;grid-row:2}
   @A [data-pane="report"] .chparts>#chP4{grid-column:1/-1;grid-row:3}
 }
+/* Nov 10 (option 1 for Sim): the Matchups headline as three real-games counts, each with its word under it */
+@A .ar-stat.ar-mu3{grid-column:1/-1;display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-end;justify-content:flex-start;gap:4px 32px}
+@A .ar-trio:has(.ar-mu3,.ar-mu2) .ar-muline{grid-column:1/-1;justify-self:start;text-align:left;margin-top:4px}
+@A .ar-mubar3{display:flex!important;gap:3px;overflow:hidden}
+@A .ar-mubar3>i{display:block;height:100%;width:auto!important;border-radius:2px}
+@A .ar-mubar3>i:nth-child(1){background:var(--ar-green)}@A .ar-mubar3>i:nth-child(2){background:color-mix(in oklch,var(--ar-ink) 22%,transparent)}@A .ar-mubar3>i:nth-child(3){background:var(--ar-amber,#E9A800)}
+@A .ar-mu3 .ar-num{display:flex;flex-direction:column;align-items:flex-start;line-height:1}
+@A .ar-mu3 .ar-num small{font:600 15px/1.2 var(--ar-body)!important;font-style:normal!important;font-stretch:100%!important;color:var(--ar-ink-2);margin-top:6px;letter-spacing:0}
+@A .ar-mu3 .ar-unit{flex-basis:100%}
