@@ -488,3 +488,627 @@ overlays) and `chTeamRender`, then re-dressed by `74-arena.js AR.team` / `AR.par
 - Code: `66-extras-a.js` (`npmega` on `.chrow` — the old row; unsure it still applies to the new TS cards).
 - Test: none needed beyond a visual check.
 
+---
+
+## 3. Edit panel and set editing (EDIT)
+
+The whole original team editor (`#team` section with `#slots`) lives inside a slide-up dialog `#chEdit` ("Edit team"), built by
+`60-concept-h.js chTeamInit`; it shows one slot (`data-slot=i`) or all six (`all`, for Save / Import / Export). Slot editors are drawn
+by `07-render-slots.js slotHtml` (lazily, `slotsFlush` / `slotsIdle`) with blocks from `08-render-all.js spreadBlock`,
+`29-fix-planner.js abilBlock/itemBlock/movesBlock`.
+
+### EDIT-01 Open / close the edit panel
+- Sees: opens from "Edit set" (set card), tapping a sheet card, an empty tile/slot, Save/Import/Export. Title "Edit Mega Charizard Y" /
+  "Add a Pokémon" / "Edit team"; "Done" closes; tapping the dimmed backdrop, Escape (unless a name list is open) or the Back button
+  close it; page behind can't scroll; focus moves into the panel, stays inside (Tab wraps) and returns to the opener on close.
+- Code: `chEditOpen/chEditClose/chEditStrip`, `[data-chedit]`, `#chEditDone`, `#chEditScrim`; focus `75-arena-team.js`
+  (`ARB.trap`, `ARB.back`); Back button `32-views.js OVERLAYS`.
+- Test: tap a tile, "Edit set" → panel titled "Edit <name>"; press Escape → closed, focus on "Edit set" again.
+
+### EDIT-02 Six-slot strip inside the panel
+- Sees: a row of six mini sprites ("Edit X") and "+" ("Add a Pokémon in slot N"); the current one marked; tapping switches the panel
+  to that slot.
+- Code: `chEditStrip` (`.chedstrip`, `data-chedit`).
+- Test: in the panel tap the third sprite → title changes to that Pokémon.
+
+### EDIT-03 Slot header card
+- Sees: slot number, Lock button ("Lock"/"Locked"), name, type chips, tags Mega / In your box, rating tag ("S tier 94"), usage bar
+  "21.6% of teams", held item line (italic "assumed" style when not chosen: "Assumed: you haven't set an item, so this is the one most
+  players run").
+- Code: `07-render-slots.js slotHtml` (`data-lock`, `ratingTag`, `topItems`); × remove `data-clear` (shown in "Edit team" mode).
+- Test: in the panel tap "Lock" → it reads "Locked"; the tile's padlock shows locked too.
+
+### EDIT-04 Nature picker
+- Sees: "Nature" with tag "Most run" or "Your pick" + "Use <top nature>"; a dropdown of all 21 natures, most-run first, each with
+  "+Spe −Atk" and share %, ★ on the most run. Picking saves at once (toast "Nature saved").
+- Code: `08-render-all.js spreadBlock` (`data-spnat`, `data-spnatreset`), handlers in 08-render-all.
+- Data: writes `S.slots[i].sp.doubles = {nat, v}` or `{nat, assumed:true}`.
+- Test: choose "Modest" → toast "Nature saved"; the set card shows "Modest · yours"; "Use Timid" puts it back.
+
+### EDIT-05 Stat points editor
+- Sees: "Stat Points" with tag "Most common" / "Yours" + "Use most common" / "assumed"; live total "66 of 66" (turns warning when over);
+  six number boxes HP Atk Def SpA SpD Spe (0-32); "Save stat points"; messages "Each box takes a whole number, 0-32", "That's 70
+  points; Champions allows 66", "Pick a nature". Toasts "Stat points saved", "Using the most common stat points".
+- Code: `spreadBlock` (`data-spi`, `data-spsave2`, `data-spptsreset`, `#sptot<i>`, `#spmsg<i>`); `SP_TOTAL`.
+- Data: writes `S.slots[i].sp.doubles.v`.
+- Test: type 32 in HP → total "98 of 66" and Save shows "That's 98 points; Champions allows 66"; fix to a valid spread → "Stat points
+  saved" and the Team Sheet shows the new stats.
+
+### EDIT-06 Ability picker
+- Sees: "Ability" tag "Most used" / "Only ability" / "Mega ability" / "Suggested · no usage data" / "Your pick" + "Use <ability>";
+  dropdown of its abilities with share % and ★. Toast "<A>: the most-used ability" or "<A> set (most players run <B>)".
+- Code: `29-fix-planner.js abilBlock` (`#ab<i>`, `data-abreset`); change handler `34-events.js` (`/^ab\d$/`).
+- Data: writes `S.slots[i].a` (null = most used).
+- Test: pick a rarer ability → toast names the common one; "Use Prankster" restores it.
+
+### EDIT-07 Item picker
+- Sees: "Item" tag "Most used" / "No usage data" / "Your pick" + "Use <usual item>" / "<item> is on a teammate" (Item Clause moved it);
+  dropdown: "(no item)" when none, group "Most used in doubles" (top 8 with %, ★), group "Other items" (every item players run in
+  Champions). Megas show "Mega stone" and a fixed stone. Warning "Clashes with Trick Room…" for Choice Scarf on a Trick Room team.
+  Toast "<item> · ready for 85% → 87% of the top threats" (+ "clashes with Trick Room").
+- Code: `29-fix-planner.js itemBlock/itemPool` (`#it<i>`, `data-iti`, `data-itreset`); `34-events.js` change handler; `assignItems`.
+- Data: writes `S.slots[i].it.doubles`.
+- Test: give Whimsicott "Sitrus Berry" → toast with readiness; tag "Your pick" and "Use Focus Sash".
+
+### EDIT-08 Moves (four pickers)
+- Sees: "Moves" with "Tournament set"/"Popular … set"/"Showdown set"/"likely moves (no usage data)" or "Your set" + "Reset to
+  popular"; "power · % used"; four tiles each showing move name, type chip, power and % used, opening a dropdown: "(no move)", group
+  "Popular in doubles" with %, group "All moves it learns"; a move already in another tile is disabled. Toast "<move> replaces <old> ·
+  Offense 18 → 17 of 18 · rarely used" or "<P> can't learn <move>"; reset toast "Back to the popular set · Offense …".
+- Code: `29-fix-planner.js movesBlock` (`#mv<i>_<j>`, `data-mvi`, `data-mvreset`), `33-move-edits.js setMove`, `34-events.js`.
+- Data: writes `S.slots[i].mv.doubles` (removed when equal to the popular four).
+- Test: change move 4 → toast mentions Offense count; "Reset to popular" brings the popular four back.
+
+### EDIT-09 "Full popular sets ›"
+- Sees: link under the moves; closes the panel and opens Popular sets on this Pokémon.
+- Code: `[data-fullset]` (34-events.js), LS `cc2.setMon`.
+- Test: tap it → Popular sets page for that Pokémon.
+
+### EDIT-10 Weak / Resists / ability text fold
+- Sees: fold "Weak: Water Electric Rock 4×" → "Resists: …" chips and the ability's description; Mega/ability modifiers note
+  (`modText`).
+- Code: `slotHtml` (`details.slmore`).
+- Test: open the fold → Resists list and ability text.
+
+### EDIT-11 Remove from the team (in panel)
+- Sees: "Remove <name> from the team" at the bottom; removes with Undo toast and the panel switches to "Add a Pokémon" for that slot.
+- Code: `chEditStrip` (`.chedrm`, `data-chrm`).
+- Test: tap it → toast "Removed X · Undo"; title becomes "Add a Pokémon".
+
+### EDIT-12 "Edit team" (all six) mode
+- Sees: when opened via Save/Import/Export: all six editors stacked (each with Lock and ×), plus the Save / Import / Export panel at the
+  top. A "Full sets | Grid" card-view switch exists in markup but is not visible (see Dead list).
+- Code: `chEditOpen(null)` from `#saveBtn/#importBtn/#exportBtn` capture handler; `07-render-slots.js` `data-tview` (hidden).
+- Test: tap "Save team" → panel "Edit team" with the save box and six set editors.
+
+---
+
+## 4. Adding a Pokémon (ADD)
+
+### ADD-01 Name box with live search (combobox)
+- Sees: "Add a Pokémon" box in an empty slot (panel opens with it focused so phones raise the keyboard). Typing part of a name ("mega
+  sal", "hisuian arc", "garch") lists up to 8 matches: sprite, name, type chips, "In your box" tag, share of tournament teams ("9.7%",
+  "<0.1%", "–"). ArrowUp/Down move, Enter picks, Escape closes the list only, mouse/tap picks. "No matches. Try fewer letters."; Species
+  Clause: Pokémon whose species is already on the team are left out ("Garchomp is already here" / "Those are already here"). Picking
+  adds it (toast "<name> added"), the panel title becomes "Edit <name>".
+- Code: `05-combobox.js openMenu/bindMonInput/kb/monOpt`, `04-search.js searchMon` (scores exact, prefix, in-box, usage),
+  `07-render-slots.js slotsAfter` (species clause pool), clear × `61-concept-h-pages.js clrWrap` (`data-clr`).
+- Data: writes `S.slots[i] = {n, a:null, lock:false}`.
+- Test: empty slot, type "mega sal" → "Mega Salamence" listed; Enter → toast "Mega Salamence added". Type "garch" with Garchomp on the
+  team → "Those are already here".
+
+### ADD-02 Typing is protected from redraws
+- Sees: a redraw (data arriving, another device's change) while typing keeps the text, cursor and list.
+- Code: `07-render-slots.js renderSlots` (restores focus/value), `03-persistence.js typingInBox/waitTyping`, `08-render-all.js typingNow`.
+- Test: start typing in a name box while the page is still loading data → text is not wiped.
+
+### ADD-03 Other ways to add (entry points in this scope)
+- Sees: "Add to team" on the info sheet (PKMN-03), quick add / suggestions (SUG-04, SUG-10), "Add your first Pokémon" (TEAM-19), Home
+  empty tiles (HOME-10), "Load this team" (HOME-09), Import (IO-01), team links (SHARE-06).
+- Test: covered in those entries.
+
+---
+
+## 5. Showdown import / export / copy (IO)
+
+### IO-01 Import a team (paste)
+- Sees: ⋯ → "Import" (or "Import a team" / "Import from Showdown" links) opens "Import a team" with × close, a big box "Paste a NastyPlot
+  team link, or a Showdown team (from Showdown, Pokémon Zone, Pikalytics or Victory Road).", "Replace my team", "Pokepaste links can't be
+  opened from here; copy the team text instead.", rules note. Replace reads up to 6 blocks: species (forms, genders, Mega from stone),
+  item, Ability, EVs/IVs → stat points, nature, moves. Unknown Pokémon/moves/items are skipped and reported, never guessed; one per
+  species; a nature with no EVs → most common points with that nature (assumed); totals over 66 skipped. Toast "Imported 2 Pokémon. Not
+  in Reg M-C, left out: Mewtwo. Not in Champions, skipped: Choice Band (Garchomp), Bogus Move (Incineroar)" with Undo. A pasted team
+  link/code is loaded the same way (SHARE-06). Nothing found → note under the box.
+- Code: `19-showdown-paste.js parsePaste/renderPastePanel/speciesFromPaste/pasteSpread`, `34-events.js #importBtn/#pasteLoad/
+  [data-pastex]`, `45-team-links.js decodeTeam/applyShared`.
+- Data: writes `S.slots` (with `mv`, `it`, `sp`), `S.loadedId=null`; `ui.paste`.
+- Test: paste a Showdown export with an illegal Pokémon → toast lists what was left out; Undo restores the old team.
+
+### IO-02 Export to Showdown
+- Sees: ⋯ → "Export" opens "Export to Showdown" with × close, a read-only box with the team in Showdown format, "Copy" (toast "Copied" or
+  "Press Ctrl+C or Cmd+C to copy"), note that items/natures/points are yours or the most common, never two on one item.
+- Code: `19-showdown-paste.js exportPaste/renderPastePanel`, `#pasteCopy`.
+- Test: Export → text starts with "Charizard @ Charizardite Y", "Ability: Drought", "Level: 50", "EVs:", "Timid Nature", moves.
+
+### IO-03 Copy for Showdown (one tap)
+- Sees: "Copy for Showdown" buttons (My Team actions, Saved team cards, Home champion, Events…) copy the team; toast "Copied — paste
+  into Showdown's teambuilder" (+ "Some details weren't published — filled with the most common set"). If the browser blocks copying,
+  a dialog "Copy for Showdown" shows the text selected with "Select all" and "Done".
+- Code: `56-showdown-copy.js sdBtn/sdResolve/sdCopyText/sdSheetOpen` (`data-sdcopy="mine" | "saved:<id>" | "ev:<id>#<k>" | "tt:" |
+  "gaunt:" | "ab:" | "core:" | "opp"`, `data-sdsel`, `data-sdx`).
+- Test: tap "Copy for Showdown" on My Team → toast; paste elsewhere → 6 Showdown blocks.
+
+### IO-04 Copy as text (Team Sheet page)
+- Sees: "Copy as text" → toast "Team copied as text" (or "Copy failed: use Export on My Team").
+- Code: `76-team-sheet.js [data-tscopy]` (`exportPaste`, `copyText`).
+- Test: Team Sheet → "Copy as text" → toast.
+
+---
+
+## 6. Share (SHARE)
+
+### SHARE-01 Share box (images)
+- Sees: "Share" opens a dialog: title ("Share card" / "Team poster" / "Team Sheet"), × close, a three-way switch "Team Card | Team
+  Poster | Team Sheet", a "Light | Dark" style switch, the image, "Save image", "Copy team link", and "On a phone you can also press and
+  hold the image to save or share it." Escape / backdrop / Back close it; focus returns. With no team: toast "Add some Pokémon first".
+- Code: `44-share-card.js openShareCard/closeShare` (`#shareBox`, `#shareSave`, `#shareLink`, `[data-shareclose]`), kinds
+  `66-extras-b.js wxShareDecor` (`data-shkind`, `CH.shareKind`), style `61-concept-h-pages.js` (`data-chshm`, `CH.shareMode`), focus
+  `75-arena-team.js`.
+- Data: none saved (`CH.shareKind`, `CH.shareMode` in memory).
+- Test: tap Share → image shows; tap "Team Poster" → portrait image; tap "Dark" → dark version.
+
+### SHARE-02 Team Card image (1200×675)
+- Sees: team name on a slanted tab (shrinks/wraps to fit), "Pokémon Champions, VGC doubles, Reg M-C", archetype plate, the Strength
+  Score numeral with "Strength Score: <band word>" and "Matchups: beats or handles X of the top 30", six art tiles with each item, tagline,
+  "NastyPlot, unofficial fan tool".
+- Code: `75-arena-team.js ARB.card` (replaces `44-share-card.js buildShareCard` drawing), `ARB.facts/posterFacts`, `ARB.score`.
+- Test: Share → Team Card shows the same score number as My Team.
+
+### SHARE-03 Team Poster image (1080×1350)
+- Sees: "My team, Pokémon Champions, Reg M-C doubles", big name, archetype, six tiles 3×2, score numeral with "Strength Score" and band
+  word (or "The grade comes with a full six" for partial teams), tagline, logo line.
+- Code: `75-arena-team.js ARB.poster` (`buildTeamPoster`); also from Saved teams ⋯ "Team poster" (SAVED-07).
+- Test: Share → Team Poster → numeral equals the score.
+
+### SHARE-04 Team Sheet image (1080×1350)
+- Sees: name, "Reg M-C doubles · level 50", key line, 2×3 cards: sprite, name, Item, Ability, Nature with +/−, 4 moves in type colours,
+  six stats with points, spread source; logo.
+- Code: `76-team-sheet.js buildSheetImage` (also "Share as image" on the Team Sheet page).
+- Test: Team Sheet page → "Share as image" → box titled "Team Sheet" with that image.
+
+### SHARE-05 Save image
+- Sees: "Save image" saves "<team name> - NastyPlot.png" via the Claude downloads capability ("Saved." / "Not saved." / "Saving is not
+  available here. Press and hold the image instead."); outside Claude it downloads directly.
+- Code: `44-share-card.js` box click handler (`claude.use('downloads')`).
+- Test: in Claude, tap Save image → save prompt → "Saved.".
+
+### SHARE-06 Team link (copy and open)
+- Sees: "Copy team link" (share box) copies `<site>#team=<code>` (inside Claude the base is the live artifact URL); toast "Team link
+  copied", button flashes "Copied"; if blocked, the link is shown under the image. Opening a link shows a bar "Shared team <name or first
+  3 names> · Load it · Not now"; Load replaces the team (Undo) and opens My Team (toast "Loaded "…" (N Pokémon)"); the hash is removed
+  either way. The code carries names, changed abilities, moves, items, nature+points, and the saved team name.
+- Code: `45-team-links.js teamCode/teamLink/copyTeamLink/decodeTeam/applyShared/checkSharedLink` (`#shareLink`, `[data-copylink]`,
+  `#sharedBar`, `data-sharedload`, `data-sharedx`), called from `99-start.js`.
+- Data: URL hash `#team=`; writes `S.slots`.
+- Test: copy a link, open it in a new tab → bar "Shared team …"; "Load it" → that team with Undo; "Not now" → bar gone, team unchanged.
+
+---
+
+## 7. Your games: log a game (LOG)
+
+### LOG-01 Your games card
+- Sees: on a full six: "Your games: this six" and "None logged yet." or "3–1 · 4 games you logged"; button "Log a game" / "Close".
+  Hidden for teams of fewer than 6. Kept apart from the tournament record.
+- Code: `64-my-record.js myRecCard/renderMyRec/myGames` (`#myRec`, `data-qlopen`).
+- Data: reads `S.log` entries whose six match (species, any order).
+- Test: full team → card shows "None logged yet."
+
+### LOG-02 Log a game form
+- Sees: "Your two leads · optional": six buttons (pick up to 2, toggles); "Their team · optional": chips with × and an "Add their
+  Pokémon" search box (up to 6); "Use their N from Battle mode: …" when Battle has an opponent; "Win" / "Loss"; "Have a Showdown replay?
+  Paste its log" (→ Battle page replay box). Escape closes; keyboard focus moves to the first lead.
+- Code: `64-my-record.js` (`data-qllead`, `#qlOppIn` bound with `bindMonInput`, `data-qloppx`, `data-qlbm`, `data-qlres`,
+  `data-qlreplay`), focus `75-arena-team.js`.
+- Data: `ui.ql` (memory) until saved; reads `S.opp`.
+- Test: tap "Log a game", pick two leads, tap "Use their 2 from Battle mode", tap "Win" → card shows "1–0".
+
+### LOG-03 Save a result and Undo
+- Sees: after Win/Loss: "Win logged. Undo"; Undo removes it (toast "Game removed").
+- Code: `data-qlres` (pushes to `S.log`, max 400, `persist`), `data-qlundo`.
+- Data: writes `S.log`.
+- Test: log a Loss then tap Undo → record back to previous.
+
+### LOG-04 Insights after 5 games
+- Sees: under 5 games: "Log N more games with this six to see who you lose to most and how your leads do." From 5: "You lose most to X
+  (2 losses, 0 wins) …", archetype line ("Trick Room teams: 2 of the 3 losses…"), "Most used leads (…): A + B 3–1 · …", "No losses yet…",
+  "No leads logged yet…".
+- Code: `64-my-record.js myInsights`.
+- Test: log 5 games (with their teams) → a "You lose most to …" line appears.
+
+### LOG-05 Record on Saved teams and Compare
+- Sees: Saved team cards show "Your games 1–0 with this six"; Compare has a "Your games with this six" row.
+- Code: `30-saved-teams.js` (`myGames`), `63-compare.js cxRows` (`mine`).
+- Test: log a game, open Saved teams → that team shows its record.
+
+---
+
+## 8. Team Sheet page (`sheet`)
+
+### SHEET-01 Page head and back link
+- Sees: "← My Team" back link, kicker "<team name>: Reg M‑C doubles, level 50", title "Team Sheet".
+- Code: `76-team-sheet.js renderSheet`, `CH.head`; back link in body.html (`data-view="report"`).
+- Test: open Team Sheet → back link returns to My Team.
+
+### SHEET-02 Actions
+- Sees: "Share as image" (opens share box on Team Sheet), "Copy as text" (IO-04), key line "Big number: the stat at level 50, small
+  number: stat points (0–32), +/− nature".
+- Code: `[data-tsshare]`, `[data-tscopy]`.
+
+### SHEET-03 Six set cards
+- Sees: one card per Pokémon (desktop 3×2, iPad 2 columns, phone 1): sprite, name, Item, Ability, 4 moves in type colours ("No move"),
+  nature with +/−, spread source ("Most common spread", yours, "your nature on the most common points"), six stats with level-50 value
+  and points. Tap or Enter/Space → My Team with that Pokémon's edit panel open.
+- Code: `TS.card` (`data-tsedit`), `TS.stats`, `memberSpread`, `calcStat`, `natMul`.
+- Test: tap Garchomp's card → My Team opens with "Edit Garchomp".
+
+### SHEET-04 Empty state
+- Sees: "No team yet. Add Pokémon on My Team and their full sets show here." and "Open My Team".
+- Code: `renderSheet` empty branch.
+- Test: clear team, open Team Sheet → this message.
+
+---
+
+## 9. Saved teams (`teams`)
+
+### SAVED-01 Save team / Update saved team
+- Sees: "Save team" opens (in the edit panel) "Save this doubles team": name box (max 40, placeholder "Team name, e.g. Rain Archaludon",
+  prefilled with the open team's name and selected), "Update "<name>"" (when a saved team is open), "Save as new" (disabled at 10 with
+  "You have 10 saved teams. Update an open team or delete one…"), "Cancel". Enter saves (update when available). Toast "Saved "<name>"".
+  Empty name → "Untitled team".
+- Code: `30-saved-teams.js renderSavePanel`, `34-events.js #saveBtn/#saveOver/#saveNew/#saveCancel`, keydown Enter on `#saveName`.
+- Data: writes `S.teams` (`{id,name,slots copy,format,saved}`), `S.loadedId`. Storage full → toast "Storage is full. Delete a saved team."
+- Test: new team → Save team → type "Test" → Save as new → toast "Saved "Test"" and the button now reads "Update saved team".
+
+### SAVED-02 Page head, count and where it's stored
+- Sees: "← My Team", "In this browser" kicker, "Saved Teams" with count "(3/10)", line "Up to 10 teams. Saved to your Claude account and
+  kept in step across your devices." or "…Saved in this browser only: this device isn't connected to your Claude account.".
+- Code: `renderSaved` (`#savedCount`, tooltip about older singles teams), `03-persistence.js syncNote` (`#saveWhere`).
+- Test: open Saved teams outside Claude → "Saved in this browser only…".
+
+### SAVED-03 Sort
+- Sees: "Recent | Name | Readiness".
+- Code: `[data-sort]` (34-events.js), `ui.sort` (memory, default recent). "Readiness" sorts by the old readiness %, not Strength Score.
+- Test: tap "Name" → alphabetical.
+
+### SAVED-04 Saved team card
+- Sees: name, "Open now" tag for the open team, six art tiles (empty slots as blanks), gone note, Strength Score badge (number in band
+  colour, word) or "2/6 Pokémon", "4/4 checks", "Your games 1–0 with this six", buttons "Compare", "Open", "Copy for Showdown", "⋯".
+- Code: `renderSaved` (`CH.gradeBadge`, `proChecks`, `myGames`), arena tiles `75-arena-team.js ARB.saved`.
+- Data: `S.teams`, `S.log`.
+- Test: a saved full six shows a number and "N/4 checks".
+
+### SAVED-05 Open a saved team
+- Sees: "Open" loads it into My Team and switches there; toast "Opened "<name>"" with Undo.
+- Code: `34-events.js d.load` (`fixSlots`, `S.loadedId`).
+- Test: Open → My Team heading is the team's name; Undo returns the previous team.
+
+### SAVED-06 Rename / Delete (⋯ menu)
+- Sees: ⋯ → "Team poster", "Rename", "Delete". Rename: inline name box + "Save" / "Cancel" (Enter saves). Delete: "Delete <name>?"
+  "Delete" / "Keep". Toast "Deleted "<name>"". Deleting the open team un-links My Team (team stays). Menu closes on outside tap, Escape,
+  after an action, and when focus leaves it; opens toward the side with room.
+- Code: `renderSaved` (`data-rn`, `data-rnok`, `data-rnx`, `data-del`, `data-delok`, `data-delx`), `66-extras-b.js` adds Team poster,
+  menus `72-keep-place.js`, `61-concept-h-pages.js`, `75-arena-team.js`.
+- Data: writes `S.teams`, `S.loadedId`.
+- Test: ⋯ → Rename → type "Rain" → Enter → card renamed. ⋯ → Delete → "Delete" → card gone.
+
+### SAVED-07 Team poster for a saved team
+- Sees: ⋯ → "Team poster" opens the share box with that team's poster (file "<name> poster - NastyPlot.png").
+- Code: `66-extras-b.js [data-poster]` (`SHARE_KIND`).
+- Test: ⋯ → Team poster → poster with that team's name.
+
+### SAVED-08 Compare two saved teams
+- Sees: "Click/Tap Compare on two teams to see them side by side." hint; tapping "Compare" marks it "Picked ✓" and shows a bar "Compare:
+  <name> is picked. Pick one more saved team, or [Compare with my current team] · Cancel"; the second pick opens Compare.
+- Code: `30-saved-teams.js cmpPanel` (`data-cmp`, `data-cmpx`), `cxGo`.
+- Data: `ui.cmp` (memory).
+- Test: tap Compare on two teams → Compare page with both.
+
+### SAVED-09 Empty state
+- Sees: Darkrai, "No saved teams yet. Open My team and tap Save team, or let NastyPlot build six for you.", "Open My team", "Build me a
+  team".
+- Code: `75-arena-team.js ARB.saved`.
+- Test: delete all saved teams → this message.
+
+### SAVED-10 Hidden older singles teams
+- Sees: teams saved in the retired singles mode are kept in storage, not shown, but still use a slot (count tooltip says so).
+- Code: `renderSaved` (`format==='singles'` filter).
+
+---
+
+## 10. My Box (`box`)
+
+### BOX-01 Page head, count and sync line
+- Sees: "← My Team", "The Pokémon you own", "My Box", "36 Pokémon", "Build for me and the suggestions pick from these when set to "My
+  box".", sync line (account vs this browser).
+- Code: `31-box.js renderBox` (`#boxCount`), `syncNote` (`#boxSync`).
+
+### BOX-02 Add a Pokémon to the box
+- Sees: "Add a Pokémon" search box (same combobox; base forms only, not ones already in the box), clear ×; toast "<name> added to your
+  box".
+- Code: `31-box.js` `bindMonInput($('boxAdd'))`; empty-state button "Add a Pokémon" focuses it (`data-arbfocus`, 75-arena-team).
+- Data: writes `S.box` (names in the order added).
+- Test: type "Dondozo", Enter → toast; tile appears.
+
+### BOX-03 Box tiles and remove
+- Sees: each owned Pokémon as an art tile with its name and an × ("Remove <name>"); toast "Removed X from your box" with Undo ("Box
+  restored").
+- Code: `renderBox` (`data-unbox`), `34-events.js d.unbox`, `toastBox` (`#toastBoxUndo`, `ui.boxUndo`), `ARB.box`.
+- Test: × on Absol → toast with Undo → Undo brings it back.
+
+### BOX-04 Sort
+- Sees: "Sort: A–Z | Type | Newest | Oldest | Rating" (remembered).
+- Code: `[data-boxsort]` (31-box.js), LS `cc2.boxSort`.
+- Test: tap Rating → highest-rated first; reload → still Rating.
+
+### BOX-05 Reset box
+- Sees: "Reset box" → first tap "Tap again to reset" (3.5 s), second resets to the default list; toast with Undo.
+- Code: `34-events.js #boxReset` (`DEFAULT_BOX`).
+- Test: tap twice → box back to default; Undo restores.
+
+### BOX-06 Box links
+- Sees: "Copy box link" (toast "Box link copied (36 Pokémon)"; if blocked, shows the link in the field "Copy the link above."); "Open a
+  box link" reveals "Paste a box link or code from another device, account or friend", a box, "Add to my box", "Replace my box" and a
+  message line ("That doesn't look like a box link…", "N Pokémon in that link aren't in Reg M-C, so they were left out."). Opening a site
+  URL with `#box=` opens My Box with the link filled in and a note; nothing changes until Add or Replace (both with Undo).
+- Code: `45-team-links.js boxCode/boxLink/decodeBox/applyBox/checkBoxLink` (`#boxLinkCopy #boxLinkOpen #boxLinkAdd #boxLinkReplace
+  #boxLinkField #boxLinkMsg`).
+- Data: URL hash `#box=`; writes `S.box`.
+- Test: Copy box link, Open a box link, paste it, "Add to my box" → toast "Everything in that link is already in your box".
+
+### BOX-07 Empty box
+- Sees: Darkrai, "Your box is empty. Add the Pokémon you own, and Build for me and the suggestions pick from them.", "Add a Pokémon".
+- Code: `ARB.box`.
+
+---
+
+## 11. Compare (`compare`)
+
+### CMP-01 Open Compare
+- Sees: from My Team "Compare with…" (My team as A, pick B), Saved teams (two picks), Events / Winning teams "Compare" (other pages).
+  Page: "← My Team", kicker "Compare · two teams side by side", "Compare teams".
+- Code: `63-compare.js cxGo/renderCompare` (`data-cxgo`), `CH.pagehead`.
+- Test: My Team → "Compare with…" → A shows your team, B says "Pick team B".
+
+### CMP-02 Team headers A and B
+- Sees: badge A/B, name, source ("My team, open now", "Saved team", "Champion · <event>", "From a Showdown paste"), six sprites/tiles,
+  "Change"; an empty side is a button "Pick team B · My team, saved, winning or pasted". "Swap A and B".
+- Code: `cxHead` (`data-cxpick`), `[data-cxswap]`.
+- Test: with both picked, "Swap A and B" swaps the columns.
+
+### CMP-03 Team picker
+- Sees: "Pick team B" (+ "Cancel"): "My Team" (open team; greyed "Already team A" when on the other side, not tappable), "Saved Teams",
+  "Winning teams · event winners, newest first" (6, then "Show 10 more winners"), "Any other tournament team: tap Compare on its card in
+  Winning teams.", "Paste a Showdown team" box + "Use this team" (note "No Pokémon found…" or toast with the first import note).
+- Code: `cxPicker` (`data-cxset`, `data-cxwmore`, `data-cxpaste`, `#cxPaste`, `data-cxpickx`), disabled same team `75-arena-team.js`.
+- Data: `ui.cx` (memory); never changes `S.slots`.
+- Test: pick "Rain test" → comparison appears.
+
+### CMP-04 Comparison result
+- Sees: "Working out both teams…" spinner, then "What's different" bullet sentences (up to 6, Team A/B highlighted) or "These two line up
+  the same on every row below.", rows that differ: Strength Score (number + word + "659 real games"/"Our estimate"), Ready for the top 30
+  threats (x/30, handles, shaky/no answer), Top threats only this team handles (sprites, "+1 more"), each team check ✓/✗/? (incl. Speed
+  control), Speed (fastest/slowest with outspeed %), Tailwind / Trick Room, Weather / terrain ("(nothing uses it)"), Weak to (2+ more
+  than resist), Types nobody resists, Types it hits super effectively, Archetype, Your games with this six; "Why these grades" fold (both
+  breakdowns + legend); "Same on both · N rows" fold (remembered for the session); footnote.
+- Code: `cxRows/cxInfo` (cached per team + data version), `[data-cxsame]` toggle (`ui.cx.same`).
+- Test: compare sample vs "Rain test" → "What's different" lists Tailwind and sun vs rain.
+
+---
+
+## 12. Pokémon info sheet (PKMN)
+
+Opened by any `data-lt="<name>"` (Home tiles, set card "Info sheet ›", ratings, brought-with rows, …). Built by
+`25-ratings-page.js lairSheet`, re-dressed by `61-concept-h-pages.js` (hero numbers, data blocks), `67-sheet-tabs.js` (tabs),
+`71-manga.js`/`74-arena.js AR.sheet` (hero), `73-desktop-sheet.js` (desktop two columns), `66-extras-a.js` (type theme, S foil).
+
+### PKMN-01 Open / close
+- Sees: a bottom sheet (phone) or large two-column panel (desktop ≥1024px, left column fixed, right scrolls). "✕" close, backdrop tap,
+  Escape and Back close it; focus returns to what opened it; page links inside close it first. Resizing across 1024px rebuilds it.
+- Code: `lairSheet/lairClose` (`#lairSheet`, `data-lclose`, `ui.lsheet`), `DSK.layout`.
+- Test: tap a Pokémon on Home → sheet opens; Escape → closed, focus back on that tile.
+
+### PKMN-02 Hero
+- Sees: type-coloured band with the sprite and a speed-line burst, rating numeral (e.g. 89) with "A tier, #12 of 321 with results" plate
+  and "?" (rating tip), name, slanted type tags, "Mega" / "In your box" / "HIDDEN GEM" marks, three numbers ("14% of teams of 13.8k",
+  "51.3% win rate 9,625 games", "80 Speed at level 50"). S tier gets a holographic foil.
+- Code: `AR.sheet`, `61-concept-h-pages.js` (`.chlstats`), `rankTxt`, `66-extras-a.js`.
+- Test: open Farigiraf → "89", "A tier, #12 of 321 with results".
+
+### PKMN-03 Actions on the sheet
+- Sees: "Add to team" (fills the first empty slot; toast "<name> added to your team"; sheet redraws) or "On your team" / "<X> is already
+  on your team (one per species)" / "Team full"; "Build around it" (→ Build with this Pokémon as the core pick); "Popular Sets" (→
+  Popular sets for it); "Report a mistake" (only for viewers who can save data: opens feedback prefilled with what was on screen).
+- Code: `lairSheet` (`data-laddteam`, `data-abaround`, `data-lsets`), `53-feedback.js fbMisBtn` (`data-fbmis`).
+- Data: `data-laddteam` writes `S.slots`.
+- Test: with 5 Pokémon, open a new one → "Add to team" → toast and the sheet now says "On your team".
+
+### PKMN-04 Tabs Info | Meta | Rating
+- Sees: tab bar "Info · stats, types", "Meta · moves, items", "Rating · why, data"; last tab remembered; ArrowLeft/Right/Home/End move
+  between tabs; a clear sideways swipe on phones switches tabs; switching keeps the tab bar where it is.
+- Code: `67-sheet-tabs.js LST.show` (`data-lstab`), LS `cc2.lstab`.
+- Test: open Meta, close, open another Pokémon → it opens on Meta.
+
+### PKMN-05 Info tab
+- Sees: "Usually: <item>, <nature>, <points> / <4 moves>" with "Full set ›" (→ Meta tab); Base stats bars (Mega shows +/− vs base form
+  and a note); Abilities (most used first, "Most used, 98%", descriptions, notes for Mega/only ability); Type matchups (4× weak, 2× weak,
+  Resists ½, ¼, Immune, plus "With <ability> … not counted above" changes); Speed at level 50 rows (What players run, Max points, Max +
+  nature, Choice Scarf, In Tailwind, weather ability, Trick Room build) each with "outspeeds N% of the top 30"; "Speed Tiers →".
+- Code: `LST.info`, `LST.speeds`, `LST.matchups`, `[data-lstabgo]`.
+- Test: Info tab of Farigiraf lists "Armor Tail Most used, 98%" and "Trick Room build 72".
+
+### PKMN-06 Meta tab
+- Sees: Typical Set (Ability %, Item(s), Nature(s), Stat points, Moves), "Moves: in-game ranked battles" with %, "Items" with %, "Brought
+  with" (partner, %, games; tap = that partner's sheet), note on how % is measured; "No tournament or ladder sets yet…" when there's no
+  data.
+- Code: `61-concept-h-pages.js` data block (`.chlsdata`), moved by `LST`; desktop grouping `DSK.layout`.
+- Test: Meta tab → "Brought with Incineroar 67% 1,144 games"; tap it → Incineroar's sheet.
+
+### PKMN-07 Rating tab
+- Sees: "Why it rates 89" with bars (Top-cut presence, Picked by strong players, Converts to top cut, Win rate; each "Top N% of Pokémon"
+  + detail) and "?" (bars tip), explanation (with "More"), "Profile: power, typing, tools" fold; fallback text for no results; trap note
+  ("Suggestions skip this one…"); "What the data says" rows (Same players test, Team preview from replays, Limitless tournaments,
+  Official VGC events, In-game Ranked Doubles, Showdown 1760+, Showdown ladder); "Other tier lists" (external links, open in a new tab);
+  "How ratings work →", "Track Record →".
+- Code: `lairSheet` (`rating`, `pilotFor`, `bringLead`, `activePerf`), links `npLink`, `data-view="track"`.
+- Test: Rating tab → four bars and "What the Data Says".
+
+---
+
+## 13. Cross-cutting behaviour on these pages (X)
+
+### X-01 Saving and syncing the team
+- Sees: every change saves at once to this browser and (inside Claude, signed in) to the account ~0.7 s later; each part (slots, box,
+  saved teams, open team, Mega goal, Battle opponent, never-suggest list, log…) saves on its own so an older device can't overwrite a newer
+  change; another device's change arrives live with toast "Updated from your other device" / "Your box was updated from your other
+  device", but waits while you type; Undo history is cleared when another device changes the team. Storage full → "Storage is full.
+  Delete a saved team."
+- Code: `03-persistence.js persist/flush/takeRemote/syncNote` (`DEV` stamp, `savedHist`).
+- Data: LS `cc2.state`; account doc `data/users/<uid>/state` fields `slots, box, teams, loadedId, format, maxMega, megaGoal, opp, boxV,
+  excl, megaV, log` (committed code). `leads` and `recentOpp` are in `cc2.state` only in the committed code; the working tree of
+  `03-persistence.js` is being changed right now to add them (not by me).
+- Test: open the site in two tabs signed in; change the team in one → the other shows "Updated from your other device".
+
+### X-02 First-visit defaults
+- Sees: a brand-new visitor gets the sample six "Sun Tailwind (sample)" (also saved as their first saved team, open), the default box
+  (36 Pokémon), the welcome card on Home, What's New suppressed.
+- Code: `01-state.js` (`DEFAULT_TEAM`, `DEFAULT_BOX`), `46-onboarding.js`, `53-feedback.js`.
+- Test: clear storage → My Team shows "Sun Tailwind (sample)" with the sample note; Saved teams lists it as "Open now".
+
+### X-03 Toasts with Undo
+- Sees: a bottom toast for each action (2.2 s; 6 s with "Undo"); Darkrai picture on plain confirmations (Saved, Copied, Imported, Opened,
+  Deleted, Team cleared…). Undo puts back the team (and open saved team) from just before the change; box toasts restore the box.
+- Code: `06-helpers.js toast/keepUndo` (`#toastUndo`, `TOAST_DK`), `31-box.js toastBox`.
+- Test: remove a Pokémon → toast "Removed X · Undo" → Undo → "Change undone".
+
+### X-04 Double-tap guard
+- Sees: a second tap within 0.45 s after Apply, quick add, remove, load, Add to team, Build around, Clear team is ignored.
+- Code: `34-events.js TAP_ACT`.
+- Test: double-tap "Apply" → only one change applied (one Undo step).
+
+### X-05 Keep your place
+- Sees: redraws after a tap (Apply, quick add, plans finishing) keep the tapped control under the finger and don't jump the page; a new
+  page opens at its top; Back returns to the previous scroll position.
+- Code: `72-keep-place.js` (`KP`), `31-box.js keepScroll`, `32-views.js setView/VIEW_SCROLL`.
+- Test: scroll to Suggestions, Apply → the page doesn't jump to the top.
+
+### X-06 Back button and dialogs
+- Sees: each page switch is a browser history step; Back first closes whatever is open on top (edit panel, threat sheet, info sheet,
+  search, share box, feedback, menu) and keeps the page's scroll.
+- Code: `32-views.js navHist/ovSync/popstate/OVERLAYS`.
+- Data: `history.state {npv, ov}` (no URL change).
+- Test: open the info sheet, press Back → sheet closes, still on the same page.
+
+### X-07 Remembered folds and views
+- Sees: these stay as left on this device: Problems and team checks (`rfix`), Game Plan (`rgplan`), Types (`rtypes`), Open team sheet
+  (`sheet2`), How scoring works (`rhow`), More on Home (`more`), Matchups view, Types view, info-sheet tab, box sort, suggest-from pool.
+- Code: `CH.fold`, toggle listener in `60-concept-h.js`.
+- Data: LS `cc2.chf.<key>`, `cc2.seg.thr`, `cc2.seg.types`, `cc2.lstab`, `cc2.boxSort`, `cc2.pool`, `cc2.tview`, `cc2.view`.
+- Test: open "Game Plan", reload My Team → still open.
+
+### X-08 Sliding pickers
+- Sees: every 2-3 choice switch (Top rated/Hidden gems, Suggest from, Megas 0/1/2, Swap my Mega, Matchups views, Offense/Defense, Team
+  Card/Poster/Sheet, Light/Dark, jump bar) is an iPhone-style slider with an icon per choice; same buttons, pressed state and keyboard.
+- Code: `76-slide.js` (`data-slt`, `.ar-slider`).
+- Test: tap "Box + catch" → the highlight slides to it and the button reports pressed.
+
+### X-09 Title Case and naming
+- Sees: page and section titles in Title Case ("Your Six", "Saved Teams", "How Scoring Works"); team names keep their own casing; "Mega
+  Charizard Y" never splits its letter; " · " lists become commas; all-caps tags become sentence case ("Most run", "Your pick").
+- Code: `97-title-case.js` (`data-notc` opt-out), `71-manga.js`, `70-riso2.js`, `ARB.nb/AR.nm`.
+- Test: a saved team named "rain test" shows exactly "rain test".
+
+### X-10 Light / dark
+- Sees: the whole scope in light and dark; share images have their own Light/Dark switch.
+- Code: `32-views.js setTheme` (LS `cc2.theme`), sun/moon header button (61/74).
+
+### X-11 Search (Ctrl K / "/")
+- Sees: header search lists Pokémon, tools and your saved teams; choosing a saved team opens it (same as Open).
+- Code: `50-jump.js` (`data-jumpbtn`, `data-jo`).
+- Test: press Ctrl K, type a saved team's name → Enter → it opens on My Team.
+
+### X-12 Text helpers
+- Sees: long paragraphs show the first sentence and "More"; a "?" never wraps alone onto a line.
+- Code: `70-riso2.js` (long text), `74-arena.js AR.glue`.
+
+### X-13 Entry points out of this scope (keep the links)
+- My Team → All suggestions (`coverage`, "See all suggestions ›"), Battle and Popular sets ("Nothing to fix"), Build ("Build me a team"),
+  How we calculate ("How the grade works →"), Battle page replay box ("Paste its log"); Home → every tool; info sheet → Build around it,
+  Popular sets, Speed tiers, How ratings work, Track record. Note: the Plan settings that live only on All suggestions (Never suggest
+  list `S.excl`, "Count abilities" `#useAbil`, "Refresh plans", Pick from select, "Let plans swap my Mega" checkbox) and the Set check
+  tips / item fixes (`data-settip`, `data-itfix`) affect My Team's numbers and suggestions but are shown only on All suggestions.
+
+---
+
+## 14. Looks dead, duplicated or broken
+
+Dead or hidden (code that still runs, nothing a player can reach):
+1. `#teamHero` / `renderTeamHero` / `data-tjump` (27-team-page.js): drawn into the hidden `build` pane on every render; never seen.
+2. "Full sets | Grid" card-view switch (`data-tview`, `.sixhead`, LS `cc2.tview`): in the edit panel markup but not visible; the edit panel
+   forces "full" anyway.
+3. `#repFold` scouting report fold and `#defense` section are hidden by `chTeamInit`; the threat sheet's "Full report" button
+   (`data-chfull`) opens and scrolls to this hidden fold, so it does nothing visible (looks broken).
+4. Old spread editor handlers `data-spedit` / `data-spsave` / `data-spclear` (08-render-all.js): nothing renders those attributes now.
+5. `#chTeamsMenu` / `#chTeamsBtn` handler (60-concept-h.js): no element with those ids exists.
+6. `44-share-card.js buildShareCard` drawing, `70-riso2.js rzSetHtml`, `MG.team`, `MG.home`: replaced by later modules (kept as chain
+   wrappers only).
+7. Weather backdrop on `.chthead` (66-extras-b.js) and Mega halo on `.chrow` (66-extras-a.js) target the older header/rows, which the
+   arena layout covers or no longer draws; unsure whether any of it still shows.
+8. `#startCard` ("New team / Where do you want to start?") in the hidden build pane: superseded by the empty My Team state.
+
+Duplicated:
+9. Two "Log a game" features: My Team's Your games form (LOG) and Home's "Your battles: Log a game" which goes to the Battle page's own
+   Battle log. Both write `S.log`.
+10. The Megas 0/1/2 and swap-Mega controls exist on My Team, Build and All suggestions (same setting, by design).
+11. The same threat appears twice in the threat sheet (detail block and the worst-5 list) when it's among the worst 5.
+12. Compare's empty side shows "Pick team B" twice (header button and picker heading).
+
+Looks broken or inconsistent (seen in the render, Nov 10 data):
+13. Mega Charizard Y's nature: set card says "Timid · most run", the editor's dropdown says "Timid (0.0%) ★", while the Team Sheet and the
+    "Open team sheet" fold say "Modest · Most common spread". Two sources disagree (`setFor().na` vs `commonSpread`/`memberSpread`), and a
+    "0.0%" most-run nature looks wrong.
+14. Threat sheet "Best fix: ±0 (93 → 93)" with an "Apply this fix" button: offers a change that doesn't raise the score.
+15. Threat sheet ring still shows the old grade letter ("A", "58% wins") instead of the Strength Score number and band word.
+16. Sample note's "Build your own" on My Team points to `build`, which is My Team itself: nothing visible happens.
+17. Home's empty tiles say "Add a Pokémon to slot N" but only open My Team (not that slot's add panel).
+18. Saved teams sort "Readiness" sorts by the old readiness %, not by the Strength Score shown on the cards.
+19. Compare still lists "Speed control" as a team check row (it's a note, not counted, since Nov 9); Compare and "Threat preparation" say
+    readiness as "81%" where My Team says "21/30".
+20. Item-change toast still says "ready for 85% → 87% of the top threats" (old % wording).
+21. What's New text is from Oct 28 and mentions "the Feedback button at the bottom of any page", which is hidden for most viewers.
+22. "Swap my Mega?" isn't saved (the hidden checkbox resets on reload) while "Megas on team" is saved.
+
+---
+
+## 15. Unsure
+
+1. Whether the All suggestions page (`coverage`) belongs to this group; I only listed its links and the controls that live only there.
+2. #13 above: which nature is right for Mega Charizard Y, and whether the "0.0%" is a data or code issue.
+3. A 2-Pokémon team scores "82, Tournament ready, so far" (empty slots rated as typical builds). By design per the code comments, but
+   it may read oddly to players; not judged here.
+4. HOME-04 caption: the hero says "% of teams" but the caption names "Showdown ladder 1630+"; I didn't trace which source `MG.srcLine`
+   and `MG.pct` actually use.
+5. `S.leads` and `S.recentOpp` account sync: committed code saves them only in browser storage; `app/src/app/03-persistence.js` has
+   uncommitted changes adding them (another session). The rebuild should follow whatever lands.
+6. "Report a mistake" and "Send feedback" only appear for viewers who can save data; I couldn't see them in the harness (no db write).
+7. Exactly which old-layer decorations (weather backdrop, Mega halo, S foil on the info sheet) are still visible under the arena CSS:
+   not checked with screenshots.
+8. Touch-only behaviour (info-sheet swipe between tabs, phone keyboard focus on the add box) read from code, not tested on a device.
+9. Escape on My Team: `chEditClose` and `chScoutClose` both listen for Escape globally; when a name list is open only the list closes
+   (by design); not tested with nested overlays (info sheet over the edit panel).
+
+---
+
+## Count
+
+HOME 16 · TEAM 20 · SUG 11 · MU 5 · PLAY 2 · SETS 3 · EDIT 12 · ADD 3 · IO 4 · SHARE 6 · LOG 5 · SHEET 4 · SAVED 10 · BOX 7 · CMP 4 ·
+PKMN 7 · X 13 = 132 entries (each covers every control and state listed in it).
