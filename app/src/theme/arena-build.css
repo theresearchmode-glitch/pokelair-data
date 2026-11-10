@@ -675,3 +675,13 @@
   @A .arb-score.arb-gfirst .ar-num{grid-column:1;grid-row:1 / 3;font-size:76px}
   @A .arb-score.arb-gfirst .arb-grade{grid-column:2;grid-row:1;align-self:end;margin:0}
   @A .arb-score.arb-gfirst .arb-basis{grid-column:2;grid-row:2;align-self:start;margin-top:2px}}
+/* Polish Batch 2 (Nov 10): the footer uses its full width on desktop (about 40% of it stood empty on the right): brand and
+   tagline | the fan-made note and Sources | the page links as a column on the right edge. The tagline wraps in balanced lines
+   (it left "rate." alone on a line). */
+@A footer.legal .lgtag{text-wrap:balance}
+@media (min-width:1001px){
+  @A footer.legal .inner{grid-template-columns:minmax(220px,300px) minmax(0,1fr) max-content!important;align-items:start}
+  @A footer.legal .inner>:not(.lgbrand):not(.lglinks){grid-column:2}
+  @A footer.legal .lglinks{grid-column:3;grid-row:1/4;display:flex!important;flex-direction:column!important;align-items:flex-end;gap:4px!important;margin:0!important}
+  @A footer.legal p{max-width:64ch}
+}
