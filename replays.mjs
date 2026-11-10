@@ -24,6 +24,9 @@ const side = s => String(s).slice(0, 2), species = d => String(d).split(',')[0].
 export function parseLog(log) {
   const L = String(log).split('\n'), names = {}, rating = {}, team = {p1: [], p2: []}, brought = {p1: [], p2: []}, leads = {p1: [], p2: []}, mega = {p1: null, p2: null};
   let started = false, winner = null, doubles = false, preview = 0; const sets = {p1: null, p2: null};
+  // what happened in the game (Focus plan, Sim Nov 10): the turn each side's Tailwind / Trick Room first went up, Fake Outs used,
+  // Speed drops and paralysis each side inflicted, and how many turns the game lasted, so speed control can be measured inside games
+  let turn = 0; const F = {tw: [null, null], tr: [null, null], fo: [0, 0], sp: [0, 0], pa: [0, 0]}, ix = s => s === 'p1' ? 0 : s === 'p2' ? 1 : -1;
   const bring = (sd, sp) => { const n = mapMon(sp); if (!n || !brought[sd]) return; const base = n.replace(/-Mega.*$/, '');
     if (!brought[sd].some(x => x.replace(/-Mega.*$/, '') === base)) { brought[sd].push(n); if (!started && leads[sd].length < 2) leads[sd].push(n); } };
   for (const line of L) { const p = line.split('|'); const t = p[1];
@@ -35,7 +38,12 @@ export function parseLog(log) {
     else if (t === 'teampreview') preview = +p[2] || 4;
     else if (t === 'switch' || t === 'drag') bring(side(p[2]), species(p[3]));
     else if (t === 'detailschange' && /-Mega/.test(p[3] || '')) { const sd = side(p[2]), n = mapMon(species(p[3])); if (n) mega[sd] = n; }
-    else if (t === 'turn') started = true;
+    else if (t === 'turn') { started = true; turn = +p[2] || turn + 1; }
+    else if (t === 'move' && p[3] === 'Fake Out') { const i = ix(side(p[2])); if (i >= 0) F.fo[i]++; }
+    else if (t === '-sidestart' && /Tailwind/.test(p[3] || '')) { const i = ix(side(p[2])); if (i >= 0 && F.tw[i] == null) F.tw[i] = turn; }
+    else if (t === '-fieldstart' && /Trick Room/.test(p[2] || '')) { const i = ix(side(String(p[3] || '').replace('[of] ', ''))); if (i >= 0 && F.tr[i] == null) F.tr[i] = turn; }
+    else if (t === '-unboost' && p[3] === 'spe') { const i = ix(side(p[2])); if (i >= 0) F.sp[1 - i]++; }
+    else if (t === '-status' && p[3] === 'par') { const i = ix(side(p[2])); if (i >= 0) F.pa[1 - i]++; }
     else if (t === 'win') winner = p[2]; }
   if (!doubles || preview !== 4 || !winner) return null;
   const out = {};
@@ -44,7 +52,7 @@ export function parseLog(log) {
     if (mega[sd]) { const base = mega[sd].replace(/-Mega.*$/, ''); six = six.map(x => x === base ? mega[sd] : x); brought[sd] = brought[sd].map(x => x === base ? mega[sd] : x); leads[sd] = leads[sd].map(x => x === base ? mega[sd] : x); }
     out[sd] = {team: six.sort(), brought: brought[sd], leads: leads[sd], mega: mega[sd], rating: rating[sd] || null}; }
   const w = winner === names.p1 ? 0 : winner === names.p2 ? 1 : null; if (w == null) return null;
-  const o = {p: [out.p1.team, out.p2.team], b: [out.p1.brought, out.p2.brought], l: [out.p1.leads, out.p2.leads], m: [out.p1.mega, out.p2.mega], r: [out.p1.rating, out.p2.rating], w}; if (sets.p1 && sets.p2) o.s = [sets.p1, sets.p2]; return o; }
+  const o = {p: [out.p1.team, out.p2.team], b: [out.p1.brought, out.p2.brought], l: [out.p1.leads, out.p2.leads], m: [out.p1.mega, out.p2.mega], r: [out.p1.rating, out.p2.rating], w}; if (sets.p1 && sets.p2) o.s = [sets.p1, sets.p2]; o.f = {n: turn, ...F}; return o; }
 async function get(url) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
   try { const r = await politeFetch(url, {signal: c.signal}); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
 const sleep = ms => new Promise(r => setTimeout(r, ms));

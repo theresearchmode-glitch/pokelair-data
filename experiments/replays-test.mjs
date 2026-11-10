@@ -55,6 +55,9 @@ ok(JSON.stringify(g.l[0]) === JSON.stringify(['Incineroar', 'Salamence-Mega']) &
 ok(g.b[0].length === 4 && g.b[0].includes('Primarina') && g.b[0].includes('Farigiraf') && !g.b[0].includes('Rillaboom'), 'p1 brought four (a Mega re-entering counts once)');
 ok(g.b[1].length === 4 && g.b[1].includes('Kingambit') && g.b[1].includes('Sneasler'), 'p2 brought four');
 ok(JSON.stringify(g.r) === JSON.stringify([1534, 1611]), 'ratings');
+ok(JSON.stringify(g.f) === JSON.stringify({n: 4, tw: [null, null], tr: [null, null], fo: [1, 0], sp: [0, 0], pa: [0, 0]}), 'in-game facts: turns and Fake Out');
+{ const h = parseLog(log.replace('|turn|2', '|turn|2\n|-sidestart|p2: Bob|move: Tailwind\n|-fieldstart|move: Trick Room|[of] p1a: Faris\n|-unboost|p2a: Kingambit|spe|1\n|-status|p1a: Prim|par'));
+  ok(JSON.stringify(h.f) === JSON.stringify({n: 4, tw: [null, 2], tr: [2, null], fo: [1, 0], sp: [1, 0], pa: [0, 1]}), 'in-game facts: Tailwind, Trick Room, Speed drops, paralysis by side and turn'); }
 ok(parseLog(log.replace('|gametype|doubles', '|gametype|singles')) === null, 'singles battles are skipped');
 ok(parseLog(log.replace('|win|Alice', '')) === null, 'unfinished battles are skipped');
 ok(parseLog(log.replace('Farigiraf, L50, M|', 'Missingno, L50|')) === null, 'teams with an unknown Pokémon are skipped');
