@@ -97,8 +97,9 @@ AR.switcher = () => { const ts = (S.teams || []).filter(t => t && t.id !== S.loa
     return `<button type="button" class="ar-tsw" data-load="${esc(t.id)}"><span class="ar-tswm" aria-hidden="true">${ns.slice(0, 6).map(p => sprite(p, 'tiny') || '').join('')}</span><b>${esc(t.name || 'Saved team')}</b></button>`; };
   return `<details class="ar-tswitch"><summary><span class="ar-tswt">Switch team</span> <span class="ar-tswn">${ts.length} saved</span></summary><div class="ar-tswl">${ts.map(row).join('')}</div></details>`; };
 /* Jump links (Sim, Nov 5): My team is long on phones, so a row under the head goes straight to each numbered part */
-AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to"><button type="button" class="ar-jump" data-arjump="chP1">Suggestions</button><button type="button" class="ar-jump" data-arjump="chP2">Matchups</button><button type="button" class="ar-jump" data-arjump="chP3">How it plays</button><button type="button" class="ar-jump" data-arjump="chP4">Sets</button></nav>`;
+AR.jumps = () => `<nav class="ar-jumps" aria-label="Jump to"><button type="button" class="ar-jump" data-arjump="chP1">Suggestions</button><button type="button" class="ar-jump" data-arjump="chP2">Matchups</button><button type="button" class="ar-jump" data-arjump="chP3">How it plays</button><button type="button" class="ar-jump" data-arjump="chSets">Sets</button></nav>`;
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arjump]'); if (!b) return; const t = $(b.dataset.arjump); if (!t) return;
+  if (t.matches('details:not([open])')) t.open = true;
   t.querySelectorAll('details.ar-sheetfold:not([open])').forEach(d => { d.open = true; });
   t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
   const h = t.querySelector('h2,h3,summary,button'); if (h && h.focus) setTimeout(() => h.focus({preventScroll: true}), 400); });
@@ -183,6 +184,8 @@ AR.roleOf = (m, L) => { const has = g => g.some(x => x.i === m.i), other = g => 
 AR.VS_META = "vs the meta's top six";
 AR.cell = (v, u, extra) => `<div class="ar-stat"><span class="ar-num">${v}</span><span class="ar-unit">${u}${extra || ''}</span></div>`;
 AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.querySelector(':scope > .chthead'); if (!th) return;
+  /* the all-sets fold lives in the old team section between draws: put it back in its part first, or the redraw throws it away */
+  { const keep = $('chSets'), p4b = document.querySelector('#chP4 .chpartb'); if (keep && p4b && !p4b.contains(keep)) p4b.append(keep); }
   const old = head.querySelector(':scope > .ar-team'); if (old) old.remove();
   const ms = members(), v = ui.vsum || {}, RD = ms.length ? prepOf(ms) : null; let G = null; try { G = RD ? CH.gradeOf(RD, v.CK, ms) : null; } catch (e) {}
   const hd = CH.hand(RD), c = CH.lvCount(RD), tp = k => typeof tip === 'function' ? tip(k) : '';
@@ -233,12 +236,12 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   if (ms.length) { const L = AR.lineup(ms), ord = [...L.lead, ...L.back, ...L.bench], sel = ui.rzSet;
     const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
     /* each one has a small X to take it off the team in one tap (Sim, Nov 7); it uses the same remove as the editor, with Undo */
-    const tiles = ord.map(m => `<div class="ar-slot">${AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})}<button type="button" class="ar-lockx${S.slots[m.i] && S.slots[m.i].lock ? ' on' : ''}" data-lock="${m.i}" aria-pressed="${!!(S.slots[m.i] && S.slots[m.i].lock)}" aria-label="${S.slots[m.i] && S.slots[m.i].lock ? 'Unlock' : 'Lock'} ${esc(m.d)}: suggestions never swap out a locked Pokémon" title="${S.slots[m.i] && S.slots[m.i].lock ? 'Locked: suggestions keep it' : 'Lock it so suggestions keep it'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${S.slots[m.i] && S.slots[m.i].lock ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg></button><button type="button" class="ar-rmx" data-chrm="${m.i}" aria-label="Remove ${esc(m.d)} from your team"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>`).join('')
+    const tiles = ord.map(m => `<div class="ar-slot${sel === m.i ? ' is-sel' : ''}">${AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})}<button type="button" class="ar-lockx${S.slots[m.i] && S.slots[m.i].lock ? ' on' : ''}" data-lock="${m.i}" aria-pressed="${!!(S.slots[m.i] && S.slots[m.i].lock)}" aria-label="${S.slots[m.i] && S.slots[m.i].lock ? 'Unlock' : 'Lock'} ${esc(m.d)}: suggestions never swap out a locked Pokémon" title="${S.slots[m.i] && S.slots[m.i].lock ? 'Locked: suggestions keep it' : 'Lock it so suggestions keep it'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${S.slots[m.i] && S.slots[m.i].lock ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg></button><button type="button" class="ar-rmx" data-chrm="${m.i}" aria-label="Remove ${esc(m.d)} from your team"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>`).join('')
       + open.map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
     const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : L.by === 'you' ? 'your pick' : 'in team order')
       + (L.by === 'you' ? `<button type="button" class="ar-link ar-leadreset" data-arlead="">Use NastyPlot's pick</button>` : '') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
-      <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
+      <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div><p class="ar-taphint">Tap a Pokémon to see its set</p>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
   else { /* no team yet: the line and the two actions, then the same stage as a full team, six add tiles (as Home's empty six) */
     const tiles = [0, 1, 2, 3, 4, 5].map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
     /* Darkrai (Sim, Nov 9; was Shady Paw): shown where window.NP_MASCOT is set, which app/build.mjs does; without it, the sprite */
@@ -259,7 +262,8 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
   const mr = $('myRec'); if (mr) sec.querySelector('.ar-tgrid').append(mr);
   AR.cols(sec);
   /* first visit: the first lead's set is open (a tap anywhere else moves it) */
-  if (ui.rzSet === undefined && ms.length && !AR.pre) { AR.pre = 1; const f = sec.querySelector('[data-chset]'); if (f) setTimeout(() => f.click(), 0); } };
+  /* Nov 10 (Sim): on phones the set card waits for a tap (the page was ~7 screens); tablets and desktop open the first lead's */
+  if (ui.rzSet === undefined && ms.length && !AR.pre && !(typeof matchMedia === 'function' && matchMedia('(max-width:599px)').matches)) { AR.pre = 1; const f = sec.querySelector('[data-chset]'); if (f) setTimeout(() => f.click(), 0); } };
 /* Nov 10 (Sim: no empty strips): on desktop My Team is two balanced columns. Left: Your Six, then the actions (two across);
    right: the numbers, the tapped Pokémon's set card beside the tiles, then Your games. Phones and tablets keep one column. */
 AR.colsMQ = typeof matchMedia === 'function' ? matchMedia('(min-width:1001px)') : null;
@@ -273,7 +277,7 @@ if (AR.colsMQ) AR.colsMQ.addEventListener('change', () => { if (typeof view !== 
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-wnew > [data-wnewx]'); if (b) setTimeout(() => { const w = b.closest('.ar-wnew'); if (w && !w.querySelector('#wnewCard')) w.remove(); }, 0); });
 /* the tapped tile: yellow ring and cursor follow ui.rzSet (the app's own handler in 70-riso2.js fills #rzSet) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ar-team [data-chset]'); if (!b) return;
-  setTimeout(() => document.querySelectorAll('.ar-team .ar-art[data-chset]').forEach(t => { const on = +t.dataset.chset === ui.rzSet; t.classList.toggle('is-sel', on);
+  setTimeout(() => document.querySelectorAll('.ar-team .ar-art[data-chset]').forEach(t => { const on = +t.dataset.chset === ui.rzSet; t.classList.toggle('is-sel', on); const sl = t.closest('.ar-slot'); if (sl) sl.classList.toggle('is-sel', on);
     const cur = t.querySelector('.ar-cursor'); if (on && !cur) t.querySelector('.ar-f').insertAdjacentHTML('afterend', '<span class="ar-cursor" aria-hidden="true"></span>'); if (!on && cur) cur.remove(); }), 0); });
 /* the set card (replaces the riso set panel): avatar on its type field, slanted type tags, its place in the game plan, the
    rating, item and ability, the four moves as battle-menu strips with a move-type edge, Edit set and the info sheet */
@@ -307,8 +311,12 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   /* usability 5 (Nov 7): on phones the full team sheet (about a screen of text) is a fold; each set is also one tap away on
      the Pokémon above. Open on iPad and desktop; the choice is remembered, and the Sets jump link opens it */
   { const so = $('chSheetOut'); if (so && !so.closest('details.ar-sheetfold')) { const n = (members() || []).length, w = document.createElement('div');
-      w.innerHTML = CH.fold('sheet', 'Open team sheet', `${n ? n + ' sets, ' : ''}Reg M-C, bring 6, pick 4`, '', !PHONE()); const d = w.firstElementChild;
-      d.classList.add('ar-sheetfold'); so.before(d); d.querySelector('.chbody').append(so); } }
+      w.innerHTML = CH.fold('sheet2', 'All six sets', `${n ? n + ' sets, ' : ''}Reg M-C, bring 6, pick 4`, '', false); const d = w.firstElementChild;
+      d.classList.add('ar-sheetfold'); d.id = 'chSets'; so.before(d); d.querySelector('.chbody').append(so); } }
+  /* Nov 10 (Sim: "merge section 4"): the all-sets fold sits with the set card, not in its own "Your six" part */
+  { const fd = $('chSets'), R = document.querySelector('.ar-team .ar-tcolR'), st = document.querySelector('.ar-team .ar-stage'), p4 = $('chP4');
+    if (fd && st && fd.parentElement !== st) st.append(fd); /* under the tiles (desktop: the left column, which keeps the two columns even) */
+    if (p4) p4.hidden = !!(fd && fd.closest('.ar-team')); }
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));
   AR.fit();
   /* every sub-page has a back link (32-views.js adds most; This week, How we calculate and About were the ones without) */

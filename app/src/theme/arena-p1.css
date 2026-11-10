@@ -1116,3 +1116,25 @@
 @A #chThrTop .chtr .st.mid:not(.chcalcv){color:var(--ar-ink-2)!important}
 @A #chThrTop .chtr .st.bad:not(.chcalcv){color:#8A5A00!important}
 @A[data-look="dark"] #chThrTop .chtr .st.bad:not(.chcalcv){color:#F2B705!important}
+/* ---------- Nov 10 (Sim): My Team shorter on phones and tablets ----------
+   Matchups: top 5 first, "Show 5 more" (desktop keeps all 10 beside Suggestions, so no gap opens there) */
+@A .chtlmore{display:none}
+@media (max-width:1000px){
+  @A #chThrTop .chtl10:not(.is-more)>.chtr:nth-child(n+6){display:none!important}
+  @A .chtlmore{display:flex;align-items:center;min-height:44px;margin:4px 0 8px;padding:0 2px;background:none;border:0;cursor:pointer;color:var(--ar-blue-ink);font:600 var(--ar-fs-body)/1.3 var(--ar-body);text-decoration:underline;text-underline-offset:4px}
+}
+/* the tap hint under Your Six shows on phones while no set is open */
+@A .ar-taphint{display:none;margin:12px 0 0;font:600 15px/1.4 var(--ar-body);color:var(--ar-ink-2)}
+@media (max-width:599px){
+  @A .ar-stage:not(:has(#rzSet:not([hidden]))) .ar-taphint{display:block}
+  /* Your Six three across with smaller art; lock and remove sit on the tapped tile only (each still one tap away) */
+  @A .ar-stage .ar-six.ar-two{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px 8px!important}
+  @A .ar-stage .ar-six>.ar-slot{grid-column:auto!important}
+  @A .ar-stage .ar-art.ar-l{--h:118px;--s:104px}
+  @A .ar-stage .ar-slot:not(.is-sel) :is(.ar-lockx,.ar-rmx){display:none}
+}
+/* all six sets, now beside the set card */
+@A #chSets{margin-top:16px}
+@A .ar-tcolR>#chSets{margin-top:0}
+@media (min-width:1001px){@A .ar-stage #chSets .ts-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (min-width:1001px) and (max-width:1199px){@A .ar-stage #chSets .ts-grid{grid-template-columns:minmax(0,1fr)!important}}

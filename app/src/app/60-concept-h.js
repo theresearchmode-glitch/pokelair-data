@@ -303,7 +303,8 @@ CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w 
   const RV = new Map(rest.map(r => [r, CH.realVs(r.t.n)])); if (rest.some(r => RV.get(r))) rest = rest.slice().sort((a, b) => ((RV.get(a) || {pts: 0}).pts - (RV.get(b) || {pts: 0}).pts) || (a.level - b.level));
   const rvWord = r => { const R = RV.get(r); return R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level]; };
   const lv = ['bad', 'shaky', 'mid', 'ok'];
-  return `${typeof ctrVal === 'function' && META.model && META.model.ctr ? '<p class="t2 chthrsrc">Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. Calc readings are underneath.</p>' : ''}<div class="chtl10">${top.map((r, i) => { const p = byName.get(r.t.n); return `<button type="button" class="chtr l${r.level}${p ? ' tyx' : ''}"${p ? ` style="${tyVars(p)}"` : ''} ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="rk">${i + 1}</span>${sprite(p) || ''}<span class="tx"><b>${escName(r.t.d)}</b>${(() => { const R = CH.realVs(r.t.n); return R ? `<span class="st ${R.c}" title="From real tournament games: how teams with your Pokémon did against teams with ${esc(r.t.d)}">${R.w}</span><span class="st chcalcv">Calc: ${CH.LV[r.level]}</span>` : `<span class="st ${lv[r.level]}">${CH.LV[r.level]}</span>`; })()}</span></button>`; }).join('')}</div>
+  return `${typeof ctrVal === 'function' && META.model && META.model.ctr ? '<p class="t2 chthrsrc">Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. Calc readings are underneath.</p>' : ''}<div class="chtl10${ui.tlMore ? ' is-more' : ''}">${top.map((r, i) => { const p = byName.get(r.t.n); return `<button type="button" class="chtr l${r.level}${p ? ' tyx' : ''}"${p ? ` style="${tyVars(p)}"` : ''} ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="rk">${i + 1}</span>${sprite(p) || ''}<span class="tx"><b>${escName(r.t.d)}</b>${(() => { const R = CH.realVs(r.t.n); return R ? `<span class="st ${R.c}" title="From real tournament games: how teams with your Pokémon did against teams with ${esc(r.t.d)}">${R.w}</span><span class="st chcalcv">Calc: ${CH.LV[r.level]}</span>` : `<span class="st ${lv[r.level]}">${CH.LV[r.level]}</span>`; })()}</span></button>`; }).join('')}</div>
+    ${top.length > 5 ? `<button type="button" class="chtlmore" data-tlmore="1" aria-expanded="${ui.tlMore ? 'true' : 'false'}">${ui.tlMore ? 'Show top 5 only' : `Show ${top.length - 5} more`}</button>` : ''}
     ${rest.length ? `<div class="chk chtk">The next ${rest.length}, worst first</div><div class="chtiles chsm" role="group" aria-label="The next ${rest.length} threats">${rest.map(r => { const p = byName.get(r.t.n); const R = RV.get(r); return `<button type="button" class="chtile l${r.level}${R ? ' rv-' + R.c : ''}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${esc(rvWord(r))}" title="${esc(r.t.d)}: ${esc(rvWord(r))}">${sprite(p) || `<span class="chk">${esc(r.t.d.slice(0, 3))}</span>`}</button>`; }).join('')}</div>` : ''}`; };
 // suggestions on the report: the top fix plans, one tap to apply (same plans as Build › Swaps)
 // the first suggestion shows; Show more opens the next two in place, then See all goes to the Suggestions page (Nov 7, Sim)
@@ -524,7 +525,10 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 // Import, Export and Save show their panels inside the editor
 document.addEventListener('click', e => { const t = e.target && e.target.closest && e.target.closest('#importBtn,#exportBtn,#saveBtn'); if (t && $('chEdit') && $('chEdit').hidden) chEditOpen(null); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !e.__cbEsc) chEditClose(); }); // Escape in an open name list closes just the list
-function chTeamRender() { const head = $('chTeam'); if (!head) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK, ms), {r: RD.score}) : null, hd = CH.hand(RD);
+function chTeamRender() { const head = $('chTeam'); if (!head) return;
+  /* Nov 10: the all-sets fold sits in the team section between draws; return it to its part before anything is redrawn */
+  { const keep = $('chSets'), p4b = document.querySelector('#chP4 .chpartb'); if (keep && p4b && !p4b.contains(keep)) p4b.append(keep); }
+  const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {}, c = CH.lvCount(RD); const G = RD ? Object.assign(CH.gradeOf(RD, v.CK, ms), {r: RD.score}) : null, hd = CH.hand(RD);
   const F = CH.four(ms), lead = F ? ms.find(m => m.p.n === F.lead[0]) || null : null, ko = CH.koNote(RD);
   const note = m => { if (lead && m === lead) { const w = CH.leadWhy(m); return `<div class="chpen">↑ Lead vs the meta's six${w ? ' · ' + esc(w) : ''}</div>`; } if (ko && m.p.n === ko.n && !(lead && lead.p.n === ko.n)) return `<div class="chpen">${esc(ko.txt)}</div>`; return ''; };
   const all = S.slots.map((s, i) => ({m: ms.find(x => x.i === i), i})).slice(0, 6);
@@ -629,3 +633,8 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   const ed = $('chEdit'); if (ed && !ed.hidden && b.closest('#chEdit')) chEditOpen(i); }, true);
 // a Your six card opens with Enter or Space too
 document.addEventListener('keydown', e => { const r = e.target; if (!r || !r.matches || !r.matches('div.chrow[data-chedit]') || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); r.click(); });
+
+/* Nov 10 (Sim): Matchups shows the top 5 on phones and tablets, the next 5 one tap away (desktop keeps all 10 beside Suggestions) */
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-tlmore]'); if (!b) return; ui.tlMore = !ui.tlMore;
+  const l = b.parentElement && b.parentElement.querySelector('.chtl10'); if (l) l.classList.toggle('is-more', ui.tlMore); b.setAttribute('aria-expanded', ui.tlMore ? 'true' : 'false');
+  b.textContent = ui.tlMore ? 'Show top 5 only' : `Show ${l ? l.children.length - 5 : 5} more`; });

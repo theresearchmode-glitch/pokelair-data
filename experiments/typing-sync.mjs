@@ -26,6 +26,8 @@ const tapSel = async sel => { await pg.waitForFunction(s => [...document.querySe
      'Cannot read properties of null', 1 run in 6). Look it up again on each retry; fail with the selector if it never shows. */
   for (let i = 0; !bb && i < 20; i++) { await pg.waitForTimeout(250); const f = await pg.evaluateHandle(s => [...document.querySelectorAll(s)].find(x => x.getBoundingClientRect().height > 0) || null, sel); const el = f.asElement(); if (el) { await el.evaluate(x => x.scrollIntoView({block: 'center', behavior: 'instant'})); bb = await el.boundingBox(); } }
   if (!bb) throw new Error(`tap: ${sel} never became tappable`); await pg.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2); };
+/* Nov 10: on phones lock and remove show on the tapped Pokémon only (Sim), so tap it first, as a player would */
+await tapSel('.ar-art[data-chset="4"]'); await pg.waitForTimeout(500);
 await tapSel('.ar-rmx[data-chrm="4"]'); await pg.waitForTimeout(300);
 await tapSel('[data-chedit="4"]'); await pg.waitForTimeout(400);
 const seen = [];
