@@ -53,7 +53,7 @@ const NOT_MODELLED = {...Object.fromEntries(Object.entries(NC || {}).map(([k, v]
   Gluttony: 'only changes pinch berries (Figy, Wiki, Mago, Aguav, Iapapa), none of which are legal in Reg M-C',
   Opportunist: 'copies stat boosts the opponent gains during the battle; calcs start from a fresh board',
   'Sweet Veil': 'stops sleep on its side (status, not damage); calcs and the grade do not model sleep (0.27% of slots, Nov 9)'};
-const NO_CALC_EFFECT = new Set(['No Item', 'Pressure', 'Keen Eye', 'Frisk', 'Synchronize', 'Cute Charm', 'Flame Body', 'Cursed Body', 'Healer', 'Shield Dust', 'Damp', 'Anticipation', 'Vital Spirit', 'Pickpocket', 'Cud Chew', 
+const NO_CALC_EFFECT = new Set(['No Item', 'No Held Item', 'Pressure', 'Keen Eye', 'Frisk', 'Synchronize', 'Cute Charm', 'Flame Body', 'Cursed Body', 'Healer', 'Shield Dust', 'Damp', 'Anticipation', 'Vital Spirit', 'Pickpocket', 'Cud Chew', 
   'Emergency Exit', 'Flower Veil', 'Static', 'Poison Point', 'Insomnia', 'Limber', 'Leaf Guard', 'Telepathy', 'Magician', 'Shed Skin', 'Immunity', 'Early Bird', 'Poison Heal', 'Toxic Debris', 'Spicy Spray', 'Trace', 'Illusion',
   'Moody', 'Anger Point', 'Steadfast', 'Magma Armor', 'Corrosion', 'Light Clay', 'Eject Button', 'Leppa Berry', 'Binding Band', 'Big Root', 'Red Card',
   'Regenerator', 'Natural Cure', 'Harvest', 'Pickup', 'Run Away', 'Honey Gather', 'Ball Fetch', 'Sitrus Berry', 'Leftovers', 'Lum Berry', 'Mental Herb', 'White Herb', 'Shell Bell', 'Black Sludge', 'Focus Sash', 'Power Herb', 'Mirror Herb', 'Eject Pack', 'Covert Cloak', 'Safety Goggles', 'Throat Spray', 'Room Service', 'Adrenaline Orb', 'Booster Energy', 'Ability Shield', 'Clear Amulet', 'Punching Glove', 'Loaded Dice']);
