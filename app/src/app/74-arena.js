@@ -130,8 +130,8 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   const runner = (p, i) => `<button type="button" class="ar-runner" style="${AR.tv(p)}" data-lt="${esc(p.n)}" aria-label="${esc(p.d)}, most used #${i + 2}, ${pct(p)}% of teams: open its info"><span class="ar-runner-f ar-field" aria-hidden="true"></span>`
     + `<span class="ar-runner-in"><span class="ar-runner-nm">${escName(p.d)}</span><span class="ar-num">${pct(p)}%</span></span>${AR.spr(p, 'ar-runner-mon')}</button>`;
   const has = ms.length > 0, b = (v, cls, ic, l, edge) => `<button type="button" class="ar-btn${cls}" data-view="${v}"${edge ? ` style="--edge:${edge}"` : ''}>${ic}<span>${l}</span>${cls ? AR.ICON.go : ''}</button>`;
-  const tools = `<nav class="ar-tools" aria-label="Start here">${has ? b('report', ' ar-primary', AR.ICON.grade, 'Grade my team') + b('auto', '', AR.ICON.build, 'Build a team', 'var(--ar-gold)')
-    : b('auto', ' ar-primary', AR.ICON.build, 'Build me a team') + b('report', '', AR.ICON.grade, 'Grade my team', 'var(--ar-blue)')}${b('matchup', '', AR.ICON.plan, 'Plan a match', 'var(--ar-orange)')}</nav>`
+  const tools = `<nav class="ar-tools" aria-label="Start here">${has ? b('report', ' ar-primary', AR.ICON.grade, 'Score my team') + b('auto', '', AR.ICON.build, 'Build a team', 'var(--ar-gold)')
+    : b('auto', ' ar-primary', AR.ICON.build, 'Build me a team') + b('report', '', AR.ICON.grade, 'Score my team', 'var(--ar-blue)')}${b('matchup', '', AR.ICON.plan, 'Plan a match', 'var(--ar-orange)')}</nav>`
     + `<p class="ar-imp">Already have a team? <button type="button" class="ar-link" data-arimport>Import from Showdown</button></p>`;
   /* the champion's six */
   let them = '', FC = null, sameSix = false;
@@ -216,7 +216,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
       <div class="ar-trio">${cells.join('')}<span class="ar-muline">${muLine}</span></div>
       <span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span></div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
-    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>${ck.pass}/${ck.n} checks</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
+    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
   else stats = '';
   /* the stage: all six as equal art tiles (no roles on the art), the game plan line under them */

@@ -64,7 +64,7 @@ MG.cover = (six, desk) => { if (!six || six.length < 3) return ''; const [a, b, 
     top: `<span class="mgn">${MG.pct(p)}%</span><span class="mgnm">${escName(p.d)}</span>`});
   return `<div class="mgcover${desk ? ' mgdesk' : ''}">${big}${sm(b)}${sm(c)}</div><p class="mgsrc">${esc(MG.srcLine())}</p>`; };
 MG.acts = ms => { const has = ms.length > 0; const btn = (v, k, l, y) => `<button type="button" class="mgact${y ? ' chprimary mgyel' : ''}" data-view="${v}">${MG.pic(k)}<b>${l}</b></button>`;
-  return `<div class="mgacts">${has ? btn('report', 'hit', 'Grade my team', 1) + btn('auto', 'spread', 'Build a team') : btn('auto', 'spread', 'Build me a team', 1) + btn('report', 'hit', 'Grade my team')}${btn('matchup', 'intimidate', 'Plan a match')}</div>`; };
+  return `<div class="mgacts">${has ? btn('report', 'hit', 'Score my team', 1) + btn('auto', 'spread', 'Build a team') : btn('auto', 'spread', 'Build me a team', 1) + btn('report', 'hit', 'Score my team')}${btn('matchup', 'intimidate', 'Plan a match')}</div>`; };
 /* the desktop 6v6 as a manga spread: each side is a page (two leads big with speed lines, the back pair, the bench) */
 MG.spread = () => { const E2 = META.events; let ev = null, t = null; const ms = members();
   if (E2 && Array.isArray(E2.events)) for (const e of E2.events) { const w = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (w) { ev = e; t = w; break; } }

@@ -1011,6 +1011,8 @@
 @A [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub){max-width:none!important;margin:0!important;padding:0!important;width:auto!important}
 @A [data-pane="calc"] .ar-dcband .ar-dccopy .sub{margin-top:6px!important;padding-bottom:0!important;min-height:0!important}
 @A [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub)::before{content:none!important;display:none!important}
+/* Nov 10 (site critique): the defender's picture stands on the left, so its name and set sit on the right (they ran under Sneasler) */
+@A [data-pane="calc"] .ar-dcband.def .ar-dccopy{margin-left:auto;margin-right:20px;text-align:right}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy{color:#fff}
 @A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy :is(.nm,.sub){color:#fff!important}
 /* Sim (Nov 7, option A): in dark mode the words sit right on the band, no box. A soft dark fade across the band's left end

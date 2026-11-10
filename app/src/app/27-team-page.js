@@ -8,7 +8,7 @@ function renderTeamHero(ms) { const el = $('teamHero'); if (!el) return; if (!ms
   if (v.RD) stats.push([v.RD.score + '%', 'ready for top threats', '']);
   if (v.tr) stats.push([`${v.tr.w}–${v.tr.l}`, 'your record', 'good']);
   if (v.best) stats.push([Math.round(v.best.wr * 100) + '%', v.best.k === 6 ? 'won at events' : 'similar teams won', '']);
-  if (v.CK) stats.push([`${v.CK.pass}/${v.CK.n}`, 'checklist', '']);
+  if (v.CK) stats.push([`${v.CK.pass}/${v.CK.n}`, 'team checks', '']);
   const mons = S.slots.map((s, i) => ({p: byName.get(s.n), i})).filter(x => x.p);
   el.className = 'thero ' + lvl; el.hidden = false;
   el.innerHTML = `<div class="thtop"><span class="thk">Your team · ${mons.length}/6</span><span class="thbadge">${esc(shortHead(v.head))}</span></div>

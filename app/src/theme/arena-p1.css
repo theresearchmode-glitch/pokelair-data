@@ -135,6 +135,7 @@
   @A .ar-deck{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:0 48px;align-items:start}
   @A .ar-hh{padding-top:24px;font-size:clamp(52px,5.4vw,76px)!important}
   @A .ar-hero{width:calc(100% + var(--ar-gutter));height:480px;margin:0 0 0 calc(-1 * var(--ar-gutter))}
+  /* Nov 10 (site critique): 1001-1199px the page's side margin is 16px, so pulling out by the full gutter (32px) ran 16px past the window */
   @A .ar-hero-bg{top:40px;clip-path:polygon(0 10%,100% 0,94% 88%,0 100%)}
   @A .ar-hero-mon{width:clamp(300px,27vw,420px)!important;height:clamp(300px,27vw,420px)!important;right:-40px;top:-24px}
   @A .ar-hero-rank{left:calc(var(--ar-gutter) + 8px);top:138px;font-size:17px}
@@ -507,6 +508,7 @@
 @A .ar-art.is-empty .ar-nm{color:var(--ar-ink-2)!important;font-family:var(--ar-body)!important;font-style:normal!important;font-weight:600!important;font-stretch:100%!important}
 @media (hover:hover){@A button.ar-art.is-empty:hover .ar-f{transform:skewX(var(--ar-slant)) translateY(-2px)}}
 /* hover: the hero and the runners lift like the art tiles */
+@media (min-width:1001px) and (max-width:1199px){@A .ar-hero{width:calc(100% + 16px);margin-left:-16px}}
 @media (hover:hover){@A .ar-hero:hover .ar-hero-bg,@A .ar-runner:hover .ar-runner-f{transform:translateY(-3px)}
   @A .ar-hero:hover .ar-hero-mon,@A .ar-runner:hover .ar-runner-mon{translate:0 -3px}}
 @media (prefers-reduced-motion:no-preference){@A :is(.ar-hero-bg,.ar-runner-f,.ar-hero-mon,.ar-runner-mon){transition:transform .16s ease-out,translate .16s ease-out}}
@@ -1065,4 +1067,4 @@
 @A .ar-ss .ar-ssrow{flex-wrap:nowrap}
 /* the score block sits beside the name only when both fit (840px+); below that it goes under the name, full width (resize sweep, Nov 9) */
 @media (min-width:840px){@A .ar-titlerow .ar-score.ar-ss{flex:0 1 auto;max-width:min(520px,58%)}}
-@media (max-width:839px){@A .ar-titlerow:has(.ar-ss){flex-direction:column;align-items:stretch;gap:8px}@A .ar-titlerow .ar-score.ar-ss{width:100%}}
+@media (max-width:839px){@A .ar-titlerow:has(.ar-ss){flex-direction:column;align-items:stretch;gap:16px}@A .ar-titlerow .ar-score.ar-ss{width:100%}}
