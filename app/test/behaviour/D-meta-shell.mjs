@@ -733,7 +733,7 @@ t('DUP-12', 'Every data source named in How We Calculate is credited in About an
   // a source counts as credited when its name (ignoring spaces and words like "replays" / "usage stats") is in the footer credits
   const norm = x => x.toLowerCase().replace(/\b(replays|usage stats|data)\b/g, '').replace(/[^a-z0-9é]/g, '');
   await d.tapFooter('Sources and credits'); const credits = norm(await d.footerText()); const miss = used.filter(s => !credits.includes(norm(s))); expect(!miss.length, 'used but not credited: ' + miss.join(', ')); }),
-  {known: 'RK9 and project-red-data feed numbers but are not credited in About/footer (inventory DUP-12, possible credit gap)'});
+  /* Nov 11: fixed. The gap was How We Calculate still naming RK9 and project-red-data, both dropped Nov 1 (terms / no licence). */);
 
 // =============================== ABOUT · About & Legal ===============================
 t('ABOUT-01', 'About head with the four chips', run({team: TEAM}, async ({ui}) => {
