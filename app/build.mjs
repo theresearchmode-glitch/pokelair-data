@@ -38,7 +38,13 @@ if (process.argv.includes('--v2')) {
   const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\n` + L.map(rd).join('\n') + '\n' + P.scripts.map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};</script>\n` : '';
-  const page = rd(P.head).replace('<meta charset="utf-8">', m => m + artTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${js}\n</script>\n</body></html>\n`;
+  // --preview-data (redesign artifact only): a copy of today's daily data (out/*.json) answers the page's data requests, so a
+  // preview shows the same numbers as the live site. Never used for the live site, which reads its own daily data.
+  let prevTag = '';
+  if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
+    const D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': o('meta_tour.json'), 'meta/teams': o('teams.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json')};
+    prevTag = `<script>(()=>{const D=${JSON.stringify(D).replace(/</g, '\\u003c')};const real=window.claude;window.claude={use:async n=>{if(n==='db')return {doc:q=>({onSnapshot:cb=>{setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5);return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})};return real&&real.use?real.use(n):null}};})();</script>\n`; }
+  const page = rd(P.head).replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${js}\n</script>\n</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
   console.log(`built dist/v2.html (${(page.length / 1024).toFixed(0)} KB; ${P.css.length} CSS layers, ${P.data.length} data files, ${P.scripts.length} scripts${(P.logic || []).length ? `, ${P.logic.length} shared logic files` : ''})`);
   process.exit(0); }
