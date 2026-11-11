@@ -1,13 +1,17 @@
 // First-visit My Team mock-up (R2): real top six ratings + today's underdog from the site, upscaled art, logo.
 // node experiments/make-firstvisit.mjs  -> docs/rebuild/mocks/out/firstvisit.html + PNGs (desktop/phone x light/dusk)
 import fs from 'node:fs'; import vm from 'node:vm'; import {fileURLToPath} from 'node:url'; import {chromium} from 'playwright';
-import {open, closeAll} from '../app/test/behaviour/harness.mjs';
+import {open, closeAll, DOCS} from '../app/test/behaviour/harness.mjs';
 const ROOT = fileURLToPath(new URL('..', import.meta.url)), MOCKS = ROOT + 'docs/rebuild/mocks/', OUT = MOCKS + 'out/';
 const helpers = fs.readFileSync(ROOT + 'app/src/app/15-visual-helpers.js', 'utf8'), i0 = helpers.indexOf('SPRITE_ID =');
 const SPRITE_ID = JSON.parse(helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1));
 const sb = {}; vm.createContext(sb); vm.runInContext(fs.readFileSync(ROOT + 'app/src/data/logos.js', 'utf8').replace(/\b(const|let)\s+NP_SVG/, 'NP_SVG'), sb);
 const art = n => { const id = SPRITE_ID[n]; const f = ROOT + `docs/rebuild/art/up1024/${id}.webp`; if (!id || !fs.existsSync(f)) throw new Error('no art for ' + n); return 'data:image/webp;base64,' + fs.readFileSync(f).toString('base64'); };
 const UNDERDOG = process.env.UNDERDOG || 'Flapple'; // Sim, Nov 11: Flapple first. Top six in the site's own order (raw total, as the ratings list ranks them)
+
+// meta/perf as the morning refresh writes it (same as make-ratings.mjs / ratings-snapshot.mjs), so numbers match the live site's Nov 10 data
+{ const PERF = JSON.parse(fs.readFileSync(ROOT + 'out/perf.json', 'utf8'));
+  DOCS['meta/perf'] = Object.assign({adj: DOCS['meta/perf'] && DOCS['meta/perf'].adj}, PERF, {updated: (DOCS['meta/perf'] || {}).updated}); }
 const {ui, close} = await open({});
 const s = JSON.parse(await ui.peek(`JSON.stringify((()=>{const one=p=>{const r=rating(p);return {n:p.n,d:p.d,r:RS(r.total),u:r.usage,t:r.total};};
   return {top:[...byName.values()].map(one).sort((a,b)=>b.t-a.t).slice(0,6),under:one(byName.get(${JSON.stringify(UNDERDOG)}))};})())`));

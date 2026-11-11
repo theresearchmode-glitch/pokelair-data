@@ -30,7 +30,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Damage Calc | 3,170 | 2,733 | 2,261 **over** | not drawn yet |
 | Type Chart | 3,105 | 2,391 | 1,856 **over** | not drawn yet |
 | This Week | 4,724 **over** | 3,647 **over** | 3,361 **over** | not drawn yet |
-| Pokémon Ratings | 3,064 | 2,441 | 2,379 **over** | not drawn yet |
+| Pokémon Ratings | 3,064 | 2,441 | 2,379 **over** | 2,949 / 2,308 / 1,790 (Nov 11) |
 | Usage | 2,136 | 2,017 | 2,086 **over** | not drawn yet |
 | Popular Sets | 2,877 | 2,204 | 2,224 **over** | not drawn yet |
 | Winning Teams | 3,755 **over** | 2,846 | 2,790 **over** | not drawn yet |
@@ -48,3 +48,5 @@ This table records the rule in design-system.md section 9. Heights are full page
 - **Home, rebuild (Nov 11): REVERSED by Sim ("38px is barely anything, find a way").** The tool descriptions are back on phone. The space came from smaller Pokémon art on phone (hero, the two sixes, the underdog), never from text or spacing. The first version of this note, kept for the record: The phone page first measured 4,238px, over the 4,200 limit. Instead of shrinking anything, the "Everything NastyPlot does" tiles show only the tool names on phone, without their one-line descriptions. Each tool is still one tap away, and the descriptions still show on iPad and desktop. Sim can reverse this.
 - **Home also changed:** the "This week in the ratings" chips moved from under the hero into the empty half beside the underdog, as a labelled list ("up 5 points": rating points, checked in AR.week). The old Welcome card, What's New and the sample-team note are not drawn. Each appears only in a special state (first visit, after an update, or while the sample team is loaded), never in the default page.
 - **Pokémon info sheet, rebuild (Nov 11):** measured as a page, the sheet is 2,431px on phone, 1,744 on iPad and 1,417 on desktop. The page-length limits are for pages and the sheet scrolls by itself, so these are recorded for reference. It shows the Info tab, which is the default for a first visit (today's site remembers the last tab chosen).
+- **Ratings, rebuild (Nov 11):** drawn by a helper agent, then checked and adjusted. Desktop is 10px under its limit. It shows 12 rows plus "See all 345 Pokémon", so no exception is needed. On phone the filter chips wrap so none is cut off at the edge.
+- **All mock-up scripts now read the morning refresh (out/perf.json) the way the live site does** (fix found by the Ratings helper). The test harness's frozen data makes On teams and Win rate fall back to Nov 1; the scripts now show the live Nov 10 numbers. Ratings and their order did not change.

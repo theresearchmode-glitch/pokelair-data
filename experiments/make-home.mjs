@@ -2,13 +2,17 @@
 // Ratings come live from the site through the test harness. The hero, This Week chips, the latest winner and the game plan
 // were read from today's Home on Nov 11 (sample team below). The event's organiser handle is left out (no-names rule).
 import fs from 'node:fs'; import vm from 'node:vm'; import {fileURLToPath} from 'node:url'; import {chromium} from 'playwright';
-import {open, closeAll} from '../app/test/behaviour/harness.mjs';
+import {open, closeAll, DOCS} from '../app/test/behaviour/harness.mjs';
 const ROOT = fileURLToPath(new URL('..', import.meta.url)), MOCKS = ROOT + 'docs/rebuild/mocks/', OUT = MOCKS + 'out/';
 const helpers = fs.readFileSync(ROOT + 'app/src/app/15-visual-helpers.js', 'utf8'), i0 = helpers.indexOf('SPRITE_ID =');
 const SPRITE_ID = JSON.parse(helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1));
 const sb = {}; vm.createContext(sb); vm.runInContext(fs.readFileSync(ROOT + 'app/src/data/logos.js', 'utf8').replace(/\b(const|let)\s+NP_SVG/, 'NP_SVG'), sb);
 const art = n => { const id = SPRITE_ID[n]; const f = ROOT + `docs/rebuild/art/up1024/${id}.webp`; if (!id || !fs.existsSync(f)) throw new Error('no art for ' + n); return 'data:image/webp;base64,' + fs.readFileSync(f).toString('base64'); };
 const TEAM = ['Garchomp', 'Sneasler', 'Charizard-Mega-Y', 'Whimsicott', 'Basculegion', 'Kingambit'];
+
+// meta/perf as the morning refresh writes it (same as make-ratings.mjs / ratings-snapshot.mjs), so numbers match the live site's Nov 10 data
+{ const PERF = JSON.parse(fs.readFileSync(ROOT + 'out/perf.json', 'utf8'));
+  DOCS['meta/perf'] = Object.assign({adj: DOCS['meta/perf'] && DOCS['meta/perf'].adj}, PERF, {updated: (DOCS['meta/perf'] || {}).updated}); }
 const {ui, close} = await open({team: TEAM, width: 1440});
 // Top of the Meta: read from today's Home itself, so the order and ranks are exactly the site's (one source for every number)
 await ui.go('home', 1500);

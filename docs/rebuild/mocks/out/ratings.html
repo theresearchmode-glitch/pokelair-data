@@ -5,8 +5,8 @@
 /* Ratings (R2, Meta > Pokémon ratings). Every feature of today's Ratings page (inventory D-meta-shell RATE-01..09, NAV-04/05) is here
    or one tap away. Rules: design-system.md 2b (floor rule, normalised colour, filled main action) and 9 (length).
    Reference: docs/rebuild/reference-2026-11-11 section 8. Real data from today's site (make-ratings.mjs). */
-:root{--gut:96px;--dockh:88px}
-.page{position:relative;overflow:hidden;padding-bottom:var(--dockh)}
+:root{--gut:max(96px,calc(50vw - 624px));--dockh:88px}
+.page{position:relative;overflow:clip;padding-bottom:var(--dockh)}
 header,.subnav,main,footer{position:relative;z-index:1}
 header{height:76px;display:flex;align-items:center;gap:48px;padding:0 var(--gut)}header .logo svg{height:36px;display:block}
 nav{display:flex;gap:36px}nav a{font:500 15px/1 var(--b);color:var(--ink-2)}
@@ -14,7 +14,7 @@ nav a.on{color:var(--ink);font-weight:700;position:relative}nav a.on::after{cont
 .hs{margin-left:auto;display:flex;align-items:center;gap:12px;width:360px;height:44px;padding:0 12px 0 18px;border:1.5px solid var(--ink);transform:skewX(-10deg);color:var(--ink-3);font:500 15px/1 var(--b)}
 .hs>*{transform:skewX(10deg)}.hs svg{width:18px;height:18px;flex:none}.hs span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hs kbd{flex:none;display:grid;place-items:center;width:24px;height:24px;border:1px solid var(--rule);border-radius:var(--r-s);font:600 13px/1 var(--b);color:var(--ink-2);background:var(--surface)}
-.hs-btn{display:none}
+.hs-btn{display:none}.hs .sm{display:none}
 :root[data-theme="dusk"] .hs{border-color:rgba(228,224,236,.42)}
 /* Meta switches (NAV-04 Pokémon | Tournaments, NAV-05 Rating / Usage / Sets) */
 .subnav{display:flex;align-items:center;gap:32px;padding:4px var(--gut) 0}
@@ -32,7 +32,7 @@ main{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:64px;p
 .facts{margin-top:8px;font:500 13px/1.5 var(--b);color:var(--ink-2)}.facts span.l{display:block}
 .facts b{font-weight:700;color:var(--ink)}
 .q{display:inline-grid;place-items:center;width:20px;height:20px;margin-left:4px;vertical-align:-4px;border:1.5px solid var(--ink-3);border-radius:50%;font:700 13px/1 var(--b);color:var(--ink-2)}
-.links{display:flex;gap:24px;margin-left:auto;font:600 15px/1.2 var(--b)}.links a{color:var(--plot-text)}
+.links{display:flex;gap:24px;margin-left:auto;font:600 15px/1.2 var(--b);white-space:nowrap}.links a{color:var(--plot-text)}.links.in{display:none}
 /* the featured one stands on the tilted panel in its normalised colour, on its pool (design-system 2b) */
 .stage{position:relative;height:300px;margin-top:24px}
 .stage .panel{position:absolute;left:0;right:0;top:84px;height:176px;transform:skewY(-7deg);border-radius:var(--r-m);
@@ -46,7 +46,7 @@ main{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:64px;p
 :root[data-theme="dusk"] .stage .pool{background:radial-gradient(closest-side,rgba(var(--cp),.9),rgba(var(--cp),.32) 45%,transparent)}
 :root[data-theme="dusk"] .stage img{filter:drop-shadow(0 0 .8px rgba(255,255,255,.6)) drop-shadow(0 14px 16px rgba(0,0,0,.45))}
 :root[data-theme="dusk"] .stage .plate{background:linear-gradient(180deg,#3E3D56,#2C2B3D);color:#F1EDE7;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35)}
-.fname{margin-top:20px}.fname h3{font-size:28px;line-height:1.05}
+.fname{margin-top:20px}.prk{display:none}.fname h3{font-size:28px;line-height:1.05}
 .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text);margin-bottom:4px}
 .fname .mg{font-family:var(--b);font-weight:700;font-size:13px;letter-spacing:.04em}
 .types{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}.fname .types{margin-top:8px}
@@ -56,19 +56,19 @@ main{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:64px;p
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px;padding-top:16px;border-top:1px solid var(--rule)}
 .stats dt{font:500 13px/1.3 var(--b);color:var(--ink-2)}.stats dd{margin-top:6px;font:900 28px/1 var(--u);font-style:italic;letter-spacing:-.02em}
 .stats dd .unit{font-family:var(--b);font-style:normal;font-weight:600}.stats small{display:block;margin-top:6px;font:500 13px/1.3 var(--b);color:var(--ink-3)}
-.acts{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:20px}.acts .btn{height:48px;padding:0 24px}.acts .btn2{height:44px}
+.acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:12px;margin-top:20px}.acts .btn{height:48px;padding:0 16px;white-space:nowrap}.acts .btn2{height:48px;padding:0 12px;white-space:nowrap}.acts .mine,.acts .add{grid-column:1/-1}
 .acts .add{font:600 15px/1.2 var(--b);color:var(--plot-text)}
-.hint{margin-top:12px;font:400 13px/1.5 var(--b);color:var(--ink-3)}
+.hint .hp{display:none}.hint{margin-top:12px;font:400 13px/1.5 var(--b);color:var(--ink-3)}
 /* the list */
 .find{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
 .find .field{height:48px}.find .field svg{width:18px;height:18px;flex:none}.find .field span{flex:1;min-width:0;white-space:nowrap}
-.find .cnt{font:600 15px/1 var(--b);color:var(--ink-2);white-space:nowrap}.find .cnt b{font:900 20px/1 var(--u);font-style:italic;color:var(--ink);margin-right:4px}
+.find .sm{display:none}.find .cnt{font:600 15px/1 var(--b);color:var(--ink-2);white-space:nowrap}.find .cnt b{font:900 20px/1 var(--u);font-style:italic;color:var(--ink);margin-right:4px}
 .filt{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px}.filt .lab{font:600 13px/1 var(--b);color:var(--ink-2);margin-right:4px;letter-spacing:.04em}
 .filt .chip i{font-style:normal;margin-left:6px;color:var(--ink-3);font-weight:600}.filt .chip.on i{color:inherit;opacity:.75}
 :root[data-theme="dusk"] .chip:not(.on){background:#262535}
 .rk{--cols:36px 64px minmax(0,1fr) minmax(48px,120px) 52px 80px 88px;margin-top:20px}
 .th,.row{display:grid;grid-template-columns:var(--cols);column-gap:14px;align-items:center}
-.th{height:40px;border-bottom:1px solid var(--rule);font:600 13px/1 var(--b);color:var(--ink-2)}.th .r{text-align:right}.th .c3{grid-column:3}.th .c4{grid-column:4/6;text-align:right}
+.th .key{display:none}.th{height:40px;border-bottom:1px solid var(--rule);font:600 13px/1 var(--b);color:var(--ink-2)}.th .r{text-align:right}.th .c3{grid-column:3}.th .c4{grid-column:4/6;text-align:right}
 .tierh{display:flex;align-items:center;gap:12px;height:52px;border-bottom:1px solid var(--rule);font:600 13px/1.3 var(--b);color:var(--ink-2)}
 .tierh .chip{height:28px;padding:0 14px;font:700 13px/1 var(--b)}
 .row{position:relative;height:72px;border-bottom:1px solid var(--rule);cursor:pointer;outline:none}
@@ -82,20 +82,20 @@ main{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:64px;p
 .row .art img{position:relative;width:64px;height:64px;object-fit:contain;object-position:50% 100%;padding-bottom:6px;filter:drop-shadow(2px 4px 4px rgba(30,20,50,.16))}
 :root[data-theme="dusk"] .row .art .sh{background:radial-gradient(closest-side,rgba(var(--cp),.75),rgba(var(--cp),.25) 45%,transparent)}
 :root[data-theme="dusk"] .row .art img{filter:drop-shadow(0 0 .6px rgba(255,255,255,.5))}
-.who{min-width:0}.who b{display:block;font:700 17px/1.2 var(--b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who{min-width:0}.who .nl{display:flex;align-items:baseline;gap:12px;min-width:0}.who .mine{flex:none}.who b{font:700 17px/1.2 var(--b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.who .mg{margin-bottom:2px}
 .who .types{margin-top:6px;flex-wrap:nowrap}
 .who .ph{display:none}
 .bar{height:10px;background:var(--rule);transform:skewX(var(--slant))}.bar i{display:block;height:100%;background:var(--ink)}
 :root[data-theme="dusk"] .bar i{background:#D6D1CA}
 .row .r{font:900 24px/1 var(--u);font-style:italic;text-align:right;letter-spacing:-.02em}
 :root[data-theme="dusk"] .row .r{color:#D6D1CA}
-.row .p{text-align:right;font:600 17px/1 var(--b)}.row .p small{display:block;margin-top:6px;font:500 13px/1 var(--b);color:var(--ink-3)}
+.row .p{text-align:right;font:600 17px/1 var(--b)}.row .p .unit,.row .p small{font-size:13px}.row .p small{display:block;margin-top:6px;font:500 13px/1 var(--b);color:var(--ink-3)}
 .more{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 24px;margin-top:24px}
 .more .btn{height:48px;padding:0 28px}
 .tiers{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.tiers .lab{font:600 13px/1 var(--b);color:var(--ink-2);margin-right:4px;letter-spacing:.04em}
 .tiers .chip b{font-weight:700;margin-right:8px}.tiers .chip i{font-style:normal;color:var(--ink-3);font-weight:600}
 .legend{margin-top:12px;font:400 13px/1.5 var(--b);color:var(--ink-3)}
-.fold{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:32px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font:600 15px/1.4 var(--b)}
+.fold{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:24px;padding:16px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font:600 15px/1.4 var(--b)}
 .fold small{display:block;font:400 13px/1.5 var(--b);color:var(--ink-2)}.fold i{font-style:normal;font-size:20px;color:var(--ink-3)}
 footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}footer svg{height:24px}footer .r{margin-left:auto;display:flex;gap:32px}
 /* team dock: frosted, along the bottom of every page except My Team (reference section 8) */
@@ -109,44 +109,58 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
 .dock .six{display:grid;grid-template-columns:repeat(6,56px);gap:12px}
 .dock .six .m{position:relative;height:56px}.dock .six img{position:relative;width:56px;height:56px;object-fit:contain;object-position:50% 100%;padding-bottom:4px}
 .dock .six .sh{position:absolute;left:50%;bottom:2px;width:48px;height:10px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(var(--cp),.55),rgba(var(--cp),.2) 55%,transparent)}
-.dock .btn2{margin-left:auto;height:44px}.dock .go{display:none}
+.dock .btn2{margin-left:auto;height:44px;white-space:nowrap}.dock .go{display:none}
 /* iPad and narrow desktop windows: one column, the featured Pokémon becomes a band beside its numbers */
 @media (max-width:1439px){:root{--gut:48px}main{grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:48px}.feat h1{font-size:48px}.stage{height:280px}.stage img{width:240px;height:240px}}
-@media (max-width:1179px){:root{--gut:32px}
-  header{gap:32px}nav{gap:24px}.hs{width:280px}
+@media (max-width:1279px){:root{--gut:32px}
+  header{gap:32px}nav{gap:24px}.hs{width:auto;flex:0 1 300px;min-width:0}.hs .lg{display:none}.hs .sm{display:block}
+  .links.top{display:none}.links.in{display:flex;margin:12px 0 0}
   main{grid-template-columns:minmax(0,1fr);gap:32px;padding-top:24px}
-  #feat{position:relative;top:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:40px;align-items:start}
+  #feat{margin-top:24px}.feat .info{align-self:center}
+  #feat{position:relative;top:0;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:40px;align-items:start}.acts .btn{padding:0 12px}
   .feat .intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:40px;align-items:end}
   .feat h1{font-size:46px;margin-top:12px}.lede{margin-top:0}
   .stage{margin-top:16px}.feat .info{align-self:center}.fname{margin-top:0}
   .dock .six{grid-template-columns:repeat(6,48px);gap:8px}.dock .six .m,.dock .six img{width:48px;height:48px}
   footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0}}
-@media (max-width:899px){.dock .tn{display:none}.feat h1{font-size:40px}}
+@media (max-width:779px){#feat{display:grid;grid-template-columns:260px minmax(0,1fr);column-gap:24px;align-items:center}#feat .info{display:contents}
+  #feat .stats,#feat .acts,#feat .hint{grid-column:1/-1}}
+@media (max-width:899px){
+  .th .c3{grid-column:3/5;white-space:nowrap}.th .c4{grid-column:5}
+  .rk{--cols:32px 60px minmax(0,1fr) minmax(40px,72px) 48px 76px 84px}.row .art,.row .art img{width:60px;height:60px}
+  .who .mine .t{display:none}.th .key{display:inline-flex;margin-left:16px;font-weight:600}.th .key .t{display:inline}
+  .filt{flex-wrap:nowrap;overflow-x:auto;margin:16px calc(-1*var(--gut)) 0;padding:0 var(--gut) 4px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}.filt::-webkit-scrollbar{display:none}
+  header .hs{display:none}.dock .six{flex:1;min-width:0;grid-template-columns:repeat(6,minmax(0,1fr))}.dock .six .m,.dock .six img{width:100%}header .hs-btn{display:grid;place-items:center;width:44px;height:44px;margin-left:auto;color:var(--ink)}.hs-btn svg{width:22px;height:22px}.dock .tn{display:none}.feat h1{font-size:40px}}
 /* phones */
 @media (max-width:699px){:root{--gut:16px;--dockh:72px}
   header{height:60px;justify-content:space-between}nav,.hs{display:none}
   .hs-btn{display:grid;place-items:center;width:44px;height:44px;margin-left:auto;color:var(--ink)}.hs-btn svg{width:22px;height:22px}
   .subnav{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding-top:0}.tabs{gap:24px}.seg{width:100%}
   main{padding:20px var(--gut) 32px;gap:28px}
-  #feat,.feat .intro{display:block}.links{margin:0}.feat h1{font-size:36px;margin-top:12px}.lede{font-size:16px;margin-top:12px}
-  .stage{height:240px;margin-top:16px}.stage .panel{top:64px;height:140px;left:8px;right:8px}.stage img{width:208px;height:208px;bottom:28px}.stage .pool{width:200px}
-  .stage .plate{height:36px;font-size:15px;padding:0 16px}
-  .fname{margin-top:16px}.stats dd{font-size:24px}
-  .acts .btn,.acts .btn2{flex:1 1 0;min-width:0;padding:0 12px;white-space:nowrap}.acts .mine{flex-basis:100%}
+  .feat .intro{display:block}.feat h1{font-size:36px;margin-top:12px}.lede{font-size:16px;margin-top:12px}
+  .stats dd{font-size:24px}#feat{margin-top:20px}
   .find .field{height:48px;padding:0 14px}
-  .filt{flex-wrap:nowrap;overflow-x:auto;margin:16px calc(-1*var(--gut)) 0;padding:0 var(--gut) 4px;scrollbar-width:none}.filt::-webkit-scrollbar{display:none}
-  .rk{--cols:24px 56px minmax(0,1fr) 44px;margin-top:16px}.th .c4{grid-column:4}.th .c6,.th .c7,.bar,.row .p{display:none}
+  .filt{flex-wrap:nowrap;overflow-x:auto;margin:16px calc(-1*var(--gut)) 0;padding:0 var(--gut) 4px;scrollbar-width:none}.filt::-webkit-scrollbar{display:none}.filt{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+  .rk{--cols:24px 56px minmax(0,1fr) 44px;margin-top:16px}.th .c3{grid-column:3}.th .c4{grid-column:4}.th .c6,.th .c7,.bar,.row .p{display:none}
   .th,.row{column-gap:10px}.row{height:96px}.row::before{inset:0 -8px}
   .row .art,.row .art img{width:56px;height:56px}.row .art .sh{width:48px}
   .row .n{font-size:15px}.row .r{font-size:22px}
   .who b{font-size:16px}.who .types{margin-top:4px}
+  .tierh .ra{display:none}.hint .hw{display:none}.hint .hp{display:inline}
+  #feat{display:grid;grid-template-columns:136px minmax(0,1fr);column-gap:16px;align-items:center}#feat .info{display:contents}
+  #feat .stats,#feat .acts,#feat .hint{grid-column:1/-1}.stage{height:168px;margin-top:0}.stage .panel{top:52px;height:96px;left:4px;right:4px}
+  .stage img{width:136px;height:136px;bottom:18px}.stage .pool{width:120px;height:26px;bottom:12px}.stage .plate{display:none}
+  .fname{margin-top:0}.fname h3{font-size:24px}.prk{display:block;margin-bottom:8px;font:700 13px/1.3 var(--b);color:var(--ink-2)}
   .who .ph{display:block;margin-top:6px;font:500 13px/1.2 var(--b);color:var(--ink-2);white-space:nowrap}.who .ph b{display:inline;font:700 13px/1 var(--b);color:var(--ink)}
-  .more{display:block}.more .btn{width:100%}.tiers{margin-top:16px}
-  .dock{gap:12px}.dock .sc b{font-size:28px}.dock .sc span{font-size:15px}.dock .sc small{display:none}
+  .more{display:block}.more .btn{width:100%}.tiers{margin-top:16px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.tiers .lab{grid-column:1/-1;margin-bottom:4px}.tiers .chip{justify-content:center;padding:0 4px}.tiers .chip b{margin-right:6px}
+  footer>span{display:block;margin-top:8px}
+  .dock{gap:12px}.dock .sc{display:block}.dock .sc b{display:block;font-size:28px}.dock .sc .w{margin-top:6px}.dock .sc span{font:700 13px/1 var(--b);font-style:normal}.dock .sc small{display:none}
   .dock .six{flex:1;min-width:0;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.dock .six .m,.dock .six img{width:100%;height:44px}.dock .six .sh{width:80%}
-  .dock .btn2{display:none}.dock .go{display:grid;place-items:center;width:44px;height:44px;margin-left:auto;font:600 22px/1 var(--b);color:var(--ink-2)}
+  .dock .btn2{display:none}.dock .go{display:grid;place-items:center;width:32px;height:44px;margin-left:auto;font:600 22px/1 var(--b);color:var(--ink-2)}
   footer{padding:24px var(--gut)}footer .r{flex-wrap:wrap;gap:12px 24px}}
-@media (max-width:379px){.ty{padding:0 10px}.who b{font-stretch:88%}.acts .btn,.acts .btn2{font-size:15px}.dock .sc span{display:none}.stats dd{font-size:22px}.feat h1{font-size:32px}}
+@media (max-width:379px){.tiers{grid-template-columns:repeat(3,minmax(0,1fr))}.th .pk{display:none}.th .key{margin-left:0}.acts{grid-template-columns:minmax(0,1fr)}.find .lg{display:none}.find .sm{display:block}.ty{padding:0 10px}.who b{font-stretch:88%}.acts .btn,.acts .btn2{font-size:15px}.stats dd{font-size:22px}.feat h1{font-size:32px}}
+/* section 9.5 (nothing cut off at the edge), as on My Box: below 900 the filter chips wrap instead of running under a fade */
+@media (max-width:899px){.filt{flex-wrap:wrap!important;overflow:visible!important;-webkit-mask-image:none!important;mask-image:none!important;margin-right:0!important}}
 </style></head><body><div class="page" id="page"></div>
 <script>
 document.documentElement.dataset.theme=location.hash.slice(1)||'light';
@@ -171,36 +185,36 @@ const I={search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
   const DK=document.documentElement.dataset.theme==='dusk',CP={};
   await Promise.all([...D.top,...D.team.six].map(async m=>{CP[m.img]=CP[m.img]||norm(await hue(m.img)).join(',');}));
   const T0=D.tiers[0],touch=matchMedia('(hover:none)').matches;
-  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a>My Team</a><a>Battle</a><a class="on">Meta</a></nav>
-    <div class="hs" role="search">${I.search}<span>Search Pokémon, tools, teams</span><kbd title="Press / to search">/</kbd></div><a class="hs-btn" aria-label="Search">${I.search}</a></header>`;
+  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Home</a><a>Build</a><a>My Team</a><a>Battle</a><a class="on">Meta</a></nav>
+    <div class="hs" role="search">${I.search}<span class="lg">Search Pokémon, tools, teams</span><span class="sm">Search everything</span><kbd title="Press / to search">/</kbd></div><a class="hs-btn" aria-label="Search">${I.search}</a></header>`;
   const subnav=`<div class="subnav"><div class="tabs"><a class="on">Pokémon</a><a>Tournaments</a></div>
-    <div class="seg"><a class="on">${I.star}Rating</a><a>${I.bars}Usage</a><a>${I.list}Sets</a></div><div class="links"><a>How ratings work →</a><a>Track Record →</a></div></div>`;
+    <div class="seg"><a class="on">${I.star}Rating</a><a>${I.bars}Usage</a><a>${I.list}Sets</a></div><div class="links top"><a>How ratings work →</a><a>Track Record →</a></div></div>`;
   const feat=m=>`<div class="stage" style="--cp:${CP[m.img]}"><i class="panel"></i><i class="pool"></i><img src="${m.img}" alt="${esc(m.d)}">
       <div class="plate">#${m.rank} · Rated ${m.r} · ${m.tier} tier</div></div>
-    <div class="info"><div class="fname"><h3 class="u">${nm(m.d)}</h3><div class="types">${m.t.map(ty).join('')}${m.gem?'<span class="gem">◆ Hidden gem</span>':''}</div></div>
+    <div class="info"><div class="fname"><span class="prk">#${m.rank} · Rated ${m.r} · ${m.tier} tier</span><h3 class="u">${nm(m.d)}</h3><div class="types">${m.t.map(ty).join('')}${m.gem?'<span class="gem">◆ Hidden gem</span>':''}</div></div>
     <dl class="stats"><div><dt>Base Speed</dt><dd>${m.sp}</dd></div><div><dt>On teams</dt><dd>${pct(m.on)}</dd><small>of ${D.teams} teams</small></div>
       <div><dt>Win rate</dt><dd>${pct(m.wr)}</dd><small>${(m.games||0).toLocaleString('en-US')} games</small></div></dl>
     <div class="acts"><div class="btn main">Open info sheet</div><div class="btn2"><span>Build around it</span></div>${m.mine?'<span class="mine">On your team</span>':'<a class="add">Add to team</a>'}</div>
-    <p class="hint">${touch?'Tap any row and it steps up here.':'Point at any row and it steps up here.'} Nothing covers the list. Rated ${m.range}.</p></div>`;
+    <p class="hint"><span class="hw">${touch?'Tap any row and it steps up here.':'Point at any row and it steps up here.'} Nothing covers the list.</span><span class="hp">Tap any row for its info sheet.</span> Rated ${m.range}.</p></div>`;
   const aside=`<aside class="feat"><div class="intro"><div><div class="eyebrow">Meta · Ratings</div><h1 class="u"><span>Who wins</span><span class="pl">right now.</span></h1></div>
       <div><p class="lede">Every Pokémon rated 0–100 from real tournament results, not opinion.</p>
-      <p class="facts"><span class="l"><b>${D.teams}</b> teams · <b>${D.events}</b> events · <b>${D.games}</b> games</span><span class="l">Reg M‑C doubles · data as of <b>${esc(D.asOf)}</b><span class="q" title="How to read our numbers">?</span></span></p></div></div>
-    <div id="feat">${feat(D.top[0])}</div></aside>
+      <p class="facts"><span class="l"><b>${D.teams}</b> teams · <b>${D.events}</b> events · <b>${D.games}</b> games</span><span class="l">Reg M‑C doubles · data as of <b>${esc(D.asOf)}</b><span class="q" title="How to read our numbers">?</span></span></p><div class="links in"><a>How ratings work →</a><a>Track Record →</a></div></div></div>
+    <div id="feat">${feat(D.top[0])}</div></aside>`;
   const row=(m,i)=>`<div class="row${i?'':' on'}" tabindex="0" role="button" data-i="${i}" style="--cp:${CP[m.img]}" aria-label="${esc(m.d)}, rated ${m.r}, rank ${m.rank}">
       <span class="n">${m.rank}</span><span class="art"><i class="sh"></i><img src="${m.img}" alt=""></span>
-      <span class="who"><b>${nm(m.d)}</b><span class="types">${m.t.map(ty).join('')}${m.mine?'<span class="mine">On your team</span>':''}</span>
+      <span class="who">${m.d.startsWith('Mega ')?'<span class="mg">Mega</span>':''}<span class="nl"><b>${esc(m.d.replace(/^Mega /,''))}</b>${m.mine?'<span class="mine"><span class="t">On your team</span></span>':''}</span><span class="types">${m.t.map(ty).join('')}</span>
         <span class="ph"><b>${(+m.on).toFixed(1)}%</b> on teams · <b>${(+m.wr).toFixed(1)}%</b> win rate</span></span>
       <span class="bar"><i style="width:${m.r}%"></i></span><span class="r">${m.r}</span>
       <span class="p">${pct(m.on)}</span><span class="p">${pct(m.wr)}<small>${(m.games/1000).toFixed(1)}k games</small></span></div>`;
-  const tierHead=k=>{const T=D.tiers.find(t=>t.k===k);return `<div class="tierh"><span class="chip on">${T.k} tier</span><span>${T.band} · ${esc(T.d)} · ${T.n} Pokémon${k==='S'?`, ranked among ${D.of} with results`:''}</span></div>`;};
+  const tierHead=k=>{const T=D.tiers.find(t=>t.k===k);return `<div class="tierh"><span class="chip on">${T.k} tier</span><span>${T.band} · ${esc(T.d)} · ${T.n} Pokémon${k==='S'?`<span class="ra">, ranked among ${D.of} with results</span>`:''}</span></div>`;};
   let rows='';D.top.forEach((m,i)=>{if(!i||m.tier!==D.top[i-1].tier)rows+=tierHead(m.tier);rows+=row(m,i);});
   const list=`<section class="list">
-    <div class="find"><div class="field">${I.search}<span>Find a Pokémon or type</span></div><span class="cnt"><b>${D.all}</b>rated</span></div>
+    <div class="find"><div class="field">${I.search}<span class="lg">Find a Pokémon or type</span><span class="sm">Pokémon or type</span></div><span class="cnt"><b>${D.all}</b>rated</span></div>
     <div class="filt"><span class="lab">Filter</span><span class="chip on">All</span><span class="chip">Megas</span><span class="chip">No Megas</span><span class="chip">◆ Hidden gems<i>${D.gems.length}</i></span><span class="chip">In my box</span><span class="chip">Types<i>18</i></span></div>
-    <div class="rk"><div class="th"><span class="c3">Pokémon</span><span class="c4">Rating</span><span class="r c6">On teams</span><span class="r c7">Win rate</span></div>${rows}</div>
+    <div class="rk"><div class="th"><span class="c3"><span class="pk">Pokémon</span><span class="mine key"><span class="t">On your team</span></span></span><span class="c4">Rating</span><span class="r c6">On teams</span><span class="r c7">Win rate</span></div>${rows}</div>
     <div class="more"><div class="btn">See all ${D.all} Pokémon</div>
       <div class="tiers"><span class="lab">By tier</span>${D.tiers.map(t=>`<span class="chip"><b>${t.k}</b><i>${t.n}</i></span>`).join('')}</div></div>
-    <p class="legend">Top ${D.top.length} of ${D.all} shown. ◆ hidden gem: rarely used, but wins more than its use predicts. Pokémon with few games are marked as an estimate.</p>
+    <p class="legend">Top ${D.top.length} of ${D.all} shown, ranked among ${D.of} with tournament results · ◆ hidden gem: rarely used, wins more than its use predicts · ? few games, an estimate</p>
     <div class="fold"><div>About the ratings<small>How they are made, the 4 data sources and their track record</small></div><i>+</i></div></section>`;
   const T=D.team;
   const dock=`<div class="dock"><div class="tn"><b>${esc(T.name)}</b><small>My Team · ${esc(T.style)}</small></div>

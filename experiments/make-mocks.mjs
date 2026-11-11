@@ -2,7 +2,7 @@
 // the new upscaled art (docs/rebuild/art/up1024) and the logo, then renders desktop/phone x light/dusk screenshots.
 // Usage: node experiments/make-mocks.mjs [mybox] [--dsf=2]   Output: docs/rebuild/mocks/out/<page>-<layout>-<theme>.png
 import fs from 'node:fs'; import vm from 'node:vm'; import {fileURLToPath} from 'node:url'; import {chromium} from 'playwright';
-import {open, closeAll} from '../app/test/behaviour/harness.mjs';
+import {open, closeAll, DOCS} from '../app/test/behaviour/harness.mjs';
 const ROOT = fileURLToPath(new URL('..', import.meta.url)), MOCKS = ROOT + 'docs/rebuild/mocks/', OUT = MOCKS + 'out/';
 const args = process.argv.slice(2), pages = args.filter(a => !a.startsWith('--')).length ? args.filter(a => !a.startsWith('--')) : ['mybox'];
 const DSF = +((args.find(a => a.startsWith('--dsf=')) || '--dsf=1.5').slice(6));
@@ -18,6 +18,10 @@ const BOX = ['Rotom-Wash', 'Glimmora', 'Tyranitar', 'Absol', 'Incineroar', 'Corv
 const TEAM = ['Garchomp', 'Sneasler', 'Charizard-Mega-Y', 'Whimsicott', 'Basculegion', 'Kingambit'];
 
 // real numbers from today's site: shown rating (RS), tier, usage %, win rate, types, base Speed, roles, data date
+
+// meta/perf as the morning refresh writes it (same as make-ratings.mjs / ratings-snapshot.mjs), so numbers match the live site's Nov 10 data
+{ const PERF = JSON.parse(fs.readFileSync(ROOT + 'out/perf.json', 'utf8'));
+  DOCS['meta/perf'] = Object.assign({adj: DOCS['meta/perf'] && DOCS['meta/perf'].adj}, PERF, {updated: (DOCS['meta/perf'] || {}).updated}); }
 const {ui, close} = await open({team: TEAM, box: BOX});
 const site = JSON.parse(await ui.peek(`JSON.stringify((()=>{
   const one=n=>{const p=byName.get(n);const r=rating(p);return {n,d:p.d,t:p.t,sp:p.sp,r:RS(r.total),tier:lTier(r.total).k+' tier',usage:r.usage,wr:r.wr};};
