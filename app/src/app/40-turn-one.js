@@ -1,8 +1,10 @@
 // ---------- turn 1: what your two leads should do into their likely leads ----------
 // Built from each side's usual moves, real damage (39-damage-calc-speed.js) and likely speed.
 // Fake Out the biggest threat, set speed control when they outspeed you, otherwise take the best KO or the best damage.
-function turnOnePlan(mine, theirs, r) {
-  if (r.lead.length < 2 || theirs.length < 2) return '';
+// R3 (Nov 11): the logic is turnOneData (plain data and plain text, no HTML); turnOnePlan only draws it. Today's page and the
+// rebuild's Battle page both draw from turnOneData, so the plan is worked out in one place. Same output: experiments/same-battle.mjs.
+function turnOneData(mine, theirs, r) {
+  if (r.lead.length < 2 || theirs.length < 2) return null;
   const opp = r.B ? likelyLead(theirs, r.B) : theirs.slice(0, 2);
   const L = r.lead.map(i => mine[i]), names = m => new Set(memberMoves(m).moves.map(x => x.name));
   // your leads use their real items and spreads; the weather/terrain the four leads set is in play for every hit
@@ -21,7 +23,7 @@ function turnOnePlan(mine, theirs, r) {
   // each action carries its priority bracket (Fake Out +3, Prankster Tailwind +1, Trick Room −7…) for the turn order below
   const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: grounded(m)});
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
-    if (mv.has('Fake Out') && danger[0] && !used.has('fake')) { used.add('fake'); lines.push([m, `Fake Out ${esc(danger[0].o.d)}`, danger[0].worst ? `its ${esc(danger[0].worst.h.mv.name)} does up to ${dmgP(100 * danger[0].worst.pct)}% of ${esc(danger[0].worst.on.d)}'s HP (${koShort(danger[0].worst.h.r)})` : 'their biggest threat', pr(m, 'Fake Out')]); continue; }
+    if (mv.has('Fake Out') && danger[0] && !used.has('fake')) { used.add('fake'); lines.push([m, `Fake Out ${danger[0].o.d}`, danger[0].worst ? `its ${danger[0].worst.h.mv.name} does up to ${dmgP(100 * danger[0].worst.pct)}% of ${danger[0].worst.on.d}'s HP (${koShort(danger[0].worst.h.r)})` : 'their biggest threat', pr(m, 'Fake Out')]); continue; }
     if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast} of their leads outspeed your side`, pr(m, 'Tailwind')]); continue; }
     if (mv.has('Trick Room') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Trick Room', 'they are faster; Trick Room goes up last this turn (−7) and flips the order from next turn', pr(m, 'Trick Room')]); continue; }
     // attack: prefer a KO, then the most damage; spread moves count both targets; a move that charges first or hits your own
@@ -30,26 +32,32 @@ function turnOnePlan(mine, theirs, r) {
     for (const o of opp) { const h = hitOn(m, memberMoves(m).moves, o); if (!h) continue; const pct = h.r.max / h.r.hp, ko = h.r.min >= h.r.hp && !h.charge;
       const hitsAlly = h.mv.ally && allyHit(h.mv, partner);
       const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
-    if (best) { const nt = hitNote(best.h), ally = best.hitsAlly ? (() => { const r2 = hitOn(m, [best.h.mv], partner); return `; also hits your ${esc(partner.d)}${r2 ? ' for up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '% of its HP' : ''}`; })() : '';
-      lines.push([m, `${esc(best.h.mv.name)} ${best.h.mv.spread ? '(hits both)' : 'into ' + esc(best.o.d)}`, `${best.ko ? 'KOs' : 'up to ' + dmgP(100 * best.pct) + '% of HP, ' + koShort(best.h.r)}${best.h.mv.spread ? ' on ' + esc(best.o.d) : ''}${nt ? ' (' + nt + ')' : ''}${ally}`, pr(m, best.h.mv.name)]); }
+    if (best) { const nt = hitNote(best.h), ally = best.hitsAlly ? (() => { const r2 = hitOn(m, [best.h.mv], partner); return `; also hits your ${partner.d}${r2 ? ' for up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '% of its HP' : ''}`; })() : '';
+      lines.push([m, `${best.h.mv.name} ${best.h.mv.spread ? '(hits both)' : 'into ' + best.o.d}`, `${best.ko ? 'KOs' : 'up to ' + dmgP(100 * best.pct) + '% of HP, ' + koShort(best.h.r)}${best.h.mv.spread ? ' on ' + best.o.d : ''}${nt ? ' (' + nt + ')' : ''}${ally}`, pr(m, best.h.mv.name)]); }
     else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); }
-  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${esc(x.o.d)}'s ${esc(x.worst.h.mv.name)} can KO ${esc(x.worst.on.d)}`);
+  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}`);
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
   // (Stall always moves last inside its bracket)
   const oPr = o => (o.moves || []).some(x => x && x.name === 'Fake Out') ? 3 : 0;
   const order = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0}; })
     .sort((a, b) => b.p - a.p || a.st - b.st || b.s - a.s);
-  /* trial v2: turn one told as a strip in move order. Your moves on blue, their threat on pink; the why stays one short line */
   const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = oPr(o) === 3;
-    return [fo ? 'Fake Out (if they have it)' : `${esc(d.worst.h.mv.name)} into ${esc(d.worst.on.d)}`, fo ? `then ${esc(d.worst.h.mv.name)}: up to ${dmgP(100 * d.worst.pct)}% of ${esc(d.worst.on.d)}'s HP` : `up to ${dmgP(100 * d.worst.pct)}% of its HP (${koShort(d.worst.h.r)})`]; };
+    return [fo ? 'Fake Out (if they have it)' : `${d.worst.h.mv.name} into ${d.worst.on.d}`, fo ? `then ${d.worst.h.mv.name}: up to ${dmgP(100 * d.worst.pct)}% of ${d.worst.on.d}'s HP` : `up to ${dmgP(100 * d.worst.pct)}% of its HP (${koShort(d.worst.h.r)})`]; };
+  // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
+  const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
+    return {x: o.x, me: o.me, speed: o.s, prio: o.p, act: ln ? ln[1] : th ? th[0] : 'Unknown move', why: ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads'}; });
+  return {leads: L, opp, beats, warn, field: F0, terrain: F.terrain};
+}
+function turnOnePlan(mine, theirs, r) { return drawTurnOne(turnOneData(mine, theirs, r)); }
+function drawTurnOne(T) { if (!T) return '';
+  const L = T.leads, opp = T.opp, F0 = T.field;
+  /* trial v2: turn one told as a strip in move order. Your moves on blue, their threat on pink; the why stays one short line */
   const tc = x => { try { return TC[x.p.t[0]] || '#888'; } catch (e) { return '#888'; } };
-  const beats = order.map((o, k) => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
-    const act = ln ? ln[1] : th ? th[0] : 'Unknown move', why = ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads';
-    return `<li class="rzbeat ${o.me ? 'you' : 'them'}" style="--tc:${tc(o.x)}"><span class="rzbn" aria-hidden="true">${k + 1}</span>${sprite(o.x.p, 'rzbspr') || ''}
-      <div class="rzbt"><span class="rzbwho">${o.me ? 'You' : 'Them'} · ${esc(o.x.d)} <small>${o.s} Speed${o.p ? ` · ${o.p > 0 ? '+' : '−'}${Math.abs(o.p)}` : ''}</small></span><b class="rzmove">${act}</b><span class="t2">${why}</span></div></li>`; }).join('');
+  const beats = T.beats.map((o, k) => `<li class="rzbeat ${o.me ? 'you' : 'them'}" style="--tc:${tc(o.x)}"><span class="rzbn" aria-hidden="true">${k + 1}</span>${sprite(o.x.p, 'rzbspr') || ''}
+      <div class="rzbt"><span class="rzbwho">${o.me ? 'You' : 'Them'} · ${esc(o.x.d)} <small>${o.speed} Speed${o.prio ? ` · ${o.prio > 0 ? '+' : '−'}${Math.abs(o.prio)}` : ''}</small></span><b class="rzmove">${esc(o.act)}</b><span class="t2">${esc(o.why)}</span></div></li>`).join('');
   return `<div class="plan t1plan rzt1"><div class="ph"><span class="pt">Turn one, in move order</span><span class="vsub">your ${esc(L[0].d)} + ${esc(L[1].d)} vs their likely ${esc(opp[0].d)} + ${esc(opp[1].d)}</span></div>
     <ol class="rzbeats">${beats}</ol>
-    ${warn.length ? `<p class="rzwarn"><b>Watch</b> ${warn.join('; ')}. Consider Protect.</p>` : ''}
-    ${F0.weather || F.terrain ? `<p class="rzfield"><span class="k">Field on turn 1</span> ${esc(fieldWords(F0))}${F0.wBy ? ` (${esc(F0.wBy.d)})` : ''}${F0.negated && F0.weather ? ', cancelled by Cloud Nine / Air Lock while it\'s out' : ''}${F0.traced ? '. A Trace user may copy it' : ''}</p>` : ''}
+    ${T.warn.length ? `<p class="rzwarn"><b>Watch</b> ${T.warn.map(esc).join('; ')}. Consider Protect.</p>` : ''}
+    ${F0.weather || T.terrain ? `<p class="rzfield"><span class="k">Field on turn 1</span> ${esc(fieldWords(F0))}${F0.wBy ? ` (${esc(F0.wBy.d)})` : ''}${F0.negated && F0.weather ? ', cancelled by Cloud Nine / Air Lock while it\'s out' : ''}${F0.traced ? '. A Trace user may copy it' : ''}</p>` : ''}
     ${''/* Turn order line removed (Nov 8): the numbered beats above already run in move order with each speed */}</div>`;
 }

@@ -53,7 +53,20 @@ design until the switch (R5).
   GitHub; it fails on !important outside reduced motion, id selectors, sizes off the type scale, spacing off the 4px grid and colours
   outside tokens.css, and was proved by planting one of each. `TARGET=v2 node experiments/polish-check.mjs` measures the new build.
   Known checker limit: it counts a tab's small count number as a second line ("uneven" on tabs is a false positive).)
-- [ ] First logic extraction (Battle plan / turn one), proving the pattern before R4
+- [x] First logic extraction (Battle plan / turn one), proving the pattern before R4 (Nov 11):
+  - `turnOneData()` (40-turn-one.js) and `battlePlan()` (47-battle-mode.js) work everything out and return plain data and plain
+    text; `drawTurnOne()` and `renderBattle()` only draw. `bmWatch()` now returns plain text too (the drawing escapes it).
+  - Proof of same output: `experiments/same-battle.mjs before.html after.html` renders Battle for 34 real tournament matchups in
+    5 settings each (weather, Trick Room, Tailwind, Intimidate, paralysis, 2 of theirs) and compares the HTML: 170 of 170
+    identical. It could fail: changing one word in a copy made 22 of 170 differ.
+
+## The pattern for every R4 page
+1. Save today's `dist/page.html` as the "before".
+2. Move the page's working-out into a `xxxPlan()` / `xxxData()` function that returns plain data and plain text (no `esc`,
+   no HTML); today's render function draws from it, escaping as it draws.
+3. Prove same output with a same-output check like `same-battle.mjs` (real data, several settings, and shown to fail on a
+   planted change), plus the page's behaviour tests and every check GitHub runs.
+4. Only then does the new page in `app/src/v2/pages/` draw from the same function.
 
 ## Size (my guess, not yet tested)
 
