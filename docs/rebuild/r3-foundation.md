@@ -102,3 +102,20 @@ just before that page is built.
   with the same Strength Score change on both builds (25 of 25; 23 have suggestions). It fails when the lane step is removed
   (6 of 9 differ). `experiments/same-team.mjs` now waits for the planner and compares Suggestions too.
 - Apply and Undo checked by hand on the new page: 62 → 84 as the card says, saved, Undo restores and is saved after reload.
+
+## R4 My Team: Team Sheet, Save Team, Saved Teams (Nov 11)
+- Shared now: `sheetData()` / `natBits()` / `SHEET_STATS` (39-damage-calc-speed.js, Team Sheet numbers; same-sheet.mjs 42 of
+  42 identical, a planted +1 makes 42 differ), `copyText()` (06-helpers.js), and a new `30-saved-data.js`: `saveTeamAs`,
+  `openSaved`, `renameSaved`, `deleteSaved` and `savedRows(sort)` (today's save panel, Saved Teams buttons and Saved Teams list
+  call them). `slotsPaste()` moved beside `exportPaste()` (19-showdown-paste.js).
+- Proof: `experiments/same-saved.mjs` runs 38 steps through today's buttons (save, update, cancel, open, Undo, rename, delete,
+  the 10-team limit, a 4-Pokémon team) and compares the saved teams, the open team, what the page shows and the Saved Teams list
+  in each sort: 38 of 38 identical. Planted changes are caught (no Undo on Open: 24 differ; a reversed name sort: 1 differs).
+- New build: Team Sheet and Save Team open as sheets; Saved Teams is a fit-to-content sheet of cards (the six, Strength Score,
+  checks, Open now; Open, Copy for Showdown, Rename, Delete with confirm; Newest / Name / Matchups slider). Cards line up across
+  a row (subgrid); an odd count gets a "spots free" card so no row is half empty.
+- Still to come on the new build: Compare (with the Compare page), "Your games" with a saved six (with My Record).
+- Question for Sim: today's "Readiness" sort orders saved teams by Matchups, not by the Strength Score on each card. Kept as is
+  (labelled Matchups); switch it to the Strength Score?
+- Lesson: my earlier "320-2560 clean" sweep of My Team checked inside the sheet, not the page itself. The Team Sheet button made
+  the page 83 px wider than a 320 phone; the polish check had flagged it (hscroll). Every sweep now also checks the page width.
