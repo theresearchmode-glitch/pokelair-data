@@ -111,6 +111,8 @@ export default (ui, pg, o) => {
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-tmsel]')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     /** the selected Pokémon's set (the Set section) */
     setCard: () => txt('#main #tm-set'),
+    /** how many moves the set card shows */
+    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *')].filter(e => e.getClientRects().length).length),
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     lockOnTile: () => NOT('lock control on the team tile (Lock is inside Edit Set)'),
     tileLockLabel: () => NOT('lock state shown on the team tile (Lock is inside Edit Set)'),

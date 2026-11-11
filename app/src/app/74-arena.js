@@ -171,8 +171,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   else { const L = AR.lineup(ms), base = L.lead.map(m => m.p.n); if (base.includes(n)) return; S.leads = [n, base[0]]; }
   persist(); safe('my team', chTeamRender); safe('home', () => typeof render === 'function' && render());
   const pk = n && ms.find(m => m.p.n === n); toast(pk ? `${pk.d} now leads` : "Back to NastyPlot's lead pick"); });
-AR.roleOf = (m, L) => { const has = g => g.some(x => x.i === m.i), other = g => g.filter(x => x.i !== m.i).map(x => escName(x.d)).join(' + ');
-  if (has(L.lead)) return `Leads with ${other(L.lead) || 'its partner'}`; if (has(L.back)) return `In the back with ${other(L.back) || 'its partner'}`; return 'On the bench'; };
+AR.roleOf = (m, L) => roleText(m, L, x => escName(x.d)); /* shared (05-six-data.js) */
 AR.VS_META = PLAN_VS.meta;
 AR.cell = (v, u, extra) => `<div class="ar-stat"><span class="ar-num">${v}</span><span class="ar-unit">${u}${extra || ''}</span></div>`;
 AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.querySelector(':scope > .chthead'); if (!th) return;
@@ -275,23 +274,17 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
    rating, item and ability, the four moves as battle-menu strips with a move-type edge, Edit set and the info sheet */
 /* Nature and stat points on the set card (Sim, Nov 6: "its nature is so important and we just dont have that"): yours when
    set (paste, link or Edit set), else what most players run; stat points read as words, biggest first */
-AR.natCells = m => { let sp = m.spread, own = !!(sp && sp.nat && !sp.assumed), nat = sp && sp.nat, note = own ? 'yours' : '';
-  if (!nat) { try { const st = setFor(m.p); if (st.na && st.na.length) nat = st.na[0][0]; } catch (e) {} }
-  let cs = null; try { cs = commonSpread(m.p); } catch (e) {}
-  if (!nat && cs) nat = cs.nat; if (nat && !own) note = sp && sp.assumed ? 'yours' : 'most run';
-  const pts = sp && !sp.assumed ? sp : cs, ptsNote = sp && !sp.assumed ? 'yours' : pts ? 'most run' : '';
-  const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
-  const words = pts ? K.map((k, j) => [pts[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]}\u00a0${x[1]}`).join(', ') : '';
+AR.natCells = m => { const N = natInfo(m); /* shared (05-six-data.js) */
   const cell = (lab, val, n) => `<div class="ar-setnat"><span>${lab}</span><b>${esc(val)}</b>${n ? `<i>${n}</i>` : ''}</div>`;
-  return (nat ? cell('Nature', nat, note) : '') + (words ? cell('Stat points', words, ptsNote) : ''); };
+  return (N.nat ? cell('Nature', N.nat, N.natNote) : '') + (N.words ? cell('Stat points', N.words, N.ptsNote) : ''); };
 rzSetHtml = function (m, i) {
-  let r = null, tier = ''; try { r = rating(m.p).total; tier = lTier(r).k; } catch (e) {}
+  const R = monRating(m.p); /* shared (05-six-data.js) */
   const ms = members(), L = ms.length >= 4 ? AR.lineup(ms) : null, t = m.p.t || ['Normal'];
   const role = L && L.lead.length ? `<p class="ar-role">${AR.roleOf(m, L)}${L.by === 'meta' ? ` ${AR.VS_META}` : ''}</p>` : '';
   const mv = (m.moves || []).filter(Boolean).map(x => `<li class="ar-strip" style="--m:${AR.TC[AR.moveType(x.name)] || TC.Normal}"><span>${esc(x.name)}</span></li>`).join('');
   return `<div class="ar-sethd"><span class="ar-av" style="${AR.tv(m.p)}" aria-hidden="true"><span class="ar-av-f ar-field"></span>${sprite(m.p, 'rzsetspr') || ''}</span>
       <div class="ar-setti"><h3 class="ar-h2 ar-setname">${AR.nm(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
-    <div class="ar-setia">${r != null ? `<div class="ar-setr"><span class="ar-num ar-mp">${RS(r)}</span><small>${AR.ICON.star}${tier ? esc(tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div>${AR.natCells(m)}</div>
+    <div class="ar-setia">${R ? `<div class="ar-setr"><span class="ar-num ar-mp">${R.n}</span><small>${AR.ICON.star}${R.tier ? esc(R.tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div>${AR.natCells(m)}</div>
     ${mv ? `<ul class="ar-strips" aria-label="Moves">${mv}</ul>` : ''}
     <div class="ar-setacts"><button type="button" class="ar-btn" data-chedit="${i}">Edit set</button>${L && L.lead.length && !L.lead.some(x => x.i === m.i) ? `<button type="button" class="ar-btn" data-arlead="${esc(m.p.n)}">Set as lead</button>` : ''}<button type="button" class="ar-link" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`; };
 MG.team = () => {}; /* the manga stage is replaced by the arena stage */

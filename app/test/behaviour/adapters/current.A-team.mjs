@@ -113,6 +113,8 @@ export default (ui, pg, o) => {
     tapTile: name => H.tapLabel(name + ': show its set', 700),
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('[data-pane="report"] [data-chset]')].find(e => (e.getAttribute('aria-label') || '').startsWith(n + ':')); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     setCard: () => txt('#rzSet'),
+    /** how many move strips the set card shows */
+    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#rzSet [class*=mv], #rzSet li')].filter(e => e.getClientRects().length && e.children.length <= 3).length),
     /** show a Pokémon's set card (tap its tile unless its card is already showing) */
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     lockOnTile: async name => { if (!(await has(`[data-pane="report"] [data-lock][aria-label*="${name}"]`))) await H.tapTile(name); await click(`[data-pane="report"] [data-lock][aria-label*="${name}"]`, 700); },

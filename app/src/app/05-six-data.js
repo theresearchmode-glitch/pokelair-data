@@ -16,3 +16,19 @@ function teamLineup(ms) { const L = lineupBase(ms), U = userLeads(ms);
 // what the game plan line says the plan is against / who picked it
 const PLAN_VS = {meta: "vs the meta's top six", you: 'your pick', order: 'in team order'};
 
+// ---------- the set card (TEAM-10) ----------
+// its place in the plan, in today's words; nm formats a teammate's name (escName for HTML)
+function roleText(m, L, nm = x => x.d) { const has = g => g.some(x => x.i === m.i), other = g => g.filter(x => x.i !== m.i).map(nm).join(' + ');
+  if (has(L.lead)) return `Leads with ${other(L.lead) || 'its partner'}`; if (has(L.back)) return `In the back with ${other(L.back) || 'its partner'}`; return 'On the bench'; }
+// nature and stat points (Sim, Nov 6): yours when set (paste, link or Edit Set), else what most players run; stat points read as
+// words, biggest first ("32 Atk, 32 Spe, 2 HP", no-break spaces). natNote / ptsNote: 'yours' | 'most run' | ''
+function natInfo(m) { let sp = m.spread, own = !!(sp && sp.nat && !sp.assumed), nat = sp && sp.nat, natNote = own ? 'yours' : '';
+  if (!nat) { try { const st = setFor(m.p); if (st.na && st.na.length) nat = st.na[0][0]; } catch (e) {} }
+  let cs = null; try { cs = commonSpread(m.p); } catch (e) {}
+  if (!nat && cs) nat = cs.nat; if (nat && !own) natNote = sp && sp.assumed ? 'yours' : 'most run';
+  const pts = sp && !sp.assumed ? sp : cs, ptsNote = sp && !sp.assumed ? 'yours' : pts ? 'most run' : '';
+  const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+  const words = pts ? K.map((k, j) => [pts[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]} ${x[1]}`).join(', ') : '';
+  return {nat: nat || '', natNote, words, ptsNote}; }
+// a Pokémon's rating out of 100 and its tier letter ("S"), or null when it can't be rated
+function monRating(p) { let r = null, tier = ''; try { r = rating(p).total; tier = lTier(r).k; } catch (e) {} return r == null ? null : {n: RS(r), tier}; }

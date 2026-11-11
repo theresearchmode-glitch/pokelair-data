@@ -24,14 +24,24 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
   if (tops.length) t.style.setProperty('--tb', (innerHeight - Math.min(...tops) + 12) + 'px'); // a custom property, so an open sheet can still move it (components.css)
   clearTimeout(V2._tt); V2._tt = setTimeout(() => t.remove(), ms); return t; };
 // ---------- sheets: one at a time; focus moves in, stays in (Tab wraps), and returns to what opened it ----------
-V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : document.activeElement; V2.closeSheet(true);
+// Back closes what's open on top (X-06, as today's site): opening a sheet adds one history step at the same address, so the phone
+// or browser Back button closes it and the page keeps its place; closing it with ✕, the backdrop or Escape takes that step back
+// out quietly. A sheet closed by a move to another page leaves its step behind; Back steps over it.
+V2.hist = {skip: 0, pop: false, t: null};
+V2.histOpen = () => { clearTimeout(V2.hist.t); try { if (!(history.state && history.state.v2sh)) history.pushState(Object.assign({}, history.state, {v2sh: 1}), ''); } catch (e) {} };
+V2.histClose = () => { if (V2.hist.pop) return; clearTimeout(V2.hist.t);
+  V2.hist.t = setTimeout(() => { try { if (!V2._sheet && history.state && history.state.v2sh) { V2.hist.skip++; history.back(); } } catch (e) {} }, 0); };
+addEventListener('popstate', () => { if (V2.hist.skip) { V2.hist.skip--; return; }
+  if (V2._sheet) { V2.hist.pop = true; try { V2.closeSheet(); } finally { V2.hist.pop = false; } return; }
+  try { if (history.state && history.state.v2sh) { V2.hist.skip++; history.back(); } } catch (e) {} });
+V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : document.activeElement; V2.closeSheet(true, true); V2.histOpen();
   const wrap = document.createElement('div'); wrap.className = 'np-sheetwrap';
   wrap.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet${o.small ? ' sm' : ''}${o.fit ? ' fit' : ''}" role="dialog" aria-modal="true" aria-label="${V2.esc(o.label || 'Details')}" tabindex="-1"><button class="x" type="button" data-v2close aria-label="Close">✕</button>${html}</div>`;
   document.body.append(wrap); document.documentElement.classList.add('np-locked');
   V2._sheet = {wrap, back, onClose: o.onClose};
   const first = wrap.querySelector(o.focus || '.np-sheet'); (first || wrap.querySelector('.np-sheet')).focus({preventScroll: true});
   return wrap.querySelector('.np-sheet'); };
-V2.closeSheet = quiet => { const S = V2._sheet; if (!S) return; V2._sheet = null; S.wrap.remove(); document.documentElement.classList.remove('np-locked');
+V2.closeSheet = (quiet, swap) => { const S = V2._sheet; if (!S) return; V2._sheet = null; S.wrap.remove(); document.documentElement.classList.remove('np-locked'); if (!swap) V2.histClose();
   if (S.onClose) try { S.onClose(); } catch (e) {} if (!quiet && S.back && S.back.isConnected) S.back.focus({preventScroll: true}); };
 document.addEventListener('click', e => { if (V2._sheet && e.target.closest('[data-v2close]')) V2.closeSheet(); });
 document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;

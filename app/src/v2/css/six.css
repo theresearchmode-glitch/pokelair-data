@@ -22,3 +22,21 @@
   /* the bench sits apart from the four you bring */
   .sx-grp:nth-child(3)::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--s3) / -2);width:1px;background:var(--rule)}
 }
+/* the set card: where it plays in the plan under the heading, its rating on a slanted plate over the art (the mock's
+   "Rated 92 · S tier"), then the facts as quiet rows with thin rules, the moves, and the three actions */
+.sx-role{margin-top:var(--s2)}
+.sx-art{position:relative;padding-bottom:var(--s4)}
+/* the art fills the set's column, as in the mock (up to 600px, from the left like the rating plate; 16px spare each side for the picked art's 1.08 scale), so a wide screen never leaves a strip beside it */
+.tm-art.sx-art{max-width:none;container-type:inline-size}.sx-art .np-mon{--iw:min(100cqi - 2 * var(--s4),600px)}.sx-art .np-mon .st{margin:0 0 0 var(--s4)}
+.sx-rate{position:absolute;left:0;bottom:0;display:inline-flex;align-items:baseline;gap:var(--s2);padding:var(--s2) var(--s5);background:var(--plate);color:var(--on-plate);transform:skewX(var(--slant))}
+.sx-rate>*{transform:skewX(24deg)}
+.sx-rate b{font-size:var(--t24);line-height:1}
+.sx-rate span{font:700 var(--t13)/1 var(--b);letter-spacing:.02em}
+:root[data-theme="night"] .sx-rate{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge)}
+.sx-kv{margin-top:var(--s4);border-bottom:1px solid var(--rule)}
+.sx-kv>div{display:grid;grid-template-columns:minmax(88px,30%) minmax(0,1fr);gap:var(--s3);align-items:baseline;padding:var(--s2) 0;border-top:1px solid var(--rule)}
+.sx-kv dt{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sx-kv dd{margin:0;font:500 var(--t16)/1.5 var(--b);color:var(--ink);overflow-wrap:anywhere}
+.sx-kv small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3);white-space:nowrap}
+.sx-info{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s1)}
+.tm-setacts{align-items:center}
