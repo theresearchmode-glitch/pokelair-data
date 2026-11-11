@@ -8,7 +8,8 @@ V2.teamData = () => {
   const useA = true, CK = proChecks(ms, useA), RD = prepOf(ms), G = RD ? CH.gradeOf(RD, CK, ms) : null;
   // the lead pair against the meta's top six (Battle mode's planner, the same one today's My Team uses)
   const four = ms.length >= 4 ? CH.four(ms) : null;
-  const role = n => !four ? '' : four.lead.includes(n) ? 'Lead' : four.back.includes(n) ? 'Back' : 'Bench';
+  // group six: the lineup My Team shows (today's teamLineup: the planner's pick, your lead pick, or team order); roles follow it
+  const L = teamLineup(ms), role = n => L.lead.some(m => m.p.n === n) ? 'Lead' : L.back.some(m => m.p.n === n) ? 'Back' : 'Bench';
   // matchups: the 30 top threats, each with the real-games verdict (if the model has one) and the damage-calc level
   const rows = RD ? RD.rows.map(r => ({t: r.t, w: r.t.w, level: r.level, real: CH.realVs(r.t.n, ms)})) : [];
   const top = rows.slice().sort((a, b) => b.w - a.w).slice(0, 10);
@@ -17,7 +18,7 @@ V2.teamData = () => {
   const basics = CK ? CK.items.filter(x => !x.note && !x.skip) : [], notes = CK ? CK.items.filter(x => x.note) : [];
   const sug = V2.sugData(ms, RD);
   const lo = S.teams.find(t => t.id === S.loadedId);
-  return {ms, G, RD, CK, four, role, rows, top, sug, saved: lo ? lo.name : '', mu: {fav: cnt('Favoured'), even: cnt('Even match'), unf: cnt('Unfavoured'), any: rows.some(r => r.real)},
+  return {ms, G, RD, CK, four, L, role, rows, top, sug, saved: lo ? lo.name : '', mu: {fav: cnt('Favoured'), even: cnt('Even match'), unf: cnt('Unfavoured'), any: rows.some(r => r.real)},
     calc: {beats: calc[3], handles: calc[2], shaky: calc[1], none: calc[0]}, basics, notes, full: ms.length === 6};
 };
 
@@ -277,7 +278,6 @@ V2.pages.team = {place: 'team', draw() {
   const word = G ? CH.wordOf(G.s) + (G.partial ? ' so far' : '') : '';
   const rank = G && !G.partial && G.rk != null ? CH.rankShort(G.rk) + ' of tournament teams' : G && G.partial ? `${ms.length} of 6 picked` : '';
   const sure = G && G.su ? `How sure: ${G.su.w}` : '';
-  const mon = (m, i) => `<button type="button" class="tm-pick" data-tmsel="${i}" aria-pressed="${m === sel}" aria-label="${V2.esc(m.d)}${D.role(m.p.n) ? ', ' + D.role(m.p.n) : ''}">${V2.mon(m.p.n, {sel: m === sel, sub: D.role(m.p.n)})}</button>`;
   const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team${D.saved ? ` · ${V2.esc(D.saved)}` : ''}</span></div>${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div><p class="tm-rank">${V2.esc([rank, sure].filter(Boolean).join(' · '))}</p>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
   const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>${S.loadedId && S.teams.some(t => t.id === S.loadedId) ? 'Update Saved Team' : 'Save Team'}</button><button type="button" class="np-btn2" data-v2share><span>Share</span></button><button type="button" class="np-btn2 tm-tsact" data-v2sheetopen><span>Team Sheet</span></button><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2" data-v2import><span>Import</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button><a class="np-btn2 tm-svl" href="#box"><span>My Box <small>${S.box.length}</small></span></a><button type="button" class="np-btn2 tm-svl" data-cxgo2="cur|"><span>Compare</span></button><button type="button" class="np-btn2 tm-svl tm-clr" data-v2clear><span>Clear Team</span></button></div>`;
@@ -307,7 +307,7 @@ V2.pages.team = {place: 'team', draw() {
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}</section>`;
-  return `<section class="tm-hero">${lockup}<div class="tm-six">${ms.map(mon).join('')}</div>${acts}</section>${jump}<div class="tm-work">${setSec}${ckSec}${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div>`;
+  return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work">${setSec}${ckSec}${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div>`;
 },
 after() {
   document.querySelectorAll('[data-v2plan]').forEach(b => b.addEventListener('click', () => { const pl = (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;

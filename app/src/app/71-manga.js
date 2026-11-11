@@ -98,9 +98,7 @@ MG.home = () => { const el = $('chHome') || document.querySelector('.chhome') ||
     sp.insertAdjacentHTML('afterend', `<section class="mgdeskcov chdesk"><h2 class="mgpt">Most used</h2>${MG.cover(six, 1)}</section>`); } };
 
 /* ======================= My team: the stage ======================= */
-MG.lineup = ms => { let F = null; try { F = CH.four(ms); } catch (e) {} const has = n => ms.some(m => m.p.n === n);
-  if (F && F.lead && F.lead.every(has) && (F.back || []).every(has)) { const lead = F.lead.slice(0, 2).map(n => ms.find(m => m.p.n === n)), back = (F.back || []).slice(0, 2).map(n => ms.find(m => m.p.n === n)); return {lead, back, home: ms.filter(m => !lead.includes(m) && !back.includes(m)), by: 'meta'}; }
-  return {lead: ms.slice(0, 2), back: ms.slice(2, 4), home: ms.slice(4), by: 'order'}; };
+MG.lineup = lineupBase; /* shared (05-six-data.js) */
 MG.team = () => { const head = $('chTeam'); if (!head) return; const six = head.querySelector('.rzsix'); if (!six || six.dataset.mg) return; const ms = members(); if (!ms.length) return;
   const L = MG.lineup(ms), sel = ui.rzSet;
   const btn = (m, g) => { const on = sel === m.i, role = {lead: 'Lead', back: 'Back'}[g];

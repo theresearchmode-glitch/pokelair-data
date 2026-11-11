@@ -116,7 +116,8 @@ export default (ui, pg, o) => {
     tileLockLabel: () => NOT('lock state shown on the team tile (Lock is inside Edit Set)'),
     /** remove a Pokémon from the team (here: Edit Set → "Remove <name>") */
     removeFromTeam: async name => { await H.settle(400, 5000); await H.openEditPanel(name); await click('.ed2 [data-ed="rm"]', 800); },
-    gamePlanLine: () => NOT('"Game plan vs the meta\'s top six: lead …, back …, bench …" line (tiles show Lead/Back/Bench)'),
+    /** the game plan line under the six (its sentence only, not the "Use NastyPlot's pick" button beside it) */
+    gamePlanLine: () => txt('#main .sx-plan .sx-pl'),
     /** the team actions are all on show (no ⋯ menu), so there is nothing to open */
     openMoreActions: async () => {},
     /** tap one of the team actions, by today's name */

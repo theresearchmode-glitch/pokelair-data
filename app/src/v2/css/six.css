@@ -1,0 +1,24 @@
+/* My Team's six tiles and the set card (R4 group "six", Nov 11). Approved mock: the six in three pairs, Lead / Back / Bench,
+   each pair under its slanted label; every name over its item. Phones: the three pairs side by side, each a column of two. */
+.tm-six.sx{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+.sx-grps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s6);align-items:start}
+.sx-grp{position:relative;display:grid;gap:var(--s3);min-width:0}
+.sx-gl{display:flex;align-items:center;gap:var(--s2);font-size:var(--t20);color:var(--ink-2)}
+.sx-gl::before{content:"";flex:none;width:16px;height:6px;background:var(--ink-3);transform:skewX(var(--slant))}
+.sx-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);align-items:end}
+.sx-slot{position:relative;min-width:0;container-type:inline-size}
+/* a narrow tile (a 1200px window, the smallest phones) steps its name and item down a size, so long names stay inside */
+@container (max-width:100px){.sx-slot .np-mon b{font-size:var(--t13)}.sx-slot .np-mon small{font-size:var(--t13);letter-spacing:-.01em}}
+.sx-slot .np-mon small{overflow-wrap:anywhere}
+/* each sprite fills its tile (up to the mock's 160px), so wide screens use the room and no tile has a half-pixel gap */
+.sx-slot .np-mon{--iw:min(100cqi,160px)}
+/* the game plan under the six (today's words): who leads, who waits in the back, who sits on the bench */
+.sx-plan{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.sx-plan b{font-weight:700;color:var(--ink)}
+@media (max-width:699px){
+  .sx-grps{column-gap:var(--s3)}
+  .sx-tiles{grid-template-columns:minmax(0,1fr);row-gap:var(--s4)}
+  .sx-gl{font-size:var(--t17)}
+  /* the bench sits apart from the four you bring */
+  .sx-grp:nth-child(3)::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--s3) / -2);width:1px;background:var(--rule)}
+}

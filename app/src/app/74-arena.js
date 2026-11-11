@@ -164,10 +164,7 @@ CH.wrap('renderHome', () => AR.home());
 /* the lineup the stage and the set card use: the planner's four vs the meta's six (CH.four), the rest on the bench */
 /* your lead pick (Sim, Nov 5): S.leads holds two names you chose with "Set as lead"; it wins over NastyPlot's pick while both
    are on the team. "Use NastyPlot's pick" clears it. */
-AR.userLeads = ms => { const U = (S.leads || []).map(n => ms.find(m => m.p.n === n)).filter(Boolean); return U.length === 2 && U[0] !== U[1] ? U : null; };
-AR.lineup = ms => { const L = MG.lineup(ms), U = AR.userLeads(ms);
-  if (U) { const rest = [...L.lead, ...L.back, ...L.home].filter(m => !U.includes(m)); return {lead: U, back: rest.slice(0, 2), bench: rest.slice(2), by: 'you'}; }
-  return {lead: L.lead, back: L.back, bench: L.home, by: L.by}; };
+AR.userLeads = userLeads; AR.lineup = teamLineup; /* shared (05-six-data.js) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arlead]'); if (!b) return;
   const ms = members(), n = b.dataset.arlead;
   if (n === '') S.leads = null;
@@ -176,7 +173,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   const pk = n && ms.find(m => m.p.n === n); toast(pk ? `${pk.d} now leads` : "Back to NastyPlot's lead pick"); });
 AR.roleOf = (m, L) => { const has = g => g.some(x => x.i === m.i), other = g => g.filter(x => x.i !== m.i).map(x => escName(x.d)).join(' + ');
   if (has(L.lead)) return `Leads with ${other(L.lead) || 'its partner'}`; if (has(L.back)) return `In the back with ${other(L.back) || 'its partner'}`; return 'On the bench'; };
-AR.VS_META = "vs the meta's top six";
+AR.VS_META = PLAN_VS.meta;
 AR.cell = (v, u, extra) => `<div class="ar-stat"><span class="ar-num">${v}</span><span class="ar-unit">${u}${extra || ''}</span></div>`;
 AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.querySelector(':scope > .chthead'); if (!th) return;
   /* the all-sets fold lives in the old team section between draws: put it back in its part first, or the redraw throws it away */
@@ -233,7 +230,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* each one has a small X to take it off the team in one tap (Sim, Nov 7); it uses the same remove as the editor, with Undo */
     const tiles = ord.map(m => `<div class="ar-slot${sel === m.i ? ' is-sel' : ''}">${AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})}<button type="button" class="ar-lockx${S.slots[m.i] && S.slots[m.i].lock ? ' on' : ''}" data-lock="${m.i}" aria-pressed="${!!(S.slots[m.i] && S.slots[m.i].lock)}" aria-label="${S.slots[m.i] && S.slots[m.i].lock ? 'Unlock' : 'Lock'} ${esc(m.d)}: suggestions never swap out a locked Pokémon" title="${S.slots[m.i] && S.slots[m.i].lock ? 'Locked: suggestions keep it' : 'Lock it so suggestions keep it'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${S.slots[m.i] && S.slots[m.i].lock ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg></button><button type="button" class="ar-rmx" data-chrm="${m.i}" aria-label="Remove ${esc(m.d)} from your team"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>`).join('')
       + open.map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
-    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : L.by === 'you' ? 'your pick' : 'in team order')
+    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, PLAN_VS[L.by])
       + (L.by === 'you' ? `<button type="button" class="ar-link ar-leadreset" data-arlead="">Use NastyPlot's pick</button>` : '') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div><p class="ar-taphint">Tap a Pokémon to see its set</p>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
