@@ -1,0 +1,8 @@
+{
+  "_": "The rebuild (R3, Nov 11): a second build of NastyPlot beside today's page. node app/build.mjs --v2 writes dist/v2.html. Shares today's data and, step by step, today's logic; none of today's CSS or reskin code. Plan: docs/rebuild/r3-foundation.md",
+  "head": "src/v2/head.html",
+  "css": [["tokens", "src/v2/css/tokens.css"], ["base", "src/v2/css/base.css"], ["components", "src/v2/css/components.css"], ["shell", "src/v2/css/shell.css"], ["pages", "src/v2/css/pages.css"]],
+  "body": "src/v2/body.html",
+  "data": ["src/data/data.js", "src/data/logos.js", "src/data/items-list.js", "src/data/move-acc.js", "src/data/move-meta.js"],
+  "scripts": ["src/v2/shell.js", "src/v2/pages/guide.js"]
+}

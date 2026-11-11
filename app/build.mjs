@@ -19,6 +19,23 @@ const asJsonParse = (src) => process.argv.includes('--no-json-parse') ? src : sr
 // `@C` (color.css) is one step stronger again, so the colour pass wins over manga.css without more !important.
 // `@A` (arena*.css, Champions arena redesign, Nov 5) adds three more ids to `@C`, so arena wins over every older layer, including
 // the older rules that carry an id of their own (#saveBtn, #homeOut, #lairSheet...).
+// The rebuild's second build (R3, Nov 11; docs/rebuild/r3-foundation.md): node app/build.mjs --v2 writes dist/v2.html from
+// parts-v2.json and stops; today's dist/page.html is not touched. CSS goes into cascade layers (tokens, base, components, shell,
+// pages) so no selector ever needs to out-shout another. The data files and SPRITE_ID are shared with today's page.
+if (process.argv.includes('--v2')) {
+  const P = JSON.parse(fs.readFileSync(dir + 'parts-v2.json', 'utf8')), rd = f => fs.readFileSync(dir + f, 'utf8').replace(/\n$/, '');
+  const layers = P.css.map(([n]) => n).join(', ');
+  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${rd(f)}\n}`).join('\n');
+  const helpers = rd('src/app/15-visual-helpers.js'), i0 = helpers.indexOf('SPRITE_ID ='), sprite = helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1);
+  JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
+  const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
+  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + `\nconst SPRITE_ID=${sprite};\nconst ART_META=${meta};\n` + P.scripts.map(rd).join('\n') + '\nV2.draw();';
+  // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
+  const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};</script>\n` : '';
+  const page = artTag + rd(P.head) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${js}\n</script>\n</body></html>\n`;
+  fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+  console.log(`built dist/v2.html (${(page.length / 1024).toFixed(0)} KB; ${P.css.length} CSS layers, ${P.data.length} data files, ${P.scripts.length} scripts)`);
+  process.exit(0); }
 const themeCss = s => s.replace(/@A/g, '@C:not(#_d):not(#_e):not(#_f)').replace(/@C/g, '@R:not(#_c)').replace(/@R/g, ':root:not(#_a):not(#_b)');
 let out = parts.map(p => { const s = fs.readFileSync(dir + p, 'utf8').replace(/\n$/, ''); return /^src\/data\/.*\.js$/.test(p) ? asJsonParse(s) : /^src\/theme\/.*\.css$/.test(p) ? themeCss(s) : s; }).join('\n');
 // Smaller page (Nov 1, load speed): whole-line // comments inside the app's plain <script> blocks are dropped, about 150 KB
