@@ -45,7 +45,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
   else { V2.sgReasons(ms); const side = !P.length && Array.isArray(P.more) && P.more.length > 0, top = S2.top, g0 = top.length ? top[0].g0 : null;
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
-    const pre = V2.protCard(ms), gap = pre + (P.gapNote ? `<p class="sg2-gap">${V2.esc(P.gapNote)}</p>` : '');
+    const pre = V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap">${V2.esc(P.gapNote)}</p>` : '');
     const all = '<button type="button" class="np-link sg2-all" data-v2sgall>See all suggestions ›</button>';
     body = !top.length ? (side ? `<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}`
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
@@ -58,6 +58,10 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
 // LANE.protFix / protApply and its [data-protfix] handler, 36-lanes.js; the words from LANE.protWords)
 V2.protCard = ms => { let f = null; try { f = LANE.protFix(ms); } catch (e) {} if (!f) return ''; const W = LANE.protWords(f);
   return `<div class="sg2-fix"><p class="sg2-ln fix"><b>Fix</b> ${W.fix}</p><p class="tm-sub">${W.who} ${f.who.map(m => `<b>${V2.esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="np-btn2" data-protfix><span>${W.btn}</span></button></div>`; };
+// Nothing to fix: every basic, no fix and no swap past the measured bar (today's plans.nothing, LANE.apply); the edge now is in
+// play: Battle, and the sets (words from LANE.NONE)
+V2.noneCard = () => { const N = LANE.NONE;
+  return `<div class="sg2-none"><p class="sg2-ok u">${N.head}</p><p class="sg2-nb">${N.body}</p><p class="tm-sub">${N.edge}</p><div class="sg2-nact"><a class="np-btn2" href="#battle"><span>Battle</span></a><a class="np-btn2" href="#sets"><span>Sets</span></a></div></div>`; };
 // the Undo bar: the last suggestion (or Quick add) applied, until the team is changed some other way; Undo steps back one at a
 // time, up to 8 (today's undo stack and its [data-undobar] handler, 06-helpers.js)
 V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role="status"><span>Applied <b>${V2.esc(t.label)}</b></span><button type="button" class="np-btn2" data-undobar><span>Undo</span></button></div>` : ''; };

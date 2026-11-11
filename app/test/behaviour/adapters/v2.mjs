@@ -34,7 +34,7 @@ export default {
     /** which page is showing (today's ids); a hash the new build has no page for reads "not-in-v2:<hash>" */
     current: () => pg.evaluate(([PS]) => { if (!window.V2) return null; if (V2._sheet) { for (const [c, id] of PS) if (V2._sheet.wrap.querySelector(c)) return id; }
       const h = (location.hash || '').slice(1).replace(/=.*/, ''); if (!V2.pages[h]) return 'not-in-v2:#' + (h || '(none: Home)');
-      return {team: 'report', sheet: 'report', 'team-empty': 'report', box: 'box', compare: 'compare'}[h] || h; }, [PAGE_SHEETS]),
+      return {team: 'report', sheet: 'report', 'team-empty': 'report', box: 'box', compare: 'compare', battle: 'matchup'}[h] || h; }, [PAGE_SHEETS]),
     /** the visible text of the page being shown (a page-like sheet counts as the page: Saved Teams, Team Sheet, Compare's team picker) */
     text: () => pg.evaluate(() => { const T = e => e.innerText.replace(/\s+/g, ' ').trim(); const h = (location.hash || '').slice(1).replace(/=.*/, '');
       if (!window.V2 || !V2.pages[h]) throw new Error('not in v2 yet: page "' + (h ? '#' + h : 'Home (no hash)') + '"');

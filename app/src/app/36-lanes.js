@@ -61,8 +61,10 @@ const LANE = {
       if (j < 0) j = 3; cur[j] = 'Protect'; s.mv = s.mv || {}; s.mv[S.format] = cur; }
     persist(); render(); try { toast('Protect added: it’s in each set now, change it any time', true); } catch (e) {} },
   // nothing to fix: say so, and point to where this team still has a measured edge
-  noneCard() { return `<div class="chlanecard none"><p><b>Nothing to fix.</b> Your team has every basic and no swap clearly beats it in real games.</p>
-    <p class="t2">Your edge now comes from how you play it: plan each matchup in Battle, and tune your sets.</p>
+  // its words, shared with the rebuild (R4, Nov 11)
+  NONE: {head: 'Nothing to fix.', body: 'Your team has every basic and no swap clearly beats it in real games.', edge: 'Your edge now comes from how you play it: plan each matchup in Battle, and tune your sets.'},
+  noneCard() { return `<div class="chlanecard none"><p><b>${LANE.NONE.head}</b> ${LANE.NONE.body}</p>
+    <p class="t2">${LANE.NONE.edge}</p>
     <div class="chlanebtns"><button type="button" class="chghost" data-view="matchup">Battle</button><button type="button" class="chghost" data-view="sets">Sets</button></div></div>`; }
 };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-protfix]'); if (!b) return; try { LANE.protApply(members()); } catch (x) {} });
