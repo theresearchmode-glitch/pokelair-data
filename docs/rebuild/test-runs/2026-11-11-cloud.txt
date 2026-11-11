@@ -1,0 +1,490 @@
+  pass  HOME-01  Home leads with the tagline "Sharply raise your win rate."
+  pass  HOME-02  Most used #1 card opens that Pokémon's info sheet
+  pass  HOME-03  Runner-up strips (#2, #3) open their info sheets
+  pass  HOME-04  Data line names the month, the source and "Data as of <date>"
+  pass  HOME-05  This week in the ratings: chips with arrow + number open the matching info sheet
+  known HOME-05b  This week chip's rating matches the info sheet it opens  -> chip says rating 78, info sheet hero says ✕ 88 ? A tie
+  pass  HOME-06  Start buttons: "Score my team" first with a team, "Build me a team" first with none
+  pass  HOME-07  "Import from Showdown" opens My Team with the Import box ready
+  pass  HOME-08  All 11 Tools: each card opens the page named on it
+  pass  HOME-09  Champion's six: load needs a second tap, loads with Undo; Copy for Showdown copies
+  pass  HOME-10  vs panel: your six, a lead/back/bench plan, Prep vs the Champion sets Battle
+  pass  HOME-11  Sample-team note on Home and My Team; "Import a team" opens Import
+  pass  HOME-12  Welcome card on first visit; "Got it" hides it for good
+  pass  HOME-13  What's New fold after an update; × dismisses it for good; never for first-time visitors
+  pass  HOME-14  Top of the Meta: 10 rated rows, Hidden gems switch changes the list, rows open info sheets
+  pass  HOME-15  More on Home fold: pairs, what changed, cores, "Log a game" → Battle; stays open after reload
+  pass  HOME-16  Weather chip "Sun team" on Home's team card
+  pass  TEAM-01  Header: "My team: N of 6, Sun team" and the team name as heading; "No team yet" when empty
+  pass  TEAM-02  A Pokémon that left the regulation is kept but a note says it's left out
+  pass  TEAM-03  Strength Score: number + band word + win line + rank; "so far" for 1-5; none when empty
+  pass  TEAM-04  "Why this score?" opens the breakdown; its parts add up to the score
+  pass  TEAM-05  Switch team fold lists saved teams; tapping one opens it with an Undo toast
+  pass  TEAM-06  "Team Sheet" button opens the Team Sheet page with all six sets
+  pass  TEAM-07  Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Sets" scrolls to All Six Sets and opens the sheet
+  pass  TEAM-08  Your Six: six tiles lead/back/bench; tapping a tile shows its set, tapping again hides it
+  pass  TEAM-09  Lock and Remove on a tile: lock label flips; × removes with Undo
+  pass  TEAM-10  Set card: plan role, rating, item, ability, nature, stat points, 4 moves; Edit set and Info sheet
+  pass  TEAM-11  Set as lead: plan says "your pick" (saved to the account); "Use NastyPlot's pick" goes back; Home follows
+  pass  TEAM-12  Game plan line names two leads, two back, two bench
+  pass  TEAM-13  Team actions row: Save/Update label, ⋯ menu; empty team keeps only Saved Teams, My Box, ⋯ Import
+  pass  TEAM-14  Clear team: "No team yet", toast "Team cleared"; Undo restores the six and the open saved team
+  pass  TEAM-15  Matchups summary: Favoured/Even/Unfavoured add to 30 and match the Matchups legend
+  pass  TEAM-16  Legal and "Team checks 4/4" badge with the rules tooltip
+  skip  TEAM-18  Weather backdrop behind a sun team's header  (decorative animation on the old header, mostly covered by the arena layout (inventory unsure it shows); needs a visual check, not a behaviour test)
+  pass  TEAM-19  Empty team: Darkrai, invitation, "Add your first Pokémon" opens the add box; six "+ Add a Pokémon"
+  pass  TEAM-20  Partial team: "so far" score, "+ X added" suggestions, no Your games, Save/Share available
+  known TEAM-13b  Empty team: the ⋯ menu hides Export and Clear team (only Import stays)  -> empty team still shows Export
+  pass  SUG-01  Suggest from: My Box | Box + catch | Whole roster; toast; remembered after reload
+  pass  SUG-02  Megas on team 0/1/2: toast explains, choice saved to the account (and kept after reload)
+  pass  SUG-03  Swap my Mega? No | Yes with toasts
+  known SUG-03b  Swap my Mega? choice is kept after reload (like Megas on team)  -> "Yes" reset to "No" after reload
+  pass  SUG-04  Suggestion cards: Apply, "Why?" reasons, "Show N more" then "See all suggestions ›"
+  pass  SUG-05  Apply swaps the Pokémon in with an Undo toast; the one swapped out isn't offered straight back
+  pass  SUG-06  Undo bar: steps back one Apply at a time
+  pass  SUG-07  Protect fix: with Protect on only one Pokémon, "Add Protect" puts it in the named sets
+  pass  SUG-08  "Nothing to fix" card with Battle and Sets on a complete team
+  pass  SUG-09  When nothing raises the score: a no-gain message instead of plain Apply cards
+  pass  SUG-10  Problems and Team Checks: count line, Ice row with Quick add; "Swap out Rillaboom" applies with Undo
+  pass  SUG-11  "?" explainer: bubble titled "Ready for the top threats", Escape closes it
+  pass  MU-01  Matchups view switch Top 10 | Top 12 grid | All 30 is remembered
+  pass  MU-02  Top 10 threats with real-games verdict and calc level; phone shows 5 + "Show 5 more"; row opens threat sheet
+  pass  MU-03  Top 12 grid: 12 threat rows × 6 cells; a row opens its threat sheet
+  pass  MU-04  All 30: "Threat preparation" groups; a threat opens to its calc reasons; Biggest threats list
+  pass  MU-05  Threat sheet: opens on the threat, other tiles switch detail, Escape closes and focus returns
+  pass  MU-05d  Closing the threat sheet puts focus back on the threat row that opened it
+  known MU-05b  Threat sheet ring shows the Strength Score number and band, not the old letter  -> ring shows a grade letter: × Scouting report: top 30 threats 6 threats need a plan. B 82.5 Strength Score 83 = 82 fro
+  known MU-05c  Threat sheet "Best fix" never offers a change that doesn't raise the score  -> Best fix offers ±0: Best fix: ±0 (93 → 93) → Sneasler → Mega Floette Apply this fix ➜ Ful
+  pass  PLAY-01  Game Plan fold: rows with Covered/Missing/Partly; Speed control covered by Whimsicott with Tailwind
+  pass  PLAY-02  Types fold: Offense/Defense switch, type grid, Mega pick with two Megas
+  pass  SETS-01  Open Team Sheet fold: one card per Pokémon; tapping opens its edit panel; "−" removes with Undo
+  pass  SETS-02  How Scoring Works fold explains Ready for the top threats
+  pass  EDIT-01  Edit panel opens titled "Edit <name>"; Done, Escape and the backdrop close it
+  pass  EDIT-01b  Closing the edit panel puts focus back on "Edit set"
+  pass  EDIT-02  Six-slot strip in the panel switches the panel to that Pokémon
+  pass  EDIT-03  Slot header: Lock → "Locked" (tile shows locked), types, Mega/rating tags, usage
+  pass  EDIT-04  Nature picker: choosing saves at once ("Nature saved"), set card says "yours"; "Use <most run>" restores
+  pass  EDIT-05  Stat points: live total, over-66 warning, Save stat points; Team Sheet shows the new stats
+  pass  EDIT-06  Ability picker: a rarer ability names the common one; "Use Prankster" restores
+  pass  EDIT-07  Item picker: "Sitrus Berry" gives a toast, "Your pick" tag and "Use Focus Sash"
+  known EDIT-07b  Item toast uses today's words (matchups), not the old "ready for N%" readiness  -> toast: Sitrus Berry · ready for 85% → 83% of the top threats
+  pass  EDIT-08  Moves: change move 4 → toast mentions Offense; "Reset to popular" brings the popular four back
+  pass  EDIT-09  "Full popular sets ›" closes the panel and opens Popular sets on this Pokémon
+  pass  EDIT-10  Weak / Resists fold shows resistances and the ability text
+  pass  EDIT-11  "Remove <name> from the team" in the panel: Undo toast, panel becomes "Add a Pokémon"
+  pass  EDIT-12  "Save team" opens "Edit team" with the save box and all six editors
+  pass  ADD-01  Name box: live search, Enter adds, species already on the team are left out
+  pass  ADD-02  Typing in the name box survives a redraw
+  pass  IO-01  Import a team: legal Pokémon load, skipped ones reported, Undo restores
+  pass  IO-02  Export to Showdown: Showdown text with item, Ability, Level 50, EVs, nature, moves; Copy
+  pass  IO-03  Copy for Showdown on My Team: toast and six Showdown blocks on the clipboard
+  pass  IO-04  Team Sheet "Copy as text" copies the team
+  pass  SHARE-01  Share box: Team Card / Poster / Sheet switch, Light / Dark style, Save image, Copy team link; Escape closes
+  pass  SHARE-02  Team Card image is 1200×675
+  pass  SHARE-03  Team Poster image is 1080×1350
+  pass  SHARE-04  Team Sheet page "Share as image" opens the box titled "Team Sheet" (1080×1350)
+  pass  SHARE-05  Save image: downloads "<team name> - NastyPlot.png" or says saving isn't available here
+  pass  SHARE-06  Team link: "Copy team link" copies #team=…; opening it offers "Load it" / "Not now"
+  pass  LOG-01  Your games card on a full six: "None logged yet." and "Log a game"
+  pass  LOG-02  Log a game: two leads, their six from Battle mode, Win → "1–0"; saved to the account
+  pass  LOG-02b  Opening "Log a game" with the keyboard moves focus to the first lead
+  pass  LOG-03  After a result: "Loss logged. Undo" removes it ("Game removed")
+  pass  LOG-04  After 5 games with their teams: "You lose most to …"
+  pass  LOG-05  Logged games show on the matching saved team and in Compare
+  pass  SHEET-01  Team Sheet head: "<team name>: Reg M-C doubles, level 50", "← My Team" back link
+  pass  SHEET-02  Team Sheet actions and key line
+  pass  SHEET-03  Six set cards (item, ability, moves, nature, stats); tapping one opens My Team with its edit panel
+  pass  SHEET-04  Team Sheet with no team: "No team yet…" and "Open My Team"
+  pass  SAVED-01  Save team: name box, "Save as new" → toast "Saved "Test"", button becomes "Update saved team"; saved to the account
+  pass  SAVED-01b  Save panel: empty name saves as "Untitled team"; 10 saved teams disable "Save as new"
+  pass  SAVED-02  Saved Teams head: count (N/10) and where it's stored (account vs this browser)
+  known SAVED-02b  Saved Teams shows how many of the 10 places are used ("2/10")  -> Saved Teams doesn't show /2\/10/
+  pass  SAVED-03  Sort Recent | Name | Readiness; "Name" is alphabetical
+  pass  SAVED-04  Saved team card: name, six tiles, Strength Score badge or "N/6 Pokémon", checks, actions
+  pass  SAVED-05  Open a saved team: My Team shows its name, toast "Opened …" with Undo
+  pass  SAVED-06  ⋯ menu: Rename (Enter saves) and Delete (asks first); deleting the open team un-links My Team
+  pass  SAVED-07  ⋯ → Team poster opens the share box with that team's poster
+  pass  SAVED-08  Compare on two saved teams opens Compare with both
+  pass  SAVED-09  No saved teams: Darkrai, "No saved teams yet…", "Open My team", "Build me a team"
+  pass  SAVED-10  Older singles teams are kept, not shown, but count toward the 10
+  pass  BOX-01  My Box head: count, explanation, sync line
+  pass  BOX-02  Add a Pokémon to the box (base forms only): toast and a new tile; saved to the account
+  pass  BOX-03  Remove from the box with Undo ("Box restored")
+  pass  BOX-04  Box sort A–Z | Type | Newest | Oldest | Rating, remembered
+  pass  BOX-05  Reset box needs a second tap, resets to the default list, Undo restores
+  pass  BOX-06  Box links: copy, open a box link, "Add to my box"; a #box= link opens My Box filled in
+  pass  BOX-07  Empty box: Darkrai, "Your box is empty…", "Add a Pokémon" focuses the search
+  pass  CMP-01  My Team "Compare with…": Compare page with My team as A, "Pick team B"
+  pass  CMP-02  Team headers A/B with source and Change; "Swap A and B" swaps the columns
+  pass  CMP-03  Team picker: My Team (greyed when already A), saved teams, winners, paste a Showdown team; never changes my team
+  pass  CMP-04  Comparison: "What's different" (Tailwind, sun vs rain), Strength Score row, Same-on-both fold
+  known CMP-04b  Compare lists Speed control as a note, not a counted team check  -> Speed control shown as a team check row
+  pass  PKMN-01  Info sheet opens from Home; ✕ and Escape close it, focus returns; desktop is a wide two-column panel
+  pass  PKMN-02  Hero: rating numeral, "<letter> tier, #N of M with results", name, types, three numbers
+  pass  PKMN-03  Add to team fills the first empty slot ("On your team" after); Build around it; Popular Sets
+  pass  PKMN-04  Tabs Info | Meta | Rating: last tab remembered; arrow keys move between tabs
+  pass  PKMN-05  Info tab: usual set, base stats, abilities with "Most used", type matchups, speed rows, Speed Tiers link
+  pass  PKMN-06  Meta tab: typical set, moves and items with %, "Brought with" opens the partner's sheet
+  pass  PKMN-07  Rating tab: "Why it rates N", four bars, What the Data Says, other tier lists, links
+  pass  X-01  Every change saves to this browser and to the account
+  skip  X-01b  A change on another device arrives live ("Updated from your other device"), waiting while you type  (needs two signed-in devices sharing a real account; the kit's fake account has no live updates from another device)
+  pass  X-02  First visit: sample six "Sun Tailwind (sample)", saved and open, default box of 36
+  pass  X-03  Toasts: Undo puts the team back ("Change undone"); plain confirmations carry Darkrai
+  pass  X-04  Double-tap on Apply applies only once
+  pass  X-05  Apply keeps your place: the page does not jump to the top
+  pass  X-06  Back closes what's open on top first and stays on the page
+  pass  X-07  Folds and views stay as left after reload (Game Plan, Types view, info-sheet tab, box sort, pool)
+  pass  X-08  Sliding pickers: tapping a choice moves the highlight and reports pressed
+  pass  X-09  A saved team name keeps its own casing ("rain test")
+  pass  X-10  Dark mode: My Team draws on a dark page
+  pass  X-11  Search (Ctrl K): type a saved team's name, Enter → it opens on My Team
+  pass  X-12  Long paragraphs show the first sentence and "More"
+  pass  X-13  Links out of this scope still work: replay "Paste its log" → Battle; How ratings work → How we calculate
+  known HOME-11b  Sample note "Build your own" on My Team opens Build  -> "Build your own" stayed on report
+  known HOME-10b  Home empty tile "Add a Pokémon to slot N" opens the add box for that slot  -> tile opened report without the slot-3 add box
+
+behaviour: 132 pass, 0 FAIL, 10 known bugs, 0 fixed?, 2 skipped; 1129s  (adapter current)
+  pass  X-01  Back steps through pages and lands at the old scroll spot
+  pass  X-02  Changes that replace team members show a toast with Undo; Undo brings the old six back
+  pass  X-03  A quick double tap on Apply makes only one change (one Undo step)
+  pass  X-04  Two/three-choice switches are sliders: the circle slides to the new choice, buttons stay readable
+  pass  X-05  The × in a Pokémon box empties it and keeps the keyboard up
+  pass  X-06  Pokémon name boxes: type part of a name, Enter picks; no match says so; Esc closes the list
+  pass  X-07  Phone: focusing Build around lifts the box into the upper screen so its list has room
+  pass  X-08  Headings and slider labels are in Title Case
+  pass  X-09  Page opens and button taps are counted anonymously (counts only, no team data)
+  pass  X-10  Tapping a built-team tile opens that Pokémon's info sheet
+  pass  X-11  Pages draw from the daily data (cores, archetype counts, sets numbers)
+  pass  X-12  Settings and team are saved: Megas on team 1 survives a reload (account and this browser)
+  pass  AUTO-01  Build page head and the How It Works fold
+  pass  AUTO-02  Build from My box / Whole roster: box count, switching rebuilds, choice is remembered
+  pass  AUTO-03  Pool rules: a tiny box says how many are usable; Never-suggest Pokémon are never built in
+  pass  AUTO-04  Megas on team: 0 rebuilds a no-Mega team with the warning toast; one value shared on all pages
+  pass  AUTO-05  Build around a Pokémon: chip, button label, every option has it, × clears, not saved
+  pass  AUTO-06  "Build around it" on an info sheet opens Build with the pick, Whole roster, and builds
+  pass  AUTO-07  Build me a team: busy state with the spinner line, then a team card
+  pass  AUTO-08  Result card: kicker, title, option count, Strength Score + band + rank, six tiles with items, readiness, checks, why, Sets and roles
+  pass  AUTO-09  Proven teams lead; a Fresh take slides in as option 2
+  pass  AUTO-10  Use this team: your six become the built six, My team opens, toast with Undo
+  pass  AUTO-11  Save the built team: toast, "Already saved", listed in Saved teams; disabled at 10
+  pass  AUTO-12  Try another cycles the options and wraps; hidden with a single option
+  pass  AUTO-13  Copy for Showdown copies the built six as Showdown text
+  pass  AUTO-14  No-result notes (tiny box, no Mega-capable box) with no "Doubles" label
+  pass  AUTO-15  Start from a recent winner: three cards; Sets; Load team needs a second tap; Practice against; Compare
+  pass  AUTO-16  Build page order: Build me a team, How it works, Build around a core, Start from a recent winner (kept after a build)
+  pass  CORES-01  Cores head, intro line with team count and ranking, and the ? explanation
+  pass  CORES-02  Kind switch: Pairs, Trios, Full teams (not saved)
+  pass  CORES-03  Sort: Most used changes the ranking line and order
+  pass  CORES-04  Filter by a Pokémon: chip, only cores with it, × clears
+  pass  CORES-05  Core rows: rank, names, tags, % wins; Details shows points vs avg, teams, % of all teams; top 3 then a fold
+  pass  CORES-06  Show more adds 15 rows
+  pass  CORES-07  Add to my team puts the core on a full team, opens My team, toast with what left, Undo
+  pass  CORES-08  Full teams › Load team replaces the six (no confirm), opens My team, toast with Undo
+  pass  CORES-09  Teams with it opens Winning teams filtered by the core
+  pass  CORES-10  Practice against (full teams) sets the Battle opponent
+  pass  CORES-11  Copy for Showdown (full teams) gives six blocks
+  pass  CORES-12  Empty state: a filter with no cores says so
+  pass  CORES-13  Menu › Build around a core opens Build scrolled to the cores
+  pass  BUILD-01  Edit panel: Edit set opens "Edit <name>" with the six strip; strip switches; Remove with Undo; Esc closes
+  pass  BUILD-02  Team actions: Save team names and saves (then "Update saved team"); ⋯ › Clear team empties with Undo
+  pass  BUILD-04  A locked Pokémon is never swapped out (All suggestions, cores)
+  pass  BUILD-06  Problems and team checks: summary line, a Speed control row with fixes; Quick add puts the pick on the team with Undo
+  pass  BUILD-07  Plan settings: Pick from, Swap my Mega, Count abilities, Refresh, Never suggest (with toasts, saved)
+  pass  COV-01  All suggestions head; reached from "See all suggestions ›"; ← My Team goes back
+  pass  COV-02  Opening after a team change shows at once with a working line, then the cards
+  pass  COV-03  Suggest from My box / Whole roster changes the list and is remembered (separate from My team's)
+  pass  COV-04  Swap/add cards: "Pokémon to Add" on a short team, "One Pokémon In, One Out" on a full one, with their details
+  pass  COV-05  Swap/Add applies in place with a toast and Undo
+  pass  COV-06  Only 3 cards first; "N More Swaps · Showing 3 of N" unfolds the rest; More suggestions loads more
+  pass  COV-07  Nothing improves: the honest note pointing to Whole roster
+  pass  COV-08  Too few Pokémon: note and Go to My team
+  pass  COV-09  Game-plan gap note shows on All suggestions when nothing in the pool closes the gap
+  pass  COV-11  Bigger plans fold: settings, multi-change suggestions only, hint
+  pass  COV-12  How Scoring Works lives at the bottom of My team
+  pass  SUGG-01  One planner everywhere: My team, Bigger plans and the threat sheet show the same top suggestion
+  pass  SUGG-02  My team sliders Suggest from / Megas / Swap my Mega are the same settings as Plan settings
+  pass  SUGG-03  My team suggestion card: out → in, score chip, lane line, Apply, Why? reasons
+  pass  SUGG-04  Bigger plans card: Suggestion N · K changes, score, lane, rows with set line, more reasons, Apply suggestion N
+  pass  SUGG-05  Planner rules: locked Pokémon stay; Pokémon just swapped out are not offered back
+  pass  SUGG-06  Lanes: Fix / Small edge / Option lines on My team and on every All suggestions card
+  pass  SUGG-07  Add Protect card: shown when few run Protect; Add Protect puts it in their sets
+  known SUGG-07  Add Protect: the toast offers Undo, and Undo takes Protect back out  -> the toast offers no Undo
+  pass  SUGG-08  Nothing to fix: card with Battle and Sets, then side-grades that keep every check
+  pass  SUGG-09  Apply: writes the plan, keeps the place under your finger, toast with the score move and Undo
+  pass  SUGG-10  Undo bar: shows on My team and Bigger plans, steps back with "Undone: …", disappears after another change
+  pass  SUGG-11  Show N more suggestions opens the next ones, then See all suggestions › opens All suggestions
+  pass  SUGG-12  Bigger plans › More suggestions adds 3 per tap
+  pass  SUGG-13  While suggestions are worked out after an edit, the old ones fade and cannot be tapped, then refresh
+  pass  SUGG-14  No-plan messages: nothing for an empty team; Bigger plans says no change raises the score
+  known SUGG-14  No-plan wording is exact: the score as shown elsewhere, and no "no change" verdict while still working  -> score in the no-plan note missing /\(it's at \d+\)\./: «Bigger Plans Two or more changes at once Plan Settings Box + catch, 2 Megas Applied Basculegion for Rillaboom, Kingambit for Incineroar Undo Nothing to fix. Your team has every basic and no swap clearly beats it in real games. Your edge now com
+  pass  SUGG-15  Mega-over-goal note and game-plan gap note on My team and All suggestions
+  pass  SUGG-16  Fix your items first: Item Clause card, Give X Y with Undo, card gone
+  pass  SUGG-17  Set check tips: a rare item gets "X: Y instead of Z" with Use Y
+  pass  SUGG-19  Threat sheet Best fix: shows the fix and Apply this fix applies it
+  known SUGG-19  Threat sheet Best fix: the sheet closes after Apply this fix  -> sheet did not close
+  pass  SETS-01  Popular sets head and the Rating · Usage · Sets switch
+  pass  SETS-02  Look up a Pokémon shows its sets, empties the box, and is remembered
+  pass  SETS-03  Your team picker: six tiles, the shown one highlighted on first open, tap switches
+  pass  SETS-04  Which Pokémon opens first: last looked up, else first team member, else the top-rated
+  pass  SETS-05  Pokémon header: tier, rating, rank, and your own set when it is on your team
+  pass  SETS-06  Source switch Best data · Tournaments · Showdown changes the numbers and is remembered
+  pass  SETS-07  Set card: moves, item, ability, nature, teammates (tap → their sets), source note
+  pass  SETS-08  Ways in: Nothing-to-fix Sets button, the editor's Full popular sets, the info sheet
+  pass  ARCH-01  Archetypes head and the Winning teams · Events · Archetypes switch
+  pass  ARCH-02  Share line from the latest top teams
+  pass  ARCH-03  Eight guides, most common first, each with share and basis
+  pass  ARCH-04  Guide body: what it does, Key Pokémon, How to beat it, What your team has
+  pass  ARCH-05  Archetype words label teams elsewhere (My team, built teams)
+
+behaviour: 88 pass, 0 FAIL, 3 known bugs, 0 fixed?, 0 skipped; 604s  (adapter current)
+  pass  NAV-01  Battle tab opens Battle and stays highlighted on its sub-pages
+  pass  NAV-02  menu group "Battle" lists the six Battle pages in order, each opens its page
+  pass  NAV-03  "← Battle" back link on the five Battle sub-pages; "← Pokémon ratings" on Track record
+  pass  NAV-04  tool switch Speed tiers · Damage calc · Type chart (tap and keyboard)
+  pass  NAV-05  "More ways to prep" cards on Battle open the four tools
+  pass  NAV-06  "Practice against" on Winning teams loads that six into Battle with its real sheet
+  pass  BATTLE-01  page head: "Team preview · <team> vs their six", real sheet kicker and event line
+  pass  BATTLE-02  their six: type, Enter picks, focus moves on, no duplicates, × removes and refocuses, survives reload
+  pass  BATTLE-03  "Clear their six" empties all six and the plan disappears
+  pass  BATTLE-04  recent opponents: a past six is one tap away, and survives reload when signed in
+  pass  BATTLE-05  "Practice against a top team" loads a tournament six; select resets when the six changes
+  pass  BATTLE-06  "Copy for Showdown" for their open team sheet copies six full sets
+  pass  BATTLE-07  empty and partial states: under 4 of yours, none of theirs, then the plan fills in
+  pass  BATTLE-08  The read: your lead, their likely lead, biggest threat, Fake Out count
+  pass  BATTLE-09  Plan / Speed / Damage switch filters cards on phones; hidden on desktop where all cards show
+  pass  BATTLE-10  Bring these four, lead the pair; one-Mega note when two Megas come
+  pass  BATTLE-11  From real games: approved verdict words, "so far" under six, gone under four
+  pass  BATTLE-12  Watch out fold lists what shuts you down; open/closed remembered
+  pass  BATTLE-13  Turn one in move order with the planned moves, KO warning and field
+  pass  BATTLE-14  Who moves first: Trick Room reverses the order, their Tailwind doubles their Speed
+  pass  BATTLE-15  Damage both ways: Rain changes Water and Fire hits; Intimidate lowers your physical hits
+  pass  BATTLE-16  Damage calc card: tap one of yours to open the calc against their first Pokémon
+  pass  BATTLE-17  Team preview practice entry opens Practice
+  pass  BATTLE-18  Deeper read: archetype matchup, their threats, full 6×6 matchup grid
+  pass  BATTLE-20  "?" tips explain, long notes fold behind "More"
+  pass  LOG-01  Battle log is pre-filled with the plan's four in order; picks update the order line
+  pass  LOG-02  Win/Loss disabled until four are picked; Win logs the game, saved and kept after reload
+  pass  LOG-03  Your record: overall %, this team, lead pairs after games
+  pass  LOG-04  delete a logged game from Recent battles
+  pass  LOG-05  log a game from a Showdown replay (paste or file); errors for bad logs
+  pass  LOG-06  "Your games · this six" on My team: log a loss with leads, then Undo
+  pass  LOG-07  a logged win shows on Home as "1–0"
+  pass  CALC-01  Damage calc head and "How the calc works →" link
+  pass  CALC-02  attacker/defender defaults and pickers grouped Your team / Top of the meta / Everyone
+  pass  CALC-03  move strips and "Other moves" change the result
+  pass  CALC-04  Set details: defender points kept legal (66 total); changing nature drops "assumed spread"
+  pass  CALC-05  Swap trades attacker and defender; move resets to the new attacker's
+  pass  CALC-06  field: weather follows the attacker's setter until you pick; Rain halves Fire
+  pass  CALC-07  result: Sneasler Close Combat into Mega Charizard Y; Garchomp Earthquake into Corviknight is No effect
+  pass  CALC-08  "Report a mistake" under the result opens feedback pre-filled with the calc
+  pass  CALC-09  best hits table: your hits on them / their hits on you
+  pass  CALC-10  "No effect" pinned mini bar jumps back to the result
+  pass  SPEED-01  Speed tiers head
+  pass  SPEED-02  Trick Room puts the slowest first
+  pass  SPEED-03  weather picker: Chlorophyll doubles Venusaur in sun only
+  pass  SPEED-04  Your six vs the field: outspeed % per Pokémon, falls under their Tailwind
+  pass  SPEED-05  race track / list view (remembered), markers open the info sheet, track scrolls on narrow screens
+  pass  SPEED-06  no team: message and "Go to My team"; footnote with its tip
+  pass  TYPES-01  pick up to two types (third replaces the older), Clear
+  pass  TYPES-02  look up a Pokémon: ability changes the defence (Heat Rotom, Levitate)
+  pass  TYPES-03  your team quick picks
+  pass  TYPES-04  Fire/Flying result: Rock 4× weak, Ground immune, STAB lines
+  pass  TYPES-05  full type chart: 18×18 grid on wide screens, attacking-type picker on phones
+  pass  TEST-01  Test run head and "How it works" fold
+  pass  TEST-02  Test run empty state under 4 Pokémon; falls back to built-in team lists without daily data
+  pass  TEST-03  summary counts: better prepared / about even / they're better prepared
+  pass  TEST-04  one card per top team, least prepared first, no-answer marks
+  pass  TEST-05  Matchup prep fold: level words for each Pokémon both ways (also MATCHUPS-07)
+  pass  TEST-06  "Practice in Battle mode" loads the team into Battle
+  pass  TEST-07  "Copy for Showdown" on a Test run card
+  pass  TEST-08  show more teams / show fewer
+  pass  TEST-09  Test run footnote and its tip
+  pass  PRAC-01  start screen: "Use my team" needs exactly six; real-team mode otherwise
+  pass  PRAC-02  pick four, then two leads; Reveal enabled only after 4 + 2
+  pass  PRAC-03  reveal: banner, both fours, per-Pokémon bars, score saved, next team
+  pass  PRAC-04  score line after one round
+  pass  TRACK-01  Track record head, stats and how it works
+  pass  TRACK-02  top-8 teams by rating band with a verdict line
+  pass  TRACK-03  biggest hits / misses; tap a Pokémon for its sheet
+  pass  TRACK-04  week by week chart with a line per band
+  pass  TRACK-06  events checked fold and "How ratings work →"
+  pass  TRACK-07  no data: "Collecting"
+  pass  MATCHUPS-01  top 10 threats with real-games word and calc level; phones show 5 + "Show 5 more"; tap opens the sheet
+  pass  MATCHUPS-02  legend counts in the approved words
+  pass  MATCHUPS-03  scouting report sheet: one threat at a time; Escape closes it
+  pass  MATCHUPS-04  your six vs the top 12 chart; tap a row for the full matchup
+  pass  MATCHUPS-05  threat preparation card: ready %, groups by level
+  pass  MATCHUPS-06  meta threats list uses the scouting level words
+  pass  X-01  their six and your picks show as Pokémon art tiles
+  pass  X-02  two- and three-choice switches show exactly one choice and move with a tap
+  pass  X-03  folds remember open/closed per device (Speed tiers fold)
+  pass  X-04  a calc button stays under your finger when the page redraws
+  pass  X-05  browser Back closes an open sheet first, then steps back a page
+  pass  X-06  Battle toggles are not swallowed by the double-tap guard
+  skip  X-07  their six and the log update live from another device  (the kit's fake account fires onSnapshot once at load; a later remote change can't be pushed (kit change needed))
+  pass  X-08  Battle text uses the site's punctuation (no " · " left in sentences)
+  pass  X-09  keyboard: arrows + Enter pick in their six, Escape closes the list, Tab stays in the open sheet
+
+behaviour: 86 pass, 0 FAIL, 0 known bugs, 0 fixed?, 1 skipped; 527s  (adapter current)
+  pass  NAV-01  Desktop main tabs: five tabs, Meta lit on Meta pages, live x/6 count
+  pass  NAV-02  Phone bottom bar: five tabs, stays put while scrolling, each opens its page
+  pass  NAV-02b  Desktop has no bottom bar
+  pass  NAV-03  The ⋯ menu lists the 24 pages, marks the current one, traps focus, closes 4 ways
+  pass  NAV-03b  The ⋯ button looks "on" only on pages outside the five main tabs (About & Legal)
+  pass  NAV-04  Meta section switch Pokémon | Tournaments
+  pass  NAV-05  Second-level sliders Rating/Usage/Sets and Winning Teams/Events/Archetypes
+  known NAV-05b  The slider tells screen readers the page that is shown (one choice marked)  -> marked as current for screen readers: Rating, Usage
+  pass  NAV-06  Back links on Meta sub-pages
+  pass  NAV-07  Each Meta page opens at its top, named, and marked in the menu
+  pass  NAV-08  Back steps through pages to the same scroll place, closes the sheet first; no page in the address
+  pass  NAV-09  A new page opens at its top
+  pass  NAV-10  Keyboard focus stays inside an open Pokémon sheet
+  pass  NAV-11  Section colours: all Meta pages share one accent; Battle, Home, Build, My Team differ
+  known BROKEN-04  Reload reopens the page you were on  -> reload opened home
+  pass  JUMP-01  Search opens from the header button, Ctrl+K (toggles) and "/" (not while typing)
+  pass  JUMP-01b  Phone: the search is an icon button in the header
+  pass  JUMP-02  Empty search lists 14 tools, Home first, each with a description
+  pass  JUMP-02b  Phone: the "Tool" label is hidden
+  pass  JUMP-03  Typing finds Pokémon (with rating and types), saved teams, and says when nothing matches
+  pass  JUMP-04  Choosing results: arrows+Enter open a Pokémon sheet, a tool opens its page, a saved team loads, Esc and backdrop close
+  pass  JUMP-05  Search finds the tools it lists (e.g. "speed" → Speed Tiers)
+  known BROKEN-10  Search finds every menu page, under its menu name  -> not findable by its menu name: Build Around a Core, All Suggestions, Battle a Team, Team Preview Practice, This Week, Pokémon Ratings, Usage, Winning Teams, Track Record, How We Calculate, About & Legal
+  pass  THEME-01  Day/night button switches to Dark, saves it, and agrees with the menu picker
+  pass  THEME-01b  A dark choice survives a reload
+  pass  THEME-02  Menu Auto / Light / Dark: Auto follows the device, Light and Dark override it
+  pass  THEME-03  Share image has its own Light/Dark choice (see WEEK-02)
+  pass  SHELL-01  Tab title, icon and the slanted Unbounded headline font
+  pass  SHELL-02  Header controls in order, nothing overflowing (desktop)
+  pass  SHELL-02b  Header on a phone: logo, search, day/night, ⋯
+  pass  SHELL-03  "Data as of" dates show on the pages
+  pass  SHELL-04  Stale data gets an amber note on Home and Meta pages only
+  pass  SHELL-04b  Fresh data: no stale-data note
+  pass  SHELL-05  A new regulation shows a calm banner with its start date and event count
+  pass  SHELL-06  Footer: tagline, disclaimer, sources and links into About
+  pass  SHELL-07  Toast with Undo after loading a team; Undo brings your team back
+  pass  SHELL-07b  A plain toast goes after about 2 s; an Undo toast stays about 6 s
+  pass  SHELL-08  Undo bar steps back through applied suggestions (My Team pages)
+  pass  SHELL-09  "?" tips: one at a time, link to How We Calculate, close on scroll / Escape / second tap
+  pass  SHELL-10  The × in a search box empties it and brings the full list back
+  pass  SHELL-11  Long paragraphs fold to More / Less
+  pass  SHELL-12  Text style: Title Case page names, commas not dots in lists, "Mega X" naming
+  pass  SHELL-13  Sliding pickers: one choice at a time, the list follows (Usage source)
+  pass  SHELL-14  Folds remember open/closed across a reload
+  pass  SHELL-15  "Details" shows the sample sizes behind the top list
+  known SHELL-16  A rarely used Pokémon shows "Early read"  -> Mega Dragonite's sheet does not say "Early read"
+  pass  SHELL-17  First visit: the welcome card shows on Home; "Got it" removes it for good
+  pass  SHELL-17b  Welcome card "Copy a top team" opens Winning Teams
+  pass  SHELL-17c  Returning visitors never see the welcome card
+  pass  SHELL-18  What's new shows once after an update, stays for the visit, × dismisses it
+  pass  SHELL-18b  First-time visitors never see What's new
+  pass  SHELL-19  First visit starts with the real sample team and a note
+  pass  SHELL-20  Feedback: anonymous, no name/email fields, too-short check, sent with personal details removed
+  pass  SHELL-20b  "Report a mistake" on a sheet sends what was on screen
+  pass  SHELL-20c  Viewers who cannot save see no feedback buttons
+  pass  SHELL-21  Owner-only panels on Home: feedback and what people use
+  pass  SHELL-21b  Owner panels are absent for a viewer without an account
+  pass  SHELL-22  Page visits are counted anonymously (saved when the tab is left)
+  pass  SHELL-23  Saved Teams says where teams are saved (account vs this browser)
+  pass  SHELL-23b  Without an account: "Saved in this browser only"
+  skip  SHELL-23c  A change on another device arrives live with a toast  (needs a second device pushing a live change; the fake account fires its snapshot once (kit change needed: a push helper))
+  pass  SHELL-24  Shared team link: banner, Not now keeps your team and clears the address; Load it loads
+  pass  SHELL-25  Box link opens My Box with the link pasted and Add / Replace ready
+  pass  SHELL-26  Copy for Showdown gives six Showdown blocks at Level 50
+  pass  SHELL-27  Share card: tall image, Light/Dark, Save image downloads a PNG
+  pass  SHELL-28  Darkrai on empty screens and tips, never beside ratings
+  pass  SHELL-29  With no live data the pages still work from the built-in snapshot
+  pass  SHELL-30  A fast double tap on "Add to team" adds once
+  pass  SHELL-31  Keep your place: a tapped filter chip stays under the finger
+  pass  SHELL-32  Reduced motion: no page fade and no shimmering S cards
+  pass  SHELL-32b  Without reduced motion the page fades in on switch
+  pass  SHELL-33  Every Pokémon on Ratings stands on its own colour field; Megas get the Mega contour
+  pass  SHELL-34  Broken data for one page never breaks the others
+  pass  RATE-01  Ratings head: kicker with team count and date; "How ratings work →" opens the method section
+  pass  RATE-02  Ratings search by name or type, with a match count
+  pass  RATE-03  Filter: two types at most, flags, badge count, Clear
+  pass  RATE-04  No matches: clear message and "0 of N match"; empty box message
+  pass  RATE-05  Top of the ratings: #1 first, rows in rating order, 20 on desktop; a row opens its sheet
+  pass  RATE-05b  Phone: the top list is shorter (16 rows)
+  pass  RATE-06  Details on the top list shows win % and games
+  pass  RATE-07  Every Pokémon, by Tier: six tier rows, "+N more" / "Show fewer", remembered
+  pass  RATE-08  About the Ratings: track record line and four number cells
+  pass  RATE-09  Rating bands: tier letter matches the number everywhere on the board
+  pass  RULE-RATING-ONE-NUMBER  A Pokémon's rating is the same number on Ratings, its sheet, search and Popular Sets
+  pass  SHEET-01  Sheet opens from any Pokémon, closes with ✕ / backdrop / Escape / Back, focus returns (PKMN-01)
+  pass  SHEET-02  Sheet header: rating with tier and rank, types, % of teams, win rate and games (PKMN-02)
+  pass  SHEET-02b  Phone sheet fits the screen
+  pass  SHEET-03  Sheet tabs Info | Meta | Rating; the last tab is remembered (PKMN-04)
+  pass  SHEET-03b  First visit opens the sheet on Info
+  skip  SHEET-03c  Sideways swipe moves to the next sheet tab  (touch swipe gestures are not reliably simulated headless; check on iPhone)
+  pass  SHEET-04  Info tab: usual set, stats, abilities with share, weaknesses, speed builds (PKMN-05)
+  pass  SHEET-05  Meta tab: typical set, move and item bars, "Brought with" partners open their sheet (PKMN-06)
+  pass  SHEET-06  Rating tab: why it rates N, what the data says, other tier lists open a new tab (PKMN-07)
+  pass  SHEET-07  Sheet actions: Add to team, Build around it, Popular Sets (PKMN-03)
+  pass  META-01  Usage source line names the source and size
+  pass  META-02  Usage source switch changes the list; starts on Ranked ladder again after a reload
+  pass  META-03  Usage search filters every rank; says when nothing matches
+  known META-03b  The "rest of the list" button hides while searching  -> "Ranks 11–60" button still shows while searching
+  pass  META-04  Usage rows: rank, name, types, usage and team count; trend badges where ranks moved
+  pass  META-05  Expanded usage row: bars "Of N teams", teammates, Add to team
+  pass  META-06  Top 10, then "Ranks 11–60" shows the rest and flips
+  pass  META-07  Usage without data says so
+  known BROKEN-13  No-data message works on the public site (does not mention Claude)  -> no-data text mentions Claude: Pokémon Tournaments Rating Usage Sets Usage Live data appears here when the page is opened in Claude.
+  pass  SETS-01  Look up a Pokémon: its sets show and stay after reload (B SETS-02)
+  pass  SETS-02  Your Team row: tap a member to see its sets (B SETS-03)
+  pass  SETS-03  Default: your first team member, else the #1 rated Pokémon (B SETS-04)
+  pass  SETS-03b  Default with no team: the #1 rated Pokémon
+  pass  SETS-04  Set head: tier pill and "Your <Pokémon>: Ability @ Item, moves" (B SETS-05)
+  pass  SETS-05  Sets source switch Best data / Tournaments / Showdown, remembered (B SETS-06/07)
+  pass  TOP-01  Winning Teams source line with update date
+  pass  TOP-02  Team search: suggestions with kind and count; Enter makes a chip; nonsense says so
+  pass  TOP-03  Team search results: count, "Often with" adds a filter, cards with matches
+  pass  TOP-04  Your Team strip: checks badge with six; asks for six when not full
+  pass  TOP-04b  Your Team strip with five Pokémon asks to add six
+  pass  TOP-05  Team list: top 3, "More Winning Teams" shows more, "Show fewer" folds back
+  pass  TOP-06  Card actions: Load team (confirm, Undo), Practice against, Compare
+  pass  TOP-07  Winning Teams without data says so
+  pass  EVT-01  Events head: total, online and official counts, "?" explains
+  pass  EVT-02  Next events calendar: countdowns, Show all, recent results open the event
+  pass  EVT-03  Event filter Official keeps only official events
+  pass  EVT-04  Event list 12 at a time with "Show more"
+  pass  EVT-05  Event detail: placings 1st→16th, opens at top, "‹ All events" returns
+  pass  EVT-06  Team sheet card: Sets shows items/moves; Load team needs a second tap and loads the exact sheet
+  pass  EVT-07  Events without data: empty note
+  pass  ARCH-01  Archetype list sorted by share with team counts (B ARCH-03)
+  pass  ARCH-02  Inside a guide: how to beat it and what your team has (B ARCH-04)
+  pass  WEEK-01  This Week head: two date ranges, team and event counts, Share button
+  pass  WEEK-02  Share this week opens a 1200-wide image
+  pass  WEEK-02b  Without data, Share says "Nothing to share yet"
+  pass  WEEK-03  Rising and Falling: "a% → b% of teams", points; tap opens the sheet
+  pass  WEEK-04  Most used this week: five tiles open their sheet
+  pass  WEEK-05  New tech: kind word, "a% → b% of its teams", Details shows team counts
+  pass  WEEK-06  Winners this week open that event on Events
+  pass  WEEK-07  Team styles with % and real changes only
+  pass  WEEK-08  New in top cut: first top 8 this regulation, or "nothing new"
+  pass  WEEK-09  How we decide what changed: fold with thresholds and date
+  pass  WEEK-10  This Week without data: empty note
+  pass  WEEK-11  Kind marker: icon and word, never colour alone
+  pass  TRACK-01  Track Record head and stats
+  pass  TRACK-02  How the check works: three steps and the fair-test line
+  pass  TRACK-03  Top-8 teams by the rating we gave: four bands and a verdict
+  pass  TRACK-04  Biggest hits and misses open their sheet
+  pass  TRACK-05  Week by week chart (or the "from about" note)
+  pass  TRACK-06  Coming as the data grows: with only 3 events it lists the verdict and misses still to come
+  pass  TRACK-06b  With 34 events the "coming" list is gone (everything is shown)
+  pass  TRACK-07  Events Checked fold: one row per event checked, remembered
+  pass  TRACK-08  Track Record link and empty state
+  pass  TRACK-08b  Track Record without data: Collecting
+  pass  METHOD-01  How We Calculate head: freshness, team and game counts
+  pass  METHOD-02  How to read our numbers: rating bands and Strength Score bands with the approved words
+  pass  METHOD-03  Ten remembered sections; each opens with content
+  known RULE-WORDS  Meta pages, menu and search use the approved words (Matchups, Strength Score, Test run…)  -> old words: How We Calculate: Ready for the Top Threats; How We Calculate: grade
+  pass  METHOD-04  Links and tips open How We Calculate at the right section
+  pass  METHOD-05  Track Record card opens Track Record
+  pass  DUP-12  Every data source named in How We Calculate is credited in About and the footer
+  pass  ABOUT-01  About head with the four chips
+  pass  ABOUT-02  Eight sections; Privacy promises no names, no cookies; folds are not remembered
+  pass  ABOUT-03  Contact email hidden until "Show email"; then a mail link and Copy
+  pass  ABOUT-04  Footer About & Legal opens at the top; Contact opens Removal & Contact in view
+  pass  ABOUT-05  Rules caption under legality statements elsewhere
+
+behaviour: 151 pass, 0 FAIL, 7 known bugs, 0 fixed?, 2 skipped; 671s  (adapter current)
