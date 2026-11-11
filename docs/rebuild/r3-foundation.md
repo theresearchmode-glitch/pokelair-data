@@ -152,3 +152,18 @@ just before that page is built.
   Team; the forms strip; Info / Meta / Rating). 1,035 sheets (345 x 3 tabs) checked at 320 wide, 320-2560 swept.
 - Still to come on the sheet: the Forms tab (side by side, mock sheet-forms.html), Build around it, Popular Sets, Speed Tiers
   and Report a mistake (each arrives with its page).
+
+## R4 My Team: Share (Nov 11)
+- Shared now (`44-share-images.js`): today's Team Card / Team Poster / Team Sheet images and everything they draw with
+  (PO, posterFacts, MG.ok/hex, the arena palette AR.TC_FIX/TC/dark/isMega, scImg, scFit, npLogoSvg, TS.STATS/natBits);
+  teamTitleFor (30-saved-data.js), regInfo + PAGE_REG (24-sheet-data.js), CH.gradeNum/recLine/readyN/n (58-strength.js).
+  Today's page still applies the arena palette to TC at the same moment (74-arena.js); the new build applies it in bridge.js.
+- Proof: same-share.mjs 18 of 18 pixel-identical on today's page (planted colour change: 6 differ); same-share-v2.cjs today's
+  page vs the new build, same data, sprites off and logo pinned: 12 of 12 identical.
+- Lessons: (1) eight hidden dependencies surfaced only when the new build drew an image (CH.gradeNum, AR, MG, scFit, TS,
+  teamTitleFor, regInfo, npLogoSvg). Better: list every free identifier a moved file calls and check each in the new build
+  first (done here once; the list had to be read, as comment words show up too). (2) Pages opened from disk lock a canvas
+  that draws other files' images, so Share is tested over a local web server. (3) run.mjs rebuilds dist/page.html from the
+  sources when it starts: a check run takes the sources as they are at that moment.
+- New build: Share sheet (Team Card / Team Poster / Team Sheet, Light / Dark, Save Image, Copy Team Link); sprites from the
+  new build's art. The images keep today's design for now; restyling them to the new look is a later step for Sim to approve.
