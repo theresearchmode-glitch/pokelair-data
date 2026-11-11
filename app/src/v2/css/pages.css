@@ -469,3 +469,4 @@
 .tm-ckok>summary::-webkit-details-marker{display:none}.tm-ckok>summary b{color:var(--plot-text)}
 .tm-ckok>summary::after{content:"Show";font:600 var(--t15)/1 var(--b);color:var(--plot-text)}.tm-ckok[open]>summary::after{content:"Hide"}
 .tm-cknote{font-style:normal;font:600 var(--t13)/1 var(--b);color:var(--ink-3);margin-right:var(--s1)}
+.why2 .tm-meter{margin:0 0 var(--s5)}
