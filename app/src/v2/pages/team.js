@@ -182,7 +182,7 @@ V2.addState = n => { const p = byName.get(n); if (!p) return 'none'; if (S.slots
 V2.addBtn = n => { const st = V2.addState(n), d = V2.esc(V2.disp(n));
   return st === 'ok' ? `<div class="row ms-add"><button type="button" class="np-btn" data-v2add="${V2.esc(n)}">Add to My Team</button></div>`
     : `<p class="fine ms-add">${st === 'have' ? `${d} is already on your team.` : st === 'full' ? 'Your team is full: remove one on My Team to add it.' : ''}</p>`; };
-V2.addToTeam = n => { const p = byName.get(n); if (V2.addState(n) !== 'ok') return; const i = S.slots.findIndex(x => !byName.get(x.n)); addMon(i, p); V2.closeSheet(true);
+V2.addToTeam = n => { const p = byName.get(n), st = V2.addState(n); if (st !== 'ok') { if (p) toast(st === 'have' ? `${p.d} is already on your team` : 'Your team is full: remove one on My Team to add it'); return; } const i = S.slots.findIndex(x => !byName.get(x.n)); addMon(i, p); V2.closeSheet(true);
   if (location.hash !== '#team') location.hash = '#team'; render(); toast(p.d + ' added'); };
 document.addEventListener('click', e => { const b = e.target.closest('[data-v2add]'); if (b) V2.addToTeam(b.dataset.v2add); });
 
@@ -194,12 +194,12 @@ V2.underdog = (now = new Date()) => { const day = Math.floor((Date.UTC(now.getFu
   if (day <= 0 || typeof rating !== 'function') return 'Flapple';
   const pool = ROSTER.filter(p => !p.m && (U(p) || 0) >= 1 && SPRITE_ID[p.n]).map(p => ({n: p.n, r: RS(rating(p).total)})).sort((a, b) => a.r - b.r || a.n.localeCompare(b.n)).slice(0, 12);
   return pool.length ? pool[(day - 1) % pool.length].n : 'Flapple'; };
-V2.emptyHtml = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nSaved = S.teams.filter(t => t.format !== 'singles').length;
+V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nSaved = S.teams.filter(t => t.format !== 'singles').length;
   return `<section class="tm-empty"><div class="tm-e-lead"><div class="np-eyebrow">My Team</div><h1 class="u">Six spots, all yours.</h1><p>Add a Pokémon to start, or let us build a whole team around a favourite.</p>
     <div class="row"><a class="np-btn" href="#build">Build Me a Team</a><button type="button" class="np-btn2" data-v2search><span>Add a Pokémon</span></button>${nSaved ? `<button type="button" class="np-link tm-e-saved" data-v2saved>Open a saved team <small>${nSaved}</small></button>` : ''}</div></div>
     <div class="tm-ud"><div class="tm-ud-hd"><div class="np-eyebrow">Today's underdog</div><h2 class="u">${d}. <span>Somebody's favourite.</span></h2></div><div class="tm-ud-st">${V2.mon(n, {iw: 240, bare: true})}</div><div class="tm-ud-bd">
     <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
-    <div class="row">${V2.addState(n) === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${V2.esc(n)}"><span>Add ${d} to My Team</span></button>` : ''}<button type="button" class="np-link" data-v2mon="${V2.esc(n)}">Info Sheet</button></div></div></div></section>`; };
+    <div class="row">${o.preview || V2.addState(n) === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${V2.esc(n)}"><span>Add ${d} to My Team</span></button>` : ''}<button type="button" class="np-link" data-v2mon="${V2.esc(n)}">Info Sheet</button></div></div></div></section>`; };
 
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
@@ -249,3 +249,5 @@ after() {
   document.querySelectorAll('[data-tmsel]').forEach(b => b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }));
   document.querySelectorAll('[data-tmjump]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
 }};
+// a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)
+V2.pages['team-empty'] = {place: 'team', draw: () => V2.emptyHtml({preview: true})};
