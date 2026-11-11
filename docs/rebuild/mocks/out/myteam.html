@@ -237,6 +237,17 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
   document.getElementById('page').innerHTML='<i class="grain"></i>'+header+`<div class="herowrap"><div class="atmos" style="background:${ATMOS}"></div>${band}${acts}</div>`+jump+work+sheet+footer;
-  await document.fonts.ready;document.body.dataset.ready=1;
+  await document.fonts.ready;
+  /* phone (Sim, Nov 11: the tall columns of light were overbearing in both modes): the same team light, but each Pokémon's
+     light is a small low pool sized to its own art and placed at its feet, measured from the page, so it never runs into a column */
+  if(PH){const hw=document.querySelector('.herowrap'),hr=hw.getBoundingClientRect(),a2=DK?.24:.16,P=x=>Math.round(x);
+    const L=[...hw.querySelectorAll('.band .mon')].map(m=>{const r=m.querySelector('img').getBoundingClientRect();
+      return `radial-gradient(${P(r.width*.85)}px ${P(r.height*.5)}px at ${P(r.left-hr.left+r.width/2)}px ${P(r.bottom-hr.top-r.height*.2)}px,rgba(${m.style.getPropertyValue('--c')},${a2}),transparent)`;});
+    const n=hw.querySelector('.lock .num').getBoundingClientRect();
+    L.push(`radial-gradient(${P(n.width*.7)}px ${P(n.height*.6)}px at ${P(n.left-hr.left+n.width*.4)}px ${P(n.bottom-hr.top-n.height*.3)}px,rgba(${rgb(TC1)},${a2}),transparent)`);
+    const ac=hw.querySelector('.acts').getBoundingClientRect(); /* Sim, Nov 11: the light still reaches the action row, as one low wide wash */
+    L.push(`radial-gradient(${P(hr.width*.6)}px ${P(ac.height*.7)}px at 50% ${P(ac.top-hr.top+ac.height*.45)}px,rgba(${rgb(TC2)},${a2*.8}),transparent)`);
+    hw.querySelector('.atmos').style.background=L.join(',');}
+  document.body.dataset.ready=1;
 })();
 </script></body></html>
