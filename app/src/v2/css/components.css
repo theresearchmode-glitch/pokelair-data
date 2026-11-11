@@ -47,9 +47,9 @@
 /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
 /* the selected Pokémon stands on a floor ring in its own colour, with a brighter pool (Sim, Nov 11: idea 2 "Floor ring";
    replaces the tilted colour panel, so nothing sits behind the Pokémon) */
-.np-mon.sel .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:108%;height:calc(var(--iw)*.26);transform:translate(-50%,36%);border-radius:50%;
-  border:2px solid rgba(var(--cp),.85);box-shadow:0 0 10px rgba(var(--cp),.3),inset 0 0 8px rgba(var(--cp),.22)}
-:root[data-theme="night"] .np-mon.sel .st::before{border-color:rgba(var(--cp),.95);box-shadow:0 0 14px rgba(var(--cp),.5),inset 0 0 10px rgba(var(--cp),.35)}
+.np-mon.sel .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:118%;height:calc(var(--iw)*.3);transform:translate(-50%,34%);border-radius:50%;
+  border:2.5px solid rgba(var(--cp),.9);background:radial-gradient(closest-side,rgba(var(--cp),.2),rgba(var(--cp),.08) 70%,transparent);box-shadow:0 0 12px rgba(var(--cp),.4)}
+:root[data-theme="night"] .np-mon.sel .st::before{border-color:rgba(var(--cp),.95);background:radial-gradient(closest-side,rgba(var(--cp),.14),transparent 75%);box-shadow:0 0 16px rgba(var(--cp),.55),inset 0 0 12px rgba(var(--cp),.3)}
 .np-mon.sel .pool{background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.85),rgba(var(--cp,150,150,165),.4) 55%,transparent)}
 .np-mon.sel img{scale:1.08;transform-origin:50% 100%}.np-mon.sel b{font-weight:800}
 /* the Strength Score lockup: the big number and its band word (blue only in the band word) */
