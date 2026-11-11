@@ -9,7 +9,7 @@ for (const g of groups) await import(`./${g}.mjs`);
 const res = [], t0 = Date.now();
 for (const T of H.tests()) { if (only.length && !only.includes(T.id)) continue;
   if (T.skip) { res.push({...T, r: 'skip', why: T.skip}); console.log(`  skip  ${T.id}  ${T.title}  (${T.skip})`); continue; }
-  let r = 'pass', why = '';
+  H.setGroup(T.group); let r = 'pass', why = '';
   try { await Promise.race([T.fn(), new Promise((_, j) => setTimeout(() => j(new Error('timed out after 60s')), 60000))]); } catch (e) { r = T.known ? 'known' : 'FAIL'; why = String(e.message || e).slice(0, 300); }
   if (r === 'pass' && T.known) { r = 'FIXED?'; why = 'marked known (' + T.known + ') but passed: remove the mark'; }
   res.push({group: T.group, id: T.id, title: T.title, r, why});

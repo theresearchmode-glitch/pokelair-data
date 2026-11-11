@@ -40,8 +40,14 @@ process.on('exit', () => { try { fs.unlinkSync(PAGE); } catch (e) {} });
 const AD_NAME = process.env.ADAPTER || 'current';
 export const ADAPTER = (await import(`./adapters/${AD_NAME}.mjs`)).default;
 // extra page-group helpers live in adapters/<name>.<group>.mjs (default export: (A, pg) => ({...more functions})), merged in
+// Name clashes (Nov 11): every group's helpers are merged, then the CURRENT test's own group is merged again last, so a group
+// always gets its own helper when two groups use the same name.
 const EXTRAS = [];
-for (const f of fs.readdirSync(HERE + 'adapters').filter(f => f.startsWith(AD_NAME + '.') && f.endsWith('.mjs') && f !== AD_NAME + '.mjs').sort()) EXTRAS.push((await import(`./adapters/${f}`)).default);
+for (const f of fs.readdirSync(HERE + 'adapters').filter(f => f.startsWith(AD_NAME + '.') && f.endsWith('.mjs') && f !== AD_NAME + '.mjs').sort())
+  EXTRAS.push({group: f.slice(AD_NAME.length + 1, -4), fn: (await import(`./adapters/${f}`)).default});
+let CUR_GROUP = null;
+/** the runner sets this before each test */
+export const setGroup = g => { CUR_GROUP = g; };
 
 let browser = null;
 export async function closeAll() { if (browser) await browser.close(); browser = null; }
@@ -63,16 +69,20 @@ export async function open(o = {}) {
   const state = o.team || o.box || o.opp || o.saved ? ADAPTER.stateFor(o) : null;
   await pg.addInitScript(([D, st, o]) => {
     window.__PL_TEST = 1;
-    try { if (!o.fresh) { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2099-01-01"'); }
+    // Reloads (Nov 11): seed only on this tab's FIRST load, so a reload shows what the player saved, like a real reload.
+    let first = true; try { first = !sessionStorage.getItem('__np_seeded'); sessionStorage.setItem('__np_seeded', '1'); } catch (e) {}
+    if (first) try { if (!o.fresh) { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2099-01-01"'); }
       localStorage.setItem('cc2.theme', JSON.stringify(o.mode || 'light'));
       if (st && o.account === false) localStorage.setItem('cc2.state', JSON.stringify(st));
       for (const k in (o.stored || {})) localStorage.setItem(k, o.stored[k]); } catch (e) {}
     // the fake account: shared docs from the frozen data; the player's own doc in memory (window.__acct) so tests can read saves
-    const mine = 'data/users/u_test/state'; window.__acct = st && o.account !== false ? {[mine]: JSON.parse(JSON.stringify(st))} : {};
+    const mine = 'data/users/u_test/state'; let kept = null; try { kept = first ? null : JSON.parse(sessionStorage.getItem('__np_acct') || 'null'); } catch (e) {}
+    window.__acct = kept || (st && o.account !== false ? {[mine]: JSON.parse(JSON.stringify(st))} : {});
+    const keep = () => { try { sessionStorage.setItem('__np_acct', JSON.stringify(window.__acct)); } catch (e) {} }; keep();
     const docOf = p => ({
       get: async () => ({exists: p in window.__acct || !!D[p], data: () => p in window.__acct ? JSON.parse(JSON.stringify(window.__acct[p])) : D[p]}),
-      set: async v => { window.__acct[p] = JSON.parse(JSON.stringify(v)); },
-      update: async v => { window.__acct[p] = Object.assign(window.__acct[p] || {}, JSON.parse(JSON.stringify(v))); },
+      set: async v => { window.__acct[p] = JSON.parse(JSON.stringify(v)); keep(); },
+      update: async v => { window.__acct[p] = Object.assign(window.__acct[p] || {}, JSON.parse(JSON.stringify(v))); keep(); },
       onSnapshot: cb => { setTimeout(() => cb({exists: p in window.__acct || !!D[p], metadata: {}, data: () => p in window.__acct ? window.__acct[p] : D[p]}), 5); return () => {}; }});
     const db = {doc: docOf, collection: c => ({doc: k => docOf(c + '/' + k)})};
     window.claude = {use: async n => { await new Promise(r => setTimeout(r, 10));
@@ -82,7 +92,8 @@ export async function open(o = {}) {
   }, [DOCS, state, {fresh: !!o.fresh, mode: o.mode, account: o.account, stored: o.stored}]);
   await pg.goto('file://' + page() + (o.hash || ''));
   await pg.waitForTimeout(o.wait ?? 1500);
-  const ui = ADAPTER.bind(pg, o); for (const X of EXTRAS) Object.assign(ui, X(ui, pg, o));
+  const ui = ADAPTER.bind(pg, o); for (const X of EXTRAS) Object.assign(ui, X.fn(ui, pg, o));
+  for (const X of EXTRAS) if (X.group === CUR_GROUP) Object.assign(ui, X.fn(ui, pg, o));
   const acct = () => pg.evaluate(() => window.__acct['data/users/u_test/state'] || null);
   const ls = k => pg.evaluate(k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return localStorage.getItem(k); } }, k);
   return {pg, ctx, errs, ui, acct, ls, close: () => ctx.close()};

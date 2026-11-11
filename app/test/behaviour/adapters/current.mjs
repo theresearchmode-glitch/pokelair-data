@@ -28,7 +28,7 @@ export default {
     /** the visible text of the page being shown */
     text: () => pg.evaluate(() => { const p = [...document.querySelectorAll('[data-pane]')].find(e => !e.hidden && e.getClientRects().length); return (p || document.body).innerText.replace(/\s+/g, ' ').trim(); }),
     /** click the first VISIBLE control whose text matches (string = contains, case-insensitive; RegExp = test) */
-    async tap(match, within = 'body', wait = 400) { const ok = await pg.evaluate(([m, isRe, w]) => {
+    async tap(match, within = 'body', wait = 500 /* the page ignores taps for 450 ms after Apply/Save/Use/Add/Load */) { const ok = await pg.evaluate(([m, isRe, w]) => {
         const re = isRe ? new RegExp(m[0], m[1]) : null, t = e => (e.innerText || e.textContent || '').replace(/\s+/g, ' ').trim();
         const root = document.querySelector(w) || document.body;
         const els = [...root.querySelectorAll('button,a,[role=button],[role=tab],summary,label,[data-view],[tabindex]')].filter(e => e.getClientRects().length && !e.closest('[hidden]'));

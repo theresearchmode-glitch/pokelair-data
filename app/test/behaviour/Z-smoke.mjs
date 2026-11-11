@@ -8,3 +8,7 @@ t('KIT-01', 'opens with a team, shows My Team with all six, no page errors', asy
 t('KIT-02', 'a change is saved to the fake account', async () => {
   const {ui, acct, close} = await open({team: TEAM}); await ui.peek(`S.slots[5]={n:'',a:null,lock:false};render()`); await ui.pg.waitForTimeout(1200);
   const a = await acct(); expect(a && a.slots && !a.slots[5].n, 'removal not saved to the account'); await close(); });
+t('KIT-03', 'a reload keeps what the player saved (account and this browser)', async () => {
+  const {ui, acct, ls, close} = await open({team: TEAM}); await ui.peek(`S.slots[5]={n:'',a:null,lock:false};render()`); await ui.pg.waitForTimeout(1200);
+  await ui.reload(); const tm = await ui.team(); expect(tm && tm.length === 5, 'after reload the team has ' + (tm && tm.length) + ' (the removal was lost)');
+  const a = await acct(); expect(a && !a.slots[5].n, 'account copy lost the removal'); await close(); });
