@@ -3,6 +3,12 @@ const NAT_UP={Atk:['Adamant','Lonely','Naughty','Brave'],Def:['Bold','Impish','L
 const NAT_DN={Atk:['Bold','Timid','Modest','Calm'],Def:['Lonely','Hasty','Mild','Gentle'],SpA:['Adamant','Impish','Jolly','Careful'],SpD:['Naughty','Lax','Rash','Naive'],Spe:['Brave','Relaxed','Quiet','Sassy']};
 const STAT_IX={HP:0,Atk:1,Def:2,SpA:3,SpD:4,Spe:5};
 function natMul(nat,stat){if(!nat)return 1;if((NAT_UP[stat]||[]).includes(nat))return 1.1;if((NAT_DN[stat]||[]).includes(nat))return .9;return 1}
+// Team Sheet data (R4, Nov 11; shared by today's Team Sheet and the rebuild): which stat the nature raises and lowers, and each of the
+// six stats at level 50 with its stat points; the spread is the player's own, their nature on the common points, or the common spread
+function natBits(nat){const up=Object.keys(NAT_UP).find(k=>NAT_UP[k].includes(nat)),dn=Object.keys(NAT_DN).find(k=>NAT_DN[k].includes(nat));return {up,dn}}
+const SHEET_STATS=[['HP','hp'],['Atk','atk'],['Def','def'],['SpA','spa'],['SpD','spd'],['Spe','spe']];
+function sheetData(m){const p=m.p,{sp,nat,src}=memberSpread(m),nb=nat?natBits(nat):{};
+  return {nat,src,up:nb.up,dn:nb.dn,stats:SHEET_STATS.map(([S_,k])=>{const pts=sp?+sp[k]||0:null;return {S:S_,pts,val:sp?calcStat(p,S_,pts,natMul(nat,S_)):null,mark:nb.up===S_?'up':nb.dn===S_?'dn':''}})}}
 function calcStat(p,stat,sp,mul){const b=p.st[STAT_IX[stat]];if(stat==='HP')return b+75+sp;return Math.floor((b+20+sp)*mul)}
 function topNature(p){try{const st=setFor(p,'doubles');return st.na&&st.na.length?st.na[0][0]:null}catch(e){return null}}
 function topItem(p){try{const st=setFor(p,'doubles','tour');return st.it&&st.it.length?st.it[0]:null}catch(e){return null}}

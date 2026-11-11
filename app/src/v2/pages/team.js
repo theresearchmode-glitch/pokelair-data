@@ -39,6 +39,24 @@ V2.sugData = (ms, RD) => { if (ms.length < 1) return null; V2.planStart(ms); con
   ui.planList = list; return {top, side, none: !top.length};
 };
 
+
+// ---------- Team Sheet (Sim, Nov 9 / Option A Nov 11: opens as a sheet over My Team) ----------
+// One card per Pokémon: item, Ability, the four moves, the nature (+ and −) and the six stats at level 50 with their stat points.
+// The numbers come from sheetData() (39-damage-calc-speed.js), the same function today's Team Sheet draws from.
+V2.openTeamSheet = () => { const ms = members(); if (!ms.length) return;
+  const card = m => { const D = sheetData(m), P = m.p;
+    const nat = D.nat ? `${V2.esc(D.nat)}${D.up && D.dn && D.up !== D.dn ? ` <span class="ts2-nb"><b class="up">+${D.up}</b> <b class="dn">−${D.dn}</b></span>` : ''}` : 'Nature unknown';
+    return `<article class="ts2-card"><header>${V2.mon(P.n, {iw: 72, bare: true})}<div><h3 class="u">${V2.nameHtml(m.d)}</h3><p><span><em>Item</em> ${V2.esc(m.heldItem || m.item || 'No item')}</span><span><em>Ability</em> ${V2.esc(m.ability || '—')}</span></p></div></header>
+      <ul class="ts2-mv">${[0, 1, 2, 3].map(j => { const x = m.moves[j]; return x ? `<li class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(x.type) ? x.type : 'Normal'})">${V2.esc(x.name)}</li>` : '<li class="none">No move</li>'; }).join('')}</ul>
+      <p class="ts2-nat"><b>${nat}</b><span>${V2.esc(String(D.src || '').replace(/<[^>]*>/g, ''))}</span></p>
+      <div class="ts2-st" role="group" aria-label="Stats at level 50, with stat points below">${D.stats.map(x => `<div class="${x.mark}"><span>${x.S}${x.mark === 'up' ? '<i aria-label="raised by nature">+</i>' : x.mark === 'dn' ? '<i aria-label="lowered by nature">−</i>' : ''}</span><b>${x.val == null ? '—' : x.val}</b><small>${x.pts == null ? '' : x.pts}</small></div>`).join('')}</div></article>`; };
+  V2.sheet(`<div class="ts2"><div class="np-eyebrow">Level 50 · bring 6, pick 4</div><h2 class="u">Team Sheet</h2>
+    <div class="ts2-acts"><button type="button" class="np-btn" data-v2copy><span>Copy for Showdown</span></button><p class="fine">Big number: the stat at level 50 · small number: stat points (0–32) · <b class="up">+</b> / <b class="dn">−</b> nature</p></div>
+    <div class="ts2-grid">${ms.map(card).join('')}</div></div>`, {label: 'Team Sheet'}); };
+// Copy for Showdown: today's export (exportPaste) and clipboard helper (copyText)
+V2.copyTeam = async () => { toast((await copyText(exportPaste())) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); };
+document.addEventListener('click', e => { if (e.target.closest('[data-v2copy]')) V2.copyTeam(); if (e.target.closest('[data-v2sheetopen]')) V2.openTeamSheet(); });
+
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
@@ -52,9 +70,9 @@ V2.pages.team = {place: 'team', draw() {
   const mon = (m, i) => `<button type="button" class="tm-pick" data-tmsel="${i}" aria-pressed="${m === sel}" aria-label="${V2.esc(m.d)}${D.role(m.p.n) ? ', ' + D.role(m.p.n) : ''}">${V2.mon(m.p.n, {sel: m === sel, sub: D.role(m.p.n)})}</button>`;
   const lockup = `<div class="tm-lock"><div class="np-eyebrow">My Team</div>${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div><p class="tm-rank">${V2.esc([rank, sure].filter(Boolean).join(' · '))}</p>`}</div>`;
-  const acts = `<div class="tm-acts"><a class="np-btn" href="#team">Save Team</a><a class="np-btn2" href="#team"><span>Share</span></a><a class="np-btn2" href="#team"><span>Copy for Showdown</span></a></div>`;
+  const acts = `<div class="tm-acts"><a class="np-btn" href="#team">Save Team</a><a class="np-btn2" href="#team"><span>Share</span></a><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button></div>`;
   const nm = D.mu.fav + D.mu.even + D.mu.unf;
-  const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a></nav>`;
+  const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a><button type="button" class="tm-tsbtn" data-v2sheetopen>Team Sheet <small>${ms.length} sets</small> <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set
   const P = sel.p, r = typeof RS === 'function' && typeof rating === 'function' ? Math.round(RS(rating(P).total)) : null;
   const spr = sel.spread && sel.spread.nat ? sel.spread : null;

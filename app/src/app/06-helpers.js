@@ -212,3 +212,7 @@ function teamWho(t) { if (!t) return 'Challenger'; const r = String(t.record || 
 /* a short event name for tight lists ("2027 Gdańsk Pokémon Regional Championships · 758 players" -> "Gdańsk Regional") */
 function evShort(s) { s = String(s || '').split(' · ')[0].replace(/^\d{4}\s+/, '').replace(/\s*Pokémon\s+/, ' ').replace(/Regional Championships?/i, 'Regional').replace(/International Championships?/i, 'Internationals').replace(/World Championships?/i, 'Worlds').replace(/\s+/g, ' ').trim();
   return s.length > 28 ? s.slice(0, 27).trim() + '…' : s; }
+// copy text to the clipboard (moved unchanged from 45-team-links.js, R4 Nov 11)
+async function copyText(t) { let ok = false; try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {}
+  if (!ok) { try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }
+  return ok; }

@@ -72,3 +72,27 @@
 @media (max-width:379px){.tm-sw img{width:36px;height:36px}.tm-sw{font-size:var(--t13)}}
 @media (max-width:459px){.tm-hero .np-score{flex-wrap:wrap;row-gap:0}.tm-hero .np-score .w{padding-bottom:0}}
 @media (max-width:439px){.tm-jump{gap:var(--s3)}.tm-jump small{display:none}}
+/* Team Sheet (opens as a sheet over My Team): 3 x 2 on desktop, 2 across on iPad, 1 on phones */
+.tm-tsbtn{margin-left:auto;min-height:var(--tap);font:600 var(--t15)/1.2 var(--b);color:var(--plot-text);white-space:nowrap}
+.tm-tsbtn small{font:600 var(--t13)/1 var(--b);color:var(--ink-3)}
+.ts2{padding:var(--s8)}
+.ts2 h2{font-size:var(--t34);margin-top:var(--s2)}
+.ts2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6);margin:var(--s4) 0 var(--s6)}
+.ts2-acts .up,.ts2-nb .up,.ts2-st .up i{color:var(--good-text)}.ts2-acts .dn,.ts2-nb .dn,.ts2-st .dn i{color:var(--pick-text)}
+.ts2-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s6)}
+/* cards in one row share row lines (subgrid): headers, moves, nature and stats line up across the row whatever wraps */
+.ts2-card{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:var(--s3);align-content:start;padding-top:var(--s4);border-top:1px solid var(--rule)}
+.ts2-grid{row-gap:var(--s3)}
+.ts2-card header{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:end;gap:var(--s3)}
+.ts2-card h3{font-size:var(--t20)}.ts2-card h3 .mg{margin-right:.3em}.ts2-card h3 .mg.none{display:none}
+.ts2-card header p{display:grid;margin-top:var(--s1);font:600 var(--t15)/1.5 var(--b)}
+.ts2-card em{font:500 var(--t13)/1.5 var(--b);font-style:normal;color:var(--ink-3);margin-right:var(--s1)}
+.ts2-mv{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.ts2-mv li{justify-content:center;min-height:36px;font-size:var(--t15)}.ts2-mv li.none{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font:500 var(--t13)/1 var(--b)}
+.ts2-nat{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s1) var(--s3);font:600 var(--t15)/1.5 var(--b)}
+.ts2-nat span{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.ts2-st{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);text-align:center}
+.ts2-st span{display:block;font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.ts2-st i{font-style:normal;font-weight:800}
+.ts2-st b{display:block;font:800 var(--t15)/1.4 var(--u);font-style:italic}.ts2-st small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+@media (max-width:1099px){.ts2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699px){.ts2{padding:var(--s6) var(--s4)}.ts2-grid{grid-template-columns:minmax(0,1fr)}.tm-tsbtn{margin-left:0}}

@@ -63,9 +63,7 @@ function decodeBox(text) { const t = String(text || '').trim(); if (!t) return n
   let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; } if (!o || o.v !== 1 || !Array.isArray(o.b)) return null;
   const seen = new Set(), out = []; for (const n of o.b.slice(0, 400)) { const p = typeof n === 'string' && byName.get(n); if (!p || p.m || seen.has(p.n)) continue; seen.add(p.n); out.push(p.n); }
   return {names: out, skipped: o.b.length - out.length}; }
-async function copyText(t) { let ok = false; try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {}
-  if (!ok) { try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }
-  return ok; }
+// copyText: moved to 06-helpers.js (R4, Nov 11; shared with the rebuild)
 function applyBox(x, mode) { ui.boxUndo = S.box.slice(); const before = S.box.length;
   if (mode === 'replace') S.box = x.names.slice(); else { const have = new Set(S.box); for (const n of x.names) if (!have.has(n)) S.box.push(n); }
   render(); const added = mode === 'replace' ? S.box.length : S.box.length - before;

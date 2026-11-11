@@ -8,17 +8,15 @@
 Object.assign(VIEW_TITLE, {sheet: 'Team sheet'}); Object.assign(VIEW_PARENT, {sheet: 'report'});
 const TS = {};
 TS.STATS = [['HP', 'hp'], ['Atk', 'atk'], ['Def', 'def'], ['SpA', 'spa'], ['SpD', 'spd'], ['Spe', 'spe']];
-TS.natBits = nat => { const up = Object.keys(NAT_UP).find(k => NAT_UP[k].includes(nat)), dn = Object.keys(NAT_DN).find(k => NAT_DN[k].includes(nat)); return {up, dn}; };
+TS.natBits = natBits; // shared (39-damage-calc-speed.js, R4 Nov 11)
 // the six stats: real value at level 50 (big), stat points (small), nature's + and −. Shared by this page and the
 // "Open team sheet" fold on My Team (Sim, Nov 9: one team sheet everywhere, with the stat spread in it)
-TS.stats = m => { const p = m.p, {sp, nat} = memberSpread(m), nb = nat ? TS.natBits(nat) : {};
-  return TS.STATS.map(([S_, k]) => { const pts = sp ? +sp[k] || 0 : null, val = sp ? calcStat(p, S_, pts, natMul(nat, S_)) : null,
-      mk = nb.up === S_ ? ' up' : nb.dn === S_ ? ' dn' : '';
+TS.stats = m => { return sheetData(m).stats.map(({S: S_, pts, val, mark}) => { const mk = mark ? ' ' + mark : '';
     return `<div class="ts-st${mk}"><span class="ts-sl">${S_}${mk === ' up' ? '<i aria-label="raised by nature">+</i>' : mk === ' dn' ? '<i aria-label="lowered by nature">−</i>' : ''}</span><b class="ts-sv">${val == null ? '—' : val}</b><span class="ts-sp">${pts == null ? '' : pts}</span></div>`; }).join(''); };
 // o (the "Open team sheet" fold on My Team, Nov 9): {fold: true, note: '<hint html>'} = tap opens the editor right there
 // (data-chedit), with the remove button and the one-line hint the old sheet rows had
 TS.card = (m, o = {}) => {
-  const p = m.p, {sp, nat, src} = memberSpread(m), nb = nat ? TS.natBits(nat) : {};
+  const p = m.p, {nat, src, up, dn} = sheetData(m), nb = {up, dn};
   const stats = TS.stats(m);
   const mv = [0, 1, 2, 3].map(j => { const x = m.moves[j]; return x ? `<li style="--mt:${TC[x.type] || 'var(--ar-ink-3)'}">${esc(x.name)}</li>` : '<li class="none">No move</li>'; }).join('');
   const nl = nat ? `${esc(nat)}${nb.up && nb.dn && nb.up !== nb.dn ? ` <span class="ts-nb">+${nb.up} −${nb.dn}</span>` : ''}` : 'Nature unknown';
