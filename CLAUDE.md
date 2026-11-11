@@ -25,6 +25,9 @@ audits and research sweeps, not our one-change-at-a-time work.
 - Every Preview or live publish must carry the 345 sprite files (sp/*.webp) beside the page; check the artifact's file list
   (Artifact list, scope files) before sending Sim a link (Nov 9: a Preview went out with no sprites).
 - Real data only, never remove functionality, be careful. Ask when unsure.
+- Authority (Sim, Nov 11): when Sim gives Claude decision-making authority (e.g. "executive control until 7PM EST"), reply first with
+  an express confirmation that you understand and got it, restating the scope and the end time. Decide on your own recommendation
+  until then, log every decision in docs/rebuild/decisions.md, and give her a summary of the decisions when the time is up.
 - Lean usage: no helper agents unless she agrees, minimal screenshots.
 - Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on her Windows PC (RTX 3080, faster than the cloud machine,
   doesn't restart). Whenever a task would go faster there (test runs, polish checks, screenshot batches, image work on the
