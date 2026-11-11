@@ -90,14 +90,13 @@ NastyPlot launches to the public sometime in January 2027, as a normal public we
 Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on
 Claude-only features without a plan for the public site; kids play Pokémon, so the privacy rules below are strict.
 
-## Darkrai on empty and loading screens (Sim, Nov 9; replaces Shady Paw)
-Darkrai is NOT a mascot: it's "just a pokemon we like", there to make empty space and loading screens better. Sim chose it over the
-AI-drawn Shady Paw. Why Darkrai: it learns Nasty Plot (checked on PokéAPI: level-up from Platinum to Scarlet/Violet) and is NOT in
-the Champions roster, so it can't be mistaken for team data. Picture: docs/mascot/darkrai.webp (PokéAPI HOME render, inked like our
-sprites). Sim approved it for live on Nov 9 (empty My Team); app/build.mjs adds it (window.NP_MASCOT). Every new spot is shown to Sim first. Spots: an empty
-My Team (no team yet), other empty screens, small notices, tip bubbles, loading. NOT in Your Six, Add a Pokémon or the Battle
-preview, and never beside grades, ratings or data. A real NastyPlot mascot is its own project that Sim will do in a separate chat
-later; don't start it here. Shady Paw files stay in docs/mascot/ as history; don't use them on the site.
+## Empty and loading screens: a rotating featured Pokémon (Sim, Nov 11; replaces Darkrai and Shady Paw)
+Sim, Nov 11: Darkrai was "forcing a mascot at an unnecessary time". In the rebuild, empty and loading screens show a featured
+Pokémon that rotates, plus one line of copy. Sim's idea: the lowest-rated Pokémon in our own ratings, as a light joke ("underdog").
+Keep it kind (kids play; it may be someone's favourite) and pick only from Pokémon with enough games for the rating to mean
+something. Every new spot is shown to Sim first. Never beside grades or a team's data. The live site keeps its current Darkrai
+spot (empty My Team) until the rebuild replaces it. A real NastyPlot mascot is its own project for later, in a separate chat.
+Darkrai and Shady Paw files stay in docs/mascot/ as history.
 
 ## The grade is a Strength Score (Sim, Nov 9)
 The 0-100 grade must say how strong the team is altogether, derived from all the factors we have studied and measured (Pokémon and

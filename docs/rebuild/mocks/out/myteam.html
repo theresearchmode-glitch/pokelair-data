@@ -234,13 +234,13 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const work=`<div class="work">${setSec}${muSec}${sgSec}</div>`;
   const sheet=`<section class="sheet"><h2 class="u">Team Sheet</h2><div class="sub" style="font-size:15px;color:var(--ink-2)">6 sets, Reg M-C, bring 6, pick 4</div><table><thead><tr><th>Pokémon</th><th>Item</th><th>Ability</th><th>Nature</th><th>Moves</th></tr></thead><tbody>
     ${D.six.map(m=>`<tr><td class="p"><div><img src="${m.img}" alt="">${esc(m.d)}</div></td><td>${esc(m.item)}</td><td>${esc(m.ab)}</td><td>${esc(m.nat)}</td><td><div class="mvs">${m.moves.map(v=>`<span style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</span>`).join('')}</div></td></tr>`).join('')}</tbody></table></section>`;
-  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
+  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Home</a><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
   document.getElementById('page').innerHTML='<i class="grain"></i>'+header+`<div class="herowrap"><div class="atmos" style="background:${ATMOS}"></div>${band}${acts}</div>`+jump+work+sheet+footer;
   await document.fonts.ready;
   /* phone (Sim, Nov 11: the tall columns of light were overbearing in both modes): the same team light, but each Pokémon's
      light is a small low pool sized to its own art and placed at its feet, measured from the page, so it never runs into a column */
-  if(PH){const hw=document.querySelector('.herowrap'),hr=hw.getBoundingClientRect(),a2=DK?.24:.16,P=x=>Math.round(x);
+  if(PH){const hw=document.querySelector('.herowrap'),hr=hw.getBoundingClientRect(),a2=DK?.24:.26,P=x=>Math.round(x);
     const L=[...hw.querySelectorAll('.band .mon')].map(m=>{const r=m.querySelector('img').getBoundingClientRect();
       return `radial-gradient(${P(r.width*.85)}px ${P(r.height*.5)}px at ${P(r.left-hr.left+r.width/2)}px ${P(r.bottom-hr.top-r.height*.2)}px,rgba(${m.style.getPropertyValue('--c')},${a2}),transparent)`;});
     const n=hw.querySelector('.lock .num').getBoundingClientRect();

@@ -140,7 +140,7 @@ const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<'
     <p>Build for Me and Suggestions pick from these when "Suggest from" is set to My Box.</p>
     <div class="field"><span>Add a Pokémon</span><b>+</b></div>
     ${PH?`<div class="sortwrap"><div class="lab sortlab">Arrange by</div><div class="sort">${sorts}</div></div>`:`<div class="lab sortlab">Arrange by</div><div class="sort">${sorts}</div>${links}<div style="margin-top:16px">${savedNote}${key}</div>`}</div>`;
-  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
+  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Home</a><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
   let main;
   if(!PH){main=`<main>${side}<div>${boxEl}${party}</div><div class="selp" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="pool"></div><div class="panel litedge" style="background:${panelBg}"></div><img class="art" src="${sel.img}" alt="">
