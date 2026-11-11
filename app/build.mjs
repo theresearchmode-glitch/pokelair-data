@@ -32,7 +32,7 @@ if (process.argv.includes('--v2')) {
   const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + `\nconst SPRITE_ID=${sprite};\nconst ART_META=${meta};\n` + P.scripts.map(rd).join('\n') + '\nV2.draw();';
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};</script>\n` : '';
-  const page = artTag + rd(P.head) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${js}\n</script>\n</body></html>\n`;
+  const page = rd(P.head).replace('<meta charset="utf-8">', m => m + artTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${js}\n</script>\n</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
   console.log(`built dist/v2.html (${(page.length / 1024).toFixed(0)} KB; ${P.css.length} CSS layers, ${P.data.length} data files, ${P.scripts.length} scripts)`);
   process.exit(0); }
