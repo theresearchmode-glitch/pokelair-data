@@ -4,6 +4,11 @@ Claude decides small things under executive control; Sim can overrule any of the
 Sim's own decisions are marked "Sim". Newest first.
 
 ## Every page
+- Nov 11 (Sim, review item 12, after the colour audit): (1) type colours used as tints (My Team move rows, the move picker bar,
+  the My Box wallpaper) follow the rule: hue kept, saturation 72%+, lightness 56% (--tyn-* in tokens.css); near-grey types (Normal, Dark)
+  stay neutral grey. (2) Type chips with white text stay outside the pool rule but are darkened, hue kept, until every one measures
+  4.6:1 or better (was 5 of 18 at 4.5+). (3) The picked Pokémon's panel in My Box takes that Pokémon's own colour. (4) Grey Pokémon keep
+  their coloured floor (some share a similar blue). Pokémon floor colours already followed the rule (346 of 346, measured).
 - Nov 11 (Sim): approved everything so far: review items 7, 8, 9; the Matchups helper's choices (Top 10 in 1-5 / 6-10 columns,
   5 + Show 5 more on phones, the next 20 as tiles, Top 12 grid with colour + shape, All 30 grouped with calc reasons, Best fix only
   when it raises the score, the ring shows the Strength Score); and the link rename to "How the Strength Score works".

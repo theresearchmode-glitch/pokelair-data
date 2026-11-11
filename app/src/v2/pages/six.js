@@ -32,7 +32,7 @@ V2.setSecHtml = (D, sel) => { const m = sel, P = m.p, E = V2.esc, L = D.ms.lengt
   return `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid sx-noart"><div>
     <h3 class="u">${V2.nameHtml(m.d)}</h3><div class="tm-types">${(P.t || []).map(V2.typeChip).join('')}${R ? `<span class="sx-rate2"><b class="u">${R.n}</b> ${R.tier ? E(R.tier) + ' tier rating' : 'Rating'}</span>` : ''}</div>
     <dl class="sx-kv">${row('Item', E(m.heldItem || m.item || 'No item'))}${row('Ability', E(m.ability || 'None'))}${N.nat ? row('Nature', E(N.nat), N.natNote) : ''}${N.words ? row('Stat points', E(N.words), N.ptsNote) : ''}</dl>
-    <div class="tm-moves">${m.moves.filter(Boolean).map(v => `<span class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(v.type) ? v.type : 'Normal'})">${E(v.name)}</span>`).join('')}</div>
+    <div class="tm-moves">${m.moves.filter(Boolean).map(v => `<span class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(v.type) ? v.type : 'Normal'});--tcn:var(--tyn-${V2.TYPES.includes(v.type) ? v.type : 'Normal'})">${E(v.name)}</span>`).join('')}</div>
     <div class="tm-setacts"><button type="button" class="np-btn2" data-v2edit="${m.i}"><span>Edit Set</span></button>${lead}<button type="button" class="np-link sx-info" data-v2mon="${E(P.n)}">Info Sheet ›</button></div></div></div></section>`; };
 
 // Set as Lead / Use NastyPlot's pick (TEAM-11): today's setLeadPick and words; the pick is saved with the team (S.leads)

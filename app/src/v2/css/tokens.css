@@ -18,8 +18,11 @@
   --d64:64px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);--unit:.62em;
   /* shadow ink and rim light as rgb triplets, for rgba(var(--shade),a) */
   --shade:30,20,50;--rim:255,255,255;
-  /* type colours for chips with white text (4.5:1 or better) */
-  --ty-Dragon:#5060E1;--ty-Ground:#9A6230;--ty-Fighting:#D9631B;--ty-Poison:#8E3FC8;--ty-Dark:#5A4A56;--ty-Steel:#4F8FA6;--ty-Fire:#DD4420;--ty-Water:#2A78D8;--ty-Grass:#2E9A46;--ty-Fairy:#C953C2;--ty-Flying:#5F97D8;--ty-Ghost:#6A4BB8;--ty-Psychic:#D93E78;--ty-Ice:#1E9FBF;--ty-Rock:#8F8556;--ty-Electric:#B88A00;--ty-Normal:#8E908C;--ty-Bug:#7F9A12;
+  /* type colours for chips with white text: each measured 4.6:1 or better (Sim, Nov 11: darkened, hue kept) */
+  --ty-Dragon:#5060E1;--ty-Ground:#9A6230;--ty-Fighting:#BE5718;--ty-Poison:#8E3FC8;--ty-Dark:#5A4A56;--ty-Steel:#447C90;--ty-Fire:#D2411E;--ty-Water:#2774D4;--ty-Grass:#28843C;--ty-Fairy:#BF3CB7;--ty-Flying:#3076C7;--ty-Ghost:#6A4BB8;--ty-Psychic:#D6316F;--ty-Ice:#187E97;--ty-Rock:#7D754B;--ty-Electric:#946F00;--ty-Normal:#737571;--ty-Bug:#677C0F;
+  /* type colours borrowed as tints (move rows, move picker, box wallpaper): hue kept, saturation 72%+, lightness 56%; near-grey types
+     (Normal, Dark) stay neutral grey (Sim, Nov 11, review item 12) */
+  --tyn-Dragon:#3E50E0;--tyn-Ground:#E08A3E;--tyn-Fighting:#E67A37;--tyn-Poison:#9B3EE0;--tyn-Dark:#8F8F8F;--tyn-Steel:#3EB5E0;--tyn-Fire:#E35B3B;--tyn-Water:#3E86E0;--tyn-Grass:#3EE062;--tyn-Fairy:#E03ED6;--tyn-Flying:#3E89E0;--tyn-Ghost:#6C3EE0;--tyn-Psychic:#E03E7A;--tyn-Ice:#3DC0E1;--tyn-Rock:#E0C33E;--tyn-Electric:#FFC71F;--tyn-Normal:#8F8F8F;--tyn-Bug:#C4E836;
   --t13:13px;--t15:15px;--t16:16px;--t17:17px;--t20:20px;--t22:22px;--t24:24px;--t26:26px;--t28:28px;--t34:34px;
   /* space on a 4px grid; corners; the brand slant */
   --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s24:96px;

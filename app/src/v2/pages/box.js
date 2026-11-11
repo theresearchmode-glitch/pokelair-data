@@ -23,7 +23,7 @@ V2.bxRange = (so, here) => { if (!here.length) return ''; const a = here[0], z =
 // the wallpaper: one soft colour per corner from the four most common types in this box (ties: A–Z), rays over it
 V2.bxWall = here => { const c = {}; for (const [n] of here) { const p = byName.get(n); if (p) for (const t of p.t) c[t] = (c[t] || 0) + (t === p.t[0] ? 2 : 1); }
   const ts = Object.keys(c).sort((a, b) => c[b] - c[a] || a.localeCompare(b)); while (ts.length < 4) ts.push(ts[ts.length - 1] || 'Normal');
-  return ts.slice(0, 4).map((t, i) => `--w${i}:var(--ty-${t})`).join(';'); };
+  return ts.slice(0, 4).map((t, i) => `--w${i}:var(--tyn-${t})`).join(';'); };
 
 V2.bxTile = (n, d, on, sel) => `<button type="button" class="bx-t${sel ? ' sel' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}${on ? ', on your team' : ''}">${on ? '<i class="bx-on" aria-hidden="true"></i>' : ''}${V2.mon(n, {iw: 96, bare: true})}<b>${V2.esc(d)}</b></button>`;
 
@@ -31,7 +31,7 @@ V2.bxTile = (n, d, on, sel) => `<button type="button" class="bx-t${sel ? ' sel' 
 V2.bxSum = (n, o = {}) => { const p = byName.get(n); if (!p) return ''; const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p);
   const onTeam = members().some(m => ownKey(m.p) === n), st = V2.addState(n), full = st === 'full';
   const num = (b, l) => `<div class="bx-n"><b>${b}</b><span>${l}</span></div>`;
-  return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art">${V2.mon(n, {sel: true, iw: o.sheet ? 140 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
+  return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art" style="--cp:${V2.cp(n)}">${V2.mon(n, {sel: true, iw: o.sheet ? 140 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
     <div class="bx-sumb"><h2 class="u">${V2.nameHtml(V2.disp(n))}</h2><div class="bx-ty">${(p.t || []).map(V2.typeChip).join('')}${onTeam ? '<span class="np-chip bx-chip">On your team</span>' : ''}</div>
     <div class="bx-nums">${num(H.hU != null ? E(pctFmt(H.hU)) : '–', 'of teams')}${num(H.hW != null ? E(pctFmt(H.hW)) : '–', 'win rate')}${num(p.st[5], 'base Speed')}</div>
     <div class="bx-acts"><button type="button" class="np-btn" data-v2mon="${E(n)}">Info Sheet</button>${onTeam ? '' : `<button type="button" class="np-btn2" data-bxteam="${E(n)}"><span>${full ? 'Swap Into My Team' : 'Add to My Team'}</span></button>`}<button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; };

@@ -160,7 +160,7 @@
 .ed-sel select{flex:1;min-width:0;min-height:48px;border:0;background:none;font:500 var(--t15)/1.2 var(--b);color:var(--ink);outline:0;cursor:pointer}
 .ed-fixed{min-height:52px;display:flex;align-items:center;font:600 var(--t15)/1.3 var(--b);color:var(--ink-2)}
 .ed-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
-.ed-mv{box-shadow:inset 6px 0 0 var(--tc)}
+.ed-mv{box-shadow:inset 6px 0 0 var(--tcn,var(--tc))}
 .ed-pts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2)}
 .ed-pts label{display:grid;gap:var(--s1);text-align:center;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .ed-num{width:100%;min-height:48px;border:1.5px solid var(--rule);border-radius:var(--r-s);background:none;text-align:center;font:700 var(--t17)/1 var(--b);color:var(--ink)}
@@ -323,7 +323,7 @@
 .bx-team .np-mon{--iw:min(72px,100%)}.bx-team .np-mon b{font-size:var(--t13);line-height:1.25}.bx-team .np-mon small{font-size:var(--t13);color:var(--ink-2)}
 @media (max-width:599px){.bx-team .np-mon b{display:none}}
 /* the picked Pokémon */
-.bx-art{position:relative;padding:var(--s6) var(--s4) var(--s10);background:color-mix(in oklab,var(--wash) 70%,var(--plot) 8%);clip-path:polygon(0 5%,100% 0,100% 95%,0 100%);overflow:hidden}
+.bx-art{position:relative;padding:var(--s6) var(--s4) var(--s10);background:linear-gradient(rgba(var(--cp,150,150,165),.2),rgba(var(--cp,150,150,165),.2)),var(--wash);clip-path:polygon(0 5%,100% 0,100% 95%,0 100%);overflow:hidden}
 .bx-art>*{position:relative}.bx-plate{position:absolute;left:var(--s3);bottom:var(--s5);margin:0;padding:var(--s2) var(--s4);background:var(--plate);color:var(--on-plate);transform:skewX(-12deg);font:600 var(--t15)/1.2 var(--b)}
 .bx-plate b{font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style}
 .bx-sumb h2{font-size:var(--t34);margin:var(--s4) 0 var(--s3);overflow-wrap:anywhere}.bx-ty{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
@@ -487,6 +487,6 @@
 .tm-yg-hd{flex-wrap:nowrap;justify-content:space-between}.tm-yg-0 span{font:500 var(--t16)/1.5 var(--b);color:var(--ink-2)}
 .yg2-why{margin:var(--s2) 0 var(--s4)}
 /* the set's four moves as soft tinted rows with a coloured edge (Sim's review, Nov 11, item 6: solid blocks were louder than the Pokémon) */
-.tm-moves .np-type{justify-content:flex-start;text-align:left;min-height:var(--tap);padding:0 var(--s3);clip-path:none;border-radius:var(--r-s);border-left:4px solid var(--tc,var(--type-none));
-  background:color-mix(in srgb,var(--tc,var(--type-none)) 14%,transparent);color:var(--ink);font-weight:600}
-:root[data-theme="night"] .tm-moves .np-type{background:color-mix(in srgb,var(--tc,var(--type-none)) 22%,transparent)}
+.tm-moves .np-type{justify-content:flex-start;text-align:left;min-height:var(--tap);padding:0 var(--s3);clip-path:none;border-radius:var(--r-s);border-left:4px solid var(--tcn,var(--type-none));
+  background:color-mix(in srgb,var(--tcn,var(--type-none)) 14%,transparent);color:var(--ink);font-weight:600}
+:root[data-theme="night"] .tm-moves .np-type{background:color-mix(in srgb,var(--tcn,var(--type-none)) 22%,transparent)}
