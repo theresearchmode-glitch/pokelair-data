@@ -23,4 +23,4 @@
   .np-bar a{display:grid;place-items:center;min-height:56px;font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
   .np-bar a[aria-current="page"]{color:var(--ink)}
   .np-bar a[aria-current="page"]::before{content:"";width:22px;height:5px;margin-bottom:-14px;background:var(--plot);transform:skewX(var(--slant))}
-  .np-foot{display:block;padding-bottom:calc(var(--s16) + 24px)}.np-foot nav{margin:var(--s3) 0 0;flex-wrap:wrap;gap:var(--s4)}}
+  .np-foot{display:block;padding-bottom:calc(var(--s16) + 24px)}.np-foot>svg{display:block;margin-bottom:var(--s2)}.np-foot nav{margin:var(--s3) 0 0;flex-wrap:wrap;gap:var(--s4)}}

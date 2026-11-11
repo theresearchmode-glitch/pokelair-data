@@ -2,7 +2,7 @@
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--t16)/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style;font-variant-numeric:tabular-nums}
-:root[data-theme="night"] body{background:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%) fixed,var(--bg)}
+body{background:var(--page-wash) fixed,var(--bg)}
 h1,h2,h3,h4,p,ul,ol,figure{margin:0}ul,ol{padding:0;list-style:none}
 img{display:block;max-width:100%}button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 a{color:inherit;text-decoration:none}

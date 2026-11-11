@@ -16,6 +16,14 @@ V2.disp = n => { const p = V2.byName.get(n); return p && p.d ? p.d : n.replace(/
 V2.nameHtml = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span>${V2.esc(d.slice(5))}` : `<span class="mg none" aria-hidden="true">&nbsp;</span>${V2.esc(d)}`;
 V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
   return `<div class="np-mon${o.sel ? ' sel' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}<b>${V2.nameHtml(V2.disp(n))}</b>${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
+// drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
+V2.ICON = {search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>'};
+// one toast at a time, always just above the team dock and the phone bar (whichever is higher on screen)
+V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach(x => x.remove());
+  const t = document.createElement('div'); t.className = 'np-toast'; t.setAttribute('role', 'status'); t.innerHTML = html; document.body.append(t);
+  const tops = [...document.querySelectorAll('.np-dock,.np-bar')].map(e => e.getBoundingClientRect()).filter(r => r.height && r.top < innerHeight).map(r => r.top);
+  if (tops.length) t.style.bottom = (innerHeight - Math.min(...tops) + 12) + 'px';
+  clearTimeout(V2._tt); V2._tt = setTimeout(() => t.remove(), ms); return t; };
 V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle', 'Battle'], ['meta', 'Meta']];
 V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 'day';
 V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.draw(); };
@@ -27,7 +35,7 @@ V2.draw = () => { const app = document.getElementById('app'); if (!app) return; 
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   app.innerHTML = `<a class="vh" href="#main">Skip to the page</a>
 <header class="np-head"><a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a><nav class="np-nav" aria-label="Main">${nav}</nav>
-  <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams"><span aria-hidden="true">⌕</span><span class="lbl">Search</span><kbd>/</kbd></button>
+  <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <button type="button" class="np-theme" data-v2theme aria-label="Switch to ${V2.theme() === 'night' ? 'day' : 'night'} mode">${V2.theme() === 'night' ? 'Day' : 'Night'}</button></div></header>
 <main class="np-main" id="main">${P ? P.draw() : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan-made tool.</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>

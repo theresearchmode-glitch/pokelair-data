@@ -34,4 +34,34 @@ V2.pages.guide = {place: null, draw() {
   <h2 class="u">Pokémon on the floor</h2>
   <div class="six">${team.map((n, i) => V2.mon(n, {sel: i === 0, sub: items[i]})).join('')}</div>
   <p class="fine" style="margin-top:12px">Every Pokémon stands on a pool of its own colour; feet and names sit on one line; the selected one stands on its tilted panel.</p>
-</section>`; }};
+
+  <h2 class="u">Slider</h2>
+  <div class="np-slide" style="--n:3;--i:0" data-v2slide><span class="thumb" aria-hidden="true"></span><button type="button" aria-pressed="true">Whole roster</button><button type="button" aria-pressed="false">My Box</button><button type="button" aria-pressed="false">Box + catch</button></div>
+
+  <h2 class="u">Search field</h2>
+  <label class="np-field" style="max-width:520px">${V2.ICON.search}<input type="search" id="sg-search" placeholder="Find a Pokémon, move or item" aria-label="Find a Pokémon, move or item"></label>
+
+  <h2 class="u">Forms strip</h2>
+  <div class="np-forms" style="max-width:560px"><div class="k"><span>Forms · tap one to open it</span><a class="np-link" href="#guide">Compare all 3 ›</a></div>
+  <div class="r" role="tablist">${V2.mon('Garchomp', {sel: true, sub: 'S tier'})}${V2.mon('Garchomp-Mega', {sub: 'D tier'})}${V2.mon('Garchomp-Mega-Z', {sub: 'A tier'})}</div></div>
+
+  <h2 class="u">Sheet and toast</h2>
+  <div class="row"><button type="button" class="np-btn2" data-v2sheet><span>Open a sheet</span></button><button type="button" class="np-btn2" data-v2toast><span>Show a toast</span></button></div>
+
+  <h2 class="u">Today's underdog</h2>
+  <div class="np-under" style="max-width:720px"><div class="stage"><i class="pool"></i><i class="pool b"></i><img src="${V2.art(SPRITE_ID.Flapple)}" alt="Flapple"></div>
+  <div><div class="k">Today's underdog</div><h3 class="u">Flapple. <span>Somebody's favourite.</span></h3><p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
+  <div class="acts"><a class="np-btn" href="#guide">Build around it</a><a class="np-link" href="#guide">Info Sheet</a></div></div></div>
+</section>
+<div class="np-dock"><b class="u" style="font-size:var(--t20)">91</b><span class="fine">Sun Tailwind</span><div class="six">${team.map(n => `<img src="${V2.art(SPRITE_ID[n])}" alt="${V2.esc(V2.disp(n))}">`).join('')}</div><a class="np-btn2" href="#guide"><span>Open My Team</span></a></div>`; },
+  after() {
+    document.querySelectorAll('[data-v2slide]').forEach(sl => sl.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const bs = [...sl.querySelectorAll('button')], i = bs.indexOf(b);
+      bs.forEach((x, k) => x.setAttribute('aria-pressed', k === i ? 'true' : 'false')); sl.style.setProperty('--i', i); }));
+  }};
+// sheet and toast demos (the real ones live in the shell once pages use them)
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-v2sheet]')) { const s = document.createElement('div'); s.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet" role="dialog" aria-modal="true" aria-label="Example sheet"><button class="x" type="button" data-v2close aria-label="Close">✕</button><div style="padding:32px"><h2 class="u" style="font-size:var(--t28)">A sheet</h2><p style="margin-top:12px;color:var(--ink-2)">A solid surface over the page. Close it with ✕, Escape or a tap outside.</p></div></div>`; s.id = 'v2-sheet'; document.body.append(s); s.querySelector('.x').focus(); }
+  if (e.target.closest('[data-v2close]')) { const s = document.getElementById('v2-sheet'); if (s) s.remove(); }
+  if (e.target.closest('[data-v2toast]')) V2.toast('Garchomp added to your team <button type="button">Undo</button>');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { const s = document.getElementById('v2-sheet'); if (s) s.remove(); } });

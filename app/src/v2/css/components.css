@@ -5,12 +5,12 @@
 /* the main action: the filled slanted plate (one per block); night: the one blue action */
 .np-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 var(--s8);background:var(--main);color:var(--on-main);
   font:900 var(--t15)/1 var(--u);font-style:italic;white-space:nowrap;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
-:root[data-theme="night"] .np-btn{background:linear-gradient(180deg,#63C0F8,#3FA2E2);box-shadow:var(--lit-edge)}
+:root[data-theme="night"] .np-btn{background:linear-gradient(180deg,var(--main-hi),var(--main-lo));box-shadow:var(--lit-edge)}
 /* secondary: the outline slanted button */
 .np-btn2{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s5);border:1.5px solid var(--ink);color:var(--ink);
   font:600 var(--t15)/1 var(--b);white-space:nowrap;transform:skewX(-12deg)}
 .np-btn2>span{transform:skewX(12deg)}
-:root[data-theme="night"] .np-btn2{border-color:rgba(228,224,236,.42)}
+:root[data-theme="night"] .np-btn2{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
 /* text link */
 .np-link{font:600 var(--t15)/1.3 var(--b);color:var(--plot-text)}
 .np-link:hover{text-decoration:underline}
@@ -18,8 +18,8 @@
 .np-chip{display:inline-flex;align-items:center;flex:none;white-space:nowrap;min-height:36px;padding:0 18px;font:600 var(--t15)/1 var(--b);color:var(--ink);background:var(--wash);
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
 .np-chip[aria-pressed="true"],.np-chip.on{background:var(--plate);color:var(--on-plate)}
-:root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on{background:linear-gradient(180deg,#3E3D56,#2C2B3D);box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
-.np-type{display:inline-flex;align-items:center;min-height:28px;padding:0 14px;font:700 var(--t13)/1 var(--b);color:#fff;background:var(--tc,#888);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+:root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
+.np-type{display:inline-flex;align-items:center;min-height:28px;padding:0 14px;font:700 var(--t13)/1 var(--b);color:var(--on-type);background:var(--tc,var(--type-none));clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 /* tabs */
 .np-tabs{display:flex;gap:var(--s8);border-bottom:1px solid var(--rule)}
 .np-tabs a,.np-tabs button{position:relative;padding:var(--s3) 0;font:600 var(--t15)/1.2 var(--b);color:var(--ink-2);white-space:nowrap;min-height:var(--tap)}
@@ -50,8 +50,57 @@
 .np-score b{font:900 168px/.86 var(--u);font-style:italic;letter-spacing:-.05em;color:var(--score-ink)}
 .np-score .w{padding-bottom:var(--s4)}.np-score .w span{display:block;font:900 var(--t26)/1.05 var(--u);font-style:italic;color:var(--band)}
 .np-score .w small{display:block;margin-top:6px;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
-:root[data-theme="night"] .np-score .w span{text-shadow:0 0 22px rgba(79,178,240,.4)}
+.np-score .w span{text-shadow:var(--band-glow)}
 .np-score.sm b{font-size:64px}.np-score.sm .w{padding-bottom:4px}.np-score.sm .w span{font-size:var(--t20)}
 @media (max-width:699px){.np-score b{font-size:120px}}
 /* list row and the soft rule */
 .np-row{display:flex;justify-content:space-between;align-items:center;min-height:52px;border-bottom:1px solid var(--rule);font:600 var(--t15)/1.2 var(--b)}
+
+/* slider: the sliding segmented picker (today's "Apple-style" slider, slanted); the thumb slides under the chosen option */
+.np-slide{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.np-slide button{position:relative;z-index:1;min-height:var(--tap);padding:0 var(--s5);font:600 var(--t15)/1 var(--b);color:var(--ink-2);white-space:nowrap}
+.np-slide button[aria-pressed="true"]{color:var(--on-plate)}
+.np-slide .thumb{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc(100% / var(--n));translate:calc(100% * var(--i)) 0;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:translate .22s cubic-bezier(.2,.8,.2,1)}
+@media (max-width:379px){.np-slide{max-width:100%}.np-slide button{padding:0 var(--s3);font-size:var(--t13)}}
+/* field and search */
+.np-field{display:flex;align-items:center;gap:var(--s2);min-height:52px;padding:0 var(--s4);border:1.5px solid var(--ink);transform:skewX(-10deg);color:var(--ink-3)}
+.np-field>*{transform:skewX(10deg)}.np-field input{flex:1;min-width:0;border:0;background:none;font:500 var(--t15)/1 var(--b);color:var(--ink);outline:0}
+.np-ic{width:20px;height:20px;flex:none}.np-field .np-ic{color:var(--ink-2)}
+.np-field:focus-within{outline:3px solid var(--plot);outline-offset:3px}
+:root[data-theme="night"] .np-field{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
+/* forms strip: a Pokémon and its Megas, one tab each; the open form stands on its tilted panel */
+.np-forms .k{display:flex;justify-content:space-between;align-items:baseline;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:var(--s2)}
+.np-forms .r{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,160px);gap:var(--s2)}
+.np-forms .np-mon{--iw:80px;--fy:56px}
+@media (max-width:699px){.np-forms .r{grid-auto-columns:minmax(0,1fr)}}
+/* sheet: a solid surface over the lit page, which is softly blurred, never dimmed dark (the glass decision) */
+.np-scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.np-sheet{position:fixed;z-index:41;left:50%;top:48px;bottom:48px;width:min(1120px,calc(100% - 64px));translate:-50% 0;overflow:auto;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-lift)}
+.np-sheet .x{position:sticky;top:0;float:right;min-width:var(--tap);min-height:var(--tap);font:600 var(--t20)/1 var(--b);color:var(--ink-2)}
+@media (max-width:699px){.np-sheet{top:auto;bottom:0;left:0;width:100%;max-height:92vh;translate:none;border-radius:var(--r-xl) var(--r-xl) 0 0}}
+/* toast */
+.np-toast{position:fixed;z-index:50;left:50%;bottom:var(--s6);translate:-50% 0;display:flex;align-items:center;gap:var(--s4);max-width:calc(100% - 32px);padding:var(--s3) var(--s5);background:var(--plate);color:var(--on-plate);
+  font:600 var(--t15)/1.3 var(--b);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.np-toast button{color:var(--plot);font-weight:700;min-height:var(--tap)}
+@media (max-width:699px){.np-toast{left:var(--gut);right:var(--gut);translate:none;max-width:none;justify-content:space-between;bottom:calc(64px + env(safe-area-inset-bottom,0px))}}
+/* V2.toast() lifts it above the team dock and phone bar */
+/* the underdog (empty and loading screens): a featured Pokémon on a floor of the site's own colours, with a slow breathing pool */
+.np-under{display:grid;grid-template-columns:200px minmax(0,1fr);gap:var(--s6);align-items:center}
+.np-under .stage{position:relative;width:200px;height:200px}
+.np-under .pool{position:absolute;left:4%;right:4%;bottom:2%;height:16%;border-radius:50%;
+  background:radial-gradient(closest-side,var(--contact),transparent 55%) center/40% 45% no-repeat,radial-gradient(closest-side,color-mix(in srgb,var(--plot) 55%,transparent),color-mix(in srgb,var(--plot) 22%,transparent) 50%,color-mix(in srgb,var(--pick) 14%,transparent) 72%,transparent)}
+.np-under .pool.b{background:radial-gradient(closest-side,color-mix(in srgb,var(--pick) 30%,transparent),color-mix(in srgb,var(--plot) 18%,transparent) 60%,transparent);animation:np-breathe 4.5s ease-in-out infinite}
+@keyframes np-breathe{0%,100%{opacity:.3}50%{opacity:1}}
+.np-under img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 1px rgba(255,255,255,.9)) drop-shadow(0 0 6px color-mix(in srgb,var(--plot) 45%,transparent)) drop-shadow(0 0 3px color-mix(in srgb,var(--pick) 25%,transparent))}
+.np-under .k{display:flex;align-items:center;gap:10px;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.np-under .k::before{content:"";width:20px;height:7px;background:linear-gradient(90deg,var(--plot),var(--pick));transform:skewX(var(--slant))}
+.np-under h3{font-size:var(--t28);margin:var(--s2) 0}.np-under h3 span{color:var(--plot)}.np-under p{font-size:var(--t15);color:var(--ink-2)}
+.np-under .acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}
+@media (max-width:699px){.np-under{grid-template-columns:1fr;justify-items:center;text-align:center}.np-under .stage{width:168px;height:168px}.np-under .k,.np-under .acts{justify-content:center}}
+/* team dock: frosted bar with your team on every page except My Team */
+.np-dock{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;gap:var(--s6);padding:var(--s3) var(--gut);border-top:1px solid var(--rule);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
+.np-dock .six{display:flex;gap:var(--s2)}.np-dock .six img{width:44px;height:44px;object-fit:contain}
+.np-dock .np-btn2{margin-left:auto}
+@media (max-width:699px){.np-dock{bottom:calc(56px + env(safe-area-inset-bottom,0px));gap:var(--s3)}.np-dock .np-btn2{display:none}.np-dock .six{flex:1;min-width:0;justify-content:flex-end}.np-dock .six img{flex:0 1 36px;min-width:0;width:36px;height:36px}}
+@media (max-width:379px){.np-dock .fine{display:none}}
