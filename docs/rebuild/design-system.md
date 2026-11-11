@@ -47,6 +47,8 @@ The light verdict and band FILL colours are too pale for text (--good 3.27, --mi
 darker partners: --good-text #16693B (6.45), --mid-text #8A5A00 (5.68), --low-text #6E6153 (5.75), all also pass on
 --wash. Dusk fills pass as text (5FD08F 8.96, FFD166 11.96, B8AA9C 7.61).
 
+Borrowed-colour limits (Nov 11): a colour taken from a sprite is clamped to lightness 25-75% and its saturation capped before use, so a very pale (Whimsicott) or very dark (Darkrai) Pokémon never makes text on its panel unreadable; contrast is then measured as usual.
+
 Type colours: one fixed set of 18 (the concept's TY map), used only for type chips, move tints and Mega contours, never
 as large fields. Borrowed colour: computed from each sprite (the concept's dominant-hue method), mixed with --wash at
 30-58% so names on it pass contrast; checked by the polish check on every box and panel.

@@ -46,3 +46,21 @@ first; no player names, real data only, nothing removed.
 - "Build one page for real first, My Team": YES, My Team is the first page built in R3 (hardest, and Sim has seen it).
 - "Keep the old look available until Sim says": YES, the old build stays as the live page until Sim approves the switch,
   and the rebuild ships to the same artifact so saved teams carry over (docs/rebuild/saved-data.md).
+
+## Second round of advice (redesign chat on Sim's PC, Nov 11, 03:11): decisions
+| Advice | Decision | Why / how |
+|---|---|---|
+| Settle the 4 PC-only test failures before rebuilding | YES (doing) | All 4 pass on the cloud machine (rerun Nov 11); likely Windows clipboard + timing. Tests must pass on both machines before the rebuild leans on them. Note: that PC run built without esbuild (unminified page), a difference to rule out. |
+| Tests are the "nothing removed" gate; group runs while working, full run before go-live | YES (already the plan) | |
+| Scroll speed with glow and big art: test early with the mouse wheel on Sim's PC | YES (already the plan) | Measured per page against docs/rebuild/baseline.json, on Sim's PC. |
+| Floor and ceiling on borrowed colours for readability | YES, a rule | Borrowed colours are clamped (lightness 25-75%, saturation capped) before use, then contrast is measured; added to design-system.md. |
+| One ratings source | YES (already the plan) | Tests already caught one case: HOME-05b (This-week chip 78 vs sheet 88). |
+| Long names on small phones | YES (done in mock-ups) | Condensed width for all names on phones, Mega as a small label. |
+| Art licensing for a public site | YES, a launch item | Official HOME renders, as today's site already uses. Check The Pokémon Company's fan-content terms before January; recorded for the launch plan. Not a rebuild blocker. |
+| Motion: hero settling in, score counting up, colour shifting on pick | YES | R2 moving prototype covers the box lift + sheet; score count-up and hero settle added. Reduced-motion respected. |
+| Rotate the Home hero Pokémon by day | YES | Picked from today's top-rated, changes daily (not per visit, so it isn't random noise). |
+| Celebrate a better Strength Score, with Shady Paw | PARTLY | A short count-up and band-colour flash, yes. No mascot beside grades (CLAUDE.md: Darkrai never beside grades; Shady Paw replaced). |
+| First visit: one obvious action ("Grade a sample team") | YES | Home's first action for a visitor with no team; the score appears in one tap. |
+| Phone jump bar on every long tool page | YES | Component rule in design-system.md. |
+| Info sheet one tap away wherever a Pokémon appears | YES | Including box tiles and team rows. |
+| Protect the rules as pages multiply; design empty states on purpose | YES (already the plan) | |
