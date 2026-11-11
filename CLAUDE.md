@@ -19,6 +19,11 @@ audits and research sweeps, not our one-change-at-a-time work.
   (Artifact list, scope files) before sending Sim a link (Nov 9: a Preview went out with no sprites).
 - Real data only, never remove functionality, be careful. Ask when unsure.
 - Lean usage: no helper agents unless she agrees, minimal screenshots.
+- Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on her Windows PC (RTX 3080, faster than the cloud machine,
+  doesn't restart). Whenever a task would go faster there (test runs, polish checks, screenshot batches, image work on the
+  GPU, anything heavy in a browser), say so up front and give her a ready-to-paste prompt: what to pull, what to run, where
+  to save results (commit to the working branch), and "fix only setup, never the code or tests". Briefs live in
+  docs/rebuild/gpu-jobs.md or docs/rebuild/test-runs/.
 - She tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
   screens except feature sprites, for smooth scrolling; never give filtered sprites their own layers (will-change), it made it worse.
 - She has a sharp eye for symmetry and small details; keep layouts even and labels clear.
