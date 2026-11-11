@@ -21,6 +21,10 @@
     [
       "pages",
       "src/v2/css/pages.css"
+    ],
+    [
+      "six",
+      "src/v2/css/six.css"
     ]
   ],
   "body": "src/v2/body.html",
@@ -38,6 +42,7 @@
     "src/v2/shell.js",
     "src/v2/pages/guide.js",
     "src/v2/pages/team.js",
+    "src/v2/pages/six.js",
     "src/v2/pages/monsheet.js",
     "src/v2/pages/box.js",
     "src/v2/pages/record.js",
@@ -52,6 +57,7 @@
     "src/app/04-search.js",
     "src/app/05-icons.js",
     "src/app/05-data-clean.js",
+    "src/app/05-six-data.js",
     "src/app/06-helpers.js",
     "src/app/08-render-all.js",
     "src/app/09-quick-add.js",

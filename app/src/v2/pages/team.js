@@ -8,7 +8,8 @@ V2.teamData = () => {
   const useA = true, CK = proChecks(ms, useA), RD = prepOf(ms), G = RD ? CH.gradeOf(RD, CK, ms) : null;
   // the lead pair against the meta's top six (Battle mode's planner, the same one today's My Team uses)
   const four = ms.length >= 4 ? CH.four(ms) : null;
-  const role = n => !four ? '' : four.lead.includes(n) ? 'Lead' : four.back.includes(n) ? 'Back' : 'Bench';
+  // group six: the lineup My Team shows (today's teamLineup: the planner's pick, your lead pick, or team order); roles follow it
+  const L = teamLineup(ms), role = n => L.lead.some(m => m.p.n === n) ? 'Lead' : L.back.some(m => m.p.n === n) ? 'Back' : 'Bench';
   // matchups: the 30 top threats, each with the real-games verdict (if the model has one) and the damage-calc level
   const rows = RD ? RD.rows.map(r => ({t: r.t, w: r.t.w, level: r.level, real: CH.realVs(r.t.n, ms)})) : [];
   const top = rows.slice().sort((a, b) => b.w - a.w).slice(0, 10);
@@ -17,7 +18,7 @@ V2.teamData = () => {
   const basics = CK ? CK.items.filter(x => !x.note && !x.skip) : [], notes = CK ? CK.items.filter(x => x.note) : [];
   const sug = V2.sugData(ms, RD);
   const lo = S.teams.find(t => t.id === S.loadedId);
-  return {ms, G, RD, CK, four, role, rows, top, sug, saved: lo ? lo.name : '', mu: {fav: cnt('Favoured'), even: cnt('Even match'), unf: cnt('Unfavoured'), any: rows.some(r => r.real)},
+  return {ms, G, RD, CK, four, L, role, rows, top, sug, saved: lo ? lo.name : '', mu: {fav: cnt('Favoured'), even: cnt('Even match'), unf: cnt('Unfavoured'), any: rows.some(r => r.real)},
     calc: {beats: calc[3], handles: calc[2], shaky: calc[1], none: calc[0]}, basics, notes, full: ms.length === 6};
 };
 
@@ -123,7 +124,7 @@ document.addEventListener('v2slide', e => { if (e.detail.key !== 'svsort') retur
 // After each change the message says how the Strength Score moved (today's site says "ready for X%" / "Offense N of 18" there).
 V2.scoreNow = () => { const ms = members(); if (!ms.length) return null; try { const RD = prepOf(ms), G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; return G ? Math.round(G.s) : null; } catch (e) { return null; } };
 V2.ed = {i: 0};
-V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i); if (!m) return `<div class="ed2"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">Add a Pokémon</h2><p class="tm-sub">This spot is empty. Pick a Pokémon to fill it.</p><div class="ed-foot"><button type="button" class="np-btn" data-v2search>Add a Pokémon</button></div></div>`;
+V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i); if (!m && V2.addHtml) return V2.addHtml(i); /* group six: add into this spot (six.js) */ if (!m) return `<div class="ed2"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">Add a Pokémon</h2><p class="tm-sub">This spot is empty. Pick a Pokémon to fill it.</p><div class="ed-foot"><button type="button" class="np-btn" data-v2search>Add a Pokémon</button></div></div>`;
   const p = m.p, E = V2.esc, pc = x => x != null ? ` (${(+x).toFixed(+x < 1 ? 1 : 0)}%)` : '';
   const tag = (mine, reset, label) => mine ? `<span class="ed-tag mine">Your pick</span><button type="button" class="np-link ed-rs" data-ed="${reset}">${E(label)}</button>` : `<span class="ed-tag">${E(label)}</span>`;
   const field = (lab, tg, ctl, cls = '') => `<div class="ed-f${cls}"><div class="ed-l"><span>${lab}</span>${tg}</div>${ctl}</div>`;
@@ -180,7 +181,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-v2edit]'))
   else if (k === 'ptsave') { const v = [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => x.value === '' ? 0 : Number(x.value)), nat = (document.querySelector('.ed2 [data-ed="nat"]') || {}).value;
     const bad = pointsProblem(v, nat); if (bad) { const msg = document.querySelector('[data-ed-msg]'); if (msg) msg.textContent = bad; return; } V2.edDo(() => savePoints(i, nat, v), 'Stat points saved'); }
   else if (k === 'lock') V2.edDo(() => toggleLock(i), on => on ? `${m.d} locked: Suggestions keep it` : `${m.d} unlocked`);
-  else if (k === 'rm') { clearSlot(i); render(); V2.edRefresh('[data-v2search]'); toast(`Removed ${m.d}`, true); } });
+  else if (k === 'rm') { clearSlot(i); render(); V2.edRefresh('[data-adq]'); /* group six */ toast(`Removed ${m.d}`, true); } });
 
 // ---------- adding a Pokémon (R4, Nov 11): today's addMon into the first empty spot, one of each species (Species Clause) ----------
 V2.addState = n => { const p = byName.get(n); if (!p) return 'none'; if (S.slots.some(x => { const q = byName.get(x.n); return q && q.b === p.b; })) return 'have'; return S.slots.findIndex(x => !byName.get(x.n)) < 0 ? 'full' : 'ok'; };
@@ -301,20 +302,13 @@ V2.pages.team = {place: 'team', draw() {
   let wx = ''; try { const k = ms.length ? wxKeyOf(ms) : null; if (k) wx = wxName(k); } catch (e) {}
   // Legal mark (mock-up: in the jump bar); narrower windows show it in the hero's links row instead, where it has room
   const legalMark = ms.length ? `<span class="tm-legal${L.illegal ? ' bad' : ''}" title="Based on our reading of the ${V2.esc(REG_NAME)} rules. Check the official rules before an event."><i aria-hidden="true"></i>${L.illegal ? 'Not legal yet' : 'Legal for ' + V2.esc(REG_NAME)}</span>` : '';
-  const mon = (m, i) => `<button type="button" class="tm-pick" data-tmsel="${i}" aria-pressed="${m === sel}" aria-label="${V2.esc(m.d)}${D.role(m.p.n) ? ', ' + D.role(m.p.n) : ''}">${V2.mon(m.p.n, {sel: m === sel, sub: D.role(m.p.n)})}</button>`;
   const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team · ${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}</span></div>${title ? `<h1 class="tm-name">${V2.esc(title).replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2')}</h1>` : ''}${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div>${V2.meter(G.s)}`}</div><div class="tm-info">${s == null ? '' : `${win ? `<p class="tm-line">${win}</p>` : ''}<p class="tm-rank">${V2.esc(rank)}</p>${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess</p>' : ''}<div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why this score?</button>${others ? `<button type="button" class="np-link" data-v2switch aria-haspopup="dialog">Switch Team <small>${others} saved</small></button>` : ''}${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
   const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>${S.loadedId && S.teams.some(t => t.id === S.loadedId) ? 'Update Saved Team' : 'Save Team'}</button><button type="button" class="np-btn2" data-v2share><span>Share</span></button><button type="button" class="np-btn2 tm-tsact" data-v2sheetopen><span>Team Sheet</span></button><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2" data-v2import><span>Import</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button><a class="np-btn2 tm-svl" href="#box"><span>My Box <small>${S.box.length}</small></span></a><button type="button" class="np-btn2 tm-svl" data-cxgo2="cur|"><span>Compare</span></button><button type="button" class="np-btn2 tm-svl tm-clr" data-v2clear><span>Clear Team</span></button></div>`;
   const nm = D.mu.fav + D.mu.even + D.mu.unf;
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <small>${ms.length} sets</small> <span aria-hidden="true">↗</span></button></nav>`;
-  // 1. Set: the selected Pokémon on its tilted panel, with its whole set
-  const P = sel.p, r = typeof RS === 'function' && typeof rating === 'function' ? Math.round(RS(rating(P).total)) : null;
-  const spr = sel.spread && sel.spread.nat ? sel.spread : null;
-  const setSec = `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid"><div class="tm-art">${V2.mon(P.n, {sel: true, iw: 240, bare: true})}</div><div>
-    <h3 class="u">${V2.esc(sel.d)}</h3><div class="tm-types">${(P.t || []).map(V2.typeChip).join('')}${r != null ? `<span class="np-chip">Rated ${r}</span>` : ''}</div>
-    <dl class="tm-kv"><div><dt>Item</dt><dd>${V2.esc(sel.heldItem || sel.item || 'None')}</dd></div><div><dt>Ability</dt><dd>${V2.esc(sel.ability || '')}</dd></div>${spr ? `<div><dt>Nature</dt><dd>${V2.esc(spr.nat)}</dd></div>` : ''}</dl>
-    <div class="tm-moves">${sel.moves.filter(Boolean).map(v => `<span class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(v.type) ? v.type : 'Normal'})">${V2.esc(v.name)}</span>`).join('')}</div>
-    <div class="tm-setacts"><button type="button" class="np-btn2" data-v2edit="${sel.i}"><span>Edit Set</span></button></div></div></div></section>`;
+  // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
+  const setSec = V2.setSecHtml(D, sel);
   // 2. Matchups: real-game verdicts lead, the calc reading underneath (Sim, Nov 10)
   const vcls = {'Favoured': 'vf', 'Even match': 've', 'Unfavoured': 'vu'};
   const muSec = !D.rows.length ? '' : `<section class="tm-sec tm-mus" id="tm-mu"><h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts come from real tournament games; the damage calc reading is underneath.' : ''}</p>
@@ -331,7 +325,7 @@ V2.pages.team = {place: 'team', draw() {
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}</section>`;
-  return `<section class="tm-hero">${lockup}<div class="tm-six">${ms.map(mon).join('')}</div>${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${ckSec}</div><div class="tm-c2">${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
+  return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${ckSec}</div><div class="tm-c2">${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() {
   document.querySelectorAll('[data-v2plan]').forEach(b => b.addEventListener('click', () => { const pl = (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;

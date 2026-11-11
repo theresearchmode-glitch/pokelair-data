@@ -15,7 +15,8 @@ const NOT = what => { throw new Error('not in v2 yet: ' + what); };
 // today's raw selectors that tests pass to has() -> the new build's element with the same meaning
 const SEL = {'#toastUndo': '.np-toast #toastUndo', '#toastBoxUndo': '.np-toast [data-bxundo]', '[data-qlres]': '.yg2 [data-ygres]', '#jump input': '[data-v2q]'};
 // today's name-box selectors -> the new build's search inputs (and the button that opens each, if it's not open yet)
-const NAMEBOX = {'#chEdit input[placeholder]': ['[data-v2q]', '[data-v2search]'], '#boxAdd': ['[data-bxq]', '[data-bxadd]'], '#jump input': ['[data-v2q]', '[data-v2search]'], '#qlOppIn': ['[data-ygq]', null]};
+// today's edit panel name box = the add box in the Edit Set sheet's empty spot ([data-adq]); else the search sheet
+const NAMEBOX = {'#chEdit input[placeholder]': ['[data-adq],[data-v2q]', '[data-v2search]'], '#boxAdd': ['[data-bxq]', '[data-bxadd]'], '#jump input': ['[data-v2q]', '[data-v2search]'], '#qlOppIn': ['[data-ygq]', null]};
 
 export default (ui, pg, o) => {
   pg.addInitScript(TOASTS).catch(() => {}); pg.evaluate(TOASTS).catch(() => {});
@@ -115,17 +116,23 @@ export default (ui, pg, o) => {
     /** Your Six tiles in the order shown (names) */
     sixTiles: () => pg.evaluate(() => [...document.querySelectorAll('#main [data-tmsel]')].filter(e => e.getClientRects().length).map(e => (e.getAttribute('aria-label') || '').split(', ')[0])),
     /** "+ Add a Pokémon" slot tiles among the six */
-    emptyTiles: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-six > *')].filter(e => e.getClientRects().length && /add a pok/i.test(e.innerText + (e.getAttribute('aria-label') || ''))).length),
+    emptyTiles: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-six [data-v2addto]')].filter(e => e.getClientRects().length && /add a pok/i.test(e.getAttribute('aria-label') || '')).length),
     tapTile: name => tapFound(n => [...document.querySelectorAll('#main [data-tmsel]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || '').split(', ')[0] === n) || null, name, 'tile ' + name, 700),
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-tmsel]')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     /** the selected Pokémon's set (the Set section) */
     setCard: () => txt('#main #tm-set'),
+    /** how many moves the set card shows */
+    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *')].filter(e => e.getClientRects().length).length),
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
-    lockOnTile: () => NOT('lock control on the team tile (Lock is inside Edit Set)'),
-    tileLockLabel: () => NOT('lock state shown on the team tile (Lock is inside Edit Set)'),
-    /** remove a Pokémon from the team (here: Edit Set → "Remove <name>") */
-    removeFromTeam: async name => { await H.settle(400, 5000); await H.openEditPanel(name); await click('.ed2 [data-ed="rm"]', 800); },
-    gamePlanLine: () => NOT('"Game plan vs the meta\'s top six: lead …, back …, bench …" line (tiles show Lead/Back/Bench)'),
+    /** the padlock on a tile (as today: shown on the picked tile, so tap the tile first when it isn't showing) */
+    lockOnTile: async name => { const f = n => [...document.querySelectorAll('#main [data-v2lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n + ':') && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;
+      if (!(await pg.evaluate(f, name))) await H.tapTile(name); await tapFound(f, name, 'lock on ' + name, 700); },
+    tileLockLabel: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-v2lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n + ':')); return e ? e.getAttribute('aria-label') : null; }, name),
+    /** remove a Pokémon with the × on its tile (tap the tile first when the × isn't showing, as today's phones) */
+    removeFromTeam: async name => { await H.settle(400, 5000); const f = n => [...document.querySelectorAll('#main [data-v2rm]')].find(e => (e.getAttribute('aria-label') || '') === 'Remove ' + n + ' from your team' && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;
+      if (!(await pg.evaluate(f, name))) await H.tapTile(name); await tapFound(f, name, 'remove ' + name, 800); },
+    /** the game plan line under the six (its sentence only, not the "Use NastyPlot's pick" button beside it) */
+    gamePlanLine: () => txt('#main .sx-plan .sx-pl'),
     /** the team actions are all on show (no ⋯ menu), so there is nothing to open */
     openMoreActions: async () => {},
     /** tap one of the team actions, by today's name */
@@ -179,7 +186,7 @@ export default (ui, pg, o) => {
     statMsg: () => txt('.ed2 [data-ed-msg]'),
     panelButton: m => H.tapText(m, 900),
     // add a Pokémon: the search sheet (data-v2q), the box's add sheet (data-bxq), the log form's opponent search (data-ygq)
-    nameBox: () => pg.evaluate(() => { const i = [...document.querySelectorAll('[data-v2q],[data-bxq],[data-ygq]')].find(e => e.getClientRects().length); return i ? {focused: i === document.activeElement, value: i.value} : null; }),
+    nameBox: () => pg.evaluate(() => { const i = [...document.querySelectorAll('[data-adq],[data-v2q],[data-bxq],[data-ygq]')].find(e => e.getClientRects().length); return i ? {focused: i === document.activeElement, value: i.value} : null; }),
     typeName: async (text, sel = '#chEdit input[placeholder]') => { const [s, opener] = NAMEBOX[sel] || [sel, null];
       if (!(await vis(s)) && opener) { if (!(await vis(opener))) NOT('a way to open ' + s + ' here'); await click(opener, 600); }
       const loc = pg.locator(s).filter({visible: true}).first(); await loc.click(); await loc.fill(''); await loc.pressSequentially(text, {delay: 20}); await pg.waitForTimeout(500); },

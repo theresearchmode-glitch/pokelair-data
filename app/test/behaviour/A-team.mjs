@@ -199,9 +199,10 @@ t('TEAM-09', 'Lock and Remove on a tile: lock label flips; × removes with Undo'
 
 t('TEAM-10', 'Set card: plan role, rating, item, ability, nature, stat points, 4 moves; Edit set and Info sheet', async () => {
   const r = await myTeam(); await r.ui.tapTile('Garchomp'); const c = await r.ui.setCard();
-  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, /Nature \w+ (most run|yours)/, /Stat points \d+ \w+, \d+ \w+/, /Edit set/, /Info sheet ›/]) has(c, s, 'set card');
-  const moves = await r.ui.pg.evaluate(() => [...document.querySelectorAll('#rzSet [class*=mv], #rzSet li')].filter(e => e.getClientRects().length && e.children.length <= 3).length); ok(moves >= 4, `${moves} move strips`);
-  await r.ui.tapText('Edit set', 900); let p = await r.ui.editPanel(); ok(p && /Edit Garchomp/.test(p.text), 'Edit set did not open "Edit Garchomp"'); await r.ui.closeEditPanel();
+  // button words in any casing (the new build writes buttons in Title Case, Sim Nov 9); the move strips are counted by the adapter
+  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, /Nature \w+ (most run|yours)/, /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, /Info sheet ›/i]) has(c, s, 'set card');
+  const moves = await r.ui.setMoveCount(); ok(moves >= 4, `${moves} move strips`);
+  await r.ui.tapText('Edit set', 900); let p = await r.ui.editPanel(); ok(p && /Edit Garchomp/.test(p.title + ' ' + p.text), 'Edit set did not open "Edit Garchomp"'); await r.ui.closeEditPanel();
   await r.ui.tapText('Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
 
 t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use NastyPlot\'s pick" goes back; Home follows', async () => {
