@@ -124,7 +124,7 @@ document.addEventListener('v2slide', e => { if (e.detail.key !== 'svsort') retur
 // After each change the message says how the Strength Score moved (today's site says "ready for X%" / "Offense N of 18" there).
 V2.scoreNow = () => { const ms = members(); if (!ms.length) return null; try { const RD = prepOf(ms), G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; return G ? Math.round(G.s) : null; } catch (e) { return null; } };
 V2.ed = {i: 0};
-V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i); if (!m) return `<div class="ed2"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">Add a Pokémon</h2><p class="tm-sub">This spot is empty. Pick a Pokémon to fill it.</p><div class="ed-foot"><button type="button" class="np-btn" data-v2search>Add a Pokémon</button></div></div>`;
+V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i); if (!m && V2.addHtml) return V2.addHtml(i); /* group six: add into this spot (six.js) */ if (!m) return `<div class="ed2"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">Add a Pokémon</h2><p class="tm-sub">This spot is empty. Pick a Pokémon to fill it.</p><div class="ed-foot"><button type="button" class="np-btn" data-v2search>Add a Pokémon</button></div></div>`;
   const p = m.p, E = V2.esc, pc = x => x != null ? ` (${(+x).toFixed(+x < 1 ? 1 : 0)}%)` : '';
   const tag = (mine, reset, label) => mine ? `<span class="ed-tag mine">Your pick</span><button type="button" class="np-link ed-rs" data-ed="${reset}">${E(label)}</button>` : `<span class="ed-tag">${E(label)}</span>`;
   const field = (lab, tg, ctl, cls = '') => `<div class="ed-f${cls}"><div class="ed-l"><span>${lab}</span>${tg}</div>${ctl}</div>`;
@@ -181,7 +181,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-v2edit]'))
   else if (k === 'ptsave') { const v = [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => x.value === '' ? 0 : Number(x.value)), nat = (document.querySelector('.ed2 [data-ed="nat"]') || {}).value;
     const bad = pointsProblem(v, nat); if (bad) { const msg = document.querySelector('[data-ed-msg]'); if (msg) msg.textContent = bad; return; } V2.edDo(() => savePoints(i, nat, v), 'Stat points saved'); }
   else if (k === 'lock') V2.edDo(() => toggleLock(i), on => on ? `${m.d} locked: Suggestions keep it` : `${m.d} unlocked`);
-  else if (k === 'rm') { clearSlot(i); render(); V2.edRefresh('[data-v2search]'); toast(`Removed ${m.d}`, true); } });
+  else if (k === 'rm') { clearSlot(i); render(); V2.edRefresh('[data-adq]'); /* group six */ toast(`Removed ${m.d}`, true); } });
 
 // ---------- adding a Pokémon (R4, Nov 11): today's addMon into the first empty spot, one of each species (Species Clause) ----------
 V2.addState = n => { const p = byName.get(n); if (!p) return 'none'; if (S.slots.some(x => { const q = byName.get(x.n); return q && q.b === p.b; })) return 'have'; return S.slots.findIndex(x => !byName.get(x.n)) < 0 ? 'full' : 'ok'; };

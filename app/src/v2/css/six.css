@@ -50,3 +50,25 @@
 .sx-slot.on .sx-ic,.sx-slot:focus-within .sx-ic,.sx-ic.on{opacity:1;pointer-events:auto}
 @media (hover:hover){.sx-slot:hover .sx-ic{opacity:1;pointer-events:auto}}
 .sx-lock.on{color:var(--plate)}.sx-lock.on::before{background:var(--mid)}
+/* an empty spot: the same footprint as a tile, a dashed tilted panel with a big slanted +, "Add a Pokémon" over its spot number */
+.sx-add{display:block;width:100%;text-align:center;color:var(--ink)}
+.sx-addart{position:relative;display:grid;place-items:center;width:min(100cqi,160px);aspect-ratio:1;margin:0 auto}
+.sx-addart::before{content:"";position:absolute;inset:12% 4% 4%;border:1.5px dashed color-mix(in srgb,var(--ink) 32%,transparent);border-radius:var(--r-m);transform:skewY(var(--tilt))}
+.sx-addart i{position:relative;font-family:var(--u);font-style:italic;font-weight:900;font-size:var(--t34);line-height:1;color:var(--plot-text)}
+.sx-add b{display:block;margin-top:var(--s3);font:700 var(--t15)/1.25 var(--b)}.sx-pre{display:block}
+.sx-add small{display:block;font:500 var(--t13)/1.35 var(--b);color:var(--ink-3)}
+.sx-add:hover .sx-addart::before,.sx-add:focus-visible .sx-addart::before{border-color:var(--plot)}
+@container (max-width:100px){.sx-add b{font-size:var(--t13)}}
+/* the name box in the sheet: matches as rows (art, name, types, In your box, share of teams); the active row is washed */
+.sx-addsh .np-field{margin-top:var(--s2)}
+.sx-hits{display:grid;margin-top:var(--s3)}
+.sx-hit{grid-template-columns:48px minmax(0,1fr) auto auto}
+.sx-hit[aria-selected="true"]{background:var(--wash)}
+.sx-meta{display:flex;align-items:center;justify-content:flex-end;gap:var(--s3)}
+.sx-inbox{font:600 var(--t13)/1 var(--b);color:var(--good-text);white-space:nowrap}
+.sx-use{min-width:5ch;font:600 var(--t13)/1 var(--b);color:var(--ink-2);text-align:right}
+.sx-none{padding:var(--s3) 0}.sx-addhint{margin-top:var(--s3)}
+@media (max-width:519px){.sx-hit{grid-template-columns:40px minmax(0,1fr) auto}.sx-hit img{width:40px;height:40px}.sx-hit .ty{grid-column:2;grid-row:2}.sx-hit b{grid-column:2;grid-row:1}.sx-hit img{grid-row:1 / span 2}.sx-meta{grid-column:3;grid-row:1 / span 2;flex-direction:column;align-items:flex-end;gap:var(--s1)}}
+/* while the Edit Set sheet holds the name box (an empty spot), it takes the small sheet's size, so it fits what it shows */
+.np-sheet:has(> .sx-addsh){top:12vh;bottom:auto;max-height:76vh;width:min(640px,calc(100% - 64px))}
+@media (max-width:699px){.np-sheet:has(> .sx-addsh){top:auto;bottom:0;width:100%;max-height:88vh}}

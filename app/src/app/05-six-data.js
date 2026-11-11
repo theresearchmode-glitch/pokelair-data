@@ -21,6 +21,20 @@ const leadMsg = pk => pk ? `${pk.d} now leads` : "Back to NastyPlot's lead pick"
 // what the game plan line says the plan is against / who picked it
 const PLAN_VS = {meta: "vs the meta's top six", you: 'your pick', order: 'in team order'};
 
+// ---------- adding a Pokémon into a spot (ADD-01) ----------
+// usage under each name: share of tournament teams (Limitless sheets), else the current format's usage
+let useCacheV = -1, useMap = null;
+function pickUse(p) { if (useCacheV !== metaVersion) { useCacheV = metaVersion; useMap = new Map(); const d = META.doubles_tour; if (d) [...(d.top || []), ...(d.more || [])].forEach(t => { if (typeof t.u === 'number') useMap.set(t.n, t.u); }); }
+  if (S.format === 'doubles' && useMap.size) return useMap.get(p.n) || 0; try { return U(p); } catch (e) { return 0; } }
+// as the name box shows it: "9.7%", "12%", "<0.1%", or "–" for none
+const useText = p => { const u = pickUse(p); return u >= .1 ? u.toFixed(u >= 10 ? 0 : 1) + '%' : u > 0 ? '<0.1%' : '–'; };
+// Species Clause: for spot i, a species already in another spot (any form) is not offered
+const slotPool = i => p => !S.slots.some((o, j) => { const q = j !== i && byName.get(o.n); return q && q.b === p.b; });
+// what the name box lists for q: up to 8 matches (searchMon: exact, start of name, in your box, usage), and a note when the pool
+// leaves every match out ("Garchomp is already here" / "Those are already here")
+function monChoices(q, pool) { const all = searchMon(q, 40), list = all.filter(p => !pool || pool(p)).slice(0, 8);
+  return {list, note: all.length && !list.length ? (all.length === 1 ? all[0].d + ' is already here' : 'Those are already here') : null}; }
+
 // ---------- the set card (TEAM-10) ----------
 // its place in the plan, in today's words; nm formats a teammate's name (escName for HTML)
 function roleText(m, L, nm = x => x.d) { const has = g => g.some(x => x.i === m.i), other = g => g.filter(x => x.i !== m.i).map(nm).join(' + ');
