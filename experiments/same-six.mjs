@@ -3,7 +3,7 @@
 // and "Use NastyPlot's pick", lock, remove and Undo, and the add box in an empty spot (live search, the in-box tag, usage %,
 // Species Clause note, no matches, Enter adds), on full, partial and stale-lead teams, through today's own buttons.
 // Compares the slots, the lead pick, the toast, the stage's HTML, the set card's HTML, Home's plan line and the add list after every step.
-// Left out as noise (today's page against itself differs there): the order of class names, the name-fit and spacing marks added a moment after drawing (data-nf, data-rz), a hidden editor's leftover text.
+// Left out as noise (today's page against itself differs there): the order of class names, the name-fit and spacing marks added a moment after drawing (data-nf, data-rz) and the tile cursor a timer drops in (its place beside the sprite varies), a hidden editor's leftover text.
 // Usage: node experiments/same-six.mjs before.html after.html   (DUMP=file.json writes every step)
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
@@ -30,7 +30,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
     S.box=['Salamence','Dragonite','Archaludon','Garchomp'];
     window.TEAM=t=>{S.slots=t.map(n=>({n,a:null,lock:false}));while(S.slots.length<6)S.slots.push({n:'',a:null,lock:false});S.leads=null;S.loadedId=null;ui.rzSet=undefined;render();setView('report',false)};
     window.SET=i=>{const e=document.querySelector('.ar-team [data-chset="'+i+'"]');if(e)e.click()};
-    window.NORM=h=>(h||'').replace(/[?]r=[0-9]+/g,'').replace(/ data-retry="[0-9]+"/g,'').replace(/ data-arb="1"/g,'').replace(/ data-clr="[^"]*"/g,'').replace(/ data-(nf|rz)="[^"]*"/g,'').replace(/ style="[^"]*"/g,'').replace(/ class="([^"]*)"/g,(m,c)=>' class="'+c.split(' ').filter(x=>x&&x!=='in').sort().join(' ')+'"');
+    window.NORM=h=>(h||'').replace(/[?]r=[0-9]+/g,'').replace(/ data-retry="[0-9]+"/g,'').replace(/ data-arb="1"/g,'').replace(/ data-clr="[^"]*"/g,'').replace(/ data-(nf|rz)="[^"]*"/g,'').replace(/<span class="ar-cursor" aria-hidden="true"><[/]span>/g,'').replace(/ style="[^"]*"/g,'').replace(/ class="([^"]*)"/g,(m,c)=>' class="'+c.split(' ').filter(x=>x&&x!=='in').sort().join(' ')+'"');
     window.SNAP=()=>{const st=document.querySelector('#chTeam .ar-stage'),set=$('rzSet'),menu=document.querySelector('#chEdit .menu'),inp=document.querySelector('#chEdit input[placeholder]'),hp=document.querySelector('[data-pane="home"] .ar-gameplan');
       return JSON.stringify({slots:S.slots,leads:S.leads||null,toast:($('toast')||{}).textContent,stage:NORM(st&&st.outerHTML),set:set&&!set.hidden?NORM(set.outerHTML):null,home:hp?hp.textContent:null,
         edit:$('chEdit')&&!$('chEdit').hidden?(($('chEdit').querySelector('h2,h3')||{}).textContent||''):null,input:inp&&!$('chEdit').hidden?inp.value:null,menu:menu?NORM(menu.innerHTML):null})}`));

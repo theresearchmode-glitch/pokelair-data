@@ -114,10 +114,13 @@ export default (ui, pg, o) => {
     /** how many moves the set card shows */
     setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *')].filter(e => e.getClientRects().length).length),
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
-    lockOnTile: () => NOT('lock control on the team tile (Lock is inside Edit Set)'),
-    tileLockLabel: () => NOT('lock state shown on the team tile (Lock is inside Edit Set)'),
-    /** remove a Pokémon from the team (here: Edit Set → "Remove <name>") */
-    removeFromTeam: async name => { await H.settle(400, 5000); await H.openEditPanel(name); await click('.ed2 [data-ed="rm"]', 800); },
+    /** the padlock on a tile (as today: shown on the picked tile, so tap the tile first when it isn't showing) */
+    lockOnTile: async name => { const f = n => [...document.querySelectorAll('#main [data-v2lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n + ':') && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;
+      if (!(await pg.evaluate(f, name))) await H.tapTile(name); await tapFound(f, name, 'lock on ' + name, 700); },
+    tileLockLabel: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-v2lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n + ':')); return e ? e.getAttribute('aria-label') : null; }, name),
+    /** remove a Pokémon with the × on its tile (tap the tile first when the × isn't showing, as today's phones) */
+    removeFromTeam: async name => { await H.settle(400, 5000); const f = n => [...document.querySelectorAll('#main [data-v2rm]')].find(e => (e.getAttribute('aria-label') || '') === 'Remove ' + n + ' from your team' && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;
+      if (!(await pg.evaluate(f, name))) await H.tapTile(name); await tapFound(f, name, 'remove ' + name, 800); },
     /** the game plan line under the six (its sentence only, not the "Use NastyPlot's pick" button beside it) */
     gamePlanLine: () => txt('#main .sx-plan .sx-pl'),
     /** the team actions are all on show (no ⋯ menu), so there is nothing to open */

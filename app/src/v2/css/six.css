@@ -41,3 +41,12 @@
 .sx-kv small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3);white-space:nowrap}
 .sx-info{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s1)}
 .tm-setacts{align-items:center}
+/* Lock and × on each tile: two 44px targets at the art's top corners, each a small slanted plate. They show on the picked tile,
+   on hover (mouse) and on keyboard focus; a locked padlock always shows, in amber */
+.sx-ic{position:absolute;top:0;z-index:2;display:grid;place-items:center;width:var(--tap);height:var(--tap);color:var(--ink);opacity:0;pointer-events:none;transition:opacity .15s}
+.sx-ic::before{content:"";position:absolute;inset:var(--s2) var(--s1);border-radius:var(--r-s);background:var(--surface);box-shadow:var(--shadow-lift);transform:skewX(-12deg)}
+.sx-ic svg{position:relative;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sx-lock{left:calc(var(--s2) * -1)}.sx-rm{right:calc(var(--s2) * -1)}
+.sx-slot.on .sx-ic,.sx-slot:focus-within .sx-ic,.sx-ic.on{opacity:1;pointer-events:auto}
+@media (hover:hover){.sx-slot:hover .sx-ic{opacity:1;pointer-events:auto}}
+.sx-lock.on{color:var(--plate)}.sx-lock.on::before{background:var(--mid)}

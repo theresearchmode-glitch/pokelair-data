@@ -437,7 +437,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   toast({box: 'Suggestions only use your box', boxfill: 'Your box first, then the best Pokémon to catch', all: 'Suggestions use the full roster'}[v]); });
 // − on a Your six card (or Remove in the edit panel): take that Pokémon off the team, with Undo. Runs before the card's own tap.
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chrm]'); if (!b) return; e.stopPropagation(); e.preventDefault();
-  const i = +b.dataset.chrm, was = byName.get((S.slots[i] || {}).n); keepUndo(); S.slots[i] = blank(); render(); if (was) toast(`Removed ${was.d}`, true);
+  const i = +b.dataset.chrm, was = clearSlot(i); render(); if (was) toast(`Removed ${was.d}`, true); /* clearSlot: shared (31-set-edits.js) */
   const ed = $('chEdit'); if (ed && !ed.hidden && b.closest('#chEdit')) chEditOpen(i); }, true);
 // a Your six card opens with Enter or Space too
 document.addEventListener('keydown', e => { const r = e.target; if (!r || !r.matches || !r.matches('div.chrow[data-chedit]') || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); r.click(); });

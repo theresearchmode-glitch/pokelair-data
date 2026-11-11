@@ -6,7 +6,11 @@
 V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   const ord = [...L.lead, ...L.back, ...L.bench], role = m => L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench';
   const tile = m => { const k = ms.indexOf(m), on = m === sel;
-    return `<div class="sx-slot${on ? ' on' : ''}"><button type="button" class="tm-pick" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(m.d)}, ${role(m)}">${V2.mon(m.p.n, {sel: on, sub: m.heldItem || m.item || 'No item'})}</button></div>`; };
+    // Lock and × on the tile (TEAM-09, today's words): shown on the picked tile, on hover, and always while locked
+    const lk = !!(S.slots[m.i] && S.slots[m.i].lock);
+    const ctl = `<button type="button" class="sx-ic sx-lock${lk ? ' on' : ''}" data-v2lock="${m.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(m.d)}: suggestions never swap out a locked Pokémon" title="${lk ? 'Locked: suggestions keep it' : 'Lock it so suggestions keep it'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg></button>`
+      + `<button type="button" class="sx-ic sx-rm" data-v2rm="${m.i}" aria-label="Remove ${E(m.d)} from your team"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>`;
+    return `<div class="sx-slot${on ? ' on' : ''}${lk ? ' locked' : ''}"><button type="button" class="tm-pick" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(m.d)}, ${role(m)}${lk ? ', locked' : ''}">${V2.mon(m.p.n, {sel: on, sub: m.heldItem || m.item || 'No item'})}</button>${ctl}</div>`; };
   const cells = ord.map(tile), grp = (name, j) => cells.slice(j * 2, j * 2 + 2).length ? `<div class="sx-grp" role="group" aria-label="${name}"><p class="sx-gl u" aria-hidden="true">${name}</p><div class="sx-tiles">${cells.slice(j * 2, j * 2 + 2).join('')}</div></div>` : '';
   const pair = g => g.map(m => escName(m.d)).join(' + '), vs = PLAN_VS[L.by];
   const plan = L.lead.length >= 2 ? `<p class="sx-plan"><span class="sx-pl">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${pair(L.lead)}</b>${L.back.length ? `, back ${pair(L.back)}` : ''}${L.bench.length ? `, bench ${pair(L.bench)}` : ''}.</span>${L.by === 'you' ? `<button type="button" class="np-link sx-reset" data-v2lead="">Use NastyPlot's pick</button>` : ''}</p>` : '';
@@ -27,3 +31,8 @@ V2.setSecHtml = (D, sel) => { const m = sel, P = m.p, E = V2.esc, L = D.ms.lengt
 // Set as Lead / Use NastyPlot's pick (TEAM-11): today's setLeadPick and words; the pick is saved with the team (S.leads)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2lead]'); if (!b) return;
   const pk = setLeadPick(b.dataset.v2lead); if (pk === false) return; render(); toast(leadMsg(pk)); });
+
+// Lock and × on a tile (TEAM-09): today's toggleLock and clearSlot (31-set-edits.js); × keeps Undo, as today
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2lock],[data-v2rm]'); if (!t) return;
+  if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
+  const was = clearSlot(+t.dataset.v2rm); render(); if (was) toast(`Removed ${was.d}`, true); });
