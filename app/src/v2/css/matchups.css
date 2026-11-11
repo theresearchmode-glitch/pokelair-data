@@ -138,3 +138,8 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 .mu-rest{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s3);margin:var(--s3) 0 0;color:var(--ink-2);font:400 var(--t15)/1.5 var(--b)}.mu-rest .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
 .mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr) auto}
 @container (max-width:340px){.mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr);grid-template-areas:"i n" "i v"}}
+/* narrow Matchups (phones, the iPad's half column): the four views as an even 2 by 2, each label on one line (polish check
+   "uneven", Nov 11); the picked one wears the plate itself instead of the sliding thumb */
+@container (max-width:440px){.mu-pick .np-slide{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}.mu-pick .np-slide .thumb{display:none}
+  .mu-pick .np-slide button{flex-direction:row;min-height:var(--tap);white-space:nowrap}
+  .mu-pick .np-slide button[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo))}}

@@ -28,7 +28,8 @@ export default {
       const closeSheet = () => pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); });
       if (ROUTE[v]) { await closeSheet(); await pg.evaluate(h => { if (location.hash !== h) location.hash = h; else if (window.V2) V2.redraw(); }, ROUTE[v]); await pg.waitForTimeout(wait); return v; }
       if (v === 'teams' || v === 'sheet') { await A.go('My Team', 400); const sel = v === 'teams' ? '[data-v2saved]' : '[data-v2sheetopen]';
-        const ok = await pg.evaluate(s => { const b = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); if (b) { b.click(); return true; } return false; }, sel);
+        const tapIt = () => pg.evaluate(s => { const b = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); if (b) { b.click(); return true; } return false; }, sel);
+        let ok = await tapIt(); if (!ok && await pg.evaluate(() => { const m = document.querySelector('#main [data-v2more]'); if (m) { m.click(); return true; } return false; })) { await pg.waitForTimeout(400); ok = await tapIt(); }
         if (!ok) throw new Error(`not in v2 yet: ${name} with this team (My Team shows no ${name} button)`); await pg.waitForTimeout(wait); return v; }
       throw new Error(`not in v2 yet: ${name} page`); },
     /** which page is showing (today's ids); a hash the new build has no page for reads "not-in-v2:<hash>" */

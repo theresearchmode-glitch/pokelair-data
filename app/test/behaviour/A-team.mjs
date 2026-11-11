@@ -344,16 +344,16 @@ t('SUG-11', '"?" explainer: bubble titled "Ready for the top threats", Escape cl
 
 // ================= My Team · Part 2 Matchups =================
 t('MU-01', 'Matchups view switch Top 10 | Top 12 grid | All 30 is remembered', async () => {
-  const r = await myTeam(); ok(await r.ui.chosen('Top 10') === true, 'Top 10 not default'); await r.ui.choose('All 30', 1200);
+  const r = await myTeam(); ok(await r.ui.chosen('Top 10') === true || await r.ui.chosen('Stand-outs') === true, 'neither Top 10 (today) nor Stand-outs (new build, Sim Nov 11) is the default'); await r.ui.choose('All 30', 1200);
   await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.chosen('All 30') === true, 'All 30 not remembered'); await r.close(); });
 
 t('MU-02', 'Top 10 threats with real-games verdict and calc level; phone shows 5 + "Show 5 more"; row opens threat sheet', async () => {
-  const r = await myTeam({team: TEAM, width: 390}); let rows = await r.ui.topThreatRows(); ok(rows.length === 5, `${rows.length} rows on a phone`);
+  const r = await myTeam({team: TEAM, width: 390}); if (await r.ui.chosen('Stand-outs') === true) await r.ui.choose('Top 10', 1200); let rows = await r.ui.topThreatRows(); // new build opens on Stand-outs (Sim, Nov 11) ok(rows.length === 5, `${rows.length} rows on a phone`);
   for (const x of rows) ok(/^\d+ .+ (Favoured|Even match|Unfavoured) Calc: (Beats it|Handles it|Shaky|No answer)$/.test(x), 'row reads ' + x);
   const tx = await r.ui.text(); has(tx, /Verdicts from real tournament games/); has(tx, /Unfavoured \d+ Even match \d+ Favoured \d+|\d+ Favoured \d+ Even match \d+ Unfavoured/); has(tx, /Damage calc: No answer \d+, Shaky \d+, Handles it \d+, Beats it \d+/);
   await r.ui.tapText('Show 5 more', 700); rows = await r.ui.topThreatRows(); ok(rows.length === 10, `${rows.length} rows after Show 5 more`); ok(await r.ui.sees('Show top 5 only'), 'no "Show top 5 only"');
   await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet(); ok(s && /Archaludon/.test(s) && await r.ui.threatPressedInSheet() === 'Archaludon', 'threat sheet did not open on Archaludon'); await r.close();
-  const {ui} = await view('team', {team: TEAM}, 'My Team'); const dr = await ui.topThreatRows(); ok(dr.length === 10, 'desktop shows ' + dr.length + ' rows: ' + dr.slice(0, 12).map(x => x.slice(0, 14)).join(' / ')); has(await ui.text(), /The next 20, worst first/); });
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); if (await ui.chosen('Stand-outs') === true) await ui.choose('Top 10', 1200); const dr = await ui.topThreatRows(); ok(dr.length === 10, 'desktop shows ' + dr.length + ' rows: ' + dr.slice(0, 12).map(x => x.slice(0, 14)).join(' / ')); has(await ui.text(), /The next 20, worst first/); });
 
 t('MU-03', 'Top 12 grid: 12 threat rows × 6 cells; a row opens its threat sheet', async () => {
   const r = await myTeam(); await r.ui.choose('Top 12 grid', 1200); const g = await r.ui.gridRows(); ok(g && g.length === 12, `${g && g.length} grid rows`);

@@ -134,14 +134,15 @@ export default (ui, pg, o) => {
     /** the game plan line under the six (its sentence only, not the "Use NastyPlot's pick" button beside it) */
     gamePlanLine: () => txt('#main .sx-plan .sx-pl'),
     /** the team actions are all on show (no ⋯ menu), so there is nothing to open */
-    openMoreActions: async () => {},
+    /** My Team's More menu (a sheet; Sim, Nov 11): opened when it isn't already */
+    openMoreActions: async () => { if (await pg.evaluate(() => !!document.querySelector('.np-sheet .tm-moremenu'))) return; if (await has('#main [data-v2more]')) await click('#main [data-v2more]', 500); },
     /** tap one of the team actions, by today's name */
-    teamAction: name => { const sel = {'Saved Teams': '[data-v2saved]', 'My Box': '#main a[href="#box"]', 'Compare with…': '[data-cxgo2]', 'Save team': '[data-v2save]', 'Update saved team': '[data-v2save]', 'Share': '[data-v2share]', 'Copy for Showdown': '#main [data-v2copy]', 'Import': '[data-v2import]', 'Clear team': '[data-v2clear]', 'Team Sheet': '#main [data-v2sheetopen]'}[name];
-      if (!sel) NOT('team action ' + name); return click(sel, 900); },
-    /** the team actions on show, under today's names (the button's own label is read; only its wording is mapped) */
+    teamAction: async name => { const sel = {'Saved Teams': '[data-v2saved]', 'My Box': 'a[href="#box"]', 'Compare with…': '[data-cxgo2]', 'Save team': '[data-v2save]', 'Update saved team': '[data-v2save]', 'Share': '[data-v2share]', 'Copy for Showdown': '[data-v2copy]', 'Import': '[data-v2import]', 'Clear team': '[data-v2clear]', 'Team Sheet': '[data-v2sheetopen]'}[name];
+      if (!sel) NOT('team action ' + name); if (!(await has(sel))) await H.openMoreActions(); return click(sel, 900); },
+    /** the team actions on offer, under today's names: the row plus the More menu's items (Sim, Nov 11), read without opening it */
     teamActions: () => pg.evaluate(() => { const m = document.querySelector('#main'); if (!m) return [];
       const MAP = [['data-v2save', 'Save Team', 'Save team'], ['data-v2share', 'Share', 'Share'], ['data-v2sheetopen', 'Team Sheet', 'Team Sheet'], ['data-v2copy', 'Copy for Showdown', 'Copy for Showdown'], ['data-v2import', 'Import', 'Import'], ['data-v2saved', 'Saved Teams', 'Saved Teams'], ['data-cxgo2', 'Compare', 'Compare with…'], ['data-v2clear', 'Clear Team', 'Clear team']];
-      const out = []; for (const e of m.querySelectorAll('.tm-acts > *, .tm-empty button, .tm-empty a')) { if (!e.getClientRects().length) continue; const t = e.innerText.replace(/\s+/g, ' ').trim().replace(/ \d+$/, '');
+      const out = []; for (const e of [...m.querySelectorAll('.tm-acts > :not([data-v2more]), .tm-empty button, .tm-empty a'), ...(document.querySelector('.np-sheet .tm-moremenu') ? document.querySelectorAll('.np-sheet .tm-moremenu .tm-mi') : (() => { const d = document.createElement('div'); d.innerHTML = m.querySelector('[data-v2more]') && window.V2 && V2.moreHtml ? V2.moreHtml() : ''; d.style.cssText = 'position:fixed;left:0;top:0;width:400px;opacity:0'; document.body.append(d); const l = [...d.querySelectorAll('.tm-mi')]; setTimeout(() => d.remove(), 0); return l; })())]) { if (!e.getClientRects().length) continue; const t = e.innerText.replace(/\s+/g, ' ').trim().replace(/ \d+$/, '');
         // the action is named by what the button does (its data attribute), so a reworded label still counts as that action
         const hit = MAP.find(([a]) => e.hasAttribute(a)); out.push(hit ? hit[2] : e.getAttribute('href') === '#box' ? 'My Box' : t); } return out; }),
     jumpBar: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].filter(e => e.getClientRects().length).map(e => e.childNodes[0].textContent.trim())),
@@ -199,11 +200,11 @@ export default (ui, pg, o) => {
     nameOptions: () => pg.evaluate(() => { const l = [...document.querySelectorAll('.np-sheet .hits')].find(e => e.getClientRects().length); return l ? [...l.querySelectorAll('.np-hit')].filter(e => e.getClientRects().length).map(o => o.innerText.replace(/\s+/g, ' ').trim()) : []; }),
     nameListText: () => pg.evaluate(() => { const l = [...document.querySelectorAll('.np-sheet .hits')].find(e => e.getClientRects().length); return l ? l.innerText.replace(/\s+/g, ' ').trim() : null; }),
     // import / export
-    openImport: () => click('[data-v2import]', 800),
+    openImport: async () => { if (!(await has('[data-v2import]'))) await H.openMoreActions(); await click('[data-v2import]', 800); },
     pasteTeam: async text => { await pg.locator('[data-impin]').fill(text); await click('[data-impgo]', 1500); },
     openExport: () => NOT('Export to Showdown panel (only Copy for Showdown)'), exportText: () => NOT('Export to Showdown panel (only Copy for Showdown)'),
     /** Clear Team is on the page, so an open sheet (e.g. the Add a Pokémon sheet left after Remove) is closed first, as a player would */
-    clearTeam: async () => { if (await pg.evaluate(() => !!(window.V2 && V2._sheet))) await closeSheet(); await click('#main [data-v2clear]', 900); },
+    clearTeam: async () => { if (await pg.evaluate(() => !!(window.V2 && V2._sheet) && !document.querySelector('.np-sheet .tm-moremenu'))) await closeSheet(); await H.openMoreActions(); await click('[data-v2clear]', 900); },
     // share (.sh2 sheet)
     openShare: () => click('#main [data-v2share]', 1500),
     shareBox: () => pg.evaluate(() => { const b = document.querySelector('.np-sheet .sh2'); if (!b || !b.getClientRects().length) return null; const i = b.querySelector('[data-sh2img] img'), h = b.querySelector('h2');
