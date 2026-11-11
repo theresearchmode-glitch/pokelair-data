@@ -120,7 +120,7 @@ concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, th
 | Jump bar | Sticky row of section links on long pages (My Team: Set, Matchups, Suggestions, Sheet). |
 | Tags | Lead / Back / Bench (text under the sprite, --ink-2, 13), verdict tags (verdict colour text + small mark), "On your team" (slanted mark). |
 | Sprite panel | Tilted ray panel (skewY -7deg) in the Pokémon's borrowed colours with the ray motif, art standing on it; rating plate ("Rated 92 · S tier") on its lower edge. |
-| Score lockup | The giant Unbounded number, used ONLY for the Strength Score: number, band word, the rank line small underneath. |
+| Score lockup | The giant Unbounded number, used ONLY for the Strength Score: number, band word (the only blue), the rank line small underneath. Behind it no spotlight: one wide, low band of light mixed from the six Pokémon's own colours, behind the number and the team together (Sim chose this, Nov 11; reference docs/redesign/concepts/sim-score-option1-shared-atmosphere.webp). |
 | List row | Sprite or mark, text, value; hairline --rule between rows; no card per row. |
 | Table | Full-width, hairline rows, sticky header, tabular numbers; scrolls sideways inside itself on phones, never the page. |
 | Sheet / modal | Phones: slides up from the bottom, swipe down to close. Desktop: right-hand panel or centred sheet. Focus returns to what opened it. |

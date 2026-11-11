@@ -124,7 +124,12 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:16px;flex-wrap:wrap}
 }
 :root[data-theme="light"] .six{--glow:.12}
-/* Score treatment options (Nov 11, Sim: the blue blur behind 91 isn't the best way) */
+/* Score light (Sim, Nov 11, chose "option 1: one shared atmosphere" from the redesign chat): the blue pool behind the number
+   is gone; one wide, low band of light mixed from the six Pokémon's own colours sits behind the number and the team together.
+   Blue stays only in the band word. */
+.band .pool{display:none}
+.band .atmos{position:absolute;left:0;right:0;top:0;bottom:-40px;z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 45%,#000 80%,transparent 100%)}
+/* the earlier options, kept for comparison only (#theme--plate etc.) */
 :root[data-score] .band .pool{display:none}
 /* A: a slanted plate in the band colour behind the number, our own shape language */
 :root[data-score="plate"] .lock .num b{position:relative;padding:8px 40px 0 22px;color:#fff;z-index:0}
@@ -159,13 +164,15 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const BANDC={'Top tier':DK?[79,178,240]:[0,120,191],'Tournament ready':DK?[201,176,255]:[123,75,214],'Solid':[107,101,112],'Needs work':[233,168,0],'Missing a basic':[138,124,110]}[D.score.band];
   const avg=a=>{const s=[0,0,0];a.forEach(c=>c.forEach((v,j)=>s[j]+=v));return s.map(v=>Math.round(v/a.length));};
   const TC1=avg(D.six.filter(m=>m.role==='Lead').map(m=>M[m.img].a)),TC2=avg(D.six.filter(m=>m.role!=='Lead').map(m=>M[m.img].a));
+  const ord=['Lead','Back','Bench'].flatMap(r=>D.six.filter(m=>m.role===r)),xs=PH?[18,50,82,18,50,82]:[40,50,62,72,84,94];
+  const al=DK?.30:.20,ATMOS=[`radial-gradient(28% 70% at 14% 92%,rgba(${rgb(TC1)},${al}),transparent)`].concat(ord.map((m,i)=>`radial-gradient(14% 60% at ${xs[i]}% ${PH&&i>2?96:88}%,rgba(${rgb(M[m.img].a)},${al}),transparent)`)).join(',');
   const BAND={'Top tier':'var(--band-top)','Tournament ready':'var(--band-ready)','Solid':'var(--band-solid)','Needs work':'var(--mid-text)','Missing a basic':'var(--low-text)'}[D.score.band];
   const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
   const grp=(cls,lab,ms)=>`<div class="grp ${cls}"><div class="lab"><i></i>${lab}</div><div class="pair">${ms.map(m=>mon(m,D.six.indexOf(m))).join('')}</div></div>`;
   const by=r=>D.six.filter(m=>m.role===r);
   const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
     <div class="meter"><div class="segs"><i style="background:var(--band-miss)"></i><i style="background:var(--band-work)"></i><i style="background:var(--band-solid)"></i><i style="background:var(--band-ready)"></i><i style="background:var(--band-top)"></i></div><span class="tick" style="left:calc(${D.score.s}% - 2px)"></span><div class="lbls"><span>Missing a basic</span><span></span><span></span><span></span><span style="color:var(--band)">Top tier</span></div></div><p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
-  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND};--t1:${rgb(TC1)};--t2:${rgb(TC2)}"><div class="teamlight"></div><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
+  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND};--t1:${rgb(TC1)};--t2:${rgb(TC2)}"><div class="atmos" style="background:${ATMOS}"></div><div class="teamlight"></div><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
   const acts=`<div class="acts"><div class="btn">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
   const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
