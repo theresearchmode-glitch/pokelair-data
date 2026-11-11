@@ -217,11 +217,13 @@ M-D most likely starts Dec 2. Sim, Nov 10: aim to have the rebuild live before t
 
 ## Review rules (Sim, Nov 11): status
 
+When (Sim, Nov 11): the review pass runs ONCE, after the redesign is built, not page by page. That avoids doing the same process over and over. Until then, new pages follow the rules as they are drawn. Account sync and Claude features stay until the public-launch preparation.
+
 The rules are in design-system.md section 10. What is known so far:
 
 1. **85 vs 92: explained, nothing to fix in the site.** 92 is correct. `out/ratings_log.json` stores the raw total (85) and every page shows `RS()` of it (92). Only the design chat's mock-up read the raw file. Still to do: a check that every page uses the one function, and the "too few games" wording.
 2. **Player handle on Home: not in today's code.** The latest winner shows "Champion · record" (`teamWho`, app/src/app/06-helpers.js) with no handle. Still to do: a sweep of every data file that reaches the page (overlaps the Player IDs plan, f6).
-3. **Claude-only features:** `window.claude` is used in 03-persistence.js (saving and sync), 51-usage.js and 53-feedback.js. Public replacements still to propose. CONFLICT to settle: "teams on this device only" vs today's site, which syncs to the Claude account.
+3. **Claude-only features:** `window.claude` is used in 03-persistence.js (saving and sync), 51-usage.js and 53-feedback.js. Public replacements belong to launch prep. Settled (Sim): keep account sync until then.
 4. **First visit:** drawn (mocks/firstvisit). Empty states for every other page still to design.
 5. **Speed:** the built page is 3,064,497 bytes and the minify step is skipped (`esbuild` not installed; app/slim.mjs). Load time, size limit and splitting still to measure and propose.
 6. **Words:** beginner explanations and a two-names sweep still to do (overlaps f7-words).
