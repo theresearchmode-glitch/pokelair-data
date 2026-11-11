@@ -15,6 +15,7 @@
 /* the game plan under the six (today's words): who leads, who waits in the back, who sits on the bench */
 .sx-plan{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .sx-plan b{font-weight:700;color:var(--ink)}
+.sx-reset{display:inline-flex;align-items:center;min-height:var(--tap)}
 @media (max-width:699px){
   .sx-grps{column-gap:var(--s3)}
   .sx-tiles{grid-template-columns:minmax(0,1fr);row-gap:var(--s4)}

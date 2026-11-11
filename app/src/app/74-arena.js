@@ -166,11 +166,9 @@ CH.wrap('renderHome', () => AR.home());
    are on the team. "Use NastyPlot's pick" clears it. */
 AR.userLeads = userLeads; AR.lineup = teamLineup; /* shared (05-six-data.js) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arlead]'); if (!b) return;
-  const ms = members(), n = b.dataset.arlead;
-  if (n === '') S.leads = null;
-  else { const L = AR.lineup(ms), base = L.lead.map(m => m.p.n); if (base.includes(n)) return; S.leads = [n, base[0]]; }
+  const pk = setLeadPick(b.dataset.arlead); if (pk === false) return; /* shared (05-six-data.js) */
   persist(); safe('my team', chTeamRender); safe('home', () => typeof render === 'function' && render());
-  const pk = n && ms.find(m => m.p.n === n); toast(pk ? `${pk.d} now leads` : "Back to NastyPlot's lead pick"); });
+  toast(leadMsg(pk)); });
 AR.roleOf = (m, L) => roleText(m, L, x => escName(x.d)); /* shared (05-six-data.js) */
 AR.VS_META = PLAN_VS.meta;
 AR.cell = (v, u, extra) => `<div class="ar-stat"><span class="ar-num">${v}</span><span class="ar-unit">${u}${extra || ''}</span></div>`;

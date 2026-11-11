@@ -13,6 +13,11 @@ function userLeads(ms) { const U = (S.leads || []).map(n => ms.find(m => m.p.n =
 function teamLineup(ms) { const L = lineupBase(ms), U = userLeads(ms);
   if (U) { const rest = [...L.lead, ...L.back, ...L.home].filter(m => !U.includes(m)); return {lead: U, back: rest.slice(0, 2), bench: rest.slice(2), by: 'you'}; }
   return {lead: L.lead, back: L.back, bench: L.home, by: L.by}; }
+// "Set as lead" (n: a team member's name: it leads with today's first lead) or "Use NastyPlot's pick" (n = ''): changes S.leads.
+// Returns the member now leading, null when the pick went back to NastyPlot's, or false when nothing changes (it already leads).
+function setLeadPick(n) { const ms = members(); if (n === '') { S.leads = null; return null; }
+  const base = teamLineup(ms).lead.map(m => m.p.n); if (base.includes(n)) return false; S.leads = [n, base[0]]; return ms.find(m => m.p.n === n) || null; }
+const leadMsg = pk => pk ? `${pk.d} now leads` : "Back to NastyPlot's lead pick";
 // what the game plan line says the plan is against / who picked it
 const PLAN_VS = {meta: "vs the meta's top six", you: 'your pick', order: 'in team order'};
 
