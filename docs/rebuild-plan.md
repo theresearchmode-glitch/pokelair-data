@@ -239,3 +239,9 @@ Claude's choices tonight:
 - Work only on rebuild mock-ups and docs on claude/design6. The live site and the Plans page are not touched.
 - Each page passes the section 9 checks before it is shown.
 - The usage review runs on Sim's PC later (Sim, Nov 10).
+
+### Found while drawing the pages overnight (to check, not yet changed)
+- **Battle:** the Deeper read says the opponent's Mega Charizard Y threatens with Hurricane, and that Pelipper's Hurricane hits Mega Charizard Y super effectively. Turn one uses the open team sheet, which has no Hurricane. My guess, not yet tested: `oppMember` uses popular sets instead of the open sheet, and an `x>=2` test may not mean super effective. Check in the code before changing anything.
+- **Battle:** "39,052 tournament games" in the real-games verdict. Check whether it follows the single-games-first rule.
+- **Events:** event names can carry an organiser's handle (e.g. "<handle> VGC Champions Arena #18"). The mock-ups leave the handle out. Add this to the no-names sweep of data that reaches the page.
+- **Night mode:** selected segment chips are hard to tell from unselected ones (a token issue, seen on Build).

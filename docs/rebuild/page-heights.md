@@ -23,7 +23,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Saved Teams | 1,344 | 1,180 | 1,129 | not drawn yet |
 | Compare Teams | 2,464 | 1,898 | 1,798 | not drawn yet |
 | My Box | 1,407 | 1,257 | 1,203 | 2,180 / 2,589 / 1,239 (Nov 11: iPad stacked, tilted-panel selection, floor) |
-| Battle a Team | 2,743 | 2,418 | 1,926 **over** | not drawn yet |
+| Battle a Team | 2,743 | 2,418 | 1,926 **over** | 3,378 / 2,545 / 1,789 (Nov 11) |
 | Team Preview Practice | 1,418 | 1,180 | 1,118 | not drawn yet |
 | Test Run | 3,034 | 2,436 | 2,474 **over** | not drawn yet |
 | Speed Tiers | 2,321 | 1,972 | 1,922 **over** | not drawn yet |
@@ -51,3 +51,4 @@ This table records the rule in design-system.md section 9. Heights are full page
 - **Ratings, rebuild (Nov 11):** drawn by a helper agent, then checked and adjusted. Desktop is 10px under its limit. It shows 12 rows plus "See all 345 Pokémon", so no exception is needed. On phone the filter chips wrap so none is cut off at the edge.
 - **All mock-up scripts now read the morning refresh (out/perf.json) the way the live site does** (fix found by the Ratings helper). The test harness's frozen data makes On teams and Win rate fall back to Nov 1; the scripts now show the live Nov 10 numbers. Ratings and their order did not change.
 - **Build, rebuild (Nov 11):** drawn by a helper agent from a real build (Build around Garchomp, whole roster, 2 Megas: Sun, Tailwind, 91 Top tier), then checked. On phone, Other options, Cores and Recent winners are tabs, one tap each; today they are reached by scrolling.
+- **Battle, rebuild (Nov 11):** drawn by a helper agent against the latest winner's open team sheet, then checked. The damage grid sits behind a tab. Opened, it takes the page to 2,570 on desktop and 4,699 on phone, so the proposed limit for that open state is 3 screens on desktop and 6 on phone (Sim to confirm).

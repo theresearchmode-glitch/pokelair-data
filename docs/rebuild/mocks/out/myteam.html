@@ -208,6 +208,7 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
 @media (max-width:379px){.grp.bench{padding-left:8px}.jump{gap:12px}.jump a{font-size:13px}.jump a small{display:none}}
 @media (min-width:700px) and (max-width:899px){nav{gap:20px}footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:24px}}
 .mg0{visibility:hidden}.sheet td .mg0,.trow .mg0{display:none}
+.mon img{translate:0 calc(var(--fo,0)*100%)}
 </style></head><body><div class="page" id="page"></div>
 <script>
 {const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[2])document.documentElement.dataset.score=h[2];}
@@ -219,11 +220,16 @@ async function hue(src){const im=new Image();im.src=src;await im.decode();const 
   const o=B.map((b,i)=>({i,w:b[3],c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[150,150,165]})).sort((a,b)=>b.w-a.w),a=o[0],b2=o.find(q=>q.w>a.w*.12&&Math.min(Math.abs(q.i-a.i),18-Math.abs(q.i-a.i))>=3)||a;return{a:a.c,b:b2.c};}
 // borrowed colour is always normalised (reference Nov 11, section 1): keep the hue, saturation at least 72%, lightness 56%
 function norm(c){const[h,s0]=hsl(...c),s=Math.max(s0,.72),l=.56,C=(1-Math.abs(2*l-1))*s,X=C*(1-Math.abs((h/60)%2-1)),m=l-C/2,k=Math.floor(h/60)%6;return[[C,X,0],[X,C,0],[0,C,X],[0,X,C],[X,0,C],[C,0,X]][k].map(v=>Math.round((v+m)*255));}
+// feet on one line (Sim, Nov 11): each picture has its own empty margin under the feet; measure it and drop the art by that much
+async function footPad(src){const im=new Image();im.src=src;await im.decode();const S=96,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
+  const k=Math.min(S/im.naturalWidth,S/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;x.drawImage(im,(S-w)/2,S-h,w,h);const d=x.getImageData(0,0,S,S).data;
+  for(let y=S-1;y>=0;y--){for(let i=0;i<S;i++)if(d[(y*S+i)*4+3]>40)return (S-1-y)/S;}return 0;}
 const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
 const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.slice(5))}`:`<span class="mg mg0" aria-hidden="true">&nbsp;</span>${esc(d)}`;
 (async()=>{
   const DK=document.documentElement.dataset.theme==='dusk',PH=innerWidth<700,M={};
   await Promise.all(D.six.map(m=>m.img).concat(D.mu.top.map(t=>t.img),[D.opt.inImg]).map(async s=>{M[s]=M[s]||await hue(s);}));
+  const FO={};await Promise.all(D.six.map(async m=>{FO[m.img]=await footPad(m.img);}));
   const sel=D.six[D.sel],k=M[sel.img];
   const BANDC={'Top tier':DK?[79,178,240]:[0,120,191],'Tournament ready':DK?[201,176,255]:[123,75,214],'Solid':[107,101,112],'Needs work':[233,168,0],'Missing a basic':[138,124,110]}[D.score.band];
   const avg=a=>{const s=[0,0,0];a.forEach(c=>c.forEach((v,j)=>s[j]+=v));return s.map(v=>Math.round(v/a.length));};
@@ -231,7 +237,7 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const ord=['Lead','Back','Bench'].flatMap(r=>D.six.filter(m=>m.role===r)),xs=PH?[18,50,82,18,50,82]:[40,50,62,72,84,94];
   const al=DK?.30:.20,ATMOS=[`radial-gradient(30% 60% at 16% 70%,rgba(${rgb(TC1)},${al}),transparent)`].concat(ord.map((m,i)=>`radial-gradient(15% 55% at ${xs[i]}% ${PH&&i>2?84:70}%,rgba(${rgb(M[m.img].a)},${al}),transparent)`)).join(',');
   const BAND={'Top tier':'var(--band-top)','Tournament ready':'var(--band-ready)','Solid':'var(--band-solid)','Needs work':'var(--mid-text)','Missing a basic':'var(--low-text)'}[D.score.band];
-  const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)};--cp:${rgb(norm(M[m.img].a))}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
+  const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)};--cp:${rgb(norm(M[m.img].a))};--fo:${(FO[m.img]||0).toFixed(3)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
   const grp=(cls,lab,ms)=>`<div class="grp ${cls}"><div class="lab"><i></i>${lab}</div><div class="pair">${ms.map(m=>mon(m,D.six.indexOf(m))).join('')}</div></div>`;
   const by=r=>D.six.filter(m=>m.role===r);
   const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
