@@ -33,6 +33,9 @@ Sim's own decisions are marked "Sim". Newest first.
 - Nov 11 (Claude): "← My Team" back link in the eyebrow (also My Box).
 
 ## My Box
+- Nov 11 (Sim's review item 8, Claude did): the light rays are gone from the box wallpaper and the picked Pokémon's panel (rays are for the
+  Home hero only). The blue mark's key ("On your team") moved from the box-link tools at the bottom to just above the grid, shown
+  only when that box has a team member.
 - Nov 11 (Claude), CHANGED: the box search now leaves out Pokémon already in the box (as today's site and BOX-02 expect).
   This replaces the earlier decision to show them greyed with "In your box". Sim can pick either.
 - Nov 11 (Claude): the box search is named "Add a Pokémon to your box".

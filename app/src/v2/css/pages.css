@@ -295,7 +295,6 @@
 .bx-box{position:relative;container-type:inline-size;border-radius:18px;overflow:hidden;padding:var(--s4) var(--s3) var(--s5);
   background:radial-gradient(75% 65% at 0 0,color-mix(in oklab,var(--w0) 40%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 0,color-mix(in oklab,var(--w1) 40%,transparent),transparent 72%),
   radial-gradient(75% 65% at 0 100%,color-mix(in oklab,var(--w2) 36%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 100%,color-mix(in oklab,var(--w3) 36%,transparent),transparent 72%),var(--wash)}
-.bx-box::before{content:"";position:absolute;inset:-20%;background:repeating-conic-gradient(from 0deg at 50% 38%,var(--ray) 0 3deg,transparent 3deg 15deg);pointer-events:none}
 :root[data-theme="night"] .bx-box{background:radial-gradient(75% 65% at 0 0,color-mix(in oklab,var(--w0) 30%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 0,color-mix(in oklab,var(--w1) 30%,transparent),transparent 72%),
   radial-gradient(75% 65% at 0 100%,color-mix(in oklab,var(--w2) 26%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 100%,color-mix(in oklab,var(--w3) 26%,transparent),transparent 72%),var(--surface)}
 .bx-box>*{position:relative}
@@ -313,7 +312,7 @@
 .bx-t.sel{background:var(--surface);transform:translateY(-4px);box-shadow:0 1px 2px rgba(var(--shade),.12),0 10px 22px -10px rgba(var(--shade),.42)}
 :root[data-theme="night"] .bx-t.sel{background:var(--wash);box-shadow:0 0 0 1px var(--rule),0 10px 22px -10px rgba(var(--shade),.6)}
 .bx-t:focus-visible{outline:3px solid var(--plot);outline-offset:-1px}
-.bx-on{display:inline-block;width:20px;height:7px;background:var(--plot);transform:skewX(-24deg)}.bx-t .bx-on{position:absolute;top:var(--s2);right:var(--s2)}
+.bx-on{display:inline-block;width:20px;height:7px;background:var(--plot);transform:skewX(-24deg)}.bx-t .bx-on{position:absolute;top:var(--s2);right:var(--s2)}.bx-onkey{display:flex;justify-content:center;align-items:center;gap:var(--s2);margin:0 0 var(--s3);font-size:var(--t13);color:var(--ink-2)}
 .bx-dots{display:flex;justify-content:center;gap:var(--s2);margin-top:var(--s3)}
 .bx-dots button{width:28px;height:var(--tap);padding:0;border:0;background:none;cursor:pointer;position:relative}
 .bx-dots button::after{content:"";position:absolute;left:0;right:0;top:50%;height:6px;translate:0 -50%;background:color-mix(in srgb,var(--ink) 22%,transparent);transform:skewX(-24deg)}
@@ -325,7 +324,6 @@
 @media (max-width:599px){.bx-team .np-mon b{display:none}}
 /* the picked Pokémon */
 .bx-art{position:relative;padding:var(--s6) var(--s4) var(--s10);background:color-mix(in oklab,var(--wash) 70%,var(--plot) 8%);clip-path:polygon(0 5%,100% 0,100% 95%,0 100%);overflow:hidden}
-.bx-art::before{content:"";position:absolute;inset:-30%;background:repeating-conic-gradient(from 0deg at 50% 45%,var(--ray-art) 0 3deg,transparent 3deg 14deg);pointer-events:none}
 .bx-art>*{position:relative}.bx-plate{position:absolute;left:var(--s3);bottom:var(--s5);margin:0;padding:var(--s2) var(--s4);background:var(--plate);color:var(--on-plate);transform:skewX(-12deg);font:600 var(--t15)/1.2 var(--b)}
 .bx-plate b{font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style}
 .bx-sumb h2{font-size:var(--t34);margin:var(--s4) 0 var(--s3);overflow-wrap:anywhere}.bx-ty{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
@@ -342,7 +340,7 @@
 .bx-links>li>button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;padding:0;border:0;background:none;color:var(--ink);font:600 var(--t16)/1.3 var(--b);cursor:pointer;text-align:left}
 .bx-links>li>button::after{content:"›";font-size:var(--t20);color:var(--ink-3)}.bx-links>li>button[aria-expanded="true"]::after{transform:rotate(90deg)}
 .bx-linkin{padding-bottom:var(--s4)}.bx-linkin .fine{margin:0 0 var(--s2)}.bx-linkin .row{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s3)}.bx-msg{margin:var(--s2) 0 0;font-size:var(--t15)}.bx-msg:empty{display:none}
-.bx-sync{margin:var(--s4) 0 var(--s3)}.bx-key{display:flex;align-items:center;gap:var(--s2);margin:0;font-size:var(--t15);color:var(--ink-2)}
+.bx-sync{margin:var(--s4) 0 var(--s3)}
 @media (min-width:600px) and (max-width:899px){.bx-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s10);align-items:start}.bx-tools>.bx-links{grid-row:1/4}}
 /* empty box: today's underdog keeps it company */
 .bx-empty{display:grid;grid-template-columns:200px minmax(0,1fr);gap:var(--s6);align-items:center;padding:var(--s8);border-radius:18px;background:var(--wash)}

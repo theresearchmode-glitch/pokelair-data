@@ -49,12 +49,12 @@ V2.pages.box = {place: 'team', draw() { const D = V2.bxData(), E = V2.esc, n = S
       <div class="bx-linkin"${V2.bx.linkOpen ? '' : ' hidden'}><p class="fine">Paste a box link or code from another device, account or friend.</p><label class="np-field"><input data-bxlinkin aria-label="Box link or code" autocomplete="off" value="${E(V2.bx.linkVal || '')}"></label>
       <div class="row"><button type="button" class="np-btn2" data-bxlink="add"><span>Add to My Box</span></button><button type="button" class="np-btn2" data-bxlink="replace"><span>Replace My Box</span></button></div><p class="bx-msg" data-bxmsg role="status">${E(V2.bx.msg || '')}</p></div></li>
       <li><button type="button" data-bxreset>${V2.bx.ask ? 'Tap Again to Reset' : 'Reset Box'}</button></li></ul>
-    <p class="fine bx-sync">${E(syncText(ui.syncSt || 'local'))}</p><p class="bx-key"><i class="bx-on" aria-hidden="true"></i>On your team</p></div>`;
+    <p class="fine bx-sync">${E(syncText(ui.syncSt || 'local'))}</p></div>`;
   if (!n) return `<section class="bx2 is-empty">${head}<div class="bx-mid">${V2.bxEmpty()}</div>${tools}</section>`;
   const nav = D.pages > 1, dots = nav ? `<div class="bx-dots" role="group" aria-label="Boxes">${Array.from({length: D.pages}, (_, i) => `<button type="button" data-bxpage="${i}" aria-label="Box ${i + 1}" aria-pressed="${i === V2.bx.page}"></button>`).join('')}</div>` : '';
   const box = `<div class="bx-box" style="${V2.bxWall(D.here)}" data-bxswipe><div class="bx-hd">${nav ? '<button type="button" class="bx-arr" data-bxgo="-1" aria-label="Previous box"><span>◀</span></button>' : '<span></span>'}
       <div class="bx-name"><h2 class="u">Box ${V2.bx.page + 1}</h2><p>${D.here.length} of ${n} · ${E(V2.bxRange(D.so, D.here))}</p></div>${nav ? '<button type="button" class="bx-arr" data-bxgo="1" aria-label="Next box"><span>▶</span></button>' : '<span></span>'}</div>
-    <div class="bx-grid">${D.here.map(([b, d]) => V2.bxTile(b, d, D.on.has(b), b === V2.bx.sel)).join('')}</div>${dots}</div>`;
+    ${D.here.some(([b]) => D.on.has(b)) ? '<p class="bx-onkey"><i class="bx-on" aria-hidden="true"></i>On your team</p>' : ''}<div class="bx-grid">${D.here.map(([b, d]) => V2.bxTile(b, d, D.on.has(b), b === V2.bx.sel)).join('')}</div>${dots}</div>`;
   const ms = members(), four = ms.length >= 4 ? CH.four(ms) : null, role = m => !four ? '' : four.lead.includes(m.p.n) ? 'Lead' : four.back.includes(m.p.n) ? 'Back' : 'Bench';
   const team = `<div class="bx-team"><div class="bx-teamhd"><h2 class="u">Your Team</h2><a class="np-link" href="#team">${ms.length} of 6 · Open My Team</a></div>
     ${ms.length ? `<ul>${ms.map(m => `<li>${V2.mon(m.p.n, {iw: 72, sub: role(m)})}</li>`).join('')}</ul>` : '<p class="fine">No team yet. Pick a Pokémon in your box and add it.</p>'}</div>`;
