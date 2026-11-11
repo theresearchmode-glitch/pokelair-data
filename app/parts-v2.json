@@ -63,6 +63,7 @@
     "src/app/22-auto-build.js",
     "src/app/23-coverage.js",
     "src/app/29-fix-planner.js",
+    "src/app/30-saved-data.js",
     "src/app/35-win-model.js",
     "src/app/36-lanes.js",
     "src/app/36-confidence.js",

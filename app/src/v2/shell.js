@@ -21,7 +21,7 @@ V2.ICON = {search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><c
 V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach(x => x.remove());
   const t = document.createElement('div'); t.className = 'np-toast'; t.setAttribute('role', 'status'); t.innerHTML = html; document.body.append(t);
   const tops = [...document.querySelectorAll('.np-dock,.np-bar')].map(e => e.getBoundingClientRect()).filter(r => r.height && r.top < innerHeight).map(r => r.top);
-  if (tops.length) t.style.bottom = (innerHeight - Math.min(...tops) + 12) + 'px';
+  if (tops.length) t.style.setProperty('--tb', (innerHeight - Math.min(...tops) + 12) + 'px'); // a custom property, so an open sheet can still move it (components.css)
   clearTimeout(V2._tt); V2._tt = setTimeout(() => t.remove(), ms); return t; };
 // ---------- sheets: one at a time; focus moves in, stays in (Tab wraps), and returns to what opened it ----------
 V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : document.activeElement; V2.closeSheet(true);

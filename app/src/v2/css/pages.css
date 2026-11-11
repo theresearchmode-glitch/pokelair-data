@@ -96,3 +96,11 @@
 .ts2-st b{display:block;font:800 var(--t15)/1.4 var(--u);font-style:italic}.ts2-st small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 @media (max-width:1099px){.ts2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:699px){.ts2{padding:var(--s6) var(--s4)}.ts2-grid{grid-template-columns:minmax(0,1fr)}.tm-tsbtn{margin-left:0}}
+
+/* Save Team sheet (R4, Nov 11) */
+.tm-eb{align-items:flex-start;line-height:1.3}.tm-eb::before{margin-top:4px}.tm-eb>span{min-width:0;overflow-wrap:anywhere}
+.sv2{padding:var(--s8)}.sv2 h2{font-size:var(--t28);margin-bottom:var(--s2)}
+.sv2 .tm-sub{margin-bottom:var(--s5)}.sv2 .tm-sub b{color:var(--ink);overflow-wrap:anywhere}.sv2-n{display:block;margin-top:var(--s1);color:var(--ink-3);font-size:var(--t13)}
+.sv2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s6)}.sv2-acts .np-link{min-height:var(--tap);padding:0 var(--s2)}
+.sv2-full{margin-top:var(--s4)}
+@media (max-width:479px){.sv2{padding:var(--s6) var(--s5)}.sv2-acts{display:grid;grid-template-columns:minmax(0,1fr)}.sv2-acts .np-btn,.sv2-acts .np-btn2{width:100%}}

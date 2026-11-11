@@ -16,7 +16,8 @@ V2.teamData = () => {
   const calc = [0, 1, 2, 3].map(l => rows.filter(r => r.level === l).length);
   const basics = CK ? CK.items.filter(x => !x.note && !x.skip) : [], notes = CK ? CK.items.filter(x => x.note) : [];
   const sug = V2.sugData(ms, RD);
-  return {ms, G, RD, CK, four, role, rows, top, sug, mu: {fav: cnt('Favoured'), even: cnt('Even match'), unf: cnt('Unfavoured'), any: rows.some(r => r.real)},
+  const lo = S.teams.find(t => t.id === S.loadedId);
+  return {ms, G, RD, CK, four, role, rows, top, sug, saved: lo ? lo.name : '', mu: {fav: cnt('Favoured'), even: cnt('Even match'), unf: cnt('Unfavoured'), any: rows.some(r => r.real)},
     calc: {beats: calc[3], handles: calc[2], shaky: calc[1], none: calc[0]}, basics, notes, full: ms.length === 6};
 };
 
@@ -57,6 +58,22 @@ V2.openTeamSheet = () => { const ms = members(); if (!ms.length) return;
 V2.copyTeam = async () => { toast((await copyText(exportPaste())) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2copy]')) V2.copyTeam(); if (e.target.closest('[data-v2sheetopen]')) V2.openTeamSheet(); });
 
+// ---------- Save Team (R4, Nov 11): a small sheet; the save itself is today's saveTeamAs (30-saved-data.js) ----------
+// Same choices as today's save panel: update the open saved team or save as new, up to 10 teams; Enter does the main action.
+V2.openSave = () => { if (!members().length) return; const lo = S.teams.find(t => t.id === S.loadedId), full = S.teams.length >= 10, n = S.teams.length;
+  const sh = V2.sheet(`<div class="sv2"><h2 class="u">Save Team</h2>
+    <p class="tm-sub">${lo ? `Open now: <b>${V2.esc(lo.name)}</b>. Update it, or save this six as a new team.` : 'Give this six a name.'} <span class="sv2-n">${n} of 10 saved</span></p>
+    <form data-v2saveform><label class="np-field"><input data-v2savename maxlength="40" placeholder="Team name, e.g. Rain Archaludon" aria-label="Team name" autocomplete="off" value="${V2.esc(lo ? lo.name : '')}"></label>
+    <div class="sv2-acts">${lo ? `<button type="submit" class="np-btn">Update Team</button><button type="button" class="np-btn2" data-v2savenew${full ? ' disabled' : ''}><span>Save as New</span></button>`
+      : `<button type="submit" class="np-btn"${full ? ' disabled' : ''}>Save Team</button>`}<button type="button" class="np-link" data-v2close>Cancel</button></div></form>
+    ${full ? '<p class="fine sv2-full">You have 10 saved teams. Update the open team, or delete one in Saved Teams to save a new one.</p>' : ''}</div>`, {label: 'Save Team', small: true, focus: '[data-v2savename]'});
+  const box = document.querySelector('[data-v2saveform]'), inp = box && box.querySelector('[data-v2savename]'); if (!box) return; if (inp) inp.select();
+  const go = over => { const t = saveTeamAs(inp.value, over); if (!t) return; V2.closeSheet(); render(); toast(`Saved "${t.name}"`); };
+  box.addEventListener('submit', e => { e.preventDefault(); go(!!lo); });
+  const nw = box.querySelector('[data-v2savenew]'); if (nw) nw.addEventListener('click', () => go(false));
+  return sh; };
+document.addEventListener('click', e => { if (e.target.closest('[data-v2save]')) V2.openSave(); });
+
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
@@ -68,9 +85,9 @@ V2.pages.team = {place: 'team', draw() {
   const rank = G && !G.partial && G.rk != null ? CH.rankShort(G.rk) + ' of tournament teams' : G && G.partial ? `${ms.length} of 6 picked` : '';
   const sure = G && G.su ? `How sure: ${G.su.w}` : '';
   const mon = (m, i) => `<button type="button" class="tm-pick" data-tmsel="${i}" aria-pressed="${m === sel}" aria-label="${V2.esc(m.d)}${D.role(m.p.n) ? ', ' + D.role(m.p.n) : ''}">${V2.mon(m.p.n, {sel: m === sel, sub: D.role(m.p.n)})}</button>`;
-  const lockup = `<div class="tm-lock"><div class="np-eyebrow">My Team</div>${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
+  const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team${D.saved ? ` · ${V2.esc(D.saved)}` : ''}</span></div>${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div><p class="tm-rank">${V2.esc([rank, sure].filter(Boolean).join(' · '))}</p>`}</div>`;
-  const acts = `<div class="tm-acts"><a class="np-btn" href="#team">Save Team</a><a class="np-btn2" href="#team"><span>Share</span></a><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button></div>`;
+  const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>Save Team</button><a class="np-btn2" href="#team"><span>Share</span></a><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button></div>`;
   const nm = D.mu.fav + D.mu.even + D.mu.unf;
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a><button type="button" class="tm-tsbtn" data-v2sheetopen>Team Sheet <small>${ms.length} sets</small> <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set

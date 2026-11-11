@@ -76,15 +76,13 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(b.id==='boxReset'){if(!ui.boxResetAsk){ui.boxResetAsk=true;b.textContent='Tap again to reset';setTimeout(()=>{ui.boxResetAsk=false;const x=$('boxReset');if(x)x.textContent='Reset box'},3500);return}ui.boxResetAsk=false;b.textContent='Reset box';const was=S.box.slice();S.box=DEFAULT_BOX.slice();ui.boxUndo=was;render();toastBox('Box reset to the default list')}
   else if(b.id==='saveBtn'){ui.saving=!ui.saving;ui.paste=null;renderPastePanel();renderSavePanel()}
   else if(b.id==='saveCancel'){ui.saving=false;renderSavePanel()}
-  else if(b.id==='saveOver'||b.id==='saveNew'){const name=($('saveName').value||'').trim()||'Untitled team';const slots=JSON.parse(JSON.stringify(S.slots));
-    if(b.id==='saveOver'){const t=S.teams.find(t=>t.id===S.loadedId);t.name=name;t.slots=slots;t.format=S.format;t.saved=Date.now()}
-    else{if(S.teams.length>=10)return;const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);S.teams.push({id,name,slots,format:S.format,saved:Date.now()});S.loadedId=id}
-    ui.saving=false;renderSavePanel();render();toast(`Saved "${name}"`)}
-  else if(d.load){const t=S.teams.find(t=>t.id===d.load);keepUndo();S.slots=JSON.parse(JSON.stringify(t.slots));fixSlots();S.loadedId=t.id;S.format='doubles';render();toast(`Opened "${t.name}"`,true);setView('build')}
+  else if(b.id==='saveOver'||b.id==='saveNew'){const t=saveTeamAs($('saveName').value,b.id==='saveOver');if(!t)return;
+    ui.saving=false;renderSavePanel();render();toast(`Saved "${t.name}"`)}
+  else if(d.load){const t=openSaved(d.load);render();toast(`Opened "${t.name}"`,true);setView('build')}
   else if(d.rn){ui.renaming=d.rn;ui.confirmDel=null;renderSaved();const f=$('rn_'+d.rn);if(f){f.focus();f.select()}}
-  else if(d.rnok){const t=S.teams.find(t=>t.id===d.rnok);const v=$('rn_'+d.rnok).value.trim();if(v)t.name=v;ui.renaming=null;render()}
+  else if(d.rnok){renameSaved(d.rnok,$('rn_'+d.rnok).value);ui.renaming=null;render()}
   else if(d.rnx){ui.renaming=null;renderSaved()}
   else if(d.del){ui.confirmDel=d.del;ui.renaming=null;renderSaved()}
-  else if(d.delok){const t=S.teams.find(t=>t.id===d.delok);S.teams=S.teams.filter(x=>x.id!==d.delok);if(S.loadedId===d.delok)S.loadedId=null;ui.confirmDel=null;render();toast(`Deleted "${t.name}"`)}
+  else if(d.delok){const t=deleteSaved(d.delok);ui.confirmDel=null;render();toast(`Deleted "${t.name}"`)}
   else if(d.delx){ui.confirmDel=null;renderSaved()}
 });
