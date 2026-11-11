@@ -8,6 +8,12 @@ Sim's own decisions are marked "Sim". Newest first.
   recommendation, each logged here and summarised to Sim at 7 PM.
 
 ## Every page
+- Nov 11 (Claude, under Sim's 6-7 PM authority; review item 19): the player-name sweep found no name on screen on either build, but
+  the Preview build wrote 756 real player names into its page source (--preview-data). Fixed in build.mjs: each name becomes the same
+  neutral stand-in ("Player 12") everywhere, so team matching still works; measured 0 of 756 in the new Preview source (756 of 756 in
+  the old one, so the count can fail). Published right away, ahead of the last Suggestions proofs (the Preview is private, not live;
+  privacy first). Still open, Sim's call: names reach visitors' browsers in the daily data (meta/events, meta/teams, meta/weekly) until
+  the Player IDs work goes live (needs the NP_PID_KEY secret); the About page still says players can ask to have their name removed.
 - Nov 11 (Claude, under Sim's 6-7 PM authority; review item 18): the data's date ("Data as of Nov 10", plus "(N days old)" when
   stale, the shared rule from today's site) is in the footer of every page, and on My Team as a quiet line under the rank.
 - Nov 11 (Sim, review item 12, after the colour audit): (1) type colours used as tints (My Team move rows, the move picker bar,
