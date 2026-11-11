@@ -2,8 +2,10 @@
 // Every number comes from today's shared working-out (59-matchup-data.js, 58-strength.js, 55-threats.js); this file only draws it.
 // The view is remembered under today's key (cc2.seg.thr), so both sites open on the same one. Word list: Matchups; Beats it /
 // Handles it / Shaky / No answer; Favoured / Even match / Unfavoured. team.js calls V2.muSec(D) and V2.muAfter().
-V2.MUV = [['top', 'Top 10'], ['grid', 'Top 12 grid'], ['all', 'All 30']];
-V2.muView = () => { const v = LS.get('cc2.seg.thr', 'top'); return V2.MUV.some(x => x[0] === v) ? v : 'top'; };
+// Sim, Nov 11: most of the 30 are "Even match", so the section opens on the stand-outs (Unfavoured, then Favoured) with "See all 30".
+// The view is kept under the new build's own key (today's page doesn't know "Stand-outs", so it never sees it).
+V2.MUV = [['out', 'Stand-outs'], ['top', 'Top 10'], ['grid', 'Top 12 grid'], ['all', 'All 30']];
+V2.muView = () => { const v = LS.get('np2.seg.thr', 'out'); return V2.MUV.some(x => x[0] === v) ? v : 'out'; };
 V2.MUG = ['✗', '~', '✓', '✓✓']; // a shape per calc level, so the colour is never the only signal
 V2.MUC = {win: 'cw', trade: 'ct', lose: 'cl', none: 'cn'}; // grid cells: CH.cellOf's four answers
 V2.VCLS = {'Favoured': 'vf', 'Even match': 've', 'Unfavoured': 'vu'};
@@ -20,7 +22,15 @@ V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, vie
     ${V2.muSplit(D)}` : ''}
     <p class="fine">Damage calc: ${CH.LV[0]} ${D.calc.none}, ${CH.LV[1]} ${D.calc.shaky}, ${CH.LV[2]} ${D.calc.handles}, ${CH.LV[3]} ${D.calc.beats}</p>
     <div class="mu-pick">${V2.slide('thr', V2.MUV, view, 'Matchups view')}</div>`;
-  return `<section class="tm-sec tm-mus" id="tm-mu">${head}<div class="mu-pane">${view === 'grid' ? V2.muGrid(RD, ms) : view === 'all' ? V2.muAll(RD, ms) : V2.muTop(RD)}</div></section>`; };
+  return `<section class="tm-sec tm-mus" id="tm-mu">${head}<div class="mu-pane">${view === 'grid' ? V2.muGrid(RD, ms) : view === 'all' ? V2.muAll(RD, ms) : view === 'top' ? V2.muTop(RD) : V2.muOut(RD)}</div></section>`; };
+
+// Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
+V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
+  const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured'), even = RD.rows.length - unf.length - fav.length;
+  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}<small>Calc: ${CH.LV[r.level]}</small></span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
+  const grp = (t, a) => a.length ? `<h3 class="tm-h3 mu-h3">${t} <small>${a.length}</small></h3><ol class="tm-rows mu-out">${a.map(row).join('')}</ol>` : '';
+  return `${grp('Unfavoured', unf)}${grp('Favoured', fav)}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
+    <p class="mu-rest">${even ? `The other ${even} ${even === 1 ? 'is an even match' : 'are even matches'}.` : ''} <button type="button" class="np-link" data-muall30>See all ${RD.rows.length}</button></p>`; };
 
 // Top 10 (by top-cut share), numbered; phones and tablets show 5 and "Show 5 more"; then the next 20 as tiles, worst first
 V2.muTop = RD => { const {top, rest, RV} = CH.top10(RD), more = !!ui.tlMore;
@@ -94,10 +104,12 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (th && th.closest('#main')) { V2.muOpen(th.dataset.muthr, th); return; }
   if (t.closest('[data-mumore]')) { ui.tlMore = !ui.tlMore; V2.redraw(); const b = document.querySelector('[data-mumore]'); if (b && e.detail === 0) b.focus({preventScroll: true}); return; } // keyboard: focus stays on the button
   if (t.closest('[data-muall]')) { ui.threatsAll = true; V2.redraw(); return; }
-  if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('cc2.seg.thr', 'all'); V2.redraw(); const m = document.getElementById('tm-mu'); if (m) m.scrollIntoView({block: 'start'}); return; }
+  if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('np2.seg.thr', 'all'); V2.redraw(); const m = document.getElementById('tm-mu'); if (m) m.scrollIntoView({block: 'start'}); return; }
   if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); persist(); V2.redraw(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); } });
 // the view switch (the shared slider) and the remembered open threats in All 30 (today's ui.thrOpen)
-document.addEventListener('v2slide', e => { if (e.detail.key !== 'thr') return; LS.set('cc2.seg.thr', e.detail.value); V2.redraw(); });
+document.addEventListener('v2slide', e => { if (e.detail.key !== 'thr') return; LS.set('np2.seg.thr', e.detail.value); V2.redraw(); });
+// "See all 30" from the stand-outs
+document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-muall30]')) return; LS.set('np2.seg.thr', 'all'); V2.redraw(); const m = document.getElementById('tm-mu'); if (m) m.scrollIntoView({block: 'start'}); });
 document.addEventListener('toggle', e => { const d = e.target; if (d && d.dataset && d.dataset.muopen) { ui.thrOpen = ui.thrOpen || {}; ui.thrOpen[d.dataset.muopen] = d.open; } }, true);
 // after My Team redraws: the open sheet follows the new numbers, and Close / Escape still return to the row that opened it
 V2.muAfter = () => { const S = V2._sheet; if (!S || !S.wrap.querySelector('.mu-sh')) return; V2.muSheetRedraw();
