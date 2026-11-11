@@ -1,8 +1,61 @@
 {
   "_": "The rebuild (R3, Nov 11): a second build of NastyPlot beside today's page. node app/build.mjs --v2 writes dist/v2.html. Shares today's data and, step by step, today's logic; none of today's CSS or reskin code. Plan: docs/rebuild/r3-foundation.md",
   "head": "src/v2/head.html",
-  "css": [["tokens", "src/v2/css/tokens.css"], ["base", "src/v2/css/base.css"], ["components", "src/v2/css/components.css"], ["shell", "src/v2/css/shell.css"], ["pages", "src/v2/css/pages.css"]],
+  "css": [
+    [
+      "tokens",
+      "src/v2/css/tokens.css"
+    ],
+    [
+      "base",
+      "src/v2/css/base.css"
+    ],
+    [
+      "components",
+      "src/v2/css/components.css"
+    ],
+    [
+      "shell",
+      "src/v2/css/shell.css"
+    ],
+    [
+      "pages",
+      "src/v2/css/pages.css"
+    ]
+  ],
   "body": "src/v2/body.html",
-  "data": ["src/data/data.js", "src/data/logos.js", "src/data/items-list.js", "src/data/move-acc.js", "src/data/move-meta.js"],
-  "scripts": ["src/v2/shell.js", "src/v2/pages/guide.js"]
+  "data": [
+    "src/data/data.js",
+    "src/data/logos.js",
+    "src/data/items-list.js",
+    "src/data/move-acc.js",
+    "src/data/move-meta.js",
+    "src/engine/types.js"
+  ],
+  "scripts": [
+    "src/v2/test-hook.js",
+    "src/v2/shell.js",
+    "src/v2/pages/guide.js"
+  ],
+  "logic": [
+    "src/app/00-main.js",
+    "src/app/01-state.js",
+    "src/app/02-set-data.js",
+    "src/app/03-persistence.js",
+    "src/app/04-search.js",
+    "src/app/06-helpers.js",
+    "src/app/10-team-strategy.js",
+    "src/app/11-game-plan.js",
+    "src/app/12-meta-threats.js",
+    "src/app/13-rating.js",
+    "src/app/14-outside-tier-lists.js",
+    "src/app/15-visual-helpers.js",
+    "src/app/16-outside-performance-data.js",
+    "src/app/17-matchup-threats-teams.js",
+    "src/app/18-archetypes.js",
+    "src/app/35-win-model.js",
+    "src/app/36-confidence.js",
+    "src/app/54-items.js",
+    "src/app/55-threats.js"
+  ]
 }

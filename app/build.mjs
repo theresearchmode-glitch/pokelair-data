@@ -31,12 +31,16 @@ if (process.argv.includes('--v2')) {
   const helpers = rd('src/app/15-visual-helpers.js'), i0 = helpers.indexOf('SPRITE_ID ='), sprite = helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1);
   JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + `\nconst SPRITE_ID=${sprite};\nconst ART_META=${meta};\n` + P.scripts.map(rd).join('\n') + '\nV2.draw();';
+  // today's logic (P.logic, in today's order) is one closure: 00-main.js opens it, so the v2 shell and pages go inside it and it is
+  // closed after the first draw. 15-visual-helpers.js brings SPRITE_ID itself when it is included.
+  const L = P.logic || [], hasIds = L.some(f => f.endsWith('15-visual-helpers.js'));
+  if (L.length && !L[0].endsWith('00-main.js')) throw new Error('parts-v2.json logic must start with src/app/00-main.js (it opens the closure)');
+  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\n` + L.map(rd).join('\n') + '\n' + P.scripts.map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};</script>\n` : '';
   const page = rd(P.head).replace('<meta charset="utf-8">', m => m + artTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${js}\n</script>\n</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
-  console.log(`built dist/v2.html (${(page.length / 1024).toFixed(0)} KB; ${P.css.length} CSS layers, ${P.data.length} data files, ${P.scripts.length} scripts)`);
+  console.log(`built dist/v2.html (${(page.length / 1024).toFixed(0)} KB; ${P.css.length} CSS layers, ${P.data.length} data files, ${P.scripts.length} scripts${(P.logic || []).length ? `, ${P.logic.length} shared logic files` : ''})`);
   process.exit(0); }
 const themeCss = s => s.replace(/@A/g, '@C:not(#_d):not(#_e):not(#_f)').replace(/@C/g, '@R:not(#_c)').replace(/@R/g, ':root:not(#_a):not(#_b)');
 let out = parts.map(p => { const s = fs.readFileSync(dir + p, 'utf8').replace(/\n$/, ''); return /^src\/data\/.*\.js$/.test(p) ? asJsonParse(s) : /^src\/theme\/.*\.css$/.test(p) ? themeCss(s) : s; }).join('\n');
