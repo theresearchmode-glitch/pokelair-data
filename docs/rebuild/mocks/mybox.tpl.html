@@ -96,9 +96,12 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .party,.links,.fine2{padding:0 var(--gut)}.party{margin-top:28px}.prow img{width:58px;height:58px}.prow .pg{top:30px;width:64px;height:44px;margin:-22px 0 0 -32px}
   footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:16px;flex-wrap:wrap}
 }
+:root[data-glow="soft"] .box{--glow:.30;--wall-mix:28%}
+:root[data-theme="light"][data-glow="soft"] .box{--glow:.16;--wall-mix:30%}
+:root[data-glow="soft"] .cell .glow{width:120px;height:90px;margin:-45px 0 0 -60px}
 </style></head><body><div class="page" id="page"></div>
 <script>
-document.documentElement.dataset.theme=location.hash.slice(1)||'light';
+{const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[1])document.documentElement.dataset.glow=h[1];}
 /*DATA*/
 const TY={Dragon:'#5060E1',Ground:'#9A6230',Fighting:'#D9631B',Poison:'#8E3FC8',Dark:'#5A4A56',Steel:'#4F8FA6',Fire:'#DD4420',Water:'#2A78D8',Grass:'#2E9A46',Fairy:'#C953C2',Flying:'#5F97D8',Ghost:'#6A4BB8',Psychic:'#D93E78',Ice:'#1E9FBF',Rock:'#8F8556',Electric:'#B88A00',Normal:'#8E908C',Bug:'#7F9A12'};
 function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
