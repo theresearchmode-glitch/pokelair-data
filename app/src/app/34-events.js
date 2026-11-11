@@ -15,7 +15,7 @@ document.addEventListener('change',e=>{const t=e.target;
     toast(`${v||'No item'}${v===def?': the usual item':''}${before!=null&&after!=null?` · ready for ${before===after?after+'% of the top threats (no change)':before+'% → '+after+'% of the top threats'}`:''}${cl&&v==='Choice Scarf'?' · clashes with Trick Room':''}`)}
   else if(t.id==='poolSel'){const say=setPool(t.value);render();toast(say)}
   else if(t.id==='oppTeamSel'){const d=META.teams,tm=d&&d.teams[+t.value];if(tm){S.opp=tm.mons.slice(0,6);while(S.opp.length<6)S.opp.push('');ui.oppFrom={who:tm.player,key:S.opp.slice().sort().join('|')};persist();renderMatchup();toast('Loaded '+tm.player+'’s team as the opponent')}}
-  else if(t.id==='useAbil'||t.id==='swapMega'){render();toast(t.id==='swapMega'?(t.checked?'Plans can now swap your Mega':'Your Mega is protected again'):'Plans updated')}});
+  else if(t.id==='useAbil'||t.id==='swapMega'){render();toast(t.id==='swapMega'?swapMegaSay(t.checked):'Plans updated')}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(e.target.id==='saveName'){e.preventDefault();const o=$('saveOver');(o||$('saveNew')).click()}else if(e.target.id&&e.target.id.startsWith('rn_')){e.preventDefault();document.querySelector(`[data-rnok="${e.target.id.slice(3)}"]`).click()}}});
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(b.id==='moreBtn'){sideOpen(!$('side').classList.contains('open'));return}

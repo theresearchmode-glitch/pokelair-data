@@ -8,3 +8,6 @@ function setPool(v) { ui.pool = ['box', 'boxfill', 'all'].includes(v) ? v : 'box
 // Megas on team: 0 / 1 / 2 (saved with the team's state, so it follows the account); returns the toast
 function setMegaGoal(n) { S.megaGoal = Math.max(0, Math.min(2, +n || 0)); S.maxMega = Math.max(1, S.megaGoal); recCache = {key: null, val: null};
   return S.megaGoal ? `Teams aim for ${S.megaGoal} Mega${S.megaGoal > 1 ? 's' : ''}` : 'Teams without Megas: rare (about 1 in 100 tournament teams), and they win about a third of their games'; }
+// Swap my Mega? No / Yes: the hidden "Let plans swap my Mega" box the planner reads (#swapMega); returns the toast
+function swapMegaSay(on) { return on ? 'Plans can now swap your Mega' : 'Your Mega is protected again'; }
+function setSwapMega(on) { const sw = $('swapMega'); on = !!on; if (!sw || sw.checked === on) return null; sw.checked = on; return swapMegaSay(on); }

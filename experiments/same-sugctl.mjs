@@ -39,7 +39,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
     window.CLICK=d=>{const x=document.createElement('button');x.type='button';Object.assign(x.dataset,d);document.body.appendChild(x);x.click();x.remove()};
     window.TIP=k=>{const b=document.querySelector('[data-pane="report"] [data-tip="'+k+'"]');if(b)b.click();return !!b};
     window.EVT=i=>{const E=META.events.events,t=[];for(const e of E)for(const x of e.top||[])if(x.mons&&x.mons.length===6&&x.mons.every(m=>byName.get(m.n)))t.push(x.mons.map(m=>m.n));const q=t[Math.floor(i*t.length/8)];S.slots=normSlots(q.map(n=>({n,a:null,lock:false})));render()};
-    window.NORM=h=>h.replace(/[?]r=[0-9]+/g,'').replace(/ style="--d:[^"]*"/g,'');
+    window.NORM=h=>h.replace(/[?]r=[0-9]+/g,'').replace(/ data-retry="[0-9]+"/g,'').replace(/ style="--d:[^"]*"/g,'');
     window.READY=()=>!planJob&&planCache.key===planKeyOf($('useAbil').checked)&&!ckWin.busy;
     window.SNAP=()=>{const t=$('toast');return JSON.stringify({team:S.slots.map(s=>s.n+(s.lock?'*':'')+(s.mv?':'+JSON.stringify(s.mv):'')),pool:ui.pool,ls:localStorage.getItem('cc2.pool'),mg:[S.megaGoal,S.maxMega],swap:$('swapMega').checked,
       toast:t?t.textContent:'',tip:($('tipPop')||{}).innerText||'',undo:(ui.undoStack||[]).map(x=>x.label),plans:(ui.planList||[]).map(pl=>pl.ch.map(x=>(x.out?x.out.p.n:'+')+'>'+x.c.p.n).join('&')),
