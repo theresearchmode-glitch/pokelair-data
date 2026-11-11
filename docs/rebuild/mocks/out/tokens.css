@@ -1,0 +1,39 @@
+/* NastyPlot rebuild: design tokens (docs/rebuild/design-system.md, draft 1). Mock-ups and, later, the real build use only these. */
+:root{
+  --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
+  --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;--plate:#17161A;--on-plate:#FBFAF7;
+  --good:#2E9E5B;--good-text:#16693B;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;
+  --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:#8A7C6E;
+  --glow:.26;--glow-strong:.40;--wall-mix:46%;--shadow-lift:0 18px 30px -16px rgba(30,20,50,.45);--contact:rgba(30,20,50,.28);
+  --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
+  --r-s:4px;--r-m:6px;--r-l:10px;--r-xl:18px;--slant:-24deg;
+  color-scheme:light}
+:root[data-theme="dusk"]{
+  --bg:#1B1A22;--surface:#24232C;--wash:#24222C;--ink:#ECE8E2;--ink-2:#C9C3CC;--ink-3:#A39CA6;--rule:rgba(236,232,226,.12);
+  --plot:#4FB2F0;--plot-text:#4FB2F0;--pick:#FF5C77;--pick-text:#FF5C77;--plate:#ECE8E2;--on-plate:#1B1A22;
+  --good:#5FD08F;--good-text:#5FD08F;--mid:#FFD166;--mid-text:#FFD166;--low:#B8AA9C;--low-text:#B8AA9C;
+  --band-top:#4FB2F0;--band-ready:#C9B0FF;--band-solid:#A39CA6;--band-work:#FFD166;--band-miss:#B8AA9C;
+  --glow:.62;--glow-strong:.78;--wall-mix:46%;--shadow-lift:0 18px 34px -14px rgba(0,0,0,.7);--contact:rgba(0,0,0,.55);
+  color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style}
+.u{font-family:var(--u);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+.plotline{color:var(--plot)}
+.eyebrow{display:flex;align-items:center;gap:10px;font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.eyebrow::before{content:"";width:20px;height:7px;background:var(--plot);transform:skewX(var(--slant))}
+.mark{display:inline-block;width:18px;height:8px;background:var(--plot);transform:skewX(var(--slant))}
+/* the ONE chip style: slanted, no rounded pills */
+.chip{display:inline-flex;white-space:nowrap;flex:none;align-items:center;height:36px;padding:0 18px;font:600 15px/1 var(--b);color:var(--ink);background:var(--wash);
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.chip.on{background:var(--plate);color:var(--on-plate)}
+.chip.type{height:28px;padding:0 14px;font:700 13px/1 var(--b);color:#fff}
+.btn{display:flex;align-items:center;justify-content:center;height:52px;padding:0 28px;background:var(--plate);color:var(--on-plate);
+  font:900 15px/1 var(--u);font-style:italic;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.btn2{display:flex;align-items:center;justify-content:center;height:44px;padding:0 20px;font:600 15px/1 var(--b);color:var(--ink);
+  border:1.5px solid var(--ink);transform:skewX(-12deg)}.btn2>span{transform:skewX(12deg)}
+.row-link{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--rule);font:600 15px/1.2 var(--b)}
+.row-link:last-child{border-bottom:1px solid var(--rule)}.row-link i{font-style:normal;color:var(--ink-3)}
+.field{display:flex;align-items:center;gap:10px;height:52px;padding:0 18px;border:1.5px solid var(--ink);color:var(--ink-3);font:500 15px/1 var(--b);
+  transform:skewX(-10deg)}.field>*{transform:skewX(10deg)}.field b{margin-left:auto;color:var(--ink);font:900 20px/1 var(--u)}
+.lab{font:500 13px/1.3 var(--b);color:var(--ink-3)}
+.fine{font:400 13px/1.5 var(--b);color:var(--ink-3)}

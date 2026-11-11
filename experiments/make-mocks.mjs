@@ -59,7 +59,8 @@ const DATA = {
 const b = await chromium.launch();
 for (const p of pages) {
   const D = DATA[p](), tpl = fs.readFileSync(MOCKS + p + '.tpl.html', 'utf8');
-  const html = tpl.replace('/*DATA*/', 'const D=' + JSON.stringify(D) + ';'); const f = MOCKS + `_${p}.html`; fs.writeFileSync(f, html);
+  const html = tpl.replace('/*DATA*/', 'const D=' + JSON.stringify(D) + ';'); const f = OUT + `${p}.html`; fs.writeFileSync(f, html); /* kept: scroll-speed checks open it (experiments/scroll-perf.mjs) */
+  for (const x of ['tokens.css']) fs.copyFileSync(MOCKS + x, OUT + x);
   for (const [layout, w, h] of [['desktop', 1440, 900], ['phone', 390, 844]].filter(x => !process.env.LAYOUT || x[0] === process.env.LAYOUT)) for (const theme of (process.env.THEMES || 'dusk,light').split(',')) {
     const pg = await (await b.newContext({viewport: {width: w, height: h}, deviceScaleFactor: DSF})).newPage(); pg.on('pageerror', e => console.log('ERR', p, layout, theme, e.message));
     await pg.goto('file://' + f + '#' + theme); await pg.waitForFunction(() => document.body.dataset.ready, null, {timeout: 30000}).catch(() => console.log('NOT READY', p, layout, theme));
@@ -67,6 +68,5 @@ for (const p of pages) {
     const sw = await pg.evaluate(() => [document.documentElement.scrollWidth, innerWidth, document.documentElement.scrollHeight]);
     const out = OUT + `${p}-${layout}-${theme.replace('-', '_')}.png`; await pg.screenshot({path: out, fullPage: true}); console.log(out.replace(ROOT, ''), sw.join(' '), sw[0] > sw[1] ? 'SIDEWAYS SCROLL' : '');
     await pg.context().close(); }
-  fs.unlinkSync(f);
 }
 await b.close();

@@ -48,11 +48,12 @@ header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
 .sec h2{font-size:28px;margin-bottom:4px}.sec h2 .n{font:900 15px/1 var(--u);color:var(--plot);margin-right:8px;vertical-align:middle}
 .sec .sub{font-size:15px;color:var(--ink-2);margin-bottom:16px}
 .set{position:relative}
-.set .pool{position:absolute;left:-40px;right:-40px;top:20px;height:300px;background:radial-gradient(closest-side,rgba(var(--c1),var(--glow-strong)),transparent);z-index:0}
-.set .panel{position:absolute;left:0;right:0;top:80px;height:180px;transform:skewY(-7deg);border-radius:var(--r-m);overflow:hidden;z-index:1}
+.set .hero{position:relative;margin-top:8px}
+.set .pool{position:absolute;left:-40px;right:-40px;top:-40px;height:300px;background:radial-gradient(closest-side,rgba(var(--c1),var(--glow-strong)),transparent);z-index:0}
+.set .panel{position:absolute;left:0;right:0;top:56px;height:180px;transform:skewY(-7deg);border-radius:var(--r-m);overflow:hidden;z-index:1}
 .set .panel::after{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(from 8deg at 50% 62%,rgba(255,255,255,.4) 0 1.6deg,transparent 1.6deg 15deg);-webkit-mask-image:radial-gradient(closest-side,transparent 22%,#000 58%,transparent 96%)}
-.set .art{position:relative;z-index:2;display:block;width:250px;height:250px;object-fit:contain;margin:16px auto 0}
-.set .plate{position:absolute;z-index:3;left:-6px;top:250px;height:34px;padding:0 16px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 13px/1 var(--u);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
+.set .art{position:relative;z-index:2;display:block;width:250px;height:250px;object-fit:contain;margin:0 auto}
+.set .plate{position:absolute;z-index:3;left:-6px;top:226px;height:34px;padding:0 16px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 13px/1 var(--u);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
 .set h3{position:relative;z-index:2;font-size:28px;margin-top:20px}
 .set .types{display:flex;gap:4px;margin-top:8px}
 .kv{margin-top:16px;border-top:1px solid var(--rule)}
@@ -111,7 +112,7 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .acts{gap:8px}.acts .btn{flex:1 0 100%;height:48px}.acts .btn2{flex:1;padding:0 8px;white-space:nowrap}.acts .more{display:none}
   .jump{gap:20px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)}.jump a{white-space:nowrap}.jump .legal{display:none}
   .work{display:block;padding:24px var(--gut) 8px}.work>section{margin-bottom:40px}
-  .set .art{width:200px;height:200px}.set .panel{top:64px;height:150px}.set .plate{top:200px}
+  .set h3{margin-top:28px}.set .art{width:200px;height:200px}.set .panel{top:44px;height:150px}.set .plate{top:180px}
   .trow{grid-template-columns:24px 48px minmax(0,1fr) auto}.trow img{width:48px;height:48px}
   .sheet{padding:8px var(--gut) 48px}.sheet table thead{display:none}.sheet tr{display:grid;grid-template-columns:1fr;padding:12px 0;border-bottom:1px solid var(--rule)}
   .sheet td{border:0;padding:2px 0}.sheet td.k{display:none}
@@ -146,7 +147,7 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
   const moves=`<div class="moves">${sel.moves.map(v=>`<div class="mv" style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</div>`).join('')}</div>`;
   const setSec=`<section class="sec set" style="--c1:${rgb(k.a)}"><h2 class="u"><span class="n">1</span>Set</h2><div class="sub">Leads with ${esc(D.partner)} vs the meta's top six</div>
-    <div class="pool"></div><div class="panel" style="background:linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))"></div><img class="art" src="${sel.img}" alt=""><div class="plate">Rated ${sel.r} · ${sel.tier}</div>
+    <div class="hero"><div class="pool"></div><div class="panel" style="background:linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))"></div><img class="art" src="${sel.img}" alt=""><div class="plate">Rated ${sel.r} · ${sel.tier}</div></div>
     <h3 class="u">${esc(sel.d)}</h3><div class="types">${sel.t.map(t=>`<span class="chip type" style="background:${TY[t]}">${t}</span>`).join('')}</div>${kv}${moves}
     <div class="row2"><div class="btn2"><span>Edit Set</span></div><div class="btn2"><span>Info Sheet</span></div></div></section>`;
   const T=D.mu.fav+D.mu.even+D.mu.unf,pc=n=>n/T*100;

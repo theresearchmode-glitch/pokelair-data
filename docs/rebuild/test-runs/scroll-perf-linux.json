@@ -1,0 +1,63 @@
+{
+ "ran": "2026-11-11T03:26:03.797Z",
+ "platform": "linux",
+ "headed": false,
+ "rows": [
+  {
+   "page": "rebuild myteam (light)",
+   "fps": 60,
+   "slow": 0,
+   "worst": 17,
+   "frames": 165
+  },
+  {
+   "page": "rebuild mybox (light)",
+   "fps": 60,
+   "slow": 0,
+   "worst": 17,
+   "frames": 145
+  },
+  {
+   "page": "rebuild myteam (dusk)",
+   "fps": 60,
+   "slow": 0,
+   "worst": 17,
+   "frames": 164
+  },
+  {
+   "page": "rebuild mybox (dusk)",
+   "fps": 60,
+   "slow": 0,
+   "worst": 17,
+   "frames": 146
+  },
+  {
+   "page": "today My Team (light)",
+   "fps": 59,
+   "slow": 1,
+   "worst": 33,
+   "frames": 202
+  },
+  {
+   "page": "today My Box (light)",
+   "fps": 60,
+   "slow": 0,
+   "worst": 17,
+   "frames": 145
+  },
+  {
+   "page": "today My Team (dark)",
+   "fps": 60,
+   "slow": 0,
+   "worst": 17,
+   "frames": 202
+  },
+  {
+   "page": "today My Box (dark)",
+   "fps": 60,
+   "slow": 0,
+   "worst": 17,
+   "frames": 145
+  }
+ ]
+}
