@@ -93,10 +93,9 @@ t('NAV-08', 'Back steps through pages to the same scroll place, closes the sheet
   await d.openPokemon('Incineroar'); await d.closeSheet('x'); await d.browserBack(); expect(await ui.current() === 'usage' || await ui.current() === 'meta', '× did not remove the sheet\'s history step: Back went to ' + await ui.current()); }));
 
 t('NAV-09', 'A new page opens at its top', run({team: TEAM}, async ({ui, d}) => {
+  // the "Track Record →" link sits near the top of Ratings, so after scrolling down the player opens it from the menu
   await ui.go('Ratings'); await d.scrollToBottom(); expect(await d.scrollY() > 400, 'could not scroll Ratings');
-  await d.scrollTo(0); await ui.tap(/^Track Record →$/); await d.scrollTo(0); // the link sits near the top
-  await ui.go('Ratings'); await d.scrollToBottom(); await ui.tap(/^How ratings work →$|^Track Record →$/).catch(() => {}); await ui.go('Track Record');
-  await ui.pg.waitForTimeout(600); expect(await ui.current() === 'track' && await d.scrollY() < 5, `Track Record opened at ${await d.scrollY()}`);
+  await d.openMenu(); await d.tapMenuPage('Track Record'); await ui.pg.waitForTimeout(600); expect(await ui.current() === 'track' && await d.scrollY() < 5, `Track Record opened at ${await d.scrollY()}`);
   await d.scrollToBottom(); await ui.go('Events'); await ui.pg.waitForTimeout(500); expect(await d.scrollY() < 5, 'Events opened at ' + await d.scrollY()); }));
 
 t('NAV-10', 'Keyboard focus stays inside an open Pokémon sheet', run({team: TEAM}, async ({ui, d}) => {
@@ -555,7 +554,8 @@ t('BROKEN-13', 'No-data message works on the public site (does not mention Claud
 // =============================== SETS · Popular Sets (= B-build SETS-02..07, different numbering) ===============================
 t('SETS-01', 'Look up a Pokémon: its sets show and stay after reload (B SETS-02)', run({team: TEAM}, async ({ui, d, ls}) => {
   await ui.go('Popular Sets'); await d.lookUpSets('Gholdengo'); expect(/Gholdengo/.test(await d.setsShowing()) && has(await d.setsShowing(), 'Moves'), 'Gholdengo sets not shown');
-  expect(has(String(await ls('cc2.setMon')), 'Gholdengo'), 'not remembered'); await ui.reload(); await ui.go('Popular Sets'); expect(/Gholdengo \S+ \S+ .*tier/.test(await d.setsShowing()) || (await d.setsShowing()).indexOf('Gholdengo') < 200, 'not shown after reload'); }));
+  expect(has(String(await ls('cc2.setMon')), 'Gholdengo'), 'not remembered'); await ui.reload(); await ui.go('Popular Sets');
+  const after = await d.setsShowing(), at = after.indexOf('Gholdengo'); expect(at >= 0 && at < after.indexOf('Moves'), 'Gholdengo not the shown Pokémon after reload'); }));
 t('SETS-02', 'Your Team row: tap a member to see its sets (B SETS-03)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Popular Sets'); const row = await d.setsTeamRow(); expect(row.length === 6, 'team row: ' + row.length); await d.tapSetsTeam('Garchomp');
   expect((await d.setsTeamRow()).find(x => x.id === 'Garchomp').on, 'Garchomp not marked'); expect(/Your Garchomp/.test(await d.setsShowing()), 'Garchomp sets not shown'); }));
@@ -683,9 +683,12 @@ t('TRACK-04', 'Biggest hits and misses open their sheet', run({team: TEAM}, asyn
   await d.openPokemon(await d.firstPokemon()); expect(await d.sheetIsOpen(), 'no sheet'); }));
 t('TRACK-05', 'Week by week chart (or the "from about" note)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Track Record'); expect(has(await ui.text(), 'Week by Week'), 'no section'); expect(await d.hasChart() || /From about/.test(await ui.text()), 'no chart and no note'); }));
-t('TRACK-06', 'Coming as the data grows: only what is not shown yet', run({team: TEAM}, async ({ui}) => {
-  // with 34 events checked, the verdict and misses are already shown, so the list must not promise them
-  await ui.go('Track Record'); const tx = await ui.text(); expect(!/Coming as the data grows[^.]*verdict/i.test(tx), 'promises a verdict that is already shown'); }));
+t('TRACK-06', 'Coming as the data grows: with only 3 events it lists the verdict and misses still to come', withDocs({'meta/track': {...DOCS['meta/track'], ev: DOCS['meta/track'].ev.slice(-3)}}, run({team: TEAM}, async ({ui}) => {
+  await ui.go('Track Record'); const tx = await ui.text(); expect(has(tx, 'Coming as the data grows'), 'no "Coming as the data grows" list with 3 events');
+  expect(/verdict after 10 events \(3 so far\)/.test(tx) && /misses after 5 events/.test(tx), 'list does not name what comes later: ' + (tx.match(/Coming as the data grows.{0,160}/) || [''])[0]);
+  expect(/Early: only 3 events/.test(tx), 'no "Early" note with 3 events'); })));
+t('TRACK-06b', 'With 34 events the "coming" list is gone (everything is shown)', run({team: TEAM}, async ({ui}) => {
+  await ui.go('Track Record'); expect(!has(await ui.text(), 'Coming as the data grows'), 'still promises things that are already shown'); }));
 t('TRACK-07', 'Events Checked fold: one row per event checked, remembered', run({team: TEAM}, async ({ui, d, ls}) => {
   await ui.go('Track Record'); const n = +(await ui.text()).match(/(\d+) events checked so far/)[1]; await d.toggleFold('Events Checked');
   expect(await d.foldRows('Events Checked') === Math.min(n, 60), `rows ${await d.foldRows('Events Checked')} vs ${n}`); expect(await ls('cc2.chf.trevents') == 1, 'not remembered'); }));

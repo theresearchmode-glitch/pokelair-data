@@ -16,7 +16,8 @@ export default (ui, pg, o) => {
   const tapFound = async (finder, arg, what, wait = 500) => { for (let k = 0; k < 4; k++) { const h = await pg.evaluateHandle(finder, arg); const el = h.asElement();
       if (!el) { if (k >= 2) throw new Error('nothing to tap: ' + what); await pg.waitForTimeout(400); continue; }
       await el.scrollIntoViewIfNeeded({timeout: 1000}).catch(() => {});
-      let done = true; try { await el.click({timeout: 1500}); } catch (e) { done = await el.evaluate(x => { if (!x.isConnected) return false; try { x.focus({preventScroll: true}); } catch (y) {} x.click(); return true; }).catch(() => false); }
+      let done = true; try { await el.click({timeout: 1500}); } catch (e) { done = await el.evaluate(x => { if (!x.isConnected) return 'gone'; try { x.focus({preventScroll: true}); } catch (y) {} x.click(); return true; }).catch(() => false); }
+      if (done === 'gone') { await pg.waitForTimeout(wait); return; } // the tap landed and the page redrew mid-click
       if (!done) continue; await pg.waitForTimeout(wait); return; } throw new Error('could not tap: ' + what); };
   const click = (sel, wait = 450) => tapFound(s => [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')) || null, sel, sel, wait);
   const has = async sel => (await pg.locator(sel).filter({visible: true}).count()) > 0;
@@ -135,21 +136,23 @@ export default (ui, pg, o) => {
     undoLastApplied: () => click('[data-undobar]', 1500),
     // edit panel
     editPanel: () => pg.evaluate(() => { const e = document.querySelector('#chEdit'); if (!e || e.hidden || !e.getClientRects().length) return null; const h = e.querySelector('h1,h2,h3,b,strong'); return {title: (h ? h.innerText : '').replace(/\s+/g, ' ').trim(), text: e.innerText.replace(/\s+/g, ' ').trim()}; }),
-    openEditPanel: async name => { await H.tapTile(name); await click('#rzSet [data-chedit]', 900); },
+    openEditPanel: async name => { await H.showSet(name); await click('#rzSet [data-chedit]', 900); },
     closeEditPanel: () => click('#chEditDone', 500),
     editStrip: () => pg.evaluate(() => [...document.querySelectorAll('#chEdit .chst')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),
     tapStrip: i => click(`#chEdit .chst[data-chedit="${i}"]`, 800),
     panelLock: () => click('#chEdit [data-lock]', 700),
     panelLockText: () => txt('#chEdit [data-lock]'),
-    pickInPanel: async (what, value, j = 0) => { const sel = {nature: '#chEdit select[data-spnat]', ability: '#chEdit select[id^="ab"]', item: '#chEdit select[id^="it"]', move: `#chEdit select[data-mvi$=":${j}"]`}[what];
-      const loc = pg.locator(sel).filter({visible: true}).first(); const opt = await loc.evaluate((s, v) => { const o = [...s.options].find(o => o.text.split(',')[0].replace(/[★\s]+$/, '').trim() === v || o.value === v); return o ? o.value : null; }, value);
-      if (opt == null) throw new Error(`no ${what} option ${value}`); await loc.selectOption(opt); await pg.waitForTimeout(900); },
-    panelSelectText: what => pg.evaluate(w => { const s = document.querySelector({nature: '#chEdit select[data-spnat]', ability: '#chEdit select[id^="ab"]', item: '#chEdit select[id^="it"]'}[w]); return s ? s.options[s.selectedIndex].text : null; }, what),
-    panelMoves: () => pg.evaluate(() => [...document.querySelectorAll('#chEdit select[data-mvi]')].filter(e => e.getClientRects().length || e.closest('#chEdit')).slice(0, 4).map(s => s.options[s.selectedIndex].text.split(',')[0].trim())),
-    setStatPoints: async v => { for (let k = 0; k < 6; k++) { const loc = pg.locator(`#chEdit input[data-spi$=":${k}"]`).first(); await loc.fill(String(v[k])); await loc.dispatchEvent('input'); } await pg.waitForTimeout(300); },
-    saveStatPoints: () => click('#chEdit [data-spsave2]', 900),
-    statTotal: () => txt('#chEdit [id^="sptot"]'),
-    statMsg: () => txt('#chEdit [id^="spmsg"]'),
+    /** which slot the edit panel shows (0-5) */
+    panelSlot: () => pg.evaluate(() => { const b = document.querySelector('#chEdit .chst[aria-current="true"]'); return b ? +b.dataset.chedit : 0; }),
+    pickInPanel: async (what, value, j = 0) => { const i = await H.panelSlot(); const sel = {nature: '#chEdit select[data-spnat="' + i + '"]', ability: '#ab' + i, item: '#it' + i, move: '#mv' + i + '_' + j}[what];
+      const loc = pg.locator(sel).first(); const opt = await loc.evaluate((s, v) => { const o = [...s.options].find(o => o.text.split(',')[0].replace(/[★\s]+$/, '').replace(/ \([\d.]+%\)$/, '').trim() === v || o.value === v); return o ? o.value : null; }, value);
+      if (opt == null) throw new Error('no ' + what + ' option ' + value); await loc.selectOption(opt); await pg.waitForTimeout(900); },
+    panelOptions: async what => { const i = await H.panelSlot(); return pg.evaluate(sel => { const s = document.querySelector(sel); return s ? [...s.options].map(o => o.text.split(',')[0].replace(/[★\s]+$/, '').replace(/ \([\d.]+%\)$/, '').trim()) : []; }, {nature: '#chEdit select[data-spnat="' + i + '"]', ability: '#ab' + i, item: '#it' + i, move3: '#mv' + i + '_3'}[what]); },
+    panelMoves: async () => { const i = await H.panelSlot(); return pg.evaluate(i => [0, 1, 2, 3].map(j => { const s = document.getElementById('mv' + i + '_' + j); return s ? s.options[s.selectedIndex].text.split(',')[0].trim() : null; }), i); },
+    setStatPoints: async v => { const i = await H.panelSlot(); for (let k = 0; k < 6; k++) { const loc = pg.locator('#chEdit input[data-spi="' + i + ':' + k + '"]').first(); await loc.fill(String(v[k])); await loc.dispatchEvent('input'); } await pg.waitForTimeout(300); },
+    saveStatPoints: async () => click('#chEdit [data-spsave2="' + (await H.panelSlot()) + '"]', 900),
+    statTotal: async () => txt('#sptot' + (await H.panelSlot())),
+    statMsg: async () => txt('#spmsg' + (await H.panelSlot())),
     panelButton: m => H.tapText(m, 900),
     // add a Pokémon (name box with live search)
     nameBox: () => pg.evaluate(() => { const i = [...document.querySelectorAll('#chEdit input,#boxAdd,#qlOppIn')].find(e => e.getClientRects().length && /add a pok|their pok/i.test((e.placeholder || '') + (e.getAttribute('aria-label') || ''))); return i ? {focused: i === document.activeElement, value: i.value} : null; }),

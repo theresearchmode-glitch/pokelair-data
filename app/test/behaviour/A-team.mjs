@@ -402,8 +402,7 @@ t('EDIT-01', 'Edit panel opens titled "Edit <name>"; Done, Escape and the backdr
   await r.ui.openEditPanel('Garchomp'); await r.ui.pg.mouse.click(5, 5); await sleep(500); ok(!(await r.ui.editPanel()), 'backdrop tap did not close');
   await r.ui.tapLabel('Garchomp: edit its set').catch(() => {}); await r.close(); });
 t('EDIT-01b', 'Closing the edit panel puts focus back on "Edit set"', async () => {
-  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.press('Escape'); ok(/^Edit set$/.test(await r.ui.focusName()), 'focus is on "' + await r.ui.focusName() + '"'); await r.close(); },
-  {known: 'measured headless: after Escape focus falls to the page, not back on "Edit set" (the set card redraws while the panel is open)'});
+  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.press('Escape'); ok(/^Edit set$/.test(await r.ui.focusName()), 'focus is on "' + await r.ui.focusName() + '"'); await r.close(); });
 
 t('EDIT-02', 'Six-slot strip in the panel switches the panel to that Pokémon', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); const st = await r.ui.editStrip(); ok(st.length === 6 && st.every(x => /^Edit /.test(x)), 'strip: ' + st.join(','));
@@ -430,7 +429,7 @@ t('EDIT-05', 'Stat points: live total, over-66 warning, Save stat points; Team S
   has(g, /HP \d+ 32/, 'Team Sheet Garchomp'); has(g, /Spe \d+ 0/, 'Team Sheet Garchomp'); await r.close(); });
 
 t('EDIT-06', 'Ability picker: a rarer ability names the common one; "Use Prankster" restores', async () => {
-  const r = await myTeam(); await r.ui.openEditPanel('Whimsicott'); const other = await r.ui.pg.evaluate(() => [...document.querySelector('#chEdit select[id^="ab"]').options].map(o => o.text.split(',')[0].replace(/[★\s]+$/, '').trim()).find(x => x && x !== 'Prankster'));
+  const r = await myTeam(); await r.ui.openEditPanel('Whimsicott'); const other = (await r.ui.panelOptions('ability')).find(x => x && x !== 'Prankster');
   ok(other, 'no other ability to pick'); await r.ui.pickInPanel('ability', other); ok(await r.ui.waitToast(new RegExp(other + ' set \\(most players run Prankster\\)')), 'toast does not name the common ability');
   has((await r.ui.editPanel()).text, /Your pick/); await r.ui.panelButton(/^Use Prankster$/); ok(await r.ui.waitToast(/Prankster: the most-used ability/), 'no reset toast'); await r.close(); });
 
@@ -444,7 +443,7 @@ t('EDIT-07b', 'Item toast uses today\'s words (matchups), not the old "ready for
 
 t('EDIT-08', 'Moves: change move 4 → toast mentions Offense; "Reset to popular" brings the popular four back', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); const before = await r.ui.panelMoves(); ok(before.length === 4, 'not four move pickers');
-  const other = await r.ui.pg.evaluate(cur => [...document.querySelector('#chEdit select[data-mvi$=":3"]').options].map(o => o.text.split(',')[0].trim()).find(x => x && x !== '(no move)' && !cur.includes(x)), before);
+  const other = (await r.ui.panelOptions('move3')).find(x => x && x !== '(no move)' && !before.includes(x));
   await r.ui.pickInPanel('move', other, 3); ok(await r.ui.waitToast(new RegExp(other + ' replaces .*Offense')), 'no "<move> replaces … Offense" toast');
   ok((await r.ui.panelMoves()).includes(other), 'move not changed'); has((await r.ui.editPanel()).text, /Your set/);
   await r.ui.panelButton(/^Reset to popular$/); ok(await r.ui.waitToast(/Back to the popular set/), 'no reset toast'); ok((await r.ui.panelMoves()).join() === before.join(), 'popular four not back'); await r.close(); });
@@ -463,7 +462,7 @@ t('EDIT-11', '"Remove <name> from the team" in the panel: Undo toast, panel beco
 
 t('EDIT-12', '"Save team" opens "Edit team" with the save box and all six editors', async () => {
   const r = await myTeam(); await r.ui.tapText(/^Save team$/, 1000); const p = await r.ui.editPanel(); ok(p && /Edit team/.test(p.title + p.text.slice(0, 30)), 'panel not "Edit team"');
-  has(p.text, /Save this doubles team/); ok((p.text.match(/Save stat points/g) || []).length === 6, 'not six set editors'); await r.close(); });
+  has(p.text, /Save this doubles team/i); ok((p.text.match(/Save stat points/g) || []).length === 6, 'not six set editors'); await r.close(); });
 
 // ================= 4. Adding a Pokémon =================
 t('ADD-01', 'Name box: live search, Enter adds, species already on the team are left out', async () => {
