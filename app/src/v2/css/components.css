@@ -39,7 +39,8 @@
 .np-mon b{position:relative;display:block;margin-top:var(--s2);font:700 var(--t15)/1.25 var(--b)}
 /* Mega (Sim, Nov 11: clear, but never bigger than the name): the word "Mega" at the name's own size, bold, in PLOT blue */
 .mg{font:inherit;font-weight:800;color:var(--plot-text);letter-spacing:0;text-transform:none}
-.np-mon b .mg{display:block}
+/* in a row the word sits just under the art, where the colour pool and the selected panel glow: a backing in the page colour keeps it readable */
+.np-mon b .mg{position:relative;z-index:1;display:table;margin:0 auto;padding:0 var(--s2);background:var(--bg);border-radius:var(--r-s)}
 .np-mon b .mg.none{visibility:hidden}
 .np-mon small{position:relative;display:block;font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}
 /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
