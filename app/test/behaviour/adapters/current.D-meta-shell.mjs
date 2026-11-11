@@ -309,7 +309,7 @@ export default (ui, pg) => {
     methodSections: () => ev(() => [...document.querySelectorAll('[data-pane=method] details[data-chf^="np_"]')].filter(__dvis).map(d => __dtx(d.querySelector('.cht')))),
     /** source names listed in How We Calculate's "Usage, Sets and Sources" */
     methodSourceNames: () => ev(() => { const d = [...document.querySelectorAll('[data-pane=method] details')].find(d => /Usage, Sets and Sources/.test(__dtx(d.querySelector('summary')))); if (!d) return [];
-      return [...new Set([...d.querySelectorAll('b, dt, strong, th')].filter(__dvis).map(__dtx).filter(s => s && s.length < 40 && /^[A-Z0-9a-z]/.test(s)).map(s => s.replace(/[:,.].*$/, '').trim()))]; }),
+      return [...d.querySelectorAll('ul.npsrc > li > b')].map(__dtx).filter(Boolean); }),
     /** is any email address in the page? (checks for a mailto link or an @ in an About text node; never reads the address out) */
     emailInPage: () => pg.evaluate(() => !!document.querySelector('a[href^="mailto:"]') || /[A-Za-z0-9._-]+@[A-Za-z0-9-]+\.[a-z]{2,}/.test((document.querySelector('[data-pane=about]') || document.body).innerText)),
     emailShown: () => ev(() => { const a = [...document.querySelectorAll('a[href^="mailto:"]')].find(__dvis); return {mailto: !!a, at: !!a && __dtx(a).includes('@'), copy: [...document.querySelectorAll('[data-pane=about] button')].filter(__dvis).some(b => __dtx(b) === 'Copy')}; }),

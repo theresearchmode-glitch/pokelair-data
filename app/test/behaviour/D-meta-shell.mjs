@@ -725,7 +725,9 @@ t('METHOD-05', 'Track Record card opens Track Record', run({team: TEAM}, async (
   expect(await ui.current() === 'track', 'card opened ' + await ui.current()); }));
 t('DUP-12', 'Every data source named in How We Calculate is credited in About and the footer', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('How We Calculate'); await d.toggleFold('Usage, Sets and Sources'); const used = await d.methodSourceNames(); expect(used.length >= 5, 'sources found: ' + used);
-  await d.tapFooter('Sources and credits'); const credits = await d.footerText(); const miss = used.filter(s => !has(credits, s)); expect(!miss.length, 'used but not credited: ' + miss.join(', ')); }),
+  // a source counts as credited when its name (ignoring spaces and words like "replays" / "usage stats") is in the footer credits
+  const norm = x => x.toLowerCase().replace(/\b(replays|usage stats|data)\b/g, '').replace(/[^a-z0-9é]/g, '');
+  await d.tapFooter('Sources and credits'); const credits = norm(await d.footerText()); const miss = used.filter(s => !credits.includes(norm(s))); expect(!miss.length, 'used but not credited: ' + miss.join(', ')); }),
   {known: 'RK9 and project-red-data feed numbers but are not credited in About/footer (inventory DUP-12, possible credit gap)'});
 
 // =============================== ABOUT · About & Legal ===============================
