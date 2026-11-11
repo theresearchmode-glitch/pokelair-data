@@ -65,7 +65,10 @@ mirror rule in light mode (a deep enough panel, the agreed "pale Pokémon stand 
   desktop) and the hero/score number (54 phone, 64-120 desktop). Body 16 (phone) / 17 (desktop). Smallest text 13.
 - Line height: paragraphs 1.5; headlines 1.02-1.1 with letter-spacing -0.02em (loose enough that words never run together).
 - Headline pattern: first line --ink, second line --plot ("Sharply raise / your win rate.").
-- Numbers: tabular figures in tables and stat rows.
+- Numbers: tabular figures everywhere (font-variant-numeric: tabular-nums; measured: Instrument Sans supports it). Units
+  ("%", "games", "/ 100") one size smaller and in --ink-2.
+- Unbounded only at 15px and up (Sim, Nov 11): headlines, big numbers, plates, the filled button. Anything smaller is
+  Instrument Sans (600-700). Unbounded has no true italic; small sizes look distorted when slanted.
 
 ## 4. Space, size, shape
 - Spacing on a 4px grid (1, 2 and 6 allowed for hairlines and optical fixes): 4 8 12 16 20 24 32 40 48 64 96.
