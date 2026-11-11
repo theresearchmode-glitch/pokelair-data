@@ -32,6 +32,9 @@
 .tm-sug .np-btn2{align-self:flex-start}
 .sg2-all{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}
 .sg2-gap{margin-top:var(--s4);padding:var(--s3) var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink);background:var(--wash)}
+/* the Protect fix: a real problem, on its own wash, with its one action */
+.sg2-fix{display:grid;gap:var(--s3);justify-items:start;margin-top:var(--s5);padding:var(--s5);background:var(--wash)}
+.sg2-fix .tm-sub{margin:0}.sg2-fix .tm-sub b{color:var(--ink)}
 /* the Undo bar: what was applied, one tap back */
 .sg2-undo{display:flex;align-items:center;justify-content:space-between;gap:var(--s3) var(--s5);flex-wrap:wrap;margin-top:var(--s5);padding:var(--s3) var(--s6) var(--s3) var(--s5);background:var(--wash);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
 .sg2-undo b{color:var(--ink);font-weight:700}.sg2-undo>span{min-width:0;flex:1 1 200px}

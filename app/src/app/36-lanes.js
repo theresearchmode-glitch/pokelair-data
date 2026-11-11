@@ -49,9 +49,11 @@ const LANE = {
   protFix(ms) { if (!ms || ms.length !== 6) return null; const n = LANE.protCount(ms); if (n > 2) return null;
     const who = ms.filter(m => !LANE.moves(m).slice(0, 4).some(x => LANE.PROT.has(x)) && (popularMoves(m.p) || []).slice(0, 4).some(x => LANE.PROT.has(x && (x.name || x))));
     return who.length ? {n, who: who.slice(0, 3 - n), pts: n <= 1 ? LANE.PTS.prot1 : LANE.PTS.prot2} : null; },
-  protCard(ms) { const f = LANE.protFix(ms); if (!f) return '';
-    return `<div class="chlanecard fix"><p><span class="chlane ln-fix"><b>Fix</b> only ${f.n} of your six run${f.n === 1 ? 's' : ''} Protect: teams with ${f.n <= 1 ? 'one or none' : 'two'} won about ${f.pts} fewer games in 100 than teams with three</span></p>
-      <p class="t2">Their usual sets run it: ${f.who.map(m => `<b>${esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="chghost" data-protfix>Add Protect</button></div>`; },
+  // the card's words (shared with the rebuild, R4 Nov 11): the problem and what it costs, and who should run it
+  protWords(f) { return {fix: `only ${f.n} of your six run${f.n === 1 ? 's' : ''} Protect: teams with ${f.n <= 1 ? 'one or none' : 'two'} won about ${f.pts} fewer games in 100 than teams with three`, who: 'Their usual sets run it:', btn: 'Add Protect'}; },
+  protCard(ms) { const f = LANE.protFix(ms); if (!f) return ''; const W = LANE.protWords(f);
+    return `<div class="chlanecard fix"><p><span class="chlane ln-fix"><b>Fix</b> ${W.fix}</span></p>
+      <p class="t2">${W.who} ${f.who.map(m => `<b>${esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="chghost" data-protfix>${W.btn}</button></div>`; },
   // the move swapped out for Protect: the one its popular set runs least (else the last one)
   protApply(ms) { const f = LANE.protFix(ms); if (!f) return; for (const m of f.who) { const s = S.slots[m.i]; if (!s) continue;
       const pop = (popularMoves(m.p) || []).map(x => x && (x.name || x)), cur = LANE.moves(m).slice(0, 4); while (cur.length < 4) cur.push('');
