@@ -12,3 +12,6 @@ function scheduleRender() { clearTimeout(V2._rq); V2._rq = setTimeout(() => { fi
 function toast(t, undo) { V2.toast(V2.esc(t) + (undo && ui.undo ? ' <button type="button" id="toastUndo">Undo</button>' : '')); }
 // the rebuild redraws in place (V2.redraw keeps the reader's place), so keeping the scroll is just running the change
 function keepScroll(fn) { fn(); }
+
+// today's arena type palette, applied to the logic's TC as today's page does at load (74-arena.js): Dark slate violet, Normal cool grey
+try { Object.assign(TC, AR.TC_FIX); } catch (e) {}

@@ -201,6 +201,35 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
     <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
     <div class="row">${o.preview || V2.addState(n) === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${V2.esc(n)}"><span>Add ${d} to My Team</span></button>` : ''}<button type="button" class="np-link" data-v2mon="${V2.esc(n)}">Info Sheet</button></div></div></div></section>`; };
 
+// ---------- Share (R4, Nov 11): today's share images (44-share-images.js, proved pixel-identical with same-share.mjs) ----------
+// Team Card / Team Poster / Team Sheet, light or dark; Save Image (the downloads capability, else a plain download) and Copy Team
+// Link (today's team link). The new build draws its sprites from its own art folder.
+V2.shUi = {kind: 'card', mode: null, url: null, blob: null};
+if (!window.__SPR) window.__SPR = new Proxy({}, {get: (t, id) => typeof id === 'string' && /^\d+$/.test(id) ? V2.art(id) : undefined});
+V2.openShare = () => { if (!members().length) return; const U = V2.shUi; if (!U.mode) U.mode = V2.theme() === 'night' ? 'dark' : 'light';
+  V2.sheet(`<div class="sh2"><div class="np-eyebrow">Share</div><h2 class="u">Share Your Team</h2>
+    <div class="sh2-ctl">${V2.slide('shkind', [['card', 'Team Card', 'card'], ['poster', 'Team Poster', 'poster'], ['sheet', 'Team Sheet', 'list']], U.kind, 'What to share')}${V2.slide('shmode', [['light', 'Light'], ['dark', 'Dark']], U.mode, 'Image style')}</div>
+    <div class="sh2-img" data-sh2img aria-live="polite"><p class="fine">Drawing your image…</p></div>
+    <div class="sh2-acts"><button type="button" class="np-btn" data-sh2save disabled>Save Image</button><button type="button" class="np-btn2" data-copylink><span>Copy Team Link</span></button><span class="fine" data-sh2msg role="status"></span></div>
+    <p class="fine">On a phone you can also press and hold the image to save or share it. The team link opens this six on NastyPlot.</p></div>`, {label: 'Share'});
+  V2.shDraw(); };
+V2.shDraw = async () => { const U = V2.shUi, box = document.querySelector('[data-sh2img]'), sv = document.querySelector('[data-sh2save]'); if (!box) return; const ms = members(), was = CH.shareMode;
+  if (sv) sv.disabled = true; CH.shareMode = U.mode; let c = null;
+  try { c = U.kind === 'poster' ? await ARB.poster(ms) : U.kind === 'sheet' ? await buildSheetImage(ms) : await ARB.card(); } catch (e) { c = null; } finally { CH.shareMode = was; }
+  if (U.url) { try { URL.revokeObjectURL(U.url); } catch (e) {} U.url = null; }
+  let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (e) {}
+  U.blob = blob; U.url = blob ? URL.createObjectURL(blob) : null; if (!document.contains(box)) return;
+  box.className = 'sh2-img' + (U.kind === 'card' ? '' : ' tall');
+  box.innerHTML = U.url ? `<img src="${U.url}" alt="${U.kind === 'sheet' ? 'Your team as a NastyPlot team sheet: every set, nature and stat' : U.kind === 'poster' ? 'Your team as a NastyPlot team poster' : 'Your team as a NastyPlot share card'}">` : '<p class="fine">Could not draw the image in this view.</p>';
+  if (sv) sv.disabled = !blob; };
+document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'shkind' && k !== 'shmode') return; V2.shUi[k === 'shkind' ? 'kind' : 'mode'] = e.detail.value; V2.shDraw(); });
+document.addEventListener('click', async e => { if (e.target.closest('[data-v2share]')) { V2.openShare(); return; }
+  if (!e.target.closest('[data-sh2save]')) return; const U = V2.shUi, msg = document.querySelector('[data-sh2msg]'); if (!U.blob) return;
+  const name = ((typeof teamTitleFor === 'function' ? teamTitleFor(members()) : '') || 'My team').replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + (U.kind === 'poster' ? ' poster' : U.kind === 'sheet' ? ' sheet' : '') + ' - NastyPlot.png';
+  let dl = null; try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (er) {}
+  if (dl) { try { await dl.save({filename: name, data: U.blob}); if (msg) msg.textContent = 'Saved.'; } catch (err) { if (msg) msg.textContent = err && err.code === 'declined' ? 'Not saved.' : 'Saving is not available here. Press and hold the image instead.'; } }
+  else { const a = document.createElement('a'); a.href = U.url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); if (msg) msg.textContent = 'Downloaded.'; } });
+
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
@@ -214,7 +243,7 @@ V2.pages.team = {place: 'team', draw() {
   const mon = (m, i) => `<button type="button" class="tm-pick" data-tmsel="${i}" aria-pressed="${m === sel}" aria-label="${V2.esc(m.d)}${D.role(m.p.n) ? ', ' + D.role(m.p.n) : ''}">${V2.mon(m.p.n, {sel: m === sel, sub: D.role(m.p.n)})}</button>`;
   const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team${D.saved ? ` · ${V2.esc(D.saved)}` : ''}</span></div>${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div><p class="tm-rank">${V2.esc([rank, sure].filter(Boolean).join(' · '))}</p>`}</div>`;
-  const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>Save Team</button><a class="np-btn2" href="#team"><span>Share</span></a><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2 tm-tsact" data-v2sheetopen><span>Team Sheet</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button></div>`;
+  const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>Save Team</button><button type="button" class="np-btn2" data-v2share><span>Share</span></button><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2 tm-tsact" data-v2sheetopen><span>Team Sheet</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button></div>`;
   const nm = D.mu.fav + D.mu.even + D.mu.unf;
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a><button type="button" class="tm-tsbtn" data-v2sheetopen>Team Sheet <small>${ms.length} sets</small> <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set

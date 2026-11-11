@@ -3,22 +3,15 @@
 // theme/ARENA.md). Every number, name and control comes from the app's own data and functions; nothing new is computed except
 // colours. Controls keep the attributes the app's handlers listen for (data-lt, data-view, data-chset, data-chgrade,
 // data-chedit, data-evload, data-evvs, data-sdcopy), and the moved nodes (#rzSet, #chGwhy, #chActs) keep their handlers.
-const AR = {};
+/* AR is created in 44-share-images.js with its palette helpers (TC_FIX, TC, dark, isMega; Nov 11); this file adds the rest */
 /* arena type palette: the app's type colours, except two. Dark (#5F4536) reads brown and Normal (#ABA88A) reads khaki on a field
    (Sim: no brown, olive or khaki fills). Dark becomes a slate violet and Normal a cool lilac-grey. The app's own TC is changed
    too, before anything renders, so every older page part (Home's rating rows, the Type chart, tables, the share card) draws
    the same two colours as the arena components. */
-AR.TC_FIX = {Dark: '#5E5068', Normal: '#A6A2AE'};
 try { Object.assign(TC, AR.TC_FIX); } catch (e) {}
-AR.TC = Object.assign({}, TC, AR.TC_FIX);
 /* dark-mode field colours (true black): every type at the same vivid chroma, cool and red hues at a mid lightness, the
    orange-to-yellow hues (Fire, Electric, Ground, Rock, Normal...) lighter, because a dark orange or yellow reads brown (Sim:
    no brown fills). --on is the text colour that reads on the first type's dark field (white or ink, whichever is 4.5:1+). */
-AR._d = new Map(); AR._k = new Map();
-AR.dark = t => { if (AR._d.has(t)) return AR._d.get(t); let v = TC.Normal;
-  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = C < .03 ? .7 : h >= 70 && h < 130 ? .76 : h >= 38 && h < 70 ? .64 : .5, c = Math.max(Math.min(C, .17), Math.min(C, .05));
-    v = MG.hex(L, c, H); AR._k.set(t, {L, c, h}); } catch (e) {}
-  AR._d.set(t, v); return v; };
 /* the middle stop of a dark dual-type field. It always lies between the two types' hues, the short way round the hue circle,
    so a field never shows a colour that belongs to neither type (Indeedee was crimson, blue, then khaki). Three guards keep it
    off brown, olive and khaki:
@@ -52,7 +45,6 @@ AR.tag = t => `<span class="ar-ty" style="--t:${AR.TC[t] || TC.Normal};color:${A
 /* move name -> type (the moves table: [name, type index, ...]) */
 AR.mt = null;
 AR.moveType = n => { if (!AR.mt) { AR.mt = new Map(); try { for (const r of MOVES) AR.mt.set(r[0], TYPES[r[1]]); } catch (e) {} } return AR.mt.get(n) || 'Normal'; };
-AR.isMega = p => !!(p && (p.m || /-Mega/.test(p.n || '')));
 AR.spr = (p, cls) => sprite(p, 'ar-spr' + (cls ? ' ' + cls : '')) || '';
 /* one art tile; o: {tag, size, below, name, sub, attrs, sel} */
 AR.art = (p, o = {}) => { const tag = o.tag || 'button', cls = `ar-art ar-${o.size || 'm'}${o.below ? ' ar-below' : ''}${AR.isMega(p) ? ' is-mega' : ''}${o.sel ? ' is-sel' : ''}`;

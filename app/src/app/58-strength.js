@@ -202,3 +202,8 @@ CH.sideGrades = (more, g0, base) => { const ok = []; for (const pl of more) { if
 /* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
 CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
   return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };
+// ---------- text helpers for the score (moved from 60-concept-h.js, Nov 11; the share images and the new build use them) ----------
+CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
+CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
+CH.readyN = RD => { const h = CH.hand(RD); return h ? `${h.x}/${h.n}` : ''; };
+CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);

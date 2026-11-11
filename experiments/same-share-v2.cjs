@@ -1,0 +1,16 @@
+// Today's page vs the new build: the same share images (Team Card, Poster, Sheet x light/dark, two teams) from the same data.
+// Sprites are switched off and the logo pinned to its stored colours in both (the new build takes the new site's logo colours).
+// Usage: node experiments/same-share-v2.cjs today.html   (compares with app/dist/v2.html)
+const fs=require('fs');const R='/home/user/pokelair-data/';const {chromium}=require(R+'node_modules/playwright');const rd=f=>{try{return JSON.parse(fs.readFileSync(R+'out/'+f,'utf8'))}catch(e){return null}};
+const L=rd('limitless.json')||{},D={'meta/results':L.results,'meta/perf':L.adj?{adj:L.adj,updated:String(L.updated||'').slice(0,10)}:null,'meta/doubles_tour':rd('meta_tour.json'),'meta/teams':rd('teams.json'),'meta/model':rd('model.json'),'meta/doubles':rd('meta_ladder.json'),'meta/events':rd('events.json')};
+const today=process.argv[2];
+(async()=>{const b=await chromium.launch();const out={};
+for(const [k,file,hash] of [['today',today,''],['v2',R+'app/dist/v2.html','#team']]){let f=file;if(k==='today'){f=file.replace(/\.html$/,'.par.html');fs.writeFileSync(f,'<!doctype html><meta charset="utf-8">'+fs.readFileSync(file,'utf8').replace('render();setView(view,false);','window.__ev=c=>eval(c);render();setView(view,false);'))}
+ const p=await b.newPage({viewport:{width:1280,height:900}});await p.addInitScript(D=>{window.__PL_TEST=1;try{localStorage.setItem('cc2.welcomed','"1"')}catch(e){};window.claude={use:async n=>n==='db'?{doc:q=>({onSnapshot:cb=>{setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5);return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})}:null}},D);
+ await p.goto('file://'+f+hash);await p.waitForTimeout(4000);
+ out[k]=await p.evaluate(()=>window.__ev(`(async()=>{window.__SPR=null;npLogoSvg=d=>NP_SVG[d?"hdrD":"hdrL"].replace(/var\((--[\\w-]+)\\s*,\\s*([^)]*)\)/g,(m,v,fb)=>fb);try{await document.fonts.ready;await ARB.card()}catch(e){}const T=[];for(const e of META.events.events)for(const t of e.top||[])if(T.length<2&&t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)))T.push(t.mons.map(m=>m.n));
+   const res=[];for(const tm of T){S.slots=normSlots(tm.map(n=>({n,a:null,lock:false})));fixSlots();S.loadedId=null;
+     for(const kind of ['card','poster','sheet'])for(const mode of ['light','dark']){CH.shareMode=mode;const ms=members();const c=kind==='poster'?await ARB.poster(ms):kind==='sheet'?await buildSheetImage(ms):await ARB.card();const u=c?c.toDataURL('image/png'):'none';let h=0;for(let i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))|0;res.push(kind+' '+mode+' '+u.length+' #'+h)}}
+   return res})()`));await p.close();if(k==='today')fs.unlinkSync(f)}
+let same=0;out.today.forEach((x,i)=>{if(x===out.v2[i])same++;else console.log('  differs:',x,'|',out.v2[i])});
+console.log(`share images, today's page vs the new build (same data, same team): ${same} of ${out.today.length} identical`);await b.close()})()

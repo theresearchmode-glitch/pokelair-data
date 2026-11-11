@@ -15,19 +15,11 @@ CH.tog = () => `<span class="chtog" aria-hidden="true">${CH.chev2()}</span>`;
 // the logo: full lockup (Home), compact header lockup (top bar, menu, footer); light and Warm charcoal
 // each copy gets its own mask ids: a hidden copy (the closed menu) would otherwise break the mask for every other copy
 CH._lk = 0; CH.uniq = svg => { const n = ++CH._lk; return svg.replace(/id="(np[^"]+)"/g, (m, id) => `id="${id}-${n}"`).replace(/url\(#(np[^)]+)\)/g, (m, id) => `url(#${id}-${n})`); };
-/* Share images draw the stored logo SVG as a picture, where the site's colour overrides (blue PLOT circle, no yellow shadow)
-   never reach it. This fills each var(--x, fallback) in it with the value the live header logo uses, so every share card
-   matches the logo on the site in both looks (Sim, Nov 5: "our share card still uses our old logo"). */
-function npLogoSvg(dark) { const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
-  /* Polish (Nov 10): a share image in the other mode than the page uses that logo's own colours (a dark image made from the light
-     page drew NASTY in the light page's dark ink: invisible on black) */
-  if (!!dark !== (document.documentElement.dataset.look === 'dark')) return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => fb);
-  const el = [...document.querySelectorAll('.nplk')].find(e => e.getClientRects().length) || document.querySelector('.nplk'); if (!el) return raw;
-  const cs = getComputedStyle(el); return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => { const x = cs.getPropertyValue(v).trim(); return x || fb; }); }
+/* npLogoSvg (the logo for share images) lives in 44-share-images.js (Nov 11) */
 CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
 // readiness grade: preparation for the top 30 threats, never a win chance
-CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
-CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
+/* CH.gradeNum lives in 58-strength.js (Nov 11) */
+/* CH.recLine lives in 58-strength.js (Nov 11) */
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
 // checks, and real results (how far the real win rate moved it).
 CH.gradeParts = (G, RD) => { const nm = G.miss ? G.miss.length : 0, chk = G.chk != null ? G.chk : G.s; return {nm, ts: chk - RD.score + CH.GMISS * nm, ra: G.s - chk}; };
@@ -51,7 +43,7 @@ CH.GCOL = {A: '#0078BF', B: '#8b4fe0', C: '#77808f', D: '#b8740a', F: '#8d7b68'}
 CH.gcol = L => CH.GCOL[String(L || '')[0]] || '#8a90a6';
 /* Sim, Nov 9: "a team getting a 90 then seeing 85% ready ... is contradictory". Readiness shows as a count everywhere: "Ready for
    24/30 top threats" (Handles it or Beats it); the weighted % stays inside the calculations only. */
-CH.readyN = RD => { const h = CH.hand(RD); return h ? `${h.x}/${h.n}` : ''; };
+/* CH.readyN lives in 58-strength.js (Nov 11) */
 CH.readyTxt = RD => { const h = CH.hand(RD); return h ? `Ready for ${h.x}/${h.n} top threats` : ''; };
 CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
 /* a team's grade as a badge (Build me a team, Saved teams): the letter in its band colour, the grade number, and the sum
@@ -107,7 +99,7 @@ CH.gradeMotion = (head, G, RD) => { const b = head.querySelector('.rd > b'), m =
   b.classList.add('np-num'); const put = v => { b.textContent = m[1] + v + m[3]; if (smOn) sm.textContent = String(v); };
   const t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 200), v = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
     if (!b.isConnected) return; put(v); if (k < 1) requestAnimationFrame(tick); }; put(from); requestAnimationFrame(tick); };
-CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
+/* CH.n lives in 58-strength.js (Nov 11) */
 // a fold: remembers open/closed per device
 CH.fold = (key, title, sub, body, open) => { const o = LS.get('cc2.chf.' + key, null); const isOpen = o == null ? !!open : !!o;
   return `<details class="chsec chfold" data-chf="${key}"${isOpen ? ' open' : ''}><summary>${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">${title}</div>${sub ? `<div class="chs">${sub}</div>` : ''}</div></summary><div class="chbody">${body}</div></details>`; };

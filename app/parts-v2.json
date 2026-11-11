@@ -64,6 +64,8 @@
     "src/app/22-auto-build.js",
     "src/app/23-coverage.js",
     "src/app/24-sheet-data.js",
+    "src/app/44-share-images.js",
+    "src/app/45-team-links.js",
     "src/app/29-fix-planner.js",
     "src/app/30-saved-data.js",
     "src/app/31-set-edits.js",

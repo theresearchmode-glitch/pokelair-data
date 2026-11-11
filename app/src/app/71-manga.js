@@ -2,16 +2,8 @@
 // Live design from Nov 4. Every number and name comes from the app's own data and functions; nothing new is computed
 // except colours. Art lives in four places only: the Home cover (phone) / cover + 6v6 spread (desktop), the My team stage,
 // the info sheet hero, and Battle mode's "The read". Everything else is the calm layer (manga.css).
-const MG = {};
+/* MG is created in 44-share-images.js with its OKLCH colour maths (s2l, l2s, ok, hex; Nov 11); this file adds the rest */
 /* ---- OKLCH: both type colours are brought to the same lightness and chroma, then blended (no muddy middle) ---- */
-MG.s2l = c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4; MG.l2s = c => c <= .0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - .055;
-MG.ok = h => { const [r, g, b] = [1, 3, 5].map(i => MG.s2l(parseInt(h.slice(i, i + 2), 16) / 255));
-  const l = Math.cbrt(.4122214708 * r + .5363325363 * g + .0514459929 * b), m = Math.cbrt(.2119034982 * r + .6806995451 * g + .1073969566 * b), s = Math.cbrt(.0883024619 * r + .2817188376 * g + .6299787005 * b);
-  const A = 1.9779984951 * l - 2.428592205 * m + .4505937099 * s, B = .0259040371 * l + .7827717662 * m - .808675766 * s; return [Math.hypot(A, B), Math.atan2(B, A) * 180 / Math.PI]; };
-MG.hex = (L, C, H) => { const a = C * Math.cos(H * Math.PI / 180), b = C * Math.sin(H * Math.PI / 180);
-  const l = (L + .3963377774 * a + .2158037573 * b) ** 3, m = (L - .1055613458 * a - .0638541728 * b) ** 3, s = (L - .0894841775 * a - 1.291485548 * b) ** 3;
-  return '#' + [4.0767416621 * l - 3.3077115913 * m + .2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - .3413193965 * s, -.0041960863 * l - .7034186147 * m + 1.707614701 * s]
-    .map(v => Math.round(Math.min(1, Math.max(0, MG.l2s(v))) * 255).toString(16).padStart(2, '0')).join(''); };
 MG.at = (t, L, Cmax) => { const [C, H] = MG.ok(TC[t] || TC.Normal); return MG.hex(L, Math.min(C, Cmax), H); };
 MG.blend = (t1, t2, L, Cmax, n) => { const a = MG.ok(TC[t1] || TC.Normal), b = MG.ok(TC[t2] || TC[t1] || TC.Normal); let dh = b[1] - a[1]; if (dh > 180) dh -= 360; if (dh < -180) dh += 360;
   return Array.from({length: n}, (_, i) => { const k = n < 2 ? 0 : i / (n - 1); return MG.hex(L, Math.min(a[0], Cmax) + (Math.min(b[0], Cmax) - Math.min(a[0], Cmax)) * k, a[1] + dh * k); }); };

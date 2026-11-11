@@ -13,3 +13,6 @@ function savedRows(sort){const order=S.teams.filter(t=>t.format!=='singles').map
   else if(sort==='rating')order.sort((x,y)=>((y.ts?y.ts.score:-1)-(x.ts?x.ts.score:-1))||x.r.a.excess-y.r.a.excess);
   else order.sort((x,y)=>y.t.saved-x.t.saved);
   return order}
+// the team's title: the open saved team's name, else its archetype (moved from 27-team-page.js, Nov 11)
+function teamTitleFor(ms) { const loaded = S.teams.find(t => t.id === S.loadedId); if (loaded) return loaded.name;
+  let lb = ''; try { const a = teamArchetype(ms); lb = a && a.label ? a.label : ''; } catch (e) {} return lb || 'Your team'; }
