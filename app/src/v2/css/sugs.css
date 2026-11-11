@@ -1,0 +1,7 @@
+/* My Team › Suggestions (R4, Nov 11): the settings sliders, the cards, the Undo bar, the fix cards, Problems and Team Checks */
+/* settings: Suggest from across the width, Megas on team and Swap my Mega side by side under it (even at every width) */
+.sg2-ctl{display:grid;grid-template-columns:repeat(2,max-content);justify-content:start;gap:var(--s4) var(--s8);margin-top:var(--s5)}
+.sg2-c{display:grid;gap:var(--s2);min-width:0;justify-items:start}
+.sg2-pool{grid-column:1/-1}
+.sg2-k{font:600 var(--t13)/1.5 var(--b);letter-spacing:.04em;color:var(--ink-3)}
+@media (max-width:519px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch}}

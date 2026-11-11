@@ -433,8 +433,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   sw.checked = on; sw.dispatchEvent(new Event('change', {bubbles: true})); });
 // Suggest from (My team): the same setting as Plan settings › Pick from
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chpool]'); if (!b) return; const v = b.dataset.chpool; if (v === ui.pool) return;
-  ui.pool = v; LS.set('cc2.pool', v); const sel = $('poolSel'); if (sel) sel.value = v; render();
-  toast({box: 'Suggestions only use your box', boxfill: 'Your box first, then the best Pokémon to catch', all: 'Suggestions use the full roster'}[v]); });
+  const say = setPool(v); const sel = $('poolSel'); if (sel) sel.value = v; render(); toast(say); });
 // − on a Your six card (or Remove in the edit panel): take that Pokémon off the team, with Undo. Runs before the card's own tap.
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chrm]'); if (!b) return; e.stopPropagation(); e.preventDefault();
   const i = +b.dataset.chrm, was = byName.get((S.slots[i] || {}).n); keepUndo(); S.slots[i] = blank(); render(); if (was) toast(`Removed ${was.d}`, true);
