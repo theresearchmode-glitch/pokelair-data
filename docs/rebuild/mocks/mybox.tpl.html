@@ -39,8 +39,14 @@ h1{font-size:46px;margin:16px 0 8px}
 .cell .n{position:absolute;left:-6px;right:-6px;top:104px;font:600 13px/1.25 var(--b);color:var(--ink);z-index:3;text-wrap:balance}
 .cell .sub{display:block;font:500 13px/1.2 var(--b);color:var(--ink-2)}
 .cell .tm{position:absolute;z-index:4;left:50%;margin-left:30px;top:8px}
-.cell.on{z-index:5}.cell.on::before{content:"";position:absolute;left:6px;right:6px;top:0;height:100px;border-radius:14px;background:color-mix(in srgb,var(--surface) 88%,transparent);box-shadow:var(--shadow-lift);z-index:1}
-.cell.on img{width:108px;height:108px;margin-left:-54px;top:-12px}
+.cell.on{z-index:5}
+/* the cursor (Nov 11, Sim: the white tile read as "only Garchomp has a tile"): the picked Pokémon lifts, its own glow brightens,
+   and a slanted PLOT-blue bracket marks it, like the game's box cursor */
+.cell.on::before,.cell.on::after{content:"";position:absolute;top:2px;width:16px;height:96px;border:3px solid var(--plot);z-index:1;transform:skewX(-8deg)}
+.cell.on::before{left:8px;border-right:0}.cell.on::after{right:8px;border-left:0}
+.cell.on .tm{top:-6px;margin-left:34px}
+.cell.on .glow{background:radial-gradient(closest-side,rgba(var(--c),var(--glow-strong)),transparent);transform:scale(1.15)}
+.cell.on img{width:104px;height:104px;margin-left:-52px;top:-8px;filter:drop-shadow(0 10px 8px var(--contact))}
 .cell.on .n{font-weight:700}
 .cell.empty::after{content:"";position:absolute;left:50%;top:70px;width:54px;height:10px;margin-left:-27px;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--ink) 22%,transparent)}
 .dots{display:flex;justify-content:center;gap:8px;margin-top:8px}.dots i{position:relative;width:24px;height:6px;background:color-mix(in srgb,var(--ink) 25%,transparent);transform:skewX(var(--slant))}
@@ -78,7 +84,7 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .grid{grid-template-columns:repeat(5,1fr)}
   .cell{height:116px}.cell img{width:66px;height:66px;margin-left:-33px;top:8px}.cell .sh{top:72px;width:46px;margin-left:-23px}
   .cell .n{top:82px;left:-3px;right:-3px;font-stretch:80%;letter-spacing:-.01em}.prow div{font-stretch:80%}.cell .tm{margin-left:20px;top:4px}
-  .cell.on::before{height:80px;left:2px;right:2px}.cell.on img{width:78px;height:78px;margin-left:-39px;top:-2px}
+  .cell.on::before,.cell.on::after{height:76px;width:12px}.cell.on::before{left:3px}.cell.on::after{right:3px}.cell.on img{width:74px;height:74px;margin-left:-37px;top:2px}
   .cell .glow{top:44px;width:80px;height:60px;margin:-30px 0 0 -40px}
   .sheet{margin:16px 8px 0;padding:8px 16px 20px;border-radius:var(--r-xl) var(--r-xl) 0 0;background:var(--surface);position:relative;overflow:hidden;box-shadow:0 -12px 30px -18px rgba(0,0,0,.4)}
   .sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--rule);margin:4px auto 12px}
