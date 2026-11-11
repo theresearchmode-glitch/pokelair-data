@@ -70,7 +70,8 @@ export default (ui, pg, o) => {
 
     // ---------- Pokémon info sheet ----------
     /** tap a Pokémon (tile, row, chip) by its name on the current page */
-    tapPokemon: (name, within = '') => tapFound(([n, w]) => { const r = w ? document.querySelector(w) : document; return [...(r || document).querySelectorAll('[data-lt]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('#lairSheet'))
+    tapPokemon: async (name, within = '') => { for (let k = 0; k < 2; k++) { await H.tapPokemonOnce(name, within); if (await waitFor(() => H.infoSheet(), 3000)) return; } },
+    tapPokemonOnce: (name, within = '') => tapFound(([n, w]) => { const r = w ? document.querySelector(w) : document; return [...(r || document).querySelectorAll('[data-lt]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('#lairSheet'))
         .find(e => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase())) || null; }, [name, within], 'Pokémon ' + name, 800),
     infoSheet: () => txt('#lairSheet'),
     /** tap a Pokémon listed inside the open info sheet (e.g. a "Brought with" partner) */
@@ -183,8 +184,9 @@ export default (ui, pg, o) => {
     // your games
     openLogForm: () => click('[data-pane="report"] [data-qlopen]', 600),
     openLogFormByKeyboard: async () => { await pg.focus('[data-pane="report"] [data-qlopen]'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(600); },
-    undoLoggedGame: () => click('[data-qlundo]', 900),
-    pickLead: name => click(`[data-qllead="${name}"]`, 300),
+    undoLoggedGame: async () => { for (let k = 0; k < 3; k++) { await H.settle(400, 4000); if (!(await has('[data-qlundo]'))) return; await click('[data-qlundo]', 600); if (await H.waitToast(/Game removed/, 1500)) return; } },
+    pickLead: async name => { await H.settle(300, 3000); if (!(await has(`[data-qllead="${name}"]`))) await H.openLogForm(); return click(`[data-qllead="${name}"]`, 300); },
+    pickLeadRaw: name => click(`[data-qllead="${name}"]`, 300),
     useBattleOpponents: () => click('[data-qlbm]', 400),
     logResult: wl => click(`[data-qlres="${wl}"]`, 900),
     myGamesCard: () => txt('#myRec'),
