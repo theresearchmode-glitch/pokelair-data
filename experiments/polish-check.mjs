@@ -17,6 +17,7 @@
 //     boxes     three or more stacked background shades (page > card > cell > ...)
 //     glow      text with a glow (text-shadow)
 //     help      "?" buttons in more than one size
+//     tap       phone/tablet widths: a button, link or toggle under 44px tall (links inside running text exempt; Sim's review Nov 11, item 7)
 // Usage: node experiments/polish-check.mjs [out.json]   (TARGET=v2 for the rebuild's dist/v2.html)
 //   (needs app/dist/page.html; ~10 minutes)
 //   STEP=80 VIEWS=home,ratings to narrow it. Writes a JSON report and prints a summary, one line per finding.
@@ -67,7 +68,7 @@ const LAYOUT = () => { const vw = document.documentElement.clientWidth, out = {h
       if (fill < .6) out.empty.push(`${where(b)} fills ${Math.round(fill * 100)}% of ${Math.round(inner)}px`); } }
   for (const k of ['spill', 'uneven', 'lone', 'empty']) out[k] = [...new Set(out[k])].slice(0, 12); return out; };
 
-const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {}, space: {}, boxes: [], glow: [], help: {}};
+const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {}, space: {}, boxes: [], glow: [], help: {}, tap: {}};
   const SCALE = new Set([13, 15, 16, 17, 20, 22, 24, 26, 28, 34]);
   const vis = e => { if (e.checkVisibility && !e.checkVisibility({checkOpacity: true, checkVisibilityCSS: true})) return null; if (e.closest('.sr,.sr-only,[aria-hidden="true"],details:not([open]) > :not(summary)')) return null; for (let a = e, i = 0; a && i < 4; a = a.parentElement, i++) { const c = getComputedStyle(a); if (/rect\(0/.test(c.clip) || (c.overflow === 'hidden' && a.getBoundingClientRect().width <= 2)) return null; } const r = e.getBoundingClientRect(); return r.width > 1 && r.height > 1 ? r : null; };
   const name = e => { const c = e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).filter(x => !/^(on|is-|ar-on)/.test(x)).slice(0, 2).join('.') : ''; return (e.id ? '#' + e.id : e.tagName.toLowerCase()) + c; };
@@ -89,6 +90,11 @@ const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {},
     for (const k of ['marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight', 'rowGap', 'columnGap']) { const v = parseFloat(cs[k]); if (!v || Number.isNaN(v)) continue; const a = Math.abs(Math.round(v * 10) / 10); if (a % 4 === 0 || a === 1 || a === 2 || a === 6) continue; if (/margin(Left|Right)/.test(k) && cs.display === 'block' && r.width > 300) continue; add(out.space, a + 'px', where(e) + ' ' + k); }
     // boxes in boxes: an element with its own shade, inside two more distinct shades below the page
     const own_bg = bg(e); if (own_bg && r.width * r.height > 2500) { const shades = [own_bg]; let p = e.parentElement; while (p && p !== document.documentElement) { const c = bg(p); if (c && c !== shades[shades.length - 1]) shades.push(c); p = p.parentElement; } if (new Set(shades).size >= 4) out.boxes.push(`${where(e)} (${new Set(shades).size} shades)`); } }
+  // tap targets (phones and tablets): interactive things under 44px tall; a link inside running text is exempt
+  if (innerWidth < 1000) for (const e of document.body.querySelectorAll('a[href],button,summary,[role="button"],[role="tab"],input:not([type="hidden"]),select')) { const r = vis(e.matches('input,select') && e.closest('label') || e); // a field inside its label: the whole label is the tap area
+    if (!r || r.height >= 43.5 || r.width < 1) continue;
+    const cs = getComputedStyle(e); if (cs.display === 'inline' && e.parentElement && own(e.parentElement)) continue;
+    add(out.tap, Math.round(r.height) + 'px', where(e) + ' "' + (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 18) + '"'); }
   out.slant = [...new Set(out.slant)].slice(0, 12); out.boxes = [...new Set(out.boxes)].slice(0, 12); out.glow = [...new Set(out.glow)].slice(0, 8); return out; };
 
 // ---------- run ----------
@@ -113,10 +119,10 @@ const ranges = ws => { ws = [...new Set(ws)].sort((a, b) => a - b); const o = []
 const sum = {}; const put = (k, v, item, at) => { const key = `${k}|${v}|${item}`; (sum[key] = sum[key] || {k, v, item, at: []}).at.push(at); };
 for (const [key, m] of Object.entries(res.layout)) { const [v, w] = key.split('@'); if (!m || m.err) { put('error', v, m && m.err, +w); continue; } if (m.hscroll) put('hscroll', v, `${m.hscroll}px`, +w); for (const k of ['spill', 'uneven', 'lone', 'empty']) for (const x of m[k] || []) put(k, v, x, +w); }
 for (const [key, m] of Object.entries(res.style)) { const [v, w, mode] = key.split('@'); if (!m || m.err) continue; const at = `${w}${mode === 'dark' ? 'd' : ''}`;
-  for (const k of ['size', 'bodyhead', 'lineh', 'space']) for (const [val, o] of Object.entries(m[k])) put(k, v, `${val} (${o.ex[0]})`, at);
+  for (const k of ['size', 'bodyhead', 'lineh', 'space', 'tap']) for (const [val, o] of Object.entries(m[k] || {})) put(k, v, `${val} (${o.ex[0]})`, at);
   for (const k of ['slant', 'boxes', 'glow']) for (const x of m[k]) put(k, v, x, at);
   if (Object.keys(m.help).length > 1) put('help', v, Object.keys(m.help).join(' / '), at); }
-const ORDER = ['error', 'hscroll', 'spill', 'uneven', 'lone', 'slant', 'size', 'bodyhead', 'lineh', 'help', 'glow', 'boxes', 'empty', 'space'], counts = {};
+const ORDER = ['error', 'hscroll', 'spill', 'uneven', 'lone', 'slant', 'tap', 'size', 'bodyhead', 'lineh', 'help', 'glow', 'boxes', 'empty', 'space'], counts = {};
 const rows = Object.values(sum).sort((a, b) => ORDER.indexOf(a.k) - ORDER.indexOf(b.k) || a.v.localeCompare(b.v));
 for (const r of rows) { counts[r.k] = (counts[r.k] || 0) + 1; if (!process.env.QUIET || r.k !== 'space') console.log(`${r.k.padEnd(8)} ${r.v.padEnd(9)} ${r.item}  @ ${typeof r.at[0] === 'number' ? ranges(r.at) : [...new Set(r.at)].join(',')}`); }
 console.log(`\npolish check: ${Object.entries(counts).map(([k, n]) => `${k} ${n}`).join(', ') || 'nothing found'}; page errors ${res.errors.length}; ${Math.round((Date.now() - t0) / 1000)}s`);

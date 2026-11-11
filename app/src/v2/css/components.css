@@ -17,7 +17,7 @@
 /* the one chip: slanted, never a rounded pill */
 .np-chip{display:inline-flex;align-items:center;flex:none;white-space:nowrap;min-height:36px;padding:0 var(--s5);font:600 var(--t15)/1 var(--b);color:var(--ink);background:var(--wash);
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
-.np-chip[aria-pressed="true"],.np-chip.on{background:var(--plate);color:var(--on-plate)}
+button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{background:var(--plate);color:var(--on-plate)}
 :root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
 .np-type{display:inline-flex;align-items:center;min-height:28px;padding:0 var(--s4);font:700 var(--t13)/1 var(--b);color:var(--on-type);background:var(--tc,var(--type-none));clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 /* tabs */
@@ -77,7 +77,7 @@
 .np-field:focus-within{outline:3px solid var(--plot);outline-offset:3px}
 :root[data-theme="night"] .np-field{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
 /* forms strip: a Pokémon and its Megas, one tab each; the open form stands on its tilted panel */
-.np-forms .k{display:flex;justify-content:space-between;align-items:baseline;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:var(--s2)}
+.np-forms .k{display:flex;justify-content:space-between;align-items:center;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:var(--s2)}.np-forms .k .np-link{display:inline-flex;align-items:center;min-height:var(--tap);margin:calc(var(--s3) * -1) 0}
 .np-forms .r{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,160px);gap:var(--s2)}
 .np-forms .np-mon{--iw:80px}
 @media (max-width:699px){.np-forms .r{grid-auto-columns:minmax(0,1fr)}}
@@ -103,7 +103,7 @@
 .np-under .k{display:flex;align-items:center;gap:var(--s3);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
 .np-under .k::before{content:"";width:20px;height:7px;background:linear-gradient(90deg,var(--plot),var(--pick));transform:skewX(var(--slant))}
 .np-under h3{font-size:var(--t28);margin:var(--s2) 0}.np-under h3 span{color:var(--plot)}.np-under p{font-size:var(--t15);color:var(--ink-2)}
-.np-under .acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}
+.np-under .acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}.np-under .acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
 @media (max-width:699px){.np-under{grid-template-columns:1fr;justify-items:center;text-align:center}.np-under .stage{width:168px;height:168px}.np-under .k,.np-under .acts{justify-content:center}}
 /* team dock: frosted bar with your team on every page except My Team */
 .np-dock{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;gap:var(--s6);padding:var(--s3) var(--gut);border-top:1px solid var(--rule);
