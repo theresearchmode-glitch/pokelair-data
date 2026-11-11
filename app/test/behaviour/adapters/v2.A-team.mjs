@@ -125,7 +125,8 @@ export default (ui, pg, o) => {
     teamActions: () => pg.evaluate(() => { const m = document.querySelector('#main'); if (!m) return [];
       const MAP = [['data-v2save', 'Save Team', 'Save team'], ['data-v2share', 'Share', 'Share'], ['data-v2sheetopen', 'Team Sheet', 'Team Sheet'], ['data-v2copy', 'Copy for Showdown', 'Copy for Showdown'], ['data-v2import', 'Import', 'Import'], ['data-v2saved', 'Saved Teams', 'Saved Teams'], ['data-cxgo2', 'Compare', 'Compare with…'], ['data-v2clear', 'Clear Team', 'Clear team']];
       const out = []; for (const e of m.querySelectorAll('.tm-acts > *, .tm-empty button, .tm-empty a')) { if (!e.getClientRects().length) continue; const t = e.innerText.replace(/\s+/g, ' ').trim().replace(/ \d+$/, '');
-        const hit = MAP.find(([a, label]) => e.hasAttribute(a) && t === label); out.push(hit ? hit[2] : e.getAttribute('href') === '#box' && t === 'My Box' ? 'My Box' : t); } return out; }),
+        // the action is named by what the button does (its data attribute), so a reworded label still counts as that action
+        const hit = MAP.find(([a]) => e.hasAttribute(a)); out.push(hit ? hit[2] : e.getAttribute('href') === '#box' ? 'My Box' : t); } return out; }),
     jumpBar: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].filter(e => e.getClientRects().length).map(e => e.childNodes[0].textContent.trim())),
     jumpTo: name => tapFound(n => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].find(e => e.getClientRects().length && e.childNodes[0].textContent.trim() === n) || null, name, 'jump ' + name, 900),
     onScreen: re => pg.evaluate(([s, f]) => { const re = new RegExp(s, f); const e = [...document.querySelectorAll('#main *')].filter(e => e.getClientRects().length && e.innerText && e.innerText.length < 60 && re.test(e.innerText)).pop(); if (!e) return null; const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }, [re.source, re.flags]),
@@ -224,7 +225,7 @@ export default (ui, pg, o) => {
       await tapFound(n => [...document.querySelectorAll('.cx2-pick [data-cxset2]')].find(e => e.getClientRects().length && e.innerText.includes(n) && e.getAttribute('aria-disabled') !== 'true') || null, name, 'compare pick ' + name, 1500); },
     compareHeads: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-head')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     pasteCompareTeam: async text => { if (!(await vis('[data-cxpaste-in]'))) await click('#main [data-cxp="B"]', 700); await pg.locator('[data-cxpaste-in]').fill(text); await click('[data-cxpaste2]', 1500); },
-    compareCheckRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-row')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim()).filter(t => /[✓✗?–]/.test(t))),
+    compareCheckRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-row')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim()).filter(t => /[✓✗?]/.test(t))),
     // shared behaviour
     doubleTapApply: async () => { const b = pg.locator('#main [data-v2plan]').filter({visible: true}).first(); await b.scrollIntoViewIfNeeded(); await b.dblclick({delay: 60}); await pg.waitForTimeout(1500); },
     scrollToSuggestions: async () => { await pg.evaluate(() => { const b = [...document.querySelectorAll('#main [data-v2plan]')].find(e => e.getClientRects().length); window.scrollTo(0, b.getBoundingClientRect().top + scrollY - 300); }); await pg.waitForTimeout(600); },
