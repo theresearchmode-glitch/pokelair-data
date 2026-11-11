@@ -17,6 +17,7 @@
 //     boxes     three or more stacked background shades (page > card > cell > ...)
 //     glow      text with a glow (text-shadow)
 //     help      "?" buttons in more than one size
+//     under     phones: scrolled to the very bottom, text or a control ends behind the fixed bottom menu (Sim's review item 9)
 //     tap       phone/tablet widths: a button, link or toggle under 44px tall (links inside running text exempt; Sim's review Nov 11, item 7)
 // Usage: node experiments/polish-check.mjs [out.json]   (TARGET=v2 for the rebuild's dist/v2.html)
 //   (needs app/dist/page.html; ~10 minutes)
@@ -27,7 +28,7 @@ const ROOT = new URL('..', import.meta.url).pathname, OUT = ROOT + 'out/', rd = 
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/history': rd('history.json'), 'meta/events': rd('events.json'), 'meta/weekly': rd('weekly.json'), 'meta/track': rd('track.json'), 'meta/practice': rd('practice.json'), 'meta/calendar': rd('calendar.json')};
 // TARGET=v2 checks the rebuild (app/dist/v2.html; views are its #hash pages, theme in np2.theme). Default: today's page.
 const V2 = process.env.TARGET === 'v2';
-const VIEWS = (process.env.VIEWS || (V2 ? 'guide' : null) || 'home,report,coverage,build,auto,matchup,box,teams,ratings,meta,top,sets,calc,speed,types,cores,events,arch,gauntlet,weekly,track,method,compare,sheet').split(',');
+const VIEWS = (process.env.VIEWS || (V2 ? 'guide,team,team-empty,box,compare,sheet' : null) || 'home,report,coverage,build,auto,matchup,box,teams,ratings,meta,top,sets,calc,speed,types,cores,events,arch,gauntlet,weekly,track,method,compare,sheet').split(',');
 const STEP = +(process.env.STEP || 80), WIDTHS = []; for (let w = +(process.env.W0 || 320); w <= 2560; w += STEP) WIDTHS.push(w);
 const STYLE_W = (process.env.STYLE_W || '390,820,1440').split(',').map(Number);
 const page = ROOT + `app/pc-${process.pid}.html`;
@@ -68,7 +69,7 @@ const LAYOUT = () => { const vw = document.documentElement.clientWidth, out = {h
       if (fill < .6) out.empty.push(`${where(b)} fills ${Math.round(fill * 100)}% of ${Math.round(inner)}px`); } }
   for (const k of ['spill', 'uneven', 'lone', 'empty']) out[k] = [...new Set(out[k])].slice(0, 12); return out; };
 
-const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {}, space: {}, boxes: [], glow: [], help: {}, tap: {}};
+const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {}, space: {}, boxes: [], glow: [], help: {}, tap: {}, under: []};
   const SCALE = new Set([13, 15, 16, 17, 20, 22, 24, 26, 28, 34]);
   const vis = e => { if (e.checkVisibility && !e.checkVisibility({checkOpacity: true, checkVisibilityCSS: true})) return null; if (e.closest('.sr,.sr-only,[aria-hidden="true"],details:not([open]) > :not(summary)')) return null; for (let a = e, i = 0; a && i < 4; a = a.parentElement, i++) { const c = getComputedStyle(a); if (/rect\(0/.test(c.clip) || (c.overflow === 'hidden' && a.getBoundingClientRect().width <= 2)) return null; } const r = e.getBoundingClientRect(); return r.width > 1 && r.height > 1 ? r : null; };
   const name = e => { const c = e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).filter(x => !/^(on|is-|ar-on)/.test(x)).slice(0, 2).join('.') : ''; return (e.id ? '#' + e.id : e.tagName.toLowerCase()) + c; };
@@ -95,6 +96,13 @@ const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {},
     if (!r || r.height >= 43.5 || r.width < 1) continue;
     const cs = getComputedStyle(e); if (cs.display === 'inline' && e.parentElement && own(e.parentElement)) continue;
     add(out.tap, Math.round(r.height) + 'px', where(e) + ' "' + (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 18) + '"'); }
+  // the last content clears the fixed bottom menu (phones): scroll to the end, nothing readable or tappable may end behind the bar
+  const bar = document.querySelector('.np-bar,.bnav'); if (innerWidth < 700 && bar && getComputedStyle(bar).position === 'fixed' && bar.getBoundingClientRect().height) { const y0 = scrollY; scrollTo(0, document.documentElement.scrollHeight); const top = bar.getBoundingClientRect().top;
+    const pinned = e => { for (let p = e; p && p !== document.body; p = p.parentElement) { const ps = getComputedStyle(p).position; if (ps === 'fixed' || ps === 'sticky') return true; } return false; };
+    for (const e of document.body.querySelectorAll('*')) { if (bar.contains(e) || !(own(e) || e.matches('a[href],button,input,select,img'))) continue; const r = vis(e); if (!r || r.bottom <= top + 0.5 || r.top >= innerHeight || pinned(e)) continue;
+      out.under.push(where(e) + ' "' + (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 18) + '" ' + Math.round(r.bottom - top) + 'px behind'); }
+    scrollTo(0, y0); }
+  out.under = [...new Set(out.under)].slice(0, 12);
   out.slant = [...new Set(out.slant)].slice(0, 12); out.boxes = [...new Set(out.boxes)].slice(0, 12); out.glow = [...new Set(out.glow)].slice(0, 8); return out; };
 
 // ---------- run ----------
@@ -120,9 +128,9 @@ const sum = {}; const put = (k, v, item, at) => { const key = `${k}|${v}|${item}
 for (const [key, m] of Object.entries(res.layout)) { const [v, w] = key.split('@'); if (!m || m.err) { put('error', v, m && m.err, +w); continue; } if (m.hscroll) put('hscroll', v, `${m.hscroll}px`, +w); for (const k of ['spill', 'uneven', 'lone', 'empty']) for (const x of m[k] || []) put(k, v, x, +w); }
 for (const [key, m] of Object.entries(res.style)) { const [v, w, mode] = key.split('@'); if (!m || m.err) continue; const at = `${w}${mode === 'dark' ? 'd' : ''}`;
   for (const k of ['size', 'bodyhead', 'lineh', 'space', 'tap']) for (const [val, o] of Object.entries(m[k] || {})) put(k, v, `${val} (${o.ex[0]})`, at);
-  for (const k of ['slant', 'boxes', 'glow']) for (const x of m[k]) put(k, v, x, at);
+  for (const k of ['slant', 'boxes', 'glow', 'under']) for (const x of m[k] || []) put(k, v, x, at);
   if (Object.keys(m.help).length > 1) put('help', v, Object.keys(m.help).join(' / '), at); }
-const ORDER = ['error', 'hscroll', 'spill', 'uneven', 'lone', 'slant', 'tap', 'size', 'bodyhead', 'lineh', 'help', 'glow', 'boxes', 'empty', 'space'], counts = {};
+const ORDER = ['error', 'hscroll', 'under', 'spill', 'uneven', 'lone', 'slant', 'tap', 'size', 'bodyhead', 'lineh', 'help', 'glow', 'boxes', 'empty', 'space'], counts = {};
 const rows = Object.values(sum).sort((a, b) => ORDER.indexOf(a.k) - ORDER.indexOf(b.k) || a.v.localeCompare(b.v));
 for (const r of rows) { counts[r.k] = (counts[r.k] || 0) + 1; if (!process.env.QUIET || r.k !== 'space') console.log(`${r.k.padEnd(8)} ${r.v.padEnd(9)} ${r.item}  @ ${typeof r.at[0] === 'number' ? ranges(r.at) : [...new Set(r.at)].join(',')}`); }
 console.log(`\npolish check: ${Object.entries(counts).map(([k, n]) => `${k} ${n}`).join(', ') || 'nothing found'}; page errors ${res.errors.length}; ${Math.round((Date.now() - t0) / 1000)}s`);

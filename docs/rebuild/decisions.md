@@ -7,6 +7,10 @@ Sim's own decisions are marked "Sim". Newest first.
 - Nov 11 (Sim's review item 7, Claude did): every button, link and toggle is at least 44px tall on phones and tablets (a link inside a
   sentence is exempt). experiments/polish-check.mjs now measures this on every page ("tap"); sheets and the empty My Team were measured
   by a separate scratch check. Header logo, nav, Search, footer links, back links, Open My Team, Info Sheet and the Why link were fixed.
+- Nov 11 (Sim's review item 9, measured): on phones, nothing on any page ends behind the bottom menu. The polish check now scrolls each page
+  to the end at phone widths and lists any text or control behind the menu ("under"). Measured 0 on all six new-build pages at 320, 390
+  and 600 wide; the check was proven to catch it by removing the footer's bottom space on purpose (3 footer links 21px behind).
+  The new-build check now visits all six pages by default (team, team-empty, box, compare, sheet, guide), not only the style guide.
 
 ## My Team
 - Nov 11 (Sim): the selected Pokémon stands on a floor ring in its own colour (idea 2), no panel behind it.
