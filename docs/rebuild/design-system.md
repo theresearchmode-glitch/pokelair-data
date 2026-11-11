@@ -62,7 +62,9 @@ mirror rule in light mode (a deep enough panel, the agreed "pale Pokémon stand 
 
 - **Mega is always clear, never louder than the name (Sim, Nov 11: "hard to see", then "the MEGA is bigger than the name")**:
   the word "Mega" is part of the name, at the name's own size, bold, in PLOT blue ("**Mega** Charizard Y"). Rows of standing
-  Pokémon and narrow lists put it on its own line above the name (the slot is kept, so names stay on one line).
+  Pokémon and narrow lists put it on its own line above the name (the slot is kept, so names stay on one line). No backing
+  behind the word (Sim, Nov 11): the art, its colour pool and the selected panel live in one stage above the name block, so the
+  glow can never reach the name.
 
 Sim chose these in conversation on Nov 11. They override anything earlier in this file that disagrees.
 

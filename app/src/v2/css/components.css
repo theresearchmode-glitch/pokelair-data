@@ -31,22 +31,23 @@
 @media (max-width:379px){.np-tabs{gap:var(--s3)}.np-tabs a,.np-tabs button{font-size:var(--t13)}.np-tabs small{display:none}}
 /* a Pokémon standing on its floor: the art on a pool of its own normalised colour (--cp); feet on one line (--fo) */
 .np-mon{position:relative;text-align:center;--iw:110px}
-.np-mon .pool{position:absolute;left:50%;bottom:var(--fy,44px);width:calc(var(--iw)*.95);height:calc(var(--iw)*.2);transform:translate(-50%,50%);border-radius:50%;
+/* the stage holds the art, its colour pool and the selected panel, so none of them can reach the name below (Sim, Nov 11) */
+.np-mon .st{position:relative;width:var(--iw);max-width:100%;margin:0 auto}
+.np-mon .pool{position:absolute;left:50%;bottom:0;width:95%;height:calc(var(--iw)*.2);transform:translate(-50%,30%);border-radius:50%;
   background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.62),rgba(var(--cp,150,150,165),.28) 55%,transparent)}
 :root[data-theme="night"] .np-mon .pool{background:radial-gradient(closest-side,rgba(var(--cp,150,150,165),.9),rgba(var(--cp,150,150,165),.32) 45%,transparent);filter:blur(1.5px)}
-.np-mon img{position:relative;width:var(--iw);max-width:100%;aspect-ratio:1;margin:0 auto;object-fit:contain;object-position:50% 100%;translate:0 calc(var(--fo,0)*100%);filter:drop-shadow(4px 7px 7px rgba(var(--shade),.16))}
+.np-mon img{position:relative;display:block;width:100%;aspect-ratio:1;margin:0 auto;object-fit:contain;object-position:50% 100%;translate:0 calc(var(--fo,0)*100%);filter:drop-shadow(4px 7px 7px rgba(var(--shade),.16))}
 :root[data-theme="night"] .np-mon img{filter:drop-shadow(0 0 .6px rgba(var(--rim),.55)) drop-shadow(0 -1px 5px rgba(var(--cp,150,150,165),.3))}
-.np-mon b{position:relative;display:block;margin-top:var(--s2);font:700 var(--t15)/1.25 var(--b)}
+.np-mon b{position:relative;display:block;margin-top:var(--s3);font:700 var(--t15)/1.25 var(--b)}
 /* Mega (Sim, Nov 11: clear, but never bigger than the name): the word "Mega" at the name's own size, bold, in PLOT blue */
 .mg{font:inherit;font-weight:800;color:var(--plot-text);letter-spacing:0;text-transform:none}
-/* in a row the word sits just under the art, where the colour pool and the selected panel glow: a backing in the page colour keeps it readable */
-.np-mon b .mg{position:relative;z-index:1;display:table;margin:0 auto;padding:0 var(--s2);background:var(--bg);border-radius:var(--r-s)}
+.np-mon b .mg{display:block}
 .np-mon b .mg.none{visibility:hidden}
 .np-mon small{position:relative;display:block;font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}
 /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
-.np-mon.sel::before{content:"";position:absolute;left:6px;right:6px;top:10%;height:58%;border-radius:var(--r-m);transform:skewY(var(--tilt));
+.np-mon.sel .st::before{content:"";position:absolute;left:-4px;right:-4px;top:12%;bottom:4%;border-radius:var(--r-m);transform:skewY(var(--tilt));
   background:linear-gradient(150deg,rgba(var(--cp),.9),rgba(var(--cp),.55));box-shadow:inset 0 1px 0 rgba(var(--rim),.6),0 8px 14px -6px rgba(var(--shade),.22),0 22px 30px -18px rgba(var(--shade),.3)}
-:root[data-theme="night"] .np-mon.sel::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(var(--rim),.4),0 0 0 1px rgba(var(--cp),.25),0 14px 30px -12px rgba(var(--cp),.55)}
+:root[data-theme="night"] .np-mon.sel .st::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(var(--rim),.4),0 0 0 1px rgba(var(--cp),.25),0 14px 30px -12px rgba(var(--cp),.55)}
 .np-mon.sel img{scale:1.08;transform-origin:50% 100%}.np-mon.sel b{font-weight:800}
 /* the Strength Score lockup: the big number and its band word (blue only in the band word) */
 .np-score{display:flex;align-items:flex-end;gap:var(--s4)}
@@ -75,7 +76,7 @@
 /* forms strip: a Pokémon and its Megas, one tab each; the open form stands on its tilted panel */
 .np-forms .k{display:flex;justify-content:space-between;align-items:baseline;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:var(--s2)}
 .np-forms .r{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,160px);gap:var(--s2)}
-.np-forms .np-mon{--iw:80px;--fy:56px}
+.np-forms .np-mon{--iw:80px}
 @media (max-width:699px){.np-forms .r{grid-auto-columns:minmax(0,1fr)}}
 /* sheet: a solid surface over the lit page, which is softly blurred, never dimmed dark (the glass decision) */
 .np-scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
