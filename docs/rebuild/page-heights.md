@@ -15,7 +15,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 
 | Page | Today: phone | Today: iPad | Today: desktop | Rebuild (phone / iPad / desktop) |
 |---|---|---|---|---|
-| Home | 3,732 | 5,099 **over** | 3,980 **over** | not drawn yet |
+| Home | 3,732 | 5,099 **over** | 3,980 **over** | 4,016 / 2,842 / 2,582 (Nov 11) |
 | My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | 1,737 / 2,587 / 1,699 (after Option A, Nov 11; before: 4,891 / 3,538 / 2,311) |
 | My Team, no team yet (first visit) | (old empty state not measured) | | | 1,804 / 1,316 / 1,039 |
 | Build for Me | 3,178 | 2,270 | 1,947 **over** | not drawn yet |
@@ -44,3 +44,6 @@ This table records the rule in design-system.md section 9. Heights are full page
 
 - **My Team, today:** I measured 3,445px on desktop. Sim's figure was about 4,270px. I don't know which setup gave hers (a different width, or a section left open, perhaps), so both are noted here.
 - **My Team, rebuild (Nov 11):** the page is over its limit at all three sizes. On desktop the Team Sheet adds 612px at the bottom. On phone the stacked Set, Matchups and Suggestions take 2,558px and the Team Sheet another 1,378px. On iPad the six overflow the screen edge, because the mock-up has no iPad layout yet. Under 9.2 this goes to Sim with options before any change.
+
+- **Home, rebuild (Nov 11): a judgment call made under Sim's overnight authority.** The phone page first measured 4,238px, over the 4,200 limit. Instead of shrinking anything, the "Everything NastyPlot does" tiles show only the tool names on phone, without their one-line descriptions. Each tool is still one tap away, and the descriptions still show on iPad and desktop. Sim can reverse this.
+- **Home also changed:** the "This week in the ratings" chips moved from under the hero into the empty half beside the underdog, as a labelled list ("up 5 points": rating points, checked in AR.week). The old Welcome card, What's New and the sample-team note are not drawn. Each appears only in a special state (first visit, after an update, or while the sample team is loaded), never in the default page.

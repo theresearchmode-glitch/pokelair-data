@@ -1,0 +1,156 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Unbounded:wght@800;900&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* Home (R2). Every feature of today's Home (inventory A-team HOME-01..16) is here or one tap away. Rules: design-system.md
+   (floor rule, filled main action, section 9 length). Real data from today's site, Nov 11. */
+:root{--gut:96px}
+.page{position:relative;overflow:hidden}
+header{position:relative;z-index:1;height:76px;display:flex;align-items:center;padding:0 var(--gut)}header .logo svg{height:36px;display:block}
+nav{display:flex;gap:36px;margin:0 auto}nav a{font:500 15px/1 var(--b);color:var(--ink-2)}
+nav a.on{color:var(--ink);font-weight:700;position:relative}nav a.on::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:5px;background:var(--plot);transform:skewX(var(--slant))}
+header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
+main{position:relative;z-index:1}
+section{padding:48px var(--gut)}section+section{border-top:1px solid var(--rule)}
+h2.u{font-size:34px}.sub{font-size:15px;color:var(--ink-2);margin-top:4px}
+.more-link{font:600 15px/1 var(--b);color:var(--plot-text)}
+/* Pokémon on the floor (design rule): art + a pool of its own normalised colour at its feet */
+.pk{position:relative;text-align:center}
+.pk .sh{position:absolute;left:50%;bottom:var(--fy,40px);width:var(--pw,110px);height:calc(var(--pw,110px)*.2);transform:translate(-50%,50%);border-radius:50%;
+  background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp),.6),rgba(var(--cp),.28) 55%,transparent)}
+:root[data-theme="dusk"] .pk .sh{background:radial-gradient(closest-side,rgba(var(--cp),.88),rgba(var(--cp),.3) 45%,transparent);filter:blur(1.5px)}
+.pk img{position:relative;display:block;margin:0 auto;width:var(--iw,110px);max-width:100%;aspect-ratio:1;object-fit:contain;object-position:50% 100%;filter:drop-shadow(4px 7px 7px rgba(30,20,50,.16))}
+:root[data-theme="dusk"] .pk img{filter:drop-shadow(0 0 .6px rgba(255,255,255,.55)) drop-shadow(0 -1px 5px rgba(var(--cp),.3))}
+.pk b{position:relative;display:block;font:700 15px/1.25 var(--b);margin-top:8px}.pk b .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text)}.pk small{position:relative;display:block;font:500 13px/1.35 var(--b);color:var(--ink-2)}
+/* hero: tagline + start buttons left; the most used three on one floor right */
+.hero{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:56px;align-items:center;padding-top:24px;border:0}
+.hero h1{font-size:68px;line-height:1;margin:16px 0}.hero h1 span{display:block;white-space:nowrap}.hero h1 .pl{color:var(--plot)}
+.hero p{font-size:17px;color:var(--ink-2);max-width:480px}
+.go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:28px;max-width:500px}.go .btn{grid-column:1/-1;height:52px}.go .btn2{height:48px}
+.hero .imp{display:block;margin-top:16px;font:500 15px/1.4 var(--b);color:var(--ink-2)}.hero .imp a{color:var(--plot-text);font-weight:600}
+.used{position:relative}.used .k{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2);text-align:center}
+.three{position:relative;display:grid;grid-template-columns:1fr 1.5fr 1fr;align-items:end;gap:8px;margin-top:8px}
+.three::before{content:"";position:absolute;left:-24px;right:-24px;bottom:58px;height:1px;background:linear-gradient(90deg,transparent,rgba(23,22,26,.13) 12%,rgba(23,22,26,.13) 88%,transparent)}
+:root[data-theme="dusk"] .three::before{background:linear-gradient(90deg,transparent,rgba(214,218,255,.3) 12%,rgba(214,218,255,.3) 88%,transparent)}
+.three .pk{--fy:58px}.three .one{--iw:260px;--pw:220px}.three .two{--iw:150px;--pw:130px}
+.three .one .rk{font:900 15px/1 var(--u);font-style:italic;color:var(--plot-text)}
+.three .one b{font:900 28px/1.05 var(--u);font-style:italic;margin-top:12px}
+.three .num{font:900 22px/1 var(--u);font-style:italic}.three .num .unit{font-family:var(--b);font-style:normal;font-weight:600}
+.used .src{margin-top:16px;text-align:center;font:400 13px/1.5 var(--b);color:var(--ink-3)}
+.week{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 var(--gut) 40px}
+.week .lab{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-right:4px}
+.week .chip i{font-style:normal;margin-left:8px;font-weight:700}.week .up{color:var(--good-text)}.week .dn{color:var(--mid-text)}
+/* the Champion's six beside your six */
+.duel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px}
+.duel .k{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:8px}
+.duel h3{font-size:28px}.duel .who{margin-top:8px;font:600 15px/1.4 var(--b)}.duel .who small{font-weight:400;color:var(--ink-2)}
+.six{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;margin-top:16px}
+.six .pk{--iw:96px;--pw:96px;--fy:52px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-top:20px;font:600 15px/1 var(--b)}.row .btn{height:48px}.row .btn2{height:44px}.row a{color:var(--plot-text)}
+.score{display:flex;align-items:flex-end;gap:12px;margin-top:4px}.score b{font:900 64px/.86 var(--u);font-style:italic;letter-spacing:-.04em}
+.score span{padding-bottom:4px;font:900 20px/1 var(--u);font-style:italic;color:var(--band-top)}.score small{display:block;font:600 13px/1.3 var(--b);color:var(--ink-2);margin-top:4px;font-style:normal}
+:root[data-theme="dusk"] .score b{color:#D6D1CA}
+.plan{margin-top:12px;font-size:15px;color:var(--ink-2)}.plan strong{color:var(--ink)}
+
+/* Top of the Meta beside today's underdog */
+.meta2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:start}
+.sw{display:flex;gap:8px;margin:16px 0 8px}.sw .chip{height:36px}
+.hint{font:400 13px/1.5 var(--b);color:var(--ink-3)}
+.rk{list-style:none;margin-top:8px}
+.rk li{display:grid;grid-template-columns:32px 40px minmax(0,1fr) auto auto;gap:12px;align-items:center;height:52px;border-bottom:1px solid var(--rule);font:600 15px/1.2 var(--b)}
+.rk li i{font:900 15px/1 var(--u);color:var(--ink-3)}.rk li img{width:40px;height:40px;object-fit:contain}
+.rk li .t{font:700 13px/1 var(--b);color:var(--ink-2)}.rk li .r{font:900 20px/1 var(--u);font-style:italic;min-width:40px;text-align:right}
+.rk + .more-link{display:inline-block;margin-top:16px}
+.ud{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;align-items:center}
+.ud .stage{position:relative;width:200px;height:200px}
+.ud .pool{position:absolute;left:4%;right:4%;bottom:2%;height:16%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(23,22,26,.30),transparent 55%) center/40% 45% no-repeat,radial-gradient(closest-side,rgba(0,120,191,.55),rgba(0,120,191,.22) 50%,rgba(232,54,79,.14) 72%,transparent)}
+.ud .pool.b{background:radial-gradient(closest-side,rgba(232,54,79,.30),rgba(0,120,191,.18) 60%,transparent);animation:breathe 4.5s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.3}50%{opacity:1}}@media (prefers-reduced-motion:reduce){.ud .pool.b{animation:none;opacity:.6}}
+:root[data-theme="dusk"] .ud .pool{background:radial-gradient(closest-side,rgba(98,190,247,.9),rgba(98,190,247,.32) 45%,rgba(240,112,138,.18) 70%,transparent);filter:blur(1.5px)}
+:root[data-theme="dusk"] .ud .pool.b{background:radial-gradient(closest-side,rgba(240,112,138,.45),rgba(98,190,247,.2) 60%,transparent)}
+.ud .stage img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 1px rgba(255,255,255,.9)) drop-shadow(0 0 6px rgba(0,120,191,.45)) drop-shadow(0 0 3px rgba(232,54,79,.25)) drop-shadow(4px 8px 8px rgba(30,20,50,.16))}
+:root[data-theme="dusk"] .ud .stage img{filter:drop-shadow(0 0 1px rgba(255,255,255,.75)) drop-shadow(0 0 7px rgba(98,190,247,.6)) drop-shadow(0 -1px 4px rgba(240,112,138,.35))}
+.ud .k{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2);display:flex;align-items:center;gap:10px}
+.ud .k::before{content:"";width:20px;height:7px;background:linear-gradient(90deg,var(--plot),var(--pick));transform:skewX(var(--slant))}
+.ud h3{font-size:28px;margin:8px 0}.ud h3 span{color:var(--plot)}.ud p{font-size:15px;color:var(--ink-2)}
+.ud .fav{display:inline-flex;gap:6px;margin-top:16px;font:600 15px/1.3 var(--b);color:var(--plot-text)}
+.side{display:grid;gap:40px}
+.wk h3{font-size:22px}.wk .hint{margin-top:4px}.wk ul{list-style:none;margin-top:8px}
+.wk li{display:flex;justify-content:space-between;align-items:center;height:52px;border-bottom:1px solid var(--rule);font:600 15px/1.2 var(--b)}
+.wk li i{font-style:normal;font-weight:700}.wk .up{color:var(--good-text)}.wk .dn{color:var(--mid-text)}
+/* all tools: 12 even tiles (11 tools + How We Calculate), no half-filled row */
+.tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 32px;margin-top:20px}
+.tools a{display:block;padding:16px 0;border-top:1px solid var(--rule)}.tools a b{display:flex;justify-content:space-between;font:700 15px/1.3 var(--b)}.tools a b i{font-style:normal;color:var(--ink-3)}
+.tools a span{display:block;margin-top:4px;font:400 13px/1.5 var(--b);color:var(--ink-2)}
+.fold{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px var(--gut);border-top:1px solid var(--rule);font:600 15px/1.4 var(--b)}
+.fold small{display:block;font:400 13px/1.5 var(--b);color:var(--ink-2)}.fold i{font-style:normal;font-size:20px;color:var(--ink-3)}
+footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}footer svg{height:24px}footer .r{margin-left:auto;display:flex;gap:32px}
+@media (max-width:1179px){:root{--gut:48px}.ud{grid-template-columns:minmax(0,1fr)}.six .pk{--iw:84px;--pw:84px}.hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px}.hero h1{font-size:48px}
+  .three .one{--iw:200px;--pw:170px}.three .two{--iw:110px;--pw:100px}.duel,.meta2{gap:40px}.duel .row .btn2{flex:1 1 0;min-width:0;padding:0 12px}.duel .row a{flex-basis:100%}.tools{grid-template-columns:repeat(3,minmax(0,1fr))}
+  nav{gap:24px}footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0}}
+@media (max-width:699px){.duel,.meta2{grid-template-columns:minmax(0,1fr);gap:48px}}
+@media (max-width:779px){.meta2{grid-template-columns:minmax(0,1fr);gap:48px}}
+@media (max-width:699px){:root{--gut:16px}nav{display:none}header{justify-content:space-between}section{padding:32px var(--gut)}h2.u{font-size:28px}
+  .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-top:8px}.hero h1{font-size:34px}.go .btn2{white-space:nowrap;padding:0 8px}
+  .three .one{--iw:150px;--pw:130px}.three .two{--iw:88px;--pw:84px}.three .one b{font-size:22px}.three .num{font-size:17px}
+  .six .pk{--iw:80px;--pw:80px}.pk b{font-stretch:85%}.pk small{font-stretch:90%}
+  .three .pk small{display:flex;flex-direction:column;align-items:center}.three .pk small .num{display:block}
+  .tools{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}.tools a{padding:0;height:52px;display:flex;align-items:center}.tools a b{flex:1}.tools a span{display:none}
+  .rk li:nth-child(n+6){display:none}
+  .ud{grid-template-columns:1fr;justify-items:center;text-align:center}.ud .k{justify-content:center}.ud .row{justify-content:center}
+  .fold{padding:16px var(--gut)}}
+@media (max-width:379px){.rk li span,.pk b{font-stretch:80%}.rk li{gap:8px}.hero h1{font-size:28px}.go{grid-template-columns:minmax(0,1fr)}}
+</style></head><body><div class="page" id="page"></div>
+<script>
+document.documentElement.dataset.theme=location.hash.slice(1)||'light';
+/*DATA*/
+const nm=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.slice(5))}`:esc(d);
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
+function norm(c){const[h,s0]=hsl(...c),s=Math.max(s0,.72),l=.56,C=(1-Math.abs(2*l-1))*s,X=C*(1-Math.abs((h/60)%2-1)),m=l-C/2,k=Math.floor(h/60)%6;return[[C,X,0],[X,C,0],[0,C,X],[0,X,C],[X,0,C],[C,0,X]][k].map(v=>Math.round((v+m)*255));}
+async function hue(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
+  const o=B.map((b,i)=>({c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[150,150,165],w:b[3]})).sort((a,b)=>b.w-a.w);return o[0].c;}
+(async()=>{
+  const DK=document.documentElement.dataset.theme==='dusk',CP={};
+  const all=[...D.used,...D.champ.mons,...D.team];await Promise.all(all.map(async m=>{CP[m.img]=CP[m.img]||norm(await hue(m.img)).join(',');}));
+  const pk=(m,cls,inner)=>`<div class="pk ${cls||''}" style="--cp:${CP[m.img]}"><i class="sh"></i><img src="${m.img}" alt="">${inner}</div>`;
+  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a class="on">Home</a><a>Build</a><a>My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
+  const [u1,u2,u3]=D.used;
+  const hero=`<section class="hero"><div><div class="eyebrow">Pokémon Champions · Reg M-C · VGC doubles</div><h1 class="u"><span>Sharply raise</span><span class="pl">your win rate.</span></h1>
+    <p>Score your team, see what beats it, and plan every match, from ${D.teams} real tournament teams.</p>
+    <div class="go"><div class="btn main">Score my team</div><div class="btn2"><span>Build a team</span></div><div class="btn2"><span>Plan a match</span></div></div>
+    <span class="imp">Already have a team? <a>Import from Showdown</a></span></div>
+    <div class="used"><div class="k">Most used right now</div><div class="three">
+      ${pk(u2,'two',`<b>${esc(u2.d)}</b><small><span class="num">${u2.pct}<span class="unit">%</span></span> of teams</small>`)}
+      ${pk(u1,'one',`<b>${esc(u1.d)}</b><small><span class="num">${u1.pct}<span class="unit">%</span></span> of teams · #1</small>`)}
+      ${pk(u3,'two',`<b>${esc(u3.d)}</b><small><span class="num">${u3.pct}<span class="unit">%</span></span> of teams</small>`)}</div>
+      <div class="src">${esc(D.src)}</div></div></section>
+`;
+  const C=D.champ;
+  const duel=`<section class="duel"><div><div class="k">The Champion's six · latest winner</div><h3 class="u">${esc(C.event)}</h3>
+      <div class="who">Champion, ${esc(C.record)} <small>· ${esc(C.date)} · ${C.players} players</small></div>
+      <div class="six">${C.mons.map(m=>pk(m,'',`<b>${nm(m.d)}</b><small>${esc(m.item)}</small>`)).join('')}</div>
+      <div class="row"><div class="btn2"><span>Load this team</span></div><div class="btn2"><span>Copy for Showdown</span></div><a>All ${C.events} events ›</a></div></div>
+    <div><div class="k">Your six · ${esc(D.teamName)}</div><div class="score"><b>${D.score}</b><span>${esc(D.band)}<small>Strength Score</small></span></div>
+      <div class="six lineup">${D.team.map(m=>pk(m,'',`<b>${nm(m.d)}</b>`)).join('')}</div>
+      <p class="plan"><strong>Game plan vs the Champion's six:</strong> ${esc(D.plan)}</p>
+      <div class="row"><div class="btn main">Prep vs the Champion</div><a>Open My Team ›</a></div></div></section>`;
+  const f=D.under;
+  const meta=`<section class="meta2"><div><h2 class="u">Top of the Meta.</h2><p class="sub">NastyPlot ratings, from ${D.teams} tournament teams</p>
+      <div class="sw"><span class="chip on">Top rated</span><span class="chip">Hidden gems</span></div><p class="hint">Highest ratings right now, with their rank. Tap one for the breakdown.</p>
+      <ol class="rk">${D.top.map(t=>`<li><i>${t.rank}</i><img src="${t.img}" alt=""><span>${esc(t.d)}</span><span class="t">${t.tier} tier</span><span class="r">${t.r}</span></li>`).join('')}</ol><a class="more-link">All ratings ›</a></div>
+    <div class="side"><div class="ud"><div class="stage"><i class="pool"></i><i class="pool b"></i><img src="${f.img}" alt="${esc(f.d)}"></div><div>
+      <div class="k">Today's underdog</div><h3 class="u">${esc(f.d)}. <span>Somebody's favourite.</span></h3>
+      <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
+      <div class="row"><div class="btn main">Build around it</div><a>Info Sheet</a></div>
+      <a class="fav">Or build around your favourite Pokémon <span aria-hidden="true">→</span></a></div></div>
+      <div class="wk"><h3 class="u">This week in the ratings</h3><p class="hint">Biggest moves in rating since last week. Tap one for its info sheet.</p>
+      <ul>${D.week.map(w=>`<li><span>${esc(w.d)}</span><i class="${w.up?'up':'dn'}">${w.up?'▲ up':'▼ down'} ${w.n} <span class="unit">points</span></i></li>`).join('')}</ul></div></div></section>`;
+  const tools=`<section><h2 class="u">Everything NastyPlot does.</h2><p class="sub">${D.tools.length} tools, one tap each</p><div class="tools">${D.tools.map(([n,l])=>`<a><b>${esc(n)}<i>›</i></b><span>${esc(l)}</span></a>`).join('')}</div></section>`;
+  const fold=`<div class="fold"><div>More on Home<small>Doubles is played in pairs · What changed this week · Winning cores · Your battles</small></div><i>+</i></div>`;
+  const footer=`<footer>${DK?D.logoD:D.logo}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
+  document.getElementById('page').innerHTML='<i class="grain"></i>'+header+'<main>'+hero+duel+meta+tools+fold+'</main>'+footer;
+  await document.fonts.ready;document.body.dataset.ready=1;})();
+</script></body></html>
