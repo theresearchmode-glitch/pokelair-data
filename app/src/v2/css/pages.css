@@ -488,3 +488,7 @@
 /* Your Games as one line (Sim, Nov 11): record or "None logged yet" beside Log a Game */
 .tm-yg-hd{flex-wrap:nowrap;justify-content:space-between}.tm-yg-0 span{font:500 var(--t16)/1.5 var(--b);color:var(--ink-2)}
 .yg2-why{margin:var(--s2) 0 var(--s4)}
+/* the set's four moves as soft tinted rows with a coloured edge (Sim's review, Nov 11, item 6: solid blocks were louder than the Pokémon) */
+.tm-moves .np-type{justify-content:flex-start;text-align:left;min-height:var(--tap);padding:0 var(--s3);clip-path:none;border-radius:var(--r-s);border-left:4px solid var(--tc,var(--type-none));
+  background:color-mix(in srgb,var(--tc,var(--type-none)) 14%,transparent);color:var(--ink);font-weight:600}
+:root[data-theme="night"] .tm-moves .np-type{background:color-mix(in srgb,var(--tc,var(--type-none)) 22%,transparent)}
