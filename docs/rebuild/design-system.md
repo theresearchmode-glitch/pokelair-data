@@ -162,3 +162,59 @@ concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, th
   no boxes in boxes, one size per kind of control, 320-2560 with no sideways scroll.
 - The agreed-rules list in docs/rebuild-plan.md ("Must match what we already agreed").
 - Smooth-scroll measurement against docs/rebuild/baseline.json.
+
+
+## 9. Page length and polish (Sim, Nov 11). Every page is checked against this before Sim sees it.
+
+Why: the old pages grew because every feature was added to the bottom and nothing said "this page is full". These limits make "full" measurable. Heights are recorded in docs/rebuild/page-heights.md and measured by experiments/page-heights.mjs (today's site) and experiments/mock-heights.mjs (rebuild).
+
+**9.1 Length limits.** Full page height, everything in its default state (nothing expanded by the user).
+
+| Size | Tool page | Home |
+|---|---|---|
+| Phone 390 x 844 | 4 screens, about 3,400px | 5 screens, about 4,200px |
+| iPad 820 x 1180 | 3 screens, about 3,500px | 3 screens, about 3,500px |
+| Desktop 1440 x 900 | 2 screens, about 1,800px | 3 screens, about 2,700px |
+
+A page over its limit is not finished.
+
+**9.2 The limits are starting points, not facts.** They came from one mock-up.
+- If a page can't fit, never shrink text, tighten spacing or drop a feature to make it fit. Stop and send Sim the page, its height, what is taking the space, and two options for what to move behind a tap. Sim decides.
+- Likely exceptions are the full Team Sheet, "All 30" matchups, the Ratings list and the damage calc. For each, propose a limit and the reason before building.
+- If a limit is too loose (a page fits but still feels long), say so.
+
+**9.3 How to stay inside.**
+- Each page has one job, and its answer is on the first screen at all three sizes.
+- Show the summary; the detail is one tap away (a sheet, an expanding row or a tab). Nothing is removed.
+- Long lists show the top 5 to 10 with "See all", never 30 rows open by default.
+- On phone, only one section is open at a time.
+- On desktop, use side-by-side columns before stacking.
+- Any page taller than 2 screens on phone gets a sticky jump bar.
+- No section repeats information already shown higher on the same page.
+
+**9.4 Shorter pages mean more taps.**
+- The most-used actions stay at most one tap from the first screen. For My Team those are: change a Pokémon, edit a set, see matchups, see suggestions, save, share, copy for Showdown.
+- Before hiding anything, list it with its taps today and taps after. Anything going from 0 or 1 taps to 2 or more needs Sim's yes.
+- Nothing is more than 2 taps deep.
+- Anything hidden has a visible label saying what's inside and how much ("All 30 matchups", "7 checks").
+- An expanded section stays open when the user comes back to the page in the same visit.
+
+**9.5 Formatting checks.** Every page, in day and night, at all three sizes:
+- No sideways scroll, and nothing cut off at the edge.
+- No clipped, overlapping or hidden text. Test with the longest names (Mega Charizard Y, Wash Rotom) and the largest numbers (100, 100.0%, 13,826).
+- No half-filled rows and no empty strips.
+- Spacing on the 4px scale and text on the type scale.
+- Items in a row share a baseline, and columns share a left edge.
+- Nothing under 13px. Tap targets at least 44px on phone.
+- At most one coloured surface per screen, and no boxes in boxes.
+- Every Pokémon is named, and every number has a label and a unit.
+- Test three states: a full team, 1 to 5 Pokémon, and no team.
+
+**9.6 Proof per page.**
+- Six screenshots: 3 sizes x day and night.
+- Its row in the height table.
+- Which checks a script ran and which were checked by eye only (never "checked" for eye-only).
+- The behaviour test results for that page.
+- What could not be checked.
+
+**9.7 Conflicts.** If any of this conflicts with another rule here or in CLAUDE.md, don't pick one silently. Name both rules and ask Sim.
