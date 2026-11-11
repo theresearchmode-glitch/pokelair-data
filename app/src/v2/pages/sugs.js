@@ -52,7 +52,10 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
       <ol class="tm-sug">${top.map((x, k) => V2.sgCard({pl: x.pl, k, g0, attr: 'data-v2plan', side, hidden: k > 0 && !open, main: !k})).join('')}</ol>
       ${hid > 0 && !open ? `<button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} more suggestion${hid === 1 ? '' : 's'}</button>` : all}`;
     V2._sgLast = body; }
-  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${body}</section>`; };
+  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; };
+// the Undo bar: the last suggestion (or Quick add) applied, until the team is changed some other way; Undo steps back one at a
+// time, up to 8 (today's undo stack and its [data-undobar] handler, 06-helpers.js)
+V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role="status"><span>Applied <b>${V2.esc(t.label)}</b></span><button type="button" class="np-btn2" data-undobar><span>Undo</span></button></div>` : ''; };
 
 // Show more: the next suggestions open in place (already worked out) and the link becomes See all suggestions (as today)
 document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-v2sgmore]')) return; ui.sugMore = members().map(m => m.p.n).join(',');

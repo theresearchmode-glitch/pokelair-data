@@ -147,7 +147,9 @@ export default (ui, pg, o) => {
       const mv = li.querySelector('.tm-mv'), b = mv && mv.querySelector('b'), sp = mv && mv.querySelector('span'), ap = li.querySelector('[data-v2plan]');
       return [chs.join(', '), b ? `${b.innerText.trim()} (${sp ? sp.innerText.replace(/\s+/g, ' ').trim() : ''})` : '', ap ? ap.innerText.trim() : ''].filter(Boolean).join(' '); })),
     applySuggestionCard: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#main [data-v2plan]')].filter(e => e.getClientRects().length)[i]; b.click(); }, i).then(() => pg.waitForTimeout(1500)),
-    undoBar: () => NOT('Undo bar for applied suggestions (only the toast Undo)'), undoLastApplied: () => NOT('Undo bar for applied suggestions (only the toast Undo)'),
+    /** the Undo bar above the suggestions ("Applied <label> Undo"), null when there is none (same reading as today's adapter) */
+    undoBar: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main [data-undobar]')].find(e => e.getClientRects().length); return e ? e.parentElement.innerText.replace(/\s+/g, ' ').trim() : null; }),
+    undoLastApplied: () => click('#main [data-undobar]', 1500),
     // edit panel: Edit Set (.ed2), and the other panels today's #chEdit hosts: Import (.imp2), Save (.sv2), Add (search sheet)
     editPanel: () => pg.evaluate(() => { const w = window.V2 && V2._sheet && V2._sheet.wrap, s = w && w.querySelector('.np-sheet'); if (!s) return null; const c = s.querySelector('.ed2,.imp2,.sv2,.np-find'); if (!c) return null;
       const h = c.querySelector('h2'), ht = h ? h.innerText.replace(/\s+/g, ' ').trim() : ''; return {title: c.classList.contains('ed2') && !/^Add a Pok/.test(ht) ? 'Edit ' + ht : ht, text: s.innerText.replace(/\s+/g, ' ').trim()}; }),
