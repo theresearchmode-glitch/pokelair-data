@@ -29,6 +29,8 @@
 .sx-art{position:relative;padding-bottom:var(--s4)}
 /* the art fills the set's column, as in the mock (up to 600px, from the left like the rating plate; 16px spare each side for the picked art's 1.08 scale), so a wide screen never leaves a strip beside it */
 .tm-art.sx-art{max-width:none;container-type:inline-size}.sx-art .np-mon{--iw:min(100cqi - 2 * var(--s4),600px)}.sx-art .np-mon .st{margin:0 0 0 var(--s4)}
+/* the set's art is always the picked one: no step-forward scale here, so its head never rises into the line above */
+.sx-art .np-mon.sel img{scale:1}
 .sx-rate{position:absolute;left:0;bottom:0;display:inline-flex;align-items:baseline;gap:var(--s2);padding:var(--s2) var(--s5);background:var(--plate);color:var(--on-plate);transform:skewX(var(--slant))}
 .sx-rate>*{transform:skewX(24deg)}
 .sx-rate b{font-size:var(--t24);line-height:1}
