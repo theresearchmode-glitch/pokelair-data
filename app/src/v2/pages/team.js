@@ -77,7 +77,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-v2save]'))
 // ---------- Saved Teams (R4, Nov 11): a sheet over My Team; rows and their scores are today's savedRows (30-saved-data.js) ----------
 // Open, Copy for Showdown, Rename and Delete (with a confirm) as today. Sort: Newest / Name / Matchups (today's "Readiness" sort).
 // Still to come on the new build: Compare (with the Compare page) and "Your games" with this six (with My Record).
-V2.svUi = {sort: 'recent', ren: null, del: null};
+V2.svUi = {sort: 'recent', ren: null, del: null, cmp: null};
 V2.savedHtml = () => { const U = V2.svUi, rows = savedRows(U.sort), n = rows.length;
   const card = ({t, r, ck, G}) => { const on = t.id === S.loadedId, id = V2.esc(t.id), nm = V2.esc(t.name), s = G ? Math.round(G.s) : null;
     const six = r.ms.map(m => `<li>${V2.mon(m.p.n, {iw: 56})}</li>`).join('') + Array.from({length: Math.max(0, 6 - r.ms.length)}, () => '<li class="svt2-empty"><i></i><span>Empty</span></li>').join('');
@@ -86,16 +86,16 @@ V2.savedHtml = () => { const U = V2.svUi, rows = savedRows(U.sort), n = rows.len
     const score = s != null ? `<div class="np-score sm" style="--band:var(--band-${({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid'})"><b>${s}</b><div class="w"><span>${V2.esc(CH.wordOf(G.s))}</span><small>Strength Score</small></div></div>`
       : `<p class="svt2-part">${r.ms.length < 6 ? `${r.ms.length} of 6 picked` : 'Not rated yet'}</p>`;
     const acts = U.del === t.id ? `<div class="svt2-del" role="group" aria-label="Delete ${nm}?"><span>Delete ${nm}?</span><button type="button" class="np-btn2" data-svact="delok" data-id="${id}"><span>Delete</span></button><button type="button" class="np-link" data-svact="delx">Keep</button></div>`
-      : `<div class="svt2-acts"><button type="button" class="np-btn2" data-svact="open" data-id="${id}" aria-label="Open ${nm}"><span>Open</span></button><button type="button" class="np-link" data-svact="copy" data-id="${id}" aria-label="Copy ${nm} for Showdown">Copy for Showdown</button><button type="button" class="np-link" data-svact="ren" data-id="${id}" aria-label="Rename ${nm}">Rename</button><button type="button" class="np-link" data-svact="del" data-id="${id}" aria-label="Delete ${nm}">Delete</button></div>`;
+      : `<div class="svt2-acts"><button type="button" class="np-btn2" data-svact="open" data-id="${id}" aria-label="Open ${nm}"><span>Open</span></button><button type="button" class="np-link" data-svact="cmp" data-id="${id}" aria-pressed="${U.cmp === t.id}" aria-label="Compare ${nm}">${U.cmp === t.id ? 'Picked ✓' : 'Compare'}</button><button type="button" class="np-link" data-svact="copy" data-id="${id}" aria-label="Copy ${nm} for Showdown">Copy for Showdown</button><button type="button" class="np-link" data-svact="poster" data-id="${id}" aria-label="Team poster of ${nm}">Team Poster</button><button type="button" class="np-link" data-svact="ren" data-id="${id}" aria-label="Rename ${nm}">Rename</button><button type="button" class="np-link" data-svact="del" data-id="${id}" aria-label="Delete ${nm}">Delete</button></div>`;
     const gone = goneNote(t.slots);
-    return `<article class="svt2-card${on ? ' on' : ''}">${head}<ul class="svt2-six" aria-label="${V2.esc(r.ms.map(m => m.d).join(', ') || 'Empty')}">${six}</ul><p class="fine svt2-gone">${gone}</p><div class="svt2-foot">${score}${ck ? `<span class="fine">${ck.pass}/${ck.n} checks</span>` : ''}</div>${acts}</article>`; };
+    return `<article class="svt2-card${on ? ' on' : ''}">${head}<ul class="svt2-six" aria-label="${V2.esc(r.ms.map(m => m.d).join(', ') || 'Empty')}">${six}</ul><p class="fine svt2-gone">${gone}</p><div class="svt2-foot">${score}${ck ? `<span class="fine">${ck.pass}/${ck.n} checks</span>` : ''}${(() => { const G = myGames(r.ms); return G ? `<span class="fine">Your games ${G.w}–${G.l}</span>` : ''; })()}</div>${acts}</article>`; };
   // an odd count leaves a hole in the 2-across grid: the free spot invites saving the six on My Team (Sim: no half-filled rows)
   const mine = members().length, free = `<article class="svt2-card svt2-free"><h3 class="u">${10 - n} spots free</h3><p class="tm-sub">${mine ? 'Keep the six on My Team as a saved team.' : 'Build a team on My Team, then save it here.'}</p>
     <div class="svt2-acts">${mine ? '<button type="button" class="np-btn2" data-svact="new"><span>Save This Six</span></button>' : '<a class="np-btn2" href="#build"><span>Build me a team</span></a>'}</div></article>`;
   return `<div class="svt2"><div class="np-eyebrow">${n} of 10 saved</div><h2 class="u">Saved Teams</h2>
-    ${n ? `<div class="svt2-sort">${V2.slide('svsort', [['recent', 'Newest', 'clock'], ['name', 'Name'], ['rating', 'Matchups', 'gauge']], U.sort, 'Sort saved teams')}</div><div class="svt2-grid" aria-live="polite">${rows.map(card).join('')}${n % 2 && n < 10 ? free : ''}</div>`
+    ${U.cmp && S.teams.some(t => t.id === U.cmp) ? `<p class="svt2-cmp" role="status"><b>Compare:</b> ${V2.esc((S.teams.find(t => t.id === U.cmp) || {}).name || '')} is picked. Pick one more saved team, or <button type="button" class="np-link" data-svact="cmpcur">Compare with My Team</button> · <button type="button" class="np-link" data-svact="cmpx">Cancel</button></p>` : n > 1 ? '<p class="fine svt2-cmp">Tap Compare on two teams to see them side by side.</p>' : ''}${n ? `<div class="svt2-sort">${V2.slide('svsort', [['recent', 'Newest', 'clock'], ['name', 'Name'], ['rating', 'Matchups', 'gauge']], U.sort, 'Sort saved teams')}</div><div class="svt2-grid" aria-live="polite">${rows.map(card).join('')}${n % 2 && n < 10 ? free : ''}</div>`
       : `<p class="tm-sub">No saved teams yet. Tap Save Team on My Team to keep this six.</p>`}</div>`; };
-V2.openSavedTeams = () => { V2.svUi.ren = V2.svUi.del = null; V2.sheet(V2.savedHtml(), {label: 'Saved Teams', fit: true}); };
+V2.openSavedTeams = () => { V2.svUi.ren = V2.svUi.del = V2.svUi.cmp = null; V2.sheet(V2.savedHtml(), {label: 'Saved Teams', fit: true}); };
 // redraw the sheet in place (the page under it redraws through render()); focus goes to `focus` or the sheet itself
 V2.svRefresh = focus => { const el = document.querySelector('.svt2'); if (!el) return; el.outerHTML = V2.savedHtml(); const f = focus && document.querySelector(focus); (f || document.querySelector('.np-sheet')).focus(); if (f && f.select) f.select(); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2saved]')) { V2.openSavedTeams(); return; }
@@ -103,6 +103,11 @@ document.addEventListener('click', e => { if (e.target.closest('[data-v2saved]')
   if (a === 'open') { const t = openSaved(id); if (!t) return; V2.closeSheet(true); V2.ui.sel = 0; if (location.hash !== '#team') location.hash = '#team'; render(); scrollTo(0, 0); toast(`Opened "${t.name}"`, true); }
   else if (a === 'copy') { const t = S.teams.find(x => x.id === id); if (t) copyText(slotsPaste(t.slots)).then(ok => toast(ok ? 'Team copied for Showdown' : 'Copy failed. Try again.')); }
   else if (a === 'ren') { U.ren = id; U.del = null; V2.svRefresh('[data-svname]'); }
+  // Compare two saved teams (as today): the first tap picks, the second opens Compare; or the pick against My Team
+  else if (a === 'cmp') { if (U.cmp && U.cmp !== id) { const x = U.cmp; U.cmp = null; V2.closeSheet(true); V2.cxGo('s:' + x, 's:' + id); } else { U.cmp = U.cmp === id ? null : id; V2.svRefresh(`[data-svact="cmp"][data-id="${CSS.escape(id)}"]`); } }
+  else if (a === 'cmpcur') { const x = U.cmp; U.cmp = null; V2.closeSheet(true); V2.cxGo('cur', 's:' + x); }
+  else if (a === 'cmpx') { const x = U.cmp; U.cmp = null; V2.svRefresh(`[data-svact="cmp"][data-id="${CSS.escape(x || '')}"]`); }
+  else if (a === 'poster') { V2.closeSheet(true); V2.openShare(id); }
   else if (a === 'renx') { const was = U.ren; U.ren = null; V2.svRefresh(`[data-svact="ren"][data-id="${CSS.escape(was || '')}"]`); }
   else if (a === 'del') { U.del = id; U.ren = null; V2.svRefresh('[data-svact="delx"]'); }
   else if (a === 'delx') { const was = U.del; U.del = null; V2.svRefresh(`[data-svact="del"][data-id="${CSS.escape(was || '')}"]`); }
@@ -196,7 +201,7 @@ V2.underdog = (now = new Date()) => { const day = Math.floor((Date.UTC(now.getFu
   return pool.length ? pool[(day - 1) % pool.length].n : 'Flapple'; };
 V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nSaved = S.teams.filter(t => t.format !== 'singles').length;
   return `<section class="tm-empty"><div class="tm-e-lead"><div class="np-eyebrow">My Team</div><h1 class="u">Six spots, all yours.</h1><p>Add a Pokémon to start, or let us build a whole team around a favourite.</p>
-    <div class="row"><a class="np-btn" href="#build">Build Me a Team</a><button type="button" class="np-btn2" data-v2search><span>Add a Pokémon</span></button>${nSaved ? `<button type="button" class="np-link tm-e-saved" data-v2saved>Open a saved team <small>${nSaved}</small></button>` : ''}</div></div>
+    <div class="row"><a class="np-btn" href="#build">Build Me a Team</a><button type="button" class="np-btn2" data-v2search><span>Add a Pokémon</span></button><span class="tm-e-links"><button type="button" class="np-link" data-v2import>Import a team</button>${nSaved ? `<button type="button" class="np-link tm-e-saved" data-v2saved>Open a saved team <small>${nSaved}</small></button>` : ''}</span></div></div>
     <div class="tm-ud"><div class="tm-ud-hd"><div class="np-eyebrow">Today's underdog</div><h2 class="u">${d}. <span>Somebody's favourite.</span></h2></div><div class="tm-ud-st">${V2.mon(n, {iw: 240, bare: true})}</div><div class="tm-ud-bd">
     <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
     <div class="row">${o.preview || V2.addState(n) === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${V2.esc(n)}"><span>Add ${d} to My Team</span></button>` : ''}<button type="button" class="np-link" data-v2mon="${V2.esc(n)}">Info Sheet</button></div></div></div></section>`; };
@@ -204,31 +209,63 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
 // ---------- Share (R4, Nov 11): today's share images (44-share-images.js, proved pixel-identical with same-share.mjs) ----------
 // Team Card / Team Poster / Team Sheet, light or dark; Save Image (the downloads capability, else a plain download) and Copy Team
 // Link (today's team link). The new build draws its sprites from its own art folder.
-V2.shUi = {kind: 'card', mode: null, url: null, blob: null};
+V2.shUi = {kind: 'card', mode: null, url: null, blob: null, saved: null};
 if (!window.__SPR) window.__SPR = new Proxy({}, {get: (t, id) => typeof id === 'string' && /^\d+$/.test(id) ? V2.art(id) : undefined});
-V2.openShare = () => { if (!members().length) return; const U = V2.shUi; if (!U.mode) U.mode = V2.theme() === 'night' ? 'dark' : 'light';
-  V2.sheet(`<div class="sh2"><div class="np-eyebrow">Share</div><h2 class="u">Share Your Team</h2>
-    <div class="sh2-ctl">${V2.slide('shkind', [['card', 'Team Card', 'card'], ['poster', 'Team Poster', 'poster'], ['sheet', 'Team Sheet', 'list']], U.kind, 'What to share')}${V2.slide('shmode', [['light', 'Light'], ['dark', 'Dark']], U.mode, 'Image style')}</div>
+V2.openShare = savedId => { const U = V2.shUi, t = savedId && S.teams.find(x => x.id === savedId); U.saved = t ? {name: t.name, ms: teamRating(t.slots).ms} : null;
+  if (U.saved ? !U.saved.ms.length : !members().length) { if (U.saved) toast('This saved team has no Pokémon'); return; } if (!U.mode) U.mode = V2.theme() === 'night' ? 'dark' : 'light'; const SV = U.saved;
+  V2.sheet(`<div class="sh2"><div class="np-eyebrow">Share</div><h2 class="u">${SV ? V2.esc(SV.name) + ': Team Poster' : 'Share Your Team'}</h2>
+    <div class="sh2-ctl">${SV ? '' : V2.slide('shkind', [['card', 'Team Card', 'card'], ['poster', 'Team Poster', 'poster'], ['sheet', 'Team Sheet', 'list']], U.kind, 'What to share')}${V2.slide('shmode', [['light', 'Light'], ['dark', 'Dark']], U.mode, 'Image style')}</div>
     <div class="sh2-img" data-sh2img aria-live="polite"><p class="fine">Drawing your image…</p></div>
-    <div class="sh2-acts"><button type="button" class="np-btn" data-sh2save disabled>Save Image</button><button type="button" class="np-btn2" data-copylink><span>Copy Team Link</span></button><span class="fine" data-sh2msg role="status"></span></div>
-    <p class="fine">On a phone you can also press and hold the image to save or share it. The team link opens this six on NastyPlot.</p></div>`, {label: 'Share'});
+    <div class="sh2-acts"><button type="button" class="np-btn" data-sh2save disabled>Save Image</button>${SV ? '' : '<button type="button" class="np-btn2" data-copylink><span>Copy Team Link</span></button>'}<span class="fine" data-sh2msg role="status"></span></div>
+    <p class="fine">On a phone you can also press and hold the image to save or share it.${SV ? '' : ' The team link opens this six on NastyPlot.'}</p></div>`, {label: SV ? 'Team poster' : 'Share'});
   V2.shDraw(); };
-V2.shDraw = async () => { const U = V2.shUi, box = document.querySelector('[data-sh2img]'), sv = document.querySelector('[data-sh2save]'); if (!box) return; const ms = members(), was = CH.shareMode;
+V2.shDraw = async () => { const U = V2.shUi, box = document.querySelector('[data-sh2img]'), sv = document.querySelector('[data-sh2save]'); if (!box) return; const SV = U.saved, ms = SV ? SV.ms : members(), was = CH.shareMode, kind = SV ? 'poster' : U.kind;
   if (sv) sv.disabled = true; CH.shareMode = U.mode; let c = null;
-  try { c = U.kind === 'poster' ? await ARB.poster(ms) : U.kind === 'sheet' ? await buildSheetImage(ms) : await ARB.card(); } catch (e) { c = null; } finally { CH.shareMode = was; }
+  try { c = SV ? await ARB.poster(ms, {name: SV.name}) : kind === 'poster' ? await ARB.poster(ms) : kind === 'sheet' ? await buildSheetImage(ms) : await ARB.card(); } catch (e) { c = null; } finally { CH.shareMode = was; }
   if (U.url) { try { URL.revokeObjectURL(U.url); } catch (e) {} U.url = null; }
   let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (e) {}
   U.blob = blob; U.url = blob ? URL.createObjectURL(blob) : null; if (!document.contains(box)) return;
-  box.className = 'sh2-img' + (U.kind === 'card' ? '' : ' tall');
-  box.innerHTML = U.url ? `<img src="${U.url}" alt="${U.kind === 'sheet' ? 'Your team as a NastyPlot team sheet: every set, nature and stat' : U.kind === 'poster' ? 'Your team as a NastyPlot team poster' : 'Your team as a NastyPlot share card'}">` : '<p class="fine">Could not draw the image in this view.</p>';
+  box.className = 'sh2-img' + (kind === 'card' ? '' : ' tall');
+  box.innerHTML = U.url ? `<img src="${U.url}" alt="${SV ? V2.esc(SV.name) + ' as a NastyPlot team poster' : U.kind === 'sheet' ? 'Your team as a NastyPlot team sheet: every set, nature and stat' : U.kind === 'poster' ? 'Your team as a NastyPlot team poster' : 'Your team as a NastyPlot share card'}">` : '<p class="fine">Could not draw the image in this view.</p>';
   if (sv) sv.disabled = !blob; };
 document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'shkind' && k !== 'shmode') return; V2.shUi[k === 'shkind' ? 'kind' : 'mode'] = e.detail.value; V2.shDraw(); });
 document.addEventListener('click', async e => { if (e.target.closest('[data-v2share]')) { V2.openShare(); return; }
   if (!e.target.closest('[data-sh2save]')) return; const U = V2.shUi, msg = document.querySelector('[data-sh2msg]'); if (!U.blob) return;
-  const name = ((typeof teamTitleFor === 'function' ? teamTitleFor(members()) : '') || 'My team').replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + (U.kind === 'poster' ? ' poster' : U.kind === 'sheet' ? ' sheet' : '') + ' - NastyPlot.png';
+  const name = U.saved ? U.saved.name.replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + ' poster - NastyPlot.png' : ((typeof teamTitleFor === 'function' ? teamTitleFor(members()) : '') || 'My team').replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + (U.kind === 'poster' ? ' poster' : U.kind === 'sheet' ? ' sheet' : '') + ' - NastyPlot.png';
   let dl = null; try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (er) {}
   if (dl) { try { await dl.save({filename: name, data: U.blob}); if (msg) msg.textContent = 'Saved.'; } catch (err) { if (msg) msg.textContent = err && err.code === 'declined' ? 'Not saved.' : 'Saving is not available here. Press and hold the image instead.'; } }
   else { const a = document.createElement('a'); a.href = U.url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); if (msg) msg.textContent = 'Downloaded.'; } });
+
+// ---------- a shared team link (R4, Nov 11): today's decodeTeam (same rules as a pasted team) and loadShared ----------
+// The link's team replaces yours only if you say so (as today); Undo brings yours back.
+V2.checkShared = () => { let raw = ''; try { raw = location.hash || ''; } catch (e) {} if (!/team=/.test(raw)) return; const x = decodeTeam(raw);
+  try { history.replaceState(history.state, '', location.pathname + location.search + '#team'); } catch (e) {}
+  if (!x) { V2.draw(); toast("That team link didn't work: it may be cut off"); return; } V2.draw();
+  const name = x.n || 'A shared team', six = x.slots.map(s => `<li>${V2.mon(s.n, {iw: 72})}</li>`).join('');
+  V2.sheet(`<div class="shd2"><div class="np-eyebrow">Shared team</div><h2 class="u">${V2.esc(name)}</h2><ul class="shd2-six">${six}</ul>
+    <p class="tm-sub">${members().length ? 'Open it as your team? Undo brings yours back.' : 'Open it as your team?'}</p>
+    <div class="row shd2-acts"><button type="button" class="np-btn" data-shdload>Open This Team</button><button type="button" class="np-link" data-v2close>Not now</button></div></div>`, {label: 'Shared team', small: true, focus: '[data-shdload]'});
+  const b = document.querySelector('[data-shdload]'); if (b) b.addEventListener('click', () => V2.openShared(x)); };
+// today's applyShared without its page switch: load (Undo kept), back to My Team, the same toast
+V2.openShared = x => { loadShared(x); V2.closeSheet(true); V2.ui.sel = 0; if (!/^#team/.test(location.hash)) location.hash = '#team'; render(); toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`, true); };
+
+// ---------- Import and Clear Team (R4, Nov 11): today's importPaste and clearTeam, same messages ----------
+V2.openImport = () => {
+  V2.sheet(`<div class="imp2"><div class="np-eyebrow">Import</div><h2 class="u">Paste a Team</h2>
+    <p class="tm-sub">A Showdown team or a NastyPlot team link. Undo brings yours back.</p>
+    <textarea class="imp2-in" data-impin rows="9" spellcheck="false" autocomplete="off" aria-label="Team to import" placeholder="Paste here: a team from Showdown, Pokémon Zone, Pikalytics or Victory Road"></textarea>
+    <p class="imp2-note" data-impnote role="status" aria-live="polite"></p>
+    <div class="imp2-acts"><button type="button" class="np-btn" data-impgo>Replace My Team</button><p class="fine">Pokepaste links can't be opened from here; copy the team text instead.</p></div>
+    ${typeof regNote === 'function' ? regNote('fine imp2-reg') : ''}</div>`, {label: 'Import a team', small: true, focus: '[data-impin]'});
+  const go = document.querySelector('[data-impgo]'); if (!go) return;
+  go.addEventListener('click', () => { const r = importPaste((document.querySelector('[data-impin]') || {}).value);
+    if (r.shared) { V2.openShared(r.shared); return; }
+    if (r.error) { const n = document.querySelector('[data-impnote]'); if (n) n.textContent = r.error; return; }
+    V2.closeSheet(true); V2.ui.sel = 0; render(); toast(r.msg, true); }); };
+V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; render(); toast('Team cleared', true); };
+document.addEventListener('click', e => { if (e.target.closest('[data-v2import]')) V2.openImport(); else if (e.target.closest('[data-v2clear]')) V2.clearTeam(); });
+window.addEventListener('hashchange', () => { if (/team=/.test(location.hash)) V2.checkShared(); });
+setTimeout(V2.checkShared, 0);
 
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
@@ -243,7 +280,7 @@ V2.pages.team = {place: 'team', draw() {
   const mon = (m, i) => `<button type="button" class="tm-pick" data-tmsel="${i}" aria-pressed="${m === sel}" aria-label="${V2.esc(m.d)}${D.role(m.p.n) ? ', ' + D.role(m.p.n) : ''}">${V2.mon(m.p.n, {sel: m === sel, sub: D.role(m.p.n)})}</button>`;
   const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team${D.saved ? ` · ${V2.esc(D.saved)}` : ''}</span></div>${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div><p class="tm-rank">${V2.esc([rank, sure].filter(Boolean).join(' · '))}</p>`}</div>`;
-  const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>Save Team</button><button type="button" class="np-btn2" data-v2share><span>Share</span></button><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2 tm-tsact" data-v2sheetopen><span>Team Sheet</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button></div>`;
+  const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>Save Team</button><button type="button" class="np-btn2" data-v2share><span>Share</span></button><button type="button" class="np-btn2 tm-tsact" data-v2sheetopen><span>Team Sheet</span></button><button type="button" class="np-btn2" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2" data-v2import><span>Import</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button><a class="np-btn2 tm-svl" href="#box"><span>My Box <small>${S.box.length}</small></span></a><button type="button" class="np-btn2 tm-svl" data-cxgo2="cur|"><span>Compare</span></button><button type="button" class="np-btn2 tm-svl tm-clr" data-v2clear><span>Clear Team</span></button></div>`;
   const nm = D.mu.fav + D.mu.even + D.mu.unf;
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a><button type="button" class="tm-tsbtn" data-v2sheetopen>Team Sheet <small>${ms.length} sets</small> <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set
@@ -270,7 +307,7 @@ V2.pages.team = {place: 'team', draw() {
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}</section>`;
-  return `<section class="tm-hero">${lockup}<div class="tm-six">${ms.map(mon).join('')}</div>${acts}</section>${jump}<div class="tm-work">${setSec}${ckSec}${muSec}${sgSec}</div>`;
+  return `<section class="tm-hero">${lockup}<div class="tm-six">${ms.map(mon).join('')}</div>${acts}</section>${jump}<div class="tm-work">${setSec}${ckSec}${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div>`;
 },
 after() {
   document.querySelectorAll('[data-v2plan]').forEach(b => b.addEventListener('click', () => { const pl = (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;

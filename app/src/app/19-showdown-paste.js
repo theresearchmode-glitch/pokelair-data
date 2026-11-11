@@ -100,6 +100,16 @@ function parsePaste(text) {
   if (assumed.length) notes.push(`No stat points in the paste for ${assumed.join(', ')}: using the most common spread with your nature`);
   return {slots, notes};
 }
+// Import (paste), the data step shared by today's page and the new build (R4, Nov 11): {shared} for a NastyPlot team link (not loaded
+// yet), {error} when nothing could be read, or {msg} once the team was replaced (Undo kept).
+function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decodeTeam(raw) : null; if (sh) return {shared: sh};
+  const r = parsePaste(raw);
+  if (!r.slots.length) return {error: r.notes.length ? r.notes.join('. ') + '.' : 'No Pokémon found. Paste the team text, one Pokémon per block.'};
+  keepUndo(); S.slots = normSlots(r.slots); S.loadedId = null; ui.paste = null;
+  const sk = r.notes.map(n => { const x = n.match(/^(.+?): skipped (item|move) "(.+?)"/); return x ? `${x[3]} (${x[1]})` : null; }).filter(Boolean);
+  const skm = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": not on the M-C roster/); return x ? x[1] : null; }).filter(Boolean);
+  return {msg: `Imported ${r.slots.length} Pokémon` + (skm.length ? `. Not in Reg M-C, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
+    + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')}; }
 function renderPastePanel() {
   const el = $('pastePanel'); if (!ui.paste) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;

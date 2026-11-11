@@ -37,7 +37,9 @@ function decodeTeam(text) {
       ...(it ? {it: {[f]: it}} : {}), ...(spOf(r[4]) ? {sp: {[f]: spOf(r[4])}} : {})}; }).filter(Boolean);
   if (!slots.length) return null;
   return {f, n: typeof o.n === 'string' ? o.n.slice(0, 60) : '', slots}; }
-function applyShared(x) { keepUndo(); S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');
+// the data step of opening a shared team (the new build calls it too; R4 Nov 11)
+function loadShared(x) { keepUndo(); S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; }
+function applyShared(x) { loadShared(x); render(); setView('build');
   toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`, true); }
 async function copyTeamLink(btn) { const l = teamLink(); if (!l) { toast('Add some Pokémon first'); return; }
   let ok = false; try { await navigator.clipboard.writeText(l); ok = true; } catch (e) {}

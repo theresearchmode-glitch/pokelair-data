@@ -4,46 +4,13 @@
    via CH.gradeOf / CH.gradeWhy), on a copy of the slots: S.slots is never touched, so nothing re-renders or saves.
    Results are cached per team and data version, and worked out a frame after the tap so the page answers at once.
    Rows show what differs first; rows that are the same on both sides fold away. Facts only, no head-to-head prediction. */
-const CX = {cache: new Map(), busy: false};
-ui.cx = ui.cx || {A: null, B: null, pick: null, paste: {}, same: false, wmore: 0};
-/* a tournament sheet (events.json shape) as slots, the same mapping loadSheet uses, without loading it */
-function cxSheetSlots(mons) { return normSlots(mons.map(m => { const p = byName.get(m.n); const mv = (m.mv || []).filter(x => mvByName.has(x)); while (mv.length < 4) mv.push('');
-  return {n: m.n, a: p.a.includes(m.a) ? m.a : null, lock: false, ...(mv.some(Boolean) ? {mv: {doubles: mv.slice(0, 4)}} : {}), ...(!p.m && m.i && typeof m.i === 'string' ? {it: {doubles: m.i}} : {})}; })); }
-/* a source: 'cur' | 's:<saved id>' | 'e:<event id>#<k>' | 't:<top team index>' | 'p:A' / 'p:B' (pasted) */
-function cxResolve(src) { if (!src) return null; try {
-  if (src === 'cur') { const ms = members(); return {name: ms.length ? teamTitleFor(ms) : 'My team', sub: 'My team · open now', slots: JSON.parse(JSON.stringify(S.slots))}; }
-  const k = src.slice(2);
-  if (src.startsWith('s:')) { const t = S.teams.find(x => x.id === k); return t ? {name: t.name, sub: 'Saved team', slots: t.slots} : null; }
-  if (src.startsWith('e:')) { const x = evTeam(k); return x ? {name: teamWho(x.t), sub: `${x.t.place ? placeTxt(x.t.place) + ' · ' : ''}${x.ev.name}`, slots: cxSheetSlots(x.t.mons)} : null; }
-  if (src.startsWith('t:')) { const t = META.teams && META.teams.teams[+k]; if (!t) return null; let slots = null;
-    /* the event's full sheet when we have it (moves, items, abilities), like Load team */
-    try { const key = t.mons.slice().sort().join('|'); for (const ev of (META.events && META.events.events) || []) for (const x of ev.top || []) if (!slots && x.player === t.player && x.mons.map(m => m.n).sort().join('|') === key) slots = cxSheetSlots(x.mons); } catch (e) {}
-    return {name: `${teamWho(t)}`, sub: [t.record, t.event].filter(Boolean).join(' · '), slots: slots || normSlots(t.mons.map(n => ({n, a: null, lock: false})))}; }
-  if (src.startsWith('p:')) { const p = ui.cx.paste[k]; return p ? {name: 'Pasted team', sub: 'From a Showdown paste', slots: p} : null; }
-  } catch (e) {} return null; }
-const cxKey = slots => metaVersion + '|' + megaGoal() + '|' + JSON.stringify(slots);
-/* everything one side needs, from the existing engines */
-function cxInfo(slots) { const key = cxKey(slots); if (CX.cache.has(key)) return CX.cache.get(key);
-  const {ms, a} = teamRating(slots); let o = {ms, a, n: ms.length};
-  if (ms.length) {
-    try { o.RD = prepOf(ms); } catch (e) {}
-    try { o.CK = proChecks(ms, true); } catch (e) {}
-    try { o.G = o.RD ? Object.assign(CH.gradeOf(o.RD, o.CK, ms), {r: o.RD.score}) : null; } catch (e) {}
-    try { o.A = teamArchetype(ms); } catch (e) {}
-    try { o.pr = teamProfile(ms, true); } catch (e) {}
-    try { const F = sideField(ms); o.wx = F.weather;
-      o.spd = ms.map(m => { const s = likelySpeed(m.p, m); return {m, v: spdCalc(s.v, s.scarf, m.ability, F.weather, {}), scarf: s.scarf}; }).sort((x, y) => y.v - x.v); o.wxS = F.weather; } catch (e) {}
-    o.thr = new Map(o.RD ? o.RD.rows.map(r => [r.t.n, r]) : []);
-    try { o.rec = typeof myGames === 'function' ? myGames(ms) : null; } catch (e) {}
-  }
-  if (CX.cache.size > 24) CX.cache.delete(CX.cache.keys().next().value); CX.cache.set(key, o); return o; }
+/* CX, cxSheetSlots, cxResolve, cxKey, cxInfo and cxFacts live in 62-compare-data.js (shared with the new build, R4 Nov 11) */
 /* open the page: sides as source strings ('' = pick one) */
 function cxGo(a, b) { if (a === 'cur' && !members().length) { a = b; b = ''; }
   ui.cx.A = a || null; ui.cx.B = b || null; ui.cx.pick = !ui.cx.A ? 'A' : !ui.cx.B ? 'B' : null; ui.cx.same = false;
   if (view !== 'compare') setView('compare'); else renderCompare(); }
 const cxBadge = s => `<span class="cxbadge ${s === 'A' ? 'a' : 'b'}" aria-hidden="true">${s}</span>`;
 const cxDn = n => (byName.get(n) || {}).d || n;
-function cxWho(ms, n = 3) { return ms.slice(0, n).map(m => esc(m.d)).join(', ') + (ms.length > n ? ` +${ms.length - n}` : ''); }
 /* the picker: where a side can come from */
 function cxPicker(side) { const other = ui.cx[side === 'A' ? 'B' : 'A'];
   const opt = (src, title, sub, sprites) => `<button type="button" class="cxopt${other === src ? ' dim' : ''}" data-cxset="${side}|${esc(src)}"><span class="cxot"><b>${esc(title)}</b>${sub ? `<span class="t2">${esc(sub)}</span>` : ''}</span><span class="cxos">${sprites}</span></button>`;
@@ -63,58 +30,23 @@ function cxHead(side, R, I) {
   return `<div class="cxhead ${side === 'A' ? 'a' : 'b'}">${cxBadge(side)}<div class="cxnm">${esc(R.name)}</div><div class="t2 cxsub">${esc(R.sub || '')}</div>
     <div class="cxsix">${ms.map(m => `<span title="${esc(m.d)}">${sprite(m.p) || esc(m.d)}</span>`).join('')}${Array.from({length: Math.max(0, 6 - ms.length)}, () => '<span class="cxe" aria-hidden="true"></span>').join('')}</div>
     <button type="button" class="linkbtn cxchg" data-cxpick="${side}" aria-label="Change team ${side}">Change</button></div>`; }
-/* the rows, each [key, label, htmlA, htmlB, differs, sentence] */
-function cxRows(RA, RB, a, b) { const rows = [], NA = 'Team A', NB = 'Team B';
-  const add = (k, label, x, y, diff, say) => rows.push({k, label, x, y, diff: !!diff, say: say || ''});
-  /* grade */
-  const gl = I => I.G ? `<span class="cxgr" style="color:${CH.gcol(I.G.letter)}">${I.G.v === 2 ? Math.round(I.G.s) : I.G.letter}</span><span class="cxgs">${CH.gradeNum(I.G)} · ${esc(CH.recLine(I.G, true))}</span>` : '<span class="t2">Add Pokémon first</span>';
-  add('grade', 'Strength Score', gl(a), gl(b), a.G && b.G && a.G.s !== b.G.s, a.G && b.G && a.G.s !== b.G.s ? `Strength Score: ${CH.gradeNum(a.G)} for ${NA}, ${CH.gradeNum(b.G)} for ${NB}.` : '');
-  /* readiness */
-  const lv = I => { const c = [0, 0]; for (const r of (I.RD ? I.RD.rows : [])) if (r.level < 2) c[r.level]++; return c; };
-  const rd = I => I.RD ? `<span class="cxl"><b>${CH.readyN(I.RD)}</b> ready for top threats</span><span class="cxl dbhand">${hRing(CH.hand(I.RD), 24)}${CH.handTxt(I.RD, true)}</span><span class="t2 cxl">${lv(I)[1]} shaky · ${lv(I)[0]} with no answer</span>` : '—';
-  add('ready', 'Ready for the top 30 threats', rd(a), rd(b), a.RD && b.RD && a.RD.score !== b.RD.score, a.RD && b.RD && Math.abs(a.RD.score - b.RD.score) >= 3 ? `${a.RD.score > b.RD.score ? NA : NB} is ready for more of the top 30 threats (${Math.max(a.RD.score, b.RD.score)}% vs ${Math.min(a.RD.score, b.RD.score)}% ready).` : '');
-  /* threats one handles (Handled or better) and the other doesn't */
-  const only = (X, Y) => X.RD && Y.RD ? X.RD.rows.filter(r => r.level >= 2 && (Y.thr.get(r.t.n) || {level: 0}).level < 2).sort((p, q) => q.t.w - p.t.w) : [];
-  const oA = only(a, b), oB = only(b, a);
-  const tl = L => L.length ? `<div class="cxthr">${L.slice(0, 5).map(r => `<span>${sprite(byName.get(r.t.n), 'tiny') || ''}${esc(r.t.d)}</span>`).join('')}${L.length > 5 ? `<span class="t2">+${L.length - 5} more</span>` : ''}</div>` : '<span class="t2">None</span>';
-  const nm = L => L.slice(0, 3).map(r => r.t.d).join(', ') + (L.length > 3 ? ` and ${L.length - 3} more` : '');
-  add('thr', 'Top threats only this team handles', tl(oA), tl(oB), oA.length || oB.length, [oA.length ? `${NA} handles ${nm(oA)}; ${NB} doesn't.` : '', oB.length ? `${NB} handles ${nm(oB)}; ${NA} doesn't.` : ''].filter(Boolean).join(' '));
-  /* the 7 team checks */
-  const ck = (I, k) => { const x = I.CK && I.CK.items.find(i => i.k === k); return x ? (x.skip ? null : !!x.ok) : null; };
-  const keys = (a.CK || b.CK || {items: []}).items.map(x => [x.k, x.label]);
-  for (const [k, label] of keys) { const x = ck(a, k), y = ck(b, k), m = v => v == null ? '<span class="cxck un" title="Not counted">?</span>' : v ? '<span class="cxck ok" aria-label="Yes">✓</span>' : '<span class="cxck no" aria-label="No">✗</span>';
-    add('ck:' + k, label, m(x), m(y), x != null && y != null && x !== y, k !== 'reach' && x != null && y != null && x !== y ? `${label}: only ${x ? NA : NB} has it.` : ''); }
-  /* speed */
+/* today's cells for each row of cxFacts (unchanged HTML) */
+const CXF = {
+  grade: G => G ? `<span class="cxgr" style="color:${CH.gcol(G.letter)}">${G.v === 2 ? Math.round(G.s) : G.letter}</span><span class="cxgs">${CH.gradeNum(G)} · ${esc(CH.recLine(G, true))}</span>` : '<span class="t2">Add Pokémon first</span>',
+  ready: v => v ? `<span class="cxl"><b>${CH.readyN(v.RD)}</b> ready for top threats</span><span class="cxl dbhand">${hRing(CH.hand(v.RD), 24)}${CH.handTxt(v.RD, true)}</span><span class="t2 cxl">${v.lv[1]} shaky · ${v.lv[0]} with no answer</span>` : '—',
+  thr: L => L.length ? `<div class="cxthr">${L.slice(0, 5).map(r => `<span>${sprite(byName.get(r.t.n), 'tiny') || ''}${esc(r.t.d)}</span>`).join('')}${L.length > 5 ? `<span class="t2">+${L.length - 5} more</span>` : ''}</div>` : '<span class="t2">None</span>',
+  ck: v => v == null ? '<span class="cxck un" title="Not counted">?</span>' : v ? '<span class="cxck ok" aria-label="Yes">✓</span>' : '<span class="cxck no" aria-label="No">✗</span>',
   /* Nov 2: each speed in plain terms too, against the top 30 threats (outspeedOf, the Speed tiers page's count) */
-  const osT = (I, x) => { const r = typeof outspeedOf === 'function' ? outspeedOf(x.v, I.wxS || '', {}) : null; return r ? `<span class="t2 cxl">outspeeds ${r.pct}% of the top ${r.n}</span>` : ''; };
-  const sp = I => I.spd && I.spd.length ? `<span class="cxl">Fastest <b>${esc(I.spd[0].m.d)}</b> ${I.spd[0].v}</span>${osT(I, I.spd[0])}<span class="cxl">Slowest <b>${esc(I.spd[I.spd.length - 1].m.d)}</b> ${I.spd[I.spd.length - 1].v}</span>${osT(I, I.spd[I.spd.length - 1])}` : '—';
-  add('spd', 'Speed (likely stat)', sp(a), sp(b), a.spd && b.spd && a.spd.length && b.spd.length && (a.spd[0].v !== b.spd[0].v || a.spd[a.spd.length - 1].v !== b.spd[b.spd.length - 1].v), '');
-  const sc = I => { const t = I.A ? I.A.setters.tw : [], r = I.A ? I.A.setters.tr : []; return {t, r, txt: [t.length ? `Tailwind: ${cxWho(t, 2)}` : '', r.length ? `Trick Room: ${cxWho(r, 2)}` : ''].filter(Boolean)}; };
-  const sa = sc(a), sb = sc(b), mode = s => (s.t.length ? 'T' : '') + (s.r.length ? 'R' : '');
-  const scSay = (() => { const out = []; for (const [w, lab] of [['t', 'Tailwind'], ['r', 'Trick Room']]) { const x = sa[w].length > 0, y = sb[w].length > 0; if (x !== y) out.push(`${x ? NA : NB} has ${lab}; ${x ? NB : NA} doesn't.`); } return out.join(' '); })();
-  add('sc', 'Tailwind / Trick Room', sa.txt.length ? sa.txt.map(x => `<span class="cxl">${x}</span>`).join('') : '<span class="t2">Neither</span>', sb.txt.length ? sb.txt.map(x => `<span class="cxl">${x}</span>`).join('') : '<span class="t2">Neither</span>', mode(sa) !== mode(sb), scSay);
-  /* weather and terrain */
-  /* every weather or terrain a Pokémon on the team sets; one nothing on the team uses says so */
-  const fx = I => I.A ? I.A.field : [], fl = I => fx(I).map(x => x.name);
-  const fa = fl(a), fb = fl(b), fj = I => fx(I).length ? fx(I).map(x => `<span class="cxl"><b>${esc(x.name)}</b>${x.active ? '' : ' <span class="t2">(nothing uses it)</span>'}</span>`).join('') : '<span class="t2">None</span>';
-  const fSay = (() => { const out = []; for (const x of fa) if (!fb.includes(x)) out.push(`${NA} sets ${x.toLowerCase()}; ${NB} doesn't.`); for (const x of fb) if (!fa.includes(x)) out.push(`${NB} sets ${x.toLowerCase()}; ${NA} doesn't.`); return out.join(' '); })();
-  add('field', 'Weather / terrain', fj(a), fj(b), fa.join() !== fb.join(), fSay);
-  /* types */
-  const weak = I => I.a ? I.a.rows.filter(r => r.w - r.r >= 2).sort((p, q) => (q.w - q.r) - (p.w - p.r)).map(r => r.atk) : [];
-  const wa = weak(a), wb = weak(b), tj = (L, none) => L.length ? `<span class="cxty">${L.slice(0, 4).map(t => chip(t)).join('')}${L.length > 4 ? `<span class="t2">+${L.length - 4}</span>` : ''}</span>` : `<span class="t2">${none}</span>`;
-  const wSay = (() => { const x = wa.filter(t => !wb.includes(t)), y = wb.filter(t => !wa.includes(t)); return [x.length ? `${NA} is weak to ${x.slice(0, 2).join(' and ')}; ${NB} isn't.` : '', y.length ? `${NB} is weak to ${y.slice(0, 2).join(' and ')}; ${NA} isn't.` : ''].filter(Boolean).join(' '); })();
-  add('weak', 'Weak to (hits 2+ more than resist)', tj(wa, 'No type hits 2+ more than resist'), tj(wb, 'No type hits 2+ more than resist'), wa.join() !== wb.join(), wSay);
-  const ur = I => I.a ? I.a.unresisted : [];
-  add('unres', 'Types nobody resists', tj(ur(a), 'Every type is resisted'), tj(ur(b), 'Every type is resisted'), ur(a).join() !== ur(b).join(), '');
-  const off = I => I.pr ? I.pr.off : null;
-  add('off', 'Types it hits super effectively', off(a) != null ? `<span class="cxl"><b>${off(a)}</b> of 18</span>` : '—', off(b) != null ? `<span class="cxl"><b>${off(b)}</b> of 18</span>` : '—', off(a) !== off(b), '');
-  /* archetype */
-  const ar = I => I.A ? `<span class="archchips">${archChips(I.A.label)}</span>` : '—';
-  add('arch', 'Archetype', ar(a), ar(b), (a.A && a.A.label) !== (b.A && b.A.label), '');
-  /* your own games, kept apart from the tournament record */
-  if ((a.rec && a.rec.n) || (b.rec && b.rec.n)) { const yg = I => I.rec && I.rec.n ? `<span class="cxl"><b>${I.rec.w}–${I.rec.l}</b></span><span class="t2 cxl">${I.rec.n} game${I.rec.n === 1 ? '' : 's'} you logged</span>` : '<span class="t2">None logged</span>';
-    add('mine', 'Your games with this six', yg(a), yg(b), true, ''); }
-  return rows; }
+  spd: v => { if (!v) return '—'; const osT = x => { const r = typeof outspeedOf === 'function' ? outspeedOf(x.v, v.wxS || '', {}) : null; return r ? `<span class="t2 cxl">outspeeds ${r.pct}% of the top ${r.n}</span>` : ''; }, f = v.spd[0], l = v.spd[v.spd.length - 1];
+    return `<span class="cxl">Fastest <b>${esc(f.m.d)}</b> ${f.v}</span>${osT(f)}<span class="cxl">Slowest <b>${esc(l.m.d)}</b> ${l.v}</span>${osT(l)}`; },
+  sc: s => s.txt.length ? s.txt.map(x => `<span class="cxl">${esc(x)}</span>`).join('') : '<span class="t2">Neither</span>',
+  field: L => L.length ? L.map(x => `<span class="cxl"><b>${esc(x.name)}</b>${x.active ? '' : ' <span class="t2">(nothing uses it)</span>'}</span>`).join('') : '<span class="t2">None</span>',
+  weak: L => L.length ? `<span class="cxty">${L.slice(0, 4).map(t => chip(t)).join('')}${L.length > 4 ? `<span class="t2">+${L.length - 4}</span>` : ''}</span>` : '<span class="t2">No type hits 2+ more than resist</span>',
+  unres: L => L.length ? `<span class="cxty">${L.slice(0, 4).map(t => chip(t)).join('')}${L.length > 4 ? `<span class="t2">+${L.length - 4}</span>` : ''}</span>` : '<span class="t2">Every type is resisted</span>',
+  off: n => n != null ? `<span class="cxl"><b>${n}</b> of 18</span>` : '—',
+  arch: v => v ? `<span class="archchips">${archChips(v.label)}</span>` : '—',
+  mine: I => I && I.n ? `<span class="cxl"><b>${I.w}–${I.l}</b></span><span class="t2 cxl">${I.n} game${I.n === 1 ? '' : 's'} you logged</span>` : '<span class="t2">None logged</span>'};
+function cxRows(RA, RB, a, b) { return cxFacts(a, b).map(r => { const f = CXF[r.k.startsWith('ck:') ? 'ck' : r.k]; return {k: r.k, label: r.label, x: f(r.a), y: f(r.b), diff: r.diff, say: r.say}; }); }
 function renderCompare() { const el = $('cxOut'); if (!el) return; const sec = $('compare'); try { CH.pagehead(sec, 'Compare · two teams side by side', 'Compare teams', ''); } catch (e) {}
   const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA) ui.cx.A = null; if (!RB) ui.cx.B = null;
   if (!ui.cx.pick && (!RA || !RB)) ui.cx.pick = !RA ? 'A' : 'B';

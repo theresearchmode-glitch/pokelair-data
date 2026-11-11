@@ -42,7 +42,8 @@ function takeRemote(v){if(v&&v._dev===DEV)return;
   if(got.some(k=>k==='slots'||k==='loadedId')&&typeof ui==='object'){ui.undoStack=[];ui.undo=null}
   render();toast(got.includes('box')&&got.length===1?'Your box was updated from your other device':'Updated from your other device');syncNote('saved')}
 // the line under Saved teams and My box that says where your data lives
-function syncNote(st){const t=st==='local'?'Saved in this browser only: this device isn’t connected to your Claude account.':'Saved to your Claude account and kept in step across your devices.';
+function syncText(st){return st==='local'?'Saved in this browser only: this device isn’t connected to your Claude account.':'Saved to your Claude account and kept in step across your devices.'}
+function syncNote(st){ui.syncSt=st;const t=syncText(st);
   ['saveWhere','boxSync'].forEach(id=>{const el=$(id);if(el)el.textContent=id==='saveWhere'?'Up to 10 teams. '+t:t})}
 // A daily data document can be stored in two parts (meta/<k> and meta/<k>_2) when it grows past the per-document size limit
 // (Nov 10: meta/results reached 263,734 bytes and the morning refresh was refused). split-docs.mjs moves whole keys or the tail

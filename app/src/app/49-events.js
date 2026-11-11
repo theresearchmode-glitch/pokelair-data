@@ -4,8 +4,7 @@
 // Events lists them with the winner up front; one tap opens the standings with every set.
 // Team search (on Top teams) filters every one of those teams by Pokémon, item, move or ability.
 // cleanEvents: moved to 05-data-clean.js (R4, Nov 11; shared with the rebuild)
-const evDate = d => { try { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) { return d; } };
-const placeTxt = n => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th';
+/* evDate, placeTxt, evTeam and tsPool live in 49-event-data.js (shared with the new build, R4 Nov 11) */
 let evUi = {open: null, filter: 'all', more: 0, sets: {}};
 // one team with its sets: sprites, then (folded) each Pokémon's item, ability, nature and moves
 function teamSheetCard(t, ev, key, hl) {
@@ -16,7 +15,6 @@ function teamSheetCard(t, ev, key, hl) {
     ${open ? `<div class="evsets">${t.mons.map(m => { const p = byName.get(m.n); return `<div class="evset tyacc" style="${tyv(p)}">${sprite(p, 'evspr')}<div><b${H(p.d)}>${esc(p.d)}</b>${m.i ? ` <span class="t2">@</span> <span${H(m.i)}>${esc(m.i)}</span>` : ''}
       <div class="t2"><span${H(m.a)}>${esc(m.a)}</span>${m.nt ? ' · ' + esc(m.nt) : ''}</div><div class="evmv">${m.mv.map(x => `<span${H(x)}>${esc(x)}</span>`).join('')}</div></div></div>`; }).join('')}</div>` : ''}
     <div class="row evbtns"><button class="btn sm" type="button" data-evload="${esc(key)}">Load team</button><button class="linkbtn" type="button" data-evsets="${esc(key)}" aria-expanded="${open}">${open ? 'Hide sets' : 'Sets'}</button><button class="linkbtn" type="button" data-evvs="${esc(key)}">Practice against</button><button class="linkbtn" type="button" data-cxgo="cur|e:${esc(key)}">Compare</button>${sdBtn('ev:' + key)}</div></div>`; }
-function evTeam(key) { const E = META.events; if (!E) return null; const [id, k] = key.split('#'); const ev = E.events.find(e => e.id === id); return ev && ev.top[+k] ? {ev, t: ev.top[+k]} : null; }
 // plain words for the data line, when it has the usual shape
 function evSourceText(x) { x = String(x || ''); const m = x.match(/Limitless \((\d+)\+ players, last (\d+) days, top (\d+)\)/), o = x.match(/official events \(top (\d+)\)/);
   return m ? `online tournaments with ${m[1]}+ players from the last ${m[2]} days (top ${m[3]})${o ? ` and official events (top ${o[1]})` : ''}` : x; }
@@ -59,8 +57,6 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 
 // ---- team search (Top teams) ----
 let tsUi = {f: [], more: 0};
-function tsPool() { const E = META.events; if (!E) return []; const out = [];
-  E.events.forEach(ev => ev.top.forEach((t, k) => out.push({ev, t, key: ev.id + '#' + k}))); return out; }
 let tsTermCache = {v: -1, terms: []};
 function tsTerms() { if (tsTermCache.v === metaVersion) return tsTermCache.terms; const m = new Map(), add = (k, v, label) => { const id = k + ':' + v; const x = m.get(id); if (x) x.c++; else m.set(id, {k, v, label, c: 1}); };
   for (const {t} of tsPool()) for (const x of t.mons) { add('mon', x.n, byName.get(x.n).d); if (x.i) add('item', x.i, x.i); if (x.a) add('ability', x.a, x.a); x.mv.forEach(v => add('move', v, v)); }

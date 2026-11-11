@@ -1,6 +1,8 @@
 /* Tokens: the only place colours, type, space, corners and shadows are defined (docs/rebuild/design-system.md).
    Day is the default; night is the reference set's night mode (Sim, Nov 11). Every other file uses these names only. */
 :root{
+  /* My Box rays over the box wallpaper and the picked Pokémon's panel (R4, Nov 11) */
+  --ray:rgba(255,255,255,.34);--ray-art:rgba(255,255,255,.4);
   --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;
   --plate:#17161A;--on-plate:#FBFAF7;--main:#17161A;--on-main:#FBFAF7;
@@ -25,6 +27,7 @@
   --gut:96px;--tap:44px;
   color-scheme:light}
 :root[data-theme="night"]{
+  --ray:rgba(255,255,255,.045);--ray-art:rgba(255,255,255,.05);
   --bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);
   --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--pick-text:#F58DA1;
   --plate:#343348;--on-plate:#F1EDE7;--main:#3FA2E2;--on-main:#08131E;

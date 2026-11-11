@@ -140,6 +140,10 @@ just before that page is built.
 - OPEN: choosing "(no item)" in the item picker stores "not set", so the Pokémon keeps its usual item, while the message
   says "No item". Holding nothing is legal in Champions, so either the picker should store a real "no item" (needs the saved
   data and the grade to accept it) or the choice should be removed. Ask Sim which.
+- OPEN (found by same-record.mjs, Nov 11): "Log a game" keeps the picked leads if you switch teams while it is open, and the
+  game is then saved with the old team's leads (the panel shows only this team's, but logging uses the stored pair). Fix: keep
+  only leads on the open six when logging.
+- OPEN (same check): the Your games insight says "the 1 wins with their team logged" (should be "the 1 win").
 
 ## R4: Pokémon info sheet (Nov 11)
 - Shared now (`24-sheet-data.js`): what the data says (`lairEvidence`), why it rates N (`lairBars`), the typical set's
@@ -167,3 +171,38 @@ just before that page is built.
   sources when it starts: a check run takes the sources as they are at that moment.
 - New build: Share sheet (Team Card / Team Poster / Team Sheet, Light / Dark, Save Image, Copy Team Link); sprites from the
   new build's art. The images keep today's design for now; restyling them to the new look is a later step for Sim to approve.
+
+## R4 My Team: shared links, Import, Clear Team, My Box (Nov 11)
+- Shared now: `loadShared` (45-team-links.js), `importPaste` (19-showdown-paste.js), `clearTeam` (31-set-edits.js), `REG_NAME` +
+  `regNote` (moved to 24-sheet-data.js), the box steps `boxSortNow/setBoxSort/boxRows/boxAdd/boxRemove/boxReset/boxRestore`
+  (new 31-box-data.js), `syncText` + `ui.syncSt` (03-persistence.js), and for Your games `logKey/MYREC_MIN/myGames/myInsights/
+  logGame/unlogGame` (new 26-log-data.js).
+- Proof: same-import.mjs 26/26 (planted: Import leaves the panel open, 7 differ); same-box.mjs 33/33 (every sort, add,
+  remove, Undo, Reset, box links); same-record.mjs 59/59 page-vs-itself.
+- New build: the Shared team sheet (#team=), Import sheet, Clear Team (all with Undo), Import on the empty state; My Box
+  (pages/box.js) from Sim's concept: boxes of 30 (6 across, 5 on phones, 3 on 320-wide phones so the longest names never cut),
+  wallpaper from the types inside, arrows / dots / swipe / arrow keys, the picked Pokémon beside the box (a sheet on phones),
+  Add (search sheet, base forms only), Add to / Swap into My Team, Remove, Reset (tap twice), box links, the save line.
+  Checked 320-2560 in day and night: no cut names, no sideways scroll; polish check clean (only auto-margin and grid-shape
+  false alarms). Not yet: drag between box and team (tap alternative is Swap into My Team), Build around it (comes with Build).
+- Same-share-v2 once read 0/12 while the machine was busy: the fonts' stylesheet hadn't arrived. It now loads every face it
+  draws with and reports UNKNOWN when a page has no loaded faces (control: fonts blocked -> UNKNOWN).
+
+## R4 My Team: Your Games, Compare, Saved Teams extras, the Preview (Nov 11, evening)
+- Shared now: Compare's data part (new 62-compare-data.js: CX, cxResolve, cxInfo, cxKey, cxSheetSlots, and cxFacts = every row as
+  data with its "What's different" sentence; today's cxRows only draws the cells now) and the event helpers it reads (new
+  49-event-data.js: evDate, placeTxt, evTeam, tsPool).
+- Proof: same-compare.mjs 21/21 (event winners, saved, pasted and bad paste, swap, change A, more winners, partial team, a team
+  vs itself, an empty side; planted sentence change: 17 differ). same-record.mjs 62/62 (planted one-lead change: 18 differ).
+  Lesson: my first Compare patch cut at the wrong marker (a comment sits above cxRows) and its own assert stopped it; the
+  first "21/21" that followed had tested the old copy, so it didn't count. Every proof now also checks the moved function is
+  in the page under test.
+- New build: Your Games section (pages/record.js; log a game sheet with leads, their team by search or from Battle mode, Win /
+  Loss, inline Undo; only leads on this six are logged, today's page can keep an old pair: bug queue 2), Compare page
+  (pages/compare.js; picker as a sheet; Matchups row in the four calc levels; narrow cells stack the score), Saved Teams cards
+  now have Compare (pick two, or one vs My Team), Team Poster (today's ARB.poster with the team's name and file name) and
+  "Your games W-L"; My Team's buttons gained My Box and Compare (8 in all: even rows on phones and desktop).
+- Not yet in the new build: "Why these grades" on Compare (CH.gradeWhy lives in today's 60-concept-h.js; comes with the grade
+  breakdown work), the Showdown replay link in Log a Game (comes with Battle), drag between box and team.
+- The Preview (Sim, Nov 11): it now opens straight into the new site; pages not rebuilt yet show "Coming next" with their
+  approved mock-up (pages/coming.js, Preview builds only, via --preview-data setting __NP_PREVIEW). The card gallery is gallery.html.

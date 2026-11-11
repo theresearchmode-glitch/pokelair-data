@@ -15,3 +15,5 @@ function keepScroll(fn) { fn(); }
 
 // today's arena type palette, applied to the logic's TC as today's page does at load (74-arena.js): Dark slate violet, Normal cool grey
 try { Object.assign(TC, AR.TC_FIX); } catch (e) {}
+// box changes from the shared logic (applyBox, 45-team-links.js): the rebuild's toast with the box's own Undo (pages/box.js)
+function toastBox(t) { V2.bxToast(t); }

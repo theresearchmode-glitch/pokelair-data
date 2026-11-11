@@ -60,3 +60,5 @@ function natureChoices(s,p){const cs=typeof commonSpread==='function'?commonSpre
   const v=K.map(k=>pts?pts[k]:0),sum=v.reduce((a,b)=>a+b,0);
   const order=[...na.map(x=>x[0]).filter(n=>NATURES.includes(n)),...NATURES.filter(n=>!pc.has(n)).sort()];
   return {cs,own,pc,top,nat,ownNat,ownPts,v,sum,order}}
+// Clear Team (R4, Nov 11; shared with the new build): six empty spots, no open saved team, Undo kept
+function clearTeam() { keepUndo(); S.slots = Array.from({length: 6}, blank); S.loadedId = null; }

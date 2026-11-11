@@ -1,7 +1,7 @@
 /* ---------- About & legal (Nov 1 2026): who we are, the disclaimer, data sources, privacy, contact ---------- */
 /* One list of data sources for the footer and the About page (docs/legal-sources.md has the full record: each site's
    terms or robots rules, quoted, the date checked and how the daily job complies). Edit sources here only. */
-var REG_NAME = 'Reg M-C';
+/* REG_NAME and regNote() live in 24-sheet-data.js (shared with the new build, R4 Nov 11) */
 const DATA_SOURCES = [
   {name: 'Limitless', url: 'https://play.limitlesstcg.com', use: 'Results, standings and team lists from online tournaments', terms: 'Read through its public API, within its rate limits'},
   {name: 'Victory Road', url: 'https://victoryroad.pro', use: 'Official event results and team lists', terms: 'Read once a day; its robots rules allow it'},
@@ -36,7 +36,6 @@ const LEGAL_P1 = 'NastyPlot is an unofficial, fan-made tool. It is not affiliate
 /* the contact address is only put together when someone taps "Show email", so it never sits in the page as text */
 const legalMail = () => ['moc.liamg', 'aggabsj.narmis'].map(s => s.split('').reverse().join('')).reverse().join('@');
 /* the small "check the official rules" caption shown once wherever the page says something is legal or not */
-function regNote(cls) { return `<p class="regnote${cls ? ' ' + cls : ''}">Based on our reading of the ${esc(REG_NAME)} rules — check the official rules before an event.</p>`; }
 const srcNames = () => { const n = DATA_SOURCES.map(s => esc(s.name) + (s.note ? ` (${esc(s.note)})` : '')); return n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1]; };
 /* footer: the source list comes from DATA_SOURCES */
 function footFill() { const s = $('lgSrcList'); if (s) s.innerHTML = srcNames(); }

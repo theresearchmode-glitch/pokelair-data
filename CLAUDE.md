@@ -15,6 +15,13 @@ audits and research sweeps, not our one-change-at-a-time work.
 - Preview before live: nothing goes to the live artifact without her explicit go (unless she says "publish when done" for that change).
 - Faster flow (Sim, Nov 10, latest, overrides the line above for now): skip the Preview for today's site; send Sim screenshots
   and put fixes live directly. The rebuild lives on its own artifact, "NastyPlot Full Redesign", until the switch.
+- Watch the build live (Sim, Nov 11): while the rebuild is being built, the "NastyPlot Full Redesign" artifact
+  (https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf) is republished after EVERY finished step (each piece of a page, not only
+  whole pages), with its index card text saying what's new, so Sim can watch the new site come together. Check its file list
+  (v2art/*.webp, 346 files) after each publish.
+  Sim, Nov 11: the Preview opens straight into the new site (index.html forwards to foundation.html, built with
+  --preview-data), so it reads as one real site growing; pages not rebuilt yet show "Coming next" with their approved mock-up
+  (pages/coming.js, Preview builds only). The old card gallery stays as gallery.html.
 - Every Preview or live publish must carry the 345 sprite files (sp/*.webp) beside the page; check the artifact's file list
   (Artifact list, scope files) before sending Sim a link (Nov 9: a Preview went out with no sprites).
 - Real data only, never remove functionality, be careful. Ask when unsure.
