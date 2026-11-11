@@ -177,12 +177,36 @@ document.addEventListener('click', e => { if (e.target.closest('[data-v2edit]'))
   else if (k === 'lock') V2.edDo(() => toggleLock(i), on => on ? `${m.d} locked: Suggestions keep it` : `${m.d} unlocked`);
   else if (k === 'rm') { clearSlot(i); V2.closeSheet(); render(); toast(`Removed ${m.d}`, true); } });
 
+// ---------- adding a Pokémon (R4, Nov 11): today's addMon into the first empty spot, one of each species (Species Clause) ----------
+V2.addState = n => { const p = byName.get(n); if (!p) return 'none'; if (S.slots.some(x => { const q = byName.get(x.n); return q && q.b === p.b; })) return 'have'; return S.slots.findIndex(x => !byName.get(x.n)) < 0 ? 'full' : 'ok'; };
+V2.addBtn = n => { const st = V2.addState(n), d = V2.esc(V2.disp(n));
+  return st === 'ok' ? `<div class="row ms-add"><button type="button" class="np-btn" data-v2add="${V2.esc(n)}">Add to My Team</button></div>`
+    : `<p class="fine ms-add">${st === 'have' ? `${d} is already on your team.` : st === 'full' ? 'Your team is full: remove one on My Team to add it.' : ''}</p>`; };
+V2.addToTeam = n => { const p = byName.get(n); if (V2.addState(n) !== 'ok') return; const i = S.slots.findIndex(x => !byName.get(x.n)); addMon(i, p); V2.closeSheet(true);
+  if (location.hash !== '#team') location.hash = '#team'; render(); toast(p.d + ' added'); };
+document.addEventListener('click', e => { const b = e.target.closest('[data-v2add]'); if (b) V2.addToTeam(b.dataset.v2add); });
+
+// ---------- empty My Team: the lead, and today's underdog (Sim, Nov 11) ----------
+// The featured Pokémon comes from the bottom of our own ratings: every Pokémon is somebody's favourite. Flapple goes first
+// (Sim: "it's the cutest"), then one a day from the 12 lowest-rated Pokémon that have real games (at least 1% of teams), so
+// the rating means something. Never shown beside grades or a team's data.
+V2.underdog = (now = new Date()) => { const day = Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 10, 12)) / 864e5);
+  if (day <= 0 || typeof rating !== 'function') return 'Flapple';
+  const pool = ROSTER.filter(p => !p.m && (U(p) || 0) >= 1 && SPRITE_ID[p.n]).map(p => ({n: p.n, r: RS(rating(p).total)})).sort((a, b) => a.r - b.r || a.n.localeCompare(b.n)).slice(0, 12);
+  return pool.length ? pool[(day - 1) % pool.length].n : 'Flapple'; };
+V2.emptyHtml = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nSaved = S.teams.filter(t => t.format !== 'singles').length;
+  return `<section class="tm-empty"><div class="tm-e-lead"><div class="np-eyebrow">My Team</div><h1 class="u">Six spots, all yours.</h1><p>Add a Pokémon to start, or let us build a whole team around a favourite.</p>
+    <div class="row"><a class="np-btn" href="#build">Build Me a Team</a><button type="button" class="np-btn2" data-v2search><span>Add a Pokémon</span></button>${nSaved ? `<button type="button" class="np-link tm-e-saved" data-v2saved>Open a saved team <small>${nSaved}</small></button>` : ''}</div></div>
+    <div class="tm-ud"><div class="tm-ud-hd"><div class="np-eyebrow">Today's underdog</div><h2 class="u">${d}. <span>Somebody's favourite.</span></h2></div><div class="tm-ud-st">${V2.mon(n, {iw: 240, bare: true})}</div><div class="tm-ud-bd">
+    <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
+    <div class="row">${V2.addState(n) === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${V2.esc(n)}"><span>Add ${d} to My Team</span></button>` : ''}<button type="button" class="np-link" data-v2mon="${V2.esc(n)}">Info Sheet</button></div></div></div></section>`; };
+
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
 V2.pages.team = {place: 'team', draw() {
   const D = V2.teamData();
-  if (D.empty) return `<section class="tm-empty"><div class="np-eyebrow">My Team</div><h1 class="u">Six spots, all yours.</h1><p>Add a Pokémon to start, or let us build one around a favourite.</p><div class="row"><a class="np-btn" href="#build">Build me a team</a><button type="button" class="np-btn2" data-v2search><span>Add a Pokémon</span></button></div></section>`;
+  if (D.empty) return V2.emptyHtml();
   const {ms, G} = D, sel = ms[Math.min(V2.ui.sel, ms.length - 1)], s = G ? Math.round(G.s) : null;
   const word = G ? CH.wordOf(G.s) + (G.partial ? ' so far' : '') : '';
   const rank = G && !G.partial && G.rk != null ? CH.rankShort(G.rk) + ' of tournament teams' : G && G.partial ? `${ms.length} of 6 picked` : '';

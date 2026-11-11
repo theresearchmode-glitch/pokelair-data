@@ -119,3 +119,24 @@ just before that page is built.
   (labelled Matchups); switch it to the Strength Score?
 - Lesson: my earlier "320-2560 clean" sweep of My Team checked inside the sheet, not the page itself. The Team Sheet button made
   the page 83 px wider than a 320 phone; the polish check had flagged it (hscroll). Every sweep now also checks the page width.
+
+## R4 My Team: Edit Set (Nov 11)
+- Shared now (`31-set-edits.js`): the changes (`setAbility`, `setItem`, `moveSlotSet`, `setNature`, `savePoints` and their
+  resets, `toggleLock`, `clearSlot`, `addMon`) and the lists each picker offers (`abilChoices`, `itemChoices`, `moveChoices`,
+  `natureChoices`). Today's editor changes sets and draws its dropdowns through them; `33-move-edits.js` joins the new build.
+- Proof: `experiments/same-edits.mjs` drives today's editor through every kind of edit (good and bad stat points, every
+  reset, lock, remove, Undo), then opens the pickers on 4 more tournament teams and 6 rarely used Pokémon, comparing the slots,
+  the message, the warnings and the editor's whole HTML: 41 of 41 identical. Today's page against itself: 41 of 41 once its
+  delayed decorations are left out (arena colours, clear-button wrappers, sprite retry counters). A planted change: 3 differ.
+- Check-writing lessons: a helper named `CH` silently collided with the page's own `CH` (half the steps did nothing and
+  still "matched"); `\d` inside a template string loses its backslash. Every check now prints what each step did.
+- New build: Edit Set sheet (strip of the six; Ability | Item, Moves 2 x 2, Nature | Stat points; Lock, Remove with Undo).
+  Messages give the Strength Score change. Focus stays on the control just changed.
+
+## Bug queue 2 (found Nov 11)
+- FIXED (batched for live): the ⋯ "More team actions" menu shut itself when My Team redrew (after Remove, or as the day's
+  data landed). Cause: 75-arena-team.js closed it on any focusout, and a redraw drops focus to the page. Now it closes only
+  when focus moves to another element. This was behaviour test TEAM-03's flakiness (2-4 of 5 failing; 6 of 6 pass after).
+- OPEN: choosing "(no item)" in the item picker stores "not set", so the Pokémon keeps its usual item, while the message
+  says "No item". Holding nothing is legal in Champions, so either the picker should store a real "no item" (needs the saved
+  data and the grade to accept it) or the choice should be removed. Ask Sim which.

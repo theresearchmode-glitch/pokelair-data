@@ -59,7 +59,7 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   draw(); };
 // a Pokémon picked anywhere opens its info sheet; pages replace V2.openMon when the full sheet is built (R4)
 V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
-  V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p></div></div>`, {label: V2.disp(n), small: true}); };
+  V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p>${V2.addBtn ? V2.addBtn(n) : ''}</div></div>`, {label: V2.disp(n), small: true}); };
 document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m) { e.preventDefault(); V2.openMon(m.dataset.v2mon); }
   if (e.target.closest('[data-v2search]')) V2.openSearch(); });
 document.addEventListener('keydown', e => { if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });

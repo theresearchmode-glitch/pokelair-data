@@ -202,4 +202,6 @@ function probit(p) { const a = [-39.69683028665376, 220.9460984245205, -275.9285
 const GEM_STABLE = .8;
 function isGem(p) { const r = rating(p), e = r.tc; if (r.proven || !e) return false;
   return e.full ? e.g >= 300 && e.lift >= 1.15 && e.wr > e.base + 1 && (e.gs == null || e.gs >= GEM_STABLE) : e.g >= 300 && e.wr > e.base + 2; }
-
+/* shown rating: piecewise-linear, each tier's band maps onto its school band (80-99 → 90-99, 70-79 → 80-89, ..., 0-34 → 1-49) */
+function RS(t) { t = Math.max(0, Math.min(99, +t || 0)); const B = [[80, 99, 90, 99], [70, 80, 80, 90], [60, 70, 70, 80], [50, 60, 60, 70], [35, 50, 50, 60], [0, 35, 1, 50]];
+  for (const [a, b, c, d] of B) if (t >= a) return Math.round(c + (Math.min(t, b) - a) * (d - c) / (b - a)); return 1; }

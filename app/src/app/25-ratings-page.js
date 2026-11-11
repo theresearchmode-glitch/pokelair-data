@@ -3,9 +3,7 @@
 // 0-100 scale where S = 90+, A = 80s, B = 70s, C = 60s, D = 50s, F under 50. Same order, same tiers; only the shown number moves.
 const LTIERS = [{k: 'S', min: 80, show: 90, c: '#ffb400', d: 'Top of the format'}, {k: 'A', min: 70, show: 80, c: '#ff6a3d', d: 'Strong, proven picks'}, {k: 'B', min: 60, show: 70, c: '#b45cff', d: 'Solid with the right team'},
   {k: 'C', min: 50, show: 60, c: '#2f9bff', d: 'Niche or team-dependent'}, {k: 'D', min: 35, show: 50, c: '#22b58a', d: 'Needs a specific plan'}, {k: 'F', min: 0, show: 1, c: '#8a90a6', d: 'Rarely worth a slot'}];
-/* shown rating: piecewise-linear, each tier's band maps onto its school band (80-99 → 90-99, 70-79 → 80-89, ..., 0-34 → 1-49) */
-function RS(t) { t = Math.max(0, Math.min(99, +t || 0)); const B = [[80, 99, 90, 99], [70, 80, 80, 90], [60, 70, 70, 80], [50, 60, 60, 70], [35, 50, 50, 60], [0, 35, 1, 50]];
-  for (const [a, b, c, d] of B) if (t >= a) return Math.round(c + (Math.min(t, b) - a) * (d - c) / (b - a)); return 1; }
+/* RS (the shown rating) lives in 13-rating.js now, so the new build shares it (Nov 11) */
 const lTier = t => LTIERS.find(x => t >= x.min) || LTIERS[LTIERS.length - 1];
 function lairRows() { const R = ratings();
   return ROSTER.map(p => ({p, r: R.get(p.n)})).filter(x => x.r).sort((a, b) => b.r.total - a.r.total || a.p.d.localeCompare(b.p.d)); }

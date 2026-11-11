@@ -47,7 +47,8 @@
 .tm-ck li:last-child{border-bottom:0}.tm-ck li b{color:var(--ink-3)}.tm-ck li.ok b{color:var(--plot-text)}
 .tm-ck small{display:block;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .tm-h3{margin-top:var(--s6);font:600 var(--t13)/1.5 var(--b);letter-spacing:.04em;color:var(--ink-3)}
-.tm-empty{padding:var(--s16) var(--gut)}.tm-empty h1{font-size:var(--t34);margin:var(--s3) 0}.tm-empty p{color:var(--ink-2);max-width:48ch}.tm-empty .row{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
+.tm-empty{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s10);align-items:center;align-content:center;min-height:calc(100svh - 240px);padding:var(--s16) var(--gut)}
+@media (max-width:899px){.tm-empty{grid-template-columns:minmax(0,1fr);gap:var(--s12)}}.tm-empty h1{font-size:var(--t34);margin:var(--s3) 0}.tm-empty p{color:var(--ink-2);max-width:48ch}.tm-empty .row{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
 @media (max-width:1179px){.tm-work{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"set set" "mu ck" "sg sg"}.tm-rows{grid-template-columns:minmax(0,1fr)}.tm-rows li:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--rule)}.tm-setgrid{grid-template-columns:minmax(0,260px) minmax(0,1fr);align-items:center}}
 @media (max-width:899px){.tm-hero{grid-template-columns:minmax(0,1fr);grid-template-areas:"lock" "six" "acts"}}
 @media (max-width:699px){.tm-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s4)}.tm-work{grid-template-columns:minmax(0,1fr);grid-template-areas:"set" "mu" "sg" "ck"}.tm-setgrid{grid-template-columns:minmax(0,1fr)}.tm-jump{top:60px}.tm-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tm-acts .np-btn{grid-column:1/-1}.tm-acts>*{justify-content:center}.tm-hero .np-score b{font-size:var(--d120)}}
@@ -167,3 +168,17 @@
 .ed-foot{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s8);padding-top:var(--s5);border-top:1px solid var(--rule)}
 .ed-foot .fine{flex:1 1 200px}.ed-rm{min-height:var(--tap)}
 @media (max-width:479px){.ed2{padding:var(--s6) var(--s4)}.ed-mvs{grid-template-columns:minmax(0,1fr)}.ed-pts{grid-template-columns:repeat(3,minmax(0,1fr))}.ed-strip{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* empty My Team (Nov 11): the lead and today's underdog side by side; the underdog stands on its pool like the six */
+.tm-e-saved small{margin-left:var(--s1);color:var(--ink-3);font-size:var(--t13)}.tm-e-saved{min-height:var(--tap)}
+.tm-ud{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"hd hd" "st bd";gap:var(--s4) var(--s6);align-items:center}
+.tm-ud-hd{grid-area:hd}.tm-ud-st{grid-area:st}.tm-ud-bd{grid-area:bd}
+.tm-ud h2{font-size:var(--t28);margin:var(--s2) 0}.tm-ud h2 span{color:var(--plot-text)}
+.tm-ud .row{align-items:center}
+.ms-add{margin-top:var(--s4)}
+@media (max-width:519px){.tm-ud{grid-template-columns:minmax(0,1fr);grid-template-areas:"st" "hd" "bd";justify-items:center;text-align:center}.tm-ud .np-eyebrow,.tm-ud .row{justify-content:center}}
+/* the underdog's pool is the site's own light (PLOT blue into the logo's pink), breathing slowly on its own layer; the art never
+   animates (design-system: every Pokémon stands on the floor). Reduce motion = still. */
+.tm-ud-st .pool{background:radial-gradient(closest-side,color-mix(in srgb,var(--plot) 60%,transparent),color-mix(in srgb,var(--plot) 24%,transparent) 50%,color-mix(in srgb,var(--pick) 16%,transparent) 72%,transparent)}
+.tm-ud-st .pool::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--pick) 34%,transparent),color-mix(in srgb,var(--plot) 18%,transparent) 60%,transparent);animation:ud-breathe 4.5s ease-in-out infinite}
+@keyframes ud-breathe{0%,100%{opacity:.3}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.tm-ud-st .pool::after{animation:none;opacity:.6}}
