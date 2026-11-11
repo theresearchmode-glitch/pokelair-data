@@ -4,20 +4,7 @@
 // minR+) had against that six or one 5 of 6 the same, how often they brought and led it; and rounds (real games) with what
 // that player brought and led, and what players with a similar six did against a similar six. Facts about choices, never
 // a chance of winning. The score (matching the strong players' four) is kept in this browser only.
-function cleanPractice(v) { try {
-  if (!v || typeof v !== 'object' || !Array.isArray(v.dict) || !Array.isArray(v.opp) || !Array.isArray(v.rounds)) return null;
-  const D = v.dict.map(x => typeof x === 'string' && byName.has(x) ? x : null), nm = i => Number.isInteger(i) ? D[i] || null : null;
-  const list = (a, len) => { if (!Array.isArray(a) || (len && a.length !== len)) return null; const o = a.map(nm); return o.every(Boolean) ? o : null; };
-  const cnt = x => Number.isFinite(+x) && +x >= 0 ? Math.round(+x) : 0;
-  const opp = v.opp.slice(0, 500).map(o => { if (!Array.isArray(o)) return null; const six = list(o[0], 6); if (!six) return null; const mons = {};
-    (Array.isArray(o[2]) ? o[2] : []).forEach(r => { if (!Array.isArray(r)) return; const n = nm(r[0]), c = [cnt(r[1]), cnt(r[2]), cnt(r[3])]; if (n && c[0] > 0 && c[1] <= c[0] && c[2] <= c[0]) mons[n] = c; });
-    return {six, n: cnt(o[1]), mons}; });
-  const rounds = v.rounds.slice(0, 2000).map((r, i) => { if (!Array.isArray(r) || !opp[r[0]]) return null;
-    const mine = list(r[1], 6), b = list(r[2], 4), l = list(r[3], 2), tb = list(r[7]), tl = list(r[8]), p = Array.isArray(r[9]) ? r[9] : null;
-    if (!mine || !b || !l || !tb || !tl || !p) return null; const four = list(p[1], 4), lead = list(p[3], 2); if (!four || !lead) return null;
-    return {i, o: r[0], mine, b, l, r: cnt(r[4]), tr: cnt(r[5]), won: r[6] === 1, tb, tl, pair: {n: Math.max(1, cnt(p[0])), four, fourN: Math.max(1, cnt(p[2])), lead, leadN: Math.max(1, cnt(p[4]))}}; }).filter(Boolean);
-  if (!rounds.length) return null;
-  return {opp, rounds, minR: cnt(v.minR), source: str(v.source, 200), updated: str(v.updated, 40), from: cnt(v.from), to: cnt(v.to)}; } catch (e) { return null; } }
+// cleanPractice: moved to 05-data-clean.js (R4, Nov 11; shared with the rebuild)
 const prBase = n => String(n || '').replace(/-Mega.*$/, '');
 const prSame = (a, b) => a.length === b.length && a.every(x => b.some(y => prBase(y) === prBase(x)));
 let pr = {step: 'start', mode: null, ri: -1, oi: -1, six: [], pick: [], lead: [], recent: []};

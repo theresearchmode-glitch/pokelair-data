@@ -4,6 +4,8 @@ let renderQueued=false,planCache={key:null,plans:[]},metaVersion=0;
 // one redraw instead of one each. Nov 1 (load speed): the wait restarts with each new piece (up to 0.7 s after the first one
 // waiting), so pieces that trickle in ~150 ms apart share one redraw instead of one each (a full redraw is ~0.3-0.7 s on a phone).
 let renderQAt=0,renderQT=0;
+// the usage source in use (ui.metaSrc) falls back to one that has data today: tournament, then ladder, then in-game (shared with the rebuild)
+function fixMetaSrc(){if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}}
 function scheduleRender(){const now=performance.now();if(now>=6000){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;bgRender()},0);return}
   if(!renderQueued){renderQueued=true;renderQAt=now}clearTimeout(renderQT);renderQT=setTimeout(()=>{renderQueued=false;bgRender()},Math.max(0,Math.min(200,renderQAt+700-now)))}
 // Background updates (data arriving, slow checks finishing) wait while someone is typing in a box: a redraw would rebuild the box
@@ -150,7 +152,7 @@ function render(){
   else if(!ms.length){ui.plansStale=false;ui.planMore=0;planCache={key:planKey,plans};planKeep(planKey,plans)}
   else{ui.plansStale=false;if(!planJob||planJob.key!==planKey)ui.planMore=0;planJobStart(planKey,ms,pool,useA,a);plans=[];plans.pending=true}
   ui.plans=plans;ui.planCtx={key:planKey,ms,a,tRows,useA,covered};plansDraw(ui.planCtx,plans);
-  if(ckWinNeeded())safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
+  if(ckWinNeeded())safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);fixMetaSrc();lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
   lazy('threats','threats',()=>renderThreats(members(),$('useAbil').checked));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch);if(view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);if(view==='compare')safe('compare',renderCompare)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);lazy('top teams','ttList',()=>renderTopTeams());safe('battle log',renderLog);lazy('sets','sets',()=>renderSets());safe('paste',renderPastePanel);safe('home',renderHome);
 }
 // The scouting report's header: legal and items first, then how ready the team is for the top threats, the checklist, and

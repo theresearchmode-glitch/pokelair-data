@@ -5,19 +5,7 @@
 /* track.mjs buckets the saved (internal) totals at 80 / 60 / 40; the labels show those cut points on the shown school
    scale (RS), so "Rated 90+" here means the same as 90+ everywhere else (Nov 2) */
 const TR_CUT = [80, 60, 40], TR_BANDS = [`${RS(TR_CUT[0])}+`, `${RS(TR_CUT[1])}–${RS(TR_CUT[0]) - 1}`, `${RS(TR_CUT[2])}–${RS(TR_CUT[1]) - 1}`, `Under ${RS(TR_CUT[2])}`], TR_MIN = {verdict: 10, misses: 5, weeks: 3};
-function cleanTrack(v) { try {
-  if (!v || typeof v !== 'object' || !Array.isArray(v.ev) || !/^\d{4}-\d{2}-\d{2}$/.test(String(v.since || ''))) return null;
-  const n4 = a => Array.isArray(a) && a.length === 4 && a.every(x => isFinite(+x) && +x >= 0) ? a.map(Number) : null;
-  const ev = v.ev.slice(-2000).map(e => { if (!Array.isArray(e)) return null; const bs = n4(e[7]), ap = n4(e[8]), teams = +e[6];
-    if (!bs || !ap || !(teams > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(String(e[1]))) return null;
-    const tops = Array.isArray(e[9]) ? e[9].filter(t => Array.isArray(t) && byName.has(t[0])).map(t => ({n: t[0], r: +t[1] || 0, c: +t[2] || 0, p: +t[3] || 0})) : null;
-    return {id: str(e[0], 120), date: e[1], name: str(e[2], 120), players: +e[3] || 0, off: !!e[4], snap: str(e[5], 10), teams, bs, ap, tops}; }).filter(Boolean);
-  const mons = (Array.isArray(v.mons) ? v.mons : []).filter(m => Array.isArray(m) && byName.has(m[0])).map(m => ({n: m[0], ev: +m[1] || 0, r: +m[2] || 0, c: +m[3] || 0, w: +m[4] || 0, best: str(m[5], 120)}));
-  const mb = Array.isArray(v.mb) && v.mb.length === 4 ? v.mb.map(x => Array.isArray(x) ? [+x[0] || 0, +x[1] || 0] : [0, 0]) : [[0, 0], [0, 0], [0, 0], [0, 0]];
-  const fw = (Array.isArray(v.fw) ? v.fw : []).filter(x => Array.isArray(x) && isFinite(+x[1]) && +x[2] > 0).map(x => ({d: str(x[0], 10), acc: +x[1], games: +x[2]}));
-  const mv = Array.isArray(v.mv) && /^\d{4}-\d{2}-\d{2}$/.test(String(v.mv[1])) && Array.isArray(v.mv[2]) ? {from: str(v.mv[0], 10), to: str(v.mv[1], 10),
-    list: v.mv[2].filter(m => Array.isArray(m) && byName.has(m[0]) && isFinite(+m[2]) && +m[2] !== 0).slice(0, 4).map(m => ({n: m[0], r: +m[1] || 0, d: +m[2]}))} : null;
-  return {since: v.since, snaps: +v.snaps || 0, last: str(v.last, 10), top: +v.top || 8, updated: str(v.updated, 40), ev, mons, mb, fw, mv}; } catch (e) { return null; } }
+// cleanTrack: moved to 05-data-clean.js (R4, Nov 11; shared with the rebuild)
 const trPct = x => pctFmt(100 * x);
 const trAdd = (d, n) => { const t = new Date(d + 'T12:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
 const trWeek = d => { const t = new Date(d + 'T12:00:00Z'), w = (t.getUTCDay() + 6) % 7; t.setUTCDate(t.getUTCDate() - w); return t.toISOString().slice(0, 10); };

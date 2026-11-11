@@ -70,6 +70,8 @@ V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg =
   /* the footer copy gets its own mask ids, so the two logos on one page never share an id */
   return svg ? (small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg) : '<b class="u">NastyPlot</b>'; };
 V2.route = () => { const h = (location.hash || '').slice(1); return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
+// redraw the current page after data arrives, keeping the reader's place and focus (no scroll jump)
+V2.redraw = () => { const y = scrollY, f = document.activeElement && document.activeElement.id; V2.draw(); scrollTo(0, y); if (f) { const e = document.getElementById(f); if (e) e.focus({preventScroll: true}); } };
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   app.innerHTML = `<a class="vh" href="#main">Skip to the page</a>

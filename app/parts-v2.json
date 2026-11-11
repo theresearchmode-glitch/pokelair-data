@@ -34,6 +34,7 @@
   ],
   "scripts": [
     "src/v2/test-hook.js",
+    "src/v2/bridge.js",
     "src/v2/shell.js",
     "src/v2/pages/guide.js"
   ],
@@ -43,7 +44,10 @@
     "src/app/02-set-data.js",
     "src/app/03-persistence.js",
     "src/app/04-search.js",
+    "src/app/05-data-clean.js",
     "src/app/06-helpers.js",
+    "src/app/08-render-all.js",
+    "src/app/09-quick-add.js",
     "src/app/10-team-strategy.js",
     "src/app/11-game-plan.js",
     "src/app/12-meta-threats.js",
@@ -53,9 +57,13 @@
     "src/app/16-outside-performance-data.js",
     "src/app/17-matchup-threats-teams.js",
     "src/app/18-archetypes.js",
+    "src/app/19-showdown-paste.js",
+    "src/app/29-fix-planner.js",
     "src/app/35-win-model.js",
     "src/app/36-confidence.js",
+    "src/app/39-damage-calc-speed.js",
     "src/app/54-items.js",
-    "src/app/55-threats.js"
+    "src/app/55-threats.js",
+    "src/app/58-strength.js"
   ]
 }

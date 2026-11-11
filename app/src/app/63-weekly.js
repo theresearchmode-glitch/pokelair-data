@@ -2,22 +2,7 @@
    meta/weekly (out/weekly.json from weekly.mjs). The pipeline decides what counts as a change (enough teams, a big enough
    gap, 3+ standard errors, and it survives dropping the one event that pushes it most); the page only shows it, always
    with the counts it's based on. Winners come from meta/events for the same seven days. */
-function cleanWeekly(v) { try {
-  if (!v || typeof v !== 'object' || !v.a || !v.b) return null;
-  const n = x => { const k = num(x); return k == null ? 0 : k; }, day = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s)) ? String(s) : '';
-  const wk = w => ({from: day(w.from), to: day(w.to), ev: n(w.ev), n: n(w.n)});
-  const a = wk(v.a), b = wk(v.b); if (!a.from || !a.to || !b.from) return null;
-  const mon = r => Array.isArray(r) && byName.has(r[0]) ? {p: byName.get(r[0]), xa: n(r[1]), xb: n(r[2])} : null;
-  const rows = x => (Array.isArray(x) ? x : []).map(mon).filter(Boolean).slice(0, 8);
-  const tech = (Array.isArray(v.tech) ? v.tech : []).map(r => Array.isArray(r) && byName.has(r[0]) && ['i', 'm', 'a'].includes(r[1]) && str(r[2], 40) && n(r[4]) > 0 && n(r[6]) > 0
-    ? {p: byName.get(r[0]), k: r[1], o: str(r[2], 40).replace(/[’‘]/g, "'"), xa: n(r[3]), ma: n(r[4]), xb: n(r[5]), mb: n(r[6])} : null).filter(Boolean).slice(0, 10);
-  const sty = x => (Array.isArray(x) ? x : []).filter(r => Array.isArray(r) && typeof ARCH === 'object' && ARCH[r[0]]).map(r => ({k: r[0], xa: n(r[1]), xb: n(r[2])}));
-  const fresh = (Array.isArray(v.fresh) ? v.fresh : []).map(r => Array.isArray(r) && byName.has(r[1]) && (r[0] === 'p' || (r[0] === 's' && str(r[2], 40)))
-    ? {kind: r[0], p: byName.get(r[1]), i: str(r[2], 40), k: n(r[3]), ev: str(r[4], 90), who: str(r[5], 40), pl: n(r[6]), d: day(r[7]), players: n(r[8])} : null).filter(Boolean).slice(0, 10);
-  const th = v.th && typeof v.th === 'object' ? v.th : {};
-  return {a, b, enough: !!v.enough && a.n > 0 && b.n > 0, updated: str(v.updated, 40), up: rows(v.up), down: rows(v.down), top: rows(v.top), tech,
-    sty: {up: sty(v.sty && v.sty.up), down: sty(v.sty && v.sty.down)}, styAll: sty(v.styAll), fresh, cutA: n(v.cutA),
-    th: {teams: n(th.teams) || 200, z: n(th.z) || 3, pts: n(th.pts) || 2, monTeams: n(th.monTeams) || 60, techPts: n(th.techPts) || 6, techMin: n(th.techMin) || 12, cut: n(th.cut) || 8, cutPlayers: n(th.cutPlayers) || 32}}; } catch (e) { return null; } }
+// cleanWeekly: moved to 05-data-clean.js (R4, Nov 11; shared with the rebuild)
 const WK = {
   pc: (x, n) => n ? Math.round(100 * x / n) : 0,
   pc1: (x, n) => { if (!n) return '0'; const v = 100 * x / n; return v < 10 ? v.toFixed(1) : String(Math.round(v)); },
@@ -152,11 +137,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
 /* ---------- Upcoming events (Nov): the official VGC calendar with a countdown, at the top of Events ----------
    meta/calendar (out/calendar.json from calendar.mjs, read from Victory Road's season calendar). Dates are the event's own
    local dates (VGC days), so the countdown counts calendar days from the viewer's today. */
-function cleanCalendar(v) { try {
-  if (!v || typeof v !== 'object' || !Array.isArray(v.ev)) return null; const day = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s)) ? String(s) : '';
-  const T = ['worlds', 'international', 'regional', 'sc', 'pbl', 'national', 'online'];
-  const ev = v.ev.slice(0, 120).map(e => e && typeof e === 'object' && str(e.n, 80) && day(e.s) && day(e.e) && e.e >= e.s ? {n: str(e.n, 80), city: str(e.city, 50), cc: /^[A-Z]{2}$/.test(e.cc) ? e.cc : '', s: e.s, e: e.e, t: T.includes(e.t) ? e.t : 'regional', url: /^https:\/\//.test(e.url) ? str(e.url, 200) : ''} : null).filter(Boolean);
-  return ev.length ? {ev, checked: day(v.checked) || str(v.updated, 10), src: {name: str(v.src && v.src.name, 80) || 'Victory Road', url: /^https:\/\//.test(v.src && v.src.url) ? str(v.src.url, 200) : ''}} : null; } catch (e) { return null; } }
+// cleanCalendar: moved to 05-data-clean.js (R4, Nov 11; shared with the rebuild)
 const CAL = {
   today: () => { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; },
   days: (a, b) => Math.round((Date.UTC(+a.slice(0, 4), +a.slice(5, 7) - 1, +a.slice(8, 10)) - Date.UTC(+b.slice(0, 4), +b.slice(5, 7) - 1, +b.slice(8, 10))) / 864e5),

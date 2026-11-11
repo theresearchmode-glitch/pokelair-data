@@ -3,20 +3,7 @@
 // events (top 16), each with full team sheets. Strings are stored once in "dict" and referenced by index.
 // Events lists them with the winner up front; one tap opens the standings with every set.
 // Team search (on Top teams) filters every one of those teams by Pokémon, item, move or ability.
-function cleanEvents(v) { try {
-  if (!v || typeof v !== 'object' || !Array.isArray(v.events) || !Array.isArray(v.dict)) return null;
-  const D = v.dict.map(x => typeof x === 'string' ? x.slice(0, 60) : ''), g = i => D[i] || '';
-  const sheet = s => { if (!Array.isArray(s)) return null; const n = g(s[0]); if (!byName.has(n)) return null;
-    // ability spelled by hand on the sheet → the Pokémon's real ability; curly apostrophes in move names (King’s Shield)
-    // item names typed by hand too ("Chopple Berry", "Grassy Seeds") → the real item
-    return {n, i: typeof canonItem === 'function' ? canonItem(g(s[1])) : g(s[1]), a: canonAbility(g(s[2]), byName.get(n)), nt: g(s[3]), mv: (Array.isArray(s[4]) ? s[4] : []).slice(0, 4).map(x => g(x).replace(/[’‘]/g, "'")).filter(Boolean).map(x => typeof canonMove === 'function' ? canonMove(x, byName.get(n)) : x)}; };
-  const events = v.events.slice(0, 200).map(e => { if (!e || !Array.isArray(e.top)) return null;
-    const top = e.top.slice(0, 16).map(t => { if (!Array.isArray(t) || !Array.isArray(t[3])) return null; const mons = t[3].map(sheet).filter(Boolean); if (mons.length !== 6) return null;
-      return {player: str(t[0], 60), place: +t[1] || 0, record: str(t[2], 20), mons}; }).filter(Boolean);
-    if (!top.length) return null;
-    return {id: str(e.id, 120), name: str(e.name, 140), date: str(e.date, 10), players: +e.players || 0, src: e.src === 'official' ? 'official' : 'limitless', top,
-      field: (Array.isArray(e.field) ? e.field : []).map(f => Array.isArray(f) ? [g(f[0]), +f[1] || 0] : null).filter(f => f && byName.has(f[0])).slice(0, 8)}; }).filter(Boolean);
-  return events.length ? {source: str(v.source, 200), updated: str(v.updated, 40), events} : null; } catch (e) { return null; } }
+// cleanEvents: moved to 05-data-clean.js (R4, Nov 11; shared with the rebuild)
 const evDate = d => { try { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) { return d; } };
 const placeTxt = n => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th';
 let evUi = {open: null, filter: 'all', more: 0, sets: {}};

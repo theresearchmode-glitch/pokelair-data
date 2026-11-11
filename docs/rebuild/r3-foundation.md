@@ -72,3 +72,18 @@ design until the switch (R5).
 
 Heavy, about 2-3 sessions as planned. The logic extractions in step 2 are spread across R4: each page pulls out its own logic
 just before that page is built.
+
+## R4 start: the new build runs today's logic (Nov 11)
+- `parts-v2.json` "logic" lists today's files in today's order, inside today's closure (00-main.js opens it); the v2 shell and pages
+  come after, so they call the same functions. 26 files today. `src/v2/bridge.js` answers the hooks the logic calls
+  (`render`, `scheduleRender`, `safe`) by redrawing the new page.
+- Moved into shared logic files, unchanged, with same-output proof on today's page:
+  - `58-strength.js`: the Strength Score's working-out (was in 60-concept-h.js). My Team 54 of 54 identical.
+  - `05-data-clean.js`: the daily data cleaners (were in 29, 49, 63-practice, 63-weekly, 64-track). The 7 cleaned documents
+    are byte-identical.
+  - `fixMetaSrc()` (08-render-all.js): the usage-source fallback that sat inside render().
+- `experiments/same-score-v2.mjs`: for 48 real teams the new build gives the same Strength Score, band word, how-sure word and
+  Matchups count as today's page (48 of 48).
+- Transitional (honest note): some mixed files are included whole for their logic (08-render-all, 09-quick-add,
+  19-showdown-paste, 29-fix-planner, 39-damage-calc-speed). Their drawing functions are never called in the new build. Each is
+  split when its page is rebuilt, and the drawing half is left out then.
