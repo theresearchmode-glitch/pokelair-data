@@ -26,9 +26,6 @@ function npLogoSvg(dark) { const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
   const cs = getComputedStyle(el); return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => { const x = cs.getPropertyValue(v).trim(); return x || fb; }); }
 CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
 // readiness grade: preparation for the top 30 threats, never a win chance
-/* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
-CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
-  return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };
 CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
 CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
@@ -134,9 +131,7 @@ CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum 
   // (Nov 7 audit) only ones about as ready as now (at most 2 points less) and never a Pokémon you just swapped out with Apply,
   // so following them can't go round in circles or drift downhill
   if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { side = true;
-    const ok = []; for (const pl of ui.plans.more) { if (ok.length >= 3) break; if (pl.ch.some(x => (swOutNow() || new Set()).has(x.c.p.b))) continue;
-      if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } }
-      const gg = g0 != null ? planGrade(pl) : null; if ((gg != null && gg < g0 - 2) || (base != null && pl._ts != null && pl._ts < base - 2)) continue; ok.push(pl); }
+    const ok = CH.sideGrades(ui.plans.more, g0, base);
     L = ui.planList = ok;
     if (!ok.length) return `<section class="chsugs" aria-label="Suggestions"><p class="t2 chsidek">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p><button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; }
   const top = L.slice(0, 3); let tk = ''; try { tk = members().map(m => m.p.n).join(','); } catch (e) {} const open = ui.sugMore === tk, hid = top.length - 1; const gapN = ui.plans && ui.plans.gapNote ? `<p class="chgapnote">${esc(ui.plans.gapNote)}</p>` : ''; // a game-plan gap nothing in this pool can fix

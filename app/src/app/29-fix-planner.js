@@ -304,6 +304,22 @@ function gpDiff(a,b){if(!a||!b)return [];const out=[];
     if(d>0)out.push(`<b>${r.st==='ok'?'Covers':'Improves'} ${esc(word)}</b>${r.who?': '+esc(r.who):''}`);
     else if(d<0)out.push(`<span class="warnline">Weakens ${esc(GP_WORD[r.k]||r.label)}</span>${r.note?': '+esc(r.note):''}`)}
   return out}
+// Apply a suggestion to the team (R4, Nov 11; shared with the rebuild): keeps Undo, remembers what it swapped out, writes the
+// new Pokémon into the slots. The caller redraws and shows the toast.
+function applyPlan(pl){keepUndo();
+    // what Apply swapped out: no suggestion offers it straight back while you keep applying suggestions (swOutNow, 29-fix-planner.js) (Nov 7 audit: Sylveon for Primarina, then Primarina for Sylveon)
+    if(!ui.swOut)ui.swOut=new Set();pl.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
+    // Nov 9: the card graded the newcomer as a typical build (its Ability not "chosen", 35-win-model.js SET_UNKNOWN_AVG); writing that
+    // Ability as chosen made Apply grade it exactly, so the result missed the card by a rank point. Same Ability shown either way.
+    pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}});
+    ui.swKey=S.slots.map(x=>x.n||'').join();
+    undoMark(pl.ch.map(x=>x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`).join(', '));}
+// Which suggestions show, in order (R4, Nov 11; shared with the rebuild): plans that would lower readiness by 5+ go after the
+// ones that keep or raise it (the plans array is reordered in place, as before), then the extra ones "More suggestions" opened.
+function planListOf(plans,baseTS,shown){const planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
+  const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
+  const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
+  return [...plans,...(shown||[])]}
 function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.length===6;if(el&&!(el.previousElementSibling&&el.previousElementSibling.classList.contains('chundohost'))){const u=document.createElement('div');u.className='chundohost';el.before(u)}undoBarSync();
   $('sugTitle').textContent='Suggestions';
   if(!ms.length){el.innerHTML='<div class="empty-note">Add at least one Pokémon to get plans.</div>';return}
@@ -316,9 +332,7 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   // each plan's readiness next to the current one, so a plan never hides that it leaves the team less prepared
   const baseTS=(ui.vsum&&ui.vsum.RD)||null,planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
   // plans that would lower readiness by 5+ go after the ones that keep or raise it
-  const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
-  const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
-  const list=[...plans,...shown];
+  const list=planListOf(plans,baseTS,shown);
   // nothing improves the team: the top side-grades still get their reasons worked out (My team shows them behind Why?)
   const extra=!plans.length?more.slice(0,3).filter(x=>!list.includes(x)):[];
   const htmls=[...list,...extra].map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;

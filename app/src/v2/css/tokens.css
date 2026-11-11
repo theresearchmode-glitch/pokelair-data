@@ -9,7 +9,7 @@
   --contact:rgba(30,20,50,.42);--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08);
   --grain:.035;--score-ink:var(--ink);
-  --plate-hi:var(--plate);--plate-lo:var(--plate);--main-hi:var(--main);--main-lo:var(--main);--band-glow:none;--floor-line:rgba(23,22,26,.13);--on-type:#FFFFFF;--mega-bg:var(--plot);--mega-ink:#FFFFFF;--type-none:#8E908C;--page-wash:none;--scrim:rgba(23,22,26,.28);
+  --plate-hi:var(--plate);--plate-lo:var(--plate);--main-hi:var(--main);--main-lo:var(--main);--band-glow:none;--floor-line:rgba(23,22,26,.13);--on-type:#FFFFFF;--type-none:#8E908C;--page-wash:none;--scrim:rgba(23,22,26,.28);
   /* type: Unbounded (slanted) for headlines and big numbers at 15px and up; Instrument Sans for the rest */
   --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
   /* display sizes: the score number and the tagline (design scale "+ display") */
@@ -33,7 +33,7 @@
   --contact:transparent;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35);
   --grain:.05;--score-ink:#D6D1CA;
-  --mega-bg:#62BEF7;--mega-ink:#0E1626;--plate-hi:#3E3D56;--plate-lo:#2C2B3D;--main-hi:#63C0F8;--main-lo:#3FA2E2;--band-glow:0 0 22px rgba(79,178,240,.4);--floor-line:rgba(214,218,255,.3);--page-wash:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%);--scrim:rgba(6,6,12,.45);
+  --plate-hi:#3E3D56;--plate-lo:#2C2B3D;--main-hi:#63C0F8;--main-lo:#3FA2E2;--band-glow:0 0 22px rgba(79,178,240,.4);--floor-line:rgba(214,218,255,.3);--page-wash:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%);--scrim:rgba(6,6,12,.45);
   color-scheme:dark}
 @media (max-width:1179px){:root{--gut:48px}}
 @media (max-width:699px){:root{--gut:16px}}

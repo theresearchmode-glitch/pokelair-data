@@ -87,3 +87,18 @@ just before that page is built.
 - Transitional (honest note): some mixed files are included whole for their logic (08-render-all, 09-quick-add,
   19-showdown-paste, 29-fix-planner, 39-damage-calc-speed). Their drawing functions are never called in the new build. Each is
   split when its page is rebuilt, and the drawing half is left out then.
+
+## R4 My Team: Suggestions (Nov 11)
+- Shared now: `planListOf()` and `applyPlan()` (29-fix-planner.js), `CH.sideGrades()` and `CH.gradeMove()` (58-strength.js),
+  `clearCaches()` (08-render-all.js). Today's render, CH.sugs and the click handler call them; the rebuild calls the same ones.
+- The rebuild runs today's planner (`planFixesG`) in 30 ms slices like today's page, and its bridge does what today's render
+  does on every redraw: save the team (`persist`), pick the usage source (`fixMetaSrc`, after the daily documents land) and
+  empty the calculation caches (`clearCaches`).
+- Two hidden dependencies found by comparing outputs (lesson for every page): shared code that calls an optional function only
+  when it exists (`typeof abY === 'function'` in the planner: Build for Me's strength adds 20 candidates) or calls one inside
+  a try block (`LANE.apply`, 36-lanes.js: drops swaps too small to matter). Missing from the rebuild, both failed silently and
+  changed the suggestions. Fix: 22-auto-build.js and 36-lanes.js in the rebuild's logic.
+- Proof: `experiments/same-sugs-v2.mjs`, 25 real teams (every third with a weak slot): the same suggestions in the same order
+  with the same Strength Score change on both builds (25 of 25; 23 have suggestions). It fails when the lane step is removed
+  (6 of 9 differ). `experiments/same-team.mjs` now waits for the planner and compares Suggestions too.
+- Apply and Undo checked by hand on the new page: 62 → 84 as the card says, saved, Undo restores and is saved after reload.

@@ -60,9 +60,9 @@ mirror rule in light mode (a deep enough panel, the agreed "pale Pokémon stand 
 
 ## 2b. Sim's decisions on the Nov 11 reference set (docs/rebuild/reference-2026-11-11)
 
-- **Mega is always clear (Sim, Nov 11: "it's hard to see mega, make sure everything is clear")**: wherever a Pokémon's name is drawn as
-  a Mega, "MEGA" is a solid slanted badge above the name (white on PLOT blue by day, dark on light blue at night; 4.7:1 and 8.8:1),
-  never thin coloured text. Rows of Pokémon keep the badge's slot so names stay on one line.
+- **Mega is always clear, never louder than the name (Sim, Nov 11: "hard to see", then "the MEGA is bigger than the name")**:
+  the word "Mega" is part of the name, at the name's own size, bold, in PLOT blue ("**Mega** Charizard Y"). Rows of standing
+  Pokémon and narrow lists put it on its own line above the name (the slot is kept, so names stay on one line).
 
 Sim chose these in conversation on Nov 11. They override anything earlier in this file that disagrees.
 

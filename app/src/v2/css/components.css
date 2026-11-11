@@ -37,8 +37,9 @@
 .np-mon img{position:relative;width:var(--iw);max-width:100%;aspect-ratio:1;margin:0 auto;object-fit:contain;object-position:50% 100%;translate:0 calc(var(--fo,0)*100%);filter:drop-shadow(4px 7px 7px rgba(var(--shade),.16))}
 :root[data-theme="night"] .np-mon img{filter:drop-shadow(0 0 .6px rgba(var(--rim),.55)) drop-shadow(0 -1px 5px rgba(var(--cp,150,150,165),.3))}
 .np-mon b{position:relative;display:block;margin-top:var(--s2);font:700 var(--t15)/1.25 var(--b)}
-/* the Mega badge (Sim, Nov 11: "it's hard to see mega"): a solid slanted badge above the name, same slot height for every Pokémon */
-.np-mon b .mg,.np-hit .mg{display:table;margin:0 auto var(--s1);padding:var(--s1) var(--s2);font:800 var(--t13)/1 var(--b);letter-spacing:.08em;text-transform:uppercase;color:var(--mega-ink);background:var(--mega-bg);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+/* Mega (Sim, Nov 11: clear, but never bigger than the name): the word "Mega" at the name's own size, bold, in PLOT blue */
+.mg{font:inherit;font-weight:800;color:var(--plot-text);letter-spacing:0;text-transform:none}
+.np-mon b .mg{display:block}
 .np-mon b .mg.none{visibility:hidden}
 .np-mon small{position:relative;display:block;font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}
 /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
@@ -122,7 +123,7 @@
 .np-hit img{width:48px;height:48px;object-fit:contain}
 .np-hit .pg{font:600 var(--t13)/1 var(--b);color:var(--ink-3);text-align:center}
 .np-hit .ty,.np-monsheet .ty{display:flex;gap:var(--s1);flex-wrap:wrap}.np-hit .ty{flex-wrap:nowrap}
-.np-hit .mg{margin:0 0 var(--s1)}.np-hit .mg.none{display:none}
+.np-hit .mg{margin-right:.3em}.np-hit .mg.none{display:none}
 @media (max-width:379px){.np-find{padding:var(--s6) var(--s4)}.np-hit{grid-template-columns:40px 1fr}.np-hit img{width:40px;height:40px}.np-hit .ty{grid-column:2}}
 /* the simple Pokémon sheet (the full info sheet replaces it in R4) */
 .np-monsheet{display:flex;align-items:center;gap:var(--s8);padding:var(--s8)}

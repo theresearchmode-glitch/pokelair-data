@@ -19,7 +19,7 @@
 .tm-pick:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
 .tm-jump{position:sticky;top:76px;z-index:5;padding:0 var(--gut);background:var(--bg)}
 /* desktop: Set and Team Checks stacked on the left, Matchups across the right two thirds in two columns (no empty half) */
-.tm-work{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);grid-template-areas:"set mu" "ck mu";align-items:start;gap:var(--s10) var(--s12);padding:var(--s8) var(--gut) var(--s16)}
+.tm-work{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);grid-template-areas:"set mu" "ck sg";align-items:start;gap:var(--s10) var(--s12);padding:var(--s8) var(--gut) var(--s16)}
 .tm-set{grid-area:set}.tm-cks{grid-area:ck}.tm-mus{grid-area:mu}
 .tm-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s8)}
 .tm-rows li:nth-last-child(2):nth-child(odd){border-bottom:0}
@@ -48,6 +48,27 @@
 .tm-ck small{display:block;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .tm-h3{margin-top:var(--s6);font:600 var(--t13)/1.5 var(--b);letter-spacing:.04em;color:var(--ink-3)}
 .tm-empty{padding:var(--s16) var(--gut)}.tm-empty h1{font-size:var(--t34);margin:var(--s3) 0}.tm-empty p{color:var(--ink-2);max-width:48ch}.tm-empty .row{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
-@media (max-width:1179px){.tm-work{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"set set" "mu ck"}.tm-rows{grid-template-columns:minmax(0,1fr)}.tm-rows li:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--rule)}.tm-setgrid{grid-template-columns:minmax(0,260px) minmax(0,1fr);align-items:center}}
+@media (max-width:1179px){.tm-work{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"set set" "mu ck" "sg sg"}.tm-rows{grid-template-columns:minmax(0,1fr)}.tm-rows li:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--rule)}.tm-setgrid{grid-template-columns:minmax(0,260px) minmax(0,1fr);align-items:center}}
 @media (max-width:899px){.tm-hero{grid-template-columns:minmax(0,1fr);grid-template-areas:"lock" "six" "acts"}}
-@media (max-width:699px){.tm-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s4)}.tm-work{grid-template-columns:minmax(0,1fr);grid-template-areas:"set" "mu" "ck"}.tm-setgrid{grid-template-columns:minmax(0,1fr)}.tm-jump{top:60px}.tm-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tm-acts .np-btn{grid-column:1/-1}.tm-acts>*{justify-content:center}.tm-hero .np-score b{font-size:var(--d120)}}
+@media (max-width:699px){.tm-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s4)}.tm-work{grid-template-columns:minmax(0,1fr);grid-template-areas:"set" "mu" "sg" "ck"}.tm-setgrid{grid-template-columns:minmax(0,1fr)}.tm-jump{top:60px}.tm-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tm-acts .np-btn{grid-column:1/-1}.tm-acts>*{justify-content:center}.tm-hero .np-score b{font-size:var(--d120)}}
+
+/* suggestions: each card = Suggestion N, the score change (big), one row per swap (out → in), Apply at the bottom */
+.tm-sgs{grid-area:sg}
+.tm-sug{list-style:none;display:grid;gap:var(--s4);margin-top:var(--s4)}
+.tm-sug li{display:flex;flex-direction:column;gap:var(--s3);padding-top:var(--s4);border-top:1px solid var(--rule)}
+.tm-mv{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--s1) var(--s3)}
+.tm-mv b{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--plot-text)}
+.tm-mv span{font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.tm-chg{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--s2)}
+.tm-sw{display:flex;align-items:center;gap:var(--s2);min-width:0;font:600 var(--t15)/1.2 var(--b)}.tm-sw img{width:44px;height:44px;flex:none;object-fit:contain}
+.tm-sw .mg{margin-right:.3em}.tm-sw .mg.none{display:none}
+.tm-sw>span{min-width:0;overflow-wrap:anywhere}
+@media (max-width:899px){.tm-sw .mg{display:block;margin:0}}
+.tm-ar{font:700 var(--t20)/1 var(--b);color:var(--ink-3)}
+.tm-sug .np-btn{align-self:flex-start;margin-top:auto}
+/* wide: one row per suggestion: the change | the swaps | Apply */
+@media (min-width:900px){.tm-sug li{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
+  .tm-sug li>.np-eyebrow{grid-area:k;align-self:end}.tm-sug .tm-mv{grid-area:mv;align-self:start;flex-direction:column;gap:var(--s1)}.tm-sug .tm-swaps{display:grid;gap:var(--s2);grid-area:sw;display:grid;gap:var(--s2)}.tm-sug li>.np-btn{grid-area:ap;align-self:center;margin:0}}
+@media (max-width:379px){.tm-sw img{width:36px;height:36px}.tm-sw{font-size:var(--t13)}}
+@media (max-width:459px){.tm-hero .np-score{flex-wrap:wrap;row-gap:0}.tm-hero .np-score .w{padding-bottom:0}}
+@media (max-width:439px){.tm-jump{gap:var(--s3)}.tm-jump small{display:none}}

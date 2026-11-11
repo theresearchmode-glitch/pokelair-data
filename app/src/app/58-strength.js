@@ -189,3 +189,16 @@ CH.order = RD => RD ? RD.rows.slice().sort((a, b) => a.level - b.level || b.t.w 
 CH.realVs = (t, ms) => { try { if (typeof ctrVal !== 'function') return null; const ns = (ms || members()).map(m => m.p.n); let v = 0, k = 0;
   for (const a of ns) { const c = ctrVal(a, t); if (c != null) { v += c; k++; } } if (!k) return null; const pts = (sig(v) - .5) * 100;
   return pts >= 1.5 ? {w: 'Favoured', c: 'ok', pts} : pts <= -1.5 ? {w: 'Unfavoured', c: 'bad', pts} : {w: 'Even match', c: 'mid', pts}; } catch (e) { return null; } };
+
+// ---------- suggestions: the side options (moved unchanged from CH.sugs in 60-concept-h.js, R4 Nov 11) ----------
+// When nothing raises the Strength Score: up to 3 swaps from the planner's "more" list that keep every check and about the same
+// grade (at most 2 points less, and matchups at most 2 less), never bringing back a Pokémon you just swapped out with Apply.
+CH.sideGrades = (more, g0, base) => { const ok = []; for (const pl of more) { if (ok.length >= 3) break; if (pl.ch.some(x => (swOutNow() || new Set()).has(x.c.p.b))) continue;
+      if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } }
+      const gg = g0 != null ? planGrade(pl) : null; if ((gg != null && gg < g0 - 2) || (base != null && pl._ts != null && pl._ts < base - 2)) continue; ok.push(pl); }
+  return ok; };
+
+// moved unchanged from 60-concept-h.js (R4, Nov 11)
+/* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
+CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
+  return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };

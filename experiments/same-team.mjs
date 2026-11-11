@@ -1,5 +1,5 @@
 // Usage: node experiments/same-team.mjs before.html after.html (e.g. a saved dist/page.html and the new one)
-// Same-output check for logic extractions: renders My Team (and its Strength Score) for real tournament teams, partial teams and an
+// Same-output check for logic extractions: renders My Team (its Strength Score, and Suggestions once the background planner finishes) for real tournament teams, partial teams and an
 // illegal team in two builds and compares the page HTML and the score object.
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
@@ -14,14 +14,15 @@ for (const [k, f] of [['a', A], ['b', B]]) {
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
   await p.goto('file://' + page); await p.waitForTimeout(3500);
-  out[k] = await p.evaluate(() => window.__ev(`(()=>{ const res=[]; const E=META.events.events; const teams=[];
+  out[k] = await p.evaluate(() => window.__ev(`(async()=>{ const res=[]; const settle=async()=>{for(let i=0;i<400&&(planJob||(planCache.key!==planKeyOf($('useAbil').checked))||(typeof ckWinNeeded==='function'&&ckWinNeeded()));i++){await new Promise(r=>setTimeout(r,25))} render(); await new Promise(r=>setTimeout(r,30)); render();}; const E=META.events.events; const teams=[];
     for(const e of E) for(const t of e.top||[]) if(t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n))) teams.push(t.mons.map(m=>m.n));
     const pick=teams.filter((_,i)=>i%Math.max(1,Math.floor(teams.length/40))===0).slice(0,40);
     const cases=[...pick.map(t=>[t,'six']),...pick.slice(0,10).map(t=>[t.slice(0,3),'three']),...pick.slice(10,14).map(t=>[[t[0],t[0],...t.slice(2)],'dupe'])];
     for(const [tm,kind] of cases){ S.format='doubles'; S.slots=[...tm,'','','','','',''].slice(0,6).map(n=>({n,a:null,lock:false})); fixSlots();
-      render(); setView('report',false); render();
+      render(); setView('report',false); render(); await settle();
+      const sug=document.getElementById('sugs'); const sugTxt=sug?sug.innerHTML:''; const plTxt=JSON.stringify((ui.planList||[]).map(pl=>pl.ch.map(x=>(x.out?x.out.p.n:'+')+'>'+x.c.p.n)));
       const pane=document.querySelector('[data-pane="report"]'); const G=ui.vsum&&ui.vsum.RD?CH.gradeOf(prepOf(members()),ui.vsum.CK,members()):null;
-      res.push([kind+' '+tm.join('/'), pane?pane.innerHTML.replace(/ data-t0="[^"]*"/g,'').replace(/--ph:-?[0-9.]+s/g,'--ph'):'', JSON.stringify(G,(k2,v)=>k2==='CK'?undefined:v)]); }
+      res.push([kind+' '+tm.join('/'), sugTxt+'|#|'+plTxt+'|#|'+(pane?pane.innerHTML.replace(/ data-t0="[^"]*"/g,'').replace(/--ph:-?[0-9.]+s/g,'--ph'):''), JSON.stringify(G,(k2,v)=>k2==='CK'?undefined:v)]); }
     return res; })()`));
   await ctx.close(); fs.unlinkSync(page);
 }

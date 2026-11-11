@@ -3,5 +3,12 @@
 // and safe() to run a step without letting one failure stop the rest. In today's page these live in 08-render-all.js; here
 // they redraw the rebuild's current page instead. Function declarations, so the shared logic finds them anywhere in the closure.
 function safe(name, fn) { try { fn(); } catch (err) { try { console.error('NastyPlot: ' + name, err); } catch (e) {} } }
-function render() { fixMetaSrc(); if (window.V2 && V2.draw) V2.redraw(); }
-function scheduleRender() { fixMetaSrc(); clearTimeout(V2._rq); V2._rq = setTimeout(() => V2.redraw(), 150); }
+// like today's render(): every redraw after a change saves the team (persist), so Undo and Apply are kept on reload
+function render() { persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.draw) V2.redraw(); }
+// like today's scheduleRender: wait a moment so the daily documents arriving together land in one redraw, and only then pick the
+// usage source (fixMetaSrc), so it never settles on whichever document happened to arrive first
+function scheduleRender() { clearTimeout(V2._rq); V2._rq = setTimeout(() => { fixMetaSrc(); clearCaches(); V2.redraw(); }, 700); }
+// toasts from the shared logic (Undo, applied suggestions): the rebuild's toast; its Undo button uses today's Undo handler (#toastUndo, 06-helpers.js)
+function toast(t, undo) { V2.toast(V2.esc(t) + (undo && ui.undo ? ' <button type="button" id="toastUndo">Undo</button>' : '')); }
+// the rebuild redraws in place (V2.redraw keeps the reader's place), so keeping the scroll is just running the change
+function keepScroll(fn) { fn(); }

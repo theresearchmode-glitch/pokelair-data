@@ -90,8 +90,10 @@ const lazyDirty=new Map();
 function lazyShown(id){const el=$(id);return !el||!el.closest('[hidden]')}
 function lazy(name,id,fn){if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}else lazyDirty.set(name,[id,fn])}
 function lazyFlush(){for(const [name,[id,fn]] of [...lazyDirty])if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}}
+// every redraw starts from fresh calculations (shared with the rebuild, R4 Nov 11)
+function clearCaches(){pmCache=new Map();vCache=new Map();setCache=new Map();pairCache=new Map();relCache=new Map()}
 function render(){
-  pmCache=new Map();vCache=new Map();setCache=new Map();pairCache=new Map();relCache=new Map();persist();renderSlots();
+  clearCaches();persist();renderSlots();
   const useA=$('useAbil').checked;const ms=members();const msPlay=playForm(ms);const a=analyze(msPlay,useA);
   {const empty=!ms.length;const sc=$('startCard');if(sc)sc.hidden=!empty;for(const id of ['defense','fixes']){const e=$(id);if(e)e.hidden=empty}}
   document.querySelectorAll('[data-megas]').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.megas===megaGoal()));
