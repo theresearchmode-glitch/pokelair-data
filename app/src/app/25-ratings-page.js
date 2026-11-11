@@ -1,25 +1,7 @@
 // ---------- NastyPlot ratings: every Reg M-C Pokémon on a tier board, a meta map, and a detail sheet ----------
 // Numbers read like school grades (Sim, Nov 2): the rating is computed on its own scale (min below), then shown on a
 // 0-100 scale where S = 90+, A = 80s, B = 70s, C = 60s, D = 50s, F under 50. Same order, same tiers; only the shown number moves.
-const LTIERS = [{k: 'S', min: 80, show: 90, c: '#ffb400', d: 'Top of the format'}, {k: 'A', min: 70, show: 80, c: '#ff6a3d', d: 'Strong, proven picks'}, {k: 'B', min: 60, show: 70, c: '#b45cff', d: 'Solid with the right team'},
-  {k: 'C', min: 50, show: 60, c: '#2f9bff', d: 'Niche or team-dependent'}, {k: 'D', min: 35, show: 50, c: '#22b58a', d: 'Needs a specific plan'}, {k: 'F', min: 0, show: 1, c: '#8a90a6', d: 'Rarely worth a slot'}];
-/* RS (the shown rating) lives in 13-rating.js now, so the new build shares it (Nov 11) */
-const lTier = t => LTIERS.find(x => t >= x.min) || LTIERS[LTIERS.length - 1];
-function lairRows() { const R = ratings();
-  return ROSTER.map(p => ({p, r: R.get(p.n)})).filter(x => x.r).sort((a, b) => b.r.total - a.r.total || a.p.d.localeCompare(b.p.d)); }
-/* Rank next to the score (Nov 2): position among the Pokémon WITH results (a placeholder rating has no rank); ties share
-   a rank (1 + how many rate strictly higher). Cached per ratings map. */
-let lairRankCache = {R: null, m: null, of: 0};
-function lairRank(p) { if (!p) return null; const R = ratings(); if (lairRankCache.R !== R) { const xs = lairRows().filter(x => x.r.tc), m = new Map();
-    xs.forEach((x, i) => m.set(x.p.n, i && xs[i - 1].r.total === x.r.total ? m.get(xs[i - 1].p.n) : i + 1)); lairRankCache = {R, m, of: xs.length}; }
-  const k = lairRankCache.m.get(p.n); return k ? {rank: k, of: lairRankCache.of} : null; }
-/* what the N in "of N" counts (Sim, Nov 4): the long form says it in full, 'cap' is the short form for tight spots,
-   short (1) is just "#20"; '' when it has no results yet */
-const rankTxt = (p, short) => { const k = lairRank(p); return k ? (short === 'cap' ? `#${k.rank} of ${k.of} with results` : short ? `#${k.rank}` : `#${k.rank} of ${k.of} Pokémon with tournament results`) : ''; };
-/* the range in words, on the shown scale: "likely 80–88" (never "±4") */
-const rRange = r => { const a = RS(Math.max(1, r.total - (r.band || 0))), b = RS(Math.min(99, r.total + (r.band || 0))); return a === b ? `likely ${a}` : `likely ${a}–${b}`; };
-/* a tier's shown band in words: "90+", ..., "under 50" */
-const tierBand = T => T.k === 'F' ? `under ${LTIERS[LTIERS.length - 2].show}` : `${T.show}+`;
+/* RS (the shown rating) lives in 13-rating.js; LTIERS, lTier, lairRows, lairRank, rankTxt, rRange and tierBand in 24-sheet-data.js (Nov 11) */
 /* a small tier letter in its band colour (the same colours everywhere) */
 const tierChip = (T, cls) => `<span class="rtier${cls ? ' ' + cls : ''}" style="--tc:${tierBg(T.c)};--ti:${tierInk(T.c)}">${T.k}</span>`;
 function lairFilter(rows) { const q = (ui.lq || '').trim().toLowerCase(), ty = ui.lty || [], f = ui.lf || {};
@@ -108,20 +90,7 @@ function lairSheet(n) {
      same school bands as the ratings, with "top X%" spelled out */
   const bar = (l, v, note) => { const vb = Math.max(2, Math.min(100, v || 0)), T = v == null ? null : LTIERS.find(x => v >= x.show) || LTIERS[LTIERS.length - 1];
     return `<div class="lbar"${T ? ` style="--bc:${T.c}"` : ''}><span>${l}</span><i style="--w:${vb}%"></i><b>${v == null ? '–' : v}</b><em>${v == null ? '' : `<strong>Top ${Math.max(1, 100 - v)}%</strong> of Pokémon${note ? ' · ' : ''}`}${note || ''}</em></div>`; };
-  const ev = [];
-  {
-    const pt = pilotFor(p); if (pt) ev.push(['Same players test', `${winSpan(pt.w)} wins with it · ${pctFmt(pt.wo)} without`, `the same ${pt.players.toLocaleString()} players: ${pt.g.toLocaleString()} games with it, ${pt.go.toLocaleString()} without. ${pt.d >= 3 ? 'A big gap: the Pokémon itself is winning games' : pt.d >= 1 ? 'Wins a little more than these players usually do' : pt.d > -1 ? 'About the same: these players win as often without it' : 'These players do better without it'}`]);
-    // (the model-based "own share of team wins / win chance" row was removed Oct 28 with the other win predictions)
-    { const bl = typeof bringLead === 'function' ? bringLead(p) : null; if (bl) ev.push(['Team preview (Showdown replays)', `brought ${pctFmt(bl.b)} · led ${pctFmt(bl.l)} of games`, `when it's on the team · ${bl.g.toLocaleString('en-US')} games${bl.forms ? ' · all forms' : ''}${bl.g < 300 ? ' · few games' : ''} · shown, not scored yet`]); }
-    // every row says how recent its numbers are, in one format ("Oct 30", "Sep 2026")
-    const dt = k => { const d = pf0 && pf0.dates && pf0.dates[k]; return d ? ' · ' + perfDateText(d) : ''; };
-    if (src.tour) ev.push(['Limitless tournaments', `${pctFmt(src.tour[0])} of teams`, `${winSpan(src.tour[1])} wins · ${src.tour[2].toLocaleString()} games${dt('tour')}`]);
-    if (src.official) ev.push(['Official VGC events', `${pctFmt(src.official[0])} of teams`, `${pctFmt(src.official[1])} of matches won · ${src.official[2].toLocaleString()} matches · whole field${pf0 && pf0.frozenOfficial ? ` · RK9, read before Nov 1 · frozen, newest event${dt('official').replace(' ·', '')}` : dt('official')}`]);
-    const fam = ROSTER.some(q => q.m && q.b === p.b), spn = ((byName.get(p.b) || ROSTER.find(q => q.b === p.b && !q.m) || p).d || '').replace(/\s*\(.*\)$/, '').replace(/^Mega /, ''); // Floette has no plain entry (only Eternal and Mega)
-    if (src.ingame != null) ev.push(['In-game Ranked Doubles', `#${src.ingame} most used`, `op.gg${pf0 && pf0.season ? ', season ' + esc(pf0.season) : ''}${fam ? ` · ${esc(spn)}, all forms (shared by form)` : ''}${dt('ingame')}`]);
-    if (src.smogon != null) ev.push(['Showdown 1760+', `${pctFmt(src.smogon)} of teams`, `Smogon usage stats${dt('smogon')}`]);
-    if (src.ladder) ev.push(['Showdown ladder', `${pctFmt(src.ladder[0])} of teams`, `${winSpan(src.ladder[1])} wins · avg player ${src.ladder[2]}${fam ? ` · ${esc(spn)} total, shared by form` : ''} · Showdowntier, 14 days${dt('ladder')}`]);
-  }
+  const ev = lairEvidence(p);
   const ab = metaAbility(p) || bestAbility(p), ti = topItems(p), mv = (() => { try { return runMoves(p).map(m => m.name).filter(Boolean); } catch (e) { return []; } })();
   const onT = members().find(m => m.base === p.b), onTeam = !!onT, full = !S.slots.some(s => !byName.get(s.n));
   sh.innerHTML = `<div class="lsback" data-lclose="1"></div><div class="lspanel" role="dialog" aria-modal="true" aria-label="${esc(p.d)} rating">
@@ -130,23 +99,20 @@ function lairSheet(n) {
       <div class="lsname"><h3>${escName(p.d)}</h3><div class="chips">${p.t.map(t => chip(t)).join('')}${p.m ? '<span class="tag mega ico" title="Mega Evolution">Mega</span>' : ''}${isGem(p) ? '<span class="tag offmeta">HIDDEN GEM</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">Box</span>' : ''}</div>
       <div class="lspos">${rankTxt(p) || 'No tournament results yet'}</div></div></div>
     <div class="lsbody">
-      <div class="lsec"><h4>Why it rates ${RS(r.total)}</h4>${r.parts && r.tc ? `<p class="t2 lbarhd">Bars rank it among the ${(lairRank(p) || {of: all.length}).of} Pokémon with tournament results${typeof tip === 'function' ? tip('bars') : ''}</p>${bar('Top-cut presence', r.parts.top, `on ${pctFmt(r.tc.top)} of top-cut teams`)}${bar('Picked by strong players', r.parts.rw, `on ${pctFmt(r.tc.rw)} of teams, strong players counted more`)}${r.parts.lift != null ? bar('Converts to top cut', r.parts.lift, `${Math.abs(r.tc.lift - 1) < .005 ? 'makes top cut as often as' : `makes top cut ${Math.round(Math.abs(r.tc.lift - 1) * 100)}% ${r.tc.lift > 1 ? 'more' : 'less'} often than`} its usage predicts`) : ''}${bar('Win rate', r.parts.wr, r.tc.g < 30 ? `only ${Math.round(r.tc.g)} games so far` : `${winFmt(r.tc.wr)} wins, recent games weighted${r.tc.g < 800 ? ' · few games' : ''}`)}
+      <div class="lsec"><h4>Why it rates ${RS(r.total)}</h4>${r.parts && r.tc ? `<p class="t2 lbarhd">Bars rank it among the ${(lairRank(p) || {of: all.length}).of} Pokémon with tournament results${typeof tip === 'function' ? tip('bars') : ''}</p>${lairBars(p).map(x => bar(...x)).join('')}
         <p class="t2">Each bar ranks it against the ${(lairRank(p) || {of: all.length}).of} Pokémon with tournament results: 94 means better than 94% of them. The rating itself compares it with the very best Pokémon (rated ${RS(all[0].r.total)}), so a Pokémon can rank high on every bar and still sit a tier below the few that winning teams bring most. Top-cut presence counts most: the best Pokémon are the ones winning teams keep bringing. How often strong players pick it (usage with each team weighted by its player's skill) comes next. Converting to top cut and win rate adjust it, pulled toward average until there are enough games, so a few lucky runs can't push a rare pick to the top${isGem(p) ? '. It overperforms its usage, so it\'s tagged a hidden gem' : ''}. With the games so far, its rating is ${rRange(r)}${r.band >= 10 ? '; few games so far, so treat this one as an estimate' : ''}.</p>
         <details class="lprof"><summary>Profile: power ${r.power}, typing ${r.typing}, tools ${r.tools}</summary><p class="t2">Stats, typing against the current meta, and the moves and abilities it brings. Shown for reference; they don't change the rating.</p></details>`
         : !r.tc && r.parts === null ? `<p class="t2">No tournament results yet, so this is a rough placeholder from its stats, typing and tools (never above ${RS(30)}). It moves up once it shows up at events.</p>`
-        : r.win != null ? `${bar('Winning', r.win, r.conf < .4 ? 'few games' : '')}${bar('Picked by strong players', r.popAll)}${bar('Stats & typing', r.intrinsic)}
+        : r.win != null ? `${lairBars(p).map(x => bar(...x)).join('')}
         <p class="t2">Its rating is ${rRange(r)}. How it wins counts ${Math.round(57 * r.conf)}%, how often strong players pick it 38%, and its stats, typing and tools the rest${r.conf < .9 ? ' (they stand in for win rates it doesn\'t have yet)' : ''}${r.band >= 10 ? '. Few games so far, so treat this one as an estimate' : ''}.</p>`
-        : `${bar('Real results', r.evidence, r.conf < .4 ? 'small sample' : '')}${bar('Power', r.power)}${bar('Typing', r.typing)}${bar('Tools', r.tools)}
+        : `${lairBars(p).map(x => bar(...x)).join('')}
         <p class="t2">Its rating is ${rRange(r)}. Real results count ${Math.round(r.conf * 100)}% toward the score; stats, typing and tools make up the rest${r.band >= 10 ? ', so treat this one as an estimate' : ''}.</p>`}</div>
       ${isTrap(p) ? `<div class="lsec"><p class="t2" style="color:var(--warn)">Suggestions skip this one: across ${((r.src && r.src.adj && r.src.adj[1]) || 0).toLocaleString()}+ Limitless games it lost more than it won, even after accounting for its teammates. You can still add it yourself.</p></div>` : ''}
       <div class="lsec"><h4>What the data says</h4>${ev.length ? `<div class="levs">${ev.map(e => `<div class="lev"><span>${e[0]}</span><b>${e[1]}</b><em>${e[2]}</em></div>`).join('')}</div>` : '<p class="t2">No tournament or ladder games yet: this rating comes from stats, typing and tools.</p>'}</div>
       ${(() => { const O = pf0 && pf0.outside; if (!O || !O.lists.length) return ''; // other sites' lists, fetched daily (perf.mjs); left out when not current
         return `<div class="lsec"><h4>Other tier lists</h4><div class="lout">${O.lists.map(L => { const v = O.data[L.k] && O.data[L.k][p.n];
         return `<a class="lo" href="${esc(L.url)}" target="_blank" rel="noopener"><b class="lot${v ? ' t' + esc(L.tiers[v]) : ''}">${v ? esc(L.tiers[v]) : '–'}</b><span>${esc(L.name)}</span><em>${v ? esc(L.how) : 'not listed · ' + esc(L.note)} · ${esc(perfDateText(L.date))}</em></a>`; }).join('')}</div><p class="t2">Shown for comparison, not counted in the score.</p></div>`; })()}
-      <div class="lsec"><h4>Typical set</h4><div class="lset"><span>Ability</span><b>${esc(ab || '–')}${(() => { let v = null; try { v = ab && abilityPct(p, ab); } catch (e) {} return v != null ? ` <span class="lsetp">${pctFmt(+v)}</span>` : ''; })()}</b>${ti ? `<span>Item</span><b>${ti.it.map(x => esc(x[0])).join(' / ')}</b>` : ''}${(() => { /* nature and stat points most players run (Sim, Nov 6) */
-        let na = null, cs = null; try { const st = setFor(p); na = st.na && st.na.length ? st.na.slice(0, 2).map(x => x[0]) : null; } catch (e) {} try { cs = commonSpread(p); } catch (e) {}
-        if (!na && cs && cs.nat) na = [cs.nat]; const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
-        const w = cs ? K.map((k, j) => [cs[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]}\u00a0${x[1]}`).join(', ') : '';
+      <div class="lsec"><h4>Typical set</h4><div class="lset"><span>Ability</span><b>${esc(ab || '–')}${(() => { let v = null; try { v = ab && abilityPct(p, ab); } catch (e) {} return v != null ? ` <span class="lsetp">${pctFmt(+v)}</span>` : ''; })()}</b>${ti ? `<span>Item</span><b>${ti.it.map(x => esc(x[0])).join(' / ')}</b>` : ''}${(() => { /* nature and stat points most players run (Sim, Nov 6) */ const {na, w} = lairSetBits(p);
         return (na ? `<span>Nature</span><b>${na.map(esc).join(' / ')}</b>` : '') + (w ? `<span>Stat points</span><b>${esc(w)}</b>` : ''); })()}${mv.length ? `<span>Moves</span><b>${mv.map(esc).join(' · ')}</b>` : ''}</div></div>
       <div class="lsact">${onTeam ? `<span class="t2">${onT.p.n === p.n ? 'On your team' : esc(onT.d) + ' is already on your team (one per species)'}</span>` : full ? '<span class="t2">Team full</span>' : `<button class="btn primary" type="button" data-laddteam="${esc(p.n)}">Add to team</button>`}<button class="btn" type="button" data-abaround="${esc(p.n)}">Build around it</button><button class="btn" type="button" data-lsets="${esc(p.n)}">Popular sets</button></div>
     </div></div>`;

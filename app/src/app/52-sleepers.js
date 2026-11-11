@@ -5,9 +5,7 @@
 // A sleeper passes every check: rated 65+, at least an even record with it (50%+ in those paired windows), a clear gap
 // over the same players' other games (3+ points, shrunk for small samples), 300+ games and 100+ players behind it, and
 // still on fewer than 8% of tournament teams.
-function pilotFor(p) { const P = META.model && META.model.pilot, v = P && P[p.n]; if (!Array.isArray(v) || v.length < 5) return null;
-  const [g, w, go, wo, players] = v.map(Number); if (![g, w, go, wo, players].every(isFinite)) return null;
-  return {g, w, go, wo, players, d: +(w - wo).toFixed(1), dShrunk: (w - wo) * g / (g + 500)}; }
+/* pilotFor (the same players test) lives in 24-sheet-data.js (Nov 11) */
 let sleeperCache = {key: null, list: []};
 function sleepers() { const key = metaVersion + '|' + ui.metaSrc; if (sleeperCache.key === key) return sleeperCache.list;
   const list = [];

@@ -49,6 +49,7 @@
  "src/app/22-auto-build.js",
  "src/app/23-coverage.js",
  "src/app/24-matchup.js",
+ "src/app/24-sheet-data.js",
  "src/app/25-ratings-page.js",
  "src/app/26-battle-log.js",
  "src/app/27-team-page.js",
