@@ -140,3 +140,15 @@ just before that page is built.
 - OPEN: choosing "(no item)" in the item picker stores "not set", so the Pokémon keeps its usual item, while the message
   says "No item". Holding nothing is legal in Champions, so either the picker should store a real "no item" (needs the saved
   data and the grade to accept it) or the choice should be removed. Ask Sim which.
+
+## R4: Pokémon info sheet (Nov 11)
+- Shared now (`24-sheet-data.js`): what the data says (`lairEvidence`), why it rates N (`lairBars`), the typical set's
+  nature and stat points (`lairSetBits`), the header numbers (`lairHead`), the Mega Stone line (`lairStones`), and, moved
+  verbatim, the tiers / rank / range helpers (from the Ratings page), `pilotFor` (Sleepers), `brKeyOf`, and the Info tab's
+  pure helpers as `SHT` (type matchups, Speed rows...; today's tabs take them on as `LST`). `RS` moved to 13-rating.js.
+- Proof: `experiments/same-info.mjs` opens today's sheet for all 345 Pokémon and forms (every layer and tab) and draws Ratings,
+  Meta, Top, Home and the Sleepers list: 350 of 350 identical; a planted label change makes 321 differ.
+- New build: `pages/monsheet.js` (header with rating, tier, rank, share of teams, win rate, Speed at level 50 and Add to My
+  Team; the forms strip; Info / Meta / Rating). 1,035 sheets (345 x 3 tabs) checked at 320 wide, 320-2560 swept.
+- Still to come on the sheet: the Forms tab (side by side, mock sheet-forms.html), Build around it, Popular Sets, Speed Tiers
+  and Report a mistake (each arrives with its page).
