@@ -39,9 +39,6 @@ header,.band,.acts,.jump,.work,.sheet,footer{position:relative;z-index:1}
 .mon img{position:relative;width:116px;height:116px;object-fit:contain;object-position:50% 100%;display:block;margin:0 auto}
 .mon .nm{position:relative;font:700 15px/1.25 var(--b);margin-top:4px}.mon .nm .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot)}
 .mon .it{position:relative;font:500 13px/1.3 var(--b);color:var(--ink-2)}
-.mon.on .nm{color:var(--pick-text)}
-.mon.on::before,.mon.on::after{content:"";position:absolute;top:2px;width:14px;height:114px;border:3px solid var(--pick);transform:skewX(-8deg)}
-.mon.on::before{left:2px;border-right:0}.mon.on::after{right:2px;border-left:0}
 .lock .num b small{font-size:.3em}
 .acts{display:flex;align-items:center;gap:12px;padding:0 var(--gut) 32px;flex-wrap:wrap}
 .acts .btn{height:48px}.acts .btn2{height:44px}.acts .more{margin-left:auto;display:flex;gap:24px;font:600 15px/1 var(--b);color:var(--ink-2)}
@@ -113,7 +110,7 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .lock .num b{font-size:120px}.lock .num .w span{font-size:22px}.lock p{font-size:16px}
   .six{margin-top:24px;grid-template-columns:repeat(3,1fr);gap:8px}.grp .pair{grid-template-columns:1fr;padding:4px 4px 8px}
   .mon img{width:88px;height:88px}.mon .glow{top:48px;width:96px;height:72px;margin:-36px 0 0 -48px}.mon .sh{top:82px;width:56px;margin-left:-28px}
-  .mon .nm{font-size:13px;font-stretch:85%}.mon .it{display:none}.mon.on::before,.mon.on::after{height:86px;width:10px;top:2px}.mon.on::before{left:2px}.mon.on::after{right:2px}
+  .mon .nm{font-size:13px;font-stretch:85%}.mon .it{display:none}
   .acts{gap:8px}.acts .btn{flex:1 0 100%;height:48px}.acts .btn2{flex:1;padding:0 8px;white-space:nowrap}.acts .more{display:none}
   .jump{gap:20px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)}.jump a{white-space:nowrap}.jump .legal{display:none}
   .work{display:block;padding:24px var(--gut) 8px}.work>section{margin-bottom:40px}
@@ -148,6 +145,41 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
 /* C: light from the team itself: a soft pool mixed from the six Pokémon's own colours, low and wide behind number and six */
 :root[data-score="team"] .band .teamlight{display:block}
 .band .teamlight{display:none;position:absolute;left:0;right:0;top:40px;height:420px;z-index:-1;pointer-events:none;background:radial-gradient(40% 60% at 22% 45%,rgba(var(--t1),var(--glow)),transparent),radial-gradient(45% 65% at 70% 50%,rgba(var(--t2),calc(var(--glow)*.7)),transparent)}
+/* ---------- Reference set, Nov 11 (docs/rebuild/reference-2026-11-11), as Sim chose it. Score light: Sim kept her team-colour light (.atmos), Nov 11. ---------- */
+.band .teamlight{display:none!important}
+/* the six stand on a shared floor (desktop): a 1px line at the feet fading at both ends, soft spill below; no Bench divider */
+.six{position:relative}
+@media (min-width:700px){.six::before{content:"";position:absolute;left:-70px;right:-40px;top:139px;height:110px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(23,22,26,.13) 12%,rgba(23,22,26,.13) 88%,transparent) top/100% 1px no-repeat,radial-gradient(52% 100% at 50% 0,rgba(60,40,110,.055),transparent)}
+ .grp.bench{border-left-color:transparent}}
+/* grounded in its own colour. Day: tight contact shadow inside a small pool of the normalised colour, soft drop shadow */
+.mon .sh{top:101px;width:124px;height:24px;margin-left:-62px;background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp),.62),rgba(var(--cp),.3) 55%,transparent)}
+.mon .glow{background:radial-gradient(closest-side,rgba(var(--c),.10),transparent)}
+.mon img{filter:drop-shadow(4px 7px 7px rgba(30,20,50,.16))}
+@media (max-width:699px){.mon .sh{top:77px;width:92px;height:19px;margin-left:-46px}}
+/* selected Pokémon: stands on the tilted panel in its normalised colour, a step forward (8%, from its feet); name in ink 800 */
+.mon.on .nm{color:var(--ink);font-weight:800}
+.mon.on::before{content:"";position:absolute;left:6px;right:6px;top:22px;height:86px;transform:skewY(-7deg);border-radius:var(--r-m);
+  background:linear-gradient(150deg,rgba(var(--cp),.9),rgba(var(--cp),.55));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 1px 2px rgba(30,20,50,.12),0 8px 14px -6px rgba(30,20,50,.22),0 22px 30px -18px rgba(30,20,50,.3)}
+.mon.on img{transform:scale(1.08);transform-origin:50% 100%}.mon.on .sh{opacity:.55}
+.grp.bench .mon.on img{transform:scale(.93)}
+@media (max-width:699px){.mon.on::before{top:16px;height:66px;left:4px;right:4px}}
+/* night: the same room lit by the Pokémon. No shadow; a small pool of colour as light, a thin rim on the art */
+:root[data-theme="dusk"] .six::before{background:linear-gradient(90deg,transparent,rgba(214,218,255,.3) 12%,rgba(214,218,255,.3) 88%,transparent) top/100% 1px no-repeat,radial-gradient(52% 100% at 50% 0,rgba(150,160,255,.2),transparent)}
+:root[data-theme="dusk"] .mon .sh{top:102px;width:112px;height:20px;margin-left:-56px;background:radial-gradient(closest-side,rgba(var(--cp),.9),rgba(var(--cp),.32) 45%,transparent);filter:blur(1.5px)}
+:root[data-theme="dusk"] .mon .glow{top:74px;width:104px;height:70px;margin:-35px 0 0 -52px;background:radial-gradient(closest-side,rgba(var(--c),.2),transparent)}
+:root[data-theme="dusk"] .mon img{filter:drop-shadow(0 0 .6px rgba(255,255,255,.55)) drop-shadow(0 -1px 5px rgba(var(--cp),.3))}
+@media (max-width:699px){:root[data-theme="dusk"] .mon .sh{top:78px;width:84px;height:16px;margin-left:-42px}:root[data-theme="dusk"] .mon .glow{top:56px;width:80px;height:56px;margin:-28px 0 0 -40px}}
+:root[data-theme="dusk"] .mon.on::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(var(--cp),.25),0 14px 30px -12px rgba(var(--cp),.55)}
+:root[data-theme="dusk"] .mon.on .sh{opacity:1}
+:root[data-theme="dusk"] .trow img,:root[data-theme="dusk"] .sheet td img,:root[data-theme="dusk"] .swap img{filter:drop-shadow(0 0 .6px rgba(255,255,255,.4))}
+:root[data-theme="dusk"] .lock .num b{color:#D6D1CA}
+:root[data-theme="dusk"] .lock .num .w span{text-shadow:0 0 22px rgba(79,178,240,.4)}
+:root[data-theme="dusk"] .set .plate{background:linear-gradient(180deg,#3E3D56,#2C2B3D);color:#F1EDE7;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35)}
+:root[data-theme="dusk"] .set .panel{background:linear-gradient(150deg,rgba(var(--c1),.78),rgba(var(--c1),.34))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(var(--c1),.25),0 24px 50px -24px rgba(var(--c1),.6)!important}
+:root[data-theme="dusk"] .set .panel::after{opacity:.3}
+:root[data-theme="dusk"] .set .art{filter:drop-shadow(0 0 .8px rgba(255,255,255,.6)) drop-shadow(0 14px 16px rgba(0,0,0,.45))}
+@media (max-width:699px){:root[data-theme="dusk"] .acts .btn.main{height:44px!important;background:linear-gradient(180deg,#4FAEEC,#2F8ACB)}}
 </style></head><body><div class="page" id="page"></div>
 <script>
 {const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[2])document.documentElement.dataset.score=h[2];}
@@ -157,6 +189,8 @@ function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,
 async function hue(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);
   for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
   const o=B.map((b,i)=>({i,w:b[3],c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[150,150,165]})).sort((a,b)=>b.w-a.w),a=o[0],b2=o.find(q=>q.w>a.w*.12&&Math.min(Math.abs(q.i-a.i),18-Math.abs(q.i-a.i))>=3)||a;return{a:a.c,b:b2.c};}
+// borrowed colour is always normalised (reference Nov 11, section 1): keep the hue, saturation at least 72%, lightness 56%
+function norm(c){const[h,s0]=hsl(...c),s=Math.max(s0,.72),l=.56,C=(1-Math.abs(2*l-1))*s,X=C*(1-Math.abs((h/60)%2-1)),m=l-C/2,k=Math.floor(h/60)%6;return[[C,X,0],[X,C,0],[0,C,X],[0,X,C],[X,0,C],[C,0,X]][k].map(v=>Math.round((v+m)*255));}
 const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
 const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.slice(5))}`:esc(d);
 (async()=>{
@@ -169,17 +203,17 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const ord=['Lead','Back','Bench'].flatMap(r=>D.six.filter(m=>m.role===r)),xs=PH?[18,50,82,18,50,82]:[40,50,62,72,84,94];
   const al=DK?.30:.20,ATMOS=[`radial-gradient(30% 60% at 16% 70%,rgba(${rgb(TC1)},${al}),transparent)`].concat(ord.map((m,i)=>`radial-gradient(15% 55% at ${xs[i]}% ${PH&&i>2?84:70}%,rgba(${rgb(M[m.img].a)},${al}),transparent)`)).join(',');
   const BAND={'Top tier':'var(--band-top)','Tournament ready':'var(--band-ready)','Solid':'var(--band-solid)','Needs work':'var(--mid-text)','Missing a basic':'var(--low-text)'}[D.score.band];
-  const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
+  const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)};--cp:${rgb(norm(M[m.img].a))}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
   const grp=(cls,lab,ms)=>`<div class="grp ${cls}"><div class="lab"><i></i>${lab}</div><div class="pair">${ms.map(m=>mon(m,D.six.indexOf(m))).join('')}</div></div>`;
   const by=r=>D.six.filter(m=>m.role===r);
   const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
     <div class="meter"><div class="segs"><i style="background:var(--band-miss)"></i><i style="background:var(--band-work)"></i><i style="background:var(--band-solid)"></i><i style="background:var(--band-ready)"></i><i style="background:var(--band-top)"></i></div><span class="tick" style="left:calc(${D.score.s}% - 2px)"></span><div class="lbls"><span>Missing a basic</span><span></span><span></span><span></span><span style="color:var(--band)">Top tier</span></div></div><p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
   const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND};--t1:${rgb(TC1)};--t2:${rgb(TC2)}"><div class="teamlight"></div><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
-  const acts=`<div class="acts"><div class="btn">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
+  const acts=`<div class="acts"><div class="btn main">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
   const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
   const moves=`<div class="moves">${sel.moves.map(v=>`<div class="mv" style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</div>`).join('')}</div>`;
-  const setSec=`<section class="sec set" style="--c1:${rgb(k.a)}"><h2 class="u"><span class="n">1</span>Set</h2><div class="sub">Leads with ${esc(D.partner)} vs the meta's top six</div>
+  const setSec=`<section class="sec set" style="--c1:${rgb(norm(k.a))}"><h2 class="u"><span class="n">1</span>Set</h2><div class="sub">Leads with ${esc(D.partner)} vs the meta's top six</div>
     <div class="hero"><div class="pool"></div><div class="panel litedge" style="background:linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))"></div><img class="art" src="${sel.img}" alt=""><div class="plate">Rated ${sel.r} · ${sel.tier}</div></div>
     <h3 class="u">${esc(sel.d)}</h3><div class="types">${sel.t.map(t=>`<span class="chip type" style="background:${TY[t]}">${t}</span>`).join('')}</div>${kv}${moves}
     <div class="row2"><div class="btn2"><span>Edit Set</span></div><div class="btn2"><span>Info Sheet</span></div></div></section>`;
@@ -202,7 +236,7 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
     ${D.six.map(m=>`<tr><td class="p"><div><img src="${m.img}" alt="">${esc(m.d)}</div></td><td>${esc(m.item)}</td><td>${esc(m.ab)}</td><td>${esc(m.nat)}</td><td><div class="mvs">${m.moves.map(v=>`<span style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</span>`).join('')}</div></td></tr>`).join('')}</tbody></table></section>`;
   const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
-  document.getElementById('page').innerHTML=(D.style.startsWith('Sun')?'<div class="weather"></div>':'')+header+`<div class="herowrap"><div class="atmos" style="background:${ATMOS}"></div>${band}${acts}</div>`+jump+work+sheet+footer;
+  document.getElementById('page').innerHTML='<i class="grain"></i>'+header+`<div class="herowrap"><div class="atmos" style="background:${ATMOS}"></div>${band}${acts}</div>`+jump+work+sheet+footer;
   await document.fonts.ready;document.body.dataset.ready=1;
 })();
 </script></body></html>

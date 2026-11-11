@@ -4,16 +4,17 @@
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;--plate:#17161A;--on-plate:#FBFAF7;
   --good:#2E9E5B;--good-text:#16693B;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;
   --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:#8A7C6E;
-  --glow:.26;--glow-strong:.40;--wall-mix:46%;--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);--contact:rgba(30,20,50,.28);
+  --glow:.10;--glow-strong:.40;--wall-mix:46%;--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);--contact:rgba(30,20,50,.42);
   --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
   --r-s:4px;--r-m:6px;--r-l:10px;--r-xl:18px;--slant:-24deg;
   color-scheme:light}
 :root[data-theme="dusk"]{
-  --bg:#1B1A22;--surface:#24232C;--wash:#24222C;--ink:#ECE8E2;--ink-2:#C9C3CC;--ink-3:#A39CA6;--rule:rgba(236,232,226,.12);
-  --plot:#4FB2F0;--plot-text:#4FB2F0;--pick:#FF5C77;--pick-text:#FF5C77;--plate:#ECE8E2;--on-plate:#1B1A22;
-  --good:#5FD08F;--good-text:#5FD08F;--mid:#FFD166;--mid-text:#FFD166;--low:#B8AA9C;--low-text:#B8AA9C;
-  --band-top:#4FB2F0;--band-ready:#C9B0FF;--band-solid:#A39CA6;--band-work:#FFD166;--band-miss:#B8AA9C;
-  --glow:.62;--glow-strong:.78;--wall-mix:46%;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);--contact:rgba(0,0,0,.55);
+  /* Night (Sim, Nov 11: chose the design chat's night mode; docs/rebuild/reference-2026-11-11 section 6) */
+  --bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);
+  --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--pick-text:#F58DA1;--plate:#343348;--on-plate:#F1EDE7;
+  --good:#74D3A0;--good-text:#86D9AC;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;
+  --band-top:#62BEF7;--band-ready:#C9B0FF;--band-solid:#B0AAB8;--band-work:#F0C768;--band-miss:#B8AA9C;
+  --glow:.20;--glow-strong:.40;--wall-mix:46%;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);--contact:transparent;
   color-scheme:dark}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style;font-variant-numeric:tabular-nums}
@@ -42,3 +43,14 @@ html,body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--b);-webk
 .unit{font-size:.62em;color:var(--ink-2);letter-spacing:0;margin-left:2px}
 .litedge{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08)}
 .reflect{-webkit-box-reflect:below -18px linear-gradient(transparent 72%,rgba(255,255,255,.18))}
+
+/* normalised borrowed colour (--cp, set by the page: hue kept, saturation >=72%, lightness 56%) */
+/* fine grain: day ~3.5%, night ~5% (reference sections 6-7) */
+.grain{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.035;mix-blend-mode:multiply;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .1 0 0 0 0 .1 0 0 0 .7 -.18'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E")}
+:root[data-theme="dusk"] .grain{opacity:.05;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 -.18'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E")}
+:root[data-theme="dusk"] .page{background:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%)}
+/* night plates: raised dark surface with a lit top edge; outline buttons at 42% light */
+:root[data-theme="dusk"] .btn,:root[data-theme="dusk"] .chip.on{background:linear-gradient(180deg,#3E3D56,#2C2B3D);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35)}
+:root[data-theme="dusk"] .btn.main{background:linear-gradient(180deg,#63C0F8,#3FA2E2);color:#08131E;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,40,80,.35)}
+:root[data-theme="dusk"] .btn2,:root[data-theme="dusk"] .field{border-color:rgba(228,224,236,.42)}
+:root[data-theme="dusk"] .u{font-weight:800}

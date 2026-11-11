@@ -58,6 +58,22 @@ disappears on #1B1A22 without help (seen on the full contact sheet, Nov 10). On 
 --wash panel or gets a soft light contact glow under it (feature sprites only on mouse screens); pale Pokémon get the
 mirror rule in light mode (a deep enough panel, the agreed "pale Pokémon stand out" rule).
 
+## 2b. Sim's decisions on the Nov 11 reference set (docs/rebuild/reference-2026-11-11)
+
+Sim chose these in conversation on Nov 11. They override anything earlier in this file that disagrees.
+
+- **Night mode = the reference's night (section 6 there).** It replaces the "dusk" values. The tokens live in docs/rebuild/mocks/tokens.css, which keeps the internal name `dusk` for now. One blue main action per screen (Save Team). Other plates are raised dark surfaces with a lit top edge. Outline buttons have a 42% light border. Grain is about 5% at night and about 3.5% by day.
+- **The selected Pokémon stands on the tilted panel** (skewY -7deg, 6px corners) in its normalised colour, scaled up 8% from its feet, with its name in ink at weight 800. This replaces the pink corner brackets. `--pick` is no longer used for selection.
+- **Borrowed colour is always normalised**: keep the hue, saturation at least 72%, lightness 56% (`--cp`). This applies to floor pools, the selection panel and the Set panel.
+- **Shared floor on desktop** (a 1px line fading at both ends, with a soft spill below; no Bench divider). Each Pokémon is grounded in its own colour: by day a contact shadow inside a pool of its colour, at night a pool of light plus a thin rim on the art.
+- **Score light: Sim KEPT her team-colour light** (the shared atmosphere behind the number, the six and the action row). The reference's "no light behind the score" is not adopted. Blue stays only in the band words.
+- **Weather that follows the team: deferred** (Sim: "I like the color more than the rain"). If it comes back later: a faint static tint only, only for teams that are clearly one style, and no motion until a scrolling-speed test passes. It is on the Plans page ideas list.
+
+Corrections to the reference README:
+- The "85 vs 92" is not two sources. 85 is the raw total in ratings_log and 92 is the displayed rating after RS(). One function shows both, so there is nothing to merge.
+- "Saved on this device only" is true only for the public site. Today's site syncs to the Claude account, so the first-visit note needs two versions.
+- CLAUDE.md already says Darkrai replaced Shady Paw. Whether empty screens use Darkrai or a featured Pokémon is still Sim's call.
+
 ## 3. Type
 - Faces: Unbounded (display: every headline, big number, the tagline, plates, the filled button), always slanted
   (synthetic italic, font-synthesis: style), weight 800-900; Instrument Sans (everything else), 400/500/600/700.
