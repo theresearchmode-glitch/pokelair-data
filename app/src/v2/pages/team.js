@@ -285,6 +285,13 @@ V2.switchHtml = () => { const ts = S.teams.filter(t => t && t.id !== S.loadedId 
   return `<div class="sw2"><div class="np-eyebrow">My Team</div><h2 class="u">Switch Team</h2><ul>${ts.map(t => `<li><button type="button" class="sw2-t" data-svact="open" data-id="${V2.esc(t.id)}"><span class="sw2-m">${t.slots.filter(x => x && byName.get(x.n)).slice(0, 6).map(x => `<img src="${V2.art(SPRITE_ID[x.n])}" alt="" loading="lazy">`).join('')}</span><b>${V2.esc(t.name || 'Saved team')}</b></button></li>`).join('')}</ul></div>`; };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2why]')) V2.sheet(V2.whyHtml(), {label: 'Why this score?', small: true}); else if (e.target.closest('[data-v2switch]')) V2.sheet(V2.switchHtml(), {label: 'Switch team', small: true, focus: '.sw2-t'}); });
 
+// Team Checks (Sim, Nov 11): checks that pass fold into one line; only the ones that fail show in full (a note says it's a note)
+V2.ckBody = (D, ck) => { const fb = D.basics.filter(x => !x.ok), fn = D.notes.filter(x => !x.ok), pb = D.basics.filter(x => x.ok), pn = D.notes.filter(x => x.ok);
+  const nb = D.basics.length, nn = D.notes.length, allOk = !fb.length && !fn.length;
+  const fails = fb.length || fn.length ? `<ul class="tm-ck">${fb.map(ck).join('')}${fn.map(x => ck(x).replace('<span>', '<span><em class="tm-cknote">Note</em> ')).join('')}</ul>` : '';
+  const passed = pb.length + pn.length, line = allOk ? `All ${nb} basics${nn ? ` and all ${nn} notes` : ''} pass` : `${passed} more pass`;
+  return `${fails}${passed ? `<details class="tm-ckok"><summary><b aria-hidden="true">✓</b>${line}</summary>${pb.length ? `<ul class="tm-ck">${pb.map(ck).join('')}</ul>` : ''}${pn.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${pn.map(ck).join('')}</ul>` : ''}</details>` : ''}`; };
+
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
@@ -320,7 +327,7 @@ V2.pages.team = {place: 'team', draw() {
     <ol class="tm-sug">${S2.top.map((x, k) => `<li><span class="np-eyebrow">Suggestion ${k + 1}</span>${x.d != null ? `<div class="tm-mv"><b>${x.d > 0 ? '+' + x.d : x.d < 0 ? '−' + Math.abs(x.d) : '±0'}</b><span>${x.r0} → ${x.r1}${x.word ? ' · ' + V2.esc(x.word) : ''}</span></div>` : ''}<div class="tm-swaps">${x.pl.ch.map(swap).join('')}</div><button type="button" class="np-btn" data-v2plan="${k}">Apply</button></li>`).join('')}</ol>`}</section>`;
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
-  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}</section>`;
+  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p>${V2.ckBody(D, ck)}</section>`;
   return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${ckSec}</div><div class="tm-c2">${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() {
