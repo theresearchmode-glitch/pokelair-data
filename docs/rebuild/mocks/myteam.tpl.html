@@ -43,7 +43,7 @@ header,.band,.acts,.jump,.work,.sheet,footer{position:relative;z-index:1}
 .mon.on::before,.mon.on::after{content:"";position:absolute;top:2px;width:14px;height:114px;border:3px solid var(--pick);transform:skewX(-8deg)}
 .mon.on::before{left:2px;border-right:0}.mon.on::after{right:2px;border-left:0}
 .lock .num b small{font-size:.3em}
-.acts{display:flex;align-items:center;gap:12px;padding:0 var(--gut) 8px;flex-wrap:wrap}
+.acts{display:flex;align-items:center;gap:12px;padding:0 var(--gut) 32px;flex-wrap:wrap}
 .acts .btn{height:48px}.acts .btn2{height:44px}.acts .more{margin-left:auto;display:flex;gap:24px;font:600 15px/1 var(--b);color:var(--ink-2)}
 .jump{position:sticky;top:0;z-index:5;display:flex;gap:32px;padding:16px var(--gut);margin-top:16px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 92%,transparent);font:600 15px/1 var(--b);color:var(--ink-2)}
 .jump a.on{color:var(--ink);position:relative}.jump a.on::after{content:"";position:absolute;left:0;right:0;bottom:-17px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
@@ -128,7 +128,9 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
    is gone; one wide, low band of light mixed from the six Pokémon's own colours sits behind the number and the team together.
    Blue stays only in the band word. */
 .band .pool{display:none}
-.band .atmos{position:absolute;left:0;right:0;top:0;bottom:-40px;z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 45%,#000 80%,transparent 100%)}
+/* Sim, Nov 11: the light reaches down through the action row too */
+.herowrap{position:relative;isolation:isolate}
+.herowrap>.atmos{position:absolute;left:0;right:0;top:0;bottom:0;z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 82%,transparent 100%)}
 /* the earlier options, kept for comparison only (#theme--plate etc.) */
 :root[data-score] .band .pool{display:none}
 /* A: a slanted plate in the band colour behind the number, our own shape language */
@@ -165,14 +167,14 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const avg=a=>{const s=[0,0,0];a.forEach(c=>c.forEach((v,j)=>s[j]+=v));return s.map(v=>Math.round(v/a.length));};
   const TC1=avg(D.six.filter(m=>m.role==='Lead').map(m=>M[m.img].a)),TC2=avg(D.six.filter(m=>m.role!=='Lead').map(m=>M[m.img].a));
   const ord=['Lead','Back','Bench'].flatMap(r=>D.six.filter(m=>m.role===r)),xs=PH?[18,50,82,18,50,82]:[40,50,62,72,84,94];
-  const al=DK?.30:.20,ATMOS=[`radial-gradient(28% 70% at 14% 92%,rgba(${rgb(TC1)},${al}),transparent)`].concat(ord.map((m,i)=>`radial-gradient(14% 60% at ${xs[i]}% ${PH&&i>2?96:88}%,rgba(${rgb(M[m.img].a)},${al}),transparent)`)).join(',');
+  const al=DK?.30:.20,ATMOS=[`radial-gradient(30% 60% at 16% 70%,rgba(${rgb(TC1)},${al}),transparent)`].concat(ord.map((m,i)=>`radial-gradient(15% 55% at ${xs[i]}% ${PH&&i>2?84:70}%,rgba(${rgb(M[m.img].a)},${al}),transparent)`)).join(',');
   const BAND={'Top tier':'var(--band-top)','Tournament ready':'var(--band-ready)','Solid':'var(--band-solid)','Needs work':'var(--mid-text)','Missing a basic':'var(--low-text)'}[D.score.band];
   const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
   const grp=(cls,lab,ms)=>`<div class="grp ${cls}"><div class="lab"><i></i>${lab}</div><div class="pair">${ms.map(m=>mon(m,D.six.indexOf(m))).join('')}</div></div>`;
   const by=r=>D.six.filter(m=>m.role===r);
   const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
     <div class="meter"><div class="segs"><i style="background:var(--band-miss)"></i><i style="background:var(--band-work)"></i><i style="background:var(--band-solid)"></i><i style="background:var(--band-ready)"></i><i style="background:var(--band-top)"></i></div><span class="tick" style="left:calc(${D.score.s}% - 2px)"></span><div class="lbls"><span>Missing a basic</span><span></span><span></span><span></span><span style="color:var(--band)">Top tier</span></div></div><p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
-  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND};--t1:${rgb(TC1)};--t2:${rgb(TC2)}"><div class="atmos" style="background:${ATMOS}"></div><div class="teamlight"></div><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
+  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND};--t1:${rgb(TC1)};--t2:${rgb(TC2)}"><div class="teamlight"></div><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
   const acts=`<div class="acts"><div class="btn">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
   const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
@@ -200,7 +202,7 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
     ${D.six.map(m=>`<tr><td class="p"><div><img src="${m.img}" alt="">${esc(m.d)}</div></td><td>${esc(m.item)}</td><td>${esc(m.ab)}</td><td>${esc(m.nat)}</td><td><div class="mvs">${m.moves.map(v=>`<span style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</span>`).join('')}</div></td></tr>`).join('')}</tbody></table></section>`;
   const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
-  document.getElementById('page').innerHTML=(D.style.startsWith('Sun')?'<div class="weather"></div>':'')+header+band+acts+jump+work+sheet+footer;
+  document.getElementById('page').innerHTML=(D.style.startsWith('Sun')?'<div class="weather"></div>':'')+header+`<div class="herowrap"><div class="atmos" style="background:${ATMOS}"></div>${band}${acts}</div>`+jump+work+sheet+footer;
   await document.fonts.ready;document.body.dataset.ready=1;
 })();
 </script></body></html>
