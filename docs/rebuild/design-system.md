@@ -69,6 +69,9 @@ Sim chose these in conversation on Nov 11. They override anything earlier in thi
 - **Score light: Sim KEPT her team-colour light** (the shared atmosphere behind the number, the six and the action row). The reference's "no light behind the score" is not adopted. Blue stays only in the band words.
 - **Weather that follows the team: deferred** (Sim: "I like the color more than the rain"). If it comes back later: a faint static tint only, only for teams that are clearly one style, and no motion until a scrolling-speed test passes. It is on the Plans page ideas list.
 
+- **Every Pokémon stands on the floor; no free-floating clouds** (Sim, Nov 11, "make sure this design rule follows us"). A Pokémon shown on its own (featured, underdog, info sheet, Set panel, empty screens) stands on a floor with a pool of colour at its feet, like the six on My Team. It never floats in a coloured cloud or halo. A featured Pokémon's extra "fun glow" is a thin brand-coloured rim on the art (PLOT blue, with a touch of the logo's pink) plus a pool in those colours. Any pulse moves only the opacity of the pool's own layer, never the art, and stops when reduce motion is on.
+- **The main action is always the filled plate** (Sim, Nov 11). Each block or screen's main action ("Build around it", "Try the sample team", Save Team) is the filled slanted plate: black by day, the blue action at night. Secondary actions are outline buttons or text links. Never draw the main action as the quiet outline button.
+
 Corrections to the reference README:
 - The "85 vs 92" is not two sources. 85 is the raw total in ratings_log and 92 is the displayed rating after RS(). One function shows both, so there is nothing to merge.
 - "Saved on this device only" is true only for the public site. Today's site syncs to the Claude account, so the first-visit note needs two versions.
