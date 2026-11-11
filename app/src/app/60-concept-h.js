@@ -266,7 +266,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
       ${typeof FB !== 'undefined' && FB.ok ? '<div class="hfb"><span>Something off or missing?</span><button type="button" class="btn sm fbbtn" data-fbopen="1">Send feedback</button></div>' : ''}
 </div>`; };
 // replay keys fold Megas into their species (same as the ratings sheet)
-function brKeyOf(p) { return p.n === 'Floette-Mega' ? 'Floette-Eternal' : p.n.replace(/-Mega(-[XYZ])?$/, ''); }
+/* brKeyOf (a Mega's key in the replay data) lives in 24-sheet-data.js (Nov 11) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chhthr]'); if (!b) return; const n = b.dataset.chhthr; if (view !== 'report') setView('report'); setTimeout(() => chScoutOpen(n), 50); });
 // ---------- My team: one page in four parts (Fix it · Threats · How your team plays · Your six) ----------
 // Every original card and table is moved in whole, so its renderer, ids and handlers keep working. Editing a set happens

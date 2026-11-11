@@ -189,7 +189,7 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-v2ad
 // ---------- empty My Team: the lead, and today's underdog (Sim, Nov 11) ----------
 // The featured Pokémon comes from the bottom of our own ratings: every Pokémon is somebody's favourite. Flapple goes first
 // (Sim: "it's the cutest"), then one a day from the 12 lowest-rated Pokémon that have real games (at least 1% of teams), so
-// the rating means something. Never shown beside grades or a team's data.
+// the rating means something (the very bottom has almost none: Flapple has 43 tournament games, 0.1% of teams). Never shown beside grades or a team's data.
 V2.underdog = (now = new Date()) => { const day = Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(2026, 10, 12)) / 864e5);
   if (day <= 0 || typeof rating !== 'function') return 'Flapple';
   const pool = ROSTER.filter(p => !p.m && (U(p) || 0) >= 1 && SPRITE_ID[p.n]).map(p => ({n: p.n, r: RS(rating(p).total)})).sort((a, b) => a.r - b.r || a.n.localeCompare(b.n)).slice(0, 12);

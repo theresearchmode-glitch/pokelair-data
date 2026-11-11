@@ -96,7 +96,8 @@ Pokémon that rotates, plus one line of copy. Sim's idea and its point: spotligh
 Pokémon comes from the bottom of our own ratings ("underdog"): even the lowest-rated Pokémon is somebody's favourite, so it gets
 its moment on our site, with playful, affectionate copy (celebrate it, never mock it). It rotates so many different Pokémon get a
 turn; pick from the bottom of the ratings, preferring ones with enough games for the rating to mean something. The first underdog is Flapple (Sim: "it's the cutest"). Rotation rule (Sim approved, Nov 11): Flapple first, then one a day from the 12 lowest-rated Pokémon
-that have real games (at least 1% of teams), since everything at the very bottom of the ratings has no games yet. Every new spot is shown to Sim first. Never beside grades or a team's data. The live site keeps its current Darkrai
+that have real games (at least 1% of teams), since the very bottom of the ratings has almost no games (Flapple: 43
+tournament games, 0.1% of teams). Every new spot is shown to Sim first. Never beside grades or a team's data. The live site keeps its current Darkrai
 spot (empty My Team) until the rebuild replaces it. A real NastyPlot mascot is its own project for later, in a separate chat.
 Darkrai and Shady Paw files stay in docs/mascot/ as history.
 

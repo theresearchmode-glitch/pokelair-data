@@ -87,3 +87,16 @@ SHT.speeds = p => { const rows = [], os = (v, tr) => { try { return outspeedOf(v
   if (dup) { run.note += ` · same as ${dup.l.replace(/^./, c => c.toLowerCase())}`; rows.splice(rows.indexOf(dup), 1); }
   for (const r of rows) if (r.os === undefined) r.os = os(r.v, r.tr);
   return rows; };
+
+// ---------- the sheet's header numbers and Mega Stone line (moved from 61-concept-h-pages.js, Nov 11) ----------
+// The header shows real totals, the same numbers as this Pokémon's row in the Ratings list: tournament share, wins and games
+// when it has tournament games, else the rating's own top-cut figures (30+ games). thinR: few games, so "Early read".
+function lairHead(p) { const r = rating(p), src = r.src || {};
+  const tOK = src.tour && +src.tour[2] > 0, tcOK = !tOK && r.tc && r.tc.g >= 30, hU = tOK ? +src.tour[0] : tcOK ? r.tc.field : null, hW = tOK ? +src.tour[1] : tcOK ? r.tc.wr : null, hG = tOK ? +src.tour[2] : tcOK ? r.tc.g : null;
+  const tot = tOK && RES && +RES.teams > 0 ? +RES.teams : null, thinR = (hG != null && thinFor(hG, 'rating')) || r.band >= 10;
+  return {tOK, tcOK, hU, hW, hG, tot, thinR}; }
+// Mega Stones: the species' Megas, the stone players pick most (for species with two, sweep Oct 31), how many hold a stone
+function lairStones(p, st) { const megas = ROSTER.filter(q => q.m && q.b === p.b && q.n !== p.n), top = (st.itStones || [])[0], mg = (top && megas.find(q => stoneFor(q) === top[0])) || megas[0], stn = st.itStone || 0, rest = (st.it || []).reduce((a, [, v]) => a + (+v || 0), 0);
+  return {megas, top, mg, stn, rest}; }
+// a Mega's key in the Showdown replay data (brought-with): its base form (moved from 60-concept-h.js, Nov 11)
+function brKeyOf(p) { return p.n === 'Floette-Mega' ? 'Floette-Eternal' : p.n.replace(/-Mega(-[XYZ])?$/, ''); }
