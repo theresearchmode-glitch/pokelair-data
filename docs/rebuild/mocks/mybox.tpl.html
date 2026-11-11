@@ -100,11 +100,31 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
 .box{--glow:.20;--wall-mix:22%}
 :root[data-theme="light"] .box{--glow:.12;--wall-mix:24%}
 .cell .glow{width:110px!important;height:84px!important;margin:-42px 0 0 -55px!important}
+/* Nov 11 edge fixes (section 9.5: nothing cut off): the six never overflow their column; on phone the sort chips wrap instead of
+   running past the edge under a fade */
+.prow{grid-template-columns:repeat(6,minmax(0,1fr))}.prow img{max-width:100%;height:auto;aspect-ratio:1}
+@media (max-width:699px){.sortwrap{overflow:visible;-webkit-mask-image:none;margin-right:0;flex-wrap:wrap}.sort{flex-wrap:wrap}}
+/* Floor rule (Sim, Nov 11): the selected Pokémon stands on a pool of its normalised colour at its feet, no floating cloud */
+.selp .pool{left:50%;right:auto;top:auto;width:240px;height:44px;margin-top:-30px;transform:translateX(-50%);position:relative;display:block;
+  background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--c1),.62),rgba(var(--c1),.28) 55%,transparent)}
+:root[data-theme="dusk"] .selp .pool{background:radial-gradient(closest-side,rgba(var(--c1),.9),rgba(var(--c1),.32) 45%,transparent);filter:blur(1.5px)}
+.selp .art{margin-bottom:0}
+/* mid widths (iPad, small laptops): the box and the side panel share the width; the side panel's parts sit under the box */
+@media (min-width:700px) and (max-width:1179px){main{grid-template-columns:minmax(0,1fr);gap:40px}}
+@media (max-width:379px){.sheet .top{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}.sheet .top h3{font-size:28px}}
+/* selected cell (Sim, Nov 11: the tilted panel, not the pink brackets): it stands on a tilted panel of its normalised colour, a step forward */
+.cell.on::after{display:none}
+.cell.on::before{left:8px;right:8px;width:auto;top:10px;height:84px;border:0;border-radius:var(--r-m);transform:skewY(-7deg);z-index:0;
+  background:linear-gradient(150deg,rgba(var(--cp),.9),rgba(var(--cp),.55));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 8px 14px -6px rgba(30,20,50,.22)}
+:root[data-theme="dusk"] .cell.on::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(var(--cp),.25),0 14px 30px -12px rgba(var(--cp),.55)}
+.cell.on img{position:relative;z-index:1;transform:scale(1.08);transform-origin:50% 100%}.cell.on .n{color:var(--ink);font-weight:800}
+.three b .unit{display:inline;margin:0 0 0 2px;font-size:.62em}
 </style></head><body><div class="page" id="page"></div>
 <script>
 {const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[1])document.documentElement.dataset.glow=h[1];}
 /*DATA*/
 const TY={Dragon:'#5060E1',Ground:'#9A6230',Fighting:'#D9631B',Poison:'#8E3FC8',Dark:'#5A4A56',Steel:'#4F8FA6',Fire:'#DD4420',Water:'#2A78D8',Grass:'#2E9A46',Fairy:'#C953C2',Flying:'#5F97D8',Ghost:'#6A4BB8',Psychic:'#D93E78',Ice:'#1E9FBF',Rock:'#8F8556',Electric:'#B88A00',Normal:'#8E908C',Bug:'#7F9A12'};
+function norm(c){const[h,s0]=hsl(...c),s=Math.max(s0,.72),l=.56,C=(1-Math.abs(2*l-1))*s,X=C*(1-Math.abs((h/60)%2-1)),m=l-C/2,k=Math.floor(h/60)%6;return[[C,X,0],[X,C,0],[0,C,X],[0,X,C],[X,0,C],[C,0,X]][k].map(v=>Math.round((v+m)*255));}
 function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
 async function hue(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);
   for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
@@ -119,7 +139,7 @@ const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<'
   const mix=r=>{const cs=r.map(m=>M[m.img].a);const s=[0,0,0];cs.forEach(c=>c.forEach((v,j)=>s[j]+=v));return s.map(v=>Math.round(v/cs.length));};
   const stops=rows.map((r,i)=>`color-mix(in srgb,rgb(${rgb(mix(r))}) var(--wall-mix),var(--wash)) ${Math.round((i+.5)/rows.length*100)}%`).join(',');
   const wall=`linear-gradient(180deg,var(--wash) 0,${stops},var(--wash) 100%)`;
-  const cell=m=>`<div class="cell${m.n===sel.n?' on':''}" style="--c:${rgb(M[m.img].a)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt="">${m.team?'<i class="mark tm"></i>':''}<div class="n">${esc(m.d)}${D.sortBy==='Rating'?`<span class="sub">${m.r} · ${m.tier[0]} tier</span>`:''}</div></div>`;
+  const cell=m=>`<div class="cell${m.n===sel.n?' on':''}" style="--c:${rgb(M[m.img].a)};--cp:${rgb(norm(M[m.img].a))}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt="">${m.team?'<i class="mark tm"></i>':''}<div class="n">${esc(m.d)}${D.sortBy==='Rating'?`<span class="sub">${m.r} · ${m.tier[0]} tier</span>`:''}</div></div>`;
   const empty=PH?'':Array.from({length:Math.max(0,PER-first.length)},()=>'<div class="cell empty"></div>').join('');
   const sorts=['A–Z','Type','Newest','Oldest','Rating'].map(s=>`<span class="chip${s===D.sortBy?' on':''}">${s}</span>`).join('');
   const nBox=Math.ceil(D.box.length/PER),teamInBox2=D.box.slice(PER).some(m=>m.team);
@@ -143,7 +163,7 @@ const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<'
   const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Home</a><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
   let main;
-  if(!PH){main=`<main>${side}<div>${boxEl}${party}</div><div class="selp" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="pool"></div><div class="panel litedge" style="background:${panelBg}"></div><img class="art" src="${sel.img}" alt="">
+  if(!PH){main=`<main>${side}<div>${boxEl}${party}</div><div class="selp" style="--c1:${rgb(norm(k.a))};--c2:${rgb(k.b)}"><div class="panel litedge" style="background:${panelBg}"></div><img class="art" src="${sel.img}" alt=""><div class="pool"></div>
       <div class="plate">Rated ${sel.r} · ${sel.tier}</div><h3 class="u">${esc(sel.d)}</h3><div class="tags">${types}${sel.team?'<span class="on-team"><i class="mark"></i>On your team</span>':''}</div>
       ${three}${src}<div class="btn">Open Info Sheet →</div><div class="acts"><div class="row-link">Build around it<i>›</i></div><div class="row-link">Swap into my team<i>›</i></div><div class="row-link">Remove from box<i>›</i></div></div></div></main>`;}
   else{main=`<main>${side}${boxEl}<div class="sheet" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="grab"></div><div class="top"><div class="mini"><div class="panel" style="background:${panelBg}"></div><img src="${sel.img}" alt=""></div>
