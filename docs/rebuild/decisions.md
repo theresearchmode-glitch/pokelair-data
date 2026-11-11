@@ -4,6 +4,9 @@ Claude decides small things under executive control; Sim can overrule any of the
 Sim's own decisions are marked "Sim". Newest first.
 
 ## Every page
+- Nov 11 (Sim): approved everything so far: review items 7, 8, 9; the Matchups helper's choices (Top 10 in 1-5 / 6-10 columns,
+  5 + Show 5 more on phones, the next 20 as tiles, Top 12 grid with colour + shape, All 30 grouped with calc reasons, Best fix only
+  when it raises the score, the ring shows the Strength Score); and the link rename to "How the Strength Score works".
 - Nov 11 (Sim's review item 7, Claude did): every button, link and toggle is at least 44px tall on phones and tablets (a link inside a
   sentence is exempt). experiments/polish-check.mjs now measures this on every page ("tap"); sheets and the empty My Team were measured
   by a separate scratch check. Header logo, nav, Search, footer links, back links, Open My Team, Info Sheet and the Why link were fixed.

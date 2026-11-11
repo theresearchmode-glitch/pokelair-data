@@ -163,7 +163,7 @@ t('TEAM-04', '"Why this score?" opens the breakdown; its parts add up to the sco
   const base = w.match(/(\d+) from how its Pokémon/); ok(base, 'no "N from how its Pokémon…" part: ' + w.slice(0, 200));
   const adds = [...w.matchAll(/([+−-]\s?\d+) (?:for|from)/g)].map(m => +m[1].replace('−', '-').replace(/\s/g, ''));
   const sum = +base[1] + adds.reduce((a, b) => a + b, 0); ok(Math.abs(sum - s.score) <= 1, `parts add to ${sum}, score is ${s.score} (${w.slice(0, 300)})`);
-  has(w, /How sure/); has(w, /How the grade works/); await r.ui.tapText('How the grade works', 900); ok(await r.ui.current() === 'method', 'link did not open How we calculate'); await r.close(); });
+  has(w, /How sure/); has(w, /How the (grade|Strength Score) works/); await r.ui.tapText(/How the (grade|Strength Score) works/, 900); ok(await r.ui.current() === 'method', 'link did not open How we calculate'); await r.close(); });
 
 t('TEAM-05', 'Switch team fold lists saved teams; tapping one opens it with an Undo toast', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), /Switch [Tt]eam \d+ saved/);
