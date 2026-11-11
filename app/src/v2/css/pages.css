@@ -238,3 +238,12 @@
 @media (max-width:699px){.ms-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms-mvs .np-type{justify-content:center}}
 .ms-hd{min-width:0}.ms-rate{flex-wrap:wrap}.ms-hd h2{overflow-wrap:anywhere}
 @media (max-width:379px){.ms-hd h2{font-size:var(--t28)}}
+/* forms side by side: one column per form; on narrow screens the table scrolls sideways in its own box, labels stay */
+.ms-fh{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}.ms-fh .np-link{min-height:var(--tap)}
+.ms-tabs:has(> :nth-child(4)){grid-template-columns:repeat(4,minmax(0,1fr))}
+.ms-ft{overflow-x:auto;margin-top:var(--s3);overscroll-behavior-x:contain}
+.ms-ftr{display:grid;grid-template-columns:96px repeat(var(--n),minmax(112px,1fr));gap:var(--s3);align-items:center;min-width:calc(96px + var(--n) * 124px);min-height:36px;border-bottom:1px solid var(--rule)}
+.ms-ftr>span{font:500 var(--t15)/1.3 var(--b)}.ms-ftr .best{font-weight:800;color:var(--plot-text)}.ms-ftr .best::after{content:" ★";font-size:var(--t13)}
+.ms-ftl{position:sticky;left:0;z-index:1;background:var(--surface);font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.ms-fth{align-items:start;padding-bottom:var(--s2)}.ms-fth b,.ms-fth .np-link{display:block;font:700 var(--t15)/1.25 var(--b);text-align:left}.ms-fth .mg{display:block}.ms-fth .mg.none{visibility:hidden}.ms-fth small{display:block;font:500 var(--t13)/1.3 var(--b);color:var(--ink-3)}
+@media (max-width:699px){.ms-tabs:has(> :nth-child(4)) b{font-size:var(--t13)}}

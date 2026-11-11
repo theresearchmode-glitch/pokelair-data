@@ -2,7 +2,7 @@
 // Mock-up docs/rebuild/mocks/sheet.html (Sim approved): the header (rating and tier, name, types, share of teams, win rate,
 // Speed at level 50, the action), the forms strip (tap one to open it), then Info / Meta / Rating. Every number comes from
 // today's shared functions (24-sheet-data.js and the rating, set and speed code), proved identical with experiments/same-info.mjs.
-V2.msTab = (() => { try { const v = localStorage.getItem('np2.montab'); return ['info', 'meta', 'rating'].includes(v) ? v : 'info'; } catch (e) { return 'info'; } })();
+V2.msTab = (() => { try { const v = localStorage.getItem('np2.montab'); return ['info', 'meta', 'rating', 'forms'].includes(v) ? v : 'info'; } catch (e) { return 'info'; } })();
 V2.txt = h => String(h == null ? '' : h).replace(/<[^>]*>/g, ''); // shared rows may carry today's small markup (win colours): text only here
 V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })();
   const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'), rank = rankTxt(p, 'cap');
@@ -13,7 +13,7 @@ V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc
   const add = V2.addBtn ? V2.addBtn(n) : '';
   const head = `<header class="ms-head"><div class="ms-art">${V2.mon(n, {iw: 240, sel: true, bare: true})}</div><div class="ms-hd">${rate}<h2 class="u">${V2.nameHtml(V2.disp(n))}</h2><div class="ms-ty">${(p.t || []).map(V2.typeChip).join('')}</div>${nums}<div class="ms-acts">${add}</div></div></header>`;
   // forms: every form of the species with its rating; tap one to open it
-  const forms = ROSTER.filter(q => q.b === p.b), fstrip = forms.length > 1 ? `<div class="ms-forms"><div class="np-eyebrow">Forms · tap one to open it</div><div class="ms-fr" role="group" aria-label="Forms of ${E(V2.disp(p.b))}">${forms.map(q => { const rq = rating(q);
+  const forms = ROSTER.filter(q => q.b === p.b), fstrip = forms.length > 1 ? `<div class="ms-forms"><div class="ms-fh"><div class="np-eyebrow">Forms · tap one to open it</div><button type="button" class="np-link" data-mstabgo="forms">Compare all ${forms.length}</button></div><div class="ms-fr" role="group" aria-label="Forms of ${E(V2.disp(p.b))}">${forms.map(q => { const rq = rating(q);
     return `<button type="button" class="ms-f" data-v2mon="${E(q.n)}" aria-pressed="${q.n === p.n}">${V2.mon(q.n, {iw: 64, bare: true, sel: q.n === p.n})}<span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}</div></div>` : '';
   // Info: usually, base stats, Abilities, type matchups, Speed
   const ti = (() => { try { return topItems(p); } catch (e) { return null; } })(), SB = lairSetBits(p), pm = (() => { try { return (popularMoves(p) || []).slice(0, 4).map(m => m.name); } catch (e) { return []; } })();
@@ -52,10 +52,23 @@ V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc
   const ev = lairEvidence(p), data = `<section class="ms-sec ms-wide"><h3 class="ms-h">What the data says</h3>${ev.length ? `<div class="ms-ev">${ev.map(e => `<div><span>${E(e[0])}</span><b>${E(V2.txt(e[1]))}</b><small>${E(V2.txt(e[2]))}</small></div>`).join('')}</div>` : '<p>No tournament or ladder games yet: this rating comes from stats, typing and tools.</p>'}</section>`;
   const O = (() => { const pf = activePerf(); return pf && pf.outside && pf.outside.lists && pf.outside.lists.length ? pf.outside : null; })();
   const outs = O ? `<section class="ms-sec ms-wide"><h3 class="ms-h">Other tier lists</h3><div class="ms-out">${O.lists.map(L => { const v = O.data[L.k] && O.data[L.k][p.n]; return `<a href="${E(L.url)}" target="_blank" rel="noopener"><b>${v ? E(L.tiers[v]) : '–'}</b><span>${E(L.name)}<small>${v ? E(L.how) : 'not listed · ' + E(L.note)} · ${E(perfDateText(L.date))}</small></span></a>`; }).join('')}</div><p class="fine">Shown for comparison, not counted in the score.</p></section>` : '';
-  const tabs = [['info', 'Info', 'stats, types'], ['meta', 'Meta', 'moves, items, partners'], ['rating', 'Rating', `why ${rs}, the data`]], cur = V2.msTab;
+  // Forms: every form side by side, the best in each row marked (mock sheet-forms.html)
+  const fcmp = forms.length > 1 ? (() => { const D = forms.map(q => { const rq = rating(q), hq = lairHead(q); return {q, rs: RS(rq.total), tk: lTier(rq.total).k, u: hq.hU, w: hq.hW, tot: q.st.reduce((a, b) => a + b, 0)}; });
+    const best = vals => { const ok = vals.filter(v => v != null); if (ok.length < 2) return () => false; const mx = Math.max(...ok); return v => v != null && v === mx && ok.some(x => x !== mx); };
+    const row = (lab, f, txt) => { const vs = D.map(f), b = best(vs); return `<div class="ms-ftr"><span class="ms-ftl">${lab}</span>${D.map((d, i) => `<span${b(vs[i]) ? ' class="best"' : ''}>${txt ? txt(d, vs[i]) : vs[i] == null ? '–' : vs[i]}</span>`).join('')}</div>`; };
+    const SL = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'];
+    return `<section class="ms-sec ms-wide"><h3 class="ms-h">Forms side by side</h3><p class="fine">The best in each row is marked. Mega forms need their Mega Stone held; a team runs one Mega.</p>
+      <div class="ms-ft" role="table" aria-label="Forms of ${E(V2.disp(p.b))} side by side" style="--n:${D.length}">
+      <div class="ms-ftr ms-fth"><span class="ms-ftl"></span>${D.map(d => `<span>${d.q.n === p.n ? `<b>${V2.nameHtml(V2.disp(d.q.n))}</b><small>open now</small>` : `<button type="button" class="np-link" data-v2mon="${E(d.q.n)}">${V2.nameHtml(V2.disp(d.q.n))}</button>`}</span>`).join('')}</div>
+      ${row('Rating', d => d.rs, d => `${d.rs} · ${E(d.tk)} tier`)}${row('On teams', d => d.u, (d, v) => v == null ? '–' : E(pctFmt(v)))}${row('Win rate', d => d.w, (d, v) => v == null ? '–' : E(pctFmt(v)))}
+      <div class="ms-ftr"><span class="ms-ftl">Type</span>${D.map(d => `<span>${E(d.q.t.join(' / '))}</span>`).join('')}</div>
+      <div class="ms-ftr"><span class="ms-ftl">Ability</span>${D.map(d => `<span>${[...new Set(d.q.a)].map(E).join(' or ')}</span>`).join('')}</div>
+      ${SL.map((l, j) => row(l, d => d.q.st[j])).join('')}${row('Total', d => d.tot)}</div>
+      <p class="fine">On teams, win rate and rating: tournament teams. Base stats: game data.</p></section>`; })() : '';
+  const tabs = [['info', 'Info', 'stats, types'], ['meta', 'Meta', 'moves, items, partners'], ['rating', 'Rating', `why ${rs}, the data`], ...(fcmp ? [['forms', 'Forms', `${forms.length}, side by side`]] : [])], cur = tabs.some(t => t[0] === V2.msTab) ? V2.msTab : 'info';
   const tb = `<div class="ms-tabs" role="tablist" aria-label="${E(V2.disp(n))}: info, meta or rating">${tabs.map(([k, l, s]) => `<button type="button" role="tab" id="mst-${k}" data-mstab="${k}" aria-controls="msp-${k}" aria-selected="${k === cur}" tabindex="${k === cur ? 0 : -1}"><b>${l}</b><small>${E(s)}</small></button>`).join('')}</div>`;
   const pan = (k, h) => `<div class="ms-pan" role="tabpanel" id="msp-${k}" aria-labelledby="mst-${k}" data-mspan="${k}"${k === cur ? '' : ' hidden'}>${h}</div>`;
-  return `<div class="ms2">${head}${fstrip}${tb}${pan('info', `<div class="ms-cols">${quick}${stats}${abs}${ty}${spd}</div>`)}${pan('meta', `<div class="ms-cols">${meta}</div>`)}${pan('rating', `<div class="ms-cols">${why}${data}${outs}</div>`)}</div>`; };
+  return `<div class="ms2">${head}${fstrip}${tb}${pan('info', `<div class="ms-cols">${quick}${stats}${abs}${ty}${spd}</div>`)}${pan('meta', `<div class="ms-cols">${meta}</div>`)}${pan('rating', `<div class="ms-cols">${why}${data}${outs}</div>`)}${fcmp ? pan('forms', `<div class="ms-cols">${fcmp}</div>`) : ''}</div>`; };
 // opening: a sheet; another Pokémon from inside it (a form, a partner) replaces it in place and keeps the tab
 V2.openMon = n => { const p = byName.get(n); if (!p) return; const cur = document.querySelector('.ms2');
   if (cur) { cur.outerHTML = V2.monHtml(n); const sh = document.querySelector('.np-sheet'); if (sh) { sh.scrollTop = 0; sh.setAttribute('aria-label', V2.disp(n)); sh.focus(); } return; }
@@ -63,7 +76,8 @@ V2.openMon = n => { const p = byName.get(n); if (!p) return; const cur = documen
 V2.msShow = (k, focus) => { V2.msTab = k; try { localStorage.setItem('np2.montab', k); } catch (e) {}
   document.querySelectorAll('.ms2 [data-mstab]').forEach(b => { const on = b.dataset.mstab === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
   document.querySelectorAll('.ms2 [data-mspan]').forEach(x => { x.hidden = x.dataset.mspan !== k; }); };
-document.addEventListener('click', e => { const b = e.target.closest('.ms2 [data-mstab]'); if (b) V2.msShow(b.dataset.mstab); });
+document.addEventListener('click', e => { const b = e.target.closest('.ms2 [data-mstab]'); if (b) V2.msShow(b.dataset.mstab);
+  const g = e.target.closest('.ms2 [data-mstabgo]'); if (g) { V2.msShow(g.dataset.mstabgo, true); const t = document.querySelector('.ms2 .ms-tabs'); if (t) t.scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); } });
 document.addEventListener('keydown', e => { const b = e.target.closest && e.target.closest('.ms2 [data-mstab]'); if (!b || !/^Arrow(Left|Right)$/.test(e.key)) return; e.preventDefault();
   const ks = [...document.querySelectorAll('.ms2 [data-mstab]')].map(x => x.dataset.mstab), i = ks.indexOf(b.dataset.mstab), j = (i + (e.key === 'ArrowRight' ? 1 : ks.length - 1)) % ks.length; V2.msShow(ks[j], true); });
 // the redesign preview links here: My Team with Garchomp's sheet open (changes nothing)
