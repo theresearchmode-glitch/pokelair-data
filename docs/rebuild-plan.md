@@ -245,3 +245,6 @@ Claude's choices tonight:
 - **Battle:** "39,052 tournament games" in the real-games verdict. Check whether it follows the single-games-first rule.
 - **Events:** event names can carry an organiser's handle (e.g. "<handle> VGC Champions Arena #18"). The mock-ups leave the handle out. Add this to the no-names sweep of data that reaches the page.
 - **Night mode:** selected segment chips are hard to tell from unselected ones (a token issue, seen on Build).
+
+## NastyPlot Full Redesign artifact (Nov 11)
+https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf. An index of every mock-up page in day and night. It is built from docs/rebuild/mocks/out/; the staging folder is the session scratchpad "redesign": the pages with art paths flattened to art/, a "‹ All pages" link on each, and thumbs/.
