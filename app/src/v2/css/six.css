@@ -84,3 +84,6 @@ svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);ver
 /* while the Edit Set sheet holds the name box (an empty spot), it takes the small sheet's size, so it fits what it shows */
 .np-sheet:has(> .sx-addsh){top:12vh;bottom:auto;max-height:76vh;width:min(640px,calc(100% - 64px))}
 @media (max-width:699px){.np-sheet:has(> .sx-addsh){top:auto;bottom:var(--kb);width:100%;max-height:min(88vh,calc(100vh - var(--kb) - var(--s10)))}}
+/* the set card without its big picture (Sim, Nov 11): one column of details; the rating sits by the types */
+.tm-setgrid.sx-noart{grid-template-columns:minmax(0,1fr)}
+.sx-rate2{display:inline-flex;align-items:baseline;gap:var(--s1);margin-left:var(--s2);font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.sx-rate2 b{font-size:var(--t20);font-style:italic;color:var(--ink)}
