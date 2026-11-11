@@ -1,0 +1,145 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NastyPlot My Box mock-up</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500..900&family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* My Box (R2 mock-up). Concept: docs/redesign/box/ (Sim chose it, Nov 10); decisions: docs/rebuild/decisions-final-suggestions.md */
+.page{position:relative;overflow:hidden;min-height:100vh}
+header{height:76px;display:flex;align-items:center;padding:0 var(--gut)}
+header .logo svg{height:36px;display:block}
+nav{display:flex;gap:36px;margin:0 auto}nav a{font:500 15px/1 var(--b);color:var(--ink-2)}
+nav a.on{color:var(--ink);font-weight:700;position:relative}nav a.on::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:5px;background:var(--plot);transform:skewX(var(--slant))}
+header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
+:root{--gut:96px}
+main{display:grid;grid-template-columns:272px minmax(0,1fr) 300px;gap:40px;padding:16px var(--gut) 72px;align-items:start;position:relative}
+h1{font-size:46px;margin:16px 0 8px}
+.count{font:600 15px/1 var(--b);color:var(--ink-2)}
+.side p{font-size:15px;color:var(--ink-2);margin-top:16px}
+.side .field{margin-top:24px}
+.sortlab{margin:24px 0 8px}
+.sort{display:flex;flex-wrap:wrap;gap:8px 4px}
+.links{margin-top:28px}
+.key{display:flex;align-items:center;gap:10px;margin-top:12px}
+/* ---------- the box ---------- */
+.box{position:relative;border-radius:var(--r-xl);overflow:hidden;padding:0 24px 20px;isolation:isolate;contain:paint}
+.box .wall{position:absolute;inset:0;z-index:-2}
+.box .rays{position:absolute;inset:-30%;z-index:-1;background:repeating-conic-gradient(from 6deg at 50% 44%,rgba(255,255,255,.16) 0 1.4deg,transparent 1.4deg 12deg);
+  -webkit-mask-image:radial-gradient(closest-side,transparent 30%,#000 70%,transparent 100%)}
+:root[data-theme="dusk"] .box .rays{background:repeating-conic-gradient(from 6deg at 50% 44%,rgba(255,255,255,.07) 0 1.4deg,transparent 1.4deg 12deg)}
+.bar{height:76px;display:grid;grid-template-columns:44px 1fr auto 44px;gap:12px;align-items:center}
+.bar .ar{width:44px;height:44px;border-radius:50%;background:color-mix(in srgb,var(--bg) 78%,transparent);display:grid;place-items:center;font:900 15px/1 var(--u)}
+.bar h2{font-size:24px}.bar small{display:block;font:500 13px/1 var(--b);color:var(--ink-2);margin-top:6px;font-style:normal;letter-spacing:0}
+.bar .sel{height:36px;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);row-gap:4px}
+.cell{position:relative;height:132px;text-align:center}
+.cell .glow{position:absolute;left:50%;top:58px;width:150px;height:116px;margin:-58px 0 0 -75px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(var(--c),var(--glow)),transparent);z-index:0}
+.cell img{position:absolute;left:50%;top:6px;width:92px;height:92px;margin-left:-46px;object-fit:contain;object-position:50% 100%;z-index:2}
+.cell .sh{position:absolute;left:50%;top:92px;width:62px;height:10px;margin-left:-31px;border-radius:50%;background:radial-gradient(closest-side,var(--contact),transparent);z-index:1}
+.cell .n{position:absolute;left:-6px;right:-6px;top:104px;font:600 13px/1.25 var(--b);color:var(--ink);z-index:3;text-wrap:balance}
+.cell .sub{display:block;font:500 13px/1.2 var(--b);color:var(--ink-2)}
+.cell .tm{position:absolute;z-index:4;left:50%;margin-left:30px;top:8px}
+.cell.on{z-index:5}.cell.on::before{content:"";position:absolute;left:6px;right:6px;top:0;height:100px;border-radius:14px;background:color-mix(in srgb,var(--surface) 88%,transparent);box-shadow:var(--shadow-lift);z-index:1}
+.cell.on img{width:108px;height:108px;margin-left:-54px;top:-12px}
+.cell.on .n{font-weight:700}
+.cell.empty::after{content:"";position:absolute;left:50%;top:70px;width:54px;height:10px;margin-left:-27px;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--ink) 22%,transparent)}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:8px}.dots i{position:relative;width:24px;height:6px;background:color-mix(in srgb,var(--ink) 25%,transparent);transform:skewX(var(--slant))}
+.dots i.on{background:var(--ink)}.dots i.tm::after{content:"";position:absolute;right:-2px;top:-8px;width:10px;height:4px;background:var(--plot)}
+.party{margin-top:24px}
+.party .ph{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}.party .ph b{font:900 20px/1 var(--u);font-style:italic}.party .ph span{font-size:15px;color:var(--ink-2)}
+.prow{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--rule);padding-top:12px}
+.prow div{text-align:center;font:600 13px/1.25 var(--b);position:relative}
+.prow .pg{position:absolute;left:50%;top:44px;width:90px;height:60px;margin:-30px 0 0 -45px;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--c),var(--glow)),transparent)}
+.prow .mg{display:block;font:900 13px/1 var(--u);font-style:italic;color:var(--plot);margin-top:2px}.prow img{position:relative;width:80px;height:80px;object-fit:contain;display:block;margin:0 auto}.prow small{display:block;font-weight:500;color:var(--ink-2)}
+/* ---------- the selected Pokémon ---------- */
+.selp{position:relative}
+.selp .pool{position:absolute;left:-60px;right:-60px;top:-40px;height:420px;background:radial-gradient(50% 50% at 50% 45%,rgba(var(--c1),var(--glow-strong)),transparent),radial-gradient(28% 30% at 62% 66%,rgba(var(--c2),var(--glow)),transparent);z-index:0;pointer-events:none}
+.panel{position:absolute;left:0;right:0;top:36px;height:248px;transform:skewY(-7deg);border-radius:var(--r-m);overflow:hidden;z-index:1}
+.panel::after{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(from 8deg at 50% 62%,rgba(255,255,255,.42) 0 1.6deg,transparent 1.6deg 15deg);-webkit-mask-image:radial-gradient(closest-side,transparent 22%,#000 58%,transparent 96%)}
+.selp .art{position:relative;z-index:2;display:block;width:280px;height:280px;object-fit:contain;margin:0 auto}
+.plate{position:absolute;z-index:4;left:-6px;top:238px;height:36px;padding:0 18px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 13px/1 var(--u);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
+.selp h3{position:relative;z-index:2;font-size:34px;margin-top:24px}
+.tags{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:8px 4px;margin-top:12px;align-items:center}
+.tags .on-team{display:flex;align-items:center;gap:8px;font:600 13px/1 var(--b);color:var(--ink-2);margin-left:8px}
+.three{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;margin-top:24px}
+.three b{display:block;font:900 26px/1.05 var(--u);font-style:italic;letter-spacing:-.03em}.three span{display:block;font-size:13px;color:var(--ink-2);margin-top:4px}
+.selp .btn{margin-top:24px;position:relative;z-index:2}.selp .acts{margin-top:12px;position:relative;z-index:2}
+.src{position:relative;z-index:2;margin-top:12px}
+footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}footer svg{height:26px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}
+/* ---------- phone ---------- */
+@media (max-width:699px){
+  :root{--gut:16px}
+  header{height:60px}nav{display:none}header .s{margin-left:auto}
+  main{display:block;padding:8px 0 40px}
+  .side{padding:0 var(--gut)}h1{font-size:36px;margin-top:12px}.side .row1{display:flex;justify-content:space-between;align-items:baseline}
+  .sortwrap{display:flex;align-items:center;gap:12px;margin:16px calc(-1*var(--gut)) 0 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)}.sortlab{margin:0;flex:none}.sort{flex-wrap:nowrap}
+  .box{margin:20px 8px 0;padding:0 8px 16px;border-radius:var(--r-l)}
+  .bar{height:72px;grid-template-columns:40px 1fr 40px}.bar .sel{display:none}.bar .ar{width:40px;height:40px}.bar h2{font-size:22px}
+  .grid{grid-template-columns:repeat(5,1fr)}
+  .cell{height:116px}.cell img{width:66px;height:66px;margin-left:-33px;top:8px}.cell .sh{top:72px;width:46px;margin-left:-23px}
+  .cell .n{top:82px;left:-3px;right:-3px;font-stretch:80%;letter-spacing:-.01em}.prow div{font-stretch:80%}.cell .tm{margin-left:20px;top:4px}
+  .cell.on::before{height:80px;left:2px;right:2px}.cell.on img{width:78px;height:78px;margin-left:-39px;top:-2px}
+  .cell .glow{top:44px;width:80px;height:60px;margin:-30px 0 0 -40px}
+  .sheet{margin:16px 8px 0;padding:8px 16px 20px;border-radius:var(--r-xl) var(--r-xl) 0 0;background:var(--surface);position:relative;overflow:hidden;box-shadow:0 -12px 30px -18px rgba(0,0,0,.4)}
+  .sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--rule);margin:4px auto 12px}
+  .sheet .top{display:grid;grid-template-columns:136px 1fr;gap:16px;align-items:center;position:relative}
+  .sheet .mini{position:relative;height:136px}.sheet .mini .panel{top:20px;height:100px}.sheet .mini img{position:relative;z-index:2;width:136px;height:136px;object-fit:contain}
+  .sheet h3{font-size:28px}.sheet .plate{position:static;display:inline-flex;margin-top:12px}
+  .sheet .three{margin-top:20px;padding-top:16px;border-top:1px solid var(--rule)}
+  .sheet .acts3{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px;margin-top:20px}.sheet .acts3 .btn{height:48px;padding:0 8px;font-size:13px}.sheet .acts3 .btn2{height:48px;padding:0 4px}
+  .party,.links,.fine2{padding:0 var(--gut)}.party{margin-top:28px}.prow img{width:58px;height:58px}.prow .pg{top:30px;width:64px;height:44px;margin:-22px 0 0 -32px}
+  footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:16px;flex-wrap:wrap}
+}
+</style></head><body><div class="page" id="page"></div>
+<script>
+document.documentElement.dataset.theme=location.hash.slice(1)||'light';
+/*DATA*/
+const TY={Dragon:'#5060E1',Ground:'#9A6230',Fighting:'#D9631B',Poison:'#8E3FC8',Dark:'#5A4A56',Steel:'#4F8FA6',Fire:'#DD4420',Water:'#2A78D8',Grass:'#2E9A46',Fairy:'#C953C2',Flying:'#5F97D8',Ghost:'#6A4BB8',Psychic:'#D93E78',Ice:'#1E9FBF',Rock:'#8F8556',Electric:'#B88A00',Normal:'#8E908C',Bug:'#7F9A12'};
+function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
+async function hue(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
+  const o=B.map((b,i)=>({i,w:b[3],c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[150,150,165]})).sort((a,b)=>b.w-a.w),a=o[0],b2=o.find(q=>q.w>a.w*.12&&Math.min(Math.abs(q.i-a.i),18-Math.abs(q.i-a.i))>=3)||a;return{a:a.c,b:b2.c};}
+const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+(async()=>{
+  const DK=document.documentElement.dataset.theme==='dusk',PH=innerWidth<700,PER=30,COLS=PH?5:6,M={};
+  await Promise.all(D.box.concat(D.team).map(async m=>{M[m.img]=M[m.img]||await hue(m.img);}));
+  const first=D.box.slice(0,PER),sel=D.sel,k=M[sel.img];
+  // the wallpaper: one soft band per row, tinted by the Pokémon standing in that row (decision 1), over --wash
+  const rows=[];for(let i=0;i<PER;i+=COLS)rows.push(first.slice(i,i+COLS));
+  const mix=r=>{const cs=r.map(m=>M[m.img].a);const s=[0,0,0];cs.forEach(c=>c.forEach((v,j)=>s[j]+=v));return s.map(v=>Math.round(v/cs.length));};
+  const stops=rows.map((r,i)=>`color-mix(in srgb,rgb(${rgb(mix(r))}) var(--wall-mix),var(--wash)) ${Math.round((i+.5)/rows.length*100)}%`).join(',');
+  const wall=`linear-gradient(180deg,var(--wash) 0,${stops},var(--wash) 100%)`;
+  const cell=m=>`<div class="cell${m.n===sel.n?' on':''}" style="--c:${rgb(M[m.img].a)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt="">${m.team?'<i class="mark tm"></i>':''}<div class="n">${esc(m.d)}${D.sortBy==='Rating'?`<span class="sub">${m.r} · ${m.tier[0]} tier</span>`:''}</div></div>`;
+  const empty=PH?'':Array.from({length:Math.max(0,PER-first.length)},()=>'<div class="cell empty"></div>').join('');
+  const sorts=['A–Z','Type','Newest','Oldest','Rating'].map(s=>`<span class="chip${s===D.sortBy?' on':''}">${s}</span>`).join('');
+  const nBox=Math.ceil(D.box.length/PER),teamInBox2=D.box.slice(PER).some(m=>m.team);
+  const dots=Array.from({length:nBox},(_,i)=>`<i class="${i===0?'on':''}${i===1&&teamInBox2?' tm':''}"></i>`).join('');
+  const boxEl=`<div class="box"><div class="wall" style="background:${wall}"></div><div class="rays"></div>
+    <div class="bar"><span class="ar">◀</span><div><h2 class="u">Box 1</h2><small>${first.length} of ${D.box.length} · ${esc(D.sortBy==='Rating'?'by Rating':'A to '+first[first.length-1].d[0])}${PH?' · swipe for Box 2':''}</small></div><span class="chip sel">Select</span><span class="ar">▶</span></div>
+    <div class="grid">${first.map(cell).join('')}${empty}</div><div class="dots">${dots}</div></div>`;
+  const party=`<div class="party"><div class="ph"><b>Your Team</b><span>6 of 6 · ${PH?'hold and drag to swap':'drag between the box and your team'}</span></div>
+    <div class="prow">${D.team.map(m=>`<div style="--c:${rgb(M[m.img].a)}"><i class="pg"></i><img src="${m.img}" alt="">${PH?'':(m.d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(m.d.slice(5))}`:esc(m.d))}<small>${m.role}</small></div>`).join('')}</div></div>`;
+  const types=sel.t.map(t=>`<span class="chip type" style="background:${TY[t]}">${t}</span>`).join('');
+  const three=`<div class="three"><div><b>${sel.usage}%</b><span>of teams</span></div><div><b>${sel.wr}%</b><span>win rate</span></div><div><b>${sel.sp}</b><span>base Speed</span></div></div>`;
+  const panelBg=`linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))`;
+  const links=`<div class="links"><div class="row-link">Copy box link<i>›</i></div><div class="row-link">Open a box link<i>›</i></div><div class="row-link">Reset box<i>›</i></div></div>`;
+  const savedNote=`<p class="fine">Saved to your account: your box is the same on every device.</p>`;
+  const key=`<div class="key fine"><i class="mark"></i>On your team</div>`;
+  const src=`<p class="fine src">Online tournaments, ${esc(D.asOf)}.</p>`;
+  const side=`<div class="side"><div class="eyebrow">My Team · The Pokémon you own</div><div class="row1"><h1 class="u">My Box</h1>${PH?`<span class="count">${D.box.length} Pokémon · ${nBox} boxes</span>`:''}</div>${PH?'':`<div class="count">${D.box.length} Pokémon · ${nBox} boxes</div>`}
+    <p>Build for Me and Suggestions pick from these when "Suggest from" is set to My Box.</p>
+    <div class="field"><span>Add a Pokémon</span><b>+</b></div>
+    ${PH?`<div class="sortwrap"><div class="lab sortlab">Arrange by</div><div class="sort">${sorts}</div></div>`:`<div class="lab sortlab">Arrange by</div><div class="sort">${sorts}</div>${links}<div style="margin-top:16px">${savedNote}${key}</div>`}</div>`;
+  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
+  const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
+  let main;
+  if(!PH){main=`<main>${side}<div>${boxEl}${party}</div><div class="selp" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="pool"></div><div class="panel" style="background:${panelBg}"></div><img class="art" src="${sel.img}" alt="">
+      <div class="plate">Rated ${sel.r} · ${sel.tier}</div><h3 class="u">${esc(sel.d)}</h3><div class="tags">${types}${sel.team?'<span class="on-team"><i class="mark"></i>On your team</span>':''}</div>
+      ${three}${src}<div class="btn">Open Info Sheet →</div><div class="acts"><div class="row-link">Build around it<i>›</i></div><div class="row-link">Swap into my team<i>›</i></div><div class="row-link">Remove from box<i>›</i></div></div></div></main>`;}
+  else{main=`<main>${side}${boxEl}<div class="sheet" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="grab"></div><div class="top"><div class="mini"><div class="panel" style="background:${panelBg}"></div><img src="${sel.img}" alt=""></div>
+      <div><h3 class="u">${esc(sel.d)}</h3><div class="tags">${types}</div><div class="plate">Rated ${sel.r} · ${sel.tier}</div></div></div>${three}${src}
+      <div class="acts3"><div class="btn">Info Sheet →</div><div class="btn2"><span>Swap in</span></div><div class="btn2"><span>Remove</span></div></div></div>${party}${links}<div class="fine2" style="margin-top:16px">${savedNote}${key}</div></main>`;}
+  document.getElementById('page').innerHTML=header+main+footer;
+  await document.fonts.ready;document.body.dataset.ready=1;
+})();
+</script></body></html>
