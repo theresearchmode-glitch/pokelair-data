@@ -323,18 +323,18 @@
 .bx-team .np-mon{--iw:min(72px,100%)}.bx-team .np-mon b{font-size:var(--t13);line-height:1.25}.bx-team .np-mon small{font-size:var(--t13);color:var(--ink-2)}
 @media (max-width:599px){.bx-team .np-mon b{display:none}}
 /* the picked Pokémon */
-.bx-art{position:relative;padding:var(--s6) var(--s4) var(--s10);background:linear-gradient(rgba(var(--cp,150,150,165),.2),rgba(var(--cp,150,150,165),.2)),var(--wash);clip-path:polygon(0 5%,100% 0,100% 95%,0 100%);overflow:hidden}
-.bx-art>*{position:relative}.bx-plate{position:absolute;left:var(--s3);bottom:var(--s5);margin:0;padding:var(--s2) var(--s4);background:var(--plate);color:var(--on-plate);transform:skewX(-12deg);font:600 var(--t15)/1.2 var(--b)}
+.bx-art{position:relative;display:grid;justify-items:center;padding:calc(var(--s16) + var(--s4)) var(--s4) var(--s8);background:radial-gradient(130% 62% at 50% 100%,rgba(var(--cp,150,150,165),.34),rgba(var(--cp,150,150,165),.08) 60%,transparent 82%),var(--wash);clip-path:polygon(0 5%,100% 0,100% 95%,0 100%);overflow:hidden}
+:root[data-theme="night"] .bx-art{background:radial-gradient(130% 62% at 50% 100%,rgba(var(--cp,150,150,165),.3),rgba(var(--cp,150,150,165),.06) 60%,transparent 82%),var(--wash)}
+.bx-art>*{position:relative}.bx-plate{position:absolute;left:var(--s4);top:var(--s6);margin:0;white-space:nowrap;padding:var(--s2) var(--s4);background:var(--plate);color:var(--on-plate);transform:skewX(-12deg);font:600 var(--t15)/1.2 var(--b)}
 .bx-plate b{font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style}
-.bx-sumb h2{font-size:var(--t34);margin:var(--s4) 0 var(--s3);overflow-wrap:anywhere}.bx-ty{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.bx-sumb h2{font-size:var(--t34);margin:var(--s4) 0 var(--s3);overflow-wrap:break-word}.bx-ty{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
 .bx-chip{min-height:28px;padding:0 var(--s3);font-size:var(--t13);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .bx-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);margin:var(--s6) 0;padding-block:var(--s4);border-block:1px solid var(--rule)}
 .bx-n b{display:block;font:900 var(--t28)/1.05 var(--u);font-style:italic;letter-spacing:-.02em}:root[data-theme="night"] .bx-n b{font-weight:800}.bx-n span{font-size:var(--t13);color:var(--ink-2)}
 .bx-acts{display:flex;flex-wrap:wrap;gap:var(--s3)}.bx-acts .np-btn{flex:1 1 100%}.bx-acts .np-btn2{flex:1 1 140px}
-.bx-sum.in-sheet{display:grid;grid-template-columns:150px minmax(0,1fr);gap:var(--s4);padding:var(--s6) var(--s4) var(--s4);align-items:start}
-.bx-sum.in-sheet .bx-art{padding:var(--s3) var(--s2) var(--s10)}.bx-sum.in-sheet .bx-plate{left:var(--s2);bottom:var(--s3);padding:var(--s1) var(--s3);font-size:var(--t13)}.bx-sum.in-sheet .bx-plate b{font-size:var(--t15)}
-.bx-sum.in-sheet h2{font-size:var(--t28);margin-top:0}.bx-sum.in-sheet .bx-nums,.bx-sum.in-sheet .bx-acts{grid-column:1/-1}.bx-sum.in-sheet .bx-nums{margin:0}
-.bx-sum.in-sheet .bx-sumb{display:contents}.bx-sum.in-sheet .bx-sumb>h2,.bx-sum.in-sheet .bx-ty{grid-column:2}.bx-sum.in-sheet .bx-ty{margin-top:calc(-1 * var(--s20, 0px))}
+.bx-sum.in-sheet{padding:var(--s6) var(--s4) var(--s4)}
+.bx-sum.in-sheet .bx-art{padding:var(--s12) var(--s4) var(--s6)}.bx-sum.in-sheet .bx-plate{top:var(--s4)}
+.bx-sum.in-sheet h2{font-size:var(--t28)}.bx-sum.in-sheet .bx-nums{margin:var(--s5) 0}
 /* tools under the lead */
 .bx-links{list-style:none;margin:0;padding:0;border-bottom:1px solid var(--rule)}.bx-links>li{border-top:1px solid var(--rule)}
 .bx-links>li>button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;padding:0;border:0;background:none;color:var(--ink);font:600 var(--t16)/1.3 var(--b);cursor:pointer;text-align:left}

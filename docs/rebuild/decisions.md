@@ -45,6 +45,9 @@ Sim's own decisions are marked "Sim". Newest first.
 - Nov 11 (Claude): "← My Team" back link in the eyebrow (also My Box).
 
 ## My Box
+- Nov 11 (Claude, under Sim's 6-7 PM authority; Sim called the first version "super sloppy"): the picked Pokémon's panel: the rating
+  label moved to the top corner on one line (it sat on the floor ring), the Pokémon's colour rises from the floor instead of a flat
+  wash, and the phone sheet stacks picture, name and types (the name broke mid-word in a narrow column).
 - Nov 11 (Sim's review item 8, Claude did): the light rays are gone from the box wallpaper and the picked Pokémon's panel (rays are for the
   Home hero only). The blue mark's key ("On your team") moved from the box-link tools at the bottom to just above the grid, shown
   only when that box has a team member.
