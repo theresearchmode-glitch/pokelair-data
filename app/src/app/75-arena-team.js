@@ -270,8 +270,10 @@ document.addEventListener('focusin', e => { const t = e.target; if (t && t.close
 new MutationObserver(() => { const ed = $('chEdit'), a = document.activeElement; if (!ed || ed.hidden || (a && a !== document.body) || !ARB.edFoc) return;
   const k = ARB.edFoc, x = k.startsWith('[') ? ed.querySelector(k) : document.getElementById(k); if (x && ed.contains(x)) try { x.focus({preventScroll: true}); } catch (er) {} })
   .observe(document.body, {childList: true, subtree: true});
-/* a ⋯ menu closes when focus leaves it */
-document.addEventListener('focusout', e => { const d = e.target && e.target.closest && e.target.closest('details.moremenu[open]'); if (!d) return; setTimeout(() => { if (!d.contains(document.activeElement)) d.open = false; }, 0); });
+/* a ⋯ menu closes when focus moves to something else (a keyboard user tabbing away). Nov 11: not when focus merely drops to the page,
+   which a redraw does (after Remove, or as the day's data lands): that shut the menu under a player's finger and made TEAM-03 flaky.
+   A tap outside still closes it (72-keep-place.js). */
+document.addEventListener('focusout', e => { const d = e.target && e.target.closest && e.target.closest('details.moremenu[open]'); if (!d) return; setTimeout(() => { const a = document.activeElement; if (a && a !== document.body && !d.contains(a)) d.open = false; }, 0); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Tab') ARB.trap(e); }, true);
 ARB.trap = e => { const d = ARB.dlg(); if (!d) return; const f = [...d.querySelectorAll(ARB.FOC)].filter(x => x.getClientRects().length && !x.closest('[hidden],details:not([open])>:not(summary)')); if (!f.length) return;

@@ -56,6 +56,7 @@
  "src/app/29-fix-planner.js",
  "src/app/30-saved-data.js",
  "src/app/30-saved-teams.js",
+ "src/app/31-set-edits.js",
  "src/app/31-box.js",
  "src/app/32-views.js",
  "src/app/33-move-edits.js",

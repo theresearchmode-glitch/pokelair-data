@@ -6,11 +6,11 @@ document.addEventListener('click',e=>{const now=Date.now();if(now-tapAt<450){e.s
   const b=e.target&&e.target.closest&&e.target.closest(TAP_ACT);if(b)tapAt=now},true);
 // ---------- events ----------
 document.addEventListener('change',e=>{const t=e.target;
-  if(t.id&&/^ab\d$/.test(t.id)){const i=+t.dataset.i,m=memberOf(S.slots[i],i);const rec=m&&(metaAbility(m.p)||bestAbility(m.p));S.slots[i].a=t.value===rec?null:t.value;render();
+  if(t.id&&/^ab\d$/.test(t.id)){const i=+t.dataset.i;const rec=setAbility(i,t.value);render();
     toast(t.value===rec?`${t.value}: the most-used ability`:`${t.value} set (most players run ${rec})`)}
   else if(t.dataset&&t.dataset.mvi){const [i,j]=t.dataset.mvi.split(':').map(Number);setMove(i,j,t.value)}
-  else if(t.dataset&&t.dataset.iti!=null){const i=+t.dataset.iti,s=S.slots[i],p=s&&byName.get(s.n);if(!p)return;const def=defaultItem(p),v=t.value;
-    const T0=(ui.vsum&&ui.vsum.RD)||null,before=T0?T0.score:null;if(!s.it)s.it={};if(!v||v===def)delete s.it[S.format];else s.it[S.format]=v;if(!Object.keys(s.it).length)delete s.it;render();
+  else if(t.dataset&&t.dataset.iti!=null){const i=+t.dataset.iti,s=S.slots[i],p=s&&byName.get(s.n);if(!p)return;const v=t.value;
+    const T0=(ui.vsum&&ui.vsum.RD)||null,before=T0?T0.score:null;const def=setItem(i,v);render();
     const T1=(ui.vsum&&ui.vsum.RD)||null,after=T1?T1.score:null,cl=scarfTrClash(members());
     toast(`${v||'No item'}${v===def?': the usual item':''}${before!=null&&after!=null?` · ready for ${before===after?after+'% of the top threats (no change)':before+'% → '+after+'% of the top threats'}`:''}${cl&&v==='Choice Scarf'?' · clashes with Trick Room':''}`)}
   else if(t.id==='poolSel'){ui.pool=['box','boxfill','all'].includes(t.value)?t.value:'boxfill';LS.set('cc2.pool',ui.pool);render();toast({box:'Suggestions only use your box',boxfill:'Your box first, then the best Pokémon to catch',all:'Suggestions use the full roster'}[ui.pool])}
@@ -25,10 +25,10 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(d.typesmon){const p=byName.get(d.typesmon);if(p){ui.typesAuto=false;ui.typesMon=p.n;ui.typesSel=p.t.slice();renderTypes()}return}
   if(d.type){const s=ui.typesSel||[];ui.typesMon=null;ui.typesCleared=true;ui.typesSel=s.includes(d.type)?s.filter(x=>x!==d.type):(s.length>=2?[s[1],d.type]:[...s,d.type]);renderTypes();return}
   if(b.id==='typesClear'||d.typesmonx){ui.typesSel=[];ui.typesMon=null;ui.typesCleared=true;const f=$('typeMonIn');if(f)f.value='';renderTypes();return}
-  if(d.mvreset!==undefined){const s=S.slots[+d.mvreset];if(s&&s.mv){const before=teamOffense();delete s.mv[S.format];if(!Object.keys(s.mv).length)delete s.mv;render();const after=teamOffense();toast(`Back to the popular set · Offense ${before===after?'stays at '+after:before+' → '+after} of 18`)}return}
+  if(d.mvreset!==undefined){const s=S.slots[+d.mvreset];if(s&&s.mv){const before=teamOffense();resetMoves(+d.mvreset);render();const after=teamOffense();toast(`Back to the popular set · Offense ${before===after?'stays at '+after:before+' → '+after} of 18`)}return}
   if(d.unexcl!==undefined){if(d.unexcl==='*'){S.excl=[];toast('Every Pokémon can be suggested again')}else{S.excl=S.excl.filter(n=>n!==d.unexcl);const q=byName.get(d.unexcl);toast(`${q?q.d:d.unexcl} can be suggested again`)}render();return}
-  if(d.itreset!==undefined){const s=S.slots[+d.itreset];if(s&&s.it){delete s.it[S.format];if(!Object.keys(s.it).length)delete s.it;render();toast('Back to the usual item')}return}
-  if(d.abreset!==undefined){const s=S.slots[+d.abreset];if(s){s.a=null;render();toast('Back to the most-used ability')}return}
+  if(d.itreset!==undefined){const s=S.slots[+d.itreset];if(s&&s.it){resetItem(+d.itreset);render();toast('Back to the usual item')}return}
+  if(d.abreset!==undefined){if(resetAbility(+d.abreset)){render();toast('Back to the most-used ability')}return}
   if(d.fullset){if(byName.get(d.fullset)){if(typeof chEditClose==='function')chEditClose();ui.setMon=d.fullset;LS.set('cc2.setMon',d.fullset);setView('sets');renderSets()}return}
   if(d.setmon){if(byName.get(d.setmon)){ui.setMon=d.setmon;LS.set('cc2.setMon',d.setmon);renderSets();try{$('sets').scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}}return}
   if(d.setsrc){ui.setSrc=d.setsrc;ui.setSrcLoaded=true;try{LS.set('cc2.setSrc',d.setsrc)}catch(e){}renderSets();return}
@@ -44,7 +44,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
     if(!r.slots.length){$('pasteNotes').textContent=r.notes.length?r.notes.join('. ')+'.':'No Pokémon found. Paste the team text, one Pokémon per block.';return}
     keepUndo();S.slots=normSlots(r.slots);S.loadedId=null;ui.paste=null;render();{const sk=r.notes.map(n=>{const x=n.match(/^(.+?): skipped (item|move) "(.+?)"/);return x?`${x[3]} (${x[1]})`:null}).filter(Boolean);const skm=r.notes.map(n=>{const x=n.match(/^Skipped "(.+?)": not on the M-C roster/);return x?x[1]:null}).filter(Boolean);toast(`Imported ${r.slots.length} Pokémon`+(skm.length?`. Not in Reg M-C, left out: ${skm.slice(0,3).join(', ')}${skm.length>3?` and ${skm.length-3} more`:''}`:'')+(sk.length?`. Not in Champions, skipped: ${sk.slice(0,3).join(', ')}${sk.length>3?` and ${sk.length-3} more`:''}`:''),true)}return}
   if(d.megas!==undefined){S.megaGoal=Math.max(0,Math.min(2,+d.megas||0));S.maxMega=Math.max(1,S.megaGoal);recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.megaGoal?`Teams aim for ${S.megaGoal} Mega${S.megaGoal>1?'s':''}`:'Teams without Megas: rare (about 1 in 100 tournament teams), and they win about a third of their games');return}
-  if(d.clear!==undefined){const was=byName.get(S.slots[+d.clear].n);keepUndo();S.slots[+d.clear]=blank();render();if(was)toast(`Removed ${was.d}`,true)}
+  if(d.clear!==undefined){const was=clearSlot(+d.clear);render();if(was)toast(`Removed ${was.d}`,true)}
   else if(b.id==='abBtn'){runAutoBuild()} // keeps the Build around pick (shown as a chip with × above the button)
   else if(d.recsrc){ui.recSrc=d.recsrc==='all'?'all':'box';LS.set('cc2.recsrc',ui.recSrc);renderRecs()}
   else if(d.rec!==undefined){const pl=(ui.recs||[])[+d.rec];if(!pl)return;const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
@@ -57,14 +57,14 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
     keepScroll(()=>render());toast(`${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`,true)}
   else if(d.plan!==undefined){const pl=(ui.planList||ui.plans)[+d.plan];if(!pl)return;applyPlan(pl);
     keepScroll(()=>render());toast(`Applied: ${pl.ch.map(x=>x.c.p.d).join(' and ')}`,true)}
-  else if(d.lock!==undefined){const s=S.slots[+d.lock];s.lock=!s.lock;render()}
+  else if(d.lock!==undefined){toggleLock(+d.lock);render()}
   else if(d.unbox!==undefined){ui.boxUndo=S.box.slice();S.box=S.box.filter(x=>x!==d.unbox);render();const q=byName.get(d.unbox);toastBox(`Removed ${q?q.d:d.unbox} from your box`)}
   else if(b.id==='replanBtn'){vCache=new Map();pmCache=new Map();planCache={key:null,plans:[]};render();toast('Plans refreshed')}
   
   else if(d.addmeta){const p=byName.get(d.addmeta);const j=S.slots.findIndex(s=>!byName.get(s.n));
     if(p&&S.slots.some(s=>{const q=byName.get(s.n);return q&&q.b===p.b}))toast(p.d+' is already on your team');
     else if(p&&j<0)toast('Your team is full. Remove a Pokémon first.');
-    else if(p){S.slots[j]={n:p.n,a:null,lock:false};keepScroll(()=>render());toast(p.d+' added')}}
+    else if(p){addMon(j,p);keepScroll(()=>render());toast(p.d+' added')}}
   else if(b.id==='threatsAllBtn'){ui.threatsAll=true;keepScroll(()=>render())}
   else if(b.id==='recMoreBtn'){ui.recMore=(ui.recMore||0)+1;keepScroll(()=>renderRecs())}
   else if(b.id==='recMoreReset'){ui.recMore=0;renderRecs();const l=$('recList');if(l&&l.scrollIntoView)l.scrollIntoView({block:'start'})}

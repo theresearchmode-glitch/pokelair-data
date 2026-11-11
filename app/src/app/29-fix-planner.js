@@ -376,13 +376,13 @@ function renderMeta(){
     return `<details class="mrow${t.r<=3?' medal md'+t.r:''}"><summary${p?` class="tyacc" style="${tyv(p)}"`:''}><span class="rk">${t.r}</span>${(p&&sprite(p,'mini'))||'<span class="spr mini"></span>'}<span class="nm">${esc(p?p.d:t.n)}${(()=>{const tr=trendFor(t.n,t.r);return tr?`<span class="trend ${tr.cls}" title="${esc(tr.long?`${tr.long}. Daily ranks, ${META.history?META.history.days.length:0} days kept.`:`New in the usage ranks this week`)}">${tr.txt}${tr.cls!=='new'?rankSpark(t.n):''}</span>`:''})()} <span class="chips" style="display:inline-flex;vertical-align:middle">${p?p.t.map(x=>chip(x)).join(''):''}</span></span><span class="pc">${t.teams?`${t.u!=null?(+t.u).toFixed(1)+'%'+ubar(t.u,umx):''}${basis(t.teams,'team','teams',{cls:'blk'})}`:u?u.toFixed(1)+'%'+ubar(u,umx):''}</span></summary><div class="mbody">${sets||'<div class="none">No set details for this one yet.</div>'}${add?`<div>${add}</div>`:''}</div></details>`}).join('')+(d.more&&d.more.length?`<div class="t2" style="padding:4px 2px">Also ranked ${d.more[0].r}–${d.more[d.more.length-1].r}: ${d.more.slice(0,40).map(m=>{const q=byName.get(m.n);return esc(q?q.d:m.n)}).join(', ')}${d.more.length>40?` and ${d.more.length-40} more`:''}</div>`:'')+(d.note?`<div class="t2" style="padding:0 2px">${esc(d.note)}</div>`:'')||'<div class="empty-note">No Pokémon in this list.</div>';
 }
 // Ability picker: says plainly which ability most players run and whether you changed it.
-function abilBlock(s,i,m){const p=m.p,meta=metaAbility(p),rec=meta||bestAbility(p),st=defSet(p);
-  const mine=s.a&&p.a.includes(s.a)&&s.a!==rec;
+function abilBlock(s,i,m){const p=m.p,A=abilChoices(s,m),meta=A.meta,rec=A.rec,st=A.st;
+  const mine=A.mine;
   const tag=mine?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-abreset="${i}">Use ${esc(rec)}</button>`
     :p.a.length===1?`<span class="tag rec soft">${p.m?'MEGA ABILITY':'ONLY ABILITY'}</span>`
     :meta?`<span class="tag rec" title="Most used in ${esc(srcWord(st.src.ab))} ${S.format}">MOST USED</span>`:`<span class="tag rec soft">SUGGESTED</span><span class="vsub">no usage data</span>`;
   return `<div class="abil"><div class="lblrow"><span class="lbl">Ability</span>${tag}</div>
-    <select class="field" id="ab${i}" data-i="${i}" aria-label="Ability for ${esc(p.d)}">${p.a.map(a=>{const pc=abilityPct(p,a);return `<option value="${esc(a)}"${a===m.ability?' selected':''}>${esc(a)}${pc!=null?` (${(+pc).toFixed(pc<1?1:0)}%)`:''}${a===rec?' ★':''}</option>`}).join('')}</select></div>`}
+    <select class="field" id="ab${i}" data-i="${i}" aria-label="Ability for ${esc(p.d)}">${A.list.map(({name:a,pct:pc})=>{return `<option value="${esc(a)}"${a===m.ability?' selected':''}>${esc(a)}${pc!=null?` (${(+pc).toFixed(pc<1?1:0)}%)`:''}${a===rec?' ★':''}</option>`}).join('')}</select></div>`}
 // Every held item players actually run in Champions (from all the usage data loaded), so the picker never offers one the game lacks.
 var itemPoolCache;function notStone(n){return n==='Eviolite'||!STONE_RE.test(n)}
 function itemPool(){if(!itemPoolCache)itemPoolCache={v:-1,list:[]};if(itemPoolCache.v===metaVersion&&itemPoolCache.list.length)return itemPoolCache.list;const seen=new Map();
@@ -393,23 +393,16 @@ function itemPool(){if(!itemPoolCache)itemPoolCache={v:-1,list:[]};if(itemPoolCa
 function itemBlock(s,i,m,clash){const p=m.p;
   const same=x=>x.p.n===p.n;
   const warn=clash&&clash.sc.some(same)?`<div class="itwarn" role="note"><b>Clashes with Trick Room.</b> ${clash.tr.length===1&&same(clash.tr[0])?'It sets Trick Room itself':'Your team sets Trick Room'}, and under it the Scarf makes ${esc(m.d)} move later.</div>`:'';
-  if(p.m)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(m.item||'Mega Stone')}</div></div>`;
-  const pop=(defSet(p).it||[]).filter(([n])=>n&&notStone(n)).slice(0,8),popN=new Set(pop.map(([n])=>n)),def=defaultItem(p);
-  const rest=itemPool().filter(n=>!popN.has(n));if(m.item&&!popN.has(m.item)&&!rest.includes(m.item))rest.unshift(m.item);
-  // with no item picked, show the item it actually holds: Item Clause can move the usual item to a teammate (Oct 30 audit)
-  let shown=m.item;if(!m.heldItem){try{const k=JSON.stringify(S.slots)+'|'+metaVersion;if(itemBlock._k!==k){itemBlock._k=k;itemBlock._a=new Map((typeof assignItems==='function'?assignItems(members()):[]).map(x=>[x.i,x.item]))}const a=itemBlock._a.get(m.i);if(a)shown=a}catch(e){}}
-  const moved=!m.heldItem&&def&&shown&&shown!==def;
+  const C=itemChoices(s,i,m);
+  if(C.fixed!=null)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(C.fixed)}</div></div>`;
+  const {pop,def,rest,shown,moved}=C;
   const tag=moved?`<span class="tag rec soft" title="Item Clause: one of each item per team">${esc(def)} is on a teammate</span>`:m.heldItem&&m.heldItem!==def?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-itreset="${i}">Use ${esc(def||'the usual item')}</button>`
     :pop.length?`<span class="tag rec">MOST USED</span>`:`<span class="tag rec soft">NO USAGE DATA</span>`;
-  if(shown&&!popN.has(shown)&&!rest.includes(shown))rest.unshift(shown);const o=(n,pc)=>`<option value="${esc(n)}"${n===shown?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
+  const o=(n,pc)=>`<option value="${esc(n)}"${n===shown?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
   return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span>${tag}</div>
     <select class="field" id="it${i}" data-iti="${i}" aria-label="Held item for ${esc(p.d)}">${m.item?'':'<option value="" selected>(no item)</option>'}${pop.length?`<optgroup label="Most used in ${S.format}">${pop.map(([n,v])=>o(n,v)).join('')}</optgroup>`:''}${rest.length?`<optgroup label="Other items">${rest.map(n=>o(n,null)).join('')}</optgroup>`:''}</select>${warn}</div>`}
 // Moves: four tiles, each a dropdown. Popular moves for this format come first with their usage %.
-function movesBlock(s,i,m){const p=m.p,sm=slotMoves(s,p),pm=popularMoves(p);
-  const pct=pm.pct||new Map();
-  const learn=(LEARN[p.n]||[]).map(k=>MV[k]).filter(Boolean);const popNames=new Set(pm.map(x=>x.name));
-  const rest=learn.filter(x=>!popNames.has(x.name)).sort((a,b)=>a.name.localeCompare(b.name));
-  const src=pm.src==='other'?`popular ${OTHER()} set`:pm.src==='guess'?'likely moves (no usage data)':pm.src==='sd'?(p.m?'Mega set · Showdown':`${S.format} set · Showdown`):pm.src==='tour'?'tournament set':pm.src==='ladder'?'Showdown set':`popular ${S.format} set`;
+function movesBlock(s,i,m){const p=m.p,M=moveChoices(s,p),sm=M.sm,pm=M.pm,pct=M.pct,rest=M.rest,src=M.src;
   const label=sm.custom?`<span class="tag mine">YOUR SET</span><button class="linkbtn" type="button" data-mvreset="${i}">Reset to popular</button>`:`<span class="tag rec">${src.toUpperCase()}</span>`;
   const opt=(x,cur)=>`<option value="${esc(x.name)}"${x.name===cur?' selected':''}${x.name!==cur&&sm.names.includes(x.name)?' disabled':''}>${esc(x.name)} · ${x.type}${x.cat?' '+(x.bp||'var'):''}${pct.has(x.name)?' · '+(+pct.get(x.name)).toFixed(0)+'%':''}</option>`;
   const tiles=sm.names.map((nm,j)=>{const mv=mvByName.get(nm);
