@@ -35,9 +35,7 @@ function sheetPaste(mons) { let filled = false;
     if (moves.length < 4) { for (const x of slotMoves({}, p).names.filter(Boolean)) if (moves.length < 4 && !moves.includes(x)) { moves.push(x); filled = true; } }
     return sdBlock({species: sdSpecies(p), item, ability, nature: String(m.nt || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''), moves}); }).filter(Boolean).join('\n\n');
   return {text, filled}; }
-// any list of slots (a saved team, a built team, six names): exported exactly as if it were your team, then put back
-function slotsPaste(slots) { const keep = S.slots, kf = S.format;
-  try { S.slots = normSlots(slots); S.format = 'doubles'; return exportPaste(); } finally { S.slots = keep; S.format = kf; } }
+// slotsPaste (any list of slots as Showdown text) lives in 19-showdown-paste.js, beside exportPaste, so the new build shares it
 // the open team sheet for a list of six names (and the player, when known); null when no event has it
 function sdSheetFor(names, player) { const E = META.events && META.events.events || [], key = names.filter(Boolean).slice().sort().join('|'); let any = null;
   for (const ev of E) for (const t of ev.top || []) if (t.mons.map(m => m.n).sort().join('|') === key) { if (!player || t.player === player) return t; any = any || t; }

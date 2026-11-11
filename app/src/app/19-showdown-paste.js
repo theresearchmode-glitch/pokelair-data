@@ -114,4 +114,6 @@ function renderPastePanel() {
       <div id="pasteNotes" class="t2"></div>${typeof regNote === 'function' ? regNote() : ''}</div>`;
   }
 }
-
+// any list of slots (a saved team, a built team, six names): exported exactly as if it were your team, then put back
+function slotsPaste(slots) { const keep = S.slots, kf = S.format;
+  try { S.slots = normSlots(slots); S.format = 'doubles'; return exportPaste(); } finally { S.slots = keep; S.format = kf; } }

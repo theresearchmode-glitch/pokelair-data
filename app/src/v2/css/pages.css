@@ -104,3 +104,38 @@
 .sv2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s6)}.sv2-acts .np-link{min-height:var(--tap);padding:0 var(--s2)}
 .sv2-full{margin-top:var(--s4)}
 @media (max-width:479px){.sv2{padding:var(--s6) var(--s5)}.sv2-acts{display:grid;grid-template-columns:minmax(0,1fr)}.sv2-acts .np-btn,.sv2-acts .np-btn2{width:100%}}
+
+/* Saved Teams sheet (R4, Nov 11): one card per team, 2 across from 900px (the sheet is at most 1120px wide) */
+.tm-svl small{margin-left:var(--s1);color:var(--ink-3);font-size:var(--t13)}
+.svt2{padding:var(--s8)}.svt2 h2{font-size:var(--t34);margin:var(--s2) 0 var(--s5)}
+.svt2-sort{margin-bottom:var(--s6)}
+.svt2-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+@media (min-width:900px){.svt2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.svt2-card{grid-row:span 5;grid-template-rows:subgrid;row-gap:var(--s3)}}
+.svt2-gone:empty{display:none}@media (min-width:900px){.svt2-gone:empty{display:block}}
+.svt2-foot,.svt2-acts,.svt2-del{align-self:end}
+.svt2-card{display:grid;align-content:start;gap:var(--s3);padding:var(--s5);background:var(--wash);border-radius:var(--r-l)}
+.svt2-card.on{box-shadow:inset 0 0 0 2px var(--plot)}
+.svt2-card header{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3)}.svt2-card h3{font-size:var(--t20);min-width:0;overflow-wrap:anywhere}.svt2-card header .np-chip{flex:none}
+.svt2-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);list-style:none;margin:0;padding:0}
+.svt2-six .np-mon b{font-size:var(--t13);line-height:1.2}.svt2-empty{display:grid;justify-items:center;align-content:start;gap:var(--s3);color:var(--ink-3);font-size:var(--t13)}
+.svt2-empty i{margin-top:var(--s3);width:32px;height:32px;border:1.5px dashed var(--rule);border-radius:50%}
+.svt2-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
+.svt2-foot .np-score .w span{font-size:var(--t20)}
+.svt2-part{color:var(--ink-2)}
+.svt2-acts,.svt2-del{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4)}.svt2-acts .np-link,.svt2-del .np-link{min-height:var(--tap);padding:0 var(--s1)}
+.svt2-del span{font-weight:600;overflow-wrap:anywhere}
+.svt2-ren{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}.svt2-ren .np-field{flex:1 1 220px}
+@media (max-width:479px){.svt2{padding:var(--s6) var(--s4)}.svt2-card{padding:var(--s4)}.svt2-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}}
+/* phones: the jump bar keeps the four sections; Team Sheet joins the action buttons (Share | Copy, Team Sheet | Saved Teams) */
+.tm-tsact{display:none}
+@media (max-width:699px){.tm-jump .tm-tsbtn{display:none}.tm-tsact{display:inline-flex}.tm-acts .np-btn2{padding:0 var(--s3)}}
+/* wider: Saved Teams is a quiet link after the buttons (the mock's "more" row) */
+@media (min-width:700px){.tm-svl{border:0;transform:none;padding:0 var(--s2);font:600 var(--t15)/1.3 var(--b);color:var(--plot-text)}.tm-svl>span{transform:none}.tm-svl:hover{text-decoration:underline}}
+/* hero actions: an even 2 x 2 from 700px until all four fit on one row (1680px); the Saved Teams count never wraps */
+.tm-svl{white-space:nowrap}
+@media (min-width:700px) and (max-width:1679px){.tm-acts{display:grid;grid-template-columns:repeat(2,max-content);justify-content:start}}
+.tm-jump>a{flex:none}
+/* the four moves as an even 2 x 2, never 3 + 1 */
+.tm-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tm-moves .np-type{justify-content:center;text-align:center}
+/* 900-1179px: the six get the full width (no names spilling out of narrow tiles); score and buttons share the row above */
+@media (min-width:900px) and (max-width:1179px){.tm-hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"lock acts" "six six"}.tm-acts{align-self:end;justify-content:end}}

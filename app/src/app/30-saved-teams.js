@@ -3,10 +3,7 @@ function renderSaved(){
   {const hs=S.teams.filter(t=>t.format==='singles').length;$('savedCount').textContent=`${S.teams.length-hs}/10`;$('savedCount').title=hs?`${hs} older team${hs>1?'s':''} from a retired mode ${hs>1?'are':'is'} kept and also use${hs>1?'':'s'} a slot`:''}
   // the same readiness for the top threats as the Team page, so saved teams can be compared at a glance (teams from the retired singles mode are kept in storage but hidden)
   /* Nov 2: each full six shows the same grade as My team (letter in its band colour, the grade, and the sum underneath) */
-  const order=S.teams.filter(t=>t.format!=='singles').map(t=>{const r=teamRating(t.slots);let ts=null,ck=null,G=null,RD=null;try{if(r.ms.length===6){ck=proChecks(r.ms,true);RD=prepOf(r.ms);ts=tsInfo(r.ms);G=RD?Object.assign(CH.gradeOf(RD,ck,r.ms),{r:RD.score}):null}}catch(e){}return {t,r,ts,ck,G,RD}});
-  if(ui.sort==='name')order.sort((x,y)=>x.t.name.localeCompare(y.t.name));
-  else if(ui.sort==='rating')order.sort((x,y)=>((y.ts?y.ts.score:-1)-(x.ts?x.ts.score:-1))||x.r.a.excess-y.r.a.excess);
-  else order.sort((x,y)=>y.t.saved-x.t.saved);
+  const order=savedRows(ui.sort);
   ui.cmp=(ui.cmp||[]).filter(id=>id==='cur'||S.teams.some(t=>t.id===id));
   $('savedList').innerHTML=!order.length?'<div class="empty-note">No saved teams yet. Build a team above and tap Save team.</div>':cmpPanel()+order.map(({t,r,ts,ck,G,RD})=>{
     const names=r.ms.map(m=>m.d).join(' · ')||'Empty';const isLoaded=t.id===S.loadedId;

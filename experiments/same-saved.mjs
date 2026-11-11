@@ -1,5 +1,6 @@
 // Same-output check for saved teams (R4, Nov 11): runs the same save / update / cancel / open / undo / rename / delete / 10-team-limit
-// steps in two builds through today's buttons and compares the saved teams, the open team and what the page shows after each step.
+// steps in two builds through today's buttons and compares the saved teams, the open team, what the page shows after each step and
+// the Saved Teams list itself (each sort).
 // Usage: node experiments/same-saved.mjs before.html after.html   (DUMP=file.json writes every step)
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
@@ -26,6 +27,8 @@ for (const [k, f] of [['a', A], ['b', B]]) {
     `CLICK({del:S.teams[1].id})`, `CLICK({delx:1})`, `CLICK({del:S.teams[1].id})`, `CLICK({delok:S.teams[1].id})`,
     `CLICK({delok:S.teams[0].id})`,
     ...Array.from({length: 11}, (_, i) => `$('saveBtn').click();if(!$('saveName'))$('saveBtn').click();$('saveName').value='Team ${i}';$('saveNew').click()`),
+    `S.slots=normSlots(TEAM.slice(0,4).map(n=>({n,a:null,lock:false})));fixSlots();S.loadedId=null;render();$('saveBtn').click();if(!$('saveName'))$('saveBtn').click();CLICK({delok:S.teams[2].id});$('saveName').value='Four only';$('saveNew').click()`,
+    `ui.sort='name';renderSaved()`, `ui.sort='rating';renderSaved()`, `ui.sort='recent';renderSaved()`,
     `S.loadedId=S.teams[3].id;render();$('saveBtn').click();if(!$('saveName'))$('saveBtn').click();$('saveName').value='Over 3';$('saveOver').click()`,
   ];
   await p.evaluate(() => window.__ev(`window.TEAM=[];for(const e of META.events.events)for(const t of e.top||[])if(!TEAM.length&&t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)))TEAM=t.mons.map(m=>m.n);
@@ -34,11 +37,13 @@ for (const [k, f] of [['a', A], ['b', B]]) {
     window.SNAP=()=>JSON.stringify({teams:S.teams.map(t=>({id:t.id,name:t.name,slots:t.slots.map(s=>s.n),format:t.format})),order:S.teams.map(t=>t.saved).map((v,i,a)=>a.filter(x=>x<v).length),
       loaded:S.loadedId,slots:S.slots.map(s=>s.n),saving:!!ui.saving,renaming:ui.renaming||null,del:ui.confirmDel||null,undo:!!ui.undo,
       toast:($('toast')||{}).textContent,title:($('teamTitle')||{}).textContent,btn:($('saveBtn')||{}).textContent,count:($('savedCount')||{}).textContent,
-      panel:!!$('saveName'),over:!!$('saveOver'),full:!!($('saveNew')&&$('saveNew').disabled)})`));
+      panel:!!$('saveName'),over:!!$('saveOver'),full:!!($('saveNew')&&$('saveNew').disabled),list:($('savedList')||{}).innerHTML})`));
   const snaps = [];
   for (const st of steps) { await p.waitForTimeout(520); snaps.push(await p.evaluate(c => window.__ev(`(()=>{try{${c}}catch(e){return 'ERR '+e.message}return ''})()`) + window.__ev('SNAP()'), st)); }
   // team ids are made from the clock and a random number: number them by first appearance instead
-  const ids = new Map(); out[k] = snaps.map(s => s.replace(/"t[0-9a-z]{8,14}"/g, m => { if (!ids.has(m)) ids.set(m, '"T' + ids.size + '"'); return ids.get(m); }));
+  const ids = new Map(); out[k] = snaps.map(s => { const pre = s.slice(0, s.indexOf('{')), j = JSON.parse(s.slice(pre.length));
+    for (const t of j.teams) if (!ids.has(t.id)) ids.set(t.id, 'T' + ids.size);
+    let x = s; for (const [id, T] of ids) x = x.split(id).join(T); return x; });
   await p.close(); fs.unlinkSync(page);
 }
 await b.close();
