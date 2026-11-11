@@ -95,7 +95,6 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     + realTxt + ` A 90+, B 80+, C 70+, D 60+.${G.partial ? ' The grade settles once all six are in.' : ''}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
 CH.LEGEND = 'Strength Score = how strong the team is altogether, from how its Pokémon, pairs and sets do in real games, its matchups against the top threats, and its own record (players\' skill taken out). 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic.';
-CH.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];
 // Motion (Nov 1): when the grade first shows or changes, the ring pops in and the "% ready" counts up from the last number,
 // 200 ms, transform/opacity only for the ring; the number is tabular so nothing moves. Off with reduced motion, and only on
 // the page that's showing (redraws with the same grade do nothing).
@@ -116,36 +115,8 @@ CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
 CH.fold = (key, title, sub, body, open) => { const o = LS.get('cc2.chf.' + key, null); const isOpen = o == null ? !!open : !!o;
   return `<details class="chsec chfold" data-chf="${key}"${isOpen ? ' open' : ''}><summary>${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">${title}</div>${sub ? `<div class="chs">${sub}</div>` : ''}</div></summary><div class="chbody">${body}</div></details>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (d && d.dataset && d.dataset.chf) LS.set('cc2.chf.' + d.dataset.chf, d.open ? 1 : 0); }, true);
-// the meta's six: the most-used Pokémon at tournaments, one per species
-CH.metaSix = () => { const seen = new Set(), out = []; for (const p of ROSTER.slice().sort((a, b) => U(b) - U(a))) { if (!(U(p) > 0) || seen.has(p.b)) continue; seen.add(p.b); out.push(p); if (out.length === 6) break; } return out; };
-// your four vs the meta's six: the Battle mode planner (same as Gauntlet), cached per team
-CH._four = {key: null, v: null};
-CH.four = ms => { if (!ms || ms.length < 4) return null; const six = CH.metaSix(); if (six.length < 4) return null;
-  const key = metaVersion + '|' + six.map(p => p.n).join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|');
-  if (CH._four.key === key) return CH._four.v; let v = null;
-  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, six.map(oppMember), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
-  CH._four = {key, v}; return v; };
-// your four against any six (the Battle mode planner), cached
-CH._fv = {key: null, v: null};
-CH.fourVs = (ms, names) => { const key = metaVersion + '|' + names.join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|'); if (CH._fv.key === key) return CH._fv.v; let v = null;
-  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, withSheet(names.map(n => oppMember(byName.get(n))), realSheetFor(names, null)), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
-  CH._fv = {key, v}; return v; };
-CH.leadWhy = m => { const mv = new Set(m.moves.map(x => x.name)); if (mv.has('Tailwind')) return 'Tailwind turn 1'; if (mv.has('Trick Room')) return 'Trick Room turn 1'; if (mv.has('Fake Out')) return 'Fake Out pressure';
-  if (m.ability === 'Intimidate') return 'Intimidate on entry'; if (mv.has('Follow Me') || mv.has('Rage Powder')) return 'redirects attacks'; return ''; };
-// one real KO for a red-pen note: the most-used top threat one of yours OHKOs as its solid answer
-CH.koNote = RD => { if (!RD) return null; let best = null;
-  for (const r of RD.rows) for (const x of r.solid || []) { const du = x.du; if (du && du.win && du.nM === 1 && du.o && x.m && (!best || r.t.w > best.w)) best = {w: r.t.w, n: x.m.n, txt: `${du.o.name || String(du.o.mv).replace(/ \(.*\)$/, '')} OHKOs ${r.t.d}`}; }
-  return best; };
-CH.lvCount = RD => [0, 1, 2, 3].map(l => RD ? RD.rows.filter(r => r.level === l).length : 0);
-CH.order = RD => RD ? RD.rows.slice().sort((a, b) => a.level - b.level || b.t.w - a.t.w) : [];
 CH.tiles = (RD, attr) => `<div class="chtiles" role="group" aria-label="Top 30 threats, worst first">${CH.order(RD).map(r => { const p = byName.get(r.t.n); return `<button type="button" class="chtile l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${sprite(p) || `<span class="chk">${esc(r.t.d.slice(0, 3))}</span>`}</button>`; }).join('')}</div>`;
 // the 10 most common threats by name (sprite, name, how ready you are), then the other 20 as a small strip, worst first
-/* Threats from real results first (Nov 8 readiness test: the damage-calc verdicts didn't predict who wins, −0.2 ±1.4 pts over
-   11,800 tournament games; the matchups learned from real games did). For each threat: how teams with your Pokémon have done
-   against teams with it (ctrVal, skill and team strength taken out), summed over your six. The calc reading stays underneath. */
-CH.realVs = (t, ms) => { try { if (typeof ctrVal !== 'function') return null; const ns = (ms || members()).map(m => m.p.n); let v = 0, k = 0;
-  for (const a of ns) { const c = ctrVal(a, t); if (c != null) { v += c; k++; } } if (!k) return null; const pts = (sig(v) - .5) * 100;
-  return pts >= 1.5 ? {w: 'Favoured', c: 'ok', pts} : pts <= -1.5 ? {w: 'Unfavoured', c: 'bad', pts} : {w: 'Even match', c: 'mid', pts}; } catch (e) { return null; } };
 CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, 10), set = new Set(top); let rest = CH.order(RD).filter(r => !set.has(r));
   /* Nov 10 (Sim picked option 1): the real-games verdict leads, so "worst first" means least favoured in real games (calc breaks ties) */
   const RV = new Map(rest.map(r => [r, CH.realVs(r.t.n)])); if (rest.some(r => RV.get(r))) rest = rest.slice().sort((a, b) => ((RV.get(a) || {pts: 0}).pts - (RV.get(b) || {pts: 0}).pts) || (a.level - b.level));

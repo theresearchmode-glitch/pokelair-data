@@ -158,3 +158,34 @@ CH.rankOfS = s => { const q = META.model && META.model.dist && META.model.dist.q
 CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
 /* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
 CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
+
+// ---------- matchups and the lead pair (moved unchanged from 60-concept-h.js, R4 Nov 11) ----------
+CH.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];
+// the meta's six: the most-used Pokémon at tournaments, one per species
+CH.metaSix = () => { const seen = new Set(), out = []; for (const p of ROSTER.slice().sort((a, b) => U(b) - U(a))) { if (!(U(p) > 0) || seen.has(p.b)) continue; seen.add(p.b); out.push(p); if (out.length === 6) break; } return out; };
+// your four vs the meta's six: the Battle mode planner (same as Gauntlet), cached per team
+CH._four = {key: null, v: null};
+CH.four = ms => { if (!ms || ms.length < 4) return null; const six = CH.metaSix(); if (six.length < 4) return null;
+  const key = metaVersion + '|' + six.map(p => p.n).join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|');
+  if (CH._four.key === key) return CH._four.v; let v = null;
+  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, six.map(oppMember), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
+  CH._four = {key, v}; return v; };
+// your four against any six (the Battle mode planner), cached
+CH._fv = {key: null, v: null};
+CH.fourVs = (ms, names) => { const key = metaVersion + '|' + names.join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|'); if (CH._fv.key === key) return CH._fv.v; let v = null;
+  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, withSheet(names.map(n => oppMember(byName.get(n))), realSheetFor(names, null)), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
+  CH._fv = {key, v}; return v; };
+CH.leadWhy = m => { const mv = new Set(m.moves.map(x => x.name)); if (mv.has('Tailwind')) return 'Tailwind turn 1'; if (mv.has('Trick Room')) return 'Trick Room turn 1'; if (mv.has('Fake Out')) return 'Fake Out pressure';
+  if (m.ability === 'Intimidate') return 'Intimidate on entry'; if (mv.has('Follow Me') || mv.has('Rage Powder')) return 'redirects attacks'; return ''; };
+// one real KO for a red-pen note: the most-used top threat one of yours OHKOs as its solid answer
+CH.koNote = RD => { if (!RD) return null; let best = null;
+  for (const r of RD.rows) for (const x of r.solid || []) { const du = x.du; if (du && du.win && du.nM === 1 && du.o && x.m && (!best || r.t.w > best.w)) best = {w: r.t.w, n: x.m.n, txt: `${du.o.name || String(du.o.mv).replace(/ \(.*\)$/, '')} OHKOs ${r.t.d}`}; }
+  return best; };
+CH.lvCount = RD => [0, 1, 2, 3].map(l => RD ? RD.rows.filter(r => r.level === l).length : 0);
+CH.order = RD => RD ? RD.rows.slice().sort((a, b) => a.level - b.level || b.t.w - a.t.w) : [];
+/* Threats from real results first (Nov 8 readiness test: the damage-calc verdicts didn't predict who wins, −0.2 ±1.4 pts over
+   11,800 tournament games; the matchups learned from real games did). For each threat: how teams with your Pokémon have done
+   against teams with it (ctrVal, skill and team strength taken out), summed over your six. The calc reading stays underneath. */
+CH.realVs = (t, ms) => { try { if (typeof ctrVal !== 'function') return null; const ns = (ms || members()).map(m => m.p.n); let v = 0, k = 0;
+  for (const a of ns) { const c = ctrVal(a, t); if (c != null) { v += c; k++; } } if (!k) return null; const pts = (sig(v) - .5) * 100;
+  return pts >= 1.5 ? {w: 'Favoured', c: 'ok', pts} : pts <= -1.5 ? {w: 'Unfavoured', c: 'bad', pts} : {w: 'Even match', c: 'mid', pts}; } catch (e) { return null; } };

@@ -31,27 +31,27 @@ V2.pages.team = {place: 'team', draw() {
   const sure = G && G.su ? `How sure: ${G.su.w}` : '';
   const mon = (m, i) => `<button type="button" class="tm-pick" data-tmsel="${i}" aria-pressed="${m === sel}" aria-label="${V2.esc(m.d)}${D.role(m.p.n) ? ', ' + D.role(m.p.n) : ''}">${V2.mon(m.p.n, {sel: m === sel, sub: D.role(m.p.n)})}</button>`;
   const lockup = `<div class="tm-lock"><div class="np-eyebrow">My Team</div>${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
-    : `<div class="np-score" data-band="${G.band}"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div><p class="tm-rank">${V2.esc([rank, sure].filter(Boolean).join(' · '))}</p>`}</div>`;
+    : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div><p class="tm-rank">${V2.esc([rank, sure].filter(Boolean).join(' · '))}</p>`}</div>`;
   const acts = `<div class="tm-acts"><a class="np-btn" href="#team">Save Team</a><a class="np-btn2" href="#team"><span>Share</span></a><a class="np-btn2" href="#team"><span>Copy for Showdown</span></a></div>`;
   const nm = D.mu.fav + D.mu.even + D.mu.unf;
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set
   const P = sel.p, r = typeof RS === 'function' && typeof rating === 'function' ? Math.round(RS(rating(P).total)) : null;
   const spr = sel.spread && sel.spread.nat ? sel.spread : null;
-  const setSec = `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid"><div class="tm-art">${V2.mon(P.n, {sel: true, iw: 240})}</div><div>
+  const setSec = `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid"><div class="tm-art">${V2.mon(P.n, {sel: true, iw: 240, bare: true})}</div><div>
     <h3 class="u">${V2.esc(sel.d)}</h3><div class="tm-types">${(P.t || []).map(V2.typeChip).join('')}${r != null ? `<span class="np-chip">Rated ${r}</span>` : ''}</div>
     <dl class="tm-kv"><div><dt>Item</dt><dd>${V2.esc(sel.heldItem || sel.item || 'None')}</dd></div><div><dt>Ability</dt><dd>${V2.esc(sel.ability || '')}</dd></div>${spr ? `<div><dt>Nature</dt><dd>${V2.esc(spr.nat)}</dd></div>` : ''}</dl>
     <div class="tm-moves">${sel.moves.filter(Boolean).map(v => `<span class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(v.type) ? v.type : 'Normal'})">${V2.esc(v.name)}</span>`).join('')}</div></div></div></section>`;
   // 2. Matchups: real-game verdicts lead, the calc reading underneath (Sim, Nov 10)
-  const vcls = {'Favoured': 'f', 'Even match': 'e', 'Unfavoured': 'u'};
-  const muSec = !D.rows.length ? '' : `<section class="tm-sec" id="tm-mu"><h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts come from real tournament games; the damage calc reading is underneath.' : ''}</p>
-    ${D.mu.any ? `<div class="tm-legend"><span class="f"><b>${D.mu.fav}</b> Favoured</span><span class="e"><b>${D.mu.even}</b> Even match</span><span class="u"><b>${D.mu.unf}</b> Unfavoured</span></div>` : ''}
+  const vcls = {'Favoured': 'vf', 'Even match': 've', 'Unfavoured': 'vu'};
+  const muSec = !D.rows.length ? '' : `<section class="tm-sec tm-mus" id="tm-mu"><h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts come from real tournament games; the damage calc reading is underneath.' : ''}</p>
+    ${D.mu.any ? `<div class="tm-legend"><span class="lf"><b>${D.mu.fav}</b> Favoured</span><span class="le"><b>${D.mu.even}</b> Even match</span><span class="lu"><b>${D.mu.unf}</b> Unfavoured</span></div>` : ''}
     <p class="fine">Damage calc: Beats it ${D.calc.beats} · Handles it ${D.calc.handles} · Shaky ${D.calc.shaky} · No answer ${D.calc.none}</p>
     <ol class="tm-rows">${D.top.map(x => `<li><img src="${V2.art(SPRITE_ID[x.t.n])}" alt="" loading="lazy"><span class="nm">${V2.esc(x.t.d)}<small>Calc: ${V2.LV[x.level]}</small></span>${x.real ? `<span class="tm-v ${vcls[x.real.w]}">${x.real.w}</span>` : ''}</li>`).join('')}</ol></section>`;
   // 3. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
-  const ckSec = `<section class="tm-sec" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}</section>`;
-  return `<section class="tm-hero">${lockup}<div class="tm-six">${ms.map(mon).join('')}</div>${acts}</section>${jump}<div class="tm-work">${setSec}${muSec}${ckSec}</div>`;
+  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}</section>`;
+  return `<section class="tm-hero">${lockup}<div class="tm-six">${ms.map(mon).join('')}</div>${acts}</section>${jump}<div class="tm-work">${setSec}${ckSec}${muSec}</div>`;
 },
 after() {
   document.querySelectorAll('[data-tmsel]').forEach(b => b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }));
