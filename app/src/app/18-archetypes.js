@@ -235,3 +235,12 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ttvs]'); if (!b) return;
   const t = META.teams && META.teams.teams[+b.dataset.ttvs]; if (!t) return;
   S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${teamWho(t)}`); });
+
+// ---------- the team's weather or terrain word ("Sun team"), shared (R4, Nov 11; was in 66-extras-b.js) ----------
+const WXFX = {rain: {n: 'Rain', p: 22}, sun: {n: 'Sun', p: 2}, sand: {n: 'Sand', p: 26}, snow: {n: 'Snow', p: 22},
+  grassy: {n: 'Grassy Terrain', p: 9}, psy: {n: 'Psychic Terrain', p: 3}, elec: {n: 'Electric Terrain', p: 10}, misty: {n: 'Misty Terrain', p: 12}};
+function wxKeyOf(ms) { if (!ms || !ms.length) return null; let a = null; try { a = teamArchetype(ms); } catch (e) {} if (!a || !a.field) return null;
+  /* a weather beats a terrain; within each, one the team uses (active) beats a setter on its own */
+  const pick = keys => { const f = a.field.filter(x => keys.includes(x.key)); const x = f.find(y => y.active) || f[0]; return x ? x.key : null; };
+  return pick(WEATHER_KEYS) || pick(TERRAIN_KEYS); }
+const wxName = k => WXFX[k] ? WXFX[k].n + ' team' : '';

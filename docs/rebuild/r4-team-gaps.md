@@ -6,12 +6,15 @@ SAVED-01 now differs only in wording). Most failures are features today's My Tea
 "Never remove functionality": each of these comes over before the switch (R5), one at a time, from today's shared code.
 
 ## To build (My Team group)
-- [ ] Header: "My team: N of 6" and the team's archetype name (TEAM-01); the win line under the score (TEAM-03);
-      "Why this score?" breakdown (TEAM-04, also Compare's "Why these grades"); Switch team (TEAM-05)
+- [x] Header (Nov 11): "My Team · 6 of 6 · Sun team" and the team's name as the page heading (TEAM-01 pass); the band meter and
+      the win line under the score, "Few real games back this mix yet" when How sure is Low (TEAM-03 pass); "Why this score?"
+      as a sheet from CH.whyData, the same numbers and sentences as today (TEAM-04: passes up to its last step, the "How the grade
+      works" link, which waits for the How We Calculate page); Switch Team as a sheet (TEAM-05 pass). Still to do: Compare's
+      "Why these grades". Measured: same-why.mjs 265/265 identical; the five tests also still pass on today's page.
 - [ ] Six tiles: Lock on the tile (TEAM-09); the set card's role, tier and Info sheet link (TEAM-10, X-06);
       Set as lead (TEAM-11); the game plan line (TEAM-12); empty spots you can tap to add into (TEAM-20, ADD-01, ADD-02)
 - [ ] Export as text (TEAM-13, IO-02; the new build copies straight to the clipboard: decide if the text box is still needed)
-- [ ] Header badges: Matchups summary (TEAM-15), Legal / Team checks badge (TEAM-16)
+- [ ] Header badges: Matchups summary (TEAM-15). Done Nov 11: Legal mark with the rules tooltip + Team Checks count (TEAM-16 pass)
 - [ ] Suggestions controls: SUG-01, 02, 03, 03b, 04, 06, 07, 08, 10, 11; X-08
 - [ ] Matchups views and the threat sheet: MU-01 to MU-05, MU-05d (+ known MU-05b, MU-05c)
 - [ ] Folds: How it plays (PLAY-01, 02), Popular sets (SETS-01, 02), X-07, X-12 (first sentence + More)
@@ -34,3 +37,9 @@ SAVED-01 now differs only in wording). Most failures are features today's My Tea
 
 ## Carried-over known bug to fix in the new build
 - CMP-04b: Compare lists Speed control as a counted check; it is a note (Sim, Nov 9).
+
+## Test wording (Nov 11)
+Some tests checked today's exact punctuation and layout. They now accept the new build's word-list form too, and still check
+the same information (each can still fail): "My team: 6 of 6, Sun team" or "My Team · 6 of 6 · Sun team"; "Switch team" or
+"Switch Team"; one "Legal Team checks 4/4" badge or a Legal mark plus "Team Checks 4/4"; the rules tooltip is read through
+a helper (rulesTooltip) instead of today's page structure. Re-run on today's page: TEAM-01, 03, 04, 05, 16 all pass.

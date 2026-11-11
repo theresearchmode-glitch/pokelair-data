@@ -46,7 +46,8 @@ export default (ui, pg, o) => {
     settle: async (quietMs = 600, maxMs = 12000) => { await pg.evaluate(() => { if (window.__npMut) return; window.__npMut = Date.now(); new MutationObserver(() => { window.__npMut = Date.now(); }).observe(document.body, {childList: true, subtree: true, characterData: true}); });
       const t0 = Date.now(); while (Date.now() - t0 < maxMs) { const q = await pg.evaluate(() => ({age: Date.now() - window.__npMut, busy: /Working out/.test(document.body.innerText)})); if (q.age > quietMs && !q.busy) return true; await pg.waitForTimeout(200); } return false; },
     /** open a saved team from My Team (today: the Switch team fold; here: Saved Teams sheet → Open) */
-    switchTeam: async name => { await H.openSavedSheet(); await tapFound(n => [...document.querySelectorAll('.svt2 [data-svact="open"]')].find(e => e.getAttribute('aria-label') === 'Open ' + n) || null, name, 'switch to ' + name, 1800); },
+    switchTeam: async name => { if (await pg.evaluate(() => !!document.querySelector('.np-sheet .sw2'))) return tapFound(n => [...document.querySelectorAll('.sw2 .sw2-t')].find(e => e.querySelector('b') && e.querySelector('b').innerText.trim() === n) || null, name, 'switch to ' + name, 1800);
+      await H.openSavedSheet(); await tapFound(n => [...document.querySelectorAll('.svt2 [data-svact="open"]')].find(e => e.getAttribute('aria-label') === 'Open ' + n) || null, name, 'switch to ' + name, 1800); },
     openSavedSheet: async () => { if (await vis('.svt2')) return; if (!(await vis('[data-v2saved]'))) await ui.go('My Team', 500); if (!(await vis('[data-v2saved]'))) NOT('Saved Teams button on this My Team'); await click('[data-v2saved]', 700); },
     toasts: () => pg.evaluate(() => (window.__npT || []).slice()),
     clearToasts: () => pg.evaluate(() => { window.__npT = []; }),
@@ -59,10 +60,10 @@ export default (ui, pg, o) => {
       return b ? (b.getAttribute('aria-pressed') || b.getAttribute('aria-selected') || b.getAttribute('aria-current')) === 'true' : null; }, label),
     choose: async (label, wait = 700) => { const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('button[aria-pressed]')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim().toLowerCase() === l.toLowerCase()); if (b) b.click(); return !!b; }, label);
       if (!ok) throw new Error('no choice labelled ' + label + ' (not in v2 yet, or a different label)'); await pg.waitForTimeout(wait); },
-    openFold: async (title, open = true, wait = 500) => { const ok = await pg.evaluate(([t, open]) => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); });
+    openFold: async (title, open = true, wait = 500) => { if (/^switch team$/i.test(title)) { if (open) await click('#main [data-v2switch]', wait); else await closeSheet(); return; } const ok = await pg.evaluate(([t, open]) => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); });
         if (!d) return false; if (d.open !== open) d.querySelector('summary').click(); return true; }, [title, open]); if (!ok) throw new Error('no fold titled ' + title + ' (not in v2 yet)'); await pg.waitForTimeout(wait); },
     foldOpen: title => pg.evaluate(t => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); }); return d ? d.open : null; }, title),
-    foldContent: title => pg.evaluate(t => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); }); return d ? d.innerText.replace(/\s+/g, ' ').trim() : null; }, title),
+    foldContent: title => /^switch team$/i.test(title) ? sheetText('.sw2') : pg.evaluate(t => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); }); return d ? d.innerText.replace(/\s+/g, ' ').trim() : null; }, title),
     tapLabel: (label, wait = 500) => tapFound(l => [...document.querySelectorAll('[aria-label]')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => e.getAttribute('aria-label').toLowerCase().includes(l.toLowerCase())) || null, label, 'label ' + label, wait),
     labelOf: label => pg.evaluate(l => { const e = [...document.querySelectorAll('[aria-label]')].filter(e => e.getClientRects().length).find(e => e.getAttribute('aria-label').toLowerCase().includes(l.toLowerCase())); return e ? e.getAttribute('aria-label') : null; }, label),
     // casing never counts (the new build writes buttons in Title Case, Sim Nov 9); a button's accessible name counts as its words too
@@ -102,7 +103,12 @@ export default (ui, pg, o) => {
     scoreBlock: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main .tm-lock .np-score')].find(e => e.getClientRects().length); if (!e) return null;
       const n = e.querySelector('b'), w = e.querySelector('.w span'), l = e.querySelector('.w small'); if (!n || !w) return null; const word = w.innerText.replace(/\s+/g, ' ').trim(), so = / so far$/.test(word);
       return {label: (l ? l.innerText.trim() : '') + (so ? ' so far' : ''), score: +n.innerText.trim(), band: word.replace(/ so far$/, '')}; }),
-    tapWhyScore: () => NOT('"Why this score?" breakdown'), whyExpanded: () => NOT('"Why this score?" breakdown'), whyPanel: () => NOT('"Why this score?" breakdown'),
+    /** "Why this score?" is a sheet here (today: a fold under the score): tap opens it; "expanded" = the sheet is open */
+    tapWhyScore: () => click('#main [data-v2why]', 600),
+    whyExpanded: () => pg.evaluate(() => !!(window.V2 && V2._sheet && V2._sheet.wrap.querySelector('.why2'))),
+    whyPanel: () => sheetText('.why2'),
+    /** the Legal mark's rules tooltip (today: a [title] in the report pane) */
+    rulesTooltip: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-legal[title]')].map(e => e.title).find(Boolean) || null),
     /** Your Six tiles in the order shown (names) */
     sixTiles: () => pg.evaluate(() => [...document.querySelectorAll('#main [data-tmsel]')].filter(e => e.getClientRects().length).map(e => (e.getAttribute('aria-label') || '').split(', ')[0])),
     /** "+ Add a Pokémon" slot tiles among the six */
@@ -180,7 +186,8 @@ export default (ui, pg, o) => {
     openImport: () => click('[data-v2import]', 800),
     pasteTeam: async text => { await pg.locator('[data-impin]').fill(text); await click('[data-impgo]', 1500); },
     openExport: () => NOT('Export to Showdown panel (only Copy for Showdown)'), exportText: () => NOT('Export to Showdown panel (only Copy for Showdown)'),
-    clearTeam: () => click('#main [data-v2clear]', 900),
+    /** Clear Team is on the page, so an open sheet (e.g. the Add a Pokémon sheet left after Remove) is closed first, as a player would */
+    clearTeam: async () => { if (await pg.evaluate(() => !!(window.V2 && V2._sheet))) await closeSheet(); await click('#main [data-v2clear]', 900); },
     // share (.sh2 sheet)
     openShare: () => click('#main [data-v2share]', 1500),
     shareBox: () => pg.evaluate(() => { const b = document.querySelector('.np-sheet .sh2'); if (!b || !b.getClientRects().length) return null; const i = b.querySelector('[data-sh2img] img'), h = b.querySelector('h2');

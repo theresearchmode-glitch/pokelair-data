@@ -100,6 +100,8 @@ export default (ui, pg, o) => {
     homeTopRows: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .hmini')].filter(e => e.getClientRects().length).map(e => e.dataset.lt)),
 
     // ---------- My Team ----------
+    /** the Legal badge's rules tooltip */
+    rulesTooltip: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] [title]')].map(e => e.title).find(t => /Based on our reading/.test(t)) || null),
     teamHeading: () => pg.evaluate(() => { const p = document.querySelector('[data-pane="report"]'); const h = p && [...p.querySelectorAll('[role=heading][aria-level="1"],h1')].find(e => e.getClientRects().length); return h ? h.innerText.replace(/\s+/g, ' ').trim() : null; }),
     /** Strength Score block: {label, score, band} or null */
     scoreBlock: () => pg.evaluate(() => { const p = document.querySelector('[data-pane="report"]'); if (!p) return null; const t = p.innerText.replace(/\s+/g, ' ');

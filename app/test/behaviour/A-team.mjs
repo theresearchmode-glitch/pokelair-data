@@ -139,11 +139,11 @@ t('HOME-16', 'Weather chip "Sun team" on Home\'s team card', async () => {
 
 // ================= 2. My Team =================
 t('TEAM-01', 'Header: "My team: N of 6, Sun team" and the team name as heading; "No team yet" when empty', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); let tx = await r.ui.text(); has(tx, /My team: 6 of 6, Sun team/);
+  const r = await myTeam({team: TEAM, saved: SAVED}); let tx = await r.ui.text(); has(tx, /My [Tt]eam(?::| ·) 6 of 6(?:,| ·) Sun team/); // today "My team: 6 of 6, Sun team"; new build "My Team · 6 of 6 · Sun team"
   ok(/Sun|Tailwind|Balance|Terrain/.test(await r.ui.teamHeading()), 'heading is not the archetype label: ' + await r.ui.teamHeading());
   await r.ui.switchTeam('Rain test'); ok(await r.ui.teamHeading() === 'Rain test', 'heading after opening a saved team: ' + await r.ui.teamHeading());
-  has(await r.ui.text(), /My team: 6 of 6, Rain team/);
-  await r.ui.clearTeam(); tx = await r.ui.text(); has(tx, 'No team yet'); has(tx, 'My team: 0 of 6'); await r.close(); });
+  has(await r.ui.text(), /My [Tt]eam(?::| ·) 6 of 6(?:,| ·) Rain team/);
+  await r.ui.clearTeam(); tx = await r.ui.text(); has(tx, 'No team yet'); has(tx, /My [Tt]eam(?::| ·) 0 of 6/); await r.close(); });
 
 t('TEAM-02', 'A Pokémon that left the regulation is kept but a note says it\'s left out', async () => {
   const r = await myTeam(); await r.ui.retirePokemonInSlot(5, 'Mewtwo'); const tx = await r.ui.text();
@@ -166,7 +166,7 @@ t('TEAM-04', '"Why this score?" opens the breakdown; its parts add up to the sco
   has(w, /How sure/); has(w, /How the grade works/); await r.ui.tapText('How the grade works', 900); ok(await r.ui.current() === 'method', 'link did not open How we calculate'); await r.close(); });
 
 t('TEAM-05', 'Switch team fold lists saved teams; tapping one opens it with an Undo toast', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), /Switch team \d+ saved/);
+  const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), /Switch [Tt]eam \d+ saved/);
   await r.ui.openFold('Switch team'); const f = await r.ui.foldContent('Switch team'); has(f, 'Rain test', 'switch fold');
   await r.ui.switchTeam('Rain test'); ok(await r.ui.teamHeading() === 'Rain test', 'heading did not change'); ok((await r.ui.team()).join() === RAIN.join(), 'team did not switch');
   ok(await r.ui.waitToast(/Opened .Rain test/), 'no "Opened "Rain test"" toast'); ok(await r.ui.has('#toastUndo'), 'toast has no Undo'); await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not return'); await r.close(); });
@@ -239,9 +239,9 @@ t('TEAM-15', 'Matchups summary: Favoured/Even/Unfavoured add to 30 and match the
   const l = tx.match(/Unfavoured (\d+) Even match (\d+) Favoured (\d+)/); ok(l && l[1] === m[3] && l[2] === m[2] && l[3] === m[1], 'header numbers differ from the Matchups legend'); });
 
 t('TEAM-16', 'Legal and "Team checks 4/4" badge with the rules tooltip', async () => {
-  const r = await myTeam({fresh: true}); const tx = await r.ui.text(); has(tx, /Legal Team checks 4\/4/);
-  ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] [title]')].some(e => /Based on our reading of the Reg M-C rules/.test(e.title))), 'no rules tooltip'); await r.close();
-  const {ui} = await view('team', {team: TEAM}, 'My Team'); has(await ui.text(), /Legal Team checks 2\/4/); });
+  const r = await myTeam({fresh: true}); const tx = await r.ui.text(); has(tx, /\bLegal\b/); has(tx, /Team [Cc]hecks 4\/4/); // today one badge "Legal Team checks 4/4"; new build a Legal mark + the Team Checks count
+  ok(/Based on our reading of the Reg M-C rules/.test(await r.ui.rulesTooltip() || ''), 'no rules tooltip'); await r.close();
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); const t2 = await ui.text(); has(t2, /\bLegal\b/); has(t2, /Team [Cc]hecks 2\/4/); });
 
 t('TEAM-18', 'Weather backdrop behind a sun team\'s header', async () => {}, {skip: 'decorative animation on the old header, mostly covered by the arena layout (inventory unsure it shows); needs a visual check, not a behaviour test'});
 
