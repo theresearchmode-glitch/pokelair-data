@@ -31,6 +31,7 @@ Names are roles, not colours. Light is the default; Dusk is the dark mode ("dusk
 | --ink-3 | #66636E | #A39CA6 | captions, the smallest text (still must pass 4.5:1) |
 | --rule | rgba(23,22,26,.11) | rgba(236,232,226,.12) | hairline dividers |
 | --plot | #0078BF | #4FB2F0 | logo PLOT blue: second line of headlines, links, focus, slanted marks, active state |
+| --pick | #E8364F (text #C41E35) | #FF5C77 | the logo's NASTY pink: the selected Pokémon's cursor and name (Sim, Nov 11: not blue) |
 | --plate | #17161A | #ECE8E2 | slanted black plates and the filled button (text: --bg) |
 
 Bands (Strength Score; never red): Top tier --band-top #0078BF, Tournament ready --band-ready #7B4BD6, Solid --band-solid

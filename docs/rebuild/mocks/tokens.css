@@ -1,7 +1,7 @@
 /* NastyPlot rebuild: design tokens (docs/rebuild/design-system.md, draft 1). Mock-ups and, later, the real build use only these. */
 :root{
   --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
-  --plot:#0078BF;--plot-text:#0068AD;--plate:#17161A;--on-plate:#FBFAF7;
+  --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;--plate:#17161A;--on-plate:#FBFAF7;
   --good:#2E9E5B;--good-text:#16693B;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;
   --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:#8A7C6E;
   --glow:.26;--glow-strong:.40;--wall-mix:46%;--shadow-lift:0 18px 30px -16px rgba(30,20,50,.45);--contact:rgba(30,20,50,.28);
@@ -10,7 +10,7 @@
   color-scheme:light}
 :root[data-theme="dusk"]{
   --bg:#1B1A22;--surface:#24232C;--wash:#24222C;--ink:#ECE8E2;--ink-2:#C9C3CC;--ink-3:#A39CA6;--rule:rgba(236,232,226,.12);
-  --plot:#4FB2F0;--plot-text:#4FB2F0;--plate:#ECE8E2;--on-plate:#1B1A22;
+  --plot:#4FB2F0;--plot-text:#4FB2F0;--pick:#FF5C77;--pick-text:#FF5C77;--plate:#ECE8E2;--on-plate:#1B1A22;
   --good:#5FD08F;--good-text:#5FD08F;--mid:#FFD166;--mid-text:#FFD166;--low:#B8AA9C;--low-text:#B8AA9C;
   --band-top:#4FB2F0;--band-ready:#C9B0FF;--band-solid:#A39CA6;--band-work:#FFD166;--band-miss:#B8AA9C;
   --glow:.62;--glow-strong:.78;--wall-mix:46%;--shadow-lift:0 18px 34px -14px rgba(0,0,0,.7);--contact:rgba(0,0,0,.55);

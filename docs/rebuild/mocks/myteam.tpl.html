@@ -26,15 +26,17 @@ header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
 .grp .lab{display:flex;align-items:center;gap:8px;margin-bottom:4px;font:900 15px/1 var(--u);font-style:italic}
 .grp .lab i{width:14px;height:7px;transform:skewX(var(--slant));background:var(--ink-3)}.grp.lead .lab i{background:var(--plot)}
 .grp .pair{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px 4px 12px;border-radius:var(--r-l)}
-.grp.bench .pair{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.grp.bench{border-left:1px solid var(--rule);padding-left:12px}
+/* Bench (Sim, Nov 11: no grey panel): full colour, a touch smaller, set apart by a thin rule */
+.grp.bench .mon img{transform:scale(.86);transform-origin:50% 100%}
 .mon{position:relative;text-align:center}
 .mon .glow{position:absolute;left:50%;top:60px;width:130px;height:96px;margin:-48px 0 0 -65px;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--c),var(--glow)),transparent)}
 .mon .sh{position:absolute;left:50%;top:108px;width:80px;height:12px;margin-left:-40px;border-radius:50%;background:radial-gradient(closest-side,var(--contact),transparent)}
 .mon img{position:relative;width:116px;height:116px;object-fit:contain;object-position:50% 100%;display:block;margin:0 auto}
 .mon .nm{position:relative;font:700 15px/1.25 var(--b);margin-top:4px}.mon .nm .mg{display:block;font:900 13px/1 var(--u);font-style:italic;color:var(--plot)}
 .mon .it{position:relative;font:500 13px/1.3 var(--b);color:var(--ink-2)}
-.mon.on .nm{color:var(--plot-text)}
-.mon.on::before,.mon.on::after{content:"";position:absolute;top:2px;width:14px;height:114px;border:3px solid var(--plot);transform:skewX(-8deg)}
+.mon.on .nm{color:var(--pick-text)}
+.mon.on::before,.mon.on::after{content:"";position:absolute;top:2px;width:14px;height:114px;border:3px solid var(--pick);transform:skewX(-8deg)}
 .mon.on::before{left:2px;border-right:0}.mon.on::after{right:2px;border-left:0}
 .acts{display:flex;align-items:center;gap:12px;padding:0 var(--gut) 8px;flex-wrap:wrap}
 .acts .btn{height:48px}.acts .btn2{height:44px}.acts .more{margin-left:auto;display:flex;gap:24px;font:600 15px/1 var(--b);color:var(--ink-2)}
