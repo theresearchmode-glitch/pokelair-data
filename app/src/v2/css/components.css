@@ -1,6 +1,6 @@
 /* Components: one rule each (design-system.md section 6 + the Nov 11 decisions in 2b). Names start with np-. */
 /* eyebrow: the small label with the slanted PLOT-blue mark */
-.np-eyebrow{display:flex;align-items:center;gap:10px;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.np-eyebrow{display:flex;align-items:center;gap:var(--s3);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
 .np-eyebrow::before{content:"";flex:none;width:20px;height:7px;background:var(--plot);transform:skewX(var(--slant))}
 /* the main action: the filled slanted plate (one per block); night: the one blue action */
 .np-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 var(--s8);background:var(--main);color:var(--on-main);
@@ -15,11 +15,11 @@
 .np-link{font:600 var(--t15)/1.3 var(--b);color:var(--plot-text)}
 .np-link:hover{text-decoration:underline}
 /* the one chip: slanted, never a rounded pill */
-.np-chip{display:inline-flex;align-items:center;flex:none;white-space:nowrap;min-height:36px;padding:0 18px;font:600 var(--t15)/1 var(--b);color:var(--ink);background:var(--wash);
+.np-chip{display:inline-flex;align-items:center;flex:none;white-space:nowrap;min-height:36px;padding:0 var(--s5);font:600 var(--t15)/1 var(--b);color:var(--ink);background:var(--wash);
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
 .np-chip[aria-pressed="true"],.np-chip.on{background:var(--plate);color:var(--on-plate)}
 :root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
-.np-type{display:inline-flex;align-items:center;min-height:28px;padding:0 14px;font:700 var(--t13)/1 var(--b);color:var(--on-type);background:var(--tc,var(--type-none));clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.np-type{display:inline-flex;align-items:center;min-height:28px;padding:0 var(--s4);font:700 var(--t13)/1 var(--b);color:var(--on-type);background:var(--tc,var(--type-none));clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 /* tabs */
 .np-tabs{display:flex;gap:var(--s8);border-bottom:1px solid var(--rule)}
 .np-tabs a,.np-tabs button{position:relative;padding:var(--s3) 0;font:600 var(--t15)/1.2 var(--b);color:var(--ink-2);white-space:nowrap;min-height:var(--tap)}
@@ -34,25 +34,25 @@
 .np-mon .pool{position:absolute;left:50%;bottom:var(--fy,44px);width:calc(var(--iw)*.95);height:calc(var(--iw)*.2);transform:translate(-50%,50%);border-radius:50%;
   background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.62),rgba(var(--cp,150,150,165),.28) 55%,transparent)}
 :root[data-theme="night"] .np-mon .pool{background:radial-gradient(closest-side,rgba(var(--cp,150,150,165),.9),rgba(var(--cp,150,150,165),.32) 45%,transparent);filter:blur(1.5px)}
-.np-mon img{position:relative;width:var(--iw);max-width:100%;aspect-ratio:1;margin:0 auto;object-fit:contain;object-position:50% 100%;translate:0 calc(var(--fo,0)*100%);filter:drop-shadow(4px 7px 7px rgba(30,20,50,.16))}
-:root[data-theme="night"] .np-mon img{filter:drop-shadow(0 0 .6px rgba(255,255,255,.55)) drop-shadow(0 -1px 5px rgba(var(--cp,150,150,165),.3))}
+.np-mon img{position:relative;width:var(--iw);max-width:100%;aspect-ratio:1;margin:0 auto;object-fit:contain;object-position:50% 100%;translate:0 calc(var(--fo,0)*100%);filter:drop-shadow(4px 7px 7px rgba(var(--shade),.16))}
+:root[data-theme="night"] .np-mon img{filter:drop-shadow(0 0 .6px rgba(var(--rim),.55)) drop-shadow(0 -1px 5px rgba(var(--cp,150,150,165),.3))}
 .np-mon b{position:relative;display:block;margin-top:var(--s2);font:700 var(--t15)/1.25 var(--b)}
 .np-mon b .mg{display:block;font:700 var(--t13)/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text)}
 .np-mon b .mg.none{visibility:hidden}
 .np-mon small{position:relative;display:block;font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}
 /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
 .np-mon.sel::before{content:"";position:absolute;left:6px;right:6px;top:10%;height:58%;border-radius:var(--r-m);transform:skewY(var(--tilt));
-  background:linear-gradient(150deg,rgba(var(--cp),.9),rgba(var(--cp),.55));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 8px 14px -6px rgba(30,20,50,.22),0 22px 30px -18px rgba(30,20,50,.3)}
-:root[data-theme="night"] .np-mon.sel::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(var(--cp),.25),0 14px 30px -12px rgba(var(--cp),.55)}
+  background:linear-gradient(150deg,rgba(var(--cp),.9),rgba(var(--cp),.55));box-shadow:inset 0 1px 0 rgba(var(--rim),.6),0 8px 14px -6px rgba(var(--shade),.22),0 22px 30px -18px rgba(var(--shade),.3)}
+:root[data-theme="night"] .np-mon.sel::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(var(--rim),.4),0 0 0 1px rgba(var(--cp),.25),0 14px 30px -12px rgba(var(--cp),.55)}
 .np-mon.sel img{scale:1.08;transform-origin:50% 100%}.np-mon.sel b{font-weight:800}
 /* the Strength Score lockup: the big number and its band word (blue only in the band word) */
 .np-score{display:flex;align-items:flex-end;gap:var(--s4)}
-.np-score b{font:900 168px/.86 var(--u);font-style:italic;letter-spacing:-.05em;color:var(--score-ink)}
+.np-score b{font:900 var(--d168)/.86 var(--u);font-style:italic;letter-spacing:-.05em;color:var(--score-ink)}
 .np-score .w{padding-bottom:var(--s4)}.np-score .w span{display:block;font:900 var(--t26)/1.05 var(--u);font-style:italic;color:var(--band)}
 .np-score .w small{display:block;margin-top:6px;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .np-score .w span{text-shadow:var(--band-glow)}
-.np-score.sm b{font-size:64px}.np-score.sm .w{padding-bottom:4px}.np-score.sm .w span{font-size:var(--t20)}
-@media (max-width:699px){.np-score b{font-size:120px}}
+.np-score.sm b{font-size:var(--d64)}.np-score.sm .w{padding-bottom:4px}.np-score.sm .w span{font-size:var(--t20)}
+@media (max-width:699px){.np-score b{font-size:var(--d120)}}
 /* list row and the soft rule */
 .np-row{display:flex;justify-content:space-between;align-items:center;min-height:52px;border-bottom:1px solid var(--rule);font:600 var(--t15)/1.2 var(--b)}
 
@@ -91,8 +91,8 @@
   background:radial-gradient(closest-side,var(--contact),transparent 55%) center/40% 45% no-repeat,radial-gradient(closest-side,color-mix(in srgb,var(--plot) 55%,transparent),color-mix(in srgb,var(--plot) 22%,transparent) 50%,color-mix(in srgb,var(--pick) 14%,transparent) 72%,transparent)}
 .np-under .pool.b{background:radial-gradient(closest-side,color-mix(in srgb,var(--pick) 30%,transparent),color-mix(in srgb,var(--plot) 18%,transparent) 60%,transparent);animation:np-breathe 4.5s ease-in-out infinite}
 @keyframes np-breathe{0%,100%{opacity:.3}50%{opacity:1}}
-.np-under img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 1px rgba(255,255,255,.9)) drop-shadow(0 0 6px color-mix(in srgb,var(--plot) 45%,transparent)) drop-shadow(0 0 3px color-mix(in srgb,var(--pick) 25%,transparent))}
-.np-under .k{display:flex;align-items:center;gap:10px;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.np-under img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 1px rgba(var(--rim),.9)) drop-shadow(0 0 6px color-mix(in srgb,var(--plot) 45%,transparent)) drop-shadow(0 0 3px color-mix(in srgb,var(--pick) 25%,transparent))}
+.np-under .k{display:flex;align-items:center;gap:var(--s3);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
 .np-under .k::before{content:"";width:20px;height:7px;background:linear-gradient(90deg,var(--plot),var(--pick));transform:skewX(var(--slant))}
 .np-under h3{font-size:var(--t28);margin:var(--s2) 0}.np-under h3 span{color:var(--plot)}.np-under p{font-size:var(--t15);color:var(--ink-2)}
 .np-under .acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}

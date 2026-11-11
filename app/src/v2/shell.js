@@ -6,10 +6,9 @@ V2.art = id => V2.ART_BASE + id + '.webp';
 V2.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]);
 V2.LS = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 // the five places, in the order players use them (Sim, Nov 11: Home is in the menu)
-// type colours for chips with white text (dark enough for 4.5:1; the rebuild mock-ups' set)
-V2.TYPE = {Dragon: '#5060E1', Ground: '#9A6230', Fighting: '#D9631B', Poison: '#8E3FC8', Dark: '#5A4A56', Steel: '#4F8FA6', Fire: '#DD4420', Water: '#2A78D8', Grass: '#2E9A46',
-  Fairy: '#C953C2', Flying: '#5F97D8', Ghost: '#6A4BB8', Psychic: '#D93E78', Ice: '#1E9FBF', Rock: '#8F8556', Electric: '#B88A00', Normal: '#8E908C', Bug: '#7F9A12'};
-V2.typeChip = t => `<span class="np-type" style="--tc:${V2.TYPE[t] || '#8E908C'}">${V2.esc(t)}</span>`;
+// type colours live in tokens.css (--ty-Dragon...); an unknown type falls back to --type-none
+V2.TYPES = ['Dragon','Ground','Fighting','Poison','Dark','Steel','Fire','Water','Grass','Fairy','Flying','Ghost','Psychic','Ice','Rock','Electric','Normal','Bug'];
+V2.typeChip = t => `<span class="np-type"${V2.TYPES.includes(t) ? ` style="--tc:var(--ty-${t})"` : ''}>${V2.esc(t)}</span>`;
 // a Pokémon by its site name (ROSTER .n), drawn standing on its floor; opts: {sel, sub, iw}
 V2.byName = new Map((typeof ROSTER === 'object' ? ROSTER : []).map(p => [p.n, p]));
 V2.disp = n => { const p = V2.byName.get(n); return p && p.d ? p.d : n.replace(/^(.*)-Mega(?:-(\w+))?$/, (m, b, x) => 'Mega ' + b + (x ? ' ' + x : '')); };

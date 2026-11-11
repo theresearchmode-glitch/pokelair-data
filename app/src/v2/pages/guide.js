@@ -11,7 +11,7 @@ V2.pages.guide = {place: null, draw() {
   <div class="swatches">${sw('Page', '--bg')}${sw('Surface', '--surface')}${sw('Wash', '--wash')}${sw('Ink', '--ink')}${sw('Ink 2', '--ink-2')}${sw('Ink 3', '--ink-3')}${sw('PLOT blue', '--plot')}${sw('Pink', '--pick')}${sw('Good', '--good')}${sw('Mid', '--mid')}${sw('Low', '--low')}${sw('Main action', '--main')}</div>
 
   <h2 class="u">Type</h2>
-  <div class="type"><div class="u" style="font-size:clamp(34px,6vw,68px)">Sharply raise <span style="color:var(--plot)">your win rate.</span></div>
+  <div class="type"><div class="u" style="font-size:var(--d-hero)">Sharply raise <span style="color:var(--plot)">your win rate.</span></div>
   <div class="u" style="font-size:var(--t34)">Headline 34 · Unbounded, slanted</div><div class="u" style="font-size:var(--t22)">Section 22</div>
   <p style="font-size:var(--t17)">Body 17 for lead paragraphs. Instrument Sans, line height 1.5.</p><p>Body 16 for running text.</p><p style="font-size:var(--t15)">Label 15 for buttons, rows and tabs.</p><p class="fine">Small 13, the smallest size used anywhere.</p></div>
 

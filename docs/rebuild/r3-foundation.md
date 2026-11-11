@@ -41,11 +41,17 @@ design until the switch (R5).
 
 ## Order of work in R3 (each step committed, tests green, today's site unchanged)
 
-- [ ] rb3-build: the `--v2` target with an empty shell page, and its own check that today's page is byte-for-byte unchanged
-- [ ] rb3-core: tokens, base, components, sprites (the upscaled art in one place, swappable, per the ownership rule)
-- [ ] rb3-core: the shell (header, navigation, phone bar, search, footer, sheets, toasts, team dock)
+- [x] rb3-build: the `--v2` target with an empty shell page, and its own check that today's page is byte-for-byte unchanged (Nov 11)
+- [x] rb3-core: tokens, base, components, sprites (the upscaled art in one place, swappable, per the ownership rule) (Nov 11:
+  plate, outline button, link, chip, type chip, tabs, slider, field, Pokémon on a floor, tilted selection, score lockup, forms strip,
+  sheet, toast, underdog, team dock; every colour, display size and type colour is a token)
+- [ ] rb3-core: the shell (header, navigation, phone bar, search, footer, sheets, toasts, team dock). Drawn: header, nav, phone bar,
+  footer, theme, toasts (V2.toast sits above the dock). Still to wire: the search sheet and the real sheet open/close with focus return.
 - [ ] rb3-guide: the living style guide page, published to the redesign artifact for Sim
-- [ ] rb3-guard: guard rails and the polish check for v2
+- [x] rb3-guard: guard rails and the polish check for v2 (Nov 11: `app/test/v2-guard.mjs` runs before every `--v2` build and on
+  GitHub; it fails on !important outside reduced motion, id selectors, sizes off the type scale, spacing off the 4px grid and colours
+  outside tokens.css, and was proved by planting one of each. `TARGET=v2 node experiments/polish-check.mjs` measures the new build.
+  Known checker limit: it counts a tab's small count number as a second line ("uneven" on tabs is a false positive).)
 - [ ] First logic extraction (Battle plan / turn one), proving the pattern before R4
 
 ## Size (my guess, not yet tested)

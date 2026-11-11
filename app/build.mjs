@@ -23,6 +23,8 @@ const asJsonParse = (src) => process.argv.includes('--no-json-parse') ? src : sr
 // parts-v2.json and stops; today's dist/page.html is not touched. CSS goes into cascade layers (tokens, base, components, shell,
 // pages) so no selector ever needs to out-shout another. The data files and SPRITE_ID are shared with today's page.
 if (process.argv.includes('--v2')) {
+  // guard rails first: the build stops if the new CSS breaks the design rules (app/test/v2-guard.mjs)
+  { const {spawnSync} = await import('node:child_process'); const g = spawnSync(process.execPath, [dir + 'test/v2-guard.mjs'], {stdio: 'inherit'}); if (g.status !== 0) process.exit(1); }
   const P = JSON.parse(fs.readFileSync(dir + 'parts-v2.json', 'utf8')), rd = f => fs.readFileSync(dir + f, 'utf8').replace(/\n$/, '');
   const layers = P.css.map(([n]) => n).join(', ');
   const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${rd(f)}\n}`).join('\n');

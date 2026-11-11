@@ -43,6 +43,9 @@ jobs:
       - run: cd node_modules/pokemon-showdown && node build
       - run: node app/test/run.mjs
         if: ${{ !cancelled() }}
+      # the rebuild's guard rails (R3): no !important, no id selectors, type/spacing on the scale, colours only in tokens.css
+      - run: node app/test/v2-guard.mjs
+        if: ${{ !cancelled() }}
       - run: node experiments/replays-test.mjs
         if: ${{ !cancelled() }}
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls

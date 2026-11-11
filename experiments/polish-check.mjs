@@ -17,17 +17,20 @@
 //     boxes     three or more stacked background shades (page > card > cell > ...)
 //     glow      text with a glow (text-shadow)
 //     help      "?" buttons in more than one size
-// Usage: node experiments/polish-check.mjs [out.json]   (needs app/dist/page.html; ~10 minutes)
+// Usage: node experiments/polish-check.mjs [out.json]   (TARGET=v2 for the rebuild's dist/v2.html)
+//   (needs app/dist/page.html; ~10 minutes)
 //   STEP=80 VIEWS=home,ratings to narrow it. Writes a JSON report and prints a summary, one line per finding.
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('..', import.meta.url).pathname, OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/history': rd('history.json'), 'meta/events': rd('events.json'), 'meta/weekly': rd('weekly.json'), 'meta/track': rd('track.json'), 'meta/practice': rd('practice.json'), 'meta/calendar': rd('calendar.json')};
-const VIEWS = (process.env.VIEWS || 'home,report,coverage,build,auto,matchup,box,teams,ratings,meta,top,sets,calc,speed,types,cores,events,arch,gauntlet,weekly,track,method,compare,sheet').split(',');
+// TARGET=v2 checks the rebuild (app/dist/v2.html; views are its #hash pages, theme in np2.theme). Default: today's page.
+const V2 = process.env.TARGET === 'v2';
+const VIEWS = (process.env.VIEWS || (V2 ? 'guide' : null) || 'home,report,coverage,build,auto,matchup,box,teams,ratings,meta,top,sets,calc,speed,types,cores,events,arch,gauntlet,weekly,track,method,compare,sheet').split(',');
 const STEP = +(process.env.STEP || 80), WIDTHS = []; for (let w = +(process.env.W0 || 320); w <= 2560; w += STEP) WIDTHS.push(w);
 const STYLE_W = (process.env.STYLE_W || '390,820,1440').split(',').map(Number);
 const page = ROOT + `app/pc-${process.pid}.html`;
-fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
+if (V2) fs.writeFileSync(page, fs.readFileSync(ROOT + 'app/dist/v2.html', 'utf8')); else fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const TEAM = ['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
 
 // ---------- in-page measurements ----------
@@ -87,10 +90,13 @@ const STYLE = () => { const out = {size: {}, bodyhead: {}, slant: [], lineh: {},
 
 // ---------- run ----------
 const b = await chromium.launch(), res = {made: new Date().toISOString(), widths: WIDTHS, styleWidths: STYLE_W, views: VIEWS, layout: {}, style: {}}, errs = [];
-async function open(w, h, mode) { const ctx = await b.newContext({viewport: {width: w, height: h}, deviceScaleFactor: 1, colorScheme: mode === 'dark' ? 'dark' : 'light'}), pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message.slice(0, 120)));
+async function open(w, h, mode) { if (V2) { const ctx = await b.newContext({viewport: {width: w, height: h}, deviceScaleFactor: 1}), pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message.slice(0, 120)));
+    await pg.addInitScript(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, mode === 'dark' ? 'night' : 'day'); await pg.goto('file://' + page + '#' + VIEWS[0]); await pg.waitForTimeout(800); return {ctx, pg}; }
+  const ctx = await b.newContext({viewport: {width: w, height: h}, deviceScaleFactor: 1, colorScheme: mode === 'dark' ? 'dark' : 'light'}), pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message.slice(0, 120)));
   await pg.addInitScript(([D, mode]) => { try { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2099-01-01"'); localStorage.setItem('cc2.theme', JSON.stringify(mode || 'light')); } catch (e) {} window.__PL_TEST = 1; window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, [D, mode]);
   await pg.goto('file://' + page); await pg.waitForTimeout(3000); await pg.evaluate(([t, mode]) => window.__ev(`S.slots=${JSON.stringify(t)}.map(n=>({n,a:null,lock:false}));try{setTheme(${JSON.stringify(mode || 'light')})}catch(e){};render();`), [TEAM, mode]); await pg.waitForTimeout(800); return {ctx, pg}; }
-async function visit(pg, v, fn) { await pg.evaluate(v => window.__ev(`setView(${JSON.stringify(v)},false);window.scrollTo(0,0)`), v); await pg.waitForTimeout(v === 'build' || v === 'report' ? 1500 : 600); return pg.evaluate(`(${fn})()`); }
+async function visit(pg, v, fn) { if (V2) { await pg.evaluate(v => { location.hash = v; scrollTo(0, 0); }, v); await pg.waitForTimeout(500); return pg.evaluate(`(${fn})()`); }
+  await pg.evaluate(v => window.__ev(`setView(${JSON.stringify(v)},false);window.scrollTo(0,0)`), v); await pg.waitForTimeout(v === 'build' || v === 'report' ? 1500 : 600); return pg.evaluate(`(${fn})()`); }
 const t0 = Date.now();
 for (const w of WIDTHS) { const {ctx, pg} = await open(w, 900, 'light'); for (const v of VIEWS) { try { res.layout[`${v}@${w}`] = await visit(pg, v, LAYOUT); } catch (e) { res.layout[`${v}@${w}`] = {err: String(e.message).slice(0, 80)}; } } await ctx.close();
   process.stdout.write(`  layout ${w}px · ${Math.round((Date.now() - t0) / 1000)}s\n`); }

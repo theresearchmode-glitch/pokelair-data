@@ -12,6 +12,12 @@
   --plate-hi:var(--plate);--plate-lo:var(--plate);--main-hi:var(--main);--main-lo:var(--main);--band-glow:none;--floor-line:rgba(23,22,26,.13);--on-type:#FFFFFF;--type-none:#8E908C;--page-wash:none;--scrim:rgba(23,22,26,.28);
   /* type: Unbounded (slanted) for headlines and big numbers at 15px and up; Instrument Sans for the rest */
   --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
+  /* display sizes: the score number and the tagline (design scale "+ display") */
+  --d64:64px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);--unit:.62em;
+  /* shadow ink and rim light as rgb triplets, for rgba(var(--shade),a) */
+  --shade:30,20,50;--rim:255,255,255;
+  /* type colours for chips with white text (4.5:1 or better) */
+  --ty-Dragon:#5060E1;--ty-Ground:#9A6230;--ty-Fighting:#D9631B;--ty-Poison:#8E3FC8;--ty-Dark:#5A4A56;--ty-Steel:#4F8FA6;--ty-Fire:#DD4420;--ty-Water:#2A78D8;--ty-Grass:#2E9A46;--ty-Fairy:#C953C2;--ty-Flying:#5F97D8;--ty-Ghost:#6A4BB8;--ty-Psychic:#D93E78;--ty-Ice:#1E9FBF;--ty-Rock:#8F8556;--ty-Electric:#B88A00;--ty-Normal:#8E908C;--ty-Bug:#7F9A12;
   --t13:13px;--t15:15px;--t16:16px;--t17:17px;--t20:20px;--t22:22px;--t24:24px;--t26:26px;--t28:28px;--t34:34px;
   /* space on a 4px grid; corners; the brand slant */
   --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s24:96px;

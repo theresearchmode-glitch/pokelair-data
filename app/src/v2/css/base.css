@@ -9,7 +9,7 @@ a{color:inherit;text-decoration:none}
 :focus-visible{outline:3px solid var(--plot);outline-offset:3px}
 .u{font-family:var(--u);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1.05}
 :root[data-theme="night"] .u{font-weight:800}
-.unit{font-size:.62em;color:var(--ink-2);letter-spacing:0;margin-left:2px;font-family:var(--b);font-style:normal;font-weight:600}
+.unit{font-size:var(--unit);color:var(--ink-2);letter-spacing:0;margin-left:2px;font-family:var(--b);font-style:normal;font-weight:600}
 .fine{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
