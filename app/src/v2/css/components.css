@@ -58,10 +58,11 @@
 
 /* slider: the sliding segmented picker (today's "Apple-style" slider, slanted); the thumb slides under the chosen option */
 .np-slide{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
-.np-slide button{position:relative;z-index:1;min-height:var(--tap);padding:0 var(--s5);font:600 var(--t15)/1 var(--b);color:var(--ink-2);white-space:nowrap}
+.np-slide button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s5);font:600 var(--t15)/1 var(--b);color:var(--ink-2);white-space:nowrap}
 .np-slide button[aria-pressed="true"]{color:var(--on-plate)}
 .np-slide .thumb{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc(100% / var(--n));translate:calc(100% * var(--i)) 0;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:translate .22s cubic-bezier(.2,.8,.2,1)}
-@media (max-width:379px){.np-slide{max-width:100%}.np-slide button{padding:0 var(--s3);font-size:var(--t13)}}
+/* phones: the icon sits above its name, like today's iPhone-style picker, so 3-4 choices always fit the width */
+@media (max-width:519px){.np-slide{display:grid;width:100%;max-width:100%}.np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}.np-slide .np-ic{width:20px;height:20px}}
 /* field and search */
 .np-field{display:flex;align-items:center;gap:var(--s2);min-height:52px;padding:0 var(--s4);border:1.5px solid var(--ink);transform:skewX(-10deg);color:var(--ink-3)}
 .np-field>*{transform:skewX(10deg)}.np-field input{flex:1;min-width:0;border:0;background:none;font:500 var(--t15)/1 var(--b);color:var(--ink);outline:0}
@@ -126,3 +127,7 @@
 .np-monsheet{display:flex;align-items:center;gap:var(--s8);padding:var(--s8)}
 .np-monsheet h2{font-size:var(--t34);margin-bottom:var(--s3)}.np-monsheet .fine{margin-top:var(--s3)}
 @media (max-width:699px){.np-monsheet{flex-direction:column;text-align:center}.np-monsheet .ty{justify-content:center}}
+/* slider icons: today's line drawings, drawn in the text colour so they turn light on the sliding plate */
+.np-slide .np-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.np-slide button{transition:color .25s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){.np-slide .thumb{transition:none}}

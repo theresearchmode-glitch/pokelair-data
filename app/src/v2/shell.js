@@ -63,6 +63,23 @@ V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
 document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m) { e.preventDefault(); V2.openMon(m.dataset.v2mon); }
   if (e.target.closest('[data-v2search]')) V2.openSearch(); });
 document.addEventListener('keydown', e => { if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
+// ---------- the Apple-style slider (Sim's favourite, kept from today's site; design-system.md "Slider") ----------
+// 2-4 choices, each an icon beside its name; the dark plate slides to the chosen one. Same icons as today's sliders (SLIDE_P /
+// SLIDE_N in 05-icons.js, found by the choice's name). Real buttons with aria-pressed; arrow keys move between choices; picking
+// one fires a "v2slide" event {key, value} on document, so pages just listen.
+V2.slideIcon = (t, ik) => { t = String(t).trim().toLowerCase(); if (typeof SLIDE_P !== 'object') return '';
+  const k = ik || (SLIDE_N[t] ? SLIDE_N[t] : (Object.keys(SLIDE_N).find(x => t.startsWith(x + ':') || t.startsWith(x + ' ')) || null) && SLIDE_N[Object.keys(SLIDE_N).find(x => t.startsWith(x + ':') || t.startsWith(x + ' '))]);
+  return k && SLIDE_P[k] ? `<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true">${SLIDE_P[k]}</svg>` : ''; };
+V2.slide = (key, items, on, label) => { const i = Math.max(0, items.findIndex(x => x[0] === on));
+  return `<div class="np-slide" role="group" aria-label="${V2.esc(label || key)}" data-v2slide="${V2.esc(key)}" style="--n:${items.length};--i:${i}"><span class="thumb" aria-hidden="true"></span>${items.map(([v, t, ik], k) =>
+    `<button type="button" data-v="${V2.esc(v)}" aria-pressed="${k === i}">${V2.slideIcon(t, ik)}<span>${V2.esc(t)}</span></button>`).join('')}</div>`; };
+V2.slidePick = (sl, b) => { const bs = [...sl.querySelectorAll('button')], i = bs.indexOf(b); if (i < 0) return;
+  bs.forEach((x, k) => x.setAttribute('aria-pressed', k === i ? 'true' : 'false')); sl.style.setProperty('--i', i);
+  document.dispatchEvent(new CustomEvent('v2slide', {detail: {key: sl.dataset.v2slide, value: b.dataset.v}})); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2slide] > button'); if (b) V2.slidePick(b.parentElement, b); });
+document.addEventListener('keydown', e => { const b = e.target.closest && e.target.closest('[data-v2slide] > button'); if (!b || !/^Arrow(Left|Right)$/.test(e.key)) return;
+  const bs = [...b.parentElement.querySelectorAll('button')], n = bs[(bs.indexOf(b) + (e.key === 'ArrowRight' ? 1 : bs.length - 1)) % bs.length];
+  e.preventDefault(); n.focus(); V2.slidePick(b.parentElement, n); });
 V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle', 'Battle'], ['meta', 'Meta']];
 V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 'day';
 V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.draw(); };

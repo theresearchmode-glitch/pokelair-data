@@ -44,6 +44,7 @@
     "src/app/02-set-data.js",
     "src/app/03-persistence.js",
     "src/app/04-search.js",
+    "src/app/05-icons.js",
     "src/app/05-data-clean.js",
     "src/app/06-helpers.js",
     "src/app/08-render-all.js",

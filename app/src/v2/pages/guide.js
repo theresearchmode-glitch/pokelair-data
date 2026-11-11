@@ -36,7 +36,7 @@ V2.pages.guide = {place: null, draw() {
   <p class="fine" style="margin-top:12px">Every Pokémon stands on a pool of its own colour; feet and names sit on one line; the selected one stands on its tilted panel.</p>
 
   <h2 class="u">Slider</h2>
-  <div class="np-slide" style="--n:3;--i:0" data-v2slide><span class="thumb" aria-hidden="true"></span><button type="button" aria-pressed="true">Whole roster</button><button type="button" aria-pressed="false">My Box</button><button type="button" aria-pressed="false">Box + catch</button></div>
+  ${V2.slide('guide-meta', [['rating', 'Rating'], ['usage', 'Usage'], ['sets', 'Sets']], 'rating', 'Show')} ${V2.slide('guide-box', [['all', 'Whole roster'], ['box', 'My Box'], ['catch', 'Box + catch']], 'all', 'Pokémon to use')}
 
   <h2 class="u">Search field</h2>
   <label class="np-field" style="max-width:520px">${V2.ICON.search}<input type="search" id="sg-search" placeholder="Find a Pokémon, move or item" aria-label="Find a Pokémon, move or item"></label>
@@ -54,10 +54,8 @@ V2.pages.guide = {place: null, draw() {
   <div class="acts"><a class="np-btn" href="#guide">Build around it</a><a class="np-link" href="#guide">Info Sheet</a></div></div></div>
 </section>
 <div class="np-dock"><b class="u" style="font-size:var(--t20)">91</b><span class="fine">Sun Tailwind</span><div class="six">${team.map(n => `<img src="${V2.art(SPRITE_ID[n])}" alt="${V2.esc(V2.disp(n))}">`).join('')}</div><a class="np-btn2" href="#guide"><span>Open My Team</span></a></div>`; },
-  after() {
-    document.querySelectorAll('[data-v2slide]').forEach(sl => sl.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const bs = [...sl.querySelectorAll('button')], i = bs.indexOf(b);
-      bs.forEach((x, k) => x.setAttribute('aria-pressed', k === i ? 'true' : 'false')); sl.style.setProperty('--i', i); }));
-  }};
+  after() {}
+};
 // sheet and toast demos use the shell's real ones
 document.addEventListener('click', e => {
   if (e.target.closest('[data-v2sheet]')) V2.sheet(`<div style="padding:var(--s8)"><h2 class="u" style="font-size:var(--t28)">A sheet</h2><p style="margin-top:var(--s3);color:var(--ink-2)">A solid surface over the page. Close it with ✕, Escape or a tap outside; the keyboard returns to the button that opened it.</p></div>`, {label: 'Example sheet'});

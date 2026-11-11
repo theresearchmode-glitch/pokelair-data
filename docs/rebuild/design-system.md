@@ -138,7 +138,7 @@ concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, th
 | Secondary button | Outlined slanted box, 1.5px --ink, Instrument Sans 600. |
 | Link | Instrument Sans 600, 1.5px underline; "›" rows for lists of actions (Copy box link ›). |
 | Chip | ONE style: slanted parallelogram (clip-path), 36 high touch / 32 mouse, --wash fill, selected = --plate fill. Used for sort options, filters, type labels (type colour fill). No rounded pills anywhere. |
-| Slider | Today's Apple-style sliding picker (76-slide.js) carried over as a first-class component: 2-4 choices, icon + label, the pill slides; checked at narrowest and widest real size. |
+| Slider | Today's Apple-style sliding picker (76-slide.js) carried over as a first-class component (Sim, Nov 11: keep it): 2-4 choices, icon + label, the dark plate slides. Built as `V2.slide()` (Nov 11) with today's icons (shared `05-icons.js`); desktop and tablet put the icon beside the name, as in the approved mock-ups; phones under 520px put it above the name, like today's iPhone-style picker, so every choice fits at 320. Arrow keys move between choices. |
 | Tabs | Text tabs with the slanted --plot underline (nav style); swipe on phones where today's page allows it. |
 | Jump bar | Sticky row of section links on long pages (My Team: Set, Matchups, Suggestions, Sheet). |
 | Tags | Lead / Back / Bench (text under the sprite, --ink-2, 13), verdict tags (verdict colour text + small mark), "On your team" (slanted mark). |
