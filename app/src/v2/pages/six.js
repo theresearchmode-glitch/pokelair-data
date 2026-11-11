@@ -6,18 +6,22 @@
 V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   const ord = [...L.lead, ...L.back, ...L.bench], role = m => L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench';
   const tile = m => { const k = ms.indexOf(m), on = m === sel;
-    // Lock and × on the tile (TEAM-09, today's words): shown on the picked tile, on hover, and always while locked
-    const lk = !!(S.slots[m.i] && S.slots[m.i].lock);
-    const ctl = `<button type="button" class="sx-ic sx-lock${lk ? ' on' : ''}" data-v2lock="${m.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(m.d)}: suggestions never swap out a locked Pokémon" title="${lk ? 'Locked: suggestions keep it' : 'Lock it so suggestions keep it'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg></button>`
-      + `<button type="button" class="sx-ic sx-rm" data-v2rm="${m.i}" aria-label="Remove ${E(m.d)} from your team"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>`;
-    return `<div class="sx-slot${on ? ' on' : ''}${lk ? ' locked' : ''}"><button type="button" class="tm-pick" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(m.d)}, ${role(m)}${lk ? ', locked' : ''}">${V2.mon(m.p.n, {sel: on, sub: m.heldItem || m.item || 'No item'})}</button>${ctl}</div>`; };
+    const lk = !!(S.slots[m.i] && S.slots[m.i].lock); // a locked Pokémon shows a small padlock before its item, so the tile keeps its height (Sim, Nov 11: no controls on the art)
+    return `<div class="sx-slot${on ? ' on' : ''}${lk ? ' locked' : ''}"><button type="button" class="tm-pick" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(m.d)}, ${role(m)}${lk ? ', locked' : ''}">${lk ? V2.mon(m.p.n, {sel: on, sub: m.heldItem || m.item || 'No item'}).replace('<small>', '<small><svg class="sx-lk" viewBox="0 0 24 24" role="img" aria-label="Locked"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></svg>') : V2.mon(m.p.n, {sel: on, sub: m.heldItem || m.item || 'No item'})}</button></div>`; };
   // empty spots (TEAM-20): "+ Add a Pokémon" tiles after the team, each opens the name box for its own spot (as today)
   const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
   const add = i => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b><span class="sx-pre">Add a</span> Pokémon</b><small>Spot ${i + 1}</small></button></div>`;
   const cells = ord.map(tile).concat(open.map(add)), grp = (name, j) => cells.slice(j * 2, j * 2 + 2).length ? `<div class="sx-grp" role="group" aria-label="${name}"><p class="sx-gl u" aria-hidden="true">${name}</p><div class="sx-tiles">${cells.slice(j * 2, j * 2 + 2).join('')}</div></div>` : '';
   const pair = g => g.map(m => escName(m.d)).join(' + '), vs = PLAN_VS[L.by];
   const plan = L.lead.length >= 2 ? `<p class="sx-plan"><span class="sx-pl">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${pair(L.lead)}</b>${L.back.length ? `, back ${pair(L.back)}` : ''}${L.bench.length ? `, bench ${pair(L.bench)}` : ''}.</span>${L.by === 'you' ? `<button type="button" class="np-link sx-reset" data-v2lead="">Use NastyPlot's pick</button>` : ''}</p>` : '';
-  return `<div class="tm-six sx"><div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${plan}</div>`; };
+  // the action strip (Sim, Nov 11: pictures stay clean; today's "−" to remove): one slim row under the six for the picked Pokémon
+  const act = sel && ms.includes(sel) ? (() => { const lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = L.lead.length && !L.lead.includes(sel);
+    return `<div class="sx-act" role="group" aria-label="${E(sel.d)}"><b class="sx-an">${V2.nameHtml(sel.d)}</b><div class="sx-ab">`
+      + `<button type="button" class="sx-a" data-v2rm="${sel.i}" aria-label="Remove ${E(sel.d)} from your team"><i aria-hidden="true">−</i>Remove</button>`
+      + `<button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button>`
+      + (lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : '')
+      + `<button type="button" class="sx-a" data-v2edit="${sel.i}">Edit Set</button></div></div>`; })() : '';
+  return `<div class="tm-six sx"><div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}${plan}</div>`; };
 
 // the set card (TEAM-10): its place in the plan, the rating with its tier, item, Ability, nature and stat points (yours or what
 // most players run), the four moves, then Edit Set, Set as Lead (not already a lead) and its Info Sheet. Today's words throughout.
@@ -35,7 +39,7 @@ V2.setSecHtml = (D, sel) => { const m = sel, P = m.p, E = V2.esc, L = D.ms.lengt
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2lead]'); if (!b) return;
   const pk = setLeadPick(b.dataset.v2lead); if (pk === false) return; render(); toast(leadMsg(pk)); });
 
-// Lock and × on a tile (TEAM-09): today's toggleLock and clearSlot (31-set-edits.js); × keeps Undo, as today
+// Remove and Lock in the action strip (TEAM-09): today's toggleLock and clearSlot (31-set-edits.js); Remove keeps Undo, as today
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2lock],[data-v2rm]'); if (!t) return;
   if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
   const was = clearSlot(+t.dataset.v2rm); render(); if (was) toast(`Removed ${was.d}`, true); });

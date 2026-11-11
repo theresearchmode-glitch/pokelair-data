@@ -18,7 +18,11 @@
 .sx-reset{display:inline-flex;align-items:center;min-height:var(--tap)}
 @media (max-width:699px){
   .sx-grps{column-gap:var(--s3)}
-  .sx-tiles{grid-template-columns:minmax(0,1fr);row-gap:var(--s4)}
+  /* the three columns share their rows (Nov 11): each row's names line up whatever a sprite's height or a name's wrap */
+  .sx-grps{grid-template-rows:auto auto auto;row-gap:var(--s4)}
+  .sx-grp{grid-row:span 3;grid-template-rows:subgrid;row-gap:var(--s4)}
+  .sx-tiles{display:contents}
+  .sx-grp > .sx-tiles > .sx-slot{align-self:end}
   .sx-gl{font-size:var(--t17)}
   /* the bench sits apart from the four you bring */
   .sx-grp:nth-child(3)::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--s3) / -2);width:1px;background:var(--rule)}
@@ -43,15 +47,21 @@
 .sx-kv small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3);white-space:nowrap}
 .sx-info{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s1)}
 .tm-setacts{align-items:center}
-/* Lock and × on each tile: two 44px targets at the art's top corners, each a small slanted plate. They show on the picked tile,
-   on hover (mouse) and on keyboard focus; a locked padlock always shows, in amber */
-.sx-ic{position:absolute;top:0;z-index:2;display:grid;place-items:center;width:var(--tap);height:var(--tap);color:var(--ink);opacity:0;pointer-events:none;transition:opacity .15s}
-.sx-ic::before{content:"";position:absolute;inset:var(--s2) var(--s1);border-radius:var(--r-s);background:var(--surface);box-shadow:var(--shadow-lift);transform:skewX(-12deg)}
-.sx-ic svg{position:relative;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.sx-lock{left:calc(var(--s2) * -1)}.sx-rm{right:calc(var(--s2) * -1)}
-.sx-slot.on .sx-ic,.sx-slot:focus-within .sx-ic,.sx-ic.on{opacity:1;pointer-events:auto}
-@media (hover:hover){.sx-slot:hover .sx-ic{opacity:1;pointer-events:auto}}
-.sx-lock.on{color:var(--plate)}.sx-lock.on::before{background:var(--mid)}
+/* the action strip under the six (Sim, Nov 11): the picked Pokémon's name, then Remove (today's "−"), Lock, Set as Lead, Edit Set.
+   One thin rule above, no box (page + one card colour); actions are text buttons at full tap height, one size for all */
+.sx-act{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s5);margin-top:var(--s4);padding-top:var(--s2);border-top:1px solid var(--rule)}
+.sx-an{font:600 var(--t15)/1.3 var(--b);color:var(--ink);min-width:0}
+.sx-ab{display:flex;flex-wrap:wrap;gap:0 var(--s4);margin-left:auto}
+.sx-a{display:inline-flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0 var(--s1);border:0;background:none;font:600 var(--t15)/1 var(--b);color:var(--plot-text);cursor:pointer}
+.sx-a i{font-style:normal;font-size:var(--t20);line-height:1}
+.sx-a svg,svg.sx-lk{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sx-a.on{color:var(--ink)}
+.sx-a:hover{text-decoration:underline}
+/* a locked Pokémon: a small padlock before its item (status only; the control is in the strip); the tile keeps its height */
+svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);vertical-align:-2px}
+@media (max-width:479px){.sx-ab{margin-left:0;width:100%;justify-content:space-between;gap:0}}
+/* very narrow phones: four actions as an even two by two (no lone "Edit Set" on its own row) */
+@media (max-width:359px){.sx-ab:has(> :nth-child(4)){display:grid;grid-template-columns:repeat(2,max-content);justify-content:space-between;column-gap:var(--s4)}}
 /* an empty spot: the same footprint as a tile, a dashed tilted panel with a big slanted +, "Add a Pokémon" over its spot number */
 .sx-add{display:block;width:100%;text-align:center;color:var(--ink)}
 .sx-addart{position:relative;display:grid;place-items:center;width:min(100cqi,160px);aspect-ratio:1;margin:0 auto}
