@@ -29,7 +29,7 @@ const CX2 = {
 const CX2_LABEL = {ready: 'Matchups (damage calc, top 30)'};
 
 V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA) ui.cx.A = null; if (!RB) ui.cx.B = null;
-  const head = `<div class="cx2-top"><div class="np-eyebrow"><span>Compare · two teams side by side</span></div><h1 class="u">Compare Teams</h1></div>
+  const head = `<div class="cx2-top"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · Compare · two teams side by side</span></div><h1 class="u">Compare Teams</h1></div>
     <div class="cx2-heads">${V2.cxHead('A', RA)}${RA && RB ? '<button type="button" class="np-link cx2-swap" data-cxswap2>Swap A and B</button>' : '<span class="cx2-swap"></span>'}${V2.cxHead('B', RB)}</div>`;
   if (!RA || !RB) return `<section class="cx2">${head}<p class="tm-sub cx2-hint">Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Every row below is worked out the same way as on My Team.</p></section>`;
   const IA = CX.cache.get(cxKey(RA.slots)), IB = CX.cache.get(cxKey(RB.slots));
@@ -42,6 +42,7 @@ V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = 
   return `<section class="cx2">${head}
     <div class="cx2-sum"><h2 class="u">What's Different</h2>${says.length ? `<ul>${says.slice(0, 6).map(s => `<li>${tm(s)}</li>`).join('')}</ul>` : '<p class="tm-sub">These two line up the same on every row below.</p>'}</div>
     <div class="cx2-grid">${diff.map(row).join('')}</div>
+    ${IA.G || IB.G ? `<details class="cx2-why"><summary>Why These Scores</summary><div class="cx2-whyg">${[['A', IA, RA], ['B', IB, RB]].map(([sd, I, R]) => I.G ? `<div class="cx2-whyi"><p class="cx2-whyt"><b class="cx2-tm ${sd.toLowerCase()}">Team ${sd}</b> ${V2.esc(R.name || '')}</p>${V2.whyHtml(I.G, {inline: true})}</div>` : '').join('')}</div><p class="fine">${V2.esc(CH.WHY_TEST)}</p><p class="fine">${V2.esc(CH.LETTERS)} <a class="np-link" href="#method">How the grade works</a></p></details>` : ''}
     ${same.length ? `<details class="cx2-same"${ui.cx.same ? ' open' : ''}><summary>Same on both <span class="fine">${same.length} row${same.length === 1 ? '' : 's'}</span></summary><div class="cx2-grid">${same.map(row).join('')}</div></details>` : ''}
     <p class="fine cx2-foot">The Strength Score and matchups are worked out exactly as on My Team: how ready each team is for the top 30 threats, not a prediction of this match. Speeds are the likely stat (your spread, or the most common one), in each team's own weather.</p></section>`; }};
 // work out what isn't cached yet, one side per frame, so the page answers at once (as today)

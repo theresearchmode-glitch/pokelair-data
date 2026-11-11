@@ -97,6 +97,9 @@ export default (ui, pg, o) => {
 
     // ---------- My Team ----------
     /** the team's name as the page shows it: a heading if there is one, else the eyebrow "My Team · <saved name>" */
+    /** the empty box's picture (the featured underdog, Sim Nov 11) is placed */
+    // the harness copies the page into app/test/behaviour/, where art/ isn't served, so this checks a Pokémon sprite is placed (screenshots check it shows)
+    emptyBoxArt: () => pg.evaluate(() => [...document.querySelectorAll('#main .bx-empty img')].some(i => i.getClientRects().length && /art\/\d+\.webp$/.test(i.getAttribute('src') || ''))),
     teamHeading: () => pg.evaluate(() => { const m = document.querySelector('#main'); if (!m) return null; const h = [...m.querySelectorAll('h1')].find(e => e.getClientRects().length && !e.closest('.tm-empty'));
       if (h) return h.innerText.replace(/\s+/g, ' ').trim(); const e = m.querySelector('.tm-eb'); const t = e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; const k = t.indexOf(' · '); return k >= 0 ? t.slice(k + 3) : null; }),
     /** Strength Score block: {label, score, band} ("Solid so far" shows as label "Strength Score so far", band "Solid") */

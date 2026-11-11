@@ -9,8 +9,8 @@ SAVED-01 now differs only in wording). Most failures are features today's My Tea
 - [x] Header (Nov 11): "My Team · 6 of 6 · Sun team" and the team's name as the page heading (TEAM-01 pass); the band meter and
       the win line under the score, "Few real games back this mix yet" when How sure is Low (TEAM-03 pass); "Why this score?"
       as a sheet from CH.whyData, the same numbers and sentences as today (TEAM-04: passes up to its last step, the "How the grade
-      works" link, which waits for the How We Calculate page); Switch Team as a sheet (TEAM-05 pass). Still to do: Compare's
-      "Why these grades". Measured: same-why.mjs 265/265 identical; the five tests also still pass on today's page.
+      works" link, which waits for the How We Calculate page); Switch Team as a sheet (TEAM-05 pass). Compare's "Why These
+      Scores" (word list: Strength Score, not grade) done Nov 11, both teams side by side from the same breakdown. Measured: same-why.mjs 265/265 identical; the five tests also still pass on today's page.
 - [ ] Six tiles: Lock on the tile (TEAM-09); the set card's role, tier and Info sheet link (TEAM-10, X-06);
       Set as lead (TEAM-11); the game plan line (TEAM-12); empty spots you can tap to add into (TEAM-20, ADD-01, ADD-02)
 - [ ] Export as text (TEAM-13, IO-02; the new build copies straight to the clipboard: decide if the text box is still needed)
@@ -22,7 +22,9 @@ SAVED-01 now differs only in wording). Most failures are features today's My Tea
 - [ ] Team Sheet page parts: SHEET-01 to 04, SHARE-04, IO-04 (Copy as text)
 - [ ] Your games: "Paste its log" (LOG-02, X-13: comes with Battle); record on saved cards (LOG-05: done Nov 11, re-test)
 - [ ] Saved Teams: SAVED-02 (+b), 04, 07, 08, 09 (07 poster and 08 compare: done Nov 11, re-test)
-- [ ] "← My Team" back links on My Box and Compare (BOX-01, CMP-01)
+- [x] "← My Team" back links on My Box and Compare (BOX-01, CMP-01 pass, Nov 11). Also fixed: My Box's search offered
+      Pokémon already in the box (BOX-02 pass); the box search is named "Add a Pokémon to your box" (BOX-07 pass).
+      Box and Compare on the new build: 10 of 11 pass; CMP-03 waits for the Winning Teams page (its "tap Compare on its card" note).
 - [ ] First-visit sample note (X-02)
 - [ ] Home (HOME-01..16) and the info sheet tests that start from Home tiles (PKMN-01..07): with the Home page
 
@@ -43,3 +45,9 @@ Some tests checked today's exact punctuation and layout. They now accept the new
 the same information (each can still fail): "My team: 6 of 6, Sun team" or "My Team · 6 of 6 · Sun team"; "Switch team" or
 "Switch Team"; one "Legal Team checks 4/4" badge or a Legal mark plus "Team Checks 4/4"; the rules tooltip is read through
 a helper (rulesTooltip) instead of today's page structure. Re-run on today's page: TEAM-01, 03, 04, 05, 16 all pass.
+Nov 11 (Box/Compare): also accepted are "Build for Me", "What's Different", "Winning Teams", "Use This Team", "Pick Team B"
+(Title Case, Sim's rule) and Compare's "Matchups (damage calc, top 30)" row (word list: not "ready for the top 30").
+The empty box's picture is checked through a helper (today: Darkrai; new build: the featured underdog, Sim's decision).
+Note: the test harness copies the page into app/test/behaviour/, where art/ isn't served, so the new build's sprites never
+load in behaviour tests; picture checks there look for the sprite being placed, and screenshots check it shows.
+Shared moves Nov 11: CH.LETTERS (the band key) to 58-strength.js; same-why 265/265 identical after it.

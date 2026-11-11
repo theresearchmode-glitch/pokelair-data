@@ -41,7 +41,7 @@ V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
     <div class="row"><button type="button" class="np-btn" data-bxadd><span>Add a Pokémon</span></button><button type="button" class="np-btn2" data-bxaddn="${V2.esc(n)}"><span>Add ${d}</span></button></div></div></div>`; };
 
 V2.pages.box = {place: 'team', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length;
-  const head = `<div class="bx-lead"><div class="np-eyebrow"><span>My Team · The Pokémon you own</span></div><h1 class="u">My Box</h1>
+  const head = `<div class="bx-lead"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · The Pokémon you own</span></div><h1 class="u">My Box</h1>
     <p class="bx-count">${n} Pokémon${n ? ` · ${D.pages} box${D.pages > 1 ? 'es' : ''}` : ''}</p><p class="bx-why">Build for Me and the suggestions pick from these when set to “My Box”.</p>
     <button type="button" class="bx-add" data-bxadd><span>Add a Pokémon</span><b aria-hidden="true">+</b></button></div>`;
   const sort = `<div class="bx-sort"><span class="lbl">Arrange by</span>${V2.slide('box-sort', BX_SORTS, D.so === 'za' ? 'az' : D.so, 'Arrange by')}</div>`;
@@ -66,9 +66,9 @@ V2.bxNarrow = () => matchMedia('(max-width:899px)').matches;
 V2.bxPick = n => { V2.bx.sel = n; if (V2.bxNarrow()) { bxRe(); V2.sheet(V2.bxSum(n, {sheet: true}), {label: V2.disp(n), small: true}); return; } bxRe();
   const t = document.querySelector(`[data-bxsel="${CSS.escape(n)}"]`); if (t) t.focus({preventScroll: true}); };
 V2.bxToast = t => V2.toast(V2.esc(t) + ' <button type="button" data-bxundo>Undo</button>', 6000);
-V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Add to My Box</h2><label class="np-field">${V2.ICON.search}<input type="search" data-bxq placeholder="Find a Pokémon you own" aria-label="Find a Pokémon to add to your box" autocomplete="off"></label><div class="hits" data-bxhits aria-live="polite"></div></div>`, {label: 'Add to My Box', small: true, focus: '[data-bxq]'});
+V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Add to My Box</h2><label class="np-field">${V2.ICON.search}<input type="search" data-bxq placeholder="Find a Pokémon you own" aria-label="Add a Pokémon to your box" autocomplete="off"></label><div class="hits" data-bxhits aria-live="polite"></div></div>`, {label: 'Add to My Box', small: true, focus: '[data-bxq]'});
   const inp = sh.querySelector('[data-bxq]'), out = sh.querySelector('[data-bxhits]');
-  const draw = () => { const q = inp.value.trim(), r = q ? V2.find(q).mons.filter(p => !p.m) : [];
+  const draw = () => { const q = inp.value.trim(), r = q ? V2.find(q).mons.filter(p => !p.m && !inBox(p)) : []; // as today: base forms only, and not ones already in the box
     out.innerHTML = !q ? '<p class="fine">Type a Pokémon\'s name. Mega forms come with their Pokémon.</p>' : !r.length ? `<p class="fine">Nothing called “${V2.esc(q)}”. Try part of the name.</p>`
       : r.map(p => { const has = inBox(p); return `<button type="button" class="np-hit" data-bxaddn="${V2.esc(p.n)}"${has ? ' aria-disabled="true"' : ''}><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${has ? '<small>In your box</small>' : (p.t || []).map(V2.typeChip).join('')}</span></button>`; }).join(''); };
   inp.addEventListener('input', draw); inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit:not([aria-disabled])'); if (h) { e.preventDefault(); h.click(); } } }); draw(); };

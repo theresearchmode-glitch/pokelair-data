@@ -682,7 +682,7 @@ t('SAVED-10', 'Older singles teams are kept, not shown, but count toward the 10'
 // ================= 10. My Box =================
 t('BOX-01', 'My Box head: count, explanation, sync line', async () => {
   const r = await aopen({team: TEAM, box: BOX}); await r.ui.go('My Box', 900); const tx = await r.ui.text();
-  for (const s of ['← My Team', 'The Pokémon you own', 'My Box', '10 Pokémon', 'Build for me and the suggestions pick from these', /Saved to your Claude account|this browser/]) has(tx, s, 'My Box'); await r.close(); });
+  for (const s of ['← My Team', 'The Pokémon you own', 'My Box', '10 Pokémon', /Build for [Mm]e and the suggestions pick from these/, /Saved to your Claude account|this browser/]) has(tx, s, 'My Box'); await r.close(); });
 
 t('BOX-02', 'Add a Pokémon to the box (base forms only): toast and a new tile; saved to the account', async () => {
   const r = await aopen({team: TEAM, box: BOX}); await r.ui.go('My Box', 900); await r.ui.typeName('mega dra', '#boxAdd'); ok(!(await r.ui.nameOptions()).some(o => /^Mega /.test(o)), 'box search offers Megas');
@@ -713,16 +713,16 @@ t('BOX-06', 'Box links: copy, open a box link, "Add to my box"; a #box= link ope
   ok((await o.ui.boxNames()).join() === 'Absol', 'box changed before Add/Replace'); await o.ui.tapText(/^Replace my box$/, 900); ok((await o.ui.boxNames()).length === 10, 'Replace did not load the linked box');
   ok(await o.ui.has('#toastBoxUndo') || await o.ui.has('#toastUndo'), 'no Undo'); await o.close(); });
 
-t('BOX-07', 'Empty box: Darkrai, "Your box is empty…", "Add a Pokémon" focuses the search', async () => {
+t('BOX-07', 'Empty box: its picture (today Darkrai; the new build the featured underdog), "Your box is empty…", "Add a Pokémon" focuses the search', async () => {
   const r = await aopen({team: TEAM, box: ['Absol']}); await r.ui.go('My Box', 900); await r.ui.removeFromBox('Absol'); const tx = await r.ui.text();
-  has(tx, /Your box is empty\. Add the Pokémon you own, and Build for me and the suggestions pick from them\./);
-  ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="box"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai');
+  has(tx, /Your box is empty\. Add the Pokémon you own, and Build for [Mm]e and the suggestions pick from them\./);
+  ok(await r.ui.emptyBoxArt(), 'no picture on the empty box');
   await r.ui.tapText(/^Add a Pokémon$/, 500); ok(/Add a Pokémon/.test(await r.ui.focusName()), 'search not focused: ' + await r.ui.focusName()); await r.close(); });
 
 // ================= 11. Compare =================
 t('CMP-01', 'My Team "Compare with…": Compare page with My team as A, "Pick team B"', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); ok(await r.ui.current() === 'compare', 'Compare did not open'); const tx = await r.ui.text();
-  has(tx, /Compare · two teams side by side|Compare Teams|Compare teams/i); has(tx, 'Pick team B'); has(tx, /My team, open now|My Team/); has(tx, '← My Team'); await r.close(); });
+  has(tx, /Compare · two teams side by side|Compare Teams|Compare teams/i); has(tx, /Pick [Tt]eam B/); has(tx, /My team, open now|My Team/); has(tx, '← My Team'); await r.close(); });
 
 t('CMP-02', 'Team headers A/B with source and Change; "Swap A and B" swaps the columns', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); await r.ui.pickCompareTeam('Rain test'); await r.ui.settle();
@@ -731,14 +731,14 @@ t('CMP-02', 'Team headers A/B with source and Change; "Swap A and B" swaps the c
 
 t('CMP-03', 'Team picker: My Team (greyed when already A), saved teams, winners, paste a Showdown team; never changes my team', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); const tx = await r.ui.text();
-  for (const s of ['Saved Teams', 'Rain test', /Winning teams: event winners, newest first/, /Show 10 more winners/, /Any other tournament team: tap Compare on its card in Winning teams/, 'Paste a Showdown team', 'Use this team', /Already team A/]) has(tx, s, 'picker');
+  for (const s of ['Saved Teams', 'Rain test', /Winning [Tt]eams:? event winners, newest first/, /Show 10 more winners/, /Any other tournament team: tap Compare on its card in Winning [Tt]eams/, /Paste a Showdown [Tt]eam/, /Use [Tt]his [Tt]eam/, /Already team A/]) has(tx, s, 'picker');
   await r.ui.tapText(/^Show 10 more winners$/, 700); ok(((await r.ui.text()).match(/Champion Won/g) || []).length >= 16, 'Show 10 more did not add winners');
   await r.ui.pasteCompareTeam(PASTE); await r.ui.settle(); has((await r.ui.compareHeads()).join(' '), /From a Showdown paste/, 'B head'); ok((await r.ui.team()).join() === TEAM.join(), 'my team changed'); await r.close(); });
 
 t('CMP-04', 'Comparison: "What\'s different" (Tailwind, sun vs rain), Strength Score row, Same-on-both fold', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED});
   await r.ui.teamAction('Compare with…'); await r.ui.pickCompareTeam('Rain test'); await r.ui.waitText(/What.s different|line up the same/, 15000); const tx = await r.ui.text();
-  has(tx, /What.s different/); has(tx, /Tailwind/); has(tx, /(sun|Sun)[^]*?(rain|Rain)|(rain|Rain)[^]*?(sun|Sun)/); has(tx, /Strength Score/); has(tx, /Ready for the top 30 threats/); has(tx, /Same on both[ ·]*\d+ rows?/); has(tx, /Why these grades/); await r.close(); });
+  has(tx, /What.s [Dd]ifferent/); has(tx, /Tailwind/); has(tx, /(sun|Sun)[^]*?(rain|Rain)|(rain|Rain)[^]*?(sun|Sun)/); has(tx, /Strength Score/); has(tx, /Ready for the top 30 threats|Matchups \(damage calc, top 30\)/); has(tx, /Same on both[ ·]*\d+ rows?/); has(tx, /Why these (grades|scores)/i); await r.close(); });
 t('CMP-04b', 'Compare lists Speed control as a note, not a counted team check', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); await r.ui.pickCompareTeam('Rain test'); await r.ui.waitText(/What.s different|line up the same/, 15000); await r.ui.openFold('Same on both', true, 500);
   ok(!(await r.ui.compareCheckRows()).some(x => /Speed control/.test(x)), 'Speed control shown as a team check row'); await r.close(); },

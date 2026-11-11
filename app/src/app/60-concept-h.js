@@ -62,7 +62,7 @@ CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><
   const ready = sum ? '' : cell(CH.readyN(RD), 'ready', tp('readiness'));
   const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'no answer') : ''}</div>`;
   return `<div class="rd wdstats">${sum}${rec}${chk}</div>`; };
-CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. A team that beats today\u2019s tournament teams half the time scores 80.';
+// CH.LETTERS moved to 58-strength.js (R4, Nov 11) so the new build shares it
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.v === 2) { const W = CH.whyData(G), L2 = `<b class="npgw" style="color:${CH.gcol(W.letter)}">${W.s} \u00b7 ${W.word}</b>`, a = W.base, m = W.mu, r = W.own;
     const su = W.sure, top = `${L2}. Teams scoring like this win about ${W.e}% against today\u2019s tournament teams (${W.rank.replace(/^Top/, 'top').replace(/^Bottom/, 'bottom')} by rank).`;
