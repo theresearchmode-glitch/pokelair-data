@@ -45,3 +45,12 @@ and no halo; today's 512 px inked sprite is softer with a faint rim. 48 thin-det
 only), as asked; none show a rim on the sheet. Design note taken into docs/rebuild/design-system.md: near-black Pokémon
 (10250-10252, 491, 823) vanish on Dusk without a panel. Today's live site keeps its current sprites; the new art ships with
 the rebuild (R3), not before.
+
+## Job 3: the full check run (whenever the main chat asks; Sim, Nov 11)
+The main chat names a base commit (the last fully checked one). Then:
+1. `git pull origin claude/design6`, then `npm ci` only if node_modules is missing or `node app/test/run.mjs` can't find playwright.
+2. `node experiments/full-check.mjs <base> <label>` (1-2 hours; it changes no code). It writes
+   `docs/rebuild/test-runs/full-check-<label>.txt`.
+3. Commit only that file and push. Report the summary lines (every "==" heading with its result line).
+Fix only setup (a missing install, a path), never the code or the tests. If a check fails, don't retry it more than once: report
+it exactly as printed.
