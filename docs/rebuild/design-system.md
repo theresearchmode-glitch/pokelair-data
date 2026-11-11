@@ -99,8 +99,6 @@ concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, th
   more"): FULL glow only where ONE Pokémon is the star (the hero, the Strength Score, the picked Pokémon's panel, a pair);
   wherever many Pokémon sit together (a box, a team row, a list) each gets only a light, faint glow (about a third of the
   full strength) and the row tint stays subtle, so the art, not the light, carries the grid.
-- No hard edges (Sim, Nov 11: a tint cut through the header): every glow, tint or pool fades to fully transparent before
-  the edge of its own box, and page-level light starts at the very top of the page, never partway down the header.
 - Readability: text never sits on the brightest part of a pool; names and numbers on glow pass contrast (checked).
 
 ## 5. Motion

@@ -124,9 +124,26 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:16px;flex-wrap:wrap}
 }
 :root[data-theme="light"] .six{--glow:.12}
+/* Score treatment options (Nov 11, Sim: the blue blur behind 91 isn't the best way) */
+:root[data-score] .band .pool{display:none}
+/* A: a slanted plate in the band colour behind the number, our own shape language */
+:root[data-score="plate"] .lock .num b{position:relative;padding:8px 40px 0 22px;color:#fff;z-index:0}
+:root[data-score="plate"] .lock .num b::before{content:"";position:absolute;inset:14px 0 4px 0;background:var(--band);transform:skewX(-14deg);z-index:-1;box-shadow:var(--shadow-lift)}
+:root[data-score="plate"] .lock .num .w span{color:var(--ink)}
+/* B: no light at all; a slanted 0-100 meter under the number shows where the score sits among the five bands */
+.meter{display:none}
+:root[data-score="meter"] .meter{display:block;position:relative;margin:14px 0 4px;max-width:420px}
+.meter .segs{display:grid;grid-template-columns:60fr 10fr 10fr 10fr 10fr;gap:3px;height:10px}
+.meter .segs i{transform:skewX(-24deg)}
+.meter .tick{position:absolute;top:-6px;width:4px;height:22px;background:var(--ink);transform:skewX(-24deg)}
+.meter .lbls{display:grid;grid-template-columns:60fr 10fr 10fr 10fr 10fr;gap:3px;margin-top:6px;font:600 13px/1.2 var(--b);color:var(--ink-3)}
+.meter .lbls span{white-space:nowrap}.meter .lbls span:first-child{text-align:left}
+/* C: light from the team itself: a soft pool mixed from the six Pokémon's own colours, low and wide behind number and six */
+:root[data-score="team"] .band .teamlight{display:block}
+.band .teamlight{display:none;position:absolute;left:0;right:0;top:40px;height:420px;z-index:-1;pointer-events:none;background:radial-gradient(40% 60% at 22% 45%,rgba(var(--t1),var(--glow)),transparent),radial-gradient(45% 65% at 70% 50%,rgba(var(--t2),calc(var(--glow)*.7)),transparent)}
 </style></head><body><div class="page" id="page"></div>
 <script>
-{const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';}
+{const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[2])document.documentElement.dataset.score=h[2];}
 /*DATA*/
 const TY={Dragon:'#5060E1',Ground:'#9A6230',Fighting:'#D9631B',Poison:'#8E3FC8',Dark:'#5A4A56',Steel:'#4F8FA6',Fire:'#DD4420',Water:'#2A78D8',Grass:'#2E9A46',Fairy:'#C953C2',Flying:'#5F97D8',Ghost:'#6A4BB8',Psychic:'#D93E78',Ice:'#1E9FBF',Rock:'#8F8556',Electric:'#B88A00',Normal:'#8E908C',Bug:'#7F9A12'};
 function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
@@ -140,13 +157,15 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   await Promise.all(D.six.map(m=>m.img).concat(D.mu.top.map(t=>t.img),[D.opt.inImg]).map(async s=>{M[s]=M[s]||await hue(s);}));
   const sel=D.six[D.sel],k=M[sel.img];
   const BANDC={'Top tier':DK?[79,178,240]:[0,120,191],'Tournament ready':DK?[201,176,255]:[123,75,214],'Solid':[107,101,112],'Needs work':[233,168,0],'Missing a basic':[138,124,110]}[D.score.band];
+  const avg=a=>{const s=[0,0,0];a.forEach(c=>c.forEach((v,j)=>s[j]+=v));return s.map(v=>Math.round(v/a.length));};
+  const TC1=avg(D.six.filter(m=>m.role==='Lead').map(m=>M[m.img].a)),TC2=avg(D.six.filter(m=>m.role!=='Lead').map(m=>M[m.img].a));
   const BAND={'Top tier':'var(--band-top)','Tournament ready':'var(--band-ready)','Solid':'var(--band-solid)','Needs work':'var(--mid-text)','Missing a basic':'var(--low-text)'}[D.score.band];
   const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
   const grp=(cls,lab,ms)=>`<div class="grp ${cls}"><div class="lab"><i></i>${lab}</div><div class="pair">${ms.map(m=>mon(m,D.six.indexOf(m))).join('')}</div></div>`;
   const by=r=>D.six.filter(m=>m.role===r);
   const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
-    <p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
-  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND}"><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
+    <div class="meter"><div class="segs"><i style="background:var(--band-miss)"></i><i style="background:var(--band-work)"></i><i style="background:var(--band-solid)"></i><i style="background:var(--band-ready)"></i><i style="background:var(--band-top)"></i></div><span class="tick" style="left:calc(${D.score.s}% - 2px)"></span><div class="lbls"><span>Missing a basic</span><span></span><span></span><span></span><span style="color:var(--band)">Top tier</span></div></div><p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
+  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND};--t1:${rgb(TC1)};--t2:${rgb(TC2)}"><div class="teamlight"></div><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
   const acts=`<div class="acts"><div class="btn">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
   const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
