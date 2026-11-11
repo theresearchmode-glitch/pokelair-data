@@ -6,8 +6,8 @@
 const slot = n => ({n, a: null, lock: false});
 // player-facing page names -> the ids the tests use (today's view names). The new build's hash routes and page-like sheets map onto them.
 const ROUTE = {report: '#team', box: '#box', compare: '#compare'};
-// sheets that ARE a page in today's site (Saved Teams, Team Sheet): current() reports them as that page
-const PAGE_SHEETS = [['.svt2', 'teams'], ['.ts2', 'sheet']];
+// sheets that ARE a page in today's site (Saved Teams, Team Sheet, All Suggestions): current() reports them as that page
+const PAGE_SHEETS = [['.svt2', 'teams'], ['.ts2', 'sheet'], ['.sga2', 'coverage']];
 export default {
   name: 'v2',
   /** the saved state for a player who has this team / box / opponents / saved teams (the new build reads today's saved state) */
@@ -38,7 +38,7 @@ export default {
     /** the visible text of the page being shown (a page-like sheet counts as the page: Saved Teams, Team Sheet, Compare's team picker) */
     text: () => pg.evaluate(() => { const T = e => e.innerText.replace(/\s+/g, ' ').trim(); const h = (location.hash || '').slice(1).replace(/=.*/, '');
       if (!window.V2 || !V2.pages[h]) throw new Error('not in v2 yet: page "' + (h ? '#' + h : 'Home (no hash)') + '"');
-      const m = document.querySelector('#main'), s = V2._sheet && V2._sheet.wrap.querySelector('.svt2,.ts2,.cx2-pick');
+      const m = document.querySelector('#main'), s = V2._sheet && V2._sheet.wrap.querySelector('.svt2,.ts2,.cx2-pick,.sga2');
       return [m ? T(m) : '', s ? T(s) : ''].filter(Boolean).join(' '); }),
     /** click the first VISIBLE control whose text matches (string = contains, case-insensitive; RegExp = test) */
     async tap(match, within = 'body', wait = 500) { const ok = await pg.evaluate(([m, isRe, w]) => {

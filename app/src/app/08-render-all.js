@@ -90,6 +90,15 @@ const lazyDirty=new Map();
 function lazyShown(id){const el=$(id);return !el||!el.closest('[hidden]')}
 function lazy(name,id,fn){if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}else lazyDirty.set(name,[id,fn])}
 function lazyFlush(){for(const [name,[id,fn]] of [...lazyDirty])if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}}
+// Offense, per type: who on the team hits it super effectively (R4, Nov 11: moved unchanged out of render(), shared with the
+// rebuild's Suggestions, whose Why? reasons and problem rows read it)
+function offenseRows(ms,useA){const ctx=teamContext(useA?ms:[]);
+  const perMon=ms.map(m=>{const mm=memberMoves(m);return {m,src:mm.src,en:attackEntries({...m,ability:useA?m.ability:null},mm.moves,ctx)}});
+  const entries=perMon.flatMap(x=>x.en);
+  const stabOnly=perMon.filter(x=>x.src==='stab').map(x=>x.m.d);
+  const tRows=TYPES.map(t=>{const hits=perMon.map(x=>({m:x.m,b:bestHit(x.en,[t],null)})).filter(h=>h.b&&h.b.x>=2);
+    return {t,hits,best:bestHit(entries,[t],null)}});
+  const covered=tRows.filter(r=>r.hits.length).length;return {perMon,entries,stabOnly,tRows,covered}}
 // every redraw starts from fresh calculations (shared with the rebuild, R4 Nov 11)
 function clearCaches(){pmCache=new Map();vCache=new Map();setCache=new Map();pairCache=new Map();relCache=new Map()}
 function render(){
@@ -120,13 +129,7 @@ function render(){
      </div>
      <div class="t2">×2 next to a type means 2 more of yours are weak to it than resist it.</div>${megaPickHtml(ms)}`;
   // offense
-  const ctx=teamContext(useA?ms:[]);
-  const perMon=ms.map(m=>{const mm=memberMoves(m);return {m,src:mm.src,en:attackEntries({...m,ability:useA?m.ability:null},mm.moves,ctx)}});
-  const entries=perMon.flatMap(x=>x.en);
-  const stabOnly=perMon.filter(x=>x.src==='stab').map(x=>x.m.d);
-  const tRows=TYPES.map(t=>{const hits=perMon.map(x=>({m:x.m,b:bestHit(x.en,[t],null)})).filter(h=>h.b&&h.b.x>=2);
-    return {t,hits,best:bestHit(entries,[t],null)}});
-  const covered=tRows.filter(r=>r.hits.length).length;
+  const {entries,stabOnly,tRows,covered}=offenseRows(ms,useA);
   $('offCard').innerHTML=`<div class="vtx"><div class="k">Offense${PG&&!PG.full?' · so far':''}</div><div class="v">${RDd?`You OHKO or 2HKO ${RDd.hit} of the top 30 threats`:'—'}</div>
      <div class="vsub">${covered}/18 types hit super effectively by at least one of yours</div></div>
      <div class="kv">${RDd&&RDd.noHit.length?`<span>Nothing 2HKOs</span><div style="font-size:13px">${RDd.noHit.slice(0,6).map(r=>esc(r.t.d)).join(', ')}<div class="t2">Top threats none of yours can OHKO or 2HKO with your moves (damage calc against their usual sets)</div></div>`:''}<span>Nobody hits super effectively</span><div class="chips">${tRows.filter(r=>!r.hits.length).map(r=>chip(r.t)).join('')||'<span class="none">None</span>'}</div>

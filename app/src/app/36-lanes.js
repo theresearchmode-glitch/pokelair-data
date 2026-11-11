@@ -35,14 +35,16 @@ const LANE = {
     out.length = 0; out.push(...keep); if (Array.isArray(out.more)) out.more.unshift(...moved.filter(pl => !out.more.includes(pl)));
     out.nothing = !keep.some(pl => pl._lane.k !== 'option') && !LANE.protFix(ms); return out; },
   // the line under a suggestion: what kind it is, and its honest size in real games
-  line(pl) { const L = pl && pl._lane; if (!L) return '';
+  // the same line as data, {k: 'fix' | 'swap' | 'opt', tag, text}, for the rebuild's own markup (R4, Nov 11); null when the plan has no lane
+  lineParts(pl) { const L = pl && pl._lane; if (!L) return null;
     if (L.k === 'fix') { const f = L.fixes[0], w = {clause: 'two of your Pokémon hold the same item, so the team can’t be registered; this frees it',
         mega: `adds a Mega: teams with no Mega won about ${L.fixes[0].pts} fewer games in 100`, reach: `makes the team ready for the top threats: teams that are win about ${Math.round(LANE.PTS.reach)} more in 100`}[f.k];
-      return `<span class="chlane ln-fix"><b>Fix</b> ${w}</span>`; }
-    if (L.k === 'swap') return `<span class="chlane ln-swap"><b>Small edge</b> about ${L.real} more win${L.real === 1 ? "" : "s"} in 100 games in real play</span>`;
+      return {k: 'fix', tag: 'Fix', text: w}; }
+    if (L.k === 'swap') return {k: 'swap', tag: 'Small edge', text: `about ${L.real} more win${L.real === 1 ? "" : "s"} in 100 games in real play`};
     const note = pl.gap && ((pl.gap.fix && pl.gap.fix.length) || (pl.gap.why || []).some(w => /^Meets the /.test(w)));
-    return note ? `<span class="chlane ln-opt"><b>Option</b> covers a team note; real games show no clear edge either way</span>`
-      : `<span class="chlane ln-opt"><b>Option</b> a small change: real games can’t tell it apart from what you have</span>`; },
+    return note ? {k: 'opt', tag: 'Option', text: 'covers a team note; real games show no clear edge either way'}
+      : {k: 'opt', tag: 'Option', text: 'a small change: real games can’t tell it apart from what you have'}; },
+  line(pl) { const x = LANE.lineParts(pl); return x ? `<span class="chlane ln-${x.k}"><b>${x.tag}</b> ${x.text}</span>` : ''; },
   // too little Protect: a set fix, not a swap. Members whose popular set runs Protect but whose moves here don't.
   protFix(ms) { if (!ms || ms.length !== 6) return null; const n = LANE.protCount(ms); if (n > 2) return null;
     const who = ms.filter(m => !LANE.moves(m).slice(0, 4).some(x => LANE.PROT.has(x)) && (popularMoves(m.p) || []).slice(0, 4).some(x => LANE.PROT.has(x && (x.name || x))));
