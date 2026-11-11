@@ -58,10 +58,8 @@ V2.pages.guide = {place: null, draw() {
     document.querySelectorAll('[data-v2slide]').forEach(sl => sl.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const bs = [...sl.querySelectorAll('button')], i = bs.indexOf(b);
       bs.forEach((x, k) => x.setAttribute('aria-pressed', k === i ? 'true' : 'false')); sl.style.setProperty('--i', i); }));
   }};
-// sheet and toast demos (the real ones live in the shell once pages use them)
+// sheet and toast demos use the shell's real ones
 document.addEventListener('click', e => {
-  if (e.target.closest('[data-v2sheet]')) { const s = document.createElement('div'); s.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet" role="dialog" aria-modal="true" aria-label="Example sheet"><button class="x" type="button" data-v2close aria-label="Close">✕</button><div style="padding:32px"><h2 class="u" style="font-size:var(--t28)">A sheet</h2><p style="margin-top:12px;color:var(--ink-2)">A solid surface over the page. Close it with ✕, Escape or a tap outside.</p></div></div>`; s.id = 'v2-sheet'; document.body.append(s); s.querySelector('.x').focus(); }
-  if (e.target.closest('[data-v2close]')) { const s = document.getElementById('v2-sheet'); if (s) s.remove(); }
+  if (e.target.closest('[data-v2sheet]')) V2.sheet(`<div style="padding:var(--s8)"><h2 class="u" style="font-size:var(--t28)">A sheet</h2><p style="margin-top:var(--s3);color:var(--ink-2)">A solid surface over the page. Close it with ✕, Escape or a tap outside; the keyboard returns to the button that opened it.</p></div>`, {label: 'Example sheet'});
   if (e.target.closest('[data-v2toast]')) V2.toast('Garchomp added to your team <button type="button">Undo</button>');
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { const s = document.getElementById('v2-sheet'); if (s) s.remove(); } });

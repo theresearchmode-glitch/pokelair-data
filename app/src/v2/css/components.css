@@ -104,3 +104,25 @@
 .np-dock .np-btn2{margin-left:auto}
 @media (max-width:699px){.np-dock{bottom:calc(56px + env(safe-area-inset-bottom,0px));gap:var(--s3)}.np-dock .np-btn2{display:none}.np-dock .six{flex:1;min-width:0;justify-content:flex-end}.np-dock .six img{flex:0 1 36px;min-width:0;width:36px;height:36px}}
 @media (max-width:379px){.np-dock .fine{display:none}}
+
+/* sheets: the page behind never scrolls while one is open */
+.np-locked{overflow:hidden}
+.np-sheet:focus{outline:0}
+.np-sheet.sm{top:12vh;bottom:auto;max-height:76vh;width:min(640px,calc(100% - 64px))}
+@media (max-width:699px){.np-sheet.sm{top:auto;bottom:0;width:100%;max-height:88vh}}
+/* search */
+.np-find{padding:var(--s8)}.np-find h2{font-size:var(--t28);margin-bottom:var(--s4)}
+.np-find .hits{margin-top:var(--s4);display:grid}
+.np-find .fine{padding:var(--s3) 0}
+.np-hit{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:var(--s3);min-height:56px;padding:var(--s1) var(--s2);text-align:left;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none;font:600 var(--t16)/1.2 var(--b)}
+.np-hit:last-child{border-bottom:0}
+.np-hit:hover,.np-hit:focus-visible{background:var(--wash)}
+.np-hit img{width:48px;height:48px;object-fit:contain}
+.np-hit .pg{font:600 var(--t13)/1 var(--b);color:var(--ink-3);text-align:center}
+.np-hit .ty,.np-monsheet .ty{display:flex;gap:var(--s1);flex-wrap:wrap}.np-hit .ty{flex-wrap:nowrap}
+.np-hit .mg{display:block}.np-hit .mg.none{display:none}
+@media (max-width:379px){.np-find{padding:var(--s6) var(--s4)}.np-hit{grid-template-columns:40px 1fr}.np-hit img{width:40px;height:40px}.np-hit .ty{grid-column:2}}
+/* the simple Pokémon sheet (the full info sheet replaces it in R4) */
+.np-monsheet{display:flex;align-items:center;gap:var(--s8);padding:var(--s8)}
+.np-monsheet h2{font-size:var(--t34);margin-bottom:var(--s3)}.np-monsheet .fine{margin-top:var(--s3)}
+@media (max-width:699px){.np-monsheet{flex-direction:column;text-align:center}.np-monsheet .ty{justify-content:center}}

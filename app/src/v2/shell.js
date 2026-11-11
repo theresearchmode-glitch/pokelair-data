@@ -14,7 +14,7 @@ V2.byName = new Map((typeof ROSTER === 'object' ? ROSTER : []).map(p => [p.n, p]
 V2.disp = n => { const p = V2.byName.get(n); return p && p.d ? p.d : n.replace(/^(.*)-Mega(?:-(\w+))?$/, (m, b, x) => 'Mega ' + b + (x ? ' ' + x : '')); };
 V2.nameHtml = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span>${V2.esc(d.slice(5))}` : `<span class="mg none" aria-hidden="true">&nbsp;</span>${V2.esc(d)}`;
 V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
-  return `<div class="np-mon${o.sel ? ' sel' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}<b>${V2.nameHtml(V2.disp(n))}</b>${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
+  return `<div class="np-mon${o.sel ? ' sel' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}${o.bare ? '' : `<b>${V2.nameHtml(V2.disp(n))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
 // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
 V2.ICON = {search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>'};
 // one toast at a time, always just above the team dock and the phone bar (whichever is higher on screen)
@@ -23,6 +23,46 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
   const tops = [...document.querySelectorAll('.np-dock,.np-bar')].map(e => e.getBoundingClientRect()).filter(r => r.height && r.top < innerHeight).map(r => r.top);
   if (tops.length) t.style.bottom = (innerHeight - Math.min(...tops) + 12) + 'px';
   clearTimeout(V2._tt); V2._tt = setTimeout(() => t.remove(), ms); return t; };
+// ---------- sheets: one at a time; focus moves in, stays in (Tab wraps), and returns to what opened it ----------
+V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : document.activeElement; V2.closeSheet(true);
+  const wrap = document.createElement('div'); wrap.className = 'np-sheetwrap';
+  wrap.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet${o.small ? ' sm' : ''}" role="dialog" aria-modal="true" aria-label="${V2.esc(o.label || 'Details')}" tabindex="-1"><button class="x" type="button" data-v2close aria-label="Close">✕</button>${html}</div>`;
+  document.body.append(wrap); document.documentElement.classList.add('np-locked');
+  V2._sheet = {wrap, back, onClose: o.onClose};
+  const first = wrap.querySelector(o.focus || '.np-sheet'); (first || wrap.querySelector('.np-sheet')).focus({preventScroll: true});
+  return wrap.querySelector('.np-sheet'); };
+V2.closeSheet = quiet => { const S = V2._sheet; if (!S) return; V2._sheet = null; S.wrap.remove(); document.documentElement.classList.remove('np-locked');
+  if (S.onClose) try { S.onClose(); } catch (e) {} if (!quiet && S.back && S.back.isConnected) S.back.focus({preventScroll: true}); };
+document.addEventListener('click', e => { if (V2._sheet && e.target.closest('[data-v2close]')) V2.closeSheet(); });
+document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
+  if (e.key === 'Escape') { e.preventDefault(); V2.closeSheet(); return; }
+  if (e.key !== 'Tab') return; const f = [...S.wrap.querySelectorAll('.np-sheet a[href],.np-sheet button,.np-sheet input,.np-sheet [tabindex="0"]')].filter(x => x.offsetParent);
+  if (!f.length) return; const i = f.indexOf(document.activeElement);
+  if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } });
+
+// ---------- search: places and Pokémon, from the header button or the / key ----------
+V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: []};
+  const norm = x => x.toLowerCase().replace(/[^a-z0-9]/g, ''), nq = norm(q);
+  const places = V2.places.filter(([, n]) => n.toLowerCase().includes(q));
+  const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
+    return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
+  return {places, mons}; };
+V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon or a page" aria-label="Find a Pokémon or a page" autocomplete="off"></label><div class="hits" data-v2hits aria-live="polite"></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
+  const inp = sh.querySelector('[data-v2q]'), out = sh.querySelector('[data-v2hits]');
+  const draw = () => { const r = V2.find(inp.value);
+    out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, or a page like Battle.</p>'
+      : !r.places.length && !r.mons.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
+      : r.places.map(([k, n]) => `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><b>${n}</b></a>`).join('')
+        + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join(''); };
+  inp.addEventListener('input', draw);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
+  draw(); };
+// a Pokémon picked anywhere opens its info sheet; pages replace V2.openMon when the full sheet is built (R4)
+V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
+  V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p></div></div>`, {label: V2.disp(n), small: true}); };
+document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m) { e.preventDefault(); V2.openMon(m.dataset.v2mon); }
+  if (e.target.closest('[data-v2search]')) V2.openSearch(); });
+document.addEventListener('keydown', e => { if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
 V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle', 'Battle'], ['meta', 'Meta']];
 V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 'day';
 V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.draw(); };

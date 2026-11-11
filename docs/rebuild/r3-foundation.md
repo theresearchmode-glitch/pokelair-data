@@ -45,8 +45,9 @@ design until the switch (R5).
 - [x] rb3-core: tokens, base, components, sprites (the upscaled art in one place, swappable, per the ownership rule) (Nov 11:
   plate, outline button, link, chip, type chip, tabs, slider, field, Pokémon on a floor, tilted selection, score lockup, forms strip,
   sheet, toast, underdog, team dock; every colour, display size and type colour is a token)
-- [ ] rb3-core: the shell (header, navigation, phone bar, search, footer, sheets, toasts, team dock). Drawn: header, nav, phone bar,
-  footer, theme, toasts (V2.toast sits above the dock). Still to wire: the search sheet and the real sheet open/close with focus return.
+- [x] rb3-core: the shell (header, navigation, phone bar, search, footer, sheets, toasts, team dock) (Nov 11: V2.sheet keeps focus
+  inside and returns it on close, locks the page behind, closes on ✕ / Escape / outside tap; search from the header or the / key finds
+  pages and Pokémon; V2.openMon is the hook the full info sheet replaces in R4)
 - [ ] rb3-guide: the living style guide page, published to the redesign artifact for Sim
 - [x] rb3-guard: guard rails and the polish check for v2 (Nov 11: `app/test/v2-guard.mjs` runs before every `--v2` build and on
   GitHub; it fails on !important outside reduced motion, id selectors, sizes off the type scale, spacing off the 4px grid and colours
