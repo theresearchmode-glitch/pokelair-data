@@ -65,10 +65,11 @@ export default (ui, pg, o) => {
     foldContent: title => pg.evaluate(t => { const d = [...document.querySelectorAll('details')].filter(e => e.getClientRects().length).find(e => { const s = e.querySelector('summary'); return s && s.innerText.replace(/\s+/g, ' ').toLowerCase().includes(t.toLowerCase()); }); return d ? d.innerText.replace(/\s+/g, ' ').trim() : null; }, title),
     tapLabel: (label, wait = 500) => tapFound(l => [...document.querySelectorAll('[aria-label]')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => e.getAttribute('aria-label').toLowerCase().includes(l.toLowerCase())) || null, label, 'label ' + label, wait),
     labelOf: label => pg.evaluate(l => { const e = [...document.querySelectorAll('[aria-label]')].filter(e => e.getClientRects().length).find(e => e.getAttribute('aria-label').toLowerCase().includes(l.toLowerCase())); return e ? e.getAttribute('aria-label') : null; }, label),
-    tapText: (m, wait = 500) => tapFound(([m, isRe]) => { const re = isRe ? new RegExp(m[0], m[1]) : null; const t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
+    // casing never counts (the new build writes buttons in Title Case, Sim Nov 9); a button's accessible name counts as its words too
+    tapText: (m, wait = 500) => tapFound(([m, isRe]) => { const re = isRe ? new RegExp(m[0], m[1].includes('i') ? m[1] : m[1] + 'i') : null; const t = e => (e.innerText || '').replace(/\s+/g, ' ').trim(), al = e => (e.getAttribute && e.getAttribute('aria-label')) || '';
         // an open sheet sits over the page: look in it first (a player can only reach the sheet)
         const root = (window.V2 && V2._sheet && V2._sheet.wrap) || document;
-        return [...root.querySelectorAll('button,a,[role=button],summary')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => re ? re.test(t(e)) : t(e).toLowerCase().includes(m.toLowerCase())) || null; },
+        return [...root.querySelectorAll('button,a,[role=button],summary')].filter(e => e.getClientRects().length && !e.closest('[hidden]')).find(e => re ? (re.test(t(e)) || re.test(al(e))) : (t(e) + ' ' + al(e)).toLowerCase().includes(m.toLowerCase())) || null; },
       [m instanceof RegExp ? [m.source, m.flags] : m, m instanceof RegExp], 'text ' + m, wait),
     setWidth: async (w, h = 900) => { await pg.setViewportSize({width: w, height: h}); await pg.waitForTimeout(700); },
     pageScrollY: () => pg.evaluate(() => Math.round(window.scrollY)),
@@ -149,7 +150,7 @@ export default (ui, pg, o) => {
     undoBar: () => NOT('Undo bar for applied suggestions (only the toast Undo)'), undoLastApplied: () => NOT('Undo bar for applied suggestions (only the toast Undo)'),
     // edit panel: Edit Set (.ed2), and the other panels today's #chEdit hosts: Import (.imp2), Save (.sv2), Add (search sheet)
     editPanel: () => pg.evaluate(() => { const w = window.V2 && V2._sheet && V2._sheet.wrap, s = w && w.querySelector('.np-sheet'); if (!s) return null; const c = s.querySelector('.ed2,.imp2,.sv2,.np-find'); if (!c) return null;
-      const h = c.querySelector('h2'), ht = h ? h.innerText.replace(/\s+/g, ' ').trim() : ''; return {title: c.classList.contains('ed2') ? 'Edit ' + ht : ht, text: s.innerText.replace(/\s+/g, ' ').trim()}; }),
+      const h = c.querySelector('h2'), ht = h ? h.innerText.replace(/\s+/g, ' ').trim() : ''; return {title: c.classList.contains('ed2') && !/^Add a Pok/.test(ht) ? 'Edit ' + ht : ht, text: s.innerText.replace(/\s+/g, ' ').trim()}; }),
     openEditPanel: async name => { await H.showSet(name); await click('#main #tm-set [data-v2edit]', 900); await H.settle(); },
     closeEditPanel: () => closeSheet(),
     editStrip: () => pg.evaluate(() => [...document.querySelectorAll('.ed2 .ed-pk')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),

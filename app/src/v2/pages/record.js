@@ -23,7 +23,7 @@ V2.ygHtml = () => { const ms = members(), q = V2.ql, E = V2.esc, so = (S.opp || 
       <div class="hits yg2-hits">${hits.map(p => `<button type="button" class="np-hit" data-ygopp="${E(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b></button>`).join('')}</div>` : ''}
     ${so.length && !q.opp.length ? `<button type="button" class="np-link yg2-bm" data-ygbm>Use their ${so.length} from Battle mode: ${E(so.slice(0, 3).map(n => byName.get(n).d).join(', '))}${so.length > 3 ? '…' : ''}</button>` : ''}
     <div class="yg2-res"><button type="button" class="np-btn" data-ygres="W">Win</button><button type="button" class="np-btn2" data-ygres="L"><span>Loss</span></button></div></div>`; };
-V2.ygOpen = () => { V2.ql.leads = []; V2.ql.opp = []; V2.ql.q = ''; V2.sheet(V2.ygHtml(), {label: 'Log a game', small: true}); };
+V2.ygOpen = () => { V2.ql.leads = []; V2.ql.opp = []; V2.ql.q = ''; V2.sheet(V2.ygHtml(), {label: 'Log a game', small: true, focus: '[data-yglead]'}); };
 V2.ygRe = focusQ => { const box = document.querySelector('.yg2'); if (!box) return; box.outerHTML = V2.ygHtml();
   if (focusQ) { const i = document.querySelector('[data-ygq]'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } } };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-yglog],[data-yglead],[data-ygoppx],[data-ygopp],[data-ygbm],[data-ygres],[data-ygundo]'); if (!t) return; const d = t.dataset, q = V2.ql;

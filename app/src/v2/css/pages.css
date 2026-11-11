@@ -428,3 +428,4 @@
 .cm2-all{display:inline-flex;align-items:center;min-height:var(--tap)}
 .cm2 .tm-sub{margin:0}.cm2 .cm2-what{margin-top:var(--s3);color:var(--ink)}
 .svt2-cmp{margin:0 0 var(--s4);font-size:var(--t15);line-height:1.5}.svt2-cmp .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0}
+.tm-gone{margin:var(--s2) 0 0;max-width:52ch}

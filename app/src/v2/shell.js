@@ -12,7 +12,7 @@ V2.typeChip = t => `<span class="np-type"${V2.TYPES.includes(t) ? ` style="--tc:
 // a Pokémon by its site name (ROSTER .n), drawn standing on its floor; opts: {sel, sub, iw}
 V2.byName = new Map((typeof ROSTER === 'object' ? ROSTER : []).map(p => [p.n, p]));
 V2.disp = n => { const p = V2.byName.get(n); return p && p.d ? p.d : n.replace(/^(.*)-Mega(?:-(\w+))?$/, (m, b, x) => 'Mega ' + b + (x ? ' ' + x : '')); };
-V2.nameHtml = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span>${V2.esc(d.slice(5))}` : `<span class="mg none" aria-hidden="true">&nbsp;</span>${V2.esc(d)}`;
+V2.nameHtml = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span> ${V2.esc(d.slice(5))}` : `<span class="mg none" aria-hidden="true">&nbsp;</span>${V2.esc(d)}`;
 V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
   return `<div class="np-mon${o.sel ? ' sel' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}</div>${o.bare ? '' : `<b>${V2.nameHtml(V2.disp(n))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
 // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
@@ -47,12 +47,15 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
-V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon or a page" aria-label="Find a Pokémon or a page" autocomplete="off"></label><div class="hits" data-v2hits aria-live="polite"></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
+V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, a saved team or a page" aria-label="Find a Pokémon, a saved team or a page" autocomplete="off"></label><div class="hits" data-v2hits aria-live="polite"></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
   const inp = sh.querySelector('[data-v2q]'), out = sh.querySelector('[data-v2hits]');
-  const draw = () => { const r = V2.find(inp.value);
-    out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, or a page like Battle.</p>'
-      : !r.places.length && !r.mons.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
+  // saved teams by name too (today's search does): choosing one opens it, like Open in Saved Teams
+  const teams = q => { q = q.trim().toLowerCase(); return q && typeof S === 'object' ? S.teams.filter(t => t.format !== 'singles' && String(t.name).toLowerCase().includes(q)).slice(0, 4) : []; };
+  const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value);
+    out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>'
+      : !r.places.length && !r.mons.length && !tm.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
       : r.places.map(([k, n]) => `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><b>${n}</b></a>`).join('')
+        + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
         + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join(''); };
   inp.addEventListener('input', draw);
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
@@ -62,7 +65,7 @@ V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
   V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p>${V2.addBtn ? V2.addBtn(n) : ''}</div></div>`, {label: V2.disp(n), small: true}); };
 document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m) { e.preventDefault(); V2.openMon(m.dataset.v2mon); }
   if (e.target.closest('[data-v2search]')) V2.openSearch(); });
-document.addEventListener('keydown', e => { if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
+document.addEventListener('keydown', e => { if ((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey) && !e.altKey) { e.preventDefault(); if (!V2._sheet) V2.openSearch(); return; } if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
 // ---------- the Apple-style slider (Sim's favourite, kept from today's site; design-system.md "Slider") ----------
 // 2-4 choices, each an icon beside its name; the dark plate slides to the chosen one. Same icons as today's sliders (SLIDE_P /
 // SLIDE_N in 05-icons.js, found by the choice's name). Real buttons with aria-pressed; arrow keys move between choices; picking
