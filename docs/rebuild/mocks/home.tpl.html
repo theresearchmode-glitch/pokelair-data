@@ -87,7 +87,7 @@ h2.u{font-size:34px}.sub{font-size:15px;color:var(--ink-2);margin-top:4px}
 .fold small{display:block;font:400 13px/1.5 var(--b);color:var(--ink-2)}.fold i{font-style:normal;font-size:20px;color:var(--ink-3)}
 footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}footer svg{height:24px}footer .r{margin-left:auto;display:flex;gap:32px}
 @media (max-width:1179px){:root{--gut:48px}.ud{grid-template-columns:minmax(0,1fr)}.six .pk{--iw:84px;--pw:84px}.hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px}.hero h1{font-size:48px}
-  .three .one{--iw:200px;--pw:170px}.three .two{--iw:110px;--pw:100px}.duel,.meta2{gap:40px}.duel .row .btn2{flex:1 1 0;min-width:0;padding:0 12px}.duel .row a{flex-basis:100%}.tools{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .three .one{--iw:200px;--pw:170px}.three .two{--iw:110px;--pw:100px}.duel,.meta2{gap:40px}.duel .row .btn2{flex:1 1 0;min-width:0;padding:0 12px;white-space:nowrap}.duel .row a{flex-basis:100%}.tools{grid-template-columns:repeat(3,minmax(0,1fr))}
   nav{gap:24px}footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0}}
 @media (max-width:699px){.duel,.meta2{grid-template-columns:minmax(0,1fr);gap:48px}}
 @media (max-width:779px){.meta2{grid-template-columns:minmax(0,1fr);gap:48px}}
@@ -101,11 +101,18 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .ud{grid-template-columns:1fr;justify-items:center;text-align:center}.ud .k{justify-content:center}.ud .row{justify-content:center}
   .fold{padding:16px var(--gut)}}
 @media (max-width:379px){.rk li span,.pk b{font-stretch:80%}.rk li{gap:8px}.hero h1{font-size:28px}.go{grid-template-columns:minmax(0,1fr)}}
+.pk img{transform:translateY(calc(var(--fo,0)*100%))}.pk b .mg0{visibility:hidden}
+.three .pk b .mg0{display:none}
 </style></head><body><div class="page" id="page"></div>
 <script>
 document.documentElement.dataset.theme=location.hash.slice(1)||'light';
 /*DATA*/
-const nm=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.slice(5))}`:esc(d);
+const nm=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.slice(5))}`:`<span class="mg mg0" aria-hidden="true">&nbsp;</span>${esc(d)}`;
+// feet on one line (Sim, Nov 11): each picture has its own empty margin under the feet; measure it and drop the art by that much
+async function footPad(src){const im=new Image();im.src=src;await im.decode();const S=96,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
+  const k=Math.min(S/im.naturalWidth,S/im.naturalHeight),w=im.naturalWidth*k,h=im.naturalHeight*k;x.drawImage(im,(S-w)/2,S-h,w,h);const d=x.getImageData(0,0,S,S).data;
+  for(let y=S-1;y>=0;y--){for(let i=0;i<S;i++)if(d[(y*S+i)*4+3]>40)return (S-1-y)/S;}return 0;}
+
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
 function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
 function norm(c){const[h,s0]=hsl(...c),s=Math.max(s0,.72),l=.56,C=(1-Math.abs(2*l-1))*s,X=C*(1-Math.abs((h/60)%2-1)),m=l-C/2,k=Math.floor(h/60)%6;return[[C,X,0],[X,C,0],[0,C,X],[0,X,C],[X,0,C],[C,0,X]][k].map(v=>Math.round((v+m)*255));}
@@ -114,8 +121,8 @@ async function hue(src){const im=new Image();im.src=src;await im.decode();const 
   const o=B.map((b,i)=>({c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[150,150,165],w:b[3]})).sort((a,b)=>b.w-a.w);return o[0].c;}
 (async()=>{
   const DK=document.documentElement.dataset.theme==='dusk',CP={};
-  const all=[...D.used,...D.champ.mons,...D.team];await Promise.all(all.map(async m=>{CP[m.img]=CP[m.img]||norm(await hue(m.img)).join(',');}));
-  const pk=(m,cls,inner)=>`<div class="pk ${cls||''}" style="--cp:${CP[m.img]}"><i class="sh"></i><img src="${m.img}" alt="">${inner}</div>`;
+  const all=[...D.used,...D.champ.mons,...D.team];const FO={};await Promise.all(all.map(async m=>{CP[m.img]=CP[m.img]||norm(await hue(m.img)).join(',');FO[m.img]=FO[m.img]??await footPad(m.img);}));
+  const pk=(m,cls,inner)=>`<div class="pk ${cls||''}" style="--cp:${CP[m.img]};--fo:${(FO[m.img]||0).toFixed(3)}"><i class="sh"></i><img src="${m.img}" alt="">${inner}</div>`;
   const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a class="on">Home</a><a>Build</a><a>My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const [u1,u2,u3]=D.used;
   const hero=`<section class="hero"><div><div class="eyebrow">Pokémon Champions · Reg M-C · VGC doubles</div><h1 class="u"><span>Sharply raise</span><span class="pl">your win rate.</span></h1>

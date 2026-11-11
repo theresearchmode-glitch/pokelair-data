@@ -74,6 +74,8 @@ Sim chose these in conversation on Nov 11. They override anything earlier in thi
 
 - **Forms in the info sheet** (Sim, Nov 11): any Pokémon with a Mega (or more than one, like Charizard X / Y or Garchomp / Garchomp Z) shows a "N forms" strip at the top of its sheet. There is one tab per form, each with its art on a small floor, its name and its rating. The open form stands on the tilted panel in its own colour. A tap swaps the whole sheet to that form and keeps the same tab open (role=tablist, arrow keys on desktop). Mock-up: docs/rebuild/mocks/sheet.html.
 
+- **Rows of Pokémon line up** (Sim, Nov 11: "not in a line, it's not symmetrical"). In any row of Pokémon, the feet sit on one line, so the art is dropped by each picture's own empty margin under the feet (measured from the image). Names sit on one line too: every name reserves the space of the small "MEGA" label, so a Mega never pushes its name below its neighbours. Items and ratings line up under the names.
+
 Corrections to the reference README:
 - The "85 vs 92" is not two sources. 85 is the raw total in ratings_log and 92 is the displayed rating after RS(). One function shows both, so there is nothing to merge.
 - "Saved on this device only" is true only for the public site. Today's site syncs to the Claude account, so the first-visit note needs two versions.
