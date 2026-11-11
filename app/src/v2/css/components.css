@@ -115,6 +115,9 @@
 .np-sheet:focus{outline:0}
 .np-sheet.sm{top:12vh;bottom:auto;max-height:76vh;width:min(640px,calc(100% - 64px))}
 @media (max-width:699px){.np-sheet.sm{top:auto;bottom:0;width:100%;max-height:88vh}}
+/* phones: an open sheet sits above the on-screen keyboard (--kb, set from visualViewport in shell.js; 0 when no keyboard) */
+:root{--kb:0px}
+@media (max-width:699px){.np-sheet{bottom:var(--kb);max-height:min(92vh,calc(100vh - var(--kb) - var(--s10)))}.np-sheet.sm{bottom:var(--kb);max-height:min(88vh,calc(100vh - var(--kb) - var(--s10)))}}
 /* search */
 .np-find{padding:var(--s8)}.np-find h2{font-size:var(--t28);margin-bottom:var(--s4)}
 .np-find .hits{margin-top:var(--s4);display:grid}
