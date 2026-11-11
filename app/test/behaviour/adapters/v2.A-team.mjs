@@ -120,7 +120,8 @@ export default (ui, pg, o) => {
     tapTile: name => tapFound(n => [...document.querySelectorAll('#main [data-tmsel]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || '').split(', ')[0] === n) || null, name, 'tile ' + name, 700),
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-tmsel]')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     /** the selected Pokémon's set (the Set section) */
-    setCard: () => txt('#main #tm-set'),
+    /** the set card: the Set section plus the strip under the six, which carries its place in the plan (Sim's review, Nov 11, item 5) */
+    setCard: () => pg.evaluate(() => [...document.querySelectorAll('#main .sx-act .sx-an, #main #tm-set')].map(e => e.innerText.replace(/\s+/g, ' ').trim()).join(' ')),
     /** how many moves the set card shows */
     setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *')].filter(e => e.getClientRects().length).length),
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },

@@ -6,6 +6,7 @@ Newest first. File: app/test/behaviour/A-team.mjs unless named.
 
 | Date | Test | Old expectation | New expectation | Why / what it still checks |
 |---|---|---|---|---|
+| Nov 11 | TEAM-10 (adapter setCard) | Set card text read from the Set section | Set section plus the strip's name line under the six | Sim's review item 5: the role ("Leads with …") is said once, in the strip. The test text is unchanged and still requires the role. New: pass. |
 | Nov 11 | MU-01 | Top 10 is the default view | Top 10 (today) or Stand-outs (new build) is the default; All 30 still remembered after reload | Sim chose Stand-outs as the new build's first view. Still checks the choice is remembered. Today: pass. New: pass. |
 | Nov 11 | MU-02 | Starts on the default view and reads the Top 10 | Picks Top 10 first if the new build opened on Stand-outs, then the same checks | The Top 10 checks are unchanged. Today: pass. New: pass. |
 | Nov 11 | CMP-04 | "Ready for the top 30 threats" row | That, or "Matchups (damage calc, top 30)" | Word list: Matchups, not "ready for the top 30". Same row, same numbers. |

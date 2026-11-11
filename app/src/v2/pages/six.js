@@ -16,7 +16,8 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   const plan = L.lead.length >= 2 ? `<p class="sx-plan"><span class="sx-pl">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${pair(L.lead)}</b>${L.back.length ? `, back ${pair(L.back)}` : ''}${L.bench.length ? `, bench ${pair(L.bench)}` : ''}.</span>${L.by === 'you' ? `<button type="button" class="np-link sx-reset" data-v2lead="">Use NastyPlot's pick</button>` : ''}</p>` : '';
   // the action strip (Sim, Nov 11: pictures stay clean; today's "−" to remove): one slim row under the six for the picked Pokémon
   const act = sel && ms.includes(sel) ? (() => { const lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = L.lead.length && !L.lead.includes(sel);
-    return `<div class="sx-act" role="group" aria-label="${E(sel.d)}"><b class="sx-an">${V2.nameHtml(sel.d)}</b><div class="sx-ab">`
+    const rt = L.lead.length && ms.length >= 4 ? roleText(sel, L, x => escName(x.d)) : ''; // its place in the plan, said once here (Sim's review, Nov 11, item 5)
+    return `<div class="sx-act" role="group" aria-label="${E(sel.d)}"><p class="sx-an"><b>${V2.nameHtml(sel.d)}</b>${rt ? `<span class="sx-rt">${rt}</span>` : ''}</p><div class="sx-ab">`
       + `<button type="button" class="sx-a" data-v2rm="${sel.i}" aria-label="Remove ${E(sel.d)} from your team"><i aria-hidden="true">−</i>Remove</button>`
       + `<button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button>`
       + (lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : '')
@@ -26,10 +27,9 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
 // the set card (TEAM-10; Sim, Nov 11: no second big picture, the six above already shows it on its floor ring): its place in the plan, the rating with its tier, item, Ability, nature and stat points (yours or what
 // most players run), the four moves, then Edit Set, Set as Lead (not already a lead) and its Info Sheet. Today's words throughout.
 V2.setSecHtml = (D, sel) => { const m = sel, P = m.p, E = V2.esc, L = D.ms.length >= 4 ? D.L : null, R = monRating(P), N = natInfo(m);
-  const role = L && L.lead.length ? `<p class="tm-sub sx-role">${roleText(m, L, x => escName(x.d))}${L.by === 'meta' ? ' ' + PLAN_VS.meta : ''}</p>` : '';
   const lead = L && L.lead.length && !L.lead.includes(m) ? `<button type="button" class="np-btn2" data-v2lead="${E(P.n)}"><span>Set as Lead</span></button>` : '';
   const row = (k, v, note) => `<div><dt>${k}</dt><dd>${v}${note ? ` <small>${note}</small>` : ''}</dd></div>`;
-  return `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2>${role}<div class="tm-setgrid sx-noart"><div>
+  return `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid sx-noart"><div>
     <h3 class="u">${V2.nameHtml(m.d)}</h3><div class="tm-types">${(P.t || []).map(V2.typeChip).join('')}${R ? `<span class="sx-rate2"><b class="u">${R.n}</b> ${R.tier ? E(R.tier) + ' tier rating' : 'Rating'}</span>` : ''}</div>
     <dl class="sx-kv">${row('Item', E(m.heldItem || m.item || 'No item'))}${row('Ability', E(m.ability || 'None'))}${N.nat ? row('Nature', E(N.nat), N.natNote) : ''}${N.words ? row('Stat points', E(N.words), N.ptsNote) : ''}</dl>
     <div class="tm-moves">${m.moves.filter(Boolean).map(v => `<span class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(v.type) ? v.type : 'Normal'})">${E(v.name)}</span>`).join('')}</div>
