@@ -137,7 +137,6 @@ export default (ui, pg, o) => {
     tipBubble: () => txt('#tipPop'),
     /** shortcut for "edit this Pokémon's four moves" (the rebuild may do it through its edit panel) */
     giveMoves: (name, moves) => ui.peek(`(()=>{const i=S.slots.findIndex(s=>s.n===${JSON.stringify(name)});S.slots[i].mv={doubles:${JSON.stringify(moves)}};render();return i})()`).then(() => pg.waitForTimeout(1500)),
-    movesOf: name => ui.peek(`(()=>{const m=members().find(m=>m.p&&m.p.n===${JSON.stringify(name)});return m?(m.mv||m.moves||null):null})()`),
     // suggestions
     suggestionCards: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] [data-plan]')].filter(e => e.getClientRects().length && !e.closest('#chScout')).map(b => { let c = b; for (let k = 0; k < 6 && c.parentElement && !/(for|added)/.test(c.innerText.split('Apply')[0]); k++) c = c.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); })),
     applySuggestionCard: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('[data-pane="report"] [data-plan]')].filter(e => e.getClientRects().length && !e.closest('#chScout'))[i]; b.click(); }, i).then(() => pg.waitForTimeout(1500)),
@@ -224,7 +223,6 @@ export default (ui, pg, o) => {
     sliderIndex: label => pg.evaluate(l => { const b = [...document.querySelectorAll('[data-slt]')].find(e => e.getClientRects().length && e.dataset.slt.toLowerCase() === l.toLowerCase()); const g = b && b.closest('.ar-slide'); return g ? g.dataset.sli + '|' + getComputedStyle(g).getPropertyValue('--i') : null; }, label),
     pageLuminance: () => pg.evaluate(() => { const c = getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g).map(Number); return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255; }),
     // the team the page holds (names; same as ui.team) and saved state helpers
-    leadsSaved: () => ui.peek('S.leads||null'),
     /** dev-only path: a slot holds a Pokémon that has since left the regulation (as after a roster change) */
     retirePokemonInSlot: (i, name) => ui.peek(`S.slots[${i}]={n:${JSON.stringify(name)},a:null,lock:false};render()`).then(() => pg.waitForTimeout(1200)),
   };
