@@ -111,11 +111,13 @@ export default (ui, pg, o) => {
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     lockOnTile: async name => { if (!(await has(`[data-pane="report"] [data-lock][aria-label*="${name}"]`))) await H.tapTile(name); await click(`[data-pane="report"] [data-lock][aria-label*="${name}"]`, 700); },
     tileLockLabel: name => pg.evaluate(n => { const e = [...document.querySelectorAll('[data-pane="report"] [data-lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n)); return e ? e.getAttribute('aria-label') : null; }, name),
-    removeFromTeam: async name => { if (!(await has(`[data-pane="report"] .ar-rmx[aria-label*="${name}"]`))) await H.tapTile(name); await click(`[data-pane="report"] .ar-rmx[aria-label*="${name}"]`, 800); },
+    removeFromTeam: async name => { await H.settle(400, 5000); if (!(await has(`[data-pane="report"] .ar-rmx[aria-label*="${name}"]`))) await H.tapTile(name); await click(`[data-pane="report"] .ar-rmx[aria-label*="${name}"]`, 800); },
     gamePlanLine: () => pg.evaluate(() => { const m = (document.querySelector('[data-pane="report"]') || document.body).innerText.replace(/\s+/g, ' ').match(/Game plan[^.]*\./); return m ? m[0] : null; }),
     homePlanLine: () => pg.evaluate(() => { const m = (document.querySelector('[data-pane="home"]') || document.body).innerText.replace(/\s+/g, ' ').match(/Game plan[^.]*\./); return m ? m[0] : null; }),
     /** ⋯ team menu */
     openMoreActions: async () => { if (!(await pg.evaluate(() => { const s = document.querySelector('summary[aria-label="More team actions"]'); return s && s.parentElement.open; }))) await click('summary[aria-label="More team actions"]', 400); },
+    /** tap one of the team actions under Your Six (Saved Teams, My Box, Compare with…, Save team, Share…) */
+    teamAction: name => tapFound(n => { const p = document.querySelector('#chActs'); return p ? [...p.querySelectorAll('button')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim() === n) || null : null; }, name, 'team action ' + name, 900),
     teamActions: () => pg.evaluate(() => { const p = document.querySelector('#chActs') || document.querySelector('[data-pane="report"]'); return [...p.querySelectorAll('button,summary')].filter(e => e.getClientRects().length).map(e => (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim()).filter(Boolean); }),
     jumpBar: () => pg.evaluate(() => [...document.querySelectorAll('[data-arjump]')].filter(e => e.getClientRects().length).map(e => (e.dataset.slt || e.innerText).trim())),
     jumpTo: name => pg.evaluate(n => { const e = [...document.querySelectorAll('[data-arjump]')].filter(e => e.getClientRects().length).find(e => (e.dataset.slt || e.innerText).trim() === n); e.click(); }, name).then(() => pg.waitForTimeout(900)),

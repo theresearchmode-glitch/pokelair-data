@@ -219,9 +219,9 @@ t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => 
 t('TEAM-13', 'Team actions row: Save/Update label, ⋯ menu; empty team keeps only Saved Teams, My Box, ⋯ Import', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.openMoreActions(); const a = await r.ui.teamActions();
   for (const s of ['Saved Teams', 'My Box', 'Compare with…', 'Copy for Showdown', 'Save team', 'Share', 'Import', 'Export', 'Clear team']) ok(a.includes(s), 'no action ' + s + ' in ' + a.join('|'));
-  await r.ui.tapText('Saved Teams', 900); ok(await r.ui.current() === 'teams', 'Saved Teams did not open'); await r.ui.go('My Team', 800);
-  await r.ui.tapText(/^My Box$/, 900); ok(await r.ui.current() === 'box', 'My Box did not open'); await r.ui.go('My Team', 800);
-  await r.ui.tapText('Compare with…', 900); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.go('My Team', 800);
+  await r.ui.teamAction('Saved Teams'); ok(await r.ui.current() === 'teams', 'Saved Teams did not open'); await r.ui.go('My Team', 800);
+  await r.ui.teamAction('My Box'); ok(await r.ui.current() === 'box', 'My Box did not open'); await r.ui.go('My Team', 800);
+  await r.ui.teamAction('Compare with…'); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.go('My Team', 800);
   await r.ui.switchTeam('Rain test'); ok((await r.ui.teamActions()).includes('Update saved team'), 'open saved team: no "Update saved team"');
   await r.ui.clearTeam(); await r.ui.openMoreActions(); const e = await r.ui.teamActions();
   for (const s of ['Save team', 'Update saved team', 'Share']) ok(!e.includes(s), 'empty team still shows ' + s);
@@ -721,26 +721,26 @@ t('BOX-07', 'Empty box: Darkrai, "Your box is empty…", "Add a Pokémon" focuse
 
 // ================= 11. Compare =================
 t('CMP-01', 'My Team "Compare with…": Compare page with My team as A, "Pick team B"', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.tapText('Compare with…', 1200); ok(await r.ui.current() === 'compare', 'Compare did not open'); const tx = await r.ui.text();
+  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); ok(await r.ui.current() === 'compare', 'Compare did not open'); const tx = await r.ui.text();
   has(tx, /Compare · two teams side by side|Compare Teams|Compare teams/i); has(tx, 'Pick team B'); has(tx, /My team, open now|My Team/); has(tx, '← My Team'); await r.close(); });
 
 t('CMP-02', 'Team headers A/B with source and Change; "Swap A and B" swaps the columns', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.tapText('Compare with…', 1200); await r.ui.pickCompareTeam('Rain test'); await r.ui.settle();
+  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); await r.ui.pickCompareTeam('Rain test'); await r.ui.settle();
   let h = await r.ui.compareHeads(); ok(h.length === 2 && /My team/i.test(h[0]) && /Rain test/.test(h[1]) && /Saved team/.test(h[1]), 'heads: ' + h.join(' || ')); has(h.join(' '), /Change/);
   await r.ui.tapText(/Swap A and B/, 1200); await r.ui.settle(); h = await r.ui.compareHeads(); ok(/Rain test/.test(h[0]) && /My team/i.test(h[1]), 'not swapped: ' + h.join(' || ')); await r.close(); });
 
 t('CMP-03', 'Team picker: My Team (greyed when already A), saved teams, winners, paste a Showdown team; never changes my team', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.tapText('Compare with…', 1200); const tx = await r.ui.text();
+  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); const tx = await r.ui.text();
   for (const s of ['Saved Teams', 'Rain test', /Winning teams: event winners, newest first/, /Show 10 more winners/, /Any other tournament team: tap Compare on its card in Winning teams/, 'Paste a Showdown team', 'Use this team', /Already team A/]) has(tx, s, 'picker');
   await r.ui.tapText(/^Show 10 more winners$/, 700); ok(((await r.ui.text()).match(/Champion Won/g) || []).length >= 16, 'Show 10 more did not add winners');
   await r.ui.pasteCompareTeam(PASTE); await r.ui.settle(); has((await r.ui.compareHeads()).join(' '), /From a Showdown paste/, 'B head'); ok((await r.ui.team()).join() === TEAM.join(), 'my team changed'); await r.close(); });
 
 t('CMP-04', 'Comparison: "What\'s different" (Tailwind, sun vs rain), Strength Score row, Same-on-both fold', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED});
-  await r.ui.tapText('Compare with…', 1200); await r.ui.pickCompareTeam('Rain test'); await r.ui.waitText(/What.s different|line up the same/, 15000); const tx = await r.ui.text();
+  await r.ui.teamAction('Compare with…'); await r.ui.pickCompareTeam('Rain test'); await r.ui.waitText(/What.s different|line up the same/, 15000); const tx = await r.ui.text();
   has(tx, /What.s different/); has(tx, /Tailwind/); has(tx, /(sun|Sun)[^]*?(rain|Rain)|(rain|Rain)[^]*?(sun|Sun)/); has(tx, /Strength Score/); has(tx, /Ready for the top 30 threats/); has(tx, /Same on both[ ·]*\d+ rows?/); has(tx, /Why these grades/); await r.close(); });
 t('CMP-04b', 'Compare lists Speed control as a note, not a counted team check', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.tapText('Compare with…', 1200); await r.ui.pickCompareTeam('Rain test'); await r.ui.waitText(/What.s different|line up the same/, 15000); await r.ui.openFold('Same on both', true, 500);
+  const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); await r.ui.pickCompareTeam('Rain test'); await r.ui.waitText(/What.s different|line up the same/, 15000); await r.ui.openFold('Same on both', true, 500);
   ok(!(await r.ui.compareCheckRows()).some(x => /Speed control/.test(x)), 'Speed control shown as a team check row'); await r.close(); },
   {known: 'inventory #19: Compare still lists "Speed control" as a team check row (a note, not counted, since Nov 9)'});
 
