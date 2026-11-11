@@ -40,14 +40,11 @@ CH.wrap('renderAutoBuild', () => { chBuildInit(); safe('build around', abAroundR
       <div class="chabg">${names.map((n, i) => `<div>${imgs[i] ? `<img class="spr" src="${esc(imgs[i])}" alt="">` : ''}<span>${esc(n)}</span></div>`).join('')}</div>`;
     (head || mons).before(six); CH.foldNode(mons, 'absets', 'Sets and roles', 'Items, abilities, roles and ratings for each of the six', false); }); });
 // ---------- Battle mode: team preview ----------
-function chOppName() { const opp = S.opp.filter(Boolean); if (opp.length < 6) return null; const E = META.events; if (!E || !Array.isArray(E.events)) return null;
-  const want = ui.oppFrom && ui.oppFrom.key === opp.slice().sort().join('|') ? ui.oppFrom.who : null; let first = null;
-  for (const e of E.events) for (const t of e.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.every(m => opp.includes(m.n))) { const r = {who: t.player, rec: t.record, place: t.place, ev: e}; if (!want || t.player === want) return r; first = first || r; }
-  return want ? null : first; }
+function chOppName() { const sh = realSheetFor(S.opp, oppWho()); return sh ? {who: sh.t.player, rec: sh.t.record, place: sh.t.place, ev: sh.ev} : null; }
 CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const sec = $('matchup'); if (sec) sec.classList.add('chbm');
   const mine = members(), on = chOppName(), title = mine.length ? teamTitleFor(mine) : 'Your team';
   // their side is named by what it runs (Rain · Tailwind, Trick Room…), not by the player
-  const theirs = S.opp.map(n => byName.get(n)).filter(Boolean); let arch = ''; try { const a = theirs.length >= 3 ? teamArchetype(theirs.map(oppMember)) : null; arch = a && a.label ? a.label : ''; } catch (e) {}
+  const theirs = S.opp.map(n => byName.get(n)).filter(Boolean); let arch = ''; try { const a = theirs.length >= 3 ? teamArchetype(oppTeam()) : null; arch = a && a.label ? a.label : ''; } catch (e) {}
   const ord = n => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th';
   const head = document.createElement('div'); head.className = 'chbmhead';
   head.innerHTML = `<div class="chk">${on ? 'Their real open team sheet' : 'Team preview'}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span data-notc>${esc(title)}</span> <small>vs</small> <em>${arch ? esc(arch) : 'their six'}</em></div>

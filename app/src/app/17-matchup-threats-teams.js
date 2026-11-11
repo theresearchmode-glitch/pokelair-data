@@ -7,6 +7,24 @@ function oppMember(p) {
   const pm = popularMoves(p);
   return {p, name: p.n, d: p.d, types: p.t, ability: metaAbility(p) || bestAbility(p), moves: pm, mega: p.m, base: p.b};
 }
+// Their real sets (Nov 11, Sim: Battle showed Hurricane on a Mega Charizard Y whose real team sheet had no Hurricane). When
+// their six are a real tournament team with an open team sheet (meta/events: {n, i, a, mv}), every read of them uses that
+// sheet's moves and item, and its Ability when it is one this form can have (a Mega's sheet lists the pre-Mega Ability).
+// Otherwise each Pokémon keeps its usual tournament set (oppMember). One match for the whole site: the Battle header's
+// "Their real open team sheet" line (chOppName) uses this same function.
+function realSheetFor(names, who) { const want = (names || []).filter(Boolean); if (want.length < 6) return null;
+  const E = META.events; if (!E || !Array.isArray(E.events)) return null; let first = null;
+  for (const e of E.events) for (const t of e.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.every(m => want.includes(m.n))) {
+    if (!who || t.player === who) return {t, ev: e}; first = first || {t, ev: e}; }
+  return who ? null : first; }
+function withSheet(list, sheet) { if (!sheet) return list;
+  for (const m of list) { const s = sheet.t.mons.find(x => x.n === m.p.n); if (!s) continue;
+    const mv = (s.mv || []).map(x => mvByName.get(typeof canonMove === 'function' ? canonMove(x, m.p) : x)).filter(Boolean);
+    if (mv.length) m.moves = mv; if (s.i) m.item = s.i; if (s.a && (m.p.a || []).includes(s.a)) m.ability = s.a; m.real = true; }
+  return list; }
+// the Battle page's opponent: their six as you set them, with their real sets when they match an open team sheet
+function oppWho() { const opp = S.opp.filter(Boolean); return ui.oppFrom && ui.oppFrom.key === opp.slice().sort().join('|') ? ui.oppFrom.who : null; }
+function oppTeam() { const opp = S.opp.filter(Boolean); return withSheet(opp.map(n => byName.get(n)).filter(Boolean).map(oppMember), realSheetFor(opp, oppWho())); }
 const fScore = x => x >= 4 ? 2 : x >= 2 ? 1 : x >= 1 ? 0 : x > 0 ? -1 : -2;
 // Head-to-head numbers between two sides. off[i][j]: my i's best hit on their j. def[i][j]: their j's best hit on my i.
 function headToHead(mine, theirs, useA) {

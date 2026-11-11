@@ -26,7 +26,7 @@ document.addEventListener('click', e => {
 
 /* Battle mode: "The read", one line that sums up the plan above everything else (lead pair, biggest threat, their Fake Outs) */
 function rzReadHtml() {
-  const mine = members(), theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
+  const mine = members(), theirs = oppTeam();
   if (mine.length < 4 || !theirs.length) return '';
   const r = planMatchup(mine, theirs, true), C = r.chosen.map(i => mine[i]);
   const mini = p => `<span class="rzmini">${sprite(p, 'rzminispr') || ''}<b>${esc(p.d || '')}</b></span>`;

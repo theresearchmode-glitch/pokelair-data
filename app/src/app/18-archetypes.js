@@ -91,7 +91,7 @@ function renderMatchup() {
       else if (!q.dataset.ver || q.dataset.ver !== String(metaVersion)) { q.dataset.ver = String(metaVersion);
         q.innerHTML = `<label class="lbl" for="oppTeamSel">Practice against a top team</label><select class="field" id="oppTeamSel"><option value="">Pick a tournament team…</option>${d.teams.map((t, i) => `<option value="${i}">${esc(teamWho(t))} · ${esc(evShort(t.event))} · ${esc(teamPlanLabel(t.mons))}</option>`).join('')}</select>`; } } }
   const el = $('mu'); if (!el) return;
-  const useA = $('useAbil').checked; const mine = members(); const theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
+  const useA = $('useAbil').checked; const mine = members(); const theirs = oppTeam();
   if (!mine.length) { el.innerHTML = '<div class="empty-note">Build your team on the Build tab first.</div>'; if (view === 'matchup') safe('battle', renderBattle); return; }
   if (!theirs.length) { el.innerHTML = '<div class="empty-note">Add their Pokémon above first.</div>'; if (view === 'matchup') safe('battle', renderBattle); return; }
   const r = planMatchup(mine, theirs, useA);

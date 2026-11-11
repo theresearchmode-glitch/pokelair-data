@@ -283,7 +283,7 @@ CH.four = ms => { if (!ms || ms.length < 4) return null; const six = CH.metaSix(
 // your four against any six (the Battle mode planner), cached
 CH._fv = {key: null, v: null};
 CH.fourVs = (ms, names) => { const key = metaVersion + '|' + names.join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|'); if (CH._fv.key === key) return CH._fv.v; let v = null;
-  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, names.map(n => oppMember(byName.get(n))), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
+  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, withSheet(names.map(n => oppMember(byName.get(n))), realSheetFor(names, null)), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
   CH._fv = {key, v}; return v; };
 CH.leadWhy = m => { const mv = new Set(m.moves.map(x => x.name)); if (mv.has('Tailwind')) return 'Tailwind turn 1'; if (mv.has('Trick Room')) return 'Trick Room turn 1'; if (mv.has('Fake Out')) return 'Fake Out pressure';
   if (m.ability === 'Intimidate') return 'Intimidate on entry'; if (mv.has('Follow Me') || mv.has('Rage Powder')) return 'redirects attacks'; return ''; };
