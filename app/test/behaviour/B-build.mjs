@@ -14,10 +14,10 @@ const SCORE_BAND = /Strength Score \d+ (Top tier|Tournament ready|Solid|Needs wo
 // =====================================================================================================
 t('X-01', 'Back steps through pages and lands at the old scroll spot', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
-  await ui.scrollPageTo(700); await sleep(300); const y0 = await ui.pageScrollY(); expect(y0 > 300, 'could not scroll Build');
+  await ui.scrollPageTo(700); await sleep(300); const y0 = await ui.scrollSpot(); expect(y0 > 300, 'could not scroll Build');
   await ui.go('All Suggestions'); expect(await ui.current() === 'coverage', 'All suggestions did not open');
   await ui.back(); expect(await ui.current() === 'auto', 'Back did not return to Build: ' + await ui.current());
-  const y1 = await ui.pageScrollY(); expect(Math.abs(y1 - y0) < 120, `Back did not restore the scroll spot (${y0} → ${y1})`);
+  const y1 = await ui.scrollSpot(); expect(Math.abs(y1 - y0) < 120, `Back did not restore the scroll spot (${y0} → ${y1})`);
   // (inventory also says "reload → same page opens"; today the site always opens on Home: cc2.view is written, never read. Not asserted; reported.)
   await close(); });
 
@@ -32,7 +32,7 @@ t('X-03', 'A quick double tap on Apply makes only one change (one Undo step)', a
   const {ui, pg, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();
   await pg.evaluate(() => { const b = [...document.querySelectorAll('[data-plan]')].find(e => e.getClientRects().length); b.click(); b.click(); });
   await ui.waitForToast(/^Applied/); const after = await ui.team(); expect(!same(after, TEAM), 'Apply did nothing');
-  await ui.until(async () => /^Applied/.test(await ui.undoBarText()), 15000, 'the Undo bar'); await sleep(600); await ui.undoLastApplied();
+  await ui.until(async () => /^Applied/.test(await ui.undoBarText()), 15000, 'the Undo bar'); await sleep(600); await ui.undoAppliedStep();
   await ui.until(async () => same(await ui.team(), TEAM), 5000, 'undo').catch(() => {}); expect(same(await ui.team(), TEAM), 'one Undo step did not restore the six: a double tap applied twice? ' + await ui.team()); await close(); });
 
 t('X-04', 'Two/three-choice switches are sliders: the circle slides to the new choice, buttons stay readable', async () => {
@@ -495,18 +495,18 @@ t('SUGG-08', 'Nothing to fix: card with Battle and Sets, then side-grades that k
   has(s, /Nothing raises this team.s Strength Score right now\. (These swaps keep every check and about the same grade, with a different look:|and every other swap would lower it\.)/, 'side-grade lead');
   await ui.tap(/^Battle$/, ui.area('My team suggestions'), 700); expect(await ui.current() === 'matchup', 'Battle button did not open Battle'); await close(); });
 
-t('SUGG-09', 'Apply: writes the plan, keeps the scroll spot, toast with the score move and Undo', async () => {
+t('SUGG-09', 'Apply: writes the plan, keeps the place under your finger, toast with the score move and Undo', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();
-  const y0 = await ui.pageScrollY(); await ui.applyMySuggestion(0); const tt = await ui.waitForToast(/^Applied: /);
+  await ui.showMySuggestions(); const y0 = await ui.firstApplyTop(); await ui.applyMySuggestion(0); const tt = await ui.waitForToast(/^Applied: /);
   has(tt, /^Applied: \S+ and \S+ [+−-]\d+ \(\d+ → \d+\), (Top tier|Tournament ready|Solid|Needs work)/, 'toast'); expect(await ui.toastOffersUndo(), 'no Undo');
-  expect(!same(await ui.team(), TEAM), 'team unchanged'); expect(Math.abs(await ui.pageScrollY() - y0) < 80, 'page jumped');
+  expect(!same(await ui.team(), TEAM), 'team unchanged'); await sleep(1500); const y1 = await ui.firstApplyTop(); expect(y1 != null && Math.abs(y1 - y0) < 40, `the place under the finger was not kept: Apply moved on screen ${y0} → ${y1}`);
   await ui.undoToast(); expect(same(await ui.team(), TEAM), 'toast Undo did not restore'); await close(); });
 
 t('SUGG-10', 'Undo bar: shows on My team and Bigger plans, steps back with "Undone: …", disappears after another change', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0);
   await ui.until(async () => /^Applied .+ for .+ Undo/.test(await ui.undoBarText()), 15000, 'Undo bar on My team');
   await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.biggerPlans(); await ui.until(async () => /^Applied .+ for /.test(await ui.undoBarText()), 15000, 'Undo bar in Bigger plans');
-  await sleep(500); await ui.undoLastApplied(); await ui.waitForToast(/^Undone: .+ for /); expect(same(await ui.team(), TEAM), 'Undo bar did not restore the six');
+  await sleep(500); await ui.undoAppliedStep(); await ui.waitForToast(/^Undone: .+ for /); expect(same(await ui.team(), TEAM), 'Undo bar did not restore the six');
   await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0); await ui.until(async () => !!(await ui.undoBarText()), 15000, 'bar');
   await sleep(600); await ui.removeFromMyTeam(5); await sleep(1200); expect(!(await ui.undoBarText()), 'Undo bar stayed after another change'); await close(); });
 

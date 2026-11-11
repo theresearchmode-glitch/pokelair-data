@@ -192,6 +192,11 @@ export default (ui, pg) => {
     applySwap: (n = 0) => click(`#recList [data-rec="${n}"]`, 900),
     /** wait until the All suggestions list has finished working */
     waitSwaps: () => until(async () => !(await ui.sees('Working out the best swaps')) && (await pg.evaluate(() => document.querySelectorAll('#recList [data-rec]').length || /Add at least two|Nothing in your box|Nothing in this pool/i.test(document.getElementById('recs')?.innerText || ''))), 20000, 'swap cards'),
+    /** bring My team's suggestions to the middle of the screen; and where their top sits on screen (px) */
+    showMySuggestions: async () => { await pg.evaluate(() => { const o = document.getElementById('chSugOut'); window.scrollBy(0, o.getBoundingClientRect().top - innerHeight / 3); }); await pg.waitForTimeout(400); },
+    mySuggestionsTop: () => pg.evaluate(() => Math.round(document.getElementById('chSugOut').getBoundingClientRect().top)),
+    /** where the first Apply button in My team's suggestions sits on screen (px), null if none */
+    firstApplyTop: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#chSugOut [data-plan]')].find(e => e.getClientRects().length); return b ? Math.round(b.getBoundingClientRect().top) : null; }),
     /** wait until the suggestion planner has finished its background work (and the page redrew) */
     waitPlans: async () => { await until(() => pg.evaluate(() => window.__ev('planJob===null&&!ui.plansStale')), 30000, 'the planner'); await pg.waitForTimeout(400); },
     /** the Bigger plans text right now, without waiting (for checking what shows while working) */
@@ -210,7 +215,7 @@ export default (ui, pg) => {
     applyPlan: (n = 0) => click(`#planSec [data-plan="${n}"]`, 900),
     /** the Undo bar text where it shows ('' if none) */
     undoBarText: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-undobar]')].find(e => e.getClientRects().length); const h = b && (b.closest('.chundohost') || b.parentElement); return h ? h.innerText.replace(/\s+/g, ' ').trim() : ''; }),
-    undoLastApplied: () => click('[data-undobar]', 900),
+    undoAppliedStep: () => click('[data-undobar]', 900),
     /** the plan settings: Pick from value (label) */
     pickFrom: () => pg.evaluate(() => { const s = document.getElementById('poolSel'); return s ? s.options[s.selectedIndex].text : null; }),
     setPickFrom: async label => { await pg.evaluate(l => { const s = document.getElementById('poolSel'); const o = [...s.options].find(o => o.text.toLowerCase().startsWith(l.toLowerCase())); s.value = o.value; s.dispatchEvent(new Event('change', {bubbles: true})); }, label); await pg.waitForTimeout(600); },
@@ -241,7 +246,7 @@ export default (ui, pg) => {
     tapTeammate: n => click(`#sets [data-setmon="${n}"]:not(#setQuick *)`, 700),
     setsText: () => txt('[data-pane="sets"]'),
     archText: () => txt('[data-pane="arch"]'),
-    pageScrollY: () => pg.evaluate(() => Math.round(window.scrollY)),
+    scrollSpot: () => pg.evaluate(() => Math.round(window.scrollY)),
     scrollPageTo: y => pg.evaluate(y => window.scrollTo(0, y), y),
     back: async () => { await pg.goBack(); await pg.waitForTimeout(700); },
     focusedId: () => pg.evaluate(() => document.activeElement && (document.activeElement.id || document.activeElement.getAttribute('aria-label') || document.activeElement.tagName)),

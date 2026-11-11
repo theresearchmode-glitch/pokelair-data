@@ -48,8 +48,10 @@ export default (ui, pg) => {
     tapSection: async name => { await ui.tap(new RegExp('^' + name + '$'), '[data-pane]:not([hidden]) .subnav'); await wait(300); },
     /** the sliding picker under it: Rating / Usage / Sets or Winning Teams / Events / Archetypes */
     pageSwitch: () => ev(new Function(`const p = ${pane}; const n = [...p.querySelectorAll('.seg.teamsw')].find(__dvis); if (!n) return null;
-      const b = [...n.querySelectorAll('button')]; return {items: b.map(__dtx), selected: __dtx(b.find(x => x.getAttribute('aria-pressed') === 'true' || x.getAttribute('aria-selected') === 'true'))};`)),
-    tapPageSwitch: async name => { await ev(new Function('n', `const p = ${pane}; const b = [...p.querySelectorAll('.seg.teamsw button')].filter(__dvis).find(b => __dtx(b) === n); if (!b) throw new Error('no switch ' + n); b.click();`), name); await wait(700); },
+      const b = [...n.querySelectorAll('button')]; return {items: b.map(__dtx), selected: __dtx(b.find(x => x.getAttribute('aria-pressed') === 'true')),
+        announced: b.filter(x => x.getAttribute('aria-pressed') === 'true' || x.getAttribute('aria-selected') === 'true').map(__dtx)};`)),
+    tapPageSwitch: async name => { const from = await ui.current(); await ev(new Function('n', `const p = ${pane}; const b = [...p.querySelectorAll('.seg.teamsw button')].filter(__dvis).find(b => __dtx(b) === n); if (!b) throw new Error('no switch ' + n); b.click();`), name);
+      await until(async () => await ui.current() !== from && ((await D.pageSwitch()) || {}).selected === name, 4000); await wait(300); },
     /** the "← name" back link on a sub-page */
     backLink: () => ev(new Function(`const p = ${pane}; const b = [...p.querySelectorAll('button,a')].filter(__dvis).find(b => /^←/.test(__dtx(b))); return b ? __dtx(b) : null;`)),
     tapBackLink: async () => { await ui.tap(/^←/, '[data-pane]:not([hidden])'); await wait(400); },
@@ -243,7 +245,8 @@ export default (ui, pg) => {
     anyOpenInView: () => ev(() => [...document.querySelectorAll('[data-pane=method] details[open]')].filter(__dvis).some(d => { const r = d.getBoundingClientRect(); return r.bottom > 40 && r.top > -60 && r.top < innerHeight - 40; })),
     toastHasUndo: () => ev(() => __dvis(document.querySelector('#toastUndo'))),
     /** apply the first suggestion on the shown page */
-    applySuggestion: async () => { await until(() => ev(new Function(`const p = ${pane}; return [...p.querySelectorAll('button')].filter(__dvis).some(b => /^Apply$/.test(__dtx(b)) && !b.disabled);`)), 8000); const before = JSON.stringify(await ui.team()); await ev(new Function(`const p = ${pane}; const b = [...p.querySelectorAll('button')].filter(__dvis).find(b => /^Apply$/.test(__dtx(b)) && !b.disabled); if (!b) throw new Error('no suggestion to apply'); b.click();`)); await until(async () => JSON.stringify(await ui.team()) !== before, 5000); await wait(1200); },
+    applySuggestion: async () => { const before = JSON.stringify(await ui.team()); for (let k = 0; k < 3; k++) {
+      await until(() => ev(new Function(`const p = ${pane}; return [...p.querySelectorAll('button')].filter(__dvis).some(b => /^Apply$/.test(__dtx(b)) && !b.disabled);`)), 8000); await ev(new Function(`const p = ${pane}; const b = [...p.querySelectorAll('button')].filter(__dvis).find(b => /^Apply$/.test(__dtx(b)) && !b.disabled); if (!b) throw new Error('no suggestion to apply'); b.click();`)); if (await until(async () => JSON.stringify(await ui.team()) !== before, 4000)) break; } await wait(1200); },
     tapUndoBar: async () => { await pg.click('[data-undobar]:visible'); await wait(600); },
     tipCount: () => ev(() => document.querySelectorAll('#tipPop').length),
     /** visible text of the Ratings top list */

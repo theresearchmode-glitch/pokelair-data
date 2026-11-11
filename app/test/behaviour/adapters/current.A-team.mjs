@@ -71,11 +71,16 @@ export default (ui, pg, o) => {
     tapPokemon: (name, within = '') => tapFound(([n, w]) => { const r = w ? document.querySelector(w) : document; return [...(r || document).querySelectorAll('[data-lt]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('#lairSheet'))
         .find(e => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase())) || null; }, [name, within], 'Pokémon ' + name, 800),
     infoSheet: () => txt('#lairSheet'),
+    /** tap a Pokémon listed inside the open info sheet (e.g. a "Brought with" partner) */
+    tapPokemonInSheet: name => tapFound(n => [...document.querySelectorAll('#lairSheet [data-lt]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || e.innerText || '').includes(n)) || null, name, 'sheet Pokémon ' + name, 900),
     closeInfoSheet: () => click('#lairSheet button[data-lclose]'),
     infoTab: name => click(`#lairSheet [data-lstab="${name.toLowerCase()}"]`, 600),
     infoTabNow: () => pg.evaluate(() => { const b = document.querySelector('#lairSheet [data-lstab][aria-selected="true"]'); return b ? b.dataset.lstab : null; }),
     infoTabText: () => pg.evaluate(() => { const p = [...document.querySelectorAll('#lairSheet [id^="lstp-"]')].find(e => !e.hidden && e.getClientRects().length); return p ? p.innerText.replace(/\s+/g, ' ').trim() : null; }),
 
+    /** size and position of the open info sheet's panel */
+    infoSheetBox: () => pg.evaluate(() => { const s = document.querySelector('#lairSheet'); if (!s || s.hidden) return null; const c = [...s.children].filter(e => e.getClientRects().length && !e.matches('[data-lclose]')).sort((a, b) => b.getBoundingClientRect().width * b.getBoundingClientRect().height - a.getBoundingClientRect().width * a.getBoundingClientRect().height)[0]; if (!c) return null; const r = c.getBoundingClientRect(); return {w: Math.round(r.width), h: Math.round(r.height), top: Math.round(r.top), bottom: Math.round(r.bottom)}; }),
+    focusInfoTab: () => pg.focus('#lairSheet [data-lstab][aria-selected="true"]'),
     // ---------- Home ----------
     homeHeadline: () => pg.evaluate(() => { const e = document.querySelector('[data-pane="home"] .ar-tag') || [...document.querySelectorAll('[data-pane="home"] h1')].find(e => e.getClientRects().length); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }),
     homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .ar-btn[data-view]')].filter(e => e.getClientRects().length && /score my team|build|plan a match/i.test(e.innerText)).map(e => e.innerText.trim())),
@@ -136,7 +141,7 @@ export default (ui, pg, o) => {
     undoLastApplied: () => click('[data-undobar]', 1500),
     // edit panel
     editPanel: () => pg.evaluate(() => { const e = document.querySelector('#chEdit'); if (!e || e.hidden || !e.getClientRects().length) return null; const h = e.querySelector('h1,h2,h3,b,strong'); return {title: (h ? h.innerText : '').replace(/\s+/g, ' ').trim(), text: e.innerText.replace(/\s+/g, ' ').trim()}; }),
-    openEditPanel: async name => { await H.showSet(name); await click('#rzSet [data-chedit]', 900); },
+    openEditPanel: async name => { await H.showSet(name); await click('#rzSet [data-chedit]', 900); await H.settle(); },
     closeEditPanel: () => click('#chEditDone', 500),
     editStrip: () => pg.evaluate(() => [...document.querySelectorAll('#chEdit .chst')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),
     tapStrip: i => click(`#chEdit .chst[data-chedit="${i}"]`, 800),
@@ -174,12 +179,16 @@ export default (ui, pg, o) => {
     closeShare: () => click('#shareBox [data-shareclose]'),
     // your games
     openLogForm: () => click('[data-pane="report"] [data-qlopen]', 600),
+    openLogFormByKeyboard: async () => { await pg.focus('[data-pane="report"] [data-qlopen]'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(600); },
+    undoLoggedGame: () => click('[data-qlundo]', 900),
     pickLead: name => click(`[data-qllead="${name}"]`, 300),
     useBattleOpponents: () => click('[data-qlbm]', 400),
     logResult: wl => click(`[data-qlres="${wl}"]`, 900),
     myGamesCard: () => txt('#myRec'),
+    /** cards per row on the Team Sheet page */
+    sheetColumns: () => pg.evaluate(() => { const c = [...document.querySelectorAll('[data-pane="sheet"] [data-tsedit]')].filter(e => e.getClientRects().length); if (!c.length) return 0; const top = Math.round(c[0].getBoundingClientRect().top); return c.filter(e => Math.abs(Math.round(e.getBoundingClientRect().top) - top) < 4).length; }),
     // saved teams
-    savedCards: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="teams"] [data-load]')].filter(e => e.getClientRects().length).map(b => { let c = b; while (c.parentElement && !c.parentElement.querySelectorAll('[data-load]')[1] && c.parentElement.dataset.pane !== 'teams') c = c.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); })),
+    savedCards: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="teams"] [data-load]')].filter(e => e.getClientRects().length).map(b => { let c = b; while (c.parentElement && !c.parentElement.querySelectorAll('[data-load]')[1] && !c.parentElement.querySelector('[data-sort]') && !/side by side/.test(c.parentElement.innerText) && c.parentElement.dataset.pane !== 'teams') c = c.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); })),
     savedCardOf: name => H.savedCards().then(a => a.find(t => t.startsWith(name + ' ') || t.includes(name)) || null),
     savedAction: async (name, what) => { const idSel = await pg.evaluate(n => { const s = [...document.querySelectorAll('[data-pane="teams"] summary[aria-label]')].find(e => e.getAttribute('aria-label') === 'More for ' + n); return s ? s.closest('details').querySelector('[data-del]').dataset.del : null; }, name);
       if (!idSel) throw new Error('no saved team ' + name);
@@ -188,11 +197,28 @@ export default (ui, pg, o) => {
       if (what === 'Copy for Showdown') return click(`[data-pane="teams"] [data-sdcopy="saved:${idSel}"]`, 600);
       await click(`[data-pane="teams"] summary[aria-label="More for ${name}"]`, 400);
       return click(`[data-pane="teams"] [data-${{'Team poster': 'poster', Rename: 'rn', Delete: 'del'}[what]}="${idSel}"]`, 700); },
+    typeSaveName: async name => { const l = pg.locator('#saveName'); await l.fill(name); await pg.waitForTimeout(200); },
+    typeRename: async name => { const l = pg.locator('[data-pane="teams"] input').filter({visible: true}).first(); await l.fill(name); await pg.waitForTimeout(200); },
+    /** storage-level: a team saved in the retired singles mode (players can't make one any more) */
+    addRetiredSinglesTeam: name => ui.peek(`S.teams.push({id:'tsg',name:${JSON.stringify(name)},slots:[{n:'Garchomp',a:null,lock:false}],format:'singles',saved:Date.now()});render()`).then(() => pg.waitForTimeout(600)),
     // box
+    tapBoxUndo: () => click('#toastBoxUndo, #toastUndo', 900),
+    typeBoxLink: async t => { if (!(await vis('#boxLinkField'))) await click('#boxLinkOpen', 400); await pg.locator('#boxLinkField').fill(t, {timeout: 5000}); await pg.waitForTimeout(200); },
     boxNames: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="box"] [data-unbox]')].filter(e => e.getClientRects().length).map(e => e.dataset.unbox)),
     addToBox: async name => { await H.typeName(name, '#boxAdd'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(800); },
     removeFromBox: name => click(`[data-pane="box"] [data-unbox="${name}"]`, 700),
-    boxSortBy: label => click(`[data-pane="box"] [data-boxsort]:text-is("${label}")`, 600),
+    boxSortBy: label => tapFound(l => [...document.querySelectorAll('[data-pane="box"] [data-boxsort]')].find(e => e.getClientRects().length && e.innerText.trim() === l) || null, label, 'box sort ' + label, 700),
+    // compare
+    pickCompareTeam: async name => { await tapFound(n => [...document.querySelectorAll('[data-pane="compare"] [data-cxset]')].find(e => e.getClientRects().length && e.innerText.includes(n) && e.getAttribute('aria-disabled') !== 'true') || null, name, 'compare pick ' + name, 1500); },
+    compareHeads: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="compare"] [data-cxpick]')].filter(e => e.getClientRects().length).map(e => { let c = e; for (let k = 0; k < 4 && c.parentElement && c.innerText.length < 25; k++) c = c.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); })),
+    pasteCompareTeam: async text => { await pg.locator('#cxPaste').fill(text); await click('[data-cxpaste]', 1500); },
+    compareCheckRows: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="compare"] tr, [data-pane="compare"] [role=row], [data-pane="compare"] .cxrow')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim()).filter(t => /[✓✗?]/.test(t))),
+    // shared behaviour
+    doubleTapApply: async () => { const b = pg.locator('[data-pane="report"] [data-plan]').filter({visible: true}).first(); await b.scrollIntoViewIfNeeded(); await b.dblclick({delay: 60}); await pg.waitForTimeout(1500); },
+    scrollToSuggestions: async () => { await pg.evaluate(() => { const b = [...document.querySelectorAll('[data-pane="report"] [data-plan]')].find(e => e.getClientRects().length); window.scrollTo(0, b.getBoundingClientRect().top + scrollY - 300); }); await pg.waitForTimeout(600); },
+    goBack: async () => { await pg.goBack().catch(() => {}); await pg.waitForTimeout(800); },
+    sliderIndex: label => pg.evaluate(l => { const b = [...document.querySelectorAll('[data-slt]')].find(e => e.getClientRects().length && e.dataset.slt.toLowerCase() === l.toLowerCase()); const g = b && b.closest('.ar-slide'); return g ? g.dataset.sli + '|' + getComputedStyle(g).getPropertyValue('--i') : null; }, label),
+    pageLuminance: () => pg.evaluate(() => { const c = getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g).map(Number); return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255; }),
     // the team the page holds (names; same as ui.team) and saved state helpers
     leadsSaved: () => ui.peek('S.leads||null'),
     /** dev-only path: a slot holds a Pokémon that has since left the regulation (as after a roster change) */

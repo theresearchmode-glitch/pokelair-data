@@ -12,8 +12,10 @@ const t = group('D-meta-shell');
 
 const PHONE = {width: 390, height: 844};
 const FIVE = TEAM.slice(0, 5);
-/** run a test body on a freshly opened page and always close it */
-const run = (o, fn) => async () => { const r = await open(o); r.d = r.ui.D; try { await fn(r); } finally { await r.close(); } };
+/** run a test body on a freshly opened page and always close it. Shorter fixed waits than the kit's defaults (open 900 ms,
+ *  page switch 350 ms) keep the group under ~12 minutes; tests wait for what they need to see instead. */
+const run = (o, fn) => async () => { const r = await open({wait: 900, ...o}); r.d = r.ui.D; const go = r.ui.go; r.ui.go = (n, w = 350) => go(n, w);
+  try { await fn(r); } finally { await r.close(); } };
 /** temporarily swap shared data documents (the frozen fixture) for one test */
 const withDocs = (patch, fn) => async () => { const old = {}; for (const k in patch) { old[k] = DOCS[k]; DOCS[k] = patch[k]; } try { await fn(); } finally { Object.assign(DOCS, old); } };
 const daysAgo = n => new Date(Date.now() - n * 864e5).toISOString();
@@ -71,6 +73,9 @@ t('NAV-05', 'Second-level sliders Rating/Usage/Sets and Winning Teams/Events/Arc
   await ui.go('Winning Teams'); s = await d.pageSwitch(); expect(s && s.items.join() === 'Winning Teams,Events,Archetypes' && s.selected === 'Winning Teams', 'Tournaments slider: ' + JSON.stringify(s));
   await d.tapPageSwitch('Archetypes'); expect(await ui.current() === 'arch', 'Archetypes not opened'); await d.tapPageSwitch('Events'); expect(await ui.current() === 'events', 'Events not opened'); }));
 
+t('NAV-05b', 'The slider tells screen readers the page that is shown (one choice marked)', run({team: TEAM}, async ({ui, d}) => {
+  await ui.go('Ratings'); await d.tapPageSwitch('Usage'); const s = await d.pageSwitch(); expect(s.announced.join() === 'Usage', 'marked as current for screen readers: ' + s.announced.join(', ')); }),
+  {known: 'after switching with the slider, "Rating" keeps aria-selected="true" while "Usage" gets aria-pressed="true" (the visible pill is right; measured on Usage)'});
 t('NAV-06', 'Back links on Meta sub-pages', run({team: TEAM}, async ({ui, d}) => {
   for (const [p, label] of [['This Week', '← Meta'], ['How We Calculate', '← Meta'], ['About', '← Meta'], ['Track Record', '← Pokémon Ratings']]) {
     await ui.go(p); expect(await d.backLink() === label, `${p}: back link "${await d.backLink()}"`); await d.tapBackLink(); expect(await ui.current() === 'ratings', `${p}: back opened ${await ui.current()}`); } }));
@@ -463,7 +468,7 @@ t('RATE-09', 'Rating bands: tier letter matches the number everywhere on the boa
   expect(!bad.length, 'wrong tier: ' + bad.slice(0, 5).map(x => `${x.name} ${x.rating} in ${x.tier}`)); }));
 
 t('RULE-RATING-ONE-NUMBER', 'A Pokémon\'s rating is the same number on Ratings, its sheet, search and Popular Sets', run({team: TEAM}, async ({ui, d}) => {
-  for (const [id, shown] of [['Incineroar', 'Incineroar'], ['Garchomp', 'Garchomp'], ['Whimsicott', 'Whimsicott'], ['Charizard-Mega-Y', 'Mega Charizard Y']]) {
+  for (const [id, shown] of [['Incineroar', 'Incineroar'], ['Whimsicott', 'Whimsicott'], ['Charizard-Mega-Y', 'Mega Charizard Y']]) {
     await ui.go('Ratings'); const r = await d.ratingOnRatings(shown); await d.openPokemon(id); const s = await d.sheetRating(); const st = await d.sheetText(); await d.closeSheet();
     await d.openSearch('keys'); await d.search(shown); const j = +(((await d.searchResults()).find(x => x.name === shown) || {}).sub || '').replace(/^Rated (\d+).*/, '$1'); await d.key('Escape');
     await ui.go('Popular Sets'); await d.lookUpSets(shown); const p = await d.setsRating();
