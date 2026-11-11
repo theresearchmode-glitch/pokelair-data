@@ -25,6 +25,10 @@
     [
       "six",
       "src/v2/css/six.css"
+    ],
+    [
+      "matchups",
+      "src/v2/css/matchups.css"
     ]
   ],
   "body": "src/v2/body.html",
@@ -43,6 +47,7 @@
     "src/v2/pages/guide.js",
     "src/v2/pages/team.js",
     "src/v2/pages/six.js",
+    "src/v2/pages/matchups.js",
     "src/v2/pages/monsheet.js",
     "src/v2/pages/box.js",
     "src/v2/pages/record.js",
@@ -90,6 +95,7 @@
     "src/app/39-damage-calc-speed.js",
     "src/app/54-items.js",
     "src/app/55-threats.js",
-    "src/app/58-strength.js"
+    "src/app/58-strength.js",
+    "src/app/59-matchup-data.js"
   ]
 }

@@ -309,12 +309,8 @@ V2.pages.team = {place: 'team', draw() {
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <small>${ms.length} sets</small> <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
   const setSec = V2.setSecHtml(D, sel);
-  // 2. Matchups: real-game verdicts lead, the calc reading underneath (Sim, Nov 10)
-  const vcls = {'Favoured': 'vf', 'Even match': 've', 'Unfavoured': 'vu'};
-  const muSec = !D.rows.length ? '' : `<section class="tm-sec tm-mus" id="tm-mu"><h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts come from real tournament games; the damage calc reading is underneath.' : ''}</p>
-    ${D.mu.any ? `<div class="tm-legend"><span class="lf"><b>${D.mu.fav}</b> Favoured</span><span class="le"><b>${D.mu.even}</b> Even match</span><span class="lu"><b>${D.mu.unf}</b> Unfavoured</span></div>` : ''}
-    <p class="fine">Damage calc: Beats it ${D.calc.beats} · Handles it ${D.calc.handles} · Shaky ${D.calc.shaky} · No answer ${D.calc.none}</p>
-    <ol class="tm-rows">${D.top.map(x => `<li><img src="${V2.art(SPRITE_ID[x.t.n])}" alt="" loading="lazy"><span class="nm">${V2.esc(x.t.d)}<small>Calc: ${V2.LV[x.level]}</small></span>${x.real ? `<span class="tm-v ${vcls[x.real.w]}">${x.real.w}</span>` : ''}</li>`).join('')}</ol></section>`;
+  // 2. Matchups: real-game verdicts lead, the calc reading underneath (Sim, Nov 10); views and threat sheet in pages/matchups.js (hook)
+  const muSec = V2.muSec ? V2.muSec(D) : '';
   // 3. Suggestions, numbered (word list), each with its Strength Score change and Apply
   const S2 = D.sug, side1 = (m, cls) => { const P = m.p || m; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}</span></span>`; };
   const swap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}">${x.out ? side1(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${side1(x.c.p, ' in')}</div>`;
@@ -332,6 +328,7 @@ after() {
     applyPlan(pl); persist(); V2.redraw(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); }));
   document.querySelectorAll('[data-tmsel]').forEach(b => b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }));
   document.querySelectorAll('[data-tmjump]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
+  if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page
 }};
 // a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)
 V2.pages['team-empty'] = {place: 'team', draw: () => V2.emptyHtml({preview: true})};
