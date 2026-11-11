@@ -12,7 +12,9 @@ nav a.on{color:var(--ink);font-weight:700;position:relative}nav a.on::after{cont
 header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
 /* ---------- the band: score lockup + the six ---------- */
 .band{position:relative;display:grid;grid-template-columns:400px minmax(0,1fr);gap:32px;padding:24px var(--gut) 32px;align-items:center;isolation:isolate}
-.band .weather{position:absolute;inset:-40px 0 auto 0;height:620px;z-index:-2;pointer-events:none;background:radial-gradient(60% 70% at 80% 0%,rgba(255,170,60,var(--sunwarm)),transparent)}
+/* team lighting (Nov 11, fixed): page-level, from the very top, fading to nothing on every edge (no hard line through the header) */
+.weather{position:absolute;left:0;right:0;top:0;height:760px;z-index:0;pointer-events:none;background:radial-gradient(closest-side at 72% 18%,rgba(255,170,60,var(--sunwarm)),transparent)}
+header,.band,.acts,.jump,.work,.sheet,footer{position:relative;z-index:1}
 :root{--sunwarm:.10}:root[data-theme="dusk"]{--sunwarm:.14}
 .band .pool{position:absolute;left:60px;top:0;width:440px;height:360px;background:radial-gradient(closest-side,rgba(var(--bandc),var(--glow-strong)),transparent);z-index:-1;pointer-events:none}
 .lock .eyebrow{margin-bottom:8px}
@@ -144,7 +146,7 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const by=r=>D.six.filter(m=>m.role===r);
   const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
     <p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
-  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND}">${D.style.startsWith('Sun')?'<div class="weather"></div>':''}<div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
+  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND}"><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
   const acts=`<div class="acts"><div class="btn">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
   const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
@@ -172,7 +174,7 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
     ${D.six.map(m=>`<tr><td class="p"><div><img src="${m.img}" alt="">${esc(m.d)}</div></td><td>${esc(m.item)}</td><td>${esc(m.ab)}</td><td>${esc(m.nat)}</td><td><div class="mvs">${m.moves.map(v=>`<span style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</span>`).join('')}</div></td></tr>`).join('')}</tbody></table></section>`;
   const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
-  document.getElementById('page').innerHTML=header+band+acts+jump+work+sheet+footer;
+  document.getElementById('page').innerHTML=(D.style.startsWith('Sun')?'<div class="weather"></div>':'')+header+band+acts+jump+work+sheet+footer;
   await document.fonts.ready;document.body.dataset.ready=1;
 })();
 </script></body></html>
