@@ -56,19 +56,19 @@ h1{font-size:46px;margin:16px 0 8px}
 .prow{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--rule);padding-top:12px}
 .prow div{text-align:center;font:600 13px/1.25 var(--b);position:relative}
 .prow .pg{position:absolute;left:50%;top:44px;width:90px;height:60px;margin:-30px 0 0 -45px;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--c),var(--glow)),transparent)}
-.prow .mg{display:block;font:900 13px/1 var(--u);font-style:italic;color:var(--plot);margin-top:2px}.prow img{position:relative;width:80px;height:80px;object-fit:contain;display:block;margin:0 auto}.prow small{display:block;font-weight:500;color:var(--ink-2)}
+.prow .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot);margin-top:2px}.prow img{position:relative;width:80px;height:80px;object-fit:contain;display:block;margin:0 auto}.prow small{display:block;font-weight:500;color:var(--ink-2)}
 /* ---------- the selected Pokémon ---------- */
 .selp{position:relative}
 .selp .pool{position:absolute;left:-60px;right:-60px;top:-40px;height:420px;background:radial-gradient(50% 50% at 50% 45%,rgba(var(--c1),var(--glow-strong)),transparent),radial-gradient(28% 30% at 62% 66%,rgba(var(--c2),var(--glow)),transparent);z-index:0;pointer-events:none}
 .panel{position:absolute;left:0;right:0;top:36px;height:248px;transform:skewY(-7deg);border-radius:var(--r-m);overflow:hidden;z-index:1}
 .panel::after{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(from 8deg at 50% 62%,rgba(255,255,255,.42) 0 1.6deg,transparent 1.6deg 15deg);-webkit-mask-image:radial-gradient(closest-side,transparent 22%,#000 58%,transparent 96%)}
 .selp .art{position:relative;z-index:2;display:block;width:280px;height:280px;object-fit:contain;margin:0 auto}
-.plate{position:absolute;z-index:4;left:-6px;top:238px;height:36px;padding:0 18px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 13px/1 var(--u);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
+.plate{position:absolute;z-index:4;left:-6px;top:238px;height:36px;padding:0 18px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 15px/1 var(--u);box-shadow:var(--shadow-lift);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
 .selp h3{position:relative;z-index:2;font-size:34px;margin-top:24px}
 .tags{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:8px 4px;margin-top:12px;align-items:center}
 .tags .on-team{display:flex;align-items:center;gap:8px;font:600 13px/1 var(--b);color:var(--ink-2);margin-left:8px}
 .three{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;margin-top:24px}
-.three b{display:block;font:900 26px/1.05 var(--u);font-style:italic;letter-spacing:-.03em}.three span{display:block;font-size:13px;color:var(--ink-2);margin-top:4px}
+.three b{display:block;white-space:nowrap;font:900 26px/1.05 var(--u);font-style:italic;letter-spacing:-.03em}.three span{display:block;font-size:13px;color:var(--ink-2);margin-top:4px}
 .selp .btn{margin-top:24px;position:relative;z-index:2}.selp .acts{margin-top:12px;position:relative;z-index:2}
 .src{position:relative;z-index:2;margin-top:12px}
 footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}footer svg{height:26px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}
@@ -124,13 +124,13 @@ const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<'
   const sorts=['A–Z','Type','Newest','Oldest','Rating'].map(s=>`<span class="chip${s===D.sortBy?' on':''}">${s}</span>`).join('');
   const nBox=Math.ceil(D.box.length/PER),teamInBox2=D.box.slice(PER).some(m=>m.team);
   const dots=Array.from({length:nBox},(_,i)=>`<i class="${i===0?'on':''}${i===1&&teamInBox2?' tm':''}"></i>`).join('');
-  const boxEl=`<div class="box"><div class="wall" style="background:${wall}"></div><div class="rays"></div>
+  const boxEl=`<div class="box"><div class="wall" style="background:${wall}"></div>
     <div class="bar"><span class="ar">◀</span><div><h2 class="u">Box 1</h2><small>${first.length} of ${D.box.length} · ${esc(D.sortBy==='Rating'?'by Rating':'A to '+first[first.length-1].d[0])}${PH?' · swipe for Box 2':''}</small></div><span class="chip sel">Select</span><span class="ar">▶</span></div>
     <div class="grid">${first.map(cell).join('')}${empty}</div><div class="dots">${dots}</div></div>`;
   const party=`<div class="party"><div class="ph"><b>Your Team</b><span>6 of 6 · ${PH?'hold and drag to swap':'drag between the box and your team'}</span></div>
     <div class="prow">${D.team.map(m=>`<div style="--c:${rgb(M[m.img].a)}"><i class="pg"></i><img src="${m.img}" alt="">${PH?'':(m.d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(m.d.slice(5))}`:esc(m.d))}<small>${m.role}</small></div>`).join('')}</div></div>`;
   const types=sel.t.map(t=>`<span class="chip type" style="background:${TY[t]}">${t}</span>`).join('');
-  const three=`<div class="three"><div><b>${sel.usage}%</b><span>of teams</span></div><div><b>${sel.wr}%</b><span>win rate</span></div><div><b>${sel.sp}</b><span>base Speed</span></div></div>`;
+  const three=`<div class="three"><div><b>${sel.usage}<span class="unit">%</span></b><span>of teams</span></div><div><b>${sel.wr}<span class="unit">%</span></b><span>win rate</span></div><div><b>${sel.sp}</b><span>base Speed</span></div></div>`;
   const panelBg=`linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))`;
   const links=`<div class="links"><div class="row-link">Copy box link<i>›</i></div><div class="row-link">Open a box link<i>›</i></div><div class="row-link">Reset box<i>›</i></div></div>`;
   const savedNote=`<p class="fine">Saved to your account: your box is the same on every device.</p>`;
@@ -143,7 +143,7 @@ const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<'
   const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
   const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
   let main;
-  if(!PH){main=`<main>${side}<div>${boxEl}${party}</div><div class="selp" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="pool"></div><div class="panel" style="background:${panelBg}"></div><img class="art" src="${sel.img}" alt="">
+  if(!PH){main=`<main>${side}<div>${boxEl}${party}</div><div class="selp" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="pool"></div><div class="panel litedge" style="background:${panelBg}"></div><img class="art" src="${sel.img}" alt="">
       <div class="plate">Rated ${sel.r} · ${sel.tier}</div><h3 class="u">${esc(sel.d)}</h3><div class="tags">${types}${sel.team?'<span class="on-team"><i class="mark"></i>On your team</span>':''}</div>
       ${three}${src}<div class="btn">Open Info Sheet →</div><div class="acts"><div class="row-link">Build around it<i>›</i></div><div class="row-link">Swap into my team<i>›</i></div><div class="row-link">Remove from box<i>›</i></div></div></div></main>`;}
   else{main=`<main>${side}${boxEl}<div class="sheet" style="--c1:${rgb(k.a)};--c2:${rgb(k.b)}"><div class="grab"></div><div class="top"><div class="mini"><div class="panel" style="background:${panelBg}"></div><img src="${sel.img}" alt=""></div>

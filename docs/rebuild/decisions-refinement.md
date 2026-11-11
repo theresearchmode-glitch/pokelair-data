@@ -22,7 +22,7 @@ mock-ups in docs/rebuild/mocks/, and some of its facts were out of date; correct
 ## Refinement list
 | Idea | Decision | How |
 |---|---|---|
-| Light and shadow: contact shadow, lit top edge on colour panels, faint floor reflection for the ONE featured Pokémon | YES | Clearest gain in its before/after. Reflection only on the featured Pokémon (hero, picked panel), per the glow rule. |
+| Light and shadow: contact shadow, lit top edge on colour panels, faint floor reflection for the ONE featured Pokémon | YES, minus the reflection | Clearest gain in its before/after. Tried Nov 11: the reflection is cut off by the "Rated · tier" plate that sits on the floor line, so it reads as a glitch; dropped. Lit edge and layered shadows kept. |
 | Number typography: tabular digits, units smaller/lighter | YES | font-variant-numeric: tabular-nums on every number; "%", "games", "/ 100" one size down and --ink-2. |
 | Strict spacing and alignment | YES (already) | The polish check enforces the 4px grid and edges. |
 | Motion quality: short, eased, no bounce | YES (already planned) | Moving prototype. |

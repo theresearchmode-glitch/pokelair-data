@@ -4,7 +4,7 @@
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;--plate:#17161A;--on-plate:#FBFAF7;
   --good:#2E9E5B;--good-text:#16693B;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;
   --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:#8A7C6E;
-  --glow:.26;--glow-strong:.40;--wall-mix:46%;--shadow-lift:0 18px 30px -16px rgba(30,20,50,.45);--contact:rgba(30,20,50,.28);
+  --glow:.26;--glow-strong:.40;--wall-mix:46%;--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);--contact:rgba(30,20,50,.28);
   --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
   --r-s:4px;--r-m:6px;--r-l:10px;--r-xl:18px;--slant:-24deg;
   color-scheme:light}
@@ -13,10 +13,10 @@
   --plot:#4FB2F0;--plot-text:#4FB2F0;--pick:#FF5C77;--pick-text:#FF5C77;--plate:#ECE8E2;--on-plate:#1B1A22;
   --good:#5FD08F;--good-text:#5FD08F;--mid:#FFD166;--mid-text:#FFD166;--low:#B8AA9C;--low-text:#B8AA9C;
   --band-top:#4FB2F0;--band-ready:#C9B0FF;--band-solid:#A39CA6;--band-work:#FFD166;--band-miss:#B8AA9C;
-  --glow:.62;--glow-strong:.78;--wall-mix:46%;--shadow-lift:0 18px 34px -14px rgba(0,0,0,.7);--contact:rgba(0,0,0,.55);
+  --glow:.62;--glow-strong:.78;--wall-mix:46%;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);--contact:rgba(0,0,0,.55);
   color-scheme:dark}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style}
+html,body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style;font-variant-numeric:tabular-nums}
 .u{font-family:var(--u);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1.05}
 .plotline{color:var(--plot)}
 .eyebrow{display:flex;align-items:center;gap:10px;font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
@@ -37,3 +37,8 @@ html,body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--b);-webk
   transform:skewX(-10deg)}.field>*{transform:skewX(10deg)}.field b{margin-left:auto;color:var(--ink);font:900 20px/1 var(--u)}
 .lab{font:500 13px/1.3 var(--b);color:var(--ink-3)}
 .fine{font:400 13px/1.5 var(--b);color:var(--ink-3)}
+
+/* refinement (Nov 11): units smaller and quieter than the figure; a lit top edge and a floor reflection for the featured panel */
+.unit{font-size:.62em;color:var(--ink-2);letter-spacing:0;margin-left:2px}
+.litedge{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08)}
+.reflect{-webkit-box-reflect:below -18px linear-gradient(transparent 72%,rgba(255,255,255,.18))}

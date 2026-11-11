@@ -12,6 +12,8 @@ nav a.on{color:var(--ink);font-weight:700;position:relative}nav a.on::after{cont
 header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
 /* ---------- the band: score lockup + the six ---------- */
 .band{position:relative;display:grid;grid-template-columns:400px minmax(0,1fr);gap:32px;padding:24px var(--gut) 32px;align-items:center;isolation:isolate}
+.band .weather{position:absolute;inset:-40px 0 auto 0;height:620px;z-index:-2;pointer-events:none;background:radial-gradient(60% 70% at 80% 0%,rgba(255,170,60,var(--sunwarm)),transparent)}
+:root{--sunwarm:.10}:root[data-theme="dusk"]{--sunwarm:.14}
 .band .pool{position:absolute;left:60px;top:0;width:440px;height:360px;background:radial-gradient(closest-side,rgba(var(--bandc),var(--glow-strong)),transparent);z-index:-1;pointer-events:none}
 .lock .eyebrow{margin-bottom:8px}
 .lock .num{display:flex;align-items:flex-end;gap:16px}
@@ -33,11 +35,12 @@ header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
 .mon .glow{position:absolute;left:50%;top:60px;width:130px;height:96px;margin:-48px 0 0 -65px;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--c),var(--glow)),transparent)}
 .mon .sh{position:absolute;left:50%;top:108px;width:80px;height:12px;margin-left:-40px;border-radius:50%;background:radial-gradient(closest-side,var(--contact),transparent)}
 .mon img{position:relative;width:116px;height:116px;object-fit:contain;object-position:50% 100%;display:block;margin:0 auto}
-.mon .nm{position:relative;font:700 15px/1.25 var(--b);margin-top:4px}.mon .nm .mg{display:block;font:900 13px/1 var(--u);font-style:italic;color:var(--plot)}
+.mon .nm{position:relative;font:700 15px/1.25 var(--b);margin-top:4px}.mon .nm .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot)}
 .mon .it{position:relative;font:500 13px/1.3 var(--b);color:var(--ink-2)}
 .mon.on .nm{color:var(--pick-text)}
 .mon.on::before,.mon.on::after{content:"";position:absolute;top:2px;width:14px;height:114px;border:3px solid var(--pick);transform:skewX(-8deg)}
 .mon.on::before{left:2px;border-right:0}.mon.on::after{right:2px;border-left:0}
+.lock .num b small{font-size:.3em}
 .acts{display:flex;align-items:center;gap:12px;padding:0 var(--gut) 8px;flex-wrap:wrap}
 .acts .btn{height:48px}.acts .btn2{height:44px}.acts .more{margin-left:auto;display:flex;gap:24px;font:600 15px/1 var(--b);color:var(--ink-2)}
 .jump{position:sticky;top:0;z-index:5;display:flex;gap:32px;padding:16px var(--gut);margin-top:16px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 92%,transparent);font:600 15px/1 var(--b);color:var(--ink-2)}
@@ -53,7 +56,7 @@ header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
 .set .panel{position:absolute;left:0;right:0;top:56px;height:180px;transform:skewY(-7deg);border-radius:var(--r-m);overflow:hidden;z-index:1}
 .set .panel::after{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(from 8deg at 50% 62%,rgba(255,255,255,.4) 0 1.6deg,transparent 1.6deg 15deg);-webkit-mask-image:radial-gradient(closest-side,transparent 22%,#000 58%,transparent 96%)}
 .set .art{position:relative;z-index:2;display:block;width:250px;height:250px;object-fit:contain;margin:0 auto}
-.set .plate{position:absolute;z-index:3;left:-6px;top:226px;height:34px;padding:0 16px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 13px/1 var(--u);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
+.set .plate{position:absolute;z-index:3;left:-6px;top:226px;height:36px;padding:0 16px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 15px/1 var(--u);box-shadow:var(--shadow-lift);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
 .set h3{position:relative;z-index:2;font-size:28px;margin-top:20px}
 .set .types{display:flex;gap:4px;margin-top:8px}
 .kv{margin-top:16px;border-top:1px solid var(--rule)}
@@ -141,13 +144,13 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
   const by=r=>D.six.filter(m=>m.role===r);
   const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
     <p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
-  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND}"><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
+  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND}">${D.style.startsWith('Sun')?'<div class="weather"></div>':''}<div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
   const acts=`<div class="acts"><div class="btn">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
   const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
   const moves=`<div class="moves">${sel.moves.map(v=>`<div class="mv" style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</div>`).join('')}</div>`;
   const setSec=`<section class="sec set" style="--c1:${rgb(k.a)}"><h2 class="u"><span class="n">1</span>Set</h2><div class="sub">Leads with ${esc(D.partner)} vs the meta's top six</div>
-    <div class="hero"><div class="pool"></div><div class="panel" style="background:linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))"></div><img class="art" src="${sel.img}" alt=""><div class="plate">Rated ${sel.r} · ${sel.tier}</div></div>
+    <div class="hero"><div class="pool"></div><div class="panel litedge" style="background:linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))"></div><img class="art" src="${sel.img}" alt=""><div class="plate">Rated ${sel.r} · ${sel.tier}</div></div>
     <h3 class="u">${esc(sel.d)}</h3><div class="types">${sel.t.map(t=>`<span class="chip type" style="background:${TY[t]}">${t}</span>`).join('')}</div>${kv}${moves}
     <div class="row2"><div class="btn2"><span>Edit Set</span></div><div class="btn2"><span>Info Sheet</span></div></div></section>`;
   const T=D.mu.fav+D.mu.even+D.mu.unf,pc=n=>n/T*100;
