@@ -84,6 +84,7 @@
     "src/app/39-damage-calc-speed.js",
     "src/app/54-items.js",
     "src/app/55-threats.js",
-    "src/app/58-strength.js"
+    "src/app/58-strength.js",
+    "src/app/59-matchup-data.js"
   ]
 }

@@ -26,7 +26,7 @@ const run = (name, args, pick, mins = 40) => { log(`== ${name}`); const r = spaw
 // 3) today's site unchanged: every same-output proof (base page vs now)
 // SMOKE=1: only the first proof (to check the script itself works)
 const SMOKE = !!process.env.SMOKE;
-for (const c of SMOKE ? ['same-import'] : ['same-import', 'same-box', 'same-record', 'same-compare', 'same-edits', 'same-saved', 'same-team', 'same-info', 'same-sheet', 'same-share'])
+for (const c of SMOKE ? ['same-import'] : ['same-import', 'same-box', 'same-record', 'same-compare', 'same-edits', 'same-saved', 'same-team', 'same-info', 'same-sheet', 'same-share', 'same-matchups'])
   run(c, [`experiments/${c}.mjs`, A, B], /compared|identical/);
 if (SMOKE) { log('SMOKE DONE'); fs.rmSync(tmp, {recursive: true, force: true}); process.exit(0); }
 run('same-share-v2', ['experiments/same-share-v2.cjs', B], /share images/);

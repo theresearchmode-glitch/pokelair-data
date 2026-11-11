@@ -202,14 +202,11 @@ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.targ
 // Threat preparation card: every top threat, grouped by how ready the team is, each with the calc behind the verdict.
 const THR_LV=[['No answer','l0'],['Shaky','l1'],['Handles it','l2'],['Beats it','l3']];
 function renderThreatCard(ms,RD){const el=$('thrCard');if(!el)return;if(!RD||!ms.length){el.innerHTML='';return}
-  const pc=x=>Math.round(x*100),open=ui.thrOpen||{};
-  const det=r=>{const L=[];for(const x of r.solid)L.push(`<li class="ok">${esc(x.why)}</li>`);for(const x of r.soft)L.push(`<li class="part">${esc(x.why)}</li>`);for(const x of r.warn)L.push(`<li class="no">${esc(x.why)}</li>`);
-    if(r.losers.length)L.push(`<li class="no">It beats ${r.losers.map(x=>`${esc(x.m.d)} (${esc(x.du.d.mv)} ${pc(x.du.d.min)}-${pc(x.du.d.pct)}%${x.du.nT===1?', OHKO':', 2HKO'}${x.du.first?'':`, speed ${x.du.st} vs ${x.du.sm}`})`).join(', ')} 1-on-1${r.overloaded?`: only ${r.holders} of your Pokémon hold up against it, so any 4 you bring includes at least 2 it beats`:''}</li>`);
-    if(r.mode)L.push(`<li class="t2">Judged by its job: ${esc(r.mode.map(x=>x.name).join(' and '))}</li>`);
-    if(!L.length)L.push('<li class="no">Nothing on the team beats it 1-on-1 or stops what it does</li>');
-    const f=r.field||{};return `<ul class="thrd">${L.join('')}</ul><div class="t2">Field: ${f.weather?esc(f.weather):'no weather'}, ${f.terrain?esc(f.terrain)+' terrain':'no terrain'} · its usual set: ${esc(r.t.moves.slice(0,4).map(m=>m.name).join(', '))}${r.t.item?' @ '+esc(r.t.item):''}</div>`};
+  const open=ui.thrOpen||{};
+  /* the calc reasons are worked out in 59-matchup-data.js (thrReasons), shared with the new build */
+  const det=r=>{const R=thrReasons(r);return `<ul class="thrd">${R.list.map(x=>x.k==='t2'?`<li class="t2">${esc(x.text)}</li>`:`<li class="${x.k}">${esc(x.text)}</li>`).join('')}</ul><div class="t2">Field: ${esc(R.field)} · its usual set: ${esc(R.set)}</div>`};
   const row=r=>{const p=byName.get(r.t.n);return `<details class="thrrow" data-thr="${esc(r.t.n)}"${open[r.t.n]?' open':''}><summary>${p?sprite(p,'mini'):''}<span class="thrn"><b>${esc(r.t.d)}</b><span class="vsub">${pctTxt(+r.t.w)} of top cuts</span></span><span class="thre">${esc(THR.evidence(r))}</span></summary>${det(r)}</details>`};
-  const grp=(lv,start)=>{const rs=RD.rows.filter(r=>r.level===lv).sort((x,y)=>y.t.w-x.t.w);if(!rs.length)return '';const [lab,c]=THR_LV[lv];
+  const grp=(lv,start)=>{const rs=thrGroup(RD,lv);if(!rs.length)return '';const [lab,c]=THR_LV[lv];
     return `<details class="thrg ${c}"${start?' open':''}><summary><span class="thrl ${c}">${lab}</span> <span class="vsub">${rs.length} threat${rs.length===1?'':'s'}</span></summary>${rs.map(row).join('')}</details>`};
   const un=RD.rows.filter(r=>r.level===0).length;
   el.innerHTML=`<div class="vtx"><div class="k">Threat preparation${ms.length<6?' · so far':''}</div><div class="v">Ready for ${RD.score}% of the top 30 threats</div>
