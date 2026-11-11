@@ -109,6 +109,8 @@ V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.
 V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg = V2.theme() === 'night' ? L.hdrD : L.hdrL;
   /* the footer copy gets its own mask ids, so the two logos on one page never share an id */
   return svg ? (small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg) : '<b class="u">NastyPlot</b>'; };
+// the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
+V2.asOf = () => { try { return typeof dataDateText === 'function' ? dataDateText() : ''; } catch (e) { return ''; } };
 V2.route = () => { const h = (location.hash || '').slice(1); return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
 // redraw the current page after data arrives, keeping the reader's place and focus (no scroll jump)
 V2.redraw = () => { const y = scrollY, f = document.activeElement && document.activeElement.id; V2.draw(); scrollTo(0, y); if (f) { const e = document.getElementById(f); if (e) e.focus({preventScroll: true}); } };
@@ -119,7 +121,7 @@ V2.draw = () => { const app = document.getElementById('app'); if (!app) return; 
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <button type="button" class="np-theme" data-v2theme aria-label="Switch to ${V2.theme() === 'night' ? 'day' : 'night'} mode">${V2.theme() === 'night' ? 'Day' : 'Night'}</button></div></header>
 <main class="np-main" id="main">${P ? P.draw() : ''}</main>
-<footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan-made tool.</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>
+<footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan-made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`;
   if (P && P.after) try { P.after(); } catch (e) { console.error(e); } };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.theme() === 'night' ? 'day' : 'night'); });

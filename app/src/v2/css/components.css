@@ -146,3 +146,4 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 @media (max-width:699px){.np-locked .np-toast{bottom:auto;top:calc(var(--s4) + env(safe-area-inset-top,0px))}}
 /* a full-width sheet that is only as tall as its content (Saved Teams with a few teams) */
 @media (min-width:700px){.np-sheet.fit{bottom:auto;max-height:calc(100% - 96px)}}
+.np-asof{white-space:nowrap}

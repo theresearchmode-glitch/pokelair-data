@@ -13,7 +13,7 @@
 .tm-hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:"lock info" "acts six";gap:var(--s6) var(--s10);align-items:end;padding:var(--s10) var(--gut) var(--s8)}
 .tm-lock{grid-area:lock}.tm-info{grid-area:info;align-self:end}.tm-info:empty{display:none}.tm-info>:first-child{margin-top:0}.tm-six{grid-area:six;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2);align-items:end}.tm-acts{grid-area:acts;display:flex;flex-wrap:wrap;gap:var(--s3)}
 .tm-lock .np-score{margin-top:var(--s3)}
-.tm-rank{margin-top:var(--s3);font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.tm-rank{margin-top:var(--s3);font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}.tm-asof{margin:0;font-size:var(--t13);color:var(--ink-2)}
 .tm-wait{margin-top:var(--s3);font:500 var(--t17)/1.5 var(--b);color:var(--ink-2);max-width:36ch}
 .tm-pick{display:block;width:100%;padding:0;border-radius:var(--r-m)}
 .tm-pick:focus-visible{outline:3px solid var(--plot);outline-offset:3px}

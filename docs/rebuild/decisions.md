@@ -8,6 +8,8 @@ Sim's own decisions are marked "Sim". Newest first.
   recommendation, each logged here and summarised to Sim at 7 PM.
 
 ## Every page
+- Nov 11 (Claude, under Sim's 6-7 PM authority; review item 18): the data's date ("Data as of Nov 10", plus "(N days old)" when
+  stale, the shared rule from today's site) is in the footer of every page, and on My Team as a quiet line under the rank.
 - Nov 11 (Sim, review item 12, after the colour audit): (1) type colours used as tints (My Team move rows, the move picker bar,
   the My Box wallpaper) follow the rule: hue kept, saturation 72%+, lightness 56% (--tyn-* in tokens.css); near-grey types (Normal, Dark)
   stay neutral grey. (2) Type chips with white text stay outside the pool rule but are darkened, hue kept, until every one measures
