@@ -314,12 +314,34 @@ function applyPlan(pl){keepUndo();
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}});
     ui.swKey=S.slots.map(x=>x.n||'').join();
     undoMark(pl.ch.map(x=>x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`).join(', '));}
+// A one-change quick add (Quick add under a problem, or an addition on Build), R4 Nov 11, shared with the rebuild: keeps Undo and
+// the Undo bar, puts the newcomer in its spot; returns the toast. The caller redraws.
+function applyQuick(pl){const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);
+  return `${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`}
 // Which suggestions show, in order (R4, Nov 11; shared with the rebuild): plans that would lower readiness by 5+ go after the
 // ones that keep or raise it (the plans array is reordered in place, as before), then the extra ones "More suggestions" opened.
 function planListOf(plans,baseTS,shown){const planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
   const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
   const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
   return [...plans,...(shown||[])]}
+// A suggestion's reasons, the ones its Why? lists (R4, Nov 11: moved unchanged out of renderPlans, shared with the rebuild).
+// X = {ms, a: analyze(playForm(ms)), plans, covered: offenseRows(...).covered, baseTS: {score} or null}; k = its place in the list
+// (threat lines are worked out for the first plans.length+6). keep=false works the reasons out without storing them on the plan.
+function planWhy(pl,k,X,keep=true){const {ms,a,plans,covered,baseTS}=X;const st=pl.st;
+    const ts=!baseTS||pl.team.length!==6?null:pl._ts===undefined?(pl._ts=tsOf(pl.team)):pl._ts,dT=ts!=null?ts-baseTS.score:null;
+    const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
+    const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
+    const newWeak=st.a.rows.filter((t,j)=>t.w>t.r&&!(a.rows[j].w>a.rows[j].r)).map(t=>t.atk);
+    const syn=pl.ch.map(x=>{const t=metaEntry(x.c.p);const mates=(t&&t.tm||[]).map(([n])=>byName.get(n)).filter(q=>q&&pl.team.some(m=>m.base===q.b&&m.p!==x.c.p)).map(q=>q.d);return mates.length?`${esc(x.c.p.d)} is often paired with ${esc(mates.slice(0,2).join(' and '))}`:''}).filter(Boolean);
+    const roleLines=gpDiff(plans.gp,pl.gp),thrLines=pl.team.length===6&&ms.length===6&&k<plans.length+6?threatDiff(ms,pl.team,3).map(x=>x.html):[];
+    const archLines=pl.ch.flatMap(x=>(x.why||[]).map(w=>`${esc(x.c.p.d)}: ${w}`));
+    const cw=[...thrLines,...roleLines].some(l=>String(l).includes('Covers weather')),lines=[...(pl.gap?pl.gap.why:[]).filter(w=>!(cw&&/^Gives your /.test(w))).map(w=>`<b>${esc(w)}</b>`),...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
+      dT!=null&&plans.gBase!=null?(()=>{const h0=CH.hand(baseTS),h1=CH.hand(prepOf(pl.team));return h0&&h1?`Ready for top threats: ${h0.x}/${h0.n} → ${h1.x}/${h1.n}`:''})():'',newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
+      st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
+    // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
+    const wk=a.excess===st.a.excess?null:[wsTxt(a),wsTxt(st.a)];if(keep){pl._why=lines.filter(Boolean);pl._wk=wk}return {lines,dT,ts,wk}}
+// the plans renderPlans adds after the list when nothing improves the team (their reasons are worked out too)
+function planExtra(plans,list){return !plans.length?(plans.more||[]).slice(0,3).filter(x=>!list.includes(x)):[]}
 function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.length===6;if(el&&!(el.previousElementSibling&&el.previousElementSibling.classList.contains('chundohost'))){const u=document.createElement('div');u.className='chundohost';el.before(u)}undoBarSync();
   $('sugTitle').textContent='Suggestions';
   if(!ms.length){el.innerHTML='<div class="empty-note">Add at least one Pokémon to get plans.</div>';return}
@@ -334,19 +356,8 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   // plans that would lower readiness by 5+ go after the ones that keep or raise it
   const list=planListOf(plans,baseTS,shown);
   // nothing improves the team: the top side-grades still get their reasons worked out (My team shows them behind Why?)
-  const extra=!plans.length?more.slice(0,3).filter(x=>!list.includes(x)):[];
-  const htmls=[...list,...extra].map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;
-    const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
-    const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
-    const newWeak=st.a.rows.filter((t,j)=>t.w>t.r&&!(a.rows[j].w>a.rows[j].r)).map(t=>t.atk);
-    const syn=pl.ch.map(x=>{const t=metaEntry(x.c.p);const mates=(t&&t.tm||[]).map(([n])=>byName.get(n)).filter(q=>q&&pl.team.some(m=>m.base===q.b&&m.p!==x.c.p)).map(q=>q.d);return mates.length?`${esc(x.c.p.d)} is often paired with ${esc(mates.slice(0,2).join(' and '))}`:''}).filter(Boolean);
-    const roleLines=gpDiff(plans.gp,pl.gp),thrLines=pl.team.length===6&&ms.length===6&&k<plans.length+6?threatDiff(ms,pl.team,3).map(x=>x.html):[];
-    const archLines=pl.ch.flatMap(x=>(x.why||[]).map(w=>`${esc(x.c.p.d)}: ${w}`));
-    const cw=[...thrLines,...roleLines].some(l=>String(l).includes('Covers weather')),lines=[...(pl.gap?pl.gap.why:[]).filter(w=>!(cw&&/^Gives your /.test(w))).map(w=>`<b>${esc(w)}</b>`),...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
-      dT!=null&&plans.gBase!=null?(()=>{const h0=CH.hand(baseTS),h1=CH.hand(prepOf(pl.team));return h0&&h1?`Ready for top threats: ${h0.x}/${h0.n} → ${h1.x}/${h1.n}`:''})():'',newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
-      st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
-    // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
-    pl._why=lines.filter(Boolean);pl._wk=a.excess===st.a.excess?null:[wsTxt(a),wsTxt(st.a)];
+  const extra=planExtra(plans,list);
+  const htmls=[...list,...extra].map((pl,k)=>{const {lines,dT,ts}=planWhy(pl,k,{ms,a,plans,covered,baseTS});const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;
     return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">Suggestion ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span>${(()=>{const g0=plans.gBase,g1=planGrade(pl);return g0!=null&&g1!=null?gradeChip(g0,g1,null,pl.team):dT!=null?`<span class="tsd ${dT>0?'up':dT<0?'dn':''}" title="${esc(tsTitle(baseTS,{score:ts}))}">${readyDelta(dT)}</span>`:''})()}</div>${(()=>{try{return LANE.line(pl)}catch(e){return ''}})()/* Part 3 (Nov 10): the honest kind-and-size line replaces the model's sureness word, which measured no better than a coin flip (51.4% when "sure") */}
       ${pl.ch.map(x=>`<div class="swap">${x.out?`<span class="out">${esc(x.out.d)}</span> →`:'Add'} ${sprite(x.c.p,'mini')}<span class="in">${esc(x.c.p.d)}</span>${confChip(x.c.p)}<span class="chips">${x.c.p.t.map(t=>chip(t)).join('')}</span>${x.c.p.m?'<span class="tag mega ico" title="Mega Evolution">Mega</span>':''}${inBox(x.c.p)?'<span class="tag box ico" title="In your box">Box</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${ratingTag(x.c.p)}${isGem(x.c.p)?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(x.c.p)}<span class="vsub">${esc(x.c.mem.ability)}${(t=>t&&t.item?' @ '+esc(t.item):'')(tA.find(m=>m.p===x.c.p))}${U(x.c.p)?` · <span title="${esc(windowWords('tour'))}">${U(x.c.p).toFixed(1)}% usage</span>`:''}</span></div>`).join('')}
       ${(()=>{const L=lines.filter(Boolean),ul=`<ul>${L.map(l=>`<li>${l}</li>`).join('')}</ul>`;if(L.length<=2)return ul;/* Phase 3: the grade is the headline; the first two reasons show, the rest (readiness, offense, weak spots) behind one tap */return `<ul>${L.slice(0,2).map(l=>`<li>${l}</li>`).join('')}</ul><details class="planwhy"><summary>${L.length-2} more reason${L.length-2===1?'':'s'}</summary><ul>${L.slice(2).map(l=>`<li>${l}</li>`).join('')}</ul></details>`})()}

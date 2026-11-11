@@ -24,9 +24,10 @@ V2.teamData = () => {
 
 // ---------- suggestions: today's planner (planFixesG), run in small slices between frames like today's page ----------
 V2.plan = {key: null, plans: null, job: null};
-V2.planKey = () => JSON.stringify([S.slots, ui.pool, typeof metaVersion === 'number' ? metaVersion : 0, ui.swKey || '']);
+// the same key today's page re-plans on (planKeyOf, 08-render-all.js): team, Suggest from, Megas on team, Swap my Mega, box, never-suggest... (R4 sugs hook)
+V2.planKey = () => planKeyOf($('useAbil').checked);
 V2.planStart = ms => { const key = V2.planKey(); if (V2.plan.key === key || (V2.plan.job && V2.plan.job.key === key)) return;
-  const job = {key, g: planFixesG(ms, suggestPool(), true)}; V2.plan.job = job;
+  const job = {key, g: planAllG(ms, suggestPool(), true, analyze(playForm(ms), true))}; /* today's whole pass, hidden gems for Quick add included (R4 sugs hook) */ V2.plan.job = job;
   const step = () => { if (V2.plan.job !== job) return; const t = performance.now(); let r;
     try { for (;;) { r = job.g.next(); if (r.done) break; if (performance.now() - t > 30) { setTimeout(step, 0); return; } } } catch (e) { console.error(e); r = {value: []}; }
     V2.plan = {key, plans: r.value || [], job: null}; if (V2.route() === 'team') V2.redraw(); };
@@ -331,21 +332,15 @@ V2.pages.team = {place: 'team', draw() {
   const setSec = V2.setSecHtml(D, sel);
   // 2. Matchups: real-game verdicts lead, the calc reading underneath (Sim, Nov 10); views and threat sheet in pages/matchups.js (hook)
   const muSec = V2.muSec ? V2.muSec(D) : '';
-  // 3. Suggestions, numbered (word list), each with its Strength Score change and Apply
-  const S2 = D.sug, side1 = (m, cls) => { const P = m.p || m; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}</span></span>`; };
-  const swap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}">${x.out ? side1(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${side1(x.c.p, ' in')}</div>`;
-  const sgSec = !S2 ? '' : `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${S2.pending ? '<p class="tm-sub" role="status">Working out the best changes for your team…</p>'
-    : S2.none ? '<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>'
-    : `<p class="tm-sub">${S2.side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
-    <ol class="tm-sug">${S2.top.map((x, k) => `<li><span class="np-eyebrow">Suggestion ${k + 1}</span>${x.d != null ? `<div class="tm-mv"><b>${x.d > 0 ? '+' + x.d : x.d < 0 ? '−' + Math.abs(x.d) : '±0'}</b><span>${x.r0} → ${x.r1}${x.word ? ' · ' + V2.esc(x.word) : ''}</span></div>` : ''}<div class="tm-swaps">${x.pl.ch.map(swap).join('')}</div><button type="button" class="np-btn" data-v2plan="${k}">Apply</button></li>`).join('')}</ol>`}</section>`;
+  // 3. Suggestions: drawn by pages/sugs.js (R4 sugs hook)
+  const sgSec = V2.sgSec(D);
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
-  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p>${V2.ckBody(D, ck)}</section>`;
+  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
   return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${ckSec}</div><div class="tm-c2">${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() {
-  document.querySelectorAll('[data-v2plan]').forEach(b => b.addEventListener('click', () => { const pl = (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
-    applyPlan(pl); persist(); V2.redraw(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); }));
+  /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
   document.querySelectorAll('[data-tmsel]').forEach(b => b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }));
   document.querySelectorAll('[data-tmjump]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page

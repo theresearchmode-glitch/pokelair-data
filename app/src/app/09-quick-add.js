@@ -33,16 +33,27 @@ function quickPicks(key,plans,ms,used){if(!plans||!plans.singles||!plans.basePl)
   const out=[],seen=new Set();for(const pl of c){const b=pl.ch[0].c.p.b;if(seen.has(b)||(used&&used.has(b)))continue;seen.add(b);out.push(pl);if(out.length>=3)break}
   if(!out.length)return out;const top=base-out[0].score;return out.filter(pl=>base-pl.score>=top*.4)}
 // Each Pokémon is shown once across problems (under the first problem it fixes), so the list never repeats itself.
-function renderQuick(key,plans,ms,used){const picks=quickPicks(key,plans,ms,used);picks.forEach(pl=>used.add(pl.ch[0].c.p.b));
+// The quick adds for one problem, as data (R4, Nov 11: moved unchanged out of renderQuick, shared with the rebuild): {picks} or
+// {picks: [], note} when nothing fits ("Fixed by a pick above." or why not)
+function quickList(key,plans,ms,used){const picks=quickPicks(key,plans,ms,used);picks.forEach(pl=>used.add(pl.ch[0].c.p.b));
   // one hidden gem per problem, when a strong off-meta Pokémon fixes it as well
   if(plans&&plans.gems&&picks.length<4){const g=quickPicks(key,plans.gems,ms,used)[0];if(g){g.gem=true;g.gemBase=plans.gems.basePl.score;used.add(g.ch[0].c.p.b);picks.push(g)}}
-  if(!picks.length&&quickPicks(key,plans,ms).length)return `<div class="qnone">Fixed by a pick above.</div>`;
-  if(!picks.length)return `<div class="qnone">${ui.pool==='box'?'Nothing in your box fixes this cleanly. Set "Suggest from" to "Box + catch" to see what to catch.':'No single change fixes this without hurting the team. Check the fix plans for two-change options.'}</div>`;
-  return `<div class="qa"><div class="qlbl">Quick add</div><div class="qpicks">${picks.map(pl=>{const x=pl.ch[0],p=x.c.p,i=ui.quick.push(pl)-1,fit=Math.round(plans.basePl.score-pl.score),why=qaReason(key,pl);
-    return `<div class="qpick${pl.gem?' gem':''}"><div class="qtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">Mega</span>':''}${inBox(p)?'<span class="tag box ico" title="In your box">Box</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${pl.gem?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(p)}</div>
-      ${why?`<div class="qwhy">${esc(why)}</div>`:''}${(()=>{if(ms.length!==6||pl.team.length!==6)return '';const d=threatDiff(ms,pl.team,1).find(x=>x.up);return d?`<div class="qwhy">${d.html}</div>`:''})()}<div class="qact"><button class="btn sm primary" type="button" data-qa="${i}">${x.out?'Swap out '+esc(x.out.d):'Add'}</button>${pl._ts!=null&&(ui.plans&&ui.plans.tsBase!=null)?`<span class="qfit" title="${esc(tsTitle({score:ui.plans.tsBase},{score:pl._ts}))}">Ready ${pl._ts>ui.plans.tsBase?'+':'±'}${pl._ts-ui.plans.tsBase||0}%</span>`:`<span class="qfit" title="Fits what the team is missing. Readiness for the top threats shows once the team has 6">Good fit</span>`}</div></div>`}).join('')}</div></div>`}
-function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
-  if(!ms.length){el.innerHTML='<div class="empty-note">Add Pokémon to see what the team needs.</div>';const sub=$('needsSub');if(sub)sub.textContent='';return}
+  if(!picks.length&&quickPicks(key,plans,ms).length)return {picks,note:'Fixed by a pick above.'};
+  if(!picks.length)return {picks,note:ui.pool==='box'?'Nothing in your box fixes this cleanly. Set "Suggest from" to "Box + catch" to see what to catch.':'No single change fixes this without hurting the team. Check the fix plans for two-change options.'};
+  return {picks}}
+// One quick add's details (shared with the rebuild): why it fits, the threat it covers (HTML), its button, how ready it makes the team
+function quickInfo(key,pl,ms){const x=pl.ch[0],p=x.c.p,ts=pl._ts!=null&&(ui.plans&&ui.plans.tsBase!=null);
+  return {why:qaReason(key,pl),thr:(()=>{if(ms.length!==6||pl.team.length!==6)return '';const d=threatDiff(ms,pl.team,1).find(x=>x.up);return d?d.html:''})(),btn:x.out?'Swap out '+x.out.d:'Add',
+    fit:ts?`Ready ${pl._ts>ui.plans.tsBase?'+':'±'}${pl._ts-ui.plans.tsBase||0}%`:'Good fit',fitTitle:ts?tsTitle({score:ui.plans.tsBase},{score:pl._ts}):'Fits what the team is missing. Readiness for the top threats shows once the team has 6',
+    box:inBox(p),catch:!inBox(p)&&ui.pool!=='all'}}
+function renderQuick(key,plans,ms,used){const Q=quickList(key,plans,ms,used),picks=Q.picks;
+  if(Q.note)return `<div class="qnone">${Q.note}</div>`;
+  return `<div class="qa"><div class="qlbl">Quick add</div><div class="qpicks">${picks.map(pl=>{const x=pl.ch[0],p=x.c.p,i=ui.quick.push(pl)-1,fit=Math.round(plans.basePl.score-pl.score),I=quickInfo(key,pl,ms),why=I.why;
+    return `<div class="qpick${pl.gem?' gem':''}"><div class="qtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t=>chip(t)).join('')}</span>${p.m?'<span class="tag mega ico" title="Mega Evolution">Mega</span>':''}${I.box?'<span class="tag box ico" title="In your box">Box</span>':I.catch?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${pl.gem?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(p)}</div>
+      ${why?`<div class="qwhy">${esc(why)}</div>`:''}${I.thr?`<div class="qwhy">${I.thr}</div>`:''}<div class="qact"><button class="btn sm primary" type="button" data-qa="${i}">${esc(I.btn)}</button><span class="qfit" title="${esc(I.fitTitle)}">${I.fit}</span></div></div>`}).join('')}</div></div>`}
+// The team's problems as rows [severity, label, text (HTML), quick-add key] (R4, Nov 11: moved unchanged out of renderProblems, shared
+// with the rebuild; chipFn draws a type chip, today's chip() or the rebuild's own)
+function problemRows(ms,a,tRows,useA,plans,chipFn){
   const name=i=>esc(ms[i].d);const out=[];
   // game-plan gaps first: these are the ones beginners miss most
   const gp=plans&&plans.gp?plans.gp:gamePlan(ms);
@@ -53,18 +64,22 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   {if(ms.length>=6&&megaCount(ms)===0)out.push(['mid','Megas','No Mega on the team. Most winning teams bring one or two Mega options; only one can Mega Evolve each battle.','mega'])}
   a.rows.filter(t=>t.w>t.r).sort((x,y)=>(y.w-y.r)-(x.w-x.r)).forEach(t=>{const weak=t.who.map(o=>name(o.i)+(o.x>=4?' (4×)':''));
     const res=ms.filter(m=>mult(t.atk,m.types,m.ability,useA)<=.5).map(m=>esc(m.d));
-    out.push([t.w-t.r>=2?'hi':'mid','Weakness',`${chip(t.atk)} ${t.w} weak (${weak.join(', ')}), ${res.length?`only ${res.length} resist${res.length===1?'s':''} (${res.join(', ')})`:'nothing resists it'}.`,'weak:'+t.atk])});
-  a.rows.filter(t=>t.r===0&&t.w<=t.r).forEach(t=>out.push(['mid','Nobody resists',`${chip(t.atk)} Nothing on your team resists it.`,'unres:'+t.atk]));
-  a.rows.forEach(t=>t.who.filter(o=>o.x>=4).forEach(o=>{if(!(t.w>t.r))out.push(['mid','4× weak',`${name(o.i)} takes 4× from <span style="white-space:nowrap">${chip(t.atk)}.</span>`])}));
-  const gaps=tRows.filter(r=>!r.hits.length).map(r=>chip(r.t));
+    out.push([t.w-t.r>=2?'hi':'mid','Weakness',`${chipFn(t.atk)} ${t.w} weak (${weak.join(', ')}), ${res.length?`only ${res.length} resist${res.length===1?'s':''} (${res.join(', ')})`:'nothing resists it'}.`,'weak:'+t.atk])});
+  a.rows.filter(t=>t.r===0&&t.w<=t.r).forEach(t=>out.push(['mid','Nobody resists',`${chipFn(t.atk)} Nothing on your team resists it.`,'unres:'+t.atk]));
+  a.rows.forEach(t=>t.who.filter(o=>o.x>=4).forEach(o=>{if(!(t.w>t.r))out.push(['mid','4× weak',`${name(o.i)} takes 4× from <span style="white-space:nowrap">${chipFn(t.atk)}.</span>`])}));
+  const gaps=tRows.filter(r=>!r.hits.length).map(r=>chipFn(r.t));
   if(gaps.length)out.push([gaps.length>=4?'mid':'lo','Offense',`No super-effective hits on ${gaps.slice(0,-1).join(' ')} <span style="white-space:nowrap">${gaps[gaps.length-1]}.</span>`]);
-  const even=a.rows.filter(t=>t.w>0&&t.w===t.r).map(t=>chip(t.atk));
+  const even=a.rows.filter(t=>t.w>0&&t.w===t.r).map(t=>chipFn(t.atk));
   if(even.length)out.push(['lo','Same weak as resist',`${even.join(' ')} One resist covers one weakness. Fine, but one bad switch away.`]);
   const R=teamRoles(ms);const nm=arr=>arr.map(m=>esc(m.d)).join(', ');
   R.arch.filter(x=>x.key!=='tw'&&x.key!=='tr'&&!ARCH[x.key].setAb.some(a=>WEATHER_OF[a])&&!x.active).forEach(x=>out.push(['lo',x.name,`${nm(x.setters)} sets ${x.name}, but nothing else on the team uses it.`]));
   if(!OFFMETA)ms.filter(m=>viability(m.p)<12).forEach(m=>out.push(['mid','Fringe pick',`${esc(m.d)} sees almost no competitive use in ${S.format} right now.`]));
   const good=R.arch.filter(x=>x.active&&x.key!=='tw').map(x=>`${x.name} (${nm(x.setters)} → ${nm(x.abusers)})`);
   if(good.length)out.push(['ok','Game plan',good.join('; ')]);
+  return out}
+function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
+  if(!ms.length){el.innerHTML='<div class="empty-note">Add Pokémon to see what the team needs.</div>';const sub=$('needsSub');if(sub)sub.textContent='';return}
+  const out=problemRows(ms,a,tRows,useA,plans,chip);
   // quick add on the first 4 fixable problems, so the list stays readable
   // Each concern is one tappable row; its suggested fixes drop down underneath, so the list stays short.
   const wasOpen=new Set([...(el.querySelectorAll?el.querySelectorAll('details.prob-row[open]'):[])].map(d=>d.dataset.k));
@@ -76,7 +91,7 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   {const sub=$('needsSub');if(sub)sub.textContent=real.length?real.length+' to look at':''}
   // the 4 that matter most up front; the rest one tap away
   const rows=out.map(row),cap=ui.needsAll?rows.length:4,more=rows.length-cap;
-  el.innerHTML=(real.length?'':'<div class="prob-row"><span class="sev ok">All clear</span><div>No type problems, and the team has speed control and support.</div></div>')+rows.slice(0,cap).join('')
+  el.innerHTML=(real.length?'':`<div class="prob-row"><span class="sev ok">${PROB_TXT.clear}</span><div>${PROB_TXT.clearWhy}</div></div>`)+rows.slice(0,cap).join('')
     +(more>0?`<button type="button" class="btn sm ghost needsmore" id="needsMore">Show ${more} more</button>`:ui.needsAll&&rows.length>4?'<button type="button" class="btn sm ghost needsmore" id="needsMore">Show less</button>':'');
 }
 function megaFormFor(p,t){if(p.m||!t||!t.it||!t.it.length)return p;const [item,pct]=t.it[0];if(!(pct>=50)||!/ite( [XYZ])?$|inite/.test(item))return p;

@@ -161,7 +161,8 @@ export default (ui, pg, o) => {
     gridRows: () => pg.evaluate(() => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? [...t.querySelectorAll('[data-muthr]')].map(r => ({name: r.getAttribute('aria-label').split(':')[0], cells: r.querySelectorAll('[role=cell]').length})) : null; }),
     tapGridRow: i => tapFound(i => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? t.querySelectorAll('[data-muthr]')[i] : null; }, i, 'grid row ' + i, 900),
     pickTypeChartMega: () => NOT('Types fold (type chart, Mega pick)'),
-    tapTip: () => NOT('"?" explainer bubbles'), tipBubble: () => NOT('"?" explainer bubbles'),
+    /** "?" explainers: tap the one with this label (its aria-label, as today's adapter), read the open bubble */
+    tapTip: label => H.tapLabel(label, 500), tipBubble: () => txt('.sg2-tipop'),
     /** shortcut for "edit this Pokémon's four moves" (same state change as today's adapter, through the shared logic) */
     giveMoves: (name, moves) => ui.peek(`(()=>{const i=S.slots.findIndex(s=>s.n===${JSON.stringify(name)});S.slots[i].mv={doubles:${JSON.stringify(moves)}};render();return i})()`).then(() => pg.waitForTimeout(1500)),
     // suggestions, read from the visible card into today's wording
@@ -171,7 +172,9 @@ export default (ui, pg, o) => {
       const mv = li.querySelector('.tm-mv'), b = mv && mv.querySelector('b'), sp = mv && mv.querySelector('span'), ap = li.querySelector('[data-v2plan]');
       return [chs.join(', '), b ? `${b.innerText.trim()} (${sp ? sp.innerText.replace(/\s+/g, ' ').trim() : ''})` : '', ap ? ap.innerText.trim() : ''].filter(Boolean).join(' '); })),
     applySuggestionCard: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#main [data-v2plan]')].filter(e => e.getClientRects().length)[i]; b.click(); }, i).then(() => pg.waitForTimeout(1500)),
-    undoBar: () => NOT('Undo bar for applied suggestions (only the toast Undo)'), undoLastApplied: () => NOT('Undo bar for applied suggestions (only the toast Undo)'),
+    /** the Undo bar above the suggestions ("Applied <label> Undo"), null when there is none (same reading as today's adapter) */
+    undoBar: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main [data-undobar]')].find(e => e.getClientRects().length); return e ? e.parentElement.innerText.replace(/\s+/g, ' ').trim() : null; }),
+    undoLastApplied: () => click('#main [data-undobar]', 1500),
     // edit panel: Edit Set (.ed2), and the other panels today's #chEdit hosts: Import (.imp2), Save (.sv2), Add (search sheet)
     editPanel: () => pg.evaluate(() => { const w = window.V2 && V2._sheet && V2._sheet.wrap, s = w && w.querySelector('.np-sheet'); if (!s) return null; const c = s.querySelector('.ed2,.imp2,.sv2,.np-find'); if (!c) return null;
       const h = c.querySelector('h2'), ht = h ? h.innerText.replace(/\s+/g, ' ').trim() : ''; return {title: c.classList.contains('ed2') && !/^Add a Pok/.test(ht) ? 'Edit ' + ht : ht, text: s.innerText.replace(/\s+/g, ' ').trim()}; }),

@@ -67,6 +67,7 @@
  "src/app/34-events.js",
  "src/app/35-win-model.js",
  "src/app/36-lanes.js",
+ "src/app/36-sug-data.js",
  "src/app/36-confidence.js",
  "src/app/37-home-trends.js",
  "src/app/38-gauntlet.js",

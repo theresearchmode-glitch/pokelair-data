@@ -23,5 +23,5 @@ Newest first. File: app/test/behaviour/A-team.mjs unless named.
 | Nov 11 | MU-04 (helper) | Looks in [data-pane] | Also in #main | Markup only. |
 | Nov 11 | MU-05b (helper) | Close glyph × | Also ✕ | Markup only; before this its letter check could never fail on the new build. |
 
-Adapter-only changes (no test text changed): the v2 adapter opens My Team's More menu (openMoreActions), reads the menu's actions
+Adapter-only changes (no test text changed): the v2 adapter maps the All Suggestions sheet to today's "coverage" page and #battle to "matchup", and reads the Undo bar and the "?" bubble (Suggestions helper, Nov 11); the v2 adapter opens My Team's More menu (openMoreActions), reads the menu's actions
 without opening it (teamActions), closes an open sheet before Clear Team, opens the Why and Switch Team sheets.

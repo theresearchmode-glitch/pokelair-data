@@ -27,6 +27,12 @@ Sim's own decisions are marked "Sim". Newest first.
   The new-build check now visits all six pages by default (team, team-empty, box, compare, sheet, guide), not only the style guide.
 
 ## My Team
+- Nov 11 (Claude, under Sim's 6-7 PM authority): accepted the Suggestions helper's choices: All Suggestions is a sheet over My Team;
+  "Swap my Mega?" is remembered in this browser (np2.swapMega; today's page resets it on reload); "Problems and Team Checks" is a fold
+  at the foot of Team Checks, closed by default as today; " · " lists become words by today's shared rule; the "?" bubble has no mascot.
+- Nov 11 (Sim's #5, done under her authority): "Nothing to fix" is one quiet paragraph with Battle and Sets as links, not a headline
+  (beside optional swaps the big headline read as a contradiction); the swaps under it are introduced as "Optional swaps:".
+  Known gap: the Sets link goes to a page the new build doesn't have yet (as does Battle, which shows "Coming next").
 - Nov 11 (Sim): the selected Pokémon stands on a floor ring in its own colour (idea 2), no panel behind it.
 - Nov 11 (Sim): action strip under the six (− Remove, Lock, Set as Lead, Edit Set); a locked Pokémon shows a padlock before its item.
 - Nov 11 (Sim): Matchups opens on the stand-outs (Unfavoured, Favoured) with "See all 30"; Team Checks fold to one line when all pass;

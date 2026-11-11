@@ -158,6 +158,8 @@ CH.rankOfS = s => { const q = META.model && META.model.dist && META.model.dist.q
 CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
 /* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
 CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
+// moved unchanged from 60-concept-h.js (R4, Nov 11: the rebuild's verdict line reads it)
+CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
 
 // ---------- matchups and the lead pair (moved unchanged from 60-concept-h.js, R4 Nov 11) ----------
 CH.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];

@@ -29,6 +29,10 @@
     [
       "matchups",
       "src/v2/css/matchups.css"
+    ],
+    [
+      "sugs",
+      "src/v2/css/sugs.css"
     ]
   ],
   "body": "src/v2/body.html",
@@ -48,6 +52,7 @@
     "src/v2/pages/team.js",
     "src/v2/pages/six.js",
     "src/v2/pages/matchups.js",
+    "src/v2/pages/sugs.js",
     "src/v2/pages/monsheet.js",
     "src/v2/pages/box.js",
     "src/v2/pages/record.js",
@@ -91,6 +96,7 @@
     "src/app/33-move-edits.js",
     "src/app/35-win-model.js",
     "src/app/36-lanes.js",
+    "src/app/36-sug-data.js",
     "src/app/36-confidence.js",
     "src/app/39-damage-calc-speed.js",
     "src/app/54-items.js",
