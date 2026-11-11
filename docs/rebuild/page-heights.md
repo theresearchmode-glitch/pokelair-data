@@ -18,7 +18,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Home | 3,732 | 5,099 **over** | 3,980 **over** | 4,191 / 2,828 / 2,595 (Nov 11) |
 | My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | 1,737 / 2,587 / 1,699 (after Option A, Nov 11; before: 4,891 / 3,538 / 2,311) |
 | My Team, no team yet (first visit) | (old empty state not measured) | | | 1,804 / 1,316 / 1,039 |
-| Build for Me | 3,178 | 2,270 | 1,947 **over** | not drawn yet |
+| Build for Me | 3,178 | 2,270 | 1,947 **over** | 2,298 / 2,943 / 1,796 (Nov 11) |
 | All Suggestions | 1,769 | 1,553 | 1,550 | not drawn yet |
 | Saved Teams | 1,344 | 1,180 | 1,129 | not drawn yet |
 | Compare Teams | 2,464 | 1,898 | 1,798 | not drawn yet |
@@ -50,3 +50,4 @@ This table records the rule in design-system.md section 9. Heights are full page
 - **Pokémon info sheet, rebuild (Nov 11):** measured as a page, the sheet is 2,431px on phone, 1,744 on iPad and 1,417 on desktop. The page-length limits are for pages and the sheet scrolls by itself, so these are recorded for reference. It shows the Info tab, which is the default for a first visit (today's site remembers the last tab chosen).
 - **Ratings, rebuild (Nov 11):** drawn by a helper agent, then checked and adjusted. Desktop is 10px under its limit. It shows 12 rows plus "See all 345 Pokémon", so no exception is needed. On phone the filter chips wrap so none is cut off at the edge.
 - **All mock-up scripts now read the morning refresh (out/perf.json) the way the live site does** (fix found by the Ratings helper). The test harness's frozen data makes On teams and Win rate fall back to Nov 1; the scripts now show the live Nov 10 numbers. Ratings and their order did not change.
+- **Build, rebuild (Nov 11):** drawn by a helper agent from a real build (Build around Garchomp, whole roster, 2 Megas: Sun, Tailwind, 91 Top tier), then checked. On phone, Other options, Cores and Recent winners are tabs, one tap each; today they are reached by scrolling.
