@@ -213,3 +213,18 @@ The redesign chat's last suggestions and Claude's decisions (Sim gave executive 
 ## Timing vs Regulation M-D (Nov 10)
 
 M-D most likely starts Dec 2. Sim, Nov 10: aim to have the rebuild live before then ("cutting it super duper close ... lets keep our hopes up high"). Safety net (Claude): keep the M-D data switch (roster, regulation profile, daily data and tests on M-D) ready as its own small step; if the rebuild is not live by about Nov 28, switch today's site to M-D data so players never see last regulation's numbers. The deeper M-D work (re-checking the Strength Score and matchups on M-D games) comes after the rebuild either way.
+
+
+## Review rules (Sim, Nov 11): status
+
+The rules are in design-system.md section 10. What is known so far:
+
+1. **85 vs 92: explained, nothing to fix in the site.** 92 is correct. `out/ratings_log.json` stores the raw total (85) and every page shows `RS()` of it (92). Only the design chat's mock-up read the raw file. Still to do: a check that every page uses the one function, and the "too few games" wording.
+2. **Player handle on Home: not in today's code.** The latest winner shows "Champion · record" (`teamWho`, app/src/app/06-helpers.js) with no handle. Still to do: a sweep of every data file that reaches the page (overlaps the Player IDs plan, f6).
+3. **Claude-only features:** `window.claude` is used in 03-persistence.js (saving and sync), 51-usage.js and 53-feedback.js. Public replacements still to propose. CONFLICT to settle: "teams on this device only" vs today's site, which syncs to the Claude account.
+4. **First visit:** drawn (mocks/firstvisit). Empty states for every other page still to design.
+5. **Speed:** the built page is 3,064,497 bytes and the minify step is skipped (`esbuild` not installed; app/slim.mjs). Load time, size limit and splitting still to measure and propose.
+6. **Words:** beginner explanations and a two-names sweep still to do (overlaps f7-words).
+7. **Contrast:** day-mode partners were measured in design-system draft 1. Pokémon-colour backgrounds, night mode and keyboard are still to measure.
+8. **package.json:** missing, so `npm ci` fails. To add.
+9. **Art in one place:** to check.

@@ -218,3 +218,19 @@ A page over its limit is not finished.
 - What could not be checked.
 
 **9.7 Conflicts.** If any of this conflicts with another rule here or in CLAUDE.md, don't pick one silently. Name both rules and ask Sim.
+
+
+## 10. Rebuild rules from the site review (Sim, Nov 11)
+
+Status of each item is in docs/rebuild-plan.md, "Review rules".
+
+1. **One source for every number.** Every page reads ratings and stats from one function, the displayed rating `RS(rating(p).total)`, and shows the date its data was last updated. A Pokémon with too few games says so in words. Never show a blank, a zero, or an old number as if current.
+2. **No player names or handles anywhere**, on any page or in any data file that reaches the page. List what is found before removing anything.
+3. **Nothing depends on Claude to work.** Every Claude-only feature has a planned public replacement before pages are built on it. On the public site, teams live on the visitor's device only, and export and import are easy to find.
+4. **A new visitor's first minute.** With no team, no score is shown. Every page looks finished with no team, no box and no saved data. Nothing reserves space for a mascot.
+5. **Speed limits, measured.** There is a page size limit and per-section loading. The minify step must run. Glow, blur, reflections and weather each need a mouse-wheel scrolling measurement before they stay. Filtered sprites never get their own layers. All movement stops under reduced motion.
+6. **Words.** Every beginner term has a plain explanation one tap away. One name per thing, from the CLAUDE.md word list; two names for one thing go to Sim. Never call the site an "app".
+7. **Readable by everyone.** Text contrast is at least 4.5 to 1 on every colour it sits on, including colours from Pokémon art, in day and night. Verdicts never rely on colour alone. Everything works by keyboard on desktop, with a visible focus outline.
+8. **Setup and tests.** A package.json makes `npm ci` work. While working, run the affected behaviour group; run the full run before anything replaces a live page. A test that passes on one machine and fails on another is reported, never hidden. Any change to a test is reported to Sim with the reason.
+9. **Ownership is open.** The art and the name are not settled. All art is loaded from one place in the code so it can be swapped.
+10. **Conflicts are raised, not settled silently.**

@@ -180,6 +180,25 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
 :root[data-theme="dusk"] .set .panel::after{opacity:.3}
 :root[data-theme="dusk"] .set .art{filter:drop-shadow(0 0 .8px rgba(255,255,255,.6)) drop-shadow(0 14px 16px rgba(0,0,0,.45))}
 @media (max-width:699px){:root[data-theme="dusk"] .acts .btn.main{height:44px!important;background:linear-gradient(180deg,#4FAEEC,#2F8ACB)}}
+/* ---------- Page length (design-system.md section 9; Sim chose Option A, Nov 11) ----------
+   The full Team Sheet opens as a sheet from its jump-bar tab (one tap, as today); it is not part of the page.
+   Phone: Set, Matchups and Suggestions (with Team Checks) are tabs, one open at a time, Set by default.
+   Tabs carry what is inside and how much (30 matchups, 4/4 checks, 6 sets). */
+.sheet{display:none}
+.jump a small{font:600 13px/1 var(--b);color:var(--ink-3);margin-left:4px}
+@media (max-width:699px){.work>section+section{display:none}.work>section{margin-bottom:24px}
+  /* phone tabs must all fit (no tab cut off at the edge): Team Checks sit inside the Suggestions tab */
+  .jump{gap:16px;-webkit-mask-image:none;overflow:visible}.jump .tc,.jump small.n{display:none}}
+/* iPad and other mid widths: score above the six, then Set beside Matchups, Suggestions below across the width */
+@media (min-width:700px) and (max-width:1179px){:root{--gut:48px}
+  .band{grid-template-columns:minmax(0,1fr);gap:24px}
+  .work{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}.work>section:nth-child(3){grid-column:1/-1}
+  .acts .more{gap:16px}.jump{gap:24px}.jump .legal{display:none}
+  .legend span{white-space:nowrap}.legend{flex-wrap:wrap;row-gap:8px}
+  footer{gap:24px}footer .r span,footer>span{white-space:nowrap}}
+.jump a{white-space:nowrap}
+.mon img{max-width:100%;height:auto;aspect-ratio:1}
+@media (max-width:379px){.grp.bench{padding-left:8px}.jump{gap:12px}.jump a{font-size:13px}.jump a small{display:none}}
 </style></head><body><div class="page" id="page"></div>
 <script>
 {const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[2])document.documentElement.dataset.score=h[2];}
@@ -210,7 +229,7 @@ const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.sli
     <div class="meter"><div class="segs"><i style="background:var(--band-miss)"></i><i style="background:var(--band-work)"></i><i style="background:var(--band-solid)"></i><i style="background:var(--band-ready)"></i><i style="background:var(--band-top)"></i></div><span class="tick" style="left:calc(${D.score.s}% - 2px)"></span><div class="lbls"><span>Missing a basic</span><span></span><span></span><span></span><span style="color:var(--band)">Top tier</span></div></div><p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
   const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND};--t1:${rgb(TC1)};--t2:${rgb(TC2)}"><div class="teamlight"></div><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
   const acts=`<div class="acts"><div class="btn main">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
-  const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
+  const jump=`<div class="jump"><a class="on">Set</a><a>Matchups <small>${D.mu.fav+D.mu.even+D.mu.unf}</small></a><a>Suggestions</a><a class="tc">Team Checks <small>4/4</small></a><a>Team Sheet <small class="n">6 sets</small> <small>↗</small></a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
   const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
   const moves=`<div class="moves">${sel.moves.map(v=>`<div class="mv" style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</div>`).join('')}</div>`;
   const setSec=`<section class="sec set" style="--c1:${rgb(norm(k.a))}"><h2 class="u"><span class="n">1</span>Set</h2><div class="sub">Leads with ${esc(D.partner)} vs the meta's top six</div>
