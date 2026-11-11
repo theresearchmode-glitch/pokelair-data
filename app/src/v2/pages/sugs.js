@@ -21,6 +21,9 @@ document.addEventListener('v2slide', e => { const {key, value} = e.detail;
 V2.sgX = ms => { const useA = $('useAbil').checked, RD = prepOf(ms), P = V2.plan.plans || [];
   return {ms, a: analyze(playForm(ms), useA), plans: P, covered: offenseRows(ms, useA).covered, baseTS: RD && RD.score != null ? {score: RD.score} : null}; };
 V2.sgReasons = ms => { const X = V2.sgX(ms), P = X.plans, list = [...P]; [...list, ...planExtra(P, list)].forEach((pl, k) => { try { planWhy(pl, k, X); } catch (e) { console.error(e); } }); return X; };
+// today's page says " · " lists in words (undotText, shared): the same rule on the shared texts drawn here, text only (never inside tags)
+V2.undot = s => undotText(String(s), ', ', /;/.test(s));
+V2.undotHtml = h => { h = String(h); const list = /;/.test(h.replace(/<[^>]*>/g, '')); return h.split(/(<[^>]*>)/).map(x => x.startsWith('<') ? x : undotText(x, ', ', list)).join(''); };
 // one suggestion as a card (also used by All Suggestions); the score change from today's planGrade, the kind line from today's LANE
 V2.sgSide = (m, cls) => { const P = m.p || m; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}</span></span>`; };
 V2.sgSwap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}">${x.out ? V2.sgSide(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${V2.sgSide(x.c.p, ' in')}</div>`;
@@ -31,7 +34,7 @@ V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main}) => { const g1 = g0 != n
   const wk = W.wk ? `<li>Weak spots: <b>${V2.esc(W.wk[0])}</b> → <b>${V2.esc(W.wk[1])}</b></li>` : '', L = W.lines.filter(Boolean), nr = L.length + (wk ? 1 : 0);
   return `<li${hidden ? ' hidden' : ''}><span class="np-eyebrow">Suggestion ${k + 1}</span>${d != null ? `<div class="tm-mv"><b>${d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '±0'}</b><span>${r0} → ${r1}</span>${word ? `<em class="sg2-band">${V2.esc(word)}</em>` : ''}</div>` : ''}<div class="tm-swaps">${pl.ch.map(V2.sgSwap).join('')}</div>
     ${ln ? `<p class="sg2-ln ${ln.k}"><b>${ln.tag}</b> ${ln.text}</p>` : ''}${main ? `<button type="button" class="np-btn" ${attr}="${k}">Apply</button>` : `<button type="button" class="np-btn2" ${attr}="${k}"><span>Apply</span></button>`}
-    ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${l}</li>`).join('')}</ul></details>` : ''}</li>`; };
+    ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${V2.undotHtml(l)}</li>`).join('')}</ul></details>` : ''}</li>`; };
 
 // ---------- the section: the settings, then the suggestions (the first; Show more opens the next two; then See all) ----------
 V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.plan.plans || [];
@@ -91,3 +94,49 @@ document.addEventListener('click', e => { if (!e.target.closest) return;
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2plan],[data-v2plana]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
   const fromAll = b.dataset.v2plana != null, pl = fromAll ? V2.sgAll.list[+b.dataset.v2plana] : (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
   if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); });
+
+// ---------- Problems and Team Checks (in the Team Checks section): a fold, closed until opened, remembered per device ----------
+// Today's rows (problemRows), Quick add picks (quickList / quickInfo), the team checks (proChecks, ckState, CK_TXT) and the verdict
+// (verdictData); the first 4 rows show, Show N more / Show less for the rest; opening the fold opens the first problem with a fix.
+V2.fx = {open: new Set(), qa: [], was: (() => { try { return !!LS.get('cc2.chf.rfix', null); } catch (e) { return false; } })()};
+V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms, a, tRows, useA, P, t => V2.typeChip(t)), used = new Set(); let qa = 0; V2.fx.qa = [];
+  const tag = (t, cls, title) => `<span class="sg2-tag${cls ? ' ' + cls : ''}"${title ? ` title="${V2.esc(title)}"` : ''}>${t}</span>`;
+  const pick = (key, pl) => { const x = pl.ch[0], p = x.c.p, I = quickInfo(key, pl, ms), i = V2.fx.qa.push(pl) - 1, idea = pl.gem ? '' : ideaTag(p);
+    return `<li class="sg2-qp"><div class="sg2-qt"><img src="${V2.art(SPRITE_ID[p.n])}" alt=""><div><b>${V2.nameHtml(p.d)}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></div></div>
+      <p class="sg2-tags">${p.m ? tag('Mega', 'mega', 'Mega Evolution') : ''}${I.box ? tag('In your box', '', '') : I.catch ? tag('To catch', '', 'Not in your box yet') : ''}${pl.gem ? tag('Hidden gem', 'gem', '') : idea ? tag('Idea', '', (idea.match(/title="([^"]*)"/) || [])[1] || '') : ''}</p>
+      ${I.why ? `<p class="sg2-qw">${V2.esc(V2.undot(I.why))}</p>` : ''}${I.thr ? `<p class="sg2-qw">${V2.undotHtml(I.thr)}</p>` : ''}
+      <div class="sg2-qa"><button type="button" class="np-btn2" data-v2qa="${i}"><span>${V2.esc(I.btn)}</span></button><span class="fine" title="${V2.esc(I.fitTitle)}">${I.fit}</span></div></li>`; };
+  const row = ([s, l, tx, key]) => { const Q = key && P && qa++ < 8 ? quickList(key, P, ms, used) : null, n = Q ? Q.picks.length : 0, minor = !Q && (s === 'lo' || s === 'ok');
+    const head = `<span class="sg2-sev ${s}">${V2.esc(l)}</span><span class="sg2-pt">${V2.undotHtml(tx)}</span>`;
+    if (!n) return `<div class="sg2-prob${minor ? ' minor' : ''}">${head}${Q && Q.note ? `<p class="fine sg2-qn">${Q.note}</p>` : ''}</div>`;
+    return `<details class="sg2-prob sg2-pf" data-v2pk="${V2.esc(key)}"${V2.fx.open.has(key) ? ' open' : ''}><summary>${head}<span class="sg2-fixn">${n} fix${n > 1 ? 'es' : ''}</span></summary><div class="sg2-qbox"><p class="sg2-k">Quick add</p><ul class="sg2-qps">${Q.picks.map(pl => pick(key, pl)).join('')}</ul></div></details>`; };
+  const real = out.filter(o => o[0] !== 'ok'), rows = out.map(row), cap = ui.needsAll ? rows.length : 4, more = rows.length - cap;
+  return {real, html: (real.length ? '' : `<div class="sg2-prob"><span class="sg2-sev ok">${PROB_TXT.clear}</span><span class="sg2-pt">${PROB_TXT.clearWhy}</span></div>`) + rows.slice(0, cap).join('')
+    + (more > 0 ? `<button type="button" class="np-link sg2-all" data-v2needs>Show ${more} more</button>` : ui.needsAll && rows.length > 4 ? '<button type="button" class="np-link sg2-all" data-v2needs>Show less</button>' : '')}; };
+V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const useA = $('useAbil').checked, a = analyze(playForm(ms), useA), {tRows} = offenseRows(ms, useA);
+  const ready = V2.plan.key === V2.planKey() && V2.plan.plans, P = ready ? V2.plan.plans : null; if (P) ui.plans = P;
+  let pr; try { pr = V2.fixRows(D, useA, a, tRows, P); } catch (e) { console.error(e); pr = {real: [], html: ''}; }
+  const PG = proGrades(ms, useA), CK = D.CK || proChecks(ms, useA), V = verdictData(ms, a, PG, CK);
+  // the team checks card
+  const ckLi = (x, nt) => { const k = ckState(x); return `<li class="${k}"><b class="mk" aria-label="${CK_MARK[k][1]}">${CK_MARK[k][0]}</b><div><b>${x.label}</b><span>${V2.esc(V2.undot(x.ok ? x.have : x.miss))}</span>${x.pro && !nt ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</div></li>`; };
+  const ckCard = CK ? `<div class="sg2-ckc"><p class="sg2-ckh"><span class="sg2-k">Team checks${!CK.full ? ' so far' : ''}</span><b class="u">${CK.pass} of ${CK.n} checks</b></p><p class="fine">${CK_TXT.intro}</p>
+    <ul class="sg2-ckl">${CK.items.filter(x => !x.note).map(x => ckLi(x)).join('')}</ul>${CK.items.some(x => x.note) ? `<p class="sg2-ckn"><b>${CK_TXT.notes}</b><span>${CK_TXT.notesWhy}</span></p><ul class="sg2-ckl nt">${CK.items.filter(x => x.note).map(x => ckLi(x, 1)).join('')}</ul>` : ''}</div>` : '';
+  // the verdict: legal and items, threats, checks, real results, your games, type balance
+  const hand = !V.illegal && V.RD && CH.hand(V.RD) ? ` · ${CH.handTxt(V.RD, true)}` : '';
+  const chips = [V.score != null ? `<span><b>${V.score}%</b> ready</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
+  const vd = `<div class="sg2-vd ${V.lvl}"><p class="sg2-vh">${V2.esc(V2.undot(V.head + hand))}</p><p class="sg2-vc">${chips}</p><dl>${V.rows.map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
+  const sub = [pr.real.length ? pr.real.length + ' to look at' : 'Nothing big to fix', CK ? `${CK.pass}/${CK.n} checks` : '', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
+  const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub" role="status">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
+  if (P) V2.fx.last = pr.html;
+  return `<details class="sg2-fold" data-v2fix${isOpen ? ' open' : ''}><summary><span class="t">Problems and Team Checks</span><span class="s">${V2.esc(sub)}</span></summary>
+    <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${ckCard}${vd}</div></details>`; };
+// the fold remembers open / closed on this device (today's key, cc2.chf.rfix); opening it opens the first problem with a fix
+document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matches) return;
+  // (a redraw draws the fold again, already open: only a real opening opens the first problem, as on today's page)
+  if (d.matches('[data-v2fix]')) { const was = V2.fx.was; V2.fx.was = d.open; LS.set('cc2.chf.rfix', d.open ? 1 : 0); if (d.open && !was) { const rows = [...d.querySelectorAll('details[data-v2pk]')]; if (rows.length && !rows.some(x => x.open)) rows[0].open = true; } }
+  else if (d.matches('[data-v2pk]')) { if (d.open) V2.fx.open.add(d.dataset.v2pk); else V2.fx.open.delete(d.dataset.v2pk); } }, true);
+// Show N more / Show less (today's ui.needsAll), and Quick add (today's applyQuick: Undo kept, the Undo bar shows it)
+document.addEventListener('click', e => { if (!e.target.closest) return;
+  if (e.target.closest('[data-v2needs]')) { ui.needsAll = !ui.needsAll; V2.redraw(); return; }
+  const b = e.target.closest('[data-v2qa]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
+  const pl = V2.fx.qa[+b.dataset.v2qa]; if (!pl) return; const say = applyQuick(pl); render(); toast(say, true); });

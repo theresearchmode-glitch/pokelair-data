@@ -26,7 +26,7 @@ V2.plan = {key: null, plans: null, job: null};
 // the same key today's page re-plans on (planKeyOf, 08-render-all.js): team, Suggest from, Megas on team, Swap my Mega, box, never-suggest... (R4 sugs hook)
 V2.planKey = () => planKeyOf($('useAbil').checked);
 V2.planStart = ms => { const key = V2.planKey(); if (V2.plan.key === key || (V2.plan.job && V2.plan.job.key === key)) return;
-  const job = {key, g: planFixesG(ms, suggestPool(), true)}; V2.plan.job = job;
+  const job = {key, g: planAllG(ms, suggestPool(), true, analyze(playForm(ms), true))}; /* today's whole pass, hidden gems for Quick add included (R4 sugs hook) */ V2.plan.job = job;
   const step = () => { if (V2.plan.job !== job) return; const t = performance.now(); let r;
     try { for (;;) { r = job.g.next(); if (r.done) break; if (performance.now() - t > 30) { setTimeout(step, 0); return; } } } catch (e) { console.error(e); r = {value: []}; }
     V2.plan = {key, plans: r.value || [], job: null}; if (V2.route() === 'team') V2.redraw(); };
@@ -302,7 +302,7 @@ V2.pages.team = {place: 'team', draw() {
   const sgSec = V2.sgSec(D);
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
-  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}</section>`;
+  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p><ul class="tm-ck">${D.basics.map(ck).join('')}</ul>${D.notes.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${D.notes.map(ck).join('')}</ul>` : ''}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
   return `<section class="tm-hero">${lockup}<div class="tm-six">${ms.map(mon).join('')}</div>${acts}</section>${jump}<div class="tm-work">${setSec}${ckSec}${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div>`;
 },
 after() {

@@ -314,6 +314,10 @@ function applyPlan(pl){keepUndo();
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}});
     ui.swKey=S.slots.map(x=>x.n||'').join();
     undoMark(pl.ch.map(x=>x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`).join(', '));}
+// A one-change quick add (Quick add under a problem, or an addition on Build), R4 Nov 11, shared with the rebuild: keeps Undo and
+// the Undo bar, puts the newcomer in its spot; returns the toast. The caller redraws.
+function applyQuick(pl){const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);
+  return `${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`}
 // Which suggestions show, in order (R4, Nov 11; shared with the rebuild): plans that would lower readiness by 5+ go after the
 // ones that keep or raise it (the plans array is reordered in place, as before), then the extra ones "More suggestions" opened.
 function planListOf(plans,baseTS,shown){const planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};

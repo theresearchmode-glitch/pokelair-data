@@ -9,6 +9,9 @@
 /* a wide Suggestions column (big desktops): all three settings in one row */
 .tm-sgs{container-type:inline-size}
 @container (min-width:900px){.sg2-ctl{grid-template-columns:repeat(3,max-content)}.sg2-pool{grid-column:auto}}
+/* a narrow Suggestions column at any screen width (tablets with the fold open): the sliders take their phone form (components.css) */
+@container (max-width:519px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch}
+  .sg2-ctl .np-slide{display:grid;width:100%;max-width:100%}.sg2-ctl .np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}.sg2-ctl .np-slide .np-ic{width:20px;height:20px}}
 /* the cards: the next two open with Show more (hidden until then); the kind line and Why? under each */
 .tm-sug li[hidden]{display:none}
 .tm-mv .sg2-band{font:700 var(--t13)/1.5 var(--b);font-style:normal;color:var(--ink-2)}
@@ -45,6 +48,69 @@
 .sg2-undo b{color:var(--ink);font-weight:700}.sg2-undo>span{min-width:0;flex:1 1 200px}
 /* while the next suggestions are worked out: the last ones stay, faded */
 .sg2-stale{opacity:.45;pointer-events:none}
+/* Problems and Team Checks: a fold at the foot of Team Checks; open, its full checks card takes the short list's place */
+.tm-cks:has(> .sg2-fold[open])>.tm-ck,.tm-cks:has(> .sg2-fold[open])>.tm-h3{display:none}
+.sg2-fold{margin-top:var(--s6);border-top:1px solid var(--rule)}
+.sg2-fold>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s1) var(--s3);padding:var(--s4) 0;cursor:pointer;list-style:none}
+.sg2-fold>summary::-webkit-details-marker{display:none}
+.sg2-fold>summary .t{font:900 var(--t20)/1.25 var(--u);font-style:italic}
+.sg2-fold>summary .s{grid-column:1;font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sg2-fold>summary::after{content:"›";grid-column:2;grid-row:1/span 2;font:700 var(--t24)/1 var(--b);color:var(--plot-text);transition:rotate .2s}
+.sg2-fold[open]>summary::after{rotate:90deg}
+.sg2-fb{display:grid;gap:var(--s8);padding-bottom:var(--s4)}
+/* desktop: an open fold is too long for the narrow column (it would leave the wide one empty): Team Checks moves to its own
+   full-width row under Suggestions, and the fold's three parts sit side by side */
+@media (min-width:1180px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set mu" "sg sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set mu" "yg sg" "ck ck"}}
+@media (min-width:700px) and (max-width:1179px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "mu yg" "ck ck"}}
+.tm-cks{container-type:inline-size}
+@container (min-width:900px){.sg2-fb{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);align-items:start;column-gap:var(--s10)}}
+/* problem rows: severity tag, what's wrong; a row with fixes folds open to its Quick add picks */
+.sg2-probs{display:grid}
+.sg2-prob{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s2);padding:var(--s3) 0;border-bottom:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.sg2-prob>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s2) var(--s3);align-items:start;cursor:pointer;list-style:none}
+.sg2-prob>summary::-webkit-details-marker{display:none}
+.sg2-prob>summary .sg2-pt{grid-column:1}
+.sg2-pt{color:var(--ink)}.sg2-pt .np-type{min-height:24px;vertical-align:middle}
+.sg2-prob.minor .sg2-pt{color:var(--ink-2)}
+.sg2-sev{justify-self:start;display:inline-flex;align-items:center;min-height:24px;padding:0 var(--s3);font:700 var(--t13)/1 var(--b);color:var(--ink);background:var(--wash);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.sg2-sev.hi{background:var(--mid);color:var(--plate)}.sg2-sev.mid{color:var(--mid-text)}.sg2-sev.ok{color:var(--good-text)}
+:root[data-theme="night"] .sg2-sev.hi{color:var(--bg)}
+.sg2-fixn{grid-column:2;grid-row:1;font:600 var(--t13)/1.5 var(--b);color:var(--plot-text);white-space:nowrap}
+.sg2-pf[open] .sg2-fixn{color:var(--ink-3)}
+.sg2-qn{margin:0}
+.sg2-qbox{display:grid;gap:var(--s2);padding-top:var(--s3)}
+.sg2-qps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--s4)}
+.sg2-qp{display:grid;align-content:start;gap:var(--s2);padding:var(--s4);background:var(--wash)}
+.sg2-qt{display:grid;grid-template-columns:48px minmax(0,1fr);gap:var(--s3);align-items:center}.sg2-qt img{width:48px;height:48px;object-fit:contain}
+.sg2-qt b{display:block;font:700 var(--t16)/1.25 var(--b);color:var(--ink)}.sg2-qt .mg{margin-right:.3em}.sg2-qt .mg.none{display:none}
+.sg2-qt .ty{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s1)}.sg2-qt .np-type{min-height:24px}
+.sg2-tags{display:flex;flex-wrap:wrap;gap:var(--s1)}.sg2-tags:empty{display:none}
+.sg2-tag{display:inline-flex;align-items:center;min-height:24px;padding:0 var(--s3);font:600 var(--t13)/1 var(--b);color:var(--ink-2);background:var(--surface);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.sg2-tag.mega{color:var(--plot-text)}.sg2-tag.gem{color:var(--pick-text)}
+.sg2-qw{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.sg2-qw b{color:var(--ink)}.sg2-qw .thcalc{display:block;color:var(--ink-3)}
+.sg2-qa{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin-top:var(--s1)}
+/* the full team checks card */
+.sg2-ckh{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--s1) var(--s3)}.sg2-ckh b{font-size:var(--t22)}
+.sg2-ckc>.fine{margin-top:var(--s2)}
+.sg2-ckl{margin-top:var(--s3)}
+.sg2-ckl li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:var(--s2);padding:var(--s3) 0;border-bottom:1px solid var(--rule)}
+.sg2-ckl li:last-child{border-bottom:0}
+.sg2-ckl .mk{font:800 var(--t16)/1.5 var(--b);color:var(--ink-3)}.sg2-ckl li.ok .mk{color:var(--plot-text)}.sg2-ckl li.part .mk,.sg2-ckl li.no .mk{color:var(--mid-text)}
+.sg2-ckl div>b{display:block;font:600 var(--t16)/1.5 var(--b)}
+.sg2-ckl div>span{display:block;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.sg2-ckl small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sg2-ckn{margin-top:var(--s5);display:grid;gap:var(--s1)}.sg2-ckn b{font:600 var(--t13)/1.5 var(--b);letter-spacing:.04em;color:var(--ink-3)}.sg2-ckn span{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+/* the verdict */
+.sg2-vh{font:900 var(--t20)/1.25 var(--u);font-style:italic}
+.sg2-vc{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s3)}
+.sg2-vc>span{display:inline-flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0 var(--s4);font:600 var(--t15)/1 var(--b);color:var(--ink-2);background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.sg2-vc b{color:var(--ink)}.sg2-vc .ok b{color:var(--good-text)}.sg2-vc .bad b{color:var(--mid-text)}
+.sg2-vd dl{margin:var(--s4) 0 0}
+.sg2-vd dl>div{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s1);padding:var(--s3) 0;border-bottom:1px solid var(--rule)}
+.sg2-vd dt{font:600 var(--t13)/1.5 var(--b);letter-spacing:.04em;color:var(--ink-3)}
+.sg2-vd dd{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink)}
+.sg2-vd .warnline{color:var(--mid-text)}
+.sg2-vd .regnote{margin-top:var(--s3)}
 /* All Suggestions sheet */
 .sga2{padding:var(--s8)}.sga2 h2{font-size:var(--t28);margin:var(--s2) 0}
 @media (max-width:699px){.sga2{padding:var(--s6) var(--s4)}}

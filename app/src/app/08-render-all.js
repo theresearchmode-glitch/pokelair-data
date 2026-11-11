@@ -22,20 +22,22 @@ function planKeep(key,plans){planLRU.delete(key);planLRU.set(key,plans);while(pl
 // The plans being worked out in the background: the same planner (planFixesG), run about 30 ms at a time between frames.
 // A newer team replaces it; when it finishes, the page redraws with the plans (from the cache, so that redraw is quick).
 let planJob=null;
+// The whole background planning pass as one generator (R4, Nov 11: moved unchanged out of planJobStart, shared with the rebuild):
+// the fix plans, then the hidden gems for Quick add, then the readiness reports the redraw will look up. Yields between slices;
+// returns the plans (with .gems).
+function planAllG(ms,pool,useA,a){const gems=!OFFMETA;return (function*(){
+  const main=planFixesG(ms,pool,useA);let plans,gem=null;for(;;){const r=main.next();if(r.done){plans=r.value;break}yield}
+  // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
+  if(gems){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{gem=withOffMeta(()=>planFixesG(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}
+  if(gem){try{for(;;){const r=withOffMeta(()=>gem.next());if(r.done){plans.gems=r.value;break}yield}}catch(e){plans.gems=null}}
+  // then the readiness reports the redraw will look up, so the redraw itself is quick
+  const warm=planWarmG(ms,plans,a);for(;;){let r;try{r=warm.next()}catch(e){break}if(r.done)break;yield}
+  return plans})()}
 function planJobStart(key,ms,pool,useA,a){if(planJob&&planJob.key===key)return;
-  const job={key};planJob=job;const gems=!OFFMETA;let main=null,gem=null,plans=null,warm=null;
+  const job={key};planJob=job;const g=planAllG(ms,pool,useA,a);let plans=null;
   const fail=(e,what)=>{try{console.error('Champions Team Coverage: '+what+' failed',e)}catch(x){}};
   const step=()=>{if(planJob!==job)return;const t=performance.now();
-    try{
-      if(!main)main=planFixesG(ms,pool,useA);
-      if(!plans){for(;;){const r=main.next();if(r.done){plans=r.value;break}if(performance.now()-t>30){setTimeout(step,0);return}}
-        // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
-        if(gems){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{gem=withOffMeta(()=>planFixesG(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}}
-      if(gem){try{for(;;){const r=withOffMeta(()=>gem.next());if(r.done){plans.gems=r.value;gem=null;break}if(performance.now()-t>30){setTimeout(step,0);return}}}catch(e){plans.gems=null;gem=null}}
-      // then the readiness reports the redraw will look up, so the redraw itself is quick
-      if(!warm)warm=planWarmG(ms,plans,a);
-      for(;;){let r;try{r=warm.next()}catch(e){break}if(r.done)break;if(performance.now()-t>30){setTimeout(step,0);return}}
-    }catch(e){fail(e,'fix plans');plans=[]}
+    try{for(;;){const r=g.next();if(r.done){plans=r.value;break}if(performance.now()-t>30){setTimeout(step,0);return}}}catch(e){fail(e,'fix plans');plans=[]}
     planJob=null;
     // the team or settings changed without a redraw yet: the next redraw starts over
     if(planKeyOf($('useAbil').checked)!==key)return;
@@ -118,8 +120,8 @@ function render(){
   // threat preparation behind the defense and offense headlines (the same report as the threat card)
   const RDf=ms.length?prepOf(ms):null,RDd=RDf?{over:RDf.rows.filter(r=>r.losers.length>=3),hit:RDf.rows.filter(r=>r.rows.some(x=>x.du&&x.du.nM<=2)).length,noHit:RDf.rows.filter(r=>!r.rows.some(x=>x.du&&x.du.nM<=2)).sort((x,y)=>y.t.w-x.t.w)}:null;
   $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Team checks${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
-     <div class="t2">What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. A ~ means only partly there, and doesn't count as passed.</div>
-     ${CK?(L=>`<ul class="cklist">${L(CK.items.filter(x=>!x.note))}</ul>${CK.items.some(x=>x.note)?`<div class="cknotes"><b>Notes, not counted</b><span>In 38,513 real games, with player skill taken into account, teams with these won no more often.</span></div><ul class="cklist ckn3">${L(CK.items.filter(x=>x.note),1)}</ul>`:''}`)((a,nt)=>a.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro&&!nt?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')):''}`;
+     <div class="t2">${CK_TXT.intro}</div>
+     ${CK?(L=>`<ul class="cklist">${L(CK.items.filter(x=>!x.note))}</ul>${CK.items.some(x=>x.note)?`<div class="cknotes"><b>${CK_TXT.notes}</b><span>${CK_TXT.notesWhy}</span></div><ul class="cklist ckn3">${L(CK.items.filter(x=>x.note),1)}</ul>`:''}`)((a,nt)=>a.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro&&!nt?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')):''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
      <div class="vsub">${ms.length}/6 Pokémon${RDd?` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length?` (${RDd.over.slice(0,3).map(r=>esc(r.t.d)).join(', ')}${RDd.over.length>3?` and ${RDd.over.length-3} more`:''})`:''}`:''}</div></div>
@@ -162,8 +164,9 @@ function render(){
 }
 // The scouting report's header: legal and items first, then how ready the team is for the top threats, the checklist, and
 // real results. Facts only: no win chance, no prediction (Oct 28).
-function renderVerdict(ms,a,PG,CK){
-  const el=$('verdict');ui.vProven=false;ui.vsum=null;if(!el)return;if(!ms.length){el.innerHTML='';return}
+// The verdict block's facts as data (R4, Nov 11: moved unchanged out of renderVerdict, shared with the rebuild): its rows [label, HTML],
+// the headline and level, the threat report, whether the team is legal, and a real-results match if there is one
+function verdictData(ms,a,PG,CK){
   const n=ms.length,miss=CK?CK.items.filter(x=>!x.ok&&!x.skip&&!x.note):[];
   const rows=[];let best=null;
   // a real tournament team with 5+ of these six, brought by 3+ players (one player's team is a result, not a pattern)
@@ -193,6 +196,10 @@ function renderVerdict(ms,a,PG,CK){
   const score=RD?RD.score:null;
   const lvl=illegal?'bad':n<6?'mid':score==null?'mid':score>=80?'good':score>=65?'mid':'bad';
   const head=illegal?'Not a legal team yet':score==null?`${n} of 6 picked`:n<6?`${n} of 6 picked · ready for ${score}% of the top threats so far`:`Ready for ${score}% of the top 30 threats`;
+  return {rows,best,tr,illegal,RD,score,lvl,head,n}}
+function renderVerdict(ms,a,PG,CK){
+  const el=$('verdict');ui.vProven=false;ui.vsum=null;if(!el)return;if(!ms.length){el.innerHTML='';return}
+  const {rows,best,tr,illegal,RD,score,lvl,head}=verdictData(ms,a,PG,CK);
   ui.vsum={lvl,head,best,tr,CK,excess:a.excess,RD:score==null?null:{score},legal:!illegal};
   ui.vProven=!!(best&&best.k===6&&best.wr>=.55);el.className='verdict '+lvl;
   const chips=[score!=null?`<span class="rchip"><b>${score}%</b> ready${typeof tip==='function'?tip('readiness'):''}</span>`:'',CK?`<span class="rchip"><b>${CK.pass}/${CK.n}</b> checks${typeof tip==='function'?tip('checklist'):''}</span>`:'',`<span class="rchip ${illegal?'bad':'ok'}"><b>${illegal?'Not legal':'Legal'}</b></span>`].join('');

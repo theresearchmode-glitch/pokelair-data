@@ -123,7 +123,10 @@ function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms
   {let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}if(ip.length)out.push({k:'items',ok:false,label:'Items work',have:'',miss:ip.map(x=>x.why).join(' '),pro:'VGC rule: each item once per team'})}
   // partly there (Trick Room with too few slow attackers, priority instead of speed control…) shows as ~ and doesn't count as passed
   const cnt=out.filter(x=>!x.skip&&!x.note);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
-const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.note&&!x.ok?'<span class="ck note" aria-label="note">i</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
+// a team check's state (shared with the rebuild, R4 Nov 11): unk / part / note / ok / no, with its mark and spoken word
+const CK_MARK={unk:['?','unknown'],part:['~','partly'],note:['i','note'],ok:['✓','yes'],no:['✗','no']};
+const ckState=x=>x.skip?'unk':x.soft?'part':x.note&&!x.ok?'note':x.ok?'ok':x.part?'part':'no';
+const ckIcon=x=>{const k=ckState(x);return `<span class="ck ${k}" aria-label="${CK_MARK[k][1]}">${CK_MARK[k][0]}</span>`};
 // same item assignment as the open team (members()), so a saved team shows the same checks as when it's open
 function teamRating(slots){const m0=slots.map(memberOf).filter(Boolean),ms=typeof assignItems==='function'?assignItems(m0):m0;return {ms,a:analyze(ms,true)}}
 // toast(text, true) adds an Undo button (and stays up longer) for changes that replace team members

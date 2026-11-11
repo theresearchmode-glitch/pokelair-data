@@ -45,7 +45,6 @@ CH.gcol = L => CH.GCOL[String(L || '')[0]] || '#8a90a6';
    24/30 top threats" (Handles it or Beats it); the weighted % stays inside the calculations only. */
 /* CH.readyN lives in 58-strength.js (Nov 11) */
 CH.readyTxt = RD => { const h = CH.hand(RD); return h ? `Ready for ${h.x}/${h.n} top threats` : ''; };
-CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
 /* a team's grade as a badge (Build me a team, Saved teams): the letter in its band colour, the grade number, and the sum
    underneath so "% ready" always reads as one part of the grade. A team with 30+ real games shows its record instead. */
 CH.gradeBadge = (G, RD) => { if (!G || !RD) return '';
