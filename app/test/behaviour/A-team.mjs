@@ -349,7 +349,7 @@ t('MU-01', 'Matchups view switch Top 10 | Top 12 grid | All 30 is remembered', a
 t('MU-02', 'Top 10 threats with real-games verdict and calc level; phone shows 5 + "Show 5 more"; row opens threat sheet', async () => {
   const r = await myTeam({team: TEAM, width: 390}); let rows = await r.ui.topThreatRows(); ok(rows.length === 5, `${rows.length} rows on a phone`);
   for (const x of rows) ok(/^\d+ .+ (Favoured|Even match|Unfavoured) Calc: (Beats it|Handles it|Shaky|No answer)$/.test(x), 'row reads ' + x);
-  const tx = await r.ui.text(); has(tx, /Verdicts from real tournament games/); has(tx, /Unfavoured \d+ Even match \d+ Favoured \d+/); has(tx, /Damage calc: No answer \d+, Shaky \d+, Handles it \d+, Beats it \d+/);
+  const tx = await r.ui.text(); has(tx, /Verdicts from real tournament games/); has(tx, /Unfavoured \d+ Even match \d+ Favoured \d+|\d+ Favoured \d+ Even match \d+ Unfavoured/); has(tx, /Damage calc: No answer \d+, Shaky \d+, Handles it \d+, Beats it \d+/);
   await r.ui.tapText('Show 5 more', 700); rows = await r.ui.topThreatRows(); ok(rows.length === 10, `${rows.length} rows after Show 5 more`); ok(await r.ui.sees('Show top 5 only'), 'no "Show top 5 only"');
   await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet(); ok(s && /Archaludon/.test(s) && await r.ui.threatPressedInSheet() === 'Archaludon', 'threat sheet did not open on Archaludon'); await r.close();
   const {ui} = await view('team', {team: TEAM}, 'My Team'); const dr = await ui.topThreatRows(); ok(dr.length === 10, 'desktop shows ' + dr.length + ' rows: ' + dr.slice(0, 12).map(x => x.slice(0, 14)).join(' / ')); has(await ui.text(), /The next 20, worst first/); });
@@ -362,7 +362,7 @@ t('MU-03', 'Top 12 grid: 12 threat rows × 6 cells; a row opens its threat sheet
 t('MU-04', 'All 30: "Threat preparation" groups; a threat opens to its calc reasons; Biggest threats list', async () => {
   const r = await myTeam(); await r.ui.choose('All 30', 1500); const tx = await r.ui.text();
   for (const s of [/Threat preparation/, /Ready for \d+% of the top 30 threats/, /Shaky \d+ threats?/, /Handles it \d+ threats?/, /Beats it \d+ threats?/, /Meta Pokémon that hit several of yours hard/]) has(tx, s, 'All 30');
-  const first = await r.ui.pg.evaluate(() => { const d = [...document.querySelectorAll('[data-pane="report"] details details')].find(e => e.getClientRects().length && /% of top cuts/.test(e.querySelector('summary').innerText)); if (!d) return null; d.querySelector('summary').click(); return d.querySelector('summary').innerText.split('\n')[0]; });
+  const first = await r.ui.pg.evaluate(() => { const d = [...document.querySelectorAll('[data-pane="report"] details details, #main details details')].find(e => e.getClientRects().length && /% of top cuts/.test(e.querySelector('summary').innerText)); if (!d) return null; d.querySelector('summary').click(); return d.querySelector('summary').innerText.split('\n')[0]; });
   ok(first, 'no threat fold to open'); await sleep(500); const ft = await r.ui.foldContent(first); ok(ft && /(✓|~|✗)/.test(ft) && /usual set/i.test(ft), `threat ${first} shows no calc reasons / usual set: ${ft && ft.slice(0, 200)}`); await r.close(); });
 
 t('MU-05', 'Threat sheet: opens on the threat, other tiles switch detail, Escape closes and focus returns', async () => {
@@ -375,7 +375,7 @@ t('MU-05d', 'Closing the threat sheet puts focus back on the threat row that ope
   const r = await myTeam(); await r.ui.tapThreat('Archaludon'); await r.ui.press('Escape'); ok(/Archaludon/.test(await r.ui.focusName()), 'focus not back on the row: "' + await r.ui.focusName() + '"'); await r.close(); });
 t('MU-05b', 'Threat sheet ring shows the Strength Score number and band, not the old letter', async () => {
   const r = await myTeam(); const sc = await r.ui.scoreBlock(); await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet();
-  ok(!/^× Scouting report: top 30 threats \d+ threats? need a plan\. [A-F][+−-]? /.test(s), 'ring shows a grade letter: ' + s.slice(0, 90)); ok(s.includes(sc.band), 'ring has no band word'); await r.close(); },
+  ok(!/^[×✕] Scouting report: top 30 threats \d+ threats? need a plan\. [A-F][+−-]? /.test(s), 'ring shows a grade letter: ' + s.slice(0, 90)); ok(s.includes(sc.band), 'ring has no band word'); await r.close(); },
   {known: 'inventory #15: the threat sheet ring still shows the old letter ("B 82.5") instead of the Strength Score and band word'});
 t('MU-05c', 'Threat sheet "Best fix" never offers a change that doesn\'t raise the score', async () => {
   const r = await myTeam({fresh: true}); await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet();

@@ -21,6 +21,10 @@
     [
       "pages",
       "src/v2/css/pages.css"
+    ],
+    [
+      "matchups",
+      "src/v2/css/matchups.css"
     ]
   ],
   "body": "src/v2/body.html",
@@ -38,6 +42,7 @@
     "src/v2/shell.js",
     "src/v2/pages/guide.js",
     "src/v2/pages/team.js",
+    "src/v2/pages/matchups.js",
     "src/v2/pages/monsheet.js",
     "src/v2/pages/box.js",
     "src/v2/pages/record.js",

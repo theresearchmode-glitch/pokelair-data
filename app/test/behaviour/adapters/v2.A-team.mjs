@@ -131,11 +131,17 @@ export default (ui, pg, o) => {
     jumpBar: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].filter(e => e.getClientRects().length).map(e => e.childNodes[0].textContent.trim())),
     jumpTo: name => tapFound(n => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].find(e => e.getClientRects().length && e.childNodes[0].textContent.trim() === n) || null, name, 'jump ' + name, 900),
     onScreen: re => pg.evaluate(([s, f]) => { const re = new RegExp(s, f); const e = [...document.querySelectorAll('#main *')].filter(e => e.getClientRects().length && e.innerText && e.innerText.length < 60 && re.test(e.innerText)).pop(); if (!e) return null; const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }, [re.source, re.flags]),
-    // matchups: rows read in today's order "<name> <real-games verdict> Calc: <level>" (no rank number is shown here)
-    topThreatRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-rows > li')].filter(e => e.getClientRects().length).map(e => { const nm = e.querySelector('.nm'), sm = nm && nm.querySelector('small'), v = e.querySelector('.tm-v');
-      const name = nm ? [...nm.childNodes].filter(x => x.nodeType === 3).map(x => x.textContent).join('').trim() : ''; return [name, v ? v.innerText.trim() : '', sm ? sm.innerText.trim() : ''].filter(Boolean).join(' ').replace(/\s+/g, ' '); })),
-    tapThreat: () => NOT('threat sheet (matchup rows are not tappable)'), threatSheet: () => NOT('threat sheet'), tapThreatInSheet: () => NOT('threat sheet'), threatPressedInSheet: () => NOT('threat sheet'),
-    gridRows: () => NOT('Top 12 grid'), tapGridRow: () => NOT('Top 12 grid'),
+    // matchups (pages/matchups.js): rows read in today's order "<rank> <name> <real-games verdict> Calc: <level>"
+    topThreatRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-rows > li')].filter(e => e.getClientRects().length).map(e => { const nm = e.querySelector('.nm'), sm = nm && nm.querySelector('small'), v = e.querySelector('.tm-v'), k = e.querySelector('.k');
+      const name = nm ? nm.innerText.replace(sm ? sm.innerText : '', '').trim() : ''; return [k ? k.innerText.trim() : '', name, v ? v.innerText.trim() : '', sm ? sm.innerText.trim() : ''].filter(Boolean).join(' ').replace(/\s+/g, ' '); })),
+    // a threat row, a "next 20" tile or a grid row on the page opens the threat sheet (a V2.sheet holding .mu-sh)
+    tapThreat: name => click(`#main [data-muthr="${name}"]`, 800),
+    threatSheet: () => sheetText('.mu-sh'),
+    tapThreatInSheet: name => click(`.mu-sh [data-muthr="${name}"]`, 600),
+    threatPressedInSheet: () => pg.evaluate(() => { const e = document.querySelector('.mu-sh [data-muthr][aria-pressed="true"]'); return e ? e.dataset.muthr : null; }),
+    /** Top 12 grid: cells per threat row (rows in order) */
+    gridRows: () => pg.evaluate(() => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? [...t.querySelectorAll('[data-muthr]')].map(r => ({name: r.getAttribute('aria-label').split(':')[0], cells: r.querySelectorAll('[role=cell]').length})) : null; }),
+    tapGridRow: i => tapFound(i => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? t.querySelectorAll('[data-muthr]')[i] : null; }, i, 'grid row ' + i, 900),
     pickTypeChartMega: () => NOT('Types fold (type chart, Mega pick)'),
     tapTip: () => NOT('"?" explainer bubbles'), tipBubble: () => NOT('"?" explainer bubbles'),
     /** shortcut for "edit this Pokémon's four moves" (same state change as today's adapter, through the shared logic) */
