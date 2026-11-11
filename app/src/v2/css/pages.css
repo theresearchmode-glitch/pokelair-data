@@ -115,7 +115,7 @@
 .svt2-foot,.svt2-acts,.svt2-del{align-self:end}
 .svt2-card{display:grid;align-content:start;gap:var(--s3);padding:var(--s5);background:var(--wash);border-radius:var(--r-l)}
 .svt2-card.on{box-shadow:inset 0 0 0 2px var(--plot)}
-.svt2-card header{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3)}.svt2-card h3{font-size:var(--t20);min-width:0;overflow-wrap:anywhere}.svt2-card header .np-chip{flex:none}
+.svt2-card header{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:var(--tap)}.svt2-card h3{font-size:var(--t20);min-width:0;overflow-wrap:anywhere}.svt2-card header .np-chip{flex:none}
 .svt2-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);list-style:none;margin:0;padding:0}
 .svt2-six .np-mon b{font-size:var(--t13);line-height:1.2}.svt2-empty{display:grid;justify-items:center;align-content:start;gap:var(--s3);color:var(--ink-3);font-size:var(--t13)}
 .svt2-empty i{margin-top:var(--s3);width:32px;height:32px;border:1.5px dashed var(--rule);border-radius:50%}
@@ -139,3 +139,6 @@
 .tm-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tm-moves .np-type{justify-content:center;text-align:center}
 /* 900-1179px: the six get the full width (no names spilling out of narrow tiles); score and buttons share the row above */
 @media (min-width:900px) and (max-width:1179px){.tm-hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"lock acts" "six six"}.tm-acts{align-self:end;justify-content:end}}
+/* the free spot: the same card with a thin outline instead of a fill, so it reads as empty */
+.svt2-free{background:none;box-shadow:inset 0 0 0 1.5px var(--rule);align-content:center;justify-items:start}
+@media (min-width:900px){.svt2-free{grid-row:span 5;grid-template-rows:none}}

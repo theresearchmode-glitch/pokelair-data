@@ -138,3 +138,5 @@
 .np-btn:disabled,.np-btn2:disabled{opacity:.45;cursor:not-allowed}
 /* a sheet open on a phone fills the bottom of the screen: its messages show at the top so they never cover its buttons */
 @media (max-width:699px){.np-locked .np-toast{bottom:auto;top:calc(var(--s4) + env(safe-area-inset-top,0px))}}
+/* a full-width sheet that is only as tall as its content (Saved Teams with a few teams) */
+@media (min-width:700px){.np-sheet.fit{bottom:auto;max-height:calc(100% - 96px)}}

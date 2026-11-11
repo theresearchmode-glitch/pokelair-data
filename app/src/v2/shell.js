@@ -26,7 +26,7 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
 // ---------- sheets: one at a time; focus moves in, stays in (Tab wraps), and returns to what opened it ----------
 V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : document.activeElement; V2.closeSheet(true);
   const wrap = document.createElement('div'); wrap.className = 'np-sheetwrap';
-  wrap.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet${o.small ? ' sm' : ''}" role="dialog" aria-modal="true" aria-label="${V2.esc(o.label || 'Details')}" tabindex="-1"><button class="x" type="button" data-v2close aria-label="Close">✕</button>${html}</div>`;
+  wrap.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet${o.small ? ' sm' : ''}${o.fit ? ' fit' : ''}" role="dialog" aria-modal="true" aria-label="${V2.esc(o.label || 'Details')}" tabindex="-1"><button class="x" type="button" data-v2close aria-label="Close">✕</button>${html}</div>`;
   document.body.append(wrap); document.documentElement.classList.add('np-locked');
   V2._sheet = {wrap, back, onClose: o.onClose};
   const first = wrap.querySelector(o.focus || '.np-sheet'); (first || wrap.querySelector('.np-sheet')).focus({preventScroll: true});
