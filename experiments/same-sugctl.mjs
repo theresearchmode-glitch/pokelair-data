@@ -29,7 +29,7 @@ const steps = [
 ];
 const b = await chromium.launch(), out = {};
 for (const [k, f] of [['a', A], ['b', B]]) {
-  const page = f.replace(/\.html$/, '.sc.html');
+  const page = f.replace(/\.html$/, '.sc' + process.pid + '.html');
   fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(f, 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
   const p = await b.newPage({viewport: {width: 1280, height: 900}});
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2099-01-01"'); } catch (e) {}

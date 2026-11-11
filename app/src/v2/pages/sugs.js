@@ -4,11 +4,13 @@
 
 // ---------- the settings: today's sliders, same choices, same saved settings, same messages ----------
 V2.sgCtl = () => `<div class="sg2-ctl" role="group" aria-label="Suggestion settings">
-  <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + catch'], ['all', 'Whole roster']], ui.pool, 'Suggest from')}</div></div>`;
+  <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + catch'], ['all', 'Whole roster']], ui.pool, 'Suggest from')}</div>
+  <div class="sg2-c"><span class="sg2-k">Megas on team</span>${V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on the team')}</div></div>`;
 // a new choice: the setting and its message at once; the page redraws once the plate has slid over (so the slide is seen)
 V2.sgLater = fn => { clearTimeout(V2._sgT); V2._sgT = setTimeout(fn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 240); };
 document.addEventListener('v2slide', e => { const {key, value} = e.detail;
-  if (key === 'sgpool') { if (value === ui.pool) return; const say = setPool(value); toast(say); V2.sgLater(render); } });
+  if (key === 'sgpool') { if (value === ui.pool) return; const say = setPool(value); toast(say); V2.sgLater(render); }
+  else if (key === 'sgmega') { if (+value === megaGoal()) return; const say = setMegaGoal(value); toast(say); V2.sgLater(render); } });
 
 // ---------- the section ----------
 V2.sgSec = D => { const S2 = D.sug; if (!S2) return '';

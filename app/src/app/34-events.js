@@ -41,7 +41,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   if(d.pastex){ui.paste=null;renderPastePanel();return}
   if(b.id==='pasteCopy'){const t=$('pasteOut');const txt=t?t.value:'';try{navigator.clipboard.writeText(txt).then(()=>toast('Copied'),()=>{t.select();toast('Press Ctrl+C or Cmd+C to copy')})}catch(err){if(t)t.select();toast('Press Ctrl+C or Cmd+C to copy')}return}
   if(b.id==='pasteLoad'){const r=importPaste(($('pasteIn')||{}).value);if(r.shared){applyShared(r.shared);return}if(r.error){$('pasteNotes').textContent=r.error;return}render();toast(r.msg,true);return}
-  if(d.megas!==undefined){S.megaGoal=Math.max(0,Math.min(2,+d.megas||0));S.maxMega=Math.max(1,S.megaGoal);recCache={key:null,val:null};if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(S.megaGoal?`Teams aim for ${S.megaGoal} Mega${S.megaGoal>1?'s':''}`:'Teams without Megas: rare (about 1 in 100 tournament teams), and they win about a third of their games');return}
+  if(d.megas!==undefined){const say=setMegaGoal(d.megas);if(ui.ab&&!ui.ab.busy){if(view==='auto')runAutoBuild();else ui.ab=null}keepScroll(()=>render());toast(say);return}
   if(d.clear!==undefined){const was=clearSlot(+d.clear);render();if(was)toast(`Removed ${was.d}`,true)}
   else if(b.id==='abBtn'){runAutoBuild()} // keeps the Build around pick (shown as a chip with × above the button)
   else if(d.recsrc){ui.recSrc=d.recsrc==='all'?'all':'box';LS.set('cc2.recsrc',ui.recSrc);renderRecs()}
