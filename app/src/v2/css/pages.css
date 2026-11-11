@@ -485,3 +485,6 @@
 @media (min-width:700px){.tm-acts{display:grid;grid-template-columns:repeat(2,max-content);justify-content:start;align-items:center;gap:var(--s3) var(--s6)}}
 @media (min-width:900px) and (max-width:1179px){.tm-acts{justify-content:end}}
 @media (max-width:399px){.tm-acts .tm-svl small{display:none}.tm-acts .np-btn2{font-size:var(--t13);padding:0 var(--s2)}}
+/* Your Games as one line (Sim, Nov 11): record or "None logged yet" beside Log a Game */
+.tm-yg-hd{flex-wrap:nowrap;justify-content:space-between}.tm-yg-0 span{font:500 var(--t16)/1.5 var(--b);color:var(--ink-2)}
+.yg2-why{margin:var(--s2) 0 var(--s4)}

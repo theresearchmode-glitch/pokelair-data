@@ -1,4 +1,4 @@
-// ---------- Your Games (R4, Nov 11): the games you log with this six, kept apart from the tournament record ----------
+// ---------- Your Games (R4, Nov 11; one line on the page since Sim's review: the record or "None logged yet", and Log a Game): the games you log with this six, kept apart from the tournament record ----------
 // Today's shared steps (26-log-data.js): myGames, myInsights, logGame, unlogGame. Shown once the team has all six (as today).
 // The Showdown replay link arrives with the Battle page (it fills the leads and their six from a replay there).
 V2.ql = {leads: [], opp: [], last: null, q: ''};
@@ -6,7 +6,7 @@ V2.ygSec = ms => { if (!ms || ms.length !== 6) return ''; const G = myGames(ms),
   const last = L && (S.log || []).some(x => x.t === L.t) ? `<p class="tm-yg-last" role="status">${L.r === 'W' ? 'Win' : 'Loss'} logged. <button type="button" class="np-link" data-ygundo="${L.t}">Undo</button></p>` : '';
   const more = G && !ins ? `<p class="tm-sub">Log ${MYREC_MIN - G.n} more game${MYREC_MIN - G.n === 1 ? '' : 's'} with this six to see who you lose to most and how your leads do.</p>` : '';
   return `<section class="tm-sec tm-yg" id="tm-yg"><h2 class="u">Your Games</h2>
-    <div class="tm-yg-hd">${G ? `<p class="tm-yg-n"><b>${G.w}–${G.l}</b><span>${G.n} game${G.n === 1 ? '' : 's'} you logged with this six</span></p>` : '<p class="tm-sub">None logged yet. Log your games with this six to see your own record, who beats you and how your leads do.</p>'}
+    <div class="tm-yg-hd">${G ? `<p class="tm-yg-n"><b>${G.w}–${G.l}</b><span>${G.n} game${G.n === 1 ? '' : 's'} logged</span></p>` : '<p class="tm-yg-n tm-yg-0"><span>None logged yet</span></p>'}
     <button type="button" class="np-btn2" data-yglog><span>Log a Game</span></button></div>${last}
     ${ins ? `<ul class="tm-yg-ins">${ins.map(s => `<li>${E(s)}</li>`).join('')}</ul>` : more}</section>`; };
 
@@ -15,6 +15,7 @@ V2.ygHtml = () => { const ms = members(), q = V2.ql, E = V2.esc, so = (S.opp || 
   const lp = q.leads.filter(n => ms.some(m => m.p.n === n));
   const hits = q.q.trim() ? V2.find(q.q).mons.filter(p => !q.opp.includes(p.n)).slice(0, 6) : [];
   return `<div class="yg2"><div class="np-eyebrow">Your Games</div><h2 class="u">Log a Game</h2>
+    <p class="tm-sub yg2-why">Log your games with this six to see your own record, who beats you most and how your leads do. They stay apart from the tournament record.</p>
     <h3 class="yg2-h">Your two leads <small>optional</small></h3>
     <div class="yg2-leads">${ms.map(m => { const on = lp.includes(m.p.n); return `<button type="button" class="yg2-l" data-yglead="${E(m.p.n)}" aria-pressed="${on}" aria-label="${E(m.d)}${on ? ', lead' : ''}">${V2.mon(m.p.n, {iw: 64, sel: on})}</button>`; }).join('')}</div>
     <h3 class="yg2-h">Their team <small>optional</small></h3>
