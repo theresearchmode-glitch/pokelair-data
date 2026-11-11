@@ -168,9 +168,7 @@ function renderVerdict(ms,a,PG,CK){
     for(const e of RES.proven){const [ns,c,wr]=e;if(!(c>=3))continue;const k=ns.filter(x=>names.has(x)).length;if(k>=5&&(!best||k>best.k||(k===best.k&&wr>best.wr)))best={k,c,wr,g:e[3]}}}
   const tr=typeof teamRecord==='function'?teamRecord(ms):null;
   // 1. legal and items
-  const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);
-  let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}
-  const clause=ip.filter(x=>x.k==='clause'),illegal=!!dup||clause.length>0,mc=megaCount(ms);
+  const {dup,ip,clause,illegal}=legalOf(ms),mc=megaCount(ms);
   const legalBits=[];if(dup)legalBits.push(`<span class="warnline">Not legal: only one ${esc(dup.p.b)} (any form) is allowed</span>`);
   for(const x of clause)legalBits.push(`<span class="warnline">Not legal: ${esc(x.why)}</span>`);
   for(const x of ip.filter(x=>x.k!=='clause'))legalBits.push(`<span class="warnline">${esc(x.why)}</span>`);
@@ -301,3 +299,7 @@ function renderGamePlan(ms){const el=$('gplan');if(!el)return;
   if(!ms.length){el.innerHTML='<div class="empty-note">Add Pokémon to see which jobs the team covers.</div>';$('gplanSub').textContent='';return}
   const gp=gamePlan(ms);{let lb='';try{const a=teamArchetype(ms);lb=a?a.label:''}catch(e){}$('gplanSub').innerHTML=(lb?`<span class="archchips">${archChips(lb)}</span>`:'')}
   el.innerHTML=gp.rows.map(r=>{const [c,t]=GP_TAG[r.st];return `<div class="gprow"><span class="gplbl">${esc(r.label)}</span><span class="sev ${c}">${t}</span><div class="gpwho">${r.who?esc(r.who):''}${r.note?`<div class="t2">${esc(r.note)}</div>`:''}</div></div>`}).join('')}
+// legality of a team (R4, Nov 11; shared with the new build): one Pokémon per species (any form) and the item clause
+function legalOf(ms){const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);
+  let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}
+  const clause=ip.filter(x=>x.k==='clause');return {dup,ip,clause,illegal:!!dup||clause.length>0}}
