@@ -1,6 +1,6 @@
 // Behaviour tests, group A: Team (docs/rebuild/inventory/A-team.md). One test per inventory entry, keyed by its ID, written from
 // the player's side. Today's selectors live in adapters/current.A-team.mjs; this file uses visible words and adapter helpers only.
-import {group, open, TEAM, BOX, OPP, expect, sleep} from './harness.mjs';
+import {group, open, TEAM, BOX, OPP, expect, sleep, eventually} from './harness.mjs';
 const t = group('A-team');
 // The kit merges every group's adapter helpers into one ui, so another group's helper with the same name would silently replace
 // ours. Re-apply this group's helpers last, so A-team tests always get A-team's meaning (same file name pattern for any adapter).
@@ -155,7 +155,7 @@ t('TEAM-03', 'Strength Score: number + band word + win line + rank; "so far" for
   const tx = await r.ui.text(); has(tx, /Teams scoring like this win about \d+% against today.s tournament teams/); has(tx, /Top \d+% of tournament teams/); has(tx, 'Why this score?');
   ok(!/\bGrade\b/.test(tx.slice(0, 400)), 'old "Grade" wording shown');
   await r.ui.removeFromTeam('Kingambit'); s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score so far', 'five Pokémon not labelled "Strength Score so far"');
-  await r.ui.clearTeam(); ok(!(await r.ui.scoreBlock()) && !(await r.ui.sees(/Strength Score \d/)), 'a score shows with no team'); await r.close(); });
+  await r.ui.clearTeam(); ok(await eventually(async () => !(await r.ui.scoreBlock()) && !(await r.ui.sees(/Strength Score \d/))), 'a score shows with no team'); await r.close(); });
 
 t('TEAM-04', '"Why this score?" opens the breakdown; its parts add up to the score', async () => {
   const r = await myTeam({fresh: true}); const s = await r.ui.scoreBlock(); ok(await r.ui.whyExpanded() === false, 'button not collapsed at first');
@@ -654,9 +654,9 @@ t('SAVED-05', 'Open a saved team: My Team shows its name, toast "Opened …" wit
 t('SAVED-06', '⋯ menu: Rename (Enter saves) and Delete (asks first); deleting the open team un-links My Team', async () => {
   const r = await aopen({team: TEAM, saved: SAVED}); await r.ui.go('Saved Teams', 900); await r.ui.savedAction('Rain test', 'Rename');
   await r.ui.typeRename('Rain'); await r.ui.press('Enter', 900); ok((await r.ui.savedCards()).some(c => /^Rain /.test(c) && !/Rain test/.test(c)), 'card not renamed');
-  await r.ui.savedAction('Rain', 'Delete'); has(await r.ui.text(), /Delete Rain\?/, 'delete confirm'); has(await r.ui.text(), /Keep/); await r.ui.tapText(/^Delete$/, 900);
+  await r.ui.savedAction('Rain', 'Delete'); ok(await eventually(async () => /Delete Rain\?/.test(await r.ui.text())), 'delete confirm'); has(await r.ui.text(), /Keep/); ok(await eventually(async () => { try { await r.ui.tapText(/^Delete$/, 900); return true; } catch (e) { return false; } }), 'nothing to tap: Delete');
   ok(await r.ui.waitToast(/Deleted .Rain./), 'no "Deleted" toast'); ok(!(await r.ui.savedCards()).some(c => /^Rain /.test(c)), 'card still there');
-  await r.ui.savedAction('Sun six', 'Open'); await r.ui.go('Saved Teams', 900); await r.ui.savedAction('Sun six', 'Delete'); await r.ui.tapText(/^Delete$/, 900);
+  await r.ui.savedAction('Sun six', 'Open'); await r.ui.go('Saved Teams', 900); await r.ui.savedAction('Sun six', 'Delete'); ok(await eventually(async () => { try { await r.ui.tapText(/^Delete$/, 900); return true; } catch (e) { return false; } }), 'nothing to tap: Delete (open team)');
   ok(await r.ui.peek('S.loadedId') === null, 'My Team still linked to the deleted team'); ok((await r.ui.team()).length === 6, 'deleting cleared the team'); await r.close(); });
 
 t('SAVED-07', '⋯ → Team poster opens the share box with that team\'s poster', async () => {

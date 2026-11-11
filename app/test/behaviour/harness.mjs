@@ -69,6 +69,8 @@ export async function open(o = {}) {
   const state = o.team || o.box || o.opp || o.saved ? ADAPTER.stateFor(o) : null;
   await pg.addInitScript(([D, st, o]) => {
     window.__PL_TEST = 1;
+    // copies are recorded here as well as sent to the real clipboard (Nov 11: reading the clipboard back fails on Windows)
+    window.__copied = null; try { const c = navigator.clipboard, w = c && c.writeText && c.writeText.bind(c); if (c) c.writeText = s => { window.__copied = String(s); return w ? w(s).catch(() => {}) : Promise.resolve(); }; } catch (e) {}
     // Reloads (Nov 11): seed only on this tab's FIRST load, so a reload shows what the player saved, like a real reload.
     let first = true; try { first = !sessionStorage.getItem('__np_seeded'); sessionStorage.setItem('__np_seeded', '1'); } catch (e) {}
     if (first) try { if (!o.fresh) { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2099-01-01"'); }
@@ -110,3 +112,6 @@ export const tests = () => ALL;
 export const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
 export const visibleText = (pg, sel = 'body') => pg.evaluate(s => { const e = document.querySelector(s); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }, sel);
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
+/** retry a check until it passes or time runs out (Nov 11: a fast PC checked before the page finished redrawing).
+ *  fn returns truthy when the condition holds; resolves true/false. */
+export async function eventually(fn, ms = 4000, step = 150) { const end = Date.now() + ms; for (;;) { try { if (await fn()) return true; } catch (e) {} if (Date.now() > end) return false; await sleep(step); } }

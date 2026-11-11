@@ -70,7 +70,7 @@ export default (ui, pg, o) => {
     pageScrollY: () => pg.evaluate(() => Math.round(window.scrollY)),
     /** wait for a heavy page to finish its first drawing (text containing re appears) */
     waitText: (re, ms = 10000) => waitFor(async () => re.test(await ui.text()), ms),
-    copied: () => pg.evaluate(() => navigator.clipboard.readText().catch(() => null)),
+    copied: () => pg.evaluate(async () => window.__copied || await navigator.clipboard.readText().catch(() => null)),
     grantClipboard: () => pg.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {}),
 
     // ---------- Pokémon info sheet ----------

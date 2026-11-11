@@ -2,7 +2,7 @@
 // system, Popular Sets and Archetypes, plus the shared behaviour of those pages. One test per entry in
 // docs/rebuild/inventory/B-build.md, keyed by its ID, written from the player's side. Talk to the page only through `ui`
 // (adapters/current.mjs + adapters/current.B-build.mjs); the rebuild adapter offers the same names.
-import {group, open, TEAM, BOX, expect, sleep} from './harness.mjs';
+import {group, open, TEAM, BOX, expect, sleep, eventually} from './harness.mjs';
 const t = group('B-build');
 const same = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
 const has = (tx, re, what) => expect(re instanceof RegExp ? re.test(tx) : tx.includes(re), `${what || 'text'} missing ${re}: «${tx.slice(0, 400)}»`);
@@ -413,7 +413,8 @@ t('COV-09', 'Game-plan gap note shows on All suggestions when nothing in the poo
   const box = ['Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon', 'Azumarill'];
   const {ui, close} = await open({team: [...NO_SPEED, 'Archaludon'], box}); await ui.go('My Team'); await ui.setSuggestFrom('My box'); await ui.waitMySuggestions();
   await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.readMore(ui.area('All suggestions page'));
-  has(await ui.text(), /Nothing in your box fixes it without weakening the team: try "Box \+ catch" or "Whole roster"|try "Whole roster" above/, 'gap note'); await close(); });
+  const GAP = /Nothing in your box fixes it without weakening the team: try "Box \+ catch" or "Whole roster"|try "Whole roster" above/;
+  await eventually(async () => GAP.test(await ui.text()), 8000); has(await ui.text(), GAP, 'gap note'); await close(); });
 
 t('COV-11', 'Bigger plans fold: settings, multi-change suggestions only, hint', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), /Bigger Plans Two or more changes at once/, 'fold heading');
