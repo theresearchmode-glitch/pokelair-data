@@ -1,0 +1,172 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NastyPlot My Team mock-up</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500..900&family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* My Team (R2 mock-up). Concept: docs/redesign/concepts (flair My Team); rules: docs/rebuild/design-system.md; words: CLAUDE.md word list */
+:root{--gut:96px}
+.page{position:relative;overflow:hidden}
+header{height:76px;display:flex;align-items:center;padding:0 var(--gut)}header .logo svg{height:36px;display:block}
+nav{display:flex;gap:36px;margin:0 auto}nav a{font:500 15px/1 var(--b);color:var(--ink-2)}
+nav a.on{color:var(--ink);font-weight:700;position:relative}nav a.on::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:5px;background:var(--plot);transform:skewX(var(--slant))}
+header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
+/* ---------- the band: score lockup + the six ---------- */
+.band{position:relative;display:grid;grid-template-columns:400px minmax(0,1fr);gap:32px;padding:24px var(--gut) 32px;align-items:center;isolation:isolate}
+.band .pool{position:absolute;left:60px;top:0;width:440px;height:360px;background:radial-gradient(closest-side,rgba(var(--bandc),var(--glow-strong)),transparent);z-index:-1;pointer-events:none}
+.lock .eyebrow{margin-bottom:8px}
+.lock .num{display:flex;align-items:flex-end;gap:16px}
+.lock .num b{font:900 168px/.86 var(--u);font-style:italic;letter-spacing:-.05em}
+.lock .num .w{padding-bottom:16px}.lock .num .w span{display:block;font:900 26px/1.05 var(--u);font-style:italic;color:var(--band)}
+.lock .num .w small{display:block;font:600 13px/1.3 var(--b);color:var(--ink-2);margin-top:6px}
+.lock p{margin-top:16px;font-size:17px;color:var(--ink-2);max-width:400px}
+.lock .rank{margin-top:8px;font:600 15px/1.3 var(--b);color:var(--ink)}
+.lock .links{display:flex;gap:24px;margin-top:20px;font:600 15px/1 var(--b)}.lock .links a{border-bottom:1.5px solid currentColor;padding-bottom:2px}
+.six{--glow:.22;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px;min-width:0}
+.grp{position:relative}
+.grp .lab{display:flex;align-items:center;gap:8px;margin-bottom:4px;font:900 15px/1 var(--u);font-style:italic}
+.grp .lab i{width:14px;height:7px;transform:skewX(var(--slant));background:var(--ink-3)}.grp.lead .lab i{background:var(--plot)}
+.grp .pair{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px 4px 12px;border-radius:var(--r-l)}
+.grp.bench .pair{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.mon{position:relative;text-align:center}
+.mon .glow{position:absolute;left:50%;top:60px;width:130px;height:96px;margin:-48px 0 0 -65px;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--c),var(--glow)),transparent)}
+.mon .sh{position:absolute;left:50%;top:108px;width:80px;height:12px;margin-left:-40px;border-radius:50%;background:radial-gradient(closest-side,var(--contact),transparent)}
+.mon img{position:relative;width:116px;height:116px;object-fit:contain;object-position:50% 100%;display:block;margin:0 auto}
+.mon .nm{position:relative;font:700 15px/1.25 var(--b);margin-top:4px}.mon .nm .mg{display:block;font:900 13px/1 var(--u);font-style:italic;color:var(--plot)}
+.mon .it{position:relative;font:500 13px/1.3 var(--b);color:var(--ink-2)}
+.mon.on .nm{color:var(--plot-text)}
+.mon.on::before,.mon.on::after{content:"";position:absolute;top:2px;width:14px;height:114px;border:3px solid var(--plot);transform:skewX(-8deg)}
+.mon.on::before{left:2px;border-right:0}.mon.on::after{right:2px;border-left:0}
+.acts{display:flex;align-items:center;gap:12px;padding:0 var(--gut) 8px;flex-wrap:wrap}
+.acts .btn{height:48px}.acts .btn2{height:44px}.acts .more{margin-left:auto;display:flex;gap:24px;font:600 15px/1 var(--b);color:var(--ink-2)}
+.jump{position:sticky;top:0;z-index:5;display:flex;gap:32px;padding:16px var(--gut);margin-top:16px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 92%,transparent);font:600 15px/1 var(--b);color:var(--ink-2)}
+.jump a.on{color:var(--ink);position:relative}.jump a.on::after{content:"";position:absolute;left:0;right:0;bottom:-17px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+.jump .legal{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--good-text)}
+/* ---------- work area: Set / Matchups / Suggestions ---------- */
+.work{display:grid;grid-template-columns:340px minmax(0,1fr) 380px;gap:48px;padding:40px var(--gut) 24px;align-items:start}
+.sec h2{font-size:28px;margin-bottom:4px}.sec h2 .n{font:900 15px/1 var(--u);color:var(--plot);margin-right:8px;vertical-align:middle}
+.sec .sub{font-size:15px;color:var(--ink-2);margin-bottom:16px}
+.set{position:relative}
+.set .pool{position:absolute;left:-40px;right:-40px;top:20px;height:300px;background:radial-gradient(closest-side,rgba(var(--c1),var(--glow-strong)),transparent);z-index:0}
+.set .panel{position:absolute;left:0;right:0;top:80px;height:180px;transform:skewY(-7deg);border-radius:var(--r-m);overflow:hidden;z-index:1}
+.set .panel::after{content:"";position:absolute;inset:-40%;background:repeating-conic-gradient(from 8deg at 50% 62%,rgba(255,255,255,.4) 0 1.6deg,transparent 1.6deg 15deg);-webkit-mask-image:radial-gradient(closest-side,transparent 22%,#000 58%,transparent 96%)}
+.set .art{position:relative;z-index:2;display:block;width:250px;height:250px;object-fit:contain;margin:16px auto 0}
+.set .plate{position:absolute;z-index:3;left:-6px;top:250px;height:34px;padding:0 16px;display:flex;align-items:center;background:var(--plate);color:var(--on-plate);font:900 13px/1 var(--u);font-style:italic;clip-path:polygon(11px 0,100% 0,calc(100% - 11px) 100%,0 100%)}
+.set h3{position:relative;z-index:2;font-size:28px;margin-top:20px}
+.set .types{display:flex;gap:4px;margin-top:8px}
+.kv{margin-top:16px;border-top:1px solid var(--rule)}
+.kv div{display:grid;grid-template-columns:96px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.kv dt{color:var(--ink-3);font-size:13px;align-self:center}.kv dd small{color:var(--ink-3);font-size:13px;margin-left:6px}
+.moves{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:16px}
+.mv{position:relative;height:44px;display:flex;align-items:center;padding:0 12px 0 16px;font:600 15px/1.1 var(--b);background:color-mix(in srgb,var(--tc) 16%,var(--wash));clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.mv::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--tc)}
+.set .row2{display:flex;gap:12px;margin-top:16px}.set .row2 .btn2{flex:1}
+/* matchups */
+.split{display:flex;height:12px;margin:8px 0 8px;gap:3px}.split i{display:block;transform:skewX(var(--slant))}
+.split .sf{background:var(--good)}.split .se{background:color-mix(in srgb,var(--ink) 28%,transparent)}.split .su{background:var(--mid)}
+.legend{display:flex;gap:24px;font-size:15px}.legend b{font:900 22px/1 var(--u);font-style:italic;margin-right:6px}
+.legend .lf b{color:var(--good-text)}.legend .lu b{color:var(--mid-text)}
+.calc{margin-top:8px;font-size:13px;color:var(--ink-3)}
+.tabs{display:flex;gap:4px;margin:20px 0 8px}
+.trow{display:grid;grid-template-columns:28px 56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)}
+.trow .k{font:900 15px/1 var(--u);font-style:italic;color:var(--ink-3)}
+.trow img{width:56px;height:56px;object-fit:contain}
+.trow .nm{font:600 15px/1.2 var(--b)}.trow .nm small{display:block;font:500 13px/1.3 var(--b);color:var(--ink-3)}
+.v{display:inline-flex;align-items:center;gap:8px;font:700 15px/1 var(--b);white-space:nowrap}.v i{width:12px;height:6px;transform:skewX(var(--slant))}
+.v.vf{color:var(--good-text)}.v.vf i{background:var(--good)}.v.ve{color:var(--ink-2)}.v.ve i{background:color-mix(in srgb,var(--ink) 35%,transparent)}.v.vu{color:var(--mid-text)}.v.vu i{background:var(--mid)}
+.seeall{display:flex;justify-content:space-between;padding:14px 0;font:600 15px/1 var(--b)}
+/* suggestions + checks */
+.ok{font:900 26px/1.1 var(--u);font-style:italic;margin-top:4px}
+.sec p.t{font-size:15px;color:var(--ink-2);margin-top:8px}
+.opt{margin-top:20px;padding-top:16px;border-top:1px solid var(--rule)}
+.opt .lab2{font:700 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-3)}
+.swap{display:grid;grid-template-columns:64px auto 64px 1fr;align-items:center;gap:8px;margin-top:12px}
+.swap img{width:64px;height:64px;object-fit:contain}.swap .arr{font:900 20px/1 var(--u);color:var(--ink-3)}
+.swap .tx{font:600 15px/1.3 var(--b)}.swap .tx small{display:block;color:var(--ink-3);font-size:13px}
+.opt .row2{display:flex;gap:12px;margin-top:12px;align-items:center}.opt .row2 .btn{height:44px;padding:0 24px;font-size:14px}.opt .row2 a{font:600 15px/1 var(--b);border-bottom:1.5px solid}
+.checks{margin-top:32px}
+.checks h3{font-size:22px}.checks h3 small{font:600 15px/1 var(--b);color:var(--good-text);margin-left:10px;font-style:normal}
+.ck{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.ck b{display:grid;place-items:center;width:24px;height:24px;font:900 13px/1 var(--b);color:var(--bg);background:var(--good);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.ck.note b{background:color-mix(in srgb,var(--ink) 30%,transparent)}.ck small{margin-left:auto;color:var(--ink-3);font-size:13px}
+/* team sheet */
+.sheet{padding:24px var(--gut) 72px}
+.sheet h2{font-size:28px}
+table{width:100%;border-collapse:collapse;margin-top:16px;font-size:15px}
+th{text-align:left;font:600 13px/1 var(--b);color:var(--ink-3);padding:10px 12px 10px 0;border-bottom:1px solid var(--rule)}
+td{padding:10px 12px 10px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+td.p{font-weight:700}td.p>div{display:flex;align-items:center;gap:12px}td.p img{width:48px;height:48px;object-fit:contain}
+td .mvs{display:flex;flex-wrap:wrap;gap:4px}td .mvs span{font-size:13px;padding:4px 10px;background:color-mix(in srgb,var(--tc) 16%,var(--wash));border-left:4px solid var(--tc)}
+footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}footer svg{height:26px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}
+/* ---------- phone ---------- */
+@media (max-width:699px){
+  :root{--gut:16px}
+  header{height:60px}nav{display:none}header .s{margin-left:auto}
+  .band{display:block;padding:8px var(--gut) 16px}.band .pool{left:-120px;top:-40px;width:520px;height:420px}
+  .lock .num b{font-size:120px}.lock .num .w span{font-size:22px}.lock p{font-size:16px}
+  .six{margin-top:24px;grid-template-columns:repeat(3,1fr);gap:8px}.grp .pair{grid-template-columns:1fr;padding:4px 4px 8px}
+  .mon img{width:88px;height:88px}.mon .glow{top:48px;width:96px;height:72px;margin:-36px 0 0 -48px}.mon .sh{top:82px;width:56px;margin-left:-28px}
+  .mon .nm{font-size:13px;font-stretch:85%}.mon .it{display:none}.mon.on::before,.mon.on::after{height:86px;width:10px;top:2px}.mon.on::before{left:2px}.mon.on::after{right:2px}
+  .acts{gap:8px}.acts .btn{flex:1;height:48px}.acts .btn2{flex:1}.acts .more{display:none}
+  .jump{gap:20px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)}.jump a{white-space:nowrap}.jump .legal{display:none}
+  .work{display:block;padding:24px var(--gut) 8px}.work>section{margin-bottom:40px}
+  .set .art{width:200px;height:200px}.set .panel{top:64px;height:150px}.set .plate{top:200px}
+  .trow{grid-template-columns:24px 48px minmax(0,1fr) auto}.trow img{width:48px;height:48px}
+  .sheet{padding:8px var(--gut) 48px}.sheet table thead{display:none}.sheet tr{display:grid;grid-template-columns:1fr;padding:12px 0;border-bottom:1px solid var(--rule)}
+  .sheet td{border:0;padding:2px 0}.sheet td.k{display:none}
+  footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:16px;flex-wrap:wrap}
+}
+:root[data-theme="light"] .six{--glow:.12}
+</style></head><body><div class="page" id="page"></div>
+<script>
+{const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';}
+/*DATA*/
+const TY={Dragon:'#5060E1',Ground:'#9A6230',Fighting:'#D9631B',Poison:'#8E3FC8',Dark:'#5A4A56',Steel:'#4F8FA6',Fire:'#DD4420',Water:'#2A78D8',Grass:'#2E9A46',Fairy:'#C953C2',Flying:'#5F97D8',Ghost:'#6A4BB8',Psychic:'#D93E78',Ice:'#1E9FBF',Rock:'#8F8556',Electric:'#B88A00',Normal:'#8E908C',Bug:'#7F9A12'};
+function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
+async function hue(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
+  const o=B.map((b,i)=>({i,w:b[3],c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[150,150,165]})).sort((a,b)=>b.w-a.w),a=o[0],b2=o.find(q=>q.w>a.w*.12&&Math.min(Math.abs(q.i-a.i),18-Math.abs(q.i-a.i))>=3)||a;return{a:a.c,b:b2.c};}
+const rgb=c=>c.join(','),esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+const nameHtml=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.slice(5))}`:esc(d);
+(async()=>{
+  const DK=document.documentElement.dataset.theme==='dusk',PH=innerWidth<700,M={};
+  await Promise.all(D.six.map(m=>m.img).concat(D.mu.top.map(t=>t.img),[D.opt.inImg]).map(async s=>{M[s]=M[s]||await hue(s);}));
+  const sel=D.six[D.sel],k=M[sel.img];
+  const BANDC={'Top tier':DK?[79,178,240]:[0,120,191],'Tournament ready':DK?[201,176,255]:[123,75,214],'Solid':[107,101,112],'Needs work':[233,168,0],'Missing a basic':[138,124,110]}[D.score.band];
+  const BAND={'Top tier':'var(--band-top)','Tournament ready':'var(--band-ready)','Solid':'var(--band-solid)','Needs work':'var(--mid-text)','Missing a basic':'var(--low-text)'}[D.score.band];
+  const mon=(m,i)=>`<div class="mon${i===D.sel?' on':''}" style="--c:${rgb(M[m.img].a)}"><i class="glow"></i><i class="sh"></i><img src="${m.img}" alt=""><div class="nm">${nameHtml(m.d)}</div><div class="it">${esc(m.item)}</div></div>`;
+  const grp=(cls,lab,ms)=>`<div class="grp ${cls}"><div class="lab"><i></i>${lab}</div><div class="pair">${ms.map(m=>mon(m,D.six.indexOf(m))).join('')}</div></div>`;
+  const by=r=>D.six.filter(m=>m.role===r);
+  const lock=`<div class="lock"><div class="eyebrow">My Team · ${esc(D.style)}</div><div class="num"><b>${D.score.s}</b><div class="w"><span>${esc(D.score.band)}</span><small>Strength Score</small></div></div>
+    <p>${esc(D.score.line)}</p><div class="rank">${esc(D.score.rank)}</div><div class="links"><a>Why this score?</a><a>Team Sheet</a></div></div>`;
+  const band=`<section class="band" style="--bandc:${rgb(BANDC)};--band:${BAND}"><div class="pool"></div>${lock}<div class="six">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('bench','Bench',by('Bench'))}</div></section>`;
+  const acts=`<div class="acts"><div class="btn">Save Team</div><div class="btn2"><span>Share</span></div><div class="btn2"><span>Copy for Showdown</span></div><div class="more"><span>Saved Teams</span><span>My Box</span><span>Compare</span><span>⋯</span></div></div>`;
+  const jump=`<div class="jump"><a class="on">Set</a><a>Matchups</a><a>Suggestions</a><a>Team Checks</a><a>Team Sheet</a><span class="legal"><i class="mark" style="background:var(--good)"></i>Legal for Reg M-C</span></div>`;
+  const kv=`<dl class="kv"><div><dt>Item</dt><dd>${esc(sel.item)}</dd></div><div><dt>Ability</dt><dd>${esc(sel.ab)}</dd></div><div><dt>Nature</dt><dd>${esc(sel.nat)}<small>most run</small></dd></div><div><dt>Stat points</dt><dd>${esc(sel.pts)}<small>most run</small></dd></div></dl>`;
+  const moves=`<div class="moves">${sel.moves.map(v=>`<div class="mv" style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</div>`).join('')}</div>`;
+  const setSec=`<section class="sec set" style="--c1:${rgb(k.a)}"><h2 class="u"><span class="n">1</span>Set</h2><div class="sub">Leads with ${esc(D.partner)} vs the meta's top six</div>
+    <div class="pool"></div><div class="panel" style="background:linear-gradient(150deg,rgba(${rgb(k.a)},.88),rgba(${rgb(k.b)},.72))"></div><img class="art" src="${sel.img}" alt=""><div class="plate">Rated ${sel.r} · ${sel.tier}</div>
+    <h3 class="u">${esc(sel.d)}</h3><div class="types">${sel.t.map(t=>`<span class="chip type" style="background:${TY[t]}">${t}</span>`).join('')}</div>${kv}${moves}
+    <div class="row2"><div class="btn2"><span>Edit Set</span></div><div class="btn2"><span>Info Sheet</span></div></div></section>`;
+  const T=D.mu.fav+D.mu.even+D.mu.unf,pc=n=>n/T*100;
+  const vcls={'Favoured':'vf','Even match':'ve','Unfavoured':'vu'};
+  const rows=D.mu.top.map((t,i)=>`<div class="trow"><span class="k">${i+1}</span><img src="${t.img}" alt=""><div class="nm">${esc(t.d)}<small>Calc: ${esc(t.calc)}</small></div><span class="v ${vcls[t.real]}"><i></i>${esc(t.real)}</span></div>`).join('');
+  const muSec=`<section class="sec"><h2 class="u"><span class="n">2</span>Matchups</h2><div class="sub">Vs the top 30 threats. Verdicts come from real tournament games; the damage calc reading is underneath.</div>
+    <div class="legend"><span class="lf"><b>${D.mu.fav}</b>Favoured</span><span class="le"><b>${D.mu.even}</b>Even match</span><span class="lu"><b>${D.mu.unf}</b>Unfavoured</span></div>
+    <div class="split"><i class="sf" style="width:${pc(D.mu.fav)}%"></i><i class="se" style="width:${pc(D.mu.even)}%"></i><i class="su" style="width:${pc(D.mu.unf)}%"></i></div>
+    <div class="calc">Damage calc: Beats it ${D.mu.calc.beats} · Handles it ${D.mu.calc.handles} · Shaky ${D.mu.calc.shaky} · No answer ${D.mu.calc.none}</div>
+    <div class="tabs"><span class="chip on">Top 10</span><span class="chip">Grid</span><span class="chip">All 30</span></div>${rows}<div class="seeall">The next 20, worst first<span>›</span></div></section>`;
+  const sgSec=`<section class="sec"><h2 class="u"><span class="n">3</span>Suggestions</h2><div class="sub">What to change, best first</div>
+    <div class="ok">Nothing to fix.</div><p class="t">${esc(D.sugg)}</p>
+    <div class="opt"><div class="lab2">OPTION · SAME STRENGTH, A DIFFERENT LOOK</div><div class="swap"><img src="${D.opt.outImg}" alt=""><span class="arr">→</span><img src="${D.opt.inImg}" alt=""><div class="tx">${esc(D.opt.in)} for ${esc(D.opt.out)}<small>Strength Score ${esc(D.opt.delta)}</small></div></div>
+      <div class="row2"><div class="btn">Apply</div><a>Why?</a><a>See all suggestions</a></div></div>
+    <div class="checks"><h3 class="u">Team Checks<small>${D.checks.filter(c=>!c.note&&c.ok).length}/${D.checks.filter(c=>!c.note).length}</small></h3>
+      ${D.checks.map(c=>`<div class="ck${c.note?' note':''}"><b>${c.ok?'✓':'–'}</b>${esc(c.label)}<small>${c.note?'note':'basic'}</small></div>`).join('')}</div></section>`;
+  const work=`<div class="work">${setSec}${muSec}${sgSec}</div>`;
+  const sheet=`<section class="sheet"><h2 class="u">Team Sheet</h2><div class="sub" style="font-size:15px;color:var(--ink-2)">6 sets, Reg M-C, bring 6, pick 4</div><table><thead><tr><th>Pokémon</th><th>Item</th><th>Ability</th><th>Nature</th><th>Moves</th></tr></thead><tbody>
+    ${D.six.map(m=>`<tr><td class="p"><div><img src="${m.img}" alt="">${esc(m.d)}</div></td><td>${esc(m.item)}</td><td>${esc(m.ab)}</td><td>${esc(m.nat)}</td><td><div class="mvs">${m.moves.map(v=>`<span style="--tc:${TY[v.type]||'#888'}">${esc(v.name)}</span>`).join('')}</div></td></tr>`).join('')}</tbody></table></section>`;
+  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav><a>Build</a><a class="on">My Team</a><a>Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
+  const footer=`<footer>${DK?D.logoD2:D.logo2}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
+  document.getElementById('page').innerHTML=header+band+acts+jump+work+sheet+footer;
+  await document.fonts.ready;document.body.dataset.ready=1;
+})();
+</script></body></html>

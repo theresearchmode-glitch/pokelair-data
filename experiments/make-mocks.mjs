@@ -23,11 +23,34 @@ const site = JSON.parse(await ui.peek(`JSON.stringify((()=>{
   const one=n=>{const p=byName.get(n);const r=rating(p);return {n,d:p.d,t:p.t,sp:p.sp,r:RS(r.total),tier:lTier(r.total).k+' tier',usage:r.usage,wr:r.wr};};
   const L=AR.lineup(members()),role=n=>L.lead.some(m=>m.p.n===n)?'Lead':L.back.some(m=>m.p.n===n)?'Back':'Bench';
   return {box:${JSON.stringify(BOX)}.map(one),team:${JSON.stringify(TEAM)}.map(n=>({...one(n),role:role(n)})),asOf:(typeof RES==='object'&&RES&&RES.updated)||''};})())`));
+// My Team: what today's My Team shows for this team (same numbers and words players see)
+await ui.go('My Team', 2500);
+const mt = JSON.parse(await ui.peek(`JSON.stringify((()=>{
+  const txt=[...document.querySelectorAll('[data-pane]')].find(e=>!e.hidden&&e.getClientRects().length).innerText.replace(/\\s+/g,' ');
+  const nOf=d=>{for(const p of byName.values())if(p.d===d)return p.n;return d;};
+  const nat=m=>{const d=document.createElement('div');d.innerHTML=AR.natCells(m);const t=d.innerText.replace(/\\s+/g,' ');return {nat:(t.match(/Nature\\s*([A-Z][a-z]+)/)||[])[1]||'',pts:(t.match(/Stat points\\s*(.+?)\\s*most run/)||[])[1]||''};};
+  const six=members().map(m=>({n:m.p.n,item:m.item,ab:m.ability,moves:LANE.moves(m).length?m.moves.map(v=>({name:v.name,type:v.type})):[],...nat(m)}));
+  const top=[...document.querySelectorAll('.chtl10 button')].slice(0,10).map(b=>{const t=b.innerText.replace(/\\s+/g,' ').trim();const m=t.match(/^\\d+\\s*(.+?)\\s*(Favoured|Even match|Unfavoured)\\s*Calc: (.+)$/);return m?{n:nOf(m[1]),d:m[1],real:m[2],calc:m[3]}:null;}).filter(Boolean);
+  const sc=txt.match(/Strength Score (\\d+) (Top tier|Tournament ready|Solid|Needs work|Missing a basic) (Teams scoring like this[^.]*?tournament teams) (Top \\d+% of tournament teams)/);
+  const mu=txt.match(/Matchups (\\d+) Favoured (\\d+) Even (\\d+) Unfavoured/), calc=txt.match(/No answer (\\d+), Shaky (\\d+), Handles it (\\d+), Beats it (\\d+)/);
+  const opt=txt.match(/→ (.+?) for (\\w[\\w\\- ]*?)(±\\d+|[+−-]\\d+) \\((\\d+ → \\d+)\\)/);
+  const sugg=(txt.match(/Nothing to fix\\. (.+?tune your sets\\.)/)||[])[1]||'';
+  const checks=(proChecks(members(),true)||{items:[]}).items.map(x=>({label:x.label==='Ready for the top threats'?'Matchups covered':x.label,ok:!!x.ok,note:!!x.note}));
+  const L=AR.lineup(members()),role=n=>L.lead.some(m=>m.p.n===n)?'Lead':L.back.some(m=>m.p.n===n)?'Back':'Bench';
+  return {six:six.map(m=>({...m,role:role(m.n)})),top,score:sc?{s:+sc[1],band:sc[2],line:sc[3],rank:sc[4]}:null,mu:mu&&calc?{fav:+mu[1],even:+mu[2],unf:+mu[3],calc:{none:+calc[1],shaky:+calc[2],handles:+calc[3],beats:+calc[4]}}:null,
+    opt:opt?{in:opt[1],out:opt[2],inN:nOf(opt[1]),outN:nOf(opt[2]),delta:opt[3]+' ('+opt[4]+')'}:null,sugg,checks};})())`));
+console.log('myteam data:', JSON.stringify({score: mt.score, mu: mt.mu, opt: mt.opt, top: mt.top.length, six: mt.six.map(m => m.role + ':' + m.n + ':' + m.nat)}));
 await close(); await closeAll();
 const fmtDate = s => { const d = new Date(String(s).slice(0, 10) + 'T12:00:00Z'); return isNaN(d) ? '' : d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'}); };
 const teamSet = new Set(TEAM.map(n => n.replace(/-Mega-[XY]$/, '').replace(/-Mega$/, '')));
 
 const DATA = {
+  myteam: () => { const ex = n => site.team.find(m => m.n === n) || site.box.find(m => m.n === n) || {};
+    const six = mt.six.map(m => ({...ex(m.n), ...m, nat: String(m.nat).replace(/most$/, ''), d: ex(m.n).d || m.n, img: art(m.n)}));
+    return {six, sel: six.findIndex(m => m.n === 'Garchomp'), partner: (six.find(m => m.role === 'Lead' && m.n !== 'Garchomp') || {}).d || '',
+      style: 'Sun · Tailwind', score: mt.score, sugg: mt.sugg, checks: mt.checks,
+      mu: {...mt.mu, top: mt.top.map(t => ({...t, img: art(t.n)}))},
+      opt: {...mt.opt, inImg: art(mt.opt.inN), outImg: art(mt.opt.outN)}, logo: LOGO, logo2: LOGO2, logoD: LOGOD, logoD2: LOGOD2}; },
   mybox: () => { const box = site.box.map(m => ({...m, img: art(m.n), team: teamSet.has(m.n)})).sort((a, b) => a.d.localeCompare(b.d));
     const sel = {...box.find(m => m.n === 'Garchomp')};
     return {box, sel, team: site.team.map(m => ({d: m.d, role: m.role, img: art(m.n)})), sortBy: 'A–Z', asOf: fmtDate(site.asOf) || 'Nov 10', logo: LOGO, logo2: LOGO2, logoD: LOGOD, logoD2: LOGOD2}; },
