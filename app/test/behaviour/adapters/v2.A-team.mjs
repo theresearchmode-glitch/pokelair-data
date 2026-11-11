@@ -137,7 +137,8 @@ export default (ui, pg, o) => {
     tapThreat: () => NOT('threat sheet (matchup rows are not tappable)'), threatSheet: () => NOT('threat sheet'), tapThreatInSheet: () => NOT('threat sheet'), threatPressedInSheet: () => NOT('threat sheet'),
     gridRows: () => NOT('Top 12 grid'), tapGridRow: () => NOT('Top 12 grid'),
     pickTypeChartMega: () => NOT('Types fold (type chart, Mega pick)'),
-    tapTip: () => NOT('"?" explainer bubbles'), tipBubble: () => NOT('"?" explainer bubbles'),
+    /** "?" explainers: tap the one with this label (its aria-label, as today's adapter), read the open bubble */
+    tapTip: label => H.tapLabel(label, 500), tipBubble: () => txt('.sg2-tipop'),
     /** shortcut for "edit this Pokémon's four moves" (same state change as today's adapter, through the shared logic) */
     giveMoves: (name, moves) => ui.peek(`(()=>{const i=S.slots.findIndex(s=>s.n===${JSON.stringify(name)});S.slots[i].mv={doubles:${JSON.stringify(moves)}};render();return i})()`).then(() => pg.waitForTimeout(1500)),
     // suggestions, read from the visible card into today's wording
