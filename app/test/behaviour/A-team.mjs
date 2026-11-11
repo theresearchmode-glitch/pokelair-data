@@ -14,7 +14,16 @@ const has = (tx, s, what) => ok(typeof s === 'string' ? tx.toLowerCase().include
 const SHARED = {};
 async function view(key, opts, page) { if (!SHARED[key]) { SHARED[key] = await aopen(opts); if (page) { await SHARED[key].ui.go(page, 600); await SHARED[key].ui.waitText(/\w/); } }
   const s = SHARED[key]; if (page && !s.settled) { await s.ui.settle(); s.settled = true; } if (page && (await s.ui.current()) !== s.ui.PAGES[page]) await s.ui.go(page, 600); return s; }
-async function myTeam(opts = {team: TEAM}) { const r = await aopen(opts); await r.ui.go('My Team', 600); await r.ui.waitText(/Strength Score|No team yet|Grade/, 12000); await r.ui.settle(); return r; }
+// My Team, drawn and settled. Speed: while a test runs, the next "harness team" page is already loading in the background
+// (most tests start from it), so a test rarely waits for a page to open. Each test still gets its own fresh page.
+async function warm(o) { const r = await aopen({...o, wait: 200}); await r.ui.go('My Team', 300); await r.ui.waitText(/Strength Score|No team yet|Grade/, 12000); await r.ui.settle(); return r; }
+const POOL = new Map(), keyOf = o => JSON.stringify(o);
+const prefetch = o => { const k = keyOf(o); if (!POOL.has(k)) POOL.set(k, warm(o).catch(() => null)); };
+async function myTeam(o = {team: TEAM}) { const k = keyOf(o), p = POOL.get(k); POOL.delete(k); let r = p ? await p : null;
+  if (r && r.pg.isClosed()) r = null; if (!r) r = await warm(o); prefetch({team: TEAM}); return r; }
+// Home with the harness team, same idea (a page that has just opened on Home, nothing tapped yet)
+let HOMEP = null; const warmHome = () => aopen({team: TEAM}).catch(() => null);
+async function homePage() { let r = HOMEP ? await HOMEP : null; HOMEP = warmHome(); if (!r || r.pg.isClosed()) r = await aopen({team: TEAM}); return r; }
 const noErrs = r => ok(!r.errs.length, 'page errors: ' + r.errs.join(' | '));
 
 // ================= 1. Home =================
@@ -24,12 +33,12 @@ t('HOME-01', 'Home leads with the tagline "Sharply raise your win rate."', async
   ok(h === 'Sharply raise your win rate.', `first heading reads "${h}"`); });
 
 t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => {
-  const r = await aopen({team: TEAM}); const tx = await r.ui.text();
+  const r = await homePage(); const tx = await r.ui.text();
   const m = tx.match(/Most used, #1 ([\d.]+)% of teams bring (.+?) [A-Z][a-z]+ [\d.]+%/); ok(m, 'no "Most used, #1 … % of teams bring X" hero');
   await r.ui.tapText('Most used, #1'); const s = await r.ui.infoSheet(); ok(s && s.includes(m[2]), `info sheet for ${m[2]} did not open`); noErrs(r); await r.close(); });
 
 t('HOME-03', 'Runner-up strips (#2, #3) open their info sheets', async () => {
-  const r = await aopen({team: TEAM}); const tx = await r.ui.text(); const m = tx.match(/bring \S+(?: \S+)?? ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)% ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)%/);
+  const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/bring \S+(?: \S+)?? ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)% ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)%/);
   ok(m, 'no two runner-up strips with name and %'); await r.ui.tapText(`${m[1]} ${m[2]}%`); let s = await r.ui.infoSheet(); ok(s && s.includes(m[1]), `info sheet for ${m[1]} did not open`);
   await r.ui.closeInfoSheet(); await r.ui.tapText(`${m[3]} ${m[4]}%`); s = await r.ui.infoSheet(); ok(s && s.includes(m[3]), `info sheet for ${m[3]} did not open`); await r.close(); });
 
@@ -38,39 +47,39 @@ t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', as
   has(tx, /Most used in (January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)[^.]*\. Data as of [A-Z][a-z]{2} \d{1,2}/, 'Home data line'); });
 
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {
-  const r = await aopen({team: TEAM}); const tx = await r.ui.text(); has(tx, 'This week in the ratings');
+  const r = await homePage(); const tx = await r.ui.text(); has(tx, 'This week in the ratings');
   const chips = await r.ui.ratingMoves(); ok(chips.length >= 1 && chips.length <= 6, `${chips.length} rating-move chips`);
   for (const c of chips) ok(/[▲▼] \d+$/.test(c.text), `chip "${c.text}" has no arrow and number`);
   const c = chips[0], rating = +(c.label.match(/rating (\d+)/) || [])[1]; ok(rating, 'chip label names no rating: ' + c.label);
   await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet(); ok(s && s.includes(c.text.replace(/ [▲▼].*/, '')), 'chip did not open its info sheet');
   await r.close(); });
 t('HOME-05b', 'This week chip\'s rating matches the info sheet it opens', async () => {
-  const r = await aopen({team: TEAM}); const c = (await r.ui.ratingMoves())[0], rating = +(c.label.match(/rating (\d+)/) || [])[1];
+  const r = await homePage(); const c = (await r.ui.ratingMoves())[0], rating = +(c.label.match(/rating (\d+)/) || [])[1];
   await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet() || '';
   ok(s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, info sheet hero says ${s.slice(0, 12)}`); await r.close(); },
   {known: 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});
 
 t('HOME-06', 'Start buttons: "Score my team" first with a team, "Build me a team" first with none', async () => {
-  const r = await aopen({team: TEAM}); let b = await r.ui.homeStartButtons();
+  const r = await homePage(); let b = await r.ui.homeStartButtons();
   ok(b.join('|') === 'Score my team|Build a team|Plan a match', 'with a team buttons are ' + b.join('|'));
   await r.ui.tapText('Score my team'); ok(await r.ui.current() === 'report', 'Score my team did not open My Team'); await r.close();
   const e = await aopen({team: []}); b = await e.ui.homeStartButtons(); ok(b[0] === 'Build me a team' && b.includes('Score my team') && b.includes('Plan a match'), 'empty team buttons are ' + b.join('|'));
   await e.ui.tapText('Build me a team'); ok(await e.ui.current() === 'auto', 'Build me a team did not open Build'); await e.close(); });
 
 t('HOME-07', '"Import from Showdown" opens My Team with the Import box ready', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.tapText('Import from Showdown', 1200);
+  const r = await homePage(); await r.ui.tapText('Import from Showdown', 1200);
   ok(await r.ui.current() === 'report', 'My Team did not open'); const p = await r.ui.editPanel(); ok(p && /Import a team/.test(p.text) && /Replace my team/.test(p.text), 'no "Import a team" box with "Replace my team"');
   ok(/paste/i.test(await r.ui.focusName()) || (await r.ui.focusName()).includes('Showdown'), 'cursor is not in the paste box (focused: ' + await r.ui.focusName() + ')'); await r.close(); });
 
 t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
-  const r = await aopen({team: TEAM}); has(await r.ui.text(), /All 11 Tools/);
+  const r = await homePage(); has(await r.ui.text(), /All 11 Tools/);
   const want = {'Battle Mode': 'matchup', Teams: 'top', 'Type Chart': 'types', Ratings: 'ratings', 'Damage Calc': 'calc', Events: 'events', 'Test Run': 'gauntlet', 'Popular Sets': 'sets', 'Speed Tiers': 'speed', Archetypes: 'arch', 'Winning Cores': 'cores'};
   const tools = await r.ui.homeTools(); ok(tools.length === 11, `${tools.length} tool cards: ${tools.join(', ')}`);
   for (const [name, v] of Object.entries(want)) { ok(tools.includes(name), 'no tool card ' + name); await r.ui.go('Home', 300); await r.ui.tapTool(name); const now = await r.ui.current(); ok(now === v || (v === 'cores' && now === 'auto'), `${name} opened ${now}`); }
   noErrs(r); await r.close(); });
 
 t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy for Showdown copies', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.grantClipboard(); const tx = await r.ui.text();
+  const r = await homePage(); await r.ui.grantClipboard(); const tx = await r.ui.text();
   ok(/The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/.test(tx), 'no champion line with record, date, players');
   ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link');
   await r.ui.tapText('Load this team'); ok(await r.ui.sees('Tap again to replace your team'), 'first tap did not ask to tap again');
@@ -94,14 +103,14 @@ t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion s
 
 t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import', async () => {
   const r = await aopen({fresh: true}); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'Home');
-  await r.ui.go('My Team', 1500); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'My Team');
+  await r.ui.go('My Team', 1500); await r.ui.settle(); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'My Team');
   has(await r.ui.text(), 'Build your own'); await r.ui.tapText('Import a team', 1000); const p = await r.ui.editPanel(); ok(p && /Import a team/.test(p.text), 'Import panel did not open'); await r.close(); });
 
 t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async () => {
   const r = await aopen({fresh: true}); const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');
   for (const s of ['How NastyPlot works', 'Get a team', 'Read your scouting report', 'Plan each match', 'Build me a team', 'Copy a top team', 'Got it']) has(w, s, 'welcome card');
   await r.ui.tapText('Got it'); ok(!(await r.ui.welcomeCardText()), 'card still there after Got it'); await r.ui.reload(); ok(!(await r.ui.welcomeCardText()), 'card came back after reload'); await r.close();
-  const back = await aopen({team: TEAM}); ok(!(await back.ui.welcomeCardText()), 'returning visitor sees the welcome card'); await back.close(); });
+  const back = await homePage(); ok(!(await back.ui.welcomeCardText()), 'returning visitor sees the welcome card'); await back.close(); });
 
 t('HOME-13', 'What\'s New fold after an update; × dismisses it for good; never for first-time visitors', async () => {
   // the kit re-seeds stored keys on every reload, so seed this one by hand once
@@ -111,7 +120,7 @@ t('HOME-13', 'What\'s New fold after an update; × dismisses it for good; never 
   const f = await aopen({fresh: true}); ok(!(await f.ui.sees("What's New")), 'first-time visitor sees What\'s New'); await f.close(); });
 
 t('HOME-14', 'Top of the Meta: 10 rated rows, Hidden gems switch changes the list, rows open info sheets', async () => {
-  const r = await aopen({team: TEAM}); const tx = await r.ui.text(); has(tx, /NastyPlot ratings: from [\d,]+ tournament teams Top of the Meta/);
+  const r = await homePage(); const tx = await r.ui.text(); has(tx, /NastyPlot ratings: from [\d,]+ tournament teams Top of the Meta/);
   const top = await r.ui.homeTopRows(); ok(top.length === 10, `${top.length} rows`); ok(/Sneasler S \d+ #1|\S+ [SABCD] \d+ #1/.test(tx), 'rows don\'t read "Name S 97 #1"');
   ok(await r.ui.chosen('Top rated') === true, '"Top rated" not chosen by default'); await r.ui.choose('Hidden gems');
   const gems = await r.ui.homeTopRows(); ok(gems.length >= 1 && gems.join() !== top.join(), 'Hidden gems list did not change'); ok(await r.ui.chosen('Hidden gems') === true, 'Hidden gems not shown as chosen');
@@ -119,7 +128,7 @@ t('HOME-14', 'Top of the Meta: 10 rated rows, Hidden gems switch changes the lis
   await r.ui.tapPokemon(gems[0].replace(/-Mega.*/, '')); ok(await r.ui.infoSheet(), 'row did not open the info sheet'); await r.ui.closeInfoSheet(); has(await r.ui.text(), 'All ratings ›'); await r.close(); });
 
 t('HOME-15', 'More on Home fold: pairs, what changed, cores, "Log a game" → Battle; stays open after reload', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.openFold('More on Home'); const f = await r.ui.foldContent('More on Home');
+  const r = await homePage(); await r.ui.openFold('More on Home'); const f = await r.ui.foldContent('More on Home');
   for (const s of [/Doubles Is Played in Pairs/i, /What changed this week/i, /Rising/, /Falling/, /#\d+ → #\d+/, /Winning Cores/i, /All cores ›/, /Your battles/i, /Log a game/]) has(f, s, 'More on Home');
   await r.ui.reload(); ok(await r.ui.foldOpen('More on Home') === true, 'fold closed again after reload');
   await r.ui.tapText(/^Log a game$/, 900); ok(await r.ui.current() === 'matchup', 'Log a game did not open Battle'); await r.close(); });
@@ -242,8 +251,8 @@ t('TEAM-19', 'Empty team: Darkrai, invitation, "Add your first Pokémon" opens t
   ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai picture');
   ok(!/Suggestions What to Change|Who Beats You/.test(tx), 'parts 1-3 still shown'); has(tx, /Tap a Slot to Add a Pokémon/i);
   await r.ui.tapText('Add your first Pokémon', 900); const p = await r.ui.editPanel(); ok(p && /Add a Pokémon/.test(p.title + p.text), 'add panel did not open');
-  const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'name box not focused'); await r.ui.closeEditPanel();
-  await r.ui.tapText('Build me a team', 900); ok(await r.ui.current() === 'auto', 'Build me a team did not open Build'); await r.close(); });
+  const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'name box not focused'); await r.ui.closeEditPanel(); await r.ui.settle();
+  await r.ui.tapText(/^Build me a team$/, 900); ok(await r.ui.current() === 'auto', 'Build me a team did not open Build'); await r.close(); });
 
 t('TEAM-20', 'Partial team: "so far" score, "+ X added" suggestions, no Your games, Save/Share available', async () => {
   const r = await myTeam({team: ['Garchomp', 'Incineroar']}); const s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score so far', 'score not "so far"');
@@ -323,13 +332,13 @@ t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap
   await r.ui.openFold('Problems and Team Checks', true, 1500); const f = await r.ui.foldContent('Problems and Team Checks');
   for (const s of [/Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, /Show \d+ more/, /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, /Ready for the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
   ok(await r.ui.foldOpen('Weakness Ice') === true, 'first fixable problem not opened automatically');
-  await r.ui.tapText(/^Show \d+ more$/, 700); has(await r.ui.foldContent('Problems and Team Checks'), /Show less/, 'Problems fold');
+  await r.ui.tapText(/^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => /Show less/.test(await r.ui.foldContent('Problems and Team Checks') || ''), 4000), 'Problems fold shows no "Show less"');
   await r.ui.tapText('Swap out Rillaboom', 1500); await r.ui.settle(); ok(await r.ui.has('#toastUndo'), 'no Undo toast'); ok(!(await r.ui.team()).includes('Rillaboom'), 'Rillaboom not swapped out');
   ok(await r.ui.undoBar(), 'no Undo bar'); await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen('Problems and Team Checks') === true, 'fold not remembered open'); await r.close(); });
 
 t('SUG-11', '"?" explainer: bubble titled "Ready for the top threats", Escape closes it', async () => {
-  const r = await myTeam(); await r.ui.openFold('Problems and Team Checks', true, 1200); await r.ui.tapTip('What is Ready for the top threats?');
-  const b = await r.ui.tipBubble(); ok(b && /Ready for the top threats/.test(b), 'no bubble titled "Ready for the top threats"'); ok(/How we calculate|How we work it out|→/.test(b), 'bubble has no link to How we calculate: ' + b);
+  const r = await myTeam(); await r.ui.openFold('Problems and Team Checks', true, 1200); await r.ui.settle(); await r.ui.tapTip('What is Ready for the top threats?');
+  const b = await r.ui.waitFor(() => r.ui.tipBubble(), 3000); ok(b && /Ready for the top threats/.test(b), 'no bubble titled "Ready for the top threats"'); ok(/How we calculate|How we work it out|→/.test(b), 'bubble has no link to How we calculate: ' + b);
   await r.ui.press('Escape'); ok(!(await r.ui.tipBubble()), 'Escape did not close the bubble'); await r.close(); });
 
 // ================= My Team · Part 2 Matchups =================
@@ -363,8 +372,7 @@ t('MU-05', 'Threat sheet: opens on the threat, other tiles switch detail, Escape
   await r.ui.press('Escape'); ok(!(await r.ui.threatSheet()), 'Escape did not close');
   await r.ui.tapThreat('Archaludon'); await r.ui.tapText(/^Close$/); ok(!(await r.ui.threatSheet()), 'Close did not close'); await r.close(); });
 t('MU-05d', 'Closing the threat sheet puts focus back on the threat row that opened it', async () => {
-  const r = await myTeam(); await r.ui.tapThreat('Archaludon'); await r.ui.press('Escape'); ok(/Archaludon/.test(await r.ui.focusName()), 'focus not back on the row: "' + await r.ui.focusName() + '"'); await r.close(); },
-  {known: 'measured headless: after scrolling the Top 10 into view, the list redraws while the sheet is open, so the opener is gone and focus falls to the page (works when nothing redraws)'});
+  const r = await myTeam(); await r.ui.tapThreat('Archaludon'); await r.ui.press('Escape'); ok(/Archaludon/.test(await r.ui.focusName()), 'focus not back on the row: "' + await r.ui.focusName() + '"'); await r.close(); });
 t('MU-05b', 'Threat sheet ring shows the Strength Score number and band, not the old letter', async () => {
   const r = await myTeam(); const sc = await r.ui.scoreBlock(); await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet();
   ok(!/^× Scouting report: top 30 threats \d+ threats? need a plan\. [A-F][+−-]? /.test(s), 'ring shows a grade letter: ' + s.slice(0, 90)); ok(s.includes(sc.band), 'ring has no band word'); await r.close(); },
@@ -475,8 +483,7 @@ t('ADD-01', 'Name box: live search, Enter adds, species already on the team are 
   await r.ui.typeName('mega sal'); const opts = await r.ui.nameOptions(); ok(opts.length >= 1 && opts.length <= 8 && /Mega Salamence/.test(opts[0]), 'list: ' + opts.join(' / '));
   ok(/%|–/.test(opts[0]), 'option shows no usage share'); await r.ui.press('Escape'); ok(!(await r.ui.nameOptions()).length && await r.ui.editPanel(), 'Escape closed more than the list');
   await r.ui.typeName('mega sal'); await r.ui.press('Enter', 1200); ok(await r.ui.waitToast(/Mega Salamence added/), 'no "Mega Salamence added" toast'); ok((await r.ui.editPanel()).title === 'Edit Mega Salamence', 'title not "Edit Mega Salamence"');
-  await r.ui.removeFromTeam('Mega Salamence').catch(() => {}); await r.ui.closeEditPanel().catch(() => {});
-  await r.ui.tapLabel('Add a Pokémon to slot 6', 900); await r.ui.typeName('garch'); ok(/already here/.test(await r.ui.nameListText() || ''), 'no "already here" note: ' + await r.ui.nameListText());
+  await r.ui.panelButton('Remove Mega Salamence from the team'); ok((await r.ui.editPanel()).title === 'Add a Pokémon', 'slot not empty again'); await r.ui.typeName('garch'); ok(/already here/.test(await r.ui.nameListText() || ''), 'no "already here" note: ' + await r.ui.nameListText());
   ok(!(await r.ui.nameOptions()).some(o => /^Garchomp/.test(o)), 'Garchomp offered twice');
   await r.ui.typeName('zzzq'); ok(/No matches/.test(await r.ui.nameListText() || ''), 'no "No matches" note'); await r.close(); });
 
@@ -662,7 +669,7 @@ t('SAVED-08', 'Compare on two saved teams opens Compare with both', async () => 
   await r.ui.savedAction('Sun six', 'Compare'); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.settle(); const tx = await r.ui.text(); has(tx, 'Rain test', 'Compare'); has(tx, 'Sun six', 'Compare'); await r.close(); });
 
 t('SAVED-09', 'No saved teams: Darkrai, "No saved teams yet…", "Open My team", "Build me a team"', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text(); has(tx, /No saved teams yet\. Open My team and tap Save team, or let NastyPlot build six for you\./);
+  const r = await homePage(); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text(); has(tx, /No saved teams yet\. Open My team and tap Save team, or let NastyPlot build six for you\./);
   ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="teams"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai');
   await r.ui.tapText(/^Build me a team$/, 900); ok(await r.ui.current() === 'auto', 'Build me a team did not open Build'); await r.ui.go('Saved Teams', 700); await r.ui.tapText(/^Open My team$/i, 900); ok(await r.ui.current() === 'report', 'Open My team did not'); await r.close(); });
 
@@ -739,14 +746,14 @@ t('CMP-04b', 'Compare lists Speed control as a note, not a counted team check', 
 
 // ================= 12. Pokémon info sheet =================
 t('PKMN-01', 'Info sheet opens from Home; ✕ and Escape close it, focus returns; desktop is a wide two-column panel', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.infoSheet(), 'sheet did not open');
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.infoSheet(), 'sheet did not open');
   ok((await r.ui.infoSheetBox()).w >= 900, 'desktop sheet is not a wide panel: ' + JSON.stringify(await r.ui.infoSheetBox()));
   await r.ui.press('Escape'); ok(!(await r.ui.infoSheet()), 'Escape did not close'); ok(/Kingambit/.test(await r.ui.focusName()), 'focus not back on the tile: ' + await r.ui.focusName());
   await r.ui.tapPokemon('Kingambit'); await r.ui.closeInfoSheet(); ok(!(await r.ui.infoSheet()), '✕ did not close'); await r.close();
   const p = await aopen({team: TEAM, width: 390}); await p.ui.tapPokemon('Kingambit'); const b = await p.ui.infoSheetBox(); ok(b && b.w <= 390 && b.bottom >= 880, 'phone sheet is not a bottom sheet: ' + JSON.stringify(b)); ok(await p.ui.noSideScroll(), 'sideways scroll'); await p.close(); });
 
 t('PKMN-02', 'Hero: rating numeral, "<letter> tier, #N of M with results", name, types, three numbers', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoSheet();
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoSheet();
   ok(/^✕ (\d+) \? [SABCD] tier, #\d+ of \d+ with results Kingambit Dark Steel/.test(s), 'hero reads: ' + s.slice(0, 90));
   for (const x of [/[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'hero'); await r.close(); });
 
@@ -755,26 +762,26 @@ t('PKMN-03', 'Add to team fills the first empty slot ("On your team" after); Bui
   ok(await r.ui.waitToast(/Kingambit added to your team/), 'no toast'); has(await r.ui.infoSheet() || '', 'On your team', 'sheet after adding'); ok((await r.ui.team()).includes('Kingambit'), 'not on the team');
   await r.ui.tapText(/^Popular Sets$/, 900); ok(await r.ui.current() === 'sets' && !(await r.ui.infoSheet()), 'Popular Sets did not open'); has(await r.ui.text(), 'Kingambit', 'Popular Sets');
   await r.ui.go('Home', 600); await r.ui.tapPokemon('Rillaboom'); has(await r.ui.infoSheet(), /On your team/); await r.ui.tapText(/^Build around it$/, 1200); ok(await r.ui.current() === 'auto', 'Build around it did not open Build'); await r.close();
-  const f = await aopen({team: TEAM}); await f.ui.tapPokemon('Kingambit'); has(await f.ui.infoSheet(), /Team full|already on your team/, 'full team sheet'); await f.close(); });
+  const f = await homePage(); await f.ui.tapPokemon('Kingambit'); has(await f.ui.infoSheet(), /Team full|already on your team/, 'full team sheet'); await f.close(); });
 
 t('PKMN-04', 'Tabs Info | Meta | Rating: last tab remembered; arrow keys move between tabs', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.infoTabNow() === 'info', 'Info not first'); await r.ui.infoTab('Meta'); ok(await r.ui.infoTabNow() === 'meta', 'Meta not shown');
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.infoTabNow() === 'info', 'Info not first'); await r.ui.infoTab('Meta'); ok(await r.ui.infoTabNow() === 'meta', 'Meta not shown');
   await r.ui.closeInfoSheet(); await r.ui.tapPokemon('Rillaboom'); ok(await r.ui.infoTabNow() === 'meta', 'last tab not remembered');
   await r.ui.focusInfoTab(); await r.ui.press('ArrowRight', 500); ok(await r.ui.infoTabNow() === 'rating', 'ArrowRight did not move to Rating'); await r.ui.press('Home', 500); ok(await r.ui.infoTabNow() === 'info', 'Home key did not go to Info');
   await r.ui.reload(); await r.ui.tapPokemon('Rillaboom'); ok(await r.ui.infoTabNow() === 'info', 'tab not kept after reload'); await r.close(); });
 
 t('PKMN-05', 'Info tab: usual set, base stats, abilities with "Most used", type matchups, speed rows, Speed Tiers link', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoTabText();
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoTabText();
   for (const x of [/Usually .+, Adamant/, /Full set ›/, /Base Stats HP \d+ Attack \d+/, /Abilities Defiant Most used, \d+%/, /Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run \d+/, /Trick Room build \d+/, /outspeeds \d+% of the top 30/, /Speed Tiers →/]) has(s, x, 'Info tab');
   await r.ui.tapText('Full set ›', 600); ok(await r.ui.infoTabNow() === 'meta', 'Full set › did not open Meta'); await r.ui.infoTab('Info'); await r.ui.tapText('Speed Tiers →', 900); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
 
 t('PKMN-06', 'Meta tab: typical set, moves and items with %, "Brought with" opens the partner\'s sheet', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Meta'); const s = await r.ui.infoTabText();
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Meta'); const s = await r.ui.infoTabText();
   for (const x of [/Typical Set Ability \w+ \d+%/, /Moves: in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% ([\d,]+) games/]) has(s, x, 'Meta tab');
   const partner = s.match(/Brought with (\w+)/)[1]; await r.ui.tapPokemonInSheet(partner); ok(new RegExp(partner).test((await r.ui.infoSheet() || '').slice(0, 140)), 'partner sheet did not open'); await r.close(); });
 
 t('PKMN-07', 'Rating tab: "Why it rates N", four bars, What the Data Says, other tier lists, links', async () => {
-  const r = await aopen({team: TEAM}); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Rating'); const s = await r.ui.infoTabText();
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Rating'); const s = await r.ui.infoTabText();
   for (const x of [/Why It Rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Converts to top cut \d+/, /Win rate \d+/, /What the Data Says/i, /Other Tier Lists/i, /How ratings work →/, /Track Record →/]) has(s, x, 'Rating tab');
   await r.ui.tapText('Track Record →', 900); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
 

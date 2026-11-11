@@ -210,7 +210,9 @@ t('SHELL-03', '"Data as of" dates show on the pages', run({team: TEAM}, async ({
 t('SHELL-04', 'Stale data gets an amber note on Home and Meta pages only', withDocs({'meta/events': {...DOCS['meta/events'], updated: daysAgo(9)}}, run({team: TEAM}, async ({ui, d}) => {
   for (const p of ['Home', 'Ratings', 'Events', 'This Week']) { await ui.go(p); const n = await d.healthNote(); expect(n && /older than usual/i.test(n) && /Events, last updated [A-Z][a-z]{2} \d/.test(n), `${p}: note ${n}`); }
   for (const p of ['About', 'My Team', 'Battle']) { await ui.go(p); expect(!(await d.healthNote()), `${p} shows the stale-data note`); } })));
-t('SHELL-04b', 'Fresh data: no stale-data note', run({team: TEAM}, async ({ui, d}) => { await ui.go('Ratings'); const n = await d.healthNote(); expect(!n || !/Events, last updated/.test(n), 'fresh events listed as stale: ' + n); }));
+t('SHELL-04b', 'Fresh data: no stale-data note', withDocs({'meta/events': {...DOCS['meta/events'], updated: daysAgo(0)}}, run({team: TEAM}, async ({ui, d}) => {
+  // events dated today (the frozen fixture ages, the browser clock is real), so this stays true whatever day it runs
+  await ui.go('Ratings'); const n = await d.healthNote(); expect(!n || !/Events, last updated/.test(n), 'fresh events listed as stale: ' + n); })));
 
 t('SHELL-05', 'A new regulation shows a calm banner with its start date and event count', withDocs({'meta/perf': {...(DOCS['meta/perf'] || {}), reg: {id: 'M-C', since: '2026-09-01', now: {id: 'M-D', since: '2026-11-08', events: 3, need: {events: 20}}}}}, run({team: TEAM}, async ({ui, d}) => {
   for (const p of ['Home', 'Ratings']) { await ui.go(p); const b = await d.regBanner(); expect(b && /New regulation \(Reg M-D\) started Nov 8, 2026/.test(b) && /3 Reg M-D events so far, switches at 20/.test(b), `${p}: banner ${b}`); }
@@ -613,7 +615,9 @@ t('EVT-02', 'Next events calendar: countdowns, Show all, recent results open the
   await ui.go('Events'); const c = await d.calendar(); expect(c.rows.length === 4, 'rows: ' + c.rows.length); expect(/(\d+) on the calendar/.test(c.head), 'head: ' + c.head);
   for (const r of c.rows) expect(r.countdownOk, 'countdown wrong: ' + r.text); expect(c.newTab, 'calendar rows do not open a new tab');
   await ui.tap(/^Show all \d+$/); const all = await d.calendar(); expect(all.rows.length === +c.head.match(/(\d+) on/)[1], 'Show all shows ' + all.rows.length);
-  await ui.tap(/results ›$/); expect(has(await ui.text(), '‹ All events'), 'results link did not open the event'); }));
+  // "Recent:" lists the last three official events by today's date; once newer ones finish without results in the frozen data it says "results not in yet"
+  if (await ui.sees(/results ›/)) { await ui.tap(/results ›$/); expect(has(await ui.text(), '‹ All events'), 'results link did not open the event'); }
+  else expect(has(await ui.text(), 'results not in yet'), 'Recent: has neither a results link nor "results not in yet"'); }));
 t('EVT-03', 'Event filter Official keeps only official events', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Events'); const all = await d.eventCards(); await d.chooseEventFilter('Official'); const off = await d.eventCards();
   expect(off.length && off.length < all.length + 100 && off.every(x => /official/i.test(x)), 'non-official card under Official'); await d.chooseEventFilter('100+ players');
@@ -621,11 +625,12 @@ t('EVT-03', 'Event filter Official keeps only official events', run({team: TEAM}
 t('EVT-04', 'Event list 12 at a time with "Show more"', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Events'); expect((await d.eventCards()).length === 12, 'cards: ' + (await d.eventCards()).length); await ui.tap(/^Show more \(\d+ left\)$/); expect((await d.eventCards()).length === 24, 'after Show more: ' + (await d.eventCards()).length); }));
 t('EVT-05', 'Event detail: placings 1st→16th, opens at top, "‹ All events" returns', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Events'); await d.scrollTo(400); await ui.tap(/^Gdańsk Regional results ›$/); const tx = await ui.text();
+  await ui.go('Events'); await d.chooseEventFilter('Official'); await d.scrollTo(400); await d.openEvent('Gdańsk'); const tx = await ui.text();
   expect(has(tx, '‹ All events') && /758 players/.test(tx) && /Official/i.test(tx), 'detail head: ' + tx.slice(0, 200)); expect(await d.scrollY() < 5, 'did not open at its top');
-  expect(await d.placings() >= 16, 'placings: ' + await d.placings()); await ui.tap(/‹ All events/); expect((await d.eventCards()).length >= 12, 'list did not return'); }));
+  expect(await d.placings() >= 16, 'placings: ' + await d.placings()); await ui.tap(/‹ All events/);
+  const back = await d.eventCards(); expect(back.length >= 1 && back.every(x => /official/i.test(x)) && !(await ui.sees('‹ All events')), 'the (Official) list did not return'); }));
 t('EVT-06', 'Team sheet card: Sets shows items/moves; Load team needs a second tap and loads the exact sheet', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Events'); await ui.tap(/^Gdańsk Regional results ›$/); await ui.tap(/^Sets$/); expect(/Ability|@/.test(await ui.text()) && has(await ui.text(), 'Hide sets'), 'sets not shown');
+  await ui.go('Events'); await d.chooseEventFilter('Official'); await d.openEvent('Gdańsk'); await ui.tap(/^Sets$/); expect(/Ability|@/.test(await ui.text()) && has(await ui.text(), 'Hide sets'), 'sets not shown');
   await ui.tap(/^Load team$/); expect(has(await ui.text(), 'Tap again to replace your team'), 'no second-tap warning'); expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'first tap changed the team');
   await ui.pg.waitForTimeout(500); await ui.tap(/Tap again to replace your team/); expect(await ui.current() === 'report', 'did not open My Team'); expect(/team loaded with its moves and items/.test(await d.toastText() || ''), 'toast: ' + await d.toastText());
   expect(await d.toastHasUndo(), 'no Undo'); expect((await ui.team()).includes('Gholdengo'), 'winning six not loaded: ' + await ui.team()); }));

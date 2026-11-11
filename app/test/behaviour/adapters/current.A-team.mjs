@@ -15,7 +15,9 @@ export default (ui, pg, o) => {
   // focus + click. Fresh lookup on each try, so a redraw between finding and tapping can't break it.
   const tapFound = async (finder, arg, what, wait = 500) => { for (let k = 0; k < 4; k++) { const h = await pg.evaluateHandle(finder, arg); const el = h.asElement();
       if (!el) { if (k >= 2) throw new Error('nothing to tap: ' + what); await pg.waitForTimeout(400); continue; }
-      await el.scrollIntoViewIfNeeded({timeout: 1000}).catch(() => {});
+      // scrolling can make the page redraw (lazy parts, keep-place): if it scrolled, let it settle and find the control again
+      const y0 = await pg.evaluate(() => scrollY); await el.scrollIntoViewIfNeeded({timeout: 1000}).catch(() => {});
+      if (k < 3 && Math.abs((await pg.evaluate(() => scrollY)) - y0) > 2) { await pg.waitForTimeout(450); const again = await pg.evaluateHandle(finder, arg); if (again.asElement() && !(await el.evaluate(x => x.isConnected).catch(() => false))) continue; }
       let done = true; try { await el.click({timeout: 1500}); } catch (e) { done = await el.evaluate(x => { if (!x.isConnected) return 'gone'; try { x.focus({preventScroll: true}); } catch (y) {} x.click(); return true; }).catch(() => false); }
       if (done === 'gone') { await pg.waitForTimeout(wait); return; } // the tap landed and the page redrew mid-click
       if (!done) continue; await pg.waitForTimeout(wait); return; } throw new Error('could not tap: ' + what); };
@@ -27,7 +29,7 @@ export default (ui, pg, o) => {
     waitFor, vis, has,
     // ---------- generic ----------
     /** wait until the page has finished redrawing (no DOM changes for quietMs, nothing "Working out…") */
-    settle: async (quietMs = 700, maxMs = 12000) => { await pg.evaluate(() => { if (window.__npMut) return; window.__npMut = Date.now(); new MutationObserver(() => { window.__npMut = Date.now(); }).observe(document.body, {childList: true, subtree: true, characterData: true}); });
+    settle: async (quietMs = 600, maxMs = 12000) => { await pg.evaluate(() => { if (window.__npMut) return; window.__npMut = Date.now(); new MutationObserver(() => { window.__npMut = Date.now(); }).observe(document.body, {childList: true, subtree: true, characterData: true}); });
       const t0 = Date.now(); while (Date.now() - t0 < maxMs) { const q = await pg.evaluate(() => ({age: Date.now() - window.__npMut, busy: /Working out/.test(document.body.innerText)})); if (q.age > quietMs && !q.busy) return true; await pg.waitForTimeout(200); } return false; },
     /** Switch team fold: open it and tap a saved team by name */
     switchTeam: async name => { await H.openFold('Switch team'); await tapFound(n => [...document.querySelectorAll('[data-pane="report"] details [data-load]')].find(e => e.getClientRects().length && e.innerText.trim() === n) || null, name, 'switch to ' + name, 1800); },
