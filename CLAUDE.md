@@ -95,7 +95,7 @@ Sim, Nov 11: Darkrai was "forcing a mascot at an unnecessary time". In the rebui
 Pokémon that rotates, plus one line of copy. Sim's idea and its point: spotlight the Pokémon that never get one. The featured
 Pokémon comes from the bottom of our own ratings ("underdog"): even the lowest-rated Pokémon is somebody's favourite, so it gets
 its moment on our site, with playful, affectionate copy (celebrate it, never mock it). It rotates so many different Pokémon get a
-turn; pick from the bottom of the ratings, preferring ones with enough games for the rating to mean something. Every new spot is shown to Sim first. Never beside grades or a team's data. The live site keeps its current Darkrai
+turn; pick from the bottom of the ratings, preferring ones with enough games for the rating to mean something. The first underdog is Flapple (Sim: "it's the cutest"). Every new spot is shown to Sim first. Never beside grades or a team's data. The live site keeps its current Darkrai
 spot (empty My Team) until the rebuild replaces it. A real NastyPlot mascot is its own project for later, in a separate chat.
 Darkrai and Shady Paw files stay in docs/mascot/ as history.
 
