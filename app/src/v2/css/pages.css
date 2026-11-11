@@ -200,9 +200,11 @@
 .ms-f[aria-pressed="true"]{background:var(--wash)}.ms-f:hover{background:var(--wash)}
 .ms-f .np-mon{flex:none}.ms-f span{display:grid;min-width:0}.ms-f b{font:700 var(--t15)/1.25 var(--b)}.ms-f b .mg{display:inline;margin-right:var(--s1)}.ms-f b .mg.none{display:none}.ms-f small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .ms-tabs{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:var(--s8) calc(var(--s8) * -1) 0;padding:0 var(--s8);background:var(--surface);border-bottom:1px solid var(--rule)}
-.ms-tabs button{position:relative;display:grid;justify-items:start;gap:2px;min-height:56px;padding:var(--s3) 0;text-align:left}
+.ms-tabs button{position:relative;display:flex;align-items:stretch;min-height:56px;padding:0;text-align:left}
+/* the blue line sits under the tab's own words, not the whole slot (Sim, Nov 11: it ran off to the right) */
+.ms-tl{position:relative;display:grid;align-content:center;justify-items:start;gap:2px;padding:var(--s3) 0}
 .ms-tabs b{font:700 var(--t15)/1.2 var(--b);color:var(--ink-2)}.ms-tabs small{font:500 var(--t13)/1.2 var(--b);color:var(--ink-3)}
-.ms-tabs [aria-selected="true"] b{color:var(--ink)}.ms-tabs [aria-selected="true"]::after{content:"";position:absolute;left:0;right:var(--s4);bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+.ms-tabs [aria-selected="true"] b{color:var(--ink)}.ms-tabs [aria-selected="true"] .ms-tl::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
 .ms-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s8);padding-top:var(--s6)}
 @media (min-width:900px){.ms-cols{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s10)}.ms-wide,.ms-usual{grid-column:1/-1}}
 .ms-h{font:800 var(--t17)/1.3 var(--u);font-style:italic;margin-bottom:var(--s3)}
@@ -245,7 +247,9 @@
 .ms-ft{overflow-x:auto;margin-top:var(--s3);overscroll-behavior-x:contain}
 .ms-ftr{display:grid;grid-template-columns:96px repeat(var(--n),minmax(112px,1fr));gap:var(--s3);align-items:center;min-width:calc(96px + var(--n) * 124px);min-height:36px;border-bottom:1px solid var(--rule)}
 .ms-ftr>span{font:500 var(--t15)/1.3 var(--b)}.ms-ftr .best{font-weight:800;color:var(--plot-text)}.ms-ftr .best::after{content:" ★";font-size:var(--t13)}
-.ms-ftl{position:sticky;left:0;z-index:1;background:var(--surface);font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+/* the row names stay put while the forms scroll sideways: they fill the whole row height and cover the gap beside them, so
+   taller cells (two-line types, two Abilities) and the names in the header row never show through (Sim, Nov 11) */
+.ms-ftl{position:sticky;left:0;z-index:1;align-self:stretch;display:flex;align-items:center;background:var(--surface);box-shadow:var(--s3) 0 0 var(--surface);font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .ms-fth{align-items:start;padding-bottom:var(--s2)}.ms-fth b,.ms-fth .np-link{display:block;font:700 var(--t15)/1.25 var(--b);text-align:left}.ms-fth .mg{display:block}.ms-fth .mg.none{visibility:hidden}.ms-fth small{display:block;font:500 var(--t13)/1.3 var(--b);color:var(--ink-3)}
 @media (max-width:699px){.ms-tabs:has(> :nth-child(4)) b{font-size:var(--t13)}}
 /* Share sheet (R4, Nov 11) */
