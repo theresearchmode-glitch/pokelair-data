@@ -96,9 +96,10 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .party,.links,.fine2{padding:0 var(--gut)}.party{margin-top:28px}.prow img{width:58px;height:58px}.prow .pg{top:30px;width:64px;height:44px;margin:-22px 0 0 -32px}
   footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:16px;flex-wrap:wrap}
 }
-:root[data-glow="soft"] .box{--glow:.30;--wall-mix:28%}
-:root[data-theme="light"][data-glow="soft"] .box{--glow:.16;--wall-mix:30%}
-:root[data-glow="soft"] .cell .glow{width:120px;height:90px;margin:-45px 0 0 -60px}
+/* Sim, Nov 11: "a light faint glow but not more" in the box. Default now; full glow only on the one featured Pokémon. */
+.box{--glow:.20;--wall-mix:22%}
+:root[data-theme="light"] .box{--glow:.12;--wall-mix:24%}
+.cell .glow{width:110px!important;height:84px!important;margin:-42px 0 0 -55px!important}
 </style></head><body><div class="page" id="page"></div>
 <script>
 {const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[1])document.documentElement.dataset.glow=h[1];}

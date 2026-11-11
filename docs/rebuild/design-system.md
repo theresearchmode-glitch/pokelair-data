@@ -89,6 +89,10 @@ concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, th
   glow off on mouse screens" was about drop-shadow FILTERS on every sprite and stays; scene glow is a different, cheap
   technique. Measured against docs/rebuild/baseline.json before it ships; if a page scrolls worse, the pools get cheaper
   (smaller, fewer stops), never removed.
+- Strength (Sim, Nov 11, after comparing: "looks so much better without so much heavy glow ... a light faint glow but not
+  more"): FULL glow only where ONE Pokémon is the star (the hero, the Strength Score, the picked Pokémon's panel, a pair);
+  wherever many Pokémon sit together (a box, a team row, a list) each gets only a light, faint glow (about a third of the
+  full strength) and the row tint stays subtle, so the art, not the light, carries the grid.
 - Readability: text never sits on the brightest part of a pool; names and numbers on glow pass contrast (checked).
 
 ## 5. Motion
