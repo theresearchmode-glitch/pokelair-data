@@ -59,6 +59,23 @@ h3{font:900 17px/1.2 var(--u);font-style:italic;margin-bottom:12px}
   .body{padding:0 16px 32px}.tabs{position:sticky;top:0;background:var(--surface);z-index:2;gap:24px;padding-top:8px}
   .cols{grid-template-columns:minmax(0,1fr);gap:28px}.sp td.o{text-align:left}.sp table,.sp tbody,.sp tr,.sp td{display:block}.sp tr{display:grid;grid-template-columns:minmax(0,1fr) 64px;padding:10px 0;border-top:1px solid var(--rule)}
   .sp td{border:0;padding:0}.sp td.o{grid-column:1/-1;font-size:13px;margin-top:4px}.sp td:first-child{width:auto}.sp td.n{width:auto;text-align:right}.x{top:8px;right:8px}}
+/* Forms (Sim, Nov 11): any Pokémon with a Mega can flip between its forms right in the sheet. One tab per form, each with its art
+   on a small floor, its name and its rating; the open form stands on the tilted panel in its own colour (the selection rule).
+   Tapping a form swaps the whole sheet to it (same tab, same scroll). Keyboard: arrow keys move between forms (role=tablist). */
+.forms{margin:0 48px 24px 0;max-width:520px}@media (max-width:699px){.forms{margin:16px 0 24px;max-width:none}}.fk{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:8px}
+.fr{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,132px);gap:8px}@media (max-width:699px){.fr{grid-auto-columns:minmax(0,1fr)}}
+.f{position:relative;display:block;text-align:center;padding:6px 2px 8px;border-radius:var(--r-m);min-height:44px}
+.f::before{content:"";position:absolute;left:4px;right:4px;top:6px;height:64px;border-radius:var(--r-m);transform:skewY(-7deg);opacity:0}
+.f.on::before{opacity:1;background:linear-gradient(150deg,rgba(var(--cp),.9),rgba(var(--cp),.55));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 8px 14px -6px rgba(30,20,50,.22)}
+:root[data-theme="dusk"] .f.on::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(var(--cp),.25)}
+.f .fp{position:absolute;left:50%;top:62px;width:64px;height:12px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,var(--contact),transparent)}
+:root[data-theme="dusk"] .f .fp{background:radial-gradient(closest-side,rgba(214,218,255,.35),transparent)}
+.f img{position:relative;display:block;width:64px;height:64px;margin:0 auto;object-fit:contain;object-position:50% 100%}
+.f.on img{transform:scale(1.08);transform-origin:50% 100%}
+.f b{position:relative;display:block;margin-top:6px;font:700 13px/1.25 var(--b);font-stretch:90%}.f b .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text)}
+.f small{display:block;margin-top:2px;font:600 13px/1.3 var(--b);color:var(--ink-2)}
+.f.on b{font-weight:800}.f:not(.on) img{opacity:.85}
+.fr .f:first-child b{padding-top:13px}
 </style></head><body>
 <script>document.documentElement.dataset.theme=location.hash.slice(1)||'light'</script>
 <div class="back"></div><div class="veil"></div>
@@ -72,6 +89,10 @@ h3{font:900 17px/1.2 var(--u);font-style:italic;margin-bottom:12px}
   <div class="acts"><div class="btn main">Build around it</div><div class="btn2"><span>Popular Sets</span></div><div class="btn2 done"><span>On your team ✓</span></div><a>Report a mistake</a></div>
  </div>
  <div class="body">
+  <div class="forms" role="tablist" aria-label="Garchomp forms"><div class="fk">3 forms · tap to switch</div><div class="fr">
+   <a class="f on" role="tab" aria-selected="true" style="--cp:246,67,40"><i class="fp"></i><img src="../art/up1024/445.webp" alt=""><b>Garchomp</b><small>92 · S tier</small></a>
+   <a class="f" role="tab" aria-selected="false"><i class="fp"></i><img src="../art/up1024/10058.webp" alt=""><b><span class="mg">Mega</span>Garchomp</b><small>59 · D tier</small></a>
+   <a class="f" role="tab" aria-selected="false"><i class="fp"></i><img src="../art/up1024/10309.webp" alt=""><b><span class="mg">Mega</span>Garchomp Z</b><small>87 · A tier</small></a></div></div>
   <div class="tabs"><a class="on">Info<small>stats, types</small></a><a>Meta<small>moves, items, partners</small></a><a>Rating<small>why 92, the data</small></a></div>
   <div class="cols">
    <div class="usually"><h3>Usually</h3><p>Choice Scarf · Adamant · 32 Atk, 32 Spe, 2 HP</p>
