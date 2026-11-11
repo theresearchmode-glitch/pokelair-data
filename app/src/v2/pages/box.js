@@ -37,7 +37,7 @@ V2.bxSum = (n, o = {}) => { const p = byName.get(n); if (!p) return ''; const E 
     <div class="bx-acts"><button type="button" class="np-btn" data-v2mon="${E(n)}">Info Sheet</button>${onTeam ? '' : `<button type="button" class="np-btn2" data-bxteam="${E(n)}"><span>${full ? 'Swap Into My Team' : 'Add to My Team'}</span></button>`}<button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; };
 
 V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
-  return `<div class="bx-empty">${V2.mon(n, {iw: 200, bare: true})}<div><h2 class="u">Your box is empty.</h2><p>Add the Pokémon you own, and Build for Me and the suggestions pick from them. ${d} would love a spot.</p>
+  return `<div class="bx-empty">${V2.mon(n, {bare: true, ft: true})}<div><h2 class="u">Your box is empty.</h2><p>Add the Pokémon you own, and Build for Me and the suggestions pick from them. ${d} would love a spot.</p>
     <div class="row"><button type="button" class="np-btn" data-bxadd><span>Add a Pokémon</span></button><button type="button" class="np-btn2" data-bxaddn="${V2.esc(n)}"><span>Add ${d}</span></button></div></div></div>`; };
 
 V2.pages.box = {place: 'team', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length;

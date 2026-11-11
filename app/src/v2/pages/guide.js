@@ -49,8 +49,8 @@ V2.pages.guide = {place: null, draw() {
   <div class="row"><button type="button" class="np-btn2" data-v2sheet><span>Open a sheet</span></button><button type="button" class="np-btn2" data-v2toast><span>Show a toast</span></button></div>
 
   <h2 class="u">Today's underdog</h2>
-  <div class="np-under" style="max-width:720px"><div class="stage"><i class="pool"></i><i class="pool b"></i><img src="${V2.art(SPRITE_ID.Flapple)}" alt="Flapple"></div>
-  <div><div class="k">Today's underdog</div><h3 class="u">Flapple. <span>Somebody's favourite.</span></h3><p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
+  <div class="np-under" style="max-width:720px">${V2.mon('Flapple', {bare: true, ft: true})}
+  <div><div class="np-eyebrow">Today's underdog</div><h3 class="u">Flapple. <span>Somebody's favourite.</span></h3><p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
   <div class="acts"><a class="np-btn" href="#guide">Build around it</a><a class="np-link" href="#guide">Info Sheet</a></div></div></div>
 </section>
 <div class="np-dock"><b class="u" style="font-size:var(--t20)">91</b><span class="fine">Sun Tailwind</span><div class="six">${team.map(n => `<img src="${V2.art(SPRITE_ID[n])}" alt="${V2.esc(V2.disp(n))}">`).join('')}</div><a class="np-btn2" href="#guide"><span>Open My Team</span></a></div>`; },

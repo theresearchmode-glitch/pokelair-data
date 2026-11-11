@@ -47,11 +47,17 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
 /* the selected Pokémon stands on a floor ring in its own colour, with a brighter pool (Sim, Nov 11: idea 2 "Floor ring";
    replaces the tilted colour panel, so nothing sits behind the Pokémon) */
-.np-mon.sel .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:118%;height:calc(var(--iw)*.3);transform:translate(-50%,34%);border-radius:50%;
+.np-mon.sel .st::before,.np-mon.ft .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:118%;height:calc(var(--iw)*.3);transform:translate(-50%,34%);border-radius:50%;
   border:2.5px solid rgba(var(--cp),.9);background:radial-gradient(closest-side,rgba(var(--cp),.2),rgba(var(--cp),.08) 70%,transparent);box-shadow:0 0 12px rgba(var(--cp),.4)}
-:root[data-theme="night"] .np-mon.sel .st::before{border-color:rgba(var(--cp),.95);background:radial-gradient(closest-side,rgba(var(--cp),.14),transparent 75%);box-shadow:0 0 16px rgba(var(--cp),.55),inset 0 0 12px rgba(var(--cp),.3)}
-.np-mon.sel .pool{background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.85),rgba(var(--cp,150,150,165),.4) 55%,transparent)}
+:root[data-theme="night"] .np-mon.sel .st::before,:root[data-theme="night"] .np-mon.ft .st::before{border-color:rgba(var(--cp),.95);background:radial-gradient(closest-side,rgba(var(--cp),.14),transparent 75%);box-shadow:0 0 16px rgba(var(--cp),.55),inset 0 0 12px rgba(var(--cp),.3)}
+.np-mon.sel .pool,.np-mon.ft .pool{background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.85),rgba(var(--cp,150,150,165),.4) 55%,transparent)}
 .np-mon.sel img{scale:1.08;transform-origin:50% 100%}.np-mon.sel b{font-weight:800}
+/* featured (today's underdog on the empty screens; Sim, Nov 11, review item 13): stands on the selected floor in its own colour,
+   with room under it for the ring; its pool breathes slowly (opacity of the pool's own layer only, never the art; reduce motion = still) */
+.np-mon.ft{padding:0 var(--s5) var(--s8)}
+.np-mon.ft .pool::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--cp),.6),rgba(var(--cp),.2) 60%,transparent);animation:np-breathe 4.5s ease-in-out infinite}
+@keyframes np-breathe{0%,100%{opacity:.3}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.np-mon.ft .pool::after{animation:none;opacity:.6}}
 /* the Strength Score lockup: the big number and its band word (blue only in the band word) */
 .np-score{display:flex;align-items:flex-end;gap:var(--s4)}
 .np-score b{font:900 var(--d168)/.86 var(--u);font-style:italic;letter-spacing:-.05em;color:var(--score-ink)}
@@ -92,19 +98,12 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-toast button{color:var(--plot);font-weight:700;min-height:var(--tap)}
 @media (max-width:699px){.np-toast{left:var(--gut);right:var(--gut);translate:none;max-width:none;justify-content:space-between;bottom:var(--tb,calc(64px + env(safe-area-inset-bottom,0px)))}}
 /* V2.toast() lifts it above the team dock and phone bar */
-/* the underdog (empty and loading screens): a featured Pokémon on a floor of the site's own colours, with a slow breathing pool */
-.np-under{display:grid;grid-template-columns:200px minmax(0,1fr);gap:var(--s6);align-items:center}
-.np-under .stage{position:relative;width:200px;height:200px}
-.np-under .pool{position:absolute;left:4%;right:4%;bottom:2%;height:16%;border-radius:50%;
-  background:radial-gradient(closest-side,var(--contact),transparent 55%) center/40% 45% no-repeat,radial-gradient(closest-side,color-mix(in srgb,var(--plot) 55%,transparent),color-mix(in srgb,var(--plot) 22%,transparent) 50%,color-mix(in srgb,var(--pick) 14%,transparent) 72%,transparent)}
-.np-under .pool.b{background:radial-gradient(closest-side,color-mix(in srgb,var(--pick) 30%,transparent),color-mix(in srgb,var(--plot) 18%,transparent) 60%,transparent);animation:np-breathe 4.5s ease-in-out infinite}
-@keyframes np-breathe{0%,100%{opacity:.3}50%{opacity:1}}
-.np-under img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 1px rgba(var(--rim),.9)) drop-shadow(0 0 6px color-mix(in srgb,var(--plot) 45%,transparent)) drop-shadow(0 0 3px color-mix(in srgb,var(--pick) 25%,transparent))}
-.np-under .k{display:flex;align-items:center;gap:var(--s3);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
-.np-under .k::before{content:"";width:20px;height:7px;background:linear-gradient(90deg,var(--plot),var(--pick));transform:skewX(var(--slant))}
-.np-under h3{font-size:var(--t28);margin:var(--s2) 0}.np-under h3 span{color:var(--plot)}.np-under p{font-size:var(--t15);color:var(--ink-2)}
+/* the underdog (empty and loading screens; Sim, Nov 11, review item 13: "no free-floating glows"): the featured Pokémon stands on
+   a floor in its own colour, the selected Pokémon's floor ring and pool (V2.mon with ft; .np-mon.ft above). No cloud behind it. */
+.np-under{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center}.np-under .np-mon{--iw:200px}
+.np-under h3{font-size:var(--t28);margin:var(--s2) 0}.np-under h3 span{color:var(--plot-text)}.np-under p{font-size:var(--t15);color:var(--ink-2)}
 .np-under .acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}.np-under .acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
-@media (max-width:699px){.np-under{grid-template-columns:1fr;justify-items:center;text-align:center}.np-under .stage{width:168px;height:168px}.np-under .k,.np-under .acts{justify-content:center}}
+@media (max-width:699px){.np-under{grid-template-columns:1fr;justify-items:center;text-align:center}.np-under .np-mon{--iw:168px}.np-under .np-eyebrow,.np-under .acts{justify-content:center}}
 /* team dock: frosted bar with your team on every page except My Team */
 .np-dock{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;gap:var(--s6);padding:var(--s3) var(--gut);border-top:1px solid var(--rule);
   background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
