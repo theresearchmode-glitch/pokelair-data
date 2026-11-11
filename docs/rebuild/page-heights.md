@@ -22,7 +22,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 | All Suggestions | 1,769 | 1,553 | 1,550 | not drawn yet |
 | Saved Teams | 1,344 | 1,180 | 1,129 | not drawn yet |
 | Compare Teams | 2,464 | 1,898 | 1,798 | not drawn yet |
-| My Box | 1,407 | 1,257 | 1,203 | 2,198 / 2,607 / 1,239 (Nov 11: iPad stacked, tilted-panel selection, floor) |
+| My Box | 1,407 | 1,257 | 1,203 | 2,180 / 2,589 / 1,239 (Nov 11: iPad stacked, tilted-panel selection, floor) |
 | Battle a Team | 2,743 | 2,418 | 1,926 **over** | not drawn yet |
 | Team Preview Practice | 1,418 | 1,180 | 1,118 | not drawn yet |
 | Test Run | 3,034 | 2,436 | 2,474 **over** | not drawn yet |
