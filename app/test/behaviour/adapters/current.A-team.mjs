@@ -13,14 +13,19 @@ export default (ui, pg, o) => {
   // click the first visible element matching a CSS selector (real mouse click, so focus moves like a player's tap)
   // tap the element a finder returns: a real click first (focus moves like a tap); animated / covered controls fall back to
   // focus + click. Fresh lookup on each try, so a redraw between finding and tapping can't break it.
-  const tapFound = async (finder, arg, what, wait = 500) => { for (let k = 0; k < 4; k++) { const h = await pg.evaluateHandle(finder, arg); const el = h.asElement();
-      if (!el) { if (k >= 2) throw new Error('nothing to tap: ' + what); await pg.waitForTimeout(400); continue; }
+  const tapFound = async (finder, arg, what, wait = 500) => { let landed = false;
+    for (let k = 0; k < 5; k++) { const h = await pg.evaluateHandle(finder, arg); const el = h.asElement();
+      // a control that disappeared right after a tap that may have landed: the page moved on, so the tap counts
+      if (!el) { if (landed) { await pg.waitForTimeout(wait); return; } if (k >= 2) throw new Error('nothing to tap: ' + what); await pg.waitForTimeout(400); continue; }
       // scrolling can make the page redraw (lazy parts, keep-place): if it scrolled, let it settle and find the control again
       const y0 = await pg.evaluate(() => scrollY); await el.scrollIntoViewIfNeeded({timeout: 1000}).catch(() => {});
-      if (k < 3 && Math.abs((await pg.evaluate(() => scrollY)) - y0) > 2) { await pg.waitForTimeout(450); const again = await pg.evaluateHandle(finder, arg); if (again.asElement() && !(await el.evaluate(x => x.isConnected).catch(() => false))) continue; }
-      let done = true; try { await el.click({timeout: 1500}); } catch (e) { done = await el.evaluate(x => { if (!x.isConnected) return 'gone'; try { x.focus({preventScroll: true}); } catch (y) {} x.click(); return true; }).catch(() => false); }
-      if (done === 'gone') { await pg.waitForTimeout(wait); return; } // the tap landed and the page redrew mid-click
-      if (!done) continue; await pg.waitForTimeout(wait); return; } throw new Error('could not tap: ' + what); };
+      if (k < 3 && Math.abs((await pg.evaluate(() => scrollY)) - y0) > 2) { await pg.waitForTimeout(450); if (!(await el.evaluate(x => x.isConnected).catch(() => false))) continue; }
+      // 1) a normal real click (waits for the control to be steady); 2) the slanted tiles animate, so if it never steadies,
+      // a real click at its position anyway; 3) if a redraw replaced it meanwhile, find the new one and try again
+      try { await el.click({timeout: 900}); await pg.waitForTimeout(wait); return; } catch (e) {}
+      if (await el.evaluate(x => x.isConnected).catch(() => false)) { try { await el.click({force: true, timeout: 900}); await pg.waitForTimeout(wait); return; } catch (e) {} }
+      landed = true; await pg.waitForTimeout(300); }
+    throw new Error('could not tap: ' + what); };
   const click = (sel, wait = 450) => tapFound(s => [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')) || null, sel, sel, wait);
   const has = async sel => (await pg.locator(sel).filter({visible: true}).count()) > 0;
   const q = s => JSON.stringify(s);
