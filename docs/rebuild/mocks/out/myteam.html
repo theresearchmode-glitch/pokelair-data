@@ -112,7 +112,8 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .mon img{width:88px;height:88px}.mon .glow{top:48px;width:96px;height:72px;margin:-36px 0 0 -48px}.mon .sh{top:82px;width:56px;margin-left:-28px}
   .mon .nm{font-size:13px;font-stretch:85%}.mon .it{display:none}
   .acts{gap:8px}.acts .btn{flex:1 0 100%;height:48px}.acts .btn2{flex:1;padding:0 8px;white-space:nowrap}.acts .more{display:none}
-  .jump{gap:20px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)}.jump a{white-space:nowrap}.jump .legal{display:none}
+  .jump{gap:20px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent)}.jump a{white-space:nowrap}
+@media (min-width:700px) and (max-width:1179px){.six::before{display:none}}.jump .legal{display:none}
   .work{display:block;padding:24px var(--gut) 8px}.work>section{margin-bottom:40px}
   .set h3{margin-top:28px}.set .art{width:200px;height:200px}.set .panel{top:44px;height:150px}.set .plate{top:180px}
   .trow{grid-template-columns:24px 48px minmax(0,1fr) auto}.trow img{width:48px;height:48px}
@@ -195,10 +196,17 @@ footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px
   .work{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}.work>section:nth-child(3){grid-column:1/-1}
   .acts .more{gap:16px}.jump{gap:24px}.jump .legal{display:none}
   .legend span{white-space:nowrap}.legend{flex-wrap:wrap;row-gap:8px}
-  footer{gap:24px}footer .r span,footer>span{white-space:nowrap}}
+  footer{gap:24px}footer .r span,footer>span{white-space:nowrap}
+  /* iPad: the words sit beside the number (no empty half), the three tallies share one even row, matchup rows as on phone */
+  .lock{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:40px;align-items:end}
+  .lock .eyebrow{grid-column:1/-1}.lock .num{grid-row:2/span 3}.lock p{margin-top:0;align-self:start;grid-column:2;grid-row:2}
+  .lock .rank{grid-column:2;grid-row:3}.lock .links{grid-column:2;grid-row:4}
+  .legend{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:12px}.legend b{display:block;margin:0 0 4px}
+  .trow{grid-template-columns:24px 48px minmax(0,1fr) auto;gap:8px}.trow img{width:48px;height:48px}}
 .jump a{white-space:nowrap}
 .mon img{max-width:100%;height:auto;aspect-ratio:1}
 @media (max-width:379px){.grp.bench{padding-left:8px}.jump{gap:12px}.jump a{font-size:13px}.jump a small{display:none}}
+@media (min-width:700px) and (max-width:899px){nav{gap:20px}footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:24px}}
 </style></head><body><div class="page" id="page"></div>
 <script>
 {const h=location.hash.slice(1).split('-');document.documentElement.dataset.theme=h[0]||'light';if(h[2])document.documentElement.dataset.score=h[2];}

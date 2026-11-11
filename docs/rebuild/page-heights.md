@@ -16,7 +16,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Page | Today: phone | Today: iPad | Today: desktop | Rebuild (phone / iPad / desktop) |
 |---|---|---|---|---|
 | Home | 3,732 | 5,099 **over** | 3,980 **over** | not drawn yet |
-| My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | 1,737 / 2,774 / 1,699 (after Option A, Nov 11; before: 4,891 / 3,538 / 2,311) |
+| My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | 1,737 / 2,587 / 1,699 (after Option A, Nov 11; before: 4,891 / 3,538 / 2,311) |
 | My Team, no team yet (first visit) | (old empty state not measured) | | | 1,804 / 1,316 / 1,039 |
 | Build for Me | 3,178 | 2,270 | 1,947 **over** | not drawn yet |
 | All Suggestions | 1,769 | 1,553 | 1,550 | not drawn yet |

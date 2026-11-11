@@ -230,3 +230,12 @@ The rules are in design-system.md section 10. What is known so far:
 7. **Contrast:** day-mode partners were measured in design-system draft 1. Pokémon-colour backgrounds, night mode and keyboard are still to measure.
 8. **package.json:** missing, so `npm ci` fails. To add.
 9. **Art in one place:** to check.
+
+
+## Overnight, Nov 10-11 (Sim away until 5 AM EST)
+
+Sim gave Claude full authority to decide and continue until 5 AM EST, Nov 11. Limits: never delete the project, highest quality.
+Claude's choices tonight:
+- Work only on rebuild mock-ups and docs on claude/design6. The live site and the Plans page are not touched.
+- Each page passes the section 9 checks before it is shown.
+- The usage review runs on Sim's PC later (Sim, Nov 10).
