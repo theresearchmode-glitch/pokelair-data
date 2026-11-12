@@ -64,6 +64,17 @@ Sim's own decisions are marked "Sim". Newest first.
   Correction logged: first 320 measures were taken before Suggestions finished loading (211px / 3,702 were wrong).
 - New from Sim: forms row in My Box's picked-Pokemon panel (given to the My Box helper as a proposal).
 
+- Afternoon (Sim's answers): 320 B+C+D (320 limit 3,900; 3,812 measured), Set as Lead strip only, Stand-outs 2x2 colour bug fixed,
+  info sheet D12-14 built (7adf7ba); My Box E17-21 + forms row + 'Two Megas' warning (d7357e8, helper patch + Sim's go; 19 uses
+  '<0.1%' over Sim's 'under 1%' at her choice of the recommendation); 30-game win-rate rule on the new site (b0ce520); main = live
+  (44c9a72, run 723 green). Preview v58-v61.
+- BUG (Sim, iPhone): "Why this score?" opened empty. Cause: whyHtml returned '' when the Strength Score (v2) can't be worked out and
+  the page falls back to the older check score (v1). Fixed 24314ef: the sheet names the case. Sim's own team's case NOT yet known:
+  ruled out (measured): all 90 tournament teams in today's data get v2; all 335 roster entries swapped into the sample team get v2;
+  the Preview build loads the model (sample team v2, 93). Left: a duplicate species arriving via import/link/saved team, or a stored
+  slot name the site no longer knows (counts < 6). Waiting for Sim to tap "Why this score?" on v61 (it names the case) or send a team link.
+- Unexplained, logged: My Team at 820 measured 3,042 earlier, 2,962 later (same with and without the My Box patch; under its limit).
+
 - MISTAKE (Claude), fixed at once: the fonts-branch commit 93ed4b7 also carried the frozen Nov 9 out/ files (they were still staged in
   the scratch copy). A new commit put out/ back as at 9eabdd6 (no history rewritten); the branch now differs from 9eabdd6 only in
   app/test/run.mjs (git diff --stat). Rule: after testing on frozen data, reset out/ from the commit before committing anything.
