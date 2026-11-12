@@ -28,7 +28,7 @@ Approved mock-up: docs/rebuild/mocks/build.tpl.html (Preview: build.html). Rule:
 3. Piece 2: other options beside the cores. 4. Piece 3: Start from a recent winner + phone jump bar. Pictures to Sim before
 each piece goes on the Preview; behaviour tests AUTO/CORES on both builds after each.
 
-## Mock-up -> data map for Build piece 1 (checked in 22-auto-build.js, Nov 12 ~3:25 PM; the engine is already shared)
+## Mock-up -> data map for Build piece 1 (checked in 22-auto-build.js, Nov 12 ~3:19 PM; the engine is already shared)
 - Run: runAutoBuild() sets ui.ab = {busy:true}, then ui.ab = {doubles: res}; res.teams[] = abDescribe() objects; the Fresh take
   arrives after and slots in as option 2 (addFreshTakeGen). It calls today's renderAutoBuild() (guards its own elements).
 - Eyebrow "Option 1 of 3 · Proven team": index in res.teams, team.proven ({n, wr, g, swapped}) or team.fresh.
