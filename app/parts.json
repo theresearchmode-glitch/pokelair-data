@@ -82,6 +82,7 @@
  "src/app/45-team-links.js",
  "src/app/46-onboarding.js",
  "src/app/47-battle-mode.js",
+ "src/app/47-core-data.js",
  "src/app/48-cores.js",
  "src/app/49-event-data.js",
  "src/app/49-events.js",

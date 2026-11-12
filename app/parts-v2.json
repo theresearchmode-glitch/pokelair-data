@@ -84,6 +84,7 @@
     "src/app/18-archetypes.js",
     "src/app/19-showdown-paste.js",
     "src/app/22-auto-build.js",
+    "src/app/47-core-data.js",
     "src/app/23-coverage.js",
     "src/app/24-sheet-data.js",
     "src/app/44-share-images.js",

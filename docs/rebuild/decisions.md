@@ -502,3 +502,9 @@ Sim's own decisions are marked "Sim". Newest first.
   layer win over Home's; only What's New uses them (More on Home keeps its approved gap).
 - ~3:13 PM, Sim: welcome card words and buttons approved; a fresh What's New entry for the switch is OK (draft to Sim first);
   the first-visit desktop height is allowed (c13 HOME 1440: 2,900 with the reason printed; page-heights.md updated).
+- ~3:25 PM: Build groundwork (look-only inventory: docs/rebuild/build-inventory.md). First step done: the Winning Cores data
+  (coreUi, CORE_MIN, coreRows, coreTagCache, coreTags, corePlan, andList, coreConfirmText) moved unchanged to a new shared file
+  app/src/app/47-core-data.js (both builds); today's drawing and actions (renderCores, bindCoreIn, useCore) stay in 48-cores.js.
+  Proof on today's site, before vs after: 38/38 identical (rows, tags, plan, replace prompt, and the drawn Cores list for every
+  kind x sort x filter, 46-93 thousand characters each). A first proof run compared empty views (wrong element); caught, redone.
+  Home's tests are being wired to the new page by a helper in its own worktree (look-only test work; merge after review).
