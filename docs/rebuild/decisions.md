@@ -466,3 +466,7 @@ Sim's own decisions are marked "Sim". Newest first.
   opens the page today's site files it under, 32-views.js VIEW_PARENT/VIEW_ALIAS: Battle / Meta / Build). Not on the Preview yet.
   Phone, as in the mock-up: Top of the Meta shows 5 rows and This week 4 (10 and 7 where the columns sit side by side).
   Phone height 4,305 at 390 (limit 4,200); 320: 4,713. Asked Sim: raise Home's phone limit to 4,400 (recommended) or trim.
+- ~2:50 PM, Sim chose "A + 2 line event name": Home's phone limit is 4,400 (was 4,200; page-heights.md, c13 HOME) and the
+  Champion's event name is one size down on phone (24) so the long real name takes 2 lines. Option B's smaller six art and the
+  underdog beside its text were not taken (the underdog left an empty strip). Home now: 320 4,701 (assumed limit 4,600: the name
+  still takes 3 lines that narrow), 390 4,268 / 4,400, 820 3,410 / 3,500, 1440 2,483 / 2,700; no overlaps 320-2560.

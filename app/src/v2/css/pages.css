@@ -662,3 +662,5 @@
 @media (max-width:699px){.hm-tgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s4)}.hm-tools h2,.hm-top h2{font-size:var(--t28)}}
 /* phone, as in the mock-up: the top 5 and 4 movers (all 10 and 7 where the two columns sit side by side; nothing is lost: All ratings ›) */
 @media (max-width:699px){.hm-rks li:nth-child(n+6),.hm-wk li:nth-child(n+5){display:none}}
+/* phone: the Champion's event name one size down so a long real name takes 2 lines, not 3 (Sim, Nov 12: "A + 2 line event name") */
+@media (max-width:699px){.hm-them h3{font-size:var(--t24)}}
