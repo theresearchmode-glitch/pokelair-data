@@ -9,6 +9,10 @@ Day plan agreed with Sim: 1 tests green (cause: frozen test data vs real clock; 
 visible (pictures by notification) -> 6 finish My Team (25 tests, A10/A12/A13, Edit Set twice, Stand-outs word, C12 use test,
 re-measure; PC prompt for heavy proofs) -> 7 info sheet D12-14, My Box E17-21, PC + sun/moon icons (pictures first) -> 8 team
 link plan F23-25 (plan only) -> 9 4 PM summary. Preview republished after every finished step. Details: decisions.md (top).
+STATE ~10:45 AM: tests green (6c168a8; runs 717/719). Live v155 has self-hosted fonts (live = cb49701 + docs/rebuild/live patch;
+live is NOT built from main: see docs/rebuild/live/README.md). main d24d31b = fonts + test fix (squashed). Preview v55 = design6
+9f11101 (height cuts e9abcc3, A10, A13). Waiting on Sim: phone height limit (3,707 vs 3,400; Claude recommends ~3,700), Edit Set
+twice (recommend Set section only), main-vs-live merge (recommend yes), A8 iPhone check. Helper: 25 behaviour tests (review first).
 Outside-check fixes done before 8 AM: c13 shown-the-same-everywhere 3204c92, sheet keys ada3a17, My Box focus/search e0874d0,
 one-click test 93ce54b, behaviour FAILs classified 13dd789 (57 pass / the same 75 FAIL).
 

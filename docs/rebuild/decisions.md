@@ -42,6 +42,16 @@ Sim's own decisions are marked "Sim". Newest first.
   1,800). Phone 3,945 -> 3,707 (320: 4,075): still over 3,400. Claude disagrees with reaching 3,400 by folding the Favoured list or
   shrinking the six; recommends raising the phone limit to ~3,700. Pictures sent; Sim's answer pending.
 
+- Sim (~10:30 AM): "go with your recommendations on both" = A10 option A+D (keep the Bench line, add it from 700px up) and A13
+  option C (day-mode chosen segments light blue, PLOT text, 4.7:1). Built 9f11101; Preview v55 (394 files). Night unchanged.
+  Read as those two picture sets only; the phone height limit (~3,700?) is NOT taken as answered.
+- A12 checked (c13, five-Pokemon state with suggestions): main buttons per screen 1 at 320/390/820/1440. Toast Undo given a 44px
+  tap area (was 38px). "About 43x44" at 390 is whole-pixel sampling (its tap area computes to 44px); left as is.
+- Edit Set twice (C3): pictures sent; Claude recommends keeping it only in the Set section. Waiting for Sim.
+- Helper started (Sim allowed helpers until 4 PM): updates the 25 "real failure" behaviour tests to the approved design in its own
+  worktree (today's page must stay 132/0; every test must still be able to fail). Its changes are reviewed before any commit.
+- Preview v54 (height cuts) and v55 (A10/A13) published; file lists checked (394 each).
+
 - MISTAKE (Claude), fixed at once: the fonts-branch commit 93ed4b7 also carried the frozen Nov 9 out/ files (they were still staged in
   the scratch copy). A new commit put out/ back as at 9eabdd6 (no history rewritten); the branch now differs from 9eabdd6 only in
   app/test/run.mjs (git diff --stat). Rule: after testing on frozen data, reset out/ from the commit before committing anything.
