@@ -421,3 +421,9 @@ Sim's own decisions are marked "Sim". Newest first.
   (Home x16, Pokémon sheet x7, links to Battle/Build/Log/How we calculate/Popular Sets) except CMP-03 (see below).
 - Open, not decided: CMP-03, the Compare picker lost today's line "Any other tournament team: tap Compare on its card in
   Winning teams." It belongs with the Winning Teams page, which isn't rebuilt yet; it goes back when that page is.
+- ~2:30 PM: Sim's screenshot of the Home mock-up page showed it unstyled (plain serif text, no colours or button shapes). The
+  four published mock-up pages (home, battle, build, ratings) loaded their colours from a separate tokens.css and fonts from
+  Google. Why that failed in Sim's viewer is not known (not reproducible here). Fixed by putting the colours and the site's
+  own font rules inside each page (fonts from fonts/ beside them, as foundation.html already does); checked locally with the
+  internet blocked: day background and Unbounded load. Preview v73 replaced only those four files.
+- Sim: Mega stays written "Mega Charizard Y" in blue on Home, the same as My Team (one style for one idea).
