@@ -45,3 +45,13 @@ ALL PASSED
 == suggest-audit
 SUGGESTIONS AUDIT PASSED
 DONE
+
+== CLAUDE'S READING (cloud, Nov 12 ~11:15 AM Eastern; proofs re-run here on the same two builds, b8f55ed vs 5003b61, with dumps)
+same-six 67/67: ONE change on every step. Only the "home" field differs (Home's "Game plan vs the Champion's six" line); stage, set
+  card, lead pick, toast, add list identical on all 67. Step 0: before "lead Garchomp + Whimsicott, back Mega Charizard Y + Rillaboom";
+  now "lead Mega Charizard Y + Garchomp, back Whimsicott + Rillaboom". EXPECTED: cb49701 (Battle: opponents' real team-sheet sets used
+  everywhere incl. Home's game plan; Sim's Hurricane report, Nov 11; live v155). Proof: today's page built at cb49701^ vs cb49701 shows
+  exactly this Home order change (Garchomp, Sneasler, ... -> Mega Charizard Y, Garchomp, ...).
+same-info 1/350: the differing entry is "view:home" (Home page), not an info sheet: the same Home six order / game plan as above. EXPECTED (cb49701).
+  same-info.mjs had no DUMP; added in 911b76d (writes the differing entries), full-check keeps it from now on.
+same-matchups 18/230 and behaviour A-team 1 FAIL: being checked (results to follow).
