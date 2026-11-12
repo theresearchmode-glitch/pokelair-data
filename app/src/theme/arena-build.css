@@ -195,7 +195,7 @@
 @A [data-pane="auto"] .corerow .corestat>b i{display:inline!important;margin-left:8px}
 @A [data-pane="auto"] .corerow .corestat .dbdt{flex-basis:auto}
 @A [data-pane="auto"] .corerow .corestat>b{font:italic 900 34px/.95 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em;color:var(--ar-ink)!important;font-variant-numeric:tabular-nums;white-space:nowrap}
-@A [data-pane="auto"] .corerow.chcbig .corestat>b{font-size:40px!important;text-shadow:.05em .04em 0 var(--ar-misprint)}
+@A [data-pane="auto"] .corerow.chcbig .corestat>b{font-size:40px!important;text-shadow:none}
 @A [data-pane="auto"] .corerow .corestat>b i{font:500 15px/1.2 var(--ar-body)!important;font-style:normal!important;letter-spacing:0;color:var(--ar-ink-2)!important;text-shadow:none}
 @A [data-pane="auto"] .corerow .corestat>span{font:700 15px/1.3 var(--ar-body)!important}
 @A [data-pane="auto"] .corerow .corestat>span.up{color:var(--ar-green-ink)!important}
@@ -466,7 +466,7 @@
 @A [data-pane="auto"] .abfmt{margin:0 0 4px 6px!important;font:600 15px/1.3 var(--ar-body)!important;color:var(--ar-gold-ink)!important;text-transform:none!important;letter-spacing:0!important;background:none!important;border:0!important}
 /* a long label ("Build around Basculegion") wraps inside the strip instead of running past it */
 @A [data-pane="auto"] #abBtn{white-space:normal!important;text-align:left}
-@A [data-pane="auto"] #abBtn.ar-primary{font-size:min(20px,5.2vw)!important;padding-right:12px!important}
+@A [data-pane="auto"] #abBtn.ar-primary{font-size:clamp(17px,calc(17px + (100vw - 385px) * 1000),20px)!important;padding-right:12px!important}
 /* the app's small-button and link rules shrink these; they keep a full tap size and never overlap the row below */
 @A [data-pane="auto"] :is(.corebtns,.evbtns,.abcol>.row,.morebar) .ar-btn{min-height:48px!important;height:auto!important}
 @A [data-pane="auto"] :is(.corebtns,.evbtns) .ar-link{margin:0!important;min-height:44px!important}
@@ -675,3 +675,13 @@
   @A .arb-score.arb-gfirst .ar-num{grid-column:1;grid-row:1 / 3;font-size:76px}
   @A .arb-score.arb-gfirst .arb-grade{grid-column:2;grid-row:1;align-self:end;margin:0}
   @A .arb-score.arb-gfirst .arb-basis{grid-column:2;grid-row:2;align-self:start;margin-top:2px}}
+/* Polish Batch 2 (Nov 10): the footer uses its full width on desktop (about 40% of it stood empty on the right): brand and
+   tagline | the fan-made note and Sources | the page links as a column on the right edge. The tagline wraps in balanced lines
+   (it left "rate." alone on a line). */
+@A footer.legal .lgtag{text-wrap:balance}
+@media (min-width:1001px){
+  @A footer.legal .inner{grid-template-columns:minmax(220px,300px) minmax(0,1fr) max-content!important;align-items:start}
+  @A footer.legal .inner>:not(.lgbrand):not(.lglinks){grid-column:2}
+  @A footer.legal .lglinks{grid-column:3;grid-row:1/4;display:flex!important;flex-direction:column!important;align-items:flex-end;gap:4px!important;margin:0!important}
+  @A footer.legal p{max-width:64ch}
+}

@@ -171,7 +171,7 @@ function realMatch(mine,theirs){if(!modelOK()||!META.model.ctr)return null;const
   // ONE game, not a tournament round (Sim, Nov 8: single games first). The model learned from rounds, 86.5% best of 3. On single
   // games its edges fit 1.02× (5,250 team-sheet games, ±0.26), 0.82× (20,000 ladder games, ±0.35) and 0.6× (best-of-1 rounds,
   // ±0.37); weighted by how sure each is, about 0.85 (docs/deep-check.md).
-  const z=ONE_GAME_K*(base+mt),p=sig(z),word=p>=.58?'Favored':p>=.53?'Slight edge':p>.47?'Even':p>.42?'Slightly behind':'Behind';
+  const z=ONE_GAME_K*(base+mt),p=sig(z),word=p>=.53?'Favoured':p>.47?'Even match':'Unfavoured';/* the word list (Sim, Nov 9): three words, same as My Team; the old five-step scale's .53/.47 edges kept */
   pr.sort((x,y)=>Math.abs(y.v)-Math.abs(x.v));return {p,word,full,key:pr.filter(x=>Math.abs(x.v)>=.02).slice(0,3),games:META.model.ctr.games||0}}
 // ---------- how sure a suggestion is to help (Nov 8, step 6): a swap changes only some Pokémon and pairs, so only their
 // uncertainty counts. P(the new six is really stronger) from the change in strength and the spread of the parts that differ

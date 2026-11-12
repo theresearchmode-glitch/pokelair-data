@@ -76,7 +76,7 @@
 @A .ar-mpg #chHot{margin-top:32px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
 @A .ar-mpg #chHot .chhothead{display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 16px!important;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg #chHot :is(.chtier,.chtier.sm){position:relative;isolation:isolate;display:grid!important;place-items:center;flex:none;width:44px!important;height:44px!important;margin:0 4px 0 0!important;padding:0!important;
-  font:italic 900 26px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+  font:italic 900 26px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;text-shadow:none!important}
 @A .ar-mpg #chHot :is(.chtier,.chtier.sm)::before{content:""!important;position:absolute;inset:0;z-index:-1;display:block!important;background:var(--ar-sec-plate)!important;transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m);box-shadow:var(--ar-shadow-s);width:auto!important;height:auto!important}
 @A .ar-mpg #chHot :is(.chtier,.chtier.sm)::after{display:none!important}
 @A .ar-mpg #chHot .chhothead>.chk,@A .ar-mpg #chHot .chtierdiv>.chk{flex:1 1 160px;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important;text-transform:none!important;letter-spacing:0!important}
@@ -109,8 +109,10 @@
 @A .ar-mpg #chHot .chhot.mgrh .mgrmon :is(img,svg){position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;margin:0!important;transform:none!important;background:none!important;border-radius:0!important;
   filter:drop-shadow(0 14px 12px rgba(40,10,50,.26))}
 @A .ar-mpg #chHot .chhot.mgrh.ar-ismega .mgrmon img{filter:drop-shadow(2.5px 0 0 var(--a)) drop-shadow(-2.5px 0 0 var(--b,var(--a))) drop-shadow(0 2.5px 0 var(--b,var(--a))) drop-shadow(0 -2.5px 0 var(--a)) drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A) drop-shadow(0 14px 12px rgba(40,10,50,.26))}
-@A .ar-mpg #chHot .chhot.mgrh .n.mgmis{position:relative!important;display:block;margin:2px 0 0 2px!important;padding:0!important;font:italic 900 76px/.9 var(--ar-display)!important;font-stretch:125%!important;letter-spacing:-.03em!important;
-  color:var(--ar-ink)!important;text-shadow:.05em .04em 0 var(--ar-misprint)!important;background:none!important;-webkit-text-stroke:0!important}
+/* The big rating number is slanted as a shape (12deg, the browser italic's angle, pivoted on its bottom edge so it never leans out of its card), not by the browser's made-up
+   italic: on iPhone (the Claude app and Safari) the made-up italic cut the top corner of the 7 (Sim, Nov 10). */
+@A .ar-mpg #chHot .chhot.mgrh .n.mgmis{position:relative!important;display:block;margin:2px 0 0 2px!important;padding:0!important;font:normal 900 76px/.9 var(--ar-display)!important;width:max-content;transform:skewX(-12deg);transform-origin:0 100%;font-stretch:125%!important;letter-spacing:-.03em!important;
+  color:var(--ar-ink)!important;text-shadow:none!important;background:none!important;-webkit-text-stroke:0!important}
 @A .ar-mpg #chHot .chhot.mgrh .n.mgmis::before,@A .ar-mpg #chHot .chhot.mgrh .n.mgmis::after{display:none!important}
 @A .ar-mpg #chHot .chhot.mgrh .mgcap.mgrcap{position:relative;isolation:isolate;display:inline-flex!important;align-items:center;min-height:32px;max-width:54%;margin:12px 0 0 4px!important;padding:2px 12px!important;
   font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:#fff!important;background:none!important;border:0!important;box-shadow:none!important;transform:none!important;white-space:normal}
@@ -157,7 +159,7 @@
 @A .ar-mpg #lairBody .ltier .ltl::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-m)}
 @A .ar-mpg #lairBody .ltier.nps .ltl::after{content:"";position:absolute;inset:-60%;z-index:-1;pointer-events:none;
   background:repeating-linear-gradient(115deg,transparent 0 30px,#ff4f8b 38px,#ffb400 44px,#46e0a2 50px,#3fa9ff 56px,#b45cff 62px,transparent 70px 110px);mix-blend-mode:color;opacity:.5;translate:calc((var(--hx,.5) - .5) * -30%) calc((var(--hy,.5) - .5) * -30%)}
-@A .ar-mpg #lairBody .ltier .ltl b{font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+@A .ar-mpg #lairBody .ltier .ltl b{font:italic 900 28px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:none!important}
 @A .ar-mpg #lairBody .ltier .ltl span{font:600 var(--ar-fs-small)/1.2 var(--ar-body)!important;color:#fff!important;margin-top:4px;text-shadow:none!important}
 @A .ar-mpg #lairBody .ltbody{min-width:0;padding:0!important;background:none!important;border:0!important}
 @A .ar-mpg #lairBody .ltd{font:italic 800 20px/1.2 var(--ar-display)!important;font-stretch:110%!important;color:var(--ar-ink)!important;padding:4px 0 6px!important;margin:0!important;border:0!important;background:none!important}
@@ -267,7 +269,7 @@
   transform:translateY(-3px) rotate(45deg)!important;background:none!important;box-shadow:none!important;margin:0!important}
 @A .ar-mpg #metaList details.mrow[open]>summary::after{transform:translateY(2px) rotate(-135deg)!important}
 @A .ar-mpg #metaList .mrow .rk{grid-column:1;font:italic 900 22px/1 var(--ar-display)!important;font-stretch:122%!important;color:var(--ar-ink)!important;background:none!important;text-align:right;padding:0!important;min-width:0!important;width:auto!important;height:auto!important;border:0!important;box-shadow:none!important}
-@A .ar-mpg #metaList .mrow.medal .rk{text-shadow:.05em .04em 0 var(--ar-misprint)!important}
+@A .ar-mpg #metaList .mrow.medal .rk{text-shadow:none!important}
 @A .ar-mpg #metaList .mrow>summary>:is(img.spr,.spr.mini){grid-column:2;position:relative!important;width:64px!important;height:64px!important;margin:-14px 0 0 4px!important;background:none!important;filter:drop-shadow(0 4px 4px rgba(30,10,40,.2))}
 @A .ar-mpg #metaList .mrow>summary.ar-ismega>img.spr{filter:drop-shadow(2px 0 0 var(--a)) drop-shadow(-2px 0 0 var(--b,var(--a))) drop-shadow(0 2px 0 var(--b,var(--a))) drop-shadow(0 -2px 0 var(--a)) drop-shadow(1px 0 0 #16141A) drop-shadow(-1px 0 0 #16141A) drop-shadow(0 1px 0 #16141A) drop-shadow(0 -1px 0 #16141A)}
 @A .ar-mpg #metaList .mrow .nm{grid-column:3;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;font:700 var(--ar-fs-body)/1.2 var(--ar-body)!important;color:var(--ar-ink)!important;white-space:normal!important}
@@ -495,9 +497,9 @@
 @A .ar-mpg #wkOut details.wkfoot>summary::before{content:""!important;position:static!important;display:block!important;width:8px!important;height:8px!important;margin:0 2px!important;border:solid currentColor!important;border-width:0 2.5px 2.5px 0!important;transform:translateY(-2px) rotate(45deg)!important;background:none!important}
 @A .ar-mpg #wkOut details.wkfoot[open]>summary::before{transform:translateY(2px) rotate(-135deg)!important}
 @A .ar-mpg #wkOut details.wkfoot>p{margin:8px 0 0!important;font-size:var(--ar-fs-small)!important;line-height:1.5;color:var(--ar-ink-2)!important;max-width:68ch}
-@media (min-width:700px){@A .ar-mpg #wkOut .wkcols{grid-template-columns:1fr 1fr!important}@A .ar-mpg #wkOut .wkfresh{grid-template-columns:1fr 1fr}@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (min-width:700px){@A .ar-mpg #wkOut .wkcols{grid-template-columns:1fr 1fr!important}@A .ar-mpg #wkOut .wkfresh{grid-template-columns:1fr 1fr}@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(var(--wkm,3),minmax(0,1fr))}
   @A .ar-mpg #wkOut .wktop{gap:24px 16px!important}@A .ar-mpg #wkOut .wktm{--h:70px;--s:96px}}
-@media (min-width:1001px){@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(4,minmax(0,1fr))}@A .ar-mpg #wkOut .wkevs,@A .ar-mpg #wkOut .wkcard:has(.wkev){display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:32px}
+@media (min-width:1001px){@A .ar-mpg #wkOut .wkstyles{grid-template-columns:repeat(var(--wkd,4),minmax(0,1fr))}@A .ar-mpg #wkOut .wkevs,@A .ar-mpg #wkOut .wkcard:has(.wkev){display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:32px}
   @A .ar-mpg #wkOut .wkcard:has(.wkev)>.wkt{grid-column:1/-1;margin-bottom:6px!important}}
 
 /* ---------- 10. Events ---------- */
@@ -596,7 +598,7 @@
 @A .ar-mpg #trackOut .trflow{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin:24px 0 0!important}
 @A .ar-mpg #trackOut .trflow>span{display:flex!important;align-items:center;gap:16px;min-height:40px;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;font:600 var(--ar-fs-body)/1.3 var(--ar-body)!important;color:var(--ar-ink)!important}
 @A .ar-mpg #trackOut .trflow b{position:relative!important;inset:auto!important;isolation:isolate;flex:none;display:grid!important;place-items:center;width:38px!important;height:38px!important;margin:0 0 0 4px!important;border-radius:0!important;background:none!important;
-  font:italic 900 22px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+  font:italic 900 22px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:none!important}
 @A .ar-mpg #trackOut .trflow b::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-sec-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s);box-shadow:var(--ar-shadow-s)}
 @A .ar-mpg #trackOut>.wdsub{margin-top:16px!important;font-size:var(--ar-fs-small)!important;color:var(--ar-ink-2)!important}
 /* each part: no box, the title as a section head */
@@ -811,9 +813,9 @@
 @media (max-width:599px){@A .ar-mpg #setOut .sethead{grid-template-columns:118px minmax(0,1fr);column-gap:16px;min-height:128px}
   @A .ar-mpg #setOut .sethead::before{width:108px!important;height:84px!important;top:34px!important}
   @A .ar-mpg #setOut .sethead>img.spr.big{width:116px!important;height:116px!important}
-  @A .ar-mpg #setOut .sethead .sl-name{font-size:min(28px,7vw)!important;overflow-wrap:normal}
+  @A .ar-mpg #setOut .sethead .sl-name{font-size:clamp(26px,calc(26px + (100vw - 400px) * 1000),28px)!important;overflow-wrap:normal}
   @A .ar-mpg #setOut .sethead .tag.tier{grid-column:1/-1;margin-top:6px}}
-@media (max-width:1000px){@A .ar-mpg #trackOut .trstats{grid-template-columns:1.4fr 1fr 1fr!important}@A .ar-mpg #trackOut .trstats b{font-size:min(34px,6.6vw)!important;white-space:nowrap}}
+@media (max-width:1000px){@A .ar-mpg #trackOut .trstats{grid-template-columns:1.4fr 1fr 1fr!important}@A .ar-mpg #trackOut .trstats b{font-size:calc(clamp(24px,calc(24px + (100vw - 400px) * 1000),26px) + clamp(0px,calc((100vw - 515px) * 1000),8px))!important;white-space:nowrap}}
 
 /* ---------- 18. review D fixes ---------- */
 /* M1: the hero keeps its keyboard ring, drawn on its slanted field (arena.css section 20 style) */
@@ -1069,3 +1071,10 @@
 @A .ar-mpg #lair>.chpghead>.chk{flex:0 1 auto;min-width:0;margin:0!important}
 @A .ar-mpg #lair>.chpghead>.chpgt.sr{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;margin:0!important;padding:0!important}
 @A .ar-mpg #lair>.chpghead>.mgtitle{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;margin:0!important;padding:0!important}
+/* Polish Batch 3 (Nov 10): a lone #1's card with the next ranks beside it (desktop) or under it (phones), styled as the list rows */
+@A .ar-mpg #chHot .chhot2s>.chhotside{grid-template-columns:1fr!important;align-content:center;min-width:0}
+@media (min-width:600px){@A .ar-mpg #chHot .chhot2.chhot2s{column-gap:36px!important}}
+@media (min-width:1001px){@A .ar-mpg #chHot .chhot2.chhot2s{column-gap:56px!important}}
+
+/* Weekly styles on phones (Batch 3): an odd last style spans both columns, so no half-filled row. */
+@media (max-width:699px){@A .ar-mpg #wkOut .wkstyles .wkst:last-child:nth-child(odd){grid-column:1/-1}}

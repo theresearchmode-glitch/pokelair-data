@@ -37,7 +37,7 @@ ARBLD.stage = col => { if (col.querySelector('.arb-stage')) return; const use = 
     <div class="ar-six">${tiles}</div><div class="arb-nums">${stats}${pips}</div>`;
   (old || head || col.firstChild).before(st); if (old) old.remove();
   /* the checks line ("missing: …", the full list in its tooltip) moves under the pips */
-  const mk = head && head.querySelector('.minick'), cks = st.querySelector('.arb-checks'); if (mk && cks) cks.append(mk);
+  const mk = head && head.querySelector('.minick'), cks = st.querySelector('.arb-checks'); if (mk && cks) { cks.append(mk); /* Nov 10: drop its loose "checks" word (hidden by font-size:0 but still read aloud and copied) */ [...mk.childNodes].forEach(n => { if (n.nodeType === 3) n.remove(); }); }
   if (head) head.classList.add('arb-hidehead');
   /* the six in the fold: each sprite on its small type field */
   col.querySelectorAll('.abmons .abmon').forEach((r, i) => { const m = tm.mons[i], p = m && byName.get(m.n), img = r.querySelector(':scope > img.spr'); if (!p || !img || img.parentElement.classList.contains('ar-row-f')) return;

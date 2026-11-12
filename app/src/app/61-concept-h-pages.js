@@ -40,14 +40,11 @@ CH.wrap('renderAutoBuild', () => { chBuildInit(); safe('build around', abAroundR
       <div class="chabg">${names.map((n, i) => `<div>${imgs[i] ? `<img class="spr" src="${esc(imgs[i])}" alt="">` : ''}<span>${esc(n)}</span></div>`).join('')}</div>`;
     (head || mons).before(six); CH.foldNode(mons, 'absets', 'Sets and roles', 'Items, abilities, roles and ratings for each of the six', false); }); });
 // ---------- Battle mode: team preview ----------
-function chOppName() { const opp = S.opp.filter(Boolean); if (opp.length < 6) return null; const E = META.events; if (!E || !Array.isArray(E.events)) return null;
-  const want = ui.oppFrom && ui.oppFrom.key === opp.slice().sort().join('|') ? ui.oppFrom.who : null; let first = null;
-  for (const e of E.events) for (const t of e.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.every(m => opp.includes(m.n))) { const r = {who: t.player, rec: t.record, place: t.place, ev: e}; if (!want || t.player === want) return r; first = first || r; }
-  return want ? null : first; }
+function chOppName() { const sh = realSheetFor(S.opp, oppWho()); return sh ? {who: sh.t.player, rec: sh.t.record, place: sh.t.place, ev: sh.ev} : null; }
 CH.wrap('renderBattle', () => { const el = $('bmOut'); if (!el) return; const sec = $('matchup'); if (sec) sec.classList.add('chbm');
   const mine = members(), on = chOppName(), title = mine.length ? teamTitleFor(mine) : 'Your team';
   // their side is named by what it runs (Rain · Tailwind, Trick Room…), not by the player
-  const theirs = S.opp.map(n => byName.get(n)).filter(Boolean); let arch = ''; try { const a = theirs.length >= 3 ? teamArchetype(theirs.map(oppMember)) : null; arch = a && a.label ? a.label : ''; } catch (e) {}
+  const theirs = S.opp.map(n => byName.get(n)).filter(Boolean); let arch = ''; try { const a = theirs.length >= 3 ? teamArchetype(oppTeam()) : null; arch = a && a.label ? a.label : ''; } catch (e) {}
   const ord = n => n === 1 ? '1st' : n === 2 ? '2nd' : n === 3 ? '3rd' : n + 'th';
   const head = document.createElement('div'); head.className = 'chbmhead';
   head.innerHTML = `<div class="chk">${on ? 'Their real open team sheet' : 'Team preview'}</div><div class="chdisp chbmt" role="heading" aria-level="2"><span data-notc>${esc(title)}</span> <small>vs</small> <em>${arch ? esc(arch) : 'their six'}</em></div>
@@ -90,13 +87,19 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
   /* the hero (Sim, Nov 5): one card for the #1. A tie shares one card (two or three Pokémon, one number); a lone leader gets the
      card to itself and #2 joins the list. More than three tied: three share the card, the rest lead the list. */
   const K = (typeof window !== 'undefined' && window.__PL_TEST && +window.__tieK) || Math.min(3, Math.max(1, top.filter(x => x.r.total === top[0].r.total).length));
+  /* Polish Batch 3 (Nov 10): a lone #1 used to leave the right half of its row empty on desktop; the next ranks of the same tier
+     (up to three) sit there now, and on phones they simply lead the list under the card as before */
+  /* how many move up: 3 when that leaves the tier's two-column list even, else 2, so no rank sits alone on the list's last row */
+  const M = (() => { if (K !== 1) return 0; const k0 = lTier(top[0].r.total).k, same = top.slice(1).filter(x => lTier(x.r.total).k === k0).length;
+    const m3 = Math.min(3, same); return m3 === 3 && (same - 3) % 2 && same >= 2 ? 2 : m3; })();
+  const row = (x, j) => `${(() => { const t = lTier(x.r.total), pv = lTier(top[j - 1].r.total); return t.k !== pv.k ? `<div class="chtierdiv">${tc(t, 1)}<span class="chk">${tierBand(t)} · ${rows.filter(y => lTier(y.r.total).k === t.k).length} Pokémon</span></div>` : ''; })()}<button type="button" class="chhr tyacc" style="${tyv(x.p)}" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${RS(x.r.total)}${rankTxt(x.p) ? ', ' + rankTxt(x.p) : ''}"><span class="rk">${rankTxt(x.p, 1) || j - K + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span>${ub(x)}${bas(x).replace('class="basis', 'class="dbsec basis blk')}</span><span class="sc"${bandAt(x.r.total)}>${RS(x.r.total)}</span></button>`;
   const tieCard = xs => { const of2 = (lairRank(xs[0].p) || {}).of, col = x => TC[x.p.t[0]] || '#4E5068';
     return `<div class="ar-tie ar-tie${xs.length}" style="--ta:${col(xs[0])};--tb:${col(xs[1])};--tc:${col(xs[2] || xs[1])}"${dbAttr('hot')}><span class="ar-tie-bg" aria-hidden="true"></span>
       <div class="ar-tie-head"><span class="ar-num ar-mp ar-tie-n">${RS(xs[0].r.total)}</span><span class="ar-tie-cap">${xs.length === 2 ? 'Tied' : 'Three-way tie'} for #1${of2 ? ` of ${of2} with results` : ''}</span></div>
       <div class="ar-tie-mons">${xs.map(x => `<button type="button" class="ar-tie-mon" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${RS(x.r.total)}, tied for number 1">${sprite(x.p) || ''}<b>${esc(x.p.d)}</b><span class="ar-tie-ln">${line(x).replace(' · ', '<br>')}</span><span class="dbsec">${bas(x)}</span></button>`).join('')}</div></div>`; };
   return `<div class="chhothead">${tc(T)}<span class="chk">${tierBand(T)} · ${nS} Pokémon${of ? ` · ranked among ${of} with results` : ''}</span>${typeof tip === 'function' ? tip('tiers') : ''}${dbBtn('hot', 'games behind each win rate')}</div>
-    ${K === 1 ? `<div class="chhot2"${dbAttr('hot')}>${big(top[0], 'ink')}</div>` : tieCard(top.slice(0, K))}
-    <div class="chhotrows"${dbAttr('hot')}>${top.slice(K).map((x, i) => `${(() => { const t = lTier(x.r.total), pv = lTier(top[i + K - 1].r.total); return t.k !== pv.k ? `<div class="chtierdiv">${tc(t, 1)}<span class="chk">${tierBand(t)} · ${rows.filter(y => lTier(y.r.total).k === t.k).length} Pokémon</span></div>` : ''; })()}<button type="button" class="chhr tyacc" style="${tyv(x.p)}" data-lt="${esc(x.p.n)}" aria-label="${esc(x.p.d)}, rated ${RS(x.r.total)}${rankTxt(x.p) ? ', ' + rankTxt(x.p) : ''}"><span class="rk">${rankTxt(x.p, 1) || i + 3}</span>${sprite(x.p) || ''}<span class="chbd"><b>${esc(x.p.d)}</b><span>${line(x)}</span>${ub(x)}${bas(x).replace('class="basis', 'class="dbsec basis blk')}</span><span class="sc"${bandAt(x.r.total)}>${RS(x.r.total)}</span></button>`).join('')}</div>`; }
+    ${K === 1 ? `<div class="chhot2${M ? ' chhot2s' : ''}"${dbAttr('hot')}>${big(top[0], 'ink')}${M ? `<div class="chhotrows chhotside">${top.slice(1, 1 + M).map((x, i) => row(x, i + 1)).join('')}</div>` : ''}</div>` : tieCard(top.slice(0, K))}
+    <div class="chhotrows"${dbAttr('hot')}>${top.slice(K + M).map((x, i) => row(x, i + K + M)).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
   if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     /* "How to read our numbers" from the page title's "?" (Nov 2) */
@@ -234,7 +237,7 @@ CH.shareMode = null;
 buildShareCard = async function () { const ms = members(); if (!ms.length) return null;
   const dark = (CH.shareMode || document.documentElement.dataset.look) === 'dark';
   const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#E6DDCD', blue: '#1E8FE8', red: '#FF3F5F', card: '#2C2A28', pen: '#7CC4FF', tile: '#171615', shadow: '#1E8FE8'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', red: '#FF48B0', card: '#FBF6EC', pen: '#005A90', tile: '#1D2140', shadow: '#0078BF'};
-  try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
+  try { await Promise.all(['400 80px Anton', '800 30px Unbounded', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
   const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   if (dark) { const g = x.createRadialGradient(600, -120, 0, 600, -120, 760); g.addColorStop(0, 'rgba(255,232,0,.10)'); g.addColorStop(1, 'rgba(255,232,0,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
@@ -260,7 +263,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   const cw = W / 6; ms.slice(0, 6).forEach((m, i) => { const cx = i * cw + cw / 2, im = imgs[i];
     x.fillStyle = 'rgba(0,0,0,.18)'; x.beginPath(); x.ellipse(cx, by + 238, 70, 12, 0, 0, 7); x.fill();
     if (im) { const s = Math.min(176 / im.width, 176 / im.height); x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetX = 3; x.shadowOffsetY = 4; x.drawImage(im, cx - im.width * s / 2, by + 246 - im.height * s, im.width * s, im.height * s); x.restore(); }
-    x.textAlign = 'center'; x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowOffsetY = 2; x.shadowBlur = 4; x.fillStyle = '#fff'; let f2 = 24; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Archivo, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
+    x.textAlign = 'center'; x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowOffsetY = 2; x.shadowBlur = 4; x.fillStyle = '#fff'; let f2 = 24; const nm = (m.d || m.p.d).toUpperCase(); do { x.font = `800 ${f2}px Unbounded, sans-serif`; } while (x.measureText(nm).width > cw - 16 && --f2 > 13); x.fillText(nm, cx, by + 280);
     if (m.item) { let f3 = 18; do { x.font = `700 ${f3}px "Instrument Sans", monospace`; } while (x.measureText(m.item).width > cw - 12 && --f3 > 12); x.fillStyle = '#fff'; x.fillText(m.item, cx, by + 305); } x.restore(); x.textAlign = 'left'; });
   x.font = '400 32px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Sharply raise your win rate.', 58, 656);
   x.textAlign = 'right'; x.font = '700 19px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', 1144, 652); x.textAlign = 'left';

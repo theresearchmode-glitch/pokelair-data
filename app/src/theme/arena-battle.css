@@ -16,7 +16,7 @@
 @A .arb .toolsw{margin:0 0 16px!important}
 @A .arb section>.head{margin:0 0 16px!important;padding:0!important;background:none!important;border:0!important;align-items:flex-start;gap:12px}
 @A .arb section>.head h2{display:none}
-@A .arb section>.head .hint .ar-link{margin:-10px 0;vertical-align:baseline}
+@A .arb section>.head .hint .ar-link{margin:-8px 0;vertical-align:baseline}
 @A .arb section>.head .hint{margin:0!important;max-width:68ch;color:var(--ar-ink-2)!important;font:400 var(--ar-fs-body)/1.5 var(--ar-body)!important}
 @A .arb .t2,@A .arb .vsub{color:var(--ar-ink-2)!important;font-size:var(--ar-fs-small)!important;line-height:1.5}
 @A .arb .t2 b,@A .arb .vsub b{color:var(--ar-ink)!important}
@@ -71,7 +71,7 @@
 @A .arb .empty-note:not(:has(.mgeart))>div{grid-column:1}
 /* names under the art break between words only, and step down a size in the three-column grids on small phones */
 @A .arb .ar-art .ar-nm{overflow-wrap:break-word;hyphens:manual}
-@media (max-width:420px){@A .arb :is(.bmopp,.prsix:not(.mine),.chcalcatk,.prfour) .ar-art .ar-nm{font-size:clamp(15px,4vw,16px)!important}}
+@media (max-width:420px){@A .arb :is(.bmopp,.prsix:not(.mine),.chcalcatk,.prfour) .ar-art .ar-nm{font-size:clamp(15px,calc(15px + (100vw - 400px) * 1000),16px)!important}}
 /* small type field behind a lone sprite (75-arena-battle.js ARB.bf) */
 @A .arb .ar-mini.ar-bf{--mw:52px;--mh:34px;--ms:52px;--mt:14px;margin-left:4px;margin-right:4px}
 /* tables on these pages: hairline rows, no grid of boxes */
@@ -89,7 +89,7 @@
 @media (min-width:1001px){@A [data-pane="matchup"] .ar-bmhead .chbmt{font-size:clamp(46px,4.4vw,64px)!important}}
 @A [data-pane="matchup"] .ar-bmhead .chbmt::before{content:"";position:absolute;left:0;bottom:.18em;width:28px;height:28px;background:var(--ar-sec);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="matchup"] .ar-bmhead .chbmt :is(span,em){font:inherit!important;color:inherit!important;background:none!important}
-@A [data-pane="matchup"] .ar-bmhead .chbmt small{display:inline-block;margin:0 .1em;padding:0!important;background:none!important;font:italic 800 .62em/1 var(--ar-display)!important;color:var(--ar-ink-3)!important;vertical-align:.12em}
+@A [data-pane="matchup"] .ar-bmhead .chbmt small{display:inline-block;margin:0 .1em;padding:0!important;background:none!important;font:italic 800 clamp(17px,calc(17px + (100vw - 1001px) * 1000),28px)/1 var(--ar-display)!important;color:var(--ar-ink-3)!important;vertical-align:.12em}
 @A [data-pane="matchup"] .ar-bmhead .mgvsarch{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:8px 0 0 40px;font:600 var(--ar-fs-body)/1.3 var(--ar-body);color:var(--ar-ink)}
 @A [data-pane="matchup"] .ar-bmhead .mgvsarch span{color:var(--ar-blue-ink)!important;font:inherit!important}
 @A [data-pane="matchup"] .ar-bmhead .mgvsarch small{font:italic 800 15px/1 var(--ar-display);color:var(--ar-ink-3)!important;background:none!important;padding:0!important}
@@ -178,6 +178,9 @@
 /* Plan / Speed / Damage */
 @A [data-pane="matchup"] .bmtabs{margin:0 0 20px!important}
 @media (min-width:761px){@A [data-pane="matchup"] .bmtabs.ar-seg{display:none!important}}
+/* Nov 10 bug fix: the sliding picker (arena.css, display:grid with extra ids) out-ranked the rule above, so on desktop the
+   Plan / Speed / Damage switch showed but filtered nothing (desktop shows every card). Same weight as the slider, plus one. */
+@media (min-width:761px){@A:not(#arcw):not(#arsl):not(#ars3):not(#arbm) [data-pane="matchup"] .bmtabs.ar-slide{display:none!important}}
 @A [data-pane="matchup"] .bmgrid{gap:28px!important;background:none!important}
 @A [data-pane="matchup"] .bmgrid>*{margin:0!important}
 /* bring these four: the planner's pick, the four as art with Lead / Back under the name */
@@ -229,7 +232,7 @@
 @A [data-pane="matchup"] .rzbeat{display:grid!important;grid-template-columns:36px 64px minmax(0,1fr);column-gap:12px;align-items:start;padding:16px 0!important;margin:0!important;background:none!important;border:0!important;border-bottom:1px solid var(--ar-rule)!important;box-shadow:none!important;border-radius:0!important}
 @A [data-pane="matchup"] .rzbeat::before,@A [data-pane="matchup"] .rzbeat::after{content:none!important;display:none!important}
 @A [data-pane="matchup"] .rzbn{position:relative;isolation:isolate;display:grid!important;place-items:center;width:36px!important;height:36px!important;margin-top:6px;background:none!important;border:0!important;box-shadow:none!important;
-  font:italic 900 20px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:.06em .05em 0 var(--ar-misprint)!important}
+  font:italic 900 20px/1 var(--ar-display)!important;font-stretch:125%!important;color:#fff!important;text-shadow:none!important}
 @A [data-pane="matchup"] .rzbn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ar-blue-plate);transform:skewX(var(--ar-slant));border-radius:var(--ar-r-s)}
 @A [data-pane="matchup"] .rzbeat.them .rzbn::before{background:var(--ar-pink-plate)}
 @A [data-pane="matchup"] .rzbeat .ar-bf{--mw:60px;--mh:40px;--ms:64px;--mt:16px;margin-left:0}
@@ -833,8 +836,8 @@
 /* n2 the Back heading's tab is a solid quieter ink, not a pale tint */
 @A .arb .ar-pgrp+.ar-pgrp .ar-pgh::before{background:var(--ar-ink-3)!important}
 /* m3 tap areas: the "?" tip is 36px with a 44px hit ring; "More" toggles are 44px tall */
-@A .arb .tipq{width:36px!important;height:36px!important;min-width:36px!important;overflow:visible!important}
-@A .arb .tipq::after{content:""!important;position:absolute!important;inset:-4px!important;border-radius:50%}
+@A .arb .tipq{width:28px!important;height:28px!important;min-width:28px!important;/* Polish Batch 1: one ? size sitewide (28, tap area 44) */overflow:visible!important}
+@A .arb .tipq::after{content:""!important;position:absolute!important;inset:-8px!important;border-radius:50%}
 @A .arb .rzmorebtn{position:relative;display:inline-flex!important;align-items:center;min-height:44px!important;padding:0 4px!important;margin:-14px 0!important;vertical-align:baseline;font-size:inherit!important}
 /* m2 the last small labels reach the 15px minimum */
 @A .arb .ar-btn.sm{font-size:var(--ar-fs-body)!important}
@@ -1018,7 +1021,7 @@
 /* Sim (Nov 7, option A): in dark mode the words sit right on the band, no box. A soft dark fade across the band's left end
    (inside the band's own shape) and a gentle shadow keep white text readable on the pale end */
 @A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy)::before,@A[data-look="dark"] [data-pane="calc"] .ar-dcband :is(.nm,.sub,.ar-dccopy)::before{content:none!important;display:none!important}
-@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy),@A[data-look="dark"] [data-pane="calc"] .ar-dcband .ar-dccopy{text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 12px rgba(0,0,0,.35)}
+@A[data-look="dark"] [data-pane="matchup"] :is(.ar-rstrip-in,.ar-rhero-copy){text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 12px rgba(0,0,0,.35)}
 @A[data-look="dark"] :is([data-pane="matchup"] .ar-rstrip-f,[data-pane="matchup"] .ar-rhero-bg,[data-pane="calc"] .ar-dcf){isolation:isolate}
 @A[data-look="dark"] :is([data-pane="matchup"] .ar-rstrip-f,[data-pane="matchup"] .ar-rhero-bg,[data-pane="calc"] .ar-dcf)::after{content:""!important;display:block!important;position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(100deg,rgba(14,12,18,.74) 0%,rgba(14,12,18,.5) 36%,rgba(14,12,18,0) 62%)!important;opacity:1!important}
@@ -1038,3 +1041,17 @@
 @A .bmreal .bmrk li span.up{color:var(--ar-green,#2E9E5B)}
 /* f4-heads (Nov 10): the empty "type their Pokémon" note has no field of its own, so no padding above and below it (it left an empty band) */
 @A #bmOut>.empty-note.mgempty{padding-top:0!important;padding-bottom:0!important;margin-bottom:0!important}
+/* Polish Batch 3 (Nov 10): on desktop the practice team picker (was 520px wide) and Team Preview Practice (was 720px) sit side by
+   side as one practice row across the full width, instead of two short blocks with empty strips beside them. Tablets and phones keep the stack. */
+@media (min-width:1001px){
+  @A [data-pane="matchup"] section#matchup{display:grid!important;grid-template-columns:minmax(0,2fr) minmax(0,3fr);column-gap:32px;align-items:center}
+  @A [data-pane="matchup"] section#matchup>*{grid-column:1/-1;min-width:0}
+  @A [data-pane="matchup"] section#matchup>#oppQuick{grid-column:1;max-width:none;align-self:center}
+  @A [data-pane="matchup"] section#matchup>#prEntry{grid-column:2;max-width:none;margin-top:32px!important;align-self:center}
+}
+/* Polish Batch 3 (Nov 10): the 18 type chips sit as an even grid that always divides 18 (3, 6 or 9 across), so no row is left half
+   filled (was 12 + 6 on desktop, 8 + 8 + 2 on tablets) */
+@A [data-pane="types"] .typepick{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}
+@A [data-pane="types"] .typepick>*{width:100%;min-width:0;justify-content:center}
+@media (min-width:600px){@A [data-pane="types"] .typepick{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (min-width:1001px){@A [data-pane="types"] .typepick{grid-template-columns:repeat(9,minmax(0,1fr))}}

@@ -15,9 +15,12 @@ const DEV=Math.random().toString(36).slice(2,10)+Date.now().toString(36);let pen
 // every value of each part this page has loaded or saved: an older one coming back is this page's own past save, not news
 const savedHist={};const noteSaved=(k,j)=>{const h=savedHist[k]||(savedHist[k]=[]);if(!h.includes(j)){h.push(j);if(h.length>30)h.shift()}};
 function snapObj(){return JSON.parse(snapshot())}
-function snapshot(){return JSON.stringify({slots:S.slots,box:S.box,teams:S.teams,loadedId:S.loadedId||null,format:S.format,maxMega:S.maxMega===2?2:1,megaGoal:megaGoal(),opp:S.opp,boxV:S.boxV,excl:S.excl,megaV:S.megaV,log:S.log||[]})}
+function snapshot(){return JSON.stringify({slots:S.slots,box:S.box,teams:S.teams,loadedId:S.loadedId||null,format:S.format,maxMega:S.maxMega===2?2:1,megaGoal:megaGoal(),opp:S.opp,boxV:S.boxV,excl:S.excl,megaV:S.megaV,log:S.log||[],leads:S.leads||null,recentOpp:S.recentOpp||[]})}
 // the account document in the page's own shape (the same cleaning as when the page opens)
-function fromDoc(v){return {slots:Array.isArray(v.slots)?v.slots:S.slots,box:Array.isArray(v.box)?v.box.filter(x=>typeof x==='string'):S.box,teams:Array.isArray(v.teams)?v.teams.filter(t=>t&&t.id&&Array.isArray(t.slots)).slice(0,10):[],loadedId:v.loadedId||null,format:'doubles',maxMega:v.maxMega===2?2:1,megaGoal:[0,1,2].includes(v.megaGoal)?v.megaGoal:undefined,opp:Array.isArray(v.opp)?v.opp:[],boxV:v.boxV,excl:Array.isArray(v.excl)?v.excl:[],megaV:v.megaV,log:Array.isArray(v.log)?v.log:[]}}
+function fromDoc(v){return {slots:Array.isArray(v.slots)?v.slots:S.slots,box:Array.isArray(v.box)?v.box.filter(x=>typeof x==='string'):S.box,teams:Array.isArray(v.teams)?v.teams.filter(t=>t&&t.id&&Array.isArray(t.slots)).slice(0,10):[],loadedId:v.loadedId||null,format:'doubles',maxMega:v.maxMega===2?2:1,megaGoal:[0,1,2].includes(v.megaGoal)?v.megaGoal:undefined,opp:Array.isArray(v.opp)?v.opp:[],boxV:v.boxV,excl:Array.isArray(v.excl)?v.excl:[],megaV:v.megaV,log:Array.isArray(v.log)?v.log:[],
+  /* your lead pick and recent opponents (Nov 10): saved to the account too; an account copy from before then has neither, so this device's own are kept */
+  leads:Array.isArray(v.leads)?v.leads.filter(x=>typeof x==='string').slice(0,2):('leads' in v?null:(S.leads||null)),
+  recentOpp:Array.isArray(v.recentOpp)?v.recentOpp.filter(x=>Array.isArray(x)&&x.every(n=>typeof n==='string')).slice(0,5):(S.recentOpp||[])}}
 const fieldJ=o=>{const r={};for(const k in o)r[k]=JSON.stringify(o[k]===undefined?null:o[k]);return r};
 async function flush(){if(!docRef)return;if(writing){pending=true;return}
   const o=snapObj(),J=fieldJ(o),patch={};for(const k in J)if(saved[k]!==J[k])patch[k]=o[k]===undefined?null:o[k];
@@ -58,7 +61,7 @@ function metaJoin(d,k,cb){let p1=null,p2=null,got1=false;const emit=()=>{if(!got
   const id=await u.id();if(!id){syncNote('local');return}db=d;uid=id;
   // the account's copy is read first; only then can this device save (a change made in the first moment can't overwrite it)
   const ref=db.doc('data/users/'+uid+'/state'),snap=await ref.get();
-  if(snap.exists){const v=snap.data()||{};S=fromDoc(v);fixSlots();fixTeams();fixLog();LS.set('cc2.state',S);saved=fieldJ(fromDoc(v));for(const k in saved)noteSaved(k,saved[k]);docExists=true;render()}
+  if(snap.exists){const v=snap.data()||{};S=fromDoc(v);fixSlots();fixTeams();fixLog();LS.set('cc2.state',S);saved=fieldJ(fromDoc(v));['leads','recentOpp'].forEach(k=>{if(!(k in v))delete saved[k]});for(const k in saved)noteSaved(k,saved[k]);docExists=true;render()}
   docRef=ref;if(!snap.exists)await flush();
   lastJson=snapshot();syncNote('saved');
   try{ref.onSnapshot(s2=>{try{if(!s2||!s2.exists||(s2.metadata&&s2.metadata.hasPendingWrites))return;docExists=true;takeRemote(s2.data()||{})}catch(e){}},()=>{})}catch(e){}

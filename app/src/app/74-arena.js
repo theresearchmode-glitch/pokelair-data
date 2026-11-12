@@ -152,7 +152,7 @@ AR.home = () => { const out = $('homeOut'); if (!out || out.querySelector(':scop
   const byN = n => ms.find(m => m.p.n === n), lead = F ? F.lead.map(byN).filter(Boolean) : [], back = F ? F.back.map(byN).filter(Boolean).filter(m => !lead.includes(m)) : [];
   const bench = ms.filter(m => !lead.includes(m) && !back.includes(m)), ord = [...lead, ...back, ...bench].slice(0, 6);
   let title = ms.length ? teamTitleFor(ms) : 'Your six goes here', wx = ''; try { const k = wxKeyOf(ms); if (k) wx = ` ${esc(wxName(k))}`; } catch (e) {}
-  const you = `<section class="ar-side ar-blue" aria-labelledby="arYours"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2${title.length > 16 ? ' ar-long' : ''}" id="arYours">${esc(title)}</h2></div>
+  const you = `<section class="ar-side ar-blue" aria-labelledby="arYours"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2${title.length > 16 ? ' ar-long' : ''}" id="arYours"${ms.length ? ' data-notc' : ''/* a team's name keeps its own casing (Title Case never touches team names) */}>${esc(title)}</h2></div>
     <div class="ar-winner">${ms.length && AR.isSample(title) ? AR.sampleNote() : ''}${ms.length ? `<p class="ar-meta">Your team: <b>${ms.length}/6</b>${wx}</p>` : '<p class="ar-meta">Add six Pokémon and NastyPlot scouts the top threats for you.</p>'}</div>
     <div class="ar-six">${ms.length ? ord.map(m => AR.art(m.p, {size: 'm', below: 1, name: m.d, attrs: `data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}: open its info"`})).join('') : Array.from({length: 6}, (_, i) => AR.emptyArt('m', {attrs: `data-view="build" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('')}</div>
     ${AR.plan(lead, back, bench, vs)}
@@ -302,7 +302,7 @@ rzSetHtml = function (m, i) {
   const mv = (m.moves || []).filter(Boolean).map(x => `<li class="ar-strip" style="--m:${AR.TC[AR.moveType(x.name)] || TC.Normal}"><span>${esc(x.name)}</span></li>`).join('');
   return `<div class="ar-sethd"><span class="ar-av" style="${AR.tv(m.p)}" aria-hidden="true"><span class="ar-av-f ar-field"></span>${sprite(m.p, 'rzsetspr') || ''}</span>
       <div class="ar-setti"><h3 class="ar-h2 ar-setname">${AR.nm(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
-    <div class="ar-setia">${r != null ? `<div class="ar-setr"><span class="ar-num ar-mp">${Math.round(r)}</span><small>${AR.ICON.star}${tier ? esc(tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div>${AR.natCells(m)}</div>
+    <div class="ar-setia">${r != null ? `<div class="ar-setr"><span class="ar-num ar-mp">${RS(r)}</span><small>${AR.ICON.star}${tier ? esc(tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div>${AR.natCells(m)}</div>
     ${mv ? `<ul class="ar-strips" aria-label="Moves">${mv}</ul>` : ''}
     <div class="ar-setacts"><button type="button" class="ar-btn" data-chedit="${i}">Edit set</button>${L && L.lead.length && !L.lead.some(x => x.i === m.i) ? `<button type="button" class="ar-btn" data-arlead="${esc(m.p.n)}">Set as lead</button>` : ''}<button type="button" class="ar-link" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`; };
 MG.team = () => {}; /* the manga stage is replaced by the arena stage */
@@ -342,7 +342,7 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
 
 
 /* names on the art. A name never breaks inside a word: while its longest word is wider than the name box, the size steps down
-   after the narrower cut of the face, 1px at a time (never under 15px; --nmf, arena-p1.css), and a name that still does not
+   after the narrower cut of the face, one type-scale step at a time (never under 15px; --nmf, arena-p1.css), and a name that still does not
    fit takes the tile's full width (.is-nmw). A name on the art that still takes two lines marks its tile .is-nm2,
    which shrinks the sprite so the name keeps clear of it. In dark mode the name sits on an ink plate that hugs its longest
    line (--nw), so a two-line name is one tidy plate, not a box out to the tile's edge. */
@@ -355,7 +355,9 @@ AR.fit = all => { document.querySelectorAll(all ? '.ar-art .ar-nm' : '.ar-art .a
   let f = parseFloat(getComputedStyle(n).fontSize), k = 0;
   // the box's 3-across phone tiles are narrower: there a name may go down to 13px, the smallest size on the scale (Nov 7, Sim)
   const fmin = tile && (tile.closest('[data-pane="box"]') || !on || (tile.closest('.ar-stage') && matchMedia('(max-width:599px)').matches)) ? 13 : 15; /* Nov 10: My Team's 3-across phone tiles too */
-  while (over() && f > fmin && k++ < 8) { f = Math.max(fmin, f - 1); n.style.setProperty('--nmf', f + 'px'); }
+  /* Polish Batch 1 (Nov 10): step down through the type scale only (17, 16, 15, 13), never to an in-between size like 14px */
+  const SC = [28, 26, 24, 22, 20, 17, 16, 15, 13];
+  while (over() && f > fmin && k++ < 8) { const nx = SC.find(x => x < f - .5 && x >= fmin); if (nx == null) break; f = nx; n.style.setProperty('--nmf', f + 'px'); }
   if (over() && tile) tile.classList.add('is-nmw');
   const r = document.createRange(); r.selectNodeContents(t); const L = [...r.getClientRects()].filter(x => x.width > 1); if (!L.length) return;
   if (on) { tile.classList.toggle('is-nm2', new Set(L.map(x => Math.round(x.top))).size > 1);

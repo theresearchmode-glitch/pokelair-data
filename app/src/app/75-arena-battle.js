@@ -62,7 +62,7 @@ ARBAT.opp = () => { document.querySelectorAll('[data-pane="matchup"] .bmopp .bms
 /* "The read": Battle's one hero. Your lead pair breaks out of a diagonal band (the page's one burst); their likely lead and their
    biggest threat are the two runner strips; Fake Out on their side is a plain numeral. Same data as before (71-manga.js). */
 rzReadHtml = function () {
-  const mine = members(), theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
+  const mine = members(), theirs = oppTeam();
   if (mine.length < 4 || !theirs.length) return '';
   const r = planMatchup(mine, theirs, true), lead = r.lead.map(i => mine[i]), C = r.chosen.map(i => mine[i]);
   const ll = r.B && theirs.length >= 2 ? likelyLead(theirs, r.B) : [];
