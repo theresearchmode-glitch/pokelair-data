@@ -77,7 +77,9 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
       .map(([e, q]) => `${(e.getAttribute('aria-label') || e.textContent || e.tagName).trim().replace(/\s+/g, ' ').slice(0, 30)} ${Math.round(q.width)}x${Math.round(q.height)}`) : [];
     // focusable but hidden: can take focus (not disabled, no tabindex -1, not inert) while the browser says it isn't visible
     // (tested by really focusing it: display:none and closed-<details> content can't take focus, whatever their tabindex says)
-    const was = document.activeElement, hidden = all.filter(e => { if (e.disabled || e.tabIndex < 0 || e.closest('.vh') || vis(e)) return false; try { e.focus({preventScroll: true}); } catch (x) { return false; } return document.activeElement === e; })
+    // Nov 12: controls inside a closed fold are skipped: Windows WebKit lets a SCRIPT focus them, but real Tab presses never land
+    // there (Sim's PC, experiments/hidden-why.cjs: 6 reached by script, 0 by keys, at 390 and 820), so they were false reports
+    const was = document.activeElement, hidden = all.filter(e => { if (e.disabled || e.tabIndex < 0 || e.closest('.vh') || vis(e)) return false; { const d = e.closest('details:not([open])'); if (d && !(e.closest('summary') && e.closest('summary').parentElement === d)) return false; } try { e.focus({preventScroll: true}); } catch (x) { return false; } return document.activeElement === e; })
       .map(e => (e.getAttribute('aria-label') || e.textContent || e.tagName).trim().replace(/\s+/g, ' ').slice(0, 30)); try { was && was.focus && was.focus({preventScroll: true}); } catch (x) {}
     // repeated lines: the same visible line of 24+ characters more than once in the page's main area
     scrollTo(0, 0);

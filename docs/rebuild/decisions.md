@@ -457,3 +457,8 @@ Sim's own decisions are marked "Sim". Newest first.
   2) Share "Could not draw the image in this view.": happens only when the page is opened as a file (file://): the browser blocks
      turning the drawing into an image there. Checked both engines: file:// card/poster/sheet all fail; served over http (as the
      Preview and the real site are) all three draw (1200x675, 1080x1350, 1080x1350). Pictures: docs/rebuild/home/share-*.png.
+- ~3:05 PM: Sim's PC ran hidden-why.cjs (3a33199): WebKit on Windows lets a script focus 6 controls inside closed folds; real
+  Alt+Tab walk 38/39 stops, 0 on them (390, 820); Chromium 0 and 0. So the "hidden-focusable" reports were the check, not the page.
+  c13 now skips controls inside a closed fold for that count (comment in the file); re-run here: team 0 at every width, both engines.
+  Open, unsure why: on the PC, WebKit's key walk made 38 stops where Chromium made 56 (here both make 56).
+- ~3:05 PM: Home piece 3 published to the Preview (v75, Sim: "home piece 3 looks great"); file list checked: 394 files.
