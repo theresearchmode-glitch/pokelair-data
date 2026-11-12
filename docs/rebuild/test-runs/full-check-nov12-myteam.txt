@@ -58,7 +58,8 @@ same-matchups: here 229/230 identical, 1 different (PC: 212/230, 18 different), 
   Top 12 grid, Farigiraf row): identical text; only the sprite tag differs: before <img ... loading="lazy" decoding="async">, now <img ...>
   without them. Cause: fa24cf7 (Sim's iPhone fix, Nov 11, live: "No picture flash on tap"): on a redraw, a sprite that has already
   loaded is kept and its loading attribute dropped, so which steps differ depends on which pictures finished loading first.
-  EXPECTED for this step. NOT yet shown for the PC's 18: needs the PC's same-matchups dump pushed to check each is only this tag.
+  EXPECTED for this step. PC dump (743b90d) checked: 18 of 18 differing steps are identical once the sprite tag's loading="lazy" /
+  decoding="async" are left out (0 other differences). EXPECTED: fa24cf7.
 behaviour A-team 1 FAIL: NOT reproduced. Cloud run of today's page (af762ba build, whose today's-page code differs from 5003b61 only by
   e25432e, the Preview data hook): `behaviour: 132 pass, 0 FAIL, 10 known bugs, 0 fixed?, 2 skipped; 1246s  (adapter current)`.
   Name unknown; earlier PC-only and under-load failures were timing (SUG-07, SAVED-05, X-05). STILL OPEN until the PC re-run names it.
