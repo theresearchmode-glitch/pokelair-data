@@ -41,6 +41,8 @@ export default (ui, pg, o) => {
   // the name shown for a Pokémon tile / button (aria-label "Garchomp, Lead" -> "Garchomp")
   const tileName = `e => (e.getAttribute('aria-label') || '').split(', ')[0]`;
   const optName = t => t.split(' · ')[0].replace(/[★\s]+$/, '').replace(/ \([\d.]+%\)$/, '').trim();
+  // the shared adapter's go / current / text (this file wraps them for Home; the kit may merge this file more than once)
+  const go0 = ui.go.__v2base || ui.go, cur0 = ui.current.__v2base || ui.current, text0 = ui.text.__v2base || ui.text;
   const H = {
     waitFor, vis, has,
     // ---------- generic ----------
@@ -93,10 +95,27 @@ export default (ui, pg, o) => {
     infoTabText: () => pg.evaluate(() => { const p = [...document.querySelectorAll('.ms2 [data-mspan]')].find(e => !e.hidden && e.getClientRects().length); return p ? p.innerText.replace(/\s+/g, ' ').trim() : null; }),
     infoSheetBox: () => pg.evaluate(() => { const s = document.querySelector('.np-sheet'); if (!s || !s.querySelector('.ms2')) return null; const r = s.getBoundingClientRect(); return {w: Math.round(r.width), h: Math.round(r.height), top: Math.round(r.top), bottom: Math.round(r.bottom)}; }),
     focusInfoTab: () => pg.focus('.ms2 [data-mstab][aria-selected="true"]'),
-    // ---------- Home: not built in the new build yet (only the Preview shows a mock-up) ----------
-    homeHeadline: () => NOT('Home page'), homeStartButtons: () => NOT('Home page'), homeTools: () => NOT('Home page (All 11 Tools)'), tapTool: () => NOT('Home page (All 11 Tools)'),
-    ratingMoves: () => NOT('Home page (This week in the ratings)'), welcomeCardText: () => NOT('Home page (welcome card)'), closeWhatsNew: () => NOT("Home page (What's New)"),
-    homeTopRows: () => NOT('Home page (Top of the Meta)'), homePlanLine: () => NOT('Home page (game plan vs the Champion)'),
+    // ---------- Home (pages/home.js, Nov 12): same names and return shapes as today's adapter ----------
+    // Home is the page with no hash too (V2.route falls back to it), so go / current / text treat "#home" and "no hash" alike
+    // (the shared v2.mjs only knows hash routes); every other page goes through the shared adapter unchanged.
+    go: async (name, wait = 600) => { if ((ui.PAGES[name] || name) !== 'home') return go0(name, wait);
+      await pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); if (location.hash !== '#home') location.hash = '#home'; else if (window.V2) V2.redraw(); }); await pg.waitForTimeout(wait); return 'home'; },
+    current: async () => { const c = await cur0(); return /^not-in-v2:#\(none/.test(c || '') && await pg.evaluate(() => !!window.V2 && V2.route() === 'home') ? 'home' : c; },
+    text: async () => (await pg.evaluate(() => !location.hash && !!window.V2 && V2.route() === 'home')) ? pg.evaluate(() => { const m = document.querySelector('#main'); return m ? m.innerText.replace(/\s+/g, ' ').trim() : ''; }) : text0(),
+    /** the big headline (the tagline) */
+    homeHeadline: () => txt('#main .hm-hero h1') || '',
+    /** the start buttons under the tagline, as shown */
+    homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-go a')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
+    /** the tool tiles' names (the tile's bold name, without its "›") */
+    homeTools: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-tool')].filter(e => e.getClientRects().length).map(e => { const b = e.querySelector('b'); return b ? b.childNodes[0].textContent.trim() : ''; })),
+    tapTool: name => tapFound(n => [...document.querySelectorAll('#main .hm-tool')].find(e => e.getClientRects().length && e.querySelector('b') && e.querySelector('b').childNodes[0].textContent.trim() === n) || null, name, 'tool ' + name, 700),
+    /** This week in the ratings, the rows on show: {name, text, label} (desktop: its own column; under 900 px: the switch's "This week") */
+    ratingMoves: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-mv')].filter(e => e.getClientRects().length).map(e => ({name: e.dataset.v2mon, text: e.innerText.replace(/\s+/g, ' ').trim(), label: e.getAttribute('aria-label')}))),
+    welcomeCardText: () => txt('#main .hm-welcome'),
+    closeWhatsNew: () => click('[data-hmnewx]'),
+    /** The Meta, right now: the rows of the list on show (names) */
+    homeTopRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-top .hm-rk')].filter(e => e.getClientRects().length).map(e => e.dataset.v2mon)),
+    homePlanLine: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main .hm-you .hm-plan')].find(e => e.getClientRects().length); const m = e && e.innerText.replace(/\s+/g, ' ').match(/Game plan[^.]*\./); return m ? m[0] : null; }),
 
     // ---------- My Team ----------
     /** the team's name as the page shows it: a heading if there is one, else the eyebrow "My Team · <saved name>" */
@@ -319,5 +338,6 @@ export default (ui, pg, o) => {
     pageLuminance: () => pg.evaluate(() => { const c = getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g).map(Number); return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255; }),
     retirePokemonInSlot: (i, name) => ui.peek(`S.slots[${i}]={n:${JSON.stringify(name)},a:null,lock:false};render()`).then(() => pg.waitForTimeout(1200)),
   };
+  H.go.__v2base = go0; H.current.__v2base = cur0; H.text.__v2base = text0;
   return H;
 };
