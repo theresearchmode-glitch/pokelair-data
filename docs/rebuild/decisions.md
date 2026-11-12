@@ -4,6 +4,15 @@ Claude decides small things under executive control; Sim can overrule any of the
 Sim's own decisions are marked "Sim". Newest first.
 
 ## Nov 12 morning (Sim, answers to the overnight questions)
+- DONE (Sim's go on Claude's recommendation): word-list wording on the new site (today's site unchanged). "Ready for 81% of the
+  top 30" was a weighted score (each threat by its top-cut share; No answer 0, Shaky .4, Handles .8, Beats 1) shown as a share of
+  threats, beside "handles 21 of 30", the plain count. Now: check "Handles the top threats" / "Beats or handles 21 of the top 30",
+  chip "21/30 handled", All 30 heading and threat sheet in the same words, Why this score "(beats or handles 21 of 30 top threats)",
+  Quick add "Matchups +7%", the "?" popup's title and text; the lead-support warning under "Nothing to fix" is labelled "Note:".
+  Measured (built page, real data, everything opened + popups + sheets): lines with "ready" 8 -> 1 (the approved band word
+  "Tournament ready"); 0 console errors. Behaviour A-team v2: only MU-04, SUG-10, SUG-11 changed (they checked the old words); they
+  now accept either wording and pass on both today's page and the new build. Picture: proposals/wording-done.png.
+
 - Sim: the older items are a go ("good for us to move forward"): Player IDs (needs Sim to add the NP_PID_KEY secret on GitHub;
   main's daily job doesn't use it yet, so nothing is broken meanwhile), About page wording (players can ask to have their name
   removed), review item 10 screenshot, a favourite link on the empty My Box, the open-Battle-tab limit (3 screens desktop, 6 phone).

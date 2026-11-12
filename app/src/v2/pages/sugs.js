@@ -48,7 +48,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
   else { V2.sgReasons(ms); const side = !P.length && Array.isArray(P.more) && P.more.length > 0, top = S2.top, g0 = top.length ? top[0].g0 : null;
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
-    const pre = V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap">${V2.esc(P.gapNote)}</p>` : '');
+    const pre = V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
     const all = '<button type="button" class="np-link sg2-all" data-v2sgall>See all suggestions ›</button>';
     body = !top.length ? (side ? `<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}`
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
@@ -106,7 +106,7 @@ V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms, 
     return `<li class="sg2-qp"><div class="sg2-qt"><img src="${V2.art(SPRITE_ID[p.n])}" alt=""><div><b>${V2.nameHtml(p.d)}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></div></div>
       <p class="sg2-tags">${p.m ? tag('Mega', 'mega', 'Mega Evolution') : ''}${I.box ? tag('In your box', '', '') : I.catch ? tag('To catch', '', 'Not in your box yet') : ''}${pl.gem ? tag('Hidden gem', 'gem', '') : idea ? tag('Idea', '', (idea.match(/title="([^"]*)"/) || [])[1] || '') : ''}</p>
       ${I.why ? `<p class="sg2-qw">${V2.esc(V2.undot(I.why))}</p>` : ''}${I.thr ? `<p class="sg2-qw">${V2.undotHtml(I.thr)}</p>` : ''}
-      <div class="sg2-qa"><button type="button" class="np-btn2" data-v2qa="${i}"><span>${V2.esc(I.btn)}</span></button><span class="fine" title="${V2.esc(I.fitTitle)}">${I.fit}</span></div></li>`; };
+      <div class="sg2-qa"><button type="button" class="np-btn2" data-v2qa="${i}"><span>${V2.esc(I.btn)}</span></button><span class="fine" title="${V2.esc(V2.wl(I.fitTitle))}">${V2.wl(I.fit)}</span></div></li>`; };
   const row = ([s, l, tx, key]) => { const Q = key && P && qa++ < 8 ? quickList(key, P, ms, used) : null, n = Q ? Q.picks.length : 0, minor = !Q && (s === 'lo' || s === 'ok');
     const head = `<span class="sg2-sev ${s}">${V2.esc(l)}</span><span class="sg2-pt">${V2.undotHtml(tx)}</span>`;
     if (!n) return `<div class="sg2-prob${minor ? ' minor' : ''}">${head}${Q && Q.note ? `<p class="fine sg2-qn">${Q.note}</p>` : ''}</div>`;
@@ -119,13 +119,13 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
   let pr; try { pr = V2.fixRows(D, useA, a, tRows, P); } catch (e) { console.error(e); pr = {real: [], html: ''}; }
   const PG = proGrades(ms, useA), CK = D.CK || proChecks(ms, useA), V = verdictData(ms, a, PG, CK);
   // the team checks card
-  const ckLi = (x, nt) => { const k = ckState(x); return `<li class="${k}"><b class="mk" aria-label="${CK_MARK[k][1]}">${CK_MARK[k][0]}</b><div><b>${x.label}</b><span>${V2.esc(V2.undot(x.ok ? x.have : x.miss))}</span>${x.pro && !nt ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</div></li>`; };
+  const ckLi = (x, nt) => { const k = ckState(x); return `<li class="${k}"><b class="mk" aria-label="${CK_MARK[k][1]}">${CK_MARK[k][0]}</b><div><b>${V2.wl(x.label)}</b><span>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, CH.hand(V.RD))))}</span>${x.pro && !nt ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</div></li>`; };
   const ckCard = CK ? `<div class="sg2-ckc"><p class="sg2-ckh"><span class="sg2-k">Team checks${!CK.full ? ' so far' : ''}</span><b class="u">${CK.pass} of ${CK.n} checks</b></p><p class="fine">${CK_TXT.intro}</p>
     <ul class="sg2-ckl">${CK.items.filter(x => !x.note).map(x => ckLi(x)).join('')}</ul>${CK.items.some(x => x.note) ? `<p class="sg2-ckn"><b>${CK_TXT.notes}</b><span>${CK_TXT.notesWhy}</span></p><ul class="sg2-ckl nt">${CK.items.filter(x => x.note).map(x => ckLi(x, 1)).join('')}</ul>` : ''}</div>` : '';
   // the verdict: legal and items, threats, checks, real results, your games, type balance
   const hand = !V.illegal && V.RD && CH.hand(V.RD) ? ` · ${CH.handTxt(V.RD, true)}` : '';
-  const chips = [V.score != null ? `<span><b>${V.score}%</b> ready${V2.tip('readiness')}</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks${V2.tip('checklist')}</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
-  const vd = `<div class="sg2-vd ${V.lvl}"><p class="sg2-vh">${V2.esc(V2.undot(V.head + hand))}</p><p class="sg2-vc">${chips}</p><dl>${V.rows.map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
+  const chips = [V.score != null && CH.hand(V.RD) ? `<span><b>${CH.hand(V.RD).x}/${CH.hand(V.RD).n}</b> handled${V2.tip('readiness')}</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks${V2.tip('checklist')}</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
+  const vd = `<div class="sg2-vd ${V.lvl}"><p class="sg2-vh">${V2.esc(V2.undot(V2.wl(V.head + hand, CH.hand(V.RD))))}</p><p class="sg2-vc">${chips}</p><dl>${V.rows.map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
   const sub = [pr.real.length ? pr.real.length + ' to look at' : 'Nothing big to fix', CK ? `${CK.pass}/${CK.n} checks` : '', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
   // A6 (Sim's fix plan): one live "Working out…" message at load, not two; Suggestions' own line is the one read out
   const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
@@ -144,12 +144,12 @@ document.addEventListener('click', e => { if (!e.target.closest) return;
   const pl = V2.fx.qa[+b.dataset.v2qa]; if (!pl) return; const say = applyQuick(pl); render(); toast(say, true); });
 
 // ---------- "?" explainers (today's TIPS words, 36-sug-data.js): tap for a small bubble; tap outside, Escape or scrolling closes it ----------
-V2.tip = k => { const T = TIPS[k]; return T ? `<button type="button" class="sg2-tip" data-v2tip="${k}" aria-expanded="false" aria-label="${V2.esc(/^(What|How)\b/.test(T[0]) ? T[0] : `What is ${T[0]}?`)}">?</button>` : ''; };
+V2.tip = k => { const T0 = TIPS[k], T = T0 && [V2.wl(T0[0]), V2.wl(T0[1])]; return T ? `<button type="button" class="sg2-tip" data-v2tip="${k}" aria-expanded="false" aria-label="${V2.esc(/^(What|How)\b/.test(T[0]) ? T[0] : `What is ${T[0]}?`)}">?</button>` : ''; };
 V2.tipClose = () => { document.querySelectorAll('.sg2-tipop').forEach(x => x.remove()); document.querySelectorAll('[data-v2tip][aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false')); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2tip]');
   if (!b) { if (!(e.target.closest && e.target.closest('.sg2-tipop'))) V2.tipClose(); return; }
   e.preventDefault(); const was = document.querySelector('.sg2-tipop'); V2.tipClose(); if (was && was.dataset.k === b.dataset.v2tip) return;
-  const T = TIPS[b.dataset.v2tip]; if (!T) return; const p = document.createElement('div'); p.className = 'sg2-tipop'; p.dataset.k = b.dataset.v2tip; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', T[0]);
+  const T0 = TIPS[b.dataset.v2tip], T = T0 && [V2.wl(T0[0]), V2.wl(T0[1])]; if (!T) return; const p = document.createElement('div'); p.className = 'sg2-tipop'; p.dataset.k = b.dataset.v2tip; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', T[0]);
   p.innerHTML = `<b class="u">${V2.esc(T[0])}</b><p>${V2.esc(T[1])}</p><a class="np-link" href="#method">How we calculate →</a>`; document.body.append(p); b.setAttribute('aria-expanded', 'true');
   // place it from the drawn 24px tile, not the 44px tap area around it (A15), so it sits where it always did
   const q = b.getBoundingClientRect(), g = Math.max(0, (q.height - 24) / 2), r = {left: q.left + g, width: q.width - 2 * g, top: q.top + g, bottom: q.bottom - g}, w = Math.min(340, innerWidth - 32); p.style.width = w + 'px'; p.style.left = Math.max(16, Math.min(innerWidth - w - 16, r.left + r.width / 2 - w / 2)) + 'px';

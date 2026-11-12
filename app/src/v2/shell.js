@@ -119,6 +119,16 @@ V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg =
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
 V2.asOf = () => { try { return typeof dataDateText === 'function' ? dataDateText() : ''; } catch (e) { return ''; } };
 V2.route = () => { const h = (location.hash || '').slice(1); return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
+// Word list (Sim, Nov 9; Nov 12: "fix them based on your recommendation"): the idea is Matchups and its levels are Beats it /
+// Handles it, never "ready". Shared logic (also today's site) still writes "Ready for ..."; the new site says it the word list's way.
+// The "81%" in "Ready for 81% of the top 30" is a weighted score, not a share of threats, so the plain count is shown instead.
+V2.wl = (t, hand) => String(t == null ? '' : t)
+  .replace(/Ready for \d+% of the top (\d+) threats(?:,| ·) handles (\d+) of \d+/g, 'Beats or handles $2 of the top $1 threats')
+  .replace(/Ready for \d+% of the top (\d+) threats/g, (m, n) => hand ? `Beats or handles ${hand.x} of the top ${hand.n}` : m)
+  .replace(/([Rr])eady for (\d+)\/(\d+) top threats/g, (m, r, x, n) => `${r === 'R' ? 'B' : 'b'}eats or handles ${x} of ${n} top threats`)
+  .replace(/Ready for the top threats/g, 'Handles the top threats')
+  .replace(/\bReady ([+−-]\d+%)/g, 'Matchups $1') // Quick add: the change to the matchup score
+  .replace(/how many your team is ready for: it Beats them or Handles them/g, 'how many your team Beats or Handles');
 // redraw the current page after data arrives or a choice changes, keeping the reader's place and focus (no scroll jump).
 // Fix plan A5 (Sim, Nov 11): a redraw used to rebuild the whole page, header included, so focus fell back to the page top
 // (the next Tab went to "Skip to the page") and a button could be replaced under the pointer. Now the new page is built
