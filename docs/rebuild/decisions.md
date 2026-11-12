@@ -508,3 +508,4 @@ Sim's own decisions are marked "Sim". Newest first.
   Proof on today's site, before vs after: 38/38 identical (rows, tags, plan, replace prompt, and the drawn Cores list for every
   kind x sort x filter, 46-93 thousand characters each). A first proof run compared empty views (wrong element); caught, redone.
   Home's tests are being wired to the new page by a helper in its own worktree (look-only test work; merge after review).
+- 3:20 PM: Sim: times must ALWAYS be correct. From now on every time comes from the clock: docs/rebuild/log-decision.sh stamps decision entries itself, and CLAUDE.md now says so. Earlier today's wrong entry times were each corrected when found (2:55/3:05 -> 2:20-2:26; 2:50 -> 2:42; 3:10/3:15 -> 2:47/2:51; 3:25 -> 3:17; draft headers 3:20 -> 3:13 and 3:15, 3:25 -> 3:19).

@@ -9,6 +9,11 @@ This repo is Sim's (Simran's). These are her standing preferences for any sessio
 - docs/rebuild/HANDOVER.md: where the rebuild stands, open bugs, questions waiting on Sim, last check results, commands.
 - docs/rebuild/my-team-fix-plan.md: Sim's My Team fix plan (Part A bugs in order, Part B causes, order of work).
 
+## Times are always read from the clock (Sim, Nov 12)
+Sim is strict and punctual about times. Never type a time from memory or estimate it ("~3:25"). Every time written anywhere
+(decisions.md, docs, messages to Sim, commit messages) comes from the clock first: `TZ=America/New_York date`. For the decision
+log use `bash docs/rebuild/log-decision.sh "..."`, which stamps the entry with the clock's time itself.
+
 ## No yes-man (Sim, Nov 12): always say when you disagree or are unsure; challenge, look deeper; never confirm or agree
 without checking first. (docs/rebuild/RULES.md section 0.)
 
