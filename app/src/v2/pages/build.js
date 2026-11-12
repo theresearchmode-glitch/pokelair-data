@@ -161,3 +161,7 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   if (b.dataset.bdcprep) { S.opp = b.dataset.bdcprep.split('|').slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = null; persist(); location.hash = '#battle'; toast('Loaded as your opponent'); return; }
   const ns = b.dataset.bdccopy.split('|').filter(n => byName.get(n)); if (!ns.length) return;
   toast((await V2.copy(slotsPaste(ns.map(n => ({n, a: null, lock: false}))))) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); });
+// Home's cores (cards and "All cores ›") open Build at the cores, as today's menu entry did (CORES-13); runs after the page change's own scroll to the top
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-hmcores]')) V2.bdUi.toCores = true; }, true);
+V2.pages.build.after = () => { V2.bdJumpSpy(); if (!V2.bdUi.toCores) return; V2.bdUi.toCores = false;
+  setTimeout(() => { const c = document.querySelector('.bd-cores'); if (c) c.scrollIntoView({block: 'start'}); V2.bdJumpSpy(); }, 0); };

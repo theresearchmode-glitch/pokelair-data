@@ -826,3 +826,4 @@
 .bd-cacts{display:flex;flex-wrap:wrap;gap:0 var(--s4);margin-top:var(--s1)}.bd-cacts .np-link{font-size:var(--t13)}
 
 .bd-fresh{margin-top:var(--s2);max-width:48ch;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)} /* today's Fresh take line (22-auto-build.js) */
+@media (min-width:700px){.bd-others,.bd-wins,.bd-cores{scroll-margin-top:96px}} /* clear the 76px sticky top bar when jumped to */
