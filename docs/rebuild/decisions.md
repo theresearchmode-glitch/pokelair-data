@@ -376,3 +376,4 @@ Sim's own decisions are marked "Sim". Newest first.
   link toast "That team link didn't work: it may be cut off" at 437 ms; a good six opens the Shared team sheet; a box link opens My
   Box with Add/Replace. Real builds never had this step (BOX-06 passes there). Found while making the team-link plan pictures (F23).
 - ~12:00 PM Eastern: team link plan F22-F25 written (docs/rebuild/team-link-plan.md, pictures docs/rebuild/team-link/); 4 choices sent to Sim. Nothing built.
+- ~12:10 PM Eastern: Sim agreed team-link choices 1-3 (no name in link, refuse partial links, deflate); 4 (address on images) waits for the public address (~2 weeks).

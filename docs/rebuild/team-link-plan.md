@@ -50,3 +50,9 @@ Make a link -> open it in a fresh browser: same six, same sets, same Strength Sc
 unchanged (compared before/after); Save to My Teams adds one saved team, Undo removes it; a cut-off, edited, empty and
 nonsense link each show the message and the normal site with nothing changed; a name with <script> shows as text;
 every check at 390 and 1440, Chromium and WebKit; one real tap on Sim's iPhone in the Claude app.
+
+## Sim's answers (Nov 12, ~12:10 PM Eastern)
+1. Team name left out of the link: agreed. 2. Refuse a partly unreadable link with the plain message: agreed ("love it").
+3. Squeeze long links (deflate; old links keep opening): agreed. 4. Address on the share images: not now; Sim sets the public
+address within ~2 weeks, so this item waits for that.
+Still plan only: building waits for Sim's go (her rule: queued after My Team is finished).
