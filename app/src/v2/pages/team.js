@@ -62,6 +62,15 @@ V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'functi
     <div class="ts2-acts"><button type="button" class="np-btn" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2" data-ts2share><span>Share as Image</span></button><p class="fine">Tap a card to edit its set · Big number: the stat at level 50 · small number: stat points (0–32) · <b class="up">+</b> / <b class="dn">−</b> nature</p></div>
     <div class="ts2-grid">${ms.map(card).join('')}</div></div>`, {label: 'Team Sheet'}); };
 // Copy for Showdown: today's export (exportPaste) and clipboard helper (copyText)
+// Export to Showdown (today's Export panel, Nov 12: every feature kept): the same text as Copy for Showdown, shown so it can be
+// read or selected by hand when copying is blocked
+V2.openExport = () => { if (!members().length) return; let x = ''; try { x = exportPaste(); } catch (e) {}
+  V2.sheet(`<div class="imp2"><div class="np-eyebrow">Export</div><h2 class="u">Export to Showdown</h2>
+    <p class="tm-sub">Your team as Showdown text: items, Abilities, level 50, stat points as EVs, natures and moves.</p>
+    <textarea class="imp2-in" data-expout rows="12" readonly spellcheck="false" aria-label="Your team as Showdown text">${V2.esc(x)}</textarea>
+    <div class="imp2-acts"><button type="button" class="np-btn" data-expcopy><span>Copy</span></button></div></div>`, {label: 'Export to Showdown', small: true, focus: '[data-expcopy]'}); };
+document.addEventListener('click', async e => { if (e.target.closest('[data-v2export]')) { V2.closeSheet(true); V2.openExport(); return; }
+  if (e.target.closest('[data-expcopy]')) { const f = document.querySelector('[data-expout]'); if (await V2.copy(f ? f.value : '')) toast('Copied'); else if (f) { f.focus(); f.select(); toast('Press Ctrl+C to copy'); } } });
 V2.copyTeam = async () => { toast((await V2.copy(exportPaste())) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2copy]')) V2.copyTeam(); if (e.target.closest('[data-v2sheetopen]')) V2.openTeamSheet();
   if (e.target.closest('[data-ts2share]')) { V2.shUi.kind = 'sheet'; V2.closeSheet(true); V2.openShare(); }
@@ -102,7 +111,8 @@ V2.savedHtml = () => { const U = V2.svUi, rows = savedRows(U.sort), n = rows.len
   // an odd count leaves a hole in the 2-across grid: the free spot invites saving the six on My Team (Sim: no half-filled rows)
   const mine = members().length, free = `<article class="svt2-card svt2-free"><h3 class="u">${10 - n} spots free</h3><p class="tm-sub">${mine ? 'Keep the six on My Team as a saved team.' : 'Build a team on My Team, then save it here.'}</p>
     <div class="svt2-acts">${mine ? '<button type="button" class="np-btn2" data-svact="new"><span>Save This Team</span></button>' : '<a class="np-btn2" href="#build"><span>Build me a team</span></a>'}</div></article>`;
-  return `<div class="svt2"><div class="np-eyebrow">${n} of 10 saved</div><h2 class="u">Saved Teams</h2>
+  return `<div class="svt2"><div class="np-eyebrow"><span><a class="np-back" href="#team" data-v2close>← My Team</a> · ${n} of 10 saved</span></div><h2 class="u">Saved Teams</h2>
+    <p class="fine svt2-sync">Up to 10 teams. ${(ui.syncSt || 'local') === 'local' ? 'Saved in this browser only.' : 'Saved and kept in step across your devices.'}</p>
     ${U.cmp && S.teams.some(t => t.id === U.cmp) ? `<p class="svt2-cmp" role="status"><b>Compare:</b> ${V2.esc((S.teams.find(t => t.id === U.cmp) || {}).name || '')} is picked. Pick one more saved team, or <button type="button" class="np-link" data-svact="cmpcur">Compare with My Team</button> · <button type="button" class="np-link" data-svact="cmpx">Cancel</button></p>` : n > 1 ? '<p class="fine svt2-cmp">Tap Compare on two teams to see them side by side.</p>' : ''}${n ? `<div class="svt2-sort">${V2.slide('svsort', [['recent', 'Newest', 'clock'], ['name', 'Name'], ['rating', 'Matchups', 'gauge']], U.sort, 'Sort saved teams')}</div><div class="svt2-grid" aria-live="polite">${rows.map(card).join('')}${n % 2 && n < 10 ? free : ''}</div>`
       : mine ? `<p class="tm-sub">No saved teams yet. Save this six to come back to it, compare it, or try changes without losing it.</p><div class="svt2-empty"><button type="button" class="np-btn" data-svact="new"><span>Save This Team</span></button></div>` // Sim, Nov 12 (option B)
       : `<p class="tm-sub">No saved teams yet. Add Pokémon on My Team, then save them here.</p>`}</div>`; };
@@ -325,7 +335,7 @@ V2.moreHtml = () => { const n = S.box.length, ms = members();
   const row = (attrs, label, sub) => `<li><button type="button" class="tm-mi" ${attrs}><span>${label}</span>${sub ? `<small>${sub}</small>` : ''}</button></li>`;
   return `<div class="tm-moremenu"><div class="np-eyebrow">My Team</div><h2 class="u">More</h2><ul>
     ${row('data-v2sheetopen', 'Team Sheet', ms.length ? `${ms.length} sets on one page` : 'Every set on one page')}${ms.length ? row('data-v2copy', 'Copy for Showdown', 'The team as text, ready to paste') : ''}
-    ${row('data-v2import', 'Import', 'Paste a team or a team link')}${ms.length ? row('data-cxgo2="cur|"', 'Compare', 'Side by side with another team') : ''}
+    ${ms.length ? row('data-v2export', 'Export', 'The Showdown text to read, select or copy') : ''}${row('data-v2import', 'Import', 'Paste a team or a team link')}${ms.length ? row('data-cxgo2="cur|"', 'Compare', 'Side by side with another team') : ''}
     <li><a class="tm-mi" href="#box"><span>My Box</span><small>${n} Pokémon you own</small></a></li></ul>
     ${ms.length ? `<ul class="tm-mdanger">${row('data-v2clear', 'Clear Team', 'Empties all six spots. Undo brings them back')}</ul>` : ''}</div>`; };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2more]')) { V2.sheet(V2.moreHtml(), {label: 'More', small: true, focus: '.tm-mi'}); return; }
@@ -349,7 +359,7 @@ V2.pages.team = {place: 'team', draw() {
   let wx = ''; try { const k = ms.length ? wxKeyOf(ms) : null; if (k) wx = wxName(k); } catch (e) {}
   // Legal mark (mock-up: in the jump bar); narrower windows show it in the hero's links row instead, where it has room
   const legalMark = ms.length ? `<span class="tm-legal${L.illegal ? ' bad' : ''}" title="Based on our reading of the ${V2.esc(REG_NAME)} rules. Check the official rules before an event."><i aria-hidden="true"></i>${L.illegal ? 'Not legal yet' : 'Legal for ' + V2.esc(REG_NAME)}</span>` : '';
-  const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team · ${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}</span></div>${title ? `<h1 class="tm-name">${V2.esc(title).replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2')}</h1>` : ''}${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
+  const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team · ${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}</span></div>${title ? `<h1 class="tm-name">${V2.esc(title).replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2')}</h1>` : ''}${/\(sample\)\s*$/i.test(title || '') ? '<p class="fine tm-sample">This is a sample team, here to show how NastyPlot works. <a class="np-link" href="#build">Build your own</a> · <button type="button" class="np-link" data-v2import>Import a team</button></p>' : ''}${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div>`}</div><div class="tm-info">${s == null ? '' : `${win ? `<p class="tm-line">${win}</p>` : ''}<p class="tm-rank">${V2.esc(rank)}${V2.asOf() ? `<span class="tm-asof"> · ${V2.esc(V2.asOf())}</span>` : ''}</p>${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess</p>' : ''}<div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why this score?</button>${others ? `<button type="button" class="np-link" data-v2switch aria-haspopup="dialog">Switch Team <small>${others} saved</small></button>` : ''}${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
   // Sim, Nov 11: the one main action plus two others; the rest in one More menu (Clear Team last, apart, with Undo)
   // A11 proposal (Sim's fix plan): the main button only when there is something to save. A saved team that hasn't changed shows a

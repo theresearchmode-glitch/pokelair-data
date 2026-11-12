@@ -540,3 +540,8 @@
 .ed-tys{display:flex;flex-wrap:wrap;gap:var(--s2)}.ed-ty{display:inline-flex;align-items:center;gap:var(--s1)}.ed-ty b{font:700 var(--t13)/1 var(--b)}
 .ed-weakin{display:grid;gap:var(--s3);padding:0 0 var(--s4)}
 .ed-weak+.ed-foot{margin-top:0}
+
+/* first-visit sample team note (Nov 12, today's feature) */
+.tm-sample{margin:var(--s1) 0 var(--s2)}
+.svt2-sync{margin:0 0 var(--s4)}
+.svt2:has(.svt2-sync) h2{margin-bottom:var(--s2)}
