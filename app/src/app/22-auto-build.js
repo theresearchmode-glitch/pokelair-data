@@ -307,7 +307,8 @@ function runAutoBuild() {
     const fresh = withFresh.teams.find(t => t.fresh); if (!fresh) return;
     // option 2 if you're still on option 1; otherwise it joins the end so the one you're looking at doesn't move
     if (((ui.abIdx && ui.abIdx.doubles) || 0) === 0) res.teams.splice(1, 0, fresh); else res.teams.push(fresh);
-    if (view === 'auto') renderAutoBuild(); }, 30);
+    // today's page redraws its Build view; the new build (no `view`) redraws its page (Nov 12: it threw "view is not defined")
+    if (typeof view !== 'undefined') { if (view === 'auto') renderAutoBuild(); } else if (typeof V2 === 'object' && V2.redraw) V2.redraw(); }, 30);
 }
 // Add a "fresh take" as option 2: a team built with off-meta scoring, on power and fit (at most 2 meta staples),
 // kept only if it passes nearly as many winning-team checks as the proven build and isn't the same team.
