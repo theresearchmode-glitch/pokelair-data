@@ -7,7 +7,7 @@ V2.homeHero = () => { const E = V2.esc, ms = members(), has = ms.length > 0, six
     : `<a class="np-btn" href="#build">Build Me a Team</a><a class="np-btn2" href="#team"><span>Score My Team</span></a>`;
   // Most used: the mock-up's three on one floor (Nov 12, Sim: keep every detail of the mock-up): #1 bigger, its name big and slanted;
   // each % big and slanted with a small unit; a floor line across all three at the feet
-  const used = (p, rank) => p ? `<button type="button" class="hm-used${rank === 1 ? ' one' : ''}" data-v2mon="${E(p.n)}" aria-label="${E(V2.disp(p.n))}, most used #${rank}, ${homePct(p)}% of teams: open its info">${V2.mon(p.n, {iw: rank === 1 ? 260 : 150, bare: true})}<span class="hm-ut"><b>${V2.nameHtml(V2.disp(p.n))}</b><small><span class="num">${homePct(p)}<span class="unit">%</span></span> of teams${rank === 1 ? ' · #1' : ''}</small></span></button>` : '';
+  const used = (p, rank) => p ? `<button type="button" class="hm-used${rank === 1 ? ' one' : ''}" data-v2mon="${E(p.n)}" aria-label="${E(V2.disp(p.n))}, most used #${rank}, ${homePct(p)}% of teams: open its info">${V2.mon(p.n, {iw: rank === 1 ? 260 : 150, bare: true})}<span class="hm-ut"><b>${V2.nameHtml(V2.disp(p.n))}</b><small><span class="num">${homePct(p)}<span class="unit">%</span></span> of ladder teams${rank === 1 ? ' · #1' : ''}</small></span></button>` : '';
   return `<section class="hm-hero"><div class="hm-lead"><div class="np-eyebrow"><span>Pokémon Champions · Reg M-C · VGC doubles</span></div>
     <h1 class="u hm-tag"><span>Sharply raise</span> <span class="pl">your win rate.</span></h1>
     <p class="hm-intro">Score your team, see what beats it, and plan every match, from ${n ? homeNum(n) + ' real tournament teams' : 'real tournament results'}.</p>

@@ -67,7 +67,9 @@ function speciesFromPaste(name) {
 // Moves from the paste become that Pokémon's moves for the current format.
 function parsePaste(text) {
   const notes = [], slots = [], assumed = [];
-  const blocks = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean).slice(0, 6);
+  const all = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean), blocks = all.slice(0, 6);
+  // more than six in the paste (Sim, Nov 12: say so): the names of the ones left out, read from each extra block's first line
+  const over = all.slice(6).map(b => { const h = b.split('\n')[0].split(' @ ')[0].trim().replace(/\s*\([MF]\)\s*$/, ''), m = h.match(/\(([^()]{2,})\)\s*$/); return m ? m[1].trim() : h; }).filter(Boolean);
   for (const b of blocks) {
     const lines = b.split('\n').map(l => l.trim()).filter(Boolean); if (!lines.length) continue;
     let head = lines[0], item = '';
@@ -98,7 +100,7 @@ function parsePaste(text) {
     slots.push(slot);
   }
   if (assumed.length) notes.push(`No stat points in the paste for ${assumed.join(', ')}: using the most common spread with your nature`);
-  return {slots, notes};
+  return {slots, notes, over};
 }
 // Import (paste), the data step shared by today's page and the new build (R4, Nov 11): {shared} for a NastyPlot team link (not loaded
 // yet), {error} when nothing could be read, or {msg} once the team was replaced (Undo kept).
@@ -109,7 +111,8 @@ function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decode
   const sk = r.notes.map(n => { const x = n.match(/^(.+?): skipped (item|move) "(.+?)"/); return x ? `${x[3]} (${x[1]})` : null; }).filter(Boolean);
   const skm = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": not on the M-C roster/); return x ? x[1] : null; }).filter(Boolean);
   return {msg: `Imported ${r.slots.length} Pokémon` + (skm.length ? `. Not in Reg M-C, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
-    + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')}; }
+    + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')
+    + (r.over && r.over.length ? `. Only 6 fit: left out ${r.over.slice(0, 3).join(', ')}${r.over.length > 3 ? ` and ${r.over.length - 3} more` : ''}` : '')}; }
 function renderPastePanel() {
   const el = $('pastePanel'); if (!ui.paste) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
