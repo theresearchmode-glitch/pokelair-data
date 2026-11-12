@@ -21,7 +21,7 @@ V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m
 V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
   return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}${V2.disp(n).startsWith('Mega ') && !o.bare ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `<b>${V2.esc(V2.disp(n).replace(/^Mega /, ''))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
 // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
-V2.ICON = {search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
+V2.ICON = {back: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>', search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
   // My Box: a storage box (lid, body, handle slot), drawn like the search glass
   // My Box (Sim, Nov 12): a Pokémon PC with a Poké Ball on its screen (option A: "easiest to identify"), same line weight as the other icons
   box: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8.5 20.5h7M12 16.5v4"/><circle cx="12" cy="10" r="3.4"/><path d="M8.6 10h6.8"/></g></svg>',
@@ -189,7 +189,7 @@ V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app
 V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   return {P, html: `<a class="vh" href="#main">Skip to the page</a>
-<header class="np-head"><a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a><nav class="np-nav" aria-label="Main">${nav}</nav>
+<header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a><nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
   <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
@@ -211,5 +211,31 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 // (that screen's address, so a team or box link isn't replayed); straight into the box with no screen before it: My Team
 V2.boxFrom = null;
 V2.pageName = h => { const k = String(h || '#team').replace(/^#/, '').split('=')[0]; return {home: 'Home', team: 'My Team', build: 'Build', battle: 'Battle', meta: 'Meta'}[k] || 'My Team'; };
-addEventListener('hashchange', e => { let was = ''; try { was = new URL(e.oldURL).hash; } catch (x) {}
-  if (V2.route() === 'box' && was && !/^#box\b/.test(was) && !/^#(team|box)=/.test(was)) V2.boxFrom = was; V2.draw(); scrollTo(0, 0); });
+addEventListener('hashchange', e => { let was = ''; try { was = new URL(e.oldURL).hash; } catch (x) {} const y = V2.navStep(was);
+  if (V2.route() === 'box' && was && !/^#box\b/.test(was) && !/^#(team|box)=/.test(was)) V2.boxFrom = was; V2.draw(); scrollTo(0, y); });
+
+// ---------- Back button (Sim, Nov 12: "go to where we previously were"; pressing again goes further back) ----------
+// Every page change is already one step in the browser's history (its address). Each step is marked with how deep in the site it is
+// (v2d), the page it came from (v2p) and where it was scrolled (v2y). Back = one real history step, so it matches the phone swipe and
+// the browser's Back exactly: same page, same scroll; a sheet that's open closes first (the sheets' own step, above). It shows only
+// when there's a step on this site to go back to (depth > 0), so it can never take you out of NastyPlot.
+V2.nav = {d: 0, p: '', ready: false, t: null};
+try { history.scrollRestoration = 'manual'; } catch (e) {}
+V2.navMark = o => { try { history.replaceState(Object.assign({}, history.state, o), ''); } catch (e) {} };
+V2.navInit = () => { if (V2.nav.ready) return; V2.nav.ready = true; const st = history.state || {};
+  if (st.v2d == null) V2.navMark({v2d: 0, v2p: ''}); else { V2.nav.d = st.v2d; V2.nav.p = st.v2p || ''; } };
+// called first thing on every address change: an entry we've marked before is a step back (or forward): return its scroll;
+// an unmarked one is a new step: mark it one deeper and start at the top
+V2.navStep = was => { V2.navInit(); const st = history.state || {};
+  if (st.v2d != null) { V2.nav.d = st.v2d; V2.nav.p = st.v2p || ''; return st.v2y || 0; }
+  V2.nav.d++; V2.nav.p = was || '#home'; V2.navMark({v2d: V2.nav.d, v2p: V2.nav.p, v2y: 0}); return 0; };
+// remember where this step is scrolled: when scrolling settles, and right before any tap that may change the page
+addEventListener('scroll', () => { clearTimeout(V2.nav.t); V2.nav.t = setTimeout(() => { if (!V2._sheet) V2.navMark({v2y: Math.round(scrollY)}); }, 200); }, {passive: true});
+document.addEventListener('click', () => { if (!V2._sheet && V2.nav.ready) { clearTimeout(V2.nav.t); V2.navMark({v2y: Math.round(scrollY)}); } }, true);
+V2.navName = h => { const k = String(h || '#home').replace(/^#/, '').split('=')[0] || 'home';
+  return {home: 'Home', build: 'Build', team: 'My Team', battle: 'Battle', meta: 'Meta', box: 'My Box', compare: 'Compare', sheet: 'Team Sheet', guide: 'the Guide',
+    method: 'How We Calculate', about: 'About', feedback: 'Send Feedback'}[k] || 'the last page'; };
+V2.backBtn = () => { V2.navInit(); const n = V2.esc(V2.navName(V2.nav.p));
+  return `<button type="button" class="np-back" data-v2back aria-label="Back to ${n}" title="Back to ${n}"${V2.nav.d > 0 ? '' : ' hidden'}>${V2.ICON.back}</button>`; };
+document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2back]'))) return; if (V2._sheet) { V2.closeSheet(); return; }
+  if (V2.nav.d > 0) try { history.back(); } catch (x) {} });

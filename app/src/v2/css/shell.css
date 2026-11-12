@@ -10,6 +10,9 @@
 .np-search{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s4);border:1.5px solid var(--rule);color:var(--ink-2);font:500 var(--t15)/1 var(--b);transform:skewX(-10deg)}
 .np-search>*{transform:skewX(10deg)}.np-search kbd{font:600 var(--t13)/1 var(--b);padding:2px 6px;border:1px solid var(--rule);border-radius:var(--r-s)}
 .np-theme{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
+/* Back (Sim, Nov 12): one step back in the site, first in the top bar; only there when there's somewhere to go back to */
+.np-back{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;margin-right:calc(var(--s4) * -1);color:var(--ink)}.np-back[hidden]{display:none}
+.np-back .np-ic{width:24px;height:24px}
 /* My Box quick link: a box icon next to Day/Night (Sim, Nov 11: the box deserves eyes; an icon, not a menu place) */
 .np-boxlink{position:relative}.np-boxlink .np-ic{width:24px;height:24px}.np-boxlink[aria-current="page"]{color:var(--ink)}
 .np-boxlink[aria-current="page"]::after{content:"";position:absolute;left:var(--s2);right:var(--s2);bottom:0;height:5px;background:var(--plot);transform:skewX(var(--slant))}
@@ -21,6 +24,7 @@
 .np-bar{display:none}
 @media (max-width:899px){.np-nav{gap:var(--s3)}.np-search .lbl,.np-search kbd{display:none}}
 @media (max-width:699px){
+  .np-back{margin:0 calc(var(--s2) * -1) 0 calc(var(--s3) * -1)}
   .np-head{height:60px;gap:var(--s3)}.np-head .logo svg{height:30px}.np-nav{display:none}.np-head .tools{margin-left:auto}
   .np-bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);padding:0 0 env(safe-area-inset-bottom,0px);
     background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--rule)}
