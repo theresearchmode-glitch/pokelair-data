@@ -13,7 +13,7 @@ async function usageFlush() { if (!USE.ok || USE.busy) return; const j = JSON.st
   try { await USE.ref.update({s: {[USE.sid]: {d: new Date().toISOString().slice(0, 10), w: innerWidth < 760 ? 'phone' : 'desktop', c: JSON.parse(j)}}}); USE.sent = j; }
   catch (e) { if (e && (e.code === 'invalid_argument' || e.code === 'permission_denied' || e.code === 'not_granted')) USE.ok = false; }
   finally { USE.busy = false; } }
-(async () => { try { const c = window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
+(async () => { try { const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
   if (typeof u.can === 'function' && u.can('data.write') === false && !(u.isOwner && u.isOwner())) return;
   const id = await u.id(); if (!id) return; USE.ref = d.doc('usage/' + id);
   const s = await USE.ref.get(); if (!s.exists) await USE.ref.set({s: {}});
