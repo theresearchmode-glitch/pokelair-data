@@ -150,3 +150,8 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-or{margin:var(--s1) 0 0}.np-or .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
 /* while a sheet is open the toast (e.g. Removed X · Undo) sits under the dimmed backdrop, not over the sheet's title (Sim, Nov 11) */
 :root:has(.np-sheetwrap) .np-toast{z-index:39}
+/* C8 (Sim's fix plan, rule C8: every tap target 44x44 on touch widths): text links and tabs narrower than 44px get an invisible
+   44x44 tap area centred on them (::before; their look is unchanged, checked pixel-identical). Not My Box's box markers: they sit
+   8px apart, so a bigger area would cover the next marker (needs a spacing change: visual, for Sim). */
+.np-tabs a,.np-tabs button,.np-nav a,.np-foot nav a,.sg2-nact a,.sg2-undo .np-btn2{position:relative}
+.np-tabs a::before,.np-tabs button::before,.np-nav a::before,.np-foot nav a::before,.sg2-nact a::before,.sg2-undo .np-btn2::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}

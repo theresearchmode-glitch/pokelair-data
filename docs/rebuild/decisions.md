@@ -52,6 +52,12 @@ Sim's own decisions are marked "Sim". Newest first.
   false alarms. Results on design6 4514041 in page-heights.md. Real findings: tap targets under 44 wide (jump bar "Set" 21-24,
   "Battle"/"Sets" links 42/31, header menu at 820 35-42, My Box "Box 1"/"Box 2" 28, footer "About" 43, "Undo" 38); duplicated
   lines when everything is open (the A2 duplication). Not covered by it (manual): C2, C3 beyond repeated lines, C5, C6, C9-C12.
+- C8 tap targets (Claude, non-visual): jump bar tabs, header menu, footer links, the "Battle"/"Sets" links and the Undo bar's
+  button get an invisible 44x44 tap area (::before). Measured on built pages: c13 hit test (taps 21px out from the centre each way)
+  My Team 0 failing controls at 320/390/820/1440 in Chromium and WebKit (before: "Set", "Sets", header menu at 820 failed);
+  full-page screenshots before vs after 16 of 16 identical (My Team and My Box, 390/820/1440, day/night, Chromium + WebKit 390;
+  a same-file control run showed one view with ~3,600 pixels of its own noise, which was identical here); behaviour A-team v2
+  unchanged (57/75/6/4/2). Left for Sim (visual): My Box's "Box 1/Box 2" markers (28 wide, 8px apart: needs more space).
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled

@@ -54,13 +54,18 @@ for (const eng of ['chromium', 'webkit']) for (const view of viewArg.split(','))
     const all = [...document.querySelectorAll(ctl)];
     // inline links inside a sentence are exempt from the 44px rule (decisions.md, review item 7)
     const inSentence = e => e.tagName === 'A' && getComputedStyle(e).display === 'inline' && [...e.parentNode.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
-    const small = touchW ? all.filter(e => vis(e) && !inSentence(e) && !e.closest('.vh')).map(e => [e, e.getBoundingClientRect()]).filter(([, q]) => q.width < 43.5 || q.height < 43.5)
+    // a control smaller than 44 still passes when its tap area reaches 44x44: tap 21px out from its centre each way (an invisible
+    // ::before area counts, as it does for a finger); scrolled to the middle of the screen first so no fixed bar covers it
+    const reaches = e => { e.scrollIntoView({block: 'center', inline: 'center'}); const q = e.getBoundingClientRect(), cx = q.left + q.width / 2, cy = q.top + q.height / 2;
+      return [[cx - 21, cy], [cx + 21, cy], [cx, cy - 21], [cx, cy + 21]].every(([x, y]) => { const h = document.elementFromPoint(x, y); return h && (h === e || e.contains(h)); }); };
+    const small = touchW ? all.filter(e => vis(e) && !inSentence(e) && !e.closest('.vh')).map(e => [e, e.getBoundingClientRect()]).filter(([e, q]) => (q.width < 43.5 || q.height < 43.5) && !reaches(e))
       .map(([e, q]) => `${(e.getAttribute('aria-label') || e.textContent || e.tagName).trim().replace(/\s+/g, ' ').slice(0, 30)} ${Math.round(q.width)}x${Math.round(q.height)}`) : [];
     // focusable but hidden: can take focus (not disabled, no tabindex -1, not inert) while the browser says it isn't visible
     // (tested by really focusing it: display:none and closed-<details> content can't take focus, whatever their tabindex says)
     const was = document.activeElement, hidden = all.filter(e => { if (e.disabled || e.tabIndex < 0 || e.closest('.vh') || vis(e)) return false; try { e.focus({preventScroll: true}); } catch (x) { return false; } return document.activeElement === e; })
       .map(e => (e.getAttribute('aria-label') || e.textContent || e.tagName).trim().replace(/\s+/g, ' ').slice(0, 30)); try { was && was.focus && was.focus({preventScroll: true}); } catch (x) {}
     // repeated lines: the same visible line of 24+ characters more than once in the page's main area
+    scrollTo(0, 0);
     const lines = (document.querySelector('#main') || document.body).innerText.split('\n').map(s => s.trim()).filter(s => s.length >= 24);
     const cnt = {}; lines.forEach(s => { cnt[s] = (cnt[s] || 0) + 1; }); const rep = Object.entries(cnt).filter(([, n]) => n > 1).map(([s, n]) => `${n}x "${s.slice(0, 50)}"`);
     // main buttons on one screen: slide a window of one screen down the page and count visible .np-btn inside it
