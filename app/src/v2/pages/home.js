@@ -17,14 +17,18 @@ V2.homeHero = () => { const E = V2.esc, ms = members(), has = ms.length > 0, six
 // Piece 2: the duel (mock-up "duel"; today's HOME-09 / HOME-10): the Champion's six beside your six. Both sides share the same
 // rows (head, six, plan, actions: one grid, subgrid rows), so the two sixes always start on the same line (Sim, Nov 12).
 V2.hmUi = V2.hmUi || {};
+// the event's name as a heading (Home duel): today's evName, minus emoji and a trailing prize line, so a title such as
+// "Amyverse VGC Champions Arena #18 ❤️ Cash Prize!" reads "Amyverse VGC Champions Arena #18", and a trailing money prize ("50€ Amazon
+// Gift Cards") goes too (the mock-up showed a short name)
+V2.evTitle = n => evName(n).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, ' ').replace(/[\s\-–|·:!]*(cash prizes?|prize pool|prizes?|\$\s?\d[\d,.]*\s*(usd|prize( pool)?)?)[\s!]*$/i, '').replace(/\s+(?:[$€£]\s?\d[\d,.]*|\d[\d,.]*\s?[$€£])\s*(?:amazon|gift|cash|prize|usd|eur)?[^#]*$/i, '').replace(/\s+/g, ' ').trim() || evName(n);
 V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
   const tile = (n, sub, attrs) => `<button type="button" class="hm-pk" ${attrs}>${V2.mon(n, {iw: 96, bare: true})}<b>${V2.nameHtml(V2.disp(n))}</b><small>${sub ? E(sub) : '&nbsp;'}</small></button>`;
   let them = '<div class="hm-side"></div>', FC = null;
   if (C) { const {ev, t} = C, key = ev.id + '#' + ev.top.indexOf(t), sure = V2.hmUi.sure === key;
     try { FC = ms.length >= 4 ? CH.fourVs(ms, C.six.map(x => x.p.n)) : null; } catch (e) { FC = null; }
-    them = `<div class="hm-side hm-them"><div class="hm-hd"><p class="hm-k2">The Champion's six · latest winner</p><h3 class="u">${E(evName(ev.name))}</h3>
+    them = `<div class="hm-side hm-them"><div class="hm-hd"><p class="hm-k2">The Champion's six · latest winner</p><h3 class="u">${E(V2.evTitle(ev.name))}</h3>
       <p class="hm-who"><b>${E(teamWho(t))}</b> <small>· ${E(evDate(ev.date))}${ev.players ? ` · ${ev.players} players` : ''}</small></p></div>
-      <div class="hm-six">${C.six.map(x => tile(x.p.n, x.it, `data-v2mon="${E(x.p.n)}" aria-label="${E(V2.disp(x.p.n))}${x.it ? ', ' + E(x.it) : ''}: open its info"`)).join('')}</div><div class="hm-plan"></div>
+      <div class="hm-six">${C.six.map(x => tile(x.p.n, x.it, `data-v2mon="${E(x.p.n)}" aria-label="${E(V2.disp(x.p.n))}${x.it ? ', ' + E(x.it) : ''}: open its info"`)).join('')}</div>
       <div class="row hm-acts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${sure ? 'Tap Again to Replace Your Team' : 'Load This Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button><a class="np-link" href="#meta">All ${C.n} events ›</a></div></div>`; }
   // your six: lead, back, bench for the plan vs the Champion's six (or the meta's six without one); your own lead pick wins (today's AR.home)
   let F = FC, vs = C ? "vs the Champion's six" : '';

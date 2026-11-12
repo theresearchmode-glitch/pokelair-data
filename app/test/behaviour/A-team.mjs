@@ -224,7 +224,7 @@ t('TEAM-10', 'Set card: plan role, rating, item, ability, nature, stat points, 4
   await r.ui.tapText('Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
 
 t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use NastyPlot\'s pick" goes back; Home follows', async () => {
-  const r = await myTeam(); await r.ui.tapTile('Sneasler'); has(await r.ui.setCard(), 'Set as lead'); await r.ui.tapText('Set as lead', 1200);
+  const r = await myTeam(); await r.ui.tapTile('Sneasler'); has(await r.ui.setCard(), /Set as [Ll]ead/); await r.ui.tapText(NEW ? 'Set as Lead' : 'Set as lead', 1200);
   ok(await r.ui.waitToast(/Sneasler now leads/), 'no "Sneasler now leads" toast'); let pl = await r.ui.gamePlanLine(); ok(/your pick/.test(pl) && /lead (Sneasler \+|.+ \+ Sneasler)/.test(pl), 'plan line: ' + pl);
   await sleep(1000); const a = await r.acct(); ok(a && Array.isArray(a.leads) && a.leads.includes('Sneasler'), 'lead pick not saved to the account: ' + JSON.stringify(a && a.leads));
   await r.ui.go('Home'); ok(/your leads|Sneasler/.test(await r.ui.homePlanLine()), 'Home plan ignores the pick: ' + await r.ui.homePlanLine());
@@ -382,8 +382,8 @@ t('SUG-09', 'When nothing raises the score: a no-gain message instead of plain A
   ok(await r.ui.sees(/Nothing raises this team.s Strength Score right now|No single change from this pool raises the team.s Strength Score|every other swap would lower it|Nothing to fix\. Your team has every basic and no swap clearly beats it/), 'no no-gain message'); await r.close(); });
 
 t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap out Rillaboom" applies with Undo', async () => {
-  /* new build (A2, Sim approved Nov 12): the fold is "Things to Know"; the checks are listed once, in the section above it */
-  const r = await myTeam(), t0 = await r.ui.text(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; has(t0, NEW ? /Things to Know 7 things, legal/ : /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);
+  /* new build (A2, Sim approved Nov 12): the fold is "Things to Know"; the checks are listed once, in the section above it; Types joined the fold, Sim approved Nov 12 */
+  const r = await myTeam(), t0 = await r.ui.text(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; has(t0, NEW ? /Things to Know 7 things, types, legal/ : /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);
   await r.ui.openFold(FT, true, 1500); const f0 = await r.ui.foldContent(FT), f = FT === 'Things to Know' ? f0 + '\n' + await r.ui.pg.evaluate(() => { document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; }); return document.querySelector('#tm-ck').innerText; }) : f0;
   for (const s of [NEW ? /[Ww]eakness Ice 3 weak/ : /Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, /Show \d+ more/, NEW ? /Team Checks/ : /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, NEW ? /Handles the top threats/ : /Ready for the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
   ok(await r.ui.foldOpen('Weakness Ice') === true, 'first fixable problem not opened automatically');

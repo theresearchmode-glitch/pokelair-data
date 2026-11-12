@@ -399,3 +399,25 @@ Sim's own decisions are marked "Sim". Newest first.
 - ~1:14 PM Eastern: Sim: begin the next section. Home plan sent (5 pieces from the approved mock-up + today's 16 Home features; usage warning: heavy, ~4-6 h, runs past today; one piece at a time). Started piece 1 (hero).
 - ~1:21 PM Eastern: Home piece 1 (hero) built (branch, not Preview): shared Home numbers moved to src/app/05-home-data.js (today's MG.month/srcLine/pct now point there; same-info incl. today's Home view: 350/350 identical, 0 different); new pages/home.js: tagline (display size, 'your win rate.' in PLOT blue), intro with the real team count, start buttons (Score My Team first with a team, Build Me a Team first with none; Plan a Match), Import from Showdown (opens My Team's Import), Most used right now (#2 · #1 · #3, % of teams, opens info sheets) + data line. c13 home: 320-1440 both engines: sideways 0, cut off 0, tap<44 0, 0 page errors; heights 1,131-1,166 / 1,059 / 937 / 900. Fixed on the way: featured-style name on the ring, phone order, phone 2+1 buttons, 320 overflow, Import 20px tap.
 - ~1:33 PM Eastern: Home piece 2 helpers shared (no change to today's site, proven): evName + AR.champ -> 05-home-data.js (homeChamp); SD notes, sdBlock, sdSpecies, sheetPaste -> 19-showdown-paste.js; loadSheet's slot mapping -> 49-event-data.js sheetSlots. Proof on today's page before/after: 978 event-team Showdown texts + champion + 40 event names identical; 976 loaded event teams identical; same-info 350/350 identical (incl. Home). PC full-check prompt (base 5003b61, label nov12-pm) given to Sim.
+
+## Nov 12, ~1:40-2:15 PM Eastern (Home piece 2 and the test run)
+- Home duel: the Champion's buttons now sit right under its six, as in the mock-up (they had been pushed down to line up
+  with my side's buttons, leaving a gap). The two sixes stay exactly level (measured: six tops 412 / 412).
+- Home duel heading: the event name drops emoji and a trailing prize line (V2.evTitle, new build only; today's site
+  unchanged). Checked on all 17 event names in the data: 3 change ("Amyverse VGC Champions Arena #18 ❤️ Cash Prize!" ->
+  "Amyverse VGC Champions Arena #18"; "⚔️Torre Lotta Cup #3⚔️ 🏆50€ Amazon Gift Cards🏆" -> "Torre Lotta Cup #3";
+  "Friday Fight Night 80! $50 Prize & Team Report" -> "Friday Fight Night 80!"), 14 stay as they are.
+- Home hero bug (found on the iPad picture): the floor line under "Most used right now" blocked the grid, so the three
+  Pokémon fell into equal columns and the #1 name ran into its neighbours at 320 and 700-1300 wide. Fixed: each tile
+  pinned to its column, labels wrap inside it, and the #1 name steps down the type scale (22, then 20) only when its own
+  area is narrow. Measured with real fonts, every 20 px from 320 to 1300 and every 80 px to 2560, Chromium and WebKit:
+  no overlaps. (A first measurement ran on a copy without fonts and wrongly said clean; redone.)
+- Home: "All events ›" and "Open My Team ›" got the invisible 44 px tap area; the floor line no longer pokes 8 px past the
+  phone edge. c13 home: 0 cut off, 0 small taps, 0 errors at 320/390/820/1440, both engines.
+- Tests: TEAM-11's new-build reader now sees the Set as Lead button under the six (it only read the name line); the test
+  then passes every step up to "Home follows", which waits for Home to be wired. SUG-10 reads the approved fold words
+  "7 things, types, legal". Today's site: the 22 tests that crashed mid-run (two runs at once ran out of browser) re-ran
+  22 pass, so today's site is 132 pass, 0 fail, 10 known bugs. New build: 100 pass, 32 fail, all on pages not rebuilt yet
+  (Home x16, Pokémon sheet x7, links to Battle/Build/Log/How we calculate/Popular Sets) except CMP-03 (see below).
+- Open, not decided: CMP-03, the Compare picker lost today's line "Any other tournament team: tap Compare on its card in
+  Winning teams." It belongs with the Winning Teams page, which isn't rebuilt yet; it goes back when that page is.
