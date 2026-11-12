@@ -130,7 +130,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-hit img{width:48px;height:48px;object-fit:contain}
 .np-hit .pg{font:600 var(--t13)/1 var(--b);color:var(--ink-3);text-align:center}
 .np-hit .ty,.np-monsheet .ty{display:flex;gap:var(--s1);flex-wrap:wrap}.np-hit .ty{flex-wrap:nowrap}
-.np-hit .mg{margin-right:.3em}.np-hit .mg.none{display:none}
+.np-hit .mg{margin-right:var(--s1)}.np-hit .mg.none{display:none}
 @media (max-width:379px){.np-find{padding:var(--s6) var(--s4)}.np-hit{grid-template-columns:40px 1fr}.np-hit img{width:40px;height:40px}.np-hit .ty{grid-column:2}}
 /* the simple Pokémon sheet (the full info sheet replaces it in R4) */
 .np-monsheet{display:flex;align-items:center;gap:var(--s8);padding:var(--s8)}
