@@ -120,7 +120,7 @@ V2.buildWinners = () => { const EV = META.events, E = V2.esc; if (!EV) return ''
       <div class="row bd-wacts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${sure ? 'Tap Again to Replace Your Team' : 'Load This Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button>
       <button type="button" class="np-link" data-hmprep="${E(key)}">Practice Against ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></details>`; };
   return `<section class="bd-wins"><div class="bd-hd"><h2 class="u">Start from a recent winner</h2><span class="bd-k">${picks.length} teams</span></div><p class="bd-sub">Full sets, ready to load.</p>${picks.map(row).join('')}</section>`; };
-V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower"><div class="bd-lcol">${V2.buildOthers() || ''}${V2.buildWinners()}</div>${V2.buildCores()}</div></div>`;
+V2.pages.build.draw = () => { const oth = V2.buildOthers() || '', win = V2.buildWinners(), cor = V2.buildCores(); return `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div>${V2.buildJump(!!oth, !!win)}<div class="bd-lower"><div class="bd-lcol">${oth}${win}</div>${cor}</div></div>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-bdwin]')) return; if (d.open) V2.bdUi.win = d.dataset.bdwin; else if (V2.bdUi.win === d.dataset.bdwin) V2.bdUi.win = null; }, true);
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdcx]'); if (b) V2.cxGo('cur', 'e:' + b.dataset.bdcx); });
 
@@ -128,3 +128,14 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 V2.buildBrk = G => { let W = null; try { W = CH.whyData(G); } catch (e) {} if (!W || W.partial) return ''; V2.bdG = G; const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
   return `<p class="bd-brk">${W.base} from its Pokémon and sets · ${sg(W.mu)} matchups${W.hasSix ? ` · ${sg(W.own)} from its own ${homeNum(W.ownGames)} games` : ''} <button type="button" class="np-link" data-bdwhy>Why this score? ›</button></p>`; };
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-bdwhy]') && V2.bdG) V2.sheet(V2.whyHtml(V2.bdG), {label: 'Why this score?', small: true}); });
+
+// ---------- Build: the phone jump bar (mock R2, under 700 wide): Other options · Cores · Recent winners, sticky under the top bar ----------
+// Buttons that scroll, not links: the site's addresses name pages, so a #section link would change the page (and add a Back step).
+V2.buildJump = (oth, win) => { const res = ui.ab && ui.ab.doubles, b = (k, t, n) => `<button type="button" data-bdjump="${k}">${t}${n != null ? ` <small>${n}</small>` : ''}</button>`;
+  return `<nav class="bd-jump" aria-label="Jump to a section">${oth ? b('others', 'Other options', res.teams.length - 1) : ''}${win ? b('wins', 'Recent winners', 3) : ''}${b('cores', 'Cores', homeNum(coreRows().length))}</nav>`; };
+V2.bdJumpSpy = () => { const nav = document.querySelector('.bd-jump'); if (!nav || getComputedStyle(nav).display === 'none') return; const y = nav.getBoundingClientRect().bottom + 8; let on = null;
+  for (const k of ['others', 'wins', 'cores']) { const sec = document.querySelector('.bd-' + k); if (sec && sec.getBoundingClientRect().top <= y) on = k; }
+  if (!on) on = (nav.querySelector('[data-bdjump]') || {dataset: {}}).dataset.bdjump; for (const x of nav.querySelectorAll('[data-bdjump]')) x.classList.toggle('on', x.dataset.bdjump === on); };
+addEventListener('scroll', () => { if (V2.route && V2.route() === 'build') V2.bdJumpSpy(); }, {passive: true});
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdjump]'); if (!b) return; const sec = document.querySelector('.bd-' + b.dataset.bdjump); if (sec) sec.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'}); });
+V2.pages.build.after = () => V2.bdJumpSpy();
