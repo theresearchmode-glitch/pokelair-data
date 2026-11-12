@@ -31,6 +31,8 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (const [w,
   const p = await ctx.newPage(), errs = [];
   p.on('pageerror', e => errs.push('pageerror ' + e.message)); p.on('console', m => { if (m.type() === 'error') errs.push(m.text().slice(0, 160)); });
   await p.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
+  // C13_NO_CV=1 (testing the check itself): act like a browser without checkVisibility (as WebKit on Windows may be)
+  if (process.env.C13_NO_CV) await p.addInitScript(() => { try { delete Element.prototype.checkVisibility; } catch (e) {} });
   await p.goto(pathToFileURL(path.resolve(file)).href + '#' + view); await p.waitForTimeout(2500);
   await p.waitForFunction(() => !document.querySelector('.sg2-wait,.cx2-busy'), null, {timeout: 90000}).catch(() => errs.push('still working after 90 s'));
   if (state === 'open') { await p.evaluate(() => document.querySelectorAll('#main details').forEach(d => { d.open = true; })); }
@@ -46,7 +48,13 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (const [w,
   if (process.env.C13_PLANT) await p.evaluate(() => document.querySelector('#main').insertAdjacentHTML('afterbegin', '<button style="opacity:0">Ghost</button><img src="art/nope.webp" alt="" width="40" height="40"><div style="width:3000px;height:4px"></div><button class="np-btn">Second main</button><button class="np-btn">Third main</button><button style="width:20px;height:20px">x</button><p>This exact sentence is planted twice on purpose.</p><p>This exact sentence is planted twice on purpose.</p>'));
   if (process.env.C13_PLANT) { await p.evaluate(() => console.error('planted console error')); await p.waitForTimeout(800); }
   const r = await p.evaluate(({touchW}) => {
-    const vis = e => e.checkVisibility ? e.checkVisibility({checkOpacity: true, checkVisibilityCSS: true}) : !!e.getClientRects().length;
+    // shown = the same answer in every engine (Sim, Nov 12: WebKit on Windows counted 5 controls in a closed fold as 0x0 taps):
+    // the browser says visible where it can, the box has a size, and it isn't inside a closed fold (its summary excepted) or hidden
+    const vis = e => { if (e.checkVisibility && !e.checkVisibility({checkOpacity: true, checkVisibilityCSS: true})) return false;
+      const q = e.getBoundingClientRect(); if (!(q.width > 0 && q.height > 0)) return false;
+      if (e.closest('[hidden],[inert]')) return false; const d = e.closest('details:not([open])'); if (d && !(e.closest('summary') && e.closest('summary').parentElement === d)) return false;
+      for (let a = e; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden' || cs.contentVisibility === 'hidden' || +cs.opacity === 0) return false; }
+      return true; };
     const H = document.documentElement.scrollHeight, sideways = document.documentElement.scrollWidth - innerWidth;
     // cut off at the edge: the page clips sideways overflow (overflow-x: clip), so look for visible boxes that run past the screen
     // edge, outside any box that scrolls sideways on purpose
