@@ -65,9 +65,13 @@ V2.closeSheet = (quiet, swap) => { const S = V2._sheet; if (!S) return; V2._shee
 document.addEventListener('click', e => { if (V2._sheet && e.target.closest('[data-v2close]')) V2.closeSheet(); });
 document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
   if (e.key === 'Escape') { e.preventDefault(); V2.closeSheet(); return; }
-  if (e.key !== 'Tab') return; const f = [...S.wrap.querySelectorAll('.np-sheet a[href],.np-sheet button,.np-sheet input,.np-sheet [tabindex="0"]')].filter(x => x.offsetParent);
+  // focus stays in the sheet (Sim's check, Nov 12: in the info sheet Tab left after 6 stops, because the inactive tabs, tabindex -1,
+  // were counted as stops). Only controls that really take Tab count: not tabindex -1, not disabled, shown, not in a closed fold.
+  if (e.key !== 'Tab') return; const shown = x => x.getClientRects().length && !x.closest('[hidden],[inert]') && !(x.closest('details:not([open])') && !(x.matches('summary') && x.parentElement.matches('details:not([open])')));
+  const f = [...S.wrap.querySelectorAll('.np-sheet :is(a[href],button,input,select,textarea,summary,[tabindex])')].filter(x => x.tabIndex >= 0 && !x.disabled && shown(x));
   if (!f.length) return; const i = f.indexOf(document.activeElement);
-  if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } });
+  if (i < 0) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); return; }
+  if (e.shiftKey && i === 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } });
 
 // ---------- search: places and Pokémon, from the header button or the / key ----------
 V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: []};
