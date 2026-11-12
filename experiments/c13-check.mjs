@@ -18,8 +18,8 @@ let pw; try { pw = require(path.join(ROOT, 'node_modules/playwright')); } catch 
 const rd = f => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'out', f), 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
 const [file = path.join(ROOT, 'app/dist/v2.html'), viewArg = 'team,team-empty,box,compare', state = 'default'] = process.argv.slice(2);
-// limits (docs/rebuild/page-heights.md, tool pages). 320 has no row in the table: the 390 limit is used and marked "assumed".
-const WIDTHS = [[320, 3400, 'assumed'], [390, 3400, ''], [820, 3500, ''], [1440, 1800, '']];
+// limits (docs/rebuild/page-heights.md, tool pages). 320 uses the 390 limit (Sim, Nov 12).
+const WIDTHS = [[320, 3400, ''], [390, 3400, ''], [820, 3500, ''], [1440, 1800, '']];
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 for (const eng of ['chromium', 'webkit']) for (const view of viewArg.split(',')) for (const [w, limit, note] of WIDTHS) {

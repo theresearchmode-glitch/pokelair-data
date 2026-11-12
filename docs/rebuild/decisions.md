@@ -3,6 +3,19 @@
 Claude decides small things under executive control; Sim can overrule any of them. Every new entry is also told to Sim in chat.
 Sim's own decisions are marked "Sim". Newest first.
 
+## Nov 12 morning (Sim, answers to the overnight questions)
+- Sim: the older items are a go ("good for us to move forward"): Player IDs (needs Sim to add the NP_PID_KEY secret on GitHub;
+  main's daily job doesn't use it yet, so nothing is broken meanwhile), About page wording (players can ask to have their name
+  removed), review item 10 screenshot, a favourite link on the empty My Box, the open-Battle-tab limit (3 screens desktop, 6 phone).
+  Queued: they are other pages; My Team is finished first (this chat's rule), the favourite link is visual (picture first).
+- Sim: phone 320 uses the 390 limit (3,400) ("go with your recommendation"); page-heights.md updated, no longer "assumed".
+- Sim: fix A9's three small faults on the selected Pokémon (Mega on its own line, floor ring across the art, art spilling 4px on
+  phone). Visual: built and shown with pictures before anything is published.
+- Sim: KEEP the night glow on the band word ("Top tier").
+- Sim: fix the wording on Claude's recommendation: the "?" popup and chip still say "ready"/"93% ready" (word list: Matchups), and
+  "Nothing to fix" sits above a lead-support warning.
+- Sim: yes, the LIVE site also hosts its fonts itself (Claude checks how a change reaches live and tells Sim before it goes).
+
 ## Nov 12, night (Claude, under Sim's executive authority until 6 AM Eastern; non-visual only)
 - A5 (redraw throws the user out): cause confirmed in code. V2.redraw rebuilt the whole page (header included) and only gave focus
   back to elements with an id, so after the suggestions finished focus fell to the page top and the next Tab went to "Skip to the
