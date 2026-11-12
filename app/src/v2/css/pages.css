@@ -601,7 +601,7 @@
 /* Home piece 2: the duel (mock-up "duel"). One grid, both sides on the same rows: head | six | plan | actions (Sim: sixes in line) */
 .hm-duel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto auto;column-gap:var(--s16)}
 .hm-side{grid-row:1/5;display:grid;grid-template-rows:subgrid;align-content:start}
-.hm-hd{align-self:end}.hm-k2{margin:0 0 var(--s2);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.hm-hd{align-self:start} /* the two heading lines level at the top (Sim, Nov 12) */.hm-k2{margin:0 0 var(--s2);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
 .hm-them h3{font-size:var(--t28);margin:0}.hm-who{margin:var(--s2) 0 0;font:600 var(--t15)/1.4 var(--b)}.hm-who small{font-weight:400;color:var(--ink-2)}
 .hm-score{margin-top:var(--s1)}
 .hm-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2) var(--s3);margin-top:var(--s4);align-content:start}
@@ -718,3 +718,10 @@
 .tm-sample-acts{white-space:nowrap} /* the two links and their dot stay together on one line (outside sweep, Nov 12) */
 .hm-welcome .hm-acts .np-btn2{flex:0 0 auto} /* the welcome card keeps its button at its own width (the duel rule makes its buttons share a row) */
 .ms-pct{font:500 var(--t13)/1 var(--b);color:var(--ink-3)} /* how often the ability is run (today's sheet shows it) */
+.hm-mvn{display:flex;align-items:center;gap:var(--s3);min-width:0} /* This week rows carry the small picture, like Top rated (Sim, Nov 12) */
+/* Hidden gems holds the same space as Top rated, so switching never makes the page jump (Sim, Nov 12); the space says why it's short */
+.hm-p1 .hm-rks{display:flex;flex-direction:column;min-height:calc(52px * 10)}
+.hm-gemnote{flex:1;display:grid;place-items:center;padding:var(--s6) var(--s4);text-align:center;font:400 var(--t15)/1.5 var(--b);color:var(--ink-3)}
+@media (max-width:699px){.hm-p1 .hm-rks{min-height:calc(52px * 5)}}
+@media (max-width:699px){.hm-top .hm-p>.hm-hint{min-height:calc(var(--t13) * 1.5 * 3)}} /* the three views keep one height on phone (their lines wrap to 2-3 lines) */
+@media (max-width:699px){.hm-top>.hm-sub{min-height:calc(var(--t15) * 1.5 * 2)}} /* the line under the heading takes 1-2 lines by view: hold two on phone */

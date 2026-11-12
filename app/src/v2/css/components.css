@@ -163,3 +163,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
    only black plate on a screen (4.7:1 contrast). Night mode keeps its lit plates. */
 :root:not([data-theme="night"]) .np-slide .thumb{background:color-mix(in srgb,var(--plot) 16%,var(--surface));box-shadow:none}
 :root:not([data-theme="night"]) .np-slide button[aria-pressed="true"]{color:var(--plot-text)}
+/* night: the picked position as clear as by day (Sim, Nov 12, outside sweep: "hard to tell from the unpicked one"): a tint of the
+   night blue with blue words, the same idea as the day switch */
+:root[data-theme="night"] .np-slide .thumb{background:color-mix(in srgb,var(--plot) 24%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--plot) 45%,transparent)}
+:root[data-theme="night"] .np-slide button[aria-pressed="true"]{color:var(--plot-text)}
