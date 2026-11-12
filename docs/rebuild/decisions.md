@@ -67,6 +67,14 @@ Sim's own decisions are marked "Sim". Newest first.
   16 of 16 identical (My Team and My Box, 390/820/1440, day/night); a build with a broken font folder came out DIFFERENT, so the
   comparison does see fonts; c13 heights identical to the Google-font build. Not done: today's LIVE site (app/src/head.html) and the
   gallery still load fonts from Google; changing the live site needs Sim's go.
+- A7 proposal (a7-proposal.png, a7.patch; visual, waiting for Sim): the jump bar's underline marks the section tapped and follows
+  scrolling. Measured (built page, Chromium): tapped -> marked right 8 of 8 (phone and desktop; before: always "Set"). Scrolling by
+  hand: phone Set -> Matchups -> Suggestions -> Team Checks; desktop (two columns side by side) Set -> Team Checks -> Suggestions ->
+  Team Checks, never Matchups. Sim's choice for desktop: keep, mark only what was tapped, or no underline on desktop.
+- A8 proposal (a8-proposal.png, a8.patch; visual, waiting for Sim): bars 96% tint on every screen, blur kept, solid where a browser
+  can't blur. Chromium at phone width (the fix plan's sweep was Chromium; mouse screens there use 82% header / 86% bar): text behind
+  goes from readable to a faint trace. WebKit: the computed tint goes 92% -> 96% but the pictures barely change, probably because
+  headless WebKit here doesn't draw the blur (a guess); a real iPhone check by Sim is needed before calling C9 met.
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled
