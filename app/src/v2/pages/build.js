@@ -91,7 +91,7 @@ V2.buildCores = () => { const E = V2.esc, rows = coreRows(), shown = rows.slice(
   const kindW = {pairs: 'pairs', trios: 'trios', teams: 'full teams'}[coreUi.kind] || 'pairs';
   const row = (r, i) => { const tags = coreTags(r.ns), pts = r.tog == null ? null : Math.round(r.tog * 1000) / 10;
     return `<li class="bd-core"><i class="bd-cn">${i + 1}</i><span class="bd-cp">${r.ns.map(n => SPRITE_ID[n] ? `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy">` : '').join('')}</span>
-      <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `<em>${E(tags.slice(0, 2).join(', '))}</em> · ` : ''}${homeNum(r.n)} teams${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} points together` : ''}</small></span>
+      <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `<em>${E(tags.slice(0, 2).join(', '))}</em> · ` : ''}${homeNum(r.n)} teams${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} points together` : ''}</small>${r.ns.length > 3 ? `<span class="bd-cacts"><button type="button" class="np-link" data-bdcprep="${E(r.ns.join('|'))}">Practice Against ›</button><button type="button" class="np-link" data-bdccopy="${E(r.ns.join('|'))}">Copy for Showdown</button></span>` : ''}</span>
       <span class="bd-cw"><b class="u">${E(winFmt(r.wr * 100))}</b><small>wins · ${r.d >= 0 ? '+' : ''}${Math.round(r.d * 1000) / 10} vs avg</small></span><button type="button" class="np-btn2 bd-add" data-bdcore="${E(r.ns.join('|'))}" aria-label="Add ${E(r.ns.map(n => V2.disp(n)).join(' and '))} to your team"><span>${r.ns.length > 3 ? 'Load' : 'Add'}</span></button></li>`; };
   return `<section class="bd-cores"><div class="bd-hd"><h2 class="u">Build around a core</h2><span class="bd-k">${homeNum(rows.length)} ${kindW}</span></div><p class="bd-sub">Pick a pair or trio that wins, then fill the rest.</p>
     <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top rated'], ['use', 'Most used']], coreUi.sort, 'Sort cores')}${V2.buildCoreFind()}</div>
@@ -155,3 +155,9 @@ document.addEventListener('keydown', e => { const i = e.target.closest && e.targ
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-bdcpick],[data-bdcmx]'); if (!t) return;
   if (t.dataset.bdcpick) { coreUi.mon = t.dataset.bdcpick; coreUi.more = 0; V2.bdUi.cfind = ''; V2.redraw(); setTimeout(() => { const x = document.querySelector('[data-bdcmx]'); if (x) x.focus({preventScroll: true}); }, 30); return; }
   coreUi.mon = null; coreUi.more = 0; V2.redraw(); setTimeout(() => { const i = document.querySelector('[data-bdcfind]'); if (i) i.focus({preventScroll: true}); }, 30); });
+
+// full-team cores: today's Practice against (sets the Battle opponent) and Copy for Showdown (48-cores.js, 56-showdown-copy.js 'core')
+document.addEventListener('click', async e => { const b = e.target.closest && e.target.closest('[data-bdcprep],[data-bdccopy]'); if (!b) return;
+  if (b.dataset.bdcprep) { S.opp = b.dataset.bdcprep.split('|').slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = null; persist(); location.hash = '#battle'; toast('Loaded as your opponent'); return; }
+  const ns = b.dataset.bdccopy.split('|').filter(n => byName.get(n)); if (!ns.length) return;
+  toast((await V2.copy(slotsPaste(ns.map(n => ({n, a: null, lock: false}))))) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); });

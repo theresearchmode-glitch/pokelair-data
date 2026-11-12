@@ -20,7 +20,7 @@ const BOXES = {'favourite pokémon': '[data-bdfind]', 'with a pokémon': '[data-
 const NO_BOX = {'exclude a pokémon': 'Never suggest box (All Suggestions › Plan settings)', 'look up a pokémon': 'Popular Sets look-up box'};
 // controls today's Build page has that the new one doesn't (a failed tap on #build names them)
 const NO_TAP = [[/^\?$/, 'the ? explanation on cores'], [/details/i, 'Details / Hide details on core rows'], [/^Sets$/, 'the Sets toggle on recent winners (each winner is a fold with its sets here)'],
-  [/teams with it/i, 'Teams with it on cores'], [/practice against/i, 'Practice against'], [/try another/i, 'Try another'], [/show more/i, 'Show more on cores']];
+  [/teams with it/i, 'Teams with it on cores'], [/try another/i, 'Try another'], [/show more/i, 'Show more on cores']];
 export default (ui, pg) => {
   const tx = s => (s || '').replace(/\s+/g, ' ').trim();
   const txt = sel => pg.evaluate(s => { const e = [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }, sel);
@@ -141,9 +141,9 @@ export default (ui, pg) => {
     /** "My Box N" on the Build-from slider, read as today's "N in your box" line */
     boxCountLine: async () => { const t = await txt('#main [data-v2slide="bdsrc"] > button[data-v="box"]'); const m = t.match(/(\d+)/); return m ? `${m[1]} in your box` : ''; },
     /** copy for Showdown inside a part: the built team, a recent winner; returns the copied text */
-    copyForShowdown: async (within = 'body', n = 0) => { if (within === AREAS.cores) NOT('Copy for Showdown on full-team cores');
+    copyForShowdown: async (within = 'body', n = 0) => { 
       await pg.evaluate(() => { window.__copied = null; try { Object.defineProperty(navigator, 'clipboard', {configurable: true, value: {writeText: t => { window.__copied = t; return Promise.resolve(); }}}); } catch (e) {} });
-      await pg.evaluate(([w, n]) => { const b = [...(document.querySelector(w) || document).querySelectorAll('[data-bdcopy],[data-hmcopy]')].filter(e => e.getClientRects().length)[n]; if (!b) throw new Error('no Copy for Showdown button'); b.click(); }, [within, n]);
+      await pg.evaluate(([w, n]) => { const b = [...(document.querySelector(w) || document).querySelectorAll('[data-bdcopy],[data-hmcopy],[data-bdccopy]')].filter(e => e.getClientRects().length)[n]; if (!b) throw new Error('no Copy for Showdown button'); b.click(); }, [within, n]);
       await pg.waitForTimeout(500); return pg.evaluate(() => window.__copied || ''); },
     /** the six on the n-th recent-winner row (display names, as today's card titles) */
     winnerSix: (n = 0) => pg.evaluate(n => { const d = [...document.querySelectorAll('#main .bd-wins [data-bdwin]')].filter(e => e.getClientRects().length)[n]; if (!d) return [];
@@ -154,6 +154,7 @@ export default (ui, pg) => {
     coreRowCount: () => pg.evaluate(() => document.querySelectorAll('#main .bd-cores [data-bdcore]').length),
     /** tap a core's button: today's "Add to my team" is "Add", "Load team" is "Load" here */
     coreTap: async (label, n = 0) => { const l = label.toLowerCase(), want = /^add/.test(l) ? 'add' : /^load/.test(l) ? 'load' : null;
+      if (/^practice against/.test(l)) { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcprep]')].filter(e => e.getClientRects().length)[n]; if (!b) return false; b.click(); return true; }, n); if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); return; }
       if (!want) NOT(`"${label}" on cores`);
       const ok = await pg.evaluate(([w, n]) => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length && e.innerText.trim().toLowerCase() === w)[n]; if (!b) return false; b.click(); return true; }, [want, n]);
       if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); },

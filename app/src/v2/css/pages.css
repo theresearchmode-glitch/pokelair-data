@@ -822,3 +822,5 @@
 /* Build: cores with a Pokémon (filter box beside the core sliders) */
 .bd-cfind{position:relative;flex:1 1 220px;min-width:0;max-width:320px}.bd-cpick{flex:0 1 auto}
 .bd-cnone{margin-top:var(--s4);font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+
+.bd-cacts{display:flex;flex-wrap:wrap;gap:0 var(--s4);margin-top:var(--s1)}.bd-cacts .np-link{font-size:var(--t13)}
