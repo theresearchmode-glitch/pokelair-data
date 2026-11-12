@@ -27,3 +27,20 @@ Approved mock-up: docs/rebuild/mocks/build.tpl.html (Preview: build.html). Rule:
 1. Move the Cores and sleepers data (same-output proof). 2. Build piece 1: title + options + the answer (best team built).
 3. Piece 2: other options beside the cores. 4. Piece 3: Start from a recent winner + phone jump bar. Pictures to Sim before
 each piece goes on the Preview; behaviour tests AUTO/CORES on both builds after each.
+
+## Mock-up -> data map for Build piece 1 (checked in 22-auto-build.js, Nov 12 ~3:25 PM; the engine is already shared)
+- Run: runAutoBuild() sets ui.ab = {busy:true}, then ui.ab = {doubles: res}; res.teams[] = abDescribe() objects; the Fresh take
+  arrives after and slots in as option 2 (addFreshTakeGen). It calls today's renderAutoBuild() (guards its own elements).
+- Eyebrow "Option 1 of 3 · Proven team": index in res.teams, team.proven ({n, wr, g, swapped}) or team.fresh.
+- Title "Sun, Tailwind": team.label (teamArchetype label) -> the mock shows it as words; chips "Speed control · Weather · 2 Mega
+  options" = team.gp + team.megas.
+- 91 Top tier + "Top 2% of tournament teams" + "89 from its Pokémon and sets, +1 matchups, +1 from its own 479 games": team.score
+  and the Strength Score pieces (58-strength.js, shared; the same numbers as My Team's "Why this score?").
+- Six: team.mons[] {n, d, mega, it (item), role, box, offMeta}; "Your pick" = ui.abLock; tier = monRating (shared).
+- Four reasons: Matchups 24/30 (team._rd: rows by level; words: Matchups with an answer, Shaky, No answer: the word list, NOT
+  the engine's old why line "N% ready for the top 30 threats"), Team checks 4/4 + notes (team.grade / proChecks), "58% won ·
+  This exact six at events · 83 players, 496 games" (team.proven), Best core (the RES.cores line in team.why).
+- Actions: Use This Team (today's data-abuse path: keepUndo + slots + toast), Save, Copy for Showdown (sheetPaste), "All six to
+  catch: none is in your box yet" (team.mons[].box), Sets and roles ›.
+- Options strip: Build from My Box (count) / Whole roster (ui.abSrc), Megas on team 0/1/2 (megaGoal, shared with My Team),
+  Build around a Pokémon (ui.abLock, name box), "Build around Garchomp ↻" = run again.
