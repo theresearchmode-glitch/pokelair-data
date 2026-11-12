@@ -30,3 +30,11 @@ function logStats(entries) { const w = entries.filter(e => e.r === 'W').length; 
 // Doubles is played in pairs (moved unchanged from 60-concept-h.js, Nov 12): for each of the meta's six, the partner it is most often
 // brought with in Showdown replays (each pair once): [{a, b, pct, g}], up to max
 function homePairs(six, max) { const bw = RES && RES.tc && RES.tc.bw; let pairs = []; if (bw) { const used = new Set(); for (const p of six) { const k = brKeyOf(p), L = bw[k]; if (!L) continue; const x = L.find(y => !used.has(k + '|' + y[0]) && byName.get(y[0])); if (!x) continue; used.add(x[0] + '|' + k); pairs.push({a: p, b: byName.get(x[0]), pct: x[1], g: x[2]}); if (pairs.length === max) break; } } return pairs; }
+// What's new after an update (moved unchanged from 53-feedback.js, Nov 12): bump the id with each release worth announcing
+const WHATS_NEW = {id: '2026-10-28b', items: [
+  ['Threat prep', 'Your scouting report now shows how many of the top meta threats your team is ready for, with a check, counter or warning for each. No more win odds.'],
+  ['Move accuracy', 'A move that can miss is never counted as a sure answer. Weather, No Guard, Compound Eyes and Wide Lens are included.'],
+  ['New ratings', 'Ratings now weigh top-cut finishes, strong players and recent events most.'],
+  ['Team checks', 'Item Clause clashes, items that do nothing, and Trick Room teams without enough slow attackers are now caught.'],
+  ['Game mechanics', 'Damage, turn order and field effects were checked against the battle simulator and thousands of real battles, and every mismatch was fixed.'],
+  ['Feedback', 'Tell us what\'s off with the Feedback button at the bottom of any page.']]};

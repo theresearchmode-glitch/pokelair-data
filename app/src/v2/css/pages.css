@@ -665,7 +665,7 @@
 /* phone: the Champion's event name one size down so a long real name takes 2 lines, not 3 (Sim, Nov 12: "A + 2 line event name") */
 @media (max-width:699px){.hm-them h3{font-size:var(--t24)}}
 /* Home piece 5 (mock-up R2): More on Home, the site's fold (as Things to Know), closed by default */
-.hm-more{margin-top:0}
+
 .hm-moreb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s10) var(--s16);padding:var(--s2) 0 var(--s8)}
 .hm-mp h3{font-size:var(--t22);margin:var(--s2) 0 0}.hm-mp h3 span{color:var(--plot-text)}.hm-mp .hm-hint{margin-top:var(--s1)}
 .hm-pairs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s6);margin-top:var(--s3)}
@@ -699,3 +699,18 @@
 /* phone (Sim, Nov 12): tools by name only, two even columns; section spacing 24 instead of 32 */
 @media (max-width:699px){.hm-tool span{display:none}.hm-tool{display:flex;align-items:center;min-height:48px;padding:var(--s2) 0}.hm-tool b{flex:1}
   .hm2>section{padding-top:var(--s6);padding-bottom:var(--s6)}}
+/* Home special states (Nov 12, proposal): the welcome card on a first visit, What's New after an update */
+.hm-welcome{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s6) var(--s16);align-items:start}
+.hm-welcome h2{font-size:var(--t28);margin:var(--s2) 0 var(--s1)}.hm-welcome .hm-acts{margin-top:var(--s4)}
+.hm-steps{list-style:none;counter-reset:st;margin:0;padding:0}
+.hm-steps li{counter-increment:st;display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:var(--s3);padding:var(--s3) 0;border-top:1px solid var(--rule)}
+.hm-steps li::before{content:counter(st);grid-row:1/3;font:900 var(--t28)/1 var(--u);font-style:italic;color:var(--plot-text)}
+.hm-steps b{font:700 var(--t15)/1.3 var(--b)}.hm-steps span{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.hm2>section.hm-newsec{position:relative;padding-top:0;padding-bottom:0}
+.hm-new>summary{padding-right:var(--s12)}.hm-newl{list-style:none;margin:0;padding:0 0 var(--s6)}
+.hm-newl li{padding:var(--s2) 0;border-top:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.hm-newl b{color:var(--ink)}
+.hm-newx{position:absolute;top:var(--s2);right:calc(var(--gut) + var(--s8));width:44px;height:44px;border:0;background:none;color:var(--ink-3);font:400 var(--t24)/1 var(--b);cursor:pointer}
+@media (max-width:899px){.hm-welcome{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699px){.hm-newx{right:calc(var(--s4) + var(--s8))}}
+.hm-newsec .hm-new{--fold-mt:0;--fold-bt:0}.hm-newsec .hm-newx{top:var(--s3)}
+@media (max-width:699px){.hm-welcome .hm-acts{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s3) var(--s5);align-items:center}.hm-welcome .hm-acts .np-btn2{justify-self:stretch}}

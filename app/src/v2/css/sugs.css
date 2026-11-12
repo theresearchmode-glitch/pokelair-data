@@ -48,7 +48,7 @@
 .sg2-stale{opacity:.45;pointer-events:none}
 /* Problems and Team Checks: a fold at the foot of Team Checks; open, its full checks card takes the short list's place */
 /* A2 proposal: the checks are listed once, so they stay visible when Things to Know is open (the rule hiding them is gone) */
-.sg2-fold{margin-top:var(--s6);border-top:1px solid var(--rule)}
+.sg2-fold{margin-top:var(--fold-mt,var(--s6));border-top:var(--fold-bt,1px solid var(--rule))} /* --fold-mt / --fold-bt: a page can drop the gap and rule (Home, Nov 12) */
 .sg2-fold>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s1) var(--s3);padding:var(--s4) 0;cursor:pointer;list-style:none}
 .sg2-fold>summary::-webkit-details-marker{display:none}
 .sg2-fold>summary .t{font:900 var(--t20)/1.25 var(--u);font-style:italic}

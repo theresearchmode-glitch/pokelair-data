@@ -490,3 +490,13 @@ Sim's own decisions are marked "Sim". Newest first.
 - ~3:02 PM: Sim chose the headline "The Meta, right now." (was "Top of the Meta."; it covers Top rated, Hidden gems and This week)
   and approved the phone changes. One line at 390 and up, two lines at 320 (320 page 4,053 / 4,600 assumed). Publishing Home
   pieces 5 and 6 (the fold, the phone and iPad changes), the headline and the My Box toggle to the Preview together.
+- ~3:05-3:11 PM: built the last three Home items today's site has, as a PROPOSAL (pictures to Sim, not on the Preview):
+  the welcome card on a first visit (today's rules and saved key cc2.welcomed; words updated to the Nov 9 word list: "Read your
+  Strength Score" instead of "Read your scouting report"; buttons Copy a Top Team + Got It, since the hero above already has the
+  start buttons: one main button per screen, nothing twice); What's New after an update (today's rules and keys; WHATS_NEW moved
+  unchanged to 05-home-data.js; today's What's New and welcome card output identical before/after, 2,072 characters); the
+  weather word on Your six ("Your six · Sun Tailwind (sample) · Sun team", today's wxKeyOf/wxName, HOME-16).
+  Open for Sim: today's WHATS_NEW text uses old words ("scouting report", "ready for", "win odds"); propose a new entry for the
+  switch to the new design, words to approve then. First visit makes desktop Home 2,878 (limit 2,700; returning 2,589).
+- The fold's top gap and rule are now variables (--fold-mt / --fold-bt in sugs.css) because the v2 CSS layers let the fold's
+  layer win over Home's; only What's New uses them (More on Home keeps its approved gap).

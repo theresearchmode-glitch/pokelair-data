@@ -44,7 +44,8 @@ V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
     : Array.from({length: 6}, (_, i) => `<button type="button" class="hm-pk hm-add" data-v2search aria-label="Add a Pokémon to slot ${i + 1}"><span class="hm-plus" aria-hidden="true">+</span><b>Add a Pokémon</b><small>&nbsp;</small></button>`).join('');
   const plan = lead.length >= 2 ? `<p class="hm-plan"><strong>Game plan ${E(vs)}:</strong> lead ${pair(lead)}${back.length ? `, back ${pair(back)}` : ''}${bench.length ? `, bench ${pair(bench)}` : ''}.</p>` : '<div class="hm-plan"></div>';
   const acts = ms.length ? `${C && FC ? `<button type="button" class="np-btn" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}">Prep vs the Champion</button>` : ''}<a class="np-link" href="#team">Open My Team ›</a>` : '<a class="np-btn" href="#build">Add Your Six</a>';
-  const you = `<div class="hm-side hm-you"><div class="hm-hd"><p class="hm-k2">Your six · ${E(title)}</p>${score}</div><div class="hm-six">${six}</div>${plan}<div class="row hm-acts">${acts}</div></div>`;
+  let wx = ''; try { const k = ms.length ? wxKeyOf(ms) : null; if (k) wx = wxName(k); } catch (e) {} // today's weather word (HOME-16)
+  const you = `<div class="hm-side hm-you"><div class="hm-hd"><p class="hm-k2">Your six · ${E(title)}${wx ? ' · ' + E(wx) : ''}</p>${score}</div><div class="hm-six">${six}</div>${plan}<div class="row hm-acts">${acts}</div></div>`;
   return `<section class="hm-duel">${them}${you}</section>`; };
 // Home piece 3 (mock-up R2): Top of the Meta (Top rated / Hidden gems, today's lairRows, isGem, lairRank and words) beside today's
 // underdog and This week in the ratings (META.track.mv, up to 12 kept since Nov 12: Sim asked for more rows to fill the space).
@@ -117,7 +118,28 @@ V2.homeMore = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID
   return `<section class="hm-moresec"><details class="sg2-fold hm-more" data-hmmore${V2.hmUi.more ? ' open' : ''}><summary><span class="t">More on Home</span><span class="s">${E(sub)}</span></summary>
     <div class="hm-moreb">${pr}${tr}${co}${bt}<p class="hm-hint hm-src">${E((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p></div></details></section>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-hmmore]')) return; V2.hmUi.more = d.open; try { localStorage.setItem('np2.fold.homemore', d.open ? '1' : '0'); } catch (x) {} }, true);
-V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeDuel()}${V2.homeMeta()}${V2.homeTools()}${V2.homeMore()}</div>`; }};
+// First visit and after an update (today's 46-onboarding.js / 53-feedback.js rules and saved keys, so a player's state carries
+// over at the switch): the welcome card until "Got It" or a path is tapped (cc2.welcomed); What's New once, the visit right after
+// an update (cc2.seenNew + this visit's np.wnew), never for a first-time visitor. Words: the Nov 9 word list (proposal, Sim to OK).
+V2.homeWelcome = () => { let seen = false; try { seen = !!LS.get('cc2.welcomed', ''); } catch (e) {} if (seen) return '';
+  return `<section class="hm-welcome"><div class="hm-wl"><p class="np-eyebrow">New here?</p><h2 class="u">How NastyPlot works.</h2>
+    <p class="hm-hint">The team on My Team is a sample to explore. Replace it any time: Build a Team above, or copy a top team.</p>
+    <div class="row hm-acts"><a class="np-btn2" href="#meta" data-hmwelcome><span>Copy a Top Team</span></a><button type="button" class="np-link" data-hmwelcome>Got It</button></div></div>
+    <ol class="hm-steps"><li><b>Get a team</b><span>Let us build one from real winning teams, copy a top team, or type your own six.</span></li>
+    <li><b>Read your Strength Score</b><span>How strong your six is, its Matchups against the top threats, and exactly what to change.</span></li>
+    <li><b>Plan each match</b><span>Scout their six, see who moves first, run the damage, and get a turn 1 plan.</span></li></ol></section>`; };
+V2.homeNew = () => { let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
+  if (!welcomed) { try { LS.set('cc2.seenNew', WHATS_NEW.id); } catch (e) {} return ''; }
+  let sess = ''; try { sess = sessionStorage.getItem('np.wnew') || ''; } catch (e) {}
+  if (seen === WHATS_NEW.id && sess !== WHATS_NEW.id) return '';
+  try { LS.set('cc2.seenNew', WHATS_NEW.id); sessionStorage.setItem('np.wnew', WHATS_NEW.id); } catch (e) {}
+  const E = V2.esc;
+  return `<section class="hm-newsec"><details class="sg2-fold hm-new"><summary><span class="t">What's New</span><span class="s">${WHATS_NEW.items.length} updates: ${WHATS_NEW.items.slice(0, 2).map(([t]) => E(t)).join(', ')}…</span></summary>
+    <ul class="hm-newl">${WHATS_NEW.items.map(([t, d]) => `<li><b>${E(t)}</b> <span>${E(d)}</span></li>`).join('')}</ul></details><button type="button" class="hm-newx" data-hmnewx aria-label="Dismiss What's New">×</button></section>`; };
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-hmwelcome],[data-hmnewx]'); if (!t) return;
+  if (t.hasAttribute('data-hmwelcome')) { try { LS.set('cc2.welcomed', '1'); } catch (x) {} if (t.tagName === 'BUTTON') { e.preventDefault(); V2.redraw(); } return; }
+  e.preventDefault(); try { LS.set('cc2.seenNew', WHATS_NEW.id); sessionStorage.removeItem('np.wnew'); } catch (x) {} const s = t.closest('.hm-newsec'); if (s) s.remove(); });
+V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeNew()}${V2.homeWelcome()}${V2.homeDuel()}${V2.homeMeta()}${V2.homeTools()}${V2.homeMore()}</div>`; }};
 // Load this team (HOME-09): with a team of your own, the first tap asks ("Tap again"); the second loads it with Undo (today's loadSheet)
 document.addEventListener('click', async e => { const L = e.target.closest('[data-hmload]'), Cp = e.target.closest('[data-hmcopy]'), P = e.target.closest('[data-hmprep]');
   if (L) { const k = L.dataset.hmload, x = evTeam(k); if (!x) return; if (members().length && V2.hmUi.sure !== k) { V2.hmUi.sure = k; clearTimeout(V2.hmUi.t); V2.hmUi.t = setTimeout(() => { V2.hmUi.sure = null; if (V2.route() === 'home') V2.redraw(); }, 6000); V2.redraw(); return; }
