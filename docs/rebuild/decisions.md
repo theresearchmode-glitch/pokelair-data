@@ -364,7 +364,7 @@ Sim's own decisions are marked "Sim". Newest first.
 - Correction (Claude): the "fits / no new findings" lines above were measured on the built page for the header only; they do not
   mean the pages are done. page-heights.md had My Team's mock-up heights as if built; corrected the same night.
 - ~10:55 AM Eastern: "Save This Six" -> "Save This Team" on the Saved Teams free-spot card (Sim: "save this team looks good to me").
-- Bug fix (restores the approved My Box layout; before/after pictures sent to Sim): at 900-1399 wide the pinned picked-Pokemon panel
+- Bug fix (restores the approved My Box layout; before/after pictures sent; Sim: "absolutely", published Preview v65, 394 files): at 900-1399 wide the pinned picked-Pokemon panel
   slid over Copy Box Link / Reset Box / the sync line once you scrolled (found by BOX-05/06 failing: the tap landed on "Swap Into My
   Team"). The panel now stays pinned inside its own column only. Built page app/dist/v2.html: behaviour BOX-01..07 + SAVED-09 + SHARE-01
   `9 pass, 0 FAIL`; BOX-05 failed before the fix. BOX-01 test reads the approved item-20 sync words on the new build.
