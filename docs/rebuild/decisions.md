@@ -26,6 +26,22 @@ Sim's own decisions are marked "Sim". Newest first.
   local missing-art messages; the art is on the artifact), heights 3,945 / 2,215 (same as measured). Artifact list after publish:
   394 files (387 + 7 fonts/*.woff2; 346 v2art kept). Sim notified to check A8 on her iPhone.
 - GitHub run 716 (design6, before the fix): run.mjs was the ONLY failing step; v2-guard, v2-words, golden, same-grade and the rest passed.
+- GitHub green after the fix: run 717 (design6 6c168a8) success, run 719 (fonts branch ec9517a) success, every job.
+- MAIN (Claude, Sim's go item 6): pushed d24d31b to main = ONE squashed commit whose tree is identical to the tested ec9517a (fonts
+  for today's site + the test fix), so the mistaken frozen-data commit, its undo and old attribution lines never reach main.
+- FOUND (Claude): the live site is NOT built from main. Live v154 = byte-identical build of claude/design6 cb49701 (Nov 10-11 fixes
+  went live straight from design6 under Sim's Nov 10 "faster flow" and were never merged to main). Publishing main's build would
+  have undone them, so it was NOT published. docs/rebuild/live/README.md has the evidence and the rebuild steps.
+- LIVE v155 published (Sim's go, item 6): cb49701 + fonts (docs/rebuild/live/live-v155-fonts.patch). Instrument Sans files swapped
+  for Google's width-axis ones (the live page asks for wdth 75-100; main's files lack that axis; the narrow slider names need it).
+  Checked vs the real live page: Google font requests 4 -> 0 (6 views), same faces (6/6), screenshots identical 3/6 and the other 3
+  differ only where a live-vs-live control also differs. File list after publish: 359 = page + 345 sp + 13 fonts. Capabilities kept.
+- OPEN for Sim: main is behind the live site (Nov 10-11 today's-site fixes). Recommendation: bring main up to the live code
+  (cb49701's today's-site files + fonts) in one tested commit, so main = live again; not done without her yes.
+- HEIGHT CUTS (Sim: "your recommendation", no feature removed or buried): e9abcc3. Desktop 2,215 -> 1,784 (all wide widths under
+  1,800). Phone 3,945 -> 3,707 (320: 4,075): still over 3,400. Claude disagrees with reaching 3,400 by folding the Favoured list or
+  shrinking the six; recommends raising the phone limit to ~3,700. Pictures sent; Sim's answer pending.
+
 - MISTAKE (Claude), fixed at once: the fonts-branch commit 93ed4b7 also carried the frozen Nov 9 out/ files (they were still staged in
   the scratch copy). A new commit put out/ back as at 9eabdd6 (no history rewritten); the branch now differs from 9eabdd6 only in
   app/test/run.mjs (git diff --stat). Rule: after testing on frozen data, reset out/ from the commit before committing anything.
