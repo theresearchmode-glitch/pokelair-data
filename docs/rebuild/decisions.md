@@ -42,6 +42,16 @@ Sim's own decisions are marked "Sim". Newest first.
   `git checkout HEAD -- out` (diff vs HEAD 0 lines; out/ was unmodified before). Everything that ran in that window is discarded and
   re-run: the A6 pictures (they had no daily data), the today's-page behaviour run, and app/dist rebuilt. Rule from now on: proposal
   patches are made with `git diff -- app/src/v2` (paths named), checked with `grep "^diff --git"`, and never applied to the main tree.
+- Proposals (waiting for Sim, pictures in docs/rebuild/proposals/): A2 (a2-proposal.png, a2.patch), A3+A4 (a3-a4-proposal.png,
+  a3-a4.patch), A6 (a6-proposal.png, a6.patch), gallery wording (gallery-wording.md). They combine (applied in that order in a
+  scratch worktree: a3-a4, a6, a2) and build clean. Behaviour A-team v2 on the combined build: 54 pass / 78 FAIL; the only changes
+  vs tonight's committed build are MU-02, SUG-10, SUG-11, which check today's wording (calc level on every row; the "Problems and
+  Team Checks" title and count line; the "?" inside that fold). If Sim approves, those three tests are updated to the new wording.
+- C13 check built (Claude's decision under authority: plan steps 3-6 wait on Sim's pictures; this is a measuring tool, no site
+  change): experiments/c13-check.mjs. Tested by planting one fault of each kind (C13_PLANT=1): all 8 kinds reported; clean page: no
+  false alarms. Results on design6 4514041 in page-heights.md. Real findings: tap targets under 44 wide (jump bar "Set" 21-24,
+  "Battle"/"Sets" links 42/31, header menu at 820 35-42, My Box "Box 1"/"Box 2" 28, footer "About" 43, "Undo" 38); duplicated
+  lines when everything is open (the A2 duplication). Not covered by it (manual): C2, C3 beyond repeated lines, C5, C6, C9-C12.
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled

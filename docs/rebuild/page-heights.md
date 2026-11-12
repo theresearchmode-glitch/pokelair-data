@@ -16,6 +16,29 @@ This table records the rule in design-system.md section 9. Heights are full page
 >   Plain words: the built My Team is about 900px too long on phone, 275px on iPad and 420px on desktop.
 > No other rebuilt page has been measured on the built page yet. Every other "Rebuild" number below is a mock-up number.
 
+> **BUILT PAGES, measured Nov 12 (~1:05 AM Eastern) with experiments/c13-check.mjs** (rule C1/C13): built new site
+> (claude/design6 at 4514041, `node app/build.mjs --v2 --art=../src/v2/art/`), daily data fed in as the live page gets it, sample
+> team, day mode; Chromium and WebKit (they agree within 2px). Default state; "open" = every fold on the page opened.
+> The 320 width has no row in the limit table: the 390 limit is used there and marked assumed (Sim to confirm).
+>
+> | Built page | 320 | 390 | 820 | 1440 |
+> |---|---|---|---|---|
+> | My Team | 4,818 over | 4,309 over | 3,775 over | 2,223 over |
+> | My Team, everything open | 8,460 | 7,701 | 6,011 | 4,799 |
+> | My Team, no team yet | 1,588 | 1,420 | 905 | 900 |
+> | My Box | 2,851 | 2,050 | 1,896 | 1,375 |
+> | Compare (no teams picked) | 1,133 | 974 | 900 | 900 |
+>
+> Worst states (same check, `five` / `apply` / `long`), My Team:
+>
+> | State | 320 | 390 | 820 | 1440 |
+> |---|---|---|---|---|
+> | 5 of 6 (sixth removed) | 4,851 | 4,289 | 3,847 | 2,292 |
+> | After Suggestion 1's Apply | 5,210 | 4,508 | 3,956 | 2,536 |
+> | Six longest names (imported) | 4,184 | 3,945 | 3,095 ok | 1,990 |
+>
+> No text cut off at any width in any state. The "open" state has no limit in the table yet.
+
 **Limits.** "over" marks a page past its limit.
 
 | Size | Tool page | Home |
