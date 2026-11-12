@@ -46,6 +46,9 @@ only), as asked; none show a rim on the sheet. Design note taken into docs/rebui
 (10250-10252, 491, 823) vanish on Dusk without a panel. Today's live site keeps its current sprites; the new art ships with
 the rebuild (R3), not before.
 
+Windows note (Nov 11): the same-*.mjs proofs, full-check.mjs and polish-check.mjs used Linux-only paths and failed in seconds on
+Windows ("NO RESULT LINE"). Fixed: fileURLToPath / path.resolve / pathToFileURL, as harness.mjs already did. Pull before running.
+
 ## Job 3: the full check run (whenever the main chat asks; Sim, Nov 11)
 The main chat names a base commit (the last fully checked one). Then:
 1. `git pull origin claude/design6`, then `npm ci` only if node_modules is missing or `node app/test/run.mjs` can't find playwright.

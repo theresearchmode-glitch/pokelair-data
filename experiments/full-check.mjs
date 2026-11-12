@@ -5,8 +5,8 @@
 //   base-ref  a commit whose today's page is the known-good one (e.g. 4a674b0); its page is built in a temporary worktree
 //   label     names the report: docs/rebuild/test-runs/full-check-<label>.txt (default: today's date)
 // Needs: node, the repo's node_modules (playwright with its Chromium), git. About 1-2 hours on the cloud machine.
-import {execFileSync, spawnSync} from 'node:child_process'; import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
-const ROOT = path.resolve(new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
+import {execFileSync, spawnSync} from 'node:child_process'; import {fileURLToPath} from 'node:url'; import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
+const ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const [ref, label = new Date().toISOString().slice(0, 10)] = process.argv.slice(2);
 if (!ref) { console.error('usage: node experiments/full-check.mjs <base-ref> [label]'); process.exit(2); }
 const out = path.join(ROOT, 'docs/rebuild/test-runs', `full-check-${label}.txt`), log = s => { fs.appendFileSync(out, s + '\n'); console.log(s); };

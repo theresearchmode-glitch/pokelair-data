@@ -1,9 +1,10 @@
 // The rebuild's My Team suggestions must match today's page: for real tournament teams (some with a slot changed so there is
 // something to fix), the suggestions shown, in order, with each one's Strength Score change. Usage: node experiments/same-sugs-v2.mjs
 // WHY=1 also compares each one's Why? reasons, weak-spot change and kind line (R4, Nov 11).
+import {fileURLToPath, pathToFileURL} from 'node:url';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const ROOT = new URL('..', import.meta.url).pathname, rd = f => { try { return JSON.parse(fs.readFileSync(ROOT + 'out/' + f, 'utf8')); } catch (e) { return null; } };
+const ROOT = fileURLToPath(new URL('../', import.meta.url)), rd = f => { try { return JSON.parse(fs.readFileSync(ROOT + 'out/' + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
 const N = +(process.env.N || 25);
 const PICK = `(()=>{const E=META.events.events,t=[];for(const e of E)for(const x of e.top||[])if(x.mons&&x.mons.length===6&&x.mons.every(m=>byName.get(m.n)))t.push(x.mons.map(m=>m.n));
@@ -18,7 +19,7 @@ for (const [k, f, pre] of [['today', 'app/dist/page.html', true], ['v2', 'app/di
   fs.writeFileSync(page, src); const p = await b.newPage({viewport: {width: 1440, height: 900}});
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-  await p.goto('file://' + page + (pre ? '' : '#team')); await p.waitForTimeout(4000);
+  await p.goto(pathToFileURL(page).href + (pre ? '' : '#team')); await p.waitForTimeout(4000);
   if (!teams) teams = JSON.parse(await p.evaluate(c => window.__ev(c), PICK));
   out[k] = [];
   for (const t of teams) {

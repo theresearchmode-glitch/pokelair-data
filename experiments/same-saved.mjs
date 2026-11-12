@@ -2,11 +2,12 @@
 // steps in two builds through today's buttons and compares the saved teams, the open team, what the page shows after each step and
 // the Saved Teams list itself (each sort).
 // Usage: node experiments/same-saved.mjs before.html after.html   (DUMP=file.json writes every step)
+import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const OUT = new URL('../out/', import.meta.url).pathname, rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const OUT = fileURLToPath(new URL('../out/', import.meta.url)), rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
-const [A, B] = process.argv.slice(2).map(f => (f.startsWith('/') ? f : process.cwd() + '/' + f));
+const [A, B] = process.argv.slice(2).map(f => (path.resolve(f)));
 const b = await chromium.launch(), out = {};
 for (const [k, f] of [['a', A], ['b', B]]) {
   const page = f.replace(/\.html$/, '.ss.html');
@@ -14,7 +15,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
   const p = await b.newPage({viewport: {width: 1280, height: 900}});
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-  await p.goto('file://' + page); await p.waitForTimeout(3500);
+  await p.goto(pathToFileURL(page).href); await p.waitForTimeout(3500);
   const steps = [
     `S.slots=normSlots(TEAM.map(n=>({n,a:null,lock:false})));fixSlots();S.loadedId=null;render()`,
     `$('saveBtn').click()`, `$('saveName').value='Rain One';$('saveNew').click()`,

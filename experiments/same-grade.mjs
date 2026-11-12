@@ -2,16 +2,17 @@
 // Build for Me (card vs. after "Use this team") and an event's "Load team". Real event teams with full sheets are used, so items,
 // Abilities and moves are the players' own. Fails on any difference in the Strength Score (Nov 9; was the letter and rank).
 // Usage: node experiments/same-grade.mjs [teams=6]     (build the page first: node app/build.mjs)
+import {fileURLToPath, pathToFileURL} from 'node:url';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const ROOT = fileURLToPath(new URL('../', import.meta.url)), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const N = +(process.argv[2] || 6), L = rd('limitless.json');
 const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
 const page = ROOT + `app/same-${process.pid}.html`;
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), pg = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(), errs = []; pg.on('pageerror', e => errs.push(e.message));
 await pg.addInitScript(D => { localStorage.setItem('cc2.welcomed', '"1"'); window.__PL_TEST = 1; window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-await pg.goto('file://' + page); await pg.waitForTimeout(3500); fs.unlinkSync(page);
+await pg.goto(pathToFileURL(page).href); await pg.waitForTimeout(3500); fs.unlinkSync(page);
 const ev = c => pg.evaluate(c => window.__ev(c), c), wait = ms => pg.waitForTimeout(ms);
 const fails = [], ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails.push(m); };
 const RX = /^\s*(\d{1,3})\b/; // Strength Score (Nov 9): every surface must show the same number

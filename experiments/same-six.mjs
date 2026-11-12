@@ -5,11 +5,12 @@
 // Compares the slots, the lead pick, the toast, the stage's HTML, the set card's HTML, Home's plan line and the add list after every step.
 // Left out as noise (today's page against itself differs there): the order of class names, the name-fit and spacing marks added a moment after drawing (data-nf, data-rz) and the tile cursor a timer drops in (its place beside the sprite varies), a hidden editor's leftover text.
 // Usage: node experiments/same-six.mjs before.html after.html   (DUMP=file.json writes every step)
+import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const OUT = new URL('../out/', import.meta.url).pathname, rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const OUT = fileURLToPath(new URL('../out/', import.meta.url)), rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
-const [A, B] = process.argv.slice(2).map(f => (f.startsWith('/') ? f : process.cwd() + '/' + f));
+const [A, B] = process.argv.slice(2).map(f => (path.resolve(f)));
 const TEAMS = [['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'], ['Pelipper', 'Archaludon', 'Basculegion', 'Incineroar', 'Garchomp', 'Sneasler'],
   ['Kingambit', 'Sinistcha', 'Floette-Mega', 'Torkoal', 'Dragonite'], ['Garchomp', 'Incineroar'], ['Gengar-Mega', 'Kingambit', 'Whimsicott'], ['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom']];
 const steps = [];
@@ -25,7 +26,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
   const p = await b.newPage({viewport: {width: 1280, height: 900}});
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.box', '[]'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-  await p.goto('file://' + page); await p.waitForTimeout(3500);
+  await p.goto(pathToFileURL(page).href); await p.waitForTimeout(3500);
   await p.evaluate(() => window.__ev(`window.CLICK=d=>{const x=document.createElement('button');x.type='button';Object.assign(x.dataset,d);document.body.appendChild(x);x.click();x.remove()};
     S.box=['Salamence','Dragonite','Archaludon','Garchomp'];
     window.TEAM=t=>{S.slots=t.map(n=>({n,a:null,lock:false}));while(S.slots.length<6)S.slots.push({n:'',a:null,lock:false});S.leads=null;S.loadedId=null;ui.rzSet=undefined;render();setView('report',false)};

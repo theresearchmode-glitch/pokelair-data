@@ -4,11 +4,12 @@
 // Usage: node experiments/same-team.mjs before.html after.html (e.g. a saved dist/page.html and the new one)
 // Same-output check for logic extractions: renders My Team (its Strength Score, and Suggestions once the background planner finishes) for real tournament teams, partial teams and an
 // illegal team in two builds and compares the page HTML and the score object.
+import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const OUT = new URL('../out/', import.meta.url).pathname, rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const OUT = fileURLToPath(new URL('../out/', import.meta.url)), rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
-const [A, B] = process.argv.slice(2).map(f => (f.startsWith('/') ? f : process.cwd() + '/' + f));
+const [A, B] = process.argv.slice(2).map(f => (path.resolve(f)));
 const b = await chromium.launch(); const out = {};
 for (const [k, f] of [['a', A], ['b', B]]) {
   const page = f.replace(/\.html$/, '.run.html');
@@ -16,7 +17,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
   const ctx = await b.newContext({viewport: {width: 1280, height: 900}}), p = await ctx.newPage();
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-  await p.goto('file://' + page); await p.waitForTimeout(3500);
+  await p.goto(pathToFileURL(page).href); await p.waitForTimeout(3500);
   out[k] = await p.evaluate(() => window.__ev(`(async()=>{ const res=[]; const settle=async()=>{for(let i=0;i<400&&(planJob||(planCache.key!==planKeyOf($('useAbil').checked))||(typeof ckWinNeeded==='function'&&ckWinNeeded()));i++){await new Promise(r=>setTimeout(r,25))} render(); await new Promise(r=>setTimeout(r,30)); render();}; const E=META.events.events; const teams=[];
     for(const e of E) for(const t of e.top||[]) if(t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n))) teams.push(t.mons.map(m=>m.n));
     const pick=teams.filter((_,i)=>i%Math.max(1,Math.floor(teams.length/40))===0).slice(0,40);

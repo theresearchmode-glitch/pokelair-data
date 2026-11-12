@@ -4,11 +4,12 @@
 // today's own buttons, on several teams. After every step it compares the team, the settings, the toast, the "?" bubble and the
 // HTML of the whole Suggestions part (#chP1, which holds the fold, #needs, #chkCard and #verdict).
 // Usage: node experiments/same-sugctl.mjs before.html after.html   (DUMP=file.json writes every step)
+import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const OUT = new URL('../out/', import.meta.url).pathname, rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const OUT = fileURLToPath(new URL('../out/', import.meta.url)), rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
-const [A, B] = process.argv.slice(2).map(f => (f.startsWith('/') ? f : process.cwd() + '/' + f));
+const [A, B] = process.argv.slice(2).map(f => (path.resolve(f)));
 const TEAM = ['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
 const SAMPLE = ['Charizard-Mega-Y', 'Whimsicott', 'Basculegion', 'Kingambit', 'Garchomp', 'Sneasler'];
 const NOMEGA = ['Pelipper', 'Archaludon', 'Basculegion', 'Incineroar', 'Garchomp', 'Sneasler'];
@@ -34,7 +35,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
   const p = await b.newPage({viewport: {width: 1280, height: 900}});
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2099-01-01"'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-  await p.goto('file://' + page); await p.waitForTimeout(3500);
+  await p.goto(pathToFileURL(page).href); await p.waitForTimeout(3500);
   await p.evaluate(() => window.__ev(`setView('report',false);
     window.CLICK=d=>{const x=document.createElement('button');x.type='button';Object.assign(x.dataset,d);document.body.appendChild(x);x.click();x.remove()};
     window.TIP=k=>{const b=document.querySelector('[data-pane="report"] [data-tip="'+k+'"]');if(b)b.click();return !!b};

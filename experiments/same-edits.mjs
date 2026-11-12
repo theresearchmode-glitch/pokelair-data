@@ -1,11 +1,12 @@
 // Same-output check for editing a set (R4, Nov 11): drives today's set editor through Ability, item, moves, nature, stat points
 // (good and bad numbers), the reset buttons, lock, remove and Undo in two builds, and compares the six slots, the message, the
 // stat-point warning and the whole editor's HTML after every step (minus the page's delayed decorations, see NORM). Usage: node experiments/same-edits.mjs before.html after.html
+import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const OUT = new URL('../out/', import.meta.url).pathname, rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const OUT = fileURLToPath(new URL('../out/', import.meta.url)), rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
-const [A, B] = process.argv.slice(2).map(f => (f.startsWith('/') ? f : process.cwd() + '/' + f));
+const [A, B] = process.argv.slice(2).map(f => (path.resolve(f)));
 const b = await chromium.launch(), out = {};
 for (const [k, f] of [['a', A], ['b', B]]) {
   const page = f.replace(/\.html$/, '.ss.html');
@@ -13,7 +14,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
   const p = await b.newPage({viewport: {width: 1280, height: 900}});
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-  await p.goto('file://' + page); await p.waitForTimeout(3500);
+  await p.goto(pathToFileURL(page).href); await p.waitForTimeout(3500);
 
   // PICK(sel,value): set a control and fire its change event, as a tap on a dropdown does
   const steps = [

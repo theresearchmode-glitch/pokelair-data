@@ -5,13 +5,14 @@
 // sheet's selected threat. Compares the HTML of every Matchups part, the open sheet, the remembered view and open rows after every step.
 // data-rz (70-riso2.js) records a text length measured at draw time and flips with timing on both pages, so it is left out.
 // Usage: node experiments/same-matchups.mjs before.html after.html   (DUMP=file.json writes every step)
+import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const OUT = new URL('../out/', import.meta.url).pathname, rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const OUT = fileURLToPath(new URL('../out/', import.meta.url)), rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null,
   'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'),
   'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/history': rd('history.json'), 'meta/events': rd('events.json')};
-const [A, B] = process.argv.slice(2).map(f => (f.startsWith('/') ? f : process.cwd() + '/' + f));
+const [A, B] = process.argv.slice(2).map(f => (path.resolve(f)));
 const TEAMS = [['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'],
   ['Pelipper', 'Archaludon', 'Basculegion', 'Incineroar', 'Garchomp', 'Sneasler'],
   ['Kingambit', 'Whimsicott', 'Farigiraf', 'Gholdengo', 'Sinistcha', 'Dragonite'],
@@ -20,14 +21,14 @@ const TEAMS = [['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Ril
 const b = await chromium.launch(), out = {};
 for (const [k, f] of [['a', A], ['b', B]]) {
   // the copy sits in app/, beside sp/, so every sprite loads (a missing sprite is swapped for a blank at a moment that varies)
-  const page = new URL(`../app/_smu-${process.pid}-${k}.html`, import.meta.url).pathname; out[k] = [];
+  const page = fileURLToPath(new URL(`../app/_smu-${process.pid}-${k}.html`, import.meta.url)); out[k] = [];
   fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(f, 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
   for (const width of [1280, 390]) {
     const ctx = await b.newContext({viewport: {width, height: 900}, isMobile: width < 700, hasTouch: width < 700}), p = await ctx.newPage(), errs = [];
     p.on('pageerror', e => errs.push(e.message));
     await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2099-01-01"'); } catch (e) {}
       window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-    await p.goto('file://' + page); await p.waitForTimeout(3500);
+    await p.goto(pathToFileURL(page).href); await p.waitForTimeout(3500);
     await p.evaluate(() => window.__ev(`window.NORM=h=>String(h||'').replace(/[?]r=[0-9]+/g,'').replace(/ data-retry="[0-9]+"/g,'').replace(/ data-arb="1"/g,'').replace(/ data-clr="[^"]*"/g,'').replace(/ data-rz="[0-9]+"/g,'');
       window.HT=id=>{const e=$(id);return e?NORM(e.innerHTML):null};
       window.SNAP=()=>JSON.stringify({seg:localStorage.getItem('cc2.seg.thr'),pressed:[...document.querySelectorAll('[data-chseg="thr"] [aria-pressed="true"]')].map(x=>x.dataset.chsegv).join(),

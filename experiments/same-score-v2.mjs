@@ -1,8 +1,9 @@
 // The rebuild uses today's logic: for real tournament teams, the Strength Score, its band word, how sure it is and the
 // matchups count must be the same in app/dist/v2.html as in app/dist/page.html. Usage: node experiments/same-score-v2.mjs
+import {fileURLToPath, pathToFileURL} from 'node:url';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const ROOT = new URL('..', import.meta.url).pathname, OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+const ROOT = fileURLToPath(new URL('../', import.meta.url)), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
 const PROBE = `(()=>{ const E=META.events.events, teams=[]; for(const e of E) for(const t of e.top||[]) if(t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n))) teams.push(t.mons.map(m=>m.n));
   const pick=teams.filter((_,i)=>i%Math.max(1,Math.floor(teams.length/40))===0).slice(0,40), out=[];
@@ -17,7 +18,7 @@ for (const [k, f, pre] of [['today', 'app/dist/page.html', true], ['v2', 'app/di
   fs.writeFileSync(page, src); const p = await b.newPage();
   await p.addInitScript(D => { window.__PL_TEST = 1; try { localStorage.setItem('cc2.welcomed', '"1"'); } catch (e) {}
     window.claude = {use: async n => n === 'db' ? {doc: q => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[q], data: () => D[q]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}, update: async () => {}})} : null}; }, D);
-  await p.goto('file://' + page + (pre ? '' : '#guide')); await p.waitForTimeout(3500);
+  await p.goto(pathToFileURL(page).href + (pre ? '' : '#guide')); await p.waitForTimeout(3500);
   try { res[k] = await p.evaluate(c => window.__ev(c), PROBE); } catch (e) { console.log(k, 'failed:', e.message.split('\n')[0]); res[k] = []; }
   await p.close(); fs.unlinkSync(page);
 }
