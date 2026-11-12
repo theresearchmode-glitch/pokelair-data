@@ -252,6 +252,16 @@ t('TEAM-14', 'Clear team: "No team yet", toast "Team cleared"; Undo restores the
   await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === RAIN.join(), 'six not restored'); ok(await r.ui.teamHeading() === 'Rain test', 'open saved team not restored'); await r.close(); });
 
 t('TEAM-15', 'Matchups summary: Favoured/Even/Unfavoured add to 30 and match the Matchups legend', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): no Matchups summary in the header; the Matchups section opens with "N Favoured N Even match
+    N Unfavoured" (adds to 30), the bar, then "Damage calc: No answer a, Shaky b, Handles it c, Beats it d" (adds to 30) */
+    const {ui} = await view('team', {team: TEAM}, 'My Team'); const tx = await ui.text(), at = tx.indexOf('Matchups Against the top 30 threats.');
+    ok(at > 0, 'no Matchups section "Against the top 30 threats."'); const pre = tx.slice(0, at).match(/.{0,60}\b(Favoured|Even match|Unfavoured)\b.{0,60}/);
+    ok(!pre, 'a Matchups summary shows before the Matchups section: …' + (pre && pre[0]) + '…');
+    const m = tx.slice(at).match(/^Matchups Against the top 30 threats\. Verdicts from real tournament games with your Pokémon; a row notes when the calc disagrees\. (\d+) Favoured (\d+) Even match (\d+) Unfavoured Damage calc: No answer (\d+), Shaky (\d+), Handles it (\d+), Beats it (\d+) /);
+    ok(m, 'Matchups section does not open with "N Favoured N Even match N Unfavoured" then "Damage calc: …": ' + tx.slice(at, at + 300));
+    const [f, e, u, a, b, c, d] = m.slice(1).map(Number); ok(f + e + u === 30, 'Favoured/Even match/Unfavoured add to ' + (f + e + u)); ok(a + b + c + d === 30, 'Damage calc levels add to ' + (a + b + c + d));
+    const bar = await ui.matchupsBar(); ok(bar && bar.section === 'Matchups' && bar.before === `${f} Favoured ${e} Even match ${u} Unfavoured` && /^Damage calc: /.test(bar.after), 'the bar is not between the summary and the Damage calc line: ' + JSON.stringify(bar));
+    for (const [k, n] of [['fav', f], ['even', e], ['unf', u]]) ok(Math.abs(bar[k] - n / 30 * 100) < 0.1, `the bar's ${k} share is ${bar[k]}, not ${n} of 30`); return; }
   const {ui} = await view('team', {team: TEAM}, 'My Team'); const tx = await ui.text();
   const m = tx.match(/Matchups (\d+) Favoured (\d+) Even (\d+) Unfavoured vs the top 30 threats in real games/); ok(m, 'no "N Favoured / N Even / N Unfavoured" summary');
   ok(+m[1] + +m[2] + +m[3] === 30, 'numbers add to ' + (+m[1] + +m[2] + +m[3])); has(tx, /Damage calc: covers \d+ of 30/);
@@ -582,6 +592,12 @@ t('IO-03', 'Copy for Showdown on My Team: toast and six Showdown blocks on the c
   const c = await r.ui.copied(); ok(c && c.trim().split(/\n\s*\n/).length === 6, 'clipboard does not hold six blocks'); await r.close(); });
 
 t('IO-04', 'Team Sheet "Copy as text" copies the team', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): the Team Sheet's copy button is "Copy for Showdown" (one name per idea; it IS today's "Copy as
+    text"): the same Showdown export (exportPaste) and My Team's toast "Team copied for Showdown" */
+    const r = await myTeam(); await r.ui.grantClipboard(); await r.ui.go('Team Sheet', 900); await r.ui.tapText(/^Copy for Showdown$/);
+    ok(await r.ui.waitToast(/^Team copied for Showdown$/), 'no "Team copied for Showdown" toast: ' + (await r.ui.toasts()).join(' | '));
+    const c = await r.ui.copied(), want = await r.ui.peek('exportPaste()'); ok(c && want && c === want, 'clipboard is not the Showdown export: ' + String(c).slice(0, 80));
+    ok(c.trim().split(/\n\s*\n/).length === 6 && /Garchomp/.test(c), 'clipboard does not hold the six'); await r.close(); return; }
   const r = await myTeam(); await r.ui.grantClipboard(); await r.ui.go('Team Sheet', 900); await r.ui.tapText('Copy as text'); ok(await r.ui.waitToast(/Team copied as text/), 'no "Team copied as text" toast');
   ok(/Garchomp/.test(await r.ui.copied() || ''), 'clipboard has no team'); await r.close(); });
 
@@ -608,6 +624,11 @@ t('SHARE-03', 'Team Poster image is 1080×1350', async () => {
   if (NEW) { ok(s.title === 'Share Your Team', 'title: ' + s.title); ok(await r.ui.chosen('Team Poster') === true && await r.ui.chosen('Team Card') === false, '"Team Poster" not the picked kind'); } else ok(/poster/i.test(s.title), 'title: ' + s.title); await r.close(); });
 
 t('SHARE-04', 'Team Sheet page "Share as image" opens the box titled "Team Sheet" (1080×1350)', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): "Share as Image" closes the Team Sheet and opens the share sheet ("Share Your Team", its title
+    for every kind) with the "Team Sheet" kind picked */
+    const r = await myTeam(); await r.ui.go('Team Sheet', 900); await r.ui.tapText(/^Share as Image$/, 1500); const s = await r.ui.waitShareImage();
+    ok(s && s.title === 'Share Your Team', 'title: ' + (s && s.title)); ok(await r.ui.chosen('Team Sheet') === true && await r.ui.chosen('Team Card') === false, '"Team Sheet" not the picked kind');
+    ok(s.w === 1080 && s.h === 1350, `sheet image is ${s.w}×${s.h}`); ok(!(await r.ui.sees('Tap a card to edit its set')), 'the Team Sheet stayed open'); await r.close(); return; }
   const r = await myTeam(); await r.ui.go('Team Sheet', 900); await r.ui.tapText('Share as image', 1500); const s = await r.ui.waitShareImage();
   ok(s && s.title === 'Team Sheet', 'title: ' + (s && s.title)); ok(s.w === 1080 && s.h === 1350, `sheet image is ${s.w}×${s.h}`); await r.close(); });
 
@@ -661,15 +682,35 @@ t('LOG-05', 'Logged games show on the matching saved team and in Compare', async
   await r.ui.savedAction('Sun six', 'Compare'); await r.ui.savedAction('Rain test', 'Compare'); await r.ui.settle(); has(await r.ui.text(), NEW ? /Your games with this six 1–0 1 game you logged None logged/ : /Your games with this six/, 'Compare'); await r.close(); });
 
 // ================= 8. Team Sheet page =================
+// new build (Sim, Nov 12): the Team Sheet opens as a sheet over My Team (from its "Team Sheet" link / More menu); eyebrow
+// "← My Team · <team title> · Reg M-C doubles · level 50", heading "Team Sheet", "Copy for Showdown" and "Share as Image", a key line
+// that starts "Tap a card to edit its set", and cards that open Edit Set (click, Enter, Space)
 t('SHEET-01', 'Team Sheet head: "<team name>: Reg M-C doubles, level 50", "← My Team" back link', async () => {
+  if (NEW) { const r = await myTeam({fresh: true}); await r.ui.go('Team Sheet', 900); ok(await r.ui.current() === 'sheet', 'Team Sheet did not open (' + await r.ui.current() + ')');
+    has(await r.ui.text(), / ← My Team · Sun Tailwind \(sample\) · Reg M-C doubles · level 50 Team Sheet Copy for Showdown /, 'Team Sheet head');
+    await r.ui.tapText(/^← My Team$/, 900); ok(await r.ui.current() === 'report', '"← My Team" did not return to My Team (' + await r.ui.current() + ')'); await r.close(); return; }
   const r = await myTeam({fresh: true}); await r.ui.go('Team Sheet', 900); has(await r.ui.text(), /Sun Tailwind \(sample\): Reg M.C doubles, level 50 Team Sheet/);
   await r.ui.tapText('← My Team', 900); ok(await r.ui.current() === 'report', 'back link did not return to My Team'); await r.close(); });
 
 t('SHEET-02', 'Team Sheet actions and key line', async () => {
+  if (NEW) { const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
+    has(tx, /Team Sheet Copy for Showdown Share as Image Tap a card to edit its set · Big number: the stat at level 50 · small number: stat points \(0–32\) · \+ \/ − nature Mega Charizard Y /, 'Team Sheet actions and key line');
+    ok(!/Copy as text/i.test(tx), 'the Team Sheet still says "Copy as text" (one name per idea: Copy for Showdown)'); await r.close(); return; }
   const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
   for (const s of ['Share as image', 'Copy as text', 'Big number: the stat at level 50, small number: stat points (0–32), +/− nature']) has(tx, s, 'Team Sheet'); await r.close(); });
 
 t('SHEET-03', 'Six set cards (item, ability, moves, nature, stats); tapping one opens My Team with its edit panel', async () => {
+  if (NEW) { const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
+    for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) has(tx, n, 'Team Sheet');
+    ok((tx.match(/Item /g) || []).length >= 6 && (tx.match(/Ability /g) || []).length >= 6 && (tx.match(/HP \d+ \d+/g) || []).length >= 6, 'cards miss item / ability / stats');
+    has(tx, /(Most common spread|yours|your nature)/i);
+    // each card opens Edit Set for its own Pokémon: by click, by Enter, by Space (a card is a role=button with tabindex 0)
+    for (const [n, how] of [['Garchomp', 'click'], ['Incineroar', 'Enter'], ['Sneasler', 'Space']]) {
+      if (how === 'click') await r.ui.tapLabel(n + ': edit its set', 1200); else { ok(await r.ui.focusSheetCard(n), `${n}'s card can't take keyboard focus`); await r.ui.press(how, 1200); }
+      ok(await r.ui.current() === 'report', `${how} on ${n}'s card: the Team Sheet is still open`); const p = await r.ui.editPanel(); ok(p && p.title === 'Edit ' + n, `${how} on ${n}'s card: no "Edit ${n}" sheet (${p && p.title})`);
+      await r.ui.closeEditPanel(); if (how !== 'Space') await r.ui.go('Team Sheet', 900); }
+    await r.close();
+    for (const [w, cols] of [[1280, 3], [390, 1]]) { const x = await myTeam({team: TEAM, width: w}); await x.ui.go('Team Sheet', 900); const c = await x.ui.sheetColumns(); ok(c === cols, `${w} wide: ${c} columns, want ${cols}`); await x.close(); } return; }
   const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
   for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) has(tx, n, 'Team Sheet');
   ok((tx.match(/Item /g) || []).length >= 6 && (tx.match(/Ability /g) || []).length >= 6 && (tx.match(/HP \d+ \d+/g) || []).length >= 6, 'cards miss item / ability / stats');
@@ -677,6 +718,12 @@ t('SHEET-03', 'Six set cards (item, ability, moves, nature, stats); tapping one 
   for (const [w, cols] of [[1280, 3], [390, 1]]) { const x = await myTeam({team: TEAM, width: w}); await x.ui.go('Team Sheet', 900); const c = await x.ui.sheetColumns(); ok(c === cols, `${w} wide: ${c} columns, want ${cols}`); await x.close(); } });
 
 t('SHEET-04', 'Team Sheet with no team: "No team yet…" and "Open My Team"', async () => {
+  if (NEW) { /* the empty My Team has no More menu and no Team Sheet link, so the sheet is opened the way the page's own code does it
+    (V2.openTeamSheet, through the adapter's peek); its "Add a Pokémon" button opens search with the name box focused */
+    const r = await myTeam({team: []}); await r.ui.peek('V2.openTeamSheet()'); await sleep(600); ok(await r.ui.current() === 'sheet', 'Team Sheet did not open (' + await r.ui.current() + ')');
+    has(await r.ui.text(), / ← My Team · Reg M-C doubles · level 50 Team Sheet No team yet\. Add Pokémon on My Team and their full sets show here\. Add a Pokémon$/, 'empty Team Sheet');
+    await r.ui.tapText(/^Add a Pokémon$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Search', '"Add a Pokémon" did not open search (' + (p && p.title) + ')');
+    const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'search name box not focused'); await r.close(); return; }
   const r = await myTeam({team: []}); await r.ui.go('Team Sheet', 900); has(await r.ui.text(), 'No team yet. Add Pokémon on My Team and their full sets show here.');
   await r.ui.tapText(/^Open My Team$/i, 900); ok(await r.ui.current() === 'report', 'Open My Team did not'); await r.close(); });
 
