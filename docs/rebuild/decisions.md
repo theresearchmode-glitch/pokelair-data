@@ -85,6 +85,11 @@ Sim's own decisions are marked "Sim". Newest first.
   end was reached); after (scroll-margin-top = header + jump bar + 16px) 40 of 40 seen, 16px under the jump bar. Full-page screenshots
   at rest 16 of 16 identical. CORRECTION: the Nov 11 repro read "targetTop: 0" as "the link works"; 0 meant the heading was under the
   bars. "Matchups disappears on a wide window": still not reproduced (visible with 8 rows at 1180-3200, both engines).
+- Squeezed suggestion row (Sim's screenshot, ~1180): cause confirmed: the card's three-column layout follows the window (900px+),
+  but from 1180 the page splits in two and the card is ~470px, leaving the swap 135px. Proposal (squeeze-proposal.png,
+  squeeze.patch; the look changes at those widths, so Sim decides): three columns only when the window is 900+ AND the card is
+  560px+. Measured (built page, real data): only 1180/1260/1320 change (swap 135x198 -> 470x44 at 1180); 390-1179 and 1400-1920
+  identical with the same page heights; Chromium and WebKit.
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled
