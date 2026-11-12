@@ -727,3 +727,25 @@
 @media (max-width:699px){.hm-top>.hm-sub{min-height:calc(var(--t15) * 1.5 * 2)}} /* the line under the heading takes 1-2 lines by view: hold two on phone */
 .hm-sample{margin-top:var(--s2);max-width:48ch}
 .ms-go{display:flex;flex-wrap:wrap;align-items:center;margin-top:var(--s3);gap:var(--s3)} /* today's Build around it + Popular sets on the sheet (PKMN-03) */
+/* Build piece 1 (mock-up R2): head and the options strip */
+.bd2>*{margin-left:var(--gut);margin-right:var(--gut)}
+.bd-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s6);padding-top:var(--s4)}
+.bd-head h1{font-size:var(--d64);margin:var(--s3) 0 0;white-space:nowrap}.bd-head h1 .pl{color:var(--plot-text)}
+.bd-side{text-align:right;max-width:360px}.bd-side p{font-size:var(--t15);line-height:1.5;color:var(--ink-2);margin:0}.bd-side .np-link{margin-top:var(--s1)}
+.bd-opts{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:var(--s4) var(--s8);align-items:end;margin-top:var(--s5);padding-top:var(--s4);padding-bottom:var(--s4);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.bd-lab{display:block;margin-bottom:var(--s2);font:600 var(--t13)/1 var(--b);color:var(--ink-2);white-space:nowrap}.bd-lab span{font-weight:500;color:var(--ink-3)}
+.bd-around{position:relative;min-width:0}
+.bd-pick{display:flex;align-items:center;gap:var(--s3);min-height:44px;padding:0 var(--s1) 0 var(--s3);border:1.5px solid var(--ink);transform:skewX(-10deg)}.bd-pick>*{transform:skewX(10deg)}
+.bd-pick img{width:32px;height:32px;object-fit:contain}.bd-pick b{flex:1;font:600 var(--t15)/1 var(--b)}
+.bd-x{width:44px;height:44px;border:0;background:none;color:var(--ink-3);font:400 var(--t24)/1 var(--b);cursor:pointer}
+.bd-find{min-height:44px}
+.bd-hits{position:absolute;z-index:5;left:0;right:0;top:100%;background:var(--surface);box-shadow:var(--shadow-lift)}.bd-hits:empty{display:none}
+.bd-go .np-btn2{white-space:nowrap}
+.bd-how h2{font-size:var(--t28);margin:var(--s2) 0 var(--s3)}
+@media (max-width:1179px){.bd-head{display:block}.bd-side{max-width:none;text-align:left;margin-top:var(--s2)}.bd-side p{display:inline}.bd-side .np-link{margin:0 0 0 var(--s2)}
+  .bd-opts{grid-template-columns:minmax(0,1fr) auto;gap:var(--s4) var(--s6)}.bd-src{grid-column:1}.bd-meg{grid-column:2}.bd-around{grid-column:1}.bd-go{grid-column:2}}
+@media (max-width:699px){.bd-head h1{font-size:var(--t34);white-space:normal}.bd-side{display:none}
+  .bd-opts{grid-template-columns:auto minmax(0,1fr)}.bd-src{grid-column:1/-1}.bd-meg{grid-column:1}.bd-meg .np-slide{width:auto}.bd-meg .np-slide button{min-width:44px;padding:0 var(--s3)}.bd-around{grid-column:2}.bd-go{grid-column:1/-1}.bd-go .np-btn2{width:100%}}
+@media (max-width:379px){.bd-rw{display:none}}
+@media (max-width:519px){.bd-find,.bd-pick{min-height:56px}.bd-lab span{display:none}} /* phone: the name box as tall as the Megas switch (labels level); "optional" lives in the box hint */
+.bd-find input{align-self:stretch;min-height:44px} /* the whole box height takes the tap, not only the text line */
