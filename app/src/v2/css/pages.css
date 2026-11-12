@@ -68,8 +68,10 @@
 .tm-ar{font:700 var(--t20)/1 var(--b);color:var(--ink-3)}
 .tm-sug .np-btn{align-self:flex-start;margin-top:auto}
 /* wide: one row per suggestion: the change | the swaps | Apply */
-@media (min-width:900px){.tm-sug li{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
-  .tm-sug li>.np-eyebrow{grid-area:k;align-self:end}.tm-sug .tm-mv{grid-area:mv;align-self:start;flex-direction:column;gap:var(--s1)}.tm-sug .tm-swaps{display:grid;gap:var(--s2);grid-area:sw;display:grid;gap:var(--s2)}.tm-sug li>.np-btn{grid-area:ap;align-self:center;margin:0}}
+/* squeezed-row proposal (Sim's screenshot, ~1180px): three columns only when the window is 900+ AND the card itself is 560px+ (from 1180 the page splits in two and the card is ~470) */
+.tm-sgs{container-type:inline-size}
+@media (min-width:900px){@container (min-width:560px){.tm-sug li{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
+  .tm-sug li>.np-eyebrow{grid-area:k;align-self:end}.tm-sug .tm-mv{grid-area:mv;align-self:start;flex-direction:column;gap:var(--s1)}.tm-sug .tm-swaps{display:grid;gap:var(--s2);grid-area:sw;display:grid;gap:var(--s2)}.tm-sug li>.np-btn{grid-area:ap;align-self:center;margin:0}}}
 @media (max-width:379px){.tm-sw img{width:36px;height:36px}.tm-sw{font-size:var(--t13)}}
 @media (max-width:459px){.tm-hero .np-score{flex-wrap:wrap;row-gap:0}.tm-hero .np-score .w{padding-bottom:0}}
 @media (max-width:439px){.tm-jump{gap:var(--s3)}.tm-jump small{display:none}}
@@ -497,3 +499,6 @@
    Matchups heading ended at 0-29px, behind the 60px header): each section stops below the sticky header + jump bar (45px) + 16px */
 .tm-work .tm-sec{scroll-margin-top:calc(76px + 45px + var(--s4))}
 @media (max-width:699px){.tm-work .tm-sec{scroll-margin-top:calc(60px + 45px + var(--s4))}}
+/* A11 (Sim approved, Nov 12): on phones, when the quiet "Saved ✓" replaces the full-width main button, the four buttons sit in
+   an even 2 x 2 grid (they wrapped 3 + 1, "More" alone) */
+@media (max-width:699px){.tm-acts:has(.tm-saved){display:grid;grid-template-columns:1fr 1fr}.tm-acts:has(.tm-saved)>*{width:100%}}

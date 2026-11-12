@@ -30,8 +30,8 @@
 .tm-sug .sg2-why li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;background:var(--plot);transform:skewX(var(--slant))}
 .sg2-why b{color:var(--ink)}.sg2-why .warnline{color:var(--mid-text)}
 .sg2-why .thcalc{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-@media (min-width:900px){.tm-sug li{grid-template-areas:"k sw ap" "mv sw ap" "ln ln ln" "wy wy wy"}
-  .tm-sug li>.sg2-ln{grid-area:ln;margin-top:var(--s2)}.tm-sug li>.sg2-why{grid-area:wy}.tm-sug li>.np-btn2{grid-area:ap;align-self:center}}
+@media (min-width:900px){@container (min-width:560px){.tm-sug li{grid-template-areas:"k sw ap" "mv sw ap" "ln ln ln" "wy wy wy"}
+  .tm-sug li>.sg2-ln{grid-area:ln;margin-top:var(--s2)}.tm-sug li>.sg2-why{grid-area:wy}.tm-sug li>.np-btn2{grid-area:ap;align-self:center}}}
 .tm-sug .np-btn2{align-self:flex-start}
 .sg2-all{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}
 .sg2-gap{margin-top:var(--s4);padding:var(--s3) var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink);background:var(--wash)}
@@ -47,7 +47,7 @@
 /* while the next suggestions are worked out: the last ones stay, faded */
 .sg2-stale{opacity:.45;pointer-events:none}
 /* Problems and Team Checks: a fold at the foot of Team Checks; open, its full checks card takes the short list's place */
-.tm-cks:has(> .sg2-fold[open])>.tm-ck,.tm-cks:has(> .sg2-fold[open])>.tm-h3{display:none}
+/* A2 proposal: the checks are listed once, so they stay visible when Things to Know is open (the rule hiding them is gone) */
 .sg2-fold{margin-top:var(--s6);border-top:1px solid var(--rule)}
 .sg2-fold>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s1) var(--s3);padding:var(--s4) 0;cursor:pointer;list-style:none}
 .sg2-fold>summary::-webkit-details-marker{display:none}
@@ -120,3 +120,5 @@
 .sg2-tip[aria-expanded="true"]{color:var(--on-plate)}.sg2-tip[aria-expanded="true"]::before{background:var(--plate)}
 .sg2-tipop{position:absolute;z-index:45;display:grid;gap:var(--s2);padding:var(--s5);background:var(--surface);color:var(--ink);border-radius:var(--r-l);box-shadow:var(--shadow-lift)}
 .sg2-tipop b{font-size:var(--t17)}.sg2-tipop p{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+/* A2 proposal: in a one-line sub-heading the "?" must not make the line taller (it takes 22px of room, not 24) */
+.tm-sub .sg2-tip{margin-block:calc((22px - var(--tap)) / 2)}

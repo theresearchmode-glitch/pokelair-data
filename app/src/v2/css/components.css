@@ -47,7 +47,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
 /* the selected Pokémon stands on a floor ring in its own colour, with a brighter pool (Sim, Nov 11: idea 2 "Floor ring";
    replaces the tilted colour panel, so nothing sits behind the Pokémon) */
-.np-mon.sel .st::before,.np-mon.ft .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:118%;height:calc(var(--iw)*.3);transform:translate(-50%,34%);border-radius:50%;
+.np-mon.sel .st::before,.np-mon.ft .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:104%;height:calc(var(--iw)*.22);transform:translate(-50%,58%);border-radius:50%;
   border:2.5px solid rgba(var(--cp),.9);background:radial-gradient(closest-side,rgba(var(--cp),.2),rgba(var(--cp),.08) 70%,transparent);box-shadow:0 0 12px rgba(var(--cp),.4)}
 :root[data-theme="night"] .np-mon.sel .st::before,:root[data-theme="night"] .np-mon.ft .st::before{border-color:rgba(var(--cp),.95);background:radial-gradient(closest-side,rgba(var(--cp),.14),transparent 75%);box-shadow:0 0 16px rgba(var(--cp),.55),inset 0 0 12px rgba(var(--cp),.3)}
 .np-mon.sel .pool,.np-mon.ft .pool{background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.85),rgba(var(--cp,150,150,165),.4) 55%,transparent)}
@@ -155,3 +155,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
    8px apart, so a bigger area would cover the next marker (needs a spacing change: visual, for Sim). */
 .np-tabs a,.np-tabs button,.np-nav a,.np-foot nav a,.sg2-nact a,.sg2-undo .np-btn2{position:relative}
 .np-tabs a::before,.np-tabs button::before,.np-nav a::before,.np-foot nav a::before,.sg2-nact a::before,.sg2-undo .np-btn2::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
+/* A9 (Sim, Nov 12): the selected Pokémon's floor ring sits lower and flatter, under the feet, so it no longer crosses the picture
+   (was 118% wide, 30% tall, 34% down); on phones the selected picture stays inside its tile (it was 120px in a 111px tile) */
+@media (max-width:699px){.np-mon.sel img{scale:1}}
+.np-megatag{position:absolute;z-index:2;left:0;top:0;padding:var(--s1) var(--s2);font:800 var(--t13)/1 var(--u);font-style:italic;font-synthesis:style;color:var(--on-main);background:var(--plot);transform:skewX(var(--slant))}

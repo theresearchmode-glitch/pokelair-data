@@ -50,6 +50,11 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
     const pre = V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
     const all = '<button type="button" class="np-link sg2-all" data-v2sgall>See all suggestions ›</button>';
+    // A3 proposal (Sim's fix plan, Nov 12: "your recommendation"): a best swap that doesn't raise the score (±0 or lower) gets no
+    // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
+    const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
+    if (top.length && up != null && up <= 0) { body = `${gap || `<p class="tm-sub">Nothing raises this team’s Strength Score right now.</p>`}${all}`; V2._sgLast = body;
+      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; }
     body = !top.length ? (side ? `<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}`
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
@@ -68,6 +73,12 @@ V2.noneCard = () => { const N = LANE.NONE;
   return `<div class="sg2-nwrap"><p class="sg2-none"><b>${N.head}</b> ${N.body} ${N.edge}</p><p class="sg2-nact"><a class="np-link" href="#battle">Battle</a><a class="np-link" href="#sets">Sets</a></p></div>`; };
 // the Undo bar: the last suggestion (or Quick add) applied, until the team is changed some other way; Undo steps back one at a
 // time, up to 8 (today's undo stack and its [data-undobar] handler, 06-helpers.js)
+// A6 proposal (Sim's fix plan: one message per action, one Undo): after an Apply, the "Applied … Undo" bar in Suggestions is the
+// message when it is on screen; the toast (with its Undo) shows only when that bar is out of sight (applied from a sheet, Matchups)
+// "on screen" means clear of the sticky header and jump bar above and the phone bar below (Nov 12: under the header it counted as seen)
+V2.appliedSay = (t) => { const b = document.querySelector('.sg2-undo'), r = b && b.getBoundingClientRect(), rs = s => [...document.querySelectorAll(s)].map(e => e.getBoundingClientRect()).filter(q => q.height);
+  const top = Math.max(0, ...rs('.np-head,.tm-jump').filter(q => q.top < innerHeight / 2).map(q => q.bottom)), bot = Math.min(innerHeight, ...rs('.np-bar,.np-dock').filter(q => q.top > innerHeight / 2).map(q => q.top));
+  if (r && r.height && r.top >= top && r.bottom <= bot) return; toast(t, true); };
 V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role="status"><span>Applied <b>${V2.esc(t.label)}</b></span><button type="button" class="np-btn2" data-undobar><span>Undo</span></button></div>` : ''; };
 
 // Show more: the next suggestions open in place (already worked out) and the link becomes See all suggestions (as today)
@@ -94,7 +105,7 @@ document.addEventListener('click', e => { if (!e.target.closest) return;
 // a second tap within half a second is ignored, as on today's page (a double tap can't apply two suggestions)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2plan],[data-v2plana]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
   const fromAll = b.dataset.v2plana != null, pl = fromAll ? V2.sgAll.list[+b.dataset.v2plana] : (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
-  if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); });
+  if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); });
 
 // ---------- Problems and Team Checks (in the Team Checks section): a fold, closed until opened, remembered per device ----------
 // Today's rows (problemRows), Quick add picks (quickList / quickInfo), the team checks (proChecks, ckState, CK_TXT) and the verdict
@@ -108,6 +119,8 @@ V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms, 
       ${I.why ? `<p class="sg2-qw">${V2.esc(V2.undot(I.why))}</p>` : ''}${I.thr ? `<p class="sg2-qw">${V2.undotHtml(I.thr)}</p>` : ''}
       <div class="sg2-qa"><button type="button" class="np-btn2" data-v2qa="${i}"><span>${V2.esc(I.btn)}</span></button><span class="fine" title="${V2.esc(V2.wl(I.fitTitle))}">${V2.wl(I.fit)}</span></div></li>`; };
   const row = ([s, l, tx, key]) => { const Q = key && P && qa++ < 8 ? quickList(key, P, ms, used) : null, n = Q ? Q.picks.length : 0, minor = !Q && (s === 'lo' || s === 'ok');
+    // A2 proposal: a weakness the "No major weak spot" check lets pass is called minor, so the two can't read as a contradiction
+    if (l === 'Weakness' && (D.basics || []).some(x => /major weak spot/i.test(x.label) && x.ok)) l = 'Minor weakness';
     const head = `<span class="sg2-sev ${s}">${V2.esc(l)}</span><span class="sg2-pt">${V2.undotHtml(tx)}</span>`;
     if (!n) return `<div class="sg2-prob${minor ? ' minor' : ''}">${head}${Q && Q.note ? `<p class="fine sg2-qn">${Q.note}</p>` : ''}</div>`;
     return `<details class="sg2-prob sg2-pf" data-v2pk="${V2.esc(key)}"${V2.fx.open.has(key) ? ' open' : ''}><summary>${head}<span class="sg2-fixn">${n} fix${n > 1 ? 'es' : ''}</span></summary><div class="sg2-qbox"><p class="sg2-k">Quick add</p><ul class="sg2-qps">${Q.picks.map(pl => pick(key, pl)).join('')}</ul></div></details>`; };
@@ -125,13 +138,14 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
   // the verdict: legal and items, threats, checks, real results, your games, type balance
   const hand = !V.illegal && V.RD && CH.hand(V.RD) ? ` · ${CH.handTxt(V.RD, true)}` : '';
   const chips = [V.score != null && CH.hand(V.RD) ? `<span><b>${CH.hand(V.RD).x}/${CH.hand(V.RD).n}</b> handled${V2.tip('readiness')}</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks${V2.tip('checklist')}</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
-  const vd = `<div class="sg2-vd ${V.lvl}"><p class="sg2-vh">${V2.esc(V2.undot(V2.wl(V.head + hand, CH.hand(V.RD))))}</p><p class="sg2-vc">${chips}</p><dl>${V.rows.map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
-  const sub = [pr.real.length ? pr.real.length + ' to look at' : 'Nothing big to fix', CK ? `${CK.pass}/${CK.n} checks` : '', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
+  const vd = `<div class="sg2-vd ${V.lvl}"><dl>${V.rows.filter(r => !/^Checklist$/.test(r[0])).map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
+  // A2: the fold holds the things to know and the read that appears nowhere else; the checks are listed once, above
+  const sub = [pr.real.length ? `${pr.real.length} thing${pr.real.length === 1 ? '' : 's'}` : 'Nothing to know', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
   // A6 (Sim's fix plan): one live "Working out…" message at load, not two; Suggestions' own line is the one read out
   const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
   if (P) V2.fx.last = pr.html;
-  return `<details class="sg2-fold" data-v2fix${isOpen ? ' open' : ''}><summary><span class="t">Problems and Team Checks</span><span class="s">${V2.esc(sub)}</span></summary>
-    <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${ckCard}${vd}</div></details>`; };
+  return `<details class="sg2-fold" data-v2fix${isOpen ? ' open' : ''}><summary><span class="t">Things to Know</span><span class="s">${V2.esc(sub)}</span></summary>
+    <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${vd}</div></details>`; };
 // the fold remembers open / closed on this device (today's key, cc2.chf.rfix); opening it opens the first problem with a fix
 document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matches) return;
   // (a redraw draws the fold again, already open: only a real opening opens the first problem, as on today's page)
@@ -141,7 +155,7 @@ document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matc
 document.addEventListener('click', e => { if (!e.target.closest) return;
   if (e.target.closest('[data-v2needs]')) { ui.needsAll = !ui.needsAll; V2.redraw(); return; }
   const b = e.target.closest('[data-v2qa]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
-  const pl = V2.fx.qa[+b.dataset.v2qa]; if (!pl) return; const say = applyQuick(pl); render(); toast(say, true); });
+  const pl = V2.fx.qa[+b.dataset.v2qa]; if (!pl) return; const say = applyQuick(pl); render(); V2.appliedSay(say); });
 
 // ---------- "?" explainers (today's TIPS words, 36-sug-data.js): tap for a small bubble; tap outside, Escape or scrolling closes it ----------
 V2.tip = k => { const T0 = TIPS[k], T = T0 && [V2.wl(T0[0]), V2.wl(T0[1])]; return T ? `<button type="button" class="sg2-tip" data-v2tip="${k}" aria-expanded="false" aria-label="${V2.esc(/^(What|How)\b/.test(T[0]) ? T[0] : `What is ${T[0]}?`)}">?</button>` : ''; };

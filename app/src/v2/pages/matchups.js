@@ -17,17 +17,20 @@ V2.muLv = l => `<span class="mu-lv l${l}"><i aria-hidden="true">${V2.MUG[l]}</i>
 V2.muSplit = D => { const tot = D.mu.fav + D.mu.even + D.mu.unf, pc = n => tot ? Math.round(n / tot * 1000) / 10 : 0;
   return `<div class="mu-split" aria-hidden="true"><i class="sf" style="flex-grow:${pc(D.mu.fav)}"></i><i class="se" style="flex-grow:${pc(D.mu.even)}"></i><i class="su" style="flex-grow:${pc(D.mu.unf)}"></i></div>`; };
 V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, view = V2.muView();
-  const head = `<h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. The damage calc reading is underneath.' : ''}</p>
+  const head = `<h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. A row notes when the calc disagrees.' : ''}</p>
     ${D.mu.any ? `<div class="tm-legend"><span class="lf"><b>${D.mu.fav}</b> Favoured</span><span class="le"><b>${D.mu.even}</b> Even match</span><span class="lu"><b>${D.mu.unf}</b> Unfavoured</span></div>
     ${V2.muSplit(D)}` : ''}
     <p class="fine">Damage calc: ${CH.LV[0]} ${D.calc.none}, ${CH.LV[1]} ${D.calc.shaky}, ${CH.LV[2]} ${D.calc.handles}, ${CH.LV[3]} ${D.calc.beats}</p>
     <div class="mu-pick">${V2.slide('thr', V2.MUV, view, 'Matchups view')}</div>`;
   return `<section class="tm-sec tm-mus" id="tm-mu">${head}<div class="mu-pane">${view === 'grid' ? V2.muGrid(RD, ms) : view === 'all' ? V2.muAll(RD, ms) : view === 'top' ? V2.muTop(RD) : V2.muOut(RD)}</div></section>`; };
 
+// A4 proposal (Sim's fix plan, Nov 12: "your recommendation"): one verdict per row. The real-games word leads; the calc reading
+// shows only when it points the other way ("Calc disagrees: Beats it"); with no real-games verdict the calc is the row's verdict.
+V2.calcNote = (R, lv) => R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Favoured' && lv <= 1)) ? `<small class="mu-dis">Calc disagrees: ${CH.LV[lv]}</small>` : '';
 // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
 V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured'), even = RD.rows.length - unf.length - fav.length;
-  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}<small>Calc: ${CH.LV[r.level]}</small></span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
+  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
   const grp = (t, a) => a.length ? `<h3 class="tm-h3 mu-h3">${t} <small>${a.length}</small></h3><ol class="tm-rows mu-out">${a.map(row).join('')}</ol>` : '';
   return `${grp('Unfavoured', unf)}${grp('Favoured', fav)}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
     <p class="mu-rest">${even ? `The other ${even} ${even === 1 ? 'is an even match' : 'are even matches'}.` : ''} <button type="button" class="np-link" data-muall30>See all ${RD.rows.length}</button></p>`; };
@@ -35,7 +38,7 @@ V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).fil
 // Top 10 (by top-cut share), numbered; phones and tablets show 5 and "Show 5 more"; then the next 20 as tiles, worst first
 V2.muTop = RD => { const {top, rest, RV} = CH.top10(RD), more = !!ui.tlMore;
   const row = (r, i) => { const R = CH.realVs(r.t.n), vw = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
-    return `<li><button type="button" class="mu-row" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(vw)}"><span class="k">${i + 1}</span>${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}<small>Calc: ${CH.LV[r.level]}</small></span>${R ? `<span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>` : V2.muLv(r.level)}</button></li>`; };
+    return `<li><button type="button" class="mu-row" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(vw)}"><span class="k">${i + 1}</span>${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level)}</span>${R ? `<span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>` : V2.muLv(r.level)}</button></li>`; };
   const tile = r => { const R = RV.get(r), w = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
     return `<button type="button" class="mu-tile${R ? ' ' + V2.VCLS[R.w] : ''}" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(w)}" title="${V2.esc(r.t.d)}: ${V2.esc(w)}">${V2.muImg(r.t.n)}</button>`; };
   return `<ol class="tm-rows mu-rows${more ? ' is-more' : ''}">${top.map(row).join('')}</ol>
@@ -105,7 +108,7 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (t.closest('[data-mumore]')) { ui.tlMore = !ui.tlMore; V2.redraw(); const b = document.querySelector('[data-mumore]'); if (b && e.detail === 0) b.focus({preventScroll: true}); return; } // keyboard: focus stays on the button
   if (t.closest('[data-muall]')) { ui.threatsAll = true; V2.redraw(); return; }
   if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('np2.seg.thr', 'all'); V2.redraw(); const m = document.getElementById('tm-mu'); if (m) m.scrollIntoView({block: 'start'}); return; }
-  if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); persist(); V2.redraw(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); } });
+  if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); persist(); V2.redraw(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); } });
 // the view switch (the shared slider) and the remembered open threats in All 30 (today's ui.thrOpen)
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'thr') return; LS.set('np2.seg.thr', e.detail.value); V2.redraw(); });
 // "See all 30" from the stand-outs

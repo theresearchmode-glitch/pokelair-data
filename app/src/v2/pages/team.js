@@ -291,7 +291,7 @@ V2.ckBody = (D, ck) => { const fb = D.basics.filter(x => !x.ok), fn = D.notes.fi
   const nb = D.basics.length, nn = D.notes.length, allOk = !fb.length && !fn.length;
   const fails = fb.length || fn.length ? `<ul class="tm-ck">${fb.map(ck).join('')}${fn.map(x => ck(x).replace('<span>', '<span><em class="tm-cknote">Note</em> ')).join('')}</ul>` : '';
   const passed = pb.length + pn.length, line = allOk ? `All ${nb} basics${nn ? ` and all ${nn} notes` : ''} pass` : `${passed} more pass`;
-  return `${fails}${passed ? `<details class="tm-ckok"><summary><b aria-hidden="true">✓</b>${line}</summary>${pb.length ? `<ul class="tm-ck">${pb.map(ck).join('')}</ul>` : ''}${pn.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${pn.map(ck).join('')}</ul>` : ''}</details>` : ''}`; };
+  return `${fails}${passed ? `<details class="tm-ckok"><summary><b aria-hidden="true">✓</b>${line}</summary>${pb.length ? `<ul class="tm-ck">${pb.map(ck).join('')}</ul>` : ''}${pn.length ? `<h3 class="tm-h3">${CK_TXT.notes}</h3><p class="fine">${CK_TXT.notesWhy}</p><ul class="tm-ck">${pn.map(ck).join('')}</ul>` : ''}<p class="fine">${CK_TXT.intro}</p></details>` : ''}`; };
 
 // the More menu (Sim, Nov 11): every other My Team action, one per row; Clear Team sits last, apart
 V2.moreHtml = () => { const n = S.box.length, ms = members();
@@ -325,7 +325,10 @@ V2.pages.team = {place: 'team', draw() {
   const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team · ${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}</span></div>${title ? `<h1 class="tm-name">${V2.esc(title).replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2')}</h1>` : ''}${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
     : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div>`}</div><div class="tm-info">${s == null ? '' : `${win ? `<p class="tm-line">${win}</p>` : ''}<p class="tm-rank">${V2.esc(rank)}</p>${V2.asOf() ? `<p class="fine tm-asof">${V2.esc(V2.asOf())}</p>` : ''}${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess</p>' : ''}<div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why this score?</button>${others ? `<button type="button" class="np-link" data-v2switch aria-haspopup="dialog">Switch Team <small>${others} saved</small></button>` : ''}${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
   // Sim, Nov 11: the one main action plus two others; the rest in one More menu (Clear Team last, apart, with Undo)
-  const acts = `<div class="tm-acts"><button type="button" class="np-btn" data-v2save>${S.loadedId && S.teams.some(t => t.id === S.loadedId) ? 'Update Saved Team' : 'Save Team'}</button><button type="button" class="np-btn2" data-v2share><span>Share</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button><button type="button" class="np-btn2 tm-svl tm-more" data-v2more aria-haspopup="dialog"><span>More <b aria-hidden="true">⋯</b></span></button></div>`;
+  // A11 proposal (Sim's fix plan): the main button only when there is something to save. A saved team that hasn't changed shows a
+  // quiet "Saved ✓" (same sheet behind it, so a copy can still be saved under a new name)
+  const lt = S.loadedId && S.teams.find(t => t.id === S.loadedId), same = lt && JSON.stringify(lt.slots) === JSON.stringify(S.slots);
+  const acts = `<div class="tm-acts">${same ? '<button type="button" class="np-btn2 tm-saved" data-v2save><span>Saved <b aria-hidden="true">✓</b></span></button>' : `<button type="button" class="np-btn" data-v2save>${lt ? 'Update Saved Team' : 'Save Team'}</button>`}<button type="button" class="np-btn2" data-v2share><span>Share</span></button><button type="button" class="np-btn2 tm-svl" data-v2saved><span>Saved Teams <small>${S.teams.filter(t => t.format !== 'singles').length}</small></span></button><button type="button" class="np-btn2 tm-svl tm-more" data-v2more aria-haspopup="dialog"><span>More <b aria-hidden="true">⋯</b></span></button></div>`;
   const nm = D.mu.fav + D.mu.even + D.mu.unf;
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page"><a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a><a href="#team" data-tmjump="tm-mu">Matchups${nm ? ` <small>${nm}</small>` : ''}</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks <small>${D.basics.filter(x => x.ok).length}/${D.basics.length}</small></a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <small>${ms.length} sets</small> <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
@@ -335,16 +338,32 @@ V2.pages.team = {place: 'team', draw() {
   // 3. Suggestions: drawn by pages/sugs.js (R4 sugs hook)
   const sgSec = V2.sgSec(D);
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
-  const hand = CH.hand(D.RD), ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(V2.wl(x.label))}${!x.ok && x.miss ? `<small>${V2.esc(V2.wl(x.miss, hand))}</small>` : ''}</span></li>`;
-  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
+  // A2 proposal (Sim's fix plan, Nov 12): the checks are listed ONCE, with the detail that used to sit in a second list inside
+  // "Problems and Team Checks" (what the team has or misses, and how often winners have it); the threats "?" sits on its check
+  const hand = CH.hand(D.RD), ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(V2.wl(x.label))}${/^Ready for/.test(x.label) ? V2.tip('readiness') : ''}${(x.ok ? x.have : x.miss) ? `<small>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, hand)))}</small>` : ''}${x.pro && !x.note ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</span></li>`; // notes: their 'why' is said once, above them
+  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
   return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() {
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
   // a redraw now keeps unchanged elements (A5), so bind each element once (a second listener would fire twice)
   document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }); });
-  document.querySelectorAll('[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
+  document.querySelectorAll('[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
+  V2.jumpSync(); // A7 proposal: the jump bar marks the section you are reading
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page
 }};
+// A7 proposal (Sim's fix plan: "a marker that is always wrong is worse than none"): the jump bar's underline follows the scroll.
+// The marked section is the last one whose top has passed just under the bar (ties, as in the desktop columns, go to the one
+// earlier in the bar, unless you tapped the other one); at the very end of the page the last one is marked.
+V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav) return; const as = [...nav.querySelectorAll('[data-tmjump]')]; if (!as.length) return;
+  // (Sim approved A7, Claude's recommendation for wide screens): from 700px the sections sit side by side, so "where you are" has
+  // no single answer; there no section is marked (no underline) rather than a wrong one
+  if (matchMedia('(min-width:700px)').matches) { for (const a of as) if (a.getAttribute('aria-selected') !== 'false') a.setAttribute('aria-selected', 'false'); return; }
+  const line = nav.getBoundingClientRect().bottom + 24; let cur = as[0], best = -Infinity;
+  for (const a of as) { const s = document.getElementById(a.dataset.tmjump); if (!s) continue; const t = s.getBoundingClientRect().top; if (t <= line && (t > best + 1 || (Math.abs(t - best) <= 1 && a.dataset.tmjump === V2._jumpPick))) { best = Math.max(best, t); cur = a; } }
+  if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) cur = as[as.length - 1];
+  for (const a of as) { const on = a === cur; if ((a.getAttribute('aria-selected') === 'true') !== on) a.setAttribute('aria-selected', on ? 'true' : 'false'); } };
+let jumpRaf = 0; addEventListener('scroll', () => { if (jumpRaf) return; jumpRaf = requestAnimationFrame(() => { jumpRaf = 0; if (V2.route() === 'team') V2.jumpSync(); }); }, {passive: true});
+addEventListener('resize', () => { if (V2.route() === 'team') V2.jumpSync(); });
 // a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)
 V2.pages['team-empty'] = {place: 'team', draw: () => V2.emptyHtml({preview: true})};

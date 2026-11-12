@@ -15,8 +15,10 @@ V2.disp = n => { const p = V2.byName.get(n); return p && p.d ? p.d : n.replace(/
 V2.nameHtml = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span> ${V2.esc(d.slice(5))}` : `<span class="mg none" aria-hidden="true">&nbsp;</span>${V2.esc(d)}`;
 // a Pokémon's own colour (already normalised: hue kept, saturation 72%+, lightness 56%) as an r,g,b triplet for rgba()
 V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165]; return m[0] + ',' + m[1] + ',' + m[2]; };
+// A9 (Sim, Nov 12: "fix pls"): on a Pokémon tile "Mega" is a small slanted tag on the picture's corner, so every name block is the
+// same shape (no reserved blank line above every name); elsewhere (rows, sentences) Mega stays inline before the name (nameHtml)
 V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
-  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}</div>${o.bare ? '' : `<b>${V2.nameHtml(V2.disp(n))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
+  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}${V2.disp(n).startsWith('Mega ') && !o.bare ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `<b>${V2.esc(V2.disp(n).replace(/^Mega /, ''))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
 // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
 V2.ICON = {search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
   // My Box: a storage box (lid, body, handle slot), drawn like the search glass

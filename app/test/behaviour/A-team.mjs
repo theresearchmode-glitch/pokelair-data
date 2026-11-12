@@ -329,16 +329,18 @@ t('SUG-09', 'When nothing raises the score: a no-gain message instead of plain A
   ok(await r.ui.sees(/Nothing raises this team.s Strength Score right now|No single change from this pool raises the team.s Strength Score|every other swap would lower it|Nothing to fix\. Your team has every basic and no swap clearly beats it/), 'no no-gain message'); await r.close(); });
 
 t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap out Rillaboom" applies with Undo', async () => {
-  const r = await myTeam(); has(await r.ui.text(), /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);
-  await r.ui.openFold('Problems and Team Checks', true, 1500); const f = await r.ui.foldContent('Problems and Team Checks');
-  for (const s of [/Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, /Show \d+ more/, /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, /Ready for the top threats|Handles the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
+  /* new build (A2, Sim approved Nov 12): the fold is "Things to Know"; the checks are listed once, in the section above it */
+  const r = await myTeam(), t0 = await r.ui.text(), FT = /Things to Know/.test(t0) ? 'Things to Know' : 'Problems and Team Checks'; has(t0, /Problems and Team Checks 7 to look at, 2\/4 checks, legal|Things to Know 7 things, legal/);
+  await r.ui.openFold(FT, true, 1500); const f0 = await r.ui.foldContent(FT), f = FT === 'Things to Know' ? f0 + '\n' + await r.ui.pg.evaluate(() => { document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; }); return document.querySelector('#tm-ck').innerText; }) : f0;
+  for (const s of [/[Ww]eakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, /Show \d+ more/, /Team checks 2 of 4 checks|Team Checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, /Ready for the top threats|Handles the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
   ok(await r.ui.foldOpen('Weakness Ice') === true, 'first fixable problem not opened automatically');
-  await r.ui.tapText(/^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => /Show less/.test(await r.ui.foldContent('Problems and Team Checks') || ''), 4000), 'Problems fold shows no "Show less"');
+  await r.ui.tapText(/^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => /Show less/.test(await r.ui.foldContent(FT) || ''), 4000), 'Problems fold shows no "Show less"');
   await r.ui.tapText('Swap out Rillaboom', 1500); await r.ui.settle(); ok(await r.ui.has('#toastUndo'), 'no Undo toast'); ok(!(await r.ui.team()).includes('Rillaboom'), 'Rillaboom not swapped out');
-  ok(await r.ui.undoBar(), 'no Undo bar'); await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen('Problems and Team Checks') === true, 'fold not remembered open'); await r.close(); });
+  ok(await r.ui.undoBar(), 'no Undo bar'); await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen(FT) === true, 'fold not remembered open'); await r.close(); });
 
 t('SUG-11', '"?" explainer: bubble titled "Ready for the top threats", Escape closes it', async () => {
-  const r = await myTeam(); await r.ui.openFold('Problems and Team Checks', true, 1200); await r.ui.settle(); /* today's site says "Ready for"; the new site says it the word list's way (Sim, Nov 12) */ await r.ui.tapTip('What is Ready for the top threats?').catch(() => r.ui.tapTip('What is Handles the top threats?'));
+  /* new build (A2): the fold is "Things to Know" and the threats "?" sits on its check in the section's list */
+  const r = await myTeam(), FT = /Things to Know/.test(await r.ui.text()) ? 'Things to Know' : 'Problems and Team Checks'; await r.ui.openFold(FT, true, 1200); await r.ui.settle(); if (FT === 'Things to Know') await r.ui.pg.evaluate(() => document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; })); /* today's site says "Ready for"; the new site says it the word list's way (Sim, Nov 12) */ await r.ui.tapTip('What is Ready for the top threats?').catch(() => r.ui.tapTip('What is Handles the top threats?'));
   const b = await r.ui.waitFor(() => r.ui.tipBubble(), 3000); ok(b && /Ready for the top threats|Handles the top threats/.test(b), 'no bubble titled "Ready for / Handles the top threats"'); ok(/How we calculate|How we work it out|→/.test(b), 'bubble has no link to How we calculate: ' + b);
   await r.ui.press('Escape'); ok(!(await r.ui.tipBubble()), 'Escape did not close the bubble'); await r.close(); });
 
@@ -349,7 +351,8 @@ t('MU-01', 'Matchups view switch Top 10 | Top 12 grid | All 30 is remembered', a
 
 t('MU-02', 'Top 10 threats with real-games verdict and calc level; phone shows 5 + "Show 5 more"; row opens threat sheet', async () => {
   const r = await myTeam({team: TEAM, width: 390}); if (await r.ui.chosen('Stand-outs') === true) await r.ui.choose('Top 10', 1200); let rows = await r.ui.topThreatRows(); // new build opens on Stand-outs (Sim, Nov 11) ok(rows.length === 5, `${rows.length} rows on a phone`);
-  for (const x of rows) ok(/^\d+ .+ (Favoured|Even match|Unfavoured) Calc: (Beats it|Handles it|Shaky|No answer)$/.test(x), 'row reads ' + x);
+  /* new build (A4, Sim approved Nov 12): one verdict per row; the calc shows only when it disagrees ("Calc disagrees: X") */
+  for (const x of rows) ok(/^\d+ .+ (Favoured|Even match|Unfavoured)( Calc( disagrees)?: (Beats it|Handles it|Shaky|No answer))?$/.test(x) || /^\d+ .+Calc disagrees: (Beats it|Handles it|Shaky|No answer).* (Favoured|Unfavoured)$/.test(x), 'row reads ' + x);
   const tx = await r.ui.text(); has(tx, /Verdicts from real tournament games/); has(tx, /Unfavoured \d+ Even match \d+ Favoured \d+|\d+ Favoured \d+ Even match \d+ Unfavoured/); has(tx, /Damage calc: No answer \d+, Shaky \d+, Handles it \d+, Beats it \d+/);
   await r.ui.tapText('Show 5 more', 700); rows = await r.ui.topThreatRows(); ok(rows.length === 10, `${rows.length} rows after Show 5 more`); ok(await r.ui.sees('Show top 5 only'), 'no "Show top 5 only"');
   await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet(); ok(s && /Archaludon/.test(s) && await r.ui.threatPressedInSheet() === 'Archaludon', 'threat sheet did not open on Archaludon'); await r.close();

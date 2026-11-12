@@ -3,6 +3,19 @@
 Claude decides small things under executive control; Sim can overrule any of them. Every new entry is also told to Sim in chat.
 Sim's own decisions are marked "Sim". Newest first.
 
+## Nov 12, 6:45-8:00 AM Eastern (Claude, under Sim's authority; Sim approved every design picture)
+- APPLIED on claude/design6: A2 (Team Checks once, "Things to Know"), A3 (±0 swap behind See all), A4 (one verdict per row,
+  "Calc disagrees"), A6 (one message per Apply), A7 (underline follows on phones), A8 (bars 96%), A11 ("Saved ✓"), squeezed row
+  (card layout by its own width), A9 (Mega tag on the tile corner, ring lower, no spill on phones). Two merge conflicts with the
+  morning's wording change resolved by hand (A2's checks list keeps the word-list wording).
+- Claude's recommendations where a picture left a choice: A2's fold subtitle "7 things, legal" (was "7 things to know"); A7 from
+  700px up (sections side by side) no underline rather than a wrong one; A11 on phones the four buttons in an even 2 x 2.
+- Checks on the built combined page (real data): c13 My Team 4,331 / 3,945 / 3,318 (iPad now within 3,500) / 2,215 (were 4,818 /
+  4,309 / 3,775 / 2,223); 0 cut off, 0 tap <44 on My Team, 0 hidden-focusable, 0 repeated lines, 0 console errors, <= 1 main button
+  per screen, both engines. A5 focus test kept; jump links 0 of 40 hidden; A7 phone marks the tapped section, 820+ none; A11 2 x 2
+  at 320/390/600. Behaviour A-team v2: 54 / 78 before test updates: only MU-02, SUG-10, SUG-11 changed (they checked the old layout
+  and words); updated to accept today's site and the approved design; all three pass on both today's page and the new build.
+
 ## Nov 12 morning (Sim, answers to the overnight questions)
 - DONE (Sim's go on Claude's recommendation): word-list wording on the new site (today's site unchanged). "Ready for 81% of the
   top 30" was a weighted score (each threat by its top-cut share; No answer 0, Shaky .4, Handles .8, Beats 1) shown as a share of
@@ -143,6 +156,9 @@ Sim's own decisions are marked "Sim". Newest first.
   proofs will show each fix as a difference, marked as a fix. Art and name ownership for the public site: Sim, later.
 
 ## Authority
+- Nov 12, ~6:45 AM Eastern (Sim): executive authority again until 8:00 AM Eastern. Sim approved every design picture sent (A2,
+  A3/A4, A6, A7, A8, A11, squeezed row, wording, A9): "go with your recommendation and what you believe would be best". New visual
+  choices beyond those still go to Sim with pictures; nothing published without her go. (Claude confirmed late; Sim had to ask.)
 - Nov 12, 6:00 AM Eastern: Sim's executive authority ENDED. No decisions on her behalf from here; summary given in chat. Last
   work commit d6f620f; nothing published (Preview still v52); everything visual waits in docs/rebuild/proposals/.
 - Nov 11, ~11:30 PM Eastern (Sim): executive authority until 6:00 AM Eastern (Sim asleep). Rules as RULES.md section 3:
