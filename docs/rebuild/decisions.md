@@ -58,6 +58,15 @@ Sim's own decisions are marked "Sim". Newest first.
   full-page screenshots before vs after 16 of 16 identical (My Team and My Box, 390/820/1440, day/night, Chromium + WebKit 390;
   a same-file control run showed one view with ~3,600 pixels of its own noise, which was identical here); behaviour A-team v2
   unchanged (57/75/6/4/2). Left for Sim (visual): My Box's "Box 1/Box 2" markers (28 wide, 8px apart: needs more space).
+- Fonts hosted by NastyPlot itself on the new site (Sim's yes, Nov 12; how it's done is Claude's call, non-visual): Google's own
+  Instrument Sans and Unbounded files and descriptors (12 faces, 7 files, 293 KB, split by language as Google serves them, so a
+  browser fetches only what a page uses: Latin, 158 KB with Latin-Ext) in app/src/v2/fonts/ with both OFL licences, served from
+  fonts/ beside the page (build copies them to app/dist/fonts; --fonts=<folder>/ like --art; the build fails if a Google Fonts link
+  comes back; the behaviour harness copies them beside its test page; Preview kit copies and publishes them: 394 files).
+  Measured on built pages: new page 0 requests to Google (old 3), same 3 faces loaded, Chromium and WebKit; full-page screenshots
+  16 of 16 identical (My Team and My Box, 390/820/1440, day/night); a build with a broken font folder came out DIFFERENT, so the
+  comparison does see fonts; c13 heights identical to the Google-font build. Not done: today's LIVE site (app/src/head.html) and the
+  gallery still load fonts from Google; changing the live site needs Sim's go.
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled

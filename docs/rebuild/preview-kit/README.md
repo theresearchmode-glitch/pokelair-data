@@ -21,5 +21,7 @@ The mock-up pages are built from `docs/rebuild/mocks/*.tpl.html`.
 1. `S=<scratch> PREVIEW=1 bash docs/rebuild/preview-kit/rebuild-preview.sh` (prints COPY-OK).
 2. Copy `index.html` into `$S/redesign/`.
 3. Artifact publish: file_path `$S/redesign/index.html`, url the artifact above,
-   files `{"foundation.html": "$S/redesign/foundation.html"}`.
-4. Artifact list, scope files: must show 387 files with 346 `v2art/*.webp`. Tell Sim the version number and the file count.
+   files `{"foundation.html": "$S/redesign/foundation.html"}` plus the 7 font files, each as `"fonts/<name>.woff2":
+   "$S/redesign/fonts/<name>.woff2"` (Nov 12: the fonts are hosted by NastyPlot itself; the page has no Google Fonts link).
+4. Artifact list, scope files: must show 394 files: 346 `v2art/*.webp` and 7 `fonts/*.woff2`. Tell Sim the version number and
+   the file count. (The first publish with the fonts adds them; later publishes keep them unless they change.)

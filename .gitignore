@@ -37,3 +37,4 @@ out/polish-check.json
 
 # Temporary probe scripts (created and deleted during checks)
 experiments/_*.mjs
+app/test/behaviour/fonts/

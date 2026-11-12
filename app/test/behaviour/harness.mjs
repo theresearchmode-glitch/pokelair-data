@@ -34,7 +34,10 @@ const PAGE = ROOT + `app/test/behaviour/_page-${process.pid}.html`;
 let built = false;
 function page() { if (built) return PAGE; let h = fs.readFileSync(PAGE_SRC, 'utf8');
   h = h.replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);');
-  fs.writeFileSync(PAGE, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + h); built = true; return PAGE; }
+  fs.writeFileSync(PAGE, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + h);
+  // the new site reads its self-hosted fonts from fonts/ beside the page (Nov 12): copy them next to this test copy too
+  const fd = PAGE_SRC.replace(/[^\/\\]*$/, '') + 'fonts'; if (fs.existsSync(fd)) { const to = ROOT + 'app/test/behaviour/fonts'; fs.mkdirSync(to, {recursive: true}); for (const f of fs.readdirSync(fd)) if (f.endsWith('.woff2')) fs.copyFileSync(fd + '/' + f, to + '/' + f); }
+  built = true; return PAGE; }
 process.on('exit', () => { try { fs.unlinkSync(PAGE); } catch (e) {} });
 
 const AD_NAME = process.env.ADAPTER || 'current';

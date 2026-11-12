@@ -9,4 +9,6 @@ REPO="$(cd "$(dirname "$0")/../../.." && pwd)"; S="${S:-/tmp/np-preview}"; mkdir
 rm -rf "$S/bc3" && mkdir -p "$S/bc3/app" && (cd app && tar cf - --exclude=./dist --exclude=./node_modules .) | (cd "$S/bc3/app" && tar xf -) && for d in out node_modules docs; do ln -s "$REPO/$d" "$S/bc3/$d"; done
 (cd "$S/bc3" && node app/build.mjs --v2 2>&1 | tail -2) || exit 1
 if [ -n "$PREVIEW" ]; then (cd "$S/bc3" && cp app/dist/v2.html app/dist/v2-plain.html && node app/build.mjs --v2 --art=v2art/ --preview-data 2>&1 | tail -1 && cp app/dist/v2.html "$S/redesign/foundation.html" && mv app/dist/v2-plain.html app/dist/v2.html); fi
+# fonts (Nov 12): NastyPlot hosts its fonts itself; the page reads them from fonts/ beside it, so they are copied next to foundation.html
+mkdir -p "$S/redesign/fonts" && cp "$REPO"/app/src/v2/fonts/*.woff2 "$S/redesign/fonts/" && echo "fonts: $(ls "$S/redesign/fonts" | wc -l) files"
 echo COPY-OK
