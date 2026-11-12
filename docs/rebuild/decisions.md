@@ -75,6 +75,9 @@ Sim's own decisions are marked "Sim". Newest first.
   can't blur. Chromium at phone width (the fix plan's sweep was Chromium; mouse screens there use 82% header / 86% bar): text behind
   goes from readable to a faint trace. WebKit: the computed tint goes 92% -> 96% but the pictures barely change, probably because
   headless WebKit here doesn't draw the blur (a guess); a real iPhone check by Sim is needed before calling C9 met.
+- A11 proposal (a11-proposal.png, a11.patch; visual, waiting for Sim): "Saved ✓" (outline, opens the same Save sheet) when the loaded
+  saved team is unchanged; "Update Saved Team" (main) after any change; Undo brings "Saved ✓" back (measured, built page, Chromium).
+  Known flaw shown in the picture: on phone the four buttons wrap 3 + 1 ("More" alone): needs Sim's layout choice (e.g. 2 x 2).
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled
