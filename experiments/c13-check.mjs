@@ -25,7 +25,7 @@ const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
 const ENGINES = (process.env.C13_ENGINES || 'chromium,webkit').split(',').map(x => x.trim()).filter(x => x === 'chromium' || x === 'webkit');
-for (const eng of ENGINES) for (const view of viewArg.split(',')) for (const [w, limit, note] of WIDTHS) {
+for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, limit, note] of WIDTHS) {
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
   const b = await pw[eng].launch(), ctx = await b.newContext({viewport: {width: w, height: w < 700 ? 844 : 900}, hasTouch: touch(w), isMobile: eng === 'chromium' ? false : w < 700});
   const p = await ctx.newPage(), errs = [];
@@ -82,8 +82,10 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (const [w,
     // main buttons on one screen: slide a window of one screen down the page and count visible .np-btn inside it
     const mains = [...document.querySelectorAll('.np-btn')].filter(vis).map(e => e.getBoundingClientRect().top + scrollY);
     let most = 0, at = 0; for (let y = 0; y < H; y += innerHeight / 4) { const n = mains.filter(t => t >= y && t < y + innerHeight).length; if (n > most) { most = n; at = y; } }
-    return {H, sideways, cut, imgs, small, hidden, rep, most, at: Math.round(at)};
+    return {H, sideways, cut, imgs, small, hidden, rep, most, at: Math.round(at), sample: !!document.querySelector('.tm-sample')};
   }, {touchW: touch(w)});
+  // Sim, Nov 12 (option A): the first-visit sample team, which shows the sample-team note, may be 50px taller on phones
+  if (r.sample && w === 390) limit += 50;
   const pics = r.imgs.length ? `broken images ${r.imgs.length}` : 'images ok';
   out.push(`${eng.padEnd(8)} ${view.padEnd(10)} ${String(w).padStart(4)}  height ${r.H}${r.H > limit ? ` OVER ${limit}` : ` ok (${limit})`}${note ? ' [limit assumed]' : ''}; sideways ${r.sideways > 0 ? r.sideways + 'px' : 0}; cut off ${r.cut}; ${pics}; tap<44 ${r.small.length}${r.small.length ? ' [' + r.small.slice(0, 4).join('; ') + (r.small.length > 4 ? '; …' : '') + ']' : ''}; hidden-focusable ${r.hidden.length}${r.hidden.length ? ' [' + r.hidden.slice(0, 3).join('; ') + ']' : ''}; repeated ${r.rep.length}${r.rep.length ? ' [' + r.rep.slice(0, 2).join('; ') + ']' : ''}; main buttons/screen ${r.most}${r.most > 1 ? ' (at y ' + r.at + ')' : ''}; errors ${errs.length}${errs.length ? ' [' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''}`);
   await b.close(); }

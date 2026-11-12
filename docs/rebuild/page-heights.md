@@ -43,7 +43,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 
 | Size | Tool page | Home |
 |---|---|---|
-| Phone 390 x 844 | 3,700 (was 3,400; Sim, Nov 12: raised rather than fold content away or shrink the six) | 4,200 |
+| Phone 390 x 844 | 3,700 (was 3,400; Sim, Nov 12: raised rather than fold content away or shrink the six); the first-visit sample team with its sample note 3,750 (Sim, Nov 12, option A) | 4,200 |
 | iPad 820 x 1180 | 3,500 | 3,500 |
 | Desktop 1440 x 900 | 1,800 | 2,700 |
 
