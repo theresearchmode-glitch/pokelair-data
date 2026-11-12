@@ -4,12 +4,15 @@ Claude decides small things under executive control; Sim can overrule any of the
 Sim's own decisions are marked "Sim". Newest first.
 
 ## Authority
+- Nov 11 (Sim): authority extended to 11:00 PM Eastern, same instructions.
 - Nov 11 (Sim): authority given again until 10:00 PM Eastern, same instructions.
 - Nov 11 (Sim): authority extended to 9:00 PM Eastern, same instructions (decide on Claude's recommendation, log here, summary at the end).
 - Nov 11, 6:02 PM Eastern (Sim): Claude has executive decision-making authority until 7:00 PM Eastern; decisions on Claude's
   recommendation, each logged here and summarised to Sim at 7 PM.
 
 ## Every page
+- Nov 11 (Sim: "i liked the glass"): the frosted bars are back on phones and iPads (92% opaque instead of 82%, so text under them
+  doesn't read through). The stutter Sim recorded was the picture flash on every redraw (fixed), not the blur.
 - Nov 11 (Sim's recordings, iPhone and PC): every tap redrew the page and rebuilt all pictures, so the six blanked for a moment
   (measured before: 0 of 6 pictures kept per tap; after: 6 of 6 kept, none blank, WebKit iPhone). Touch screens: text boxes 16px so
   iPhone doesn't zoom the page (Save Team name: 15px before -> zoomed and slid sideways; 16px after, page width = screen width).

@@ -27,10 +27,10 @@
 @media (max-width:359px){.np-foot nav{flex-direction:column;gap:0}}
 /* Sim, Nov 11 (iPhone): no sideways scroll anywhere, whatever a page holds (clip keeps the sticky header working) */
 html,body{overflow-x:clip}
-/* touch screens (iPhone, iPad): no frosted blur on the bars and a background that scrolls with the page; re-blurring the big
-   glowing sprites under a sticky bar, and a fixed background, are classic causes of scroll stutter on iOS */
+/* touch screens (iPhone, iPad): the frosted glass stays (Sim: "i liked the glass"), a little more opaque so text under the bars
+   doesn't read through; the page background scrolls with the page (a fixed background is a classic iOS stutter cause) */
 @media (hover:none){
-  .np-head,.np-bar,.np-dock{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+  .np-head,.np-bar,.np-dock{background:color-mix(in srgb,var(--bg) 92%,transparent)}
   body{background:var(--page-wash),var(--bg)}
 }
 /* iPhone zooms the whole page in when a text box with type under 16px gets focus (Save Team name: the page then slid sideways) */
