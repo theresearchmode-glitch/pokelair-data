@@ -545,3 +545,11 @@
 .tm-sample{margin:var(--s1) 0 var(--s2)}
 .svt2-sync{margin:0 0 var(--s4)}
 .svt2:has(.svt2-sync) h2{margin-bottom:var(--s2)}
+
+/* Game Plan sheet (Nov 12, today's fold): label, status tag, who + note; one row per job */
+.sx-gpl{font:inherit;vertical-align:baseline}
+.gp2{padding:var(--s8)}.gp2 h2{font-size:var(--t34);margin:var(--s2) 0 var(--s2)}@media (max-width:699px){.gp2{padding:var(--s6) var(--s4)}}
+.gp2-rows{list-style:none;margin:var(--s4) 0 0;padding:0}
+.gp2-rows li{display:grid;grid-template-columns:minmax(120px,180px) 96px minmax(0,1fr);align-items:baseline;gap:var(--s2) var(--s4);padding:var(--s3) 0;border-top:1px solid var(--rule)}
+.gp2-l{font:600 var(--t16)/1.5 var(--b)}.gp2-w{font:400 var(--t15)/1.5 var(--b)}.gp2-w small{display:block;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+@media (max-width:599px){.gp2-rows li{grid-template-columns:minmax(0,1fr) auto}.gp2-w{grid-column:1/-1}}

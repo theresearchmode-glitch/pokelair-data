@@ -13,7 +13,7 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   const add = i => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b><span class="sx-pre">Add a</span> Pokémon</b><small>Spot ${i + 1}</small></button></div>`;
   const cells = ord.map(tile).concat(open.map(add)), grp = (name, j) => cells.slice(j * 2, j * 2 + 2).length ? `<div class="sx-grp" role="group" aria-label="${name}"><p class="sx-gl u" aria-hidden="true">${name}</p><div class="sx-tiles">${cells.slice(j * 2, j * 2 + 2).join('')}</div></div>` : '';
   const pair = g => g.map(m => escName(m.d)).join(' + '), vs = PLAN_VS[L.by];
-  const plan = L.lead.length >= 2 ? `<p class="sx-plan"><span class="sx-pl">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${pair(L.lead)}</b>${L.back.length ? `, back ${pair(L.back)}` : ''}${L.bench.length ? `, bench ${pair(L.bench)}` : ''}.</span>${L.by === 'you' ? `<button type="button" class="np-link sx-reset" data-v2lead="">Use NastyPlot's pick</button>` : ''}</p>` : '';
+  const plan = L.lead.length >= 2 ? `<p class="sx-plan"><span class="sx-pl"><button type="button" class="np-link sx-gpl" data-v2gplan aria-label="Game plan: open the full Game Plan">Game plan</button>${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${pair(L.lead)}</b>${L.back.length ? `, back ${pair(L.back)}` : ''}${L.bench.length ? `, bench ${pair(L.bench)}` : ''}.</span>${L.by === 'you' ? `<button type="button" class="np-link sx-reset" data-v2lead="">Use NastyPlot's pick</button>` : ''}</p>` : '';
   // the action strip (Sim, Nov 11: pictures stay clean; today's "−" to remove): one slim row under the six for the picked Pokémon
   const act = sel && ms.includes(sel) ? (() => { const lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = L.lead.length && !L.lead.includes(sel);
     const rt = L.lead.length && ms.length >= 4 ? roleText(sel, L, x => escName(x.d)) : ''; // its place in the plan, said once here (Sim's review, Nov 11, item 5)
@@ -73,3 +73,13 @@ document.addEventListener('keydown', e => { const inp = e.target; if (!inp.match
   else if (e.key === 'Enter') { e.preventDefault(); const p = V2.ad.list[V2.ad.k]; if (p) V2.adPick(+inp.dataset.adq, p.n); }
   // Escape closes the list first (the sheet stays open, as today); a second Escape closes the sheet
   else if (e.key === 'Escape' && document.querySelector('[data-adhits]').innerHTML) { e.preventDefault(); e.stopPropagation(); V2.ad = {list: [], k: 0}; document.querySelector('[data-adhits]').innerHTML = ''; inp.setAttribute('aria-expanded', 'false'); } }, true); // capture: runs before the sheet's own Escape
+
+// ---------- Game Plan (Nov 12, today's "Game Plan" fold, every row kept): the plan line's "Game plan" opens it as a sheet ----------
+// rows from today's gamePlan() (11-game-plan.js): Speed control, Backup speed, Weather, Terrain, Lead support... each Covered /
+// Partly / Missing / Optional with who does it and a note; the team's archetype on top (teamArchetype, as today)
+const GP2 = {ok: ['ok', 'Covered'], part: ['mid', 'Partly'], miss: ['hi', 'Missing'], opt: ['', 'Optional']};
+V2.openGamePlan = () => { const ms = members(); if (!ms.length) return; let gp = {rows: []}, lb = ''; try { gp = gamePlan(ms); } catch (e) {} try { const a = teamArchetype(ms); lb = a ? a.label : ''; } catch (e) {}
+  const rows = gp.rows.map(r => { const [c, t] = GP2[r.st] || GP2.opt; return `<li><span class="gp2-l">${V2.esc(r.label)}</span><span class="sg2-sev ${c}">${t}</span><span class="gp2-w">${r.who ? V2.esc(r.who) : ''}${r.note ? `<small>${V2.esc(r.note)}</small>` : ''}</span></li>`; }).join('');
+  V2.sheet(`<div class="gp2"><div class="np-eyebrow"><span>My Team${lb ? ' · ' + V2.esc(lb) : ''}</span></div><h2 class="u">Game Plan</h2>
+    <p class="tm-sub">Leads, backups and what to watch: which of your Pokémon covers each job.</p><ul class="gp2-rows">${rows}</ul></div>`, {label: 'Game Plan', fit: true}); };
+document.addEventListener('click', e => { if (e.target.closest('[data-v2gplan]')) V2.openGamePlan(); });
