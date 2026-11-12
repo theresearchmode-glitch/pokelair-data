@@ -398,9 +398,9 @@ Sim's own decisions are marked "Sim". Newest first.
 - ~1:11 PM Eastern, Sim changed her pick: My Box icon = option A, the PC with a Poké Ball ('easiest to identify'), replacing B.
 - ~1:14 PM Eastern: Sim: begin the next section. Home plan sent (5 pieces from the approved mock-up + today's 16 Home features; usage warning: heavy, ~4-6 h, runs past today; one piece at a time). Started piece 1 (hero).
 - ~1:21 PM Eastern: Home piece 1 (hero) built (branch, not Preview): shared Home numbers moved to src/app/05-home-data.js (today's MG.month/srcLine/pct now point there; same-info incl. today's Home view: 350/350 identical, 0 different); new pages/home.js: tagline (display size, 'your win rate.' in PLOT blue), intro with the real team count, start buttons (Score My Team first with a team, Build Me a Team first with none; Plan a Match), Import from Showdown (opens My Team's Import), Most used right now (#2 · #1 · #3, % of teams, opens info sheets) + data line. c13 home: 320-1440 both engines: sideways 0, cut off 0, tap<44 0, 0 page errors; heights 1,131-1,166 / 1,059 / 937 / 900. Fixed on the way: featured-style name on the ring, phone order, phone 2+1 buttons, 320 overflow, Import 20px tap.
-- ~1:33 PM Eastern: Home piece 2 helpers shared (no change to today's site, proven): evName + AR.champ -> 05-home-data.js (homeChamp); SD notes, sdBlock, sdSpecies, sheetPaste -> 19-showdown-paste.js; loadSheet's slot mapping -> 49-event-data.js sheetSlots. Proof on today's page before/after: 978 event-team Showdown texts + champion + 40 event names identical; 976 loaded event teams identical; same-info 350/350 identical (incl. Home). PC full-check prompt (base 5003b61, label nov12-pm) given to Sim.
+- 1:33 PM Eastern (commit time): Home piece 2 helpers shared (no change to today's site, proven): evName + AR.champ -> 05-home-data.js (homeChamp); SD notes, sdBlock, sdSpecies, sheetPaste -> 19-showdown-paste.js; loadSheet's slot mapping -> 49-event-data.js sheetSlots. Proof on today's page before/after: 978 event-team Showdown texts + champion + 40 event names identical; 976 loaded event teams identical; same-info 350/350 identical (incl. Home). PC full-check prompt (base 5003b61, label nov12-pm) given to Sim.
 
-## Nov 12, ~1:40-2:15 PM Eastern (Home piece 2 and the test run)
+## Nov 12, 1:33-1:58 PM Eastern, from commit times (Home piece 2 and the test run)
 - Home duel: the Champion's buttons now sit right under its six, as in the mock-up (they had been pushed down to line up
   with my side's buttons, leaving a gap). The two sixes stay exactly level (measured: six tops 412 / 412).
 - Home duel heading: the event name drops emoji and a trailing prize line (V2.evTitle, new build only; today's site
@@ -421,14 +421,14 @@ Sim's own decisions are marked "Sim". Newest first.
   (Home x16, Pokémon sheet x7, links to Battle/Build/Log/How we calculate/Popular Sets) except CMP-03 (see below).
 - Open, not decided: CMP-03, the Compare picker lost today's line "Any other tournament team: tap Compare on its card in
   Winning teams." It belongs with the Winning Teams page, which isn't rebuilt yet; it goes back when that page is.
-- ~2:30 PM: Sim's screenshot of the Home mock-up page showed it unstyled (plain serif text, no colours or button shapes). The
+- 2:01 PM (commit time): Sim's screenshot of the Home mock-up page showed it unstyled (plain serif text, no colours or button shapes). The
   four published mock-up pages (home, battle, build, ratings) loaded their colours from a separate tokens.css and fonts from
   Google. Why that failed in Sim's viewer is not known (not reproducible here). Fixed by putting the colours and the site's
   own font rules inside each page (fonts from fonts/ beside them, as foundation.html already does); checked locally with the
   internet blocked: day background and Unbounded load. Preview v73 replaced only those four files.
 - Sim: Mega stays written "Mega Charizard Y" in blue on Home, the same as My Team (one style for one idea).
 
-## Nov 12, ~2:00-2:30 PM Eastern (authority extended by Sim to 5 PM Eastern at 2:01 PM)
+## Nov 12, 2:01-2:16 PM Eastern, from commit times (authority extended by Sim to 5 PM Eastern at 2:01 PM)
 - Home pieces 1+2 published to the Preview (v74, Sim: "love it"); Preview file list checked: 394 files.
 - Home piece 3 built (Top of the Meta with the Top rated / Hidden gems slider, today's underdog, This week in the ratings), from
   the mock-up's CSS; shared helpers only (lairRows, isGem, lairRank, monRating, today's words). NOT on the Preview yet: pictures sent.
@@ -449,7 +449,7 @@ Sim's own decisions are marked "Sim". Newest first.
 - Tests (from Sim's PC outside check): TEAM-13b, SUG-03b, MU-05b, EDIT-07b pass on the new build, so their known-bug mark now
   applies to today's site only (today's site: 4 known, unchanged). TEAM-11 and SUG-10 were already fixed in 10b04ce, after the
   tree the PC checked (174523a).
-- ~2:20 PM, the two items from Sim's PC check:
+- 2:23 PM (commit time), the two items from Sim's PC check:
   1) WebKit "hidden-focusable 7" on My Team: NOT reproduced here, on the current tree or on 174523a (the PC's tree): c13 webkit team
      320/390/820 all 0; experiments/hidden-why.cjs (new): script focus reaches 0 hidden controls, real key walk 56 stops, 0 hidden.
      Sim's own WebKit Tab walk also found 0. Likely the Windows WebKit build lets a script focus a control in a closed fold; not
@@ -457,40 +457,40 @@ Sim's own decisions are marked "Sim". Newest first.
   2) Share "Could not draw the image in this view.": happens only when the page is opened as a file (file://): the browser blocks
      turning the drawing into an image there. Checked both engines: file:// card/poster/sheet all fail; served over http (as the
      Preview and the real site are) all three draw (1200x675, 1080x1350, 1080x1350). Pictures: docs/rebuild/home/share-*.png.
-- ~2:25 PM: Sim's PC ran hidden-why.cjs (3a33199): WebKit on Windows lets a script focus 6 controls inside closed folds; real
+- 2:26 PM (commit time): Sim's PC ran hidden-why.cjs (3a33199): WebKit on Windows lets a script focus 6 controls inside closed folds; real
   Alt+Tab walk 38/39 stops, 0 on them (390, 820); Chromium 0 and 0. So the "hidden-focusable" reports were the check, not the page.
   c13 now skips controls inside a closed fold for that count (comment in the file); re-run here: team 0 at every width, both engines.
   Open, unsure why: on the PC, WebKit's key walk made 38 stops where Chromium made 56 (here both make 56).
-- ~2:26 PM: Home piece 3 published to the Preview (v75, Sim: "home piece 3 looks great"); file list checked: 394 files.
-- ~2:30 PM: Home piece 4 built (Everything NastyPlot does: 12 even tiles, names as in the mock-up, today's descriptions; each tile
+- 2:26 PM (commit time): Home piece 3 published to the Preview (v75, Sim: "home piece 3 looks great"); file list checked: 394 files.
+- 2:37 PM (commit time): Home piece 4 built (Everything NastyPlot does: 12 even tiles, names as in the mock-up, today's descriptions; each tile
   opens the page today's site files it under, 32-views.js VIEW_PARENT/VIEW_ALIAS: Battle / Meta / Build). Not on the Preview yet.
   Phone, as in the mock-up: Top of the Meta shows 5 rows and This week 4 (10 and 7 where the columns sit side by side).
   Phone height 4,305 at 390 (limit 4,200); 320: 4,713. Asked Sim: raise Home's phone limit to 4,400 (recommended) or trim.
-- ~2:42 PM, Sim chose "A + 2 line event name": Home's phone limit is 4,400 (was 4,200; page-heights.md, c13 HOME) and the
+- 2:43 PM (commit time), Sim chose "A + 2 line event name": Home's phone limit is 4,400 (was 4,200; page-heights.md, c13 HOME) and the
   Champion's event name is one size down on phone (24) so the long real name takes 2 lines. Option B's smaller six art and the
   underdog beside its text were not taken (the underdog left an empty strip). Home now: 320 4,701 (assumed limit 4,600: the name
   still takes 3 lines that narrow), 390 4,268 / 4,400, 820 3,410 / 3,500, 1440 2,483 / 2,700; no overlaps 320-2560.
-- ~2:47 PM: Home piece 4 published (Preview v76, 394 files). Piece 5 built: More on Home, the site's fold (as Things to Know),
+- 2:52 PM (commit time; piece 4 itself was published after the 2:43 commit): Home piece 4 published (Preview v76, 394 files). Piece 5 built: More on Home, the site's fold (as Things to Know),
   closed by default and remembered; today's four parts and words: pairs, What changed this week, Winning cores, Your battles,
   source line. Shared data: homeTrendData, homePairs, logStats moved to 05-home-data.js; today's Home identical with all folds
   open and history loaded (What changed: 2,059 characters in both; only the sun animation's start time differs). The test
   caught a missed variable (h) in today's homeTrends during the move; fixed before anything shipped. Preview data now carries
   meta/history. Click test 6/6. Heights with the fold closed: 390 4,394 / 4,400; 820 3,517 / 3,500 (17 over); 1440 2,589.
-- ~2:51 PM: My Box icon toggles (Sim's request): pressed inside My Box it goes back to the screen you came from (its address);
+- 2:52 PM (commit time): My Box icon toggles (Sim's request): pressed inside My Box it goes back to the screen you came from (its address);
   opened directly, back to My Team. Both engines: Home -> Box -> Home, My Team -> Box -> My Team, direct -> My Team.
 - PC report "underdog stage empty in WebKit capture": the picture loads lazily; before scrolling 0 px, after scrolling 384 px.
   A capture effect, not a page bug.
-- ~2:56 PM, Sim's answers on the PC's phone-length suggestions: 1) the two sixes stay as they are; 2) yes: "This week" is a third
+- 2:59 PM (commit time), Sim's answers on the PC's phone-length suggestions: 1) the two sixes stay as they are; 2) yes: "This week" is a third
   position of the Top of the Meta switch where the columns stack (under 900 px: phone and iPad; calendar icon), replacing the
   separate list there; desktop keeps two positions and its own column (a saved "This week" shows Top rated there); 3) yes: tools
   by name only on phone (two even columns; descriptions from 700 px up). This reverses the Nov 11 "descriptions back on phone"
   decision, by Sim's choice today; 4) yes: phone section spacing 24 instead of 32. Measured: 390 4,394 -> 3,723; 820 3,517 ->
   3,058; 1440 2,589 (unchanged); 320 4,023. Switch click test both engines: phone 3 positions, This week 5 movers and tap opens
   the info sheet, remembered after reload; desktop falls back correctly (2 positions, Top rated, 7-row column).
-- ~3:02 PM: Sim chose the headline "The Meta, right now." (was "Top of the Meta."; it covers Top rated, Hidden gems and This week)
+- 3:01 PM (commit time): Sim chose the headline "The Meta, right now." (was "Top of the Meta."; it covers Top rated, Hidden gems and This week)
   and approved the phone changes. One line at 390 and up, two lines at 320 (320 page 4,053 / 4,600 assumed). Publishing Home
   pieces 5 and 6 (the fold, the phone and iPad changes), the headline and the My Box toggle to the Preview together.
-- ~3:05-3:11 PM: built the last three Home items today's site has, as a PROPOSAL (pictures to Sim, not on the Preview):
+- 3:09 PM (commit time): built the last three Home items today's site has, as a PROPOSAL (pictures to Sim, not on the Preview):
   the welcome card on a first visit (today's rules and saved key cc2.welcomed; words updated to the Nov 9 word list: "Read your
   Strength Score" instead of "Read your scouting report"; buttons Copy a Top Team + Got It, since the hero above already has the
   start buttons: one main button per screen, nothing twice); What's New after an update (today's rules and keys; WHATS_NEW moved
@@ -500,12 +500,13 @@ Sim's own decisions are marked "Sim". Newest first.
   switch to the new design, words to approve then. First visit makes desktop Home 2,878 (limit 2,700; returning 2,589).
 - The fold's top gap and rule are now variables (--fold-mt / --fold-bt in sugs.css) because the v2 CSS layers let the fold's
   layer win over Home's; only What's New uses them (More on Home keeps its approved gap).
-- ~3:13 PM, Sim: welcome card words and buttons approved; a fresh What's New entry for the switch is OK (draft to Sim first);
+- 3:12 PM (commit time), Sim: welcome card words and buttons approved; a fresh What's New entry for the switch is OK (draft to Sim first);
   the first-visit desktop height is allowed (c13 HOME 1440: 2,900 with the reason printed; page-heights.md updated).
-- ~3:17 PM: Build groundwork (look-only inventory: docs/rebuild/build-inventory.md). First step done: the Winning Cores data
+- 3:17 PM (commit time): Build groundwork (look-only inventory: docs/rebuild/build-inventory.md). First step done: the Winning Cores data
   (coreUi, CORE_MIN, coreRows, coreTagCache, coreTags, corePlan, andList, coreConfirmText) moved unchanged to a new shared file
   app/src/app/47-core-data.js (both builds); today's drawing and actions (renderCores, bindCoreIn, useCore) stay in 48-cores.js.
   Proof on today's site, before vs after: 38/38 identical (rows, tags, plan, replace prompt, and the drawn Cores list for every
   kind x sort x filter, 46-93 thousand characters each). A first proof run compared empty views (wrong element); caught, redone.
   Home's tests are being wired to the new page by a helper in its own worktree (look-only test work; merge after review).
 - 3:20 PM: Sim: times must ALWAYS be correct. From now on every time comes from the clock: docs/rebuild/log-decision.sh stamps decision entries itself, and CLAUDE.md now says so. Earlier today's wrong entry times were each corrected when found (2:55/3:05 -> 2:20-2:26; 2:50 -> 2:42; 3:10/3:15 -> 2:47/2:51; 3:25 -> 3:17; draft headers 3:20 -> 3:13 and 3:15, 3:25 -> 3:19).
+- 3:20 PM: Checked every afternoon entry's time against its git commit time (TZ=America/New_York git log). 16 estimated (~) times replaced with the commit times; the largest errors were the mock-up screenshot fix (written 2:30, committed 2:01) and Home piece 4 (written 2:30, committed 2:37).
