@@ -100,3 +100,4 @@ Sim's own decisions are marked "Sim". Newest first.
   and a shown 94 can't be mixed up again.
 
 - Nov 11, ~10:40 PM: "Mega" label gap .3em (4.5px, off the 4px grid) changed to 4px everywhere (My Team, Team Sheet, suggestions). Polish check My Team: no new findings. iPhone (WebKit) sweep of My Box, Compare, Team Sheet, empty My Team at 300-430 wide: no sideways scroll; My Box add sheet stays on screen while typing. Preview v50.
+- Nov 11, 9:46 PM: Sim allowed helpers until 11 PM. Started two look-only helpers: a My Team height breakdown (phone 4354 vs 3400 target) and a fresh-eyes polish review of every new page. Their findings go to Sim as proposals; fixes land one at a time.
