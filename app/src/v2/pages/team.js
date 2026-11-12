@@ -285,7 +285,7 @@ V2.openShared = x => { loadShared(x); V2.closeSheet(true); V2.ui.sel = 0; if (!/
 V2.openImport = () => {
   V2.sheet(`<div class="imp2"><div class="np-eyebrow">Import</div><h2 class="u">Paste a Team</h2>
     <p class="tm-sub">A Showdown team or a NastyPlot team link. Undo brings yours back.</p>
-    <textarea class="imp2-in" data-impin rows="9" spellcheck="false" autocomplete="off" aria-label="Team to import" placeholder="Paste here: a team from Showdown, Pokémon Zone, Pikalytics or Victory Road"></textarea>
+    <textarea class="imp2-in" data-impin rows="9" spellcheck="false" autocomplete="off" aria-label="Paste a Showdown team to import" placeholder="Paste here: a team from Showdown, Pokémon Zone, Pikalytics or Victory Road"></textarea>
     <p class="imp2-note" data-impnote role="status" aria-live="polite"></p>
     <div class="imp2-acts"><button type="button" class="np-btn" data-impgo>Replace My Team</button><p class="fine">Pokepaste links can't be opened from here; copy the team text instead.</p></div>
     ${typeof regNote === 'function' ? regNote('fine imp2-reg') : ''}</div>`, {label: 'Import a team', small: true, focus: '[data-impin]'});

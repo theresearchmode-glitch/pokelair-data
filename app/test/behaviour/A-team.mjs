@@ -69,7 +69,7 @@ t('HOME-05b', 'This week chip\'s rating matches the info sheet it opens', async 
   const r = await homePage(); const c = (await r.ui.ratingMoves())[0], rating = +(c.label.match(/rating (\d+)/) || [])[1];
   await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet() || '';
   ok(s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, info sheet hero says ${s.slice(0, 12)}`); await r.close(); },
-  {known: 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});
+  {known: NEW ? '' : 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});
 
 t('HOME-06', 'Start buttons: "Score my team" first with a team, "Build me a team" first with none', async () => {
   // new build: Title Case on buttons (decisions.md Nov 11, "Title Case on buttons and headings"); same buttons, same order
@@ -128,7 +128,7 @@ t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion s
 t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import', async () => {
   const r = await aopen({fresh: true}); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'Home');
   await r.ui.go('My Team', 1500); await r.ui.settle(); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'My Team');
-  has(await r.ui.text(), 'Build your own'); await r.ui.tapText('Import a team', 1000); const p = await r.ui.editPanel(); ok(p && /Import a team/.test(p.text), 'Import panel did not open'); await r.close(); });
+  has(await r.ui.text(), 'Build your own'); await r.ui.tapText('Import a team', 1000); const p = await r.ui.editPanel(); /* new build: the import sheet is headed "Paste a Team" (as HOME-07 / IO-01's new-build branches) */ ok(p && (NEW ? p.title === 'Paste a Team' : /Import a team/.test(p.text)), 'Import panel did not open'); await r.close(); });
 
 t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async () => {
   const r = await aopen({fresh: true}); const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');

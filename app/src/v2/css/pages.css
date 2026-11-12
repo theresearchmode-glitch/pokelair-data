@@ -725,3 +725,4 @@
 @media (max-width:699px){.hm-p1 .hm-rks{min-height:calc(52px * 5)}}
 @media (max-width:699px){.hm-top .hm-p>.hm-hint{min-height:calc(var(--t13) * 1.5 * 3)}} /* the three views keep one height on phone (their lines wrap to 2-3 lines) */
 @media (max-width:699px){.hm-top>.hm-sub{min-height:calc(var(--t15) * 1.5 * 2)}} /* the line under the heading takes 1-2 lines by view: hold two on phone */
+.hm-sample{margin-top:var(--s2);max-width:48ch}
