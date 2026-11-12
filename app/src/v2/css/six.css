@@ -93,3 +93,5 @@ svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);ver
 @media (max-width:699px){:root.kbo .np-sheet{top:calc(var(--vvt,0px) + var(--s2));bottom:auto;max-height:calc(var(--vvh,100vh) - var(--s4));border-radius:var(--r-xl)}}
 /* Height cut (Nov 12): on phones My Team's Set details sit two by two, label over value (no word broken mid-way) */
 @media (max-width:699px){.tm-set .sx-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s4)}.tm-set .sx-kv>div{grid-template-columns:minmax(0,1fr);gap:0}.tm-set .sx-kv dd{overflow-wrap:normal}}
+/* A10 (Sim, Nov 12: "your recommendation"): the line before Bench (the two you don't bring) shows on every width, not only phones */
+@media (min-width:700px){.sx-grp:nth-child(3)::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--s6) / -2);width:1px;background:var(--rule)}}

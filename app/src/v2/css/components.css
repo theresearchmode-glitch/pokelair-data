@@ -153,9 +153,13 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 /* C8 (Sim's fix plan, rule C8: every tap target 44x44 on touch widths): text links and tabs narrower than 44px get an invisible
    44x44 tap area centred on them (::before; their look is unchanged, checked pixel-identical). Not My Box's box markers: they sit
    8px apart, so a bigger area would cover the next marker (needs a spacing change: visual, for Sim). */
-.np-tabs a,.np-tabs button,.np-nav a,.np-foot nav a,.sg2-nact a,.sg2-undo .np-btn2{position:relative}
-.np-tabs a::before,.np-tabs button::before,.np-nav a::before,.np-foot nav a::before,.sg2-nact a::before,.sg2-undo .np-btn2::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
+.np-tabs a,.np-tabs button,.np-nav a,.np-foot nav a,.sg2-nact a,.sg2-undo .np-btn2,.np-toast button{position:relative}
+.np-tabs a::before,.np-tabs button::before,.np-nav a::before,.np-foot nav a::before,.sg2-nact a::before,.sg2-undo .np-btn2::before,.np-toast button::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
 /* A9 (Sim, Nov 12): the selected Pokémon's floor ring sits lower and flatter, under the feet, so it no longer crosses the picture
    (was 118% wide, 30% tall, 34% down); on phones the selected picture stays inside its tile (it was 120px in a 111px tile) */
 @media (max-width:699px){.np-mon.sel img{scale:1}}
 .np-megatag{position:absolute;z-index:2;left:0;top:0;padding:var(--s1) var(--s2);font:800 var(--t13)/1 var(--u);font-style:italic;font-synthesis:style;color:var(--on-main);background:var(--plot);transform:skewX(var(--slant))}
+/* A13 (Sim, Nov 12: option C): in day mode a chosen option is a light blue plate with blue text, so the one main action stays the
+   only black plate on a screen (4.7:1 contrast). Night mode keeps its lit plates. */
+:root:not([data-theme="night"]) .np-slide .thumb{background:color-mix(in srgb,var(--plot) 16%,var(--surface));box-shadow:none}
+:root:not([data-theme="night"]) .np-slide button[aria-pressed="true"]{color:var(--plot-text)}
