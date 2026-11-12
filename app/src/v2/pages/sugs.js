@@ -140,12 +140,12 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
   const chips = [V.score != null && CH.hand(V.RD) ? `<span><b>${CH.hand(V.RD).x}/${CH.hand(V.RD).n}</b> handled${V2.tip('readiness')}</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks${V2.tip('checklist')}</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
   const vd = `<div class="sg2-vd ${V.lvl}"><dl>${V.rows.filter(r => !/^Checklist$/.test(r[0])).map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
   // A2: the fold holds the things to know and the read that appears nowhere else; the checks are listed once, above
-  const sub = [pr.real.length ? `${pr.real.length} thing${pr.real.length === 1 ? '' : 's'}` : 'Nothing to know', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
+  const sub = [pr.real.length ? `${pr.real.length} thing${pr.real.length === 1 ? '' : 's'}` : 'Nothing to know', 'types', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
   // A6 (Sim's fix plan): one live "Working out…" message at load, not two; Suggestions' own line is the one read out
   const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
   if (P) V2.fx.last = pr.html;
   return `<details class="sg2-fold" data-v2fix${isOpen ? ' open' : ''}><summary><span class="t">Things to Know</span><span class="s">${V2.esc(sub)}</span></summary>
-    <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${vd}</div></details>`; };
+    <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${vd}${V2.typesHtml ? V2.typesHtml() : ''}</div></details>`; };
 // the fold remembers open / closed on this device (today's key, cc2.chf.rfix); opening it opens the first problem with a fix
 document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matches) return;
   // (a redraw draws the fold again, already open: only a real opening opens the first problem, as on today's page)
@@ -170,3 +170,40 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   const below = r.bottom + 8 + p.offsetHeight < innerHeight - 72; p.style.top = (below ? r.bottom + 8 : Math.max(16, r.top - 8 - p.offsetHeight)) + scrollY + 'px'; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.querySelector('.sg2-tipop')) { const b = document.querySelector('[data-v2tip][aria-expanded="true"]'); V2.tipClose(); if (b) b.focus(); } });
 addEventListener('scroll', () => { if (document.querySelector('.sg2-tipop')) V2.tipClose(); }, {passive: true});
+
+// ---------- Types (Nov 12, today's "Types" fold, every part kept; Sim: inside Things to Know) ----------
+// Offense / Defense switch, today's headlines (threat 2HKOs, types hit; weaknesses vs resists, top threats that beat 3+),
+// the type lists, the two-Mega pick, and Full Tables (today's offense table and defense grid) as a sheet.
+// Working-out is today's shared logic: analyze, offenseRows, prepOf, playForm, mult (no maths copied here).
+V2.ty = {mode: (() => { try { return LS.get('np2.seg.types', 'off') === 'def' ? 'def' : 'off'; } catch (e) { return 'off'; } })()};
+V2.tyData = () => { const ms = members(); if (!ms.length) return null; const msPlay = playForm(ms), a = analyze(msPlay, true);
+  let RD = null; try { RD = prepOf(ms); } catch (e) {}
+  const RDd = RD ? {over: RD.rows.filter(r => r.losers.length >= 3), hit: RD.rows.filter(r => r.rows.some(x => x.du && x.du.nM <= 2)).length, noHit: RD.rows.filter(r => !r.rows.some(x => x.du && x.du.nM <= 2)).sort((x, y) => y.t.w - x.t.w)} : null;
+  const off = offenseRows(ms, true); return {ms, msPlay, a, RDd, off}; };
+V2.typesHtml = () => { const D = V2.tyData(); if (!D) return ''; const {a, RDd, off, ms} = D, E = V2.esc, chips = l => l.length ? l.join('') : '<span class="fine">None</span>';
+  const ch = (t, k) => `<span class="ed-ty">${V2.typeChip(t)}${k ? `<b>${k}</b>` : ''}</span>`;
+  const row = (k, v) => `<div class="ty2-r"><span class="lbl">${k}</span><span class="ed-tys">${v}</span></div>`;
+  const offB = `<p class="ty2-h"><b>${RDd ? `You OHKO or 2HKO ${RDd.hit} of the top 30 threats` : '—'}</b><span class="fine">${off.covered}/18 types hit super effectively by at least one of yours</span></p>
+    ${RDd && RDd.noHit.length ? row('Nothing 2HKOs', `<span class="ty2-t">${RDd.noHit.slice(0, 6).map(r => E(r.t.d)).join(', ')}</span>`) : ''}
+    ${row('Nobody hits super effectively', chips(off.tRows.filter(r => !r.hits.length).map(r => ch(r.t))))}
+    ${off.stabOnly.length ? `<p class="fine">${E(off.stabOnly.join(', '))}: no move data yet, so only their own types are counted.</p>` : ''}`;
+  const megas = ms.filter(m => m.p && m.p.m), keep = megas.length > 1 ? (megas.find(m => m.p.n === ui.megaPick) || megas[0]) : null;
+  const defB = `<p class="ty2-h"><b>${a.excess ? `${a.excess} more weakness${a.excess === 1 ? '' : 'es'} than resistances` : 'Every weakness is covered by a resist'}</b><span class="fine">${ms.length}/6 Pokémon${RDd ? ` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length ? ` (${RDd.over.slice(0, 3).map(r => E(r.t.d)).join(', ')}${RDd.over.length > 3 ? ` and ${RDd.over.length - 3} more` : ''})` : ''}` : ''}</span></p>
+    ${row('More weak than resist', chips(a.rows.filter(t => t.w > t.r).map(t => ch(t.atk, t.w - t.r > 1 ? '×' + (t.w - t.r) : ''))))}
+    ${row('Nobody resists', chips(a.unresisted.map(t => ch(t))))}
+    ${row('Even split', chips(a.rows.filter(t => t.w > 0 && t.w === t.r).map(t => ch(t.atk))))}
+    <p class="fine">×2 next to a type means 2 more of yours are weak to it than resist it.</p>
+    ${keep ? `<p class="fine ty2-mega">Only one Mega Evolves per battle, so this reads <b>${E(keep.d)}</b> as the Mega and the others in base form. Show: ${megas.map(m => `<button type="button" class="np-link" data-v2megapick="${E(m.p.n)}" aria-pressed="${m === keep}">${V2.nameHtml(m.d)}</button>`).join(' · ')}</p>` : ''}`;
+  return `<div class="ty2"><div class="ty2-hd"><h3 class="u">Types</h3>${V2.slide('types', [['off', 'Offense'], ['def', 'Defense']], V2.ty.mode, 'Types: offense or defense')}</div>
+    <p class="fine">${V2.ty.mode === 'off' ? 'What you hit.' : 'What hits you.'}</p>${V2.ty.mode === 'off' ? offB : defB}
+    <button type="button" class="np-link ty2-full" data-v2tytables>Full Tables ›</button></div>`; };
+V2.openTypeTables = () => { const D = V2.tyData(); if (!D) return; const {a, off, msPlay} = D, E = V2.esc;
+  const m = x => `<span class="ty2-m${x === 0 ? ' z' : x >= 2 ? ' hi' : x < 1 ? ' lo' : ''}">${x === 0 ? '0' : x === .25 ? '¼' : x === .5 ? '½' : x === 1 ? '' : x + '×'}</span>`;
+  const offT = `<table class="ty2-tb ty2-off"><thead><tr><th>Defending type</th><th>Best</th><th>Who hits it super effectively</th></tr></thead><tbody>${off.tRows.map(r => { const x = r.best ? r.best.x : 0;
+    return `<tr${r.hits.length ? '' : ' class="no"'}><td>${V2.typeChip(r.t)}</td><td>${m(x)}</td><td>${r.hits.length ? r.hits.map(h => `${V2.nameHtml(h.m.d)} <span class="fine">(${E(h.b.e.move)})</span>`).join(', ') : '<span class="fine">Nobody</span>'}</td></tr>`; }).join('')}</tbody></table>`;
+  const defT = `<table class="ty2-tb ty2-grid"><thead><tr><th>Attack</th>${msPlay.map(x => `<th title="${E(x.d)}">${E(x.d.replace('Mega ', 'M·').slice(0, 12))}</th>`).join('')}<th>Weak</th><th>Resist</th><th>Net</th></tr></thead><tbody>${a.rows.map(t => `<tr${t.w > t.r ? ' class="no"' : ''}><td>${V2.typeChip(t.atk)}</td>${msPlay.map(x => `<td>${m(mult(t.atk, x.types, x.ability, true))}</td>`).join('')}<td>${t.w || ''}</td><td>${t.r || ''}</td><td>${t.net > 0 ? '+' + t.net : t.net < 0 ? t.net : '0'}</td></tr>`).join('')}</tbody></table>`;
+  V2.sheet(`<div class="gp2 ty2s"><div class="np-eyebrow"><span>My Team · Types</span></div><h2 class="u">Full Tables</h2>
+    <h3 class="u">Offense: what you hit</h3><div class="ty2-wrap">${offT}</div><h3 class="u">Defense: what hits you</h3><div class="ty2-wrap">${defT}</div></div>`, {label: 'Full Tables'}); };
+document.addEventListener('v2slide', e => { if (e.detail.key !== 'types') return; V2.ty.mode = e.detail.value; try { LS.set('np2.seg.types', V2.ty.mode); } catch (er) {} const el = document.querySelector('.ty2'); if (el) { el.outerHTML = V2.typesHtml(); const f = document.querySelector(`.ty2 [data-v2slide="types"] [data-v="${V2.ty.mode}"]`); if (f) f.focus(); } });
+document.addEventListener('click', e => { if (e.target.closest('[data-v2tytables]')) { V2.openTypeTables(); return; }
+  const b = e.target.closest('[data-v2megapick]'); if (b) { ui.megaPick = b.dataset.v2megapick; const el = document.querySelector('.ty2'); if (el) el.outerHTML = V2.typesHtml(); } });

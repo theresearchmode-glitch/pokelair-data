@@ -553,3 +553,17 @@
 .gp2-rows li{display:grid;grid-template-columns:minmax(120px,180px) 96px minmax(0,1fr);align-items:baseline;gap:var(--s2) var(--s4);padding:var(--s3) 0;border-top:1px solid var(--rule)}
 .gp2-l{font:600 var(--t16)/1.5 var(--b)}.gp2-w{font:400 var(--t15)/1.5 var(--b)}.gp2-w small{display:block;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 @media (max-width:599px){.gp2-rows li{grid-template-columns:minmax(0,1fr) auto}.gp2-w{grid-column:1/-1}}
+
+/* Types inside Things to Know (Nov 12, today's Types fold) and its Full Tables sheet */
+.ty2{grid-column:1/-1;margin-top:var(--s6);padding-top:var(--s5);border-top:1px solid var(--rule)}
+.ty2-hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.ty2-hd h3{font-size:var(--t22);margin:0}.ty2-hd+.fine{margin-top:var(--s3)}
+.ty2-h{display:grid;gap:var(--s1);margin:var(--s3) 0}.ty2-h b{font:600 var(--t17)/1.4 var(--b)}
+.ty2-r{display:grid;grid-template-columns:minmax(160px,280px) minmax(0,1fr);align-items:baseline;gap:var(--s2) var(--s4);padding:var(--s2) 0}
+.ty2-r .lbl{font:600 var(--t15)/1.3 var(--b)}.ty2-t{font:400 var(--t15)/1.5 var(--b)}
+@media (max-width:599px){.ty2-r{grid-template-columns:minmax(0,1fr)}}
+.ty2-full{margin-top:var(--s3);position:relative}.ty2-full::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
+.ty2s h3{font-size:var(--t20);margin:var(--s6) 0 var(--s2)}.ty2-wrap{overflow-x:auto}
+.ty2-tb{border-collapse:collapse;width:100%;font:400 var(--t15)/1.4 var(--b)}.ty2-tb th{text-align:left;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);padding:var(--s2)}
+.ty2-tb td{padding:var(--s2);border-top:1px solid var(--rule);vertical-align:middle}.ty2-tb tr.no td{background:var(--wash)}
+.ty2-grid td:not(:first-child),.ty2-grid th:not(:first-child){text-align:center}
+.ty2-m{font-weight:700}.ty2-off .ty2-m.hi{color:var(--good-text)}.ty2-m.hi{color:var(--pick-text)}.ty2-m.lo{color:var(--good-text)}.ty2-m.z{color:var(--plot-text)}
