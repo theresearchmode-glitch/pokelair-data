@@ -30,6 +30,7 @@
  "src/app/05-icons.js",
  "src/app/05-data-clean.js",
  "src/app/05-six-data.js",
+ "src/app/05-home-data.js",
  "src/app/05-combobox.js",
  "src/app/06-helpers.js",
  "src/app/07-render-slots.js",

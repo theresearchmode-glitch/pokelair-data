@@ -43,10 +43,7 @@ MG.panel = o => { const p = o.p, burst = o.mode === 'lines';
   const tag = o.tag || 'div', a = o.attrs || '';
   return `<${tag} class="mgpn ${burst ? 'mgburst' : 'mgtone'} ${o.cls || ''}" style="${MG.vars(p)}${o.style ? ';' + o.style : ''}" ${a}><span class="mgin">${burst ? '<span class="mgwash"></span><span class="mglines"></span>' : '<span class="mgdots"></span>'}`
     + `${o.top || ''}${cap}<span class="mgmon">${p ? MG.aura(p) : ''}</span></span></${tag}>`; };
-MG.month = per => { const m = /^(\d{4})-(\d{2})/.exec(per || ''); return m ? new Date(Date.UTC(+m[1], +m[2] - 1, 15)).toLocaleString('en-US', {month: 'long', timeZone: 'UTC'}) : ''; };
-MG.srcLine = () => { const d = typeof META === 'object' && META && META[S.format]; if (!d) return 'Share of teams that bring each one';
-  const src = String(d.source || '').replace(/\s*\(.*$/, '').trim(), mo = MG.month(d.period); return `Most used${mo ? ' in ' + mo : ''}${src ? ', ' + src : ''}${typeof dataDateText === 'function' && dataDateText() ? '. ' + dataDateText() : ''}`; };
-MG.pct = p => { const u = U(p); return u ? u.toFixed(1) : ''; };
+MG.month = homeMonth; MG.srcLine = homeSrcLine; MG.pct = homePct; /* shared (05-home-data.js, Nov 12) */
 
 /* ======================= Home ======================= */
 MG.cover = (six, desk) => { if (!six || six.length < 3) return ''; const [a, b, c] = six;

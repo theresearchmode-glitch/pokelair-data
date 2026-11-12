@@ -57,6 +57,7 @@
     "src/v2/pages/box.js",
     "src/v2/pages/record.js",
     "src/v2/pages/compare.js",
+    "src/v2/pages/home.js",
     "src/v2/pages/coming.js"
   ],
   "logic": [
@@ -68,6 +69,7 @@
     "src/app/05-icons.js",
     "src/app/05-data-clean.js",
     "src/app/05-six-data.js",
+    "src/app/05-home-data.js",
     "src/app/06-helpers.js",
     "src/app/08-render-all.js",
     "src/app/09-quick-add.js",
