@@ -71,7 +71,19 @@ V2.homeMeta = () => { const E = V2.esc, rows = lairRows(), top = rows.slice(0, 1
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'homegems') return; V2.hmUi.gems = e.detail.value === '1'; try { localStorage.setItem('np2.seg.homegems', V2.hmUi.gems ? '1' : '0'); } catch (x) {} V2.redraw(); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hmaround]'); if (!b) return; const p = byName.get(b.dataset.hmaround); if (!p) return;
   ui.abLock = p.n; if (typeof inBox === 'function' && !inBox(p)) ui.abSrc = 'all'; location.hash = '#build'; });
-V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeDuel()}${V2.homeMeta()}</div>`; }};
+// Home piece 4 (mock-up R2): Everything NastyPlot does, 12 even tiles (11 tools + How We Calculate), no half-filled row at 4, 3 or
+// 2 columns. Names as in the mock-up, descriptions are today's (HOME_TILES). Each tile opens the page today's site files the tool
+// under (32-views.js VIEW_PARENT / VIEW_ALIAS): Battle, Meta (Pokémon + Tournaments) or Build (cores); the tool's own spot inside
+// that page comes when the page is rebuilt.
+V2.HOME_TOOLS = [['Battle Mode', 'Their six in, your four, the leads and turn 1 out', 'battle'], ['Teams', 'Search every winning team by Pokémon, item or move', 'meta'],
+  ['Type Chart', 'What hits what, and your team against every type', 'battle'], ['Ratings', 'Every legal Pokémon on one tier board', 'meta'],
+  ['Damage Calc', 'Real damage with stats, items and spread moves', 'battle'], ['Events', 'Every recent tournament, top cut and full sets', 'meta'],
+  ['Test Run', 'Run your team into the top 20 tournament teams', 'battle'], ['Popular Sets', 'Moves, items and natures players run', 'meta'],
+  ['Speed Tiers', 'Who moves first, with Tailwind and Trick Room', 'battle'], ['Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', 'meta'],
+  ['Winning Cores', 'Pairs and trios that win the most', 'build'], ['How We Calculate', 'Where every number comes from', 'meta']];
+V2.homeTools = () => `<section class="hm-tools"><h2 class="u">Everything NastyPlot does.</h2><p class="hm-sub">${V2.HOME_TOOLS.length} tools, one tap each</p>
+  <div class="hm-tgrid">${V2.HOME_TOOLS.map(([n, d, to]) => `<a class="hm-tool" href="#${to}"><b>${V2.esc(n)}<i aria-hidden="true">›</i></b><span>${V2.esc(d)}</span></a>`).join('')}</div></section>`;
+V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeDuel()}${V2.homeMeta()}${V2.homeTools()}</div>`; }};
 // Load this team (HOME-09): with a team of your own, the first tap asks ("Tap again"); the second loads it with Undo (today's loadSheet)
 document.addEventListener('click', async e => { const L = e.target.closest('[data-hmload]'), Cp = e.target.closest('[data-hmcopy]'), P = e.target.closest('[data-hmprep]');
   if (L) { const k = L.dataset.hmload, x = evTeam(k); if (!x) return; if (members().length && V2.hmUi.sure !== k) { V2.hmUi.sure = k; clearTimeout(V2.hmUi.t); V2.hmUi.t = setTimeout(() => { V2.hmUi.sure = null; if (V2.route() === 'home') V2.redraw(); }, 6000); V2.redraw(); return; }

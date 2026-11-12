@@ -462,3 +462,7 @@ Sim's own decisions are marked "Sim". Newest first.
   c13 now skips controls inside a closed fold for that count (comment in the file); re-run here: team 0 at every width, both engines.
   Open, unsure why: on the PC, WebKit's key walk made 38 stops where Chromium made 56 (here both make 56).
 - ~2:26 PM: Home piece 3 published to the Preview (v75, Sim: "home piece 3 looks great"); file list checked: 394 files.
+- ~2:30 PM: Home piece 4 built (Everything NastyPlot does: 12 even tiles, names as in the mock-up, today's descriptions; each tile
+  opens the page today's site files it under, 32-views.js VIEW_PARENT/VIEW_ALIAS: Battle / Meta / Build). Not on the Preview yet.
+  Phone, as in the mock-up: Top of the Meta shows 5 rows and This week 4 (10 and 7 where the columns sit side by side).
+  Phone height 4,305 at 390 (limit 4,200); 320: 4,713. Asked Sim: raise Home's phone limit to 4,400 (recommended) or trim.

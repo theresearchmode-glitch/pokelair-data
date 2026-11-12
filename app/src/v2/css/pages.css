@@ -651,3 +651,14 @@
 @media (max-width:1179px){.hm-meta{gap:var(--s10)}.hm-ud{grid-template-columns:160px minmax(0,1fr)}.hm-udst{width:160px}}
 @media (max-width:899px){.hm-meta{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:479px){.hm-ud{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}.hm-ud .row{justify-content:center}.hm-udk{justify-content:center}}
+/* Home piece 4 (mock-up R2): all tools, 12 even tiles: 4 columns, 3 under 1180, 2 under 700 (no half-filled row at any of them) */
+.hm-tools h2{font-size:var(--t34);margin:0}
+.hm-tgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 var(--s8);margin-top:var(--s5)}
+.hm-tool{display:block;min-height:44px;padding:var(--s4) 0;border-top:1px solid var(--rule);color:inherit;text-decoration:none}
+.hm-tool b{display:flex;justify-content:space-between;gap:var(--s2);font:700 var(--t15)/1.3 var(--b)}.hm-tool b i{font-style:normal;color:var(--ink-3)}
+.hm-tool span{display:block;margin-top:var(--s1);font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.hm-tool:hover b{color:var(--plot-text)}
+@media (max-width:1179px){.hm-tgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:699px){.hm-tgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s4)}.hm-tools h2,.hm-top h2{font-size:var(--t28)}}
+/* phone, as in the mock-up: the top 5 and 4 movers (all 10 and 7 where the two columns sit side by side; nothing is lost: All ratings ›) */
+@media (max-width:699px){.hm-rks li:nth-child(n+6),.hm-wk li:nth-child(n+5){display:none}}
