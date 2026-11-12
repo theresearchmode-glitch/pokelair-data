@@ -3,7 +3,7 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
-## NOW (Nov 12, ~2:30 AM Eastern; Sim's executive authority until 6:00 AM, reminder trig_018wFMcUYF4Dr2ve6rGyih8j)
+## NOW (Nov 12; Sim's executive authority ENDED at 6:00 AM Eastern. Next: Sim reviews the proposals and answers the questions)
 Every decision and check of the night is in decisions.md ("Nov 12, night" and "Nov 12 (Sim, new chat ...)"). Nothing was published;
 the Preview is still v52. Last commit of the night: see `git log` on claude/design6.
 

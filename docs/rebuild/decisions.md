@@ -121,6 +121,8 @@ Sim's own decisions are marked "Sim". Newest first.
   proofs will show each fix as a difference, marked as a fix. Art and name ownership for the public site: Sim, later.
 
 ## Authority
+- Nov 12, 6:00 AM Eastern: Sim's executive authority ENDED. No decisions on her behalf from here; summary given in chat. Last
+  work commit d6f620f; nothing published (Preview still v52); everything visual waits in docs/rebuild/proposals/.
 - Nov 11, ~11:30 PM Eastern (Sim): executive authority until 6:00 AM Eastern (Sim asleep). Rules as RULES.md section 3:
   everything but visual/design on Claude's recommendation, helpers at Claude's discretion (moderate usage), nothing published.
 - Nov 11 (Sim): authority extended to 11:00 PM Eastern, same instructions.
