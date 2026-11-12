@@ -104,3 +104,22 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (ns.length > 3) { keepUndo(); S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); location.hash = '#team'; toast(cur.length ? 'Loaded the team (your old team is one tap away: Undo)' : 'Loaded the team', !!cur.length); return; }
   const c = corePlan(ns); keepUndo(); S.slots = normSlots(c.next.slice(0, 6)); S.format = 'doubles'; render(); location.hash = '#team';
   toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${c.dropped.length ? ' · removed ' + c.dropped.join(', ') : ''}${c.megas > 2 ? ` · ${c.megas} Megas on the team now` : ''}`, true); });
+// ---------- Build: Start from a recent winner (mock R2: compact rows under Other options; today's abStart picks and card actions) ----------
+// The same three winners today's Build offers (newest 1st-place teams from official events or 64+ players). Each row opens a fold with
+// the six full sets (today's "Sets") and today's four actions: Load This Team (second tap to replace, Home's), Practice Against, Compare,
+// Copy for Showdown.
+V2.bdUi = V2.bdUi || {win: null};
+V2.buildWinners = () => { const EV = META.events, E = V2.esc; if (!EV) return '';
+  const picks = EV.events.filter(e => e.src === 'official' || e.players >= 64).filter(e => e.top[0] && e.top[0].place === 1).slice(0, 3); if (!picks.length) return '';
+  const row = ev => { const t = ev.top[0], key = ev.id + '#0', open = V2.bdUi.win === key, sure = V2.hmUi && V2.hmUi.sure === key;
+    const sets = t.mons.map(m => { const p = byName.get(m.n); return `<li class="bd-set">${V2.mon(m.n, {iw: 48, bare: true})}<div><b>${V2.rowName(p ? p.d : m.n)}</b>${m.i ? ` <span class="bd-at">@ ${E(m.i)}</span>` : ''}
+      <small>${E(m.a || '')}${m.nt ? ' · ' + E(m.nt) : ''}</small><small class="bd-mv">${(m.mv || []).map(E).join(' · ')}</small></div></li>`; }).join('');
+    return `<details class="sg2-fold bd-win" data-bdwin="${E(key)}"${open ? ' open' : ''}><summary><span class="bd-wtop"><span class="bd-wk"><b class="u">1st</b>${t.record ? E(t.record) + ' · ' : ''}${E(evDate(ev.date))}${ev.players ? ` · ${ev.players} players` : ''}</span>
+      <span class="bd-wev">${E(V2.evTitle(ev.name))}</span></span><span class="bd-wsix" aria-hidden="true">${t.mons.map(m => V2.mon(m.n, {iw: 40, bare: true})).join('')}</span></summary>
+      <p class="bd-wwho">${E(teamWho(t))}'s six, full sets</p><ul class="bd-sets">${sets}</ul>
+      <div class="row bd-wacts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${sure ? 'Tap Again to Replace Your Team' : 'Load This Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button>
+      <button type="button" class="np-link" data-hmprep="${E(key)}">Practice Against ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></details>`; };
+  return `<section class="bd-wins"><div class="bd-hd"><h2 class="u">Start from a recent winner</h2><span class="bd-k">${picks.length} teams</span></div><p class="bd-sub">Full sets, ready to load.</p>${picks.map(row).join('')}</section>`; };
+V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower"><div class="bd-lcol">${V2.buildOthers() || ''}${V2.buildWinners()}</div>${V2.buildCores()}</div></div>`;
+document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-bdwin]')) return; if (d.open) V2.bdUi.win = d.dataset.bdwin; else if (V2.bdUi.win === d.dataset.bdwin) V2.bdUi.win = null; }, true);
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdcx]'); if (b) V2.cxGo('cur', 'e:' + b.dataset.bdcx); });
