@@ -1,38 +1,46 @@
-# HANDOVER: the NastyPlot rebuild (updated Nov 12, ~1:00 AM Eastern, during Sim's executive authority until 6:00 AM)
+# HANDOVER: the NastyPlot rebuild (updated Nov 12, ~2:30 AM Eastern, during Sim's executive authority until 6:00 AM)
 
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
-## NOW (Nov 12 night)
-- Chat "rebuild, Nov 12": Sim answered the handover questions (all in decisions.md, "Nov 12 (Sim, new chat ...)") and gave
-  executive authority until 6:00 AM Eastern (RULES.md section 3). A reminder fires at 6:00 AM Eastern (trig_018wFMcUYF4Dr2ve6rGyih8j)
-  to stop deciding and give Sim the summary. Nothing has been published; the Preview is still v52.
-- Sim's answers in short: A9 keep the current look (none of the 3 redesigns); My Box icon = retro PC with Poké Ball (Claude refines
-  it to read at 24px, picture first, queued after My Team); Day/Night as a sun/moon icon (queued, pictures first); A3/A4/phone
-  height: Claude's recommendation (pictures first, they are visual); fonts self-hosted: yes; fix today's known bugs in the rebuild,
-  don't carry them over. Still unclear: what "those are good" means for the older items (asked).
-- Done tonight on claude/design6 (commit 6aa245f, checks in decisions.md "Nov 12, night"):
-  A5 redraw in place (focus kept; a control whose data-* markers change is replaced, never mutated: SUG-04 caught that);
-  A6 one live "Working out" line; A14 shown NOT a bug (closed-fold controls are invisible, untabbable, not in the a11y tree);
-  A15 "?" buttons 44x44 tap area, pixel-identical. Behaviour A-team v2: 57 pass / 75 FAIL / 6 known / 4 fixed? / 2 skipped, no
-  outcome change vs the baseline on efe9fe5. run.mjs ALL PASSED. v2 guard clean.
-- A16 answered (commit 0c405c7): same-six and same-info differences = one intended fix (cb49701, Champion's real sets on Home):
-  67/67 and 350/350 identical with base cb49701. same-compare not reproduced (3x 21/21). same-share-v2 portable now, 12/12 here.
-  Behaviour A-team on today's page here: 132 pass, 0 FAIL, 10 known (the PC's 1 FAIL not reproduced, unnamed).
-- Waiting for Sim (proposals with pictures, NOT applied): docs/rebuild/proposals/a3-a4-proposal.png + a3-a4.patch (A3: a ±0 best
-  swap gets no card/Apply; A4: one verdict per Matchups row, "Calc disagrees: X" only when it does; phone 4,309 -> 4,016, desktop
-  2,223 unchanged) and a6-proposal.png + a6.patch (one message per Apply: the bar when in view, else the toast).
-  Patches were made in scratch worktrees; check with `git apply --check`, never apply without Sim's yes.
-- Found tonight, for Sim: "Nothing to fix" sits above a warning that this team lacks lead support after the ±0 swap; the "?"
-  popup says "ready for the top threats"/"93% ready" (word list says Matchups); A8 header/bottom bar text readable in pictures
-  (Chromium at phone width; iPhone unconfirmed).
-- MISTAKE logged in decisions.md: a scratch patch removed out/ in the main tree for ~7 minutes (restored from HEAD, nothing
-  committed). Rule: proposal patches only with named paths (`git diff -- app/src/v2`), never applied to the main tree.
-- Setup in this container: WebKit installed; node_modules/playwright(-core) linked to /opt/node-tools (ESM scripts need it).
-  Pictures of the built page need the daily data fed in (scratch pics/shoot.cjs does it like the proof scripts) and art via
-  `node app/build.mjs --v2 --art=../src/v2/art/`; without data the page is ~800px shorter and Matchups has no real verdicts.
-- Next in the plan: A2 (needs a proposal with pictures), the gallery wording (needs Sim's yes + go to publish), re-measure (C1),
-  then A7/A8/A10-A13 (visual: pictures), C13 check.
+## NOW (Nov 12, ~2:30 AM Eastern; Sim's executive authority until 6:00 AM, reminder trig_018wFMcUYF4Dr2ve6rGyih8j)
+Every decision and check of the night is in decisions.md ("Nov 12, night" and "Nov 12 (Sim, new chat ...)"). Nothing was published;
+the Preview is still v52. Last commit of the night: see `git log` on claude/design6.
+
+DONE on claude/design6 (non-visual, each checked on the built page with real data; result lines in decisions.md):
+- A5 redraw in place (focus kept; a control whose data-* markers change is replaced, never mutated) - 6aa245f.
+- A6 one live "Working out" line - 6aa245f.  A14 not a bug (closed folds are invisible/untabbable).
+- A15/C8 44x44 tap areas: "?" buttons (6aa245f) and small links/tabs (b48f37a), pixel-identical.
+- Jump links land ON the section (were hiding its heading under the bars: Sim's "Matchups takes you nowhere") - 9282812.
+- Fonts hosted by NastyPlot itself on the new site (0 Google requests, pixel-identical) - fd80eac. Today's LIVE site still uses Google.
+- A16 answered (0c405c7). C13 check built and self-tested: experiments/c13-check.mjs (e08862f, b48f37a). Built-page heights
+  incl. worst states in page-heights.md.
+- Behaviour A-team v2 after all of it: 57 pass / 75 FAIL / 6 known / 4 fixed? / 2 skipped, no test changed outcome vs the baseline
+  (efe9fe5). Today's page: 132 pass / 0 FAIL. run.mjs ALL PASSED. v2 guard clean.
+
+WAITING FOR SIM (pictures + patches in docs/rebuild/proposals/, none applied; check with `git apply --check`):
+- A2 Team Checks once / "Things to Know" (a2-proposal.png) - A3 ±0 swap behind See all + A4 one verdict per Matchups row
+  (a3-a4-proposal.png) - A6 one message per Apply (a6-proposal.png) - A7 jump underline follows (a7-proposal.png; desktop needs a
+  choice) - A8 bars 96% (a8-proposal.png; iPhone check needed) - A11 quiet "Saved" (a11-proposal.png; phone wraps 3+1) -
+  squeezed row at 1180-1320 (squeeze-proposal.png) - gallery wording (gallery-wording.md, also needs a go to publish).
+  Apply order if all approved: a3-a4, a6, a2 (checked to combine); a7, a8, a11, squeeze are independent. If A2/A4 are approved,
+  behaviour tests MU-02, SUG-10, SUG-11 need their expected wording updated (they test today's words).
+- Queued after My Team: My Box PC icon (refined drawing, picture first), Day/Night as sun/moon (pictures first).
+- Questions: what "those are good" meant for the older items; the 320 height limit (390's used, "assumed"); A9's three small
+  faults (fix or leave); night glow on "Top tier"; My Box box markers 28px (need spacing); fonts on the live site; wording: "?"
+  popup says "ready"/"93% ready" (word list: Matchups); "Nothing to fix" above a lead-support warning after a ±0 swap.
+- Not reproduced: "Matchups disappears on a wide window" (visible 1180-3200, both engines); same-compare's 1 difference; the PC's
+  1 behaviour FAIL.
+
+HOW TO WORK HERE (learned tonight):
+- Pictures of the built page need the daily data fed in (as the proof scripts do) and art + fonts on disk:
+  `node app/build.mjs --v2 --art=../src/v2/art/` (fonts are copied to app/dist/fonts by the build). Without data the page is
+  ~800px shorter and Matchups has no real verdicts.
+- Proposals: build in a scratch `git worktree` (link out/ and node_modules), make the patch with `git diff -- app/src/v2` ONLY
+  (a full diff once carried out/ "deletions" into the main tree: logged MISTAKE), never apply to the main tree without Sim's yes.
+- Pixel checks: run a same-file control first (one view has ~3,600 px of its own noise); prove a check can fail (planted faults,
+  broken font folder) before trusting "identical".
+- Setup: WebKit installed (with system libraries); node_modules/playwright(-core) linked to /opt/node-tools for ES-module scripts.
 
 # (history) HANDOVER: end of the Nov 11 chat (written Nov 11, ~11:00 PM Eastern)
 
