@@ -88,7 +88,7 @@ function computeRecs(ms, useA) {
   const first = clean.slice(0, 6).concat(gems.slice(0, 2));
   const rk2 = pl => (pl._ts != null ? pl._ts * 1000 : 0) + rating(pl.ch[0].c.p).total + (pl.gem ? 6 : 0) + pl.gain * 3;
   const rest = clean.slice(6).concat(gems.slice(2), alts).sort((x, y) => rk2(y) - rk2(x));
-  const val = {B, clean: first, more: rest, soft, basePl: res.basePl, full: res.full};
+  const val = {B, clean: first, more: rest, soft, basePl: res.basePl, full: res.full, gB};
   recCache = {key, val}; return val;
 }
 function renderRecs() {
@@ -116,7 +116,7 @@ function renderRecs() {
     return `<div class="addcard${soft ? ' soft' : ''}"><div class="rtop">${sprite(p,'mini')}<span class="qname">${esc(p.d)}</span><span class="chips">${p.t.map(t => chip(t)).join('')}</span>${confChip(p)}${p.m ? '<span class="tag mega ico" title="Mega Evolution">Mega</span>' : ''}${inBox(p) ? '<span class="tag box ico" title="In your box">Box</span>' : '<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>'}<span class="tag role">${esc(monRole(mem))}</span>${(pl.gem ? '<span class="tag offmeta">HIDDEN GEM</span>' : (pl.alt ? '<span class="tag sidegrade">SIDE-GRADE</span>' : '') + ideaTag(p)) + ratingTag(p)}</div>
       ${pl.gem ? `<div class="qwhy gemline">Hidden gem: ${esc(evidenceLine(p))}. It fits this team as cleanly as the usual picks.</div>` : pl.alt ? `<div class="qwhy gemline">A different look that keeps every check and stays close on the numbers.</div>` : ''}
       <div class="dchips">${tsChip(pl.team)}${[A.ex !== B.ex ? delta('Weak', A.ex, B.ex, A.ex < B.ex, v => v) : '', A.un !== B.un ? delta('Unresisted', A.un, B.un, A.un < B.un, v => v) : '', A.off !== B.off ? delta('Offense', A.off, B.off, A.off > B.off, v => v + '/18') : ''].join('')}</div>
-      ${(()=>{try{if(!pl._lane)LANE.of(pl,ms,gB);return LANE.line(pl)}catch(e){return ''}})()/* Part 3 (Nov 10): the same kind-and-honest-size line as the suggestion cards */}
+      ${(()=>{try{if(!pl._lane)LANE.of(pl,ms,r.gB)/* Nov 10 fix: gB lives in computeRecs; reading it here threw and the line was always empty */;return LANE.line(pl)}catch(e){return ''}})()/* Part 3 (Nov 10): the same kind-and-honest-size line as the suggestion cards */}
       ${(pl.gap ? pl.gap.why : []).map(w => `<div class="qwhy gapwhy"><b>${esc(w)}</b></div>`).join('')}${thr.map(l => `<div class="qwhy">${l}</div>`).join('')}
       ${why ? `<div class="qwhy">${esc(why)}</div>` : ''}${pl.megaFix ? `<div class="qwhy warnline">Trade-off: ${[A.ex > B.ex ? 'one more weakness than resist' : '', A.un > B.un ? 'one more type nobody resists' : '', A.off < B.off ? 'one less type hit super effectively' : ''].filter(Boolean).join(', ') || 'small coverage cost'}, but it brings the team to ${megaGoal()} Mega${megaGoal() > 1 ? 's' : ''}</div>` : ''}${soft ? `<div class="qwhy warnline">Trade-off: ${esc([A.ex > B.ex ? `${A.ex - B.ex} more weakness` : '', A.off < B.off ? 'one less type covered' : '', A.un > B.un ? 'one more unresisted type' : ''].filter(Boolean).join(', ') || 'loses part of the game plan')}</div>` : ''}
       <div class="row"><button class="btn sm primary" type="button" data-rec="${i}">${x.out ? 'Swap out ' + esc(x.out.d) : 'Add to team'}</button></div></div>`; };

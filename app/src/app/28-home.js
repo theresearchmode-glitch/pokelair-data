@@ -75,12 +75,17 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
 /* Tool card titles fit their card (Sim, Nov 7: "Archetypes" ran into the card's slanted edge on phones). A one-word title can't
    wrap like "Speed tiers", so every title in the grid gets the size that fits its longest word: the same size on every card,
    at most what the design sets and never under 13px. Checked after each redraw and when the screen changes width. */
-function fitHomeTiles() { document.querySelectorAll('#homeOut .htiles').forEach(g => { g.style.removeProperty('--htfs'); delete g.dataset.stack; fitHomeGrid(g);
-  /* still too long at 13px (narrow phones, the icon beside the title): the icon goes above the title on every card, and the
-     title gets the card's full width */
-  if (g.dataset.small) { delete g.dataset.small; g.style.removeProperty('--htfs'); g.dataset.stack = '1'; fitHomeGrid(g); delete g.dataset.small; } }); }
+function fitHomeTiles() { document.querySelectorAll('#homeOut .htiles').forEach(g => {
+  /* Polish Batch 2 (Nov 10): try the icon beside the name and the icon above it, and keep the layout that gives the bigger name
+     (430px gave 13px beside, while above gives 16px); if neither fits a name on one line at 13px (320px phones), the names use the
+     face's slightly narrower width (.tight) before anything is allowed to wrap. */
+  const pass = (stack, tight) => { g.style.removeProperty('--htfs'); delete g.dataset.small; if (stack) g.dataset.stack = '1'; else delete g.dataset.stack; g.classList.toggle('tight', !!tight); return fitHomeGrid(g); };
+  const row = pass(false, false); if (row != null && row >= 15) return;
+  const st = pass(true, false); if (st != null && (row == null || st > row)) return;
+  if (row != null) { pass(false, false); return; }
+  pass(true, true); delete g.dataset.small; }); }
 function fitHomeGrid(g) {
-  const bs = [...g.querySelectorAll('.htile b')].filter(b => b.offsetParent && b.clientWidth); if (!bs.length) return;
+  const bs = [...g.querySelectorAll('.htile b')].filter(b => b.offsetParent && b.clientWidth); if (!bs.length) return null;
   const f = parseFloat(getComputedStyle(bs[0]).fontSize); let k = 1;
   // measured with a hidden copy outside the cards (same font settings), so measuring doesn't count as a change to the cards; an
   // ordinary hidden element at the page's top-left, never a fixed one: on iPhone a fixed element far off-screen can leave the
@@ -88,10 +93,16 @@ function fitHomeGrid(g) {
   const cs = getComputedStyle(bs[0]), m = document.createElement('span'); m.setAttribute('aria-hidden', 'true');
   m.style.cssText = `position:absolute;left:0;top:0;visibility:hidden;pointer-events:none;white-space:nowrap;font-family:${cs.fontFamily};font-size:${cs.fontSize};font-weight:${cs.fontWeight};font-style:${cs.fontStyle};font-stretch:${cs.fontStretch};letter-spacing:${cs.letterSpacing};font-synthesis:${cs.fontSynthesis || 'style'}`;
   document.body.append(m);
-  for (const b of bs) { const w = b.clientWidth; for (const word of (b.textContent || '').trim().split(/\s+/)) { m.textContent = word; const ww = m.getBoundingClientRect().width; if (ww > w - 2) k = Math.min(k, (w - 3) / ww); } }
+  /* Polish Batch 2 (Nov 10): the whole name fits on one line (not word by word: "Damage Calc" broke in two beside "Events"),
+     and the shared size is a step of the type scale (17, 16, 15, 13), never an in-between size like 14.5px. A tile that spans
+     the whole row (Winning Cores under the two colour columns) has room of its own and is left out of the measuring. */
+  const full = b => { const t = b.closest('.htile'); return t && t.getBoundingClientRect().width > 1.5 * Math.min(...bs.map(x => x.closest('.htile').getBoundingClientRect().width)); };
+  for (const b of bs) { if (bs.length > 2 && full(b)) continue; const w = b.clientWidth; m.textContent = (b.textContent || '').trim(); const ww = m.getBoundingClientRect().width; if (ww > w - 2) k = Math.min(k, (w - 3) / ww); }
   m.remove();
-  if (f * k < 13) g.dataset.small = '1';
-  if (k < 1) g.style.setProperty('--htfs', Math.max(13, Math.floor(f * k * 2) / 2) + 'px'); }
+  const SC = [28, 26, 24, 22, 20, 17, 16, 15, 13], fit = SC.find(x => x <= f * k + .01);
+  if (fit == null) g.dataset.small = '1';
+  if (k < 1) g.style.setProperty('--htfs', (fit == null ? 13 : fit) + 'px');
+  return fit == null ? null : k < 1 ? fit : f; }
 { let t = 0; const later = () => { cancelAnimationFrame(t); t = requestAnimationFrame(() => { try { fitHomeTiles(); } catch (e) {} }); };
   const go = () => { const h = document.getElementById('homeOut'); if (!h) return setTimeout(go, 200); new MutationObserver(later).observe(h, {childList: true, subtree: true}); addEventListener('resize', later); try { document.fonts && document.fonts.ready.then(later); } catch (e) {} later(); };
   go(); }

@@ -63,7 +63,7 @@ function posterFacts(ms, name) { const RD = ms.length ? prepOf(ms) : null; let c
 async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length) return null; ms = ms.slice(0, 6);
   const dark = (opt.dark != null ? opt.dark : (CH.shareMode || document.documentElement.dataset.look) === 'dark');
   const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#D9D0C2', pen: '#7CC4FF', line: '#4A4541', card: '#2C2A28'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', pen: '#005A90', line: '#D8CCB6', card: '#FBF6EC'};
-  try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
+  try { await Promise.all(['400 80px Anton', '800 30px Unbounded', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%'))); } catch (e) {}
   const f = posterFacts(ms, opt.name), {W, H} = PO, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.textBaseline = 'alphabetic';
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   /* the banner: the team's type colours, a diagonal hem, halftone dots */
@@ -87,7 +87,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   /* the archetype chip */
   let cy = ty - fz * .98 + 34;
   /* an unsaved team is named after its archetype: then the chip would only repeat the name, so it is left out */
-  if (f.arch && f.arch.toUpperCase() !== title.replace(/\u00a0/g, ' ')) { x.font = '800 30px Archivo, sans-serif'; const t = scFit(x, f.arch, 900), w = x.measureText(t).width + 48; x.fillStyle = TX; PO.round(x, 56, cy, w, 54, 27); x.fill();
+  if (f.arch && f.arch.toUpperCase() !== title.replace(/\u00a0/g, ' ')) { x.font = '800 30px Unbounded, sans-serif'; const t = scFit(x, f.arch, 900), w = x.measureText(t).width + 48; x.fillStyle = TX; PO.round(x, 56, cy, w, 54, 27); x.fill();
     x.fillStyle = TX === '#ffffff' ? PO.mix(c1, '#000000', .35) : '#ffffff'; if (PO.cr(x.fillStyle, TX) < 4.5) x.fillStyle = TX === '#ffffff' ? ink : '#ffffff'; x.fillText(t, 80, cy + 38); cy += 54; }
   /* the six: big sprites in two rows of three, each name on a white tag */
   const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp';
@@ -98,7 +98,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
     x.fillStyle = 'rgba(10,8,30,.22)'; x.beginPath(); x.ellipse(cx, y0 + sz - 6, sz * .34, 14, 0, 0, 7); x.fill();
     const im = imgs[i]; if (im) { const s = Math.min(sz / im.width, sz / im.height); x.save(); x.shadowColor = 'rgba(0,0,0,.28)'; x.shadowOffsetX = 4; x.shadowOffsetY = 6; x.shadowBlur = 6;
       x.drawImage(im, cx - im.width * s / 2, y0 + sz - im.height * s, im.width * s, im.height * s); x.restore(); }
-    const nm = (m.d || m.p.d || m.p.n).toUpperCase(); let f2 = 28; do { x.font = `800 ${f2}px Archivo, sans-serif`; } while (x.measureText(nm).width > cw - 44 && --f2 > 15);
+    const nm = (m.d || m.p.d || m.p.n).toUpperCase(); let f2 = 28; do { x.font = `800 ${f2}px Unbounded, sans-serif`; } while (x.measureText(nm).width > cw - 44 && --f2 > 15);
     const nw = x.measureText(nm).width + 28; x.fillStyle = dark ? '#171615' : '#ffffff'; PO.round(x, cx - nw / 2, y0 + sz + 6, nw, 42, 21); x.fill();
     x.fillStyle = dark ? '#F3EBDC' : ink; x.textAlign = 'center'; x.fillText(nm, cx, y0 + sz + 37); x.textAlign = 'left'; }
   /* grade and threats, under the banner */
@@ -113,13 +113,13 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
     let fs = v2 ? 84 : 112; do { x.font = `400 ${fs}px Anton, Impact, sans-serif`; } while (x.measureText(word).width > 1144 - 282 - 40 && --fs > 40);
     const nw = x.measureText(word).width; x.fillStyle = P.ink; x.fillText(word, 282, gy + (v2 ? 44 : 62));
     x.fillStyle = bc; x.fillRect(282, gy + (v2 ? 60 : 76), nw, 8); }
-  else { x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText(`${ms.length} OF 6 POKÉMON`, 56, gy - 30); x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText('The Strength Score comes with a full six', 56, gy + 20); }
+  else { x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText(`${ms.length} OF 6 POKÉMON`, 56, gy - 30); x.font = '800 34px Unbounded, sans-serif'; x.fillStyle = P.ink; x.fillText('The Strength Score comes with a full six', 56, gy + 20); }
   /* Nov 9, Sim: the poster doesn't need "handles x of the top 30 threats" (ring and words removed) */
   if (false && f.hd) { const rx = 640, r = 74, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
     x.lineWidth = 18; x.strokeStyle = P.line; x.beginPath(); x.arc(rx, gy, r, 0, 7); x.stroke();
     x.strokeStyle = dark ? '#3DBE78' : '#1E8E4E'; x.lineCap = 'round'; x.beginPath(); x.arc(rx, gy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fr); x.stroke(); x.lineCap = 'butt';
     x.textAlign = 'center'; x.font = '400 70px Anton, Impact, sans-serif'; x.fillStyle = P.ink; x.fillText(String(f.hd.x), rx, gy + 25); x.textAlign = 'left';
-    x.font = '800 34px Archivo, sans-serif'; x.fillStyle = P.ink; x.fillText(`Handles ${f.hd.x} of`, 744, gy - 8); x.fillText(`the top ${f.hd.n} threats`, 744, gy + 34); }
+    x.font = '800 34px Unbounded, sans-serif'; x.fillStyle = P.ink; x.fillText(`Handles ${f.hd.x} of`, 744, gy - 8); x.fillText(`the top ${f.hd.n} threats`, 744, gy + 34); }
   /* footer: the logo and the line */
   x.fillStyle = P.line; x.fillRect(56, 1236, W - 112, 3);
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));

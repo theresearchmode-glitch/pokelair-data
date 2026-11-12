@@ -102,13 +102,13 @@ ARB.stops = () => document.querySelectorAll('main :is(.ty,.ar-ty)').forEach(t =>
 
 /* ===== the share card (1200x675) and the team poster (1080x1350), drawn in the arena style ======
    Paper, ink and the section blue; each Pokémon on its own slanted type field with the light streaks, the sprite breaking out of
-   the top, Megas with the two-colour contour; the name in Archivo italic under the art; the headline numeral with the misprint
+   the top, Megas with the two-colour contour; the name in Unbounded (slanted) under the art; the headline numeral (no misprint since Nov 10)
    offset. Sentence case and commas (no all-caps, no middle dots). The same facts as before: the team's name, its archetype, the
    grade (from the record with 30+ games, as on My team), readiness and how many of the top 30 threats it handles. */
 ARB.dots = t => String(t || '').replace(/\s*·\s*/g, ', ');
 ARB.facts = (ms, name) => { const f = posterFacts(ms, name); f.name = ARB.dots(f.name); f.arch = ARB.dots(f.arch); return f; };
 /* one name size for the whole six, so the names read as a set */
-ARB.nameSize = (x, ms, w, max) => { let f = max; for (const m of ms) { if (!m) continue; const nm = m.d || m.p.d; while (f > 16) { ARB.fnt(x, `italic 800 ${f}px Archivo, sans-serif`, true); if (x.measureText(nm).width <= w + 10) break; f--; } } return f; };
+ARB.nameSize = (x, ms, w, max) => { let f = max; for (const m of ms) { if (!m) continue; const nm = m.d || m.p.d; while (f > 16) { ARB.fnt(x, `italic 800 ${f}px Unbounded, sans-serif`, true); if (x.measureText(nm).width <= w + 10) break; f--; } } return f; };
 ARB.PAL = d => d ? {paper: '#000000', sheet: '#1A191D', ink: '#F4F1EC', ink2: '#C9C3CC', rule: 'rgba(255,255,255,.16)', blue: '#4FB2F0', plate: '#0068AD', mis: '#E8364F', green: '#5FD08F', bar: 'rgba(255,255,255,.14)'}
   : {paper: '#ECE7E0', sheet: '#FBF8F4', ink: '#16141A', ink2: '#4A4550', rule: 'rgba(22,20,26,.14)', blue: '#0078BF', plate: '#0068AD', mis: '#FF5C8A', green: '#2E9E5B', bar: 'rgba(22,20,26,.1)'};
 ARB.SK = Math.tan(12 * Math.PI / 180);
@@ -130,7 +130,7 @@ ARB.drawTile = (x, P, dark, m, im, cx, y, w, h, sz, nameSize, sub) => { const t 
   if (im) { const k = Math.min(sz / im.width, sz / im.height), dw = im.width * k, dh = im.height * k, dx = cx - dw / 2, dy = y + h - dh - h * .06;
     if (AR.isMega(m.p)) { const d = Math.max(3, sz / 60), A = ARB.tint(im, a), B = ARB.tint(im, b); x.drawImage(A, dx + d, dy, dw, dh); x.drawImage(B, dx - d, dy, dw, dh); x.drawImage(B, dx, dy + d, dw, dh); x.drawImage(A, dx, dy - d, dw, dh); }
     x.save(); x.shadowColor = 'rgba(30,10,40,.25)'; x.shadowBlur = 10; x.shadowOffsetY = 8; x.drawImage(im, dx, dy, dw, dh); x.restore(); }
-  x.textAlign = 'center'; x.fillStyle = P.ink; const nm = m.d || m.p.d; let f = nameSize; do { ARB.fnt(x, `italic 800 ${f}px Archivo, "Instrument Sans", sans-serif`, true); } while (x.measureText(nm).width > w + 10 && --f > 14);
+  x.textAlign = 'center'; x.fillStyle = P.ink; const nm = m.d || m.p.d; let f = nameSize; do { ARB.fnt(x, `italic 800 ${f}px Unbounded, "Instrument Sans", sans-serif`, true); } while (x.measureText(nm).width > w + 10 && --f > 14);
   x.fillText(nm, cx - ARB.SK * 0, y + h + nameSize * 1.25);
   if (sub) { const sz2 = Math.max(20, Math.round(nameSize * .82)); ARB.fnt(x, `600 ${sz2}px "Instrument Sans", sans-serif`); x.fillStyle = P.ink2; x.fillText(scFit(x, sub, w + 12), cx, y + h + nameSize * 1.25 + sz2 * 1.25); }
   x.textAlign = 'left'; };
@@ -141,15 +141,19 @@ ARB.score = (G) => { if (!G) return null; // grade first: a big "63.0%" beside "
   const n = CH.gradeNum(G);
   if (G.v === 2) { const w = CH.wordOfL(G.letter); return {num: String(Math.round(G.s)), top: 'Strength Score' + so, basis: `${w} \u00b7 ${CH.recLine(G, true)}`, line: `Strength Score ${Math.round(G.s)}${so}: ${w} \u00b7 ${CH.recLine(G)}`}; }
   return {num: G.letter, top: 'Grade' + so, basis: `${n} · ${CH.recLine(G, true)}`, line: `Grade ${G.letter}${so}: ${n} · ${CH.recLine(G)}`}; };
-ARB.numeral = (x, P, txt, X, Y, size, align) => { ARB.fnt(x, `italic 900 ${size}px Archivo, sans-serif`, true); x.textAlign = align || 'left'; const o = size * .05;
-  x.fillStyle = P.mis; x.fillText(txt, X + o, Y + o * .8); x.fillStyle = P.ink; x.fillText(txt, X, Y); x.textAlign = 'left'; };
+ARB.numeral = (x, P, txt, X, Y, size, align) => { ARB.fnt(x, `italic 900 ${size}px Unbounded, sans-serif`, true); x.textAlign = align || 'left'; const o = size * .05;
+  /* Polish (Nov 10): no misprint offset (retired Nov 7); the numeral stands alone, as on the site */
+  x.fillStyle = P.ink; x.fillText(txt, X, Y); x.textAlign = 'left'; };
+/* the tagline as on the site: "Sharply raise" in ink, "your win rate." in PLOT blue; right-aligned at X */
+ARB.tagline = (x, P, X, Y, size) => { ARB.fnt(x, `italic 800 ${size}px Unbounded, sans-serif`, true); x.textAlign = 'left'; const a = 'Sharply raise ', b = 'your win rate.', wa = x.measureText(a).width, wb = x.measureText(b).width;
+  x.fillStyle = P.ink; x.fillText(a, X - wa - wb, Y); x.fillStyle = P.blue; x.fillText(b, X - wb, Y); };
 ARB.tab = (x, P, X, Y, s) => { x.fillStyle = P.blue; ARB.para(x, X + s / 2, Y - s, s, s, 4); x.fill(); };
 /* the logo on share cards; X/Y the top left, w the width */
 ARB.logo = async (x, dark, X, Y, w) => { /* Sim (Nov 5): the original logo, N(chevron)STY with the circled PLOT */
   const im = new Image(); im.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { im.onload = r; im.onerror = r; }); try { x.drawImage(im, X, Y, w, w * 196 / 761.34); } catch (e) {} };
 ARB.imgs = ms => { const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp'; return Promise.all(ms.map(m => { const id = typeof SPRITE_ID === 'object' && SPRITE_ID ? SPRITE_ID[m.p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); })); };
-ARB.fonts = async () => { try { await Promise.all(['italic 800 40px Archivo', 'italic 900 40px Archivo', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"'].map(f => document.fonts.load(f, 'Aa0123%'))); } catch (e) {} };
+ARB.fonts = async () => { try { await Promise.all(['800 40px Unbounded', '900 40px Unbounded', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"'].map(f => document.fonts.load(f, 'Aa0123%'))); } catch (e) {} };
 ARB.lines = (x, text, max) => { if (x.measureText(text).width <= max) return [text]; const w = text.split(' '); let best = null;
   for (let i = 1; i < w.length; i++) { const L = [w.slice(0, i).join(' '), w.slice(i).join(' ')], m = Math.max(...L.map(l => x.measureText(l).width)); if (m <= max && (!best || m < best.m)) best = {L, m}; } return best ? best.L : null; };
 /* greedy wrap into at most n lines that fit max, or null */
@@ -160,11 +164,15 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
   const W = 1200, H = 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.textBaseline = 'alphabetic'; x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   const f = ARB.facts(ms), sc = ARB.score(f.G), RD = f.RD;
   /* readiness, top right */
-  if (RD) { ARB.numeral(x, P, CH.readyN(RD) || RD.score + '%', W - 60, 132, 104, 'right'); x.textAlign = 'right'; ARB.fnt(x, '600 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('ready for top threats', W - 60, 168);
-    if (sc) { ARB.fnt(x, '700 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(String(sc.line).split(' · ')[0], W - 60, 202); /* Nov 9, Sim: the grade only, no 'Our estimate…' note on the share card */ } x.textAlign = 'left'; }
+  /* Polish (Nov 10): the team's number leads, as on the site (word list: Strength Score, with its band word); the matchups count
+     sits under it in the word list's words (Beats it / Handles it), not the old 'ready for top threats' */
+  if (sc && /^\d+$/.test(sc.num)) { ARB.numeral(x, P, sc.num, W - 60, 140, 112, 'right'); x.textAlign = 'right';
+    ARB.fnt(x, '700 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(`Strength Score: ${String(sc.basis).split(' · ')[0]}`, W - 60, 176);
+    const h = RD ? CH.hand(RD) : null; if (h) { ARB.fnt(x, '500 20px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText(`Matchups: beats or handles ${h.x} of the top ${h.n}`, W - 60, 206); } x.textAlign = 'left'; }
+  else if (RD) { ARB.numeral(x, P, CH.readyN(RD) || RD.score + '%', W - 60, 132, 104, 'right'); x.textAlign = 'right'; ARB.fnt(x, '600 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('Matchups: beaten or handled', W - 60, 168); x.textAlign = 'left'; }
   /* the title on its slanted tab: one line as big as fits, else two lines (never cut off) */
-  let fz = 70, TL = null; for (; fz >= 34; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); if (x.measureText(f.name).width <= 640) { TL = [f.name]; break; } if (fz <= 50) { const L2 = ARB.lines(x, f.name, 640); if (L2) { TL = L2; break; } } }
-  if (!TL) for (fz = 40; fz >= 26 && !TL; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); TL = ARB.wrapN(x, f.name, 640, 3); }
+  let fz = 70, TL = null; for (; fz >= 34; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); if (x.measureText(f.name).width <= 640) { TL = [f.name]; break; } if (fz <= 50) { const L2 = ARB.lines(x, f.name, 640); if (L2) { TL = L2; break; } } }
+  if (!TL) for (fz = 40; fz >= 26 && !TL; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); TL = ARB.wrapN(x, f.name, 640, 3); }
   if (!TL) { fz = 26; TL = [scFit(x, f.name, 640)]; }
   const ty0 = TL.length > 2 ? 64 : TL.length > 1 ? 84 : 116; ARB.tab(x, P, 56, ty0, 40); x.fillStyle = P.ink; TL.forEach((l, i) => x.fillText(l, 112, ty0 + i * fz * 1.02));
   const sy = ty0 + (TL.length - 1) * fz * 1.02 + 40;
@@ -178,7 +186,7 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
     ARB.drawTile(x, P, dark, m, imgs[i], cx, 322, cw - 26, 146, 168, ns, item); }
   /* footer */
   x.fillStyle = P.rule; x.fillRect(56, 586, W - 112, 2); await ARB.logo(x, dark, 50, 604, 200);
-  x.textAlign = 'right'; ARB.fnt(x, 'italic 800 30px Archivo, sans-serif', true); x.fillStyle = P.blue; x.fillText('Sharply raise your win rate.', W - 56, 640);
+  ARB.tagline(x, P, W - 56, 640, 26); x.textAlign = 'right';
   ARB.fnt(x, '600 17px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('NastyPlot, unofficial fan tool', W - 56, 662); x.textAlign = 'left';
   return c; };
 ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) return null; ms = ms.slice(0, 6);
@@ -191,8 +199,8 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
   if (dark) { x.fillStyle = '#0078BF'; x.beginPath(); x.moveTo(0, 360); x.lineTo(0, 1040); x.lineTo(8, 1040); x.lineTo(8, 360); x.fill(); } x.restore();
   ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('My team, Pokémon Champions, Reg M-C doubles', 60, 86);
   /* the name, as big as fits, up to two lines, on its slanted tab */
-  let fz = 104, L = null; for (; fz >= 52; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); L = ARB.lines(x, f.name, W - 190); if (L && (L.length === 1 || fz <= 92)) break; }
-  if (!L) for (fz = 60; fz >= 40 && !L; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Archivo, sans-serif`, true); L = ARB.wrapN(x, f.name, W - 190, 3); }
+  let fz = 104, L = null; for (; fz >= 52; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); L = ARB.lines(x, f.name, W - 190); if (L && (L.length === 1 || fz <= 92)) break; }
+  if (!L) for (fz = 60; fz >= 40 && !L; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); L = ARB.wrapN(x, f.name, W - 190, 3); }
   if (!L) { fz = 40; L = [scFit(x, f.name, W - 190)]; } let ty = 110 + fz * .9; ARB.tab(x, P, 60, ty - fz * .12, fz * .62); for (const l of L) { x.fillStyle = P.ink; x.fillText(l, 60 + fz * .78, ty); ty += fz * 1.02; }
   if (f.arch && f.arch !== f.name) { ARB.fnt(x, '700 28px "Instrument Sans", sans-serif'); const t = scFit(x, f.arch, 700), w = x.measureText(t).width + 44, yy = ty - fz * 1.02 + 30; x.fillStyle = P.plate; ARB.para(x, 64 + w / 2, yy, w, 48, 6); x.fill(); x.fillStyle = '#fff'; x.fillText(t, 86, yy + 33); }
   /* the six: 3 by 2 art tiles */
@@ -202,15 +210,15 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
     ARB.drawTile(x, P, dark, m, imgs[i], cx, y, cw - 40, 170, 230, ns); }
   /* the grade and the threats */
   const gy = 1128 + 44 /* Nov 9: centred in the space the threats bar left */;
-  if (sc) { const nz = sc.num.length > 3 ? 104 : 124; ARB.numeral(x, P, sc.num, 60, gy, nz); ARB.fnt(x, `italic 900 ${nz}px Archivo, sans-serif`, true); const nw = x.measureText(sc.num).width + 28;
+  if (sc) { const nz = sc.num.length > 3 ? 104 : 124; ARB.numeral(x, P, sc.num, 60, gy, nz); ARB.fnt(x, `italic 900 ${nz}px Unbounded, sans-serif`, true); const nw = x.measureText(sc.num).width + 28;
     ARB.fnt(x, '700 32px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; x.fillText(sc.top, 60 + nw, gy - 44); ARB.fnt(x, '500 24px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText(String(sc.basis).split(' · ')[0], 60 + nw, gy - 8); } /* Nov 9, Sim: no 'Our estimate' note on the poster */
-  else { ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText(`${ms.length} of 6 Pokémon`, 60, gy - 50); ARB.fnt(x, 'italic 800 40px Archivo, sans-serif', true); x.fillStyle = P.ink; x.fillText('The grade comes with a full six', 60, gy); }
+  else { ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText(`${ms.length} of 6 Pokémon`, 60, gy - 50); ARB.fnt(x, 'italic 800 40px Unbounded, sans-serif', true); x.fillStyle = P.ink; x.fillText('The grade comes with a full six', 60, gy); }
   /* Nov 9, Sim: the poster doesn't need "handles x of the top 30 threats" */
   if (false && f.hd) { const ry = 1206; ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink; const t = `Handles ${f.hd.x} of the top ${f.hd.n} threats`; x.fillText(t, 60, ry); const tx = 60 + x.measureText(t).width + 28, bw = W - 60 - tx, fr = Math.max(0, Math.min(1, f.hd.x / f.hd.n));
     if (bw > 80) { x.fillStyle = P.bar; ARB.para(x, tx + bw / 2, ry - 18, bw, 14, 3); x.fill(); x.save(); ARB.para(x, tx + bw / 2, ry - 18, bw, 14, 3); x.clip(); x.fillStyle = P.green; x.fillRect(tx - 10, ry - 18, (bw + 10) * fr, 14); x.restore(); } }
   /* footer */
   x.fillStyle = P.rule; x.fillRect(60, 1240, W - 120, 2); await ARB.logo(x, dark, 54, 1258, 260);
-  x.textAlign = 'right'; ARB.fnt(x, 'italic 800 40px Archivo, sans-serif', true); x.fillStyle = P.blue; x.fillText('Sharply raise your win rate.', W - 60, 1300);
+  ARB.tagline(x, P, W - 60, 1300, 34); x.textAlign = 'right';
   ARB.fnt(x, '600 20px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('NastyPlot, unofficial fan tool', W - 60, 1330); x.textAlign = 'left';
   return c; };
 buildTeamPoster = ARB.poster;

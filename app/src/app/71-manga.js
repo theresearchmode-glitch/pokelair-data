@@ -73,7 +73,7 @@ MG.spread = () => { const E2 = META.events; let ev = null, t = null; const ms = 
   const byN = n => ms.find(m => m.p.n === n), cl = FC ? FC.lead.map(byN).filter(Boolean).slice(0, 2) : [], cb = FC ? FC.back.map(byN).filter(Boolean).filter(m => !cl.includes(m)).slice(0, 2) : [];
   const ord = [...cl, ...cb, ...ms.filter(m => !cl.includes(m) && !cb.includes(m))];
   let ll = [];
-  try { if (champ && ms.length >= 4) { const theirs = champ.map(x => Object.assign(oppMember(x.p), x.it ? {item: x.it} : {}, x.ab ? {ability: x.ab} : {})), r = planMatchup(ms, theirs, true); if (r && r.B) ll = likelyLead(theirs, r.B).map(o => o.p.n); } } catch (e) {}
+  try { if (champ && ms.length >= 4) { const theirs = withSheet(champ.map(x => oppMember(x.p)), {t, ev}), r = planMatchup(ms, theirs, true); if (r && r.B) ll = likelyLead(theirs, r.B).map(o => o.p.n); } } catch (e) {}
   let G = null; try { const RD = ms.length ? prepOf(ms) : null; G = RD ? CH.gradeOf(RD, (ui.vsum || {}).CK, ms) : null; } catch (e) {}
   const yp = (m, i) => { const role = !FC ? '' : cl.includes(m) ? 'Lead' : cb.includes(m) ? 'Back' : 'Bench';
     return MG.panel({p: m.p, mode: FC && cl.includes(m) ? 'lines' : 'dots', cls: 'mgsp' + (i < 2 ? ' mgbig2' : ''), tag: 'button', attrs: `type="button" data-lt="${esc(m.p.n)}" aria-label="${esc(m.d)}${role ? ', ' + role.toLowerCase() : ''}: open its info"`,
@@ -158,7 +158,7 @@ CH.wrap('lairSheet', n => MG.sheet(n));
 
 /* ======================= Battle mode: "The read" as a three-panel strip ======================= */
 function rzReadHtml() {
-  const mine = members(), theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
+  const mine = members(), theirs = oppTeam();
   if (mine.length < 4 || !theirs.length) return '';
   const r = planMatchup(mine, theirs, true), lead = r.lead.map(i => mine[i]), C = r.chosen.map(i => mine[i]);
   const ll = r.B && theirs.length >= 2 ? likelyLead(theirs, r.B) : [];
@@ -192,7 +192,7 @@ MG.battle = () => { const pane = document.querySelector('[data-pane="matchup"]')
   const fold = pane.querySelector('#muFold'); ['chCalcCard', 'oppQuick', 'prEntry'].forEach(id => { const x = $(id); if (x && fold && x.compareDocumentPosition(out) & Node.DOCUMENT_POSITION_FOLLOWING) fold.before(x); });
   const head = pane.querySelector('.chbmhead'), t = head && head.querySelector('.chbmt'), pg = head && head.querySelector('.chpgs');
   if (t && pg && !head.dataset.mg) { const bs = pg.querySelectorAll('b'), who = bs[0] && bs[0].textContent.trim(); if (who) { head.dataset.mg = '1'; const old = t.cloneNode(true); old.className = 'mgvsarch'; t.innerHTML = `Vs ${esc(who)}`; t.after(old); } }
-  if (!opp.dataset.mg) { opp.dataset.mg = '1'; try { const mine = members(), theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
+  if (!opp.dataset.mg) { opp.dataset.mg = '1'; try { const mine = members(), theirs = oppTeam();
       if (mine.length >= 4 && theirs.length >= 2) { const r = planMatchup(mine, theirs, true), ll = r.B ? likelyLead(theirs, r.B).map(o => o.p.n) : [];
         opp.querySelectorAll('.bmslot').forEach(sl => { const n = (sl.querySelector('[data-oppx],[data-lt],button') || {}).dataset || {}; const nm = n.oppx || n.lt || ''; const hit = ll.find(x => sl.textContent.includes((byName.get(x) || {}).d || '~'));
           if (hit && !sl.querySelector('.mgll')) { sl.classList.add('mgllead'); sl.insertAdjacentHTML('beforeend', '<span class="mgll">Likely lead</span>'); } }); } } catch (e) {} } };

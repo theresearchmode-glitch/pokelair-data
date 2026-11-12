@@ -19,6 +19,9 @@ CH._lk = 0; CH.uniq = svg => { const n = ++CH._lk; return svg.replace(/id="(np[^
    never reach it. This fills each var(--x, fallback) in it with the value the live header logo uses, so every share card
    matches the logo on the site in both looks (Sim, Nov 5: "our share card still uses our old logo"). */
 function npLogoSvg(dark) { const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
+  /* Polish (Nov 10): a share image in the other mode than the page uses that logo's own colours (a dark image made from the light
+     page drew NASTY in the light page's dark ink: invisible on black) */
+  if (!!dark !== (document.documentElement.dataset.look === 'dark')) return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => fb);
   const el = [...document.querySelectorAll('.nplk')].find(e => e.getClientRects().length) || document.querySelector('.nplk'); if (!el) return raw;
   const cs = getComputedStyle(el); return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => { const x = cs.getPropertyValue(v).trim(); return x || fb; }); }
 CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
@@ -280,7 +283,7 @@ CH.four = ms => { if (!ms || ms.length < 4) return null; const six = CH.metaSix(
 // your four against any six (the Battle mode planner), cached
 CH._fv = {key: null, v: null};
 CH.fourVs = (ms, names) => { const key = metaVersion + '|' + names.join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|'); if (CH._fv.key === key) return CH._fv.v; let v = null;
-  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, names.map(n => oppMember(byName.get(n))), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
+  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, withSheet(names.map(n => oppMember(byName.get(n))), realSheetFor(names, null)), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
   CH._fv = {key, v}; return v; };
 CH.leadWhy = m => { const mv = new Set(m.moves.map(x => x.name)); if (mv.has('Tailwind')) return 'Tailwind turn 1'; if (mv.has('Trick Room')) return 'Trick Room turn 1'; if (mv.has('Fake Out')) return 'Fake Out pressure';
   if (m.ability === 'Intimidate') return 'Intimidate on entry'; if (mv.has('Follow Me') || mv.has('Rage Powder')) return 'redirects attacks'; return ''; };

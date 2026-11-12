@@ -58,7 +58,7 @@ async function buildSheetImage(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   /* head: kicker, team name, the key */
   const r = (typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}, name = opt.name || (typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team';
-  x.font = `600 20px ${BODY}`; x.fillStyle = P.mute; x.fillText(`TEAM SHEET · POKÉMON CHAMPIONS · REG ${String(r.id).toUpperCase()} DOUBLES · LEVEL 50`, 40, 54);
+  x.font = `600 20px ${BODY}`; x.fillStyle = P.mute; x.fillText(`Team sheet · Pokémon Champions · Reg ${String(r.id).toUpperCase()} doubles · Level 50`, 40, 54);
   let fz = 52; do { x.font = `italic 800 ${fz}px ${DISP}`; } while (x.measureText(name).width > W - 80 && --fz > 28);
   x.fillStyle = P.ink; x.fillText(fit(name, W - 80), 40, 54 + 16 + fz);
   const ky = 54 + 16 + fz + 34; x.font = `400 19px ${BODY}`; x.fillStyle = P.mute;
@@ -101,7 +101,7 @@ async function buildSheetImage(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   await new Promise(res => { logo.onload = res; logo.onerror = res; }); try { x.drawImage(logo, 36, 1276, 230, 230 * 196 / 761.34); } catch (e) {}
   x.textAlign = 'right'; x.font = `italic 800 26px ${DISP}`; x.fillStyle = P.ink; const t2 = 'your win rate.', t1 = 'Sharply raise ', w2 = x.measureText(t2).width;
   x.fillStyle = P.pen; x.fillText(t2, W - 40, 1314); x.fillStyle = P.ink; x.fillText(t1, W - 40 - w2, 1314);
-  x.font = `600 15px ${BODY}`; x.fillStyle = P.faint; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', W - 40, 1338); x.textAlign = 'left';
+  x.font = `600 15px ${BODY}`; x.fillStyle = P.faint; x.fillText('NastyPlot, unofficial fan tool', W - 40, 1338); x.textAlign = 'left';
   return c; }
 /* the third Share choice on My Team: Team card · Team poster · Team sheet */
 { const bsc = buildShareCard; buildShareCard = function () { return CH.shareKind === 'sheet' && !SHARE_KIND ? buildSheetImage(members()) : bsc.apply(this, arguments); }; }

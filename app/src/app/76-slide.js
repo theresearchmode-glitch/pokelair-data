@@ -53,7 +53,7 @@ const SLIDE = {
     'winning teams': 'trophy', 'events': 'cal', 'archetypes': 'layers', 'top rated': 'star', 'hidden gems': 'gem', 'most used': 'bars',
     'my box': 'box', 'box + catch': 'boxplus', 'whole roster': 'dots6', 'no': 'x', 'yes': 'check', 'top 10': 'list3', 'top 12 grid': 'grid4',
     'all 30': 'list', 'offense': 'sword', 'defense': 'shield', 'pairs': 'dots2', 'trios': 'dots3', 'full teams': 'dots6', 'recent': 'clock',
-    'name': 'az', 'readiness': 'gauge', 'in-game ranked': 'pad', 'tournaments': 'trophy', 'showdown ladder': 'ladder', 'showdown': 'ladder',
+    'name': 'az', 'readiness': 'gauge', 'in-game ranked': 'pad', 'ranked ladder': 'pad', 'online tournaments': 'trophy', 'tournaments': 'trophy', 'showdown ladder': 'ladder', 'showdown': 'ladder',
     'best data': 'spark', 'your hits on them': 'right', 'their hits on you': 'left', 'race track': 'flag', 'list view': 'list',
     'auto': 'auto', 'light': 'sun', 'dark': 'moon',
     'suggestions': 'spark', 'matchups': 'versus', 'how it plays': 'play', 'plan': 'plan', 'speed': 'bolt', 'damage': 'aim',
@@ -78,12 +78,12 @@ const SLIDE = {
   slideFrom(s, from, to) { s.classList.add('no-anim'); s.style.setProperty('--i', from);
     requestAnimationFrame(() => { s.classList.remove('no-anim'); requestAnimationFrame(() => s.style.setProperty('--i', to)); }); },
   scan() { SLIDE.queued = false;
-    document.querySelectorAll(':is(.seg,.themeseg:not(.tabtheme),.ar-jumps):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
+    document.querySelectorAll(':is(.seg:not(.lmodes),.themeseg:not(.tabtheme),.ar-jumps):not(.ar-slide)').forEach(s => { if (!SLIDE.fits(s)) return; const bs = SLIDE.btns(s);
       /* the new circle is placed where it belongs before it first shows, so it never slides in from the first choice */
       const i = bs.findIndex(SLIDE.on); s.style.setProperty('--i', Math.max(0, i)); s.style.setProperty('--n', bs.length);
       s.classList.add('ar-slide', 'no-anim'); if (bs.every(b => /^\d$/.test(b.textContent.trim()))) s.classList.add('ar-slnum');
       s.insertAdjacentHTML('afterbegin', '<i class="ar-slpill" aria-hidden="true"></i>'); requestAnimationFrame(() => s.classList.remove('no-anim')); });
-    document.querySelectorAll(':is(.seg,.themeseg,.ar-jumps).ar-slide').forEach(s => { const bs = SLIDE.btns(s); bs.forEach(SLIDE.dress); const i = bs.findIndex(SLIDE.on);
+    document.querySelectorAll(':is(.seg,.themeseg,.ar-jumps).ar-slide').forEach(s => { const bs = SLIDE.btns(s); bs.forEach(SLIDE.dress); SLIDE.watch(s); const i = bs.findIndex(SLIDE.on);
       s.classList.toggle('ar-slnone', i < 0); if (i < 0) return;
       const vis = !!(s.offsetParent || s.getClientRects().length), k = SLIDE.key(s), m = SLIDE.mem[k];
       if (!vis) { if (s.style.getPropertyValue('--i') !== String(i)) s.style.setProperty('--i', i); delete s.dataset.sli; return; }
@@ -91,7 +91,17 @@ const SLIDE = {
       const first = s.dataset.sli == null; s.dataset.sli = i; SLIDE.mem[k] = i;
       /* first time on screen (a redraw, or the next page's switcher): slide from the last choice seen; otherwise the same circle simply moves */
       if (first && m != null && m !== i && !SLIDE.reduce()) SLIDE.slideFrom(s, m, i); else s.style.setProperty('--i', i); }); },
-  queue() { if (SLIDE.queued) return; SLIDE.queued = true; requestAnimationFrame(SLIDE.scan); }
+  queue() { if (SLIDE.queued) return; SLIDE.queued = true; requestAnimationFrame(SLIDE.scan); },
+  /* Polish Batch 1 (Nov 10): no uneven labels. If some names in a group wrap and others don't ("Tier board" on two lines beside
+     "Meta map" on one), every name breaks between its words (.ar-slwrap), so they sit as an even set; if that still leaves them
+     uneven (a one-word name beside two-word ones), the group goes back to normal wrapping. Measured in a ResizeObserver, after
+     layout, so it never forces one (the Nov 10 jumpy-slide lesson) and it follows any window resize. */
+  lines(b) { const l = b.querySelector('.ar-sllb'); if (!l) return 1; const r = document.createRange(); r.selectNodeContents(l); const t = new Set(); for (const q of r.getClientRects()) if (q.width > 1 && q.height > 4) t.add(Math.round(q.top / 4)); return t.size || 1; },
+  even(s) { if (!s.isConnected || s.classList.contains('ar-slnum') || !s.getClientRects().length) return; const bs = SLIDE.btns(s); s.classList.remove('ar-slwrap');
+    let ls = bs.map(SLIDE.lines); if (!(Math.max(...ls) > 1 && Math.min(...ls) === 1)) return;
+    s.classList.add('ar-slwrap'); ls = bs.map(SLIDE.lines); if (Math.max(...ls) > 2 || new Set(ls).size > 1) s.classList.remove('ar-slwrap'); },
+  ro: null,
+  watch(s) { if (s.dataset.slw) return; s.dataset.slw = 1; try { (SLIDE.ro = SLIDE.ro || new ResizeObserver(es => es.forEach(e => SLIDE.even(e.target)))).observe(s); } catch (e) {} }
 };
 safe('slide pickers', () => { SLIDE.scan(); new MutationObserver(SLIDE.queue).observe(document.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['aria-pressed', 'aria-selected', 'class', 'hidden']}); });
 CH.wrap('setView', () => SLIDE.scan());

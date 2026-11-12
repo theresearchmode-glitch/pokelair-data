@@ -798,13 +798,13 @@ body{background-color:var(--court)}
 /* The header's sky, stars and glow run right down to the curved stripe, with no flat strip above it.
    Desktop: the stripe is the wave below the header, pulled up over the header's curved bottom.
    Phone: the header is sticky, so the stripe is drawn inside it and stays with it. */
-:root{--wh:30px}
+:root{--wh:32px}
 .bstripe{display:none}
 .band{padding-bottom:var(--wh);-webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - var(--wh) + 1px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 34' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1440V9C1080 33 360 33 0 9Z'/%3E%3C/svg%3E") bottom/100% var(--wh) no-repeat;mask:linear-gradient(#000 0 0) top/100% calc(100% - var(--wh) + 1px) no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 34' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1440V9C1080 33 360 33 0 9Z'/%3E%3C/svg%3E") bottom/100% var(--wh) no-repeat}
 .wave{margin-top:calc(-1 * var(--wh))}
 .wave .wtop{display:none}
 @media (max-width:1000px){
-  :root{--wh:14px}
+  :root{--wh:16px}
   .wave{display:none}
   .band .bstripe{display:block;position:absolute;left:0;right:0;bottom:0;height:var(--wh);z-index:2;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 34' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%23b47bff'/%3E%3Cstop offset='.55' stop-color='%23ff3ea5'/%3E%3Cstop offset='1' stop-color='%23ff8a5c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 6c360 24 1080 24 1440 0v6C1080 36 360 36 0 12z' fill='url(%23g)'/%3E%3C/svg%3E") center/100% 100% no-repeat}
 }
@@ -1381,7 +1381,7 @@ h1 .h1b,.logotx b{background:linear-gradient(90deg,var(--volt),var(--glow))!impo
 .hht em{background:linear-gradient(90deg,var(--volt),var(--glow));-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.08em}
 .sidenav button[aria-selected="true"]{background:linear-gradient(90deg,var(--volt),var(--volt2))}
 /* footer: brand + fan-site disclaimer */
-.legal{margin-top:40px;padding-block:22px calc(26px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);color:var(--mute);font-size:13px;line-height:1.5}
+.legal{margin-top:40px;padding-block:24px calc(28px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);color:var(--mute);font-size:13px;line-height:1.5}
 .legal .inner{display:flex;flex-direction:column;gap:8px;max-width:1120px}
 .legal p{margin:0;max-width:78ch}
 .lgbrand{display:flex;align-items:center;gap:8px;color:var(--ink)}
@@ -2007,3 +2007,6 @@ button.hcore{display:block;width:100%;text-align:left;color:var(--ink);font:inhe
 .spedit{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}.spedit .field{width:auto;min-width:0;flex:1 1 150px}.spedit select.field{flex:0 1 110px}
 
 .titem.asmb{border-style:dashed}
+
+/* Polish Batch 4: paragraphs that only had the browser's 1em gap sit on the 4px grid. Zero specificity: any real rule wins. */
+:where(p.t2){margin-block:16px}

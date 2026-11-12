@@ -67,7 +67,8 @@ function renderWeekly() {
   const techRow = t => `<button type="button" class="wkrow wktech tyacc" style="${tyv(t.p)}" data-lt="${esc(t.p.n)}" data-kind="${t.k}" aria-label="${KIND[t.k].w}: ${esc(t.o)}, on ${esc(t.p.d)}: up ${wkDelta(t.xa, t.ma, t.xb, t.mb)} points, ${WK.pc1(t.xb, t.mb)}% to ${WK.pc1(t.xa, t.ma)}% of ${esc(t.p.d)} teams">${sprite(t.p, 'wkspr') || ''}<span class="wkn">${kindTag(t.k)}<b><span class="kdopt kd-${t.k}">${esc(t.o)}</span> <i>${esc(t.p.d)}</i></b><span>${WK.pc1(t.xb, t.mb)}% → <b>${WK.pc1(t.xa, t.ma)}%</b> of its teams<span class="dbsec"> (${CH.n(t.ma)} ${esc(t.p.d)} teams this week, ${CH.n(t.mb)} the week before)</span></span></span><span class="wkar up">▲${wkDelta(t.xa, t.ma, t.xb, t.mb)}<small> points</small></span></button>`;
   const tech = W.enough ? (W.tech.slice(0, 4).map(techRow).join('') || none('No item, move or ability jumped enough on any Pokémon this week.')) : none('Needs more teams this week.');
   const upS = new Set(W.sty.up.map(s => s.k)), dnS = new Set(W.sty.down.map(s => s.k));
-  const styles = W.styAll.length ? `<div class="wkstyles">${W.styAll.map(s => { const c = upS.has(s.k) ? 'up' : dnS.has(s.k) ? 'dn' : '';
+  const sN = W.styAll.length, sD = sN % 4 === 0 ? 4 : sN % 3 === 0 ? 3 : sN % 5 === 0 ? 5 : 4, sM = sN % 3 === 0 ? 3 : sN % 5 === 0 ? 5 : sN % 4 === 0 ? 4 : 3;
+  const styles = sN ? `<div class="wkstyles" style="--wkd:${sD};--wkm:${sM}">${W.styAll.map(s => { const c = upS.has(s.k) ? 'up' : dnS.has(s.k) ? 'dn' : '';
       return `<span class="wkst ${c}"><b>${esc(WK.styName(s.k))}</b> ${WK.pc1(s.xa, nA)}%${c ? ` <i>${c === 'up' ? '▲ up' : '▼ down'} ${wkDelta(s.xa, nA, s.xb, nB)} points from ${WK.pc1(s.xb, nB)}%</i>` : ''}</span>`; }).join('')}</div>
     <p class="t2 wkcap wdsub">% of teams using each style${tq('wksty', 'What the team styles count', '% of teams with a Trick Room or Tailwind user, or a weather or terrain setter. Arrows only on real changes.')}</p>` : '';
   const ws = WK.winners(W);
@@ -95,11 +96,13 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 /* the share image: 1200 wide and as tall as its content (up to 1350; a tall card reads well in Discord and on phones), Concept H light or Warm charcoal */
 async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
   const dark = (CH.shareMode || document.documentElement.dataset.look) === 'dark';
-  const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#E6DDCD', blue: '#1E8FE8', card: '#2C2A28', pen: '#7CC4FF', up: '#3DBE78', dn: '#8C9BFF', line: '#4A4542'}
-    : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', blue: '#0078BF', card: '#FBF6EC', pen: '#005A90', up: '#1E8E4E', dn: '#4A5BF0', line: '#D8CCB6'};
-  try { await Promise.all(['400 80px Anton', '800 30px Archivo', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%▲▼'))); } catch (e) {}
+  /* Polish (Nov 10): the share card's palette and type (ARB: paper, ink, PLOT blue; Unbounded slanted for headings and numbers,
+     Instrument Sans for sentences; no misprint), so every image NastyPlot makes looks like one family */
+  const A = ARB.PAL(dark), P = {paper: A.paper, ink: A.ink, mute: A.ink2, blue: A.blue, card: A.sheet, pen: A.blue, up: A.green, dn: dark ? '#9AA6FF' : '#4A5BF0', line: A.rule};
+  try { await Promise.all(['800 30px Unbounded', 'italic 800 30px Unbounded', '700 16px "Instrument Sans"', '400 40px "Instrument Sans"'].map(f => document.fonts.load(f, 'NASTYPLOT 0123%▲▼'))); } catch (e) {}
   const nA = W.a.n, nB = W.b.n, up = W.enough ? W.up.slice(0, 4) : [], dn = W.enough ? W.down.slice(0, 4) : [], tech = W.enough ? W.tech.slice(0, 3) : [];
-  const rowsN = Math.max(up.length, dn.length, 1), Y0 = 392 + rowsN * 84 + 52, by = Y0 + 20 + Math.max(tech.length, 1) * 76 + 24, bh = 230;
+  /* the winner band is full height only when there is a winner to show (no empty blue band) */
+  const rowsN = Math.max(up.length, dn.length, 1), Y0 = 392 + rowsN * 84 + 52, by = Y0 + 20 + Math.max(tech.length, 1) * 76 + 24, bh = WK.winners(W)[0] ? 230 : 104;
   const Wd = 1200, H = by + bh + 80, c = document.createElement('canvas'); c.width = Wd; c.height = H; const x = c.getContext('2d');
   x.fillStyle = P.paper; x.fillRect(0, 0, Wd, H);
   const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp', img = p => { const id = p && typeof SPRITE_ID === 'object' ? SPRITE_ID[p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); };
@@ -108,39 +111,42 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, 250, 250 * 196 / 761.34); } catch (e) {}
   txt('Pokémon Champions, VGC doubles, Reg M-C', '700 20px "Instrument Sans", monospace', P.mute, 1156, 66, 0, 'right');
-  txt('This week', '400 112px Anton, Impact, sans-serif', P.blue, 62, 238); txt('This week', '400 112px Anton, Impact, sans-serif', P.ink, 56, 232);
+  txt('This week', 'italic 800 96px Unbounded, sans-serif', P.ink, 56, 232);
   txt(`${WK.range(W.a)} vs ${WK.range(W.b)}`, '700 22px "Instrument Sans", monospace', P.mute, 60, 272, 1080);
-  txt(`${CH.n(W.a.n)} tournament teams from ${W.a.ev} events, against ${CH.n(W.b.n)} the week before`, '600 22px Archivo, sans-serif', P.mute, 60, 304, 1080);
+  txt(`${CH.n(W.a.n)} tournament teams from ${W.a.ev} events, against ${CH.n(W.b.n)} the week before`, '500 22px "Instrument Sans", sans-serif', P.mute, 60, 304, 1080);
   /* rising / falling */
   const [iu, idn] = await Promise.all([Promise.all(up.map(r => img(r.p))), Promise.all(dn.map(r => img(r.p)))]);
-  const col = (title, rows, ims, X, isUp) => { txt(title, '400 40px Anton, Impact, sans-serif', isUp ? P.up : P.dn, X, 372);
-    if (!rows.length) { txt(isUp ? 'Nothing rose enough to call it a trend' : 'Nothing dropped enough to call it a trend', '600 22px Archivo, sans-serif', P.mute, X, 414, 520); return; }
+  const col = (title, rows, ims, X, isUp) => { txt(title, 'italic 800 34px Unbounded, sans-serif', isUp ? P.up : P.dn, X, 372);
+    if (!rows.length) { txt(isUp ? 'Nothing rose enough to call it a trend' : 'Nothing dropped enough to call it a trend', '500 22px "Instrument Sans", sans-serif', P.mute, X, 414, 520); return; }
     rows.forEach((r, i) => { const Y = 392 + i * 84; x.fillStyle = P.card; scRound(x, X, Y, 520, 72, 14); x.fill(); x.strokeStyle = P.line; x.lineWidth = 2; x.stroke();
-      draw(ims[i], X + 42, Y + 34, 66); txt(r.p.d, '800 26px Archivo, sans-serif', P.ink, X + 86, Y + 33, 270);
-      txt(`${WK.pc1(r.xb, nB)}% → ${WK.pc1(r.xa, nA)}% of teams`, '700 18px "Instrument Sans", monospace', P.mute, X + 86, Y + 58, 300);
-      const d = wkDelta(r.xa, nA, r.xb, nB); txt(`${isUp ? '▲' : '▼'}${d} points`, '400 38px Anton, Impact, sans-serif', isUp ? P.up : P.dn, X + 500, Y + 50, 0, 'right'); }); };
+      /* the change first (its width decides the room left), then the name as big as fits beside it, never cut off */
+      const d = wkDelta(r.xa, nA, r.xb, nB), dt = `${isUp ? '▲' : '▼'}${d} points`; x.font = 'italic 800 26px Unbounded, sans-serif'; const dw = x.measureText(dt).width;
+      txt(dt, 'italic 800 26px Unbounded, sans-serif', isUp ? P.up : P.dn, X + 500, Y + 48, 0, 'right');
+      const room = 500 - 86 - dw - 20; let nf = 24; do { x.font = `italic 800 ${nf}px Unbounded, sans-serif`; } while (x.measureText(r.p.d).width > room && --nf > 15);
+      draw(ims[i], X + 42, Y + 34, 66); txt(r.p.d, `italic 800 ${nf}px Unbounded, sans-serif`, P.ink, X + 86, Y + 33, room);
+      txt(`${WK.pc1(r.xb, nB)}% → ${WK.pc1(r.xa, nA)}% of teams`, '600 18px "Instrument Sans", sans-serif', P.mute, X + 86, Y + 58, room + dw); }); };
   col('Rising', up, iu, 56, true); col('Falling', dn, idn, 624, false);
   /* new tech */
-  txt('New tech', '400 40px Anton, Impact, sans-serif', P.ink, 56, Y0); const it = await Promise.all(tech.map(t => img(t.p)));
-  if (!tech.length) txt('Nothing jumped enough to call it a trend', '600 22px Archivo, sans-serif', P.mute, 56, Y0 + 42);
+  txt('New tech', 'italic 800 34px Unbounded, sans-serif', P.ink, 56, Y0); const it = await Promise.all(tech.map(t => img(t.p)));
+  if (!tech.length) txt('Nothing jumped enough to call it a trend', '500 22px "Instrument Sans", sans-serif', P.mute, 56, Y0 + 42);
   const KC = KIND.col[dark ? 'dark' : 'light'];
   tech.forEach((t, i) => { const Y = Y0 + 20 + i * 76; draw(it[i], 92, Y + 32, 62);
     /* the kind: line icon + word in its colour, then the option underlined in the same colour (as on the page) */
     const kc = KC[t.k] || P.mute; x.save(); x.translate(134, Y + 3); x.scale(18 / 24, 18 / 24); x.strokeStyle = kc; x.lineWidth = 2.6; x.lineCap = 'round'; x.lineJoin = 'round'; x.stroke(new Path2D(KIND[t.k].ic)); x.restore();
     txt(KIND[t.k].w, '700 17px "Instrument Sans", sans-serif', kc, 158, Y + 17); x.font = '700 17px "Instrument Sans", sans-serif'; const kw = x.measureText(KIND[t.k].w).width;
-    x.font = '800 26px Archivo, sans-serif'; const ow = Math.min(x.measureText(t.o).width, 600);
-    txt(`${t.o} ${t.p.d}`, '800 26px Archivo, sans-serif', P.ink, 168 + kw, Y + 17, 860 - kw); x.fillStyle = kc; x.fillRect(168 + kw, Y + 22, ow, 3);
+    x.font = 'italic 800 24px Unbounded, sans-serif'; const ow = Math.min(x.measureText(t.o).width, 600);
+    txt(`${t.o} ${t.p.d}`, 'italic 800 24px Unbounded, sans-serif', P.ink, 168 + kw, Y + 17, 860 - kw); x.fillStyle = kc; x.fillRect(168 + kw, Y + 22, ow, 3);
     txt(`${WK.pc1(t.xb, t.mb)}% → ${WK.pc1(t.xa, t.ma)}% of ${t.p.d} teams (${CH.n(t.ma)} this week, ${CH.n(t.mb)} before)`, '700 18px "Instrument Sans", monospace', P.mute, 134, Y + 52, 1000);
-    txt(`▲${wkDelta(t.xa, t.ma, t.xb, t.mb)} points`, '400 38px Anton, Impact, sans-serif', P.up, 1144, Y + 46, 0, 'right'); });
+    txt(`▲${wkDelta(t.xa, t.ma, t.xb, t.mb)} points`, 'italic 800 30px Unbounded, sans-serif', P.up, 1144, Y + 46, 0, 'right'); });
   /* the week's biggest winner, on the blue band */
   const w0 = WK.winners(W)[0];
-  x.fillStyle = P.blue; x.fillRect(0, by, Wd, bh); x.fillStyle = 'rgba(255,255,255,.2)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < Wd; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.3, 0, 7); x.fill(); }
+  x.fillStyle = A.plate; x.fillRect(0, by, Wd, bh); /* the deep PLOT blue in both modes: white text stays readable on it */ x.fillStyle = 'rgba(255,255,255,.2)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < Wd; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.3, 0, 7); x.fill(); }
   if (w0) { const t = w0.top[0]; txt(`Winner: ${w0.name}`, '700 20px "Instrument Sans", monospace', '#fff', 56, by + 38, 1090);
-    txt(`Champion, ${evDate(w0.date)}, ${CH.n(w0.players)} players`, '800 26px Archivo, sans-serif', '#fff', 56, by + 72, 1090);
+    txt(`Champion, ${evDate(w0.date)}, ${CH.n(w0.players)} players`, 'italic 800 26px Unbounded, sans-serif', '#fff', 56, by + 72, 1090);
     const ims = await Promise.all(t.mons.map(m => img(byName.get(m.n)))); ims.forEach((im, i) => { if (!im) return; x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowOffsetY = 4; draw(im, 110 + i * 196, by + 154, 132); x.restore(); }); }
-  else txt('No big event finished this week', '800 28px Archivo, sans-serif', '#fff', 56, by + 120);
-  txt('Sharply raise your win rate.', '400 32px "Instrument Sans",system-ui,sans-serif', P.pen, 58, H - 28);
-  txt('NastyPlot, unofficial fan tool', '700 19px "Instrument Sans", monospace', P.mute, 1144, H - 32, 0, 'right');
+  else txt('No big event finished this week', 'italic 800 28px Unbounded, sans-serif', '#fff', 56, by + 64);
+  ARB.tagline(x, A, 1144, H - 32, 26);
+  txt('NastyPlot, unofficial fan tool', '600 17px "Instrument Sans", sans-serif', P.mute, 58, H - 32);
   return c; }
 
 /* ---------- Upcoming events (Nov): the official VGC calendar with a countdown, at the top of Events ----------

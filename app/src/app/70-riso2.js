@@ -7,7 +7,7 @@ function rzSetHtml(m, i) {
   try { r = rating(m.p).total; tier = lTier(r).k; } catch (e) {}
   const mv = (m.moves || []).filter(Boolean).map(x => `<li>${esc(x.name)}</li>`).join('');
   return `<div class="rzseth">${sprite(m.p, 'rzsetspr') || ''}<div class="rzsetn"><b>${esc(m.d)}</b><span>${(m.p.t || []).map(esc).join(' and ')} type</span></div>
-    ${r != null ? `<div class="rzsetr"><b>${Math.round(r)}</b><span>${tier ? esc(tier) + ' tier rating' : 'Rating'}</span></div>` : ''}</div>
+    ${r != null ? `<div class="rzsetr"><b>${RS(r)}</b><span>${tier ? esc(tier) + ' tier rating' : 'Rating'}</span></div>` : ''}</div>
     <dl class="rzsetd"><div><dt>Item</dt><dd>${esc(m.item || 'No item')}</dd></div><div><dt>Ability</dt><dd>${esc(m.ability || '–')}</dd></div></dl>
     ${mv ? `<ul class="rzsetm" aria-label="Moves">${mv}</ul>` : ''}
     <div class="rzseta"><button type="button" class="chghost" data-chedit="${i}">Edit set</button><button type="button" class="rzlink" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`;
@@ -26,7 +26,7 @@ document.addEventListener('click', e => {
 
 /* Battle mode: "The read", one line that sums up the plan above everything else (lead pair, biggest threat, their Fake Outs) */
 function rzReadHtml() {
-  const mine = members(), theirs = S.opp.map(n => byName.get(n)).filter(Boolean).map(oppMember);
+  const mine = members(), theirs = oppTeam();
   if (mine.length < 4 || !theirs.length) return '';
   const r = planMatchup(mine, theirs, true), C = r.chosen.map(i => mine[i]);
   const mini = p => `<span class="rzmini">${sprite(p, 'rzminispr') || ''}<b>${esc(p.d || '')}</b></span>`;

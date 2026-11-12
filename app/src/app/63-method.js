@@ -5,12 +5,11 @@
 // The data sources live in ONE list (NP_SOURCES): add, drop or rename a source there and every section follows.
 const NP_SOURCES = [
   {k: 'tour', name: 'Limitless', what: 'Online tournaments: every standing, open team sheet and pairing.', use: 'Ratings, top threats, usage, sets, team records, Build me a team, the team-strength model', main: true},
-  {k: 'official', name: 'RK9', what: 'Official Regionals and Internationals: top team lists, plus every Masters team and match once 95%+ of an event’s lists can be read.', use: 'Events page, each Pokémon’s official-events row, top-cut sets, cross-check'},
+  {k: 'official', name: 'Victory Road', what: 'Official Regionals and Internationals: results and the top 64 Masters team lists (full sheets via VR Pastes), checked against Liquipedia. (RK9 was read until Nov 1; its terms forbid automated reading, so it was replaced.)', use: 'Events page, each Pokémon’s official-events row, top-cut sets, cross-check'},
   {k: 'replays', name: 'Pokémon Showdown replays', what: 'The newest public Reg M-C games: team preview, the four each side brought and the leads.', use: 'Bring and lead rates on each Pokémon (shown, not scored)'},
   {k: 'smogon', name: 'Smogon usage stats', what: 'Monthly Showdown ladder stats.', use: 'Usage page (ladder view), common spreads for speed tiers'},
   {k: 'ingame', name: 'op.gg', what: 'The official in-game Ranked Doubles usage order.', use: 'Usage page (in-game view)'},
   {k: 'ladder', name: 'Showdowntier', what: 'Showdown ladder usage and win rates, last 14 days, and its tier list.', use: 'Each Pokémon’s sheet, cross-check'},
-  {k: 'prd', name: 'project-red-data', what: 'The top 10% of public Showdown replays, last 30 days.', use: 'Each Pokémon’s sheet, cross-check'},
   {k: 'pika', name: 'Pikalytics', what: 'Tournament usage from about the last two weeks.', use: 'Cross-check only'}];
 // themed or restricted cups left out by name (formats.mjs OFF_FORMAT; keep the two in step)
 const NP_OFF_WORDS = ['Off-meta', 'Spooky', 'Monotype', 'Small Pokémon', 'Ultra Beast', 'Draft', 'BST', '−1%', 'Under X%', 'Little Cup', 'NFE'];
