@@ -1,4 +1,4 @@
-# What's New at the switch to the new design: DRAFT for Sim (Nov 12, ~3:20 PM). Not in the code yet.
+# What's New at the switch to the new design: DRAFT for Sim (Nov 12, ~3:13 PM). Not in the code yet.
 
 Sim agreed (Nov 12, 3:13 PM) that today's What's New list (Oct 28: "scouting report", "ready for the top threats", "No more win odds")
 is replaced by a fresh entry when the new design goes live. Words follow the Nov 9 word list. Every item names something that exists
