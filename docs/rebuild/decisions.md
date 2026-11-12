@@ -52,6 +52,18 @@ Sim's own decisions are marked "Sim". Newest first.
   worktree (today's page must stay 132/0; every test must still be able to fail). Its changes are reviewed before any commit.
 - Preview v54 (height cuts) and v55 (A10/A13) published; file lists checked (394 each).
 
+- MAIN = LIVE (Sim's yes, "your recommendations check out"): 44c9a72 on main, tree identical to 641f928 which GitHub run 723 passed
+  (all jobs). main's app/ (minus app/src/v2) and docs/mascot/darkrai.webp now equal the live code (cb49701 + fonts); main keeps its
+  newer data and pipeline scripts and the health-test fix. `node app/build.mjs` from this tree = byte-identical to live v155's page.
+  NOT copied on purpose: design6's data files and pipeline scripts (update.mjs, official.mjs, pid.mjs, scrub-names.mjs), which were
+  never reviewed for main.
+- Phone limit 3,700 + Edit Set in the Set section only (3aa5fa6); info sheet jitter fix (5003b61; v2-kb-jitter: old build --kb
+  64/0/54/32px while bars move, new 0px; keyboard 344px). Preview v56, v57. A8 confirmed by Sim on her iPhone ("text is more legible").
+- Pictures sent, waiting for Sim: D12-14 info sheet (phone picture 180px: the 180px phone rule never applied, inline 240px won),
+  Set as Lead (recommend strip only), 320 options (A 4,067 / B+D 3,968 / B+C+D 3,870; recommend B+D and a 320 limit ~4,000).
+  Correction logged: first 320 measures were taken before Suggestions finished loading (211px / 3,702 were wrong).
+- New from Sim: forms row in My Box's picked-Pokemon panel (given to the My Box helper as a proposal).
+
 - MISTAKE (Claude), fixed at once: the fonts-branch commit 93ed4b7 also carried the frozen Nov 9 out/ files (they were still staged in
   the scratch copy). A new commit put out/ back as at 9eabdd6 (no history rewritten); the branch now differs from 9eabdd6 only in
   app/test/run.mjs (git diff --stat). Rule: after testing on frozen data, reset out/ from the commit before committing anything.
