@@ -1,4 +1,4 @@
-# Build page: inventory before rebuilding (Nov 12, ~3:20 PM; look-only groundwork, nothing built)
+# Build page: inventory before rebuilding (Nov 12, ~3:15 PM; look-only groundwork, nothing built)
 
 Approved mock-up: docs/rebuild/mocks/build.tpl.html (Preview: build.html). Rule: every feature of today's Build stays.
 
