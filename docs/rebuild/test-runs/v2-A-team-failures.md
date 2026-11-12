@@ -49,6 +49,44 @@ change per test, e.g. "Paste a Team" → "Import a Team", the disabled save butt
 
 Not added to docs/rebuild/test-edits.md (this branch was limited to the tests and this file); the per-test notes are in the table below.
 
+## Update, Nov 12 afternoon: Team Sheet and Matchups summary tests (branch helper-tests-nov12)
+
+Sim approved (Nov 12) the new build's Team Sheet (a sheet over My Team: eyebrow "← My Team · <team title> · Reg M-C doubles ·
+level 50", heading "Team Sheet", "Copy for Showdown" (today's "Copy as text", same exportPaste text) and "Share as Image" (closes
+the sheet, opens "Share Your Team" with the Team Sheet kind picked), key line "Tap a card to edit its set · Big number: …", cards
+that open Edit Set by click / Enter / Space, and the empty "No team yet. …" with "Add a Pokémon" opening search), and the
+Matchups summary moved out of the header to the top of the Matchups section ("N Favoured N Even match N Unfavoured" adding to 30,
+the bar, "Damage calc: No answer a, Shaky b, Handles it c, Beats it d" adding to 30).
+
+Seven tests got a new-build branch (`if (NEW) { … return; }` placed before today's code; today's lines are unchanged, the diff of
+A-team.mjs is 47 added lines, 0 removed): **SHEET-01, SHEET-02, SHEET-03, SHEET-04, IO-04, SHARE-04, TEAM-15**. Adapter
+(adapters/v2.A-team.mjs, 8 added lines, commented): `focusSheetCard(name)` (puts keyboard focus on a card so Enter / Space can be
+pressed) and `matchupsBar()` (the bar is aria-hidden, so text can't see it: its three shares and the lines around it). SHEET-04 opens
+the empty sheet with `peek('V2.openTeamSheet()')`, because the empty My Team has no More menu or Team Sheet link. Nothing under app/src changed.
+
+Builds: claude/design6 at b5c1d9c, `node app/build.mjs --v2` and `node app/build.mjs` (esbuild installed), copied to the scratchpad.
+Result lines (verbatim, `--only=SHEET-01,SHEET-02,SHEET-03,SHEET-04,IO-04,SHARE-04,TEAM-15`):
+- New build, before: `behaviour: 0 pass, 7 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 33s  (adapter v2)`
+- New build, after: `behaviour: 7 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 47s  (adapter v2)`
+- Today's page, before: `behaviour: 7 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 53s  (adapter current)`
+- Today's page, after: `behaviour: 7 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 55s  (adapter current)`
+
+Proof each new branch can fail: one deliberately wrong copy of the built v2.html per test (one string replaced), each run alone
+with `--only=<ID>`; every run printed `behaviour: 0 pass, 1 FAIL, 0 known bugs, 0 fixed?, 0 skipped; …  (adapter v2)`:
+
+| ID | What was broken in the copy | FAIL line (verbatim message) |
+|---|---|---|
+| SHEET-01 | team title dropped from the eyebrow | Team Sheet head doesn't show / ← My Team · Sun Tailwind \(sample\) · Reg M-C doubles · level 50 Team Sheet Copy for Showdown / |
+| SHEET-02 | "Share as Image" → "Share Image" | Team Sheet actions and key line doesn't show /Team Sheet Copy for Showdown Share as Image Tap a card to edit its set · … Mega Charizard Y / |
+| SHEET-03 | `data-ts2edit` removed from the cards | click on Garchomp's card: the Team Sheet is still open |
+| SHEET-03 | key handler answers Tab, not Enter / Space | Enter on Incineroar's card: the Team Sheet is still open |
+| SHEET-03 | key handler answers Enter only | Space on Sneasler's card: the Team Sheet is still open |
+| SHEET-04 | empty sheet's "Add a Pokémon" loses `data-v2search` | "Add a Pokémon" did not open search (null) |
+| IO-04 | copies `exportPaste().toUpperCase()` | clipboard is not the Showdown export: CHARIZARD @ CHARIZARDITE Y |
+| SHARE-04 | "Share as Image" picks the Team Card kind | "Team Sheet" not the picked kind |
+| TEAM-15 | bar's Favoured share drawn from the Unfavoured count | the bar's fav share is 10, not 6 of 30 |
+| TEAM-15 | "6 Favoured 21 Even match 3 Unfavoured" put back in the header (before "Why this score?") | a Matchups summary shows before the Matchups section: …Data as of Nov 10 6 Favoured 21 Even match 3 Unfavoured · Why this score? Lead Mega Char… |
+
 ## The 75 FAIL tests (Nov 12 run; Category and Reason updated for the 25 "real failure" rows)
 
 | ID | Title (short) | Category | Reason | Failure message (shortened) |
