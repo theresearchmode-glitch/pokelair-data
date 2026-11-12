@@ -54,6 +54,8 @@ export default (ui, pg, o) => {
     clearToasts: () => pg.evaluate(() => { window.__npT = []; }),
     waitToast: (re, ms = 6000) => waitFor(async () => (await pg.evaluate(() => (window.__npT || []).slice())).find(t => re.test(t)) || null, ms),
     tapToastUndo: () => click('.np-toast #toastUndo, .np-toast [data-bxundo]'),
+    /** the pictures on the toast showing now (srcs); null when no toast is showing, so "no picture" can't pass on a missing toast */
+    toastImages: () => pg.evaluate(() => { const t = [...document.querySelectorAll('.np-toast')].filter(e => e.getClientRects().length); return t.length ? t.flatMap(e => [...e.querySelectorAll('img,svg image,[style*="background-image"]')].map(i => i.getAttribute('src') || i.getAttribute('href') || i.getAttribute('style'))) : null; }),
     press: async (k, wait = 400) => { await pg.keyboard.press(k); await pg.waitForTimeout(wait); },
     focusName: () => pg.evaluate(() => { const e = document.activeElement; if (!e || e === document.body) return ''; return (e.getAttribute('aria-label') || e.innerText || e.value || e.placeholder || '').replace(/\s+/g, ' ').trim(); }),
     /** is a pressable choice (slider button, tab) with this label chosen? null if not found */
@@ -100,6 +102,10 @@ export default (ui, pg, o) => {
     /** the team's name as the page shows it: a heading if there is one, else the eyebrow "My Team · <saved name>" */
     /** the empty box's picture (the featured underdog, Sim Nov 11) is placed */
     // the harness copies the page into app/test/behaviour/, where art/ isn't served, so this checks a Pokémon sprite is placed (screenshots check it shows)
+    /** every picture on the empty My Team, with whether it sits in the "Today's underdog" spot (Sim, Nov 11: the underdog replaces Darkrai) */
+    emptyTeamPictures: () => pg.evaluate(() => [...document.querySelectorAll('#main img')].filter(i => i.getClientRects().length).map(i => ({src: i.getAttribute('src') || '', underdog: !!i.closest('.tm-ud')}))),
+    /** where the section a jump-bar link leads to sits now: its top edge and the window height */
+    jumpTarget: name => pg.evaluate(n => { const a = [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].find(e => e.childNodes[0].textContent.trim() === n); const s = a && document.getElementById(a.dataset.tmjump); return s ? {top: Math.round(s.getBoundingClientRect().top), vh: innerHeight} : null; }, name),
     emptyBoxArt: () => pg.evaluate(() => [...document.querySelectorAll('#main .bx-empty img')].some(i => i.getClientRects().length && /art\/\d+\.webp$/.test(i.getAttribute('src') || ''))),
     teamHeading: () => pg.evaluate(() => { const m = document.querySelector('#main'); if (!m) return null; const h = [...m.querySelectorAll('h1')].find(e => e.getClientRects().length && !e.closest('.tm-empty'));
       if (h) return h.innerText.replace(/\s+/g, ' ').trim(); const e = m.querySelector('.tm-eb'); const t = e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; const k = t.indexOf(' · '); return k >= 0 ? t.slice(k + 3) : null; }),
@@ -145,7 +151,10 @@ export default (ui, pg, o) => {
       const MAP = [['data-v2save', 'Save Team', 'Save team'], ['data-v2share', 'Share', 'Share'], ['data-v2sheetopen', 'Team Sheet', 'Team Sheet'], ['data-v2copy', 'Copy for Showdown', 'Copy for Showdown'], ['data-v2import', 'Import', 'Import'], ['data-v2saved', 'Saved Teams', 'Saved Teams'], ['data-cxgo2', 'Compare', 'Compare with…'], ['data-v2clear', 'Clear Team', 'Clear team']];
       const out = []; for (const e of [...m.querySelectorAll('.tm-acts > :not([data-v2more]), .tm-empty button, .tm-empty a'), ...(document.querySelector('.np-sheet .tm-moremenu') ? document.querySelectorAll('.np-sheet .tm-moremenu .tm-mi') : (() => { const d = document.createElement('div'); d.innerHTML = m.querySelector('[data-v2more]') && window.V2 && V2.moreHtml ? V2.moreHtml() : ''; d.style.cssText = 'position:fixed;left:0;top:0;width:400px;opacity:0'; document.body.append(d); const l = [...d.querySelectorAll('.tm-mi')]; setTimeout(() => d.remove(), 0); return l; })())]) { if (!e.getClientRects().length) continue; const t = e.innerText.replace(/\s+/g, ' ').trim().replace(/ \d+$/, '');
         // the action is named by what the button does (its data attribute), so a reworded label still counts as that action
-        const hit = MAP.find(([a]) => e.hasAttribute(a)); out.push(hit ? hit[2] : e.getAttribute('href') === '#box' ? 'My Box' : t); } return out; }),
+        // the main save button says what it will do (A11, approved Nov 12): "Save Team", "Update Saved Team" (the open saved team
+        // has changed) or a quiet "Saved ✓" (unchanged); reported under today's names, and "Saved ✓" as itself (Nov 12)
+        const sv = e.hasAttribute('data-v2save') ? (/^Update Saved Team$/i.test(t) ? 'Update saved team' : /^Saved\b/.test(t) ? 'Saved ✓' : 'Save team') : null;
+        const hit = MAP.find(([a]) => e.hasAttribute(a)); out.push(sv || (hit ? hit[2] : e.getAttribute('href') === '#box' ? 'My Box' : t)); } return out; }),
     jumpBar: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].filter(e => e.getClientRects().length).map(e => e.childNodes[0].textContent.trim())),
     jumpTo: name => tapFound(n => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].find(e => e.getClientRects().length && e.childNodes[0].textContent.trim() === n) || null, name, 'jump ' + name, 900),
     onScreen: re => pg.evaluate(([s, f]) => { const re = new RegExp(s, f); const e = [...document.querySelectorAll('#main *')].filter(e => e.getClientRects().length && e.innerText && e.innerText.length < 60 && re.test(e.innerText)).pop(); if (!e) return null; const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }, [re.source, re.flags]),
@@ -178,6 +187,10 @@ export default (ui, pg, o) => {
     // edit panel: Edit Set (.ed2), and the other panels today's #chEdit hosts: Import (.imp2), Save (.sv2), Add (search sheet)
     editPanel: () => pg.evaluate(() => { const w = window.V2 && V2._sheet && V2._sheet.wrap, s = w && w.querySelector('.np-sheet'); if (!s) return null; const c = s.querySelector('.ed2,.imp2,.sv2,.np-find'); if (!c) return null;
       const h = c.querySelector('h2'), ht = h ? h.innerText.replace(/\s+/g, ' ').trim() : ''; return {title: c.classList.contains('ed2') && !/^Add a Pok/.test(ht) ? 'Edit ' + ht : ht, text: s.innerText.replace(/\s+/g, ' ').trim()}; }),
+    /** is keyboard focus inside the open Edit Set sheet? (today: inside #chEdit) */
+    focusInEditPanel: () => pg.evaluate(() => { const s = document.querySelector('.np-sheet'); return !!(s && s.querySelector('.ed2') && s.getClientRects().length && s.contains(document.activeElement)); }),
+    /** one field of the Edit Set sheet (Ability, Item, Moves, Nature, Stat points), read as shown: "<label> <tag> …" */
+    panelField: label => pg.evaluate(l => { const f = [...document.querySelectorAll('.np-sheet .ed2 .ed-f')].find(f => { const s = f.querySelector('.ed-l > span'); return s && s.innerText.trim() === l; }); return f ? f.innerText.replace(/\s+/g, ' ').trim() : null; }, label),
     openEditPanel: async name => { await H.showSet(name); await click('#main #tm-set [data-v2edit]', 900); await H.settle(); },
     closeEditPanel: () => closeSheet(),
     editStrip: () => pg.evaluate(() => [...document.querySelectorAll('.ed2 .ed-pk')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),
@@ -226,13 +239,16 @@ export default (ui, pg, o) => {
     logResult: wl => click(`[data-ygres="${wl}"]`, 900),
     myGamesCard: () => pg.evaluate(() => { const c = [...document.querySelectorAll('#main #tm-yg')].find(e => e.getClientRects().length), f = document.querySelector('.np-sheet .yg2');
       return c || f ? [c, f].filter(Boolean).map(e => e.innerText.replace(/\s+/g, ' ').trim()).join(' ') : null; }),
+    /** one Pokémon's card on the Team Sheet (the sheet over My Team), as shown */
+    teamSheetCard: name => pg.evaluate(n => { const c = [...document.querySelectorAll('.np-sheet .ts2 .ts2-card')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim().startsWith(n + ' ')); return c ? c.innerText.replace(/\s+/g, ' ').trim() : null; }, name),
     sheetColumns: () => pg.evaluate(() => { const c = [...document.querySelectorAll('.ts2 .ts2-card')].filter(e => e.getClientRects().length); if (!c.length) return 0; const top = Math.round(c[0].getBoundingClientRect().top); return c.filter(e => Math.abs(Math.round(e.getBoundingClientRect().top) - top) < 4).length; }),
     // saved teams (.svt2 sheet)
     savedCards: () => pg.evaluate(() => [...document.querySelectorAll('.svt2 .svt2-card:not(.svt2-free)')].filter(e => e.getClientRects().length).map(c => c.innerText.replace(/\s+/g, ' ').trim())),
     savedCardOf: name => H.savedCards().then(a => a.find(t => t.startsWith(name + ' ') || t.includes(name)) || null),
     savedAction: async (name, what) => { if (!(await vis('.svt2'))) await H.openSavedSheet();
-      const a = {Open: 'open', 'Copy for Showdown': 'copy', Rename: 'ren', Delete: 'del'}[what]; if (!a) NOT('saved team action ' + what);
-      const label = {open: 'Open ', copy: 'Copy ', ren: 'Rename ', del: 'Delete '}[a] + name + (a === 'copy' ? ' for Showdown' : '');
+      // Nov 12: Compare and Team Poster added (the build has had them on each card since Nov 11; the adapter lagged)
+      const a = {Open: 'open', 'Copy for Showdown': 'copy', Rename: 'ren', Delete: 'del', Compare: 'cmp', 'Team poster': 'poster'}[what]; if (!a) NOT('saved team action ' + what);
+      const label = {open: 'Open ', copy: 'Copy ', ren: 'Rename ', del: 'Delete ', cmp: 'Compare ', poster: 'Team poster of '}[a] + name + (a === 'copy' ? ' for Showdown' : '');
       return tapFound(([a, l]) => [...document.querySelectorAll(`.svt2 [data-svact="${a}"]`)].find(e => e.getClientRects().length && e.getAttribute('aria-label') === l) || null, [a, label], label, a === 'open' ? 1500 : 700); },
     typeSaveName: async name => { const l = pg.locator('[data-v2savename]'); await l.fill(name); await pg.waitForTimeout(200); },
     typeRename: async name => { const l = pg.locator('.svt2 [data-svname]').filter({visible: true}).first(); await l.fill(name); await pg.waitForTimeout(200); },

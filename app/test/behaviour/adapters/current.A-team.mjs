@@ -155,6 +155,8 @@ export default (ui, pg, o) => {
     undoBar: () => pg.evaluate(() => { const e = [...document.querySelectorAll('[data-undobar]')].find(e => e.getClientRects().length); if (!e) return null; let c = e.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); }),
     undoLastApplied: () => click('[data-undobar]', 1500),
     // edit panel
+    /** is keyboard focus inside the open edit panel? (Nov 12: moved here from EDIT-01, which read #chEdit itself) */
+    focusInEditPanel: () => pg.evaluate(() => { const e = document.querySelector('#chEdit'); return !!(e && !e.hidden && e.getClientRects().length && e.contains(document.activeElement)); }),
     editPanel: () => pg.evaluate(() => { const e = document.querySelector('#chEdit'); if (!e || e.hidden || !e.getClientRects().length) return null; const h = e.querySelector('h1,h2,h3,b,strong'); return {title: (h ? h.innerText : '').replace(/\s+/g, ' ').trim(), text: e.innerText.replace(/\s+/g, ' ').trim()}; }),
     openEditPanel: async name => { await H.showSet(name); await click('#rzSet [data-chedit]', 900); await H.settle(); },
     closeEditPanel: () => click('#chEditDone', 500),

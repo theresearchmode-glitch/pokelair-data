@@ -179,12 +179,27 @@ t('TEAM-06', '"Team Sheet" button opens the Team Sheet page with all six sets', 
   const tx = await r.ui.text(); has(tx, 'Team Sheet'); for (const n of ['Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler', 'Mega Charizard Y']) has(tx, n, 'Team Sheet'); await r.close(); });
 
 t('TEAM-07', 'Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Sets" scrolls to All Six Sets and opens the sheet', async () => {
+  if (NEW) { /* new build (decided Nov 11, r4-team-gaps.md): one jump bar Set | Matchups | Suggestions | Team Checks at every width;
+    a link scrolls its section to just under the bar and marks itself (A7, approved Nov 12: on phones the mark follows the scroll) */
+    const r = await myTeam({team: TEAM, width: 390}); const j = await r.ui.jumpBar(); ok(j.join('|') === 'Set|Matchups|Suggestions|Team Checks', 'jump bar: ' + j.join('|'));
+    ok(await r.ui.chosen('Set') === true, '"Set" not marked at the top of the page'); const b = await r.ui.jumpTarget('Suggestions'); ok(b && b.top > b.vh, 'Suggestions already on screen before the jump: ' + JSON.stringify(b));
+    await r.ui.jumpTo('Suggestions'); await sleep(900); const a = await r.ui.jumpTarget('Suggestions'); ok(a && a.top >= 0 && a.top < a.vh / 2, 'Suggestions not scrolled to the top of the screen: ' + JSON.stringify(a));
+    ok(await r.ui.chosen('Suggestions') === true && await r.ui.chosen('Set') === false, '"Suggestions" not the marked link after the jump'); ok(await r.ui.noSideScroll(), 'sideways scroll at 390'); await r.close();
+    const d = await myTeam({team: TEAM, width: 1280}); ok((await d.ui.jumpBar()).join('|') === 'Set|Matchups|Suggestions|Team Checks', 'desktop jump bar: ' + (await d.ui.jumpBar()).join('|')); await d.close(); return; }
   const r = await myTeam({team: TEAM, width: 390}); const j = await r.ui.jumpBar(); ok(j.join('|') === 'Suggestions|Matchups|How it plays|Sets', 'jump bar: ' + j.join('|'));
   await r.ui.jumpTo('Sets'); ok(await r.ui.onScreen(/^Open Team Sheet/), 'All Six Sets (its Open Team Sheet fold) not scrolled into view'); ok(await r.ui.foldOpen('Open Team Sheet') === true, 'team sheet fold not opened');
   ok(await r.ui.chosen('Sets') === true, '"Sets" not kept highlighted'); ok(await r.ui.noSideScroll(), 'sideways scroll at 390'); await r.close();
   const d = await myTeam({team: TEAM, width: 1280}); ok(!(await d.ui.jumpBar()).length, 'jump bar shows on desktop'); await d.close(); });
 
 t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set, tapping again hides it', async () => {
+  if (NEW) { /* new build (decided Nov 11, approved mock-up): no "Your Six" heading; the picked Pokémon's set always shows (the first
+    lead's before any tap, on phones too), so there is no "Tap a Pokémon…" hint and tapping the picked tile again keeps its set */
+    const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); ok(!(await r.ui.sees(/Your Six/)), 'a "Your Six" heading shows (removed by design)');
+    const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
+    ok(!(await r.ui.sees('Tap a Pokémon to see its set')), 'old "Tap a Pokémon to see its set" hint shows'); ok(new RegExp('Set ' + tiles[0] + ' ').test(await r.ui.setCard()) && await r.ui.tilePressed(tiles[0]), `phone does not show the first lead's (${tiles[0]}) set before any tap`);
+    await r.ui.tapTile('Garchomp'); let c = await r.ui.setCard(); ok(/Set Garchomp /.test(c) && !new RegExp('Set ' + tiles[0] + ' ').test(c), 'no set card for Garchomp: ' + c.slice(0, 80)); ok(await r.ui.tilePressed('Garchomp') && !(await r.ui.tilePressed(tiles[0])), 'Garchomp\'s tile not the marked one');
+    await r.ui.tapTile('Garchomp'); c = await r.ui.setCard(); ok(/Set Garchomp /.test(c) && await r.ui.tilePressed('Garchomp'), 'second tap hid Garchomp\'s set (the picked set always shows)'); await r.close();
+    const d = await myTeam({team: TEAM}), d0 = (await d.ui.sixTiles())[0]; ok(d0 && new RegExp('Set ' + d0 + ' ').test(await d.ui.setCard()), 'desktop did not open the first lead\'s set'); await d.close(); return; }
   const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); has(await r.ui.text(), 'Your Six');
   const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
   ok(await r.ui.sees('Tap a Pokémon to see its set'), 'phone shows no "Tap a Pokémon to see its set" hint'); ok(!(await r.ui.setCard()), 'phone opened a set card before any tap');
@@ -250,6 +265,15 @@ t('TEAM-16', 'Legal and "Team checks 4/4" badge with the rules tooltip', async (
 t('TEAM-18', 'Weather backdrop behind a sun team\'s header', async () => {}, {skip: 'decorative animation on the old header, mostly covered by the arena layout (inventory unsure it shows); needs a visual check, not a behaviour test'});
 
 t('TEAM-19', 'Empty team: Darkrai, invitation, "Add your first Pokémon" opens the add box; six "+ Add a Pokémon"', async () => {
+  if (NEW) { /* new build (Sim, Nov 11): "Six spots, all yours." with Build Me a Team / Add a Pokémon / Import a team, and today's
+    underdog (a rotating Pokémon from the bottom of our ratings) instead of Darkrai; no six "+ Add" tiles */
+    const r = await myTeam({team: []}); const tx = await r.ui.text();
+    has(tx, /^My Team · 0 of 6 · No team yet Six spots, all yours\. Add a Pokémon to start, or let us build a whole team around a favourite\. Build Me a Team Add a Pokémon Import a team /);
+    has(tx, /Today's underdog (.+?)\. Somebody's favourite\. Rarely picked in tournaments, but every Pokémon deserves its moment\. Maybe it's yours\? Add \1 to My Team Info Sheet/);
+    const pics = await r.ui.emptyTeamPictures(); ok(pics.length === 1 && pics[0].underdog && /art\/\d+\.webp$/.test(pics[0].src), 'pictures on the empty My Team are not just the underdog\'s sprite (no Darkrai): ' + JSON.stringify(pics));
+    ok(await r.ui.emptyTiles() === 0, 'six "+ Add" tiles still shown'); ok(!/Suggestions|Matchups|Who Beats You|Team Checks/.test(tx), 'parts 1-3 still shown');
+    await r.ui.tapText(/^Add a Pokémon$/, 900); const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'Add a Pokémon did not open the add box with the name box focused'); await r.ui.closeEditPanel(); await r.ui.settle();
+    await r.ui.tapText(/^Build Me a Team$/, 900); ok(await r.ui.current() === 'auto', 'Build Me a Team did not open Build (' + await r.ui.current() + ')'); await r.close(); return; }
   const r = await myTeam({team: []}); const tx = await r.ui.text();
   has(tx, 'Add your six and NastyPlot scouts the top 30 threats for you.'); has(tx, 'Build me a team'); ok(await r.ui.emptyTiles() === 6, 'not six "+ Add a Pokémon" tiles');
   ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai picture');
@@ -416,13 +440,16 @@ t('SETS-02', 'How Scoring Works fold explains Ready for the top threats', async 
 // ================= 3. Edit panel =================
 t('EDIT-01', 'Edit panel opens titled "Edit <name>"; Done, Escape and the backdrop close it', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); let p = await r.ui.editPanel(); ok(p && p.title === 'Edit Garchomp', 'panel title: ' + (p && p.title));
-  ok(await r.ui.pg.evaluate(() => document.querySelector('#chEdit').contains(document.activeElement)), 'focus did not move into the panel');
+  ok(await r.ui.focusInEditPanel(), 'focus did not move into the panel'); // Nov 12: read through the adapter (was today's #chEdit, read here)
   await r.ui.press('Escape'); ok(!(await r.ui.editPanel()), 'Escape did not close');
   await r.ui.openEditPanel('Garchomp'); await r.ui.closeEditPanel(); ok(!(await r.ui.editPanel()), 'Done did not close');
   await r.ui.openEditPanel('Garchomp'); await r.ui.pg.mouse.click(5, 5); await sleep(500); ok(!(await r.ui.editPanel()), 'backdrop tap did not close');
   await r.ui.tapLabel('Garchomp: edit its set').catch(() => {}); await r.close(); });
 t('EDIT-01b', 'Closing the edit panel puts focus back on "Edit set"', async () => {
-  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.press('Escape'); ok(/^Edit set$/.test(await r.ui.focusName()), 'focus is on "' + await r.ui.focusName() + '"'); await r.close(); });
+  // the new build writes the button in Title Case, "Edit Set" (Sim's rule); each page is checked for its own exact words
+  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.press('Escape'); ok((NEW ? /^Edit Set$/ : /^Edit set$/).test(await r.ui.focusName()), 'focus is on "' + await r.ui.focusName() + '"');
+  // the new build's sheet is itself labelled "Edit Set", so also make sure it closed and focus is on a button
+  if (NEW) ok(!(await r.ui.editPanel()) && await r.ui.pg.evaluate(() => document.activeElement && document.activeElement.tagName === 'BUTTON'), 'focus is not back on the "Edit Set" button (sheet still open?)'); await r.close(); });
 
 t('EDIT-02', 'Six-slot strip in the panel switches the panel to that Pokémon', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); const st = await r.ui.editStrip(); ok(st.length === 6 && st.every(x => /^Edit /.test(x)), 'strip: ' + st.join(','));
@@ -444,14 +471,19 @@ t('EDIT-05', 'Stat points: live total, over-66 warning, Save stat points; Team S
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); has(await r.ui.statTotal() || '', /66 of 66/, 'total');
   await r.ui.setStatPoints([32, 32, 0, 0, 2, 32]); has(await r.ui.statTotal() || '', /98 of 66/, 'total after HP 32'); await r.ui.saveStatPoints();
   has(await r.ui.statMsg() || '', /That's 98 points; Champions allows 66/, 'message');
-  await r.ui.setStatPoints([32, 32, 0, 0, 2, 0]); await r.ui.saveStatPoints(); ok(await r.ui.waitToast(/Stat points saved/), 'no "Stat points saved" toast'); has((await r.ui.editPanel()).text, /Yours/);
-  await r.ui.closeEditPanel(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text(); const g = tx.slice(tx.indexOf('Garchomp'), tx.indexOf('Garchomp') + 400);
+  await r.ui.setStatPoints([32, 32, 0, 0, 2, 0]); await r.ui.saveStatPoints(); ok(await r.ui.waitToast(/Stat points saved/), 'no "Stat points saved" toast');
+  // the new build tags every own choice "Your pick" with its reset beside it (as Nature, Item, Ability); read on the Stat points field itself
+  if (NEW) has(await r.ui.panelField('Stat points') || '', /^Stat points Your pick Use the most common 66 of 66 /, 'Stat points field'); else has((await r.ui.editPanel()).text, /Yours/);
+  // the new build's Team Sheet is a sheet over My Team, so its Garchomp card is read on its own (the page text starts with My Team's)
+  await r.ui.closeEditPanel(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text(); const g = NEW ? await r.ui.teamSheetCard('Garchomp') || '' : tx.slice(tx.indexOf('Garchomp'), tx.indexOf('Garchomp') + 400);
+  if (NEW) has(g, /^Garchomp .* Your spread HP \d+ 32 /, 'Team Sheet Garchomp');
   has(g, /HP \d+ 32/, 'Team Sheet Garchomp'); has(g, /Spe \d+ 0/, 'Team Sheet Garchomp'); await r.close(); });
 
 t('EDIT-06', 'Ability picker: a rarer ability names the common one; "Use Prankster" restores', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Whimsicott'); const other = (await r.ui.panelOptions('ability')).find(x => x && x !== 'Prankster');
   ok(other, 'no other ability to pick'); await r.ui.pickInPanel('ability', other); ok(await r.ui.waitToast(new RegExp(other + ' set \\(most players run Prankster\\)')), 'toast does not name the common ability');
-  has((await r.ui.editPanel()).text, /Your pick/); await r.ui.panelButton(/^Use Prankster$/); ok(await r.ui.waitToast(/most-used ability/), 'no reset toast'); await r.close(); });
+  // reset toast: today "…most-used ability…"; the new build capitalises the game term, "Back to the most-used Ability" (word list)
+  has((await r.ui.editPanel()).text, /Your pick/); await r.ui.panelButton(/^Use Prankster$/); ok(await r.ui.waitToast(NEW ? /^Back to the most-used Ability\b/ : /most-used ability/), 'no reset toast'); await r.close(); });
 
 t('EDIT-07', 'Item picker: "Sitrus Berry" gives a toast, "Your pick" tag and "Use Focus Sash"', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Whimsicott'); has((await r.ui.editPanel()).text, /Item Most used/);
@@ -464,6 +496,12 @@ t('EDIT-07b', 'Item toast uses today\'s words (matchups), not the old "ready for
 t('EDIT-08', 'Moves: change move 4 → toast mentions Offense; "Reset to popular" brings the popular four back', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); const before = await r.ui.panelMoves(); ok(before.length === 4, 'not four move pickers');
   const other = (await r.ui.panelOptions('move3')).find(x => x && x !== '(no move)' && !before.includes(x));
+  if (NEW) { /* new build (decided Nov 11, r4-team-gaps.md): the toast says how the Strength Score moved, not "Offense N of 18"; the
+    Moves field is tagged "Your pick" like the other fields, and its reset reads "Back to the popular set" (same action as today's "Reset to popular") */
+    await r.ui.pickInPanel('move', other, 3); const tt = await r.ui.waitToast(new RegExp('^' + other + ' replaces ' + before[3] + ' · Strength Score (stays at \\d+|\\d+ → \\d+)$'));
+    ok(tt, 'no "<move> replaces <old> · Strength Score …" toast: ' + (await r.ui.toasts()).join(' | ')); ok(!/Offense/.test(tt), 'toast still mentions Offense');
+    ok((await r.ui.panelMoves()).includes(other), 'move not changed'); has(await r.ui.panelField('Moves') || '', /^Moves Your pick Back to the popular set /, 'Moves field');
+    await r.ui.panelButton(/^Back to the popular set$/); ok(await r.ui.waitToast(/^Back to the popular set · Strength Score/), 'no reset toast'); ok((await r.ui.panelMoves()).join() === before.join(), 'popular four not back'); await r.close(); return; }
   await r.ui.pickInPanel('move', other, 3); ok(await r.ui.waitToast(new RegExp(other + ' replaces .*Offense')), 'no "<move> replaces … Offense" toast');
   ok((await r.ui.panelMoves()).includes(other), 'move not changed'); has((await r.ui.editPanel()).text, /Your set/);
   await r.ui.panelButton(/^Reset to popular$/); ok(await r.ui.waitToast(/Back to the popular set/), 'no reset toast'); ok((await r.ui.panelMoves()).join() === before.join(), 'popular four not back'); await r.close(); });
@@ -522,7 +560,10 @@ Careful Nature
 - Parting Shot
 - Flare Blitz`;
 t('IO-01', 'Import a team: legal Pokémon load, skipped ones reported, Undo restores', async () => {
-  const r = await myTeam(); await r.ui.openImport(); const p = await r.ui.editPanel(); has(p.text, /Import a team/); has(p.text, /Replace my team/); has(p.text, /Pokepaste links can't be opened from here/);
+  // the new build's import sheet is headed "Paste a Team" under "Import" (Title Case), its button "Replace My Team"
+  const r = await myTeam(); await r.ui.openImport(); const p = await r.ui.editPanel();
+  if (NEW) { ok(p && p.title === 'Paste a Team', 'import sheet title: ' + (p && p.title)); has(p.text, /^✕ Import Paste a Team A Showdown team or a NastyPlot team link\. /); has(p.text, /Replace My Team/); }
+  else { has(p.text, /Import a team/); has(p.text, /Replace my team/); } has(p.text, /Pokepaste links can't be opened from here/);
   await r.ui.pasteTeam(PASTE); const tt = await r.ui.waitToast(/^Imported 2 Pokémon/); ok(tt, 'no "Imported 2 Pokémon" toast: ' + (await r.ui.toasts()).join(' | '));
   has(tt, /Mewtwo/, 'toast'); has(tt, /Bogus Move/, 'toast'); ok((await r.ui.team()).join() === 'Garchomp,Incineroar', 'team after import: ' + (await r.ui.team()).join());
   await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not restore'); await r.close(); });
@@ -534,7 +575,10 @@ t('IO-02', 'Export to Showdown: Showdown text with item, Ability, Level 50, EVs,
   await r.ui.panelButton(/^Copy$/); ok(await r.ui.waitToast(/Copied|Press Ctrl\+C/), 'no copy toast'); await r.close(); });
 
 t('IO-03', 'Copy for Showdown on My Team: toast and six Showdown blocks on the clipboard', async () => {
-  const r = await myTeam(); await r.ui.grantClipboard(); await r.ui.tapText('Copy for Showdown'); ok(await r.ui.waitToast(/Copied — paste into Showdown's teambuilder/), 'no copy toast');
+  // new build (Sim, Nov 11): Copy for Showdown sits in My Team's More menu, and its toast reads "Team copied for Showdown"
+  const r = await myTeam(); await r.ui.grantClipboard();
+  if (NEW) { await r.ui.teamAction('Copy for Showdown'); ok(await r.ui.waitToast(/^Team copied for Showdown$/), 'no "Team copied for Showdown" toast: ' + (await r.ui.toasts()).join(' | ')); }
+  else { await r.ui.tapText('Copy for Showdown'); ok(await r.ui.waitToast(/Copied — paste into Showdown's teambuilder/), 'no copy toast'); }
   const c = await r.ui.copied(); ok(c && c.trim().split(/\n\s*\n/).length === 6, 'clipboard does not hold six blocks'); await r.close(); });
 
 t('IO-04', 'Team Sheet "Copy as text" copies the team', async () => {
@@ -552,10 +596,14 @@ t('SHARE-01', 'Share box: Team Card / Poster / Sheet switch, Light / Dark style,
   const e = await myTeam({team: []}); await e.ui.peek(`$('shareBtn').click()`); ok(await e.ui.waitToast(/Add some Pokémon first/), 'empty team: no "Add some Pokémon first"'); await e.close(); });
 
 t('SHARE-02', 'Team Card image is 1200×675', async () => {
-  const r = await myTeam(); await r.ui.openShare(); const s = await r.ui.waitShareImage(); ok(s.w === 1200 && s.h === 675, `card is ${s.w}×${s.h}`); ok(s.title === 'Share card', 'title: ' + s.title); await r.close(); });
+  // the new build's share sheet is titled "Share Your Team" for every kind; the Team Card choice is the one picked
+  const r = await myTeam(); await r.ui.openShare(); const s = await r.ui.waitShareImage(); ok(s.w === 1200 && s.h === 675, `card is ${s.w}×${s.h}`); ok(s.title === (NEW ? 'Share Your Team' : 'Share card'), 'title: ' + s.title);
+  if (NEW) ok(await r.ui.chosen('Team Card') === true, '"Team Card" not the picked kind'); await r.close(); });
 
 t('SHARE-03', 'Team Poster image is 1080×1350', async () => {
-  const r = await myTeam(); await r.ui.openShare(); await r.ui.choose('Team Poster', 1500); const s = await r.ui.waitShareImage(); ok(s.w === 1080 && s.h === 1350, `poster is ${s.w}×${s.h}`); ok(/poster/i.test(s.title), 'title: ' + s.title); await r.close(); });
+  const r = await myTeam(); await r.ui.openShare(); await r.ui.choose('Team Poster', 1500); const s = await r.ui.waitShareImage(); ok(s.w === 1080 && s.h === 1350, `poster is ${s.w}×${s.h}`);
+  // new build: the sheet keeps its title "Share Your Team"; the poster is marked by the picked "Team Poster" choice
+  if (NEW) { ok(s.title === 'Share Your Team', 'title: ' + s.title); ok(await r.ui.chosen('Team Poster') === true && await r.ui.chosen('Team Card') === false, '"Team Poster" not the picked kind'); } else ok(/poster/i.test(s.title), 'title: ' + s.title); await r.close(); });
 
 t('SHARE-04', 'Team Sheet page "Share as image" opens the box titled "Team Sheet" (1080×1350)', async () => {
   const r = await myTeam(); await r.ui.go('Team Sheet', 900); await r.ui.tapText('Share as image', 1500); const s = await r.ui.waitShareImage();
@@ -571,15 +619,19 @@ t('SHARE-06', 'Team link: "Copy team link" copies #team=…; opening it offers "
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.grantClipboard(); await r.ui.switchTeam('Rain test'); await r.ui.openShare(); await r.ui.waitShareImage();
   await r.ui.tapText('Copy team link', 800); ok(await r.ui.waitToast(/Team link copied/), 'no "Team link copied" toast'); const link = await r.ui.copied(); ok(link && /#team=/.test(link), 'clipboard: ' + link); await r.close();
   const hash = link.slice(link.indexOf('#team='));
-  const o = await aopen({team: TEAM, hash}); ok(await o.ui.waitFor(() => o.ui.sees(/Shared team[\s\S]{0,80}Rain test/)), 'no "Shared team Rain test" bar'); await o.ui.tapText(/^Load it$/, 1500);
+  // new build: the offer's button reads "Open This Team" (today "Load it"); its pages are hash routes, so the link's #team=… gives way
+  // to My Team's own route (#team) instead of an empty hash
+  const o = await aopen({team: TEAM, hash}); ok(await o.ui.waitFor(() => o.ui.sees(/Shared team[\s\S]{0,80}Rain test/)), 'no "Shared team Rain test" bar'); await o.ui.tapText(NEW ? /^Open This Team$/ : /^Load it$/, 1500);
   ok((await o.ui.team()).join() === RAIN.join(), 'team not loaded: ' + (await o.ui.team()).join()); ok(await o.ui.current() === 'report', 'My Team not opened'); ok(await o.ui.waitToast(/Loaded .Rain test. \(6 Pokémon\)/), 'no "Loaded" toast');
-  ok(await o.ui.has('#toastUndo'), 'no Undo'); ok(!(await o.pg.evaluate(() => location.hash)), 'hash not removed'); await o.close();
+  ok(await o.ui.has('#toastUndo'), 'no Undo'); const h = await o.pg.evaluate(() => location.hash); ok(NEW ? h === '#team' : !h, 'hash not removed: ' + h); await o.close();
   const n = await aopen({team: TEAM, hash}); await n.ui.waitFor(() => n.ui.sees('Shared team')); await n.ui.tapText(/^Not now$/, 800); ok(!(await n.ui.sees(/Shared team[\s\S]{0,120}Load it/)), 'bar still there');
   ok((await n.ui.team()).join() === TEAM.join(), 'team changed after Not now'); await n.close(); });
 
 // ================= 7. Your games =================
 t('LOG-01', 'Your games card on a full six: "None logged yet." and "Log a game"', async () => {
-  const {ui} = await view('team', {team: TEAM}, 'My Team'); const c = await ui.myGamesCard(); ok(c && /Your games: this six/.test(c) && /None logged yet\./.test(c) && /Log a game/.test(c), 'card: ' + c); });
+  // the new build's section reads "Your Games / None logged yet / Log a Game" (Title Case heading and button, Sim's rule)
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); const c = await ui.myGamesCard();
+  ok(c && (NEW ? /^Your Games None logged yet Log a Game$/.test(c) : /Your games: this six/.test(c) && /None logged yet\./.test(c) && /Log a game/.test(c)), 'card: ' + c); });
 
 t('LOG-02', 'Log a game: two leads, their six from Battle mode, Win → "1–0"; saved to the account', async () => {
   const r = await myTeam({team: TEAM, opp: OPP}); await r.ui.openLogForm(); const f = await r.ui.myGamesCard();
@@ -601,8 +653,10 @@ t('LOG-04', 'After 5 games with their teams: "You lose most to …"', async () =
 
 t('LOG-05', 'Logged games show on the matching saved team and in Compare', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.openLogForm(); await r.ui.logResult('W'); await r.ui.go('Saved Teams', 900);
-  has(await r.ui.savedCardOf('Sun six') || '', /Your games 1–0 with this six/, 'Sun six card'); ok(!/Your games/.test(await r.ui.savedCardOf('Rain test') || ''), 'Rain test shows a record');
-  await r.ui.savedAction('Sun six', 'Compare'); await r.ui.savedAction('Rain test', 'Compare'); await r.ui.settle(); has(await r.ui.text(), /Your games with this six/, 'Compare'); await r.close(); });
+  // the new build's saved card says "Your games 1–0" in its footer (the card is the six, so no "with this six"); Compare's row is
+  // "Your games with this six" with each side's record
+  has(await r.ui.savedCardOf('Sun six') || '', NEW ? /\b2\/4 checks Your games 1–0 Open\b/ : /Your games 1–0 with this six/, 'Sun six card'); ok(!/Your games/.test(await r.ui.savedCardOf('Rain test') || ''), 'Rain test shows a record');
+  await r.ui.savedAction('Sun six', 'Compare'); await r.ui.savedAction('Rain test', 'Compare'); await r.ui.settle(); has(await r.ui.text(), NEW ? /Your games with this six 1–0 1 game you logged None logged/ : /Your games with this six/, 'Compare'); await r.close(); });
 
 // ================= 8. Team Sheet page =================
 t('SHEET-01', 'Team Sheet head: "<team name>: Reg M-C doubles, level 50", "← My Team" back link', async () => {
@@ -626,6 +680,14 @@ t('SHEET-04', 'Team Sheet with no team: "No team yet…" and "Open My Team"', as
 
 // ================= 9. Saved teams =================
 t('SAVED-01', 'Save team: name box, "Save as new" → toast "Saved "Test"", button becomes "Update saved team"; saved to the account', async () => {
+  if (NEW) { /* new build: a small "Save Team" sheet ("Give this six a name.", the count, Save Team / Cancel); after saving, the main
+    button is a quiet "Saved ✓" while the six is unchanged and "Update Saved Team" once it changes (A11, approved Nov 12) */
+    const r = await myTeam(); await r.ui.tapText(/^Save team$/, 1000); const p = await r.ui.editPanel(); ok(p && p.title === 'Save Team', 'save sheet title: ' + (p && p.title));
+    has(p.text, /Give this six a name\. 0 of 10 saved Save Team Cancel$/, 'save sheet');
+    await r.ui.typeSaveName('Test'); await r.ui.tapText(/^Save Team$/, 1200); ok(await r.ui.waitToast(/^Saved .Test.$/), 'no "Saved "Test"" toast'); ok(!(await r.ui.editPanel()), 'save sheet still open');
+    let a = await r.ui.teamActions(); ok(a.includes('Saved ✓') && !a.includes('Save team'), 'button not "Saved ✓": ' + a.join('|')); await sleep(1000);
+    const ac = await r.acct(); ok(ac.teams.some(x => x.name === 'Test' && x.slots.filter(s => s.n).length === 6) && ac.teams.find(x => x.name === 'Test').id === ac.loadedId, 'saved team not in the account / not open');
+    await r.ui.removeFromTeam('Sneasler'); await r.ui.settle(); a = await r.ui.teamActions(); ok(a.includes('Update saved team'), 'button not "Update Saved Team" after a change: ' + a.join('|')); await r.close(); return; }
   const r = await myTeam(); await r.ui.tapText(/^Save team$/, 1000); const p = await r.ui.editPanel(); has(p.text, /Save this doubles team/i); has(p.text, /Save as new/); has(p.text, /Cancel/);
   await r.ui.typeSaveName('Test'); await r.ui.tapText(/^Save as new$/, 1200); ok(await r.ui.waitToast(/Saved .Test./), 'no "Saved "Test"" toast');
   await r.ui.closeEditPanel().catch(() => {}); ok((await r.ui.teamActions()).includes('Update saved team'), 'button not "Update saved team"'); await sleep(1000);
@@ -633,8 +695,11 @@ t('SAVED-01', 'Save team: name box, "Save as new" → toast "Saved "Test"", butt
 t('SAVED-01b', 'Save panel: empty name saves as "Untitled team"; 10 saved teams disable "Save as new"', async () => {
   const ten = Array.from({length: 10}, (_, i) => ({name: 'Team ' + i, team: TEAM.slice(0, 2)}));
   const r = await myTeam({team: TEAM, saved: ten}); await r.ui.tapText(/^Save team$/, 1000); has((await r.ui.editPanel()).text, /You have 10 saved teams/, 'save panel');
-  ok(await r.ui.pg.evaluate(() => { const b = document.querySelector('#saveNew'); return !!(b && b.disabled); }), '"Save as new" not disabled at 10'); await r.close();
-  const e = await myTeam(); await e.ui.tapText(/^Save team$/, 1000); await e.ui.typeSaveName(''); await e.ui.tapText(/^Save as new$/, 1200); ok(await e.ui.waitToast(/Saved .Untitled team./), 'empty name not saved as "Untitled team"'); await e.close(); });
+  // the save button found by its label in the open save panel (was today's #saveNew, read directly): today "Save as new", new build "Save Team"
+  const SAVE = NEW ? 'Save Team' : 'Save as new', saveBtn = () => r.ui.pg.evaluate(l => { const d = [...document.querySelectorAll('[role=dialog]')].filter(e => e.getClientRects().length && !e.hidden).pop() || document;
+    const b = [...d.querySelectorAll('button')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim() === l); return b ? {disabled: b.disabled} : null; }, SAVE);
+  const sb = await saveBtn(); ok(sb && sb.disabled, `"${SAVE}" not disabled at 10: ` + JSON.stringify(sb)); await r.close();
+  const e = await myTeam(); await e.ui.tapText(/^Save team$/, 1000); await e.ui.typeSaveName(''); await e.ui.tapText(NEW ? /^Save Team$/ : /^Save as new$/, 1200); ok(await e.ui.waitToast(/Saved .Untitled team./), 'empty name not saved as "Untitled team"'); await e.close(); });
 
 t('SAVED-02', 'Saved Teams head: count (N/10) and where it\'s stored (account vs this browser)', async () => {
   const r = await aopen({team: TEAM, saved: SAVED}); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text(); has(tx, /Up to 10 teams\. Saved to your Claude account and kept in step across your devices\./); has(tx, '← My Team'); await r.close();
@@ -645,13 +710,17 @@ t('SAVED-02b', 'Saved Teams shows how many of the 10 places are used ("2/10")', 
   {known: 'inventory SAVED-02 says the head shows the count "(3/10)"; today the count element exists but is hidden (display:none parent), so players never see it'});
 t('SAVED-03', 'Sort Recent | Name | Readiness; "Name" is alphabetical', async () => {
   const r = await aopen({team: TEAM, saved: [{name: 'Zed', team: RAIN}, {name: 'alpha', team: TEAM}, {name: 'Mid', team: TEAM.slice(0, 3)}]}); await r.ui.go('Saved Teams', 900);
-  ok(await r.ui.chosen('Recent') === true, 'Recent not default'); await r.ui.choose('Name', 700); const names = (await r.ui.savedCards()).map(c => c.split(' ')[0]);
-  ok(names.join() === 'alpha,Mid,Zed', 'Name order: ' + names.join()); await r.ui.choose('Readiness', 700); ok((await r.ui.savedCards()).length === 3, 'Readiness sort lost cards'); await r.close(); });
+  // the new build's sort reads Newest | Name | Matchups (word list: Matchups, not "Readiness"; today "Recent | Name | Readiness")
+  const [RECENT, READY] = NEW ? ['Newest', 'Matchups'] : ['Recent', 'Readiness'];
+  ok(await r.ui.chosen(RECENT) === true, RECENT + ' not default'); if (NEW) ok(await r.ui.chosen('Recent') === null && await r.ui.chosen('Readiness') === null, 'old sort words still shown');
+  await r.ui.choose('Name', 700); const names = (await r.ui.savedCards()).map(c => c.split(' ')[0]);
+  ok(names.join() === 'alpha,Mid,Zed', 'Name order: ' + names.join()); await r.ui.choose(READY, 700); if (NEW) ok(await r.ui.chosen(READY) === true, READY + ' sort not marked chosen'); ok((await r.ui.savedCards()).length === 3, 'Readiness sort lost cards'); await r.close(); });
 
 t('SAVED-04', 'Saved team card: name, six tiles, Strength Score badge or "N/6 Pokémon", checks, actions', async () => {
   const r = await aopen({team: TEAM, saved: [{name: 'Rain test', team: RAIN}, {name: 'Two', team: ['Garchomp', 'Incineroar']}]}); await r.ui.go('Saved Teams', 900); await r.ui.settle();
   const c = await r.ui.savedCardOf('Rain test'); for (const s of [/Pelipper/, /Archaludon/, /\b\d{2}\b/, /\d\/4 checks/, /Compare/, /Open/, /Copy for Showdown/]) has(c, s, 'Rain test card');
-  has(await r.ui.savedCardOf('Two') || '', /2\/6 Pokémon/, 'partial card'); await r.close(); });
+  // a partial team's card: today "2/6 Pokémon", new build "2 of 6 picked" (the same words as My Team's partial score)
+  has(await r.ui.savedCardOf('Two') || '', NEW ? /^Two Garchomp Incineroar Empty Empty Empty Empty 2 of 6 picked Open / : /2\/6 Pokémon/, 'partial card'); await r.close(); });
 
 t('SAVED-05', 'Open a saved team: My Team shows its name, toast "Opened …" with Undo', async () => {
   const r = await aopen({team: TEAM, saved: SAVED}); await r.ui.go('Saved Teams', 900); await r.ui.savedAction('Rain test', 'Open');
@@ -672,7 +741,7 @@ t('SAVED-07', '⋯ → Team poster opens the share box with that team\'s poster'
 
 t('SAVED-08', 'Compare on two saved teams opens Compare with both', async () => {
   const r = await aopen({team: TEAM, saved: SAVED}); await r.ui.go('Saved Teams', 900); has(await r.ui.text(), /(Click|Tap) Compare on two teams to see them side by side/);
-  await r.ui.savedAction('Rain test', 'Compare'); has(await r.ui.text(), /Picked ✓/); has(await r.ui.text(), /Compare:? Rain test is picked\. Pick one more saved team, or/); has(await r.ui.text(), 'Compare with my current team');
+  await r.ui.savedAction('Rain test', 'Compare'); has(await r.ui.text(), /Picked ✓/); has(await r.ui.text(), /Compare:? Rain test is picked\. Pick one more saved team, or/); has(await r.ui.text(), NEW ? /Pick one more saved team, or Compare with My Team · Cancel/ : 'Compare with my current team'); // new build: Title Case "Compare with My Team"
   await r.ui.savedAction('Sun six', 'Compare'); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.settle(); const tx = await r.ui.text(); has(tx, 'Rain test', 'Compare'); has(tx, 'Sun six', 'Compare'); await r.close(); });
 
 t('SAVED-09', 'No saved teams: Darkrai, "No saved teams yet…", "Open My team", "Build me a team"', async () => {
@@ -805,7 +874,10 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
 
 t('X-03', 'Toasts: Undo puts the team back ("Change undone"); plain confirmations carry Darkrai', async () => {
   const r = await myTeam(); await r.ui.removeFromTeam('Sneasler'); ok(await r.ui.waitToast(/Removed Sneasler/), 'no toast'); await r.ui.tapToastUndo(); ok(await r.ui.waitToast(/Change undone/), 'no "Change undone"'); ok((await r.ui.team()).includes('Sneasler'), 'not restored');
-  await r.ui.clearTeam(); ok(await r.ui.waitToast(/Team cleared/), 'no "Team cleared"'); ok(await r.ui.pg.evaluate(() => { const i = document.querySelector('#toast img'); return !!(i && i.src === window.NP_MASCOT); }), 'no Darkrai on the confirmation'); await r.close(); });
+  await r.ui.clearTeam(); ok(await r.ui.waitToast(/Team cleared/), 'no "Team cleared"');
+  // new build (Sim, Nov 11): Darkrai is cut, so the confirmation toast carries no picture at all (checked while the toast shows)
+  if (NEW) { const im = await r.ui.toastImages(); ok(Array.isArray(im) && im.length === 0, 'confirmation toast ' + (im ? 'has a picture (Darkrai is cut): ' + im.join(', ') : 'not showing')); }
+  else ok(await r.ui.pg.evaluate(() => { const i = document.querySelector('#toast img'); return !!(i && i.src === window.NP_MASCOT); }), 'no Darkrai on the confirmation'); await r.close(); });
 
 t('X-04', 'Double-tap on Apply applies only once', async () => {
   const r = await myTeam(); const start = await r.ui.team(); await r.ui.doubleTapApply(); await r.ui.settle(); const now = await r.ui.team();
@@ -832,7 +904,9 @@ t('X-08', 'Sliding pickers: tapping a choice moves the highlight and reports pre
 
 t('X-09', 'A saved team name keeps its own casing ("rain test")', async () => {
   const r = await aopen({team: TEAM, saved: [{name: 'rain test', team: RAIN}]}); await r.ui.go('Saved Teams', 900); const cards = (await r.ui.savedCards()).join(' | '); ok(/\brain test\b/.test(cards) && !/Rain [Tt]est/.test(cards), 'name re-cased: ' + cards);
-  await r.ui.savedAction('rain test', 'Open'); await r.ui.settle(); ok(await r.ui.teamHeading() === 'rain test', 'heading: ' + await r.ui.teamHeading()); has(await r.ui.text(), 'Your Six'); await r.close(); });
+  await r.ui.savedAction('rain test', 'Open'); await r.ui.settle(); ok(await r.ui.teamHeading() === 'rain test', 'heading: ' + await r.ui.teamHeading());
+  // My Team drew the opened team (today under its "Your Six" heading; the new build has no such heading by design, as TEAM-08)
+  if (NEW) { ok(!/Your Six/.test(await r.ui.text()), 'a "Your Six" heading shows (removed by design)'); ok((await r.ui.sixTiles()).length === 6, 'opened team\'s six tiles not drawn'); } else has(await r.ui.text(), 'Your Six'); await r.close(); });
 
 t('X-10', 'Dark mode: My Team draws on a dark page', async () => {
   const r = await myTeam({team: TEAM, mode: 'dark'}); const lum = await r.ui.pageLuminance(); ok(lum < 0.25, 'page not dark in dark mode: ' + lum.toFixed(2)); await r.close();
