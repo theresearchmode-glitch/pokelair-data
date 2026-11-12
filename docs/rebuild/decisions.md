@@ -500,3 +500,5 @@ Sim's own decisions are marked "Sim". Newest first.
   switch to the new design, words to approve then. First visit makes desktop Home 2,878 (limit 2,700; returning 2,589).
 - The fold's top gap and rule are now variables (--fold-mt / --fold-bt in sugs.css) because the v2 CSS layers let the fold's
   layer win over Home's; only What's New uses them (More on Home keeps its approved gap).
+- ~3:13 PM, Sim: welcome card words and buttons approved; a fresh What's New entry for the switch is OK (draft to Sim first);
+  the first-visit desktop height is allowed (c13 HOME 1440: 2,900 with the reason printed; page-heights.md updated).

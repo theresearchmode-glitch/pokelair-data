@@ -23,7 +23,7 @@ const [file = path.join(ROOT, 'app/dist/v2.html'), viewArg = 'team,team-empty,bo
 const WIDTHS = [[320, 3900, ''], [390, 3700, ''], [820, 3500, ''], [1440, 1800, '']];
 // Home has its own agreed limits (docs/rebuild/page-heights.md: phone 4,400 (Sim, Nov 12, was 4,200), iPad 3,500, desktop 2,700); 320 has none agreed,
 // so it takes the phone limit + 200 like the tool pages do, and says the limit is assumed (Nov 12)
-const HOME = {320: [4600, "assumed"], 390: [4400, ""], 820: [3500, ""], 1440: [2700, ""]};
+const HOME = {320: [4600, "assumed"], 390: [4400, ""], 820: [3500, ""], 1440: [2900, "first visit: welcome card allowed over 2,700 (Sim, Nov 12)"]};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
@@ -93,7 +93,7 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
   // Sim, Nov 12 (option A): the first-visit sample team, which shows the sample-team note, may be 50px taller on phones
   if (r.sample && w === 390) limit += 50;
   const pics = r.imgs.length ? `broken images ${r.imgs.length}` : 'images ok';
-  out.push(`${eng.padEnd(8)} ${view.padEnd(10)} ${String(w).padStart(4)}  height ${r.H}${r.H > limit ? ` OVER ${limit}` : ` ok (${limit})`}${note ? ' [limit assumed]' : ''}; sideways ${r.sideways > 0 ? r.sideways + 'px' : 0}; cut off ${r.cut}; ${pics}; tap<44 ${r.small.length}${r.small.length ? ' [' + r.small.slice(0, 4).join('; ') + (r.small.length > 4 ? '; …' : '') + ']' : ''}; hidden-focusable ${r.hidden.length}${r.hidden.length ? ' [' + r.hidden.slice(0, 3).join('; ') + ']' : ''}; repeated ${r.rep.length}${r.rep.length ? ' [' + r.rep.slice(0, 2).join('; ') + ']' : ''}; main buttons/screen ${r.most}${r.most > 1 ? ' (at y ' + r.at + ')' : ''}; errors ${errs.length}${errs.length ? ' [' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''}`);
+  out.push(`${eng.padEnd(8)} ${view.padEnd(10)} ${String(w).padStart(4)}  height ${r.H}${r.H > limit ? ` OVER ${limit}` : ` ok (${limit})`}${note ? ' [limit ' + (note === 'assumed' ? 'assumed' : note) + ']' : ''}; sideways ${r.sideways > 0 ? r.sideways + 'px' : 0}; cut off ${r.cut}; ${pics}; tap<44 ${r.small.length}${r.small.length ? ' [' + r.small.slice(0, 4).join('; ') + (r.small.length > 4 ? '; …' : '') + ']' : ''}; hidden-focusable ${r.hidden.length}${r.hidden.length ? ' [' + r.hidden.slice(0, 3).join('; ') + ']' : ''}; repeated ${r.rep.length}${r.rep.length ? ' [' + r.rep.slice(0, 2).join('; ') + ']' : ''}; main buttons/screen ${r.most}${r.most > 1 ? ' (at y ' + r.at + ')' : ''}; errors ${errs.length}${errs.length ? ' [' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''}`);
   await b.close(); }
 console.log(out.join('\n'));
 console.log(`c13 check (${state}; ${ENGINES.join(' + ')}): ${out.length} page/width runs; ${out.filter(l => / OVER /.test(l)).length} over height; ${Math.round((Date.now() - t0) / 1000)}s. Not covered: C2, C3 (beyond repeated lines), C5, C6, C9, C10, C11, C12.`);
