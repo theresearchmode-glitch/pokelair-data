@@ -127,3 +127,30 @@ function renderPastePanel() {
 // any list of slots (a saved team, a built team, six names): exported exactly as if it were your team, then put back
 function slotsPaste(slots) { const keep = S.slots, kf = S.format;
   try { S.slots = normSlots(slots); S.format = 'doubles'; return exportPaste(); } finally { S.slots = keep; S.format = kf; } }
+
+// ---------- team sheets as Showdown text (moved unchanged from 56-showdown-copy.js, Nov 12: shared with the new build's Home) ----------
+const SD_NOTE_TOUR = "Some details weren't published — filled with the most common set";
+const SD_NOTE_BUILT = 'Moves, items and natures are the most common sets from real play';
+// one Pokémon block in Showdown's text format
+function sdBlock(x) { return [`${x.species}${x.item ? ' @ ' + x.item : ''}`, x.ability ? 'Ability: ' + x.ability : '', 'Level: 50', x.ev ? 'EVs: ' + x.ev : '', x.nature ? x.nature + ' Nature' : '', ...x.moves.filter(Boolean).map(m => '- ' + m)].filter(Boolean).join('\n'); }
+// the name Showdown wants: a Mega as its base form (Meowstic-F's Mega as Meowstic-F)
+function sdSpecies(p) { if (p.n === 'Meowstic-F-Mega') return 'Meowstic-F'; if (!p.m) return p.n; const base = byName.get(p.b); if (base && !base.m) return base.n;
+  /* a Mega whose base has another name on the roster (Mega Floette comes from Floette-Eternal): the form that turns into it with its stone */
+  const st = stoneFor(p), q = ROSTER.find(x => !x.m && megaFormFor(x, {it: [[st, 100]]}).n === p.n); return q ? q.n : p.n; }
+// a team sheet (from meta/events: {n, i, a, nt, mv}) as Showdown text; filled = a missing move or item came from common sets
+function sheetPaste(mons) { let filled = false;
+  const text = mons.map(m => { const p = byName.get(m.n); if (!p) return ''; const base = byName.get(p.b) || p;
+    let item = m.i || '';
+    // a Mega's stone is fixed by its form, so it is known even when the sheet left the item blank
+    if (!item && p.m) item = stoneFor(p);
+    if (!item) { const ti = topItems(p); if (ti && ti.it[0]) { item = ti.it[0][0]; filled = true; } }
+    // a Mega's paste carries the base form's ability (some sheets write the Mega's own; Showdown would reject that)
+    /* an ability the Pokémon can't have (a typo on the sheet) is treated as missing */
+    let ability = m.a && (p.m || p.a.includes(m.a)) ? m.a : '';
+    if (p.m && !base.a.includes(ability)) ability = metaAbility(base) || bestAbility(base);
+    if (!ability) { ability = metaAbility(p) || bestAbility(p); filled = true; }
+    /* a move the Pokémon can't learn in Champions (a typo on the sheet) is treated as missing, so Showdown accepts the team */
+    const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), moves = (m.mv || []).filter(x => x && (!learn.size || learn.has(x))).slice(0, 4);
+    if (moves.length < 4) { for (const x of slotMoves({}, p).names.filter(Boolean)) if (moves.length < 4 && !moves.includes(x)) { moves.push(x); filled = true; } }
+    return sdBlock({species: sdSpecies(p), item, ability, nature: String(m.nt || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''), moves}); }).filter(Boolean).join('\n\n');
+  return {text, filled}; }

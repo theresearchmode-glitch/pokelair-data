@@ -9,3 +9,9 @@ const homeSrcLine = () => { const d = typeof META === 'object' && META && META[S
 const homePct = p => { const u = U(p); return u ? u.toFixed(1) : ''; };
 // 13826 -> "13,826"
 const homeNum = n => n && n.toLocaleString ? n.toLocaleString('en-US') : String(n || 0);
+// an event's name without its prize note (moved unchanged from 60-concept-h.js)
+const evName = n => String(n || '').replace(/\s*\((?:[^()]*?(?:prize|USD|\$)[^()]*)\)\s*$/i, '').trim();
+// the latest winner's six (moved unchanged from 74-arena.js AR.champ): {ev, t, n, six:[{p, it, ab}]}, or null
+const homeChamp = () => { const E = META.events; if (!E || !Array.isArray(E.events)) return null;
+  for (const e of E.events) { const t = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (t) return {ev: e, t, n: E.events.length, six: t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''}))}; }
+  return null; };

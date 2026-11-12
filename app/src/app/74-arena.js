@@ -104,9 +104,7 @@ AR.sampleNote = () => `<div class="ar-sample"><p>This is a sample team, here to 
 AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
 AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
-AR.champ = () => { const E = META.events; if (!E || !Array.isArray(E.events)) return null;
-  for (const e of E.events) { const t = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (t) return {ev: e, t, n: E.events.length, six: t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''}))}; }
-  return null; };
+AR.champ = homeChamp; /* shared (05-home-data.js, Nov 12) */
 
 /* ======================= Home ======================= */
 /* the Top of the meta rows: one naming everywhere ("Mega Charizard Y", not "M-Charizard Y"), the Mega contour on the small

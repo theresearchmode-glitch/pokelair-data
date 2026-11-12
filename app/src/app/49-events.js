@@ -40,8 +40,7 @@ function renderEvents() {
       <div class="t2">${evDate(e.date)} · ${e.players.toLocaleString('en-US')} players</div>
       <div class="evwin">${w.mons.map(m => sprH(byName.get(m.n), 'mini')).join('')}</div></button>`; }).join('') || '<div class="empty-note">No events here yet.</div>'}</div>`
     + (list.length > cap ? `<div class="morebar"><button class="btn sm" type="button" data-evmore="1">Show more (${list.length - cap} left)</button></div>` : ''); }
-function loadSheet(t) { keepUndo(); S.slots = normSlots(t.mons.map(m => { const p = byName.get(m.n); const mv = m.mv.filter(x => mvByName.has(x)); while (mv.length < 4) mv.push('');
-    return {n: m.n, a: p.a.includes(m.a) ? m.a : null, lock: false, ...(mv.some(Boolean) ? {mv: {doubles: mv.slice(0, 4)}} : {}), ...(!p.m && m.i && typeof m.i === 'string' ? {it: {doubles: m.i}} : {})}; }));
+function loadSheet(t) { keepUndo(); S.slots = sheetSlots(t); /* shared (49-event-data.js, Nov 12) */
   S.format = 'doubles'; S.loadedId = null; render(); setView('build'); toast(`${teamWho(t).split(' · ')[0]}'s team loaded with its moves and items`, true); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-evopen],[data-evback],[data-evf],[data-evmore],[data-evsets],[data-evload],[data-evvs]'); if (!b) return; const d = b.dataset;
   if (d.evopen) { evUi.open = d.evopen; renderEvents(); try { window.scrollTo({top: 0}); } catch (er) {} return; }

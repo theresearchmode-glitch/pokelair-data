@@ -142,7 +142,7 @@ CH.legendRow = RD => { const c = CH.lvCount(RD); let rv = null; try { rv = RD.ro
   if (rv && rv.length) { const k = w => rv.filter(x => x.c === w).length; return `<div class="chleg chlegrv"><span><i class="rv-bad" aria-hidden="true"></i>Unfavoured ${k('bad')}</span><span><i class="rv-mid" aria-hidden="true"></i>Even match ${k('mid')}</span><span><i class="rv-ok" aria-hidden="true"></i>Favoured ${k('ok')}</span></div><p class="t2 chlegcalc">Damage calc: ${CH.LV[0]} ${c[0]} · ${CH.LV[1]} ${c[1]} · ${CH.LV[2]} ${c[2]} · ${CH.LV[3]} ${c[3]}</p>`; }
   return `<div class="chleg">${[[0, 'var(--chbad)', '✗', 'bad'], [1, 'var(--chshaky)', '~', 'part'], [2, 'var(--chmid)', '✓', 'mid'], [3, 'var(--chok)', '✓✓', 'ok']].map(([l, col, g, k]) => `<span><i class="g-${k}" style="background:${col}" aria-hidden="true">${g}</i>${CH.LV[l]} ${c[l]}</span>`).join('')}</div>`; };
 // event names without a trailing prize-pool note, e.g. "($40 USD prize pool)" (Oct 30 audit)
-const evName = n => String(n || '').replace(/\s*\((?:[^()]*?(?:prize|USD|\$)[^()]*)\)\s*$/i, '').trim();
+/* evName moved to 05-home-data.js (Nov 12, shared with the new build's Home) */
 // ---------- Home ----------
 const chHomeOld = renderHome;
 renderHome = function () { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
