@@ -37,6 +37,9 @@ if (!process.argv.includes('--keep-comments')) {
   if (at < 0) throw new Error('no <script> in page'); out = out.slice(0, at) + `<script>window.NP_MASCOT='data:image/webp;base64,${img}';</script>` + out.slice(at); }
 fs.mkdirSync(dir + 'dist', {recursive: true});
 fs.writeFileSync(dir + 'dist/page.html', out);
+// fonts (Sim, Nov 12): hosted by NastyPlot itself; the page reads them from fonts/ beside it, so they go next to page.html
+if (/fonts\.(googleapis|gstatic)\.com/.test(out)) throw new Error('a Google Fonts link is back in the page');
+fs.mkdirSync(dir + 'dist/fonts', {recursive: true}); for (const f of fs.readdirSync(dir + 'src/fonts')) if (f.endsWith('.woff2')) fs.copyFileSync(dir + 'src/fonts/' + f, dir + 'dist/fonts/' + f);
 console.log(`built dist/page.html (${(out.length / 1024).toFixed(0)} KB from ${parts.length} parts${dropped ? `, ${dropped} comment lines dropped` : ''})`);
 // Lighter page (Sim, Nov 5): drop CSS that can never match and minify (see slim.mjs). `--no-slim` skips it.
 if (!process.argv.includes('--no-slim')) await import('./slim.mjs');
