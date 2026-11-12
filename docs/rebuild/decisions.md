@@ -449,3 +449,11 @@ Sim's own decisions are marked "Sim". Newest first.
 - Tests (from Sim's PC outside check): TEAM-13b, SUG-03b, MU-05b, EDIT-07b pass on the new build, so their known-bug mark now
   applies to today's site only (today's site: 4 known, unchanged). TEAM-11 and SUG-10 were already fixed in 10b04ce, after the
   tree the PC checked (174523a).
+- ~2:55 PM, the two items from Sim's PC check:
+  1) WebKit "hidden-focusable 7" on My Team: NOT reproduced here, on the current tree or on 174523a (the PC's tree): c13 webkit team
+     320/390/820 all 0; experiments/hidden-why.cjs (new): script focus reaches 0 hidden controls, real key walk 56 stops, 0 hidden.
+     Sim's own WebKit Tab walk also found 0. Likely the Windows WebKit build lets a script focus a control in a closed fold; not
+     confirmed. PC prompt given to run hidden-why.cjs there.
+  2) Share "Could not draw the image in this view.": happens only when the page is opened as a file (file://): the browser blocks
+     turning the drawing into an image there. Checked both engines: file:// card/poster/sheet all fail; served over http (as the
+     Preview and the real site are) all three draw (1200x675, 1080x1350, 1080x1350). Pictures: docs/rebuild/home/share-*.png.
