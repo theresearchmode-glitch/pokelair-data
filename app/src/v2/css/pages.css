@@ -726,3 +726,4 @@
 @media (max-width:699px){.hm-top .hm-p>.hm-hint{min-height:calc(var(--t13) * 1.5 * 3)}} /* the three views keep one height on phone (their lines wrap to 2-3 lines) */
 @media (max-width:699px){.hm-top>.hm-sub{min-height:calc(var(--t15) * 1.5 * 2)}} /* the line under the heading takes 1-2 lines by view: hold two on phone */
 .hm-sample{margin-top:var(--s2);max-width:48ch}
+.ms-go{display:flex;flex-wrap:wrap;align-items:center;margin-top:var(--s3);gap:var(--s3)} /* today's Build around it + Popular sets on the sheet (PKMN-03) */
