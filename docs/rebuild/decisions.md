@@ -370,3 +370,8 @@ Sim's own decisions are marked "Sim". Newest first.
   `9 pass, 0 FAIL`; BOX-05 failed before the fix. BOX-01 test reads the approved item-20 sync words on the new build.
 - Measuring note: c13 heights must be taken on app/dist/v2.html (fonts beside it). Copies in the scratchpad measured My Team 390 at
   3,719 ("OVER") on every commit back to 3aa5fa6; the real build reads 3,699 (ok). Likely also the unexplained 820 3,042 vs 2,962.
+- ~11:45 AM Eastern (non-visual bug fix, Preview only): the Preview's "land on My Team" step (pages/coming.js, Preview builds only)
+  reset the address before team links (#team=) and box links (#box=) were read, so every link opened in the Preview was silently
+  dropped (good ones loaded nothing; cut-off ones showed no message). Links now pass through. Built Preview foundation.html: cut-off
+  link toast "That team link didn't work: it may be cut off" at 437 ms; a good six opens the Shared team sheet; a box link opens My
+  Box with Add/Replace. Real builds never had this step (BOX-06 passes there). Found while making the team-link plan pictures (F23).

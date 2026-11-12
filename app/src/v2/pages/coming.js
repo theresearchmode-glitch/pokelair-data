@@ -13,5 +13,5 @@ if (window.__NP_PREVIEW) {
       <p class="tm-sub cm2-what">${V2.esc(what)}</p><div class="row"><a class="np-btn" href="${href}">Open the ${name} Mock-up</a><a class="np-btn2" href="#team"><span>Go to My Team</span></a><a class="np-link cm2-all" href="gallery.html">All mock-ups</a></div></div>
       <a class="cm2-shot" href="${href}" aria-label="Open the ${name} mock-up"><img src="${img}" alt="The approved ${name} mock-up" loading="lazy"></a></section>`; }};
   // land on the first rebuilt page, not a placeholder
-  if (!location.hash || !V2.pages[location.hash.slice(1)]) { try { history.replaceState(null, '', location.pathname + location.search + '#team'); } catch (e) {} }
+  if (!/^#(team|box)=/.test(location.hash) && (!location.hash || !V2.pages[location.hash.slice(1)])) { /* Nov 12 fix: team and box links pass through (they were swallowed here) */ try { history.replaceState(null, '', location.pathname + location.search + '#team'); } catch (e) {} }
 }
