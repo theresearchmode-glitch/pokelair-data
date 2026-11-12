@@ -1,3 +1,6 @@
+// Takes about 20 minutes per page (Nov 11): each state waits up to 20 s for ckWinNeeded(), which never clears with the test
+// data stub, on old and new pages alike. Give it 40 minutes (full-check.mjs does); a 20-minute limit kills it mid-run and
+// looks like a crash ("Target page, context or browser has been closed").
 // Usage: node experiments/same-team.mjs before.html after.html (e.g. a saved dist/page.html and the new one)
 // Same-output check for logic extractions: renders My Team (its Strength Score, and Suggestions once the background planner finishes) for real tournament teams, partial teams and an
 // illegal team in two builds and compares the page HTML and the score object.
