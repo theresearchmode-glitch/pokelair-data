@@ -11,6 +11,7 @@ Sim's own decisions are marked "Sim". Newest first.
   recommendation, each logged here and summarised to Sim at 7 PM.
 
 ## Every page
+- Nov 11, 9:39 PM (Sim, on her iPhone): stutter gone, glass kept, Add a Pokémon sheet "love it. works well".
 - Nov 11 (Sim, iPhone Claude app: Add a Pokémon box opened off screen): while a box in a sheet has focus, phone sheets pin to the top of
   the visible area (visualViewport top/height) instead of sitting a measured keyboard-height up, which the Claude app's frame can get
   wrong (my guess at the cause; Sim to confirm on her phone). While a sheet is open, toasts sit under the dimmed backdrop.
