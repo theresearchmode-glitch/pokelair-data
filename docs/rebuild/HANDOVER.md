@@ -1,7 +1,27 @@
-# HANDOVER: the NastyPlot rebuild (updated Nov 12, ~2:30 AM Eastern, during Sim's executive authority until 6:00 AM)
+# HANDOVER: the NastyPlot rebuild (updated Nov 12, 5:24 PM Eastern by the clock)
 
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
+
+## NOW (Nov 12, written 5:24 PM Eastern by the clock; Sim's authority until 6:00 PM; summary reminder 5:40 PM)
+Read first: RULES.md section 00 (honesty: Sim's questions first; WORKING/STOPPED; nothing claimed before it's real; every check
+shows its proof; mistakes reported at once) and the CLAUDE.md rule "times are always read from the clock".
+- Home (app/src/v2/pages/home.js) is BUILT: hero, the Champion's six vs yours, The Meta right now (Top rated / Hidden gems, plus
+  This week on phone and iPad), today's underdog, 12 tools, More on Home fold, welcome card, What's New, weather word.
+  On the Preview: v78 (everything up to the welcome card / What's New / weather word). Built since v78, pictures sent, NOT on the
+  Preview (waiting on Sim's yes): the sweep look changes (level duel headings, #18, Mega names, This week pictures, outlined
+  Build Around It, night switch, Hidden gems fixed height), the five Home gaps (All cores, sample note, Add Your Six -> My Team,
+  This week labels read the rating, paste box label), info sheet Build Around It / Popular Sets, Home/End tab keys, ability share.
+- Checks last run (newest first): Home tests HOME-01..16 + PKMN-01..07, new build: "behaviour: 15 pass, 9 FAIL, 0 known bugs"
+  (5:21 PM; the 9 = pages not rebuilt (Build, Battle, Meta, method) + info-sheet wording/links); today's site: "23 pass, 0 FAIL,
+  1 known bugs" (unchanged). c13 home 390 4,345/4,400, 820 3,436/3,500, 1440 2,893/2,900 (first visit), tap<44 0, both engines.
+- Open, waiting on Sim: Hidden gems fixed height (kept, with the "Only 2..." line) vs short; Preview publish of the items above;
+  What's New draft words (docs/rebuild/whats-new-draft.md); PKMN-02/06 test wording vs the approved sheet (no decisions.md entry
+  yet, so no test branch added); 320 px Home limit (assumed 4,600; Home is 4,743 there).
+- Next page: Build. Groundwork done (docs/rebuild/build-inventory.md: tests, shared logic, mock-up -> data map); Winning Cores
+  data shared (47-core-data.js, today's Cores proven identical 38/38). Nothing of Build's page is built.
+- 4:02-5:02 PM: no work was done (Claude ended its turn while holding authority, after saying "I'm fixing these now"). Rule 00
+  was written so this never repeats.
 
 ## NOW (Nov 12, ~8:30 AM Eastern; Sim at work, Claude has authority until 4:00 PM, reminder trig_01N8c7k5MNNSTMMSs7GsdFYh)
 Day plan agreed with Sim: 1 tests green (cause: frozen test data vs real clock; fix 6c168a8) -> 2 records -> 3 live fonts to main
