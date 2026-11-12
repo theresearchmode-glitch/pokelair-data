@@ -62,12 +62,14 @@ export async function closeAll() { if (browser) await browser.close(); browser =
  *   fresh: true = first-time visitor (no welcome dismissal, nothing saved),
  *   stored: extra raw localStorage entries {key: value}, hash: '#team=...' etc.
  * Returns {pg, ctx, errs, ui, acct, ls, close}. `ui` is the adapter bound to this page. */
+// the page a test opened last (FAILSHOT=dir in run.mjs saves a picture + its text when a test fails; Nov 12, SAVED-06 PC-only)
+let LAST = null; export const lastPage = () => LAST;
 export async function open(o = {}) {
   if (!browser) browser = await chromium.launch();
   const width = o.width || 1280, touch = o.touch ?? width < 700;
   const ctx = await browser.newContext({viewport: {width, height: o.height || 900}, deviceScaleFactor: 1, isMobile: touch, hasTouch: touch,
     colorScheme: o.mode === 'dark' ? 'dark' : 'light'});
-  const pg = await ctx.newPage(), errs = [];
+  const pg = await ctx.newPage(), errs = []; LAST = pg;
   pg.on('pageerror', e => errs.push(e.message.slice(0, 200)));
   const state = o.team || o.box || o.opp || o.saved ? ADAPTER.stateFor(o) : null;
   await pg.addInitScript(([D, st, o]) => {

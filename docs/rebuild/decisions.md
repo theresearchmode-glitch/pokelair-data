@@ -377,3 +377,4 @@ Sim's own decisions are marked "Sim". Newest first.
   Box with Add/Replace. Real builds never had this step (BOX-06 passes there). Found while making the team-link plan pictures (F23).
 - ~12:00 PM Eastern: team link plan F22-F25 written (docs/rebuild/team-link-plan.md, pictures docs/rebuild/team-link/); 4 choices sent to Sim. Nothing built.
 - ~12:10 PM Eastern: Sim agreed team-link choices 1-3 (no name in link, refuse partial links, deflate); 4 (address on images) waits for the public address (~2 weeks).
+- ~12:25 PM Eastern: SAVED-06 (PC A-team re-run 5ba520c) fails on Sim's PC only, also on Nov 11 (2026-11-11-pc.txt), passes 3/3 in the cloud: not a new break. Added FAILSHOT=dir to the behaviour runner (picture + page text of each FAIL; proved on TEAM-15) so the PC can show why.
