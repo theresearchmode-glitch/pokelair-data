@@ -84,7 +84,7 @@ V2.buildOthers = () => { const res = ui.ab && ui.ab.doubles; if (!res || !res.te
       <div class="bd-alt-six">${t.mons.map(m => `<span class="bd-alt-pk">${V2.mon(m.n, {iw: 60, bare: true})}<b>${V2.rowName(m.d)}</b></span>`).join('')}</div>
       <div class="bd-alt-meta"><span>${ans}/${rows.length} matchups with an answer · ${bas.filter(x => x.ok).length}/${bas.length} team checks</span><button type="button" class="np-link" data-bdshow="${i}">Show this one ›</button></div></div>`; };
   const list = res.teams.map((t, i) => i === cur ? '' : item(t, i)).join('');
-  return `<section class="bd-others"><div class="bd-hd"><h2 class="u">Other options</h2><span class="bd-k">${n} built</span></div><p class="bd-sub">Proven teams first, best score first.${ui.abLock ? ` All have ${E(V2.disp(ui.abLock))}.` : ''}</p>${list}</section>`; };
+  return `<section class="bd-others"><div class="bd-hd"><h2 class="u">Other options</h2><span class="bd-k">${n} built</span></div><p class="bd-sub">Tap one to see it in full above.${ui.abLock ? ` All have ${E(V2.disp(ui.abLock))}.` : ''}</p>${list}</section>`; };
 V2.buildCores = () => { const E = V2.esc, rows = coreRows(), shown = rows.slice(0, 7 + 15 * (coreUi.more || 0)), base = RES && +RES.base ? +RES.base : .5;
   const kindW = {pairs: 'pairs', trios: 'trios', teams: 'full teams'}[coreUi.kind] || 'pairs';
   const row = (r, i) => { const tags = coreTags(r.ns), pts = r.tog == null ? null : Math.round(r.tog * 1000) / 10;
