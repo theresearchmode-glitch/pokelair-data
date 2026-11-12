@@ -44,3 +44,14 @@ each piece goes on the Preview; behaviour tests AUTO/CORES on both builds after 
   catch: none is in your box yet" (team.mons[].box), Sets and roles ›.
 - Options strip: Build from My Box (count) / Whole roster (ui.abSrc), Megas on team 0/1/2 (megaGoal, shared with My Team),
   Build around a Pokémon (ui.abLock, name box), "Build around Garchomp ↻" = run again.
+
+## Status (Nov 12, 6:36 PM Eastern by the clock): Build is built in code, NOT on the Preview (waiting on Sim's yes to pictures)
+Built (app/src/v2/pages/build.js): head and options; the answer (score, rank, breakdown + Why this score?, Fresh take line, six
+with item / role / tier / To catch / Off-meta, four reasons with "1 swap" wording, Use / Save / Copy, today's no-result notes);
+Other options; Start from a recent winner (sets + Load / Copy / Practice Against / Compare); Build around a core (kinds, sort,
+With a Pokémon… filter, How cores are ranked, Add / Load, Practice Against + Copy on full teams, Show more); phone jump bar.
+Today's AUTO/CORES tests on the new page (adapters/v2.B-build.mjs, new): 10 pass, 19 FAIL at 6:28 PM; the FAILs are wording by
+design (Title Case headings and buttons, word list: Matchups, Show this one, Load, My Box), pages not rebuilt (Battle, Ratings,
+All Suggestions, Winning Teams: Teams with it, CORES-09), Sim's questions (main yellow button before a build AUTO-07; menu entry
+CORES-13), and today's "Details" toggle / More Cores fold (the new rows show the details inline; hover gives raw rate and % of teams).
+Checks: c13 build 7/7 clean both engines; polish-check build: lone/tap flags explained in decisions.md (6:36 PM).
