@@ -1,7 +1,7 @@
 // Same-output check for the Pokémon info sheet (R4, Nov 11): opens today's info sheet for every Pokémon on the roster in two
 // builds and compares the whole sheet (rating, why it rates N, what the data says, other tier lists, typical set, the Info /
 // Meta / Rating tabs). Inline styles and sprite retry counters are left out (they don't come from the sheet's data).
-// Usage: node experiments/same-info.mjs before.html after.html
+// Usage: node experiments/same-info.mjs before.html after.html   (DUMP=file.json writes the differing sheets, name + both HTMLs; Nov 12)
 import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
@@ -31,4 +31,5 @@ let same = 0, errs = 0; const diff = [];
 out.a.forEach((x, i) => { if (x[1].startsWith('ERR')) errs++; if (x[1] === out.b[i][1]) same++; else diff.push([x[0], x[1], out.b[i][1]]); });
 console.log(`${out.a.length} info sheets compared: ${same} identical, ${diff.length} different; ${errs} errors; sheet chars ${out.a.reduce((s, x) => s + x[1].length, 0)}`);
 diff.slice(0, 3).forEach(([n, x, y]) => { let j = 0; while (j < x.length && x[j] === y[j]) j++; console.log('  ', n, '\n   a:', x.slice(Math.max(0, j - 150), j + 200), '\n   b:', y.slice(Math.max(0, j - 150), j + 200)); });
+if (process.env.DUMP && diff.length) fs.writeFileSync(process.env.DUMP, JSON.stringify(diff.map(([n, a, b]) => ({name: n, a, b})), null, 1));
 process.exit(diff.length || errs ? 1 : 0);
