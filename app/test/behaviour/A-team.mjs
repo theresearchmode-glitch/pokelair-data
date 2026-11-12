@@ -36,7 +36,7 @@ t('HOME-01', 'Home leads with the tagline "Sharply raise your win rate."', async
   ok(h === 'Sharply raise your win rate.', `first heading reads "${h}"`); });
 
 t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => {
-  if (NEW) { /* new build (Home piece 1, decisions.md Nov 12 ~1:21 PM, from the approved mock-up; Preview v74, Sim "love it"): "Most used right
+  if (NEW) { /* new build (Home piece 1, decisions.md Nov 12, from the approved mock-up; Preview v74, Sim "love it"): "Most used right
     now", three tiles #2 · #1 · #3, each "<name> N% of ladder teams", the #1 marked "· #1" ("ladder teams": decisions.md Nov 12 3:50 PM) (aria-label "<name>, most used #1, …") */
     const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now .+? [\d.]+% of ladder teams (.+?) ([\d.]+)% of ladder teams · #1 /); ok(m, 'no "Most used right now … <name> N% of ladder teams · #1" hero');
     await r.ui.tapText('most used #1'); const s = await r.ui.infoSheet(); ok(s && s.includes(m[1]), `info sheet for ${m[1]} did not open`); noErrs(r); await r.close(); return; }
@@ -45,7 +45,7 @@ t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => 
   await r.ui.tapText('Most used, #1'); const s = await r.ui.infoSheet(); ok(s && s.includes(m[2]), `info sheet for ${m[2]} did not open`); noErrs(r); await r.close(); });
 
 t('HOME-03', 'Runner-up strips (#2, #3) open their info sheets', async () => {
-  if (NEW) { /* new build (Home piece 1, decisions.md Nov 12 ~1:21 PM; Preview v74): #2 and #3 are tiles either side of #1, "<name> N% of ladder teams" */
+  if (NEW) { /* new build (Home piece 1, decisions.md Nov 12; Preview v74): #2 and #3 are tiles either side of #1, "<name> N% of ladder teams" */
     const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now (.+?) ([\d.]+)% of ladder teams .+? [\d.]+% of ladder teams · #1 (.+?) ([\d.]+)% of ladder teams/);
     ok(m, 'no #2 and #3 tiles with name and %'); await r.ui.tapText(`${m[1]} ${m[2]}%`); let s = await r.ui.infoSheet(); ok(s && s.includes(m[1]), `info sheet for ${m[1]} did not open`);
     await r.ui.closeInfoSheet(); await r.ui.tapText(`${m[3]} ${m[4]}%`); s = await r.ui.infoSheet(); ok(s && s.includes(m[3]), `info sheet for ${m[3]} did not open`); await r.close(); return; }
@@ -59,7 +59,7 @@ t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', as
 
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {
   const r = await homePage(); const tx = await r.ui.text(); has(tx, 'This week in the ratings');
-  // new build (decisions.md Nov 12 ~2:00-2:30 PM, Sim "add a few more"): up to 7 rows on desktop, each "<name> ▲ up N points" (shown scale)
+  // new build (decisions.md Nov 12, Sim "add a few more"): up to 7 rows on desktop, each "<name> ▲ up N points" (shown scale)
   const chips = await r.ui.ratingMoves(); ok(chips.length >= 1 && chips.length <= (NEW ? 7 : 6), `${chips.length} rating-move chips`);
   for (const c of chips) ok((NEW ? /[▲▼] (up|down) \d+ points$/ : /[▲▼] \d+$/).test(c.text), `chip "${c.text}" has no arrow and number`);
   const c = chips[0], rating = +(c.label.match(/rating (\d+)/) || [])[1]; ok(rating, 'chip label names no rating: ' + c.label);
@@ -86,7 +86,7 @@ t('HOME-07', '"Import from Showdown" opens My Team with the Import box ready', a
   ok(/paste/i.test(await r.ui.focusName()) || (await r.ui.focusName()).includes('Showdown'), 'cursor is not in the paste box (focused: ' + await r.ui.focusName() + ')'); await r.close(); });
 
 t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
-  if (NEW) { /* new build (Home piece 4, decisions.md Nov 12 ~2:30 PM, published Preview v76): "Everything NastyPlot does.", 12 tiles (today's 11
+  if (NEW) { /* new build (Home piece 4, decisions.md Nov 12, published Preview v76): "Everything NastyPlot does.", 12 tiles (today's 11
     + How We Calculate); each opens the page today's site files the tool under (32-views.js VIEW_PARENT/VIEW_ALIAS): Battle, Meta or Build */
     const r = await homePage(); has(await r.ui.text(), /Everything NastyPlot does\. 12 tools/);
     const B = 'matchup', M = 'meta', BU = 'auto', want = {'Battle Mode': B, Teams: M, 'Type Chart': B, Ratings: M, 'Damage Calc': B, Events: M, 'Test Run': B, 'Popular Sets': M, 'Speed Tiers': B, Archetypes: M, 'Winning Cores': BU, 'How We Calculate': M};
@@ -101,7 +101,7 @@ t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
 
 t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy for Showdown copies', async () => {
   const r = await homePage(); await r.ui.grantClipboard(); const tx = await r.ui.text();
-  // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12 ~1:40 PM): the same line with "·" between parts
+  // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12): the same line with "·" between parts
   ok((NEW ? /The Champion's six · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players/ : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
   ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link');
   await r.ui.tapText('Load this team'); ok(await r.ui.sees('Tap again to replace your team'), 'first tap did not ask to tap again');
@@ -115,7 +115,7 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
 
 t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion sets Battle', async () => {
   const r = await aopen({fresh: true}); const tx = await r.ui.text();
-  // new build (decisions.md Nov 12 ~3:05-3:13 PM): the weather word sits in the eyebrow "Your six · <team name> · Sun team"
+  // new build (decisions.md Nov 12): the weather word sits in the eyebrow "Your six · <team name> · Sun team"
   has(tx, 'Sun Tailwind (sample)'); has(tx, NEW ? /Your six · Sun Tailwind \(sample\) · Sun team/ : /Your team: 6\/6 Sun team/);
   ok(/Game plan vs the Champion's six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\./.test(await r.ui.homePlanLine() || ''), 'no lead/back/bench plan line: ' + await r.ui.homePlanLine());
   has(tx, 'Open my team'); await r.ui.tapText('Prep vs the Champion', 1200); ok(await r.ui.current() === 'matchup', 'Battle did not open');
@@ -132,7 +132,7 @@ t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import
 
 t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async () => {
   const r = await aopen({fresh: true}); const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');
-  // new build (Sim approved the words and buttons, decisions.md Nov 12 ~3:05-3:13 PM): "Read your Strength Score"; buttons Copy a Top Team + Got It,
+  // new build (Sim approved the words and buttons, decisions.md Nov 12): "Read your Strength Score"; buttons Copy a Top Team + Got It,
   // no "Build me a team" in the card (the hero above has the start buttons)
   if (NEW) { for (const s of ['How NastyPlot works', 'Get a team', 'Read your Strength Score', 'Plan each match', 'Copy a Top Team', 'Got It']) has(w, s, 'welcome card'); ok(!/Build me a team/i.test(w), 'welcome card repeats "Build me a team"'); }
   else for (const s of ['How NastyPlot works', 'Get a team', 'Read your scouting report', 'Plan each match', 'Build me a team', 'Copy a top team', 'Got it']) has(w, s, 'welcome card');
@@ -147,7 +147,7 @@ t('HOME-13', 'What\'s New fold after an update; × dismisses it for good; never 
   const f = await aopen({fresh: true}); ok(!(await f.ui.sees("What's New")), 'first-time visitor sees What\'s New'); await f.close(); });
 
 t('HOME-14', 'Top of the Meta: 10 rated rows, Hidden gems switch changes the list, rows open info sheets', async () => {
-  // new build (decisions.md Nov 12 ~3:02 PM, Sim chose the headline "The Meta, right now."; piece 3 rows from the mock-up, Preview v75): headline
+  // new build (decisions.md Nov 12, Sim chose the headline "The Meta, right now."; piece 3 rows from the mock-up, Preview v75): headline
   // first, then "NastyPlot ratings, from N tournament teams"; each row "<rank> <name> <letter> tier <rating>" (word list: "S tier"); hint words differ
   const r = await homePage(); const tx = await r.ui.text(); has(tx, NEW ? /The Meta, right now\. NastyPlot ratings, from [\d,]+ tournament teams/ : /NastyPlot ratings: from [\d,]+ tournament teams Top of the Meta/);
   const top = await r.ui.homeTopRows(); ok(top.length === 10, `${top.length} rows`); ok((NEW ? /\b1 \S+(?: \S+)?(?: [XYZ])? [SABCD] tier \d+ 2 / : /Sneasler S \d+ #1|\S+ [SABCD] \d+ #1/).test(tx), 'rows don\'t read "Name S 97 #1"');
@@ -164,7 +164,7 @@ t('HOME-15', 'More on Home fold: pairs, what changed, cores, "Log a game" → Ba
   await r.ui.tapText(/^Log a game$/, 900); ok(await r.ui.current() === 'matchup', 'Log a game did not open Battle'); await r.close(); });
 
 t('HOME-16', 'Weather chip "Sun team" on Home\'s team card', async () => {
-  // new build (decisions.md Nov 12 ~3:05-3:13 PM): the weather word ends the eyebrow "Your six · <team name> · Sun team"
+  // new build (decisions.md Nov 12): the weather word ends the eyebrow "Your six · <team name> · Sun team"
   const {ui} = await view('home', {team: TEAM}); ok(await ui.sees(NEW ? /Your six · .+ · Sun team/ : /Your team: 6\/6 Sun team/), 'no "Sun team" weather chip');
   const r = await aopen({team: RAIN}); ok(await r.ui.sees(NEW ? /Your six · .+ · Rain team/ : /Your team: 6\/6 Rain team/), 'Rain team shows no "Rain team" chip'); await r.close(); });
 
