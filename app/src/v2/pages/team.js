@@ -163,7 +163,17 @@ V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i)
     `<div class="ed-pts">${L.map((l, j) => `<label><span>${l}</span><input class="ed-num" type="number" min="0" max="32" step="1" inputmode="numeric" data-ed="pt" data-j="${j}" value="${N.v[j]}" aria-label="${l} stat points for ${E(m.d)}"></label>`).join('')}</div>
     <div class="ed-ptact"><button type="button" class="np-btn2" data-ed="ptsave"><span>Save Stat Points</span></button><span class="fine" data-ed-msg role="status"></span></div>`);
   const foot = `<div class="ed-foot"><button type="button" class="np-btn2" data-ed="lock" aria-pressed="${!!s.lock}"><span>${s.lock ? 'Locked' : 'Lock'}</span></button><p class="fine">${s.lock ? 'Suggestions never swap out a locked Pokémon.' : 'Lock it so Suggestions never swap it out.'}</p><button type="button" class="np-link ed-rm" data-ed="rm">Remove ${E(m.d)} from the team</button></div>`;
-  return `<div class="ed2"><div class="np-eyebrow">Edit Set</div><h2 class="u">${V2.nameHtml(m.d)}</h2>${strip}<div class="ed-grid">${ab}${it}${mv}${na}${pts}</div>${foot}</div>`; };
+  // Nov 12 (today's features kept, Sim): the slot header (types, rating with its tier, share of teams) and the Weak / Resists fold
+  // with the Ability's text (today's 07-render-slots.js: mult() over every type, the Ability counted)
+  const P = m.p, R = monRating(P); let H = null; try { H = lairHead(P); } catch (e) {}
+  const head = `<div class="tm-types ed-head">${(P.t || []).map(V2.typeChip).join('')}${R ? `<span class="sx-rate2"><b class="u">${R.n}</b> ${R.tier ? V2.esc(R.tier) + ' tier rating' : 'Rating'}</span>` : ''}${H ? `<span class="ed-use">${V2.esc(V2.shareTxt(H))} of teams</span>` : ''}</div>`;
+  const wk = [], rs = []; for (const t of V2.TYPES) { let x = 1; try { x = mult(t, P.t, m.ability, true); } catch (e) {} if (x >= 2) wk.push([t, x >= 4 ? '4×' : '']); else if (x <= .5) rs.push([t, x === 0 ? '0×' : x <= .25 ? '¼×' : '']); }
+  const chips = a => a.length ? a.map(([t, k]) => `<span class="ed-ty">${V2.typeChip(t)}${k ? `<b>${k}</b>` : ''}</span>`).join('') : '<span class="fine">None</span>';
+  const abTxt = typeof ABIL === 'object' && ABIL[m.ability] ? String(ABIL[m.ability]).replace(/Pokemon/g, 'Pokémon') : '';
+  const weak = `<details class="ed-weak"${V2.ed.weak ? ' open' : ''}><summary><span class="lbl">Weak to</span><span class="ed-tys">${chips(wk)}</span></summary>
+    <div class="ed-weakin"><div class="ed-wrow"><span class="lbl">Resists</span><span class="ed-tys">${chips(rs)}</span></div>${abTxt ? `<p class="fine"><b>${V2.esc(m.ability)}:</b> ${V2.esc(abTxt)}</p>` : ''}</div></details>`;
+  return `<div class="ed2"><div class="np-eyebrow">Edit Set</div><h2 class="u">${V2.nameHtml(m.d)}</h2>${head}${strip}<div class="ed-grid">${ab}${it}${mv}${na}${pts}</div>${weak}${foot}</div>`; };
+document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('ed-weak')) V2.ed.weak = e.target.open; }, true);
 V2.openEdit = i => { if (i != null) V2.ed.i = i; if (!memberOf(S.slots[V2.ed.i] || {}, V2.ed.i)) { const f = members()[0]; if (!f) return; V2.ed.i = f.i; } V2.sheet(V2.editHtml(), {label: 'Edit Set'}); };
 // redraw the sheet in place and put focus back on the same control (so a keyboard user keeps their place)
 V2.edKey = (a = document.activeElement) => a && a.dataset && a.dataset.ed ? `[data-ed="${a.dataset.ed}"]${a.dataset.j != null ? `[data-j="${a.dataset.j}"]` : ''}${a.dataset.k != null ? `[data-k="${a.dataset.k}"]` : ''}` : null;
