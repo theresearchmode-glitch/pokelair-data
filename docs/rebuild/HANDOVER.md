@@ -1,7 +1,34 @@
-# HANDOVER: the NastyPlot rebuild (updated Nov 12, 5:24 PM Eastern by the clock)
+# HANDOVER: the NastyPlot rebuild (updated Nov 12, 6:28 PM Eastern by the clock)
 
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
+
+## NOW (Nov 12, written 6:28 PM Eastern by the clock; Sim's authority until 7:30 PM; summary reminder 7:10 PM)
+Rules first: RULES.md section 00 (WORKING/STOPPED, questions first, nothing claimed before it's real, proof for every check).
+- BUILD page (app/src/v2/pages/build.js) is BUILT in code, NOT on the Preview (pictures sent to Sim, waiting on her yes):
+  head (title, How it works, My Box/Whole roster, Megas, build around a Pokémon, Go); the answer (Option k of n · kind, label,
+  Strength Score + rank + breakdown line + Why this score?, Fresh take line, six with items/roles/tiers, four reasons, Use This
+  Team / Save / Copy, to-catch note, today's no-result notes); lower half: Other options ("Show this one ›"), Start from a recent
+  winner (folds with full sets + Load (2 taps) / Copy / Practice Against / Compare), Build around a core (Pairs/Trios/Full teams,
+  Top rated/Most used, With a Pokémon… filter, How cores are ranked, Add/Load, Practice Against + Copy on full teams, Show more);
+  phone jump bar (Other options · Recent winners · Cores, page order). Home's core links open Build at the cores.
+- BACK BUTTON (Sim asked 5:42 PM): built in the top bar (shell.js V2.backBtn / navStep; class np-goback), one real history step
+  per press, same scroll, hidden when nothing to go back to. NOT on the Preview: Sim to choose A (arrow first in the top bar,
+  recommended) or B (text line), the colour (PLOT blue as pictured) and the small desktop shift. Pictures docs/rebuild/back/.
+  Not checked: inside the Claude app on Sim's iPhone.
+- Shared-logic changes this evening, each proven on today's site: 22-auto-build.js proven gets theirs/ours (AUTO 16/0);
+  coreWhyText moved to 47-core-data.js (CORES 13/0). Today's site full A-team run (5:39 PM build): 132 pass, 0 FAIL.
+- Tests: adapters/v2.B-build.mjs is new (helper agent, reviewed and extended by Claude): today's AUTO/CORES tests now drive the new
+  Build. The rest fail for: wording by design (Title Case, word list, "Show this one" for "Try another", "Load" for "Load team",
+  "My Box"), pages not rebuilt (Battle, Ratings, All Suggestions, Winning Teams), or Sim's questions below.
+- Mistakes found and fixed this evening (all in decisions.md): proven teams with a swap said "This exact six" (now "1 swap ... in
+  place of"); Top rated cores showed the raw win rate (I had told Sim today's site did the same: wrong); an invalid same-output
+  proof (stale scratch copy, redone); I wrongly told Sim Add to Team was missing from the sheet.
+- Questions waiting on Sim: Back button A/B, colour, desktop shift; Build Me a Team as the main yellow button before the first
+  build (AUTO-07; today's is); PKMN-03 Add to My Team closes the sheet and opens My Team (today stays open, "On your team");
+  "Mega" tag repeats the blue Mega name on cores; six names shorten on phone in Other options; left column longer than the
+  right on desktop; the lone "2 Mega options" chip; "Bottom 33%" under a 78; CORES-13 menu entry (new site: Home "All cores ›");
+  plus the older list in the 5:24 PM section (Hidden gems, Preview publish, What's New words, PKMN-02/06, Home 320 limit).
 
 ## NOW (Nov 12, written 5:24 PM Eastern by the clock; Sim's authority until 6:00 PM; summary reminder 5:40 PM)
 Read first: RULES.md section 00 (honesty: Sim's questions first; WORKING/STOPPED; nothing claimed before it's real; every check
