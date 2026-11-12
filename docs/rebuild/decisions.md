@@ -487,3 +487,6 @@ Sim's own decisions are marked "Sim". Newest first.
   decision, by Sim's choice today; 4) yes: phone section spacing 24 instead of 32. Measured: 390 4,394 -> 3,723; 820 3,517 ->
   3,058; 1440 2,589 (unchanged); 320 4,023. Switch click test both engines: phone 3 positions, This week 5 movers and tap opens
   the info sheet, remembered after reload; desktop falls back correctly (2 positions, Top rated, 7-row column).
+- ~3:02 PM: Sim chose the headline "The Meta, right now." (was "Top of the Meta."; it covers Top rated, Hidden gems and This week)
+  and approved the phone changes. One line at 390 and up, two lines at 320 (320 page 4,053 / 4,600 assumed). Publishing Home
+  pieces 5 and 6 (the fold, the phone and iPad changes), the headline and the My Box toggle to the Preview together.

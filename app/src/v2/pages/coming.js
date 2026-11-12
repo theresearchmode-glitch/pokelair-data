@@ -2,7 +2,7 @@
 // Pages not rebuilt yet show "Coming next" with the approved mock-up they're built from (files beside the Preview). Never in a
 // real build: only the --preview-data build sets __NP_PREVIEW, and a page drops out of this list the moment it exists.
 if (window.__NP_PREVIEW) {
-  const MOCK = {home: ['home', 'Home', 'Score, build or plan, the most used Pokémon, the latest winner beside your six, Top of the Meta and today\'s underdog.'],
+  const MOCK = {home: ['home', 'Home', 'Score, build or plan, the most used Pokémon, the latest winner beside your six, The Meta, right now and today\'s underdog.'],
     build: ['build', 'Build', 'Build me a team around a Pokémon: the best team first with its Strength Score, then other options and cores.'],
     battle: ['battle', 'Battle', 'Bring these four, lead the pair: the plan against an opponent\'s six, turn one in move order.'],
     meta: ['ratings', 'Meta', 'Who wins right now: ratings, usage, winning teams, events and archetypes.']};
