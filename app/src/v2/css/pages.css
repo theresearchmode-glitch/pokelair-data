@@ -84,7 +84,7 @@
 .ts2-acts .up,.ts2-nb .up,.ts2-st .up i{color:var(--good-text)}.ts2-acts .dn,.ts2-nb .dn,.ts2-st .dn i{color:var(--pick-text)}
 .ts2-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s6)}
 /* cards in one row share row lines (subgrid): headers, moves, nature and stats line up across the row whatever wraps */
-.ts2-card{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:var(--s3);align-content:start;padding-top:var(--s4);border-top:1px solid var(--rule)}
+.ts2-card{cursor:pointer;display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:var(--s3);align-content:start;padding-top:var(--s4);border-top:1px solid var(--rule)}
 .ts2-grid{row-gap:var(--s3)}
 .ts2-card header{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:end;gap:var(--s3)}
 .ts2-card h3{font-size:var(--t20)}.ts2-card h3 .mg{margin-right:var(--s1)}.ts2-card h3 .mg.none{display:none}
@@ -525,3 +525,6 @@
 :root:not([data-theme="night"]) .ms-f[aria-pressed="true"] small{color:var(--plot-text)}
 /* empty Saved Teams (Sim, Nov 12, option B): one full-width main button under the line */
 .svt2-empty{margin-top:var(--s4)}.svt2-empty .np-btn{width:100%}
+
+/* Team Sheet cards open Edit Set (Nov 12): a visible focus ring for keyboards */
+.ts2-card:focus-visible{outline:2px solid var(--plot);outline-offset:var(--s1)}

@@ -46,19 +46,27 @@ V2.sugData = (ms, RD) => { if (ms.length < 1) return null; V2.planStart(ms); con
 // ---------- Team Sheet (Sim, Nov 9 / Option A Nov 11: opens as a sheet over My Team) ----------
 // One card per Pokémon: item, Ability, the four moves, the nature (+ and −) and the six stats at level 50 with their stat points.
 // The numbers come from sheetData() (39-damage-calc-speed.js), the same function today's Team Sheet draws from.
-V2.openTeamSheet = () => { const ms = members(); if (!ms.length) return;
+// Nov 12 (Sim: every feature of today's Team Sheet kept): head line with the team and regulation, "← My Team", Share as Image,
+// cards that open Edit Set, and the empty-team message (items 10-14).
+V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}, reg = `Reg ${V2.esc(String(r.id))} doubles · level 50`;
+  const back = '<a class="np-back" href="#team" data-v2close>← My Team</a>';
+  if (!ms.length) { V2.sheet(`<div class="ts2"><div class="np-eyebrow"><span>${back} · ${reg}</span></div><h2 class="u">Team Sheet</h2>
+    <p class="tm-sub">No team yet. Add Pokémon on My Team and their full sets show here.</p><div class="ts2-acts"><button type="button" class="np-btn" data-v2close data-v2search><span>Add a Pokémon</span></button></div></div>`, {label: 'Team Sheet', small: true}); return; }
   const card = m => { const D = sheetData(m), P = m.p;
     const nat = D.nat ? `${V2.esc(D.nat)}${D.up && D.dn && D.up !== D.dn ? ` <span class="ts2-nb"><b class="up">+${D.up}</b> <b class="dn">−${D.dn}</b></span>` : ''}` : 'Nature unknown';
-    return `<article class="ts2-card"><header>${V2.mon(P.n, {iw: 72, bare: true})}<div><h3 class="u">${V2.nameHtml(m.d)}</h3><p><span><em>Item</em> ${V2.esc(m.heldItem || m.item || 'No item')}</span><span><em>Ability</em> ${V2.esc(m.ability || '—')}</span></p></div></header>
+    return `<article class="ts2-card" role="button" tabindex="0" data-ts2edit="${m.i}" aria-label="${V2.esc(m.d)}: edit its set"><header>${V2.mon(P.n, {iw: 72, bare: true})}<div><h3 class="u">${V2.nameHtml(m.d)}</h3><p><span><em>Item</em> ${V2.esc(m.heldItem || m.item || 'No item')}</span><span><em>Ability</em> ${V2.esc(m.ability || '—')}</span></p></div></header>
       <ul class="ts2-mv">${[0, 1, 2, 3].map(j => { const x = m.moves[j]; return x ? `<li class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(x.type) ? x.type : 'Normal'})">${V2.esc(x.name)}</li>` : '<li class="none">No move</li>'; }).join('')}</ul>
       <p class="ts2-nat"><b>${nat}</b><span>${V2.esc(String(D.src || '').replace(/<[^>]*>/g, ''))}</span></p>
       <div class="ts2-st" role="group" aria-label="Stats at level 50, with stat points below">${D.stats.map(x => `<div class="${x.mark}"><span>${x.S}${x.mark === 'up' ? '<i aria-label="raised by nature">+</i>' : x.mark === 'dn' ? '<i aria-label="lowered by nature">−</i>' : ''}</span><b>${x.val == null ? '—' : x.val}</b><small>${x.pts == null ? '' : x.pts}</small></div>`).join('')}</div></article>`; };
-  V2.sheet(`<div class="ts2"><div class="np-eyebrow">Level 50 · bring 6, pick 4</div><h2 class="u">Team Sheet</h2>
-    <div class="ts2-acts"><button type="button" class="np-btn" data-v2copy><span>Copy for Showdown</span></button><p class="fine">Big number: the stat at level 50 · small number: stat points (0–32) · <b class="up">+</b> / <b class="dn">−</b> nature</p></div>
+  V2.sheet(`<div class="ts2"><div class="np-eyebrow"><span>${back} · ${V2.esc(teamTitleFor(ms))} · ${reg}</span></div><h2 class="u">Team Sheet</h2>
+    <div class="ts2-acts"><button type="button" class="np-btn" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2" data-ts2share><span>Share as Image</span></button><p class="fine">Tap a card to edit its set · Big number: the stat at level 50 · small number: stat points (0–32) · <b class="up">+</b> / <b class="dn">−</b> nature</p></div>
     <div class="ts2-grid">${ms.map(card).join('')}</div></div>`, {label: 'Team Sheet'}); };
 // Copy for Showdown: today's export (exportPaste) and clipboard helper (copyText)
 V2.copyTeam = async () => { toast((await V2.copy(exportPaste())) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); };
-document.addEventListener('click', e => { if (e.target.closest('[data-v2copy]')) V2.copyTeam(); if (e.target.closest('[data-v2sheetopen]')) V2.openTeamSheet(); });
+document.addEventListener('click', e => { if (e.target.closest('[data-v2copy]')) V2.copyTeam(); if (e.target.closest('[data-v2sheetopen]')) V2.openTeamSheet();
+  if (e.target.closest('[data-ts2share]')) { V2.shUi.kind = 'sheet'; V2.closeSheet(true); V2.openShare(); }
+  const c = e.target.closest('[data-ts2edit]'); if (c) { V2.closeSheet(true); V2.openEdit(+c.dataset.ts2edit); } });
+document.addEventListener('keydown', e => { const c = e.target && e.target.closest && e.target.closest('[data-ts2edit]'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); c.click(); } });
 
 // ---------- Save Team (R4, Nov 11): a small sheet; the save itself is today's saveTeamAs (30-saved-data.js) ----------
 // Same choices as today's save panel: update the open saved team or save as new, up to 10 teams; Enter does the main action.
@@ -306,7 +314,7 @@ V2.ckBody = (D, ck) => { const fb = D.basics.filter(x => !x.ok), fn = D.notes.fi
 V2.moreHtml = () => { const n = S.box.length, ms = members();
   const row = (attrs, label, sub) => `<li><button type="button" class="tm-mi" ${attrs}><span>${label}</span>${sub ? `<small>${sub}</small>` : ''}</button></li>`;
   return `<div class="tm-moremenu"><div class="np-eyebrow">My Team</div><h2 class="u">More</h2><ul>
-    ${ms.length ? row('data-v2sheetopen', 'Team Sheet', `${ms.length} sets on one page`) : ''}${ms.length ? row('data-v2copy', 'Copy for Showdown', 'The team as text, ready to paste') : ''}
+    ${row('data-v2sheetopen', 'Team Sheet', ms.length ? `${ms.length} sets on one page` : 'Every set on one page')}${ms.length ? row('data-v2copy', 'Copy for Showdown', 'The team as text, ready to paste') : ''}
     ${row('data-v2import', 'Import', 'Paste a team or a team link')}${ms.length ? row('data-cxgo2="cur|"', 'Compare', 'Side by side with another team') : ''}
     <li><a class="tm-mi" href="#box"><span>My Box</span><small>${n} Pokémon you own</small></a></li></ul>
     ${ms.length ? `<ul class="tm-mdanger">${row('data-v2clear', 'Clear Team', 'Empties all six spots. Undo brings them back')}</ul>` : ''}</div>`; };
