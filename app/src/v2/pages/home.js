@@ -36,7 +36,7 @@ V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
   const UL = userLeads(ms); if (UL && F) { F = {lead: UL.map(m => m.p.n), back: F.lead.concat(F.back).filter(n => !UL.some(m => m.p.n === n)).slice(0, 2)}; vs = vs ? vs + ', your leads' : 'your leads'; }
   const byN = n => ms.find(m => m.p.n === n), lead = F ? F.lead.map(byN).filter(Boolean) : [], back = F ? F.back.map(byN).filter(Boolean).filter(m => !lead.includes(m)) : [];
   const bench = ms.filter(m => !lead.includes(m) && !back.includes(m)), ord = [...lead, ...back, ...bench].slice(0, 6), pair = g => g.map(m => E(m.d)).join(' + ');
-  const title = ms.length ? teamTitleFor(ms) : 'Your six goes here', s = V2.scoreNow ? V2.scoreNow() : null;
+  const title = ms.length ? teamTitleFor(ms) : '', s = V2.scoreNow ? V2.scoreNow() : null;
   let G = null; try { const RD = ms.length ? prepOf(ms) : null; G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; } catch (e) {}
   const band = G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid' : 'solid';
   const score = s != null && G ? `<div class="np-score sm hm-score" style="--band:var(--band-${band})"><b>${s}</b><div class="w"><span>${E(CH.wordOf(G.s))}</span><small>Strength Score</small></div></div>` : '';
@@ -45,7 +45,7 @@ V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
   const plan = lead.length >= 2 ? `<p class="hm-plan"><strong>Game plan ${E(vs)}:</strong> lead ${pair(lead)}${back.length ? `, back ${pair(back)}` : ''}${bench.length ? `, bench ${pair(bench)}` : ''}.</p>` : '<div class="hm-plan"></div>';
   const acts = ms.length ? `${C && FC ? `<button type="button" class="np-btn" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}">Prep vs the Champion</button>` : ''}<a class="np-link" href="#team">Open My Team ›</a>` : '<a class="np-btn" href="#build">Add Your Six</a>';
   let wx = ''; try { const k = ms.length ? wxKeyOf(ms) : null; if (k) wx = wxName(k); } catch (e) {} // today's weather word (HOME-16)
-  const you = `<div class="hm-side hm-you"><div class="hm-hd"><p class="hm-k2">Your six · ${E(title)}${wx ? ' · ' + E(wx) : ''}</p>${score}</div><div class="hm-six">${six}</div>${plan}<div class="row hm-acts">${acts}</div></div>`;
+  const you = `<div class="hm-side hm-you"><div class="hm-hd"><p class="hm-k2">Your six${title ? " · " + E(title) : ""}${wx ? ' · ' + E(wx) : ''}</p>${score}</div><div class="hm-six">${six}</div>${plan}<div class="row hm-acts">${acts}</div></div>`;
   return `<section class="hm-duel">${them}${you}</section>`; };
 // Home piece 3 (mock-up R2): Top of the Meta (Top rated / Hidden gems, today's lairRows, isGem, lairRank and words) beside today's
 // underdog and This week in the ratings (META.track.mv, up to 12 kept since Nov 12: Sim asked for more rows to fill the space).

@@ -710,7 +710,11 @@
 .hm-new>summary{padding-right:var(--s12)}.hm-newl{list-style:none;margin:0;padding:0 0 var(--s6)}
 .hm-newl li{padding:var(--s2) 0;border-top:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.hm-newl b{color:var(--ink)}
 .hm-newx{position:absolute;top:var(--s2);right:calc(var(--gut) + var(--s8));width:44px;height:44px;border:0;background:none;color:var(--ink-3);font:400 var(--t24)/1 var(--b);cursor:pointer}
-@media (max-width:899px){.hm-welcome{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:899px){.hm-welcome{gap:var(--s6) var(--s8)}}
+@media (max-width:699px){.hm-welcome{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699px){.hm-newx{right:calc(var(--s4) + var(--s8))}}
 .hm-newsec .hm-new{--fold-mt:0;--fold-bt:0}.hm-newsec .hm-newx{top:var(--s3)}
 @media (max-width:699px){.hm-welcome .hm-acts{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s3) var(--s5);align-items:center}.hm-welcome .hm-acts .np-btn2{justify-self:stretch}}
+.tm-sample-acts{white-space:nowrap} /* the two links and their dot stay together on one line (outside sweep, Nov 12) */
+.hm-welcome .hm-acts .np-btn2{flex:0 0 auto} /* the welcome card keeps its button at its own width (the duel rule makes its buttons share a row) */
+.ms-pct{font:500 var(--t13)/1 var(--b);color:var(--ink-3)} /* how often the ability is run (today's sheet shows it) */
