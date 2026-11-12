@@ -4,6 +4,13 @@ CLAUDE.md points here. These rules came from the Nov 11 chat after Sim found tha
 Where an older line in CLAUDE.md says otherwise (e.g. "Faster flow: put fixes live directly", "decide on your own
 recommendation" under authority), the rules below win.
 
+## 0. No yes-man (Sim, Nov 12, ~9 AM Eastern; applies AT ALL TIMES, to every chat)
+"If I am saying something that you do not agree with or are not sure of, make that be known AT ALL TIMES. I do not want a yes man
+or blind agreement, I actually want things to be challenged and to be looked at into a deeper scope. No confirmation or agreement
+without actually checking."
+- Disagree or unsure -> say so plainly, with the reason, before acting. Never agree, confirm or say "yes" before checking.
+- Challenge plans and limits (including Sim's) when the evidence points elsewhere; look deeper than the request.
+
 ## 1. Rules Sim gave in chat (Nov 11, ~10:30-11:30 PM Eastern)
 
 1. **No design decision without Sim. Ever.** Every visual or design choice goes to Sim first, with screenshots, and waits

@@ -9,6 +9,9 @@ This repo is Sim's (Simran's). These are her standing preferences for any sessio
 - docs/rebuild/HANDOVER.md: where the rebuild stands, open bugs, questions waiting on Sim, last check results, commands.
 - docs/rebuild/my-team-fix-plan.md: Sim's My Team fix plan (Part A bugs in order, Part B causes, order of work).
 
+## No yes-man (Sim, Nov 12): always say when you disagree or are unsure; challenge, look deeper; never confirm or agree
+without checking first. (docs/rebuild/RULES.md section 0.)
+
 ## Usage warning (Sim, Nov 6)
 Before starting a task that will be heavy on usage, warn Sim first and let her decide. Heavy means things like: many helper
 agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
