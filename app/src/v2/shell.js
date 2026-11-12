@@ -22,7 +22,10 @@ V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n
 // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
 V2.ICON = {search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
   // My Box: a storage box (lid, body, handle slot), drawn like the search glass
-  box: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></g><path d="M10 13.5h4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>'};
+  box: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></g><path d="M10 13.5h4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  // Day/Night as a sun and a moon (Sim, Nov 12: not the words; today's site shows the mode you're in: a sun by day, a moon at night)
+  sun: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></g></svg>',
+  moon: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>'};
 // one toast at a time, always just above the team dock and the phone bar (whichever is higher on screen)
 V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach(x => x.remove());
   const t = document.createElement('div'); t.className = 'np-toast'; t.setAttribute('role', 'status'); t.innerHTML = html; document.body.append(t);
@@ -187,7 +190,7 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 <header class="np-head"><a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a><nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="#box" aria-label="My Box" title="My Box"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
-  <button type="button" class="np-theme" data-v2theme aria-label="Switch to ${V2.theme() === 'night' ? 'day' : 'night'} mode">${V2.theme() === 'night' ? 'Day' : 'Night'}</button></div></header>
+  <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
 <main class="np-main" id="main">${P ? P.draw() : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan-made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
