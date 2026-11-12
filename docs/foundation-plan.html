@@ -314,7 +314,9 @@ const PLANS = [
   ["gp1-tests","MU-02/MU-04/SUG-10/SUG-11 expect each page's own wording",""],
   ["gp1-clicks","Test: one click fires each handler once after 3 redraws","experiments/v2-clicks.mjs: 123 controls, 0."],
   ["gp1-c13","c13-check runs Chromium only on request (C13_ENGINES=chromium)",""],
-  ["gp1-dump","Full check keeps a proof's step dump when it finds a difference",""]]},
+  ["gp1-dump","Full check keeps a proof's step dump when it finds a difference",""],
+  ["gp1-c13vis","c13 ignores controls the browser doesn't show, the same in every engine","3204c92; self-test with and without checkVisibility."],
+  ["gp1-compare","Compare's repeated picker hint: intended (one per empty picker); wording with the Compare pictures",""]]},
  {id:"gp2", name:"G2. Finish My Team (fix plan Part A)", steps:[
   ["gp2-done","Done and applied: A2, A3, A4, A5, A6, A7, A9, A11, squeezed row, jump links, wording, fonts, tap areas","A14 not a bug; A16 explained."],
   ["gp2-height","A1 page length: Sim picks the cuts (C1-C12), then build and re-measure every width and worst state","Measured: all desktop cuts 1,762 (under 1,800); phone needs C9 (Favoured folded) to reach 3,324 (under 3,400)."],
@@ -331,8 +333,14 @@ const PLANS = [
  {id:"gp3", name:"G3. Finish the pieces already built", steps:[
   ["gp3-empty","Empty My Team (underdog Flapple)","C13 + use test + review."],
   ["gp3-sheet","Pokémon info sheet (same-info 350/350)",""],
+  ["gp3-sheetkeys","Info sheet: Tab stays in the sheet; tabs by arrow keys","ada3a17: 34 of 80 presses left the sheet before, 0 after."],
+  ["gp3-sheetpics","Info sheet pictures: shorter phone top, picture/ring clear of the 94, forms row plates (D12-14)",""],
   ["gp3-tsheet","Team Sheet, Share images, Saved Teams, Import, Log a Game",""],
   ["gp3-box","My Box (incl. the favourite link on the empty box: pictures)",""],
+  ["gp3-boxfocus","My Box: focus kept after Remove and Copy Box Link","e0874d0"],
+  ["gp3-boxsearch","My Box search: 'already in your box'; accents","e0874d0"],
+  ["gp3-boxpics","My Box pictures: left column, phone load state, team names, 'under 1%', Box 1/2 markers (E17-19, 21)",""],
+  ["gp3-claude","Public wording instead of 'Claude account' (2 sentences, 03-persistence.js syncText) (E20)",""],
   ["gp3-compare","Compare (empty state fills the cards: pictures)",""]]},
  {id:"gp4", name:"G4. The other pages, one at a time (each: mock-up OK > build > C13 + use test + proofs > pictures > Preview > Sim's review > done)", steps:[
   ["gp4-home","Home",""],
@@ -351,6 +359,9 @@ const PLANS = [
   ["gp5-livefonts","Today's live site hosts its fonts (prepared on claude/wonderful-carson-nb6gd5, 9eabdd6; after My Team, Sim's go)",""],
   ["gp5-tests","Behaviour groups B-build, C-battle, D-meta-shell pass on the new build for each built page",""],
   ["gp5-weight","Page weight plan for the public site (data out of the page)",""],
+  ["gp5-link22","Team link: what exists today, reported to Sim (F22)",""],
+  ["gp5-linkplan","Team link that opens a look-only team with 'Save to My Teams': plan with pictures (F23-24), after My Team",""],
+  ["gp5-linkbuild","Team link built and tested: fresh browser, same six, sets and score; own team untouched; damaged link fails safely (F25)",""],
   ["gp5-full","Full check on Sim's PC passes on one commit",""]]},
  {id:"gp6", name:"G6. The switch and after", steps:[
   ["gp6-contract","Saved-data contract holds (same artifact URL, keys, team links)",""],
