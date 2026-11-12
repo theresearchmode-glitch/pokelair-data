@@ -33,3 +33,5 @@ html,body{overflow-x:clip}
   .np-head,.np-bar,.np-dock{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
   body{background:var(--page-wash),var(--bg)}
 }
+/* iPhone zooms the whole page in when a text box with type under 16px gets focus (Save Team name: the page then slid sideways) */
+@media (hover:none){input,select,textarea,.np-field input{font-size:var(--t16)}}

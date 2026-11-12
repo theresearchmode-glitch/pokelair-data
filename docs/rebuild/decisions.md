@@ -10,6 +10,10 @@ Sim's own decisions are marked "Sim". Newest first.
   recommendation, each logged here and summarised to Sim at 7 PM.
 
 ## Every page
+- Nov 11 (Sim's recordings, iPhone and PC): every tap redrew the page and rebuilt all pictures, so the six blanked for a moment
+  (measured before: 0 of 6 pictures kept per tap; after: 6 of 6 kept, none blank, WebKit iPhone). Touch screens: text boxes 16px so
+  iPhone doesn't zoom the page (Save Team name: 15px before -> zoomed and slid sideways; 16px after, page width = screen width).
+  The strip above the jump bar was content showing through the see-through header; touch headers are solid now.
 - Nov 11 (Claude, under Sim's 9-10 PM authority; Sim on iPhone: sideways scroll, stutter): html/body overflow-x:clip so no page can
   scroll sideways (WebKit iPhone, measured: overflow up to 33px under 300px wide before, none from 260 to 430 after); on touch screens
   the header, bottom menu and dock are solid (no frosted blur) and the page background scrolls with the page (no background-attachment

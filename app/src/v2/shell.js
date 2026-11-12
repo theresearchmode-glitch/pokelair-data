@@ -116,6 +116,9 @@ V2.route = () => { const h = (location.hash || '').slice(1); return V2.pages[h] 
 V2.redraw = () => { const y = scrollY, f = document.activeElement && document.activeElement.id; V2.draw(); scrollTo(0, y); if (f) { const e = document.getElementById(f); if (e) e.focus({preventScroll: true}); } };
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
+  // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
+  // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
+  const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
   app.innerHTML = `<a class="vh" href="#main">Skip to the page</a>
 <header class="np-head"><a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a><nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
@@ -123,6 +126,10 @@ V2.draw = () => { const app = document.getElementById('app'); if (!app) return; 
 <main class="np-main" id="main">${P ? P.draw() : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan-made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`;
+  if (keep.size) for (const n of app.querySelectorAll('img[src]')) { const l = keep.get(n.getAttribute('src')), o = l && l.shift(); if (!o) continue;
+    for (const a of [...o.attributes]) if (a.name !== 'src' && !n.hasAttribute(a.name)) o.removeAttribute(a.name);
+    for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
+    o.removeAttribute('loading'); n.replaceWith(o); }
   if (P && P.after) try { P.after(); } catch (e) { console.error(e); } };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.theme() === 'night' ? 'day' : 'night'); });
 addEventListener('hashchange', () => { V2.draw(); scrollTo(0, 0); });
