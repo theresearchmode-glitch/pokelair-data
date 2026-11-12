@@ -62,7 +62,7 @@ V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Use This Team</button><button type="button" class="np-btn2" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2" data-bdcopy><span>Copy for Showdown</span></button>
     <span class="bd-catch">${nCatch === 6 ? 'All six to catch: none is in your box yet' : nCatch ? `${nCatch} to catch` : 'All six are in your box'}</span></div>`;
   return `<section class="bd-ans" style="--band:var(--band-${band})"><div class="bd-lock"><p class="np-eyebrow">Option ${k + 1} of ${n} · ${kind}</p><h2 class="u">${E(t.label)}</h2>
-    <div class="np-score bd-score"><b>${s}</b><div class="w"><span>${E(word)}</span><small>Strength Score</small></div></div>${G ? `<p class="bd-rank">${E(CH.pctTxt(G))}</p>` : ''}
+    <div class="np-score bd-score"><b>${s}</b><div class="w"><span>${E(word)}</span><small>Strength Score</small></div></div>${G ? `<p class="bd-rank">${E(CH.pctTxt(G))}</p>${V2.buildBrk(G)}` : ''}
     ${chips.length ? `<div class="bd-chips">${chips.map(c => `<span class="np-chip">${E(c)}</span>`).join('')}</div>` : ''}</div><div class="bd-six" style="background:${V2.buildLight(t.mons)}">${six}</div></section>${why}${acts}`; };
 V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div></div>`;
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bduse],[data-bdsave],[data-bdcopy]'); if (!b) return; const t = abTeam('doubles'); if (!t) return;
@@ -123,3 +123,8 @@ V2.buildWinners = () => { const EV = META.events, E = V2.esc; if (!EV) return ''
 V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower"><div class="bd-lcol">${V2.buildOthers() || ''}${V2.buildWinners()}</div>${V2.buildCores()}</div></div>`;
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-bdwin]')) return; if (d.open) V2.bdUi.win = d.dataset.bdwin; else if (V2.bdUi.win === d.dataset.bdwin) V2.bdUi.win = null; }, true);
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdcx]'); if (b) V2.cxGo('cur', 'e:' + b.dataset.bdcx); });
+
+// ---------- Build: the score's breakdown line under the rank (mock R2 line 194; the same numbers as My Team's "Why this score?") ----------
+V2.buildBrk = G => { let W = null; try { W = CH.whyData(G); } catch (e) {} if (!W || W.partial) return ''; V2.bdG = G; const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
+  return `<p class="bd-brk">${W.base} from its Pokémon and sets · ${sg(W.mu)} matchups${W.hasSix ? ` · ${sg(W.own)} from its own ${homeNum(W.ownGames)} games` : ''} <button type="button" class="np-link" data-bdwhy>Why this score? ›</button></p>`; };
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-bdwhy]') && V2.bdG) V2.sheet(V2.whyHtml(V2.bdG), {label: 'Why this score?', small: true}); });
