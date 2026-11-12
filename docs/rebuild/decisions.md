@@ -10,6 +10,12 @@ Sim's own decisions are marked "Sim". Newest first.
   recommendation, each logged here and summarised to Sim at 7 PM.
 
 ## Every page
+- Nov 11 (Claude, under Sim's 9-10 PM authority; Sim on iPhone: sideways scroll, stutter): html/body overflow-x:clip so no page can
+  scroll sideways (WebKit iPhone, measured: overflow up to 33px under 300px wide before, none from 260 to 430 after); on touch screens
+  the header, bottom menu and dock are solid (no frosted blur) and the page background scrolls with the page (no background-attachment
+  fixed); hover underlines only on mouse screens (a tapped "Lock" stayed underlined). Stutter fix is a measured-cause guess until Sim
+  tests on her iPhone. Also: wide My Team columns rebalanced (Set + Suggestions | Matchups + Team Checks + Your Games, equal halves):
+  page 2381 -> 2223 at 1440, columns 1135 vs 1267 (were 729 vs 1425).
 - Nov 11 (Claude, under Sim's 6-7 PM authority; review item 19): the player-name sweep found no name on screen on either build, but
   the Preview build wrote 756 real player names into its page source (--preview-data). Fixed in build.mjs: each name becomes the same
   neutral stand-in ("Player 12") everywhere, so team matching still works; measured 0 of 756 in the new Preview source (756 of 756 in

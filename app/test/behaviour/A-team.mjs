@@ -326,7 +326,7 @@ t('SUG-08', '"Nothing to fix" card with Battle and Sets on a complete team', asy
 
 t('SUG-09', 'When nothing raises the score: a no-gain message instead of plain Apply cards', async () => {
   const r = await myTeam({fresh: true});
-  ok(await r.ui.sees(/Nothing raises this team.s Strength Score right now|No single change from this pool raises the team.s Strength Score|every other swap would lower it/), 'no no-gain message'); await r.close(); });
+  ok(await r.ui.sees(/Nothing raises this team.s Strength Score right now|No single change from this pool raises the team.s Strength Score|every other swap would lower it|Nothing to fix\. Your team has every basic and no swap clearly beats it/), 'no no-gain message'); await r.close(); });
 
 t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap out Rillaboom" applies with Undo', async () => {
   const r = await myTeam(); has(await r.ui.text(), /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);

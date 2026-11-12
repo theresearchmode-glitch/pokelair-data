@@ -452,11 +452,14 @@
 /* Desktop (Nov 11): two independent columns, each stacking its own parts, so a short part never leaves a gap beside a tall one
    (Set, Team Checks | Matchups, Suggestions, Your Games). Narrower widths keep the shared grid: the column wrappers step aside. */
 .tm-c1,.tm-c2{display:flex;flex-direction:column;gap:var(--s10);min-width:0}
+/* wide screens (Nov 11, measured): Set + Suggestions | Matchups + Team Checks + Your Games, equal halves, so the two columns end
+   near the same height (1135 vs 1267 at 1440; was 729 vs 1425) */
+@media (min-width:1180px){.tm-work{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:1179px){.tm-c1,.tm-c2{display:contents}.tm-work:has(.tm-yg){grid-template-areas:"set set" "mu ck" "mu yg" "sg sg";grid-template-rows:auto auto 1fr auto}}
 @media (max-width:699px){.tm-work:has(.tm-yg){grid-template-areas:"set" "mu" "sg" "ck" "yg";grid-template-rows:none}}
 /* "← My Team" in the eyebrow of pages opened from My Team (My Box, Compare): today's back link; the tap area reaches 44px without moving the line */
 .np-back{display:inline-flex;align-items:center;min-height:var(--tap);margin:calc(var(--s4) * -1) 0;color:var(--plot-text);text-decoration:none}
-.np-back:hover{text-decoration:underline}
+@media (hover:hover){.np-back:hover{text-decoration:underline}}
 /* Compare: Why These Scores, both teams' breakdowns side by side */
 .cx2-why{margin-top:var(--s6);border-top:1px solid var(--rule)}.cx2-why>summary{padding:var(--s4) 0;font:600 var(--t17)/1.3 var(--b);cursor:pointer}
 .cx2-whyg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s8)}.cx2-whyt{margin:0 0 var(--s2);font:600 var(--t15)/1.3 var(--b)}

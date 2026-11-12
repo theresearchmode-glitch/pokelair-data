@@ -52,7 +52,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     const all = '<button type="button" class="np-link sg2-all" data-v2sgall>See all suggestions ›</button>';
     body = !top.length ? (side ? `<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}`
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
-      : `${gap}<p class="tm-sub">${side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : P.nothing ? 'Optional swaps:' : 'What to change, best first.'}</p>
+      : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
       <ol class="tm-sug">${top.map((x, k) => V2.sgCard({pl: x.pl, k, g0, attr: 'data-v2plan', side, hidden: k > 0 && !open, main: !k})).join('')}</ol>
       ${hid > 0 && !open ? `<button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} more suggestion${hid === 1 ? '' : 's'}</button>` : all}`;
     V2._sgLast = body; }

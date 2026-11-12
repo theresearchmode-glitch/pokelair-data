@@ -337,7 +337,7 @@ V2.pages.team = {place: 'team', draw() {
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
-  return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${ckSec}</div><div class="tm-c2">${muSec}${sgSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
+  return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() {
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
