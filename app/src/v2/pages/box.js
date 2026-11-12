@@ -68,8 +68,9 @@ V2.bxPick = n => { V2.bx.sel = n; if (V2.bxNarrow()) { bxRe(); V2.sheet(V2.bxSum
 V2.bxToast = t => V2.toast(V2.esc(t) + ' <button type="button" data-bxundo>Undo</button>', 6000);
 V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Add to My Box</h2><label class="np-field">${V2.ICON.search}<input type="search" data-bxq placeholder="Find a Pokémon you own" aria-label="Add a Pokémon to your box" autocomplete="off"></label><div class="hits" data-bxhits aria-live="polite"></div></div>`, {label: 'Add to My Box', small: true, focus: '[data-bxq]'});
   const inp = sh.querySelector('[data-bxq]'), out = sh.querySelector('[data-bxhits]');
-  const draw = () => { const q = inp.value.trim(), r = q ? V2.find(q).mons.filter(p => !p.m && !inBox(p)) : []; // as today: base forms only, and not ones already in the box
-    out.innerHTML = !q ? '<p class="fine">Type a Pokémon\'s name. Mega forms come with their Pokémon.</p>' : !r.length ? `<p class="fine">Nothing called “${V2.esc(q)}”. Try part of the name.</p>`
+  // E16 (Sim's check, Nov 12): a name that is already in the box says so, instead of "Nothing called ..."
+  const draw = () => { const q = inp.value.trim(), all = q ? V2.find(q).mons.filter(p => !p.m) : [], r = all.filter(p => !inBox(p)), had = all.filter(inBox); // as today: base forms only, and not ones already in the box
+    out.innerHTML = !q ? '<p class="fine">Type a Pokémon\'s name. Mega forms come with their Pokémon.</p>' : !r.length ? (had.length ? `<p class="fine">${had.slice(0, 3).map(p => V2.esc(V2.disp(p.n))).join(', ')} ${had.length === 1 ? 'is' : 'are'} already in your box.</p>` : `<p class="fine">Nothing called “${V2.esc(q)}”. Try part of the name.</p>`)
       : r.map(p => { const has = inBox(p); return `<button type="button" class="np-hit" data-bxaddn="${V2.esc(p.n)}"${has ? ' aria-disabled="true"' : ''}><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${has ? '<small>In your box</small>' : (p.t || []).map(V2.typeChip).join('')}</span></button>`; }).join(''); };
   inp.addEventListener('input', draw); inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit:not([aria-disabled])'); if (h) { e.preventDefault(); h.click(); } } }); draw(); };
 V2.bxAdd = n => { const p = byName.get(n); if (!p) return; if (!boxAdd(p)) { toast(`${p.d} is already in your box`); return; } V2.closeSheet(true);
@@ -91,12 +92,16 @@ document.addEventListener('click', async e => { const t = e.target.closest && e.
   else if (d.bxadd !== undefined) V2.bxAddPick();
   else if (d.bxaddn) { if (t.getAttribute('aria-disabled') !== 'true') V2.bxAdd(d.bxaddn); }
   else if (d.bxteam) V2.bxTeam(d.bxteam);
-  else if (d.bxrm) { const p = byName.get(d.bxrm); boxRemove(d.bxrm); V2.closeSheet(true); render(); V2.bxToast(`Removed ${p ? p.d : d.bxrm} from your box`); }
+  // E15 (Sim's check, Nov 12): the button pressed belonged to the Pokémon just removed, so focus fell to the page top; it now goes to
+  // the box tile in the same place (the next Pokémon), or the last one
+  else if (d.bxrm) { const p = byName.get(d.bxrm), tiles = [...document.querySelectorAll('[data-bxsel]')], at = Math.max(0, tiles.findIndex(x => x.dataset.bxsel === d.bxrm));
+    boxRemove(d.bxrm); V2.closeSheet(true); render(); V2.bxToast(`Removed ${p ? p.d : d.bxrm} from your box`);
+    const now = [...document.querySelectorAll('[data-bxsel]')].filter(x => x.getClientRects().length), f = now[Math.min(at, now.length - 1)]; if (f) f.focus({preventScroll: false}); }
   else if (d.bxundo !== undefined) { if (boxRestore()) { render(); toast('Box restored'); } }
   else if (d.bxreset !== undefined) { if (!V2.bx.ask) { V2.bx.ask = true; bxRe(); clearTimeout(V2.bx._t); V2.bx._t = setTimeout(() => { V2.bx.ask = false; if (V2.route() === 'box') bxRe(); }, 3500); return; }
     V2.bx.ask = false; boxReset(); V2.bx.page = 0; V2.bx.sel = null; render(); V2.bxToast('Box reset to the default list'); }
   else if (d.bxlink === 'copy') { const l = boxLink(); if (!l) { toast('Add some Pokémon to your box first'); return; }
-    if (await copyText(l)) toast(`Box link copied (${S.box.length} Pokémon)`); else { V2.bx.linkOpen = true; V2.bx.linkVal = l; V2.bx.msg = 'Copy the link above.'; bxRe(); const f = document.querySelector('[data-bxlinkin]'); if (f) f.select(); } }
+    if (await V2.copy(l)) toast(`Box link copied (${S.box.length} Pokémon)`); else { V2.bx.linkOpen = true; V2.bx.linkVal = l; V2.bx.msg = 'Copy the link above.'; bxRe(); const f = document.querySelector('[data-bxlinkin]'); if (f) { f.focus(); f.select(); } } } /* E15: focus goes to the link box, not the page top */
   else if (d.bxlink === 'open') { V2.bx.linkOpen = !V2.bx.linkOpen; V2.bx.msg = ''; bxRe(); if (V2.bx.linkOpen) { const f = document.querySelector('[data-bxlinkin]'); if (f) f.focus(); } }
   else if (d.bxlink === 'add' || d.bxlink === 'replace') { const f = document.querySelector('[data-bxlinkin]'), x = decodeBox(f && f.value);
     if (!x || !x.names.length) { V2.bx.linkVal = f ? f.value : ''; V2.bx.msg = 'That doesn’t look like a box link. Copy it again with Copy Box Link, then paste the whole thing.'; bxRe(); return; }

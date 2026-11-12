@@ -57,7 +57,7 @@ V2.openTeamSheet = () => { const ms = members(); if (!ms.length) return;
     <div class="ts2-acts"><button type="button" class="np-btn" data-v2copy><span>Copy for Showdown</span></button><p class="fine">Big number: the stat at level 50 · small number: stat points (0–32) · <b class="up">+</b> / <b class="dn">−</b> nature</p></div>
     <div class="ts2-grid">${ms.map(card).join('')}</div></div>`, {label: 'Team Sheet'}); };
 // Copy for Showdown: today's export (exportPaste) and clipboard helper (copyText)
-V2.copyTeam = async () => { toast((await copyText(exportPaste())) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); };
+V2.copyTeam = async () => { toast((await V2.copy(exportPaste())) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2copy]')) V2.copyTeam(); if (e.target.closest('[data-v2sheetopen]')) V2.openTeamSheet(); });
 
 // ---------- Save Team (R4, Nov 11): a small sheet; the save itself is today's saveTeamAs (30-saved-data.js) ----------
@@ -103,7 +103,7 @@ V2.svRefresh = focus => { const el = document.querySelector('.svt2'); if (!el) r
 document.addEventListener('click', e => { if (e.target.closest('[data-v2saved]')) { V2.openSavedTeams(); return; }
   const b = e.target.closest('[data-svact]'); if (!b) return; const U = V2.svUi, id = b.dataset.id, a = b.dataset.svact;
   if (a === 'open') { const t = openSaved(id); if (!t) return; V2.closeSheet(true); V2.ui.sel = 0; if (location.hash !== '#team') location.hash = '#team'; render(); scrollTo(0, 0); toast(`Opened "${t.name}"`, true); }
-  else if (a === 'copy') { const t = S.teams.find(x => x.id === id); if (t) copyText(slotsPaste(t.slots)).then(ok => toast(ok ? 'Team copied for Showdown' : 'Copy failed. Try again.')); }
+  else if (a === 'copy') { const t = S.teams.find(x => x.id === id); if (t) V2.copy(slotsPaste(t.slots)).then(ok => toast(ok ? 'Team copied for Showdown' : 'Copy failed. Try again.')); }
   else if (a === 'ren') { U.ren = id; U.del = null; V2.svRefresh('[data-svname]'); }
   // Compare two saved teams (as today): the first tap picks, the second opens Compare; or the pick against My Team
   else if (a === 'cmp') { if (U.cmp && U.cmp !== id) { const x = U.cmp; U.cmp = null; V2.closeSheet(true); V2.cxGo('s:' + x, 's:' + id); } else { U.cmp = U.cmp === id ? null : id; V2.svRefresh(`[data-svact="cmp"][data-id="${CSS.escape(id)}"]`); } }

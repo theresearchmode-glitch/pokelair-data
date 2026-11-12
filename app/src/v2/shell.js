@@ -75,7 +75,10 @@ document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
 
 // ---------- search: places and Pokémon, from the header button or the / key ----------
 V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: []};
-  const norm = x => x.toLowerCase().replace(/[^a-z0-9]/g, ''), nq = norm(q);
+  // accents count as their plain letter ("é" = "e", as in Pokémon); a query that is all punctuation finds nothing (Sim's check E16,
+  // Nov 12: "é" became an empty query, which matched every name, so the most-used Pokémon showed up)
+  const norm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''), nq = norm(q);
+  if (!nq) return {places: V2.places.filter(([, n]) => n.toLowerCase().includes(q)), mons: []};
   const places = V2.places.filter(([, n]) => n.toLowerCase().includes(q));
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
@@ -138,6 +141,9 @@ V2.wl = (t, hand) => String(t == null ? '' : t)
   .replace(/Ready for the top threats/g, 'Handles the top threats')
   .replace(/\bReady ([+−-]\d+%)/g, 'Matchups $1') // Quick add: the change to the matchup score
   .replace(/how many your team is ready for: it Beats them or Handles them/g, 'how many your team Beats or Handles');
+// copy without losing your place (Sim's check E15, Nov 12): the shared copyText falls back to a hidden text box when the clipboard is
+// blocked, which takes focus and is then removed; focus goes back to the control you pressed
+V2.copy = async t => { const a = document.activeElement, ok = await copyText(t); if (a && a !== document.body && a.isConnected && document.activeElement !== a) a.focus({preventScroll: true}); return ok; };
 // redraw the current page after data arrives or a choice changes, keeping the reader's place and focus (no scroll jump).
 // Fix plan A5 (Sim, Nov 11): a redraw used to rebuild the whole page, header included, so focus fell back to the page top
 // (the next Tab went to "Skip to the page") and a button could be replaced under the pointer. Now the new page is built
