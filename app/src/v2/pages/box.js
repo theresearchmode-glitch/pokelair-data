@@ -13,8 +13,11 @@ V2.bxPer = () => 30;
 V2.bxData = () => { const so = boxSortNow(), rows = boxRows(so), per = V2.bxPer(), pages = Math.max(1, Math.ceil(rows.length / per));
   if (V2.bx.page >= pages) V2.bx.page = pages - 1; if (V2.bx.page < 0) V2.bx.page = 0;
   const on = new Set(members().map(m => ownKey(m.p)));
-  if (!V2.bx.sel || !S.box.includes(V2.bx.sel)) V2.bx.sel = (rows[V2.bx.page * per] || [])[0] || null;
-  return {so, rows, per, pages, on, here: rows.slice(V2.bx.page * per, V2.bx.page * per + per)}; };
+  // E18 proposal (Sim's check, Nov 12): nothing is picked until the player taps; wide screens (side panel) show the first tile's
+  // summary meanwhile ("shown"), and only there does that tile look picked (.auto, CSS from 900px); phones show no pick on load
+  if (V2.bx.sel && !S.box.includes(V2.bx.sel)) V2.bx.sel = null;
+  const here = rows.slice(V2.bx.page * per, V2.bx.page * per + per);
+  return {so, rows, per, pages, on, here, shown: V2.bx.sel || (here[0] || [])[0] || null}; };
 // what the page header says about this box's range: letters for A–Z, types for Type, the order otherwise
 V2.bxRange = (so, here) => { if (!here.length) return ''; const a = here[0], z = here[here.length - 1];
   if (so === 'az' || so === 'za') return `${a[1][0]} to ${z[1][0]}`;
@@ -25,17 +28,29 @@ V2.bxWall = here => { const c = {}; for (const [n] of here) { const p = byName.g
   const ts = Object.keys(c).sort((a, b) => c[b] - c[a] || a.localeCompare(b)); while (ts.length < 4) ts.push(ts[ts.length - 1] || 'Normal');
   return ts.slice(0, 4).map((t, i) => `--w${i}:var(--tyn-${t})`).join(';'); };
 
-V2.bxTile = (n, d, on, sel) => `<button type="button" class="bx-t${sel ? ' sel' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}${on ? ', on your team' : ''}">${on ? '<i class="bx-on" aria-hidden="true"></i>' : ''}${V2.mon(n, {iw: 96, bare: true})}<b>${V2.esc(d)}</b></button>`;
+V2.bxTile = (n, d, on, sel, auto) => `<button type="button" class="bx-t${sel ? ' sel' : auto ? ' auto' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}${on ? ', on your team' : ''}">${on ? '<i class="bx-on" aria-hidden="true"></i>' : ''}${V2.mon(n, {iw: 96, bare: true})}<b>${V2.esc(d)}</b></button>`;
 
 // the summary of the picked Pokémon (beside the box on wide screens, in a sheet on phones)
-V2.bxSum = (n, o = {}) => { const p = byName.get(n); if (!p) return ''; const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p);
-  const onTeam = members().some(m => ownKey(m.p) === n), st = V2.addState(n), full = st === 'full';
+// F proposal (Sim, Nov 12): a species with more than one form (a Mega) shows a Forms row, as the info sheet does; the tapped form's
+// rating and numbers fill the panel, Info Sheet opens that form and Add / Swap adds that form (as the info sheet's own Add does).
+// The box itself keeps the species (n); Remove from Box removes the species.
+V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs = ROSTER.filter(q => q.b === b.b), F = V2.bx.form && V2.bx.form.of === n && fs.some(q => q.n === V2.bx.form.f) ? V2.bx.form.f : n;
+  const p = byName.get(F), E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p);
+  const onTeam = members().some(m => ownKey(m.p) === n), st = V2.addState(F), full = st === 'full';
+  const forms = fs.length > 1 ? `<div class="bx-forms"><div class="np-eyebrow">Forms · tap one to show it</div><div class="bx-fr" role="group" aria-label="Forms of ${E(V2.disp(b.b))}">${fs.map(q => { const rq = rating(q);
+    return `<button type="button" class="ms-f bx-f" data-bxform="${E(q.n)}" data-bxof="${E(n)}" aria-pressed="${q.n === F}">${V2.mon(q.n, {iw: 48, bare: true})}<span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}</div></div>` : '';
   const num = (b, l) => `<div class="bx-n"><b>${b}</b><span>${l}</span></div>`;
-  return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art" style="--cp:${V2.cp(n)}">${V2.mon(n, {sel: true, iw: o.sheet ? 180 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
-    <div class="bx-sumb"><h2 class="u">${V2.nameHtml(V2.disp(n))}</h2><div class="bx-ty">${(p.t || []).map(V2.typeChip).join('')}${onTeam ? '<span class="np-chip bx-chip">On your team</span>' : ''}</div>
-    <div class="bx-nums">${num(H.hU != null ? E(pctFmt(H.hU)) : '–', 'of teams')}${num(H.hW != null ? E(pctFmt(H.hW)) : '–', 'win rate')}${num(p.st[5], 'base Speed')}</div>
-    <div class="bx-acts"><button type="button" class="np-btn" data-v2mon="${E(n)}">Info Sheet</button>${onTeam ? '' : `<button type="button" class="np-btn2" data-bxteam="${E(n)}"><span>${full ? 'Swap Into My Team' : 'Add to My Team'}</span></button>`}<button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; };
+  return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art" style="--cp:${V2.cp(F)}">${V2.mon(F, {sel: true, iw: o.sheet ? 180 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
+    <div class="bx-sumb"><h2 class="u">${V2.nameHtml(V2.disp(F))}</h2><div class="bx-ty">${(p.t || []).map(V2.typeChip).join('')}${onTeam ? '<span class="np-chip bx-chip">On your team</span>' : ''}</div>${forms}
+    <div class="bx-nums">${num(E(V2.shareTxt(H)), 'of teams')}${num(H.hW != null ? E(pctFmt(H.hW)) : '–', 'win rate')}${num(p.st[5], 'base Speed')}</div>
+    <div class="bx-acts"><button type="button" class="np-btn" data-v2mon="${E(F)}">Info Sheet</button>${onTeam ? '' : `<button type="button" class="np-btn2" data-bxteam="${E(F)}"><span>${full ? 'Swap Into My Team' : 'Add to My Team'}</span></button>`}<button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; };
 
+// E20 proposal (Sim's check, Nov 12): the shared syncText names the Claude account, which can't be on the public site; the new site
+// says it in plain words (today's site keeps its wording). Local = this browser's storage, so "browser", not "device".
+V2.syncTxt = st => st === 'local' ? 'Saved in this browser only. To use your box on another device, copy its box link.' : 'Saved and kept in step across your devices.';
+// E19 proposal (Sim's check, Nov 12): the share is stored rounded to 0.1 (meta_tour), so 0 with tournament games means under 0.05%:
+// shown as "<0.1%" (the site's own rule for tiny shares, pctFmt); no tournament games at all stays "–"
+V2.shareTxt = H => H.hU == null ? '–' : +H.hU === 0 && H.hG > 0 ? '<0.1%' : pctFmt(H.hU);
 V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
   return `<div class="bx-empty">${V2.mon(n, {bare: true, ft: true})}<div><h2 class="u">Your box is empty.</h2><p>Add the Pokémon you own, and Build for Me and the suggestions pick from them. ${d} would love a spot.</p>
     <div class="row"><button type="button" class="np-btn" data-bxadd><span>Add a Pokémon</span></button><button type="button" class="np-btn2" data-bxaddn="${V2.esc(n)}"><span>Add ${d}</span></button></div></div></div>`; };
@@ -49,21 +64,21 @@ V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.
       <div class="bx-linkin"${V2.bx.linkOpen ? '' : ' hidden'}><p class="fine">Paste a box link or code from another device, account or friend.</p><label class="np-field"><input data-bxlinkin aria-label="Box link or code" autocomplete="off" value="${E(V2.bx.linkVal || '')}"></label>
       <div class="row"><button type="button" class="np-btn2" data-bxlink="add"><span>Add to My Box</span></button><button type="button" class="np-btn2" data-bxlink="replace"><span>Replace My Box</span></button></div><p class="bx-msg" data-bxmsg role="status">${E(V2.bx.msg || '')}</p></div></li>
       <li><button type="button" data-bxreset>${V2.bx.ask ? 'Tap Again to Reset' : 'Reset Box'}</button></li></ul>
-    <p class="fine bx-sync">${E(syncText(ui.syncSt || 'local'))}</p></div>`;
+    <p class="fine bx-sync">${E(V2.syncTxt(ui.syncSt || 'local'))}</p></div>`;
   if (!n) return `<section class="bx2 is-empty">${head}<div class="bx-mid">${V2.bxEmpty()}</div>${tools}</section>`;
   const nav = D.pages > 1, dots = nav ? `<div class="bx-dots" role="group" aria-label="Boxes">${Array.from({length: D.pages}, (_, i) => `<button type="button" data-bxpage="${i}" aria-label="Box ${i + 1}" aria-pressed="${i === V2.bx.page}"></button>`).join('')}</div>` : '';
   const box = `<div class="bx-box" style="${V2.bxWall(D.here)}" data-bxswipe><div class="bx-hd">${nav ? '<button type="button" class="bx-arr" data-bxgo="-1" aria-label="Previous box"><span>◀</span></button>' : '<span></span>'}
       <div class="bx-name"><h2 class="u">Box ${V2.bx.page + 1}</h2><p>${D.here.length} of ${n} · ${E(V2.bxRange(D.so, D.here))}</p></div>${nav ? '<button type="button" class="bx-arr" data-bxgo="1" aria-label="Next box"><span>▶</span></button>' : '<span></span>'}</div>
-    ${D.here.some(([b]) => D.on.has(b)) ? '<p class="bx-onkey"><i class="bx-on" aria-hidden="true"></i>On your team</p>' : ''}<div class="bx-grid">${D.here.map(([b, d]) => V2.bxTile(b, d, D.on.has(b), b === V2.bx.sel)).join('')}</div>${dots}</div>`;
+    ${D.here.some(([b]) => D.on.has(b)) ? '<p class="bx-onkey"><i class="bx-on" aria-hidden="true"></i>On your team</p>' : ''}<div class="bx-grid">${D.here.map(([b, d]) => V2.bxTile(b, d, D.on.has(b), b === V2.bx.sel, !V2.bx.sel && b === D.shown)).join('')}</div>${dots}</div>`;
   const ms = members(), four = ms.length >= 4 ? CH.four(ms) : null, role = m => !four ? '' : four.lead.includes(m.p.n) ? 'Lead' : four.back.includes(m.p.n) ? 'Back' : 'Bench';
   const team = `<div class="bx-team"><div class="bx-teamhd"><h2 class="u">Your Team</h2><a class="np-link" href="#team">${ms.length} of 6 · Open My Team</a></div>
     ${ms.length ? `<ul>${ms.map(m => `<li>${V2.mon(m.p.n, {iw: 72, sub: role(m)})}</li>`).join('')}</ul>` : '<p class="fine">No team yet. Pick a Pokémon in your box and add it.</p>'}</div>`;
-  return `<section class="bx2">${head}<div class="bx-mid">${sort}${box}${team}</div><aside class="bx-side" aria-label="Picked Pokémon">${V2.bx.sel ? V2.bxSum(V2.bx.sel) : ''}</aside>${tools}</section>`; }};
+  return `<section class="bx2">${head}<div class="bx-mid">${sort}${box}</div>${team}<aside class="bx-side" aria-label="Picked Pokémon">${D.shown ? V2.bxSum(D.shown) : ''}</aside>${tools}</section>`; }};
 
 // ---------- actions ----------
 const bxRe = () => V2.redraw();
 V2.bxNarrow = () => matchMedia('(max-width:899px)').matches;
-V2.bxPick = n => { V2.bx.sel = n; if (V2.bxNarrow()) { bxRe(); V2.sheet(V2.bxSum(n, {sheet: true}), {label: V2.disp(n), small: true}); return; } bxRe();
+V2.bxPick = n => { V2.bx.sel = n; V2.bx.form = null; if (V2.bxNarrow()) { bxRe(); V2.sheet(V2.bxSum(n, {sheet: true}), {label: V2.disp(n), small: true}); return; } bxRe();
   const t = document.querySelector(`[data-bxsel="${CSS.escape(n)}"]`); if (t) t.focus({preventScroll: true}); };
 V2.bxToast = t => V2.toast(V2.esc(t) + ' <button type="button" data-bxundo>Undo</button>', 6000);
 V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Add to My Box</h2><label class="np-field">${V2.ICON.search}<input type="search" data-bxq placeholder="Find a Pokémon you own" aria-label="Add a Pokémon to your box" autocomplete="off"></label><div class="hits" data-bxhits aria-live="polite"></div></div>`, {label: 'Add to My Box', small: true, focus: '[data-bxq]'});
@@ -76,17 +91,26 @@ V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">A
 V2.bxAdd = n => { const p = byName.get(n); if (!p) return; if (!boxAdd(p)) { toast(`${p.d} is already in your box`); return; } V2.closeSheet(true);
   V2.bx.sel = p.n; const D = V2.bxData(), i = D.rows.findIndex(r => r[0] === p.n); if (i >= 0) V2.bx.page = Math.floor(i / D.per); render(); toast(p.d + ' added to your box'); };
 // add to the team (an empty spot) or swap it in for one of the six (today's addMon; Undo brings the team back)
+// Sim, Nov 12: adding a Mega form when the team already has a Mega stops and asks first (only one Pokemon can Mega Evolve per
+// battle). `skip` is the slot being replaced (replacing the team's own Mega needs no warning).
+V2.bxMegaOk = (p, skip, go) => { const other = p.m && members().find(m => m.mega && m.i !== skip); if (!other) return go();
+  V2.sheet(`<div class="bx-swap"><div class="np-eyebrow">Two Megas</div><h2 class="u">Add ${V2.esc(V2.disp(p.n))} too?</h2><p>Your team already has ${V2.esc(V2.disp(other.p.n))}. Only one Pok\u00e9mon can Mega Evolve in a battle.</p><div class="bx-acts"><button type="button" class="np-btn2" data-bxmegago><span>Add Anyway</span></button><button type="button" class="np-btn2" data-bxmegano><span>Cancel</span></button></div></div>`, {label: 'Two Megas', small: true});
+  const yes = document.querySelector('[data-bxmegago]'), no = document.querySelector('[data-bxmegano]');
+  if (yes) yes.addEventListener('click', go); if (no) no.addEventListener('click', () => V2.closeSheet()); if (no) no.focus(); };
 V2.bxTeam = n => { const p = byName.get(n); if (!p) return; const st = V2.addState(n);
   if (st === 'have') { toast(`${p.d} is already on your team`); return; }
-  if (st === 'ok') { keepUndo(); addMon(S.slots.findIndex(x => !byName.get(x.n)), p); V2.closeSheet(true); render(); toast(`${p.d} added to your team`, true); return; }
+  if (st === 'ok') { const at = S.slots.findIndex(x => !byName.get(x.n)); V2.bxMegaOk(p, -1, () => { keepUndo(); addMon(at, p); V2.closeSheet(true); render(); toast(`${p.d} added to your team`, true); }); return; }
   V2.sheet(`<div class="bx-swap"><div class="np-eyebrow">Swap into my team</div><h2 class="u">${V2.esc(V2.disp(n))} replaces…</h2><ul>${members().map(m => `<li><button type="button" class="bx-swapb" data-bxswap="${m.i}">${V2.mon(m.p.n, {iw: 72})}</button></li>`).join('')}</ul></div>`, {label: 'Swap into my team', small: true});
   document.querySelectorAll('[data-bxswap]').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.bxswap, out = S.slots[i] && byName.get(S.slots[i].n);
-    keepUndo(); addMon(i, p); V2.closeSheet(true); render(); toast(`${out ? out.d + ' → ' : ''}${p.d}`, true); })); };
-V2.bxGo = d => { const D = V2.bxData(); V2.bx.page = (V2.bx.page + d + D.pages) % D.pages; V2.bx.sel = (V2.bxData().here[0] || [])[0] || null; bxRe(); };
+    V2.bxMegaOk(p, i, () => { keepUndo(); addMon(i, p); V2.closeSheet(true); render(); toast(`${out ? out.d + ' → ' : ''}${p.d}`, true); }); })); };
+V2.bxGo = d => { const D = V2.bxData(); V2.bx.page = (V2.bx.page + d + D.pages) % D.pages; V2.bx.sel = null; bxRe(); };
 
-document.addEventListener('click', async e => { const t = e.target.closest && e.target.closest('[data-bxsel],[data-bxgo],[data-bxpage],[data-bxadd],[data-bxaddn],[data-bxteam],[data-bxrm],[data-bxreset],[data-bxlink],[data-bxundo]'); if (!t) return;
+document.addEventListener('click', async e => { const t = e.target.closest && e.target.closest('[data-bxsel],[data-bxform],[data-bxgo],[data-bxpage],[data-bxadd],[data-bxaddn],[data-bxteam],[data-bxrm],[data-bxreset],[data-bxlink],[data-bxundo]'); if (!t) return;
   const d = t.dataset;
   if (d.bxsel) V2.bxPick(d.bxsel);
+  else if (d.bxform) { V2.bx.sel = d.bxof; V2.bx.form = {of: d.bxof, f: d.bxform}; const sh = document.querySelector('.bx-sum.in-sheet');
+    if (sh) sh.outerHTML = V2.bxSum(d.bxof, {sheet: true}); else bxRe();
+    const k = document.querySelector(`${sh ? ".bx-sum.in-sheet" : ".bx-side"} [data-bxform="${CSS.escape(d.bxform)}"]`); if (k) k.focus({preventScroll: true}); }
   else if (d.bxgo) V2.bxGo(+d.bxgo);
   else if (d.bxpage !== undefined) { V2.bx.page = +d.bxpage; V2.bx.sel = null; bxRe(); }
   else if (d.bxadd !== undefined) V2.bxAddPick();

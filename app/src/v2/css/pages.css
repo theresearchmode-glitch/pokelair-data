@@ -276,12 +276,12 @@
 /* the narrowest phones: the action row's two columns are 140px, so its labels step down one size together (Copy for Showdown fits) */
 @media (max-width:359px){.tm-acts .np-btn2{font-size:var(--t13);padding:0 var(--s2)}}
 /* ===== My Box (R4, Nov 11): Sim's in-game box concept (docs/redesign/box/NOTES.md) ===== */
-.bx2{display:grid;gap:var(--s8) var(--s10);grid-template-columns:minmax(0,1fr);grid-template-areas:"lead" "mid" "tools";padding:var(--s8) var(--gut) var(--s16)}
-.bx-lead{grid-area:lead}.bx-mid{grid-area:mid;min-width:0}.bx-side{grid-area:side;display:none}.bx-tools{grid-area:tools}
-@media (min-width:900px){.bx2{grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:"lead lead" "mid side" "tools side";grid-template-rows:auto auto minmax(0,1fr)}.bx-side{display:block}
+.bx2{display:grid;gap:var(--s8) var(--s10);grid-template-columns:minmax(0,1fr);grid-template-areas:"lead" "mid" "team" "tools";padding:var(--s8) var(--gut) var(--s16)}
+.bx-lead{grid-area:lead}.bx-mid{grid-area:mid;min-width:0}.bx-team{grid-area:team;min-width:0}.bx-side{grid-area:side;display:none}.bx-tools{grid-area:tools}
+@media (min-width:900px){.bx2{grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:"lead lead" "mid side" "team tools";grid-template-rows:auto auto auto}.bx-side{display:block}
   .bx-lead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s10);align-items:end}.bx-lead>.np-eyebrow,.bx-lead>h1,.bx-lead>.bx-count,.bx-lead>.bx-why{grid-column:1}
   .bx-lead>.bx-add{grid-column:2;grid-row:3/5;align-self:end;margin-bottom:var(--s6)}}
-@media (min-width:1400px){.bx2{grid-template-columns:280px minmax(0,1fr) 300px;grid-template-areas:"lead mid side" "tools mid side";grid-template-rows:auto minmax(0,1fr);align-items:start}
+@media (min-width:1400px){.bx2{grid-template-columns:280px minmax(0,1fr) 300px;grid-template-areas:"lead mid side" "tools mid side" "team mid side";grid-template-rows:auto auto minmax(0,1fr);align-items:start}
   .bx-lead{display:block}.bx-lead>.bx-add{margin-bottom:0}}
 /* the empty box: its wide layout comes after the base rule (Nov 11: it came before and lost, so at 1400+ the empty box and its
    underdog were squeezed into the 280px lead column) */
@@ -311,19 +311,21 @@
 .bx-t>b{display:block;max-width:100%;font:600 var(--t13)/1.25 var(--b);font-stretch:88%;white-space:nowrap}
 @container (max-width:420px){.bx-t>b{font-stretch:75%}.bx-t{padding-inline:0}.bx-grid{gap:var(--s1) 0}}
 .bx-t:hover{background:color-mix(in srgb,var(--surface) 45%,transparent)}
+@media (min-width:900px){.bx-t.auto{background:var(--surface);transform:translateY(-4px);box-shadow:0 1px 2px rgba(var(--shade),.12),0 10px 22px -10px rgba(var(--shade),.42)}
+  :root[data-theme="night"] .bx-t.auto{background:var(--wash);box-shadow:0 0 0 1px var(--rule),0 10px 22px -10px rgba(var(--shade),.6)}}
 .bx-t.sel{background:var(--surface);transform:translateY(-4px);box-shadow:0 1px 2px rgba(var(--shade),.12),0 10px 22px -10px rgba(var(--shade),.42)}
 :root[data-theme="night"] .bx-t.sel{background:var(--wash);box-shadow:0 0 0 1px var(--rule),0 10px 22px -10px rgba(var(--shade),.6)}
 .bx-t:focus-visible{outline:3px solid var(--plot);outline-offset:-1px}
 .bx-on{display:inline-block;width:20px;height:7px;background:var(--plot);transform:skewX(-24deg)}.bx-t .bx-on{position:absolute;top:var(--s2);right:var(--s2)}.bx-onkey{display:flex;justify-content:center;align-items:center;gap:var(--s2);margin:0 0 var(--s3);font-size:var(--t13);color:var(--ink-2)}
-.bx-dots{display:flex;justify-content:center;gap:var(--s2);margin-top:var(--s3)}
-.bx-dots button{width:28px;height:var(--tap);padding:0;border:0;background:none;cursor:pointer;position:relative}
-.bx-dots button::after{content:"";position:absolute;left:0;right:0;top:50%;height:6px;translate:0 -50%;background:color-mix(in srgb,var(--ink) 22%,transparent);transform:skewX(-24deg)}
+.bx-dots{display:flex;justify-content:center;gap:0;margin-top:var(--s3)}
+.bx-dots button{width:var(--tap);height:var(--tap);padding:0;border:0;background:none;cursor:pointer;position:relative}
+.bx-dots button::after{content:"";position:absolute;left:var(--s2);right:var(--s2);top:50%;height:6px;translate:0 -50%;background:color-mix(in srgb,var(--ink) 22%,transparent);transform:skewX(-24deg)}
 .bx-dots button[aria-pressed="true"]::after{background:var(--ink)}
 /* your team under the box */
-.bx-team{margin-top:var(--s8)}.bx-teamhd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s4);padding-bottom:var(--s3);border-bottom:1px solid var(--rule)}
+.bx-team{margin-top:0}.bx-teamhd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s4);padding-bottom:var(--s3);border-bottom:1px solid var(--rule)}
 .bx-teamhd h2{font-size:var(--t24);margin:0}.bx-teamhd .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}.bx-team ul{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2);list-style:none;margin:var(--s4) 0 0;padding:0}
 .bx-team .np-mon{--iw:min(72px,100%)}.bx-team .np-mon b{font-size:var(--t13);line-height:1.25}.bx-team .np-mon small{font-size:var(--t13);color:var(--ink-2)}
-@media (max-width:599px){.bx-team .np-mon b{display:none}}
+@media (max-width:599px),(min-width:1400px){.bx-team ul{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s4)}}
 /* the picked Pokémon */
 .bx-art{position:relative;display:grid;justify-items:center;padding:calc(var(--s16) + var(--s4)) var(--s4) var(--s8);background:radial-gradient(130% 62% at 50% 100%,rgba(var(--cp,150,150,165),.34),rgba(var(--cp,150,150,165),.08) 60%,transparent 82%),var(--wash);clip-path:polygon(0 5%,100% 0,100% 95%,0 100%);overflow:hidden}
 :root[data-theme="night"] .bx-art{background:radial-gradient(130% 62% at 50% 100%,rgba(var(--cp,150,150,165),.3),rgba(var(--cp,150,150,165),.06) 60%,transparent 82%),var(--wash)}
@@ -331,7 +333,10 @@
 .bx-plate b{font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style}
 .bx-sumb h2{font-size:var(--t34);margin:var(--s4) 0 var(--s3);overflow-wrap:break-word}.bx-ty{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
 .bx-chip{min-height:28px;padding:0 var(--s3);font-size:var(--t13);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
-.bx-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);margin:var(--s6) 0;padding-block:var(--s4);border-block:1px solid var(--rule)}
+.bx-forms{margin-top:var(--s5)}.bx-fr{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s1);margin-top:var(--s2)}
+.bx-f{flex-direction:column;gap:var(--s1);min-height:var(--tap);padding:var(--s2) var(--s1);border:0;background:none;color:var(--ink);cursor:pointer;text-align:center}.bx-f .np-mon{--iw:56px}
+.bx-f span{justify-items:center}.bx-f b .mg{display:block;margin:0}.bx-f b .mg.none{display:block;visibility:hidden}
+.bx-nums{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:var(--s3);margin:var(--s6) 0;padding-block:var(--s4);border-block:1px solid var(--rule)}
 .bx-n b{display:block;font:900 var(--t28)/1.05 var(--u);font-style:italic;letter-spacing:-.02em}:root[data-theme="night"] .bx-n b{font-weight:800}.bx-n span{font-size:var(--t13);color:var(--ink-2)}
 .bx-acts{display:flex;flex-wrap:wrap;gap:var(--s3)}.bx-acts .np-btn{flex:1 1 100%}.bx-acts .np-btn2{flex:1 1 140px}
 .bx-sum.in-sheet{padding:var(--s6) var(--s4) var(--s4)}
