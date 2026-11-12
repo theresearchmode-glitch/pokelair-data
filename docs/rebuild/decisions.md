@@ -78,6 +78,13 @@ Sim's own decisions are marked "Sim". Newest first.
 - A11 proposal (a11-proposal.png, a11.patch; visual, waiting for Sim): "Saved ✓" (outline, opens the same Save sheet) when the loaded
   saved team is unchanged; "Update Saved Team" (main) after any change; Undo brings "Saved ✓" back (measured, built page, Chromium).
   Known flaw shown in the picture: on phone the four buttons wrap 3 + 1 ("More" alone): needs Sim's layout choice (e.g. 2 x 2).
+- Jump links (Sim: "pressing Matchups just scrolls and takes you nowhere"): FOUND and fixed (behaviour, not look; Claude under
+  authority). The jump scrolled each section's top to y=0, under the sticky header and jump bar, so its heading and first lines were
+  hidden (phone: you landed on "calc reading is underneath."). Measured on the built page (design6 4485c6b, real data, Chromium and
+  WebKit, 320/390/820/1180/1440, each section): before 33 of 40 headings HIDDEN (105-121px too far; the rest only because the page
+  end was reached); after (scroll-margin-top = header + jump bar + 16px) 40 of 40 seen, 16px under the jump bar. Full-page screenshots
+  at rest 16 of 16 identical. CORRECTION: the Nov 11 repro read "targetTop: 0" as "the link works"; 0 meant the heading was under the
+  bars. "Matchups disappears on a wide window": still not reproduced (visible with 8 rows at 1180-3200, both engines).
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled

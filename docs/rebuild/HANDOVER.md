@@ -111,7 +111,7 @@ Heights: only My Team has been measured on the built page (page-heights.md corre
   suggestion's swap column is 135px wide and 198px tall (every other width 265-928px wide). Plain words: just past the switch to
   two columns, the middle of the row gets squeezed. Cause not confirmed (likely the `.tm-sug li` grid at min-width 900 with
   `minmax(0,1fr)` for the swap column in the narrow left column). Raw output: test-runs/nov11-night/jump-and-suggestion-repro.txt.
-- **"Pressing Matchups just scrolls and takes you nowhere" (Sim):** NOT reproduced. Built page v52, WebKit, widths 390-1440: the
+- **"Pressing Matchups just scrolls and takes you nowhere" (Sim):** [Nov 12: FOUND AND FIXED, see decisions.md: the jump put the heading under the bars; "targetTop: 0" below was misread] NOT reproduced. Built page v52, WebKit, widths 390-1440: the
   Matchups jump link scrolled the page so the Matchups section's top sat at 0 every time (result lines in the repro file). Need
   from Sim: which app and roughly how wide. Possibly linked to the next item and to A5 (redraw) and A7 (jump bar).
 - **"On a wide browser the whole Matchups section disappears" (Sim):** NOT reproduced, cause unknown. Same request to Sim.

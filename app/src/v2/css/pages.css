@@ -493,3 +493,7 @@
 .tm-moves .np-type{justify-content:flex-start;text-align:left;min-height:var(--tap);padding:0 var(--s3);clip-path:none;border-radius:var(--r-s);border-left:4px solid var(--tcn,var(--type-none));
   background:color-mix(in srgb,var(--tcn,var(--type-none)) 14%,transparent);color:var(--ink);font-weight:600}
 :root[data-theme="night"] .tm-moves .np-type{background:color-mix(in srgb,var(--tcn,var(--type-none)) 22%,transparent)}
+/* Jump links land ON the section, not under the bars (Sim: "pressing Matchups just scrolls and takes you nowhere"; Nov 12: on phone the
+   Matchups heading ended at 0-29px, behind the 60px header): each section stops below the sticky header + jump bar (45px) + 16px */
+.tm-work .tm-sec{scroll-margin-top:calc(76px + 45px + var(--s4))}
+@media (max-width:699px){.tm-work .tm-sec{scroll-margin-top:calc(60px + 45px + var(--s4))}}
