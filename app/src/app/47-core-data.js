@@ -52,3 +52,6 @@ function coreConfirmText(ns) { if (ns.length > 3) return 'Replace your team?'; c
   let wx = ''; try { const nt = c.next.map(s => byName.get(s.n)).filter(Boolean).map(p => abMember(p)), ws = wxSetsOf(nt);
     if (ws.length > 1) wx = ` The team would set both ${ws.map(w => ARCH[w].name.toLowerCase()).join(' and ')}, which cancel each other out.`; } catch (e) {}
   return `Replace ${andList(c.dropped)}?${c.megas > 2 ? ` Your team would have ${c.megas} Megas (only one can Mega Evolve per battle).` : ''}${wx}`; }
+
+// the full explanation behind the cores "?" (moved from 48-cores.js, Nov 12, so the new Build shows the same words)
+function coreWhyText(what, base) { return `A core is a group of Pokémon that cover each other: one sets up, protects or speeds the other, or they handle each other's bad matchups. These are ${what}, from ${(+RES.teams || 0).toLocaleString('en-US')} tournament teams. Average team wins ${winFmt(100 * base)} of games. ${coreUi.sort === 'win' ? `Ranked by win rate pulled toward the average as if ${coreUi.kind === 'teams' ? 20 : 300} average teams had also run it, so a high rate over a few teams sits below a slightly lower one over many. "Together" compares it with what its members win on their own. Win rates also reflect who plays them: strong players' favourite picks look better than they are.` : 'Ranked by how many teams used it.'}`; }

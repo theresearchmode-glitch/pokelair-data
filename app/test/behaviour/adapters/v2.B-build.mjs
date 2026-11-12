@@ -19,7 +19,7 @@ const AREAS = {'built team': '#main .bd-result', 'cores': '#main .bd-cores', 'in
 const BOXES = {'favourite pokémon': '[data-bdfind]', 'with a pokémon': '[data-bdcfind]'};
 const NO_BOX = {'exclude a pokémon': 'Never suggest box (All Suggestions › Plan settings)', 'look up a pokémon': 'Popular Sets look-up box'};
 // controls today's Build page has that the new one doesn't (a failed tap on #build names them)
-const NO_TAP = [[/^\?$/, 'the ? explanation on cores'], [/details/i, 'Details / Hide details on core rows'], [/^Sets$/, 'the Sets toggle on recent winners (each winner is a fold with its sets here)'],
+const NO_TAP = [[/details/i, 'Details / Hide details on core rows'], [/^Sets$/, 'the Sets toggle on recent winners (each winner is a fold with its sets here)'],
   [/teams with it/i, 'Teams with it on cores'], [/try another/i, 'Try another'], [/show more/i, 'Show more on cores']];
 export default (ui, pg) => {
   const tx = s => (s || '').replace(/\s+/g, ' ').trim();
@@ -57,7 +57,8 @@ export default (ui, pg) => {
       await pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); if (location.hash !== '#build') location.hash = '#build'; else if (window.V2) V2.redraw(); }); await pg.waitForTimeout(wait); return 'auto'; },
     /** the shared tap; on the Build page a miss is retried ignoring case (the new build writes buttons in Title Case, as v2.A-team's
      *  tapText), and a control the new page doesn't have is named */
-    tap: async (match, within = 'body', wait = 500) => { try { return await prevTap(match, within, wait); } catch (e) {
+    tap: async (match, within = 'body', wait = 500) => { if (match === '?' && await pg.evaluate(() => !!document.querySelector('#main [data-bdcwhy]'))) { await pg.click('#main [data-bdcwhy]'); await pg.waitForTimeout(wait); return; } /* today's cores "?" = the new page's "How cores are ranked ›" */
+      try { return await prevTap(match, within, wait); } catch (e) {
         if (!/nothing visible to tap/.test(e.message) || !(await onBuild())) throw e;
         if (match instanceof RegExp && !match.flags.includes('i')) { try { return await prevTap(new RegExp(match.source, match.flags + 'i'), within, wait); } catch (x) {} }
         const s = match instanceof RegExp ? match.source : String(match); for (const [re, what] of NO_TAP) if (re.test(s) || (typeof match === 'string' && re.test(match))) NOT(what + ' on the Build page');
@@ -104,7 +105,7 @@ export default (ui, pg) => {
     teamNames: () => ev('S.slots.filter(s=>s.n).map(s=>byName.get(s.n).d)'),
     slotSet: i => ev(`JSON.parse(JSON.stringify(S.slots[${i}]))`),
     battleOpponentIds: () => ev('S.opp.slice()'),
-    openTipText: () => NOT('the ? explanation (tip pop-up) on the Build page'),
+    openTipText: () => pg.evaluate(() => { const w = document.querySelector('.np-sheet .bd-cwhy'); return w ? w.innerText.replace(/\s+/g, ' ').trim() : ''; }),
     openInfoSheetFor: async id => { if (!ui.tapPokemon) NOT('opening an info sheet from this page'); await ui.tapPokemon(id); },
     infoSheetText: () => txt('.np-sheet .ms2'),
 

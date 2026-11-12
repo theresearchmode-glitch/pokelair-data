@@ -96,7 +96,7 @@ V2.buildCores = () => { const E = V2.esc, rows = coreRows(), shown = rows.slice(
         return `<b class="u"${use ? '' : ` title="Win rate, pulled toward average until there are enough games (raw: ${E(winFmt(100 * r.wr))})"`}>${E(winFmt(100 * w))}</b><small>wins · ${dv >= 0 ? '+' : '−'}${E(ptsTxt(Math.abs(100 * dv)))} vs avg</small>`; })()}</span><button type="button" class="np-btn2 bd-add" data-bdcore="${E(r.ns.join('|'))}" aria-label="Add ${E(r.ns.map(n => V2.disp(n)).join(' and '))} to your team"><span>${r.ns.length > 3 ? 'Load' : 'Add'}</span></button></li>`; };
   return `<section class="bd-cores"><div class="bd-hd"><h2 class="u">Build around a core</h2><span class="bd-k">${homeNum(rows.length)} ${kindW}</span></div><p class="bd-sub">Pick a pair or trio that wins, then fill the rest.</p>
     <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top rated'], ['use', 'Most used']], coreUi.sort, 'Sort cores')}${V2.buildCoreFind()}</div>
-    <p class="bd-hint">From ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams run it.' : 'Ranked by win rate, pulled toward the average.'}</p>
+    <p class="bd-hint">From ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams used it.' : 'Ranked by win rate, pulled toward the average.'} <button type="button" class="np-link" data-bdcwhy>How cores are ranked ›</button></p>
     ${shown.length ? `<ol class="bd-clist">${shown.map(row).join('')}</ol>` : '<p class="bd-cnone">No cores match. Try another Pokémon.</p>'}${rows.length > shown.length ? `<button type="button" class="np-link bd-cmore" data-bdcmore>Show ${Math.min(15, rows.length - shown.length)} more ${kindW}</button>` : ''}</section>`; };
 V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower">${V2.buildOthers() || ''}${V2.buildCores()}</div></div>`;
 document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'bdckind' && k !== 'bdcsort') return; if (k === 'bdckind') coreUi.kind = e.detail.value; else coreUi.sort = e.detail.value; coreUi.more = 0; V2.redraw(); });
@@ -166,3 +166,8 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-hmcores]')) V2.bdUi.toCores = true; }, true);
 V2.pages.build.after = () => { V2.bdJumpSpy(); if (!V2.bdUi.toCores) return; V2.bdUi.toCores = false;
   setTimeout(() => { const c = document.querySelector('.bd-cores'); if (c) c.scrollIntoView({block: 'start'}); V2.bdJumpSpy(); }, 0); };
+
+// today's "?" on cores: the same explanation (coreWhyText, shared) in a small sheet
+V2.bdCoreWhat = () => coreUi.kind === 'pairs' ? `two Pokémon on the same team, ${CORE_MIN.pairs}+ teams` : coreUi.kind === 'trios' ? `three Pokémon on the same team, ${RES.minCore || 6}+ teams` : `the exact six, ${CORE_MIN.teams}+ entries`;
+document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-bdcwhy]'))) return;
+  V2.sheet(`<div class="bd-cwhy"><h2 class="u">How cores are ranked</h2><p>${V2.esc(coreWhyText(V2.bdCoreWhat(), +RES.base || .5))}</p></div>`, {label: 'How cores are ranked', small: true}); });

@@ -827,3 +827,5 @@
 
 .bd-fresh{margin-top:var(--s2);max-width:48ch;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)} /* today's Fresh take line (22-auto-build.js) */
 @media (min-width:700px){.bd-others,.bd-wins,.bd-cores{scroll-margin-top:96px}} /* clear the 76px sticky top bar when jumped to */
+
+.bd-cwhy h2{font-size:var(--t22)}.bd-cwhy p{margin-top:var(--s3);font:400 var(--t15)/1.5 var(--b)}
