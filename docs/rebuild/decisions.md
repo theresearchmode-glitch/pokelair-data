@@ -23,6 +23,25 @@ Sim's own decisions are marked "Sim". Newest first.
 - A15 ("?" buttons 24x24): tap area now 44x44 with the same look. Measured: before/after screenshots of the chip row pixel-identical
   in 16 of 16 cases (Chromium and WebKit, 390 and 1440, day and night, popup closed and open); tap area 24x24 -> 44x44; the popup's
   position relative to the chip row unchanged in 8 of 8 cases (it is now placed from the drawn 24px tile).
+- A16 (proofs that disagreed, full check nov11-r4b: base b8f55ed vs 9d22563). Answers, each re-run here on today's page built at
+  the base and from the working tree (6aa245f content):
+  - same-six 0/67 identical: every one of the 67 differences is ONE line, Home's "Game plan vs the Champion's six" (ignoring it,
+    0 of 67 differ). It was changed on purpose by cb49701 (Nov 11, Sim's report: opponents from a real team sheet use their real
+    sets, "Home's game plan" named in the commit). With the base at cb49701: `67 My Team six steps compared: 67 identical, 0
+    different`. Out-of-date proof base, not a regression.
+  - same-info 1/350 different: the one difference is the "home" view (Home's six ordered by that same plan). Base cb49701:
+    `350 info sheets compared: 350 identical, 0 different; 0 errors`. Same intended fix.
+  - same-compare 1/21 different (PC): NOT reproduced here: 3 runs, each `21 Compare steps compared: 21 identical, 0 different`
+    (base b8f55ed). Cause unknown; likely a timing wobble on the PC run (a guess, not tested; that run's step dump wasn't kept).
+  - same-share-v2 crashed on Windows: the script had the Linux repo folder written in. Fixed (folder from the script's own place,
+    page addresses with pathToFileURL). Here: `share images, today's page vs the new build (same data, same team): 12 of 12 identical`.
+    Not yet run on Windows.
+- MISTAKE (Claude, ~5:33-5:40 UTC Nov 12, recovered): while preparing the A6 proposal picture, Claude applied a patch made with
+  `git diff` in a scratch worktree whose out/ folder had been replaced by a link; the patch carried "deletions" of out/ and removed the
+  main repo's out/ data files (nothing was committed or pushed). Found within minutes from a failed second apply; restored with
+  `git checkout HEAD -- out` (diff vs HEAD 0 lines; out/ was unmodified before). Everything that ran in that window is discarded and
+  re-run: the A6 pictures (they had no daily data), the today's-page behaviour run, and app/dist rebuilt. Rule from now on: proposal
+  patches are made with `git diff -- app/src/v2` (paths named), checked with `grep "^diff --git"`, and never applied to the main tree.
 - Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
   threats" / "93% ready", which the word list replaces with Matchups.
 - Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled
