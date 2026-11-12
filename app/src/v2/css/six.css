@@ -88,3 +88,6 @@ svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);ver
 .tm-setgrid.sx-noart{grid-template-columns:minmax(0,1fr)}
 .sx-rate2{display:inline-flex;align-items:baseline;gap:var(--s1);margin-left:var(--s2);font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.sx-rate2 b{font-size:var(--t20);font-style:italic;color:var(--ink)}
 .sx-an{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);margin:0}.sx-an b{font:600 var(--t15)/1.3 var(--b);color:var(--ink)}.sx-rt{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+/* phones, typing in a sheet (shell.js kbo): pin the sheet to the top of the visible area, sized to what's above the keyboard, so the
+   box being typed in stays in view even where the keyboard height can't be measured (Claude app on iPhone) */
+@media (max-width:699px){:root.kbo .np-sheet{top:calc(var(--vvt,0px) + var(--s2));bottom:auto;max-height:calc(var(--vvh,100vh) - var(--s4));border-radius:var(--r-xl)}}

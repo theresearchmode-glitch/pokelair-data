@@ -11,6 +11,9 @@ Sim's own decisions are marked "Sim". Newest first.
   recommendation, each logged here and summarised to Sim at 7 PM.
 
 ## Every page
+- Nov 11 (Sim, iPhone Claude app: Add a Pokémon box opened off screen): while a box in a sheet has focus, phone sheets pin to the top of
+  the visible area (visualViewport top/height) instead of sitting a measured keyboard-height up, which the Claude app's frame can get
+  wrong (my guess at the cause; Sim to confirm on her phone). While a sheet is open, toasts sit under the dimmed backdrop.
 - Nov 11 (Sim: "i liked the glass"): the frosted bars are back on phones and iPads (92% opaque instead of 82%, so text under them
   doesn't read through). The stutter Sim recorded was the picture flash on every redraw (fixed), not the blur.
 - Nov 11 (Sim's recordings, iPhone and PC): every tap redrew the page and rebuilt all pictures, so the six blanked for a moment

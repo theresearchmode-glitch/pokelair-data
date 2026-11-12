@@ -148,3 +148,5 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-asof{white-space:nowrap}
 /* the underdog's "Or build around your favourite Pokémon" line: its own line under the actions, a 44px link */
 .np-or{margin:var(--s1) 0 0}.np-or .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+/* while a sheet is open the toast (e.g. Removed X · Undo) sits under the dimmed backdrop, not over the sheet's title (Sim, Nov 11) */
+:root:has(.np-sheetwrap) .np-toast{z-index:39}

@@ -29,10 +29,15 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
 // iOS draws the keyboard over fixed elements; visualViewport says how much of the screen is left, so --kb lifts and shortens
 // the sheet (components.css), and the box being typed in is scrolled into view inside it.
 (() => { const vv = window.visualViewport; if (!vv) return; let raf = 0;
-  const set = () => { raf = 0; const kb = Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)); document.documentElement.style.setProperty('--kb', kb + 'px');
+  const set = () => { raf = 0; const kb = Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)), R = document.documentElement.style;
+    R.setProperty('--kb', kb + 'px'); R.setProperty('--vvt', Math.max(0, Math.round(vv.offsetTop)) + 'px'); R.setProperty('--vvh', Math.round(vv.height) + 'px');
     const a = document.activeElement; if (kb && a && a.closest && a.closest('.np-sheet') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) a.scrollIntoView({block: 'nearest'}); };
   const later = () => { if (!raf) raf = requestAnimationFrame(set); };
   vv.addEventListener('resize', later); vv.addEventListener('scroll', later); set(); })();
+// Sim, Nov 11 (iPhone, Claude app): typing in a sheet sent it off screen; inside the app's frame the keyboard height can't be
+// trusted. While a box in a sheet has focus, the sheet pins to the top of what is visible instead (kbo, components.css).
+document.addEventListener('focusin', e => { const t = e.target; if (t && t.closest && t.closest('.np-sheet') && /^(INPUT|TEXTAREA)$/.test(t.tagName)) document.documentElement.classList.add('kbo'); });
+document.addEventListener('focusout', () => setTimeout(() => { const a = document.activeElement; if (!(a && a.closest && a.closest('.np-sheet') && /^(INPUT|TEXTAREA)$/.test(a.tagName))) document.documentElement.classList.remove('kbo'); }, 60));
 // ---------- sheets: one at a time; focus moves in, stays in (Tab wraps), and returns to what opened it ----------
 // Back closes what's open on top (X-06, as today's site): opening a sheet adds one history step at the same address, so the phone
 // or browser Back button closes it and the page keeps its place; closing it with ✕, the backdrop or Escape takes that step back
