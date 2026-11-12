@@ -14,9 +14,10 @@ const DOCS = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, upd
 const VIEWS = ['home', 'report', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'arch', 'coverage', 'types', 'ratings', 'meta', 'top', 'events', 'sets', 'teams', 'box'];
 let fails = 0; const ok = (c, msg) => { if (!c) { fails++; console.log('  FAIL', msg); } else console.log('  ok  ', msg); };
 const browser = await chromium.launch();
-async function open(width) {
+async function open(width, now) {
   const ctx = await browser.newContext({viewport: {width, height: 900}, isMobile: width < 700, hasTouch: width < 700});
   const pg = await ctx.newPage(); const errs = [];
+  if (now) await pg.clock.setFixedTime(now); // the page's clock (Date only; timers keep running)
   pg.on('pageerror', e => errs.push(e.message));
   pg.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::ERR_FILE_NOT_FOUND/.test(m.text())) errs.push(m.text()); });
   await pg.addInitScript(D => { window.__PL_TEST = true; const state = {};
@@ -191,9 +192,13 @@ for (const width of [1280, 390]) {
   await ctx.close(); }
 // data health banner: hidden with fresh data, shown when a source is stale
 { console.log('\n== data health');
-  const fresh = await open(1280); ok(await fresh.pg.evaluate(() => document.getElementById('healthBar').hidden), 'health: no banner with fresh data'); await fresh.ctx.close();
+  // "Fresh" is judged against the data's own newest date, not the wall clock: the code tests run on a frozen snapshot (CI's
+  // TEST_DATA), which the real clock makes "older than usual" a few days later (Nov 12: failed on every branch from 10:17 UTC).
+  const newest = Math.max(...Object.values(DOCS).map(v => { const t = v && (v.updated || v.pulled || v.date); const ms = t ? Date.parse(String(t).length === 10 ? t + 'T12:00:00' : t) : NaN; return isNaN(ms) ? 0 : ms; }));
+  const at = new Date(newest + 36e5);
+  const fresh = await open(1280, at); ok(await fresh.pg.evaluate(() => document.getElementById('healthBar').hidden), 'health: no banner with fresh data'); await fresh.ctx.close();
   const old = DOCS['meta/model']; DOCS['meta/model'] = {...old, updated: '2026-01-01T00:00:00Z'};
-  const stale = await open(1280); ok(await stale.pg.evaluate(() => { const b = document.getElementById('healthBar'); return !b.hidden && /Win model/.test(b.textContent); }), 'health: banner names a stale source'); await stale.ctx.close();
+  const stale = await open(1280, at); ok(await stale.pg.evaluate(() => { const b = document.getElementById('healthBar'); return !b.hidden && /Win model/.test(b.textContent); }), 'health: banner names a stale source'); await stale.ctx.close();
   DOCS['meta/model'] = old; }
 // share card: draws the team and opens the dialog
 { console.log('\n== share card');
