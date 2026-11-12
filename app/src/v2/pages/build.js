@@ -63,7 +63,7 @@ V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   const nCatch = t.mons.filter(m => !m.box).length;
   const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Use This Team</button><button type="button" class="np-btn2" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2" data-bdcopy><span>Copy for Showdown</span></button>
     <span class="bd-catch">${nCatch === 6 ? 'All six to catch: none is in your box yet' : nCatch ? `${nCatch} to catch` : 'All six are in your box'}</span></div>`;
-  return `<section class="bd-ans" style="--band:var(--band-${band})"><div class="bd-lock"><p class="np-eyebrow">Option ${k + 1} of ${n} · ${kind}</p><h2 class="u">${E(t.label)}</h2>
+  return `<section class="bd-ans" style="--band:var(--band-${band})"><div class="bd-lock"><p class="np-eyebrow">${n > 1 ? `Option ${k + 1} of ${n} · ` : ''}${kind}</p><h2 class="u">${E(t.label)}</h2>
     <div class="np-score bd-score"><b>${s}</b><div class="w"><span>${E(word)}</span><small>Strength Score</small></div></div>${G ? `<p class="bd-rank">${E(CH.pctTxt(G))}</p>${V2.buildBrk(G)}` : ''}${t.fresh ? '<p class="bd-fresh">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</p>' : ''}
     ${chips.length ? `<div class="bd-chips">${chips.map(c => `<span class="np-chip">${E(c)}</span>`).join('')}</div>` : ''}</div><div class="bd-six" style="background:${V2.buildLight(t.mons)}">${six}</div></section>${why}${acts}`; };
 V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div></div>`;

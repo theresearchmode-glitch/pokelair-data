@@ -37,11 +37,11 @@ export default (ui, pg) => {
   // the answer area as today's #abOut reads: kicker, option count, title, "Strength Score n band", rank, then the rest as shown
   const resultText = () => pg.evaluate(() => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; const r = document.querySelector('#main .bd-result'); if (!r || !r.getClientRects().length) return '';
     const a = r.querySelector('.bd-ans'); if (!a) return T(r);
-    const eb = T(a.querySelector('.bd-lock .np-eyebrow')), m = eb.match(/^(Option \d+ of \d+) · (.+)$/), sc = a.querySelector('.bd-score'), n = sc && sc.querySelector('b'), w = sc && sc.querySelector('.w span');
+    const eb = T(a.querySelector('.bd-lock .np-eyebrow')), m = (/^Option \d+ of \d+ · /.test(eb) ? eb : 'Option 1 of 1 · ' + eb).match(/^(Option \d+ of \d+) · (.+)$/) /* one option: the page shows only the kind */, sc = a.querySelector('.bd-score'), n = sc && sc.querySelector('b'), w = sc && sc.querySelector('.w span');
     const head = m ? `${m[2]} ${m[1]}` : eb, score = n ? `Strength Score ${T(n)} ${T(w)}` : '';
     const rest = [...r.children].map(c => c === a ? [...a.querySelectorAll('.bd-lock > :not(.np-eyebrow):not(.bd-score), .bd-six')].map(T).join(' ') : T(c)).join(' ');
     return [head, score, rest].filter(Boolean).join(' '); });
-  const optCount = async () => { const m = (await txt(ans + ' .bd-lock .np-eyebrow')).match(/^Option (\d+) of (\d+)/); return m ? [+m[1], +m[2]] : null; };
+  const optCount = async () => { const e = await txt(ans + ' .bd-lock .np-eyebrow'); if (!e) return null; const m = e.match(/^Option (\d+) of (\d+)/); return m ? [+m[1], +m[2]] : [1, 1]; }; /* no count shown = the only option */
   const toastNow = () => pg.evaluate(() => { const t = [...document.querySelectorAll('.np-toast')].find(e => e.getClientRects().length); if (!t) return '';
     const c = t.cloneNode(true); c.querySelectorAll('button').forEach(b => b.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); });
   const H = {
