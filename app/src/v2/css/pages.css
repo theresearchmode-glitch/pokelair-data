@@ -522,3 +522,5 @@
 @media (max-width:699px){.ms-art .np-mon .st{--iw:180px}.ms-art{margin-bottom:var(--s4)}}
 :root:not([data-theme="night"]) .ms-f[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 16%,var(--surface))}
 :root:not([data-theme="night"]) .ms-f[aria-pressed="true"] small{color:var(--plot-text)}
+/* empty Saved Teams (Sim, Nov 12, option B): one full-width main button under the line */
+.svt2-empty{margin-top:var(--s4)}.svt2-empty .np-btn{width:100%}

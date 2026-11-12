@@ -11,6 +11,10 @@ without actually checking."
 - Disagree or unsure -> say so plainly, with the reason, before acting. Never agree, confirm or say "yes" before checking.
 - Challenge plans and limits (including Sim's) when the evidence points elsewhere; look deeper than the request.
 
+## 0b. Design philosophy (Sim, Nov 12): usability and easy accessibility are key factors in every design decision.
+Each screen leads to its one useful next action; nothing a player needs is buried; controls are reachable by touch and keyboard
+(44px targets, real tab stops); words are plain. Keep the WOW, but never at the cost of using the site.
+
 ## 1. Rules Sim gave in chat (Nov 11, ~10:30-11:30 PM Eastern)
 
 1. **No design decision without Sim. Ever.** Every visual or design choice goes to Sim first, with screenshots, and waits

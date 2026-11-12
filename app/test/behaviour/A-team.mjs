@@ -593,7 +593,9 @@ t('SHARE-01', 'Share box: Team Card / Poster / Sheet switch, Light / Dark style,
   await r.ui.choose('Team Poster', 1500); s = await r.ui.waitShareImage(); ok(s.h > s.w, 'Team Poster is not portrait');
   await r.ui.choose('Dark', 1500); await r.ui.waitShareImage(); const dark = await r.ui.shareImagePixel(); ok(dark < light - 20, `dark image not darker (${Math.round(light)} → ${Math.round(dark)})`);
   await r.ui.press('Escape'); ok(!(await r.ui.shareBox()), 'Escape did not close'); await r.close();
-  const e = await myTeam({team: []}); await e.ui.peek(`$('shareBtn').click()`); ok(await e.ui.waitToast(/Add some Pokémon first/), 'empty team: no "Add some Pokémon first"'); await e.close(); });
+  // Sim, Nov 12: on an empty team neither site shows a Share button (checked), so the new build skips this step; it pressed a
+  // hidden button no player can reach. Today's page keeps it unchanged.
+  if (!NEW) { const e = await myTeam({team: []}); await e.ui.peek(`$('shareBtn').click()`); ok(await e.ui.waitToast(/Add some Pokémon first/), 'empty team: no "Add some Pokémon first"'); await e.close(); } });
 
 t('SHARE-02', 'Team Card image is 1200×675', async () => {
   // the new build's share sheet is titled "Share Your Team" for every kind; the Team Card choice is the one picked
@@ -745,6 +747,11 @@ t('SAVED-08', 'Compare on two saved teams opens Compare with both', async () => 
   await r.ui.savedAction('Sun six', 'Compare'); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.settle(); const tx = await r.ui.text(); has(tx, 'Rain test', 'Compare'); has(tx, 'Sun six', 'Compare'); await r.close(); });
 
 t('SAVED-09', 'No saved teams: Darkrai, "No saved teams yet…", "Open My team", "Build me a team"', async () => {
+  if (NEW) { // Sim, Nov 12 (option B): the new build's empty list says why to save and offers one main button that opens Save Team; no Darkrai
+    const r = await homePage(); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text();
+    has(tx, /No saved teams yet\. Save this six to come back to it, compare it, or try changes without losing it\./);
+    ok(await r.ui.pg.evaluate(() => ![...document.querySelectorAll('.np-sheet img')].some(i => /darkrai/i.test(i.src + i.alt))), 'a Darkrai picture in the empty list');
+    await r.ui.tapText(/^Save This Team$/, 700); has(await r.ui.pg.evaluate(() => (document.querySelector('.np-sheet') || {}).innerText || ''), /Save Team[\s\S]*Give this six a name/); await r.close(); return; }
   const r = await homePage(); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text(); has(tx, /No saved teams yet\. Open My team and tap Save team, or let NastyPlot build six for you\./);
   ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="teams"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai');
   await r.ui.tapText(/^Build me a team$/, 900); ok(await r.ui.current() === 'auto', 'Build me a team did not open Build'); await r.ui.go('Saved Teams', 700); await r.ui.tapText(/^Open My team$/i, 900); ok(await r.ui.current() === 'report', 'Open My team did not'); await r.close(); });

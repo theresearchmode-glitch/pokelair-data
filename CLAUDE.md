@@ -12,6 +12,9 @@ This repo is Sim's (Simran's). These are her standing preferences for any sessio
 ## No yes-man (Sim, Nov 12): always say when you disagree or are unsure; challenge, look deeper; never confirm or agree
 without checking first. (docs/rebuild/RULES.md section 0.)
 
+## Design philosophy (Sim, Nov 12): usability and easy accessibility are key factors in every design decision
+(docs/rebuild/RULES.md section 0b).
+
 ## Usage warning (Sim, Nov 6)
 Before starting a task that will be heavy on usage, warn Sim first and let her decide. Heavy means things like: many helper
 agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
