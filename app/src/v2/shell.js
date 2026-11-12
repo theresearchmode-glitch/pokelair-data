@@ -33,9 +33,15 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
 // iOS draws the keyboard over fixed elements; visualViewport says how much of the screen is left, so --kb lifts and shortens
 // the sheet (components.css), and the box being typed in is scrolled into view inside it.
 (() => { const vv = window.visualViewport; if (!vv) return; let raf = 0;
-  const set = () => { raf = 0; const kb = Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)), R = document.documentElement.style;
-    R.setProperty('--kb', kb + 'px'); R.setProperty('--vvt', Math.max(0, Math.round(vv.offsetTop)) + 'px'); R.setProperty('--vvh', Math.round(vv.height) + 'px');
-    const a = document.activeElement; if (kb && a && a.closest && a.closest('.np-sheet') && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) a.scrollIntoView({block: 'nearest'}); };
+  // Sim, Nov 12 (iPhone): scrolling an info sheet made it flash. Scrolling and bouncing resize the app's bars, so innerHeight vs
+  // visualViewport flickered and the sheet's bottom/height (--kb) jumped with it. A keyboard can only be open while a text box has
+  // focus, so --kb is 0 otherwise, and the properties are written only when they change.
+  let last = '';
+  const set = () => { raf = 0; const a = document.activeElement, typing = !!(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+    const kb = typing ? Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)) : 0, R = document.documentElement.style;
+    const vals = [kb, typing ? Math.max(0, Math.round(vv.offsetTop)) : 0, typing ? Math.round(vv.height) : 0], key = vals.join(',');
+    if (key !== last) { last = key; R.setProperty('--kb', vals[0] + 'px'); if (typing) { R.setProperty('--vvt', vals[1] + 'px'); R.setProperty('--vvh', vals[2] + 'px'); } }
+    if (kb && a.closest && a.closest('.np-sheet')) a.scrollIntoView({block: 'nearest'}); };
   const later = () => { if (!raf) raf = requestAnimationFrame(set); };
   vv.addEventListener('resize', later); vv.addEventListener('scroll', later); set(); })();
 // Sim, Nov 11 (iPhone, Claude app): typing in a sheet sent it off screen; inside the app's frame the keyboard height can't be
