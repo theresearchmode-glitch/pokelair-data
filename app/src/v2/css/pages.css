@@ -505,7 +505,7 @@
 /* Height cuts (Nov 12): "Data as of" joins the rank line; less empty space under the work area; on phones the Set's four
    details sit two by two (label over value; the rule lives in six.css, whose layer wins), nothing hidden. */
 .tm-rank .tm-asof{font-size:var(--t13);color:var(--ink-2)}
-.tm-work{padding-bottom:var(--s10)}
+.tm-work{padding-bottom:var(--s8)}
 /* Height cuts (Nov 12), wide screens: the hero buttons sit under the six (right column), not under the score */
 @media (min-width:1180px){.tm-hero{grid-template-areas:"lock six" "info six" "info acts";grid-template-rows:auto 1fr auto}.tm-acts{align-self:start}}
 @media (min-width:1180px){.tm-acts{grid-template-columns:repeat(4,max-content)}}
