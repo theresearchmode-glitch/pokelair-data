@@ -17,7 +17,7 @@ V2.muLv = l => `<span class="mu-lv l${l}"><i aria-hidden="true">${V2.MUG[l]}</i>
 V2.muSplit = D => { const tot = D.mu.fav + D.mu.even + D.mu.unf, pc = n => tot ? Math.round(n / tot * 1000) / 10 : 0;
   return `<div class="mu-split" aria-hidden="true"><i class="sf" style="flex-grow:${pc(D.mu.fav)}"></i><i class="se" style="flex-grow:${pc(D.mu.even)}"></i><i class="su" style="flex-grow:${pc(D.mu.unf)}"></i></div>`; };
 V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, view = V2.muView();
-  const head = `<h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. A row notes when the calc disagrees.' : ''}</p>
+  const head = `<h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts from real tournament games with your Pokémon; a row notes when the calc disagrees.' : ''}</p>
     ${D.mu.any ? `<div class="tm-legend"><span class="lf"><b>${D.mu.fav}</b> Favoured</span><span class="le"><b>${D.mu.even}</b> Even match</span><span class="lu"><b>${D.mu.unf}</b> Unfavoured</span></div>
     ${V2.muSplit(D)}` : ''}
     <p class="fine">Damage calc: ${CH.LV[0]} ${D.calc.none}, ${CH.LV[1]} ${D.calc.shaky}, ${CH.LV[2]} ${D.calc.handles}, ${CH.LV[3]} ${D.calc.beats}</p>
@@ -29,11 +29,13 @@ V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, vie
 V2.calcNote = (R, lv) => R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Favoured' && lv <= 1)) ? `<small class="mu-dis">Calc disagrees: ${CH.LV[lv]}</small>` : '';
 // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
 V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
-  const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured'), even = RD.rows.length - unf.length - fav.length;
+  const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured');
   const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
-  const grp = (t, a) => a.length ? `<h3 class="tm-h3 mu-h3">${t} <small>${a.length}</small></h3><ol class="tm-rows mu-out">${a.map(row).join('')}</ol>` : '';
+  // Nov 12 height cut: no group headings (each row carries its verdict badge; the counts line above has the numbers)
+  const grp = (t, a) => a.length ? `<ol class="tm-rows mu-out" aria-label="${t}: ${a.length}">${a.map(row).join('')}</ol>` : '';
   return `${grp('Unfavoured', unf)}${grp('Favoured', fav)}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
-    <p class="mu-rest">${even ? `The other ${even} ${even === 1 ? 'is an even match' : 'are even matches'}.` : ''} <button type="button" class="np-link" data-muall30>See all ${RD.rows.length}</button></p>`; };
+`; }; // Nov 12 height cut: no "The other N are even matches. See all 30" line; the counts line above says how many are even and
+  // the "All 30" view button sits just above the rows (the data-muall30 handler below stays for any other link)
 
 // Top 10 (by top-cut share), numbered; phones and tablets show 5 and "Show 5 more"; then the next 20 as tiles, worst first
 V2.muTop = RD => { const {top, rest, RV} = CH.top10(RD), more = !!ui.tlMore;

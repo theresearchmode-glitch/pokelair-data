@@ -143,3 +143,11 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 @container (max-width:440px){.mu-pick .np-slide{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}.mu-pick .np-slide .thumb{display:none}
   .mu-pick .np-slide button{flex-direction:row;min-height:var(--tap);white-space:nowrap}
   .mu-pick .np-slide button[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo))}}
+/* Height cuts (Nov 12, Sim: "trim, but nothing removed or buried"): Stand-outs rows without group headings, a little tighter
+   (48px still clears the 44px tap size); the two groups sit one gap apart. (Views in one row on a phone: tried, "Top 12 grid" wrapped; dropped.) */
+.mu-out{margin-top:var(--s3)}.mu-out+.mu-out{margin-top:var(--s4)}
+.mu-out .mu-row{min-height:48px}
+/* Height cuts (Nov 12), wide screens: the stand-out rows two by two */
+@media (min-width:1180px){.tm-mus .mu-out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s6)}
+  .tm-mus .mu-out .mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr);grid-template-areas:"i n" "i v";row-gap:var(--s1);padding:var(--s2) 0}
+  .tm-mus .mu-out .mu-row img{grid-area:i}.tm-mus .mu-out .mu-row .nm{grid-area:n}.tm-mus .mu-out .mu-row .tm-v{grid-area:v;justify-self:start}}
