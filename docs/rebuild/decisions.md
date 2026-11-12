@@ -428,7 +428,7 @@ Sim's own decisions are marked "Sim". Newest first.
   internet blocked: day background and Unbounded load. Preview v73 replaced only those four files.
 - Sim: Mega stays written "Mega Charizard Y" in blue on Home, the same as My Team (one style for one idea).
 
-## Nov 12, ~2:00-2:45 PM Eastern (authority extended by Sim to 5 PM Eastern at 2:01 PM)
+## Nov 12, ~2:00-2:30 PM Eastern (authority extended by Sim to 5 PM Eastern at 2:01 PM)
 - Home pieces 1+2 published to the Preview (v74, Sim: "love it"); Preview file list checked: 394 files.
 - Home piece 3 built (Top of the Meta with the Top rated / Hidden gems slider, today's underdog, This week in the ratings), from
   the mock-up's CSS; shared helpers only (lairRows, isGem, lairRank, monRating, today's words). NOT on the Preview yet: pictures sent.
@@ -449,7 +449,7 @@ Sim's own decisions are marked "Sim". Newest first.
 - Tests (from Sim's PC outside check): TEAM-13b, SUG-03b, MU-05b, EDIT-07b pass on the new build, so their known-bug mark now
   applies to today's site only (today's site: 4 known, unchanged). TEAM-11 and SUG-10 were already fixed in 10b04ce, after the
   tree the PC checked (174523a).
-- ~2:55 PM, the two items from Sim's PC check:
+- ~2:20 PM, the two items from Sim's PC check:
   1) WebKit "hidden-focusable 7" on My Team: NOT reproduced here, on the current tree or on 174523a (the PC's tree): c13 webkit team
      320/390/820 all 0; experiments/hidden-why.cjs (new): script focus reaches 0 hidden controls, real key walk 56 stops, 0 hidden.
      Sim's own WebKit Tab walk also found 0. Likely the Windows WebKit build lets a script focus a control in a closed fold; not
@@ -457,8 +457,8 @@ Sim's own decisions are marked "Sim". Newest first.
   2) Share "Could not draw the image in this view.": happens only when the page is opened as a file (file://): the browser blocks
      turning the drawing into an image there. Checked both engines: file:// card/poster/sheet all fail; served over http (as the
      Preview and the real site are) all three draw (1200x675, 1080x1350, 1080x1350). Pictures: docs/rebuild/home/share-*.png.
-- ~3:05 PM: Sim's PC ran hidden-why.cjs (3a33199): WebKit on Windows lets a script focus 6 controls inside closed folds; real
+- ~2:25 PM: Sim's PC ran hidden-why.cjs (3a33199): WebKit on Windows lets a script focus 6 controls inside closed folds; real
   Alt+Tab walk 38/39 stops, 0 on them (390, 820); Chromium 0 and 0. So the "hidden-focusable" reports were the check, not the page.
   c13 now skips controls inside a closed fold for that count (comment in the file); re-run here: team 0 at every width, both engines.
   Open, unsure why: on the PC, WebKit's key walk made 38 stops where Chromium made 56 (here both make 56).
-- ~3:05 PM: Home piece 3 published to the Preview (v75, Sim: "home piece 3 looks great"); file list checked: 394 files.
+- ~2:26 PM: Home piece 3 published to the Preview (v75, Sim: "home piece 3 looks great"); file list checked: 394 files.
