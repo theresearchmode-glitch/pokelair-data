@@ -98,3 +98,5 @@ Sim's own decisions are marked "Sim". Newest first.
 ## Data
 - Nov 11 (Claude, proposed, not done): the daily ratings log also saves the shown 0-100 number next to the raw total, so a raw 89
   and a shown 94 can't be mixed up again.
+
+- Nov 11, ~10:40 PM: "Mega" label gap .3em (4.5px, off the 4px grid) changed to 4px everywhere (My Team, Team Sheet, suggestions). Polish check My Team: no new findings. iPhone (WebKit) sweep of My Box, Compare, Team Sheet, empty My Team at 300-430 wide: no sideways scroll; My Box add sheet stays on screen while typing. Preview v50.
