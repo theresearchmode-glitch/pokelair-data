@@ -688,3 +688,14 @@
 @media (max-width:479px){.hm-pairs{grid-template-columns:minmax(0,1fr)}}
 .hm2>section.hm-moresec{padding-top:0;padding-bottom:0}.hm-src{text-align:left}
 @media (max-width:699px){.hm-trs{grid-template-columns:minmax(0,1fr)}}
+/* Top of the Meta views (Sim, Nov 12): one panel shows at a time; "This week" is a switch position only where the columns stack */
+.hm-p{display:none}.hm-top[data-show="0"] .hm-p0,.hm-top[data-show="1"] .hm-p1,.hm-top[data-show="2"] .hm-p2{display:block}
+.hm-sub .hm-p{display:none}.hm-top[data-show="0"] .hm-sub .hm-p0,.hm-top[data-show="1"] .hm-sub .hm-p1,.hm-top[data-show="2"] .hm-sub .hm-p2{display:inline}
+@media (min-width:900px){.hm-top[data-show="2"] .hm-sub .hm-p0{display:inline}.hm-top[data-show="2"] .hm-sub .hm-p2{display:none}}
+.hm-top .np-slide{margin:var(--s4) 0 var(--s2)}
+.hm-wkl .hm-mv{min-height:52px}
+@media (min-width:900px){.hm-sw-n{display:none}.hm-top[data-show="2"] .hm-p0{display:block}.hm-top[data-show="2"] .hm-p2{display:none}}
+@media (max-width:899px){.hm-sw-w{display:none}.hm-wk{display:none}}
+/* phone (Sim, Nov 12): tools by name only, two even columns; section spacing 24 instead of 32 */
+@media (max-width:699px){.hm-tool span{display:none}.hm-tool{display:flex;align-items:center;min-height:48px;padding:var(--s2) 0}.hm-tool b{flex:1}
+  .hm2>section{padding-top:var(--s6);padding-bottom:var(--s6)}}

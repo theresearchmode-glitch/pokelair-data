@@ -480,3 +480,10 @@ Sim's own decisions are marked "Sim". Newest first.
   opened directly, back to My Team. Both engines: Home -> Box -> Home, My Team -> Box -> My Team, direct -> My Team.
 - PC report "underdog stage empty in WebKit capture": the picture loads lazily; before scrolling 0 px, after scrolling 384 px.
   A capture effect, not a page bug.
+- ~2:56 PM, Sim's answers on the PC's phone-length suggestions: 1) the two sixes stay as they are; 2) yes: "This week" is a third
+  position of the Top of the Meta switch where the columns stack (under 900 px: phone and iPad; calendar icon), replacing the
+  separate list there; desktop keeps two positions and its own column (a saved "This week" shows Top rated there); 3) yes: tools
+  by name only on phone (two even columns; descriptions from 700 px up). This reverses the Nov 11 "descriptions back on phone"
+  decision, by Sim's choice today; 4) yes: phone section spacing 24 instead of 32. Measured: 390 4,394 -> 3,723; 820 3,517 ->
+  3,058; 1440 2,589 (unchanged); 320 4,023. Switch click test both engines: phone 3 positions, This week 5 movers and tap opens
+  the info sheet, remembered after reload; desktop falls back correctly (2 positions, Top rated, 7-row column).
