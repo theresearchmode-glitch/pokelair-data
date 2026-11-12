@@ -177,7 +177,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
     <button type="button" class="chghost" data-view="build" style="margin-top:10px">Start from scratch</button></div>`;
   // 03 doubles is played in pairs: Showdown replays, how often the first brings the second
   const bw = RES && RES.tc && RES.tc.bw, games = RES && RES.tc && RES.tc.games;
-  let pairs = []; if (bw) { const used = new Set(); for (const p of six) { const k = brKeyOf(p), L = bw[k]; if (!L) continue; const x = L.find(y => !used.has(k + '|' + y[0]) && byName.get(y[0])); if (!x) continue; used.add(x[0] + '|' + k); pairs.push({a: p, b: byName.get(x[0]), pct: x[1], g: x[2]}); if (pairs.length === (PHONE() ? 2 : 4)) break; } }
+  let pairs = homePairs(six, PHONE() ? 2 : 4); // data: homePairs (05-home-data.js, shared with the new build, Nov 12)
   const pr = pairs.length >= 2 ? `<div class="chblock"><div class="chk">Team preview · Showdown replays${games ? ` · ${CH.n(games)} games` : ''}</div><h3>Doubles is played in <span class="hl">pairs.</span></h3>
     <div class="chpair4">${pairs.map(x => `<button type="button" data-lt="${esc(x.b.n)}" aria-label="${esc(x.a.d)} and ${esc(x.b.d)}: brought together ${x.pct}%"><div class="sp">${sprite(x.a) || ''}${sprite(x.b) || ''}</div><div><div class="pct">${x.pct}<i>%</i></div><div class="nm">${esc(x.a.d)} + ${esc(x.b.d)}</div><div class="t2">${CH.n(x.g)} games</div></div></button>`).join('')}</div><div class="t2" style="margin-top:6px">% = how often the pair is brought together when both are on the team.</div></div>` : '';
   // the older Home sections, folded (nothing removed)

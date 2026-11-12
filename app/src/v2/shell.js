@@ -190,7 +190,7 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
   return {P, html: `<a class="vh" href="#main">Skip to the page</a>
 <header class="np-head"><a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a><nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
-  <a class="np-theme np-boxlink" href="#box" aria-label="My Box" title="My Box"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
+  <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
   <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
 <main class="np-main" id="main">${P ? P.draw() : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan-made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>
@@ -206,4 +206,9 @@ V2.draw = () => { const app = document.getElementById('app'); if (!app) return; 
     o.removeAttribute('loading'); n.replaceWith(o); }
   if (P && P.after) try { P.after(); } catch (e) { console.error(e); } };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.theme() === 'night' ? 'day' : 'night'); });
-addEventListener('hashchange', () => { V2.draw(); scrollTo(0, 0); });
+// My Box toggles (Sim, Nov 12): the box icon opens My Box; pressed again while in the box, it goes back to the screen you came from
+// (that screen's address, so a team or box link isn't replayed); straight into the box with no screen before it: My Team
+V2.boxFrom = null;
+V2.pageName = h => { const k = String(h || '#team').replace(/^#/, '').split('=')[0]; return {home: 'Home', team: 'My Team', build: 'Build', battle: 'Battle', meta: 'Meta'}[k] || 'My Team'; };
+addEventListener('hashchange', e => { let was = ''; try { was = new URL(e.oldURL).hash; } catch (x) {}
+  if (V2.route() === 'box' && was && !/^#box\b/.test(was) && !/^#(team|box)=/.test(was)) V2.boxFrom = was; V2.draw(); scrollTo(0, 0); });
