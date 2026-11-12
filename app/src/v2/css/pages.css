@@ -91,7 +91,7 @@
 .ts2-card header p{display:grid;margin-top:var(--s1);font:600 var(--t15)/1.5 var(--b)}
 .ts2-card em{font:500 var(--t13)/1.5 var(--b);font-style:normal;color:var(--ink-3);margin-right:var(--s1)}
 .ts2-mv{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
-.ts2-mv li{justify-content:center;min-height:36px;font-size:var(--t15)}.ts2-mv li.none{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font:500 var(--t13)/1 var(--b)}
+.ts2-mv li{justify-content:center;min-height:36px;font-size:var(--t15);padding:0 var(--s3);white-space:nowrap}.ts2-mv li.none{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font:500 var(--t13)/1 var(--b)}
 .ts2-nat{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s1) var(--s3);font:600 var(--t15)/1.5 var(--b)}
 .ts2-nat span{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 .ts2-st{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);text-align:center}
@@ -567,3 +567,11 @@
 .ty2-tb td{padding:var(--s2);border-top:1px solid var(--rule);vertical-align:middle}.ty2-tb tr.no td{background:var(--wash)}
 .ty2-grid td:not(:first-child),.ty2-grid th:not(:first-child){text-align:center}
 .ty2-m{font-weight:700}.ty2-off .ty2-m.hi{color:var(--good-text)}.ty2-m.hi{color:var(--pick-text)}.ty2-m.lo{color:var(--good-text)}.ty2-m.z{color:var(--plot-text)}
+
+/* How Scoring Works at the end of "Why this score?" (Nov 12, today's fold) */
+.hs2-in{display:grid;gap:var(--s3);padding:0 0 var(--s4)}.hs2-in p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.hs2-mb{position:relative}.hs2-mb::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
+.hs2>summary{grid-template-columns:minmax(0,1fr) 0 20px}.hs2{margin-top:var(--s6)}
+.hs2>summary{padding-right:var(--s10)}
+.ts2-lead{margin:0 0 var(--s1);font:600 var(--t13)/1.3 var(--b);color:var(--plot-text)}
+@media (max-width:699px){.ts2-lead.no{display:none}}
