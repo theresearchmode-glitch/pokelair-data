@@ -236,6 +236,6 @@ V2.navName = h => { const k = String(h || '#home').replace(/^#/, '').split('=')[
   return {home: 'Home', build: 'Build', team: 'My Team', battle: 'Battle', meta: 'Meta', box: 'My Box', compare: 'Compare', sheet: 'Team Sheet', guide: 'the Guide',
     method: 'How We Calculate', about: 'About', feedback: 'Send Feedback'}[k] || 'the last page'; };
 V2.backBtn = () => { V2.navInit(); const n = V2.esc(V2.navName(V2.nav.p));
-  return `<button type="button" class="np-back" data-v2back aria-label="Back to ${n}" title="Back to ${n}"${V2.nav.d > 0 ? '' : ' hidden'}>${V2.ICON.back}</button>`; };
+  return `<button type="button" class="np-goback" data-v2back aria-label="Back to ${n}" title="Back to ${n}"${V2.nav.d > 0 ? '' : ' hidden'}>${V2.ICON.back}</button>`; };
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2back]'))) return; if (V2._sheet) { V2.closeSheet(); return; }
   if (V2.nav.d > 0) try { history.back(); } catch (x) {} });
