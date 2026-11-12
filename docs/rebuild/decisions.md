@@ -3,6 +3,22 @@
 Claude decides small things under executive control; Sim can overrule any of them. Every new entry is also told to Sim in chat.
 Sim's own decisions are marked "Sim". Newest first.
 
+## Nov 12, 8:00 AM-4:00 PM Eastern (Sim at work; Claude has authority until 4 PM, helpers allowed; Sim decides by notification)
+- Sim's answers (Nov 12, ~8:20 AM): 1 fix the tests and keep everything stable; 2 height cuts on Claude's recommendation, but no
+  feature removed and nothing buried in sub-menus; 3 A8 on the Preview for her iPhone; 4 gallery wording on Claude's recommendation,
+  publish it; 5 publish My Team to the Preview; 6 live fonts on Claude's recommendation; 7 move forward on the queued items;
+  8 show the team-link facts again (done in chat). History rewrite: not answered, so pushed history stays as it is.
+  Working rule for today: the Preview is republished after each finished step; new design choices Sim hasn't seen get a picture
+  and a phone notification before they go in; anything she dislikes is undone.
+- CAUSE of the red GitHub tests (Claude): app/test/run.mjs "health: no banner with fresh data" judged the frozen test data (CI's
+  TEST_DATA 0c992f6, dated Nov 9 10:17 UTC) by the real clock; from Nov 12 10:17 UTC it counted as 3 days old and the banner showed.
+  Every branch failed the same way (main: run 707 passed 07:20 UTC, 708 failed 10:29 UTC). Not caused by the fonts or the rebuild.
+  FIX 6c168a8 (design6) / 93ed4b7 + undo commit (fonts branch): the fresh and stale cases pin the page clock to 1 h after the
+  newest data date. Checked: frozen snapshot before "1 FAILED", after "ALL PASSED"; today's data "ALL PASSED".
+- MISTAKE (Claude), fixed at once: the fonts-branch commit 93ed4b7 also carried the frozen Nov 9 out/ files (they were still staged in
+  the scratch copy). A new commit put out/ back as at 9eabdd6 (no history rewritten); the branch now differs from 9eabdd6 only in
+  app/test/run.mjs (git diff --stat). Rule: after testing on frozen data, reset out/ from the commit before committing anything.
+
 ## Nov 12, 6:45-8:00 AM Eastern (Claude, under Sim's authority; Sim approved every design picture)
 - APPLIED on claude/design6: A2 (Team Checks once, "Things to Know"), A3 (±0 swap behind See all), A4 (one verdict per row,
   "Calc disagrees"), A6 (one message per Apply), A7 (underline follows on phones), A8 (bars 96%), A11 ("Saved ✓"), squeezed row

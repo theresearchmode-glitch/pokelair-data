@@ -3,6 +3,15 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 12, ~8:30 AM Eastern; Sim at work, Claude has authority until 4:00 PM, reminder trig_01N8c7k5MNNSTMMSs7GsdFYh)
+Day plan agreed with Sim: 1 tests green (cause: frozen test data vs real clock; fix 6c168a8) -> 2 records -> 3 live fonts to main
++ live page republished with fonts/ -> 4 Preview v53 (My Team with A8, gallery wording) -> 5 height cuts that keep every feature
+visible (pictures by notification) -> 6 finish My Team (25 tests, A10/A12/A13, Edit Set twice, Stand-outs word, C12 use test,
+re-measure; PC prompt for heavy proofs) -> 7 info sheet D12-14, My Box E17-21, PC + sun/moon icons (pictures first) -> 8 team
+link plan F23-25 (plan only) -> 9 4 PM summary. Preview republished after every finished step. Details: decisions.md (top).
+Outside-check fixes done before 8 AM: c13 shown-the-same-everywhere 3204c92, sheet keys ada3a17, My Box focus/search e0874d0,
+one-click test 93ce54b, behaviour FAILs classified 13dd789 (57 pass / the same 75 FAIL).
+
 ## NOW (Nov 12, ~7:15 AM Eastern; Sim's executive authority until 8:00 AM, reminder trig_01DdVoPaM325QesqGQccfTGF)
 MORNING UPDATE: Sim approved all the design pictures; they are APPLIED on claude/design6 (51759e5): A2, A3, A4, A6, A7, A8, A11,
 squeezed row, A9, plus the word-list wording (147c28b). My Team built-page heights now 4,331 / 3,945 / 3,318 (iPad within limit) /
