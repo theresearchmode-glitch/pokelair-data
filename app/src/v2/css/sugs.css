@@ -59,7 +59,7 @@
 /* desktop: an open fold is too long for the narrow column (it would leave the wide one empty): Team Checks moves to its own
    full-width row under Suggestions, and the fold's three parts sit side by side */
 @media (min-width:1180px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set mu" "sg sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set mu" "yg sg" "ck ck"}}
-@media (min-width:700px) and (max-width:1179px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "mu yg" "ck ck"}}
+@media (min-width:700px) and (max-width:1179px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "ck ck";grid-template-rows:none}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "mu yg" "ck ck";grid-template-rows:none}}
 .tm-cks{container-type:inline-size}
 @container (min-width:900px){.sg2-fb{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);align-items:start;column-gap:var(--s10)}}
 /* problem rows: severity tag, what's wrong; a row with fixes folds open to its Quick add picks */

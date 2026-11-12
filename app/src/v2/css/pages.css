@@ -456,6 +456,11 @@
    near the same height (1135 vs 1267 at 1440; was 729 vs 1425) */
 @media (min-width:1180px){.tm-work{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:1179px){.tm-c1,.tm-c2{display:contents}.tm-work:has(.tm-yg){grid-template-areas:"set set" "mu ck" "mu yg" "sg sg";grid-template-rows:auto auto 1fr auto}}
+/* iPad widths (Nov 11, helper review): when Matchups runs long, Suggestions move up into the right column beside it instead of
+   a full-width row below, so the right half is never left empty. V2.tmBalance (team.js) sets data-sg="r" only when that makes
+   the page shorter (sample team at 820: 3775 -> 3068; a team with a short Matchups list keeps the full-width row) */
+@media (min-width:700px) and (max-width:1179px){.tm-work[data-sg="r"]{grid-template-areas:"set set" "mu ck" "mu sg";grid-template-rows:auto auto 1fr}
+  .tm-work[data-sg="r"]:has(.tm-yg){grid-template-areas:"set set" "mu ck" "mu yg" "mu sg";grid-template-rows:auto auto auto 1fr}}
 @media (max-width:699px){.tm-work:has(.tm-yg){grid-template-areas:"set" "mu" "sg" "ck" "yg";grid-template-rows:none}}
 /* "← My Team" in the eyebrow of pages opened from My Team (My Box, Compare): today's back link; the tap area reaches 44px without moving the line */
 .np-back{display:inline-flex;align-items:center;min-height:var(--tap);margin:calc(var(--s4) * -1) 0;color:var(--plot-text);text-decoration:none}

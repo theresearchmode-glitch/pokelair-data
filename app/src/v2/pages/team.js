@@ -344,6 +344,14 @@ after() {
   document.querySelectorAll('[data-tmsel]').forEach(b => b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }));
   document.querySelectorAll('[data-tmjump]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page
+  V2.tmBalance();
 }};
+// iPad widths (700-1179): put Suggestions in the right column beside Matchups only when that makes the page shorter. Measured
+// both ways once per draw or width change (never from a resize of the pieces themselves, so it can't flip back and forth).
+V2.tmBalance = () => { const w = document.querySelector('.tm-work'); if (!w) return;
+  if (innerWidth < 700 || innerWidth > 1179 || w.querySelector('.sg2-fold[open]')) { delete w.dataset.sg; return; }
+  const h = () => w.getBoundingClientRect().height; delete w.dataset.sg; const a = h(); w.dataset.sg = 'r'; const b = h();
+  if (b > a - 1) delete w.dataset.sg; };
+(() => { let t, lastW = innerWidth; addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(t); t = setTimeout(V2.tmBalance, 150); }); })();
 // a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)
 V2.pages['team-empty'] = {place: 'team', draw: () => V2.emptyHtml({preview: true})};
