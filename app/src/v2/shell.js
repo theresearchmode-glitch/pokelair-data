@@ -128,6 +128,9 @@ V2.wl = (t, hand) => String(t == null ? '' : t)
   .replace(/Ready for \d+% of the top (\d+) threats(?:,| ·) handles (\d+) of \d+/g, 'Beats or handles $2 of the top $1 threats')
   .replace(/Ready for \d+% of the top (\d+) threats/g, (m, n) => hand ? `Beats or handles ${hand.x} of the top ${hand.n}` : m)
   .replace(/([Rr])eady for (\d+)\/(\d+) top threats/g, (m, r, x, n) => `${r === 'R' ? 'B' : 'b'}eats or handles ${x} of ${n} top threats`)
+  .replace(/Ready for (\d+)\/(\d+) → (\d+)\/(\d+) top threats/g, 'Beats or handles $1 → $3 of $2 top threats')
+  .replace(/(\d+)% → (\d+)% ready for the top (\d+) threats/g, 'Matchups $1% → $2% against the top $3 threats')
+  .replace(/(\d+)% ready for the top (\d+) threats/g, 'Matchups $1% against the top $2 threats')
   .replace(/Ready for the top threats/g, 'Handles the top threats')
   .replace(/\bReady ([+−-]\d+%)/g, 'Matchups $1') // Quick add: the change to the matchup score
   .replace(/how many your team is ready for: it Beats them or Handles them/g, 'how many your team Beats or Handles');

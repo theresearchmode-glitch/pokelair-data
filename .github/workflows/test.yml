@@ -46,6 +46,9 @@ jobs:
       # the rebuild's guard rails (R3): no !important, no id selectors, type/spacing on the scale, colours only in tokens.css
       - run: node app/test/v2-guard.mjs
         if: ${{ !cancelled() }}
+      # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
+      - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
+        if: ${{ !cancelled() }}
       - run: node experiments/replays-test.mjs
         if: ${{ !cancelled() }}
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls

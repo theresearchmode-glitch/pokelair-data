@@ -1,6 +1,9 @@
 // Behaviour tests, group A: Team (docs/rebuild/inventory/A-team.md). One test per inventory entry, keyed by its ID, written from
 // the player's side. Today's selectors live in adapters/current.A-team.mjs; this file uses visible words and adapter helpers only.
 import {group, open, TEAM, BOX, OPP, expect, sleep, eventually} from './harness.mjs';
+// which wording to expect (Sim, Nov 12): today's page keeps its words; the new build uses the word list and the approved
+// My Team designs (A2 "Things to Know", A4 one verdict per row). Each test expects its page's own words, never either.
+const NEW = (process.env.ADAPTER || 'current') === 'v2';
 const t = group('A-team');
 // The kit merges every group's adapter helpers into one ui, so another group's helper with the same name would silently replace
 // ours. Re-apply this group's helpers last, so A-team tests always get A-team's meaning (same file name pattern for any adapter).
@@ -330,9 +333,9 @@ t('SUG-09', 'When nothing raises the score: a no-gain message instead of plain A
 
 t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap out Rillaboom" applies with Undo', async () => {
   /* new build (A2, Sim approved Nov 12): the fold is "Things to Know"; the checks are listed once, in the section above it */
-  const r = await myTeam(), t0 = await r.ui.text(), FT = /Things to Know/.test(t0) ? 'Things to Know' : 'Problems and Team Checks'; has(t0, /Problems and Team Checks 7 to look at, 2\/4 checks, legal|Things to Know 7 things, legal/);
+  const r = await myTeam(), t0 = await r.ui.text(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; has(t0, NEW ? /Things to Know 7 things, legal/ : /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);
   await r.ui.openFold(FT, true, 1500); const f0 = await r.ui.foldContent(FT), f = FT === 'Things to Know' ? f0 + '\n' + await r.ui.pg.evaluate(() => { document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; }); return document.querySelector('#tm-ck').innerText; }) : f0;
-  for (const s of [/[Ww]eakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, /Show \d+ more/, /Team checks 2 of 4 checks|Team Checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, /Ready for the top threats|Handles the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
+  for (const s of [NEW ? /[Ww]eakness Ice 3 weak/ : /Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, /Show \d+ more/, NEW ? /Team Checks/ : /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, NEW ? /Handles the top threats/ : /Ready for the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
   ok(await r.ui.foldOpen('Weakness Ice') === true, 'first fixable problem not opened automatically');
   await r.ui.tapText(/^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => /Show less/.test(await r.ui.foldContent(FT) || ''), 4000), 'Problems fold shows no "Show less"');
   await r.ui.tapText('Swap out Rillaboom', 1500); await r.ui.settle(); ok(await r.ui.has('#toastUndo'), 'no Undo toast'); ok(!(await r.ui.team()).includes('Rillaboom'), 'Rillaboom not swapped out');
@@ -340,8 +343,8 @@ t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap
 
 t('SUG-11', '"?" explainer: bubble titled "Ready for the top threats", Escape closes it', async () => {
   /* new build (A2): the fold is "Things to Know" and the threats "?" sits on its check in the section's list */
-  const r = await myTeam(), FT = /Things to Know/.test(await r.ui.text()) ? 'Things to Know' : 'Problems and Team Checks'; await r.ui.openFold(FT, true, 1200); await r.ui.settle(); if (FT === 'Things to Know') await r.ui.pg.evaluate(() => document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; })); /* today's site says "Ready for"; the new site says it the word list's way (Sim, Nov 12) */ await r.ui.tapTip('What is Ready for the top threats?').catch(() => r.ui.tapTip('What is Handles the top threats?'));
-  const b = await r.ui.waitFor(() => r.ui.tipBubble(), 3000); ok(b && /Ready for the top threats|Handles the top threats/.test(b), 'no bubble titled "Ready for / Handles the top threats"'); ok(/How we calculate|How we work it out|→/.test(b), 'bubble has no link to How we calculate: ' + b);
+  const r = await myTeam(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; await r.ui.openFold(FT, true, 1200); await r.ui.settle(); if (FT === 'Things to Know') await r.ui.pg.evaluate(() => document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; })); await r.ui.tapTip(NEW ? 'What is Handles the top threats?' : 'What is Ready for the top threats?');
+  const b = await r.ui.waitFor(() => r.ui.tipBubble(), 3000); ok(b && (NEW ? /Handles the top threats/ : /Ready for the top threats/).test(b), 'no bubble titled ' + (NEW ? '"Handles the top threats"' : '"Ready for the top threats"')); ok(/How we calculate|How we work it out|→/.test(b), 'bubble has no link to How we calculate: ' + b);
   await r.ui.press('Escape'); ok(!(await r.ui.tipBubble()), 'Escape did not close the bubble'); await r.close(); });
 
 // ================= My Team · Part 2 Matchups =================
@@ -352,7 +355,7 @@ t('MU-01', 'Matchups view switch Top 10 | Top 12 grid | All 30 is remembered', a
 t('MU-02', 'Top 10 threats with real-games verdict and calc level; phone shows 5 + "Show 5 more"; row opens threat sheet', async () => {
   const r = await myTeam({team: TEAM, width: 390}); if (await r.ui.chosen('Stand-outs') === true) await r.ui.choose('Top 10', 1200); let rows = await r.ui.topThreatRows(); // new build opens on Stand-outs (Sim, Nov 11) ok(rows.length === 5, `${rows.length} rows on a phone`);
   /* new build (A4, Sim approved Nov 12): one verdict per row; the calc shows only when it disagrees ("Calc disagrees: X") */
-  for (const x of rows) ok(/^\d+ .+ (Favoured|Even match|Unfavoured)( Calc( disagrees)?: (Beats it|Handles it|Shaky|No answer))?$/.test(x) || /^\d+ .+Calc disagrees: (Beats it|Handles it|Shaky|No answer).* (Favoured|Unfavoured)$/.test(x), 'row reads ' + x);
+  for (const x of rows) ok(NEW ? /^\d+ .+ (Favoured|Even match|Unfavoured)( Calc disagrees: (Beats it|Handles it|Shaky|No answer))?$/.test(x) || /^\d+ .+Calc disagrees: (Beats it|Handles it|Shaky|No answer).* (Favoured|Unfavoured)$/.test(x) : /^\d+ .+ (Favoured|Even match|Unfavoured) Calc: (Beats it|Handles it|Shaky|No answer)$/.test(x), 'row reads ' + x);
   const tx = await r.ui.text(); has(tx, /Verdicts from real tournament games/); has(tx, /Unfavoured \d+ Even match \d+ Favoured \d+|\d+ Favoured \d+ Even match \d+ Unfavoured/); has(tx, /Damage calc: No answer \d+, Shaky \d+, Handles it \d+, Beats it \d+/);
   await r.ui.tapText('Show 5 more', 700); rows = await r.ui.topThreatRows(); ok(rows.length === 10, `${rows.length} rows after Show 5 more`); ok(await r.ui.sees('Show top 5 only'), 'no "Show top 5 only"');
   await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet(); ok(s && /Archaludon/.test(s) && await r.ui.threatPressedInSheet() === 'Archaludon', 'threat sheet did not open on Archaludon'); await r.close();
@@ -365,7 +368,7 @@ t('MU-03', 'Top 12 grid: 12 threat rows × 6 cells; a row opens its threat sheet
 
 t('MU-04', 'All 30: "Threat preparation" groups; a threat opens to its calc reasons; Biggest threats list', async () => {
   const r = await myTeam(); await r.ui.choose('All 30', 1500); const tx = await r.ui.text();
-  for (const s of [/Threat preparation/, /Ready for \d+% of the top 30 threats|Beats or handles \d+ of the top 30 threats/, /Shaky \d+ threats?/, /Handles it \d+ threats?/, /Beats it \d+ threats?/, /Meta Pokémon that hit several of yours hard/]) has(tx, s, 'All 30');
+  for (const s of [/Threat preparation/, NEW ? /Beats or handles \d+ of the top 30 threats/ : /Ready for \d+% of the top 30 threats/, /Shaky \d+ threats?/, /Handles it \d+ threats?/, /Beats it \d+ threats?/, /Meta Pokémon that hit several of yours hard/]) has(tx, s, 'All 30');
   const first = await r.ui.pg.evaluate(() => { const d = [...document.querySelectorAll('[data-pane="report"] details details, #main details details')].find(e => e.getClientRects().length && /% of top cuts/.test(e.querySelector('summary').innerText)); if (!d) return null; d.querySelector('summary').click(); return d.querySelector('summary').innerText.split('\n')[0]; });
   ok(first, 'no threat fold to open'); await sleep(500); const ft = await r.ui.foldContent(first); ok(ft && /(✓|~|✗)/.test(ft) && /usual set/i.test(ft), `threat ${first} shows no calc reasons / usual set: ${ft && ft.slice(0, 200)}`); await r.close(); });
 

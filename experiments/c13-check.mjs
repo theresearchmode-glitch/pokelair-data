@@ -9,6 +9,7 @@
 // C6 (one message per action), C9 (text legible behind the bars: needs eyes or a pixel test), C10 (links to unbuilt pages),
 // C11 (symmetry), C12 (the use test: click, tab, sheets, change-and-undo, reload).
 // Usage: node app/build.mjs --v2 --art=../src/v2/art/ && node experiments/c13-check.mjs [page.html] [views] [state]
+//   C13_ENGINES=chromium  Chromium only (no WebKit on the machine); the report line says which engines ran
 //   page   default app/dist/v2.html (build it with --art=../src/v2/art/ so pictures load from disk; then rebuild without)
 //   views  comma list of hash views, default team,team-empty,box,compare
 //   state  default | open (every <details> opened) | five (a 5-of-6 team) | apply (after Suggestion 1's Apply) | long (six longest names)
@@ -22,7 +23,9 @@ const [file = path.join(ROOT, 'app/dist/v2.html'), viewArg = 'team,team-empty,bo
 const WIDTHS = [[320, 3400, ''], [390, 3400, ''], [820, 3500, ''], [1440, 1800, '']];
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
-for (const eng of ['chromium', 'webkit']) for (const view of viewArg.split(',')) for (const [w, limit, note] of WIDTHS) {
+// C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
+const ENGINES = (process.env.C13_ENGINES || 'chromium,webkit').split(',').map(x => x.trim()).filter(x => x === 'chromium' || x === 'webkit');
+for (const eng of ENGINES) for (const view of viewArg.split(',')) for (const [w, limit, note] of WIDTHS) {
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
   const b = await pw[eng].launch(), ctx = await b.newContext({viewport: {width: w, height: w < 700 ? 844 : 900}, hasTouch: touch(w), isMobile: eng === 'chromium' ? false : w < 700});
   const p = await ctx.newPage(), errs = [];
@@ -77,4 +80,4 @@ for (const eng of ['chromium', 'webkit']) for (const view of viewArg.split(','))
   out.push(`${eng.padEnd(8)} ${view.padEnd(10)} ${String(w).padStart(4)}  height ${r.H}${r.H > limit ? ` OVER ${limit}` : ` ok (${limit})`}${note ? ' [limit assumed]' : ''}; sideways ${r.sideways > 0 ? r.sideways + 'px' : 0}; cut off ${r.cut}; ${pics}; tap<44 ${r.small.length}${r.small.length ? ' [' + r.small.slice(0, 4).join('; ') + (r.small.length > 4 ? '; …' : '') + ']' : ''}; hidden-focusable ${r.hidden.length}${r.hidden.length ? ' [' + r.hidden.slice(0, 3).join('; ') + ']' : ''}; repeated ${r.rep.length}${r.rep.length ? ' [' + r.rep.slice(0, 2).join('; ') + ']' : ''}; main buttons/screen ${r.most}${r.most > 1 ? ' (at y ' + r.at + ')' : ''}; errors ${errs.length}${errs.length ? ' [' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''}`);
   await b.close(); }
 console.log(out.join('\n'));
-console.log(`c13 check (${state}): ${out.length} page/width runs; ${out.filter(l => / OVER /.test(l)).length} over height; ${Math.round((Date.now() - t0) / 1000)}s. Not covered: C2, C3 (beyond repeated lines), C5, C6, C9, C10, C11, C12.`);
+console.log(`c13 check (${state}; ${ENGINES.join(' + ')}): ${out.length} page/width runs; ${out.filter(l => / OVER /.test(l)).length} over height; ${Math.round((Date.now() - t0) / 1000)}s. Not covered: C2, C3 (beyond repeated lines), C5, C6, C9, C10, C11, C12.`);

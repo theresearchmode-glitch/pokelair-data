@@ -21,12 +21,16 @@ try {
 // 2) today's page and the new build from the working tree
 execFileSync(process.execPath, ['app/build.mjs'], {cwd: ROOT, stdio: 'ignore'}); fs.copyFileSync(path.join(ROOT, 'app/dist/page.html'), B);
 execFileSync(process.execPath, ['app/build.mjs', '--v2'], {cwd: ROOT, stdio: 'ignore'});
-const run = (name, args, pick, mins = 40) => { log(`== ${name}`); const r = spawnSync(process.execPath, args, {cwd: ROOT, encoding: 'utf8', timeout: mins * 60e3, maxBuffer: 1 << 28});
-  const txt = (r.stdout || '') + (r.stderr || ''), lines = txt.split('\n').filter(l => pick.test(l)); log(lines.length ? lines.slice(-1)[0] : `NO RESULT LINE (exit ${r.status}${r.error ? ', ' + r.error.message : ''}); last output: ${txt.trim().split('\n').slice(-3).join(' | ')}`); };
+// every same-output proof writes its step dump (DUMP=); when a proof reports a difference, the dump is kept next to the report as
+// full-check-<label>-<proof>-dump.json so the difference can be read (Sim, Nov 12: same-compare's 1 of 21 couldn't be explained)
+const run = (name, args, pick, mins = 40) => { log(`== ${name}`); const dump = /^same-/.test(name) ? path.join(tmp, name + '-dump.json') : null;
+  const r = spawnSync(process.execPath, args, {cwd: ROOT, encoding: 'utf8', timeout: mins * 60e3, maxBuffer: 1 << 28, env: dump ? {...process.env, DUMP: dump} : process.env});
+  const txt = (r.stdout || '') + (r.stderr || ''), lines = txt.split('\n').filter(l => pick.test(l)); log(lines.length ? lines.slice(-1)[0] : `NO RESULT LINE (exit ${r.status}${r.error ? ', ' + r.error.message : ''}); last output: ${txt.trim().split('\n').slice(-3).join(' | ')}`);
+  if (dump && fs.existsSync(dump) && (r.status !== 0 || /[1-9]\d* different/.test(lines.slice(-1)[0] || ''))) { const keep = out.replace(/\.txt$/, `-${name}-dump.json`); fs.copyFileSync(dump, keep); log(`   step dump kept: ${path.relative(ROOT, keep)}`); } };
 // 3) today's site unchanged: every same-output proof (base page vs now)
-// SMOKE=1: only the first proof (to check the script itself works)
+// SMOKE=1: only the first proof (to check the script itself works); SMOKE=same-six (any proof's name): only that proof
 const SMOKE = !!process.env.SMOKE;
-for (const c of SMOKE ? ['same-import'] : ['same-import', 'same-box', 'same-record', 'same-compare', 'same-edits', 'same-saved', 'same-team', 'same-info', 'same-sheet', 'same-share', 'same-matchups', 'same-six', 'same-why'])
+for (const c of SMOKE ? [/^same-/.test(process.env.SMOKE) ? process.env.SMOKE : 'same-import'] : ['same-import', 'same-box', 'same-record', 'same-compare', 'same-edits', 'same-saved', 'same-team', 'same-info', 'same-sheet', 'same-share', 'same-matchups', 'same-six', 'same-why'])
   run(c, [`experiments/${c}.mjs`, A, B], /compared|identical/);
 if (SMOKE) { log('SMOKE DONE'); fs.rmSync(tmp, {recursive: true, force: true}); process.exit(0); }
 run('same-share-v2', ['experiments/same-share-v2.cjs', B], /share images/);
