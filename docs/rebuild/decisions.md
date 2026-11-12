@@ -15,6 +15,17 @@ Sim's own decisions are marked "Sim". Newest first.
   Every branch failed the same way (main: run 707 passed 07:20 UTC, 708 failed 10:29 UTC). Not caused by the fonts or the rebuild.
   FIX 6c168a8 (design6) / 93ed4b7 + undo commit (fonts branch): the fresh and stale cases pin the page clock to 1 h after the
   newest data date. Checked: frozen snapshot before "1 FAILED", after "ALL PASSED"; today's data "ALL PASSED".
+- History rewrite (Sim: "do what you think is best for the health of our website"): Claude decided NOT to rewrite pushed history
+  (rewriting breaks the branch links GitHub, the Plans page and the PC chat use; it gains the site nothing). The rebuild reaches main
+  as one squashed commit with no attribution lines.
+- Gallery wording (Sim: "your recommendation and publish it"): applied the proposal in gallery-wording.md: facts strip "3 sizes
+  measured: My Team is over the length limits, being fixed"; My Team card tag "Built from today's code · numbers being checked
+  against today's site".
+- PREVIEW v53 published (Sim's go, item 5): foundation.html from claude/design6 at 20d0404 (--preview-data), gallery.html with the new
+  wording, index.html, and the 7 font files. Checked before publishing: WebKit 390 and Chromium 1440 open with no page errors (only
+  local missing-art messages; the art is on the artifact), heights 3,945 / 2,215 (same as measured). Artifact list after publish:
+  394 files (387 + 7 fonts/*.woff2; 346 v2art kept). Sim notified to check A8 on her iPhone.
+- GitHub run 716 (design6, before the fix): run.mjs was the ONLY failing step; v2-guard, v2-words, golden, same-grade and the rest passed.
 - MISTAKE (Claude), fixed at once: the fonts-branch commit 93ed4b7 also carried the frozen Nov 9 out/ files (they were still staged in
   the scratch copy). A new commit put out/ back as at 9eabdd6 (no history rewritten); the branch now differs from 9eabdd6 only in
   app/test/run.mjs (git diff --stat). Rule: after testing on frozen data, reset out/ from the commit before committing anything.

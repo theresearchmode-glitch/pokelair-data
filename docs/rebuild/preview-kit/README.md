@@ -1,6 +1,6 @@
 # Preview kit: how the "NastyPlot Full Redesign" artifact is built and published
 
-Artifact: https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf (last published: version 52, Nov 11 ~10:10 PM Eastern, commit 636aa5c).
+Artifact: https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf (last published: version 53, Nov 12 ~8:40 AM Eastern, commit 20d0404; 394 files incl. 7 fonts).
 
 ## Files here
 - `index.html`: the artifact's page. It forwards straight to `foundation.html#team` (Sim, Nov 11).
