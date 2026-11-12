@@ -341,8 +341,9 @@ V2.pages.team = {place: 'team', draw() {
 },
 after() {
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
-  document.querySelectorAll('[data-tmsel]').forEach(b => b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }));
-  document.querySelectorAll('[data-tmjump]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
+  // a redraw now keeps unchanged elements (A5), so bind each element once (a second listener would fire twice)
+  document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }); });
+  document.querySelectorAll('[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page
 }};
 // a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)

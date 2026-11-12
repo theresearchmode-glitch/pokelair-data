@@ -113,7 +113,10 @@
 .sga2{padding:var(--s8)}.sga2 h2{font-size:var(--t28);margin:var(--s2) 0}
 @media (max-width:699px){.sga2{padding:var(--s6) var(--s4)}}
 /* "?" explainers: a small slanted mark beside the term; the bubble is a solid surface over the page */
-.sg2-tip{display:inline-grid;place-items:center;width:24px;height:24px;margin-left:var(--s1);font:800 var(--t13)/1 var(--b);color:var(--plot-text);background:var(--surface);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
-.sg2-tip[aria-expanded="true"]{background:var(--plate);color:var(--on-plate)}
+/* A15 (Sim's fix plan): the "?" looks the same (a 24px slanted tile) but its tap area is 44x44: the button is 44 square and
+   transparent, the tile is drawn by ::before, and negative margins keep the room it takes in the line exactly as before */
+.sg2-tip{position:relative;isolation:isolate;display:inline-grid;place-items:center;width:var(--tap);height:var(--tap);margin:calc((24px - var(--tap)) / 2);margin-left:calc(var(--s1) + (24px - var(--tap)) / 2);font:800 var(--t13)/1 var(--b);color:var(--plot-text);background:none}
+.sg2-tip::before{content:"";position:absolute;inset:calc((var(--tap) - 24px) / 2);z-index:-1;background:var(--surface);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.sg2-tip[aria-expanded="true"]{color:var(--on-plate)}.sg2-tip[aria-expanded="true"]::before{background:var(--plate)}
 .sg2-tipop{position:absolute;z-index:45;display:grid;gap:var(--s2);padding:var(--s5);background:var(--surface);color:var(--ink);border-radius:var(--r-l);box-shadow:var(--shadow-lift)}
 .sg2-tipop b{font-size:var(--t17)}.sg2-tipop p{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}

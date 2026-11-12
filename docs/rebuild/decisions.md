@@ -3,6 +3,31 @@
 Claude decides small things under executive control; Sim can overrule any of them. Every new entry is also told to Sim in chat.
 Sim's own decisions are marked "Sim". Newest first.
 
+## Nov 12, night (Claude, under Sim's executive authority until 6 AM Eastern; non-visual only)
+- A5 (redraw throws the user out): cause confirmed in code. V2.redraw rebuilt the whole page (header included) and only gave focus
+  back to elements with an id, so after the suggestions finished focus fell to the page top and the next Tab went to "Skip to the
+  page". Fix: V2.redraw builds the new page off-screen and changes only what differs (V2.morph); unchanged parts and the focused
+  control stay the same elements; if the focused control had to be replaced, focus goes to its new copy. The theme switch uses it too.
+  Measured on the built page (app/dist/v2.html, efe9fe5 + fix), scratch test a5.cjs, Chromium 390/1440 and WebKit 390/1180:
+  before `focusAfterLateResults: BODY, nextTab: Skip to the page, every part replaced`; after `Night button, Why this score?,
+  every part kept`. The first version broke behaviour test SUG-04 (passes 3/3 on the clean build, failed 3/3 with the change): "Show 2
+  more" turned into "See all suggestions" in place and the same click then opened All Suggestions. Rule added: an element whose
+  data-* markers differ is replaced, never changed in place. SUG-04 then passed 3/3 and the A5 results held. Not yet done: reserving the Suggestions section's height while it works (C5) shows a blank area, so it is visual
+  and goes to Sim with pictures.
+- A6 (two status messages): at load only Suggestions' "Working out…" line is a live region now (the one in the closed Problems fold
+  was also role=status). Which of the two Apply messages stays (the bar in Suggestions or the toast) is visual: pictures for Sim.
+- A14 (controls in closed sections): NOT a bug on this build. Measured (built page, Chromium and WebKit, 1440): inside the closed
+  Problems fold all four controls report checkVisibility()=false, are not in the screen-reader tree, and a real Tab walk never
+  stops on them (0 hidden stops of 55 / 54); after opening the fold they are in the tree, so the test can see them. The sweep read
+  the "would-be" size browsers report for hidden content. The C13 check must use checkVisibility(), not sizes.
+- A15 ("?" buttons 24x24): tap area now 44x44 with the same look. Measured: before/after screenshots of the chip row pixel-identical
+  in 16 of 16 cases (Chromium and WebKit, 390 and 1440, day and night, popup closed and open); tap area 24x24 -> 44x44; the popup's
+  position relative to the chip row unchanged in 8 of 8 cases (it is now placed from the drawn 24px tile).
+- Noticed, for Sim (wording, not changed): the "?" popup for the verdict chip is long (a 473px paragraph) and says "Ready for the top
+  threats" / "93% ready", which the word list replaces with Matchups.
+- Setup only: WebKit installed in this container (with its system libraries); node_modules/playwright linked to the preinstalled
+  Playwright so the ES-module test scripts can import it (node_modules is gitignored).
+
 ## Nov 12 (Sim, new chat; answers to the handover questions)
 - Sim: "executive authority" / "express authority" defined (RULES.md section 3): Claude in charge of everything except visual or
   design choices, helpers at Claude's discretion with moderate usage, immediate confirmation, decisions logged here.
@@ -10,6 +35,10 @@ Sim's own decisions are marked "Sim". Newest first.
 - Sim: My Box header icon = option 1, the retro PC with a tiny Poké Ball on screen (replaces the v52 storage box). Claude flagged
   that the ball reads like a minus-in-a-circle at 24px; refined drawings go to Sim with pictures before building. Queued after
   My Team (this chat's rule: My Team is fixed and re-measured before anything else starts).
+- Sim: My Box icon: "go with your recommendation for what would be best": Claude refines option 1 (retro PC) so it reads at
+  24px; Sim still sees the picture before it goes on the Preview. Queued after My Team.
+- Sim: the Day/Night button should be a sun/moon icon, not the words "Day"/"Night". Queued (visual: pictures first); goes
+  with A15's unclear-label item.
 - Sim: A4 Matchups and A3 ±0 suggestion: "your recommendation". Claude recommends: (A4) each row leads with the real-games word;
   the calc shows only when it points the other way ("Calc disagrees: Beats it"); with no real-games verdict the calc is the row's
   verdict; the All 30 view stays calc-grouped. (A3) a ±0 or worse best swap is not shown; the quiet "Nothing to fix" line stays and
@@ -25,6 +54,8 @@ Sim's own decisions are marked "Sim". Newest first.
   proofs will show each fix as a difference, marked as a fix. Art and name ownership for the public site: Sim, later.
 
 ## Authority
+- Nov 11, ~11:30 PM Eastern (Sim): executive authority until 6:00 AM Eastern (Sim asleep). Rules as RULES.md section 3:
+  everything but visual/design on Claude's recommendation, helpers at Claude's discretion (moderate usage), nothing published.
 - Nov 11 (Sim): authority extended to 11:00 PM Eastern, same instructions.
 - Nov 11 (Sim): authority given again until 10:00 PM Eastern, same instructions.
 - Nov 11 (Sim): authority extended to 9:00 PM Eastern, same instructions (decide on Claude's recommendation, log here, summary at the end).

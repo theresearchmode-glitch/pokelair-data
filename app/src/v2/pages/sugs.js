@@ -127,7 +127,8 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
   const chips = [V.score != null ? `<span><b>${V.score}%</b> ready${V2.tip('readiness')}</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks${V2.tip('checklist')}</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
   const vd = `<div class="sg2-vd ${V.lvl}"><p class="sg2-vh">${V2.esc(V2.undot(V.head + hand))}</p><p class="sg2-vc">${chips}</p><dl>${V.rows.map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
   const sub = [pr.real.length ? pr.real.length + ' to look at' : 'Nothing big to fix', CK ? `${CK.pass}/${CK.n} checks` : '', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
-  const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub" role="status">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
+  // A6 (Sim's fix plan): one live "Working out…" message at load, not two; Suggestions' own line is the one read out
+  const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
   if (P) V2.fx.last = pr.html;
   return `<details class="sg2-fold" data-v2fix${isOpen ? ' open' : ''}><summary><span class="t">Problems and Team Checks</span><span class="s">${V2.esc(sub)}</span></summary>
     <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${ckCard}${vd}</div></details>`; };
@@ -150,7 +151,8 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   e.preventDefault(); const was = document.querySelector('.sg2-tipop'); V2.tipClose(); if (was && was.dataset.k === b.dataset.v2tip) return;
   const T = TIPS[b.dataset.v2tip]; if (!T) return; const p = document.createElement('div'); p.className = 'sg2-tipop'; p.dataset.k = b.dataset.v2tip; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', T[0]);
   p.innerHTML = `<b class="u">${V2.esc(T[0])}</b><p>${V2.esc(T[1])}</p><a class="np-link" href="#method">How we calculate →</a>`; document.body.append(p); b.setAttribute('aria-expanded', 'true');
-  const r = b.getBoundingClientRect(), w = Math.min(340, innerWidth - 32); p.style.width = w + 'px'; p.style.left = Math.max(16, Math.min(innerWidth - w - 16, r.left + r.width / 2 - w / 2)) + 'px';
+  // place it from the drawn 24px tile, not the 44px tap area around it (A15), so it sits where it always did
+  const q = b.getBoundingClientRect(), g = Math.max(0, (q.height - 24) / 2), r = {left: q.left + g, width: q.width - 2 * g, top: q.top + g, bottom: q.bottom - g}, w = Math.min(340, innerWidth - 32); p.style.width = w + 'px'; p.style.left = Math.max(16, Math.min(innerWidth - w - 16, r.left + r.width / 2 - w / 2)) + 'px';
   const below = r.bottom + 8 + p.offsetHeight < innerHeight - 72; p.style.top = (below ? r.bottom + 8 : Math.max(16, r.top - 8 - p.offsetHeight)) + scrollY + 'px'; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.querySelector('.sg2-tipop')) { const b = document.querySelector('[data-v2tip][aria-expanded="true"]'); V2.tipClose(); if (b) b.focus(); } });
 addEventListener('scroll', () => { if (document.querySelector('.sg2-tipop')) V2.tipClose(); }, {passive: true});

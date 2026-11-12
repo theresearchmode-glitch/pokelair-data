@@ -112,28 +112,59 @@ document.addEventListener('keydown', e => { const b = e.target.closest && e.targ
   e.preventDefault(); n.focus(); V2.slidePick(b.parentElement, n); });
 V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle', 'Battle'], ['meta', 'Meta']];
 V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 'day';
-V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.draw(); };
+V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg = V2.theme() === 'night' ? L.hdrD : L.hdrL;
   /* the footer copy gets its own mask ids, so the two logos on one page never share an id */
   return svg ? (small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg) : '<b class="u">NastyPlot</b>'; };
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
 V2.asOf = () => { try { return typeof dataDateText === 'function' ? dataDateText() : ''; } catch (e) { return ''; } };
 V2.route = () => { const h = (location.hash || '').slice(1); return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
-// redraw the current page after data arrives, keeping the reader's place and focus (no scroll jump)
-V2.redraw = () => { const y = scrollY, f = document.activeElement && document.activeElement.id; V2.draw(); scrollTo(0, y); if (f) { const e = document.getElementById(f); if (e) e.focus({preventScroll: true}); } };
-V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
+// redraw the current page after data arrives or a choice changes, keeping the reader's place and focus (no scroll jump).
+// Fix plan A5 (Sim, Nov 11): a redraw used to rebuild the whole page, header included, so focus fell back to the page top
+// (the next Tab went to "Skip to the page") and a button could be replaced under the pointer. Now the new page is built
+// off-screen and only the parts that differ are changed in place (V2.morph); what didn't change, and the focused control,
+// stay the same elements. If the focused control itself had to be replaced, focus goes to its new copy (V2.focusKey).
+V2.focusKey = el => { if (!el || el === document.body || !el.closest || !el.closest('#app')) return null; if (el.id) return {sel: '#' + CSS.escape(el.id), i: 0};
+  const ds = [...el.attributes].filter(a => a.name.startsWith('data-') || a.name === 'href' || a.name === 'aria-label'), sel = el.tagName.toLowerCase() + ds.map(a => `[${a.name}="${CSS.escape(a.value)}"]`).join('');
+  return {sel, i: [...document.querySelectorAll('#app ' + sel)].indexOf(el)}; };
+// make old (live) look like new (built off-screen): same nodes kept where they match, attributes and text updated in place
+// An element whose action markers (data-* attributes) differ is a different control: it is replaced, never changed in place, so a
+// tap that is still being handled can't reach a different action (found Nov 12: "Show 2 more" became "See all" in place and the
+// same click then opened All Suggestions; behaviour test SUG-04).
+V2.dataSig = e => [...e.attributes].filter(a => a.name.startsWith('data-')).map(a => a.name + '=' + a.value).sort().join('&');
+V2.morph = (o, n) => { if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeName || (o.nodeType === 1 && (o.id !== n.id || V2.dataSig(o) !== V2.dataSig(n)))) { o.replaceWith(n); return; }
+  if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
+  if (o.isEqualNode(n)) { if ('value' in o && /^(INPUT|TEXTAREA|SELECT)$/.test(o.nodeName)) V2.morphField(o, n); return; }
+  for (const a of [...o.attributes]) if (!n.hasAttribute(a.name)) o.removeAttribute(a.name);
+  for (const a of [...n.attributes]) if (o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(o.nodeName)) V2.morphField(o, n);
+  V2.morphKids(o, n); };
+V2.morphKids = (o, n) => { const oc = [...o.childNodes], nc = [...n.childNodes], k = Math.min(oc.length, nc.length);
+  for (let i = 0; i < k; i++) V2.morph(oc[i], nc[i]); for (let i = k; i < oc.length; i++) oc[i].remove(); for (let i = k; i < nc.length; i++) o.append(nc[i]); };
+// a form field ends up as a full redraw would leave it (value and ticks from the new page), so code that clears a box still works
+V2.morphField = (o, n) => { if (o.nodeName === 'SELECT') { V2.morphKids(o, n); o.value = [...n.options].find(x => x.hasAttribute('selected'))?.value ?? o.value; return; }
+  if (o.type === 'checkbox' || o.type === 'radio') o.checked = n.hasAttribute('checked'); else if (o.value !== (n.getAttribute('value') ?? n.textContent ?? '')) o.value = n.getAttribute('value') ?? (o.nodeName === 'TEXTAREA' ? n.textContent : ''); };
+V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app.firstChild) { V2.draw(); return; }
+  const y = scrollY, act = document.activeElement, key = V2.focusKey(act), r = V2.shell(), t = document.createElement('template'); t.innerHTML = r.html;
+  V2.morphKids(app, t.content); scrollTo(0, y);
+  if (key && !act.isConnected) { const e = [...document.querySelectorAll('#app ' + key.sel)][Math.max(0, key.i)]; if (e) e.focus({preventScroll: true}); }
+  if (r.P && r.P.after) try { r.P.after(); } catch (e) { console.error(e); } };
+// the whole page as HTML (header, the page, footer, phone bar); V2.draw puts it in fresh, V2.redraw merges it in place
+V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
-  // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
-  // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
-  const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
-  app.innerHTML = `<a class="vh" href="#main">Skip to the page</a>
+  return {P, html: `<a class="vh" href="#main">Skip to the page</a>
 <header class="np-head"><a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a><nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="#box" aria-label="My Box" title="My Box"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
   <button type="button" class="np-theme" data-v2theme aria-label="Switch to ${V2.theme() === 'night' ? 'day' : 'night'} mode">${V2.theme() === 'night' ? 'Day' : 'Night'}</button></div></header>
 <main class="np-main" id="main">${P ? P.draw() : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan-made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>
-<nav class="np-bar" aria-label="Main">${nav}</nav>`;
+<nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
+V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const {P, html} = V2.shell();
+  // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
+  // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
+  const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
+  app.innerHTML = html;
   if (keep.size) for (const n of app.querySelectorAll('img[src]')) { const l = keep.get(n.getAttribute('src')), o = l && l.shift(); if (!o) continue;
     for (const a of [...o.attributes]) if (a.name !== 'src' && !n.hasAttribute(a.name)) o.removeAttribute(a.name);
     for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
