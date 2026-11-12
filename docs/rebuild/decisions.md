@@ -16,8 +16,10 @@ Sim's own decisions are marked "Sim". Newest first.
   the swap sits behind "See all suggestions". Both are visual: before/after pictures to Sim before building.
 - Sim: phone height cuts: "recommendation". Claude: do A2/A3/A4 first, re-measure, then propose only the cuts still needed
   (sliders folded into a summary line, shorter Matchups intro; keep the Favoured list open). Pictures first.
-- Sim: the polish helper's findings: "those are good" (Claude's grouping: My Team ones now, other pages in their turn,
-  the night glow on the band word is Sim's call with pictures).
+- Sim: the polish helper's 15 findings: "help me out here". Claude's proposal (not yet approved): My Team ones (1-7, 11) with
+  the My Team fixes, other pages in their turn, 12 and 15 covered by A9/A8, the night glow (13) Sim's call with pictures.
+- Sim: the older open items (NP_PID_KEY, About wording, item 10 screenshot, empty-Box favourite link, Battle tab limit):
+  "those are good". Meaning not confirmed (fine as they are, or later?); asked.
 - Sim: host the two fonts ourselves: yes (before/after pictures).
 - Sim: today's known bugs are FIXED in the rebuild, not carried over ("fix bugs why bring them over"). The "same as today"
   proofs will show each fix as a difference, marked as a fix. Art and name ownership for the public site: Sim, later.
