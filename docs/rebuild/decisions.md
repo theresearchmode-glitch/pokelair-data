@@ -34,6 +34,10 @@ Sim's own decisions are marked "Sim". Newest first.
   The new-build check now visits all six pages by default (team, team-empty, box, compare, sheet, guide), not only the style guide.
 
 ## My Team
+- Nov 11 (Claude, under Sim's 7-9 PM authority; review item 13): the featured underdog stands on a floor ring and pool in its own colour
+  (Flapple: gold) on the style guide, empty My Team and empty My Box; the loose red/blue cloud and glow are gone. On empty My Team the
+  page's one filled button stays "Build Me a Team" (rule: one main action per screen), so the underdog's "Add Flapple to My Team" is
+  outlined; on the style guide sample "Build around it" stays filled. The breathing pool is kept (it sits on the floor, not a cloud).
 - Nov 11 (Claude, under Sim's 6-7 PM authority): accepted the Suggestions helper's choices: All Suggestions is a sheet over My Team;
   "Swap my Mega?" is remembered in this browser (np2.swapMega; today's page resets it on reload); "Problems and Team Checks" is a fold
   at the foot of Team Checks, closed by default as today; " · " lists become words by today's shared rule; the "?" bubble has no mascot.
