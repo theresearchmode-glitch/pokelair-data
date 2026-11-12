@@ -38,10 +38,11 @@ for (const [n, o] of M) { const r = o.r / o.n, b = band(Math.round(r)); mb[b][0]
 const fw = (SB && Array.isArray(SB.history) ? SB.history : []).filter(h => h && h.ratingsForward).map(h => [h.date, h.ratingsForward.acc, h.ratingsForward.games]);
 // mv (Sim, Nov 5): the week's biggest rating moves for Home's "This week" line. Newest snapshot against the oldest one from the
 // last 7 days; only Pokémon rated 60+ now that moved 2+ points. [from date, to date, [[name, rating now, change], ...]]
+// Nov 12: up to 12 kept (was 4) so the new Home can fill its "This week in the ratings" list (Sim: "add a few more"); today's Home still shows 4.
 const mv = (() => { const z = snaps[snaps.length - 1], from = new Date(Date.parse(z.d + 'T12:00:00Z') - 7 * 864e5).toISOString().slice(0, 10);
   const a = snaps.find(x => x.d >= from && x.d < z.d); if (!a) return null;
   const ch = Object.keys(z.r).filter(n => n in a.r && z.r[n] >= 60 && Math.abs(z.r[n] - a.r[n]) >= 2).map(n => [n, z.r[n], z.r[n] - a.r[n]])
-    .sort((x, y) => Math.abs(y[2]) - Math.abs(x[2]) || y[1] - x[1]).slice(0, 4);
+    .sort((x, y) => Math.abs(y[2]) - Math.abs(x[2]) || y[1] - x[1]).slice(0, 12);
   return ch.length ? [a.d, z.d, ch] : null; })();
 const out = {v: 1, updated: new Date().toISOString(), since: snaps[0].d, snaps: snaps.length, last: snaps[snaps.length - 1].d, top: TOP, ev: evs, mons, mb, fw, mv};
 // under the cap: the oldest events lose their per-Pokémon lists first (their band totals stay)

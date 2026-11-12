@@ -427,3 +427,25 @@ Sim's own decisions are marked "Sim". Newest first.
   own font rules inside each page (fonts from fonts/ beside them, as foundation.html already does); checked locally with the
   internet blocked: day background and Unbounded load. Preview v73 replaced only those four files.
 - Sim: Mega stays written "Mega Charizard Y" in blue on Home, the same as My Team (one style for one idea).
+
+## Nov 12, ~2:00-2:45 PM Eastern (authority extended by Sim to 5 PM Eastern at 2:01 PM)
+- Home pieces 1+2 published to the Preview (v74, Sim: "love it"); Preview file list checked: 394 files.
+- Home piece 3 built (Top of the Meta with the Top rated / Hidden gems slider, today's underdog, This week in the ratings), from
+  the mock-up's CSS; shared helpers only (lairRows, isGem, lairRank, monRating, today's words). NOT on the Preview yet: pictures sent.
+- This week in the ratings (Sim: "add a few more"): 13 Pokémon moved under today's rule (rated 60+, moved 2+ points); the data kept
+  4. track.mjs now keeps up to 12 and the shared data cleaner reads 12; today's Home still shows 4 (AR.week slices 4), proven:
+  today's Home is identical before/after except the sun animation's start time, which differs run to run on the same build.
+  The new Home shows 7 rows, the number at which both columns end level on desktop (left bottom 1904, right 1891).
+  A move is shown on the ratings' shown scale (RS(now) - RS(before)), so "up 5 points" matches the numbers people see; for this
+  week's 12 movers both scales give the same numbers.
+- The Preview's built-in data had no movers file; added meta/track to build.mjs --preview-data (the real site already reads it).
+- Underdog on Home: the mock-up's stage (two floor pools, one breathing, with the blue/pink glow; still with reduced motion).
+- Row names: "Mega" inline in blue (Sim's choice), no reserved space before other names.
+- A tablet rule that put every link in an action row on its own line was meant for the duel only; scoped to the duel.
+- c13 now knows Home's agreed limits (390 4,200 / 820 3,500 / 1440 2,700; 320 assumed 4,400). Home now: 4,307 / 3,980 / 2,877 /
+  2,045. Watch: pieces 4 and 5 (tools, the More on Home fold) still have to fit in the phone limit (~220 px left at 390).
+- Hidden gems: only 2 Pokémon qualify today (today's rule: 300+ games, top cut more often than usage predicts), so that view is
+  short; real data only, nothing padded.
+- Tests (from Sim's PC outside check): TEAM-13b, SUG-03b, MU-05b, EDIT-07b pass on the new build, so their known-bug mark now
+  applies to today's site only (today's site: 4 known, unchanged). TEAM-11 and SUG-10 were already fixed in 10b04ce, after the
+  tree the PC checked (174523a).

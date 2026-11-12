@@ -78,5 +78,5 @@ function cleanTrack(v) { try {
   const mb = Array.isArray(v.mb) && v.mb.length === 4 ? v.mb.map(x => Array.isArray(x) ? [+x[0] || 0, +x[1] || 0] : [0, 0]) : [[0, 0], [0, 0], [0, 0], [0, 0]];
   const fw = (Array.isArray(v.fw) ? v.fw : []).filter(x => Array.isArray(x) && isFinite(+x[1]) && +x[2] > 0).map(x => ({d: str(x[0], 10), acc: +x[1], games: +x[2]}));
   const mv = Array.isArray(v.mv) && /^\d{4}-\d{2}-\d{2}$/.test(String(v.mv[1])) && Array.isArray(v.mv[2]) ? {from: str(v.mv[0], 10), to: str(v.mv[1], 10),
-    list: v.mv[2].filter(m => Array.isArray(m) && byName.has(m[0]) && isFinite(+m[2]) && +m[2] !== 0).slice(0, 4).map(m => ({n: m[0], r: +m[1] || 0, d: +m[2]}))} : null;
+    list: v.mv[2].filter(m => Array.isArray(m) && byName.has(m[0]) && isFinite(+m[2]) && +m[2] !== 0).slice(0, 12).map(m => ({n: m[0], r: +m[1] || 0, d: +m[2]}))} : null;
   return {since: v.since, snaps: +v.snaps || 0, last: str(v.last, 10), top: +v.top || 8, updated: str(v.updated, 40), ev, mons, mb, fw, mv}; } catch (e) { return null; } }

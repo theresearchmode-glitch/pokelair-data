@@ -46,7 +46,32 @@ V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
   const acts = ms.length ? `${C && FC ? `<button type="button" class="np-btn" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}">Prep vs the Champion</button>` : ''}<a class="np-link" href="#team">Open My Team ›</a>` : '<a class="np-btn" href="#build">Add Your Six</a>';
   const you = `<div class="hm-side hm-you"><div class="hm-hd"><p class="hm-k2">Your six · ${E(title)}</p>${score}</div><div class="hm-six">${six}</div>${plan}<div class="row hm-acts">${acts}</div></div>`;
   return `<section class="hm-duel">${them}${you}</section>`; };
-V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeDuel()}</div>`; }};
+// Home piece 3 (mock-up R2): Top of the Meta (Top rated / Hidden gems, today's lairRows, isGem, lairRank and words) beside today's
+// underdog and This week in the ratings (META.track.mv, up to 12 kept since Nov 12: Sim asked for more rows to fill the space).
+// A move is shown on the same scale as the ratings people see (RS), so "up 5 points" matches the numbers on the Ratings page.
+V2.hmUi = V2.hmUi || {}; try { V2.hmUi.gems = localStorage.getItem('np2.seg.homegems') === '1'; } catch (e) {}
+V2.homeWeek = (max = 7) => { const M = META.track && META.track.mv; if (!M || !M.list) return [];
+  return M.list.map(m => ({n: m.n, d: RS(m.r) - RS(m.r - m.d)})).filter(x => x.d && V2.byName.get(x.n)).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, max); };
+// a name in a list row: "Mega" inline in blue (Sim, Nov 12: the same as My Team), no reserved space before other names
+V2.rowName = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span> ${V2.esc(d.slice(5))}` : V2.esc(d);
+V2.homeMeta = () => { const E = V2.esc, rows = lairRows(), top = rows.slice(0, 10), gems = rows.filter(x => isGem(x.p)).slice(0, 10), G = V2.hmUi.gems && gems.length;
+  const list = G ? gems : top, row = x => { const R = monRating(x.p), lr = lairRank(x.p), rk = lr ? lr.rank : null, id = typeof SPRITE_ID === 'object' ? SPRITE_ID[x.p.n] : null;
+    return `<li><button type="button" class="hm-rk" data-v2mon="${E(x.p.n)}" aria-label="${E(x.p.d)}, ${R ? R.tier + ' tier, rated ' + R.n : ''}${rk ? ', rank ' + rk : ''}: open its info"><i class="hm-rn">${rk || '·'}</i><span class="hm-ri">${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}</span><span class="hm-rnm">${V2.rowName(x.p.d)}${G ? ' <i class="hm-gem" aria-hidden="true">◆</i>' : ''}</span><span class="hm-rt">${R ? E(R.tier) + ' tier' : ''}</span><b class="hm-rr">${R ? R.n : ''}</b></button></li>`; };
+  const left = `<div class="hm-top"><h2 class="u">Top of the Meta.</h2><p class="hm-sub">${G ? 'Hidden gems · rarely used, winning more than expected' : `NastyPlot ratings, from ${homeNum(RES && RES.teams)} tournament teams`}</p>
+    ${gems.length ? V2.slide('homegems', [['0', 'Top rated'], ['1', 'Hidden gems']], G ? '1' : '0', 'Show') : ''}<p class="hm-hint">${G ? 'Rarely used, but they make top cut more often than their usage predicts, over 300+ games.' : 'Highest ratings right now, with their rank. Tap one for the breakdown.'}</p>
+    <ol class="hm-rks">${list.map(row).join('')}</ol><a class="np-link hm-all" href="#meta">All ratings ›</a></div>`;
+  const n = V2.underdog(), d = E(V2.disp(n));
+  const dog = `<div class="hm-ud"><div class="hm-udst" style="--fo:${(typeof ART_META === 'object' && ART_META[SPRITE_ID[n]] || [0, 0, 0, 0])[3]}"><i class="pool" aria-hidden="true"></i><i class="pool b" aria-hidden="true"></i>${SPRITE_ID[n] ? `<img src="${V2.art(SPRITE_ID[n])}" alt="${d}" loading="lazy">` : ''}</div><div><p class="np-eyebrow hm-udk">Today's underdog</p><h3 class="u">${d}. <span>Somebody's favourite.</span></h3>
+    <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
+    <div class="row hm-acts"><button type="button" class="np-btn" data-hmaround="${E(n)}"><span>Build around it</span></button><button type="button" class="np-link" data-v2mon="${E(n)}">Info Sheet</button></div>
+    <a class="np-link hm-fav" href="#build">Or build around your favourite Pokémon <span aria-hidden="true">→</span></a></div></div>`;
+  const W = V2.homeWeek(), wk = W.length ? `<div class="hm-wk"><h3 class="u">This week in the ratings</h3><p class="hm-hint">Biggest moves in rating since last week. Tap one for its info sheet.</p>
+    <ul>${W.map(w => `<li><button type="button" class="hm-mv" data-v2mon="${E(w.n)}" aria-label="${E(V2.disp(w.n))}: ${w.d > 0 ? 'up' : 'down'} ${Math.abs(w.d)} points this week"><span>${V2.rowName(V2.disp(w.n))}</span><i class="${w.d > 0 ? 'up' : 'dn'}" aria-hidden="true">${w.d > 0 ? '▲ up' : '▼ down'} ${Math.abs(w.d)} <span class="unit">points</span></i></button></li>`).join('')}</ul></div>` : '';
+  return `<section class="hm-meta">${left}<div class="hm-side2">${dog}${wk}</div></section>`; };
+document.addEventListener('v2slide', e => { if (e.detail.key !== 'homegems') return; V2.hmUi.gems = e.detail.value === '1'; try { localStorage.setItem('np2.seg.homegems', V2.hmUi.gems ? '1' : '0'); } catch (x) {} V2.redraw(); });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hmaround]'); if (!b) return; const p = byName.get(b.dataset.hmaround); if (!p) return;
+  ui.abLock = p.n; if (typeof inBox === 'function' && !inBox(p)) ui.abSrc = 'all'; location.hash = '#build'; });
+V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeDuel()}${V2.homeMeta()}</div>`; }};
 // Load this team (HOME-09): with a team of your own, the first tap asks ("Tap again"); the second loads it with Undo (today's loadSheet)
 document.addEventListener('click', async e => { const L = e.target.closest('[data-hmload]'), Cp = e.target.closest('[data-hmcopy]'), P = e.target.closest('[data-hmprep]');
   if (L) { const k = L.dataset.hmload, x = evTeam(k); if (!x) return; if (members().length && V2.hmUi.sure !== k) { V2.hmUi.sure = k; clearTimeout(V2.hmUi.t); V2.hmUi.t = setTimeout(() => { V2.hmUi.sure = null; if (V2.route() === 'home') V2.redraw(); }, 6000); V2.redraw(); return; }

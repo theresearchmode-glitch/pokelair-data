@@ -316,7 +316,7 @@ t('TEAM-20', 'Partial team: "so far" score, "+ X added" suggestions, no Your gam
 t('TEAM-13b', 'Empty team: the ⋯ menu hides Export and Clear team (only Import stays)', async () => {
   const r = await myTeam({team: []}); await r.ui.openMoreActions(); const e = await r.ui.teamActions();
   for (const s of ['Export', 'Clear team']) ok(!e.includes(s), 'empty team still shows ' + s); ok(e.includes('Import'), 'Import missing'); await r.close(); },
-  {known: 'inventory says Export and Clear team are hidden with an empty team; today they still show in the ⋯ menu (inventory or code is wrong: Sim to decide)'});
+  {known: NEW ? '' : 'inventory says Export and Clear team are hidden with an empty team; today they still show in the ⋯ menu (inventory or code is wrong: Sim to decide)'});
 
 // ================= My Team · Part 1 Suggestions =================
 // a sample-team player whose saved data lives in this browser only (the kit re-seeds the fake account on reload, so reload
@@ -341,7 +341,7 @@ t('SUG-03', 'Swap my Mega? No | Yes with toasts', async () => {
   await r.ui.choose('No', 1200); ok(await r.ui.waitToast(/Your Mega is protected again/), 'no "Your Mega is protected again" toast'); await r.close(); });
 t('SUG-03b', 'Swap my Mega? choice is kept after reload (like Megas on team)', async () => {
   const l = await localSample(); await l.ui.go('My Team', 2500); await l.ui.choose('Yes', 1000); await l.ui.reload(2500); await l.ui.go('My Team', 2500);
-  ok(await l.ui.chosen('Yes') === true, '"Yes" reset to "No" after reload'); await l.close(); }, {known: 'inventory #22: "Swap my Mega?" is a hidden checkbox and resets on reload while "Megas on team" is saved'});
+  ok(await l.ui.chosen('Yes') === true, '"Yes" reset to "No" after reload'); await l.close(); }, {known: NEW ? '' : 'inventory #22: "Swap my Mega?" is a hidden checkbox and resets on reload while "Megas on team" is saved'});
 
 t('SUG-04', 'Suggestion cards: Apply, "Why?" reasons, "Show N more" then "See all suggestions ›"', async () => {
   const r = await myTeam({team: TEAM, width: 390}); let c = await r.ui.suggestionCards(); ok(c.length === 1, `${c.length} cards shown at first`);
@@ -433,7 +433,7 @@ t('MU-05d', 'Closing the threat sheet puts focus back on the threat row that ope
 t('MU-05b', 'Threat sheet ring shows the Strength Score number and band, not the old letter', async () => {
   const r = await myTeam(); const sc = await r.ui.scoreBlock(); await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet();
   ok(!/^[×✕] Scouting report: top 30 threats \d+ threats? need a plan\. [A-F][+−-]? /.test(s), 'ring shows a grade letter: ' + s.slice(0, 90)); ok(s.includes(sc.band), 'ring has no band word'); await r.close(); },
-  {known: 'inventory #15: the threat sheet ring still shows the old letter ("B 82.5") instead of the Strength Score and band word'});
+  {known: NEW ? '' : 'inventory #15: the threat sheet ring still shows the old letter ("B 82.5") instead of the Strength Score and band word'});
 t('MU-05c', 'Threat sheet "Best fix" never offers a change that doesn\'t raise the score', async () => {
   const r = await myTeam({fresh: true}); await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet();
   ok(!/Best fix:[^.]*±0/.test(s), 'Best fix offers ±0: ' + (s.match(/Best fix:.{0,60}/) || [''])[0]); await r.close(); },
@@ -576,7 +576,7 @@ t('EDIT-07', 'Item picker: "Sitrus Berry" gives a toast, "Your pick" tag and "Us
   await sleep(900); ok(((await r.acct()).slots[3].it || {}).doubles === 'Sitrus Berry', 'item not saved to the account'); await r.close(); });
 t('EDIT-07b', 'Item toast uses today\'s words (matchups), not the old "ready for N%" readiness', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Whimsicott'); await r.ui.pickInPanel('item', 'Sitrus Berry'); const tt = await r.ui.waitToast(/^Sitrus Berry/);
-  ok(tt && !/ready for \d+% → \d+% of the top threats/.test(tt), 'toast: ' + tt); await r.close(); }, {known: 'inventory #20: item toast still says "ready for 85% → 87% of the top threats"'});
+  ok(tt && !/ready for \d+% → \d+% of the top threats/.test(tt), 'toast: ' + tt); await r.close(); }, {known: NEW ? '' : 'inventory #20: item toast still says "ready for 85% → 87% of the top threats"'});
 
 t('EDIT-08', 'Moves: change move 4 → toast mentions Offense; "Reset to popular" brings the popular four back', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); const before = await r.ui.panelMoves(); ok(before.length === 4, 'not four move pickers');

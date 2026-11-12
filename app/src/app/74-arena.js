@@ -78,7 +78,7 @@ AR.nm = n => escName(AR.mega(n)).replace(/ \(([FMfm])\)/g, '\u00a0($1)');
 /* This week in the ratings (Sim, Nov 5): the week's biggest real rating moves from the daily snapshots (track.mjs mv), each a
    tap into its info sheet; nothing shows until the data has them */
 AR.week = () => { const M = META.track && META.track.mv; if (!M || !M.list || !M.list.length) return '';
-  const it = M.list.map(m => { const p = byName.get(m.n); if (!p) return ''; const up = m.d > 0;
+  const it = M.list.slice(0, 4).map(m => { const p = byName.get(m.n); if (!p) return ''; const up = m.d > 0;
     return `<button type="button" class="ar-mv" data-lt="${esc(m.n)}" aria-label="${esc(p.d)}, rating ${m.r}, ${up ? 'up' : 'down'} ${Math.abs(m.d)} this week"><b>${AR.nm(p.d)}</b><span class="ar-mvd ${up ? 'up' : 'dn'}" aria-hidden="true">${up ? '▲' : '▼'} ${Math.abs(m.d)}</span></button>`; }).join('');
   return it ? `<div class="ar-week"><span class="ar-weekk">This week in the ratings</span><div class="ar-mvs">${it}</div></div>` : ''; };
 /* Quick team switch (Sim, Nov 5): a "Switch team" fold under the My team title lists your other saved teams; each opens with

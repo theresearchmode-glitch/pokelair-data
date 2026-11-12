@@ -21,11 +21,15 @@ const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf
 const [file = path.join(ROOT, 'app/dist/v2.html'), viewArg = 'team,team-empty,box,compare', state = 'default'] = process.argv.slice(2);
 // limits (docs/rebuild/page-heights.md, tool pages). 320 uses the 390 limit (Sim, Nov 12). Phone 3,700 (Sim, Nov 12; was 3,400); 320 3,900 (Sim chose options B+C+D, which reach 3,870).
 const WIDTHS = [[320, 3900, ''], [390, 3700, ''], [820, 3500, ''], [1440, 1800, '']];
+// Home has its own agreed limits (docs/rebuild/page-heights.md: phone 4,200, iPad 3,500, desktop 2,700); 320 has none agreed,
+// so it takes the phone limit + 200 like the tool pages do, and says the limit is assumed (Nov 12)
+const HOME = {320: [4400, "assumed"], 390: [4200, ""], 820: [3500, ""], 1440: [2700, ""]};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
 const ENGINES = (process.env.C13_ENGINES || 'chromium,webkit').split(',').map(x => x.trim()).filter(x => x === 'chromium' || x === 'webkit');
 for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, limit, note] of WIDTHS) {
+  if (view === "home" && HOME[w]) [limit, note] = HOME[w];
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
   const b = await pw[eng].launch(), ctx = await b.newContext({viewport: {width: w, height: w < 700 ? 844 : 900}, hasTouch: touch(w), isMobile: eng === 'chromium' ? false : w < 700});
   const p = await ctx.newPage(), errs = [];
