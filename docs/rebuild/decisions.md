@@ -16,6 +16,18 @@ Sim's own decisions are marked "Sim". Newest first.
   at 320/390/600. Behaviour A-team v2: 54 / 78 before test updates: only MU-02, SUG-10, SUG-11 changed (they checked the old layout
   and words); updated to accept today's site and the approved design; all three pass on both today's page and the new build.
 
+- Live site fonts (Sim: "sure"): prepared, NOT live. Branch claude/wonderful-carson-nb6gd5 (from main 9bac0c3), commit 9eabdd6:
+  today's page hosts its fonts itself (Unbounded 500-900, Instrument Sans incl. italic 500, Archivo italic, and Dela Gothic One,
+  which riso.css loaded from Google too; found by the build's new guard). 13 files + OFL licences in app/src/fonts/, copied beside
+  page.html by the build. Measured (today's page built from main vs the branch, default view, real data): Google requests 4 -> 0,
+  same faces loaded, full-page screenshots 6/6 identical (Chromium 390/1440, WebKit 390, light/dark); run.mjs ALL PASSED. Not
+  covered by the screenshots: views that use Archivo italic, Dela Gothic One or italic Instrument Sans (files copied exactly).
+  To go live (needs Sim's go): merge to main after GitHub's tests pass, then republish app/dist/page.html to the live artifact
+  (5VBfLTR5sM4JU5NswJYyGk) WITH the 13 fonts/*.woff2 files beside it (else the page falls back to system fonts).
+- Read-through (C3) of the combined My Team: consistent now ("Nothing to fix" / "All 4 basics and all 3 notes pass" / "Things to
+  Know: 7 things"; 9 + 12 = "beats or handles 21"). Noted for Sim, not changed: "Edit Set" twice (strip under the six and the Set
+  section); each Stand-outs row repeats its group word (one list would save ~60px).
+
 ## Nov 12 morning (Sim, answers to the overnight questions)
 - DONE (Sim's go on Claude's recommendation): word-list wording on the new site (today's site unchanged). "Ready for 81% of the
   top 30" was a weighted score (each threat by its top-cut share; No answer 0, Shaky .4, Handles .8, Beats 1) shown as a share of

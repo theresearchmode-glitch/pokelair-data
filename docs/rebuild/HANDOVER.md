@@ -3,9 +3,12 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
-## NOW (Nov 12; Sim's executive authority ENDED at 6:00 AM Eastern. Next: Sim reviews the proposals and answers the questions)
-Every decision and check of the night is in decisions.md ("Nov 12, night" and "Nov 12 (Sim, new chat ...)"). Nothing was published;
-the Preview is still v52. Last commit of the night: see `git log` on claude/design6.
+## NOW (Nov 12, ~7:15 AM Eastern; Sim's executive authority until 8:00 AM, reminder trig_01DdVoPaM325QesqGQccfTGF)
+MORNING UPDATE: Sim approved all the design pictures; they are APPLIED on claude/design6 (51759e5): A2, A3, A4, A6, A7, A8, A11,
+squeezed row, A9, plus the word-list wording (147c28b). My Team built-page heights now 4,331 / 3,945 / 3,318 (iPad within limit) /
+2,215; phone still 545 over, desktop 415 over -> next: layout options for Sim (fix plan step 4). Live-site fonts prepared on branch
+claude/wonderful-carson-nb6gd5 (9eabdd6), not live (needs Sim's go: merge to main, then republish with fonts/ beside page.html).
+Nothing published to the Preview yet (still v52); the new work needs Sim's go to publish. Details: decisions.md (Nov 12 sections).
 
 DONE on claude/design6 (non-visual, each checked on the built page with real data; result lines in decisions.md):
 - A5 redraw in place (focus kept; a control whose data-* markers change is replaced, never mutated) - 6aa245f.
