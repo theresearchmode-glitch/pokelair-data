@@ -87,6 +87,90 @@ with `--only=<ID>`; every run printed `behaviour: 0 pass, 1 FAIL, 0 known bugs, 
 | TEAM-15 | bar's Favoured share drawn from the Unfavoured count | the bar's fav share is 10, not 6 of 30 |
 | TEAM-15 | "6 Favoured 21 Even match 3 Unfavoured" put back in the header (before "Why this score?") | a Matchups summary shows before the Matchups section: …Data as of Nov 10 6 Favoured 21 Even match 3 Unfavoured · Why this score? Lead Mega Char… |
 
+## Update, Nov 12 evening: Export, Saved Teams head, first visit, Edit Set header, Save Team, Game Plan, Types, Team Sheet, How Scoring Works (branch helper-tests2-nov12)
+
+Sim approved (Nov 12) these new-build designs; twelve tests got a new-build branch (`if (NEW) { … return; }` before today's code;
+today's lines unchanged: A-team.mjs is 130 added lines, 0 removed): **IO-02, TEAM-13, SAVED-02, X-02, EDIT-03, EDIT-12, PLAY-01,
+PLAY-02, X-07, SETS-01, SETS-02, X-12**. What each new branch checks:
+- IO-02: More → "Export" opens "Export to Showdown" (exact sheet words), a readonly box equal to exportPaste(), "Copy" → toast "Copied"
+  and the clipboard; with copying blocked in the browser (clipboard.writeText rejects, execCommand false) → "Press Ctrl+C to copy" and
+  the whole text focused and selected.
+- TEAM-13: every action incl. Team Sheet and the More row "Export" ("The Showdown text to read, select or copy", opens Export to
+  Showdown); Saved Teams / My Box / Compare open; a saved team just opened shows "Saved ✓" (no "Update saved team", A11); empty team
+  has no save / share / export / copy / clear, keeps Saved Teams and Import, and the header My Box icon opens My Box.
+- SAVED-02: " ← My Team · 2 of 10 saved Saved Teams Up to 10 teams. Saved and kept in step across your devices." (account) and
+  "… Saved in this browser only." (no account), each without the other's words; "← My Team" closes the sheet back on My Team.
+- X-02: first visit heading "Sun Tailwind (sample)", the note "This is a sample team, here to show how NastyPlot works. Build your own ·
+  Import a team", "Build your own" leads to #build (checked by its link: #build has no page in this build yet), "Import a team" opens
+  "Paste a Team", the sample is saved and "Open now", Saved Teams closed with "← My Team", then My Box "36 Pokémon · 2 boxes".
+- EDIT-03: Edit Set header starts exactly "Edit Set Mega Charizard Y Fire Flying <N> <X> tier rating <share> of teams" with N, X and the
+  share from the shared logic (monRating, lairHead, V2.shareTxt); "Mega Ability" / "Mega Stone" tags; Lock → "Locked" + its line; the
+  tile gets class locked, the "Locked" padlock and the name "…, locked"; Garchomp's tile does not.
+- EDIT-12: "Save team" opens the Save Team sheet (title, focus in the "Team name" box, no set editors); Edit Set's strip lists the six
+  in team order and its 6th button switches to Sneasler.
+- PLAY-01: plan line starts "Game plan vs the meta's top six: lead"; "Game plan" opens the "Game Plan" sheet; eyebrow "My Team ·
+  <teamArchetype label>"; every row (label, Covered/Partly/Missing/Optional, who, note) equals gamePlan(members()); Speed control
+  Covered with Whimsicott · Tailwind; after a reload no sheet and no Game Plan fold.
+- PLAY-02: inside Things to Know, Types starts on Offense ("You OHKO or 2HKO N of the top 30 threats", "N/18 types…"), no Mega pick
+  there; Defense headline, "More weak than resist / Nobody resists / Even split", np2.seg.types = "def"; two-Mega line exact and the
+  Mega Salamence pick switches it; "Full Tables ›" opens "Full Tables" (eyebrow "My Team · Types"): an 18-row offense table and the
+  defense grid (Attack, the six, Weak, Resist, Net); Defense still chosen after a reload.
+- X-07: Things to Know open, Defense and "Whole roster" kept after a reload; the Game Plan sheet is not.
+- SETS-01 (lead's update): the Team Sheet sheet's six cards (item, Ability, stats); exactly the plan line's two leads carry "↑ Lead vs
+  the meta's top six"; no remove control on any card (Sim dropped it); a card opens Edit Set; the six's "− Remove" removes with Undo.
+- SETS-02 (lead's update): "How Scoring Works" is a closed fold, the last part of "Why this score?"; its first paragraph shows exactly
+  "Matchups: the 30 Pokémon that make top cut most often (weighted by how often), and for each one whether your team is prepared. More";
+  no "Ready for the top threats" (Sim approved the wording and this test change).
+- X-12 (lead's update): 8 paragraphs, at least 6 with "More" (aria-expanded false) showing one sentence; More shows the rest (only that
+  paragraph) and reads "Less" (true); Less folds it back to the same text.
+
+Adapter (adapters/v2.A-team.mjs, 36 added and 4 changed lines, all commented "Nov 12"): `openExport` / `exportText` and
+`pickTypeChartMega` were "not in v2 yet" throws and now use the built features; `teamAction` and `teamActions` know the Export row;
+new `exportBox`, `moreMenuRows`, `tileLock`, `linkHref`, `gamePlanSheet`, `typesPart`, `typeTables`, `howScoring`, `tapHowMore`,
+`teamSheetRemoves`. Nothing under app/src changed.
+
+Builds: claude/design6 at 637d04a (before, first nine) and f926516 (everything else), `node app/build.mjs --v2` and `node app/build.mjs`,
+copied to the scratchpad. Result lines (verbatim):
+- New build, before (637d04a, the nine): `behaviour: 0 pass, 9 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 28s  (adapter v2)`
+- New build, before (f926516, SETS-01, SETS-02, X-12 with neighbours TEAM-13b, SAVED-01, EDIT-02, IO-01, SHEET-03):
+  `behaviour: 4 pass, 3 FAIL, 0 known bugs, 1 fixed?, 0 skipped; 46s  (adapter v2)` (the 3 FAILs are the three; TEAM-13b's fixed? as before)
+- New build, after (f926516, the twelve plus those five neighbours): `behaviour: 16 pass, 0 FAIL, 0 known bugs, 1 fixed?, 0 skipped; 125s  (adapter v2)`
+- Today's page, before (f926516, the twelve): `behaviour: 12 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 93s  (adapter current)`
+- Today's page, after: `behaviour: 12 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 94s  (adapter current)`
+
+Proof each new branch can fail: one deliberately wrong copy of the built v2.html per row (strings replaced once), each run alone with
+`--only=<ID>`; every row printed `behaviour: 0 pass, 1 FAIL, 0 known bugs, 0 fixed?, 0 skipped; …  (adapter v2)`:
+
+| ID | What was broken in the copy | FAIL message (shortened) |
+|---|---|---|
+| TEAM-13 | Export row's line shortened to "The Showdown text" | More menu has no "Export" row with its line: … {"label":"Export","sub":"The Showdown text"} … |
+| IO-02 | export box not readonly | export box can be typed in |
+| IO-02 | blocked copy focuses but doesn't select | export text not focused and selected: {"readOnly":true,"focused":true,"selected":0,"len":891} |
+| SAVED-02 | account line says "Saved in this browser only." | Saved Teams head (account): ← My Team · 2 of 10 saved Saved Teams Up to 10 teams. Saved in this browser only. … |
+| SAVED-02 | "← My Team" without href and data-v2close | "← My Team" did not close the sheet back to My Team (teams) |
+| X-02 | sample note's "Import a team" loses data-v2import | "Import a team" did not open Import (null) |
+| X-02 | "Build your own" points at #team | "Build your own" leads to #team |
+| EDIT-03 | header says "of all teams" | Edit Set header reads "✕ Edit Set Mega Charizard Y Fire Flying 94 S tier rating 16% of all teams …" |
+| EDIT-03 | tile's name loses ", locked" | tile not shown locked: {"label":"Mega Charizard Y, Lead","locked":true,"padlock":true,…} |
+| EDIT-12 | Save sheet focuses its button and doesn't select the name | the name box is not focused (focus on "Save Team") |
+| EDIT-12 | every strip button points at spot 1 | nothing to tap: .ed2 .ed-pk[data-k="5"] |
+| PLAY-01 | status word "Covered" → "Done" | row 1 reads {"label":"Speed control","status":"Done",…} |
+| PLAY-01 | archetype dropped from the eyebrow | eyebrow "My Team", want the archetype "Sun · Grassy Terrain · Tailwind" |
+| PLAY-02 | Offense / Defense not saved | Defense not kept in np2.seg.types: null |
+| PLAY-02 | Full Tables without the defense table | Full Tables parts: Offense: what you hit, 1 tables |
+| PLAY-02 | Mega pick does nothing | Mega pick doesn't show /so this reads Mega Salamence as the Mega/ |
+| X-07 | Offense / Defense not saved | Types view not kept |
+| SETS-01 | "↑ Lead" on every card | Incineroar is not a lead but its card says "↑ Lead" … |
+| SETS-02 | old words "Ready for the top threats: …" | first paragraph: Ready for the top threats: the 30 Pokémon that make top cut most often … |
+| X-12 | "More" never turns into "Less" | "More" did not show the rest: {"len":1432,"was":131,"b":"More","x":"true"} |
+
+Two first tries did not break anything (so they are not proof, and were replaced above): removing only `data-v2close` from "← My Team"
+(its href="#team" still closes the sheet), and only changing the Save sheet's `focus:` option (the sheet still selects the name box).
+
+Notes: (1) going to My Box with the Saved Teams sheet open was flaky in a probe (once it landed back on My Team, once on My Box: the
+sheet's close and the hash change race); X-02 now closes the sheet first, as a player must. (2) In this (non-Preview) build "Build your
+own" and "Build Me a Team" lead to #build, which has no page yet (TEAM-19 is "page not built yet"); rule C10 applies until Build exists.
+
 ## The 75 FAIL tests (Nov 12 run; Category and Reason updated for the 25 "real failure" rows)
 
 | ID | Title (short) | Category | Reason | Failure message (shortened) |

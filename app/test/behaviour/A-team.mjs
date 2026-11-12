@@ -236,6 +236,22 @@ t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => 
   const r = await myTeam({team: ['Garchomp', 'Incineroar']}); ok(/in team order/.test(await r.ui.gamePlanLine() || ''), 'under 4: no "in team order" line'); await r.close(); });
 
 t('TEAM-13', 'Team actions row: Save/Update label, ⋯ menu; empty team keeps only Saved Teams, My Box, ⋯ Import', async () => {
+  if (NEW) { /* new build (Sim, Nov 11-12): Save Team, Share, Saved Teams and More ⋯ on the page; the More menu holds Team Sheet, Copy for
+    Showdown, Export ("The Showdown text to read, select or copy", opens "Export to Showdown"), Import, Compare, My Box, Clear Team. No
+    "Update saved team" for a saved team just opened: it shows "Saved ✓" (A11). Empty team: no save / share / export / clear; "Open a
+    saved team", "Import a team" stay, and My Box is the header icon (rule 5) */
+    const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.openMoreActions(); const a = await r.ui.teamActions();
+    for (const s of ['Saved Teams', 'My Box', 'Compare with…', 'Copy for Showdown', 'Save team', 'Share', 'Import', 'Export', 'Clear team', 'Team Sheet']) ok(a.includes(s), 'no action ' + s + ' in ' + a.join('|'));
+    const ex = (await r.ui.moreMenuRows()).find(x => x.label === 'Export'); ok(ex && ex.sub === 'The Showdown text to read, select or copy', 'More menu has no "Export" row with its line: ' + JSON.stringify(await r.ui.moreMenuRows()));
+    await r.ui.teamAction('Export'); const p = await r.ui.editPanel(); ok(p && p.title === 'Export to Showdown', '"Export" did not open "Export to Showdown" (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
+    await r.ui.teamAction('Saved Teams'); ok(await r.ui.current() === 'teams', 'Saved Teams did not open'); await r.ui.go('My Team', 800);
+    await r.ui.teamAction('My Box'); ok(await r.ui.current() === 'box', 'My Box did not open'); await r.ui.go('My Team', 800);
+    await r.ui.teamAction('Compare with…'); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.go('My Team', 800);
+    await r.ui.switchTeam('Rain test'); const b = await r.ui.teamActions(); ok(b.includes('Saved ✓') && !b.includes('Update saved team') && !b.includes('Save team'), 'saved team just opened: not "Saved ✓": ' + b.join('|'));
+    await r.ui.clearTeam(); await r.ui.openMoreActions(); const e = await r.ui.teamActions();
+    for (const s of ['Save team', 'Update saved team', 'Saved ✓', 'Share', 'Export', 'Copy for Showdown', 'Clear team']) ok(!e.includes(s), 'empty team still shows ' + s + ': ' + e.join('|'));
+    for (const s of ['Saved Teams', 'Import']) ok(e.includes(s), 'empty team lost ' + s + ': ' + e.join('|'));
+    await r.ui.tapLabel('My Box', 900); ok(await r.ui.current() === 'box', 'empty team: the My Box icon did not open My Box'); await r.close(); return; }
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.openMoreActions(); const a = await r.ui.teamActions();
   for (const s of ['Saved Teams', 'My Box', 'Compare with…', 'Copy for Showdown', 'Save team', 'Share', 'Import', 'Export', 'Clear team']) ok(a.includes(s), 'no action ' + s + ' in ' + a.join('|'));
   await r.ui.teamAction('Saved Teams'); ok(await r.ui.current() === 'teams', 'Saved Teams did not open'); await r.ui.go('My Team', 800);
@@ -425,11 +441,42 @@ t('MU-05c', 'Threat sheet "Best fix" never offers a change that doesn\'t raise t
 
 // ================= My Team · Part 3 and 4 =================
 t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control covered by Whimsicott with Tailwind', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): no Game Plan fold; the six's plan line starts with a "Game plan" link that opens a "Game Plan"
+    sheet: eyebrow "My Team · <archetype>", one row per gamePlan() row (label, Covered / Partly / Missing / Optional, who, note).
+    Nothing is remembered: after a reload no sheet is open and there is no Game Plan fold */
+    const r = await myTeam(); ok(/^Game plan vs the meta's top six: lead /.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game plan": ' + await r.ui.gamePlanLine());
+    await r.ui.tapText(/^Game plan$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
+    const W = s => String(s || '').replace(/\s+/g, ' ').trim();
+    const want = await r.ui.peek("[(teamArchetype(members()) || {}).label || '', gamePlan(members()).rows.map(r => [r.label, ({ok: 'Covered', part: 'Partly', miss: 'Missing', opt: 'Optional'})[r.st] || 'Optional', r.who || '', r.note || ''])]");
+    ok(want && want[1].length >= 7, 'no gamePlan() rows to compare: ' + JSON.stringify(want)); ok(g.eyebrow === 'My Team' + (want[0] ? ' · ' + want[0] : ''), 'eyebrow "' + g.eyebrow + '", want the archetype "' + want[0] + '"');
+    ok(g.rows.length === want[1].length, `${g.rows.length} rows, gamePlan() has ${want[1].length}`);
+    want[1].forEach(([l, st, w, n], k) => { const x = g.rows[k] || {}; ok(x.label === l && x.status === st && x.who === W(w) && x.note === W(n), `row ${k + 1} reads ${JSON.stringify(x)}, want ${JSON.stringify([l, st, W(w), W(n)])}`); });
+    const sp = g.rows.find(x => x.label === 'Speed control'); ok(sp && /^(Covered|Partly)$/.test(sp.status) && /Whimsicott · Tailwind/.test(sp.who), 'Speed control row: ' + JSON.stringify(sp));
+    for (const s of ['Backup speed', 'Weather', 'Terrain', 'Lead support', 'Priority attacks', 'Answer to their speed control']) ok(g.rows.some(x => x.label === s), 'no Game Plan row ' + s);
+    await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(!(await r.ui.gamePlanSheet()), 'Game Plan sheet came back after a reload'); ok(await r.ui.foldOpen('Game Plan') === null, 'a Game Plan fold shows'); await r.close(); return; }
   const r = await myTeam(); await r.ui.openFold('Game Plan', true, 800); const f = await r.ui.foldContent('Game Plan');
   has(f, /Speed control (Covered|Partly)[^]*Whimsicott with Tailwind/, 'Game Plan'); for (const s of ['Backup speed', 'Weather', 'Terrain', 'Lead support', 'Priority attacks', 'Answer to their speed control']) has(f, s, 'Game Plan');
   has(f, /(Covered|Missing|Partly|Optional)/); await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen('Game Plan') === true, 'Game Plan fold not remembered'); await r.close(); });
 
 t('PLAY-02', 'Types fold: Offense/Defense switch, type grid, Mega pick with two Megas', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): a "Types" part inside the Things to Know fold: Offense / Defense slider (kept in np2.seg.types
+    across reloads), offense headline "You OHKO or 2HKO N of the top 30 threats", defense headline weaknesses vs resistances, the type
+    rows, the two-Mega pick when the team has two Megas, and "Full Tables ›" opening a "Full Tables" sheet with two tables */
+    const r = await myTeam({team: ['Charizard-Mega-Y', 'Salamence-Mega', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']}); await r.ui.openFold('Things to Know', true, 800);
+    let f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Offense') === true && await r.ui.chosen('Defense') === false, 'Offense is not the first view');
+    const o = f.match(/^Types Offense Defense What you hit\. You OHKO or 2HKO (\d+) of the top 30 threats (\d+)\/18 types hit super effectively by at least one of yours /);
+    ok(o && +o[1] <= 30 && +o[2] <= 18, 'Offense view: ' + f.slice(0, 200)); has(f, /Nobody hits super effectively /, 'Offense view'); ok(!/Only one Mega Evolves/.test(f), 'the Mega pick shows on Offense');
+    await r.ui.choose('Defense', 900); f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Defense') === true, 'Defense not chosen'); ok(await r.ls('np2.seg.types') === 'def', 'Defense not kept in np2.seg.types: ' + await r.ls('np2.seg.types'));
+    has(f, /^Types Offense Defense What hits you\. (\d+ more weakness(es)? than resistances|Every weakness is covered by a resist) 6\/6 Pokémon /, 'Defense view');
+    for (const s of ['More weak than resist', 'Nobody resists', 'Even split']) has(f, s, 'Defense view');
+    has(f, /Only one Mega Evolves per battle, so this reads Mega Charizard Y as the Mega and the others in base form\. Show: Mega Charizard Y · Mega Salamence /, 'two-Mega pick');
+    await r.ui.pickTypeChartMega('Mega Salamence'); has(await r.ui.typesPart() || '', /so this reads Mega Salamence as the Mega/, 'Mega pick');
+    await r.ui.tapText(/^Full Tables ›$/, 900); const T = await r.ui.typeTables(); ok(T && T.title === 'Full Tables' && T.eyebrow === 'My Team · Types', 'Full Tables sheet: ' + JSON.stringify(T && {title: T.title, eyebrow: T.eyebrow}));
+    ok(T.heads.join('|') === 'Offense: what you hit|Defense: what hits you' && T.tables.length === 2, 'Full Tables parts: ' + T.heads.join('|') + ', ' + T.tables.length + ' tables');
+    ok(T.tables[0].rows === 18 && T.tables[0].cols.join('|') === 'Defending type|Best|Who hits it super effectively', 'offense table: ' + JSON.stringify(T.tables[0]));
+    ok(T.tables[1].rows >= 18 && T.tables[1].cols[0] === 'Attack' && T.tables[1].cols.slice(-3).join('|') === 'Weak|Resist|Net' && T.tables[1].cols.length === 6 + 4, 'defense grid: ' + JSON.stringify(T.tables[1]));
+    await r.ui.closeEditPanel().catch(() => {}); await r.ui.pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); });
+    await r.ui.reload(2500); await r.ui.go('My Team', 2500); await r.ui.openFold('Things to Know', true, 800); ok(await r.ui.chosen('Defense') === true, 'Defense view not kept after reload'); has(await r.ui.typesPart() || '', /^Types Offense Defense What hits you\./, 'Types after reload'); await r.close(); return; }
   const r = await myTeam({team: ['Charizard-Mega-Y', 'Salamence-Mega', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']}); await r.ui.openFold('Types', true, 800);
   let f = await r.ui.foldContent('Types What you hit'); has(f, /You OHKO or 2HKO \d+ of the top 30 threats|types hit super effectively/, 'Offense');
   await r.ui.choose('Defense: what hits you', 1000); f = await r.ui.foldContent('Types What you hit'); has(f, /\d+ more weaknesses than resistances|resistances/, 'Defense'); has(f, /More weak than resist/); has(f, /Only one Mega Evolves per battle, so the chart reads Mega Charizard Y as the Mega/);
@@ -438,6 +485,15 @@ t('PLAY-02', 'Types fold: Offense/Defense switch, type grid, Mega pick with two 
   ok(rows >= 18, `defense type grid has ${rows} rows (want one per attacking type)`); await r.close(); });
 
 t('SETS-01', 'Open Team Sheet fold: one card per Pokémon; tapping opens its edit panel; "−" removes with Undo', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): today's "Open Team Sheet" fold is the Team Sheet sheet: one card per Pokémon (item, Ability,
+    stats), the two leads marked "↑ Lead vs the meta's top six" (the plan line's lead pair, no other card), a card opens Edit Set. Sim
+    dropped the per-card "−": the six's "− Remove" (with Undo) covers removing */
+    const r = await myTeam(); const pl = (await r.ui.gamePlanLine() || '').match(/^Game plan (vs the meta's top six): lead (.+?) \+ (.+?), back /); ok(pl, 'plan line: ' + await r.ui.gamePlanLine());
+    await r.ui.go('Team Sheet', 900); const leads = [pl[2], pl[3]], names = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
+    for (const n of names) { const c = await r.ui.teamSheetCard(n) || ''; ok(/ Item .+ Ability /.test(c) && /HP \d+ \d+/.test(c), `${n}'s card misses item / Ability / stats: ` + c.slice(0, 120));
+      if (leads.includes(n)) ok(c.startsWith(`${n} ↑ Lead ${pl[1]} Item `), `lead ${n}'s card has no "↑ Lead ${pl[1]}": ` + c.slice(0, 80)); else ok(!/↑ Lead/.test(c), `${n} is not a lead but its card says "↑ Lead": ` + c.slice(0, 80)); }
+    ok(await r.ui.teamSheetRemoves() === 0, 'a Team Sheet card still has a remove control'); await r.ui.tapLabel('Whimsicott: edit its set', 1000); const p = await r.ui.editPanel(); ok(p && p.title === 'Edit Whimsicott', 'card did not open "Edit Whimsicott" (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
+    await r.ui.removeFromTeam('Whimsicott'); ok(await r.ui.waitToast(/^Removed Whimsicott/), 'no removal toast'); ok(await r.ui.has('#toastUndo'), 'no Undo'); ok(!(await r.ui.team()).includes('Whimsicott'), 'not removed'); await r.close(); return; }
   const r = await myTeam(); await r.ui.openFold('Open Team Sheet', true, 900); const f = await r.ui.foldContent('Open Team Sheet');
   for (const s of ['Whimsicott', 'Garchomp', /Item /, /Ability /, /HP \d+/, /Spe\+? \d+/]) has(f, s, 'team sheet fold');
   await r.ui.tapLabel('Whimsicott: edit its set', 1000); const p = await r.ui.editPanel(); ok(p && /Edit Whimsicott/.test(p.text), 'card did not open "Edit Whimsicott"'); await r.ui.closeEditPanel();
@@ -445,6 +501,12 @@ t('SETS-01', 'Open Team Sheet fold: one card per Pokémon; tapping opens its edi
   const ph = await myTeam({team: TEAM, width: 390}); ok(await ph.ui.foldOpen('Open Team Sheet') === false, 'fold open by default on a phone'); await ph.close(); });
 
 t('SETS-02', 'How Scoring Works fold explains Ready for the top threats', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): "How Scoring Works" is a fold at the end of the "Why this score?" sheet; its first paragraph now
+    starts "Matchups: the 30 Pokémon that make top cut most often" (word list; Sim approved the wording and this test change) */
+    const r = await myTeam(); await r.ui.tapWhyScore(); let h = await r.ui.howScoring(); ok(h && h.last && h.title === 'How Scoring Works' && h.open === false, 'no closed "How Scoring Works" fold at the end of Why this score?: ' + JSON.stringify(h && {last: h.last, title: h.title, open: h.open}));
+    await r.ui.openFold('How Scoring Works', true, 600); h = await r.ui.howScoring(); ok(h.open, 'fold did not open');
+    ok(/^Matchups: the 30 Pokémon that make top cut most often \(weighted by how often\), and for each one whether your team is prepared\. More$/.test(h.paras[0].text), 'first paragraph: ' + h.paras[0].text);
+    has(await r.ui.foldContent('How Scoring Works'), /Matchups: the 30 Pokémon that make top cut most often/, 'How Scoring Works'); ok(!/Ready for the top threats/i.test(await r.ui.foldContent('How Scoring Works')), 'still says "Ready for the top threats"'); await r.close(); return; }
   const r = await myTeam(); await r.ui.openFold('How Scoring Works', true, 600); has(await r.ui.foldContent('How Scoring Works'), /Ready for the top threats: the 30 Pokémon that make top cut most often/, 'How Scoring Works'); await r.close(); });
 
 // ================= 3. Edit panel =================
@@ -466,6 +528,19 @@ t('EDIT-02', 'Six-slot strip in the panel switches the panel to that Pokémon', 
   await r.ui.tapStrip(2); ok((await r.ui.editPanel()).title === 'Edit Incineroar', 'third sprite did not switch to Incineroar'); await r.close(); });
 
 t('EDIT-03', 'Slot header: Lock → "Locked" (tile shows locked), types, Mega/rating tags, usage', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): Edit Set's line under the name: type chips, "<N> <X> tier rating", "<share> of teams" (the same
+    rating and share the shared logic gives: monRating, lairHead); the Mega shows as the Ability's "Mega Ability" and the Item's "Mega
+    Stone" tags. Lock reads Lock / Locked; the six's tile is then marked locked (padlock "Locked", accessible name "…, locked") */
+    const r = await myTeam(); await r.ui.openEditPanel('Mega Charizard Y'); const p = await r.ui.editPanel();
+    const want = await r.ui.peek("(() => { const P = byName.get('Charizard-Mega-Y'), R = monRating(P); let H = null; try { H = lairHead(P); } catch (e) {} return [(P.t || []).join(' '), R ? R.n : null, R ? R.tier : null, H ? V2.shareTxt(H) : null]; })()");
+    ok(want && want[1] != null && want[2] && want[3], 'no rating / share to compare: ' + JSON.stringify(want));
+    const head = `✕ Edit Set Mega Charizard Y ${want[0]} ${want[1]} ${want[2]} tier rating ${want[3]} of teams `; ok(p.text.startsWith(head), `Edit Set header reads "${p.text.slice(0, head.length + 20)}", want "${head}"`);
+    ok(want[0] === 'Fire Flying', 'types: ' + want[0]); has(p.text, /Ability Mega Ability Drought/, 'Edit Set'); has(p.text, /Item Mega Stone Charizardite Y/, 'Edit Set');
+    ok(await r.ui.panelLockText() === 'Lock', 'lock reads ' + await r.ui.panelLockText()); let t0 = await r.ui.tileLock('Mega Charizard Y'); ok(t0 && !t0.locked && !t0.padlock, 'tile already locked: ' + JSON.stringify(t0));
+    await r.ui.panelLock(); ok(await r.ui.panelLockText() === 'Locked', 'lock did not read "Locked": ' + await r.ui.panelLockText()); has((await r.ui.editPanel()).text, /Locked Suggestions never swap out a locked Pokémon\./, 'Edit Set foot');
+    await r.ui.closeEditPanel(); t0 = await r.ui.tileLock('Mega Charizard Y');
+    ok(t0 && t0.locked && t0.padlock && t0.padlockLabel === 'Locked' && /^Mega Charizard Y, \w+, locked$/.test(t0.label), 'tile not shown locked: ' + JSON.stringify(t0));
+    const g = await r.ui.tileLock('Garchomp'); ok(g && !g.locked && !g.padlock, 'Garchomp\'s tile shows locked too: ' + JSON.stringify(g)); await r.close(); return; }
   const r = await myTeam(); await r.ui.openEditPanel('Mega Charizard Y'); const p = await r.ui.editPanel();
   for (const s of [/Fire Flying/, /Mega/, /S tier \d+/, /[\d.]+% of teams/]) has(p.text, s, 'slot header'); ok(/^Lock$/.test(await r.ui.panelLockText()), 'lock reads ' + await r.ui.panelLockText());
   await r.ui.panelLock(); ok(/^Locked$/.test(await r.ui.panelLockText()), 'lock did not read "Locked"'); await r.ui.closeEditPanel(); ok(/^Unlock/.test(await r.ui.tileLockLabel('Mega Charizard Y') || ''), 'tile padlock not locked'); await r.close(); });
@@ -529,6 +604,15 @@ t('EDIT-11', '"Remove <name> from the team" in the panel: Undo toast, panel beco
   ok(await r.ui.waitToast(/Removed Garchomp/), 'no "Removed Garchomp" toast'); ok(await r.ui.has('#toastUndo'), 'no Undo'); ok((await r.ui.editPanel()).title === 'Add a Pokémon', 'panel did not switch to "Add a Pokémon"'); await r.close(); });
 
 t('EDIT-12', '"Save team" opens "Edit team" with the save box and all six editors', async () => {
+  if (NEW) { /* new build (Sim approved, Nov 12): no stacked "Edit team" panel. "Save Team" opens its own small Save Team sheet (title,
+    name box focused, no set editors); each set is edited in Edit Set, whose strip of the six switches Pokémon (EDIT-02 covers the strip
+    more closely) */
+    const r = await myTeam(); await r.ui.tapText(/^Save team$/, 1000); const p = await r.ui.editPanel(); ok(p && p.title === 'Save Team', 'save sheet title: ' + (p && p.title));
+    ok(await r.ui.focusName() === 'Team name', 'the name box is not focused (focus on "' + await r.ui.focusName() + '")'); ok(!/Edit team|Save stat points/i.test(p.text), 'the save sheet holds set editors: ' + p.text.slice(0, 120));
+    await r.ui.closeEditPanel(); ok(!(await r.ui.editPanel()), 'save sheet did not close');
+    await r.ui.openEditPanel('Garchomp'); const st = await r.ui.editStrip(), six = (await r.ui.team()).map(n => (n === 'Charizard-Mega-Y' ? 'Mega Charizard Y' : n));
+    ok(st.join() === six.map(n => 'Edit ' + n).join(), 'Edit Set strip: ' + st.join(',') + ' (team ' + six.join(',') + ')');
+    await r.ui.tapStrip(5); const q = await r.ui.editPanel(); ok(q && q.title === 'Edit ' + six[5] && await r.ui.panelSlot() === 5, 'strip did not switch to ' + six[5] + ' (' + (q && q.title) + ')'); await r.close(); return; }
   const r = await myTeam(); await r.ui.tapText(/^Save team$/, 1000); const p = await r.ui.editPanel(); ok(p && /Edit team/.test(p.title + p.text.slice(0, 30)), 'panel not "Edit team"');
   has(p.text, /Save this doubles team/i); ok((p.text.match(/Save stat points/g) || []).length === 6, 'not six set editors'); await r.close(); });
 
@@ -579,6 +663,18 @@ t('IO-01', 'Import a team: legal Pokémon load, skipped ones reported, Undo rest
   await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not restore'); await r.close(); });
 
 t('IO-02', 'Export to Showdown: Showdown text with item, Ability, Level 50, EVs, nature, moves; Copy', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): More menu "Export" opens the sheet "Export to Showdown": a readonly box holding exportPaste()
+    and "Copy" (toast "Copied"; when the browser blocks copying, the text is selected and the toast says "Press Ctrl+C to copy") */
+    const r = await myTeam(); await r.ui.grantClipboard(); await r.ui.openExport(); const p = await r.ui.editPanel(); ok(p && p.title === 'Export to Showdown', 'export sheet title: ' + (p && p.title));
+    has(p.text, /^✕ Export Export to Showdown Your team as Showdown text: items, Abilities, level 50, stat points as EVs, natures and moves\. Copy$/, 'export sheet');
+    const x = await r.ui.exportText(), want = await r.ui.peek('exportPaste()'); ok(x && want && x === want, 'export box is not the Showdown export: ' + String(x).slice(0, 60));
+    ok(/^Charizard @ Charizardite Y\nAbility: \w+/.test(x), 'export starts: ' + x.slice(0, 60)); for (const s of [/Level: 50/, /EVs: /, /\w+ Nature/, /\n- /]) has(x, s, 'export'); ok((x.match(/ @ /g) || []).length === 6, 'not six Pokémon in the export');
+    ok((await r.ui.exportBox()).readOnly === true, 'export box can be typed in');
+    await r.ui.panelButton(/^Copy$/); ok(await r.ui.waitToast(/^Copied$/), 'no "Copied" toast: ' + (await r.ui.toasts()).join(' | ')); ok(await r.ui.copied() === x, 'clipboard is not the export');
+    // copying blocked by the browser (both ways the shared copyText tries): the box's text is selected for Ctrl+C
+    await r.ui.clearToasts(); await r.pg.evaluate(() => { navigator.clipboard.writeText = () => Promise.reject(new Error('blocked')); document.execCommand = () => false; });
+    await r.ui.panelButton(/^Copy$/); ok(await r.ui.waitToast(/^Press Ctrl\+C to copy$/), 'no "Press Ctrl+C to copy" toast: ' + (await r.ui.toasts()).join(' | '));
+    const b = await r.ui.exportBox(); ok(b && b.focused && b.selected === b.len && b.len > 0, 'export text not focused and selected: ' + JSON.stringify(b)); await r.close(); return; }
   const r = await myTeam(); await r.ui.grantClipboard(); await r.ui.openExport(); const p = await r.ui.editPanel(); has(p.text, /Export to Showdown/);
   const x = await r.ui.exportText(); ok(x, 'no export text'); ok(/^Charizard @ Charizardite Y\nAbility: \w+/.test(x), 'export starts: ' + x.slice(0, 60));
   for (const s of [/Level: 50/, /EVs: /, /\w+ Nature/, /\n- /]) has(x, s, 'export'); ok((x.match(/ @ /g) || []).length === 6, 'not six Pokémon in the export');
@@ -751,6 +847,13 @@ t('SAVED-01b', 'Save panel: empty name saves as "Untitled team"; 10 saved teams 
   const e = await myTeam(); await e.ui.tapText(/^Save team$/, 1000); await e.ui.typeSaveName(''); await e.ui.tapText(NEW ? /^Save Team$/ : /^Save as new$/, 1200); ok(await e.ui.waitToast(/Saved .Untitled team./), 'empty name not saved as "Untitled team"'); await e.close(); });
 
 t('SAVED-02', 'Saved Teams head: count (N/10) and where it\'s stored (account vs this browser)', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): eyebrow "← My Team · N of 10 saved" ("← My Team" closes the sheet, back on My Team), then
+    "Up to 10 teams. Saved and kept in step across your devices." (account) or "Up to 10 teams. Saved in this browser only." */
+    const r = await aopen({team: TEAM, saved: SAVED}); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text();
+    has(tx, / ← My Team · 2 of 10 saved Saved Teams Up to 10 teams\. Saved and kept in step across your devices\. /, 'Saved Teams head (account): ' + tx.slice(tx.indexOf('← My Team'), tx.indexOf('← My Team') + 130)); ok(!/this browser only/.test(tx), 'account: still says "this browser only"');
+    await r.ui.tapText(/^← My Team$/, 900); ok(await r.ui.current() === 'report' && !(await r.ui.pg.evaluate(() => !!(window.V2 && V2._sheet))), '"← My Team" did not close the sheet back to My Team (' + await r.ui.current() + ')'); await r.close();
+    const l = await aopen({team: TEAM, saved: SAVED, account: false}); await l.ui.go('Saved Teams', 900); const lx = await l.ui.text();
+    has(lx, / ← My Team · 2 of 10 saved Saved Teams Up to 10 teams\. Saved in this browser only\. /, 'Saved Teams head (this browser)'); ok(!/kept in step/.test(lx), 'browser only: still says "kept in step"'); await l.close(); return; }
   const r = await aopen({team: TEAM, saved: SAVED}); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text(); has(tx, /Up to 10 teams\. Saved to your Claude account and kept in step across your devices\./); has(tx, '← My Team'); await r.close();
   const l = await aopen({team: TEAM, saved: SAVED, account: false}); await l.ui.go('Saved Teams', 900); has(await l.ui.text(), /Saved in this browser only: this device isn.t connected to your Claude account\./); await l.close(); });
 
@@ -925,6 +1028,17 @@ t('X-01', 'Every change saves to this browser and to the account', async () => {
 t('X-01b', 'A change on another device arrives live ("Updated from your other device"), waiting while you type', async () => {}, {skip: 'needs two signed-in devices sharing a real account; the kit\'s fake account has no live updates from another device'});
 
 t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, default box of 36', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): first visit shows the sample "Sun Tailwind (sample)" with the note "This is a sample team, here to
+    show how NastyPlot works." + "Build your own" (#build; no Build page in this build yet, so where it leads is checked) · "Import a
+    team" (opens Import). It is saved and open; My Box holds the default 36 ("36 Pokémon · 2 boxes"). The Saved Teams sheet is closed
+    with its "← My Team" before going to My Box, as a player would (the sheet covers the page) */
+    const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); const tx = await r.ui.text(); ok(await r.ui.teamHeading() === 'Sun Tailwind (sample)', 'heading: ' + await r.ui.teamHeading());
+    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. Build your own · Import a team /, 'sample note');
+    ok(await r.ui.linkHref('Build your own') === '#build', '"Build your own" leads to ' + await r.ui.linkHref('Build your own'));
+    await r.ui.tapText(/^Import a team$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
+    await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');
+    await r.ui.tapText(/^← My Team$/, 900); ok(await r.ui.current() === 'report', 'Saved Teams did not close');
+    await r.ui.go('My Box', 900); ok(await r.ui.current() === 'box', 'My Box did not open'); has(await r.ui.text(), / My Box 36 Pokémon · 2 boxes /, 'My Box'); await r.close(); return; }
   const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); has(await r.ui.text(), 'Sun Tailwind (sample)'); has(await r.ui.text(), 'This is a sample team');
   await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', 'Open now', 'saved sample'); await r.ui.go('My Box', 900); has(await r.ui.text(), '36 Pokémon'); await r.close(); });
 
@@ -950,6 +1064,13 @@ t('X-06', 'Back closes what\'s open on top first and stays on the page', async (
   await r.ui.go('Saved Teams', 700); await r.ui.goBack(); ok(await r.ui.current() === 'report', 'Back did not return to the previous page'); await r.close(); });
 
 t('X-07', 'Folds and views stay as left after reload (Game Plan, Types view, info-sheet tab, box sort, pool)', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): Game Plan is a sheet from the plan line (nothing remembered: no sheet after a reload); Types sits
+    in the Things to Know fold (fold kept open, cc2.chf.rfix) and keeps its Offense / Defense view (np2.seg.types); the pool is kept */
+    const r = await myTeam(); await r.ui.openFold('Things to Know', true, 600); await r.ui.choose('Defense', 800); await r.ui.choose('Whole roster', 900);
+    await r.ui.tapText(/^Game plan$/, 900); ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
+    await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(!(await r.ui.gamePlanSheet()), 'Game Plan sheet came back after a reload');
+    ok(await r.ui.foldOpen('Things to Know') === true, 'Things to Know closed'); ok(await r.ui.chosen('Defense') === true && /^Types Offense Defense What hits you\./.test(await r.ui.typesPart() || ''), 'Types view not kept');
+    ok(await r.ui.chosen('Whole roster') === true, 'pool not kept'); await r.close(); return; }
   const r = await myTeam(); await r.ui.openFold('Game Plan', true, 600); await r.ui.openFold('Types', true, 600); await r.ui.choose('Defense: what hits you', 800); await r.ui.choose('Whole roster', 900);
   await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen('Game Plan') === true, 'Game Plan closed'); ok(await r.ui.foldOpen('Types') === true, 'Types closed');
   ok(await r.ui.chosen('Defense: what hits you') === true, 'Types view not kept'); ok(await r.ui.chosen('Whole roster') === true, 'pool not kept'); await r.close(); });
@@ -973,6 +1094,15 @@ t('X-11', 'Search (Ctrl K): type a saved team\'s name, Enter → it opens on My 
   ok(await r.ui.current() === 'report', 'My Team did not open'); await r.ui.settle(); ok(await r.ui.teamHeading() === 'Rain test', 'saved team not opened: ' + await r.ui.teamHeading()); await r.close(); });
 
 t('X-12', 'Long paragraphs show the first sentence and "More"', async () => {
+  if (NEW) { /* new build (Sim, Nov 12): in How Scoring Works (end of "Why this score?") each long paragraph shows its first sentence and
+    "More"; More shows the rest and turns into "Less" (aria-expanded), Less folds it back */
+    const r = await myTeam(); await r.ui.tapWhyScore(); await r.ui.openFold('How Scoring Works', true, 600); const h = await r.ui.howScoring(); ok(h && h.paras.length === 8, 'How Scoring Works paragraphs: ' + (h && h.paras.length));
+    const long = h.paras.filter(p => p.button); ok(long.length >= 6, `only ${long.length} paragraphs have "More"`);
+    for (const p of long) { ok(p.button === 'More' && p.expanded === 'false', 'button reads ' + p.button + ' / ' + p.expanded); const s = p.text.replace(/ More$/, ''); ok(/\.$/.test(s) && !/\. [A-Z(]/.test(s), 'shows more than its first sentence: ' + s.slice(0, 120)); }
+    const k = h.paras.indexOf(long[0]); await r.ui.tapHowMore(k); let n = (await r.ui.howScoring()).paras;
+    ok(n[k].text.length > h.paras[k].text.length + 40 && n[k].button === 'Less' && n[k].expanded === 'true', '"More" did not show the rest: ' + JSON.stringify({len: n[k].text.length, was: h.paras[k].text.length, b: n[k].button, x: n[k].expanded}));
+    ok(n.every((p, j) => j === k || p.text === h.paras[j].text), '"More" opened another paragraph too');
+    await r.ui.tapHowMore(k); n = (await r.ui.howScoring()).paras; ok(n[k].text === h.paras[k].text && n[k].button === 'More' && n[k].expanded === 'false', '"Less" did not fold it back: ' + n[k].text.slice(-60)); await r.close(); return; }
   const r = await myTeam(); await r.ui.openFold('How Scoring Works', true, 600); const before = (await r.ui.foldContent('How Scoring Works')).length; await r.ui.tapText(/^More$/, 500);
   ok((await r.ui.foldContent('How Scoring Works')).length > before + 40, '"More" did not show more text'); await r.close(); });
 

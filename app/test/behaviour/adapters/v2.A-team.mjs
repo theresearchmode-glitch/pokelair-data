@@ -144,11 +144,12 @@ export default (ui, pg, o) => {
     /** My Team's More menu (a sheet; Sim, Nov 11): opened when it isn't already */
     openMoreActions: async () => { if (await pg.evaluate(() => !!document.querySelector('.np-sheet .tm-moremenu'))) return; if (await has('#main [data-v2more]')) await click('#main [data-v2more]', 500); },
     /** tap one of the team actions, by today's name */
-    teamAction: async name => { const sel = {'Saved Teams': '[data-v2saved]', 'My Box': 'a[href="#box"]', 'Compare with…': '[data-cxgo2]', 'Save team': '[data-v2save]', 'Update saved team': '[data-v2save]', 'Share': '[data-v2share]', 'Copy for Showdown': '[data-v2copy]', 'Import': '[data-v2import]', 'Clear team': '[data-v2clear]', 'Team Sheet': '[data-v2sheetopen]'}[name];
+    teamAction: async name => { const sel = {'Saved Teams': '[data-v2saved]', 'My Box': 'a[href="#box"]', 'Compare with…': '[data-cxgo2]', 'Save team': '[data-v2save]', 'Update saved team': '[data-v2save]', 'Share': '[data-v2share]', 'Copy for Showdown': '[data-v2copy]', 'Import': '[data-v2import]', 'Clear team': '[data-v2clear]', 'Team Sheet': '[data-v2sheetopen]',
+        'Export': '[data-v2export]'}[name]; // Nov 12 (TEAM-13): the More menu's Export row (Sim approved), same name as today's
       if (!sel) NOT('team action ' + name); if (!(await has(sel))) await H.openMoreActions(); return click(sel, 900); },
     /** the team actions on offer, under today's names: the row plus the More menu's items (Sim, Nov 11), read without opening it */
     teamActions: () => pg.evaluate(() => { const m = document.querySelector('#main'); if (!m) return [];
-      const MAP = [['data-v2save', 'Save Team', 'Save team'], ['data-v2share', 'Share', 'Share'], ['data-v2sheetopen', 'Team Sheet', 'Team Sheet'], ['data-v2copy', 'Copy for Showdown', 'Copy for Showdown'], ['data-v2import', 'Import', 'Import'], ['data-v2saved', 'Saved Teams', 'Saved Teams'], ['data-cxgo2', 'Compare', 'Compare with…'], ['data-v2clear', 'Clear Team', 'Clear team']];
+      const MAP = [['data-v2save', 'Save Team', 'Save team'], ['data-v2share', 'Share', 'Share'], ['data-v2sheetopen', 'Team Sheet', 'Team Sheet'], ['data-v2copy', 'Copy for Showdown', 'Copy for Showdown'], ['data-v2import', 'Import', 'Import'], ['data-v2saved', 'Saved Teams', 'Saved Teams'], ['data-cxgo2', 'Compare', 'Compare with…'], ['data-v2clear', 'Clear Team', 'Clear team'], ['data-v2export', 'Export', 'Export']]; // Export row: Nov 12 (TEAM-13)
       const out = []; for (const e of [...m.querySelectorAll('.tm-acts > :not([data-v2more]), .tm-empty button, .tm-empty a'), ...(document.querySelector('.np-sheet .tm-moremenu') ? document.querySelectorAll('.np-sheet .tm-moremenu .tm-mi') : (() => { const d = document.createElement('div'); d.innerHTML = m.querySelector('[data-v2more]') && window.V2 && V2.moreHtml ? V2.moreHtml() : ''; d.style.cssText = 'position:fixed;left:0;top:0;width:400px;opacity:0'; document.body.append(d); const l = [...d.querySelectorAll('.tm-mi')]; setTimeout(() => d.remove(), 0); return l; })())]) { if (!e.getClientRects().length) continue; const t = e.innerText.replace(/\s+/g, ' ').trim().replace(/ \d+$/, '');
         // the action is named by what the button does (its data attribute), so a reworded label still counts as that action
         // the main save button says what it will do (A11, approved Nov 12): "Save Team", "Update Saved Team" (the open saved team
@@ -169,7 +170,8 @@ export default (ui, pg, o) => {
     /** Top 12 grid: cells per threat row (rows in order) */
     gridRows: () => pg.evaluate(() => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? [...t.querySelectorAll('[data-muthr]')].map(r => ({name: r.getAttribute('aria-label').split(':')[0], cells: r.querySelectorAll('[role=cell]').length})) : null; }),
     tapGridRow: i => tapFound(i => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? t.querySelectorAll('[data-muthr]')[i] : null; }, i, 'grid row ' + i, 900),
-    pickTypeChartMega: () => NOT('Types fold (type chart, Mega pick)'),
+    // Nov 12 (PLAY-02): the two-Mega pick sits in the Types part of Things to Know (Defense view): "Show: <Mega> · <Mega>" links
+    pickTypeChartMega: name => tapFound(n => [...document.querySelectorAll('#main .ty2 [data-v2megapick]')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim() === n) || null, name, 'Mega pick ' + name, 700),
     /** "?" explainers: tap the one with this label (its aria-label, as today's adapter), read the open bubble */
     tapTip: label => H.tapLabel(label, 500), tipBubble: () => txt('.sg2-tipop'),
     /** shortcut for "edit this Pokémon's four moves" (same state change as today's adapter, through the shared logic) */
@@ -219,7 +221,11 @@ export default (ui, pg, o) => {
     // import / export
     openImport: async () => { if (!(await has('[data-v2import]'))) await H.openMoreActions(); await click('[data-v2import]', 800); },
     pasteTeam: async text => { await pg.locator('[data-impin]').fill(text); await click('[data-impgo]', 1500); },
-    openExport: () => NOT('Export to Showdown panel (only Copy for Showdown)'), exportText: () => NOT('Export to Showdown panel (only Copy for Showdown)'),
+    // Nov 12 (IO-02): Export to Showdown is a sheet opened from the More menu's "Export" row; its text is a readonly box
+    openExport: async () => { if (!(await has('[data-v2export]'))) await H.openMoreActions(); await click('[data-v2export]', 800); },
+    exportText: () => pg.evaluate(() => { const f = [...document.querySelectorAll('.np-sheet [data-expout]')].find(e => e.getClientRects().length); return f ? f.value : null; }),
+    /** the Export box as a player meets it: readonly? focused? how much of it is selected (for the "Press Ctrl+C" fallback) */
+    exportBox: () => pg.evaluate(() => { const f = [...document.querySelectorAll('.np-sheet [data-expout]')].find(e => e.getClientRects().length); return f ? {readOnly: f.readOnly, focused: document.activeElement === f, selected: f.selectionEnd - f.selectionStart, len: f.value.length} : null; }),
     /** Clear Team is on the page, so an open sheet (e.g. the Add a Pokémon sheet left after Remove) is closed first, as a player would */
     clearTeam: async () => { if (await pg.evaluate(() => !!(window.V2 && V2._sheet) && !document.querySelector('.np-sheet .tm-moremenu'))) await closeSheet(); await H.openMoreActions(); await click('[data-v2clear]', 900); },
     // share (.sh2 sheet)
@@ -279,6 +285,32 @@ export default (ui, pg, o) => {
     compareHeads: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-head')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     pasteCompareTeam: async text => { if (!(await vis('[data-cxpaste-in]'))) await click('#main [data-cxp="B"]', 700); await pg.locator('[data-cxpaste-in]').fill(text); await click('[data-cxpaste2]', 1500); },
     compareCheckRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-row')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim()).filter(t => /[✓✗?]/.test(t))),
+    // ---------- Nov 12 (helper-tests2): approved new-build designs ----------
+    /** the More menu's rows as shown, [{label, sub}] (TEAM-13: the "Export" row and its line); [] when the menu isn't open */
+    moreMenuRows: () => pg.evaluate(() => [...document.querySelectorAll('.np-sheet .tm-moremenu .tm-mi')].filter(e => e.getClientRects().length).map(e => { const s = e.querySelector('small'), l = e.querySelector('span');
+      return {label: l ? l.innerText.replace(/\s+/g, ' ').trim() : '', sub: s ? s.innerText.replace(/\s+/g, ' ').trim() : ''}; })),
+    /** a My Team tile as the six draws it (EDIT-03): its accessible name, whether it is marked locked and shows the padlock */
+    tileLock: name => pg.evaluate(n => { const b = [...document.querySelectorAll('#main .sx-slot .tm-pick')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); if (!b) return null; const s = b.closest('.sx-slot'), p = b.querySelector('.sx-lk');
+      return {label: b.getAttribute('aria-label'), locked: s.classList.contains('locked'), padlock: !!(p && p.getClientRects().length), padlockLabel: p ? p.getAttribute('aria-label') : null}; }, name),
+    /** the link (an <a>) on My Team whose words are exactly `text`: where it leads (X-02's "Build your own"; #build has no page in this build yet) */
+    linkHref: text => pg.evaluate(t => { const a = [...document.querySelectorAll('#main a')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim() === t); return a ? a.getAttribute('href') : null; }, text),
+    /** the Game Plan sheet (PLAY-01): eyebrow, title, the line under it and each row {label, status, who, note}; null when not open */
+    gamePlanSheet: () => pg.evaluate(() => { const g = [...document.querySelectorAll('.np-sheet .gp2:not(.ty2s)')].find(e => e.getClientRects().length); if (!g) return null; const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '';
+      return {eyebrow: T(g.querySelector('.np-eyebrow')), title: T(g.querySelector('h2')), sub: T(g.querySelector('.tm-sub')), rows: [...g.querySelectorAll('.gp2-rows > li')].map(li => { const w = li.querySelector('.gp2-w'), s = w && w.querySelector('small');
+        return {label: T(li.querySelector('.gp2-l')), status: T(li.querySelector('.sg2-sev')), who: w ? [...w.childNodes].filter(n => n !== s).map(n => n.textContent).join('').replace(/\s+/g, ' ').trim() : '', note: T(s)}; })}; }),
+    /** the Types part inside the Things to Know fold (PLAY-02), as shown; null if it isn't there */
+    typesPart: () => txt('#main details[data-v2fix] .ty2'),
+    /** the Full Tables sheet (PLAY-02): title, eyebrow, its headings and each table's column heads and row count */
+    typeTables: () => pg.evaluate(() => { const g = [...document.querySelectorAll('.np-sheet .ty2s')].find(e => e.getClientRects().length); if (!g) return null; const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '';
+      return {eyebrow: T(g.querySelector('.np-eyebrow')), title: T(g.querySelector('h2')), heads: [...g.querySelectorAll('h3')].map(T), tables: [...g.querySelectorAll('table')].map(t => ({cols: [...t.querySelectorAll('thead th')].map(T), rows: t.querySelectorAll('tbody tr').length, first: T(t.querySelector('tbody tr'))}))}; }),
+    /** How Scoring Works (SETS-02, X-12): the fold at the end of "Why this score?": is it the sheet's last part, its title, open?, and
+     *  each paragraph as shown {text, button ("More" / "Less" / ""), expanded}; null when the fold isn't there */
+    howScoring: () => pg.evaluate(() => { const w = document.querySelector('.np-sheet .why2'), d = w && w.querySelector('details.hs2'); if (!d) return null; const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '';
+      return {last: w.lastElementChild === d, title: T(d.querySelector('summary')), open: d.open, paras: [...d.querySelectorAll('.hs2-in > p')].map(p => { const b = p.querySelector('[data-hsmore]'); return {text: T(p), button: b ? T(b) : '', expanded: b ? b.getAttribute('aria-expanded') : null}; })}; }),
+    /** tap paragraph k's More / Less button in How Scoring Works */
+    tapHowMore: k => tapFound(k => { const p = document.querySelectorAll('.np-sheet .why2 details.hs2 .hs2-in > p')[k]; return p ? p.querySelector('[data-hsmore]') : null; }, k, 'More/Less in paragraph ' + k, 400),
+    /** remove controls on the Team Sheet's cards (SETS-01: Sim dropped the per-card "−"; the six's "− Remove" covers it) */
+    teamSheetRemoves: () => pg.evaluate(() => [...document.querySelectorAll('.np-sheet .ts2 button, .np-sheet .ts2 [role=button]')].filter(e => /remove|^−$/i.test((e.getAttribute('aria-label') || '') + ' ' + e.innerText.trim())).length),
     // shared behaviour
     doubleTapApply: async () => { const b = pg.locator('#main [data-v2plan]').filter({visible: true}).first(); await b.scrollIntoViewIfNeeded(); await b.dblclick({delay: 60}); await pg.waitForTimeout(1500); },
     scrollToSuggestions: async () => { await pg.evaluate(() => { const b = [...document.querySelectorAll('#main [data-v2plan]')].find(e => e.getClientRects().length); window.scrollTo(0, b.getBoundingClientRect().top + scrollY - 300); }); await pg.waitForTimeout(600); },
