@@ -73,3 +73,34 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // the team's own light behind the six (mock-up: one low wash per Pokémon in its own colour, as My Team); stronger at night
 V2.buildLight = mons => { const dk = V2.theme && V2.theme() === 'night', al = dk ? .22 : .11, ph = innerWidth < 700, xs = ph ? [17, 50, 83, 17, 50, 83] : [8, 25, 42, 58, 75, 92], ys = ph ? [30, 30, 30, 80, 80, 80] : [50, 50, 50, 50, 50, 50];
   return mons.map((m, i) => `radial-gradient(${ph ? 30 : 14}% ${ph ? 26 : 46}% at ${xs[i]}% ${ys[i]}%,rgba(${V2.cp(m.n)},${al}),transparent)`).join(','); };
+// ---------- Build piece 3 (Nov 12): the lower half: Other options (left) beside Build around a core (right), from the mock-up ----------
+// Other options = the other built teams (today's ui.abIdx picks the one shown: "Show this one ›" is today's Try another, made direct).
+// Cores = today's Winning Cores data (47-core-data.js: coreUi, coreRows, coreTags, corePlan); Add follows today's useCore rules and words.
+V2.buildOthers = () => { const res = ui.ab && ui.ab.doubles; if (!res || !res.teams || res.teams.length < 2) return ''; const E = V2.esc, n = res.teams.length, cur = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
+  const item = (t, i) => { let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
+    const rows = t._rd && t._rd.rows || [], ans = rows.filter(x => x.level >= 2).length, bas = CK ? CK.items.filter(x => !x.skip && !x.note) : [], band = G ? V2.BAND_K[G.band] || 'solid' : 'solid';
+    return `<div class="bd-alt"><div class="bd-alt-top"><div><p class="bd-kk">Option ${i + 1} · ${t.proven ? 'Proven team' : t.fresh ? 'Fresh take' : 'Built team'}</p><h3 class="u">${E(t.label)}</h3></div>
+      <div class="bd-alt-sc" style="--band:var(--band-${band})"><b class="u">${G ? Math.round(G.s) : t.score}</b><span>${G ? E(CH.wordOf(G.s)) : ''}<small>${G ? E(CH.pctShort(G)) : ''}</small></span></div></div>
+      <div class="bd-alt-six">${t.mons.map(m => `<span class="bd-alt-pk">${V2.mon(m.n, {iw: 60, bare: true})}<b>${V2.rowName(m.d)}</b></span>`).join('')}</div>
+      <div class="bd-alt-meta"><span>${ans}/${rows.length} matchups with an answer · ${bas.filter(x => x.ok).length}/${bas.length} team checks</span><button type="button" class="np-link" data-bdshow="${i}">Show this one ›</button></div></div>`; };
+  const list = res.teams.map((t, i) => i === cur ? '' : item(t, i)).join('');
+  return `<section class="bd-others"><div class="bd-hd"><h2 class="u">Other options</h2><span class="bd-k">${n} built</span></div><p class="bd-sub">Proven teams first, best score first.${ui.abLock ? ` All have ${E(V2.disp(ui.abLock))}.` : ''}</p>${list}</section>`; };
+V2.buildCores = () => { const E = V2.esc, rows = coreRows(), shown = rows.slice(0, 7 + 15 * (coreUi.more || 0)), base = RES && +RES.base ? +RES.base : .5;
+  const kindW = {pairs: 'pairs', trios: 'trios', teams: 'full teams'}[coreUi.kind] || 'pairs';
+  const row = (r, i) => { const tags = coreTags(r.ns), pts = r.tog == null ? null : Math.round(r.tog * 1000) / 10;
+    return `<li class="bd-core"><i class="bd-cn">${i + 1}</i><span class="bd-cp">${r.ns.map(n => SPRITE_ID[n] ? `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy">` : '').join('')}</span>
+      <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `<em>${E(tags.slice(0, 2).join(', '))}</em> · ` : ''}${homeNum(r.n)} teams${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} points together` : ''}</small></span>
+      <span class="bd-cw"><b class="u">${E(winFmt(r.wr * 100))}</b><small>wins · ${r.d >= 0 ? '+' : ''}${Math.round(r.d * 1000) / 10} vs avg</small></span><button type="button" class="np-btn2 bd-add" data-bdcore="${E(r.ns.join('|'))}" aria-label="Add ${E(r.ns.map(n => V2.disp(n)).join(' and '))} to your team"><span>${r.ns.length > 3 ? 'Load' : 'Add'}</span></button></li>`; };
+  return `<section class="bd-cores"><div class="bd-hd"><h2 class="u">Build around a core</h2><span class="bd-k">${homeNum(rows.length)} ${kindW}</span></div><p class="bd-sub">Pick a pair or trio that wins, then fill the rest.</p>
+    <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top rated'], ['use', 'Most used']], coreUi.sort, 'Sort cores')}</div>
+    <p class="bd-hint">From ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams run it.' : 'Ranked by win rate, pulled toward the average.'}</p>
+    <ol class="bd-clist">${shown.map(row).join('')}</ol>${rows.length > shown.length ? `<button type="button" class="np-link bd-cmore" data-bdcmore>Show ${Math.min(15, rows.length - shown.length)} more ${kindW}</button>` : ''}</section>`; };
+V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower">${V2.buildOthers() || ''}${V2.buildCores()}</div></div>`;
+document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'bdckind' && k !== 'bdcsort') return; if (k === 'bdckind') coreUi.kind = e.detail.value; else coreUi.sort = e.detail.value; coreUi.more = 0; V2.redraw(); });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdshow],[data-bdcore],[data-bdcmore]'); if (!b) return;
+  if (b.dataset.bdshow != null) { ui.abIdx = ui.abIdx || {}; ui.abIdx.doubles = +b.dataset.bdshow; V2.redraw(); const a = document.querySelector('.bd-ans'); if (a) a.scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
+  if (b.hasAttribute('data-bdcmore')) { coreUi.more = (coreUi.more || 0) + 1; V2.redraw(); return; }
+  const ns = b.dataset.bdcore.split('|'), cur = S.slots.filter(s => byName.get(s.n)), have = new Set(cur.map(s => s.n));
+  if (ns.length > 3) { keepUndo(); S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); location.hash = '#team'; toast(cur.length ? 'Loaded the team (your old team is one tap away: Undo)' : 'Loaded the team', !!cur.length); return; }
+  const c = corePlan(ns); keepUndo(); S.slots = normSlots(c.next.slice(0, 6)); S.format = 'doubles'; render(); location.hash = '#team';
+  toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${c.dropped.length ? ' · removed ' + c.dropped.join(', ') : ''}${c.megas > 2 ? ` · ${c.megas} Megas on the team now` : ''}`, true); });
