@@ -45,7 +45,7 @@ V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   const t = abTeam('doubles'), n = res.teams.length, k = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
   let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
   const s = G ? Math.round(G.s) : t.score, band = G ? V2.BAND_K[G.band] || 'solid' : 'solid', word = G ? CH.wordOf(G.s) : '';
-  const kind = t.proven ? 'Proven team' : t.fresh ? 'Fresh take' : 'Built team';
+  const kind = t.proven ? (t.proven.swapped ? 'Proven team, 1 swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team';
   const chips = (t.gp || []).slice(0, 3).concat(t.megas > 1 ? [`${t.megas} Mega options`] : []);
   const six = t.mons.map(m => { const R = monRating(byName.get(m.n));
     return `<div class="bd-pk">${V2.mon(m.n, {iw: 120, bare: true})}<b>${m.n === ui.abLock ? '<span class="mg">Your pick</span> ' : ''}${V2.nameHtml(m.d)}</b><small>${E(m.it || '')}</small><small class="r">${E(String(m.role || '').replace(', Mega', ''))}${R ? ' · ' + E(R.tier) + ' tier ' + R.n : ''}</small></div>`; }).join('');
@@ -56,7 +56,7 @@ V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   const why = `<div class="bd-why">
     <div><span class="n">${ans}<span class="unit">/${rows.length}</span></span><span class="l">Matchups with an answer</span><p>Top ${rows.length} threats: ${sh} Shaky, ${no} No answer</p></div>
     <div><span class="n good">${basics.filter(x => x.ok).length}/${basics.length}</span><span class="l">Team checks: the ${basics.length} basics</span><p>${notes.length ? 'Notes met: ' + notes.map(E).join(', ') : 'No notes met'}</p></div>
-    ${pv ? `<div><span class="n">${Math.round(pv.wr * 100)}<span class="unit">% won</span></span><span class="l">This exact six at events</span><p>${homeNum(pv.n)} players, ${homeNum(pv.g)} games</p></div>` : `<div><span class="n">New</span><span class="l">Not yet run at events</span><p>Built from cores that win; no player has run this exact six</p></div>`}
+    ${pv ? `<div><span class="n">${Math.round(pv.wr * 100)}<span class="unit">% won</span></span><span class="l">${pv.swapped ? 'Their six at events, 1 swap' : 'This exact six at events'}</span><p>${homeNum(pv.n)} players, ${homeNum(pv.g)} games${pv.swapped && pv.ours && pv.theirs ? `, with ${E(V2.disp(pv.ours))} in place of ${E(V2.disp(pv.theirs))}` : ''}</p></div>` : `<div><span class="n">New</span><span class="l">Not yet run at events</span><p>Built from cores that win; no player has run this exact six</p></div>`}
     ${core ? `<div><span class="n">${E(core[3])}<span class="unit">% wins</span></span><span class="l">Best core, ${E(core[2])} teams</span><p>${E(core[1])}</p></div>` : ''}</div>`;
   const nCatch = t.mons.filter(m => !m.box).length;
   const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Use This Team</button><button type="button" class="np-btn2" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2" data-bdcopy><span>Copy for Showdown</span></button>
@@ -79,7 +79,7 @@ V2.buildLight = mons => { const dk = V2.theme && V2.theme() === 'night', al = dk
 V2.buildOthers = () => { const res = ui.ab && ui.ab.doubles; if (!res || !res.teams || res.teams.length < 2) return ''; const E = V2.esc, n = res.teams.length, cur = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
   const item = (t, i) => { let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
     const rows = t._rd && t._rd.rows || [], ans = rows.filter(x => x.level >= 2).length, bas = CK ? CK.items.filter(x => !x.skip && !x.note) : [], band = G ? V2.BAND_K[G.band] || 'solid' : 'solid';
-    return `<div class="bd-alt"><div class="bd-alt-top"><div><p class="bd-kk">Option ${i + 1} · ${t.proven ? 'Proven team' : t.fresh ? 'Fresh take' : 'Built team'}</p><h3 class="u">${E(t.label)}</h3></div>
+    return `<div class="bd-alt"><div class="bd-alt-top"><div><p class="bd-kk">Option ${i + 1} · ${t.proven ? (t.proven.swapped ? 'Proven team, 1 swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team'}</p><h3 class="u">${E(t.label)}</h3></div>
       <div class="bd-alt-sc" style="--band:var(--band-${band})"><b class="u">${G ? Math.round(G.s) : t.score}</b><span>${G ? E(CH.wordOf(G.s)) : ''}<small>${G ? E(CH.pctShort(G)) : ''}</small></span></div></div>
       <div class="bd-alt-six">${t.mons.map(m => `<span class="bd-alt-pk">${V2.mon(m.n, {iw: 60, bare: true})}<b>${V2.rowName(m.d)}</b></span>`).join('')}</div>
       <div class="bd-alt-meta"><span>${ans}/${rows.length} matchups with an answer · ${bas.filter(x => x.ok).length}/${bas.length} team checks</span><button type="button" class="np-link" data-bdshow="${i}">Show this one ›</button></div></div>`; };

@@ -98,7 +98,7 @@ function* provenBuildGen() {
     const src = `${c.n} players brought this exact team at Limitless events${c.g ? ` (${c.g.toLocaleString('en-US')} games)` : ''}, winning about ${Math.round(c.wr * 100)}% of them`;
     d.why.unshift(c.missing ? `${src}, with ${c.missing.d} where you have ${(t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: '?'}).d}` : src);
     { const ws = wxSetsOf(t); if (ws.length > 1) d.why.push(`Sets both ${ws.map(w => ARCH[w].name.toLowerCase()).join(' and ')}: each cancels the other, so lead with the one you want up`); }
-    d.proven = {n: c.n, wr: c.wr, g: c.g, swapped: !!c.missing}; return d; })};
+    d.proven = {n: c.n, wr: c.wr, g: c.g, swapped: !!c.missing, theirs: c.missing ? c.missing.d : null, ours: c.missing ? (t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: null}).d : null}; return d; })};
 }
 // The build runs as a generator so the page can draw between steps (audit, Oct 30: it froze phones for up to 17 s);
 // buildBest() runs it straight through for callers that need the result at once.
