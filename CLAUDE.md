@@ -9,6 +9,12 @@ This repo is Sim's (Simran's). These are her standing preferences for any sessio
 - docs/rebuild/HANDOVER.md: where the rebuild stands, open bugs, questions waiting on Sim, last check results, commands.
 - docs/rebuild/my-team-fix-plan.md: Sim's My Team fix plan (Part A bugs in order, Part B causes, order of work).
 
+## Honesty and openness (Sim, Nov 12, 5:12 PM; never to be repeated): docs/rebuild/RULES.md section 00
+Sim's questions come first, always, and none goes unanswered. Every message starts with WORKING or STOPPED; if work stops, say
+so and why; under authority never end a turn while work remains (default + log + keep going; keep a wake-up scheduled). Never
+claim something is being done or is done unless it truly is. Every check: command, exact result line, plain meaning. Report a
+wrong statement to Sim the moment it's found.
+
 ## Times are always read from the clock (Sim, Nov 12)
 Sim is strict and punctual about times. Never type a time from memory or estimate it ("~3:25"). Every time written anywhere
 (decisions.md, docs, messages to Sim, commit messages) comes from the clock first: `TZ=America/New_York date`. For the decision

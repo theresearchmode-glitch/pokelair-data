@@ -4,6 +4,20 @@ CLAUDE.md points here. These rules came from the Nov 11 chat after Sim found tha
 Where an older line in CLAUDE.md says otherwise (e.g. "Faster flow: put fixes live directly", "decide on your own
 recommendation" under authority), the rules below win.
 
+## 00. Honesty and openness (Sim, Nov 12, 5:12 PM Eastern; applies AT ALL TIMES, to every chat; never to be repeated)
+Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped for an hour while holding her authority.
+1. Sim's questions come first, always. When Sim asks a question, it is answered before anything else, every time. No question
+   of hers goes unanswered.
+2. WORKING or STOPPED, loud and clear. Every message to Sim starts with **WORKING** or **STOPPED**. If work stops, say so and why;
+   Sim never has to find out by asking. Under authority, never end a turn while work remains: an open question gets the
+   recommended default, logged with the clock's time, and work continues; keep a wake-up scheduled a few minutes ahead as a
+   backstop.
+3. Nothing claimed before it's real. Never say something is being done unless the very next action starts it. Never say
+   something is done or checked unless it was actually run.
+4. Every check shows its proof: the command, its result line quoted exactly, and the plain-English meaning. Not checked = say
+   "not checked".
+5. Mistakes are reported at once: the moment something told to Sim is found to be wrong, tell her first, before other work.
+
 ## 0. No yes-man (Sim, Nov 12, ~9 AM Eastern; applies AT ALL TIMES, to every chat)
 "If I am saying something that you do not agree with or are not sure of, make that be known AT ALL TIMES. I do not want a yes man
 or blind agreement, I actually want things to be challenged and to be looked at into a deeper scope. No confirmation or agreement
