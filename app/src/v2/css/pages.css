@@ -832,3 +832,5 @@
 
 .bd-pk .bd-tag{display:block;margin-top:var(--s1);font:700 var(--t13)/1.3 var(--b);color:var(--plot-text)}
 @media (max-width:359px){.bd-opts{grid-template-columns:minmax(0,1fr)}.bd-meg,.bd-around{grid-column:1}} /* narrowest phones: Megas and Build around stack, so "Build around a Pokémon" and its hint aren't cut */
+
+.ms-add.ms-on{font:700 var(--t15)/1.5 var(--b);color:var(--ink)} /* sheet: 'On your team ✓' after adding (Sim, Nov 12, decision 15) */

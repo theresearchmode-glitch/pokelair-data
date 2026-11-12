@@ -157,7 +157,7 @@ export default (ui, pg) => {
     coreTap: async (label, n = 0) => { const l = label.toLowerCase(), want = /^add/.test(l) ? 'add' : /^load/.test(l) ? 'load' : null;
       if (/^practice against/.test(l)) { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcprep]')].filter(e => e.getClientRects().length)[n]; if (!b) return false; b.click(); return true; }, n); if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); return; }
       if (!want) NOT(`"${label}" on cores`);
-      const ok = await pg.evaluate(([w, n]) => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length && e.innerText.trim().toLowerCase() === w)[n]; if (!b) return false; b.click(); return true; }, [want, n]);
+      const ok = await pg.evaluate(([w, n]) => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length && e.innerText.trim().toLowerCase().split(' ')[0] === w)[n] /* 'Load Team' (Sim, Nov 12) counts as today's Load team */; if (!b) return false; b.click(); return true; }, [want, n]);
       if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); },
     coreMembers: (n = 0) => pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length)[n]; return b ? b.dataset.bdcore.split('|') : []; }, n),
     clearCoreFilter: async () => { await pg.click('[data-bdcmx]'); await pg.waitForTimeout(600); },
