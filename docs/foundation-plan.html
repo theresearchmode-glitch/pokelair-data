@@ -301,6 +301,63 @@ const PLANS = [
   ["r1-switch","Test switch","Try M-D on a preview without touching the live site."],
   ["r1-cold","Too-little-data mode","Honest Low confidence while M-D games build up."]]}
 ]},
+{id:"gameplan", short:"Game plan", name:"Rebuild game plan (Nov 12): every step to the switch", about:"Sim, Nov 12: the full rebuild mapped out as one checklist we tick together. Order: G1 fixes, finish My Team, finish what is built, then each other page, then the switch. One page at a time; pictures before any visual change; nothing published without Sim's go. Details and result lines: docs/rebuild/decisions.md and HANDOVER.md.", phases:[
+ {id:"gp0", name:"G0. Ground rules for every step (read once)", steps:[
+  ["gp0-rules","RULES.md applies: pictures before any visual change, nothing published without Sim's go, one page at a time","Every 'checked' names the built page, the commit and the result line."],
+  ["gp0-done","A page is done only after: C13 check (heights, taps, hidden controls, repeats, errors) + C12 use test + proofs + Sim's review","Commands: experiments/c13-check.mjs, v2-clicks.mjs, v2-words.mjs, behaviour run, full-check on the PC."],
+  ["gp0-commits","Commits carry no model names or session links (Sim, Nov 12)","Stopped from e31e0e1 on. Removing them from pushed history: Sim's decision, not done."]]},
+ {id:"gp1", name:"G1. Outside-check fixes (Sim's PC check of 147c28b, Nov 12)", steps:[
+  ["gp1-trailer","Stop adding Co-Authored-By / session links; explain history rewrite","Stopped. Rewrite waits for Sim."],
+  ["gp1-list","One list of proposals waiting on Sim, with px saved at 390/1440",""],
+  ["gp1-fails","All 75 behaviour FAILs on the new build classified","docs/rebuild/test-runs/v2-A-team-failures.md: 50 page not built yet, 25 real failure (none a build bug)."],
+  ["gp1-words","Check: no 'Ready for' / '% ready' on the built new site (in CI)","experiments/v2-words.mjs: 29 screens, 0."],
+  ["gp1-tests","MU-02/MU-04/SUG-10/SUG-11 expect each page's own wording",""],
+  ["gp1-clicks","Test: one click fires each handler once after 3 redraws","experiments/v2-clicks.mjs: 123 controls, 0."],
+  ["gp1-c13","c13-check runs Chromium only on request (C13_ENGINES=chromium)",""],
+  ["gp1-dump","Full check keeps a proof's step dump when it finds a difference",""]]},
+ {id:"gp2", name:"G2. Finish My Team (fix plan Part A)", steps:[
+  ["gp2-done","Done and applied: A2, A3, A4, A5, A6, A7, A9, A11, squeezed row, jump links, wording, fonts, tap areas","A14 not a bug; A16 explained."],
+  ["gp2-height","A1 page length: Sim picks the cuts (C1-C12), then build and re-measure every width and worst state","Measured: all desktop cuts 1,762 (under 1,800); phone needs C9 (Favoured folded) to reach 3,324 (under 3,400)."],
+  ["gp2-a8","A8 bars: Sim checks on her iPhone that text behind the bars can't be read",""],
+  ["gp2-a10","A10 divider symmetry in the six on phone (pictures)",""],
+  ["gp2-a12","A12/A13 one main button per screen; selected segments quieter than the main button (pictures)",""],
+  ["gp2-a15","A15 rest: 2x2 Matchups switcher backgrounds, desktop column balance, links to unbuilt pages marked 'coming soon' (pictures)",""],
+  ["gp2-dupes","'Edit Set' shown twice; Stand-outs rows repeat their group word (pictures)",""],
+  ["gp2-box","My Box: Box 1 / Box 2 markers to 44px (needs spacing; pictures)",""],
+  ["gp2-tests","Update the 25 'real failure' tests to the approved design (adapter gaps, wording, old ids)","Then the suite shows only 'page not built yet' failures for My Team."],
+  ["gp2-use","C12 use test on My Team (click, tab, sheets, change-and-undo, reload) at 390 and 1440, both engines",""],
+  ["gp2-prev","Preview publish with Sim's go (sprites + fonts in the file list)",""],
+  ["gp2-review","Sim reviews My Team on iPhone, iPad and PC; My Team marked done",""]]},
+ {id:"gp3", name:"G3. Finish the pieces already built", steps:[
+  ["gp3-empty","Empty My Team (underdog Flapple)","C13 + use test + review."],
+  ["gp3-sheet","Pokémon info sheet (same-info 350/350)",""],
+  ["gp3-tsheet","Team Sheet, Share images, Saved Teams, Import, Log a Game",""],
+  ["gp3-box","My Box (incl. the favourite link on the empty box: pictures)",""],
+  ["gp3-compare","Compare (empty state fills the cards: pictures)",""]]},
+ {id:"gp4", name:"G4. The other pages, one at a time (each: mock-up OK > build > C13 + use test + proofs > pictures > Preview > Sim's review > done)", steps:[
+  ["gp4-home","Home",""],
+  ["gp4-build","Build: Build for Me, Build around a Pokémon",""],
+  ["gp4-battle","Battle: Battle a team, Team preview practice, Test run",""],
+  ["gp4-tools","Battle tools: Speed tiers, Damage calc, Type chart",""],
+  ["gp4-ratings","Meta: Ratings (first: one ratings source, Garchomp 85 vs 92)",""],
+  ["gp4-meta","Meta: Usage, Popular Sets, Winning Teams, Events, Archetypes, This Week, Track Record",""],
+  ["gp4-sets","Sets",""],
+  ["gp4-method","How We Calculate",""],
+  ["gp4-about","About, Legal, Send Feedback (About: players can ask to have their name removed)",""],
+  ["gp4-first","First visit / onboarding, empty, error and loading states",""]]},
+ {id:"gp5", name:"G5. Across the site", steps:[
+  ["gp5-icons","My Box PC icon and the Day/Night sun/moon icon (pictures first)",""],
+  ["gp5-pid","Player IDs: Sim adds the NP_PID_KEY secret on GitHub; then names never reach browsers",""],
+  ["gp5-livefonts","Today's live site hosts its fonts (prepared on claude/wonderful-carson-nb6gd5, 9eabdd6; after My Team, Sim's go)",""],
+  ["gp5-tests","Behaviour groups B-build, C-battle, D-meta-shell pass on the new build for each built page",""],
+  ["gp5-weight","Page weight plan for the public site (data out of the page)",""],
+  ["gp5-full","Full check on Sim's PC passes on one commit",""]]},
+ {id:"gp6", name:"G6. The switch and after", steps:[
+  ["gp6-contract","Saved-data contract holds (same artifact URL, keys, team links)",""],
+  ["gp6-go","Sim approves the switch",""],
+  ["gp6-publish","Publish the new site to the live page with sprites + fonts; undo plan ready",""],
+  ["gp6-watch","Watch the first days; then remove the old code",""],
+  ["gp6-next","Then: Regulation M-D, then the January launch plan (parked until Sim says)",""]]}]},
 {id:"rebuild", short:"Rebuild", name:"Rebuild into the new design", about:"Nov 10 (Sim): a full rebuild into the new 'flair' design (breathable, the Pok\u00e9mon carry it, plus NastyPlot's logo, slanted headlines, ray panels and the sliders), done once and cleanly: one design system, no stacked layers, zero features lost. Claude leads; Sim approves the direction, each page and the switch. Not started until Sim says go. Order of work (Sim, Nov 10): this rebuild, then Regulation M-D, then the launch. Full plan: docs/rebuild-plan.md; what the redesign chat made: docs/redesign/HANDOFF.md.", phases:[
  {id:"rb0", name:"R0. Decide and freeze", steps:[
   ["rb0-dir","Direction locked: the flair concept","Breathable layout + logo, Unbounded slanted, tilted ray panels, slanted plates, sliders."],
