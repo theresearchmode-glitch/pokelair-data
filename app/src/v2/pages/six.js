@@ -27,7 +27,7 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
 // the set card (TEAM-10; Sim, Nov 11: no second big picture, the six above already shows it on its floor ring): its place in the plan, the rating with its tier, item, Ability, nature and stat points (yours or what
 // most players run), the four moves, then Edit Set, Set as Lead (not already a lead) and its Info Sheet. Today's words throughout.
 V2.setSecHtml = (D, sel) => { const m = sel, P = m.p, E = V2.esc, L = D.ms.length >= 4 ? D.L : null, R = monRating(P), N = natInfo(m);
-  const lead = L && L.lead.length && !L.lead.includes(m) ? `<button type="button" class="np-btn2" data-v2lead="${E(P.n)}"><span>Set as Lead</span></button>` : '';
+  const lead = ''; // Set as Lead lives only in the strip under the six (Sim, Nov 12: team actions there, build actions here; C3)
   const row = (k, v, note) => `<div><dt>${k}</dt><dd>${v}${note ? ` <small>${note}</small>` : ''}</dd></div>`;
   return `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid sx-noart"><div>
     <h3 class="u">${V2.nameHtml(m.d)}</h3><div class="tm-types">${(P.t || []).map(V2.typeChip).join('')}${R ? `<span class="sx-rate2"><b class="u">${R.n}</b> ${R.tier ? E(R.tier) + ' tier rating' : 'Rating'}</span>` : ''}</div>

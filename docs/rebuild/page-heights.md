@@ -19,7 +19,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 > **BUILT PAGES, measured Nov 12 (~1:05 AM Eastern) with experiments/c13-check.mjs** (rule C1/C13): built new site
 > (claude/design6 at 4514041, `node app/build.mjs --v2 --art=../src/v2/art/`), daily data fed in as the live page gets it, sample
 > team, day mode; Chromium and WebKit (they agree within 2px). Default state; "open" = every fold on the page opened.
-> The 320 width uses the 390 limit (Sim, Nov 12).
+> The 320 width uses the 390 limit (Sim, Nov 12). Later Nov 12: 320 has its own limit, 3,900 (Sim chose the 320 options B+C+D, 3,870).
 >
 > | Built page | 320 | 390 | 820 | 1440 |
 > |---|---|---|---|---|

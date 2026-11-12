@@ -50,3 +50,5 @@ html,body{overflow-x:clip}
    every screen (was 82% header / 86% phone bar on mouse screens, 92% on touch), and where a browser can't blur, the bars are solid */
 .np-head,.np-bar,.np-dock{background:color-mix(in srgb,var(--bg) 96%,transparent)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.np-head,.np-bar,.np-dock{background:var(--bg)}}
+/* 320-wide phones (Sim, Nov 12: option D): footer links share rows instead of one per line */
+@media (max-width:359px){.np-foot nav{flex-direction:row;flex-wrap:wrap;gap:0 var(--s4)}}

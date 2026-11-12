@@ -509,3 +509,11 @@
 /* Height cuts (Nov 12), wide screens: the hero buttons sit under the six (right column), not under the score */
 @media (min-width:1180px){.tm-hero{grid-template-areas:"lock six" "info six" "info acts";grid-template-rows:auto 1fr auto}.tm-acts{align-self:start}}
 @media (min-width:1180px){.tm-acts{grid-template-columns:repeat(4,max-content)}}
+/* 320-wide phones (Sim, Nov 12: option C): the Strength Score number at 64px with its band word beside it */
+@media (max-width:359px){.tm-hero .np-score b{font-size:var(--d64)}}
+/* Info sheet D12-D14 (Sim, Nov 12: "proceed"): on phones the Pokemon shows at 180px (the phone rule above never applied: the inline
+   --iw:240px on .np-mon won, so it is set one level down on .st), the floor ring clears the big number, and in day mode the open form
+   is a light-blue plate with PLOT text like every other chosen option (A13), not a beige box */
+@media (max-width:699px){.ms-art .np-mon .st{--iw:180px}.ms-art{margin-bottom:var(--s4)}}
+:root:not([data-theme="night"]) .ms-f[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 16%,var(--surface))}
+:root:not([data-theme="night"]) .ms-f[aria-pressed="true"] small{color:var(--plot-text)}

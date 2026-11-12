@@ -151,3 +151,8 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 @media (min-width:1180px){.tm-mus .mu-out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s6)}
   .tm-mus .mu-out .mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr);grid-template-areas:"i n" "i v";row-gap:var(--s1);padding:var(--s2) 0}
   .tm-mus .mu-out .mu-row img{grid-area:i}.tm-mus .mu-out .mu-row .nm{grid-area:n}.tm-mus .mu-out .mu-row .tm-v{grid-area:v;justify-self:start}}
+/* A13 follow-up (Sim, Nov 12: "Stand-outs" showed blue text on a black plate on phones): in the 2 x 2 view switch the chosen
+   button paints its own plate (the sliding one is hidden), so in day mode it takes the same light-blue plate as every other choice */
+@container (max-width:440px){:root:not([data-theme="night"]) .mu-pick .np-slide button[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 16%,var(--surface))}}
+/* 320-wide phones (Sim, Nov 12: option B): a stand-out row keeps name and verdict on one line (36px picture, 15/13 type) */
+@container (max-width:340px){.tm-mus .mu-row.mu-nk{grid-template-columns:36px minmax(0,1fr) auto;grid-template-areas:none;row-gap:0;padding:0}.tm-mus .mu-row.mu-nk img{width:36px;height:36px}.tm-mus .mu-row.mu-nk .nm{font-size:var(--t15)}.tm-mus .mu-row.mu-nk img,.tm-mus .mu-row.mu-nk .nm,.tm-mus .mu-row.mu-nk .tm-v{grid-area:auto}.tm-mus .mu-row .tm-v{font-size:var(--t13)}}
