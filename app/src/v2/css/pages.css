@@ -829,3 +829,5 @@
 @media (min-width:700px){.bd-others,.bd-wins,.bd-cores{scroll-margin-top:96px}} /* clear the 76px sticky top bar when jumped to */
 
 .bd-cwhy h2{font-size:var(--t22)}.bd-cwhy p{margin-top:var(--s3);font:400 var(--t15)/1.5 var(--b)}
+
+.bd-pk .bd-tag{display:block;margin-top:var(--s1);font:700 var(--t13)/1.3 var(--b);color:var(--plot-text)}
