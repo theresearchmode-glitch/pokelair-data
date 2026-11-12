@@ -65,3 +65,13 @@ C13. Add these as an automated check that runs on every built page, so they are 
      automated check does not cover; those stay manual.
 
 The full fix plan (Part A bugs, Part B causes, order of work) is in docs/rebuild/my-team-fix-plan.md.
+
+## 3. Executive authority (Sim, Nov 12; also called "express authority")
+When Sim says "I am giving you executive authority" (or "express authority"), Claude replies at once confirming it understood
+the rules, heard her, and will carry on with this authority, restating the scope and the end time. Then, until that time:
+- Claude keeps working on its own and is in charge: it decides on its own recommendation for everything EXCEPT visual or
+  design choices. Those always wait for Sim, with pictures (rule 1). Sim will not be at her computer or reading the chat.
+- Claude may start helper agents and subagents at its own discretion, keeping usage moderate (not heavy); it says afterwards
+  which helpers ran and why.
+- Every other rule still applies (checks with result lines, one item at a time, nothing published to the artifact without
+  Sim's go, stop means stop). Every decision is logged in docs/rebuild/decisions.md; a summary goes to Sim when the time is up.

@@ -3,6 +3,25 @@
 Claude decides small things under executive control; Sim can overrule any of them. Every new entry is also told to Sim in chat.
 Sim's own decisions are marked "Sim". Newest first.
 
+## Nov 12 (Sim, new chat; answers to the handover questions)
+- Sim: "executive authority" / "express authority" defined (RULES.md section 3): Claude in charge of everything except visual or
+  design choices, helpers at Claude's discretion with moderate usage, immediate confirmation, decisions logged here.
+- Sim: A9 selected Pokémon: NONE of the three redesigns; keep the current look ("i like what we have NOW").
+- Sim: My Box header icon = option 1, the retro PC with a tiny Poké Ball on screen (replaces the v52 storage box). Claude flagged
+  that the ball reads like a minus-in-a-circle at 24px; refined drawings go to Sim with pictures before building. Queued after
+  My Team (this chat's rule: My Team is fixed and re-measured before anything else starts).
+- Sim: A4 Matchups and A3 ±0 suggestion: "your recommendation". Claude recommends: (A4) each row leads with the real-games word;
+  the calc shows only when it points the other way ("Calc disagrees: Beats it"); with no real-games verdict the calc is the row's
+  verdict; the All 30 view stays calc-grouped. (A3) a ±0 or worse best swap is not shown; the quiet "Nothing to fix" line stays and
+  the swap sits behind "See all suggestions". Both are visual: before/after pictures to Sim before building.
+- Sim: phone height cuts: "recommendation". Claude: do A2/A3/A4 first, re-measure, then propose only the cuts still needed
+  (sliders folded into a summary line, shorter Matchups intro; keep the Favoured list open). Pictures first.
+- Sim: the polish helper's findings: "those are good" (Claude's grouping: My Team ones now, other pages in their turn,
+  the night glow on the band word is Sim's call with pictures).
+- Sim: host the two fonts ourselves: yes (before/after pictures).
+- Sim: today's known bugs are FIXED in the rebuild, not carried over ("fix bugs why bring them over"). The "same as today"
+  proofs will show each fix as a difference, marked as a fix. Art and name ownership for the public site: Sim, later.
+
 ## Authority
 - Nov 11 (Sim): authority extended to 11:00 PM Eastern, same instructions.
 - Nov 11 (Sim): authority given again until 10:00 PM Eastern, same instructions.

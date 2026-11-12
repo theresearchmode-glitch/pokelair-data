@@ -1,12 +1,13 @@
-﻿# From the design chat, Nov 11 (late): what was not yet in the repo
+# From the design chat, Nov 11 (late): what was not yet in the repo
 
 Saved by the separate design/PC chat at Sim's request so a new rebuild chat starts with nothing missing.
 Read docs/rebuild/RULES.md and HANDOVER.md first; this folder only adds to them.
 
-## 1. Selected Pokémon: three redesigns waiting on Sim's pick
+## 1. Selected Pokémon: three redesigns (Sim, Nov 12: NONE chosen; she keeps the current look)
 
 Sim does not like the tilted panel or the floor ring behind the selected Pokémon. Three standalone redesigns
-were drawn for her. She has NOT chosen yet. Do not build any of them, and do not polish the current ring,
+were drawn for her. Sim, Nov 12: she wants NONE of them ("i like what we have NOW"). Do not build any of them. The
+current ring look stays; its small faults (fix plan A9) are fixed only if she says so, with pictures first. [Old text:] Do not polish the current ring,
 until she picks.
 
 - `nastyplot-selected-stage.png`: A, Centre stage (the design chat's recommendation)
