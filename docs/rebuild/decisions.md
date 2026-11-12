@@ -470,13 +470,13 @@ Sim's own decisions are marked "Sim". Newest first.
   Champion's event name is one size down on phone (24) so the long real name takes 2 lines. Option B's smaller six art and the
   underdog beside its text were not taken (the underdog left an empty strip). Home now: 320 4,701 (assumed limit 4,600: the name
   still takes 3 lines that narrow), 390 4,268 / 4,400, 820 3,410 / 3,500, 1440 2,483 / 2,700; no overlaps 320-2560.
-- ~3:10 PM: Home piece 4 published (Preview v76, 394 files). Piece 5 built: More on Home, the site's fold (as Things to Know),
+- ~2:47 PM: Home piece 4 published (Preview v76, 394 files). Piece 5 built: More on Home, the site's fold (as Things to Know),
   closed by default and remembered; today's four parts and words: pairs, What changed this week, Winning cores, Your battles,
   source line. Shared data: homeTrendData, homePairs, logStats moved to 05-home-data.js; today's Home identical with all folds
   open and history loaded (What changed: 2,059 characters in both; only the sun animation's start time differs). The test
   caught a missed variable (h) in today's homeTrends during the move; fixed before anything shipped. Preview data now carries
   meta/history. Click test 6/6. Heights with the fold closed: 390 4,394 / 4,400; 820 3,517 / 3,500 (17 over); 1440 2,589.
-- ~3:15 PM: My Box icon toggles (Sim's request): pressed inside My Box it goes back to the screen you came from (its address);
+- ~2:51 PM: My Box icon toggles (Sim's request): pressed inside My Box it goes back to the screen you came from (its address);
   opened directly, back to My Team. Both engines: Home -> Box -> Home, My Team -> Box -> My Team, direct -> My Team.
 - PC report "underdog stage empty in WebKit capture": the picture loads lazily; before scrolling 0 px, after scrolling 384 px.
   A capture effect, not a page bug.
