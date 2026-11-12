@@ -2,6 +2,13 @@
 
 This repo is Sim's (Simran's). These are her standing preferences for any session working on it.
 
+## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
+- docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's
+  yes and screenshots, even under authority; every "checked" names built page or mock-up, the result line, and a
+  plain-English meaning; quality over speed, one item at a time; stop means stop; Part C rules C1-C13 for every page.
+- docs/rebuild/HANDOVER.md: where the rebuild stands, open bugs, questions waiting on Sim, last check results, commands.
+- docs/rebuild/my-team-fix-plan.md: Sim's My Team fix plan (Part A bugs in order, Part B causes, order of work).
+
 ## Usage warning (Sim, Nov 6)
 Before starting a task that will be heavy on usage, warn Sim first and let her decide. Heavy means things like: many helper
 agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
@@ -101,6 +108,8 @@ Build with that in mind: a brand-new visitor with no saved teams must have a cle
 Claude-only features without a plan for the public site; kids play Pokémon, so the privacy rules below are strict.
 
 ## Empty and loading screens: a rotating featured Pokémon (Sim, Nov 11; replaces Darkrai and Shady Paw)
+**Shady Paw is cut. He is NOT the NastyPlot mascot and must not be used anywhere (Sim, Nov 11). Darkrai is cut from the
+rebuild too.** NastyPlot has no mascot for now; a real one is a separate project for later.
 Sim, Nov 11: Darkrai was "forcing a mascot at an unnecessary time". In the rebuild, empty and loading screens show a featured
 Pokémon that rotates, plus one line of copy. Sim's idea and its point: spotlight the Pokémon that never get one. The featured
 Pokémon comes from the bottom of our own ratings ("underdog"): even the lowest-rated Pokémon is somebody's favourite, so it gets
@@ -169,7 +178,8 @@ One name per idea, everywhere on the site:
 ## Focus and honesty (Sim, Nov 9)
 After Claude's honest review, Sim agreed:
 - No new features until what we have is finished and refined (Sim, Nov 9). Work = finishing, fixing and refining what
-  exists (Team Sheet, share image, Darkrai's one spot on the Preview, the grade) and the process fixes.
+  exists (Team Sheet, share image, the grade) and the process fixes. (Darkrai's Preview spot is gone: replaced by the featured
+  underdog, see above; Shady Paw is cut.)
 - Multitask where it helps (Sim, Nov 9): look-only work (sweeps, measurements, background runs) can run alongside a change; always
   tell Sim when we are multitasking. Changes themselves stay one at a time:
 - One thing at a time: at most ONE grade/model change and ONE site item in progress. Finish (tested, reviewed, live or

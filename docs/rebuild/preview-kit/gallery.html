@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NastyPlot Full Redesign</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Unbounded:wght@800;900&display=swap">
+<style>
+/* Layout: one even grid of page cards, each a screenshot with Day / Night links; NastyPlot's own tokens (docs/rebuild/mocks/tokens.css) */
+:root{--bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);--plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--plate:#17161A;--on-plate:#FBFAF7;--good:#16693B;
+  --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);--plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--plate:#343348;--on-plate:#F1EDE7;--good:#86D9AC;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);--plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--plate:#343348;--on-plate:#F1EDE7;--good:#86D9AC;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--b);font-synthesis:style;margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{display:flex;align-items:center;gap:10px;font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.eyebrow::before{content:"";width:20px;height:7px;background:var(--plot);transform:skewX(-24deg)}
+h1{font:900 clamp(34px,6vw,68px)/1 var(--u);font-style:italic;letter-spacing:-.02em;margin:16px 0 12px;text-wrap:balance}
+h1 span{color:var(--plot)}
+.lede{max-width:64ch;color:var(--ink-2);font-size:17px;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:20px;font:600 15px/1.4 var(--b)}
+.facts b{font:900 20px/1 var(--u);font-style:italic;margin-right:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:40px 32px;margin-top:48px}
+.card{min-width:0}
+.shot{display:block;position:relative;aspect-ratio:16/10;max-width:100%;overflow:hidden;border-radius:10px;box-shadow:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18)}
+.shot img{display:block;width:100%;height:100%;object-fit:cover}
+.shot .n{position:absolute;display:none}
+.card h2{font:900 22px/1.1 var(--u);font-style:italic;margin:16px 0 4px}
+.card p{margin:0;color:var(--ink-2);font-size:15px}
+.card .h{margin-top:6px;font:500 13px/1.4 var(--b);color:var(--ink-3)}
+.row{display:flex;gap:12px;margin-top:12px}
+.row a{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;font:600 15px/1 var(--b);text-decoration:none;color:var(--ink);border:1.5px solid var(--ink);transform:skewX(-12deg)}
+.row a span{transform:skewX(12deg)}
+.row a.main{background:var(--plate);color:var(--on-plate);border-color:var(--plate)}
+.row a:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
+.note{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2);max-width:72ch}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shot.l{display:none}}
+:root[data-theme="dark"] .shot.l{display:none}
+.shot.d{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shot.d{display:block}}
+:root[data-theme="dark"] .shot.d{display:block}
+</style>
+
+</head><body>
+<div class="wrap">
+  <div class="eyebrow">Rebuild · built live, step by step · Nov 11</div>
+  <h1>NastyPlot <span>Full Redesign.</span></h1>
+  <p class="lede">The new site, coming together one step at a time: this page is updated after every finished step. Cards marked “Built from the code” are the real new site, so their buttons work; the rest are the approved mock-ups each page is built from. Open any page in Day or Night and resize the window: every page is checked from 320 to 2560 wide.</p>
+  <div class="facts"><span><b>4</b>pages still to come</span><span><b>3</b>real pages built</span><span><b>2</b>modes, day and night</span><span><b>3</b>sizes, all inside the length limits</span></div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="note">Mock-ups of pages already rebuilt (My Team, My Box, the info sheet, first visit) are gone from this list: the real pages replace them. Use "‹ All pages" at the bottom left of a mock-up to come back here.</p>
+</div>
+
+<script>
+const P=[
+ ['foundation#team','My Team: the real build','The first real page: today\'s logic in the new design. Strength Score, your six with the lead pair, Set, Matchups from real games, Suggestions you can Apply (and Undo), Team Checks, the Team Sheet, Save Team, Saved Teams, Edit Set, Share (Team Card, Poster or Sheet, light or dark), Import, Clear Team, opening a shared team link, and Your Games (log a game with your leads and their team; your record and what it says).','Built from the code · same numbers as today\'s site',1],
+ ['foundation#box','My Box: the real build','Your box like the game\'s: boxes of 30 on a wallpaper mixed from the types inside, flip with the arrows, dots, a swipe or the arrow keys. Pick one to see its rating and numbers, open its sheet, add or swap it into your team, or remove it (Undo). Arrange by A–Z, Type, Newest, Oldest or Rating; Add a Pokémon; box links; Reset.','Built from the code · checked 320 to 2560 wide',1],
+ ['foundation#sheet','Info sheet: the real build','Garchomp\'s sheet over My Team: rating and rank, share of teams, win rate, Speed, the forms strip, then Info, Meta, Rating and Forms (every form side by side). Tap any Pokémon in search, a form or a partner to open its own.','Built from the code · all 345 sheets checked at 320 wide',1],
+ ['foundation#team-empty','My Team: empty, with today\'s underdog','A first visit or an empty team: build, add or open a saved team, beside today\'s underdog. Flapple first, then one a day from the lowest-rated Pokémon with real games. Add Flapple, or open its sheet.','Built from the code · checked 320 to 2560 wide',1],
+ ['foundation','New foundation: style guide','The real new build, not a mock-up: tokens, buttons, chips, tabs, the score and Pokémon on their floors. Switch day or night inside it.','Built from the code · checked 320 to 2000 wide',1],
+ ['home','Home','Score, build or plan, the most used Pokémon, the latest winner beside your six, Top of the Meta and today\'s underdog.','Phone 4,191 · iPad 2,828 · Desktop 2,595 px'],
+ ['ratings','Ratings','Who wins right now: today\'s order and ranks, the featured Pokémon beside the list, your team docked below.','Phone 2,949 · iPad 2,308 · Desktop 1,790 px'],
+ ['build','Build','Build me a team: a real build around Garchomp, the best team first with its Strength Score, then other options and cores.','Phone 2,298 · iPad 2,943 · Desktop 1,796 px'],
+ ['battle','Battle','Bring these four, lead the pair: the plan against the latest winner\'s six, turn one in move order.','Phone 3,378 · iPad 2,545 · Desktop 1,789 px']];
+const L=f=>f.includes('#')?f.replace('#','.html#'):f+'.html#guide';
+const esc=s=>s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+document.getElementById('grid').innerHTML=P.map(([f,t,d,h,live])=>`<article class="card">
+  <a class="shot l" href="${live?L(f):f+'.html#light'}" aria-label="Open ${esc(t)} in day mode"><img src="thumbs/${f.split('#')[0]}${f.includes('#')?'-'+f.split('#')[1]:''}-light.jpg" alt="${esc(t)} in day mode" loading="lazy"></a>
+  <a class="shot d" href="${live?L(f):f+'.html#dusk'}" aria-label="Open ${esc(t)} in night mode"><img src="thumbs/${f.split('#')[0]}${f.includes('#')?'-'+f.split('#')[1]:''}-dusk.jpg" alt="${esc(t)} in night mode" loading="lazy"></a>
+  <h2>${esc(t)}</h2><p>${esc(d)}</p><div class="h">${esc(h)}</div>
+  <div class="row">${live?`<a class="main" href="${L(f)}"><span>Open</span></a>`:`<a class="main" href="${f}.html#light"><span>Day</span></a><a href="${f}.html#dusk"><span>Night</span></a>`}</div></article>`).join('');
+</script>
+
+</body></html>

@@ -3,7 +3,18 @@
 This table records the rule in design-system.md section 9. Heights are full page height in pixels, in the default state (nothing expanded), in day mode, with the sample team (Garchomp, Sneasler, Mega Charizard Y, Whimsicott, Basculegion, Kingambit).
 
 - **Today's site:** measured Nov 11 with `node experiments/page-heights.mjs` (raw: test-runs/page-heights-today.json).
-- **Rebuild:** measured with `node experiments/mock-heights.mjs`.
+- **Rebuild:** measured with `node experiments/mock-heights.mjs`. **These are MOCK-UP heights, not the built page** (correction,
+  Nov 11 night, Sim's sweep). Only a row marked "BUILT" was measured on the real built page. See the correction below.
+
+> **CORRECTION, Nov 11 night (Sim's sweep, rule C1 in docs/rebuild/RULES.md).** The My Team figures that were here
+> (1,737 / 2,587 / 1,699) are the mock-up's. The real built page (Preview foundation.html, sample team, default state) is
+> over the limit at every size:
+> - Sim's sweep (Chromium): phone 390: 4,309; phone 320: 4,818; iPad 820: 3,775; desktop 1440: 2,223. In use: 2,500 on desktop
+>   after removing one Pokémon, 2,536 after an Apply, 4,108 with every section open.
+> - Height helper (Nov 11 ~10:20 PM, built page foundation.html as published in Preview v50/v51, WebKit iPhone 13 for phone,
+>   Chromium for iPad/desktop; report: test-runs/nov11-night/helper-height-report.md): phone 4,308; iPad 3,775; desktop 2,223.
+>   Plain words: the built My Team is about 900px too long on phone, 275px on iPad and 420px on desktop.
+> No other rebuilt page has been measured on the built page yet. Every other "Rebuild" number below is a mock-up number.
 
 **Limits.** "over" marks a page past its limit.
 
@@ -16,7 +27,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Page | Today: phone | Today: iPad | Today: desktop | Rebuild (phone / iPad / desktop) |
 |---|---|---|---|---|
 | Home | 3,732 | 5,099 **over** | 3,980 **over** | 4,191 / 2,828 / 2,595 (Nov 11) |
-| My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | 1,737 / 2,587 / 1,699 (after Option A, Nov 11; before: 4,891 / 3,538 / 2,311) |
+| My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | BUILT: 4,309 **over** / 3,775 **over** / 2,223 **over** (Nov 11 night, built page). Mock-up was 1,737 / 2,587 / 1,699 |
 | My Team, no team yet (first visit) | (old empty state not measured) | | | 1,804 / 1,316 / 1,039 |
 | Build for Me | 3,178 | 2,270 | 1,947 **over** | 2,298 / 2,943 / 1,796 (Nov 11) |
 | All Suggestions | 1,769 | 1,553 | 1,550 | not drawn yet |

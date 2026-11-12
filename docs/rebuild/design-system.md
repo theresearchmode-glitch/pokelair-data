@@ -85,7 +85,8 @@ Sim chose these in conversation on Nov 11. They override anything earlier in thi
 Corrections to the reference README:
 - The "85 vs 92" is not two sources. 85 is the raw total in ratings_log and 92 is the displayed rating after RS(). One function shows both, so there is nothing to merge.
 - "Saved on this device only" is true only for the public site. Today's site syncs to the Claude account, so the first-visit note needs two versions.
-- CLAUDE.md already says Darkrai replaced Shady Paw. Whether empty screens use Darkrai or a featured Pokémon is still Sim's call.
+- Decided (Sim, Nov 11): empty and loading screens show the rotating featured underdog (Flapple first). Shady Paw is cut and
+  is not the mascot; Darkrai is cut from the rebuild. See CLAUDE.md.
 
 ## 3. Type
 - Faces: Unbounded (display: every headline, big number, the tagline, plates, the filled button), always slanted

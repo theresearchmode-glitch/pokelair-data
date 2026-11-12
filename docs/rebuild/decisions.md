@@ -103,3 +103,16 @@ Sim's own decisions are marked "Sim". Newest first.
 - Nov 11, 9:46 PM: Sim allowed helpers until 11 PM. Started two look-only helpers: a My Team height breakdown (phone 4354 vs 3400 target) and a fresh-eyes polish review of every new page. Their findings go to Sim as proposals; fixes land one at a time.
 - Nov 11, ~10:05 PM: My Box quick link in the header next to Day/Night (Sim: "a box next to day night switch", not a sixth menu place; a sixth place was tried and reverted). It shows "My Box" on every page and every width, underlined in PLOT blue (slanted, like the menu) on My Box; My Team is no longer marked current there (one mark). To fit: header tools 8px apart under 900, menu 12px apart under 900, names never wrap, phone-size logo at 700-759 and a 26px logo under 360. Measured: fits 300-2560 with even margins; polish check box+team: no new findings.
 - Nov 11, ~10:05 PM: Sim: "a box icon up top", not words, and never a sixth menu place. The header link is now a box icon (lid, body, handle slot, drawn like the search glass), 44px tap, labelled "My Box" for screen readers and on hover; slanted PLOT-blue mark under it on My Box. Fit rules: menu names never wrap, 24px apart below 1100, 12px below 900; smaller logo at 700-759 and under 360; tools 4px apart under 330. Measured 300-2560 in WebKit: no sideways scroll, even left/right margins. Polish check box+team: no new findings.
+
+## Nov 11, ~10:00-11:00 PM Eastern (Sim)
+- Sim: My Box is never a sixth place in the top menu or phone bar ("waaay too much"); it goes next to Day/Night as an icon, not
+  words. The two entries above about a "My Box" text link are superseded; v52 shows a storage-box icon. Sim then suggested a
+  Pokémon PC icon; three options were described, none built (waiting for Sim, with pictures).
+- Sim: STOP until she says go (~10:45 PM). The iPad "Suggestions beside Matchups" change is parked on branch
+  claude/park-ipad-balance, not on the Preview.
+- Sim: no design or visual decision ever without her yes and screenshots, even under authority; every "checked" names built page
+  or mock-up, the result line and a plain-English meaning; quality over speed. Rules in docs/rebuild/RULES.md; her My Team fix
+  plan in docs/rebuild/my-team-fix-plan.md; state of everything in docs/rebuild/HANDOVER.md.
+- Sim: Shady Paw is cut (not the mascot). Host the two fonts ourselves. One source for ratings before Ratings is built.
+- Correction (Claude): the "fits / no new findings" lines above were measured on the built page for the header only; they do not
+  mean the pages are done. page-heights.md had My Team's mock-up heights as if built; corrected the same night.

@@ -154,7 +154,8 @@ concepts did and what the rebuild does instead.
 - Checked on iPhone, iPad and the Windows desktop app, light and dark; reduced motion respected for every animation.
 
 **Characters**
-- Darkrai (not Shady Paw) on empty and loading screens only, never beside grades, ratings or data, and never in Your Six,
+- SUPERSEDED (Sim, Nov 11): neither Darkrai nor Shady Paw. Empty screens show the rotating featured underdog; Shady Paw is cut.
+  Old text: Darkrai (not Shady Paw) on empty and loading screens only, never beside grades, ratings or data, and never in Your Six,
   Add a Pokémon or the Battle preview. The redesign chat suggested bringing Shady Paw in; that conflicts with Sim's Nov 9
   decision. A real NastyPlot mascot is its own later project.
 
