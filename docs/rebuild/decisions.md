@@ -363,3 +363,10 @@ Sim's own decisions are marked "Sim". Newest first.
 - Sim: Shady Paw is cut (not the mascot). Host the two fonts ourselves. One source for ratings before Ratings is built.
 - Correction (Claude): the "fits / no new findings" lines above were measured on the built page for the header only; they do not
   mean the pages are done. page-heights.md had My Team's mock-up heights as if built; corrected the same night.
+- ~10:55 AM Eastern: "Save This Six" -> "Save This Team" on the Saved Teams free-spot card (Sim: "save this team looks good to me").
+- Bug fix (restores the approved My Box layout; before/after pictures sent to Sim): at 900-1399 wide the pinned picked-Pokemon panel
+  slid over Copy Box Link / Reset Box / the sync line once you scrolled (found by BOX-05/06 failing: the tap landed on "Swap Into My
+  Team"). The panel now stays pinned inside its own column only. Built page app/dist/v2.html: behaviour BOX-01..07 + SAVED-09 + SHARE-01
+  `9 pass, 0 FAIL`; BOX-05 failed before the fix. BOX-01 test reads the approved item-20 sync words on the new build.
+- Measuring note: c13 heights must be taken on app/dist/v2.html (fonts beside it). Copies in the scratchpad measured My Team 390 at
+  3,719 ("OVER") on every commit back to 3aa5fa6; the real build reads 3,699 (ok). Likely also the unexplained 820 3,042 vs 2,962.

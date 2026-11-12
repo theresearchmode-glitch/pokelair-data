@@ -765,7 +765,9 @@ t('SAVED-10', 'Older singles teams are kept, not shown, but count toward the 10'
 // ================= 10. My Box =================
 t('BOX-01', 'My Box head: count, explanation, sync line', async () => {
   const r = await aopen({team: TEAM, box: BOX}); await r.ui.go('My Box', 900); const tx = await r.ui.text();
-  for (const s of ['← My Team', 'The Pokémon you own', 'My Box', '10 Pokémon', /Build for [Mm]e and the suggestions pick from these/, /Saved to your Claude account|this browser/]) has(tx, s, 'My Box'); await r.close(); });
+  for (const s of ['← My Team', 'The Pokémon you own', 'My Box', '10 Pokémon', /Build for [Mm]e and the suggestions pick from these/,
+    // new build (Sim's My Box item 20, Nov 12): plain sync words, "Saved and kept in step across your devices." / "Saved in this browser only…"
+    NEW ? /Saved and kept in step across your devices\.|Saved in this browser only\. To use your box on another device, copy its box link\./ : /Saved to your Claude account|this browser/]) has(tx, s, 'My Box'); await r.close(); });
 
 t('BOX-02', 'Add a Pokémon to the box (base forms only): toast and a new tile; saved to the account', async () => {
   const r = await aopen({team: TEAM, box: BOX}); await r.ui.go('My Box', 900); await r.ui.typeName('mega dra', '#boxAdd'); ok(!(await r.ui.nameOptions()).some(o => /^Mega /.test(o)), 'box search offers Megas');
