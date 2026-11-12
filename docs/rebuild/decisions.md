@@ -34,6 +34,9 @@ Sim's own decisions are marked "Sim". Newest first.
   The new-build check now visits all six pages by default (team, team-empty, box, compare, sheet, guide), not only the style guide.
 
 ## My Team
+- Nov 11 (Sim's ask of Nov 11, 4:29 AM, done under her 7-9 PM authority): the underdog block on empty My Team (and the style guide
+  sample) has "Or build around your favourite Pokémon ›", linking to Build (Build Around a Pokémon). Until Build is rebuilt it opens
+  Build's "Coming next" page. Not on the empty My Box, where the job is adding the Pokémon you own.
 - Nov 11 (Claude, under Sim's 7-9 PM authority; review item 13): the featured underdog stands on a floor ring and pool in its own colour
   (Flapple: gold) on the style guide, empty My Team and empty My Box; the loose red/blue cloud and glow are gone. On empty My Team the
   page's one filled button stays "Build Me a Team" (rule: one main action per screen), so the underdog's "Add Flapple to My Team" is
