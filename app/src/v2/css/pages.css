@@ -818,3 +818,7 @@
   .bd-jump button.on{color:var(--ink)}.bd-jump button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
   .bd-others,.bd-wins,.bd-cores{scroll-margin-top:116px}.bd-lower{margin-top:0;padding-top:var(--s6);border-top:0}}
 @media (max-width:379px){.bd-jump{gap:var(--s3)}.bd-jump button{font-size:var(--t13)}}
+
+/* Build: cores with a Pokémon (filter box beside the core sliders) */
+.bd-cfind{position:relative;flex:1 1 220px;min-width:0;max-width:320px}.bd-cpick{flex:0 1 auto}
+.bd-cnone{margin-top:var(--s4);font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}

@@ -13,7 +13,7 @@ try { if (V2.LS.get('np2.swapMega') === '1') $('swapMega').checked = true; } cat
 V2.sgLater = fn => { clearTimeout(V2._sgT); V2._sgT = setTimeout(fn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 240); };
 document.addEventListener('v2slide', e => { const {key, value} = e.detail;
   if (key === 'sgpool') { if (value === ui.pool) return; const say = setPool(value); toast(say); V2.sgLater(render); }
-  else if (key === 'sgmega') { if (+value === megaGoal()) return; const say = setMegaGoal(value); toast(say); V2.sgLater(render); }
+  else if (key === 'sgmega') { if (+value === megaGoal()) return; const say = setMegaGoal(value); if (ui.ab && !ui.ab.busy) { if (V2.route() === 'build') runAutoBuild(); else ui.ab = null; } toast(say); V2.sgLater(render); } // Build results follow the new Megas number (today's 34-events.js)
   else if (key === 'sgswap') { const say = setSwapMega(value === '1'); if (!say) return; V2.LS.set('np2.swapMega', value); toast(say); V2.sgLater(render); } });
 
 // ---------- the cards' reasons: today's planWhy over the same plans renderPlans works them out for ----------

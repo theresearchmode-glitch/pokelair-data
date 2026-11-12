@@ -41,7 +41,9 @@ V2.BAND_K = {A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'};
 V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   if (r && r.busy) return '<p class="bd-busy" role="status">Building from real winning teams…</p>';
   const res = r && r.doubles; if (!res) return '';
-  if (!res.teams || !res.teams.length) return `<p class="bd-none" role="status">${res.noMega != null ? `No team fits with ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool.` : 'No team fits these settings.'} Try Whole roster, or another Megas number.</p>`;
+  // today's three no-result notes (22-auto-build.js col()), without the format word (AUTO-14)
+  if (!res.teams || !res.teams.length) return `<p class="bd-none" role="status">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. ${ui.abSrc === 'all' ? 'Try a different number of Megas on team' + (ui.abLock ? ' or build without the pick' : '') + '.' : 'Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team.'}`
+    : res.short != null ? `Only ${res.short} usable Pokémon in your box for doubles. Add more in My Box, or switch to Whole roster.` : 'No legal team from this pool.'}</p>`;
   const t = abTeam('doubles'), n = res.teams.length, k = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
   let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
   const s = G ? Math.round(G.s) : t.score, band = G ? V2.BAND_K[G.band] || 'solid' : 'solid', word = G ? CH.wordOf(G.s) : '';
@@ -92,9 +94,9 @@ V2.buildCores = () => { const E = V2.esc, rows = coreRows(), shown = rows.slice(
       <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `<em>${E(tags.slice(0, 2).join(', '))}</em> · ` : ''}${homeNum(r.n)} teams${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} points together` : ''}</small></span>
       <span class="bd-cw"><b class="u">${E(winFmt(r.wr * 100))}</b><small>wins · ${r.d >= 0 ? '+' : ''}${Math.round(r.d * 1000) / 10} vs avg</small></span><button type="button" class="np-btn2 bd-add" data-bdcore="${E(r.ns.join('|'))}" aria-label="Add ${E(r.ns.map(n => V2.disp(n)).join(' and '))} to your team"><span>${r.ns.length > 3 ? 'Load' : 'Add'}</span></button></li>`; };
   return `<section class="bd-cores"><div class="bd-hd"><h2 class="u">Build around a core</h2><span class="bd-k">${homeNum(rows.length)} ${kindW}</span></div><p class="bd-sub">Pick a pair or trio that wins, then fill the rest.</p>
-    <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top rated'], ['use', 'Most used']], coreUi.sort, 'Sort cores')}</div>
+    <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top rated'], ['use', 'Most used']], coreUi.sort, 'Sort cores')}${V2.buildCoreFind()}</div>
     <p class="bd-hint">From ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams run it.' : 'Ranked by win rate, pulled toward the average.'}</p>
-    <ol class="bd-clist">${shown.map(row).join('')}</ol>${rows.length > shown.length ? `<button type="button" class="np-link bd-cmore" data-bdcmore>Show ${Math.min(15, rows.length - shown.length)} more ${kindW}</button>` : ''}</section>`; };
+    ${shown.length ? `<ol class="bd-clist">${shown.map(row).join('')}</ol>` : '<p class="bd-cnone">No cores match. Try another Pokémon.</p>'}${rows.length > shown.length ? `<button type="button" class="np-link bd-cmore" data-bdcmore>Show ${Math.min(15, rows.length - shown.length)} more ${kindW}</button>` : ''}</section>`; };
 V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower">${V2.buildOthers() || ''}${V2.buildCores()}</div></div>`;
 document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'bdckind' && k !== 'bdcsort') return; if (k === 'bdckind') coreUi.kind = e.detail.value; else coreUi.sort = e.detail.value; coreUi.more = 0; V2.redraw(); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdshow],[data-bdcore],[data-bdcmore]'); if (!b) return;
@@ -139,3 +141,17 @@ V2.bdJumpSpy = () => { const nav = document.querySelector('.bd-jump'); if (!nav 
 addEventListener('scroll', () => { if (V2.route && V2.route() === 'build') V2.bdJumpSpy(); }, {passive: true});
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdjump]'); if (!b) return; const sec = document.querySelector('.bd-' + b.dataset.bdjump); if (sec) sec.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'}); });
 V2.pages.build.after = () => V2.bdJumpSpy();
+
+// ---------- Build: cores with a Pokémon (today's CORES-04 filter: "With a Pokémon…", a chip with ×; the same name box as Build around) ----------
+V2.bdUi.cfind = V2.bdUi.cfind || '';
+V2.buildCoreFind = () => { const E = V2.esc, m = coreUi.mon && byName.get(coreUi.mon);
+  if (m) return `<div class="bd-pick bd-cpick">${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="">` : ''}<b>${V2.nameHtml(V2.disp(m.n))}</b><button type="button" class="bd-x" data-bdcmx aria-label="Show cores with any Pokémon">×</button></div>`;
+  return `<div class="bd-cfind"><label class="np-field bd-find">${V2.ICON.search}<input type="search" data-bdcfind value="${E(V2.bdUi.cfind)}" placeholder="With a Pokémon…" aria-label="Only cores with this Pokémon: type its name" autocomplete="off"></label><div class="bd-hits" data-bdchits></div></div>`; };
+V2.bdCoreHits = q => V2.buildHits(q).replace(/data-bdpick=/g, 'data-bdcpick=');
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-bdcfind]'); if (!i) return; V2.bdUi.cfind = i.value; const h = document.querySelector('[data-bdchits]'); if (h) h.innerHTML = V2.bdCoreHits(i.value); });
+document.addEventListener('keydown', e => { const i = e.target.closest && e.target.closest('[data-bdcfind]'); if (!i) return;
+  if (e.key === 'Enter') { const h = document.querySelector('[data-bdchits] [data-bdcpick]'); if (h) { e.preventDefault(); h.click(); } }
+  else if (e.key === 'Escape') { V2.bdUi.cfind = ''; i.value = ''; const h = document.querySelector('[data-bdchits]'); if (h) h.innerHTML = ''; } });
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-bdcpick],[data-bdcmx]'); if (!t) return;
+  if (t.dataset.bdcpick) { coreUi.mon = t.dataset.bdcpick; coreUi.more = 0; V2.bdUi.cfind = ''; V2.redraw(); setTimeout(() => { const x = document.querySelector('[data-bdcmx]'); if (x) x.focus({preventScroll: true}); }, 30); return; }
+  coreUi.mon = null; coreUi.more = 0; V2.redraw(); setTimeout(() => { const i = document.querySelector('[data-bdcfind]'); if (i) i.focus({preventScroll: true}); }, 30); });
