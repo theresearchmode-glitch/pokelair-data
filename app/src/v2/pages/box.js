@@ -42,7 +42,7 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
   const num = (b, l) => `<div class="bx-n"><b>${b}</b><span>${l}</span></div>`;
   return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art" style="--cp:${V2.cp(F)}">${V2.mon(F, {sel: true, iw: o.sheet ? 180 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
     <div class="bx-sumb"><h2 class="u">${V2.nameHtml(V2.disp(F))}</h2><div class="bx-ty">${(p.t || []).map(V2.typeChip).join('')}${onTeam ? '<span class="np-chip bx-chip">On your team</span>' : ''}</div>${forms}
-    <div class="bx-nums">${num(E(V2.shareTxt(H)), 'of teams')}${num(H.hW != null ? E(pctFmt(H.hW)) : '–', 'win rate')}${num(p.st[5], 'base Speed')}</div>
+    <div class="bx-nums">${num(E(V2.shareTxt(H)), 'of teams')}${num(H.hW != null && H.hG >= 30 ? E(pctFmt(H.hW)) : '–', 'win rate')}${num(p.st[5], 'base Speed')}</div>
     <div class="bx-acts"><button type="button" class="np-btn" data-v2mon="${E(F)}">Info Sheet</button>${onTeam ? '' : `<button type="button" class="np-btn2" data-bxteam="${E(F)}"><span>${full ? 'Swap Into My Team' : 'Add to My Team'}</span></button>`}<button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; };
 
 // E20 proposal (Sim's check, Nov 12): the shared syncText names the Claude account, which can't be on the public site; the new site
@@ -97,6 +97,7 @@ V2.bxMegaOk = (p, skip, go) => { const other = p.m && members().find(m => m.mega
   V2.sheet(`<div class="bx-swap"><div class="np-eyebrow">Two Megas</div><h2 class="u">Add ${V2.esc(V2.disp(p.n))} too?</h2><p>Your team already has ${V2.esc(V2.disp(other.p.n))}. Only one Pok\u00e9mon can Mega Evolve in a battle.</p><div class="bx-acts"><button type="button" class="np-btn2" data-bxmegago><span>Add Anyway</span></button><button type="button" class="np-btn2" data-bxmegano><span>Cancel</span></button></div></div>`, {label: 'Two Megas', small: true});
   const yes = document.querySelector('[data-bxmegago]'), no = document.querySelector('[data-bxmegano]');
   if (yes) yes.addEventListener('click', go); if (no) no.addEventListener('click', () => V2.closeSheet()); if (no) no.focus(); };
+// win rate needs 30+ tournament games, as on today's site (Sim, Nov 12: go)
 V2.bxTeam = n => { const p = byName.get(n); if (!p) return; const st = V2.addState(n);
   if (st === 'have') { toast(`${p.d} is already on your team`); return; }
   if (st === 'ok') { const at = S.slots.findIndex(x => !byName.get(x.n)); V2.bxMegaOk(p, -1, () => { keepUndo(); addMon(at, p); V2.closeSheet(true); render(); toast(`${p.d} added to your team`, true); }); return; }
