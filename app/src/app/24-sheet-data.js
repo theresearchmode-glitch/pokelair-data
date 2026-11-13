@@ -25,7 +25,9 @@ function lairBars(p) { const r = rating(p);
   return [['Real results', r.evidence, r.conf < .4 ? 'small sample' : ''], ['Power', r.power], ['Typing', r.typing], ['Tools', r.tools]]; }
 // Typical set: the nature(s) and stat points most players run (Sim, Nov 6)
 function lairSetBits(p) { let na = null, cs = null; try { const st = setFor(p); na = st.na && st.na.length ? st.na.slice(0, 2).map(x => x[0]) : null; } catch (e) {} try { cs = commonSpread(p); } catch (e) {}
-  if (!na && cs && cs.nat) na = [cs.nat]; const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+  if (!na && cs && cs.nat) na = [cs.nat];
+  // Sim, Nov 13 (Natures Q1 B): the nature shown first is the complete spread's, so it matches the points beside it (w); the next most run follows
+  if (cs && cs.nat && na) na = [cs.nat, ...na.filter(x => x !== cs.nat)].slice(0, 2); const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
   const w = cs ? K.map((k, j) => [cs[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]}\u00a0${x[1]}`).join(', ') : '';
   return {na, w}; }
 

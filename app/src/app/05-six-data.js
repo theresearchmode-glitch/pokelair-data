@@ -42,8 +42,11 @@ function roleText(m, L, nm = x => x.d) { const has = g => g.some(x => x.i === m.
 // nature and stat points (Sim, Nov 6): yours when set (paste, link or Edit Set), else what most players run; stat points read as
 // words, biggest first ("32 Atk, 32 Spe, 2 HP", no-break spaces). natNote / ptsNote: 'yours' | 'most run' | ''
 function natInfo(m) { let sp = m.spread, own = !!(sp && sp.nat && !sp.assumed), nat = sp && sp.nat, natNote = own ? 'yours' : '';
-  if (!nat) { try { const st = setFor(m.p); if (st.na && st.na.length) nat = st.na[0][0]; } catch (e) {} }
   let cs = null; try { cs = commonSpread(m.p); } catch (e) {}
+  // Sim, Nov 13 (Natures Q1 B): show the complete spread (nature + points players run together), as the calcs and Team Sheet do;
+  // the most-run nature on its own is only the fallback when there is no spread data
+  if (!nat && cs && cs.nat) nat = cs.nat;
+  if (!nat) { try { const st = setFor(m.p); if (st.na && st.na.length) nat = st.na[0][0]; } catch (e) {} }
   if (!nat && cs) nat = cs.nat; if (nat && !own) natNote = sp && sp.assumed ? 'yours' : 'most run';
   const pts = sp && !sp.assumed ? sp : cs, ptsNote = sp && !sp.assumed ? 'yours' : pts ? 'most run' : '';
   const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
