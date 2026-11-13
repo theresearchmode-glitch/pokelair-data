@@ -5,8 +5,9 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 
 ## NOW (Nov 13, written 2:23 AM Eastern by the clock; overnight under Sim's authority until 6:00 AM)
 - Full account of the night: docs/rebuild/overnight-nov13.md (mistakes first, fixes with checks, measurements, questions).
-- PREVIEW v92 (2:35 AM, 394 files checked; v91 2:27 AM, favicons added in v92): title case + C1-C4, the overnight behaviour fixes, Build's text-in-box fixes, and the
-  Build 3/4 colour (d374d06) and form letters kept with names (5dd4e26).
+- PREVIEW v93 (5:43 AM, 394 files checked): Sim's morning answers built and checked: Words Q1 B + Q2 B, Look Q1 B (88 px Build
+  sprites on phones), Q2 B (Compare in plain ink), Q3 B (Battle tabs two lines on phones), Q4 B (Build tabs on phones), Height Q1 A
+  (5-of-6 limits 4,250 / 4,100 / 1,950). Speed Q1/Q2 A wait for the Speed Tiers page. Authority extended to 9:00 AM.
 - Checklist (https://claude.ai/artifact/E99Mux9sZxxBuvFXEsKW1V) current: i03/i32 measured and reviewed; i27-i32 added tonight.
 - WAITING ON SIM (labelled pictures, RECOMMENDED marked): Speed Q1/Q2 (Speed Tiers mock), Height Q1 (My Team 5 of 6), Look Q1
   (Build phone sprites), Look Q2 (Compare colours), Look Q3 (Battle phone tabs), Look Q4 (Build after building on phones),
