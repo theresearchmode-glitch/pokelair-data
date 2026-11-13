@@ -91,6 +91,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .np-sheet{position:fixed;z-index:41;left:50%;top:48px;bottom:48px;width:min(1120px,calc(100% - 64px));translate:-50% 0;overflow:auto;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-lift)}
 .np-sheet .x{position:sticky;top:0;float:right;min-width:var(--tap);min-height:var(--tap);font:600 var(--t20)/1 var(--b);color:var(--ink-2)}
+.np-sheet .x{position:sticky;z-index:5;background:var(--surface)} /* i42 (Nov 13): the X stays on top of scrolled content (a tilted panel painted over it), on the sheet's own surface */
 @media (max-width:699px){.np-sheet{top:auto;bottom:0;left:0;width:100%;max-height:92vh;translate:none;border-radius:var(--r-xl) var(--r-xl) 0 0}}
 /* toast */
 .np-toast{position:fixed;z-index:50;left:50%;bottom:var(--tb,var(--s6));translate:-50% 0;display:flex;align-items:center;gap:var(--s4);max-width:calc(100% - 32px);padding:var(--s3) var(--s5);background:var(--plate);color:var(--on-plate);

@@ -1046,3 +1046,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tm-e-w b{font:700 var(--t15)/1.3 var(--b);max-width:100%;overflow-wrap:anywhere}.tm-e-w small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tm-e-w small span{display:block}
 @media (hover:hover){.tm-e-w:hover b{color:var(--plot-text)}}
 @media (max-width:899px){.tm-empty2{grid-template-areas:"lead" "six" "win" "ud";row-gap:var(--s12)}}
+
+/* i42 (Nov 13): Build and Battle sheets had no inner padding (text touched the screen edge); the site's sheet standard (as .ed2/.bx-swap/.ms2) */
+.bt-osheet,.bt-rep,.bt-rec,.bt-lsheet,.bd-how,.bd-cwhy{padding:var(--s8)}@media (max-width:479px){.bt-osheet,.bt-rep,.bt-rec,.bt-lsheet,.bd-how,.bd-cwhy{padding:var(--s6) var(--s4)}}
