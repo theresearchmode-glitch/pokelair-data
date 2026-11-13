@@ -75,7 +75,7 @@ V2.homeMeta = () => { const E = V2.esc, rows = lairRows(), top = rows.slice(0, 1
     ${W.length ? panel('2', 'This Week in the Ratings', 'Biggest moves in rating since last week. Tap one for its info sheet.', W.map(mv).join('')) : ''}
     <a class="np-link hm-all" href="#meta">All ratings ›</a></div>`;
   const n = V2.underdog(), d = E(V2.disp(n));
-  const dog = `<div class="hm-ud"><div class="hm-udst" style="--fo:${(typeof ART_META === 'object' && ART_META[SPRITE_ID[n]] || [0, 0, 0, 0])[3]}"><i class="pool" aria-hidden="true"></i><i class="pool b" aria-hidden="true"></i>${SPRITE_ID[n] ? `<img src="${V2.art(SPRITE_ID[n])}" alt="${d}" loading="lazy">` : ''}</div><div><p class="np-eyebrow hm-udk">Today's underdog</p><h3 class="u">${d}. <span>Somebody's favourite.</span></h3>
+  const dog = `<div class="hm-ud"><div class="hm-udst2">${V2.mon(n, {iw: 200, bare: true, ft: true}) /* Sim, Nov 13 (Home Q1 B): the empty My Team's look, a floor ring in its own colour */}</div><div><p class="np-eyebrow hm-udk">Today's underdog</p><h3 class="u">${d}. <span>Somebody's favourite.</span></h3>
     <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
     <div class="row hm-acts"><button type="button" class="np-btn2" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-link" data-v2mon="${E(n)}">Info Sheet</button></div>
     <a class="np-link hm-fav" href="#build">Or build around your favourite Pokémon <span aria-hidden="true">→</span></a></div></div>`;

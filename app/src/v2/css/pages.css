@@ -642,7 +642,7 @@
 :root[data-theme="night"] .hm-udst .pool{background:radial-gradient(closest-side,color-mix(in srgb,var(--plot) 90%,transparent),color-mix(in srgb,var(--plot) 32%,transparent) 45%,color-mix(in srgb,var(--pick) 18%,transparent) 70%,transparent);filter:blur(1.5px)}
 :root[data-theme="night"] .hm-udst .pool.b{background:radial-gradient(closest-side,color-mix(in srgb,var(--pick) 45%,transparent),color-mix(in srgb,var(--plot) 20%,transparent) 60%,transparent)}
 @media (prefers-reduced-motion:reduce){.hm-udst .pool.b{animation:none;opacity:.6}}
-.hm-udk::before{background:linear-gradient(90deg,var(--plot),var(--pick))}
+/* Home Q1 B (Nov 13): the eyebrow mark is the plain blue one, as on My Team (pink means only 'selected') */
 .hm-ud h3{font-size:var(--t28);margin:var(--s2) 0}.hm-ud h3 span{color:var(--plot-text)}.hm-ud p{font-size:var(--t15);line-height:1.5;color:var(--ink-2)}
 .hm-ud .hm-acts{margin-top:var(--s4)}
 .hm-fav{display:inline-flex;gap:var(--s2);margin-top:var(--s4);font-weight:600}
@@ -1063,3 +1063,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 /* Sim, Nov 13 (Build Q2 C): Other Options' small tiles: 'Mega' on its own line above the name (non-Megas keep that line blank), so names line up */
 .bd-alt-pk b .mg{display:block}
+
+/* Home Q1 B (Sim, Nov 13): Home's underdog drawn as on the empty My Team (featured tile: floor ring in its own colour) */
+.hm-udst2{width:100%;max-width:200px;justify-self:center}
