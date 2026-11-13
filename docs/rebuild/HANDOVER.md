@@ -3,6 +3,16 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 6:37 AM Eastern by the clock; Sim's authority until 9:00 AM)
+- PREVIEW v95 (6:24 AM, 394 files checked): adds title case on 'Other Options' and 'Scouting Report' to v94.
+- Sim's main ask today: shorter pages through layout, not higher limits (checklist i35). Questions sent with labelled pictures:
+  Build Q1 (tabs on every size; ready patch docs/rebuild/proposals/build-q1b.patch), My Team Q1 (Stand-Outs at most 4+4; ready
+  patch docs/rebuild/proposals/myteam-q1b.patch), My Team Q2 (keep 2 columns vs the mock-up's 3; recommend keep), Battle Q1
+  (asked again). Patches are NOT applied; apply with `git apply <patch>`, rebuild, run the checks listed in overnight-nov13.md.
+- Side-by-side with every approved mock-up done (i34). New open items: i36-i40 (My Team columns, My Box Build around it and
+  headline, info sheet Report a mistake, first-visit empty spots + winners grid). Correction: My Team DOES have a mock-up.
+- Tests: Build 25 pass before and after the heading fix (no test changed result); Battle 21 pass.
+
 ## NOW (Nov 13, written 2:23 AM Eastern by the clock; overnight under Sim's authority until 6:00 AM)
 - Full account of the night: docs/rebuild/overnight-nov13.md (mistakes first, fixes with checks, measurements, questions).
 - PREVIEW v93 (5:43 AM, 394 files checked): Sim's morning answers built and checked: Words Q1 B + Q2 B, Look Q1 B (88 px Build
