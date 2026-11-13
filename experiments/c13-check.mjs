@@ -34,6 +34,8 @@ const ENGINES = (process.env.C13_ENGINES || 'chromium,webkit').split(',').map(x 
 for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, limit, note] of WIDTHS) {
   if (view === "home" && HOME[w]) [limit, note] = HOME[w];
   if (view === 'battle' && BATTLE[w]) [limit, note] = BATTLE[w];
+  // Sim, Nov 13 (Height Q1 A): a team with only 5 of 6 has its own, higher limits (the measured heights rounded up to the next 50); the normal My Team limits don't move
+  if (view === 'team' && state === 'five' && {320: 1, 390: 1, 1440: 1}[w]) [limit, note] = [{320: 4250, 390: 4100, 1440: 1950}[w], '5 of 6 (Sim, Nov 13, Height Q1 A)'];
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
   const b = await pw[eng].launch(), ctx = await b.newContext({viewport: {width: w, height: w < 700 ? 844 : 900}, hasTouch: touch(w), isMobile: eng === 'chromium' ? false : w < 700});
   const p = await ctx.newPage(), errs = [];

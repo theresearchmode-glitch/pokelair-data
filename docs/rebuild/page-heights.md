@@ -25,7 +25,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 > | Built page, state | 320 | 390 | 820 | 1440 |
 > |---|---|---|---|---|
 > | My Team (default) | 3,875 ok (3,900) | 3,743 ok (3,750) | 3,009 ok | 1,786 ok (1,800) |
-> | My Team, 5 of 6 | 4,169 **over** | 4,040 **over** | 3,298 ok | 1,917 **over** |
+> | My Team, 5 of 6 (own limits, Sim Nov 13 Height Q1 A: 4,250 / 4,100 / 3,500 / 1,950; re-measured 5:42 AM after the SUGG-06 line came back on the suggestion card, +59) | 4,227 ok | 4,099 ok | 3,334 ok | 1,917 ok |
 > | My Team, six longest names (imported) | 3,944 **over** | 3,842 **over** (limit 3,700: not the sample team) | 3,091 ok | 1,863 **over** |
 > | My Team, after Suggestion 1's Apply | unknown: today's data gives the sample team no suggestion that raises its score, so there was nothing to apply | | | |
 > | My Team, every fold open (no limit set) | 6,530 | 6,217 | 5,026 | 4,017 |
