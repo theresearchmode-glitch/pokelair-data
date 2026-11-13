@@ -257,3 +257,16 @@ V2.TAP_ACT = /* today's set mapped to the new buttons (plan, absave, abuse, chrm
 V2._tapAt = 0;
 document.addEventListener('click', e => { const now = Date.now(); if (now - V2._tapAt < 450) { e.stopImmediatePropagation(); e.preventDefault(); return; }
   const b = e.target && e.target.closest && e.target.closest(V2.TAP_ACT); if (b) V2._tapAt = now; }, true);
+// ---------- ↑/↓ through a name box's suggestions (audit JUMP-04 / X-09; today's search and name boxes have it) ----------
+// One rule for every box: ↓ from the box moves focus to the first suggestion, ↑/↓ move between them, ↑ from the first goes back to
+// the box. Focus shows the site's usual focus ring, Enter/Space picks (they are buttons and links). The add box (six.js) keeps its own.
+V2.ARROW_LISTS = [['[data-v2q]', () => '[data-v2hits] .np-hit'], ['[data-bxq]', () => '[data-bxhits] .np-hit:not([aria-disabled])'],
+  ['[data-bdfind]', () => '[data-bdhits] [data-bdpick]'], ['[data-bdcfind]', () => '[data-bdchits] [data-bdcpick]'],
+  ['[data-btfind]', i => `[data-bthits="${i.dataset.btfind}"] [data-btpick]`]];
+document.addEventListener('keydown', e => { if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' || e.altKey || e.ctrlKey || e.metaKey || !e.target.closest) return;
+  for (const [sel, list] of V2.ARROW_LISTS) {
+    const inp = e.target.matches(sel) ? e.target : null, items = inp ? [...document.querySelectorAll(list(inp))].filter(x => x.getClientRects().length) : null;
+    if (inp) { if (e.key === 'ArrowDown' && items.length) { e.preventDefault(); items[0].focus(); } return; }
+    for (const box of document.querySelectorAll(sel)) { const its = [...document.querySelectorAll(list(box))].filter(x => x.getClientRects().length), k = its.indexOf(e.target);
+      if (k < 0) continue; e.preventDefault(); const n = k + (e.key === 'ArrowDown' ? 1 : -1);
+      if (n < 0) box.focus(); else if (n < its.length) its[n].focus(); return; } } });
