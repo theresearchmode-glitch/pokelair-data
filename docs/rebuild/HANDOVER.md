@@ -3,6 +3,18 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 2:23 AM Eastern by the clock; overnight under Sim's authority until 6:00 AM)
+- Full account of the night: docs/rebuild/overnight-nov13.md (mistakes first, fixes with checks, measurements, questions).
+- PREVIEW v90 (1:38 AM, 394 files checked): title case + C1-C4, the overnight behaviour fixes, Build's text-in-box fixes. On the
+  branch since: Build 3/4 colour (d374d06), form letters kept with names (5dd4e26).
+- Checklist (https://claude.ai/artifact/E99Mux9sZxxBuvFXEsKW1V) current: i03/i32 measured and reviewed; i27-i32 added tonight.
+- WAITING ON SIM (labelled pictures, RECOMMENDED marked): Speed Q1/Q2 (Speed Tiers mock), Height Q1 (My Team 5 of 6), Look Q1
+  (Build phone sprites), Look Q2 (Compare colours), Look Q3 (Battle phone tabs), Look Q4 (Build after building on phones),
+  Words Q1 (Dangerous / Manageable), Words Q2 (likely their Mega on two), plus older: Compare / All Suggestions designs, usage
+  counting, site menu / Auto theme, Plan settings.
+- iPhone brief for Sim: docs/rebuild/test-runs/x07-keyboard-iphone.md (keyboard over name-box lists; info sheet swipe).
+- Tests on the latest build: My Team 127 (same as before tonight), Build 24 (was 13), Battle 21 (same), use test 32/0, clicks 0 double.
+
 ## NOW (Nov 12, written 10:02 PM Eastern by the clock; Sim's authority until 6:00 AM Fri Nov 13; summary reminder 5:40 AM)
 - PREVIEW v85 (394 files checked). Since v81: Battle pieces 1-3 (head, sixes, turn one, The read, Watch out, detail tabs), blue good /
   red bad everywhere (Sim's rule, tokens: --good = --plot, --bad red, --on-mark), the SPEED LINE (Sim chose B1; 1024+, bars on
