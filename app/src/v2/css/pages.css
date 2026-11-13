@@ -1004,3 +1004,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-lacts{gap:var(--s3);align-items:center}.bt-lacts .np-btn2{min-width:120px}
 @media (min-width:820px){.bt-log{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s10)}}
 .bt-lacts{display:flex;flex-wrap:wrap}
+@media (max-width:559px){.bt-lacts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bt-lacts .np-link{grid-column:1/-1}.bt-lacts .np-btn2{min-width:0;width:100%}}
