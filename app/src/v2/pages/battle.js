@@ -34,7 +34,7 @@ V2.battleTurn = P => { const T = P && P.turnOne; if (!T || !T.beats || !T.beats.
 V2.battleEmpty = (mine, theirs) => mine.length < 4 ? `<p class="bt-empty">Add at least 4 Pokémon on My Team first. <a class="np-link" href="#team">Go to My Team ›</a></p>`
   : !theirs.length ? `<p class="bt-empty">Everything below fills in once their six is in: which four to bring, who leads, and turn one.</p>` : '';
 V2.pages.battle = {place: 'battle', draw() { const {mine, theirs, P} = V2.btPlan();
-  return `<div class="bt2">${V2.battleHead(mine, theirs, P)}<section class="bt-body"><div class="bt-sixes">${V2.battleTheirs(theirs, P)}${V2.battleMine(mine, P)}</div>${V2.battleTurn(P)}</section>${P ? `<section class="bt-plan"><div class="bt-pl">${V2.battleRead(theirs, P)}</div>${V2.battleWatch(P)}</section>` : ''}${V2.battleTabs(theirs, P)}${V2.battleDetail(mine, theirs, P)}${V2.battleLog(P)}${V2.battleEmpty(mine, theirs)}</div>`; }};
+  return `<div class="bt2">${V2.battleToolsBar()}${V2.battleHead(mine, theirs, P)}<section class="bt-body"><div class="bt-sixes">${V2.battleTheirs(theirs, P)}${V2.battleMine(mine, P)}</div>${V2.battleTurn(P)}</section>${P ? `<section class="bt-plan"><div class="bt-pl">${V2.battleRead(theirs, P)}</div>${V2.battleWatch(P)}</section>` : ''}${V2.battleTabs(theirs, P)}${V2.battleDetail(mine, theirs, P)}${V2.battleMoreTools()}${V2.battleLog(P)}${V2.battleEmpty(mine, theirs)}</div>`; }};
 
 // ---------- their six: a sheet with six name boxes and the top tournament teams (today's entry ways) ----------
 V2.btOppSheet = () => { const E = V2.esc, opp = S.opp.slice(0, 6); while (opp.length < 6) opp.push('');
@@ -209,3 +209,16 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (d.btldel) { const k = +d.btldel; S.log = (S.log || []).filter(x => x.t !== k); persist(); const s = document.querySelector('.np-sheet .bt-rec'); if (s) s.outerHTML = V2.btRecord(); V2.redraw(); toast('Battle deleted'); } });
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.matches || !t.matches('[data-btrepfile]') || !t.files || !t.files[0]) return;
   const fr = new FileReader(); fr.onload = () => { const s = String(fr.result || ''); const m = s.match(/<script type="text\/plain" class="battle-log-data">([\s\S]*?)<\/script>/); V2.btAddReplay(m ? m[1] : s); }; fr.readAsText(t.files[0]); t.value = ''; });
+
+// ---------- piece 4b (BUILT ON THE BRANCH FOR SIM'S Q6, not on the Preview until she says yes): the Battle tools ----------
+// Mock-up: a tools bar under the header on 700+ (Battle a team · Team preview practice · Test run · Speed tiers · Damage calc · Type chart,
+// Battle log on the right) and, on phones, "More ways to prep" above the Battle log. Counts are today's: Test run = gauntletTeams(),
+// Speed tiers = your six against the 20 most-used (39-damage-calc-speed.js slice(0,20)). Pages not rebuilt yet open the Preview's
+// "Coming next" page (rule C10: marked, not faked).
+V2.BT_TOOLS = () => { let n = 0; try { n = gauntletTeams().length; } catch (e) {}
+  return [['practice', 'Team preview practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test run', n ? n + ' teams' : '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
+    ['speed', 'Speed tiers', 'top 20', 'Your six against the 20 most-used Pokémon'], ['calc', 'Damage calc', '', 'Any attacker into any defender'], ['types', 'Type chart', '18 types', '18 types, or look up a Pokémon']]; };
+V2.battleToolsBar = () => { const L = Array.isArray(S.log) ? S.log.length : 0;
+  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle" aria-current="page" class="on">Battle a team</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}">${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Battle log<small>${L} game${L === 1 ? '' : 's'}</small></a></nav>`; };
+V2.battleMoreTools = () => `<section class="bt-more"><h2 class="u">More ways to prep</h2><ul>${V2.BT_TOOLS().map(([h, t, s, d]) => `<li><a href="#${h}"><span>${t}<small>${V2.esc(d)}</small></span><i aria-hidden="true">›</i></a></li>`).join('')}</ul></section>`;
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-btlogjump]'); if (!a) return; e.preventDefault(); const l = document.querySelector('.bt-log'); if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'}); });

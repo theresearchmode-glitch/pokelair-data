@@ -6,6 +6,10 @@ if (window.__NP_PREVIEW) {
     build: ['build', 'Build', 'Build me a team around a Pokémon: the best team first with its Strength Score, then other options and cores.'],
     battle: ['battle', 'Battle', 'Bring these four, lead the pair: the plan against an opponent\'s six, turn one in move order.'],
     meta: ['ratings', 'Meta', 'Who wins right now: ratings, usage, winning teams, events and archetypes.']};
+  // Battle's tools (Nov 12, Q6): not rebuilt yet and no mock-up of their own; the page says so and points to today's site
+  const TOOLS = {practice: 'Team preview practice', gauntlet: 'Test run', speed: 'Speed tiers', calc: 'Damage calc', types: 'Type chart'};
+  for (const [k, name] of Object.entries(TOOLS)) if (!V2.pages[k]) V2.pages[k] = {place: 'battle', draw: () => `<section class="cm2"><div class="cm2-t"><div class="np-eyebrow"><span>Battle · ${name} · coming next</span></div><h1 class="u">${name}</h1>
+      <p class="tm-sub">This page is being rebuilt in the new design. It works on today's NastyPlot site until the switch.</p><div class="row"><a class="np-btn" href="#battle">Back to Battle</a></div></div></section>`};
   for (const [k, [f, name, what]] of Object.entries(MOCK)) if (!V2.pages[k]) V2.pages[k] = {place: k, draw: () => {
     const dk = V2.theme() === 'night', img = `thumbs/${f}-${dk ? 'dusk' : 'light'}.jpg`, href = `${f}.html#${dk ? 'dusk' : 'light'}`;
     return `<section class="cm2"><div class="cm2-t"><div class="np-eyebrow"><span>${name} · coming next</span></div><h1 class="u">${name}</h1>
