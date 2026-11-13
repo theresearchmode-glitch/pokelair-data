@@ -86,7 +86,8 @@ try { V2.hmUi.duel = localStorage.getItem('np2.seg.homeduel') === 'you' ? 'you' 
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'homeduel') return; V2.hmUi.duel = e.detail.value === 'you' ? 'you' : 'them'; try { localStorage.setItem('np2.seg.homeduel', V2.hmUi.duel); } catch (x) {} V2.redraw(); });
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'homegems') return; V2.hmUi.top = e.detail.value; try { localStorage.setItem('np2.seg.homegems', e.detail.value); } catch (x) {} V2.redraw(); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hmaround]'); if (!b) return; const p = byName.get(b.dataset.hmaround); if (!p) return;
-  ui.abLock = p.n; if (typeof inBox === 'function' && !inBox(p)) ui.abSrc = 'all'; if (V2.closeSheet && b.closest('.ms2')) V2.closeSheet(true); location.hash = '#build'; });
+  ui.abLock = p.n; if (typeof inBox === 'function' && !inBox(p)) ui.abSrc = 'all'; if (V2.closeSheet && b.closest('.ms2')) V2.closeSheet(true); location.hash = '#build';
+  if (typeof runAutoBuild === 'function') { runAutoBuild(); V2.redraw(); } }); // and starts building, as today's 52-sleepers.js does (audit AUTO-06)
 // Home piece 4 (mock-up R2): Everything NastyPlot does, 12 even tiles (11 tools + How We Calculate), no half-filled row at 4, 3 or
 // 2 columns. Names as in the mock-up, descriptions are today's (HOME_TILES). Each tile opens the page today's site files the tool
 // under (32-views.js VIEW_PARENT / VIEW_ALIAS): Battle, Meta (Pokémon + Tournaments) or Build (cores); the tool's own spot inside
