@@ -3,6 +3,20 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 12, written 10:02 PM Eastern by the clock; Sim's authority until 6:00 AM Fri Nov 13; summary reminder 5:40 AM)
+- PREVIEW v85 (394 files checked). Since v81: Battle pieces 1-3 (head, sixes, turn one, The read, Watch out, detail tabs), blue good /
+  red bad everywhere (Sim's rule, tokens: --good = --plot, --bad red, --on-mark), the SPEED LINE (Sim chose B1; 1024+, bars on
+  iPad upright and phones), restored mock-up features (Copy for Showdown, recent opponents, all 90 tournament teams, sheet kicker),
+  the their-six line moved into the sheet (Q2 = A), threat sentence names each move (Q4, both sites).
+- New rules tonight (RULES.md / ALL-RULES.md/.txt): meaning colours for small marks + "colour must say something"; round corners
+  only in chosen spots; blue good / red bad / amber caution; every recommendation has a short reason; every picture labelled.
+- WAITING ON SIM: Q5 Battle log always shown (A, raise limits 1,850 / 3,750 / 4,250) or a 4th tab (B). Built on branch, not Preview
+  (commit be47faf): LOG 5/0 on v2 and today's.
+- NEXT: More ways to prep (links to unbuilt pages: a C10 question with pictures); then the calc picker and Practice entry come with
+  their pages. Battle tests on v2: 13 BATTLE + 5 LOG pass; BATTLE-09/12/16/17/18/20 differ by design or wait for unbuilt pages.
+- Checks: c13 battle (all widths inside limits on v85), today's BATTLE-18 + MATCHUPS 7/0, same-matchup 40 reads only the threat
+  sentence changed; parseReplay shared (41-replay-data.js; today's page byte-identical).
+
 ## NOW (Nov 12, written 8:21 PM Eastern by the clock; Sim's authority until 9:00 PM; summary reminder 8:40 PM)
 - PREVIEW v81 (8:16 PM, 394 files checked). Since v79: Sim's 4 B (Back keeps its spot), 8 (Mega count in the eyebrow), 11 (three
   across on phone), 20 A (Home duel switch on phone; Home 320 4,743 -> 4,211), duel buttons at 320, tile-name polish, Build's
