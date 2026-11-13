@@ -4,6 +4,13 @@ CLAUDE.md points here. These rules came from the Nov 11 chat after Sim found tha
 Where an older line in CLAUDE.md says otherwise (e.g. "Faster flow: put fixes live directly", "decide on your own
 recommendation" under authority), the rules below win.
 
+## 00t. Times come only from the clock (Sim, Nov 13, rule written 8:54 AM Eastern by the clock: "I am very very punctual about timing")
+Every time written anywhere (messages to Sim, checklist notes and 't' fields, docs, commit messages, scheduled task prompts) is
+copied from `bash docs/rebuild/now.sh` run in the SAME step, never typed, estimated ("6:2x", "~3:25") or reused from an earlier
+reading. decisions.md entries go through log-decision.sh (it reads the clock itself). Checklist notes carry no hand-written
+time: the 't' field comes from now.sh. Every session runs `git config core.hooksPath .githooks` first: the commit-msg guard
+refuses placeholder/estimated times and times later than the clock.
+
 ## 00. Honesty and openness (Sim, Nov 12, 5:12 PM Eastern; applies AT ALL TIMES, to every chat; never to be repeated)
 Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped for an hour while holding her authority.
 1. Sim's questions come first, always. When Sim asks a question, it is answered before anything else, every time. No question

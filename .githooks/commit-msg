@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Time guard (Sim, Nov 13): refuse a commit message whose times can't have come from the clock:
+#  - placeholders or estimates: "6:2x", "~3:25", "about 4 PM", "around 9:10"
+#  - a time later than the clock right now (more than 2 minutes ahead), on today's Eastern date
+# Earlier times are allowed (messages may name when something happened); copy them from docs/rebuild/now.sh or the decision log.
+msg=$(grep -v '^#' "$1")
+bad=$(printf '%s' "$msg" | grep -oiE '([0-9]{1,2}:[0-9]x)|(~ ?[0-9]{1,2}(:[0-9]{2})?)|((about|around|roughly|approx\.?) [0-9]{1,2}(:[0-9]{2})? ?(AM|PM))' | head -3)
+if [ -n "$bad" ]; then echo "commit refused: a time that wasn't read from the clock: $bad (run docs/rebuild/now.sh)" >&2; exit 1; fi
+now=$(TZ=America/New_York date +%s)
+for t in $(printf '%s' "$msg" | grep -oE '\b[0-9]{1,2}:[0-9]{2} ?(AM|PM)\b' | tr -d ' '); do
+  s=$(TZ=America/New_York date -d "today ${t%??} ${t: -2}" +%s 2>/dev/null) || continue
+  if [ $((s - now)) -gt 120 ]; then echo "commit refused: $t is later than the clock ($(TZ=America/New_York date '+%-I:%M %p')); run docs/rebuild/now.sh" >&2; exit 1; fi
+done
+exit 0

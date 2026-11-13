@@ -16,6 +16,8 @@ claim something is being done or is done unless it truly is. Every check: comman
 wrong statement to Sim the moment it's found.
 
 ## Times are always read from the clock (Sim, Nov 12)
+Nov 13: run `bash docs/rebuild/now.sh` in the same step as writing any time; `git config core.hooksPath .githooks` at session
+start (commit guard). docs/rebuild/RULES.md section 00t.
 Sim is strict and punctual about times. Never type a time from memory or estimate it ("~3:25"). Every time written anywhere
 (decisions.md, docs, messages to Sim, commit messages) comes from the clock first: `TZ=America/New_York date`. For the decision
 log use `bash docs/rebuild/log-decision.sh "..."`, which stamps the entry with the clock's time itself.
