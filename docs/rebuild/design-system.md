@@ -105,7 +105,7 @@ Corrections to the reference README:
 - Page gutters: 16 (phone) / 32 (tablet) / 96 (desktop 1440+), max content width 1440, centred.
 - Breakpoints: 700 (phone to tablet), 1000 (two-column work area), 1440 (three columns). Layouts are fluid between them
   and must hold at every width from 320 to 2560 and while the window is being dragged.
-- Corners: 4 / 6 / 10 / 18 / round. Round only for avatars and slider knobs, never for chips or buttons.
+- Corners: 4 / 6 / 10 / 18 / round. Round is fine where it fits (Sim, Nov 12, 8:43 PM; was "round only for avatars and slider knobs, never for chips or buttons"). Claude's suggestion, not a rule: keep buttons, plates and chips slanted (part of the look); round suits count badges, track dots, the day/night switch, small tips.
 - Slant: one angle, -24deg skew for marks (the 18x8 team mark, eyebrow mark, nav underline); plates and buttons use the
   clip-path slant (11-14px offset at each end). Tilted panels: skewY(-7deg).
 - Tap targets: 44px minimum on touch, 36px on mouse screens.

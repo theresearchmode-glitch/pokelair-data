@@ -100,9 +100,7 @@ function renderMatchup() {
   const monLine = (i, tag) => { const hs = handles(i);
     return `<div class="muline"><span class="mutag ${tag === 'Lead' ? 'lead' : ''}">${tag}</span><span class="in">${nm(i)}</span><span class="chips">${mine[i].types.map(t => chip(t)).join('')}</span><span class="t2">${hs.length ? 'Good into ' + hs.map(th).join(', ') : 'Flexible pick, no standout matchup'}</span></div>`; };
   // their biggest threats: who hits several of your picks super effectively
-  const threats = theirs.map((o, j) => { const hit = r.chosen.filter(i => r.h.def[i][j] && r.h.def[i][j].x >= 2);
-    const ans = r.chosen.filter(i => r.h.M[i][j] >= 1); return {j, hit, ans, move: hit.length ? r.h.def[hit[0]][j].e.move : ''}; })
-    .filter(t => t.hit.length >= 2 || (t.hit.length && !t.ans.length)).sort((a, b) => b.hit.length - a.hit.length).slice(0, 4);
+  const threats = deeperThreats(r, theirs); // shared with the rebuild's Battle (Nov 12)
   const grid = `<details class="foot"><summary>Full matchup grid</summary><div class="tablewrap" style="margin-top:8px"><table><tr><th class="t">You ↓ / Them →</th>${theirs.map(o => `<th title="${esc(o.d)}">${esc(o.d.replace('Mega ', 'M·').slice(0, 12))}</th>`).join('')}</tr>
     ${mine.map((m, i) => `<tr><td class="t">${nm(i)}</td>${theirs.map((o, j) => { const v = r.h.M[i][j]; const c = v >= 1.5 ? 'mq' : v >= .75 ? 'mh' : v <= -1.5 ? 'm4' : v <= -.75 ? 'm2' : ''; return `<td><span class="m ${c}">${v > 0 ? '+' : ''}${Math.round(v * 4) / 4}</span></td>`; }).join('')}</tr>`).join('')}</table></div>
     <p>Plus means you hit them harder than they hit you, using each side's most common moves and abilities. Speed breaks ties.</p></details>`;
@@ -236,3 +234,10 @@ function wxKeyOf(ms) { if (!ms || !ms.length) return null; let a = null; try { a
   const pick = keys => { const f = a.field.filter(x => keys.includes(x.key)); const x = f.find(y => y.active) || f[0]; return x ? x.key : null; };
   return pick(WEATHER_KEYS) || pick(TERRAIN_KEYS); }
 const wxName = k => WXFX[k] ? WXFX[k].n + ' team' : '';
+
+// their biggest threats to your four: who hits several of your picks super effectively (moved out of renderMatchup, Nov 12, so the
+// rebuild's Battle "Deeper read" shows the same list). r = planMatchup(mine, theirs, ...).
+function deeperThreats(r, theirs) {
+  return theirs.map((o, j) => { const hit = r.chosen.filter(i => r.h.def[i][j] && r.h.def[i][j].x >= 2);
+    const ans = r.chosen.filter(i => r.h.M[i][j] >= 1); return {j, hit, ans, move: hit.length ? r.h.def[hit[0]][j].e.move : ''}; })
+    .filter(t => t.hit.length >= 2 || (t.hit.length && !t.ans.length)).sort((a, b) => b.hit.length - a.hit.length).slice(0, 4); }
