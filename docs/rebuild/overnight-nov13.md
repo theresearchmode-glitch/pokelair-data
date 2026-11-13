@@ -118,3 +118,14 @@ After 2:27 AM (on the Preview since v92, 2:35 AM):
   lines). Rechecked with full data: Home matches its mock-up apart from changes Sim chose.
 - WRONG comparison: "Build at 1100: 3,428 over 1,800". The limits are set at 390 / 820 / 1440. With full data, Build after
   building: 1440 2,121 (over 1,800 by 321); 820 3,490 (inside 3,500); phones with the new tabs 3,167 / 2,469 / 3,148 (inside 3,700).
+
+## Side-by-side with the approved mock-ups (Sim, Nov 13 morning)
+- Home (home.html mock-up, 1440, full data): matches, apart from changes Sim chose since (headline "The Meta, right now.",
+  outlined Build Around It, first-visit welcome card).
+- Battle (battle.html): found and fixed a regression of mine (Look Q3 left a wider gap inside the tab names on desktop; fixed
+  ddfc980, Preview v94). Differences: the head's "Vs the Champion's six: 9-1 at ..." line and the archetype beside Their six /
+  Your six (known, item i24, BATTLE-01); "How turn one is worked out ›" (Battle Q1, asked with pictures).
+- Build (build.html): "Teams with it ›" per core (CORES-09; its page isn't rebuilt), "Sets and roles ›" (i15), "Open all 3 ›"
+  beside Recent Winners (added to i16). Longer at 1440 (2,121 vs the mock-up's 1,796): Other Options cards are taller.
+- My Team: no separate mock-up (its mock-ups were retired when the real page replaced them; approved piece by piece).
+- Tests after this morning: Battle 21 (new site) and 86/0 (today's page), Build 24, both unchanged.
