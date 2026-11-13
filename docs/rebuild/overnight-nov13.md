@@ -146,3 +146,7 @@ Mock-ups only (CSS added in the screenshot script; the site's code is unchanged)
   - My Box: "Build around it" is in the mock-up's panel, not the built one (i37); headline "My / Box" on two lines (i38).
   - Info sheet: "Report a mistake" (today's site and the mock-up) is missing on the new site (i39); layout differs from the
     mock-up (built Nov 12 after Sim saw the D12-14 pictures; unsure she chose this exact layout).
+- CORRECTION (Build Q1 B): my first 820 mock-up was broken (3 cards across and 2-column Cores crushed names and numbers), so its
+  820 numbers were wrong. Fixed version: wide layouts only from 1180; 820 keeps today's stacked cards and 1-column Cores inside the
+  tabs: 2,374 / 2,394 (one team open) / 2,548. 1180: 1,559 / 1,676 / 1,838, names in full. Cores show 8 first (was 7) in B so
+  2 columns end even. Preview v95 (394 files) carries the two heading fixes.
