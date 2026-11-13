@@ -324,8 +324,12 @@ t('TEAM-19', 'Empty team: Darkrai, invitation, "Add your first Pokémon" opens t
     const r = await myTeam({team: []}); const tx = await r.ui.text();
     has(tx, /^My Team · 0 of 6 · No team yet Six spots, all yours\. Add a Pokémon to start, or let us build a whole team around a favourite\. Build Me a Team Add a Pokémon Import a [Tt]eam /); /* Title Case (Sim, Nov 12) */
     has(tx, /Today's underdog (.+?)\. Somebody's favourite\. Rarely picked in tournaments, but every Pokémon deserves its moment\. Maybe it's yours\? Add \1 to My Team Info Sheet/);
-    const pics = await r.ui.emptyTeamPictures(); ok(pics.length === 1 && pics[0].underdog && /art\/\d+\.webp$/.test(pics[0].src), 'pictures on the empty My Team are not just the underdog\'s sprite (no Darkrai): ' + JSON.stringify(pics));
-    ok(await r.ui.emptyTiles() === 0, 'six "+ Add" tiles still shown'); ok(!/Suggestions|Matchups|Who Beats You|Team Checks/.test(tx), 'parts 1-3 still shown');
+    /* Sim, Nov 13 (First visit Q1 B, the approved first-visit mock-up): six empty spots beside the lead, and "Or Start from a
+       Winner" (today's six highest-rated) beside the underdog; still no Darkrai: one underdog sprite + six winner sprites */
+    const pics = await r.ui.emptyTeamPictures(), ud = pics.filter(x => x.underdog), other = pics.filter(x => !x.underdog);
+    ok(ud.length === 1 && /art\/\d+\.webp$/.test(ud[0].src) && other.length === 6 && other.every(x => /art\/\d+\.webp$/.test(x.src)), 'pictures on the empty My Team are not the underdog + six winners (no Darkrai): ' + JSON.stringify(pics));
+    has(tx, /Or Start from a Winner Today's six highest-rated Pokémon\. Tap one to build a team around it\./);
+    ok(await r.ui.emptyTiles() === 6, 'not six "+ Add a Pokémon" spots'); ok(!/Suggestions|Matchups|Who Beats You|Team Checks/.test(tx), 'parts 1-3 still shown');
     await r.ui.tapText(/^Add a Pokémon$/, 900); const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'Add a Pokémon did not open the add box with the name box focused'); await r.ui.closeEditPanel(); await r.ui.settle();
     await r.ui.tapText(/^Build Me a Team$/, 900); ok(await r.ui.current() === 'auto', 'Build Me a Team did not open Build (' + await r.ui.current() + ')'); await r.close(); return; }
   const r = await myTeam({team: []}); const tx = await r.ui.text();
