@@ -3,6 +3,18 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 10:00 AM Eastern by the clock; Sim's authority until 5:00 PM)
+- PREVIEW v98 (394 files checked). Built today with Sim's yes (all recommendations, 8:47 AM): Build Q1 B (v96, tabs on every
+  size; 1440 2,121 -> 1,499; phones pixel-identical), My Team Q1 B (v97, Stand-Outs at most 4+4), My Box Q2 B (v97, Build Around
+  It in the panel), First visit Q1 B + Q2 A (v98, six empty spots + 'Or Start from a Winner', no sample button). Kept: My Team
+  Q2 A, Battle Q1 B, My Box Q1 A. Each: c13, tests (no test changed; TEAM-19 updated to the approved design), use 32/0.
+- New today: times only from docs/rebuild/now.sh; .githooks/commit-msg refuses estimated/future times and model names (run
+  `git config core.hooksPath .githooks` at session start); experiments/visual-diff.mjs = before/after picture check (EXPECT=
+  widths where change is intended; proven on the Look Q3 regression). Commit 915b83e's model line removed with Sim's permission
+  (history rewritten on claude/design6 only; 316 older commits with the line stay, Sim: 'not a big deal').
+- IN PROGRESS: i42, re-check of every built page against rules changed since it was built (3 look-only helpers on
+  app/dist/v2-recheck.html; Claude judges findings; catch-ups fixed one at a time, design choices to Sim with pictures).
+
 ## NOW (Nov 13, written 6:37 AM Eastern by the clock; Sim's authority until 9:00 AM)
 - PREVIEW v95 (6:24 AM, 394 files checked): adds title case on 'Other Options' and 'Scouting Report' to v94.
 - Sim's main ask today: shorter pages through layout, not higher limits (checklist i35). Questions sent with labelled pictures:
