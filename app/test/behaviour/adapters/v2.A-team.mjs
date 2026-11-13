@@ -61,7 +61,7 @@ export default (ui, pg, o) => {
     press: async (k, wait = 400) => { await pg.keyboard.press(k); await pg.waitForTimeout(wait); },
     focusName: () => pg.evaluate(() => { const e = document.activeElement; if (!e || e === document.body) return ''; return (e.getAttribute('aria-label') || e.innerText || e.value || e.placeholder || '').replace(/\s+/g, ' ').trim(); }),
     /** is a pressable choice (slider button, tab) with this label chosen? null if not found */
-    chosen: label => pg.evaluate(l => { const b = [...document.querySelectorAll('button[aria-pressed],[role=tab],[data-tmjump]')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim().toLowerCase() === l.toLowerCase());
+    chosen: label => pg.evaluate(l => { const root = (window.V2 && V2._sheet && V2._sheet.wrap) || document; /* an open sheet's controls first (Nov 12: My Team's 'Matchups' tab matched before Saved Teams' sort) */ const b = [...root.querySelectorAll('button[aria-pressed],[role=tab],[data-tmjump]')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim().toLowerCase() === l.toLowerCase());
       return b ? (b.getAttribute('aria-pressed') || b.getAttribute('aria-selected') || b.getAttribute('aria-current')) === 'true' : null; }, label),
     choose: async (label, wait = 700) => { const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('button[aria-pressed]')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim().toLowerCase() === l.toLowerCase()); if (b) b.click(); return !!b; }, label);
       if (!ok) throw new Error('no choice labelled ' + label + ' (not in v2 yet, or a different label)'); await pg.waitForTimeout(wait); },

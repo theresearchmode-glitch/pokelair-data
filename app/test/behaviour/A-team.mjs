@@ -117,7 +117,7 @@ t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion s
   const r = await aopen({fresh: true}); const tx = await r.ui.text();
   // new build (decisions.md Nov 12): the weather word sits in the eyebrow "Your six · <team name> · Sun team"
   has(tx, 'Sun Tailwind (sample)'); has(tx, NEW ? /Your six · Sun Tailwind \(sample\) · Sun team/ : /Your team: 6\/6 Sun team/);
-  ok(/Game plan vs the Champion's six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\./.test(await r.ui.homePlanLine() || ''), 'no lead/back/bench plan line: ' + await r.ui.homePlanLine());
+  ok(/Game [Pp]lan vs the Champion's six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\./.test(await r.ui.homePlanLine() || ''), 'no lead/back/bench plan line: ' + await r.ui.homePlanLine());
   has(tx, 'Open my team'); await r.ui.tapText('Prep vs the Champion', 1200); ok(await r.ui.current() === 'matchup', 'Battle did not open');
   ok(await r.ui.waitToast(/Opponent set/), 'no "Opponent set" toast'); const opp = await r.ui.peek('S.opp.filter(Boolean)'); ok(opp && opp.length === 6, 'opponent six not set');
   await sleep(1000); const ac = await r.acct(); ok(ac && ac.opp.filter(Boolean).length === 6 && Array.isArray(ac.recentOpp) && ac.recentOpp.some(x => x.join() === opp.join()), 'opponent / recent opponents not saved to the account: ' + JSON.stringify(ac && ac.recentOpp));
@@ -260,7 +260,7 @@ t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use Na
   pl = await r.ui.gamePlanLine(); ok(!/your pick/.test(pl), 'still "your pick": ' + pl); await r.close(); });
 
 t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => {
-  const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(/^Game plan vs the meta's top six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\.$/.test(await ui.gamePlanLine() || ''), 'plan line: ' + await ui.gamePlanLine());
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(/^Game [Pp]lan vs the meta's top six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\.$/.test(await ui.gamePlanLine() || ''), 'plan line: ' + await ui.gamePlanLine());
   const r = await myTeam({team: ['Garchomp', 'Incineroar']}); ok(/in team order/.test(await r.ui.gamePlanLine() || ''), 'under 4: no "in team order" line'); await r.close(); });
 
 t('TEAM-13', 'Team actions row: Save/Update label, ⋯ menu; empty team keeps only Saved Teams, My Box, ⋯ Import', async () => {
@@ -312,7 +312,7 @@ t('TEAM-15', 'Matchups summary: Favoured/Even/Unfavoured add to 30 and match the
   const l = tx.match(/Unfavoured (\d+) Even match (\d+) Favoured (\d+)/); ok(l && l[1] === m[3] && l[2] === m[2] && l[3] === m[1], 'header numbers differ from the Matchups legend'); });
 
 t('TEAM-16', 'Legal and "Team checks 4/4" badge with the rules tooltip', async () => {
-  const r = await myTeam({fresh: true}); const tx = await r.ui.text(); has(tx, /\bLegal\b/); has(tx, /Team [Cc]hecks 4\/4/); // today one badge "Legal Team checks 4/4"; new build a Legal mark + the Team Checks count
+  const r = await myTeam({fresh: true}); const tx = await r.ui.text(); has(tx, /\bLegal\b/); has(tx, /Team [Cc]hecks:? 4\/4/); /* new build (Sim, Nov 12, C1): the count sits on the Team Checks section heading, not the tab */ // today one badge "Legal Team checks 4/4"; new build a Legal mark + the Team Checks count
   ok(/Based on our reading of the Reg M-C rules/.test(await r.ui.rulesTooltip() || ''), 'no rules tooltip'); await r.close();
   const {ui} = await view('team', {team: TEAM}, 'My Team'); const t2 = await ui.text(); has(t2, /\bLegal\b/); has(t2, /Team [Cc]hecks 2\/4/); });
 
@@ -322,7 +322,7 @@ t('TEAM-19', 'Empty team: Darkrai, invitation, "Add your first Pokémon" opens t
   if (NEW) { /* new build (Sim, Nov 11): "Six spots, all yours." with Build Me a Team / Add a Pokémon / Import a team, and today's
     underdog (a rotating Pokémon from the bottom of our ratings) instead of Darkrai; no six "+ Add" tiles */
     const r = await myTeam({team: []}); const tx = await r.ui.text();
-    has(tx, /^My Team · 0 of 6 · No team yet Six spots, all yours\. Add a Pokémon to start, or let us build a whole team around a favourite\. Build Me a Team Add a Pokémon Import a team /);
+    has(tx, /^My Team · 0 of 6 · No team yet Six spots, all yours\. Add a Pokémon to start, or let us build a whole team around a favourite\. Build Me a Team Add a Pokémon Import a [Tt]eam /); /* Title Case (Sim, Nov 12) */
     has(tx, /Today's underdog (.+?)\. Somebody's favourite\. Rarely picked in tournaments, but every Pokémon deserves its moment\. Maybe it's yours\? Add \1 to My Team Info Sheet/);
     const pics = await r.ui.emptyTeamPictures(); ok(pics.length === 1 && pics[0].underdog && /art\/\d+\.webp$/.test(pics[0].src), 'pictures on the empty My Team are not just the underdog\'s sprite (no Darkrai): ' + JSON.stringify(pics));
     ok(await r.ui.emptyTiles() === 0, 'six "+ Add" tiles still shown'); ok(!/Suggestions|Matchups|Who Beats You|Team Checks/.test(tx), 'parts 1-3 still shown');
@@ -472,8 +472,8 @@ t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control co
   if (NEW) { /* new build (Sim, Nov 12): no Game Plan fold; the six's plan line starts with a "Game plan" link that opens a "Game Plan"
     sheet: eyebrow "My Team · <archetype>", one row per gamePlan() row (label, Covered / Partly / Missing / Optional, who, note).
     Nothing is remembered: after a reload no sheet is open and there is no Game Plan fold */
-    const r = await myTeam(); ok(/^Game plan vs the meta's top six: lead /.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game plan": ' + await r.ui.gamePlanLine());
-    await r.ui.tapText(/^Game plan$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
+    const r = await myTeam(); ok(/^Game [Pp]lan vs the meta's top six: lead /.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game Plan": ' + await r.ui.gamePlanLine());
+    await r.ui.tapText(/^Game [Pp]lan$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
     const W = s => String(s || '').replace(/\s+/g, ' ').trim();
     const want = await r.ui.peek("[(teamArchetype(members()) || {}).label || '', gamePlan(members()).rows.map(r => [r.label, ({ok: 'Covered', part: 'Partly', miss: 'Missing', opt: 'Optional'})[r.st] || 'Optional', r.who || '', r.note || ''])]");
     ok(want && want[1].length >= 7, 'no gamePlan() rows to compare: ' + JSON.stringify(want)); ok(g.eyebrow === 'My Team' + (want[0] ? ' · ' + want[0] : ''), 'eyebrow "' + g.eyebrow + '", want the archetype "' + want[0] + '"');
@@ -1061,7 +1061,7 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
     team" (opens Import). It is saved and open; My Box holds the default 36 ("36 Pokémon · 2 boxes"). The Saved Teams sheet is closed
     with its "← My Team" before going to My Box, as a player would (the sheet covers the page) */
     const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); const tx = await r.ui.text(); ok(await r.ui.teamHeading() === 'Sun Tailwind (sample)', 'heading: ' + await r.ui.teamHeading());
-    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. Build your own · Import a team /, 'sample note');
+    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. Build your own · Import a [Tt]eam /, 'sample note');
     ok(await r.ui.linkHref('Build your own') === '#build', '"Build your own" leads to ' + await r.ui.linkHref('Build your own'));
     await r.ui.tapText(/^Import a team$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');
@@ -1095,7 +1095,7 @@ t('X-07', 'Folds and views stay as left after reload (Game Plan, Types view, inf
   if (NEW) { /* new build (Sim, Nov 12): Game Plan is a sheet from the plan line (nothing remembered: no sheet after a reload); Types sits
     in the Things to Know fold (fold kept open, cc2.chf.rfix) and keeps its Offense / Defense view (np2.seg.types); the pool is kept */
     const r = await myTeam(); await r.ui.openFold('Things to Know', true, 600); await r.ui.choose('Defense', 800); await r.ui.choose('Whole roster', 900);
-    await r.ui.tapText(/^Game plan$/, 900); ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
+    await r.ui.tapText(/^Game [Pp]lan$/, 900); ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
     await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(!(await r.ui.gamePlanSheet()), 'Game Plan sheet came back after a reload');
     ok(await r.ui.foldOpen('Things to Know') === true, 'Things to Know closed'); ok(await r.ui.chosen('Defense') === true && /^Types Offense Defense What hits you\./.test(await r.ui.typesPart() || ''), 'Types view not kept');
     ok(await r.ui.chosen('Whole roster') === true, 'pool not kept'); await r.close(); return; }
