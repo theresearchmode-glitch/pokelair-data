@@ -1085,3 +1085,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 /* Box Q1 B (proposal): a box that isn't full keeps its full size and shows its empty spots, like the in-game box; the arrows and dots stay put when you flip boxes */
 .bx-grid:has(.bx-slot){grid-auto-rows:1fr}.bx-slot{border:1.5px dashed color-mix(in srgb,var(--ink) 16%,transparent);border-radius:var(--r-s);margin:var(--s1)}
+
+/* Box Q3 B (Sim, Nov 13): 'Too few' (too few games for a win rate) in words, one size below the numbers, on one line; 17 px under 360 */
+.bx-n.few b,.ms-n.few b{font-size:var(--t20);line-height:1.4;white-space:nowrap}@media (max-width:359px){.bx-n.few b,.ms-n.few b{font-size:var(--t17)}}
