@@ -835,3 +835,8 @@
 
 .ms-add.ms-on{font:700 var(--t15)/1.5 var(--b);color:var(--ink)} /* sheet: 'On your team ✓' after adding (Sim, Nov 12, decision 15) */
 @media (max-width:359px){.hm-duel .hm-acts .np-btn2{flex-basis:100%}} /* 320: "Copy for Showdown" needs 142px, half a row gives 132 (measured Nov 12): each button gets its own row */
+@media (max-width:699px){.bd-alt-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}} /* Sim, Nov 12 (decision 11): three across on phone, every name in full */
+
+/* Home duel as one switch on phone (Sim, Nov 12, decision 20 A) */
+.hm-dsw{display:none}
+@media (max-width:699px){.hm-dsw{display:block}.hm-duel:has(.hm-dsw){row-gap:var(--s5)}.hm-duel[data-show="them"] .hm-you,.hm-duel[data-show="you"] .hm-them{display:none}}

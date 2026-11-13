@@ -46,7 +46,9 @@ V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
   const acts = ms.length ? `${C && FC ? `<button type="button" class="np-btn" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}">Prep vs the Champion</button>` : ''}<a class="np-link" href="#team">Open My Team ›</a>` : '<a class="np-btn" href="#team">Add Your Six</a>';
   let wx = ''; try { const k = ms.length ? wxKeyOf(ms) : null; if (k) wx = wxName(k); } catch (e) {} // today's weather word (HOME-16)
   const you = `<div class="hm-side hm-you"><div class="hm-hd"><p class="hm-k2">Your six${title ? " · " + E(title) : ""}${wx ? ' · ' + E(wx) : ''}</p>${score}${/\(sample\)\s*$/i.test(title) ? `<p class="fine hm-sample">This is a sample team, here to show how NastyPlot works. <span class="tm-sample-acts"><a class="np-link" href="#build">Build your own</a> · <button type="button" class="np-link" data-v2homeimport>Import a team</button></span></p>` : ''}</div><div class="hm-six">${six}</div>${plan}<div class="row hm-acts">${acts}</div></div>`;
-  return `<section class="hm-duel">${them}${you}</section>`; };
+  // Sim, Nov 12 (decision 20 A): on phone the two sixes are one switch, one six at a time (iPad and desktop keep both side by side)
+  const ds = C && V2.hmUi.duel === 'you' ? 'you' : 'them', sw = C ? `<div class="hm-dsw">${V2.slide('homeduel', [['them', "Champion's six"], ['you', 'Your six']], ds, 'Show which six')}</div>` : '';
+  return `<section class="hm-duel" data-show="${C ? ds : 'you'}">${sw}${them}${you}</section>`; };
 // Home piece 3 (mock-up R2): Top of the Meta (Top rated / Hidden gems, today's lairRows, isGem, lairRank and words) beside today's
 // underdog and This week in the ratings (META.track.mv, up to 12 kept since Nov 12: Sim asked for more rows to fill the space).
 // A move is shown on the same scale as the ratings people see (RS), so "up 5 points" matches the numbers on the Ratings page.
@@ -80,6 +82,8 @@ V2.homeMeta = () => { const E = V2.esc, rows = lairRows(), top = rows.slice(0, 1
   const wk = W.length ? `<div class="hm-wk"><h3 class="u">This week in the ratings</h3><p class="hm-hint">Biggest moves in rating since last week. Tap one for its info sheet.</p>
     <ul>${W.map(w => `<li><button type="button" class="hm-mv" data-v2mon="${E(w.n)}" aria-label="${E(V2.disp(w.n))}, rating ${w.r}, ${w.d > 0 ? 'up' : 'down'} ${Math.abs(w.d)} points this week"><span class="hm-mvn">${(id => id ? `<span class="hm-ri"><img src="${V2.art(id)}" alt="" loading="lazy"></span>` : '')(typeof SPRITE_ID === 'object' ? SPRITE_ID[w.n] : null)}<span>${V2.rowName(V2.disp(w.n))}</span></span><i class="${w.d > 0 ? 'up' : 'dn'}" aria-hidden="true">${w.d > 0 ? '▲ up' : '▼ down'} ${Math.abs(w.d)} <span class="unit">points</span></i></button></li>`).join('')}</ul></div>` : '';
   return `<section class="hm-meta">${left}<div class="hm-side2">${dog}${wk}</div></section>`; };
+try { V2.hmUi.duel = localStorage.getItem('np2.seg.homeduel') === 'you' ? 'you' : 'them'; } catch (e) { V2.hmUi.duel = 'them'; }
+document.addEventListener('v2slide', e => { if (e.detail.key !== 'homeduel') return; V2.hmUi.duel = e.detail.value === 'you' ? 'you' : 'them'; try { localStorage.setItem('np2.seg.homeduel', V2.hmUi.duel); } catch (x) {} V2.redraw(); });
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'homegems') return; V2.hmUi.top = e.detail.value; try { localStorage.setItem('np2.seg.homegems', e.detail.value); } catch (x) {} V2.redraw(); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-hmaround]'); if (!b) return; const p = byName.get(b.dataset.hmaround); if (!p) return;
   ui.abLock = p.n; if (typeof inBox === 'function' && !inBox(p)) ui.abSrc = 'all'; if (V2.closeSheet && b.closest('.ms2')) V2.closeSheet(true); location.hash = '#build'; });

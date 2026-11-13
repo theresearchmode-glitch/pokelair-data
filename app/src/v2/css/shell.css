@@ -11,7 +11,7 @@
 .np-search>*{transform:skewX(10deg)}.np-search kbd{font:600 var(--t13)/1 var(--b);padding:2px 6px;border:1px solid var(--rule);border-radius:var(--r-s)}
 .np-theme{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
 /* Back (Sim, Nov 12): one step back in the site, first in the top bar; only there when there's somewhere to go back to */
-.np-goback{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;margin:0 calc(var(--s4) * -1) 0 calc(var(--s3) * -1);color:var(--plot-text)}.np-goback[hidden]{display:none}
+.np-goback{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;margin:0 calc(var(--s4) * -1) 0 calc(var(--s3) * -1);color:var(--plot-text)}.np-goback[hidden]{visibility:hidden} /* Sim, Nov 12 (decision 4 B): the spot is always kept, so the logo and menu never move */
 .np-goback .np-ic{width:24px;height:24px}
 /* My Box quick link: a box icon next to Day/Night (Sim, Nov 11: the box deserves eyes; an icon, not a menu place) */
 .np-boxlink{position:relative}.np-boxlink .np-ic{width:24px;height:24px}.np-boxlink[aria-current="page"]{color:var(--ink)}
@@ -50,7 +50,7 @@ html,body{overflow-x:clip}
 @media (min-width:700px) and (max-width:759px){.np-head .logo svg{height:30px}}
 @media (max-width:359px){.np-head .logo svg{height:26px}}
 @media (max-width:329px){.np-head .tools{gap:var(--s1)}}
-@media (max-width:359px){.np-head{gap:var(--s2)}.np-goback{margin-right:calc(var(--s1) * -1)}.np-goback:not([hidden])~.tools .np-search{padding:0 var(--s2)}}
+@media (max-width:359px){.np-head{gap:var(--s2)}.np-goback{margin-right:calc(var(--s1) * -1)}.np-goback~.tools .np-search{padding:0 var(--s2)}}
 /* A8 proposal (Sim's fix plan, rule C9: text behind the bars must never be legible): the glass stays, but the tint is 96% on
    every screen (was 82% header / 86% phone bar on mouse screens, 92% on touch), and where a browser can't blur, the bars are solid */
 .np-head,.np-bar,.np-dock{background:color-mix(in srgb,var(--bg) 96%,transparent)}
