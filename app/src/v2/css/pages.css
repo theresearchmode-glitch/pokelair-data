@@ -794,7 +794,7 @@
 /* from 1180 the width is used side by side: Other Options 3 cards across (six in 3 x 2, names in full), a winner's sets 3 across,
    the cores list in 2 columns (8 shown first, so rows end even) */
 @media (min-width:1180px){.bd-others{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s10)}.bd-others>.bd-hd,.bd-others>.bd-sub{grid-column:1/-1}
-  .bd-others .bd-alt{display:flex;flex-direction:column}.bd-others .bd-alt-top{grid-template-columns:minmax(0,1fr)}.bd-others .bd-alt-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}.bd-others .bd-alt-meta{margin-top:auto;padding-top:var(--s2)}
+  .bd-others .bd-alt{display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:0}.bd-others.n2{grid-template-columns:repeat(2,minmax(0,1fr))}.bd-others.n2 .bd-alt-six{grid-template-columns:repeat(6,minmax(0,1fr))}.bd-others.n1{grid-template-columns:minmax(0,1fr)} /* review (Nov 13): titles, sixes and footers line up across the cards; 2 options fill 2 columns, no empty third */.bd-others .bd-alt-top{grid-template-columns:minmax(0,1fr)}.bd-others .bd-alt-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}.bd-others .bd-alt-meta{margin-top:auto;padding-top:var(--s2)}
   .bd-wins .bd-wsix>*{width:56px}.bd-wins .bd-sets{grid-template-columns:repeat(3,minmax(0,1fr))}
   .bd-clist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12)}}
 .bd-hd{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}.bd-hd h2{font-size:var(--t34);margin:0}.bd-k{font:600 var(--t13)/1 var(--b);color:var(--ink-2);white-space:nowrap}
