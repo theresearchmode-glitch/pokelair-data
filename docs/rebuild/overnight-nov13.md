@@ -39,7 +39,8 @@ On the Preview (v88 at 11:46 PM, v89 at 12:14 AM, 394 files each): title case + 
 
 ## Measured: page heights (fresh table in docs/rebuild/page-heights.md)
 My Team is inside every limit in its normal state. Over: with 5 of 6 (320: 4,169 / 3,900; 390: 4,040 / 3,750; 1440:
-1,917 / 1,800) and with six long imported names (3,944 / 3,842 / 1,863). Home, Build, Battle inside. After Apply: unknown
+1,917 / 1,800) and with six long imported names (3,944 / 3,842 / 1,863). Home and Battle inside. Build: inside before you tap
+Build, but far over AFTER building (390: 4,807 / 3,700; 1100: 3,428 / 1,800); I first wrote "Build inside", wrong (corrected 12:53 AM). After Apply: unknown
 (today's data offers the sample team nothing to apply).
 
 ## Questions for you (each with labelled pictures in the morning message)

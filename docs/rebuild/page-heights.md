@@ -30,7 +30,8 @@ This table records the rule in design-system.md section 9. Heights are full page
 > | My Team, after Suggestion 1's Apply | unknown: today's data gives the sample team no suggestion that raises its score, so there was nothing to apply | | | |
 > | My Team, every fold open (no limit set) | 6,530 | 6,217 | 5,026 | 4,017 |
 > | Home | 4,203 ok | 3,799 ok | 3,437 ok | 2,910 ok (2,950) |
-> | Build (after building) | 2,973 ok | 2,390 ok | 1,761 ok | 1,342 ok |
+> | Build (before tapping Build; the check doesn't build a team. CORRECTION 12:53 AM: I first labelled this row "after building", wrongly) | 2,973 ok | 2,390 ok | 1,761 ok | 1,342 ok |
+> | Build after building (Nov 13, 12:50 AM screenshot run, file time; Chromium, day 390/600, night 1100) | | 4,807 **over** (3,700) | 600: 4,196 | 1100: 3,428 **over** (1,800) |
 > | Battle | 4,620 ok (4,650) | 4,097 ok (4,100) | 3,142 ok | 1,928 ok (1,950) |
 >
 > Where 5 of 6 grows (390, section heights): Matchups +168, Suggestions +107, Team Checks +105, the top +47, Your Games -89
