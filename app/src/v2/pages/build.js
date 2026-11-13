@@ -16,7 +16,7 @@ V2.buildHead = () => { const E = V2.esc, nBox = (S.box || []).length, lk = ui.ab
     <div class="bd-opt bd-go"><button type="button" class="${ui.ab ? 'np-btn2' : 'np-btn'}" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${label}${ui.ab && !busy ? ' ↻' : ''}</span></button></div></div>`;
   return head + opts; };
 V2.buildHits = q => { q = String(q || '').trim().toLowerCase(); if (!q) return '';
-  const r = ROSTER.filter(p => !p.m && (p.d || p.n).toLowerCase().includes(q)).slice(0, 6);
+  const r = searchMon(q, 40).slice(0, 6); /* today's search (04-search.js, shared): Megas included, word-start matching (audit AUTO-05) */
   return r.length ? r.map(p => `<button type="button" class="np-hit" data-bdpick="${V2.esc(p.n)}">${SPRITE_ID[p.n] ? `<img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy">` : ''}<b>${V2.esc(p.d || p.n)}</b></button>`).join('')
     : `<p class="fine">No Pokémon called “${V2.esc(q)}”.</p>`; };
 V2.pages.build = {place: 'build', draw() { return `<div class="bd2">${V2.buildHead()}<section class="bd-result" aria-live="polite">${ui.ab && ui.ab.busy ? '<p class="fine">Building from real winning teams…</p>' : ''}</section></div>`; }};
