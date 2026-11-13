@@ -6,7 +6,7 @@ V2.bdUi = V2.bdUi || {find: ''};
 V2.buildHead = () => { const E = V2.esc, nBox = (S.box || []).length, lk = ui.abLock && byName.get(ui.abLock);
   const head = `<div class="bd-head"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles</span></p><h1 class="u">Build me <span class="pl">a team.</span></h1></div>
     <div class="bd-side"><p>Winning tournament teams you can field from your box or the whole roster.</p><button type="button" class="np-link" data-bdhow>How It Works ›</button></div></div>`;
-  const src = V2.slide('bdsrc', [['box', `My Box ${nBox}`], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
+  const src = V2.slide('bdsrc', [['box', 'My Box'], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
   const meg = V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');
   const around = lk ? `<div class="bd-pick">${SPRITE_ID[lk.n] ? `<img src="${V2.art(SPRITE_ID[lk.n])}" alt="">` : ''}<b>${V2.nameHtml(V2.disp(lk.n))}</b><button type="button" class="bd-x" data-bdx aria-label="Stop building around ${E(V2.disp(lk.n))}">×</button></div>`
     : `<label class="np-field bd-find">${V2.ICON.search}<input type="search" data-bdfind value="${E(V2.bdUi.find)}" placeholder="Optional" aria-label="Build around a Pokémon (optional): type its name" autocomplete="off"></label><div class="bd-hits" data-bdhits></div>`;
@@ -135,8 +135,8 @@ document.addEventListener('click', e => { if (e.target.closest && e.target.close
 
 // ---------- Build: the phone jump bar (mock R2, under 700 wide): Other options · Cores · Recent winners, sticky under the top bar ----------
 // Buttons that scroll, not links: the site's addresses name pages, so a #section link would change the page (and add a Back step).
-V2.buildJump = (oth, win) => { const res = ui.ab && ui.ab.doubles, b = (k, t, n) => `<button type="button" data-bdjump="${k}">${t}${n != null ? ` <small>${n}</small>` : ''}</button>`;
-  return `<nav class="bd-jump" aria-label="Jump to a section">${oth ? b('others', 'Other Options', res.teams.length - 1) : ''}${win ? b('wins', 'Recent Winners', 3) : ''}${b('cores', 'Cores', homeNum(coreRows().length))}</nav>`; };
+V2.buildJump = (oth, win) => { const res = ui.ab && ui.ab.doubles, b = k_t => `<button type="button" data-bdjump="${k_t[0]}">${k_t[1]}</button>`; /* names only (Sim, Nov 12) */
+  return `<nav class="bd-jump" aria-label="Jump to a section">${oth ? b(['others', 'Other Options']) : ''}${win ? b(['wins', 'Recent Winners']) : ''}${b(['cores', 'Cores'])}</nav>`; };
 V2.bdJumpSpy = () => { const nav = document.querySelector('.bd-jump'); if (!nav || getComputedStyle(nav).display === 'none') return; const y = nav.getBoundingClientRect().bottom + 8; let on = null;
   for (const k of ['others', 'wins', 'cores']) { const sec = document.querySelector('.bd-' + k); if (sec && sec.getBoundingClientRect().top <= y) on = k; }
   if (!on) on = (nav.querySelector('[data-bdjump]') || {dataset: {}}).dataset.bdjump; for (const x of nav.querySelectorAll('[data-bdjump]')) x.classList.toggle('on', x.dataset.bdjump === on); };

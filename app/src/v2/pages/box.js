@@ -71,7 +71,7 @@ V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.
       <div class="bx-name"><h2 class="u">Box ${V2.bx.page + 1}</h2><p>${D.here.length} of ${n} · ${E(V2.bxRange(D.so, D.here))}</p></div>${nav ? '<button type="button" class="bx-arr" data-bxgo="1" aria-label="Next box"><span>▶</span></button>' : '<span></span>'}</div>
     ${D.here.some(([b]) => D.on.has(b)) ? '<p class="bx-onkey"><i class="bx-on" aria-hidden="true"></i>On your team</p>' : ''}<div class="bx-grid">${D.here.map(([b, d]) => V2.bxTile(b, d, D.on.has(b), b === V2.bx.sel, !V2.bx.sel && b === D.shown)).join('')}</div>${dots}</div>`;
   const ms = members(), four = ms.length >= 4 ? CH.four(ms) : null, role = m => !four ? '' : four.lead.includes(m.p.n) ? 'Lead' : four.back.includes(m.p.n) ? 'Back' : 'Bench';
-  const team = `<div class="bx-team"><div class="bx-teamhd"><h2 class="u">Your Team</h2><a class="np-link" href="#team">${ms.length} of 6 · Open My Team</a></div>
+  const team = `<div class="bx-team"><div class="bx-teamhd"><h2 class="u">Your Team</h2><a class="np-link" href="#team">Open My Team</a></div>
     ${ms.length ? `<ul>${ms.map(m => `<li>${V2.mon(m.p.n, {iw: 72, sub: role(m)})}</li>`).join('')}</ul>` : '<p class="fine">No team yet. Pick a Pokémon in your box and add it.</p>'}</div>`;
   return `<section class="bx2">${head}<div class="bx-mid">${sort}${box}</div>${team}<aside class="bx-side" aria-label="Picked Pokémon">${D.shown ? V2.bxSum(D.shown) : ''}</aside>${tools}</section>`; }};
 
