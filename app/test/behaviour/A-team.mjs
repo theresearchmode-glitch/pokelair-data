@@ -58,7 +58,7 @@ t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', as
   has(tx, /Most used in (January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)[^.]*\. Data as of [A-Z][a-z]{2} \d{1,2}/, 'Home data line'); });
 
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {
-  const r = await homePage(); const tx = await r.ui.text(); has(tx, 'This week in the ratings');
+  const r = await homePage(); const tx = await r.ui.text(); has(tx, /This [Ww]eek in the [Rr]atings/); /* Title Case on the new site (Sim's Nov 12 rule) */
   // new build (decisions.md Nov 12, Sim "add a few more"): up to 7 rows on desktop, each "<name> ▲ up N points" (shown scale)
   const chips = await r.ui.ratingMoves(); ok(chips.length >= 1 && chips.length <= (NEW ? 7 : 6), `${chips.length} rating-move chips`);
   for (const c of chips) ok((NEW ? /[▲▼] (up|down) \d+ points$/ : /[▲▼] \d+$/).test(c.text), `chip "${c.text}" has no arrow and number`);
@@ -128,7 +128,7 @@ t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion s
 t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import', async () => {
   const r = await aopen({fresh: true}); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'Home');
   await r.ui.go('My Team', 1500); await r.ui.settle(); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'My Team');
-  has(await r.ui.text(), 'Build your own'); await r.ui.tapText('Import a team', 1000); const p = await r.ui.editPanel(); /* new build: the import sheet is headed "Paste a Team" (as HOME-07 / IO-01's new-build branches) */ ok(p && (NEW ? p.title === 'Paste a Team' : /Import a team/.test(p.text)), 'Import panel did not open'); await r.close(); });
+  has(await r.ui.text(), /Build [Yy]our [Oo]wn/); await r.ui.tapText('Import a team', 1000); const p = await r.ui.editPanel(); /* new build: the import sheet is headed "Paste a Team" (as HOME-07 / IO-01's new-build branches) */ ok(p && (NEW ? p.title === 'Paste a Team' : /Import a team/.test(p.text)), 'Import panel did not open'); await r.close(); });
 
 t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async () => {
   const r = await aopen({fresh: true}); const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');
@@ -1065,8 +1065,8 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
     team" (opens Import). It is saved and open; My Box holds the default 36 ("36 Pokémon · 2 boxes"). The Saved Teams sheet is closed
     with its "← My Team" before going to My Box, as a player would (the sheet covers the page) */
     const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); const tx = await r.ui.text(); ok(await r.ui.teamHeading() === 'Sun Tailwind (sample)', 'heading: ' + await r.ui.teamHeading());
-    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. Build your own · Import a [Tt]eam /, 'sample note');
-    ok(await r.ui.linkHref('Build your own') === '#build', '"Build your own" leads to ' + await r.ui.linkHref('Build your own'));
+    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. Build [Yy]our [Oo]wn · Import a [Tt]eam /, 'sample note');
+    const bo = NEW ? 'Build Your Own' : 'Build your own'; ok(await r.ui.linkHref(bo) === '#build', '"' + bo + '" leads to ' + await r.ui.linkHref(bo));
     await r.ui.tapText(/^Import a team$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');
     await r.ui.tapText(/^← My Team$/, 900); ok(await r.ui.current() === 'report', 'Saved Teams did not close');
@@ -1144,7 +1144,7 @@ t('X-13', 'Links out of this scope still work: replay "Paste its log" → Battle
 
 // ================= Inventory "looks broken" items that a player can hit (correct behaviour, marked known) =================
 t('HOME-11b', 'Sample note "Build your own" on My Team opens Build', async () => {
-  const r = await myTeam({fresh: true}); await r.ui.tapText(/^Build your own$/, 1000); ok(await r.ui.current() === 'auto', '"Build your own" stayed on ' + await r.ui.current()); await r.close(); },
+  const r = await myTeam({fresh: true}); await r.ui.tapText(/^Build [Yy]our [Oo]wn$/, 1000); ok(await r.ui.current() === 'auto', '"Build your own" stayed on ' + await r.ui.current()); await r.close(); },
   {known: NEW ? '' /* the new site has a real Build page now (Nov 12): the link works */ : 'inventory #16: on My Team the note\'s "Build your own" points at `build`, which is My Team itself, so nothing visible happens'});
 t('HOME-10b', 'Home empty tile "Add a Pokémon to slot N" opens the add box for that slot', async () => {
   const r = await aopen({team: []}); await r.ui.tapLabel('Add a Pokémon to slot 3', 1200); const p = await r.ui.editPanel(); const nb = await r.ui.nameBox();

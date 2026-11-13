@@ -52,12 +52,12 @@ V2.syncTxt = st => st === 'local' ? 'Saved in this browser only. To use your box
 // shown as "<0.1%" (the site's own rule for tiny shares, pctFmt); no tournament games at all stays "–"
 V2.shareTxt = H => H.hU == null ? '–' : +H.hU === 0 && H.hG > 0 ? '<0.1%' : pctFmt(H.hU);
 V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
-  return `<div class="bx-empty">${V2.mon(n, {bare: true, ft: true})}<div><h2 class="u">Your box is empty.</h2><p>Add the Pokémon you own, and Build for Me and the suggestions pick from them. ${d} would love a spot.</p>
+  return `<div class="bx-empty">${V2.mon(n, {bare: true, ft: true})}<div><h2 class="u">Your box is empty.</h2><p>Add the Pokémon you own, and Build and the suggestions pick from them. ${d} would love a spot.</p>
     <div class="row"><button type="button" class="np-btn" data-bxadd><span>Add a Pokémon</span></button><button type="button" class="np-btn2" data-bxaddn="${V2.esc(n)}"><span>Add ${d}</span></button></div></div></div>`; };
 
 V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length;
   const head = `<div class="bx-lead"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · The Pokémon you own</span></div><h1 class="u">My Box</h1>
-    <p class="bx-count">${n} Pokémon${n ? ` · ${D.pages} box${D.pages > 1 ? 'es' : ''}` : ''}</p><p class="bx-why">Build for Me and the suggestions pick from these when set to “My Box”.</p>
+    <p class="bx-count">${n} Pokémon${n ? ` · ${D.pages} box${D.pages > 1 ? 'es' : ''}` : ''}</p><p class="bx-why">Build and the suggestions pick from these when set to “My Box”.</p>
     <button type="button" class="bx-add" data-bxadd><span>Add a Pokémon</span><b aria-hidden="true">+</b></button></div>`;
   const sort = `<div class="bx-sort"><span class="lbl">Arrange by</span>${V2.slide('box-sort', BX_SORTS, D.so === 'za' ? 'az' : D.so, 'Arrange by')}</div>`;
   const tools = `<div class="bx-tools"><ul class="bx-links"><li><button type="button" data-bxlink="copy">Copy Box Link</button></li><li><button type="button" data-bxlink="open" aria-expanded="${!!V2.bx.linkOpen}">Open a Box Link</button>
