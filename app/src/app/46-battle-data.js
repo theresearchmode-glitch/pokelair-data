@@ -49,7 +49,8 @@ function bmWatch(C, theirs) {
       if (mv.has(k)) { const ct = C.filter(m => dmg(m).some(x => x.contact)); if (ct.length) out.push(['lo', k, `protects (+4) and ${w}: ${nm(ct)}`]); }
     if (prio.length && (['Armor Tail', 'Queenly Majesty', 'Dazzling'].includes(ab) || ab === 'Psychic Surge')) out.push(['hi', ab, `blocks priority and Fake Out from ${nm(prio)}`]);
     if (BM_WEATHER[ab]) out.push(['lo', ab, BM_WEATHER[ab]]);
-    if (o.p.m) out.push(['lo', 'Mega', 'likely their Mega this game']);
+    // Sim, Nov 13 (Words Q2 B): with two or more Mega stones only one can Mega Evolve, so the line says so instead of calling each 'likely'
+    if (o.p.m) { const nM = theirs.filter(x => x.p && x.p.m).length; out.push(['lo', 'Mega', nM > 1 ? `one of their ${nM === 2 ? 'two' : nM} Megas: only one can Mega Evolve` : 'likely their Mega this game']); }
     return {o, out}; }).filter(x => x.out.length); }
 // ---------- the Battle plan as data (R3, Nov 11) ----------
 // Everything the Battle page works out, with no HTML: which four to bring and who leads, their likely lead, the turn-1 field,
