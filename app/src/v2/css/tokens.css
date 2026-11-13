@@ -6,7 +6,7 @@
   --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;
   --plate:#17161A;--on-plate:#FBFAF7;--main:#17161A;--on-main:#FBFAF7;
-  --good:#2E9E5B;--good-text:#16693B;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;
+  --good:#2E9E5B;--good-text:#16693B;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
   --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:#8A7C6E;
   --contact:rgba(30,20,50,.42);--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08);
@@ -34,7 +34,7 @@
   --bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);
   --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--pick-text:#F58DA1;
   --plate:#343348;--on-plate:#F1EDE7;--main:#3FA2E2;--on-main:#08131E;
-  --good:#74D3A0;--good-text:#86D9AC;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;
+  --good:#74D3A0;--good-text:#86D9AC;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;--bad:#FF7A70;--bad-text:#FF8A80;
   --band-top:#62BEF7;--band-ready:#C9B0FF;--band-solid:#B0AAB8;--band-work:#F0C768;--band-miss:#B8AA9C;
   --contact:transparent;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35);

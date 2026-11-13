@@ -905,3 +905,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-r b{font:700 var(--t15)/1.5 var(--b)}.bt-r .tg{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-r .tg em{font-style:normal;font-weight:700;margin-right:var(--s1)}
 .bt-r .tg em.mid{color:var(--mid-text)}.bt-r .tg em.lo{color:var(--ink)}
 @media (max-width:899px){.bt-plan{grid-template-columns:minmax(0,1fr);gap:var(--s10)}}
+
+/* red where it means danger (Sim, Nov 12: 'where red would make sense, use it'): Watch out's high warnings, Hurts you, Unfavoured */
+.bt-r .tg em.hi{color:var(--bad-text)}.bt-pairs i.hu{color:var(--bad-text)}.bt-verdict b.vu{color:var(--bad-text)}
