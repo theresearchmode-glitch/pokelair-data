@@ -3,6 +3,21 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 3:43 PM Eastern by the clock; Sim's authority until 5:00 PM)
+- PREVIEW v106 (394 files checked). Since v104: Sim's 2:43 PM 'all recommended' built one at a time with checks: Even Q1 B
+  (f4c84ba), Arrows Q1 B (d7f9185), Filled Q1 B (489f6df), Box Q1 B (8eefcca); You Q1 A = no change. Then (v106) the empty
+  My Team winners line 'N% of teams' fits at 320 (9e3b7d0). Full checks after: use 32/0, clicks 0 double, Battle 21 pass (62
+  waiting for unbuilt pages, as before), My Team 127/11/4 (as before), GitHub's v2-guard, v2-words, run.mjs ALL PASSED.
+- POLISH CHECK FIXED (99b522c, 532d02b): for the new site it measured with fallback fonts and no sprites (page copy sat in
+  app/, fonts in app/dist/fonts), and it counted scroll content in the info sheet as 'spill'. Earlier v2 polish numbers
+  (spill/wrap) were unreliable. First real-font run: empty My Team spill (fixed), Home centre name (i46, unsure, not fixed).
+  Remaining known findings: tap 20-26 px are text boxes of links (tap areas checked OK Nov 12), 'lone' groups as before.
+- i41 X-10 (flaky Build test): measured, cause still unknown. Facts: early tap 3/9 pass vs 9/9 after a 1.5 s wait; in failing
+  runs press and release reach the tile but no click fires; extra mousemove listeners hide it; image-drag idea rejected.
+  Look-only script: experiments/x10-debug.mjs. Set aside (not committed): scratchpad harness-art.patch (test copy loads sprites).
+- Every re-check question (i44) answered and built or closed with a reason. i45 Megas ranking noted (meta-notes.md).
+- Stray private page from a wrong publish: claude.ai/artifact/PQJowbgcJ3dMv7MyS9EkMo (not deleted; Sim's word needed).
+
 ## NOW (Nov 13, written 2:33 PM Eastern by the clock; Sim's authority until 5:00 PM)
 - PREVIEW v104 (394 files checked): adds Red Q1 C (Clear Team + Saved Teams Delete both red, pages.css after .svt2-del span)
   and the More menu without counts (More Q1 A: its short lines stay). My Team tests 127/11/4 unchanged; use 32/0; clicks 0 double.
