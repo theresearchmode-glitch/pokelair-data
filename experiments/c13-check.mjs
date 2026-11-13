@@ -25,7 +25,8 @@ const WIDTHS = [[320, 3900, ''], [390, 3700, ''], [820, 3500, ''], [1440, 1800, 
 // so it takes the phone limit + 200 like the tool pages do, and says the limit is assumed (Nov 12)
 const HOME = {320: [4600, "assumed"], 390: [4400, ""], 820: [3500, ""], 1440: [2950, "first visit: welcome card allowed over 2,700 (Sim, Nov 12; 2,950 from 8:17 PM: the Meta grows with the daily data)"]};
 // Battle (Sim, Nov 12, 10:15 PM, Q5 = A): the Battle log stays always shown, so Battle's limits rise a little
-const BATTLE = {320: [4250, 'Battle log always shown (Sim, Nov 12)'], 390: [3750, 'Battle log always shown (Sim, Nov 12)'], 1440: [1850, 'Battle log always shown (Sim, Nov 12)']};
+// Q6 = A (Sim, Nov 12): the Battle tools (bar 700+, list on phones) too
+const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4100, 'Battle log + tools (Sim, Nov 12)'], 1440: [1950, 'Battle log + tools (Sim, Nov 12)']};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines

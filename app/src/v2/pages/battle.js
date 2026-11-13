@@ -216,9 +216,10 @@ document.addEventListener('change', e => { const t = e.target; if (!t || !t.matc
 // Speed tiers = your six against the 20 most-used (39-damage-calc-speed.js slice(0,20)). Pages not rebuilt yet open the Preview's
 // "Coming next" page (rule C10: marked, not faked).
 V2.BT_TOOLS = () => { let n = 0; try { n = gauntletTeams().length; } catch (e) {}
-  return [['practice', 'Team preview practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test run', n ? n + ' teams' : '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
-    ['speed', 'Speed tiers', 'top 20', 'Your six against the 20 most-used Pokémon'], ['calc', 'Damage calc', '', 'Any attacker into any defender'], ['types', 'Type chart', '18 types', '18 types, or look up a Pokémon']]; };
+  /* names in title case, no counts in the bar (Sim, Nov 12) */
+  return [['practice', 'Team Preview Practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test Run', '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
+    ['speed', 'Speed Tiers', '', 'Your six against the 20 most-used Pokémon'], ['calc', 'Damage Calc', '', 'Any attacker into any defender'], ['types', 'Type Chart', '', '18 types, or look up a Pokémon']]; };
 V2.battleToolsBar = () => { const L = Array.isArray(S.log) ? S.log.length : 0;
-  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle" aria-current="page" class="on">Battle a team</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}">${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Battle log<small>${L} game${L === 1 ? '' : 's'}</small></a></nav>`; };
+  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle" aria-current="page" class="on">Battle A Team</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}">${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Battle Log<small>${L} game${L === 1 ? '' : 's'}</small></a></nav>`; };
 V2.battleMoreTools = () => `<section class="bt-more"><h2 class="u">More ways to prep</h2><ul>${V2.BT_TOOLS().map(([h, t, s, d]) => `<li><a href="#${h}"><span>${t}<small>${V2.esc(d)}</small></span><i aria-hidden="true">›</i></a></li>`).join('')}</ul></section>`;
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-btlogjump]'); if (!a) return; e.preventDefault(); const l = document.querySelector('.bt-log'); if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'}); });
