@@ -105,6 +105,11 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (b.dataset.bdshow != null) { ui.abIdx = ui.abIdx || {}; ui.abIdx.doubles = +b.dataset.bdshow; V2.redraw(); const a = document.querySelector('.bd-ans'); if (a) a.scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
   if (b.hasAttribute('data-bdcmore')) { coreUi.more = (coreUi.more || 0) + 1; V2.redraw(); return; }
   const ns = b.dataset.bdcore.split('|'), cur = S.slots.filter(s => byName.get(s.n)), have = new Set(cur.map(s => s.n));
+  // a six played at a recent event loads with that player's moves and items, as today's useCore (48-cores.js, Nov 9: names alone
+  // gave every Pokémon its most common set and some top teams graded far lower); same load as Home's (sheetSlots, audit CORES-08)
+  if (ns.length > 3 && META.events && META.events.events) { const k = ns.slice().sort().join('|');
+    for (const ev of META.events.events) for (const t of ev.top || []) if (t && t.mons && t.mons.length === 6 && t.mons.map(m => m.n).sort().join('|') === k) {
+      keepUndo(); S.slots = sheetSlots(t); S.format = 'doubles'; S.loadedId = null; render(); location.hash = '#team'; toast(`${teamWho(t).split(' · ')[0]}'s team loaded with its moves and items`, true); return; } }
   if (ns.length > 3) { keepUndo(); S.slots = normSlots(ns.map(n => ({n, a: null, lock: false}))); S.format = 'doubles'; S.loadedId = null; render(); location.hash = '#team'; toast(cur.length ? 'Loaded the team (your old team is one tap away: Undo)' : 'Loaded the team', !!cur.length); return; }
   const c = corePlan(ns); keepUndo(); S.slots = normSlots(c.next.slice(0, 6)); S.format = 'doubles'; render(); location.hash = '#team';
   toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${c.dropped.length ? ' · removed ' + c.dropped.join(', ') : ''}${c.megas > 2 ? ` · ${c.megas} Megas on the team now` : ''}`, true); });
