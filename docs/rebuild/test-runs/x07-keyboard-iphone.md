@@ -26,3 +26,9 @@ Claude app cases still need the real phone.
    Info → Meta → Rating. Swipe the other way to go back. A slow drag or a mostly up-and-down scroll should do nothing.
    Checked in Chromium with simulated touches (works); WebKit's test browser can't simulate touches, so only a real
    iPhone can confirm it. Send back: "works" or what happened.
+
+## Two more, Claude app on the iPhone only (Nov 13, audit NAV-02 and SHELL-01)
+7. Bottom bar (Home / Build / My Team / Battle / Meta): does it sit fully above the app's own bar at the bottom, or is part
+   of it hidden? Today's site lifts its bar there; the new one may not need it. Screenshot the bottom of any page.
+8. Turn the phone sideways on My Team: does anything sit under the notch or get cut off at the sides? (Today's site has an
+   extra setting, "viewport-fit-sides", that the new site doesn't; I'm unsure whether it's needed, so I didn't add it.)
