@@ -1,3 +1,4 @@
+V2.dotWrap = h => h.replace(/ · /g, ' ·\u00a0'); // a '·' joins the word after it, so a line never ends on a dot (outside review, Nov 13)
 // ---------- Build (R4, Nov 12): piece 1, the head and the options strip, from the approved mock-up (docs/rebuild/mocks/build.tpl.html) ----------
 // Every setting is today's: the pool is ui.abSrc (saved as cc2.absrc, as 34-events.js), Megas on team is megaGoal()/setMegaGoal() (one
 // value shared with My Team's slider), Build around is ui.abLock (as 52-sleepers.js / Home's Build Around It). The engine (runAutoBuild,
@@ -48,7 +49,7 @@ V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
   const s = G ? Math.round(G.s) : t.score, band = G ? V2.BAND_K[G.band] || 'solid' : 'solid', word = G ? CH.wordOf(G.s) : '';
   // Sim, Nov 12 (decision 8): the Mega count rides in the eyebrow, so the chips never leave one alone on a row
-  const kind = (t.proven ? (t.proven.swapped ? 'Proven team, 1 swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team') + (t.megas > 1 ? ` · ${t.megas} Mega options` : '');
+  const kind = (t.proven ? (t.proven.swapped ? 'Proven team, 1\u00a0swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team') + (t.megas > 1 ? ` · ${t.megas}\u00a0Mega\u00a0options` : ''); /* review (Nov 13): no word left alone on a line */
   const chips = (t.gp || []).slice(0, 3);
   const six = t.mons.map(m => { const R = monRating(byName.get(m.n));
     return `<button type="button" class="bd-pk" data-v2mon="${E(m.n)}" aria-label="${E(V2.disp(m.n))}${m.it ? ', ' + E(m.it) : ''}: open its info">${V2.mon(m.n, {bare: true, tag: true}) /* size from the styles: 120 desktop, 88 phones (Sim, Nov 13, Look Q1 B) */}<b>${m.n === ui.abLock ? '<span class="mg">Your pick</span> ' : ''}${V2.tileName(m.d)}</b><small>${E(m.it || '')}</small><small class="r">${E(String(m.role || '').replace(', Mega', ''))}${R ? ' · ' + E(R.tier) + '\u00a0tier\u00a0' + R.n : ''}</small>${t.mons.some(x => !x.box || x.offMeta) ? (!m.box || m.offMeta ? `<small class="bd-tag">${[!m.box ? 'To catch' : '', m.offMeta ? 'Off-meta' : ''].filter(Boolean).join(' · ')}</small>` : '<small class="bd-tag" aria-hidden="true">&nbsp;</small>') : ''}</button>`; }).join(''); /* today's Box / TO CATCH and OFF-META tags (22-auto-build.js); 'In your box' left out: the to-catch total says it */
@@ -64,7 +65,7 @@ V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   const nCatch = t.mons.filter(m => !m.box).length;
   const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Use This Team</button><button type="button" class="np-btn2" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2" data-bdcopy><span>Copy for Showdown</span></button>
     <span class="bd-catch">${nCatch === 6 ? 'All six to catch: none is in your box yet' : nCatch ? `${nCatch} to catch` : 'All six are in your box'}</span></div>`;
-  return `<section class="bd-ans" style="--band:var(--band-${band})"><div class="bd-lock"><p class="np-eyebrow">${n > 1 ? `Option ${k + 1} of ${n} · ` : ''}${kind}</p><h2 class="u">${E(t.label)}</h2>
+  return `<section class="bd-ans" style="--band:var(--band-${band})"><div class="bd-lock"><p class="np-eyebrow">${n > 1 ? `Option ${k + 1} of ${n} · ` : ''}${kind}</p><h2 class="u">${V2.dotWrap(E(t.label))}</h2>
     <div class="np-score bd-score"><b>${s}</b><div class="w"><span>${E(word)}</span><small>Strength Score</small></div></div>${G ? `<p class="bd-rank">${E(CH.pctTxt(G))}</p>${V2.buildBrk(G)}` : ''}${t.fresh ? '<p class="bd-fresh">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</p>' : ''}
     ${chips.length ? `<div class="bd-chips">${chips.map(c => `<span class="np-chip">${E(c)}</span>`).join('')}</div>` : ''}</div><div class="bd-six" style="background:${V2.buildLight(t.mons)}">${six}</div></section>${why}${acts}`; };
 V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div></div>`;
@@ -82,7 +83,7 @@ V2.buildLight = mons => { const dk = V2.theme && V2.theme() === 'night', al = dk
 V2.buildOthers = () => { const res = ui.ab && ui.ab.doubles; if (!res || !res.teams || res.teams.length < 2) return ''; const E = V2.esc, n = res.teams.length, cur = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
   const item = (t, i) => { let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
     const rows = t._rd && t._rd.rows || [], ans = rows.filter(x => x.level >= 2).length, bas = CK ? CK.items.filter(x => !x.skip && !x.note) : [], band = G ? V2.BAND_K[G.band] || 'solid' : 'solid';
-    return `<div class="bd-alt"><div class="bd-alt-top"><div><p class="bd-kk">Option ${i + 1} · ${t.proven ? (t.proven.swapped ? 'Proven team, 1 swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team'}</p><h3 class="u">${E(t.label)}</h3></div>
+    return `<div class="bd-alt"><div class="bd-alt-top"><div><p class="bd-kk">Option ${i + 1} · ${t.proven ? (t.proven.swapped ? 'Proven team, 1\u00a0swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team'}</p><h3 class="u">${V2.dotWrap(E(t.label))}</h3></div>
       <div class="bd-alt-sc" style="--band:var(--band-${band})"><b class="u">${G ? Math.round(G.s) : t.score}</b><span>${G ? E(CH.wordOf(G.s)) : ''}<small>${G ? E(CH.pctShort(G)) : ''}</small></span></div></div>
       <div class="bd-alt-six">${t.mons.map(m => `<button type="button" class="bd-alt-pk" data-v2mon="${E(m.n)}" aria-label="${E(V2.disp(m.n))}: open its info">${V2.mon(m.n, {iw: 60, bare: true})}<b>${V2.nameHtml(m.d)}</b></button>`).join('')}</div>
       <div class="bd-alt-meta"><span>${ans}/${rows.length} matchups with an answer · ${bas.filter(x => x.ok).length}/${bas.length} team checks</span><button type="button" class="np-link" data-bdshow="${i}">Show This One ›</button></div></div>`; };
