@@ -215,7 +215,7 @@ t('BATTLE-10', 'Bring these four, lead the pair; one-Mega note when two Megas co
 
 t('BATTLE-11', 'From real games: approved verdict words, "so far" under six, gone under four', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
-  const card = async () => { const tx = await ui.pageText(); const i = NEW ? (tx.lastIndexOf('From Real Games') >= 0 ? tx.lastIndexOf('From Real Games') : tx.lastIndexOf('From real games')) : tx.indexOf('From real games'); return i < 0 ? null : tx.slice(i, i + 260); }; /* new page: the head's verdict says it first */
+  const card = async () => { const tx = await ui.pageText(); if (NEW) { /* Battle Q2 B (Sim, Nov 13): the verdict and game count are said once, at the top ('From real games' in the head); the section 'From Real Games' keeps the pairings */ const h = tx.indexOf('From real games'), sct = tx.lastIndexOf('From Real Games'); return h < 0 && sct < 0 ? null : (h >= 0 ? tx.slice(h, h + 120) : '') + ' ' + (sct >= 0 ? tx.slice(sct, sct + 260) : ''); } const i = tx.indexOf('From real games'); return i < 0 ? null : tx.slice(i, i + 260); }; /* new page: the head's verdict says it first */
   let c = await card(); expect(c, 'no "From real games" card');
   expect(/39,052 tournament games/.test(c), 'games count not shown');
   expect(/\b(Favoured|Even match|Unfavoured)\b/.test(c), 'verdict is not Favoured / Even match / Unfavoured: ' + c.slice(0, 80));
