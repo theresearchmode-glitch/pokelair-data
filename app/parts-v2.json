@@ -59,6 +59,7 @@
     "src/v2/pages/compare.js",
     "src/v2/pages/home.js",
     "src/v2/pages/build.js",
+    "src/v2/pages/battle.js",
     "src/v2/pages/coming.js"
   ],
   "logic": [

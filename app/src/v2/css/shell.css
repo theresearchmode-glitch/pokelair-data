@@ -65,3 +65,4 @@ html,body{overflow-x:clip}
 @media (max-width:359px){.np-head .logo svg{height:20px}.np-gofwd{margin-left:calc(var(--s2) * -1)}} /* 320-359: Forward tap area no longer covers the end of the logo (was 8px) */
 @media (max-width:699px){.np-goback{margin-right:calc(var(--s4) * -1)}}@media (max-width:359px){.np-gofwd{margin-left:calc(var(--s3) * -1)}} /* Sim, Nov 12: Back and Forward the same distance from the logo (15px each on phones) */
 @media (max-width:359px){.np-goback{margin-right:calc(var(--s3) * -1)}} /* 320-359: Back 15px from the logo too, like Forward */
+.np-foot nav a{min-width:var(--tap);justify-content:center} /* footer links never under 44px wide ("About" was 43 at 390, Nov 12) */

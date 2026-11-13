@@ -42,6 +42,7 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
   if (state === 'open') { await p.evaluate(() => document.querySelectorAll('#main details').forEach(d => { d.open = true; })); }
   // C1's worst states, set up through the page's own controls as a player would (the team lives in the page's private scope)
   const settle = async () => { await p.waitForTimeout(1500); await p.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => errs.push('still working after 90 s')); await p.waitForTimeout(800); };
+  if (view === 'battle' && state !== 'empty') { const b = p.locator('[data-btopp]').first(); if (await b.count()) { await b.click(); await p.waitForTimeout(500); await p.locator('[data-btteam="0"]').first().click(); await settle(); } else errs.push('no Enter Their Six to press'); } /* Battle (Nov 12): checked filled in, as a player sees it; state 'empty' checks the empty page */
   if (state === 'five' && view === 'team') { await p.locator('[data-tmsel="5"]').first().click(); await p.waitForTimeout(500); await p.locator('[data-v2rm]').first().click(); await settle(); }
   if (state === 'apply' && view === 'team') { const a = p.locator('[data-v2plan="0"]').first(); if (await a.count()) { await a.click(); await settle(); } else errs.push('no Apply to press'); }
   if (state === 'long' && view === 'team') { await p.locator('[data-v2more]').first().click(); await p.waitForTimeout(400); await p.locator('[data-v2import]').first().click(); await p.waitForTimeout(400);
