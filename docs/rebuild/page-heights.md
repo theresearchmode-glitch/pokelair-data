@@ -16,28 +16,28 @@ This table records the rule in design-system.md section 9. Heights are full page
 >   Plain words: the built My Team is about 900px too long on phone, 275px on iPad and 420px on desktop.
 > No other rebuilt page has been measured on the built page yet. Every other "Rebuild" number below is a mock-up number.
 
-> **BUILT PAGES, measured Nov 12 (~1:05 AM Eastern) with experiments/c13-check.mjs** (rule C1/C13): built new site
-> (claude/design6 at 4514041, `node app/build.mjs --v2 --art=../src/v2/art/`), daily data fed in as the live page gets it, sample
-> team, day mode; Chromium and WebKit (they agree within 2px). Default state; "open" = every fold on the page opened.
-> The 320 width uses the 390 limit (Sim, Nov 12). Later Nov 12: 320 has its own limit, 3,900 (Sim chose the 320 options B+C+D, 3,870).
+> **BUILT PAGES, re-measured Nov 12-13 (runs finished 11:55 PM Nov 12 and 12:04 AM Nov 13, file times; replaces the Nov 12 1:05 AM tables, which were out of date).**
+> Check: `node experiments/c13-check.mjs app/dist/v2-c13.html <pages> <state>`; My Team rows on claude/design6 at 252994d; Home, Build
+> and Battle rows on the 11:47 PM build (before AUTO-06 and the jump-bar tap fix, neither changes a height); sample team,
+> daily data as the live page gets it, day mode, Chromium and WebKit (they agree within 24px; the larger is shown).
+> Home, Build and Battle don't change with the team states, so their row is the default state.
 >
-> | Built page | 320 | 390 | 820 | 1440 |
+> | Built page, state | 320 | 390 | 820 | 1440 |
 > |---|---|---|---|---|
-> | My Team | 4,818 over | 4,309 over | 3,775 over | 2,223 over |
-> | My Team, everything open | 8,460 | 7,701 | 6,011 | 4,799 |
-> | My Team, no team yet | 1,588 | 1,420 | 905 | 900 |
-> | My Box | 2,851 | 2,050 | 1,896 | 1,375 |
-> | Compare (no teams picked) | 1,133 | 974 | 900 | 900 |
+> | My Team (default) | 3,875 ok (3,900) | 3,743 ok (3,750) | 3,009 ok | 1,786 ok (1,800) |
+> | My Team, 5 of 6 | 4,169 **over** | 4,040 **over** | 3,298 ok | 1,917 **over** |
+> | My Team, six longest names (imported) | 3,944 **over** | 3,842 **over** (limit 3,700: not the sample team) | 3,091 ok | 1,863 **over** |
+> | My Team, after Suggestion 1's Apply | unknown: today's data gives the sample team no suggestion that raises its score, so there was nothing to apply | | | |
+> | My Team, every fold open (no limit set) | 6,530 | 6,217 | 5,026 | 4,017 |
+> | Home | 4,203 ok | 3,799 ok | 3,437 ok | 2,910 ok (2,950) |
+> | Build (after building) | 2,973 ok | 2,390 ok | 1,761 ok | 1,342 ok |
+> | Battle | 4,620 ok (4,650) | 4,097 ok (4,100) | 3,142 ok | 1,928 ok (1,950) |
 >
-> Worst states (same check, `five` / `apply` / `long`), My Team:
->
-> | State | 320 | 390 | 820 | 1440 |
-> |---|---|---|---|---|
-> | 5 of 6 (sixth removed) | 4,851 | 4,289 | 3,847 | 2,292 |
-> | After Suggestion 1's Apply | 5,210 | 4,508 | 3,956 | 2,536 |
-> | Six longest names (imported) | 4,184 | 3,945 | 3,095 ok | 1,990 |
->
-> No text cut off at any width in any state. The "open" state has no limit in the table yet.
+> Where 5 of 6 grows (390, section heights): Matchups +168, Suggestions +107, Team Checks +105, the top +47, Your Games -89
+> (gone). A missing Pokémon means more threats without an answer and more checks failing, so those sections list more.
+> Nothing cut off, nothing sideways, 0 errors in any state. My Box and Compare were not re-measured this time.
+> Check limit found: the "open" state is measured before the ~120-team winner-rate pass finishes, so the checks read
+> "most recent event winners" (today's fallback) instead of the measured numbers; real pages fill them in within 10 s.
 
 **Limits.** "over" marks a page past its limit.
 
@@ -50,12 +50,12 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Page | Today: phone | Today: iPad | Today: desktop | Rebuild (phone / iPad / desktop) |
 |---|---|---|---|---|
 | Home | 3,732 | 5,099 **over** | 3,980 **over** | 4,191 / 2,828 / 2,595 (Nov 11) |
-| My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | BUILT: 4,309 **over** / 3,775 **over** / 2,223 **over** (Nov 11 night, built page). Mock-up was 1,737 / 2,587 / 1,699 |
+| My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | BUILT (Nov 13): 3,743 ok / 3,009 ok / 1,786 ok in the default state; over with 5 of 6 and with long names (see the table above). Mock-up was 1,737 / 2,587 / 1,699 |
 | My Team, no team yet (first visit) | (old empty state not measured) | | | 1,804 / 1,316 / 1,039 |
 | Build for Me | 3,178 | 2,270 | 1,947 **over** | 2,298 / 2,943 / 1,796 (Nov 11) |
-| All Suggestions | 1,769 | 1,553 | 1,550 | not drawn yet |
-| Saved Teams | 1,344 | 1,180 | 1,129 | not drawn yet |
-| Compare Teams | 2,464 | 1,898 | 1,798 | not drawn yet |
+| All Suggestions | 1,769 | 1,553 | 1,550 | built (a sheet over My Team, Claude's design under authority; not measured as a page) |
+| Saved Teams | 1,344 | 1,180 | 1,129 | built (a sheet; not measured as a page) |
+| Compare Teams | 2,464 | 1,898 | 1,798 | built (Nov 12 table: 974 at 390 with no teams picked; not re-measured) |
 | My Box | 1,407 | 1,257 | 1,203 | 2,180 / 2,589 / 1,239 (Nov 11: iPad stacked, tilted-panel selection, floor) |
 | Battle a Team | 2,743 | 2,418 | 1,926 **over** | 3,378 / 2,545 / 1,789 (Nov 11) |
 
