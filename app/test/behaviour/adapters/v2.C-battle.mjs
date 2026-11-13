@@ -40,10 +40,14 @@ export default (ui, pg) => {
     async removeOpponent(name) { await openSheet(); const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('.bt-osheet [data-btox]')].find(b => (b.getAttribute('aria-label') || '').toLowerCase() === ('remove ' + n).toLowerCase()); if (!b) return false; b.click(); return true; }, name);
       if (!ok) throw new Error('no × for ' + name); await pg.waitForTimeout(400); const inSheet = await sheetOpen(); if (!inSheet) return; },
     async clearOpponents() { await closeSheet(); await click('[data-btclear]', 500); },
-    tournamentTeams: async () => { await openSheet(); const t = await pg.evaluate(() => [...document.querySelectorAll('.bt-osheet [data-btteam]')].map(e => e.innerText.replace(/\s+/g, ' ').trim())); return ['Pick a tournament team…', ...t]; },
-    tournamentTeamChosen: () => NOT('a "Pick a tournament team…" drop-down (the sheet lists the top 10 teams as buttons; no chosen state)'),
-    async pickTournamentTeam(k) { await openSheet(); await click(`.bt-osheet [data-btteam="${k - 1}"]`, 2500); },
-    recentOpponents: () => NOT('recent opponents row'), loadRecentOpponent: () => NOT('recent opponents row'),
+    // every tournament team: the sheet's "Show all N tournament teams" list (today's drop-down, same order: index k-1 = option k)
+    async tournamentTeams() { await openSheet(); if (await pg.$('.bt-osheet [data-btall]')) await click('.bt-osheet [data-btall]', 500);
+      const t = await pg.evaluate(() => [...document.querySelectorAll('.bt-osheet [data-btteamall]')].map(e => e.innerText.replace(/\s+/g, ' ').trim())); return ['Pick a tournament team…', ...t]; },
+    /** which tournament team their six came from: its name, or today's placeholder once the six was changed by hand */
+    tournamentTeamChosen: () => pg.evaluate(() => window.__ev('ui.oppFrom ? ui.oppFrom.label : "Pick a tournament team…"')),
+    async pickTournamentTeam(k) { await A.tournamentTeams(); await click(`.bt-osheet [data-btteamall="${k - 1}"]`, 2500); },
+    async recentOpponents() { await openSheet(); return pg.evaluate(() => [...document.querySelectorAll('.bt-osheet [data-btrecent]')].map(e => (e.getAttribute('aria-label') || '').replace(/^Load /, ''))); },
+    async loadRecentOpponent(i) { await openSheet(); await click(`.bt-osheet [data-btrecent="${i}"]`, 800); },
     // ---- clipboard ----
     async watchClipboard() { await pg.evaluate(() => { window.__copied = ''; const w = navigator.clipboard && navigator.clipboard.writeText; if (navigator.clipboard) navigator.clipboard.writeText = t => { window.__copied = t; return w ? w.call(navigator.clipboard, t).catch(() => {}) : Promise.resolve(); }; }); },
     copiedText: () => pg.evaluate(() => window.__copied || ''),

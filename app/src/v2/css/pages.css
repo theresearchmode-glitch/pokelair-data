@@ -957,3 +957,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* phones (Nov 12): the three tabs side by side in even columns, so the bar stays two lines tall instead of four (C1 height) */
 @media (max-width:519px){.bt-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s3);margin-top:var(--s4)}
   .bt-tab{white-space:normal;align-items:flex-start;text-align:left;padding:var(--s1) 0;font-size:var(--t15)}.bt-tab small,.bt-hint{display:none}}
+.bt-oallb{margin-top:var(--s4)}.bt-acts+.fine{margin-top:var(--s2)}
+.bt-labrow{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}
+@media (max-width:519px){.bt-acts.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3)}.bt-acts.two>*{width:100%;min-width:0;padding-left:var(--s2);padding-right:var(--s2);white-space:normal}}
+.bt-labrow .np-link{display:inline-flex;align-items:center;justify-content:flex-end;min-height:var(--tap);min-width:var(--tap)}

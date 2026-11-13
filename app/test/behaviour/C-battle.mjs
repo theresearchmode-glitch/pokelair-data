@@ -3,6 +3,7 @@
 // Run: node app/test/behaviour/run.mjs C-battle [--only=ID,ID]
 import fs from 'node:fs'; import {group, open, TEAM, OPP, expect, HERE} from './harness.mjs';
 const t = group('C-battle');
+const NEW = (process.env.ADAPTER || 'current') === 'v2'; // the rebuild: words from the approved mock-up (docs/rebuild/mocks/battle.tpl.html)
 
 // the inventory's worked example: their six with a Trick Room setter, Armor Tail, rain and Psychic Terrain
 const OPP2 = ['Kingambit', 'Pelipper', 'Archaludon', 'Basculegion', 'Farigiraf', 'Indeedee-F'];
@@ -135,8 +136,10 @@ t('BATTLE-05', '"Practice against a top team" loads a tournament six; select res
 
 t('BATTLE-06', '"Copy for Showdown" for their open team sheet copies six full sets', async () => {
   const {ui, ctx, close} = await open({team: TEAM}); await ui.go('Battle');
-  expect(!(await ui.sees('Their open team sheet')), 'copy shown before a known sheet is loaded');
-  await ui.pickTournamentTeam(1); expect(await ui.sees('Their open team sheet'), 'no "Their open team sheet" after loading a sheet');
+  const SHEET = NEW ? 'Their real open team sheet' : 'Their open team sheet'; /* new build: the head's kicker says it (mock-up), beside Copy for Showdown */
+  expect(!(await ui.sees(SHEET)), 'copy shown before a known sheet is loaded');
+  if (NEW) expect(!(await ui.sees('Copy for Showdown')), 'Copy for Showdown shown before a known sheet is loaded');
+  await ui.pickTournamentTeam(1); expect(await ui.sees(SHEET), `no "${SHEET}" after loading a sheet`);
   try { await ctx.grantPermissions(['clipboard-read', 'clipboard-write']); } catch (e) {}
   await ui.watchClipboard(); await ui.tapIn('Copy for Showdown', 600);
   const txt = await ui.copiedText();
