@@ -85,7 +85,7 @@ V2.battleTabs = (theirs, P) => { if (!P) return ''; const n = P.chosen.length * 
   return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', 'Damage both ways', n + ' pairs')}${b('spd', 'Who moves first', P.speed.length + ' Pokémon')}${b('deep', 'Deeper read', 'pair grid')}<span class="bt-hint">${t ? 'Tap it again to close' : 'Open one for the detail'}</span></nav>`; };
 V2.battleDamage = (theirs, P) => { const E = V2.esc, C = P.chosen, F1 = P.field || {};
   const pc = h => h ? (h.r.max < h.r.hp ? dmgP(100 * h.r.max / h.r.hp) : String(Math.min(999, Math.round(100 * h.r.max / h.r.hp)))) + '%' : '–';
-  const one = h => h && h.r && h.r.min >= h.r.hp; // knocks out in one hit on every roll
+  const one = h => h && h.r && koShort(h.r) === 'OHKO'; // knocks out in one hit on every roll (not when a Focus Sash holds)
   const cell = (h, side) => `<div class="bt-hx ${side}"><span class="s">${side === 'y' ? 'You' : 'Them'}</span><b class="${one(h) ? (side === 'y' ? 'ko-good' : 'ko-bad') : ''}">${pc(h)}</b><i>${h ? E(koShort(h.r)) : ''}</i><span class="mv">${h ? E(h.mv.name) : ''}</span></div>`;
   const wx = [['auto', `Leads${F1.weather || F1.terrain ? ': ' + fieldWords(F1) : ': none'}`], ['', 'No weather'], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']].map(([k, t]) => V2.btChip(`data-btw="${k}"`, bmUi.weather === k, t)).join('');
   const head = `<tr><th scope="col">Your four ↓ · their six →</th>${theirs.map(o => `<th scope="col">${V2.mon(o.p.n, {iw: 40, bare: true})}<span>${V2.rowName(o.d)}</span></th>`).join('')}</tr>`;
@@ -94,7 +94,7 @@ V2.battleDamage = (theirs, P) => { const E = V2.esc, C = P.chosen, F1 = P.field 
   return `<h2 class="u">Damage both ways</h2><p class="bt-sub">Your four against their six: your best hit on them, and their best hit on you</p>
     <div class="bt-chips" role="group" aria-label="Weather">${wx}</div><div class="bt-chips" role="group" aria-label="Intimidate">${V2.btChip('data-bti="intMe"', bmUi.intMe, "You're Intimidated")}${V2.btChip('data-bti="intThem"', bmUi.intThem, "They're Intimidated")}</div>
     <div class="bt-tw"><table class="bt-dg">${head}${rows}</table></div>
-    <p class="fine">Top roll as % of HP, each side's usual set, with how many hits it takes: OHKO, 2HKO, 3HKO (a % = only that share of rolls do it). Green: you knock it out in one hit; red: they knock yours out in one hit.</p>`; };
+    <p class="fine">Top roll as % of HP, each side's usual set, with how many hits it takes: OHKO, 2HKO, 3HKO (a % = only that share of rolls do it). Blue: you knock it out in one hit; red: they knock yours out in one hit.</p>`; };
 V2.battleSpeed = P => { const E = V2.esc, rows = P.speed, mx = P.speedMax, sd = P.spDrop;
   const tg = [['tw', 'Your Tailwind'], ['twOpp', 'Their Tailwind'], ['icy', sd.length ? `Them −1 (after your ${sd[0]})` : 'Them −1'], ['par', "They're paralyzed"], ['tr', 'Trick Room']].map(([k, t]) => V2.btChip(`data-bts="${k}"`, bmUi[k], t)).join('');
   const prio = P.prio.map(q => `${q.move} ${q.prio > 0 ? '+' : '−'}${Math.abs(q.prio)}${q.grassy ? ' (Grassy Terrain)' : ''} (${q.who})`);
