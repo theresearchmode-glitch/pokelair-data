@@ -4,7 +4,7 @@
 // Handles it / Shaky / No answer; Favoured / Even match / Unfavoured. team.js calls V2.muSec(D) and V2.muAfter().
 // Sim, Nov 11: most of the 30 are "Even match", so the section opens on the stand-outs (Unfavoured, then Favoured) with "See all 30".
 // The view is kept under the new build's own key (today's page doesn't know "Stand-outs", so it never sees it).
-V2.MUV = [['out', 'Stand-outs'], ['top', 'Top 10'], ['grid', 'Top 12 grid'], ['all', 'All 30']];
+V2.MUV = [['out', 'Stand-Outs'], ['top', 'Top 10'], ['grid', 'Top 12 Grid'], ['all', 'All 30']];
 V2.muView = () => { const v = LS.get('np2.seg.thr', 'out'); return V2.MUV.some(x => x[0] === v) ? v : 'out'; };
 V2.MUG = ['✗', '~', '✓', '✓✓']; // a shape per calc level, so the colour is never the only signal
 V2.MUC = {win: 'cw', trade: 'ct', lose: 'cl', none: 'cn'}; // grid cells: CH.cellOf's four answers
@@ -68,7 +68,7 @@ V2.muAll = (RD, ms) => { const open = ui.thrOpen || {}, un = RD.rows.filter(r =>
     : `<ul class="mu-big">${shown.map(r => `<li>${V2.muImg(r.o.p.n)}<div><p class="nm">${V2.nameHtml(r.name)} <span class="ty">${r.o.types.map(V2.typeChip).join('')}</span></p>
       <p class="t">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => V2.esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => V2.esc(ms[i].d)).join(', ') : r.lv >= 2 ? 'Answered by your scouting report (speed control, support or a combined KO), not 1-on-1' : '<b class="no">No clean answer</b>'}${r.hard ? `<br>Hardest hit: ${V2.esc(r.hard.mv)} does up to ${r.hard.pct}% to ${V2.esc(r.hard.m.d)}.` : ''}</p></div>
       ${r.lv != null ? V2.muLv(r.lv) : `<span class="mu-lv ${r.ans.length ? (r.hit.length >= 3 ? 'l1' : 'l2') : 'l0'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'No answer'}</span>`}</li>`).join('')}</ul>
-      ${shown.length < bt.length ? `<button type="button" class="np-link mu-more" data-muall>Show all ${bt.length}</button>` : ''}`;
+      ${shown.length < bt.length ? `<button type="button" class="np-link mu-more" data-muall>Show All ${bt.length}</button>` : ''}`;
   return `<div class="mu-prep"><div class="np-eyebrow">Threat preparation${ms.length < 6 ? ' · so far' : ''}</div><p class="mu-big1 u">${(h => h ? `Beats or handles ${h.x} of the top ${h.n} threats` : '')(CH.hand(RD))}</p>
     <p class="fine">${un ? `${un} with no answer` : 'Every threat has an answer'} · weighted by how often each makes top cut</p></div>
     ${grp(0, true)}${grp(1, true)}${grp(2, false)}${grp(3, false)}

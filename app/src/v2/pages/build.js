@@ -5,8 +5,8 @@
 V2.bdUi = V2.bdUi || {find: ''};
 V2.buildHead = () => { const E = V2.esc, nBox = (S.box || []).length, lk = ui.abLock && byName.get(ui.abLock);
   const head = `<div class="bd-head"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles</span></p><h1 class="u">Build me <span class="pl">a team.</span></h1></div>
-    <div class="bd-side"><p>Winning tournament teams you can field from your box or the whole roster.</p><button type="button" class="np-link" data-bdhow>How it works ›</button></div></div>`;
-  const src = V2.slide('bdsrc', [['box', `My Box ${nBox}`], ['all', 'Whole roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
+    <div class="bd-side"><p>Winning tournament teams you can field from your box or the whole roster.</p><button type="button" class="np-link" data-bdhow>How It Works ›</button></div></div>`;
+  const src = V2.slide('bdsrc', [['box', `My Box ${nBox}`], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
   const meg = V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');
   const around = lk ? `<div class="bd-pick">${SPRITE_ID[lk.n] ? `<img src="${V2.art(SPRITE_ID[lk.n])}" alt="">` : ''}<b>${V2.nameHtml(V2.disp(lk.n))}</b><button type="button" class="bd-x" data-bdx aria-label="Stop building around ${E(V2.disp(lk.n))}">×</button></div>`
     : `<label class="np-field bd-find">${V2.ICON.search}<input type="search" data-bdfind value="${E(V2.bdUi.find)}" placeholder="Optional" aria-label="Build around a Pokémon (optional): type its name" autocomplete="off"></label><div class="bd-hits" data-bdhits></div>`;
@@ -33,7 +33,7 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 // How it works (today's three points, 22-auto-build.js abStart; "Ready for the top threats" is "Matchups" in the word list)
 V2.BUILD_HOW = [['Six that work together', 'Built from teams that win at real tournaments, filtered to what you own.'], ['The why', 'Each pick comes with its job on the team and what it fixes.'], ['Matchups', 'Which of the top threats it answers, and the one change that would help most.']];
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-bdhow]'))) return;
-  V2.sheet(`<div class="bd-how"><p class="np-eyebrow">Build</p><h2 class="u">How it works</h2><ol class="hm-steps">${V2.BUILD_HOW.map(([t, d]) => `<li><b>${V2.esc(t)}</b><span>${V2.esc(d)}</span></li>`).join('')}</ol></div>`, {label: 'How Build works', fit: true}); });
+  V2.sheet(`<div class="bd-how"><p class="np-eyebrow">Build</p><h2 class="u">How It Works</h2><ol class="hm-steps">${V2.BUILD_HOW.map(([t, d]) => `<li><b>${V2.esc(t)}</b><span>${V2.esc(d)}</span></li>`).join('')}</ol></div>`, {label: 'How Build works', fit: true}); });
 // ---------- Build piece 2 (Nov 12): the answer, the best team built (mock-up's lock + six + four reasons + actions) ----------
 // The option shown is today's abTeam('doubles') (ui.abIdx); its Strength Score is CH.gradeOf on its own RD and checks, the same call
 // My Team makes, so both pages agree. Use / Save follow today's 34-events.js rules (Undo; 10 saved max; "Already saved as").
@@ -42,8 +42,8 @@ V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
   if (r && r.busy) return '<p class="bd-busy" role="status">Building from real winning teams…</p>';
   const res = r && r.doubles; if (!res) return '';
   // today's three no-result notes (22-auto-build.js col()), without the format word (AUTO-14)
-  if (!res.teams || !res.teams.length) return `<p class="bd-none" role="status">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. ${ui.abSrc === 'all' ? 'Try a different number of Megas on team' + (ui.abLock ? ' or build without the pick' : '') + '.' : 'Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team.'}`
-    : res.short != null ? `Only ${res.short} usable Pokémon in your box for doubles. Add more in My Box, or switch to Whole roster.` : 'No legal team from this pool.'}</p>`;
+  if (!res.teams || !res.teams.length) return `<p class="bd-none" role="status">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. ${ui.abSrc === 'all' ? 'Try a different number of Megas on team' + (ui.abLock ? ' or build without the pick' : '') + '.' : 'Add Mega-capable Pokémon to your box, switch to Whole Roster, or change Megas on team.'}`
+    : res.short != null ? `Only ${res.short} usable Pokémon in your box for doubles. Add more in My Box, or switch to Whole Roster.` : 'No legal team from this pool.'}</p>`;
   const t = abTeam('doubles'), n = res.teams.length, k = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
   let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
   const s = G ? Math.round(G.s) : t.score, band = G ? V2.BAND_K[G.band] || 'solid' : 'solid', word = G ? CH.wordOf(G.s) : '';
@@ -95,10 +95,10 @@ V2.buildCores = () => { const E = V2.esc, rows = coreRows(), shown = rows.slice(
       <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `<em>${E(tags.slice(0, 2).join(', '))}</em> · ` : ''}${homeNum(r.n)} teams${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} points together` : ''}</small>${r.ns.length > 3 ? `<span class="bd-cacts"><button type="button" class="np-link" data-bdcprep="${E(r.ns.join('|'))}">Practice Against ›</button><button type="button" class="np-link" data-bdccopy="${E(r.ns.join('|'))}">Copy for Showdown</button></span>` : ''}</span>
       <span class="bd-cw" title="${E(pctTxt(r.use))} of all tournament teams">${(() => { const use = coreUi.sort === 'use', w = use ? r.wr : r.score, dv = use ? r.d : r.score - base; /* today's 48-cores.js: Top rated shows the win rate pulled toward the average (the number it ranks by); Most used shows the raw rate */
         return `<b class="u"${use ? '' : ` title="Win rate, pulled toward average until there are enough games (raw: ${E(winFmt(100 * r.wr))})"`}>${E(winFmt(100 * w))}</b><small>wins · ${dv >= 0 ? '+' : '−'}${E(ptsTxt(Math.abs(100 * dv)))} vs avg</small>`; })()}</span><button type="button" class="np-btn2 bd-add" data-bdcore="${E(r.ns.join('|'))}" aria-label="Add ${E(r.ns.map(n => V2.disp(n)).join(' and '))} to your team"><span>${r.ns.length > 3 ? 'Load Team' : 'Add'}</span></button></li>`; };
-  return `<section class="bd-cores"><div class="bd-hd"><h2 class="u">Build around a core</h2><span class="bd-k">${homeNum(rows.length)} ${kindW}</span></div><p class="bd-sub">Pick a pair or trio that wins, then fill the rest.</p>
-    <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top rated'], ['use', 'Most used']], coreUi.sort, 'Sort cores')}${V2.buildCoreFind()}</div>
-    <p class="bd-hint">From ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams used it.' : 'Ranked by win rate, pulled toward the average.'} <button type="button" class="np-link" data-bdcwhy>How cores are ranked ›</button></p>
-    ${shown.length ? `<ol class="bd-clist">${shown.map(row).join('')}</ol>` : '<p class="bd-cnone">No cores match. Try another Pokémon.</p>'}${rows.length > shown.length ? `<button type="button" class="np-link bd-cmore" data-bdcmore>Show ${Math.min(15, rows.length - shown.length)} more ${kindW}</button>` : ''}</section>`; };
+  return `<section class="bd-cores"><div class="bd-hd"><h2 class="u">Build Around a Core</h2><span class="bd-k">${homeNum(rows.length)} ${kindW}</span></div><p class="bd-sub">Pick a pair or trio that wins, then fill the rest.</p>
+    <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full Teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top Rated'], ['use', 'Most Used']], coreUi.sort, 'Sort cores')}${V2.buildCoreFind()}</div>
+    <p class="bd-hint">From ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams used it.' : 'Ranked by win rate, pulled toward the average.'} <button type="button" class="np-link" data-bdcwhy>How Cores Are Ranked ›</button></p>
+    ${shown.length ? `<ol class="bd-clist">${shown.map(row).join('')}</ol>` : '<p class="bd-cnone">No cores match. Try another Pokémon.</p>'}${rows.length > shown.length ? `<button type="button" class="np-link bd-cmore" data-bdcmore>Show ${Math.min(15, rows.length - shown.length)} More ${kindW.replace(/\b[a-z]/g, c => c.toUpperCase())}</button>` : ''}</section>`; };
 V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower">${V2.buildOthers() || ''}${V2.buildCores()}</div></div>`;
 document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'bdckind' && k !== 'bdcsort') return; if (k === 'bdckind') coreUi.kind = e.detail.value; else coreUi.sort = e.detail.value; coreUi.more = 0; V2.redraw(); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdshow],[data-bdcore],[data-bdcmore]'); if (!b) return;
@@ -123,15 +123,15 @@ V2.buildWinners = () => { const EV = META.events, E = V2.esc; if (!EV) return ''
       <p class="bd-wwho">${E(teamWho(t))}'s six, full sets</p><ul class="bd-sets">${sets}</ul>
       <div class="row bd-wacts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${sure ? 'Tap Again to Replace Your Team' : 'Load This Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button>
       <button type="button" class="np-link" data-hmprep="${E(key)}">Practice Against ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></details>`; };
-  return `<section class="bd-wins"><div class="bd-hd"><h2 class="u">Start from a recent winner</h2><span class="bd-k">${picks.length} teams</span></div><p class="bd-sub">Full sets, ready to load.</p>${picks.map(row).join('')}</section>`; };
+  return `<section class="bd-wins"><div class="bd-hd"><h2 class="u">Start from a Recent Winner</h2><span class="bd-k">${picks.length} teams</span></div><p class="bd-sub">Full sets, ready to load.</p>${picks.map(row).join('')}</section>`; };
 V2.pages.build.draw = () => { const oth = V2.buildOthers() || '', win = V2.buildWinners(), cor = V2.buildCores(); return `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div>${V2.buildJump(!!oth, !!win)}<div class="bd-lower"><div class="bd-lcol">${oth}${win}</div>${cor}</div></div>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-bdwin]')) return; if (d.open) V2.bdUi.win = d.dataset.bdwin; else if (V2.bdUi.win === d.dataset.bdwin) V2.bdUi.win = null; }, true);
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdcx]'); if (b) V2.cxGo('cur', 'e:' + b.dataset.bdcx); });
 
 // ---------- Build: the score's breakdown line under the rank (mock R2 line 194; the same numbers as My Team's "Why this score?") ----------
 V2.buildBrk = G => { let W = null; try { W = CH.whyData(G); } catch (e) {} if (!W || W.partial) return ''; V2.bdG = G; const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
-  return `<p class="bd-brk">${W.base} from its Pokémon and sets · ${sg(W.mu)} matchups${W.hasSix ? ` · ${sg(W.own)} from its own ${homeNum(W.ownGames)} games` : ''} <button type="button" class="np-link" data-bdwhy>Why this score? ›</button></p>`; };
-document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-bdwhy]') && V2.bdG) V2.sheet(V2.whyHtml(V2.bdG), {label: 'Why this score?', small: true}); });
+  return `<p class="bd-brk">${W.base} from its Pokémon and sets · ${sg(W.mu)} matchups${W.hasSix ? ` · ${sg(W.own)} from its own ${homeNum(W.ownGames)} games` : ''} <button type="button" class="np-link" data-bdwhy>Why This Score? ›</button></p>`; };
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-bdwhy]') && V2.bdG) V2.sheet(V2.whyHtml(V2.bdG), {label: 'Why This Score?', small: true}); });
 
 // ---------- Build: the phone jump bar (mock R2, under 700 wide): Other options · Cores · Recent winners, sticky under the top bar ----------
 // Buttons that scroll, not links: the site's addresses name pages, so a #section link would change the page (and add a Back step).
@@ -171,4 +171,4 @@ V2.pages.build.after = () => { V2.bdJumpSpy(); if (!V2.bdUi.toCores) return; V2.
 // today's "?" on cores: the same explanation (coreWhyText, shared) in a small sheet
 V2.bdCoreWhat = () => coreUi.kind === 'pairs' ? `two Pokémon on the same team, ${CORE_MIN.pairs}+ teams` : coreUi.kind === 'trios' ? `three Pokémon on the same team, ${RES.minCore || 6}+ teams` : `the exact six, ${CORE_MIN.teams}+ entries`;
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-bdcwhy]'))) return;
-  V2.sheet(`<div class="bd-cwhy"><h2 class="u">How cores are ranked</h2><p>${V2.esc(coreWhyText(V2.bdCoreWhat(), +RES.base || .5))}</p></div>`, {label: 'How cores are ranked', small: true}); });
+  V2.sheet(`<div class="bd-cwhy"><h2 class="u">How Cores Are Ranked</h2><p>${V2.esc(coreWhyText(V2.bdCoreWhat(), +RES.base || .5))}</p></div>`, {label: 'How cores are ranked', small: true}); });

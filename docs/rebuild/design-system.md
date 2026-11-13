@@ -103,6 +103,7 @@ Corrections to the reference README:
   desktop) and the hero/score number (54 phone, 64-120 desktop). Body 16 (phone) / 17 (desktop). Smallest text 13.
 - Line height: paragraphs 1.5; headlines 1.02-1.1 with letter-spacing -0.02em (loose enough that words never run together).
 - Headline pattern: first line --ink, second line --plot ("Sharply raise / your win rate.").
+- Capitalisation (Sim, Nov 12, 10:31 PM): Title Case for anything you tap or navigate by (menus, tabs, buttons, chips, the tools bar) and for section headings; sentence case for sentences (headline sentences ending in a full stop, like the tagline, stay sentences), descriptions, notes and eyebrow lines. Short joining words stay lowercase: a, an, the, and, or, for, of, in, on, to, at, by, vs, from, with (as in Copy for Showdown, Import from Showdown).
 - Numbers: tabular figures everywhere (font-variant-numeric: tabular-nums; measured: Instrument Sans supports it). Units
   ("%", "games", "/ 100") one size smaller and in --ink-2.
 - Unbounded only at 15px and up (Sim, Nov 11): headlines, big numbers, plates, the filled button. Anything smaller is

@@ -16,7 +16,7 @@ V2.pages.guide = {place: null, draw() {
   <p style="font-size:var(--t17)">Body 17 for lead paragraphs. Instrument Sans, line height 1.5.</p><p>Body 16 for running text.</p><p style="font-size:var(--t15)">Label 15 for buttons, rows and tabs.</p><p class="fine">Small 13, the smallest size used anywhere.</p></div>
 
   <h2 class="u">Actions</h2>
-  <div class="row"><a class="np-btn" href="#guide">Save Team</a><a class="np-btn2" href="#guide"><span>Share</span></a><a class="np-btn2" href="#guide"><span>Copy for Showdown</span></a><a class="np-link" href="#guide">See all suggestions ›</a></div>
+  <div class="row"><a class="np-btn" href="#guide">Save Team</a><a class="np-btn2" href="#guide"><span>Share</span></a><a class="np-btn2" href="#guide"><span>Copy for Showdown</span></a><a class="np-link" href="#guide">See All Suggestions ›</a></div>
   <p class="fine" style="margin-top:12px">One filled main action per block (black by day, the blue action at night); outline buttons and links for the rest.</p>
 
   <h2 class="u">Chips and types</h2>
@@ -36,7 +36,7 @@ V2.pages.guide = {place: null, draw() {
   <p class="fine" style="margin-top:12px">Every Pokémon stands on a pool of its own colour; feet and names sit on one line; the selected one stands on its tilted panel.</p>
 
   <h2 class="u">Slider</h2>
-  ${V2.slide('guide-meta', [['rating', 'Rating'], ['usage', 'Usage'], ['sets', 'Sets']], 'rating', 'Show')} ${V2.slide('guide-box', [['all', 'Whole roster'], ['box', 'My Box'], ['catch', 'Box + catch']], 'all', 'Pokémon to use')}
+  ${V2.slide('guide-meta', [['rating', 'Rating'], ['usage', 'Usage'], ['sets', 'Sets']], 'rating', 'Show')} ${V2.slide('guide-box', [['all', 'Whole Roster'], ['box', 'My Box'], ['catch', 'Box + Catch']], 'all', 'Pokémon to use')}
 
   <h2 class="u">Search field</h2>
   <label class="np-field" style="max-width:520px">${V2.ICON.search}<input type="search" id="sg-search" placeholder="Find a Pokémon, move or item" aria-label="Find a Pokémon, move or item"></label>

@@ -134,6 +134,8 @@ listed at the end. The full wording stays in those files; this is the plain-word
 
 **Type, spacing and shapes**
 
+- Capitalisation (Nov 12): Title Case for buttons, tabs, menus and section headings; sentence case for sentences, descriptions and notes; short joining words (a, the, and, for, from…) lowercase.
+
 12. **Type** (Nov 7):
     - Headlines, big numbers and the tagline use Unbounded, slanted (the whole headline, not half), with no pink offset shadow.
     - Body text and small labels use Instrument Sans.
