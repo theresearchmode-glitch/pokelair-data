@@ -452,7 +452,7 @@ t('MU-04', 'All 30: "Threat preparation" groups; a threat opens to its calc reas
 
 t('MU-05', 'Threat sheet: opens on the threat, other tiles switch detail, Escape closes and focus returns', async () => {
   const r = await myTeam(); await r.ui.tapThreat('Archaludon'); let s = await r.ui.threatSheet(); ok(s, 'sheet did not open');
-  for (const x of [/Scouting report: top 30 threats/, /\d+ threats? need a plan|Ready for every top threat/, /handles \d+ of the top 30/, /% of top cuts/, /Team checks: \d\/4/, /Close/]) has(s, x, 'threat sheet');
+  for (const x of [/Scouting report: top 30 threats/, /\d+ threats? need a plan|Ready for every top threat/, /handles \d+ of the top 30/, /% of top cuts/, /Team [Cc]hecks: \d\/4/, /Close/]) has(s, x, 'threat sheet');
   ok(await r.ui.threatPressedInSheet() === 'Archaludon', 'sheet not on Archaludon'); await r.ui.tapThreatInSheet('Farigiraf'); ok(await r.ui.threatPressedInSheet() === 'Farigiraf', 'tile did not switch the detail'); has(await r.ui.threatSheet(), 'Farigiraf');
   await r.ui.press('Escape'); ok(!(await r.ui.threatSheet()), 'Escape did not close');
   await r.ui.tapThreat('Archaludon'); await r.ui.tapText(/^Close$/); ok(!(await r.ui.threatSheet()), 'Close did not close'); await r.close(); });

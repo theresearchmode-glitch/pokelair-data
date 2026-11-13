@@ -115,7 +115,7 @@ export default (ui, pg, o) => {
     closeWhatsNew: () => click('[data-hmnewx]'),
     /** The Meta, right now: the rows of the list on show (names) */
     homeTopRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-top .hm-rk')].filter(e => e.getClientRects().length).map(e => e.dataset.v2mon)),
-    homePlanLine: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main .hm-you .hm-plan')].find(e => e.getClientRects().length); const m = e && e.innerText.replace(/\s+/g, ' ').match(/Game plan[^.]*\./); return m ? m[0] : null; }),
+    homePlanLine: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main .hm-you .hm-plan')].find(e => e.getClientRects().length); const m = e && e.innerText.replace(/\s+/g, ' ').match(/Game [Pp]lan[^.]*\./); return m ? m[0] : null; }),
 
     // ---------- My Team ----------
     /** the team's name as the page shows it: a heading if there is one, else the eyebrow "My Team · <saved name>" */
