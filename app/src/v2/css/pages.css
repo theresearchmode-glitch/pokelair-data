@@ -1066,3 +1066,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 /* Home Q1 B (Sim, Nov 13): Home's underdog drawn as on the empty My Team (featured tile: floor ring in its own colour) */
 .hm-udst2{width:100%;max-width:200px;justify-self:center}
+.bx-n small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)} /* i42: too few games in words, as the info sheet */
