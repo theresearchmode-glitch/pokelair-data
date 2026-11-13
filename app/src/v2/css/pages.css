@@ -813,11 +813,11 @@
 /* Build: phone jump bar (mock R2): sticky under the 60px phone top bar */
 .bd-jump{display:none}
 @media (max-width:699px){
-  .bd-jump{position:sticky;top:60px;z-index:5;display:flex;gap:var(--s5);margin:var(--s6) 0 0;padding:0 var(--gut);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 94%,transparent);overflow-x:auto;scrollbar-width:none}
-  .bd-jump button{position:relative;display:flex;align-items:center;min-height:48px;white-space:nowrap;font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.bd-jump button small{margin-left:var(--s1);font:600 var(--t13)/1 var(--b);color:var(--ink-3)}
-  .bd-jump button.on{color:var(--ink)}.bd-jump button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+  .bd-jump{position:sticky;top:60px;z-index:5;display:flex;gap:var(--s3);margin:var(--s6) 0 0;padding:0 calc(var(--gut) - var(--s1));border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 94%,transparent);overflow-x:auto;scrollbar-width:none}
+  .bd-jump button{position:relative;display:flex;align-items:center;justify-content:center;min-height:48px;min-width:44px;padding:0 var(--s1);white-space:nowrap;font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.bd-jump button small{margin-left:var(--s1);font:600 var(--t13)/1 var(--b);color:var(--ink-3)}
+  .bd-jump button.on{color:var(--ink)}.bd-jump button.on::after{content:"";position:absolute;left:var(--s1);right:var(--s1);bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
   .bd-others,.bd-wins,.bd-cores{scroll-margin-top:116px}.bd-lower{margin-top:0;padding-top:var(--s6);border-top:0}}
-@media (max-width:379px){.bd-jump{gap:var(--s3)}.bd-jump button{font-size:var(--t13)}}
+@media (max-width:379px){.bd-jump{gap:var(--s1)}.bd-jump button{font-size:var(--t13)}}
 
 /* Build: cores with a Pokémon (filter box beside the core sliders) */
 .bd-cfind{position:relative;flex:1 1 100%;min-width:0;max-width:420px}.bd-cpick{flex:0 1 auto}
