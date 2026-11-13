@@ -1060,3 +1060,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* i42 (Nov 13): My Team's six at 1180-1279: 'Charizardite Y' wrapped (the Y alone) and pushed its pair's names down; the form letter
    stays with its word (keepForm) and the item line uses Home's approved narrower letters at these widths */
 @media (min-width:1180px) and (max-width:1279px){.sx .np-mon small{font-stretch:88%}}
+
+/* Sim, Nov 13 (Build Q2 C): Other Options' small tiles: 'Mega' on its own line above the name (non-Megas keep that line blank), so names line up */
+.bd-alt-pk b .mg{display:block}
