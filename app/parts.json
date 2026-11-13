@@ -46,6 +46,7 @@
  "src/app/17-matchup-threats-teams.js",
  "src/app/18-archetypes.js",
  "src/app/19-showdown-paste.js",
+ "src/app/20-types-data.js",
  "src/app/20-types.js",
  "src/app/21-sets.js",
  "src/app/22-auto-build.js",
