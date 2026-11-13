@@ -1088,3 +1088,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 /* Box Q3 B (Sim, Nov 13): 'Too few' (too few games for a win rate) in words, one size below the numbers, on one line; 17 px under 360 */
 .bx-n.few b,.ms-n.few b{font-size:var(--t20);line-height:1.4;white-space:nowrap}@media (max-width:359px){.bx-n.few b,.ms-n.few b{font-size:var(--t17)}}
+/* Box Q4 B (Sim, Nov 13): the on-your-team mark sits before the name, never on the sprite */
+.bx-t>b .bx-on{position:static;display:inline-block;width:12px;height:6px;margin-right:var(--s1);vertical-align:middle}.bx-t>b:has(.bx-on){font-stretch:75%}
+@container (max-width:420px){.bx-t>b .bx-on{width:8px;margin-right:2px}}

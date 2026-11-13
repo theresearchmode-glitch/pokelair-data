@@ -28,7 +28,7 @@ V2.bxWall = here => { const c = {}; for (const [n] of here) { const p = byName.g
   const ts = Object.keys(c).sort((a, b) => c[b] - c[a] || a.localeCompare(b)); while (ts.length < 4) ts.push(ts[ts.length - 1] || 'Normal');
   return ts.slice(0, 4).map((t, i) => `--w${i}:var(--tyn-${t})`).join(';'); };
 
-V2.bxTile = (n, d, on, sel, auto) => `<button type="button" class="bx-t${sel ? ' sel' : auto ? ' auto' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}${on ? ', on your team' : ''}">${on ? '<i class="bx-on" aria-hidden="true"></i>' : ''}${V2.mon(n, {iw: 96, bare: true})}<b>${V2.esc(d)}</b></button>`;
+V2.bxTile = (n, d, on, sel, auto) => `<button type="button" class="bx-t${sel ? ' sel' : auto ? ' auto' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}${on ? ', on your team' : ''}">${V2.mon(n, {iw: 96, bare: true})}<b>${on ? '<i class="bx-on" aria-hidden="true"></i>' : ''}${V2.esc(d)}</b></button>`;
 
 // the summary of the picked Pokémon (beside the box on wide screens, in a sheet on phones)
 // F proposal (Sim, Nov 12): a species with more than one form (a Mega) shows a Forms row, as the info sheet does; the tapped form's
