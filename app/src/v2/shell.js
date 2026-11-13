@@ -90,8 +90,8 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   // accents count as their plain letter ("é" = "e", as in Pokémon); a query that is all punctuation finds nothing (Sim's check E16,
   // Nov 12: "é" became an empty query, which matched every name, so the most-used Pokémon showed up)
   const norm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''), nq = norm(q);
-  if (!nq) return {places: V2.places.filter(([, n]) => n.toLowerCase().includes(q)), mons: []};
-  const places = V2.places.filter(([, n]) => n.toLowerCase().includes(q));
+  if (!nq) return {places: V2.findPlaces.filter(([, n]) => n.toLowerCase().includes(q)), mons: []};
+  const places = V2.findPlaces.filter(([, n]) => n.toLowerCase().includes(q));
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
@@ -102,7 +102,7 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value);
     out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>'
       : !r.places.length && !r.mons.length && !tm.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
-      : r.places.map(([k, n]) => `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><b>${n}</b></a>`).join('')
+      : r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><b>${n}</b></a>`).join('')
         + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
         + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join(''); };
   inp.addEventListener('input', draw);
@@ -131,7 +131,14 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 document.addEventListener('keydown', e => { const b = e.target.closest && e.target.closest('[data-v2slide] > button'); if (!b || !/^Arrow(Left|Right)$/.test(e.key)) return;
   const bs = [...b.parentElement.querySelectorAll('button')], n = bs[(bs.indexOf(b) + (e.key === 'ArrowRight' ? 1 : bs.length - 1)) % bs.length];
   e.preventDefault(); n.focus(); V2.slidePick(b.parentElement, n); });
-V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle', 'Battle'], ['meta', 'Meta']];
+V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle', 'Battle'], ['meta', 'Meta']]; // the top bar
+// search finds these too: rebuilt places inside My Team (audit JUMP-05; today's search finds them); pages are links, sheets open over
+// My Team as their buttons do. Search only: the top bar stays the five above.
+V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], ['team', 'Saved Teams', () => V2.openSavedTeams && V2.openSavedTeams()],
+  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()]];
+V2.goPlace = i => { const pl = V2.findPlaces[i]; if (!pl) return; const [k, , act] = pl;
+  if (!act) { location.hash = '#' + k; return; } V2.closeSheet(true); if (location.hash !== '#' + k) location.hash = '#' + k; setTimeout(act, 60); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2place]'); if (b) V2.goPlace(+b.dataset.v2place); });
 V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 'day';
 V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg = V2.theme() === 'night' ? L.hdrD : L.hdrL;
