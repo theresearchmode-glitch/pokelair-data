@@ -11,11 +11,9 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 - Waiting on Sim (pictures sent): 4 Back on desktop A shift / B fixed spot (rec B); 8 lone chip: Mega count into the eyebrow (rec);
   11 Other options names on phone: six across vs three across (rec three across, +93px each); 20 Home at 320 (4,799 now):
   idea A duel as one switch on phone (rec; 4,199-4,308), idea B compact underdog (not rec); duel buttons fix to the Preview.
-- FIRST NEXT: PKMN-06 on the new build: 'Brought with' (partners) doesn't show in the test run, though the fixture has the data
-  (limitless.json.gz 'bw') and the Preview shows partners. Compare the harness's data hand-over for the new site with build.mjs
-  --preview-data. (My 7:04 PM 'RES.tc missing' check was invalid: no harness.)
-- Still to do from Sim's answers: 16 update PKMN-02/06 tests to the approved sheet mock-up's words (test branch, decisions.md
-  entry exists now); HOME-11b known-bug mark can come off (Build exists, the link works); 17 Hidden gems keep fixed height.
+- PKMN-02/03/06 now carry new-site branches with the approved sheet mock-up's words (decision 16): 02 and 06 pass on the new build;
+  03 passes its add step and stops at Popular Sets (Meta not rebuilt). Partners show fine (7:06 PM correction in decisions.md).
+- Still to do from Sim's answers: HOME-11b known-bug mark can come off (Build exists, the link works); 17 Hidden gems keep fixed height.
 - Last checks: Build tests 10 pass / 19 FAIL (wording by design, unbuilt pages); A-team 123 pass / 14 FAIL / 4 known / 1 fixed?
   (6:28 PM build); GitHub push checks 17/18 pass locally (fields-audit needs Showdown, not run); back-check 4/4; c13 build clean.
 

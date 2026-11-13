@@ -1040,7 +1040,7 @@ t('PKMN-05', 'Info tab: usual set, base stats, abilities with "Most used", type 
 
 t('PKMN-06', 'Meta tab: typical set, moves and items with %, "Brought with" opens the partner\'s sheet', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Meta'); const s = await r.ui.infoTabText();
-  for (const x of NEW ? [/Typical set Ability \w+ \d+%/, /in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% ([\d,]+) games/] /* approved sheet mock-up words (Sim, Nov 12, decision 16) */ : [/Typical Set Ability \w+ \d+%/, /Moves: in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% ([\d,]+) games/]) has(s, x, 'Meta tab');
+  for (const x of NEW ? [/Typical set Ability \w+ \d+%/, /in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% · ([\d,]+) games/] /* approved sheet mock-up words (Sim, Nov 12, decision 16) */ : [/Typical Set Ability \w+ \d+%/, /Moves: in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% ([\d,]+) games/]) has(s, x, 'Meta tab');
   const partner = s.match(/Brought with (\w+)/)[1]; await r.ui.tapPokemonInSheet(partner); ok(new RegExp(partner).test((await r.ui.infoSheet() || '').slice(0, 140)), 'partner sheet did not open'); await r.close(); });
 
 t('PKMN-07', 'Rating tab: "Why it rates N", four bars, What the Data Says, other tier lists, links', async () => {
