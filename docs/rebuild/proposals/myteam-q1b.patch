@@ -1,0 +1,28 @@
+diff --git a/app/src/v2/css/pages.css b/app/src/v2/css/pages.css
+index 2ae6d41..8a27a3e 100644
+--- a/app/src/v2/css/pages.css
++++ b/app/src/v2/css/pages.css
+@@ -1024,3 +1024,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
+ @media (max-width:699px){.bt-more{display:block;margin-top:var(--s8)}.bt-more h2{font-size:var(--t24);margin:0 0 var(--s2)}.bt-more ul{list-style:none;margin:0;padding:0}
+   .bt-more a{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:56px;padding:var(--s2) 0;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none;font:700 var(--t15)/1.5 var(--b)}
+   .bt-more small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-more i{font-style:normal;color:var(--ink-3)}}
++
++.mu-outmore{margin-top:var(--s1)}.mu-outmore .np-link{display:inline-flex;align-items:center;min-height:var(--tap)} /* My Team Q1 B: the line under the stand-outs */
+diff --git a/app/src/v2/pages/matchups.js b/app/src/v2/pages/matchups.js
+index b0b66b4..7e68010 100644
+--- a/app/src/v2/pages/matchups.js
++++ b/app/src/v2/pages/matchups.js
+@@ -32,8 +32,11 @@ V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).fil
+   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured');
+   const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
+   // Nov 12 height cut: no group headings (each row carries its verdict badge; the counts line above has the numbers)
+-  const grp = (t, a) => a.length ? `<ol class="tm-rows mu-out" aria-label="${t}: ${a.length}">${a.map(row).join('')}</ol>` : '';
+-  return `${grp('Unfavoured', unf)}${grp('Favoured', fav)}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
++  // Sim, Nov 13 (My Team Q1 B): at most 4 of each (the most common threats first), so rows stay even and the page length no longer
++  // depends on the team; a line says how many more and opens All 30
++  const N = 4, grp = (t, a) => a.length ? `<ol class="tm-rows mu-out" aria-label="${t}: ${a.length}">${a.slice(0, N).map(row).join('')}</ol>` : '';
++  const more = [unf.length > N ? `${unf.length - N} more Unfavoured` : '', fav.length > N ? `${fav.length - N} more Favoured` : ''].filter(Boolean).join(' and ');
++  return `${grp('Unfavoured', unf)}${grp('Favoured', fav)}${more ? `<p class="tm-sub mu-outmore">${more} in <button type="button" class="np-link" data-muall30>All 30 ›</button></p>` : ''}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
+ `; }; // Nov 12 height cut: no "The other N are even matches. See all 30" line; the counts line above says how many are even and
+   // the "All 30" view button sits just above the rows (the data-muall30 handler below stays for any other link)
+ 
