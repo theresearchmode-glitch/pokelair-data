@@ -71,7 +71,7 @@ Checklist: NastyPlot Plans page, section "Rebuild into the new design" (docs/fou
 Each page: mock-up approved, build, behaviour tests green, polish check clean, Preview, Sim OK. Order (hardest and most
 used first): My Team (with Team Sheet, saved teams, box, compare, share), the Pokémon info sheet, Home, Build (Build for
 Me, cores, coverage, sets, add a Pokémon), Battle (battle mode, damage calc, speed tiers, type chart, practice, game log),
-Meta (ratings, usage, teams, events, weekly, archetypes, track record), then method, about, legal, feedback, onboarding
+Meta (ratings, usage, teams, events, weekly, archetypes, track record), then method, about, legal, feedback, onboarding (notes for the Meta rebuild: docs/rebuild/meta-notes.md, incl. Sim's Mega ranking list, Nov 13)
 and every empty, loading and error state.
 
 ### R5. The switch
