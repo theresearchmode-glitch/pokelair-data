@@ -312,9 +312,9 @@ t('TEAM-15', 'Matchups summary: Favoured/Even/Unfavoured add to 30 and match the
   const l = tx.match(/Unfavoured (\d+) Even match (\d+) Favoured (\d+)/); ok(l && l[1] === m[3] && l[2] === m[2] && l[3] === m[1], 'header numbers differ from the Matchups legend'); });
 
 t('TEAM-16', 'Legal and "Team checks 4/4" badge with the rules tooltip', async () => {
-  const r = await myTeam({fresh: true}); const tx = await r.ui.text(); has(tx, /\bLegal\b/); has(tx, /Team [Cc]hecks:? 4\/4/); /* new build (Sim, Nov 12, C1): the count sits on the Team Checks section heading, not the tab */ // today one badge "Legal Team checks 4/4"; new build a Legal mark + the Team Checks count
+  const r = await myTeam({fresh: true}); const tx = await r.ui.text(); has(tx, /\bLegal\b/); if (NEW) has(tx, /All 4 basics( and all \d+ notes)? pass/); else has(tx, /Team checks 4\/4/); /* new build (Sim, Nov 12, C1: names only on tabs): the 4/4 count left the tab; the Team Checks section says it in words. (Correction, Nov 13: an earlier note here said the count moved to the heading; it did not.) */ // today one badge "Legal Team checks 4/4"; new build a Legal mark + the Team Checks count
   ok(/Based on our reading of the Reg M-C rules/.test(await r.ui.rulesTooltip() || ''), 'no rules tooltip'); await r.close();
-  const {ui} = await view('team', {team: TEAM}, 'My Team'); const t2 = await ui.text(); has(t2, /\bLegal\b/); has(t2, /Team [Cc]hecks 2\/4/); });
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); const t2 = await ui.text(); has(t2, /\bLegal\b/); if (NEW) { ok(!/All 4 basics/.test(t2), 'a 2/4 team says all 4 basics pass'); has(t2, /Team Checks/); } else has(t2, /Team checks 2\/4/); });
 
 t('TEAM-18', 'Weather backdrop behind a sun team\'s header', async () => {}, {skip: 'decorative animation on the old header, mostly covered by the arena layout (inventory unsure it shows); needs a visual check, not a behaviour test'});
 
@@ -516,7 +516,7 @@ t('SETS-01', 'Open Team Sheet fold: one card per Pokémon; tapping opens its edi
   if (NEW) { /* new build (Sim, Nov 12): today's "Open Team Sheet" fold is the Team Sheet sheet: one card per Pokémon (item, Ability,
     stats), the two leads marked "↑ Lead vs the meta's top six" (the plan line's lead pair, no other card), a card opens Edit Set. Sim
     dropped the per-card "−": the six's "− Remove" (with Undo) covers removing */
-    const r = await myTeam(); const pl = (await r.ui.gamePlanLine() || '').match(/^Game plan (vs the meta's top six): lead (.+?) \+ (.+?), back /); ok(pl, 'plan line: ' + await r.ui.gamePlanLine());
+    const r = await myTeam(); const pl = (await r.ui.gamePlanLine() || '').match(/^Game [Pp]lan (vs the meta's top six): lead (.+?) \+ (.+?), back /); ok(pl, 'plan line: ' + await r.ui.gamePlanLine());
     await r.ui.go('Team Sheet', 900); const leads = [pl[2], pl[3]], names = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
     for (const n of names) { const c = await r.ui.teamSheetCard(n) || ''; ok(/ Item .+ Ability /.test(c) && /HP \d+ \d+/.test(c), `${n}'s card misses item / Ability / stats: ` + c.slice(0, 120));
       if (leads.includes(n)) ok(c.startsWith(`${n} ↑ Lead ${pl[1]} Item `), `lead ${n}'s card has no "↑ Lead ${pl[1]}": ` + c.slice(0, 80)); else ok(!/↑ Lead/.test(c), `${n} is not a lead but its card says "↑ Lead": ` + c.slice(0, 80)); }

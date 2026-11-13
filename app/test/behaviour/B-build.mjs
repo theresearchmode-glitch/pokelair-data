@@ -111,7 +111,7 @@ t('AUTO-02', 'Build from My box / Whole roster: box count, switching rebuilds, c
 
 t('AUTO-03', 'Pool rules: a tiny box says how many are usable; Never-suggest Pokémon are never built in', async () => {
   { const {ui, close} = await open({team: TEAM, box: ['Garchomp', 'Incineroar']}); await ui.go('Build');
-    const r = await ui.buildMeATeam(); has(r, /Only \d+ usable Pokémon in your box for doubles\. Add more in My box, or switch to Whole roster\./, 'tiny box note'); await close(); }
+    const r = await ui.buildMeATeam(); has(r, /Only \d+ usable Pokémon in your box for doubles\. Add more in My [Bb]ox, or switch to Whole [Rr]oster\./, 'tiny box note'); await close(); }
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.unfold(/^Bigger Plans/i); await ui.unfold(/^Plan Settings/i);
     await ui.neverSuggest('Kingamb'); await ui.go('Build'); await ui.tap(/^Whole roster/);
     await ui.buildMeATeam(); const n = await ui.waitOptions(); for (let i = 0; i < n; i++) { const six = await ui.builtSix(); expect(!six.includes('Kingambit'), `option ${i + 1} uses never-suggest Kingambit`); if (n > 1) await ui.tryAnother(); }
@@ -205,7 +205,7 @@ t('AUTO-14', 'No-result notes (tiny box, no Mega-capable box) with no "Doubles" 
   { const {ui, close} = await open({team: TEAM, box: ['Garchomp', 'Incineroar']}); await ui.go('Build'); const r = await ui.buildMeATeam();
     has(r, /^Only \d+ usable Pokémon in your box for doubles/, 'tiny box (no label before it)'); await close(); }
   { const {ui, close} = await open({team: TEAM, box: ['Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler', 'Kingambit', 'Basculegion', 'Archaludon', 'Farigiraf']}); await ui.go('Build'); const r = await ui.buildMeATeam();
-    has(r, /^No strong team with exactly 2 Megas from this pool\. Add Mega-capable Pokémon to your box, switch to Whole roster, or change Megas on team\./, 'no-Mega box'); await close(); } });
+    has(r, /^No strong team with exactly 2 Megas from this pool\. Add Mega-capable Pokémon to your box, switch to Whole [Rr]oster, or change Megas on team\./, 'no-Mega box'); await close(); } });
 
 t('AUTO-15', 'Start from a recent winner: three cards; Sets; Load team needs a second tap; Practice against; Compare', async () => {
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
