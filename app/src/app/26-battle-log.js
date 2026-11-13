@@ -1,7 +1,7 @@
 // ---------- Battle log: your own results, by team, Pokémon and lead pair ----------
 /* logKey lives in 26-log-data.js (shared with the new build, R4 Nov 11) */
 // logStats: moved to 05-home-data.js (Nov 12; shared with the new build)
-function teamRecord(ms) { if (!S.log || !S.log.length || ms.length < 6) return null; const k = logKey(ms.map(m => m.p.n)); const e = S.log.filter(x => x.tm.length === 6 && logKey(x.tm) === k); return e.length ? logStats(e) : null; }
+// teamRecord moved to 26-log-data.js (Nov 12, shared so the rebuild's My Team and Battle show the team's own record)
 function renderLog() {
   const form = $('logForm'), out = $('logStats'); if (!form || !out) return;
   if (!Array.isArray(S.log)) S.log = [];

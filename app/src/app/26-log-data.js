@@ -35,3 +35,5 @@ function logGame(r, leads, opp) { const ms = members(); if (ms.length !== 6) ret
   const x = {t: Date.now(), r, b: leads.length === 2 ? leads.slice() : [], tm: ms.map(m => m.p.n), o: opp.slice(0, 6)};
   S.log.push(x); if (S.log.length > 400) S.log = S.log.slice(-400); return x; }
 function unlogGame(t) { S.log = (S.log || []).filter(x => x.t !== t); }
+// the team's own record from the game log (moved from 26-battle-log.js, Nov 12)
+function teamRecord(ms) { if (!S.log || !S.log.length || ms.length < 6) return null; const k = logKey(ms.map(m => m.p.n)); const e = S.log.filter(x => x.tm.length === 6 && logKey(x.tm) === k); return e.length ? logStats(e) : null; }
