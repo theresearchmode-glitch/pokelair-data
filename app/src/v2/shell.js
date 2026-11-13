@@ -246,3 +246,11 @@ document.addEventListener('click', e => { if (!(e.target.closest && e.target.clo
   if (V2.nav.d < V2.nav.max) try { history.forward(); } catch (x) {} });
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2back]'))) return; if (V2._sheet) { V2.closeSheet(); return; }
   if (V2.nav.d > 0) try { history.back(); } catch (x) {} });
+// Double taps (today's 34-events.js TAP_ACT, Oct 31; audit X-03/X-04, Nov 12): right after an action that changes the team, the box,
+// their six, the log or the page, a second tap within 450 ms is ignored, so a double tap can't apply twice, save twice, or land on
+// whatever the redraw put under the finger. One capture-phase listener, as today; the two per-button guards in sugs.js stay harmless.
+V2.TAP_ACT = /* today's set mapped to the new buttons (plan, absave, abuse, chrm, rec, qa, evload, abaround, clearTeam) + the audit's Use/Save/core/Load + the log's Win/Loss */
+  '[data-v2plan],[data-v2plana],[data-v2qa],[data-v2rm],[data-v2fix],[data-mufix],[data-v2clear],[data-bduse],[data-bdsave],[data-bdcore],[data-hmload],[data-hmaround],[data-bdgo],[data-btlres]';
+V2._tapAt = 0;
+document.addEventListener('click', e => { const now = Date.now(); if (now - V2._tapAt < 450) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+  const b = e.target && e.target.closest && e.target.closest(V2.TAP_ACT); if (b) V2._tapAt = now; }, true);
