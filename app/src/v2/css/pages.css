@@ -601,7 +601,9 @@
 .hm-ut b{font:700 var(--t15)/1.25 var(--b)}.hm-used.one .hm-ut b{font:900 var(--t28)/1.05 var(--u);font-style:italic}
 /* Home Q2 B (proposal): on small phones a long #1 name ran into its neighbour (Rillaboom +18 px at 320): wider centre and the 20 px size under 450 px */
 @media (max-width:449px){.hm-three{grid-template-columns:1fr 2fr 1fr}.hm-used.one .hm-ut b{font-size:var(--t20)}}
-@media (max-width:359px){.hm-used:not(.one) .hm-ut b{font-stretch:88%}} /* the side names fit their narrower columns (approved narrower letters) */
+@media (max-width:359px){.hm-used:not(.one) .hm-ut b{font-stretch:88%}}
+/* Home Q3 B (proposal): the same overlap on tablets, where Home sits in a narrow column (700-899): same fix */
+@media (min-width:700px) and (max-width:899px){.hm-three{grid-template-columns:1fr 2fr 1fr}.hm-used.one .hm-ut b{font-size:var(--t20)}}@media (min-width:700px) and (max-width:799px){.hm-used:not(.one) .hm-ut b{font-stretch:88%}} /* the side names fit their narrower columns (approved narrower letters) */
 .hm-ut small{font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}.hm-ut .num{font:900 var(--t22)/1 var(--u);font-style:italic;color:var(--ink)}.hm-ut .unit{font-family:var(--b);font-style:normal;font-weight:600;font-size:var(--t13)}
 .hm-src{margin:var(--s4) 0 0;text-align:center}
 @media (max-width:1179px){.hm-hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s8)}.hm-used .st{--iw:110px}.hm-used.one .st{--iw:200px}}
