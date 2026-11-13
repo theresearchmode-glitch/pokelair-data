@@ -28,7 +28,7 @@ V2.undotHtml = h => { h = String(h); const list = /;/.test(h.replace(/<[^>]*>/g,
 V2.sgSide = (m, cls) => { const P = m.p || m; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}</span></span>`; };
 V2.sgSwap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}">${x.out ? V2.sgSide(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${V2.sgSide(x.c.p, ' in')}</div>`;
 V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main}) => { const g1 = g0 != null ? planGrade(pl) : null, ok = g0 != null && g1 != null, r0 = ok ? Math.round(g0) : null, r1 = ok ? Math.round(g1) : null, d = ok ? r1 - r0 : null;
-  const word = ok && CH.wordOf(g0) !== CH.wordOf(g1) ? CH.wordOf(g1) : '', ln = LANE.lineParts(pl);
+  const word = ok && CH.wordOf(g0) !== CH.wordOf(g1) ? CH.wordOf(g1) : '', ln = (() => { try { if (!pl._lane) LANE.of(pl, members(), g0); } catch (e) {} return LANE.lineParts(pl); })(); // plans from the planner's extra list have no lane yet: work it out, as today's 23-coverage.js does (Nov 10 fix; audit SUGG-06)
   // Why?: the plan's own reasons (else, for a side option, what keeps it level), the weak-spot change first (as today)
   const W = why || {lines: pl._why && pl._why.length ? pl._why : side ? ['Keeps every check and your speed control', 'About the same grade as now, with a different look'] : [], wk: pl._wk};
   const wk = W.wk ? `<li>Weak spots: <b>${V2.esc(W.wk[0])}</b> → <b>${V2.esc(W.wk[1])}</b></li>` : '', L = W.lines.filter(Boolean), nr = L.length + (wk ? 1 : 0);
