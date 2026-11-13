@@ -947,7 +947,7 @@ t('SAVED-10', 'Older singles teams are kept, not shown, but count toward the 10'
 // ================= 10. My Box =================
 t('BOX-01', 'My Box head: count, explanation, sync line', async () => {
   const r = await aopen({team: TEAM, box: BOX}); await r.ui.go('My Box', 900); const tx = await r.ui.text();
-  for (const s of ['← My Team', 'The Pokémon you own', 'My Box', '10 Pokémon', /Build for [Mm]e and the suggestions pick from these/,
+  for (const s of ['← My Team', 'The Pokémon you own', 'My Box', '10 Pokémon', /Build(?: for [Mm]e)? and the suggestions pick from these/,
     // new build (Sim's My Box item 20, Nov 12): plain sync words, "Saved and kept in step across your devices." / "Saved in this browser only…"
     NEW ? /Saved and kept in step across your devices\.|Saved in this browser only\. To use your box on another device, copy its box link\./ : /Saved to your Claude account|this browser/]) has(tx, s, 'My Box'); await r.close(); });
 
@@ -982,7 +982,7 @@ t('BOX-06', 'Box links: copy, open a box link, "Add to my box"; a #box= link ope
 
 t('BOX-07', 'Empty box: its picture (today Darkrai; the new build the featured underdog), "Your box is empty…", "Add a Pokémon" focuses the search', async () => {
   const r = await aopen({team: TEAM, box: ['Absol']}); await r.ui.go('My Box', 900); await r.ui.removeFromBox('Absol'); const tx = await r.ui.text();
-  has(tx, /Your box is empty\. Add the Pokémon you own, and Build for [Mm]e and the suggestions pick from them\./);
+  has(tx, /Your box is empty\. Add the Pokémon you own, and Build(?: for [Mm]e)? and the suggestions pick from them\./);
   ok(await r.ui.emptyBoxArt(), 'no picture on the empty box');
   await r.ui.tapText(/^Add a Pokémon$/, 500); ok(/Add a Pokémon/.test(await r.ui.focusName()), 'search not focused: ' + await r.ui.focusName()); await r.close(); });
 
