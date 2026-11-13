@@ -110,7 +110,7 @@ function renderMatchup() {
       ${notes.map(n => `<div class="prob-row"><span class="sev ${n.tone === 'good' ? 'ok' : n.tone === 'bad' ? 'hi' : 'mid'}">${n.tone === 'good' ? 'Edge' : n.tone === 'bad' ? 'Watch' : 'Note'}</span><div><b>${esc(n.t)}</b>: ${esc(n.d)}</div></div>`).join('')}
       ${ll.length === 2 ? `<p class="t2" style="margin:0">Likely lead: <b>${esc(ll[0].d)}</b> + <b>${esc(ll[1].d)}</b> (their speed and field setters, then Fake Out).</p>` : ''}</div>`; })() : '';
   // Battle mode (47-battle-mode.js) shows the four, the leads and turn 1; this is the deeper read underneath it
-  const thr = `<div class="plan"><div class="ph"><span class="pt">Their threats</span><span class="vsub">to your four</span></div><div class="problems">${threats.length ? threats.map(t => `<div class="prob-row"><span class="sev ${t.ans.length ? 'mid' : 'hi'}">Watch</span><div><b>${th(t.j)}</b>: ${esc(t.move)} hits ${t.hit.map(nm).join(', ')} super effectively. ${t.ans.length ? 'Answer: ' + t.ans.map(nm).join(', ') + '.' : 'No clean answer in your 4, so keep it in check with speed control or double-targeting.'}</div></div>`).join('')
+  const thr = `<div class="plan"><div class="ph"><span class="pt">Their threats</span><span class="vsub">to your four</span></div><div class="problems">${threats.length ? threats.map(t => `<div class="prob-row"><span class="sev ${t.ans.length ? 'mid' : 'hi'}">Watch</span><div><b>${th(t.j)}</b>: ${t.by.map(g => `${esc(g.move)} hits ${g.hit.map(nm).join(', ')}`).join('; ')} (super effective). ${t.ans.length ? 'Answer: ' + t.ans.map(nm).join(', ') + '.' : 'No clean answer in your 4, so keep it in check with speed control or double-targeting.'}</div></div>`).join('')
       : '<div class="prob-row"><span class="sev ok">Clear</span><div>None of their Pokémon threatens several of your picks at once.</div></div>'}</div></div>`;
   el.innerHTML = archBlock + thr + grid;
   if (typeof view !== 'undefined' && view === 'matchup') safe('battle', renderBattle);
@@ -239,5 +239,7 @@ const wxName = k => WXFX[k] ? WXFX[k].n + ' team' : '';
 // rebuild's Battle "Deeper read" shows the same list). r = planMatchup(mine, theirs, ...).
 function deeperThreats(r, theirs) {
   return theirs.map((o, j) => { const hit = r.chosen.filter(i => r.h.def[i][j] && r.h.def[i][j].x >= 2);
-    const ans = r.chosen.filter(i => r.h.M[i][j] >= 1); return {j, hit, ans, move: hit.length ? r.h.def[hit[0]][j].e.move : ''}; })
+    const ans = r.chosen.filter(i => r.h.M[i][j] >= 1), by = []; /* by: each move with the Pokémon it hits (Sim, Nov 12: one move named for all was misleading) */
+    for (const i of hit) { const mv = r.h.def[i][j].e.move, g = by.find(x => x.move === mv); if (g) g.hit.push(i); else by.push({move: mv, hit: [i]}); }
+    return {j, hit, ans, by, move: hit.length ? r.h.def[hit[0]][j].e.move : ''}; })
     .filter(t => t.hit.length >= 2 || (t.hit.length && !t.ans.length)).sort((a, b) => b.hit.length - a.hit.length).slice(0, 4); }

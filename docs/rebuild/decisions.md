@@ -596,3 +596,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:30 PM: New rule from Sim (RULES.md 00b): every picture is labelled with its question number and option name printed on the picture. Q1 (Who moves first) and Q2 (320 height fix) re-sent with labelled pictures. Sim: continue the test work.
 - 9:30 PM: Sim chose Q1 = B1 ('i hate the overlapping. so lets go with your recommendation'): Who moves first becomes the speed line in move order on desktop and iPad (820+), bars stay on phones; numbers on one level line, ties marked. Pictures before the Preview.
 - 9:31 PM: Sim chose Q2 = A: the 'Type them as you see them...' line moves from under their six into the Their six sheet (all widths), so Battle fits 320 without raising the limit.
+- 9:42 PM: Sim: Q3 yes (speed line 1024+, bars on iPad upright and phones), Q4 yes (Deeper read threat sentence names each move with the Pokémon it hits, both sites; was: only the first move). 'lets go for it'.

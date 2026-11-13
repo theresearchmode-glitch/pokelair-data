@@ -72,8 +72,13 @@ t('NAV-06', '"Practice against" on Winning teams loads that six into Battle with
 // ============================== BATTLE: Battle mode ==============================
 t('BATTLE-01', 'page head: "Team preview · <team> vs their six", real sheet kicker and event line', async () => {
   { const {ui, close} = await open({team: []}); await ui.go('Battle'); const tx = await ui.pageText();
-    expect(/team preview/i.test(tx) && /your team\s+vs\s+their six/i.test(tx), 'empty Battle head is not "Team preview · Your team vs their six": ' + tx.slice(0, 120)); await close(); }
+    if (NEW) expect(/Battle a team · Team preview/.test(tx) && /Who are you facing\? Plan the match\./.test(tx), 'empty head is not the mock-up\'s "Battle a team · Team preview / Who are you facing? Plan the match.": ' + tx.slice(0, 120));
+    else expect(/team preview/i.test(tx) && /your team\s+vs\s+their six/i.test(tx), 'empty Battle head is not "Team preview · Your team vs their six": ' + tx.slice(0, 120)); await close(); }
   const {ui, close} = await open({team: TEAM}); await ui.go('Battle'); let tx = await ui.pageText();
+  if (NEW) { /* mock-up: the typing help sits in the Their six sheet (Sim, Nov 12, Q2 = A); the head names the team once a sheet is in */
+    await ui.enterOpponents(['Kingambit']); tx = await ui.pageText(); expect(/Bring these four\. Lead the pair\./.test(tx), 'no plan head with 1 of theirs');
+    await ui.pickTournamentTeam(1); tx = await ui.pageText(); hasAll(tx, ['Battle a team · Their real open team sheet', 'Champion', 'players'], 'real-sheet head');
+    await close(); return; }
   expect(/vs\s+their six/i.test(tx), 'head does not say "vs their six" with none of theirs in');
   lacks(tx, 'as you see them at team preview. Type', 'head');
   await ui.enterOpponents(['Kingambit']); tx = await ui.pageText();
@@ -153,7 +158,8 @@ t('BATTLE-07', 'empty and partial states: under 4 of yours, none of theirs, then
     expect(await ui.sees('Add at least 4 Pokémon on My team first'), 'no "Add at least 4" message with 3');
     await ui.tapIn('Go to My team'); expect(await ui.current() === 'report', '"Go to My team" did not open My team'); await close(); }
   const {ui, close} = await open({team: TEAM.slice(0, 4)}); await ui.go('Battle');
-  expect(await ui.sees('Type their Pokémon as you see them at team preview. Everything below fills in as you go.'), 'no "Type their Pokémon…" message with 4 and none of theirs');
+  if (NEW) expect(await ui.sees('Everything below fills in once their six is in'), 'no "Everything below fills in…" message with 4 and none of theirs');
+  else expect(await ui.sees('Type their Pokémon as you see them at team preview. Everything below fills in as you go.'), 'no "Type their Pokémon…" message with 4 and none of theirs');
   expect(!(await ui.sees(/bring these four/i)), 'plan shows with none of theirs');
   await ui.enterOpponents(['Kingambit', 'Pelipper']); const tx = await ui.pageText();
   hasAll(tx, ['The read', 'Bring these four', 'Turn one, in move order'], 'Battle with 2 of theirs');
@@ -162,9 +168,13 @@ t('BATTLE-07', 'empty and partial states: under 4 of yours, none of theirs, then
 t('BATTLE-08', 'The read: your lead, their likely lead, biggest threat, Fake Out count', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); const tx = await ui.pageText();
   expect(/The read/i.test(tx), 'no "The read"');
-  expect(/Your lead Mega Charizard Y \+ Rillaboom/i.test(tx), 'your lead not "Mega Charizard Y + Rillaboom"');
+  if (NEW) { /* mock-up: your lead is the Lead group of Your six, their likely lead is tagged on their six, The read keeps threat + Fake Out */
+    expect(/Lead Mega Charizard Y \S+ Y Rillaboom/i.test(tx), 'your Lead group not Mega Charizard Y + Rillaboom');
+    expect(/Pelipper Likely lead/.test(tx) && /Indeedee \(F\) Likely lead/.test(tx), 'their likely lead not tagged on Indeedee (F) + Pelipper');
+    expect(/Biggest threat Farigiraf Trick Room/i.test(tx), 'biggest threat not "Farigiraf, Trick Room"'); }
+  else { expect(/Your lead Mega Charizard Y \+ Rillaboom/i.test(tx), 'your lead not "Mega Charizard Y + Rillaboom"');
   expect(/Their likely lead Indeedee \(F\) \+ Pelipper/i.test(tx), 'their likely lead not "Indeedee (F) + Pelipper"');
-  expect(/Biggest threat Farigiraf,? Trick Room/i.test(tx), 'biggest threat not "Farigiraf, Trick Room"');
+  expect(/Biggest threat Farigiraf,? Trick Room/i.test(tx), 'biggest threat not "Farigiraf, Trick Room"'); }
   expect(/\b0 Fake Out on their side/i.test(tx), 'no "0 Fake Out on their side"');
   await ui.removeOpponent('Farigiraf'); expect(!/Biggest threat Farigiraf/i.test(await ui.pageText()), 'The read did not update after removing Farigiraf');
   await close(); });
@@ -187,16 +197,19 @@ t('BATTLE-09', 'Plan / Speed / Damage switch filters cards on phones; hidden on 
 
 t('BATTLE-10', 'Bring these four, lead the pair; one-Mega note when two Megas come', async () => {
   { const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); const tx = await ui.pageText();
-    hasAll(tx, ["NastyPlot's pick", 'Bring these four. Lead the pair.', 'Tested on 13,000 ladder games'], 'Bring card');
+    if (NEW) { hasAll(tx, ['Bring these four. Lead the pair.', 'Lead pair tested on 13,000 ladder games'], 'Bring head');
+      expect(/Lead Mega Charizard Y \S+ Y Rillaboom [^]*Back Incineroar [^]*Whimsicott/i.test(tx), 'Lead/Back not Mega Charizard Y + Rillaboom / Incineroar + Whimsicott');
+      expect(/Leave home Garchomp [^]*Sneasler/i.test(tx), 'no "Leave home: Garchomp, Sneasler"'); await close(); }
+    else { hasAll(tx, ["NastyPlot's pick", 'Bring these four. Lead the pair.', 'Tested on 13,000 ladder games'], 'Bring card');
     expect(/Lead Mega Charizard Y Rillaboom Back Incineroar Whimsicott/i.test(tx), 'Lead/Back not Mega Charizard Y + Rillaboom / Incineroar + Whimsicott');
-    expect(/Leave home: Garchomp, Sneasler/i.test(tx), 'no "Leave home: Garchomp, Sneasler"'); await close(); }
+    expect(/Leave home: Garchomp, Sneasler/i.test(tx), 'no "Leave home: Garchomp, Sneasler"'); await close(); } }
   const {ui, close} = await open({team: MEGAS, opp: OPP2}); await ui.go('Battle');
   expect(await ui.sees('Only one Mega can Mega Evolve this battle'), 'no one-Mega note with two Megas brought');
   await close(); });
 
 t('BATTLE-11', 'From real games: approved verdict words, "so far" under six, gone under four', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
-  const card = async () => { const tx = await ui.pageText(); const i = tx.indexOf('From real games'); return i < 0 ? null : tx.slice(i, i + 260); };
+  const card = async () => { const tx = await ui.pageText(); const i = NEW ? tx.lastIndexOf('From real games') : tx.indexOf('From real games'); return i < 0 ? null : tx.slice(i, i + 260); }; /* new page: the head's verdict says it first */
   let c = await card(); expect(c, 'no "From real games" card');
   expect(/39,052 tournament games/.test(c), 'games count not shown');
   expect(/\b(Favoured|Even match|Unfavoured)\b/.test(c), 'verdict is not Favoured / Even match / Unfavoured: ' + c.slice(0, 80));
@@ -221,11 +234,11 @@ t('BATTLE-12', 'Watch out fold lists what shuts you down; open/closed remembered
 t('BATTLE-13', 'Turn one in move order with the planned moves, KO warning and field', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); const tx = await ui.pageText();
   expect(/Turn one, in move order your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i.test(tx), 'turn one title wrong');
-  expect(/1 You: Rillaboom 107 Speed, \+3 Fake Out Pelipper/i.test(tx), 'step 1 is not Rillaboom Fake Out on Pelipper');
-  expect(/2 You: Mega Charizard Y \d+ Speed Weather Ball/i.test(tx), 'step 2 is not Mega Charizard Y Weather Ball');
-  expect(/3 Them: .+4 Them: /i.test(tx), 'steps 3-4 are not theirs');
-  expect(/Watch Pelipper's Weather Ball can KO Rillaboom\. Consider Protect\./i.test(tx), 'no KO warning');
-  expect(/Field on turn 1 sun \+ Psychic Terrain \(Mega Charizard Y\)/i.test(tx), 'no field line');
+  expect((NEW ? /1 You Rillaboom · 107 Speed, \+3 priority Fake Out Pelipper/i : /1 You: Rillaboom 107 Speed, \+3 Fake Out Pelipper/i).test(tx), 'step 1 is not Rillaboom Fake Out on Pelipper'); /* new: the mock-up's step format */
+  expect((NEW ? /2 You Mega Charizard Y · \d+ Speed Weather Ball/i : /2 You: Mega Charizard Y \d+ Speed Weather Ball/i).test(tx), 'step 2 is not Mega Charizard Y Weather Ball');
+  expect((NEW ? /3 Them .+4 Them /i : /3 Them: .+4 Them: /i).test(tx), 'steps 3-4 are not theirs');
+  expect(/Watch ?Pelipper's Weather Ball can KO Rillaboom\. Consider Protect\./i.test(tx), 'no KO warning');
+  expect((NEW ? /Field on turn 1: sun \+ Psychic Terrain \(Mega Charizard Y\)/i : /Field on turn 1 sun \+ Psychic Terrain \(Mega Charizard Y\)/i).test(tx), 'no field line');
   await ui.clearOpponents(); await ui.enterOpponents(['Kingambit']);
   expect(!/Turn one, in move order/i.test(await ui.pageText()), 'turn one shows with 1 of theirs');
   await close(); });
