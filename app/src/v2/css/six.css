@@ -95,3 +95,6 @@ svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);ver
 @media (max-width:699px){.tm-set .sx-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s4)}.tm-set .sx-kv>div{grid-template-columns:minmax(0,1fr);gap:0}.tm-set .sx-kv dd{overflow-wrap:normal}}
 /* A10 (Sim, Nov 12: "your recommendation"): the line before Bench (the two you don't bring) shows on every width, not only phones */
 @media (min-width:700px){.sx-grp:nth-child(3)::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--s6) / -2);width:1px;background:var(--rule)}}
+/* i42 (Nov 13): on phones the shorter fact (Nature) stretched to its neighbour's height and its value slid down; values start at the top,
+   so Nature and Stat points share their first line (rule 9.5) */
+@media (max-width:699px){.tm-set .sx-kv>div{align-content:start}}
