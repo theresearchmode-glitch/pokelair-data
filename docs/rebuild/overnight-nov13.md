@@ -129,3 +129,20 @@ After 2:27 AM (on the Preview since v92, 2:35 AM):
   beside Recent Winners (added to i16). Longer at 1440 (2,121 vs the mock-up's 1,796): Other Options cards are taller.
 - My Team: no separate mock-up (its mock-ups were retired when the real page replaced them; approved piece by piece).
 - Tests after this morning: Battle 21 (new site) and 86/0 (today's page), Build 24, both unchanged.
+
+## Shorter pages instead of higher limits (Sim, Nov 13 morning)
+Mock-ups only (CSS added in the screenshot script; the site's code is unchanged). Questions sent with labelled pictures:
+- Build Q1 (desktop): the phone tabs on every size. Other Options 3 cards across (six Pokémon 3x2, names in full); Recent Winners
+  one full-width list (an opened team's sets three across); Cores in 2 columns. Measured 1440: 1,523 / 1,620 (one team open) /
+  1,619, was 2,121 (limit 1,800). 820: 2,279 / 2,351 / 3,128 (limit 3,500). A first try with the six in one row broke names
+  mid-word ("Basculegi on"); not offered.
+- My Team Q1: Stand-Outs at most 4 Unfavoured + 4 Favoured, with a line pointing to the rest in All 30. Today the list has no
+  upper bound (11 for the 5-of-6 sample, one tile alone on its row). 5 of 6 at 1440: 1,917 -> 1,829; full team 1,786 unchanged.
+- Fixed (approved title-case rule): "Other Options" and "Scouting Report" headings.
+- CORRECTION (6:15 AM): "My Team has no separate mock-up" was wrong and unchecked: docs/rebuild/mocks/myteam.tpl.html exists
+  (and mybox.tpl.html). Compared at 1440 (mock-up left, built right):
+  - My Team: the mock-up has 3 columns (1,699 px); built has 2 (1,786). Asked as My Team Q2; 3 columns measured on the built page:
+    full team 1,703, 5 of 6 1,972 (longer), empty strip under Set, view buttons wrap 2x2. Recommended: keep 2.
+  - My Box: "Build around it" is in the mock-up's panel, not the built one (i37); headline "My / Box" on two lines (i38).
+  - Info sheet: "Report a mistake" (today's site and the mock-up) is missing on the new site (i39); layout differs from the
+    mock-up (built Nov 12 after Sim saw the D12-14 pictures; unsure she chose this exact layout).

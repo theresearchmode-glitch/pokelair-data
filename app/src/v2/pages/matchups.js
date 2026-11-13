@@ -78,7 +78,7 @@ V2.muAll = (RD, ms) => { const open = ui.thrOpen || {}, un = RD.rows.filter(r =>
 // ---------- the threat sheet (today's scouting report), one threat picked at a time ----------
 // The picked threat's detail sits above the 30 tiles (today: below them), so the threat you tapped is on the first screen.
 V2.muSel = null;
-V2.muSheetHtml = () => { const D = V2.teamData(); if (D.empty || !D.RD) return '<div class="mu-sh"><h2 class="u">Scouting report</h2><p class="tm-sub">Add Pokémon to your team to see how ready it is for the top threats.</p></div>';
+V2.muSheetHtml = () => { const D = V2.teamData(); if (D.empty || !D.RD) return '<div class="mu-sh"><h2 class="u">Scouting Report</h2><p class="tm-sub">Add Pokémon to your team to see how ready it is for the top threats.</p></div>';
   const {RD, ms, G} = D, need = CH.needN(RD), sel = V2.muSel && RD.rows.find(r => r.t.n === V2.muSel), s = G ? Math.round(G.s) : null;
   const band = G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid' : 'solid';
   const ring = s == null ? '' : `<div class="np-score sm mu-score" style="--band:var(--band-${band})"><b>${s}</b><div class="w"><span>${V2.esc(CH.wordOf(G.s) + (G.partial ? ' so far' : ''))}</span><small>Strength Score</small></div></div>`;
