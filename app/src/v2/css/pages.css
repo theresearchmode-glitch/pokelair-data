@@ -764,7 +764,7 @@
 @media (max-width:519px){.bd-find,.bd-pick{min-height:56px}.bd-lab span{display:none}} /* phone: the name box as tall as the Megas switch (labels level); "optional" lives in the box hint */
 .bd-find input{align-self:stretch;min-height:44px} /* the whole box height takes the tap, not only the text line */
 /* Build piece 2 (mock-up R2): the answer: lock beside the six on one floor, four reasons, actions */
-.bd-ans{display:grid;grid-template-columns:380px minmax(0,1fr);gap:var(--s10);align-items:center;padding-top:var(--s6)}
+.bd-ans{display:grid;grid-template-columns:420px minmax(0,1fr);gap:var(--s10);align-items:center;padding-top:var(--s6)}
 .bd-lock h2{font-size:var(--t34);margin:var(--s2) 0 0}
 .bd-score{margin-top:var(--s5)}.bd-rank{margin-top:var(--s4);font:600 var(--t15)/1.4 var(--b)}
 .bd-chips{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s3)}
