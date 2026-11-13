@@ -661,3 +661,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:57 PM: Preview v102 (394 files): Natures Q1 B, My Team Q3 B, Build Q2 C, Home Q1 B. Each checked (tests unchanged, heights inside, picture/eye checks, use 32/0, clicks 0 double).
 - 1:00 PM: i42 catch-up (rule 10.1 'too few games in words, never a blank'): My Box's win rate under 30 games now shows the info sheet's existing words under the dash ('only N games' / 'no tournament games yet'). Checked 1440 + 390 (sheet); My Box tests unchanged.
 - 1:01 PM: Asked Sim: My Team Q4 (stale-data age words on the score line wrap and put 390 over: C date only beside the score, age in the footer, 3,743 inside, recommended).
+- 1:03 PM: Asked Sim: Battle Q3 (empty Battle: B show Your Six under the empty state, recommended; mock-up on a copy, heights 1440 1,278 / 1,950, 390 2,035 / 4,100). An overlay mock-up was discarded (it overlapped the headline).
