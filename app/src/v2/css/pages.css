@@ -1049,3 +1049,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 /* i42 (Nov 13): Build and Battle sheets had no inner padding (text touched the screen edge); the site's sheet standard (as .ed2/.bx-swap/.ms2) */
 .bt-osheet,.bt-rep,.bt-rec,.bt-lsheet,.bd-how,.bd-cwhy{padding:var(--s8)}@media (max-width:479px){.bt-osheet,.bt-rep,.bt-rec,.bt-lsheet,.bd-how,.bd-cwhy{padding:var(--s6) var(--s4)}}
+
+/* i42 (Nov 13) catch-ups: Unbounded numbers are always slanted; nothing under 13px (rank numbers, This week's 'points', rank moves, the Champion line) */
+.hm-rn,.bd-cn{font-style:italic}
+.hm-mv .unit{font-size:var(--t13)}
+.hm-trd small,.hm-who small{font-size:var(--t13)}
