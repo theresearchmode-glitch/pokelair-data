@@ -1,4 +1,4 @@
-# HANDOVER: the NastyPlot rebuild (updated Nov 12, 7:00 PM Eastern by the clock)
+# HANDOVER: the NastyPlot rebuild (updated Nov 12, 7:08 PM Eastern by the clock)
 
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
@@ -8,6 +8,8 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
   Sim's decisions 6/10/14/15 (yellow Build Me a Team before a build, no Mega tag on cores, Load Team, sheet stays open with
   "On your team ✓"). Sim's 20 answers are in decisions.md (6:51 PM entry).
 - Built after v79, pictures sent, NOT on the Preview: Home duel buttons a row each below 360 (Copy for Showdown fits).
+  Also in code, NOT on the Preview (7:08 PM): decision 8, the Mega count in the answer's eyebrow (waiting on Sim's OK of the picture).
+  HOME-11b known mark now today's site only (the new Build link works).
 - Waiting on Sim (pictures sent): 4 Back on desktop A shift / B fixed spot (rec B); 8 lone chip: Mega count into the eyebrow (rec);
   11 Other options names on phone: six across vs three across (rec three across, +93px each); 20 Home at 320 (4,799 now):
   idea A duel as one switch on phone (rec; 4,199-4,308), idea B compact underdog (not rec); duel buttons fix to the Preview.
