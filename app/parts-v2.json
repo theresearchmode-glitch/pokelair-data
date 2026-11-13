@@ -96,6 +96,7 @@
     "src/app/31-set-edits.js",
     "src/app/31-box-data.js",
     "src/app/26-log-data.js",
+    "src/app/41-replay-data.js",
     "src/app/49-event-data.js",
     "src/app/62-compare-data.js",
     "src/app/33-move-edits.js",

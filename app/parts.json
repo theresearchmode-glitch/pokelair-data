@@ -77,6 +77,7 @@
  "src/app/39-damage-calc-speed.js",
  "src/app/40-turn-one-data.js",
  "src/app/40-turn-one.js",
+ "src/app/41-replay-data.js",
  "src/app/41-replay-import.js",
  "src/app/42-archetype-guides.js",
  "src/app/43-data-health.js",
