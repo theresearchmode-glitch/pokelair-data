@@ -127,6 +127,8 @@
 .svt2-part{color:var(--ink-2)}
 .svt2-acts,.svt2-del{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4)}.svt2-acts .np-link,.svt2-del .np-link{min-height:var(--tap);padding:0 var(--s1)}
 .svt2-del span{font-weight:600;overflow-wrap:anywhere}
+/* Red Q1 = C (Sim, Nov 13): the Delete confirm is red, like Clear Team: same kind of action, same colour (red = danger) */
+.svt2-del .np-btn2[data-svact]{border-color:var(--bad-text);color:var(--bad-text)}
 .svt2-ren{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}.svt2-ren .np-field{flex:1 1 220px}
 @media (max-width:479px){.svt2{padding:var(--s6) var(--s4)}.svt2-card{padding:var(--s4)}.svt2-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}}
 /* phones: the jump bar keeps the four sections; Team Sheet joins the action buttons (Share | Copy, Team Sheet | Saved Teams) */

@@ -341,12 +341,12 @@ V2.ckBody = (D, ck) => { const fb = D.basics.filter(x => !x.ok), fn = D.notes.fi
   return `${fails}${passed ? `<details class="tm-ckok"><summary><b aria-hidden="true">✓</b>${line}</summary>${pb.length ? `<ul class="tm-ck">${pb.map(ck).join('')}</ul>` : ''}${pn.length ? `<h3 class="tm-h3">${CK_TXT.notes}</h3><p class="fine">${CK_TXT.notesWhy}</p><ul class="tm-ck">${pn.map(ck).join('')}</ul>` : ''}<p class="fine">${CK_TXT.intro}</p></details>` : ''}`; };
 
 // the More menu (Sim, Nov 11): every other My Team action, one per row; Clear Team sits last, apart
-V2.moreHtml = () => { const n = S.box.length, ms = members();
+V2.moreHtml = () => { const ms = members();
   const row = (attrs, label, sub) => `<li><button type="button" class="tm-mi" ${attrs}><span>${label}</span>${sub ? `<small>${sub}</small>` : ''}</button></li>`;
   return `<div class="tm-moremenu"><div class="np-eyebrow">My Team</div><h2 class="u">More</h2><ul>
-    ${row('data-v2sheetopen', 'Team Sheet', ms.length ? `${ms.length} sets on one page` : 'Every set on one page')}${ms.length ? row('data-v2copy', 'Copy for Showdown', 'The team as text, ready to paste') : ''}
+    ${row('data-v2sheetopen', 'Team Sheet', 'Every set on one page')}${ms.length ? row('data-v2copy', 'Copy for Showdown', 'The team as text, ready to paste') : ''}
     ${ms.length ? row('data-v2export', 'Export', 'The Showdown text to read, select or copy') : ''}${row('data-v2import', 'Import', 'Paste a team or a team link')}${ms.length ? row('data-cxgo2="cur|"', 'Compare', 'Side by side with another team') : ''}
-    <li><a class="tm-mi" href="#box"><span>My Box</span><small>${n} Pokémon you own</small></a></li></ul>
+    <li><a class="tm-mi" href="#box"><span>My Box</span><small>The Pokémon you own</small></a></li></ul>
     ${ms.length ? `<ul class="tm-mdanger">${row('data-v2clear', 'Clear Team', 'Empties all six spots. Undo brings them back')}</ul>` : ''}</div>`; };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2more]')) { V2.sheet(V2.moreHtml(), {label: 'More', small: true, focus: '.tm-mi'}); return; }
   // actions that don't open their own sheet close the menu (the others replace it)
