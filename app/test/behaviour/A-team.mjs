@@ -1021,7 +1021,7 @@ t('PKMN-02', 'Hero: rating numeral, "<letter> tier, #N of M with results", name,
   for (const x of [/[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'hero'); await r.close(); });
 
 t('PKMN-03', 'Add to team fills the first empty slot ("On your team" after); Build around it; Popular Sets', async () => {
-  const r = await aopen({team: TEAM.slice(0, 5)}); await r.ui.tapPokemon('Kingambit'); has(await r.ui.infoSheet(), 'Add to team'); await r.ui.tapText(/^Add to team$/, 1000);
+  const r = await aopen({team: TEAM.slice(0, 5)}); await r.ui.tapPokemon('Kingambit'); has(await r.ui.infoSheet(), NEW ? 'Add to My Team' : 'Add to team'); await r.ui.tapText(NEW ? /^Add to My Team$/ /* word list: My Team (Sim, Nov 12, decisions 15-16) */ : /^Add to team$/, 1000);
   ok(await r.ui.waitToast(/Kingambit added to your team/), 'no toast'); has(await r.ui.infoSheet() || '', 'On your team', 'sheet after adding'); ok((await r.ui.team()).includes('Kingambit'), 'not on the team');
   await r.ui.tapText(/^Popular Sets$/, 900); ok(await r.ui.current() === 'sets' && !(await r.ui.infoSheet()), 'Popular Sets did not open'); has(await r.ui.text(), 'Kingambit', 'Popular Sets');
   await r.ui.go('Home', 600); await r.ui.tapPokemon('Rillaboom'); has(await r.ui.infoSheet(), /On your team/); await r.ui.tapText(/^Build around it$/, 1200); ok(await r.ui.current() === 'auto', 'Build around it did not open Build'); await r.close();
