@@ -736,3 +736,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:19 PM: Asked Sim with labelled pictures: Build Q3 ('All six are in your box' far right vs right after the buttons; rec B) and Build Q4 (night glow on every band word vs only 'Top tier', the scope Sim kept on Nov 12, decisions.md line 124; rec B: the blue glow blurs the purple 'Tournament ready').
 - 6:21 PM: Build suite on the latest Build fixes (Other Options lining up): 25 pass, 63 FAIL (unbuilt pages), 2 known, 1 fixed? (SUGG-19), same as before.
 - 6:21 PM: Preview v112 (400 files checked; foundation.html 3,006,086 bytes): Build review fixes (score clear of the six at 1180-1440, even tile titles, no dangling dots, Other Options lined up).
+- 6:22 PM: Sim: Build Q3 = B and Build Q4 = B (recommended). Info Q1: wants a couple more suggestions (no pick yet).
+- 6:23 PM: Build Q3 B built ('All six are in your box' right after the buttons) and Build Q4 B built (night glow only on 'Top tier', also when the band is set on a parent as on Build). Checks: night glow on My Team/Home Top tier yes, Build 'Tournament ready' no; Build-style Top tier glows (test markup); build guard clean.

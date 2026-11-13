@@ -63,7 +63,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-score b{font:900 var(--d168)/.86 var(--u);font-style:italic;letter-spacing:-.05em;color:var(--score-ink)}
 .np-score .w{padding-bottom:var(--s4)}.np-score .w span{display:block;font:900 var(--t26)/1.05 var(--u);font-style:italic;color:var(--band)}
 .np-score .w small{display:block;margin-top:6px;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
-.np-score .w span{text-shadow:var(--band-glow)}
+.np-score[style*="band-top"] .w span,[style*="band-top"] .np-score:not([style]) .w span{text-shadow:var(--band-glow)} /* Build Q4 B (Sim, Nov 13): the night glow only on "Top tier", as kept on Nov 12 */
 .np-score.sm b{font-size:var(--d64)}.np-score.sm .w{padding-bottom:4px}.np-score.sm .w span{font-size:var(--t20)}
 @media (max-width:699px){.np-score b{font-size:var(--d120)}}
 /* list row and the soft rule */

@@ -777,7 +777,7 @@
 .bd-why .unit{font-family:var(--b);font-style:normal;font-weight:600;font-size:var(--t15)}
 .bd-why .l{display:block;margin-top:var(--s1);font:700 var(--t15)/1.3 var(--b);text-wrap:balance} /* review (Nov 13): titles split evenly, no lone word; '1 swap' / '4 basics' kept together */.bd-why p{margin:var(--s1) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .bd-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s6);padding-bottom:var(--s8)}
-.bd-catch{margin-left:auto;font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
+.bd-catch{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)} /* Build Q3 B (Sim, Nov 13): right after the buttons it belongs with */
 .bd-busy,.bd-none{padding:var(--s8) 0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 @media (max-width:1179px){.bd-ans{grid-template-columns:minmax(0,1fr);gap:var(--s5)}.bd-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s5)}.bd-why{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:var(--s4)}}
 @media (max-width:699px){.bd-pk .np-mon{--iw:88px}.bd-lock h2{font-size:var(--t28)}.bd-catch{margin-left:0;flex-basis:100%}.bd-acts .np-btn{flex-basis:100%}}
