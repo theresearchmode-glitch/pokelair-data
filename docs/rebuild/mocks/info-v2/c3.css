@@ -1,0 +1,14 @@
+/* Concept 3: Colour Field (mock-up only) */
+.ms-head{display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;justify-items:stretch!important;position:relative;padding-top:var(--s4)}
+.ms-head::before{content:"";position:absolute;z-index:0;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:calc(var(--s6)*-1);height:330px;background:linear-gradient(165deg,rgba(var(--own),.65),rgba(var(--own),.2) 80%);clip-path:polygon(0 0,100% 0,100% 84%,0 100%)}
+.ms-head>*{position:relative;z-index:1}
+.ms-hd{display:contents!important}
+.ms-head{grid-template-areas:"art rate" "name name" "ty ty" "nums nums" "acts acts"}
+.ms-art{grid-area:art;margin:0!important}.ms-art .np-mon,.ms-art .np-mon .st{--iw:150px!important}
+.ms-rate{grid-area:rate;flex-direction:column!important;align-items:flex-start!important;gap:4px!important;align-self:end;padding-bottom:var(--s4)}
+.ms-hd h2{grid-area:name;margin:var(--s3) 0 var(--s2)!important}.ms-ty{grid-area:ty}.ms-acts{grid-area:acts}
+.ms-nums{grid-area:nums;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:0!important;margin-top:var(--s5)!important;border-block:1px solid var(--rule)}
+.ms-n{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:var(--s3) var(--s2)}.ms-n+.ms-n{border-left:1px solid var(--rule)}
+.ms-n b{font-size:var(--t26)!important;line-height:1}.ms-n span{font-size:13px!important;line-height:1.3;white-space:nowrap}
+:root[data-theme=night] .ms-rate b{color:#fff!important}:root[data-theme=night] .ms-rate small{color:rgba(255,255,255,.85)!important}:root[data-theme=night] .ms-hd h2{color:#fff}:root:not([data-theme=night]) .ms-rate b{color:var(--ink)!important}
+:root:not([data-theme=night]) .ms-head::before{background:linear-gradient(165deg,rgba(var(--own),.85),rgba(var(--own),.45) 80%)}

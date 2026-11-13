@@ -1,0 +1,18 @@
+/* Concept 1: Type Poster (mock-up only) */
+.ms-head{display:block!important;position:relative}
+.mk-hero{position:relative;display:block;box-sizing:border-box;width:calc(100% + var(--s4)*2);margin:calc(var(--s6)*-1) calc(var(--s4)*-1) 0;height:330px;overflow:hidden;background:linear-gradient(125deg,var(--t1) 0 52%,var(--t2) 52% 100%);clip-path:polygon(0 0,100% 0,100% 88%,0 100%)}
+.mk-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.35))}
+.mk-wm{position:absolute;left:-8px;top:18px;font:900 96px/0.9 var(--u);font-style:italic;letter-spacing:-.04em;color:rgba(255,255,255,.14);white-space:nowrap;transform:rotate(-8deg);transform-origin:left top}
+.mk-hero .ms-art{position:absolute;right:-18px;bottom:26px;margin:0!important;z-index:2}
+.mk-hero .ms-art .np-mon,.mk-hero .ms-art .np-mon .st{--iw:236px!important}
+.mk-plate{position:absolute;left:12px;bottom:34px;z-index:3;display:flex;align-items:flex-end;gap:8px;padding:10px 18px 10px 14px;background:#0E0E16;transform:skewX(-12deg);box-shadow:0 10px 24px -10px rgba(0,0,0,.6)}
+.mk-plate>*{transform:skewX(12deg)}
+.mk-plate b{font:900 48px/.85 var(--u);font-style:italic;color:#fff;letter-spacing:-.04em}
+.mk-plate span{font:900 20px/1 var(--u);font-style:italic;color:#63C0F8}.mk-plate small{display:block;font:600 12px/1.3 var(--b);font-style:normal;color:#C9C6D6;margin-top:4px}
+.ms-hd .ms-rate{display:none!important}
+.ms-hd h2{font-size:var(--t34)!important;margin:var(--s3) 0 var(--s2)!important}
+.ms-nums{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)!important;margin-top:var(--s4)!important}
+.ms-n{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:var(--s3);background:var(--wash);border-left:4px solid var(--t1)}
+.ms-n b{font-size:var(--t26)!important;line-height:1}.ms-n span{font-size:13px!important;line-height:1.3}.ms-n small{font-size:12px}
+.ms-rb i,.ms-bars i,.ms-st i{background:linear-gradient(90deg,var(--t1),var(--t2))!important}
+.ms-n span{white-space:nowrap}
