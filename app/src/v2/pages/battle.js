@@ -6,7 +6,7 @@
 V2.btUi = V2.btUi || {find: ['', '', '', '', '', '']};
 V2.btOppWho = () => { const opp = S.opp.filter(Boolean); if (!opp.length) return ''; const k = opp.slice().sort().join('|');
   return ui.oppFrom && ui.oppFrom.key === k ? (ui.oppFrom.label || (ui.oppFrom.who && typeof teamWho === 'function' ? teamWho({player: ui.oppFrom.who}) : '') || '') : ''; };
-V2.btPk = (n, sub, extra) => `<button type="button" class="bt-pk" data-v2mon="${V2.esc(n)}" aria-label="${V2.esc(V2.disp(n))}${sub ? ', ' + V2.esc(sub) : ''}: open its info">${V2.mon(n, {iw: 96, bare: true})}<b>${V2.nameHtml(V2.disp(n))}</b>${sub ? `<small>${V2.esc(sub)}</small>` : '<small>&nbsp;</small>'}${extra || ''}</button>`;
+V2.btPk = (n, sub, extra) => `<button type="button" class="bt-pk" data-v2mon="${V2.esc(n)}" aria-label="${V2.esc(V2.disp(n))}${sub ? ', ' + V2.esc(sub) : ''}: open its info">${V2.mon(n, {iw: 96, bare: true, tag: true})}<b>${V2.tileName(V2.disp(n))}</b>${sub ? `<small>${V2.esc(sub)}</small>` : '<small>&nbsp;</small>'}${extra || ''}</button>`;
 V2.btItem = m => { try { return (m && (m.item || (m.it && m.it.n) || (typeof m.it === 'string' ? m.it : ''))) || ''; } catch (e) { return ''; } };
 V2.btPlan = () => { const mine = members(), theirs = oppTeam(); if (mine.length < 4 || !theirs.length) return {mine, theirs, P: null};
   let P = null; try { P = battlePlan(mine, theirs); } catch (e) { console.error(e); } return {mine, theirs, P}; };
