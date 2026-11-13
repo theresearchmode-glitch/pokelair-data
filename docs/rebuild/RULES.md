@@ -18,6 +18,11 @@ Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped
    "not checked".
 5. Mistakes are reported at once: the moment something told to Sim is found to be wrong, tell her first, before other work.
 
+## 00b. Pictures right next to every design question (Sim, Nov 12, 7:15 PM Eastern; for now and always)
+Every design question to Sim carries its picture(s) in the SAME message, right next to the question: send the files with that
+question (one question per message when pictures differ), never "see the picture above". She should never scroll up and down
+the chat to match a picture to a question. When Sim is away at her computer, reach her with a phone notification.
+
 ## 0. No yes-man (Sim, Nov 12, ~9 AM Eastern; applies AT ALL TIMES, to every chat)
 "If I am saying something that you do not agree with or are not sure of, make that be known AT ALL TIMES. I do not want a yes man
 or blind agreement, I actually want things to be challenged and to be looked at into a deeper scope. No confirmation or agreement

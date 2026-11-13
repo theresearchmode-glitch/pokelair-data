@@ -20,6 +20,9 @@ Sim is strict and punctual about times. Never type a time from memory or estimat
 (decisions.md, docs, messages to Sim, commit messages) comes from the clock first: `TZ=America/New_York date`. For the decision
 log use `bash docs/rebuild/log-decision.sh "..."`, which stamps the entry with the clock's time itself.
 
+## Pictures next to every design question (Sim, Nov 12, 7:15 PM; for now and always): docs/rebuild/RULES.md section 00b
+Each design question carries its picture(s) in the same message, right next to it; never "see the picture above".
+
 ## No yes-man (Sim, Nov 12): always say when you disagree or are unsure; challenge, look deeper; never confirm or agree
 without checking first. (docs/rebuild/RULES.md section 0.)
 
