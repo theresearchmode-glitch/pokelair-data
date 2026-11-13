@@ -1036,3 +1036,13 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .bt-more small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-more i{font-style:normal;color:var(--ink-3)}}
 
 .mu-outmore{margin-top:var(--s1)}.mu-outmore .np-link{display:inline-flex;align-items:center;min-height:var(--tap)} /* My Team Q1 B: the line under the stand-outs */
+
+/* First visit Q1 B (Sim, Nov 13): empty My Team as the approved mock-up: lead | six empty spots, then winners | underdog */
+.tm-empty2{grid-template-areas:"lead six" "win ud";row-gap:var(--s16);align-items:start;min-height:0}
+.tm-empty2>.tm-e-lead{grid-area:lead;align-self:center}.tm-empty2>.tm-e-six{grid-area:six}.tm-empty2>.tm-e-win{grid-area:win}.tm-empty2>.tm-ud{grid-area:ud}
+.tm-e-win h2{font-size:var(--t28);margin:0}.tm-e-win>p{margin:var(--s2) 0 var(--s4)}
+.tm-e-wg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s3)}
+.tm-e-w{display:grid;justify-items:center;align-content:start;gap:var(--s1);min-width:0;padding:var(--s2) 0;border:0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer}
+.tm-e-w b{font:700 var(--t15)/1.3 var(--b);max-width:100%;overflow-wrap:anywhere}.tm-e-w small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tm-e-w small span{display:block}
+@media (hover:hover){.tm-e-w:hover b{color:var(--plot-text)}}
+@media (max-width:899px){.tm-empty2{grid-template-areas:"lead" "six" "win" "ud";row-gap:var(--s12)}}
