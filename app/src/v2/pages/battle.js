@@ -33,7 +33,7 @@ V2.battleTurn = P => { const T = P && P.turnOne; if (!T || !T.beats || !T.beats.
 V2.battleEmpty = (mine, theirs) => mine.length < 4 ? `<p class="bt-empty">Add at least 4 Pokémon on My Team first. <a class="np-link" href="#team">Go to My Team ›</a></p>`
   : !theirs.length ? `<p class="bt-empty">Everything below fills in once their six is in: which four to bring, who leads, and turn one.</p>` : '';
 V2.pages.battle = {place: 'battle', draw() { const {mine, theirs, P} = V2.btPlan();
-  return `<div class="bt2">${V2.battleHead(mine, theirs, P)}<section class="bt-body"><div class="bt-sixes">${V2.battleTheirs(theirs, P)}${V2.battleMine(mine, P)}</div>${V2.battleTurn(P)}</section>${V2.battleEmpty(mine, theirs)}</div>`; }};
+  return `<div class="bt2">${V2.battleHead(mine, theirs, P)}<section class="bt-body"><div class="bt-sixes">${V2.battleTheirs(theirs, P)}${V2.battleMine(mine, P)}</div>${V2.battleTurn(P)}</section>${P ? `<section class="bt-plan"><div class="bt-pl">${V2.battleRead(theirs, P)}</div>${V2.battleWatch(P)}</section>` : ''}${V2.battleEmpty(mine, theirs)}</div>`; }};
 
 // ---------- their six: a sheet with six name boxes and the top tournament teams (today's entry ways) ----------
 V2.btOppSheet = () => { const E = V2.esc, opp = S.opp.slice(0, 6); while (opp.length < 6) opp.push('');
@@ -59,3 +59,18 @@ document.addEventListener('input', e => { const i = e.target.closest && e.target
 document.addEventListener('keydown', e => { const i = e.target.closest && e.target.closest('[data-btfind]'); if (!i) return; const k = +i.dataset.btfind;
   if (e.key === 'Enter') { const h = document.querySelector(`[data-bthits="${k}"] [data-btpick]`); if (h) { e.preventDefault(); h.click(); } }
   else if (e.key === 'Escape' && i.value) { e.stopPropagation(); V2.btUi.find[k] = ''; i.value = ''; const h = document.querySelector(`[data-bthits="${k}"]`); if (h) h.innerHTML = ''; } });
+
+// ---------- piece 2: the read (biggest threat, Fake Out on their side, real-games pairings) and watch out ----------
+// Biggest threat and Fake Out count: today's rule (75-arena-battle.js rzReadHtml): the first of their side Watch out marks 'hi',
+// else the first listed. Real-games pairings and Watch out: today's words (47-battle-mode.js).
+V2.battleRead = (theirs, P) => { if (!P) return ''; const E = V2.esc, W = P.watch || [], R = P.real; let thr = null;
+  const hi = W.find(w => w.out.some(o => o[0] === 'hi')) || W[0]; if (hi) thr = {o: hi.o, t: (hi.out.find(o => o[0] === 'hi') || hi.out[0])[1]};
+  const fos = theirs.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out'));
+  const big = thr ? `<div class="bt-big">${V2.btPk(thr.o.p.n, '').replace(/<b>[\s\S]*?<\/b><small>&nbsp;<\/small>/, '')}<div><p class="k">Biggest threat</p><h3 class="u">${V2.nameHtml(V2.disp(thr.o.p.n))}</h3><p>${E(thr.t)}</p></div></div>` : '';
+  const fo = `<div class="bt-fo"><b class="u">${fos.length}</b><p>Fake Out on their side<small>${fos.length ? E(fos.map(o => o.d).join(', ')) + ' can flinch one of your leads on turn 1' : 'Nobody on their side can flinch your leads on turn 1'}</small></p></div>`;
+  const nm = n => E((byName.get(n) || {}).d || n);
+  const real = R ? `<div class="bt-real"><h2 class="u">From real games</h2><p class="bt-sub">${homeNum(R.games || 0)} tournament games: ${E(R.word)}${R.full ? '' : ' so far'}.${R.key.length ? ' The pairings that stand out:' : ''}</p>
+    ${R.key.length ? `<ul class="bt-pairs">${R.key.map(k => `<li><i class="${k.v > 0 ? 'he' : 'hu'}">${k.v > 0 ? 'Helps you' : 'Hurts you'}</i><span>Your ${nm(k.a)} vs their ${nm(k.b)}</span></li>`).join('')}</ul>` : '<p class="fine">No Pokémon pairing here stands out in real results.</p>'}</div>` : '';
+  return `<div class="bt-read"><h2 class="u">The read</h2><p class="bt-sub">What decides this match</p>${big}${fo}</div>${real}`; };
+V2.battleWatch = P => { if (!P) return ''; const E = V2.esc, W = P.watch || [];
+  return `<div class="bt-watch"><h2 class="u">Watch out</h2><p class="bt-sub">${W.length ? `${W.length} of their six can shut something down` : 'Nothing on their side shuts down your four'}</p>${W.length ? `<div class="bt-rows">${W.map(w => `<div class="bt-r">${V2.mon(w.o.p.n, {iw: 52, bare: true})}<div><b>${V2.nameHtml(V2.disp(w.o.p.n))}</b>${w.out.map(([c, t, d]) => `<p class="tg"><em class="${c === 'lo' ? 'lo' : 'mid'}">${E(t)}</em>${E(d)}</p>`).join('')}</div></div>`).join('')}</div>` : '<p class="fine">Nothing on their side shuts down your four.</p>'}</div>`; };

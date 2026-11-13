@@ -889,3 +889,19 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:1179px){.bt-body{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699px){.bt-head{grid-template-columns:minmax(0,1fr)}.bt-verdict{text-align:left}.bt-head h1{font-size:var(--t34)}
   .bt-row6{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}.bt-grps{grid-template-columns:minmax(0,1fr)}.bt-oslots{grid-template-columns:minmax(0,1fr)}.bt-osix>*{width:28px}}
+
+/* Battle piece 2: the read, real games, watch out */
+.bt-plan{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s12);padding-top:var(--s10);margin-top:var(--s10);border-top:1px solid var(--rule)}
+.bt-pl{display:grid;gap:var(--s8);align-content:start}.bt-plan h2{font-size:var(--t24);margin:0}
+.bt-big{display:grid;grid-template-columns:96px minmax(0,1fr);gap:var(--s4);align-items:center;margin-top:var(--s4)}.bt-big .bt-pk small{display:none}
+.bt-big .k{font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}.bt-big h3{font-size:var(--t22);margin:var(--s2) 0 0}.bt-big p:last-child{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.bt-fo{display:flex;align-items:center;gap:var(--s4);margin-top:var(--s5);padding:var(--s3) 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.bt-fo b{font-size:var(--t34);line-height:1}.bt-fo p{font:600 var(--t15)/1.5 var(--b)}.bt-fo small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.bt-pairs{list-style:none;margin:var(--s3) 0 0;padding:0;border-top:1px solid var(--rule)}
+.bt-pairs li{display:flex;align-items:baseline;gap:var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--rule);font:500 var(--t15)/1.5 var(--b)}
+.bt-pairs i{font-style:normal;font:700 var(--t13)/1 var(--b);white-space:nowrap}.bt-pairs i.hu{color:var(--mid-text)}.bt-pairs i.he{color:var(--good-text)}
+.bt-rows{margin-top:var(--s4);border-top:1px solid var(--rule)}
+.bt-r{display:grid;grid-template-columns:52px minmax(0,1fr);gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--rule)}
+.bt-r b{font:700 var(--t15)/1.5 var(--b)}.bt-r .tg{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-r .tg em{font-style:normal;font-weight:700;margin-right:var(--s1)}
+.bt-r .tg em.mid{color:var(--mid-text)}.bt-r .tg em.lo{color:var(--ink)}
+@media (max-width:899px){.bt-plan{grid-template-columns:minmax(0,1fr);gap:var(--s10)}}
