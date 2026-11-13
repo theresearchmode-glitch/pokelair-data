@@ -961,3 +961,22 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-labrow{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}
 @media (max-width:519px){.bt-acts.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3)}.bt-acts.two>*{width:100%;min-width:0;padding-left:var(--s2);padding-right:var(--s2);white-space:normal}}
 .bt-labrow .np-link{display:inline-flex;align-items:center;justify-content:flex-end;min-height:var(--tap);min-width:var(--tap)}
+/* Who moves first, the speed line (Sim chose B1, Nov 12): 820+ only; the list below stays for phones and screen readers */
+.bt-sline,.bt-sorder{display:none}
+@media (min-width:820px){
+  .bt-sline{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));align-items:start;margin-top:var(--s8);--iw:72px}
+  .bt-sc{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
+  .bt-sc .num{font-size:var(--t28);line-height:1;margin-bottom:var(--s3);font-variant-numeric:tabular-nums}.bt-sc.me .num{color:var(--plot-text)}
+  .bt-sc .np-mon{--iw:inherit}
+  .bt-sc .nm{display:block;margin-top:var(--s3);font:600 var(--t15)/1.5 var(--b);min-width:0;overflow-wrap:anywhere}
+  .bt-sc .sd{display:block;font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.bt-sc.me .sd{color:var(--plot-text)}
+  .bt-sc small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+  .bt-sorder{display:flex;justify-content:space-between;margin-top:var(--s4);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.bt-sorder span{display:inline-flex;align-items:center;gap:var(--s1)}
+  .bt-sorder .np-ic{width:16px;height:16px}
+  .bt-spd{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
+}
+@media (min-width:1100px){.bt-sline{--iw:112px}.bt-sc .num{font-size:var(--t34)}}
+/* 320-379 (Nov 12, fitting Battle's 3,900 limit after the restored features): Clear keeps its 44px tap area without making the title
+   row taller, and the gap above the plan steps down from 40+40 to 24+24 */
+.bt-labrow .np-link{margin-block:calc(var(--s2) * -1)}
+@media (max-width:379px){.bt-plan{padding-top:var(--s6);margin-top:var(--s6)}}
