@@ -1,7 +1,23 @@
-# HANDOVER: the NastyPlot rebuild (updated Nov 12, 7:08 PM Eastern by the clock)
+# HANDOVER: the NastyPlot rebuild (updated Nov 12, 8:21 PM Eastern by the clock)
 
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
+
+## NOW (Nov 12, written 8:21 PM Eastern by the clock; Sim's authority until 9:00 PM; summary reminder 8:40 PM)
+- PREVIEW v81 (8:16 PM, 394 files checked). Since v79: Sim's 4 B (Back keeps its spot), 8 (Mega count in the eyebrow), 11 (three
+  across on phone), 20 A (Home duel switch on phone; Home 320 4,743 -> 4,211), duel buttons at 320, tile-name polish, Build's
+  Pokemon open their info sheet, My Box scrolls as one page (option 1), the FORWARD button (right of the logo, evenly spaced with
+  Back: 15px phones / 27px desktop at every width), Home tool names on one line at 320.
+- New rule 00b (RULES.md, CLAUDE.md): every design question carries its pictures in the same message.
+- Home first-visit desktop limit 2,950 (Sim, 8:18 PM; Home 2,910 with today's data).
+- BATTLE groundwork done (docs/rebuild/battle-inventory.md): all 7 logic moves shared with the new site, each proven unchanged on
+  today's site (byte-identical builds, same-battle 170/170, same-types 291/291, the C-battle test groups). New site: 51 shared
+  logic files. NEXT: the Battle page itself from its approved mock-up, piece by piece with pictures; a v2 C-battle test adapter.
+- Checks: fields-audit passed on Sim's PC (all 18 push checks pass); forward-check 4/4, back-check 4/4 (both in experiments/);
+  c13 home/build/box/team clean.
+- Closed: theresearchmode-glitch/pokelair-data#3 (opened by accident, never merged).
+- Open polish notes (judged, not changed): sheet list rows line height 1.3 (list style, not paragraphs); the polish check can't see
+  a scrolling sheet or ::before tap areas, and reports two tile names it measures before fonts load (measured fine after).
 
 ## NOW (Nov 12, written 7:00 PM Eastern by the clock; authority until 7:30 PM)
 - PREVIEW v79 (6:54 PM, 394 files checked): the Back button (option A, PLOT blue), the whole Build page, Home's approved items,
