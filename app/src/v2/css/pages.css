@@ -308,7 +308,7 @@
 @container (max-width:560px){.bx-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .bx-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:var(--s2) var(--s1) var(--s2);border:0;border-radius:10px;background:none;color:var(--ink);cursor:pointer;transition:transform .15s,background-color .15s,box-shadow .15s}
 .bx-t .np-mon{--iw:min(96px,100%);width:100%}
-.bx-t>b{display:block;max-width:100%;font:600 var(--t13)/1.25 var(--b);font-stretch:88%;white-space:nowrap}
+.bx-t>b{display:block;max-width:100%;font:600 var(--t13)/1.25 var(--b);font-stretch:88%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @container (max-width:420px){.bx-t>b{font-stretch:75%}.bx-t{padding-inline:0}.bx-grid{gap:var(--s1) 0}}
 .bx-t:hover{background:color-mix(in srgb,var(--surface) 45%,transparent)}
 @media (min-width:900px){.bx-t.auto{background:var(--surface);transform:translateY(-4px);box-shadow:0 1px 2px rgba(var(--shade),.12),0 10px 22px -10px rgba(var(--shade),.42)}
@@ -840,3 +840,4 @@
 /* Home duel as one switch on phone (Sim, Nov 12, decision 20 A) */
 .hm-dsw{display:none}
 @media (max-width:699px){.hm-dsw{display:block}.hm-duel:has(.hm-dsw){row-gap:var(--s5)}.hm-duel[data-show="them"] .hm-you,.hm-duel[data-show="you"] .hm-them{display:none}}
+.hm-pk b{max-width:100%;overflow:hidden;text-overflow:ellipsis}@media (max-width:359px),(min-width:700px) and (max-width:759px){.hm-pk b{font-stretch:88%}} /* polish, Nov 12: "Basculegion" ran 4-6px out of its tile at 320 and 720; the narrow width My Box uses, and never out of the tile */
