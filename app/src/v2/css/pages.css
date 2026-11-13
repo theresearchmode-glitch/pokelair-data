@@ -257,6 +257,8 @@
 .sh2-img{display:grid;place-items:center;min-height:240px;margin-top:var(--s5);padding:var(--s4);background:var(--wash);border-radius:var(--r-l)}
 .sh2-img img{display:block;max-width:100%;max-height:60vh;width:auto;height:auto;border-radius:var(--r-m);box-shadow:var(--shadow-lift)}
 .sh2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s5)}
+/* a blocked copy writes the link here to copy by hand (SHARE-06): it wraps inside the sheet instead of pushing it sideways */
+.sh2-acts [data-sh2msg]{min-width:0;max-width:100%;overflow-wrap:anywhere}.sh2-acts [data-sh2msg]:not(:empty){flex:1 1 100%;user-select:all}
 .sh2 .fine{margin-top:var(--s3)}
 @media (max-width:479px){.sh2{padding:var(--s6) var(--s4)}.sh2-acts{display:grid;grid-template-columns:minmax(0,1fr)}.sh2-acts .np-btn,.sh2-acts .np-btn2{width:100%}.sh2-ctl .np-slide{width:100%}}
 /* shared team link sheet (R4, Nov 11) */
