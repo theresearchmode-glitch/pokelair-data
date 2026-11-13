@@ -34,7 +34,7 @@ Names are roles, not colours. Light is the default; Dusk is the dark mode ("dusk
 | --pick | #E8364F (text #C41E35) | #FF5C77 | the logo's NASTY pink: the selected Pokémon's cursor and name (Sim, Nov 11: not blue) |
 | --plate | #17161A | #ECE8E2 | slanted black plates and the filled button (text: --bg) |
 
-Bands (Strength Score; never red): Top tier --band-top #0078BF, Tournament ready --band-ready #7B4BD6, Solid --band-solid
+Bands (Strength Score; the "never red" rule was removed by Sim, Nov 12, 8:36 PM; current colours below unchanged until she picks): Top tier --band-top #0078BF, Tournament ready --band-ready #7B4BD6, Solid --band-solid
 #6B6570, Needs work --band-work #E9A800 (text on it: --ink), Missing a basic --band-miss #8A7C6E. Dusk uses the "-ink"
 lighter versions (#4FB2F0, #C9B0FF, #A39CA6, #FFD166, #B8AA9C).
 
