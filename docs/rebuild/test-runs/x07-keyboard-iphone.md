@@ -20,3 +20,9 @@ plus the screenshot.
 If you'd rather use the Mac: Xcode > Open Developer Tool > Simulator, iPhone 13, open the Preview link in Safari, and turn
 on the software keyboard (I/O > Keyboard > Toggle Software Keyboard). The Claude app can't run in the Simulator, so the
 Claude app cases still need the real phone.
+
+## Also, while you're on the iPhone (Nov 13, PKMN-04): swipe between the info sheet's tabs
+6. On My Team, tap a Pokémon's Info Sheet. Swipe sideways (right to left) across the sheet's panel: it should move
+   Info → Meta → Rating. Swipe the other way to go back. A slow drag or a mostly up-and-down scroll should do nothing.
+   Checked in Chromium with simulated touches (works); WebKit's test browser can't simulate touches, so only a real
+   iPhone can confirm it. Send back: "works" or what happened.

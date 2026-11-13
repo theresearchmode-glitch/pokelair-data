@@ -87,3 +87,18 @@ V2.pages['sheet'] = {place: 'team', draw: () => V2.pages.team.draw(), after() { 
 // today's "Popular sets" on the sheet (PKMN-03; 25-ratings-page.js data-lsets): remembers the Pokémon for the sets page, which today's
 // site files under Meta (Popular Sets is rebuilt with Meta); "Build Around It" uses Home's handler (ui.abLock, then Build)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-mssets]'); if (!b) return; ui.setMon = b.dataset.mssets; try { LS.set('cc2.setMon', b.dataset.mssets); } catch (x) {} if (V2.closeSheet) V2.closeSheet(true); location.hash = '#meta'; });
+// touch swipe between the tabs (audit PKMN-04): today's rule (67-sheet-tabs.js, Sim, Nov 2), unchanged: a clear sideways swipe on
+// the panels moves to the neighbouring tab; passive listeners; not from a form field or something that scrolls sideways, not with two
+// fingers or while text is selected; vertical scrolls never count; touch only, so a mouse never swipes
+V2.msSw = null;
+document.addEventListener('touchstart', e => { V2.msSw = null; const w = e.target && e.target.closest && e.target.closest('.ms2 [data-mspan]'); if (!w || e.touches.length !== 1) return;
+  if (e.target.closest('input,select,textarea,[contenteditable]')) return;
+  for (let x = e.target; x && x !== w.parentElement; x = x.parentElement) if (x.scrollWidth > x.clientWidth + 2 && /auto|scroll/.test(getComputedStyle(x).overflowX)) return;
+  const t = e.touches[0]; V2.msSw = {x: t.clientX, y: t.clientY, t: Date.now()}; }, {passive: true});
+document.addEventListener('touchmove', e => { if (V2.msSw && e.touches.length !== 1) V2.msSw = null; }, {passive: true});
+document.addEventListener('touchend', e => { const s = V2.msSw; V2.msSw = null; if (!s || !e.changedTouches.length) return; const t = e.changedTouches[0], dx = t.clientX - s.x, dy = t.clientY - s.y;
+  if (Math.abs(dx) <= 50 || Math.abs(dx) <= 1.5 * Math.abs(dy) || Date.now() - s.t > 900) return;
+  try { const sel = getSelection(); if (sel && String(sel).trim()) return; } catch (x) {}
+  const tabs = [...document.querySelectorAll('.ms2 [data-mstab]')], ks = tabs.map(x => x.dataset.mstab), i = tabs.findIndex(x => x.getAttribute('aria-selected') === 'true'), j = dx < 0 ? i + 1 : i - 1;
+  if (i < 0 || j < 0 || j >= ks.length) return; V2.msShow(ks[j], false); }, {passive: true});
+document.addEventListener('touchcancel', () => { V2.msSw = null; }, {passive: true});
