@@ -30,6 +30,17 @@ question number and option name are printed ON the picture itself (e.g. "Q1 · O
 The recommended option says so ON its picture too (Sim, Nov 12, 10:15 PM): e.g. "Q5 · OPTION A · RECOMMENDED · log always shown".
 EVERY option gets its own labelled picture, even "no change" / "wait" (a picture of the page as it stays, labelled e.g. "Q6 · OPTION B · no change") (Sim, Nov 12, 10:24 PM: "I don't know which one is A and which one is B").
 
+## 00d. The Rebuild Checklist is always up to date (Sim, Nov 12, 11:20 PM Eastern; TOP PRIORITY, permanent)
+The Rebuild Checklist page (https://claude.ai/artifact/E99Mux9sZxxBuvFXEsKW1V; guide: docs/rebuild/checklist.md) is the shared
+record of where every page stands. Keep it current at all times:
+1. Any time a step changes (mock-up approved, built, tests run, checks run, on the Preview, Sim's OK), or something is found missing
+   or unsure, update the checklist in the SAME message as the work, before moving on. No batching for later.
+2. Five states: done (blue), partly (amber, the note says what is left), unsure (purple, the note says why), blocked (red), not started.
+   Mark "unsure" whenever Claude is not certain; never tick done without the check that proves it.
+3. Every missing feature or open question becomes its own open item; close it only when it is checked.
+4. At the start of every chat, read the checklist; at the end of every work session, confirm it matches HANDOVER.md.
+5. A page is "Built" only when every one of today's features for it (docs/rebuild/inventory) is found on the new site.
+
 ## 00c. Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM Eastern; for now and always)
 Whenever Claude recommends something (an option, a default, a design, a next step), it gives a short, quick reason why, right
 next to the recommendation: one line in plain words. Example: "I recommend C. Why: blue and red stay easy to tell apart for

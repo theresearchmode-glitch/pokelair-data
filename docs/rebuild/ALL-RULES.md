@@ -32,6 +32,7 @@ listed at the end. The full wording stays in those files; this is the plain-word
 12b. Every picture is labelled (Nov 12): the question number and option name are printed on the picture itself. The recommended option says "RECOMMENDED" on its picture too. Every option gets its own labelled picture, even "no change".
 13. **Every recommendation comes with a short, quick reason** (Nov 12, 8:55 PM): one line in plain words saying why.
 14. **When you're away,** a phone notification reaches you when a decision is needed.
+16. **The Rebuild Checklist is always up to date (TOP PRIORITY, Nov 12).** Every step change, missing feature or doubt goes on it in the same message as the work; purple means Claude is unsure.
 15. **We are partners.** You bring the ideas, Claude does the research and the proper work, and each helps the other in both.
 
 ## 2. How the work is done
