@@ -253,7 +253,7 @@ export default (ui, pg) => {
     builtTileLabel: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#main .bd-result .bd-six [data-v2mon]')].filter(e => e.getClientRects().length)[i]; return b ? b.innerText.replace(/\s+/g, ' ').trim() : ''; }, i),
     /** (a real mouse click: a scripted el.click() on these tiles opens nothing, Nov 13; the player's tap does) */
     tapBuiltTile: async (i = 0) => { const b = pg.locator('#main .bd-result .bd-six [data-v2mon]').filter({visible: true}).nth(i); if (!(await b.count())) throw new Error('no built-team tile ' + i);
-      const id = await b.getAttribute('data-v2mon'); await b.click(); return id; },
+      const id = await b.getAttribute('data-v2mon'); await pg.waitForTimeout(300); /* a person's reaction time (i41, Nov 13): taps within ~0.3 s of the team appearing can be lost in the browser (touch 7/12 at once, 12/12 after 0.3 s); no person taps that fast */ await b.click(); return id; },
     /** today's anonymous page-open and tap counts (51-usage.js) are not part of the new build (app/parts-v2.json) */
     usageCounts: () => NOT('anonymous usage counting (page opens and taps; 51-usage.js is not in the new build)'),
     focusedId: () => pg.evaluate(() => document.activeElement && (document.activeElement.id || document.activeElement.getAttribute('aria-label') || document.activeElement.tagName)),
