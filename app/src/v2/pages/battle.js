@@ -101,7 +101,7 @@ V2.battleWatch = P => { if (!P) return ''; const E = V2.esc, W = P.watch || [];
 // ---------- piece 3: the detail tabs (mock: one pane open at a time, closed until you open one) ----------
 // Damage both ways, Who moves first and Deeper read, from battlePlan (damage, speed, prio, r) and today's shared helpers
 // (koShort / dmgP / koText / dmgRange, fieldWords, archMatchup, deeperThreats). The switches are today's: they change bmUi.
-V2.btUi.tab = V2.btUi.tab || null;
+V2.btUi.tab = V2.btUi.tab || (() => { const t = LS.get('cc2.v2.bttab', null); return ['dmg', 'spd', 'deep'].includes(t) ? t : null; })(); // the open tab is remembered on this device (audit X-03; today remembered Deeper Read under cc2.chf.mufold)
 V2.btChip = (attr, on, t) => `<button type="button" class="np-chip" ${attr} aria-pressed="${!!on}">${V2.esc(t)}</button>`;
 V2.battleTabs = (theirs, P) => { if (!P) return ''; const n = P.chosen.length * theirs.length, t = V2.btUi.tab;
   const b = (k, lab) => `<button type="button" class="bt-tab${t === k ? ' on' : ''}" data-bttab="${k}" aria-expanded="${t === k}" aria-controls="bt-pane">${lab}</button>`; /* no counts beside the names (Sim, Nov 12: too wordy) */
@@ -149,7 +149,7 @@ V2.battleDeep = (mine, theirs, P) => { const E = V2.esc, r = P.r; let notes = []
 V2.battleDetail = (mine, theirs, P) => { if (!P || !V2.btUi.tab) return ''; const t = V2.btUi.tab;
   return `<section class="bt-pane" id="bt-pane">${t === 'dmg' ? V2.battleDamage(theirs, P) : t === 'spd' ? V2.battleSpeed(P) : V2.battleDeep(mine, theirs, P)}</section>`; };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bttab],[data-btw],[data-bts],[data-bti]'); if (!b) return; const d = b.dataset;
-  if (d.bttab) { V2.btUi.tab = V2.btUi.tab === d.bttab ? null : d.bttab; V2.redraw(); return; }
+  if (d.bttab) { V2.btUi.tab = V2.btUi.tab === d.bttab ? null : d.bttab; LS.set('cc2.v2.bttab', V2.btUi.tab); V2.redraw(); return; }
   if (d.btw != null) bmUi.weather = d.btw; else if (d.bts) bmUi[d.bts] = !bmUi[d.bts]; else if (d.bti) bmUi[d.bti] = !bmUi[d.bti]; V2.redraw(); });
 
 // ---------- piece 4a: the Battle log (mock-up: four from the plan, Win / Loss, a Showdown replay; today's record and recent battles) ----------
