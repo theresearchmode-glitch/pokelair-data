@@ -308,6 +308,9 @@
 .bx-name{text-align:center}.bx-name h2{font-size:var(--t28);margin:0}.bx-name p{margin:var(--s1) 0 0;font-size:var(--t13);color:var(--ink-2)}
 .bx-arr{width:var(--tap);height:var(--tap);border-radius:50%;border:0;background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(var(--shade),.14),0 4px 10px -4px rgba(var(--shade),.3);cursor:pointer;font-size:var(--t13)}
 :root[data-theme="night"] .bx-arr{background:var(--wash)}
+/* Arrows Q1 B (proposal): the box arrows are slanted like every other button (they were the only round buttons) */
+.bx-arr{border-radius:0;transform:skewX(-12deg);border:1.5px solid var(--ink);box-shadow:none}.bx-arr span{display:inline-block;transform:skewX(12deg)}
+:root[data-theme="night"] .bx-arr{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
 .bx-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1) var(--s1)}
 @container (max-width:560px){.bx-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .bx-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:var(--s2) var(--s1) var(--s2);border:0;border-radius:10px;background:none;color:var(--ink);cursor:pointer;transition:transform .15s,background-color .15s,box-shadow .15s}
