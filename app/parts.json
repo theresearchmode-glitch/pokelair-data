@@ -73,6 +73,7 @@
  "src/app/37-home-trends.js",
  "src/app/38-gauntlet.js",
  "src/app/39-damage-calc-speed.js",
+ "src/app/40-turn-one-data.js",
  "src/app/40-turn-one.js",
  "src/app/41-replay-import.js",
  "src/app/42-archetype-guides.js",
