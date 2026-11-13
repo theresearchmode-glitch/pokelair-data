@@ -110,3 +110,11 @@ After 2:27 AM (on the Preview since v92, 2:35 AM):
   Know: none sits alone on a line.
 - Favicons: today's three, unchanged, added to the new site (the browser tab showed no icon) (5b8c103; use test 32/0).
 - iPhone brief now has 8 steps (keyboard, swipe, bottom bar, sideways).
+
+## Corrections (5:47 AM, found during the side-by-side check)
+- WRONG: "empty space beside Home's ratings list at 1100". My screenshot script lacked the ratings-movement data (meta/track);
+  with it, "This week in the ratings" fills that column, as in the approved mock-up. The official height and polish checks
+  always load all data, so their numbers stand; only my own quick screenshots were affected (Home's This week and More on Home
+  lines). Rechecked with full data: Home matches its mock-up apart from changes Sim chose.
+- WRONG comparison: "Build at 1100: 3,428 over 1,800". The limits are set at 390 / 820 / 1440. With full data, Build after
+  building: 1440 2,121 (over 1,800 by 321); 820 3,490 (inside 3,500); phones with the new tabs 3,167 / 2,469 / 3,148 (inside 3,700).
