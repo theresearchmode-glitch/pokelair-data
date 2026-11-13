@@ -63,3 +63,5 @@ html,body{overflow-x:clip}
 @media (max-width:419px){.np-head .logo svg{height:26px}.np-head .tools{gap:var(--s1)}.np-gofwd{margin-right:0}} /* Back + Forward on narrow phones (Nov 12): nothing past the edge, no overlapping tap areas */
 @media (min-width:700px) and (max-width:759px){.np-head{gap:var(--s3)}}@media (max-width:359px){.np-head .logo svg{height:22px}} /* Back + Forward: 700-719 ran 7-17px past the edge, 320 ran 10px (measured Nov 12) */
 @media (max-width:359px){.np-head .logo svg{height:20px}.np-gofwd{margin-left:calc(var(--s2) * -1)}} /* 320-359: Forward tap area no longer covers the end of the logo (was 8px) */
+@media (max-width:699px){.np-goback{margin-right:calc(var(--s4) * -1)}}@media (max-width:359px){.np-gofwd{margin-left:calc(var(--s3) * -1)}} /* Sim, Nov 12: Back and Forward the same distance from the logo (15px each on phones) */
+@media (max-width:359px){.np-goback{margin-right:calc(var(--s3) * -1)}} /* 320-359: Back 15px from the logo too, like Forward */
