@@ -60,6 +60,10 @@ export default (ui, pg) => {
     if (!ok) throw new Error(`nothing visible: ${sel}`); await pg.waitForTimeout(wait); };
   const until = async (fn, ms = 8000, what = 'condition') => { const t0 = Date.now(); for (;;) { const v = await fn(); if (v) return v; if (Date.now() - t0 > ms) throw new Error(`timed out waiting for ${what}`); await pg.waitForTimeout(150); } };
   const onBuild = () => pg.evaluate(() => !!window.V2 && V2.route() === 'build');
+  /* Build's lower part is tabs (Look Q4 B on phones; Build Q1 B on every size): a player taps the section's tab first. A no-op
+     when the page has no tab bar showing or the tab is already open. */
+  const tabTo = async k => { const t = await pg.evaluate(k => { const b = document.querySelector(`#main .bd-jump [data-bdjump="${k}"]`);
+    if (!b || !b.getClientRects().length || b.getAttribute('aria-pressed') === 'true') return 0; b.click(); return 1; }, k); if (t) await pg.waitForTimeout(400); };
   const ev = e => pg.evaluate(e => window.__ev ? window.__ev(e) : undefined, e);
   const boxSel = label => { const l = String(label).toLowerCase(); for (const k in NO_BOX) if (l.includes(k)) NOT(NO_BOX[k]); for (const k in BOXES) if (l.includes(k)) return BOXES[k]; return null; };
   // the shared adapter's (and v2.A-team's) go / tap, wrapped; the kit may merge this file more than once, so keep the first ones
@@ -109,7 +113,7 @@ export default (ui, pg) => {
       await pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); if (location.hash !== '#build') location.hash = '#build'; else if (window.V2) V2.redraw(); }); await pg.waitForTimeout(wait); return 'auto'; },
     /** the shared tap; on the Build page a miss is retried ignoring case (the new build writes buttons in Title Case, as v2.A-team's
      *  tapText), and a control the new page doesn't have is named */
-    tap: async (match, within = 'body', wait = 500) => { if (match === '?' && await pg.evaluate(() => !!document.querySelector('#main [data-bdcwhy]'))) { await pg.click('#main [data-bdcwhy]'); await pg.waitForTimeout(wait); return; } /* today's cores "?" = the new page's "How cores are ranked ›" */
+    tap: async (match, within = 'body', wait = 500) => { if (within === 'cores' || within === AREAS.cores) await tabTo('cores'); if (match === '?' && await pg.evaluate(() => !!document.querySelector('#main [data-bdcwhy]'))) { await pg.click('#main [data-bdcwhy]'); await pg.waitForTimeout(wait); return; } /* today's cores "?" = the new page's "How cores are ranked ›" */
       try { return await prevTap(match, within, wait); } catch (e) {
         if (!/nothing visible to tap/.test(e.message)) throw e;
         const src = match instanceof RegExp ? match.source : String(match);
@@ -137,7 +141,7 @@ export default (ui, pg) => {
     unfold: async (m, within = 'body') => { const s = m instanceof RegExp ? m.source.replace(/^\^/, '') : String(m), is = k => new RegExp('^' + k.replace(/ /g, ' '), 'i').test(s.replace(/\\/g, ''));
       if (await onBuild()) {
         if (is('How It Works')) { if (!(await vis('.np-sheet .bd-how'))) await click('#main [data-bdhow]', 600); return txt('.np-sheet .bd-how'); }
-        if (is('Start from a Recent Winner')) { if (!(await vis('#main .bd-wins'))) NOT('Start from a recent winner (no winners shown)'); return txt('#main .bd-wins'); }
+        if (is('Start from a Recent Winner')) { await tabTo('wins'); if (!(await vis('#main .bd-wins'))) NOT('Start from a recent winner (no winners shown)'); return txt('#main .bd-wins'); }
         if (is('Sets and Roles')) NOT('the Sets and Roles fold on the built team (the six tiles show item, role and tier instead)');
         if (is('More Cores')) NOT('the More Cores fold (#4 onward): the new page lists 7 cores, then "Show N more"'); }
       if (is('Bigger Plans')) { if (!(await vis('.np-sheet .sga2'))) await openAll(600); return readAll('big'); }
@@ -194,7 +198,7 @@ export default (ui, pg) => {
     builtSix: async () => (await vis(ans)) ? ev(`(()=>{const t=abTeam('doubles');return t?t.mons.map(m=>m.n):[]})()`) : [],
     /** Try another = "Show this one ›" on the next option (wrapping after the last) */
     tryAnother: async () => { const o = await optCount(); if (!o || o[1] < 2) NOT('Try another with a single option (no other options shown)');
-      await click(`#main .bd-others [data-bdshow="${o[0] % o[1]}"]`, 500); },
+      await tabTo('others'); await click(`#main .bd-others [data-bdshow="${o[0] % o[1]}"]`, 500); },
     useThisTeam: () => click(ans + ' ~ .bd-acts [data-bduse], #main .bd-result [data-bduse]', 800),
     saveBuiltTeam: () => click('#main .bd-result [data-bdsave]', 600),
     builtSaveButton: () => pg.evaluate(() => { const b = document.querySelector('#main .bd-result [data-bdsave]'); return b ? {disabled: b.disabled || b.getAttribute('aria-disabled') === 'true', title: b.title || b.getAttribute('aria-label') || ''} : null; }),
@@ -210,22 +214,22 @@ export default (ui, pg) => {
       await pg.evaluate(([w, n]) => { const b = [...(document.querySelector(w) || document).querySelectorAll('[data-bdcopy],[data-hmcopy],[data-bdccopy]')].filter(e => e.getClientRects().length)[n]; if (!b) throw new Error('no Copy for Showdown button'); b.click(); }, [within, n]);
       await pg.waitForTimeout(500); return pg.evaluate(() => window.__copied || ''); },
     /** the six on the n-th recent-winner row (display names, as today's card titles) */
-    winnerSix: (n = 0) => pg.evaluate(n => { const d = [...document.querySelectorAll('#main .bd-wins [data-bdwin]')].filter(e => e.getClientRects().length)[n]; if (!d) return [];
-      return window.__ev(`(()=>{const x=evTeam(${JSON.stringify(d.dataset.bdwin)});return x?x.t.mons.map(m=>byName.get(m.n)?byName.get(m.n).d:m.n):[]})()`); }, n),
+    winnerSix: (n = 0) => tabTo('wins').then(() => pg.evaluate(n => { const d = [...document.querySelectorAll('#main .bd-wins [data-bdwin]')].filter(e => e.getClientRects().length)[n]; if (!d) return [];
+      return window.__ev(`(()=>{const x=evTeam(${JSON.stringify(d.dataset.bdwin)});return x?x.t.mons.map(m=>byName.get(m.n)?byName.get(m.n).d:m.n):[]})()`); }, n)),
 
     // ---------------- Cores ----------------
-    coresText: () => txt(AREAS.cores),
-    coreRowCount: () => pg.evaluate(() => document.querySelectorAll('#main .bd-cores [data-bdcore]').length),
+    coresText: async () => { await tabTo('cores'); return txt(AREAS.cores); },
+    coreRowCount: async () => { await tabTo('cores'); return pg.evaluate(() => document.querySelectorAll('#main .bd-cores [data-bdcore]').length); },
     /** tap a core's button: today's "Add to my team" is "Add", "Load team" is "Load" here */
-    coreTap: async (label, n = 0) => { const l = label.toLowerCase(), want = /^add/.test(l) ? 'add' : /^load/.test(l) ? 'load' : null;
+    coreTap: async (label, n = 0) => { await tabTo('cores'); const l = label.toLowerCase(), want = /^add/.test(l) ? 'add' : /^load/.test(l) ? 'load' : null;
       if (/^practice against/.test(l)) { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcprep]')].filter(e => e.getClientRects().length)[n]; if (!b) return false; b.click(); return true; }, n); if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); return; }
       if (!want) NOT(`"${label}" on cores`);
       const ok = await pg.evaluate(([w, n]) => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length && e.innerText.trim().toLowerCase().split(' ')[0] === w)[n] /* 'Load Team' (Sim, Nov 12) counts as today's Load team */; if (!b) return false; b.click(); return true; }, [want, n]);
       if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); },
-    coreMembers: (n = 0) => pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length)[n]; return b ? b.dataset.bdcore.split('|') : []; }, n),
+    coreMembers: (n = 0) => tabTo('cores').then(() => pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length)[n]; return b ? b.dataset.bdcore.split('|') : []; }, n)),
     clearCoreFilter: async () => { await pg.click('[data-bdcmx]'); await pg.waitForTimeout(600); },
     coreFilterChip: () => pg.evaluate(() => { const c = document.querySelector('.bd-cpick'); return c ? c.innerText.trim() : ''; }),
-    coresTopOnScreen: () => pg.evaluate(() => { const c = document.querySelector('#main .bd-cores'); return c ? Math.round(c.getBoundingClientRect().top) : null; }),
+    coresTopOnScreen: () => tabTo('cores').then(() => pg.evaluate(() => { const c = document.querySelector('#main .bd-cores'); return c ? Math.round(c.getBoundingClientRect().top) : null; })),
 
     /** the page's text; with All Suggestions open, only the sheet (it IS that page here: My Team underneath is not All Suggestions,
      *  so a note on My Team can't pass a check meant for All Suggestions) */
