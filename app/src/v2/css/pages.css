@@ -1054,3 +1054,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .hm-rn,.bd-cn{font-style:italic}
 .hm-mv .unit{font-size:var(--t13)}
 .hm-trd small,.hm-who small{font-size:var(--t13)}
+/* i42 (Nov 13): Battle's six at 1180-1279 wide: long one-word names ("Basculegion") touched their neighbour; Home's approved fix
+   (slightly narrower letters, Nov 12 polish) and a little more room between the pair */
+.bt-pair{column-gap:var(--s2)}@media (min-width:1180px) and (max-width:1279px){.bt-pk b{font-stretch:88%}}
