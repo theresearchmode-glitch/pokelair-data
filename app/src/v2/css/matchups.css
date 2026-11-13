@@ -2,7 +2,7 @@
 /* the real-games split under the three counts (the mock's slanted bar) */
 .mu-split{display:flex;gap:var(--s1);height:12px;margin:var(--s2) 0 var(--s3)}
 .mu-split i{display:block;flex-basis:0;min-width:6px;transform:skewX(var(--slant))}
-.mu-split .sf{background:var(--plot)}.mu-split .se{background:color-mix(in srgb,var(--ink) 26%,transparent)}.mu-split .su{background:var(--mid)}
+.mu-split .sf{background:var(--plot)}.mu-split .se{background:color-mix(in srgb,var(--ink) 26%,transparent)}.mu-split .su{background:var(--bad)}
 .mu-pick{margin:var(--s5) 0 var(--s2)}
 /* the views follow the width they get (a phone, or half of an iPad), not the window */
 .mu-pane{container-type:inline-size}
@@ -14,7 +14,7 @@
 /* calc level tag: a shape and a word, never the colour alone */
 .mu-lv{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap;padding:6px var(--s3) 6px var(--s2);font:700 var(--t13)/1 var(--b);color:var(--ink);background:var(--wash);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .mu-lv i{font-style:normal;font-weight:800}
-.mu-lv.l0 i{color:var(--pick-text)}.mu-lv.l1 i{color:var(--mid-text)}.mu-lv.l2 i,.mu-lv.l3 i{color:var(--plot-text)}
+.mu-lv.l0 i{color:var(--bad-text)}.mu-lv.l1 i{color:var(--mid-text)}.mu-lv.l2 i,.mu-lv.l3 i{color:var(--plot-text)}
 
 /* Top 10: numbered rows, 1-5 down the left and 6-10 down the right on wide screens */
 .mu-rows li{display:block}
@@ -26,7 +26,7 @@
 .mu-row:hover .nm{color:var(--plot-text)}
 .tm-v{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .tm-v i{display:block;width:12px;height:6px;transform:skewX(var(--slant));background:color-mix(in srgb,var(--ink) 35%,transparent)}
-.tm-v.vf i{background:var(--plot)}.tm-v.vu i{background:var(--mid)}
+.tm-v.vf i{background:var(--plot)}.tm-v.vu i{background:var(--bad)}
 .mu-rows{grid-template-columns:minmax(0,1fr)}.mu-rows li:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--rule)}
 /* wide enough for two columns without squeezing a name onto two lines: 1-5 down the left, 6-10 down the right */
 @container (min-width:760px){.mu-rows{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,auto);grid-auto-flow:column}.mu-rows li:nth-child(5){border-bottom:0}}
@@ -39,7 +39,7 @@
 .mu-tile{position:relative;display:grid;place-items:center;min-height:56px;padding:var(--s1) 0 var(--s2);background:var(--wash);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .mu-tile img{width:100%;max-width:64px;aspect-ratio:1;object-fit:contain}
 .mu-tile::after{content:"";position:absolute;left:var(--s2);right:var(--s2);bottom:var(--s1);height:4px;transform:skewX(var(--slant));background:color-mix(in srgb,var(--ink) 26%,transparent)}
-.mu-tile.vf::after{background:var(--plot)}.mu-tile.vu::after{background:var(--mid)}
+.mu-tile.vf::after{background:var(--plot)}.mu-tile.vu::after{background:var(--bad)}
 .mu-tile:hover{background:color-mix(in srgb,var(--plot) 12%,var(--wash))}
 @container (max-width:600px){.mu-tiles{grid-template-columns:repeat(5,minmax(0,1fr))}}
 /* narrow: the verdict moves under the name, so names and calc words never break mid-phrase */
@@ -50,7 +50,7 @@
 .mu-c{--c:var(--plot);--ct:var(--plot-text);position:relative;display:grid;place-items:center;width:100%;max-width:56px;height:32px;margin:0 auto;font:800 var(--t15)/1 var(--b);color:var(--ct);
   background:color-mix(in srgb,var(--c) 16%,transparent);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .mu-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c)}
-.mu-c.ct{--c:var(--mid);--ct:var(--mid-text)}.mu-c.cl{--c:var(--pick);--ct:var(--pick-text)}.mu-c.cn{--c:color-mix(in srgb,var(--ink) 30%,transparent);--ct:var(--ink-3);background:var(--wash)}
+.mu-c.ct{--c:var(--mid);--ct:var(--mid-text)}.mu-c.cl{--c:var(--bad);--ct:var(--bad-text)}.mu-c.cn{--c:color-mix(in srgb,var(--ink) 30%,transparent);--ct:var(--ink-3);background:var(--wash)}
 .mu-grid{margin-top:var(--s3)}
 .mu-gr{display:grid;grid-template-columns:minmax(0,2.2fr) repeat(var(--n),minmax(0,1fr));align-items:center;gap:var(--s1);width:100%;min-height:52px;padding:var(--s1) 0;border-bottom:1px solid var(--rule);text-align:left}
 .mu-gh{min-height:0;border-bottom:0}.mu-gh img{width:44px;height:44px;margin:0 auto;object-fit:contain}
@@ -78,7 +78,7 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 .mu-thr>ul,.mu-thr>p{margin-left:56px}.mu-thr>p{padding-bottom:var(--s3)}
 .mu-why{display:grid;gap:var(--s2);margin-bottom:var(--s2)}
 .mu-why li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--s2);font:400 var(--t15)/1.5 var(--b)}
-.mu-why li i{font-style:normal;font-weight:800}.mu-why .ok i{color:var(--plot-text)}.mu-why .part i{color:var(--mid-text)}.mu-why .no i{color:var(--pick-text)}
+.mu-why li i{font-style:normal;font-weight:800}.mu-why .ok i{color:var(--plot-text)}.mu-why .part i{color:var(--mid-text)}.mu-why .no i{color:var(--bad-text)}
 .mu-why li.t2{display:block;font-size:var(--t13);color:var(--ink-3)}
 @container (max-width:560px){.mu-thr>summary{grid-template-columns:44px minmax(0,1fr) 12px}.mu-thr .ev{grid-column:2/3}.mu-thr>ul,.mu-thr>p{margin-left:0}}
 .mu-note{margin-top:var(--s4)}
@@ -86,7 +86,7 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 .mu-big li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:start;gap:var(--s3);padding:var(--s3) 0;border-top:1px solid var(--rule)}
 .mu-big img{width:56px;height:56px;object-fit:contain}
 .mu-big .nm{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:700 var(--t16)/1.3 var(--b)}.mu-big .nm .mg.none{display:none}.mu-big .ty{display:inline-flex;gap:var(--s1)}
-.mu-big .t{margin-top:var(--s1);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.mu-big .no{color:var(--pick-text)}
+.mu-big .t{margin-top:var(--s1);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.mu-big .no{color:var(--bad-text)}
 @container (max-width:480px){.mu-big li{grid-template-columns:44px minmax(0,1fr)}.mu-big img{width:44px;height:44px}.mu-big li>.mu-lv{grid-column:2;justify-self:start}}
 
 /* the threat sheet */
@@ -99,7 +99,7 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 .mu-st{position:relative;display:grid;place-items:center;padding:var(--s1);background:var(--wash);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .mu-st img{width:100%;max-width:64px;aspect-ratio:1;object-fit:contain}
 .mu-st i{position:absolute;right:6px;top:2px;font:800 var(--t13)/1.5 var(--b);font-style:normal}
-.mu-st.l0 i{color:var(--pick-text)}.mu-st.l1 i{color:var(--mid-text)}.mu-st.l2 i,.mu-st.l3 i{color:var(--plot-text)}
+.mu-st.l0 i{color:var(--bad-text)}.mu-st.l1 i{color:var(--mid-text)}.mu-st.l2 i,.mu-st.l3 i{color:var(--plot-text)}
 .mu-st[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge)}
 .mu-st[aria-pressed="true"] i{color:var(--on-plate)}
 :root[data-theme="night"] .mu-st[aria-pressed="true"]{outline:1.5px solid var(--plot);outline-offset:-2px}
@@ -116,7 +116,7 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 .mu-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:0 var(--s10)}
 .mu-w5 .mu-wr{padding:var(--s2) 0;border-bottom:1px solid var(--rule)}.mu-w5 .mu-wr:last-child{border-bottom:0}
 .mu-ck{display:grid;gap:var(--s2);margin-top:var(--s2)}.mu-ck li{display:flex;align-items:center;gap:var(--s3);font:600 var(--t15)/1.3 var(--b)}
-.mu-ck b{display:grid;place-items:center;width:24px;height:24px;font:800 var(--t13)/1 var(--b);color:var(--pick-text);background:var(--wash)}.mu-ck .ok b{color:var(--plot-text)}
+.mu-ck b{display:grid;place-items:center;width:24px;height:24px;font:800 var(--t13)/1 var(--b);color:var(--bad-text);background:var(--wash)}.mu-ck .ok b{color:var(--plot-text)}
 .mu-best{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}
 .mu-best .sw{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:var(--s3) 0 var(--s4);font:600 var(--t15)/1.3 var(--b)}
 .mu-best .sw img{width:44px;height:44px;object-fit:contain}.mu-best .sw b{margin:0 var(--s2);color:var(--plot-text)}
@@ -128,7 +128,7 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 /* phones: each of your six stands over its answer, three across, so long names never run out of the panel */
 @media (max-width:699px){.mu-dots{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}.mu-dots li{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:var(--s1)}}
 .mu-skey{margin:var(--s3) 0 0}
-@media (max-width:519px){.mu-skey{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1) var(--s4)}.mu-skey .k{grid-column:1/-1}}.mu-g{font-style:normal;font-weight:800}.mu-g.l0{color:var(--pick-text)}.mu-g.l1{color:var(--mid-text)}.mu-g.l2,.mu-g.l3{color:var(--plot-text)}
+@media (max-width:519px){.mu-skey{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1) var(--s4)}.mu-skey .k{grid-column:1/-1}}.mu-g{font-style:normal;font-weight:800}.mu-g.l0{color:var(--bad-text)}.mu-g.l1{color:var(--mid-text)}.mu-g.l2,.mu-g.l3{color:var(--plot-text)}
 .mu-sh .mu-cols .tm-legend{margin-top:var(--s2)}
 
 /* Stand-outs (Sim, Nov 11): two short lists and one line for the even ones */

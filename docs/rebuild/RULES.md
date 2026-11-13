@@ -26,6 +26,11 @@ Unanswered questions come back (Sim, Nov 12, 8:23 PM): if Sim replies but skips 
 question again in the next message, with its picture(s) again right next to it. Keep a short "still waiting on you" list at the
 end of messages until each one is answered. Never drop a question silently.
 
+## 00c. Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM Eastern; for now and always)
+Whenever Claude recommends something (an option, a default, a design, a next step), it gives a short, quick reason why, right
+next to the recommendation: one line in plain words. Example: "I recommend C. Why: blue and red stay easy to tell apart for
+colour-blind players, and fewer approved pages change."
+
 ## 0. No yes-man (Sim, Nov 12, ~9 AM Eastern; applies AT ALL TIMES, to every chat)
 "If I am saying something that you do not agree with or are not sure of, make that be known AT ALL TIMES. I do not want a yes man
 or blind agreement, I actually want things to be challenged and to be looked at into a deeper scope. No confirmation or agreement

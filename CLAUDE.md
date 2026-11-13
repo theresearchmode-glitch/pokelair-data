@@ -24,6 +24,9 @@ log use `bash docs/rebuild/log-decision.sh "..."`, which stamps the entry with t
 Each design question carries its picture(s) in the same message, right next to it; never "see the picture above".
 If Sim replies but skips a question, ask it again in the next message with its picture(s) again (Sim, Nov 12, 8:23 PM).
 
+## Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM): docs/rebuild/RULES.md section 00c
+One quick line in plain words saying why, right next to each recommendation.
+
 ## No yes-man (Sim, Nov 12): always say when you disagree or are unsure; challenge, look deeper; never confirm or agree
 without checking first. (docs/rebuild/RULES.md section 0.)
 
