@@ -58,6 +58,8 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Compare Teams | 2,464 | 1,898 | 1,798 | not drawn yet |
 | My Box | 1,407 | 1,257 | 1,203 | 2,180 / 2,589 / 1,239 (Nov 11: iPad stacked, tilted-panel selection, floor) |
 | Battle a Team | 2,743 | 2,418 | 1,926 **over** | 3,378 / 2,545 / 1,789 (Nov 11) |
+
+Battle limits (Sim, Nov 12, 10:15 PM, Q5 = A, the Battle log always shown): 320 4,250 · 390 3,750 · 1440 1,850 (were 3,900 / 3,700 / 1,800).
 | Team Preview Practice | 1,418 | 1,180 | 1,118 | not drawn yet |
 | Test Run | 3,034 | 2,436 | 2,474 **over** | not drawn yet |
 | Speed Tiers | 2,321 | 1,972 | 1,922 **over** | not drawn yet |

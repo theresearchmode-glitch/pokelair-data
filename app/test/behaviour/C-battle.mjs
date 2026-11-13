@@ -1,7 +1,7 @@
 // Behaviour tests, group C: Battle pages (docs/rebuild/inventory/C-battle.md). One test per inventory entry, keyed by its ID,
 // written from the player's side. Talks to the page only through the adapter (adapters/<name>.mjs + adapters/<name>.C-battle.mjs).
 // Run: node app/test/behaviour/run.mjs C-battle [--only=ID,ID]
-import fs from 'node:fs'; import {group, open, TEAM, OPP, expect, HERE} from './harness.mjs';
+import fs from 'node:fs'; import {group, open, TEAM, OPP, expect, HERE, tests} from './harness.mjs';
 const t = group('C-battle');
 const NEW = (process.env.ADAPTER || 'current') === 'v2'; // the rebuild: words from the approved mock-up (docs/rebuild/mocks/battle.tpl.html)
 
@@ -180,6 +180,12 @@ t('BATTLE-08', 'The read: your lead, their likely lead, biggest threat, Fake Out
   await close(); });
 
 t('BATTLE-09', 'Plan / Speed / Damage switch filters cards on phones; hidden on desktop where all cards show', async () => {
+  if (NEW) { /* approved mock-up: no Plan/Speed/Damage switch; the plan shows on every width and the detail sits in three tabs, one open at a time */
+    for (const width of [390, 1280]) { const {ui, close} = await open({team: TEAM, opp: OPP, width}); await ui.go('Battle');
+      expect(/bring these four/i.test(await ui.text()), `${width}: plan not shown`);
+      for (const [k, re] of [['Who moves first', /Who moves first[^]*Fastest first/i], ['Damage both ways', /Damage both ways[^]*Your four against their six/i]]) { await ui.openFold(k);
+        const tx = await ui.text(); expect(re.test(tx), `${width}: ${k} tab did not open`); expect(await ui.pg.evaluate(() => document.querySelectorAll('.bt-pane').length) === 1, `${width}: more than one tab open`); }
+      await close(); } return; }
   { const {ui, close} = await open({team: TEAM, opp: OPP, width: 390}); await ui.go('Battle');
     expect(await ui.planSwitchShown(), 'phone: switch not shown');
     const SPD = /Who moves first,? fastest first/i;
@@ -221,6 +227,10 @@ t('BATTLE-11', 'From real games: approved verdict words, "so far" under six, gon
   await close(); });
 
 t('BATTLE-12', 'Watch out fold lists what shuts you down; open/closed remembered', async () => {
+  if (NEW) { /* approved mock-up: Watch out is always open beside The read (nothing to remember) */
+    const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
+    expect(/Watch out.*\d of their six can shut something down/i.test(await ui.pageText()), 'Watch out title missing its count');
+    hasAll(await ui.foldText('Watch out'), ['Farigiraf', 'Trick Room', 'Armor Tail'], 'Watch out'); await close(); return; }
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
   expect(/Watch out.*\d of their six can shut something down/i.test(await ui.pageText()), 'Watch out title missing its count');
   await ui.openFold('Watch out'); const f = await ui.foldText('Watch out');
@@ -280,6 +290,13 @@ t('BATTLE-17', 'Team preview practice entry opens Practice', async () => {
   await ui.tapIn('Team preview practice'); expect(await ui.current() === 'practice', 'Practice did not open'); await close(); });
 
 t('BATTLE-18', 'Deeper read: archetype matchup, their threats, full 6×6 matchup grid', async () => {
+  if (NEW) { /* new page: Deeper read is a tab under the plan, offered once their Pokémon are in (mock-up); same content, the mock-up's words */
+    { const {ui, close} = await open({team: TEAM}); await ui.go('Battle'); expect(!(await ui.sees('Deeper read')) && await ui.sees('Everything below fills in once their six is in'), 'Deeper read offered before their Pokémon are in'); await close(); }
+    const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); const f = await ui.foldText('Deeper read');
+    hasAll(f, ['Archetypes, their threats', 'You:', 'Them: Rain', 'Psychic Terrain', 'Pelipper:', '(super effective)'], 'Deeper read');
+    expect(/\b(Edge|Watch|Note)\b/.test(f), 'no Edge/Watch/Note rows');
+    expect(await ui.pg.evaluate(() => document.querySelectorAll('.bt-mg td').length) === 36, 'full grid is not 6×6');
+    await close(); return; }
   { const {ui, close} = await open({team: TEAM}); await ui.go('Battle'); await ui.openFold('Deeper read');
     expect(await ui.sees('Add their Pokémon above first'), 'empty Deeper read message missing'); await close(); }
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); await ui.openFold('Deeper read');
@@ -770,3 +787,8 @@ t('X-09', 'keyboard: arrows + Enter pick in their six, Escape closes the list, T
   await ui.go('My Team', 1200); await ui.tapThreat('Archaludon');
   for (let k = 0; k < 25; k++) await pg.keyboard.press('Tab');
   expect(await ui.focusInSheet(), 'Tab left the open sheet'); await close(); });
+
+// the rebuild: tests for pieces that wait for pages not rebuilt yet (rule C10: no links to pages that don't exist). Listed, never dropped.
+if (NEW) { const WAIT = {'BATTLE-16': 'the calc picker comes with the Damage Calc page (not rebuilt yet)', 'BATTLE-17': 'the Practice entry comes with the Practice page (not rebuilt yet)',
+  'BATTLE-20': 'the "What the calc counts" tip sits on the calc picker; the damage legend is shown in full, nothing behind "More"'};
+  for (const T of tests()) if (T.group === 'C-battle' && WAIT[T.id]) T.skip = WAIT[T.id]; }

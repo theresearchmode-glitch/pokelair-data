@@ -27,6 +27,7 @@ question again in the next message, with its picture(s) again right next to it. 
 end of messages until each one is answered. Never drop a question silently.
 Every picture is labelled (Sim, Nov 12, 9:30 PM: "I can't answer ... bc you stopped labeling the pictures with which option it is"): the
 question number and option name are printed ON the picture itself (e.g. "Q1 · OPTION B1 · Speed line"), not only in the caption.
+The recommended option says so ON its picture too (Sim, Nov 12, 10:15 PM): e.g. "Q5 · OPTION A · RECOMMENDED · log always shown".
 
 ## 00c. Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM Eastern; for now and always)
 Whenever Claude recommends something (an option, a default, a design, a next step), it gives a short, quick reason why, right
