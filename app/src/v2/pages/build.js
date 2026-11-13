@@ -136,7 +136,7 @@ document.addEventListener('click', e => { if (e.target.closest && e.target.close
 // ---------- Build: the phone jump bar (mock R2, under 700 wide): Other options · Cores · Recent winners, sticky under the top bar ----------
 // Buttons that scroll, not links: the site's addresses name pages, so a #section link would change the page (and add a Back step).
 V2.buildJump = (oth, win) => { const res = ui.ab && ui.ab.doubles, b = (k, t, n) => `<button type="button" data-bdjump="${k}">${t}${n != null ? ` <small>${n}</small>` : ''}</button>`;
-  return `<nav class="bd-jump" aria-label="Jump to a section">${oth ? b('others', 'Other options', res.teams.length - 1) : ''}${win ? b('wins', 'Recent winners', 3) : ''}${b('cores', 'Cores', homeNum(coreRows().length))}</nav>`; };
+  return `<nav class="bd-jump" aria-label="Jump to a section">${oth ? b('others', 'Other Options', res.teams.length - 1) : ''}${win ? b('wins', 'Recent Winners', 3) : ''}${b('cores', 'Cores', homeNum(coreRows().length))}</nav>`; };
 V2.bdJumpSpy = () => { const nav = document.querySelector('.bd-jump'); if (!nav || getComputedStyle(nav).display === 'none') return; const y = nav.getBoundingClientRect().bottom + 8; let on = null;
   for (const k of ['others', 'wins', 'cores']) { const sec = document.querySelector('.bd-' + k); if (sec && sec.getBoundingClientRect().top <= y) on = k; }
   if (!on) on = (nav.querySelector('[data-bdjump]') || {dataset: {}}).dataset.bdjump; for (const x of nav.querySelectorAll('[data-bdjump]')) x.classList.toggle('on', x.dataset.bdjump === on); };

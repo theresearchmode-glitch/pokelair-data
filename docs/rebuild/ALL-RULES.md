@@ -134,6 +134,7 @@ listed at the end. The full wording stays in those files; this is the plain-word
 
 **Type, spacing and shapes**
 
+- Names only on tabs, menus and navigation (Nov 12): no counts or extra detail beside them.
 - Capitalisation (Nov 12): Title Case for buttons, tabs, menus and section headings; sentence case for sentences, descriptions and notes; short joining words (a, the, and, for, from…) lowercase.
 
 12. **Type** (Nov 7):

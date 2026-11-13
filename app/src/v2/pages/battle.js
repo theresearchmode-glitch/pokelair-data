@@ -104,8 +104,8 @@ V2.battleWatch = P => { if (!P) return ''; const E = V2.esc, W = P.watch || [];
 V2.btUi.tab = V2.btUi.tab || null;
 V2.btChip = (attr, on, t) => `<button type="button" class="np-chip" ${attr} aria-pressed="${!!on}">${V2.esc(t)}</button>`;
 V2.battleTabs = (theirs, P) => { if (!P) return ''; const n = P.chosen.length * theirs.length, t = V2.btUi.tab;
-  const b = (k, lab, small) => `<button type="button" class="bt-tab${t === k ? ' on' : ''}" data-bttab="${k}" aria-expanded="${t === k}" aria-controls="bt-pane">${lab}<small>${small}</small></button>`;
-  return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', 'Damage Both Ways', n + ' pairs')}${b('spd', 'Who Moves First', P.speed.length + ' Pokémon')}${b('deep', 'Deeper Read', 'pair grid')}<span class="bt-hint">${t ? 'Tap it again to close' : 'Open one for the detail'}</span></nav>`; };
+  const b = (k, lab) => `<button type="button" class="bt-tab${t === k ? ' on' : ''}" data-bttab="${k}" aria-expanded="${t === k}" aria-controls="bt-pane">${lab}</button>`; /* no counts beside the names (Sim, Nov 12: too wordy) */
+  return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', 'Damage Both Ways')}${b('spd', 'Who Moves First')}${b('deep', 'Deeper Read')}</nav>`; };
 V2.battleDamage = (theirs, P) => { const E = V2.esc, C = P.chosen, F1 = P.field || {};
   const pc = h => h ? (h.r.max < h.r.hp ? dmgP(100 * h.r.max / h.r.hp) : String(Math.min(999, Math.round(100 * h.r.max / h.r.hp)))) + '%' : '–';
   const one = h => h && h.r && koShort(h.r) === 'OHKO'; // knocks out in one hit on every roll (not when a Focus Sash holds)
@@ -133,7 +133,7 @@ V2.battleSpeed = P => { const E = V2.esc, rows = P.speed, mx = P.speedMax, sd = 
   const tg = [['tw', 'Your Tailwind'], ['twOpp', 'Their Tailwind'], ['icy', sd.length ? `Them −1 (after your ${sd[0]})` : 'Them −1'], ['par', "They're Paralyzed"], ['tr', 'Trick Room']].map(([k, t]) => V2.btChip(`data-bts="${k}"`, bmUi[k], t)).join('');
   const prio = P.prio.map(q => `${q.move} ${q.prio > 0 ? '+' : '−'}${Math.abs(q.prio)}${q.grassy ? ' (Grassy Terrain)' : ''} (${q.who})`);
   return `<h2 class="u">Who Moves First</h2><p class="bt-sub">${bmUi.tr ? 'Slowest moves first (Trick Room)' : 'Fastest first'} · your four and their six</p><div class="bt-chips" role="group" aria-label="Speed conditions">${tg}</div>
-    ${P.weather ? `<p class="fine">Weather: ${E(P.weather)} (set it under Damage both ways).</p>` : ''}
+    ${P.weather ? `<p class="fine">Weather: ${E(P.weather)} (set it under Damage Both Ways).</p>` : ''}
     ${V2.battleSpeedLine(rows)}<ol class="bt-spd">${rows.map(q => `<li class="${q.me ? 'me' : ''}">${V2.mon(q.x.p.n, {iw: 40, bare: true})}<div class="nm"><span class="sd">${q.me ? 'You' : 'Them'}</span> ${V2.rowName(q.x.d)}<small>${[q.s && q.s.scarf ? 'Choice Scarf' : '', q.wxUp ? E(q.ab) : '', q.unb ? `${q.unb} after its item` : '', q.tie ? 'Speed tie' : ''].filter(Boolean).join(' · ') || '&nbsp;'}</small></div><i class="bar" style="--w:${Math.max(4, 100 * q.v / mx).toFixed(1)}%" aria-hidden="true"></i><b class="v u">${q.v}</b></li>`).join('')}</ol>
     ${prio.length ? `<p class="fine">Moves that skip the Speed order (higher bracket goes first, Speed only breaks ties inside a bracket): ${E(prio.join(', '))}.</p>` : ''}
     <p class="fine">Your side: your items (and your spreads where you set them). Their side assumed: the most common spreads, natures and items. Ties are a coin flip.</p>`; };
@@ -220,6 +220,6 @@ V2.BT_TOOLS = () => { let n = 0; try { n = gauntletTeams().length; } catch (e) {
   return [['practice', 'Team Preview Practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test Run', '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
     ['speed', 'Speed Tiers', '', 'Your six against the 20 most-used Pokémon'], ['calc', 'Damage Calc', '', 'Any attacker into any defender'], ['types', 'Type Chart', '', '18 types, or look up a Pokémon']]; };
 V2.battleToolsBar = () => { const L = Array.isArray(S.log) ? S.log.length : 0;
-  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle" aria-current="page" class="on">Battle A Team</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}">${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Battle Log<small>${L} game${L === 1 ? '' : 's'}</small></a></nav>`; };
+  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle" aria-current="page" class="on">Battle A Team</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}">${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Battle Log</a></nav>`; };
 V2.battleMoreTools = () => `<section class="bt-more"><h2 class="u">More Ways to Prep</h2><ul>${V2.BT_TOOLS().map(([h, t, s, d]) => `<li><a href="#${h}"><span>${t}<small>${V2.esc(d)}</small></span><i aria-hidden="true">›</i></a></li>`).join('')}</ul></section>`;
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-btlogjump]'); if (!a) return; e.preventDefault(); const l = document.querySelector('.bt-log'); if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'}); });
