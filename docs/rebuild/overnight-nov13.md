@@ -153,3 +153,6 @@ Mock-ups only (CSS added in the screenshot script; the site's code is unchanged)
 - Side-by-side finished for every approved mock-up in docs/rebuild/mocks/out: first visit / empty My Team differs (i40: the
   mock-up's six empty spots and "Or start from a winner" grid are not built; no decision found); forms info sheet has its strip,
   Compare all 3 and Forms tab. Not compared: Compare, All Suggestions (no approved mock-up), Ratings, Speed Tiers (not rebuilt).
+- Ready patches tested: myteam-q1b.patch: My Team tests 127 pass before and after, no test changed; c13 five 0 over, tap<44 0.
+  build-q1b.patch: Build tests unchanged test by test once the test adapter taps the section's tab first (setup only; same 25 on
+  the current page); X-10 is flaky on both pages (i41).
