@@ -32,7 +32,9 @@ const V2 = process.env.TARGET === 'v2';
 const VIEWS = (process.env.VIEWS || (V2 ? 'guide,team,team-empty,box,compare,sheet' : null) || 'home,report,coverage,build,auto,matchup,box,teams,ratings,meta,top,sets,calc,speed,types,cores,events,arch,gauntlet,weekly,track,method,compare,sheet').split(',');
 const STEP = +(process.env.STEP || 80), WIDTHS = []; for (let w = +(process.env.W0 || 320); w <= 2560; w += STEP) WIDTHS.push(w);
 const STYLE_W = (process.env.STYLE_W || '390,820,1440').split(',').map(Number);
-const page = ROOT + `app/pc-${process.pid}.html`;
+// Nov 13: the new site's copy sits in app/dist/ beside the real page, so its self-hosted fonts (dist/fonts/) and sprites (--art=../src/v2/art/)
+// load; before this, every TARGET=v2 run measured with fallback fonts and no sprites (a false 'Meowscarada spills 12px' on My Box)
+const page = ROOT + (process.env.TARGET === 'v2' ? `app/dist/pc-${process.pid}.html` : `app/pc-${process.pid}.html`);
 if (V2) fs.writeFileSync(page, fs.readFileSync(ROOT + 'app/dist/v2.html', 'utf8')); else fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const TEAM = ['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
 
