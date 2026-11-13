@@ -778,7 +778,15 @@
 .bd-lower{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s16);margin-top:var(--s6);padding-top:var(--s10);border-top:1px solid var(--rule)}
 .bd-lower>.bd-cores:only-child{grid-column:1/-1}
 /* Sim, Nov 13 (Look Q4 B): phones show one section at a time, chosen in the bar */
-@media (max-width:699px){.bd-lower:not([data-bdtab="others"]) .bd-others,.bd-lower:not([data-bdtab="wins"]) .bd-wins,.bd-lower:not([data-bdtab="cores"]) .bd-cores{display:none}.bd-lower[data-bdtab="cores"] .bd-lcol{display:none}}
+/* Sim, Nov 13 (Build Q1 B, chosen 8:47 AM): every screen size shows one section at a time, chosen in the tab bar (was phones only, Look Q4 B) */
+.bd-lower{display:block;margin-top:0;padding-top:var(--s6);border-top:0}.bd-lcol{display:contents}
+.bd-lower:not([data-bdtab="others"]) .bd-others,.bd-lower:not([data-bdtab="wins"]) .bd-wins,.bd-lower:not([data-bdtab="cores"]) .bd-cores{display:none}
+/* from 1180 the width is used side by side: Other Options 3 cards across (six in 3 x 2, names in full), a winner's sets 3 across,
+   the cores list in 2 columns (8 shown first, so rows end even) */
+@media (min-width:1180px){.bd-others{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s10)}.bd-others>.bd-hd,.bd-others>.bd-sub{grid-column:1/-1}
+  .bd-others .bd-alt{display:flex;flex-direction:column}.bd-others .bd-alt-top{grid-template-columns:minmax(0,1fr)}.bd-others .bd-alt-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}.bd-others .bd-alt-meta{margin-top:auto;padding-top:var(--s2)}
+  .bd-wins .bd-wsix>*{width:56px}.bd-wins .bd-sets{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .bd-clist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12)}}
 .bd-hd{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}.bd-hd h2{font-size:var(--t34);margin:0}.bd-k{font:600 var(--t13)/1 var(--b);color:var(--ink-2);white-space:nowrap}
 .bd-sub{margin-top:var(--s1);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bd-hint{margin-top:var(--s3);font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 .bd-alt{padding:var(--s4) 0 var(--s3);border-bottom:1px solid var(--rule)}
@@ -817,12 +825,14 @@
 .bd-brk{margin-top:var(--s1);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bd-brk .np-link{font-size:var(--t13)}
 
 /* Build: phone jump bar (mock R2): sticky under the 60px phone top bar */
-.bd-jump{display:none}
+.bd-jump{position:sticky;top:76px;z-index:5;display:flex;gap:var(--s8);margin:var(--s8) 0 0;padding:0 calc(var(--gut) - var(--s1));border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 94%,transparent)}
+.bd-jump button{position:relative;display:flex;align-items:center;min-height:52px;padding:0 var(--s1);white-space:nowrap;font:600 var(--t17)/1 var(--b);color:var(--ink-2)}
+.bd-jump button.on{color:var(--ink)}.bd-jump button.on::after{content:"";position:absolute;left:var(--s1);right:var(--s1);bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
 @media (max-width:699px){
   .bd-jump{position:sticky;top:60px;z-index:5;display:flex;gap:var(--s3);margin:var(--s6) 0 0;padding:0 calc(var(--gut) - var(--s1));border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 94%,transparent);overflow-x:auto;scrollbar-width:none}
   .bd-jump button{position:relative;display:flex;align-items:center;justify-content:center;min-height:48px;min-width:44px;padding:0 var(--s1);white-space:nowrap;font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.bd-jump button small{margin-left:var(--s1);font:600 var(--t13)/1 var(--b);color:var(--ink-3)}
   .bd-jump button.on{color:var(--ink)}.bd-jump button.on::after{content:"";position:absolute;left:var(--s1);right:var(--s1);bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
-  .bd-others,.bd-wins,.bd-cores{scroll-margin-top:116px}.bd-lower{margin-top:0;padding-top:var(--s6);border-top:0}}
+  .bd-others,.bd-wins,.bd-cores{scroll-margin-top:116px}}
 @media (max-width:379px){.bd-jump{gap:var(--s1)}.bd-jump button{font-size:var(--t13)}}
 
 /* Build: cores with a Pokémon (filter box beside the core sliders) */
