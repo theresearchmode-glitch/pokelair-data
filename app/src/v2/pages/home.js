@@ -22,7 +22,7 @@ V2.hmUi = V2.hmUi || {};
 // Gift Cards") goes too (the mock-up showed a short name)
 V2.evTitle = n => evName(n).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, ' ').replace(/[\s\-–|·:!]*(cash prizes?|prize pool|prizes?|\$\s?\d[\d,.]*\s*(usd|prize( pool)?)?)[\s!]*$/i, '').replace(/\s+(?:[$€£]\s?\d[\d,.]*|\d[\d,.]*\s?[$€£])\s*(?:amazon|gift|cash|prize|usd|eur)?[^#]*$/i, '').replace(/\s+/g, ' ').trim().replace(/ (#\d+)$/, '\u00a0$1') || evName(n); // "#18" stays with the name (Sim, Nov 12)
 V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
-  const tile = (n, sub, attrs) => `<button type="button" class="hm-pk" ${attrs}>${V2.mon(n, {iw: 96, bare: true})}<b>${V2.nameHtml(V2.disp(n))}</b><small>${sub ? E(sub) : '&nbsp;'}</small></button>`;
+  const tile = (n, sub, attrs) => `<button type="button" class="hm-pk" ${attrs}>${V2.mon(n, {iw: 96, bare: true, tag: true})}<b>${V2.tileName(V2.disp(n))}</b><small>${sub ? E(sub) : '&nbsp;'}</small></button>`;
   let them = '<div class="hm-side"></div>', FC = null;
   if (C) { const {ev, t} = C, key = ev.id + '#' + ev.top.indexOf(t), sure = V2.hmUi.sure === key;
     try { FC = ms.length >= 4 ? CH.fourVs(ms, C.six.map(x => x.p.n)) : null; } catch (e) { FC = null; }
