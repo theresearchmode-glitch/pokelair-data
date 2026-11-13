@@ -58,3 +58,31 @@ Build, but far over AFTER building (390: 4,807 / 3,700; 1100: 3,428 / 1,800); I 
 - i31: the threat list's length depends on which page asked first (shared code); measured harmless today, a risk when
   Speed Tiers / Damage Calc are rebuilt.
 - iPhone checks: keyboard over name-box lists, and the info sheet swipe: docs/rebuild/test-runs/x07-keyboard-iphone.md.
+
+## Second look through every built page (Sim, 12:47 AM: "make sure it's matching our standards")
+How: screenshots of Home, My Team, Build (after building), Battle (with an opponent), My Box, Compare at 600 day, 390 day
+and 1100 night, read by eye; the polish check on every built page (320-2560, day and night: 0 page errors); text-inside-
+its-box checks at 14 widths in both engines; double-tap check (125 controls, 0 fired twice); use test (32 ok).
+
+Found and FIXED (on the Preview since v90, 1:38 AM; before/after picture in the morning message):
+- Build after building had never been checked (the height and polish checks don't build a team). At 320-430 the score's
+  "Tournament ready" ran off the screen; names and role lines ran into the next tile ("S tier 92Attacker · S tier 92");
+  Other Options cut names with "…" ("Mega Glim…"); at 700 the headline ran 5 px past its column. All fixed (675d601, 68f86af).
+- Corrected: page-heights.md had Build's numbers labelled "after building"; they were before building.
+
+Questions and ideas for you (look choices, so nothing changed):
+1. Look Q1: Build's sprites are 120 px on phones though the page's styles meant 88 px; at 320-340 one pokes past the
+   screen edge. B (88 px) recommended: fits the tiles and shortens the page.
+2. Build after building is far over its height (390: about 4,850 / 3,700; 1100: 3,428 / 1,800). Ideas needed (like Height Q1).
+3. Colours with no meaning: Compare's team B badge is pink, the colour that means "selected" (A is the "good" blue);
+   Build's "3/4 team checks" is blue though a basic is missing.
+4. Names: "Battle A Team" (our lowercase rule says "Battle a Team"); Home's tiles say "Battle Mode", "Teams", "Winning
+   Cores" where the pages say "Battle A Team" and "Cores"; the info sheet's tabs carry details ("stats, types", "why 87,
+   the data", "3, side by side") that your names-only rule took off the other tabs; Battle's phone "More Ways to Prep"
+   still says "latest 20 top teams" and "18 types".
+5. Battle: Turn One shows a fixed order on a speed tie (both Mega Charizard Y at 152; today's site too); in a mirror
+   match the sentence "Mega Charizard Y's Ancient Power can KO Mega Charizard Y" doesn't say whose.
+6. Space at 1100: empty beside Home's ratings list under Today's Underdog, and beside the big score on My Team and Build.
+7. Home's top three: "% of ladder teams" wraps on the two sides but not the middle (uneven).
+8. My Box "Your Team" lists the six in slot order, not grouped Lead / Back / Bench as on My Team.
+9. One-word names slightly wider than their tile ("Meowscarada" in My Box at 400-480, "Basculegion" on Home at 320/720).
