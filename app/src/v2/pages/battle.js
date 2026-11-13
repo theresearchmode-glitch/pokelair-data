@@ -91,9 +91,13 @@ V2.battleDamage = (theirs, P) => { const E = V2.esc, C = P.chosen, F1 = P.field 
   const head = `<tr><th scope="col">Your four ↓ · their six →</th>${theirs.map(o => `<th scope="col">${V2.mon(o.p.n, {iw: 40, bare: true})}<span>${V2.rowName(o.d)}</span></th>`).join('')}</tr>`;
   const rows = C.map((m, i) => `<tr><th scope="row">${V2.mon(m.p.n, {iw: 40, bare: true})}<span>${V2.rowName(m.d)}</span></th>${theirs.map((o, j) => { const {a, d} = P.damage[i][j];
     return `<td title="${a ? `${E(m.d)} ${E(a.mv.name)}: ${E(dmgRange(a.r))}, ${E(koText(a.r))}` : ''}${d ? ` · ${E(o.d)} ${E(d.mv.name)}: ${E(dmgRange(d.r))}, ${E(koText(d.r))}` : ''}">${cell(a, 'y')}${cell(d, 't')}</td>`; }).join('')}</tr>`).join('');
+  // phones (Nov 12): the same numbers as one block per Pokémon of yours, their six as rows, so nothing scrolls sideways
+  const ln = (h, side) => `<span class="bt-dv ${side}"><b class="${one(h) ? (side === 'y' ? 'ko-good' : 'ko-bad') : ''}">${pc(h)}</b> <i>${h ? E(koShort(h.r)) : ''}</i><small>${h ? E(h.mv.name) : ''}</small></span>`;
+  const list = `<div class="bt-dl">${C.map((m, i) => `<section><h3>${V2.mon(m.p.n, {iw: 40, bare: true})}<span>${V2.rowName(m.d)}</span></h3><div class="bt-dlh" aria-hidden="true"><span></span><span>You hit</span><span>They hit</span></div>
+    <ul>${theirs.map((o, j) => { const {a, d} = P.damage[i][j]; return `<li><span class="nm">${V2.mon(o.p.n, {iw: 32, bare: true})}<span>${V2.rowName(o.d)}</span></span>${ln(a, 'y')}${ln(d, 't')}</li>`; }).join('')}</ul></section>`).join('')}</div>`;
   return `<h2 class="u">Damage both ways</h2><p class="bt-sub">Your four against their six: your best hit on them, and their best hit on you</p>
     <div class="bt-chips" role="group" aria-label="Weather">${wx}</div><div class="bt-chips" role="group" aria-label="Intimidate">${V2.btChip('data-bti="intMe"', bmUi.intMe, "You're Intimidated")}${V2.btChip('data-bti="intThem"', bmUi.intThem, "They're Intimidated")}</div>
-    <div class="bt-tw"><table class="bt-dg">${head}${rows}</table></div>
+    <div class="bt-tw bt-dgw"><table class="bt-dg">${head}${rows}</table></div>${list}
     <p class="fine">Top roll as % of HP, each side's usual set, with how many hits it takes: OHKO, 2HKO, 3HKO (a % = only that share of rolls do it). Blue: you knock it out in one hit; red: they knock yours out in one hit.</p>`; };
 V2.battleSpeed = P => { const E = V2.esc, rows = P.speed, mx = P.speedMax, sd = P.spDrop;
   const tg = [['tw', 'Your Tailwind'], ['twOpp', 'Their Tailwind'], ['icy', sd.length ? `Them −1 (after your ${sd[0]})` : 'Them −1'], ['par', "They're paralyzed"], ['tr', 'Trick Room']].map(([k, t]) => V2.btChip(`data-bts="${k}"`, bmUi[k], t)).join('');
