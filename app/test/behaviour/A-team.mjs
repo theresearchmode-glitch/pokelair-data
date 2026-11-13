@@ -1017,7 +1017,7 @@ t('PKMN-01', 'Info sheet opens from Home; ✕ and Escape close it, focus returns
 
 t('PKMN-02', 'Hero: rating numeral, "<letter> tier, #N of M with results", name, types, three numbers', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoSheet();
-  ok(/^✕ (\d+) \? [SABCD] tier, #\d+ of \d+ with results Kingambit Dark Steel/.test(s), 'hero reads: ' + s.slice(0, 90));
+  ok((NEW ? /^✕ (\d+) [SABCD] tier Rating · #\d+ of \d+ with results Kingambit Dark Steel/ /* the approved sheet mock-up's words (Sim, Nov 12, decision 16) */ : /^✕ (\d+) \? [SABCD] tier, #\d+ of \d+ with results Kingambit Dark Steel/).test(s), 'hero reads: ' + s.slice(0, 90));
   for (const x of [/[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'hero'); await r.close(); });
 
 t('PKMN-03', 'Add to team fills the first empty slot ("On your team" after); Build around it; Popular Sets', async () => {
@@ -1040,7 +1040,7 @@ t('PKMN-05', 'Info tab: usual set, base stats, abilities with "Most used", type 
 
 t('PKMN-06', 'Meta tab: typical set, moves and items with %, "Brought with" opens the partner\'s sheet', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Meta'); const s = await r.ui.infoTabText();
-  for (const x of [/Typical Set Ability \w+ \d+%/, /Moves: in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% ([\d,]+) games/]) has(s, x, 'Meta tab');
+  for (const x of NEW ? [/Typical set Ability \w+ \d+%/, /in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% ([\d,]+) games/] /* approved sheet mock-up words (Sim, Nov 12, decision 16) */ : [/Typical Set Ability \w+ \d+%/, /Moves: in-game ranked battles/, /Items \S.* \d+%/, /Brought with (\w+) (\d+)% ([\d,]+) games/]) has(s, x, 'Meta tab');
   const partner = s.match(/Brought with (\w+)/)[1]; await r.ui.tapPokemonInSheet(partner); ok(new RegExp(partner).test((await r.ui.infoSheet() || '').slice(0, 140)), 'partner sheet did not open'); await r.close(); });
 
 t('PKMN-07', 'Rating tab: "Why it rates N", four bars, What the Data Says, other tier lists, links', async () => {
