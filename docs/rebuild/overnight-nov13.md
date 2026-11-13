@@ -86,3 +86,11 @@ Questions and ideas for you (look choices, so nothing changed):
 7. Home's top three: "% of ladder teams" wraps on the two sides but not the middle (uneven).
 8. My Box "Your Team" lists the six in slot order, not grouped Lead / Back / Bench as on My Team.
 9. One-word names slightly wider than their tile ("Meowscarada" in My Box at 400-480, "Basculegion" on Home at 320/720).
+
+Later fixes (by 2:07 AM, on the branch; not on the Preview yet):
+- Build's "3/4 team checks" was always blue; now blue only at 4/4 (d374d06; checked on all four built options).
+- Form letters never alone on a line in text built by shared logic: Battle's pairings and Watch Out, the turn-one warning,
+  Build's sets fold (5dd4e26; checked: no split on 5 pages at 11 widths). Battle 21 / Build 24 passes, unchanged.
+- Sheets checked (Team Sheet, Saved Teams, All Suggestions, Search, Share, More, Edit Set, Why This Score?): 4 widths,
+  both engines: no text outside its box, no sideways scroll, 0 errors.
+Labelled pictures ready: Look Q1 (Build phone sprites), Look Q2 (Compare colours), Look Q3 (Battle tabs on phones).
