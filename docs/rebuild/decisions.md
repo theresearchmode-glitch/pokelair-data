@@ -618,3 +618,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:28 AM: Sim: Look Q2 B (Compare: both teams in plain ink, told apart by their A/B letters). Words Q1 and the mock-up side-by-side still unanswered: re-ask.
 - 5:31 AM: Sim: Look Q2 B confirmed (built 9053111). Words Q1: recommended (no word when no measured level) but wants to see both options first: pictures. Side-by-side check of built pages against their approved mock-ups: yes, do it.
 - 5:38 AM: Sim: Words Q1 B (no level word when a threat has no measured level; 'Dangerous / Manageable' removed on the new site).
+- 5:49 AM: Regression found in the side-by-side and fixed: my Look Q3 change (3860ab0, on Preview v93) left a wider gap inside Battle's tab names on desktop ('Damage  Both Ways'). Fixed: the name halves are plain text above 519 px; phones keep two even lines.
