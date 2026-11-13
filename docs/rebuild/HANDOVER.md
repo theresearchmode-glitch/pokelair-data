@@ -5,7 +5,7 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 
 ## NOW (Nov 13, written 2:23 AM Eastern by the clock; overnight under Sim's authority until 6:00 AM)
 - Full account of the night: docs/rebuild/overnight-nov13.md (mistakes first, fixes with checks, measurements, questions).
-- PREVIEW v91 (2:27 AM, 394 files checked): title case + C1-C4, the overnight behaviour fixes, Build's text-in-box fixes, and the
+- PREVIEW v92 (2:35 AM, 394 files checked; v91 2:27 AM, favicons added in v92): title case + C1-C4, the overnight behaviour fixes, Build's text-in-box fixes, and the
   Build 3/4 colour (d374d06) and form letters kept with names (5dd4e26).
 - Checklist (https://claude.ai/artifact/E99Mux9sZxxBuvFXEsKW1V) current: i03/i32 measured and reviewed; i27-i32 added tonight.
 - WAITING ON SIM (labelled pictures, RECOMMENDED marked): Speed Q1/Q2 (Speed Tiers mock), Height Q1 (My Team 5 of 6), Look Q1

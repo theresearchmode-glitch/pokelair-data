@@ -105,7 +105,7 @@ Small notes (no question needed):
 - All Suggestions for the sample team shows one ±0 card with a full Apply button; on My Team a ±0 swap gets no card (your
   A3). Logged as i27 (differences nobody approved).
 
-After 2:27 AM (on the branch, Preview with the next publish):
+After 2:27 AM (on the Preview since v92, 2:35 AM):
 - "?" tips: settled. The site has two, both checked at 12-13 widths in both engines, on the pages and inside Things to
   Know: none sits alone on a line.
 - Favicons: today's three, unchanged, added to the new site (the browser tab showed no icon) (5b8c103; use test 32/0).
