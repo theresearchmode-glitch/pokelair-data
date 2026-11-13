@@ -311,13 +311,13 @@ t('LOG-01', 'Battle log is pre-filled with the plan\'s four in order; picks upda
   const ord = n => (c.find(x => x.name === n) || {}).order;
   expect(ord('Mega Charizard Y') === 'Lead 1' && ord('Rillaboom') === 'Lead 2' && ord('Incineroar') === 'Back 3' && ord('Whimsicott') === 'Back 4', 'chips do not match "Bring these four": ' + JSON.stringify(c));
   let f = await ui.foldText('Battle log'); expect(/Filled in from the plan/i.test(f) && /saved with their 6/i.test(f), 'no "Filled in from the plan … saved with their 6"');
-  expect(/Order: lead Mega Charizard Y \+ Rillaboom, back Incineroar \+ Whimsicott/i.test(f), 'order line wrong');
+  expect((NEW ? /lead Mega Charizard Y \+ Rillaboom, back Incineroar \+ Whimsicott/i : /Order: lead Mega Charizard Y \+ Rillaboom, back Incineroar \+ Whimsicott/i).test(f), 'order line wrong'); /* new: the four sit in the mock-up's sentence */
   await ui.logPick('Whimsicott'); f = await ui.foldText('Battle log'); expect(/3\/4 picked/.test(f), 'no "3/4 picked" after tapping one off');
   await ui.logPick('Sneasler'); f = await ui.foldText('Battle log'); expect(/4\/4 picked/.test(f), 'no "4/4 picked"');
   expect(/back Incineroar \+ Sneasler/i.test(f), 'order line did not update');
   await close();
   { const {ui, close} = await open({team: TEAM.slice(0, 3), opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log');
-    expect(await ui.sees('Add at least 4 Pokémon to your team to log a battle'), 'no under-4 message in Battle log'); await close(); } });
+    expect(await ui.sees(NEW ? 'Add at least 4 Pokémon on My Team first' : 'Add at least 4 Pokémon to your team to log a battle'), 'no under-4 message in Battle log'); await close(); } }); /* new page: one under-4 message for the whole page */
 
 t('LOG-02', 'Win/Loss disabled until four are picked; Win logs the game, saved and kept after reload', async () => {
   const {ui, acct, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log');
@@ -332,11 +332,11 @@ t('LOG-02', 'Win/Loss disabled until four are picked; Win logs the game, saved a
 
 t('LOG-03', 'Your record: overall %, this team, lead pairs after games', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log');
-  expect(await ui.sees('No battles logged yet'), 'empty record message missing');
+  expect(await ui.sees(NEW ? 'No games logged yet' : 'No battles logged yet'), 'empty record message missing'); /* new: the mock-up's words */
   await ui.logResult('W'); await ui.logResult('W'); await ui.logResult('L');
   const f = await ui.foldText('Battle log');
-  expect(/2-1 overall,? 67%/i.test(f), 'no "2-1 overall · 67%": ' + f.slice(0, 300));
-  expect(/2-1 this team/i.test(f), 'no "this team" record');
+  expect(/2[–-]1 overall,?( ·)? 67%/i.test(f), 'no "2-1 overall · 67%": ' + f.slice(0, 300));
+  expect(/2[–-]1 this team/i.test(f), 'no "this team" record');
   expect(/3 battles logged/i.test(f), 'no "3 battles logged"');
   expect(/Lead pairs/i.test(f) && /Mega Charizard Y \+ Rillaboom/i.test(f), 'no lead pair row');
   expect(/Your Pokémon/i.test(f), 'no "Your Pokémon" bars');
@@ -347,7 +347,7 @@ t('LOG-04', 'delete a logged game from Recent battles', async () => {
   await ui.logResult('W'); await ui.logResult('L');
   await ui.deleteBattle(0); expect(/Battle deleted/i.test(await ui.toast()), 'no "Battle deleted" toast');
   const g = await ui.savedGames(); expect(g.length === 1 && g[0].r === 'W', 'the newest game was not the one deleted: ' + JSON.stringify(g));
-  expect(/1-0 overall/i.test(await ui.foldText('Battle log')), 'record did not drop by one');
+  expect(/1[–-]0 overall/i.test(await ui.foldText('Battle log')), 'record did not drop by one');
   await close(); });
 
 t('LOG-05', 'log a game from a Showdown replay (paste or file); errors for bad logs', async () => {

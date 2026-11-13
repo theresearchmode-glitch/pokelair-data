@@ -54,9 +54,24 @@ export default (ui, pg) => {
     // ---- plan views ----
     planSwitchShown: async () => false, // the new page has tabs under the plan on every width, no Plan/Speed/Damage switch
     planSwitch: () => NOT('the phone Plan / Speed / Damage switch (the new page uses tabs under the plan on every width)'),
-    async openFold(name, open = true) { const k = TABS[String(name).toLowerCase()]; if (k) return tab(k, open); if (/watch out/i.test(name)) { if (!open) NOT('closing Watch out (always open, no fold)'); return; } NOT('fold ' + name); },
+    // ---- Battle log (piece 4a): always open on the page; Your record and the replay box are sheets ----
+    // the six pick buttons live in a sheet (mock-up: "the plan's four … (tap to change)"); open it first
+    logChips: async () => { if (!(await pg.$('.np-sheet .bt-lsheet'))) { await closeSheet(); await click('[data-btlfour]', 500); } return pg.evaluate(() => [...document.querySelectorAll('.bt-lp')].map(e => ({name: e.querySelector('span').innerText.replace(/\s+/g, ' ').trim(), on: e.getAttribute('aria-pressed') === 'true', order: e.querySelector('small').innerText.trim()}))); },
+    async logPick(name) { if (!(await pg.$('.np-sheet .bt-lsheet'))) { await closeSheet(); await click('[data-btlfour]', 500); } const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('.bt-lp')].find(e => e.querySelector('span').innerText.replace(/\s+/g, ' ').trim() === n); if (!e) return false; e.click(); return true; }, name); if (!ok) throw new Error('no log chip ' + name); await pg.waitForTimeout(400); },
+    async logResult(r) { await closeSheet(); await click(`[data-btlres="${r}"]`, 700); },
+    logResultEnabled: r => pg.evaluate(r => { const e = document.querySelector(`[data-btlres="${r}"]`); return e ? !e.disabled : null; }, r),
+    async logGame(result, four) { if (four) { for (const c of await A.logChips()) if (c.on) await A.logPick(c.name); for (const n of four) await A.logPick(n); } await A.logResult(result === 'W' || /win/i.test(result) ? 'W' : 'L'); },
+    async recentBattles() { await closeSheet(); await click('[data-btrecord]', 500); return pg.evaluate(() => [...document.querySelectorAll('.bt-rlist li')].map(e => e.innerText.replace(/\s+/g, ' ').trim())); },
+    async deleteBattle(i = 0) { await closeSheet(); await click('[data-btrecord]', 500); const ok = await pg.evaluate(i => { const e = [...document.querySelectorAll('[data-btldel]')][i]; if (!e) return false; e.click(); return true; }, i); if (!ok) throw new Error('no battle ' + i); await pg.waitForTimeout(500); },
+    async pasteReplay(text) { if (!(await pg.$('.np-sheet [data-btrepin]'))) { await closeSheet(); await click('[data-btreplay]', 500); } await pg.fill('[data-btrepin]', text); await click('[data-btrepgo]', 700); },
+    async uploadReplay(path) { if (!(await pg.$('.np-sheet [data-btrepin]'))) { await closeSheet(); await click('[data-btreplay]', 500); } await pg.setInputFiles('[data-btrepfile]', path); await pg.waitForTimeout(900); },
+    replayMessage: () => pg.evaluate(() => { const e = document.querySelector('[data-btrepout]'); return e ? e.innerText.trim() : null; }),
+    savedGames: () => ui.peek('(S.log||[]).map(g=>({r:g.r,b:g.b.slice(),o:(g.o||[]).slice()}))'),
+    async openFold(name, open = true) { if (/^(battle log|recent battles|log a game)/i.test(name)) return; const k = TABS[String(name).toLowerCase()]; if (k) return tab(k, open); if (/watch out/i.test(name)) { if (!open) NOT('closing Watch out (always open, no fold)'); return; } NOT('fold ' + name); },
     async isFoldOpen(name) { const k = TABS[String(name).toLowerCase()]; if (k) return pg.evaluate(k => { const b = document.querySelector(`[data-bttab="${k}"]`); return b ? b.getAttribute('aria-expanded') === 'true' : null; }, k); if (/watch out/i.test(name)) NOT('remembering Watch out open/closed (always open)'); NOT('fold ' + name); },
-    async foldText(name) { const k = TABS[String(name).toLowerCase()]; if (k) { await tab(k, true); return pg.evaluate(() => { const p = document.querySelector('.bt-pane'); return p ? p.innerText.replace(/\s+/g, ' ').trim() : ''; }); }
+    async foldText(name) { if (/^battle log/i.test(name)) { await closeSheet(); let t = await pg.evaluate(() => { const e = document.querySelector('.bt-log'); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; });
+        if (await pg.$('[data-btrecord]')) { await click('[data-btrecord]', 500); t += ' ' + await pg.evaluate(() => { const e = document.querySelector('.np-sheet .bt-rec'); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }); await closeSheet(); } return t; }
+      const k = TABS[String(name).toLowerCase()]; if (k) { await tab(k, true); return pg.evaluate(() => { const p = document.querySelector('.bt-pane'); return p ? p.innerText.replace(/\s+/g, ' ').trim() : ''; }); }
       if (/watch out/i.test(name)) return pg.evaluate(() => { const w = document.querySelector('.bt-watch'); return w ? w.innerText.replace(/\s+/g, ' ').trim() : ''; }); NOT('fold ' + name); },
     async battleSpeedOrder() { await tab('spd', true); return pg.evaluate(() => [...document.querySelectorAll('.bt-spd li')].map(li => { const nm = li.querySelector('.nm'); const t = nm.cloneNode(true); t.querySelectorAll('small,.sd').forEach(x => x.remove());
       return {name: t.innerText.replace(/\s+/g, ' ').trim(), side: li.classList.contains('me') ? 'you' : 'them', speed: +li.querySelector('.v').innerText.replace(/\D/g, '')}; })); },
@@ -70,7 +85,7 @@ export default (ui, pg) => {
   };
   // the other Battle pages: every helper the current adapter has that isn't wired here names itself as missing
   const OTHER = ['mainTab', 'tapMainTab', 'openMenu', 'menuGroup', 'tapMenu', 'toolSwitch', 'toolSwitchChosen', 'toolSwitchKey', 'opponentPictures', 'buttonTop', 'doubleTap', 'trackChartLines', 'scrollToEnd', 'focusInSheet',
-    'logChips', 'logPick', 'logResult', 'logResultEnabled', 'logGame', 'recentBattles', 'deleteBattle', 'pasteReplay', 'uploadReplay', 'replayMessage', 'savedGames', 'quickLogOpen', 'quickLogLead', 'quickLogResult', 'quickLogUndo', 'quickLogText',
+    'quickLogOpen', 'quickLogLead', 'quickLogResult', 'quickLogUndo', 'quickLogText',
     'calcPick', 'calcMove', 'calcOtherMove', 'calcMoveStrips', 'calcSet', 'calcSetValue', 'calcSetChoices', 'calcSwap', 'calcResult', 'calcPokemonGroups', 'speedOrder', 'speedRowText', 'openInfoSheet', 'openDialog', 'pickedTypes', 'tapType', 'clearTypes',
     'lookUpPokemon', 'typesUnder', 'tapAttackingType', 'typeRowText', 'typeGridShown', 'waitTestRun', 'testRunCards', 'testRunPractice', 'testRunCopy', 'testRunNoAnswer', 'calcResultOnly', 'calcPinnedBar', 'tapCalcPinnedBar', 'calcResultOnScreen',
     'reloadWithout', 'practicePick', 'practiceMine', 'practiceScore', 'matchupsView', 'threatRows', 'tapThreat', 'scoutSheet', 'matchupsText', 'matchupGrid', 'isPressed', 'isDisabled'];

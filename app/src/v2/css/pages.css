@@ -980,3 +980,27 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    row taller, and the gap above the plan steps down from 40+40 to 24+24 */
 .bt-labrow .np-link{margin-block:calc(var(--s2) * -1)}
 @media (max-width:379px){.bt-plan{padding-top:var(--s6);margin-top:var(--s6)}}
+/* Battle piece 4a (Nov 12): the Battle log and its sheets */
+.bt-log{display:grid;gap:var(--s4);margin-top:var(--s10);padding-top:var(--s8);border-top:1px solid var(--rule)}.bt-log h2{font-size:var(--t24);margin:0}
+.bt-lrec{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin-top:var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bt-lrec b{font-size:var(--t20);color:var(--ink);margin-right:var(--s1)}
+.bt-lpicks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2)}
+.bt-lp{display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-height:var(--tap);padding:var(--s2) var(--s1);border:0;background:none;color:inherit;font:600 var(--t13)/1.5 var(--b);text-align:center;cursor:pointer}
+.bt-lp>span{min-width:0;overflow-wrap:anywhere}.bt-lp small{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text)}.bt-lp:not(.on){opacity:.62}.bt-lp.on{opacity:1}
+.bt-lacts{align-items:center;gap:var(--s3)}.bt-lacts .fine{flex:1 1 100%;margin:0}.bt-lacts .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
+.bt-rec h2,.bt-rep h2{font-size:var(--t24);margin:0}.bt-rep textarea{width:100%;margin-top:var(--s4);font:400 var(--t15)/1.5 var(--b)}.bt-rep .row{margin-top:var(--s3)}
+.bt-rrows,.bt-rlist{list-style:none;margin:var(--s2) 0 0;padding:0}
+.bt-rrows li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 48px 40px;gap:var(--s3);align-items:center;min-height:36px;border-bottom:1px solid var(--rule);font:500 var(--t15)/1.5 var(--b)}
+.bt-rrows .bar{display:block;height:8px;width:var(--w);background:var(--plot);transform:skewX(var(--slant))}.bt-rrows b{text-align:right;font-variant-numeric:tabular-nums}.bt-rrows small{color:var(--ink-3);font:400 var(--t13)/1.5 var(--b);text-align:right}
+.bt-rlist li{display:grid;grid-template-columns:48px 56px minmax(0,1fr) auto;gap:var(--s3);align-items:center;min-height:var(--tap);border-bottom:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b)}
+.bt-rlist .r.w{color:var(--good-text)}.bt-rlist .r.l{color:var(--bad-text)}.bt-rlist span{color:var(--ink-2)}.bt-rlist .b{color:var(--ink);min-width:0;overflow-wrap:anywhere}.bt-rlist .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
+@media (max-width:519px){.bt-lpicks{grid-template-columns:repeat(3,minmax(0,1fr))}.bt-rlist li{grid-template-columns:44px minmax(0,1fr) auto}.bt-rlist li>span:not(.b){display:none}}
+.bt-lfour{display:block;min-height:var(--tap);text-align:left;font:400 var(--t15)/1.5 var(--b)}.bt-lfour b{font-weight:700}
+.bt-lsheet h2{font-size:var(--t24);margin:0}.bt-lsheet .bt-lpicks{margin-top:var(--s4)}.bt-lsheet .row{margin-top:var(--s4)}
+/* the log as the mock-up's single band (Nov 12): text left, Win / Loss / replay right on 820+ */
+.bt-log{display:grid;gap:var(--s4);align-items:center;margin-top:0;border-top:0;padding-top:var(--s8)}
+.bt-lsay{margin-top:var(--s2);font:400 var(--t17)/1.5 var(--b);color:var(--ink-2)}.bt-lgl .fine{margin-top:var(--s1)}
+.bt-lfour{display:inline;min-height:0;padding:0;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:4px;position:relative}
+.bt-lfour::after{content:"";position:absolute;inset:-12px -4px}
+.bt-lacts{gap:var(--s3);align-items:center}.bt-lacts .np-btn2{min-width:120px}
+@media (min-width:820px){.bt-log{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s10)}}
+.bt-lacts{display:flex;flex-wrap:wrap}
