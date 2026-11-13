@@ -150,3 +150,6 @@ Mock-ups only (CSS added in the screenshot script; the site's code is unchanged)
   820 numbers were wrong. Fixed version: wide layouts only from 1180; 820 keeps today's stacked cards and 1-column Cores inside the
   tabs: 2,374 / 2,394 (one team open) / 2,548. 1180: 1,559 / 1,676 / 1,838, names in full. Cores show 8 first (was 7) in B so
   2 columns end even. Preview v95 (394 files) carries the two heading fixes.
+- Side-by-side finished for every approved mock-up in docs/rebuild/mocks/out: first visit / empty My Team differs (i40: the
+  mock-up's six empty spots and "Or start from a winner" grid are not built; no decision found); forms info sheet has its strip,
+  Compare all 3 and Forms tab. Not compared: Compare, All Suggestions (no approved mock-up), Ratings, Speed Tiers (not rebuilt).
