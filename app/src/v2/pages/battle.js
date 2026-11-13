@@ -105,7 +105,7 @@ V2.btUi.tab = V2.btUi.tab || (() => { const t = LS.get('cc2.v2.bttab', null); re
 V2.btChip = (attr, on, t) => `<button type="button" class="np-chip" ${attr} aria-pressed="${!!on}">${V2.esc(t)}</button>`;
 V2.battleTabs = (theirs, P) => { if (!P) return ''; const n = P.chosen.length * theirs.length, t = V2.btUi.tab;
   const b = (k, lab) => `<button type="button" class="bt-tab${t === k ? ' on' : ''}" data-bttab="${k}" aria-expanded="${t === k}" aria-controls="bt-pane">${lab}</button>`; /* no counts beside the names (Sim, Nov 12: too wordy) */
-  return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', 'Damage Both Ways')}${b('spd', 'Who Moves First')}${b('deep', 'Deeper Read')}</nav>`; };
+  return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', '<span>Damage</span> <span>Both Ways</span>')}${b('spd', '<span>Who Moves</span> <span>First</span>')}${b('deep', '<span>Deeper</span> <span>Read</span>')}</nav>`; };
 V2.battleDamage = (theirs, P) => { const E = V2.esc, C = P.chosen, F1 = P.field || {};
   const pc = h => h ? (h.r.max < h.r.hp ? dmgP(100 * h.r.max / h.r.hp) : String(Math.min(999, Math.round(100 * h.r.max / h.r.hp)))) + '%' : '–';
   const one = h => h && h.r && koShort(h.r) === 'OHKO'; // knocks out in one hit on every roll (not when a Focus Sash holds)

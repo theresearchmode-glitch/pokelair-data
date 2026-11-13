@@ -959,6 +959,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .bt-dv b.ko-good{color:var(--good-text)}.bt-dv b.ko-bad{color:var(--bad-text)}
 }
 /* phones (Nov 12): the three tabs side by side in even columns, so the bar stays two lines tall instead of four (C1 height) */
+/* Sim, Nov 13 (Look Q3 B): on phones every tab name sits on two lines, so the row is even */
+@media (max-width:519px){.bt-tab{white-space:normal;text-align:left;align-items:center}.bt-tab>span{display:block}.bt-tab{flex-direction:column;align-items:flex-start;justify-content:center}}
 @media (max-width:519px){.bt-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s3);margin-top:var(--s4)}
   .bt-tab{white-space:normal;align-items:flex-start;text-align:left;padding:var(--s1) 0;font-size:var(--t15)}.bt-tab small,.bt-hint{display:none}}
 .bt-oallb{margin-top:var(--s4)}.bt-acts+.fine{margin-top:var(--s2)}
