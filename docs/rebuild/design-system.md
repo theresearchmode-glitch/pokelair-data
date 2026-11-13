@@ -10,7 +10,12 @@ sizes on the scale) as the mock-ups are made, and anything that changes is noted
 1. Real data, nothing lost: every feature in docs/rebuild/inventory/ survives and passes its behaviour test.
 2. The Pokémon carry the page: their art is the largest, most vivid thing on every screen.
 3. Readable first: contrast passes in light and Dusk, every Pokémon named, no shrinking one label to fit.
-4. Colour is borrowed from the Pokémon on screen; fixed colours only for the logo blue, section marks, bands and verdicts.
+4. Colour is borrowed from the Pokémon on screen (floor pools, the selected panel, the box wallpaper); that is the theme and
+   stays as it is. Fixed colours: the logo blue, section marks, bands, verdicts, and the meaning colours (Sim, Nov 12, 8:46 PM):
+   a small fixed set, red = danger, green = good, amber = caution, used ONLY for small status marks (tags, verdict words,
+   warning labels, damage cells), never for large areas or backgrounds.
+4b. Colour must always say something (Sim, Nov 12, 8:46 PM). Every colour on a screen means one thing: a type, a danger, a
+   band, a verdict, the selected Pokémon, the Pokémon's own colour. A colour with no meaning is not added.
 5. One coloured surface per screen at most (the hero panel, the box wallpaper, the score lockup), page + one card colour,
    no boxes inside boxes.
 6. NastyPlot's voice in fixed places: logo, slanted Unbounded headlines with the blue second half, the tilted ray panel,
@@ -39,7 +44,10 @@ Bands (Strength Score; the "never red" rule was removed by Sim, Nov 12, 8:36 PM;
 lighter versions (#4FB2F0, #C9B0FF, #A39CA6, #FFD166, #B8AA9C).
 
 Verdicts: Favoured / Beats it --good #2E9E5B (Dusk #5FD08F); Handles it --plot; Even match / Shaky --mid #E9A800
-(Dusk #FFD166); Unfavoured / No answer --low #8A7C6E (Dusk #B8AA9C). Red is not used for any verdict or score.
+(Dusk #FFD166); Unfavoured / No answer --low #8A7C6E (Dusk #B8AA9C).
+Meaning colours (Sim, Nov 12, 8:46 PM; small status marks only, rule 4): danger --bad #D93A3A, text --bad-text #B3261E
+(6.26 on --bg) / Dusk --bad #FF7A70, text #FF8A80 (8.15); good = --good / --good-text; caution = --mid / --mid-text.
+Where red goes is shown to Sim with pictures first (first use: Battle's high-danger warnings, "Hurts you", the Unfavoured verdict).
 
 Measured contrast (Nov 10, WCAG ratio on --bg): light ink-2 8.98, ink-3 5.63 (5.17 on --wash), --plot 4.53 (passes, just;
 use --plot-text #0068AD 5.61 for small link text); Dusk ink-2 9.99, ink-3 6.46 (5.82 on --surface), --plot 7.36.
@@ -105,7 +113,7 @@ Corrections to the reference README:
 - Page gutters: 16 (phone) / 32 (tablet) / 96 (desktop 1440+), max content width 1440, centred.
 - Breakpoints: 700 (phone to tablet), 1000 (two-column work area), 1440 (three columns). Layouts are fluid between them
   and must hold at every width from 320 to 2560 and while the window is being dragged.
-- Corners: 4 / 6 / 10 / 18 / round. Round is fine where it fits (Sim, Nov 12, 8:43 PM; was "round only for avatars and slider knobs, never for chips or buttons"). Claude's suggestion, not a rule: keep buttons, plates and chips slanted (part of the look); round suits count badges, track dots, the day/night switch, small tips.
+- Corners: 4 / 6 / 10 / 18 / round. Round only in chosen spots (Sim, Nov 12, 8:46 PM; was "round only for avatars and slider knobs"): small count badges, dots on slider tracks, the day/night switch, small pop-up tips, and Pokémon circles in compact lists. Buttons, plates and chips stay slanted: they are part of the WOW.
 - Slant: one angle, -24deg skew for marks (the 18x8 team mark, eyebrow mark, nav underline); plates and buttons use the
   clip-path slant (11-14px offset at each end). Tilted panels: skewY(-7deg).
 - Tap targets: 44px minimum on touch, 36px on mouse screens.

@@ -33,7 +33,7 @@ V2.battleTurn = P => { const T = P && P.turnOne; if (!T || !T.beats || !T.beats.
 V2.battleEmpty = (mine, theirs) => mine.length < 4 ? `<p class="bt-empty">Add at least 4 Pokémon on My Team first. <a class="np-link" href="#team">Go to My Team ›</a></p>`
   : !theirs.length ? `<p class="bt-empty">Everything below fills in once their six is in: which four to bring, who leads, and turn one.</p>` : '';
 V2.pages.battle = {place: 'battle', draw() { const {mine, theirs, P} = V2.btPlan();
-  return `<div class="bt2">${V2.battleHead(mine, theirs, P)}<section class="bt-body"><div class="bt-sixes">${V2.battleTheirs(theirs, P)}${V2.battleMine(mine, P)}</div>${V2.battleTurn(P)}</section>${P ? `<section class="bt-plan"><div class="bt-pl">${V2.battleRead(theirs, P)}</div>${V2.battleWatch(P)}</section>` : ''}${V2.battleEmpty(mine, theirs)}</div>`; }};
+  return `<div class="bt2">${V2.battleHead(mine, theirs, P)}<section class="bt-body"><div class="bt-sixes">${V2.battleTheirs(theirs, P)}${V2.battleMine(mine, P)}</div>${V2.battleTurn(P)}</section>${P ? `<section class="bt-plan"><div class="bt-pl">${V2.battleRead(theirs, P)}</div>${V2.battleWatch(P)}</section>` : ''}${V2.battleTabs(theirs, P)}${V2.battleDetail(mine, theirs, P)}${V2.battleEmpty(mine, theirs)}</div>`; }};
 
 // ---------- their six: a sheet with six name boxes and the top tournament teams (today's entry ways) ----------
 V2.btOppSheet = () => { const E = V2.esc, opp = S.opp.slice(0, 6); while (opp.length < 6) opp.push('');
@@ -74,3 +74,46 @@ V2.battleRead = (theirs, P) => { if (!P) return ''; const E = V2.esc, W = P.watc
   return `<div class="bt-read"><h2 class="u">The read</h2><p class="bt-sub">What decides this match</p>${big}${fo}</div>${real}`; };
 V2.battleWatch = P => { if (!P) return ''; const E = V2.esc, W = P.watch || [];
   return `<div class="bt-watch"><h2 class="u">Watch out</h2><p class="bt-sub">${W.length ? `${W.length} of their six can shut something down` : 'Nothing on their side shuts down your four'}</p>${W.length ? `<div class="bt-rows">${W.map(w => `<div class="bt-r">${V2.mon(w.o.p.n, {iw: 52, bare: true})}<div><b>${V2.rowName(V2.disp(w.o.p.n))}</b>${w.out.map(([c, t, d]) => `<p class="tg"><em class="${c === 'lo' ? 'lo' : c === 'hi' ? 'hi' : 'mid'}">${E(t)}</em>${E(d)}</p>`).join('')}</div></div>`).join('')}</div>` : '<p class="fine">Nothing on their side shuts down your four.</p>'}</div>`; };
+
+// ---------- piece 3: the detail tabs (mock: one pane open at a time, closed until you open one) ----------
+// Damage both ways, Who moves first and Deeper read, from battlePlan (damage, speed, prio, r) and today's shared helpers
+// (koShort / dmgP / koText / dmgRange, fieldWords, archMatchup, deeperThreats). The switches are today's: they change bmUi.
+V2.btUi.tab = V2.btUi.tab || null;
+V2.btChip = (attr, on, t) => `<button type="button" class="np-chip" ${attr} aria-pressed="${!!on}">${V2.esc(t)}</button>`;
+V2.battleTabs = (theirs, P) => { if (!P) return ''; const n = P.chosen.length * theirs.length, t = V2.btUi.tab;
+  const b = (k, lab, small) => `<button type="button" class="bt-tab${t === k ? ' on' : ''}" data-bttab="${k}" aria-expanded="${t === k}" aria-controls="bt-pane">${lab}<small>${small}</small></button>`;
+  return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', 'Damage both ways', n + ' pairs')}${b('spd', 'Who moves first', P.speed.length + ' Pokémon')}${b('deep', 'Deeper read', 'pair grid')}<span class="bt-hint">${t ? 'Tap it again to close' : 'Open one for the detail'}</span></nav>`; };
+V2.battleDamage = (theirs, P) => { const E = V2.esc, C = P.chosen, F1 = P.field || {};
+  const pc = h => h ? (h.r.max < h.r.hp ? dmgP(100 * h.r.max / h.r.hp) : String(Math.min(999, Math.round(100 * h.r.max / h.r.hp)))) + '%' : '–';
+  const one = h => h && h.r && h.r.min >= h.r.hp; // knocks out in one hit on every roll
+  const cell = (h, side) => `<div class="bt-hx ${side}"><span class="s">${side === 'y' ? 'You' : 'Them'}</span><b class="${one(h) ? (side === 'y' ? 'ko-good' : 'ko-bad') : ''}">${pc(h)}</b><i>${h ? E(koShort(h.r)) : ''}</i><span class="mv">${h ? E(h.mv.name) : ''}</span></div>`;
+  const wx = [['auto', `Leads${F1.weather || F1.terrain ? ': ' + fieldWords(F1) : ': none'}`], ['', 'No weather'], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']].map(([k, t]) => V2.btChip(`data-btw="${k}"`, bmUi.weather === k, t)).join('');
+  const head = `<tr><th scope="col">Your four ↓ · their six →</th>${theirs.map(o => `<th scope="col">${V2.mon(o.p.n, {iw: 40, bare: true})}<span>${V2.rowName(o.d)}</span></th>`).join('')}</tr>`;
+  const rows = C.map((m, i) => `<tr><th scope="row">${V2.mon(m.p.n, {iw: 40, bare: true})}<span>${V2.rowName(m.d)}</span></th>${theirs.map((o, j) => { const {a, d} = P.damage[i][j];
+    return `<td title="${a ? `${E(m.d)} ${E(a.mv.name)}: ${E(dmgRange(a.r))}, ${E(koText(a.r))}` : ''}${d ? ` · ${E(o.d)} ${E(d.mv.name)}: ${E(dmgRange(d.r))}, ${E(koText(d.r))}` : ''}">${cell(a, 'y')}${cell(d, 't')}</td>`; }).join('')}</tr>`).join('');
+  return `<h2 class="u">Damage both ways</h2><p class="bt-sub">Your four against their six: your best hit on them, and their best hit on you</p>
+    <div class="bt-chips" role="group" aria-label="Weather">${wx}</div><div class="bt-chips" role="group" aria-label="Intimidate">${V2.btChip('data-bti="intMe"', bmUi.intMe, "You're Intimidated")}${V2.btChip('data-bti="intThem"', bmUi.intThem, "They're Intimidated")}</div>
+    <div class="bt-tw"><table class="bt-dg">${head}${rows}</table></div>
+    <p class="fine">Top roll as % of HP, each side's usual set, with how many hits it takes: OHKO, 2HKO, 3HKO (a % = only that share of rolls do it). Green: you knock it out in one hit; red: they knock yours out in one hit.</p>`; };
+V2.battleSpeed = P => { const E = V2.esc, rows = P.speed, mx = P.speedMax, sd = P.spDrop;
+  const tg = [['tw', 'Your Tailwind'], ['twOpp', 'Their Tailwind'], ['icy', sd.length ? `Them −1 (after your ${sd[0]})` : 'Them −1'], ['par', "They're paralyzed"], ['tr', 'Trick Room']].map(([k, t]) => V2.btChip(`data-bts="${k}"`, bmUi[k], t)).join('');
+  const prio = P.prio.map(q => `${q.move} ${q.prio > 0 ? '+' : '−'}${Math.abs(q.prio)}${q.grassy ? ' (Grassy Terrain)' : ''} (${q.who})`);
+  return `<h2 class="u">Who moves first</h2><p class="bt-sub">${bmUi.tr ? 'Slowest moves first (Trick Room)' : 'Fastest first'} · your four and their six</p><div class="bt-chips" role="group" aria-label="Speed conditions">${tg}</div>
+    ${P.weather ? `<p class="fine">Weather: ${E(P.weather)} (set it under Damage both ways).</p>` : ''}
+    <ol class="bt-spd">${rows.map(q => `<li class="${q.me ? 'me' : ''}">${V2.mon(q.x.p.n, {iw: 40, bare: true})}<div class="nm"><span class="sd">${q.me ? 'You' : 'Them'}</span> ${V2.rowName(q.x.d)}<small>${[q.s && q.s.scarf ? 'Choice Scarf' : '', q.wxUp ? E(q.ab) : '', q.unb ? `${q.unb} after its item` : '', q.tie ? 'Speed tie' : ''].filter(Boolean).join(' · ') || '&nbsp;'}</small></div><i class="bar" style="--w:${Math.max(4, 100 * q.v / mx).toFixed(1)}%" aria-hidden="true"></i><b class="v u">${q.v}</b></li>`).join('')}</ol>
+    ${prio.length ? `<p class="fine">Moves that skip the Speed order (higher bracket goes first, Speed only breaks ties inside a bracket): ${E(prio.join(', '))}.</p>` : ''}
+    <p class="fine">Your side: your items (and your spreads where you set them). Their side assumed: the most common spreads, natures and items. Ties are a coin flip.</p>`; };
+V2.battleDeep = (mine, theirs, P) => { const E = V2.esc, r = P.r; let notes = [], thr = [];
+  try { notes = r.A && r.B ? archMatchup(r.A, r.B, mine) : []; } catch (e) {} try { thr = deeperThreats(r, theirs); } catch (e) {}
+  const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(Math.round(v * 10) / 10);
+  const grid = `<div class="bt-tw"><table class="bt-mg"><tr><th scope="col">You ↓ · them →</th>${theirs.map(o => `<th scope="col" title="${E(o.d)}">${V2.mon(o.p.n, {iw: 36, bare: true})}</th>`).join('')}</tr>${mine.map((m, i) => `<tr><th scope="row">${V2.rowName(m.d)}</th>${theirs.map((o, j) => { const v = r.h.M[i][j]; return `<td class="${v >= .75 ? 'p' : v <= -.75 ? 'm' : ''}">${sg(v)}</td>`; }).join('')}</tr>`).join('')}</table></div>`;
+  return `<h2 class="u">Deeper read</h2><p class="bt-sub">Archetypes, their threats, the full matchup grid</p><div class="bt-deep"><div>
+    ${r.A && r.B ? `<p class="bt-av"><span>You: ${E(r.A.label)}</span><span class="vs">vs</span><span>Them: ${E(r.B.label)}</span></p>` : ''}
+    ${notes.map(n => `<p class="bt-note"><em class="${n.tone === 'good' ? 'good' : n.tone === 'bad' ? 'bad' : 'mid'}">${n.tone === 'good' ? 'Edge' : n.tone === 'bad' ? 'Watch' : 'Note'}</em><b>${E(n.t)}</b>: ${E(n.d)}</p>`).join('')}
+    ${thr.length ? thr.map(t => `<p class="bt-note"><em class="${t.ans.length ? 'mid' : 'bad'}">Watch</em><b>${E(theirs[t.j].d)}</b>: ${E(t.move)} hits ${E(t.hit.map(i => mine[i].d).join(', '))} super effectively. ${t.ans.length ? 'Answer: ' + E(t.ans.map(i => mine[i].d).join(', ')) + '.' : 'No clean answer in your four.'}</p>`).join('') : '<p class="bt-note"><em class="good">Clear</em>None of their Pokémon threatens several of your picks at once.</p>'}</div>
+    <div>${grid}<p class="fine">Columns, left to right: ${E(theirs.map(o => o.d).join(', '))}. Plus means you hit them harder than they hit you, with each side's most common moves and abilities. Speed breaks ties.</p></div></div>`; };
+V2.battleDetail = (mine, theirs, P) => { if (!P || !V2.btUi.tab) return ''; const t = V2.btUi.tab;
+  return `<section class="bt-pane" id="bt-pane">${t === 'dmg' ? V2.battleDamage(theirs, P) : t === 'spd' ? V2.battleSpeed(P) : V2.battleDeep(mine, theirs, P)}</section>`; };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bttab],[data-btw],[data-bts],[data-bti]'); if (!b) return; const d = b.dataset;
+  if (d.bttab) { V2.btUi.tab = V2.btUi.tab === d.bttab ? null : d.bttab; V2.redraw(); return; }
+  if (d.btw != null) bmUi.weather = d.btw; else if (d.bts) bmUi[d.bts] = !bmUi[d.bts]; else if (d.bti) bmUi[d.bti] = !bmUi[d.bti]; V2.redraw(); });
