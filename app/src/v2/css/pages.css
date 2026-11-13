@@ -73,7 +73,7 @@
 @media (min-width:900px){@container (min-width:560px){.tm-sug li{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
   .tm-sug li>.np-eyebrow{grid-area:k;align-self:end}.tm-sug .tm-mv{grid-area:mv;align-self:start;flex-direction:column;gap:var(--s1)}.tm-sug .tm-swaps{display:grid;gap:var(--s2);grid-area:sw;display:grid;gap:var(--s2)}.tm-sug li>.np-btn{grid-area:ap;align-self:center;margin:0}}}
 @media (max-width:379px){.tm-sw img{width:36px;height:36px}.tm-sw{font-size:var(--t13)}}
-@media (max-width:459px){.tm-hero .np-score{flex-wrap:wrap;row-gap:0}.tm-hero .np-score .w{padding-bottom:0}}
+@media (max-width:459px){.tm-hero .np-score,.bd-score{flex-wrap:wrap;row-gap:0}.tm-hero .np-score .w,.bd-score .w{padding-bottom:0}} /* Build's score too (Nov 13 second look: 'Tournament ready' ran past the edge at 320-430) */
 @media (max-width:439px){.tm-jump{gap:var(--s3)}.tm-jump small{display:none}}
 /* Team Sheet (opens as a sheet over My Team): 3 x 2 on desktop, 2 across on iPad, 1 on phones */
 .tm-tsbtn{margin-left:auto;min-height:var(--tap);font:600 var(--t15)/1.2 var(--b);color:var(--plot-text);white-space:nowrap}
@@ -733,6 +733,8 @@
 .bd2>*{margin-left:var(--gut);margin-right:var(--gut)}
 .bd-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s6);padding-top:var(--s4)}
 .bd-head h1{font-size:var(--d64);margin:var(--s3) 0 0;white-space:nowrap}.bd-head h1 .pl{color:var(--plot-text)}
+/* 700-759 (Nov 13 second look): at 700 the one-line headline was 5px wider than the column; it may wrap there, never splitting 'a team.' */
+@media (min-width:700px) and (max-width:759px){.bd-head h1{white-space:normal}.bd-head h1 .pl{white-space:nowrap}}
 .bd-side{text-align:right;max-width:360px}.bd-side p{font-size:var(--t15);line-height:1.5;color:var(--ink-2);margin:0}.bd-side .np-link{margin-top:var(--s1)}
 .bd-opts{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:var(--s4) var(--s8);align-items:end;margin-top:var(--s5);padding-top:var(--s4);padding-bottom:var(--s4);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 .bd-lab{display:block;margin-bottom:var(--s2);font:600 var(--t13)/1 var(--b);color:var(--ink-2);white-space:nowrap}.bd-lab span{font-weight:500;color:var(--ink-3)}
