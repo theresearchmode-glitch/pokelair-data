@@ -96,3 +96,11 @@ Later fixes (by 2:07 AM, on the branch; not on the Preview yet):
 Labelled pictures ready: Look Q1 (Build phone sprites), Look Q2 (Compare colours), Look Q3 (Battle tabs on phones).
 Look Q4: Build after building on phones: A raise the limit (4,857) or B the jump bar becomes tabs, one section at a time
 (measured 3,208 / 2,533 / 3,252, all inside 3,700) RECOMMENDED: the bar already looks like tabs; nothing is more than one tap away.
+
+Small notes (no question needed):
+- 320 footer: "Send Feedback" sits alone on its line. That follows your Nov 12 option D (links share rows to save height),
+  so I left it.
+- Home's "Or build around your favourite Pokémon →" on phones: centred text with its arrow far right (an idea: arrow
+  right after the words).
+- All Suggestions for the sample team shows one ±0 card with a full Apply button; on My Team a ±0 swap gets no card (your
+  A3). Logged as i27 (differences nobody approved).
