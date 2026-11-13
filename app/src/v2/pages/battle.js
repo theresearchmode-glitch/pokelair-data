@@ -122,7 +122,7 @@ V2.battleDamage = (theirs, P) => { const E = V2.esc, C = P.chosen, F1 = P.field 
     <div class="bt-chips" role="group" aria-label="Weather">${wx}</div><div class="bt-chips" role="group" aria-label="Intimidate">${V2.btChip('data-bti="intMe"', bmUi.intMe, "You're Intimidated")}${V2.btChip('data-bti="intThem"', bmUi.intThem, "They're Intimidated")}</div>
     <div class="bt-tw bt-dgw"><table class="bt-dg">${head}${rows}</table></div>${list}
     <p class="fine">Top roll as % of HP, each side's usual set, with how many hits it takes: OHKO, 2HKO, 3HKO (a % = only that share of rolls do it). Blue: you knock it out in one hit; red: they knock yours out in one hit.</p>`; };
-// Who moves first as a speed line (Sim chose B1, Nov 12, 9:30 PM): desktop and iPad (820+), the ten in move order on one floor, first mover
+// Who moves first as a speed line (Sim chose B1, Nov 12, 9:30 PM): desktop and iPad sideways (1024+), the ten in move order on one floor, first mover
 // on the left, each with its Speed number above (yours in blue) on one level line; phones keep the bars (ten can't stand side by side)
 V2.battleSpeedLine = rows => { const E = V2.esc; if (!rows.length) return '';
   const note = q => [q.s && q.s.scarf ? 'Choice Scarf' : '', q.wxUp ? E(q.ab) : '', q.unb ? `${q.unb} after its item` : ''].filter(Boolean).join(' · ');
