@@ -21,3 +21,16 @@ turnOneData (not shared yet; battlePlan calls it inside try, so in the new site 
 7. 20-types.js: typeGroups, typeOffence -> 20-types-data.js.
 Not shared: the arena files (74/75-arena-*: today's look only); 42-archetype-guides.js belongs to Meta, not Battle.
 Open (not sure): where bmUi's toggle state lives; exact split inside renderGauntlet and renderGuides.
+
+## Status (8:21 PM Eastern by the clock): all 7 logic steps DONE (shared with the new site, today's site proven unchanged)
+1. 40-turn-one-data.js (turnOneData): today's page byte-identical; same-battle 170/170.
+2. 46-battle-data.js (bmUi, bmHit, bmSpeed, BM_IMMUNE, BM_WEATHER, bmWatch, battlePlan): byte-identical; 170/170; BATTLE 19/0;
+   runs in the new site (all 19 helpers present; bring 4, turn one, 10 speed rows).
+3. teamRecord -> 26-log-data.js: code identical (one comment moved); LOG 7/0 before and after.
+4. 38-gauntlet-data.js (Test run): byte-identical; TEST 9/0.
+5. 63-practice-data.js: byte-identical; PRAC + BATTLE-05/17 6/0.
+6. 64-track-data.js: byte-identical; TRACK 6/0.
+7. 20-types-data.js (typeGroups, typeOffence, lifted out of renderTypes): 291/291 Types screens identical (experiments/same-types.cjs);
+   TYPES 5/0.
+New site: 51 shared logic files (45 before). Next: the Battle page itself (mock-up docs/rebuild/mocks/battle.tpl.html), piece by
+piece with pictures to Sim; and a new-site adapter for C-battle tests (like v2.B-build.mjs).
