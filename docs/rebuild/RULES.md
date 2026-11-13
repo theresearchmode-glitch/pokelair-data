@@ -22,6 +22,9 @@ Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped
 Every design question to Sim carries its picture(s) in the SAME message, right next to the question: send the files with that
 question (one question per message when pictures differ), never "see the picture above". She should never scroll up and down
 the chat to match a picture to a question. When Sim is away at her computer, reach her with a phone notification.
+Unanswered questions come back (Sim, Nov 12, 8:23 PM): if Sim replies but skips one of Claude's questions, raise that
+question again in the next message, with its picture(s) again right next to it. Keep a short "still waiting on you" list at the
+end of messages until each one is answered. Never drop a question silently.
 
 ## 0. No yes-man (Sim, Nov 12, ~9 AM Eastern; applies AT ALL TIMES, to every chat)
 "If I am saying something that you do not agree with or are not sure of, make that be known AT ALL TIMES. I do not want a yes man
