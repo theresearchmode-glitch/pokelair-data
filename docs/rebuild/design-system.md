@@ -40,7 +40,7 @@ Names are roles, not colours. Light is the default; Dusk is the dark mode ("dusk
 | --plate | #17161A | #ECE8E2 | slanted black plates and the filled button (text: --bg) |
 
 Bands (Strength Score; the "never red" rule was removed by Sim, Nov 12, 8:36 PM; current colours below unchanged until she picks): Top tier --band-top #0078BF, Tournament ready --band-ready #7B4BD6, Solid --band-solid
-#6B6570, Needs work --band-work #E9A800 (text on it: --ink), Missing a basic --band-miss #8A7C6E. Dusk uses the "-ink"
+#6B6570, Needs work --band-work #E9A800 (text on it: --ink), Missing a basic --band-miss = --bad-text (red; Sim, Nov 13, My Team Q3 B; was #8A7C6E). Dusk uses the "-ink"
 lighter versions (#4FB2F0, #C9B0FF, #A39CA6, #FFD166, #B8AA9C).
 
 Verdicts: Favoured / Beats it --good #2E9E5B (Dusk #5FD08F); Handles it --plot; Even match / Shaky --mid #E9A800
