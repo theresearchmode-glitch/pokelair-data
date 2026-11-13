@@ -13,6 +13,8 @@ V2.typeChip = t => `<span class="np-type"${V2.TYPES.includes(t) ? ` style="--tc:
 V2.byName = new Map((typeof ROSTER === 'object' ? ROSTER : []).map(p => [p.n, p]));
 V2.disp = n => { const p = V2.byName.get(n); return p && p.d ? p.d : n.replace(/^(.*)-Mega(?:-(\w+))?$/, (m, b, x) => 'Mega ' + b + (x ? ' ' + x : '')); };
 // a form letter never sits alone on a line ("Charizard Y"); a long Mega name breaks only after "Mega" (Sim, Nov 12)
+// a lone form letter stays with the word before it ('Charizard Y', 'Charizardite Y', 'Charizard Y\'s'; Nov 12 rule), for text built elsewhere
+V2.keepForm = h => String(h).replace(/([A-Za-z]) ([XYZ])(?![A-Za-z])/g, '$1\u00a0$2');
 V2.nameHtml = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span> ${V2.esc(d.slice(5)).replace(/ ([XYZ])$/, '\u00a0$1')}` : `<span class="mg none" aria-hidden="true">&nbsp;</span>${V2.esc(d)}`;
 // a Pokémon's own colour (already normalised: hue kept, saturation 72%+, lightness 56%) as an r,g,b triplet for rgba()
 V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165]; return m[0] + ',' + m[1] + ',' + m[2]; };

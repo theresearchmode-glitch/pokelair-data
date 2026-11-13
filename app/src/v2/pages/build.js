@@ -121,7 +121,7 @@ V2.bdUi = V2.bdUi || {win: null};
 V2.buildWinners = () => { const EV = META.events, E = V2.esc; if (!EV) return '';
   const picks = EV.events.filter(e => e.src === 'official' || e.players >= 64).filter(e => e.top[0] && e.top[0].place === 1).slice(0, 3); if (!picks.length) return '';
   const row = ev => { const t = ev.top[0], key = ev.id + '#0', open = V2.bdUi.win === key, sure = V2.hmUi && V2.hmUi.sure === key;
-    const sets = t.mons.map(m => { const p = byName.get(m.n); return `<li class="bd-set">${V2.mon(m.n, {iw: 48, bare: true})}<div><b>${V2.rowName(p ? p.d : m.n)}</b>${m.i ? ` <span class="bd-at">@ ${E(m.i)}</span>` : ''}
+    const sets = t.mons.map(m => { const p = byName.get(m.n); return `<li class="bd-set">${V2.mon(m.n, {iw: 48, bare: true})}<div><b>${V2.rowName(p ? p.d : m.n)}</b>${m.i ? ` <span class="bd-at">@ ${V2.keepForm(E(m.i))}</span>` : ''}
       <small>${E(m.a || '')}${m.nt ? ' · ' + E(m.nt) : ''}</small><small class="bd-mv">${(m.mv || []).map(E).join(' · ')}</small></div></li>`; }).join('');
     return `<details class="sg2-fold bd-win" data-bdwin="${E(key)}"${open ? ' open' : ''}><summary><span class="bd-wtop"><span class="bd-wk"><b class="u">1st</b>${t.record ? E(t.record) + ' · ' : ''}${E(evDate(ev.date))}${ev.players ? ` · ${ev.players} players` : ''}</span>
       <span class="bd-wev">${E(V2.evTitle(ev.name))}</span></span><span class="bd-wsix" aria-hidden="true">${t.mons.map(m => V2.mon(m.n, {iw: 40, bare: true})).join('')}</span></summary>
