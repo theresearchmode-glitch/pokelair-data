@@ -3,6 +3,16 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 4:50 PM Eastern by the clock; Sim's authority extended to 6:00 PM, summary 5:40 PM)
+- PREVIEW v109 (394 files checked). After v106: Home Q2 B (phones, c1a4ffa) and Home Q3 B (tablets 700-899, 654e55c): a long
+  #1 name (Rillaboom with the bundled data) no longer runs into its neighbours (0 px at 320-1024); Home six tiles use the corner
+  Mega tag (approved A9 rule, eedcf79). Checks after: use 32/0, clicks 0 double, c13 home 0 over, Home tests unchanged.
+- All-page before/after pictures (140 shots): My Team, Build, Battle 0 changed; My Box and Home changed only where intended.
+- Real-font polish, all built pages: spill 47 -> 0 for real problems (3 Home spills fixed by Q3); remaining findings judged
+  (decisions.md 4:04 PM; Top tier night glow approved, line 124).
+- i41 X-10 now POSSIBLY A REAL PHONE ISSUE: touch tap right after Build shows the team lost 2-3 of 10-12 taps (events reach the
+  tile, no click). Desktop mouse hover-first 10/10. Next: Sim tries by hand on her iPhone; scripts experiments/x10-*.mjs.
+
 ## NOW (Nov 13, written 3:43 PM Eastern by the clock; Sim's authority until 5:00 PM)
 - PREVIEW v106 (394 files checked). Since v104: Sim's 2:43 PM 'all recommended' built one at a time with checks: Even Q1 B
   (f4c84ba), Arrows Q1 B (d7f9185), Filled Q1 B (489f6df), Box Q1 B (8eefcca); You Q1 A = no change. Then (v106) the empty
