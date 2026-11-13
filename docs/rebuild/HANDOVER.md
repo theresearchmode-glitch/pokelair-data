@@ -3,6 +3,19 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 2:33 PM Eastern by the clock; Sim's authority until 5:00 PM)
+- PREVIEW v104 (394 files checked): adds Red Q1 C (Clear Team + Saved Teams Delete both red, pages.css after .svt2-del span)
+  and the More menu without counts (More Q1 A: its short lines stay). My Team tests 127/11/4 unchanged; use 32/0; clicks 0 double.
+- Mistake: one publish without the Preview's URL made a separate private page (claude.ai/artifact/PQJowbgcJ3dMv7MyS9EkMo).
+  Not deleted (Sim's word needed). To update the Preview, always pass url 8KBkk7PtbGjVzLzLKK5akf (list files first).
+- WAITING ON SIM (asked with labelled pictures, scratchpad look/L-*.png): Box Q1 (Box 2 keeps full size with empty spots,
+  rec B), Arrows Q1 (slanted box arrows, rec B), Filled Q1 (Swap Into My Team filled, rec B), Even Q1 (Battle Even match in
+  ink, rec B: pages.css .bt-verdict b.ve), You Q1 (keep blue 'You' on Battle, rec A).
+- i42/i44 re-check: every listed item is now built, asked, or closed with a reason (decisions.md 2:23 PM).
+- Page heights (c13, 42 runs, 0 over): tight at 99% = Battle 320 4,607/4,650 and 390 4,083/4,100; My Team 320 3,875/3,900
+  and 390 3,743/3,750. Battle 390 sections: head 319, body (their six + your four) 1,680, lead/back/home 172 each, Turn One 545,
+  The Read..Watch Out 890, More Ways to Prep 328, Battle Log 332. Shorter needs a layout proposal with pictures (not started).
+
 ## NOW (Nov 13, written 10:00 AM Eastern by the clock; Sim's authority until 5:00 PM)
 - PREVIEW v98 (394 files checked). Built today with Sim's yes (all recommendations, 8:47 AM): Build Q1 B (v96, tabs on every
   size; 1440 2,121 -> 1,499; phones pixel-identical), My Team Q1 B (v97, Stand-Outs at most 4+4), My Box Q2 B (v97, Build Around
