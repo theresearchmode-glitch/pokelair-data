@@ -106,6 +106,7 @@
     "src/app/40-turn-one-data.js",
     "src/app/46-battle-data.js",
     "src/app/38-gauntlet-data.js",
+    "src/app/63-practice-data.js",
     "src/app/54-items.js",
     "src/app/55-threats.js",
     "src/app/58-strength.js",
