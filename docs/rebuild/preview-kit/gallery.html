@@ -19,7 +19,7 @@ h1{font:900 clamp(34px,6vw,68px)/1 var(--u);font-style:italic;letter-spacing:-.0
 h1 span{color:var(--plot)}
 .lede{max-width:64ch;color:var(--ink-2);font-size:17px;margin:0}
 .facts{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:20px;font:600 15px/1.4 var(--b)}
-.facts b{font:900 20px/1 var(--u);font-style:italic;margin-right:6px}
+.facts b{font:900 20px/1 var(--u);font-style:italic;margin-right:6px}@media (max-width:1100px){.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:40px 32px;margin-top:48px}
 .card{min-width:0}
 .shot{display:block;position:relative;aspect-ratio:16/10;max-width:100%;overflow:hidden;border-radius:10px;box-shadow:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18)}
@@ -43,14 +43,14 @@ h1 span{color:var(--plot)}
 
 </head><body>
 <div class="wrap">
-  <div class="eyebrow">Rebuild · built live, step by step · Nov 11</div>
+  <div class="eyebrow">Rebuild · built live, step by step · updated Nov 13</div>
   <h1>NastyPlot <span>Full Redesign.</span></h1>
   <p class="lede">The new site, coming together one step at a time: this page is updated after every finished step. Cards marked “Built from the code” are the real new site, so their buttons work; the rest are the approved mock-ups each page is built from. Open any page in Day or Night and resize the window: every page is checked from 320 to 2560 wide.</p>
-  <div class="facts"><span><b>4</b>pages still to come</span><span><b>3</b>real pages built</span><span><b>2</b>modes, day and night</span><span><b>3</b>sizes measured: My Team is over the length limits, being fixed</span></div>
+  <div class="facts"><span><b>7</b>real pages built</span><span><b>Next</b>Meta and the tools</span><span><b>2</b>modes, day and night</span><span><b>0</b>pages over their length limits</span></div>
 
   <div class="grid" id="grid"></div>
 
-  <p class="note">Mock-ups of pages already rebuilt (My Team, My Box, the info sheet, first visit) are gone from this list: the real pages replace them. Use "‹ All pages" at the bottom left of a mock-up to come back here.</p>
+  <p class="note">Mock-ups of pages already rebuilt (My Team, My Box, the info sheet, first visit, Home, Build, Battle) are gone from this list: the real pages replace them. Use "‹ All pages" at the bottom left of a mock-up to come back here.</p>
 </div>
 
 <script>
@@ -60,10 +60,10 @@ const P=[
  ['foundation#sheet','Info sheet: the real build','Garchomp\'s sheet over My Team: rating and rank, share of teams, win rate, Speed, the forms strip, then Info, Meta, Rating and Forms (every form side by side). Tap any Pokémon in search, a form or a partner to open its own.','Built from the code · all 345 sheets checked at 320 wide',1],
  ['foundation#team-empty','My Team: empty, with today\'s underdog','A first visit or an empty team: build, add or open a saved team, beside today\'s underdog. Flapple first, then one a day from the lowest-rated Pokémon with real games. Add Flapple, or open its sheet.','Built from the code · checked 320 to 2560 wide',1],
  ['foundation','New foundation: style guide','The real new build, not a mock-up: tokens, buttons, chips, tabs, the score and Pokémon on their floors. Switch day or night inside it.','Built from the code · checked 320 to 2000 wide',1],
- ['home','Home','Score, build or plan, the most used Pokémon, the latest winner beside your six, Top of the Meta and today\'s underdog.','Phone 4,191 · iPad 2,828 · Desktop 2,595 px'],
- ['ratings','Ratings','Who wins right now: today\'s order and ranks, the featured Pokémon beside the list, your team docked below.','Phone 2,949 · iPad 2,308 · Desktop 1,790 px'],
- ['build','Build','Build me a team: a real build around Garchomp, the best team first with its Strength Score, then other options and cores.','Phone 2,298 · iPad 2,943 · Desktop 1,796 px'],
- ['battle','Battle','Bring these four, lead the pair: the plan against the latest winner\'s six, turn one in move order.','Phone 3,378 · iPad 2,545 · Desktop 1,789 px']];
+ ['foundation#home','Home: the real build','Score your team, build or plan, the most used Pokémon, the latest winner beside your six, Top of the Meta and today\'s underdog.','Built from the code · checked 320 to 2560 wide',1],
+ ['foundation#build','Build: the real build','Build me a team from your box or the whole roster: the best team first with its Strength Score, then other options, recent winners and cores.','Built from the code · checked 320 to 2560 wide',1],
+ ['foundation#battle','Battle: the real build','Bring these four, lead the pair: the plan against their six, turn one in move order, the read, real-game pairings and the Battle Log.','Built from the code · checked 320 to 2560 wide',1],
+ ['ratings','Ratings','Who wins right now: today\'s order and ranks, the featured Pokémon beside the list, your team docked below. Comes with the Meta rebuild.','Mock-up · Phone 2,949 · iPad 2,308 · Desktop 1,790 px']];
 const L=f=>f.includes('#')?f.replace('#','.html#'):f+'.html#guide';
 const esc=s=>s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
 document.getElementById('grid').innerHTML=P.map(([f,t,d,h,live])=>`<article class="card">
