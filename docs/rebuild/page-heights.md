@@ -45,7 +45,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 |---|---|---|
 | Phone 390 x 844 | 3,700 (was 3,400; Sim, Nov 12: raised rather than fold content away or shrink the six); the first-visit sample team with its sample note 3,750 (Sim, Nov 12, option A) | 4,400 (was 4,200; Sim, Nov 12, option A: raised rather than shrink the sixes or move the underdog; plus the two-line event name) |
 | iPad 820 x 1180 | 3,500 | 3,500 |
-| Desktop 1440 x 900 | 1,800 | 2,700 (2,900 on a first visit: the welcome card is allowed over, Sim, Nov 12) |
+| Desktop 1440 x 900 | 1,800 | 2,700 (2,950 on a first visit: the welcome card is allowed over, Sim, Nov 12; raised from 2,900 at 8:18 PM because the Meta grows with the daily data) |
 
 | Page | Today: phone | Today: iPad | Today: desktop | Rebuild (phone / iPad / desktop) |
 |---|---|---|---|---|
