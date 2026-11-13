@@ -177,7 +177,7 @@ export default (ui, pg) => {
     infoSheetText: () => txt('.np-sheet .ms2'),
 
     // ---------------- Pokémon name boxes (Build around) ----------------
-    typeInto: async (label, text, enter = false) => { const s = boxSel(label); if (!s) return ui.type(label, text, enter);
+    typeInto: async (label, text, enter = false) => { const s = boxSel(label); if (!s) return ui.type(label, text, enter); if (s === BOXES['with a pokémon']) await tabTo('cores');
       const el = pg.locator(s).filter({visible: true}).first(); if (!(await el.count())) throw new Error(`no visible input for "${label}"`);
       await el.click(); await el.fill(''); await el.type(text, {delay: 15}); if (enter) await el.press('Enter'); await pg.waitForTimeout(400); },
     boxValue: label => { const s = boxSel(label) || 'input'; return pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(i => i.getClientRects().length); return i ? i.value : null; }, s); },
@@ -227,7 +227,7 @@ export default (ui, pg) => {
       const ok = await pg.evaluate(([w, n]) => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length && e.innerText.trim().toLowerCase().split(' ')[0] === w)[n] /* 'Load Team' (Sim, Nov 12) counts as today's Load team */; if (!b) return false; b.click(); return true; }, [want, n]);
       if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); },
     coreMembers: (n = 0) => tabTo('cores').then(() => pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length)[n]; return b ? b.dataset.bdcore.split('|') : []; }, n)),
-    clearCoreFilter: async () => { await pg.click('[data-bdcmx]'); await pg.waitForTimeout(600); },
+    clearCoreFilter: async () => { await tabTo('cores'); await pg.click('[data-bdcmx]'); await pg.waitForTimeout(600); },
     coreFilterChip: () => pg.evaluate(() => { const c = document.querySelector('.bd-cpick'); return c ? c.innerText.trim() : ''; }),
     coresTopOnScreen: () => tabTo('cores').then(() => pg.evaluate(() => { const c = document.querySelector('#main .bd-cores'); return c ? Math.round(c.getBoundingClientRect().top) : null; })),
 
@@ -247,7 +247,7 @@ export default (ui, pg) => {
     tapClear: () => NOT('a × (Clear) button of the site\'s own in Pokémon boxes'),
     /** the name list open under the Build around / cores box ('' if closed) */
     nameList: () => txt('#main [data-bdhits], #main [data-bdchits]'),
-    focusBox: async label => { const s = boxSel(label); if (!s) NOT(`the box "${label}"`); await pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); if (i) i.focus(); }, s); await pg.waitForTimeout(900); },
+    focusBox: async label => { const s = boxSel(label); if (!s) NOT(`the box "${label}"`); if (s === BOXES['with a pokémon']) await tabTo('cores'); await pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); if (i) i.focus(); }, s); await pg.waitForTimeout(900); },
     boxTop: label => { const s = boxSel(label); if (!s) NOT(`the box "${label}"`); return pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); return i ? Math.round(i.getBoundingClientRect().top) : null; }, s); },
     /** the built team's tiles (each opens that Pokémon's info sheet): the n-th tile's words, and a tap on it (returns its id) */
     builtTileLabel: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#main .bd-result .bd-six [data-v2mon]')].filter(e => e.getClientRects().length)[i]; return b ? b.innerText.replace(/\s+/g, ' ').trim() : ''; }, i),
