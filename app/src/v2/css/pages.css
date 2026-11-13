@@ -364,7 +364,7 @@
 @container (max-width:310px){.bx-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.bx-t>b{font-stretch:88%;letter-spacing:0}}
 /* the picked Pokémon stays in view while you look through the box (wide screens) */
 /* Nov 12 bug fix: the panel stays pinned only inside its own column (the aside stretches over its grid rows), so it never slides over Copy Box Link / Reset Box below it at 900-1399 */
-@media (min-width:900px){.bx-side{align-self:stretch}.bx-side>.bx-sum{position:sticky;top:calc(76px + var(--s6))}}
+@media (min-width:900px){.bx-side{align-self:start}} /* Sim, Nov 12: no pinned panel, the whole page scrolls as one (the panel was taller than its pinned space, so the sides scrolled in turns) */
 /* Your Games on My Team (R4, Nov 11): under Suggestions on desktop; beside Matchups on tablets; last on phones */
 .tm-yg{grid-area:yg}
 .tm-yg-hd{margin-top:var(--s4);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.tm-yg-hd .tm-sub{flex:1 1 220px;margin:0}

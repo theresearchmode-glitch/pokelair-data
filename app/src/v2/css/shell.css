@@ -13,6 +13,9 @@
 /* Back (Sim, Nov 12): one step back in the site, first in the top bar; only there when there's somewhere to go back to */
 .np-goback{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;margin:0 calc(var(--s4) * -1) 0 calc(var(--s3) * -1);color:var(--plot-text)}.np-goback[hidden]{visibility:hidden} /* Sim, Nov 12 (decision 4 B): the spot is always kept, so the logo and menu never move */
 .np-goback .np-ic{width:24px;height:24px}
+/* Forward (Sim, Nov 12): Back's mirror, right of the logo; its spot is kept so nothing moves */
+.np-gofwd{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;margin:0 calc(var(--s3) * -1) 0 calc(var(--s4) * -1);color:var(--plot-text)}.np-gofwd[hidden]{visibility:hidden}
+.np-gofwd .np-ic{width:24px;height:24px}
 /* My Box quick link: a box icon next to Day/Night (Sim, Nov 11: the box deserves eyes; an icon, not a menu place) */
 .np-boxlink{position:relative}.np-boxlink .np-ic{width:24px;height:24px}.np-boxlink[aria-current="page"]{color:var(--ink)}
 .np-boxlink[aria-current="page"]::after{content:"";position:absolute;left:var(--s2);right:var(--s2);bottom:0;height:5px;background:var(--plot);transform:skewX(var(--slant))}
@@ -57,3 +60,6 @@ html,body{overflow-x:clip}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.np-head,.np-bar,.np-dock{background:var(--bg)}}
 /* 320-wide phones (Sim, Nov 12: option D): footer links share rows instead of one per line */
 @media (max-width:359px){.np-foot nav{flex-direction:row;flex-wrap:wrap;gap:0 var(--s4)}}
+@media (max-width:419px){.np-head .logo svg{height:26px}.np-head .tools{gap:var(--s1)}.np-gofwd{margin-right:0}} /* Back + Forward on narrow phones (Nov 12): nothing past the edge, no overlapping tap areas */
+@media (min-width:700px) and (max-width:759px){.np-head{gap:var(--s3)}}@media (max-width:359px){.np-head .logo svg{height:22px}} /* Back + Forward: 700-719 ran 7-17px past the edge, 320 ran 10px (measured Nov 12) */
+@media (max-width:359px){.np-head .logo svg{height:20px}.np-gofwd{margin-left:calc(var(--s2) * -1)}} /* 320-359: Forward tap area no longer covers the end of the logo (was 8px) */
