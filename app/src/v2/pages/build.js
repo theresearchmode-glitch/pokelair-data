@@ -129,7 +129,9 @@ V2.buildWinners = () => { const EV = META.events, E = V2.esc; if (!EV) return ''
       <div class="row bd-wacts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${sure ? 'Tap Again to Replace Your Team' : 'Load This Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button>
       <button type="button" class="np-link" data-hmprep="${E(key)}">Practice Against ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></details>`; };
   return `<section class="bd-wins"><div class="bd-hd"><h2 class="u">Start from a Recent Winner</h2><span class="bd-k">${picks.length} teams</span></div><p class="bd-sub">Full sets, ready to load.</p>${picks.map(row).join('')}</section>`; };
-V2.pages.build.draw = () => { const oth = V2.buildOthers() || '', win = V2.buildWinners(), cor = V2.buildCores(); return `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div>${V2.buildJump(!!oth, !!win)}<div class="bd-lower"><div class="bd-lcol">${oth}${win}</div>${cor}</div></div>`; };
+// Sim, Nov 13 (Look Q4 B): on phones the jump bar is tabs, one section at a time (Other Options / Recent Winners / Cores); desktop shows all
+V2.bdTab = (oth, win) => { const ks = [oth && 'others', win && 'wins', 'cores'].filter(Boolean); return ks.includes(V2.bdUi.jtab) ? V2.bdUi.jtab : ks[0]; };
+V2.pages.build.draw = () => { const oth = V2.buildOthers() || '', win = V2.buildWinners(), cor = V2.buildCores(), tab = V2.bdTab(!!oth, !!win); return `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div>${V2.buildJump(!!oth, !!win, tab)}<div class="bd-lower" data-bdtab="${tab}"><div class="bd-lcol">${oth}${win}</div>${cor}</div></div>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-bdwin]')) return; if (d.open) V2.bdUi.win = d.dataset.bdwin; else if (V2.bdUi.win === d.dataset.bdwin) V2.bdUi.win = null; }, true);
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdcx]'); if (b) V2.cxGo('cur', 'e:' + b.dataset.bdcx); });
 
@@ -140,13 +142,13 @@ document.addEventListener('click', e => { if (e.target.closest && e.target.close
 
 // ---------- Build: the phone jump bar (mock R2, under 700 wide): Other options · Cores · Recent winners, sticky under the top bar ----------
 // Buttons that scroll, not links: the site's addresses name pages, so a #section link would change the page (and add a Back step).
-V2.buildJump = (oth, win) => { const res = ui.ab && ui.ab.doubles, b = k_t => `<button type="button" data-bdjump="${k_t[0]}">${k_t[1]}</button>`; /* names only (Sim, Nov 12) */
-  return `<nav class="bd-jump" aria-label="Jump to a section">${oth ? b(['others', 'Other Options']) : ''}${win ? b(['wins', 'Recent Winners']) : ''}${b(['cores', 'Cores'])}</nav>`; };
-V2.bdJumpSpy = () => { const nav = document.querySelector('.bd-jump'); if (!nav || getComputedStyle(nav).display === 'none') return; const y = nav.getBoundingClientRect().bottom + 8; let on = null;
-  for (const k of ['others', 'wins', 'cores']) { const sec = document.querySelector('.bd-' + k); if (sec && sec.getBoundingClientRect().top <= y) on = k; }
-  if (!on) on = (nav.querySelector('[data-bdjump]') || {dataset: {}}).dataset.bdjump; for (const x of nav.querySelectorAll('[data-bdjump]')) x.classList.toggle('on', x.dataset.bdjump === on); };
-addEventListener('scroll', () => { if (V2.route && V2.route() === 'build') V2.bdJumpSpy(); }, {passive: true});
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdjump]'); if (!b) return; const sec = document.querySelector('.bd-' + b.dataset.bdjump); if (sec) sec.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'}); });
+V2.buildJump = (oth, win, tab) => { const res = ui.ab && ui.ab.doubles, b = k_t => `<button type="button" data-bdjump="${k_t[0]}" aria-pressed="${k_t[0] === tab}"${k_t[0] === tab ? ' class="on"' : ''}>${k_t[1]}</button>`; /* names only (Sim, Nov 12) */
+  return `<nav class="bd-jump" aria-label="Sections">${oth ? b(['others', 'Other Options']) : ''}${win ? b(['wins', 'Recent Winners']) : ''}${b(['cores', 'Cores'])}</nav>`; };
+V2.bdJumpSpy = () => {}; // tabs mark the chosen section themselves (Look Q4 B)
+// a tap shows that section; if the bar has scrolled away, the page comes back to the top of the section
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdjump]'); if (!b) return; V2.bdUi.jtab = b.dataset.bdjump; V2.redraw();
+  const nav = document.querySelector('.bd-jump'), low = document.querySelector('.bd-lower'); if (nav && low && low.getBoundingClientRect().top < nav.getBoundingClientRect().bottom) low.scrollIntoView({block: 'start'});
+  const nb = document.querySelector(`[data-bdjump="${V2.bdUi.jtab}"]`); if (nb && e.detail === 0) nb.focus({preventScroll: true}); });
 V2.pages.build.after = () => V2.bdJumpSpy();
 
 // ---------- Build: cores with a Pokémon (today's CORES-04 filter: "With a Pokémon…", a chip with ×; the same name box as Build around) ----------
@@ -169,7 +171,7 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   const ns = b.dataset.bdccopy.split('|').filter(n => byName.get(n)); if (!ns.length) return;
   toast((await V2.copy(slotsPaste(ns.map(n => ({n, a: null, lock: false}))))) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); });
 // Home's cores (cards and "All cores ›") open Build at the cores, as today's menu entry did (CORES-13); runs after the page change's own scroll to the top
-document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-hmcores]')) V2.bdUi.toCores = true; }, true);
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-hmcores]')) { V2.bdUi.toCores = true; V2.bdUi.jtab = 'cores'; } }, true);
 V2.pages.build.after = () => { V2.bdJumpSpy(); if (!V2.bdUi.toCores) return; V2.bdUi.toCores = false;
   setTimeout(() => { const c = document.querySelector('.bd-cores'); if (c) c.scrollIntoView({block: 'start'}); V2.bdJumpSpy(); }, 0); };
 

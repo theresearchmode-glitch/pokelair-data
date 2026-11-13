@@ -777,6 +777,8 @@
 /* Build piece 3 (mock-up R2): Other options beside Build around a core */
 .bd-lower{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s16);margin-top:var(--s6);padding-top:var(--s10);border-top:1px solid var(--rule)}
 .bd-lower>.bd-cores:only-child{grid-column:1/-1}
+/* Sim, Nov 13 (Look Q4 B): phones show one section at a time, chosen in the bar */
+@media (max-width:699px){.bd-lower:not([data-bdtab="others"]) .bd-others,.bd-lower:not([data-bdtab="wins"]) .bd-wins,.bd-lower:not([data-bdtab="cores"]) .bd-cores{display:none}.bd-lower[data-bdtab="cores"] .bd-lcol{display:none}}
 .bd-hd{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}.bd-hd h2{font-size:var(--t34);margin:0}.bd-k{font:600 var(--t13)/1 var(--b);color:var(--ink-2);white-space:nowrap}
 .bd-sub{margin-top:var(--s1);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bd-hint{margin-top:var(--s3);font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 .bd-alt{padding:var(--s4) 0 var(--s3);border-bottom:1px solid var(--rule)}
