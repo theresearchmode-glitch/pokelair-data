@@ -48,8 +48,8 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 /* the selected Pokémon stands on a floor ring in its own colour, with a brighter pool (Sim, Nov 11: idea 2 "Floor ring";
    replaces the tilted colour panel, so nothing sits behind the Pokémon) */
 .np-mon.sel .st::before,.np-mon.ft .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:104%;height:calc(var(--iw)*.22);transform:translate(-50%,58%);border-radius:50%;
-  border:2.5px solid rgba(var(--cp),.9);background:radial-gradient(closest-side,rgba(var(--cp),.2),rgba(var(--cp),.08) 70%,transparent);box-shadow:0 0 12px rgba(var(--cp),.4)}
-:root[data-theme="night"] .np-mon.sel .st::before,:root[data-theme="night"] .np-mon.ft .st::before{border-color:rgba(var(--cp),.95);background:radial-gradient(closest-side,rgba(var(--cp),.14),transparent 75%);box-shadow:0 0 16px rgba(var(--cp),.55),inset 0 0 12px rgba(var(--cp),.3)}
+  border:0;background:radial-gradient(closest-side,rgba(var(--cp),.8),rgba(var(--cp),.38) 55%,transparent);box-shadow:0 0 22px 4px rgba(var(--cp),.35)} /* Ring Q1 B (Sim, Nov 13): a soft glow in its own colour, no outline */
+:root[data-theme="night"] .np-mon.sel .st::before,:root[data-theme="night"] .np-mon.ft .st::before{background:radial-gradient(closest-side,rgba(var(--cp),.9),rgba(var(--cp),.45) 55%,transparent);box-shadow:0 0 26px 6px rgba(var(--cp),.45)}
 .np-mon.sel .pool,.np-mon.ft .pool{background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.85),rgba(var(--cp,150,150,165),.4) 55%,transparent)}
 .np-mon.sel img{scale:1.08;transform-origin:50% 100%}.np-mon.sel b{font-weight:800}
 /* featured (today's underdog on the empty screens; Sim, Nov 11, review item 13): stands on the selected floor in its own colour,
