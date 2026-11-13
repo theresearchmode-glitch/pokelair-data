@@ -387,7 +387,7 @@ after() {
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
   // a redraw now keeps unchanged elements (A5), so bind each element once (a second listener would fire twice)
   document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }); });
-  document.querySelectorAll('[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }));
+  document.querySelectorAll('[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) { t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); const h = t.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } } })); /* focus moves to the section heading, so Tab and screen readers carry on from there (audit TEAM-07) */
   V2.jumpSync(); // A7 proposal: the jump bar marks the section you are reading
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page
 }};
