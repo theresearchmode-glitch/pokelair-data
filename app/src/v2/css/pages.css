@@ -834,3 +834,4 @@
 @media (max-width:359px){.bd-opts{grid-template-columns:minmax(0,1fr)}.bd-meg,.bd-around{grid-column:1}} /* narrowest phones: Megas and Build around stack, so "Build around a Pokémon" and its hint aren't cut */
 
 .ms-add.ms-on{font:700 var(--t15)/1.5 var(--b);color:var(--ink)} /* sheet: 'On your team ✓' after adding (Sim, Nov 12, decision 15) */
+@media (max-width:359px){.hm-duel .hm-acts .np-btn2{flex-basis:100%}} /* 320: "Copy for Showdown" needs 142px, half a row gives 132 (measured Nov 12): each button gets its own row */
