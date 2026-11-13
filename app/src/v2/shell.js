@@ -187,6 +187,9 @@ V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app
   if (key && !act.isConnected) { const e = [...document.querySelectorAll('#app ' + key.sel)][Math.max(0, key.i)]; if (e) e.focus({preventScroll: true}); }
   if (r.P && r.P.after) try { r.P.after(); } catch (e) { console.error(e); } };
 // the whole page as HTML (header, the page, footer, phone bar); V2.draw puts it in fresh, V2.redraw merges it in place
+// one page's error never blanks the whole site (audit SHELL-34; today's safe() wrapper does the same per section): the header, menus
+// and footer still draw, the page says what happened, and the error goes to the console for the checks to catch
+V2.safeDraw = P => { try { return P.draw(); } catch (e) { console.error(e); return '<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Something went wrong drawing it. Reload to try again; the rest of the site still works.</p></div></section>'; } };
 V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   return {P, html: `<a class="vh" href="#main">Skip to the page</a>
@@ -194,7 +197,7 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
   <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
-<main class="np-main" id="main">${P ? P.draw() : ''}</main>
+<main class="np-main" id="main">${P ? V2.safeDraw(P) : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan&#8209;made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a></nav></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const {P, html} = V2.shell();

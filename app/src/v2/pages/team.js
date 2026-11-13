@@ -422,5 +422,7 @@ V2.HOW_SCORE = [
   'Roster, abilities, moves and learnsets come from Pokémon Showdown\'s Champions data.'];
 V2.howHtml = () => `<details class="ed-weak hs2"${V2.hsOpen ? ' open' : ''}><summary><span class="lbl">How Scoring Works</span><span></span></summary><div class="hs2-in">${V2.HOW_SCORE.map((t, i) => { const k = t.search(/\. [A-Z(]/), first = k > 0 ? t.slice(0, k + 1) : t, rest = k > 0 ? t.slice(k + 1) : '';
   return `<p>${V2.esc(first)}${rest ? `<span class="hs2-more" hidden>${V2.esc(rest)}</span> <button type="button" class="np-link hs2-mb" data-hsmore aria-expanded="false">More</button>` : ''}</p>`; }).join('')}</div></details>`;
-document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('hs2')) V2.hsOpen = e.target.open; }, true);
+// open / closed is remembered on this device, under today's key (cc2.chf.rhow; audit X-07)
+try { V2.hsOpen = !!LS.get('cc2.chf.rhow', false); } catch (e) { V2.hsOpen = false; }
+document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('hs2')) { V2.hsOpen = e.target.open; try { LS.set('cc2.chf.rhow', V2.hsOpen); } catch (er) {} } }, true);
 document.addEventListener('click', e => { const b = e.target.closest('[data-hsmore]'); if (!b) return; const s = b.parentElement.querySelector('.hs2-more'); if (!s) return; const open = s.hidden; s.hidden = !open; b.textContent = open ? 'Less' : 'More'; b.setAttribute('aria-expanded', String(open)); });
