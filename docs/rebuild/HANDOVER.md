@@ -4,6 +4,7 @@ Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this t
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
 ## NOW (Nov 14, written 9:54 AM Eastern by the clock; Sim's authority until 5:00 PM Sat Nov 14 (extended 8:40 AM); summary 4:40 PM)
+- Home design APPROVED by Sim: Fight Night refined (docs/rebuild/mocks/home3). Design round continues: discuss Build + My Team upgrades with Sim (rebuild-plan.md R4b); Meta is with her other designer; no building until the designs are settled.
 - 2:50 PM by the clock: Meta > Pokémon > Rating built (Sim's approved mock-up) and on the Preview v133 (400 files). RATE 9/10 (RATE-01 needs How We Calculate). Next: mock-ups for the Meta parts the approved mock-up does not cover (Usage, Tournaments, This Week, Archetypes) for Sim, then build.
 - 2:24 PM by the clock: full Battle tests on the new site: 55 pass, 28 FAIL, 4 skipped. All 28 explained: Meta pages not rebuilt (TRACK x6, NAV-06), adapter hooks not wired for menus/matchups/x-cases (NAV-01..03, MATCHUPS-01..06, X-01/03/04/05/06/09, LOG-06), How We Calculate + feedback not rebuilt (CALC-01/08), known open items (NAV-05 phones only, LOG-07 Home fold, X-08 the " · " style choice for Sim, i25). WAITING: Sim Question 4 (Meta A heavy / B light).
 - 1:33 PM by the clock: Type Chart SKYLINE built and on the Preview v132 (400 files); TYPES-01..05 pass. Changes from the brief listed in decisions.md. Next by plan: Battle Log mock-ups (last Battle page).

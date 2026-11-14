@@ -253,7 +253,7 @@ https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf. An index of every mock-up pag
 ### R4b. Design round: bold character on every page (Sim, Nov 14, afternoon)
 Sim: Home and the Meta page felt bland next to Skyline (Type Chart) and Arena VS (Practice). Building stops; design first,
 page by page, then finish building ("there's no point in building if we're going to be changing things").
-- [ ] Home: Fight Night (Sim picked it, "much much better, I love it"); refined mock-up for Sim (docs/rebuild/mocks/home3).
+- [x] Home: Fight Night, refined mock-up APPROVED by Sim Nov 14 (Sim picked it, "much much better, I love it"); refined mock-up for Sim (docs/rebuild/mocks/home3).
 - [ ] Meta: with Sim's other designer.
 - [ ] After Home is finished: discuss with Sim how to upgrade Build and My Team with the new creative vision and design philosophy.
 - [ ] Then the remaining pages one by one; only then finish building.
