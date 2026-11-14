@@ -3,6 +3,14 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 2:38 AM Eastern by the clock; Sim's authority until 10:00 AM Sat Nov 14 (extended 1:38 AM); summary 9:40 AM)
+- Sim asleep / away until 10 AM. Main job: Damage Calc 'Their Side' (docs/rebuild/calc/BRIEF.md + 6 reference pictures).
+- BUILT, not on the Preview: app/src/v2/pages/calc.js + pages.css 'Damage Calc' blocks + tokens (wx-sun, table, mvc-face, ko-tint,
+  hp-left). Shared: calcData / calcResultNotes / calcNoResultText (experiments/same-calc.mjs: 1285 identical). Test adapter wired
+  (v2.C-battle.mjs calc helpers, routes #speed/#calc). Pictures script: scratchpad dcb/dc.cjs (J=case:theme:w:h[:full]).
+- Open: CALC-10 pinned No-effect bar (today has it); iPad design (Sim: after); How We Calculate / Send Feedback pages not rebuilt.
+- Earlier tonight: Speed Tiers done (v123); The Card done (v122). Search: Speed Tiers result parked in git stash (untested).
+
 ## NOW (Nov 14, written 12:28 AM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
 - Speed Tiers DONE (Sim approved Preview v123, 12:20 AM). Info sheet done (v122).
 - Damage Calc: round 1 (12:27 AM) judged uninspired by Sim; round 2 (12:44 AM: Arena / Sixteen Rolls + KO Board); round 3 (12:50 AM,
