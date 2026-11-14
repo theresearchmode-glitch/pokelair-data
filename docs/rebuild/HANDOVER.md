@@ -3,6 +3,14 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 9:26 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
+- Info sheet redesign is ON THE PREVIEW (v119 = v117's look, which Sim called 'much better'): desktop stage is a box (292-460 px, sheet
+  at most 860 px, centred). Sim's mock-up in-stage measurements (v118, 454dbc4) looked 'squished' to her and were taken out (7b0a6e0);
+  the iPad-upright measurements (36bb963) were never published and are out too. Waiting on Sim: is v119 fine, or still squished (which
+  device, what needs room)?
+- 'None yet' (Info Q3 B) is live on the Preview; chips stay stacked at 320 (Q4 A).
+- Tests: SUGG-19 fixed on the new site (known mark kept for today's site only); SUGG-08, ARCH-05, AUTO-08 read the approved wording.
+
 ## NOW (Nov 13, written 8:32 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
 - Info sheet redesign (BRIEF.md + PLAN.md) BUILT in all five steps, NOT on the Preview (needs Sim's go): stage (945543e/9612ecf), headline
   (fd2ed4c), desktop Side Stage (0860928), iPad upright (6fcfe26), brief section 7 checks + full-width headline fix (f80aee4). Every step:
