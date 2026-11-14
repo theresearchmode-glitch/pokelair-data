@@ -639,5 +639,5 @@ t('ARCH-04', 'Guide body: what it does, Key Pokémon, How to beat it, What your 
   has(f, 'Key Pokémon'); has(f, 'How to beat it'); has(f, 'What your team has'); has(f, /Incineroar Fake Out ✓/, 'your answers'); await close(); });
 
 t('ARCH-05', 'Archetype words label teams elsewhere (My team, built teams)', async () => {
-  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); has(await ui.text(), /Sun, Grassy Terrain, Tailwind/, 'My team label');
-  await ui.go('Build'); await ui.tap(/^Whole roster/); const r = await ui.buildMeATeam(); has(r, new RegExp('^(Proven team(, 1 swap)?|Fresh take|Your build) (' + [...ARCHS, 'Hard Trick Room', 'TailRoom', 'Electric Terrain', 'Sun-Rain'].join('|') + ')'), 'built card title'); await close(); });
+  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); has(await ui.text(), /Sun(,| ·) Grassy Terrain(,| ·) Tailwind/, 'My team label'); /* the shared label joins with ' · ' (18-archetypes.js), on both sites */
+  await ui.go('Build'); await ui.tap(/^Whole roster/); const r = await ui.buildMeATeam(); has(r, new RegExp('^(Proven team(, 1 swap)?|Fresh take|Your build)' + (NEW ? '[^]*?\\b' : ' ') + '(' + [...ARCHS, 'Hard Trick Room', 'TailRoom', 'Electric Terrain', 'Sun-Rain'].join('|') + ')'), 'built card title'); /* new site (approved Build mock-up): the kicker ('Proven team · 2 Mega options') comes first and the archetype title is the card's heading, after the option count */ await close(); });
