@@ -1201,13 +1201,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-list .nm{display:grid;min-width:0;font:600 var(--t15)/1.4 var(--b)}.sp2-list .nm small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 .sp2-list .tag{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text);white-space:nowrap}
 @media (min-width:1024px){.sp2-list{columns:2;column-gap:var(--s12)}.sp2-list li{break-inside:avoid}}
-.sp2-vt{position:relative;list-style:none;margin:var(--s6) 0 0;padding:0}.sp2-vt::before{content:"";position:absolute;left:60px;top:0;bottom:0;width:1px;background:var(--rule)}
-.sp2-vt li{position:relative;display:flex;align-items:center;min-height:52px;padding-left:76px}
-.sp2-vt .v{position:absolute;left:0;width:44px;text-align:right;font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums}.sp2-vt li.me .v{color:var(--plot-text)}
-.sp2-vt .dot{position:absolute;left:56px;width:8px;height:8px;background:var(--ink-3);transform:skewX(var(--slant))}.sp2-vt li.me .dot{background:var(--plot)}
-.sp2-vt .who{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
-.sp2-vt .chip2{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);text-align:left}.sp2-vt .chip2.me{font-size:var(--t15);color:var(--ink)}
-.sp2-vt .tie{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text)}
 .sp2-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s8);margin-top:var(--s8)}
 .sp2-sum p{margin:0;padding:var(--s2) 0;border-top:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.sp2-sum b{color:var(--ink)}.sp2-sum small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 @media (max-width:899px){.sp2-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -1218,7 +1211,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2{padding:0 var(--gut) var(--s16)} /* the same side gutters as Battle */
 @media (max-width:599px){.sp2 .sp2-wx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.sp2 .sp2-wx .np-chip:first-child{grid-column:1/-1}}
 @media (min-width:600px) and (max-width:899px){.sp2-ctl .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.sp2-ctl .np-chip{justify-content:center}} /* no lone Trick Room on its own line (3 + 2) */
-/* Speed Tiers, candidate looks for Sim (Nov 14): split track (yours left of the Speed line, the field right) and band (your rows washed blue) */
+/* Speed Tiers, Sim's Speed Q4 A (Nov 14): the split slim track, yours left of the Speed line, the field right */
 .sp2-vs-h{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:var(--s2);margin-top:var(--s6);padding-bottom:var(--s2);border-bottom:1px solid var(--rule);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3);text-align:center}
 .sp2-vs-h .u{font:800 var(--t15)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--ink)}.sp2-vs-h .u:first-child{text-align:right;color:var(--plot-text)}.sp2-vs-h .u:last-child{text-align:left}
 .sp2-vs{position:relative;list-style:none;margin:0;padding:0}.sp2-vs::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--rule)}
@@ -1226,9 +1219,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-vs .v{justify-self:center;padding:var(--s1) 0;background:var(--bg);font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums;color:var(--ink-2)}.sp2-vs .v.me{color:var(--plot-text);font-size:var(--t20)}
 .sp2-vs .mine,.sp2-vs .them{display:flex;flex-wrap:wrap;gap:0 var(--s2)}.sp2-vs .mine{justify-content:flex-end}
 .sp2-vs .chip2{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}.sp2-vs .chip2.me{font-size:var(--t15);font-weight:700;color:var(--ink);text-align:right}
-:root .sp2.band .sp2-vt li.me{background:color-mix(in srgb,var(--plot) 12%,transparent)}.sp2.band .sp2-vt li:not(.me) .chip2{opacity:.8}
-.sp2.band .sp2-vt li.me .who::after{content:"Yours";margin-left:auto;padding-right:var(--s3);font:700 var(--t13)/1.5 var(--b);color:var(--plot-text)}.sp2.band .sp2-vt li.me .who{flex:1}
-.sp2.band .sp2-vt li.me+li.me{margin-top:var(--s1)} /* two of yours in a row keep separate bands */
-/* candidate (desktop): your six sit on a soft blue field above the line, labelled, the top 20 on the page below */
-.sp2.band .sp2-track::before{content:"";position:absolute;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:0;height:var(--ay);background:color-mix(in srgb,var(--plot) 8%,transparent)}
-.sp2.band .sp2-track::after{content:"Your six";position:absolute;left:0;top:var(--s3);font:800 var(--t17)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--plot-text)}
+/* Sim's Speed Q5 A (Nov 14): on desktop your six sit on a soft blue field above the line, labelled, the top 20 on the page below */
+.sp2-track.mine::before{content:"";position:absolute;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:0;height:var(--ay);background:color-mix(in srgb,var(--plot) 8%,transparent)}
+.sp2-track.mine::after{content:"Your six";position:absolute;left:0;top:var(--s3);font:800 var(--t17)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--plot-text)}
+.sp2-vs.solo li{grid-template-columns:56px minmax(0,1fr)}.sp2-vs.solo::before{left:28px} /* no team yet: the field alone */
+.sp2-vs .chip2{max-width:100%}.sp2-vs .chip2>span{min-width:0}.sp2-vs .chip2 .np-mon{flex:none} /* 320: long names (Mega Charizard Y) wrap inside their side instead of running past the screen */
+@media (max-width:399px){.sp2-vs li,.sp2-vs-h{grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:var(--s1)}.sp2-vs .chip2.me{font-size:var(--t13)}.sp2-vs .chip2.me .np-mon,.sp2-vs .chip2.me .np-mon .st{--iw:32px}} /* 320-399: one-word names (Whimsicott) fit beside their sprite */
+.sp2-vs .them .chip2{text-align:left}
+@media (max-width:359px){.sp2-vs .chip2 .np-mon,.sp2-vs .chip2 .np-mon .st{--iw:28px}} /* 320: "Mega Garchomp Z" fits its side */
