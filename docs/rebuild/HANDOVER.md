@@ -3,6 +3,14 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 5:11 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
+- Meta Ratings = The Grandstand BUILT (Preview v136, 400 files). meta.js: V2.gsLay (rows per width), V2.gsMon, V2.gsStand, V2.raSpot (new
+  spotlight), V2.raFiltered2 (search/types/gems/box keep the list until Sim sees pictures), U.view stand|list ("List with win rates").
+  Tier tokens --tier-s..f in tokens.css. Ratings tests 9 pass, 1 FAIL (RATE-01: method page not rebuilt; fails on the earlier commit too).
+  c13: no cut-offs, no small taps; heights over the old list limits (1440 2,811/1,800; 820 3,930/3,500; 390 4,727/3,700; 320 4,924/3,900).
+  Q1 sent to Sim 5:10 PM with pictures: phone rows A (3 per tier, brief, 4,727) or B (2 per tier, 4,261). Default until she answers: A.
+- NEXT: Meta Usage ("The Podium", How <Pokemon> is played), then Sets, from the brief. Then Build + My Team talk (R4b).
+
 ## NOW (Nov 14, written 4:35 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
 - Fight Night Home BUILT and live on the Preview (v134, 400 files; commit df71a00). Checks: polish (TARGET=v2 VIEWS=home) no spill or uneven rows;
   c13 390 4,380 / 820 3,459 / 1440 2,929 within limits, 320 4,749 vs an assumed 4,600 (Sim to set); Home tests 18 pass, 0 FAIL, 1 known (HOME-10b).
