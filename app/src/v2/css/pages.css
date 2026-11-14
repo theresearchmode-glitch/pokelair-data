@@ -1408,3 +1408,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:379px){.dc2-ko{display:contents}.dc2-hp{grid-column:2;grid-row:1;align-self:center;text-wrap:balance}.dc2-ko b{grid-column:1/-1;justify-self:start;margin-top:var(--s2)}}
 .dc2-tok button span{display:block;white-space:nowrap}
 @media (max-width:359px){.dc2-tok button{font-stretch:80%}} /* "Hits both" fits a 320-wide pill (narrower letters, as Basculegion on My Box) */
+/* desktop (review point 3): the tilted surface reaches up and out behind the far row, so the defender and the KO Board wings lie on the
+   table, inside its slanted sides (tilted, its top edge drew about 90 px lower and narrower than the table's box) */
+@media (min-width:1024px){.dc2-surface{inset:calc(var(--s24)*-1) calc(var(--s10)*-1) 0}}
+/* KO tiles (review points 10-11): a smaller stamp, and the knocked-out Pokemon less dimmed (it read as muddy) */
+.dc2-kt.ko>.np-mon{opacity:.75}.dc2-kt .stamp{top:2px;right:-2px;padding:0 var(--s1);line-height:1.15;letter-spacing:.02em}
+/* light mode (review point 12): the card in play's KO text a little darker than its type colour, so it keeps 4.5:1 over the corner glow
+   (type colour alone: 3.36:1 at worst, Psychic; mixed: 4.90:1 at worst) */
+:root:not([data-theme="night"]) .dc2-mv.play .ko{color:color-mix(in srgb,var(--tc) 75%,var(--mvc-ink))}
