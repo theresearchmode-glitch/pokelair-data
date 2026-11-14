@@ -100,3 +100,4 @@ svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);ver
 @media (max-width:699px){.tm-set .sx-kv>div{align-content:start}}
 /* My Team: The Hand (Nov 14): the editing strip shows Nature and Stat points as compact label-over-value pairs, no rules */
 .mt-edit .sx-kv{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s8);margin:0;border:0}.mt-edit .sx-kv>div{display:grid;grid-template-columns:none;gap:2px;padding:0;border:0}.mt-edit .sx-kv dd{white-space:nowrap}
+.mh-hand .sx-grp:nth-child(3)::before{content:none}
