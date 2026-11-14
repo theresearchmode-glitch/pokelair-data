@@ -3,6 +3,13 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 6:23 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
+- My Team "The Hand" pieces 1-3 BUILT, committed (not on the Preview yet): team.js (mtHead), six.js (V2.handHtml, V2.editStripHtml, V2.isHand),
+  monsheet.js (msCard takes a sprite size). Full A-team run on this build in progress; baseline (before the Hand) 130 pass, 8 FAIL, 4 known.
+  Questions sent to Sim with pictures: Q5 header counts (out, per Nov 12), Q6 new heights, Q7 Set as Lead in the strip. Defaults = recommended.
+- NEXT: compare tests, publish My Team (400 files); piece 4 = Matchups full width + stand-out Cards (brief s5); then Winning Hands
+  (docs/rebuild/mocks/winning-hands/BRIEF.md). Tournaments' other tabs: Sim's designer.
+
 ## NOW (Nov 14, written 5:51 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
 - Meta Pokemon tab DONE: Ratings (Grandstand), Usage (Podium), Sets (sets.js; 21-sets.js now in v2 shared logic). Preview v138, 400 files.
   Meta tests 22 pass, 1 FAIL (RATE-01: method page). Home tests 18 pass, 0 FAIL, 1 known. c13 ok on Home/Ratings/Usage/Sets at every width.
