@@ -4,6 +4,7 @@ Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this t
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
 ## NOW (Nov 14, written 9:54 AM Eastern by the clock; Sim's authority until 5:00 PM Sat Nov 14 (extended 8:40 AM); summary 4:40 PM)
+- 1:33 PM by the clock: Type Chart SKYLINE built and on the Preview v132 (400 files); TYPES-01..05 pass. Changes from the brief listed in decisions.md. Next by plan: Battle Log mock-ups (last Battle page).
 - 1:22 PM by the clock: Test Run (Sim's pick A) on the Preview v131 (400 files); tests TEST-01..09 pass. Sim picked Type Chart SKYLINE (brief + 12 pictures; brief saved to docs/rebuild/mocks/types/skyline/BRIEF.md). Building Skyline next (result area only).
 - 12:43 PM by the clock: Practice (Arena VS) on the Preview v130 (400 files). Preview build now gets out/practice.json (app/build.mjs). VS layered between the sides (your plates above it). WAITS on Sim: OK on VS layering; Type Chart round 3 pick (U1-U4, docs/rebuild/mocks/types/round3). Next by plan: Test Run, mock-ups first.
 - Sim's morning answers: all recommended (calc Q1-Q4 A), Preview go, iPad Q1 B / Q2 A. Preview now v127 (400 files checked).
