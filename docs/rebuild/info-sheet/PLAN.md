@@ -1,10 +1,12 @@
 # Info sheet redesign: how it gets built (Claude's plan, Fri Nov 13, 7:39 PM Eastern; brief: BRIEF.md)
 
 Code today: app/src/v2/pages/monsheet.js `V2.monHtml` builds the header (`head`: .ms-art sprite 240, .ms-hd = rate, name, types,
-nums, acts) and the forms strip (`fstrip`); the tabs follow. Every number comes from today's shared functions and
-experiments/same-info.mjs proves the sheet says the same as today's site: it must keep passing (same data, same wording).
+nums, acts) and the forms strip (`fstrip`); the tabs follow. Every number comes from today's shared functions.
+CORRECTION (7:45 PM): experiments/same-info.mjs checks TODAY's site (lairSheet), not the new sheet, so it proves nothing here.
+The check for this work: the new sheet's text for every Pokémon, before vs after, outside the stage, must be identical
+(the stage only adds the base stats, from the same p.st the Base Stats section uses).
 
-## Steps (one at a time; each: build, polish check on the sheet, c13 heights, same-info, pictures with real sprites
+## Steps (one at a time; each: build, polish check on the sheet, c13 heights, sheet text before/after, pictures with real sprites
 ## beside Sim's mock-ups, light + dark; nothing to the Preview without Sim's go)
 1. Stage (phone first): a new `.ms-stage` replaces `.ms-art` at the top of the sheet.
    - Fixed stage colours as NEW tokens in tokens.css (same in light and dark: it is a lit place), e.g. --stage-bg, --stage-floor,

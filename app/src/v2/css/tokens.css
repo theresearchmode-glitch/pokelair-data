@@ -28,6 +28,8 @@
   --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s24:96px;
   --r-s:4px;--r-m:6px;--r-l:10px;--r-xl:18px;--slant:-24deg;--tilt:-7deg;
   --gut:96px;--tap:44px;
+  /* info sheet stage (Sim's brief, Nov 13): a lit place, the SAME in day and night, so these are never redefined for night */
+  --stage-bg:#0A0A12;--stage-floor:#11111B;--stage-line:rgba(255,255,255,.07);--stage-ink:#F4F2EE;--stage-ink-2:rgba(244,242,238,.68);--stage-ring:rgba(255,255,255,.16);--stage-screen:rgba(8,8,16,.86);--stage-glass:rgba(255,255,255,.05);--stage-cable:rgba(255,255,255,.22);--stage-crowd:rgba(255,255,255,.55);--stage-spot:rgba(255,255,255,.07);--stage-btn:rgba(10,10,18,.72);
   color-scheme:light}
 :root[data-theme="night"]{
   --ray:rgba(255,255,255,.045);--ray-art:rgba(255,255,255,.05);

@@ -4,6 +4,22 @@
 // today's shared functions (24-sheet-data.js and the rating, set and speed code), proved identical with experiments/same-info.mjs.
 V2.msTab = (() => { try { const v = localStorage.getItem('np2.montab'); return ['info', 'meta', 'rating', 'forms'].includes(v) ? v : 'info'; } catch (e) { return 'info'; } })();
 V2.txt = h => String(h == null ? '' : h).replace(/<[^>]*>/g, ''); // shared rows may carry today's small markup (win colours): text only here
+// The stadium stage (Sim's info sheet brief, Nov 13, docs/rebuild/info-sheet/BRIEF.md; our tokens and scale, PLAN.md step 1): a dark stage,
+// the Pokémon on its floor glow on the left, a hanging screen on the right with the six base stats as a web (clockwise from the top:
+// HP, Attack, Defense, Speed, Sp. Def, Sp. Atk; 160 reaches the outer ring), the highest stat lit white. One label for screen readers;
+// the Info tab's Base Stats section has the full numbers.
+V2.msStage = (p, n) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
+  const ix = [0, 1, 2, 5, 4, 3], L = ['HP', 'Attack', 'Defense', 'Speed', 'Sp. Def', 'Sp. Atk'], v = ix.map(i => p.st[i]), hi = v.indexOf(Math.max(...v));
+  const U = [[0, -1], [.866, -.5], [.866, .5], [0, 1], [-.866, .5], [-.866, -.5]], f = x => x.toFixed(1);
+  const poly = r => U.map(([x, y]) => f(x * r) + ',' + f(y * r)).join(' '), pt = (k, r) => [f(U[k][0] * r), f(U[k][1] * r)];
+  const shape = v.map((x, k) => pt(k, Math.min(x, 160) / 160 * 100).join(',')).join(' ');
+  const svg = `<svg class="ms-web" viewBox="-104 -104 208 208" aria-hidden="true"><polygon points="${poly(100)}" class="r"/><polygon points="${poly(66.7)}" class="r"/><polygon points="${poly(33.3)}" class="r"/>${U.map(([x, y]) => `<line x1="0" y1="0" x2="${f(x * 100)}" y2="${f(y * 100)}" class="r"/>`).join('')}<polygon points="${shape}" class="s"/>${v.map((x, k) => { const [a, b] = pt(k, Math.min(x, 160) / 160 * 100); return `<circle cx="${a}" cy="${b}" r="${k === hi ? 5 : 3}" class="${k === hi ? 'hi' : 'd'}"/>`; }).join('')}</svg>`;
+  const lab = v.map((x, k) => `<span class="ms-wl${k === hi ? ' hi' : ''}" style="--ux:${U[k][0]};--uy:${U[k][1]}"><b>${x}</b>${L[k]}</span>`).join('');
+  const ty = (p.t || []).filter(t => V2.TYPES.includes(t)), t1 = ty[0] ? `var(--ty-${ty[0]})` : 'var(--type-none)', t2 = ty[1] ? `var(--ty-${ty[1]})` : t1;
+  return `<div class="ms-stage" role="img" aria-label="${V2.esc(V2.disp(n))} on the stage. Base stats: ${v.map((x, k) => L[k] + ' ' + x).join(', ')}" style="--cp:${m[0]},${m[1]},${m[2]};--t1:${t1};--t2:${t2}">
+    <i class="ms-crowd" aria-hidden="true"></i><i class="ms-floor" aria-hidden="true"></i><i class="ms-spill" aria-hidden="true"></i>
+    <div class="ms-star">${V2.mon(n, {iw: 164, sel: true, bare: true})}</div>
+    <div class="ms-scr"><p class="ms-cap">Base stats</p><div class="ms-wb">${svg}${lab}</div></div></div>`; };
 V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })();
   const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'), rank = rankTxt(p, 'cap');
   // header
@@ -11,7 +27,7 @@ V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc
   const nums = `<div class="ms-nums">${H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('–', 'of teams', 'no tournament games yet')}${H.hW != null ? (H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate', Math.round(H.hG).toLocaleString('en-US') + ' games') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) : ''}${run ? num(run.v, 'Speed at level 50', '') : ''}</div>`;
   const rate = `<div class="ms-rate"><b>${rs}</b><span>${E(T.k)} tier<small>Rating${rank ? ' · ' + E(rank) : ' · no results yet'}${H.thinR ? ' · early read' : ''}</small></span></div>`;
   const add = V2.addBtn ? V2.addBtn(n) : '';
-  const head = `<header class="ms-head"><div class="ms-art">${V2.mon(n, {iw: 240, sel: true, bare: true})}</div><div class="ms-hd">${rate}<h2 class="u">${V2.nameHtml(V2.disp(n))}</h2><div class="ms-ty">${(p.t || []).map(V2.typeChip).join('')}</div>${nums}<div class="ms-acts">${add}<div class="row ms-go"><button type="button" class="np-btn2" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-mssets="${E(n)}"><span>Popular Sets</span></button></div></div></div></header>`;
+  const head = `${V2.msStage(p, n)}<header class="ms-head"><div class="ms-hd">${rate}<h2 class="u">${V2.nameHtml(V2.disp(n))}</h2><div class="ms-ty">${(p.t || []).map(V2.typeChip).join('')}</div>${nums}<div class="ms-acts">${add}<div class="row ms-go"><button type="button" class="np-btn2" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-mssets="${E(n)}"><span>Popular Sets</span></button></div></div></div></header>`;
   // forms: every form of the species with its rating; tap one to open it
   const forms = ROSTER.filter(q => q.b === p.b), fstrip = forms.length > 1 ? `<div class="ms-forms"><div class="ms-fh"><div class="np-eyebrow">Forms · tap one to open it</div><button type="button" class="np-link" data-mstabgo="forms">Compare all ${forms.length}</button></div><div class="ms-fr" role="group" aria-label="Forms of ${E(V2.disp(p.b))}">${forms.map(q => { const rq = rating(q);
     return `<button type="button" class="ms-f" data-v2mon="${E(q.n)}" aria-pressed="${q.n === p.n}">${V2.mon(q.n, {iw: 64, bare: true, sel: q.n === p.n})}<span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}</div></div>` : '';

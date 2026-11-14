@@ -1103,3 +1103,25 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bd-six{grid-auto-rows:auto}.bd-six>.bd-pk{grid-row:span 5;grid-template-rows:subgrid;row-gap:0;align-items:end}.bd-six>.bd-pk>small{align-self:start}
 /* review fix (Nov 13, most used three): the name may shrink to its spot (a grid item's min-width:auto kept it 7 px wider than a 67 px side spot at 700) */
 .hm-ut{grid-template-columns:minmax(0,1fr)}.hm-ut b{min-width:0;max-width:100%}
+/* ---------- Info sheet: the stadium stage (Sim's brief Nov 13, info-sheet/BRIEF.md + PLAN.md step 1). Same in day and night (stage tokens).
+   No filter or will-change on moving layers (Sim's smooth-scroll rule): the lights are plain gradients. ---------- */
+.ms-stage{position:relative;display:grid;grid-template-columns:auto auto;justify-content:space-between;align-items:end;box-sizing:border-box;height:332px;margin:calc(var(--s6)*-1) calc(var(--s4)*-1) var(--s6);padding:0 var(--s4) var(--s8);overflow:hidden;color:var(--stage-ink);background:var(--stage-bg);border-bottom:4px solid transparent;border-image:linear-gradient(90deg,var(--t1) 50%,var(--t2) 50%) 1}
+.ms-stage>i{position:absolute;pointer-events:none}
+.ms-crowd{inset:0 0 40% 0;background:radial-gradient(6px 6px at 8% 18%,var(--stage-crowd),transparent),radial-gradient(10px 10px at 22% 8%,rgba(var(--cp),.7),transparent),radial-gradient(8px 8px at 36% 22%,var(--stage-crowd),transparent),radial-gradient(12px 12px at 52% 10%,color-mix(in srgb,var(--t1) 80%,transparent),transparent),radial-gradient(7px 7px at 64% 26%,var(--stage-crowd),transparent),radial-gradient(12px 12px at 78% 12%,color-mix(in srgb,var(--t2) 80%,transparent),transparent),radial-gradient(8px 8px at 92% 24%,rgba(var(--cp),.6),transparent),radial-gradient(60% 50% at 20% 0,rgba(var(--cp),.22),transparent 70%),radial-gradient(50% 45% at 85% 0,color-mix(in srgb,var(--t1) 22%,transparent),transparent 70%),linear-gradient(100deg,transparent 18%,var(--stage-spot) 26%,transparent 34%),linear-gradient(80deg,transparent 64%,var(--stage-spot) 72%,transparent 80%)}
+.ms-floor{left:-20%;right:-20%;bottom:0;height:34%;background:repeating-linear-gradient(90deg,var(--stage-line) 0 1px,transparent 1px 48px),var(--stage-floor);transform:perspective(220px) rotateX(48deg);transform-origin:bottom}
+.ms-spill{right:4%;bottom:0;width:60%;height:30%;background:radial-gradient(closest-side,rgba(var(--cp),.32),transparent)}
+.ms-star{position:relative;z-index:1}.ms-star .np-mon,.ms-star .np-mon .st{--iw:164px}
+.ms-scr{position:relative;z-index:1;align-self:end;box-sizing:border-box;width:228px;height:232px;padding:var(--s2) var(--s3);background:linear-gradient(160deg,var(--stage-glass),transparent 40%),var(--stage-screen);border:2px solid rgb(var(--cp));border-radius:var(--r-m);box-shadow:0 0 24px 2px rgba(var(--cp),.45),inset 0 0 18px rgba(var(--cp),.18);transform:perspective(640px) rotateY(-10deg)}
+.ms-scr::before,.ms-scr::after{content:"";position:absolute;bottom:100%;width:1px;height:400px;background:var(--stage-cable)}.ms-scr::before{left:20%}.ms-scr::after{right:20%}
+.ms-cap{margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--stage-ink-2)}
+.ms-wb{--wr:58px;--lr:86px;position:absolute;left:50%;top:54%;width:0;height:0}
+.ms-web{position:absolute;left:calc(var(--wr)*-1);top:calc(var(--wr)*-1);width:calc(var(--wr)*2);height:calc(var(--wr)*2);overflow:visible}
+.ms-web .r{fill:none;stroke:var(--stage-ring);stroke-width:1.5}.ms-web .s{fill:rgba(var(--cp),.45);stroke:rgb(var(--cp));stroke-width:3;stroke-linejoin:round}
+.ms-web .d{fill:rgb(var(--cp))}.ms-web .hi{fill:var(--stage-ink)}
+.ms-wl{position:absolute;left:calc(var(--lr)*var(--ux));top:calc(var(--lr)*var(--uy) * .92);translate:-50% -50%;display:grid;justify-items:center;font:600 var(--t13)/1.1 var(--b);color:var(--stage-ink-2);white-space:nowrap}
+.ms-wl b{font:900 var(--t17)/1.1 var(--u);font-style:italic;color:var(--stage-ink-2)}.ms-wl.hi,.ms-wl.hi b{color:var(--stage-ink)}.ms-wl.hi b{font-size:var(--t22)}
+.ms2:has(>.ms-stage) .ms-head{grid-template-columns:minmax(0,1fr)}
+.np-sheet:has(.ms-stage) .x{float:none;display:block;top:var(--s3);width:var(--tap);border-radius:50%;margin:var(--s3) var(--s3) calc((var(--tap) + var(--s3))*-1) auto;color:var(--stage-ink);background:var(--stage-btn)} /* over the stage, not beside it (a float squeezed the stage) */
+@media (min-width:700px){.ms-stage{justify-content:center;column-gap:var(--s16);margin:calc(var(--s8)*-1) calc(var(--s8)*-1) var(--s6)}}
+@media (max-width:699px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:144px}.ms-scr{width:212px}.ms-wb{--wr:52px;--lr:80px}}
+@media (max-width:359px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:116px}.ms-scr{width:168px;height:188px}.ms-wb{--wr:40px;--lr:64px}}
