@@ -427,7 +427,9 @@ function notCounted(A,D,mv,r){const out=[],seen=new Set(),add=(k,side)=>{const x
   const pinchT={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'};
   if(!(pinchT[A.ability]&&r&&r.type!==pinchT[A.ability]))add(A.ability,'a');if(A.ability!=='Klutz')add(A.item,'a');add(mv&&mv.name,'a');
   if(!(D.ability==='Marvel Scale'&&mv&&mv.cat!==1))add(D.ability,'d');return out}
-function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
+// The calc's state and numbers (shared with the new site's Damage Calc, Nov 14): sets the defaults (attacker, defender, weather,
+// terrain, move) the way today's calc always has, then works out both sides, the move, the order and the result.
+function calcData(){const ms=members();
   if(!dc.a||!byName.get(dc.a))dc.a=(ms[0]&&ms[0].p.n)||'Garchomp';
   if(!dc.d||!byName.get(dc.d)){let t=[];try{t=metaThreats(5).map(x=>x.p||x)}catch(e){}dc.d=(t.find(p=>p.n!==dc.a)||byName.get('Incineroar')||ROSTER[1]).n}
   const A=dcSide('atk',dc.a),D=dcSide('def',dc.d);const mvs=dcMoves(A.p);
@@ -436,7 +438,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   if(!dc.wSet){const mine=ms.some(m=>m.p.n===A.p.n);dc.weather=(typeof WEATHER_OF==='object'&&(WEATHER_OF[A.ability]||WEATHER_OF[D.ability]))||(mine&&typeof sideField==='function'?sideField(ms).weather:'')||''}
   if(!dc.tSet){const mine=ms.some(m=>m.p.n===A.p.n),tk=typeof TERRAIN_OF==='object'?(TERRAIN_OF[A.ability]||TERRAIN_OF[D.ability]):'';dc.terrain=(tk&&typeof TERR_DC==='function'?TERR_DC(tk):'')||(mine&&typeof sideField==='function'?sideField(ms).terrain:'')||''}if(!dc.mv||![...mvs.pop,...mvs.rest].some(m=>m.name===dc.mv)){const dmg=mvs.pop.filter(m=>m&&(+m.bp||0)>0&&m.name!=='Fake Out');dc.mv=(dmg[0]||mvs.pop[0]||mvs.rest[0]||{}).name}
   const mv=mvByName.get(dc.mv);const spread=dc.spread==null?!!(mv&&mv.spread):dc.spread;
-  const sel=(id,opts,v)=>`<select class="field" id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}"${o[0]===v?' selected':''}>${esc(o[1])}</option>`:`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  /*ui*/const sel=(id,opts,v)=>`<select class="field" id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}"${o[0]===v?' selected':''}>${esc(o[1])}</option>`:`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
   const PTS=v=>[...new Set([32,28,24,20,16,12,8,4,0,+v])].sort((a,b)=>b-a).map(x=>[String(x),x===32?'32 (max)':String(x)]);
   // Body Press hits with the attacker's Defense, so the points box (and the stat stage) switch to Defense for it
   const mvC=mvByName.get(dc.mv),bp_=mvC&&mvC.name==='Body Press',aShown=bp_?(A.spDef??0):mvC&&mvC.cat===2?(A.spS??A.sp):(A.spA??A.sp);
@@ -447,6 +449,8 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   const ord=mv?dcOrder(A,D,mv,dc.weather,dc.terrain):null,ctx=dcContext(A,ms);
   const opt={atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,fainted:dc.fainted||0,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit,atkLast:!!(ord&&ord.last),plusAlly:ctx.plusAlly,party:ctx.party};
   const r=damage(opt);
+  return {ms,A,D,mvs,mv,spread,mvC,bp_,aShown,ord,ctx,opt,r,sel,PTS,boosts,itemSel}}
+function renderCalc(){const el=$('dcOut');if(!el)return;const {ms,A,D,mvs,mv,spread,mvC,bp_,aShown,ord,ctx,opt,r,sel,PTS,boosts,itemSel}=calcData();
   /* what the result shows, for "Report a mistake" (trust pass): attacker, defender, move, field and the numbers */
   try{const W={sun:'Sun',rain:'Rain',sand:'Sand',snow:'Snow'},tg=[spread&&'hits both foes',dc.screen&&'screen up',dc.hh&&'Helping Hand',dc.fg&&'Friend Guard',dc.crit&&'critical hit'].filter(Boolean),pc0=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
     dc.lastCtx=[`Attacker: ${A.p.d||A.p.n} · ${A.nat} · ${A.item||'no item'} · ${A.ability} · stage ${A.boost>0?'+':''}${A.boost}${A.real?' · ladder spread':''}`,`Defender: ${D.p.d||D.p.n} · ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${D.nat} · ${D.item||'no item'} · ${D.ability} · stage ${D.boost>0?'+':''}${D.boost}${D.real?' · ladder spread':''}`,
