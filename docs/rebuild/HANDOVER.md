@@ -3,6 +3,12 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 5:51 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
+- Meta Pokemon tab DONE: Ratings (Grandstand), Usage (Podium), Sets (sets.js; 21-sets.js now in v2 shared logic). Preview v138, 400 files.
+  Meta tests 22 pass, 1 FAIL (RATE-01: method page). Home tests 18 pass, 0 FAIL, 1 known. c13 ok on Home/Ratings/Usage/Sets at every width.
+- NEXT (heavy, Sim told): My Team "The Hand" from docs/rebuild/mocks/my-team-hand/BRIEF.md (6 webp). Feature list docs/rebuild/inventory/A-team.md.
+  Every "not drawn" state (section 7) gets a picture for Sim before it is built. Tournaments: Sim's other designer.
+
 ## NOW (Nov 14, written 5:31 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
 - Sim approved all four recommendations (5:19 PM): phone Grandstand 2 rows per tier; new height limits in c13 (META_L, USAGE_L; Home 320 4,800);
   keep the brief's words and plain "Add to team". Tournaments go to her other designer (5:27 PM). Home 93 centred (slant nudge). Meta stand and
