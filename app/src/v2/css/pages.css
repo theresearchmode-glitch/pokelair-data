@@ -1553,3 +1553,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.pp2-plate.me.on{translate:none}.pp2-plate.me{padding-right:var(--s6)}.pp2-rib,.pp2-no{right:auto;left:var(--s1);top:var(--s1)}
  .pp2-four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.pp2-four>span{width:auto}}
 .pp2-fours{grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))} /* 320: the two fours fit (they asked for 300 of 288) */
+/* Nov 14 Preview check: the VS sits behind the plates (it covered a picked plate's number badge); a card's Lead/Back label keeps to the bottom so a long name (Mega Charizard Y) doesn't push it out of line */
+.pp2-seam{z-index:1}.pp2-side{position:relative;z-index:0}.pp2-side.mine{z-index:2}
+.pp2-four>span{grid-template-rows:auto 1fr auto}.pp2-four>span i{align-self:end}
