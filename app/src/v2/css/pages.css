@@ -1107,7 +1107,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    its name (the heading) and its type chips; decorations are aria-hidden and use plain gradients (no filters, no own layers: Sim's
    smooth-scroll rule). Cut corners 24 (brief 26), edge 2. Phone first; iPad upright from 700; desktop and iPad on its side from 1000. ---------- */
 .ms-card{--cut:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));position:relative;isolation:isolate;height:360px;margin-top:var(--s5)}
-.ms-card::before{content:"";position:absolute;inset:calc(var(--s6)*-1);z-index:-1;background:radial-gradient(closest-side,rgba(var(--cp),var(--card-glow)),transparent),radial-gradient(60% 40% at 50% 100%,var(--card-shade),transparent)}
+.ms-card::before{content:"";position:absolute;inset:calc(var(--s6)*-1);z-index:-1;background:radial-gradient(closest-side,rgba(var(--cp),var(--card-glow)),transparent),radial-gradient(44% 10% at 50% 88%,var(--card-shade),transparent)}
 .mc-bg{position:absolute;inset:0;clip-path:var(--cut);background:linear-gradient(135deg,var(--t1),var(--card-edge-mid) 38%,rgb(var(--cp)) 68%,var(--t2))}
 .mc-in{position:absolute;inset:2px;overflow:hidden;clip-path:polygon(0 0,calc(100% - 23px) 0,100% 23px,100% 100%,23px 100%,0 calc(100% - 23px));
   background:radial-gradient(70% 45% at 0 0,color-mix(in srgb,var(--t1) 34%,transparent),transparent),radial-gradient(70% 45% at 100% 100%,color-mix(in srgb,var(--t2) 34%,transparent),transparent),repeating-linear-gradient(135deg,var(--card-line) 0 1px,transparent 1px 8px),linear-gradient(165deg,var(--card-face-1),var(--card-face-2))}
@@ -1118,7 +1118,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .mc-orbit{position:absolute;left:50%;top:48%;translate:-50% -50%;border:1px solid var(--card-giant);border-radius:50%}
 .mc-orbit.a{width:460px;height:160px;rotate:-16deg}.mc-orbit.b{width:560px;height:208px;rotate:12deg;border-color:rgba(var(--cp),.42)}
 .mc-sheen{position:absolute;inset:0;background:linear-gradient(118deg,transparent 38%,var(--card-sheen) 48%,transparent 58%)}
-.mc-mon{position:absolute;z-index:2;left:50%;top:calc(var(--s3)*-1);translate:-50% 0}.mc-mon .np-mon,.mc-mon .np-mon .st{--iw:284px}
+.mc-mon{position:absolute;z-index:2;left:50%;top:calc(var(--s3)*-1);translate:-50% 0}.mc-mon .np-mon,.mc-mon .np-mon .st{--iw:272px}
 .mc-id{position:absolute;z-index:3;left:var(--s4);right:var(--s4);bottom:var(--s5);display:grid;justify-items:center;gap:var(--s2);text-align:center}
 .mc-id h2{margin:0;font-size:var(--t28);color:var(--card-ink);overflow-wrap:normal}
 .mc-id .ms-ty{justify-content:center}
@@ -1128,13 +1128,47 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ms-top{margin-top:var(--s5)}.ms-top .ms-rate{display:flex;align-items:flex-end;gap:var(--s3)}.ms-top .ms-rate small{max-width:22ch}
 .ms-top .ms-nums{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0;margin-top:var(--s5)}
 .ms-top .ms-n{display:block;padding:0 var(--s3);border-left:1px solid var(--rule)}.ms-top .ms-n:first-child{padding-left:0;border-left:0}
-.ms-top .ms-n b{display:block}.ms-top .ms-n span{display:block;margin-top:var(--s1)}.ms-top .ms-n .lv{display:block}
+.ms-top .ms-n b{display:block}.ms-top .ms-n span{display:block;margin-top:var(--s1)}.ms-top .ms-n .lv{display:block;margin-top:0}
 @media (max-width:399px){.ms-top .ms-n.few b{font-size:var(--t17)}}@media (max-width:359px){.ms-top .ms-n.few b{font-size:var(--t15)}}
 .ms-left>.ms-acts{margin-top:var(--s5)}.ms-left .ms-go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:0 var(--s2)}.ms-left .ms-go>.np-btn2{width:100%}
 .ms2 .ms-fr{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
 .ms2 .ms-fr:has(>.ms-f:nth-child(5)){grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
 .ms2 .ms-f{flex-direction:column;justify-content:start;gap:var(--s1);padding:var(--s2) var(--s1);text-align:center}.ms2 .ms-f span{justify-items:center}
-.ms2 .ms-f[aria-pressed="true"]{background:none}
+:root .ms2 .ms-f[aria-pressed="true"]{background:none} /* no box behind the open form (the day-mode tint at the old sheet rule won before); the slanted bar marks it */
 .ms2 .ms-f[aria-pressed="true"]::after{content:"";display:block;width:var(--s10);height:4px;margin-top:var(--s1);background:var(--plot);transform:skewX(var(--slant))}
 .ms2 .ms-bs i{width:100%;background:linear-gradient(90deg,var(--plot) calc(var(--v) / 200 * 100%),color-mix(in srgb,var(--ink) 9%,transparent) 0)}.ms2 .ms-bs .tot i{background:none}
+/* Phone: the close button keeps its own 44 strip above the card (brief 2), so the card spans the full gutters */
+@media (max-width:699px){.np-sheet .ms2{clear:both;padding-top:0}.ms2 .ms-card{margin-top:0}}
 @media (max-width:359px){.ms-card{height:320px}.mc-mon .np-mon,.mc-mon .np-mon .st{--iw:236px}.mc-id h2{font-size:var(--t24)}}
+/* The Card, iPad upright (brief 3, Nov 13): card 340 x 480 on the left, rating / numbers / buttons / forms centred beside it; tabs and two balanced columns below */
+@media (min-width:700px){.np-sheet:has(>.ms2)>.x{margin-left:calc(var(--tap)*-1)}
+ .ms2 .ms-cols{display:block;column-count:2;column-gap:var(--s10)}.ms2 .ms-cols>*{break-inside:avoid;margin-bottom:var(--s8)}.ms2 .ms-cols>.ms-wide{column-span:all}}
+@media (min-width:700px) and (max-width:999px){
+ .ms2{display:grid;grid-template-columns:340px minmax(0,1fr);grid-template-rows:minmax(var(--s3),1fr) auto auto auto minmax(var(--s3),1fr) auto auto;column-gap:var(--s8)}
+ .ms2 .ms-card{grid-column:1;grid-row:1/6;height:480px;margin:0}
+ .ms2>.ms-top{grid-column:2;grid-row:2;margin:0}.ms-left>.ms-acts{grid-column:2;grid-row:3}.ms2>.ms-forms{grid-column:2;grid-row:4;margin-top:var(--s6)}
+ .ms2>.ms-tabs{grid-column:1/-1;grid-row:6}.ms2>.ms-pan{grid-column:1/-1;grid-row:7}
+ .ms2 .mc-mon{top:var(--s10)}.ms2 .mc-mon .np-mon,.ms2 .mc-mon .np-mon .st{--iw:284px}}
+/* The Card, desktop and iPad on its side (brief 4, Nov 13): left column = the tall card (fills the height) + On your team and the two buttons;
+   right = rating and numbers in one row, a slim forms row, the tabs, two balanced columns. The left column stays put while the right scrolls,
+   and scrolls with the page in windows under 900 high so nothing is clipped. */
+@media (min-width:1000px){
+ .ms2{display:grid;grid-template-columns:392px minmax(0,1fr);grid-template-rows:auto auto auto 1fr;column-gap:var(--s12);align-items:start}
+ .ms2>.ms-left{display:flex;flex-direction:column;grid-column:1;grid-row:1/-1;position:sticky;top:var(--s8);height:calc(100vh - var(--s24) - var(--s16))}
+ .ms2 .ms-card{flex:1 1 auto;height:auto;min-height:328px;margin:0;container-type:size}
+ .ms2 .mc-mon{top:auto;bottom:calc(var(--s24) + var(--s16) + var(--s1))}.ms2 .mc-mon .np-mon,.ms2 .mc-mon .np-mon .st{--iw:min(324px,calc(100cqh - var(--s24) - var(--s16) - var(--s12) - var(--s2)))}
+ .ms-left>.ms-acts{margin-top:var(--s5)}
+ .ms2>.ms-top{grid-column:2;grid-row:1;display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s4) var(--s8);margin:0;padding:0 var(--s12) var(--s5) 0;border-bottom:1px solid var(--rule)}
+ .ms2>.ms-top .ms-nums{flex:1 1 264px;margin:0}.ms2>.ms-top .ms-rate small{max-width:15ch}
+ .ms2>.ms-forms{grid-column:2;grid-row:2;display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center;margin:0;padding:var(--s3) 0;border-bottom:1px solid var(--rule)}
+ .ms2 .ms-fh{display:grid;justify-items:start;gap:var(--s1);max-width:16ch}
+ .ms2 .ms-fr{margin:0}.ms2 .ms-f{flex-direction:row;align-items:center;text-align:left;gap:var(--s2)}.ms2 .ms-f span{justify-items:start}
+ .ms2 .ms-f .np-mon,.ms2 .ms-f .np-mon .st{--iw:40px}
+ .ms2 .ms-f{position:relative}.ms2 .ms-f[aria-pressed="true"]::after{position:absolute;left:var(--s2);bottom:0;margin:0}
+ .ms2>.ms-tabs{grid-column:2;grid-row:3;margin:0;padding:0}.ms2>.ms-pan{grid-column:2;grid-row:4}}
+@media (min-width:1000px) and (max-height:899px){.ms2>.ms-left{position:static}}
+/* narrower desktop windows: the forms row stacks (label over tiles, then tiles upright) and the tab content uses one column until the right side has room for two */
+@media (min-width:1000px){.ms2>.ms-forms{container-type:inline-size}}
+@container (max-width:719px){.ms2 .ms-forms>.ms-fh{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;max-width:none}.ms2 .ms-forms>.ms-fr{grid-column:1/-1}}
+@container (max-width:559px){.ms2 .ms-fr .ms-f{flex-direction:column;text-align:center}.ms2 .ms-fr .ms-f span{justify-items:center}.ms2 .ms-fr .ms-f[aria-pressed="true"]::after{left:50%;translate:-50% 0}}
+@media (min-width:1000px) and (max-width:1143px){.ms2 .ms-cols{column-count:1}}
