@@ -1,33 +1,32 @@
 {
- "updated": "2026-11-13T10:29:23.925Z",
+ "updated": "2026-11-14T10:18:43.602Z",
  "today": {
-  "date": "2026-11-13",
+  "date": "2026-11-14",
   "model": {
-   "heldOutAcc": 0.5471,
-   "calibratedLogloss": 0.68427,
-   "eventsBeatCoinFlip": "71/92",
-   "rawWinRateAcc": 0.5407,
-   "games": 40799
+   "heldOutAcc": 0.55,
+   "calibratedLogloss": 0.68307,
+   "eventsBeatCoinFlip": "70/95",
+   "rawWinRateAcc": 0.5425,
+   "games": 41720
   },
   "teamStrengthOnEvents": {
-   "acc": 0.5532,
-   "pairs": 4024,
-   "events": 111
+   "acc": 0.5569,
+   "pairs": 4105,
+   "events": 114
   },
   "ratingsForward": {
    "snapshot": "2026-10-29",
-   "acc": 0.5305,
-   "games": 7363,
-   "snapshots": 2,
-   "avgAcc": 0.5282
+   "acc": 0.5343,
+   "games": 8277,
+   "snapshots": 3,
+   "avgAcc": 0.532
   },
   "replays": {
    "games": 20000,
-   "rated1300": 6672
+   "rated1300": 6598
   },
   "warnings": [
-   "Win model held-out accuracy: 0.5471 vs 0.5613 recently",
-   "Win model calibrated log-loss: 0.68427 vs 0.68083 recently"
+   "Win model held-out accuracy: 0.55 vs 0.5613 recently"
   ]
  },
  "history": [
@@ -411,6 +410,35 @@
    "warnings": [
     "Win model held-out accuracy: 0.5471 vs 0.5613 recently",
     "Win model calibrated log-loss: 0.68427 vs 0.68083 recently"
+   ]
+  },
+  {
+   "date": "2026-11-14",
+   "model": {
+    "heldOutAcc": 0.55,
+    "calibratedLogloss": 0.68307,
+    "eventsBeatCoinFlip": "70/95",
+    "rawWinRateAcc": 0.5425,
+    "games": 41720
+   },
+   "teamStrengthOnEvents": {
+    "acc": 0.5569,
+    "pairs": 4105,
+    "events": 114
+   },
+   "ratingsForward": {
+    "snapshot": "2026-10-29",
+    "acc": 0.5343,
+    "games": 8277,
+    "snapshots": 3,
+    "avgAcc": 0.532
+   },
+   "replays": {
+    "games": 20000,
+    "rated1300": 6598
+   },
+   "warnings": [
+    "Win model held-out accuracy: 0.55 vs 0.5613 recently"
    ]
   }
  ]
