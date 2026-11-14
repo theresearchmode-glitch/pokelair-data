@@ -1175,3 +1175,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* type matchups: a narrower label column so a row of three chips (Fire, Poison, Rock) stays on one line in the two-column desktop layout */
 @media (min-width:1144px){.ms2 .ms-tyr{grid-template-columns:80px minmax(0,1fr)}}
 @media (min-width:700px) and (max-width:779px){.ms2{column-gap:var(--s6)}} /* small iPads: 8 more for the numbers and form names beside the card */
+/* "Too few" ran into the next column on iPad and desktop (Pikachu, Rotom): the three columns size to their content there (still even when they fit), and the words go one step smaller on iPad */
+@media (min-width:700px){.ms-top .ms-nums{grid-auto-columns:auto}}@media (min-width:700px) and (max-width:999px){.ms-top .ms-n.few b{font-size:var(--t17)}}
+@media (min-width:1000px){.ms-left>.ms-acts{min-height:calc(var(--s24) + var(--s3))}} /* the card keeps one size whether the Pokémon is on the team or shows "Add to My Team" (brief 4: same size for every Pokémon) */
