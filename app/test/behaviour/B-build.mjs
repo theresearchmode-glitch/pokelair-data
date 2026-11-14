@@ -4,6 +4,7 @@
 // (adapters/current.mjs + adapters/current.B-build.mjs); the rebuild adapter offers the same names.
 import {group, open, TEAM, BOX, expect, sleep, eventually} from './harness.mjs';
 const t = group('B-build');
+const NEW = (process.env.ADAPTER || 'current') === 'v2'; // the rebuild: wording and layout Sim approved for the new site
 const same = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
 const has = (tx, re, what) => expect(re instanceof RegExp ? re.test(tx) : tx.includes(re), `${what || 'text'} missing ${re}: «${tx.slice(0, 400)}»`);
 const not = (tx, re, what) => expect(!(re instanceof RegExp ? re.test(tx) : tx.includes(re)), `${what || 'text'} should not show ${re}: «${tx.slice(0, 400)}»`);
@@ -493,7 +494,8 @@ t('SUGG-07', 'Add Protect: the toast offers Undo, and Undo takes Protect back ou
 t('SUGG-08', 'Nothing to fix: card with Battle and Sets, then side-grades that keep every check', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0); const s = await ui.waitMySuggestions();
   has(s, 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.', 'card'); has(s, 'Your edge now comes from how you play it', 'card');
-  has(s, /Nothing raises this team.s Strength Score right now\. (These swaps keep every check and about the same grade, with a different look:|and every other swap would lower it\.)/, 'side-grade lead');
+  if (NEW) has(s, /See All Suggestions/, 'the swaps behind See All Suggestions'); /* new site (Sim's fix plan A3, Nov 12, 'your recommendation'): when no swap raises the score there are no swap cards on My Team; the swaps wait behind See All Suggestions */
+  else has(s, /Nothing raises this team.s Strength Score right now\. (These swaps keep every check and about the same (?:grade|score), with a different look:|and every other swap would lower it\.)/, 'side-grade lead');
   await ui.tap(/^(Battle|Plan a Match ›)$/, ui.area('My team suggestions'), 700); /* new: the links say where they go (review fix, Nov 13) */ expect(await ui.current() === 'matchup', 'Battle button did not open Battle'); await close(); });
 
 t('SUGG-09', 'Apply: writes the plan, keeps the place under your finger, toast with the score move and Undo', async () => {
