@@ -19,7 +19,7 @@ for (const [k, f] of [['a', A], ['b', B]]) {
     for(const e of E) for(const t of e.top||[]) if(t.mons&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n))) teams.push(t.mons.map(m=>m.n));
     const pick=teams.filter((_,i)=>i%Math.max(1,Math.floor(teams.length/12))===0).slice(0,12); const thr=metaThreats(30).map(x=>x.p||x);
     for(let i=0;i<pick.length;i++){ const me=pick[i]; S.format='doubles'; S.slots=me.map(n=>({n,a:null,lock:false})); fixSlots(); render();
-      for(let j=0;j<3;j++){ const a=me[j], d=thr[(i*3+j)%thr.length].n; const mvs=dcMoves(byName.get(a)); const list=[null,...mvs.pop.slice(0,4).map(m=>m.name)];
+      for(let j=0;j<3;j++){ const a=me[j], d=thr[(i*3+j)%thr.length].n; const mvs=dcMoves(byName.get(a)); const list=[null,...mvs.pop.slice(0,4).map(m=>m.name),...mvs.rest.filter(m=>['counter','endeavor','stockpile','fling','gambit','wt','lowhp'].includes(m.vbp)).slice(0,3).map(m=>m.name),...mvs.rest.filter(m=>m.type==='Ground'||m.type==='Normal'||m.type==='Poison').slice(0,2).map(m=>m.name)];
         for(const mvn of list) for(const st of [{},{weather:'rain',wSet:true,terrain:'grassy',tSet:true},{screen:true,hh:true,crit:true},{fg:true,spread:true,weather:'sun',wSet:true},{dir:'theirs'}]){
           dc.a=a; dc.d=d; dc.mv=mvn; dc.spread=null; dc.wSet=false; dc.tSet=false; dc.screen=false; dc.hh=false; dc.fg=false; dc.crit=false; dc.dir='mine'; dc.inv={}; Object.assign(dc,st);
           renderCalc(); res.push($('dcOut').innerHTML+' ||| '+dc.lastCtx); } } }
