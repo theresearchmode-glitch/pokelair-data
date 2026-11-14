@@ -659,9 +659,9 @@ t('PRAC-03', 'reveal: banner, both fours, per-Pokémon bars, score saved, next t
   expect(/Your pick/i.test(tx) && /Strong players' four/i.test(tx), 'both fours not shown');
   expect(/Each of your six against this team/i.test(tx), 'no per-Pokémon bars');
   const sc = await ls('np.practice'); expect(sc && sc.played === 1, 'score not saved with played = 1: ' + JSON.stringify(sc));
-  const six1 = (/as seen at team preview (.+?) (Strong|Ladder)/.exec(await ui.pageText()) || [])[1];
+  const six1 = (/as seen at team preview (.+?) (Strong|Ladder)/i.exec(await ui.pageText()) || [])[1];
   await ui.tapIn('Next team', 900); const tx2 = await ui.pageText(); expect(/Bring four 0\/4/i.test(tx2), 'Next team did not start a new pick');
-  expect(six1 && !tx2.includes('as seen at team preview ' + six1), 'Next team shows the same six'); await close(); });
+  expect(six1 && !tx2.toLowerCase().includes(('as seen at team preview ' + six1).toLowerCase()), 'Next team shows the same six'); await close(); });
 
 t('PRAC-04', 'score line after one round', async () => {
   const {ui, close} = await open({team: TEAM, stored: {'np.practice': JSON.stringify({streak: 1, best: 2, played: 1, matched: 1})}}); await ui.go('Practice');

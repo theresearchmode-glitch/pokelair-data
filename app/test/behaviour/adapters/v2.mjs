@@ -5,7 +5,7 @@
 // unchanged through its test hook (src/v2/test-hook.js sets window.__ev when window.__PL_TEST is set before load).
 const slot = n => ({n, a: null, lock: false});
 // player-facing page names -> the ids the tests use (today's view names). The new build's hash routes and page-like sheets map onto them.
-const ROUTE = {report: '#team', box: '#box', compare: '#compare', matchup: '#battle', speed: '#speed', calc: '#calc', types: '#types'};
+const ROUTE = {report: '#team', box: '#box', compare: '#compare', matchup: '#battle', speed: '#speed', calc: '#calc', types: '#types', practice: '#practice'};
 // sheets that ARE a page in today's site (Saved Teams, Team Sheet, All Suggestions): current() reports them as that page
 const PAGE_SHEETS = [['.svt2', 'teams'], ['.ts2', 'sheet'], ['.sga2', 'coverage']];
 export default {

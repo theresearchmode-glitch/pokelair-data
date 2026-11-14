@@ -108,6 +108,14 @@ export default (ui, pg) => {
     calcSetValue: (side, field) => pg.evaluate(([s, f]) => { const id = {attacker: {points: 'dcASp', nature: 'dcANat'}, defender: {hp: 'dcDHp', def: 'dcDDf', spd: 'dcDSd', nature: 'dcDNat'}}[s][f]; const e = document.getElementById(id); return e ? e.selectedOptions[0].text : null; }, [side, field]),
     calcSetChoices: (side, field) => pg.evaluate(([s, f]) => { const id = {attacker: {item: 'dcAIt', nature: 'dcANat', stage: 'dcABo'}, defender: {item: 'dcDIt', nature: 'dcDNat', stage: 'dcDBo'}}[s][f]; const e = document.getElementById(id); return e ? [...e.options].map(o => o.text) : null; }, [side, field]),
     async calcSwap() { await click('#dcSwap', 600); },
+    // reload with some data documents missing (today's helper, unchanged)
+    async reloadWithout(doc, wait = 1500) { await pg.addInitScript(d => { d = [].concat(d); const c = window.claude; if (!c) return; const use = c.use; window.claude = {use: async n => { const r = await use(n); if (n !== 'db' || !r) return r;
+        const doc = p => d.includes(p) ? {get: async () => ({exists: false, data: () => undefined}), set: async () => {}, update: async () => {}, onSnapshot: cb => { setTimeout(() => cb({exists: false, metadata: {}, data: () => undefined}), 5); return () => {}; }} : r.doc(p);
+        return {doc, collection: k => ({doc: x => doc(k + '/' + x)})}; }}; }, doc); await pg.reload(); await pg.waitForTimeout(wait); },
+    // ---- Team Preview Practice (Nov 14, Arena VS) ----
+    async practicePick(name) { const ok = await pg.evaluate(n => { const e = [...document.querySelectorAll('.pp2 [data-ppick]')].find(e => e.getClientRects().length && (e.dataset.ppick === n || e.innerText.replace(/\s+/g, ' ').includes(n))); if (!e) return false; e.click(); return true; }, name); if (!ok) NOT('practice pick ' + name + ' (not in your six on screen)'); await pg.waitForTimeout(300); },
+    practiceMine: () => pg.evaluate(() => [...document.querySelectorAll('.pp2 [data-ppick]')].filter(e => e.getClientRects().length).map(e => e.dataset.ppick)),
+    isDisabled: label => pg.evaluate(l => { const b = [...document.querySelectorAll('button')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim().toLowerCase() === String(l).toLowerCase()); return b ? b.disabled : null; }, label),
     // ---- Type Chart (Nov 14, concept A): read the page as a person would ----
     pickedTypes: () => pg.evaluate(() => [...document.querySelectorAll('.tc [data-tctype][aria-pressed="true"]')].map(e => e.innerText.trim())),
     async tapType(t) { await click(`.tc [data-tctype="${t}"]`, 400); },
@@ -130,8 +138,8 @@ export default (ui, pg) => {
     isPressed: label => pg.evaluate(([m, re]) => { const R = re ? new RegExp(re[0], re[1]) : null, hit = t => R ? R.test(t) : t.toLowerCase() === String(m).toLowerCase();
       for (const s of document.querySelectorAll('.dc2 [data-dcfield]')) for (const o of s.options) { const names = [o.text, o.text.replace(/^No (weather|terrain)$/i, 'No $1')]; if (names.some(hit)) return s.value === o.value; }
       const T = e => (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim();
-      const els = [...document.querySelectorAll('[aria-pressed],[aria-selected]')].filter(e => e.getClientRects().length); const e = els.find(e => hit(T(e))) || els.find(e => !R && T(e).toLowerCase().includes(String(m).toLowerCase()));
-      return e ? (e.getAttribute('aria-pressed') || e.getAttribute('aria-selected')) === 'true' : null; }, [String(label), label instanceof RegExp ? [label.source, label.flags] : null]),
+      const els = [...document.querySelectorAll('[aria-pressed],[aria-selected],[aria-checked]')].filter(e => e.getClientRects().length); const e = els.find(e => hit(T(e))) || els.find(e => !R && T(e).toLowerCase().includes(String(m).toLowerCase()));
+      return e ? (e.getAttribute('aria-pressed') || e.getAttribute('aria-selected') || e.getAttribute('aria-checked')) === 'true' : null; }, [String(label), label instanceof RegExp ? [label.source, label.flags] : null]),
   };
   // the other Battle pages: every helper the current adapter has that isn't wired here names itself as missing
   const OTHER = ['mainTab', 'tapMainTab', 'openMenu', 'menuGroup', 'tapMenu', 'toolSwitch', 'toolSwitchChosen', 'toolSwitchKey', 'opponentPictures', 'buttonTop', 'doubleTap', 'trackChartLines', 'scrollToEnd', 'focusInSheet',

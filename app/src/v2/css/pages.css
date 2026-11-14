@@ -1495,3 +1495,61 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:700px) and (max-width:1023px){.tc-tm{flex-direction:column;justify-content:center;gap:2px;padding:var(--s1)}.tc-tm span{white-space:normal;overflow:visible;text-align:center;line-height:1.2}}
 @media (min-width:700px) and (max-width:1023px){.tc-tm span{font-stretch:85%;letter-spacing:-.01em}} /* every name on one line (Mega Charizard Y took two beside one-line neighbours) */
 @media (min-width:700px) and (max-width:1023px){.tc-team{gap:var(--s1)}.tc-tm{padding-inline:2px}}
+/* ---------- Team Preview Practice (Nov 14, Sim's pick 'Arena VS'; mock-ups docs/rebuild/mocks/practice/round2) ---------- */
+.pp2{padding:0 var(--gut) var(--s16);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s5);overflow-x:clip}
+.pp2-h{display:grid;gap:var(--s2)}.pp2-h h1{font-size:var(--t34);margin:0}.pp2-h h1 .pl{color:var(--plot-text)}
+.pp2-lede{margin:0;font:400 var(--t17)/1.5 var(--b);color:var(--ink-2)}.pp2-lede b{color:var(--ink)}
+.pp2-cap{margin:0;font-size:var(--t13);line-height:1.3;font-style:italic;font-synthesis:style;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.pp2-who{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pp2-who b{color:var(--ink)}.pp2-src{margin:0}
+.pp2-score{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pp2-score b{font-size:var(--t20);color:var(--plot-text);font-style:italic;font-synthesis:style}
+.pp2-act{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5)}.pp2 .np-btn{max-width:100%}.pp2 .np-btn span{white-space:normal;text-align:center}
+.pp2 .nm.u{font-size:var(--t17);line-height:1.1;font-style:italic;font-synthesis:style}.pp2 .ty{display:flex;gap:var(--s1);flex-wrap:wrap}
+/* start: two big slanted choices */
+.pp2-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
+.pp2-mode{display:grid;align-content:start;gap:var(--s2);min-height:136px;padding:var(--s5) var(--s8) var(--s5) var(--s5);text-align:left;background:var(--wash);clip-path:polygon(0 0,100% 0,calc(100% - 24px) 100%,0 100%)}
+.pp2-mode b{font-size:var(--t22)}.pp2-mode span{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pp2-mode .six{display:flex;gap:var(--s1)}
+.pp2-mode[aria-checked="true"]{background:color-mix(in srgb,var(--plot) 18%,var(--surface))}.pp2-mode[aria-checked="true"] b{color:var(--plot-text)}.pp2-mode:disabled{opacity:.6;cursor:not-allowed}
+/* the meter: four slanted pips for 'Bring four', two for 'Lead two' */
+.pp2-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}
+.pp2-meter{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1)}.pp2-meter .lab{font:700 var(--t13)/1 var(--b);color:var(--ink-2);margin:0 var(--s2) 0 var(--s4)}.pp2-meter .lab:first-child{margin-left:0}.pp2-meter .lab b{color:var(--ink)}
+.pp2-meter i{width:28px;height:12px;transform:skewX(-20deg);background:color-mix(in srgb,var(--ink) 14%,transparent);transition:background .25s}.pp2-meter i.on{background:var(--plot)}.pp2-meter i.on.ld{background:var(--bad)}
+.pp2-hint{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}.pp2-line{margin:0;min-height:1.5em;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pp2-line b{color:var(--ink)}
+/* the arena: their half, the seam with a giant outlined VS, your half */
+.pp2-arena{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 96px minmax(0,1fr);isolation:isolate}
+.pp2-arena::before{content:"";position:absolute;inset:0 50% 0 0;z-index:-1;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--plot) 16%,transparent))}
+.pp2-arena::after{content:"";position:absolute;inset:0 0 0 50%;z-index:-1;background:linear-gradient(270deg,transparent,color-mix(in srgb,var(--ink) 8%,transparent))}
+.pp2-side{display:grid;gap:var(--s3);align-content:start;padding:var(--s4) 0}.pp2-side.them .pp2-cap{text-align:right}
+.pp2-seam{position:relative;z-index:3}.pp2-seam::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:linear-gradient(transparent,var(--plot),transparent);transform:skewX(-8deg)}
+.pp2-seam b{position:absolute;top:50%;left:50%;translate:-50% -50%;rotate:-8deg;font-size:var(--d120);line-height:1;font-style:italic;font-synthesis:style;color:transparent;-webkit-text-stroke:2px var(--plot);white-space:nowrap}
+.pp2-plate{position:relative;display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:var(--s4);min-height:104px;padding:var(--s2) var(--s16) var(--s2) var(--s3);text-align:left;background:var(--surface);clip-path:polygon(0 0,100% 0,calc(100% - 20px) 100%,0 100%);transition:translate .35s cubic-bezier(.16,1,.3,1)}
+.pp2-plate .tx{display:grid;gap:var(--s2)}
+.pp2-plate.them{grid-template-columns:minmax(0,1fr) 80px;padding:var(--s2) var(--s3) var(--s2) var(--s16);text-align:right;clip-path:polygon(20px 0,100% 0,100% 100%,0 100%)}.pp2-plate.them .ty{justify-content:flex-end}
+
+.pp2-plate.me.on{translate:var(--s6) 0;background:linear-gradient(100deg,var(--surface) 30%,rgba(var(--cp),.32))}
+.pp2-plate.me:not(.on):not(.ok):not(.miss){opacity:.8}.pp2-plate.me.miss{opacity:.72}
+.pp2-plate.me:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.pp2-rib,.pp2-no{position:absolute;top:0;right:var(--s8);padding:var(--s1) var(--s3);font-size:var(--t13);text-transform:uppercase;font-style:italic;font-synthesis:style;color:var(--on-mark)}.pp2-rib{background:var(--bad)}.pp2-no{background:var(--plot);font-size:var(--t15)}
+/* reveal */
+.pp2-banner{display:grid;gap:var(--s1);padding:var(--s5) var(--s6);clip-path:polygon(16px 0,100% 0,calc(100% - 16px) 100%,0 100%)}.pp2-banner b{font-size:var(--t28)}.pp2-banner span{font:600 var(--t16)/1.5 var(--b)}
+.pp2-banner.yes{background:var(--plot);color:var(--on-mark)}.pp2-banner.no,.pp2-banner.none{background:color-mix(in srgb,var(--ink) 8%,var(--surface))}
+.pp2-fours{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--s5)}.pp2-fours>div{display:grid;gap:var(--s2);align-content:start}
+.pp2-four{display:flex;flex-wrap:wrap;gap:var(--s2)}.pp2-four>span{display:grid;justify-items:center;gap:2px;width:88px;padding:var(--s2) var(--s1);background:var(--wash);font:600 var(--t13)/1.2 var(--b);text-align:center}.pp2-four>span i{font-style:normal;font-weight:700;font-size:var(--t13);color:var(--ink-2)}.pp2-four>span.ld i{color:var(--bad-text)}
+.pp2-each{margin-top:var(--s2)}.pp2.rev .pp2-plate.me{min-height:120px}
+.pp2-rate{display:grid;gap:var(--s1);width:100%}.pp2-rate .bars{position:relative;height:8px;background:color-mix(in srgb,var(--ink) 10%,transparent);transform:skewX(-20deg)}.pp2-rate .bars i{position:absolute;left:0;top:0;bottom:0}.pp2-rate .bars .b{background:var(--plot)}.pp2-rate .bars .l{background:var(--bad);top:auto;height:3px}
+.pp2-rate small{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.pp2-rate small b{color:var(--ink)}.pp2-rate.none{margin:0;font:400 var(--t13)/1.4 var(--b);color:var(--ink-3)}
+.pp2-stamp{position:absolute;right:var(--s10);bottom:var(--s3);rotate:-8deg;padding:var(--s1) var(--s2);font-size:var(--t13);text-transform:uppercase;font-style:italic;font-synthesis:style;border:2px solid currentColor;z-index:2}
+.pp2-stamp.yes{color:var(--plot-text);background:color-mix(in srgb,var(--plot) 14%,var(--surface))}.pp2-stamp.no{color:var(--ink-3);background:var(--surface)}
+@media (prefers-reduced-motion:reduce){.pp2-plate{transition:none}}
+@media (max-width:699px){.pp2-h h1{font-size:var(--t28)}.pp2-modes{grid-template-columns:minmax(0,1fr)}.pp2-meter i{width:20px}
+ .pp2-arena{grid-template-columns:minmax(0,1fr)}.pp2-arena::before,.pp2-arena::after{display:none}.pp2-seam{height:72px}.pp2-seam::before{display:none}.pp2-seam b{font-size:var(--t34)}
+ .pp2-side.them{grid-template-columns:repeat(3,minmax(0,1fr))}.pp2-side.them .pp2-cap,.pp2-side.them .pp2-who{grid-column:1/-1}.pp2-side.mine .pp2-cap{text-align:left}
+ .pp2-plate.them{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;padding:var(--s2);clip-path:none}.pp2-plate.them .ty{display:none}.pp2-plate.them .np-mon{order:-1}.pp2-plate.them .nm{font-size:var(--t13)}
+ .pp2-plate.me{grid-template-columns:72px minmax(0,1fr);min-height:88px;padding-right:var(--s12)}.pp2-plate.me.on{translate:var(--s3) 0}.pp2-rib,.pp2-no{right:var(--s6)}.pp2-stamp{right:var(--s6)}
+ .pp2-side.them{order:-1}.pp2-seam{order:-1}.pp2-side.them .pp2-cap{text-align:left}.pp2-side.them{order:-2}}
+.pp2-stamp{position:static;rotate:-6deg;margin-left:var(--s2);align-self:center} /* in the plate's own line, beside the types (it covered the rates) */
+@media (max-width:699px){.pp2-stamp{right:auto}}
+/* phone fixes (Nov 14): each meter group stays whole; picked plates don't slide off the screen; the ribbon sits over the sprite; each four in one row */
+.pp2-meter{column-gap:var(--s4);row-gap:var(--s2)}.pp2-meter .grp{display:inline-flex;align-items:center;gap:var(--s1);white-space:nowrap}.pp2-meter .grp .lab{margin:0 var(--s2) 0 0}
+@media (max-width:699px){.pp2-plate.me.on{translate:none}.pp2-plate.me{padding-right:var(--s6)}.pp2-rib,.pp2-no{right:auto;left:var(--s1);top:var(--s1)}
+ .pp2-four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.pp2-four>span{width:auto}}
+.pp2-fours{grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))} /* 320: the two fours fit (they asked for 300 of 288) */
