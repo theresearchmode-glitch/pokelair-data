@@ -22,7 +22,7 @@ V2.hmUi = V2.hmUi || {};
 // Gift Cards") goes too (the mock-up showed a short name)
 V2.evTitle = n => evName(n).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, ' ').replace(/[\s\-–|·:!]*(cash prizes?|prize pool|prizes?|\$\s?\d[\d,.]*\s*(usd|prize( pool)?)?)[\s!]*$/i, '').replace(/\s+(?:[$€£]\s?\d[\d,.]*|\d[\d,.]*\s?[$€£])\s*(?:amazon|gift|cash|prize|usd|eur)?[^#]*$/i, '').replace(/\s+/g, ' ').trim().replace(/ (#\d+)$/, '\u00a0$1') || evName(n); // "#18" stays with the name (Sim, Nov 12)
 V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
-  const tile = (n, sub, attrs) => `<button type="button" class="hm-pk" ${attrs}>${V2.mon(n, {iw: 96, bare: true, tag: true})}<b>${V2.tileName(V2.disp(n))}</b><small>${sub ? E(sub) : '&nbsp;'}</small></button>`;
+  const tile = (n, sub, attrs) => `<button type="button" class="hm-pk" ${attrs}>${V2.mon(n, {iw: 96, bare: true, tag: true})}<b>${V2.tileName(V2.disp(n))}</b><small>${sub ? V2.keepForm(E(sub)) : '&nbsp;'}</small></button>`;
   let them = '<div class="hm-side"></div>', FC = null;
   if (C) { const {ev, t} = C, key = ev.id + '#' + ev.top.indexOf(t), sure = V2.hmUi.sure === key;
     try { FC = ms.length >= 4 ? CH.fourVs(ms, C.six.map(x => x.p.n)) : null; } catch (e) { FC = null; }
@@ -40,7 +40,7 @@ V2.homeDuel = () => { const E = V2.esc, C = homeChamp(), ms = members();
   let G = null; try { const RD = ms.length ? prepOf(ms) : null; G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; } catch (e) {}
   const band = G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid' : 'solid';
   const score = s != null && G ? `<div class="np-score sm hm-score" style="--band:var(--band-${band})"><b>${s}</b><div class="w"><span>${E(CH.wordOf(G.s))}</span><small>Strength Score</small></div></div>` : '';
-  const six = ms.length ? ord.map(m => tile(m.p.n, '', `data-v2mon="${E(m.p.n)}" aria-label="${E(m.d)}: open its info"`)).join('')
+  const six = ms.length ? ord.map(m => { const it = m.heldItem || m.item || ''; return tile(m.p.n, it, `data-v2mon="${E(m.p.n)}" aria-label="${E(m.d)}${it ? ', ' + E(it) : ''}: open its info"`); }).join('')
     : Array.from({length: 6}, (_, i) => `<button type="button" class="hm-pk hm-add" data-v2search aria-label="Add a Pokémon to slot ${i + 1}"><span class="hm-plus" aria-hidden="true">+</span><b>Add a Pokémon</b><small>&nbsp;</small></button>`).join('');
   const plan = lead.length >= 2 ? `<p class="hm-plan"><strong>Game Plan ${E(vs)}:</strong> lead ${pair(lead)}${back.length ? `, back ${pair(back)}` : ''}${bench.length ? `, bench ${pair(bench)}` : ''}.</p>` : '<div class="hm-plan"></div>';
   const acts = ms.length ? `${C && FC ? `<button type="button" class="np-btn" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}">Prep vs the Champion</button>` : ''}<a class="np-link" href="#team">Open My Team ›</a>` : '<a class="np-btn" href="#team">Add Your Six</a>';

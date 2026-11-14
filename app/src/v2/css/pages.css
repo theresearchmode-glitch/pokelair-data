@@ -616,7 +616,7 @@
 .hm-hd{align-self:start} /* the two heading lines level at the top (Sim, Nov 12) */.hm-k2{margin:0 0 var(--s2);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
 .hm-them h3{font-size:var(--t28);margin:0}.hm-who{margin:var(--s2) 0 0;font:600 var(--t15)/1.4 var(--b)}.hm-who small{font-weight:400;color:var(--ink-2)}
 .hm-score{margin-top:var(--s1)}
-.hm-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2) var(--s3);margin-top:var(--s4);align-content:start}
+.hm-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s3);margin-top:var(--s4);align-content:start}
 .hm-pk{display:grid;justify-items:center;align-content:end;gap:0;min-width:0;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;text-align:center}
 .hm-pk b{font:700 var(--t15)/1.25 var(--b);margin-top:var(--s2)}.hm-pk small{font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}
 .hm-add{min-height:150px;align-content:center}.hm-plus{display:grid;place-items:center;width:64px;height:64px;font:900 var(--t28)/1 var(--u);color:var(--ink-3);border:1.5px dashed var(--rule)}
