@@ -4,7 +4,9 @@ Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this t
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
 ## NOW (Nov 13, written 10:34 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
-- PAUSED by Sim (10:34 PM): "dont work on the info page yet im checking something". No info-page work until she says go.
+- Sim paused the info page at 10:34 PM and resumed it ("pls continue") right after. Section 6 checks done 10:45 PM (bbfb754): names on one
+  line, "Too few" fits, desktop card one size in both team states; 6 forms, one type, no data, widest/tallest, 320, 1366x768, Add state,
+  keyboard, screen reader pass. UNSURE: scroll smoothness on a real mouse PC. Clicks test running. Waiting on Sim: Preview go; A/B.
 - Info sheet = NEW DIRECTION, Sim's Card brief (docs/rebuild/info-sheet/BRIEF-CARD.md; the Stadium/Side Stage is gone). Built on the
   branch, NOT on the Preview (v120 is still the old stage): phone, iPad upright, desktop, dark + light (b35657a, a1064d0, 4b7bec5).
   Tab sub-lines removed (Sim, 10:30 PM). Checks 10:31 PM: words 345/345 kept (look/sit3.cjs, order-free), polish 0 spills,
