@@ -248,9 +248,12 @@ V2.navStep = was => { V2.navInit(); const st = history.state || {};
   if (st.v2d != null) { V2.nav.d = st.v2d; V2.nav.p = st.v2p || ''; V2.nav.hs[V2.nav.d] = location.hash || '#home'; if (V2.nav.d > V2.nav.max) V2.nav.max = V2.nav.d; return st.v2y || 0; }
   // a new step after going back drops the steps you could go forward to (as in any browser)
   V2.nav.d++; V2.nav.p = was || '#home'; V2.nav.max = V2.nav.d; V2.nav.hs.length = V2.nav.d; V2.nav.hs[V2.nav.d] = location.hash || '#home'; V2.navMark({v2d: V2.nav.d, v2p: V2.nav.p, v2y: 0}); return 0; };
-// remember where this step is scrolled: when scrolling settles, and right before any tap that may change the page
-addEventListener('scroll', () => { clearTimeout(V2.nav.t); V2.nav.t = setTimeout(() => { if (!V2._sheet) V2.navMark({v2y: Math.round(scrollY)}); }, 200); }, {passive: true});
-document.addEventListener('click', () => { if (!V2._sheet && V2.nav.ready) { clearTimeout(V2.nav.t); V2.navMark({v2y: Math.round(scrollY)}); } }, true);
+// remember where this step is scrolled: right before any tap that may change the page, and when the page is hidden or left.
+// Sim, Nov 14 (Claude app on iPhone, every long page): the scroll bar flashed after scrolling a moment. Writing to the history while
+// scrolling (each 200 ms pause) was the likely cause, so scrolling itself no longer touches the history; Back still returns to the spot.
+const navSaveY = () => { if (!V2._sheet && V2.nav.ready) V2.navMark({v2y: Math.round(scrollY)}); };
+addEventListener('pagehide', navSaveY); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') navSaveY(); });
+document.addEventListener('click', navSaveY, true);
 V2.navName = h => { const k = String(h || '#home').replace(/^#/, '').split('=')[0] || 'home';
   return {home: 'Home', build: 'Build', team: 'My Team', battle: 'Battle', meta: 'Meta', box: 'My Box', compare: 'Compare', sheet: 'Team Sheet', guide: 'the Guide',
     method: 'How We Calculate', about: 'About', feedback: 'Send Feedback'}[k] || 'the last page'; };
