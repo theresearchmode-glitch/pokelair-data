@@ -1328,3 +1328,45 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .dc2-fc .lab{letter-spacing:.04em}.dc2-fc{gap:var(--s1) var(--s2);overflow:hidden}
 @media (max-width:1023px){.dc2 .ms-card{--ch:176px}.dc2 .mc-mon .np-mon,.dc2 .mc-mon .np-mon .st{--iw:88px}.dc2-hand .dc2-mv{min-height:136px}}
 @media (max-width:1023px){.dc2-hand .dc2-mv .nm{font-size:var(--t13)}}
+/* Damage Calc, desktop (1024+): the result band above a table seen at an angle. Only the table's surface tilts (rotateX); the cards,
+   tiles and labels on it stay flat and full size (brief 7: the mock-up's tilted far end made its labels too small) */
+@media (min-width:1024px){
+ .dc2-top .np-link{display:inline}
+ .dc2-res{display:flex;justify-content:center;align-items:center;gap:var(--s6);margin-top:var(--s4)}
+ .dc2-num{font-size:var(--d64)}.dc2-num small{font-size:var(--t28)}
+ .dc2-res .dc2-side{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--s1);min-width:320px;max-width:520px}
+ .dc2-line{grid-column:1/-1}.dc2-ko{display:contents}.dc2-ko b{grid-column:1/-1;justify-self:start;margin-top:var(--s2);font-size:var(--t17)}
+ .dc2-bar.big{grid-column:1/-1}.dc2-hp{grid-column:1;margin-top:var(--s2)}.dc2-eff{grid-column:2;margin-top:var(--s2);font-size:var(--t13);line-height:1.3}.dc2-eff::before{content:"· "}
+ .dc2-res.empty{text-align:center}
+ .dc2-table{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--s3);row-gap:var(--s5);max-width:1200px;margin:var(--s6) auto 0;padding:var(--s6) var(--s8) var(--s8)}
+ .dc2-surface{transform:perspective(1600px) rotateX(18deg);transform-origin:50% 100%;border-radius:var(--s10)}
+ .dc2-wing{display:grid;align-content:end;gap:var(--s2)}.dc2-wing.l{grid-column:1/5;grid-row:1}.dc2-wing.r{grid-column:9/13;grid-row:1}
+ .dc2-wing .cap{margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}.dc2-wing.r .cap{text-align:right}
+ .dc2-wing .dc2-kts{grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}.dc2-wing .dc2-kt{min-height:var(--s16)}
+ .dc2-pc.defender{grid-column:5/9;grid-row:1;justify-self:center;width:208px}.dc2-pc.defender .ms-card{--ch:280px;rotate:0deg}.dc2-pc.defender .mc-mon .np-mon,.dc2-pc.defender .mc-mon .np-mon .st{--iw:150px}
+ .dc2-fc.wx{grid-column:2/4;grid-row:2}.dc2-fc.tr{grid-column:10/12;grid-row:2}
+ .dc2-fc{flex-direction:column;align-items:flex-start;justify-content:center;gap:var(--s1);min-height:var(--s24);padding:var(--s3) var(--s4);align-self:center}.dc2-fc b{font-size:var(--t24)}.dc2-fc .pips{margin-left:0}
+ .dc2-swap{grid-column:4/5;grid-row:2;width:auto;height:auto;padding:var(--s2) var(--s3);border-radius:var(--r-round,999px);display:flex;gap:var(--s1)}
+ .dc2-mv.play{grid-column:5/9;grid-row:2;align-self:center;rotate:-2deg;min-height:116px;padding:var(--s3) var(--s4)}.dc2-mv.play .nm{font-size:var(--t24)}.dc2-mv.play .rg{font-size:var(--t34)}.dc2-mv .cat{display:block}
+ .dc2-pc.attacker{grid-column:1/4;grid-row:3;justify-self:center;width:212px;align-self:end}.dc2-pc.attacker .ms-card{--ch:224px;rotate:-2deg}.dc2-pc.attacker .mc-mon .np-mon,.dc2-pc.attacker .mc-mon .np-mon .st{--iw:112px}
+ .dc2 .mc-id h2{font-size:var(--t17)}
+ .dc2-hand{grid-column:4/11;grid-row:3;grid-template-columns:repeat(var(--hn),minmax(0,176px));justify-content:center;gap:var(--s2);padding:0}
+ .dc2-hand .dc2-mv{min-height:216px;padding:var(--s3)}.dc2-hand .dc2-mv .nm{font-size:var(--t17)}.dc2-hand .dc2-mv .rg{font-size:var(--t24)}
+ .dc2-hand>:nth-child(1){rotate:-6deg;translate:0 var(--s2)}.dc2-hand>:nth-child(2){rotate:-2deg}.dc2-hand>:nth-child(3){rotate:2deg}.dc2-hand>:nth-child(4){rotate:6deg;translate:0 var(--s2)}
+ .dc2-tok{grid-column:11/13;grid-row:3;grid-template-columns:repeat(2,72px);justify-content:center;align-content:end;gap:var(--s2)}.dc2-tok button{width:72px;height:72px;padding:var(--s1);border-radius:50%}
+ .dc2-kb{max-width:1200px;margin:var(--s6) auto 0}.dc2-kb .dc2-kg{display:none}
+ .dc2-det{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s10);max-width:1200px;margin:var(--s8) auto 0}.dc2-dl .dc2-links .np-link[href="#method"]{display:none}}
+@media (min-width:1024px){
+ .dc2-line{grid-row:1}.dc2-ko b{grid-row:2}.dc2-bar.big{grid-row:3}.dc2-hp{grid-row:4;grid-column:1}.dc2-eff{grid-row:4;grid-column:2}
+ .dc2-res{margin-top:0}.dc2-table{margin-top:var(--s3);row-gap:var(--s3);padding:var(--s4) var(--s8) var(--s5)}
+ .dc2-pc.defender{width:184px}.dc2-pc.defender .ms-card{--ch:236px}.dc2-pc.defender .mc-mon .np-mon,.dc2-pc.defender .mc-mon .np-mon .st{--iw:124px}
+ .dc2-mv.play{min-height:104px}.dc2-fc{min-height:var(--s24)}
+ .dc2-pc.attacker{width:200px}.dc2-pc.attacker .ms-card{--ch:204px}.dc2-pc.attacker .mc-mon .np-mon,.dc2-pc.attacker .mc-mon .np-mon .st{--iw:100px}
+ .dc2-hand .dc2-mv{min-height:196px}.dc2-hand{grid-template-columns:repeat(var(--hn),minmax(0,168px))}}
+@media (min-width:1024px){.dc2-hand .dc2-mv{min-height:156px}.dc2-hand .dc2-mv .out{margin-top:var(--s2)}.dc2-tok{grid-template-columns:repeat(2,64px);align-self:end}.dc2-tok button{width:64px;height:64px}
+ .dc2-mv.play{grid-column:4/10;margin:0 var(--s8)}.dc2-swap{grid-column:4/5;justify-self:start;z-index:4}}
+@media (min-width:1024px){.dc2-mv.play{grid-column:5/9;margin:0}.dc2-swap{grid-column:4/5;justify-self:center}}
+/* (1280+ wider card in play removed: it ran under Swap) */
+@media (max-width:1023px){.dc2-hand .dc2-mv{margin:0}.dc2-hand{gap:var(--s1)}} /* no card covers the next one's words (brief 7) */
+@media (min-width:1024px){.dc2-mv.play .nm{font-size:var(--t20)}}
+@media (min-width:1024px){.dc2-mv.play .rg{font-size:var(--t28)}.dc2-mv.play .cat,.dc2-mv.play .nm{white-space:nowrap}}
