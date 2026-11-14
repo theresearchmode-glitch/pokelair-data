@@ -786,3 +786,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:31 PM: Sim (10:30 PM): tab sub-lines removed (stats, types / moves, items, partners / why N, the data / N, side by side) - redundant. Tab names Info, Meta, Rating, Forms stay. The Card: phone, iPad upright and desktop layouts built; not on the Preview until Sim's go.
 - 10:45 PM: Card section 6 checks (authority): long names forced onto one line (Paldean Tauros (Combat) climbed into the Pokemon); 'Too few' columns size to content on iPad/desktop; desktop card same height on team / Add. Kept: type and move chips wrapping 2+1 / 3+1 where the mock-up does too.
 - 11:00 PM: Sim (10:56 PM): phone forms B (forms row under the tabs on phones; tabs on the first screen, Garchomp tabs at 753 of 844) and go for the Preview.
+- 11:00 PM: Preview v121 published (400 files checked): The Card info sheet with phone forms B.
