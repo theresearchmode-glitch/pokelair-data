@@ -580,7 +580,7 @@ t('TEST-01', 'Test run head and "How it works" fold', async () => {
 
 t('TEST-02', 'Test run empty state under 4 Pokémon; falls back to built-in team lists without daily data', async () => {
   const {ui, close} = await open({team: TEAM.slice(0, 3)}); await ui.go('Test Run');
-  expect(await ui.sees('Add at least 4 Pokémon on My team to run the gauntlet. You have 3.'), 'no "You have 3." message');
+  expect(await ui.sees(/Add at least 4 Pokémon on My team to (run the gauntlet|start a Test Run)\. You have 3\./i), 'no "You have 3." message'); /* new site: Sim's word list says Test run, not gauntlet (Nov 9) */
   await ui.tapIn('Go to My team'); expect(await ui.current() === 'report', '"Go to My team" did not open My team'); await close();
   // "no team data" message: not reachable today. Without meta/teams the page falls back to the proven team lists built into the
   // page itself (RESULTS), so the message never shows; checked Nov 10 with meta/teams and meta/results both missing.

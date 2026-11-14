@@ -64,6 +64,7 @@
     "src/v2/pages/calc.js",
     "src/v2/pages/types.js",
     "src/v2/pages/practice.js",
+    "src/v2/pages/gauntlet.js",
     "src/v2/pages/coming.js"
   ],
   "logic": [
