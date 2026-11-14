@@ -111,7 +111,7 @@ export default (ui, pg) => {
     calcResult: () => pg.evaluate(() => [...document.querySelectorAll('.dc2-res,.dc2-dl')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim()),
     calcResultOnly: () => pg.evaluate(() => [...document.querySelectorAll('.dc2-res,.dc2-dl')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim()),
     calcPokemonGroups: () => pg.evaluate(() => [...document.querySelectorAll('#dcA optgroup')].map(g => g.label + ':' + g.children.length)),
-    calcPinnedBar: async () => null, // the new calc has no pinned mini bar (today's is switched off too: Sim, Nov 7)
+    calcPinnedBar: () => pg.evaluate(() => { const e = [...document.querySelectorAll('.dc2 *')].find(x => /^(fixed|sticky)$/.test(getComputedStyle(x).position) && x.getClientRects().length); return e ? e.innerText.replace(/\s+/g, ' ').trim() || 'pinned' : null; }), // looks for any pinned element in the calc (Sim, Nov 14, Q3 A: none)
     tapCalcPinnedBar: () => NOT('the pinned result bar (the new calc has none)'),
     calcResultOnScreen: () => pg.evaluate(() => { const e = document.querySelector('.dc2-res'); const r = e.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }),
     scrollToEnd: () => pg.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)).then(() => pg.waitForTimeout(300)),

@@ -483,6 +483,8 @@ t('CALC-10', '"No effect" pinned mini bar jumps back to the result', async () =>
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   await ui.calcPick('attacker', 'Garchomp'); await ui.calcPick('defender', 'Corviknight'); await ui.calcOtherMove('Earthquake').catch(() => ui.calcMove('Earthquake'));
   await ui.scrollToEnd();
+  // new site: no pinned bar at all (Sim, Nov 14, Calc Q3 A: the pinned bar was switched off Nov 7; the No-effect one was a leftover)
+  if (NEW) { expect(!(await ui.calcPinnedBar()), 'the new calc shows a pinned bar'); await close(); return; }
   const bar = await ui.calcPinnedBar(); expect(bar && /No effect/.test(bar), 'no pinned "No effect" bar while the result is off screen');
   await ui.tapCalcPinnedBar(); expect(await ui.calcResultOnScreen(), 'tapping the bar did not bring the result on screen'); await close(); });
 
