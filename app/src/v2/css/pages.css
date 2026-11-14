@@ -1144,11 +1144,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:700px){.np-sheet:has(>.ms2)>.x{margin-left:calc(var(--tap)*-1)}
  .ms2 .ms-cols{display:block;column-count:2;column-gap:var(--s10)}.ms2 .ms-cols>*{break-inside:avoid;margin-bottom:var(--s8)}.ms2 .ms-cols>.ms-wide{column-span:all}}
 @media (min-width:700px) and (max-width:999px){
- .ms2{display:grid;grid-template-columns:340px minmax(0,1fr);grid-template-rows:minmax(var(--s3),1fr) auto auto auto minmax(var(--s3),1fr) auto auto;column-gap:var(--s8)}
+ .ms2{display:grid;grid-template-columns:min(340px,48%) minmax(0,1fr);grid-template-rows:minmax(var(--s3),1fr) auto auto auto minmax(var(--s3),1fr) auto auto;column-gap:var(--s8)}
  .ms2 .ms-card{grid-column:1;grid-row:1/6;height:480px;margin:0}
  .ms2>.ms-top{grid-column:2;grid-row:2;margin:0}.ms-left>.ms-acts{grid-column:2;grid-row:3}.ms2>.ms-forms{grid-column:2;grid-row:4;margin-top:var(--s6)}
  .ms2>.ms-tabs{grid-column:1/-1;grid-row:6}.ms2>.ms-pan{grid-column:1/-1;grid-row:7}
- .ms2 .mc-mon{top:var(--s10)}.ms2 .mc-mon .np-mon,.ms2 .mc-mon .np-mon .st{--iw:284px}}
+ .ms2 .ms-card{container-type:size}.ms2 .mc-mon{top:var(--s10)}.ms2 .mc-mon .np-mon,.ms2 .mc-mon .np-mon .st{--iw:min(284px,calc(100cqw - var(--s6)))}}
 /* The Card, desktop and iPad on its side (brief 4, Nov 13): left column = the tall card (fills the height) + On your team and the two buttons;
    right = rating and numbers in one row, a slim forms row, the tabs, two balanced columns. The left column stays put while the right scrolls,
    and scrolls with the page in windows under 900 high so nothing is clipped. */
@@ -1172,3 +1172,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @container (max-width:719px){.ms2 .ms-forms>.ms-fh{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;max-width:none}.ms2 .ms-forms>.ms-fr{grid-column:1/-1}}
 @container (max-width:559px){.ms2 .ms-fr .ms-f{flex-direction:column;text-align:center}.ms2 .ms-fr .ms-f span{justify-items:center}.ms2 .ms-fr .ms-f[aria-pressed="true"]::after{left:50%;translate:-50% 0}}
 @media (min-width:1000px) and (max-width:1143px){.ms2 .ms-cols{column-count:1}}
+/* type matchups: a narrower label column so a row of three chips (Fire, Poison, Rock) stays on one line in the two-column desktop layout */
+@media (min-width:1144px){.ms2 .ms-tyr{grid-template-columns:80px minmax(0,1fr)}}
+@media (min-width:700px) and (max-width:779px){.ms2{column-gap:var(--s6)}} /* small iPads: 8 more for the numbers and form names beside the card */
