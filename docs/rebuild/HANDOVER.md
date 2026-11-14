@@ -3,6 +3,15 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 10:34 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
+- PAUSED by Sim (10:34 PM): "dont work on the info page yet im checking something". No info-page work until she says go.
+- Info sheet = NEW DIRECTION, Sim's Card brief (docs/rebuild/info-sheet/BRIEF-CARD.md; the Stadium/Side Stage is gone). Built on the
+  branch, NOT on the Preview (v120 is still the old stage): phone, iPad upright, desktop, dark + light (b35657a, a1064d0, 4b7bec5).
+  Tab sub-lines removed (Sim, 10:30 PM). Checks 10:31 PM: words 345/345 kept (look/sit3.cjs, order-free), polish 0 spills,
+  c13 0 over height, use 32 ok. Pictures beside her mock-ups sent (scratchpad look/L-phone, L-ipad, L-desk).
+- Open question to Sim: phone with forms, tabs 139 px below the first screen: A keep / B (recommended) forms under the tabs (Q-A/Q-B.png).
+- Not yet checked (brief 6): one type, no data, >3 forms, Add state, keyboard/screen reader, scroll smoothness.
+
 ## NOW (Nov 13, written 9:26 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
 - Info sheet redesign is ON THE PREVIEW (v119 = v117's look, which Sim called 'much better'): desktop stage is a box (292-460 px, sheet
   at most 860 px, centred). Sim's mock-up in-stage measurements (v118, 454dbc4) looked 'squished' to her and were taken out (7b0a6e0);
