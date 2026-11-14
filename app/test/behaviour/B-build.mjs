@@ -569,7 +569,8 @@ t('SUGG-19', 'Threat sheet Best fix: shows the fix and Apply this fix applies it
 
 t('SUGG-19', 'Threat sheet Best fix: the sheet closes after Apply this fix', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.openThreat('Archaludon'); await ui.applyBestFix();
-  expect(!(await ui.threatSheetText()), 'sheet did not close'); await close(); }); /* known-bug mark removed Nov 13: the new site closes the sheet on Apply (matchups.js V2.closeSheet(true)); passed 3 of 3 with the first SUGG-19 confirming the button exists */
+  expect(!(await ui.threatSheetText()), 'sheet did not close'); await close(); },
+  NEW ? {} : {known: 'Apply this fix applies the plan but the threat sheet stays open (also with a real mouse click)'}); /* the new site closes the sheet on Apply (matchups.js V2.closeSheet(true), passed 3 of 3, Nov 13); today's site still has the bug */
 
 // =====================================================================================================
 // 6. Popular sets
