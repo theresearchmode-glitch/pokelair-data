@@ -788,3 +788,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:00 PM: Sim (10:56 PM): phone forms B (forms row under the tabs on phones; tabs on the first screen, Garchomp tabs at 753 of 844) and go for the Preview.
 - 11:00 PM: Preview v121 published (400 files checked): The Card info sheet with phone forms B.
 - 11:08 PM: Sim (11:03-11:04 PM): phone info sheet slid sideways (card glow 8 px past the sheet) -> sheet never scrolls sideways; desktop card stretched into a long strip on a tall window -> capped at 656 tall (brief's 392 x 654 at 1440 x 900).
+- 11:41 PM: Sim (11:25 PM): desktop card on Preview v122 'looks VERY sharp', sprites high quality. Still open: empty left column under the buttons on very tall windows.
