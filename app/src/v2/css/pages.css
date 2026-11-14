@@ -1216,3 +1216,15 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .ms2:has(.ms-stage) .ms-left:has(.ms-forms) .ms-stage{height:auto;min-height:292px}
 }
 @media (min-width:1024px) and (min-height:900px){.ms2:has(.ms-stage)>.ms-left{height:min(calc(100vh - 96px),860px);max-height:none}}
+/* Sim's Side Stage measurements (Nov 13, 9:21 PM), rounded to the 4 px grid; the box heights stay as Sim approved (v117):
+   Pokémon 224 wide, 8 from the left, feet 32 up; screen 228 x 232, 8 from the right (8 + 224 + 12 + 228 + 8 = 480); the screen hangs
+   from 40 px cables, its top at half the stage height minus 136 (never above 44); the floor glow 260 wide under the screen */
+@media (min-width:1024px){
+  .ms2:has(.ms-stage) .ms-stage{display:block;padding:0}
+  .ms2:has(.ms-stage) .ms-star{position:absolute;left:8px;bottom:var(--s8)}
+  .ms2:has(.ms-stage) .ms-star .np-mon,.ms2:has(.ms-stage) .ms-star .np-mon .st{--iw:224px}
+  .ms2:has(.ms-stage) .ms-scr{position:absolute;right:8px;top:max(calc(50% - 136px),44px);width:228px;height:232px}
+  .ms2:has(.ms-stage) .ms-scr::before,.ms2:has(.ms-stage) .ms-scr::after{height:40px}
+  .ms2:has(.ms-stage) .ms-wb{--wr:56px;--lr:84px}
+  .ms2:has(.ms-stage) .ms-spill{right:-8px;width:260px;top:calc(max(calc(50% - 136px),44px) + 232px);bottom:0;height:auto}
+}
