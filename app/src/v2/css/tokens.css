@@ -7,6 +7,8 @@
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;
   --plate:#17161A;--on-plate:#FBFAF7;--main:#17161A;--on-main:#FBFAF7;
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#FFFFFF;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
+  /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
+  --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
   --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:var(--bad-text); /* Sim, Nov 13 (My Team Q3 B): "Missing a basic" in the site's red, now that red is allowed */
   --contact:rgba(30,20,50,.42);--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08);
