@@ -3,6 +3,14 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 9:54 AM Eastern by the clock; Sim's authority until 5:00 PM Sat Nov 14 (extended 8:40 AM); summary 4:40 PM)
+- Sim's morning answers: all recommended (calc Q1-Q4 A), Preview go, iPad Q1 B / Q2 A. Preview now v127 (400 files checked).
+- On the Preview: Damage Calc 'Their Side' (v124), iPad upright table + KO Board side by side (v125), scroll-bar fix (v126/127,
+  i50, UNSURE until Sim tries it on her iPhone), tap today's underdog to open its sheet (v127, i51).
+- Next by the rebuild plan (Battle group): Type Chart, then Practice, then Battle Log; each needs mock-ups for Sim first.
+- Reminders: summary trig_01PbzKFQ8nVFkJsCK3hJWvzt at 4:38 PM; backstops trig_01P8wwfASshsPdbcFcM3qNMv (:23) and
+  trig_012D8AdnvLFxfYqeBtDUoc7o (:53) to delete at 5:00 PM.
+
 ## NOW (Nov 14, written 3:37 AM Eastern by the clock; Sim's authority until 10:00 AM Sat Nov 14; summary 9:40 AM)
 - Damage Calc 'Their Side' polish pass done through review points 2-23 (decisions.md 3:21, 3:25, 3:32, 3:36 AM). Latest commit 2f8c25a
   on claude/design6, NOT on the Preview (Preview still v123; needs Sim's go).
