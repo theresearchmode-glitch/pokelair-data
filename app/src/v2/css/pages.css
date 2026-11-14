@@ -1120,34 +1120,68 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ms-web .d{fill:rgb(var(--cp))}.ms-web .hi{fill:var(--stage-ink)}
 .ms-wl{position:absolute;left:calc(var(--lr)*var(--ux));top:calc(var(--lr)*var(--uy) * .92);translate:-50% -50%;display:grid;justify-items:center;font:600 var(--t13)/1.1 var(--b);color:var(--stage-ink-2);white-space:nowrap}
 .ms-wl b{font:900 var(--t17)/1.1 var(--u);font-style:italic;color:var(--stage-ink-2)}.ms-wl.hi,.ms-wl.hi b{color:var(--stage-ink)}.ms-wl.hi b{font-size:var(--t22)}
-.ms2:has(>.ms-stage) .ms-head{grid-template-columns:minmax(0,1fr)}
+.ms2:has(.ms-stage) .ms-head{grid-template-columns:minmax(0,1fr)}
 .np-sheet:has(.ms-stage) .x{top:var(--s3);width:var(--tap);border-radius:50%;margin:var(--s3) var(--s3) calc((var(--tap) + var(--s3))*-1) 0;color:var(--stage-ink);background:var(--stage-btn)} /* floats right as elsewhere; its negative bottom margin gives it no height, so the stage runs under it instead of beside it */
 @media (min-width:700px){.ms-stage{justify-content:center;column-gap:var(--s16);margin:calc(var(--s8)*-1) calc(var(--s8)*-1) var(--s6)}}
 @media (max-width:699px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:144px}.ms-scr{width:212px}.ms-wb{--wr:52px;--lr:80px}}
 @media (max-width:359px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:116px}.ms-scr{width:168px;height:188px}.ms-wb{--wr:40px;--lr:64px}}
 /* ---------- Info sheet step 2 (Sim's brief section 2): the headline block under the stage. Same content and order as before
    (grid areas only), so the sheet's text stays identical. ---------- */
-.ms2:has(>.ms-stage) .ms-hd{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name rate" "ty rate" "nums nums" "acts acts";column-gap:var(--s4);align-items:end}
-.ms2:has(>.ms-stage) .ms-hd>h2{grid-area:name;margin:0}
-.ms2:has(>.ms-stage) .ms-hd>.ms-ty{grid-area:ty;align-self:start;margin-top:var(--s2)}
-.ms2:has(>.ms-stage) .ms-rate{grid-area:rate;display:grid;justify-items:end;gap:var(--s1);text-align:right}
-.ms2:has(>.ms-stage) .ms-rate span{padding:0}.ms2:has(>.ms-stage) .ms-rate small{max-width:20ch;margin-left:auto}
-.ms2:has(>.ms-stage) .ms-nums{grid-area:nums;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0;margin-top:var(--s6)}
-.ms2:has(>.ms-stage) .ms-n{display:block;padding:0 var(--s3);border-left:1px solid var(--rule)}.ms2:has(>.ms-stage) .ms-n:first-child{padding-left:0;border-left:0}
-.ms2:has(>.ms-stage) .ms-n b{display:block}.ms2:has(>.ms-stage) .ms-n span{display:block;margin-top:var(--s1)}
-.ms2:has(>.ms-stage) .ms-acts{grid-area:acts;margin-top:var(--s6)}
-.ms2:has(>.ms-stage) .ms-go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms2:has(>.ms-stage) .ms-go>.np-btn2{width:100%}
-.ms2:has(>.ms-stage) .ms-fr{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
-.ms2:has(>.ms-stage) .ms-f{flex-direction:column;justify-content:start;gap:var(--s1);padding:var(--s2) var(--s1);text-align:center}
-.ms2:has(>.ms-stage) .ms-f span{justify-items:center}
-.ms2:has(>.ms-stage) .ms-f[aria-pressed="true"]{background:none}
-.ms2:has(>.ms-stage) .ms-f[aria-pressed="true"]::after{content:"";display:block;width:var(--s10);height:4px;margin-top:var(--s1);background:var(--plot);transform:skewX(var(--slant))}
-.ms2:has(>.ms-stage) .ms-bs i{width:100%;background:linear-gradient(90deg,var(--plot) calc(var(--v) / 200 * 100%),color-mix(in srgb,var(--ink) 9%,transparent) 0)}
-.ms2:has(>.ms-stage) .ms-bs .tot i{background:none}
-.ms2:has(>.ms-stage) .ms-hd>h2{font-size:var(--t28);overflow-wrap:normal;hyphens:manual}
-.ms2:has(>.ms-stage) .ms-rate small{max-width:15ch}
-.ms2:has(>.ms-stage) .ms-n .lv{display:block}
-@media (max-width:359px){.ms2:has(>.ms-stage) .ms-hd>h2{font-size:var(--t24)}}
-@media (max-width:399px){.ms2:has(>.ms-stage) .ms-n.few b{font-size:var(--t17)}}@media (max-width:359px){.ms2:has(>.ms-stage) .ms-n.few b{font-size:var(--t15)}}
+.ms2:has(.ms-stage) .ms-hd{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name rate" "ty rate" "nums nums" "acts acts";column-gap:var(--s4);align-items:end}
+.ms2:has(.ms-stage) .ms-hd>h2{grid-area:name;margin:0}
+.ms2:has(.ms-stage) .ms-hd>.ms-ty{grid-area:ty;align-self:start;margin-top:var(--s2)}
+.ms2:has(.ms-stage) .ms-rate{grid-area:rate;display:grid;justify-items:end;gap:var(--s1);text-align:right}
+.ms2:has(.ms-stage) .ms-rate span{padding:0}.ms2:has(.ms-stage) .ms-rate small{max-width:20ch;margin-left:auto}
+.ms2:has(.ms-stage) .ms-nums{grid-area:nums;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0;margin-top:var(--s6)}
+.ms2:has(.ms-stage) .ms-n{display:block;padding:0 var(--s3);border-left:1px solid var(--rule)}.ms2:has(.ms-stage) .ms-n:first-child{padding-left:0;border-left:0}
+.ms2:has(.ms-stage) .ms-n b{display:block}.ms2:has(.ms-stage) .ms-n span{display:block;margin-top:var(--s1)}
+.ms2:has(.ms-stage) .ms-acts{grid-area:acts;margin-top:var(--s6)}
+.ms2:has(.ms-stage) .ms-go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms2:has(.ms-stage) .ms-go>.np-btn2{width:100%}
+.ms2:has(.ms-stage) .ms-fr{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+.ms2:has(.ms-stage) .ms-f{flex-direction:column;justify-content:start;gap:var(--s1);padding:var(--s2) var(--s1);text-align:center}
+.ms2:has(.ms-stage) .ms-f span{justify-items:center}
+.ms2:has(.ms-stage) .ms-f[aria-pressed="true"]{background:none}
+.ms2:has(.ms-stage) .ms-f[aria-pressed="true"]::after{content:"";display:block;width:var(--s10);height:4px;margin-top:var(--s1);background:var(--plot);transform:skewX(var(--slant))}
+.ms2:has(.ms-stage) .ms-bs i{width:100%;background:linear-gradient(90deg,var(--plot) calc(var(--v) / 200 * 100%),color-mix(in srgb,var(--ink) 9%,transparent) 0)}
+.ms2:has(.ms-stage) .ms-bs .tot i{background:none}
+.ms2:has(.ms-stage) .ms-hd>h2{font-size:var(--t28);overflow-wrap:normal;hyphens:manual}
+.ms2:has(.ms-stage) .ms-rate small{max-width:15ch}
+.ms2:has(.ms-stage) .ms-n .lv{display:block}
+@media (max-width:359px){.ms2:has(.ms-stage) .ms-hd>h2{font-size:var(--t24)}}
+@media (max-width:399px){.ms2:has(.ms-stage) .ms-n.few b{font-size:var(--t17)}}@media (max-width:359px){.ms2:has(.ms-stage) .ms-n.few b{font-size:var(--t15)}}
 /* more than 4 forms (Rotom: 6): rows of 3 instead of one cramped row (at 320 six tiles were 41 px and names touched) */
-.ms2:has(>.ms-stage) .ms-fr:has(>.ms-f:nth-child(5)){grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
+.ms2:has(.ms-stage) .ms-fr:has(>.ms-f:nth-child(5)){grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
+/* ---------- Info sheet step 3 (Sim's brief section 4, "Side Stage"): from 1024 wide (iPad on its side and up) two halves: left 480 px
+   (stage, headline, forms) stays in place and fills the sheet's height (the stage takes the spare room); right: the tabs at the very top,
+   the tab's sections flowing in two balanced columns. Windows under 900 tall: the left column scrolls with the page (never clipped). ---------- */
+@media (min-width:1024px){
+  .ms2:has(.ms-stage){display:grid;grid-template-columns:480px minmax(0,1fr);grid-template-rows:auto 1fr;padding:0;align-items:start}
+  .ms2:has(.ms-stage)>.ms-left{grid-row:1/-1;display:flex;flex-direction:column;box-sizing:border-box;padding:0 var(--s6) var(--s6);border-right:1px solid var(--rule)}
+  .ms2:has(.ms-stage) .ms-stage{flex:1 0 auto;height:auto;min-height:292px;margin:0 calc(var(--s6)*-1) var(--s6);justify-content:space-between;column-gap:0;padding:var(--s16) var(--s6) var(--s6)}
+  .ms2:has(.ms-stage) .ms-star .np-mon,.ms2:has(.ms-stage) .ms-star .np-mon .st{--iw:224px}
+  .ms2:has(.ms-stage) .ms-scr{width:212px}.ms2:has(.ms-stage) .ms-wb{--wr:52px;--lr:80px}
+  .ms2:has(.ms-stage) .ms-forms{margin-top:var(--s6)}
+  .ms2:has(.ms-stage)>.ms-tabs{grid-column:2;margin:0;padding:0 calc(var(--tap) + var(--s6)) 0 var(--s8)}
+  .ms2:has(.ms-stage)>.ms-pan{grid-column:2;padding:0 var(--s8) var(--s8)}
+  .ms2:has(.ms-stage) .ms-cols{display:block;columns:2;column-gap:var(--s10)}
+  .ms2:has(.ms-stage) .ms-cols>*{break-inside:avoid;margin-bottom:var(--s8)}
+  .np-sheet:has(.ms-stage){overflow:auto}
+}
+@media (min-width:1024px) and (min-height:900px){
+  .ms2:has(.ms-stage)>.ms-left{position:sticky;top:0;height:calc(100vh - 96px);overflow:auto}
+}
+@media (min-width:1024px){
+  .ms2:has(.ms-stage) .ms-stage{padding:var(--s6) var(--s4);margin-bottom:var(--s4)}
+  .ms2:has(.ms-stage) .ms-star .np-mon,.ms2:has(.ms-stage) .ms-star .np-mon .st{--iw:208px}
+  .ms2:has(.ms-stage) .ms-nums,.ms2:has(.ms-stage) .ms-acts,.ms2:has(.ms-stage) .ms-forms{margin-top:var(--s4)}
+  .ms2:has(.ms-stage) .ms-f .np-mon,.ms2:has(.ms-stage) .ms-f .np-mon .st{--iw:56px}
+}
+@media (min-width:1024px){
+  .ms2:has(.ms-stage) .ms-rate small{max-width:none}
+  .ms2:has(.ms-stage) .ms-f{padding-top:var(--s1);padding-bottom:var(--s1)}
+  .ms2:has(.ms-stage) .ms-fr{margin-top:var(--s2)}
+  .ms2:has(.ms-stage)>.ms-left{padding-bottom:var(--s4)}
+}
+/* right half under ~640 px (windows 1024-1143): one content column (two were ~200 px: Base Stats bars shrank to stubs); move chips 2 x 2 */
+@media (min-width:1024px) and (max-width:1143px){.ms2:has(.ms-stage) .ms-cols{columns:1}}
+@media (min-width:1024px){.ms2:has(.ms-stage) .ms-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms2:has(.ms-stage) .ms-mvs .np-type{justify-content:center}}
