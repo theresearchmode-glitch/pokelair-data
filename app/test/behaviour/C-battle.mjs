@@ -562,7 +562,8 @@ t('TYPES-04', 'Fire/Flying result: Rock 4× weak, Ground immune, STAB lines', as
   const {ui, close} = await open({team: TEAM}); await ui.go('Type Chart'); await ui.clearTypes(); await ui.tapType('Fire'); await ui.tapType('Flying');
   expect(JSON.stringify(await ui.typesUnder('4× weak')) === '["Rock"]', '4× weak is not Rock: ' + JSON.stringify(await ui.typesUnder('4× weak')));
   expect((await ui.typesUnder('Immune') || []).includes('Ground'), 'Ground not immune');
-  hasAll(await ui.pageText(), ['Everything not listed hits it for normal damage', 'Attacking with its own types', 'Fire attacks', '2× on'], 'type result'); await close(); });
+  const tx = await ui.pageText(); hasAll(tx, ['Everything not listed hits it for normal damage', 'Attacking with its own types', 'Fire attacks'], 'type result');
+  expect(has(tx, '2× on') || has(tx, '2× hits hard'), 'no "2× on" (today) or "2× Hits hard" (new site, Sim\'s Skyline pick, Nov 14)'); await close(); });
 
 t('TYPES-05', 'full type chart: 18×18 grid on wide screens, attacking-type picker on phones', async () => {
   { const {ui, close} = await open({team: TEAM}); await ui.go('Type Chart'); await ui.openFold('Full type chart');

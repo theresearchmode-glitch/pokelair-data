@@ -32,18 +32,39 @@ V2.pages.types = {place: 'battle', draw() { const E = V2.esc, chip = V2.typeChip
   const ctl = `<div class="tc-ctl">${find}${team}</div>${mon ? `<p class="tc-show">Showing <b>${E(V2.disp(mon.n))}</b>, ability ${E(X.ab || '')}${X.onTeam ? ' (from your team)' : ''}</p>` : ''}<p class="tc-lbl tc-pl"><span>Or pick one or two types</span>${sel.length || mon ? '<button type="button" class="np-link tc-clear" data-tcclear>Clear</button>' : ''}</p>${picks}`;
   const fold = `<details class="tc-fold" data-tcfold${V2.tcOpen ? ' open' : ''}><summary><span><b>Full type chart</b><small>Every attacking type against every defending type</small></span><i aria-hidden="true">›</i></summary>${V2.tcGrid(sel)}<p class="fine tc-gnote">Rows attack, columns defend. 2 = super effective, ½ = not very effective, 0 = no effect, blank = normal.</p>${V2.tcRow()}</details>`;
   const wrap = body => `<div class="tc">${V2.battleToolsBar('types')}${head}${ctl}${body}${fold}</div>`;
-  if (!sel.length) return wrap(`<p class="tm-sub tc-none">Pick one or two types above, or look up a Pokémon.</p>`);
+  if (!sel.length) return wrap(`<p class="tm-sub tc-none">Pick one or two types above, or look up a Pokémon.</p><div class="tc-city quiet" aria-hidden="true">${V2.tcCity(TYPES.map(t => ({t, m: 1})), true)}</div>`);
   const {groups: g, abNotes} = typeGroups(sel, X.ab), off = typeOffence(sel);
-  const bands = [['4×', 'weak', g.q, 'b4'], ['2×', 'weak', g.d, 'b2'], ['½', 'resists', g.h, 'bh'], ['¼', 'resists', g.qr, 'bq'], ['0', 'immune', g.z, 'b0']];
+  const mulOf = t => g.q.includes(t) ? 4 : g.d.includes(t) ? 2 : g.h.includes(t) ? .5 : g.qr.includes(t) ? .25 : g.z.includes(t) ? 0 : 1;
+  const list = TYPES.map((t, i) => ({t, m: mulOf(t), i})).sort((a, b) => b.m - a.m || a.i - b.i);
   const left = mon ? `<div class="tc-cardw">${V2.msCard(mon, mon.n, `<h2 class="u">${V2.nameHtml(V2.disp(mon.n))}</h2>`, `<div class="ms-ty">${mon.t.map(chip).join('')}</div>`)}</div>`
     : `<div class="tc-cardw tc-types">${sel.map(t => `<span class="tc-tile big" style="--tc:var(--ty-${t})"><b>${t}</b></span>`).join('')}</div>`;
-  const note = `${abNotes.length ? `<p class="tc-ab">${E(abNotes.join('. '))}.</p>` : ''}<p class="fine">Everything not listed hits it for normal damage.</p>`;
-  const offH = off.map(o => `<div class="tc-off"><div class="tc-offh">${chip(o.atk)}<b>attacks</b></div><div class="tc-offr"><span class="k up">2× on</span><span class="c">${o.se.map(chip).join('') || '<i>Nothing</i>'}</span></div>
-    <div class="tc-offr"><span class="k dn">½× on</span><span class="c">${o.nv.map(chip).join('') || '<i>Nothing</i>'}</span></div>${o.no.length ? `<div class="tc-offr"><span class="k no">No effect</span><span class="c">${o.no.map(chip).join('')}</span></div>` : ''}</div>`).join('');
-  return wrap(`<div class="tc-main">${left}<div class="tc-right"><p class="tc-lbl">Taking hits as ${sel.map(chip).join(' ')}</p>
-    <div class="tc-spec">${bands.map(([m, w, ts, c]) => `<div class="tc-band ${c}${ts.length ? '' : ' none'}"><div class="m u">${m}<small>${w}</small></div><div class="ts">${ts.length ? ts.map(chip).join('') : '<i>None</i>'}</div></div>`).join('')}</div>${note}
-    <p class="tc-lbl">Attacking with its own types</p><div class="tc-offs">${offH}</div></div></div>`); }};
+  // the text version (screen readers, and what the tests read): today's five groups and today's sentence
+  const bands = [['4×', 'weak', g.q, 'b4'], ['2×', 'weak', g.d, 'b2'], ['½', 'resists', g.h, 'bh'], ['¼', 'resists', g.qr, 'bq'], ['0', 'immune', g.z, 'b0']];
+  const sr = `<div class="vh"><ul>${bands.map(([m, w, ts, c]) => `<li class="tc-band ${c}">${m} ${w}: <span class="ts">${ts.length ? ts.map(chip).join(' ') : 'none'}</span></li>`).join('')}</ul><p>Everything not listed hits it for normal damage.</p></div>`;
+  const legend = `<ul class="tc-leg" aria-hidden="true"><li><i class="k w"></i>Tall, red edge: it is weak here</li><li><i class="k n"></i>Short and faded: normal damage</li><li><i class="k r"></i>Low, blue edge: it resists</li><li><i class="k z"></i>Flat plate: immune</li></ul>`;
+  const note = abNotes.length ? `<p class="tc-ab">${E(abNotes.join('. '))}.</p>` : '';
+  const grp = (m, w, ts, k) => `<div class="tc-grp ${k}"><p class="cap"><b class="u">${m}</b><span>${w}</span></p><div class="row">${ts.length ? ts.map(t => `<span class="blk" style="--ty:var(--ty-${t})"><i aria-hidden="true"></i><span>${t}</span></span>`).join('') : '<i class="none">Nothing</i>'}</div></div>`;
+  const streets = `<section class="tc-streets n${off.length}"><p class="tc-lbl">Attacking with its own types</p><p class="tc-sub">Everything not standing here takes normal damage.</p><div class="tc-sts">${off.map(o => `<div class="tc-st" style="--ty:var(--ty-${o.atk})"><div class="tc-ban"><b class="u">${o.atk}</b> <small>attacks</small></div><div class="tc-grps">${grp('2×', 'Hits hard', o.se, 'hi')}${grp('½', 'Half damage', o.nv, 'lo')}${o.no.length ? grp('0', 'No effect', o.no, 'z') : ''}</div></div>`).join('')}</div></section>`;
+  return wrap(`<div class="tc-sky">${left}<p class="tc-lbl tc-takes">Taking hits as ${sel.map(chip).join(' ')}</p><div class="tc-city" aria-hidden="true">${V2.tcCity(list)}</div>${sr}${legend}${note}<p class="fine tc-sorted">Sorted from hits hardest (back) to can't touch it (front).</p></div>${streets}`); }};
 
+// ---------- Skyline (Sim's pick, Nov 14; brief docs/rebuild/mocks/types/skyline/BRIEF.md): the 18 attacking types as towers ----------
+// Three drawings of the same city; the room the city has picks one (container query): a diamond on wide columns, a slanted block of
+// six on phones, a block of three on the narrowest. Heights follow the multiplier; six to a row, hardest hits at the back, so a tall
+// tower never stands in front of a shorter one. Roof labels are text laid over the drawing at a fixed size (the type scale).
+V2.TC_H = {4: 1.4375, 2: .85, 1: .2875, .5: .1375, .25: .0625, 0: 0};
+V2.tcCity = (list, quiet) => [['dia', 160, 6], ['blk6', 120, 6], ['blk3', 120, 3]].map(([kind, L, per]) => {
+  const P = list.map((o, k) => { const r = Math.floor(k / per), c = k % per, x = kind === 'dia' ? (c - r) * L / 2 : c * L / 2, y = kind === 'dia' ? (c + r) * L / 4 : c * L / 4 + r * L / 2;
+    return {...o, x, y, h: (quiet ? V2.TC_H[1] : V2.TC_H[o.m]) * L}; });
+  const w = .86 * L / 2, d = w / 2, pad = 6, f = n => Math.round(n * 10) / 10;
+  const x0 = Math.min(...P.map(p => p.x)) - L / 2 - pad, x1 = Math.max(...P.map(p => p.x)) + L / 2 + pad, y0 = Math.min(...P.map(p => Math.min(p.y - L / 4, p.y - d - p.h))) - pad, y1 = Math.max(...P.map(p => p.y)) + L / 4 + pad, W = x1 - x0, H = y1 - y0;
+  const st = m => quiet ? 'q' : m >= 2 ? 'w' + m : m === 1 ? 'n' : m === 0 ? 'z' : 'r', mul = m => m === 4 ? '4×' : m === 2 ? '2×' : m === .5 ? '½' : m === .25 ? '¼' : m === 0 ? '0' : '';
+  const tower = p => { const {x, y, h} = p, pt = a => a.map(([u, v]) => `${f(u)},${f(v)}`).join(' '), lot = pt([[x, y - L / 4], [x + L / 2, y], [x, y + L / 4], [x - L / 2, y]]);
+    if (!quiet && p.m === 0) return `<g class="tw z" style="--ty:var(--ty-${p.t})"><polygon class="lot" points="${lot}"/><polygon class="pl" vector-effect="non-scaling-stroke" points="${pt([[x, y - d], [x + w, y], [x, y + d], [x - w, y]])}"/></g>`;
+    let lines = ''; for (let k = L * .075; k < h - 2; k += L * .075) lines += `<polyline class="fl" vector-effect="non-scaling-stroke" points="${pt([[x - w, y - k], [x, y + d - k], [x + w, y - k]])}"/>`;
+    return `<g class="tw ${st(p.m)}" style="--ty:var(--ty-${p.t})"><polygon class="lot" points="${lot}"/><polygon class="lw" points="${pt([[x - w, y - h], [x, y + d - h], [x, y + d], [x - w, y]])}"/><polygon class="rw" points="${pt([[x, y + d - h], [x + w, y - h], [x + w, y], [x, y + d]])}"/>${lines}<polygon class="rf" vector-effect="non-scaling-stroke" points="${pt([[x, y - d - h], [x + w, y - h], [x, y + d - h], [x - w, y - h]])}"/><polyline class="lt" vector-effect="non-scaling-stroke" points="${pt([[x - w, y - h], [x, y - d - h], [x + w, y - h]])}"/></g>`; };
+  const order = P.slice().sort((a, b) => a.y - b.y || a.x - b.x);
+  const labels = P.map(p => `<span class="lb ${st(p.m)}" style="left:${f((p.x - x0) / W * 100)}%;top:${f((p.y - p.h - x0 * 0 - y0) / H * 100)}%">${mul(p.m) && !quiet ? `<b class="u">${mul(p.m)}</b> ` : ''}<span>${p.t}</span></span>`).join('');
+  return `<div class="tc-cv ${kind}" style="--mw:${Math.round(kind === 'blk3' ? W * 1.25 : W)}px"><svg viewBox="${f(x0)} ${f(y0)} ${f(W)} ${f(H)}" focusable="false">${order.map(tower).join('')}</svg>${labels}</div>`; }).join('');
 // the look-up box: Build's search (same names, Megas included), picks a Pokemon
 V2.tcHits = q => (V2.buildHits ? V2.buildHits(q) : '').replace(/data-bdpick=/g, 'data-tcpick=');
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-tcfind]'); if (!i) return; V2.tcFind = i.value; const h = document.querySelector('[data-tchits]'); if (h) h.innerHTML = V2.tcHits(i.value); });

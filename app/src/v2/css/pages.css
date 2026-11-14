@@ -1610,3 +1610,46 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tr-how summary::before,.tr-prep summary::before{content:"";flex:none;width:8px;height:8px;margin-right:var(--s1);border-right:2px solid var(--plot-text);border-bottom:2px solid var(--plot-text);rotate:-45deg;transition:rotate .2s}
 .tr-how[open] summary::before,.tr-prep[open] summary::before{rotate:45deg}
 @media (prefers-reduced-motion:reduce){.tr-how summary::before,.tr-prep summary::before{transition:none}}
+/* ---------- Type Chart: Skyline (Sim's pick, Nov 14; docs/rebuild/mocks/types/skyline/BRIEF.md) ---------- */
+.tc-sky{display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-areas:"card takes" "card city" "leg city" "note city" "sort city";grid-template-rows:auto auto auto auto 1fr;column-gap:var(--s8);row-gap:var(--s4);align-items:start}
+.tc-sky>.tc-cardw{grid-area:card}.tc-takes{grid-area:takes;margin:0}.tc-sky>.tc-city{grid-area:city}.tc-leg{grid-area:leg}.tc-sky>.tc-ab{grid-area:note;margin:0}.tc-sorted{grid-area:sort;margin:0}
+.tc-city{container-type:inline-size;min-width:0}
+.tc-cv{position:relative;display:none;width:100%;max-width:var(--mw);margin:0 auto}.tc-cv svg{display:block;width:100%;height:auto;overflow:visible}
+@container (min-width:576px){.tc-cv.dia{display:block}}
+@container (min-width:340px) and (max-width:575.98px){.tc-cv.blk6{display:block}}
+@container (max-width:339.98px){.tc-cv.blk3{display:block}}
+.tw{--c:var(--ty)}.tw.n{--c:color-mix(in srgb,var(--ty) 50%,var(--bg))}.tw.q{--c:color-mix(in srgb,var(--ty) 34%,var(--bg))}
+.tw .lot{fill:var(--table);stroke:var(--table-edge);stroke-width:1}
+.tw .rf{fill:var(--c)}.tw .lw{fill:color-mix(in srgb,var(--c) 80%,rgb(var(--shade)))}.tw .rw{fill:color-mix(in srgb,var(--c) 62%,rgb(var(--shade)))}
+.tw.n .lw,.tw.q .lw{fill:color-mix(in srgb,var(--c) 86%,rgb(var(--shade)))}.tw.n .rw,.tw.q .rw{fill:color-mix(in srgb,var(--c) 72%,rgb(var(--shade)))}
+.tw .fl{fill:none;stroke:rgba(var(--shade),.3);stroke-width:1}
+.tw .lt{fill:none;stroke:color-mix(in srgb,var(--on-type) 40%,transparent);stroke-width:1}.tw.n .lt,.tw.q .lt{stroke:color-mix(in srgb,var(--bg) 50%,transparent)}
+.tw.w4 .rf,.tw.w2 .rf{stroke:var(--bad);stroke-width:4;stroke-linejoin:round}.tw.r .rf{stroke:var(--plot);stroke-width:4;stroke-linejoin:round}
+.tw.z .pl{fill:var(--ink);stroke:var(--ty);stroke-width:4;stroke-linejoin:round}
+.tc-cv .lb{position:absolute;translate:-50% -50%;display:flex;align-items:baseline;gap:var(--s1);white-space:nowrap;font:600 var(--t13)/1.1 var(--b);color:var(--on-type);pointer-events:none}
+.tc-cv .lb b{font-size:var(--t15);line-height:1}.tc-cv .lb.n,.tc-cv .lb.q{color:var(--ink)}.tc-cv .lb.z{color:var(--bg)}
+@container (min-width:640px){.tc-cv.dia .lb{flex-direction:column;align-items:center;gap:0}.tc-cv.dia .lb b{font-size:var(--t20)}.tc-cv.dia .lb.w4 b{font-size:var(--t28)}}
+.tc-leg{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none;font:400 var(--t15)/1.5 var(--b)}.tc-leg li{display:flex;align-items:center;gap:var(--s3)}
+.tc-leg .k{flex:none;width:16px;height:16px}.tc-leg .k.w{background:var(--bad)}.tc-leg .k.n{background:color-mix(in srgb,var(--ink) 30%,var(--bg))}.tc-leg .k.r{background:var(--plot)}.tc-leg .k.z{background:var(--ink)}
+.tc-city.quiet{margin-top:var(--s4)}.tc-city.quiet .tc-cv{max-width:min(var(--mw),720px)}
+/* the streets: attacking with its own types */
+.tc-streets{container-type:inline-size;display:grid;gap:var(--s2);margin-top:var(--s6)}.tc-streets .tc-lbl,.tc-sub{margin:0}.tc-sub{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.tc-sts{display:grid;gap:var(--s6);margin-top:var(--s3)}
+.tc-st{display:grid;gap:var(--s4);align-content:start}
+.tc-ban{position:relative;display:flex;align-items:baseline;justify-content:center;gap:var(--s2);padding:var(--s3) var(--s5);color:var(--on-type);background:repeating-conic-gradient(from 200deg at 100% 0,color-mix(in srgb,var(--on-type) 22%,transparent) 0 3deg,transparent 3deg 8deg) right top/40% 100% no-repeat,var(--ty);clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.tc-ban b{font-size:var(--t28);line-height:1}.tc-ban small{font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase}
+.tc-grps{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s5) var(--s6)}
+.tc-grp{display:grid;gap:var(--s2);--bw:48px;--th:112px}.tc-grp.lo{--th:32px}.tc-grp.z{--th:8px}
+.tc-grp .cap{margin:0;display:flex;align-items:baseline;gap:var(--s2);font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase}.tc-grp .cap b{font-size:var(--t22);letter-spacing:0;text-transform:none}
+.tc-grp .row{position:relative;display:flex;flex-wrap:wrap;gap:var(--s4) var(--s2);padding:0 var(--s1)}
+.tc-grp .blk{display:grid;justify-items:center;gap:var(--s2);min-width:var(--bw);font:600 var(--t15)/1.2 var(--b)}
+.tc-grp .blk i{position:relative;display:block;width:var(--bw);height:var(--th);background:repeating-linear-gradient(0deg,transparent 0 8px,rgba(var(--shade),.3) 8px 9px),var(--ty);box-shadow:0 4px 0 var(--table-edge)}
+.tc-grp .blk i::after{content:"";position:absolute;top:-4px;right:-8px;width:8px;height:100%;background:color-mix(in srgb,var(--ty) 62%,rgb(var(--shade)));transform:skewY(-30deg);transform-origin:left bottom}
+.tc-grp.z .blk i{height:8px;background:var(--ink);outline:2px solid var(--ty);outline-offset:-2px}.tc-grp.z .blk i::after{display:none}
+.tc-grp .none{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2);font-style:normal}
+@container (min-width:600px){.tc-st{grid-template-columns:176px minmax(0,1fr);align-items:start}.tc-ban{flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:112px;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}}
+@container (min-width:960px){.tc-streets.n2 .tc-sts{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s8)}.tc-streets.n2 .tc-st{grid-template-columns:minmax(0,1fr)}.tc-streets.n2 .tc-ban{flex-direction:row;align-items:baseline;justify-content:center;min-height:0}
+ .tc-streets.n1 .tc-ban{width:176px;min-height:176px}}
+@media (max-width:1023px){.tc-sky{grid-template-columns:260px minmax(0,1fr);column-gap:var(--s6)}}
+@media (max-width:699px){.tc-sky{grid-template-columns:minmax(0,1fr);grid-template-areas:"card" "note" "takes" "city" "leg" "sort";grid-template-rows:none}
+ .tc-grp{--bw:40px;--th:84px}.tc-grp.lo{--th:24px}.tc-grp .blk{font-size:var(--t13)}.tc-grps{gap:var(--s4) var(--s6)}.tc-grp .row{gap:var(--s3) var(--s2)}}
