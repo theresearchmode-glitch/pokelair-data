@@ -1443,3 +1443,55 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.dc2-hand{align-items:stretch}} /* phones too: hand cards one height (polish flagged uneven cards at 320) */
 /* today's underdog: tapping the Pokemon or its name opens its info sheet (Sim, Nov 14); the buttons keep the spots' look */
 .hm-udst2,.tm-ud-st,.bx-mon{display:block}.ud-nm{cursor:pointer} /* the heading itself opens the sheet (a button inside it changed how it wrapped); keyboard: the Info Sheet link */
+/* ---------- Type Chart (Nov 14, concept A 'Spotlight'; mock-ups docs/rebuild/mocks/types) ---------- */
+.tc{padding:0 var(--gut) var(--s16);display:grid;gap:var(--s5);overflow-x:clip}
+.tc-h{display:grid;gap:var(--s2)}.tc-h h1{font-size:var(--t34);margin:0}.tc-h h1 .pl{color:var(--plot-text)}
+.tc-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5)}.tc-findw{position:relative;flex:0 1 320px}.tc-find input{border:0;background:none;font:500 var(--t16)/1 var(--b);color:var(--ink);width:100%;transform:skewX(10deg)}
+.tc-hits{position:absolute;left:0;right:0;top:calc(100% + var(--s1));z-index:5}
+.tc-team{display:flex;flex-wrap:wrap;gap:var(--s2)}.tc-tm{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:var(--s1) var(--s3) var(--s1) var(--s1);border:1.5px solid var(--rule);font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
+.tc-tm[aria-pressed="true"]{border-color:var(--plot);color:var(--plot-text)}
+.tc-picks{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:var(--s1)}
+.tc-tp{min-height:var(--tap);font:700 var(--t13)/1 var(--b);color:var(--ink-2);border:1.5px solid color-mix(in srgb,var(--tc) 55%,transparent);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.tc-tp[aria-pressed="true"]{background:var(--tc);color:var(--on-type);border-color:var(--tc)}
+.tc-lbl{margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+.tc-ab{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}.tc .fine{margin:0}.tc-none{margin:0}
+.tc-main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--s8);align-items:start}
+.tc-cardw .ms-card{--ch:420px}
+.tc-types{display:grid;gap:var(--s3);align-content:start}.tc-tile{display:grid;place-items:center;min-height:120px;padding:0 var(--s3);background:var(--tc);color:var(--on-type);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}.tc-tile b{font:900 var(--t28)/1 var(--u);font-style:italic;font-synthesis:style}
+.tc-right{display:grid;gap:var(--s4)}
+.tc-spec{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2)}
+.tc-band{display:grid;align-content:start;gap:var(--s3);min-height:200px;padding:var(--s4) var(--s3);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.tc-band .m{font:900 var(--t34)/1 var(--u);font-style:italic;font-synthesis:style;display:grid}.tc-band .m small{font:700 var(--t13)/1.3 var(--b);font-style:normal;letter-spacing:.06em;text-transform:uppercase;margin-top:var(--s1)}
+.tc-band .ts{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-band i{font-style:normal;color:var(--ink-3)}
+.tc-band.b4{background:var(--bad);color:var(--on-mark)}.tc-band.b2{background:color-mix(in srgb,var(--bad) 22%,var(--surface))}
+.tc-band.bh{background:color-mix(in srgb,var(--good) 18%,var(--surface))}.tc-band.bq{background:color-mix(in srgb,var(--good) 30%,var(--surface))}
+.tc-band.b0{background:var(--plot);color:var(--on-mark)}.tc-band.none{background:var(--wash);color:var(--ink-3)}
+.tc-offs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--s3)}.tc-off{display:grid;gap:var(--s2);padding:var(--s4);background:var(--wash)}
+.tc-offh{display:flex;align-items:center;gap:var(--s2);font:700 var(--t15)/1 var(--b)}.tc-offr{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s2);align-items:center}
+.tc-offr .k{font:700 var(--t13)/1.3 var(--b)}.tc-offr .k.up{color:var(--good-text)}.tc-offr .k.dn{color:var(--mid-text)}.tc-offr .k.no{color:var(--bad-text)}.tc-offr .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-offr i{font-style:normal;color:var(--ink-3)}
+.tc-fold{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.tc-fold summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:var(--s16);padding:var(--s2) 0;cursor:pointer;list-style:none}.tc-fold summary::-webkit-details-marker{display:none}
+.tc-fold summary span{display:grid}.tc-fold summary b{font:700 var(--t15)/1.4 var(--b)}.tc-fold summary small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tc-fold summary i{font-style:normal;font-size:var(--t20);color:var(--ink-3);transition:rotate .2s}.tc-fold[open] summary i{rotate:90deg}
+.tc-gw{overflow-x:auto;padding-bottom:var(--s4)}.tc-grid{border-collapse:separate;border-spacing:2px;font:700 var(--t13)/1 var(--b);width:100%;table-layout:fixed}
+.tc-grid th{padding:var(--s1);color:var(--ink-2);font-weight:700}.tc-grid thead th{height:40px}.tc-grid thead th span{display:inline-block;padding:var(--s1);color:var(--on-type);background:var(--tc)}
+.tc-grid thead th.cor{width:112px;text-align:left;font:600 var(--t13)/1.3 var(--b)}.tc-grid tbody th{text-align:left}.tc-grid tbody th span{display:block;padding:var(--s1) var(--s2);color:var(--on-type);background:var(--tc);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.tc-grid td{height:32px;text-align:center;background:var(--wash);color:var(--ink)}
+.tc-grid td.v2{background:color-mix(in srgb,var(--good) 55%,var(--surface))}.tc-grid td.v0_5{background:color-mix(in srgb,var(--bad) 22%,var(--surface))}.tc-grid td.v0{background:var(--ink);color:var(--surface)}
+.tc-grid td.lit{outline:2px solid var(--plot);outline-offset:-2px}.tc-grid thead th.lit span{outline:2px solid var(--plot);outline-offset:2px}
+.tc-prow{display:none}
+@media (max-width:699px){.tc-h h1{font-size:var(--t28)}.tc-picks{grid-template-columns:repeat(6,minmax(0,1fr))}.tc-tp{font-stretch:85%;letter-spacing:-.01em}
+ .tc-main{grid-template-columns:minmax(0,1fr)}.tc-cardw .ms-card{--ch:280px}.tc-spec{grid-template-columns:minmax(0,1fr)}.tc-band{min-height:0;grid-template-columns:64px minmax(0,1fr);align-items:center}
+ .tc-findw{flex-basis:100%;margin-inline:var(--s2)}.tc-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%}.tc-tm{justify-content:center;padding:var(--s1)}.tc-tm span{display:none}
+ .tc-types{grid-template-columns:repeat(2,minmax(0,1fr))}.tc-tile{min-height:72px}.tc-gw{display:none}.tc-prow{display:grid;gap:var(--s3);padding-bottom:var(--s4)}}
+.tc-pl{justify-content:space-between}.tc-pl .tc-clear{text-transform:none;letter-spacing:0}
+.tc-show{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.tc-show b{color:var(--ink)}@media (max-width:699px){.tc-gnote{display:none}}
+.tc-prow .tc-offr{grid-template-columns:minmax(0,1fr);gap:var(--s1)} /* phones: today's longer labels sit above their chips */
+/* Type Chart polish (Nov 14): under 1100 the five bands run as rows (side by side they spilled at 720-800); under 1024 your six take one even
+   row of their own (they wrapped 4+2 / 5+1); 'Clear' is a full-size tap target; narrower letters on the type buttons under 360 */
+@media (min-width:700px) and (max-width:1099px){.tc-main{grid-template-columns:260px minmax(0,1fr)}.tc-cardw .ms-card{--ch:360px}}
+@media (max-width:1099px){.tc-spec{grid-template-columns:minmax(0,1fr)}.tc-band{min-height:0;grid-template-columns:72px minmax(0,1fr);align-items:center}}
+@media (max-width:1023px){.tc-findw{flex-basis:100%}.tc-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%}.tc-tm{min-width:0}.tc-tm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+.tc-pl .tc-clear{min-height:var(--tap);padding:0 var(--s2)}
+@media (max-width:359px){.tc-tp{font-stretch:75%}}
+@media (min-width:700px) and (max-width:1023px){.tc-tm{flex-direction:column;justify-content:center;gap:2px;padding:var(--s1)}.tc-tm span{white-space:normal;overflow:visible;text-align:center;line-height:1.2}}
+@media (min-width:700px) and (max-width:1023px){.tc-tm span{font-stretch:85%;letter-spacing:-.01em}} /* every name on one line (Mega Charizard Y took two beside one-line neighbours) */
+@media (min-width:700px) and (max-width:1023px){.tc-team{gap:var(--s1)}.tc-tm{padding-inline:2px}}
