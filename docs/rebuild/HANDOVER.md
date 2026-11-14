@@ -4,6 +4,7 @@ Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this t
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
 ## NOW (Nov 14, written 9:54 AM Eastern by the clock; Sim's authority until 5:00 PM Sat Nov 14 (extended 8:40 AM); summary 4:40 PM)
+- 12:43 PM by the clock: Practice (Arena VS) on the Preview v130 (400 files). Preview build now gets out/practice.json (app/build.mjs). VS layered between the sides (your plates above it). WAITS on Sim: OK on VS layering; Type Chart round 3 pick (U1-U4, docs/rebuild/mocks/types/round3). Next by plan: Test Run, mock-ups first.
 - Sim's morning answers: all recommended (calc Q1-Q4 A), Preview go, iPad Q1 B / Q2 A. Preview now v127 (400 files checked).
 - On the Preview: Damage Calc 'Their Side' (v124), iPad upright table + KO Board side by side (v125), scroll-bar fix (v126/127,
   i50, UNSURE until Sim tries it on her iPhone), tap today's underdog to open its sheet (v127, i51).
