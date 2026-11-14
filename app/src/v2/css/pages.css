@@ -1960,3 +1960,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .us-bench{--gsw:72px}.us-bench .us-fig .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-tx b{font-size:var(--t13)}.us-hh h2{font-size:var(--t24)}}
 .us-step .us-fig.pod{grid-row:auto}.us-fig.pod .us-tx{padding-top:var(--s3)}.us-steps{border-bottom:0}.us-fig.pod .us-blk{border-bottom:4px solid var(--plot)}
 .us-bar>i>i{background:linear-gradient(90deg,var(--ty-a,var(--plot)),var(--ty-b,var(--plot)))}
+/* Sim, Nov 14: Meta scrolled slowly on her Windows desktop (mouse wheel). Her standing rule: sprite glow off on mouse screens except feature
+   sprites. The stand and the podium draw ~80 sprites, each with drop-shadow filters (two at night) and a blurred pool; the spotlight keeps its. */
+@media (hover:hover) and (pointer:fine){
+  .gs .np-mon img,.us-podium .np-mon img,.us-mates .np-mon img,.us-list .np-mon img,:root[data-theme="night"] .gs .np-mon img,:root[data-theme="night"] .us-podium .np-mon img,:root[data-theme="night"] .us-mates .np-mon img,:root[data-theme="night"] .us-list .np-mon img{filter:none}
+  :root[data-theme="night"] .gs .np-mon .pool,:root[data-theme="night"] .us-podium .np-mon .pool,:root[data-theme="night"] .us-mates .np-mon .pool{filter:none}}
+/* Sim, Nov 14: the slanted 93 looked off-centre (its ink sat ~0.1em right of the panel centre: the slant leans the tops right) */
+.fn-belt>b{translate:-.1em 0}

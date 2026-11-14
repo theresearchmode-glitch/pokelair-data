@@ -27,11 +27,11 @@ V2.raRow = x => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.ra
     <span class="ra-ut">${N.u != null ? `${E(V2.raPct(N.u))}` : '–'}</span><span class="ra-wr">${N.w != null ? `<b>${E(winFmt(N.w))}</b><small>${E(V2.raGames(N.g))}</small>` : '<b>–</b><small>too few games</small>'}</span></button>`; };
 V2.raPct = v => (+v).toFixed(1) + '%';
 // The Grandstand (Sim's pick, Nov 14; brief docs/rebuild/mocks/meta-grandstand/BRIEF.md): every Pokémon stands on a bench in its tier,
-// bigger in higher tiers. Rows per width (brief section 2): desktop up to 12 across (two rows at most, F one), iPad 6, phone 4 (5 when that
-// leaves no lone slot), three rows at most (D two, F one); a shorter last row is centred; more than fits = "See all N ›" (remembered).
+// bigger in higher tiers. Rows per width (brief section 2): desktop up to 12 across (two rows at most, F one), iPad 6 (three rows at most), phone 4 (5 when that
+// leaves no lone slot), two rows at most (Sim, Nov 14, Q1 B; D two, F one); a shorter last row is centred; more than fits = "See all N ›" (remembered).
 V2.gsWeek = () => { const M = META.track && META.track.mv, o = new Map(); if (M && M.list) for (const m of M.list) { const d = RS(m.r) - RS(m.r - m.d); if (d) o.set(m.n, d); } return o; };
 V2.gsLay = (n, k, open) => { const W = innerWidth, desk = W >= 1100, tab = W >= 700; let C = desk ? 12 : tab ? 6 : 4; if (!tab && [5, 9, 10].includes(n)) C = 5;
-  const R = k === 'F' ? 1 : k === 'D' ? 2 : desk ? 2 : 3, shown = open ? n : Math.min(n, C * R), rows = Math.max(1, Math.ceil(shown / C)); return {shown, c: Math.ceil(shown / rows)}; };
+  const R = k === 'F' ? 1 : k === 'D' || !tab ? 2 : desk ? 2 : 3, /* Sim, Nov 14 (Q1 B): phones show 2 rows per tier + See all */ shown = open ? n : Math.min(n, C * R), rows = Math.max(1, Math.ceil(shown / C)); return {shown, c: Math.ceil(shown / rows)}; };
 V2.gsMon = (x, wk, mrank) => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.raNums(p), gem = isGem(p), mine = V2.raOnTeam(p), mv = wk.get(p.n) || 0, sc = RS(r.total), T = lTier(r.total);
   const one = k && k.rank === 1 && !mrank, d = p.d.startsWith('Mega ') ? p.d.slice(5) : p.d;
   const top = mrank ? `<span class="gs-mg u">#${mrank}</span>` : p.m ? '<span class="gs-mg u">Mega</span>' : '<span class="gs-mg" aria-hidden="true">&nbsp;</span>';

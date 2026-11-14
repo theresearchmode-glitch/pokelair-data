@@ -23,9 +23,12 @@ const [file = path.join(ROOT, 'app/dist/v2.html'), viewArg = 'team,team-empty,bo
 const WIDTHS = [[320, 3900, ''], [390, 3700, ''], [820, 3500, ''], [1440, 1800, '']];
 // Home has its own agreed limits (docs/rebuild/page-heights.md: phone 4,400 (Sim, Nov 12, was 4,200), iPad 3,500, desktop 2,700); 320 has none agreed,
 // so it takes the phone limit + 200 like the tool pages do, and says the limit is assumed (Nov 12)
-const HOME = {320: [4600, "assumed"], 390: [4400, ""], 820: [3500, ""], 1440: [2950, "first visit: welcome card allowed over 2,700 (Sim, Nov 12; 2,950 from 8:17 PM: the Meta grows with the daily data)"]};
+const HOME = {320: [4800, 'Sim, Nov 14 (Q3 A)'], 390: [4400, ""], 820: [3500, ""], 1440: [2950, "first visit: welcome card allowed over 2,700 (Sim, Nov 12; 2,950 from 8:17 PM: the Meta grows with the daily data)"]};
 // Battle (Sim, Nov 12, 10:15 PM, Q5 = A): the Battle log stays always shown, so Battle's limits rise a little
 // Q6 = A (Sim, Nov 12): the Battle tools (bar 700+, list on phones) too
+// Sim, Nov 14 (Q2 A): the Grandstand and the Podium show far more Pokémon than the old lists; limits = measured heights rounded up to the next 50
+const META_L = {320: [4500, 'Grandstand (Sim, Nov 14, Q2 A)'], 390: [4300, 'Grandstand (Sim, Nov 14, Q2 A)'], 820: [3950, 'Grandstand (Sim, Nov 14, Q2 A)'], 1440: [2850, 'Grandstand (Sim, Nov 14, Q2 A)']};
+const USAGE_L = {1440: [2100, 'Podium (Sim, Nov 14, Q2 A)']};
 const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4100, 'Battle log + tools (Sim, Nov 12)'], 1440: [1950, 'Battle log + tools (Sim, Nov 12)']};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
@@ -34,6 +37,8 @@ const ENGINES = (process.env.C13_ENGINES || 'chromium,webkit').split(',').map(x 
 for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, limit, note] of WIDTHS) {
   if (view === "home" && HOME[w]) [limit, note] = HOME[w];
   if (view === 'battle' && BATTLE[w]) [limit, note] = BATTLE[w];
+  if (view === 'meta' && META_L[w]) [limit, note] = META_L[w];
+  if (view === 'usage' && USAGE_L[w]) [limit, note] = USAGE_L[w];
   // Sim, Nov 13 (Height Q1 A): a team with only 5 of 6 has its own, higher limits (the measured heights rounded up to the next 50); the normal My Team limits don't move
   if (view === 'team' && state === 'five' && {320: 1, 390: 1, 1440: 1}[w]) [limit, note] = [{320: 4250, 390: 4100, 1440: 1950}[w], '5 of 6 (Sim, Nov 13, Height Q1 A)'];
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
