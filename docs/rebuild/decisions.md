@@ -789,3 +789,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:00 PM: Preview v121 published (400 files checked): The Card info sheet with phone forms B.
 - 11:08 PM: Sim (11:03-11:04 PM): phone info sheet slid sideways (card glow 8 px past the sheet) -> sheet never scrolls sideways; desktop card stretched into a long strip on a tall window -> capped at 656 tall (brief's 392 x 654 at 1440 x 900).
 - 11:41 PM: Sim (11:25 PM): desktop card on Preview v122 'looks VERY sharp', sprites high quality. Still open: empty left column under the buttons on very tall windows.
+- 11:41 PM: Sim (11:42 PM): A, leave the empty left column on very tall windows; finish what we have now, new things maybe after the rebuild.
