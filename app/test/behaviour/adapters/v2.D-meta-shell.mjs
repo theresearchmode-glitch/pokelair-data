@@ -44,6 +44,20 @@ export default (ui, pg) => {
       await ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); if (!d) throw new Error('no fold ' + m); d.querySelector('summary').click(); }, m); await wait(500); },
     foldText: m => ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); return d ? __dtx(d) : null; }, m),
     inView: m => NOT('inView ' + m + ' (How We Calculate page)'),
+    // ---------------- Usage (Nov 14, The Podium): the top 10 stand on the podium and benches; tapping one shows "How <Pokémon> is played" ----------------
+    usageSourceLine: () => ev(() => __dtx(document.querySelector('.us-src'))),
+    usageSources: () => ev(() => [...document.querySelectorAll('[data-ussrc]')].map(b => ({name: __dtx(b), on: b.getAttribute('aria-pressed') === 'true'}))),
+    chooseUsageSource: async name => { await ev(n => { const b = [...document.querySelectorAll('[data-ussrc]')].find(b => __dtx(b) === n); if (!b) throw new Error('no source ' + n); b.click(); }, name); await wait(500); },
+    usageSearch: async text => { await pg.fill('[data-usq]', text); await wait(500); },
+    /** every rank shown, in rank order: [{rank, name, text}] */
+    usageRows: () => ev(() => [...document.querySelectorAll('.us [data-uspick]')].filter(__dvis).map(b => ({rank: +(__dtx(b.querySelector('.us-rk')).replace('#', '')), name: __dtx(b.querySelector('.us-tx b')), text: __dtx(b) + ' ' + (b.getAttribute('aria-label') || '')})).sort((a, b) => a.rank - b.rank)),
+    restButtonShown: () => ev(() => __dvis(document.querySelector('[data-usrest]'))),
+    tapRestOfList: async () => { await pg.click('[data-usrest]'); await wait(500); },
+    openUsageRow: async name => { await ev(n => { const b = [...document.querySelectorAll('.us [data-uspick]')].filter(__dvis).find(b => __dtx(b.querySelector('.us-tx b')) === n); if (!b) throw new Error('no usage row ' + n); b.click(); }, name); await wait(600); },
+    usageRowText: name => ev(n => { const s = document.querySelector('[data-ushow]'); return s && new RegExp('How ' + n + ' is played').test(__dtx(s)) ? __dtx(s) : ''; }, name),
+    tapInUsageRow: async (name, re) => { await ev(([n, src]) => { const s = document.querySelector('[data-ushow]'), r = new RegExp(src.replace(/^\/|\/[a-z]*$/g, ''));
+      if (!s || !new RegExp('How ' + n + ' is played').test(__dtx(s))) throw new Error('row not open: ' + n); const b = [...s.querySelectorAll('button, a')].filter(__dvis).find(b => r.test(__dtx(b))); if (!b) throw new Error('no ' + src + ' in ' + n); b.click(); }, [name, re.toString()]); await wait(800); },
+    toastText: () => ev(() => { const t = [...document.querySelectorAll('.np-toast')].filter(__dvis).pop(); return t ? __dtx(t) : null; }),
   };
   // the other Meta and shell helpers: the pages they belong to aren't rebuilt yet
   for (const k of ['mainTabs', 'activeMainTab', 'teamCount', 'bottomBar', 'tapMainTab', 'openMenu', 'ratingOnRatings', 'filterChipsTop', 'teamLinkCode', 'findRulesCaption'])

@@ -5,7 +5,7 @@
 // unchanged through its test hook (src/v2/test-hook.js sets window.__ev when window.__PL_TEST is set before load).
 const slot = n => ({n, a: null, lock: false});
 // player-facing page names -> the ids the tests use (today's view names). The new build's hash routes and page-like sheets map onto them.
-const ROUTE = {report: '#team', box: '#box', compare: '#compare', matchup: '#battle', speed: '#speed', calc: '#calc', types: '#types', practice: '#practice', gauntlet: '#gauntlet', ratings: '#meta'};
+const ROUTE = {report: '#team', box: '#box', compare: '#compare', matchup: '#battle', speed: '#speed', calc: '#calc', types: '#types', practice: '#practice', gauntlet: '#gauntlet', ratings: '#meta', meta: '#usage'};
 // sheets that ARE a page in today's site (Saved Teams, Team Sheet, All Suggestions): current() reports them as that page
 const PAGE_SHEETS = [['.svt2', 'teams'], ['.ts2', 'sheet'], ['.sga2', 'coverage']];
 export default {
@@ -35,7 +35,7 @@ export default {
     /** which page is showing (today's ids); a hash the new build has no page for reads "not-in-v2:<hash>" */
     current: () => pg.evaluate(([PS]) => { if (!window.V2) return null; if (V2._sheet) { for (const [c, id] of PS) if (V2._sheet.wrap.querySelector(c)) return id; }
       const h = (location.hash || '').slice(1).replace(/=.*/, ''); if (!V2.pages[h]) return 'not-in-v2:#' + (h || '(none: Home)');
-      return {team: 'report', sheet: 'report', 'team-empty': 'report', box: 'box', compare: 'compare', battle: 'matchup', build: 'auto'}[h] || h; }, [PAGE_SHEETS]),
+      return {team: 'report', sheet: 'report', 'team-empty': 'report', box: 'box', compare: 'compare', battle: 'matchup', build: 'auto', meta: 'ratings', usage: 'meta'}[h] || h; }, [PAGE_SHEETS]),
     /** the visible text of the page being shown (a page-like sheet counts as the page: Saved Teams, Team Sheet, Compare's team picker) */
     text: () => pg.evaluate(() => { const T = e => e.innerText.replace(/\s+/g, ' ').trim(); const h = (location.hash || '').slice(1).replace(/=.*/, '');
       if (!window.V2 || !V2.pages[h]) throw new Error('not in v2 yet: page "' + (h ? '#' + h : 'Home (no hash)') + '"');
