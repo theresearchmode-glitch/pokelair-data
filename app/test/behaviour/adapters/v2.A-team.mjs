@@ -148,7 +148,7 @@ export default (ui, pg, o) => {
     /** the set card: the Set section plus the strip under the six, which carries its place in the plan (Sim's review, Nov 11, item 5) */
     setCard: () => pg.evaluate(() => [...document.querySelectorAll('#main .sx-act, #main #tm-set, #main .mh-slot.on .mh-rate, #main .mh-slot.on .mh-set')].map(e => (e.closest('.mh-slot, .mt-edit') ? e.textContent : e.innerText).replace(/\s+/g, ' ').trim()).join(' ')), /* the strip's 'Editing' is capitals by CSS only; the set's type chips sit in the Card on desktop */ /* The Hand (Sim, Nov 14): the editing strip plus the picked Card's plate and set */
     /** how many moves the set card shows */
-    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *, #main .mh-slot.on .mh-mv > li')].filter(e => e.getClientRects().length).length),
+    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *, #main .mh-slot.on .mh-mv > li, #main #tm-set .mt-emv > li')].filter(e => e.getClientRects().length).length),
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     /** the padlock on a tile (as today: shown on the picked tile, so tap the tile first when it isn't showing) */
     lockOnTile: async name => { const f = n => [...document.querySelectorAll('#main [data-v2lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n + ':') && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;

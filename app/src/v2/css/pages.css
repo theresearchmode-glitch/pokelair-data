@@ -2037,3 +2037,21 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:359px){.mh .mc-id h3{font-stretch:88%}.mh .mc-id{left:var(--s1);right:var(--s1)}}
 @media (max-width:359px){.mh .mc-id h3{font-size:var(--t13)}}
 @media (min-width:700px) and (max-width:799px){.mh-pair{grid-template-columns:minmax(0,1fr)}}
+/* Sim, Nov 14 (H2 A): the four moves as a 2x2 chip block under each Card */
+.mh-mv{grid-template-columns:repeat(2,minmax(0,1fr))}.mh-mv li{padding:var(--s1) var(--s2);line-height:1.3;min-width:0;overflow-wrap:anywhere}
+.mt-emv{display:none}
+/* Sim, Nov 14 (H1 C): iPhone keeps the Hand short: two Pokémon side by side, each Card with its item and Ability; the picked one's
+   four moves show in the editing strip (every set one tap away); the name sits beside the score; tighter gaps */
+@media (max-width:699px){
+  .mh-hand{gap:var(--s4)}.mh-gh{margin-bottom:var(--s2)}
+  .mh-pair{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}.tm-hero.mt .mh-slot{grid-template-columns:minmax(0,1fr);row-gap:var(--s2)}
+  .mh .ms-card{height:152px}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:96px}.mh .mc-id h3{font-size:var(--t13)}.mh-it b{font-size:var(--t15)}
+  .mh-slot .mh-mv{display:none}.mt-emv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr) auto;align-items:start}.tm-hero.mt .mt-right{grid-column:1/-1}
+  .tm-hero.mt .mt-belt .np-score b{font-size:var(--d64)}.mt-id .tm-name{font-size:var(--t24)}.mt-id{gap:var(--s1)}.mt-id .tm-links{margin-top:0}.tm-hero.mt{gap:var(--s4)}
+  .mt-band{font-size:var(--t13);letter-spacing:.02em;column-gap:var(--s2)}.mt-band span{white-space:nowrap}
+  .mt-edit{padding:var(--s2) var(--s3);gap:var(--s2)}.tm-six.mh .sx-plan{padding:var(--s2) var(--s3)}}
+@media (max-width:399px){.mt-band span:nth-child(2){white-space:normal}}
+@media (max-width:699px){.tm-hero.mt .mt-id{display:contents}.tm-hero.mt .mt-id>*{grid-column:1/-1}.tm-hero.mt .mt-id>.fn-k,.tm-hero.mt .mt-id>.tm-name{grid-column:1}
+  .tm-hero.mt .mt-id>.fn-k{grid-row:1;align-self:end}.tm-hero.mt .mt-id>.tm-name{grid-row:2;align-self:start}.tm-hero.mt .mt-belt{grid-column:2;grid-row:1/3}
+  .tm-hero.mt .mt-head{row-gap:var(--s2)}.mt-band span:nth-child(2){text-wrap:balance}}
