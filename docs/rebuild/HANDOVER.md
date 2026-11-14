@@ -3,6 +3,18 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 8:14 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
+- Preview v115 (400 files): all review fixes (Home sixes, My Team buttons/links/Stand-Outs/empty spots 'Add'+'Spot N', Build Your pick,
+  most-used names fit, Battle Q1 B/Q2 B). Built from 0a324fa so the info sheet stage is NOT on it.
+- Info sheet redesign (Sim's picks; docs/rebuild/info-sheet/BRIEF.md + PLAN.md): step 1 stage (945543e, 9612ecf) and step 2 headline
+  (fd2ed4c) built on phone, NOT on the Preview until Sim says go. Checks: sheet text 345/345 identical (look/sit.cjs), long names,
+  Rotom forms, polish (only the judged 'boxes' screen finding), c13. Next: step 3 desktop Side Stage, step 4 iPad upright, step 5 checks.
+- Open questions to Sim: stage OK / go to step 2+ (default: continue, no Preview); lone dash for 'of teams' with no data; chips stack at 320.
+- Tests (frozen copy of the review fixes): My Team 127/11/4 same list as at-nat.txt; Build 25/63/2/1; SUGG-19 passed 3 times today
+  (known-bug mark still on: remove it as its own step).
+- Scripts (scratchpad look/): st.cjs (stage pictures + measures), nm.cjs/nm2.cjs (long names), fm2.cjs (forms), sit.cjs (text before/after,
+  needs scratchpad v2-before-a0d.html), ovC.cjs (Home most-used worst case), czR.cjs (Build Your pick, real sprites).
+
 ## NOW (Nov 13, written 4:50 PM Eastern by the clock; Sim's authority extended to 6:00 PM, summary 5:40 PM)
 - PREVIEW v109 (394 files checked). After v106: Home Q2 B (phones, c1a4ffa) and Home Q3 B (tablets 700-899, 654e55c): a long
   #1 name (Rillaboom with the bundled data) no longer runs into its neighbours (0 px at 320-1024); Home six tiles use the corner
