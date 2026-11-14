@@ -8,6 +8,8 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
   line, "Too few" fits, desktop card one size in both team states; 6 forms, one type, no data, widest/tallest, 320, 1366x768, Add state,
   keyboard, screen reader pass. UNSURE: scroll smoothness on a real mouse PC. Clicks 125/0 double.
 - Sim 10:56 PM: phone forms B (b7bd675) + go. PREVIEW v121 (400 files) = The Card. Next: Sim tries it; refine as she says.
+- Sim 11:03-11:04 PM: PC scrolling smooth; phone sheet slid sideways and desktop card was a long strip on a tall window -> fixed
+  (6bc6f2d). PREVIEW v122 (400 files). Open (her call): empty left column under the buttons on very tall windows.
 - Info sheet = NEW DIRECTION, Sim's Card brief (docs/rebuild/info-sheet/BRIEF-CARD.md; the Stadium/Side Stage is gone). Built on the
   branch, NOT on the Preview (v120 is still the old stage): phone, iPad upright, desktop, dark + light (b35657a, a1064d0, 4b7bec5).
   Tab sub-lines removed (Sim, 10:30 PM). Checks 10:31 PM: words 345/345 kept (look/sit3.cjs, order-free), polish 0 spills,
