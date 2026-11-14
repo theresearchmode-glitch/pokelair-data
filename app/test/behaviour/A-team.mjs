@@ -38,7 +38,7 @@ t('HOME-01', 'Home leads with the tagline "Sharply raise your win rate."', async
 t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => {
   if (NEW) { /* new build (Home piece 1, decisions.md Nov 12, from the approved mock-up; Preview v74, Sim "love it"): "Most used right
     now", three tiles #2 · #1 · #3, each "<name> N% of ladder teams", the #1 marked "· #1" ("ladder teams": decisions.md Nov 12 3:50 PM) (aria-label "<name>, most used #1, …") */
-    const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now .+? [\d.]+% of ladder teams (.+?) ([\d.]+)% of ladder teams · #1 /); ok(m, 'no "Most used right now … <name> N% of ladder teams · #1" hero');
+    const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now\.? .+? [\d.]+% of ladder teams (.+?) ([\d.]+)% of ladder teams · #1 /); ok(m, 'no "Most used right now … <name> N% of ladder teams · #1" hero');
     await r.ui.tapText('most used #1'); const s = await r.ui.infoSheet(); ok(s && s.includes(m[1]), `info sheet for ${m[1]} did not open`); noErrs(r); await r.close(); return; }
   const r = await homePage(); const tx = await r.ui.text();
   const m = tx.match(/Most used, #1 ([\d.]+)% of teams bring (.+?) [A-Z][a-z]+ [\d.]+%/); ok(m, 'no "Most used, #1 … % of teams bring X" hero');
@@ -46,7 +46,7 @@ t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => 
 
 t('HOME-03', 'Runner-up strips (#2, #3) open their info sheets', async () => {
   if (NEW) { /* new build (Home piece 1, decisions.md Nov 12; Preview v74): #2 and #3 are tiles either side of #1, "<name> N% of ladder teams" */
-    const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now (.+?) ([\d.]+)% of ladder teams .+? [\d.]+% of ladder teams · #1 (.+?) ([\d.]+)% of ladder teams/);
+    const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now\.? (?:Most used in .*? Data as of [A-Z][a-z]{2} \d+(?: \([^)]*\))? )?(.+?) ([\d.]+)% of ladder teams .+? [\d.]+% of ladder teams · #1 (.+?) ([\d.]+)% of ladder teams/);
     ok(m, 'no #2 and #3 tiles with name and %'); await r.ui.tapText(`${m[1]} ${m[2]}%`); let s = await r.ui.infoSheet(); ok(s && s.includes(m[1]), `info sheet for ${m[1]} did not open`);
     await r.ui.closeInfoSheet(); await r.ui.tapText(`${m[3]} ${m[4]}%`); s = await r.ui.infoSheet(); ok(s && s.includes(m[3]), `info sheet for ${m[3]} did not open`); await r.close(); return; }
   const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/bring \S+(?: \S+)?? ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)% ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)%/);
@@ -102,7 +102,7 @@ t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
 t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy for Showdown copies', async () => {
   const r = await homePage(); await r.ui.grantClipboard(); const tx = await r.ui.text();
   // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12): the same line with "·" between parts
-  ok((NEW ? /The Champion's six · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players/ : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
+  ok((NEW ? /The Champion's (?:six|corner) · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players/i : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
   ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link');
   await r.ui.tapText('Load this team'); ok(await r.ui.sees('Tap again to replace your team'), 'first tap did not ask to tap again');
   ok((await r.ui.team()).join() === TEAM.join(), 'first tap already replaced the team');
@@ -116,7 +116,7 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
 t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion sets Battle', async () => {
   const r = await aopen({fresh: true}); const tx = await r.ui.text();
   // new build (decisions.md Nov 12): the weather word sits in the eyebrow "Your six · <team name> · Sun team"
-  has(tx, 'Sun Tailwind (sample)'); has(tx, NEW ? /Your six · Sun Tailwind \(sample\) · Sun team/ : /Your team: 6\/6 Sun team/);
+  has(tx, 'Sun Tailwind (sample)'); has(tx, NEW ? /Your (?:six · |corner )Sun Tailwind \(sample\)(?: ·)? Sun team/i : /Your team: 6\/6 Sun team/);
   ok(/Game [Pp]lan vs the Champion's six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\./.test(await r.ui.homePlanLine() || ''), 'no lead/back/bench plan line: ' + await r.ui.homePlanLine());
   has(tx, 'Open my team'); await r.ui.tapText('Prep vs the Champion', 1200); ok(await r.ui.current() === 'matchup', 'Battle did not open');
   ok(await r.ui.waitToast(/Opponent set/), 'no "Opponent set" toast'); const opp = await r.ui.peek('S.opp.filter(Boolean)'); ok(opp && opp.length === 6, 'opponent six not set');
@@ -134,7 +134,7 @@ t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async ()
   const r = await aopen({fresh: true}); const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');
   // new build (Sim approved the words and buttons, decisions.md Nov 12): "Read your Strength Score"; buttons Copy a Top Team + Got It,
   // no "Build me a team" in the card (the hero above has the start buttons)
-  if (NEW) { for (const s of ['How NastyPlot works', 'Get a team', 'Read your Strength Score', 'Plan each match', 'Copy a Top Team', 'Got It']) has(w, s, 'welcome card'); ok(!/Build me a team/i.test(w), 'welcome card repeats "Build me a team"'); }
+  if (NEW) { ok(/How (?:NastyPlot|fight night) works/.test(w), 'welcome card has no "How … works" heading'); /* Fight Night (Sim, Nov 14): "How fight night works." */ for (const s of ['Get a team', 'Read your Strength Score', 'Plan each match', 'Copy a Top Team', 'Got It']) has(w, s, 'welcome card'); ok(!/Build me a team/i.test(w), 'welcome card repeats "Build me a team"'); }
   else for (const s of ['How NastyPlot works', 'Get a team', 'Read your scouting report', 'Plan each match', 'Build me a team', 'Copy a top team', 'Got it']) has(w, s, 'welcome card');
   await r.ui.tapText('Got it'); ok(!(await r.ui.welcomeCardText()), 'card still there after Got it'); await r.ui.reload(); ok(!(await r.ui.welcomeCardText()), 'card came back after reload'); await r.close();
   const back = await homePage(); ok(!(await back.ui.welcomeCardText()), 'returning visitor sees the welcome card'); await back.close(); });
@@ -165,8 +165,8 @@ t('HOME-15', 'More on Home fold: pairs, what changed, cores, "Log a game" → Ba
 
 t('HOME-16', 'Weather chip "Sun team" on Home\'s team card', async () => {
   // new build (decisions.md Nov 12): the weather word ends the eyebrow "Your six · <team name> · Sun team"
-  const {ui} = await view('home', {team: TEAM}); ok(await ui.sees(NEW ? /Your six · .+ · Sun team/ : /Your team: 6\/6 Sun team/), 'no "Sun team" weather chip');
-  const r = await aopen({team: RAIN}); ok(await r.ui.sees(NEW ? /Your six · .+ · Rain team/ : /Your team: 6\/6 Rain team/), 'Rain team shows no "Rain team" chip'); await r.close(); });
+  const {ui} = await view('home', {team: TEAM}); ok(await ui.sees(NEW ? /Your (?:six · |corner\s)[\s\S]*?Sun team/i : /Your team: 6\/6 Sun team/), 'no "Sun team" weather chip');
+  const r = await aopen({team: RAIN}); ok(await r.ui.sees(NEW ? /Your (?:six · |corner\s)[\s\S]*?Rain team/i : /Your team: 6\/6 Rain team/), 'Rain team shows no "Rain team" chip'); await r.close(); });
 
 // ================= 2. My Team =================
 t('TEAM-01', 'Header: "My team: N of 6, Sun team" and the team name as heading; "No team yet" when empty', async () => {
