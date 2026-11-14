@@ -8,7 +8,7 @@ V2.DC_PAT = {Fighting: 'burst', Fire: 'burst', Electric: 'burst', Dragon: 'burst
   Normal: 'rings', Psychic: 'rings', Ghost: 'rings', Flying: 'rings', Ice: 'shards', Rock: 'shards', Steel: 'shards', Ground: 'shards', Dark: 'shards'};
 V2.DC_WX = [['', 'None'], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']];
 V2.DC_TR = [['', 'None'], ['grassy', 'Grassy'], ['electric', 'Electric'], ['psychic', 'Psychic'], ['misty', 'Misty']];
-V2.DC_WXC = {sun: 'var(--wx-sun)', rain: 'var(--ty-Water)', sand: 'var(--ty-Rock)', snow: 'var(--ty-Ice)', grassy: 'var(--ty-Grass)', electric: 'var(--ty-Electric)', psychic: 'var(--ty-Psychic)', misty: 'var(--ty-Fairy)'};
+V2.DC_WXC = {sun: 'var(--wx-sun)', rain: 'var(--ty-Water)', sand: 'var(--ty-Ground)', snow: 'var(--ty-Ice)', grassy: 'var(--ty-Grass)', electric: 'var(--tr-electric)', psychic: 'var(--ty-Psychic)', misty: 'var(--ty-Fairy)'};
 V2.dcPct = r => `${dmgP(100 * r.min / r.hp)}–${dmgP(100 * r.max / r.hp)}%`;
 // one move's own result against the defender on the table (same sides and field as the move in play)
 V2.dcHit = (C, m) => { if (!m) return null; try { const ord = dcOrder(C.A, C.D, m, dc.weather, dc.terrain);

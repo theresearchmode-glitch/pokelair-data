@@ -30,11 +30,11 @@
   --gut:96px;--tap:44px;
   /* info sheet card (Sim's 'The Card' brief, Nov 13): a real light card by day (night values below) */
   /* Damage Calc 'Their Side' (Nov 14): the lit Sun field card, ink on lit field cards, the table surface and its grid, the move card face, the KO tint */
-  --wx-sun:#E3A51C;--wx-sun-hi:#F2C44D;--on-wx:#1C1708;--table:rgba(23,22,26,.035);--table-line:rgba(23,22,26,.06);--table-edge:rgba(23,22,26,.12);--mvc-face:#FFFFFF;--mvc-ink:#17161A;--mvc-sub:#5E5A66;--ko-tint:rgba(217,58,58,.10);--hp-left:#2DA84A;
+  --wx-sun:#E3A51C;--wx-sun-hi:#F2C44D;--tr-electric:#F4DC3C;--on-wx:#1C1708;--table:rgba(23,22,26,.035);--table-line:rgba(23,22,26,.06);--table-edge:rgba(23,22,26,.12);--mvc-face:#FFFFFF;--mvc-ink:#17161A;--mvc-sub:#5E5A66;--ko-tint:rgba(217,58,58,.10);--hp-left:#2DA84A;
   --card-face-1:#FFFFFF;--card-face-2:#ECEAF2;--card-ink:#17161A;--card-giant:rgba(23,22,26,.11);--card-line:rgba(23,22,26,.035);--card-sheen:rgba(255,255,255,.55);--card-edge-mid:#FFFFFF;--card-glow:.16;--card-shade:rgba(30,20,50,.18);
   color-scheme:light}
 :root[data-theme="night"]{
-  --wx-sun:#D99A1B;--wx-sun-hi:#F0C25A;--on-wx:#1C1708;--table:rgba(255,255,255,.025);--table-line:rgba(255,255,255,.045);--table-edge:rgba(255,255,255,.10);--mvc-face:#15141E;--mvc-ink:#F4F2EE;--mvc-sub:#B0AAB8;--ko-tint:rgba(255,122,112,.14);--hp-left:#3FC060;
+  --wx-sun:#D99A1B;--wx-sun-hi:#F0C25A;--tr-electric:#E9D23A;--on-wx:#1C1708;--table:rgba(255,255,255,.025);--table-line:rgba(255,255,255,.045);--table-edge:rgba(255,255,255,.10);--mvc-face:#15141E;--mvc-ink:#F4F2EE;--mvc-sub:#B0AAB8;--ko-tint:rgba(255,122,112,.14);--hp-left:#3FC060;
   --card-face-1:#1A1924;--card-face-2:#0C0C13;--card-ink:#F4F2EE;--card-giant:rgba(255,255,255,.10);--card-line:rgba(255,255,255,.03);--card-sheen:rgba(255,255,255,.07);--card-glow:.30;--card-shade:transparent;
   --ray:rgba(255,255,255,.045);--ray-art:rgba(255,255,255,.05);
   --bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);

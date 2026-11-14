@@ -1416,3 +1416,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* light mode (review point 12): the card in play's KO text a little darker than its type colour, so it keeps 4.5:1 over the corner glow
    (type colour alone: 3.36:1 at worst, Psychic; mixed: 4.90:1 at worst) */
 :root:not([data-theme="night"]) .dc2-mv.play .ko{color:color-mix(in srgb,var(--tc) 75%,var(--mvc-ink))}
+/* review point 17 (Nov 14): Electric terrain lit in a bright lemon with dark text, like Sun (its type colour, a dark mustard, looked muddy
+   and close to Sun and Sand); Sand takes Ground's brown */
+.dc2-fc.lit[style*="tr-electric"]{color:var(--on-wx)}
+.dc2-fc .pips{gap:var(--s1)}.dc2-fc .pips i{width:var(--s2)}.dc2-fc .pips i.on{width:var(--s4)} /* review point 18: pips were 6 px, too small to read */
+@media (max-width:1023px){.dc2-hand{padding-inline:var(--s2)}} /* review point 16: a hand of four sat 1-2 px from the table's edge */
+/* review point 19: the six columns share the width evenly (they followed their longest move name) */
+.dc2-grid{table-layout:fixed}.dc2-grid thead th:first-child{width:184px}.dc2-grid td small{overflow-wrap:anywhere}
+@media (max-width:699px){.dc2-grid thead th:first-child{width:var(--s10)}}
+@media (max-width:379px){.dc2-grid{border-spacing:1px}.dc2-grid td{padding:var(--s1) 2px}.dc2-grid td b{font-size:var(--t13);letter-spacing:-.02em}}
