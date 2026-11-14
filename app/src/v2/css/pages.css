@@ -1218,3 +1218,17 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2{padding:0 var(--gut) var(--s16)} /* the same side gutters as Battle */
 @media (max-width:599px){.sp2 .sp2-wx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.sp2 .sp2-wx .np-chip:first-child{grid-column:1/-1}}
 @media (min-width:600px) and (max-width:899px){.sp2-ctl .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.sp2-ctl .np-chip{justify-content:center}} /* no lone Trick Room on its own line (3 + 2) */
+/* Speed Tiers, candidate looks for Sim (Nov 14): split track (yours left of the Speed line, the field right) and band (your rows washed blue) */
+.sp2-vs-h{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:var(--s2);margin-top:var(--s6);padding-bottom:var(--s2);border-bottom:1px solid var(--rule);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3);text-align:center}
+.sp2-vs-h .u{font:800 var(--t15)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--ink)}.sp2-vs-h .u:first-child{text-align:right;color:var(--plot-text)}.sp2-vs-h .u:last-child{text-align:left}
+.sp2-vs{position:relative;list-style:none;margin:0;padding:0}.sp2-vs::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--rule)}
+.sp2-vs li{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:var(--s2);align-items:center;min-height:48px}
+.sp2-vs .v{justify-self:center;padding:var(--s1) 0;background:var(--bg);font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums;color:var(--ink-2)}.sp2-vs .v.me{color:var(--plot-text);font-size:var(--t20)}
+.sp2-vs .mine,.sp2-vs .them{display:flex;flex-wrap:wrap;gap:0 var(--s2)}.sp2-vs .mine{justify-content:flex-end}
+.sp2-vs .chip2{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}.sp2-vs .chip2.me{font-size:var(--t15);font-weight:700;color:var(--ink);text-align:right}
+:root .sp2.band .sp2-vt li.me{background:color-mix(in srgb,var(--plot) 12%,transparent)}.sp2.band .sp2-vt li:not(.me) .chip2{opacity:.8}
+.sp2.band .sp2-vt li.me .who::after{content:"Yours";margin-left:auto;padding-right:var(--s3);font:700 var(--t13)/1.5 var(--b);color:var(--plot-text)}.sp2.band .sp2-vt li.me .who{flex:1}
+.sp2.band .sp2-vt li.me+li.me{margin-top:var(--s1)} /* two of yours in a row keep separate bands */
+/* candidate (desktop): your six sit on a soft blue field above the line, labelled, the top 20 on the page below */
+.sp2.band .sp2-track::before{content:"";position:absolute;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:0;height:var(--ay);background:color-mix(in srgb,var(--plot) 8%,transparent)}
+.sp2.band .sp2-track::after{content:"Your six";position:absolute;left:0;top:var(--s3);font:800 var(--t17)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--plot-text)}

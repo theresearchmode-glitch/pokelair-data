@@ -39,6 +39,12 @@ V2.spVTrack = D => { const g = []; for (const r of D.rows) { const l = g[g.lengt
   return `<ol class="sp2-vt" aria-label="Turn order">${g.map(G => `<li class="${G.items.some(r => r.me) ? 'me' : ''}"><b class="v u">${G.v}</b><i class="dot" aria-hidden="true"></i><span class="who">${G.items.map(r =>
     `<button type="button" class="chip2${r.me ? ' me' : ''}" data-v2mon="${V2.esc(r.p.n)}" aria-label="${V2.esc(V2.disp(r.p.n))}, ${r.v} Speed${r.me ? ', yours' : ''}${G.items.length > 1 && G.items.some(o => o.me !== r.me) ? ', a tie' : ''}: open its info">${V2.mon(r.p.n, {iw: r.me ? 40 : 32, bare: true})}<span>${V2.spName(r)}</span></button>`).join('')}${G.items.length > 1 && G.items.some(r => r.me) && G.items.some(r => !r.me) ? '<span class="tie">Tie</span>' : ''}</span></li>`).join('')}</ol>`; };
 
+// Sim, Nov 14 (12:0x AM): "hard to tell which 6 are ours and 20 are the meta". Two candidate looks for the slim track, drawn for her
+// pictures (V2.spLook = 'split' | 'band'); the plain track above stays until she picks.
+V2.spVSplit = D => { const g = []; for (const r of D.rows) { const l = g[g.length - 1]; if (l && l.v === r.v) l.items.push(r); else g.push({v: r.v, items: [r]}); }
+  const one = r => `<button type="button" class="chip2${r.me ? ' me' : ''}" data-v2mon="${V2.esc(r.p.n)}" aria-label="${V2.esc(V2.disp(r.p.n))}, ${r.v} Speed${r.me ? ', yours' : ''}: open its info">${r.me ? `<span>${V2.spName(r)}</span>${V2.mon(r.p.n, {iw: 40, bare: true})}` : `${V2.mon(r.p.n, {iw: 32, bare: true})}<span>${V2.spName(r)}</span>`}</button>`;
+  return `<div class="sp2-vs-h"><span class="u">Your six</span><span>Speed</span><span class="u">Top ${D.thr.length}</span></div><ol class="sp2-vs" aria-label="Turn order">${g.map(G => `<li><span class="mine">${G.items.filter(r => r.me).map(one).join('')}</span><b class="v u${G.items.some(r => r.me) ? ' me' : ''}">${G.v}</b><span class="them">${G.items.filter(r => !r.me).map(one).join('')}</span></li>`).join('')}</ol>`; };
+
 // the list: every row with today's small print (spread, item, notes, base Speed) and You / Tie tags
 V2.spList = D => `<ol class="sp2-list">${D.rows.map(r => `<li class="${r.me ? 'me' : ''}"><b class="v u">${r.v}</b><button type="button" class="sp2-li" data-v2mon="${V2.esc(r.p.n)}" aria-label="${V2.esc(V2.disp(r.p.n))}: open its info">${V2.mon(r.p.n, {iw: 40, bare: true})}<span class="nm">${V2.spName(r)}<small>${V2.esc(V2.spNote(r, D.W))}</small></span></button><span class="tag">${r.me ? 'You' : ''}${V2.spTie(D.rows, r) ? `${r.me ? ' · ' : ''}Tie` : ''}</span></li>`).join('')}</ol>`;
 
@@ -51,7 +57,7 @@ V2.pages.speed = {place: 'battle', draw() { let D; try { D = speedData(); } catc
   const view = V2.spView(), wide = matchMedia('(min-width:1024px)').matches;
   if (!D) return `<div class="sp2">${V2.battleToolsBar('speed')}<p class="tm-sub">Speed Tiers couldn't load. Try again in a moment.</p></div>`;
   const empty = !D.mine.length ? `<div class="sp2-empty"><p class="tm-sub">Add Pokémon on My Team to place them against the top ${D.thr.length}.</p><a class="np-btn" href="#team">Go to My Team</a></div>` : '';
-  const body = view === 'list' ? V2.spList(D) : wide ? V2.spTrack(D) : V2.spVTrack(D);
+  const body = view === 'list' ? V2.spList(D) : wide ? V2.spTrack(D) : V2.spLook === 'split' ? V2.spVSplit(D) : V2.spVTrack(D);
   return `<div class="sp2">${V2.battleToolsBar('speed')}${V2.spHead(D, view)}${empty}${body}${V2.spSums(D)}
     <p class="fine sp2-foot">Level 50, 31 IVs. Yours use your items, and your spreads where you set them. Theirs are assumed, since their real spreads and items are hidden: the most common natures and items, fast Pokémon at 32 Speed points. Weather speed Abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather.</p></div>`; }};
 
