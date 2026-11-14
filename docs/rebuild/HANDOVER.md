@@ -3,6 +3,11 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 12:28 AM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
+- Speed Tiers DONE (Sim approved Preview v123, 12:20 AM). Info sheet done (v122).
+- Damage Calc: mock-ups sent 12:27 AM (docs/rebuild/mocks/calc/: Calc Q1 A Versus recommended / B Workbench / C Quick; hit table top 30
+  down, your six across). Waiting on Sim's pick; nothing built. Checklist i49.
+
 ## NOW (Nov 14, written 12:04 AM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
 - Info sheet (The Card) done on Preview v122; Sim: desktop 'VERY sharp'; tall-window left column stays (A). Left: her iPhone/iPad look.
 - Speed Tiers BUILT (35c32db), NOT on the Preview: Sim's go (11:43 PM). Track 1024+, slim track under 1024 (Speed Q3 A, asked),
