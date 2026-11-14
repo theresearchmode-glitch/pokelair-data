@@ -105,9 +105,10 @@ V2.pages.calc = {place: 'battle', draw() { let C; try { C = calcData(); } catch 
   return `<div class="dc2">${V2.battleToolsBar('calc')}<div class="dc2-top"><p class="np-eyebrow"><span><span class="dc2-bt">Battle · </span>Damage Calc · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</span></p><a class="np-link" href="#method">How the calc works →</a></div>
     ${V2.dcResult(C)}
     <section class="dc2-table" aria-label="The table"><div class="dc2-surface" aria-hidden="true"></div>
-      ${wl}${V2.dcPoke(C.D, 'Defender', 'dcD')}${wr}
-      ${V2.dcField('w')}<button type="button" class="dc2-swap" id="dcSwap" aria-label="Swap attacker and defender"><i aria-hidden="true">⇄</i><span>Swap</span></button>${play}${V2.dcField('t')}
-      ${V2.dcPoke(C.A, 'Attacker', 'dcA')}<div class="dc2-hand" style="--hn:${hand.length + 1}" role="group" aria-label="${V2.esc(V2.disp(C.A.p.n))}'s moves">${hand.map(m => V2.dcMove(C, m)).join('')}${V2.dcOther(C)}</div>${V2.dcTokens(C)}
+      <!-- keyboard and screen-reader order: attacker, its moves, Swap, defender, the field; every piece is placed on the table by the CSS grid -->
+      ${V2.dcPoke(C.A, 'Attacker', 'dcA')}${play}<div class="dc2-hand" style="--hn:${hand.length + 1}" role="group" aria-label="${V2.esc(V2.disp(C.A.p.n))}'s moves">${hand.map(m => V2.dcMove(C, m)).join('')}${V2.dcOther(C)}</div>
+      <button type="button" class="dc2-swap" id="dcSwap" aria-label="Swap attacker and defender"><i aria-hidden="true">⇄</i><span>Swap</span></button>${V2.dcPoke(C.D, 'Defender', 'dcD')}
+      ${V2.dcField('w')}${V2.dcField('t')}${V2.dcTokens(C)}${wl}${wr}
     </section>${V2.dcBoard(C)}${V2.dcDetails(C)}</div>`; }};
 
 // taps: a move card, a KO Board tile; the pickers' changes (today's ids go through today's handler first, then the page redraws)
