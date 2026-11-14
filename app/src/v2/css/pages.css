@@ -1375,3 +1375,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* long KO text (Focus Sash wording): the plate wraps inside the screen and the HP line moves under it, never off the side */
 .dc2-ko{flex-wrap:wrap;row-gap:var(--s1)}.dc2-ko b{flex:0 1 auto;max-width:100%;text-wrap:balance}
 .dc2-mv.play .ko{max-width:200px;text-wrap:balance}.dc2-mv .ko{text-wrap:balance}
+/* iPad (700-1023): not designed yet (Sim wants it after this); until then the phone scene, scaled up to the room it has */
+@media (min-width:700px) and (max-width:1023px){.dc2 .ms-card{--ch:224px}.dc2 .mc-mon .np-mon,.dc2 .mc-mon .np-mon .st{--iw:120px}
+ .dc2-hand{grid-template-columns:repeat(var(--hn),minmax(0,168px));gap:var(--s2)}.dc2-hand .dc2-mv{min-height:180px;padding:var(--s3)}.dc2-hand .dc2-mv .nm{font-size:var(--t15)}.dc2-hand .dc2-mv .rg{font-size:var(--t20)}.dc2-mv .cat{display:block}
+ .dc2-kts{grid-template-columns:repeat(10,minmax(0,1fr))}.dc2-num{font-size:var(--d64)}}
+@media (min-width:1024px){.dc2-mv.play .nm{white-space:normal}} /* the name wraps beside the range (the one-line name ran into it) */
+/* no effect, as the mock-up: the face greys out but the card keeps its type chip and edge; the reason reads in the type colour */
+.dc2 .dc2-mv.none,:root:not([data-theme="night"]) .dc2 .dc2-mv.none{background:linear-gradient(color-mix(in srgb,var(--type-none) 22%,var(--mvc-face)),color-mix(in srgb,var(--type-none) 22%,var(--mvc-face))) padding-box,linear-gradient(135deg,var(--tc),var(--card-edge-mid) 40%,var(--tc) 70%,color-mix(in srgb,var(--tc) 60%,var(--card-ink))) border-box}
+.dc2-mv.none .np-type{background:var(--tc)}.dc2-mv.none .ko{color:var(--tc)}:root[data-theme="night"] .dc2-mv.none .ko{color:color-mix(in srgb,var(--tc) 55%,var(--mvc-ink))}
