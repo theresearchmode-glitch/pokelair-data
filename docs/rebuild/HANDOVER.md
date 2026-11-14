@@ -3,6 +3,15 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 13, written 8:32 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
+- Info sheet redesign (BRIEF.md + PLAN.md) BUILT in all five steps, NOT on the Preview (needs Sim's go): stage (945543e/9612ecf), headline
+  (fd2ed4c), desktop Side Stage (0860928), iPad upright (6fcfe26), brief section 7 checks + full-width headline fix (f80aee4). Every step:
+  sheet text 345/345 identical (look/sit.cjs vs scratchpad v2-before-a0d.html), polish (new only the judged screen 'boxes' and the
+  Side Stage grid 'lone'), c13 inside, real-sprite pictures sent to Sim. To put on the Preview: the normal rebuild-preview from HEAD.
+- Preview v115 = review fixes only (built from 0a324fa).
+- SUGG-19 'fixed?' is NOT proof (first SUGG-19 fails: no 'Apply this fix' shown), mark kept. Earlier 'passed 3 times' told to Sim = corrected.
+- Open questions for Sim: info sheet go for the Preview; lone dash for 'of teams' with no data; type chips stack at 320.
+
 ## NOW (Nov 13, written 8:14 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
 - Preview v115 (400 files): all review fixes (Home sixes, My Team buttons/links/Stand-Outs/empty spots 'Add'+'Spot N', Build Your pick,
   most-used names fit, Battle Q1 B/Q2 B). Built from 0a324fa so the info sheet stage is NOT on it.
