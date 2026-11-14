@@ -1970,3 +1970,13 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .us-how,.us-podium,.us-mates{grid-template-columns:minmax(0,1fr)}@media (min-width:1100px){.us-podium{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 @media (max-width:559px){.gs-ctl .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.gs-ctl .us-srcs>*{white-space:normal;line-height:1.2;padding:var(--s1) var(--s2);text-align:center}}
 @media (max-width:559px){.us-sp{display:block;height:0;overflow:hidden}}@media (max-width:359px){.gs-ctl .us-srcs>*{font-size:var(--t13)}}
+/* ---------- Meta > Sets (Grandstand brief, section 5) ---------- */
+.st-find{display:grid;gap:var(--s2)}.st-hits{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.st-h2{margin:0;font:900 var(--t24)/1.1 var(--u);font-style:italic}.st-team{display:grid;gap:var(--s2)}.st-six{--gsw:80px}
+.st .gs-mon.on .gs-tx b{color:var(--plot-text)}.st .gs-mon.on .np-mon{transform:translateY(calc(var(--s1)*-1))}.st .gs-mon.on .gs-base{box-shadow:0 0 0 2px var(--plot)}
+.st-mine{margin:0;padding-left:var(--s3);border-left:4px solid var(--plot);font:500 var(--t15)/1.5 var(--b)}
+.st-cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:var(--s4) var(--s8)}.st-side{display:grid;gap:var(--s4);align-content:start}
+.st-stone{margin:0;font:500 var(--t15)/1.5 var(--b)}.st-note{margin:0}.st-pill{white-space:normal}
+@media (max-width:699px){.st-cols{grid-template-columns:minmax(0,1fr)}.st-six{--gsw:56px}.st-six .gs-tx b{font-size:var(--t13);font-stretch:88%}}
+@media (hover:hover) and (pointer:fine){.st .gs-row .np-mon img,:root[data-theme="night"] .st .gs-row .np-mon img{filter:none}}
+.st-team,.st-how{grid-template-columns:minmax(0,1fr)}@media (max-width:359px){.gs-sinfo h2{font-size:var(--t22)}}

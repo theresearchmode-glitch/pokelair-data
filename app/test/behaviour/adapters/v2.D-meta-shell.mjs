@@ -44,6 +44,13 @@ export default (ui, pg) => {
       await ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); if (!d) throw new Error('no fold ' + m); d.querySelector('summary').click(); }, m); await wait(500); },
     foldText: m => ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); return d ? __dtx(d) : null; }, m),
     inView: m => NOT('inView ' + m + ' (How We Calculate page)'),
+    // ---------------- Popular Sets (Nov 14, Grandstand brief section 5): spotlight + "Your team" bench + "How <Pokémon> is built" ----------------
+    lookUpSets: async name => { await pg.fill('[data-stq]', name); await wait(500); await ev(n => { const bs = [...document.querySelectorAll('.st-hits [data-v2setmon]')]; const b = bs.find(b => __dtx(b) === n) || bs[0]; if (!b) throw new Error('no match for ' + n); b.click(); }, name); await wait(600); },
+    setsShowing: () => ev(() => [...document.querySelectorAll('.st .gs-spot, .st .us-src, .st .st-how')].filter(__dvis).map(e => e.textContent.replace(/\s+/g, ' ').trim()).join(' ')), /* textContent: the headings are capitals by CSS only */
+    setsTeamRow: () => ev(() => [...document.querySelectorAll('.st-six [data-v2setmon]')].filter(__dvis).map(b => ({id: b.dataset.v2setmon, on: b.getAttribute('aria-pressed') === 'true'}))),
+    tapSetsTeam: async id => { await pg.click(`.st-six [data-v2setmon="${id}"]`); await wait(600); },
+    setsSources: () => ev(() => [...document.querySelectorAll('[data-v2setsrc]')].map(b => ({name: __dtx(b), on: b.getAttribute('aria-pressed') === 'true'}))),
+    chooseSetsSource: async name => { await ev(n => { const b = [...document.querySelectorAll('[data-v2setsrc]')].find(b => __dtx(b) === n); if (!b) throw new Error('no source ' + n); b.click(); }, name); await wait(600); },
     // ---------------- Usage (Nov 14, The Podium): the top 10 stand on the podium and benches; tapping one shows "How <Pokémon> is played" ----------------
     usageSourceLine: () => ev(() => __dtx(document.querySelector('.us-src'))),
     usageSources: () => ev(() => [...document.querySelectorAll('[data-ussrc]')].map(b => ({name: __dtx(b), on: b.getAttribute('aria-pressed') === 'true'}))),

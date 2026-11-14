@@ -67,6 +67,7 @@
     "src/v2/pages/gauntlet.js",
     "src/v2/pages/meta.js",
     "src/v2/pages/usage.js",
+    "src/v2/pages/sets.js",
     "src/v2/pages/coming.js"
   ],
   "logic": [
@@ -92,6 +93,7 @@
     "src/app/17-matchup-threats-teams.js",
     "src/app/18-archetypes.js",
     "src/app/19-showdown-paste.js",
+    "src/app/21-sets.js",
     "src/app/22-auto-build.js",
     "src/app/47-core-data.js",
     "src/app/23-coverage.js",
