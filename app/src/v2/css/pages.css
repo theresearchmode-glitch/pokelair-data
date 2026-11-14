@@ -1427,3 +1427,17 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:379px){.dc2-grid{border-spacing:1px}.dc2-grid td{padding:var(--s1) 2px}.dc2-grid td b{font-size:var(--t13);letter-spacing:-.02em}}
 .dc2-tok button[aria-pressed="false"]{border-color:color-mix(in srgb,var(--ink) 28%,transparent)} /* off tokens read as buttons (the table edge colour, 10-12%, was too faint) */
 .dc2-dl p{text-wrap:pretty} /* the set readout breaks between whole phrases where it can (Close / Combat split) */
+/* iPad upright, 700-1023 (Sim, Nov 14, iPad Q1 B): the table on the left, the KO Board beside it on the right, so the duel and the board
+   share the first screen; the rest (Details, folds) runs full width below */
+@media (min-width:700px) and (max-width:1023px){
+ .dc2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);column-gap:var(--s5);align-items:start}
+ .dc2>*{grid-column:1/-1}.dc2>.dc2-table{grid-column:1;grid-row:4;margin-inline:0}.dc2>.dc2-kb{grid-column:2;grid-row:4;margin-top:var(--s3)}
+ .dc2-kb .dc2-kts{grid-template-columns:repeat(4,minmax(0,1fr))}.dc2-kb .dc2-kg h3{margin-top:var(--s3)}}
+/* iPad Q1 B: the table is now about half the width, so the hand uses a size between the phone's and the holding layout's; the KO Board's
+   switch takes the column's full width (at 700 'Their hits on you' was cut off) */
+@media (min-width:700px) and (max-width:1023px){
+ .dc2-hand{grid-template-columns:repeat(var(--hn),minmax(0,128px));gap:var(--s1)}.dc2-hand .dc2-mv{min-height:160px;padding:var(--s2)}
+ .dc2-hand .dc2-mv .nm{font-size:var(--t15)}.dc2-hand .dc2-mv .rg{font-size:var(--t17)}
+ .dc2-kb .dc2-dir{width:100%}.dc2-kb .dc2-dir button{font-size:var(--t13);padding:0 var(--s2)}}
+@media (min-width:700px) and (max-width:1023px){.dc2-hand{align-items:stretch}} /* iPad: every card in the hand the same height (a wrapped range made one taller) */
+@media (max-width:699px){.dc2-hand{align-items:stretch}} /* phones too: hand cards one height (polish flagged uneven cards at 320) */
