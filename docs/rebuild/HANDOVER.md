@@ -3,6 +3,16 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 3:37 AM Eastern by the clock; Sim's authority until 10:00 AM Sat Nov 14; summary 9:40 AM)
+- Damage Calc 'Their Side' polish pass done through review points 2-23 (decisions.md 3:21, 3:25, 3:32, 3:36 AM). Latest commit 2f8c25a
+  on claude/design6, NOT on the Preview (Preview still v123; needs Sim's go).
+- Questions for Sim (pictures in scratchpad q/ and dcb/LC1-4.webp): small phones (360x780 hand 35-66 px under the bar; 375x667
+  179 short) shrink or let it peek; 1366x768 laptop (hand 128 px under; shrinking makes text ~10 px) recommend leave; CALC-10
+  pinned No-effect bar; power number on the card in play; 'The KO Board' heading peeking above the bar; iPad design; Preview go.
+- UNSURE: scroll smoothness on Sim's PC (158 sprites carry the standard shadow; headless frames steady).
+- Checks at 3:36 AM: guard clean; polish calc lone 9 / space 7 / uneven 0 / errors 0; c13 0 over; CALC+SPEED 13 pass + 3 known
+  FAIL (CALC-01/08/10); A-team as baseline after PKMN-02 test update (Card order).
+
 ## NOW (Nov 14, written 2:38 AM Eastern by the clock; Sim's authority until 10:00 AM Sat Nov 14 (extended 1:38 AM); summary 9:40 AM)
 - Sim asleep / away until 10 AM. Main job: Damage Calc 'Their Side' (docs/rebuild/calc/BRIEF.md + 6 reference pictures).
 - BUILT, not on the Preview: app/src/v2/pages/calc.js + pages.css 'Damage Calc' blocks + tokens (wx-sun, table, mvc-face, ko-tint,
