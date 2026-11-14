@@ -230,7 +230,7 @@ function* buildBestGen_() {
       for (const [, nt, i, p] of sw.slice(0, 12)) { yield; const G = abGradeC(nt); if (G && G.g >= 90 && (!best || G.g > best.g)) best = {g: G.g, p, out: t[i].p}; }
       if (best) teamsOut[0].why.push(`To reach 90+ (Top tier): catch ${best.p.d} for ${best.out.d}. With it this team scores ${Math.round(best.g)}`); } }
     return {fmt, teams: teamsOut};
-  } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, list: null}; }
+  } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, by: {}}; }
 }
 // Everything the card shows about one built team.
 function abDescribe(t) {

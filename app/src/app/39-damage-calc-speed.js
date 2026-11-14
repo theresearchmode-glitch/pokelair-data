@@ -53,9 +53,13 @@ function topThreatSpeeds(W,o){o=o||{};const key=metaVersion+'|'+W+'|'+!!o.tw+!!o
 function outspeedOf(v,W,o){o=o||{};const L=topThreatSpeeds(W,o);if(!L.length||!(v>0))return null;let x=0;for(const t of L)x+=t.v===v?.5:(o.tr?v<t.v:v>t.v)?1:0;
   return {pct:Math.round(100*x/L.length),n:L.length,x}}
 function outspeedTxt(r,o){if(!r)return '';o=o||{};return `${o.tr?'moves before':'outspeeds'} ${r.pct}% of the top ${r.n}`}
-function renderSpeed(){const el=$('spdOut');if(!el)return;
-  const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
-  const thr=metaThreats(24).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
+// The speed tiers' numbers (shared with the new site's Speed Tiers page, Nov 13): your six and the 20 most-used others, each at its
+// likely Speed under spdUi's conditions, sorted in move order, and one summary per member of yours (outspeed share of the top 30,
+// what it moves before, and the Speed points it takes to pass the nearest threat above it when no condition is on).
+function speedData(){const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
+  // 30, not 24 (Nov 13): today the cache handed every caller the 30-list, so the field was always 20 others; with the cache
+  // now per length, 24 would leave fewer than 20 when your six are among the most used
+  const thr=metaThreats(30).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
   const myMem=new Map(ms.map(m=>[m.p.n,m])),myItem=new Map([...myMem].map(([n,m])=>[n,m.item]));
   const autoW=typeof sideField==='function'?sideField(ms).weather:'',W=spdUi.wx==='auto'?autoW:spdUi.wx;
   const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const mem=r.me?myMem.get(r.p.n):null,s={...likelySpeed(r.p,mem)};
@@ -64,18 +68,23 @@ function renderSpeed(){const el=$('spdOut');if(!el)return;
     // Unburden: doubled once its item is used (Sneasler's seed or herb), unless Scarf/no item
     const unb=ab==='Unburden'&&!s.scarf?spdCalc(s.v,s.scarf,ab,W,{...o,unb:true}):null;return {...r,s,v,ab,wxUp,unb}});
   rows.sort((a,b)=>spdUi.tr?a.v-b.v:b.v-a.v);
+  const sums=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
+    let tip=null;if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
+      const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
+      if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
+        tip={above,need,cur}}}
+    const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
+    return {p,me,beat,tip,os,cond}});
+  return {mine,thr,rows,W,autoW,sums}}
+function renderSpeed(){const el=$('spdOut');if(!el)return;
+  const {mine,thr,rows,W,autoW,sums}=speedData();
   const tog=(k,t)=>`<button type="button" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
   const wxb=(k,t)=>`<button type="button" data-spdwx="${k}" aria-pressed="${spdUi.wx===k}">${t}</button>`;
   $('spdCtl').innerHTML=`<div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('par','They\'re paralyzed')}${tog('tr','Trick Room')}</div>
     <div class="seg segwrap" role="group" aria-label="Weather" style="margin-top:6px">${wxb('auto',autoW?`Your weather (${autoW})`:'Your weather (none)')}${wxb('','No weather')}${wxb('sun','Sun')}${wxb('rain','Rain')}${wxb('sand','Sand')}${wxb('snow','Snow')}</div>`;
   if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on My team to place them against the top threats.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>';return}
-  const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
-    let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
-      const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
-      if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
-        tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
-    const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
-    return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> ${os?`${outspeedTxt(os,{tr:spdUi.tr})} threats${cond?` (${cond})`:''}`:`moves first against ${beat} of the ${thr.length} below`}${tip}</span>`}).join('');
+  const sum=sums.map(({p,beat,tip,os,cond})=>{const t=!tip?'':tip.need!=null?`<span class="spdtip">${tip.need-tip.cur} more Speed points (${tip.need} total) outspeeds ${esc(tip.above.p.d||tip.above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(tip.above.p.d||tip.above.p.n)} with this nature</span>`;
+    return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> ${os?`${outspeedTxt(os,{tr:spdUi.tr})} threats${cond?` (${cond})`:''}`:`moves first against ${beat} of the ${thr.length} below`}${t}</span>`}).join('');
   /* the race track (65-design-c.js) draws from the same rows as the list */
   spdLast={rows,W};
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
@@ -509,7 +518,7 @@ function moveAcc(mv,ab,weather,def,item,userTypes,moved){if(!mv)return 100;if(ab
   if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(item==='Zoom Lens'&&moved)a=a*4915/4096;if(ab==='Hustle'&&mv.cat===1)a*=.8;
   if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
   return Math.min(100,Math.round(a))}
-function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThreats(12).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
+function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{/* 30 (Nov 13): today the shared cache always handed this table the 30-list; kept so the live table does not change */thr=metaThreats(30).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
   const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';const nt=hitNote(b),ks=koShort(b.r);return `<td class="${c}" data-ko="${esc(ks)}" title="${esc(b.mv.name)}: ${dmgRange(b.r)} · ${esc(koText(b.r))}${nt?' ('+nt+')':''}">${dmgP(p)}%<span>${esc(b.mv.name)}${nt?' *':''}</span></td>`};
   const thH=p=>`<th title="${esc(p.d||p.n)}">${sprite(p,'dcth')}<span>${esc((p.d||p.n).replace(/^Mega /,'M-'))}</span></th>`,rowH=(p,d)=>`<th>${sprite(p,'dcth')}<span>${esc(d||p.d||p.n)}</span></th>`;
   const theirs=dc.dir==='theirs';

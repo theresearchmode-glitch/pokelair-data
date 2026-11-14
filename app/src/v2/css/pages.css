@@ -1184,3 +1184,37 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .np-sheet:has(>.ms2){overflow-x:hidden}.ms2{overflow-x:clip}
 /* Sim, Nov 13 (11:04 PM): on a tall window the card stretched into a long strip; it stops at the brief's size (392 x 656, as at 1440 x 900) and the buttons follow right under it */
 @media (min-width:1000px){.ms2 .ms-card{max-height:656px}}
+/* ---------- Speed Tiers (Nov 13; Sim's Speed Q1 A race track on desktop, Q2 A slim track on phones; mock: scratchpad speedmock) ---------- */
+.sp2-h{display:grid;gap:var(--s2)}.sp2-h h1{font-size:var(--t34);margin:0}.sp2-h h1 .pl{color:var(--plot-text)}.sp2-h .tm-sub{margin:0}
+.sp2-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin-top:var(--s6)}.sp2 .chips{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.sp2-wx{margin-top:var(--s2)}.sp2-wx .np-chip{font-size:var(--t13)}
+.sp2-empty{display:grid;justify-items:start;gap:var(--s3);margin-top:var(--s6)}
+.sp2-track{position:relative;margin-top:var(--s8);height:var(--h)}.sp2-axis{position:absolute;left:0;right:0;top:var(--ay);height:1px;background:var(--rule)}
+.sp2-m{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:var(--mw);padding:0;text-align:center;color:var(--ink)}
+.sp2-m .v{font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums}.sp2-m.me .v{color:var(--plot-text);font-size:var(--t24)}
+.sp2-m .nm{font:600 var(--t13)/1.3 var(--b);margin-top:var(--s1);overflow-wrap:anywhere}.sp2-m.me .nm{font-size:var(--t15)}
+.sp2-k{display:flex;justify-content:space-between;gap:var(--s4);margin-top:var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sp2-list{list-style:none;margin:var(--s6) 0 0;padding:0}
+.sp2-list li{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:var(--s3);align-items:center;padding:var(--s2) 0;border-top:1px solid var(--rule)}
+.sp2-list .v{font:900 var(--t20)/1 var(--u);font-style:italic;font-synthesis:style;text-align:right;font-variant-numeric:tabular-nums}.sp2-list li.me .v{color:var(--plot-text)}
+.sp2-li{display:flex;align-items:center;gap:var(--s3);min-width:0;min-height:var(--tap);padding:0;text-align:left;color:var(--ink)}
+.sp2-list .nm{display:grid;min-width:0;font:600 var(--t15)/1.4 var(--b)}.sp2-list .nm small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sp2-list .tag{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text);white-space:nowrap}
+@media (min-width:1024px){.sp2-list{columns:2;column-gap:var(--s12)}.sp2-list li{break-inside:avoid}}
+.sp2-vt{position:relative;list-style:none;margin:var(--s6) 0 0;padding:0}.sp2-vt::before{content:"";position:absolute;left:60px;top:0;bottom:0;width:1px;background:var(--rule)}
+.sp2-vt li{position:relative;display:flex;align-items:center;min-height:52px;padding-left:76px}
+.sp2-vt .v{position:absolute;left:0;width:44px;text-align:right;font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums}.sp2-vt li.me .v{color:var(--plot-text)}
+.sp2-vt .dot{position:absolute;left:56px;width:8px;height:8px;background:var(--ink-3);transform:skewX(var(--slant))}.sp2-vt li.me .dot{background:var(--plot)}
+.sp2-vt .who{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
+.sp2-vt .chip2{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);text-align:left}.sp2-vt .chip2.me{font-size:var(--t15);color:var(--ink)}
+.sp2-vt .tie{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text)}
+.sp2-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s8);margin-top:var(--s8)}
+.sp2-sum p{margin:0;padding:var(--s2) 0;border-top:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.sp2-sum b{color:var(--ink)}.sp2-sum small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+@media (max-width:899px){.sp2-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:599px){.sp2-sum{grid-template-columns:minmax(0,1fr)}.sp2-h h1{font-size:var(--t28)}.sp2-ctl .np-slide{width:100%}
+  .sp2-ctl .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.sp2-ctl .chips .np-chip:last-child{grid-column:1/-1}
+  .sp2-wx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.sp2-wx .np-chip:first-child{grid-column:1/-1}.sp2 .np-chip{justify-content:center}}
+.sp2-foot{margin-top:var(--s6);max-width:72ch}
+.sp2{padding:0 var(--gut) var(--s16)} /* the same side gutters as Battle */
+@media (max-width:599px){.sp2 .sp2-wx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.sp2 .sp2-wx .np-chip:first-child{grid-column:1/-1}}
+@media (min-width:600px) and (max-width:899px){.sp2-ctl .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.sp2-ctl .np-chip{justify-content:center}} /* no lone Trick Room on its own line (3 + 2) */
