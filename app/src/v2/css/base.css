@@ -1,6 +1,9 @@
 /* Base: the page, text and the few element defaults. No component looks here. */
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
+/* Sim, Nov 13: on desktop the page shifted when a page was short enough to need no scrollbar (My Box on a tall window): mouse screens
+   always keep the scrollbar's room. Touch screens (phones, iPad) have floating scrollbars, so they keep their layout untouched */
+@media (hover:hover) and (pointer:fine){html{scrollbar-gutter:stable}}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--t16)/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style;font-variant-numeric:tabular-nums}
 body{background:var(--page-wash) fixed,var(--bg)}
 h1,h2,h3,h4,p,ul,ol,figure{margin:0}ul,ol{padding:0;list-style:none}
