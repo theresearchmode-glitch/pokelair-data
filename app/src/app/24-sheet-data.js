@@ -111,3 +111,13 @@ function regInfo() { const r = (META.perf && META.perf.reg) || META.reg; /* META
 // the regulation's name (switch it here for Reg M-D) and the rules note under team checks and Import (moved from 56-about.js, R4 Nov 11)
 var REG_NAME = 'Reg M-C';
 function regNote(cls) { return `<p class="regnote${cls ? ' ' + cls : ''}">Based on our reading of the ${esc(REG_NAME)} rules — check the official rules before an event.</p>`; }
+
+// ---------- moved from 25-ratings-page.js (Nov 14), shared with the new site's Meta page ----------
+// The ratings' own track record, measured live: inside each recent event's top cut, how often the
+// team with the higher average rating finished higher. Cheap (ratings are cached), so it's recomputed with the data.
+let ratingTrackCache = {key: null, res: null};
+function ratingTrack() { const E = META.events; if (!E) return null; const key = E.updated + '|' + E.events.length + '|' + metaVersion; if (ratingTrackCache.key === key) return ratingTrackCache.res;
+  let agree = 0, pairs = 0;
+  for (const ev of E.events) { const sc = (ev.top || []).filter(t => t && t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))).map(t => ({pl: t.place, s: t.mons.reduce((a, m) => a + rating(byName.get(m.n)).total, 0) / 6}));
+    for (let a = 0; a < sc.length; a++) for (let b = a + 1; b < sc.length; b++) { const A = sc[a], B = sc[b]; if (A.pl === B.pl || A.s === B.s) continue; pairs++; if ((A.s > B.s) === (A.pl < B.pl)) agree++; } }
+  const res = pairs >= 200 ? {acc: agree / pairs, pairs, events: E.events.length} : null; ratingTrackCache = {key, res}; return res; }

@@ -12,7 +12,7 @@ if (window.__NP_PREVIEW) {
       <p class="tm-sub">This page is being rebuilt in the new design. It works on today's NastyPlot site until the switch.</p><div class="row"><a class="np-btn" href="#battle">Back to Battle</a></div></div></section>`};
   // Pages linked from the footer and from inside pages, not rebuilt yet and with no mock-up of their own (Nov 12, audit i19, rule C10):
   // the same 'coming next' page as Battle's tools, instead of falling through to Home
-  const INFO = {method: ['meta', 'How We Calculate'], sets: ['meta', 'Popular Sets'], about: ['', 'About & Legal'], feedback: ['', 'Send Feedback']}; /* footer pages: no top tab lit */;
+  const INFO = {method: ['meta', 'How We Calculate'], sets: ['meta', 'Popular Sets'], usage: ['meta', 'Usage'], tournaments: ['meta', 'Tournaments'], track: ['meta', 'Track Record'], about: ['', 'About & Legal'], feedback: ['', 'Send Feedback']}; /* footer pages: no top tab lit */;
   for (const [k, [place, name]] of Object.entries(INFO)) if (!V2.pages[k]) V2.pages[k] = {place, draw: () => `<section class="cm2"><div class="cm2-t"><div class="np-eyebrow"><span>${name} · coming next</span></div><h1 class="u">${name}</h1>
       <p class="tm-sub">This page is being rebuilt in the new design. It works on today's NastyPlot site until the switch.</p><div class="row"><a class="np-btn" href="#team">Go to My Team</a></div></div></section>`};
   for (const [k, [f, name, what]] of Object.entries(MOCK)) if (!V2.pages[k]) V2.pages[k] = {place: k, draw: () => {

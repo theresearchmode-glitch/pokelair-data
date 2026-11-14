@@ -15,14 +15,7 @@ function lairTile(p, r) { const a = TC[p.t[0]], b = TC[p.t[1] || p.t[0]];
 const ltName = p => { let n = p.m ? String(p.d).replace(/^Mega /, '') : String(p.d); if (n.length > 16) n = n.replace(/^(Alolan|Galarian|Hisuian|Paldean) /, (m, r) => r[0] + '. '); return n; };
 // smaller type for a long word, or a long name overall (tiles fit two lines)
 const ltnFit = p => { const n = ltName(p), w = Math.max(...n.split(' ').map(x => x.length)); return w >= 11 || n.length >= 19 ? ' xs' : w >= 9 || n.length >= 15 ? ' sm' : ''; };
-// The ratings' own track record, measured live: inside each recent event's top cut, how often the
-// team with the higher average rating finished higher. Cheap (ratings are cached), so it's recomputed with the data.
-let ratingTrackCache = {key: null, res: null};
-function ratingTrack() { const E = META.events; if (!E) return null; const key = E.updated + '|' + E.events.length + '|' + metaVersion; if (ratingTrackCache.key === key) return ratingTrackCache.res;
-  let agree = 0, pairs = 0;
-  for (const ev of E.events) { const sc = (ev.top || []).filter(t => t && t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))).map(t => ({pl: t.place, s: t.mons.reduce((a, m) => a + rating(byName.get(m.n)).total, 0) / 6}));
-    for (let a = 0; a < sc.length; a++) for (let b = a + 1; b < sc.length; b++) { const A = sc[a], B = sc[b]; if (A.pl === B.pl || A.s === B.s) continue; pairs++; if ((A.s > B.s) === (A.pl < B.pl)) agree++; } }
-  const res = pairs >= 200 ? {acc: agree / pairs, pairs, events: E.events.length} : null; ratingTrackCache = {key, res}; return res; }
+/* ratingTrack (the ratings' own track record) moved to 24-sheet-data.js (Nov 14) so the new site's Meta page shares it */
 function renderLair(bodyOnly) {
   { const el = $('ratingTrack'), r = ratingTrack(); if (el) el.textContent = r ? `Track record: in ${r.events} recent events, the team with the higher average rating finished higher in ${pctFmt(r.acc * 100)} of ${r.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip). Ratings rank single Pokémon: use them to find candidates, and the scouting report to check a team.` : ''; }
   const pane = $('lairBody'); if (!pane) return; if (ui.lmode == null) { try { ui.lmode = LS.get('cc2.lmode', 'board'); } catch (e) { ui.lmode = 'board'; } }
