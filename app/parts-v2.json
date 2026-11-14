@@ -61,6 +61,7 @@
     "src/v2/pages/build.js",
     "src/v2/pages/battle.js",
     "src/v2/pages/speed.js",
+    "src/v2/pages/calc.js",
     "src/v2/pages/coming.js"
   ],
   "logic": [
