@@ -38,7 +38,8 @@ V2.dcOther = (C) => { const E = V2.esc, mv = C.mvs;
 V2.dcField = (kind) => { const E = V2.esc, L = kind === 'w' ? V2.DC_WX : V2.DC_TR, cur = kind === 'w' ? dc.weather || '' : dc.terrain || '', i = Math.max(0, L.findIndex(x => x[0] === cur)), lab = kind === 'w' ? 'Weather' : 'Terrain';
   return `<div class="dc2-fc ${kind === 'w' ? 'wx' : 'tr'}${cur ? ' lit' : ''}" style="${cur ? `--fc:${V2.DC_WXC[cur]}` : ''}"><span class="lab">${lab}</span><b class="u">${E(L[i][1])}</b><span class="pips" aria-hidden="true">${L.map((x, j) => `<i${j === i ? ' class="on"' : ''}></i>`).join('')}</span>
     <select class="dc2-pick" data-dcfield="${kind}" aria-label="${lab}: ${E(L[i][1])}. Choose">${L.map(([k, t]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${t === 'None' ? `No ${lab.toLowerCase()}` : t}</option>`).join('')}</select></div>`; };
-V2.dcTokens = (C) => `<div class="dc2-tok" role="group" aria-label="In play">${[['spread', 'Hits both foes'], ['screen', 'Screen up'], ['hh', 'Helping Hand'], ['fg', 'Friend Guard'], ['crit', 'Critical hit']].map(([k, t]) => `<button type="button" data-dct="${k}" aria-pressed="${k === 'spread' ? !!C.spread : !!dc[k]}">${t}</button>`).join('')}</div>`;
+// every token in two even lines, so no label sits on one line beside two-line neighbours (polish: uneven at 480)
+V2.dcTokens = (C) => `<div class="dc2-tok" role="group" aria-label="In play">${[['spread', 'Hits both', 'foes'], ['screen', 'Screen', 'up'], ['hh', 'Helping', 'Hand'], ['fg', 'Friend', 'Guard'], ['crit', 'Critical', 'hit']].map(([k, a, b]) => `<button type="button" data-dct="${k}" aria-pressed="${k === 'spread' ? !!C.spread : !!dc[k]}"><span>${a}</span> <span>${b}</span></button>`).join('')}</div>`;
 
 // the result: the range big, the move line, the KO text on a plate in the move's type colour, the damage bar, HP and effectiveness
 V2.dcResult = (C) => { const E = V2.esc, r = C.r, mv = C.mv, t = (r && r.type) || (mv && mv.type) || 'Normal';
@@ -117,7 +118,15 @@ V2.dcDetails = (C) => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc 
       <p class="dc2-links"><a class="np-link" href="#feedback">Report a mistake</a><a class="np-link" href="#method">How the calc works →</a></p></div>
     <div class="dc2-dr">${fold('a', V2.disp(A.p.n), aLine, aBoxes)}${fold('d', V2.disp(D.p.n), dLine, dBoxes)}</div></section>`; };
 
-V2.pages.calc = {place: 'battle', draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2">${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
+// each Pokemon fits the room its Card actually has: below the ATTACKER / DEFENDER label and at least 8 px above its name (a Mega's blue
+// "Mega" line counts as part of the name), whatever the card's size or the name's length (Sim's brief 1: clear space under the feet)
+V2.dcFit = () => { for (const pc of document.querySelectorAll('.dc2-pc')) { const card = pc.querySelector('.ms-card'), mon = pc.querySelector('.mc-mon'), lab = pc.querySelector('.dc2-role'), h2 = pc.querySelector('.mc-id h2');
+    if (!card || !mon || !lab || !h2) continue; const nm = mon.querySelector('.np-mon'), st = mon.querySelector('.np-mon .st'); [nm, st].forEach(e => e && e.style.removeProperty('--iw')); mon.style.top = '';
+    const c = card.getBoundingClientRect(), top = lab.getBoundingClientRect().bottom - c.top + 2, bottom = h2.getBoundingClientRect().top - c.top - 13;
+    const room = Math.floor(Math.min(bottom - top, c.width - 16)), want = parseFloat(getComputedStyle(mon.querySelector('.np-mon') || mon).getPropertyValue('--iw')) || room;
+    const iw = Math.max(40, Math.min(want, room)); [nm, st].forEach(e => e && e.style.setProperty('--iw', iw + 'px')); mon.style.top = Math.round(top + (bottom - top - iw)) + 'px'; } };
+addEventListener('resize', () => { clearTimeout(V2._dcFitT); V2._dcFitT = setTimeout(() => document.querySelector('.dc2') && V2.dcFit(), 120); });
+V2.pages.calc = {place: 'battle', after() { V2.dcFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelector('.dc2') && V2.dcFit()); }, draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2">${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
   const set = C.mvs.pop.filter(m => m && m.bp > 0), hand = set.filter(m => m.name !== dc.mv).slice(0, 3), [wl, wr] = V2.dcWings(C);
   const play = C.mv ? V2.dcMove(C, C.mv, true) : `<div class="dc2-mv play empty"><b class="nm u">Pick a damaging move</b></div>`;
   return `<div class="dc2">${V2.battleToolsBar('calc')}<div class="dc2-top"><p class="np-eyebrow"><span><span class="dc2-bt">Battle · </span>Damage Calc · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</span></p><a class="np-link" href="#method">How the calc works →</a></div>

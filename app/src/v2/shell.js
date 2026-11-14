@@ -186,7 +186,9 @@ V2.morph = (o, n) => { if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeNam
   if (o.isEqualNode(n)) { if ('value' in o && /^(INPUT|TEXTAREA|SELECT)$/.test(o.nodeName)) V2.morphField(o, n); return; }
   for (const a of [...o.attributes]) if (!n.hasAttribute(a.name)) o.removeAttribute(a.name);
   for (const a of [...n.attributes]) if (o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
-  if (/^(INPUT|TEXTAREA|SELECT)$/.test(o.nodeName)) V2.morphField(o, n);
+  // a select merges its options inside morphField (and sets its value after): merging them a second time here dropped the options the
+  // first pass had just moved in, so a longer list fell back to its first option (Nov 14: the calc's set boxes after a new Pokemon)
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(o.nodeName)) { V2.morphField(o, n); if (o.nodeName === 'SELECT') return; }
   V2.morphKids(o, n); };
 V2.morphKids = (o, n) => { const oc = [...o.childNodes], nc = [...n.childNodes], k = Math.min(oc.length, nc.length);
   for (let i = 0; i < k; i++) V2.morph(oc[i], nc[i]); for (let i = k; i < oc.length; i++) oc[i].remove(); for (let i = k; i < nc.length; i++) o.append(nc[i]); };

@@ -1391,3 +1391,20 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .dc2-grid .k1{background:var(--bad);color:var(--on-type)}.dc2-grid .k1 small{color:var(--on-type)}.dc2-grid .k1m{background:var(--ko-tint)}.dc2-grid .k2{background:color-mix(in srgb,var(--mid) 45%,transparent)}.dc2-grid .k2m{background:color-mix(in srgb,var(--mid) 22%,transparent)}.dc2-grid .z{color:var(--ink-3)}
 @media (max-width:699px){.dc2-grid td small{display:none}.dc2-grid tbody th span{display:none}.dc2-grid td{min-width:0}}
 .dc2-grid .k1,.dc2-grid .k1 small{color:var(--on-mark)} /* readable on the red in day (white) and night (dark ink) */
+@media (max-width:699px){.dc2 .ms-card{--ch:192px}} /* phone cards a little taller so the Pokemon stays big above a two-line Mega name */
+@media (min-width:1024px){.dc2-pc.attacker .ms-card{--ch:216px}.dc2-pc.attacker{width:208px}}
+@media (min-width:1024px){.dc2-table{row-gap:var(--s2);padding-bottom:var(--s4)}}
+/* phones (Nov 14, 3 AM): field cards in two lines, label and pips over the value, so "Electric" or "Psychic" never gets cut off
+   (one line needed ~186-224 px; the card is 153-168 px wide on phones) */
+@media (max-width:1023px){.dc2-fc{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"lab pips" "val val";align-content:center;row-gap:2px;padding:var(--s2) var(--s3)}
+ .dc2-fc .lab{grid-area:lab}.dc2-fc .pips{grid-area:pips;margin-left:0}.dc2-fc b{grid-area:val;white-space:nowrap;line-height:1.1}}
+/* narrow phones (under 380 wide): the move line goes under the big number (beside it, it wrapped to five lines), and the range in play
+   steps down to 22 so the move name keeps one line */
+@media (max-width:379px){.dc2-line{grid-column:1/-1;grid-row:2;margin-top:var(--s1)}.dc2-mv.play .rg{font-size:var(--t22)}}
+/* phones (Nov 14): a hand card's range one size smaller, so most ranges keep one line (review point 7); the longest ("107–126%", 98 px
+   in a 76 px card) still break, and only at the dash */
+@media (max-width:1023px){.dc2-hand .dc2-mv .rg{font-size:var(--t15);letter-spacing:-.02em}}
+/* narrow phones (under 380): "x–y of z HP" fills the space beside the big number; the KO plate gets its own line under the move line */
+@media (max-width:379px){.dc2-ko{display:contents}.dc2-hp{grid-column:2;grid-row:1;align-self:center;text-wrap:balance}.dc2-ko b{grid-column:1/-1;justify-self:start;margin-top:var(--s2)}}
+.dc2-tok button span{display:block;white-space:nowrap}
+@media (max-width:359px){.dc2-tok button{font-stretch:80%}} /* "Hits both" fits a 320-wide pill (narrower letters, as Basculegion on My Box) */

@@ -1021,7 +1021,8 @@ t('PKMN-01', 'Info sheet opens from Home; ✕ and Escape close it, focus returns
 
 t('PKMN-02', 'Hero: rating numeral, "<letter> tier, #N of M with results", name, types, three numbers', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoSheet();
-  ok((NEW ? /^✕ (\d+) [SABCD] tier Rating · #\d+ of \d+ with results Kingambit Dark Steel/ /* the approved sheet mock-up's words (Sim, Nov 12, decision 16) */ : /^✕ (\d+) \? [SABCD] tier, #\d+ of \d+ with results Kingambit Dark Steel/).test(s), 'hero reads: ' + s.slice(0, 90));
+  // new site: the Card (Sim, Nov 13) puts the name and types first, then the buttons, then the rating; each piece is checked on its own
+  ok(NEW ? /^✕ .*Kingambit Dark Steel .*\b(\d+) [SABCD] tier Rating · #\d+ of \d+ with results/.test(s) : /^✕ (\d+) \? [SABCD] tier, #\d+ of \d+ with results Kingambit Dark Steel/.test(s), 'hero reads: ' + s.slice(0, 160));
   for (const x of [/[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'hero'); await r.close(); });
 
 t('PKMN-03', 'Add to team fills the first empty slot ("On your team" after); Build around it; Popular Sets', async () => {

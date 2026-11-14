@@ -489,19 +489,19 @@ t('CALC-10', '"No effect" pinned mini bar jumps back to the result', async () =>
 // ============================== SPEED: Speed tiers ==============================
 t('SPEED-01', 'Speed tiers head', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers');
-  hasAll(await ui.pageText(), ['Speed tiers: level 50', 'Who moves first', 'Your six against the 20 most-used Pokémon, fastest first.'], 'Speed head'); await close(); });
+  hasAll(await ui.pageText(), NEW ? ['Speed Tiers · level 50', 'Who moves first.', 'Fastest first, with each side'] /* approved mock-up (Speed Q1/Q2) */ : ['Speed tiers: level 50', 'Who moves first', 'Your six against the 20 most-used Pokémon, fastest first.'], 'Speed head'); await close(); });
 
 t('SPEED-02', 'Trick Room puts the slowest first', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers');
-  for (const b of ['Your Tailwind', 'Their Tailwind', 'Their −1 Speed', "They're paralyzed", 'Trick Room']) expect(await ui.isPressed(b) === false, `toggle "${b}" missing or on`);
-  await ui.tapIn('List view'); const r0 = await ui.speedRowText(); await ui.tapIn('Trick Room', 600); const r1 = await ui.speedRowText();
+  for (const b of NEW ? ['Your Tailwind', 'Their Tailwind', 'Them −1', "They're Paralyzed", 'Trick Room'] /* the mock-up's chip words */ : ['Your Tailwind', 'Their Tailwind', 'Their −1 Speed', "They're paralyzed", 'Trick Room']) expect(await ui.isPressed(b) === false, `toggle "${b}" missing or on`);
+  await ui.tapIn(NEW ? /^List$/ : 'List view'); const r0 = await ui.speedRowText(); await ui.tapIn('Trick Room', 600); const r1 = await ui.speedRowText();
   const sp = r => +(/^(\d+)/.exec(r) || [0, 0])[1];
   expect(sp(r0[0]) > sp(r0[r0.length - 1]), 'list not fastest first'); expect(sp(r1[0]) < sp(r1[r1.length - 1]), 'Trick Room: slowest not first');
   expect(await ui.sees('Trick Room: the slowest moves first'), 'no Trick Room note'); await close(); });
 
 t('SPEED-03', 'weather picker: Chlorophyll doubles Venusaur in sun only', async () => {
-  const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers'); await ui.tapIn('List view');
-  expect(await ui.isPressed(/^Your weather \(sun\)/) === true, '"Your weather (sun)" not chosen for a sun team');
+  const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers'); await ui.tapIn(NEW ? /^List$/ : 'List view');
+  expect(await ui.isPressed(NEW ? /^Your Weather \(sun\)/ : /^Your weather \(sun\)/) === true, '"Your weather (sun)" not chosen for a sun team');
   const ven = async () => (await ui.speedRowText()).find(r => / Venusaur /.test(' ' + r + ' ')) || '';
   await ui.tapIn('No weather', 500); const v0 = await ven(); await ui.tapIn(/^Sun$/, 500); const v1 = await ven();
   const sp = r => +(/^(\d+)/.exec(r) || [0, 0])[1];
@@ -516,21 +516,22 @@ t('SPEED-04', 'Your six vs the field: outspeed % per Pokémon, falls under their
 
 t('SPEED-05', 'race track / list view (remembered), markers open the info sheet, track scrolls on narrow screens', async () => {
   { const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers');
-    expect(await ui.isPressed('Race track') === true, 'Race track not the default');
+    expect(await ui.isPressed(NEW ? /^Track$/ : 'Race track') === true, 'Race track not the default');
     const o = await ui.speedOrder(); expect(o.length >= 20 + 6 - 1, 'track has too few markers: ' + o.length);
     const sh = await ui.openInfoSheet('Garchomp'); expect(/Garchomp/.test(sh), 'tapping Garchomp did not open its info sheet');
-    await ui.pg.keyboard.press('Escape'); await ui.tapIn('List view'); await ui.reload(); await ui.go('Speed Tiers');
-    expect(await ui.isPressed('List view') === true, 'List view not remembered after reload');
+    await ui.pg.keyboard.press('Escape'); await ui.tapIn(NEW ? /^List$/ : 'List view'); await ui.reload(); await ui.go('Speed Tiers');
+    expect(await ui.isPressed(NEW ? /^List$/ : 'List view') === true, 'List view not remembered after reload');
     const rows = await ui.speedRowText(); expect(rows.some(r => /You/.test(r) && /Speed points/.test(r)), 'list rows lack "YOU" tags or how the number was worked out'); await close(); }
   const {ui, pg, close} = await open({team: TEAM, width: 390}); await ui.go('Speed Tiers');
-  expect(await ui.sees(/(Swipe|Scroll) the track/i), 'no "Swipe the track" hint on a phone');
+  if (!NEW) expect(await ui.sees(/(Swipe|Scroll) the track/i), 'no "Swipe the track" hint on a phone'); // the new phone track is vertical (Speed Q2/Q4): nothing scrolls sideways, so no hint
   expect(await ui.noSideScroll(), 'the page itself scrolls sideways'); await close(); });
 
 t('SPEED-06', 'no team: message and "Go to My team"; footnote with its tip', async () => {
   { const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers');
-    expect(await ui.sees('Level 50, 31 IVs. Theirs assumed: common sets'), 'no footnote'); const h = await ui.openHelp('How speeds are worked out'); expect(h.length > 20, 'no footnote tip'); await close(); }
+    if (NEW) expect(await ui.sees('Level 50, 31 IVs.') && await ui.sees('Weather speed Abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed'), 'no footnote (the new page shows the tip\'s words in full)');
+    else { expect(await ui.sees('Level 50, 31 IVs. Theirs assumed: common sets'), 'no footnote'); const h = await ui.openHelp('How speeds are worked out'); expect(h.length > 20, 'no footnote tip'); } await close(); }
   const {ui, close} = await open({team: []}); await ui.go('Speed Tiers');
-  expect(await ui.sees('Add Pokémon on My team to place them against the top threats'), 'no empty message');
+  expect(await ui.sees(NEW ? 'Add Pokémon on My Team to place them against the top' : 'Add Pokémon on My team to place them against the top threats'), 'no empty message');
   expect(await ui.isPressed('Trick Room') === false, 'toggles hidden with no team');
   await ui.tapIn('Go to My team'); expect(await ui.current() === 'report', '"Go to My team" did not open My team'); await close(); });
 
@@ -746,7 +747,7 @@ t('X-01', 'their six and your picks show as Pokémon art tiles', async () => {
 
 t('X-02', 'two- and three-choice switches show exactly one choice and move with a tap', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers');
-  for (const [a, b] of [['Race track', 'List view']]) { await ui.tapIn(b); expect(await ui.isPressed(b) === true && await ui.isPressed(a) === false, `${a}/${b} switch did not move`); }
+  for (const [a, b] of [NEW ? [/^Track$/, /^List$/] : ['Race track', 'List view']]) { await ui.tapIn(b); expect(await ui.isPressed(b) === true && await ui.isPressed(a) === false, `${a}/${b} switch did not move`); }
   await ui.go('Damage Calc'); await ui.openFold('Your best hit'); await ui.tapIn('Their hits on you');
   expect(await ui.isPressed('Their hits on you') === true && await ui.isPressed('Your hits on them') === false, 'hits switch did not move'); await close(); });
 
