@@ -3,6 +3,15 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 4:35 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
+- Fight Night Home BUILT and live on the Preview (v134, 400 files; commit df71a00). Checks: polish (TARGET=v2 VIEWS=home) no spill or uneven rows;
+  c13 390 4,380 / 820 3,459 / 1440 2,929 within limits, 320 4,749 vs an assumed 4,600 (Sim to set); Home tests 18 pass, 0 FAIL, 1 known (HOME-10b).
+  Decisions logged 4:34 PM in decisions.md (phone band, small-phone fits). Open for Sim: her look at the Home pictures; the 320 limit;
+  820 "Most used right now." wraps to 4 lines in its narrow column (kept bold; stacking it would push 820 over 3,500).
+- NEXT: Meta tab from Sim's Grandstand brief (docs/rebuild/mocks/meta-grandstand/BRIEF.md + 12 webp). Our rules win; list every change for Sim;
+  parts the brief says need a picture go to Sim first. Later: discuss Build + My Team upgrades (rebuild-plan.md R4b, checklist i57).
+- Measuring helpers (scratchpad, not in repo): gap2.cjs (section heights with the c13 data; NOD=1 = polish state), shot.cjs (full-page picture).
+
 ## NOW (Nov 14, written 9:54 AM Eastern by the clock; Sim's authority until 5:00 PM Sat Nov 14 (extended 8:40 AM); summary 4:40 PM)
 - Home design APPROVED by Sim: Fight Night refined (docs/rebuild/mocks/home3). Design round continues: discuss Build + My Team upgrades with Sim (rebuild-plan.md R4b); Meta is with her other designer; no building until the designs are settled.
 - 2:50 PM by the clock: Meta > Pokémon > Rating built (Sim's approved mock-up) and on the Preview v133 (400 files). RATE 9/10 (RATE-01 needs How We Calculate). Next: mock-ups for the Meta parts the approved mock-up does not cover (Usage, Tournaments, This Week, Archetypes) for Sim, then build.
