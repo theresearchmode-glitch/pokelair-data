@@ -3,7 +3,7 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
-## NOW (Nov 14, written 5:33 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
+## NOW (Nov 14, written 5:31 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
 - Sim approved all four recommendations (5:19 PM): phone Grandstand 2 rows per tier; new height limits in c13 (META_L, USAGE_L; Home 320 4,800);
   keep the brief's words and plain "Add to team". Tournaments go to her other designer (5:27 PM). Home 93 centred (slant nudge). Meta stand and
   podium sprites have no shadow filters on mouse screens (Sim: slow scroll in the Claude app on Windows; headless could not reproduce it).
