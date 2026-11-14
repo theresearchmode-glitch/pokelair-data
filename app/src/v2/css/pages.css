@@ -1383,3 +1383,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* no effect, as the mock-up: the face greys out but the card keeps its type chip and edge; the reason reads in the type colour */
 .dc2 .dc2-mv.none,:root:not([data-theme="night"]) .dc2 .dc2-mv.none{background:linear-gradient(color-mix(in srgb,var(--type-none) 22%,var(--mvc-face)),color-mix(in srgb,var(--type-none) 22%,var(--mvc-face))) padding-box,linear-gradient(135deg,var(--tc),var(--card-edge-mid) 40%,var(--tc) 70%,color-mix(in srgb,var(--tc) 60%,var(--card-ink))) border-box}
 .dc2-mv.none .np-type{background:var(--tc)}.dc2-mv.none .ko{color:var(--tc)}:root[data-theme="night"] .dc2-mv.none .ko{color:color-mix(in srgb,var(--tc) 55%,var(--mvc-ink))}
+/* every hit (today's table, kept): a fold under the KO Board; on desktop the board's groups live on the table, so this fold and the switch are what's below it */
+.dc2-all{margin-top:var(--s5)}.dc2-gw{overflow-x:auto}
+.dc2-grid{width:100%;border-collapse:separate;border-spacing:2px;font:600 var(--t13)/1.2 var(--b)}
+.dc2-grid th{padding:var(--s1);text-align:center;font-weight:600;color:var(--ink-2)}.dc2-grid tbody th{display:flex;align-items:center;gap:var(--s1);text-align:left;white-space:nowrap}
+.dc2-grid td{min-width:var(--s16);padding:var(--s1);text-align:center;background:var(--wash)}.dc2-grid td b{display:block;font-size:var(--t15)}.dc2-grid td small{display:block;font-weight:500;color:var(--ink-2)}
+.dc2-grid .k1{background:var(--bad);color:var(--on-type)}.dc2-grid .k1 small{color:var(--on-type)}.dc2-grid .k1m{background:var(--ko-tint)}.dc2-grid .k2{background:color-mix(in srgb,var(--mid) 45%,transparent)}.dc2-grid .k2m{background:color-mix(in srgb,var(--mid) 22%,transparent)}.dc2-grid .z{color:var(--ink-3)}
+@media (max-width:699px){.dc2-grid td small{display:none}.dc2-grid tbody th span{display:none}.dc2-grid td{min-width:0}}

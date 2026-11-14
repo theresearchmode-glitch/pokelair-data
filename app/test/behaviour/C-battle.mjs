@@ -401,7 +401,7 @@ t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
 // ============================== CALC: Damage calc ==============================
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
-  hasAll(await ui.pageText(), ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
+  hasAll(await ui.pageText(), NEW ? ['Damage Calc · level 50 doubles', 'assumed spread'] /* Sim's 'Their Side' brief 10: the title is one small line, no big heading */ : ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
   await ui.tapIn('How the calc works'); expect(await ui.current() === 'method', 'link did not open How we calculate');
   expect(await ui.sees(/damage/i), 'How we calculate does not show the damage section'); await close(); });
 
@@ -409,7 +409,7 @@ t('CALC-02', 'attacker/defender defaults and pickers grouped Your team / Top of 
   { const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
     let s = await ui.calcSides(); expect(s.a === 'Mega Charizard Y' && s.d === 'Sneasler', 'defaults are ' + JSON.stringify(s));
     const gr = await ui.calcPokemonGroups(); expect(/^Your team:6/.test(gr[0]) && /^Top of the meta:/.test(gr[1]) && /^Everyone:/.test(gr[2]) && +gr[2].split(':')[1] > 250, 'picker groups: ' + gr.join(','));
-    hasAll(await ui.calcResultOnly(), ['% of HP'], 'result');
+    if (NEW) expect(/\d+–\d+%/.test(await ui.calcResultOnly()) && / of \d+ HP/.test(await ui.calcResultOnly()), 'result: no range / HP line'); else hasAll(await ui.calcResultOnly(), ['% of HP'], 'result'); // brief 10: 'x–y of z HP' beside the range
     const r0 = await ui.calcResultOnly(); await ui.calcPick('defender', 'Incineroar'); s = await ui.calcSides();
     expect(s.d === 'Incineroar', 'defender not Incineroar'); expect(await ui.calcResultOnly() !== r0, 'result did not change for the new defender');
     expect(/Assumed spread|Estimated spread/i.test(await ui.pageText()), 'no "assumed/estimated spread" tag'); await close(); }
@@ -447,7 +447,7 @@ t('CALC-05', 'Swap trades attacker and defender; move resets to the new attacker
 t('CALC-06', 'field: weather follows the attacker\'s setter until you pick; Rain halves Fire', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   expect(await ui.isPressed('Sun') === true, 'Mega Charizard Y attacking: Sun not pressed by itself');
-  const pct = r => +((/(\d+)–(\d+)% of HP/.exec(r) || [0, 0, 0])[2]);
+  const pct = r => +(((NEW ? /(\d+)–(\d+)%/ : /(\d+)–(\d+)% of HP/).exec(r) || [0, 0, 0])[2]);
   const sun = pct(await ui.calcResultOnly()); await ui.tapIn(/^Rain$/, 500); const rain = pct(await ui.calcResultOnly());
   expect(await ui.isPressed('Rain') === true, 'Rain not pressed'); expect(rain > 0 && rain < sun * 0.4, `Fire damage in rain ${rain}% vs sun ${sun}% (should be about a third: ×1.5 → ×0.5)`);
   await ui.calcPick('attacker', 'Garchomp'); expect(await ui.isPressed('Sun') === true && await ui.isPressed('Rain') === false, 'weather did not follow the new attacker (no setter: your team\'s sun)');
@@ -459,10 +459,10 @@ t('CALC-07', 'result: Sneasler Close Combat into Mega Charizard Y; Garchomp Eart
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   await ui.calcPick('attacker', 'Sneasler'); await ui.calcPick('defender', 'Mega Charizard Y'); await ui.calcMove('Close Combat');
   const r = await ui.calcResultOnly();
-  expect(/45–52% of HP/.test(r) && /20% chance to 2HKO/.test(r) && /Fighting is resisted/.test(r), 'result: ' + r.slice(0, 200));
+  expect((NEW ? /45–52%/ : /45–52% of HP/).test(r) && /20% chance to 2HKO/.test(r) && /Fighting is resisted/.test(r), 'result: ' + r.slice(0, 200)); // new calc: '% of HP' is shown as 'x–y of z HP' (brief 10)
   expect(/of 155 HP/.test(r) && /Fewest points to always survive/.test(r), 'HP numbers or survive line missing');
   await ui.calcPick('attacker', 'Garchomp'); await ui.calcPick('defender', 'Corviknight'); await ui.calcOtherMove('Earthquake').catch(() => ui.calcMove('Earthquake'));
-  expect(/No effect\. Corviknight is immune to Ground/.test(await ui.calcResultOnly()), 'no "No effect" for Earthquake into Corviknight');
+  expect((NEW ? /No effect.*Corviknight is immune to Ground/ : /No effect\. Corviknight is immune to Ground/).test(await ui.calcResultOnly()), 'no "No effect" for Earthquake into Corviknight');
   await close(); });
 
 t('CALC-08', '"Report a mistake" under the result opens feedback pre-filled with the calc', async () => {

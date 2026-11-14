@@ -27,7 +27,9 @@ export default (ui, pg) => {
       await pg.reload(); await pg.waitForTimeout(wait); },
     async waitFor(m, ms = 8000) { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (await ui.sees(m)) return true; await pg.waitForTimeout(150); } return false; },
     async toast(ms = 2500) { const t0 = Date.now(); while (Date.now() - t0 < ms) { const t = await pg.evaluate(() => { const e = document.querySelector('.np-toast'); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }); if (t) return t; await pg.waitForTimeout(100); } return ''; },
-    async tapIn(m, wait = 400) { return ui.tap(m, '#main', wait); },
+    async tapIn(m, wait = 400) { // the calc's weather / terrain names pick from their field card's list
+      const f = await pg.evaluate(([src, fl]) => { const R = fl != null ? new RegExp(src, fl) : null; for (const s of document.querySelectorAll('.dc2 [data-dcfield]')) for (const o of s.options) if (R ? R.test(o.text) : o.text.toLowerCase() === src.toLowerCase()) return [s.dataset.dcfield, o.value]; return null; }, m instanceof RegExp ? [m.source, m.flags] : [String(m), null]);
+      if (f) { await pg.selectOption(`.dc2 [data-dcfield="${f[0]}"]`, f[1]); await pg.waitForTimeout(wait); return; } return ui.tap(m, '#main', wait); },
     // ---- their six ----
     async typeOpponent(k, text) { await openSheet(); const sel = `.bt-osheet [data-btfind="${k - 1}"]`;
       if (!(await pg.$(sel))) throw new Error(`their box ${k} is filled (no name box to type in)`); await pg.fill(sel, ''); await pg.type(sel, text, {delay: 15}); await pg.waitForTimeout(300); },
@@ -67,9 +69,9 @@ export default (ui, pg) => {
     async uploadReplay(path) { if (!(await pg.$('.np-sheet [data-btrepin]'))) { await closeSheet(); await click('[data-btreplay]', 500); } await pg.setInputFiles('[data-btrepfile]', path); await pg.waitForTimeout(900); },
     replayMessage: () => pg.evaluate(() => { const e = document.querySelector('[data-btrepout]'); return e ? e.innerText.trim() : null; }),
     savedGames: () => ui.peek('(S.log||[]).map(g=>({r:g.r,b:g.b.slice(),o:(g.o||[]).slice()}))'),
-    async openFold(name, open = true) { if (/^(battle log|recent battles|log a game)/i.test(name)) return; const k = TABS[String(name).toLowerCase()]; if (k) return tab(k, open); if (/watch out/i.test(name)) { if (!open) NOT('closing Watch out (always open, no fold)'); return; } NOT('fold ' + name); },
+    async openFold(name, open = true) { if (/^(battle log|recent battles|log a game)/i.test(name)) return; if (/best hit/i.test(name)) { await pg.evaluate(o => { const d = document.querySelector('[data-dcfold="g"]'); if (d) d.open = o; }, open); await pg.waitForTimeout(300); return; } const k = TABS[String(name).toLowerCase()]; if (k) return tab(k, open); if (/watch out/i.test(name)) { if (!open) NOT('closing Watch out (always open, no fold)'); return; } NOT('fold ' + name); },
     async isFoldOpen(name) { const k = TABS[String(name).toLowerCase()]; if (k) return pg.evaluate(k => { const b = document.querySelector(`[data-bttab="${k}"]`); return b ? b.getAttribute('aria-expanded') === 'true' : null; }, k); if (/watch out/i.test(name)) NOT('remembering Watch out open/closed (always open)'); NOT('fold ' + name); },
-    async foldText(name) { if (/^battle log/i.test(name)) { await closeSheet(); let t = await pg.evaluate(() => { const e = document.querySelector('.bt-log'); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; });
+    async foldText(name) { if (/best hit/i.test(name)) return pg.evaluate(() => { const d = document.querySelector('[data-dcfold="g"]'); return d ? d.innerText.replace(/\s+/g, ' ').trim() : ''; }); if (/^battle log/i.test(name)) { await closeSheet(); let t = await pg.evaluate(() => { const e = document.querySelector('.bt-log'); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; });
         if (await pg.$('[data-btrecord]')) { await click('[data-btrecord]', 500); t += ' ' + await pg.evaluate(() => { const e = document.querySelector('.np-sheet .bt-rec'); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }); await closeSheet(); } return t; }
       const k = TABS[String(name).toLowerCase()]; if (k) { await tab(k, true); return pg.evaluate(() => { const p = document.querySelector('.bt-pane'); return p ? p.innerText.replace(/\s+/g, ' ').trim() : ''; }); }
       if (/watch out/i.test(name)) return pg.evaluate(() => { const w = document.querySelector('.bt-watch'); return w ? w.innerText.replace(/\s+/g, ' ').trim() : ''; }); NOT('fold ' + name); },
@@ -81,7 +83,36 @@ export default (ui, pg) => {
       return 'Damage both ways ' + parts.join(' | ').replace(/\s+/g, ' '); }); },
     damageRow: () => NOT('damageRow (not used by the Battle-page tests)'),
     openHelp: name => NOT(`the "?" tip "${name}" on Battle`),
-    calcSides: () => NOT('Damage Calc page'),
+    // ---- Damage Calc (Nov 14, "Their Side", src/v2/pages/calc.js). Translation notes: the move strips are the move in play + the hand
+    // (data-dcmv); weather and terrain are field cards with a list each (data-dcfield), so "Sun"/"Rain"/"No weather"... read and set
+    // that list; the set boxes keep today's ids inside the two set folds; the best-hits table is the fold under the KO Board.
+    calcSides: () => pg.evaluate(() => ({a: document.querySelector('#dcA').selectedOptions[0].text, d: document.querySelector('#dcD').selectedOptions[0].text, move: document.querySelector('#dcMv').selectedOptions[0].text})),
+    async calcPick(side, name) { const id = side === 'attacker' ? '#dcA' : '#dcD'; const v = await pg.evaluate(([id, n]) => { const o = [...document.querySelector(id).options].find(o => o.text === n); return o ? o.value : null; }, [id, name]);
+      if (v == null) throw new Error('no Pokémon ' + name); await pg.selectOption(id, v); await pg.waitForTimeout(600); },
+    async calcMove(name) { const cur = await pg.evaluate(() => window.__ev('dc.mv')); if (cur === name) return; await click(`.dc2 [data-dcmv="${name}"]`, 600); },
+    async calcOtherMove(name) { const v = await pg.evaluate(n => { const o = [...document.querySelector('#dcMv').options].find(o => o.text === n); return o ? o.value : null; }, name); if (v == null) throw new Error('no move ' + name); await pg.selectOption('#dcMv', v); await pg.waitForTimeout(600); },
+    calcMoveStrips: () => pg.evaluate(() => { const play = document.querySelector('.dc2-mv.play .nm'); return [...(play ? [{move: play.textContent.trim(), on: true}] : []), ...[...document.querySelectorAll('.dc2-hand [data-dcmv]')].map(e => ({move: e.dataset.dcmv, on: false}))]; }),
+    async calcSet(side, field, value) { const M = {attacker: {points: 'dcASp', nature: 'dcANat', item: 'dcAIt', ability: 'dcAAb', stage: 'dcABo'}, defender: {hp: 'dcDHp', def: 'dcDDf', spd: 'dcDSd', nature: 'dcDNat', item: 'dcDIt', ability: 'dcDAb', stage: 'dcDBo'}};
+      const id = M[side][field]; await pg.evaluate(id => { document.querySelectorAll('details').forEach(d => { if (d.contains(document.getElementById(id))) d.open = true; }); }, id); await pg.waitForTimeout(150);
+      const v = await pg.evaluate(([id, val]) => { const s = document.getElementById(id); const o = [...s.options].find(o => o.value === String(val) || o.text === String(val) || o.text.startsWith(String(val) + ' ')); return o ? o.value : null; }, [id, value]);
+      if (v == null) throw new Error(`no ${field} option ${value}`); await pg.selectOption('#' + id, v); await pg.waitForTimeout(500); },
+    calcSetValue: (side, field) => pg.evaluate(([s, f]) => { const id = {attacker: {points: 'dcASp', nature: 'dcANat'}, defender: {hp: 'dcDHp', def: 'dcDDf', spd: 'dcDSd', nature: 'dcDNat'}}[s][f]; const e = document.getElementById(id); return e ? e.selectedOptions[0].text : null; }, [side, field]),
+    calcSetChoices: (side, field) => pg.evaluate(([s, f]) => { const id = {attacker: {item: 'dcAIt', nature: 'dcANat', stage: 'dcABo'}, defender: {item: 'dcDIt', nature: 'dcDNat', stage: 'dcDBo'}}[s][f]; const e = document.getElementById(id); return e ? [...e.options].map(o => o.text) : null; }, [side, field]),
+    async calcSwap() { await click('#dcSwap', 600); },
+    calcResult: () => pg.evaluate(() => [...document.querySelectorAll('.dc2-res,.dc2-dl')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim()),
+    calcResultOnly: () => pg.evaluate(() => [...document.querySelectorAll('.dc2-res,.dc2-dl')].map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim()),
+    calcPokemonGroups: () => pg.evaluate(() => [...document.querySelectorAll('#dcA optgroup')].map(g => g.label + ':' + g.children.length)),
+    calcPinnedBar: async () => null, // the new calc has no pinned mini bar (today's is switched off too: Sim, Nov 7)
+    tapCalcPinnedBar: () => NOT('the pinned result bar (the new calc has none)'),
+    calcResultOnScreen: () => pg.evaluate(() => { const e = document.querySelector('.dc2-res'); const r = e.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }),
+    scrollToEnd: () => pg.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)).then(() => pg.waitForTimeout(300)),
+    openDialog: () => pg.evaluate(() => { const s = [...document.querySelectorAll('[role=dialog]')].find(e => !e.hidden && e.getClientRects().length && e.innerText.trim()); return s ? s.innerText.replace(/\s+/g, ' ').slice(0, 2000) : ''; }),
+    // pressed state: the calc's weather / terrain lists answer for their values; everything else reads aria-pressed like today's helper
+    isPressed: label => pg.evaluate(([m, re]) => { const R = re ? new RegExp(re[0], re[1]) : null, hit = t => R ? R.test(t) : t.toLowerCase() === String(m).toLowerCase();
+      for (const s of document.querySelectorAll('.dc2 [data-dcfield]')) for (const o of s.options) { const names = [o.text, o.text.replace(/^No (weather|terrain)$/i, 'No $1')]; if (names.some(hit)) return s.value === o.value; }
+      const T = e => (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim();
+      const els = [...document.querySelectorAll('[aria-pressed],[aria-selected]')].filter(e => e.getClientRects().length); const e = els.find(e => hit(T(e))) || els.find(e => !R && T(e).toLowerCase().includes(String(m).toLowerCase()));
+      return e ? (e.getAttribute('aria-pressed') || e.getAttribute('aria-selected')) === 'true' : null; }, [String(label), label instanceof RegExp ? [label.source, label.flags] : null]),
   };
   // the other Battle pages: every helper the current adapter has that isn't wired here names itself as missing
   const OTHER = ['mainTab', 'tapMainTab', 'openMenu', 'menuGroup', 'tapMenu', 'toolSwitch', 'toolSwitchChosen', 'toolSwitchKey', 'opponentPictures', 'buttonTop', 'doubleTap', 'trackChartLines', 'scrollToEnd', 'focusInSheet',

@@ -72,7 +72,25 @@ V2.dcBoard = (C) => { const E = V2.esc, dir = dc.dir === 'theirs' ? 'theirs' : '
   const L = V2.dcKB(), c = V2.dcCounts(L), on = dir === 'mine' ? C.D.p.n : C.A.p.n;
   const grp = (k, t) => { const g = L.filter(b => (b.lo >= 1 ? 'ko' : b.hi >= 1 ? 'can' : 'sv') === k); return g.length ? `<div class="dc2-kg"><h3><b class="u">${g.length}</b> ${t}</h3><div class="dc2-kts">${g.map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>` : ''; };
   return `<section class="dc2-kb"><div class="dc2-kbh"><h2 class="u">The KO Board</h2>${V2.dcDir()}</div><p class="fine">${dir === 'mine' ? 'Your best hit on each of the top 30 (its usual set), surest KO first. The bar is the HP it has left. Tap one to put it on the table.' : 'Each of the top 30\'s best hit on your six (its usual set), surest KO first. The small picture is the one of yours it hits hardest; the bar is the HP yours has left. Tap one to put it on the table.'}</p>
-    ${grp('ko', 'down in one hit')}${grp('can', 'can go down')}${grp('sv', 'survive')}</section>`; };
+    ${grp('ko', 'down in one hit')}${grp('can', 'can go down')}${grp('sv', 'survive')}${V2.dcGridHtml(C)}</section>`; };
+// every hit (today's best-hits table, kept: brief 0): your six across, the top 30 down, each cell the best hit with its usual set;
+// switched with the board's "Their hits on you". Folded under the board; the KO Board shows only each one's single best.
+V2.dcGrid = () => { const ms = members(), dir = dc.dir === 'theirs' ? 'theirs' : 'mine', key = 'grid|' + (V2._dcKB ? V2._dcKB.key : '') + dir;
+  if (V2._dcGr && V2._dcGr.key === key) return V2._dcGr.v;
+  let thr = []; try { thr = metaThreats(30).map(x => x.p || x).filter(p => p && p.st); } catch (e) {}
+  const myF = typeof sideField === 'function' ? sideField(ms) : {}, thF = t => typeof sideField === 'function' ? sideField([{p: t, ability: abilityOf({p: t})}]) : {};
+  const v = {ms, thr, cells: thr.map(t => ms.map(m => { const h = dir === 'mine' ? bestHitOn(m.p, m.moves, t, m, null, myF) : bestHitOn(t, popularMoves(t), m.p, null, m, thF(t));
+    return h && h.r && h.r.hp ? {hi: h.r.max / h.r.hp, lo: h.r.min / h.r.hp, mv: h.mv.name, note: hitNote(h)} : null; }))};
+  V2._dcGr = {key, v}; return v; };
+V2.dcGridHtml = (C) => { if (!C.ms.length) return ''; const E = V2.esc, dir = dc.dir === 'theirs' ? 'theirs' : 'mine', G = V2.dcGrid();
+  const title = dir === 'mine' ? 'Your best hit on each top threat' : "Each top threat's best hit on your team";
+  const cell = c => { if (!c) return '<td class="z">–</td>'; const k = c.lo >= 1 ? 'k1' : c.hi >= 1 ? 'k1m' : c.lo >= .5 ? 'k2' : c.hi >= .5 ? 'k2m' : 'k3';
+    return `<td class="${k}"><b>${Math.round(100 * c.hi)}%</b><small>${E(c.mv)}${c.note ? ' *' : ''}</small></td>`; };
+  return `<details class="dc2-fold dc2-all" data-dcfold="g"${V2.dcOpen && V2.dcOpen.g ? ' open' : ''}><summary><span><b>${title}</b><small>${dir === 'mine' ? 'Every one of your six into each of the top 30' : 'Each of the top 30 into every one of your six'}: the best hit with its usual set, as % of HP</small></span><i aria-hidden="true">›</i></summary>
+    <div class="dc2-gw"><table class="dc2-grid"><thead><tr><th scope="col"><span class="vh">${dir === 'mine' ? 'Top 30 (defending)' : 'Top 30 (attacking)'}</span></th>${G.ms.map(m => `<th scope="col" title="${E(V2.disp(m.p.n))}">${V2.mon(m.p.n, {iw: 32, bare: true})}<span class="vh">${E(V2.disp(m.p.n))}</span></th>`).join('')}</tr></thead>
+    <tbody>${G.thr.map((t, i) => `<tr><th scope="row">${V2.mon(t.n, {iw: 28, bare: true})}<span>${V2.rowName(V2.disp(t.n))}</span></th>${G.cells[i].map(cell).join('')}</tr>`).join('')}</tbody></table></div>
+    <p class="fine">KOs in one hit: red · can KO: light red · two hits: amber · more: grey. * charges first, may miss, must recharge or is a one-hit KO move.</p></details>`; };
+
 // desktop: the board's two wings beside the defender, 15 tiles each, with your counts as captions
 V2.dcWings = (C) => { const dir = dc.dir === 'theirs' ? 'theirs' : 'mine'; if (!C.ms.length) return ['', ''];
   const L = V2.dcKB(), c = V2.dcCounts(L), on = dir === 'mine' ? C.D.p.n : C.A.p.n, h = Math.ceil(L.length / 2);
