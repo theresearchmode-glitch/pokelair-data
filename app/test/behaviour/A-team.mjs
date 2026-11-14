@@ -407,7 +407,7 @@ t('SUG-07', 'Protect fix: with Protect on only one Pokémon, "Add Protect" puts 
 
 t('SUG-08', '"Nothing to fix" card with Battle and Sets on a complete team', async () => {
   const r = await myTeam({fresh: true, width: 390}); const tx = await r.ui.text(); has(tx, 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.'); has(tx, /Your edge now comes from how you play it/);
-  await r.ui.setWidth(1280); await r.ui.tapText(/^Battle$/, 900); ok(await r.ui.current() === 'matchup', 'Battle button did not open Battle'); await r.ui.go('My Team', 1500); await r.ui.tapText(/^Sets$/, 900); ok(await r.ui.current() === 'sets', 'Sets button did not open Popular sets'); await r.close(); });
+  await r.ui.setWidth(1280); await r.ui.tapText(NEW ? /^Plan a Match/ : /^Battle$/, 900); /* new: the links say where they go (review fix, Nov 13) */ ok(await r.ui.current() === 'matchup', 'Battle button did not open Battle'); await r.ui.go('My Team', 1500); await r.ui.tapText(NEW ? /^Popular Sets/ : /^Sets$/, 900); ok(await r.ui.current() === 'sets', 'Sets button did not open Popular sets'); await r.close(); });
 
 t('SUG-09', 'When nothing raises the score: a no-gain message instead of plain Apply cards', async () => {
   const r = await myTeam({fresh: true});

@@ -236,7 +236,8 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
   // First visit Q1 B (Sim, Nov 13, the approved first-visit mock-up): the six empty spots (Lead / Back / Bench, the six's own
   // empty tiles: each opens the name box for its spot) beside the lead, and "Or Start from a Winner" (today's six highest-rated,
   // tap one to build around it: Home's handler) beside the underdog
-  const add = i => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b><span class="sx-pre">Add a</span> Pokémon</b><small>Spot ${i + 1}</small></button></div>`;
+  // Sim, Nov 13 (Empty My Team Q1 B): "Add" with "Spot N" under it, as in six.js
+  const add = i => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b>Add</b><small>Spot ${i + 1}</small></button></div>`;
   const spots = `<div class="tm-six sx tm-e-six"><div class="sx-grps">${['Lead', 'Back', 'Bench'].map((g, j) => `<div class="sx-grp" role="group" aria-label="${g}"><p class="sx-gl u" aria-hidden="true">${g}</p><div class="sx-tiles">${add(j * 2)}${add(j * 2 + 1)}</div></div>`).join('')}</div></div>`;
   let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {}
   const win = top.length ? `<div class="tm-e-win"><h2 class="u">Or Start from a Winner</h2><p>Today's six highest-rated Pokémon. Tap one to build a team around it.</p><div class="tm-e-wg">${top.map(p => { const R = monRating(p), u = homePct(p);

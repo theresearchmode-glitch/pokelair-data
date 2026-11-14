@@ -144,7 +144,22 @@ V2.homeNew = () => { let seen = '', welcomed = ''; try { seen = LS.get('cc2.seen
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-hmwelcome],[data-hmnewx]'); if (!t) return;
   if (t.hasAttribute('data-hmwelcome')) { try { LS.set('cc2.welcomed', '1'); } catch (x) {} if (t.tagName === 'BUTTON') { e.preventDefault(); V2.redraw(); } return; }
   e.preventDefault(); try { LS.set('cc2.seenNew', WHATS_NEW.id); sessionStorage.removeItem('np.wnew'); } catch (x) {} const s = t.closest('.hm-newsec'); if (s) s.remove(); });
-V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeNew()}${V2.homeWelcome()}${V2.homeDuel()}${V2.homeMeta()}${V2.homeTools()}${V2.homeMore()}</div>`; }};
+// Sim, Nov 13 ("make sure there's no overhang in the most used 3"): a name that doesn't fit its button (one long word such as
+// "Squawkabilly (Yellow)" or "Mega Crabominable" can't wrap) steps down the type scale until it does; names that fit keep their size.
+// Measured before: the 12 longest names in our data stuck out by up to 48 px at 320-360 (scratchpad look/ovB.cjs).
+V2.fitUsed = () => { const steps = ['--t34', '--t28', '--t26', '--t24', '--t22', '--t20', '--t17', '--t16', '--t15'], root = getComputedStyle(document.documentElement);
+  document.querySelectorAll('.hm-three .hm-used').forEach(btn => { const b = btn.querySelector('.hm-ut b'); if (!b) return; b.style.fontSize = ''; b.style.fontStretch = ''; b.style.hyphens = '';
+    const over = () => { const br = btn.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(b); /* the text's own lines, not its box (a capped box can fit while a long word spills out of it) */
+      return [...rg.getClientRects()].some(r => r.width && (r.left < br.left - 0.5 || r.right > br.right + 0.5)); };
+    if (!over()) return; const cur = parseFloat(getComputedStyle(b).fontSize);
+    for (const s of steps) { if (parseFloat(root.getPropertyValue(s)) >= cur) continue; b.style.fontSize = `var(${s})`; if (!over()) return; }
+    // still too wide at 15 px (narrow side spots on phones): the approved narrower letters (88%, then 75%, as Home and My Box use), then 13 px
+    for (const [fs, st] of [['--t15', '88%'], ['--t15', '75%'], ['--t13', '75%']]) { b.style.fontSize = `var(${fs})`; b.style.fontStretch = st; if (!over()) return; }
+    // last resort (one long word in a 67 px side spot at 700-760): break it with a hyphen rather than let it stick out
+    b.style.hyphens = 'auto'; }); };
+addEventListener('resize', () => { if (V2.route() === 'home') requestAnimationFrame(V2.fitUsed); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (V2.route && V2.route() === 'home') V2.fitUsed(); });
+V2.pages.home = {place: 'home', draw() { return `<div class="hm2">${V2.homeHero()}${V2.homeNew()}${V2.homeWelcome()}${V2.homeDuel()}${V2.homeMeta()}${V2.homeTools()}${V2.homeMore()}</div>`; }, after() { V2.fitUsed(); }};
 // Load this team (HOME-09): with a team of your own, the first tap asks ("Tap again"); the second loads it with Undo (today's loadSheet)
 document.addEventListener('click', async e => { const L = e.target.closest('[data-hmload]'), Cp = e.target.closest('[data-hmcopy]'), P = e.target.closest('[data-hmprep]');
   if (L) { const k = L.dataset.hmload, x = evTeam(k); if (!x) return; if (members().length && V2.hmUi.sure !== k) { V2.hmUi.sure = k; clearTimeout(V2.hmUi.t); V2.hmUi.t = setTimeout(() => { V2.hmUi.sure = null; if (V2.route() === 'home' || V2.route() === 'build') V2.redraw(); }, 6000); V2.redraw(); return; }

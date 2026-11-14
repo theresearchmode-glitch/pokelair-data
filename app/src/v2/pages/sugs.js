@@ -70,7 +70,7 @@ V2.protCard = ms => { let f = null; try { f = LANE.protFix(ms); } catch (e) {} i
 // play: Battle, and the sets (words from LANE.NONE)
 V2.noneCard = () => { const N = LANE.NONE;
   // Sim, Nov 11 (#5): one quiet paragraph, not a headline (beside optional swaps a big "Nothing to fix." read as a contradiction)
-  return `<div class="sg2-nwrap"><p class="sg2-none"><b>${N.head}</b> ${N.body} ${N.edge}</p><p class="sg2-nact"><a class="np-link" href="#battle">Battle</a><a class="np-link" href="#sets">Sets</a></p></div>`; };
+  return `<div class="sg2-nwrap"><p class="sg2-none"><b>${N.head}</b> ${N.body} ${N.edge}</p><p class="sg2-nact"><a class="np-link" href="#battle">Plan a Match ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></div>`; };
 // the Undo bar: the last suggestion (or Quick add) applied, until the team is changed some other way; Undo steps back one at a
 // time, up to 8 (today's undo stack and its [data-undobar] handler, 06-helpers.js)
 // A6 proposal (Sim's fix plan: one message per action, one Undo): after an Apply, the "Applied … Undo" bar in Suggestions is the

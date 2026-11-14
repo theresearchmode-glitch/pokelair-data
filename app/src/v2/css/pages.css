@@ -1096,3 +1096,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1920px){.bt2:has(>.bt-empty){grid-template-columns:minmax(0,1fr) 820px}}
 /* Battle Q2 B: the actions wrap as two whole groups ([Pick your four first, Win, Loss] and [Replay, Record]), never one link alone; phones keep their grid */
 .bt-lg{display:flex;flex-wrap:nowrap;align-items:center;gap:var(--s3)}@media (max-width:559px){.bt-lg{display:contents}}
+/* review fix (Nov 13): two across on phones there is room, so the My Team actions keep the one button size (15px) and the Saved Teams count */
+@media (max-width:399px){.tm-acts:has(.tm-saved) .np-btn2{font-size:var(--t15);padding:0 var(--s3)}.tm-acts:has(.tm-saved) .tm-svl small{display:inline}}
+/* review fix (Nov 13, "Your pick" pushed its tile up): the six tiles share five row lines (sprite, name, item, role, tag), names sit on
+   the name row's bottom, so a "Your pick" line above one name no longer lifts that sprite and name */
+.bd-six{grid-auto-rows:auto}.bd-six>.bd-pk{grid-row:span 5;grid-template-rows:subgrid;row-gap:0;align-items:end}.bd-six>.bd-pk>small{align-self:start}
+/* review fix (Nov 13, most used three): the name may shrink to its spot (a grid item's min-width:auto kept it 7 px wider than a 67 px side spot at 700) */
+.hm-ut{grid-template-columns:minmax(0,1fr)}.hm-ut b{min-width:0;max-width:100%}

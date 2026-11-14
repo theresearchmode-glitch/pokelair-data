@@ -494,7 +494,7 @@ t('SUGG-08', 'Nothing to fix: card with Battle and Sets, then side-grades that k
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0); const s = await ui.waitMySuggestions();
   has(s, 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.', 'card'); has(s, 'Your edge now comes from how you play it', 'card');
   has(s, /Nothing raises this team.s Strength Score right now\. (These swaps keep every check and about the same grade, with a different look:|and every other swap would lower it\.)/, 'side-grade lead');
-  await ui.tap(/^Battle$/, ui.area('My team suggestions'), 700); expect(await ui.current() === 'matchup', 'Battle button did not open Battle'); await close(); });
+  await ui.tap(/^(Battle|Plan a Match ›)$/, ui.area('My team suggestions'), 700); /* new: the links say where they go (review fix, Nov 13) */ expect(await ui.current() === 'matchup', 'Battle button did not open Battle'); await close(); });
 
 t('SUGG-09', 'Apply: writes the plan, keeps the place under your finger, toast with the score move and Undo', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();

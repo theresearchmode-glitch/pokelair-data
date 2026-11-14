@@ -30,7 +30,8 @@ V2.calcNote = (R, lv) => R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Fa
 // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
 V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured');
-  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
+  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>${V2.calcNote(R, r.level)}</button></li>`;
+  // review fix (Nov 13): the calc note sits after the badge, so names and badges line up across a row whether or not a cell has a note
   // Nov 12 height cut: no group headings (each row carries its verdict badge; the counts line above has the numbers)
   // Sim, Nov 13 (My Team Q1 B, Sim chose it): at most 4 of each (the most common threats first), so rows stay even and the page length no longer
   // depends on the team; a line says how many more and opens All 30
