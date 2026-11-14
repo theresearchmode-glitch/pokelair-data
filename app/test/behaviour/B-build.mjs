@@ -562,13 +562,12 @@ t('SUGG-17', 'Set check tips: a rare item gets "X: Y instead of Z" with Use Y', 
 
 t('SUGG-19', 'Threat sheet Best fix: shows the fix and Apply this fix applies it', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.openThreat('Archaludon');
-  const sh = await ui.threatSheetText(); has(sh, /Best fix/, 'sheet'); has(sh, /[+−-]\d+ \(\d+ → \d+\)/, 'score move'); has(sh, /Apply this fix/, 'sheet'); await ui.applyBestFix();
+  const sh = await ui.threatSheetText(); has(sh, /Best fix/, 'sheet'); has(sh, /[+−-]\d+ \(\d+ → \d+\)/, 'score move'); has(sh, /Apply this fix/i, 'sheet'); /* the button reads 'Apply This Fix' since the title-case catch-up (Nov 13) */ await ui.applyBestFix();
   expect(!same(await ui.team(), TEAM), 'team unchanged'); await ui.waitForToast(/^Applied: /); await close(); });
 
 t('SUGG-19', 'Threat sheet Best fix: the sheet closes after Apply this fix', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.openThreat('Archaludon'); await ui.applyBestFix();
-  expect(!(await ui.threatSheetText()), 'sheet did not close'); await close(); },
-  {known: 'Apply this fix applies the plan but the threat sheet stays open (also with a real mouse click)'});
+  expect(!(await ui.threatSheetText()), 'sheet did not close'); await close(); }); /* known-bug mark removed Nov 13: the new site closes the sheet on Apply (matchups.js V2.closeSheet(true)); passed 3 of 3 with the first SUGG-19 confirming the button exists */
 
 // =====================================================================================================
 // 6. Popular sets
