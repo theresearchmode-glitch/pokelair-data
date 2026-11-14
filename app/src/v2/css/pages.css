@@ -1199,3 +1199,20 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 }
 @media (min-width:700px) and (max-width:1023px){.ms2:has(.ms-stage)>.ms-left:not(:has(.ms-forms)){grid-template-areas:"stage stage stage stage" "name rate acts acts" "ty rate acts acts" "nums nums nums nums"}} /* no forms: the numbers use the whole width (no empty right half) */
 .ms2:has(.ms-stage) .ms-hd{justify-self:stretch} /* the phone rule .ms-head{justify-items:start} let the block shrink to its content (Flapple: 305 of 358 px) */
+/* Sim, Nov 13 9:18 PM (tall window screenshot: 'the mock up had rillaboom inside as a box... so much dead space'): on desktop the stage is a
+   box of fixed height (292 with forms, 340 without), never stretched; the left column is at most the window's height; the sheet takes
+   the height of its content (up to the window), so nothing stretches to fill a tall window */
+@media (min-width:1024px){
+  .ms2:has(.ms-stage) .ms-stage{flex:0 0 auto;height:340px;min-height:0}
+  .ms2:has(.ms-stage) .ms-left:has(.ms-forms) .ms-stage{height:292px}
+  .np-sheet:has(.ms-stage){bottom:auto;max-height:calc(100% - 96px)}
+}
+@media (min-width:1024px) and (min-height:900px){.ms2:has(.ms-stage)>.ms-left{height:auto;max-height:calc(100vh - 96px)}}
+/* follow-up (same feedback): the sheet is never taller than 860 px (centred on tall windows; the right side scrolls inside it), and the
+   stage is a box between 292 and 460 px that takes the left column's spare room, so there is no long strip and no big empty area */
+@media (min-width:1024px){
+  .np-sheet:has(.ms-stage){top:max(48px,calc((100vh - 860px) / 2));bottom:auto;height:min(calc(100vh - 96px),860px);max-height:none}
+  .ms2:has(.ms-stage) .ms-stage{flex:1 1 auto;height:auto;min-height:340px;max-height:460px}
+  .ms2:has(.ms-stage) .ms-left:has(.ms-forms) .ms-stage{height:auto;min-height:292px}
+}
+@media (min-width:1024px) and (min-height:900px){.ms2:has(.ms-stage)>.ms-left{height:min(calc(100vh - 96px),860px);max-height:none}}
