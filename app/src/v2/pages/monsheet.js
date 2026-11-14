@@ -24,13 +24,13 @@ V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc
   const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'), rank = rankTxt(p, 'cap');
   // header
   const num = (b, l, s, w) => `<div class="ms-n${w ? ' few' : ''}"><b>${b}</b><span>${l}${s ? `<small>${s}</small>` : ''}</span></div>`;
-  const nums = `<div class="ms-nums">${H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('–', 'of teams', 'no tournament games yet')}${H.hW != null ? (H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate', Math.round(H.hG).toLocaleString('en-US') + ' games') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) : ''}${run ? num(run.v, 'Speed at level 50', '') : ''}</div>`;
+  const nums = `<div class="ms-nums">${H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('–', 'of teams', 'no tournament games yet')}${H.hW != null ? (H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate', Math.round(H.hG).toLocaleString('en-US') + '\u00a0games') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) : ''}${run ? num(run.v, 'Speed <span class="lv">at level 50</span>', '') : ''}</div>`;
   const rate = `<div class="ms-rate"><b>${rs}</b><span>${E(T.k)} tier<small>Rating${rank ? ' · ' + E(rank) : ' · no results yet'}${H.thinR ? ' · early read' : ''}</small></span></div>`;
   const add = V2.addBtn ? V2.addBtn(n) : '';
   const head = `${V2.msStage(p, n)}<header class="ms-head"><div class="ms-hd">${rate}<h2 class="u">${V2.nameHtml(V2.disp(n))}</h2><div class="ms-ty">${(p.t || []).map(V2.typeChip).join('')}</div>${nums}<div class="ms-acts">${add}<div class="row ms-go"><button type="button" class="np-btn2" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-mssets="${E(n)}"><span>Popular Sets</span></button></div></div></div></header>`;
   // forms: every form of the species with its rating; tap one to open it
   const forms = ROSTER.filter(q => q.b === p.b), fstrip = forms.length > 1 ? `<div class="ms-forms"><div class="ms-fh"><div class="np-eyebrow">Forms · tap one to open it</div><button type="button" class="np-link" data-mstabgo="forms">Compare all ${forms.length}</button></div><div class="ms-fr" role="group" aria-label="Forms of ${E(V2.disp(p.b))}">${forms.map(q => { const rq = rating(q);
-    return `<button type="button" class="ms-f" data-v2mon="${E(q.n)}" aria-pressed="${q.n === p.n}">${V2.mon(q.n, {iw: 64, bare: true, sel: q.n === p.n})}<span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}</div></div>` : '';
+    return `<button type="button" class="ms-f" data-v2mon="${E(q.n)}" aria-pressed="${q.n === p.n}">${V2.mon(q.n, {iw: 64, bare: true, sel: q.n === p.n})}<span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)}\u00a0tier</small></span></button>`; }).join('')}</div></div>` : '';
   // Info: usually, base stats, Abilities, type matchups, Speed
   const ti = (() => { try { return topItems(p); } catch (e) { return null; } })(), SB = lairSetBits(p), pm = (() => { try { return (popularMoves(p) || []).slice(0, 4).map(m => m.name); } catch (e) { return []; } })();
   const usual = [ti && ti.it && ti.it[0] ? ti.it[0][0] : null, SB.na ? SB.na[0] : null, SB.w || null].filter(Boolean);
@@ -87,8 +87,14 @@ V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc
   return `<div class="ms2">${head}${fstrip}${tb}${pan('info', `<div class="ms-cols">${quick}${stats}${abs}${ty}${spd}</div>`)}${pan('meta', `<div class="ms-cols">${meta}</div>`)}${pan('rating', `<div class="ms-cols">${why}${data}${outs}</div>`)}${fcmp ? pan('forms', `<div class="ms-cols">${fcmp}</div>`) : ''}</div>`; };
 // opening: a sheet; another Pokémon from inside it (a form, a partner) replaces it in place and keeps the tab
 V2.openMon = n => { const p = byName.get(n); if (!p) return; const cur = document.querySelector('.ms2');
-  if (cur) { cur.outerHTML = V2.monHtml(n); const sh = document.querySelector('.np-sheet'); if (sh) { sh.scrollTop = 0; sh.setAttribute('aria-label', V2.disp(n)); sh.focus(); } return; }
-  V2.sheet(V2.monHtml(n), {label: V2.disp(n)}); };
+  if (cur) { cur.outerHTML = V2.monHtml(n); const sh = document.querySelector('.np-sheet'); if (sh) { sh.scrollTop = 0; sh.setAttribute('aria-label', V2.disp(n)); sh.focus(); } V2.fitMsName(); return; }
+  V2.sheet(V2.monHtml(n), {label: V2.disp(n)}); V2.fitMsName(); };
+// the name under the stage fits its column (Sim's brief: long names take two lines, nothing collides): a word wider than its column
+// ("Squawkabilly (Yellow)", "Mega Crabominable") steps the name down the type scale until every line fits; names that fit keep 28 px
+V2.fitMsName = () => { const h = document.querySelector('.ms2 .ms-stage ~ .ms-head .ms-hd>h2'); if (!h) return; h.style.fontSize = '';
+  const over = () => { const box = h.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(h); return [...rg.getClientRects()].some(r => r.width && r.right > box.right + 0.5); };
+  for (const s of ['--t26', '--t24', '--t22', '--t20', '--t17']) { if (!over()) return; h.style.fontSize = `var(${s})`; } };
+addEventListener('resize', () => requestAnimationFrame(V2.fitMsName));
 V2.msShow = (k, focus) => { V2.msTab = k; try { localStorage.setItem('np2.montab', k); } catch (e) {}
   document.querySelectorAll('.ms2 [data-mstab]').forEach(b => { const on = b.dataset.mstab === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
   document.querySelectorAll('.ms2 [data-mspan]').forEach(x => { x.hidden = x.dataset.mspan !== k; }); };

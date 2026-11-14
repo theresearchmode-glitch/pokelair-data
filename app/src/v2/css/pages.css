@@ -1125,3 +1125,29 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:700px){.ms-stage{justify-content:center;column-gap:var(--s16);margin:calc(var(--s8)*-1) calc(var(--s8)*-1) var(--s6)}}
 @media (max-width:699px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:144px}.ms-scr{width:212px}.ms-wb{--wr:52px;--lr:80px}}
 @media (max-width:359px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:116px}.ms-scr{width:168px;height:188px}.ms-wb{--wr:40px;--lr:64px}}
+/* ---------- Info sheet step 2 (Sim's brief section 2): the headline block under the stage. Same content and order as before
+   (grid areas only), so the sheet's text stays identical. ---------- */
+.ms2:has(>.ms-stage) .ms-hd{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name rate" "ty rate" "nums nums" "acts acts";column-gap:var(--s4);align-items:end}
+.ms2:has(>.ms-stage) .ms-hd>h2{grid-area:name;margin:0}
+.ms2:has(>.ms-stage) .ms-hd>.ms-ty{grid-area:ty;align-self:start;margin-top:var(--s2)}
+.ms2:has(>.ms-stage) .ms-rate{grid-area:rate;display:grid;justify-items:end;gap:var(--s1);text-align:right}
+.ms2:has(>.ms-stage) .ms-rate span{padding:0}.ms2:has(>.ms-stage) .ms-rate small{max-width:20ch;margin-left:auto}
+.ms2:has(>.ms-stage) .ms-nums{grid-area:nums;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0;margin-top:var(--s6)}
+.ms2:has(>.ms-stage) .ms-n{display:block;padding:0 var(--s3);border-left:1px solid var(--rule)}.ms2:has(>.ms-stage) .ms-n:first-child{padding-left:0;border-left:0}
+.ms2:has(>.ms-stage) .ms-n b{display:block}.ms2:has(>.ms-stage) .ms-n span{display:block;margin-top:var(--s1)}
+.ms2:has(>.ms-stage) .ms-acts{grid-area:acts;margin-top:var(--s6)}
+.ms2:has(>.ms-stage) .ms-go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms2:has(>.ms-stage) .ms-go>.np-btn2{width:100%}
+.ms2:has(>.ms-stage) .ms-fr{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+.ms2:has(>.ms-stage) .ms-f{flex-direction:column;justify-content:start;gap:var(--s1);padding:var(--s2) var(--s1);text-align:center}
+.ms2:has(>.ms-stage) .ms-f span{justify-items:center}
+.ms2:has(>.ms-stage) .ms-f[aria-pressed="true"]{background:none}
+.ms2:has(>.ms-stage) .ms-f[aria-pressed="true"]::after{content:"";display:block;width:var(--s10);height:4px;margin-top:var(--s1);background:var(--plot);transform:skewX(var(--slant))}
+.ms2:has(>.ms-stage) .ms-bs i{width:100%;background:linear-gradient(90deg,var(--plot) calc(var(--v) / 200 * 100%),color-mix(in srgb,var(--ink) 9%,transparent) 0)}
+.ms2:has(>.ms-stage) .ms-bs .tot i{background:none}
+.ms2:has(>.ms-stage) .ms-hd>h2{font-size:var(--t28);overflow-wrap:normal;hyphens:manual}
+.ms2:has(>.ms-stage) .ms-rate small{max-width:15ch}
+.ms2:has(>.ms-stage) .ms-n .lv{display:block}
+@media (max-width:359px){.ms2:has(>.ms-stage) .ms-hd>h2{font-size:var(--t24)}}
+@media (max-width:399px){.ms2:has(>.ms-stage) .ms-n.few b{font-size:var(--t17)}}@media (max-width:359px){.ms2:has(>.ms-stage) .ms-n.few b{font-size:var(--t15)}}
+/* more than 4 forms (Rotom: 6): rows of 3 instead of one cramped row (at 320 six tiles were 41 px and names touched) */
+.ms2:has(>.ms-stage) .ms-fr:has(>.ms-f:nth-child(5)){grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
