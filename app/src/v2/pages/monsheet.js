@@ -8,12 +8,12 @@ V2.txt = h => String(h == null ? '' : h).replace(/<[^>]*>/g, ''); // shared rows
 // (the sheet's heading) and its type chips, on a card with two cut corners and a thin edge in its type colours and its own colour.
 // Behind the Pokémon: a face tinted by its types, a soft glow in its own colour, its name as giant outlined letters (decoration),
 // two orbit lines, a faint hairline texture and one sheen band. Decorations are aria-hidden; the real name is the h2.
-V2.msCard = (p, n, nameH, tyH) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
+V2.msCard = (p, n, nameH, tyH, iw = 284) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
   const ty = (p.t || []).filter(t => V2.TYPES.includes(t)), t1 = ty[0] ? `var(--ty-${ty[0]})` : 'var(--type-none)', t2 = ty[1] ? `var(--ty-${ty[1]})` : t1;
   const giant = V2.esc(V2.disp(n).replace(/^Mega /, '').toUpperCase());
   return `<div class="ms-card" style="--cp:${m[0]},${m[1]},${m[2]};--t1:${t1};--t2:${t2}">
     <div class="mc-bg" aria-hidden="true"><div class="mc-in"><i class="mc-glow"></i><span class="mc-giant">${giant}</span><span class="mc-giant two">${giant}</span><i class="mc-orbit a"></i><i class="mc-orbit b"></i><i class="mc-sheen"></i></div></div>
-    <div class="mc-mon">${V2.mon(n, {iw: 284, sel: true, bare: true})}</div>
+    <div class="mc-mon">${V2.mon(n, {iw, sel: true, bare: true})}</div>
     <div class="mc-id">${nameH}${tyH}</div></div>`; };
 V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })();
   const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'), rank = rankTxt(p, 'cap');

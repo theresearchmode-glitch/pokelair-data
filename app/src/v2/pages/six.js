@@ -3,6 +3,28 @@
 // Approved look: docs/rebuild/mocks/myteam.tpl.html (the six in three pairs: Lead, Back, Bench, each name over its item).
 
 // the six in three pairs, in plan order, then the game plan line (today's AR.plan words)
+// The Hand (Sim's pick, Nov 14; brief docs/rebuild/mocks/my-team-hand/BRIEF.md, section 2), piece 2: a full team's six as Cards (the info
+// sheet's ms-card) in Lead / Back / Bench, each with its rating plate and, under it, the item, the Ability and the four moves as bars.
+// Tapping a Card picks it (data-tmsel, as today's tiles). Teams of one to five keep today's tiles until Sim has seen pictures (brief s7).
+V2.handHtml = (D, sel) => { const {ms, L} = D, E = V2.esc, role = m => L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench';
+  const card = m => { const k = ms.indexOf(m), on = m === sel, lk = !!(S.slots[m.i] && S.slots[m.i].lock), R = monRating(m.p), it = m.heldItem || m.item || 'No item';
+    const lock = lk ? '<svg class="sx-lk" viewBox="0 0 24 24" role="img" aria-label="Locked"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></svg>' : '';
+    const mv = m.moves.filter(Boolean).map(v => { const ty = V2.TYPES.includes(v.type) ? v.type : 'Normal'; return `<li style="--tc:var(--ty-${ty})">${E(v.name)}</li>`; }).join('');
+    return `<div class="sx-slot mh-slot${on ? ' on' : ''}${lk ? ' locked' : ''}"><button type="button" class="tm-pick mh-pick" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(m.d)}, ${role(m)}${R ? `, rated ${R.n}${R.tier ? ' ' + E(R.tier) + ' tier' : ''}` : ''}, ${E(it)}${lk ? ', locked' : ''}">
+      ${R ? `<span class="mh-rate" aria-hidden="true"><b class="u">${R.n}</b>${R.tier ? ` ${E(R.tier)} tier` : ''}${lock}</span>` : lock}
+      ${V2.msCard(m.p, m.p.n, `<h3 class="u">${V2.nameHtml(V2.disp(m.p.n))}</h3>`, `<div class="ms-ty">${(m.p.t || []).map(V2.typeChip).join('')}</div>`, 150)}</button>
+      <div class="mh-set"><div class="ms-ty mh-ty">${(m.p.t || []).map(V2.typeChip).join('')}</div><p class="mh-it"><b>${V2.keepForm(E(it))}</b><small>${E(m.ability || 'None')}</small></p><ul class="mh-mv">${mv}</ul></div></div>`; };
+  const G = [['Lead', 'start the battle', L.lead], ['Back', 'come in next', L.back], ['Bench', 'stay out this game', L.bench]];
+  return `<div class="mh-hand">${G.map(([name, note, g]) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${g.map(card).join('')}</div></div>`).join('')}</div>`; };
+// The Hand, piece 3 (brief section 3): the editing strip replaces the Set section. Only what the Card does not show: its place in the plan,
+// nature and stat points with their "most run" notes; then Edit Set, Info Sheet, Set as Lead / Use NastyPlot's pick (today's buttons, not
+// drawn in the brief: picture for Sim), Lock, Remove. Same hooks as today (data-v2edit, data-v2mon, data-v2lead, data-v2lock, data-v2rm).
+V2.editStripHtml = (D, sel) => { const {ms, L} = D, E = V2.esc; if (!sel || !ms.includes(sel)) return ''; const N = natInfo(sel), lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = L.lead.length && !L.lead.includes(sel);
+  const rt = L.lead.length && ms.length >= 4 ? roleText(sel, L, x => escName(x.d)) : '';
+  return `<section class="mt-edit" id="tm-set" aria-label="Editing ${E(sel.d)}"><div class="mt-ename"><p class="mt-ek">Editing</p><h2 class="u">${V2.nameHtml(sel.d)}</h2>${rt ? `<p class="sx-rt">${rt}</p>` : ''}</div>
+    <dl class="sx-kv mt-ekv">${N.nat ? `<div><dt>Nature</dt><dd>${E(N.nat)}${N.natNote ? ` <small>${N.natNote}</small>` : ''}</dd></div>` : ''}${N.words ? `<div><dt>Stat points</dt><dd>${E(N.words)}${N.ptsNote ? ` <small>${N.ptsNote}</small>` : ''}</dd></div>` : ''}</dl>
+    <div class="mt-eacts"><button type="button" class="np-btn2" data-v2edit="${sel.i}"><span>Edit Set</span></button><button type="button" class="np-link sx-info" data-v2mon="${E(sel.p.n)}">Info Sheet ›</button>${lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : ''}${L.by === 'you' ? `<button type="button" class="sx-a sx-reset" data-v2lead="">Use NastyPlot's pick</button>` : ''}
+      <button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button><button type="button" class="sx-a" data-v2rm="${sel.i}" aria-label="Remove ${E(sel.d)} from your team"><i aria-hidden="true">−</i>Remove</button></div></section>`; };
 V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   const ord = [...L.lead, ...L.back, ...L.bench], role = m => L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench';
   const tile = m => { const k = ms.indexOf(m), on = m === sel;
@@ -23,7 +45,8 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
       + `<button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button>`
       + (lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : '')
       + `</div></div>`; })() : ''; // Edit Set lives only in the Set section (Sim, Nov 12: "your recommendation"; rule C3, nothing twice)
-  return `<div class="tm-six sx"><div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}${plan}</div>`; };
+  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? V2.handHtml(D, sel) + V2.editStripHtml(D, sel) : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
+V2.isHand = D => D.ms.length === 6 && D.L && D.L.lead.length === 2 && D.L.back.length === 2 && D.L.bench.length === 2;
 
 // the set card (TEAM-10; Sim, Nov 11: no second big picture, the six above already shows it on its floor ring): its place in the plan, the rating with its tier, item, Ability, nature and stat points (yours or what
 // most players run), the four moves, then Edit Set, Set as Lead (not already a lead) and its Info Sheet. Today's words throughout.

@@ -146,9 +146,9 @@ export default (ui, pg, o) => {
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-tmsel]')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     /** the selected Pokémon's set (the Set section) */
     /** the set card: the Set section plus the strip under the six, which carries its place in the plan (Sim's review, Nov 11, item 5) */
-    setCard: () => pg.evaluate(() => [...document.querySelectorAll('#main .sx-act, #main #tm-set')].map(e => e.innerText.replace(/\s+/g, ' ').trim()).join(' ')),
+    setCard: () => pg.evaluate(() => [...document.querySelectorAll('#main .sx-act, #main #tm-set, #main .mh-slot.on .mh-rate, #main .mh-slot.on .mh-set')].map(e => e.innerText.replace(/\s+/g, ' ').trim()).join(' ')), /* The Hand (Sim, Nov 14): the editing strip plus the picked Card's plate and set */
     /** how many moves the set card shows */
-    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *')].filter(e => e.getClientRects().length).length),
+    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *, #main .mh-slot.on .mh-mv > li')].filter(e => e.getClientRects().length).length),
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     /** the padlock on a tile (as today: shown on the picked tile, so tap the tile first when it isn't showing) */
     lockOnTile: async name => { const f = n => [...document.querySelectorAll('#main [data-v2lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n + ':') && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;

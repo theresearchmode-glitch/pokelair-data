@@ -1980,3 +1980,58 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.st-cols{grid-template-columns:minmax(0,1fr)}.st-six{--gsw:56px}.st-six .gs-tx b{font-size:var(--t13);font-stretch:88%}}
 @media (hover:hover) and (pointer:fine){.st .gs-row .np-mon img,:root[data-theme="night"] .st .gs-row .np-mon img{filter:none}}
 .st-team,.st-how{grid-template-columns:minmax(0,1fr)}@media (max-width:359px){.gs-sinfo h2{font-size:var(--t22)}}
+/* ---------- My Team: The Hand (Sim's pick, Nov 14; brief docs/rebuild/mocks/my-team-hand/BRIEF.md), piece 1: band and header ---------- */
+.tm-hero.mt{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:none;gap:var(--s6);align-items:start;padding:var(--s4) var(--gut) var(--s8)}
+.mt .tm-legal-h{display:none}
+.tm-hero.mt .mt-head{grid-area:auto;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,3fr) minmax(0,4fr);gap:var(--s6) var(--s8);align-items:center}
+.mt-id{display:grid;gap:var(--s2);min-width:0}.mt-id .fn-k{margin:0}.mt-id .tm-name{margin:0;font:900 var(--t34)/1.1 var(--u);font-style:italic}
+.mt-id .tm-line{margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}.mt-id .tm-line .tm-rank{color:var(--ink)}.mt-id .tm-links{display:flex;flex-wrap:wrap;gap:0 var(--s6);margin:0}
+.mt-belt{display:grid;justify-items:center}.tm-hero.mt .mt-belt .np-score{margin:0;flex-direction:column;align-items:center}
+.mt-right{display:grid;gap:var(--s4);justify-items:stretch}
+.mt-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}.mt-nums p{margin:0;display:grid;justify-items:center;text-align:center}
+.mt-nums b{font:900 var(--t34)/1 var(--u);font-style:italic}.mt-nums span{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
+.mt-nums .lf b{color:var(--plot-text)}.mt-nums .lu b{color:var(--bad-text)}
+.tm-hero.mt .tm-acts{grid-area:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);justify-content:stretch}.tm-hero.mt .tm-acts>*{justify-content:center;grid-column:auto}
+/* iPad keeps one row; iPhone stacks: name block, belt, numbers, buttons */
+@media (max-width:1099px){.tm-hero.mt .mt-head{grid-template-columns:minmax(0,4fr) minmax(0,3fr) minmax(0,4fr);gap:var(--s4)}.tm-hero.mt .mt-belt .np-score b{font-size:var(--d64)}.mt-id .tm-name{font-size:var(--t28)}.mt-nums b{font-size:var(--t28)}}
+@media (max-width:699px){.tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr)}.mt-band span:nth-child(3){display:none}.mt-band{flex-wrap:nowrap}}
+.tm-hero.mt>*,.tm-hero.mt .tm-six{grid-area:auto;grid-column:1/-1}
+@media (max-width:1099px){.mt-band span:nth-child(2){display:inline}.mt-band span:nth-child(3){display:none}}
+/* My Team: The Hand, piece 2 (brief section 2): Lead / Back / Bench, two Cards each, the set under each Card */
+.mh-hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s8)}
+.mh-gh{display:flex;align-items:baseline;gap:var(--s3);margin:0 0 var(--s4);padding-bottom:var(--s2);border-bottom:1px solid var(--ar-rule)}
+.mh-gh b{font:900 var(--t24)/1.1 var(--u);font-style:italic}.mh-gh span{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
+.mh-grp.lead .mh-gh{border-bottom:3px solid var(--plot)}.mh-grp.lead .mh-gh b{color:var(--plot-text)}
+.mh-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
+.mh-slot{display:grid;gap:var(--s3);align-content:start;min-width:0}
+.mh-pick{position:relative;display:block;width:100%;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-align:left}
+.mh .ms-card{height:300px;margin:0}.mh .mc-giant{font-size:var(--d64)}.mh .mc-id{left:var(--s2);right:var(--s2);bottom:var(--s4)}
+.mh .mc-id h3{margin:0;font:900 var(--t17)/1.1 var(--u);font-style:italic;color:var(--card-ink);overflow-wrap:normal}
+.mh-rate{position:absolute;z-index:4;top:0;left:0;display:flex;align-items:center;gap:var(--s1);padding:2px var(--s3) 2px var(--s2);background:var(--plate);color:var(--on-plate);font:600 var(--t13)/1.3 var(--b);clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.mh-rate b{font:900 var(--t20)/1 var(--u);font-style:italic}.mh-rate .sx-lk{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.mh-slot.on .mh-pick{box-shadow:0 0 0 3px var(--plot)}
+.mh-ty{display:none}
+.mh-it{margin:0;display:grid}.mh-it b{font:700 var(--t17)/1.3 var(--b)}.mh-it small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
+.mh-mv{list-style:none;margin:0;padding:0;display:grid;gap:var(--s1)}.mh-mv li{padding:var(--s1) var(--s3);border-left:4px solid var(--tc);background:color-mix(in srgb,var(--tc) 16%,transparent);font:500 var(--t13)/1.5 var(--b)}
+.mh-set{display:grid;gap:var(--s2);align-content:start;min-width:0}
+/* iPad and phone: each Pokémon one row, its Card left and its set right; the type chips leave the Card and sit above the item */
+@media (max-width:1099px){.mh-hand{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.mh-slot{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start;column-gap:var(--s4)}
+  .mh .ms-card{height:220px}.mh .mc-id .ms-ty{display:none}.mh-ty{display:flex;flex-wrap:wrap;gap:var(--s1)}}
+@media (max-width:699px){.mh-pair{grid-template-columns:minmax(0,1fr)}.mh .ms-card{height:200px}}
+.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:150px}@media (max-width:1099px){.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:128px}}
+.mh-hand .sx-grp{border:0;padding:0;margin:0}
+.mh-hand .sx-grp:nth-child(3)::before{content:none}
+/* My Team: The Hand, piece 3 (brief section 3): the editing strip, a blue left edge, only what the Card does not show */
+.mt-edit{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--s3) var(--s8);align-items:center;margin-top:var(--s6);padding:var(--s3) var(--s5);border-left:4px solid var(--plot);background:color-mix(in srgb,var(--plot) 7%,transparent)}
+.mt-ek{margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text)}
+.mt-ename{display:grid;gap:2px;min-width:0}.mt-ename h2{margin:0;font:900 var(--t22)/1.15 var(--u);font-style:italic}.mt-ename .sx-rt{margin:0;font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
+.mt-ekv{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s8);margin:0}.mt-ekv>div{display:grid;gap:2px;border:0;padding:0}.mt-ekv dt{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}.mt-ekv dd{margin:0;font:600 var(--t15)/1.4 var(--b)}.mt-ekv dd small{font-weight:500;color:var(--ink-2)}
+.mt-eacts{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--s2) var(--s4)}.mt-eacts .np-link,.mt-eacts .sx-a{min-height:var(--tap);display:inline-flex;align-items:center}
+/* the Game Plan: Home's slanted strip (brief section 4) */
+.tm-six.mh .sx-plan{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:var(--s1) var(--s4);margin:var(--s4) 0 0;padding:var(--s3) var(--s5);font:400 var(--t15)/1.5 var(--b);text-align:center;background:var(--wash);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);border:0}
+.tm-six.mh .sx-gpl{font:900 var(--t17)/1.3 var(--u);font-style:italic}
+@media (max-width:1099px){.mt-edit{grid-template-columns:minmax(0,1fr)}.mt-eacts{justify-content:flex-start}}
+.mt-edit .sx-kv>div{display:grid;grid-template-columns:none;gap:2px;border:0;padding:0;margin:0}.mt-edit .sx-kv{border:0;padding:0}.mt-edit .sx-kv dd{white-space:nowrap}
+.tm-six.mh .sx-gpl,.mt-id .tm-sample-acts .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
+@media (max-width:699px){.mh .mc-id h3{font-size:var(--t15)}.mt-eacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s4)}.mt-eacts>*{justify-content:flex-start}}
+@media (max-width:359px){.mh .mc-id h3{font-stretch:88%}.mh .mc-id{left:var(--s1);right:var(--s1)}}
