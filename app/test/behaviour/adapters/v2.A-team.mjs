@@ -146,7 +146,7 @@ export default (ui, pg, o) => {
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-tmsel]')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     /** the selected Pokémon's set (the Set section) */
     /** the set card: the Set section plus the strip under the six, which carries its place in the plan (Sim's review, Nov 11, item 5) */
-    setCard: () => pg.evaluate(() => [...document.querySelectorAll('#main .sx-act, #main #tm-set, #main .mh-slot.on .mh-rate, #main .mh-slot.on .mh-set')].map(e => e.innerText.replace(/\s+/g, ' ').trim()).join(' ')), /* The Hand (Sim, Nov 14): the editing strip plus the picked Card's plate and set */
+    setCard: () => pg.evaluate(() => [...document.querySelectorAll('#main .sx-act, #main #tm-set, #main .mh-slot.on .mh-rate, #main .mh-slot.on .mh-set')].map(e => (e.closest('.mh-slot, .mt-edit') ? e.textContent : e.innerText).replace(/\s+/g, ' ').trim()).join(' ')), /* the strip's 'Editing' is capitals by CSS only; the set's type chips sit in the Card on desktop */ /* The Hand (Sim, Nov 14): the editing strip plus the picked Card's plate and set */
     /** how many moves the set card shows */
     setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *, #main .mh-slot.on .mh-mv > li')].filter(e => e.getClientRects().length).length),
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },

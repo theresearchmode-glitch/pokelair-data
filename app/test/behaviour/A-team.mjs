@@ -210,9 +210,9 @@ t('TEAM-07', 'Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Set
   if (NEW) { /* new build (decided Nov 11, r4-team-gaps.md): one jump bar Set | Matchups | Suggestions | Team Checks at every width;
     a link scrolls its section to just under the bar and marks itself (A7, approved Nov 12: on phones the mark follows the scroll) */
     const r = await myTeam({team: TEAM, width: 390}); const j = await r.ui.jumpBar(); ok(/^(Set\|)?Matchups\|Suggestions\|Team Checks$/.test(j.join('|')) /* The Hand (Sim, Nov 14): no Set tab; the editing strip sits under the Hand */, 'jump bar: ' + j.join('|'));
-    ok(await r.ui.chosen('Set') === true, '"Set" not marked at the top of the page'); const b = await r.ui.jumpTarget('Suggestions'); ok(b && b.top > b.vh, 'Suggestions already on screen before the jump: ' + JSON.stringify(b));
+    ok(await r.ui.chosen('Set') === true || (j[0] === 'Matchups' && await r.ui.chosen('Matchups') === true), 'the first tab not marked at the top of the page'); /* The Hand (Sim, Nov 14): no Set tab, Matchups comes first */ const b = await r.ui.jumpTarget('Suggestions'); ok(b && b.top > b.vh, 'Suggestions already on screen before the jump: ' + JSON.stringify(b));
     await r.ui.jumpTo('Suggestions'); await sleep(900); const a = await r.ui.jumpTarget('Suggestions'); ok(a && a.top >= 0 && a.top < a.vh / 2, 'Suggestions not scrolled to the top of the screen: ' + JSON.stringify(a));
-    ok(await r.ui.chosen('Suggestions') === true && await r.ui.chosen('Set') === false, '"Suggestions" not the marked link after the jump'); ok(await r.ui.noSideScroll(), 'sideways scroll at 390'); await r.close();
+    ok(await r.ui.chosen('Suggestions') === true && await r.ui.chosen('Set') !== true, '"Suggestions" not the marked link after the jump'); /* The Hand: there may be no Set tab */ ok(await r.ui.noSideScroll(), 'sideways scroll at 390'); await r.close();
     const d = await myTeam({team: TEAM, width: 1280}); ok(/^(Set\|)?Matchups\|Suggestions\|Team Checks$/.test((await d.ui.jumpBar()).join('|')), 'desktop jump bar: ' + (await d.ui.jumpBar()).join('|')); await d.close(); return; }
   const r = await myTeam({team: TEAM, width: 390}); const j = await r.ui.jumpBar(); ok(j.join('|') === 'Suggestions|Matchups|How it plays|Sets', 'jump bar: ' + j.join('|'));
   await r.ui.jumpTo('Sets'); ok(await r.ui.onScreen(/^Open Team Sheet/), 'All Six Sets (its Open Team Sheet fold) not scrolled into view'); ok(await r.ui.foldOpen('Open Team Sheet') === true, 'team sheet fold not opened');
@@ -571,7 +571,7 @@ t('EDIT-03', 'Slot header: Lock → "Locked" (tile shows locked), types, Mega/ra
     ok(await r.ui.panelLockText() === 'Lock', 'lock reads ' + await r.ui.panelLockText()); let t0 = await r.ui.tileLock('Mega Charizard Y'); ok(t0 && !t0.locked && !t0.padlock, 'tile already locked: ' + JSON.stringify(t0));
     await r.ui.panelLock(); ok(await r.ui.panelLockText() === 'Locked', 'lock did not read "Locked": ' + await r.ui.panelLockText()); has((await r.ui.editPanel()).text, /Locked Suggestions never swap out a locked Pokémon\./, 'Edit Set foot');
     await r.ui.closeEditPanel(); t0 = await r.ui.tileLock('Mega Charizard Y');
-    ok(t0 && t0.locked && t0.padlock && t0.padlockLabel === 'Locked' && /^Mega Charizard Y, \w+, locked$/.test(t0.label), 'tile not shown locked: ' + JSON.stringify(t0));
+    ok(t0 && t0.locked && t0.padlock && t0.padlockLabel === 'Locked' && /^Mega Charizard Y, \w+(, [^,]+)*, locked$/.test(t0.label) /* The Hand (Sim, Nov 14, brief s7): the Card's label also says its rating and item */, 'tile not shown locked: ' + JSON.stringify(t0));
     const g = await r.ui.tileLock('Garchomp'); ok(g && !g.locked && !g.padlock, 'Garchomp\'s tile shows locked too: ' + JSON.stringify(g)); await r.close(); return; }
   const r = await myTeam(); await r.ui.openEditPanel('Mega Charizard Y'); const p = await r.ui.editPanel();
   for (const s of [/Fire Flying/, /Mega/, /S tier \d+/, /[\d.]+% of teams/]) has(p.text, s, 'slot header'); ok(/^Lock$/.test(await r.ui.panelLockText()), 'lock reads ' + await r.ui.panelLockText());
