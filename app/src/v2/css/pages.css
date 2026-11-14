@@ -1111,7 +1111,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ms-floor{left:-20%;right:-20%;bottom:0;height:34%;background:repeating-linear-gradient(90deg,var(--stage-line) 0 1px,transparent 1px 48px),var(--stage-floor);transform:perspective(220px) rotateX(48deg);transform-origin:bottom}
 .ms-spill{right:4%;bottom:0;width:60%;height:30%;background:radial-gradient(closest-side,rgba(var(--cp),.32),transparent)}
 .ms-star{position:relative;z-index:1}.ms-star .np-mon,.ms-star .np-mon .st{--iw:164px}
-.ms-scr{position:relative;z-index:1;align-self:end;box-sizing:border-box;width:228px;height:232px;padding:var(--s2) var(--s3);background:linear-gradient(160deg,var(--stage-glass),transparent 40%),var(--stage-screen);border:2px solid rgb(var(--cp));border-radius:var(--r-m);box-shadow:0 0 24px 2px rgba(var(--cp),.45),inset 0 0 18px rgba(var(--cp),.18);transform:perspective(640px) rotateY(-10deg)}
+.ms-scr{position:relative;z-index:1;align-self:end;box-sizing:border-box;width:228px;height:232px;padding:var(--s2) var(--s3);background:var(--stage-screen);border:2px solid rgb(var(--cp));border-radius:var(--r-m);box-shadow:0 0 24px 2px rgba(var(--cp),.45);transform:perspective(640px) rotateY(-10deg)}
 .ms-scr::before,.ms-scr::after{content:"";position:absolute;bottom:100%;width:1px;height:400px;background:var(--stage-cable)}.ms-scr::before{left:20%}.ms-scr::after{right:20%}
 .ms-cap{margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--stage-ink-2)}
 .ms-wb{--wr:58px;--lr:86px;position:absolute;left:50%;top:54%;width:0;height:0}
@@ -1121,7 +1121,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ms-wl{position:absolute;left:calc(var(--lr)*var(--ux));top:calc(var(--lr)*var(--uy) * .92);translate:-50% -50%;display:grid;justify-items:center;font:600 var(--t13)/1.1 var(--b);color:var(--stage-ink-2);white-space:nowrap}
 .ms-wl b{font:900 var(--t17)/1.1 var(--u);font-style:italic;color:var(--stage-ink-2)}.ms-wl.hi,.ms-wl.hi b{color:var(--stage-ink)}.ms-wl.hi b{font-size:var(--t22)}
 .ms2:has(>.ms-stage) .ms-head{grid-template-columns:minmax(0,1fr)}
-.np-sheet:has(.ms-stage) .x{float:none;display:block;top:var(--s3);width:var(--tap);border-radius:50%;margin:var(--s3) var(--s3) calc((var(--tap) + var(--s3))*-1) auto;color:var(--stage-ink);background:var(--stage-btn)} /* over the stage, not beside it (a float squeezed the stage) */
+.np-sheet:has(.ms-stage) .x{top:var(--s3);width:var(--tap);border-radius:50%;margin:var(--s3) var(--s3) calc((var(--tap) + var(--s3))*-1) 0;color:var(--stage-ink);background:var(--stage-btn)} /* floats right as elsewhere; its negative bottom margin gives it no height, so the stage runs under it instead of beside it */
 @media (min-width:700px){.ms-stage{justify-content:center;column-gap:var(--s16);margin:calc(var(--s8)*-1) calc(var(--s8)*-1) var(--s6)}}
 @media (max-width:699px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:144px}.ms-scr{width:212px}.ms-wb{--wr:52px;--lr:80px}}
 @media (max-width:359px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:116px}.ms-scr{width:168px;height:188px}.ms-wb{--wr:40px;--lr:64px}}
