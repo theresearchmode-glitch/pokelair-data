@@ -1840,3 +1840,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.fn-uact{width:100%;justify-self:stretch}.fn-uact .hm-sw{flex:1 1 auto;min-width:0}}
 @media (max-width:359px){.ff{grid-template-columns:36px minmax(0,1fr);column-gap:var(--s1);padding:2px var(--s1)}.ff .np-mon{--iw:36px}.fn-prep{padding-inline:var(--s2);font-size:var(--t13)}}
 @media (max-width:359px){.ff small{font-stretch:88%;padding-right:var(--s1)}}
+.fn .hm-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4)}@media (max-width:699px){.fn .hm-welcome .hm-acts{display:grid}}
