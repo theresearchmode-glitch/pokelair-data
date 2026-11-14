@@ -1103,116 +1103,38 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bd-six{grid-auto-rows:auto}.bd-six>.bd-pk{grid-row:span 5;grid-template-rows:subgrid;row-gap:0;align-items:end}.bd-six>.bd-pk>small{align-self:start}
 /* review fix (Nov 13, most used three): the name may shrink to its spot (a grid item's min-width:auto kept it 7 px wider than a 67 px side spot at 700) */
 .hm-ut{grid-template-columns:minmax(0,1fr)}.hm-ut b{min-width:0;max-width:100%}
-/* ---------- Info sheet: the stadium stage (Sim's brief Nov 13, info-sheet/BRIEF.md + PLAN.md step 1). Same in day and night (stage tokens).
-   No filter or will-change on moving layers (Sim's smooth-scroll rule): the lights are plain gradients. ---------- */
-.ms-stage{position:relative;display:grid;grid-template-columns:auto auto;justify-content:space-between;align-items:end;box-sizing:border-box;height:332px;margin:calc(var(--s6)*-1) calc(var(--s4)*-1) var(--s6);padding:0 var(--s4) var(--s8);overflow:hidden;color:var(--stage-ink);background:var(--stage-bg);border-bottom:4px solid transparent;border-image:linear-gradient(90deg,var(--t1) 50%,var(--t2) 50%) 1}
-.ms-stage>i{position:absolute;pointer-events:none}
-.ms-crowd{inset:0 0 40% 0;background:radial-gradient(6px 6px at 8% 18%,var(--stage-crowd),transparent),radial-gradient(10px 10px at 22% 8%,rgba(var(--cp),.7),transparent),radial-gradient(8px 8px at 36% 22%,var(--stage-crowd),transparent),radial-gradient(12px 12px at 52% 10%,color-mix(in srgb,var(--t1) 80%,transparent),transparent),radial-gradient(7px 7px at 64% 26%,var(--stage-crowd),transparent),radial-gradient(12px 12px at 78% 12%,color-mix(in srgb,var(--t2) 80%,transparent),transparent),radial-gradient(8px 8px at 92% 24%,rgba(var(--cp),.6),transparent),radial-gradient(60% 50% at 20% 0,rgba(var(--cp),.22),transparent 70%),radial-gradient(50% 45% at 85% 0,color-mix(in srgb,var(--t1) 22%,transparent),transparent 70%),linear-gradient(100deg,transparent 18%,var(--stage-spot) 26%,transparent 34%),linear-gradient(80deg,transparent 64%,var(--stage-spot) 72%,transparent 80%)}
-.ms-floor{left:-20%;right:-20%;bottom:0;height:34%;background:repeating-linear-gradient(90deg,var(--stage-line) 0 1px,transparent 1px 48px),var(--stage-floor);transform:perspective(220px) rotateX(48deg);transform-origin:bottom}
-.ms-spill{right:4%;bottom:0;width:60%;height:30%;background:radial-gradient(closest-side,rgba(var(--cp),.32),transparent)}
-.ms-star{position:relative;z-index:1}.ms-star .np-mon,.ms-star .np-mon .st{--iw:164px}
-.ms-scr{position:relative;z-index:1;align-self:end;box-sizing:border-box;width:228px;height:232px;padding:var(--s2) var(--s3);background:var(--stage-screen);border:2px solid rgb(var(--cp));border-radius:var(--r-m);box-shadow:0 0 24px 2px rgba(var(--cp),.45);transform:perspective(640px) rotateY(-10deg)}
-.ms-scr::before,.ms-scr::after{content:"";position:absolute;bottom:100%;width:1px;height:400px;background:var(--stage-cable)}.ms-scr::before{left:20%}.ms-scr::after{right:20%}
-.ms-cap{margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--stage-ink-2)}
-.ms-wb{--wr:58px;--lr:86px;position:absolute;left:50%;top:54%;width:0;height:0}
-.ms-web{position:absolute;left:calc(var(--wr)*-1);top:calc(var(--wr)*-1);width:calc(var(--wr)*2);height:calc(var(--wr)*2);overflow:visible}
-.ms-web .r{fill:none;stroke:var(--stage-ring);stroke-width:1.5}.ms-web .s{fill:rgba(var(--cp),.45);stroke:rgb(var(--cp));stroke-width:3;stroke-linejoin:round}
-.ms-web .d{fill:rgb(var(--cp))}.ms-web .hi{fill:var(--stage-ink)}
-.ms-wl{position:absolute;left:calc(var(--lr)*var(--ux));top:calc(var(--lr)*var(--uy) * .92);translate:-50% -50%;display:grid;justify-items:center;font:600 var(--t13)/1.1 var(--b);color:var(--stage-ink-2);white-space:nowrap}
-.ms-wl b{font:900 var(--t17)/1.1 var(--u);font-style:italic;color:var(--stage-ink-2)}.ms-wl.hi,.ms-wl.hi b{color:var(--stage-ink)}.ms-wl.hi b{font-size:var(--t22)}
-.ms2:has(.ms-stage) .ms-head{grid-template-columns:minmax(0,1fr)}
-.np-sheet:has(.ms-stage) .x{top:var(--s3);width:var(--tap);border-radius:50%;margin:var(--s3) var(--s3) calc((var(--tap) + var(--s3))*-1) 0;color:var(--stage-ink);background:var(--stage-btn)} /* floats right as elsewhere; its negative bottom margin gives it no height, so the stage runs under it instead of beside it */
-@media (min-width:700px){.ms-stage{justify-content:center;column-gap:var(--s16);margin:calc(var(--s8)*-1) calc(var(--s8)*-1) var(--s6)}}
-@media (max-width:699px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:144px}.ms-scr{width:212px}.ms-wb{--wr:52px;--lr:80px}}
-@media (max-width:359px){.ms-star .np-mon,.ms-star .np-mon .st{--iw:116px}.ms-scr{width:168px;height:188px}.ms-wb{--wr:40px;--lr:64px}}
-/* ---------- Info sheet step 2 (Sim's brief section 2): the headline block under the stage. Same content and order as before
-   (grid areas only), so the sheet's text stays identical. ---------- */
-.ms2:has(.ms-stage) .ms-hd{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name rate" "ty rate" "nums nums" "acts acts";column-gap:var(--s4);align-items:end}
-.ms2:has(.ms-stage) .ms-hd>h2{grid-area:name;margin:0}
-.ms2:has(.ms-stage) .ms-hd>.ms-ty{grid-area:ty;align-self:start;margin-top:var(--s2)}
-.ms2:has(.ms-stage) .ms-rate{grid-area:rate;display:grid;justify-items:end;gap:var(--s1);text-align:right}
-.ms2:has(.ms-stage) .ms-rate span{padding:0}.ms2:has(.ms-stage) .ms-rate small{max-width:20ch;margin-left:auto}
-.ms2:has(.ms-stage) .ms-nums{grid-area:nums;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0;margin-top:var(--s6)}
-.ms2:has(.ms-stage) .ms-n{display:block;padding:0 var(--s3);border-left:1px solid var(--rule)}.ms2:has(.ms-stage) .ms-n:first-child{padding-left:0;border-left:0}
-.ms2:has(.ms-stage) .ms-n b{display:block}.ms2:has(.ms-stage) .ms-n span{display:block;margin-top:var(--s1)}
-.ms2:has(.ms-stage) .ms-acts{grid-area:acts;margin-top:var(--s6)}
-.ms2:has(.ms-stage) .ms-go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms2:has(.ms-stage) .ms-go>.np-btn2{width:100%}
-.ms2:has(.ms-stage) .ms-fr{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
-.ms2:has(.ms-stage) .ms-f{flex-direction:column;justify-content:start;gap:var(--s1);padding:var(--s2) var(--s1);text-align:center}
-.ms2:has(.ms-stage) .ms-f span{justify-items:center}
-.ms2:has(.ms-stage) .ms-f[aria-pressed="true"]{background:none}
-.ms2:has(.ms-stage) .ms-f[aria-pressed="true"]::after{content:"";display:block;width:var(--s10);height:4px;margin-top:var(--s1);background:var(--plot);transform:skewX(var(--slant))}
-.ms2:has(.ms-stage) .ms-bs i{width:100%;background:linear-gradient(90deg,var(--plot) calc(var(--v) / 200 * 100%),color-mix(in srgb,var(--ink) 9%,transparent) 0)}
-.ms2:has(.ms-stage) .ms-bs .tot i{background:none}
-.ms2:has(.ms-stage) .ms-hd>h2{font-size:var(--t28);overflow-wrap:normal;hyphens:manual}
-.ms2:has(.ms-stage) .ms-rate small{max-width:15ch}
-.ms2:has(.ms-stage) .ms-n .lv{display:block}
-@media (max-width:359px){.ms2:has(.ms-stage) .ms-hd>h2{font-size:var(--t24)}}
-@media (max-width:399px){.ms2:has(.ms-stage) .ms-n.few b{font-size:var(--t17)}}@media (max-width:359px){.ms2:has(.ms-stage) .ms-n.few b{font-size:var(--t15)}}
-/* more than 4 forms (Rotom: 6): rows of 3 instead of one cramped row (at 320 six tiles were 41 px and names touched) */
-.ms2:has(.ms-stage) .ms-fr:has(>.ms-f:nth-child(5)){grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
-/* ---------- Info sheet step 3 (Sim's brief section 4, "Side Stage"): from 1024 wide (iPad on its side and up) two halves: left 480 px
-   (stage, headline, forms) stays in place and fills the sheet's height (the stage takes the spare room); right: the tabs at the very top,
-   the tab's sections flowing in two balanced columns. Windows under 900 tall: the left column scrolls with the page (never clipped). ---------- */
-@media (min-width:1024px){
-  .ms2:has(.ms-stage){display:grid;grid-template-columns:480px minmax(0,1fr);grid-template-rows:auto 1fr;padding:0;align-items:start}
-  .ms2:has(.ms-stage)>.ms-left{grid-row:1/-1;display:flex;flex-direction:column;box-sizing:border-box;padding:0 var(--s6) var(--s6);border-right:1px solid var(--rule)}
-  .ms2:has(.ms-stage) .ms-stage{flex:1 0 auto;height:auto;min-height:292px;margin:0 calc(var(--s6)*-1) var(--s6);justify-content:space-between;column-gap:0;padding:var(--s16) var(--s6) var(--s6)}
-  .ms2:has(.ms-stage) .ms-star .np-mon,.ms2:has(.ms-stage) .ms-star .np-mon .st{--iw:224px}
-  .ms2:has(.ms-stage) .ms-scr{width:212px}.ms2:has(.ms-stage) .ms-wb{--wr:52px;--lr:80px}
-  .ms2:has(.ms-stage) .ms-forms{margin-top:var(--s6)}
-  .ms2:has(.ms-stage)>.ms-tabs{grid-column:2;margin:0;padding:0 calc(var(--tap) + var(--s6)) 0 var(--s8)}
-  .ms2:has(.ms-stage)>.ms-pan{grid-column:2;padding:0 var(--s8) var(--s8)}
-  .ms2:has(.ms-stage) .ms-cols{display:block;columns:2;column-gap:var(--s10)}
-  .ms2:has(.ms-stage) .ms-cols>*{break-inside:avoid;margin-bottom:var(--s8)}
-  .np-sheet:has(.ms-stage){overflow:auto}
-}
-@media (min-width:1024px) and (min-height:900px){
-  .ms2:has(.ms-stage)>.ms-left{position:sticky;top:0;height:calc(100vh - 96px);overflow:auto}
-}
-@media (min-width:1024px){
-  .ms2:has(.ms-stage) .ms-stage{padding:var(--s6) var(--s4);margin-bottom:var(--s4)}
-  .ms2:has(.ms-stage) .ms-star .np-mon,.ms2:has(.ms-stage) .ms-star .np-mon .st{--iw:208px}
-  .ms2:has(.ms-stage) .ms-nums,.ms2:has(.ms-stage) .ms-acts,.ms2:has(.ms-stage) .ms-forms{margin-top:var(--s4)}
-  .ms2:has(.ms-stage) .ms-f .np-mon,.ms2:has(.ms-stage) .ms-f .np-mon .st{--iw:56px}
-}
-@media (min-width:1024px){
-  .ms2:has(.ms-stage) .ms-rate small{max-width:none}
-  .ms2:has(.ms-stage) .ms-f{padding-top:var(--s1);padding-bottom:var(--s1)}
-  .ms2:has(.ms-stage) .ms-fr{margin-top:var(--s2)}
-  .ms2:has(.ms-stage)>.ms-left{padding-bottom:var(--s4)}
-}
-/* right half under ~640 px (windows 1024-1143): one content column (two were ~200 px: Base Stats bars shrank to stubs); move chips 2 x 2 */
-@media (min-width:1024px) and (max-width:1143px){.ms2:has(.ms-stage) .ms-cols{columns:1}}
-@media (min-width:1024px){.ms2:has(.ms-stage) .ms-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms2:has(.ms-stage) .ms-mvs .np-type{justify-content:center}}
-/* ---------- Info sheet step 4 (Sim's brief section 5, iPad upright; 700-1023 wide): stage full width ~352 tall, the pair centred; the
-   headline in two even halves (name, rating, the three numbers | buttons and forms); the sections in two balanced columns. ---------- */
-@media (min-width:700px) and (max-width:1023px){
-  .ms2:has(.ms-stage) .ms-stage{height:352px}
-  .ms2:has(.ms-stage)>.ms-left{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr) minmax(0,1fr) minmax(0,1fr);grid-template-areas:"stage stage stage stage" "name rate acts acts" "ty rate acts acts" "nums nums forms forms";column-gap:var(--s4);align-items:start}
-  .ms2:has(.ms-stage)>.ms-left>.ms-stage{grid-area:stage}
-  .ms2:has(.ms-stage)>.ms-left>.ms-head,.ms2:has(.ms-stage) .ms-left .ms-hd{display:contents}
-  .ms2:has(.ms-stage) .ms-left .ms-hd>h2{grid-area:name}.ms2:has(.ms-stage) .ms-left .ms-ty{grid-area:ty}.ms2:has(.ms-stage) .ms-left .ms-rate{grid-area:rate}
-  .ms2:has(.ms-stage) .ms-left .ms-nums{grid-area:nums}.ms2:has(.ms-stage) .ms-left .ms-acts{grid-area:acts;margin-top:0}.ms2:has(.ms-stage)>.ms-left>.ms-forms{grid-area:forms;margin-top:var(--s6)}
-  .ms2:has(.ms-stage) .ms-cols{display:block;columns:2;column-gap:var(--s8)}.ms2:has(.ms-stage) .ms-cols>*{break-inside:avoid;margin-bottom:var(--s8)}
-  .ms2:has(.ms-stage) .ms-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ms2:has(.ms-stage) .ms-mvs .np-type{justify-content:center}
-}
-@media (min-width:700px) and (max-width:1023px){.ms2:has(.ms-stage)>.ms-left:not(:has(.ms-forms)){grid-template-areas:"stage stage stage stage" "name rate acts acts" "ty rate acts acts" "nums nums nums nums"}} /* no forms: the numbers use the whole width (no empty right half) */
-.ms2:has(.ms-stage) .ms-hd{justify-self:stretch} /* the phone rule .ms-head{justify-items:start} let the block shrink to its content (Flapple: 305 of 358 px) */
-/* Sim, Nov 13 9:18 PM (tall window screenshot: 'the mock up had rillaboom inside as a box... so much dead space'): on desktop the stage is a
-   box of fixed height (292 with forms, 340 without), never stretched; the left column is at most the window's height; the sheet takes
-   the height of its content (up to the window), so nothing stretches to fill a tall window */
-@media (min-width:1024px){
-  .ms2:has(.ms-stage) .ms-stage{flex:0 0 auto;height:340px;min-height:0}
-  .ms2:has(.ms-stage) .ms-left:has(.ms-forms) .ms-stage{height:292px}
-  .np-sheet:has(.ms-stage){bottom:auto;max-height:calc(100% - 96px)}
-}
-@media (min-width:1024px) and (min-height:900px){.ms2:has(.ms-stage)>.ms-left{height:auto;max-height:calc(100vh - 96px)}}
-/* follow-up (same feedback): the sheet is never taller than 860 px (centred on tall windows; the right side scrolls inside it), and the
-   stage is a box between 292 and 460 px that takes the left column's spare room, so there is no long strip and no big empty area */
-@media (min-width:1024px){
-  .np-sheet:has(.ms-stage){top:max(48px,calc((100vh - 860px) / 2));bottom:auto;height:min(calc(100vh - 96px),860px);max-height:none}
-  .ms2:has(.ms-stage) .ms-stage{flex:1 1 auto;height:auto;min-height:340px;max-height:460px}
-  .ms2:has(.ms-stage) .ms-left:has(.ms-forms) .ms-stage{height:auto;min-height:292px}
-}
-@media (min-width:1024px) and (min-height:900px){.ms2:has(.ms-stage)>.ms-left{height:min(calc(100vh - 96px),860px);max-height:none}}
+/* ---------- Info sheet: "The Card" (Sim's brief Nov 13, 10:08 PM, docs/rebuild/info-sheet/BRIEF-CARD.md). The card holds only the Pokémon,
+   its name (the heading) and its type chips; decorations are aria-hidden and use plain gradients (no filters, no own layers: Sim's
+   smooth-scroll rule). Cut corners 24 (brief 26), edge 2. Phone first; iPad upright from 700; desktop and iPad on its side from 1000. ---------- */
+.ms-card{--cut:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));position:relative;isolation:isolate;height:360px;margin-top:var(--s5)}
+.ms-card::before{content:"";position:absolute;inset:calc(var(--s6)*-1);z-index:-1;background:radial-gradient(closest-side,rgba(var(--cp),var(--card-glow)),transparent),radial-gradient(60% 40% at 50% 100%,var(--card-shade),transparent)}
+.mc-bg{position:absolute;inset:0;clip-path:var(--cut);background:linear-gradient(135deg,var(--t1),var(--card-edge-mid) 38%,rgb(var(--cp)) 68%,var(--t2))}
+.mc-in{position:absolute;inset:2px;overflow:hidden;clip-path:polygon(0 0,calc(100% - 23px) 0,100% 23px,100% 100%,23px 100%,0 calc(100% - 23px));
+  background:radial-gradient(70% 45% at 0 0,color-mix(in srgb,var(--t1) 34%,transparent),transparent),radial-gradient(70% 45% at 100% 100%,color-mix(in srgb,var(--t2) 34%,transparent),transparent),repeating-linear-gradient(135deg,var(--card-line) 0 1px,transparent 1px 8px),linear-gradient(165deg,var(--card-face-1),var(--card-face-2))}
+.mc-in::after{content:"";position:absolute;left:0;right:0;bottom:0;height:36%;background:linear-gradient(transparent,color-mix(in srgb,var(--card-face-2) 80%,transparent))}
+.mc-glow{position:absolute;left:50%;top:46%;width:400px;height:400px;translate:-50% -50%;background:radial-gradient(closest-side,rgba(var(--cp),.32),transparent)}
+.mc-giant{position:absolute;left:var(--s2);top:var(--s3);font:900 var(--d120)/1 var(--u);font-style:italic;font-synthesis:style;letter-spacing:-.02em;white-space:nowrap;color:transparent;-webkit-text-stroke:1.5px var(--card-giant)}
+.mc-giant.two{left:calc(var(--s16)*-1);top:calc(var(--s24) + var(--s8));opacity:.55}
+.mc-orbit{position:absolute;left:50%;top:48%;translate:-50% -50%;border:1px solid var(--card-giant);border-radius:50%}
+.mc-orbit.a{width:460px;height:160px;rotate:-16deg}.mc-orbit.b{width:560px;height:208px;rotate:12deg;border-color:rgba(var(--cp),.42)}
+.mc-sheen{position:absolute;inset:0;background:linear-gradient(118deg,transparent 38%,var(--card-sheen) 48%,transparent 58%)}
+.mc-mon{position:absolute;z-index:2;left:50%;top:calc(var(--s3)*-1);translate:-50% 0}.mc-mon .np-mon,.mc-mon .np-mon .st{--iw:284px}
+.mc-id{position:absolute;z-index:3;left:var(--s4);right:var(--s4);bottom:var(--s5);display:grid;justify-items:center;gap:var(--s2);text-align:center}
+.mc-id h2{margin:0;font-size:var(--t28);color:var(--card-ink);overflow-wrap:normal}
+.mc-id .ms-ty{justify-content:center}
+/* phone order: card, rating, three numbers, On your team / Add and the two buttons, forms, tabs */
+.ms2{display:flex;flex-direction:column}.ms2>.ms-left{display:contents}
+.ms-card{order:1}.ms2>.ms-top{order:2}.ms-left>.ms-acts{order:3}.ms2>.ms-forms{order:4}.ms2>.ms-tabs{order:5}.ms2>.ms-pan{order:6}
+.ms-top{margin-top:var(--s5)}.ms-top .ms-rate{display:flex;align-items:flex-end;gap:var(--s3)}.ms-top .ms-rate small{max-width:22ch}
+.ms-top .ms-nums{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0;margin-top:var(--s5)}
+.ms-top .ms-n{display:block;padding:0 var(--s3);border-left:1px solid var(--rule)}.ms-top .ms-n:first-child{padding-left:0;border-left:0}
+.ms-top .ms-n b{display:block}.ms-top .ms-n span{display:block;margin-top:var(--s1)}.ms-top .ms-n .lv{display:block}
+@media (max-width:399px){.ms-top .ms-n.few b{font-size:var(--t17)}}@media (max-width:359px){.ms-top .ms-n.few b{font-size:var(--t15)}}
+.ms-left>.ms-acts{margin-top:var(--s5)}.ms-left .ms-go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:0 var(--s2)}.ms-left .ms-go>.np-btn2{width:100%}
+.ms2 .ms-fr{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+.ms2 .ms-fr:has(>.ms-f:nth-child(5)){grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr))}
+.ms2 .ms-f{flex-direction:column;justify-content:start;gap:var(--s1);padding:var(--s2) var(--s1);text-align:center}.ms2 .ms-f span{justify-items:center}
+.ms2 .ms-f[aria-pressed="true"]{background:none}
+.ms2 .ms-f[aria-pressed="true"]::after{content:"";display:block;width:var(--s10);height:4px;margin-top:var(--s1);background:var(--plot);transform:skewX(var(--slant))}
+.ms2 .ms-bs i{width:100%;background:linear-gradient(90deg,var(--plot) calc(var(--v) / 200 * 100%),color-mix(in srgb,var(--ink) 9%,transparent) 0)}.ms2 .ms-bs .tot i{background:none}
+@media (max-width:359px){.ms-card{height:320px}.mc-mon .np-mon,.mc-mon .np-mon .st{--iw:236px}.mc-id h2{font-size:var(--t24)}}
