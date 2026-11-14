@@ -1180,3 +1180,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1000px){.ms-left>.ms-acts{min-height:calc(var(--s24) + var(--s3))}} /* the card keeps one size whether the Pokémon is on the team or shows "Add to My Team" (brief 4: same size for every Pokémon) */
 /* Sim, Nov 13 (phone forms B): on phones the forms row sits under the tabs so the tabs show on the first screen */
 @media (max-width:699px){.ms2>.ms-forms{order:6;margin-top:var(--s6)}.ms2>.ms-pan{order:7}}
+/* Sim, Nov 13 (11:03 PM): the card's soft glow reached 8 px past the phone sheet and let it slide sideways; the sheet never scrolls sideways */
+.np-sheet:has(>.ms2){overflow-x:hidden}.ms2{overflow-x:clip}
+/* Sim, Nov 13 (11:04 PM): on a tall window the card stretched into a long strip; it stops at the brief's size (392 x 656, as at 1440 x 900) and the buttons follow right under it */
+@media (min-width:1000px){.ms2 .ms-card{max-height:656px}}

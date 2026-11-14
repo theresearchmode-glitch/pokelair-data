@@ -787,3 +787,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:45 PM: Card section 6 checks (authority): long names forced onto one line (Paldean Tauros (Combat) climbed into the Pokemon); 'Too few' columns size to content on iPad/desktop; desktop card same height on team / Add. Kept: type and move chips wrapping 2+1 / 3+1 where the mock-up does too.
 - 11:00 PM: Sim (10:56 PM): phone forms B (forms row under the tabs on phones; tabs on the first screen, Garchomp tabs at 753 of 844) and go for the Preview.
 - 11:00 PM: Preview v121 published (400 files checked): The Card info sheet with phone forms B.
+- 11:08 PM: Sim (11:03-11:04 PM): phone info sheet slid sideways (card glow 8 px past the sheet) -> sheet never scrolls sideways; desktop card stretched into a long strip on a tall window -> capped at 656 tall (brief's 392 x 654 at 1440 x 900).
