@@ -157,8 +157,8 @@ t('AUTO-08', 'Result card: kicker, title, option count, Strength Score + band + 
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.tap(/^Whole roster/); await ui.buildMeATeam(); const r = await ui.buildResult();
   has(r, /^(Proven team(, 1 swap)?|Fresh take|Your build)\b/, 'kicker'); has(r, /Option 1 of \d/, 'option count'); has(r, SCORE_BAND, 'score');
   has(r, /(Top|Bottom) \d+% of tournament teams/, 'rank line'); expect((await ui.builtSix()).length === 6, 'not six tiles');
-  has(r, /\d+\/30 ready for top threats/, 'readiness'); has(r, /\d\/4 team checks/, 'checks'); not(r, /team checks\W+checks/, 'checks line (stray "checks")');
-  has(r, /(players brought this exact team|tournament teams, [\d.]+% wins)/, 'why bullets'); has(r, /ready for the top 30 threats: handles \d+/, 'readiness why');
+  has(r, NEW ? /\d+\s*\/30\s*Matchups with an answer/ : /\d+\/30 ready for top threats/, 'readiness'); /* new site: the word list's 'Matchups' (Nov 9) */ has(r, NEW ? /\d\/4\s*Team checks: the 4 basics/ : /\d\/4 team checks/, 'checks'); /* new site: 'Team checks: the 4 basics' (word list, title case) */ not(r, /team checks\W+checks/, 'checks line (stray "checks")');
+  has(r, (NEW ? /(\d+% won|Best core, [\d,]+ teams)/ : /(players brought this exact team|tournament teams, [\d.]+% wins)/), 'why bullets'); has(r, NEW ? /Top 30 threats: \d+ (Shaky|No answer|Handles it|Beats it)/ : /ready for the top 30 threats: handles \d+/, 'readiness why'); /* new site: the word list's Matchups levels */
   has(r, /Mega option/, 'Mega options chip');
   const sr = await ui.unfold(/^Sets and Roles/i); expect((sr.match(/ @ /g) || []).length === 6, 'Sets and roles should list six "name @ item" rows: ' + sr);
   has(sr, /(Tailwind|Trick Room|Fake Out|Redirect|Priority|Setup|Attacker|Sun|Rain|Sand|Snow)/, 'roles'); has(sr, /[SABCD] tier \d+/, 'rating tags'); await close(); });
