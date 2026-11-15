@@ -32,6 +32,8 @@ const USAGE_L = {1440: [2100, 'Podium (Sim, Nov 14, Q2 A)']};
 // Sim, Nov 14 (Build limits A, 8:30 PM): the built Build page (the Blueprint) = measured heights rounded up to the next 50; iPad stays 3,500
 const BUILD_L = {320: [4150, 'Blueprint (Sim, Nov 14, Build limits A)'], 390: [3850, 'Blueprint (Sim, Nov 14, Build limits A)'], 1440: [2100, 'Blueprint (Sim, Nov 14, Build limits A)']};
 const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4200, 'Play-by-Play (Sim, Nov 15, Q2: 4,100 to 4,200)'], 1440: [2150, 'Play-by-Play 2x2 + three columns (Sim, Nov 15: 1,950 to 2,150)']};
+// My Team 'The Hand' (Sim's pick Nov 14; limits Nov 15, Claude under Sim's authority, her standing 'recommended'): measured heights rounded up to the next 50, as for Build / Meta / Battle
+const TEAM_L = {320: [4600, 'The Hand (Nov 15)'], 390: [4150, 'The Hand (Nov 15)'], 1440: [2350, 'The Hand (Nov 15)']};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
@@ -42,8 +44,9 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
   if (view === 'meta' && META_L[w]) [limit, note] = META_L[w];
   if (view === 'usage' && USAGE_L[w]) [limit, note] = USAGE_L[w];
   if (view === 'build' && BUILD_L[w]) [limit, note] = BUILD_L[w];
+  if (view === 'team' && state === 'default' && TEAM_L[w]) [limit, note] = TEAM_L[w];
   // Sim, Nov 13 (Height Q1 A): a team with only 5 of 6 has its own, higher limits (the measured heights rounded up to the next 50); the normal My Team limits don't move
-  if (view === 'team' && state === 'five' && {320: 1, 390: 1, 1440: 1}[w]) [limit, note] = [{320: 4250, 390: 4100, 1440: 1950}[w], '5 of 6 (Sim, Nov 13, Height Q1 A)'];
+  if (view === 'team' && state === 'five' && {320: 1, 390: 1, 1440: 1}[w]) [limit, note] = [{320: 4500, 390: 4200, 1440: 2100}[w], '5 of 6, The Hand (Nov 15; was 4,250 / 4,100 / 1,950, Sim Nov 13)'];
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
   const b = await pw[eng].launch(), ctx = await b.newContext({viewport: {width: w, height: w < 700 ? 844 : 900}, hasTouch: touch(w), isMobile: eng === 'chromium' ? false : w < 700});
   const p = await ctx.newPage(), errs = [];
