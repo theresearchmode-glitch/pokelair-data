@@ -2507,3 +2507,105 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .bp-parts .bd-cacts{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4)}}
 .bd-result .bp{margin-left:0;margin-right:0}
 @media (max-width:699px){.bp2 .bd-lower .bp{margin-left:var(--s4);margin-right:var(--s4)}.bp2 .bd-jump{margin-left:var(--s4);margin-right:var(--s4)}}
+
+/* ---------- Events "The Ticket Wall" (Nov 15; docs/rebuild/mocks/tournaments-tickets-weather) ----------
+   A ticket sits straight on the page: its scalloped ends and the notches of its tear line are drawn in the page colour (--bg).
+   Colours: the winner's first Pokémon's type colours (--ty-*, white text 4.6:1 or better), gold for an official event (dark text). */
+.ev-top{align-items:start}
+.ev-plate{display:grid;gap:var(--s3);justify-items:start;padding:var(--s5) var(--s6);background:var(--wash);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,0 100%)}
+.ev-pk{margin:0;padding:var(--s1) var(--s3);background:var(--plot);color:var(--on-plate);font:800 var(--t13)/1.5 var(--u);font-style:italic;text-transform:uppercase;transform:skewX(-8deg)}
+.ev-ns{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s8);margin:0}
+.ev-n{display:grid}.ev-n b{font:900 var(--t34)/1.1 var(--u);font-style:italic;color:var(--ink)}.ev-n small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.ev-what summary{min-height:var(--tap);display:flex;align-items:center;cursor:pointer;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}
+.ev-what p{margin:0 0 var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.ev-ph{margin:var(--s2) 0 0;font:900 var(--t22)/1.2 var(--u);font-style:italic}
+.ev-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.ev-cal{list-style:none;margin:0;padding:0;display:grid;width:100%}
+.ev-cal li+li{border-top:1px solid var(--rule)}
+.ev-crow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s3);min-height:var(--tap);padding:var(--s2) 0;color:inherit;text-decoration:none}
+.ev-cd{display:grid;justify-items:center;min-width:var(--s10)}.ev-cd b{font:900 var(--t20)/1 var(--u);font-style:italic}.ev-cd small{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2);text-transform:uppercase}
+.ev-cm{display:grid;min-width:0}.ev-cm b{font:600 var(--t15)/1.5 var(--b)}.ev-cm small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.ev-cw{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2);white-space:nowrap}.ev-cw.soon,.ev-cw.live{color:var(--plot-text)}
+.ev-call{min-height:var(--tap)}
+.ev-cpast{margin:0;display:flex;flex-wrap:wrap;gap:var(--s1) var(--s3);align-items:center;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.ev-csrc{margin:0}
+.ev-wall{display:grid;gap:var(--s6)}
+.ev-wh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s6)}
+.ev-wh h2{margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic}.ev-wh p{margin:0;max-width:60ch;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.ev-f{display:flex;flex-wrap:wrap;gap:var(--s2)}.ev-fc{display:inline-flex;align-items:baseline;gap:var(--s2)}.ev-f small{font:500 var(--t13)/1.5 var(--b);opacity:.8}
+.ev-more{justify-self:center}
+
+/* the ticket */
+.tk{--tk-tilt:0deg;position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"h m s" "h f s";align-items:center;width:100%;min-width:0;margin:var(--s6) 0 0;padding:0 0 0 var(--s4);border:0;border-radius:var(--r-s);text-align:left;font:inherit;color:var(--on-type);cursor:pointer;
+  background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(115deg,var(--ta),var(--tb));transform:rotate(var(--tk-tilt))}
+/* scalloped ends: half circles in the page colour down both edges */
+.tk::before,.tk::after{content:"";position:absolute;top:0;bottom:0;width:6px;background:radial-gradient(circle at 0 50%,var(--bg) 5px,transparent 5.5px) 0 0/12px 14px repeat-y;pointer-events:none}
+.tk::before{left:0}.tk::after{right:0;transform:scaleX(-1)}
+.tk:focus-visible{outline:3px solid var(--plot);outline-offset:4px}
+.tk-hero{grid-area:h;position:relative;align-self:end;display:grid;justify-items:center;width:112px;margin-top:calc(var(--s6)*-1)}
+.tk-hero .np-mon{--iw:104px;filter:drop-shadow(0 4px 0 var(--tk-shade))}
+.tk-seal{position:absolute;top:var(--s1);left:calc(var(--s1)*-1);display:grid;place-items:center;width:var(--s10);height:var(--s10);border-radius:50%;background:var(--podium-1);color:var(--tk-ink);font:900 var(--t13)/1 var(--u);font-style:italic;transform:rotate(-14deg);box-shadow:0 0 0 2px var(--tk-ink)}
+.tk-mid{grid-area:m;display:grid;gap:var(--s1);align-self:end;min-width:0;padding:var(--s3) var(--s4) 0 var(--s3)}
+.tk-k{font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;opacity:.92}
+.tk-name{margin:0;font:900 var(--t17)/1.3 var(--u);font-style:italic;overflow-wrap:break-word;hyphens:auto}
+.tk-five{grid-area:f;align-self:start;display:flex;gap:var(--s1);min-width:0;padding:var(--s1) var(--s4) var(--s3) var(--s3)}.tk-five .np-mon{--iw:40px}
+/* the stub, behind a dashed tear line with a notch top and bottom */
+.tk-stub{grid-area:s;position:relative;align-self:stretch;display:grid;align-content:center;justify-items:center;gap:0;min-width:96px;padding:var(--s3) var(--s4) var(--s3) var(--s3);border-left:2px dashed var(--tk-tear);background:var(--tk-shade);border-radius:0 var(--r-s) var(--r-s) 0}
+.tk-stub::before,.tk-stub::after{content:"";position:absolute;left:-8px;width:16px;height:16px;border-radius:50%;background:var(--bg)}
+.tk-stub::before{top:-8px}.tk-stub::after{bottom:-8px}
+.tk-stub small{font:700 var(--t13)/1.5 var(--b)}.tk-mo{letter-spacing:.08em;text-transform:uppercase}
+.tk-stub b{font:900 var(--t34)/1.05 var(--u);font-style:italic}
+.tk-bar{display:block;width:64px;height:var(--s3);margin-top:var(--s1);background:repeating-linear-gradient(90deg,var(--on-type) 0 1px,transparent 1px 3px,var(--on-type) 3px 5px,transparent 5px 6px,var(--on-type) 6px 7px,transparent 7px 10px);opacity:.85}
+/* official: gold with dark words */
+.tk.off{--ta:var(--podium-1);--tb:var(--podium-1);color:var(--tk-ink)}
+.tk.off .tk-bar{background:repeating-linear-gradient(90deg,var(--tk-ink) 0 1px,transparent 1px 3px,var(--tk-ink) 3px 5px,transparent 5px 6px,var(--tk-ink) 6px 7px,transparent 7px 10px)}
+.tk.off .tk-stub{border-left-color:var(--tk-ink)}
+/* the latest result: one large ticket across the wall */
+.tk.big{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"h m s";margin-top:var(--s10);cursor:pointer}
+.tk.big .tk-mid{align-self:center}.tk.big .tk-five{grid-area:auto;padding:0}
+.tk.big .tk-hero{width:240px;margin-top:calc(var(--s10)*-1)}.tk.big .tk-hero .np-mon{--iw:200px}
+.tk.big .tk-seal{width:var(--s12);height:var(--s12);font-size:var(--t17)}
+.tk-ln{margin:0 0 var(--s3);font:900 var(--t17)/1.3 var(--u);font-style:italic}
+.tk-tag{justify-self:start;padding:var(--s1) var(--s3);background:var(--on-type);color:var(--tk-ink);font:800 var(--t13)/1.5 var(--u);font-style:italic;transform:skewX(-8deg)}
+.tk.big .tk-mid{gap:var(--s2);padding:var(--s5) var(--s6) var(--s5) var(--s4)}
+.tk.big .tk-name{font-size:var(--t28)}
+.tk.big .tk-five{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s3)}
+.tk.big .tk-five li{display:grid;justify-items:center;gap:var(--s1);text-align:center;min-width:0}.tk.big .tk-five .np-mon{--iw:64px}
+.tk.big .tk-five span{font:600 var(--t13)/1.3 var(--b)}
+.tk-go{justify-self:start;min-height:var(--tap);margin-top:var(--s1);padding:0 var(--s1);border:0;border-bottom:2px solid currentColor;background:none;color:inherit;font:700 var(--t15)/1.5 var(--b);cursor:pointer}
+.tk-go:focus-visible{outline:3px solid var(--on-type);outline-offset:2px}
+.tk.big .tk-stub{min-width:160px}.tk.big .tk-stub b{font-size:var(--d64)}.tk.big .tk-bar{width:96px;height:var(--s5)}
+/* the wall: one column, two from 1100; an odd last ticket runs the full width so no row is half filled */
+.tk-wall{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4) var(--s6)}
+@media (min-width:1100px){.tk-wall{grid-template-columns:repeat(2,minmax(0,1fr))}.tk-wall.odd>.tk:last-child{grid-column:1/-1}
+  .tk-wall>.tk:nth-child(odd){--tk-tilt:-.5deg}.tk-wall>.tk:nth-child(even){--tk-tilt:.5deg}}
+@media (min-width:600px) and (max-width:1099px){.tk-wall>.tk:nth-child(odd){--tk-tilt:-.4deg}.tk-wall>.tk:nth-child(even){--tk-tilt:.4deg}}
+/* phones: the large ticket stacks (Pokémon and stub on top, the words and the five below a second tear line) */
+@media (max-width:699px){
+  .tk-hero{width:72px}.tk-hero .np-mon{--iw:72px}.tk-seal{width:var(--s8);height:var(--s8)}
+  .tk-stub{min-width:76px;padding:var(--s2) var(--s3) var(--s2) var(--s2)}.tk-stub b{font-size:var(--t28)}.tk-bar{width:48px}
+  .ev-f{display:grid;grid-template-columns:repeat(3,auto);justify-content:start}.ev-fc{padding:0 var(--s3)}
+  .tk{grid-template-areas:"h m s" "f f s"}.tk-mid{padding-right:var(--s2)}.tk-five{padding-left:var(--s3);justify-content:space-between}.tk-five .np-mon{--iw:40px}.tk-name{font-size:var(--t15)}
+  .tk.big{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"h s" "m m"}
+  .tk.big .tk-hero{grid-area:h;width:auto;justify-self:start;margin-left:var(--s4)}.tk.big .tk-hero .np-mon{--iw:144px}
+  .tk.big .tk-stub{grid-area:s;min-width:112px;border-radius:0 var(--r-s) 0 0}.tk.big .tk-stub b{font-size:var(--d64)}
+  .tk.big .tk-mid{grid-area:m;padding:var(--s4) var(--s4) var(--s5);border-top:2px dashed var(--tk-tear)}
+  .tk.big .tk-name{font-size:var(--t22)}
+  .tk.big .tk-five{display:flex;flex-wrap:wrap;justify-content:center;row-gap:var(--s3)}.tk.big .tk-five li{flex:0 0 33.333%} /* 3 + 2, the two centred under the three */
+}
+@media (max-width:389px){.tk-hero{width:72px}.tk-hero .np-mon{--iw:68px}.tk-five{gap:0}.tk-five .np-mon{--iw:36px}}
+
+/* an event opened */
+.ev-open{display:grid;gap:var(--s6)}
+.ev-back{justify-self:start;min-height:var(--tap)}
+.ev-oh{padding:var(--s6);color:var(--on-type);background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(115deg,var(--ta),var(--tb));border-radius:var(--r-s)}
+.ev-oh h2{margin:var(--s1) 0;font:900 var(--t34)/1.2 var(--u);font-style:italic;overflow-wrap:anywhere}.ev-osub{margin:0;font:500 var(--t15)/1.5 var(--b)}
+.ev-field h3,.ev-plh{margin:0;font:900 var(--t22)/1.3 var(--u);font-style:italic}.ev-field .fine{margin:0 0 var(--s3)}
+.ev-field ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--s2) var(--s4)}
+.ev-fm{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s2);width:100%;min-height:var(--tap);padding:0;border:0;background:none;color:inherit;font:600 var(--t15)/1.4 var(--b);text-align:left;cursor:pointer}
+.ev-fm b{font:900 var(--t17)/1 var(--u);font-style:italic}
+.ev-pl{min-width:var(--s12)}.ev-pl.p1{color:var(--podium-1)}
+.ev-sets{list-style:none;margin:var(--s2) 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s3) var(--s4)}
+.ev-sets li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2);align-items:start}.ev-sets li div{display:grid;font:400 var(--t15)/1.5 var(--b)}
+.ev-sets small,.ev-sets span{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){.tk{--tk-tilt:0deg}}

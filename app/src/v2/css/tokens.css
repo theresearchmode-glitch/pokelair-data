@@ -26,6 +26,8 @@
   --shade:30,20,50;--rim:255,255,255;
   /* type colours for chips with white text: each measured 4.6:1 or better (Sim, Nov 11: darkened, hue kept) */
   --ty-Dragon:#5060E1;--ty-Ground:#9A6230;--ty-Fighting:#BE5718;--ty-Poison:#8E3FC8;--ty-Dark:#5A4A56;--ty-Steel:#447C90;--ty-Fire:#D2411E;--ty-Water:#2774D4;--ty-Grass:#28843C;--ty-Fairy:#BF3CB7;--ty-Flying:#3076C7;--ty-Ghost:#6A4BB8;--ty-Psychic:#D6316F;--ty-Ice:#187E97;--ty-Rock:#7D754B;--ty-Electric:#946F00;--ty-Normal:#737571;--ty-Bug:#677C0F;
+  /* tickets (Events, This Week winners; Nov 15): fine lines, the tear line and the stub's shade over a type colour, the same in both themes */
+  --tk-line:rgba(255,255,255,.09);--tk-tear:rgba(255,255,255,.55);--tk-shade:rgba(10,8,20,.22);--tk-ink:#1A1408;
   /* type colours borrowed as tints (move rows, move picker, box wallpaper): hue kept, saturation 72%+, lightness 56%; near-grey types
      (Normal, Dark) stay neutral grey (Sim, Nov 11, review item 12) */
   --tyn-Dragon:#3E50E0;--tyn-Ground:#E08A3E;--tyn-Fighting:#E67A37;--tyn-Poison:#9B3EE0;--tyn-Dark:#8F8F8F;--tyn-Steel:#3EB5E0;--tyn-Fire:#E35B3B;--tyn-Water:#3E86E0;--tyn-Grass:#3EE062;--tyn-Fairy:#E03ED6;--tyn-Flying:#3E89E0;--tyn-Ghost:#6C3EE0;--tyn-Psychic:#E03E7A;--tyn-Ice:#3DC0E1;--tyn-Rock:#E0C33E;--tyn-Electric:#FFC71F;--tyn-Normal:#8F8F8F;--tyn-Bug:#C4E836;
