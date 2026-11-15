@@ -2997,7 +2997,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 /* ---------- The Pokémon page, "The Answer Page" (Sim's pick, Nov 15): the top and Base Stats ---------- */
 .pk{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s10)} /* the column never grows past the screen (a long name on the Card pushed it to 330 px at 320) */
-.pk-trail{display:flex;flex-wrap:wrap;gap:var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.pk-trail a{color:var(--plot-text);text-decoration:none}
+.pk-trail{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.pk-trail a{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s2);margin:0 calc(var(--s2)*-1);color:var(--plot-text);text-decoration:none} /* the links themselves are 44 px tall (a drawn-on tap area is not counted by every check, nor every finger) */
 .pk-top{display:grid;grid-template-columns:minmax(260px,360px) minmax(0,1fr);gap:var(--s10);align-items:start}
 .pk-card .ms-card{margin:0}.pk-card .mc-nm{margin:0;font:900 var(--t28)/1.15 var(--u);font-style:italic;color:var(--card-ink)}
 .pk-is{display:grid;gap:var(--s4);min-width:0}
@@ -3036,7 +3036,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:399px){.pk-n.few b{font-size:var(--t17)} /* 'None yet' on one line at 320 (audit Nov 15) */.pk-lane{grid-template-columns:minmax(0,1fr);gap:var(--s1)}.pk-sl{justify-self:start}
   .pk-lane dd{padding-right:0;min-height:var(--s6)}.pk-lane b{font-size:var(--t22)}.pk-lane{position:relative}
   .pk-v{left:clamp(100px, calc(100% * var(--f)), calc(100% - var(--s24) - var(--s4)));top:calc(var(--s8)*-1)} /* on the line above at the tip, but never on the plate (low stats) or past the panel (a Mega's '159 +30') */.pk-lanes{background-position:0 0;background-size:100% 100%}.pk-scale{margin:0}}
-.pk-trail a,.pk-more .np-link,.pk-tap{position:relative}.pk-trail a::after,.pk-more .np-link::after,.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
+.pk-more .np-link,.pk-tap{position:relative}.pk-more .np-link::after,.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
 .pk-404{position:relative}.pk-404::after{content:"";position:absolute;inset:-12px -4px} /* 44 px tap area */
 /* Pokémon page: jump links, each part's head, part 1 "How to build it" */
 .pk-jumps{display:flex;flex-wrap:wrap;gap:var(--s2)}.pk-jumps button{min-height:var(--tap);padding:0 var(--s4);background:var(--wash);color:var(--ink);font:700 var(--t15)/1 var(--b);transform:skewX(-10deg)}.pk-jumps button:hover{background:color-mix(in srgb,var(--plot) 14%,var(--wash))}
@@ -3121,3 +3121,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-ftw{overflow-x:auto}@media (max-width:899px){.pk-ft th[scope=row]{position:sticky;left:0;z-index:1;background:var(--bg)}.pk-ftw{scroll-snap-type:x proximity}.pk-ft th[scope=col]{scroll-snap-align:end}} /* phones: the row names stay while the forms scroll */.pk-ft{width:100%;border-collapse:collapse;font:600 var(--t15)/1.4 var(--b)}.pk-ft th[scope=col]{padding:0 var(--s2) var(--s3);vertical-align:bottom}.pk-ft th[scope=col] b{display:block;font:900 var(--t17)/1.2 var(--u);font-style:italic}
 .pk-ft th[scope=row]{padding:var(--s2) var(--s3) var(--s2) 0;text-align:left;font:900 var(--t17)/1.3 var(--u);font-style:italic;color:var(--plot-text);white-space:nowrap}
 .pk-ft td{padding:var(--s2);text-align:center;border-top:1px solid var(--rule)}.pk-ft td.best{background:var(--plot);color:var(--on-mark);font-weight:800}
+.pk-sec>.ra-links{margin:var(--s4) 0 0}

@@ -92,3 +92,9 @@ Battle 390 limit raised to 4,200 (Sim, Nov 15, Q2: 'recommended'; measured 4,179
 - **Battle, rebuild (Nov 11):** drawn by a helper agent against the latest winner's open team sheet, then checked. The damage grid sits behind a tab. Opened, it takes the page to 2,570 on desktop and 4,699 on phone, so the proposed limit for that open state is 3 screens on desktop and 6 on phone (Sim to confirm).
 Battle 1440 limit raised to 2,150 (Sim, Nov 15, time: 8:23 AM (8:23:06)  date: Sun Nov 15, 2026, recommended): at 1366+ the Play-by-Play is 2x2 and the three blocks below are even columns; measured 2,102 at 1440 with an opponent (was 2,331).
 My Team limits for 'The Hand' (time: 8:51 AM (8:51:06)  date: Sun Nov 15, 2026, Claude under Sim's authority and standing 'recommended'; Sim can say B): measured heights rounded up to the next 50, as for Build / Meta / Battle. Normal: 320 4,600 (measured 4,571), 390 4,150 (4,133), iPad 3,500 unchanged (3,191), 1440 2,350 (2,328). 5 of 6: 320 4,500 (4,492), 390 4,200 (4,188), 1440 2,100 (2,068). The older limits were set Nov 11-13, before The Hand.
+
+## Pokémon page (#pokemon=<name>), Nov 15 (set under Claude's authority, for Sim's review)
+Measured on six Pokémon (Kingambit, Rotom-Wash, Mega Charizard Y, Persian, Gholdengo, Flapple), real data; the longest is Rotom-Wash
+(the forms table). Limits = longest rounded up to 50 (Sim's rule for Build / Meta / Battle): 320 9,550 · 390 9,050 · 820 7,700 · 1440 5,800.
+Measured: 320 7,332-9,535 · 390 7,043-9,002 · 820 5,760-7,697 · 1440 4,247-5,754. Long by design (seven parts replacing the sheet's
+three tabs); shortening it on phones is a design question for Sim (summary, Nov 16).

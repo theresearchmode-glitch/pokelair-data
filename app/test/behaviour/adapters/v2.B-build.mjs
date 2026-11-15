@@ -30,7 +30,7 @@
 const NOT = what => { throw new Error('not in v2 yet: ' + what); };
 const RE = m => m instanceof RegExp ? [m.source, m.flags] : null;
 // today's part names -> the new Build page's parts (other pages' parts are not in v2 yet)
-const AREAS = {'built team': '#main .bd-result', 'cores': '#main .bd-cores', 'info sheet': '.np-sheet .ms2', 'Build page': '#main .bd2', 'My team page': '#main',
+const AREAS = {'built team': '#main .bd-result', 'cores': '#main .bd-cores', 'info sheet': '.np-sheet .ms2, #main .pk' /* Nov 15: the Pokémon page */, 'Build page': '#main .bd2', 'My team page': '#main',
   'My team suggestions': '#main #tm-sg', 'All suggestions page': '.np-sheet .sga2', 'Bigger plans': '.np-sheet .sga2'};
 // today's parts with no equivalent here (a helper asked for one names it)
 const NO_AREA = {'Plan settings': 'Plan settings (Pick from, Let plans swap my Mega, Count abilities, Refresh plans, Never suggest)'};
@@ -174,7 +174,7 @@ export default (ui, pg) => {
     battleOpponentIds: () => ev('S.opp.slice()'),
     openTipText: () => pg.evaluate(() => { const w = document.querySelector('.np-sheet .bd-cwhy'); return w ? w.innerText.replace(/\s+/g, ' ').trim() : ''; }),
     openInfoSheetFor: async id => { if (!ui.tapPokemon) NOT('opening an info sheet from this page'); await ui.tapPokemon(id); },
-    infoSheetText: () => txt('.np-sheet .ms2'),
+    infoSheetText: async () => (await txt('.np-sheet .ms2')) || (await txt('#main .pk')), /* Nov 15: the Pokémon page took over from the sheet */
 
     // ---------------- Pokémon name boxes (Build around) ----------------
     typeInto: async (label, text, enter = false) => { const s = boxSel(label); if (!s) return ui.type(label, text, enter); if (s === BOXES['with a pokémon']) await tabTo('cores');

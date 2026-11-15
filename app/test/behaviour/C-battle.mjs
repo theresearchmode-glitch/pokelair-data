@@ -522,7 +522,8 @@ t('SPEED-05', 'race track / list view (remembered), markers open the info sheet,
     expect(await ui.isPressed(NEW ? /^Track$/ : 'Race track') === true, 'Race track not the default');
     const o = await ui.speedOrder(); expect(o.length >= 20 + 6 - 1, 'track has too few markers: ' + o.length);
     const sh = await ui.openInfoSheet('Garchomp'); expect(/Garchomp/.test(sh), 'tapping Garchomp did not open its info sheet');
-    await ui.pg.keyboard.press('Escape'); await ui.tapIn(NEW ? /^List$/ : 'List view'); await ui.reload(); await ui.go('Speed Tiers');
+    if (NEW) { await ui.pg.goBack(); await ui.pg.waitForTimeout(900); expect(await ui.pg.evaluate(() => location.hash) === '#speed', 'Back from the Pokémon page did not return to Speed Tiers'); } /* Nov 15: the marker opens the Pokémon page; Back returns */
+    else await ui.pg.keyboard.press('Escape'); await ui.tapIn(NEW ? /^List$/ : 'List view'); await ui.reload(); await ui.go('Speed Tiers');
     expect(await ui.isPressed(NEW ? /^List$/ : 'List view') === true, 'List view not remembered after reload');
     const rows = await ui.speedRowText(); expect(rows.some(r => /You/.test(r) && /Speed points/.test(r)), 'list rows lack "YOU" tags or how the number was worked out'); await close(); }
   const {ui, pg, close} = await open({team: TEAM, width: 390}); await ui.go('Speed Tiers');
@@ -683,7 +684,7 @@ t('TRACK-02', 'top-8 teams by rating band with a verdict line', async () => {
 
 t('TRACK-03', 'biggest hits / misses; tap a Pokémon for its sheet', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Track Record');
-  hasAll(await ui.pageText(), ['Biggest hits', 'Biggest misses', 'Tap a Pokémon for its sheet'], 'Track record');
+  hasAll(await ui.pageText(), ['Biggest hits', 'Biggest misses', NEW ? 'Tap a Pokémon for its page' : 'Tap a Pokémon for its sheet'], 'Track record');
   const sh = await ui.openInfoSheet('Sneasler'); expect(/Sneasler/.test(sh), 'Sneasler sheet did not open'); await close(); });
 
 t('TRACK-04', 'week by week chart with a line per band', async () => {

@@ -68,7 +68,8 @@ t('HOME-05', 'This week in the ratings: chips with arrow + number open the match
 t('HOME-05b', 'This week chip\'s rating matches the info sheet it opens', async () => {
   const r = await homePage(); const c = (await r.ui.ratingMoves())[0], rating = +(c.label.match(/rating (\d+)/) || [])[1];
   await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet() || '';
-  ok(s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, info sheet hero says ${s.slice(0, 12)}`); await r.close(); },
+  const pr = +((s.match(/\b(\d+) [SABCDF] tier Rating/) || [])[1]); /* Nov 15: the Pokémon page's rating */
+  ok(NEW ? pr === rating : s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, ${NEW ? 'the page says ' + pr : 'info sheet hero says ' + s.slice(0, 12)}`); await r.close(); },
   {known: NEW ? '' : 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});
 
 t('HOME-06', 'Start buttons: "Score my team" first with a team, "Build me a team" first with none', async () => {
@@ -246,10 +247,10 @@ t('TEAM-09', 'Lock and Remove on a tile: lock label flips; × removes with Undo'
 t('TEAM-10', 'Set card: plan role, rating, item, ability, nature, stat points, 4 moves; Edit set and Info sheet', async () => {
   const r = await myTeam(); await r.ui.tapTile('Garchomp'); const c = await r.ui.setCard();
   // button words in any casing (the new build writes buttons in Title Case, Sim Nov 9); the move strips are counted by the adapter
-  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, (NEW ? /Nature \w+ (most used|yours)/ : /Nature \w+ (most run|yours)/), /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, /Info sheet ›/i]) has(c, s, 'set card');
+  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, (NEW ? /Nature \w+ (most used|yours)/ : /Nature \w+ (most run|yours)/), /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, NEW ? /Pokémon Page ›/ /* Nov 15: the page replaces the sheet */ : /Info sheet ›/i]) has(c, s, 'set card');
   const moves = await r.ui.setMoveCount(); ok(moves >= 4, `${moves} move strips`);
   await r.ui.tapText('Edit set', 900); let p = await r.ui.editPanel(); ok(p && /Edit Garchomp/.test(p.title + ' ' + p.text), 'Edit set did not open "Edit Garchomp"'); await r.ui.closeEditPanel();
-  await r.ui.tapText('Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
+  await r.ui.tapText(NEW ? 'Pokémon Page ›' : 'Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
 
 t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use NastyPlot\'s pick" goes back; Home follows', async () => {
   const r = await myTeam(); await r.ui.tapTile('Sneasler'); has(await r.ui.setCard(), /Set as [Ll]ead/); await r.ui.tapText(NEW ? 'Set as Lead' : 'Set as lead', 1200);
@@ -323,7 +324,7 @@ t('TEAM-19', 'Empty team: Darkrai, invitation, "Add your first Pokémon" opens t
     underdog (a rotating Pokémon from the bottom of our ratings) instead of Darkrai; no six "+ Add" tiles */
     const r = await myTeam({team: []}); const tx = await r.ui.text();
     has(tx, /^My Team · 0 of 6 · No team yet Six spots, all yours\. Add a Pokémon to start, or let us build a whole team around a favourite\. Build Me a Team Add a Pokémon Import a [Tt]eam /); /* Title Case (Sim, Nov 12) */
-    has(tx, /Today's underdog (.+?)\. Somebody's favourite\. Rarely picked in tournaments, but every Pokémon deserves its moment\. Maybe it's yours\? Add \1 to My Team Info Sheet/);
+    has(tx, /Today's underdog (.+?)\. Somebody's favourite\. Rarely picked in tournaments, but every Pokémon deserves its moment\. Maybe it's yours\? Add \1 to My Team Pokémon Page/); /* Nov 15: 'Info Sheet' became 'Pokémon Page' */
     /* Sim, Nov 13 (First visit Q1 B, the approved first-visit mock-up): six empty spots beside the lead, and "Or Start from a
        Winner" (today's six highest-rated) beside the underdog; still no Darkrai: one underdog sprite + six winner sprites */
     const pics = await r.ui.emptyTeamPictures(), ud = pics.filter(x => x.underdog), other = pics.filter(x => !x.underdog);
@@ -1018,6 +1019,44 @@ t('CMP-04b', 'Compare lists Speed control as a note, not a counted team check', 
   {known: 'inventory #19: Compare still lists "Speed control" as a team check row (a note, not counted, since Nov 9)'});
 
 // ================= 12. Pokémon info sheet =================
+if (NEW) { // Nov 15 (Sim): the Pokémon page replaces the info sheet; the same promises, checked on the page
+t('PKMN-01', 'A Pokémon tapped on Home opens its page (#pokemon=); keyboard focus on its name; Back returns to Home; no sideways scroll on a phone', async () => {
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(/Kingambit/.test(await r.ui.pokemonPage() || ''), 'page did not open');
+  ok(await r.ui.pageHash() === '#pokemon=kingambit', 'address: ' + await r.ui.pageHash()); ok(/Kingambit/.test(await r.ui.focusName()), 'focus not on the name: ' + await r.ui.focusName());
+  await r.ui.browserBack(); ok(await r.ui.current() === 'home', 'Back did not return to Home: ' + await r.ui.current()); await r.close();
+  const p = await aopen({team: TEAM, width: 390}); await p.ui.tapPokemon('Kingambit'); ok(await p.ui.pokemonPage(), 'phone page did not open'); ok(await p.ui.noSideScroll(), 'sideways scroll'); await p.close(); });
+
+t('PKMN-02', 'Top: name, types, "#N of M with results", rating with its tier, three numbers', async () => {
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
+  for (const x of [/Kingambit Dark Steel #\d+ of \d+ with results/, /\b\d+ [SABCDF] tier Rating/, /[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'top'); await r.close(); });
+
+t('PKMN-03', 'Add to My Team fills the first empty slot ("On your team" after); Popular Sets; Build Around It; a full team says so', async () => {
+  const r = await aopen({team: TEAM.slice(0, 5)}); await r.ui.tapPokemon('Kingambit'); has(await r.ui.pokemonPage(), 'Add to My Team'); await r.ui.tapText(/^Add to My Team$/, 1000);
+  ok(await r.ui.waitToast(/Kingambit added to your team/), 'no toast'); has(await r.ui.pokemonPage() || '', 'On your team', 'page after adding'); ok((await r.ui.team()).includes('Kingambit'), 'not on the team');
+  await r.ui.tapText(/^Popular Sets$/, 900); ok(await r.ui.current() === 'sets', 'Popular Sets did not open'); has(await r.ui.text(), 'Kingambit', 'Popular Sets');
+  await r.ui.go('Home', 600); await r.ui.tapPokemon('Rillaboom'); has(await r.ui.pokemonPage(), /On your team/); await r.ui.tapText(/^Build Around It$/, 1200); ok(await r.ui.current() === 'auto', 'Build Around It did not open Build'); await r.close();
+  const f = await homePage(); await f.ui.tapPokemon('Kingambit'); has(await f.ui.pokemonPage(), /Team full|already on your team|On your team|remove one/, 'full team page'); await f.close(); });
+
+t('PKMN-04', 'Jump links ("On this page") go to each part and move keyboard focus into it', async () => {
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit');
+  for (const [name, id] of [['What beats it', 'pk-s3'], ['How fast it is', 'pk-s4'], ['How to build it', 'pk-s1']]) { await r.ui.tapJump(name); ok(await r.ui.focusInside() === id, name + ': focus in ' + await r.ui.focusInside()); } await r.close(); });
+
+t('PKMN-05', 'Build, stats, abilities, type matchups, speed: usual set, base stats, "Most used", weak/resists, speed builds, Speed Tiers link', async () => {
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
+  for (const x of [/Usually .+ Adamant/, /Base Stats TOTAL \d+ HP \d+ Attack \d+/, /Abilities Defiant most used, \d+%/i, /What beats it Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run/i, /Trick Room build/i, /outspeeds \d+% of the top 30/, /Speed Tiers →/]) has(s, x, 'page');
+  await r.ui.tapInPage('Speed Tiers →'); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
+
+t('PKMN-06', 'How to build it and partners: typical set, moves and items with %, a partner opens its own page', async () => {
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
+  for (const x of [/Typical set ABILITY \w+ \d+%/i, /in-game ranked battles/, /Items \S.* \d+%/, /Who it teams with/]) has(s, x, 'page');
+  const partner = (s.match(/Who it teams with Brought with \w+ \w+ (\w+)/) || [])[1] || 'Sneasler'; await r.ui.tapInPage(partner);
+  ok(new RegExp(partner, 'i').test(await r.ui.pageHash()), 'partner page did not open: ' + await r.ui.pageHash()); await r.close(); });
+
+t('PKMN-07', 'Why it rates N: its bars, What the data says, other tier lists, How Ratings Work and Track Record links', async () => {
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
+  for (const x of [/Why it rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Win rate \d+/, /What the data says/i, /Other tier lists/i, /How Ratings Work ›/, /Track Record →/]) has(s, x, 'page');
+  await r.ui.tapInPage('Track Record →'); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
+} else {
 t('PKMN-01', 'Info sheet opens from Home; ✕ and Escape close it, focus returns; desktop is a wide two-column panel', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.infoSheet(), 'sheet did not open');
   ok((await r.ui.infoSheetBox()).w >= 900, 'desktop sheet is not a wide panel: ' + JSON.stringify(await r.ui.infoSheetBox()));
@@ -1059,6 +1098,8 @@ t('PKMN-07', 'Rating tab: "Why it rates N", four bars, What the Data Says, other
   for (const x of [/Why It Rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Converts to top cut \d+/, /Win rate \d+/, /What the Data Says/i, /Other Tier Lists/i, (NEW ? /How Ratings Work ›/ : (NEW ? /How Ratings Work →/ : /How ratings work →/)), /Track Record →/]) has(s, x, 'Rating tab');
   await r.ui.tapText('Track Record →', 900); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
 
+}
+
 // ================= 13. Shared behaviour =================
 t('X-01', 'Every change saves to this browser and to the account', async () => {
   const r = await myTeam(); await r.ui.removeFromTeam('Rillaboom'); await sleep(1300);
@@ -1097,8 +1138,8 @@ t('X-05', 'Apply keeps your place: the page does not jump to the top', async () 
   const y1 = await r.ui.pageScrollY(); ok(Math.abs(y1 - y0) < 400, `page jumped from ${y0} to ${y1}`); await r.close(); });
 
 t('X-06', 'Back closes what\'s open on top first and stays on the page', async () => {
-  const r = await myTeam(); await r.ui.tapText('Info sheet ›', 900); ok(await r.ui.infoSheet(), 'sheet did not open'); await r.ui.goBack();
-  ok(!(await r.ui.infoSheet()), 'Back did not close the sheet'); ok(await r.ui.current() === 'report', 'Back left My Team');
+  const r = await myTeam(); await r.ui.tapText(NEW ? 'Pokémon Page ›' : 'Info sheet ›', 900); ok(await r.ui.infoSheet(), NEW ? 'Pokémon page did not open' : 'sheet did not open'); await r.ui.goBack();
+  ok(!(await r.ui.infoSheet()), NEW ? 'Back did not leave the Pokémon page' : 'Back did not close the sheet'); ok(await r.ui.current() === 'report', NEW ? 'Back did not return to My Team' : 'Back left My Team');
   await r.ui.openEditPanel('Garchomp'); await r.ui.goBack(); ok(!(await r.ui.editPanel()), 'Back did not close the edit panel'); ok(await r.ui.current() === 'report', 'left My Team');
   await r.ui.go('Saved Teams', 700); await r.ui.goBack(); ok(await r.ui.current() === 'report', 'Back did not return to the previous page'); await r.close(); });
 

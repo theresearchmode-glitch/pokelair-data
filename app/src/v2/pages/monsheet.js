@@ -82,9 +82,14 @@ V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc
   const pan = (k, h) => `<div class="ms-pan" role="tabpanel" id="msp-${k}" aria-labelledby="mst-${k}" data-mspan="${k}"${k === cur ? '' : ' hidden'}>${h}</div>`;
   return `<div class="ms2">${head}${fstrip}${tb}${pan('info', `<div class="ms-cols">${quick}${stats}${abs}${ty}${spd}</div>`)}${pan('meta', `<div class="ms-cols">${meta}</div>`)}${pan('rating', `<div class="ms-cols">${why}${data}${outs}</div>`)}${fcmp ? pan('forms', `<div class="ms-cols">${fcmp}</div>`) : ''}</div>`; };
 // opening: a sheet; another Pokémon from inside it (a form, a partner) replaces it in place and keeps the tab
-V2.openMon = n => { const p = byName.get(n); if (!p) return; const cur = document.querySelector('.ms2');
+V2.openMonSheet = n => { const p = byName.get(n); if (!p) return; const cur = document.querySelector('.ms2');
   if (cur) { cur.outerHTML = V2.monHtml(n); const sh = document.querySelector('.np-sheet'); if (sh) { sh.scrollTop = 0; sh.setAttribute('aria-label', V2.disp(n)); sh.focus(); } V2.fitMsName(); return; }
   V2.sheet(V2.monHtml(n), {label: V2.disp(n)}); V2.fitMsName(); };
+/* The switch (Sim, Nov 15: the Pokémon page replaces the info sheet): a Pokémon picked anywhere opens its own page. An open sheet closes
+   first (its leftover history step is skipped by Back, shell.js); Back returns to where you were, at the same scroll. Keyboard focus moves to
+   the page's name on arrival. The sheet's code stays (V2.openMonSheet) but nothing opens it. */
+V2.openMon = n => { const p = byName.get(n); if (!p) return; if (V2.closeSheet) V2.closeSheet(true); const h = '#pokemon=' + V2.monSlug(n); V2.pkFocus = 1;
+  if (location.hash === h) { scrollTo(0, 0); V2.pkFocusName(); return; } location.hash = h; };
 // the name on the card fits its line (The Card brief, Nov 13): a name wider than the card
 // ("Squawkabilly (Yellow)", "Mega Crabominable") steps the name down the type scale until every line fits; names that fit keep 28 px
 V2.fitMsName = (sel) => { const h = document.querySelector(typeof sel === 'string' ? sel : '.ms2 .ms-card .mc-id>h2'); /* never a frame timestamp as a selector */ if (!h) return; h.style.fontSize = ''; /* Nov 15: also the Pokémon page's Card (sel) */
@@ -117,11 +122,11 @@ document.addEventListener('keydown', e => { const b = e.target.closest && e.targ
   // Home / End jump to the first / last tab (today's tabs do; the tab pattern's keys, PKMN-04)
   const ks = [...document.querySelectorAll('.ms2 [data-mstab]')].map(x => x.dataset.mstab), i = ks.indexOf(b.dataset.mstab), j = e.key === 'Home' ? 0 : e.key === 'End' ? ks.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : ks.length - 1)) % ks.length; V2.msShow(ks[j], true); });
 // the redesign preview links here: My Team with Garchomp's sheet open (changes nothing)
-V2.pages['sheet'] = {place: 'team', draw: () => V2.pages.team.draw(), after() { V2.pages.team.after(); setTimeout(() => V2.openMon('Garchomp'), 60); }};
+V2.pages['sheet'] = {place: 'team', draw: () => V2.pages.team.draw(), after() { V2.pages.team.after(); setTimeout(() => V2.openMonSheet('Garchomp'), 60); }};
 
 // today's "Popular sets" on the sheet (PKMN-03; 25-ratings-page.js data-lsets): remembers the Pokémon for the sets page, which today's
 // site files under Meta (Popular Sets is rebuilt with Meta); "Build Around It" uses Home's handler (ui.abLock, then Build)
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-mssets]'); if (!b) return; ui.setMon = b.dataset.mssets; try { LS.set('cc2.setMon', b.dataset.mssets); } catch (x) {} if (V2.closeSheet) V2.closeSheet(true); location.hash = '#meta'; });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-mssets]'); if (!b) return; ui.setMon = b.dataset.mssets; try { LS.set('cc2.setMon', b.dataset.mssets); } catch (x) {} if (V2.closeSheet) V2.closeSheet(true); location.hash = '#sets'; }); /* Nov 15: it went to #meta (Ratings), not Popular Sets */
 // touch swipe between the tabs (audit PKMN-04): today's rule (67-sheet-tabs.js, Sim, Nov 2), unchanged: a clear sideways swipe on
 // the panels moves to the neighbouring tab; passive listeners; not from a form field or something that scrolls sideways, not with two
 // fingers or while text is selected; vertical scrolls never count; touch only, so a mouse never swipes

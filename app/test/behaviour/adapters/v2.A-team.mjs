@@ -84,17 +84,24 @@ export default (ui, pg, o) => {
     grantClipboard: () => pg.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {}),
 
     // ---------- Pokémon info sheet (.ms2 in a sheet) ----------
-    tapPokemon: async (name, within = '') => { for (let k = 0; k < 2; k++) { await H.tapPokemonOnce(name, within); if (await waitFor(() => H.infoSheet(), 3000)) return; } },
+    tapPokemon: async (name, within = '') => { for (let k = 0; k < 2; k++) { await H.tapPokemonOnce(name, within); if (await waitFor(async () => (await H.infoSheet()) || (await H.pokemonPage()), 3000)) return; } }, /* the page since Nov 15 */
     tapPokemonOnce: (name, within = '') => tapFound(([n, w]) => { const r = w ? document.querySelector(w) : document; return [...(r || document).querySelectorAll('[data-v2mon]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('.ms2'))
         .find(e => (e.getAttribute('aria-label') || e.innerText || e.dataset.v2mon || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase()) || e.dataset.v2mon.toLowerCase() === n.toLowerCase()) || null; }, [name, within], 'Pokémon ' + name + ' (an element that opens its info sheet)', 800),
-    infoSheet: () => sheetText('.ms2'),
+    infoSheet: async () => (await sheetText('.ms2')) || (await H.pokemonPage()), /* Nov 15: the Pokémon page took over from the sheet; tests asking for the sheet read the page */
     tapPokemonInSheet: name => tapFound(n => [...document.querySelectorAll('.ms2 [data-v2mon]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || e.innerText || '').includes(n)) || null, name, 'sheet Pokémon ' + name, 900),
-    closeInfoSheet: () => closeSheet(),
+    closeInfoSheet: async () => { if (await H.pokemonPage()) { await pg.goBack(); await pg.waitForTimeout(900); return; } return closeSheet(); }, /* the Pokémon page: Back is its close */
     infoTab: name => click(`.ms2 [data-mstab="${name.toLowerCase()}"]`, 600),
     infoTabNow: () => pg.evaluate(() => { const b = document.querySelector('.ms2 [data-mstab][aria-selected="true"]'); return b ? b.dataset.mstab : null; }),
     infoTabText: () => pg.evaluate(() => { const p = [...document.querySelectorAll('.ms2 [data-mspan]')].find(e => !e.hidden && e.getClientRects().length); return p ? p.innerText.replace(/\s+/g, ' ').trim() : null; }),
     infoSheetBox: () => pg.evaluate(() => { const s = document.querySelector('.np-sheet'); if (!s || !s.querySelector('.ms2')) return null; const r = s.getBoundingClientRect(); return {w: Math.round(r.width), h: Math.round(r.height), top: Math.round(r.top), bottom: Math.round(r.bottom)}; }),
     focusInfoTab: () => pg.focus('.ms2 [data-mstab][aria-selected="true"]'),
+    // ---------- the Pokémon page (#pokemon=<name>, Nov 15: replaces the info sheet; every Pokémon tap opens it) ----------
+    pokemonPage: () => pg.evaluate(() => { const m = document.querySelector('#main .pk'); return m && window.V2 && V2.route() === 'pokemon' ? m.innerText.replace(/\s+/g, ' ').trim() : null; }),
+    pageHash: () => pg.evaluate(() => location.hash),
+    browserBack: async (wait = 900) => { await pg.goBack(); await pg.waitForTimeout(wait); },
+    tapJump: name => tapFound(n => [...document.querySelectorAll('#main .pk-jumps [data-pkjump]')].find(e => e.innerText.trim() === n) || null, name, 'jump link ' + name, 900),
+    focusInside: () => pg.evaluate(() => { const a = document.activeElement; const s = a && a.closest && a.closest('section'); return s ? s.getAttribute('aria-labelledby') || '' : (a ? a.id || a.tagName : ''); }),
+    tapInPage: name => tapFound(n => [...document.querySelectorAll('#main .pk a, #main .pk button')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').includes(n)) || null, name, 'on the Pokémon page: ' + name, 1200),
     // ---------- Home (pages/home.js, Nov 12): same names and return shapes as today's adapter ----------
     // Home is the page with no hash too (V2.route falls back to it), so go / current / text treat "#home" and "no hash" alike
     // (the shared v2.mjs only knows hash routes); every other page goes through the shared adapter unchanged.

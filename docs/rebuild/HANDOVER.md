@@ -3,6 +3,22 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 15, written time: 2:50 PM (2:50:51)  date: Sun Nov 15, 2026 by the clock; Sim's authority until 8:00 AM Mon Nov 16 (extended 12:30 PM Sun); summary 7:40 AM Mon)
+- Scope (Sim): finish building, checks, audits, pristine and ready to be the live site; the switch to live waits for Sim's go.
+- Backstops trig_01P8wwfASshsPdbcFcM3qNMv (:23) and trig_012D8AdnvLFxfYqeBtDUoc7o (:53) carry the work order to 8 AM Mon; then STOPPED,
+  HANDOVER, phone notification, delete both.
+- Today on the Preview (v164-v167): Pokémon page part 6; two helper audits' fixes (share race, Mega stats, no mid-word breaks via V2.fitWords,
+  Hand level Cards, poster/card/sheet image details, Pokémon page colours and gaps, Battle 390 height); partners two across to 899; Forms (Sim A);
+  Team Card for a team being built (Sim A).
+- In progress: THE SWITCH. V2.openMon now opens #pokemon=<name> (monsheet.js; the old sheet is V2.openMonSheet, nothing opens it). Labels
+  'Info Sheet' -> 'Pokémon Page'. Page gained Speed Tiers / How Ratings Work / Track Record links. Fixed: Popular Sets went to #meta (now #sets);
+  Add to My Team on the page stays on the page. Tests translated (PKMN-01..07 for the page; adapters read the page where they read the sheet).
+  Final full run on t89 pending, then commit + Preview.
+- Helper agent (worktree): writing missing v2.D-meta-shell.mjs helpers (78 Meta tests fail mostly 'not in v2 yet'); merge its branch after.
+- For Sim when back (~5 PM): the Pokémon page is long on phones (7,300-9,500 px); question with pictures q/len-now-s.png, q/len-fold-s.png
+  (scratchpad): recommend folding parts 3-6 on phones with a one-line summary each (8,319 -> 4,928 for Kingambit at 390).
+- Height limits for the Pokémon page added to c13-check.mjs (POKEMON_L, measured + 50), noted in page-heights.md for Sim's review.
+
 ## LATER UPDATE (Nov 15, written time: 5:53 AM (5:53:29)  date: Sun Nov 15, 2026 by the clock)
 - Preview v156 (4:51 AM); v157 pending (tests running on frozen copy t28). Since 1:39 AM: Battle Play-by-Play overlap + 700-899 layout; Toughest
   Opponents only even/losing; Compare Team A/B labels + picker names by style; event names cleaned on EVERY page (shared V2.evTitle in home.js);

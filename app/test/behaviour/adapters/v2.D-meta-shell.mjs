@@ -49,8 +49,9 @@ export default (ui, pg) => {
         if (!e) { const els = [...document.querySelectorAll('#main [data-v2mon]')].filter(__dvis), al = e => e.getAttribute('aria-label') || '';
           e = els.find(e => e.dataset.v2mon === n) || els.find(e => al(e).startsWith(n + ',') || al(e).startsWith(n + ':')); if (e) e.scrollIntoView({block: 'center'}); }
         if (!e) throw new Error('no row ' + n); e.click(); }, id); await until(() => D.sheetIsOpen()); await wait(400); },
-    sheetIsOpen: () => ev(() => __dvis(document.querySelector('.np-sheet .ms2'))),
-    sheetName: () => ev(() => __dtx(document.querySelector('.np-sheet .ms2 h2'))),
+    /* Nov 15: a Pokémon tap opens its page (#pokemon=<name>); the page counts as the opened sheet, its name as the sheet's name */
+    sheetIsOpen: () => ev(() => __dvis(document.querySelector('.np-sheet .ms2')) || (V2.route() === 'pokemon' && !!document.querySelector('#main .pk'))),
+    sheetName: () => ev(() => __dtx(document.querySelector('.np-sheet .ms2 h2')) || (V2.route() === 'pokemon' ? __dtx(document.querySelector('#main .pk-is h1')) : '')),
     // folds: "Every Pokémon, by Tier" is the See all switch; the rest are real folds (details) on the page
     foldIsOpen: m => /every pokémon, by tier/i.test(m) ? ev(() => !!document.querySelector('.ra-board')) : ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); return d ? d.open : null; }, m),
     toggleFold: async m => { if (/every pokémon, by tier/i.test(m)) { const on = await ev(() => !!document.querySelector('.ra-board')); await pg.click(on ? '[data-raview="stand"]' : '[data-raview="list"]'); await wait(500); return; }
