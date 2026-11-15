@@ -1,8 +1,9 @@
 // Page helpers for group B (Build: Build for Me, Build around a core, recent winners) on the REBUILD (app/dist/v2.html). Same names
 // and meanings as adapters/current.B-build.mjs, against the new Build page's markup (src/v2/pages/build.js, address #build).
 // Where the new build has no equivalent yet, the helper throws Error('not in v2 yet: <what>') so the failure names the missing
-// feature; nothing is faked. Only the Build page helpers the AUTO-* and CORES-* tests call are wired here (Nov 12); the other
-// group B helpers (All Suggestions, Popular Sets, Archetypes, My Team pieces) throw "not wired for v2 yet" until their pages exist.
+// feature; nothing is faked. Build helpers wired Nov 12; My Team / All Suggestions Nov 13; Popular Sets (pages/sets.js), Archetypes
+// (pages/archetypes.js, the Weather Map: a style's guide opens from its region), the usage counts (pages/owner.js) and the Blueprint
+// sheet (pages/build-sheet.js) Nov 15. Words are read as written: capitals drawn by CSS are switched off while reading (as the base text()).
 // Notes on translation (what the player sees, read from the new markup):
 //  - "How It Works" is a sheet here (data-bdhow), not a fold: unfold() opens the sheet and returns its text
 //  - "Start from a Recent Winner" is an always-open section (.bd-wins) with one fold per winner: unfold() returns the section's text
@@ -31,7 +32,7 @@ const NOT = what => { throw new Error('not in v2 yet: ' + what); };
 const RE = m => m instanceof RegExp ? [m.source, m.flags] : null;
 // today's part names -> the new Build page's parts (other pages' parts are not in v2 yet)
 const AREAS = {'built team': '#main .bd-result', 'cores': '#main .bd-cores', 'info sheet': '.np-sheet .ms2', 'Build page': '#main .bd2', 'My team page': '#main',
-  'My team suggestions': '#main #tm-sg', 'All suggestions page': '.np-sheet .sga2', 'Bigger plans': '.np-sheet .sga2'};
+  'My team suggestions': '#main #tm-sg', 'All suggestions page': '.np-sheet .sga2', 'Bigger plans': '.np-sheet .sga2', 'Popular sets page': '#main .st'};
 // today's parts with no equivalent here (a helper asked for one names it)
 const NO_AREA = {'Plan settings': 'Plan settings (Pick from, Let plans swap my Mega, Count abilities, Refresh plans, Never suggest)'};
 // one suggestion card (li) read into today's wording: 'my' = My Team's card, 'big' = today's Bigger plans card. Runs in the page.
@@ -47,14 +48,16 @@ const READ = ([sel, mode, CARDs]) => { const CARD = eval('(' + CARDs + ')'), roo
   const T = e => e.innerText.replace(/\s+/g, ' ').trim();
   return [...root.children].filter(c => c.getClientRects().length).map(c => c.matches('ol.tm-sug') ? [...c.children].filter(li => li.getClientRects().length).map(li => CARD(li, mode)).join(' ') : T(c)).filter(Boolean).join(' '); };
 // today's name boxes on Build -> the new page's ([data-bdfind] = "Build around a Pokémon"); the cores filter box has no equivalent
-const BOXES = {'favourite pokémon': '[data-bdfind]', 'with a pokémon': '[data-bdcfind]'};
-const NO_BOX = {'exclude a pokémon': 'Never suggest box (All Suggestions › Plan settings)', 'look up a pokémon': 'Popular Sets look-up box'};
+const BOXES = {'favourite pokémon': '[data-bdfind]', 'with a pokémon': '[data-bdcfind]', 'look up a pokémon': '[data-stq]' /* Popular Sets (pages/sets.js) */};
+const NO_BOX = {'exclude a pokémon': 'Never suggest box (All Suggestions › Plan settings)'};
 // controls today's Build page has that the new one doesn't (a failed tap on #build names them)
 const NO_TAP = [[/details/i, 'Details / Hide details on core rows'], [/^Sets$/, 'the Sets toggle on recent winners (each winner is a fold with its sets here)'],
   [/teams with it/i, 'Teams with it on cores'], [/try another/i, 'Try another'], [/show more/i, 'Show more on cores']];
 export default (ui, pg) => {
   const tx = s => (s || '').replace(/\s+/g, ' ').trim();
-  const txt = sel => pg.evaluate(s => { const e = [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }, sel);
+  /* words as written: capitals drawn by CSS (text-transform) are a look, not the words, so they are switched off while reading (as the base text()) */
+  const txt = sel => pg.evaluate(s => { const e = [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')); if (!e) return '';
+    const st = document.createElement('style'); st.textContent = '*,*::before,*::after{text-transform:none!important}'; document.head.append(st); try { return e.innerText.replace(/\s+/g, ' ').trim(); } finally { st.remove(); } }, sel);
   const vis = sel => pg.evaluate(s => [...document.querySelectorAll(s)].some(e => e.getClientRects().length && !e.closest('[hidden]')), sel);
   const click = async (sel, wait = 400) => { const ok = await pg.evaluate(s => { const e = [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')); if (e) { e.click(); return true; } return false; }, sel);
     if (!ok) throw new Error(`nothing visible: ${sel}`); await pg.waitForTimeout(wait); };
@@ -71,11 +74,16 @@ export default (ui, pg) => {
   const ans = '#main .bd-ans';
   // the answer area as today's #abOut reads: kicker, option count, title, "Strength Score n band", rank, then the rest as shown
   const resultText = () => pg.evaluate(() => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; const r = document.querySelector('#main .bd-result'); if (!r || !r.getClientRects().length) return '';
+    const st = document.createElement('style'); st.textContent = '*,*::before,*::after{text-transform:none!important}'; document.head.append(st); try {
     const a = r.querySelector('.bd-ans'); if (!a) return T(r);
-    const eb = T(a.querySelector('.bd-lock .np-eyebrow')), m = (/^Option \d+ of \d+ · /.test(eb) ? eb : 'Option 1 of 1 · ' + eb).match(/^(Option \d+ of \d+) · (.+)$/) /* one option: the page shows only the kind */, sc = a.querySelector('.bd-score'), n = sc && sc.querySelector('b'), w = sc && sc.querySelector('.w span');
-    const head = m ? `${m[2]} ${m[1]}` : eb, score = n ? `Strength Score ${T(n)} ${T(w)}` : '';
-    const rest = [...r.children].map(c => c === a ? [...a.querySelectorAll('.bd-lock > :not(.np-eyebrow):not(.bd-score), .bd-six')].map(T).join(' ') : T(c)).join(' ');
-    return [head, score, rest].filter(Boolean).join(' '); });
+    const eb = T(a.querySelector('.bd-lock .np-eyebrow')), m = eb.match(/^(Option \d+ of \d+) · (.+)$/) /* one option: the page shows only the kind, and so does this text (no made-up "Option 1 of 1", Nov 15) */, sc = a.querySelector('.bd-score'), n = sc && sc.querySelector('b'), w = sc && sc.querySelector('.w span');
+    /* the Blueprint puts the rank in the score's small line ("Strength Score · Top 2% of tournament teams"): it follows the score here, as on today's card */
+    const rk = a.classList.contains('bp') && sc ? T(sc.querySelector('small')).replace(/^Strength Score\s*·?\s*/, '') : '';
+    const head = m ? `${m[2]} ${m[1]}` : eb, score = n ? `Strength Score ${T(n)} ${T(w)}${rk ? ' ' + rk : ''}` : '';
+    /* the Blueprint sheet (pages/build-sheet.js, Nov 14) holds the Notes, the Spec, the Revisions and the actions inside .bd-ans: read all of it, less the eyebrow and score already put first */
+    const bp = el => { const hide = [...el.querySelectorAll('.bd-lock .np-eyebrow, .bd-score')], was = hide.map(x => x.style.display); hide.forEach(x => { x.style.display = 'none'; }); try { return T(el); } finally { hide.forEach((x, i) => { x.style.display = was[i]; }); } };
+    const rest = [...r.children].map(c => c === a ? (a.classList.contains('bp') ? bp(a) : [...a.querySelectorAll('.bd-lock > :not(.np-eyebrow):not(.bd-score), .bd-six')].map(T).join(' ')) : T(c)).join(' ');
+    return [head, score, rest].filter(Boolean).join(' '); } finally { st.remove(); } });
   const optCount = async () => { const e = await txt(ans + ' .bd-lock .np-eyebrow'); if (!e) return null; const m = e.match(/^Option (\d+) of (\d+)/); return m ? [+m[1], +m[2]] : [1, 1]; }; /* no count shown = the only option */
   const toastNow = () => pg.evaluate(() => { const t = [...document.querySelectorAll('.np-toast')].find(e => e.getClientRects().length); if (!t) return '';
     const c = t.cloneNode(true); c.querySelectorAll('button').forEach(b => b.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); });
@@ -98,6 +106,9 @@ export default (ui, pg) => {
     if (!(await pg.evaluate(k => { const b = document.querySelector(`#main [data-tmsel="${k}"]`); return !!(b && b.getAttribute('aria-pressed') === 'true'); }, k))) await click(`#main [data-tmsel="${k}"]`, 150); };
   const pickNamed = async name => { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main [data-tmsel]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || '').split(', ')[0] === n); if (!b) return false; if (b.getAttribute('aria-pressed') !== 'true') b.click(); return true; }, name);
     if (!ok) throw new Error('no tile for ' + name + ' on My Team'); await pg.waitForTimeout(300); };
+  /** the open Archetypes guide's words as written (capitals drawn by CSS switched off while reading, as the base text()) */
+  const guideText = () => pg.evaluate(() => { const g = document.querySelector('#main .ar-guide'); if (!g) return ''; const st = document.createElement('style'); st.textContent = '*,*::before,*::after{text-transform:none!important}'; document.head.append(st);
+    try { return g.innerText.replace(/\s+/g, ' ').trim(); } finally { st.remove(); } });
   const undoSel = () => pg.evaluate(() => window.V2 && V2._sheet ? '.np-sheet [data-undobar]' : '#main [data-undobar]');
   const H = {
     area: name => { if (NO_AREA[name]) NOT(NO_AREA[name]); if (!AREAS[name]) NOT(`the "${name}" part (its page is not rebuilt yet)`); return AREAS[name]; },
@@ -107,7 +118,11 @@ export default (ui, pg) => {
     // ---------------- pages ----------------
     /** Build / Build for Me open #build; "cores" (today's menu entry Build around a core, which scrolls to the cores) has no v2 entry */
     go: async (name, wait = 600) => { const v = ui.PAGES[name] || name;
-      if (v === 'cores') NOT('a menu entry "Build around a core" that opens Build scrolled to the cores');
+      /* today's menu entry "Build around a core" has no copy here (decisions.md Nov 13 6:23 PM: on Sim's list); the new site's way in is
+         Home's "All Cores ›" (data-hmcores, pages/home.js), which opens Build at the cores: go('cores') takes that way, as a player would */
+      if (v === 'cores') { await prevGo('Home', 400); const ok = await pg.evaluate(() => { const b = [...document.querySelectorAll('#main a.hm-all[data-hmcores], #main a[data-hmcores]')]; const e = b.find(x => x.getClientRects().length) || b[0]; if (!e) return false;
+          const d = e.closest('details'); if (d && !d.open) d.querySelector(':scope > summary').click(); e.click(); return true; });
+        if (!ok) NOT('a way from Home to Build\'s cores (no "All Cores ›" link on Home)'); await pg.waitForTimeout(wait); return 'auto'; }
       if (v === 'coverage') return openAll(wait);
       if (v !== 'auto') return prevGo(name, wait);
       await pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); if (location.hash !== '#build') location.hash = '#build'; else if (window.V2) V2.redraw(); }); await pg.waitForTimeout(wait); return 'auto'; },
@@ -122,8 +137,15 @@ export default (ui, pg) => {
         if (/^\^?← My Team/i.test(src) && await vis('.np-sheet .sga2')) return click('.np-sheet > button.x[data-v2close]', wait);
         // the new build writes buttons and links in Title Case (Sim, Nov 9; as v2.A-team's tapText): a miss is retried ignoring case
         if (match instanceof RegExp && !match.flags.includes('i')) { try { return await prevTap(new RegExp(match.source, match.flags + 'i'), within, wait); } catch (x) {} }
+        /* a row button that is a name plus a description (My Team's More sheet: "Clear Team" / "Empties all six spots…"): its name is its first line */
+        if (await pg.evaluate(([m, re, w]) => { const rx = re ? new RegExp(re[0], re[1].includes('i') ? re[1] : re[1] + 'i') : null, root = document.querySelector(w) || document.body;
+          const b = [...root.querySelectorAll('button,a,[role=button]')].find(e => { if (!e.getClientRects().length || e.closest('[hidden]')) return false; const f = (e.innerText || '').split('\n')[0].trim(); return rx ? rx.test(f) : f.toLowerCase() === m.toLowerCase(); });
+          if (b) b.click(); return !!b; }, [String(match), RE(match), within])) { await pg.waitForTimeout(wait); return; }
         else if (typeof match === 'string') { /* strings already match ignoring case */ }
         if (!(await onBuild())) throw e;
+        /* Build's lower half is tabs (Sim, Nov 13: Build Q1 B, tabs on every size): a control in a closed tab is reached by its tab first, as a player does */
+        for (const k of ['cores', 'wins', 'others']) { if (!(await pg.evaluate(k => { const b = document.querySelector(`#main .bd-jump [data-bdjump="${k}"]`); return !!(b && b.getClientRects().length && b.getAttribute('aria-pressed') !== 'true'); }, k))) continue;
+          await tabTo(k); try { return await prevTap(match instanceof RegExp && !match.flags.includes('i') ? new RegExp(match.source, match.flags + 'i') : match, within, wait); } catch (x) {} }
         const s = match instanceof RegExp ? match.source : String(match); for (const [re, what] of NO_TAP) if (re.test(s) || (typeof match === 'string' && re.test(match))) NOT(what + ' on the Build page');
         throw e; } },
 
@@ -133,10 +155,13 @@ export default (ui, pg) => {
     toastOffersUndo: () => vis('.np-toast #toastUndo'),
     undoToast: () => click('.np-toast #toastUndo', 600),
     /** is the visible pressable control with this text pressed? (the new sliders' buttons carry aria-pressed) null if not found */
-    pressed: (m, within = 'body') => pg.evaluate(([m, re, w]) => { const r = re ? new RegExp(re[0], re[1].includes('i') ? re[1] : re[1] + 'i') /* Title Case labels here */ : null, t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
+    pressed: async (m, within = 'body') => (within === AREAS.cores && await tabTo('cores'), pg.evaluate(([m, re, w]) => { const r = re ? new RegExp(re[0], re[1].includes('i') ? re[1] : re[1] + 'i') /* Title Case labels here */ : null, t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
       const root = document.querySelector(w) || document.body;
       const e = [...root.querySelectorAll('[aria-pressed]')].find(e => e.getClientRects().length && !e.closest('[hidden]') && (r ? r.test(t(e)) : t(e).toLowerCase().includes(m.toLowerCase())));
-      return e ? e.getAttribute('aria-pressed') === 'true' : null; }, [String(m), RE(m), within]),
+      if (e) return e.getAttribute('aria-pressed') === 'true';
+      /* the Meta tabs here are links that mark the open view with aria-current="page" (pages/archetypes.js, sets.js): selected = aria-current */
+      const a = [...root.querySelectorAll('nav a[href]')].find(e => e.getClientRects().length && !e.closest('[hidden]') && (r ? r.test(t(e)) : t(e).toLowerCase().includes(m.toLowerCase())));
+      return a ? a.getAttribute('aria-current') === 'page' : null; }, [String(m), RE(m), within])),
     /** open a fold whose heading matches; returns its text (see the notes at the top for How It Works and Start from a Recent Winner) */
     unfold: async (m, within = 'body') => { const s = m instanceof RegExp ? m.source.replace(/^\^/, '') : String(m), is = k => new RegExp('^' + k.replace(/ /g, ' '), 'i').test(s.replace(/\\/g, ''));
       if (await onBuild()) {
@@ -152,6 +177,9 @@ export default (ui, pg) => {
         const d = [...root.querySelectorAll('details')].find(d => { const s = d.querySelector(':scope > summary'); if (!s || !s.getClientRects().length || d.closest('[hidden]')) return false; const t = s.innerText.replace(/\s+/g, ' ');
           return rx ? rx.test(t) : t.toLowerCase().includes(m.toLowerCase()); });
         if (!d) return null; document.querySelectorAll('[data-bbfold]').forEach(x => x.removeAttribute('data-bbfold')); d.setAttribute('data-bbfold', '1'); if (!d.open) d.querySelector(':scope > summary').click(); return true; }, [String(m), RE(m), within]);
+      if (!r && await pg.evaluate(() => !!window.V2 && V2.route() === 'archetypes')) { /* today's guide folds = a region of the Weather Map, which opens that style's guide in its place (pages/archetypes.js; Sim's brief, docs/rebuild/mocks/tournaments-tickets-weather) */
+        const k = await pg.evaluate(([m, re]) => { const rx = re ? new RegExp(re[0], re[1]) : null; const b = [...document.querySelectorAll('#main .ar-reg[data-argo]')].find(b => { const n = b.querySelector('.ar-nm'); const t = n ? n.textContent.trim() : ''; return rx ? rx.test(t) : t.toLowerCase().includes(m.toLowerCase()); }); if (!b) return null; b.click(); return b.dataset.argo; }, [String(m), RE(m)]);
+        if (!k) NOT(`a style ${m} on the Weather Map`); await pg.waitForTimeout(500); return guideText(); }
       if (!r) NOT(`a fold ${m} on this page`); await pg.waitForTimeout(400);
       return pg.evaluate(() => { const d = document.querySelector('[data-bbfold]'); return d ? d.innerText.replace(/\s+/g, ' ').trim() : ''; }); },
     isUnfolded: async m => { const s = m instanceof RegExp ? m.source.replace(/^\^/, '') : String(m);
@@ -190,7 +218,10 @@ export default (ui, pg) => {
     /** tap Build and wait until a team or a no-result note shows; returns the result text */
     buildMeATeam: async (ms = 40000) => { await click('#main [data-bdgo]', 100);
       return until(async () => { const busy = await pg.evaluate(() => { const b = document.querySelector('#main [data-bdgo]'); return !!(b && b.getAttribute('aria-busy') === 'true') || !!document.querySelector('#main .bd-busy'); });
-        const t = await resultText(); return !busy && (/Strength Score/.test(t) || await vis('#main .bd-none')) ? t : ''; }, ms, 'a built team'); },
+        const t = await resultText(); return !busy && (/Strength Score/.test(t) || await vis('#main .bd-none')) ? t : ''; }, ms, 'a built team')
+      /* a person's reaction time before the next tap (as tapBuiltTile, i41): measured Nov 15, a tap on Whole Roster at once after the sheet appeared
+         was lost 2 of 3 times (no v2slide event), at 1.5 s and 4 s it worked; reported as unsure, not hidden */
+      .then(async t => { await pg.waitForTimeout(400); return resultText().then(t2 => t2 || t); }); },
     tapBuild: () => click('#main [data-bdgo]', 30),
     /** wait until "Option k of n" shows with n >= the given count (the fresh take arrives later); returns n */
     waitOptions: async (n, ms = 30000) => until(async () => { const o = await optCount(); return o && (!n || o[1] >= n) ? o[1] : 0; }, ms, `Option … of ${n}`),
@@ -254,8 +285,13 @@ export default (ui, pg) => {
     /** (a real mouse click: a scripted el.click() on these tiles opens nothing, Nov 13; the player's tap does) */
     tapBuiltTile: async (i = 0) => { const b = pg.locator('#main .bd-result .bd-six [data-v2mon]').filter({visible: true}).nth(i); if (!(await b.count())) throw new Error('no built-team tile ' + i);
       const id = await b.getAttribute('data-v2mon'); await pg.waitForTimeout(300); /* a person's reaction time (i41, Nov 13): taps within ~0.3 s of the team appearing can be lost in the browser (touch 7/12 at once, 12/12 after 0.3 s); no person taps that fast */ await b.click(); return id; },
-    /** today's anonymous page-open and tap counts (51-usage.js) are not part of the new build (app/parts-v2.json) */
-    usageCounts: () => NOT('anonymous usage counting (page opens and taps; 51-usage.js is not in the new build)'),
+    /** the anonymous usage counts this visit has saved (pages/owner.js, Nov 15: today's counting, same documents usage/<id>); forces the
+     *  save a page-hide does. Page keys are the new site's routes ("view:build"); they are read back under today's page ids ("view:auto")
+     *  with the same route -> page map as current(), so the test compares like with like. Button keys are as the page writes them. */
+    usageCounts: async () => { await pg.evaluate(() => { try { Object.defineProperty(document, 'visibilityState', {configurable: true, get: () => 'hidden'}); } catch (e) {} document.dispatchEvent(new Event('visibilitychange')); });
+      await pg.waitForTimeout(500); const c = await pg.evaluate(() => { const d = window.__acct['usage/u_test']; if (!d || !d.s) return null; const k = Object.keys(d.s)[0]; return k ? d.s[k].c : null; }); if (!c) return c;
+      const MAP = {team: 'report', 'team-empty': 'report', battle: 'matchup', build: 'auto', tournaments: 'top', archetypes: 'arch'}, out = {};
+      for (const [k, n] of Object.entries(c)) { const m = k.match(/^view:(.+)$/), key = m ? 'view:' + (MAP[m[1]] || m[1]) : k; out[key] = (out[key] || 0) + n; } return out; },
     focusedId: () => pg.evaluate(() => document.activeElement && (document.activeElement.id || document.activeElement.getAttribute('aria-label') || document.activeElement.tagName)),
 
     // ---------------- My Team pieces used by group B ----------------
@@ -316,6 +352,29 @@ export default (ui, pg) => {
     biggerPlanCount: () => pg.evaluate(() => [...document.querySelectorAll('.np-sheet .sga2 [data-v2plana]')].filter(e => e.getClientRects().length).length),
     applyPlan: (n = 0) => click(`.np-sheet .sga2 [data-v2plana="${n}"]`, 900),
 
+    /** two quick taps on My Team's first Apply, in one go (as a fast double tap; X-03) */
+    applyTwiceQuickly: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#main #tm-sg [data-v2plan]')].find(e => e.getClientRects().length); if (!b) throw new Error('no Apply on My Team'); b.click(); b.click(); }),
+
+    // ---------------- Popular Sets (pages/sets.js, Meta › Pokémon › Popular Sets) ----------------
+    /** the Pokémon whose sets are shown (the same ui.setMon today's adapter reads; the page draws its spotlight and sets from it) */
+    setsShownPokemonId: () => ev('ui.setMon'),
+    findSetsFor: async typed => { await H.typeInto('Look up a Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(700); },
+    /** the Your Team bench: [{name (id), pressed}] */
+    setsTeamPicker: () => pg.evaluate(() => [...document.querySelectorAll('#main .st-six [data-v2setmon]')].filter(e => e.getClientRects().length).map(e => ({name: e.getAttribute('data-v2setmon'), pressed: e.getAttribute('aria-pressed')}))),
+    showSetsOfTeamMember: n => click(`#main .st-six [data-v2setmon="${n}"]`, 600),
+    /** a teammate under "Usually alongside" (today's Teammates chips) */
+    tapTeammate: n => click(`#main .us-mates [data-v2setmon="${n}"]`, 900),
+    /** the source switch's chosen label (Best data / Tournaments / Showdown) */
+    setsSource: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#main [data-v2setsrc][aria-pressed="true"]')].find(e => e.getClientRects().length); return b ? b.innerText.trim() : null; }),
+    tapSetsSource: label => pg.evaluate(l => { const b = [...document.querySelectorAll('#main [data-v2setsrc]')].find(e => e.getClientRects().length && e.innerText.trim() === l); if (!b) throw new Error('no source ' + l); b.click(); }, label).then(() => pg.waitForTimeout(700)),
+    /** where the sets start on screen (px): "How <Pokémon> is built" (a teammate tap scrolls there, as today's scrolls the pane to its top) */
+    paneTop: () => pg.evaluate(() => { const p = [...document.querySelectorAll('#main .st-how')].find(e => e.getClientRects().length) || [...document.querySelectorAll('#main .gs-body')].find(e => e.getClientRects().length); return p ? Math.round(p.getBoundingClientRect().top) : null; }),
+    setsText: () => txt('#main .st'),
+    archText: () => txt('#main .ar'),
+    /** the archetype styles in order, as the Weather Map's regions say them: [{name, share (% of top teams), basis "N of M top teams"}] */
+    archGuides: () => pg.evaluate(() => [...document.querySelectorAll('#main .ar-reg[data-argo]')].filter(e => e.getClientRects().length).map(b => { const t = (b.getAttribute('aria-label') || '').trim(), m = t.match(/^(.+?), (\d+)% of top teams, (\d+ of \d+)\./);
+      return m ? {name: m[1], share: +m[2], basis: m[3] + ' top teams'} : {name: t}; })),
+
     // ---------------- Plan settings: no equivalent in the new build ----------------
     pickFrom: () => NOT('Plan settings › Pick from (My Team\'s Suggest from slider is the only pool control)'),
     setPickFrom: () => NOT('Plan settings › Pick from'), pickFromOptions: () => NOT('Plan settings › Pick from'),
@@ -327,8 +386,5 @@ export default (ui, pg) => {
   const tapFoundLock = async name => { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main [data-v2lock]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || '').startsWith('Lock ' + n + ':')); if (b) b.click(); return !!b; }, name);
     if (!ok) throw new Error('no Lock for ' + name); await pg.waitForTimeout(600); };
   H.text.__bPrev = text0; if (ui.text.__v2base) H.text.__v2base = ui.text.__v2base; H.go.__bPrev = prevGo; H.go.__v2base = baseGo; H.tap.__bPrev = prevTap;
-  // the rest of today's group B helpers belong to pages not rebuilt yet (All Suggestions, Popular Sets, Archetypes) or to My Team
-  for (const k of ['setsText', 'archText'])
-    if (!(k in ui) || ui[k].__v2b) { const f = () => NOT(`${k} (group B helper not wired for v2 yet)`); f.__v2b = 1; H[k] = f; }
   return H;
 };
