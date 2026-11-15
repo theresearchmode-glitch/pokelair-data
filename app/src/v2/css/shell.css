@@ -67,6 +67,10 @@ html,body{overflow-x:clip}
 @media (max-width:359px){.np-goback{margin-right:calc(var(--s3) * -1)}} /* 320-359: Back 15px from the logo too, like Forward */
 .np-foot nav a{min-width:var(--tap);justify-content:center} /* footer links never under 44px wide ("About" was 43 at 390, Nov 12) */
 /* Sim, Nov 15 (Q2 A): today's footer parts back: the tagline, Privacy and Contact, Sources and Credits (from the same list as About) */
-.np-foot{flex-wrap:wrap;row-gap:var(--s3)}.np-ftxt{flex:1;min-width:0;display:grid;gap:var(--s1)}.np-ftag{margin:0;font:800 var(--t20)/1.3 var(--u);font-style:italic;color:var(--ink)}.np-ftag span{color:var(--plot-text)}
+.np-foot{flex-wrap:wrap;row-gap:var(--s3)}.np-ftxt{flex:1 0 320px;max-width:100%;min-width:0;display:grid;gap:var(--s1)} /* at least 320 px: when the links don't fit beside it they wrap below (it shrank to 9 px at 820, under the links) */.np-ftag{margin:0;font:800 var(--t20)/1.3 var(--u);font-style:italic;color:var(--ink)}.np-ftag span{color:var(--plot-text)}
 .np-fsrc{flex-basis:100%;margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.np-fsrcb{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;white-space:nowrap}.np-fsrcb:hover{color:var(--plot-text)}
 @media (max-width:699px){.np-foot{padding-top:var(--s6)}.np-ftxt{margin-top:var(--s1)}.np-foot nav{margin-top:var(--s2);column-gap:var(--s4);row-gap:0}} /* phones: tighter, so the restored parts cost as little height as possible */
+/* data note (parity, Nov 15): today's healthBar/regBar as one calm line above Home and the Meta pages; the amber mark is My Team's legal mark */
+.np-dnote{display:flex;align-items:flex-start;gap:var(--s3);margin:var(--s6) var(--gut) 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.np-dnote b{color:var(--ink);font-weight:700}.np-dnote span{min-width:0}
+.np-dnote i{flex:none;width:12px;height:6px;margin-top:var(--s2);background:var(--band-work);transform:skewX(-24deg)}

@@ -98,7 +98,7 @@
     "src/app/22-auto-build.js",
     "src/app/47-core-data.js",
     "src/app/23-coverage.js",
-    "src/app/24-sheet-data.js",
+    "src/app/24-sheet-data.js", "src/app/43-data-health.js",
     "src/app/44-share-images.js",
     "src/app/45-team-links.js",
     "src/app/29-fix-planner.js",

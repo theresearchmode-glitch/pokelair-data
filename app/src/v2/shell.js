@@ -155,6 +155,18 @@ V2.goPlace = i => { const pl = V2.findPlaces[i]; if (!pl) return; const [k, , ac
   if (!act) { location.hash = '#' + k; return; } V2.closeSheet(true); if (location.hash !== '#' + k) location.hash = '#' + k; setTimeout(act, 60); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2place]'); if (b) V2.goPlace(+b.dataset.v2place); });
 V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 'day';
+// ---------- data note (parity, Nov 15): today's #healthBar and #regBar (43-data-health.js), one calm line on Home and the Meta
+// pages: a source past its usual age is named with its day, and a new or changed regulation is said plainly. Empty when all is current.
+V2.dataNote = () => { const E = V2.esc, out = [];
+  try { const r = typeof regInfo === 'function' && regInfo();
+    if (r && r.now) out.push(`<b>New regulation: Reg ${E(r.now.id)} started ${E(regDay(r.now.since))}.</b> Numbers are from Reg ${E(r.id)} until there's enough Reg ${E(r.now.id)} data; the two are never mixed.`);
+    else if (r && r.id !== PAGE_REG) out.push(`<b>Numbers are from Reg ${E(r.id)}.</b> Anything new in Reg ${E(r.id)} may be missing until NastyPlot is updated for it.`); } catch (e) {}
+  try { const st = typeof healthStale === 'function' ? healthStale() : [];
+    if (st.length && window.__NP_PREVIEW) out.push(`<b>This Preview uses a saved copy of the data</b> from ${E(st[0].day)}; the live site updates every morning.`);
+    else if (st.length) { const by = {}; st.forEach(x => { (by[x.day] = by[x.day] || []).push(x.label.charAt(0).toLowerCase() + x.label.slice(1)); });
+      const and = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0];
+      out.push(`<b>Some data is older than usual:</b> ${Object.keys(by).map(d => `${and(by[d])}, last updated ${E(d)}`).join('; ').replace(/^./, c => c.toUpperCase())}. Everything else is current.`); } } catch (e) {}
+  return out.length ? `<p class="np-dnote" role="status"><i aria-hidden="true"></i><span>${out.join(' ')}</span></p>` : ''; };
 V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg = V2.theme() === 'night' ? L.hdrD : L.hdrL;
   /* the footer copy gets its own mask ids, so the two logos on one page never share an id */
@@ -219,12 +231,12 @@ V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app
 V2.safeDraw = P => { try { return P.draw(); } catch (e) { console.error(e); return '<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Something went wrong drawing it. Reload to try again; the rest of the site still works.</p></div></section>'; } };
 V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
-  return {P, html: `<a class="vh" href="#main">Skip to the page</a>
+  return {P, html: `<a class="vh np-skip" href="#main" data-v2skip>Skip to the page</a>
 <header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a>${V2.fwdBtn()}<nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
   <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
-<main class="np-main" id="main">${P ? V2.safeDraw(P) : ''}</main>
+<main class="np-main" id="main" tabindex="-1">${(place === 'home' || place === 'meta') && r !== 'pokemon' ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<div class="np-ftxt"><p class="np-ftag u">Sharply raise <span>your win rate.</span></p><span>NastyPlot is an unofficial, fan&#8209;made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const {P, html} = V2.shell();
@@ -303,3 +315,6 @@ document.addEventListener('keydown', e => { if (e.key !== 'ArrowDown' && e.key !
 
 // footer: "Sources and Credits" sits with the links (no row of its own, so pages stay within their heights) and opens the list below
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-fsrc]'); if (!b) return; const p = document.getElementById('np-fsrc'); if (!p) return; const open = p.hidden; p.hidden = !open; b.setAttribute('aria-expanded', open); });
+
+// the skip link (code review A1, Nov 15): moves keyboard focus to the page instead of changing the address (#main sent it to Home)
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2skip]'); if (!a) return; e.preventDefault(); const m = document.getElementById('main'); if (m) m.focus({preventScroll: false}); });

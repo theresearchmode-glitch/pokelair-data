@@ -84,7 +84,7 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
       if (e.closest('[hidden],[inert]')) return false; const d = e.closest('details:not([open])'); if (d && !(e.closest('summary') && e.closest('summary').parentElement === d)) return false;
       for (let a = e; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden' || cs.contentVisibility === 'hidden' || +cs.opacity === 0) return false; }
       return true; };
-    const H = document.documentElement.scrollHeight, sideways = document.documentElement.scrollWidth - innerWidth;
+    /* the data note (.np-dnote, Nov 15) shows only when a source is stale, or in the Preview's saved data copy: measured apart, never counted */ const dn = document.querySelector('.np-dnote'), dnH = dn ? Math.round(dn.getBoundingClientRect().height + parseFloat(getComputedStyle(dn).marginTop)) : 0; const H = document.documentElement.scrollHeight - dnH, sideways = document.documentElement.scrollWidth - innerWidth;
     // cut off at the edge: the page clips sideways overflow (overflow-x: clip), so look for visible boxes that run past the screen
     // edge, outside any box that scrolls sideways on purpose
     const scrollsX = e => { for (let a = e.parentElement; a && a !== document.body; a = a.parentElement) { const o = getComputedStyle(a).overflowX; if (o === 'auto' || o === 'scroll' || o === 'hidden' || o === 'clip') return true; } return false; };
@@ -113,12 +113,12 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
     // main buttons on one screen: slide a window of one screen down the page and count visible .np-btn inside it
     const mains = [...document.querySelectorAll('.np-btn')].filter(vis).map(e => e.getBoundingClientRect().top + scrollY);
     let most = 0, at = 0; for (let y = 0; y < H; y += innerHeight / 4) { const n = mains.filter(t => t >= y && t < y + innerHeight).length; if (n > most) { most = n; at = y; } }
-    return {H, sideways, cut, imgs, small, hidden, rep, most, at: Math.round(at), sample: !!document.querySelector('.tm-sample')};
+    return {H, dnH, sideways, cut, imgs, small, hidden, rep, most, at: Math.round(at), sample: !!document.querySelector('.tm-sample')};
   }, {touchW: touch(w)});
   // Sim, Nov 12 (option A): the first-visit sample team, which shows the sample-team note, may be 50px taller on phones
   if (r.sample && w === 390) limit += 50;
   const pics = r.imgs.length ? `broken images ${r.imgs.length}` : 'images ok';
-  out.push(`${eng.padEnd(8)} ${view.padEnd(10)} ${String(w).padStart(4)}  height ${r.H}${r.H > limit ? ` OVER ${limit}` : ` ok (${limit})`}${note ? ' [limit ' + (note === 'assumed' ? 'assumed' : note) + ']' : ''}; sideways ${r.sideways > 0 ? r.sideways + 'px' : 0}; cut off ${r.cut}; ${pics}; tap<44 ${r.small.length}${r.small.length ? ' [' + r.small.slice(0, 4).join('; ') + (r.small.length > 4 ? '; …' : '') + ']' : ''}; hidden-focusable ${r.hidden.length}${r.hidden.length ? ' [' + r.hidden.slice(0, 3).join('; ') + ']' : ''}; repeated ${r.rep.length}${r.rep.length ? ' [' + r.rep.slice(0, 2).join('; ') + ']' : ''}; main buttons/screen ${r.most}${r.most > 1 ? ' (at y ' + r.at + ')' : ''}; errors ${errs.length}${errs.length ? ' [' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''}`);
+  out.push(`${eng.padEnd(8)} ${view.padEnd(10)} ${String(w).padStart(4)}  height ${r.H}${r.dnH ? ` (+${r.dnH} data note, not counted)` : ''}${r.H > limit ? ` OVER ${limit}` : ` ok (${limit})`}${note ? ' [limit ' + (note === 'assumed' ? 'assumed' : note) + ']' : ''}; sideways ${r.sideways > 0 ? r.sideways + 'px' : 0}; cut off ${r.cut}; ${pics}; tap<44 ${r.small.length}${r.small.length ? ' [' + r.small.slice(0, 4).join('; ') + (r.small.length > 4 ? '; …' : '') + ']' : ''}; hidden-focusable ${r.hidden.length}${r.hidden.length ? ' [' + r.hidden.slice(0, 3).join('; ') + ']' : ''}; repeated ${r.rep.length}${r.rep.length ? ' [' + r.rep.slice(0, 2).join('; ') + ']' : ''}; main buttons/screen ${r.most}${r.most > 1 ? ' (at y ' + r.at + ')' : ''}; errors ${errs.length}${errs.length ? ' [' + [...new Set(errs)].slice(0, 2).join(' | ') + ']' : ''}`);
   await b.close(); }
 console.log(out.join('\n'));
 console.log(`c13 check (${state}; ${ENGINES.join(' + ')}): ${out.length} page/width runs; ${out.filter(l => / OVER /.test(l)).length} over height; ${Math.round((Date.now() - t0) / 1000)}s. Not covered: C2, C3 (beyond repeated lines), C5, C6, C9, C10, C11, C12.`);
