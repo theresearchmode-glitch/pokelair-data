@@ -117,8 +117,8 @@ function* boxCatchGen(res) { const d = res.teams && res.teams[0]; if (!d || !d.m
   sw.sort((a, b) => b[0] - a[0]); let best = null;
   for (const [, i, p] of sw.slice(0, 12)) { yield; const nt = [...t.slice(0, i), abMember(p), ...t.slice(i + 1)]; if (megaCount(nt) !== megaCount(t) || wxConflict(nt) || wxUnmet(nt).length) continue; const g = gradeTeam(nt); if (g != null && (!best || g > best.g)) best = {g, p, out: t[i].p}; }
   if (!best || best.g < g0 + 3) return;
-  d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach 90+ (Top tier): catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams`
-    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${Math.round(g0)} to ${Math.round(best.g)} (${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams)`);
+  d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach 90+ (Top tier): catch ${best.p.d} for ${best.out.d}.${CH.rankShort(CH.rankOfS(best.g)) ? ` With it this team is ${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams` : ''}`
+    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${Math.round(g0)} to ${Math.round(best.g)}${CH.rankShort(CH.rankOfS(best.g)) ? ` (${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams)` : ''}`);
   d.boxCatch = {p: best.p.n, out: best.out.n, g0, g: best.g}; }
 function* buildBestGen0() {
   // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below

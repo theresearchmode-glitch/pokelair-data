@@ -2132,3 +2132,37 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.bp .bp-spec .bd-opt{grid-template-columns:minmax(0,1fr)}}
 .bp-notes li{grid-template-columns:var(--s5) 128px minmax(0,1fr)}.bp-revs{grid-template-columns:minmax(0,1fr)}@media (max-width:699px){.bp-notes li{grid-template-columns:var(--s4) 96px minmax(0,1fr)}}
 .bp .bp-spec .bd-opt{grid-column:1/-1}.bp .bp-spec .np-slide{width:100%}@media (max-width:699px){.bp-notes li{grid-template-columns:var(--s4) minmax(0,1fr);row-gap:2px}.bp-notes .bp-nt{grid-column:2}}
+
+/* ---------- Build Blueprint lower half (designer's roughs, Nov 14): tab plates, "Reference sheets", "Parts list" ---------- */
+.bp2 .bd-jump{position:static;flex-wrap:wrap;align-items:center;gap:var(--s3);margin:var(--s10) var(--gut) 0;padding:0;border:0;background:none;overflow:visible}
+.bp2 .bd-jump button{min-height:44px;padding:0 var(--s6);border:1px solid var(--bp-ink);font:900 var(--t17)/1 var(--u);font-style:italic;color:var(--plot-text);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.bp2 .bd-jump button.on{background:var(--plot);border-color:var(--plot);color:var(--on-mark)}.bp2 .bd-jump button.on::after{content:none}
+.bp-tnote{margin-left:auto;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2);text-align:right}
+.bp2 .bd-lower{margin:0;padding:0;border:0}
+.bp2 .bd-lower>.bp{margin-top:var(--s4)}
+.bp-lower .bp-line h2{margin:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.bp-champ{display:flex;align-items:center;gap:var(--s3);margin:var(--s2) 0 var(--s4);font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--bp-ink)}
+.bp-champ::before,.bp-champ::after{content:'';flex:1;height:1px;background:var(--bp-ink);opacity:.6}
+.bp-wsix{margin:0;padding:0;list-style:none}.bp-wfig{cursor:default}
+.bp-mvs{display:grid;gap:0;margin-top:var(--s2)}.bp-mvs small{color:var(--ink)}
+.bp-ref .bd-win{margin:0;border-top:1px solid var(--bp-ink)}.bp-ref .bd-win[open]{padding:0 var(--s4) var(--s2);border:1px solid var(--bp-ink)}.bp-ref .bd-win[open]+.bd-win{border-top:0}
+.bp-wplace{display:grid;place-items:center;min-width:56px;padding:var(--s1) var(--s3);border:2px solid var(--bp-ink);font:900 var(--t20)/1.2 var(--u);font-style:italic;color:var(--plot-text)}
+.bp-ref .bd-wk{white-space:normal;overflow:visible}.bp-ref .bd-wev{margin:0;font:900 var(--t20)/1.25 var(--u);font-style:italic;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:normal}
+.bp-ref .bd-win[open] .bd-wev{font-size:var(--t26)}.bp-ref .bd-win[open] .bp-wplace{min-width:72px;font-size:var(--t26)}
+.bp-ref .bd-win[open] .bd-wsix{display:none}
+.bp-ref .bd-wacts{margin:var(--s5) 0 var(--s3)}
+.bp-ref .bd-wsix>*{width:44px}
+.bp-parts .bd-csw{margin-top:var(--s2)}.bp-parts .bd-hint{margin:0;color:var(--ink-2)}
+.bp-parts .bd-clist{display:block;margin:0;padding:0;list-style:none}
+.bp-parts .bd-core{grid-template-columns:48px auto minmax(0,1fr) auto auto;column-gap:var(--s4);padding:var(--s3) 0;border-bottom:1px solid var(--bp-grid5)}
+.bp-parts .bd-core:last-child{border-bottom:0}
+.bp-parts .bd-cn{font:900 var(--t22)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--bp-ink)}
+.bp-parts .bd-cp img{width:48px;height:48px}
+.bp-parts .bd-cm b{font:900 var(--t20)/1.25 var(--u);font-style:italic}
+.bp-parts .bd-cw b{font:900 var(--t28)/1 var(--u);font-style:italic}
+.bp-parts .bd-cmore{justify-self:center}
+@media (max-width:699px){.bp2 .bd-jump{margin:var(--s8) var(--s2) 0;gap:var(--s2)}.bp2 .bd-jump button{flex:1 1 0;justify-content:center;padding:0 var(--s3);font-size:var(--t15)}.bp-tnote{flex-basis:100%;margin:0;text-align:left}
+  .bp-ref .bd-win[open]{padding:0 var(--s2) var(--s2)}.bp-ref .bd-win[open] .bd-wev{font-size:var(--t20)}.bp-ref .bd-wev{font-size:var(--t17)}.bp-wplace{min-width:48px;font-size:var(--t17)}.bp-ref .bd-win[open] .bp-wplace{min-width:56px;font-size:var(--t20)}
+  .bp-parts .bd-core{grid-template-columns:auto minmax(0,1fr) auto}.bp-parts .bd-cm b{font-size:var(--t17)}.bp-parts .bd-cw{flex-wrap:wrap;column-gap:var(--s2);row-gap:0}.bp-parts .bd-cw b{font-size:var(--t20)}.bp-parts .bd-cp img{width:40px;height:40px}}
+
+@media (max-width:379px){.bp2 .bd-jump button{padding:0 var(--s2);font-size:var(--t13)}}

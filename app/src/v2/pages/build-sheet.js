@@ -49,7 +49,15 @@ V2.buildSheet = M => { const E = V2.esc, t = M.t, busy = !!(ui.ab && ui.ab.busy)
         <div class="bd-opt bd-go"><button type="button" class="np-btn" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'} ↻</span></button></div></div>
       <div class="bp-right"><p class="bp-k">Notes</p>${V2.bpNotes(M)}${acts}</div></div></section>`; };
 // the page: today's head (eyebrow, headline, intro and How It Works), the sheet, then Recent Winners and Cores as today (not redesigned yet)
-V2.bpPage = M => { const win = V2.buildWinners(), cor = V2.buildCores(), tab = V2.bdTab(false, !!win);
+// ---------- Blueprint lower half (designer's roughs, Nov 14): Recent Winners as "Reference sheets", Cores as "Parts list" ----------
+// Same sections, hooks and actions as today (build.js buildWinners / buildCores); only the frame, the header and the winner's six change.
+V2.bpCorners = () => ['tl', 'tr', 'bl', 'br'].map(k => `<i class="bp-x ${k}" aria-hidden="true"></i>`).join('');
+V2.bpHead = (plate, h, src) => `<div class="bp-line"><span class="bp-plate u" aria-hidden="true">${plate}</span><h2 class="bp-h">${h}</h2><span class="bp-src">${V2.esc(src)}</span></div>`;
+V2.bpWinSix = t => { const E = V2.esc, nm = d => /^Mega /.test(d) ? d.slice(5) : d, lg = t.mons.some(m => nm(V2.disp(m.n)).length > 9);
+  return `<p class="bp-champ"><span>${E(teamWho(t))}'s six, full sets</span></p><ul class="bp-six bp-wsix${lg ? ' lg' : ''}">${t.mons.map((m, i) => { const p = byName.get(m.n), d = V2.disp(m.n), mega = /^Mega /.test(d);
+    return `<li class="bp-fig bp-wfig"><span class="bp-no u" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span><span class="bp-art" aria-hidden="true"><i class="bp-ring"></i>${V2.mon(m.n, {bare: true})}</span><i class="bp-base" aria-hidden="true" style="--b1:var(--ty-${p ? p.t[0] : 'Normal'});--b2:var(--ty-${p ? p.t[1] || p.t[0] : 'Normal'})"></i>
+      <span class="bp-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b>${E(nm(d))}</b><small>${E(m.i || '')}</small><small class="r">${E(m.a || '')}${m.nt ? ' · ' + E(m.nt) : ''}</small><span class="bp-mvs">${(m.mv || []).map(x => `<small>${E(x)}</small>`).join('')}</span></li>`; }).join('')}</ul>`; };
+V2.bpPage = M => { const win = V2.buildWinners(true), cor = V2.buildCores(true), tab = V2.bdTab(false, !!win);
   const head = V2.buildHead().split('<div class="bd-opts">')[0];
-  return `<div class="bd2 bp2">${head}<div class="bd-result" aria-live="polite">${V2.buildSheet(M)}</div>${V2.buildJump(false, !!win, tab)}<div class="bd-lower" data-bdtab="${tab}"><div class="bd-lcol">${win}</div>${cor}</div></div>`; };
+  return `<div class="bd2 bp2">${head}<div class="bd-result" aria-live="polite">${V2.buildSheet(M)}</div>${V2.buildJump(false, !!win, tab).replace('</nav>', M.n > 1 ? '<span class="bp-tnote">The other teams from this build are now the Revisions on the sheet above.</span></nav>' : '</nav>')}<div class="bd-lower bp-lower" data-bdtab="${tab}"><div class="bd-lcol">${win}</div>${cor}</div></div>`; };
 (() => { const before = V2.pages.build.draw; V2.pages.build.draw = () => { const M = V2.bpModel(); return M ? V2.bpPage(M) : before(); }; })();

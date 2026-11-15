@@ -143,7 +143,7 @@ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.
 const pct1 = x => Math.round(x * 1000) / 10 + '%';
 // v2: where the six ranks among real teams, and what the grade rests on (its own games, or our estimate)
 CH.rkOf = G => G.rk != null ? G.rk : CH.rankOfS(G.s);
-CH.pctTxt = G => CH.rankShort(CH.rkOf(G)) + ' of tournament teams';
+CH.pctTxt = G => { const r = CH.rankShort(CH.rkOf(G)); return r ? r + ' of tournament teams' : ''; }; /* Sim, Nov 14 (Q2 A): no rank line when the rank is unknown */
 CH.pctShort = G => CH.rankShort(CH.rkOf(G));
 // a grade number (a rank among real teams) as its expected win rate, for explanations
 // a Strength Score as its chance to beat today's tournament teams (%), and as a rank among real teams (0-100)
@@ -155,7 +155,7 @@ CH.rankOfS = s => { const q = META.model && META.model.dist && META.model.dist.q
    or "Grade C · rating 41 → 46" when the letter stays. A tiny win-rate change ("−0.6%") claimed more precision than there is. */
 /* Shown as a rank (Sim, Nov 8: "77 for a 9-1 team seems so low"): the 0-100 number is where the six ranks among real tournament
    teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
-CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
+CH.rankShort = s => { if (s == null || !isFinite(s)) return ''; const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
 /* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
 CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
 // moved unchanged from 60-concept-h.js (R4, Nov 11: the rebuild's verdict line reads it)

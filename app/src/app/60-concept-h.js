@@ -42,7 +42,7 @@ CH.gcol = L => CH.GCOL[String(L || '')[0]] || '#8a90a6';
    underneath so "% ready" always reads as one part of the grade. A team with 30+ real games shows its record instead. */
 CH.gradeBadge = (G, RD) => { if (!G || !RD) return '';
   /* the same three lines as My team: the letter, the grade out of 100, the real win rate (or none yet); the sum is the tooltip */
-  const tt = G.v === 2 ? `Strength Score ${Math.round(G.s)}, ${CH.wordOfL(G.letter)}: ${CH.gradeSumS(G, RD)}. ${CH.pctTxt(G)}. ${CH.recLine(G)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.`;
+  const tt = G.v === 2 ? `Strength Score ${Math.round(G.s)}, ${CH.wordOfL(G.letter)}: ${CH.gradeSumS(G, RD)}. ${CH.pctTxt(G) ? CH.pctTxt(G) + '. ' : ''}${CH.recLine(G)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.`;
   /* plain words (Nov 9, Sim: no extra numbers next to the letter): the letter only; the rank and the record are in the hover text */
   return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(G.v === 2 ? tt : `${CH.gradeNum(G)}. ${tt}`)}"><b class="npgl">${G.v === 2 ? Math.round(G.s) : G.letter}</b></span>`; };
 /* round words (Sim, Nov 4): the record and readiness as labelled number cells instead of a sentence, each figure once.
