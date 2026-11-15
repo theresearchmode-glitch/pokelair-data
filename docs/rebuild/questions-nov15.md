@@ -12,3 +12,7 @@
 8. This Week's way in: "This Week ›" under Home's What Changed This Week (no Meta tab for it yet).
 9. Game Plan strip (My Team, Battle) now left-aligned (was centred).
 10. Naming leftovers: Share / Share as Image / Save Image / Team Poster; Tournaments vs Events; the replace-team confirmation wording.
+11. The Slab share card (built; pictures: pictures-nov15/slab-*-built.webp, share-sheet-slab-390.webp): ship it as the 4th choice in the share
+    sheet? Print and Aurora follow the same way once you say go.
+12. The three info pages (drafts; pictures: pictures-nov15/info-draft-*.webp): How We Calculate as ten numbered tiles that open their
+    working; About & Legal as "The Fine Print" rows beside "Everything We Save"; Send Feedback as one question, five kinds, a box. Yes, or changes?
