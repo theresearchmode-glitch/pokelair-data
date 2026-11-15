@@ -52,6 +52,7 @@ V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = 
 // work out what isn't cached yet, one side per frame, so the page answers at once (as today)
 V2.cxWork = () => { if (V2.cxBusy) return; V2.cxBusy = true; const step = () => requestAnimationFrame(() => setTimeout(() => { try { const R = [cxResolve(ui.cx.A), cxResolve(ui.cx.B)].find(r => r && !CX.cache.has(cxKey(r.slots))); if (R) { cxInfo(R.slots); step(); return; } } catch (e) {} V2.cxBusy = false; if (V2.route() === 'compare') V2.redraw(); }, 0)); step(); };
 
+// Sim Q10d (Nov 15): titled 'Change Team X' when that side already has a team (the button you tapped says Change), 'Pick Team X' when empty
 // the picker, as a sheet: My Team, saved teams, event winners (newest first), or a pasted Showdown team
 V2.cxPickHtml = side => { const other = ui.cx[side === 'A' ? 'B' : 'A'], E = V2.esc;
   const opt = (src, title, sub, names) => `<button type="button" class="cx2-opt" data-cxset2="${side}|${E(src)}"${other === src ? ' aria-disabled="true"' : ''}><span class="t"><b>${E(title)}</b>${other === src ? `<span>Already team ${side === 'A' ? 'B' : 'A'}</span>` : sub ? `<span>${E(sub)}</span>` : ''}</span><span class="s">${names.map(n => `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy">`).join('')}</span></button>`;
@@ -63,7 +64,7 @@ V2.cxPickHtml = side => { const other = ui.cx[side === 'A' ? 'B' : 'A'], E = V2.
   if (pool.length) parts.push(`<h3 class="cx2-ph">Winning Teams <small>event winners, newest first</small></h3>${pool.slice(0, cap).map(x => opt('e:' + x.key, String(teamPlanLabel(x.t.mons.map(m => m.n)) || '') || 'Event winner', `Won ${V2.evTitle(x.ev.name)} · ${evDate(x.ev.date)}`, x.t.mons.map(m => m.n)) /* Nov 15 (re-audit #10): every row said 'Champion'; now the team's style, as on Winning Teams; event names cleaned as on Build */).join('')}${pool.length > cap ? `<button type="button" class="np-link cx2-more" data-cxwmore2>Show ${Math.min(10, pool.length - cap)} More Winners</button>` : ''}<p class="fine">Any other tournament team: tap Compare on its card in Winning Teams.</p>`); /* today's line, restored (quality pass Nov 15) */
   parts.push(`<h3 class="cx2-ph">Paste a Showdown Team</h3><textarea class="imp2-in cx2-paste" data-cxpaste-in rows="5" spellcheck="false" placeholder="Paste a team from Showdown, Pokémon Zone, Pikalytics or Victory Road" aria-label="Showdown team text"></textarea>
     <div class="cx2-pacts"><button type="button" class="np-btn2" data-cxpaste2="${side}"><span>Use This Team</span></button><p class="fine" data-cxpnote aria-live="polite"></p></div>`);
-  return `<div class="cx2-pick"><div class="np-eyebrow">Compare</div><h2 class="u">Pick Team ${side}</h2>${parts.join('')}</div>`; };
+  return `<div class="cx2-pick"><div class="np-eyebrow">Compare</div><h2 class="u">${ui.cx[side] ? 'Change' : 'Pick'} Team ${side}</h2>${parts.join('')}</div>`; };
 V2.cxPick = side => { ui.cx.pick = side; V2.sheet(V2.cxPickHtml(side), {label: 'Pick team ' + side, small: true}); };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-cxp],[data-cxset2],[data-cxswap2],[data-cxwmore2],[data-cxpaste2],[data-cxgo2]'); if (!t) return; const d = t.dataset;
   if (d.cxgo2 !== undefined) { const [a, b] = d.cxgo2.split('|'); V2.cxGo(a, b); }
