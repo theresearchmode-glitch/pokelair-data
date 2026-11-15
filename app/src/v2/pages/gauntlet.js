@@ -12,7 +12,7 @@ V2.trRows = ms => { const T = gauntletTeams(); if (!T.length) return [];
 V2.trCp = n => { const m = (typeof ART_META === 'object' && ART_META[SPRITE_ID[n]]) || [150, 150, 165]; return `${m[0]},${m[1]},${m[2]}`; };
 V2.trUi = {more: false};
 TIPS.gauntcalc = ['How each verdict is worked out', "Each verdict is a real damage calc with your sets against each team's usual sets, the same as the Matchups on My Team. The suggested four come from the Battle planner. Least prepared matchups first."];
-V2.trHead = n => `<section class="tr-h"><p class="np-eyebrow"><span>Battle · Test Run</span></p><h1 class="u"><span>Your six vs the</span> <span class="pl">top${n ? ' ' + n : ''}.</span></h1></section>`;
+V2.trHead = n => `<section class="tr-h"><p class="np-eyebrow"><span>Battle · Test Run</span></p><h1 class="u"><span>Your six vs the</span> <span class="pl">top${n ? '\u00a0' + n : ''}.</span></h1></section>`;
 
 V2.pages.gauntlet = {place: 'battle', draw() { const E = V2.esc, ms = members(), tools = V2.battleToolsBar('gauntlet');
   if (ms.length < 4) return `<div class="tr">${tools}${V2.trHead(0)}<p class="tm-sub">Add at least four Pokémon on My Team to start a Test Run.${ms.length ? ` You have ${ms.length}.` : ''}</p><div class="tr-btns"><a class="np-btn" href="#team"><span>Go to My Team</span></a></div></div>`;
