@@ -2885,3 +2885,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:700px) and (max-width:819px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:104px}}
 .us-bh small{font-size:inherit} /* re-check Nov 15: a <small> inside the 13px line fell to 10.8px (browser default), off the type scale */
 .sp2-h h1 .pl{display:block} /* re-check Nov 15: two sentences, two lines (it ran on and left 'top 20.' alone) */
+.hm-acts .np-link{min-width:var(--tap);justify-content:center} /* re-check Nov 15: Got It was 39px wide */
+@media (max-width:359px){.gs-facts b{font-size:var(--t15)}} /* re-check Nov 15: at 320 '37.5%' and '52.0%' were wider than their columns and touched */
