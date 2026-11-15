@@ -19,14 +19,14 @@ V2.arRegion = (x, n, mine, row) => { const E = V2.esc, km = guideKeyMons(x.k), s
   return `<button type="button" class="ar-reg ${V2.arScene(x.k)} r${row}" style="--g:${Math.max(1, x.c)}" data-argo="${x.k}" aria-label="${E(x.name)}, ${x.pct}% of top teams, ${x.c} of ${n}.${you ? ' Your style.' : ''} Open guide.">
     <span class="ar-rk" aria-hidden="true"><b class="u">No. ${x.i + 1}</b>${you ? '<i class="ar-you">Your style</i>' : ''}</span>
     <span class="ar-nm u" aria-hidden="true">${E(x.name)}</span>
-    <span class="ar-sh" aria-hidden="true"><b class="u">${x.pct}%</b><small>of top teams<br>${x.c} of ${n}</small></span>
+    <span class="ar-sh" aria-hidden="true"><b class="u">${x.pct}%</b><small><span class="c1">of top teams</span> <span class="c2">${x.c} of ${n}</span><span class="c3">${x.c} of ${n} teams</span></small></span>
     <span class="ar-km" aria-hidden="true">${km.slice(0, show).map((p, j) => `<span class="${j ? '' : 'lead'}">${V2.mon(p.n, {bare: true})}</span>`).join('')}</span></button>`; };
 V2.arMap = (D, mine) => { const R = D.rows, rows = [R.slice(0, 2), R.slice(2, 5), R.slice(5)];
   return `<section class="ar-map" aria-label="The Weather Map: the eight team styles, biggest first">${rows.map((L, r) => `<div class="ar-row r${r}">${L.map(x => V2.arRegion(x, D.n, mine, r)).join('')}</div>`).join('')}</section>
     <p class="fine ar-note">A team can count for more than one style, so the regions add up to more than ${D.n} teams.</p>`; };
 V2.arGuide = (x, D, mine) => { const E = V2.esc, g = GUIDE[x.k], km = guideKeyMons(x.k), ms = members(), y = ms.length ? guideYours(x.k, ms) : null, you = mine.includes(x.k);
   const banner = `<section class="ar-ban ${V2.arScene(x.k)}" aria-label="${E(x.name)}"><div class="ar-bt">${you ? '<i class="ar-you">Your style</i>' : ''}<h2 class="u">${E(x.name)}</h2>
-      <p class="ar-sh"><b class="u">${x.pct}%</b><small>of top teams<br>${x.c} of ${D.n}</small></p><p class="ar-what">${E(g.what)}</p></div>
+      <p class="ar-sh"><b class="u">${x.pct}%</b><small><span>of top teams</span> <span>${x.c} of ${D.n}</span></small></p><p class="ar-what">${E(g.what)}</p></div>
     ${km.length ? `<div class="ar-keys"><p class="ar-kk">Key Pokémon</p><ul>${km.map((p, j) => `<li class="${j ? '' : 'lead'}"><button type="button" class="ar-key" data-v2mon="${E(p.n)}" aria-label="${E(p.d)}: open its info sheet">${V2.mon(p.n, {bare: true})}<span>${E(p.d)}</span></button></li>`).join('')}</ul></div>` : ''}</section>`;
   const beat = `<section class="ar-beat"><h3 class="u">How to beat it</h3><ol>${g.beat.map((b, i) => `<li><i class="ar-no u ${V2.arScene(x.k)}" aria-hidden="true">${i + 1}</i><span>${E(b)}</span></li>`).join('')}</ol></section>`;
   const has = y ? `<section class="ar-has"><h3 class="u">What your team has</h3>${y.length ? `<ul>${y.map(({m, why}) => `<li>${V2.mon(m.p.n, {iw: 48, bare: true})}<div><b>${E(m.d)}</b><small>${why.map(E).join(' · ')}</small></div><i class="ar-ok" aria-label="has an answer">✓</i></li>`).join('')}</ul>` : '<p class="ar-none"><b>Nothing on your team directly answers it.</b> One of the ideas beside this would help.</p>'}</section>`
