@@ -72,3 +72,8 @@ PICTURES (dark left, light right)
 build-blueprint-desktop.png
 build-blueprint-ipad.png
 build-blueprint-iphone.png
+
+
+## Lower half roughs (Sim, Nov 15, "the roughs for the other sections from the designer")
+lower-recent-winners-desktop.webp: Recent Winners as "Reference sheets" (slanted tab plates Recent Winners / Cores; first winner open with its six numbered figures, full sets, Load This Team / Copy for Showdown / Practice Against / Compare; the other two as rows with Open). Line above: "The other teams from this build are now the Revisions on the sheet above."
+lower-cores-desktop.webp: Cores as "Parts list" (Pairs / Trios / Full Teams, Top Rated / Most Used, With a Pokemon search; numbered rows 01-08 with sprites, names, teams, points together, win rate, vs avg, Add; Show 16 More Pairs). Desktop only, dark and light; no text brief: our rules win, changes listed for Sim.
