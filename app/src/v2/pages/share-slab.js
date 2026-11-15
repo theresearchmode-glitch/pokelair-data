@@ -24,10 +24,10 @@ V2.slabCard = (x, m, im, cx, cy, w, h, tilt, big, ic) => { const t = m.p.t || ['
   // the item just under the Card, in plain text (straight, for reading)
   if (item) { x.textAlign = 'center'; ARB.fnt(x, `600 ${big ? 26 : 18}px "Instrument Sans", sans-serif`); x.fillStyle = ic || '#D9D4DE'; x.fillText(scFit(x, item, w + 20), cx, cy + h / 2 + (big ? 44 : 32)); }
   x.textAlign = 'left'; };
-V2.slab = async (ms, shape, light) => { /* light (Nov 15): the same look on a cream field, for the share window's Light choice; the Cards stay dark */
+V2.slab = async (ms, shape, light, nameAs) => { /* light (Nov 15): the same look on a cream field, for the share window's Light choice; the Cards stay dark */
   const K = light ? {bg: '#F3EEE7', line: 'rgba(22,20,26,.05)', line2: 'rgba(255,255,255,.12)', ink: '#16141A', ink2: '#4A4550', ink3: '#1F1C24', blue: '#0068AD', band: .5, chipText: '#FBF8F4'} : {bg: '#0E0D12', line: 'rgba(255,255,255,.035)', line2: 'rgba(255,255,255,.06)', ink: '#FFFFFF', ink2: '#C9C3CC', ink3: '#D9D4DE', blue: '#62BEF7', band: .85, chipText: '#14110F'}; ms = (ms || members()).slice(0, 6); if (!ms.length) return null; await ARB.fonts();
   const tall = shape !== 'wide', W = tall ? 1080 : 1200, H = tall ? 1350 : 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.textBaseline = 'alphabetic';
-  const f = ARB.facts(ms), sc = ARB.score(f.G), hd = f.RD ? CH.hand(f.RD) : null, rank = f.G ? CH.pctTxt(f.G) : '', word = f.G ? CH.wordOf(f.G.s) : '';
+  const f = ARB.facts(ms, nameAs), sc = ARB.score(f.G), hd = f.RD ? CH.hand(f.RD) : null, rank = f.G ? CH.pctTxt(f.G) : '', word = f.G ? CH.wordOf(f.G.s) : '';
   let L = null; try { L = teamLineup(ms); } catch (e) {} const lead = L && L.lead && L.lead.length >= 2 ? L.lead.slice(0, 2) : ms.slice(0, 2), rest = ms.filter(m => !lead.includes(m)).slice(0, 4);
   const order = [...lead, ...rest], imgs = await ARB.imgs(order);
   // near-black, fine diagonal lines
