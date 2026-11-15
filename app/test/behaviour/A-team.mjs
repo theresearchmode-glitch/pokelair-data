@@ -1002,7 +1002,7 @@ t('CMP-02', 'Team headers A/B with source and Change; "Swap A and B" swaps the c
 t('CMP-03', 'Team picker: My Team (greyed when already A), saved teams, winners, paste a Showdown team; never changes my team', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); const tx = await r.ui.text();
   for (const s of ['Saved Teams', 'Rain test', /Winning [Tt]eams:? event winners, newest first/, (NEW ? /Show 10 More Winners/ : /Show 10 more winners/), /Any other tournament team: tap Compare on its card in Winning [Tt]eams/, /Paste a Showdown [Tt]eam/, /Use [Tt]his [Tt]eam/, /Already team A/]) has(tx, s, 'picker');
-  await r.ui.tapText((NEW ? /^Show 10 More Winners$/ : /^Show 10 more winners$/), 700); ok(((await r.ui.text()).match(/Champion Won/g) || []).length >= 16, 'Show 10 more did not add winners');
+  await r.ui.tapText((NEW ? /^Show 10 More Winners$/ : /^Show 10 more winners$/), 700); { const t10 = await r.ui.text(), n10 = (t10.match(NEW ? /\bWon .+?· [A-Z][a-z]{2} \d+/g : /Champion Won/g) || []).length; ok(n10 >= 16, 'Show 10 more did not add winners: ' + n10 + ' found; ' + JSON.stringify(t10.slice(t10.indexOf('newest first'), t10.indexOf('newest first') + 160))); } // new site (Nov 15): rows are titled by team style, not 'Champion'
   await r.ui.pasteCompareTeam(PASTE); await r.ui.settle(); has((await r.ui.compareHeads()).join(' '), /From a Showdown paste/, 'B head'); ok((await r.ui.team()).join() === TEAM.join(), 'my team changed'); await r.close(); });
 
 t('CMP-04', 'Comparison: "What\'s different" (Tailwind, sun vs rain), Strength Score row, Same-on-both fold', async () => {
