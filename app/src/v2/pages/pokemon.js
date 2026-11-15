@@ -79,12 +79,31 @@ V2.pkTypes = p => { const E = V2.esc, M = SHT.matchups(p), chips = arr => arr.le
     <div class="pk-scale5">${box('q', '4× weak', chips(M.g.q))}${box('d', '2× weak', chips(M.g.d))}${box('n', 'Normal damage', '<p class="pk-none">Every other type</p>')}${box('h', 'Resists ½', res)}${box('z', 'Immune', chips(M.g.z))}</div>
     ${M.ab.map(o => `<p class="fine">With ${E(o.a)}${M.only ? ' (its only Ability, already counted)' : ''}: ${o.ch.map(c => `${E(c.t)} ${E(SHT.word(c.raw))} → ${E(SHT.word(c.x))}`).join(', ')}.</p>`).join('')}
     <p class="fine">${M.only ? `Its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} with ${E(M.only)}` : `For its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} alone`}. Every other type hits it for normal damage.</p></section>`; };
-V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-nm'); }, draw() { const p = V2.monFromHash(), E = V2.esc;
+
+// 4. How fast it is (today's Speed at Level 50: every build, its Speed, its line and how much of the top 30 it outspeeds; the same note).
+// Desktop: one line from "outspeeds none" to "outspeeds all" of the top 30, each build a flag at its share. Flags go in the first free
+// row (above, below, then a second row each way) so two close builds never overlap. The Trick Room build is measured the other way
+// round, so it has its own strip. Under 1100 px the line would crowd: the builds are a list with a bar each.
+V2.pkSpeed = p => { const E = V2.esc, sp = SHT.speeds(p), id = typeof SPRITE_ID === 'object' ? SPRITE_ID[p.n] : null;
+  const onLine = sp.filter(x => !x.tr && x.os), tr = sp.filter(x => x.tr), W = 17 /* a flag's width as % of the line, at 1100 px+ */;
+  const rows = [[], [], [], []], place = onLine.slice().sort((a, b) => a.os.pct - b.os.pct).map(x => { const L = Math.min(Math.max(x.os.pct - W / 2, 0), 100 - W);
+    let r = rows.findIndex(R => !R.length || R[R.length - 1] + 1 <= L); if (r < 0) r = 0; rows[r].push(L + W); return {x, L, r}; });
+  const used = rows.map(R => R.length > 0), up = (used[0] ? 1 : 0) + (used[2] ? 1 : 0), dn = (used[1] ? 1 : 0) + (used[3] ? 1 : 0);
+  const flag = ({x, L, r}) => `<div class="pk-flag r${r}${x.main ? ' main' : ''}" style="--l:${L.toFixed(2)};--p:${x.os.pct}"><b class="u">${x.main && id ? `<span class="pk-fm" aria-hidden="true">${V2.mon(p.n, {iw: 40, bare: true})}</span>` : ''}${x.v}</b><span>${E(x.l)}</span><small>${E(x.note)}</small><em>outspeeds ${x.os.pct}% of the top 30</em></div><i class="pk-stem r${r}" style="--p:${x.os.pct}" aria-hidden="true"></i>`;
+  const mon = ''; /* the Pokémon stands in its own dark flag, beside its Speed (on the line it hid behind the flag) */
+  const line = `<div class="pk-speed" style="--up:${up};--dn:${dn}"><div class="pk-line">${[0, 25, 50, 75, 100].map(v => `<i class="tick" style="--p:${v}" aria-hidden="true"><span>${v}%</span></i>`).join('')}${mon}</div>${place.map(flag).join('')}
+    <p class="pk-ends"><span>Outspeeds none of the top 30</span><span>Outspeeds all of the top 30</span></p></div>`;
+  const strip = tr.map(x => `<div class="pk-tr"><b class="u">${x.v}</b><span>${E(x.l)}<small>${E(x.note)}</small></span><em>${x.os ? `moves before ${x.os.pct}% of the top 30 under Trick Room` : ''}</em></div>`).join('');
+  const list = `<div class="pk-splist">${sp.map(x => `<div class="${x.main ? 'main' : ''}"><span>${E(x.l)}<small>${E(x.note)}</small></span><b class="u">${x.v}</b><i style="--p:${x.os ? x.os.pct : 0}" aria-hidden="true"></i><em>${x.os ? (x.tr ? `moves before ${x.os.pct}% of the top 30 under Trick Room` : `outspeeds ${x.os.pct}% of the top 30`) : ''}</em></div>`).join('')}</div>`;
+  return `<section class="pk-sec" aria-labelledby="pk-s4">${V2.pkHead(4, 'How fast it is', 'Speed at Level 50', 'pk-s4')}${line}${strip}${list}
+    <p class="fine">Level 50, as in Pokémon Champions: base Speed ${p.st[5]}, Speed points 0–32 add 1 each, a Speed nature adds 10%. "Top 30" = the 30 biggest threats at their usual Speed.</p></section>`; };
+V2.pkFlags = () => { const w = document.querySelector('.pk-speed'); if (!w) return; const h = Math.max(0, ...[...w.querySelectorAll('.pk-flag')].map(f => f.offsetHeight)); w.style.setProperty('--rh', (h + 16) + 'px'); }; /* rows as tall as the tallest flag */
+V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkFlags(); }, draw() { const p = V2.monFromHash(), E = V2.esc;
   if (!p) return `<div class="ra gsp"><section class="ra-h"><p class="np-eyebrow"><span>Pokémon</span></p><h1 class="u">No Pokémon here.</h1><p class="ra-lede">This address doesn't match a Pokémon in Reg M-C. <a class="np-link pk-404" href="#meta">Every Pokémon, by tier</a></p></section></div>`;
   try { document.title = `${V2.disp(p.n)}: rating, sets and partners · NastyPlot`; } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
   return `<div class="ra pk"><nav class="pk-trail" aria-label="You are here"><a href="#meta">Meta</a><span aria-hidden="true">›</span><a href="#meta">Ratings</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav>
-    ${V2.pkTop(p)}${V2.pkStats(p)}${(() => { const pr = V2.pkPartners(p); return V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it'], ...(pr ? [['pk-s2', 'Who it teams with']] : []), ['pk-s3', 'What beats it']]) + V2.pkBuild(p) + pr + V2.pkTypes(p); })()}
+    ${V2.pkTop(p)}${V2.pkStats(p)}${(() => { const pr = V2.pkPartners(p); return V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it'], ...(pr ? [['pk-s2', 'Who it teams with']] : []), ['pk-s3', 'What beats it'], ['pk-s4', 'How fast it is']]) + V2.pkBuild(p) + pr + V2.pkTypes(p) + V2.pkSpeed(p); })()}
     <p class="pk-more fine">The rest of ${E(V2.disp(p.n))}'s page is being rebuilt part by part. Until then: <button type="button" class="np-link" data-v2mon="${E(p.n)}">Open today's info sheet</button></p></div>`; }};
 // the tab title goes back to the site's own when you leave a Pokémon page
 V2.title0 = document.title; addEventListener('hashchange', () => { if (V2.route() !== 'pokemon') try { document.title = V2.title0; } catch (e) {} });
-addEventListener('resize', () => requestAnimationFrame(() => { if (V2.route() === 'pokemon') V2.fitMsName('.pk-card .mc-id>.mc-nm'); }));
+addEventListener('resize', () => requestAnimationFrame(() => { if (V2.route() === 'pokemon') { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkFlags(); } }));

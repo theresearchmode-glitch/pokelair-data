@@ -3071,3 +3071,29 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-chips{display:flex;flex-wrap:wrap;gap:var(--s1);padding:0 var(--s3)}.pk-none,.pk-qr{margin:0;padding:0 var(--s3);font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pk-qr{font:700 var(--t13)/1.5 var(--b)}
 @media (max-width:899px){.pk-scale5{grid-template-columns:minmax(0,1fr)}.pk-tb{grid-template-columns:132px minmax(0,1fr);align-items:center;padding:0}.pk-tb h3{align-self:stretch;display:flex;align-items:center}
   .pk-tb .pk-chips,.pk-tb .pk-none{padding:var(--s2) var(--s3)}.pk-tb .pk-qr{grid-column:2}.pk-tb>*:nth-child(n+3){grid-column:2}}
+/* Pokémon page part 4 "How fast it is": the line of the top 30 outsped, a flag per build in its own row (r0/r2 above, r1/r3 below) */
+.pk-speed{--rh:160px;position:relative;padding:calc(var(--up)*var(--rh)) 0 calc(var(--dn)*var(--rh) + var(--s16))}
+.pk-line{position:relative;height:4px;background:var(--plot)}.pk-line .tick{position:absolute;left:calc(var(--p)*1%);top:-6px;width:2px;height:16px;background:var(--plot)}
+.pk-line .tick span{position:absolute;top:var(--s5);left:0;font:600 var(--t13)/1 var(--b);font-style:normal;color:var(--ink-3);transform:translateX(-50%)}.pk-line .tick:first-child span{transform:none}.pk-line .tick:last-of-type span{transform:translateX(-100%)}
+.pk-sprite{position:absolute;bottom:2px;left:calc(var(--p)*1%);transform:translateX(-50%)}
+.pk-flag{position:absolute;left:calc(var(--l)*1%);width:17%;display:grid;gap:2px;padding:var(--s2) var(--s3);background:var(--wash);font:500 var(--t13)/1.4 var(--b)}
+.pk-flag.r0{top:calc(var(--up)*var(--rh) - var(--s4));translate:0 -100%}.pk-flag.r2{top:calc(var(--up)*var(--rh) - var(--rh) - var(--s4));translate:0 -100%} /* flags above stand on their stems, just over the line */
+.pk-flag.r1{top:calc(var(--up)*var(--rh) + var(--s10))}.pk-flag.r3{top:calc(var(--up)*var(--rh) + var(--rh) + var(--s10))} /* below the % labels */
+.pk-flag b{font:900 var(--t28)/1 var(--u);font-style:italic}.pk-flag span{font:700 var(--t13)/1.4 var(--b)}.pk-flag small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.pk-flag em{font:700 var(--t13)/1.4 var(--b);font-style:normal;color:var(--plot-text)}
+.pk-flag.main{background:var(--plate);color:var(--on-plate)}.pk-flag.main small{color:var(--on-plate);opacity:.85}.pk-flag.main em{color:var(--on-plate)}
+.pk-stem{position:absolute;left:calc(var(--p)*1%);width:2px;background:var(--ink-3)}
+.pk-stem.r0{top:calc(var(--up)*var(--rh) - var(--s4));height:var(--s4)}.pk-stem.r2{top:calc(var(--up)*var(--rh) - var(--rh) - var(--s4));height:calc(var(--rh) + var(--s4))}
+.pk-stem.r1{top:calc(var(--up)*var(--rh) + 4px);height:calc(var(--s10) - 4px)}.pk-stem.r3{top:calc(var(--up)*var(--rh) + 4px);height:calc(var(--rh) + var(--s10) - 4px)}
+.pk-ends{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;margin:0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.pk-tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s4);padding:var(--s3) var(--s5);background:color-mix(in srgb,var(--band-ready) 18%,var(--wash));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.pk-tr b{font:900 var(--t28)/1 var(--u);font-style:italic}.pk-tr span{display:grid;font:700 var(--t15)/1.4 var(--b)}.pk-tr small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.pk-tr em{font:700 var(--t13)/1.4 var(--b);font-style:normal}
+.pk-splist{display:none}
+@media (max-width:1099px){.pk-speed,.pk-tr{display:none}.pk-splist{display:grid;gap:var(--s3)}
+  .pk-splist>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s1) var(--s4);align-items:center;padding:var(--s3) var(--s4);background:var(--wash)}.pk-splist>div.main{background:var(--plate);color:var(--on-plate)}
+  .pk-splist span{display:grid;font:700 var(--t15)/1.4 var(--b)}.pk-splist small{font:500 var(--t13)/1.4 var(--b);opacity:.85}.pk-splist b{font:900 var(--t28)/1 var(--u);font-style:italic}
+  .pk-splist i{grid-column:1/-1;height:var(--s2);background:linear-gradient(90deg,var(--plot) calc(var(--p)*1%),color-mix(in srgb,var(--ink) 12%,transparent) 0)}.pk-splist em{grid-column:1/-1;font:700 var(--t13)/1.4 var(--b);font-style:normal}}
+
+.pk-fm{display:inline-block;vertical-align:middle;margin-right:var(--s2)}.pk-flag b{display:flex;align-items:flex-end}
+.mh .mc-mon{top:var(--s10)} /* Sim, Nov 15 (B, recommended): no Pokémon pops out of its Card on The Hand; every one stands inside on the same floor */
+@media (max-width:699px){.mh .mc-mon{top:var(--s5)}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:80px}} /* small Cards (152 px): the Pokémon stays inside and clear of its name */
+@media (min-width:700px) and (max-width:1099px){.mh .mc-mon{top:var(--s5)}} /* tablets: a Mega two-line name stays clear */
