@@ -21,13 +21,13 @@ V2.ticket = (ev, big) => { const E = V2.esc, w = ev.top[0], ns = w ? w.mons.map(
     <span class="tk-mid" aria-hidden="true">${k}<b class="tk-name u">${E(ev.name)}</b></span><span class="tk-five" aria-hidden="true">${rest.map(n => V2.mon(n, {bare: true})).join('')}</span>${stub}</button>`;
   return `<article class="tk big${off ? ' off' : ''}" style="${V2.evTy(lead)}" data-evgo="${E(ev.id)}" aria-label="Latest result. ${E(say)}">${hero}
     <div class="tk-mid"><span class="tk-tag u">Latest result</span>${k}<h3 class="tk-name u">${E(ev.name)}</h3>
-      <ul class="tk-five">${rest.map(n => `<li>${V2.mon(n, {bare: true})}<span>${E(V2.disp(n))}</span></li>`).join('')}</ul>
+      <ul class="tk-five">${rest.map(n => `<li>${V2.mon(n, {bare: true})}<span>${E(V2.disp(n)).replace(/ (\S{1,2})$/, '\u00a0$1')}</span></li>`).join('')}</ul>
       <button type="button" class="tk-go" data-evgo="${E(ev.id)}">See the placings, 1st to ${placeTxt(ev.top.length)} ›</button></div>${stub}</article>`; };
 // Next Events (today's calendarHTML: the next events with a countdown, Show all, the recent official ones with results, the source)
 V2.evCal = () => { const C = META.calendar, E = V2.esc;
   if (!C || typeof CAL === 'undefined') return '<p class="ev-none">The event calendar appears after the next data refresh.</p>';
   const t = CAL.today(), next = C.ev.filter(e => e.e >= t && e.t !== 'national'), past = C.ev.filter(e => e.e < t && ['regional', 'sc', 'international', 'worlds'].includes(e.t)).slice(-3).reverse();
-  const shown = V2.evUi.cal ? next : next.slice(0, innerWidth < 700 ? 2 : 3) /* phones: two, so the plate doesn't push the wall down (page length) */, age = C.checked ? CAL.days(t, C.checked) : 0;
+  const shown = V2.evUi.cal ? next : next.slice(0, 2) /* two, so the plate stays level with the headline (audit: an empty strip beside a tall plate) */, age = C.checked ? CAL.days(t, C.checked) : 0;
   const row = e => { const [k, w] = CAL.when(e), d = new Date(e.s + 'T12:00:00'), place = e.t === 'online' ? '' : [e.city !== e.n ? e.city : '', CAL.country(e.cc)].filter(Boolean).join(', ');
     const inner = `<span class="ev-cd" aria-hidden="true"><b class="u">${d.getDate()}</b><small>${d.toLocaleDateString('en-US', {month: 'short'})}</small></span><span class="ev-cm"><b>${E(e.n)}</b><small>${E(CAL.range(e))}${place ? ' · ' + E(place) : ''}${e.n.toLowerCase().includes(CAL.type[e.t].toLowerCase()) ? '' : ' · ' + CAL.type[e.t]}</small></span><span class="ev-cw ${k}">${w}</span>`;
     return `<li>${e.url ? `<a class="ev-crow" href="${E(e.url)}" target="_blank" rel="noopener" aria-label="${E(e.n)}, ${E(CAL.range(e))}, ${w}: details (opens a new tab)">${inner}</a>` : `<span class="ev-crow">${inner}</span>`}</li>`; };
@@ -53,7 +53,7 @@ V2.evRow = (ev, t, i) => { const E = V2.esc, key = ev.id + '#' + i, ns = t.mons.
     <div class="wt-rt"><p class="wt-rh"><b class="u">${E(teamWho(t))}</b></p><p class="wt-names">${ns.map(n => E(V2.disp(n))).join(' · ')}</p><p class="wt-meta">${V2.wtChips(ns)}</p>${sets}${V2.evActs(key)}</div></article>`; };
 V2.evOpen = ev => { const E = V2.esc, off = ev.src === 'official';
   const field = ev.field && ev.field.length ? `<section class="ev-field"><h3 class="u">Most brought by the whole field</h3><p class="fine">Of ${homeNum(ev.players)} players</p><ul>${ev.field.map(([n, pc]) => { const p = byName.get(n); return p ? `<li><button type="button" class="ev-fm" data-v2mon="${E(n)}" aria-label="${E(p.d)}, ${E(pctTxt(pc))} of players: open its info sheet">${V2.mon(n, {iw: 48, bare: true})}<span>${E(p.d)}</span><b class="u">${E(pctTxt(pc))}</b></button></li>` : ''; }).join('')}</ul></section>` : '';
-  return `<section class="ev-open"><button type="button" class="np-link ev-back" data-evback>‹ All Events</button>
+  return `<section class="ev-open wt"><button type="button" class="np-link ev-back" data-evback>‹ All Events</button>
     <header class="ev-oh" style="${V2.evTy(ev.top[0] && ev.top[0].mons[0] && ev.top[0].mons[0].n)}"><div><p class="tk-k">${off ? '<b>Official event</b> · ' : ''}${E(evDate(ev.date))} · ${homeNum(ev.players)} players</p><h2 class="u">${E(ev.name)}</h2>
       <p class="ev-osub">${off ? 'Official Pokémon event (Victory Road)' : 'Online (Limitless)'} · top ${ev.top.length}</p></div></header>${field}
     <h3 class="u ev-plh">The Placings, 1st to ${placeTxt(ev.top.length)}</h3><div class="wt-rows ev-rows">${ev.top.map((t, i) => V2.evRow(ev, t, i)).join('')}</div></section>`; };

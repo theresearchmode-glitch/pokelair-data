@@ -2600,7 +2600,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .tk.big .tk-stub{grid-area:s;min-width:112px;border-radius:0 var(--r-s) 0 0}.tk.big .tk-stub b{font-size:var(--d64)}
   .tk.big .tk-mid{grid-area:m;padding:var(--s4) var(--s4) var(--s5);border-top:2px dashed var(--tk-tear)}
   .tk.big .tk-name{font-size:var(--t22)}
-  .tk.big .tk-five{display:flex;flex-wrap:wrap;justify-content:center;row-gap:var(--s3)}.tk.big .tk-five li{flex:0 0 33.333%} /* 3 + 2, the two centred under the three */
+
 }
 @media (max-width:389px){.tk-hero{width:72px}.tk-hero .np-mon{--iw:68px}.tk-five{gap:0}.tk-five .np-mon{--iw:36px}}
 
@@ -2610,8 +2610,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ev-oh{padding:var(--s6);color:var(--on-type);background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(115deg,var(--ta),var(--tb));border-radius:var(--r-s)}
 .ev-oh h2{margin:var(--s1) 0;font:900 var(--t34)/1.2 var(--u);font-style:italic;overflow-wrap:anywhere}.ev-osub{margin:0;font:500 var(--t15)/1.5 var(--b)}
 .ev-field h3,.ev-plh{margin:0;font:900 var(--t22)/1.3 var(--u);font-style:italic}.ev-field .fine{margin:0 0 var(--s3)}
-.ev-field ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--s2) var(--s4)}
-.ev-fm{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s2);width:100%;min-height:var(--tap);padding:0;border:0;background:none;color:inherit;font:600 var(--t15)/1.4 var(--b);text-align:left;cursor:pointer}
+.ev-field ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s2) var(--s6)}@media (max-width:1099px){.ev-field ul{grid-template-columns:repeat(2,minmax(0,1fr))}} /* the field's 8 in even rows (audit: names ran under the % and one sat alone) */
+.ev-fm{display:grid;grid-template-columns:auto minmax(0,1fr) auto;overflow-wrap:break-word;align-items:center;gap:var(--s2);width:100%;min-height:var(--tap);padding:0;border:0;background:none;color:inherit;font:600 var(--t15)/1.4 var(--b);text-align:left;cursor:pointer}
 .ev-fm b{font:900 var(--t17)/1 var(--u);font-style:italic}
 .ev-pl{min-width:var(--s12)}.ev-pl.p1{color:var(--podium-1)}
 .ev-sets{list-style:none;margin:var(--s2) 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s3) var(--s4)}
@@ -2635,17 +2635,17 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wx-tw{--wc:var(--ty-Flying);background-image:radial-gradient(130% 70% at 20% 125%,transparent 58%,var(--wx-mid) 59% 61%,transparent 62%),radial-gradient(120% 60% at 75% 120%,transparent 64%,var(--wx-lo) 65% 67%,transparent 68%),repeating-linear-gradient(172deg,transparent 0 26px,var(--wx-lo) 26px 28px)}
 .wx-sun{--wc:var(--ty-Fire);background-image:radial-gradient(circle at 88% 10%,var(--podium-1) 0 44px,var(--wx-mid) 45px 52px,transparent 53px),repeating-conic-gradient(from 0deg at 88% 10%,var(--wx-mid) 0 5deg,transparent 5deg 15deg)}
 .wx-rain{--wc:var(--ty-Water);background-image:radial-gradient(40% 30% at 15% 0,var(--wx-dk) 0 99%,transparent),radial-gradient(45% 34% at 55% 0,var(--wx-dk) 0 99%,transparent),radial-gradient(40% 30% at 92% 0,var(--wx-dk) 0 99%,transparent),repeating-linear-gradient(105deg,transparent 0 14px,var(--wx-mid) 14px 15px)}
-.wx-sand{--wc:var(--ty-Ground);background-image:radial-gradient(70% 40% at 20% 120%,var(--wx-dk) 0 99%,transparent),radial-gradient(60% 34% at 80% 125%,var(--wx-dk) 0 99%,transparent),repeating-linear-gradient(-8deg,transparent 0 18px,var(--wx-lo) 18px 24px),radial-gradient(circle,var(--wx-mid) 1px,transparent 1.5px) 0 0/9px 7px}
-.wx-snow{--wc:var(--ty-Ice);background-image:radial-gradient(80% 30% at 50% 115%,var(--wx-hi) 0 99%,transparent),radial-gradient(circle,var(--wx-hi) 2px,transparent 2.5px) 0 0/34px 30px,radial-gradient(circle,var(--wx-mid) 1.5px,transparent 2px) 15px 13px/26px 24px}
-.wx-grassy{--wc:var(--ty-Grass);background-image:repeating-linear-gradient(78deg,transparent 0 7px,var(--wx-mid) 7px 9px),radial-gradient(circle,var(--wx-mid) 1.5px,transparent 2px) 0 0/22px 26px;background-size:100% 28%,auto;background-position:0 100%,0 0;background-repeat:no-repeat,repeat}
+.wx-sand{--wc:var(--ty-Ground);background-image:radial-gradient(70% 40% at 20% 120%,var(--wx-dk) 0 99%,transparent),radial-gradient(60% 34% at 80% 125%,var(--wx-dk) 0 99%,transparent),repeating-linear-gradient(-8deg,transparent 0 18px,var(--wx-lo) 18px 24px),radial-gradient(circle,var(--wx-mid) 1px,transparent 1.5px);background-size:auto,auto,auto,9px 7px}
+.wx-snow{--wc:var(--ty-Ice);background-image:radial-gradient(80% 30% at 50% 115%,var(--wx-hi) 0 99%,transparent),radial-gradient(circle,var(--wx-hi) 2px,transparent 2.5px),radial-gradient(circle,var(--wx-mid) 1.5px,transparent 2px);background-size:auto,34px 30px,26px 24px;background-position:0 0,0 0,15px 13px}
+.wx-grassy{--wc:var(--ty-Grass);background-image:repeating-linear-gradient(78deg,transparent 0 7px,var(--wx-mid) 7px 9px),radial-gradient(circle,var(--wx-mid) 1.5px,transparent 2px);background-size:100% 28%,22px 26px;background-position:0 100%,0 0;background-repeat:no-repeat,repeat}
 .wx-psy{--wc:var(--ty-Psychic);background-image:repeating-radial-gradient(ellipse at 50% 120%,transparent 0 22px,var(--wx-mid) 22px 25px)}
-.wx-tr{--wc:var(--ty-Ghost);background-image:linear-gradient(var(--wx-mid) 1px,transparent 1px) center/18px 18px,linear-gradient(90deg,var(--wx-mid) 1px,transparent 1px) center/18px 18px,repeating-conic-gradient(from 0deg at 50% 50%,var(--wx-mid) 0 .8deg,transparent .8deg 22.5deg);background-size:36% 40%,36% 40%,auto;background-repeat:no-repeat,no-repeat,repeat}
+.wx-tr{--wc:var(--ty-Ghost);background-image:repeating-linear-gradient(0deg,var(--wx-hi) 0 1px,transparent 1px 16px),repeating-linear-gradient(90deg,var(--wx-hi) 0 1px,transparent 1px 16px),linear-gradient(var(--wx-dk),var(--wx-dk)),repeating-conic-gradient(from 0deg at 50% 50%,var(--wx-mid) 0 .8deg,transparent .8deg 22.5deg);background-size:36% 40%,36% 40%,36% 40%,auto;background-position:center;background-repeat:no-repeat,no-repeat,no-repeat,repeat} /* lines running back to a gridded far wall */
 .wx-elec{--wc:var(--ty-Electric);background-image:repeating-linear-gradient(-62deg,transparent 0 28px,var(--wx-hi) 28px 30px,transparent 30px 44px),linear-gradient(transparent 70%,var(--wx-dk))}
 /* the map: three rows, tallest first; widths in a row follow the counts */
 .ar-map{display:grid;gap:var(--s2)}
 .ar-row{display:flex;gap:var(--s2)}
 .ar-reg{flex:var(--g) 1 0;min-width:0;display:grid;grid-template-rows:auto auto 1fr auto;align-content:start;gap:var(--s1);padding:var(--s4) var(--s5) 0;border:0;border-radius:var(--r-s);text-align:left;font:inherit;cursor:pointer}
-.ar-row.r0 .ar-reg{min-height:300px}.ar-row.r1 .ar-reg{min-height:232px}.ar-row.r2 .ar-reg{min-height:184px}
+.ar-row .ar-reg{height:var(--h)}
 .ar-reg:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
 .ar-rk{display:flex;align-items:center;gap:var(--s2);font:800 var(--t13)/1.5 var(--u);font-style:italic}
 .ar-you{padding:0 var(--s2);background:var(--on-type);color:var(--tk-ink);font:800 var(--t13)/1.5 var(--u);font-style:italic;text-shadow:none;transform:skewX(-8deg)}
@@ -2701,7 +2701,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.ar-ban{padding:var(--s5)}.ar-ban h2{font-size:var(--t34)}.ar-oth ul{grid-template-columns:repeat(2,minmax(0,1fr))}.ar-key .np-mon{--iw:64px}.ar-keys li.lead .ar-key .np-mon{--iw:96px}.ar-gh{display:grid;justify-items:start}}
 
 @media (max-width:429px){.ar-row.r2 .ar-sh small .c3{display:none}.ar-row.r2 .ar-sh small .c2{display:block}} /* the narrowest regions keep '7 of 90' on one line */
-.wx-misty{--wc:var(--ty-Fairy);background-image:radial-gradient(60% 40% at 30% 100%,var(--wx-mid) 0 99%,transparent),radial-gradient(50% 35% at 80% 105%,var(--wx-lo) 0 99%,transparent),radial-gradient(circle,var(--wx-mid) 2px,transparent 2.5px) 0 0/30px 34px}
+.wx-misty{--wc:var(--ty-Fairy);background-image:radial-gradient(60% 40% at 30% 100%,var(--wx-mid) 0 99%,transparent),radial-gradient(50% 35% at 80% 105%,var(--wx-lo) 0 99%,transparent),radial-gradient(circle,var(--wx-mid) 2px,transparent 2.5px);background-size:auto,auto,30px 34px}
 
 /* ---------- This Week "The Front Page" (Nov 15) ---------- */
 .wk{display:grid;gap:var(--s10)}
@@ -2829,3 +2829,17 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    label keeps a 44px tap area through ::after instead of a 44px-tall box that sat over the sentence's second line */
 .tm-six.mh .sx-plan{justify-content:flex-start;text-align:left}
 .tm-six.mh .sx-gpl{min-height:0;display:inline;position:relative}.tm-six.mh .sx-gpl::after{content:"";position:absolute;inset:-12px -4px}
+/* quality pass Nov 15 (Compare): the giant score keeps clear of its band word; Change and Swap keep their look but get a 44px tap area */
+.cxf-score>b{margin-bottom:var(--s2)}
+.cxf-id .np-link,.cx2-swap{position:relative}.cxf-id .np-link::after,.cx2-swap::after{content:"";position:absolute;inset:-12px -6px}
+
+/* audit fixes (Nov 15): the latest ticket's five as 3 + 2 (two centred) up to 1099; filter chips stack their count on small phones;
+   Recent and source links get a 44px tap area */
+@media (max-width:1099px){.tk.big .tk-five{display:flex;flex-wrap:wrap;justify-content:center;row-gap:var(--s3)}.tk.big .tk-five li{flex:0 0 33.333%}}
+@media (max-width:389px){.ev-fc{flex-direction:column;align-items:flex-start;gap:0;line-height:1.2;padding:var(--s1) var(--s3)}}
+.ev-cpast .np-link,.ev-csrc a{position:relative}.ev-cpast .np-link::after,.ev-csrc a::after{content:"";position:absolute;inset:-12px -4px}
+
+/* the shortest row: the count and one Pokémon, the Pokémon to the right of the words, so 152px is enough */
+@media (min-width:700px){.ar-row.r2 .ar-reg{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto 1fr;padding-bottom:0}.ar-row.r2 .ar-reg>:not(.ar-km){grid-column:1}.ar-row.r2 .ar-reg>.ar-km{grid-column:2;grid-row:1/-1}.ar-row.r2 .ar-km span:not(.lead){display:none}}
+@media (max-width:699px){.ar-row .ar-reg{height:auto}}
+.ar-ban h2{margin-bottom:var(--s2)}.ar-pl span{text-wrap:pretty} /* audit: guide name clear of its share; no lone '90' in the plate */
