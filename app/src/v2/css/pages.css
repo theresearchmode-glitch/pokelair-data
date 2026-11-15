@@ -1002,7 +1002,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bx-n small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)} /* i42: too few games in words, as the info sheet */
 
 /* Battle Q3 B (Sim, Nov 13): Your Six on the empty Battle page, below the empty-state line */
-.bt-yours{margin-top:var(--s10);padding-top:var(--s8);border-top:1px solid var(--rule)}.bt-yours h2{font-size:var(--t24);margin:0}.bt-yours .bt-sub{margin:var(--s1) 0 var(--s4)}@media (min-width:1180px){.bt-yours .sx{max-width:820px}}
+.bt-yours{margin-top:var(--s10);padding-top:var(--s8);border-top:1px solid var(--rule)}.bt-yours h2{font-size:var(--t24);margin:0}.bt-yours .bt-sub{margin:var(--s1) 0 var(--s4)}
 
 /* Box Q1 B (proposal): a box that isn't full keeps its full size and shows its empty spots, like the in-game box; the arrows and dots stay put when you flip boxes */
 .bx-grid:has(.bx-slot){grid-auto-rows:1fr}.bx-slot{border:1.5px dashed color-mix(in srgb,var(--ink) 16%,transparent);border-radius:var(--r-s);margin:var(--s1)}
@@ -1013,8 +1013,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bx-t>b .bx-on{position:static;display:inline-block;width:12px;height:6px;margin-right:var(--s1);vertical-align:middle}.bx-t>b:has(.bx-on){font-stretch:75%}
 @container (max-width:420px){.bx-t>b .bx-on{width:8px;margin-right:2px}}
 /* Battle Q1 B (Sim, Nov 13): while their six is empty, wide screens use two columns: Their Six + Battle Log left, Your Six right */
-@media (min-width:1440px){.bt2:has(>.bt-empty){display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);column-gap:var(--s16);align-content:start}.bt2:has(>.bt-empty)>.bt-tools,.bt2:has(>.bt-empty)>.bt-head{grid-column:1/-1}.bt2:has(>.bt-empty)>.bt-body,.bt2:has(>.bt-empty)>.bt-log,.bt2:has(>.bt-empty)>.bt-empty{grid-column:1}.bt2:has(>.bt-empty)>.bt-yours{grid-column:2;grid-row:3/span 3;align-self:start;margin-top:var(--s6);padding-top:0;border-top:0}.bt2:has(>.bt-empty) .bt-log{grid-template-columns:minmax(0,1fr)}.bt2:has(>.bt-empty) .bt-yours .tm-six{width:100%}}
-@media (min-width:1440px){.bt2:has(>.bt-empty){grid-template-columns:minmax(0,1fr) 820px}} /* quality pass Nov 15: the six gets its designed 820px from 1440 (at 3/5 it was ~700px: names and items cut) */
+/* re-audit Nov 15: the empty Battle page's two-column layout (six beside Your Games, 820px) removed: the six needs My Team's full width (names were cut from 1280 up) */
+
 /* Battle Q2 B: the actions wrap as two whole groups ([Pick your four first, Win, Loss] and [Replay, Record]), never one link alone; phones keep their grid */
 .bt-lg{display:flex;flex-wrap:nowrap;align-items:center;gap:var(--s3)}@media (max-width:559px){.bt-lg{display:contents}}
 /* review fix (Nov 13): two across on phones there is room, so the My Team actions keep the one button size (15px) and the Saved Teams count */
@@ -2860,3 +2860,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tr-tot{margin-bottom:var(--s2)}.tr-slip{min-height:176px}
 .tr-links .np-link{position:relative}.tr-links .np-link::after{content:"";position:absolute;inset:-12px -4px}
 @media (max-width:699px){.tr-slip{min-height:0}.tr-slip .tr-stamp{right:var(--s2)}.tr-sr{align-content:start;padding-bottom:var(--s10)}.tr-leg{display:grid;grid-template-columns:repeat(2,auto);justify-content:start}.tr-calls .fine{margin-top:var(--s4)}}
+/* re-audit Nov 15: the VS badge sat on Pokémon names wherever the halves' Pokémon reach the middle. Phones: it sits in the seam between the
+   stacked halves (in the flow, not over them). 700-1099: hidden (decoration only; the blue and pink halves already say who faces whom) */
+@media (max-width:699px){.pbp-vs{position:relative;left:auto;top:auto;translate:none;justify-self:center;margin:calc(var(--s6)*-1) 0 calc(var(--s5)*-1)}}
+@media (min-width:700px) and (max-width:1099px){.pbp-vs{display:none}}
