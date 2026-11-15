@@ -2283,7 +2283,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tt-pick{display:grid;justify-items:center;gap:2px;width:100%;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
 .tt-ban{position:relative;display:grid;place-items:end center;width:100%;height:148px;overflow:hidden;background:linear-gradient(160deg,var(--b1),var(--b2));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
 .tt-ban::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(120deg,transparent 0 10px,color-mix(in srgb,var(--tier-lit) 10%,transparent) 10px 11px)}
-.tt-no{position:absolute;left:var(--s4);top:var(--s1);z-index:1;font:900 var(--t26)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--tier-lit)}
+.tt-no{position:absolute;left:var(--s4);top:var(--s1);z-index:2;font:900 var(--t26)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--tier-lit)}
 .tt-giant{position:absolute;left:var(--s2);bottom:calc(var(--s2)*-1);font:900 var(--t34)/1 var(--u);font-style:italic;white-space:nowrap;color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--tier-lit) 45%,transparent)}
 .tt-ban .np-mon{--iw:120px;position:relative;z-index:1}
 .tt-pick:hover .tt-ban .np-mon,.tt-pick:focus-visible .tt-ban .np-mon{translate:0 calc(var(--s1)*-1)}

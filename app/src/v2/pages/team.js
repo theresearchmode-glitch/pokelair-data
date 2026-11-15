@@ -74,7 +74,7 @@ V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'functi
   const legend = `<p class="tt-key"><span><i class="tt-kbest" aria-hidden="true"></i>team best in that stat</span><span><b class="up">▲</b> raised by nature</span><span><b class="dn">▼</b> lowered by nature</span><span>points = stat points (0–32)</span>${LU ? `<span>Lead = ${E(vs)}</span>` : ''}</p>`;
   V2.sheet(`<div class="ts2 tt2"><div class="np-eyebrow"><span>${back} · ${V2.esc(teamTitleFor(ms))} · ${reg}</span></div><div class="tt-top"><h2 class="u">Team Sheet</h2>
     <div class="ts2-acts"><button type="button" class="np-btn" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2" data-ts2share><span>Share as Image</span></button></div></div>
-    <p class="fine tt-help">Tap a column to edit its set · Big number: the stat at level 50 · small number: stat points (0–32)</p>${legend}
+    <p class="fine tt-help">Tap a column to edit its set · Big number: the stat at level 50</p>${legend}
     <div class="tt-wrap">${parts.map((p, k) => tape(p, parts.length > 1 ? k : null)).join('')}</div></div>`, {label: 'Team Sheet'}); };
 (() => { let b = innerWidth < 700, tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { const nb = innerWidth < 700; if (nb === b) return; b = nb; if (document.querySelector('.np-sheet .tt2')) V2.openTeamSheet(); }, 150); }); })();
 // Copy for Showdown: today's export (exportPaste) and clipboard helper (copyText)
