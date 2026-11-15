@@ -9,11 +9,12 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 2 | Build lower half: Reference sheets (Recent Winners), Parts list (Cores) | build-blueprint (lower-*.webp) | Built, on Preview v145. Height A done (390: 5,237 to 3,821; iPad inside; desktop 2,572 to 2,078). Limits set to measured (Sim A). B-build same failure list |
 | 3 | Winning Teams "The Winning Hands" | winning-hands | Built, on Preview v147. TOP-01..07: 8 pass (were 8 FAIL). Heights inside limits. Pictures + questions sent to Sim. Full D-meta-shell baseline compare running |
 | 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Built, on Preview v148 (400 files). A-team 130 pass / 8 FAIL, same 8 as before. Pictures + questions sent |
-| 5 | Battle a team "Play-by-Play" | battle-playbyplay | IN PROGRESS (them = existing --pick) |
-| 6 | Compare "The Face-Off" | compare-faceoff | Waiting (received 7:49 PM Nov 14); same pink |
+| 5 | Battle a team "Play-by-Play" | battle-playbyplay | Built + polished; C-battle 55 pass / 28 FAIL, same 28 as before (3 tests translated). Height question for Sim. Preview after the audits |
+| 6 | Compare "The Face-Off" | compare-faceoff | Built + edge check clean at 6 widths; heights inside limits; A-team tests running |
 | 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); names approved: The Problems, The Coin Flips, The Good Matchups; no new pink |
 | 8 | Share card: The Slab / Print / Aurora (tall + wide) | share-cards | Waiting (received 9:19 PM Nov 14); question to Sim: one design or all three |
-| 9 | Colour uniformity: one colour per meaning across the site (Sim, Nov 14: 'a big deal') | (audit) | IN PROGRESS: read-only audit running; fixes go to Sim as a list with pictures |
+| 9a | Helper audits of everything built (Sim, Nov 14): 3 read-only auditors running (Home/Meta/Winning Teams; My Team/Team Sheet/Compare; Build/Battle/tools) | (audit) | Running |
+| 9 | Colour uniformity: one colour per meaning across the site (Sim, Nov 14: 'a big deal') | (audit) | Audit done: docs/rebuild/colour-audit.md (18 conflicts). Fix list + pictures to Sim next |
 | 10 | My Team height and polish pass | my-team-hand | Waiting |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.
