@@ -56,7 +56,7 @@
     "src/v2/pages/monsheet.js",
     "src/v2/pages/box.js",
     "src/v2/pages/record.js",
-    "src/v2/pages/compare.js",
+    "src/v2/pages/compare.js", "src/v2/pages/compare-faceoff.js",
     "src/v2/pages/home.js",
     "src/v2/pages/build.js",
     "src/v2/pages/build-sheet.js", "src/v2/pages/winning.js",
