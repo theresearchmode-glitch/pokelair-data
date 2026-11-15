@@ -525,6 +525,9 @@ t('SETS-01', 'Open Team Sheet fold: one card per Pokémon; tapping opens its edi
     for (const n of names) { const c = await r.ui.teamSheetCard(n) || ''; ok(/ Item .+ Ability /.test(c) && /HP \d+ \d+/.test(c), `${n}'s card misses item / Ability / stats: ` + c.slice(0, 120));
       if (leads.includes(n)) ok(c.startsWith(`${n} ↑ Lead ${pl[1]} Item `), `lead ${n}'s card has no "↑ Lead ${pl[1]}": ` + c.slice(0, 80)); else ok(!/↑ Lead/.test(c), `${n} is not a lead but its card says "↑ Lead": ` + c.slice(0, 80)); }
     ok(await r.ui.teamSheetRemoves() === 0, 'a Team Sheet card still has a remove control'); await r.ui.tapLabel('Whimsicott: edit its set', 1000); const p = await r.ui.editPanel(); ok(p && p.title === 'Edit Whimsicott', 'card did not open "Edit Whimsicott" (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
+    /* Sim Q15 (Nov 15): Edit Set opened from the Team Sheet returns to the Team Sheet when closed (checked by hand in the browser,
+       docs/rebuild/decisions.md); close whatever sheet is open, then remove on My Team */
+    await r.ui.closeEditPanel(); if (await r.pg.evaluate(() => !!(window.V2 && V2._sheet))) await r.ui.closeEditPanel();
     await r.ui.removeFromTeam('Whimsicott'); ok(await r.ui.waitToast(/^Removed Whimsicott/), 'no removal toast'); ok(await r.ui.has('#toastUndo'), 'no Undo'); ok(!(await r.ui.team()).includes('Whimsicott'), 'not removed'); await r.close(); return; }
   const r = await myTeam(); await r.ui.openFold('Open Team Sheet', true, 900); const f = await r.ui.foldContent('Open Team Sheet');
   for (const s of ['Whimsicott', 'Garchomp', /Item /, /Ability /, /HP \d+/, /Spe\+? \d+/]) has(f, s, 'team sheet fold');
