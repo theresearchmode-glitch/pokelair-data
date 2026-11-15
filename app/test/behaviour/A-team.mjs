@@ -582,7 +582,7 @@ t('EDIT-04', 'Nature picker: choosing saves at once ("Nature saved"), set card s
   await r.ui.pickInPanel('nature', 'Jolly'); ok(await r.ui.waitToast(/Nature saved/), 'no "Nature saved" toast'); has((await r.ui.editPanel()).text, /Your pick/); await sleep(900);
   const a = await r.acct(); ok(a.slots[1].sp && a.slots[1].sp.doubles && a.slots[1].sp.doubles.nat === 'Jolly', 'nature not saved to the account');
   await r.ui.closeEditPanel(); has(await r.ui.showSet('Garchomp'), /Nature Jolly yours/, 'set card');
-  await r.ui.openEditPanel('Garchomp'); await r.ui.panelButton(/^Use Adamant$/); await r.ui.closeEditPanel(); has(await r.ui.showSet('Garchomp'), /Nature Adamant most run/, 'set card after reset'); await r.close(); });
+  await r.ui.openEditPanel('Garchomp'); await r.ui.panelButton(/^Use Adamant$/); await r.ui.closeEditPanel(); has(await r.ui.showSet('Garchomp'), NEW ? /Nature Adamant most used/ : /Nature Adamant most run/, 'set card after reset'); await r.close(); });
 
 t('EDIT-05', 'Stat points: live total, over-66 warning, Save stat points; Team Sheet shows the new stats', async () => {
   const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); has(await r.ui.statTotal() || '', /66 of 66/, 'total');
