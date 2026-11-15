@@ -2304,3 +2304,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}.tt-no{font-size:var(--t20)}.tt-mv .np-type{font-size:var(--t13);padding:var(--s1)}}
 .tt thead th{vertical-align:top}
 @media (max-width:1099px){.tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
+@media (max-width:1099px){.tt thead th{padding-left:0;padding-right:0}}
+@media (max-width:699px){.tt-corner{width:64px}}@media (max-width:379px){.tt-mv .np-type{padding:var(--s1) 2px}.tt td{padding-left:2px;padding-right:2px}}
