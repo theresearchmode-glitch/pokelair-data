@@ -84,7 +84,7 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
       return `<section class="ra-tg" id="ra-t-${T.k}">${V2.raTierHead(T, all)}${shown.map(V2.raRow).join('')}${inT.length > cap + 1 ? `<button type="button" class="ra-more" data-ratier="${T.k}" aria-expanded="${!!U.open[T.k]}">${U.open[T.k] ? 'Show Fewer' : `+${inT.length - cap} more`}</button>` : ''}</section>`; }).join('')}</div>`;
   const legend = `<p class="fine ra-legend">${!listy ? `${rows.length} rated` : filtered ? `${rows.length} of ${all.length} shown` : `All ${all.length} shown`}, ranked among ${(lairRank(all[0] && all[0].p) || {}).of || 0} with tournament results · ◆ hidden gem: rarely used, wins more than its use predicts${listy ? ' · ? few games, an estimate' : ''}</p>`;
   const tr = ratingTrack(), src = pf && pf.sources ? Object.entries(pf.sources).filter(([k, v]) => v && !(k === 'adj' && pf.sources.tour)).map(([, v]) => String(v)) : [];
-  const about = `<details class="ra-about" data-raabout><summary><span><b>About the ratings</b><small>How they are made, the ${src.length} data sources and their track record</small></span><i aria-hidden="true">+</i></summary>
+  const about = `<details class="ra-about" data-raabout${(() => { try { return localStorage.getItem('cc2.chf.raabout') === '1' ? ' open' : ''; } catch (e) { return ''; } })()}><summary><span><b>About the ratings</b><small>How they are made, the ${src.length} data sources and their track record</small></span><i aria-hidden="true">+</i></summary>
     ${tr ? `<p class="ra-track">Track record: in ${tr.events} recent events, the team with the higher average rating finished higher in ${E(pctFmt(tr.acc * 100))} of ${tr.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip). Ratings rank single Pokémon: use them to find candidates, and Matchups on My Team to check a team.</p>` : ''}
     <div class="ra-cells"><p><b class="u">${all.length}</b><span>Pokémon rated</span></p><p><b class="u">${src.length}</b><span>data source${src.length === 1 ? '' : 's'}</span></p><p><b class="u">${all.filter(x => x.r.total >= 80).length}</b><span>in S tier</span></p><p><b class="u">${gems}</b><span>hidden gems</span></p></div>
     <p class="ra-lbl">Doubles sources${d ? ' · data from ' + E(d) : ''}</p><ul class="ra-src">${src.map(v => `<li>${E(v)}</li>`).join('')}</ul>
@@ -103,9 +103,14 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.raall != null) { U.all = !U.all; V2.raSave(); if (!U.all) { V2.redraw(); const l = document.querySelector('.ra-list'); if (l) l.scrollIntoView({block: 'start'}); return; } }
   else if (d.ratier) { U.open = {...U.open, [d.ratier]: !U.open[d.ratier]}; V2.raSave(); }
   else if (d.rajump) { U.all = true; U.open = {...U.open, [d.rajump]: true}; V2.raSave(); V2.redraw(); const t = document.getElementById('ra-t-' + d.rajump); if (t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
-  V2.redraw(); });
+  /* keep your place (Nov 15, SHELL-31): the tapped chip stays under the finger; the list above it may change height on a redraw */
+  const key = Object.keys(d).filter(k => /^ra/.test(k)).map(k => `[data-${k.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}="${d[k]}"]`).join(''), y0 = b.getBoundingClientRect().top;
+  V2.redraw(); try { const nb = key && document.querySelector(key); if (nb) { const dy = nb.getBoundingClientRect().top - y0; if (Math.abs(dy) > 1) scrollBy(0, dy); } } catch (x) {} });
 // the spotlight follows the pointer on mouse screens only (touch taps open the sheet)
 document.addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const r = e.target.closest && e.target.closest('[data-raspot]'); if (!r) return; const n = r.dataset.raspot; if (V2.raUi.spot === n) return;
   V2.raUi.spot = n; const w = document.querySelector('[data-raspotw]'); if (w) w.innerHTML = V2.raSpot(n); });
 // the stand's rows follow the window width (desktop / iPad / phone counts): redraw when the width crosses one of them
 (() => { const band = () => innerWidth >= 1100 ? 2 : innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.gs')) V2.redraw(); }, 150); }); })();
+
+// 'About the ratings' keeps open / closed across a reload, as How We Calculate's parts do (Nov 15, SHELL-14)
+document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-raabout]')) return; try { localStorage.setItem('cc2.chf.raabout', d.open ? '1' : '0'); } catch (x) {} }, true);

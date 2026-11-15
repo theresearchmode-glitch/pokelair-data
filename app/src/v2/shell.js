@@ -95,7 +95,7 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   // Nov 12: "é" became an empty query, which matched every name, so the most-used Pokémon showed up)
   const norm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''), nq = norm(q);
   if (!nq) return {places: V2.findPlaces.filter(([, n]) => n.toLowerCase().includes(q)), mons: []};
-  const places = V2.findPlaces.filter(([, n]) => n.toLowerCase().includes(q));
+  const places = V2.findPlaces.filter(([k, n]) => n.toLowerCase().includes(q) || (q.length >= 4 && new RegExp('\\b' + q.replace(/[^a-z0-9 ]/g, '')).test((V2.placeLines[k] || '').toLowerCase()))).slice(0, 6); /* Nov 15: by a word of its line too ('damage', 'speed') */
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
@@ -104,11 +104,11 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   // saved teams by name too (today's search does): choosing one opens it, like Open in Saved Teams
   const teams = q => { q = q.trim().toLowerCase(); return q && typeof S === 'object' ? S.teams.filter(t => t.format !== 'singles' && String(t.name).toLowerCase().includes(q)).slice(0, 4) : []; };
   const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value);
-    out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>'
+    out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>' + V2.TOOLS.map(k => { const pl = V2.findPlaces.find(x => x[0] === k && !x[2]); return pl ? `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${pl[1]}</b><small>${V2.esc(V2.placeLines[k] || '')}</small></span></a>` : ''; }).join('') /* the tools, as today's empty search lists them (Nov 15) */
       : !r.places.length && !r.mons.length && !tm.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
-      : r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><b>${n}</b></a>`).join('')
+      : r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${n}</b>${V2.placeLines[k] ? `<small>${V2.esc(V2.placeLines[k])}</small>` : ''}</span></a>`).join('')
         + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
-        + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join(''); };
+        + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join(''); };
   inp.addEventListener('input', draw);
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
   draw(); };
@@ -117,7 +117,7 @@ V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
   V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p>${V2.addBtn ? V2.addBtn(n) : ''}</div></div>`, {label: V2.disp(n), small: true}); };
 document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m) { e.preventDefault(); V2.openMon(m.dataset.v2mon); }
   if (e.target.closest('[data-v2search]')) V2.openSearch(); });
-document.addEventListener('keydown', e => { if ((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey) && !e.altKey) { e.preventDefault(); if (!V2._sheet) V2.openSearch(); return; } if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
+document.addEventListener('keydown', e => { if ((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey) && !e.altKey) { e.preventDefault(); if (!V2._sheet) V2.openSearch(); else if (document.querySelector('.np-sheet .np-find')) V2.closeSheet(); return; } /* a second Ctrl+K closes Search, as today (JUMP-01) */ if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
 // ---------- the Apple-style slider (Sim's favourite, kept from today's site; design-system.md "Slider") ----------
 // 2-4 choices, each an icon beside its name; the dark plate slides to the chosen one. Same icons as today's sliders (SLIDE_P /
 // SLIDE_N in 05-icons.js, found by the choice's name). Real buttons with aria-pressed; arrow keys move between choices; picking
@@ -139,7 +139,18 @@ V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle
 // search finds these too: rebuilt places inside My Team (audit JUMP-05; today's search finds them); pages are links, sheets open over
 // My Team as their buttons do. Search only: the top bar stays the five above.
 V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], ['team', 'Saved Teams', () => V2.openSavedTeams && V2.openSavedTeams()],
-  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()]];
+  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()],
+  /* Nov 15 (parity with today's search): every page can be found, by its name or a word of its line */
+  ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
+  ['speed', 'Speed Tiers'], ['calc', 'Damage Calc'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
+  ['track', 'Track Record'], ['method', 'How We Calculate'], ['about', 'About & Legal'], ['feedback', 'Send Feedback']];
+// one line per page, shown when the search box is empty (today's search lists its tools) and searched too ("speed", "damage")
+V2.TOOLS = ['home', 'build', 'team', 'battle', 'meta', 'tournaments', 'sets', 'speed', 'calc', 'types', 'practice', 'gauntlet', 'compare', 'box']; // the empty search's list (14, Home first)
+V2.placeLines = {home: 'Start here', build: 'Build a team around a Pokémon, or from winning teams', team: 'Your six, its Strength Score and matchups', battle: 'Plan a game against an opponent',
+  meta: 'Every Pokémon rated, by tier', box: 'The Pokémon you have', compare: 'Two teams side by side', usage: 'The most used Pokémon', sets: 'What players run on each Pokémon',
+  tournaments: 'Top teams from recent events', events: 'Recent and upcoming events', archetypes: 'The team styles winning right now', weekly: 'What changed this week',
+  speed: 'Your six against the 20 most-used Pokémon', calc: 'Any attacker into any defender', types: '18 types, or look up a Pokémon', practice: 'Pick four and two leads against real ladder teams',
+  gauntlet: 'Your team into the latest top teams', track: 'How our ratings did at real events', method: 'How every number is worked out', about: 'Sources, privacy and the rules', feedback: 'Tell us what to fix or add'};
 V2.goPlace = i => { const pl = V2.findPlaces[i]; if (!pl) return; const [k, , act] = pl;
   if (!act) { location.hash = '#' + k; return; } V2.closeSheet(true); if (location.hash !== '#' + k) location.hash = '#' + k; setTimeout(act, 60); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2place]'); if (b) V2.goPlace(+b.dataset.v2place); });
@@ -214,7 +225,7 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
   <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
 <main class="np-main" id="main">${P ? V2.safeDraw(P) : ''}</main>
-<footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan&#8209;made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#feedback">Send Feedback</a>${V2.OWN ? `<a href="#owner">Owner</a>` : ``}</nav></footer>
+<footer class="np-foot">${V2.logo(true)}<span>NastyPlot is an unofficial, fan&#8209;made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}</nav></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const {P, html} = V2.shell();
   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the

@@ -126,7 +126,7 @@ document.addEventListener('toggle', e => { const d = e.target; if (!d.matches ||
 V2.homeWelcome = () => { let seen = false; try { seen = !!LS.get('cc2.welcomed', ''); } catch (e) {} if (seen) return '';
   return `<section class="hm-welcome"><div class="hm-wl"><p class="np-eyebrow">New here?</p><h2 class="u">How fight night works.</h2>
     <p class="hm-hint">The team in your corner is a sample to explore. Replace it any time: Build Me a Team above, or copy a top team.</p>
-    <div class="row hm-acts"><a class="np-btn2" href="#meta" data-hmwelcome><span>Copy a Top Team</span></a><button type="button" class="np-link" data-hmwelcome>Got It</button></div></div>
+    <div class="row hm-acts"><a class="np-btn2" href="#tournaments" data-hmwelcome><span>Copy a Top Team</span></a><button type="button" class="np-link" data-hmwelcome>Got It</button></div></div>
     <ol class="hm-steps"><li><b>Get a team</b><span>Let us build one from real winning teams, copy a top team, or type your own six.</span></li>
     <li><b>Read your Strength Score</b><span>How strong your six is, its Matchups against the top threats, and exactly what to change.</span></li>
     <li><b>Plan each match</b><span>Scout their six, see who moves first, run the damage, and get a turn 1 plan.</span></li></ol></section>`; };

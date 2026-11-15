@@ -6,9 +6,9 @@
 V2.FB = {ref: null, ok: false, kind: 'idea', busy: false, from: ''};
 (async () => { try { const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
-  const id = await u.id(); if (!id) return; V2.FB.ref = d.doc('feedback/' + id); V2.FB.ok = true; } catch (e) {} })();
+  const id = await u.id(); if (!id) return; V2.FB.ref = d.doc('feedback/' + id); V2.FB.ok = true; if (V2.redraw) V2.redraw(); } catch (e) {} })(); /* feedback links show only where feedback can be saved (Nov 15, SHELL-20c) */
 // the page they came from: the last page opened before Send Feedback (first read once every page has registered)
-{ const note = () => { const r = V2.route(); if (r && r !== 'feedback') V2.FB.from = r; }; setTimeout(note, 0); addEventListener('hashchange', note); }
+{ const note = () => { const r = V2.route(); if (r && r !== 'feedback') V2.FB.from = r === 'pokemon' ? (location.hash || '').slice(1, 60) : r; }; /* a Pokémon page says which Pokémon (Nov 15) */ setTimeout(note, 0); addEventListener('hashchange', note); }
 V2.pages.feedback = {place: '', draw() { const F = V2.FB, K = typeof FB_KINDS === 'object' ? FB_KINDS : [];
   return `<div class="ra gsp infp"><div class="gs-top wt-top ev-top"><section class="ra-h"><p class="np-eyebrow"><span>Send Feedback</span></p><h1 class="u"><span>Tell us</span> <span class="pl">what's off.</span></h1><p class="ra-lede">Spotted a bug, a wrong number or a better idea? It goes straight to the people who make NastyPlot.</p></section>
     <div class="ra-spotw"><aside class="ev-plate"><p class="ev-pk u">Anonymous</p><p class="ev-none">We never ask for your name or email. Anything that looks like an email, phone number or @handle is removed before it's saved.</p><div class="abtmail" id="abtMail"><button type="button" class="np-link" data-abtmail="show">Show Email</button></div></aside></div></div>
