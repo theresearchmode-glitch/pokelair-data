@@ -44,7 +44,11 @@ export default (ui, pg) => {
     filterChips: () => ev(() => [...document.querySelectorAll('[data-raty], [data-raflag]:not([data-raflag="all"]):not([data-raflag="clear"])')].filter(__dvis).map(b => ({name: __dtx(b).replace(/^◆\s*/, '').replace(/\s+\d+$/, ''), on: b.getAttribute('aria-pressed') === 'true'}))),
     hotText: () => ev(() => [...document.querySelectorAll('.ra-list, .gs')].filter(__dvis).map(l => __dtx(l) + ' ' + [...l.querySelectorAll('.ra-row, .gs-mon')].map(r => r.getAttribute('aria-label')).join(' ')).join(' ')),
     tapDetails: async () => { await pg.click('[data-raview="list"]'); await wait(500); },
-    openPokemon: async id => { await ev(n => { const e = [...document.querySelectorAll('.ra-list [data-v2mon], .gs [data-v2mon]')].filter(__dvis).find(e => e.dataset.v2mon === n); if (!e) throw new Error('no row ' + n); e.click(); }, id); await until(() => D.sheetIsOpen()); await wait(400); },
+    /** tap a Pokémon by id (Ratings: its row on the list or the stand; any other page: any tappable Pokémon, by id or by the name its label starts with) */
+    openPokemon: async id => { await ev(n => { let e = [...document.querySelectorAll('.ra-list [data-v2mon], .gs [data-v2mon]')].filter(__dvis).find(e => e.dataset.v2mon === n);
+        if (!e) { const els = [...document.querySelectorAll('#main [data-v2mon]')].filter(__dvis), al = e => e.getAttribute('aria-label') || '';
+          e = els.find(e => e.dataset.v2mon === n) || els.find(e => al(e).startsWith(n + ',') || al(e).startsWith(n + ':')); if (e) e.scrollIntoView({block: 'center'}); }
+        if (!e) throw new Error('no row ' + n); e.click(); }, id); await until(() => D.sheetIsOpen()); await wait(400); },
     sheetIsOpen: () => ev(() => __dvis(document.querySelector('.np-sheet .ms2'))),
     sheetName: () => ev(() => __dtx(document.querySelector('.np-sheet .ms2 h2'))),
     // folds: "Every Pokémon, by Tier" is the See all switch; the rest are real folds (details) on the page
@@ -74,7 +78,64 @@ export default (ui, pg) => {
     tapInUsageRow: async (name, re) => { await ev(([n, src]) => { const s = document.querySelector('[data-ushow]'), r = new RegExp(src.replace(/^\/|\/[a-z]*$/g, ''));
       if (!s || !new RegExp('How ' + n + ' is played').test(__dtx(s))) throw new Error('row not open: ' + n); const b = [...s.querySelectorAll('button, a')].filter(__dvis).find(b => r.test(__dtx(b))); if (!b) throw new Error('no ' + src + ' in ' + n); b.click(); }, [name, re.toString()]); await wait(800); },
     toastText: () => ev(() => { const t = [...document.querySelectorAll('.np-toast')].filter(__dvis).pop(); return t ? __dtx(t) : null; }),
+    // ---------------- shared page helpers (Nov 15, for Events, Archetypes, This Week, Track Record) ----------------
+    scrollY: () => pg.evaluate(() => Math.round(scrollY)),
+    scrollTo: async y => { await pg.mouse.move(640, 400); await pg.evaluate(y => scrollTo(0, y), y); await pg.mouse.wheel(0, 1); await wait(300); },
+    /** open the "?" whose label matches (the new build's [data-v2tip] bubbles). Translation: where a page explains with a question fold
+     *  instead of a "?" (Events: "What counts as an event?"), that fold is the explainer: it is opened and tipText reads its body. */
+    openTip: async m => { const how = await ev(m => { const re = new RegExp(m, 'i'), main = document.querySelector('#main') || document.body;
+        const b = [...main.querySelectorAll('[data-v2tip]')].filter(__dvis).find(b => re.test(b.getAttribute('aria-label') || '') || re.test(b.dataset.v2tip));
+        if (b) { const r = b.getBoundingClientRect(); if (r.top < 60 || r.bottom > innerHeight - 60) b.scrollIntoView({block: 'center'}); window.__dtipFold = null; return 'tip'; }
+        const d = [...main.querySelectorAll('details')].filter(__dvis).find(d => { const s = __dtx(d.querySelector('summary')); return /\?$/.test(s) && re.test(s); });
+        if (!d) throw new Error('no tip ' + m); window.__dtipFold = d; d.querySelector('summary').click(); return 'fold'; }, m);
+      if (how === 'tip') { await wait(250); await ev(m => { const re = new RegExp(m, 'i'); [...(document.querySelector('#main') || document.body).querySelectorAll('[data-v2tip]')].filter(__dvis).find(b => re.test(b.getAttribute('aria-label') || '') || re.test(b.dataset.v2tip)).click(); }, m); }
+      await wait(350); },
+    tipText: () => ev(() => { const t = [...document.querySelectorAll('.sg2-tipop')].filter(__dvis).pop(); if (t) return __dtx(t);
+      const d = window.__dtipFold; if (!d || !d.isConnected || !d.open) return null; return [...d.children].filter(e => e.tagName !== 'SUMMARY').map(__dtx).join(' ').trim() || null; }),
+    /** the first tappable Pokémon on the shown page (in `within`), and every tappable one */
+    firstPokemon: within => ev(w => { const e = [...document.querySelectorAll('#main ' + (w ? w + ' ' : '') + '[data-v2mon]')].filter(__dvis)[0]; return e ? e.dataset.v2mon : null; }, within || ''),
+    pokemonOnPage: () => ev(() => [...new Set([...document.querySelectorAll('#main [data-v2mon]')].filter(__dvis).map(e => e.dataset.v2mon))]),
+    /** "More" on a folded paragraph inside `within` (today's [data-pane=x] is the new build's #main). The new build's folds show their full
+     *  text when open (nothing is clamped): then there is nothing to unfold and this checks that every paragraph is shown whole. */
+    tapMore: async (within = 'body', label = 'More') => { await ev(([w, l]) => { w = w.replace(/\[data-pane=[^\]]+\]/g, '#main'); const root = [...document.querySelectorAll(w)].filter(__dvis);
+        const b = root.flatMap(r => [...r.querySelectorAll('button,[role=button]')]).filter(__dvis).find(b => __dtx(b) === l); if (b) { b.click(); return; }
+        if (!root.length) throw new Error('nothing matches ' + w); const cut = root.flatMap(r => [...r.querySelectorAll('p')]).filter(__dvis).filter(p => p.scrollHeight > p.clientHeight + 2);
+        if (cut.length) throw new Error('no ' + l + ' button, and ' + cut.length + ' paragraph(s) are cut short'); }, [within, label]); await wait(300); },
+    // ---------------- Events (Nov 15, The Ticket Wall: src/v2/pages/events.js) ----------------
+    // Translation: today's event cards = the tickets (the latest result across the wall and the rest; each opens the event's placings).
+    eventCards: () => ev(() => [...document.querySelectorAll('#main .ev-wall .tk[data-evgo]')].filter(__dvis).map(__dtx)),
+    chooseEventFilter: async name => { await ev(n => { const b = [...document.querySelectorAll('#main [data-evf]')].filter(__dvis).find(b => (b.firstChild ? b.firstChild.textContent : '').trim() === n); if (!b) throw new Error('no filter ' + n); b.click(); }, name); await wait(600); },
+    openEvent: async m => { await ev(m => { const b = [...document.querySelectorAll('#main .tk[data-evgo]')].filter(__dvis).find(b => __dtx(b).includes(m)); if (!b) throw new Error('no event ' + m); (b.matches('article') ? b.querySelector('.tk-go') : b).click(); }, m); await wait(800); },
+    /** number of placings in an open event (each has one Load Team button, or Replace while its question is asked) */
+    placings: () => ev(() => [...document.querySelectorAll('#main .ev-open [data-evask], #main .ev-open [data-evload]')].filter(__dvis).length),
+    /** Next Events: head, rows {text, countdownOk}, whether rows open a new tab (same reading as today's calendar helper) */
+    calendar: () => ev(() => { const box = document.querySelector('#main .ev-plate'), h = box && box.querySelector('.ev-ph'); if (!h) return {head: '', rows: []};
+      const rows = [...box.querySelectorAll('.ev-cal .ev-crow')].filter(__dvis), t0 = new Date(); t0.setHours(0, 0, 0, 0);
+      const head = [h, ...[...box.children].slice([...box.children].indexOf(h) + 1)].map(__dtx).join(' ').slice(0, 80);
+      return {head, newTab: rows.filter(r => r.tagName === 'A').every(r => r.target === '_blank'), rows: rows.map(r => { const day = +r.querySelector('.ev-cd b').textContent.trim(), mon = r.querySelector('.ev-cd small').textContent.trim(), w = __dtx(r.querySelector('.ev-cw'));
+        let d = new Date(`${mon} ${day}, ${t0.getFullYear()} 12:00`); if (d - t0 < -200 * 864e5) d = new Date(`${mon} ${day}, ${t0.getFullYear() + 1} 12:00`); const n = Math.round((d.setHours(0, 0, 0, 0) - t0) / 864e5);
+        const ok = n <= 0 ? /Live now/i.test(w) : n === 1 ? /Tomorrow/i.test(w) : new RegExp(`in ${n} days`).test(w); return {text: __dtx(r), countdownOk: ok}; })}; }),
+    // ---------------- This Week (Nov 15, The Front Page: src/v2/pages/thisweek.js) ----------------
+    /** the share image in the open share sheet (today's dialog): its size once drawn */
+    shareCard: () => ev(() => { const s = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop(), i = s && s.querySelector('[data-wkimg] img'); if (!i || !i.complete || !i.naturalWidth) return null;
+      return {w: i.naturalWidth, h: i.naturalHeight, src: (i.src || '').slice(0, 40), text: __dtx(s)}; }),
+    tapWinner: async () => { await ev(() => { const b = [...document.querySelectorAll('#main .wk-win [data-evgo]')].find(__dvis); if (!b) throw new Error('no winner row'); b.click(); }); await wait(900); },
+    /** New Tech's kind markers: the word as written (CSS shows it in capitals) and whether an icon is drawn beside it */
+    kindMarkers: () => ev(() => [...document.querySelectorAll('#main .wk-kind')].filter(__dvis).map(k => ({word: k.textContent.trim(), icon: !!k.querySelector('svg')}))),
+    // ---------------- Track Record (Nov 15, The Receipt: src/v2/pages/track.js) ----------------
+    hasChart: () => ev(() => [...document.querySelectorAll('#main svg')].filter(__dvis).some(s => s.querySelectorAll('path,polyline,line').length > 4)),
+    /** number of rows inside a fold */
+    foldRows: m => ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); if (!d) return null;
+      return [...d.querySelectorAll('li, tr')].filter(__dvis).length; }, m),
   };
+  // Archetypes (Nov 15, The Weather Map: src/v2/pages/archetypes.js). Translation: today's guide folds are the map's regions; a region
+  // opens its guide (".ar-guide", headed "<style> Guide"), which is the fold's text.
+  const fold0 = D.toggleFold, text0 = D.foldText, onArch = () => ev(() => location.hash.replace(/=.*/, '') === '#archetypes');
+  D.toggleFold = async m => { if (!(await onArch())) return fold0(m);
+    await ev(m => { const l = m.toLowerCase(), b = [...document.querySelectorAll('#main [data-argo]')].filter(__dvis).find(b => __dtx(b.querySelector('.ar-nm') || b).toLowerCase() === l || __dtx(b.querySelector('.ar-nm') || b).toLowerCase().includes(l));
+      if (!b) throw new Error('no style ' + m); b.click(); }, m); await wait(500); };
+  D.foldText = async m => { if (!(await onArch())) return text0(m);
+    return ev(m => { const g = [...document.querySelectorAll('#main .ar-guide')].find(__dvis), h = g && g.querySelector('.ar-gh h2'); return h && __dtx(h).toLowerCase().includes(m.toLowerCase()) ? __dtx(g) : null; }, m); };
   // the other Meta and shell helpers: the pages they belong to aren't rebuilt yet
   for (const k of ['mainTabs', 'activeMainTab', 'teamCount', 'bottomBar', 'tapMainTab', 'openMenu', 'ratingOnRatings', 'filterChipsTop', 'teamLinkCode', 'findRulesCaption'])
     if (!(k in D)) D[k] = () => NOT(`${k} (a Meta/shell helper for a page or feature the new site doesn't have yet)`);

@@ -36,11 +36,13 @@ export default {
     current: () => pg.evaluate(([PS]) => { if (!window.V2) return null; if (V2._sheet) { for (const [c, id] of PS) if (V2._sheet.wrap.querySelector(c)) return id; }
       const h = (location.hash || '').slice(1).replace(/=.*/, ''); if (!V2.pages[h]) return 'not-in-v2:#' + (h || '(none: Home)');
       return {team: 'report', sheet: 'report', 'team-empty': 'report', box: 'box', compare: 'compare', battle: 'matchup', build: 'auto', tournaments: 'top', archetypes: 'arch'}[h] || h; }, [PAGE_SHEETS]),
-    /** the visible text of the page being shown (a page-like sheet counts as the page: Saved Teams, Team Sheet, Compare's team picker) */
+    /** the visible text of the page being shown (a page-like sheet counts as the page: Saved Teams, Team Sheet, Compare's team picker).
+     *  Words are read as written: capitals drawn by CSS (text-transform) are a look, not the words, so they are switched off while reading. */
     text: () => pg.evaluate(() => { const T = e => e.innerText.replace(/\s+/g, ' ').trim(); const h = (location.hash || '').slice(1).replace(/=.*/, '');
       if (!window.V2 || !V2.pages[h]) throw new Error('not in v2 yet: page "' + (h ? '#' + h : 'Home (no hash)') + '"');
       const m = document.querySelector('#main'), s = V2._sheet && V2._sheet.wrap.querySelector('.svt2,.ts2,.cx2-pick,.sga2');
-      return [m ? T(m) : '', s ? T(s) : ''].filter(Boolean).join(' '); }),
+      const st = document.createElement('style'); st.textContent = '*,*::before,*::after{text-transform:none!important}'; document.head.append(st);
+      try { return [m ? T(m) : '', s ? T(s) : ''].filter(Boolean).join(' '); } finally { st.remove(); } }),
     /** click the first VISIBLE control whose text matches (string = contains, case-insensitive; RegExp = test) */
     async tap(match, within = 'body', wait = 500) { const ok = await pg.evaluate(([m, isRe, w]) => {
         const re = isRe ? new RegExp(m[0], m[1]) : null, t = e => (e.innerText || e.textContent || '').replace(/\s+/g, ' ').trim();

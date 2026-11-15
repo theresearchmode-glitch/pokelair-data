@@ -629,12 +629,12 @@ t('EVT-04', 'Event list 12 at a time with "Show more"', run({team: TEAM}, async 
 t('EVT-05', 'Event detail: placings 1st→16th, opens at top, "‹ All events" returns', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Events'); await d.chooseEventFilter('Official'); await d.scrollTo(400); await d.openEvent('Gdańsk'); const tx = await ui.text();
   expect(has(tx, '‹ All events') && /758 players/.test(tx) && /Official/i.test(tx), 'detail head: ' + tx.slice(0, 200)); expect(await d.scrollY() < 5, 'did not open at its top');
-  expect(await d.placings() >= 16, 'placings: ' + await d.placings()); await ui.tap(/‹ All events/);
+  expect(await d.placings() >= 16, 'placings: ' + await d.placings()); await ui.tap((NEW ? /‹ All Events/ : /‹ All events/)); /* Sim, Nov 14 naming */
   const back = await d.eventCards(); expect(back.length >= 1 && back.every(x => /official/i.test(x)) && !(await ui.sees('‹ All events')), 'the (Official) list did not return'); }));
 t('EVT-06', 'Team sheet card: Sets shows items/moves; Load team needs a second tap and loads the exact sheet', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Events'); await d.chooseEventFilter('Official'); await d.openEvent('Gdańsk'); await ui.tap(/^Sets$/); expect(/Ability|@/.test(await ui.text()) && has(await ui.text(), 'Hide sets'), 'sets not shown');
-  await ui.tap(/^Load team$/i); expect(has(await ui.text(), 'Tap again to replace your team'), 'no second-tap warning'); expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'first tap changed the team');
-  await ui.pg.waitForTimeout(500); await ui.tap(/Tap again to replace your team/); expect(await ui.current() === 'report', 'did not open My Team'); expect(/team loaded with its moves and items/.test(await d.toastText() || ''), 'toast: ' + await d.toastText());
+  await ui.tap(/^Load team$/i); expect(has(await ui.text(), (NEW ? 'Replace your current team?' : 'Tap again to replace your team')), 'no second-tap warning'); /* new: the second tap is Replace in the question, as on Winning Teams (TOP-06) */ expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'first tap changed the team');
+  await ui.pg.waitForTimeout(500); await ui.tap((NEW ? /^Replace$/ : /Tap again to replace your team/)); expect(await ui.current() === 'report', 'did not open My Team'); expect(/team loaded with its moves and items/.test(await d.toastText() || ''), 'toast: ' + await d.toastText());
   expect(await d.toastHasUndo(), 'no Undo'); expect((await ui.team()).includes('Gholdengo'), 'winning six not loaded: ' + await ui.team()); }));
 t('EVT-07', 'Events without data: empty note', run({team: TEAM, account: false}, async ({ui}) => {
   await ui.go('Events'); expect(has(await ui.text(), 'Tournament results appear here after the next data refresh.'), 'no empty note'); }));
@@ -642,7 +642,7 @@ t('EVT-07', 'Events without data: empty note', run({team: TEAM, account: false},
 // =============================== ARCH · Archetypes (= B-build ARCH-03/04) ===============================
 t('ARCH-01', 'Archetype list sorted by share with team counts (B ARCH-03)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Archetypes'); const tx = await ui.text(); expect(/From the latest \d+ top tournament teams/.test(tx), 'no source line');
-  const g = [...tx.matchAll(/([A-Z][A-Za-z ]+?) (\d+)% (\d+) of (\d+) top teams/g)].map(m => +m[2]); expect(g.length >= 6, 'styles: ' + g.length);
+  const g = [...tx.matchAll((NEW ? /([A-Z][A-Za-z ]+?) (\d+)% (?:of top teams )?(\d+) of (\d+)(?: teams)?/g : /([A-Z][A-Za-z ]+?) (\d+)% (\d+) of (\d+) top teams/g))].map(m => +m[2]); /* new: "<style> 49% of top teams 44 of 90" (small regions: "10% 9 of 90 teams") */ expect(g.length >= 6, 'styles: ' + g.length);
   for (let i = 1; i < g.length; i++) expect(g[i] <= g[i - 1], 'not sorted by share'); }));
 t('ARCH-02', 'Inside a guide: how to beat it and what your team has (B ARCH-04)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Archetypes'); await d.toggleFold('Trick Room'); const s = await d.foldText('Trick Room');
@@ -651,7 +651,7 @@ t('ARCH-02', 'Inside a guide: how to beat it and what your team has (B ARCH-04)'
 // =============================== WEEK · This Week ===============================
 t('WEEK-01', 'This Week head: two date ranges, team and event counts, Share button', run({team: TEAM}, async ({ui}) => {
   await ui.go('This Week'); const tx = await ui.text(); expect(/Tournament teams, [A-Z][a-z]{2} \d+ – .*against .*\d/.test(tx), 'no ranges');
-  expect(/This Week [\d,]+ teams \d+ events/.test(tx) && /Week before [\d,]+ teams \d+ events/.test(tx), 'no counts'); expect(has(tx, 'Share this week'), 'no share button'); }));
+  expect((NEW ? /This week [\d,]+ teams \d+ events/ : /This Week [\d,]+ teams \d+ events/).test(tx) && /Week before [\d,]+ teams \d+ events/.test(tx), 'no counts'); expect(has(tx, 'Share this week'), 'no share button'); }));
 t('WEEK-02', 'Share this week opens a 1200-wide image', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('This Week'); await ui.tap('Share this week'); const c = await d.until(() => d.shareCard()); expect(c && c.w === 1200, 'image: ' + JSON.stringify(c)); }));
 t('WEEK-02b', 'Without data, Share says "Nothing to share yet"', run({team: TEAM, account: false}, async ({ui, d}) => {
@@ -691,7 +691,7 @@ t('TRACK-03', 'Top-8 teams by the rating we gave: four bands and a verdict', run
   await ui.go('Track Record'); const tx = await ui.text(); for (const b of ['Rated 90+', 'Rated 70–89', 'Rated 53–69', 'Rated Under 53']) expect(has(tx, b), 'band missing ' + b);
   expect(/\d+ of \d+ Pokémon made a top 8/.test(tx), 'no band counts'); expect(/Pokémon we rated 90\+ were on top-8 teams/.test(tx) || /Early: only \d+ events/.test(tx), 'no verdict or early note'); }));
 t('TRACK-04', 'Biggest hits and misses open their sheet', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Track Record'); const tx = await ui.text(); expect(has(tx, 'Biggest Hits') && has(tx, 'Biggest Misses'), 'no hits/misses'); expect(/Rated \d+, on \d+ top-8 teams/.test(tx), 'hit rows');
+  await ui.go('Track Record'); const tx = await ui.text(); expect(has(tx, 'Biggest Hits') && has(tx, 'Biggest Misses'), 'no hits/misses'); expect((NEW ? /Rated \d+ · on \d+ top-8 teams/ : /Rated \d+, on \d+ top-8 teams/).test(tx), 'hit rows');
   await d.openPokemon(await d.firstPokemon()); expect(await d.sheetIsOpen(), 'no sheet'); }));
 t('TRACK-05', 'Week by week chart (or the "from about" note)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Track Record'); expect(has(await ui.text(), 'Week by Week'), 'no section'); expect(await d.hasChart() || /From about/.test(await ui.text()), 'no chart and no note'); }));
