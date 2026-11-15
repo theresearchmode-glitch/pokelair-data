@@ -33,7 +33,7 @@ function turnOneData(mine, theirs, r) {
       const hitsAlly = h.mv.ally && allyHit(h.mv, partner);
       const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
     if (best) { const nt = hitNote(best.h), ally = best.hitsAlly ? (() => { const r2 = hitOn(m, [best.h.mv], partner); return `; also hits your ${partner.d}${r2 ? ' for up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '% of its HP' : ''}`; })() : '';
-      lines.push([m, `${best.h.mv.name} ${best.h.mv.spread ? '(hits both)' : 'into ' + best.o.d}`, `${best.ko ? 'KOs' : 'up to ' + dmgP(100 * best.pct) + '% of HP, ' + koShort(best.h.r)}${best.h.mv.spread ? ' on ' + best.o.d : ''}${nt ? ' (' + nt + ')' : ''}${ally}`, pr(m, best.h.mv.name)]); }
+      lines.push([m, `${best.h.mv.name} ${best.h.mv.spread ? '(hits both)' : 'into ' + best.o.d}`, `${best.ko ? 'KOs' : 'up to ' + dmgP(100 * best.pct) + '% of its HP, ' + koShort(best.h.r)}${best.h.mv.spread ? ' on ' + best.o.d : ''}${nt ? ' (' + nt + ')' : ''}${ally}`, pr(m, best.h.mv.name)]); }
     else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); }
   const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}`);
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
@@ -42,7 +42,7 @@ function turnOneData(mine, theirs, r) {
   const order = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0}; })
     .sort((a, b) => b.p - a.p || a.st - b.st || b.s - a.s);
   const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = oPr(o) === 3;
-    return [fo ? 'Fake Out (if they have it)' : `${d.worst.h.mv.name} into ${d.worst.on.d}`, fo ? `then ${d.worst.h.mv.name}: up to ${dmgP(100 * d.worst.pct)}% of ${d.worst.on.d}'s HP` : `up to ${dmgP(100 * d.worst.pct)}% of its HP (${koShort(d.worst.h.r)})`]; };
+    return [fo ? 'Fake Out (if they have it)' : `${d.worst.h.mv.name} into ${d.worst.on.d}`, fo ? `then ${d.worst.h.mv.name}: up to ${dmgP(100 * d.worst.pct)}% of ${d.worst.on.d}'s HP` : `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}`]; }; /* one wording for both lines (audit Nov 15) */
   // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
   const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
     return {x: o.x, me: o.me, speed: o.s, prio: o.p, act: ln ? ln[1] : th ? th[0] : 'Unknown move', why: ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads'}; });

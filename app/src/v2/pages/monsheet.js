@@ -99,6 +99,8 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
   const fit = b => { b.style.fontSize = ''; b.classList.remove('np-brk'); if (b.clientWidth < 2) return true;
     for (const s of b.tagName === 'H1' ? ['--t34', '--t28', '--t24'] : ['--t17', '--t15']) { if (!ow(b)) break; b.style.fontSize = `var(${s})`; } return !ow(b); };
   document.querySelectorAll('.pk-is h1').forEach(b => { if (!fit(b)) b.classList.add('np-brk'); });
+  const pn = [...document.querySelectorAll('.pk-pc .mc-nm')]; pn.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); /* partner names: one size for the row (the smallest any of them needed), so the four read even */
+  const px = Math.min(...pn.map(b => parseFloat(getComputedStyle(b).fontSize))); if (pn.length && isFinite(px)) pn.forEach(b => { if (parseFloat(getComputedStyle(b).fontSize) > px) b.style.fontSize = px + 'px'; });
   document.querySelectorAll('.pk-slots').forEach(u => { u.classList.remove('pk-slots1'); const bs = [...u.querySelectorAll('b')]; if (bs.map(fit).every(Boolean)) return;
     u.classList.add('pk-slots1'); /* a move can't fit two across even at 15 px (320 wide): one per row, then fit again */ bs.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); });
   const groups = new Map(); document.querySelectorAll('.mh-mv').forEach(u => { u.classList.remove('mh-mv1'); u.querySelectorAll('li').forEach(li => li.classList.remove('np-brk')); const g = u.closest('.mh') || u.parentElement; groups.set(g, [...(groups.get(g) || []), u]); });

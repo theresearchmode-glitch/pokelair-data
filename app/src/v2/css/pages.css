@@ -3012,7 +3012,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-gauge span{position:absolute;top:calc(100% + var(--s1));left:calc(var(--v)*1%);font:600 var(--t13)/1 var(--b);color:var(--ink-3);transform:translateX(-50%)}.pk-gauge span:first-of-type{transform:none}.pk-gauge span:last-of-type{transform:translateX(-100%)}
 .pk-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4);padding:var(--s4) 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 .pk-n{display:grid;gap:var(--s1)}.pk-n b{font:900 var(--t34)/1 var(--u);font-style:italic}.pk-n.few b{font-size:var(--t22)}.pk-n span{display:grid;font:600 var(--t15)/1.4 var(--b)}.pk-n small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-.pk-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}
+.pk-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}.pk-acts>.ms-add{margin:0} /* the sheet's top margin pushed it 8 px below the buttons (audit Nov 15) */
 /* Base Stats */
 .pk-stats{--nr:var(--s16);display:grid;gap:var(--s4);padding:var(--s6) var(--s8) var(--s8);background:var(--wash);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px))}
 .pk-sh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s1) var(--s4)} /* phones: 'Total 634 +100' drops under the heading instead of pushing the panel wider */.pk-sh h2{margin:0;font:900 var(--t28)/1.2 var(--u);font-style:italic}
@@ -3057,14 +3057,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:1099px){.pk-build{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-usual{grid-column:1/-1;order:0}}
 @media (max-width:699px){.pk-build{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.pk-h h2{font-size:var(--t26)}.pk-jumps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.pk-jumps button{padding:0 var(--s2);font-size:var(--t13)}}
 /* Pokémon page part 2 "Who it teams with": the partners as a fanned hand (outer Cards tilt more and sit lower, as in Winning Hands) */
-.pk-fan{display:flex;justify-content:center;gap:var(--s4);margin:0;padding:var(--s4) 0 0;list-style:none}
+.pk-fan{display:flex;justify-content:center;gap:var(--s4);margin:0;padding:var(--s4) 0 0;list-style:none}@media (min-width:900px) and (max-width:1099px){.pk-fan{padding-inline:var(--s3);gap:var(--s6)}} /* a 6deg tilt leans ~12 px: room at the sides and between Cards (they poked out at 700-1024 and touched at 700, audit Nov 15) */
 .pk-fan li{flex:0 1 220px;display:grid;justify-items:center;align-content:start;gap:var(--s3);margin-top:calc(var(--s3)*(var(--i) - (var(--k) - 1)/2)*(var(--i) - (var(--k) - 1)/2))}
 .pk-fan .pk-pc{transform:rotate(calc((var(--i) - (var(--k) - 1)/2)*4deg))} /* only the Cards tilt; the numbers under them stay straight and inside the section */
-.pk-pc{display:block;width:100%;text-decoration:none;color:inherit}.pk-pc .ms-card{height:240px;margin:0}.pk-pc .mc-nm{margin:0;font:900 var(--t20)/1.15 var(--u);font-style:italic;color:var(--card-ink)}
+.pk-pc{display:block;width:100%;text-decoration:none;color:inherit}.pk-pc .ms-card{height:240px;margin:0}.pk-pc .mc-nm{min-width:0;max-width:100%;margin:0;font:900 var(--t20)/1.15 var(--u);font-style:italic;color:var(--card-ink)}
 .pk-pc:hover .ms-card,.pk-pc:focus-visible .ms-card{translate:0 calc(var(--s2)*-1)}
 .pk-pn{display:grid;justify-items:center;gap:var(--s1);margin:0}.pk-pn b{font:900 var(--t34)/1.15 var(--u);font-style:italic}.pk-pn small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .pk-fnote{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s4)}.pk-fnote .fine{margin:0}
-@media (max-width:699px){.pk-fan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s4)}.pk-fan li{margin-top:0}.pk-fan .pk-pc{transform:none}.pk-pc .ms-card{height:200px}}
+@media (max-width:899px){.pk-fan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s4)}.pk-fan li{margin-top:0}.pk-fan .pk-pc{transform:none}.pk-pc .ms-card{height:200px}} /* two across up to 899 (Nov 15: four across at 700-899 left ~90 px for a name) */
 @media (prefers-reduced-motion:reduce){.pk-pc:hover .ms-card,.pk-pc:focus-visible .ms-card{translate:none}}
 .pk-pc .mc-mon .np-mon,.pk-pc .mc-mon .np-mon .st{--iw:150px}.pk-pc .mc-mon{top:var(--s4)} /* the Card's own 272 px sprite size is for the big Card; a partner's sprite fits its 240 px Card */
 @media (max-width:699px){.pk-pc .mc-mon .np-mon,.pk-pc .mc-mon .np-mon .st{--iw:112px}.pk-pc .mc-nm{font-size:var(--t15)}}
