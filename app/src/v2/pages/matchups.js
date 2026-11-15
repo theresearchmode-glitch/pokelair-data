@@ -26,7 +26,7 @@ V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, vie
 
 // A4 proposal (Sim's fix plan, Nov 12: "your recommendation"): one verdict per row. The real-games word leads; the calc reading
 // shows only when it points the other way ("Calc disagrees: Beats it"); with no real-games verdict the calc is the row's verdict.
-V2.calcNote = (R, lv) => R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Favoured' && lv <= 1)) ? `<small class="mu-dis">Calc disagrees: ${CH.LV[lv]}</small>` : '';
+V2.calcNote = (R, lv) => R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Favoured' && lv <= 1)) ? `<small class="mu-dis">Calc disagrees: <span class="mu-lv">${CH.LV[lv]}</span></small>` /* Nov 15: 'Beats it' kept together (lone 'it' at 390); text unchanged */ : '';
 // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
 V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured');
