@@ -135,3 +135,13 @@ the rules, heard her, and will carry on with this authority, restating the scope
   which helpers ran and why.
 - Every other rule still applies (checks with result lines, one item at a time, nothing published to the artifact without
   Sim's go, stop means stop). Every decision is logged in docs/rebuild/decisions.md; a summary goes to Sim when the time is up.
+
+## 00q. The full quality gate (Sim, Nov 14, 9:58 PM and 10:0x PM: "this can't happen" / "be this thorough for everything yet to be built")
+Every page, built or still to be built, passes before it reaches Sim or the Preview:
+1. The full check (scratchpad qcheck.cjs; its logic is described here so it can be rebuilt): on the REAL-DATA build (never local test data), at
+   320, 360, 390, 430, 600, 820, 1024, 1100, 1280, 1440, 1920, in day AND night, every element: stays inside its clipping box and the screen;
+   no visible text overlaps other visible text; every font size on the scale; every button/link at least 40-44px on touch widths; no page errors.
+   Zero findings, or each remaining one explained as a false alarm with evidence.
+2. Every state the page has (empty, partial, open folds, other tabs, long names, the not-drawn states) goes through the same check.
+3. A fresh helper agent re-audits the page independently (reads the rules, screenshots, its own eyes) and finds nothing broken.
+4. Before/after pictures to Sim. A page is "done" only after all four.
