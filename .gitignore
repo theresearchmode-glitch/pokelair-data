@@ -8,7 +8,8 @@ speed.out.txt
 legality.out.txt
 app/verify-*.html
 shots-oct28/
-.claude/
+.claude/*
+!.claude/settings.json
 # check scripts save screenshots to C:/pl; on Linux that lands here
 C:/
 out/matches_ab.json
