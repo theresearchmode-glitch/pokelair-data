@@ -41,8 +41,12 @@ document.addEventListener('click', e => { if (!(e.target.closest && e.target.clo
 // The option shown is today's abTeam('doubles') (ui.abIdx); its Strength Score is CH.gradeOf on its own RD and checks, the same call
 // My Team makes, so both pages agree. Use / Save follow today's 34-events.js rules (Undo; 10 saved max; "Already saved as").
 V2.BAND_K = {A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'};
-V2.buildAnswer = () => { const E = V2.esc, r = ui.ab;
-  if (r && r.busy) return '<p class="bd-busy" role="status">Building from real winning teams…</p>';
+/* Sim, Nov 15: while it builds, the page no longer collapses to one line (jarring). The last result stays in place, faded and inert,
+   under "Building…"; the new one replaces it in the same spot. The first build keeps a reserved height. */
+V2.buildAnswer = () => { const r = ui.ab;
+  if (r && r.busy) return `<div class="bd-busyw${V2.bdLast ? '' : ' first'}"><p class="bd-busy" role="status">Building from real winning teams…</p>${V2.bdLast ? `<div class="bd-prev" inert aria-hidden="true">${V2.bdLast}</div>` : ''}</div>`;
+  const h = V2.buildAnswer0(); if (h) V2.bdLast = h; return h; };
+V2.buildAnswer0 = () => { const E = V2.esc, r = ui.ab;
   const res = r && r.doubles; if (!res) return '';
   // today's three no-result notes (22-auto-build.js col()), without the format word (AUTO-14)
   if (!res.teams || !res.teams.length) return `<p class="bd-none" role="status">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. ${ui.abSrc === 'all' ? 'Try a different number of Megas on team' + (ui.abLock ? ' or build without the pick' : '') + '.' : 'Add Mega-capable Pokémon to your box, switch to Whole Roster, or change Megas on team.'}`

@@ -2083,8 +2083,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp-team{display:grid;gap:var(--s2);min-width:0}.bp-team h2{margin:0;font:900 var(--d64)/1 var(--u);font-style:italic;overflow-wrap:normal}
 .bp-chips{display:flex;flex-wrap:wrap;gap:var(--s2)}.bp-chips .np-chip{background:none;border:1px solid var(--bp-ink);color:var(--bp-ink)}
 .bp-meas{display:grid;gap:var(--s2);justify-items:start}
-.tm-hero .bp-score,.bp .bp-score{display:flex;align-items:center;gap:var(--s5);margin:0;padding:0 0 0 var(--s4);border-left:1px solid var(--bp-ink);position:relative}
-.bp .bp-score::before,.bp .bp-score::after{content:'';position:absolute;left:0;right:calc(var(--s4)*-1);height:1px;background:var(--bp-ink);opacity:.6}.bp .bp-score::before{top:var(--s2)}.bp .bp-score::after{bottom:var(--s2)}
+.tm-hero .bp-score,.bp .bp-score{display:flex;align-items:center;gap:var(--s5);margin:0;padding:0;position:relative} /* Sim, Nov 15: no thin blue frame around the score (the stamp looked like it fell out of it) */
+
 .bp .bp-score>b{font:900 var(--d120)/1 var(--u);font-style:italic;color:var(--ink)}
 .bp .bp-score .w{display:grid;gap:var(--s2);justify-items:start}
 .bp-stamp{display:inline-block;padding:var(--s1) var(--s3);border:3px double var(--band);color:var(--band);font:900 var(--t28)/1.1 var(--u);font-style:italic;rotate:-4deg}
@@ -3064,7 +3064,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-pc:hover .ms-card,.pk-pc:focus-visible .ms-card{translate:0 calc(var(--s2)*-1)}
 .pk-pn{display:grid;justify-items:center;gap:var(--s1);margin:0}.pk-pn b{font:900 var(--t34)/1.15 var(--u);font-style:italic}.pk-pn small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .pk-fnote{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s4)}.pk-fnote .fine{margin:0}
-@media (max-width:899px){.pk-fan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s4)}.pk-fan li{margin-top:0}.pk-fan .pk-pc{transform:none}.pk-pc .ms-card{height:200px}} /* two across up to 899 (Nov 15: four across at 700-899 left ~90 px for a name) */
+@media (max-width:899px){.pk-fan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s4)}.pk-fan li{margin-top:0}.pk-fan .pk-pc{transform:none}.pk-pc .ms-card{height:200px}}
+@media (max-width:699px){.pk-fan{display:flex;gap:var(--s4);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:var(--s2);margin-inline:calc(var(--s4)*-1);padding-inline:var(--s4);scroll-padding-inline:var(--s4)}.pk-fan li{flex:0 0 min(46%, 180px);scroll-snap-align:start}} /* phones: the four partners in one swipe row (the 2x2 block was 841 px tall; Sim, Nov 15: keep within the limits, keep the wow) */ /* two across up to 899 (Nov 15: four across at 700-899 left ~90 px for a name) */
 @media (prefers-reduced-motion:reduce){.pk-pc:hover .ms-card,.pk-pc:focus-visible .ms-card{translate:none}}
 .pk-pc .mc-mon .np-mon,.pk-pc .mc-mon .np-mon .st{--iw:150px}.pk-pc .mc-mon{top:var(--s4)} /* the Card's own 272 px sprite size is for the big Card; a partner's sprite fits its 240 px Card */
 @media (max-width:699px){.pk-pc .mc-mon .np-mon,.pk-pc .mc-mon .np-mon .st{--iw:112px}.pk-pc .mc-nm{font-size:var(--t15)}}
@@ -3123,3 +3124,21 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-ft td{padding:var(--s2);text-align:center;border-top:1px solid var(--rule)}.pk-ft td.best{background:var(--plot);color:var(--on-mark);font-weight:800}
 .pk-sec>.ra-links{margin:var(--s4) 0 0}
 .ed-full{margin:var(--s4) 0 0}.ed-full .np-link{display:inline-flex;align-items:center;min-height:var(--tap)} /* Full Popular Sets (Nov 15) */
+/* Sim, Nov 15 (Q1 A): parts 3-6 fold on phones to their heading and one summary line */
+.pk-sum{display:none}
+.pk-fold .pk-sum{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--s4);margin:var(--s3) 0 0}.pk-sum p{margin:0;flex:1 1 200px;font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pk-sum .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.pk-fold:not(.open)>*:not(.pk-h):not(.pk-sum){display:none}.pk-fold.open .pk-sum p{display:none} /* every width (uniform; the desktop page was 4,200-5,750 px) */
+@media (max-width:699px){.pk-lsum{display:flex}}
+@media (max-width:699px){.pk-jumps{display:flex;flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;margin-inline:calc(var(--s4)*-1);padding-inline:var(--s4)}.pk-jumps>*{flex:none;scroll-snap-align:start}} /* phones: the jump links in one swipe row */
+@media (max-width:699px){.pk-set dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.pk-set dl>div:last-child:nth-child(odd){grid-column:1/-1}} /* phones: the typical set two by two (it was 4 rows down a half-empty width) */
+@media (max-width:699px){.pk-lsum{order:3}.pk-lists:not(.open){display:none}.pk-lists{order:4}}.pk-lsum{display:none}@media (max-width:699px){.pk-build .pk-lsum{display:flex}} /* part 1 on phones: the full lists behind one tap (order: after the typical set and Usually) */
+@media (min-width:900px){.pk{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12)}.pk>*{grid-column:1/-1}.pk>.pk-fold:not(.open){grid-column:auto}.pk>.pk-fold.pk-solo{grid-column:1/-1}} /* wide screens: folded parts two side by side (one line each ran a whole row); an opened part takes the full width */
+.bd-busyw{position:relative}.bd-busyw.first{min-height:min(70vh,var(--s24)*6)}.bd-busyw .bd-busy{position:sticky;top:var(--s24);z-index:1;margin:0 0 var(--s3)}.bd-prev{opacity:.4;pointer-events:none;transition:opacity .2s} /* Build: the last result stays while a new one is built (no jump) */
+@media (prefers-reduced-motion:reduce){.bd-prev{transition:none}}
+.bd-rebuild .bd-result{position:relative}.bd-rebuild .bd-result>.bd-busy{position:absolute;top:var(--s4);left:50%;translate:-50% 0;z-index:2;margin:0;white-space:nowrap;box-shadow:var(--shadow-lift)} /* floats over the faded result: takes no space, so nothing moves */.bd-rebuild .bd-result>:not(.bd-busy){opacity:.4;pointer-events:none;transition:opacity .2s} /* Build: the last Blueprint stays while a new one is built */
+.bd-rebuild .bd-result>.bd-busy{display:inline-block;padding:var(--s2) var(--s4);background:var(--bg);font:600 var(--t15)/1.5 var(--b);color:var(--ink)}
+.bp-revwait{opacity:.6;cursor:default}
+/* Never suggest (Sim, Nov 15 Q3 A) */
+.sg2-excl{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s3);margin:var(--s3) 0 0}.sg2-excl .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.ex2-list{list-style:none;margin:var(--s4) 0;padding:0;display:grid;gap:var(--s2)}.ex2-list li{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--rule)}.ex2-list b{font:600 var(--t16)/1.3 var(--b)}.ex2-add{margin-top:var(--s4)}
+.sg2-links{display:flex;flex-wrap:wrap;gap:0 var(--s6)}

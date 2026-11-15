@@ -1042,8 +1042,8 @@ t('PKMN-04', 'Jump links ("On this page") go to each part and move keyboard focu
   for (const [name, id] of [['What beats it', 'pk-s3'], ['How fast it is', 'pk-s4'], ['How to build it', 'pk-s1']]) { await r.ui.tapJump(name); ok(await r.ui.focusInside() === id, name + ': focus in ' + await r.ui.focusInside()); } await r.close(); });
 
 t('PKMN-05', 'Build, stats, abilities, type matchups, speed: usual set, base stats, "Most used", weak/resists, speed builds, Speed Tiers link', async () => {
-  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
-  for (const x of [/Usually .+ Adamant/, /Base Stats TOTAL \d+ HP \d+ Attack \d+/, /Abilities Defiant most used, \d+%/i, /What beats it Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run/i, /Trick Room build/i, /outspeeds \d+% of the top 30/, /Speed Tiers →/]) has(s, x, 'page');
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.openAllParts() >= 1, 'no folded part to open'); const s = await r.ui.pokemonPage();
+  for (const x of [/Usually .+ Adamant/, /Base Stats TOTAL \d+ HP \d+ Attack \d+/, /Abilities (Hide )?Defiant most used, \d+%/i, /What beats it Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run/i, /Trick Room build/i, /outspeeds \d+% of the top 30/, /Speed Tiers →/]) has(s, x, 'page');
   await r.ui.tapInPage('Speed Tiers →'); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
 
 t('PKMN-06', 'How to build it and partners: typical set, moves and items with %, a partner opens its own page', async () => {
@@ -1053,7 +1053,7 @@ t('PKMN-06', 'How to build it and partners: typical set, moves and items with %,
   ok(new RegExp(partner, 'i').test(await r.ui.pageHash()), 'partner page did not open: ' + await r.ui.pageHash()); await r.close(); });
 
 t('PKMN-07', 'Why it rates N: its bars, What the data says, other tier lists, How Ratings Work and Track Record links', async () => {
-  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.openAllParts() >= 1, 'no folded part to open'); const s = await r.ui.pokemonPage();
   for (const x of [/Why it rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Win rate \d+/, /What the data says/i, /Other tier lists/i, /How Ratings Work ›/, /Track Record →/]) has(s, x, 'page');
   await r.ui.tapInPage('Track Record →'); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
 } else {
@@ -1188,7 +1188,7 @@ t('X-12', 'Long paragraphs show the first sentence and "More"', async () => {
 
 t('X-13', 'Links out of this scope still work: replay "Paste its log" → Battle; How ratings work → How we calculate', async () => {
   const r = await myTeam(); await r.ui.openLogForm(); await r.ui.tapText('Paste its log', 1200); ok(await r.ui.current() === 'matchup', '"Paste its log" did not open Battle');
-  await r.ui.go('Home', 600); await r.ui.tapPokemon('Kingambit'); if (!NEW) await r.ui.infoTab('Rating') /* the Pokémon page has no tabs: the link is on the page (Nov 15) */; await r.ui.tapText((NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →')), 900); ok(await r.ui.current() === 'method', (NEW ? 'How Ratings Work did not open How we calculate' : 'How ratings work did not open How we calculate')); await r.close(); });
+  await r.ui.go('Home', 600); await r.ui.tapPokemon('Kingambit'); if (NEW) await r.ui.openAllParts(); if (!NEW) await r.ui.infoTab('Rating') /* the Pokémon page has no tabs: the link is on the page (Nov 15) */; await r.ui.tapText((NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →')), 900); ok(await r.ui.current() === 'method', (NEW ? 'How Ratings Work did not open How we calculate' : 'How ratings work did not open How we calculate')); await r.close(); });
 
 // ================= Inventory "looks broken" items that a player can hit (correct behaviour, marked known) =================
 t('HOME-11b', 'Sample note "Build your own" on My Team opens Build', async () => {

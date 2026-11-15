@@ -6,7 +6,7 @@
 V2.sgCtl = () => `<div class="sg2-ctl" role="group" aria-label="Suggestion settings">
   <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div>
   <div class="sg2-c"><span class="sg2-k">Megas on team</span>${V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on the team')}</div>
-  <div class="sg2-c"><span class="sg2-k">Swap my Mega?</span>${V2.slide('sgswap', [['0', 'No'], ['1', 'Yes']], $('swapMega').checked ? '1' : '0', 'Suggestions can swap out my Mega')}</div></div>`;
+  <div class="sg2-c"><span class="sg2-k">Swap my Mega?</span>${V2.slide('sgswap', [['0', 'No'], ['1', 'Yes']], $('swapMega').checked ? '1' : '0', 'Suggestions can swap out my Mega')}</div></div>${V2.exclLine()}`;
 // Swap my Mega? is kept in this browser on the new build (today's page forgets it on reload while Megas on team is kept: SUG-03b)
 try { if (V2.LS.get('np2.swapMega') === '1') $('swapMega').checked = true; } catch (e) {}
 // a new choice: the setting and its message at once; the page redraws once the plate has slid over (so the slide is seen)
@@ -48,22 +48,29 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
   else { V2.sgReasons(ms); const side = !P.length && Array.isArray(P.more) && P.more.length > 0, top = S2.top, g0 = top.length ? top[0].g0 : null;
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
-    const pre = V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
-    const all = '<button type="button" class="np-link sg2-all" data-v2sgall>See All Suggestions ›</button>';
+    const pre = V2.itemFixCard(ms) + V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
+    const all = `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgall>See All Suggestions ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>`;
     // A3 proposal (Sim's fix plan, Nov 12: "your recommendation"): a best swap that doesn't raise the score (±0 or lower) gets no
     // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
     const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
     if (top.length && up != null && up <= 0) { body = `${gap || `<p class="tm-sub">Nothing raises this team’s Strength Score right now.</p>`}${all}`; V2._sgLast = body;
       return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; }
-    body = !top.length ? (side ? `<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}`
+    body = !top.length ? (side ? `${gap}<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}` /* Nov 15: the fix cards (items, Protect) showed in every branch but this one */
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
       <ol class="tm-sug">${top.map((x, k) => V2.sgCard({pl: x.pl, k, g0, attr: 'data-v2plan', side, hidden: k > 0 && !open, main: !k})).join('')}</ol>
-      ${hid > 0 && !open ? `<button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More Suggestion${hid === 1 ? '' : 's'}</button>` : all}`;
+      ${hid > 0 && !open ? `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More Suggestion${hid === 1 ? '' : 's'}</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>` : all}`;
     V2._sgLast = body; }
+  if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button></p>'; /* always reachable */
   return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; };
 // the Protect fix: only 0-2 of the six run Protect while their usual sets do; Add Protect puts it in those sets (today's
 // LANE.protFix / protApply and its [data-protfix] handler, 36-lanes.js; the words from LANE.protWords)
+// today's "Fix your items first" (54-items.js itemFixHtml): an Item Clause clash or an item that does nothing, with a one-tap "Give X Y"
+// (data-itfix, today's handler: Undo in the message). Nov 15 parity: the new site flagged the clash but had no fix button.
+V2.itemFixCard = ms0 => { const ms = typeof members === 'function' ? members() : ms0; /* with their items, as today's fix planner passes them */ let pr = []; try { pr = itemProblems(ms); } catch (e) {} if (!pr.length) return ''; const E = V2.esc;
+  const rows = pr.map(x => { const tgt = x.k === 'clause' ? x.ms[x.ms.length - 1] : x.ms[0]; let fix = ''; try { fix = tgt && tgt.i >= 0 ? itemFixFor(tgt, ms) : ''; } catch (e) {}
+    return `<p class="sg2-ln fix"><b>Fix</b> ${E(x.k === 'clause' ? 'Item Clause' : x.k === 'scarftr' ? 'Clashes with Trick Room' : 'Item does nothing')}: ${E(x.why)}</p>${fix ? `<button type="button" class="np-btn2" data-itfix="${tgt.i}|${E(fix)}"><span>Give ${E(tgt.d)} ${E(fix)}</span></button>` : ''}`; }).join('');
+  return `<div class="sg2-fix sg2-items" role="group" aria-label="Fix your items first">${rows}</div>`; };
 V2.protCard = ms => { let f = null; try { f = LANE.protFix(ms); } catch (e) {} if (!f) return ''; const W = LANE.protWords(f);
   return `<div class="sg2-fix"><p class="sg2-ln fix"><b>Fix</b> ${W.fix}</p><p class="tm-sub">${W.who} ${f.who.map(m => `<b>${V2.esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="np-btn2" data-protfix><span>${W.btn}</span></button></div>`; };
 // Nothing to fix: every basic, no fix and no swap past the measured bar (today's plans.nothing, LANE.apply); the edge now is in
@@ -207,3 +214,21 @@ V2.openTypeTables = () => { const D = V2.tyData(); if (!D) return; const {a, off
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'types') return; V2.ty.mode = e.detail.value; try { LS.set('np2.seg.types', V2.ty.mode); } catch (er) {} const el = document.querySelector('.ty2'); if (el) { el.outerHTML = V2.typesHtml(); const f = document.querySelector(`.ty2 [data-v2slide="types"] [data-v="${V2.ty.mode}"]`); if (f) f.focus(); } });
 document.addEventListener('click', e => { if (e.target.closest('[data-v2tytables]')) { V2.openTypeTables(); return; }
   const b = e.target.closest('[data-v2megapick]'); if (b) { ui.megaPick = b.dataset.v2megapick; const el = document.querySelector('.ty2'); if (el) el.outerHTML = V2.typesHtml(); } });
+
+// Sim, Nov 15 (Q3 A): the Pokémon you chose never to have suggested (today's Plan settings › Never suggest, S.excl). Saved lists from today's
+// site still filter suggestions and Build Me a Team, so they must be visible and undoable: one line here, "Change ›" opens the list.
+V2.exclNames = () => (S.excl || []).map(n => [n, (byName.get(n) || {}).d || n]).sort((x, y) => x[1].localeCompare(y[1]));
+V2.exclLine = () => { const L = V2.exclNames(), E = V2.esc;
+  return `<p class="fine sg2-excl">${L.length ? `<span>Never suggested: ${L.slice(0, 4).map(([, d]) => `<b>${E(d)}</b>`).join(', ')}${L.length > 4 ? ` and ${L.length - 4} more` : ''}</span><button type="button" class="np-link" data-v2excl>Change ›</button>` : ''}</p>`.replace('<p class="fine sg2-excl"></p>', ''); }; /* empty list: the link sits with See All Suggestions instead (no extra row) */
+V2.exclSheet = () => { const E = V2.esc, L = V2.exclNames();
+  return `<div class="ex2"><div class="np-eyebrow">Suggestions</div><h2 class="u">Never Suggest</h2><p class="fine">These never appear in suggestions or Build Me a Team${L.length ? '' : '. Nothing here yet'}.</p>
+    ${L.length ? `<ul class="ex2-list">${L.map(([n, d]) => `<li><b>${E(d)}</b><button type="button" class="np-btn2" data-exallow="${E(n)}"><span>Allow Again</span></button></li>`).join('')}</ul>` : ''}
+    <label class="np-field ex2-add">${V2.ICON.search}<input type="search" data-exq placeholder="Add a Pokémon" aria-label="Add a Pokémon never to suggest" autocomplete="off"></label><div class="hits" data-exhits aria-live="polite"></div></div>`; };
+V2.exclOpen = (focus) => { V2.sheet(V2.exclSheet(), {label: 'Never suggest', small: true, focus: focus || '[data-exq]'}); };
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2excl],[data-exallow],[data-exadd]'); if (!t) return; const d = t.dataset;
+  if (d.v2excl != null) { V2.exclOpen(); return; }
+  if (d.exallow) { const p = byName.get(d.exallow); S.excl = S.excl.filter(n => n !== d.exallow); toast(`${p ? p.d : d.exallow} can be suggested again`); render(); V2.exclOpen('[data-exq]'); return; }
+  if (d.exadd) { const p = byName.get(d.exadd); if (p && !isExcl(p)) { S.excl.push(p.n); toast(`${p.d} won't be suggested${!p.m && ROSTER.some(q => q.m && ownKey(q) === p.n) ? ' (nor its Mega)' : ''}`); } render(); V2.exclOpen('[data-exq]'); } });
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-exq]'); if (!i) return; const out = document.querySelector('[data-exhits]'); if (!out) return;
+  const r = i.value.trim() ? V2.find(i.value).mons.filter(p => !isExcl(p)).slice(0, 6) : [];
+  out.innerHTML = r.map(p => `<button type="button" class="np-hit" data-exadd="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b></span><span class="pg">Add</span></button>`).join(''); });

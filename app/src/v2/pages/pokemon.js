@@ -36,7 +36,7 @@ V2.pkStats = p => { const E = V2.esc, bf = SHT.baseForm(p), tot = p.st.reduce((a
 V2.pkHead = (no, q, sub, id) => `<header class="pk-h"><i class="pk-no u" aria-hidden="true">${no}</i><div><h2 class="u" id="${id}">${q}</h2>${sub ? `<p>${sub}</p>` : ''}</div></header>`;
 // the jump links (brief 3): only to the parts already on the page (the rest are added as they are built)
 V2.pkJumps = list => `<nav class="pk-jumps" aria-label="On this page">${list.map(([id, t]) => `<button type="button" data-pkjump="${id}">${t}</button>`).join('')}</nav>`;
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkjump]'); if (!b) return; const t = document.getElementById(b.dataset.pkjump); if (t) { t.scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); const h = t.matches('h1,h2') ? t : t.querySelector('h1,h2') || t; if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } }); /* keyboard focus moves with the jump, so the next Tab goes into that part (audit Nov 15) */
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkjump]'); if (!b) return; const t = document.getElementById(b.dataset.pkjump); if (t && document.getElementById(b.dataset.pkjump + '-sec')) V2.pkSetOpen(b.dataset.pkjump, true); if (t) { t.scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); const h = t.matches('h1,h2') ? t : t.querySelector('h1,h2') || t; if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } }); /* keyboard focus moves with the jump, so the next Tab goes into that part (audit Nov 15) */
 // 1. How to build it (today's Usually, Typical set, Moves, Items; the same helpers and words as the sheet)
 V2.pkBuild = p => { const E = V2.esc, n = p.n, st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })();
   const ti = (() => { try { return topItems(p); } catch (e) { return null; } })(), SB = lairSetBits(p), pm = (() => { try { return (popularMoves(p) || []).slice(0, 4).map(m => m.name); } catch (e) { return []; } })();
@@ -60,7 +60,7 @@ V2.pkBuild = p => { const E = V2.esc, n = p.n, st = (() => { try { return setFor
     : p.m ? `<div class="pk-list"><h3 class="pk-k u">Items</h3><p>Always holds ${E(stoneFor(p) || 'its Mega Stone')}.</p></div>` : st.it && st.it.length ? `<div class="pk-list"><h3 class="pk-k u">Items</h3>${bars(st.it, 3)}</div>` : '';
   const noSets = !(st.mv && st.mv.length) && !(st.it && st.it.length);
   const body = noSets ? `<p class="pk-empty"><b>No tournament or ladder sets yet.</b> Nobody has brought ${E(V2.disp(n))} to the events and ladders we read, so there are no popular moves or items to show.</p><div class="pk-build">${set}</div>`
-    : `<div class="pk-build">${slots}${set}<div class="pk-lists">${mvs}${items}</div></div>`;
+    : `<div class="pk-build">${slots}${set}<div class="pk-sum pk-lsum"><p>Every move and item, with how often each is run</p><button type="button" class="np-link" data-pklists aria-expanded="${V2.pkOpen('pk-lists')}" aria-controls="pk-lists">${V2.pkOpen('pk-lists') ? 'Hide' : 'All Moves and Items ›'}</button></div><div class="pk-lists${V2.pkOpen('pk-lists') ? ' open' : ''}" id="pk-lists">${mvs}${items}</div></div>`;
   return `<section class="pk-sec" aria-labelledby="pk-s1">${V2.pkHead(1, 'How to build it', 'Usually · Typical set · Moves · Items', 'pk-s1')}${body}</section>`; };
 
 // 2. Who it teams with (today's Brought with: the four partners, share brought together, games; the same data and note)
@@ -132,14 +132,41 @@ V2.pkForms = p => { const E = V2.esc, forms = ROSTER.filter(q => q.b === p.b); i
     ${['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'].map((l, j) => row(l, d => d.q.st[j])).join('')}${row('Total', d => d.tot)}</tbody></table></div>
     <p class="fine">On teams, win rate and rating: tournament teams. Base stats: game data.</p></section>`;
   return {strip, table}; };
+
+// Sim, Nov 15 (Q1 A): on phones parts 3-6 fold to their heading and one line, so the page is about half as long; "Show ›" opens a part
+// (remembered per part), a jump link to it opens it too. Desktop shows every part as before. The line uses the same data as the part.
+V2.pkSums = p => { const E = V2.esc, o = {};
+  try { const M = SHT.matchups(p), q = M.g.q || [], d = M.g.d || []; o['pk-s3'] = [q.length ? `4× weak: ${q.join(', ')}` : '', d.length ? `2× weak: ${d.join(', ')}` : ''].filter(Boolean).join(' · ') || 'No weaknesses'; } catch (e) {}
+  try { const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'); if (run) o['pk-s4'] = `${run.v} Speed${run.main ? ' (what players run)' : ''}${run.os ? ` · outspeeds ${run.os.pct}% of the top 30` : ''}`; } catch (e) {}
+  try { const st = setFor(p) || {}, sh = new Map((st.ab || []).map(([a, v]) => [a, v])); o['pk-s5'] = [...new Set(p.a)].sort((x, y) => (+(sh.get(y) ?? -1)) - (+(sh.get(x) ?? -1))).map(a => sh.get(a) != null && p.a.length > 1 && +sh.get(a) >= 1 ? `${a} (${Math.round(+sh.get(a))}%)` : a).join(' or '); } catch (e) {}
+  try { o['pk-s6'] = lairBars(p).filter(([, v]) => v != null).map(([l, v]) => `${l} ${v}`).join(' · '); } catch (e) {}
+  try { const f = ROSTER.filter(q => q.b === p.b); if (f.length > 1) o['pk-s7'] = `${f.length} forms: ${f.map(q => V2.disp(q.n)).join(', ')}`; } catch (e) {}
+  for (const k in o) o[k] = E(o[k]); return o; };
+// wide screens pair folded parts two across; a folded part left without a partner takes the full width (no lone tile beside an empty half)
+V2.pkPair = () => { const kids = [...document.querySelectorAll('#main .pk > *')]; let run = [];
+  const flush = () => { run.forEach((el, i) => el.classList.toggle('pk-solo', run.length % 2 === 1 && i === run.length - 1)); run = []; };
+  kids.forEach(el => { if (el.classList.contains('pk-fold') && !el.classList.contains('open')) run.push(el); else { el.classList.remove('pk-solo'); flush(); } }); flush(); };
+V2.pkOpen = id => { try { return localStorage.getItem('np2.pkopen.' + id) === '1'; } catch (e) { return false; } };
+V2.pkFoldAll = (html, p) => { const S = V2.pkSums(p);
+  return ['pk-s3', 'pk-s4', 'pk-s5', 'pk-s6', 'pk-s7'].reduce((h, id) => { const tag = `<section class="pk-sec" aria-labelledby="${id}">`; const i = h.indexOf(tag); if (i < 0 || !S[id]) return h;
+    const j = h.indexOf('</header>', i) + '</header>'.length, open = V2.pkOpen(id);
+    const sum = `<div class="pk-sum"><p>${S[id]}</p><button type="button" class="np-link" data-pkopen="${id}" aria-expanded="${open}" aria-controls="${id}-sec">${open ? 'Hide' : 'Show ›'}</button></div>`;
+    return h.slice(0, i) + `<section class="pk-sec pk-fold${open ? ' open' : ''}" id="${id}-sec" aria-labelledby="${id}">` + h.slice(i + tag.length, j) + sum + h.slice(j); }, html); };
+V2.pkSetOpen = (id, open) => { const s = document.getElementById(id + '-sec'), b = s && s.querySelector('[data-pkopen]'); if (!s) return; s.classList.toggle('open', open);
+  if (b) { b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide' : 'Show ›'; } try { localStorage.setItem('np2.pkopen.' + id, open ? '1' : '0'); } catch (e) {} V2.pkPair(); if (open) V2.pkFlags(); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkopen]'); if (!b) return; const s = document.getElementById(b.dataset.pkopen + '-sec'); V2.pkSetOpen(b.dataset.pkopen, !(s && s.classList.contains('open'))); });
 V2.pkFocusName = () => { if (!V2.pkFocus) return; V2.pkFocus = 0; const h = document.querySelector(innerWidth < 900 ? '.pk-card .mc-nm' : '.pk-is h1') || document.querySelector('.pk-is h1'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } };
-V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkFlags(); V2.pkFocusName(); }, draw() { const p = V2.monFromHash(), E = V2.esc;
+V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkPair(); V2.pkFlags(); V2.pkFocusName(); }, draw() { const p = V2.monFromHash(), E = V2.esc;
   if (!p) return `<div class="ra gsp"><section class="ra-h"><p class="np-eyebrow"><span>Pokémon</span></p><h1 class="u">No Pokémon here.</h1><p class="ra-lede">This address doesn't match a Pokémon in Reg M-C. <a class="np-link pk-404" href="#meta">Every Pokémon, by tier</a></p></section></div>`;
   try { document.title = `${V2.disp(p.n)}: rating, sets and partners · NastyPlot`; } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
   let k = 0; /* section numbers follow the page order, so a part that isn't shown (no partners) leaves no gap (audit Nov 15) */
   return `<div class="ra pk"><nav class="pk-trail" aria-label="You are here"><a href="#meta">Meta</a><span aria-hidden="true">›</span><a href="#meta">Ratings</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav>
     ${V2.pkTop(p)}${V2.pkForms(p).strip}${V2.pkStats(p)}${(() => { const pr = V2.pkPartners(p); return V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it'], ...(pr ? [['pk-s2', 'Who it teams with']] : []), ['pk-s3', 'What beats it'], ['pk-s4', 'How fast it is'], ['pk-s6', `Why it rates ${RS(rating(p).total)}`], ...(ROSTER.filter(q => q.b === p.b).length > 1 ? [['pk-s7', 'Forms side by side']] : [])]) + V2.pkBuild(p) + pr + V2.pkTypes(p) + V2.pkSpeed(p) + V2.pkAbilities(p) + V2.pkWhy(p); })()}
-    ${V2.pkForms(p).table}</div>`.replace(/(<i class="pk-no u" aria-hidden="true">)\d+(<\/i>)/g, (m, a, b) => a + (++k) + b); }};
+    ${V2.pkForms(p).table}</div>`.replace(/(<i class="pk-no u" aria-hidden="true">)\d+(<\/i>)/g, (m, a, b) => a + (++k) + b).replace(/^/, '').replace(/[\s\S]*/, h => V2.pkFoldAll(h, p)); }};
 // the tab title goes back to the site's own when you leave a Pokémon page
 V2.title0 = document.title; addEventListener('hashchange', () => { if (V2.route() !== 'pokemon') try { document.title = V2.title0; } catch (e) {} });
 addEventListener('resize', () => requestAnimationFrame(() => { if (V2.route() === 'pokemon') { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkFlags(); } }));
+
+// phones: part 1's full Moves and Items lists fold behind "All Moves and Items ›" (Usually and the typical set already sum them up)
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pklists]'); if (!b) return; const l = document.getElementById('pk-lists'); if (!l) return; const open = !l.classList.contains('open');
+  l.classList.toggle('open', open); b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide' : 'All Moves and Items ›'; try { localStorage.setItem('np2.pkopen.pk-lists', open ? '1' : '0'); } catch (x) {} });

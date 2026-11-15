@@ -299,12 +299,15 @@ function runAutoBuild() {
     try { res = await abDrive(buildBestGen(), id); } catch (e) { fail(e); return; }
     if (id !== abRunId || res === undefined) return;
     if (abKey() !== key) { runAutoBuild(); return; }
+    if (res && res.teams && res.teams.length && !OFFMETA && !ui.abLock) res.freshPending = true; /* set before the first draw (Nov 15) */
     ui.ab = {doubles: res}; render();
     if (!res || !res.teams || !res.teams.length || OFFMETA || ui.abLock) return;
     const n0 = res.teams.length, copy = {...res, teams: res.teams.slice()}; let withFresh;
-    try { withFresh = await abDrive(addFreshTakeGen(copy), id); } catch (e) { return; }
-    if (id !== abRunId || !withFresh || abKey() !== key || withFresh.teams.length === n0 || !ui.ab || ui.ab.doubles !== res) return;
-    const fresh = withFresh.teams.find(t => t.fresh); if (!fresh) return;
+    // Nov 15 (new site): freshPending lets the page hold a row for the fresh take, so nothing jumps when it slots in; cleared on every way out
+    const done = () => { res.freshPending = false; if (id === abRunId && typeof V2 === 'object' && V2.redraw && typeof view === 'undefined') V2.redraw(); };
+    try { withFresh = await abDrive(addFreshTakeGen(copy), id); } catch (e) { done(); return; }
+    if (id !== abRunId || !withFresh || abKey() !== key || withFresh.teams.length === n0 || !ui.ab || ui.ab.doubles !== res) { done(); return; }
+    const fresh = withFresh.teams.find(t => t.fresh); if (!fresh) { done(); return; } res.freshPending = false;
     // option 2 if you're still on option 1; otherwise it joins the end so the one you're looking at doesn't move
     if (((ui.abIdx && ui.abIdx.doubles) || 0) === 0) res.teams.splice(1, 0, fresh); else res.teams.push(fresh);
     // today's page redraws its Build view; the new build (no `view`) redraws its page (Nov 12: it threw "view is not defined")

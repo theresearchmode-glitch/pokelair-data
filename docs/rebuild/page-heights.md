@@ -98,3 +98,15 @@ Measured on six Pokémon (Kingambit, Rotom-Wash, Mega Charizard Y, Persian, Ghol
 (the forms table). Limits = longest rounded up to 50 (Sim's rule for Build / Meta / Battle): 320 9,550 · 390 9,050 · 820 7,700 · 1440 5,800.
 Measured: 320 7,332-9,535 · 390 7,043-9,002 · 820 5,760-7,697 · 1440 4,247-5,754. Long by design (seven parts replacing the sheet's
 three tabs); shortening it on phones is a design question for Sim (summary, Nov 16).
+
+### Pokémon page after folding (Sim, Nov 15 Q1 A; written time: 4:50 PM (4:50:55)  date: Sun Nov 15, 2026)
+Parts 3-6 (and Forms side by side) fold on every width with a one-line summary; wide screens pair folded parts two across; on phones the
+partners and jump links are swipe rows, the typical set is two by two and the full Moves and Items lists sit behind one tap.
+Longest (Rotom-Wash): 320 9,535 -> 4,752 · 390 9,002 -> 4,506 · 820 7,697 -> 4,505 · 1440 5,754 -> 3,222. Kingambit: 4,207 / 4,151 / 4,195 / 2,920.
+Limits now 320 4,800 · 390 4,550 · 820 4,550 · 1440 3,250 (measured + 50).
+
+## Footer restored (Sim, Nov 15 Q2 A; written time: 5:29 PM (5:29:56)  date: Sun Nov 15, 2026)
+The footer's tagline, Privacy, Contact and Sources and Credits (a button in the link row, list below on tap) add, measured on Home:
+320 +88 · 390 +62 · 820 +64 · 1440 +9 px (phones: the tagline line and a second row of links). Every page's limit gets +90 / +70 / +70 / +10
+(rounded up to 10) in c13-check.mjs; nothing else may grow. Before the change Home 390 was 4,431 vs 4,400, Meta 820 3,987 vs 3,950,
+Battle 390 4,251 vs 4,200, Rotom-Wash 320 4,840 vs 4,800: each within its old limit + the footer. For Sim's review.

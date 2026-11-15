@@ -34,3 +34,16 @@ Each failing test was sorted against decisions.md and the approved mock-ups. "Ch
 ## Unsure / left as is for now
 - Toast length 4 s vs today's 2 s (SHELL-07b); no page fade on switch (SHELL-32b); Events calendar 2 rows and 13 tickets before Show More
   (EVT-02/04, Ticket Wall design); ArrowDown in search focuses the first result (JUMP-04).
+
+## Update (time: 5:10 PM (5:10:14)  date: Sun Nov 15, 2026): Build and Battle helpers (test helpers merged: Build 30 -> 57 passing, Battle 59 -> 79)
+Fixed since: Set as Opponent names the team (NAV-06); Report a Mistake carries the calc / the Pokémon (CALC-08 behaviour; test reads the box);
+Teams with It on cores (CORES-09); Full Popular Sets in Edit Set (EDIT-09 / SETS-08); Paste its log (LOG-02 / X-13); Battle comma (X-08);
+Never Suggest list visible and undoable (Sim Q3 A; was a hidden filter); footer credits / Privacy / Contact (Sim Q2 A); Pokémon page folds (Sim Q1 A).
+Build: the page no longer switches layout while building (last Blueprint stays, faded); the fresh take's row is held (no late jump);
+the thin blue frame around the score is gone (Sim).
+Still open (genuine gaps, in this order):
+1. "Fix your items first" card with one-tap "Give X Y" + Undo (SUGG-16; 54-items.js itemFixHtml not used in v2). Item Clause is flagged but not fixable in one tap.
+2. Set check tips ("X: Y instead of Z", SUGG-17; 57-set-tips.js not in parts-v2.json).
+3. All Suggestions has no pool switch of its own (BUILD-04, COV-03/06) and its sheet design (Bigger Plans fold, notes, Undo bar) is waiting on Sim.
+4. Plan settings: Count abilities, Refresh plans (AUTO-03/04, BUILD-07, SUGG-02); Never suggest now done.
+5. A core's "% of all teams" only as a hover title (touch can't see it).

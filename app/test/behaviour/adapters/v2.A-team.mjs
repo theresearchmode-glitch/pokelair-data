@@ -98,6 +98,8 @@ export default (ui, pg, o) => {
     // ---------- the Pokémon page (#pokemon=<name>, Nov 15: replaces the info sheet; every Pokémon tap opens it) ----------
     pokemonPage: () => pg.evaluate(() => { const m = document.querySelector('#main .pk'); return m && window.V2 && V2.route() === 'pokemon' ? m.innerText.replace(/\s+/g, ' ').trim() : null; }),
     pageHash: () => pg.evaluate(() => location.hash),
+    /** taps every 'Show ›' on the Pokémon page (parts fold since Nov 15, Sim Q1 A); returns how many it opened */
+    openAllParts: async () => { const n = await pg.evaluate(() => { const bs = [...document.querySelectorAll('#main [data-pkopen][aria-expanded="false"], #main [data-pklists][aria-expanded="false"]')].filter(b => b.getClientRects().length); bs.forEach(b => b.click()); return bs.length; }); await pg.waitForTimeout(500); return n; },
     browserBack: async (wait = 900) => { await pg.goBack(); await pg.waitForTimeout(wait); },
     tapJump: name => tapFound(n => [...document.querySelectorAll('#main .pk-jumps [data-pkjump]')].find(e => e.innerText.trim() === n) || null, name, 'jump link ' + name, 900),
     focusInside: () => pg.evaluate(() => { const a = document.activeElement; const s = a && a.closest && a.closest('section'); return s ? s.getAttribute('aria-labelledby') || '' : (a ? a.id || a.tagName : ''); }),

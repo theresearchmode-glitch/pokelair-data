@@ -32,7 +32,7 @@ const USAGE_L = {1440: [2100, 'Podium (Sim, Nov 14, Q2 A)']};
 // Sim, Nov 14 (Build limits A, 8:30 PM): the built Build page (the Blueprint) = measured heights rounded up to the next 50; iPad stays 3,500
 // the Pokémon page (#pokemon=<name>, Nov 15): its measured height on the longest Pokémon (Rotom-Wash, with the forms table) rounded up to 50,
 // the rule Sim approved for Build / Meta / Battle; set under Claude's authority (Nov 15), to be reviewed by Sim (the page is long by design: seven parts)
-const POKEMON_L = {320: [9550, 'Pokémon page (Nov 15, measured)'], 390: [9050, 'Pokémon page (Nov 15, measured)'], 820: [7700, 'Pokémon page (Nov 15, measured)'], 1440: [5800, 'Pokémon page (Nov 15, measured)']};
+const POKEMON_L = {320: [4800, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)'], 390: [4550, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)'], 820: [4550, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)'], 1440: [3250, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)']};
 const BUILD_L = {320: [4150, 'Blueprint (Sim, Nov 14, Build limits A)'], 390: [3850, 'Blueprint (Sim, Nov 14, Build limits A)'], 1440: [2100, 'Blueprint (Sim, Nov 14, Build limits A)']};
 const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4200, 'Play-by-Play (Sim, Nov 15, Q2: 4,100 to 4,200)'], 1440: [2150, 'Play-by-Play 2x2 + three columns (Sim, Nov 15: 1,950 to 2,150)']};
 // My Team 'The Hand' (Sim's pick Nov 14; limits Nov 15, Claude under Sim's authority, her standing 'recommended'): measured heights rounded up to the next 50, as for Build / Meta / Battle
@@ -51,6 +51,9 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
   if (view === 'team' && state === 'default' && TEAM_L[w]) [limit, note] = TEAM_L[w];
   // Sim, Nov 13 (Height Q1 A): a team with only 5 of 6 has its own, higher limits (the measured heights rounded up to the next 50); the normal My Team limits don't move
   if (view === 'team' && state === 'five' && {320: 1, 390: 1, 1440: 1}[w]) [limit, note] = [{320: 4500, 390: 4200, 1440: 2100}[w], '5 of 6, The Hand (Nov 15; was 4,250 / 4,100 / 1,950, Sim Nov 13)'];
+  // Sim, Nov 15 (Q2 A): the footer got back its tagline, Privacy, Contact and Sources and Credits on every page. Its measured extra height
+  // (phones: the tagline line and a second row of links) is added to every page's limit, rounded up to 10; no page may grow otherwise.
+  { const FOOT = {320: 90, 390: 70, 820: 70, 1440: 10}; if (FOOT[w]) { limit += FOOT[w]; note = (note ? note + '; ' : '') + '+' + FOOT[w] + ' footer (Nov 15)'; } }
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
   const b = await pw[eng].launch(), ctx = await b.newContext({viewport: {width: w, height: w < 700 ? 844 : 900}, hasTouch: touch(w), isMobile: eng === 'chromium' ? false : w < 700});
   const p = await ctx.newPage(), errs = [];

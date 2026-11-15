@@ -52,7 +52,7 @@ const BOXES = {'favourite pokémon': '[data-bdfind]', 'with a pokémon': '[data-
 const NO_BOX = {'exclude a pokémon': 'Never suggest box (All Suggestions › Plan settings)'};
 // controls today's Build page has that the new one doesn't (a failed tap on #build names them)
 const NO_TAP = [[/details/i, 'Details / Hide details on core rows'], [/^Sets$/, 'the Sets toggle on recent winners (each winner is a fold with its sets here)'],
-  [/teams with it/i, 'Teams with it on cores'], [/try another/i, 'Try another'], [/show more/i, 'Show more on cores']];
+  [/try another/i, 'Try another'], [/show more/i, 'Show more on cores']];
 export default (ui, pg) => {
   const tx = s => (s || '').replace(/\s+/g, ' ').trim();
   /* words as written: capitals drawn by CSS (text-transform) are a look, not the words, so they are switched off while reading (as the base text()) */
@@ -254,6 +254,7 @@ export default (ui, pg) => {
     /** tap a core's button: today's "Add to my team" is "Add", "Load team" is "Load" here */
     coreTap: async (label, n = 0) => { await tabTo('cores'); const l = label.toLowerCase(), want = /^add/.test(l) ? 'add' : /^load/.test(l) ? 'load' : null;
       if (/^(practice against|set as opponent)/.test(l)) { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcprep]')].filter(e => e.getClientRects().length)[n]; if (!b) return false; b.click(); return true; }, n); if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); return; }
+      if (/^teams with it/.test(l)) { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcteams]')].filter(e => e.getClientRects().length)[n]; if (!b) return false; b.click(); return true; }, n); if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(900); return; } /* Nov 15: 'Teams with It ›' */
       if (!want) NOT(`"${label}" on cores`);
       const ok = await pg.evaluate(([w, n]) => { const b = [...document.querySelectorAll('#main .bd-cores [data-bdcore]')].filter(e => e.getClientRects().length && e.innerText.trim().toLowerCase().split(' ')[0] === w)[n] /* 'Load Team' (Sim, Nov 12) counts as today's Load team */; if (!b) return false; b.click(); return true; }, [want, n]);
       if (!ok) throw new Error('no core button ' + label); await pg.waitForTimeout(700); },
