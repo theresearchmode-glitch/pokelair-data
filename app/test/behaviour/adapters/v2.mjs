@@ -5,7 +5,7 @@
 // unchanged through its test hook (src/v2/test-hook.js sets window.__ev when window.__PL_TEST is set before load).
 const slot = n => ({n, a: null, lock: false});
 // player-facing page names -> the ids the tests use (today's view names). The new build's hash routes and page-like sheets map onto them.
-const ROUTE = {report: '#team', box: '#box', compare: '#compare', matchup: '#battle', speed: '#speed', calc: '#calc', types: '#types', practice: '#practice', gauntlet: '#gauntlet', ratings: '#meta', meta: '#usage', sets: '#sets', top: '#tournaments', track: '#track', events: '#events', arch: '#archetypes', weekly: '#weekly'}; // Nov 15: the four new Meta pages
+const ROUTE = {report: '#team', box: '#box', compare: '#compare', matchup: '#battle', speed: '#speed', calc: '#calc', types: '#types', practice: '#practice', gauntlet: '#gauntlet', ratings: '#meta', meta: '#usage', sets: '#sets', top: '#tournaments', track: '#track', events: '#events', arch: '#archetypes', weekly: '#weekly', method: '#method', about: '#about'}; // Nov 15: How We Calculate and About built // Nov 15: the four new Meta pages
 // sheets that ARE a page in today's site (Saved Teams, Team Sheet, All Suggestions): current() reports them as that page
 const PAGE_SHEETS = [['.svt2', 'teams'], ['.ts2', 'sheet'], ['.sga2', 'coverage']];
 export default {

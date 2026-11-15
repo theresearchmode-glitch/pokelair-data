@@ -52,11 +52,20 @@ export default (ui, pg) => {
     sheetIsOpen: () => ev(() => __dvis(document.querySelector('.np-sheet .ms2'))),
     sheetName: () => ev(() => __dtx(document.querySelector('.np-sheet .ms2 h2'))),
     // folds: "Every Pokémon, by Tier" is the See all switch; the rest are real folds (details) on the page
-    foldIsOpen: m => /every pokémon, by tier/i.test(m) ? ev(() => !!document.querySelector('.ra-board')) : /pokémon ratings/i.test(m) ? NOT('How We Calculate page (the "Pokémon Ratings" section)') : ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); return d ? d.open : null; }, m),
+    foldIsOpen: m => /every pokémon, by tier/i.test(m) ? ev(() => !!document.querySelector('.ra-board')) : ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); return d ? d.open : null; }, m),
     toggleFold: async m => { if (/every pokémon, by tier/i.test(m)) { const on = await ev(() => !!document.querySelector('.ra-board')); await pg.click(on ? '[data-raview="stand"]' : '[data-raview="list"]'); await wait(500); return; }
       await ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); if (!d) throw new Error('no fold ' + m); d.querySelector('summary').click(); }, m); await wait(500); },
     foldText: m => ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); return d ? __dtx(d) : null; }, m),
-    inView: m => NOT('inView ' + m + ' (How We Calculate page)'),
+    /** is the section whose heading or summary holds m on screen (Nov 15: How We Calculate and About are built) */
+    inView: m => ev(m => { const re = m.toLowerCase(); const e = [...document.querySelectorAll('#main summary, #main h2, #main h3')].filter(__dvis).find(x => __dtx(x).toLowerCase().includes(re)); if (!e) return false; const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }, m),
+    anyOpenInView: () => ev(() => [...document.querySelectorAll('#main details[open]')].some(d => { const r = d.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; })),
+    /** How We Calculate's ten parts, and the sources its Usage, Sets and Sources part names (today's ul.npsrc, shared HTML) */
+    methodSections: () => ev(() => [...document.querySelectorAll('#main .inf-tile[data-mth]')].map(d => d.dataset.mth)),
+    methodSourceNames: () => ev(() => { const d = document.querySelector('#main .inf-tile[data-mth="data"]'); return d ? [...d.querySelectorAll('ul.npsrc > li > b')].map(__dtx).filter(Boolean) : []; }),
+    /** any email address in the page? (a mailto link or an @ in the page text; never reads the address out) */
+    emailInPage: () => ev(() => !!document.querySelector('a[href^="mailto:"]') || /[A-Za-z0-9._-]+@[A-Za-z0-9-]+\.[a-z]{2,}/.test((document.querySelector('#main') || document.body).innerText)),
+    emailShown: () => ev(() => { const a = [...document.querySelectorAll('a[href^="mailto:"]')].find(__dvis); return {mailto: !!a, at: !!a && __dtx(a).includes('@'), copy: [...document.querySelectorAll('#main button')].filter(__dvis).some(b => __dtx(b) === 'Copy')}; }),
+    footerText: () => ev(() => __dtx(document.querySelector('footer'))),
     // ---------------- Popular Sets (Nov 14, Grandstand brief section 5): spotlight + "Your team" bench + "How <Pokémon> is built" ----------------
     lookUpSets: async name => { await pg.fill('[data-stq]', name); await wait(500); await ev(n => { const bs = [...document.querySelectorAll('.st-hits [data-v2setmon]')]; const b = bs.find(b => __dtx(b) === n) || bs[0]; if (!b) throw new Error('no match for ' + n); b.click(); }, name); await wait(600); },
     setsShowing: () => ev(() => [...document.querySelectorAll('.st .gs-spot, .st .us-src, .st .st-how')].filter(__dvis).map(e => e.textContent.replace(/\s+/g, ' ').trim()).join(' ')), /* textContent: the headings are capitals by CSS only */
