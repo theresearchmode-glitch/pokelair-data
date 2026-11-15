@@ -38,3 +38,32 @@
     check from here (unsure). RECOMMENDED: under 390, move the winner sprite down beside the five so the name gets the full ticket width;
     reason: no word ever breaks (it may also make the ticket shorter: my guess, not measured). Other choice: keep it and rely on hyphenation. Could you glance at Events on
     an iPhone mini/SE size (375 wide) if you have one?
+
+## Pictures and recommendations for questions 1-10 (added time: 4:56 AM (4:56:09)  date: Sun Nov 15, 2026; pictures from the real-data build, v156)
+1. Colour (pictures: q1-compare-teamB-pink.webp, q1-unfavoured-red.webp): Team B / "them" pink sits right beside "Unfavoured" red, and in
+   light mode the two read as one colour, so "the other team" looks like "bad". RECOMMENDED: give them / Team B a clearly different hue
+   (the designer's original magenta from the briefs), keep red only for bad; reason: a colour should mean one thing. The other 17 colour
+   items are in colour-audit.md; I suggest we go through them together in one sitting.
+2. Battle height (pictures: q2-battle-390-full.webp, q2-battle-1440-full.webp; measured today: 390 is 4,179 px vs the 4,100 limit, 79 over;
+   1440 is 2,331 px vs 1,950, 381 over). RECOMMENDED: at 390 raise the limit to 4,200 (79 px is less than one row); at 1440 do question 14
+   (Your Games into the empty right half) and measure again; reason: fix the real waste first, not squeeze good content.
+3. Build's two game counts (pictures: q3-build-496.webp, q3-build-479.webp): "83 players, 496 games" (this exact six at events) and "479
+   real games, with its players' skill taken out" (Why This Score). Both are true. I'm unsure why the score uses 17 fewer games (my guess:
+   games without player-skill data are left out); I check the code before writing anything. RECOMMENDED: say it in words on both lines
+   ("496 games at events" / "479 of them used for the score"); reason: two different numbers for one thing looks like a mistake.
+4. Build's opened winner (picture: q4-build-reference-open.webp): the opened team sits inside the Reference Sheets frame. Measured: it is
+   the same paper colour as the frame, so no second shade (not a box-in-box by our rule). RECOMMENDED: keep; reason: it reads as a sheet
+   pulled out of the binder, which is the Blueprint idea.
+5. Weather Map section-9 items (picture: q5-weather-1440.webp: Your team's style plate, Your style tags, No. 1-8 ranks).
+   RECOMMENDED: keep as built; reason: every item uses real counts and the plate answers "where does my team sit" at a glance.
+6. Weather Map height (picture: q6-weather-390-full.webp; measured 2,233 px at 390). RECOMMENDED: keep; reason: the region sizes are the
+   information (a bigger region means more teams), shrinking them would make the map lie.
+7. Track Record paper in dark mode (picture: q7-track-night-390.webp). RECOMMENDED: keep the white receipt; reason: it is the brief's one
+   bright object, and the text on it measures dark-on-white (no contrast problem).
+8. This Week's way in (picture: q8-home-more-fold.webp): today the only way in is "What Changed This Week" inside Home's closed "More on
+   Home" fold, and the 12-tool grid has no This Week tile. RECOMMENDED: add "This Week" as a fourth tab beside Winning Teams / Events /
+   Archetypes (where players already look at results); reason: today it is hidden two taps deep.
+9. Game Plan strip (picture: q9-gameplan-strip.webp): now left-aligned. RECOMMENDED: keep left; reason: it starts where the cards'
+   text starts, so the eye doesn't jump.
+10. Naming leftovers: RECOMMENDED: "Share as Image" on every share button, "Save Image" only inside the share sheet, "Events" as the page name
+    everywhere ("Tournaments" stays only as the group label in the Meta tabs); reason: one name per action (your Nov 14 rule).
