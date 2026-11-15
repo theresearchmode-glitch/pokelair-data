@@ -36,5 +36,5 @@
     text; most fit in 2-3 lines at 320, were up to 9). Under 390 wide the name column is only ~95 px beside the big winner sprite, so a long
     word still breaks mid-word ("HOSPITA/L"). The page asks for proper hyphenation; iPhones may show "HOS-PITAL" instead, which I can't
     check from here (unsure). RECOMMENDED: under 390, move the winner sprite down beside the five so the name gets the full ticket width;
-    reason: no word ever breaks, and the ticket gets shorter. Other choice: keep it and rely on hyphenation. Could you glance at Events on
+    reason: no word ever breaks (it may also make the ticket shorter: my guess, not measured). Other choice: keep it and rely on hyphenation. Could you glance at Events on
     an iPhone mini/SE size (375 wide) if you have one?

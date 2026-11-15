@@ -1,3 +1,4 @@
+// Nov 15: every event name shown here goes through the shared cleaner V2.evTitle (raw names had emoji and prize text, up to 9 lines at 320)
 // ---------- Meta > Tournaments > Events (Nov 15): Sim's pick "The Ticket Wall" (docs/rebuild/mocks/tournaments-tickets-weather/BRIEF.md) ----------
 // Everything today's Events tab does (49-events.js renderEvents + 63-weekly.js calendarHTML), from the same shared helpers and data:
 // META.events (evDate, placeTxt, evTeam, sheetSlots, sdNames), META.calendar (CAL), teamWho, teamPlanLabel. The three counts and
@@ -13,14 +14,14 @@ V2.evMonth = d => { try { return new Date(d + 'T12:00:00').toLocaleDateString('e
 V2.evDay = d => { try { return new Date(d + 'T12:00:00').getDate(); } catch (e) { return ''; } };
 // one ticket. big: the latest result across the wall. The five other Pokémon are pictures here; their names are in the label and the placings.
 V2.ticket = (ev, big) => { const E = V2.esc, w = ev.top[0], ns = w ? w.mons.map(m => m.n) : [], off = ev.src === 'official', lead = ns[0], rest = ns.slice(1);
-  const say = `${ev.name}, ${evDate(ev.date)}, ${homeNum(ev.players)} players${off ? ', official event' : ''}. Winner's team: ${ns.map(n => V2.disp(n)).join(', ')}.`;
+  const say = `${V2.evTitle(ev.name)}, ${evDate(ev.date)}, ${homeNum(ev.players)} players${off ? ', official event' : ''}. Winner's team: ${ns.map(n => V2.disp(n)).join(', ')}.`;
   const k = `<span class="tk-k">${off ? '<b>Official event</b> · ' : ''}Winner's team</span>`;
   const stub = `<span class="tk-stub" aria-hidden="true"><small class="tk-mo">${E(V2.evMonth(ev.date))}</small><b class="u">${V2.evDay(ev.date)}</b><small>${homeNum(ev.players)} players</small><i class="tk-bar"></i></span>`;
   const hero = `<span class="tk-hero" aria-hidden="true">${lead ? V2.mon(lead, {bare: true}) : ''}<b class="tk-seal u">1st</b>${big && lead ? `<span class="tk-ln u">${E(V2.disp(lead))}</span>` : ''}</span>`;
   if (!big) return `<button type="button" class="tk${off ? ' off' : ''}" style="${V2.evTy(lead)}" data-evgo="${E(ev.id)}" aria-label="${E(say)} Open the placings.">${hero}
-    <span class="tk-mid" aria-hidden="true">${k}<b class="tk-name u">${E(ev.name)}</b></span><span class="tk-five" aria-hidden="true">${rest.map(n => V2.mon(n, {bare: true})).join('')}</span>${stub}</button>`;
+    <span class="tk-mid" aria-hidden="true">${k}<b class="tk-name u">${E(V2.evTitle(ev.name))}</b></span><span class="tk-five" aria-hidden="true">${rest.map(n => V2.mon(n, {bare: true})).join('')}</span>${stub}</button>`;
   return `<article class="tk big${off ? ' off' : ''}" style="${V2.evTy(lead)}" data-evgo="${E(ev.id)}" aria-label="Latest result. ${E(say)}">${hero}
-    <div class="tk-mid"><span class="tk-tag u">Latest result</span>${k}<h3 class="tk-name u">${E(ev.name)}</h3>
+    <div class="tk-mid"><span class="tk-tag u">Latest result</span>${k}<h3 class="tk-name u">${E(V2.evTitle(ev.name))}</h3>
       <ul class="tk-five">${rest.map(n => `<li>${V2.mon(n, {bare: true})}<span>${E(V2.disp(n)).replace(/ (\S{1,2})$/, '\u00a0$1')}</span></li>`).join('')}</ul>
       <button type="button" class="tk-go" data-evgo="${E(ev.id)}">See the placings, 1st to ${placeTxt(ev.top.length)} ›</button></div>${stub}</article>`; };
 // Next Events (today's calendarHTML: the next events with a countdown, Show all, the recent official ones with results, the source)
@@ -54,7 +55,7 @@ V2.evRow = (ev, t, i) => { const E = V2.esc, key = ev.id + '#' + i, ns = t.mons.
 V2.evOpen = ev => { const E = V2.esc, off = ev.src === 'official';
   const field = ev.field && ev.field.length ? `<section class="ev-field"><h3 class="u">Most brought by the whole field</h3><p class="fine">Of ${homeNum(ev.players)} players</p><ul>${ev.field.map(([n, pc]) => { const p = byName.get(n); return p ? `<li><button type="button" class="ev-fm" data-v2mon="${E(n)}" aria-label="${E(p.d)}, ${E(pctTxt(pc))} of players: open its info sheet">${V2.mon(n, {iw: 48, bare: true})}<span>${E(p.d)}</span><b class="u">${E(pctTxt(pc))}</b></button></li>` : ''; }).join('')}</ul></section>` : '';
   return `<section class="ev-open wt"><button type="button" class="np-link ev-back" data-evback>‹ All Events</button>
-    <header class="ev-oh" style="${V2.evTy(ev.top[0] && ev.top[0].mons[0] && ev.top[0].mons[0].n)}"><div><p class="tk-k">${off ? '<b>Official event</b> · ' : ''}${E(evDate(ev.date))} · ${homeNum(ev.players)} players</p><h2 class="u">${E(ev.name)}</h2>
+    <header class="ev-oh" style="${V2.evTy(ev.top[0] && ev.top[0].mons[0] && ev.top[0].mons[0].n)}"><div><p class="tk-k">${off ? '<b>Official event</b> · ' : ''}${E(evDate(ev.date))} · ${homeNum(ev.players)} players</p><h2 class="u">${E(V2.evTitle(ev.name))}</h2>
       <p class="ev-osub">${off ? 'Official Pokémon event (Victory Road)' : 'Online (Limitless)'} · top ${ev.top.length}</p></div></header>${field}
     <h3 class="u ev-plh">The Placings, 1st to ${placeTxt(ev.top.length)}</h3><div class="wt-rows ev-rows">${ev.top.map((t, i) => V2.evRow(ev, t, i)).join('')}</div></section>`; };
 V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U = V2.evUi;
