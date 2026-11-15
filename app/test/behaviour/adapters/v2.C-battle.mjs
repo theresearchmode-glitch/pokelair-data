@@ -88,7 +88,13 @@ export default (ui, pg) => {
     // ---- Test Run (Nov 14, src/v2/pages/gauntlet.js). A card's "You: ready for X of their 6 / Them: ready for Y of your 6" is the tug bar's
     // label (its screen-reader text; on screen it is the two bars with X/6 and Y/6), so a card's text here is its label + its words.
     async waitTestRun(ms = 30000) { return ui.waitFor(/you.re better prepared/i, ms); },
-    testRunCards: () => pg.evaluate(() => [...document.querySelectorAll('#main .tr-card')].filter(e => e.getClientRects().length).map(c => { const t = c.querySelector('.tr-tug'); return ((t ? t.getAttribute('aria-label') + ' ' : '') + c.innerText).replace(/\s+/g, ' ').trim(); })),
+    // Nov 14, Three Piles (Sim's pick): every team is a card in one of three piles; no bare scores on screen. A card's text here is today's
+    // readiness label from the same rows the page draws (V2.trCache), then the card's own words, then the open card's words when it is open.
+    testRunCards: () => pg.evaluate(() => { const R = (V2.trCache && V2.trCache.rows) || [], n = (document.querySelectorAll('#main .tp-card').length && window.__ev ? window.__ev('members().length') : 6);
+      const cards = [...document.querySelectorAll('#main .tp-card')].filter(e => e.getClientRects().length); if (!cards.length) return [...document.querySelectorAll('#main .tr-card')].filter(e => e.getClientRects().length).map(c => c.innerText.replace(/\s+/g, ' ').trim());
+      const open = document.querySelector('#main .tp-open'), T = e => (e.getAttribute('aria-label') || '') + ' ' + e.innerText;
+      return cards.map(c => { const x = R.find(r => r.ix === +c.dataset.tpflip), pr = x && x.pr, lab = pr ? `You: ready for ${pr.yN} of their ${pr.n}. Them: ready for ${pr.tN} of your ${n}. ` : '';
+        return (lab + T(c) + (c.classList.contains('on') && open ? ' ' + open.innerText : '')).replace(/\s+/g, ' ').trim(); }); }),
     async testRunPractice(i = 0) { const ok = await pg.evaluate(i => { const e = [...document.querySelectorAll('#main [data-trbat]')].filter(e => e.getClientRects().length)[i]; if (!e) return false; e.click(); return true; }, i); if (!ok) throw new Error('no test run card ' + i); await pg.waitForTimeout(900); },
     async testRunCopy(i = 0) { const ok = await pg.evaluate(i => { const e = [...document.querySelectorAll('#main [data-trcopy]')].filter(e => e.getClientRects().length)[i]; if (!e) return false; e.click(); return true; }, i); if (!ok) throw new Error('no copy button ' + i); await pg.waitForTimeout(500); },
     /** Pokémon on one card marked "No answer" (the red "!"): their names, from each sprite's label */

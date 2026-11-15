@@ -591,12 +591,12 @@ t('TEST-02', 'Test run empty state under 4 Pokémon; falls back to built-in team
 
 t('TEST-03', 'summary counts: better prepared / about even / they\'re better prepared', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Test Run'); await ui.waitTestRun();
-  const m = /(\d+) you're better prepared (\d+) about even (\d+) they're better prepared/.exec(await ui.pageText());
+  const tx = await ui.pageText(), pc = r => +((tx.match(r) || [])[1]), m = NEW ? [0, pc(/(\d+) The Problems They're better prepared/i), pc(/(\d+) The Coin Flips About even/i), pc(/(\d+) The Good Matchups You're better prepared/i)] : /(\d+) you're better prepared (\d+) about even (\d+) they're better prepared/.exec(tx); /* Nov 14, Three Piles: the counts are the pile headers */
   expect(m && +m[1] + +m[2] + +m[3] === 20, 'summary counts missing or not adding to 20'); await close(); });
 
 t('TEST-04', 'one card per top team, least prepared first, no-answer marks', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Test Run'); await ui.waitTestRun();
-  const c = await ui.testRunCards(); expect(c.length === 3, 'not 3 cards shown first: ' + c.length);
+  const c = await ui.testRunCards(); expect(c.length === (NEW ? 20 : 3), 'cards shown first: ' + c.length); /* Nov 14, Three Piles: all 20 at once */
   const ready = c.map(x => +(/You: ready for (\d+) of their 6/.exec(x) || [0, 99])[1]);
   expect(ready[0] <= ready[1] && ready[1] <= ready[2], 'not least prepared first: ' + ready);
   expect(/Them: ready for \d+ of your 6/.test(c[0]) && /Bring .+ \+ .+ up front, .+ \+ .+ in back\./.test(c[0]), 'card lacks "Them: ready for" or the bring line');
@@ -621,6 +621,7 @@ t('TEST-07', '"Copy for Showdown" on a Test run card', async () => {
 
 t('TEST-08', 'show more teams / show fewer', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Test Run'); await ui.waitTestRun();
+  if (NEW) { /* Nov 14, Three Piles (Sim's pick): all 20 teams are dealt at once, so there is nothing to show more or fewer of */ expect((await ui.testRunCards()).length === 20, '20 cards not shown'); expect(!(await ui.sees(/more teams|show fewer/i)), 'a show more / show fewer button is still there'); await close(); return; }
   await ui.tapIn('17 more teams'); expect((await ui.testRunCards()).length === 20, '20 cards not shown');
   await ui.tapIn('Show fewer'); expect((await ui.testRunCards()).length === 3, 'did not fold back to 3'); await close(); });
 
