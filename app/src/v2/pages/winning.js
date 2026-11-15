@@ -46,10 +46,10 @@ V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = po
   const mates = [...c].sort((a, b) => b[1] - a[1]).slice(0, 6);
   const row = x => { const ns = x.t.mons.map(m => m.n), key = x.key;
     return `<article class="wt-row" aria-label="${E(teamWho(x.t))}"><span class="wt-no u" aria-hidden="true">${x.t.place || ''}</span><div class="wt-six">${ns.map((n, i) => V2.wtCard(n, 64, i)).join('')}</div>
-      <div class="wt-rt"><p class="wt-rh"><b class="u">${E(teamWho(x.t))}</b>${x.ev.src === 'official' ? '<span class="wt-off">Official event</span>' : ''}</p><p class="wt-ev">${E(x.ev.name)} · ${E(evDate(x.ev.date))} · ${x.ev.players} players</p>
+      <div class="wt-rt"><p class="wt-rh"><b class="u">${E(teamWho(x.t))}</b>${x.ev.src === 'official' ? '<span class="wt-off">Official event</span>' : ''}</p><p class="wt-ev">${E(V2.evTitle(x.ev.name))} · ${E(evDate(x.ev.date))} · ${x.ev.players} players</p>
       <p class="wt-names">${x.t.mons.map(m => `${E(V2.disp(m.n))}${m.i ? ` @ ${E(m.i)}` : ''}`).join(' · ')}</p>${V2.wtChips(ns)}
       <div class="wt-acts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${V2.hmUi && V2.hmUi.sure === key ? 'Tap Again to Replace Your Team' : 'Load Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-hmprep="${E(key)}">Set as Opponent</button><button type="button" class="np-link" data-cxgo2="cur|e:${E(key)}">Compare</button></div></div></article>`; };
-  return `<section class="wt-res" aria-live="polite"><p class="wt-cnt"><b class="u">${homeNum(hits.length)}</b>&nbsp;team${hits.length === 1 ? '' : 's'} match${hits.length ? `, ${hits.filter(x => x.t.place === 1).length} won their event` : ''}</p>
+  return `<section class="wt-res" aria-live="polite"><p class="wt-cnt"><b class="u">${homeNum(hits.length)}</b>&nbsp;team${hits.length === 1 ? '' : 's'} match${hits.length ? `, ${hits.filter(x => x.t.place === 1).length} won their event` : ''}<span class="wt-pool"> · searched all ${homeNum(pool.length)} event team sheets</span></p>
     ${mates.length && hits.length >= 3 ? `<p class="wt-mates"><span>Often with:</span>${mates.map(([n, k]) => `<button type="button" class="np-chip" data-tsadd="${E(n)}">${E(V2.disp(n))}&nbsp;<b>${Math.round(100 * k / hits.length)}%</b></button>`).join('')}</p>` : ''}
     ${hits.length ? `<div class="wt-rows">${hits.slice(0, cap).map(row).join('')}</div>` : '<p class="tm-sub">No winning team has all of these. Remove a filter.</p>'}
     ${hits.length > cap ? `<button type="button" class="np-btn2 wt-more" data-tsmore><span>Show More · ${hits.length - cap} left</span></button>` : ''}</section>`; };
@@ -58,7 +58,8 @@ V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams
   if (!U.grp || !G.some(([g]) => g === U.grp)) U.grp = G.length ? G[0][0] : null;
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta">Pokémon</a><a href="#tournaments" class="on" aria-current="page">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Tournament views"><a href="#tournaments" class="on" aria-current="page">Winning Teams</a><a href="#events">Events</a><a href="#archetypes">Archetypes</a></nav></div>`;
-  const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> teams${G.map(([g, n]) => ` · <b>${n}</b> ${E(g.toLowerCase())}`).join('')}</p>` : '';
+  /* Nov 15 (audit #6): the header counts the top-cut list, the search looks through every event team sheet; each line now says which */
+  const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> top-cut teams${G.map(([g, n]) => ` · <b>${n}</b> ${E(g.toLowerCase())}`).join('')}</p>` : '';
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Winning Teams</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>
     <p class="ra-lede">Top-cut teams from real tournaments. Load one, practice against it, or compare it with yours.</p>${facts}</section>`;
   const src = d ? `<p class="fine wt-src">${E(ttSourceText(d.source))}${d.updated ? ', updated ' + E(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) : ''}</p>` : '';
