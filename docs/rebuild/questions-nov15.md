@@ -51,15 +51,15 @@
    real games, with its players' skill taken out" (Why This Score). Both are true. I'm unsure why the score uses 17 fewer games (my guess:
    games without player-skill data are left out); I check the code before writing anything. RECOMMENDED: say it in words on both lines
    ("496 games at events" / "479 of them used for the score"); reason: two different numbers for one thing looks like a mistake.
-4. Build's opened winner (picture: q4-build-reference-open.webp): the opened team sits inside the Reference Sheets frame. Measured: it is
-   the same paper colour as the frame, so no second shade (not a box-in-box by our rule). RECOMMENDED: keep; reason: it reads as a sheet
+4. Build's opened winner (picture: q4-build-reference-open.webp): the opened team sits inside the Reference Sheets frame. Measured (5:00 AM, computed
+   styles): the opened panel has no background of its own, it shows the frame's paper (rgb 251,252,254), so no second shade. RECOMMENDED: keep; reason: it reads as a sheet
    pulled out of the binder, which is the Blueprint idea.
 5. Weather Map section-9 items (picture: q5-weather-1440.webp: Your team's style plate, Your style tags, No. 1-8 ranks).
    RECOMMENDED: keep as built; reason: every item uses real counts and the plate answers "where does my team sit" at a glance.
 6. Weather Map height (picture: q6-weather-390-full.webp; measured 2,233 px at 390). RECOMMENDED: keep; reason: the region sizes are the
    information (a bigger region means more teams), shrinking them would make the map lie.
 7. Track Record paper in dark mode (picture: q7-track-night-390.webp). RECOMMENDED: keep the white receipt; reason: it is the brief's one
-   bright object, and the text on it measures dark-on-white (no contrast problem).
+   bright object, and its text passes contrast (measured at 390 in night mode: lowest 5.86:1, the blue "20×" on white; the minimum is 4.5:1).
 8. This Week's way in (picture: q8-home-more-fold.webp): today the only way in is "What Changed This Week" inside Home's closed "More on
    Home" fold, and the 12-tool grid has no This Week tile. RECOMMENDED: add "This Week" as a fourth tab beside Winning Teams / Events /
    Archetypes (where players already look at results); reason: today it is hidden two taps deep.
