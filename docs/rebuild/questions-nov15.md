@@ -21,4 +21,4 @@
     picked chip; the slanted shape and smaller size already tell it apart). Other choice: picked chips in PLOT blue site-wide.
 14. Battle's top area at 1440+ (picture: pictures-nov15/battle-empty-right-1920.webp): the headline, Their Six and Your Games all sit on the
     left and the right half is empty (your space rule). RECOMMENDED: on wide screens, move Your Games (Win / Loss / Log from a Showdown
-    Replay) into the empty right half beside the headline; it fills the gap and makes the page about 150 px shorter. Other choice: leave it.
+    Replay) into the empty right half beside the headline; it fills the gap and should make the page shorter (my guess, not measured; I measure before building). Other choice: leave it.
