@@ -2006,7 +2006,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .mh-hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s8)}
 .mh-gh{display:flex;align-items:baseline;gap:var(--s3);margin:0 0 var(--s4);padding-bottom:var(--s2);border-bottom:1px solid var(--rule)}
 .mh-gh b{font:900 var(--t24)/1.1 var(--u);font-style:italic}.mh-gh span{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
-.mh-grp.lead .mh-gh{border-bottom:3px solid var(--plot)}.mh-grp.lead .mh-gh b{color:var(--plot-text)}
+.mh-grp.lead .mh-gh{border-bottom-color:var(--plot);box-shadow:0 2px 0 var(--plot)} /* audit #5: the thick line drawn without changing the header's height, so all three groups' Cards start level */.mh-grp.lead .mh-gh b{color:var(--plot-text)}
 .mh-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
 .mh-slot{display:grid;gap:var(--s3);align-content:start;min-width:0}
 .mh-pick{position:relative;display:block;width:100%;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-align:left}
@@ -2871,3 +2871,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .wt .wt-two .wt-card{--cw:76px;--ch:108px;--ov:2px}.wt .wt-two .wt-card .mc-mon .np-mon,.wt .wt-two .wt-card .mc-mon .np-mon .st{--iw:68px}.wt .wt-two .wt-card .mc-id h3{font-size:var(--t13)}}
 .wt-acts .np-link,[data-wtless],[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -4px}
 @media (max-width:359px){.wt .ra-seg a,.ev .ra-seg a,.ar .ra-seg a{font-size:var(--t13);padding:0 var(--s1)}}
+@media (min-width:1100px){.mh-gh span{white-space:nowrap}} /* 'stay out this game' on one line, so the three headers are one height */
