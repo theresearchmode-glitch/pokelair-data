@@ -77,7 +77,7 @@ V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back :
   const first = wrap.querySelector(o.focus || '.np-sheet'); (first || wrap.querySelector('.np-sheet')).focus({preventScroll: true});
   return wrap.querySelector('.np-sheet'); };
 V2.closeSheet = (quiet, swap) => { const S = V2._sheet; if (!S) return; V2._sheet = null; S.wrap.remove(); document.documentElement.classList.remove('np-locked'); if (!swap) V2.histClose();
-  if (S.onClose) try { S.onClose(); } catch (e) {} if (!quiet && S.back && S.back.isConnected) S.back.focus({preventScroll: true}); };
+  if (S.onClose) try { S.onClose(!!swap); } catch (e) {} /* Nov 15: onClose learns whether another sheet is replacing this one */ if (!quiet && S.back && S.back.isConnected) S.back.focus({preventScroll: true}); };
 document.addEventListener('click', e => { if (V2._sheet && e.target.closest('[data-v2close]')) V2.closeSheet(); });
 document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
   if (e.key === 'Escape') { e.preventDefault(); V2.closeSheet(); return; }

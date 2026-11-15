@@ -90,7 +90,7 @@ document.addEventListener('click', async e => { if (e.target.closest('[data-v2ex
 V2.copyTeam = async () => { toast((await V2.copy(exportPaste())) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2copy]')) V2.copyTeam(); if (e.target.closest('[data-v2sheetopen]')) V2.openTeamSheet();
   if (e.target.closest('[data-ts2share]')) { V2.shUi.kind = 'sheet'; V2.closeSheet(true); V2.openShare(); }
-  const c = e.target.closest('[data-ts2edit]'); if (c) { V2.closeSheet(true); V2.openEdit(+c.dataset.ts2edit); } });
+  const c = e.target.closest('[data-ts2edit]'); if (c) { V2.closeSheet(true); V2.openEdit(+c.dataset.ts2edit, true); } });
 document.addEventListener('keydown', e => { const c = e.target && e.target.closest && e.target.closest('[data-ts2edit]'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); c.click(); } });
 
 // ---------- Save Team (R4, Nov 11): a small sheet; the save itself is today's saveTeamAs (30-saved-data.js) ----------
@@ -200,7 +200,7 @@ V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i)
     <div class="ed-weakin"><div class="ed-wrow"><span class="lbl">Resists</span><span class="ed-tys">${chips(rs)}</span></div>${abTxt ? `<p class="fine"><b>${V2.esc(m.ability)}:</b> ${V2.esc(abTxt)}</p>` : ''}</div></details>`;
   return `<div class="ed2"><div class="np-eyebrow">Edit Set</div><h2 class="u">${V2.nameHtml(m.d)}</h2>${head}${strip}<div class="ed-grid">${ab}${it}${mv}${na}${pts}</div>${weak}${foot}</div>`; };
 document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('ed-weak')) V2.ed.weak = e.target.open; }, true);
-V2.openEdit = i => { if (i != null) V2.ed.i = i; if (!memberOf(S.slots[V2.ed.i] || {}, V2.ed.i)) { const f = members()[0]; if (!f) return; V2.ed.i = f.i; } V2.sheet(V2.editHtml(), {label: 'Edit Set'}); };
+V2.openEdit = (i, fromSheet) => { if (i != null) V2.ed.i = i; if (!memberOf(S.slots[V2.ed.i] || {}, V2.ed.i)) { const f = members()[0]; if (!f) return; V2.ed.i = f.i; } V2.sheet(V2.editHtml(), {label: 'Edit Set', onClose: fromSheet ? swap => { if (!swap && V2.route() === 'team') setTimeout(() => V2.openTeamSheet(), 0); } : undefined}); }; /* Sim Q15 (Nov 15): opened from the Team Sheet, closing Edit Set brings you back to it (not when another sheet replaces it, nor after leaving My Team) */
 // redraw the sheet in place and put focus back on the same control (so a keyboard user keeps their place)
 V2.edKey = (a = document.activeElement) => a && a.dataset && a.dataset.ed ? `[data-ed="${a.dataset.ed}"]${a.dataset.j != null ? `[data-j="${a.dataset.j}"]` : ''}${a.dataset.k != null ? `[data-k="${a.dataset.k}"]` : ''}` : null;
 V2.edRefresh = (key = V2.edKey()) => { const el = document.querySelector('.ed2'); if (!el) return; el.outerHTML = V2.editHtml(); const f = key && document.querySelector('.ed2 ' + key); (f || document.querySelector('.np-sheet')).focus(); };
