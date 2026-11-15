@@ -8,7 +8,7 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 1 | Build "The Blueprint": top sheet | build-blueprint | Built, on Preview (v142); pictures + questions sent to Sim 7:50 PM Nov 14 |
 | 2 | Build lower half: Reference sheets (Recent Winners), Parts list (Cores) | build-blueprint (lower-*.webp) | Built, on Preview v145. Height A done (390: 5,237 to 3,821; iPad inside; desktop 2,572 to 2,078). Limits set to measured (Sim A). B-build same failure list |
 | 3 | Winning Teams "The Winning Hands" | winning-hands | Built, on Preview v147. TOP-01..07: 8 pass (were 8 FAIL). Heights inside limits. Pictures + questions sent to Sim. Full D-meta-shell baseline compare running |
-| 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Built (a real table), edge check clean at 5 widths; A-team tests running; Preview + pictures next |
+| 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Built, on Preview v148 (400 files). A-team 130 pass / 8 FAIL, same 8 as before. Pictures + questions sent |
 | 5 | Battle a team "Play-by-Play" | battle-playbyplay | Waiting (received 8:00 PM Nov 14); needs the pink 'them' colour approved |
 | 6 | Compare "The Face-Off" | compare-faceoff | Waiting (received 7:49 PM Nov 14); same pink |
 | 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); nicknames need Sim's yes; no new pink |
