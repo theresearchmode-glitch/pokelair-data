@@ -268,27 +268,30 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
 // Link (today's team link). The new build draws its sprites from its own art folder.
 V2.shUi = {kind: 'card', mode: null, url: null, blob: null, saved: null};
 if (!window.__SPR) window.__SPR = new Proxy({}, {get: (t, id) => typeof id === 'string' && /^\d+$/.test(id) ? V2.art(id) : undefined});
+// Nov 15: The Slab (Sim, Nov 14, Q4 A) joins the kinds; it has one fixed look, so its second choice is the shape (Tall for feeds, Wide for link previews)
+V2.shCtl = SV => { const U = V2.shUi; return `${SV ? '' : V2.slide('shkind', [['card', 'Team Card', 'card'], ['poster', 'Team Poster', 'poster'], ['sheet', 'Team Sheet', 'list'], ['slab', 'The Slab', 'poster']], U.kind, 'What to share')}${!SV && U.kind === 'slab' ? V2.slide('shshape', [['tall', 'Tall'], ['wide', 'Wide']], U.shape || 'tall', 'Shape') : V2.slide('shmode', [['light', 'Light'], ['dark', 'Dark']], U.mode, 'Image style')}`; };
 V2.openShare = savedId => { const U = V2.shUi, t = savedId && S.teams.find(x => x.id === savedId); U.saved = t ? {name: t.name, ms: teamRating(t.slots).ms} : null;
   if (U.saved ? !U.saved.ms.length : !members().length) { if (U.saved) toast('This saved team has no Pokémon'); return; } if (!U.mode) U.mode = V2.theme() === 'night' ? 'dark' : 'light'; const SV = U.saved;
   V2.sheet(`<div class="sh2"><div class="np-eyebrow">Share</div><h2 class="u">${SV ? V2.esc(SV.name) + ': Team Poster' : 'Share Your Team'}</h2>
-    <div class="sh2-ctl">${SV ? '' : V2.slide('shkind', [['card', 'Team Card', 'card'], ['poster', 'Team Poster', 'poster'], ['sheet', 'Team Sheet', 'list']], U.kind, 'What to share')}${V2.slide('shmode', [['light', 'Light'], ['dark', 'Dark']], U.mode, 'Image style')}</div>
+    <div class="sh2-ctl" data-sh2ctl>${V2.shCtl(SV)}</div>
     <div class="sh2-img" data-sh2img aria-live="polite"><p class="fine">Drawing your image…</p></div>
     <div class="sh2-acts"><button type="button" class="np-btn" data-sh2save disabled>Save Image</button>${SV ? '' : '<button type="button" class="np-btn2" data-copylink><span>Copy Team Link</span></button>'}<span class="fine" id="shareMsg" data-sh2msg role="status"></span></div>
     <p class="fine">On a phone you can also press and hold the image to save or share it.${SV ? '' : ' The team link opens this six on NastyPlot.'}</p></div>`, {label: SV ? 'Team poster' : 'Share'});
   V2.shDraw(); };
 V2.shDraw = async () => { const U = V2.shUi, box = document.querySelector('[data-sh2img]'), sv = document.querySelector('[data-sh2save]'); if (!box) return; const SV = U.saved, ms = SV ? SV.ms : members(), was = CH.shareMode, kind = SV ? 'poster' : U.kind;
   if (sv) sv.disabled = true; CH.shareMode = U.mode; let c = null;
-  try { c = SV ? await ARB.poster(ms, {name: SV.name}) : kind === 'poster' ? await ARB.poster(ms) : kind === 'sheet' ? await buildSheetImage(ms) : await ARB.card(); } catch (e) { c = null; } finally { CH.shareMode = was; }
+  try { c = SV ? await ARB.poster(ms, {name: SV.name}) : kind === 'slab' ? await V2.slab(ms, U.shape || 'tall') : kind === 'poster' ? await ARB.poster(ms) : kind === 'sheet' ? await buildSheetImage(ms) : await ARB.card(); } catch (e) { c = null; } finally { CH.shareMode = was; }
   if (U.url) { try { URL.revokeObjectURL(U.url); } catch (e) {} U.url = null; }
   let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (e) {}
   U.blob = blob; U.url = blob ? URL.createObjectURL(blob) : null; if (!document.contains(box)) return;
-  box.className = 'sh2-img' + (kind === 'card' ? '' : ' tall');
-  box.innerHTML = U.url ? `<img src="${U.url}" alt="${SV ? V2.esc(SV.name) + ' as a NastyPlot team poster' : U.kind === 'sheet' ? 'Your team as a NastyPlot team sheet: every set, nature and stat' : U.kind === 'poster' ? 'Your team as a NastyPlot team poster' : 'Your team as a NastyPlot share card'}">` : '<p class="fine">Could not draw the image in this view.</p>';
+  box.className = 'sh2-img' + (kind === 'card' || (kind === 'slab' && U.shape === 'wide') ? '' : ' tall');
+  box.innerHTML = U.url ? `<img src="${U.url}" alt="${SV ? V2.esc(SV.name) + ' as a NastyPlot team poster' : U.kind === 'sheet' ? 'Your team as a NastyPlot team sheet: every set, nature and stat' : U.kind === 'slab' ? 'Your team as a NastyPlot share card, The Slab' : U.kind === 'poster' ? 'Your team as a NastyPlot team poster' : 'Your team as a NastyPlot share card'}">` : '<p class="fine">Could not draw the image in this view.</p>';
   if (sv) sv.disabled = !blob; };
-document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'shkind' && k !== 'shmode') return; V2.shUi[k === 'shkind' ? 'kind' : 'mode'] = e.detail.value; V2.shDraw(); });
+document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'shkind' && k !== 'shmode' && k !== 'shshape') return; V2.shUi[k === 'shkind' ? 'kind' : k === 'shshape' ? 'shape' : 'mode'] = e.detail.value;
+  if (k === 'shkind') { const ctl = document.querySelector('[data-sh2ctl]'); if (ctl) ctl.innerHTML = V2.shCtl(V2.shUi.saved); } V2.shDraw(); });
 document.addEventListener('click', async e => { if (e.target.closest('[data-v2share]')) { V2.openShare(); return; }
   if (!e.target.closest('[data-sh2save]')) return; const U = V2.shUi, msg = document.querySelector('[data-sh2msg]'); if (!U.blob) return;
-  const name = U.saved ? U.saved.name.replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + ' poster - NastyPlot.png' : ((typeof teamTitleFor === 'function' ? teamTitleFor(members()) : '') || 'My Team').replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + (U.kind === 'poster' ? ' poster' : U.kind === 'sheet' ? ' sheet' : '') + ' - NastyPlot.png';
+  const name = U.saved ? U.saved.name.replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + ' poster - NastyPlot.png' : ((typeof teamTitleFor === 'function' ? teamTitleFor(members()) : '') || 'My Team').replace(/[\\/:*?"<>|]+/g, '').slice(0, 60) + (U.kind === 'poster' ? ' poster' : U.kind === 'sheet' ? ' sheet' : U.kind === 'slab' ? ' slab' : '') + ' - NastyPlot.png';
   let dl = null; try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (er) {}
   if (dl) { try { await dl.save({filename: name, data: U.blob}); if (msg) msg.textContent = 'Saved.'; } catch (err) { if (msg) msg.textContent = err && err.code === 'declined' ? 'Not saved.' : 'Saving is not available here. Press and hold the image instead.'; } }
   else { const a = document.createElement('a'); a.href = U.url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); if (msg) msg.textContent = 'Downloaded.'; } });
