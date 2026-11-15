@@ -13,7 +13,8 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 6 | Compare "The Face-Off" | compare-faceoff | Waiting (received 7:49 PM Nov 14); same pink |
 | 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); names approved: The Problems, The Coin Flips, The Good Matchups; no new pink |
 | 8 | Share card: The Slab / Print / Aurora (tall + wide) | share-cards | Waiting (received 9:19 PM Nov 14); question to Sim: one design or all three |
-| 9 | My Team height and polish pass | my-team-hand | Waiting |
+| 9 | Colour uniformity: one colour per meaning across the site (Sim, Nov 14: 'a big deal') | (audit) | IN PROGRESS: read-only audit running; fixes go to Sim as a list with pictures |
+| 10 | My Team height and polish pass | my-team-hand | Waiting |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.
 Everything else keeps today's design (Sim: no bolder look needed).
