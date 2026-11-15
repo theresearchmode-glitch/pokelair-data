@@ -43,10 +43,10 @@ V2.pages.track = {place: 'meta', draw() { const E = V2.esc, T = META.track;
   const ms = T.mons, hits = ms.filter(m => m.r >= 70 && m.c > 0).sort((a, b) => b.c - a.c || b.r - a.r).slice(0, 3);
   const lows = ms.filter(m => m.r < 50 && m.c > 0).sort((a, b) => b.w - a.w || b.c - a.c || a.r - b.r).slice(0, 3);
   const highs = n >= TR_MIN.misses ? ms.filter(m => m.r >= 75 && m.c === 0 && m.ev >= TR_MIN.misses).sort((a, b) => b.r - a.r).slice(0, 3) : [];
-  const won = m => m.w ? (m.w === 1 ? `won ${E(m.best)}` : `won ${m.w} events`) : `on ${m.c} top-8 team${m.c === 1 ? '' : 's'}${m.best ? ` (${E(m.best)})` : ''}`;
+  const won = m => m.w ? (m.w === 1 ? `won ${E(V2.evTitle(m.best))}` : `won ${m.w} events`) : `on ${m.c} top-8 team${m.c === 1 ? '' : 's'}${m.best ? ` (${E(V2.evTitle(m.best))})` : ''}`;
   const misses = [...lows.map(m => [m, `Rated only ${RS(m.r)} · ${won(m)}`]), ...highs.map(m => [m, `Rated ${RS(m.r)} · no top 8 in ${m.ev} events`])];
   const calls = n ? `<section class="trk-calls"><header><h2 class="u">The Calls</h2><p>Three we called and three we missed.</p></header><div class="trk-cols">
-      <div><h3 class="u">Biggest Hits</h3>${hits.length ? `<ul class="trk-slips">${hits.map((m, i) => V2.trSlip(m, true, `Rated ${RS(m.r)} · on ${m.c} top-8 team${m.c === 1 ? '' : 's'} in ${m.ev} event${m.ev === 1 ? '' : 's'}${m.w ? ` · won ${m.w === 1 ? E(m.best) : m.w + ' events'}` : ''}`, i)).join('')}</ul>` : '<p class="trk-none">None yet.</p>'}</div>
+      <div><h3 class="u">Biggest Hits</h3>${hits.length ? `<ul class="trk-slips">${hits.map((m, i) => V2.trSlip(m, true, `Rated ${RS(m.r)} · on ${m.c} top-8 team${m.c === 1 ? '' : 's'} in ${m.ev} event${m.ev === 1 ? '' : 's'}${m.w ? ` · won ${m.w === 1 ? E(V2.evTitle(m.best)) : m.w + ' events'}` : ''}`, i)).join('')}</ul>` : '<p class="trk-none">None yet.</p>'}</div>
       <div><h3 class="u">Biggest Misses</h3>${misses.length ? `<ul class="trk-slips">${misses.map(([m, t], i) => V2.trSlip(m, false, t, i)).join('')}</ul>` : '<p class="trk-none">None yet.</p>'}${n < TR_MIN.misses ? `<p class="fine">High ratings that miss every top 8 show here after ${TR_MIN.misses} events.</p>` : ''}</div></div>
     <p class="fine">"Rated" is the average of the ratings saved before each event. Tap a Pokémon for its sheet.</p></section>` : '';
   const chart = n ? V2.trChart(T) : null, firstWk = n ? trWeek(T.ev[0].date) : T.since, chartAt = trAdd(firstWk, 7 * (TR_MIN.weeks - 1));
