@@ -2259,7 +2259,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:1099px){.wt-top{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699px){.wt .wt-fan:not(.wt-mini) .wt-card .mc-id h3{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
 @media (max-width:699px){.wt .ra-seg a{font-size:var(--t13);white-space:nowrap}.wt-hh h3{font-size:var(--t20)}}
-@media (max-width:699px){.wt .ra-seg{grid-template-columns:auto auto auto}}
+@media (max-width:699px){.wt .ra-seg,.ev .ra-seg,.ar .ra-seg{grid-template-columns:auto auto auto}}
 .wt-open{max-width:100%;white-space:normal;text-align:center}.wt-open span{white-space:normal}
 .wt-two>.wt-hand{min-width:0}
 .wt-hand{grid-template-columns:minmax(0,1fr)}.wt-hand>.wt-fan{justify-self:stretch}
