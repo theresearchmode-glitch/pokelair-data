@@ -2991,3 +2991,46 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .pbp .bt-plan{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s10)}.pbp .bt-pl{display:contents}}
 /* How We Calculate (Nov 15, plain until the designer's bold version): the small line under a label sits on its own line, never glued to it */
 .inf-legend .nplrow>b small,.inf-track b small{display:block;font:400 var(--t13)/1.5 var(--b)}
+
+/* ---------- The Pokémon page, "The Answer Page" (Sim's pick, Nov 15): the top and Base Stats ---------- */
+.pk{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s10)} /* the column never grows past the screen (a long name on the Card pushed it to 330 px at 320) */
+.pk-trail{display:flex;flex-wrap:wrap;gap:var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.pk-trail a{color:var(--plot-text);text-decoration:none}
+.pk-top{display:grid;grid-template-columns:minmax(260px,360px) minmax(0,1fr);gap:var(--s10);align-items:start}
+.pk-card .ms-card{margin:0}.pk-card .mc-nm{margin:0;font:900 var(--t28)/1.15 var(--u);font-style:italic;color:var(--card-ink)}
+.pk-is{display:grid;gap:var(--s4);min-width:0}
+.pk-kick{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin:0;font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.pk-rank{padding:var(--s1) var(--s3);background:var(--plot);color:var(--on-mark);font:800 var(--t13)/1.5 var(--u);font-style:italic;letter-spacing:0;text-transform:none;transform:skewX(-10deg)}
+.pk-is h1{margin:0;font:900 var(--d-hero)/1 var(--u);font-style:italic;overflow-wrap:anywhere}
+.pk-rate{display:flex;align-items:flex-end;gap:var(--s4)}.pk-rate>b{font:900 var(--d120)/.9 var(--u);font-style:italic}
+.pk-rate span{display:grid;gap:var(--s1);padding-bottom:var(--s3)}.pk-rate em{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--plot-text)}.pk-rate small{font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pk-gauge{position:relative;height:var(--s8);margin-bottom:var(--s5);border-bottom:2px solid var(--rule)}
+.pk-gauge .pk-rg{position:absolute;bottom:0;left:calc(var(--lo)*1%);width:calc((var(--hi) - var(--lo))*1%);height:var(--s3);background:color-mix(in srgb,var(--plot) 35%,transparent)}
+.pk-gauge .pk-mk{position:absolute;bottom:0;left:calc(var(--v)*1%);width:var(--s2);height:var(--s6);background:var(--plot);transform:translateX(-50%) skewX(-10deg)}
+.pk-gauge span{position:absolute;top:calc(100% + var(--s1));left:calc(var(--v)*1%);font:600 var(--t13)/1 var(--b);color:var(--ink-3);transform:translateX(-50%)}.pk-gauge span:first-of-type{transform:none}.pk-gauge span:last-of-type{transform:translateX(-100%)}
+.pk-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4);padding:var(--s4) 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.pk-n{display:grid;gap:var(--s1)}.pk-n b{font:900 var(--t34)/1 var(--u);font-style:italic}.pk-n.few b{font-size:var(--t22)}.pk-n span{display:grid;font:600 var(--t15)/1.4 var(--b)}.pk-n small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.pk-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}
+/* Base Stats */
+.pk-stats{display:grid;gap:var(--s4);padding:var(--s6) var(--s8) var(--s8);background:var(--wash);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px))}
+.pk-sh{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}.pk-sh h2{margin:0;font:900 var(--t28)/1.2 var(--u);font-style:italic}
+.pk-tot{margin:0;display:flex;align-items:baseline;gap:var(--s2)}.pk-tot small{font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}.pk-tot b{font:900 var(--t34)/1 var(--u);font-style:italic}
+.pk-lanes{display:grid;gap:var(--s3);margin:0;background:repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px calc(100%/var(--n))) 112px 0/calc(100% - 112px - var(--s16)) 100% no-repeat}
+.pk-lane{display:grid;grid-template-columns:96px minmax(0,1fr);gap:var(--s4);align-items:center}
+.pk-sl{padding:var(--s1) var(--s3);background:var(--c);color:var(--on);font:800 var(--t13)/1.5 var(--u);font-style:italic;transform:skewX(-10deg)}
+.pk-lane dd{position:relative;display:flex;align-items:center;margin:0;padding-right:var(--s16);min-height:var(--s8)} /* the right 64 px is the number's room, so every streak is measured on the same width as the scale */
+.pk-streak{display:block;flex:none;width:var(--w);height:var(--s6);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 15%,transparent),var(--c));clip-path:polygon(0 42%,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 58%)}
+.pk-v{position:absolute;left:calc((100% - var(--s16))*var(--f) + var(--s3));display:flex;align-items:baseline;gap:var(--s1);white-space:nowrap}.pk-lane b{font:900 var(--t28)/1 var(--u);font-style:italic} /* a Mega's change ('+50') follows its number */.pk-lane em,.pk-tot em{font:700 var(--t13)/1 var(--b);font-style:normal}.pk-lane em.up,.pk-tot em.up{color:var(--good-text)}.pk-lane em.dn,.pk-tot em.dn{color:var(--bad-text)}
+.pk-scale{position:relative;height:var(--s5);margin:0 var(--s16) 0 112px;font:600 var(--t13)/1 var(--b);color:var(--ink-3)}.pk-scale span{position:absolute;left:var(--v);transform:translateX(-50%)}.pk-scale span:first-child{transform:none}.pk-scale span:last-child{transform:translateX(-100%)}
+.pk-share{display:flex;height:var(--s6);margin-top:var(--s2);gap:2px}.pk-share i{display:flex;align-items:center;justify-content:center;min-width:0;background:var(--c);color:var(--on);font:800 var(--t13)/1 var(--b);font-style:normal;overflow:hidden;white-space:nowrap;transform:skewX(-10deg)}
+.pk-more{margin:0}
+@media (max-width:899px){.pk-top{grid-template-columns:minmax(0,1fr)}.pk-card{max-width:360px;width:100%;justify-self:center}.pk-is h1{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)} /* iPhone/iPad: the name shows once, on the Card (brief 1) */
+  .pk-acts .np-btn,.pk-acts .np-btn2{flex:1 1 160px}}
+@media (max-width:699px){.pk-stats{padding:var(--s5) var(--s4) var(--s6)}.pk-lane{grid-template-columns:88px minmax(0,1fr);gap:var(--s3)}.pk-sl{padding:var(--s1) var(--s2);white-space:nowrap}.pk-lanes{background-position:100px 0;background-size:calc(100% - 100px - var(--s16)) 100%}.pk-scale{margin-left:100px}.pk-scale span:nth-child(even){display:none} /* phones: the plates fit 'Sp. Atk' on one line; the scale shows 0, 80, 160 */
+  .pk-share span{display:none}.pk-rate>b{font-size:var(--d64)}.pk-n b{font-size:var(--t26)}}
+/* narrow phones (under 400): each stat on two lines, plate and number on top, the streak under them at the panel's full width (beside the
+   plate the streaks were ~90 px at 320, too short to read); the scale lines and labels follow the full width */
+@media (max-width:399px){.pk-lane{grid-template-columns:minmax(0,1fr);gap:var(--s1)}.pk-sl{justify-self:start}
+  .pk-lane dd{padding-right:0;min-height:var(--s6)}.pk-lane b{font-size:var(--t22)}.pk-lane{position:relative}
+  .pk-v{left:clamp(100px, calc(100% * var(--f)), calc(100% - var(--s24) - var(--s4)));top:calc(var(--s8)*-1)} /* on the line above at the tip, but never on the plate (low stats) or past the panel (a Mega's '159 +30') */.pk-lanes{background-position:0 0;background-size:100% 100%}.pk-scale{margin:0}}
+.pk-trail a,.pk-more .np-link{position:relative}.pk-trail a::after,.pk-more .np-link::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
+.pk-404{position:relative}.pk-404::after{content:"";position:absolute;inset:-12px -4px} /* 44 px tap area */
