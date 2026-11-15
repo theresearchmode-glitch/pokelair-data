@@ -93,6 +93,7 @@
  "src/app/49-event-data.js",
  "src/app/49-events.js",
  "src/app/50-jump.js",
+ "src/app/51-usage-data.js",
  "src/app/51-usage.js",
  "src/app/52-sleepers.js",
  "src/app/53-feedback-data.js",

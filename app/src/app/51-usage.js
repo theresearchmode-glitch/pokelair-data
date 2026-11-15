@@ -27,12 +27,7 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   else if (b.tagName === 'SUMMARY') { const d = b.parentElement; track('open:' + ((d && d.className && String(d.className).split(' ')[0]) || 'details')); } }, true);
 // owner only: what people use, from everyone's counts
 async function usageReport() { const d = ui.usageDb; if (!d) return null; let snap; try { snap = await d.collection('usage').get(); } catch (e) { return null; }
-  const tot = new Map(), ppl = new Map(); let people = 0, visits = 0, phone = 0;
-  for (const doc of snap.docs) { const v = doc.data() || {}, mine = new Set(); people++;
-    for (const s of Object.values(v.s || {})) { visits++; if (s.w === 'phone') phone++; for (const [k, n] of Object.entries(s.c || {})) { tot.set(k, (tot.get(k) || 0) + (+n || 0)); mine.add(k); } }
-    for (const k of mine) ppl.set(k, (ppl.get(k) || 0) + 1); }
-  const rows = [...tot].filter(([k]) => k !== 'visit').map(([k, n]) => ({k, n, p: ppl.get(k) || 0})).sort((a, b) => b.p - a.p || b.n - a.n);
-  return {people, visits, phone, rows}; }
+  return usageTally(snap.docs); } /* the tally lives in 51-usage-data.js (shared with the new build, Nov 15) */
 const USE_WORD = k => { const [t, n] = k.split(':'); if (t === 'view') return (VIEW_TITLE[n] || n) + ' (page)'; return (t === 'open' ? 'Opened ' : '') + n.replace(/([A-Z])/g, ' $1').toLowerCase(); };
 async function renderUsage() { const el = $('usageOut'); if (!el || !ui.usageOwner) return; el.innerHTML = '<p class="t2">Loading…</p>'; const r = await usageReport();
   if (!r || !r.people) { el.innerHTML = '<p class="t2">No visits counted yet.</p>'; return; }

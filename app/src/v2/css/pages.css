@@ -2975,3 +2975,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .npchip{display:inline-grid;gap:0}.npchip b{font:900 var(--t17)/1.2 var(--u);font-style:italic}.npchip small{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}
 .npop{font:700 var(--t17)/1 var(--b);color:var(--ink-3)}.npbands span{white-space:nowrap}.nplegend,.nplive{margin:0 0 var(--s3)}
 .inf-work .chk{font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin:var(--s3) 0 var(--s1)}
+/* the owner's page (Nov 15): plain counts table and feedback list; only the owner ever sees it */
+.own-sum{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin:0 0 var(--s2);font:400 var(--t15)/1.5 var(--b)}.own-sum b{font:900 var(--t28)/1.2 var(--u);font-style:italic;margin-right:var(--s1)}
+.own-tab{width:100%;border-collapse:collapse;margin-top:var(--s4);font:400 var(--t15)/1.4 var(--b)}.own-tab th{text-align:left;font:700 var(--t13)/1.4 var(--b);color:var(--ink-2);padding:var(--s2) var(--s2) var(--s2) 0;border-bottom:1px solid var(--rule)}
+.own-tab td{padding:var(--s2) var(--s2) var(--s2) 0;border-bottom:1px solid var(--rule)}.own-tab td+td,.own-tab th+th{text-align:right;width:64px}
+.own-fb{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;gap:var(--s4)}.own-fb li{padding-bottom:var(--s4);border-bottom:1px solid var(--rule)}.own-fb p{margin:0 0 var(--s1);overflow-wrap:anywhere}
+.own-ctx{margin:var(--s2) 0 0;padding:var(--s3);background:var(--wash);font:400 var(--t13)/1.5 var(--b);white-space:pre-wrap;overflow-wrap:anywhere}
+.own-h{margin:var(--s6) 0 var(--s2);font:700 var(--t17)/1.4 var(--b)}
