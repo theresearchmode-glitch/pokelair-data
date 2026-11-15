@@ -178,7 +178,7 @@ V2.btRecord = () => { const E = V2.esc, L = Array.isArray(S.log) ? S.log : []; i
   const row = (label, st) => `<li><span>${label}</span><i class="bar" style="--w:${st.pct}%" aria-hidden="true"></i><b>${st.w}–${st.l}</b><small>${st.pct}%</small></li>`;
   const mons = [...byMon].map(([n, e]) => [n, logStats(e)]).sort((a, b) => b[1].n - a[1].n).slice(0, 8);
   const leads = [...byLead].map(([k, e]) => [k, logStats(e)]).filter(x => x[1].n >= 2).sort((a, b) => b[1].pct - a[1].pct || b[1].n - a[1].n).slice(0, 4);
-  const opps = [...byOpp].map(([n, e]) => [n, logStats(e)]).filter(x => x[1].n >= 3).sort((a, b) => a[1].pct - b[1].pct).slice(0, 4);
+  const opps = [...byOpp].map(([n, e]) => [n, logStats(e)]).filter(x => x[1].n >= 3 && x[1].pct <= 50).sort((a, b) => a[1].pct - b[1].pct).slice(0, 4); // Nov 15 (re-audit #23): a 2-1 win isn't a tough opponent: only even or losing records
   const when = t => { try { return new Date(t).toLocaleDateString([], {month: 'short', day: 'numeric'}); } catch (e) { return ''; } };
   return `<div class="bt-rec"><h2 class="u">Your Games</h2><p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> games logged</span></p>
     <h3 class="bt-oh">Your Pokémon</h3><ul class="bt-rrows">${mons.map(([n, st]) => row(E(dn(n)), st)).join('')}</ul>
