@@ -2267,7 +2267,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wt-f i{margin-right:var(--s1)}
 
 /* ---------- Team Sheet: "Tale of the Tape" (Sim's pick, Nov 14) ---------- */
-.tt-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.tt-top h2{margin:var(--s1) 0 0;font-size:var(--d64);line-height:1}
+.tt-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.tt-top h2{margin:var(--s3) 0 0;font-size:var(--d64);line-height:1} /* re-check Nov 15: clear of the eyebrow line above */
 .tt2 .ts2-acts{margin:0}.tt-help{margin:var(--s2) 0 0}
 .tt-key{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s5);margin:var(--s2) 0 var(--s4);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tt-key span{display:inline-flex;align-items:center;gap:var(--s1)}
 .tt-kbest{width:16px;height:8px;background:var(--plot);clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%)}
