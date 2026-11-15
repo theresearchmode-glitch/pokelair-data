@@ -51,7 +51,7 @@
    real games, with its players' skill taken out" (Why This Score). Both are true. I'm unsure why the score uses 17 fewer games (my guess:
    games without player-skill data are left out); I check the code before writing anything. RECOMMENDED: say it in words on both lines
    ("496 games at events" / "479 of them used for the score"); reason: two different numbers for one thing looks like a mistake.
-4. Build's opened winner (picture: q4-build-reference-open.webp): the opened team sits inside the Reference Sheets frame. Measured (5:00 AM, computed
+4. Build's opened winner (picture: q4-build-reference-open.webp): the opened team sits inside the Reference Sheets frame. Measured (4:56 AM by the clock, computed
    styles): the opened panel has no background of its own, it shows the frame's paper (rgb 251,252,254), so no second shade. RECOMMENDED: keep; reason: it reads as a sheet
    pulled out of the binder, which is the Blueprint idea.
 5. Weather Map section-9 items (picture: q5-weather-1440.webp: Your team's style plate, Your style tags, No. 1-8 ranks).
