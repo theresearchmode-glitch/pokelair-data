@@ -87,7 +87,7 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
     if (d.evask && members().length) { U.sure = d.evask; V2.redraw(); const r = document.querySelector('[data-evload]'); if (r) r.focus({preventScroll: true}); return; }
     U.sure = null; keepUndo(); S.slots = sheetSlots(x.t); S.format = 'doubles'; S.loadedId = null; location.hash = '#team'; render(); toast(`${teamWho(x.t).split(' · ')[0]}'s team loaded with its moves and items`, true); return; }
   else if (d.evcopy) { const x = evTeam(d.evcopy); if (!x) return; const r = sdNames(x.t.mons.map(m => m.n), x.t.player); toast((await V2.copy(r.text)) ? (r.note ? 'Team copied for Showdown. ' + r.note : 'Team copied for Showdown') : 'Copy failed. Try again.'); return; }
-  else if (d.evvs) { const x = evTeam(d.evvs); if (!x) return; const ns = x.t.mons.map(m => m.n); V2.btSetOpp(ns, {who: x.t.player, key: ns.slice().sort().join('|'), ev: evShort(x.ev.name)}); location.hash = '#battle'; toast(`Opponent set: ${teamWho(x.t)}`); return; }
+  else if (d.evvs) { const x = evTeam(d.evvs); if (!x) return; const ns = x.t.mons.map(m => m.n); V2.btSetOpp(ns, {who: x.t.player, label: teamWho(x.t), key: ns.slice().sort().join('|'), ev: evShort(x.ev.name)}); location.hash = '#battle'; toast(`Opponent set: ${teamWho(x.t)}`); return; }
   V2.redraw(); });
 // a ticket is a button except the latest result, which is an article with its own button; a tap anywhere on it opens the placings too
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('article.tk[data-evgo]'); if (!a || e.target.closest('button')) return; a.querySelector('.tk-go')?.click(); });

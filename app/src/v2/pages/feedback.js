@@ -13,18 +13,26 @@ V2.pages.feedback = {place: '', draw() { const F = V2.FB, K = typeof FB_KINDS ==
   return `<div class="ra gsp infp"><div class="gs-top wt-top ev-top"><section class="ra-h"><p class="np-eyebrow"><span>Send Feedback</span></p><h1 class="u"><span>Tell us</span> <span class="pl">what's off.</span></h1><p class="ra-lede">Spotted a bug, a wrong number or a better idea? It goes straight to the people who make NastyPlot.</p></section>
     <div class="ra-spotw"><aside class="ev-plate"><p class="ev-pk u">Anonymous</p><p class="ev-none">We never ask for your name or email. Anything that looks like an email, phone number or @handle is removed before it's saved.</p><div class="abtmail" id="abtMail"><button type="button" class="np-link" data-abtmail="show">Show Email</button></div></aside></div></div>
     <section class="inf-fb"><p class="inf-q u" id="fbQ">What kind of note is it?</p><div class="ev-f" role="group" aria-labelledby="fbQ">${K.map(([k, t]) => `<button type="button" class="np-chip" data-fbk2="${k}" aria-pressed="${F.kind === k}">${V2.esc(t)}</button>`).join('')}</div>
-      <label class="np-field inf-box"><span class="vh">Your note</span><textarea id="fbText2" maxlength="1000" rows="6" placeholder="What happened, or what would help?"></textarea></label>
+      <label class="np-field inf-box"><span class="vh">Your note</span><textarea id="fbText2" maxlength="1000" rows="6" placeholder="What happened, or what would help?"></textarea></label>${F.ctx ? `<p class="fine inf-ctx">Sent with what was on screen: <b>${V2.esc(F.ctx)}</b> <button type="button" class="np-link" data-fbctxoff>Don't send it</button></p>` : ''}
       <div class="row"><button type="button" class="np-btn" data-fbsend2><span>Send</span></button><span class="fine" role="status" data-fbmsg2>Saved with the page you came from, phone or desktop, and the date.</span></div></section></div>`; }};
 V2.fbSend = async () => { const F = V2.FB, ta = document.getElementById('fbText2'), msg = document.querySelector('[data-fbmsg2]'), btn = document.querySelector('[data-fbsend2]'); if (!ta || F.busy) return;
   const t = ta.value.trim(); if (t.length < 3) { msg.textContent = 'Write a few words first.'; return; }
   if (window.__NP_PREVIEW) { msg.textContent = "This is the preview: it can't save messages. Send Feedback works on the real site."; return; }
   if (!F.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
   F.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
-  const entry = {t: sc.t, k: F.kind, v: F.from || 'home', w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)};
+  const entry = {t: sc.t, k: F.kind, v: F.from || 'home', w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (F.ctx) entry.c = fbScrub(F.ctx.slice(0, 300)).t; /* Report a Mistake: what was on screen (Nov 15, CALC-08) */
   try { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}});
-    ta.value = ''; msg.textContent = 'Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : ''); V2.toast('Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : '')); }
+    ta.value = ''; F.ctx = ''; const cx = document.querySelector('.inf-ctx'); if (cx) cx.remove(); msg.textContent = 'Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : ''); V2.toast('Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : '')); }
   catch (e) { msg.textContent = "Couldn't send. Try again in a moment."; }
   finally { F.busy = false; btn.disabled = false; } };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-fbk2],[data-fbsend2]'); if (!b) return;
   if (b.dataset.fbk2) { V2.FB.kind = b.dataset.fbk2; document.querySelectorAll('[data-fbk2]').forEach(x => x.setAttribute('aria-pressed', x.dataset.fbk2 === V2.FB.kind)); return; }
   V2.fbSend(); });
+
+// "Report a Mistake" (Damage Calc, a Pokémon page): opens Send Feedback as "Wrong info" with what was on screen attached (today's fbMistake),
+// shown on the page with "Don't send it"; nothing personal is in it (a calc result or a Pokémon's name)
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-fbmistake],[data-fbctxoff]'); if (!b) return;
+  if (b.dataset.fbctxoff != null) { V2.FB.ctx = ''; const c = b.closest('.inf-ctx'); if (c) c.remove(); return; }
+  let ctx = ''; try { if (b.dataset.fbmistake === 'calc') { const r = document.querySelector('.dc2-res'), w = document.querySelector('.dc2'); const nm = w ? [...w.querySelectorAll('h2.u')].map(h => h.textContent.trim()).filter(Boolean).slice(0, 2) : []; ctx = ((nm.length === 2 ? nm[0] + ' into ' + nm[1] + ': ' : '') + (r ? r.innerText : '')).replace(/\s+/g, ' ').trim(); } /* who hit whom, then the result */
+    else ctx = ((document.querySelector('#main .pk-is h1') || {}).textContent || '').trim(); } catch (x) {}
+  V2.FB.kind = 'mistake'; V2.FB.ctx = ctx.slice(0, 300); });
