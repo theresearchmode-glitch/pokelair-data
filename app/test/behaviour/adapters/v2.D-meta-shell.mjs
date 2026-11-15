@@ -119,6 +119,15 @@ export default (ui, pg) => {
     /** the share image in the open share sheet (today's dialog): its size once drawn */
     shareCard: () => ev(() => { const s = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop(), i = s && s.querySelector('[data-wkimg] img'); if (!i || !i.complete || !i.naturalWidth) return null;
       return {w: i.naturalWidth, h: i.naturalHeight, src: (i.src || '').slice(0, 40), text: __dtx(s)}; }),
+    /** tap a button in the open sheet by its words (today's tapInDialog; the new build's dialogs are .np-sheet) */
+    tapInDialog: async m => { const ok = await ev(([src, fl]) => { const re = new RegExp(src, fl); const d = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop(); const b = d && [...d.querySelectorAll('button')].filter(__dvis).find(b => re.test(__dtx(b)));
+        if (!b) return false; b.click(); return true; }, [m.source, m.flags]); if (!ok) throw new Error('nothing in the sheet matching ' + m); await wait(500); },
+    /** the open share image's average brightness, 0 (black) to 1 (white), as today's adapter measures it */
+    shareImageBrightness: () => ev(async () => { const d = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop(), i = d && d.querySelector('.sh2-img img'); if (!i) return null;
+      if (!i.complete) await new Promise(r => i.onload = r); const c = document.createElement('canvas'); c.width = 60; c.height = 60; const x = c.getContext('2d'); x.drawImage(i, 0, 0, 60, 60);
+      const p = x.getImageData(0, 0, 60, 60).data; let t = 0; for (let k = 0; k < p.length; k += 4) t += 0.2126 * p[k] + 0.7152 * p[k + 1] + 0.0722 * p[k + 2]; return t / (p.length / 4) / 255; }),
+    /** is the site itself showing in dark (its page background) */
+    looksDark: () => ev(() => { const c = getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g).map(Number); return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255 < 0.4; }),
     tapWinner: async () => { await ev(() => { const b = [...document.querySelectorAll('#main .wk-win [data-evgo]')].find(__dvis); if (!b) throw new Error('no winner row'); b.click(); }); await wait(900); },
     /** New Tech's kind markers: the word as written (CSS shows it in capitals) and whether an icon is drawn beside it */
     kindMarkers: () => ev(() => [...document.querySelectorAll('#main .wk-kind')].filter(__dvis).map(k => ({word: k.textContent.trim(), icon: !!k.querySelector('svg')}))),

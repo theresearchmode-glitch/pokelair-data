@@ -38,11 +38,15 @@ V2.pages.weekly = {place: 'meta', draw() { const E = V2.esc, W = META.weekly;
   return shell(`<p class="np-eyebrow"><span>Meta · last 7 days</span></p>${mast}<section class="wk-move"><h2 class="u">Pokémon on the Move</h2>${moves}</section>${top}<div class="wk-two">${tech}${win}</div>${sty}${fresh}${fold}`); }};
 // Nov 15 (tests WEEK-05/11): New Tech says 'of its teams' and names the Pokémon's team counts, and each kind keeps its icon, as today's page does
 // Share This Week: today's share image (buildWeeklyCard), in the new build's share sheet
-document.addEventListener('click', async e => { if (!e.target.closest('[data-wkshare]')) return; V2.sheet(`<div class="sh2"><div class="np-eyebrow">Share</div><h2 class="u">This Week</h2><div class="sh2-img tall" data-wkimg aria-live="polite"><p class="fine">Drawing your image…</p></div>
+document.addEventListener('click', async e => { if (!e.target.closest('[data-wkshare]')) return; V2.wkMode = V2.theme() === 'night' ? 'dark' : 'light'; V2.sheet(`<div class="sh2"><div class="np-eyebrow">Share</div><h2 class="u">This Week</h2><div class="sh2-ctl">${V2.slide('wkmode', [['light', 'Light'], ['dark', 'Dark']], V2.wkMode, 'Image style')}</div><div class="sh2-img tall" data-wkimg aria-live="polite"><p class="fine">Drawing your image…</p></div>
     <div class="sh2-acts"><button type="button" class="np-btn" data-wksave disabled>Save Image</button><span class="fine" data-wkmsg role="status"></span></div><p class="fine">On a phone you can also press and hold the image to save or share it.</p></div>`, {label: 'Share This Week'});
-  const was = CH.shareMode; CH.shareMode = V2.theme() === 'night' ? 'dark' : 'light'; let c = null; try { c = await buildWeeklyCard(); } catch (er) { c = null; } finally { CH.shareMode = was; }
+  V2.wkDraw(); });
+/* Nov 15: today's This Week share offers Light / Dark (openShareCard); the new sheet had lost that choice. V2.wkDraw draws in the picked style */
+V2.wkDraw = async () => { const sv0 = document.querySelector('[data-wksave]'); if (sv0) sv0.disabled = true;
+  const was = CH.shareMode; CH.shareMode = V2.wkMode; let c = null; try { c = await buildWeeklyCard(); } catch (er) { c = null; } finally { CH.shareMode = was; }
   const box = document.querySelector('[data-wkimg]'), sv = document.querySelector('[data-wksave]'); let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (er) {}
   if (!box) return; const url = blob ? URL.createObjectURL(blob) : null; box.innerHTML = url ? `<img src="${url}" alt="This week in Reg M-C as a NastyPlot share card">` : '<p class="fine">Nothing to share yet.</p>';
   if (sv && blob) { sv.disabled = false; sv.onclick = async () => { const msg = document.querySelector('[data-wkmsg]'), name = 'This week in Reg M-C - NastyPlot.png'; let dl = null; try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (er) {}
     if (dl) { try { await dl.save({filename: name, data: blob}); if (msg) msg.textContent = 'Saved.'; } catch (err) { if (msg) msg.textContent = err && err.code === 'declined' ? 'Not saved.' : 'Saving is not available here. Press and hold the image instead.'; } }
-    else { const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); if (msg) msg.textContent = 'Downloaded.'; } }; } });
+    else { const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); if (msg) msg.textContent = 'Downloaded.'; } }; } };
+document.addEventListener('v2slide', e => { if (e.detail.key === 'wkmode') { V2.wkMode = e.detail.value; V2.wkDraw(); } });
