@@ -171,7 +171,7 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 .mu-card .mc-mon .np-mon,.mu-card .mc-mon .np-mon .st{--iw:84px}.mu-card .mc-orbit,.mu-card .ms-card::before{display:none}
 .mu-cards .nm{font:700 var(--t13)/1.25 var(--b);overflow-wrap:normal}.mu-cards .tm-v{justify-self:center}.mu-cards .mu-dis{font-size:var(--t13);line-height:1.3}
 @media (max-width:1099px){.mu-cards li{flex-basis:25%}}
-@media (max-width:359px){.mu-cards .nm{font-stretch:88%}}
+@media (max-width:359px){.mu-cards .nm{font-stretch:88%}.mu-cards li{flex-basis:33.333%}} /* re-check Nov 15: four across cut the verdict words at 320; three across, the last two centred */
 .tm-mus .mu-cards .mu-out{display:contents;margin:0}
 .tm-mus .mu-cards .mu-out .mu-row.mu-nk{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:none;justify-items:center;row-gap:var(--s1);padding:0 var(--s1);min-height:0;border:0}
 .tm-mus .mu-cards .mu-out .mu-row .nm,.tm-mus .mu-cards .mu-out .mu-row .tm-v,.tm-mus .mu-cards .mu-out .mu-row .mu-dis{grid-area:auto;justify-self:center;margin:0}
