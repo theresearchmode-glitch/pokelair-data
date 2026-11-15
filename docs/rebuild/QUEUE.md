@@ -2,7 +2,7 @@
 
 **QUALITY PASS FIRST (Sim, Nov 14, 9:58 PM):** new design work paused. Sections in order: Build (in progress), Battle, Compare, Team Sheet, My Team, Winning Teams, Meta, Home, Test Run, tools. Each: fix audit findings (docs/rebuild/audits/), check every element at 11 widths x day/night on the real-data build, fresh independent re-audit, before/after pictures to Sim. Done only when the re-audit finds nothing broken.
 
-Last updated: time: 2:05 AM (2:05:09)  date: Sun Nov 15, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
+Last updated: time: 7:54 AM (7:54:10)  date: Sun Nov 15, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
 Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New briefs are added here the moment they arrive.
 
 | # | Brief | Folder | Status |
@@ -21,7 +21,7 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 9d | Battle quality pass | audits/reaudit-battle.md | Re-audit's 2 broken fixed (VS over names; six cut 1280+), lone Y, Watch false alarm; full check clean except a confirmed false alarm. Open: heights + colours (Sim), polish 11-23 |
 | 9e | Compare, Team Sheet, My Team, Winning Teams | (qcheck) | Fixed what the full check found (scores, labels, taps, hands at 1100-1279, Team Sheet number, My Team audit #1 #2 #3 #5 #7 #8 #14). Compare + Team Sheet re-audit running |
 | 9 | Colour uniformity: one colour per meaning across the site (Sim, Nov 14: 'a big deal') | (audit) | Audit done: docs/rebuild/colour-audit.md (18 conflicts). Fix list + pictures to Sim next |
-| 10 | Info pages: How We Calculate, About & Legal, Send Feedback (Claude designs; Sim: 'simple, still not boring') | (none) | DRAFTS (info-draft.js, review mode only); pictures in pictures-nov15/; waiting on Sim |
+| 10 | Info pages: How We Calculate, About & Legal, Send Feedback (Claude designs; Sim: 'simple, still not boring') | (none) | BUILT as real pages (Sim Q12: recommended). Words shared with today's site unchanged; About's privacy list written from the new site's code; Send Feedback saves today's entry (Preview says it can't save). Full check clean 320-1920 day+night; live suite ALL PASSED |
 | 11 | My Team height and polish pass | my-team-hand | Waiting |
 | 12 | Events + Archetypes | tournaments-tickets-weather | BUILT; audit fixes in; full check clean on every state. Waiting on Sim: section 9 items, map height |
 | 13 | This Week + Track Record | thisweek-trackrecord | BUILT; audit fixes in; full check clean (one rotation false alarm). Waiting on Sim: white paper in dark mode, the way into This Week |
