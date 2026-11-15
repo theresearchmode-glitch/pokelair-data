@@ -62,11 +62,28 @@ V2.pkBuild = p => { const E = V2.esc, n = p.n, st = (() => { try { return setFor
   const body = noSets ? `<p class="pk-empty"><b>No tournament or ladder sets yet.</b> Nobody has brought ${E(V2.disp(n))} to the events and ladders we read, so there are no popular moves or items to show.</p><div class="pk-build">${set}</div>`
     : `<div class="pk-build">${slots}${set}<div class="pk-lists">${mvs}${items}</div></div>`;
   return `<section class="pk-sec" aria-labelledby="pk-s1">${V2.pkHead(1, 'How to build it', 'Usually · Typical set · Moves · Items', 'pk-s1')}${body}</section>`; };
+
+// 2. Who it teams with (today's Brought with: the four partners, share brought together, games; the same data and note)
+V2.pkPartners = p => { const E = V2.esc, bw = RES && RES.tc && RES.tc.bw ? (RES.tc.bw[brKeyOf(p)] || []).filter(x => byName.get(x[0])).slice(0, 4) : [];
+  if (!bw.length) return '';
+  const cards = bw.map((x, i) => { const q = byName.get(x[0]); return `<li style="--i:${i};--k:${bw.length}"><a class="pk-pc" href="#pokemon=${V2.monSlug(q.n)}" aria-label="${E(V2.disp(q.n))}: brought together ${E(pctFmt(x[1]))}, ${(+x[2]).toLocaleString('en-US')} games">${V2.msCard(q, q.n, `<p class="mc-nm u">${V2.nameHtml(V2.disp(q.n))}</p>`, '', 150)}</a><p class="pk-pn"><b class="u">${E(pctFmt(x[1]))}</b><small>${(+x[2]).toLocaleString('en-US')} games</small></p></li>`; }).join('');
+  return `<section class="pk-sec" aria-labelledby="pk-s2">${V2.pkHead(2, 'Who it teams with', 'Brought with', 'pk-s2')}<ul class="pk-fan">${cards}</ul>
+    <div class="pk-fnote"><p class="fine">% = brought together when both are on the team, from Showdown replays.</p><button type="button" class="np-btn" data-hmaround="${E(p.n)}"><span>Build Around It</span></button></div></section>`; };
+
+// 3. What beats it (today's Type Matchups: the same groups, the Ability lines and the note). One scale from danger to safe; Resists keeps
+// today's ¼ row inside it; an empty group says "None" (it still answers the question: no 4x weakness is worth knowing)
+V2.pkTypes = p => { const E = V2.esc, M = SHT.matchups(p), chips = arr => arr.length ? `<div class="pk-chips">${arr.map(V2.typeChip).join('')}</div>` : '<p class="pk-none">None</p>';
+  const box = (cls, head, body) => `<div class="pk-tb ${cls}"><h3>${head}</h3>${body}</div>`;
+  const res = M.g.h.length || M.g.qr.length ? `${M.g.h.length ? chips(M.g.h) : ''}${M.g.qr.length ? `<p class="pk-qr">Resists ¼</p>${chips(M.g.qr)}` : ''}` : '<p class="pk-none">None</p>';
+  return `<section class="pk-sec" aria-labelledby="pk-s3">${V2.pkHead(3, 'What beats it', 'Type Matchups', 'pk-s3')}
+    <div class="pk-scale5">${box('q', '4× weak', chips(M.g.q))}${box('d', '2× weak', chips(M.g.d))}${box('n', 'Normal damage', '<p class="pk-none">Every other type</p>')}${box('h', 'Resists ½', res)}${box('z', 'Immune', chips(M.g.z))}</div>
+    ${M.ab.map(o => `<p class="fine">With ${E(o.a)}${M.only ? ' (its only Ability, already counted)' : ''}: ${o.ch.map(c => `${E(c.t)} ${E(SHT.word(c.raw))} → ${E(SHT.word(c.x))}`).join(', ')}.</p>`).join('')}
+    <p class="fine">${M.only ? `Its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} with ${E(M.only)}` : `For its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} alone`}. Every other type hits it for normal damage.</p></section>`; };
 V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-nm'); }, draw() { const p = V2.monFromHash(), E = V2.esc;
   if (!p) return `<div class="ra gsp"><section class="ra-h"><p class="np-eyebrow"><span>Pokémon</span></p><h1 class="u">No Pokémon here.</h1><p class="ra-lede">This address doesn't match a Pokémon in Reg M-C. <a class="np-link pk-404" href="#meta">Every Pokémon, by tier</a></p></section></div>`;
   try { document.title = `${V2.disp(p.n)}: rating, sets and partners · NastyPlot`; } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
   return `<div class="ra pk"><nav class="pk-trail" aria-label="You are here"><a href="#meta">Meta</a><span aria-hidden="true">›</span><a href="#meta">Ratings</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav>
-    ${V2.pkTop(p)}${V2.pkStats(p)}${V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it']])}${V2.pkBuild(p)}
+    ${V2.pkTop(p)}${V2.pkStats(p)}${(() => { const pr = V2.pkPartners(p); return V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it'], ...(pr ? [['pk-s2', 'Who it teams with']] : []), ['pk-s3', 'What beats it']]) + V2.pkBuild(p) + pr + V2.pkTypes(p); })()}
     <p class="pk-more fine">The rest of ${E(V2.disp(p.n))}'s page is being rebuilt part by part. Until then: <button type="button" class="np-link" data-v2mon="${E(p.n)}">Open today's info sheet</button></p></div>`; }};
 // the tab title goes back to the site's own when you leave a Pokémon page
 V2.title0 = document.title; addEventListener('hashchange', () => { if (V2.route() !== 'pokemon') try { document.title = V2.title0; } catch (e) {} });
