@@ -58,8 +58,8 @@ V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams
   if (!U.grp || !G.some(([g]) => g === U.grp)) U.grp = G.length ? G[0][0] : null;
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta">Pokémon</a><a href="#tournaments" class="on" aria-current="page">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Tournament views"><a href="#tournaments" class="on" aria-current="page">Winning Teams</a><a href="#events">Events</a><a href="#archetypes">Archetypes</a></nav></div>`;
-  /* Nov 15 (audit #6): the header counts the top-cut list, the search looks through every event team sheet; each line now says which */
-  const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> top-cut teams${G.map(([g, n]) => ` · <b>${n}</b> ${E(g.toLowerCase())}`).join('')}</p>` : '';
+  /* Nov 15 (audit #6): the header counts the top-cut list, the search looks through every event team sheet; each line now says which; re-audit nov15b #9: the group numbers are teams (32 + 58 = 90), so 'from official events', and the button says 'teams' */
+  const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> top-cut teams${G.map(([g, n]) => ` · <b>${n}</b> from ${/^last/i.test(g) ? 'the ' : ''}${E(g.toLowerCase())}`).join('')}</p>` : '';
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Winning Teams</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>
     <p class="ra-lede">Top-cut teams from real tournaments. Load one, practice against it, or compare it with yours.</p>${facts}</section>`;
   const src = d ? `<p class="fine wt-src">${E(ttSourceText(d.source))}${d.updated ? ', updated ' + E(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) : ''}</p>` : '';
@@ -73,7 +73,7 @@ V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams
     ${three[0] ? V2.wtHand(three[0], 1, same) : ''}${three.length > 1 ? `<div class="wt-two">${three.slice(1).map((x, i) => V2.wtHand(x, i + 2, same)).join('')}</div>` : ''}</section>`;
   const more = all.length > 3 ? `<section class="wt-more-s">${U.more ? `<h2 class="u wt-mh">More Winning Teams</h2><div class="wt-rows">${shown.map(x => V2.wtRow(x, false)).join('')}</div>
       <p class="wt-mbtns">${left > 0 ? `<button type="button" class="np-btn2" data-wtmore><span>Show More · ${left} left</span></button>` : ''}<button type="button" class="np-link" data-wtless>Show Fewer</button></p>`
-    : `<button type="button" class="np-btn2 wt-open" data-wtmore><span>More Winning Teams · Showing the top 3 of ${all.length}</span></button>`}</section>` : '';
+    : `<button type="button" class="np-btn2 wt-open" data-wtmore><span>More Winning Teams · Showing the top 3 of ${all.length} teams</span></button>`}</section>` : '';
   return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body">${ctl}${hands}${more}</div></div>`; }};
 
 // ---- actions ----

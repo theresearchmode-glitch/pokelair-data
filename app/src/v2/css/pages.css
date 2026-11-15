@@ -2939,3 +2939,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tm-name{text-wrap:balance} /* Nov 15 (re-audit #4): no lone word on the team name's last line */
 @media (max-width:699px){.cxf-half.b .cxf-id{margin-top:var(--s6)}} /* Nov 15 (re-audit #3): Team B's headline starts below the VS badge (it sat under its lower half and broke "Challeng/er" at 320) */
 @media (max-width:359px){.cxf-id h2{font-size:var(--t17)}} /* Nov 15 (re-audit #3): at 320 "Challenger" (141 px at 20) was wider than its 128 px box */
+/* Nov 15 (re-audit #10): tap areas: the search chip x (was 8x15), Events' stacked Recent links (20 px tall, hit areas overlapped), the calendar link (~40 px) */
+.wt-f button{position:relative}.wt-f button::after{content:"";position:absolute;inset:-16px -20px}
+.ev-cpast .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.ev-csrc a::after{inset:-16px -4px}
+.ev-cpast .np-link::after{content:none} /* 44 px each already; the shared enlarged area made neighbours overlap */
