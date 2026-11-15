@@ -2869,6 +2869,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    down here so each hand fits its width. The rows' links (Sets, Set as Opponent, Compare, Show Fewer) keep their look with a 44px tap area */
 @media (min-width:1100px) and (max-width:1279px){.wt .wt-card{--cw:160px;--ch:224px}.wt .wt-card .mc-mon .np-mon,.wt .wt-card .mc-mon .np-mon .st{--iw:120px}
   .wt .wt-two .wt-card{--cw:76px;--ch:108px;--ov:2px}.wt .wt-two .wt-card .mc-mon .np-mon,.wt .wt-two .wt-card .mc-mon .np-mon .st{--iw:68px}.wt .wt-two .wt-card .mc-id h3{font-size:var(--t13)}}
-.wt-acts .np-link,[data-wtless],[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -4px}
+.wt-acts .np-link,[data-wtless],[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -8px}
 @media (max-width:359px){.wt .ra-seg a,.ev .ra-seg a,.ar .ra-seg a{font-size:var(--t13);padding:0 var(--s1)}}
 @media (min-width:1100px){.mh-gh span{white-space:nowrap}} /* 'stay out this game' on one line, so the three headers are one height */
+/* re-check Nov 15, This Week at 320: the label on its own line, the two counts under it (they ran into each other); a change note may wrap */
+@media (max-width:389px){.wk-cn{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:0}.wk-cl{grid-column:1/-1}.wk-chg b{white-space:normal}}
