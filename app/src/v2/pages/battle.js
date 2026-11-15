@@ -65,7 +65,7 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   if (d.btall != null) { V2.btUi.allTeams = true; V2.btOppRefresh(); return; }
   if (d.btrecent != null) { const x = V2.btRecent()[+d.btrecent]; if (!x) return; V2.btSetOpp(x, null); V2.closeSheet(); V2.redraw(); toast('Recent opponent loaded'); return; }
   if (d.btteamall != null) { const t = META.teams && META.teams.teams[+d.btteamall]; if (!t) return; const ns = t.mons.slice(0, 6).filter(n => byName.get(n));
-    V2.btSetOpp(ns, {who: t.player, label: teamWho(t), key: V2.btKey(ns), ev: evShort(t.event)}); V2.closeSheet(); V2.redraw(); toast(`Opponent set: ${t.player}`); } });
+    V2.btSetOpp(ns, {who: t.player, label: teamWho(t), key: V2.btKey(ns), ev: evShort(t.event)}); V2.closeSheet(); V2.redraw(); toast(`Opponent set: ${teamWho(t)}`); } });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-btopp],[data-btclear],[data-btox],[data-btpick],[data-btteam]'); if (!b) return; const d = b.dataset;
   if (d.btopp != null) { V2.sheet(V2.btOppSheet(), {label: 'Their Six'}); return; }
   if (d.btclear != null) { V2.btSetOpp([], null); V2.redraw(); toast('Cleared their six'); return; }

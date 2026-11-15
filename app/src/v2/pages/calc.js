@@ -128,10 +128,10 @@ V2.dcFit = () => { for (const pc of document.querySelectorAll('.dc2-pc')) { cons
     const room = Math.floor(Math.min(bottom - top, c.width - 16)), want = parseFloat(getComputedStyle(mon.querySelector('.np-mon') || mon).getPropertyValue('--iw')) || room;
     const iw = Math.max(40, Math.min(want, room)); [nm, st].forEach(e => e && e.style.setProperty('--iw', iw + 'px')); mon.style.top = Math.round(top + (bottom - top - iw)) + 'px'; } };
 addEventListener('resize', () => { clearTimeout(V2._dcFitT); V2._dcFitT = setTimeout(() => document.querySelector('.dc2') && V2.dcFit(), 120); });
-V2.pages.calc = {place: 'battle', after() { V2.dcFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelector('.dc2') && V2.dcFit()); }, draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2">${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
+V2.pages.calc = {place: 'battle', after() { V2.dcFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelector('.dc2') && V2.dcFit()); }, draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2"><h1 class="vh">Damage Calc</h1>${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
   const set = C.mvs.pop.filter(m => m && m.bp > 0), hand = set.filter(m => m.name !== dc.mv).slice(0, 3), [wl, wr] = V2.dcWings(C);
   const play = C.mv ? V2.dcMove(C, C.mv, true) : `<div class="dc2-mv play empty"><b class="nm u">Pick a damaging move</b></div>`;
-  return `<div class="dc2">${V2.battleToolsBar('calc')}<div class="dc2-top"><p class="np-eyebrow"><span><span class="dc2-bt">Battle · </span>Damage Calc · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</span></p><a class="np-link" href="#method">How the Calc Works ›</a></div>
+  return `<div class="dc2"><h1 class="vh">Damage Calc</h1>${V2.battleToolsBar('calc')}<div class="dc2-top"><p class="np-eyebrow"><span><span class="dc2-bt">Battle · </span>Damage Calc · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</span></p><a class="np-link" href="#method">How the Calc Works ›</a></div>
     ${V2.dcResult(C)}
     <section class="dc2-table" aria-label="The table"><div class="dc2-surface" aria-hidden="true"></div>
       <!-- keyboard and screen-reader order: attacker, its moves, Swap, defender, the field; every piece is placed on the table by the CSS grid -->

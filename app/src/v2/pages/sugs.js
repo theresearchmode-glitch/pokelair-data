@@ -74,7 +74,7 @@ V2.setTipsCard = () => { let tips = []; try { tips = setTips(); } catch (e) { re
 V2.itemFixCard = ms0 => { const ms = typeof members === 'function' ? members() : ms0; /* with their items, as today's fix planner passes them */ let pr = []; try { pr = itemProblems(ms); } catch (e) {} if (!pr.length) return ''; const E = V2.esc;
   const rows = pr.map(x => { const tgt = x.k === 'clause' ? x.ms[x.ms.length - 1] : x.ms[0]; let fix = ''; try { fix = tgt && tgt.i >= 0 ? itemFixFor(tgt, ms) : ''; } catch (e) {}
     return `<p class="sg2-ln fix"><b>Fix</b> ${E(x.k === 'clause' ? 'Item Clause' : x.k === 'scarftr' ? 'Clashes with Trick Room' : 'Item does nothing')}: ${E(x.why)}</p>${fix ? `<button type="button" class="np-btn2" data-itfix="${tgt.i}|${E(fix)}"><span>Give ${E(tgt.d)} ${E(fix)}</span></button>` : ''}`; }).join('');
-  return `<div class="sg2-fix sg2-items" role="group" aria-label="Fix your items first">${rows}</div>`; };
+  return `<div class="sg2-fix sg2-items" role="group" aria-label="Fix your items first">${rows}${typeof regNote === 'function' ? regNote('fine') : ''}</div>`; }; /* parity, Nov 15: today's card ends with the rules caption, visible (a hover title never reaches touch screens) */
 V2.protCard = ms => { let f = null; try { f = LANE.protFix(ms); } catch (e) {} if (!f) return ''; const W = LANE.protWords(f);
   return `<div class="sg2-fix"><p class="sg2-ln fix"><b>Fix</b> ${W.fix}</p><p class="tm-sub">${W.who} ${f.who.map(m => `<b>${V2.esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="np-btn2" data-protfix><span>${W.btn}</span></button></div>`; };
 // Nothing to fix: every basic, no fix and no swap past the measured bar (today's plans.nothing, LANE.apply); the edge now is in

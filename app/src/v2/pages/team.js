@@ -211,6 +211,7 @@ document.addEventListener('change', e => { const t = e.target.closest && e.targe
   if (k === 'ab') V2.edDo(() => setAbility(i, t.value), rec => t.value === rec ? `${t.value}: the most-used Ability` : `${t.value} set (most players run ${rec})`);
   else if (k === 'it') V2.edDo(() => setItem(i, t.value), def => `${t.value || 'No item'}${t.value === def ? ': the usual item' : ''}`);
   else if (k === 'mv') { const name = t.value; if (name && !(LEARN[m.p.n] || []).some(x => MV[x].name === name)) { toast(`${m.d} can't learn ${name}`); V2.edRefresh(); return; }
+    if (name && [...document.querySelectorAll('.ed2 [data-ed="mv"]')].some(x => x !== t && x.value === name)) { toast(`${m.d} already knows ${name}`); V2.edRefresh(); return; } /* function sweep, Nov 15: the list greys it out; this guards anything that gets past that */
     V2.edDo(() => moveSlotSet(i, +t.dataset.j, name), old => `${name || 'Move removed'}${old && name ? ' replaces ' + old : ''}`); }
   else if (k === 'nat') V2.edDo(() => setNature(i, t.value), 'Nature saved'); });
 document.addEventListener('input', e => { const t = e.target.closest && e.target.closest('.ed2 [data-ed="pt"]'); if (!t) return;

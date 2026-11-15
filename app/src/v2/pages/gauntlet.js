@@ -41,4 +41,4 @@ document.addEventListener('click', async e => { if (e.target.closest('[data-trmo
   const ix = +(b.dataset.trbat != null ? b.dataset.trbat : b.dataset.trcopy), x = (V2.trCache.rows || []).find(r => r.ix === ix); if (!x) return;
   if (b.dataset.trcopy != null) { const r = sheetPaste(x.t.mons); toast((await V2.copy(r.text)) ? (r.filled ? 'Team copied for Showdown. ' + SD_NOTE_TOUR : 'Team copied for Showdown') : 'Copy failed. Try again.'); return; }
   const ns = x.t.mons.map(m => (m && m.n) || m).filter(n => byName.get(n)).slice(0, 6);
-  V2.btSetOpp(ns, {who: x.t.player, label: x.t.who, key: ns.slice().sort().join('|'), ev: x.t.ev || ''}); location.hash = '#battle'; toast(`Opponent set: ${x.t.player || x.t.who}`); });
+  V2.btSetOpp(ns, {who: x.t.player, label: x.t.who, key: ns.slice().sort().join('|'), ev: x.t.ev || ''}); location.hash = '#battle'; toast(`Opponent set: ${x.t.who || x.t.player}`); });

@@ -94,8 +94,8 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   // accents count as their plain letter ("é" = "e", as in Pokémon); a query that is all punctuation finds nothing (Sim's check E16,
   // Nov 12: "é" became an empty query, which matched every name, so the most-used Pokémon showed up)
   const norm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''), nq = norm(q);
-  if (!nq) return {places: V2.findPlaces.filter(([, n]) => n.toLowerCase().includes(q)), mons: []};
-  const places = V2.findPlaces.filter(([k, n]) => n.toLowerCase().includes(q) || (q.length >= 4 && new RegExp('\\b' + q.replace(/[^a-z0-9 ]/g, '')).test((V2.placeLines[k] || '').toLowerCase()))).slice(0, 6); /* Nov 15: by a word of its line too ('damage', 'speed') */
+  if (!nq) return {places: V2.findOk().filter(([, n]) => n.toLowerCase().includes(q)), mons: []};
+  const places = V2.findOk().filter(([k, n]) => n.toLowerCase().includes(q) || (q.length >= 4 && new RegExp('\\b' + q.replace(/[^a-z0-9 ]/g, '')).test((V2.placeLines[k] || '').toLowerCase()))).slice(0, 6); /* Nov 15: by a word of its line too ('damage', 'speed') */
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
@@ -144,6 +144,7 @@ V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], 
   ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
   ['speed', 'Speed Tiers'], ['calc', 'Damage Calc'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
   ['track', 'Track Record'], ['method', 'How We Calculate'], ['about', 'About & Legal'], ['feedback', 'Send Feedback']];
+V2.findOk = () => V2.findPlaces.filter(([k]) => k !== 'feedback' || (V2.FB && V2.FB.ok)); /* Send Feedback only where it can send (function sweep, Nov 15: listed in the Preview) */
 // one line per page, shown when the search box is empty (today's search lists its tools) and searched too ("speed", "damage")
 V2.TOOLS = ['home', 'build', 'team', 'battle', 'meta', 'tournaments', 'sets', 'speed', 'calc', 'types', 'practice', 'gauntlet', 'compare', 'box']; // the empty search's list (14, Home first)
 V2.placeLines = {home: 'Start here', build: 'Build a team around a Pokémon, or from winning teams', team: 'Your six, its Strength Score and matchups', battle: 'Plan a game against an opponent',
@@ -259,7 +260,7 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 // My Box toggles (Sim, Nov 12): the box icon opens My Box; pressed again while in the box, it goes back to the screen you came from
 // (that screen's address, so a team or box link isn't replayed); straight into the box with no screen before it: My Team
 V2.boxFrom = null;
-V2.pageName = h => { const k = String(h || '#team').replace(/^#/, '').split('=')[0]; return {home: 'Home', team: 'My Team', build: 'Build', battle: 'Battle', meta: 'Meta'}[k] || 'My Team'; };
+V2.pageName = h => { const k = String(h || '#team').replace(/^#/, '').split('=')[0]; return {home: 'Home', team: 'My Team', build: 'Build', battle: 'Battle', meta: 'Meta'}[k] || V2.placeTitle(h) || 'My Team'; };
 addEventListener('hashchange', e => { let was = ''; try { was = new URL(e.oldURL).hash; } catch (x) {} const y = V2.navStep(was);
   if (V2.route() === 'box' && was && !/^#box\b/.test(was) && !/^#(team|box)=/.test(was)) V2.boxFrom = was; V2.draw(); scrollTo(0, y); });
 
@@ -287,7 +288,10 @@ addEventListener('pagehide', navSaveY); document.addEventListener('visibilitycha
 document.addEventListener('click', navSaveY, true);
 V2.navName = h => { const k = String(h || '#home').replace(/^#/, '').split('=')[0] || 'home';
   return {home: 'Home', build: 'Build', team: 'My Team', battle: 'Battle', meta: 'Meta', box: 'My Box', compare: 'Compare', sheet: 'Team Sheet', guide: 'the Guide',
-    method: 'How We Calculate', about: 'About', feedback: 'Send Feedback'}[k] || 'the last page'; };
+    method: 'How We Calculate', about: 'About', feedback: 'Send Feedback'}[k] || V2.placeTitle(h) || 'the last page'; };
+// any other page by its Search name, a Pokémon page by the Pokémon (function sweep, Nov 15: 13 pages read 'the last page')
+V2.placeTitle = h => { const [k, v] = String(h || '').replace(/^#/, '').split('='); try { if (k === 'pokemon' && v) { const n = decodeURIComponent(v); for (const q of byName.values()) if (q.n.toLowerCase() === n) return V2.disp(q.n); return ''; } } catch (e) { return ''; }
+  const f = (V2.findPlaces || []).find(x => x[0] === k && !x[2]); return f ? f[1] : ''; };
 V2.backBtn = () => { V2.navInit(); const n = V2.esc(V2.navName(V2.nav.p));
   return `<button type="button" class="np-goback" data-v2back aria-label="Back to ${n}" title="Back to ${n}"${V2.nav.d > 0 ? '' : ' hidden'}>${V2.ICON.back}</button>`; };
 // Forward (Sim, Nov 12): the mirror of Back, right of the logo; one real history step forward, only when there is one

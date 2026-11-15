@@ -3,7 +3,7 @@
 // Every feature of today's Usage (meta-features.md META-01..07) is here, from today's shared logic: metaDoc / SRC / ui.metaSrc (the source,
 // back to Ranked ladder on a reload), setFor + setBasis + basis (the bars and "Of N teams"), trendFor (badges), V2.addToTeam.
 V2.usUi = {q: '', pick: null, all: false};
-V2.usSrcs = [['ingame', 'Ranked ladder'], ['ladder', 'Showdown ladder'], ['tour', 'Online tournaments']];
+V2.usSrcs = [['ingame', 'Ranked ladder'], ['tour', 'Online tournaments'], ['ladder', 'Showdown ladder']]; // today's order (parity, Nov 15)
 V2.usLine = d => { const per = d.period && !String(d.source).includes(d.period) ? ' · ' + (/^\d{4}-\d{2}$/.test(d.period) ? new Date(d.period + '-15T12:00:00').toLocaleDateString('en-US', {month: 'short', year: 'numeric'}) : d.period) : '';
   return `${d.source || ''}${per}${d.battles ? ` · ${(+d.battles).toLocaleString('en-US')} battles` : ''}`; };
 // one rank of the list, filled in as today: a ranked-ladder row with no sets borrows the tournament set (and says how many teams it is from)
@@ -45,7 +45,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage" class="on" aria-current="page">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
   const rows = d ? (d.top || []).map(t => V2.usRow(t, kind)) : [];
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Usage</span></p><h1 class="u"><span>Who gets picked</span> <span class="pl">right now.</span></h1>
-    <p class="ra-lede">The most used Pokémon, from the ranked ladder, the Showdown ladder or online tournaments.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings →</a><a class="np-link" href="#sets">Popular Sets →</a></p></section>`;
+    <p class="ra-lede">The most used Pokémon, from the ranked ladder, online tournaments or the Showdown ladder.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings →</a><a class="np-link" href="#sets">Popular Sets →</a></p></section>`;
   const srcs = `<div class="gs-ctl"><div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-usq value="${E(U.q)}" placeholder="Find a Pokémon in the ranks" aria-label="Find a Pokémon in the ranks" autocomplete="off"></label></div>
     <div class="ra-filt us-srcs" role="group" aria-label="Source">${V2.usSrcs.map(([k, l]) => `<button type="button" class="ra-chip" data-ussrc="${k}" aria-pressed="${ui.metaSrc === k}"${META[SRC[k]] ? '' : ' disabled title="No data from this source yet"'}><span>${l.replace(' ', '<span class="us-sp"> </span>')}</span></button>`).join('')}</div>
     ${d ? `<p class="fine us-src">${E(V2.usLine(d))}</p>` : ''}</div>`;
