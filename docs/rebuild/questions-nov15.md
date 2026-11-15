@@ -32,3 +32,9 @@
     fails for 3+ days, but then the site falls back to OLDER ratings than it has. RECOMMENDED: when the refresh is past 3 days, keep
     using it (the newest we have) and say its date plainly; reason: older data is never better than newer data. This is shared rating
     logic, so I have not changed it. Other choice: keep today's rule.
+17. Events tickets on small phones (audit C8; picture: pictures-nov15/events-ticket-320.webp): event names are now cleaned (no emoji or prize
+    text; most fit in 2-3 lines at 320, were up to 9). Under 390 wide the name column is only ~95 px beside the big winner sprite, so a long
+    word still breaks mid-word ("HOSPITA/L"). The page asks for proper hyphenation; iPhones may show "HOS-PITAL" instead, which I can't
+    check from here (unsure). RECOMMENDED: under 390, move the winner sprite down beside the five so the name gets the full ticket width;
+    reason: no word ever breaks, and the ticket gets shorter. Other choice: keep it and rely on hyphenation. Could you glance at Events on
+    an iPhone mini/SE size (375 wide) if you have one?
