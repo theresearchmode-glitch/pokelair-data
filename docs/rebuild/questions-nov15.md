@@ -22,3 +22,7 @@
 14. Battle's top area at 1440+ (picture: pictures-nov15/battle-empty-right-1920.webp): the headline, Their Six and Your Games all sit on the
     left and the right half is empty (your space rule). RECOMMENDED: on wide screens, move Your Games (Win / Loss / Log from a Showdown
     Replay) into the empty right half beside the headline; it fills the gap and should make the page shorter (my guess, not measured; I measure before building). Other choice: leave it.
+15. Team Sheet, after editing a set (re-audit #14; picture: pictures-nov15/team-sheet-1280-built.webp): tapping a column opens Edit Set,
+    and closing it leaves you on My Team, the same as today's live site (checked: 76-team-sheet.js). RECOMMENDED: closing Edit Set
+    brings you back to the Team Sheet you came from, so you can check the change and edit the next one without reopening it.
+    Other choice: keep today's way.
