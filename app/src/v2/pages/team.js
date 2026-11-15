@@ -68,7 +68,7 @@ V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'functi
   const tape = (part, k) => { const ix = part.map(m => ms.indexOf(m));
     const row = (label, f, cls) => `<tr class="${cls || ''}"><th scope="row" class="tt-rh u">${label}</th>${part.map((m, i) => `<td data-ts2edit="${m.i}">${f(m, ix[i])}</td>`).join('')}</tr>`;
     return `<table class="tt"${k != null ? ` aria-label="Team Sheet, Pokémon ${ix[0] + 1} to ${ix[ix.length - 1] + 1}"` : ' aria-label="Team Sheet"'}><thead><tr><td class="tt-corner"></td>${part.map((m, i) => head(m, ix[i])).join('')}</tr></thead>
-      <tbody>${row('Item', m => E(m.heldItem || m.item || 'No item'))}${row('Ability', m => E(m.ability || '—'))}${row('Nature', nat, 'tt-nat')}${row('Moves', m => mv(m), 'tt-mvs')}</tbody>
+      <tbody>${row('Item', m => E(m.heldItem || m.item || 'No item').replace(/ (\S{1,2})$/, '\u00a0$1'))}${row('Ability', m => E(m.ability || '—'))}${row('Nature', nat, 'tt-nat')}${row('Moves', m => mv(m), 'tt-mvs')}</tbody>
       <tbody class="tt-stats"><tr class="tt-sh"><th scope="rowgroup" colspan="${part.length + 1}"><span class="u">Stats</span> <small>at level 50</small></th></tr>${(D[0] ? D[0].stats : []).map((s, k) => row(s.S, (m, i) => stat(k)(m, i), k % 2 ? 'odd' : '')).join('')}</tbody></table>`; };
   const phone = innerWidth < 700, parts = phone && ms.length > 3 ? [ms.slice(0, 3), ms.slice(3)] : [ms];
   const legend = `<p class="tt-key"><span><i class="tt-kbest" aria-hidden="true"></i>team best in that stat</span><span><b class="up">▲</b> raised by nature</span><span><b class="dn">▼</b> lowered by nature</span><span>points = stat points (0–32)</span>${LU ? `<span>Lead = ${E(vs)}</span>` : ''}</p>`;

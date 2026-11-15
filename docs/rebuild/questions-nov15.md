@@ -74,3 +74,8 @@
     "Show All 31" still opens the rest) so the plate stays level with the headline, and there is no "N on the calendar" line; the list shows
     the latest result plus 12 tickets (today 12). RECOMMENDED: keep 2; reason: the page stays even, and the count of what's coming is already
     on the button ("Show All 31"). Other choice: show 4 like today (the plate gets taller).
+19. Team Sheet on the smallest phones (re-audit #5; picture: q19-team-sheet-320.webp, after tonight's fixes): names are now apart (12 px+),
+    "Charizardite Y" stays together, "Adaptability" fits; at 360 and 390 move chips have 12 / 8 px between columns. Only at 320: a long
+    one-word chip ("Moonblast", ~74 px with its padding) is wider than its ~62 px column, so its corner meets the next chip.
+    RECOMMENDED: under 380 wide, show the six as three tables of two instead of two of three; reason: every chip fits with room, at the
+    cost of a taller sheet on those phones only. Other choice: leave 320 as it is (iPhone SE size is 375, also under 380).
