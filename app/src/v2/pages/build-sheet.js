@@ -1,0 +1,55 @@
+// ---------- Build: The Blueprint (Sim's pick, Nov 14; brief docs/rebuild/mocks/build-blueprint/BRIEF.md) ----------
+// A built team is drawn as one drafting sheet: the header line (Sheet k of n, its kind), the team and its Strength Score, a dimension line,
+// six numbered figures, then the title block: Spec (today's three options), Revisions (every option; was Other Options) and Build Me a Team;
+// Notes (the four proof numbers) and the actions. Same engine, data and words as the page before (build.js: abTeam, CH.gradeOf, proChecks,
+// t.why, t.proven); same hooks (data-bdgo, data-bdshow, data-bduse/save/copy, data-bdwhy, data-v2mon, the slides bdsrc / sgmega, data-bdfind).
+// The page before a first build keeps today's layout until Sim has seen a picture of it (brief section 6).
+V2.bpModel = () => { const res = ui.ab && !ui.ab.busy && ui.ab.doubles; if (!res || !res.teams || !res.teams.length) return null;
+  const t = abTeam('doubles'), n = res.teams.length, k = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
+  let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
+  const kind = t.proven ? (t.proven.swapped ? 'Proven team, 1 swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team';
+  const rows = t._rd && t._rd.rows || [], basics = CK ? CK.items.filter(x => !x.skip && !x.note) : [], notes = CK ? CK.items.filter(x => x.note && x.ok).map(x => x.label) : [];
+  const core = (t.why || []).map(w => w.match(/^(.*): ([\d,]+) tournament teams, ([\d.]+)% wins$/)).find(Boolean);
+  return {res, t, n, k, G, CK, s: G ? Math.round(G.s) : t.score, band: G ? V2.BAND_K[G.band] || 'solid' : 'solid', word: G ? CH.wordOf(G.s) : '', kind, rows, basics, notes, core,
+    ans: rows.filter(x => x.level >= 2).length, sh: rows.filter(x => x.level === 1).length, no: rows.filter(x => x.level === 0).length, nCatch: t.mons.filter(m => !m.box).length}; };
+V2.bpFig = (m, i, coreNames, showTags) => { const E = V2.esc, p = byName.get(m.n), R = monRating(p), d = V2.disp(m.n), mega = /^Mega /.test(d), inCore = coreNames.includes(d) || coreNames.includes(m.d);
+  const tag = [!m.box ? 'to catch' : '', m.offMeta ? 'off‑meta' : ''].filter(Boolean).join(' · ');
+  return `<button type="button" class="bp-fig" data-v2mon="${E(m.n)}" aria-label="${E(d)}${m.role ? ', ' + E(String(m.role).replace(', Mega', '')) : ''}${m.it ? ', ' + E(m.it) : ''}${R ? `, ${E(R.tier)} tier ${R.n}` : ''}${tag ? ', ' + tag : ''}${inCore ? ', in the best core' : ''}: open its info">
+    <span class="bp-no u" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>${inCore ? '<span class="bp-core" aria-hidden="true">Core</span>' : ''}
+    <span class="bp-art" aria-hidden="true"><i class="bp-ring"></i>${V2.mon(m.n, {bare: true})}</span><i class="bp-base" aria-hidden="true" style="--b1:var(--ty-${p ? p.t[0] : 'Normal'});--b2:var(--ty-${p ? p.t[1] || p.t[0] : 'Normal'})"></i>
+    <span class="bp-role u">${m.n === ui.abLock ? 'Your pick' : E(String(m.role || '').replace(', Mega', '').split(',')[0])}</span><span class="bp-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b>${E(mega ? d.slice(5) : d)}</b><small>${E(m.it || '')}</small><small class="r">${R ? `${E(R.tier)} tier ${R.n}` : ''}${showTags && tag ? ' · ' + tag : ''}</small></button>`; };
+V2.bpSpec = () => { const E = V2.esc, lk = ui.abLock && byName.get(ui.abLock);
+  const src = V2.slide('bdsrc', [['box', 'My Box'], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
+  const meg = V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');
+  const around = lk ? `<div class="bd-pick">${SPRITE_ID[lk.n] ? `<img src="${V2.art(SPRITE_ID[lk.n])}" alt="">` : ''}<b>${V2.nameHtml(V2.disp(lk.n))}</b><button type="button" class="bd-x" data-bdx aria-label="Stop building around ${E(V2.disp(lk.n))}">×</button></div>`
+    : `<label class="np-field bd-find">${V2.ICON.search}<input type="search" data-bdfind value="${E(V2.bdUi.find || '')}" placeholder="Any Pokémon" aria-label="Build around a Pokémon (optional): type its name" autocomplete="off"></label><div class="bd-hits" data-bdhits></div>`;
+  return `<div class="bp-spec bd-opts"><div class="bd-opt bd-src"><span class="bd-lab">Build from</span>${src}</div><div class="bd-opt bd-meg"><span class="bd-lab">Megas on team</span>${meg}</div><div class="bd-opt bd-around"><span class="bd-lab">Build around <span>· optional</span></span>${around}</div></div>`; };
+V2.bpRevs = M => { const E = V2.esc, L = 'ABCDEFGH';
+  return `<div class="bd-others bp-revs" role="list">${M.res.teams.map((t, i) => { let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
+    const rows = t._rd && t._rd.rows || [], ans = rows.filter(x => x.level >= 2).length, bas = CK ? CK.items.filter(x => !x.skip && !x.note) : [], on = i === M.k;
+    return `<div role="listitem"><button type="button" class="bp-rev${on ? ' on' : ''}" data-bdshow="${i}"${on ? ' aria-current="true"' : ''} aria-label="Option ${i + 1}, ${E(t.label)}, Strength Score ${G ? Math.round(G.s) : t.score}${on ? ', shown' : ': show this one'}">
+      <span class="bp-rl u" aria-hidden="true">${L[i] || i + 1}</span><span class="bp-rn"><b>${V2.dotWrap(E(t.label))}</b><small>${ans}/${rows.length} matchups with an answer · ${bas.filter(x => x.ok).length}/${bas.length} team checks</small></span><span class="bp-rs u" aria-hidden="true">${G ? Math.round(G.s) : t.score}</span>${on ? '' : '<span class="vh">Show This One ›</span>'}</button></div>`; }).join('')}</div>`; };
+V2.bpNotes = M => { const E = V2.esc, pv = M.t.proven, li = (n, u, l, s) => `<li><span class="n u">${n}${u ? `<span class="unit">${u}</span>` : ''}</span><span class="bp-nt"><b>${l}</b><small>${s}</small></span></li>`;
+  return `<ol class="bp-notes">${li(M.ans, '/' + M.rows.length, 'Matchups with an answer', `Top ${M.rows.length} threats: ${M.sh} Shaky, ${M.no} No answer`)}
+    ${li(`${M.basics.filter(x => x.ok).length}`, '/' + M.basics.length, `Team checks: the ${M.basics.length} basics`, M.notes.length ? 'Notes met: ' + M.notes.map(E).join(', ') : 'No notes met')}
+    ${pv ? li(Math.round(pv.wr * 100), '% won', pv.swapped ? 'Their six at events, 1 swap' : 'This exact six at events', `${homeNum(pv.n)} players, ${homeNum(pv.g)} games${pv.swapped && pv.ours && pv.theirs ? `, with ${E(V2.disp(pv.ours))} in place of ${E(V2.disp(pv.theirs))}` : ''}`) : li('New', '', 'Not yet run at events', 'Built from cores that win; no player has run this exact six')}
+    ${M.core ? li(E(M.core[3]), '% wins', `Best core, ${E(M.core[2])} teams`, E(M.core[1])) : ''}</ol>`; };
+V2.buildSheet = M => { const E = V2.esc, t = M.t, busy = !!(ui.ab && ui.ab.busy), lk = ui.abLock && byName.get(ui.abLock);
+  const coreNames = M.core ? M.core[1].split(' + ').map(s => s.trim()) : [], tags = t.mons.some(x => !x.box || x.offMeta), chips = (t.gp || []).slice(0, 3);
+  const ey = `${M.n > 1 ? `Option ${M.k + 1} of ${M.n} · ` : ''}${M.kind}${t.megas > 1 ? ` · ${t.megas} Mega options` : ''}`;
+  const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Use This Team</button><button type="button" class="np-btn2" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2" data-bdcopy><span>Copy for Showdown</span></button>
+    <span class="bd-catch">${M.nCatch === 6 ? 'All six to catch: none is in your box yet' : M.nCatch ? `${M.nCatch} to catch` : 'All six are in your box'}</span></div>`;
+  return `<section class="bd-ans bp" style="--band:var(--band-${M.band})"><i class="bp-x tl" aria-hidden="true"></i><i class="bp-x tr" aria-hidden="true"></i><i class="bp-x bl" aria-hidden="true"></i><i class="bp-x br" aria-hidden="true"></i>
+    <p class="bp-line"><span class="bp-plate u">Sheet ${M.k + 1} of ${M.n}</span><span class="bp-kind">${E(M.kind)}${t.megas > 1 ? ` · ${t.megas} Mega options` : ''}</span><span class="bp-src">${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles · drawn from real winning teams</span></p>
+    <div class="bd-lock bp-top"><p class="np-eyebrow vh">${ey}</p><div class="bp-team"><p class="bp-k">Team</p><h2 class="u">${V2.dotWrap(E(t.label))}</h2>${chips.length ? `<div class="bd-chips bp-chips">${chips.map(c => `<span class="np-chip">${E(c)}</span>`).join('')}</div>` : ''}${t.fresh ? '<p class="bd-fresh">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</p>' : ''}</div>
+      <div class="bp-meas"><div class="np-score bd-score bp-score"><b class="u">${M.s}</b><div class="w"><span class="bp-stamp u">${E(M.word)}</span><small>Strength Score${M.G && CH.rkOf(M.G) != null ? ' · ' + E(CH.pctTxt(M.G)) : ''}</small></div></div>${M.G ? V2.buildBrk(M.G) : ''}</div></div>
+    <p class="bp-dim"><span>Team of six${t.megas ? ` · ${t.megas} Mega${t.megas === 1 ? '' : 's'}` : ''}</span></p>
+    <div class="bd-six bp-six">${t.mons.map((m, i) => V2.bpFig(m, i, coreNames, tags)).join('')}</div>
+    <div class="bp-tb"><div class="bp-left"><p class="bp-k">Spec · tap a field to change it</p>${V2.bpSpec()}${M.n > 1 ? `<p class="bp-k">Revisions · tap one to see it</p>${V2.bpRevs(M)}` : ''}
+        <div class="bd-opt bd-go"><button type="button" class="np-btn" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'} ↻</span></button></div></div>
+      <div class="bp-right"><p class="bp-k">Notes</p>${V2.bpNotes(M)}${acts}</div></div></section>`; };
+// the page: today's head (eyebrow, headline, intro and How It Works), the sheet, then Recent Winners and Cores as today (not redesigned yet)
+V2.bpPage = M => { const win = V2.buildWinners(), cor = V2.buildCores(), tab = V2.bdTab(false, !!win);
+  const head = V2.buildHead().split('<div class="bd-opts">')[0];
+  return `<div class="bd2 bp2">${head}<div class="bd-result" aria-live="polite">${V2.buildSheet(M)}</div>${V2.buildJump(false, !!win, tab)}<div class="bd-lower" data-bdtab="${tab}"><div class="bd-lcol">${win}</div>${cor}</div></div>`; };
+(() => { const before = V2.pages.build.draw; V2.pages.build.draw = () => { const M = V2.bpModel(); return M ? V2.bpPage(M) : before(); }; })();

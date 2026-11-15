@@ -10,6 +10,8 @@
   /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
   --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
   /* the Usage podium (Grandstand brief: new colours, dark text passes on all three) */
+  /* Build: The Blueprint (Nov 14): drafting-sheet paper, its grid (a heavier line every fifth square) and blue ink */
+  --bp-paper:#fbfcfe;--bp-grid:#0078bf17;--bp-grid5:#0078bf2e;--bp-ink:#0a68a8;
   --podium-1:#f2b705;--podium-2:#b9c0cc;--podium-3:#d08a4e;
   --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:var(--bad-text); /* Sim, Nov 13 (My Team Q3 B): "Missing a basic" in the site's red, now that red is allowed */
   --contact:rgba(30,20,50,.42);--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);
@@ -38,6 +40,7 @@
   --card-face-1:#FFFFFF;--card-face-2:#ECEAF2;--card-ink:#17161A;--card-giant:rgba(23,22,26,.11);--card-line:rgba(23,22,26,.035);--card-sheen:rgba(255,255,255,.55);--card-edge-mid:#FFFFFF;--card-glow:.16;--card-shade:rgba(30,20,50,.18);
   color-scheme:light}
 :root[data-theme="night"]{
+  --bp-paper:transparent;--bp-grid:#62bef712;--bp-grid5:#62bef724;--bp-ink:#62bef7;
   --wx-sun:#D99A1B;--wx-sun-hi:#F0C25A;--tr-electric:#E9D23A;--on-wx:#1C1708;--table:rgba(255,255,255,.025);--table-line:rgba(255,255,255,.045);--table-edge:rgba(255,255,255,.10);--mvc-face:#15141E;--mvc-ink:#F4F2EE;--mvc-sub:#B0AAB8;--ko-tint:rgba(255,122,112,.14);--hp-left:#3FC060;
   --card-face-1:#1A1924;--card-face-2:#0C0C13;--card-ink:#F4F2EE;--card-giant:rgba(255,255,255,.10);--card-line:rgba(255,255,255,.03);--card-sheen:rgba(255,255,255,.07);--card-glow:.30;--card-shade:transparent;
   --ray:rgba(255,255,255,.045);--ray-art:rgba(255,255,255,.05);
