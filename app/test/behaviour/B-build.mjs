@@ -214,8 +214,8 @@ t('AUTO-15', 'Start from a recent winner: three cards; Sets; Load team needs a s
     expect((f.match(/Load team/g) || []).length === 3, 'not three winner cards: ' + f.slice(0, 300));
     const want = await ui.winnerSix(0); expect(want.length === 6, 'winner card does not show six: ' + want);
     await ui.tap(/^Sets$/, ui.area('Build page')); await sleep(300); has(await ui.text(), /Hide sets/, 'Sets toggle'); has(await ui.text(), /Protect|Fake Out/, 'moves listed');
-    await ui.tap(/^Load team/, ui.area('Build page'), 700); has(await ui.text(), 'Tap again to replace your team', 'first tap');
-    await ui.tap(/Tap again to replace your team/, ui.area('Build page'), 900); const tt = await ui.waitForToast(/team loaded with its moves and items/);
+    await ui.tap(/^Load team/, ui.area('Build page'), 700); has(await ui.text(), NEW ? 'Replace your current team?' : 'Tap again to replace your team', 'first tap'); /* Sim Q10c (Nov 15): the Replace / Cancel question everywhere */
+    await ui.tap(NEW ? /^Replace$/ : /Tap again to replace your team/, ui.area('Build page'), 900); const tt = await ui.waitForToast(/team loaded with its moves and items/);
     expect(await ui.toastOffersUndo(), 'no Undo: ' + tt); expect(await ui.current() === 'report', 'My team did not open'); expect(same(await ui.teamNames(), want), 'team is not the winner six: ' + await ui.teamNames() + ' vs ' + want);
     const s0 = await ui.slotSet(0); expect(s0.it && s0.it.doubles && s0.mv && s0.mv.doubles && s0.mv.doubles.length === 4, 'player items/moves not loaded: ' + JSON.stringify(s0)); await close(); }
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.unfold(/^Start from a Recent Winner/i);
