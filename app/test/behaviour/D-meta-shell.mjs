@@ -226,14 +226,14 @@ t('SHELL-06', 'Footer: tagline, disclaimer, sources and links into About', run({
   expect(await d.foldIsOpen('Privacy'), 'Privacy section not open'); expect(await d.inView('Privacy'), 'Privacy section not scrolled into view'); }));
 
 t('SHELL-07', 'Toast with Undo after loading a team; Undo brings your team back', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); await ui.tap(/^Load team$/); await ui.tap(/^Replace$/);
+  await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/);
   const tx = await d.until(() => d.toastText()); expect(tx, 'no toast'); expect(await d.toastHasUndo(), 'toast has no Undo');
   expect(JSON.stringify(await ui.team()) !== JSON.stringify(TEAM), 'team was not replaced');
   await d.tapUndo(); expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Undo did not restore: ' + await ui.team()); }));
 t('SHELL-07b', 'A plain toast goes after about 2 s; an Undo toast stays about 6 s', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); await ui.tap(/^Practice against$/); // a plain toast ("Opponent set: ...")
+  await ui.go('Winning Teams'); await ui.tap(/^Practice against$/i); // a plain toast ("Opponent set: ...")
   expect(await d.toastText(), 'no toast'); expect(!(await d.toastHasUndo()), 'plain toast has Undo'); await ui.pg.waitForTimeout(3000); expect(!(await d.toastText()), 'plain toast still showing after 3 s');
-  await ui.go('Winning Teams'); await ui.tap(/^Load team$/); await ui.tap(/^Replace$/); await ui.pg.waitForTimeout(3500);
+  await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/); await ui.pg.waitForTimeout(3500);
   expect(await d.toastText(), 'Undo toast gone before 3.5 s'); await ui.pg.waitForTimeout(3500); expect(!(await d.toastText()), 'Undo toast still showing after 7 s'); }));
 
 t('SHELL-08', 'Undo bar steps back through applied suggestions (My Team pages)', run({team: FIVE}, async ({ui, d}) => {
@@ -598,10 +598,10 @@ t('TOP-05', 'Team list: top 3, "More Winning Teams" shows more, "Show fewer" fol
   await ui.go('Winning Teams'); const n0 = await d.teamCards(); expect(n0 === 3, 'cards: ' + n0); expect(/Showing the top 3 of \d+/.test(await ui.text()), 'no "Showing the top 3 of N"');
   await ui.tap(/More Winning Teams/); const n1 = await d.teamCards(); expect(n1 > 3, 'more not shown: ' + n1); await ui.tap(/^Show fewer/i); expect(await d.teamCards() === 3, 'did not fold back'); }));
 t('TOP-06', 'Card actions: Load team (confirm, Undo), Practice against, Compare', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); await ui.tap(/^Load team$/); expect(has(await ui.text(), 'Replace your current team?'), 'no confirm'); await ui.tap(/^Cancel$/);
-  expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Cancel changed the team'); await ui.tap(/^Load team$/); await ui.tap(/^Replace$/);
+  await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); expect(has(await ui.text(), 'Replace your current team?'), 'no confirm'); await ui.tap(/^Cancel$/);
+  expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Cancel changed the team'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/);
   expect(await ui.current() === 'report', 'did not open My Team'); expect(await d.toastHasUndo(), 'no Undo'); const loaded = await ui.team(); expect(loaded.includes('Gholdengo'), 'first card not loaded: ' + loaded);
-  await ui.go('Winning Teams'); await ui.tap(/^Practice against$/); expect(await ui.current() === 'matchup', 'Practice against opened ' + await ui.current());
+  await ui.go('Winning Teams'); await ui.tap(/^Practice against$/i); expect(await ui.current() === 'matchup', 'Practice against opened ' + await ui.current());
   expect(has(await d.toastText() || '', 'Opponent set'), 'toast: ' + await d.toastText());
   await ui.go('Winning Teams'); await ui.tap(/^Compare$/, '[data-pane=top]'); expect(await ui.current() === 'compare', 'Compare opened ' + await ui.current()); }));
 t('TOP-07', 'Winning Teams without data says so', run({team: TEAM, account: false}, async ({ui}) => {
@@ -631,7 +631,7 @@ t('EVT-05', 'Event detail: placings 1st→16th, opens at top, "‹ All events" r
   const back = await d.eventCards(); expect(back.length >= 1 && back.every(x => /official/i.test(x)) && !(await ui.sees('‹ All events')), 'the (Official) list did not return'); }));
 t('EVT-06', 'Team sheet card: Sets shows items/moves; Load team needs a second tap and loads the exact sheet', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Events'); await d.chooseEventFilter('Official'); await d.openEvent('Gdańsk'); await ui.tap(/^Sets$/); expect(/Ability|@/.test(await ui.text()) && has(await ui.text(), 'Hide sets'), 'sets not shown');
-  await ui.tap(/^Load team$/); expect(has(await ui.text(), 'Tap again to replace your team'), 'no second-tap warning'); expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'first tap changed the team');
+  await ui.tap(/^Load team$/i); expect(has(await ui.text(), 'Tap again to replace your team'), 'no second-tap warning'); expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'first tap changed the team');
   await ui.pg.waitForTimeout(500); await ui.tap(/Tap again to replace your team/); expect(await ui.current() === 'report', 'did not open My Team'); expect(/team loaded with its moves and items/.test(await d.toastText() || ''), 'toast: ' + await d.toastText());
   expect(await d.toastHasUndo(), 'no Undo'); expect((await ui.team()).includes('Gholdengo'), 'winning six not loaded: ' + await ui.team()); }));
 t('EVT-07', 'Events without data: empty note', run({team: TEAM, account: false}, async ({ui}) => {
