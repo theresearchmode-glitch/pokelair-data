@@ -628,7 +628,7 @@ t('EDIT-08', 'Moves: change move 4 → toast mentions Offense; "Reset to popular
   await r.ui.panelButton(/^Reset to popular$/); ok(await r.ui.waitToast(/Back to the popular set/), 'no reset toast'); ok((await r.ui.panelMoves()).join() === before.join(), 'popular four not back'); await r.close(); });
 
 t('EDIT-09', '"Full popular sets ›" closes the panel and opens Popular sets on this Pokémon', async () => {
-  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.panelButton('Full popular sets ›'); ok(!(await r.ui.editPanel()), 'panel still open');
+  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.panelButton(NEW ? 'Full Popular Sets ›' /* Title Case buttons (Sim, Nov 9) */ : 'Full popular sets ›'); ok(!(await r.ui.editPanel()), 'panel still open');
   ok(await r.ui.current() === 'sets', 'Popular sets did not open'); has(await r.ui.text(), 'Garchomp', 'Popular sets'); await r.close(); });
 
 t('EDIT-10', 'Weak / Resists fold shows resistances and the ability text', async () => {
@@ -1188,7 +1188,7 @@ t('X-12', 'Long paragraphs show the first sentence and "More"', async () => {
 
 t('X-13', 'Links out of this scope still work: replay "Paste its log" → Battle; How ratings work → How we calculate', async () => {
   const r = await myTeam(); await r.ui.openLogForm(); await r.ui.tapText('Paste its log', 1200); ok(await r.ui.current() === 'matchup', '"Paste its log" did not open Battle');
-  await r.ui.go('Home', 600); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Rating'); await r.ui.tapText((NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →')), 900); ok(await r.ui.current() === 'method', (NEW ? 'How Ratings Work did not open How we calculate' : 'How ratings work did not open How we calculate')); await r.close(); });
+  await r.ui.go('Home', 600); await r.ui.tapPokemon('Kingambit'); if (!NEW) await r.ui.infoTab('Rating') /* the Pokémon page has no tabs: the link is on the page (Nov 15) */; await r.ui.tapText((NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →')), 900); ok(await r.ui.current() === 'method', (NEW ? 'How Ratings Work did not open How we calculate' : 'How ratings work did not open How we calculate')); await r.close(); });
 
 // ================= Inventory "looks broken" items that a player can hit (correct behaviour, marked known) =================
 t('HOME-11b', 'Sample note "Build your own" on My Team opens Build', async () => {

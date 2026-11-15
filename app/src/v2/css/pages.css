@@ -3122,3 +3122,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-ft th[scope=row]{padding:var(--s2) var(--s3) var(--s2) 0;text-align:left;font:900 var(--t17)/1.3 var(--u);font-style:italic;color:var(--plot-text);white-space:nowrap}
 .pk-ft td{padding:var(--s2);text-align:center;border-top:1px solid var(--rule)}.pk-ft td.best{background:var(--plot);color:var(--on-mark);font-weight:800}
 .pk-sec>.ra-links{margin:var(--s4) 0 0}
+.ed-full{margin:var(--s4) 0 0}.ed-full .np-link{display:inline-flex;align-items:center;min-height:var(--tap)} /* Full Popular Sets (Nov 15) */

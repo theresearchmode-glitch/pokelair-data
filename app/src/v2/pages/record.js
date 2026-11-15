@@ -16,6 +16,7 @@ V2.ygHtml = () => { const ms = members(), q = V2.ql, E = V2.esc, so = (S.opp || 
   const hits = q.q.trim() ? V2.find(q.q).mons.filter(p => !q.opp.includes(p.n)).slice(0, 6) : [];
   return `<div class="yg2"><div class="np-eyebrow">Your Games</div><h2 class="u">Log a Game</h2>
     <p class="tm-sub yg2-why">Log your games with this six to see your own record, who beats you most and how your leads do. They stay apart from the tournament record.</p>
+    <p class="fine yg2-rep">Have a Showdown replay? <button type="button" class="np-link" data-ygreplay>Paste its log</button> and the leads and their six are filled in for you.</p>
     <h3 class="yg2-h">Your two leads <small>optional</small></h3>
     <div class="yg2-leads">${ms.map(m => { const on = lp.includes(m.p.n); return `<button type="button" class="yg2-l" data-yglead="${E(m.p.n)}" aria-pressed="${on}" aria-label="${E(m.d)}${on ? ', lead' : ''}">${V2.mon(m.p.n, {iw: 64, sel: on})}</button>`; }).join('')}</div>
     <h3 class="yg2-h">Their team <small>optional</small></h3>
@@ -39,3 +40,6 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   else if (d.ygundo) { unlogGame(+d.ygundo); q.last = null; persist(); V2.redraw(); toast('Game removed'); } });
 document.addEventListener('input', e => { if (e.target.matches && e.target.matches('[data-ygq]')) { V2.ql.q = e.target.value; V2.ygRe(true); } });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches && e.target.matches('[data-ygq]')) { const h = document.querySelector('[data-ygopp]'); if (h) { e.preventDefault(); h.click(); } } });
+
+// today's 'Paste its log' (64-my-record.js): opens Battle's replay sheet, which logs the game for this same six (Nov 15, LOG-02 / X-13)
+document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-ygreplay]')) return; V2.closeSheet(true); if (location.hash !== '#battle') location.hash = '#battle'; setTimeout(() => { if (V2.btReplaySheet) V2.sheet(V2.btReplaySheet(), {label: 'Log from a Showdown Replay'}); }, 120); });
