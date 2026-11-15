@@ -4,7 +4,7 @@
   /* My Box rays over the box wallpaper and the picked Pokémon's panel (R4, Nov 11) */
   --ray:rgba(255,255,255,.34);--ray-art:rgba(255,255,255,.4);
   --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
-  --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--pick-text:#C41E35;
+  --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--them:#B4238F;--them-text:#9A1A7B;--pick-text:#C41E35;
   --plate:#17161A;--on-plate:#FBFAF7;--main:#17161A;--on-main:#FBFAF7;
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#FFFFFF;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
   /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
@@ -52,7 +52,7 @@
   --card-face-1:#1A1924;--card-face-2:#0C0C13;--card-ink:#F4F2EE;--card-giant:rgba(255,255,255,.10);--card-line:rgba(255,255,255,.03);--card-sheen:rgba(255,255,255,.07);--card-glow:.30;--card-shade:transparent;
   --ray:rgba(255,255,255,.045);--ray-art:rgba(255,255,255,.05);
   --bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);
-  --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--pick-text:#F58DA1;
+  --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--them:#E57FD3;--them-text:#EC9BDF;--pick-text:#F58DA1;
   --plate:#343348;--on-plate:#F1EDE7;--main:#3FA2E2;--on-main:#08131E;
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#12121B;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;--bad:#FF7A70;--bad-text:#FF8A80;
   --band-top:#62BEF7;--band-ready:#C9B0FF;--band-solid:#B0AAB8;--band-work:#F0C768;--band-miss:var(--bad-text);
@@ -63,3 +63,4 @@
   color-scheme:dark}
 @media (max-width:1179px){:root{--gut:48px}}
 @media (max-width:699px){:root{--gut:16px}}
+/* Sim Q1 (Nov 15): 'them' / Team B is magenta (--them), clearly apart from red (--bad); measured: day fill #B4238F white text 5.87:1, text #9A1A7B 7.17:1 on the page; night fill #E57FD3 dark text 7.36:1, text #EC9BDF 9.15:1 */

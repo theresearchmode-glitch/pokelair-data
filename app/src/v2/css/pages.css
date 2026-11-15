@@ -816,7 +816,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-steps{list-style:none;margin:var(--s4) 0 0;padding:0;border-top:1px solid var(--rule)}
 .bt-steps li{display:grid;grid-template-columns:28px 52px minmax(0,1fr);gap:var(--s3);align-items:center;padding:var(--s2) 0;border-bottom:1px solid var(--rule)}
 .bt-steps .n{font-size:var(--t22);line-height:1;color:var(--ink-3);font-style:italic}
-.bt-steps .who{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-steps .who span{font-weight:700;margin-right:var(--s1)}.bt-steps .who .you{color:var(--plot-text)}.bt-steps .who .them{color:var(--pick-text)} /* i42: amber means caution only (Sim, Nov 12, 8:53 PM); 'Them' is grey as in Who Moves First */
+.bt-steps .who{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-steps .who span{font-weight:700;margin-right:var(--s1)}.bt-steps .who .you{color:var(--plot-text)}.bt-steps .who .them{color:var(--them-text)} /* i42: amber means caution only (Sim, Nov 12, 8:53 PM); 'Them' is grey as in Who Moves First */
 .bt-steps .mv{font:700 var(--t16)/1.5 var(--b)}.bt-steps .why{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .bt-warn{margin-top:var(--s4);font:600 var(--t15)/1.5 var(--b)}.bt-warn i{font-style:normal;color:var(--mid-text);margin-right:var(--s1)}
 .bt-field{margin-top:var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bt-field b{color:var(--ink);font-weight:600}
@@ -1512,7 +1512,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tr-tug{display:grid;gap:var(--s2)}.tr-tug>div{display:grid;grid-template-columns:48px 56px minmax(0,1fr);align-items:center;gap:var(--s3)}
 .tr-tug .lab{font:700 var(--t13)/1 var(--b);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}.tr-tug b{font-size:var(--t24);line-height:1}.tr-tug small{font-size:var(--t13);color:var(--ink-2)}
 .tr-tug i{display:block;height:12px;background:linear-gradient(90deg,var(--plot) var(--w),color-mix(in srgb,var(--ink) 10%,transparent) var(--w));transform:skewX(-14deg)}
-.tr-tug .them i{background:linear-gradient(90deg,var(--pick) var(--w),color-mix(in srgb,var(--ink) 10%,transparent) var(--w))}
+.tr-tug .them i{background:linear-gradient(90deg,var(--them) var(--w),color-mix(in srgb,var(--ink) 10%,transparent) var(--w))}
 .tr-lede .w,.tr-plan .w{color:var(--bad-text)}
 @media (max-width:699px){.tr-h h1{font-size:var(--t28)}
  .tr-board>div{display:grid;gap:var(--s1);padding:var(--s3) var(--s4)}.tr-board b{font-size:var(--t34)}.tr-board span{font-size:var(--t13)}
@@ -2316,7 +2316,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tt td:has(.tt-mv){vertical-align:top}
 
 /* ---------- Battle a team: "Play-by-Play" (Sim's pick, Nov 14): you PLOT blue, them the site's own pink (--pick) ---------- */
-.pbp{--you:var(--plot);--them:var(--pick);--you-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--them-d:color-mix(in srgb,var(--pick) 62%,var(--tier-shade));--you-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--them-dd:color-mix(in srgb,var(--pick) 38%,var(--tier-shade))}
+.pbp{--you:var(--plot);--you-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--them-d:color-mix(in srgb,var(--them) 62%,var(--tier-shade));--you-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--them-dd:color-mix(in srgb,var(--them) 38%,var(--tier-shade))}
 /* the verdict on a filled slanted plate: blue Favoured, dark plate Even match, red Unfavoured (never the pink: pink means them) */
 .pbp .bt-verdict{padding:var(--s3) var(--s8) var(--s3) var(--s10);text-align:right;background:var(--plate);color:var(--on-plate);clip-path:polygon(24px 0,100% 0,100% 100%,0 100%)}
 .pbp .bt-verdict:has(b.vf){background:var(--plot);color:var(--on-mark)}.pbp .bt-verdict:has(b.vu){background:var(--bad);color:var(--on-mark)}
@@ -2390,7 +2390,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:379px){.pbp .bt-verdict b,.pbp .bt-verdict b.vf,.pbp .bt-verdict b.ve,.pbp .bt-verdict b.vu{font-size:var(--t28)}}
 
 /* ---------- Compare: "The Face-Off" (Sim's pick, Nov 14): Team A PLOT blue, Team B the site's own pink (--pick), as on Battle ---------- */
-.cxf{--a-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--a-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--b-d:color-mix(in srgb,var(--pick) 62%,var(--tier-shade));--b-dd:color-mix(in srgb,var(--pick) 38%,var(--tier-shade))}
+.cxf{--a-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--a-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--b-d:color-mix(in srgb,var(--them) 62%,var(--tier-shade));--b-dd:color-mix(in srgb,var(--them) 38%,var(--tier-shade))}
 .cxf-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s2) var(--s6)}.cxf-top .np-eyebrow{flex-basis:100%}.cxf-top h1{margin:0}
 .cxf-poster{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-top:var(--s5);isolation:isolate}
 .cxf-half{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"id id" "score hero" "six six";align-items:end;gap:var(--s2) var(--s4);min-height:420px;padding:var(--s5) var(--s8) var(--s4);color:var(--tier-lit);overflow:hidden}
@@ -2423,8 +2423,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .cxf-col h3{display:flex;align-items:center;gap:var(--s2);margin:0;font:900 var(--t22)/1.2 var(--u);font-style:italic}.cxf-col .cxf-badge{min-width:28px;height:28px;font-size:var(--t15);color:var(--tier-lit)}.cxf-col.a .cxf-badge{background:var(--a-d)}.cxf-col.b .cxf-badge{background:var(--b-d)}
 .cxf-thr{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);margin:0;padding:0;list-style:none}.cxf-thr li{display:flex;align-items:center;gap:var(--s1);font:600 var(--t15)/1.3 var(--b)}.cxf-thr img{width:32px;height:32px;object-fit:contain}
 .cxf-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);margin:var(--s2) 0 0;padding-top:var(--s3);border-top:1px solid var(--rule)}.cxf-facts dt{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.cxf-facts dd{margin:0;font:900 var(--t17)/1.3 var(--u);font-style:italic}
-.cxf-facts dd.ok{color:var(--good-text)}.cxf-facts dd.no{color:var(--bad-text)}.cxf-col.a .cxf-tm{color:var(--plot-text)}.cxf-col.b .cxf-tm{color:var(--pick-text)}
-.cxf .cx2-tm.a{color:var(--plot-text)}.cxf .cx2-tm.b{color:var(--pick-text)}
+.cxf-facts dd.ok{color:var(--good-text)}.cxf-facts dd.no{color:var(--bad-text)}.cxf-col.a .cxf-tm{color:var(--plot-text)}.cxf-col.b .cxf-tm{color:var(--them-text)}
+.cxf .cx2-tm.a{color:var(--plot-text)}.cxf .cx2-tm.b{color:var(--them-text)}
 .cxf-more{margin:var(--s8) 0 var(--s3);font-size:var(--t22)} /* Nov 15 (re-audit #5): the headline sat on the rule */
 .cx2-hrow{border-bottom:0;padding:0 0 var(--s2)}.cx2-hrow .cx2-tm{font:700 var(--t13)/1.5 var(--b);letter-spacing:.02em}
 @media (max-width:699px){.cx2-hrow .cx2-lab{display:none}}
