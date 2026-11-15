@@ -328,7 +328,7 @@ t('LOG-01', 'Battle log is pre-filled with the plan\'s four in order; picks upda
   expect(on.length === 4, 'not four pre-picked: ' + JSON.stringify(c));
   const ord = n => (c.find(x => x.name === n) || {}).order;
   expect(ord('Mega Charizard Y') === 'Lead 1' && ord('Rillaboom') === 'Lead 2' && ord('Incineroar') === 'Back 3' && ord('Whimsicott') === 'Back 4', 'chips do not match "Bring these four": ' + JSON.stringify(c));
-  let f = await ui.foldText('Battle log'); expect(/Filled in from the plan/i.test(f) && /saved with their 6/i.test(f), 'no "Filled in from the plan … saved with their 6"');
+  let f = await ui.foldText('Battle log'); expect(/Filled in from the plan/i.test(f) && (NEW ? /saved with their six/i : /saved with their 6/i).test(f) /* audit 26: words for six, as everywhere else */, 'no "Filled in from the plan … saved with their 6"');
   expect((NEW ? /lead Mega Charizard Y \+ Rillaboom, back Incineroar \+ Whimsicott/i : /Order: lead Mega Charizard Y \+ Rillaboom, back Incineroar \+ Whimsicott/i).test(f), 'order line wrong'); /* new: the four sit in the mock-up's sentence */
   await ui.logPick('Whimsicott'); f = await ui.foldText('Battle log'); expect((NEW ? /3 of 4 picked/ : /3\/4 picked/).test(f), 'no "3 of 4 picked" after tapping one off'); /* new: the count shows once, on the four button (Sim, Battle Q2 B, Nov 13) */
   await ui.logPick('Sneasler'); f = await ui.foldText('Battle log'); expect(/4\/4 picked/.test(f), 'no "4/4 picked"');
