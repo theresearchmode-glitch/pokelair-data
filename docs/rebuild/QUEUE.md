@@ -6,7 +6,7 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | # | Brief | Folder | Status |
 |---|---|---|---|
 | 1 | Build "The Blueprint": top sheet | build-blueprint | Built, on Preview (v142); pictures + questions sent to Sim 7:50 PM Nov 14 |
-| 2 | Build lower half: Reference sheets (Recent Winners), Parts list (Cores) | build-blueprint (lower-*.webp) | Built 8:00 PM Nov 14; edge check clean; tests running |
+| 2 | Build lower half: Reference sheets (Recent Winners), Parts list (Cores) | build-blueprint (lower-*.webp) | Built, on Preview v144. B-build 30 pass / 59 FAIL / 2 known, same failure list as before. Height question (A/B/C) with Sim |
 | 3 | Winning Teams "The Winning Hands" | winning-hands | Waiting |
 | 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Waiting (received 7:43 PM Nov 14) |
 | 5 | Battle a team "Play-by-Play" | battle-playbyplay | Waiting (received 8:00 PM Nov 14); needs the pink 'them' colour approved |
