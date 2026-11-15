@@ -150,7 +150,7 @@ V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg =
   return svg ? (small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg) : '<b class="u">NastyPlot</b>'; };
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
 V2.asOf = () => { try { return typeof dataDateText === 'function' ? dataDateText() : ''; } catch (e) { return ''; } };
-V2.route = () => { const h = (location.hash || '').slice(1); return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
+V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
 // Word list (Sim, Nov 9; Nov 12: "fix them based on your recommendation"): the idea is Matchups and its levels are Beats it /
 // Handles it, never "ready". Shared logic (also today's site) still writes "Ready for ..."; the new site says it the word list's way.
 // The "81%" in "Ready for 81% of the top 30" is a weighted score, not a share of threats, so the plain count is shown instead.

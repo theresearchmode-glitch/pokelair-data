@@ -10,7 +10,6 @@ var FB = {ref: null, ok: false, from: null, kind: 'idea', busy: false};
   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
   const id = await u.id(); if (!id) return; FB.ref = d.doc('feedback/' + id); FB.ok = true; FB.db = d;
   document.querySelectorAll('.fbbtn,.fbmis').forEach(b => b.hidden = false); if (view === 'home') safe('home', renderHome); } catch (e) {} })();
-const FB_KINDS = [['bug', 'Something broke'], ['confusing', 'Confusing'], ['idea', 'Idea'], ['like', 'I like this'], ['mistake', 'Wrong info']];
 /* ---------- report a mistake (trust pass): one tap on a Pokémon sheet or a damage calc result opens the feedback sheet as
    "Wrong info" with what was on screen filled in (which Pokémon and its numbers, or the whole calc and its result), so the
    person only says what's wrong, if they want to. Saved in the same feedback/<id> doc with the context as field c.
@@ -37,13 +36,7 @@ function fbOpen(fromMenu) { if (fromMenu) FB.ctx = null; if (!FB.ctx && FB.kind 
     <textarea id="fbText" maxlength="1000" rows="${C ? 3 : 4}" placeholder="${C ? 'What looks wrong? (optional)' : 'What happened, or what would help?'}" aria-describedby="fbAnon"></textarea>${FB_ANON.replace('<p ', '<p id="fbAnon" ')}
     <div class="fbfoot"><span class="t2" id="fbMsg" role="status"></span><button type="button" class="btn go sm" id="fbSend">Send</button></div></div>`;
   setTimeout(() => { const t = $('fbText'); if (t) t.focus(); }, 30); }
-/* personal details typed by mistake are removed before saving: email addresses, phone numbers (9+ digits, so damage
-   ranges like "45.2 - 53.1%" and EV spreads stay) and @handles (not Showdown's "Mon @ Item", which has a space) */
-function fbScrub(t) { let n = 0; t = String(t || '')
-  .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, () => { n++; return '[email removed]'; })
-  .replace(/\+?\d[\d\s().-]{7,}\d/g, m => (m.match(/\d/g) || []).length >= 9 ? (n++, '[number removed]') : m)
-  .replace(/(^|[\s(])@[A-Za-z0-9_.]{2,}/g, (m, a) => { n++; return a + '[handle removed]'; });
-  return {t, n}; }
+/* fbScrub and FB_KINDS live in 53-feedback-data.js (shared with the new build, Nov 15) */
 const FB_ANON = '<p class="fbanon">Anonymous — please don\'t include personal info like your name or email.</p>';
 function fbClose() { const w = $('fbSheet'); if (w) w.hidden = true; }
 async function fbSend() { const ta = $('fbText'), msg = $('fbMsg'), btn = $('fbSend'); if (!ta || FB.busy) return; const t = ta.value.trim();
