@@ -65,7 +65,7 @@
     "src/v2/pages/calc.js",
     "src/v2/pages/types.js",
     "src/v2/pages/practice.js",
-    "src/v2/pages/gauntlet.js",
+    "src/v2/pages/gauntlet.js", "src/v2/pages/test-piles.js",
     "src/v2/pages/meta.js",
     "src/v2/pages/usage.js",
     "src/v2/pages/sets.js",
