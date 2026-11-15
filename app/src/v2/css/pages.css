@@ -2306,3 +2306,64 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:1099px){.tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
 @media (max-width:1099px){.tt thead th{padding-left:0;padding-right:0}}
 @media (max-width:699px){.tt-corner{width:64px}}@media (max-width:379px){.tt-mv .np-type{padding:var(--s1) 2px}.tt td{padding-left:2px;padding-right:2px}}
+
+/* ---------- Battle a team: "Play-by-Play" (Sim's pick, Nov 14): you PLOT blue, them the site's own pink (--pick) ---------- */
+.pbp{--you:var(--plot);--them:var(--pick);--you-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--them-d:color-mix(in srgb,var(--pick) 62%,var(--tier-shade));--you-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--them-dd:color-mix(in srgb,var(--pick) 38%,var(--tier-shade))}
+/* the verdict on a filled slanted plate: blue Favoured, dark plate Even match, red Unfavoured (never the pink: pink means them) */
+.pbp .bt-verdict{padding:var(--s3) var(--s8) var(--s3) var(--s10);text-align:right;background:var(--plate);color:var(--on-plate);clip-path:polygon(24px 0,100% 0,100% 100%,0 100%)}
+.pbp .bt-verdict:has(b.vf){background:var(--plot);color:var(--on-mark)}.pbp .bt-verdict:has(b.vu){background:var(--bad);color:var(--on-mark)}
+.pbp .bt-verdict .k,.pbp .bt-verdict small{color:inherit;opacity:.85}.pbp .bt-verdict b,.pbp .bt-verdict b.vf,.pbp .bt-verdict b.ve,.pbp .bt-verdict b.vu{color:inherit;font-size:var(--d64);line-height:1}
+/* the poster: two halves on a diagonal, both full sixes */
+.pbp-poster{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-top:var(--s6);isolation:isolate}
+.pbp-half{position:relative;display:grid;justify-items:center;align-content:start;gap:var(--s1);padding:var(--s5) var(--s8) var(--s6);color:var(--tier-lit);overflow:hidden}
+.pbp-half::after{content:'';position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(120deg,transparent 0 12px,color-mix(in srgb,var(--tier-lit) 8%,transparent) 12px 13px)}
+.pbp-half.you{background:linear-gradient(160deg,var(--you-d),var(--you-dd));clip-path:polygon(0 0,100% 0,calc(100% - 48px) 100%,0 100%);margin-right:-24px}
+.pbp-half.them{background:linear-gradient(200deg,var(--them-d),var(--them-dd));clip-path:polygon(48px 0,100% 0,100% 100%,0 100%);margin-left:-24px}
+.pbp-half h2{margin:0;font:900 var(--t26)/1.1 var(--u);font-style:italic}
+.pbp-gl{margin:0;font:900 var(--t13)/1.3 var(--u);font-style:italic;opacity:.9}
+.pbp-leads{display:flex;justify-content:center;gap:var(--s6)}.pbp-half.them .pbp-leads .np-mon img{transform:scaleX(-1)}
+.pbp-bench{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2) var(--s8);width:100%;margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid color-mix(in srgb,var(--tier-lit) 35%,transparent)}
+.pbp-g{display:grid;justify-items:center;gap:var(--s1)}.pbp-row{display:flex;gap:var(--s3)}
+.pbp-mon{display:grid;justify-items:center;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-align:center;min-width:0}
+.pbp-mon b{font:700 var(--t13)/1.2 var(--b)}.pbp-mon small{font:500 var(--t13)/1.3 var(--b);opacity:.85}
+.pbp-mon.big b{font:900 var(--t20)/1.1 var(--u);font-style:italic}
+.pbp-mon:hover .np-mon,.pbp-mon:focus-visible .np-mon{translate:0 calc(var(--s1)*-1)}.pbp-mon:focus-visible{outline:3px solid var(--tier-lit);outline-offset:2px}
+.pbp-vs{position:absolute;left:50%;top:40%;z-index:2;translate:-50% -50%;padding:var(--s2) var(--s4);background:var(--plate);color:var(--on-plate);font:900 var(--t34)/1 var(--u);font-style:italic;rotate:-8deg;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+/* turn one, play by play: a dashed centre line, numbered plates on it, each move on its mover's side */
+.pbp-th{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s4);margin-top:var(--s8)}.pbp-th h2{margin:0;font-size:var(--t26)}.pbp-th .bt-sub{margin:0}
+.pbp-steps{position:relative;display:grid;gap:var(--s3);margin:var(--s4) 0 0;padding:0;list-style:none}
+.pbp-steps::before{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--rule)}
+.pbp-beat{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);align-items:center}
+.pbp-n{grid-column:2;grid-row:1;justify-self:center;z-index:1;display:grid;place-items:center;width:40px;height:40px;color:var(--tier-lit);font:900 var(--t22)/1 var(--u);font-style:italic;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.pbp-beat.you .pbp-n{background:var(--you-d)}.pbp-beat.them .pbp-n{background:var(--them-d)}
+.pbp-band{grid-row:1;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:var(--s3);padding:var(--s3) var(--s5);color:var(--tier-lit)}
+.pbp-beat.you .pbp-band{grid-column:1;background:linear-gradient(90deg,var(--you-dd),var(--you-d));clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.pbp-beat.them .pbp-band{grid-column:3;background:linear-gradient(270deg,var(--them-dd),var(--them-d));clip-path:polygon(16px 0,100% 0,100% 100%,0 100%)}
+.pbp-tx{display:grid;min-width:0}.pbp-tx p{margin:0}
+.pbp-who{font:700 var(--t13)/1.3 var(--b);opacity:.9}.pbp-mv{font:900 var(--t22)/1.1 var(--u);font-style:italic}
+.pbp-into{font:700 var(--t15)/1.3 var(--b)}.pbp-why{font:500 var(--t13)/1.4 var(--b);opacity:.92}
+.pbp-hp{display:block;height:4px;margin-top:var(--s1);background:linear-gradient(90deg,var(--tier-lit) var(--w),color-mix(in srgb,var(--tier-lit) 25%,transparent) var(--w))}
+.pbp-tgt{position:relative;display:grid;place-items:center;min-width:56px}
+.pbp-tgt.ko .np-mon{filter:grayscale(1);opacity:.6;rotate:-12deg}
+.pbp-tgt b{position:absolute;bottom:0;padding:0 var(--s2);background:var(--plate);color:var(--on-plate);font:900 var(--t15)/1.4 var(--u);font-style:italic;rotate:-8deg}
+.pbp-tgt b.hk{font:700 var(--t13)/1.4 var(--b);rotate:none}
+.pbp-spe{display:grid;justify-items:center;margin:0}.pbp-spe b{font:900 var(--t28)/1 var(--u);font-style:italic}.pbp-spe small{font:600 var(--t13)/1.2 var(--b)}
+.pbp-spe em{margin-top:2px;padding:0 var(--s1);background:var(--tier-lit);color:var(--tier-ink);font:700 var(--t13)/1.3 var(--b);font-style:normal}
+.pbp-warn i{font:900 var(--t20)/1 var(--u);font-style:italic;color:var(--mid-text)}
+.pbp-acts{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6);margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}.pbp-acts .fine{margin:0;max-width:60ch}
+@media (hover:hover) and (pointer:fine){.pbp-half .np-mon img,.pbp-band .np-mon img,:root[data-theme="night"] .pbp .np-mon img{filter:none}.pbp-tgt.ko .np-mon img{filter:grayscale(1)}}
+@media (prefers-reduced-motion:reduce){.pbp-mon:hover .np-mon{translate:none}}
+@media (max-width:1099px){.pbp-spe{display:none}.pbp-band{grid-template-columns:auto minmax(0,1fr) auto}.pbp-half{padding:var(--s5) var(--s5) var(--s6)}.pbp-bench .pbp-mon small{display:none}}
+@media (max-width:699px){
+  .pbp-poster{grid-template-columns:minmax(0,1fr)}.pbp-half.you{margin:0 0 -16px;clip-path:polygon(0 0,100% 0,100% calc(100% - 24px),0 100%)}.pbp-half.them{margin:0;padding-top:var(--s10);clip-path:polygon(0 24px,100% 0,100% 100%,0 100%)}
+  .pbp-vs{top:calc(50% - 8px);font-size:var(--t26)}.pbp-leads{gap:var(--s3)}.pbp-mon.big b{font-size:var(--t15)}
+  .pbp-steps::before{left:20px}.pbp-beat{grid-template-columns:40px minmax(0,1fr);column-gap:var(--s2)}.pbp-n{grid-column:1}
+  .pbp-beat.you .pbp-band,.pbp-beat.them .pbp-band{grid-column:2;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+  .pbp-band{padding:var(--s3);gap:var(--s2)}.pbp-band>.np-mon{display:none}.pbp-mv{font-size:var(--t17)}.pbp-acts .row{width:100%}}
+@media (max-width:1099px){.pbp-mon.big b{font-size:var(--t17)}.pbp .bt-verdict b,.pbp .bt-verdict b.vf,.pbp .bt-verdict b.ve,.pbp .bt-verdict b.vu{font-size:var(--t34)}}
+@media (max-width:699px){.pbp .bt-verdict{padding:var(--s3) var(--s5);text-align:left;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}.pbp .bt-verdict b,.pbp .bt-verdict b.vf,.pbp .bt-verdict b.ve,.pbp .bt-verdict b.vu{font-size:var(--t34)}
+  .pbp-band{grid-template-columns:minmax(0,1fr) auto}}
+/* Sim, Nov 14 (page height): the moves alternate sides, so each band starts halfway down the one before: same order, half the height */
+@media (min-width:700px){.pbp-steps{grid-template-columns:minmax(0,1fr);grid-auto-rows:minmax(48px,auto);row-gap:var(--s2)}.pbp-beat{grid-column:1;grid-row:var(--r) / span 2}}
+.pbp-acts .row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4)}
+@media (max-width:379px){.pbp-mon.big b{font-size:var(--t15)}.pbp-leads{gap:var(--s2)}.pbp-half{padding-left:var(--s3);padding-right:var(--s3)}}

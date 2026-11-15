@@ -60,7 +60,7 @@
     "src/v2/pages/home.js",
     "src/v2/pages/build.js",
     "src/v2/pages/build-sheet.js", "src/v2/pages/winning.js",
-    "src/v2/pages/battle.js",
+    "src/v2/pages/battle.js", "src/v2/pages/battle-pbp.js",
     "src/v2/pages/speed.js",
     "src/v2/pages/calc.js",
     "src/v2/pages/types.js",
