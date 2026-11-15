@@ -167,6 +167,12 @@ V2.dataNote = () => { const E = V2.esc, out = [];
       const and = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0];
       out.push(`<b>Some data is older than usual:</b> ${Object.keys(by).map(d => `${and(by[d])}, last updated ${E(d)}`).join('; ').replace(/^./, c => c.toUpperCase())}. Everything else is current.`); } } catch (e) {}
   return out.length ? `<p class="np-dnote" role="status"><i aria-hidden="true"></i><span>${out.join(' ')}</span></p>` : ''; };
+// keyboard focus never hides under the sticky header or the phone bar (function sweep, Nov 15): only Tab focus (:focus-visible) on the page
+// itself; sheets scroll on their own. Sections that are jumped to keep their own scroll-margin, so no page-wide scroll-padding.
+document.addEventListener('focusin', e => { const t = e.target; try { if (!t.matches(':focus-visible') || t.closest('.np-head, .np-bar, .np-sheet, .np-dock')) return; } catch (x) { return; }
+  const r = t.getBoundingClientRect(), hd = document.querySelector('.np-head'), bar = document.querySelector('.np-bar'), top = (hd ? hd.getBoundingClientRect().bottom : 0) + 8,
+    bot = (bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().top : innerHeight) - 8;
+  if (r.top < top) scrollBy(0, r.top - top); else if (r.bottom > bot && r.height < bot - top) scrollBy(0, r.bottom - bot); });
 V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg = V2.theme() === 'night' ? L.hdrD : L.hdrL;
   /* the footer copy gets its own mask ids, so the two logos on one page never share an id */
