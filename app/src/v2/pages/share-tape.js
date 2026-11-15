@@ -63,7 +63,7 @@ V2.tapeImage = async (ms, dark) => { ms = (ms || members()).slice(0, 6); if (!ms
     ms.forEach((m, i) => { const v = D[i].stats[k], X = colX(i), top = v.val != null && v.val === best[k];
       if (top) { x.fillStyle = P.blue; ARB.para(x, X, y + 5, CW - 18, RH - 10, 4); x.fill(); }
       ARB.fnt(x, 'italic 900 32px Unbounded, sans-serif', true); x.textAlign = 'center'; x.fillStyle = top ? onMark : v.mark === 'up' ? up : v.mark === 'dn' ? red : P.ink; x.fillText(v.val == null ? '—' : String(v.val), X, y + RH / 2 + 6);
-      ARB.fnt(x, '700 13px "Instrument Sans", sans-serif'); x.fillStyle = top ? onMark : P.ink2; const pt = (v.mark === 'up' ? '▲ ' : v.mark === 'dn' ? '▼ ' : '') + (v.pts == null ? '' : v.pts + ' pts'); x.fillText(pt, X, y + RH / 2 + 24); });
+      ARB.fnt(x, '700 13px "Instrument Sans", sans-serif'); x.fillStyle = top ? onMark : P.ink2; const pt = (v.mark === 'up' ? '▲ ' : v.mark === 'dn' ? '▼ ' : '') + (v.pts == null ? '' : v.pts + ' points'); x.fillText(pt, X, y + RH / 2 + 24); });
     x.textAlign = 'left'; y += RH; });
   // bottom: the tagline and the fan-tool line
   rule(H - 84); ARB.tagline(x, P, W - M, H - 40, 30); ARB.fnt(x, '600 16px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('NastyPlot, unofficial fan tool', M, H - 42);

@@ -92,6 +92,20 @@ V2.fitMsName = (sel) => { const h = document.querySelector(typeof sel === 'strin
   const over = () => { const box = h.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(h); const rs = [...rg.getClientRects()].filter(r => r.width); return rs.some(r => r.right > box.right + 0.5) || new Set(rs.map(r => Math.round(r.top / 8))).size > 1; };
   for (const s of ['--t26', '--t24', '--t22', '--t20', '--t17', '--t15']) { if (!over()) return; h.style.fontSize = `var(${s})`; } };
 addEventListener('resize', () => requestAnimationFrame(() => V2.fitMsName()));
+/* Nov 15 (audit): words never break in the middle ('Flamethrowe|r', 'Earthqua|ke'). A move name on the Pokémon page and a long Pokémon
+   name step down the type scale until each word fits; the Hand's move chips go one per row when two across can't fit a word. Only if a
+   word still can't fit at the smallest size may it break (np-brk). Runs after every page draw (shell.js), on resize and once the fonts load */
+V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.clientWidth + 1;
+  const fit = b => { b.style.fontSize = ''; b.classList.remove('np-brk'); if (b.clientWidth < 2) return true;
+    for (const s of b.tagName === 'H1' ? ['--t34', '--t28', '--t24'] : ['--t17', '--t15']) { if (!ow(b)) break; b.style.fontSize = `var(${s})`; } return !ow(b); };
+  document.querySelectorAll('.pk-is h1').forEach(b => { if (!fit(b)) b.classList.add('np-brk'); });
+  document.querySelectorAll('.pk-slots').forEach(u => { u.classList.remove('pk-slots1'); const bs = [...u.querySelectorAll('b')]; if (bs.map(fit).every(Boolean)) return;
+    u.classList.add('pk-slots1'); /* a move can't fit two across even at 15 px (320 wide): one per row, then fit again */ bs.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); });
+  const groups = new Map(); document.querySelectorAll('.mh-mv').forEach(u => { u.classList.remove('mh-mv1'); u.querySelectorAll('li').forEach(li => li.classList.remove('np-brk')); const g = u.closest('.mh') || u.parentElement; groups.set(g, [...(groups.get(g) || []), u]); });
+  groups.forEach(us => { if (!us.some(u => [...u.children].some(ow))) return; /* one Card needs it, so the whole Hand goes one per row (even Cards, Sim's eye for symmetry) */
+    us.forEach(u => u.classList.add('mh-mv1')); us.forEach(u => u.querySelectorAll('li').forEach(li => { if (ow(li)) li.classList.add('np-brk'); })); }); };
+addEventListener('resize', () => requestAnimationFrame(() => V2.fitWords()));
+try { document.fonts.ready.then(() => V2.fitWords()); document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(() => V2.fitWords())); } catch (e) {} /* again when a font arrives: measured with a stand-in font the fit is wrong */
 V2.msShow = (k, focus) => { V2.msTab = k; try { localStorage.setItem('np2.montab', k); } catch (e) {}
   document.querySelectorAll('.ms2 [data-mstab]').forEach(b => { const on = b.dataset.mstab === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
   document.querySelectorAll('.ms2 [data-mspan]').forEach(x => { x.hidden = x.dataset.mspan !== k; }); };

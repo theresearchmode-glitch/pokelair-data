@@ -42,10 +42,11 @@ document.addEventListener('click', async e => { if (!e.target.closest('[data-wks
     <div class="sh2-acts"><button type="button" class="np-btn" data-wksave disabled>Save Image</button><span class="fine" data-wkmsg role="status"></span></div><p class="fine">On a phone you can also press and hold the image to save or share it.</p></div>`, {label: 'Share This Week'});
   V2.wkDraw(); });
 /* Nov 15: today's This Week share offers Light / Dark (openShareCard); the new sheet had lost that choice. V2.wkDraw draws in the picked style */
-V2.wkDraw = async () => { const sv0 = document.querySelector('[data-wksave]'); if (sv0) sv0.disabled = true;
+V2.wkDraw = () => { const t = V2.wkTok = (V2.wkTok || 0) + 1; V2.wkQ = (V2.wkQ || Promise.resolve()).then(() => t === V2.wkTok ? V2.wkDraw0(t) : null).catch(() => {}); return V2.wkQ; };
+V2.wkDraw0 = async (tok) => { const sv0 = document.querySelector('[data-wksave]'); if (sv0) sv0.disabled = true;
   const was = CH.shareMode; CH.shareMode = V2.wkMode; let c = null; try { c = await buildWeeklyCard(); } catch (er) { c = null; } finally { CH.shareMode = was; }
   const box = document.querySelector('[data-wkimg]'), sv = document.querySelector('[data-wksave]'); let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (er) {}
-  if (!box) return; const url = blob ? URL.createObjectURL(blob) : null; box.innerHTML = url ? `<img src="${url}" alt="This week in Reg M-C as a NastyPlot share card">` : '<p class="fine">Nothing to share yet.</p>';
+  if (!box || tok !== V2.wkTok) return; const url = blob ? URL.createObjectURL(blob) : null; box.innerHTML = url ? `<img src="${url}" alt="This week in Reg M-C as a NastyPlot share card">` : '<p class="fine">Nothing to share yet.</p>';
   if (sv && blob) { sv.disabled = false; sv.onclick = async () => { const msg = document.querySelector('[data-wkmsg]'), name = 'This week in Reg M-C - NastyPlot.png'; let dl = null; try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (er) {}
     if (dl) { try { await dl.save({filename: name, data: blob}); if (msg) msg.textContent = 'Saved.'; } catch (err) { if (msg) msg.textContent = err && err.code === 'declined' ? 'Not saved.' : 'Saving is not available here. Press and hold the image instead.'; } }
     else { const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); if (msg) msg.textContent = 'Downloaded.'; } }; } };

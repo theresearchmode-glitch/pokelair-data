@@ -278,11 +278,14 @@ V2.openShare = savedId => { const U = V2.shUi, t = savedId && S.teams.find(x => 
     <div class="sh2-acts"><button type="button" class="np-btn" data-sh2save disabled>Save Image</button>${SV ? '' : '<button type="button" class="np-btn2" data-copylink><span>Copy Team Link</span></button>'}<span class="fine" id="shareMsg" data-sh2msg role="status"></span></div>
     <p class="fine">On a phone you can also press and hold the image to save or share it.${SV ? '' : ' The team link opens this six on NastyPlot.'}</p></div>`, {label: SV ? 'Team poster' : 'Share'});
   V2.shDraw(); };
-V2.shDraw = async () => { const U = V2.shUi, box = document.querySelector('[data-sh2img]'), sv = document.querySelector('[data-sh2save]'); if (!box) return; const SV = U.saved, ms = SV ? SV.ms : members(), was = CH.shareMode, kind = SV ? 'poster' : U.kind;
+/* Nov 15 (audit): draws run one at a time and only the newest pick is shown and saved (quick taps could show the wrong image) */
+V2.shDraw = () => { const t = V2.shTok = (V2.shTok || 0) + 1; V2.shQ = (V2.shQ || Promise.resolve()).then(() => t === V2.shTok ? V2.shDraw0(t) : null).catch(() => {}); return V2.shQ; };
+V2.shDraw0 = async (tok) => { const U = V2.shUi, box = document.querySelector('[data-sh2img]'), sv = document.querySelector('[data-sh2save]'); if (!box) return; const SV = U.saved, ms = SV ? SV.ms : members(), was = CH.shareMode, kind = SV ? 'poster' : U.kind;
   if (sv) sv.disabled = true; CH.shareMode = U.mode; let c = null;
   try { c = SV ? await V2.slab(ms, 'tall', U.mode !== 'dark', SV.name) : kind === 'poster' ? await V2.slab(ms, 'tall', U.mode !== 'dark') : kind === 'sheet' ? await (V2.tapeImage ? V2.tapeImage(ms, U.mode === 'dark') : buildSheetImage(ms)) /* Nov 15: the Team Sheet image in the Tale of the Tape look (share-tape.js) */ : await V2.slab(ms, 'wide', U.mode !== 'dark'); } catch (e) { c = null; } finally { CH.shareMode = was; }
   if (U.url) { try { URL.revokeObjectURL(U.url); } catch (e) {} U.url = null; }
   let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (e) {}
+  if (tok !== V2.shTok) { if (sv) sv.disabled = true; return; }
   U.blob = blob; U.url = blob ? URL.createObjectURL(blob) : null; if (!document.contains(box)) return;
   box.className = 'sh2-img' + (kind === 'card' ? '' : ' tall');
   box.innerHTML = U.url ? `<img src="${U.url}" alt="${SV ? V2.esc(SV.name) + ' as a NastyPlot team poster' : U.kind === 'sheet' ? 'Your team as a NastyPlot team sheet: every set, nature and stat' : U.kind === 'slab' ? 'Your team as a NastyPlot share card, The Slab' : U.kind === 'poster' ? 'Your team as a NastyPlot team poster' : 'Your team as a NastyPlot share card'}">` : '<p class="fine">Could not draw the image in this view.</p>';
