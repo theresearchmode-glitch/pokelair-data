@@ -2864,3 +2864,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    stacked halves (in the flow, not over them). 700-1099: hidden (decoration only; the blue and pink halves already say who faces whom) */
 @media (max-width:699px){.pbp-vs{position:relative;left:auto;top:auto;translate:none;justify-self:center;margin:calc(var(--s6)*-1) 0 calc(var(--s5)*-1)}}
 @media (min-width:700px) and (max-width:1099px){.pbp-vs{display:none}}
+@media (max-width:699px){.cxf-score{margin-top:var(--s3)}} /* Compare phones: the score clear of the Change line above */
