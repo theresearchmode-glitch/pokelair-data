@@ -18,6 +18,15 @@ export default (ui, pg) => {
     return {id: e.dataset.v2mon, name: m[1], rating: +m[2], rank: m[3] ? +m[3] : null, tier: t ? t.dataset.tier : null}; }), sel);
   const D = {
     until,
+    // ---------------- Winning Teams (Nov 14, The Winning Hands: src/v2/pages/winning.js) ----------------
+    // Translation: today's team cards = the hands and rows (each has one Load team / Replace button); the search box keeps today's id #tsIn.
+    teamSearch: async (text, enter = true) => { await pg.fill('#tsIn', ''); await pg.type('#tsIn', text, {delay: 20}); await wait(500); if (enter) { await pg.press('#tsIn', 'Enter'); await wait(600); } },
+    teamSearchSuggestions: () => ev(() => [...document.querySelectorAll('.wt [role=option]')].filter(__dvis).map(__dtx)),
+    teamSearchMenuText: () => ev(() => { const l = [...document.querySelectorAll('.wt [role=listbox]')].filter(__dvis).pop(); return l ? __dtx(l) : null; }),
+    topSearchChips: () => ev(() => [...document.querySelectorAll('.wt [data-tsx]')].filter(__dvis).filter(b => b.dataset.tsx !== '*').map(b => __dtx(b.parentElement).replace(/\s*×$/, '')).join('|')),
+    tapOftenWith: async () => { await ev(() => { const b = [...document.querySelectorAll('.wt [data-tsadd]')].filter(__dvis)[0]; if (!b) throw new Error('no Often with chip'); b.click(); }); await wait(600); },
+    teamCards: () => ev(() => [...document.querySelectorAll('.wt [data-wtask], .wt [data-wtload], .wt [data-hmload]')].filter(__dvis).length),
+    toastHasUndo: () => ev(() => __dvis(document.querySelector('#toastUndo'))),
     // ---------------- Ratings ----------------
     ratingsSearch: async text => { await pg.fill('[data-raq]', text); await wait(500); },
     matchCount: () => ev(() => { const m = __dtx(document.querySelector('.ra-count')).match(/(\d+) of (\d+) match/); return m ? {n: +m[1], of: +m[2]} : null; }),

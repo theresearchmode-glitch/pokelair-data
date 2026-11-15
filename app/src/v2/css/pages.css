@@ -2253,5 +2253,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wt .wt-card .mc-id h3 .mg{display:block;font:700 var(--t13)/1.1 var(--b);font-style:normal;color:var(--plot-text)}
 @media (max-width:1099px){.wt-top{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699px){.wt .wt-fan:not(.wt-mini) .wt-card .mc-id h3{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
-@media (max-width:699px){.wt .ra-seg a{font-size:var(--t13);white-space:nowrap}.wt-hh{flex-wrap:nowrap}.wt-hh h3{font-size:var(--t20)}.wt-hh .wt-off{display:none}.wt-hand .wt-hh+.wt-off{display:inline-block}}
-@media (max-width:699px){.wt-hand>.wt-hh{flex-wrap:wrap}.wt-hh .wt-off{display:inline-block}}
+@media (max-width:699px){.wt .ra-seg a{font-size:var(--t13);white-space:nowrap}.wt-hh h3{font-size:var(--t20)}}
