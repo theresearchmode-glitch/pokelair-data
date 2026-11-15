@@ -17,10 +17,11 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 8 | Share card: The Slab / Print / Aurora (tall + wide) | share-cards | Waiting (received 9:19 PM Nov 14); question to Sim: one design or all three |
 | 9a | Helper audits of everything built (Sim, Nov 14): 3 read-only auditors running (Home/Meta/Winning Teams; My Team/Team Sheet/Compare; Build/Battle/tools) | (audit) | Running |
 | 9 | Colour uniformity: one colour per meaning across the site (Sim, Nov 14: 'a big deal') | (audit) | Audit done: docs/rebuild/colour-audit.md (18 conflicts). Fix list + pictures to Sim next |
-| 10 | My Team height and polish pass | my-team-hand | Waiting |
+| 10 | Info pages: How We Calculate, About & Legal, Send Feedback (Claude designs; Sim: 'simple, still not boring') | (none) | After the quality pass; pictures first |
+| 11 | My Team height and polish pass | my-team-hand | Waiting |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.
 Everything else keeps today's design (Sim: no bolder look needed).
 Why this order: finish what's half-built first, then pages by how much players use them.
 
-Sim, 9:19 PM Nov 14: that's every brief. Order is Claude's call; our rules and data win over the designer's.
+Still with Sim's designer: Events, Archetypes, This Week, Track Record. Sim, 9:19 PM Nov 14: that's every brief. Order is Claude's call; our rules and data win over the designer's.
