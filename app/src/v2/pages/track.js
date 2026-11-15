@@ -28,7 +28,7 @@ V2.pages.track = {place: 'meta', draw() { const E = V2.esc, T = META.track;
   const foot = `<p class="trk-links"><a class="np-link" href="#method">How Ratings Work ›</a></p>`;
   if (!T) return `<div class="ra gsp trk">${head}${how}<section class="trk-empty"><h2 class="u">Collecting</h2><p>The first results appear here after the next morning's data refresh.</p></section>${foot}</div>`;
   const n = T.ev.length, early = n < TR_MIN.verdict, days = Math.max(1, Math.round((Date.parse(T.last + 'T12:00:00Z') - Date.parse(T.since + 'T12:00:00Z')) / 864e5) + 1);
-  const stats = `<ul class="trk-stats"><li><b class="u">${E(evDate(T.since))}</b><span>tracking since</span></li><li><b class="u">${days}</b><span>day${days === 1 ? '' : 's'} of ratings saved</span></li><li><b class="u">${n}</b><span>event${n === 1 ? '' : 's'} checked so far</span></li></ul>`;
+  const stats = `<ul class="trk-stats"><li><b class="u">${E(evDate(T.since))}</b><span>tracking since</span></li><li><b class="u">${days}</b><span>day${days === 1 ? '' : 's'} of ratings saved</span></li><li><b class="u">${n}</b><span>event${n === 1 ? '' : 's'} checked <span class="trk-nw">so far</span></span></li></ul>`;
   let receipt = '';
   if (!n) receipt = `<section class="trk-rc"><p class="trk-rn u">NastyPlot</p><p class="trk-rk">* * * Track Record * * *</p><p class="trk-rs">Collecting. No event has been played after the first saved ratings yet. The first check appears the morning after one finishes.</p></section>`;
   else { const r = trRates(T.ev), ratio = r[0] && r[3] ? r[0] / r[3] : null, big = !early && ratio && isFinite(ratio), x = big ? (ratio >= 20 ? '20×' : ratio >= 10 ? Math.round(ratio) + '×' : ratio.toFixed(1) + '×') : '';
