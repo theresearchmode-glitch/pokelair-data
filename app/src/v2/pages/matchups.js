@@ -30,14 +30,14 @@ V2.calcNote = (R, lv) => R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Fa
 // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
 V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured');
-  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>${V2.calcNote(R, r.level)}</button></li>`;
+  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2._hand && byName.get(r.t.n) ? `<span class="mu-card" aria-hidden="true">${V2.msCard(byName.get(r.t.n), r.t.n, '', '', 112)}</span>` : V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>${V2.calcNote(R, r.level)}</button></li>`;
   // review fix (Nov 13): the calc note sits after the badge, so names and badges line up across a row whether or not a cell has a note
   // Nov 12 height cut: no group headings (each row carries its verdict badge; the counts line above has the numbers)
   // Sim, Nov 13 (My Team Q1 B, Sim chose it): at most 4 of each (the most common threats first), so rows stay even and the page length no longer
   // depends on the team; a line says how many more and opens All 30
   const N = 4, grp = (t, a) => a.length ? `<ol class="tm-rows mu-out" aria-label="${t}: ${a.length}">${a.slice(0, N).map(row).join('')}</ol>` : '';
   const more = [unf.length > N ? `${unf.length - N} more Unfavoured` : '', fav.length > N ? `${fav.length - N} more Favoured` : ''].filter(Boolean).join(' and ');
-  return `${grp('Unfavoured', unf)}${grp('Favoured', fav)}${more ? `<p class="tm-sub mu-outmore">${more} in <button type="button" class="np-link" data-muall30>All 30 ›</button></p>` : ''}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
+  return `${V2._hand ? '<div class="mu-cards">' : ''}${grp('Unfavoured', unf)}${grp('Favoured', fav)}${V2._hand ? '</div>' : ''}${more ? `<p class="tm-sub mu-outmore">${more} in <button type="button" class="np-link" data-muall30>All 30 ›</button></p>` : ''}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
 `; }; // Nov 12 height cut: no "The other N are even matches. See all 30" line; the counts line above says how many are even and
   // the "All 30" view button sits just above the rows (the data-muall30 handler below stays for any other link)
 

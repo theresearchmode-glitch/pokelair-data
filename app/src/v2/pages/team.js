@@ -395,7 +395,7 @@ V2.pages.team = {place: 'team', draw() {
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
   const setSec = V2.isHand(D) ? '' : V2.setSecHtml(D, sel); // The Hand: the editing strip under the Hand replaces the Set section (brief s3)
   // 2. Matchups: real-game verdicts lead, the calc reading underneath (Sim, Nov 10); views and threat sheet in pages/matchups.js (hook)
-  const muSec = V2.muSec ? V2.muSec(D) : '';
+  V2._hand = V2.isHand(D); /* The Hand, piece 4: stand-outs as small Cards (matchups.js) */ const muSec = V2.muSec ? V2.muSec(D) : '';
   // 3. Suggestions: drawn by pages/sugs.js (R4 sugs hook)
   const sgSec = V2.sgSec(D);
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
@@ -403,7 +403,7 @@ V2.pages.team = {place: 'team', draw() {
   // "Problems and Team Checks" (what the team has or misses, and how often winners have it); the threats "?" sits on its check
   const hand = CH.hand(D.RD), ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(V2.wl(x.label))}${/^Ready for/.test(x.label) ? V2.tip('readiness') : ''}${(x.ok ? x.have : x.miss) ? `<small>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, hand)))}</small>` : ''}${x.pro && !x.note ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</span></li>`; // notes: their 'why' is said once, above them
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
-  return `<section class="tm-hero mt">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
+  return `<section class="tm-hero mt">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}">${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() {
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */

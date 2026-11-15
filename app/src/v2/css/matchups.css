@@ -162,3 +162,23 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 @container (max-width:340px){.mu-row.mu-nk{grid-template-areas:"i n" "i v" "i d";row-gap:var(--s1)}}
 /* the note row adds no gap to rows without a note (c13: My Team 1440 went 2 px over its 1,800 limit) */
 @media (min-width:1180px){.tm-mus .mu-out .mu-row.mu-nk{row-gap:0}.tm-mus .mu-out .mu-row.mu-nk .tm-v{margin-top:var(--s1)}.tm-mus .mu-out .mu-row.mu-nk>.mu-dis{margin-top:var(--s1)}}
+/* The Hand, piece 4 (brief s5): each stand-out threat is a small Card with its name, verdict and any "Calc disagrees" under it;
+   Unfavoured first, then Favoured (4 of each at most, Sim Nov 13); up to 8 across on desktop, 4 on iPad and iPhone; a shorter last row is centred */
+.mu-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s4) 0;margin-top:var(--s2)}.mu-cards>ol{display:contents}
+.mu-cards li{flex:0 0 12.5%;min-width:0;list-style:none}
+.mu-cards .mu-row{display:grid;justify-items:center;gap:var(--s1);width:100%;padding:0 var(--s1);border:0;background:none;text-align:center;grid-template-columns:none}
+.mu-card{display:block;width:100%;max-width:120px}.mu-card .ms-card{height:132px;margin:0}.mu-card .mc-giant{font-size:var(--t34)}.mu-card .mc-id{display:none}
+.mu-card .mc-mon .np-mon,.mu-card .mc-mon .np-mon .st{--iw:84px}.mu-card .mc-orbit,.mu-card .ms-card::before{display:none}
+.mu-cards .nm{font:700 var(--t13)/1.25 var(--b);overflow-wrap:normal}.mu-cards .tm-v{justify-self:center}.mu-cards .mu-dis{font-size:var(--t13);line-height:1.3}
+@media (max-width:1099px){.mu-cards li{flex-basis:25%}}
+@media (max-width:359px){.mu-cards .nm{font-stretch:88%}}
+.tm-mus .mu-cards .mu-out{display:contents;margin:0}
+.tm-mus .mu-cards .mu-out .mu-row.mu-nk{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:none;justify-items:center;row-gap:var(--s1);padding:0 var(--s1);min-height:0;border:0}
+.tm-mus .mu-cards .mu-out .mu-row .nm,.tm-mus .mu-cards .mu-out .mu-row .tm-v,.tm-mus .mu-cards .mu-out .mu-row .mu-dis{grid-area:auto;justify-self:center;margin:0}
+.tm-mus .mu-cards .mu-out li{border:0;padding:0}
+.tm-mus .mu-cards .mu-card .mc-mon{top:auto;bottom:var(--s3)}.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:100px}
+.tm-mus .mu-cards .mu-out .mu-row .mu-dis{display:block;text-align:center}
+.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:112px}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:100%;justify-self:stretch}
+.tm-mus .mu-cards .mu-card img{width:100%;height:auto}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:auto;max-width:128px;justify-self:center}
+.tm-mus .mu-cards .mu-out .mu-row .mu-dis{max-width:100%;text-wrap:balance}
+@media (max-width:699px){.tm-mus .mu-cards .mu-card .ms-card{height:100px}.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:76px}.tm-mus .mu-cards .mu-card{max-width:86px}.tm-mus .mu-cards .mu-out .mu-row .tm-v{font-size:var(--t13);padding:0 var(--s1);gap:2px;clip-path:none;background:none;white-space:nowrap}.tm-mus .mu-cards .mu-out .mu-row .tm-v i{width:8px}}
