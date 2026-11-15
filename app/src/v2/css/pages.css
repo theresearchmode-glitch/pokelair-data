@@ -2813,9 +2813,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   background:radial-gradient(circle at 0 50%,var(--bg) 5px,transparent 5.5px) 0 0/12px 16px repeat-y,var(--rc-paper);box-shadow:0 4px 12px var(--rc-shadow);transform:rotate(calc((var(--i) - 1) * .5deg))}
 .trk-slip:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
 .trk-sp{display:grid;place-items:end center;width:88px;margin:var(--s2) 0;border-radius:var(--r-s);background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(115deg,var(--ta),var(--tb))}.trk-sp .np-mon{--iw:80px}
-.trk-st{display:grid;align-content:center;gap:var(--s1);min-width:0;padding:var(--s3) var(--s3) var(--s8)}.trk-st b{font:900 var(--t17)/1.25 var(--u);font-style:italic;overflow-wrap:break-word}.trk-st span{font:400 var(--t13)/1.5 var(--b);color:var(--rc-ink2)}
+.trk-st{display:grid;align-content:center;gap:var(--s1);min-width:0;padding:var(--s3)}.trk-st b{font:900 var(--t17)/1.25 var(--u);font-style:italic;overflow-wrap:break-word}.trk-st span{font:400 var(--t13)/1.5 var(--b);color:var(--rc-ink2)}
 .trk-sr{display:grid;align-content:center;justify-items:center;min-width:72px;padding:var(--s3);border-left:2px dashed var(--rc-rule)}.trk-sr small{font:700 var(--t13)/1.5 var(--b);text-transform:uppercase;letter-spacing:.06em;color:var(--rc-ink2)}.trk-sr b{font:900 var(--t34)/1 var(--u);font-style:italic}
-.trk-slip .trk-stamp{position:absolute;right:calc(72px + var(--s3));bottom:var(--s2);font-size:var(--t13);transform:rotate(-8deg)}
+.trk-slip .trk-stamp{position:static;justify-self:start;margin:var(--s2) 0 var(--s1) var(--s1);font-size:var(--t13);transform:rotate(-8deg)} /* Nov 15 (re-audit #6): in the text column's flow, under the words */
 .trk-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 /* how we check */
 .trk-how h2{margin-bottom:var(--s4)}
@@ -2833,7 +2833,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .trk-links{margin:0}
 @media (max-width:1099px){.trk-top{grid-template-columns:minmax(0,1fr)}.trk-body{grid-template-columns:minmax(0,1fr)}.trk-left{justify-self:center;width:min(100%,440px)}.trk-cols{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699px){.trk-rc,.trk-slip,.trk-paper{transform:none}.trk-flow{grid-template-columns:minmax(0,1fr);gap:var(--s3)}.trk-flow li+li::before{content:none}.trk-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}.trk-stats b{font-size:var(--t22)}
-  .trk-sp{width:64px}.trk-sp .np-mon{--iw:60px}.trk-sr{min-width:64px}.trk-slip .trk-stamp{right:calc(64px + var(--s2))}.trk-st b{font-size:var(--t15)}.trk-paper{padding:var(--s3)}}
+  .trk-sp{width:64px}.trk-sp .np-mon{--iw:60px}.trk-sr{min-width:64px}.trk-st b{font-size:var(--t15)}.trk-paper{padding:var(--s3)}}
 @media (prefers-reduced-motion:reduce){.trk-rc,.trk-slip,.trk-paper{transform:none}}
 /* quality pass Nov 15: the Game Plan strip (My Team, Battle) reads left-aligned (a centred 3-line sentence is hard to read, audit 42), and its
    label keeps a 44px tap area through ::after instead of a 44px-tall box that sat over the sentence's second line */
@@ -2931,3 +2931,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 :root[data-theme="night"] .tc-grid td.v2{background:color-mix(in srgb,var(--good) 40%,var(--surface))} /* Nov 15 (night contrast sweep): 2x cells were 3.76:1 at 55%; 40% measures 5.28:1 */
 .wk-kind{display:inline-flex;align-items:center;gap:var(--s1)}.wk-kind .kdic{width:var(--s4);height:var(--s4);flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round} /* Nov 15: the kind icon beside its word */
 .fn-uc .mg.none{display:block;visibility:hidden} /* Nov 15 (audit #15): every Undercard tile keeps the Mega line, so ratings and tiers sit level (Mega tiles were 6 px lower at 1280, measured 129 vs 135); same as My Box (.bx-f) */
+@media (max-width:399px){.trk-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);align-items:start}.trk-stats li:first-child{grid-column:1/-1}} /* Nov 15 (re-audit #7): at 320 "Oct 29" filled its column and read "Oct 2913"; the date gets its own row, the two counts share the next */
+.trk-stats{align-items:start} /* Nov 15: labels start level under each number */
