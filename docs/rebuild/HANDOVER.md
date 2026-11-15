@@ -3,6 +3,16 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## LATER UPDATE (Nov 15, written time: 5:53 AM (5:53:29)  date: Sun Nov 15, 2026 by the clock)
+- Preview v156 (4:51 AM); v157 pending (tests running on frozen copy t28). Since 1:39 AM: Battle Play-by-Play overlap + 700-899 layout; Toughest
+  Opponents only even/losing; Compare Team A/B labels + picker names by style; event names cleaned on EVERY page (shared V2.evTitle in home.js);
+  Team Sheet chips; My Team 'most used'; Winning Teams counts explained; Track Record/This Week fixes; contrast sweep (docs/rebuild/preview-kit/
+  contrast.cjs) day 0 / night 0 flagged; Preview build passes all of out/perf.json as meta/perf.
+- Tests: the four new Meta pages are now under test (adapter routes + helper agent's helpers, commit 99fbc63). Last full numbers: D-meta 60/91
+  (agent), C-battle 58/25, A-team 131/7, B-build 30/59. Fresh full run on t28 in progress.
+- Questions for Sim: 18 in docs/rebuild/questions-nov15.md, each with pictures (pictures-nov15/) and a RECOMMENDED option + reason.
+- Open, not started: Events tickets under 390 (Q17), Archetypes P3, colour choices (Q1), info pages (Q12), the Slab ship (Q11).
+
 ## NOW (Nov 15, written time: 1:38 AM (1:38:05)  date: Sun Nov 15, 2026 by the clock; Sim's authority until 12:00 PM Sun Nov 15; summary 11:40 AM; reminder trig_01PbzKFQ8nVFkJsCK3hJWvzt 11:38 AM)
 - Preview v150 (400 files, commit 2a19943). All four test groups: no new failures (My Team 131 pass / 7 FAIL, Build 30/59, Battle 55/28, Meta 34/117).
 - QUALITY PASS done for every built page: full check (scratchpad qcheck.cjs, copy in docs/rebuild/preview-kit/qcheck.cjs; setups in scratchpad
