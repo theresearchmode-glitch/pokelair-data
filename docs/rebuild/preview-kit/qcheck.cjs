@@ -25,7 +25,7 @@ for(const th of TH)for(const w of W){const touch=w<1100;const ctx=await b.newCon
   // 3 sizes
   for(const x of T){const fs=parseFloat(getComputedStyle(x.e).fontSize);if(fs<40&&!SC.some(s=>Math.abs(s-fs)<0.6))o.push('SIZE '+fs.toFixed(1)+'px '+JSON.stringify(x.e.innerText.slice(0,18)))}
   // 4 tap targets
-  if(touch)for(const e of R.querySelectorAll('button,a[href],summary,[role=button]')){if(!vis(e)||hidden(e))continue;const q=e.getBoundingClientRect();if(q.width&&q.height&&(q.height<40||q.width<40))o.push('TAP '+Math.round(q.width)+'x'+Math.round(q.height)+' '+JSON.stringify((e.innerText||e.getAttribute('aria-label')||'').slice(0,20)))}
+  if(touch)for(const e of R.querySelectorAll('button,a[href],summary,[role=button]')){if(!vis(e)||hidden(e))continue;let q=e.getBoundingClientRect();/* a ::after hit area (absolute, negative inset) counts as part of the target */{const a=getComputedStyle(e,'::after');if(a.content&&a.content!=='none'&&a.position==='absolute'){const t=-parseFloat(a.top)||0,bt=-parseFloat(a.bottom)||0,l=-parseFloat(a.left)||0,rr=-parseFloat(a.right)||0;q={width:q.width+Math.max(0,l)+Math.max(0,rr),height:q.height+Math.max(0,t)+Math.max(0,bt)}}}if(q.width&&q.height&&(q.height<40||q.width<40))o.push('TAP '+Math.round(q.width)+'x'+Math.round(q.height)+' '+JSON.stringify((e.innerText||e.getAttribute('aria-label')||'').slice(0,20)))}
   return [...new Set(o)]},[process.env.ROOT||'#main',touch]);
  const all=[...r,...errs.map(x=>'ERROR '+x)];total+=all.length;console.log(`${th} ${w}: ${all.length?all.length+' findings':'clean'}`+(all.length?'\n  '+all.slice(0,12).join('\n  '):''));await ctx.close()}
 console.log('TOTAL',total);await b.close()})();

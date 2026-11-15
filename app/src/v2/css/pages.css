@@ -2825,3 +2825,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.tr-rc,.tr-slip,.tr-paper{transform:none}.tr-flow{grid-template-columns:minmax(0,1fr);gap:var(--s3)}.tr-flow li+li::before{content:none}.tr-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}.tr-stats b{font-size:var(--t22)}
   .tr-sp{width:64px}.tr-sp .np-mon{--iw:60px}.tr-sr{min-width:64px}.tr-slip .tr-stamp{right:calc(64px + var(--s2))}.tr-st b{font-size:var(--t15)}.tr-paper{padding:var(--s3)}}
 @media (prefers-reduced-motion:reduce){.tr-rc,.tr-slip,.tr-paper{transform:none}}
+/* quality pass Nov 15: the Game Plan strip (My Team, Battle) reads left-aligned (a centred 3-line sentence is hard to read, audit 42), and its
+   label keeps a 44px tap area through ::after instead of a 44px-tall box that sat over the sentence's second line */
+.tm-six.mh .sx-plan{justify-content:flex-start;text-align:left}
+.tm-six.mh .sx-gpl{min-height:0;display:inline;position:relative}.tm-six.mh .sx-gpl::after{content:"";position:absolute;inset:-12px -4px}
