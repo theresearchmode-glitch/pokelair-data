@@ -19,3 +19,6 @@
 13. Selected chips (re-audit Battle #9; picture: pictures-nov15/battle-chip-1280.webp): a picked chip is solid black everywhere on the site
     (Battle's weather, Events' filters, Ratings' filters), so it can look like a main button. RECOMMENDED: keep it as is (one look for every
     picked chip; the slanted shape and smaller size already tell it apart). Other choice: picked chips in PLOT blue site-wide.
+14. Battle's top area at 1440+ (picture: pictures-nov15/battle-empty-right-1920.webp): the headline, Their Six and Your Games all sit on the
+    left and the right half is empty (your space rule). RECOMMENDED: on wide screens, move Your Games (Win / Loss / Log from a Showdown
+    Replay) into the empty right half beside the headline; it fills the gap and makes the page about 150 px shorter. Other choice: leave it.
