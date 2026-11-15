@@ -157,3 +157,8 @@ function sheetPaste(mons) { let filled = false;
     if (moves.length < 4) { for (const x of slotMoves({}, p).names.filter(Boolean)) if (moves.length < 4 && !moves.includes(x)) { moves.push(x); filled = true; } }
     return sdBlock({species: sdSpecies(p), item, ability, nature: String(m.nt || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''), moves}); }).filter(Boolean).join('\n\n');
   return {text, filled}; }
+function sdSheetFor(names, player) { const E = META.events && META.events.events || [], key = names.filter(Boolean).slice().sort().join('|'); let any = null;
+  for (const ev of E) for (const t of ev.top || []) if (t.mons.map(m => m.n).sort().join('|') === key) { if (!player || t.player === player) return t; any = any || t; }
+  return player ? null : any; }
+function sdNames(names, player) { const t = sdSheetFor(names, player); if (t) { const r = sheetPaste(t.mons); return {text: r.text, note: r.filled ? SD_NOTE_TOUR : ''}; }
+  return {text: slotsPaste(names.filter(n => byName.get(n)).map(n => ({n, a: null, lock: false}))), note: SD_NOTE_TOUR}; }

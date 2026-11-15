@@ -56,13 +56,6 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 
 // ---- team search (Top teams) ----
 let tsUi = {f: [], more: 0};
-let tsTermCache = {v: -1, terms: []};
-function tsTerms() { if (tsTermCache.v === metaVersion) return tsTermCache.terms; const m = new Map(), add = (k, v, label) => { const id = k + ':' + v; const x = m.get(id); if (x) x.c++; else m.set(id, {k, v, label, c: 1}); };
-  for (const {t} of tsPool()) for (const x of t.mons) { add('mon', x.n, byName.get(x.n).d); if (x.i) add('item', x.i, x.i); if (x.a) add('ability', x.a, x.a); x.mv.forEach(v => add('move', v, v)); }
-  tsTermCache = {v: metaVersion, terms: [...m.values()].sort((a, b) => b.c - a.c)}; return tsTermCache.terms; }
-function tsMatch(t, f) { return t.mons.some(m => f.k === 'mon' ? m.n === f.v : f.k === 'item' ? m.i === f.v : f.k === 'ability' ? m.a === f.v : m.mv.includes(f.v)); }
-function tsSet(fs) { tsUi.f = fs.slice(0, 6); tsUi.more = 0; }
-const TS_KIND = {mon: 'Pokémon', item: 'Item', move: 'Move', ability: 'Ability'};
 function renderTeamSearch() {
   const box = $('tsBox'), out = $('tsOut'), list = $('ttList'); if (!box || !out) return;
   const pool = tsPool();
@@ -93,3 +86,4 @@ function renderTeamSearch() {
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-tsx],[data-tsmore],[data-tsadd]'); if (!b) return; const d = b.dataset;
   if (d.tsx === '*') tsUi.f = []; else if (d.tsx != null) tsUi.f.splice(+d.tsx, 1); else if (d.tsmore) tsUi.more++; else if (d.tsadd) tsUi.f.push({k: 'mon', v: d.tsadd});
   if (!d.tsmore) tsUi.more = 0; keepScroll(() => renderTeamSearch()); });
+/* tsTermCache, tsTerms, tsMatch and TS_KIND moved to 49-event-data.js (Nov 14), shared with the new Winning Teams page */

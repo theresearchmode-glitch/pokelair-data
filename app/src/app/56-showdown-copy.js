@@ -13,11 +13,6 @@ function sdBtn(spec, cls) { return `<button type="button" class="sdcopy${cls ? '
 // SD_NOTE_TOUR / SD_NOTE_BUILT, sdBlock, sdSpecies and sheetPaste moved to 19-showdown-paste.js (Nov 12) so the new build's Home shares them
 // slotsPaste (any list of slots as Showdown text) lives in 19-showdown-paste.js, beside exportPaste, so the new build shares it
 // the open team sheet for a list of six names (and the player, when known); null when no event has it
-function sdSheetFor(names, player) { const E = META.events && META.events.events || [], key = names.filter(Boolean).slice().sort().join('|'); let any = null;
-  for (const ev of E) for (const t of ev.top || []) if (t.mons.map(m => m.n).sort().join('|') === key) { if (!player || t.player === player) return t; any = any || t; }
-  return player ? null : any; }
-function sdNames(names, player) { const t = sdSheetFor(names, player); if (t) { const r = sheetPaste(t.mons); return {text: r.text, note: r.filled ? SD_NOTE_TOUR : ''}; }
-  return {text: slotsPaste(names.filter(n => byName.get(n)).map(n => ({n, a: null, lock: false}))), note: SD_NOTE_TOUR}; }
 // what each kind of button copies
 function sdResolve(spec) { const i = String(spec).indexOf(':'), kind = i < 0 ? spec : spec.slice(0, i), key = i < 0 ? '' : spec.slice(i + 1);
   if (kind === 'mine') return members().length ? {text: exportPaste(), note: ''} : null;
@@ -56,3 +51,4 @@ document.addEventListener('click', e => { const t = e.target && e.target.closest
   b.classList.add('sddone'); clearTimeout(b._sd); b._sd = setTimeout(() => b.classList.remove('sddone'), 1600);
   sdCopyText(r.text, r.note); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') sdSheetClose(); });
+/* sdSheetFor and sdNames moved to 19-showdown-paste.js (Nov 14), shared with the new Winning Teams page */
