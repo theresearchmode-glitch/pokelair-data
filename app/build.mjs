@@ -44,12 +44,13 @@ if (process.argv.includes('--v2')) {
   // replaced, so the data is also handed over as window.__NP_CLAUDE, which the page reads first.
   let prevTag = '';
   if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
-    const D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': o('meta_tour.json'), 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json')};
+    const D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': o('meta_tour.json'), 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/weekly': o('weekly.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json')};
     // privacy (Sim's review item 19, Nov 11): no real player name goes into the Preview's page source. Each name becomes the same
     // neutral stand-in everywhere it appears ("Player 12"), so matching a team to its own sets still works; none is shown on screen.
     { const ids = new Map(), anon = n => typeof n === 'string' && n ? (ids.has(n) || ids.set(n, 'Player ' + (ids.size + 1)), ids.get(n)) : n;
       for (const e of (D['meta/events'] || {}).events || []) for (const t of e.top || []) if (Array.isArray(t)) t[0] = anon(t[0]);
-      for (const t of ((D['meta/teams'] || {}).teams || [])) if (t && 'player' in t) t.player = anon(t.player); }
+      for (const t of ((D['meta/teams'] || {}).teams || [])) if (t && 'player' in t) t.player = anon(t.player);
+      for (const r of ((D['meta/weekly'] || {}).fresh || [])) if (Array.isArray(r)) r[5] = anon(r[5]); /* This Week's new-in-top-cut rows carry the player (never shown) */ }
     prevTag = `<script>window.__NP_PREVIEW=1;(()=>{const D=${JSON.stringify(D).replace(/</g, '\\u003c')};const real=window.claude,w={use:async n=>{if(n==='db')return {doc:q=>({onSnapshot:cb=>{setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5);return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})};return real&&real.use?real.use(n):null}};window.__NP_CLAUDE=w;try{window.claude=w}catch(e){}})();</script>\n`; }
   // fonts (Sim, Nov 11: privacy): hosted by NastyPlot itself, never Google's servers. fonts/ beside the page by default;
   // --fonts=<folder>/ when the files live elsewhere (as --art). The build fails if a Google Fonts link ever comes back.

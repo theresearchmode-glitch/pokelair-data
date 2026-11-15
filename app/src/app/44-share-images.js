@@ -243,3 +243,5 @@ async function buildSheetImage(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   x.fillStyle = P.pen; x.fillText(t2, W - 40, 1314); x.fillStyle = P.ink; x.fillText(t1, W - 40 - w2, 1314);
   x.font = `600 15px ${BODY}`; x.fillStyle = P.faint; x.fillText('NastyPlot, unofficial fan tool', W - 40, 1338); x.textAlign = 'left';
   return c; }
+// a rounded rectangle path (moved unchanged from 44-share-card.js, Nov 15: shared with the rebuild)
+function scRound(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }

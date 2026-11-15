@@ -21,7 +21,7 @@ function scLogo(ctx, x, y, s) {
   ctx.fillStyle = SC.ink; let cx = px + 19 * s; for (const l of letters) { ctx.fillText(l, cx, py + ph - 7 * s); cx += ctx.measureText(l).width + sp; }
   ctx.save(); ctx.translate(px - 24 * s, py - 19 * s); ctx.scale((pw + 48 * s) / 300, (ph + 38 * s) / 96); ctx.fillStyle = SC.ink; ctx.fill(SC_LOOP); ctx.restore();
 }
-function scRound(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+// scRound: moved to 44-share-images.js (Nov 15; shared with the rebuild)
 /* scFit lives in 44-share-images.js (Nov 11) */
 async function buildShareCard() {
   const ms = members(); if (!ms.length) return null;
