@@ -664,8 +664,8 @@ t('WEEK-04', 'Most used this week: five tiles open their sheet', run({team: TEAM
   await ui.go('This Week'); expect(has(await ui.text(), 'Most used this week, % of teams.'), 'no caption'); const ids = await d.pokemonOnPage();
   expect(ids.length >= 13, 'few tappable Pokémon: ' + ids.length); await d.openPokemon('Sneasler'); expect(await d.sheetName() === 'Sneasler', 'tile did not open Sneasler'); }));
 t('WEEK-05', 'New tech: kind word, "a% → b% of its teams", Details shows team counts', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); const tx = await ui.text(); expect(/(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams ▲\d+/.test(tx), 'no new tech rows');
-  await d.tapDetails(); expect(/\(\d+ .+ teams this week, \d+ the week before\)/.test(await ui.text()), 'Details did not show team counts'); }));
+  await ui.go('This Week'); const tx = await ui.text(); expect((NEW ? /(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams \(\d+ .+ teams this week, \d+ the week before\) ▲\d+/ : /(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams ▲\d+/).test(tx), 'no new tech rows');
+  if (!NEW) await d.tapDetails(); /* new site (Nov 15): the team counts are always shown, no Details button; the same counts are checked */ expect(/\(\d+ .+ teams this week, \d+ the week before\)/.test(await ui.text()), 'Details did not show team counts'); }));
 t('WEEK-06', 'Winners this week open that event on Events', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('This Week'); expect(has(await ui.text(), 'Winners This Week'), 'no winners'); await d.tapWinner();
   expect(await ui.current() === 'events' && has(await ui.text(), '‹ All events'), 'winner did not open its event'); }));

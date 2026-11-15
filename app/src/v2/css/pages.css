@@ -2929,3 +2929,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* Nov 15 (night contrast sweep): the Events/Archetypes plate label and Track Record step numbers used --on-plate on --plot (1.76:1 at night); now --on-mark like the other eight */
 /* Nov 15 (day contrast sweep): This Week's Rising/Falling labels and points use --on-mark by day (off-white on red was 4.36:1, white is 4.55:1) */
 :root[data-theme="night"] .tc-grid td.v2{background:color-mix(in srgb,var(--good) 40%,var(--surface))} /* Nov 15 (night contrast sweep): 2x cells were 3.76:1 at 55%; 40% measures 5.28:1 */
+.wk-kind{display:inline-flex;align-items:center;gap:var(--s1)}.wk-kind .kdic{width:var(--s4);height:var(--s4);flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round} /* Nov 15: the kind icon beside its word */
