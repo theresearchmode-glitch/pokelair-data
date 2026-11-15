@@ -87,11 +87,11 @@ V2.openMon = n => { const p = byName.get(n); if (!p) return; const cur = documen
   V2.sheet(V2.monHtml(n), {label: V2.disp(n)}); V2.fitMsName(); };
 // the name on the card fits its line (The Card brief, Nov 13): a name wider than the card
 // ("Squawkabilly (Yellow)", "Mega Crabominable") steps the name down the type scale until every line fits; names that fit keep 28 px
-V2.fitMsName = (sel) => { const h = document.querySelector(sel || '.ms2 .ms-card .mc-id>h2'); if (!h) return; h.style.fontSize = ''; /* Nov 15: also the Pokémon page's Card (sel) */
+V2.fitMsName = (sel) => { const h = document.querySelector(typeof sel === 'string' ? sel : '.ms2 .ms-card .mc-id>h2'); /* never a frame timestamp as a selector */ if (!h) return; h.style.fontSize = ''; /* Nov 15: also the Pokémon page's Card (sel) */
   /* on the card the name stays on ONE line (a second line would climb into the Pokémon): step down the scale until it does */
   const over = () => { const box = h.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(h); const rs = [...rg.getClientRects()].filter(r => r.width); return rs.some(r => r.right > box.right + 0.5) || new Set(rs.map(r => Math.round(r.top / 8))).size > 1; };
   for (const s of ['--t26', '--t24', '--t22', '--t20', '--t17', '--t15']) { if (!over()) return; h.style.fontSize = `var(${s})`; } };
-addEventListener('resize', () => requestAnimationFrame(V2.fitMsName));
+addEventListener('resize', () => requestAnimationFrame(() => V2.fitMsName()));
 V2.msShow = (k, focus) => { V2.msTab = k; try { localStorage.setItem('np2.montab', k); } catch (e) {}
   document.querySelectorAll('.ms2 [data-mstab]').forEach(b => { const on = b.dataset.mstab === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
   document.querySelectorAll('.ms2 [data-mspan]').forEach(x => { x.hidden = x.dataset.mspan !== k; }); };
