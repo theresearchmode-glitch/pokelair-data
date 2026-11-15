@@ -2865,3 +2865,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699px){.pbp-vs{position:relative;left:auto;top:auto;translate:none;justify-self:center;margin:calc(var(--s6)*-1) 0 calc(var(--s5)*-1)}}
 @media (min-width:700px) and (max-width:1099px){.pbp-vs{display:none}}
 @media (max-width:699px){.cxf-score{margin-top:var(--s3)}} /* Compare phones: the score clear of the Change line above */
+/* re-check Nov 15: Winning Hands at 1100-1279: the champion's six (200px Cards) and the two hands below (100px) ran off both edges; one size
+   down here so each hand fits its width. The rows' links (Sets, Set as Opponent, Compare, Show Fewer) keep their look with a 44px tap area */
+@media (min-width:1100px) and (max-width:1279px){.wt .wt-card{--cw:160px;--ch:224px}.wt .wt-card .mc-mon .np-mon,.wt .wt-card .mc-mon .np-mon .st{--iw:120px}
+  .wt .wt-two .wt-card{--cw:76px;--ch:108px;--ov:2px}.wt .wt-two .wt-card .mc-mon .np-mon,.wt .wt-two .wt-card .mc-mon .np-mon .st{--iw:68px}.wt .wt-two .wt-card .mc-id h3{font-size:var(--t13)}}
+.wt-acts .np-link,[data-wtless],[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -4px}
+@media (max-width:359px){.wt .ra-seg a,.ev .ra-seg a,.ar .ra-seg a{font-size:var(--t13);padding:0 var(--s1)}}
