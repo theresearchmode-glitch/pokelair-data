@@ -2306,11 +2306,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (prefers-reduced-motion:reduce){.tt-pick:hover .tt-ban .np-mon{translate:none}}
 @media (max-width:1099px){.tt-corner{width:80px}.tt-ban{height:120px}.tt-ban .np-mon{--iw:96px}.tt-nm{font-size:var(--t13)}.tt .tt-rh{font-size:var(--t15)}.tt-st b{font-size:var(--t22)}.tt th,.tt td{font-size:var(--t13)}.tt-giant{font-size:var(--t26)}}
 @media (max-width:699px){.tt-top h2{font-size:var(--t34)}.tt-corner{width:56px}.tt .tt-rh{font-size:var(--t13)}.tt-ban{height:104px}.tt-ban .np-mon{--iw:88px}
-  .tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}.tt-no{font-size:var(--t20)}.tt-mv .np-type{font-size:var(--t13);padding:var(--s1)}}
+  .tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}.tt-no{font-size:var(--t20)}.tt-mv .np-type{font-size:var(--t13);padding:var(--s1) 6px}}
 .tt thead th{vertical-align:top}
 @media (max-width:1099px){.tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
 @media (max-width:1099px){.tt thead th{padding-left:0;padding-right:0}}
-@media (max-width:699px){.tt-corner{width:64px}}@media (max-width:379px){.tt-mv .np-type{padding:var(--s1) 2px}.tt td{padding-left:2px;padding-right:2px}}
+@media (max-width:699px){.tt-corner{width:64px}}@media (max-width:379px){.tt-mv .np-type{padding:var(--s1) 6px}.tt td{padding-left:2px;padding-right:2px}}
+/* Nov 15 (re-audit #15): under 380 the move text touched the chips' slanted edges (2px sides, now 6px); the moves start at the top of
+   every column, so the four rows line up instead of each column floating to its own middle */
+.tt td:has(.tt-mv){vertical-align:top}
 
 /* ---------- Battle a team: "Play-by-Play" (Sim's pick, Nov 14): you PLOT blue, them the site's own pink (--pick) ---------- */
 .pbp{--you:var(--plot);--them:var(--pick);--you-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--them-d:color-mix(in srgb,var(--pick) 62%,var(--tier-shade));--you-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--them-dd:color-mix(in srgb,var(--pick) 38%,var(--tier-shade))}
@@ -2422,7 +2425,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .cxf-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);margin:var(--s2) 0 0;padding-top:var(--s3);border-top:1px solid var(--rule)}.cxf-facts dt{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.cxf-facts dd{margin:0;font:900 var(--t17)/1.3 var(--u);font-style:italic}
 .cxf-facts dd.ok{color:var(--good-text)}.cxf-facts dd.no{color:var(--bad-text)}.cxf-col.a .cxf-tm{color:var(--plot-text)}.cxf-col.b .cxf-tm{color:var(--pick-text)}
 .cxf .cx2-tm.a{color:var(--plot-text)}.cxf .cx2-tm.b{color:var(--pick-text)}
-.cxf-more{margin:var(--s8) 0 0;font-size:var(--t22)}
+.cxf-more{margin:var(--s8) 0 var(--s3);font-size:var(--t22)} /* Nov 15 (re-audit #5): the headline sat on the rule */
+.cx2-hrow{border-bottom:0;padding:0 0 var(--s2)}.cx2-hrow .cx2-tm{font:700 var(--t13)/1.5 var(--b);letter-spacing:.02em}
+@media (max-width:699px){.cx2-hrow .cx2-lab{display:none}}
 @media (hover:hover) and (pointer:fine){.cxf-poster .np-mon img,:root[data-theme="night"] .cxf-poster .np-mon img{filter:none}}
 @media (max-width:1099px){.cxf-ghost{display:none}.cxf-half{min-height:360px;padding:var(--s4) var(--s10) var(--s4) var(--s5)}.cxf-half.b{padding-left:var(--s10);padding-right:var(--s5)}.cxf-score>b{font-size:var(--d64)}.cxf-six b{display:none}.cxf-hero .np-mon{--iw:160px}}
 @media (max-width:699px){.cxf-poster{grid-template-columns:minmax(0,1fr)}.cxf-half.a{margin:0 0 -20px;padding-right:var(--s5);clip-path:polygon(0 0,100% 0,100% calc(100% - 28px),0 100%)}.cxf-half.b{margin:0;padding:var(--s10) var(--s5) var(--s4);clip-path:polygon(0 28px,100% 0,100% 100%,0 100%)}

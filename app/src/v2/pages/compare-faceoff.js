@@ -32,6 +32,6 @@ V2.cxfCol = (side, rows) => { const E = V2.esc, k = side.toLowerCase(), v = r =>
   /* today's page from "What's Different" down, with the rows already drawn above left out of its differing-rows grid (they are all still on the page) */
   const tmp = document.createElement('div'); tmp.innerHTML = html; const sec = tmp.querySelector('.cx2'); if (!sec) return html;
   sec.querySelector('.cx2-top')?.remove(); sec.querySelector('.cx2-heads')?.remove();
-  const grid = sec.querySelector(':scope > .cx2-grid'); if (grid) { const keep = rows.filter(r => r.diff && !shown(r)); [...grid.children].forEach((el, i) => { const r = rows.filter(x => x.diff)[i]; if (r && shown(r)) el.remove(); }); if (!keep.length) grid.remove(); else grid.insertAdjacentHTML('beforebegin', '<h2 class="u cxf-more">Also Different</h2>'); }
+  const grid = sec.querySelector(':scope > .cx2-grid'); if (grid) { const keep = rows.filter(r => r.diff && !shown(r)); [...grid.children].forEach((el, i) => { const r = rows.filter(x => x.diff)[i]; if (r && shown(r)) el.remove(); }); if (!keep.length) grid.remove(); else grid.insertAdjacentHTML('beforebegin', '<h2 class="u cxf-more">Also Different</h2>' + V2.cxHrow()); /* Nov 15 (re-audit #5): say which column is which */ }
   sec.querySelectorAll('.cx2-tm').forEach(b => b.classList.add('cxf-tm'));
   sec.classList.add('cxf'); sec.insertAdjacentHTML('afterbegin', head); return tmp.innerHTML; }; })();
