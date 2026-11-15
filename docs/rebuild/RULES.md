@@ -144,4 +144,7 @@ Every page, built or still to be built, passes before it reaches Sim or the Prev
    Zero findings, or each remaining one explained as a false alarm with evidence.
 2. Every state the page has (empty, partial, open folds, other tabs, long names, the not-drawn states) goes through the same check.
 3. A fresh helper agent re-audits the page independently (reads the rules, screenshots, its own eyes) and finds nothing broken.
-4. Before/after pictures to Sim. A page is "done" only after all four.
+4. Labels and colours (Sim, Nov 14: "different names for the same action is just confusing"): every button for the same action uses the same
+   words across the site, Title Case, Word-list names; every colour carries the same meaning as everywhere else (docs/rebuild/audits/audit-naming.md,
+   colour-audit.md).
+5. Before/after pictures to Sim. A page is "done" only after all five.
