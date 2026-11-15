@@ -75,9 +75,11 @@ V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U 
   const wall = shown.length ? `${V2.ticket(shown[0], true)}<div class="tk-wall${small.length % 2 ? ' odd' : ''}">${small.map(e => V2.ticket(e)).join('')}</div>` : '<p class="tm-sub">No events here yet.</p>';
   return `<div class="ra gsp ev">${top}${tabs}<div class="gs-body"><section class="ev-wall"><header class="ev-wh"><h2 class="u">The Ticket Wall</h2><p>Newest first. Each ticket shows the winner's six, the winner's first Pokémon up front. Tap a ticket for the event's placings.</p></header>
     ${seg}${wall}${list.length > cap ? `<button type="button" class="np-btn2 ev-more" data-evmore><span>Show More · ${list.length - cap} left</span></button>` : ''}</section></div></div>`; }};
+// bring an opened event (or, on the way back, its card) just under the sticky header, once the page has drawn
+V2.evScrollTo = sel => { let n = 0; const go = () => { const el = document.querySelector(sel); if (!el) { if (++n < 20) requestAnimationFrame(go); return; } const h = (document.querySelector('.np-head') || {}).offsetHeight || 0; scrollTo({top: Math.max(0, el.getBoundingClientRect().top + scrollY - h - 16)}); }; requestAnimationFrame(go); };
 document.addEventListener('click', async e => { const b = e.target.closest && e.target.closest('[data-evgo],[data-evback],[data-evf],[data-evmore],[data-evcal],[data-evask],[data-evload],[data-evx],[data-evcopy],[data-evsets],[data-evvs]'); if (!b) return; const d = b.dataset, U = V2.evUi;
-  if (d.evgo) { U.open = d.evgo; U.sure = null; if (location.hash !== '#events') location.hash = '#events'; else V2.redraw(); try { scrollTo({top: 0}); } catch (er) {} return; }
-  if (d.evback != null) { U.open = null; U.sure = null; V2.redraw(); return; }
+  if (d.evgo) { U.open = d.evgo; U.sure = null; if (location.hash !== '#events') location.hash = '#events'; else V2.redraw(); V2.evScrollTo('.ev-open'); return; } /* function sweep, Nov 15: was scrollTo top, which left the opened results off screen on phones */
+  if (d.evback != null) { const was = U.open; U.open = null; U.sure = null; V2.redraw(); if (was) V2.evScrollTo(`[data-evgo="${CSS.escape(was)}"]`); return; }
   if (d.evf) { U.filter = d.evf; U.more = 0; }
   else if (d.evmore != null) U.more++;
   else if (d.evcal != null) U.cal = !U.cal;
