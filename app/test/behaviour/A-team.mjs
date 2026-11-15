@@ -246,7 +246,7 @@ t('TEAM-09', 'Lock and Remove on a tile: lock label flips; × removes with Undo'
 t('TEAM-10', 'Set card: plan role, rating, item, ability, nature, stat points, 4 moves; Edit set and Info sheet', async () => {
   const r = await myTeam(); await r.ui.tapTile('Garchomp'); const c = await r.ui.setCard();
   // button words in any casing (the new build writes buttons in Title Case, Sim Nov 9); the move strips are counted by the adapter
-  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, /Nature \w+ (most run|yours)/, /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, /Info sheet ›/i]) has(c, s, 'set card');
+  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, (NEW ? /Nature \w+ (most used|yours)/ : /Nature \w+ (most run|yours)/), /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, /Info sheet ›/i]) has(c, s, 'set card');
   const moves = await r.ui.setMoveCount(); ok(moves >= 4, `${moves} move strips`);
   await r.ui.tapText('Edit set', 900); let p = await r.ui.editPanel(); ok(p && /Edit Garchomp/.test(p.title + ' ' + p.text), 'Edit set did not open "Edit Garchomp"'); await r.ui.closeEditPanel();
   await r.ui.tapText('Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
@@ -578,7 +578,7 @@ t('EDIT-03', 'Slot header: Lock → "Locked" (tile shows locked), types, Mega/ra
   await r.ui.panelLock(); ok(/^Locked$/.test(await r.ui.panelLockText()), 'lock did not read "Locked"'); await r.ui.closeEditPanel(); ok(/^Unlock/.test(await r.ui.tileLockLabel('Mega Charizard Y') || ''), 'tile padlock not locked'); await r.close(); });
 
 t('EDIT-04', 'Nature picker: choosing saves at once ("Nature saved"), set card says "yours"; "Use <most run>" restores', async () => {
-  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); has((await r.ui.editPanel()).text, /Nature Most run/);
+  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); has((await r.ui.editPanel()).text, NEW ? /Nature Most used/ : /Nature Most run/); // new site: one tag word (audit #26)
   await r.ui.pickInPanel('nature', 'Jolly'); ok(await r.ui.waitToast(/Nature saved/), 'no "Nature saved" toast'); has((await r.ui.editPanel()).text, /Your pick/); await sleep(900);
   const a = await r.acct(); ok(a.slots[1].sp && a.slots[1].sp.doubles && a.slots[1].sp.doubles.nat === 'Jolly', 'nature not saved to the account');
   await r.ui.closeEditPanel(); has(await r.ui.showSet('Garchomp'), /Nature Jolly yours/, 'set card');

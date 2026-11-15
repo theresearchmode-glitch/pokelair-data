@@ -1,3 +1,5 @@
+// Nov 15 (audit #26): the shared note says 'most run'; the new site says 'most used' everywhere (Edit Set's tags, Home, Usage)
+V2.noteWord = n => n === 'most run' ? 'most used' : n;
 // ---------- My Team's six tiles and the set card (R4 group "six", Nov 11) ----------
 // The working-out is today's shared logic (src/app/05-six-data.js: teamLineup, PLAN_VS); this file only draws it.
 // Approved look: docs/rebuild/mocks/myteam.tpl.html (the six in three pairs: Lead, Back, Bench, each name over its item).
@@ -22,7 +24,7 @@ V2.handHtml = (D, sel) => { const {ms, L} = D, E = V2.esc, role = m => L.lead.in
 V2.editStripHtml = (D, sel) => { const {ms, L} = D, E = V2.esc; if (!sel || !ms.includes(sel)) return ''; const N = natInfo(sel), lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = L.lead.length && !L.lead.includes(sel);
   const rt = L.lead.length && ms.length >= 4 ? roleText(sel, L, x => escName(x.d)) : '';
   return `<section class="mt-edit" id="tm-set" aria-label="Editing ${E(sel.d)}"><div class="mt-ename"><p class="mt-ek">Editing</p> <h2 class="u">${V2.nameHtml(sel.d)}</h2> ${rt ? `<p class="sx-rt">${rt}</p>` : ''}</div>
-    <dl class="sx-kv mt-ekv">${N.nat ? `<div><dt>Nature</dt> <dd>${E(N.nat)}${N.natNote ? ` <small>${N.natNote}</small>` : ''}</dd></div>` : ''}${N.words ? `<div><dt>Stat points</dt> <dd>${E(N.words)}${N.ptsNote ? ` <small>${N.ptsNote}</small>` : ''}</dd></div>` : ''}</dl>
+    <dl class="sx-kv mt-ekv">${N.nat ? `<div><dt>Nature</dt> <dd>${E(N.nat)}${N.natNote ? ` <small>${V2.noteWord(N.natNote)}</small>` : ''}</dd></div>` : ''}${N.words ? `<div><dt>Stat points</dt> <dd>${E(N.words)}${N.ptsNote ? ` <small>${V2.noteWord(N.ptsNote)}</small>` : ''}</dd></div>` : ''}</dl>
     ${(() => { const mv = sel.moves.filter(Boolean); return mv.length ? `<ul class="mh-mv mt-emv" aria-label="Moves">${mv.map(v => { const ty = V2.TYPES.includes(v.type) ? v.type : 'Normal'; return `<li style="--tc:var(--ty-${ty})">${E(v.name)}</li>`; }).join('')}</ul>` : ''; })()}<div class="mt-eacts"><button type="button" class="np-btn2" data-v2edit="${sel.i}"><span>Edit Set</span></button><button type="button" class="np-link sx-info" data-v2mon="${E(sel.p.n)}">Info Sheet ›</button>${lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : ''}${L.by === 'you' ? `<button type="button" class="sx-a sx-reset" data-v2lead="">Use NastyPlot's Pick</button>` : ''}
       <button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button><button type="button" class="sx-a" data-v2rm="${sel.i}" aria-label="Remove ${E(sel.d)} from your team"><i aria-hidden="true">−</i>Remove</button></div></section>`; };
 V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
@@ -55,7 +57,7 @@ V2.setSecHtml = (D, sel) => { const m = sel, P = m.p, E = V2.esc, L = D.ms.lengt
   const row = (k, v, note) => `<div><dt>${k}</dt><dd>${v}${note ? ` <small>${note}</small>` : ''}</dd></div>`;
   return `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid sx-noart"><div>
     <h3 class="u">${V2.nameHtml(m.d)}</h3><div class="tm-types">${(P.t || []).map(V2.typeChip).join('')}${R ? `<span class="sx-rate2"><b class="u">${R.n}</b> ${R.tier ? E(R.tier) + ' tier rating' : 'Rating'}</span>` : ''}</div>
-    <dl class="sx-kv">${row('Item', E(m.heldItem || m.item || 'No item'))}${row('Ability', E(m.ability || 'None'))}${N.nat ? row('Nature', E(N.nat), N.natNote) : ''}${N.words ? row('Stat points', E(N.words), N.ptsNote) : ''}</dl>
+    <dl class="sx-kv">${row('Item', E(m.heldItem || m.item || 'No item'))}${row('Ability', E(m.ability || 'None'))}${N.nat ? row('Nature', E(N.nat), V2.noteWord(N.natNote)) : ''}${N.words ? row('Stat points', E(N.words), V2.noteWord(N.ptsNote)) : ''}</dl>
     <div class="tm-moves">${m.moves.filter(Boolean).map(v => `<span class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(v.type) ? v.type : 'Normal'});--tcn:var(--tyn-${V2.TYPES.includes(v.type) ? v.type : 'Normal'})">${E(v.name)}</span>`).join('')}</div>
     <div class="tm-setacts"><button type="button" class="np-btn2" data-v2edit="${m.i}"><span>Edit Set</span></button>${lead}<button type="button" class="np-link sx-info" data-v2mon="${E(P.n)}">Info Sheet ›</button></div></div></div></section>`; };
 
