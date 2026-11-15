@@ -2489,3 +2489,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1100px) and (max-width:1279px){.bp-top{grid-template-columns:minmax(0,1fr)}.bp-tb{grid-template-columns:minmax(0,1fr)}.bp-right{border-left:0;border-top:1px solid var(--bp-ink)}}
 @media (max-width:1279px){.bp .bp-left{grid-template-columns:minmax(0,1fr)}.bp .bp-left>*{grid-column:1/-1;min-width:0}.bp .bp-spec .np-slide{width:100%;min-width:0}}
 @media (min-width:1280px) and (max-width:1399px){.bp-top{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699px){.bp-left,.bp-right{padding:var(--s4) var(--s3)}.bp .bd-go .np-btn{max-width:100%;white-space:normal;text-align:center}}
+.bp .bd-brk{margin-top:var(--s4)}
+@media (pointer:coarse){.bd2 .np-link{display:inline-flex;align-items:center;min-height:44px}}
+@media (min-width:1280px) and (max-width:1399px){.bp .bp-left{grid-template-columns:minmax(0,1fr)}.bp .bp-left>*{grid-column:1/-1;min-width:0}.bp .bp-spec .np-slide{width:100%;min-width:0}}
+@media (max-width:1399px){.bp .bp-spec .bd-opt{grid-template-columns:minmax(0,1fr)}}
