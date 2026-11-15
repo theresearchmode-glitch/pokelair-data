@@ -37,7 +37,7 @@ V2.bpNotes = M => { const E = V2.esc, pv = M.t.proven, li = (n, u, l, s) => `<li
 V2.buildSheet = M => { const E = V2.esc, t = M.t, busy = !!(ui.ab && ui.ab.busy), lk = ui.abLock && byName.get(ui.abLock);
   const coreNames = M.core ? M.core[1].split(' + ').map(s => s.trim()) : [], tags = t.mons.some(x => !x.box || x.offMeta), chips = (t.gp || []).slice(0, 3);
   const ey = `${M.n > 1 ? `Option ${M.k + 1} of ${M.n} · ` : ''}${M.kind}${t.megas > 1 ? ` · ${t.megas} Mega options` : ''}`;
-  const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Use This Team</button><button type="button" class="np-btn2" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2" data-bdcopy><span>Copy for Showdown</span></button>
+  const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Load Team</button><button type="button" class="np-btn2" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2" data-bdcopy><span>Copy for Showdown</span></button>
     <span class="bd-catch">${M.nCatch === 6 ? 'All six to catch: none is in your box yet' : M.nCatch ? `${M.nCatch} to catch` : 'All six are in your box'}</span></div>`;
   return `<section class="bd-ans bp" style="--band:var(--band-${M.band})"><i class="bp-x tl" aria-hidden="true"></i><i class="bp-x tr" aria-hidden="true"></i><i class="bp-x bl" aria-hidden="true"></i><i class="bp-x br" aria-hidden="true"></i>
     <p class="bp-line"><span class="bp-plate u">Sheet ${M.k + 1} of ${M.n}</span><span class="bp-kind">${E(M.kind)}${t.megas > 1 ? ` · ${t.megas} Mega options` : ''}</span><span class="bp-src">${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles · drawn from real winning teams</span></p>
@@ -46,7 +46,7 @@ V2.buildSheet = M => { const E = V2.esc, t = M.t, busy = !!(ui.ab && ui.ab.busy)
     <p class="bp-dim"><span>Team of six${t.megas ? ` · ${t.megas} Mega${t.megas === 1 ? '' : 's'}` : ''}</span></p>
     <div class="bd-six bp-six${t.mons.some(m => { const d = V2.disp(m.n); return (/^Mega /.test(d) ? d.slice(5) : d).length > 9; }) ? ' lg' : ''}">${t.mons.map((m, i) => V2.bpFig(m, i, coreNames, tags)).join('')}</div>
     <div class="bp-tb"><div class="bp-left"><p class="bp-k">Spec · tap a field to change it</p>${V2.bpSpec()}${M.n > 1 ? `<p class="bp-k">Revisions · tap one to see it</p>${V2.bpRevs(M)}` : ''}
-        <div class="bd-opt bd-go"><button type="button" class="np-btn" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'} ↻</span></button></div></div>
+        <div class="bd-opt bd-go"><button type="button" class="np-btn2" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'} ↻</span></button></div></div>
       <div class="bp-right"><p class="bp-k">Notes</p>${V2.bpNotes(M)}${acts}</div></div></section>`; };
 // the page: today's head (eyebrow, headline, intro and How It Works), the sheet, then Recent Winners and Cores as today (not redesigned yet)
 // ---------- Blueprint lower half (designer's roughs, Nov 14): Recent Winners as "Reference sheets", Cores as "Parts list" ----------

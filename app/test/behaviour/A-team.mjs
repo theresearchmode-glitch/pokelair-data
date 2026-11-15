@@ -104,7 +104,7 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
   // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12): the same line with "·" between parts
   ok((NEW ? /The Champion's (?:six|corner) · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players/i : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
   ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link');
-  await r.ui.tapText('Load this team'); ok(await r.ui.sees('Tap again to replace your team'), 'first tap did not ask to tap again');
+  await r.ui.tapText(NEW ? 'Load Team' : 'Load this team'); /* Sim, Nov 14 (Q3 A): one name, Load Team */ ok(await r.ui.sees('Tap again to replace your team'), 'first tap did not ask to tap again');
   ok((await r.ui.team()).join() === TEAM.join(), 'first tap already replaced the team');
   await r.ui.tapText('Tap again to replace your team', 1200); const now = await r.ui.team(); ok(now.join() !== TEAM.join() && now.length === 6, 'second tap did not load the champion six');
   ok(await r.ui.waitToast(/./) && await r.ui.has('#toastUndo'), 'no Undo toast after loading');

@@ -151,7 +151,7 @@ t('AUTO-07', 'Build me a team: busy state with the spinner line, then a team car
   has(await ui.buildResult(), 'Building your teams… checking each against the top 30 threats.', 'spinner line');
   await ui.until(async () => /Strength Score/.test(await ui.buildResult()), 20000, 'team card');
   const a = await ui.buildButton(); expect(!a.disabled && !a.busy && !a.primary, 'after results the Build button should be enabled and no longer the main button: ' + JSON.stringify(a));
-  has(await ui.buildResult(), /Use this team/, 'Use this team'); await close(); });
+  has(await ui.buildResult(), NEW ? /Load Team/ : /Use this team/, 'Use this team'); /* Sim, Nov 14 (Q3 A): one name, Load Team */ await close(); });
 
 t('AUTO-08', 'Result card: kicker, title, option count, Strength Score + band + rank, six tiles with items, readiness, checks, why, Sets and roles', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.tap(/^Whole roster/); await ui.buildMeATeam(); const r = await ui.buildResult();
