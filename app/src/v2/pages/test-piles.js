@@ -20,7 +20,7 @@ V2.tpOpen = (x, ms, top) => { const E = V2.esc, pr = x.pr, P = V2.tpPile(x.e), n
     <p class="tp-v u">${verdict}</p>${pr ? `<p class="tp-say">You have an answer for <b>${all(pr.yN, pr.n)}</b> of their Pokémon. They have an answer for <b>${all(pr.tN, ms.length)}</b> of yours.</p>` : ''}
     <p class="tp-bh u">Bring these four</p><div class="tp-four">${four.map(([i, big]) => `<span class="${big ? 'big' : ''}">${V2.mon(ms[i].p.n, {bare: true})}</span>`).join('')}</div>
     <p class="tr-plan">Bring <b>${x.r.lead.map(nm).join(' + ')}</b> up front, ${x.r.back.map(nm).join(' + ')} in back.${x.un.length ? ` Watch <b class="w">${x.un.map(j => E(x.theirs[j].d)).join(', ')}</b>.` : ''}</p>
-    <div class="tr-btns"><button type="button" class="np-btn" data-trbat="${x.ix}"><span>Practice in Battle mode</span></button><button type="button" class="np-btn2" data-trcopy="${x.ix}"><span>Copy for Showdown</span></button></div>
+    <div class="tr-btns"><button type="button" class="np-btn" data-trbat="${x.ix}"><span>Set as Opponent</span></button><button type="button" class="np-btn2" data-trcopy="${x.ix}"><span>Copy for Showdown</span></button></div>
     ${pr ? `<details class="tr-prep"><summary>Matchup prep ›</summary><p class="tr-lbl">You against their six</p><div class="tr-cells">${pr.you.map(cell).join('')}</div><p class="tr-lbl">Their six against yours</p><div class="tr-cells">${pr.them.map(cell).join('')}</div></details>` : ''}</article>`; };
 (() => { const before = V2.pages.gauntlet.draw; V2.pages.gauntlet.draw = () => { const E = V2.esc, ms = members(); if (ms.length < 4) return before();
   let rows = []; try { rows = V2.trRows(ms); } catch (e) { rows = []; } if (!rows.length) return before();
@@ -35,7 +35,7 @@ V2.tpOpen = (x, ms, top) => { const E = V2.esc, pr = x.pr, P = V2.tpPile(x.e), n
   const tools = V2.battleToolsBar('gauntlet');
   return `<div class="tr tp">${tools}${V2.trHead(rows.length)}
     <p class="tr-lede">Take a test run: the latest top tournament teams, least prepared first.</p>
-    <details class="tr-how" data-trfold><summary><span class="u">How it works</span><small>Same calcs as your scouting report, both ways</small></summary><p>Your six against real top tournament teams, with the same calcs as your scouting report: how many of their Pokémon you're ready for, and how many of yours they're ready for. A red <b class="w">!</b> marks one of theirs you have no answer to. Preparation, not a forecast: the player still decides the game.</p></details>
+    <details class="tr-how" data-trfold><summary><span class="u">How it works</span><small>Same calcs as your Matchups, both ways</small></summary><p>Your six against real top tournament teams, with the same calcs as your Matchups: how many of their Pokémon you're ready for, and how many of yours they're ready for. A red <b class="w">!</b> marks one of theirs you have no answer to. Preparation, not a forecast: the player still decides the game.</p></details>
     <section class="tp-table"><div class="tp-th"><h2 class="u">Three Piles</h2><p>We dealt all ${rows.length} top teams into three piles. Work through the pink pile first. Tap a card to flip it over.</p></div>
       <div class="tp-piles">${pile('p', 'The Problems', "they're better prepared")}${pile('c', 'The Coin Flips', 'about even')}${pile('g', 'The Good Matchups', "you're better prepared")}</div></section>
     <p class="fine tr-foot">Real damage calcs, least prepared matchups first ${V2.tip('gauntcalc')}</p></div>`; }; })();

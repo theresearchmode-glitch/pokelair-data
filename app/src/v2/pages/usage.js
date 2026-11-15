@@ -24,7 +24,7 @@ V2.usHow = (R, d) => { const E = V2.esc, t = R.t, p = R.p, nm = V2.usName(R), sb
   const mates = tm.length ? `<div class="us-mates"><p class="np-eyebrow"><span>Teammates</span></p><h3 class="u">Usually alongside</h3>${(innerWidth < 700 && tm.length > 3 ? [tm.slice(0, 3), tm.slice(3)] : [tm]).map(row => `<div class="gs-row us-bench" style="--c:${innerWidth < 700 ? 3 : row.length}">${row.map(([n, v]) => { const q = byName.get(n);
       return `<button type="button" class="gs-mon" data-v2mon="${E(n)}" style="--b1:var(--ty-${q.t[0]});--b2:var(--ty-${q.t[1] || q.t[0]})" aria-label="${E(q.d)}${v != null ? `, on ${Math.round(+v)}% of its teams` : ''}: open its info sheet"><span class="gs-fig" aria-hidden="true"><i class="gs-base"></i>${V2.mon(q.n, {bare: true})}</span><span class="gs-tx" aria-hidden="true">${q.m ? '<span class="gs-mg u">Mega</span>' : '<span class="gs-mg">&nbsp;</span>'}<b>${E(q.m ? q.d.slice(5) : q.d)}</b>${v != null ? `<small>${Math.round(+v)}% of its teams</small>` : ''}</span></button>`; }).join('')}</div>`).join('')}</div>` : '';
   const cc = t.cc && t.cc.length ? `<p class="fine us-cc"><b>Checks and counters:</b> ${t.cc.slice(0, 5).map(([n, v]) => { const q = byName.get(n); return E(q ? q.d : n) + ` <small>${(+v).toFixed(0)}</small>`; }).join(', ')}</p>` : '';
-  const add = st === 'ok' ? `<button type="button" class="np-btn" data-v2add="${E(p.n)}" aria-label="Add ${E(nm)} to team"><span>Add to team</span></button>` : st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : '';
+  const add = st === 'ok' ? `<button type="button" class="np-btn" data-v2add="${E(p.n)}" aria-label="Add ${E(nm)} to My Team"><span>Add to My Team</span></button>` : st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : '';
   return `<section class="us-how" data-ushow="${E(t.n)}"${p ? ` style="--ty-a:var(--ty-${p.t[0]});--ty-b:var(--ty-${p.t[1] || p.t[0]})"` : ''}><div class="us-hh"><h2 class="u">How ${E(nm)} is played</h2><p class="fine">Point at or tap any Pokémon above to see it here instead.</p></div>
     ${t.w ? `<p class="us-w">Win rate · ${E(d.source || 'this list')}: <b class="u">${(+t.w).toFixed(1)}%</b>${t.teams ? ' ' + basis(t.teams, 'team', 'teams', {pre: 'from its'}) : ''}</p>` : ''}
     ${groups.length ? `<div class="us-groups">${groups.join('')}</div>` : '<p class="tm-sub">No set details for this one yet.</p>'}${cc}${mates}
@@ -35,14 +35,14 @@ V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x 
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
     <div class="gs-sinfo"><p class="gs-tag u">Most used right now</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       <div class="gs-facts"><p><span>Usage rank</span><b class="u">#${R.t.r}</b></p><p><span>On teams</span><b class="u">${R.u != null ? (+R.u).toFixed(1) + '%' : N.u != null ? E(V2.raPct(N.u)) : '–'}</b></p><p><span>Win rate</span><b class="u">${R.t.w ? (+R.t.w).toFixed(1) + '%' : N.w != null ? E(winFmt(N.w)) : '–'}</b></p></div>
-      <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Open info sheet</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}"><span>Add to team</span></button>` : ''}</div>
+      <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Info Sheet</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}"><span>Add to My Team</span></button>` : ''}</div>
       ${st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}${x ? `<p class="fine">Rated ${RS(x.r.total)} · ${lTier(x.r.total).k} tier</p>` : ''}</div></div>`; };
 
 V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
   if (!META[SRC[ui.metaSrc]]) { const alt = ['ingame', 'tour', 'ladder'].find(k => META[SRC[k]]); if (alt) ui.metaSrc = alt; }
   const d = metaDoc(), kind = d && (d.kind || 'ladder');
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
-    <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Rating</a><a href="#usage" class="on" aria-current="page">Usage</a><a href="#sets">Sets</a></nav></div>`;
+    <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage" class="on" aria-current="page">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
   const rows = d ? (d.top || []).map(t => V2.usRow(t, kind)) : [];
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Usage</span></p><h1 class="u"><span>Who gets picked</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">The most used Pokémon, from the ranked ladder, the Showdown ladder or online tournaments.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings →</a><a class="np-link" href="#sets">Popular Sets →</a></p></section>`;

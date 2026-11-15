@@ -115,7 +115,7 @@ V2.dcDetails = (C) => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc 
   const fold = (k, who, line, boxes) => `<details class="dc2-fold" data-dcfold="${k}"${V2.dcOpen && V2.dcOpen[k] ? ' open' : ''}><summary><span><b>${E(who)}'s set</b><small>${line}</small></span><i aria-hidden="true">›</i></summary><div class="dc2-boxes">${boxes}</div></details>`;
   return `<section class="dc2-det"><div class="dc2-dl"><p class="np-eyebrow"><span>Details</span></p>
       ${notes.length ? `<p>${notes.join(' · ')}</p>` : ''}${nc.length ? `<p>Not counted: ${nc.join('; ')}.</p>` : ''}${bulk ? `<p>${bulk}</p>` : ''}${set}
-      <p class="dc2-links"><a class="np-link" href="#feedback">Report a mistake</a><a class="np-link" href="#method">How the calc works →</a></p></div>
+      <p class="dc2-links"><a class="np-link" href="#feedback">Report a Mistake</a><a class="np-link" href="#method">How the Calc Works ›</a></p></div>
     <div class="dc2-dr">${fold('a', V2.disp(A.p.n), aLine, aBoxes)}${fold('d', V2.disp(D.p.n), dLine, dBoxes)}</div></section>`; };
 
 // each Pokemon fits the room its Card actually has: below the ATTACKER / DEFENDER label and at least 8 px above its name (a Mega's blue
@@ -129,7 +129,7 @@ addEventListener('resize', () => { clearTimeout(V2._dcFitT); V2._dcFitT = setTim
 V2.pages.calc = {place: 'battle', after() { V2.dcFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelector('.dc2') && V2.dcFit()); }, draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2">${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
   const set = C.mvs.pop.filter(m => m && m.bp > 0), hand = set.filter(m => m.name !== dc.mv).slice(0, 3), [wl, wr] = V2.dcWings(C);
   const play = C.mv ? V2.dcMove(C, C.mv, true) : `<div class="dc2-mv play empty"><b class="nm u">Pick a damaging move</b></div>`;
-  return `<div class="dc2">${V2.battleToolsBar('calc')}<div class="dc2-top"><p class="np-eyebrow"><span><span class="dc2-bt">Battle · </span>Damage Calc · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</span></p><a class="np-link" href="#method">How the calc works →</a></div>
+  return `<div class="dc2">${V2.battleToolsBar('calc')}<div class="dc2-top"><p class="np-eyebrow"><span><span class="dc2-bt">Battle · </span>Damage Calc · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</span></p><a class="np-link" href="#method">How the Calc Works ›</a></div>
     ${V2.dcResult(C)}
     <section class="dc2-table" aria-label="The table"><div class="dc2-surface" aria-hidden="true"></div>
       <!-- keyboard and screen-reader order: attacker, its moves, Swap, defender, the field; every piece is placed on the table by the CSS grid -->

@@ -7,7 +7,7 @@ V2.cxGo = (a, b) => { if (a === 'cur' && !members().length) { a = b; b = ''; } u
   if (location.hash !== '#compare') location.hash = '#compare'; else V2.redraw(); if (!ui.cx.A || !ui.cx.B) setTimeout(() => V2.cxPick(!ui.cx.A ? 'A' : 'B'), 60); };
 const cxBadge = s => `<span class="cx2-b ${s === 'A' ? 'a' : 'b'}" aria-hidden="true">${s}</span>`;
 V2.cxHead = (side, R) => { const E = V2.esc;
-  if (!R) return `<button type="button" class="cx2-head empty ${side === 'A' ? 'a' : 'b'}" data-cxp="${side}">${cxBadge(side)}<span class="nm">Pick Team ${side}</span><span class="fine">My team, saved, winning or pasted</span></button>`;
+  if (!R) return `<button type="button" class="cx2-head empty ${side === 'A' ? 'a' : 'b'}" data-cxp="${side}">${cxBadge(side)}<span class="nm">Pick Team ${side}</span><span class="fine">My Team, saved, winning or pasted</span></button>`;
   const ms = teamRating(R.slots).ms;
   return `<div class="cx2-head ${side === 'A' ? 'a' : 'b'}"><div class="cx2-hd">${cxBadge(side)}<div class="cx2-nm"><b>${E(R.name)}</b><span>${E(R.sub || '')}</span></div><button type="button" class="np-link" data-cxp="${side}" aria-label="Change team ${side}">Change</button></div>
     <ul class="cx2-six">${ms.map(m => `<li>${V2.mon(m.p.n, {iw: 64})}</li>`).join('')}${Array.from({length: Math.max(0, 6 - ms.length)}, () => '<li class="cx2-e" aria-hidden="true"></li>').join('')}</ul></div>`; };
@@ -56,7 +56,7 @@ V2.cxPickHtml = side => { const other = ui.cx[side === 'A' ? 'B' : 'A'], E = V2.
   const sv = S.teams.filter(t => t.format !== 'singles');
   if (sv.length) parts.push(`<h3 class="cx2-ph">Saved Teams</h3>${sv.map(t => opt('s:' + t.id, t.name, '', teamRating(t.slots).ms.map(m => m.p.n))).join('')}`);
   const pool = tsPool().filter(x => x.t.place === 1), cap = 6 + ui.cx.wmore * 10;
-  if (pool.length) parts.push(`<h3 class="cx2-ph">Winning Teams <small>event winners, newest first</small></h3>${pool.slice(0, cap).map(x => opt('e:' + x.key, 'Champion', `Won ${x.ev.name} · ${evDate(x.ev.date)}`, x.t.mons.map(m => m.n))).join('')}${pool.length > cap ? `<button type="button" class="np-link cx2-more" data-cxwmore2>Show ${Math.min(10, pool.length - cap)} more winners</button>` : ''}`);
+  if (pool.length) parts.push(`<h3 class="cx2-ph">Winning Teams <small>event winners, newest first</small></h3>${pool.slice(0, cap).map(x => opt('e:' + x.key, 'Champion', `Won ${x.ev.name} · ${evDate(x.ev.date)}`, x.t.mons.map(m => m.n))).join('')}${pool.length > cap ? `<button type="button" class="np-link cx2-more" data-cxwmore2>Show ${Math.min(10, pool.length - cap)} More Winners</button>` : ''}`);
   parts.push(`<h3 class="cx2-ph">Paste a Showdown Team</h3><textarea class="imp2-in cx2-paste" data-cxpaste-in rows="5" spellcheck="false" placeholder="Paste a team from Showdown, Pokémon Zone, Pikalytics or Victory Road" aria-label="Showdown team text"></textarea>
     <div class="cx2-pacts"><button type="button" class="np-btn2" data-cxpaste2="${side}"><span>Use This Team</span></button><p class="fine" data-cxpnote aria-live="polite"></p></div>`);
   return `<div class="cx2-pick"><div class="np-eyebrow">Compare</div><h2 class="u">Pick Team ${side}</h2>${parts.join('')}</div>`; };

@@ -22,7 +22,7 @@ V2.ygHtml = () => { const ms = members(), q = V2.ql, E = V2.esc, so = (S.opp || 
     <div class="yg2-opp">${q.opp.map((n, i) => `<span class="yg2-o">${V2.mon(n, {iw: 48, bare: true})}<b>${E(V2.disp(n))}</b><button type="button" data-ygoppx="${i}" aria-label="Remove ${E(V2.disp(n))}">×</button></span>`).join('')}</div>
     ${q.opp.length < 6 ? `<label class="np-field yg2-q">${V2.ICON.search}<input type="search" data-ygq value="${E(q.q)}" placeholder="Add their Pokémon" aria-label="Add one of their Pokémon" autocomplete="off"></label>
       <div class="hits yg2-hits">${hits.map(p => `<button type="button" class="np-hit" data-ygopp="${E(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><b>${V2.nameHtml(V2.disp(p.n))}</b></button>`).join('')}</div>` : ''}
-    ${so.length && !q.opp.length ? `<button type="button" class="np-link yg2-bm" data-ygbm>Use their ${so.length} from Battle mode: ${E(so.slice(0, 3).map(n => byName.get(n).d).join(', '))}${so.length > 3 ? '…' : ''}</button>` : ''}
+    ${so.length && !q.opp.length ? `<button type="button" class="np-link yg2-bm" data-ygbm>Use their ${so.length} from Battle: ${E(so.slice(0, 3).map(n => byName.get(n).d).join(', '))}${so.length > 3 ? '…' : ''}</button>` : ''}
     <div class="yg2-res"><button type="button" class="np-btn" data-ygres="W">Win</button><button type="button" class="np-btn2" data-ygres="L"><span>Loss</span></button></div></div>`; };
 V2.ygOpen = () => { V2.ql.leads = []; V2.ql.opp = []; V2.ql.q = ''; V2.sheet(V2.ygHtml(), {label: 'Log a game', small: true, focus: '[data-yglead]'}); };
 V2.ygRe = focusQ => { const box = document.querySelector('.yg2'); if (!box) return; box.outerHTML = V2.ygHtml();

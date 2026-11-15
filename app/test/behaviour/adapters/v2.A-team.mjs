@@ -173,7 +173,7 @@ export default (ui, pg, o) => {
         // the action is named by what the button does (its data attribute), so a reworded label still counts as that action
         // the main save button says what it will do (A11, approved Nov 12): "Save Team", "Update Saved Team" (the open saved team
         // has changed) or a quiet "Saved ✓" (unchanged); reported under today's names, and "Saved ✓" as itself (Nov 12)
-        const sv = e.hasAttribute('data-v2save') ? (/^Update Saved Team$/i.test(t) ? 'Update saved team' : /^Saved\b/.test(t) ? 'Saved ✓' : 'Save team') : null;
+        const sv = e.hasAttribute('data-v2save') ? (/^Update (Saved )?Team$/i.test(t) ? 'Update saved team' : /^Saved\b/.test(t) ? 'Saved ✓' : 'Save team') : null;
         const hit = MAP.find(([a]) => e.hasAttribute(a)); out.push(sv || (hit ? hit[2] : e.getAttribute('href') === '#box' ? 'My Box' : t)); } return out; }),
     jumpBar: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].filter(e => e.getClientRects().length).map(e => e.childNodes[0].textContent.trim())),
     jumpTo: name => tapFound(n => [...document.querySelectorAll('#main .tm-jump [data-tmjump]')].find(e => e.getClientRects().length && e.childNodes[0].textContent.trim() === n) || null, name, 'jump ' + name, 900),
@@ -274,7 +274,7 @@ export default (ui, pg, o) => {
         const rows = [...tb.querySelectorAll('tbody tr')].map(tr => ({h: T(tr.querySelector('th')), d: tr.querySelectorAll('td')[k]})).filter(x => x.h && x.d);
         const by = h => rows.filter(x => x.h === h), rest = rows.filter(x => !['Item', 'Ability', 'Moves', 'Nature'].includes(x.h));
         for (const x of [...by('Item'), ...by('Ability')]) out.push(x.h, T(x.d)); for (const x of by('Moves')) out.push(T(x.d)); for (const x of by('Nature')) out.push(T(x.d).replace(/^(\S+) /, '$1 '));
-        for (const x of rest) out.push(x.h, T(x.d).replace(/ pts/g, '').replace(/[▲▼] /g, '')); return out.join(' '); } return null; }, name),
+        for (const x of rest) out.push(x.h, T(x.d).replace(/ (pts|points)/g, '').replace(/[▲▼] /g, '')); return out.join(' '); } return null; }, name),
     focusSheetCard: name => pg.evaluate(n => { const b = [...document.querySelectorAll('.np-sheet .ts2 .tt-pick')].filter(e => e.getClientRects().length).find(e => (e.getAttribute('aria-label') || '').startsWith(n + ':')); if (b) b.focus(); return !!b && document.activeElement === b; }, name),
     // Nov 12 (TEAM-15): the Matchups section's real-games bar is drawn only (aria-hidden), so text can't see it: its three shares
     // (Favoured | Even match | Unfavoured), the section it sits in, and the lines just before and after it; null if not shown

@@ -133,7 +133,7 @@ t('BATTLE-05', '"Practice against a top team" loads a tournament six; select res
   expect(/Pick a tournament team/i.test(opts[0]), 'first choice is not "Pick a tournament team…"');
   await ui.pickTournamentTeam(1);
   expect((await ui.opponents()).length === 6, 'their six not filled');
-  expect(/Loaded .+ team as the opponent/i.test(await ui.toast()), 'no "Loaded … team as the opponent" toast');
+  expect((NEW ? /Opponent set: .+/i : /Loaded .+ team as the opponent/i).test(await ui.toast()), 'no opponent toast'); /* new: Sim, Nov 14 naming: one toast "Opponent set: X" */
   expect(await ui.sees('Their real open team sheet'), 'head does not say "Their real open team sheet"');
   const one = (await ui.opponents())[2]; await ui.removeOpponent(one);
   expect(/Pick a tournament team/i.test(await ui.tournamentTeamChosen()), 'select did not go back to "Pick a tournament team…"');
@@ -155,8 +155,8 @@ t('BATTLE-06', '"Copy for Showdown" for their open team sheet copies six full se
 
 t('BATTLE-07', 'empty and partial states: under 4 of yours, none of theirs, then the plan fills in', async () => {
   { const {ui, close} = await open({team: TEAM.slice(0, 3)}); await ui.go('Battle');
-    expect(await ui.sees('Add at least 4 Pokémon on My team first'), 'no "Add at least 4" message with 3');
-    await ui.tapIn('Go to My team'); expect(await ui.current() === 'report', '"Go to My team" did not open My team'); await close(); }
+    expect(await ui.sees((NEW ? 'Add at least four Pokémon on My Team first' : 'Add at least 4 Pokémon on My team first')), 'no "Add at least 4" message with 3');
+    await ui.tapIn((NEW ? 'Go to My Team' : 'Go to My team')); expect(await ui.current() === 'report', (NEW ? '"Go to My Team" did not open My team' : '"Go to My team" did not open My team')); await close(); }
   const {ui, close} = await open({team: TEAM.slice(0, 4)}); await ui.go('Battle');
   if (NEW) expect(await ui.sees('Everything below fills in once their six is in'), 'no "Everything below fills in…" message with 4 and none of theirs');
   else expect(await ui.sees('Type their Pokémon as you see them at team preview. Everything below fills in as you go.'), 'no "Type their Pokémon…" message with 4 and none of theirs');
@@ -355,7 +355,7 @@ t('LOG-03', 'Your record: overall %, this team, lead pairs after games', async (
   const f = await ui.foldText('Battle log');
   expect(/2[–-]1 overall,?( ·)? 67%/i.test(f), 'no "2-1 overall · 67%": ' + f.slice(0, 300));
   expect(/2[–-]1 this team/i.test(f), 'no "this team" record');
-  expect(/3 battles logged/i.test(f), 'no "3 battles logged"');
+  expect((NEW ? /3 games logged/i : /3 battles logged/i).test(f), 'no "3 games logged"'); /* new: Sim, Nov 14 naming: Your Games */
   expect(/Lead pairs/i.test(f) && /Mega Charizard Y \+ Rillaboom/i.test(f), 'no lead pair row');
   expect(/Your Pokémon/i.test(f), 'no "Your Pokémon" bars');
   await close(); });
@@ -363,7 +363,7 @@ t('LOG-03', 'Your record: overall %, this team, lead pairs after games', async (
 t('LOG-04', 'delete a logged game from Recent battles', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log');
   await ui.logResult('W'); await ui.logResult('L');
-  await ui.deleteBattle(0); expect(/Battle deleted/i.test(await ui.toast()), 'no "Battle deleted" toast');
+  await ui.deleteBattle(0); expect((NEW ? /Game removed/i : /Battle deleted/i).test(await ui.toast()), 'no removed toast'); /* new: Sim, Nov 14 naming */
   const g = await ui.savedGames(); expect(g.length === 1 && g[0].r === 'W', 'the newest game was not the one deleted: ' + JSON.stringify(g));
   expect(/1[–-]0 overall/i.test(await ui.foldText('Battle log')), 'record did not drop by one');
   await close(); });
@@ -403,7 +403,7 @@ t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   hasAll(await ui.pageText(), NEW ? ['Damage Calc · level 50 doubles', 'assumed spread'] /* Sim's 'Their Side' brief 10: the title is one small line, no big heading */ : ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
-  await ui.tapIn('How the calc works'); expect(await ui.current() === 'method', 'link did not open How we calculate');
+  await ui.tapIn((NEW ? 'How the Calc Works' : 'How the calc works')); expect(await ui.current() === 'method', 'link did not open How we calculate');
   expect(await ui.sees(/damage/i), 'How we calculate does not show the damage section'); await close(); });
 
 t('CALC-02', 'attacker/defender defaults and pickers grouped Your team / Top of the meta / Everyone', async () => {
@@ -536,7 +536,7 @@ t('SPEED-06', 'no team: message and "Go to My team"; footnote with its tip', asy
   const {ui, close} = await open({team: []}); await ui.go('Speed Tiers');
   expect(await ui.sees(NEW ? 'Add Pokémon on My Team to place them against the top' : 'Add Pokémon on My team to place them against the top threats'), 'no empty message');
   expect(await ui.isPressed('Trick Room') === false, 'toggles hidden with no team');
-  await ui.tapIn('Go to My team'); expect(await ui.current() === 'report', '"Go to My team" did not open My team'); await close(); });
+  await ui.tapIn((NEW ? 'Go to My Team' : 'Go to My team')); expect(await ui.current() === 'report', (NEW ? '"Go to My Team" did not open My team' : '"Go to My team" did not open My team')); await close(); });
 
 // ============================== TYPES: Type chart ==============================
 t('TYPES-01', 'pick up to two types (third replaces the older), Clear', async () => {
@@ -578,12 +578,12 @@ t('TYPES-05', 'full type chart: 18×18 grid on wide screens, attacking-type pick
 t('TEST-01', 'Test run head and "How it works" fold', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Test Run'); await ui.waitTestRun();
   hasAll(await ui.pageText(), ['The latest top tournament teams', 'Take a test run'], 'Test run head');
-  await ui.openFold('How it works'); const f = await ui.foldText('How it works'); expect(f && f.length > 120 && /same calcs as your scouting report/i.test(f), 'How it works has no explanation'); await close(); });
+  await ui.openFold('How it works'); const f = await ui.foldText('How it works'); expect(f && f.length > 120 && (NEW ? /same calcs as your Matchups/i : /same calcs as your scouting report/i).test(f), 'How it works has no explanation'); await close(); });
 
 t('TEST-02', 'Test run empty state under 4 Pokémon; falls back to built-in team lists without daily data', async () => {
   const {ui, close} = await open({team: TEAM.slice(0, 3)}); await ui.go('Test Run');
   expect(await ui.sees(/Add at least 4 Pokémon on My team to (run the gauntlet|start a Test Run)\. You have 3\./i), 'no "You have 3." message'); /* new site: Sim's word list says Test run, not gauntlet (Nov 9) */
-  await ui.tapIn('Go to My team'); expect(await ui.current() === 'report', '"Go to My team" did not open My team'); await close();
+  await ui.tapIn((NEW ? 'Go to My Team' : 'Go to My team')); expect(await ui.current() === 'report', (NEW ? '"Go to My Team" did not open My team' : '"Go to My team" did not open My team')); await close();
   // "no team data" message: not reachable today. Without meta/teams the page falls back to the proven team lists built into the
   // page itself (RESULTS), so the message never shows; checked Nov 10 with meta/teams and meta/results both missing.
   { const {ui, close} = await open({team: TEAM}); await ui.reloadWithout('meta/teams'); await ui.go('Test Run', 1500); await ui.waitTestRun();
@@ -611,7 +611,7 @@ t('TEST-05', 'Matchup prep fold: level words for each Pokémon both ways (also M
 t('TEST-06', '"Practice in Battle mode" loads the team into Battle', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Test Run'); await ui.waitTestRun();
   await ui.testRunPractice(0); expect(await ui.current() === 'matchup', 'Battle did not open');
-  expect((await ui.opponents()).length === 6, 'their six not loaded'); expect(/Loaded as your opponent/i.test(await ui.toast()), 'no "Loaded as your opponent" toast');
+  expect((await ui.opponents()).length === 6, 'their six not loaded'); expect((NEW ? /Opponent set/i : /Loaded as your opponent/i).test(await ui.toast()), 'no opponent toast'); /* new: Sim, Nov 14 naming ("Set as Opponent") */
   expect(await ui.sees('Their real open team sheet'), 'their sheet not named in the head'); await close(); });
 
 t('TEST-07', '"Copy for Showdown" on a Test run card', async () => {
@@ -623,7 +623,7 @@ t('TEST-08', 'show more teams / show fewer', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Test Run'); await ui.waitTestRun();
   if (NEW) { /* Nov 14, Three Piles (Sim's pick): all 20 teams are dealt at once, so there is nothing to show more or fewer of */ expect((await ui.testRunCards()).length === 20, '20 cards not shown'); expect(!(await ui.sees(/more teams|show fewer/i)), 'a show more / show fewer button is still there'); await close(); return; }
   await ui.tapIn('17 more teams'); expect((await ui.testRunCards()).length === 20, '20 cards not shown');
-  await ui.tapIn('Show fewer'); expect((await ui.testRunCards()).length === 3, 'did not fold back to 3'); await close(); });
+  await ui.tapIn((NEW ? 'Show Fewer' : 'Show fewer')); expect((await ui.testRunCards()).length === 3, 'did not fold back to 3'); await close(); });
 
 t('TEST-09', 'Test run footnote and its tip', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Test Run'); await ui.waitTestRun();
@@ -634,37 +634,37 @@ t('TEST-09', 'Test run footnote and its tip', async () => {
 t('PRAC-01', 'start screen: "Use my team" needs exactly six; real-team mode otherwise', async () => {
   { const {ui, close} = await open({team: TEAM}); await ui.go('Practice');
     hasAll(await ui.pageText(), ['Pick your four', 'Pick four and two leads against a real ladder team', 'From the Showdown ladder'], 'Practice start');
-    expect(await ui.isPressed(/^Use my team/) === true, '"Use my team" not chosen with six'); await close(); }
+    expect(await ui.isPressed((NEW ? /^Use My Team/ : /^Use my team/)) === true, (NEW ? '"Use My Team" not chosen with six' : '"Use my team" not chosen with six')); await close(); }
   { const {ui, close} = await open({team: TEAM.slice(0, 4)}); await ui.go('Practice');
-    expect(await ui.isPressed(/^Practice with a real team/) === true, '"Practice with a real team" not chosen with 4');
-    expect(await ui.sees('Add six Pokémon on My team to use it (you have 4)'), 'no "you have 4" note');
-    expect(await ui.sees('Go to My team'), 'no "Go to My team"'); await close(); }
+    expect(await ui.isPressed((NEW ? /^Practice With a Real Team/ : /^Practice with a real team/)) === true, (NEW ? '"Practice With a Real Team" not chosen with 4' : '"Practice with a real team" not chosen with 4'));
+    expect(await ui.sees((NEW ? 'Add six Pokémon on My Team to use it (you have 4)' : 'Add six Pokémon on My team to use it (you have 4)')), 'no "you have 4" note');
+    expect(await ui.sees((NEW ? 'Go to My Team' : 'Go to My team')), (NEW ? 'no "Go to My Team"' : 'no "Go to My team"')); await close(); }
   const {ui, close} = await open({team: TEAM}); await ui.reloadWithout('meta/practice'); await ui.go('Practice');
   expect(await ui.sees('Practice games appear after the next data refresh'), 'no "after the next data refresh" without data'); await close(); });
 
 t('PRAC-02', 'pick four, then two leads; Reveal enabled only after 4 + 2', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Practice'); await ui.tapIn(/^Start/, 700);
   expect(/Their six\W*as seen at team preview/i.test(await ui.pageText()), 'their six not shown');
-  expect(await ui.isDisabled('Reveal what strong players chose') === true, 'Reveal enabled before picking');
+  expect(await ui.isDisabled((NEW ? 'Reveal What Strong Players Chose' : 'Reveal what strong players chose')) === true, 'Reveal enabled before picking');
   for (const n of ['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Rillaboom']) await ui.practicePick(n);
   expect(await ui.sees('Now tap two of your four to lead'), 'no "Now tap two of your four to lead"');
   await ui.practicePick('Whimsicott'); expect(/Four are picked/i.test(await ui.toast()), 'no "Four are picked" toast on a fifth');
   await ui.practicePick('Garchomp'); await ui.practicePick('Incineroar');
   expect(/Bringing .+ Leading Garchomp \+ Incineroar/i.test(await ui.pageText()), 'no "Bringing … Leading Garchomp + Incineroar" line');
-  expect(await ui.isDisabled('Reveal what strong players chose') === false, 'Reveal not enabled after 4 + 2'); await close(); });
+  expect(await ui.isDisabled((NEW ? 'Reveal What Strong Players Chose' : 'Reveal what strong players chose')) === false, 'Reveal not enabled after 4 + 2'); await close(); });
 
 t('PRAC-03', 'reveal: banner, both fours, per-Pokémon bars, score saved, next team', async () => {
   const {ui, ls, close} = await open({team: TEAM}); await ui.go('Practice'); await ui.tapIn(/^Start/, 700);
   const six0 = await ui.pageText();
   for (const n of ['Charizard-Mega-Y', 'Garchomp', 'Incineroar', 'Rillaboom', 'Garchomp', 'Incineroar']) await ui.practicePick(n);
-  await ui.tapIn('Reveal what strong players chose', 900); const tx = await ui.pageText();
+  await ui.tapIn((NEW ? 'Reveal What Strong Players Chose' : 'Reveal what strong players chose'), 900); const tx = await ui.pageText();
   expect(/You matched the strong players' four|A different four from the strong players|No score this round/i.test(tx), 'no reveal banner');
   expect(/Your pick/i.test(tx) && /Strong players' four/i.test(tx), 'both fours not shown');
   expect(/Each of your six against this team/i.test(tx), 'no per-Pokémon bars');
   const sc = await ls('np.practice'); expect(sc && sc.played === 1, 'score not saved with played = 1: ' + JSON.stringify(sc));
   const six1 = (/as seen at team preview (.+?) (Strong|Ladder)/i.exec(await ui.pageText()) || [])[1];
-  await ui.tapIn('Next team', 900); const tx2 = await ui.pageText(); expect(/Bring four 0\/4/i.test(tx2), 'Next team did not start a new pick');
-  expect(six1 && !tx2.toLowerCase().includes(('as seen at team preview ' + six1).toLowerCase()), 'Next team shows the same six'); await close(); });
+  await ui.tapIn((NEW ? 'Next Team' : 'Next team'), 900); const tx2 = await ui.pageText(); expect(/Bring four 0\/4/i.test(tx2), (NEW ? 'Next Team did not start a new pick' : 'Next team did not start a new pick'));
+  expect(six1 && !tx2.toLowerCase().includes(('as seen at team preview ' + six1).toLowerCase()), (NEW ? 'Next Team shows the same six' : 'Next team shows the same six')); await close(); });
 
 t('PRAC-04', 'score line after one round', async () => {
   const {ui, close} = await open({team: TEAM, stored: {'np.practice': JSON.stringify({streak: 1, best: 2, played: 1, matched: 1})}}); await ui.go('Practice');
@@ -695,7 +695,7 @@ t('TRACK-06', 'events checked fold and "How ratings work →"', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Track Record');
   await ui.openFold('Events checked'); const f = await ui.foldText('Events checked');
   expect(/\d+ events, newest first/.test(f) && /players/.test(f) && /ratings from/.test(f), 'events list wrong: ' + f.slice(0, 150));
-  await ui.tapIn('How ratings work'); expect(await ui.current() === 'method', 'link did not open How we calculate'); await close(); });
+  await ui.tapIn((NEW ? 'How Ratings Work' : 'How ratings work')); expect(await ui.current() === 'method', 'link did not open How we calculate'); await close(); });
 
 t('TRACK-07', 'no data: "Collecting"', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.reloadWithout('meta/track'); await ui.go('Track Record');
@@ -709,11 +709,11 @@ t('MATCHUPS-01', 'top 10 threats with real-games word and calc level; phones sho
     expect(top.every(x => /\b(Favoured|Even match|Unfavoured)\b/.test(x) && /Calc: (Beats it|Handles it|Shaky|No answer)/.test(x)), 'a row lacks its words: ' + top.find(x => !/Calc:/.test(x)));
     expect(/Verdicts from real tournament games/.test(await ui.matchupsText()) && /The next 20, worst first/i.test(await ui.matchupsText()), 'intro or "next 20" missing');
     expect(r.length >= 30, 'next 20 tiles missing');
-    await ui.tapThreat('Archaludon'); const s = await ui.scoutSheet(); expect(s && /Scouting report/i.test(s) && /Archaludon/.test(s), 'tapping a threat did not open the scouting sheet'); await close(); }
+    await ui.tapThreat('Archaludon'); const s = await ui.scoutSheet(); expect(s && (NEW ? /Matchups/i : /Scouting report/i).test(s) && /Archaludon/.test(s), 'tapping a threat did not open the scouting sheet'); await close(); }
   const {ui, close} = await open({team: TEAM, width: 390}); await ui.go('My Team', 1200);
   expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 5, 'phone does not show 5');
-  await ui.tapIn('Show 5 more'); expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 10, '"Show 5 more" did not show 10');
-  expect(await ui.sees('Show top 5 only'), 'no "Show top 5 only"'); await close(); });
+  await ui.tapIn((NEW ? 'Show 5 More' : 'Show 5 more')); expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 10, (NEW ? '"Show 5 More" did not show 10' : '"Show 5 more" did not show 10'));
+  expect(await ui.sees((NEW ? 'Show Top 5 Only' : 'Show top 5 only')), (NEW ? 'no "Show Top 5 Only"' : 'no "Show top 5 only"')); await close(); });
 
 t('MATCHUPS-02', 'legend counts in the approved words', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('My Team', 1200); const m = await ui.matchupsText();
@@ -722,7 +722,7 @@ t('MATCHUPS-02', 'legend counts in the approved words', async () => {
 
 t('MATCHUPS-03', 'scouting report sheet: one threat at a time; Escape closes it', async () => {
   const {ui, pg, close} = await open({team: TEAM}); await ui.go('My Team', 1200); await ui.tapThreat('Archaludon');
-  const s = await ui.scoutSheet(); hasAll(s, ['Scouting report', 'top 30 threats', 'Strength Score', 'Archaludon', 'Team checks'], 'scouting sheet');
+  const s = await ui.scoutSheet(); hasAll(s, [(NEW ? 'Matchups' : 'Scouting report'), 'top 30 threats', 'Strength Score', 'Archaludon', 'Team checks'], 'scouting sheet');
   expect(/\d+ threats? need a plan|Ready for every top threat/i.test(s), 'no "<n> threats need a plan"');
   await pg.keyboard.press('Escape'); await pg.waitForTimeout(500); expect(!(await ui.scoutSheet()), 'Escape did not close the sheet'); await close(); });
 
@@ -735,7 +735,7 @@ t('MATCHUPS-04', 'your six vs the top 12 chart; tap a row for the full matchup',
 
 t('MATCHUPS-05', 'threat preparation card: ready %, groups by level', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('My Team', 1200); await ui.matchupsView('All 30');
-  const m = await ui.matchupsText(); expect(/Threat preparation/i.test(m) && /Ready for \d+% of the top 30 threats/.test(m), 'no "Ready for <x>% of the top 30 threats"');
+  const m = await ui.matchupsText(); expect((NEW ? /Matchups/i : /Threat preparation/i).test(m) && /Ready for \d+% of the top 30 threats/.test(m), 'no "Ready for <x>% of the top 30 threats"');
   expect(/Shaky \d+ threats/.test(m) && /Handles it \d+ threats/.test(m) && /Beats it \d+ threats/.test(m), 'level groups missing'); await close(); });
 
 t('MATCHUPS-06', 'meta threats list uses the scouting level words', async () => {

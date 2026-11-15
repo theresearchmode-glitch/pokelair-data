@@ -8,6 +8,7 @@
 // visible ones), BROKEN-02 (page title hidden; each page names itself, NAV-07), BROKEN-03 (two theme controls: both tested in THEME-01/02
 // and must agree), DUP-11 (tested once in TOP-05), ODD-14 (About's "← Meta", NAV-06), ODD-15, ODD-17, ODD-18 (content / unsure).
 import {group, open, expect, TEAM, DOCS} from './harness.mjs';
+const NEW = (process.env.ADAPTER || 'current') === 'v2'; // the rebuild's approved wording
 const t = group('D-meta-shell');
 
 const PHONE = {width: 390, height: 844};
@@ -31,7 +32,7 @@ t('NAV-01', 'Desktop main tabs: five tabs, Meta lit on Meta pages, live x/6 coun
   for (const p of ['Ratings', 'Usage', 'Events', 'This Week', 'Track Record', 'How We Calculate']) { await ui.go(p); expect(await d.activeMainTab() === 'Meta', `${p}: lit tab is ${await d.activeMainTab()}`); }
   await ui.go('About'); expect(await d.activeMainTab() === null, 'About & Legal lights a main tab: ' + await d.activeMainTab());
   expect(await d.teamCount() === '5/6', 'count is ' + await d.teamCount());
-  await ui.go('Ratings'); await d.openPokemon('Kingambit'); await d.tapInSheet(/^Add to team$/); await d.closeSheet();
+  await ui.go('Ratings'); await d.openPokemon('Kingambit'); await d.tapInSheet((NEW ? /^Add to My Team$/ : /^Add to team$/)); await d.closeSheet();
   expect(await d.teamCount() === '6/6', 'count after adding is ' + await d.teamCount()); }));
 
 t('NAV-02', 'Phone bottom bar: five tabs, stays put while scrolling, each opens its page', run({team: TEAM, ...PHONE}, async ({ui, d}) => {
@@ -67,9 +68,10 @@ t('NAV-04', 'Meta section switch Pokémon | Tournaments', run({team: TEAM}, asyn
   for (const p of ['This Week', 'Track Record', 'How We Calculate', 'About']) { await ui.go(p); expect(!(await d.sectionSwitch()), `${p} shows the section switch`); } }));
 
 t('NAV-05', 'Second-level sliders Rating/Usage/Sets and Winning Teams/Events/Archetypes', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Ratings'); let s = await d.pageSwitch(); expect(s && s.items.join() === 'Rating,Usage,Sets' && s.selected === 'Rating', 'Pokémon slider: ' + JSON.stringify(s));
+  const RT = NEW ? 'Ratings' : 'Rating', ST = NEW ? 'Popular Sets' : 'Sets'; /* new: Sim, Nov 14 naming: a tab carries its Home tile's name */
+  await ui.go('Ratings'); let s = await d.pageSwitch(); expect(s && s.items.join() === `${RT},Usage,${ST}` && s.selected === RT, 'Pokémon slider: ' + JSON.stringify(s));
   await d.tapPageSwitch('Usage'); expect(await ui.current() === 'meta' && (await d.pageSwitch()).selected === 'Usage', 'Usage not opened/selected');
-  await d.tapPageSwitch('Sets'); expect(await ui.current() === 'sets' && (await d.pageSwitch()).selected === 'Sets', 'Sets not opened/selected');
+  await d.tapPageSwitch(ST); expect(await ui.current() === 'sets' && (await d.pageSwitch()).selected === ST, 'Sets not opened/selected');
   await ui.go('Winning Teams'); s = await d.pageSwitch(); expect(s && s.items.join() === 'Winning Teams,Events,Archetypes' && s.selected === 'Winning Teams', 'Tournaments slider: ' + JSON.stringify(s));
   await d.tapPageSwitch('Archetypes'); expect(await ui.current() === 'arch', 'Archetypes not opened'); await d.tapPageSwitch('Events'); expect(await ui.current() === 'events', 'Events not opened'); }));
 
@@ -231,7 +233,7 @@ t('SHELL-07', 'Toast with Undo after loading a team; Undo brings your team back'
   expect(JSON.stringify(await ui.team()) !== JSON.stringify(TEAM), 'team was not replaced');
   await d.tapUndo(); expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Undo did not restore: ' + await ui.team()); }));
 t('SHELL-07b', 'A plain toast goes after about 2 s; an Undo toast stays about 6 s', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); await ui.tap(/^Practice against$/i); // a plain toast ("Opponent set: ...")
+  await ui.go('Winning Teams'); await ui.tap(/^(Practice against|Set as Opponent)$/i); /* Sim, Nov 14 naming */ // a plain toast ("Opponent set: ...")
   expect(await d.toastText(), 'no toast'); expect(!(await d.toastHasUndo()), 'plain toast has Undo'); await ui.pg.waitForTimeout(3000); expect(!(await d.toastText()), 'plain toast still showing after 3 s');
   await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/); await ui.pg.waitForTimeout(3500);
   expect(await d.toastText(), 'Undo toast gone before 3.5 s'); await ui.pg.waitForTimeout(3500); expect(!(await d.toastText()), 'Undo toast still showing after 7 s'); }));
@@ -298,7 +300,7 @@ t('SHELL-16', 'A rarely used Pokémon shows "Early read"', run({team: TEAM}, asy
 
 t('SHELL-17', 'First visit: the welcome card shows on Home; "Got it" removes it for good', run({fresh: true}, async ({ui, d, ls}) => {
   await ui.go('Home'); const w = await d.welcomeCard(); expect(w, 'no welcome card for a first-time visitor');
-  for (const x of ['How NastyPlot works', 'Get a team', 'Read your scouting report', 'Plan each match', 'Build me a team', 'Copy a top team', 'Got it']) expect(has(w, x), 'welcome card lacks ' + x);
+  for (const x of ['How NastyPlot works', 'Get a team', 'Read your scouting report', 'Plan each match', (NEW ? 'Build Me a Team' : 'Build me a team'), 'Copy a top team', 'Got it']) expect(has(w, x), 'welcome card lacks ' + x);
   await ui.tap(/^Got it$/); expect(!(await d.welcomeCard()), '"Got it" did not remove the card'); expect(await ls('cc2.welcomed'), 'not marked welcomed');
   await ui.reload(); await ui.go('Home'); expect(!(await d.welcomeCard()), 'card came back after reload'); }));
 t('SHELL-17b', 'Welcome card "Copy a top team" opens Winning Teams', run({fresh: true}, async ({ui, d}) => {
@@ -356,7 +358,7 @@ t('SHELL-23c', 'A change on another device arrives live with a toast', async () 
 t('SHELL-24', 'Shared team link: banner, Not now keeps your team and clears the address; Load it loads', async () => {
   const a = await open({team: OPP6()}); const code = await a.ui.D.teamLinkCode(); await a.close(); expect(code, 'could not make a team link');
   let r = await open({team: TEAM, hash: '#team=' + code}); try { const d = r.ui.D; const b = await d.until(() => d.sharedBanner()); expect(b, 'no shared-team banner');
-    expect(JSON.stringify(await r.ui.team()) === JSON.stringify(TEAM), 'team applied silently'); await r.ui.tap(/^Not now$/);
+    expect(JSON.stringify(await r.ui.team()) === JSON.stringify(TEAM), 'team applied silently'); await r.ui.tap((NEW ? /^Not Now$/ : /^Not now$/));
     expect(!(await d.sharedBanner()), 'banner did not close'); expect(JSON.stringify(await r.ui.team()) === JSON.stringify(TEAM), 'team changed'); expect(!/team=/.test(await d.address()), 'code left in the address'); } finally { await r.close(); }
   r = await open({team: TEAM, hash: '#team=' + code}); try { const d = r.ui.D; await d.until(() => d.sharedBanner()); await r.ui.tap(/^Load it$/);
     expect(JSON.stringify(await r.ui.team()) === JSON.stringify(OPP6()), 'Load it did not load: ' + await r.ui.team()); expect(await r.ui.current() === 'report', 'did not open My Team');
@@ -390,7 +392,7 @@ t('SHELL-29', 'With no live data the pages still work from the built-in snapshot
   await ui.go('Usage'); expect(/No meta data loaded yet|Plotting/.test(await ui.text()), 'Usage has no loading/no-data line'); }));
 
 t('SHELL-30', 'A fast double tap on "Add to team" adds once', run({team: ['Garchomp', 'Incineroar', 'Whimsicott']}, async ({ui, d}) => {
-  await ui.go('Ratings'); await d.openPokemon('Kingambit'); await d.doubleTapInSheet(/^Add to team$/);
+  await ui.go('Ratings'); await d.openPokemon('Kingambit'); await d.doubleTapInSheet((NEW ? /^Add to My Team$/ : /^Add to team$/));
   expect((await ui.team()).length === 4, 'team now ' + await ui.team()); expect(!/already on your team/i.test(await d.toastText() || ''), 'second tap was not ignored: ' + await d.toastText()); }));
 
 t('SHELL-31', 'Keep your place: a tapped filter chip stays under the finger', run({team: TEAM}, async ({ui, d}) => {
@@ -416,7 +418,7 @@ t('SHELL-34', 'Broken data for one page never breaks the others', withDocs({'met
 t('RATE-01', 'Ratings head: kicker with team count and date; "How ratings work →" opens the method section', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); expect(/Rated 0–100 from real results: Reg M.C doubles, [\d,]+ teams, data as of [A-Z][a-z]{2} \d/.test(await ui.text()), 'kicker missing');
   expect(has(await ui.text(), 'Track Record →'), 'no Track Record link');
-  await ui.tap(/^How ratings work →$/); await ui.pg.waitForTimeout(500); expect(await ui.current() === 'method', 'link opened ' + await ui.current());
+  await ui.tap((NEW ? /^How Ratings Work ›$/ : (NEW ? /^How Ratings Work →$/ : /^How ratings work →$/))); await ui.pg.waitForTimeout(500); expect(await ui.current() === 'method', 'link opened ' + await ui.current());
   expect(await d.foldIsOpen('Pokémon Ratings'), 'Pokémon Ratings section not open'); expect(await d.inView('Pokémon Ratings'), 'section not scrolled into view'); }));
 
 t('RATE-02', 'Ratings search by name or type, with a match count', run({team: TEAM}, async ({ui, d}) => {
@@ -455,7 +457,7 @@ t('RATE-07', 'Every Pokémon, by Tier: six tier rows, "+N more" / "Show fewer", 
   await ui.go('Ratings'); if (await d.foldIsOpen('Every Pokémon, by Tier')) await d.toggleFold('Every Pokémon, by Tier'); await d.toggleFold('Every Pokémon, by Tier');
   const rows = await d.boardRows(); expect(rows.map(r => r.tier).join() === 'S,A,B,C,D,F', 'tiers: ' + rows.map(r => r.tier));
   expect(/Top of the [Ff]ormat(:| ·) \d+/.test(rows[0].head), 'S row head: ' + rows[0].head); const f = rows[5]; expect(/^\+\d+ more$/.test(f.more), 'F row has no "+N more": ' + f.more);
-  await d.tapTierMore('F'); const f2 = (await d.boardRows())[5]; expect(f2.tiles > f.tiles && f2.more === 'Show fewer', 'F row did not expand: ' + JSON.stringify(f2));
+  await d.tapTierMore('F'); const f2 = (await d.boardRows())[5]; expect(f2.tiles > f.tiles && f2.more === (NEW ? 'Show Fewer' : 'Show fewer'), 'F row did not expand: ' + JSON.stringify(f2));
   expect(await ls('cc2.chf.lairboard') == 1 || /"open":\{[^}]*"F":true/.test(JSON.stringify(await ls('np2.ra.board'))), 'open state not remembered'); /* new site: the opened tier is remembered */ }));
 
 t('RATE-08', 'About the Ratings: track record line and four number cells', run({team: TEAM}, async ({ui, d}) => {
@@ -516,16 +518,16 @@ t('SHEET-06', 'Rating tab: why it rates N, what the data says, other tier lists 
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); const n = await d.sheetRating(); await d.tapSheetTab('Rating'); const s = await d.sheetPanel();
   expect(has(s, `Why It Rates ${n}`), 'no "Why It Rates ' + n + '"'); for (const b of ['Top-cut presence', 'Picked by strong players', 'Converts to top cut', 'Win rate']) expect(has(s, b), 'bar missing: ' + b);
   expect(has(s, 'What the Data Says') && has(s, 'Limitless'), 'no data rows'); expect(has(s, 'Other Tier Lists') && has(s, 'not counted'), 'no outside tier lists');
-  expect(await d.outsideLinksNewTab(), 'outside tier list links do not open a new tab'); expect(has(s, 'How ratings work →') && has(s, 'Track Record →'), 'links missing'); }));
+  expect(await d.outsideLinksNewTab(), 'outside tier list links do not open a new tab'); expect(has(s, (NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →'))) && has(s, 'Track Record →'), 'links missing'); }));
 
 t('SHEET-07', 'Sheet actions: Add to team, Build around it, Popular Sets (PKMN-03)', run({team: FIVE}, async ({ui, d, acct}) => {
-  await ui.go('Ratings'); await d.openPokemon('Kingambit'); await d.tapInSheet(/^Add to team$/);
+  await ui.go('Ratings'); await d.openPokemon('Kingambit'); await d.tapInSheet((NEW ? /^Add to My Team$/ : /^Add to team$/));
   expect(has(await d.toastText() || '', 'Kingambit added'), 'toast: ' + await d.toastText()); expect(has(await d.sheetText(), 'On your team'), 'button did not become "On your team"');
   expect((await ui.team()).includes('Kingambit'), 'not on the team'); await ui.pg.waitForTimeout(1200); expect((await acct()).slots.some(s => s.n === 'Kingambit'), 'not saved to the account');
   await d.closeSheet(); await d.openPokemon('Garchomp'); expect(/On your team/.test(await d.sheetText()), 'team member not marked');
   await d.closeSheet(); await d.openPokemon('Archaludon'); expect(/Team full/i.test(await d.sheetText()), 'full team not said');
   await d.tapInSheet(/^Popular Sets$/); expect(await ui.current() === 'sets' && /Archaludon/.test(await d.setsShowing()), 'Popular Sets did not open on Archaludon');
-  await ui.go('Ratings'); await d.openPokemon('Archaludon'); await d.tapInSheet(/^Build around it$/); expect(await ui.current() === 'auto', 'Build around it opened ' + await ui.current()); }));
+  await ui.go('Ratings'); await d.openPokemon('Archaludon'); await d.tapInSheet((NEW ? /^Build Around It$/ : /^Build around it$/)); expect(await ui.current() === 'auto', (NEW ? 'Build Around It opened ' : 'Build around it opened ') + await ui.current()); }));
 
 // =============================== META · Usage ===============================
 t('META-01', 'Usage source line names the source and size', run({team: TEAM}, async ({ui, d}) => {
@@ -548,8 +550,8 @@ t('META-04', 'Usage rows: rank, name, types, usage and team count; trend badges 
   await d.tapRestOfList(); const all = await d.usageRows(); expect(all.some(x => /▲|▼|NEW/.test(x.text)), 'no trend badge anywhere in the list'); }));
 t('META-05', 'Expanded usage row: bars "Of N teams", teammates, Add to team', run({team: FIVE}, async ({ui, d}) => {
   await ui.go('Usage'); await d.chooseUsageSource('Online tournaments'); await d.openUsageRow('Rillaboom'); const s = await d.usageRowText('Rillaboom');
-  expect(/Of [\d,]+ Teams/i.test(s) && has(s, 'Grassy Surge') && has(s, 'Fake Out'), 'Rillaboom details: ' + s.slice(0, 200)); expect(has(s, 'Teammates'), 'no teammates'); expect(!/Add to team/.test(s), 'Add to team offered for a team member');
-  await d.openUsageRow('Kingambit'); await d.tapInUsageRow('Kingambit', /^Add to team$/); expect(/Kingambit added/.test(await d.toastText() || ''), 'toast: ' + await d.toastText()); expect((await ui.team()).includes('Kingambit'), 'not added'); }));
+  expect(/Of [\d,]+ Teams/i.test(s) && has(s, 'Grassy Surge') && has(s, 'Fake Out'), 'Rillaboom details: ' + s.slice(0, 200)); expect(has(s, 'Teammates'), 'no teammates'); expect(!(NEW ? /Add to My Team/ : /Add to team/).test(s), (NEW ? 'Add to My Team offered for a team member' : 'Add to team offered for a team member'));
+  await d.openUsageRow('Kingambit'); await d.tapInUsageRow('Kingambit', (NEW ? /^Add to My Team$/ : /^Add to team$/)); expect(/Kingambit added/.test(await d.toastText() || ''), 'toast: ' + await d.toastText()); expect((await ui.team()).includes('Kingambit'), 'not added'); }));
 t('META-06', 'Top 10, then "Ranks 11–60" shows the rest and flips', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Usage'); expect((await d.usageRows()).length === 10, 'not 10 rows'); await d.tapRestOfList(); const r = await d.usageRows();
   expect(r.length > 10 && r[10].rank === 11, 'rest not shown'); expect(has(await ui.text(), 'Show the top 10'), 'button did not flip'); await d.tapRestOfList(); expect((await d.usageRows()).length === 10, 'did not fold back'); }));
@@ -593,15 +595,15 @@ t('TOP-03', 'Team search results: count, "Often with" adds a filter, cards with 
 t('TOP-04', 'Your Team strip: checks badge with six; asks for six when not full', run({team: TEAM}, async ({ui}) => {
   await ui.go('Winning Teams'); expect(/Your Team.*\d\/4 checks/.test(await ui.text()), 'no checks badge'); }));
 t('TOP-04b', 'Your Team strip with five Pokémon asks to add six', run({team: FIVE}, async ({ui}) => {
-  await ui.go('Winning Teams'); expect(has(await ui.text(), 'Add six Pokémon on My team to compare.'), 'no "add six" line'); }));
+  await ui.go('Winning Teams'); expect(has(await ui.text(), (NEW ? 'Add six Pokémon on My Team to compare.' : 'Add six Pokémon on My team to compare.')), 'no "add six" line'); }));
 t('TOP-05', 'Team list: top 3, "More Winning Teams" shows more, "Show fewer" folds back', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Winning Teams'); const n0 = await d.teamCards(); expect(n0 === 3, 'cards: ' + n0); expect(/Showing the top 3 of \d+/.test(await ui.text()), 'no "Showing the top 3 of N"');
-  await ui.tap(/More Winning Teams/); const n1 = await d.teamCards(); expect(n1 > 3, 'more not shown: ' + n1); await ui.tap(/^Show fewer/i); expect(await d.teamCards() === 3, 'did not fold back'); }));
+  await ui.tap(/More Winning Teams/); const n1 = await d.teamCards(); expect(n1 > 3, 'more not shown: ' + n1); await ui.tap((NEW ? /^Show Fewer/i : /^Show fewer/i)); expect(await d.teamCards() === 3, 'did not fold back'); }));
 t('TOP-06', 'Card actions: Load team (confirm, Undo), Practice against, Compare', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); expect(has(await ui.text(), 'Replace your current team?'), 'no confirm'); await ui.tap(/^Cancel$/);
   expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Cancel changed the team'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/);
   expect(await ui.current() === 'report', 'did not open My Team'); expect(await d.toastHasUndo(), 'no Undo'); const loaded = await ui.team(); expect(loaded.includes('Gholdengo'), 'first card not loaded: ' + loaded);
-  await ui.go('Winning Teams'); await ui.tap(/^Practice against$/i); expect(await ui.current() === 'matchup', 'Practice against opened ' + await ui.current());
+  await ui.go('Winning Teams'); await ui.tap(/^(Practice against|Set as Opponent)$/i); /* Sim, Nov 14 naming */ expect(await ui.current() === 'matchup', 'Practice against opened ' + await ui.current());
   expect(has(await d.toastText() || '', 'Opponent set'), 'toast: ' + await d.toastText());
   await ui.go('Winning Teams'); await ui.tap(/^Compare$/, '[data-pane=top]'); expect(await ui.current() === 'compare', 'Compare opened ' + await ui.current()); }));
 t('TOP-07', 'Winning Teams without data says so', run({team: TEAM, account: false}, async ({ui}) => {
@@ -703,7 +705,7 @@ t('TRACK-07', 'Events Checked fold: one row per event checked, remembered', run(
   await ui.go('Track Record'); const n = +(await ui.text()).match(/(\d+) events checked so far/)[1]; await d.toggleFold('Events Checked');
   expect(await d.foldRows('Events Checked') === Math.min(n, 60), `rows ${await d.foldRows('Events Checked')} vs ${n}`); expect(await ls('cc2.chf.trevents') == 1, 'not remembered'); }));
 t('TRACK-08', 'Track Record link and empty state', run({team: TEAM}, async ({ui}) => {
-  await ui.go('Track Record'); await ui.tap(/^How ratings work →$/); expect(await ui.current() === 'method', 'link opened ' + await ui.current()); }));
+  await ui.go('Track Record'); await ui.tap((NEW ? /^How Ratings Work ›$/ : (NEW ? /^How Ratings Work →$/ : /^How ratings work →$/))); expect(await ui.current() === 'method', 'link opened ' + await ui.current()); }));
 t('TRACK-08b', 'Track Record without data: Collecting', run({team: TEAM, account: false}, async ({ui}) => {
   await ui.go('Track Record'); expect(has(await ui.text(), 'The first results appear here after the next morning'), 'no empty note'); }));
 

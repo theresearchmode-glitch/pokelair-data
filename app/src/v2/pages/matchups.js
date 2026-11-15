@@ -48,7 +48,7 @@ V2.muTop = RD => { const {top, rest, RV} = CH.top10(RD), more = !!ui.tlMore;
   const tile = r => { const R = RV.get(r), w = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
     return `<button type="button" class="mu-tile${R ? ' ' + V2.VCLS[R.w] : ''}" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(w)}" title="${V2.esc(r.t.d)}: ${V2.esc(w)}">${V2.muImg(r.t.n)}</button>`; };
   return `<ol class="tm-rows mu-rows${more ? ' is-more' : ''}">${top.map(row).join('')}</ol>
-    ${top.length > 5 ? `<button type="button" class="np-link mu-more" data-mumore aria-expanded="${more}">${more ? 'Show top 5 only' : `Show ${top.length - 5} more`}</button>` : ''}
+    ${top.length > 5 ? `<button type="button" class="np-link mu-more" data-mumore aria-expanded="${more}">${more ? 'Show Top 5 Only' : `Show ${top.length - 5} More`}</button>` : ''}
     ${rest.length ? `<h3 class="tm-h3 mu-h3">The next ${rest.length}, worst first</h3><div class="mu-tiles" role="group" aria-label="The next ${rest.length} threats">${rest.map(tile).join('')}</div>` : ''}`; };
 
 // Top 12 grid: your six across, the top 12 threats down (worst first); a cell says what that Pokémon does 1-on-1
@@ -70,10 +70,10 @@ V2.muAll = (RD, ms) => { const open = ui.thrOpen || {}, un = RD.rows.filter(r =>
   const bt = biggestThreats(ms, true), all = !!ui.threatsAll || !PHONE(), shown = bt ? (all ? bt : bt.slice(0, 4)) : [];
   const big = !bt ? '<p class="tm-sub">Threats appear once meta data has loaded.</p>' : !bt.length ? '<p class="tm-sub">No top meta Pokémon hits several of yours super effectively while going unanswered. Nice.</p>'
     : `<ul class="mu-big">${shown.map(r => `<li>${V2.muImg(r.o.p.n)}<div><p class="nm">${V2.nameHtml(r.name)} <span class="ty">${r.o.types.map(V2.typeChip).join('')}</span></p>
-      <p class="t">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => V2.esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => V2.esc(ms[i].d)).join(', ') : r.lv >= 2 ? 'Answered by your scouting report (speed control, support or a combined KO), not 1-on-1' : '<b class="no">No clean answer</b>'}${r.hard ? `<br>Hardest hit: ${V2.esc(r.hard.mv)} does up to ${r.hard.pct}% to ${V2.esc(r.hard.m.d)}.` : ''}</p></div>
+      <p class="t">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => V2.esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => V2.esc(ms[i].d)).join(', ') : r.lv >= 2 ? 'Answered by the team as a whole (speed control, support or a combined KO), not 1-on-1' : '<b class="no">No clean answer</b>'}${r.hard ? `<br>Hardest hit: ${V2.esc(r.hard.mv)} does up to ${r.hard.pct}% to ${V2.esc(r.hard.m.d)}.` : ''}</p></div>
       ${r.lv != null ? V2.muLv(r.lv) : r.ans.length ? '' : '<span class="mu-lv l0">No answer</span>'}</li>`).join('')}</ul>
       ${shown.length < bt.length ? `<button type="button" class="np-link mu-more" data-muall>Show All ${bt.length}</button>` : ''}`;
-  return `<div class="mu-prep"><div class="np-eyebrow">Threat preparation${ms.length < 6 ? ' · so far' : ''}</div><p class="mu-big1 u">${(h => h ? `Beats or handles ${h.x} of the top ${h.n} threats` : '')(CH.hand(RD))}</p>
+  return `<div class="mu-prep"><div class="np-eyebrow">Matchups${ms.length < 6 ? ' · so far' : ''}</div><p class="mu-big1 u">${(h => h ? `Beats or handles ${h.x} of the top ${h.n} threats` : '')(CH.hand(RD))}</p>
     <p class="fine">${un ? `${un} with no answer` : 'Every threat has an answer'} · weighted by how often each makes top cut</p></div>
     ${grp(0, true)}${grp(1, true)}${grp(2, false)}${grp(3, false)}
     <p class="fine mu-note">Each verdict is a real damage calc with your sets against the set most players run (one-on-one, average rolls, no crits or misses), with the speed, weather, terrain, Tailwind and Trick Room your team actually has. Doubles adds partners and switches, so treat it as preparation, not a forecast.</p>
@@ -96,13 +96,13 @@ V2.muSheetHtml = () => { const D = V2.teamData(); if (D.empty || !D.RD) return '
   // Best fix: the first suggestion, and only when it raises the Strength Score (known bug MU-05c: today's sheet can offer ±0)
   const S2 = D.sug, b = S2 && !S2.pending && !S2.side && S2.top[0], up = b && b.d != null && b.d > 0;
   const best = !up ? '' : `<div class="mu-best"><div class="np-eyebrow">Best fix: ${V2.esc(CH.gradeMove(b.g0, b.g1))}</div><p class="sw">${b.pl.ch.map(x => `${x.out ? `${V2.muImg(x.out.p.n)}<span>${V2.esc(x.out.d)}</span><b aria-hidden="true">→</b>` : '<b aria-hidden="true">+</b>'}${V2.muImg(x.c.p.n)}<span>${V2.esc(x.c.p.d)}</span>`).join('')}</p><button type="button" class="np-btn" data-mufix>Apply This Fix <span aria-hidden="true">➜</span></button></div>`;
-  return `<div class="mu-sh"><header class="mu-shh"><div><div class="np-eyebrow">Scouting report: top 30 threats</div><h2 class="u">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} a plan.` : 'Ready for every top threat.'}</h2></div>${ring}</header>
+  return `<div class="mu-sh"><header class="mu-shh"><div><div class="np-eyebrow">Matchups: top 30 threats</div><h2 class="u">${need ? `${need} threat${need === 1 ? '' : 's'} need${need === 1 ? 's' : ''} a plan.` : 'Ready for every top threat.'}</h2></div>${ring}</header>
     <p class="mu-sum">${sum}${sum ? ' · ' : ''}${CH.handTxt(RD)}</p><p class="fine">${V2.esc(CH.LEGEND)}</p>${det}
     ${tiles}<p class="mu-key mu-skey"><span class="k">Damage calc:</span>${[D.calc.none, D.calc.shaky, D.calc.handles, D.calc.beats].map((n, l) => `<span><i class="mu-g l${l}" aria-hidden="true">${V2.MUG[l]}</i>${CH.LV[l]} ${n}</span>`).join('')}</p>
     <div class="mu-cols">${list ? `<div>${list}</div>` : ''}<div>${ck}${real}${best}</div></div>
     <div class="mu-acts"><button type="button" class="np-btn2" data-mufull><span>All 30 Matchups</span></button><button type="button" class="np-btn2" data-v2close><span>Close</span></button></div></div>`; };
 // from: the row or tile that opened it (focus goes back there on Close or Escape, even where a tap doesn't focus a button)
-V2.muOpen = (n, from) => { V2.muSel = n || null; V2.sheet(V2.muSheetHtml(), {label: 'Scouting report: top 30 threats', focus: '.mu-st[aria-pressed="true"]'}); if (from && V2._sheet) V2._sheet.back = from; };
+V2.muOpen = (n, from) => { V2.muSel = n || null; V2.sheet(V2.muSheetHtml(), {label: 'Matchups: top 30 threats', focus: '.mu-st[aria-pressed="true"]'}); if (from && V2._sheet) V2._sheet.back = from; };
 // redraw the open sheet in place (a tile picked, or the suggestions finished), keeping the focus on the same control
 V2.muSheetRedraw = () => { const w = V2._sheet && V2._sheet.wrap, s = w && w.querySelector('.np-sheet'); if (!s || !s.querySelector('.mu-sh')) return;
   const a = document.activeElement, key = a && a.closest && s.contains(a) ? (a.dataset.muthr ? `[data-muthr="${CSS.escape(a.dataset.muthr)}"]` : a.matches('[data-mufix]') ? '[data-mufix]' : null) : null;

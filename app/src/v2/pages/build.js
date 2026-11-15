@@ -97,7 +97,7 @@ V2.buildCores = bp => { const E = V2.esc, rows = coreRows(), wide = !!(V2.CORES_
   const kindW = {pairs: 'pairs', trios: 'trios', teams: 'full teams'}[coreUi.kind] || 'pairs';
   const row = (r, i) => { const tags = coreTags(r.ns).filter(x => x !== 'Mega') /* Sim, Nov 12 decision 10: the blue Mega in the name says it */, pts = r.tog == null ? null : Math.round(r.tog * 1000) / 10;
     return `<li class="bd-core"><i class="bd-cn${bp ? ' u' : ''}"${bp ? ' aria-hidden="true"' : ''}>${bp ? String(i + 1).padStart(2, '0') : i + 1}</i><span class="bd-cp">${r.ns.map(n => SPRITE_ID[n] ? `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy">` : '').join('')}</span>
-      <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `<em>${E(tags.slice(0, 2).join(', '))}</em> · ` : ''}${homeNum(r.n)} teams${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} point${Math.abs(pts) === 1 ? '' : 's'} together` : ''}</small>${r.ns.length > 3 ? `<span class="bd-cacts"><button type="button" class="np-link" data-bdcprep="${E(r.ns.join('|'))}">Practice Against ›</button><button type="button" class="np-link" data-bdccopy="${E(r.ns.join('|'))}">Copy for Showdown</button></span>` : ''}</span>
+      <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `<em>${E(tags.slice(0, 2).join(', '))}</em> · ` : ''}${homeNum(r.n)} teams${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} point${Math.abs(pts) === 1 ? '' : 's'} together` : ''}</small>${r.ns.length > 3 ? `<span class="bd-cacts"><button type="button" class="np-link" data-bdcprep="${E(r.ns.join('|'))}">Set as Opponent ›</button><button type="button" class="np-link" data-bdccopy="${E(r.ns.join('|'))}">Copy for Showdown</button></span>` : ''}</span>
       <span class="bd-cw" title="${E(pctTxt(r.use))} of all tournament teams">${(() => { const use = coreUi.sort === 'use', w = use ? r.wr : r.score, dv = use ? r.d : r.score - base; /* today's 48-cores.js: Top rated shows the win rate pulled toward the average (the number it ranks by); Most used shows the raw rate */
         return `<b class="u"${use ? '' : ` title="Win rate, pulled toward average until there are enough games (raw: ${E(winFmt(100 * r.wr))})"`}>${E(winFmt(100 * w))}</b><small>wins · ${dv >= 0 ? '+' : '−'}${E(ptsTxt(Math.abs(100 * dv)))} vs avg</small>`; })()}</span><button type="button" class="np-btn2 bd-add" data-bdcore="${E(r.ns.join('|'))}" aria-label="Add ${E(r.ns.map(n => V2.disp(n)).join(' and '))} to your team"><span>${r.ns.length > 3 ? 'Load Team' : 'Add'}</span></button></li>`; };
   return `<section class="bd-cores${bp ? ' bp bp-parts' : ''}">${bp ? V2.bpCorners() + V2.bpHead('Parts list', 'Build Around a Core', `${homeNum(rows.length)} ${kindW} · pick one that wins, then fill the rest`) : `<div class="bd-hd"><h2 class="u">Build Around a Core</h2><span class="bd-k">${homeNum(rows.length)} ${kindW}</span></div><p class="bd-sub">Pick a pair or trio that wins, then fill the rest.</p>`}
@@ -120,7 +120,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   toast(`Added ${ns.filter(n => !have.has(n)).map(n => byName.get(n).d).join(' + ') || 'the core'}${c.dropped.length ? ' · removed ' + c.dropped.join(', ') : ''}${c.megas > 2 ? ` · ${c.megas} Megas on the team now` : ''}`, true); });
 // ---------- Build: Start from a recent winner (mock R2: compact rows under Other options; today's abStart picks and card actions) ----------
 // The same three winners today's Build offers (newest 1st-place teams from official events or 64+ players). Each row opens a fold with
-// the six full sets (today's "Sets") and today's four actions: Load This Team (second tap to replace, Home's), Practice Against, Compare,
+// the six full sets (today's "Sets") and today's four actions: Load This Team (second tap to replace, Home's), Set as Opponent, Compare,
 // Copy for Showdown.
 V2.bdUi = V2.bdUi || {win: null};
 V2.buildWinners = bp => { const EV = META.events, E = V2.esc; if (!EV) return '';
@@ -132,7 +132,7 @@ V2.buildWinners = bp => { const EV = META.events, E = V2.esc; if (!EV) return ''
       <span class="bd-wev">${E(V2.evTitle(ev.name))}</span></span>`}<span class="bd-wsix" aria-hidden="true">${t.mons.map(m => V2.mon(m.n, {iw: 40, bare: true})).join('')}</span></summary>
       ${bp ? V2.bpWinSix(t) : `<p class="bd-wwho">${E(teamWho(t))}'s six, full sets</p><ul class="bd-sets">${sets}</ul>`}
       <div class="row bd-wacts"><button type="button" class="${bp ? 'np-btn' : 'np-btn2'}" data-hmload="${E(key)}"><span>${sure ? 'Tap Again to Replace Your Team' : 'Load Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button>
-      <button type="button" class="np-link" data-hmprep="${E(key)}">Practice Against ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></details>`; };
+      <button type="button" class="np-link" data-hmprep="${E(key)}">Set as Opponent ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></details>`; };
   if (bp) return `<section class="bd-wins bp bp-ref">${V2.bpCorners()}${V2.bpHead('Reference sheets', 'Start from a Recent Winner', `${picks.length} teams · full sets, ready to load`)}${picks.map(row).join('')}</section>`;
   return `<section class="bd-wins"><div class="bd-hd"><h2 class="u">Start from a Recent Winner</h2><span class="bd-k">${picks.length} teams</span></div><p class="bd-sub">Full sets, ready to load.</p>${picks.map(row).join('')}</section>`; };
 // Sim, Nov 13 (Look Q4 B): on phones the jump bar is tabs, one section at a time (Other Options / Recent Winners / Cores); desktop shows all
@@ -173,7 +173,7 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 
 // full-team cores: today's Practice against (sets the Battle opponent) and Copy for Showdown (48-cores.js, 56-showdown-copy.js 'core')
 document.addEventListener('click', async e => { const b = e.target.closest && e.target.closest('[data-bdcprep],[data-bdccopy]'); if (!b) return;
-  if (b.dataset.bdcprep) { S.opp = b.dataset.bdcprep.split('|').slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = null; persist(); location.hash = '#battle'; toast('Loaded as your opponent'); return; }
+  if (b.dataset.bdcprep) { S.opp = b.dataset.bdcprep.split('|').slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = null; persist(); location.hash = '#battle'; toast('Opponent set'); return; }
   const ns = b.dataset.bdccopy.split('|').filter(n => byName.get(n)); if (!ns.length) return;
   toast((await V2.copy(slotsPaste(ns.map(n => ({n, a: null, lock: false}))))) ? 'Team copied for Showdown' : 'Copy failed. Try again.'); });
 // Home's cores (cards and "All cores ›") open Build at the cores, as today's menu entry did (CORES-13); runs after the page change's own scroll to the top

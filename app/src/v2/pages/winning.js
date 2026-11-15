@@ -15,7 +15,7 @@ V2.wtCard = (n, iw, i) => { const p = byName.get(n); if (!p) return ''; const d 
   return `<button type="button" class="wt-card" style="--i:${i}" data-v2mon="${V2.esc(n)}" aria-label="${V2.esc(d)}: open its info sheet">${V2.msCard(p, n, `<h3 class="u">${V2.nameHtml(d)}</h3>`, '', iw)}</button>`; };
 V2.wtActs = k => { const E = V2.esc, sure = V2.wtUi.sure === k;
   return sure ? `<div class="wt-acts wt-sure" role="group" aria-label="Load this team"><span class="wt-q">Replace your current team?</span><button type="button" class="np-btn" data-wtload="${k}"><span>Replace</span></button><button type="button" class="np-btn2" data-wtx><span>Cancel</span></button></div>`
-    : `<div class="wt-acts"><button type="button" class="np-btn2" data-wtask="${k}"><span>Load Team</span></button><button type="button" class="np-btn2" data-wtcopy="${k}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-wtvs="${k}">Practice Against</button><button type="button" class="np-link" data-cxgo2="cur|t:${k}">Compare</button></div>`; };
+    : `<div class="wt-acts"><button type="button" class="np-btn2" data-wtask="${k}"><span>Load Team</span></button><button type="button" class="np-btn2" data-wtcopy="${k}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-wtvs="${k}">Set as Opponent</button><button type="button" class="np-link" data-cxgo2="cur|t:${k}">Compare</button></div>`; };
 V2.wtTag = t => V2.wtOfficial(t) ? '<span class="wt-off">Official event</span>' : '';
 // a hand: the top three of a group (place 1 big; 2 and 3 smaller)
 V2.wtHand = (x, rank, sameEv) => { const {t, k} = x, E = V2.esc, g = gradeNames(t.mons), pl = V2.wtPlace(t) || rank;
@@ -30,7 +30,7 @@ V2.wtRow = (x, sameEv) => { const {t, k} = x, E = V2.esc, g = gradeNames(t.mons)
     <p class="wt-meta">${V2.wtChecks(g, true)}${V2.wtChips(t.mons)}</p>${V2.wtActs(k)}</div></article>`; };
 // Your Team, in the header spotlight (today's strip: checks as the Team page grades them, style chips, the six)
 V2.wtYours = () => { const E = V2.esc, mine = members();
-  if (mine.length !== 6) return `<div class="wt-spot"><p class="gs-tag u">Your Team</p><p class="tm-sub">Add six Pokémon on My team to compare.</p><a class="np-btn2" href="#team"><span>Go to My Team</span></a></div>`;
+  if (mine.length !== 6) return `<div class="wt-spot"><p class="gs-tag u">Your Team</p><p class="tm-sub">Add six Pokémon on My Team to compare.</p><a class="np-btn2" href="#team"><span>Go to My Team</span></a></div>`;
   let mg = null; try { mg = proChecks(mine, true); } catch (e) { mg = gradeNames(mine.map(m => m.p.n), true); }
   return `<div class="wt-spot"><p class="gs-tag u">Your Team</p><p class="wt-big">${mg ? `<b class="u">${mg.pass}/${mg.n}</b><span><i class="u">checks</i><small>the four basics</small></span>` : ''}</p>${V2.wtChips(mine.map(m => m.p.n))}
     <p class="wt-names">${mine.map(m => E(m.d)).join(' · ')}</p><div class="wt-fan wt-mini" aria-hidden="true">${mine.map((m, i) => V2.wtCard(m.p.n, 64, i).replace('<button type="button"', '<button type="button" tabindex="-1"')).join('')}</div></div>`; };
@@ -48,7 +48,7 @@ V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = po
     return `<article class="wt-row" aria-label="${E(teamWho(x.t))}"><span class="wt-no u" aria-hidden="true">${x.t.place || ''}</span><div class="wt-six">${ns.map((n, i) => V2.wtCard(n, 64, i)).join('')}</div>
       <div class="wt-rt"><p class="wt-rh"><b class="u">${E(teamWho(x.t))}</b>${x.ev.src === 'official' ? '<span class="wt-off">Official event</span>' : ''}</p><p class="wt-ev">${E(x.ev.name)} · ${E(evDate(x.ev.date))} · ${x.ev.players} players</p>
       <p class="wt-names">${x.t.mons.map(m => `${E(V2.disp(m.n))}${m.i ? ` @ ${E(m.i)}` : ''}`).join(' · ')}</p>${V2.wtChips(ns)}
-      <div class="wt-acts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${V2.hmUi && V2.hmUi.sure === key ? 'Tap Again to Replace Your Team' : 'Load Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-hmprep="${E(key)}">Practice Against</button><button type="button" class="np-link" data-cxgo2="cur|e:${E(key)}">Compare</button></div></div></article>`; };
+      <div class="wt-acts"><button type="button" class="np-btn2" data-hmload="${E(key)}"><span>${V2.hmUi && V2.hmUi.sure === key ? 'Tap Again to Replace Your Team' : 'Load Team'}</span></button><button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-hmprep="${E(key)}">Set as Opponent</button><button type="button" class="np-link" data-cxgo2="cur|e:${E(key)}">Compare</button></div></div></article>`; };
   return `<section class="wt-res" aria-live="polite"><p class="wt-cnt"><b class="u">${homeNum(hits.length)}</b>&nbsp;team${hits.length === 1 ? '' : 's'} match${hits.length ? `, ${hits.filter(x => x.t.place === 1).length} won their event` : ''}</p>
     ${mates.length && hits.length >= 3 ? `<p class="wt-mates"><span>Often with:</span>${mates.map(([n, k]) => `<button type="button" class="np-chip" data-tsadd="${E(n)}">${E(V2.disp(n))}&nbsp;<b>${Math.round(100 * k / hits.length)}%</b></button>`).join('')}</p>` : ''}
     ${hits.length ? `<div class="wt-rows">${hits.slice(0, cap).map(row).join('')}</div>` : '<p class="tm-sub">No winning team has all of these. Remove a filter.</p>'}
@@ -71,7 +71,7 @@ V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams
   const hands = `<section class="wt-hands"><div class="wt-th"><h2 class="u">The Winning Hands</h2><p>${same ? `${E(three[0].t.event)}. ` : ''}Tap a Card for its info sheet.</p></div>
     ${three[0] ? V2.wtHand(three[0], 1, same) : ''}${three.length > 1 ? `<div class="wt-two">${three.slice(1).map((x, i) => V2.wtHand(x, i + 2, same)).join('')}</div>` : ''}</section>`;
   const more = all.length > 3 ? `<section class="wt-more-s">${U.more ? `<h2 class="u wt-mh">More Winning Teams</h2><div class="wt-rows">${shown.map(x => V2.wtRow(x, false)).join('')}</div>
-      <p class="wt-mbtns">${left > 0 ? `<button type="button" class="np-btn2" data-wtmore><span>Show More · ${left} left</span></button>` : ''}<button type="button" class="np-link" data-wtless>Show fewer</button></p>`
+      <p class="wt-mbtns">${left > 0 ? `<button type="button" class="np-btn2" data-wtmore><span>Show More · ${left} left</span></button>` : ''}<button type="button" class="np-link" data-wtless>Show Fewer</button></p>`
     : `<button type="button" class="np-btn2 wt-open" data-wtmore><span>More Winning Teams · Showing the top 3 of ${all.length}</span></button>`}</section>` : '';
   return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body">${ctl}${hands}${more}</div></div>`; }};
 

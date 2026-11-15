@@ -36,7 +36,7 @@ V2.pages.guide = {place: null, draw() {
   <p class="fine" style="margin-top:12px">Every Pokémon stands on a pool of its own colour; feet and names sit on one line; the selected one stands on its tilted panel.</p>
 
   <h2 class="u">Slider</h2>
-  ${V2.slide('guide-meta', [['rating', 'Rating'], ['usage', 'Usage'], ['sets', 'Sets']], 'rating', 'Show')} ${V2.slide('guide-box', [['all', 'Whole Roster'], ['box', 'My Box'], ['catch', 'Box + Catch']], 'all', 'Pokémon to use')}
+  ${V2.slide('guide-meta', [['rating', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets']], 'rating', 'Show')} ${V2.slide('guide-box', [['all', 'Whole Roster'], ['box', 'My Box'], ['catch', 'Box + Catch']], 'all', 'Pokémon to use')}
 
   <h2 class="u">Search field</h2>
   <label class="np-field" style="max-width:520px">${V2.ICON.search}<input type="search" id="sg-search" placeholder="Find a Pokémon, move or item" aria-label="Find a Pokémon, move or item"></label>
@@ -51,7 +51,7 @@ V2.pages.guide = {place: null, draw() {
   <h2 class="u">Today's underdog</h2>
   <div class="np-under" style="max-width:720px">${V2.mon('Flapple', {bare: true, ft: true})}
   <div><div class="np-eyebrow">Today's underdog</div><h3 class="u">Flapple. <span>Somebody's favourite.</span></h3><p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
-  <div class="acts"><a class="np-btn" href="#guide">Build around it</a><a class="np-link" href="#guide">Info Sheet</a></div><p class="np-or"><a class="np-link" href="#guide">Or build around your favourite Pokémon ›</a></p></div></div>
+  <div class="acts"><a class="np-btn" href="#guide">Build Around It</a><a class="np-link" href="#guide">Info Sheet</a></div><p class="np-or"><a class="np-link" href="#guide">Or Build Around Your Favourite Pokémon ›</a></p></div></div>
 </section>
 <div class="np-dock"><b class="u" style="font-size:var(--t20)">91</b><span class="fine">Sun Tailwind</span><div class="six">${team.map(n => `<img src="${V2.art(SPRITE_ID[n])}" alt="${V2.esc(V2.disp(n))}">`).join('')}</div><a class="np-btn2" href="#guide"><span>Open My Team</span></a></div>`; },
   after() {}

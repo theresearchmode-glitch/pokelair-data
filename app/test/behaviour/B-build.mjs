@@ -139,7 +139,7 @@ t('AUTO-05', 'Build around a Pokémon: chip, button label, every option has it, 
 
 t('AUTO-06', '"Build around it" on an info sheet opens Build with the pick, Whole roster, and builds', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Ratings');
-  await ui.openInfoSheetFor('Farigiraf'); await ui.tap(/^Build around it/, ui.area('info sheet'), 600);
+  await ui.openInfoSheetFor('Farigiraf'); await ui.tap((NEW ? /^Build Around It/ : /^Build around it/), ui.area('info sheet'), 600);
   expect(await ui.current() === 'auto', 'did not open Build'); has(await ui.buildAroundChip(), 'Farigiraf', 'chip');
   await ui.until(async () => (await ui.builtSix()).includes('Farigiraf'), 40000, 'a team with Farigiraf');
   expect(await ui.pressed(/^Whole roster/), 'Whole roster not chosen for a Pokémon outside the box'); await close(); });
@@ -289,7 +289,7 @@ t('CORES-09', 'Teams with it opens Winning teams filtered by the core', async ()
 
 t('CORES-10', 'Practice against (full teams) sets the Battle opponent', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.tap(/^Full teams$/, ui.area('cores')); const six = await ui.coreMembers(0);
-  await ui.coreTap('Practice against'); expect(await ui.current() === 'matchup', 'Battle did not open'); await ui.waitForToast('Loaded as your opponent');
+  await ui.coreTap(NEW ? 'Set as Opponent' : 'Practice against'); expect(await ui.current() === 'matchup', 'Battle did not open'); await ui.waitForToast(NEW ? 'Opponent set' : 'Loaded as your opponent'); /* new: Sim, Nov 14 naming */
   expect(same((await ui.battleOpponentIds()).filter(Boolean), six), 'opponent six not set'); await close(); });
 
 t('CORES-11', 'Copy for Showdown (full teams) gives six blocks', async () => {
@@ -381,7 +381,7 @@ t('COV-03', 'Suggest from My box / Whole roster changes the list and is remember
 
 t('COV-04', 'Swap/add cards: "Pokémon to Add" on a short team, "One Pokémon In, One Out" on a full one, with their details', async () => {
   { const {ui, close} = await open({team: TEAM.slice(0, 4), box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), 'Pokémon to Add', 'heading');
-    const c = await ui.swapCards(); expect(c.length && c.every(x => x.button === 'Add to team'), 'add cards: ' + JSON.stringify(c.map(x => x.button))); await close(); }
+    const c = await ui.swapCards(); expect(c.length && c.every(x => x.button === (NEW ? 'Add to My Team' : 'Add to team')), 'add cards: ' + JSON.stringify(c.map(x => x.button))); await close(); }
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), 'One Pokémon In, One Out', 'heading');
     const c = await ui.swapCards(); expect(c.length > 0, 'no swap cards'); const x = c[0];
     expect(/^Swap out /.test(x.button), 'button: ' + x.button); has(x.text, /[\d,]+ teams/, 'card'); has(x.text, /In your box|To catch/, 'card'); has(x.text, /[SABCD] tier \d+/, 'card');
@@ -408,7 +408,7 @@ t('COV-07', 'Nothing improves: the honest note pointing to Whole roster', async 
 
 t('COV-08', 'Too few Pokémon: note and Go to My team', async () => {
   const {ui, close} = await open({team: ['Garchomp'], box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps();
-  has(await ui.text(), 'Add at least two Pokémon on My team to get suggestions.', 'note'); await ui.tap(/^Go to My team/, ui.area('All suggestions page')); expect(await ui.current() === 'report', 'did not open My team'); await close(); });
+  has(await ui.text(), 'Add at least two Pokémon on My team to get suggestions.', 'note'); await ui.tap((NEW ? /^Go to My Team/ : /^Go to My team/), ui.area('All suggestions page')); expect(await ui.current() === 'report', 'did not open My team'); await close(); });
 
 t('COV-09', 'Game-plan gap note shows on All suggestions when nothing in the pool closes the gap', async () => {
   const box = ['Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon', 'Azumarill'];
@@ -514,8 +514,8 @@ t('SUGG-10', 'Undo bar: shows on My team and Bigger plans, steps back with "Undo
   await sleep(600); await ui.removeFromMyTeam(5); await sleep(1200); expect(!(await ui.undoBarText()), 'Undo bar stayed after another change'); await close(); });
 
 t('SUGG-11', 'Show N more suggestions opens the next ones, then See all suggestions › opens All suggestions', async () => {
-  const {ui, close} = await open({team: NO_SPEED6, box: BOX}); await ui.go('My Team'); has(await ui.waitMySuggestions(), /Show 2 more suggestions/, 'Show more');
-  expect(await ui.mySuggestionCount() === 1, 'more than one card first'); await ui.tap(/^Show 2 more suggestions/, ui.area('My team suggestions'), 600);
+  const {ui, close} = await open({team: NO_SPEED6, box: BOX}); await ui.go('My Team'); has(await ui.waitMySuggestions(), (NEW ? /Show 2 More Suggestions/ : /Show 2 more suggestions/), 'Show more');
+  expect(await ui.mySuggestionCount() === 1, 'more than one card first'); await ui.tap((NEW ? /^Show 2 More Suggestions/ : /^Show 2 more suggestions/), ui.area('My team suggestions'), 600);
   expect(await ui.mySuggestionCount() === 3, 'not 3 cards after Show more: ' + await ui.mySuggestionCount());
   await ui.tap(/^See all suggestions/, ui.area('My team suggestions'), 700); expect(await ui.current() === 'coverage', 'All suggestions did not open'); await close(); });
 
@@ -578,7 +578,7 @@ t('SUGG-19', 'Threat sheet Best fix: the sheet closes after Apply this fix', asy
 t('SETS-01', 'Popular sets head and the Rating · Usage · Sets switch', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); expect(await ui.current() === 'sets', 'not on Popular sets');
   const tx = await ui.text(); has(tx, /^Pokémon Tournaments Rating Usage Sets/, 'tabs and switch'); has(tx, 'Popular Sets', 'title'); has(tx, 'What players run on any Pokémon.', 'hint');
-  expect(await ui.pressed(/^Sets$/), 'Sets not selected'); await ui.tap(/^Usage$/, ui.area('Popular sets page'), 700); expect(await ui.current() === 'meta', 'Usage did not open'); await close(); });
+  expect(await ui.pressed(NEW ? /^Popular Sets$/ : /^Sets$/), 'Sets not selected'); /* new: Sim, Nov 14 naming */ await ui.tap(/^Usage$/, ui.area('Popular sets page'), 700); expect(await ui.current() === 'meta', 'Usage did not open'); await close(); });
 
 t('SETS-02', 'Look up a Pokémon shows its sets, empties the box, and is remembered', async () => {
   const {ui, ls, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); await ui.findSetsFor('kingam');

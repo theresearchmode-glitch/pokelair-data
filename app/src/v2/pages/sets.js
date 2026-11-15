@@ -20,11 +20,11 @@ V2.stSpot = (p, mine) => { const E = V2.esc, x = lairRows().find(y => y.p.n === 
     <div class="gs-sinfo"><p class="gs-tag u">${mine ? 'On your team' : k ? `#${k.rank} rated` : 'Looked up'}</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       ${T ? `<p class="gs-big"><b class="u">${RS(x.r.total)}</b><span><i class="u">${T.k} tier</i><small class="st-pill">${T.k} tier, rated ${RS(x.r.total)}${k ? `, #${k.rank} of ${k.of}` : ''}</small></span></p>` : ''}
       <div class="gs-facts"><p><span>On teams</span><b class="u">${N.u != null ? E(V2.raPct(N.u)) : '–'}</b></p><p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
-      <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Open info sheet</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}" aria-label="Add ${E(p.d)} to team"><span>Add to team</span></button>` : `<button type="button" class="np-btn2" data-hmaround="${E(p.n)}"><span>Build around it</span></button>`}</div></div></div>`; };
+      <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Info Sheet</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}" aria-label="Add ${E(p.d)} to My Team"><span>Add to My Team</span></button>` : `<button type="button" class="np-btn2" data-hmaround="${E(p.n)}"><span>Build Around It</span></button>`}</div></div></div>`; };
 
 V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = members(), p = V2.stMon();
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
-    <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Rating</a><a href="#usage">Usage</a><a href="#sets" class="on" aria-current="page">Sets</a></nav></div>`;
+    <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage">Usage</a><a href="#sets" class="on" aria-current="page">Popular Sets</a></nav></div>`;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Sets</span></p><h1 class="u"><span>How it's built</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">The moves, items, Abilities and natures real players run, and who they pair it with.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings →</a><a class="np-link" href="#usage">Usage →</a></p></section>`;
   const q = U.q.trim().toLowerCase(), hits = q ? ROSTER.filter(x => x.d.toLowerCase().includes(q)).slice(0, 8) : [];
@@ -35,7 +35,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
     ${S2 ? `<p class="fine us-src">${S2.line}</p>` : ''}</div>`;
   if (!p) return `<div class="ra gsp us st"><div class="gs-top">${head}</div>${tabs}<div class="gs-body">${ctl}<p class="tm-sub">Look up a Pokémon to see its popular sets.</p></div></div>`;
   const mine = team.find(m => m.p.n === p.n), t = S2.t;
-  const yours = team.length ? `<section class="st-team"><h2 class="u st-h2">Your team</h2>${(innerWidth < 700 && team.length > 3 ? [team.slice(0, 3), team.slice(3)] : [team]).map(r => V2.stBench(r.map(m => V2.stFig(m.p, '', m.p.n === p.n)), 'st-six')).join('')}</section>` : '';
+  const yours = team.length ? `<section class="st-team"><h2 class="u st-h2">Your Team</h2>${(innerWidth < 700 && team.length > 3 ? [team.slice(0, 3), team.slice(3)] : [team]).map(r => V2.stBench(r.map(m => V2.stFig(m.p, '', m.p.n === p.n)), 'st-six')).join('')}</section>` : '';
   const your = mine ? `<p class="st-mine">Your ${E(mine.d)}: ${E(mine.ability)}${mine.item ? ` @ <b>${E(mine.item)}</b>${mine.heldItem ? ' (your pick)' : ''}` : ''} · ${mine.moves.filter(Boolean).map(x => E(x.name)).join(', ')}${mine.custom ? ' (your moves)' : ''}</p>` : '';
   const stone = p.m && t && t.it && t.it.length ? t.it[0][0] : null;
   const build = hasSet(t) ? `<div class="st-cols"><div class="st-mv">${V2.usBars('Moves', t.mv, 8, '')}</div><div class="st-side">${stone ? `<div class="us-bars"><p class="us-bh">Item</p><p class="st-stone">Always holds <b>${E(stone)}</b>.</p></div>` : V2.usBars('Item', t.it, 4, '')}${V2.usBars('Ability', t.ab, 3, '')}${V2.usBars('Nature', t.na, 3, '')}</div></div>`

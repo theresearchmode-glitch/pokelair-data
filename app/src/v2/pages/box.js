@@ -101,7 +101,7 @@ V2.bxMegaOk = (p, skip, go) => { const other = p.m && members().find(m => m.mega
 V2.bxTeam = n => { const p = byName.get(n); if (!p) return; const st = V2.addState(n);
   if (st === 'have') { toast(`${p.d} is already on your team`); return; }
   if (st === 'ok') { const at = S.slots.findIndex(x => !byName.get(x.n)); V2.bxMegaOk(p, -1, () => { keepUndo(); addMon(at, p); V2.closeSheet(true); render(); toast(`${p.d} added to your team`, true); }); return; }
-  V2.sheet(`<div class="bx-swap"><div class="np-eyebrow">Swap into my team</div><h2 class="u">${V2.esc(V2.disp(n))} replaces…</h2><ul>${members().map(m => `<li><button type="button" class="bx-swapb" data-bxswap="${m.i}">${V2.mon(m.p.n, {iw: 72})}</button></li>`).join('')}</ul></div>`, {label: 'Swap into my team', small: true});
+  V2.sheet(`<div class="bx-swap"><div class="np-eyebrow">Swap Into My Team</div><h2 class="u">${V2.esc(V2.disp(n))} replaces…</h2><ul>${members().map(m => `<li><button type="button" class="bx-swapb" data-bxswap="${m.i}">${V2.mon(m.p.n, {iw: 72})}</button></li>`).join('')}</ul></div>`, {label: 'Swap Into My Team', small: true});
   document.querySelectorAll('[data-bxswap]').forEach(b => b.addEventListener('click', () => { const i = +b.dataset.bxswap, out = S.slots[i] && byName.get(S.slots[i].n);
     V2.bxMegaOk(p, i, () => { keepUndo(); addMon(i, p); V2.closeSheet(true); render(); toast(`${out ? out.d + ' → ' : ''}${p.d}`, true); }); })); };
 V2.bxGo = d => { const D = V2.bxData(); V2.bx.page = (V2.bx.page + d + D.pages) % D.pages; V2.bx.sel = null; bxRe(); };

@@ -31,7 +31,7 @@ V2.battleTurn = P => { const T = P && P.turnOne; if (!T || !T.beats || !T.beats.
   const F0 = T.field || {}, fld = F0.weather || T.terrain ? `${fieldWords(F0)}${F0.wBy ? ` (${F0.wBy.d})` : ''}${F0.negated && F0.weather ? ", cancelled by Cloud Nine / Air Lock while it's out" : ''}${F0.traced ? '. A Trace user may copy it' : ''}` : ''; // today's words (40-turn-one.js drawTurnOne)
   return `<section class="bt-turn"><h2 class="u">Turn One, in Move Order</h2><p class="bt-sub">Your ${E(T.leads.map(x => x.d).join(' + '))} vs their likely ${E(T.opp.map(x => x.d).join(' + '))}</p>
     <ol class="bt-steps">${steps}</ol>${T.warn && T.warn.length ? `<p class="bt-warn"><i>Watch</i> ${V2.keepForm(T.warn.map(E).join('; '))}. Consider Protect.</p>` : ''}${fld ? `<p class="bt-field">Field on turn 1: <b>${E(fld)}</b></p>` : ''}</section>`; };
-V2.battleEmpty = (mine, theirs) => mine.length < 4 ? `<p class="bt-empty">Add at least 4 Pokémon on My Team first. <a class="np-link" href="#team">Go to My Team ›</a></p>`
+V2.battleEmpty = (mine, theirs) => mine.length < 4 ? `<p class="bt-empty">Add at least four Pokémon on My Team first. <a class="np-link" href="#team">Go to My Team ›</a></p>`
   : !theirs.length ? `<p class="bt-empty">Everything below fills in once their six is in: which four to bring, who leads, and turn one.</p>${(() => { try { const D = V2.teamData(); return D && !D.empty && V2.sixHtml ? `<section class="bt-yours"><h2 class="u">Your Six</h2><p class="bt-sub">From My Team. Change it there.</p>${V2.sixHtml(D)}</section>` : ''; } catch (e) { return ''; } })() /* Sim, Nov 13 (Battle Q3 B): the empty Battle shows who you're bringing */}` : '';
 V2.pages.battle = {place: 'battle', draw() { const {mine, theirs, P} = V2.btPlan();
   return `<div class="bt2">${V2.battleToolsBar()}${V2.battleHead(mine, theirs, P)}<section class="bt-body"><div class="bt-sixes">${V2.battleTheirs(theirs, P)}${V2.battleMine(mine, P)}</div>${V2.battleTurn(P)}</section>${P ? `<section class="bt-plan"><div class="bt-pl">${V2.battleRead(theirs, P)}</div>${V2.battleWatch(P)}</section>` : ''}${V2.battleTabs(theirs, P)}${V2.battleDetail(mine, theirs, P)}${V2.battleMoreTools()}${V2.battleLog(P)}${V2.battleEmpty(mine, theirs)}</div>`; }};
@@ -65,7 +65,7 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   if (d.btall != null) { V2.btUi.allTeams = true; V2.btOppRefresh(); return; }
   if (d.btrecent != null) { const x = V2.btRecent()[+d.btrecent]; if (!x) return; V2.btSetOpp(x, null); V2.closeSheet(); V2.redraw(); toast('Recent opponent loaded'); return; }
   if (d.btteamall != null) { const t = META.teams && META.teams.teams[+d.btteamall]; if (!t) return; const ns = t.mons.slice(0, 6).filter(n => byName.get(n));
-    V2.btSetOpp(ns, {who: t.player, label: teamWho(t), key: V2.btKey(ns), ev: evShort(t.event)}); V2.closeSheet(); V2.redraw(); toast(`Loaded ${t.player}’s team as the opponent`); } });
+    V2.btSetOpp(ns, {who: t.player, label: teamWho(t), key: V2.btKey(ns), ev: evShort(t.event)}); V2.closeSheet(); V2.redraw(); toast(`Opponent set: ${t.player}`); } });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-btopp],[data-btclear],[data-btox],[data-btpick],[data-btteam]'); if (!b) return; const d = b.dataset;
   if (d.btopp != null) { V2.sheet(V2.btOppSheet(), {label: 'Their Six'}); return; }
   if (d.btclear != null) { V2.btSetOpp([], null); V2.redraw(); toast('Cleared their six'); return; }
@@ -74,7 +74,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
     if (o.some(x => x && byName.get(x) && byName.get(x).b === p.b)) { toast(`${p.d} is already in their six`); return; }
     o[+i] = n; V2.btUi.find[+i] = ''; V2.btSetOpp(o, null); V2.btOppRefresh(); const next = document.querySelector('.bt-osheet [data-btfind]'); if (next) next.focus(); return; }
   if (d.btteam != null) { let t = null; try { t = gauntletTeams()[+d.btteam]; } catch (x) {} if (!t) return; const ns = t.mons.map(m => (m && m.n) || m).filter(n => byName.get(n));
-    V2.btSetOpp(ns, {who: t.player, label: t.who, key: ns.slice().sort().join('|'), ev: t.ev || ''}); /* who = the player (17 realSheetFor matches on it, as Home's prep does); label = what we show */ V2.closeSheet(); V2.redraw(); toast(`Their Six: ${t.who}`); } });
+    V2.btSetOpp(ns, {who: t.player, label: t.who, key: ns.slice().sort().join('|'), ev: t.ev || ''}); /* who = the player (17 realSheetFor matches on it, as Home's prep does); label = what we show */ V2.closeSheet(); V2.redraw(); toast(`Opponent set: ${t.who}`); } });
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-btfind]'); if (!i) return; const k = +i.dataset.btfind; V2.btUi.find[k] = i.value;
   const h = document.querySelector(`[data-bthits="${k}"]`); if (h) { h.innerHTML = V2.buildHits(i.value).replace(/data-bdpick="([^"]*)"/g, (m, n) => `data-btpick="${k}|${n}"`);
     const inSix = new Set((S.opp || []).filter(n => n && byName.get(n)).map(n => byName.get(n).b)); /* no Pokémon offered twice (today's rule) */
@@ -163,16 +163,16 @@ V2.battleLog = P => { const E = V2.esc, ms = members(); if (ms.length < 4) retur
   const order = pick.length === 4 ? `lead ${E(dn(pick[0]))} + ${E(dn(pick[1]))}, back ${E(dn(pick[2]))} + ${E(dn(pick[3]))}` : `${pick.length} of 4 picked`;
   const four = `<button type="button" class="bt-lfour" data-btlfour aria-label="Change the four you brought: ${order}"><b>${order}</b></button> (tap to change)`;
   const whose = fromPlan ? "the plan's four" : 'your four';
-  const say = L.length ? `<p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> battles logged</span></p><p class="bt-lsay">Next game: log it with ${whose}: ${four}.</p>`
+  const say = L.length ? `<p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> games logged</span></p><p class="bt-lsay">Next game: log it with ${whose}: ${four}.</p>`
     : `<p class="bt-lsay">No games logged yet. After the match, log the result with ${whose}: ${four}.</p>`;
   V2.btUi.logPicksHtml = `<div class="bt-lpicks" role="group" aria-label="The four you brought, leads first">${ms.map(m => { const i = pick.indexOf(m.p.n);
     return `<button type="button" class="bt-lp${i >= 0 ? ' on' : ''}" data-btlp="${E(m.p.n)}" aria-pressed="${i >= 0}">${V2.mon(m.p.n, {iw: 40, bare: true})}<span>${V2.rowName(m.d)}</span><small>${i >= 0 ? (i < 2 ? 'Lead ' : 'Back ') + (i + 1) : '&nbsp;'}</small></button>`; }).join('')}</div>`;
   const off = pick.length === 4 ? '' : ' disabled';
-  return `<section class="bt-log"><div class="bt-lgl"><h2 class="u">Battle Log</h2>${say}${(() => { const f = [fromPlan ? 'Filled in from the plan' : pick.length === 4 ? '4/4 picked' : '', S.opp.some(Boolean) ? `saved with ${S.opp.filter(Boolean).length === 6 ? 'their six' : S.opp.filter(Boolean).length + ' of their six'}` : ''].filter(Boolean).join(' · '); return f ? `<p class="fine">${f.charAt(0).toUpperCase() + f.slice(1)}</p>` : ''; })()}</div>
-    <div class="row bt-lacts"><span class="bt-lg">${off ? '<button type="button" class="np-link" data-btlfour>Pick your four first ›</button>' : ''}<button type="button" class="np-btn2" data-btlres="W"${off}><span>Win</span></button><button type="button" class="np-btn2" data-btlres="L"${off}><span>Loss</span></button></span>
-      <span class="bt-lg"><button type="button" class="np-link" data-btreplay>Log from a Showdown Replay ›</button>${L.length ? '<button type="button" class="np-link" data-btrecord>Your Record ›</button>' : ''}</span></div></section>`; };
+  return `<section class="bt-log"><div class="bt-lgl"><h2 class="u">Your Games</h2>${say}${(() => { const f = [fromPlan ? 'Filled in from the plan' : pick.length === 4 ? '4/4 picked' : '', S.opp.some(Boolean) ? `saved with ${S.opp.filter(Boolean).length === 6 ? 'their six' : S.opp.filter(Boolean).length + ' of their six'}` : ''].filter(Boolean).join(' · '); return f ? `<p class="fine">${f.charAt(0).toUpperCase() + f.slice(1)}</p>` : ''; })()}</div>
+    <div class="row bt-lacts"><span class="bt-lg">${off ? '<button type="button" class="np-link" data-btlfour>Pick Your Four First ›</button>' : ''}<button type="button" class="np-btn2" data-btlres="W"${off}><span>Win</span></button><button type="button" class="np-btn2" data-btlres="L"${off}><span>Loss</span></button></span>
+      <span class="bt-lg"><button type="button" class="np-link" data-btreplay>Log from a Showdown Replay ›</button>${L.length ? '<button type="button" class="np-link" data-btrecord>All Your Games ›</button>' : ''}</span></div></section>`; };
 // your record (today's Battle log stats, in a sheet): by Pokémon, lead pairs (2+ games), toughest opponents (3+), recent battles with delete
-V2.btRecord = () => { const E = V2.esc, L = Array.isArray(S.log) ? S.log : []; if (!L.length) return '<div class="bt-rec"><h2 class="u">Your Record</h2><p class="bt-sub">No battles logged yet.</p></div>';
+V2.btRecord = () => { const E = V2.esc, L = Array.isArray(S.log) ? S.log : []; if (!L.length) return '<div class="bt-rec"><h2 class="u">Your Games</h2><p class="bt-sub">No games logged yet.</p></div>';
   const dn = n => (byName.get(n) || {}).d || n, all = logStats(L), tr = teamRecord(members()), byMon = new Map(), byLead = new Map(), byOpp = new Map();
   for (const e of L) { for (const n of e.b) byMon.set(n, [...(byMon.get(n) || []), e]); if (e.b.length >= 2) { const k = logKey(e.b.slice(0, 2)); byLead.set(k, [...(byLead.get(k) || []), e]); } for (const n of e.o) byOpp.set(n, [...(byOpp.get(n) || []), e]); }
   const row = (label, st) => `<li><span>${label}</span><i class="bar" style="--w:${st.pct}%" aria-hidden="true"></i><b>${st.w}–${st.l}</b><small>${st.pct}%</small></li>`;
@@ -180,17 +180,17 @@ V2.btRecord = () => { const E = V2.esc, L = Array.isArray(S.log) ? S.log : []; i
   const leads = [...byLead].map(([k, e]) => [k, logStats(e)]).filter(x => x[1].n >= 2).sort((a, b) => b[1].pct - a[1].pct || b[1].n - a[1].n).slice(0, 4);
   const opps = [...byOpp].map(([n, e]) => [n, logStats(e)]).filter(x => x[1].n >= 3).sort((a, b) => a[1].pct - b[1].pct).slice(0, 4);
   const when = t => { try { return new Date(t).toLocaleDateString([], {month: 'short', day: 'numeric'}); } catch (e) { return ''; } };
-  return `<div class="bt-rec"><h2 class="u">Your Record</h2><p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> battles logged</span></p>
+  return `<div class="bt-rec"><h2 class="u">Your Games</h2><p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> games logged</span></p>
     <h3 class="bt-oh">Your Pokémon</h3><ul class="bt-rrows">${mons.map(([n, st]) => row(E(dn(n)), st)).join('')}</ul>
     ${leads.length ? `<h3 class="bt-oh">Lead Pairs (2+ Games)</h3><ul class="bt-rrows">${leads.map(([k, st]) => row(k.split('|').map(x => E(dn(x))).join(' + '), st)).join('')}</ul>` : ''}
     ${opps.length ? `<h3 class="bt-oh">Toughest Opponents (3+ Games)</h3><ul class="bt-rrows">${opps.map(([n, st]) => row(E(dn(n)), st)).join('')}</ul>` : ''}
-    <h3 class="bt-oh">Recent Battles</h3><ul class="bt-rlist">${L.slice(-15).reverse().map(e => `<li><b class="r ${e.r === 'W' ? 'w' : 'l'}">${e.r === 'W' ? 'Win' : 'Loss'}</b><span>${E(when(e.t))}</span><span class="b">${e.b.length ? E(e.b.map(dn).join(', ')) : 'Pokémon not recorded'}</span><button type="button" class="np-link" data-btldel="${e.t}" aria-label="Delete this battle">Delete</button></li>`).join('')}</ul></div>`; };
+    <h3 class="bt-oh">Recent Games</h3><ul class="bt-rlist">${L.slice(-15).reverse().map(e => `<li><b class="r ${e.r === 'W' ? 'w' : 'l'}">${e.r === 'W' ? 'Win' : 'Loss'}</b><span>${E(when(e.t))}</span><span class="b">${e.b.length ? E(e.b.map(dn).join(', ')) : 'Pokémon not recorded'}</span><button type="button" class="np-link" data-btldel="${e.t}" aria-label="Delete this battle">Delete</button></li>`).join('')}</ul></div>`; };
 V2.btLogSheet = () => { V2.battleLog(V2.btPlan().P); const {pick} = V2.btLogPick(V2.btPlan().P), dn = n => (byName.get(n) || {}).d || n, E = V2.esc;
   return `<div class="bt-lsheet"><h2 class="u">The Four You Brought</h2><p class="bt-sub">Tap in the order they came out: your two leads first, then the back two. ${pick.length}/4 picked.</p>${V2.btUi.logPicksHtml}
     <p class="fine">${pick.length === 4 ? `Order: lead ${E(dn(pick[0]))} + ${E(dn(pick[1]))}, back ${E(dn(pick[2]))} + ${E(dn(pick[3]))}` : 'Pick four to log the game.'}</p><div class="row"><button type="button" class="np-btn" data-v2close><span>Done</span></button></div></div>`; };
 V2.btReplaySheet = () => `<div class="bt-rep"><h2 class="u">Log from a Showdown Replay</h2><p class="bt-sub">On the replay page, open the log (or download the replay), then paste the log here or choose the file. Load the team you played with first.</p>
   <textarea class="np-field" data-btrepin rows="5" placeholder="|player|p1|…" aria-label="Replay log"></textarea>
-  <div class="row"><button type="button" class="np-btn" data-btrepgo><span>Log This Game</span></button><label class="np-btn2"><span>Choose Replay File</span><input type="file" data-btrepfile accept=".html,.htm,.txt,.log" hidden></label></div><p class="fine" data-btrepout aria-live="polite"></p></div>`;
+  <div class="row"><button type="button" class="np-btn" data-btrepgo><span>Log a Game</span></button><label class="np-btn2"><span>Choose Replay File</span><input type="file" data-btrepfile accept=".html,.htm,.txt,.log" hidden></label></div><p class="fine" data-btrepout aria-live="polite"></p></div>`;
 V2.btAddReplay = text => { const x = parseReplay(text), out = document.querySelector('[data-btrepout]');
   if (x.error) { if (out) out.textContent = x.error; return; } if (!Array.isArray(S.log)) S.log = [];
   S.log.push({t: Date.now(), r: x.r, b: x.b, tm: members().map(m => m.p.n), o: x.o}); if (S.log.length > 400) S.log = S.log.slice(-400); persist();
@@ -205,8 +205,8 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
     V2.btUi.logPick = []; V2.btUi.logTouched = false; persist(); V2.redraw(); toast(d.btlres === 'W' ? 'Win logged' : 'Loss logged'); return; }
   if (d.btreplay != null) { V2.sheet(V2.btReplaySheet(), {label: 'Log from a Showdown Replay'}); return; }
   if (d.btrepgo != null) { V2.btAddReplay((document.querySelector('[data-btrepin]') || {}).value); return; }
-  if (d.btrecord != null) { V2.sheet(V2.btRecord(), {label: 'Your Record'}); return; }
-  if (d.btldel) { const k = +d.btldel; S.log = (S.log || []).filter(x => x.t !== k); persist(); const s = document.querySelector('.np-sheet .bt-rec'); if (s) s.outerHTML = V2.btRecord(); V2.redraw(); toast('Battle deleted'); } });
+  if (d.btrecord != null) { V2.sheet(V2.btRecord(), {label: 'Your Games'}); return; }
+  if (d.btldel) { const k = +d.btldel; S.log = (S.log || []).filter(x => x.t !== k); persist(); const s = document.querySelector('.np-sheet .bt-rec'); if (s) s.outerHTML = V2.btRecord(); V2.redraw(); toast('Game removed'); } });
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.matches || !t.matches('[data-btrepfile]') || !t.files || !t.files[0]) return;
   const fr = new FileReader(); fr.onload = () => { const s = String(fr.result || ''); const m = s.match(/<script type="text\/plain" class="battle-log-data">([\s\S]*?)<\/script>/); V2.btAddReplay(m ? m[1] : s); }; fr.readAsText(t.files[0]); t.value = ''; });
 
@@ -220,7 +220,7 @@ V2.BT_TOOLS = () => { let n = 0; try { n = gauntletTeams().length; } catch (e) {
   return [['practice', 'Team Preview Practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test Run', '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
     ['speed', 'Speed Tiers', '', 'Your six against the 20 most-used Pokémon'], ['calc', 'Damage Calc', '', 'Any attacker into any defender'], ['types', 'Type Chart', '', '18 types, or look up a Pokémon']]; };
 V2.battleToolsBar = (cur = 'battle') => { const L = Array.isArray(S.log) ? S.log.length : 0, on = k => k === cur ? ' aria-current="page" class="on"' : '';
-  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle"${on('battle')}>Battle A Team</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}"${on(h)}>${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Battle Log</a></nav>`; };
+  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle"${on('battle')}>Battle</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}"${on(h)}>${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Your Games</a></nav>`; };
 V2.battleMoreTools = () => `<section class="bt-more"><h2 class="u">More Ways to Prep</h2><ul>${V2.BT_TOOLS().map(([h, t, s, d]) => `<li><a href="#${h}"><span>${t}<small>${V2.esc(d)}</small></span><i aria-hidden="true">›</i></a></li>`).join('')}</ul></section>`;
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-btlogjump]'); if (!a) return; e.preventDefault(); const l = document.querySelector('.bt-log'); if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'}); });
 // Battle Q3 B (Nov 13): a tile in Your Six on the empty Battle page opens that Pokémon's info sheet (as Build's six, Sim Nov 12)
