@@ -3,6 +3,17 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 14, written 7:08 PM Eastern by the clock; Sim's authority until 12:00 PM Sun Nov 15 (extended 7:08 PM); summary 11:40 AM)
+- Scheduled: summary reminder trig_01PbzKFQ8nVFkJsCK3hJWvzt fires 11:38 AM; backstops trig_01P8wwfASshsPdbcFcM3qNMv (:23) and
+  trig_012D8AdnvLFxfYqeBtDUoc7o (:53) carry the work order. At 12:00 PM: STOPPED, HANDOVER, phone notification, delete both backstops.
+- My Team "The Hand" DONE (pieces 1-4) on the Preview v141 (400 files): header, Hand of Cards, editing strip, Game Plan strip, Matchups full
+  width with stand-out Cards (matchups.css, V2._hand). Sim approved Q5 A, Q7 A, H1 C, H2 A. Heights still over (desktop 2,326 vs 1,800; iPhone
+  4,137 vs 3,750; 320 4,413 vs 3,900); iPad 3,207 ok. A-team tests = baseline (130 pass, 8 FAIL, 4 known; same failing tests).
+- NEXT (order logged 7:08 PM): 1) Build "The Blueprint" (docs/rebuild/mocks/build-blueprint/BRIEF.md + 3 webp), 2) Winning Hands
+  (docs/rebuild/mocks/winning-hands), 3) My Team height/polish pass. Not-drawn states: pictures for Sim first.
+- Helpers in scratchpad (not in repo): shot2e.cjs/shot2c.cjs (pictures; VIEW, CLIP, VH, CLICK, EVAL), hsec-team2.cjs (section heights with
+  c13 data), cut.cjs (what runs past the edge), mockshot.cjs (inject a style for mock-ups).
+
 ## NOW (Nov 14, written 6:23 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
 - My Team "The Hand" pieces 1-3 BUILT, committed (not on the Preview yet): team.js (mtHead), six.js (V2.handHtml, V2.editStripHtml, V2.isHand),
   monsheet.js (msCard takes a sprite size). Full A-team run on this build in progress; baseline (before the Hand) 130 pass, 8 FAIL, 4 known.
