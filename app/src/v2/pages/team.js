@@ -280,7 +280,7 @@ V2.openShare = savedId => { const U = V2.shUi, t = savedId && S.teams.find(x => 
   V2.shDraw(); };
 V2.shDraw = async () => { const U = V2.shUi, box = document.querySelector('[data-sh2img]'), sv = document.querySelector('[data-sh2save]'); if (!box) return; const SV = U.saved, ms = SV ? SV.ms : members(), was = CH.shareMode, kind = SV ? 'poster' : U.kind;
   if (sv) sv.disabled = true; CH.shareMode = U.mode; let c = null;
-  try { c = SV ? await ARB.poster(ms, {name: SV.name}) : kind === 'slab' ? await V2.slab(ms, U.shape || 'tall') : kind === 'poster' ? await ARB.poster(ms) : kind === 'sheet' ? await buildSheetImage(ms) : await ARB.card(); } catch (e) { c = null; } finally { CH.shareMode = was; }
+  try { c = SV ? await ARB.poster(ms, {name: SV.name}) : kind === 'slab' ? await V2.slab(ms, U.shape || 'tall') : kind === 'poster' ? await ARB.poster(ms) : kind === 'sheet' ? await (V2.tapeImage ? V2.tapeImage(ms, U.mode === 'dark') : buildSheetImage(ms)) /* Nov 15: the Team Sheet image in the Tale of the Tape look (share-tape.js) */ : await ARB.card(); } catch (e) { c = null; } finally { CH.shareMode = was; }
   if (U.url) { try { URL.revokeObjectURL(U.url); } catch (e) {} U.url = null; }
   let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (e) {}
   U.blob = blob; U.url = blob ? URL.createObjectURL(blob) : null; if (!document.contains(box)) return;

@@ -59,7 +59,7 @@
     "src/v2/pages/compare.js", "src/v2/pages/compare-faceoff.js",
     "src/v2/pages/home.js",
     "src/v2/pages/build.js",
-    "src/v2/pages/build-sheet.js", "src/v2/pages/winning.js", "src/v2/pages/events.js", "src/v2/pages/archetypes.js", "src/v2/pages/thisweek.js", "src/v2/pages/track.js", "src/v2/pages/share-slab.js", "src/v2/pages/method.js", "src/v2/pages/about.js", "src/v2/pages/feedback.js", "src/v2/pages/owner.js",
+    "src/v2/pages/build-sheet.js", "src/v2/pages/winning.js", "src/v2/pages/events.js", "src/v2/pages/archetypes.js", "src/v2/pages/thisweek.js", "src/v2/pages/track.js", "src/v2/pages/share-slab.js", "src/v2/pages/share-tape.js", "src/v2/pages/method.js", "src/v2/pages/about.js", "src/v2/pages/feedback.js", "src/v2/pages/owner.js",
     "src/v2/pages/battle.js", "src/v2/pages/battle-pbp.js",
     "src/v2/pages/speed.js",
     "src/v2/pages/calc.js",
