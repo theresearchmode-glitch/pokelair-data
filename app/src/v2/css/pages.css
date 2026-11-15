@@ -2954,3 +2954,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:389px){.tk:not(.big) .tk-name{font-size:var(--t13);font-stretch:88%;overflow-wrap:break-word}} /* Sim Q17 (Nov 15): under 390 no word breaks: smaller name in the approved 88% letters (moving the winner down would shrink six sprites to ~26 px) */
 @media (max-width:359px){.tk:not(.big) .tk-hero{width:56px}.tk:not(.big) .tk-hero .np-mon{--iw:56px}.tk:not(.big) .tk-mid{padding-right:var(--s2)}} /* Q17 at 320-359: room for "TOURNAMENT" (it reached 17 px into the stub) */
 @media (max-width:339px){.tk:not(.big) .tk-mid{padding-left:var(--s2)}}
+/* Sim Q2/Q14 (Nov 15): before their six is in, wide screens (1366+; at 1280 the narrower headline made the page taller, measured) put Your Games in the empty right half beside the headline */
+@media (min-width:1366px){.bt2.bt-noopp{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,440px);column-gap:var(--s10);align-items:start}
+  .bt2.bt-noopp>*{grid-column:1/-1}.bt2.bt-noopp>.bt-head{grid-column:1;grid-row:2}.bt2.bt-noopp>.bt-body{grid-column:1;grid-row:3}
+  .bt2.bt-noopp>.bt-log{grid-column:2;grid-row:2/span 2;align-self:center}}
+@media (min-width:1366px){.bt2.bt-noopp>.bt-log{grid-template-columns:minmax(0,1fr);gap:var(--s4)}.bt2.bt-noopp>.bt-log .bt-lacts{justify-content:flex-start}} /* in the right column, Your Games stacks: words, then its buttons */

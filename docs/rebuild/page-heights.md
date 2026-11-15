@@ -61,6 +61,7 @@ This table records the rule in design-system.md section 9. Heights are full page
 | Battle a Team | 2,743 | 2,418 | 1,926 **over** | 3,378 / 2,545 / 1,789 (Nov 11) |
 
 Battle limits (Sim, Nov 12, 10:15 PM, Q5 = A, the Battle log always shown): 320 4,250 · 390 3,750 · 1440 1,850 (were 3,900 / 3,700 / 1,800). Then Q6 = A (Sim, Nov 12, the Battle tools): 320 4,650 · 390 4,100 · 1440 1,950.
+Battle 390 limit raised to 4,200 (Sim, Nov 15, Q2: 'recommended'; measured 4,179 with the Play-by-Play). At 1366+ Your Games now sits beside the headline before their six is in (Q14): 1,545 at 1366/1440 (was 1,595), 1,479 at 1920 (was 1,569). Logged time: 7:29 AM (7:29:23)  date: Sun Nov 15, 2026.
 | Team Preview Practice | 1,418 | 1,180 | 1,118 | not drawn yet |
 | Test Run | 3,034 | 2,436 | 2,474 **over** | not drawn yet |
 | Speed Tiers | 2,321 | 1,972 | 1,922 **over** | not drawn yet |
