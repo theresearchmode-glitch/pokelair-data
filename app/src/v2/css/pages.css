@@ -3097,3 +3097,17 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .mh .mc-mon{top:var(--s10)} /* Sim, Nov 15 (B, recommended): no Pokémon pops out of its Card on The Hand; every one stands inside on the same floor */
 @media (max-width:699px){.mh .mc-mon{top:var(--s5)}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:80px}} /* small Cards (152 px): the Pokémon stays inside and clear of its name */
 @media (min-width:700px) and (max-width:1099px){.mh .mc-mon{top:var(--s5)}} /* tablets: a Mega two-line name stays clear */
+/* Pokémon page parts 5 and 6: Abilities (a share bar, then each Ability) and Why it rates N (Track Record's receipt, paper slips) */
+.pk-abbar{display:flex;gap:2px;height:var(--s4)}.pk-abbar i,.pk-abh i{display:block;background:var(--plot);transform:skewX(-10deg)}
+.pk-abbar .a1,.pk-abh .a1{background:color-mix(in srgb,var(--plot) 55%,var(--wash))}.pk-abbar .a2,.pk-abh .a2{background:color-mix(in srgb,var(--plot) 30%,var(--wash))}.pk-abh .ax{background:var(--rule)}
+.pk-abs{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:var(--s8)}.pk-ab p{margin:0;font:400 var(--t15)/1.5 var(--b)}
+.pk-abh{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);margin-bottom:var(--s2)}.pk-abh i{width:var(--s3);height:var(--s3);align-self:center}.pk-abh b{font:900 var(--t20)/1.2 var(--u);font-style:italic}.pk-abh span{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text)}
+.pk-why{display:grid;grid-template-columns:minmax(300px,4fr) minmax(0,7fr);gap:var(--s12);align-items:start}
+.pk-rc .pk-rt{margin:0 0 var(--s2);padding-top:var(--s3);border-top:2px dashed var(--rc-rule);font:800 var(--t15)/1.4 var(--b)}.pk-rc .trk-lines li{display:grid;gap:var(--s2)} /* room for the 1.5° tilt: lines never touch */
+.pk-rc .trk-bar .trk-stamp{bottom:auto;top:calc(var(--s3)*-1)} /* the stamp sits over the top edge of the barcode, never over its end */
+.pk-data{display:grid;gap:var(--s4);min-width:0}
+.pk-slips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4);margin:0;padding:0;list-style:none}
+.pk-slip{display:grid;gap:var(--s1);padding:var(--s4);background:var(--rc-paper);color:var(--rc-ink);border-top:4px solid var(--rc-good);box-shadow:0 4px 12px var(--rc-shadow)}
+.pk-slip span{font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--rc-ink2)}.pk-slip b{font:800 var(--t17)/1.35 var(--b)}.pk-slip small{font:400 var(--t13)/1.5 var(--b);color:var(--rc-ink2)}
+@media (max-width:1099px){.pk-why{grid-template-columns:minmax(0,1fr)}.pk-rc{max-width:480px;width:100%;justify-self:center}}
+@media (max-width:699px){.pk-abs{grid-template-columns:minmax(0,1fr);gap:var(--s5)}.pk-slips{grid-template-columns:minmax(0,1fr)}}

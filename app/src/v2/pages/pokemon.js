@@ -33,7 +33,7 @@ V2.pkStats = p => { const E = V2.esc, bf = SHT.baseForm(p), tot = p.st.reduce((a
     <div class="pk-share" aria-hidden="true">${share}</div>${bf ? `<p class="fine">Mega Evolved stats; the small numbers are the change from ${E(bf.d)}.</p>` : ''}</section>`; };
 
 // each part's head (brief 4): a blue slanted square with its number, the question, today's section name small under it, a thick rule
-V2.pkHead = (no, q, sub, id) => `<header class="pk-h"><i class="pk-no u" aria-hidden="true">${no}</i><div><h2 class="u" id="${id}">${q}</h2><p>${sub}</p></div></header>`;
+V2.pkHead = (no, q, sub, id) => `<header class="pk-h"><i class="pk-no u" aria-hidden="true">${no}</i><div><h2 class="u" id="${id}">${q}</h2>${sub ? `<p>${sub}</p>` : ''}</div></header>`;
 // the jump links (brief 3): only to the parts already on the page (the rest are added as they are built)
 V2.pkJumps = list => `<nav class="pk-jumps" aria-label="On this page">${list.map(([id, t]) => `<button type="button" data-pkjump="${id}">${t}</button>`).join('')}</nav>`;
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkjump]'); if (!b) return; const t = document.getElementById(b.dataset.pkjump); if (t) t.scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
@@ -98,12 +98,34 @@ V2.pkSpeed = p => { const E = V2.esc, sp = SHT.speeds(p), id = typeof SPRITE_ID 
   return `<section class="pk-sec" aria-labelledby="pk-s4">${V2.pkHead(4, 'How fast it is', 'Speed at Level 50', 'pk-s4')}${line}${strip}${list}
     <p class="fine">Level 50, as in Pokémon Champions: base Speed ${p.st[5]}, Speed points 0–32 add 1 each, a Speed nature adds 10%. "Top 30" = the 30 biggest threats at their usual Speed.</p></section>`; };
 V2.pkFlags = () => { const w = document.querySelector('.pk-speed'); if (!w) return; const h = Math.max(0, ...[...w.querySelectorAll('.pk-flag')].map(f => f.offsetHeight)); w.style.setProperty('--rh', (h + 16) + 'px'); }; /* rows as tall as the tallest flag */
+
+// 5. Abilities (today's: each Ability, its share of players' sets, its text, the same note): one bar split by share, then the Abilities
+V2.pkAbilities = p => { const E = V2.esc, st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })(), bf = SHT.baseForm(p);
+  const abSh = new Map((st.ab || []).map(([a, v]) => [a, v])), abTop = (st.ab || [])[0];
+  const list = [...new Set(p.a)].sort((x, y) => (+(abSh.get(y) ?? -1)) - (+(abSh.get(x) ?? -1)));
+  const note = p.m && bf ? `Its Mega's Ability. Before Mega Evolving, ${E(bf.d)} has ${[...new Set(bf.a)].map(E).join(' or ')}.` : p.a.length === 1 ? 'Its only Ability.' : abTop ? "Share of players' sets with each Ability." : '';
+  const shared = list.filter(a => abSh.get(a) != null), bar = shared.length > 1 ? `<div class="pk-abbar" aria-hidden="true">${shared.map((a, i) => `<i class="a${i}" style="flex:${Math.max(.6, +abSh.get(a))}"></i>`).join('')}</div>` : '';
+  const items = list.map((a, i) => { const v = abSh.get(a), top = abTop && abTop[0] === a && p.a.length > 1;
+    return `<div class="pk-ab"><p class="pk-abh"><i class="a${shared.indexOf(a) < 0 ? 'x' : shared.indexOf(a)}" aria-hidden="true"></i><b class="u">${E(a)}</b>${top ? `<span>most used${v != null ? ', ' + E(pctFmt(+v)) : ''}</span>` : v != null && p.a.length > 1 ? `<span>${E(pctFmt(+v))}</span>` : ''}</p><p>${E(SHT.abDesc(a))}</p></div>`; }).join('');
+  return `<section class="pk-sec" aria-labelledby="pk-s5">${V2.pkHead(5, p.a.length > 1 ? 'Abilities' : 'Ability', '', 'pk-s5')}${bar}<div class="pk-abs" style="--n:${Math.min(3, list.length)}">${items}</div>${note ? `<p class="fine">${note}</p>` : ''}</section>`; };
+// 6. Why it rates N (today's: the note and the four reasons, What the data says, Other tier lists): the reasons as a till receipt (Track
+// Record's paper), the evidence as paper slips
+V2.pkWhy = p => { const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), B = lairBars(p), of = (lairRank(p) || {of: lairRows().length}).of;
+  const lines = B.map(([l, v, note]) => `<li><p class="trk-ln"><span>${E(l)}</span><i aria-hidden="true"></i><b class="u">${v == null ? '–' : v}</b></p><small>${v == null ? '' : `Top ${Math.max(1, 100 - v)}% of Pokémon`}${note ? (v == null ? '' : ' · ') + E(V2.txt(note)) : ''}</small></li>`).join('');
+  const receipt = `<section class="trk-rc pk-rc" aria-labelledby="pk-s6r"><i class="trk-tape" aria-hidden="true"></i><p class="trk-rn u" aria-hidden="true">NastyPlot</p><p class="trk-rk" aria-hidden="true">* * * ${E(V2.disp(p.n))} * * *</p>
+    <h3 class="pk-rt" id="pk-s6r">Why it rates ${rs}</h3>${B.length ? `<p class="trk-rs">Each bar ranks it against the ${of} Pokémon with tournament results: 94 means better than 94% of them. Its rating is ${E(rRange(r))}${r.band >= 10 ? '; few games so far, so treat it as an estimate' : ''}.</p><ul class="trk-lines">${lines}</ul>`
+      : `<p class="trk-rs">No tournament results yet, so this is a rough placeholder from its stats, typing and tools (never above ${RS(30)}). It moves up once it shows up at events.</p>`}
+    <p class="trk-tot"><span>Rating</span><b>${rs}</b></p><div class="trk-bar" aria-hidden="true"><i></i><span class="trk-stamp hit">${E(T.k)} tier</span></div></section>`;
+  const ev = lairEvidence(p), slips = ev.length ? `<ul class="pk-slips">${ev.map(e => `<li class="pk-slip"><span>${E(e[0])}</span><b>${E(V2.txt(e[1]))}</b><small>${E(V2.txt(e[2]))}</small></li>`).join('')}</ul>` : '<p>No tournament or ladder games yet: this rating comes from stats, typing and tools.</p>';
+  const O = (() => { const pf = activePerf(); return pf && pf.outside && pf.outside.lists && pf.outside.lists.length ? pf.outside : null; })();
+  const outs = O ? `<h3 class="pk-k u">Other tier lists</h3><div class="ms-out">${O.lists.map(L => { const v = O.data[L.k] && O.data[L.k][p.n]; return `<a href="${E(L.url)}" target="_blank" rel="noopener"><b>${v ? E(L.tiers[v]) : '–'}</b><span>${E(L.name)}<small>${v ? E(L.how) : 'not listed · ' + E(L.note)} · ${E(perfDateText(L.date))}</small></span></a>`; }).join('')}</div><p class="fine">Shown for comparison, not counted in the score.</p>` : '';
+  return `<section class="pk-sec" aria-labelledby="pk-s6">${V2.pkHead(6, `Why it rates ${rs}`, 'Rating · What the data says · Other tier lists', 'pk-s6')}<div class="pk-why">${receipt}<div class="pk-data"><h3 class="pk-k u">What the data says</h3>${slips}${outs}</div></div></section>`; };
 V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkFlags(); }, draw() { const p = V2.monFromHash(), E = V2.esc;
   if (!p) return `<div class="ra gsp"><section class="ra-h"><p class="np-eyebrow"><span>Pokémon</span></p><h1 class="u">No Pokémon here.</h1><p class="ra-lede">This address doesn't match a Pokémon in Reg M-C. <a class="np-link pk-404" href="#meta">Every Pokémon, by tier</a></p></section></div>`;
   try { document.title = `${V2.disp(p.n)}: rating, sets and partners · NastyPlot`; } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
   return `<div class="ra pk"><nav class="pk-trail" aria-label="You are here"><a href="#meta">Meta</a><span aria-hidden="true">›</span><a href="#meta">Ratings</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav>
-    ${V2.pkTop(p)}${V2.pkStats(p)}${(() => { const pr = V2.pkPartners(p); return V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it'], ...(pr ? [['pk-s2', 'Who it teams with']] : []), ['pk-s3', 'What beats it'], ['pk-s4', 'How fast it is']]) + V2.pkBuild(p) + pr + V2.pkTypes(p) + V2.pkSpeed(p); })()}
-    <p class="pk-more fine">The rest of ${E(V2.disp(p.n))}'s page is being rebuilt part by part. Until then: <button type="button" class="np-link" data-v2mon="${E(p.n)}">Open today's info sheet</button></p></div>`; }};
+    ${V2.pkTop(p)}${V2.pkStats(p)}${(() => { const pr = V2.pkPartners(p); return V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it'], ...(pr ? [['pk-s2', 'Who it teams with']] : []), ['pk-s3', 'What beats it'], ['pk-s4', 'How fast it is'], ['pk-s6', `Why it rates ${RS(rating(p).total)}`]]) + V2.pkBuild(p) + pr + V2.pkTypes(p) + V2.pkSpeed(p) + V2.pkAbilities(p) + V2.pkWhy(p); })()}
+    ${ROSTER.filter(q => q.b === p.b).length > 1 ? `<p class="pk-more fine">${E(V2.disp(p.b))} has ${ROSTER.filter(q => q.b === p.b).length} forms. Their side-by-side comparison is still on the info sheet until its new design is approved: <button type="button" class="np-link" data-v2mon="${E(p.n)}">Open the info sheet</button></p>` : ''}</div>`; }};
 // the tab title goes back to the site's own when you leave a Pokémon page
 V2.title0 = document.title; addEventListener('hashchange', () => { if (V2.route() !== 'pokemon') try { document.title = V2.title0; } catch (e) {} });
 addEventListener('resize', () => requestAnimationFrame(() => { if (V2.route() === 'pokemon') { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkFlags(); } }));
