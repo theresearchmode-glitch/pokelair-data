@@ -2166,3 +2166,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .bp-parts .bd-core{grid-template-columns:auto minmax(0,1fr) auto}.bp-parts .bd-cm b{font-size:var(--t17)}.bp-parts .bd-cw{flex-wrap:wrap;column-gap:var(--s2);row-gap:0}.bp-parts .bd-cw b{font-size:var(--t20)}.bp-parts .bd-cp img{width:40px;height:40px}}
 
 @media (max-width:379px){.bp2 .bd-jump button{padding:0 var(--s2);font-size:var(--t13)}}
+/* Sim, Nov 14 (Build height A): phones tighten the sheet: smaller figures, shorter Revisions line, compact winner rows */
+.bp-sh{display:none}
+@media (max-width:699px){.bp-fig .np-mon{--iw:min(88px,100cqw)}.bp-art{height:96px}.bp-ring{width:88px;height:88px}.bp-lf{display:none}.bp-sh{display:inline}}

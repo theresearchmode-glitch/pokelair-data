@@ -131,5 +131,5 @@
 .bp-ref .bd-win>summary{grid-template-columns:auto minmax(0,1fr) auto auto;gap:var(--s2) var(--s4);padding:var(--s4) var(--s2)}
 .bp-ref .bd-win>summary::after{content:"Open ›";grid-column:4;grid-row:1;font:700 var(--t15)/1 var(--b);rotate:none;transition:none}
 .bp-ref .bd-win[open]>summary::after{content:"Close ×";rotate:none}
-@media (max-width:699px){.bp-ref .bd-win>summary{grid-template-columns:auto minmax(0,1fr) auto;row-gap:var(--s2)}.bp-ref .bd-win>summary::after{grid-column:3;grid-row:1}.bp-ref .bd-win>summary .bp-wplace{grid-column:1;grid-row:1}
-  .bp-ref .bd-win>summary .bd-wtop{grid-column:1/-1;grid-row:2}.bp-ref .bd-win>summary .bd-wsix{grid-column:1/-1;grid-row:3}}
+@media (max-width:699px){.bp-ref .bd-win>summary{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;row-gap:var(--s2)}.bp-ref .bd-win>summary .bp-wplace{grid-column:1;grid-row:1}.bp-ref .bd-win>summary .bd-wtop{grid-column:2/4;grid-row:1}
+  .bp-ref .bd-win>summary .bd-wsix{grid-column:1/3;grid-row:2}.bp-ref .bd-win>summary::after{grid-column:3;grid-row:2}}
