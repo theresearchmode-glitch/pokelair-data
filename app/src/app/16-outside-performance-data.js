@@ -108,6 +108,11 @@ function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of
 let perfCache = {key: null, val: null};
 function activePerf() { const key = metaVersion; if (perfCache.key === key) return perfCache.val;
   let v = null; try { const raw = META.perf; if (raw) { const fresh = Object.assign({}, typeof PERF_RAW === 'object' && builtinOk() ? perfFreshParts(PERF_RAW) : {}, perfFreshParts(raw));
-      if (fresh.tour) { for (const k of PERF_KEYS) if (fresh[k] && !fresh[k].updated) fresh[k] = Object.assign({}, fresh[k], {updated: perfDate(raw[k] ? raw : PERF_RAW, k)}); v = perfFromRaw(Object.assign({updated: raw.updated}, fresh)); } } } catch (e) { v = null; }
+      if (fresh.tour) { for (const k of PERF_KEYS) if (fresh[k] && !fresh[k].updated) fresh[k] = Object.assign({}, fresh[k], {updated: perfDate(raw[k] ? raw : PERF_RAW, k)}); v = perfFromRaw(Object.assign({updated: raw.updated}, fresh)); }
+      /* Sim, Nov 15 (Q16): when the refresh is past its age limit but still newer than the built-in snapshot, keep the newest we have
+         (its own parts and dates, shown plainly) instead of falling back to older ratings; frozen parts stay out (Nov 7 rule) */
+      else if (raw.tour && !raw.tour.frozen && !(typeof PERF_RAW === 'object' && builtinOk() && perfDate(PERF_RAW, 'tour') > perfDate(raw, 'tour'))) {
+        const own = {}; for (const k of PERF_KEYS) if (raw[k] && !raw[k].frozen) own[k] = Object.assign({}, raw[k], {updated: raw[k].updated || perfDate(raw, k)});
+        v = perfFromRaw(Object.assign({updated: raw.updated}, own)); } } } catch (e) { v = null; }
   if (!v) { try { v = typeof PERF_RAW === 'object' && builtinOk() ? perfFromRaw(PERF_RAW) : null; } catch (e) { v = null; } }
   perfCache = {key, val: v}; return v; }
