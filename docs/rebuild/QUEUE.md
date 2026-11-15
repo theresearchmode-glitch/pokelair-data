@@ -9,13 +9,14 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 2 | Build lower half: Reference sheets (Recent Winners), Parts list (Cores) | build-blueprint (lower-*.webp) | Built, on Preview v145. Height A done (390: 5,237 to 3,821; iPad inside; desktop 2,572 to 2,078). Limits set to measured (Sim A). B-build same failure list |
 | 3 | Winning Teams "The Winning Hands" | winning-hands | Built, on Preview v147. TOP-01..07: 8 pass (were 8 FAIL). Heights inside limits. Pictures + questions sent to Sim. Full D-meta-shell baseline compare running |
 | 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Built, on Preview v148 (400 files). A-team 130 pass / 8 FAIL, same 8 as before. Pictures + questions sent |
-| 5 | Battle a team "Play-by-Play" | battle-playbyplay | Waiting (received 8:00 PM Nov 14); needs the pink 'them' colour approved |
+| 5 | Battle a team "Play-by-Play" | battle-playbyplay | IN PROGRESS (them = existing --pick) |
 | 6 | Compare "The Face-Off" | compare-faceoff | Waiting (received 7:49 PM Nov 14); same pink |
 | 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); names approved: The Problems, The Coin Flips, The Good Matchups; no new pink |
-| 8 | My Team height and polish pass | my-team-hand | Waiting |
+| 8 | Share card: The Slab / Print / Aurora (tall + wide) | share-cards | Waiting (received 9:19 PM Nov 14); question to Sim: one design or all three |
+| 9 | My Team height and polish pass | my-team-hand | Waiting |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.
 Everything else keeps today's design (Sim: no bolder look needed).
 Why this order: finish what's half-built first, then pages by how much players use them.
 
-Coming from Sim's designer: share card (add here when it arrives).
+Sim, 9:19 PM Nov 14: that's every brief. Order is Claude's call; our rules and data win over the designer's.
