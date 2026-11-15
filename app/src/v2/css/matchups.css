@@ -182,3 +182,8 @@ button.mu-gr:hover .nm{color:var(--plot-text)}
 .tm-mus .mu-cards .mu-card img{width:100%;height:auto}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:auto;max-width:128px;justify-self:center}
 .tm-mus .mu-cards .mu-out .mu-row .mu-dis{max-width:100%;text-wrap:balance}
 @media (max-width:699px){.tm-mus .mu-cards .mu-card .ms-card{height:100px}.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:76px}.tm-mus .mu-cards .mu-card{max-width:86px}.tm-mus .mu-cards .mu-out .mu-row .tm-v{font-size:var(--t13);padding:0 var(--s1);gap:2px;clip-path:none;background:none;white-space:nowrap}.tm-mus .mu-cards .mu-out .mu-row .tm-v i{width:8px}}
+/* Nov 15 (full check, a 5-of-6 team on phones): a row with a "Calc disagrees" note had no place for the note, so the grid's auto-placement
+   pushed the verdict onto the name. The verdict keeps its column on the first line; the note gets the line under the name and verdict. */
+.mu-row .tm-v{grid-row:1}.mu-row .mu-dis{grid-row:2;grid-column:3/-1;justify-self:start;width:max-content;max-width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.mu-row.mu-nk .mu-dis{grid-column:2/-1}
+@container (max-width:340px){.mu-row .tm-v{grid-row:auto}.mu-row .mu-dis{grid-area:auto;grid-column:3/-1;grid-row:3}.mu-row.mu-nk .mu-dis{grid-column:2/-1}}

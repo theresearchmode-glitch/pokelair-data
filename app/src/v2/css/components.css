@@ -168,3 +168,4 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
    night blue with blue words, the same idea as the day switch */
 :root[data-theme="night"] .np-slide .thumb{background:color-mix(in srgb,var(--plot) 24%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--plot) 45%,transparent)}
 :root[data-theme="night"] .np-slide button[aria-pressed="true"]{color:var(--plot-text)}
+.np-btn small,.np-btn2 small{font-size:var(--t13)} /* Nov 15: a count in a button ("Saved Teams 1") took the browser default "smaller", 10.8 px on a 13 px button; now the scale minimum */
