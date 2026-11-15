@@ -2935,3 +2935,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .trk-stats{align-items:start} /* Nov 15: labels start level under each number */
 @media (max-width:429px){.tt thead th{padding-left:2px;padding-right:2px}.tt-nm{font-stretch:88%}.tt td{padding-left:var(--s1);padding-right:var(--s1)}} /* Nov 15 (re-audit #5): at 320-390 the names touched ("Charizard YWhimsicottBasculegion") and the move chips met the next column; a small gap each side, names in the approved narrower letters (88%, as Home and My Box) */
 @media (max-width:379px){.tt td{font-stretch:88%;padding-left:6px;padding-right:6px}.tt-mv .np-type{font-stretch:88%}} /* Nov 15 (re-audit #5): the approved narrower letters for cell text on the smallest phones ("Adaptability" met the edge, chips met the next column) */
+@media (max-width:399px){.mt-id .tm-name{font-size:var(--t20)}} /* Nov 15 (re-audit #4): beside the score box at 320 the name column is ~140 px; "Tailwind" broke mid-word at 24 px */
+.tm-name{text-wrap:balance} /* Nov 15 (re-audit #4): no lone word on the team name's last line */
