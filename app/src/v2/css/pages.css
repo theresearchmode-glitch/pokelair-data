@@ -2658,7 +2658,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ar-row.r2 .ar-sh{flex-direction:column;align-items:flex-start;gap:0}.ar-row.r2 .ar-sh small .c1,.ar-row.r2 .ar-sh small .c2{display:none}.ar-row.r2 .ar-sh small .c3{display:block}.ar-row.r2 .ar-sh small{padding:0}
 .ar-note{margin:var(--s2) 0 0}
 .ar-guide,.ar-map{scroll-margin-top:96px}
-.ar-sh small .c3{white-space:nowrap}@media (max-width:429px){.ar-row.r2 .ar-sh small .c3{display:none}.ar-row.r2 .ar-sh small .c2{display:block}} /* the narrowest regions keep '7 of 90' on one line */
+.ar-sh small .c3{white-space:nowrap}
 /* iPhone: Tailwind, Sun and the third each a full row, each shorter than the one before; then two share a row, then three */
 @media (max-width:699px){
   .ar-row{flex-wrap:wrap}.ar-row.r0 .ar-reg{flex-basis:100%}.ar-row.r0 .ar-reg:first-child{min-height:240px}.ar-row.r0 .ar-reg:last-child{min-height:216px}
@@ -2699,3 +2699,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ar-pl b.u{font:900 var(--t34)/1 var(--u);font-style:italic}.ar-pl span{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.ar-pl span b{color:var(--ink)}
 @media (max-width:1099px){.ar-ban{grid-template-columns:minmax(0,1fr)}.ar-cols{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.ar-oth ul{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:699px){.ar-ban{padding:var(--s5)}.ar-ban h2{font-size:var(--t34)}.ar-oth ul{grid-template-columns:repeat(2,minmax(0,1fr))}.ar-key .np-mon{--iw:64px}.ar-keys li.lead .ar-key .np-mon{--iw:96px}.ar-gh{display:grid;justify-items:start}}
+
+@media (max-width:429px){.ar-row.r2 .ar-sh small .c3{display:none}.ar-row.r2 .ar-sh small .c2{display:block}} /* the narrowest regions keep '7 of 90' on one line */
