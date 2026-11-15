@@ -411,7 +411,7 @@
 .cx2-row{display:grid;grid-template-columns:minmax(160px,1fr) minmax(0,2fr) minmax(0,2fr);gap:var(--s3) var(--s8);padding:var(--s4) 0;border-bottom:1px solid var(--rule);align-items:start}
 .cx2-lab{font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}.cx2-c{min-width:0;display:flex;flex-direction:column;gap:var(--s1);font-size:var(--t15);line-height:1.5}
 .cx2-l b{font-weight:700}.cx2-ty,.cx2-mons{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}.cx2-mons>span{display:inline-flex;align-items:center;gap:var(--s1)}.cx2-mons img{width:32px;height:32px;object-fit:contain}
-.cx2-ck{font:700 var(--t17)/1.5 var(--b)}.cx2-ck.ok{color:var(--good)}.cx2-ck.no{color:var(--ink-2)}.cx2-ck.un{color:var(--ink-3)}
+.cx2-ck{font:700 var(--t17)/1.5 var(--b)}.cx2-ck.ok{color:var(--good)}.cx2-ck.no{color:var(--bad-text)}.cx2-ck.un{color:var(--ink-3)}
 @media (max-width:699px){.cx2-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cx2-lab{grid-column:1/-1}}
 .cx2-same{margin-top:var(--s6)}.cx2-same summary{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);cursor:pointer;font:600 var(--t16)/1.3 var(--b);list-style:none}.cx2-same summary::-webkit-details-marker{display:none}
 .cx2-same summary::before{content:"›";display:inline-block;width:var(--s4);font-size:var(--t20);color:var(--ink-3);transition:transform .15s}.cx2-same[open] summary::before{transform:rotate(90deg)}
@@ -816,7 +816,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-steps{list-style:none;margin:var(--s4) 0 0;padding:0;border-top:1px solid var(--rule)}
 .bt-steps li{display:grid;grid-template-columns:28px 52px minmax(0,1fr);gap:var(--s3);align-items:center;padding:var(--s2) 0;border-bottom:1px solid var(--rule)}
 .bt-steps .n{font-size:var(--t22);line-height:1;color:var(--ink-3);font-style:italic}
-.bt-steps .who{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-steps .who span{font-weight:700;margin-right:var(--s1)}.bt-steps .who .you{color:var(--plot-text)}.bt-steps .who .them{color:var(--ink-2)} /* i42: amber means caution only (Sim, Nov 12, 8:53 PM); 'Them' is grey as in Who Moves First */
+.bt-steps .who{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-steps .who span{font-weight:700;margin-right:var(--s1)}.bt-steps .who .you{color:var(--plot-text)}.bt-steps .who .them{color:var(--pick-text)} /* i42: amber means caution only (Sim, Nov 12, 8:53 PM); 'Them' is grey as in Who Moves First */
 .bt-steps .mv{font:700 var(--t16)/1.5 var(--b)}.bt-steps .why{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .bt-warn{margin-top:var(--s4);font:600 var(--t15)/1.5 var(--b)}.bt-warn i{font-style:normal;color:var(--mid-text);margin-right:var(--s1)}
 .bt-field{margin-top:var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bt-field b{color:var(--ink);font-weight:600}
@@ -1433,7 +1433,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* the meter: four slanted pips for 'Bring four', two for 'Lead two' */
 .pp2-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}
 .pp2-meter{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1)}.pp2-meter .lab{font:700 var(--t13)/1 var(--b);color:var(--ink-2);margin:0 var(--s2) 0 var(--s4)}.pp2-meter .lab:first-child{margin-left:0}.pp2-meter .lab b{color:var(--ink)}
-.pp2-meter i{width:28px;height:12px;transform:skewX(-20deg);background:color-mix(in srgb,var(--ink) 14%,transparent);transition:background .25s}.pp2-meter i.on{background:var(--plot)}.pp2-meter i.on.ld{background:var(--bad)}
+.pp2-meter i{width:28px;height:12px;transform:skewX(-20deg);background:color-mix(in srgb,var(--ink) 14%,transparent);transition:background .25s}.pp2-meter i.on{background:color-mix(in srgb,var(--plot) 50%,transparent)}.pp2-meter i.on.ld{background:var(--plot)}
 .pp2-hint{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}.pp2-line{margin:0;min-height:1.5em;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pp2-line b{color:var(--ink)}
 /* the arena: their half, the seam with a giant outlined VS, your half */
 .pp2-arena{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 96px minmax(0,1fr);isolation:isolate}
@@ -1449,12 +1449,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pp2-plate.me.on{translate:var(--s6) 0;background:linear-gradient(100deg,var(--surface) 30%,rgba(var(--cp),.32))}
 .pp2-plate.me:not(.on):not(.ok):not(.miss){opacity:.8}.pp2-plate.me.miss{opacity:.72}
 .pp2-plate.me:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
-.pp2-rib,.pp2-no{position:absolute;top:0;right:var(--s8);padding:var(--s1) var(--s3);font-size:var(--t13);text-transform:uppercase;font-style:italic;font-synthesis:style;color:var(--on-mark)}.pp2-rib{background:var(--bad)}.pp2-no{background:var(--plot);font-size:var(--t15)}
+.pp2-rib,.pp2-no{position:absolute;top:0;right:var(--s8);padding:var(--s1) var(--s3);font-size:var(--t13);text-transform:uppercase;font-style:italic;font-synthesis:style;color:var(--on-mark)}.pp2-rib{background:var(--plot)}.pp2-no{background:var(--plot);font-size:var(--t15)}
 /* reveal */
 .pp2-banner{display:grid;gap:var(--s1);padding:var(--s5) var(--s6);clip-path:polygon(16px 0,100% 0,calc(100% - 16px) 100%,0 100%)}.pp2-banner b{font-size:var(--t28)}.pp2-banner span{font:600 var(--t16)/1.5 var(--b)}
 .pp2-banner.yes{background:var(--plot);color:var(--on-mark)}.pp2-banner.no,.pp2-banner.none{background:color-mix(in srgb,var(--ink) 8%,var(--surface))}
 .pp2-fours{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--s5)}.pp2-fours>div{display:grid;gap:var(--s2);align-content:start}
-.pp2-four{display:flex;flex-wrap:wrap;gap:var(--s2)}.pp2-four>span{display:grid;justify-items:center;gap:2px;width:88px;padding:var(--s2) var(--s1);background:var(--wash);font:600 var(--t13)/1.2 var(--b);text-align:center}.pp2-four>span i{font-style:normal;font-weight:700;font-size:var(--t13);color:var(--ink-2)}.pp2-four>span.ld i{color:var(--bad-text)}
+.pp2-four{display:flex;flex-wrap:wrap;gap:var(--s2)}.pp2-four>span{display:grid;justify-items:center;gap:2px;width:88px;padding:var(--s2) var(--s1);background:var(--wash);font:600 var(--t13)/1.2 var(--b);text-align:center}.pp2-four>span i{font-style:normal;font-weight:700;font-size:var(--t13);color:var(--ink-2)}.pp2-four>span.ld i{color:var(--plot-text)}
 .pp2-each{margin-top:var(--s2)}.pp2.rev .pp2-plate.me{min-height:120px}
 .pp2-rate{display:grid;gap:var(--s1);width:100%}.pp2-rate .bars{position:relative;height:8px;background:color-mix(in srgb,var(--ink) 10%,transparent);transform:skewX(-20deg)}.pp2-rate .bars i{position:absolute;left:0;top:0;bottom:0}.pp2-rate .bars .b{background:var(--plot)}.pp2-rate .bars .l{background:var(--bad);top:auto;height:3px}
 .pp2-rate small{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.pp2-rate small b{color:var(--ink)}.pp2-rate.none{margin:0;font:400 var(--t13)/1.4 var(--b);color:var(--ink-3)}
@@ -1512,7 +1512,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tr-tug{display:grid;gap:var(--s2)}.tr-tug>div{display:grid;grid-template-columns:48px 56px minmax(0,1fr);align-items:center;gap:var(--s3)}
 .tr-tug .lab{font:700 var(--t13)/1 var(--b);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}.tr-tug b{font-size:var(--t24);line-height:1}.tr-tug small{font-size:var(--t13);color:var(--ink-2)}
 .tr-tug i{display:block;height:12px;background:linear-gradient(90deg,var(--plot) var(--w),color-mix(in srgb,var(--ink) 10%,transparent) var(--w));transform:skewX(-14deg)}
-.tr-tug .them i{background:linear-gradient(90deg,var(--bad) var(--w),color-mix(in srgb,var(--ink) 10%,transparent) var(--w))}
+.tr-tug .them i{background:linear-gradient(90deg,var(--pick) var(--w),color-mix(in srgb,var(--ink) 10%,transparent) var(--w))}
 .tr-lede .w,.tr-plan .w{color:var(--bad-text)}
 @media (max-width:699px){.tr-h h1{font-size:var(--t28)}
  .tr-board>div{display:grid;gap:var(--s1);padding:var(--s3) var(--s4)}.tr-board b{font-size:var(--t34)}.tr-board span{font-size:var(--t13)}
@@ -2911,3 +2911,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .inf-fb{display:grid;gap:var(--s4);max-width:720px}.inf-q{margin:0;font:900 var(--t22)/1.3 var(--u);font-style:italic}.inf-box textarea{width:100%;min-height:160px;border:0;background:transparent;resize:vertical;font:400 var(--t16)/1.5 var(--b)}
 @media (max-width:1099px){.inf-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.inf-two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:599px){.inf-tiles{grid-template-columns:minmax(0,1fr)}.inf-tile summary{min-height:0}}
+/* colour audit (Nov 15): meanings Sim already approved, applied where they were missed: Lead is blue (Practice used red), 'them' is the pink --pick (Test Run red, Battle grey), ✗ is red (Compare grey) */
