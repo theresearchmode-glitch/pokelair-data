@@ -6,8 +6,8 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | # | Brief | Folder | Status |
 |---|---|---|---|
 | 1 | Build "The Blueprint": top sheet | build-blueprint | Built, on Preview (v142); pictures + questions sent to Sim 7:50 PM Nov 14 |
-| 2 | Build lower half: Reference sheets (Recent Winners), Parts list (Cores) | build-blueprint (lower-*.webp) | Built, on Preview v145. Height A done (390: 5,237 to 3,821; iPad inside; desktop 2,572 to 2,078). Open: limits question (remaining 121 / 218 / 278 over). B-build rerun going |
-| 3 | Winning Teams "The Winning Hands" | winning-hands | Next. NOTE: no rebuilt Tournaments page exists yet (#tournaments shows "Coming next"), so this is a new page: all TOP-01..07 features (live code 18-archetypes.js ttList, 49-events.js team search), tests D-meta-shell TOP-*. Size: medium-heavy |
+| 2 | Build lower half: Reference sheets (Recent Winners), Parts list (Cores) | build-blueprint (lower-*.webp) | Built, on Preview v145. Height A done (390: 5,237 to 3,821; iPad inside; desktop 2,572 to 2,078). Limits set to measured (Sim A). B-build same failure list |
+| 3 | Winning Teams "The Winning Hands" | winning-hands | Built, on Preview v147. TOP-01..07: 8 pass (were 8 FAIL). Heights inside limits. Pictures + questions sent to Sim. Full D-meta-shell baseline compare running |
 | 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Waiting (received 7:43 PM Nov 14) |
 | 5 | Battle a team "Play-by-Play" | battle-playbyplay | Waiting (received 8:00 PM Nov 14); needs the pink 'them' colour approved |
 | 6 | Compare "The Face-Off" | compare-faceoff | Waiting (received 7:49 PM Nov 14); same pink |
