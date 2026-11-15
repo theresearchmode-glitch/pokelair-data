@@ -27,6 +27,15 @@ t('NAV-01', 'Battle tab opens Battle and stays highlighted on its sub-pages', as
     noErrors(errs); await close(); } });
 
 t('NAV-02', 'menu group "Battle" lists the six Battle pages in order, each opens its page', async () => {
+  if (NEW) { /* approved: no ⋯ menu (parity-nov15.md:7, "never a sixth menu place"); the Battle pages are the Battle tools bar on 700+ (decisions.md:603, Q6 A,
+     mock-up docs/rebuild/mocks/battle.tpl.html:199), names in title case (decisions.md:604), the first one named "Battle" (decisions.md:879) */
+    const {ui, close} = await open({team: TEAM}); await ui.go('Battle');
+    const want = ['Battle', 'Team Preview Practice', 'Test Run', 'Speed Tiers', 'Damage Calc', 'Type Chart'], bar = await ui.toolsBar();
+    expect(JSON.stringify(bar.slice(0, 6)) === JSON.stringify(want), 'Battle tools bar is ' + JSON.stringify(bar));
+    const pane = {'Battle': 'matchup', 'Team Preview Practice': 'practice', 'Test Run': 'gauntlet', 'Speed Tiers': 'speed', 'Damage Calc': 'calc', 'Type Chart': 'types'};
+    for (const n of want) { await ui.go('Battle'); await ui.toolSwitch(n); expect(await ui.current() === pane[n], `tools bar "${n}" opened ${await ui.current()}`); }
+    await ui.go('Ratings', 900); await ui.tapIn('Track Record', 900); expect(await ui.current() === 'track', 'Ratings has no link that opens Track Record');
+    await close(); return; }
   const {ui, close} = await open({team: TEAM});
   await ui.openMenu(); const g = (await ui.menuGroup('Battle') || []).map(s => s.toLowerCase());
   const want = ['battle a team', 'team preview practice', 'test run', 'speed tiers', 'damage calc', 'type chart'];
@@ -37,6 +46,14 @@ t('NAV-02', 'menu group "Battle" lists the six Battle pages in order, each opens
   await close(); });
 
 t('NAV-03', '"← Battle" back link on the five Battle sub-pages; "← Pokémon ratings" on Track record', async () => {
+  if (NEW) { /* approved mock-ups have no "← Battle" / "← Pokémon ratings" eyebrow links: Damage Calc (Sim's 'Their Side' pick, docs/rebuild/calc/ref-desktop-charizard.webp:
+     tools bar with "Battle A Team", eyebrow "Battle · Damage Calc · level 50 doubles") and Track Record (mocks/thisweek-trackrecord/track-record-desktop.webp: eyebrow
+     "Meta · Track Record", the Meta tab lit). The way back on 700+ is the tools bar's "Battle" (decisions.md:603, :879); Track Record goes back through Meta. */
+    const {ui, close} = await open({team: TEAM});
+    for (const p of ['Damage Calc', 'Test Run', 'Practice', 'Speed Tiers', 'Type Chart']) { await ui.go(p); expect((await ui.toolsBar()).includes('Battle'), `${p} has no "Battle" in its tools bar`);
+      await ui.toolSwitch('Battle'); expect(await ui.current() === 'matchup', `${p}: "Battle" did not open Battle`); }
+    await ui.go('Track Record'); expect(await ui.mainTab() === 'Meta', 'Meta tab not lit on Track Record'); await ui.tapMainTab('Meta');
+    expect(await ui.current() === 'ratings', 'Meta tab from Track Record did not open Pokémon ratings'); await close(); return; }
   const {ui, close} = await open({team: TEAM});
   await ui.openMenu(); await ui.tapMenu('Damage calc'); await ui.tapIn('← Battle');
   expect(await ui.current() === 'matchup', 'Damage calc "← Battle" did not open Battle');
@@ -54,6 +71,12 @@ t('NAV-04', 'tool switch Speed tiers · Damage calc · Type chart (tap and keybo
   await close(); });
 
 t('NAV-05', '"More ways to prep" cards on Battle open the four tools', async () => {
+  if (NEW) { /* approved (decisions.md:603, Q6 A): "More ways to prep" on phones, the tools bar on 700+; lines as the mock-up (docs/rebuild/mocks/battle.tpl.html:250) */
+    const {ui, close} = await open({team: TEAM, opp: OPP, width: 390}); await ui.go('Battle');
+    expect(await ui.sees(/more ways to prep/i), 'no "More ways to prep" on Battle (phone)');
+    for (const [txt, pane] of [['Any attacker into any defender', 'calc'], [/Your team into the latest/, 'gauntlet'], [/Your six against the \d+ most-used Pokémon/, 'speed'], ['18 types, or look up a Pokémon', 'types'], ['Pick four and two leads against real ladder teams', 'practice']]) {
+      await ui.go('Battle'); await ui.tapIn(txt); expect(await ui.current() === pane, `"${txt}" opened ${await ui.current()}`); }
+    await close(); return; }
   const {ui, close} = await open({team: TEAM, opp: OPP}); await ui.go('Battle');
   expect(await ui.sees(/more ways to prep/i), 'no "More ways to prep" on Battle');
   for (const [txt, pane] of [['Any attacker into any defender', 'calc'], ['Your team against the latest top teams', 'gauntlet'], ['Who moves first across the meta', 'speed'], ['What hits what', 'types']]) {
@@ -62,11 +85,15 @@ t('NAV-05', '"More ways to prep" cards on Battle open the four tools', async () 
 
 t('NAV-06', '"Practice against" on Winning teams loads that six into Battle with its real sheet', async () => {
   const {ui, errs, close} = await open({team: TEAM}); await ui.go('Winning Teams', 1200);
-  await ui.tapIn('Practice against', 700);
+  await ui.tapIn(NEW ? 'Set as Opponent' : 'Practice against', 700); /* new: Sim approved 'Set as Opponent' + toast 'Opponent set: X' for every such button (decisions.md:879) */
   expect(await ui.current() === 'matchup', 'Battle did not open');
   expect((await ui.opponents()).length === 6, 'their six is not filled: ' + (await ui.opponents()).join(','));
   expect(/Opponent set/i.test(await ui.toast()), 'no "Opponent set" toast');
-  const tx = await ui.text(); hasAll(tx, ['Their real open team sheet', 'finished', 'players'], 'Battle head');
+  const tx = await ui.text();
+  if (NEW) { /* the approved head (mocks/battle.tpl.html:203: "Vs the Champion's six: <record> at <event>, <date>, <n> players"); the first winning team is a Champion,
+    so the head names it as Battle's own tournament pick does (BATTLE-01: "Vs Champion at <event>") */
+    hasAll(tx, ['Their real open team sheet', 'players'], 'Battle head'); expect(/Vs Champion\b.* at \S/.test(tx), 'head does not name the Champion and its event: ' + (tx.match(/Vs [^.]{0,60}/) || [''])[0]); }
+  else hasAll(tx, ['Their real open team sheet', 'finished', 'players'], 'Battle head');
   noErrors(errs); await close(); });
 
 // ============================== BATTLE: Battle mode ==============================
@@ -386,7 +413,7 @@ t('LOG-05', 'log a game from a Showdown replay (paste or file); errors for bad l
 
 t('LOG-06', '"Your games · this six" on My team: log a loss with leads, then Undo', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('My Team', 1200);
-  expect(/Your games:? this six/i.test(await ui.quickLogText()) && /None logged yet/i.test(await ui.quickLogText()), 'card missing or not "None logged yet"');
+  expect((NEW ? /Your Games/ /* Sim's naming: logged games are 'Your Games' (decisions.md:879) */ : /Your games:? this six/i).test(await ui.quickLogText()) && /None logged yet/i.test(await ui.quickLogText()), 'card missing or not "None logged yet"');
   await ui.quickLogOpen(); expect(/Your two leads/i.test(await ui.quickLogText()), 'panel did not open');
   await ui.quickLogLead('Garchomp'); await ui.quickLogLead('Incineroar'); await ui.quickLogResult('L');
   let q = await ui.quickLogText(); expect(/Loss logged/i.test(q) && /Undo/i.test(q), 'no "Loss logged. Undo"');
@@ -397,7 +424,9 @@ t('LOG-06', '"Your games · this six" on My team: log a loss with leads, then Un
 
 t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log'); await ui.logResult('W');
-  await ui.go('Home', 900); expect(/1[–-]0/.test(await ui.pageText()), 'Home does not show the 1–0 record'); await close(); });
+  await ui.go('Home', 900);
+  if (NEW) await ui.openFold('More on Home'); /* approved Home mock-up (docs/rebuild/mocks/home.tpl.html:159; decisions.md:473): the record sits in the "More on Home" fold, closed by default */
+  expect(/1[–-]0/.test(await ui.pageText()), 'Home does not show the 1–0 record'); await close(); });
 
 // ============================== CALC: Damage calc ==============================
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
@@ -678,8 +707,9 @@ t('TRACK-01', 'Track record head, stats and how it works', async () => {
 
 t('TRACK-02', 'top-8 teams by rating band with a verdict line', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Track Record'); const tx = await ui.pageText();
-  expect(/Top-8 teams, by the rating we gave/i.test(tx), 'no band card');
-  expect((tx.match(/Rated (90\+|\d+–\d+|Under \d+) \d+ of \d+ Pokémon made a top 8/g) || []).length === 4, 'not four rating bands');
+  /* new: Sim's brief 'The Receipt' (decisions.md:881, mocks/thisweek-trackrecord/track-record-desktop.webp): title case, each band's share printed beside its name */
+  expect((NEW ? /Top-8 teams,? by the rating we gave/i : /Top-8 teams, by the rating we gave/i).test(tx), 'no band card');
+  expect((tx.match(NEW ? /Rated (90\+|\d+–\d+|Under \d+) (\d+(\.\d+)?% )?\d+ of \d+ Pokémon made a top 8/g : /Rated (90\+|\d+–\d+|Under \d+) \d+ of \d+ Pokémon made a top 8/g) || []).length === 4, 'not four rating bands');
   expect(/Pokémon we rated 90\+ were on top-8 teams .+ as often as Pokémon we rated under/i.test(tx), 'no verdict line (34 events)'); await close(); });
 
 t('TRACK-03', 'biggest hits / misses; tap a Pokémon for its sheet', async () => {
@@ -705,20 +735,23 @@ t('TRACK-07', 'no data: "Collecting"', async () => {
 // ============================== MATCHUPS: threat lists (My team) ==============================
 t('MATCHUPS-01', 'top 10 threats with real-games word and calc level; phones show 5 + "Show 5 more"; tap opens the sheet', async () => {
   { const {ui, close} = await open({team: TEAM}); await ui.go('My Team', 1200);
+    if (NEW) await ui.matchupsView('Top 10'); /* Sim (decisions.md:317): Matchups opens on the Stand-Outs; Top 10 is the next view */
     const r = await ui.threatRows(); const top = r.filter(x => /^\d+ /.test(x));
     expect(top.length === 10, 'not 10 top threats on desktop: ' + top.length);
-    expect(top.every(x => /\b(Favoured|Even match|Unfavoured)\b/.test(x) && /Calc: (Beats it|Handles it|Shaky|No answer)/.test(x)), 'a row lacks its words: ' + top.find(x => !/Calc:/.test(x)));
+    if (NEW) /* A4, Sim "your recommendation" (decisions.md:232): one verdict per row, the real-games word, else the calc level; "Calc disagrees: X" only when they differ */
+      expect(top.every(x => /\b(Favoured|Even match|Unfavoured|Beats it|Handles it|Shaky|No answer)\b/.test(x) && (!/Calc disagrees/.test(x) || /Calc disagrees: (Beats it|Handles it|Shaky|No answer)/.test(x))), 'a row lacks its verdict: ' + top.find(x => !/\b(Favoured|Even match|Unfavoured|Beats it|Handles it|Shaky|No answer)\b/.test(x)));
+    else expect(top.every(x => /\b(Favoured|Even match|Unfavoured)\b/.test(x) && /Calc: (Beats it|Handles it|Shaky|No answer)/.test(x)), 'a row lacks its words: ' + top.find(x => !/Calc:/.test(x)));
     expect(/Verdicts from real tournament games/.test(await ui.matchupsText()) && /The next 20, worst first/i.test(await ui.matchupsText()), 'intro or "next 20" missing');
     expect(r.length >= 30, 'next 20 tiles missing');
     await ui.tapThreat('Archaludon'); const s = await ui.scoutSheet(); expect(s && (NEW ? /Matchups/i : /Scouting report/i).test(s) && /Archaludon/.test(s), 'tapping a threat did not open the scouting sheet'); await close(); }
-  const {ui, close} = await open({team: TEAM, width: 390}); await ui.go('My Team', 1200);
+  const {ui, close} = await open({team: TEAM, width: 390}); await ui.go('My Team', 1200); if (NEW) await ui.matchupsView('Top 10');
   expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 5, 'phone does not show 5');
   await ui.tapIn((NEW ? 'Show 5 More' : 'Show 5 more')); expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 10, (NEW ? '"Show 5 More" did not show 10' : '"Show 5 more" did not show 10'));
   expect(await ui.sees((NEW ? 'Show Top 5 Only' : 'Show top 5 only')), (NEW ? 'no "Show Top 5 Only"' : 'no "Show top 5 only"')); await close(); });
 
 t('MATCHUPS-02', 'legend counts in the approved words', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('My Team', 1200); const m = await ui.matchupsText();
-  const a = /Unfavoured (\d+),? Even match (\d+),? Favoured (\d+)/.exec(m), b = /Damage calc: No answer (\d+),? Shaky (\d+),? Handles it (\d+),? Beats it (\d+)/.exec(m);
+  const a = NEW ? /(\d+) Favoured (\d+) Even match (\d+) Unfavoured/.exec(m) /* approved My Team mock-up legend (docs/rebuild/mocks/myteam.tpl.html:258) */ : /Unfavoured (\d+),? Even match (\d+),? Favoured (\d+)/.exec(m), b = /Damage calc: No answer (\d+),? Shaky (\d+),? Handles it (\d+),? Beats it (\d+)/.exec(m);
   expect(a && b, 'legend rows missing: ' + m.slice(0, 200)); expect(+b[1] + +b[2] + +b[3] + +b[4] === 30, 'calc legend does not add to 30'); await close(); });
 
 t('MATCHUPS-03', 'scouting report sheet: one threat at a time; Escape closes it', async () => {
@@ -736,7 +769,7 @@ t('MATCHUPS-04', 'your six vs the top 12 chart; tap a row for the full matchup',
 
 t('MATCHUPS-05', 'threat preparation card: ready %, groups by level', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('My Team', 1200); await ui.matchupsView('All 30');
-  const m = await ui.matchupsText(); expect((NEW ? /Matchups/i : /Threat preparation/i).test(m) && /Ready for \d+% of the top 30 threats/.test(m), 'no "Ready for <x>% of the top 30 threats"');
+  const m = await ui.matchupsText(); expect((NEW ? /Matchups/i : /Threat preparation/i).test(m) && (NEW ? /Beats or handles \d+ of the top 30 threats/ /* Sim's go, Nov 12 (decisions.md:107-110): the weighted "Ready for x%" became the plain count */ : /Ready for \d+% of the top 30 threats/).test(m), 'no "Ready for <x>% of the top 30 threats" (new: "Beats or handles <n> of the top 30 threats")');
   expect(/Shaky \d+ threats/.test(m) && /Handles it \d+ threats/.test(m) && /Beats it \d+ threats/.test(m), 'level groups missing'); await close(); });
 
 t('MATCHUPS-06', 'meta threats list uses the scouting level words', async () => {
@@ -776,6 +809,7 @@ t('X-05', 'browser Back closes an open sheet first, then steps back a page', asy
 
 t('X-06', 'Battle toggles are not swallowed by the double-tap guard', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP}); await ui.go('Battle');
+  if (NEW) await ui.openFold('Who moves first'); /* approved mock-up: the speed toggles sit in the "Who moves first" tab (see BATTLE-09) */
   await ui.doubleTap('Trick Room');
   expect(await ui.isPressed('Trick Room') === false && await ui.sees(/fastest first/i), 'second quick tap on Trick Room was ignored'); await close(); });
 
@@ -783,7 +817,10 @@ t('X-07', 'their six and the log update live from another device', async () => {
 
 t('X-08', 'Battle text uses the site\'s punctuation (no " · " left in sentences)', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
-  expect(!/\w · \w/.test(await ui.pageText()), '" · " separators left in Battle text'); await close(); });
+  let tx = await ui.pageText();
+  if (NEW) tx = tx.replace(/Battle a team · (Team preview|Their real open team sheet)/g, '') /* the approved eyebrow (BATTLE-01, mocks/battle.tpl.html) */
+    .replace(/\b(You|Them) · /g, ''); /* the play-by-play step label "1 You · Rillaboom" (mocks/battle-playbyplay/BRIEF.md:27, BATTLE-13) */
+  expect(!/\w · \w/.test(tx), '" · " separators left in Battle text: ' + (tx.match(/.{0,30}\w · \w.{0,30}/g) || []).join(' | ')); await close(); });
 
 t('X-09', 'keyboard: arrows + Enter pick in their six, Escape closes the list, Tab stays in the open sheet', async () => {
   const {ui, pg, close} = await open({team: TEAM}); await ui.go('Battle');
