@@ -269,7 +269,12 @@ export default (ui, pg, o) => {
     // row labels, the way today's card reads ("Garchomp Item Choice Scarf Ability Rough Skin ... HP 185 2 ..."), so the same checks apply.
     teamSheetCard: name => pg.evaluate(n => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; for (const tb of document.querySelectorAll('.np-sheet .ts2 table.tt')) { if (!tb.getClientRects().length) continue;
         const hs = [...tb.querySelectorAll('thead th')], k = hs.findIndex(h => T(h.querySelector('.tt-pick')).replace(/ Lead.*$/, '').replace(/^\d\d /, '').startsWith(n.replace(/^Mega /, '')) || (h.querySelector('[aria-label]') || {}).getAttribute?.('aria-label')?.startsWith(n + ':')); if (k < 0) continue;
-        const out = [n]; for (const tr of tb.querySelectorAll('tbody tr')) { const th = tr.querySelector('th'), td = tr.querySelectorAll('td')[k]; if (th && td) out.push(T(th), T(td).replace(/ pts/g, '').replace(/[▲▼] /g, '')); } return out.join(' '); } return null; }, name),
+        /* today's card reading order: name, "↑ Lead <plan>", Item, Ability, the moves, the nature and its spread line, the stats */
+        const out = [n], ld = hs[k].querySelector('.tt-lead:not(.no)'); if (ld) out.push('↑ ' + T(ld));
+        const rows = [...tb.querySelectorAll('tbody tr')].map(tr => ({h: T(tr.querySelector('th')), d: tr.querySelectorAll('td')[k]})).filter(x => x.h && x.d);
+        const by = h => rows.filter(x => x.h === h), rest = rows.filter(x => !['Item', 'Ability', 'Moves', 'Nature'].includes(x.h));
+        for (const x of [...by('Item'), ...by('Ability')]) out.push(x.h, T(x.d)); for (const x of by('Moves')) out.push(T(x.d)); for (const x of by('Nature')) out.push(T(x.d).replace(/^(\S+) /, '$1 '));
+        for (const x of rest) out.push(x.h, T(x.d).replace(/ pts/g, '').replace(/[▲▼] /g, '')); return out.join(' '); } return null; }, name),
     focusSheetCard: name => pg.evaluate(n => { const b = [...document.querySelectorAll('.np-sheet .ts2 .tt-pick')].filter(e => e.getClientRects().length).find(e => (e.getAttribute('aria-label') || '').startsWith(n + ':')); if (b) b.focus(); return !!b && document.activeElement === b; }, name),
     // Nov 12 (TEAM-15): the Matchups section's real-games bar is drawn only (aria-hidden), so text can't see it: its three shares
     // (Favoured | Even match | Unfavoured), the section it sits in, and the lines just before and after it; null if not shown

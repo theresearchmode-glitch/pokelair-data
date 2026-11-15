@@ -822,7 +822,8 @@ t('SHEET-01', 'Team Sheet head: "<team name>: Reg M-C doubles, level 50", "← M
 
 t('SHEET-02', 'Team Sheet actions and key line', async () => {
   if (NEW) { const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
-    has(tx, /Team Sheet Copy for Showdown Share as Image Tap a card to edit its set · Big number: the stat at level 50 · small number: stat points \(0–32\) · \+ \/ − nature Mega Charizard Y /, 'Team Sheet actions and key line');
+    /* Nov 14, Tale of the Tape (Sim's pick): 'Tap a column', and the nature marks moved to the legend under it (▲ raised / ▼ lowered by nature) */
+    has(tx, /Team Sheet Copy for Showdown Share as Image Tap a column to edit its set · Big number: the stat at level 50 · small number: stat points \(0–32\) team best in that stat ▲ raised by nature ▼ lowered by nature pts = stat points \(0–32\)/, 'Team Sheet actions and key line');
     ok(!/Copy as text/i.test(tx), 'the Team Sheet still says "Copy as text" (one name per idea: Copy for Showdown)'); await r.close(); return; }
   const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
   for (const s of ['Share as image', 'Copy as text', 'Big number: the stat at level 50, small number: stat points (0–32), +/− nature']) has(tx, s, 'Team Sheet'); await r.close(); });
