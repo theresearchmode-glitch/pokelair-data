@@ -16,7 +16,7 @@ V2.battleHead = (mine, theirs, P) => { const E = V2.esc, who = V2.btOppWho(), R 
     : `<h1 class="u"><span>Bring these ${P.chosen.length === 4 ? 'four' : P.chosen.length}.</span><span class="pl">${dbl ? 'Lead the pair.' : 'Lead this one.'}</span></h1>`;
   const ev = who && ui.oppFrom && ui.oppFrom.ev ? ui.oppFrom.ev : '';
   const vs = theirs.length ? `<p class="bt-vs">Vs ${who ? `<b>${E(who)}</b>${ev ? ` at ${E(ev)}` : ''}` : 'their six'}${theirs.length < 6 ? ` · ${theirs.length} of 6 entered` : ''}</p>` : `<p class="bt-vs">Enter their six as you see them at team preview, or pick a top tournament team.</p>`;
-  const verdict = R ? `<div class="bt-verdict"><p class="k">From real games</p><b class="u ${vcls}">${E(R.word)}${R.full ? '' : ' so far'}</b><small>${homeNum(R.games)} tournament games</small></div>` : '';
+  const verdict = R ? `<div class="bt-verdict"><p class="k">From real games</p><b class="u ${vcls}">${E(R.word)}${R.full ? '' : ' so far'}</b><small>learned from ${homeNum(R.games)} tournament games</small></div>` : ''; /* audit 27: the model's whole training set, not games between these two teams */
   return `<section class="bt-head"><div><p class="np-eyebrow">Battle a team · ${V2.btSheet() ? 'Their real open team sheet' : 'Team preview'}</p>${h}${vs}</div>${verdict}</section>`; };
 V2.battleTheirs = (theirs, P) => { const E = V2.esc, ll = P ? P.likelyLead || [] : [];
   const six = theirs.length ? `<div class="bt-row6">${theirs.map(o => V2.btPk(o.p.n, V2.btItem(o), ll.includes(o) ? '<span class="bt-ll">Likely lead</span>' : '')).join('')}</div>` : '';
