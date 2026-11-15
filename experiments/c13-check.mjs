@@ -31,7 +31,7 @@ const META_L = {320: [4500, 'Grandstand (Sim, Nov 14, Q2 A)'], 390: [4300, 'Gran
 const USAGE_L = {1440: [2100, 'Podium (Sim, Nov 14, Q2 A)']};
 // Sim, Nov 14 (Build limits A, 8:30 PM): the built Build page (the Blueprint) = measured heights rounded up to the next 50; iPad stays 3,500
 const BUILD_L = {320: [4150, 'Blueprint (Sim, Nov 14, Build limits A)'], 390: [3850, 'Blueprint (Sim, Nov 14, Build limits A)'], 1440: [2100, 'Blueprint (Sim, Nov 14, Build limits A)']};
-const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4200, 'Play-by-Play (Sim, Nov 15, Q2: 4,100 to 4,200)'], 1440: [1950, 'Battle log + tools (Sim, Nov 12)']};
+const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4200, 'Play-by-Play (Sim, Nov 15, Q2: 4,100 to 4,200)'], 1440: [2150, 'Play-by-Play 2x2 + three columns (Sim, Nov 15: 1,950 to 2,150)']};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
