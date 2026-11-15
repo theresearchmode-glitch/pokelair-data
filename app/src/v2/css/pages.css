@@ -2874,3 +2874,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1100px){.mh-gh span{white-space:nowrap}} /* 'stay out this game' on one line, so the three headers are one height */
 /* re-check Nov 15, This Week at 320: the label on its own line, the two counts under it (they ran into each other); a change note may wrap */
 @media (max-width:389px){.wk-cn{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:0}.wk-cl{grid-column:1/-1}.wk-chg b{white-space:normal}}
+/* re-audit Nov 15 (Compare): the hero Pokémon one size down where its column is narrow, so it no longer sits over the score (700-1366) */
+@media (min-width:1100px) and (max-width:1366px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:176px}}
+@media (min-width:700px) and (max-width:1099px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:120px}}
+/* the band word stays in its own column: one line only from 1367, a size down below 1100 */
+@media (max-width:1366px){.cxf-score>span{white-space:normal}}@media (min-width:700px) and (max-width:1099px){.cxf-score>span{font-size:var(--t20)}}
+/* the score column takes at most ~58% so the hero keeps room (it was squeezed to 107px at 1100 and drawn over the score) */
+@media (min-width:700px){.cxf-half.a{grid-template-columns:fit-content(58%) minmax(0,1fr)}.cxf-half.b{grid-template-columns:minmax(0,1fr) fit-content(58%)}}
+@media (min-width:1100px) and (max-width:1366px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:160px}}
+@media (min-width:700px) and (max-width:819px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:104px}}

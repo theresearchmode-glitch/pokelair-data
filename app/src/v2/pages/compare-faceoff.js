@@ -26,7 +26,7 @@ V2.cxfCol = (side, rows) => { const E = V2.esc, k = side.toLowerCase(), v = r =>
       <div><dt>Weather / terrain</dt><dd class="cxf-tm">${F.length ? F.map(x => E(x.name)).join(', ') : 'None'}</dd></div><div><dt>Archetype</dt><dd>${ar && v(ar) && v(ar).label ? E(String(v(ar).label)) : '–'}</dd></div></dl></div>`; };
 (() => { const before = V2.pages.compare.draw; V2.pages.compare.draw = () => { const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA || !RB) return before();
   const IA = CX.cache.get(cxKey(RA.slots)), IB = CX.cache.get(cxKey(RB.slots)); if (!IA || !IB) return before();
-  const html = before(), rows = cxFacts(IA, IB), shown = r => ['grade', 'spd', 'thr', 'field', 'arch'].includes(r.k) || /weak spots/i.test(r.label);
+  const html = before(), rows = V2.cxRows(IA, IB), shown = r => ['grade', 'spd', 'thr', 'field', 'arch'].includes(r.k) || /weak spots/i.test(r.label);
   const head = `<div class="cx2-top cxf-top"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · Compare · two teams side by side</span></div><h1 class="u">Compare Teams</h1><button type="button" class="np-link cx2-swap" data-cxswap2>Swap A and B ⇄</button></div>
     <section class="cxf-poster" aria-label="Team A against Team B">${V2.cxfHalf('A', RA, IA)}<i class="cxf-vs u" aria-hidden="true">VS</i>${V2.cxfHalf('B', RB, IB)}</section>${V2.cxfTape(IA, IB)}<section class="cxf-cols">${V2.cxfCol('A', rows)}${V2.cxfCol('B', rows)}</section>`;
   /* today's page from "What's Different" down, with the rows already drawn above left out of its differing-rows grid (they are all still on the page) */

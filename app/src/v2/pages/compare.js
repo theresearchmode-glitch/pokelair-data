@@ -28,13 +28,16 @@ const CX2 = {
   mine: I => I && I.n ? `<span class="cx2-l"><b>${I.w}–${I.l}</b> <span class="fine">${I.n} game${I.n === 1 ? '' : 's'} you logged</span></span>` : '<span class="fine">None logged</span>'};
 const CX2_LABEL = {ready: 'Matchups (damage calc, top 30)'};
 
+// re-audit Nov 15: a row is 'the same on both' only when both cells read the same; today's flag compares one number (Matchups' score,
+// a check's yes/no) while the cells show more (Beats/Handles counts, the Tailwind setter), so rows that differ were listed as the same
+V2.cxRows = (IA, IB) => cxFacts(IA, IB).map(r => { if (r.diff) return r; let d = false; try { const c = v => CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v); d = c(r.a) !== c(r.b); } catch (e) {} return d ? {...r, diff: true} : r; });
 V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA) ui.cx.A = null; if (!RB) ui.cx.B = null;
   const head = `<div class="cx2-top"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · Compare · two teams side by side</span></div><h1 class="u">Compare Teams</h1></div>
     <div class="cx2-heads">${V2.cxHead('A', RA)}${RA && RB ? '<button type="button" class="np-link cx2-swap" data-cxswap2>Swap A and B</button>' : '<span class="cx2-swap"></span>'}${V2.cxHead('B', RB)}</div>`;
   if (!RA || !RB) return `<section class="cx2">${head}<p class="tm-sub cx2-hint">Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Every row below is worked out the same way as on My Team.</p></section>`;
   const IA = CX.cache.get(cxKey(RA.slots)), IB = CX.cache.get(cxKey(RB.slots));
   if (!IA || !IB) { V2.cxWork(); return `<section class="cx2">${head}<p class="tm-sub cx2-busy" role="status">Working out both teams: Strength Score, matchups, checks and speed…</p></section>`; }
-  const rows = cxFacts(IA, IB), diff = rows.filter(r => r.diff), same = rows.filter(r => !r.diff);
+  const rows = V2.cxRows(IA, IB), diff = rows.filter(r => r.diff), same = rows.filter(r => !r.diff);
   const says = ['thr', 'sc', 'field', 'grade', 'ready', 'weak'].map(k => (rows.find(r => r.k === k) || {}).say).concat(rows.filter(r => r.k.startsWith('ck:')).map(r => r.say)).filter(Boolean);
   const cell = (r, v) => CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v);
   const row = r => `<div class="cx2-row"><div class="cx2-lab">${V2.esc(CX2_LABEL[r.k] || V2.wl(r.label))}</div><div class="cx2-c a">${cell(r, r.a)}</div><div class="cx2-c b">${cell(r, r.b)}</div></div>`;
