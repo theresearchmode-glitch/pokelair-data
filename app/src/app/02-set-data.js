@@ -101,14 +101,22 @@ function natOK(n){try{return NATURES.includes(n)}catch(e){return true}}
 function normMv(mv){if(!mv||typeof mv!=='object'||Array.isArray(mv))return null;const o={};
   for(const f of ['doubles','singles']){const a=mv[f];if(!Array.isArray(a))continue;const c=a.slice(0,4).map(x=>typeof x==='string'&&mvByName.has(x)?x:'');while(c.length<4)c.push('');if(c.some(Boolean))o[f]=c}
   return Object.keys(o).length?o:null}
-function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>s&&typeof s==='object'?s:{}).map(s=>{const o={n:byName.has(s.n)?s.n:'',a:typeof s.a==='string'?s.a:null,lock:!!s.lock};const mv=o.n&&normMv(s.mv);if(mv)o.mv=mv;
+// Nov 15 (code review A2): a Pokémon this regulation doesn't have keeps its name in `gone` (and its set in `gset`), so goneNote's
+// promise holds: it stays saved and comes back, set and all, if a later regulation has it. Every page still sees an empty slot (n:'').
+const goneId=x=>typeof x==='string'&&/^[\w-]{1,40}$/.test(x)?x:'';
+function goneBack(s){const g=!byName.has(s.n)&&goneId(s.gone);return g&&byName.has(g)?Object.assign({},s.gset&&typeof s.gset==='object'?s.gset:{},{n:g,a:s.a,lock:s.lock}):s}
+function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>s&&typeof s==='object'?goneBack(s):{}).map(s=>{const o={n:byName.has(s.n)?s.n:'',a:typeof s.a==='string'?s.a:null,lock:!!s.lock};
+    if(!o.n){const g=goneId(s.n)||goneId(s.gone);if(g){o.gone=g;const gs=s.gone===g&&s.gset?s.gset:{mv:s.mv,it:s.it,sp:s.sp};try{if(JSON.stringify(gs).length<=2000)o.gset=JSON.parse(JSON.stringify(gs))}catch(e){}}}const mv=o.n&&normMv(s.mv);if(mv)o.mv=mv;
     // held items per format ({doubles:'Sitrus Berry'}), kept only as short plain strings
     if(o.n&&s.it&&typeof s.it==='object'){const it={};for(const f of ['doubles','singles'])if(typeof s.it[f]==='string'&&s.it[f]&&s.it[f].length<=40)it[f]=s.it[f];if(Object.keys(it).length)o.it=it}
     // your nature and stat points per format ({doubles:{nat:'Jolly',v:[hp,atk,def,spa,spd,spe]}}), from a paste or team link
     if(o.n&&s.sp&&typeof s.sp==='object'){const sp={};for(const f of ['doubles','singles']){const x=s.sp[f];if(x&&x.assumed===true)sp[f]={nat:typeof x.nat==='string'&&x.nat.length<=12&&natOK(x.nat)?x.nat:null,assumed:true};else if(x&&Array.isArray(x.v)&&x.v.length===6&&x.v.every(n=>Number.isInteger(n)&&n>=0&&n<=32)&&x.v.reduce((a,b)=>a+b,0)<=SP_TOTAL)sp[f]={nat:typeof x.nat==='string'&&x.nat.length<=12&&natOK(x.nat)?x.nat:null,v:x.v.slice()}}if(Object.keys(sp).length)o.sp=sp}return o});
   while(out.length<6)out.push(blank());return out}
 // Battle log entries: {t: time, r: 'W'|'L', b: the 4 brought (leads first), tm: the team's 6, o: opponent's Pokémon}
-function fixLog(){S.log=(Array.isArray(S.log)?S.log:[]).filter(e=>e&&(e.r==='W'||e.r==='L')&&Array.isArray(e.b)).slice(-400).map(e=>({t:+e.t||0,r:e.r,b:e.b.filter(n=>typeof n==='string'&&byName.has(n)).slice(0,4),tm:(Array.isArray(e.tm)?e.tm:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6),o:(Array.isArray(e.o)?e.o:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6)}))}
+// Nov 15 (code review A2): names this regulation doesn't have are kept per list in gx, and rejoin their list if they come back
+function fixLog(){const arr=x=>Array.isArray(x)?x:[];S.log=arr(S.log).filter(e=>e&&(e.r==='W'||e.r==='L')&&Array.isArray(e.b)).slice(-400).map(e=>{const gx=e.gx&&typeof e.gx==='object'?e.gx:{},out={t:+e.t||0,r:e.r},keep={};
+  for(const [k,max] of [['b',4],['tm',6],['o',6]]){const all=arr(e[k]).concat(arr(gx[k])).filter(n=>typeof n==='string');out[k]=all.filter(n=>byName.has(n)).slice(0,max);const g=all.filter(n=>!byName.has(n)&&goneId(n)).slice(0,max);if(g.length)keep[k]=g}
+  if(Object.keys(keep).length)out.gx=keep;return out})}
 function fixSlots(){S.slots=normSlots(S.slots);S.opp=(Array.isArray(S.opp)?S.opp:[]).slice(0,6).map(n=>typeof n==='string'&&byName.has(n)?n:'');while(S.opp.length<6)S.opp.push('')}
 fixSlots();fixTeams();fixLog();
 for(const k of ['doubles','doubles_ingame','doubles_tour','singles'])META[k]=cleanMeta(META[k]);

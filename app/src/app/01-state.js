@@ -1,7 +1,10 @@
 // ---------- state ----------
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let S=LS.get('cc2.state',null);
-if(S&&(!Array.isArray(S.teams)||!Array.isArray(S.box)||!Array.isArray(S.slots)))S=null;
+// Nov 15 (code review A3): a damaged field is repaired on its own; the rest of a player's saved state (teams, log, choices) is kept.
+// Only something that isn't a saved state at all starts fresh. fixSlots/fixTeams/fixLog then check each entry.
+if(S&&(typeof S!=='object'||Array.isArray(S)))S=null;
+if(S){if(!Array.isArray(S.teams))S.teams=[];if(!Array.isArray(S.box))S.box=DEFAULT_BOX.slice();if(!Array.isArray(S.slots))S.slots=[]}
 if(!S){S={slots:DEFAULT_TEAM.slots.map(s=>({...s})),box:DEFAULT_BOX.slice(),teams:[{id:'t'+Date.now(),name:DEFAULT_TEAM.name,slots:DEFAULT_TEAM.slots,format:'doubles',saved:Date.now()}],loadedId:null,format:'doubles'};S.loadedId=S.teams[0].id}
 S.format='doubles'; // NastyPlot is doubles only. Teams saved under the retired singles mode stay stored but aren't shown.
 // Off-meta search: when true, the planner and auto-build score power and fit over popularity. Only the hidden-gem and

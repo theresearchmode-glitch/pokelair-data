@@ -35,7 +35,7 @@ function slotMoves(s,p){const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name))
   const pm=popularMoves(p).slice(0,4);const names=pm.map(m=>m.name);while(names.length<4)names.push('');return {names,moves:pm,custom:false}}
 // Nov 7: a team member the current regulation doesn't have (after a regulation change) is kept in storage, in case it comes
 // back, but left out of every page. goneNote() says so instead of letting it vanish silently.
-const goneOf=slots=>(slots||[]).filter(s=>s&&s.n&&!byName.get(s.n)).map(s=>String(s.n).replace(/-/g,' '));
+const goneOf=slots=>(slots||[]).filter(s=>s&&!byName.get(s.n)&&(s.n||s.gone)).map(s=>String(s.n||s.gone).replace(/-/g,' '));
 const goneNote=slots=>{const g=goneOf(slots);if(!g.length)return '';const one=g.length===1,reg=typeof REG_NAME==='string'?REG_NAME:'this regulation';
   return `${esc(g.join(', '))} ${one?"isn't":"aren't"} legal in ${esc(reg)}, so ${one?'it is':'they are'} left out of this team. ${one?'It stays':'They stay'} saved in case ${one?'it comes':'they come'} back.`};
 const members=()=>{const ms=S.slots.map(memberOf).filter(Boolean);return typeof assignItems==='function'?assignItems(ms):ms};

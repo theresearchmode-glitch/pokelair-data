@@ -90,6 +90,7 @@ export default (ui, pg) => {
     toastText: () => ev(() => { const t = [...document.querySelectorAll('.np-toast')].filter(__dvis).pop(); return t ? __dtx(t) : null; }),
     // ---------------- shared page helpers (Nov 15, for Events, Archetypes, This Week, Track Record) ----------------
     scrollY: () => pg.evaluate(() => Math.round(scrollY)),
+    eventDetailTop: () => pg.evaluate(() => { const o = document.querySelector('.ev-open'); return o ? Math.round(o.getBoundingClientRect().top) : null; }),
     scrollTo: async y => { await pg.mouse.move(640, 400); await pg.evaluate(y => scrollTo(0, y), y); await pg.mouse.wheel(0, 1); await wait(300); },
     /** open the "?" whose label matches (the new build's [data-v2tip] bubbles). Translation: where a page explains with a question fold
      *  instead of a "?" (Events: "What counts as an event?"), that fold is the explainer: it is opened and tipText reads its body. */

@@ -628,7 +628,7 @@ t('EVT-04', 'Event list 12 at a time with "Show more"', run({team: TEAM}, async 
   await ui.go('Events'); expect((await d.eventCards()).length === 12, 'cards: ' + (await d.eventCards()).length); await ui.tap(/^Show more \(\d+ left\)$/); expect((await d.eventCards()).length === 24, 'after Show more: ' + (await d.eventCards()).length); }));
 t('EVT-05', 'Event detail: placings 1st→16th, opens at top, "‹ All events" returns', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Events'); await d.chooseEventFilter('Official'); await d.scrollTo(400); await d.openEvent('Gdańsk'); const tx = await ui.text();
-  expect(has(tx, '‹ All events') && /758 players/.test(tx) && /Official/i.test(tx), 'detail head: ' + tx.slice(0, 200)); expect(await d.scrollY() < 5, 'did not open at its top');
+  expect(has(tx, '‹ All events') && /758 players/.test(tx) && /Official/i.test(tx), 'detail head: ' + tx.slice(0, 200)); if (NEW && d.eventDetailTop) { const top = await d.eventDetailTop(); expect(top != null && top >= 0 && top <= 160, 'did not open at its top: ' + top); } else expect(await d.scrollY() < 5, 'did not open at its top'); /* Nov 15: the rebuild opens the event just under the header (scrolling to the page top left it off screen on phones) */
   expect(await d.placings() >= 16, 'placings: ' + await d.placings()); await ui.tap((NEW ? /‹ All Events/ : /‹ All events/)); /* Sim, Nov 14 naming */
   const back = await d.eventCards(); expect(back.length >= 1 && back.every(x => /official/i.test(x)) && !(await ui.sees('‹ All events')), 'the (Official) list did not return'); }));
 t('EVT-06', 'Team sheet card: Sets shows items/moves; Load team needs a second tap and loads the exact sheet', run({team: TEAM}, async ({ui, d}) => {
