@@ -830,7 +830,8 @@ t('SHEET-02', 'Team Sheet actions and key line', async () => {
 t('SHEET-03', 'Six set cards (item, ability, moves, nature, stats); tapping one opens My Team with its edit panel', async () => {
   if (NEW) { const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
     for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) has(tx, n, 'Team Sheet');
-    ok((tx.match(/Item /g) || []).length >= 6 && (tx.match(/Ability /g) || []).length >= 6 && (tx.match(/HP \d+ \d+/g) || []).length >= 6, 'cards miss item / ability / stats');
+    /* Nov 14, Tale of the Tape: each Pokémon is a column; its column read with the row labels must show item, Ability and stats */
+    for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) { const c = await r.ui.teamSheetCard(n) || ''; ok(/ Item .+ Ability /.test(c) && /HP \d+ \d+/.test(c), `${n}'s column misses item / Ability / stats: ` + c.slice(0, 120)); }
     has(tx, /(Most common spread|yours|your nature)/i);
     // each card opens Edit Set for its own Pokémon: by click, by Enter, by Space (a card is a role=button with tabindex 0)
     for (const [n, how] of [['Garchomp', 'click'], ['Incineroar', 'Enter'], ['Sneasler', 'Space']]) {
@@ -838,7 +839,8 @@ t('SHEET-03', 'Six set cards (item, ability, moves, nature, stats); tapping one 
       ok(await r.ui.current() === 'report', `${how} on ${n}'s card: the Team Sheet is still open`); const p = await r.ui.editPanel(); ok(p && p.title === 'Edit ' + n, `${how} on ${n}'s card: no "Edit ${n}" sheet (${p && p.title})`);
       await r.ui.closeEditPanel(); if (how !== 'Space') await r.ui.go('Team Sheet', 900); }
     await r.close();
-    for (const [w, cols] of [[1280, 3], [390, 1]]) { const x = await myTeam({team: TEAM, width: w}); await x.ui.go('Team Sheet', 900); const c = await x.ui.sheetColumns(); ok(c === cols, `${w} wide: ${c} columns, want ${cols}`); await x.close(); } return; }
+    /* Nov 14, Tale of the Tape (Sim's pick): all six across on desktop, two tapes of three on phones */
+    for (const [w, cols] of [[1280, 6], [390, 3]]) { const x = await myTeam({team: TEAM, width: w}); await x.ui.go('Team Sheet', 900); const c = await x.ui.sheetColumns(); ok(c === cols, `${w} wide: ${c} columns, want ${cols}`); await x.close(); } return; }
   const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
   for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) has(tx, n, 'Team Sheet');
   ok((tx.match(/Item /g) || []).length >= 6 && (tx.match(/Ability /g) || []).length >= 6 && (tx.match(/HP \d+ \d+/g) || []).length >= 6, 'cards miss item / ability / stats');

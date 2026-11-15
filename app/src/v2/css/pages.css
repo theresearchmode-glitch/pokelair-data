@@ -2218,7 +2218,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* rows: every team after the third, and search results */
 .wt-more-s{display:grid;justify-items:center;gap:var(--s4);margin-top:var(--s8)}.wt-mh{justify-self:start;margin:0;font-size:var(--t26)}
 .wt-rows{display:grid;width:100%}
-.wt-row{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:var(--s4);align-items:center;padding:var(--s4) 0;border-top:1px solid var(--ar-rule)}
+.wt-row{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:var(--s4);align-items:center;padding:var(--s4) 0;border-top:1px solid var(--rule)}
 .wt-row .wt-no{min-width:36px;height:36px;font-size:var(--t20);background:var(--plate);color:var(--on-plate)}
 .wt-six{display:flex;gap:var(--s1)}.wt .wt-six .wt-card{--cw:56px;--ch:76px;--tilt:0deg;--ov:0px;translate:none}.wt-six .wt-card:hover{translate:0 calc(var(--s1)*-1)}
 .wt-rt{display:grid;gap:var(--s1);min-width:0}.wt-rh{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:0}.wt-rh b{font:900 var(--t17)/1.3 var(--u);font-style:italic}
@@ -2260,3 +2260,47 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wt-hand{grid-template-columns:minmax(0,1fr)}.wt-hand>.wt-fan{justify-self:stretch}
 .wt-fan>.wt-card:first-child{margin-left:0}.wt-fan>.wt-card:last-child{margin-right:0}
 .wt-f i{margin-right:var(--s1)}
+
+/* ---------- Team Sheet: "Tale of the Tape" (Sim's pick, Nov 14) ---------- */
+.tt-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.tt-top h2{margin:var(--s1) 0 0;font-size:var(--d64);line-height:1}
+.tt2 .ts2-acts{margin:0}.tt-help{margin:var(--s2) 0 0}
+.tt-key{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s5);margin:var(--s2) 0 var(--s4);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tt-key span{display:inline-flex;align-items:center;gap:var(--s1)}
+.tt-kbest{width:16px;height:8px;background:var(--plot);clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%)}
+.tt2 .up{color:var(--plot-text)}.tt2 .dn{color:var(--bad-text)}
+.tt-wrap{display:grid;gap:var(--s8)}
+.tt{width:100%;border-collapse:collapse;table-layout:fixed}
+.tt-corner{width:112px}
+.tt th,.tt td{padding:var(--s2) var(--s1);text-align:center;vertical-align:middle;font:500 var(--t15)/1.4 var(--b)}
+.tt tbody td{border-bottom:1px solid var(--rule);cursor:pointer}
+.tt .tt-rh{padding-left:0;text-align:left;font:900 var(--t17)/1.2 var(--u);font-style:italic;color:var(--plot-text);border-bottom:1px solid var(--rule)}
+.tt thead th{padding:0 var(--s1) var(--s3);border-bottom:2px solid var(--plot);vertical-align:bottom}
+/* the six across the top: a slanted banner in its two type colours, outlined number and name behind the Pokémon */
+.tt-pick{display:grid;justify-items:center;gap:2px;width:100%;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.tt-ban{position:relative;display:grid;place-items:end center;width:100%;height:148px;overflow:hidden;background:linear-gradient(160deg,var(--b1),var(--b2));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.tt-ban::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(120deg,transparent 0 10px,color-mix(in srgb,var(--tier-lit) 10%,transparent) 10px 11px)}
+.tt-no{position:absolute;left:var(--s4);top:var(--s1);z-index:1;font:900 var(--t26)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--tier-lit)}
+.tt-giant{position:absolute;left:var(--s2);bottom:calc(var(--s2)*-1);font:900 var(--t34)/1 var(--u);font-style:italic;white-space:nowrap;color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--tier-lit) 45%,transparent)}
+.tt-ban .np-mon{--iw:120px;position:relative;z-index:1}
+.tt-pick:hover .tt-ban .np-mon,.tt-pick:focus-visible .tt-ban .np-mon{translate:0 calc(var(--s1)*-1)}
+.tt-pick:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.tt-mg{min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;color:var(--plot-text)}
+.tt-nm{max-width:100%;font:900 var(--t17)/1.2 var(--u);font-style:italic;overflow-wrap:normal}
+.tt-lead{padding:0 var(--s2);background:var(--plot);color:var(--on-mark);font:900 var(--t13)/1.5 var(--u);font-style:italic;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}.tt-lead.no{background:none}
+/* set rows */
+.tt-nat b{display:block;font-weight:700}.tt-nb,.tt-src{display:block;font:500 var(--t13)/1.4 var(--b)}.tt-src{color:var(--ink-3)}
+.tt-mv{display:grid;gap:var(--s1);margin:0;padding:0;list-style:none}.tt-mv .np-type{display:flex;justify-content:center;min-height:24px;padding:0 var(--s2);text-align:center;line-height:1.2}.tt-mv .none{font:500 var(--t13)/1.4 var(--b);color:var(--ink-3)}
+/* stat rows: the number, its points, a bar against the team's best; the best on a blue plate */
+.tt-sh th{padding:var(--s6) 0 var(--s2);text-align:left;border-bottom:2px solid var(--plot)}.tt-sh .u{font:900 var(--t22)/1 var(--u);font-style:italic}.tt-sh small{font:500 var(--t13)/1 var(--b);color:var(--ink-2)}
+.tt-stats tr.odd>*{background:var(--table)}
+.tt-st{display:grid;justify-items:center;gap:2px;padding:var(--s1) var(--s2)}
+.tt-st b{font:900 var(--t28)/1 var(--u);font-style:italic}.tt-st small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.tt-bar{display:block;justify-self:stretch;height:3px;margin-top:var(--s1);background:linear-gradient(90deg,currentColor var(--w),var(--rule) var(--w));opacity:.45;transform:skewX(var(--slant))}
+.tt-st.up b,.tt-st.up small{color:var(--plot-text)}.tt-st.dn b,.tt-st.dn small{color:var(--bad-text)}
+.tt-st.best{background:var(--plot);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}.tt-st.best b,.tt-st.best small{color:var(--on-mark)}.tt-st.best .tt-bar{opacity:.8}
+@media (hover:hover) and (pointer:fine){.tt-ban .np-mon img,:root[data-theme="night"] .tt-ban .np-mon img{filter:none}}
+@media (prefers-reduced-motion:reduce){.tt-pick:hover .tt-ban .np-mon{translate:none}}
+@media (max-width:1099px){.tt-corner{width:80px}.tt-ban{height:120px}.tt-ban .np-mon{--iw:96px}.tt-nm{font-size:var(--t13)}.tt .tt-rh{font-size:var(--t15)}.tt-st b{font-size:var(--t22)}.tt th,.tt td{font-size:var(--t13)}.tt-giant{font-size:var(--t26)}}
+@media (max-width:699px){.tt-top h2{font-size:var(--t34)}.tt-corner{width:56px}.tt .tt-rh{font-size:var(--t13)}.tt-ban{height:104px}.tt-ban .np-mon{--iw:88px}
+  .tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}.tt-no{font-size:var(--t20)}.tt-mv .np-type{font-size:var(--t13);padding:var(--s1)}}
+.tt thead th{vertical-align:top}
+@media (max-width:1099px){.tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}}

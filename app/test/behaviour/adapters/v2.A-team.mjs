@@ -265,16 +265,18 @@ export default (ui, pg, o) => {
     myGamesCard: () => pg.evaluate(() => { const c = [...document.querySelectorAll('#main #tm-yg')].find(e => e.getClientRects().length), f = document.querySelector('.np-sheet .yg2');
       return c || f ? [c, f].filter(Boolean).map(e => e.innerText.replace(/\s+/g, ' ').trim()).join(' ') : null; }),
     /** one Pokémon's card on the Team Sheet (the sheet over My Team), as shown */
-    teamSheetCard: name => pg.evaluate(n => { const c = [...document.querySelectorAll('.np-sheet .ts2 .ts2-card')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim().startsWith(n + ' ')); return c ? c.innerText.replace(/\s+/g, ' ').trim() : null; }, name),
-    // Nov 12 (SHEET-03): move keyboard focus to a Team Sheet card the way Tab would land on it (the cards are tabindex=0), so a test
-    // can press Enter / Space on it; no other helper puts focus on a chosen card
-    focusSheetCard: name => pg.evaluate(n => { const c = [...document.querySelectorAll('.np-sheet .ts2 .ts2-card')].filter(e => e.getClientRects().length).find(e => e.innerText.replace(/\s+/g, ' ').trim().startsWith(n + ' ')); if (c) c.focus(); return !!c && document.activeElement === c; }, name),
+    // Nov 14, Tale of the Tape: one Pokémon is a column of the table, not a card. Its "card" text = its column read top to bottom with the
+    // row labels, the way today's card reads ("Garchomp Item Choice Scarf Ability Rough Skin ... HP 185 2 ..."), so the same checks apply.
+    teamSheetCard: name => pg.evaluate(n => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; for (const tb of document.querySelectorAll('.np-sheet .ts2 table.tt')) { if (!tb.getClientRects().length) continue;
+        const hs = [...tb.querySelectorAll('thead th')], k = hs.findIndex(h => T(h.querySelector('.tt-pick')).replace(/ Lead.*$/, '').replace(/^\d\d /, '').startsWith(n.replace(/^Mega /, '')) || (h.querySelector('[aria-label]') || {}).getAttribute?.('aria-label')?.startsWith(n + ':')); if (k < 0) continue;
+        const out = [n]; for (const tr of tb.querySelectorAll('tbody tr')) { const th = tr.querySelector('th'), td = tr.querySelectorAll('td')[k]; if (th && td) out.push(T(th), T(td).replace(/ pts/g, '').replace(/[▲▼] /g, '')); } return out.join(' '); } return null; }, name),
+    focusSheetCard: name => pg.evaluate(n => { const b = [...document.querySelectorAll('.np-sheet .ts2 .tt-pick')].filter(e => e.getClientRects().length).find(e => (e.getAttribute('aria-label') || '').startsWith(n + ':')); if (b) b.focus(); return !!b && document.activeElement === b; }, name),
     // Nov 12 (TEAM-15): the Matchups section's real-games bar is drawn only (aria-hidden), so text can't see it: its three shares
     // (Favoured | Even match | Unfavoured), the section it sits in, and the lines just before and after it; null if not shown
     matchupsBar: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#main .mu-split')].find(e => e.getClientRects().length); if (!b) return null;
       const g = c => { const e = b.querySelector(c); return e ? +e.style.flexGrow || 0 : null; }, T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '', s = b.closest('section');
       return {fav: g('.sf'), even: g('.se'), unf: g('.su'), section: T(s && s.querySelector('h2')), before: T(b.previousElementSibling), after: T(b.nextElementSibling)}; }),
-    sheetColumns: () => pg.evaluate(() => { const c = [...document.querySelectorAll('.ts2 .ts2-card')].filter(e => e.getClientRects().length); if (!c.length) return 0; const top = Math.round(c[0].getBoundingClientRect().top); return c.filter(e => Math.abs(Math.round(e.getBoundingClientRect().top) - top) < 4).length; }),
+    sheetColumns: () => pg.evaluate(() => { const c = [...document.querySelectorAll('.ts2 .tt-pick')].filter(e => e.getClientRects().length); if (!c.length) return 0; const top = Math.round(c[0].getBoundingClientRect().top); return c.filter(e => Math.abs(Math.round(e.getBoundingClientRect().top) - top) < 4).length; }),
     // saved teams (.svt2 sheet)
     savedCards: () => pg.evaluate(() => [...document.querySelectorAll('.svt2 .svt2-card:not(.svt2-free)')].filter(e => e.getClientRects().length).map(c => c.innerText.replace(/\s+/g, ' ').trim())),
     savedCardOf: name => H.savedCards().then(a => a.find(t => t.startsWith(name + ' ') || t.includes(name)) || null),
