@@ -335,7 +335,7 @@ t('LOG-01', 'Battle log is pre-filled with the plan\'s four in order; picks upda
   expect(/back Incineroar \+ Sneasler/i.test(f), 'order line did not update');
   await close();
   { const {ui, close} = await open({team: TEAM.slice(0, 3), opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log');
-    expect(await ui.sees(NEW ? 'Add at least 4 Pokémon on My Team first' : 'Add at least 4 Pokémon to your team to log a battle'), 'no under-4 message in Battle log'); await close(); } }); /* new page: one under-4 message for the whole page */
+    expect(await ui.sees(NEW ? 'Add at least four Pokémon on My Team first' : 'Add at least 4 Pokémon to your team to log a battle'), 'no under-4 message in Battle log'); await close(); } }); /* new page: one under-4 message for the whole page */
 
 t('LOG-02', 'Win/Loss disabled until four are picked; Win logs the game, saved and kept after reload', async () => {
   const {ui, acct, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log');
@@ -582,7 +582,7 @@ t('TEST-01', 'Test run head and "How it works" fold', async () => {
 
 t('TEST-02', 'Test run empty state under 4 Pokémon; falls back to built-in team lists without daily data', async () => {
   const {ui, close} = await open({team: TEAM.slice(0, 3)}); await ui.go('Test Run');
-  expect(await ui.sees(/Add at least 4 Pokémon on My team to (run the gauntlet|start a Test Run)\. You have 3\./i), 'no "You have 3." message'); /* new site: Sim's word list says Test run, not gauntlet (Nov 9) */
+  expect(await ui.sees(/Add at least (?:4|four) Pokémon on My team to (run the gauntlet|start a Test Run)\. You have 3\./i), 'no "You have 3." message'); /* new site: Sim's word list says Test run, not gauntlet (Nov 9) */
   await ui.tapIn((NEW ? 'Go to My Team' : 'Go to My team')); expect(await ui.current() === 'report', (NEW ? '"Go to My Team" did not open My team' : '"Go to My team" did not open My team')); await close();
   // "no team data" message: not reachable today. Without meta/teams the page falls back to the proven team lists built into the
   // page itself (RESULTS), so the message never shows; checked Nov 10 with meta/teams and meta/results both missing.

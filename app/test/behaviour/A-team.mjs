@@ -103,7 +103,7 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
   const r = await homePage(); await r.ui.grantClipboard(); const tx = await r.ui.text();
   // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12): the same line with "·" between parts
   ok((NEW ? /The Champion's (?:six|corner) · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players/i : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
-  ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link');
+  ok((NEW ? /All \d+ Events ›/ : /All \d+ events ›/).test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */
   await r.ui.tapText(NEW ? 'Load Team' : 'Load this team'); /* Sim, Nov 14 (Q3 A): one name, Load Team */ ok(await r.ui.sees('Tap again to replace your team'), 'first tap did not ask to tap again');
   ok((await r.ui.team()).join() === TEAM.join(), 'first tap already replaced the team');
   await r.ui.tapText('Tap again to replace your team', 1200); const now = await r.ui.team(); ok(now.join() !== TEAM.join() && now.length === 6, 'second tap did not load the champion six');
@@ -128,13 +128,13 @@ t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion s
 t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import', async () => {
   const r = await aopen({fresh: true}); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'Home');
   await r.ui.go('My Team', 1500); await r.ui.settle(); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'My Team');
-  has(await r.ui.text(), /Build [Yy]our [Oo]wn/); await r.ui.tapText('Import a team', 1000); const p = await r.ui.editPanel(); /* new build: the import sheet is headed "Paste a Team" (as HOME-07 / IO-01's new-build branches) */ ok(p && (NEW ? p.title === 'Paste a Team' : /Import a team/.test(p.text)), 'Import panel did not open'); await r.close(); });
+  has(await r.ui.text(), NEW ? /Build Me a Team/ : /Build [Yy]our [Oo]wn/); await r.ui.tapText(NEW ? 'Import a Team' : 'Import a team', 1000); /* Sim, Nov 14 naming */ const p = await r.ui.editPanel(); /* new build: the import sheet is headed "Paste a Team" (as HOME-07 / IO-01's new-build branches) */ ok(p && (NEW ? p.title === 'Paste a Team' : /Import a team/.test(p.text)), 'Import panel did not open'); await r.close(); });
 
 t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async () => {
   const r = await aopen({fresh: true}); const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');
   // new build (Sim approved the words and buttons, decisions.md Nov 12): "Read your Strength Score"; buttons Copy a Top Team + Got It,
   // no "Build me a team" in the card (the hero above has the start buttons)
-  if (NEW) { ok(/How (?:NastyPlot|fight night) works/.test(w), 'welcome card has no "How … works" heading'); /* Fight Night (Sim, Nov 14): "How fight night works." */ for (const s of ['Get a team', 'Read your Strength Score', 'Plan each match', 'Copy a Top Team', 'Got It']) has(w, s, 'welcome card'); ok(!/Build me a team/i.test(w), (NEW ? 'welcome card repeats "Build Me a Team"' : 'welcome card repeats "Build me a team"')); }
+  if (NEW) { ok(/How (?:NastyPlot|fight night) works/.test(w), 'welcome card has no "How … works" heading'); /* Fight Night (Sim, Nov 14): "How fight night works." */ for (const s of ['Get a team', 'Read your Strength Score', 'Plan each match', 'Copy a Top Team', 'Got It']) has(w, s, 'welcome card'); ok(NEW || !/Build me a team/i.test(w), /* new: the hint sentence names the Build Me a Team button above by its one name; the card's own buttons are the list just checked */ (NEW ? 'welcome card repeats "Build Me a Team"' : 'welcome card repeats "Build me a team"')); }
   else for (const s of ['How NastyPlot works', 'Get a team', 'Read your scouting report', 'Plan each match', (NEW ? 'Build Me a Team' : 'Build me a team'), 'Copy a top team', 'Got it']) has(w, s, 'welcome card');
   await r.ui.tapText('Got it'); ok(!(await r.ui.welcomeCardText()), 'card still there after Got it'); await r.ui.reload(); ok(!(await r.ui.welcomeCardText()), 'card came back after reload'); await r.close();
   const back = await homePage(); ok(!(await back.ui.welcomeCardText()), 'returning visitor sees the welcome card'); await back.close(); });
@@ -197,7 +197,7 @@ t('TEAM-04', '"Why this score?" opens the breakdown; its parts add up to the sco
   has(w, /How sure/); has(w, /How the (grade|Strength Score) works/); await r.ui.tapText(/How the (grade|Strength Score) works/, 900); ok(await r.ui.current() === 'method', 'link did not open How we calculate'); await r.close(); });
 
 t('TEAM-05', 'Switch team fold lists saved teams; tapping one opens it with an Undo toast', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), /Switch [Tt]eam \d+ saved/);
+  const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), NEW ? /Saved Teams \d+ saved/ : /Switch [Tt]eam \d+ saved/); /* Sim, Nov 14 naming */
   await r.ui.openFold('Switch team'); const f = await r.ui.foldContent('Switch team'); has(f, 'Rain test', 'switch fold');
   await r.ui.switchTeam('Rain test'); ok(await r.ui.teamHeading() === 'Rain test', 'heading did not change'); ok((await r.ui.team()).join() === RAIN.join(), 'team did not switch');
   ok(await r.ui.waitToast(/Opened .Rain test/), 'no "Opened "Rain test"" toast'); ok(await r.ui.has('#toastUndo'), 'toast has no Undo'); await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not return'); await r.close(); });
@@ -379,7 +379,7 @@ t('SUG-04', 'Suggestion cards: Apply, "Why?" reasons, "Show N more" then "See al
   const r = await myTeam({team: TEAM, width: 390}); let c = await r.ui.suggestionCards(); ok(c.length === 1, `${c.length} cards shown at first`);
   ok(/\S+ for \S+/.test(c[0]) && /[+±−-]\d+ \(\d+ → \d+\)/.test(c[0]) && /Apply/.test(c[0]), 'first card lacks "X for Y", score change or Apply: ' + c[0]);
   await r.ui.openFold('Why?'); const w = await r.ui.foldContent('Why?'); ok(w && w.length > 60, 'Why? fold lists no reasons');
-  const more = (await r.ui.text()).match(/Show (\d) more suggestions?/); ok(more, 'no "Show N more suggestions"'); await r.ui.tapText(more[0], 1200);
+  const more = (await r.ui.text()).match(NEW ? /Show (\d) More Suggestions?/ : /Show (\d) more suggestions?/); ok(more, 'no "Show N more suggestions"'); await r.ui.tapText(more[0], 1200);
   c = await r.ui.suggestionCards(); ok(c.length === 1 + +more[1], `${c.length} cards after Show more`); ok(await r.ui.sees('See all suggestions ›'), 'link did not become "See all suggestions ›"');
   await r.ui.tapText('See all suggestions ›', 1200); ok(await r.ui.current() === 'coverage', 'See all did not open All suggestions'); await r.close(); });
 
@@ -417,16 +417,16 @@ t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap
   /* new build (A2, Sim approved Nov 12): the fold is "Things to Know"; the checks are listed once, in the section above it; Types joined the fold, Sim approved Nov 12 */
   const r = await myTeam(), t0 = await r.ui.text(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; has(t0, NEW ? /Things to Know 7 things, types, legal/ : /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);
   await r.ui.openFold(FT, true, 1500); const f0 = await r.ui.foldContent(FT), f = FT === 'Things to Know' ? f0 + '\n' + await r.ui.pg.evaluate(() => { document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; }); return document.querySelector('#tm-ck').innerText; }) : f0;
-  for (const s of [NEW ? /[Ww]eakness Ice 3 weak/ : /Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, /Show \d+ more/, NEW ? /Team Checks/ : /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, NEW ? /Handles the top threats/ : /Ready for the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
+  for (const s of [NEW ? /[Ww]eakness Ice 3 weak/ : /Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, NEW ? /Show \d+ More/ : /Show \d+ more/, NEW ? /Team Checks/ : /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, NEW ? /Handles the top threats/ : /Ready for the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
   ok(await r.ui.foldOpen('Weakness Ice') === true, 'first fixable problem not opened automatically');
-  await r.ui.tapText(/^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => (NEW ? /Show Fewer/ : /Show less/).test(await r.ui.foldContent(FT) || ''), 4000), (NEW ? 'Problems fold shows no "Show Fewer"' : 'Problems fold shows no "Show less"'));
+  await r.ui.tapText(NEW ? /^Show \d+ More$/ : /^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => (NEW ? /Show Fewer/ : /Show less/).test(await r.ui.foldContent(FT) || ''), 4000), (NEW ? 'Problems fold shows no "Show Fewer"' : 'Problems fold shows no "Show less"'));
   await r.ui.tapText('Swap out Rillaboom', 1500); await r.ui.settle(); ok(await r.ui.has('#toastUndo'), 'no Undo toast'); ok(!(await r.ui.team()).includes('Rillaboom'), 'Rillaboom not swapped out');
   ok(await r.ui.undoBar(), 'no Undo bar'); await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen(FT) === true, 'fold not remembered open'); await r.close(); });
 
 t('SUG-11', '"?" explainer: bubble titled "Ready for the top threats", Escape closes it', async () => {
   /* new build (A2): the fold is "Things to Know" and the threats "?" sits on its check in the section's list */
   const r = await myTeam(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; await r.ui.openFold(FT, true, 1200); await r.ui.settle(); if (FT === 'Things to Know') await r.ui.pg.evaluate(() => document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; })); await r.ui.tapTip(NEW ? 'What is Handles the top threats?' : 'What is Ready for the top threats?');
-  const b = await r.ui.waitFor(() => r.ui.tipBubble(), 3000); ok(b && (NEW ? /Handles the top threats/ : /Ready for the top threats/).test(b), 'no bubble titled ' + (NEW ? '"Handles the top threats"' : '"Ready for the top threats"')); ok(/How we calculate|How we work it out|→/.test(b), 'bubble has no link to How we calculate: ' + b);
+  const b = await r.ui.waitFor(() => r.ui.tipBubble(), 3000); ok(b && (NEW ? /Handles the top threats/ : /Ready for the top threats/).test(b), 'no bubble titled ' + (NEW ? '"Handles the top threats"' : '"Ready for the top threats"')); ok(/How we calculate|How We Calculate|How we work it out|→|›/.test(b), 'bubble has no link to How we calculate: ' + b);
   await r.ui.press('Escape'); ok(!(await r.ui.tipBubble()), 'Escape did not close the bubble'); await r.close(); });
 
 // ================= My Team · Part 2 Matchups =================
@@ -772,7 +772,7 @@ t('SHARE-06', 'Team link: "Copy team link" copies #team=…; opening it offers "
   const hash = link.slice(link.indexOf('#team='));
   // new build: the offer's button reads "Open This Team" (today "Load it"); its pages are hash routes, so the link's #team=… gives way
   // to My Team's own route (#team) instead of an empty hash
-  const o = await aopen({team: TEAM, hash}); ok(await o.ui.waitFor(() => o.ui.sees(/Shared team[\s\S]{0,80}Rain test/)), 'no "Shared team Rain test" bar'); await o.ui.tapText(NEW ? /^Open This Team$/ : /^Load it$/, 1500);
+  const o = await aopen({team: TEAM, hash}); ok(await o.ui.waitFor(() => o.ui.sees(/Shared team[\s\S]{0,80}Rain test/)), 'no "Shared team Rain test" bar'); await o.ui.tapText(NEW ? /^Load Team$/ : /^Load it$/, 1500); /* Sim, Nov 14 (Q3): Load Team wherever a team replaces yours */
   ok((await o.ui.team()).join() === RAIN.join(), 'team not loaded: ' + (await o.ui.team()).join()); ok(await o.ui.current() === 'report', 'My Team not opened'); ok(await o.ui.waitToast(/Loaded .Rain test. \(6 Pokémon\)/), 'no "Loaded" toast');
   ok(await o.ui.has('#toastUndo'), 'no Undo'); const h = await o.pg.evaluate(() => location.hash); ok(NEW ? h === '#team' : !h, 'hash not removed: ' + h); await o.close();
   const n = await aopen({team: TEAM, hash}); await n.ui.waitFor(() => n.ui.sees('Shared team')); await n.ui.tapText((NEW ? /^Not Now$/ : /^Not now$/), 800); ok(!(await n.ui.sees(/Shared team[\s\S]{0,120}Load it/)), 'bar still there');
@@ -1069,7 +1069,7 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
     team" (opens Import). It is saved and open; My Box holds the default 36 ("36 Pokémon · 2 boxes"). The Saved Teams sheet is closed
     with its "← My Team" before going to My Box, as a player would (the sheet covers the page) */
     const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); const tx = await r.ui.text(); ok(await r.ui.teamHeading() === 'Sun Tailwind (sample)', 'heading: ' + await r.ui.teamHeading());
-    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. Build [Yy]our [Oo]wn · Import a [Tt]eam /, 'sample note');
+    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. (?:Build [Yy]our [Oo]wn|Build Me a Team) · Import a [Tt]eam /, 'sample note');
     const bo = NEW ? (NEW ? 'Build Me a Team' : 'Build Your Own') : 'Build your own'; ok(await r.ui.linkHref(bo) === '#build', '"' + bo + '" leads to ' + await r.ui.linkHref(bo));
     await r.ui.tapText(/^Import a team$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');
@@ -1148,7 +1148,7 @@ t('X-13', 'Links out of this scope still work: replay "Paste its log" → Battle
 
 // ================= Inventory "looks broken" items that a player can hit (correct behaviour, marked known) =================
 t('HOME-11b', 'Sample note "Build your own" on My Team opens Build', async () => {
-  const r = await myTeam({fresh: true}); await r.ui.tapText(/^Build [Yy]our [Oo]wn$/, 1000); ok(await r.ui.current() === 'auto', '"Build your own" stayed on ' + await r.ui.current()); await r.close(); },
+  const r = await myTeam({fresh: true}); await r.ui.tapText(NEW ? /^Build Me a Team$/ : /^Build [Yy]our [Oo]wn$/, 1000); ok(await r.ui.current() === 'auto', '"Build your own" stayed on ' + await r.ui.current()); await r.close(); },
   {known: NEW ? '' /* the new site has a real Build page now (Nov 12): the link works */ : 'inventory #16: on My Team the note\'s "Build your own" points at `build`, which is My Team itself, so nothing visible happens'});
 t('HOME-10b', 'Home empty tile "Add a Pokémon to slot N" opens the add box for that slot', async () => {
   const r = await aopen({team: []}); await r.ui.tapLabel('Add a Pokémon to slot 3', 1200); const p = await r.ui.editPanel(); const nb = await r.ui.nameBox();

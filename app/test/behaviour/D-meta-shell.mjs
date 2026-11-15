@@ -316,7 +316,7 @@ t('SHELL-18b', 'First-time visitors never see What\'s new', run({fresh: true}, a
 t('SHELL-19', 'First visit starts with the real sample team and a note', run({fresh: true}, async ({ui, d}) => {
   const want = ['Charizard-Mega-Y', 'Whimsicott', 'Basculegion', 'Kingambit', 'Garchomp', 'Sneasler'];
   expect(JSON.stringify((await ui.team()).slice().sort()) === JSON.stringify(want.slice().sort()), 'sample team: ' + await ui.team());
-  await ui.go('My Team'); const tx = await ui.text(); expect(has(tx, 'This is a sample team'), 'no sample note'); expect(has(tx, 'Build your own') && has(tx, 'Import a team'), 'sample note lacks its two buttons');
+  await ui.go('My Team'); const tx = await ui.text(); expect(has(tx, 'This is a sample team'), 'no sample note'); expect(has(tx, NEW ? 'Build Me a Team' : 'Build your own') && has(tx, NEW ? 'Import a Team' : 'Import a team'), /* Sim, Nov 14 naming */ 'sample note lacks its two buttons');
   await ui.go('Saved Teams'); expect(has(await ui.text(), 'Sun Tailwind (sample)'), 'sample not in Saved Teams'); }));
 
 t('SHELL-20', 'Feedback: anonymous, no name/email fields, too-short check, sent with personal details removed', run({team: TEAM}, async ({ui, d}) => {
