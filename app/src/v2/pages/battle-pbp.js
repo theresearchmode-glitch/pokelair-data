@@ -2,7 +2,7 @@
 // A face-off poster with both full sixes (you PLOT blue, them the site's existing pink --pick: Sim, Nov 14, no new colours), then turn one
 // told move by move down a centre line, each move on its mover's side. Same plan, same helpers, same words as battle.js (btPlan, turnOne,
 // btItem, btSheet); everything under the play-by-play is battle.js's own sections, untouched.
-V2.pbpMon = (n, sub, big) => `<button type="button" class="pbp-mon${big ? ' big' : ''}" data-v2mon="${V2.esc(n)}" aria-label="${V2.esc(V2.disp(n))}${sub ? ', ' + V2.esc(sub) : ''}: open its info sheet">${V2.mon(n, {iw: big ? 128 : 64, bare: true})}<b>${V2.esc(V2.disp(n))}</b>${sub ? `<small>${V2.esc(sub)}</small>` : ''}</button>`;
+V2.pbpMon = (n, sub, big) => `<button type="button" class="pbp-mon${big ? ' big' : ''}" data-v2mon="${V2.esc(n)}" aria-label="${V2.esc(V2.disp(n))}${sub ? ', ' + V2.esc(sub) : ''}: open its info sheet">${V2.mon(n, {bare: true})}<b>${V2.esc(V2.disp(n))}</b>${sub ? `<small>${V2.esc(sub)}</small>` : ''}</button>`;
 V2.pbpPoster = (mine, theirs, P) => { const r = P.r, ll = P.likelyLead || [], rest = theirs.filter(o => !ll.includes(o)), mon = (m, big) => V2.pbpMon(m.p.n, V2.btItem(m), big);
   const grp = (lab, idx) => idx.length ? `<div class="pbp-g"><p class="pbp-gl u">${lab}</p><div class="pbp-row">${idx.map(i => mon(mine[i])).join('')}</div></div>` : '';
   return `<section class="pbp-poster" aria-label="Your six against their six">

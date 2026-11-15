@@ -885,7 +885,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:899px){.bt-deep{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.bt-hint{margin-left:0;width:100%}}
 @media (max-width:519px){.bt-spd li{grid-template-columns:40px minmax(0,1fr) 64px}.bt-spd .bar{grid-column:2/4;grid-row:2}.bt-tab{font-size:var(--t15)}}
 .bt-dl{display:none}
-@media (max-width:519px){
+/* quality pass Nov 15: the both-ways table needs ~1,000px for their six; below 1100 it was cut off at the right (820), so the by-Pokémon list
+   takes over up to 1099, two columns from 520 */
+@media (min-width:520px) and (max-width:1099px){.bt-dl{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s8)}}
+@media (max-width:1099px){
   .bt-dgw{display:none}.bt-dl{display:grid;gap:var(--s8);margin-top:var(--s6)}
   .bt-dl h3{display:flex;align-items:center;gap:var(--s2);margin:0;font:600 var(--t17)/1.5 var(--b)}
   .bt-dlh,.bt-dl li{display:grid;grid-template-columns:minmax(0,1fr) 96px 96px;gap:var(--s2);align-items:start}
@@ -2325,6 +2328,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pbp-bench{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2) var(--s8);width:100%;margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid color-mix(in srgb,var(--tier-lit) 35%,transparent)}
 .pbp-g{display:grid;justify-items:center;gap:var(--s1)}.pbp-row{display:flex;gap:var(--s3)}
 .pbp-mon{display:grid;justify-items:center;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-align:center;min-width:0}
+/* sizes live here, not inline, so phones can shrink them (quality pass Nov 15: at 320 the two leads ran off the screen) */
+.pbp-mon .np-mon{--iw:64px}.pbp-mon.big .np-mon{--iw:128px}
+@media (max-width:429px){.pbp-mon.big .np-mon{--iw:104px}}@media (max-width:379px){.pbp-mon.big .np-mon{--iw:88px}.pbp-mon.big{max-width:50%}.pbp-mon.big b{overflow-wrap:break-word}}
 .pbp-mon b{font:700 var(--t13)/1.2 var(--b)}.pbp-mon small{font:500 var(--t13)/1.3 var(--b);opacity:.85}
 .pbp-mon.big b{font:900 var(--t20)/1.1 var(--u);font-style:italic}
 .pbp-mon:hover .np-mon,.pbp-mon:focus-visible .np-mon{translate:0 calc(var(--s1)*-1)}.pbp-mon:focus-visible{outline:3px solid var(--tier-lit);outline-offset:2px}
@@ -2366,9 +2372,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* Sim, Nov 14 (page height): the moves alternate sides, so each band starts halfway down the one before: same order, half the height */
 @media (min-width:700px){.pbp-steps{grid-template-columns:minmax(0,1fr);grid-auto-rows:minmax(48px,auto);row-gap:var(--s2)}.pbp-beat{grid-column:1;grid-row:var(--r) / span 2}}
 .pbp-acts .row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4)}
+.pbp-acts .np-link{min-height:var(--tap);display:inline-flex;align-items:center} /* quality pass Nov 15: Clear was a 20px-tall tap target */
 @media (max-width:379px){.pbp-mon.big b{font-size:var(--t15)}.pbp-leads{gap:var(--s2)}.pbp-half{padding-left:var(--s3);padding-right:var(--s3)}}
 .pbp .bt-head h1>span{white-space:nowrap}.pbp .bt-verdict b{white-space:nowrap}
-@media (max-width:1279px){.pbp .bt-head{grid-template-columns:minmax(0,1fr);gap:var(--s4)}.pbp .bt-verdict{justify-self:start;text-align:left;padding:var(--s3) var(--s10) var(--s3) var(--s5);clip-path:polygon(0 0,100% 0,calc(100% - 24px) 100%,0 100%)}}
+@media (max-width:1439px){.pbp .bt-head{grid-template-columns:minmax(0,1fr);gap:var(--s4)}.pbp .bt-verdict{justify-self:start;text-align:left;padding:var(--s3) var(--s10) var(--s3) var(--s5);clip-path:polygon(0 0,100% 0,calc(100% - 24px) 100%,0 100%)}}
 @media (max-width:699px){.pbp .bt-head h1>span{white-space:normal}}
 @media (max-width:379px){.pbp .bt-verdict b,.pbp .bt-verdict b.vf,.pbp .bt-verdict b.ve,.pbp .bt-verdict b.vu{font-size:var(--t28)}}
 
