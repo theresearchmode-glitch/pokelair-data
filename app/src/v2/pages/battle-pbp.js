@@ -22,7 +22,7 @@ V2.pbpBeat = (b, i, T) => { const E = V2.esc, all = [...T.leads, ...T.opp], m = 
     <p class="pbp-spe"><b class="u">${b.speed}</b><small>Speed</small>${b.prio ? `<em>${b.prio > 0 ? '+' : '−'}${Math.abs(b.prio)} priority</em>` : ''}</p></div></li>`; };
 V2.pbpTurn = P => { const T = P && P.turnOne; if (!T || !T.beats || !T.beats.length) return ''; const E = V2.esc, F0 = T.field || {};
   const fld = F0.weather || T.terrain ? `${fieldWords(F0)}${F0.wBy ? ` (${F0.wBy.d})` : ''}${F0.negated && F0.weather ? ", cancelled by Cloud Nine / Air Lock while it's out" : ''}${F0.traced ? '. A Trace user may copy it' : ''}` : ''; // today's words (battle.js battleTurn)
-  return `<section class="pbp-turn bt-turn"><div class="pbp-th"><h2 class="u">Turn One, Play by Play</h2><p class="bt-sub">Fastest moves first. Your ${E(T.leads.map(x => x.d).join(' + '))} vs their likely ${E(T.opp.map(x => x.d).join(' + '))}</p></div>
+  return `<section class="pbp-turn bt-turn"><div class="pbp-th"><h2 class="u">Turn One, Play\u00a0by\u00a0Play</h2><p class="bt-sub">Fastest moves first. Your ${E(T.leads.map(x => x.d).join(' + '))} vs their likely ${E(T.opp.map(x => x.d).join(' + '))}</p></div>
     <ol class="pbp-steps">${T.beats.map((b, i) => V2.pbpBeat(b, i, T)).join('')}</ol>
     ${T.warn && T.warn.length ? `<p class="bt-warn pbp-warn"><i class="u">Watch</i> ${V2.keepForm(T.warn.map(E).join('; '))}. Consider Protect.</p>` : ''}${fld ? `<p class="bt-field">Field on turn 1: <b>${E(fld)}</b></p>` : ''}</section>`; };
 V2.pbpActs = (theirs, P) => `<div class="pbp-acts"><p class="fine">Lead pair tested on 13,000 ladder games: players who led with this pair won more than their rating predicted.${P.twoMegas ? ' Only one Mega can Mega Evolve this battle.' : ''}</p>
