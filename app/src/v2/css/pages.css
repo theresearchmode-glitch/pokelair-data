@@ -1898,7 +1898,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .gs-blk b{font-size:var(--t34)}.gs-blk small{margin-left:auto}
   .gs-step[data-tier="S"]{--gsw:76px}.gs-step[data-tier="A"]{--gsw:68px}.gs-step[data-tier="B"]{--gsw:64px}.gs-step[data-tier="C"]{--gsw:64px}.gs-step[data-tier="D"]{--gsw:56px}.gs-step[data-tier="F"]{--gsw:56px}
   .gs-sc .u{font-size:var(--t20)}.gs-title h2{font-size:var(--t24)}}
-.gsp .ra-sub{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:var(--s3) var(--s6);border-bottom:1px solid var(--ar-rule)}
+.gsp .ra-sub{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:var(--s3) var(--s6);border-bottom:1px solid var(--rule)}
 .gs-spot .ra-acts{display:flex;flex-direction:row;flex-wrap:wrap}.gs-spot .ra-acts>*{width:auto;flex:0 1 auto}
 .gs-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6)}.gs-ctl .ra-find{flex:1 1 320px;max-width:480px;margin:0}.gs-ctl .ra-filt{flex:1 1 auto;margin:0}.gs-ctl .ra-types{flex:0 0 100%}
 .gs .ra-gem,.gs-key .ra-gem{color:var(--band-ready)}
@@ -1941,7 +1941,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .us-benches{display:grid;gap:var(--s4)}.us-bench{--gsw:96px}
 .us-bench::before{border-bottom-color:var(--plot)}
 .us-bench .us-fig{flex:0 0 calc(100% / var(--c))}
-.us-how{display:grid;gap:var(--s4);padding-top:var(--s6);border-top:1px solid var(--ar-rule)}
+.us-how{display:grid;gap:var(--s4);padding-top:var(--s6);border-top:1px solid var(--rule)}
 .us-hh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:var(--s2) var(--s6)}.us-hh h2{margin:0;font:900 var(--t28)/1.1 var(--u);font-style:italic}.us-hh p{margin:0}
 .us-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4) var(--s8)}
 .us-bars{display:grid;gap:var(--s2);align-content:start}.us-bh{margin:0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}.us-bh small{text-transform:none;letter-spacing:0;font-weight:500}
@@ -1999,7 +1999,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:1099px){.mt-band span:nth-child(2){display:inline}.mt-band span:nth-child(3){display:none}}
 /* My Team: The Hand, piece 2 (brief section 2): Lead / Back / Bench, two Cards each, the set under each Card */
 .mh-hand{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s8)}
-.mh-gh{display:flex;align-items:baseline;gap:var(--s3);margin:0 0 var(--s4);padding-bottom:var(--s2);border-bottom:1px solid var(--ar-rule)}
+.mh-gh{display:flex;align-items:baseline;gap:var(--s3);margin:0 0 var(--s4);padding-bottom:var(--s2);border-bottom:1px solid var(--rule)}
 .mh-gh b{font:900 var(--t24)/1.1 var(--u);font-style:italic}.mh-gh span{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
 .mh-grp.lead .mh-gh{border-bottom:3px solid var(--plot)}.mh-grp.lead .mh-gh b{color:var(--plot-text)}
 .mh-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}

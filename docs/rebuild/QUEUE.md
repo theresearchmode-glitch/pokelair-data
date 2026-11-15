@@ -11,7 +11,7 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Built, on Preview v148 (400 files). A-team 130 pass / 8 FAIL, same 8 as before. Pictures + questions sent |
 | 5 | Battle a team "Play-by-Play" | battle-playbyplay | Waiting (received 8:00 PM Nov 14); needs the pink 'them' colour approved |
 | 6 | Compare "The Face-Off" | compare-faceoff | Waiting (received 7:49 PM Nov 14); same pink |
-| 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); nicknames need Sim's yes; no new pink |
+| 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); names approved: The Problems, The Coin Flips, The Good Matchups; no new pink |
 | 8 | My Team height and polish pass | my-team-hand | Waiting |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.
