@@ -16,3 +16,6 @@
     sheet? Print and Aurora follow the same way once you say go.
 12. The three info pages (drafts; pictures: pictures-nov15/info-draft-*.webp): How We Calculate as ten numbered tiles that open their
     working; About & Legal as "The Fine Print" rows beside "Everything We Save"; Send Feedback as one question, five kinds, a box. Yes, or changes?
+13. Selected chips (re-audit Battle #9; picture: pictures-nov15/battle-chip-1280.webp): a picked chip is solid black everywhere on the site
+    (Battle's weather, Events' filters, Ratings' filters), so it can look like a main button. RECOMMENDED: keep it as is (one look for every
+    picked chip; the slanted shape and smaller size already tell it apart). Other choice: picked chips in PLOT blue site-wide.
