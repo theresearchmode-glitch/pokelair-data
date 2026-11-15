@@ -2494,3 +2494,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (pointer:coarse){.bd2 .np-link{display:inline-flex;align-items:center;min-height:44px}}
 @media (min-width:1280px) and (max-width:1399px){.bp .bp-left{grid-template-columns:minmax(0,1fr)}.bp .bp-left>*{grid-column:1/-1;min-width:0}.bp .bp-spec .np-slide{width:100%;min-width:0}}
 @media (max-width:1399px){.bp .bp-spec .bd-opt{grid-template-columns:minmax(0,1fr)}}
+/* audit fixes, Battle (Nov 14): moves never break mid-word in the empty Battle's Your Six; Battle Log two columns only from 1100; paragraph line height */
+.bt-yours .mh-mv{grid-template-columns:minmax(0,1fr)}.bt-yours .mh-mv li{overflow-wrap:normal}
+@media (min-width:820px) and (max-width:1099px){.bt-log{grid-template-columns:minmax(0,1fr)}}
+.pbp-why{line-height:1.5}
