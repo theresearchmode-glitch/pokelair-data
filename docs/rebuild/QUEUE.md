@@ -2,7 +2,7 @@
 
 **QUALITY PASS FIRST (Sim, Nov 14, 9:58 PM):** new design work paused. Sections in order: Build (in progress), Battle, Compare, Team Sheet, My Team, Winning Teams, Meta, Home, Test Run, tools. Each: fix audit findings (docs/rebuild/audits/), check every element at 11 widths x day/night on the real-data build, fresh independent re-audit, before/after pictures to Sim. Done only when the re-audit finds nothing broken.
 
-Last updated: time: 10:53 PM (10:53:20)  date: Sat Nov 14, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
+Last updated: time: 11:20 PM (11:20:47)  date: Sat Nov 14, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
 Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New briefs are added here the moment they arrive.
 
 | # | Brief | Folder | Status |
@@ -22,9 +22,10 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 10 | Info pages: How We Calculate, About & Legal, Send Feedback (Claude designs; Sim: 'simple, still not boring') | (none) | After the quality pass; pictures first |
 | 11 | My Team height and polish pass | my-team-hand | Waiting |
 | 12 | Events "The Ticket Wall" + Archetypes "The Weather Map" | tournaments-tickets-weather | Received 10:52 PM Nov 14 (12 pictures). Built after Build + Battle quality pass, through the full gate. Section 9 items (Your team's style plate, Your style tags, No. 1-8 ranks, names) need Sim's confirm with pictures before they ship |
+| 13 | This Week "The Front Page" + Track Record "The Receipt" | thisweek-trackrecord | Received 11:20 PM Nov 14 (6 pictures). After #12, reusing its ticket stub + weather scenes (one shared build). Questions for Sim with pictures: white paper in dark mode; Electric Terrain in --ty-Electric |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.
 Everything else keeps today's design (Sim: no bolder look needed).
 Why this order: finish what's half-built first, then pages by how much players use them.
 
-Still with Sim's designer: This Week, Track Record (Events + Archetypes arrived 10:52 PM Nov 14). Sim, 9:19 PM Nov 14: that's every brief. Order is Claude's call; our rules and data win over the designer's.
+Every designer brief is in (Sim, 11:20 PM Nov 14). Sim, 9:19 PM Nov 14: that's every brief. Order is Claude's call; our rules and data win over the designer's.
