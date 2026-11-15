@@ -67,6 +67,9 @@
    text starts, so the eye doesn't jump.
 10. Naming leftovers: RECOMMENDED: "Share as Image" on every share button, "Save Image" only inside the share sheet, "Events" as the page name
     everywhere ("Tournaments" stays only as the group label in the Meta tabs); reason: one name per action (your Nov 14 rule).
+    Replace-team confirmation (checked in the code, 6:20 AM): two styles today. "Replace your current team?" with Replace / Cancel on
+    Winning Teams' cards and Events; "Tap Again to Replace Your Team" on Home, Winning Teams' search results and Build. RECOMMENDED: the
+    Replace / Cancel question everywhere; reason: it says what will happen, has a way out, and one action should look the same on every page.
 18. Events, compared with today's page (found by the tests; picture: q18-events-top-1280.webp): Next Events shows 2 upcoming events (today 4;
     "Show All 31" still opens the rest) so the plate stays level with the headline, and there is no "N on the calendar" line; the list shows
     the latest result plus 12 tickets (today 12). RECOMMENDED: keep 2; reason: the page stays even, and the count of what's coming is already
