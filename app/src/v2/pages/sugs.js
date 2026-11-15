@@ -48,7 +48,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
   else { V2.sgReasons(ms); const side = !P.length && Array.isArray(P.more) && P.more.length > 0, top = S2.top, g0 = top.length ? top[0].g0 : null;
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
-    const pre = V2.itemFixCard(ms) + V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
+    const pre = V2.itemFixCard(ms) + V2.setTipsCard() + V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
     const all = `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgall>See All Suggestions ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>`;
     // A3 proposal (Sim's fix plan, Nov 12: "your recommendation"): a best swap that doesn't raise the score (±0 or lower) gets no
     // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
@@ -67,6 +67,10 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
 // LANE.protFix / protApply and its [data-protfix] handler, 36-lanes.js; the words from LANE.protWords)
 // today's "Fix your items first" (54-items.js itemFixHtml): an Item Clause clash or an item that does nothing, with a one-tap "Give X Y"
 // (data-itfix, today's handler: Undo in the message). Nov 15 parity: the new site flagged the clash but had no fix button.
+// today's "Set check: what most players run" (57-set-tips.js setTips): a rare item, Ability or move next to what most players run, with
+// one tap to use theirs (today's [data-settip] handler: Undo in the message). Nov 15 parity: the file was not in the new build.
+V2.setTipsCard = () => { let tips = []; try { tips = setTips(); } catch (e) { return ''; } ui.setTips = tips; if (!tips.length) return ''; const E = V2.esc, what = t => t.k === 'it' ? 'item' : t.k === 'ab' ? 'Ability' : 'move';
+  return `<div class="sg2-fix sg2-tips" role="group" aria-label="Set check: what most players run">${tips.map((t, x) => `<p class="sg2-ln fix tip"><b>Tip</b> ${E(t.p.d)}: ${E(t.to)} instead of ${E(t.from)} (${what(t)}). ${E(t.why)}</p><button type="button" class="np-btn2" data-settip="${x}"><span>Use ${E(t.to)}</span></button>`).join('')}<p class="fine">Tips come from what players run, not from the Strength Score.</p></div>`; };
 V2.itemFixCard = ms0 => { const ms = typeof members === 'function' ? members() : ms0; /* with their items, as today's fix planner passes them */ let pr = []; try { pr = itemProblems(ms); } catch (e) {} if (!pr.length) return ''; const E = V2.esc;
   const rows = pr.map(x => { const tgt = x.k === 'clause' ? x.ms[x.ms.length - 1] : x.ms[0]; let fix = ''; try { fix = tgt && tgt.i >= 0 ? itemFixFor(tgt, ms) : ''; } catch (e) {}
     return `<p class="sg2-ln fix"><b>Fix</b> ${E(x.k === 'clause' ? 'Item Clause' : x.k === 'scarftr' ? 'Clashes with Trick Room' : 'Item does nothing')}: ${E(x.why)}</p>${fix ? `<button type="button" class="np-btn2" data-itfix="${tgt.i}|${E(fix)}"><span>Give ${E(tgt.d)} ${E(fix)}</span></button>` : ''}`; }).join('');

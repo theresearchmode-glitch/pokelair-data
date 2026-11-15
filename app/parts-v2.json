@@ -122,6 +122,7 @@
     "src/app/64-track-data.js",
     "src/app/20-types-data.js",
     "src/app/54-items.js",
+    "src/app/57-set-tips.js",
     "src/app/55-threats.js",
     "src/app/58-strength.js",
     "src/app/59-matchup-data.js"
