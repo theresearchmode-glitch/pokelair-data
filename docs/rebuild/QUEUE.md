@@ -2,7 +2,7 @@
 
 **QUALITY PASS FIRST (Sim, Nov 14, 9:58 PM):** new design work paused. Sections in order: Build (in progress), Battle, Compare, Team Sheet, My Team, Winning Teams, Meta, Home, Test Run, tools. Each: fix audit findings (docs/rebuild/audits/), check every element at 11 widths x day/night on the real-data build, fresh independent re-audit, before/after pictures to Sim. Done only when the re-audit finds nothing broken.
 
-Last updated: time: 7:43 PM (7:43:40)  date: Sat Nov 14, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
+Last updated: time: 10:42 PM (10:42:47)  date: Sat Nov 14, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
 Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New briefs are added here the moment they arrive.
 
 | # | Brief | Folder | Status |
@@ -15,7 +15,9 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 6 | Compare "The Face-Off" | compare-faceoff | Built + edge check clean at 6 widths; heights inside limits; A-team tests running |
 | 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); names approved: The Problems, The Coin Flips, The Good Matchups; no new pink |
 | 8 | Share card: The Slab / Print / Aurora (tall + wide) | share-cards | Waiting (received 9:19 PM Nov 14); question to Sim: one design or all three |
-| 9a | Helper audits of everything built (Sim, Nov 14): 3 read-only auditors running (Home/Meta/Winning Teams; My Team/Team Sheet/Compare; Build/Battle/tools) | (audit) | Running |
+| 9a | Helper audits of everything built (Sim, Nov 14) | (audit) | Done: 4 audits in docs/rebuild/audits/ (3 page audits, 106 findings; naming audit). Fixed section by section |
+| 9b | One name per action (Sim, Nov 14) | audits/audit-naming.md | Sim's 4 answers + Word-list/Title Case labels in code (committed 10:41 PM, time from git); tests on the new words running |
+| 9c | Build quality pass | audits | Full check 0 findings in all 6 states, 11 widths x 2 themes. Left: recheck on the newest build, fresh re-audit, pictures |
 | 9 | Colour uniformity: one colour per meaning across the site (Sim, Nov 14: 'a big deal') | (audit) | Audit done: docs/rebuild/colour-audit.md (18 conflicts). Fix list + pictures to Sim next |
 | 10 | Info pages: How We Calculate, About & Legal, Send Feedback (Claude designs; Sim: 'simple, still not boring') | (none) | After the quality pass; pictures first |
 | 11 | My Team height and polish pass | my-team-hand | Waiting |
