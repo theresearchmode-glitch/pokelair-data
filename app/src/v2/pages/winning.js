@@ -69,7 +69,7 @@ V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams
   if (U.f.length) return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body">${ctl}${V2.wtResults()}</div></div>`;
   const all = V2.wtList().filter(x => x.t.section === U.grp), three = all.slice(0, 3), evs = new Set(three.map(x => x.t.event)), same = evs.size === 1;
   const step = 6, shown = U.more ? all.slice(3, 3 + step * U.more) : [], left = all.length - 3 - shown.length;
-  const hands = `<section class="wt-hands"><div class="wt-th"><h2 class="u">The Winning Hands</h2><p>${same ? `${E(three[0].t.event)}. ` : ''}Tap a Card for its info sheet.</p></div>
+  const hands = `<section class="wt-hands"><div class="wt-th"><h2 class="u">The Winning Hands</h2><p>${same ? `${E(three[0].t.event)}. ` : ''}Tap a card for its info sheet.</p></div>
     ${three[0] ? V2.wtHand(three[0], 1, same) : ''}${three.length > 1 ? `<div class="wt-two">${three.slice(1).map((x, i) => V2.wtHand(x, i + 2, same)).join('')}</div>` : ''}</section>`;
   const more = all.length > 3 ? `<section class="wt-more-s">${U.more ? `<h2 class="u wt-mh">More Winning Teams</h2><div class="wt-rows">${shown.map(x => V2.wtRow(x, false)).join('')}</div>
       <p class="wt-mbtns">${left > 0 ? `<button type="button" class="np-btn2" data-wtmore><span>Show More · ${left} left</span></button>` : ''}<button type="button" class="np-link" data-wtless>Show Fewer</button></p>`
