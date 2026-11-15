@@ -2951,3 +2951,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ra-seg[aria-label="Tournament views"]{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media (max-width:699px){.ra-seg[aria-label="Tournament views"]{grid-template-columns:repeat(4,minmax(0,1fr))}.ra-seg[aria-label="Tournament views"] a{white-space:normal;padding:0 var(--s2);text-align:center;line-height:1.2}}
 @media (max-width:359px){.ra-seg[aria-label="Tournament views"] a{font-stretch:88%;padding:0 var(--s1)}} /* at 320 "Archetypes" was wider than its tab */
+@media (max-width:389px){.tk:not(.big) .tk-name{font-size:var(--t13);font-stretch:88%;overflow-wrap:break-word}} /* Sim Q17 (Nov 15): under 390 no word breaks: smaller name in the approved 88% letters (moving the winner down would shrink six sprites to ~26 px) */
+@media (max-width:359px){.tk:not(.big) .tk-hero{width:56px}.tk:not(.big) .tk-hero .np-mon{--iw:56px}.tk:not(.big) .tk-mid{padding-right:var(--s2)}} /* Q17 at 320-359: room for "TOURNAMENT" (it reached 17 px into the stub) */
+@media (max-width:339px){.tk:not(.big) .tk-mid{padding-left:var(--s2)}}
