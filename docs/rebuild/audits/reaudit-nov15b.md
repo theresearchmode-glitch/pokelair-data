@@ -16,4 +16,4 @@ POLISH: 15 half-filled rows (2-2-1 etc.); 16 lone words in headings/labels; 17 C
 - 8 FIXED (sentence says the % is weighted; checked 55-threats.js). 9 FIXED (header '32 from official events', button '... of 32 teams').
 - 10 FIXED (chip x 48x47, Recent links 44 px no overlap, calendar 48 px). 11 FIXED (bars as ' · ', space before '#'; ALL CAPS kept: acronyms).
 - 12 FIXED (weather % 14 px+ room at 320-1440). 13 FIXED terrain case; Mega colour = question 1.
-- 14 (Track 'since Oct 29' vs chart's first point Oct 26): not yet checked. 15-22 polish: not yet worked; listed for Sim's summary.
+- 14 FIXED: chart dates are week-start Mondays (checked in code); caption added. 15-22 polish: not yet worked; listed for Sim's summary.
