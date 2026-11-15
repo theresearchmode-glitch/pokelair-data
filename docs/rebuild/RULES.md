@@ -148,3 +148,6 @@ Every page, built or still to be built, passes before it reaches Sim or the Prev
    words across the site, Title Case, Word-list names; every colour carries the same meaning as everywhere else (docs/rebuild/audits/audit-naming.md,
    colour-audit.md).
 5. Before/after pictures to Sim. A page is "done" only after all five.
+6. Class names (Nov 15, three clashes in one night): a page's own classes carry the page's prefix and are never 2-3 letter words other
+   parts use (Test Run's root '.tr' also styled Damage Calc's Terrain tile '.tr', the Blueprint's corner '.tr' and Track Record's new
+   '.tr-*'). Before adding a class, grep the source for it; short shared words (tr, tl, ev, ar, wk, on, a, b) are only ever used scoped.
