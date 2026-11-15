@@ -1,5 +1,7 @@
 # Design brief queue (one place for every brief Sim sends)
 
+**QUALITY PASS FIRST (Sim, Nov 14, 9:58 PM):** new design work paused. Sections in order: Build (in progress), Battle, Compare, Team Sheet, My Team, Winning Teams, Meta, Home, Test Run, tools. Each: fix audit findings (docs/rebuild/audits/), check every element at 11 widths x day/night on the real-data build, fresh independent re-audit, before/after pictures to Sim. Done only when the re-audit finds nothing broken.
+
 Last updated: time: 7:43 PM (7:43:40)  date: Sat Nov 14, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
 Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New briefs are added here the moment they arrive.
 
