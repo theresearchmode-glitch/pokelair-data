@@ -54,7 +54,7 @@ function moveChoices(s,p){const sm=slotMoves(s,p),pm=popularMoves(p),pct=pm.pct|
   return {sm,pm,pct,rest,src,custom:sm.custom}}
 // Nature and stat points: the ones shown (yours, else the most run), each nature with its % (most run first), the six numbers
 function natureChoices(s,p){const cs=typeof commonSpread==='function'?commonSpread(p):null,own=s.sp&&s.sp[S.format];
-  let na=[];try{na=setFor(p).na||[]}catch(e){}const pc=new Map(na.map(x=>[x[0],x[1]])),top=(na[0]&&na[0][0])||(cs&&cs.nat)||null;
+  let na=[];try{na=setFor(p).na||[]}catch(e){}const pc=new Map(na.map(x=>[x[0],x[1]])),top=(cs&&cs.nat)||(na[0]&&na[0][0])||null;/* Nov 15 (audit #1): the complete set's nature first, as the calcs, Speed, Team Sheet and Showdown copy use (Sim's rule: show the most common COMPLETE set); before, Edit Set said Timid while everything else used Modest */
   const nat=(own&&own.nat)||top||'Hardy',ownNat=!!(own&&own.nat&&own.nat!==top),ownPts=!!(own&&!own.assumed&&own.v);
   const pts=ownPts?{hp:own.v[0],atk:own.v[1],def:own.v[2],spa:own.v[3],spd:own.v[4],spe:own.v[5]}:cs,K=['hp','atk','def','spa','spd','spe'];
   const v=K.map(k=>pts?pts[k]:0),sum=v.reduce((a,b)=>a+b,0);

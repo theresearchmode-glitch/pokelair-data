@@ -37,7 +37,7 @@ V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = 
   const rows = cxFacts(IA, IB), diff = rows.filter(r => r.diff), same = rows.filter(r => !r.diff);
   const says = ['thr', 'sc', 'field', 'grade', 'ready', 'weak'].map(k => (rows.find(r => r.k === k) || {}).say).concat(rows.filter(r => r.k.startsWith('ck:')).map(r => r.say)).filter(Boolean);
   const cell = (r, v) => CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v);
-  const row = r => `<div class="cx2-row"><div class="cx2-lab">${V2.esc(CX2_LABEL[r.k] || r.label)}</div><div class="cx2-c a">${cell(r, r.a)}</div><div class="cx2-c b">${cell(r, r.b)}</div></div>`;
+  const row = r => `<div class="cx2-row"><div class="cx2-lab">${V2.esc(CX2_LABEL[r.k] || V2.wl(r.label))}</div><div class="cx2-c a">${cell(r, r.a)}</div><div class="cx2-c b">${cell(r, r.b)}</div></div>`;
   const tm = s => V2.esc(s).replace(/Team A/g, '<b class="cx2-tm a">Team A</b>').replace(/Team B/g, '<b class="cx2-tm b">Team B</b>');
   return `<section class="cx2">${head}
     <div class="cx2-sum"><h2 class="u">What's Different</h2>${says.length ? `<ul>${says.slice(0, 6).map(s => `<li>${tm(V2.wl(s))}</li>`).join('')}</ul>` : '<p class="tm-sub">These two line up the same on every row below.</p>'}</div>

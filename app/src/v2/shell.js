@@ -155,6 +155,7 @@ V2.route = () => { const h = (location.hash || '').slice(1); return V2.pages[h] 
 // Handles it, never "ready". Shared logic (also today's site) still writes "Ready for ..."; the new site says it the word list's way.
 // The "81%" in "Ready for 81% of the top 30" is a weighted score, not a share of threats, so the plain count is shown instead.
 V2.wl = (t, hand) => String(t == null ? '' : t)
+  .replace(/\bReady for the top threats\b/g, 'Handles the top threats') /* the check's name as My Team shows it (audit #8, Nov 15) */
   .replace(/Ready for \d+% of the top (\d+) threats(?:,| ·) handles (\d+) of \d+/g, 'Beats or handles $2 of the top $1 threats')
   .replace(/Ready for \d+% of the top (\d+) threats/g, (m, n) => hand ? `Beats or handles ${hand.x} of the top ${hand.n}` : m)
   .replace(/([Rr])eady for (\d+)\/(\d+) top threats/g, (m, r, x, n) => `${r === 'R' ? 'B' : 'b'}eats or handles ${x} of ${n} top threats`)
