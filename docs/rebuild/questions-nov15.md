@@ -48,8 +48,8 @@
    1440 is 2,331 px vs 1,950, 381 over). RECOMMENDED: at 390 raise the limit to 4,200 (79 px is less than one row); at 1440 do question 14
    (Your Games into the empty right half) and measure again; reason: fix the real waste first, not squeeze good content.
 3. Build's two game counts (pictures: q3-build-496.webp, q3-build-479.webp): "83 players, 496 games" (this exact six at events) and "479
-   real games, with its players' skill taken out" (Why This Score). Both are true. I'm unsure why the score uses 17 fewer games (my guess:
-   games without player-skill data are left out); I check the code before writing anything. RECOMMENDED: say it in words on both lines
+   real games, with its players' skill taken out" (Why This Score). Both are true. Checked in the code (six.mjs line 23): the score
+   counts only games where BOTH teams' full six is known, and leaves out draws and mirror matches; the 496 counts every game this six played. RECOMMENDED: say it in words on both lines
    ("496 games at events" / "479 of them used for the score"); reason: two different numbers for one thing looks like a mistake.
 4. Build's opened winner (picture: q4-build-reference-open.webp): the opened team sits inside the Reference Sheets frame. Measured (4:56 AM by the clock, computed
    styles): the opened panel has no background of its own, it shows the frame's paper (rgb 251,252,254), so no second shade. RECOMMENDED: keep; reason: it reads as a sheet
