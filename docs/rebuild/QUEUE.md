@@ -2,7 +2,7 @@
 
 **QUALITY PASS FIRST (Sim, Nov 14, 9:58 PM):** new design work paused. Sections in order: Build (in progress), Battle, Compare, Team Sheet, My Team, Winning Teams, Meta, Home, Test Run, tools. Each: fix audit findings (docs/rebuild/audits/), check every element at 11 widths x day/night on the real-data build, fresh independent re-audit, before/after pictures to Sim. Done only when the re-audit finds nothing broken.
 
-Last updated: time: 11:20 PM (11:20:47)  date: Sat Nov 14, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
+Last updated: time: 11:45 PM (11:45:38)  date: Sat Nov 14, 2026. Rule: one site change at a time; each finished step is published to the Preview and ticked on the checklist.
 Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New briefs are added here the moment they arrive.
 
 | # | Brief | Folder | Status |
@@ -17,11 +17,12 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 8 | Share card: The Slab / Print / Aurora (tall + wide) | share-cards | Waiting (received 9:19 PM Nov 14); question to Sim: one design or all three |
 | 9a | Helper audits of everything built (Sim, Nov 14) | (audit) | Done: 4 audits in docs/rebuild/audits/ (3 page audits, 106 findings; naming audit). Fixed section by section |
 | 9b | One name per action (Sim, Nov 14) | audits/audit-naming.md | Sim's 4 answers + Word-list/Title Case labels in code (committed 10:41 PM, time from git); tests on the new words running |
-| 9c | Build quality pass | audits | Full check 0 findings in all 6 states, 11 widths x 2 themes. Left: recheck on the newest build, fresh re-audit, pictures |
+| 9c | Build quality pass | audits/reaudit-build.md | Recheck found a 1440 overlap (fixed). Fresh re-audit: 15 findings; 8 fixed (incl. a code comment on screen and Cores at 700-1099), 4 questions for Sim, 4 polish open. Final full check running |
+| 9d | Battle quality pass | (qcheck) | Fixed: Your Six at 1440 and phones, verdict vs headline 1280-1439, damage list below 1100, Deeper Read grid, poster at 320, tap sizes. Final full check running; re-audit next |
 | 9 | Colour uniformity: one colour per meaning across the site (Sim, Nov 14: 'a big deal') | (audit) | Audit done: docs/rebuild/colour-audit.md (18 conflicts). Fix list + pictures to Sim next |
 | 10 | Info pages: How We Calculate, About & Legal, Send Feedback (Claude designs; Sim: 'simple, still not boring') | (none) | After the quality pass; pictures first |
 | 11 | My Team height and polish pass | my-team-hand | Waiting |
-| 12 | Events "The Ticket Wall" + Archetypes "The Weather Map" | tournaments-tickets-weather | Received 10:52 PM Nov 14 (12 pictures). Built after Build + Battle quality pass, through the full gate. Section 9 items (Your team's style plate, Your style tags, No. 1-8 ranks, names) need Sim's confirm with pictures before they ship |
+| 12 | Events "The Ticket Wall" + Archetypes "The Weather Map" | tournaments-tickets-weather | Received 10:52 PM Nov 14 (12 pictures). Events built (first pass, real data, checked by eye at 1440/390); Archetypes written, building next. Built after Build + Battle quality pass, through the full gate. Section 9 items (Your team's style plate, Your style tags, No. 1-8 ranks, names) need Sim's confirm with pictures before they ship |
 | 13 | This Week "The Front Page" + Track Record "The Receipt" | thisweek-trackrecord | Received 11:20 PM Nov 14 (6 pictures). After #12, reusing its ticket stub + weather scenes (one shared build). Questions for Sim with pictures: white paper in dark mode; Electric Terrain in --ty-Electric |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.

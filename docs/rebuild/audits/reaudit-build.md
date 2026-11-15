@@ -14,7 +14,7 @@ Written: time: 11:42 PM (11:42:52)  date: Sat Nov 14, 2026. The helper checked 6
 | 9 | "58% won" vs "57.3% wins" | FIXED: both "% wins", one decimal |
 | 10 | Empty space under Notes at 1440 | OPEN (polish) |
 | 11 | Bottom tabs change style before/after building | ASK Sim (unsure if intended) |
-| 12 | Sheet headers don't match (How Cores Are Ranked has no kicker); How It Works sheet wide and short at 1440 | OPEN (polish) |
-| 13 | Save toast has no Undo | OPEN: check rule C6 |
+| 12 | Sheet headers don't match (How Cores Are Ranked has no kicker); How It Works sheet wide and short at 1440 | PART FIXED: kicker 'Build · Cores' added; the wide How It Works sheet OPEN |
+| 13 | Save toast has no Undo | NO CHANGE: C6 is 'one Undo' per action that changes something; Save changes nothing to undo |
 | 14 | Revision row rules don't line up with Spec rules | OPEN (polish) |
 | 15 | Before building, 1440: empty band in Recent Winner rows | OPEN (polish) |

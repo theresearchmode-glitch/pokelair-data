@@ -186,4 +186,4 @@ V2.pages.build.after = () => { V2.bdJumpSpy(); if (!V2.bdUi.toCores) return; V2.
 // today's "?" on cores: the same explanation (coreWhyText, shared) in a small sheet
 V2.bdCoreWhat = () => coreUi.kind === 'pairs' ? `two Pokémon on the same team, ${CORE_MIN.pairs}+ teams` : coreUi.kind === 'trios' ? `three Pokémon on the same team, ${RES.minCore || 6}+ teams` : `the exact six, ${CORE_MIN.teams}+ entries`;
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-bdcwhy]'))) return;
-  V2.sheet(`<div class="bd-cwhy"><h2 class="u">How Cores Are Ranked</h2><p>${V2.esc(coreWhyText(V2.bdCoreWhat(), +RES.base || .5))}</p></div>`, {label: 'How cores are ranked', small: true}); });
+  V2.sheet(`<div class="bd-cwhy"><p class="np-eyebrow">Build · Cores</p><h2 class="u">How Cores Are Ranked</h2><p>${V2.esc(coreWhyText(V2.bdCoreWhat(), +RES.base || .5))}</p></div>`, {label: 'How Cores Are Ranked', small: true}); });
