@@ -1009,7 +1009,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @container (max-width:420px){.bx-t>b .bx-on{width:8px;margin-right:2px}}
 /* Battle Q1 B (Sim, Nov 13): while their six is empty, wide screens use two columns: Their Six + Battle Log left, Your Six right */
 @media (min-width:1440px){.bt2:has(>.bt-empty){display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);column-gap:var(--s16);align-content:start}.bt2:has(>.bt-empty)>.bt-tools,.bt2:has(>.bt-empty)>.bt-head{grid-column:1/-1}.bt2:has(>.bt-empty)>.bt-body,.bt2:has(>.bt-empty)>.bt-log,.bt2:has(>.bt-empty)>.bt-empty{grid-column:1}.bt2:has(>.bt-empty)>.bt-yours{grid-column:2;grid-row:3/span 3;align-self:start;margin-top:var(--s6);padding-top:0;border-top:0}.bt2:has(>.bt-empty) .bt-log{grid-template-columns:minmax(0,1fr)}.bt2:has(>.bt-empty) .bt-yours .tm-six{width:100%}}
-@media (min-width:1920px){.bt2:has(>.bt-empty){grid-template-columns:minmax(0,1fr) 820px}}
+@media (min-width:1440px){.bt2:has(>.bt-empty){grid-template-columns:minmax(0,1fr) 820px}} /* quality pass Nov 15: the six gets its designed 820px from 1440 (at 3/5 it was ~700px: names and items cut) */
 /* Battle Q2 B: the actions wrap as two whole groups ([Pick your four first, Win, Loss] and [Replay, Record]), never one link alone; phones keep their grid */
 .bt-lg{display:flex;flex-wrap:nowrap;align-items:center;gap:var(--s3)}@media (max-width:559px){.bt-lg{display:contents}}
 /* review fix (Nov 13): two across on phones there is room, so the My Team actions keep the one button size (15px) and the Saved Teams count */
@@ -2609,3 +2609,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ev-sets li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2);align-items:start}.ev-sets li div{display:grid;font:400 var(--t15)/1.5 var(--b)}
 .ev-sets small,.ev-sets span{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 @media (prefers-reduced-motion:reduce){.tk{--tk-tilt:0deg}}
+/* quality pass Nov 15: Your Six on the empty Battle page stacks each Card over its set on phones, as My Team does (side by side the
+   names ran under the Ability lines at 320-390) */
+@media (max-width:699px){.bt-yours .mh-slot{grid-template-columns:minmax(0,1fr);row-gap:var(--s2)}}
