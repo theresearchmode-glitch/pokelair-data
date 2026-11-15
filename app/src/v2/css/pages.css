@@ -2491,6 +2491,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1280px) and (max-width:1399px){.bp-top{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699px){.bp-left,.bp-right{padding:var(--s4) var(--s3)}.bp .bd-go .np-btn{max-width:100%;white-space:normal;text-align:center}}
 .bp .bd-brk{margin-top:var(--s4)}
+/* recheck Nov 14: the breakdown line wraps to the score block instead of widening it (its one long line made the score column 1,112px at 1440 and the team name 22px) */
+.bp .bp-meas .bd-brk{width:0;min-width:100%}
 @media (pointer:coarse){.bd2 .np-link{display:inline-flex;align-items:center;min-height:44px}}
 @media (min-width:1280px) and (max-width:1399px){.bp .bp-left{grid-template-columns:minmax(0,1fr)}.bp .bp-left>*{grid-column:1/-1;min-width:0}.bp .bp-spec .np-slide{width:100%;min-width:0}}
 @media (max-width:1399px){.bp .bp-spec .bd-opt{grid-template-columns:minmax(0,1fr)}}
