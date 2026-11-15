@@ -162,7 +162,7 @@ t('BATTLE-07', 'empty and partial states: under 4 of yours, none of theirs, then
   else expect(await ui.sees('Type their Pokémon as you see them at team preview. Everything below fills in as you go.'), 'no "Type their Pokémon…" message with 4 and none of theirs');
   expect(!(await ui.sees(/bring these four/i)), 'plan shows with none of theirs');
   await ui.enterOpponents(['Kingambit', 'Pelipper']); const tx = await ui.pageText();
-  hasAll(tx, ['The read', 'Bring these four', 'Turn one, in move order'], 'Battle with 2 of theirs');
+  hasAll(tx, ['The read', 'Bring these four', NEW ? 'Turn one, play by play' : 'Turn one, in move order'], 'Battle with 2 of theirs'); /* Nov 14, Play-by-Play (Sim's pick): the new title */
   await close(); });
 
 t('BATTLE-08', 'The read: your lead, their likely lead, biggest threat, Fake Out count', async () => {
@@ -170,7 +170,8 @@ t('BATTLE-08', 'The read: your lead, their likely lead, biggest threat, Fake Out
   expect(/The read/i.test(tx), 'no "The read"');
   if (NEW) { /* mock-up: your lead is the Lead group of Your six, their likely lead is tagged on their six, The read keeps threat + Fake Out */
     expect(/Lead Mega Charizard Y \S+ Y Rillaboom/i.test(tx), 'your Lead group not Mega Charizard Y + Rillaboom');
-    expect(/Pelipper Likely lead/.test(tx) && /Indeedee \(F\) Likely lead/.test(tx), 'their likely lead not tagged on Indeedee (F) + Pelipper');
+    { /* Nov 14, Play-by-Play: their likely lead is the poster's 'Likely lead' group, before 'The other four' */ const g = (tx.match(/Likely lead ([\s\S]*?) The other four/i) || [])[1] || '';
+      expect(/Indeedee \(F\)/.test(g) && /Pelipper/.test(g), 'their likely lead not Indeedee (F) + Pelipper: ' + g.slice(0, 120)); }
     expect(/Biggest threat Farigiraf Trick Room/i.test(tx), 'biggest threat not "Farigiraf, Trick Room"'); }
   else { expect(/Your lead Mega Charizard Y \+ Rillaboom/i.test(tx), 'your lead not "Mega Charizard Y + Rillaboom"');
   expect(/Their likely lead Indeedee \(F\) \+ Pelipper/i.test(tx), 'their likely lead not "Indeedee (F) + Pelipper"');
@@ -243,10 +244,10 @@ t('BATTLE-12', 'Watch out fold lists what shuts you down; open/closed remembered
 
 t('BATTLE-13', 'Turn one in move order with the planned moves, KO warning and field', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); const tx = await ui.pageText();
-  expect(/Turn one, in move order your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i.test(tx), 'turn one title wrong');
-  expect((NEW ? /1 You Rillaboom · 107 Speed, \+3 priority Fake Out Pelipper/i : /1 You: Rillaboom 107 Speed, \+3 Fake Out Pelipper/i).test(tx), 'step 1 is not Rillaboom Fake Out on Pelipper'); /* new: the mock-up's step format */
-  expect((NEW ? /2 You Mega Charizard Y · \d+ Speed Weather Ball/i : /2 You: Mega Charizard Y \d+ Speed Weather Ball/i).test(tx), 'step 2 is not Mega Charizard Y Weather Ball');
-  expect((NEW ? /3 Them .+4 Them /i : /3 Them: .+4 Them: /i).test(tx), 'steps 3-4 are not theirs');
+  expect((NEW ? /Turn one, play by play Fastest moves first\. Your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i : /Turn one, in move order your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i).test(tx), 'turn one title wrong'); /* Nov 14: Play-by-Play title and sub-line */
+  expect((NEW ? /1 You · Rillaboom Fake Out into Pelipper .*?107 Speed \+3 priority/i : /1 You: Rillaboom 107 Speed, \+3 Fake Out Pelipper/i).test(tx), 'step 1 is not Rillaboom Fake Out on Pelipper'); /* new: the mock-up's step format */
+  expect((NEW ? /2 You · Mega Charizard Y Weather Ball .*?\d+ Speed/i : /2 You: Mega Charizard Y \d+ Speed Weather Ball/i).test(tx), 'step 2 is not Mega Charizard Y Weather Ball');
+  expect((NEW ? /3 Them · .+4 Them · /i : /3 Them: .+4 Them: /i).test(tx), 'steps 3-4 are not theirs');
   expect(/Watch ?Pelipper's Weather Ball can KO Rillaboom\. Consider Protect\./i.test(tx), 'no KO warning');
   expect((NEW ? /Field on turn 1: sun \+ Psychic Terrain \(Mega Charizard Y\)/i : /Field on turn 1 sun \+ Psychic Terrain \(Mega Charizard Y\)/i).test(tx), 'no field line');
   await ui.clearOpponents(); await ui.enterOpponents(['Kingambit']);
