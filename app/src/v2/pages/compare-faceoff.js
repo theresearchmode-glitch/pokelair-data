@@ -6,7 +6,7 @@ V2.cxfHero = ms => { try { const L = teamLineup(ms); if (L && L.lead && L.lead[0
 V2.cxfHalf = (side, R, I) => { const E = V2.esc, ms = teamRating(R.slots).ms, G = I.G, h = V2.cxfHero(ms), s = side.toLowerCase();
   return `<div class="cxf-half ${s}"><div class="cxf-id"><span class="cxf-badge u" aria-hidden="true">${side}</span><div><h2 class="u"><span class="vh">Team ${side}: </span>${E(R.name)}</h2><p>${E(R.sub || '')} · <button type="button" class="np-link" data-cxp="${side}" aria-label="Change team ${side}">Change</button></p></div></div>
     ${G ? `<div class="cxf-score"><i class="cxf-ghost u" aria-hidden="true">${Math.round(G.s)}</i><b class="u">${Math.round(G.s)}</b><span class="u">${E(CH.wordOf(G.s))}</span><small>Strength Score · ${E(CH.recLine(G, true))}</small></div>` : '<p class="fine">No Strength Score yet</p>'}
-    ${h ? `<div class="cxf-hero" aria-hidden="true">${V2.mon(h.p.n, {iw: 240, bare: true})}</div>` : ''}
+    ${h ? `<div class="cxf-hero" aria-hidden="true">${V2.mon(h.p.n, {bare: true})}</div>` : ''}
     <ul class="cxf-six">${ms.map(m => `<li>${V2.mon(m.p.n, {iw: 56, bare: true})}<b>${E(m.d)}</b></li>`).join('')}</ul></div>`; };
 // a tug-of-war band: A's part and B's part in proportion to the two numbers, the leader tagged when higher is plainly better
 V2.cxfBand = (name, a, b, da, db, tag) => { const E = V2.esc, t = a + b || 1, lead = tag && a !== b ? (a > b ? 'A' : 'B') : '';
