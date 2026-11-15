@@ -3074,7 +3074,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* Pokémon page part 4 "How fast it is": the line of the top 30 outsped, a flag per build in its own row (r0/r2 above, r1/r3 below) */
 .pk-speed{--rh:160px;position:relative;padding:calc(var(--up)*var(--rh)) 0 calc(var(--dn)*var(--rh) + var(--s16))}
 .pk-line{position:relative;height:4px;background:var(--plot)}.pk-line .tick{position:absolute;left:calc(var(--p)*1%);top:-6px;width:2px;height:16px;background:var(--plot)}
-.pk-line .tick span{position:absolute;top:var(--s5);left:0;font:600 var(--t13)/1 var(--b);font-style:normal;color:var(--ink-3);transform:translateX(-50%)}.pk-line .tick:first-child span{transform:none}.pk-line .tick:last-of-type span{transform:translateX(-100%)}
+.pk-tls{position:relative;height:0}.pk-tls span{position:absolute;top:var(--s3);left:calc(var(--p)*1%);font:600 var(--t13)/1 var(--b);color:var(--ink-3);transform:translateX(-50%)}.pk-tls span:first-child{transform:none}.pk-tls span:last-child{transform:translateX(-100%)} /* labels are their own elements on the page background (inside the 2 px ticks, the contrast check read them as blue-on-blue) */
 .pk-sprite{position:absolute;bottom:2px;left:calc(var(--p)*1%);transform:translateX(-50%)}
 .pk-flag{position:absolute;left:calc(var(--l)*1%);width:17%;display:grid;gap:2px;padding:var(--s2) var(--s3);background:var(--wash);font:500 var(--t13)/1.4 var(--b)}
 .pk-flag.r0{top:calc(var(--up)*var(--rh) - var(--s4));translate:0 -100%}.pk-flag.r2{top:calc(var(--up)*var(--rh) - var(--rh) - var(--s4));translate:0 -100%} /* flags above stand on their stems, just over the line */
