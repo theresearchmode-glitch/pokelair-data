@@ -11,10 +11,11 @@ Brief files live in docs/rebuild/mocks/<folder>/ (BRIEF.md + pictures). New brie
 | 4 | Team Sheet "Tale of the Tape" | team-sheet-tape | Waiting (received 7:43 PM Nov 14) |
 | 5 | Battle a team "Play-by-Play" | battle-playbyplay | Waiting (received 8:00 PM Nov 14); needs the pink 'them' colour approved |
 | 6 | Compare "The Face-Off" | compare-faceoff | Waiting (received 7:49 PM Nov 14); same pink |
-| 7 | My Team height and polish pass | my-team-hand | Waiting |
+| 7 | Test Run "Three Piles" | test-run-piles | Waiting (received 8:40 PM Nov 14); nicknames need Sim's yes; no new pink |
+| 8 | My Team height and polish pass | my-team-hand | Waiting |
 
 Designer-owned (Sim, Nov 14): Team Sheet, Compare, Battle a team, Test run; Tournaments' Events, Archetypes, This Week, Track Record.
 Everything else keeps today's design (Sim: no bolder look needed).
 Why this order: finish what's half-built first, then pages by how much players use them.
 
-Coming from Sim's designer: Test run, share card (add here when they arrive).
+Coming from Sim's designer: share card (add here when it arrives).

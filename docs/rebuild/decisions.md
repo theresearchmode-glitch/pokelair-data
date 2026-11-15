@@ -867,3 +867,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:04 PM: Sim: page length is one of the most important things; we work out how page by page as we go. Every page from now on is measured against its limit before it goes to the Preview, and every brief's build comes with a height plan.
 - 8:17 PM: Sim: Build height A (every winner starts closed; then tighten the top sheet on phones, pictures first). Winning Hands next, heavy is fine.
 - 8:30 PM: Sim: Build limits A. Built Build page limits = measured heights rounded up to the next 50: iPhone 3,850, 320 4,150, desktop 2,100; iPad stays 3,500.
+- 8:40 PM: Test Run 'Three Piles' brief received (docs/rebuild/mocks/test-run-piles), queued #7 after Compare: Battle and Compare share the poster language and the --pick colour; Test Run's pile nicknames need Sim's yes first.
