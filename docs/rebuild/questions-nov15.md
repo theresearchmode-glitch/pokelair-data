@@ -67,3 +67,7 @@
    text starts, so the eye doesn't jump.
 10. Naming leftovers: RECOMMENDED: "Share as Image" on every share button, "Save Image" only inside the share sheet, "Events" as the page name
     everywhere ("Tournaments" stays only as the group label in the Meta tabs); reason: one name per action (your Nov 14 rule).
+18. Events, compared with today's page (found by the tests; picture: q18-events-top-1280.webp): Next Events shows 2 upcoming events (today 4;
+    "Show All 31" still opens the rest) so the plate stays level with the headline, and there is no "N on the calendar" line; the list shows
+    the latest result plus 12 tickets (today 12). RECOMMENDED: keep 2 but add the "31 on the calendar" count beside Show All; reason: the
+    page stays even and nobody loses sight of how many events are coming. Other choice: show 4 like today (the plate gets taller).
