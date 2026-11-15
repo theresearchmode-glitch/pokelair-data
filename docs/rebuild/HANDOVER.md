@@ -3,6 +3,18 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## NOW (Nov 15, written time: 1:38 AM (1:38:05)  date: Sun Nov 15, 2026 by the clock; Sim's authority until 12:00 PM Sun Nov 15; summary 11:40 AM; reminder trig_01PbzKFQ8nVFkJsCK3hJWvzt 11:38 AM)
+- Preview v150 (400 files, commit 2a19943). All four test groups: no new failures (My Team 131 pass / 7 FAIL, Build 30/59, Battle 55/28, Meta 34/117).
+- QUALITY PASS done for every built page: full check (scratchpad qcheck.cjs, copy in docs/rebuild/preview-kit/qcheck.cjs; setups in scratchpad
+  setups/*.js) clean on every state; fresh re-audits: audits/reaudit-build.md, reaudit-battle.md, audit-meta4.md, reaudit-compare-sheet.md.
+- BUILT tonight: Events (events.js), Archetypes (archetypes.js), This Week (thisweek.js, way in: Home 'This Week ›'), Track Record (track.js, classes trk-*),
+  The Slab share card (share-slab.js, in the share sheet). Info pages: DRAFTS only (info-draft.js, drawn only with window.__NP_DRAFT; pictures in
+  docs/rebuild/pictures-nov15/).
+- Shared code moved whole (live site ALL PASSED after each): 63-calendar-data.js (CAL), 42-guide-data.js (GUIDE + counts), 63-weekly-data.js
+  (WK, KIND, wkDelta, buildWeeklyCard), scRound to 44-share-images.js. Bug fix in shared 31-set-edits.js: Edit Set's nature from the complete set.
+- Questions for Sim: docs/rebuild/questions-nov15.md (12 items, pictures in pictures-nov15/ and to be taken at summary time).
+- Lessons: class-name clashes (RULES 00q item 6); export a canvas only over http (page.route in slabdraw.cjs), not file://.
+
 ## NOW (Nov 14, written 7:08 PM Eastern by the clock; Sim's authority until 12:00 PM Sun Nov 15 (extended 7:08 PM); summary 11:40 AM)
 - Scheduled: summary reminder trig_01PbzKFQ8nVFkJsCK3hJWvzt fires 11:38 AM; backstops trig_01P8wwfASshsPdbcFcM3qNMv (:23) and
   trig_012D8AdnvLFxfYqeBtDUoc7o (:53) carry the work order. At 12:00 PM: STOPPED, HANDOVER, phone notification, delete both backstops.
