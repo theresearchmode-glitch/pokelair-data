@@ -13,7 +13,7 @@ V2.wkMover = (r, up, nA, nB, big) => { const E = V2.esc, d = wkDelta(r.xa, nA, r
 V2.wkSide = (L, up, nA, nB) => `<section class="wk-side ${up ? 'up' : 'dn'}"><h3 class="wk-st u">${up ? 'Rising' : 'Falling'}</h3>${L.length ? `${V2.wkMover(L[0], up, nA, nB, true)}${L.length > 1 ? `<ul class="wk-ml">${L.slice(1, 4).map(r => V2.wkMover(r, up, nA, nB)).join('')}</ul>` : ''}`
   : `<p class="wk-none">${up ? 'No Pokémon rose enough to call it a trend.' : 'No Pokémon dropped enough to call it a trend.'}</p>`}</section>`;
 V2.pages.weekly = {place: 'meta', draw() { const E = V2.esc, W = META.weekly;
-  const shell = inner => `<div class="ra gsp wk">${inner}</div>`;
+  const shell = inner => `<div class="ra gsp wk">${V2.tourTabs('weekly')}${inner}</div>`;
   if (!W) return shell(`<header class="wk-mast"><h1 class="u">This Week</h1></header><p class="tm-sub">This week's changes appear after the next data refresh.</p>`);
   const A = W.a, B = W.b, nA = A.n, nB = B.n, T = W.th;
   const cnt = (lab, w, say) => `<p class="wk-cn" role="group" aria-label="${E(say)}"><span class="wk-cl">${lab}</span><span><b class="u">${CH.n(w.n)}</b> teams</span><span><b class="u">${w.ev}</b> events</span></p>`;

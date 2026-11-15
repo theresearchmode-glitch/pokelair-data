@@ -59,8 +59,7 @@ V2.evOpen = ev => { const E = V2.esc, off = ev.src === 'official';
       <p class="ev-osub">${off ? 'Official Pokémon event (Victory Road)' : 'Online (Limitless)'} · top ${ev.top.length}</p></div></header>${field}
     <h3 class="u ev-plh">The Placings, 1st to ${placeTxt(ev.top.length)}</h3><div class="wt-rows ev-rows">${ev.top.map((t, i) => V2.evRow(ev, t, i)).join('')}</div></section>`; };
 V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U = V2.evUi;
-  const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta">Pokémon</a><a href="#tournaments" class="on" aria-current="page">Tournaments</a></nav>
-    <nav class="ra-seg" aria-label="Tournament views"><a href="#tournaments">Winning Teams</a><a href="#events" class="on" aria-current="page">Events</a><a href="#archetypes">Archetypes</a></nav></div>`;
+  const tabs = `${V2.tourTabs('events')}`;
   const ev = D ? D.events : [], on = ev.filter(e => e.src !== 'official').length;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Events</span></p><h1 class="u"><span>Every result,</span> <span class="pl">event by event.</span></h1>
     <p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${D ? `<p class="wt-facts"><b>${homeNum(ev.length)}</b> events · <b>${homeNum(on)}</b> online · <b>${homeNum(ev.length - on)}</b> official</p>` : ''}</section>`;

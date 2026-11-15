@@ -1,3 +1,7 @@
+// Sim Q8 (Nov 15): one tab row for the four Tournaments views, This Week added as the fourth (it was only reachable from Home's closed fold)
+V2.tourTabs = on => { const T = [['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week']];
+  return `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta">Pokémon</a><a href="#tournaments" class="on" aria-current="page">Tournaments</a></nav>
+    <nav class="ra-seg" aria-label="Tournament views">${T.map(([h, t]) => `<a href="#${h}"${h === on ? ' class="on" aria-current="page"' : ''}>${t}</a>`).join('')}</nav></div>`; };
 // ---------- Meta > Tournaments > Winning Teams (Nov 14): Sim's pick "The Winning Hands" (docs/rebuild/mocks/winning-hands/BRIEF.md) ----------
 // Every feature of today's Winning Teams (meta-features.md TOP-01..07) from today's shared logic: META.teams, ttSourceText, gradeNames,
 // proChecks, teamPlanLabel / archChips, teamWho, tsPool / tsTerms / tsMatch (search), sdNames (Copy for Showdown), sheetSlots (Load).
@@ -56,8 +60,7 @@ V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = po
 
 V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams, U = V2.wtUi, G = V2.wtGroups();
   if (!U.grp || !G.some(([g]) => g === U.grp)) U.grp = G.length ? G[0][0] : null;
-  const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta">Pokémon</a><a href="#tournaments" class="on" aria-current="page">Tournaments</a></nav>
-    <nav class="ra-seg" aria-label="Tournament views"><a href="#tournaments" class="on" aria-current="page">Winning Teams</a><a href="#events">Events</a><a href="#archetypes">Archetypes</a></nav></div>`;
+  const tabs = `${V2.tourTabs('tournaments')}`;
   /* Nov 15 (audit #6): the header counts the top-cut list, the search looks through every event team sheet; each line now says which; re-audit nov15b #9: the group numbers are teams (32 + 58 = 90), so 'from official events', and the button says 'teams' */
   const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> top-cut teams${G.map(([g, n]) => ` · <b>${n}</b> from ${/^last/i.test(g) ? 'the ' : ''}${E(g.toLowerCase())}`).join('')}</p>` : '';
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Winning Teams</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>

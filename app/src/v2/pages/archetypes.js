@@ -42,8 +42,7 @@ V2.arPlate = (D, mine) => { const E = V2.esc, L = mine.map(k => D.rows.find(r =>
   return `<aside class="ev-plate ar-plate" aria-label="Your team's style"><p class="ev-pk u">Your team's style</p>${L.length ? `<p class="ar-pn u">${L.map(x => E(x.name)).join(' + ')}</p>
     <ul class="ar-pl">${L.map(x => `<li><b class="u">${x.pct}%</b><span>of top teams also play <b>${E(x.name)}</b>, ${x.c}\u00a0of\u00a0${D.n}</span></li>`).join('')}</ul>` : `<p class="ar-none">${members().length ? "Your team doesn't play one of these eight styles: it's read as a balanced team." : 'Add your team on My Team to see which styles it plays.'}</p>`}</aside>`; };
 V2.pages.archetypes = {place: 'meta', draw() { const D = V2.arData(), U = V2.arUi;
-  const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta">Pokémon</a><a href="#tournaments" class="on" aria-current="page">Tournaments</a></nav>
-    <nav class="ra-seg" aria-label="Tournament views"><a href="#tournaments">Winning Teams</a><a href="#events">Events</a><a href="#archetypes" class="on" aria-current="page">Archetypes</a></nav></div>`;
+  const tabs = `${V2.tourTabs('archetypes')}`;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Archetypes</span></p><h1 class="u"><span>What you'll face,</span> <span class="pl">style by style.</span></h1>
     <p class="ra-lede">The team styles you'll face most, how they win, and how to play into them.</p>${D && D.n ? `<p class="wt-facts">From the latest <b>${D.n}</b> top tournament teams</p>` : ''}</section>`;
   if (!D || !D.n) return `<div class="ra gsp ar"><div class="gs-top wt-top ev-top">${head}</div>${tabs}<div class="gs-body"><p class="tm-sub">Usage numbers appear once top teams load.</p></div></div>`;
