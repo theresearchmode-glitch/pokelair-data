@@ -110,6 +110,8 @@ export default (ui, pg) => {
 
     /** are My team's suggestions in their working (faded, not tappable) state? */
     suggestionsBusy: () => pg.evaluate(() => { const o = document.getElementById('chSugOut'); if (!o) return false; return !!(o.closest('[aria-busy=true]') || o.querySelector('[aria-busy=true]') || /Working out/.test(o.innerText)); }),
+    /** two quick taps on the first visible Apply, in one go (X-03; the code the test used to run itself) */
+    applyTwiceQuickly: () => pg.evaluate(() => { const b = [...document.querySelectorAll('[data-plan]')].find(e => e.getClientRects().length); b.click(); b.click(); }),
     /** how many Apply buttons show in My team's suggestions / in Bigger plans */
     mySuggestionCount: () => pg.evaluate(() => [...document.querySelectorAll('#chSugOut [data-plan]')].filter(e => e.getClientRects().length).length),
     biggerPlanCount: () => pg.evaluate(() => [...document.querySelectorAll('#planSec [data-plan]')].filter(e => e.getClientRects().length).length),

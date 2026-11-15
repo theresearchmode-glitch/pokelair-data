@@ -15,6 +15,7 @@ const SCORE_BAND = /Strength Score \d+ (Top tier|Tournament ready|Solid|Needs wo
 // =====================================================================================================
 t('X-01', 'Back steps through pages and lands at the old scroll spot', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
+  if (NEW) await ui.buildMeATeam(); /* new site: Build's lower half is tabs (Sim, Nov 13 8:47 AM, decisions.md: 'Build Q1 B (tabs on every size)'), so Build before a build is shorter than a 900 px screen (measured 823 px at 1280x900); a built team gives it room to scroll */
   await ui.scrollPageTo(700); await sleep(300); const y0 = await ui.scrollSpot(); expect(y0 > 300, 'could not scroll Build');
   await ui.go('All Suggestions'); expect(await ui.current() === 'coverage', 'All suggestions did not open');
   await ui.back(); expect(await ui.current() === 'auto', 'Back did not return to Build: ' + await ui.current());
@@ -31,14 +32,14 @@ t('X-02', 'Changes that replace team members show a toast with Undo; Undo brings
 
 t('X-03', 'A quick double tap on Apply makes only one change (one Undo step)', async () => {
   const {ui, pg, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();
-  await pg.evaluate(() => { const b = [...document.querySelectorAll('[data-plan]')].find(e => e.getClientRects().length); b.click(); b.click(); });
-  await ui.waitForToast(/^Applied/); const after = await ui.team(); expect(!same(after, TEAM), 'Apply did nothing');
+  await ui.applyTwiceQuickly();
+  if (!NEW) await ui.waitForToast(/^Applied/); /* new site: one message per Apply (Sim approved A6, decisions.md Nov 12 'A6 (one message per Apply)'): the "Applied … Undo" bar, waited for below, replaces the toast while it is on screen */ const after = await ui.team(); expect(!same(after, TEAM), 'Apply did nothing');
   await ui.until(async () => /^Applied/.test(await ui.undoBarText()), 15000, 'the Undo bar'); await sleep(600); await ui.undoAppliedStep();
   await ui.until(async () => same(await ui.team(), TEAM), 5000, 'undo').catch(() => {}); expect(same(await ui.team(), TEAM), 'one Undo step did not restore the six: a double tap applied twice? ' + await ui.team()); await close(); });
 
 t('X-04', 'Two/three-choice switches are sliders: the circle slides to the new choice, buttons stay readable', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team');
-  expect(await ui.megasSliderPos() === 2, 'Megas slider not at 2: ' + await ui.megasSliderPos()); expect(await ui.sliderHasIcons() >= 3, 'slider has no icons');
+  expect(await ui.megasSliderPos() === 2, 'Megas slider not at 2: ' + await ui.megasSliderPos()); if (!NEW) expect(await ui.sliderHasIcons() >= 3, 'slider has no icons'); /* new site: Megas on team is three plain numbers in the approved Build mock-up (docs/rebuild/mocks/build.tpl.html line 179: chips '0' '1' '2', no icons) */
   await ui.setMegas(1); expect(await ui.megasSliderPos() === 1, 'circle did not slide to 1');
   const b = await ui.megasButtons(); expect(b.length === 3 && b.map(x => x.pressed).join() === 'false,true,false', 'buttons not three pressed/unpressed: ' + JSON.stringify(b)); await close(); });
 
@@ -64,7 +65,7 @@ t('X-07', 'Phone: focusing Build around lifts the box into the upper screen so i
 
 t('X-08', 'Headings and slider labels are in Title Case', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
-  has(await ui.text(), /Build Me a Team/, 'Build heading'); has(await ui.text(), /Build Around a Core/, 'cores heading');
+  has(await ui.text(), /Build Me a Team/, 'Build heading'); has(NEW ? await ui.coresText() : await ui.text(), /Build Around a Core/, 'cores heading'); /* new: the cores sit in their own tab (Build Q1 B, decisions.md Nov 13 8:47 AM); coresText opens it */
   await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), /One Pokémon In, One Out/, 'swap heading'); await close(); });
 
 t('X-09', 'Page opens and button taps are counted anonymously (counts only, no team data)', async () => {
@@ -81,7 +82,7 @@ t('X-10', 'Tapping a built-team tile opens that Pokémon\'s info sheet', async (
 t('X-11', 'Pages draw from the daily data (cores, archetype counts, sets numbers)', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
   has(await ui.coresText(), /From [\d,]+ tournament teams\. Average team wins [\d.]+% of games\./, 'cores intro');
-  await ui.go('Archetypes'); has(await ui.text(), /From the latest \d+ top tournament teams\./, 'archetype share line');
+  await ui.go('Archetypes'); has(await ui.text(), NEW ? /From the latest \d+ top tournament teams/ : /From the latest \d+ top tournament teams\./, 'archetype share line'); /* new: the Weather Map mock-up's facts line has no full stop (docs/rebuild/mocks/tournaments-tickets-weather/archetypes-weather-map-desktop.webp) */
   await ui.go('Popular Sets'); has(await ui.text(), /\d+(\.\d)?%/, 'sets numbers'); not(await ui.text(), 'No data loaded yet', 'sets'); await close(); });
 
 t('X-12', 'Settings and team are saved: Megas on team 1 survives a reload (account and this browser)', async () => {
@@ -96,16 +97,20 @@ t('X-12', 'Settings and team are saved: Megas on team 1 survives a reload (accou
 // =====================================================================================================
 t('AUTO-01', 'Build page head and the How It Works fold', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const tx = await ui.text();
-  has(tx, /Build\W{1,3}real winning teams/i, 'kicker'); has(tx, 'Build Me a Team'); has(tx, 'Winning tournament teams you can field from your box.');
+  has(tx, /Build\W{1,3}real winning teams/i, 'kicker'); has(tx, 'Build Me a Team'); has(tx, NEW ? 'Winning tournament teams you can field from your box or the whole roster.' : 'Winning tournament teams you can field from your box.'); /* new: the approved Build mock-up's line (docs/rebuild/mocks/build.tpl.html line 176) */
   expect(await ui.isUnfolded(/^How It Works/) === false, 'How it works should start closed');
-  const f = await ui.unfold(/^How It Works/); for (const p of ['Six that work together', 'The why', 'Ready for the top threats']) has(f, new RegExp(p, 'i'), 'How it works');
+  const f = await ui.unfold(/^How It Works/); for (const p of ['Six that work together', 'The why', NEW ? 'Matchups' : 'Ready for the top threats']) has(f, /* new: the word list's 'Matchups' replaces 'ready for the top threats' (CLAUDE.md word list, Sim approved Nov 9) */ new RegExp(p, 'i'), 'How it works');
   await close(); });
 
 t('AUTO-02', 'Build from My box / Whole roster: box count, switching rebuilds, choice is remembered', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
-  has(await ui.boxCountLine(), '10 in your box'); has(await ui.text(), 'quick build, anything legal');
+  if (!NEW) { has(await ui.boxCountLine(), '10 in your box'); has(await ui.text(), 'quick build, anything legal'); } /* new: 'Build My Box switch without count' (Sim, decisions.md Nov 12 10:51 PM, C1-C4), and the mock-up's plain 'Whole roster' chip (build.tpl.html line 178) */
   const boxed = await ui.buildMeATeam(); has(boxed, SCORE_BAND, 'box build');
-  const sr = await ui.unfold(/^Sets and Roles/i); expect((sr.match(/\b(Box|To catch)\b/gi) || []).length >= 6, 'every built Pokémon should say Box or To catch: ' + sr);
+  if (NEW) { /* new: no Sets and roles fold; each of the six figures shows 'to catch' when it applies, and the sheet says 'N to catch' / 'All six are in
+     your box' (Sim's pick, The Blueprint: docs/rebuild/mocks/build-blueprint/BRIEF.md sections 0, 4, 5). Same fact: the tags must add up to the line. */
+    const tiles = []; for (let i = 0; i < 6; i++) tiles.push(await ui.builtTileLabel(i)); const tagged = tiles.filter(t => /to catch/i.test(t)).length, m = boxed.match(/(\d) to catch|All six (are in your box|to catch)/);
+    expect(m && (m[1] ? +m[1] : /in your box/.test(m[0]) ? 0 : 6) === tagged, `'to catch' tags (${tagged}) do not match the sheet's line: ${m && m[0]}`); }
+  else { const sr = await ui.unfold(/^Sets and Roles/i); expect((sr.match(/\b(Box|To catch)\b/gi) || []).length >= 6, 'every built Pokémon should say Box or To catch: ' + sr); }
   await ui.tap(/^Whole roster/); await ui.until(async () => (await ui.buildResult()) !== boxed && /Strength Score/.test(await ui.buildResult()), 30000, 'rebuild on switch');
   expect(await ui.pressed(/^Whole roster/), 'Whole roster not selected');
   await ui.reloadAsSamePlayer(); await ui.go('Build'); expect(await ui.pressed(/^Whole roster/), 'Whole roster not remembered after reload'); await close(); });
@@ -130,7 +135,7 @@ t('AUTO-04', 'Megas on team: 0 rebuilds a no-Mega team with the warning toast; o
 
 t('AUTO-05', 'Build around a Pokémon: chip, button label, every option has it, × clears, not saved', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.tap(/^Whole roster/);
-  await ui.buildAround('farig'); has(await ui.buildAroundChip(), 'Farigiraf', 'chip'); has((await ui.buildButton()).label, 'Build around Farigiraf', 'main button');
+  await ui.buildAround('farig'); has(await ui.buildAroundChip(), 'Farigiraf', 'chip'); has((await ui.buildButton()).label, NEW ? /Build around Farigiraf/i : 'Build around Farigiraf', 'main button'); /* new: Title Case on buttons (Sim approved the rule, decisions.md Nov 12 10:31 PM) */
   await ui.buildMeATeam(); const n = await ui.waitOptions();
   for (let i = 0; i < n; i++) { expect((await ui.builtSix()).includes('Farigiraf'), `option ${i + 1} has no Farigiraf`); if (n > 1) await ui.tryAnother(); }
   await ui.clearBuildAround(); expect(!(await ui.buildAroundChip()), 'chip still there'); not(await ui.buildResult(), /Strength Score/, 'results after clearing the pick');
@@ -160,6 +165,10 @@ t('AUTO-08', 'Result card: kicker, title, option count, Strength Score + band + 
   has(r, NEW ? /\d+\s*\/30\s*Matchups with an answer/ : /\d+\/30 ready for top threats/, 'readiness'); /* new site: the word list's 'Matchups' (Nov 9) */ has(r, NEW ? /\d\/4\s*Team checks: the 4 basics/ : /\d\/4 team checks/, 'checks'); /* new site: 'Team checks: the 4 basics' (word list, title case) */ not(r, /team checks\W+checks/, 'checks line (stray "checks")');
   has(r, (NEW ? /(\d+% won|Best core, [\d,]+ teams)/ : /(players brought this exact team|tournament teams, [\d.]+% wins)/), 'why bullets'); has(r, NEW ? /Top 30 threats: \d+ (Shaky|No answer|Handles it|Beats it)/ : /ready for the top 30 threats: handles \d+/, 'readiness why'); /* new site: the word list's Matchups levels */
   has(r, /Mega option/, 'Mega options chip');
+  if (NEW) { /* new: no Sets and roles fold; each figure shows its role, item and tier (The Blueprint, BRIEF.md sections 0 and 4). Abilities are not shown (reported). */
+    const six = await ui.builtSix(); for (let i = 0; i < 6; i++) { const t = await ui.builtTileLabel(i), it = await ui.peek(`(abTeam('doubles').mons[${i}]||{}).it`);
+      expect(it && t.includes(it), `figure ${i + 1} (${six[i]}) shows no item ${it}: ${t}`); has(t, /[SABCD] tier \d+/, 'rating tag'); }
+    has(r, /(Tailwind|Trick Room|Fake Out|Redirect|Priority|Setup|Attacker|Sun|Rain|Sand|Snow)/, 'roles'); await close(); return; }
   const sr = await ui.unfold(/^Sets and Roles/i); expect((sr.match(/ @ /g) || []).length === 6, 'Sets and roles should list six "name @ item" rows: ' + sr);
   has(sr, /(Tailwind|Trick Room|Fake Out|Redirect|Priority|Setup|Attacker|Sun|Rain|Sand|Snow)/, 'roles'); has(sr, /[SABCD] tier \d+/, 'rating tags'); await close(); });
 
@@ -194,7 +203,10 @@ t('AUTO-12', 'Try another cycles the options and wraps; hidden with a single opt
     for (let i = 2; i <= n; i++) { await ui.tryAnother(); has(await ui.buildResult(), `Option ${i} of ${n}`, 'Try another'); }
     await ui.tryAnother(); has(await ui.buildResult(), `Option 1 of ${n}`, 'wrap after the last'); await close(); }
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const r = await ui.buildMeATeam();
-    if (!/Option \d+ of/.test(r)) not(r, /Try another/, 'single option'); else has(r, /Try another/, 'several options'); await close(); } });
+    if (!NEW) { if (!/Option \d+ of/.test(r)) not(r, /Try another/, 'single option'); else has(r, /Try another/, 'several options'); }
+    else { /* new: Try another is the Blueprint's Revisions rows, one per option (Sim's pick, docs/rebuild/mocks/build-blueprint/BRIEF.md section 5) */
+      const rv = (r.match(/Show This One/g) || []).length, m = r.match(/Option \d+ of (\d+)/); if (!m) expect(rv === 0, 'single option shows other options: ' + r.slice(0, 300)); else expect(rv === +m[1] - 1, `revisions ${rv} for ${m[1]} options`); }
+    await close(); } });
 
 t('AUTO-13', 'Copy for Showdown copies the built six as Showdown text', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.tap(/^Whole roster/); await ui.buildMeATeam();
@@ -209,6 +221,20 @@ t('AUTO-14', 'No-result notes (tiny box, no Mega-capable box) with no "Doubles" 
     has(r, /^No strong team with exactly 2 Megas from this pool\. Add Mega-capable Pokémon to your box, switch to Whole [Rr]oster, or change Megas on team\./, 'no-Mega box'); await close(); } });
 
 t('AUTO-15', 'Start from a recent winner: three cards; Sets; Load team needs a second tap; Practice against; Compare', async () => {
+  if (NEW) { /* new: each winner is a fold that starts closed and shows its full sets when opened (Sim, decisions.md Nov 14 8:17 PM 'Build height A
+     (every winner starts closed)'; build.js buildWinners), so there is no separate Sets toggle; 'Load Team' (Q3 A, Nov 14 10:27 PM) asks 'Replace your current
+     team?' with Replace / Cancel (Q10c, Nov 15 7:03 AM); 'Set as Opponent' (Sim, Nov 14 naming, as CORES-10). The heading words are checked last, unchanged. */
+    let f0 = ''; { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); f0 = await ui.unfold(/^Start from a Recent Winner/i);
+      const sixes = []; for (let i = 0; i < 3; i++) sixes.push(await ui.winnerSix(i)); expect(sixes.every(x => x.length === 6), 'not three winners of six: ' + JSON.stringify(sixes)); const want = sixes[0];
+      const w = await ui.unfold(/^1st/, ui.area('Build page')); has(w, /Protect|Fake Out/, 'moves listed in the open winner'); has(w, / @ /, 'items listed');
+      await ui.tap(/^Load Team/, ui.area('Build page'), 700); has(await ui.text(), 'Replace your current team?', 'first tap'); expect(same(await ui.team(), TEAM), 'the first tap changed the team');
+      await ui.tap(/^Replace$/, ui.area('Build page'), 900); const tt = await ui.waitForToast(/team loaded with its moves and items/);
+      expect(await ui.toastOffersUndo(), 'no Undo: ' + tt); expect(await ui.current() === 'report', 'My team did not open'); expect(same(await ui.teamNames(), want), 'team is not the winner six: ' + await ui.teamNames() + ' vs ' + want);
+      const s0 = await ui.slotSet(0); expect(s0.it && s0.it.doubles && s0.mv && s0.mv.doubles && s0.mv.doubles.length === 4, 'player items/moves not loaded: ' + JSON.stringify(s0)); await close(); }
+    { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.unfold(/^Start from a Recent Winner/i); await ui.unfold(/^1st/, ui.area('Build page'));
+      await ui.tap(/^Set as Opponent/, ui.area('Build page'), 800); expect(await ui.current() === 'matchup', 'Battle did not open'); await ui.waitForToast(/Opponent set|as the opponent|as your opponent/);
+      await ui.go('Build'); await ui.unfold(/^Start from a Recent Winner/i); await ui.unfold(/^1st/, ui.area('Build page')); await ui.tap(/^Compare/, ui.area('Build page'), 800); expect(await ui.current() === 'compare', 'Compare did not open: ' + await ui.current()); await close(); }
+    has(f0, /3 winning teams, full sets, ready to load/, 'fold heading'); return; }
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
     const f = await ui.unfold(/^Start from a Recent Winner/i); has(f, /3 winning teams, full sets, ready to load/, 'fold heading');
     expect((f.match(/Load team/g) || []).length === 3, 'not three winner cards: ' + f.slice(0, 300));
@@ -224,6 +250,12 @@ t('AUTO-15', 'Start from a recent winner: three cards; Sets; Load team needs a s
 
 t('AUTO-16', 'Build page order: Build me a team, How it works, Build around a core, Start from a recent winner (kept after a build)', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
+  if (NEW) { /* new: head ('Build me a team.' + How It Works), options, then the lower half as tabs in page order, Recent Winners before Cores
+     (Sim, decisions.md Nov 12 6:51 PM item 7 'tabs in page order'; Build Q1 B 'tabs on every size', Nov 13 8:47 AM) */
+    const tx = await ui.text(), p = [tx.search(/Build me a team/i), tx.indexOf('How It Works'), tx.indexOf('Recent Winners'), tx.indexOf('Cores', tx.indexOf('Recent Winners'))];
+    expect(p.every(i => i >= 0) && p.every((v, i) => !i || v > p[i - 1]), 'order wrong: ' + p);
+    has(await ui.unfold(/^Start from a Recent Winner/i), 'Start from a Recent Winner', 'Recent Winners tab'); has(await ui.coresText(), 'Build Around a Core', 'Cores tab');
+    await ui.buildMeATeam(); has(await ui.coresText(), 'Build Around a Core', 'cores after a build'); await close(); return; }
   const at = tx => ['Build Me a Team', 'How It Works', 'Build Around a Core', 'Start from a Recent Winner'].map(s => tx.indexOf(s));
   const p = at(await ui.text()); expect(p.every(i => i >= 0) && p.every((v, i) => !i || v > p[i - 1]), 'order wrong: ' + p);
   await ui.buildMeATeam(); has(await ui.text(), 'Build Around a Core', 'cores after a build'); await close(); });
@@ -241,7 +273,7 @@ t('CORES-02', 'Kind switch: Pairs, Trios, Full teams (not saved)', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
   expect((await ui.coreMembers(0)).length === 2, 'Pairs default not two');
   await ui.tap(/^Trios$/, ui.area('cores')); expect((await ui.coreMembers(0)).length === 3, 'Trios row not three'); has(await ui.coresText(), /\+ .+ \+ .+ [\d.]+% wins/, 'trio row');
-  await ui.tap(/^Full teams$/, ui.area('cores')); expect((await ui.coreMembers(0)).length === 6, 'Full teams row not six'); has(await ui.coresText(), /Load team/, 'full teams button');
+  await ui.tap(/^Full teams$/, ui.area('cores')); expect((await ui.coreMembers(0)).length === 6, 'Full teams row not six'); has(await ui.coresText(), NEW ? /Load Team/ : /Load team/, 'full teams button'); /* new: 'Load Team' everywhere a whole team replaces yours (Sim, decisions.md Nov 14 10:27 PM, Q3 A) */
   await ui.reloadAsSamePlayer(); await ui.go('Build'); expect(await ui.pressed(/^Pairs$/, ui.area('cores')), 'kind should reset to Pairs on reload'); await close(); });
 
 t('CORES-03', 'Sort: Most used changes the ranking line and order', async () => {
@@ -258,13 +290,21 @@ t('CORES-04', 'Filter by a Pokémon: chip, only cores with it, × clears', async
 
 t('CORES-05', 'Core rows: rank, names, tags, % wins; Details shows points vs avg, teams, % of all teams; top 3 then a fold', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const c = await ui.coresText();
+  if (NEW) { /* new: no Details toggle and no '#4 onward' fold: each row shows its teams, points together and vs avg at once, then 'Show N More'
+     (approved Build mock-up docs/rebuild/mocks/build.tpl.html lines 228-230; the Parts list rough, build-blueprint/lower-cores-desktop.webp).
+     Today's '% of all teams' is not in either picture and is not checked here (reported). */
+    has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /[\d,]+ teams/, 'team count'); has(c, /points? together/, 'together'); has(c, /[+−-][\d.]+ vs avg/, 'vs avg'); has(c, /Show \d+ More/, 'Show more'); await close(); return; }
   has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /More Cores #4 to #\d+/, 'fold for #4 onward');
   await ui.tap(/^Details$/, ui.area('cores')); const d = await ui.coresText();
   has(d, /[+−-][\d.]+ points vs avg/, 'vs avg'); has(d, /[\d,]+ teams/, 'team count'); has(d, /points together/, 'together'); has(d, /% of all teams/, 'share'); has(d, /Hide details/, 'Hide details');
   await ui.tap(/^Hide details$/, ui.area('cores')); not(await ui.coresText(), /Hide details/, 'after Hide details'); await close(); });
 
 t('CORES-06', 'Show more adds 15 rows', async () => {
-  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); await ui.unfold(/^More Cores/i, ui.area('cores'));
+  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
+  if (NEW) { /* new: 8 rows then 16 more from 1180 wide, else 7 then 15 (Sim chose Build Q1 B, decisions.md Nov 13 8:47 AM; built 9:12 AM) */
+    const n0 = await ui.coreRowCount(), step = n0 === 8 ? 16 : 15; expect(n0 === 8 || n0 === 7, 'expected 8 (or 7) rows at start, got ' + n0);
+    await ui.tap(/^Show \d+ More/, ui.area('cores'), 600); expect(await ui.coreRowCount() === n0 + step, `Show more did not add ${step}: ` + await ui.coreRowCount()); await close(); return; }
+  await ui.unfold(/^More Cores/i, ui.area('cores'));
   const n0 = await ui.coreRowCount(); expect(n0 === 10, 'expected 10 rows at start, got ' + n0);
   await ui.tap(/^Show more/, ui.area('cores'), 600); expect(await ui.coreRowCount() === 25, 'Show more did not add 15: ' + await ui.coreRowCount()); await close(); });
 
@@ -323,7 +363,7 @@ t('BUILD-01', 'Edit panel: Edit set opens "Edit <name>" with the six strip; stri
 t('BUILD-02', 'Team actions: Save team names and saves (then "Update saved team"); ⋯ › Clear team empties with Undo', async () => {
   const {ui, acct, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team');
   await ui.tap(/^Save team$/, 'body', 700); await ui.typeInto('Team name', 'Test', true); await ui.waitForToast('Saved "Test"');
-  await ui.waitSee('Update saved team'); await sleep(800); expect((await acct()).teams.some(x => x.name === 'Test'), 'Test not saved to the account');
+  await ui.waitSee(NEW ? 'Saved ✓' : 'Update saved team'); /* new: a quiet 'Saved ✓' when nothing has changed (Sim approved A11, decisions.md Nov 12 6:45-8:00 AM) */ await sleep(800); expect((await acct()).teams.some(x => x.name === 'Test'), 'Test not saved to the account');
   await ui.tap(/^⋯$/); await ui.tap(/^Clear team$/, 'body', 700); expect((await ui.team()).length === 0, 'team not cleared');
   await ui.waitForToast('Team cleared'); expect(await ui.toastOffersUndo(), 'no Undo'); await ui.undoToast(); expect(same(await ui.team(), TEAM), 'Undo did not bring the six back'); await close(); });
 
@@ -336,7 +376,7 @@ t('BUILD-04', 'A locked Pokémon is never swapped out (All suggestions, cores)',
 
 t('BUILD-06', 'Problems and team checks: summary line, a Speed control row with fixes; Quick add puts the pick on the team with Undo', async () => {
   const {ui, close} = await open({team: NO_SPEED, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();
-  const f = await ui.unfold(/^Problems and Team Checks/i); has(f, /\d+ to look at, \d\/4 checks, legal/i, 'summary line');
+  const f = await ui.unfold(/^Problems and Team Checks/i); has(f, NEW ? /\d+ things?, .*legal/i : /\d+ to look at, \d\/4 checks, legal/i, 'summary line'); /* new: Team Checks shown once; this fold is 'Things to Know' (Sim approved A2, decisions.md Nov 12 6:45-8:00 AM), so its line has no checks count */
   has(f, /Speed control .*?\d+ fixes/, 'Speed control row'); has(f, /Ready \+\d+%|Good fit/, 'pick readiness');
   const before = await ui.team(); const r = await ui.quickAddFromProblem('Speed control'); expect(r && r.btn, 'no Quick add pick: ' + JSON.stringify(r));
   const tt = await ui.waitForToast(/^Added|→/); expect(await ui.toastOffersUndo(), 'no Undo'); expect((await ui.team()).length === 6 && !same(await ui.team(), before), 'pick not added: ' + tt);
@@ -500,7 +540,15 @@ t('SUGG-08', 'Nothing to fix: card with Battle and Sets, then side-grades that k
 
 t('SUGG-09', 'Apply: writes the plan, keeps the place under your finger, toast with the score move and Undo', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();
-  await ui.showMySuggestions(); const y0 = await ui.firstApplyTop(); await ui.applyMySuggestion(0); const tt = await ui.waitForToast(/^Applied: /);
+  await ui.showMySuggestions(); const y0 = await ui.firstApplyTop(), s0 = NEW ? await ui.mySuggestionsTop() : null; await ui.applyMySuggestion(0);
+  if (NEW) { /* new: one message per Apply (Sim approved A6, decisions.md Nov 12 6:45-8:00 AM): the 'Applied … Undo' bar in Suggestions while it is on
+     screen, the toast only when it is not; this test applies with the bar on screen. The bar names the change; the score move is not in it (reported). */
+    const bar = await ui.until(async () => { const t = await ui.undoBarText(); return /^Applied \S+ for \S+.* Undo$/.test(t) ? t : ''; }, 8000, 'the Applied … Undo bar');
+    expect(!(await ui.toast()), 'a toast as well as the bar (two messages): ' + await ui.toast()); expect(!same(await ui.team(), TEAM), 'team unchanged'); await sleep(1500);
+    /* the next suggestion's Apply may not exist (this six then has nothing to fix): the place kept is the Suggestions part the finger was in */
+    const y1 = await ui.firstApplyTop(), s1 = await ui.mySuggestionsTop(); expect(y1 != null ? Math.abs(y1 - y0) < 40 : Math.abs(s1 - s0) < 40, `the place under the finger was not kept: Apply ${y0} → ${y1}, Suggestions ${s0} → ${s1}`);
+    await ui.undoAppliedStep(); expect(same(await ui.team(), TEAM), 'bar Undo did not restore: ' + bar); await close(); return; }
+  const tt = await ui.waitForToast(/^Applied: /);
   has(tt, /^Applied: \S+ and \S+ [+−-]\d+ \(\d+ → \d+\), (Top tier|Tournament ready|Solid|Needs work)/, 'toast'); expect(await ui.toastOffersUndo(), 'no Undo');
   expect(!same(await ui.team(), TEAM), 'team unchanged'); await sleep(1500); const y1 = await ui.firstApplyTop(); expect(y1 != null && Math.abs(y1 - y0) < 40, `the place under the finger was not kept: Apply moved on screen ${y0} → ${y1}`);
   await ui.undoToast(); expect(same(await ui.team(), TEAM), 'toast Undo did not restore'); await close(); });
@@ -577,8 +625,12 @@ t('SUGG-19', 'Threat sheet Best fix: the sheet closes after Apply this fix', asy
 // =====================================================================================================
 t('SETS-01', 'Popular sets head and the Rating · Usage · Sets switch', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); expect(await ui.current() === 'sets', 'not on Popular sets');
-  const tx = await ui.text(); has(tx, /^Pokémon Tournaments Rating Usage Sets/, 'tabs and switch'); has(tx, 'Popular Sets', 'title'); has(tx, 'What players run on any Pokémon.', 'hint');
-  expect(await ui.pressed(NEW ? /^Popular Sets$/ : /^Sets$/), 'Sets not selected'); /* new: Sim, Nov 14 naming */ await ui.tap(/^Usage$/, ui.area('Popular sets page'), 700); expect(await ui.current() === 'meta', 'Usage did not open'); await close(); });
+  const tx = await ui.text();
+  if (NEW) { /* new: the Grandstand header (Sim's brief docs/rebuild/mocks/meta-grandstand/BRIEF.md sections 1, 5, 9; Sim kept the brief's new words, decisions.md Nov 14 5:19 PM Q4 A):
+     headline 'How it's built right now.' and its line first, then the Pokémon / Tournaments tabs and the Ratings / Usage / Popular Sets switch */
+    has(tx, /Pokémon Tournaments Ratings Usage Popular Sets/, 'tabs and switch'); has(tx, "How it's built right now.", 'title'); has(tx, 'The moves, items, Abilities and natures real players run', 'hint'); }
+  else { has(tx, /^Pokémon Tournaments Rating Usage Sets/, 'tabs and switch'); has(tx, 'Popular Sets', 'title'); has(tx, 'What players run on any Pokémon.', 'hint'); }
+  expect(await ui.pressed(NEW ? /^Popular Sets$/ : /^Sets$/), 'Sets not selected'); /* new: Sim, Nov 14 naming */ await ui.tap(/^Usage$/, ui.area('Popular sets page'), 700); expect(NEW ? ['meta', 'usage'].includes(await ui.current()) : await ui.current() === 'meta', 'Usage did not open'); /* new: the shared adapter (v2.mjs current()) reads #usage as 'usage', its own route name, not today's 'meta'; left as is there because A-team HOME-08 reads the Meta pages by that map */ await close(); });
 
 t('SETS-02', 'Look up a Pokémon shows its sets, empties the box, and is remembered', async () => {
   const {ui, ls, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); await ui.findSetsFor('kingam');
@@ -594,11 +646,11 @@ t('SETS-03', 'Your team picker: six tiles, the shown one highlighted on first op
 t('SETS-04', 'Which Pokémon opens first: last looked up, else first team member, else the top-rated', async () => {
   { const {ui, close} = await open({team: TEAM, box: BOX, stored: {'cc2.setMon': '"Kingambit"'}}); await ui.go('Popular Sets'); expect(await ui.setsShownPokemonId() === 'Kingambit', 'saved pick not first'); await close(); }
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); expect(await ui.setsShownPokemonId() === 'Charizard-Mega-Y', 'first team member not first'); await close(); }
-  { const {ui, close} = await open({team: [], box: BOX}); await ui.go('Popular Sets'); has(await ui.text(), /#1 of \d+ Pokémon with tournament results/, 'top-rated Pokémon'); await close(); } });
+  { const {ui, close} = await open({team: [], box: BOX}); await ui.go('Popular Sets'); has(await ui.text(), NEW ? /#1 rated/ : /#1 of \d+ Pokémon with tournament results/, 'top-rated Pokémon'); /* new: the spotlight's tag '#N rated' (Grandstand brief section 1) */ await close(); } });
 
 t('SETS-05', 'Pokémon header: tier, rating, rank, and your own set when it is on your team', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); const tx = await ui.text();
-  has(tx, /Mega Charizard Y Fire Flying Mega S tier, rated \d+, #\d+ of \d+ Pokémon with tournament results/, 'header'); has(tx, /Your Mega Charizard Y: Drought @ Charizardite Y/, 'your set line'); await close(); });
+  has(tx, NEW ? /On your team Mega Charizard Y Fire Flying \d+ S tier S tier, rated \d+, #\d+ of \d+/ : /Mega Charizard Y Fire Flying Mega S tier, rated \d+, #\d+ of \d+ Pokémon with tournament results/, 'header'); /* new: the Grandstand spotlight (brief section 1: tag 'On your team', name, type chips, rating with its tier) */ has(tx, /Your Mega Charizard Y: Drought @ Charizardite Y/, 'your set line'); await close(); });
 
 t('SETS-06', 'Source switch Best data · Tournaments · Showdown changes the numbers and is remembered', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); const a = await ui.text(); expect(await ui.setsSource() === 'Best data', 'default not Best data');
@@ -625,10 +677,11 @@ const ARCHS = ['Tailwind', 'Trick Room', 'Rain', 'Sun', 'Sand', 'Snow', 'Psychic
 t('ARCH-01', 'Archetypes head and the Winning teams · Events · Archetypes switch', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Archetypes'); expect(await ui.current() === 'arch', 'not on Archetypes');
   const tx = await ui.text(); has(tx, 'Winning Teams Events Archetypes', 'switch'); expect(await ui.pressed(/^Archetypes$/), 'Archetypes not selected');
-  has(tx, "The team styles you'll face most, how they win, and how to play into them. Tap a guide to open it.", 'hint'); await close(); });
+  if (NEW) { has(tx, "The team styles you'll face most, how they win, and how to play into them.", 'hint'); has(tx, /Tap a region for its guide\./, 'map hint'); } /* new: guides open from the Weather Map's regions (Sim's pick, docs/rebuild/mocks/tournaments-tickets-weather/BRIEF.md section 7 and its pictures) */
+  else has(tx, "The team styles you'll face most, how they win, and how to play into them. Tap a guide to open it.", 'hint'); await close(); });
 
 t('ARCH-02', 'Share line from the latest top teams', async () => {
-  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Archetypes'); has(await ui.text(), /From the latest \d+ top tournament teams\./, 'share line'); await close(); });
+  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Archetypes'); has(await ui.text(), NEW ? /From the latest \d+ top tournament teams/ : /From the latest \d+ top tournament teams\./, 'share line'); /* new: no full stop, as the Weather Map mock-up (archetypes-weather-map-desktop.webp) */ await close(); });
 
 t('ARCH-03', 'Eight guides, most common first, each with share and basis', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Archetypes'); const g = await ui.archGuides();
