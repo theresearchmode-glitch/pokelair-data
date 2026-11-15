@@ -1,5 +1,7 @@
 # Questions waiting on Sim (collected time: 12:23 AM (12:23:13)  date: Sun Nov 15, 2026). Each goes to Sim with its pictures, one option marked RECOMMENDED with a reason.
 
+**ANSWERED (Sim, 7:00 AM Nov 15): "recommended is good for all of em" — every question below takes its RECOMMENDED option. Authority extended to 8:00 PM.**
+
 1. Colour list (docs/rebuild/colour-audit.md, 18 items), the biggest: pink (--pick, them / Team B) vs red (--bad) too close in light mode;
    their Megas labelled "Mega" in our blue (blue = you); "Them" grey on Who Moves First but pink on the poster; Watch amber vs red; Delete in blue;
    a selected tab / Revision / weather chip that looks like the main button.
