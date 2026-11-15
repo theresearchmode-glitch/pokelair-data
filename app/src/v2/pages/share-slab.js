@@ -24,6 +24,12 @@ V2.slabCard = (x, m, im, cx, cy, w, h, tilt, big, ic) => { const t = m.p.t || ['
   // the item just under the Card, in plain text (straight, for reading)
   if (item) { x.textAlign = 'center'; ARB.fnt(x, `600 ${big ? 26 : 18}px "Instrument Sans", sans-serif`); x.fillStyle = ic || '#D9D4DE'; x.fillText(scFit(x, item, w + 20), cx, cy + h / 2 + (big ? 44 : 32)); }
   x.textAlign = 'left'; };
+// an empty spot on a team still being built (Sim, Nov 15: A): the Card's shape as a dashed outline with 'Open slot'
+V2.slabOpen = (x, cx, cy, w, h, tilt, K, big) => { x.save(); x.translate(cx, cy); x.rotate(tilt * Math.PI / 180); const c = 16;
+  x.beginPath(); x.moveTo(-w / 2 + c, -h / 2); x.lineTo(w / 2, -h / 2); x.lineTo(w / 2, h / 2 - c); x.lineTo(w / 2 - c, h / 2); x.lineTo(-w / 2, h / 2); x.lineTo(-w / 2, -h / 2 + c); x.closePath();
+  x.setLineDash([10, 8]); x.lineWidth = 3; x.strokeStyle = K.ink2; x.globalAlpha = .7; x.stroke(); x.setLineDash([]); x.globalAlpha = 1;
+  x.fillStyle = K.ink2; x.textAlign = 'center'; ARB.fnt(x, `900 ${big ? 64 : 40}px Unbounded, sans-serif`); x.fillText('+', 0, big ? -4 : -2);
+  ARB.fnt(x, `italic 800 ${big ? 24 : 16}px Unbounded, sans-serif`, true); x.fillText('Open slot', 0, big ? 44 : 30); x.textAlign = 'left'; x.restore(); };
 V2.slab = async (ms, shape, light, nameAs) => { /* light (Nov 15): the same look on a cream field, for the share window's Light choice; the Cards stay dark */
   const K = light ? {bg: '#F3EEE7', line: 'rgba(22,20,26,.05)', line2: 'rgba(255,255,255,.12)', ink: '#16141A', ink2: '#4A4550', ink3: '#1F1C24', blue: '#0068AD', band: .5, chipText: '#FBF8F4'} : {bg: '#0E0D12', line: 'rgba(255,255,255,.035)', line2: 'rgba(255,255,255,.06)', ink: '#FFFFFF', ink2: '#C9C3CC', ink3: '#D9D4DE', blue: '#62BEF7', band: .85, chipText: '#14110F'}; ms = (ms || members()).slice(0, 6); if (!ms.length) return null; await ARB.fonts();
   const tall = shape !== 'wide', W = tall ? 1080 : 1200, H = tall ? 1350 : 675, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.textBaseline = 'alphabetic';
@@ -49,8 +55,11 @@ V2.slab = async (ms, shape, light, nameAs) => { /* light (Nov 15): the same look
     if (sc && /^\d+$/.test(sc.num)) { ARB.fnt(x, 'italic 900 230px Unbounded, sans-serif', true); x.fillStyle = K.ink; x.textAlign = 'right'; x.fillText(sc.num, W - 60, 340); /* audit Nov 15: the slant left 19 px; now on the same edge as STRENGTH SCORE */
       ARB.fnt(x, 'italic 900 34px Unbounded, sans-serif', true); const ww = x.measureText(word).width + 36; x.fillStyle = K.ink; ARB.para(x, W - 56 - ww / 2, 362, ww, 50, 6); x.fill(); x.fillStyle = K.chipText; x.textAlign = 'center'; x.fillText(word, W - 56 - ww / 2, 398);
       ARB.fnt(x, '800 18px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.textAlign = 'right'; x.fillText('STRENGTH SCORE', W - 60, 438); x.textAlign = 'left'; }
+    else if (ms.length < 6) { ARB.fnt(x, 'italic 900 160px Unbounded, sans-serif', true); x.fillStyle = K.ink; x.textAlign = 'right'; x.fillText(`${ms.length}/6`, W - 60, 310); /* 160 px: '5/6' is wider than a score and must clear the team name */ /* a team still being built: how far along, and what the score needs */
+      ARB.fnt(x, '800 24px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.fillText((ms.length === 5 ? 'Add a sixth for a Strength Score' : `Add ${6 - ms.length} more for a Strength Score`), W - 60, 370); x.textAlign = 'left'; }
     V2.slabCard(x, order[0], imgs[0], 320, 705, 340, 400, -4, true, K.ink3); if (order[1]) V2.slabCard(x, order[1], imgs[1], 760, 690, 340, 400, 4, true, K.ink3);
     order.slice(2).forEach((m, i) => V2.slabCard(x, m, imgs[i + 2], 150 + i * 260, 1112, 190, 186, i % 2 ? 2 : -2, false, K.ink3));
+    if (!order[1]) V2.slabOpen(x, 760, 690, 340, 400, 4, K, true); for (let i = Math.max(0, order.length - 2); i < 4; i++) V2.slabOpen(x, 150 + i * 260, 1112, 190, 186, i % 2 ? 2 : -2, K);
     if (proof.length) { ARB.fnt(x, '600 24px "Instrument Sans", sans-serif'); x.fillStyle = K.ink3; x.textAlign = 'center'; x.fillText(scFit(x, proof.join(' · '), W - 120), W / 2, 1268); x.textAlign = 'left'; }
     ARB.fnt(x, 'italic 800 34px Unbounded, sans-serif', true); ARB.tagline(x, ARB.PAL(!light), 48 + x.measureText('Sharply raise your win rate.').width, 1314, 34); /* audit Nov 15: starts on the 48 px margin (placed by its right end at 600 it began at x=8) */ ARB.fnt(x, '600 20px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.textAlign = 'right'; x.fillText('NastyPlot, unofficial fan tool', W - 48, 1312); x.textAlign = 'left';
   } else {
@@ -62,9 +71,12 @@ V2.slab = async (ms, shape, light, nameAs) => { /* light (Nov 15): the same look
     if (sc && /^\d+$/.test(sc.num)) { ARB.fnt(x, 'italic 900 150px Unbounded, sans-serif', true); x.fillStyle = K.ink; x.fillText(sc.num, 36, y0 + 150);
       ARB.fnt(x, 'italic 900 26px Unbounded, sans-serif', true); const ww = x.measureText(word).width + 28; x.fillStyle = K.ink; ARB.para(x, 44 + ww / 2, y0 + 172, ww, 40, 6); x.fill(); x.fillStyle = K.chipText; x.textAlign = 'center'; x.fillText(word, 44 + ww / 2, y0 + 201);
       ARB.fnt(x, '800 15px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.textAlign = 'left'; x.fillText('STRENGTH SCORE', 64 + ww, y0 + 198); }
+    else if (ms.length < 6) { ARB.fnt(x, 'italic 900 130px Unbounded, sans-serif', true); x.fillStyle = K.ink; x.fillText(`${ms.length}/6`, 36, y0 + 140);
+      ARB.fnt(x, '800 20px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.fillText((ms.length === 5 ? 'Add a sixth for a Strength Score' : `Add ${6 - ms.length} more for a Strength Score`), 44, y0 + 188); }
     ARB.fnt(x, '600 20px "Instrument Sans", sans-serif'); x.fillStyle = K.ink3; proof.forEach((p, i) => x.fillText(scFit(x, p, 460), 44, y0 + 250 + i * 28));
     V2.slabCard(x, order[0], imgs[0], 760, 215, 210, 250, -4, true, K.ink3); if (order[1]) V2.slabCard(x, order[1], imgs[1], 1010, 205, 210, 250, 4, true, K.ink3);
     order.slice(2).forEach((m, i) => V2.slabCard(x, m, imgs[i + 2], 660 + i * 145, 548, 112, 100, i % 2 ? 2 : -2, false, K.ink3));
+    if (!order[1]) V2.slabOpen(x, 1010, 205, 210, 250, 4, K, true); for (let i = Math.max(0, order.length - 2); i < 4; i++) V2.slabOpen(x, 660 + i * 145, 548, 112, 100, i % 2 ? 2 : -2, K);
     ARB.tagline(x, ARB.PAL(!light), 520, 646, 26);
     ARB.fnt(x, '600 15px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.fillText('Pokémon Champions · VGC doubles · Reg M-C · NastyPlot, unofficial fan tool', 44, 604); /* in the words column: the leads stand where the mock had it, the items fill the bottom right */
   }
