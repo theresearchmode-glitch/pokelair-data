@@ -12,7 +12,7 @@ C4 1100 weather % cut, "points" wraps; C5 masthead number touches its word, unev
 Track Record: C1 MISSED stamp over text on iPhone; C2 "20×" over the verdict (600-1920), title over sub-line at 1920; C3 How Ratings Work 19px;
 P4 slips not one height; P5 receipt ends 125px above the right column at 1440; P6 white receipt faint on the light page on iPhone; P7 lone words; P8 chart axis ~11px on phones.
 
-## Status (Nov 15, ~12:30 AM)
+## Status (Nov 15, 12:15 AM, from the clock)
 FIXED: scenes (all 9 draw); Events B1-B4, C6, C7 ("Y" kept with its word), C9; Archetypes C1 (measured: bigger region = more teams at 390/820/1100/1440/1920),
 C2, P4, P5; This Week B1, B2, C4, C5, P6, P8; Track Record C1, C2 (spacing; most were rotation false alarms), C3, P4, P5, P6 (the mask had cut the shadow), P7 legend, P8.
 OPEN: Events C5 (plate now 2 rows; recheck the strip), C8 long names on small phone tickets (no truncation allowed), tab "Winning Teams" wraps ≤390;
