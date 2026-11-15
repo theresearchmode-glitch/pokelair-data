@@ -308,7 +308,7 @@ export default (ui, pg, o) => {
     // compare
     pickCompareTeam: async name => { if (!(await vis('.cx2-pick'))) { await waitFor(() => vis('.cx2-pick'), 1500); if (!(await vis('.cx2-pick'))) await click('#main [data-cxp="B"]', 700); }
       await tapFound(n => [...document.querySelectorAll('.cx2-pick [data-cxset2]')].find(e => e.getClientRects().length && e.innerText.includes(n) && e.getAttribute('aria-disabled') !== 'true') || null, name, 'compare pick ' + name, 1500); },
-    compareHeads: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-head')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
+    compareHeads: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-head, #main .cxf-half .cxf-id')] /* the Face-Off poster halves carry the heads now (Nov 14) */.filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     pasteCompareTeam: async text => { if (!(await vis('[data-cxpaste-in]'))) await click('#main [data-cxp="B"]', 700); await pg.locator('[data-cxpaste-in]').fill(text); await click('[data-cxpaste2]', 1500); },
     compareCheckRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .cx2-row')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim()).filter(t => /[✓✗?]/.test(t))),
     // ---------- Nov 12 (helper-tests2): approved new-build designs ----------
