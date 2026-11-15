@@ -26,3 +26,9 @@
     and closing it leaves you on My Team, the same as today's live site (checked: 76-team-sheet.js). RECOMMENDED: closing Edit Set
     brings you back to the Team Sheet you came from, so you can check the change and edit the next one without reopening it.
     Other choice: keep today's way.
+16. Ratings date (Meta audit #7; picture: pictures-nov15/meta-data-date-1280.webp): the Preview says "data as of Nov 1" while the footer
+    says Nov 10. Checked: the ratings code only uses the daily refresh while it is at most 3 days old; past that it drops it and shows
+    the snapshot built into the page, which is even older (Nov 1). The live site refreshes daily, so this only shows if the daily job
+    fails for 3+ days, but then the site falls back to OLDER ratings than it has. RECOMMENDED: when the refresh is past 3 days, keep
+    using it (the newest we have) and say its date plainly; reason: older data is never better than newer data. This is shared rating
+    logic, so I have not changed it. Other choice: keep today's rule.
