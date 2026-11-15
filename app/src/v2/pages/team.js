@@ -184,9 +184,9 @@ V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i)
   const N = natureChoices(s, p);
   const na = field('Nature', N.ownNat ? tag(true, 'natreset', 'Use ' + (N.top || 'the most used')) : N.top ? '<span class="ed-tag">Most used</span>' : '', /* Nov 15 (audit #26): one tag word, as Ability and Item say */
     sel('data-ed="nat"', 'Nature for ' + m.d, N.order.map(n => `<option value="${E(n)}"${n === N.nat ? ' selected' : ''}>${E(n)} · ${natFx(n)}${N.pc.has(n) ? pc(N.pc.get(n)) : ''}${n === N.top ? ' ★' : ''}</option>`).join('')));
-  const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'];
-  const pts = field('Stat points', (N.ownPts ? tag(true, 'ptsreset', 'Use the most common') : N.cs ? '<span class="ed-tag">Most common</span>' : '') + `<span class="ed-tot" data-ed-tot>${N.sum} of ${SP_TOTAL}</span>`,
-    `<div class="ed-pts">${L.map((l, j) => `<label><span>${l}</span><input class="ed-num" type="number" min="0" max="32" step="1" inputmode="numeric" data-ed="pt" data-j="${j}" value="${N.v[j]}" aria-label="${l} stat points for ${E(m.d)}"></label>`).join('')}</div>
+  const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], DV = V2.ed.draft && V2.ed.draft.i === V2.ed.i ? V2.ed.draft.v : null;
+  const pts = field('Stat points', (N.ownPts ? tag(true, 'ptsreset', 'Use the most common') : N.cs ? '<span class="ed-tag">Most common</span>' : '') + `<span class="ed-tot${DV && DV.reduce((a, b) => a + b, 0) > SP_TOTAL ? ' over' : ''}" data-ed-tot>${DV ? DV.reduce((a, b) => a + b, 0) : N.sum} of ${SP_TOTAL}</span>`,
+    `<div class="ed-pts">${L.map((l, j) => `<label><span>${l}</span><input class="ed-num" type="number" min="0" max="32" step="1" inputmode="numeric" data-ed="pt" data-j="${j}" value="${DV ? DV[j] : N.v[j]}" aria-label="${l} stat points for ${E(m.d)}"></label>`).join('')}</div>
     <div class="ed-ptact"><button type="button" class="np-btn2" data-ed="ptsave"><span>Save Stat Points</span></button><span class="fine" data-ed-msg role="status"></span></div>`);
   const foot = `<div class="ed-foot"><button type="button" class="np-btn2" data-ed="lock" aria-pressed="${!!s.lock}"><span>${s.lock ? 'Locked' : 'Lock'}</span></button><p class="fine">${s.lock ? 'Suggestions never swap out a locked Pokémon.' : 'Lock it so Suggestions never swap it out.'}</p><button type="button" class="np-link ed-rm" data-ed="rm">Remove ${E(m.d)} from the team</button></div>`;
   // Nov 12 (today's features kept, Sim): the slot header (types, rating with its tier, share of teams) and the Weak / Resists fold
@@ -200,7 +200,7 @@ V2.editHtml = () => { const i = V2.ed.i, s = S.slots[i], m = s && memberOf(s, i)
     <div class="ed-weakin"><div class="ed-wrow"><span class="lbl">Resists</span><span class="ed-tys">${chips(rs)}</span></div>${abTxt ? `<p class="fine"><b>${V2.esc(m.ability)}:</b> ${V2.esc(abTxt)}</p>` : ''}</div></details>`;
   return `<div class="ed2"><div class="np-eyebrow">Edit Set</div><h2 class="u">${V2.nameHtml(m.d)}</h2>${head}${strip}<div class="ed-grid">${ab}${it}${mv}${na}${pts}</div><p class="ed-full"><button type="button" class="np-link" data-mssets="${V2.esc(m.p.n)}">Full Popular Sets ›</button></p>${weak}${foot}</div>`; }; /* today's 'Full popular sets ›' (EDIT-09): closes the sheet, opens Popular Sets on this Pokémon */
 document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('ed-weak')) V2.ed.weak = e.target.open; }, true);
-V2.openEdit = (i, fromSheet) => { if (i != null) V2.ed.i = i; if (!memberOf(S.slots[V2.ed.i] || {}, V2.ed.i)) { const f = members()[0]; if (!f) return; V2.ed.i = f.i; } V2.sheet(V2.editHtml(), {label: 'Edit Set', onClose: fromSheet ? swap => { if (!swap && (V2.pages[V2.route()] || {}).place === 'team') V2.openTeamSheet(); } /* reopened at once, so it keeps the sheet's history step and Back still closes it (Nov 15) */ : undefined}); }; /* Sim Q15 (Nov 15): opened from the Team Sheet, closing Edit Set brings you back to it (not when another sheet replaces it, nor after leaving My Team) */
+V2.openEdit = (i, fromSheet) => { if (i != null) V2.ed.i = i; if (!memberOf(S.slots[V2.ed.i] || {}, V2.ed.i)) { const f = members()[0]; if (!f) return; V2.ed.i = f.i; } V2.ed.draft = null; V2.sheet(V2.editHtml(), {label: 'Edit Set', onClose: swap => { V2.edFlush(); if (fromSheet && !swap && (V2.pages[V2.route()] || {}).place === 'team') V2.openTeamSheet(); } /* reopened at once, so it keeps the sheet's history step and Back still closes it (Nov 15) */}); }; /* Sim Q15 (Nov 15): opened from the Team Sheet, closing Edit Set brings you back to it (not when another sheet replaces it, nor after leaving My Team) */
 // redraw the sheet in place and put focus back on the same control (so a keyboard user keeps their place)
 V2.edKey = (a = document.activeElement) => a && a.dataset && a.dataset.ed ? `[data-ed="${a.dataset.ed}"]${a.dataset.j != null ? `[data-j="${a.dataset.j}"]` : ''}${a.dataset.k != null ? `[data-k="${a.dataset.k}"]` : ''}` : null;
 V2.edRefresh = (key = V2.edKey()) => { const el = document.querySelector('.ed2'); if (!el) return; el.outerHTML = V2.editHtml(); const f = key && document.querySelector('.ed2 ' + key); (f || document.querySelector('.np-sheet')).focus(); };
@@ -215,17 +215,23 @@ document.addEventListener('change', e => { const t = e.target.closest && e.targe
   else if (k === 'nat') V2.edDo(() => setNature(i, t.value), 'Nature saved'); });
 document.addEventListener('input', e => { const t = e.target.closest && e.target.closest('.ed2 [data-ed="pt"]'); if (!t) return;
   const v = [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => +x.value || 0), tot = v.reduce((a, b) => a + b, 0), el = document.querySelector('[data-ed-tot]');
-  if (el) { el.textContent = `${tot} of ${SP_TOTAL}`; el.classList.toggle('over', tot > SP_TOTAL); } });
+  if (el) { el.textContent = `${tot} of ${SP_TOTAL}`; el.classList.toggle('over', tot > SP_TOTAL); }
+  V2.ed.draft = {i: V2.ed.i, v: [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => x.value === '' ? 0 : Number(x.value))}; });
+// typed stat points are never lost (function sweep, Nov 15): a redraw shows the draft, and closing Edit Set or switching Pokémon saves it,
+// or says plainly why it couldn't (the same rule as Save Stat Points)
+V2.edFlush = () => { const d = V2.ed.draft; V2.ed.draft = null; const s = d && S.slots[d.i], p = s && byName.get(s.n); if (!p) return;
+  const N = natureChoices(s, p); if (d.v.every((x, j) => x === N.v[j])) return; const bad = savePoints(d.i, N.nat, d.v);
+  if (bad) { V2.toast(`${V2.esc(p.d)}'s stat points weren't saved: ${V2.esc(bad)}.`); return; } render(); V2.toast(`${V2.esc(p.d)}'s stat points saved`); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2edit]')) { V2.openEdit(+e.target.closest('[data-v2edit]').dataset.v2edit); return; }
   const b = e.target.closest('.ed2 button[data-ed]'); if (!b) return; const i = V2.ed.i, k = b.dataset.ed, m = memberOf(S.slots[i], i);
-  if (k === 'go') { V2.ed.i = +b.dataset.k; V2.edRefresh(); return; } if (!m) return;
+  if (k === 'go') { V2.edFlush(); V2.ed.i = +b.dataset.k; V2.edRefresh(); return; } if (!m) return;
   if (k === 'abreset') V2.edDo(() => resetAbility(i), 'Back to the most-used Ability');
   else if (k === 'itreset') V2.edDo(() => resetItem(i), 'Back to the usual item');
   else if (k === 'mvreset') V2.edDo(() => resetMoves(i), 'Back to the popular set');
   else if (k === 'natreset') V2.edDo(() => resetNature(i), 'Using the nature most players run');
-  else if (k === 'ptsreset') V2.edDo(() => resetPoints(i), 'Using the most common stat points');
+  else if (k === 'ptsreset') V2.edDo(() => { V2.ed.draft = null; return resetPoints(i); }, 'Using the most common stat points');
   else if (k === 'ptsave') { const v = [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => x.value === '' ? 0 : Number(x.value)), nat = (document.querySelector('.ed2 [data-ed="nat"]') || {}).value;
-    const bad = pointsProblem(v, nat); if (bad) { const msg = document.querySelector('[data-ed-msg]'); if (msg) msg.textContent = bad; return; } V2.edDo(() => savePoints(i, nat, v), 'Stat points saved'); }
+    const bad = pointsProblem(v, nat); if (bad) { const msg = document.querySelector('[data-ed-msg]'); if (msg) msg.textContent = bad; return; } V2.ed.draft = null; V2.edDo(() => savePoints(i, nat, v), 'Stat points saved'); }
   else if (k === 'lock') V2.edDo(() => toggleLock(i), on => on ? `${m.d} locked: Suggestions keep it` : `${m.d} unlocked`);
   else if (k === 'rm') { clearSlot(i); render(); V2.edRefresh('[data-adq]'); /* group six */ toast(`Removed ${m.d}`, true); } });
 
