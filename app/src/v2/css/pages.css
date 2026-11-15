@@ -2775,7 +2775,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tr-body{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:var(--s12);align-items:stretch}
 .tr-right{display:grid;gap:var(--s10);align-content:space-between}
 /* the receipt */
-.tr-rc{position:relative;display:grid;gap:var(--s2);padding:var(--s8) var(--s6) var(--s10);background:var(--rc-paper);color:var(--rc-ink);box-shadow:0 8px 24px var(--rc-shadow);transform:rotate(-1.5deg);
+.tr-rc{position:relative;display:grid;gap:var(--s2);padding:var(--s8) var(--s6) var(--s10);background:var(--rc-paper);color:var(--rc-ink);transform:rotate(-1.5deg);
   -webkit-mask:linear-gradient(var(--rc-ink) 0 0) top/100% calc(100% - 12px) no-repeat,conic-gradient(from -45deg at bottom,transparent,var(--rc-ink) 1deg 89deg,transparent 90deg) bottom/16px 12px repeat-x;
   mask:linear-gradient(var(--rc-ink) 0 0) top/100% calc(100% - 12px) no-repeat,conic-gradient(from -45deg at bottom,transparent,var(--rc-ink) 1deg 89deg,transparent 90deg) bottom/16px 12px repeat-x}
 .tr-tape{position:absolute;top:calc(var(--s3)*-1);left:50%;width:120px;height:var(--s8);margin-left:-60px;background:var(--rc-tape);transform:rotate(3deg)}
@@ -2843,3 +2843,20 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:700px){.ar-row.r2 .ar-reg{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto 1fr;padding-bottom:0}.ar-row.r2 .ar-reg>:not(.ar-km){grid-column:1}.ar-row.r2 .ar-reg>.ar-km{grid-column:2;grid-row:1/-1}.ar-row.r2 .ar-km span:not(.lead){display:none}}
 @media (max-width:699px){.ar-row .ar-reg{height:auto}}
 .ar-ban h2{margin-bottom:var(--s2)}.ar-pl span{text-wrap:pretty} /* audit: guide name clear of its share; no lone '90' in the plate */
+
+/* audit fixes (Nov 15), This Week: small-phone ticket names may break anywhere; Most Used 3 + 2 on small phones; 3x3 weather tiles below
+   1280 (9 across cut the numbers at 1100); counts never touch their words; shorter tiles; folds show their open/close mark */
+@media (max-width:389px){.wk-tix .tk-name,.tk-name{overflow-wrap:anywhere}}
+@media (max-width:429px){.wk-top ul{display:flex;flex-wrap:wrap;justify-content:center;row-gap:var(--s4)}.wk-top li{flex:0 0 33.333%}}
+@media (max-width:1279px){.wk-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.wk-chg b{white-space:nowrap}.wk-cn>span{display:inline-flex;align-items:baseline;gap:var(--s1);white-space:nowrap}
+@media (max-width:389px){.wk-cn{grid-template-columns:6em repeat(2,minmax(0,1fr))}.wk-cn b{font-size:var(--t17)}}
+.wk-tile{min-height:152px}
+.wk-fold summary::after{content:"›";margin-left:var(--s2);font-weight:700;transition:rotate .2s}.wk-fold[open] summary::after{rotate:90deg}
+/* Track Record: the receipt's shadow comes from its column (the torn-edge mask cut a box-shadow away, so the white paper barely showed on
+   the light page); the receipt runs level with the right column; Total clear of the verdict; the slips one height; stamps clear of words */
+.tr-left{filter:drop-shadow(0 8px 14px var(--rc-shadow));display:flex}
+@media (min-width:1100px){.tr-rc{flex:1;display:flex;flex-direction:column;gap:var(--s2)}.tr-bar{margin-top:auto}}
+.tr-tot{margin-bottom:var(--s2)}.tr-slip{min-height:176px}
+.tr-links .np-link{position:relative}.tr-links .np-link::after{content:"";position:absolute;inset:-12px -4px}
+@media (max-width:699px){.tr-slip{min-height:0}.tr-slip .tr-stamp{right:var(--s2)}.tr-sr{align-content:start;padding-bottom:var(--s10)}.tr-leg{display:grid;grid-template-columns:repeat(2,auto);justify-content:start}.tr-calls .fine{margin-top:var(--s4)}}
