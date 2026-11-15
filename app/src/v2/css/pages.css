@@ -795,7 +795,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-head h1{margin:var(--s3) 0 0;font-size:var(--d64);line-height:1.04}.bt-head h1 span{display:block}.bt-head h1 .pl{color:var(--plot)}
 .bt-vs{margin-top:var(--s3);font:500 var(--t17)/1.5 var(--b);color:var(--ink-2)}.bt-vs b{color:var(--ink);font-weight:700}
 .bt-verdict{text-align:right;padding-bottom:var(--s1)}.bt-verdict .k{font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
-.bt-verdict b{display:block;margin-top:var(--s2);font-size:var(--t34);line-height:1.05}.bt-verdict b.vf{color:var(--good-text)}.bt-verdict b.ve{color:var(--ink-2)}.bt-verdict b.vu{color:var(--mid-text)}
+.bt-verdict b{display:block;margin-top:var(--s2);font-size:var(--t34);line-height:1.05}.bt-verdict b.vf{color:var(--good-text)} /* Nov 15 (colour audit #9): the Even/Unfavoured colours here were dead (line ~852 sets both, same selectors, later) */
 .bt-verdict small{display:block;margin-top:var(--s2);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .bt-body{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:var(--s12);align-items:start;padding-top:var(--s6)}.bt-body:has(> .bt-sixes:only-child){grid-template-columns:minmax(0,1fr)}
 .bt-sixes{display:grid;gap:var(--s6)}
@@ -1231,7 +1231,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .dc2-kts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1)}
 .dc2-kt{--cut:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));position:relative;display:grid;justify-items:center;align-content:end;min-height:var(--s16);padding:var(--s2) var(--s1) var(--s1);background:var(--wash);clip-path:var(--cut);overflow:hidden}
 .dc2-kt .np-mon{position:relative}.dc2-kt .by{position:absolute;top:2px;left:2px;z-index:1}.dc2-kt .hp{position:relative;display:block;width:100%;height:4px;margin-top:2px;background:color-mix(in srgb,var(--ink) 12%,transparent)}.dc2-kt .hp i{position:absolute;top:0;bottom:0;left:0;background:var(--hp-left)}.dc2-kt .hp .r{background:var(--bad)}
-.dc2-kt.ko{background:var(--ko-tint)}.dc2-kt.ko>.np-mon{opacity:.55}.dc2-kt .stamp{position:absolute;top:var(--s1);right:calc(var(--s1)*-1);z-index:2;padding:0 var(--s2);background:var(--bad);color:var(--on-type);font-size:var(--t13);line-height:1.3;transform:rotate(10deg)}
+.dc2-kt.ko{background:var(--ko-tint)}.dc2-kt.ko>.np-mon{opacity:.55}.dc2-kt .stamp{position:absolute;top:var(--s1);right:calc(var(--s1)*-1);z-index:2;padding:0 var(--s2);background:var(--bad);color:var(--on-mark);font-size:var(--t13);line-height:1.3;transform:rotate(10deg)}
 .dc2-kt.on{outline:2px solid var(--plot);outline-offset:-2px}
 /* details and the set folds */
 .dc2-det{display:grid;gap:var(--s6);margin-top:var(--s10)}.dc2-dl p{margin:var(--s2) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.dc2-dl p b{color:var(--ink)}
@@ -1309,7 +1309,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .dc2-grid{width:100%;border-collapse:separate;border-spacing:2px;font:600 var(--t13)/1.2 var(--b)}
 .dc2-grid th{padding:var(--s1);text-align:center;font-weight:600;color:var(--ink-2)}.dc2-grid tbody th{display:flex;align-items:center;gap:var(--s1);text-align:left;white-space:nowrap}
 .dc2-grid td{min-width:var(--s16);padding:var(--s1);text-align:center;background:var(--wash)}.dc2-grid td b{display:block;font-size:var(--t15)}.dc2-grid td small{display:block;font-weight:500;color:var(--ink-2)}
-.dc2-grid .k1{background:var(--bad);color:var(--on-type)}.dc2-grid .k1 small{color:var(--on-type)}.dc2-grid .k1m{background:var(--ko-tint)}.dc2-grid .k2{background:color-mix(in srgb,var(--mid) 45%,transparent)}.dc2-grid .k2m{background:color-mix(in srgb,var(--mid) 22%,transparent)}.dc2-grid .z{color:var(--ink-3)}
+.dc2-grid .k1{background:var(--bad);color:var(--on-mark)}.dc2-grid .k1 small{color:var(--on-mark)}.dc2-grid .k1m{background:var(--ko-tint)}.dc2-grid .k2{background:color-mix(in srgb,var(--mid) 45%,transparent)}.dc2-grid .k2m{background:color-mix(in srgb,var(--mid) 22%,transparent)}.dc2-grid .z{color:var(--ink-3)}
 @media (max-width:699px){.dc2-grid td small{display:none}.dc2-grid tbody th span{display:none}.dc2-grid td{min-width:0}}
 .dc2-grid .k1,.dc2-grid .k1 small{color:var(--on-mark)} /* readable on the red in day (white) and night (dark ink) */
 @media (max-width:699px){.dc2 .ms-card{--ch:192px}} /* phone cards a little taller so the Pokemon stays big above a two-line Mega name */
@@ -2925,3 +2925,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 .mu-lv{white-space:nowrap} /* Nov 15: the calc level ('Beats it') never splits */
 .trk-nw{white-space:nowrap} /* Nov 15 (audit P7): 'so far' never leaves 'far' alone; text unchanged */
+/* Nov 15 (colour audit #15): the KO stamp's text uses --on-mark: white on day red 4.55:1, dark on night red 7.33:1 (white on night red was 2.54:1) */
