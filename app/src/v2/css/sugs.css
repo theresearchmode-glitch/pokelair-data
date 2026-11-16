@@ -196,3 +196,4 @@
 /* Type Chart picks under 380px (Nov 16, re-verify #8: "Fighting" cut by the slant at 320): narrower letters (as below 360) and a 5px slant */@media (max-width:379px){.tc-tp{font-stretch:75%;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}}
 /* Usage / Sets spotlight on narrow phones (Nov 16, re-verify #12: "37.7%51.8%", sprite over the rating line at 320): each fact keeps its width and wraps instead of overrunning; the sprite fits its column */@media (max-width:419px){.gs-facts{grid-template-columns:repeat(3,min-content);column-gap:var(--s3)}}@media (max-width:379px){.gs-plate .np-mon{--iw:96px}.gs-plate{min-height:150px}}
 @media (max-width:359px){.gs-facts{column-gap:var(--s2)}}
+/* Events tickets under 340 (Nov 16, re-verify #1: long one-word names crossed the perforation by up to 12px at 320): the date stub gives up 13px, no word breaks (Sim Q17) */@media (max-width:339px){.tk:not(.big){grid-template-columns:56px minmax(0,1fr) 72px}}
