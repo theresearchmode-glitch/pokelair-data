@@ -241,9 +241,9 @@ V2.addState = n => { const p = byName.get(n); if (!p) return 'none'; if (S.slots
 V2.addBtn = n => { const st = V2.addState(n), d = V2.esc(V2.disp(n));
   return st === 'ok' ? `<div class="row ms-add"><button type="button" class="np-btn" data-v2add="${V2.esc(n)}">Add to My Team</button></div>`
     : `<p class="fine ms-add${st === 'have' ? ' ms-on' : ''}">${st === 'have' ? 'On your team ✓' : st === 'full' ? 'Your team is full: remove one on My Team to add it.' : ''}</p>`; };
-V2.addToTeam = n => { const p = byName.get(n), st = V2.addState(n); if (st !== 'ok') { if (p) toast(st === 'have' ? `${p.d} is already on your team` : 'Your team is full: remove one on My Team to add it'); return; } const i = S.slots.findIndex(x => !byName.get(x.n)); addMon(i, p);
+V2.addToTeam = n => { const p = byName.get(n), st = V2.addState(n); if (st !== 'ok') { if (p) toast(st === 'have' ? `${p.d} is already on your team` : 'Your team is full: remove one on My Team to add it'); return; } const i = S.slots.findIndex(x => !byName.get(x.n)); keepUndo(); addMon(i, p); /* code review C8: Undo, as the Box has */
   // Sim, Nov 12 (decision 15): from a sheet you stay where you are; the sheet shows "On your team ✓" (her approved sheet mock-up, today's behaviour)
-  const sh = V2._sheet; render(); if (sh) { const el = document.querySelector('.np-sheet .ms-add'); if (el) el.outerHTML = V2.addBtn(n); } else if (V2.route() === 'pokemon') { if (V2.redraw) V2.redraw(); } /* the Pokémon page took over from the sheet: you stay, it shows 'On your team ✓' (decision 15) */ else if (!/^#team/.test(location.hash)) location.hash = '#team'; toast(p.d + ' added to your team'); };
+  const sh = V2._sheet; render(); if (sh) { const el = document.querySelector('.np-sheet .ms-add'); if (el) el.outerHTML = V2.addBtn(n); } else if (V2.route() === 'pokemon') { if (V2.redraw) V2.redraw(); } /* the Pokémon page took over from the sheet: you stay, it shows 'On your team ✓' (decision 15) */ else if (!/^#team/.test(location.hash)) location.hash = '#team'; toast(p.d + ' added to your team', true); };
 document.addEventListener('click', e => { const b = e.target.closest('[data-v2add]'); if (b) V2.addToTeam(b.dataset.v2add); });
 
 // ---------- empty My Team: the lead, and today's underdog (Sim, Nov 11) ----------

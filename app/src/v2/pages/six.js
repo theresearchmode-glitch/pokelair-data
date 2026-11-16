@@ -90,7 +90,7 @@ V2.adDraw = inp => { const out = document.querySelector('[data-adhits]'); if (!o
 V2.adMove = (inp, d) => { const n = V2.ad.list.length; if (!n) return; V2.ad.k = (V2.ad.k + d + n) % n;
   document.querySelectorAll('[data-adhits] .sx-hit').forEach((o, k) => o.setAttribute('aria-selected', k === V2.ad.k)); inp.setAttribute('aria-activedescendant', 'sx-o' + V2.ad.k);
   const o = document.getElementById('sx-o' + V2.ad.k); if (o) o.scrollIntoView({block: 'nearest'}); };
-V2.adPick = (i, n) => { const p = byName.get(n); if (!p || !slotPool(i)(p) || memberOf(S.slots[i], i)) return; addMon(i, p); render(); toast(p.d + ' added'); V2.ed.i = i; V2.edRefresh(); };
+V2.adPick = (i, n) => { const p = byName.get(n); if (!p || !slotPool(i)(p) || memberOf(S.slots[i], i)) return; keepUndo(); addMon(i, p); render(); toast(p.d + ' added', true); /* code review C8: Undo, as adding from the Box has */ V2.ed.i = i; V2.edRefresh(); };
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2addto]'); if (a) { V2.openAdd(+a.dataset.v2addto); return; }
   const o = e.target.closest && e.target.closest('[data-adpick]'), inp = document.querySelector('[data-adq]'); if (o && inp) V2.adPick(+inp.dataset.adq, o.dataset.adpick); });
 document.addEventListener('input', e => { if (e.target.matches && e.target.matches('[data-adq]')) V2.adDraw(e.target); });

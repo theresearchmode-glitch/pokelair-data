@@ -68,7 +68,7 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
     V2.btSetOpp(ns, {who: t.player, label: teamWho(t), key: V2.btKey(ns), ev: evShort(t.event)}); V2.closeSheet(); V2.redraw(); toast(`Opponent set: ${teamWho(t)}`); } });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-btopp],[data-btclear],[data-btox],[data-btpick],[data-btteam]'); if (!b) return; const d = b.dataset;
   if (d.btopp != null) { V2.sheet(V2.btOppSheet(), {label: 'Their Six'}); return; }
-  if (d.btclear != null) { V2.btSetOpp([], null); V2.redraw(); toast('Cleared their six'); return; }
+  if (d.btclear != null) { const was = S.opp.slice(), from = V2.btUi && ui.oppFrom; V2.btSetOpp([], null); V2.redraw(); V2.undoToast('Cleared their six', () => { V2.btSetOpp(was, from || null); V2.btOppRefresh(); }); return; }
   if (d.btox != null) { const o = S.opp.slice(); o[+d.btox] = ''; V2.btSetOpp(o, null); V2.btOppRefresh(); const f = document.querySelector(`.bt-osheet [data-btfind="${+d.btox}"]`); if (f) f.focus(); return; }
   if (d.btpick) { const [i, n] = d.btpick.split('|'), o = S.opp.slice(0, 6); while (o.length < 6) o.push(''); const p = byName.get(n); if (!p) return;
     if (o.some(x => x && byName.get(x) && byName.get(x).b === p.b)) { toast(`${p.d} is already in their six`); return; }
@@ -206,7 +206,8 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (d.btreplay != null) { V2.sheet(V2.btReplaySheet(), {label: 'Log from a Showdown Replay'}); return; }
   if (d.btrepgo != null) { V2.btAddReplay((document.querySelector('[data-btrepin]') || {}).value); return; }
   if (d.btrecord != null) { V2.sheet(V2.btRecord(), {label: 'Your Games'}); return; }
-  if (d.btldel) { const k = +d.btldel; S.log = (S.log || []).filter(x => x.t !== k); persist(); const s = document.querySelector('.np-sheet .bt-rec'); if (s) s.outerHTML = V2.btRecord(); V2.redraw(); toast('Game removed'); } });
+  if (d.btldel) { const k = +d.btldel, was = (S.log || []).slice(); S.log = was.filter(x => x.t !== k); persist(); const re = () => { const s = document.querySelector('.np-sheet .bt-rec'); if (s) s.outerHTML = V2.btRecord(); V2.redraw(); }; re();
+    V2.undoToast('Game removed', () => { S.log = was; persist(); re(); }); } });
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.matches || !t.matches('[data-btrepfile]') || !t.files || !t.files[0]) return;
   const fr = new FileReader(); fr.onload = () => { const s = String(fr.result || ''); const m = s.match(/<script type="text\/plain" class="battle-log-data">([\s\S]*?)<\/script>/); V2.btAddReplay(m ? m[1] : s); }; fr.readAsText(t.files[0]); t.value = ''; });
 

@@ -25,7 +25,7 @@ export default {
       'Compare': 'compare', 'Team Sheet': 'sheet'},
     /** go to a page the way a player does: its hash route (header menu / links), or for Saved Teams and Team Sheet the My Team button */
     async go(name, wait = 600) { const v = A.PAGES[name] || name;
-      const closeSheet = () => pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); });
+      const closeSheet = async () => { const was = await pg.evaluate(() => { if (window.V2 && V2._sheet) { V2.closeSheet(true); return true; } return false; }); if (was) await pg.waitForTimeout(250); }; /* Nov 15: closing a sheet takes its history step back a moment later; setting the page before that was undone by it */
       if (ROUTE[v]) { await closeSheet(); await pg.evaluate(h => { if (location.hash !== h) location.hash = h; else if (window.V2) V2.redraw(); }, ROUTE[v]); await pg.waitForTimeout(wait); return v; }
       if (v === 'teams' || v === 'sheet') { await A.go('My Team', 400); const sel = v === 'teams' ? '[data-v2saved]' : '[data-v2sheetopen]';
         const tapIt = () => pg.evaluate(s => { const b = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); if (b) { b.click(); return true; } return false; }, sel);
