@@ -3248,3 +3248,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:499.98px){.dc2-hand{grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch;gap:var(--s2);padding-top:var(--s2)}
   .dc2-hand .dc2-mv{min-height:112px;margin:0}.dc2-hand>:nth-child(odd){rotate:-1.5deg}.dc2-hand>:nth-child(even){rotate:1.5deg}}
 @media (max-width:359.98px){.dc2-hand .dc2-mv .nm{font-size:var(--t13);letter-spacing:-.03em}.dc2-hand .dc2-mv{padding-inline:var(--s1)}} /* 320-359: the longest one-word moves (Flamethrower) fit at 13px */
+.tc-h h1{text-wrap:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
+.tc>.tc-h,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */

@@ -23,9 +23,17 @@ V2.tcRow = () => { const a = TYPES.includes(ui.tcAtk) ? ui.tcAtk : 'Fire', chip 
   return `<div class="tc-prow"><p class="tc-lbl">Attacking type</p><div class="tc-picks" role="group" aria-label="Attacking type">${TYPES.map(t => `<button type="button" class="tc-tp${t === a ? ' on' : ''}" data-tcatk="${t}" aria-pressed="${t === a}" style="--tc:var(--ty-${t})">${t}</button>`).join('')}</div>
     <div class="tc-off"><div class="tc-offh">${chip(a)}<b>attacks hit…</b></div>${grp('Super effective (2×)', x => x >= 2, 'up')}${grp('Not very effective (½×)', x => x > 0 && x < 1, 'dn')}${grp('No effect (0×)', x => x === 0, 'no')}<p class="fine">Every other type takes normal damage.</p></div></div>`; };
 
-V2.pages.types = {place: 'battle', draw() { const E = V2.esc, chip = V2.typeChip, X = V2.tcState(), {sel, mon} = X;
+/* morning helper (confirmed): 'Name hard.' is kept together (no lone 'hard.'), unless the pair is wider than the screen (a long one-word
+   name at 320, Crabominable +46px): then the join becomes an ordinary space so the headline wraps instead of running off */
+V2.tcFitHead = () => { const h = document.querySelector('.tc-h h1'), j = h && h.querySelector('.tc-j'); if (!j) return; j.textContent = '\u00a0'; h.style.fontSize = '';
+  const fits = () => { const edge = h.parentElement.getBoundingClientRect().right; return ![...h.querySelectorAll('span')].some(s => s.getBoundingClientRect().right > edge + 1); };
+  /* first one or two steps down the type scale (28 -> 26 -> 24), so the pair stays together; only then may 'hard.' wrap */
+  if (fits()) return; const base = parseFloat(getComputedStyle(h).fontSize);
+  for (const v of ['--t26', '--t24']) { const px = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(v)); if (!(px < base)) continue; h.style.fontSize = `var(${v})`; if (fits()) return; }
+  h.style.fontSize = ''; j.textContent = ' '; };
+V2.pages.types = {place: 'battle', after() { V2.tcFitHead(); }, draw() { const E = V2.esc, chip = V2.typeChip, X = V2.tcState(), {sel, mon} = X;
   const who = mon ? E(V2.disp(mon.n)) : sel.length ? sel.join(' and ') : '';
-  const head = `<section class="tc-h"><p class="np-eyebrow"><span>Battle · Type Chart</span></p><h1 class="u">${who ? `<span>What hits ${who}</span>&nbsp;<span class="pl">hard.</span>` : '<span>What hits</span>&nbsp;<span class="pl">what.</span>' /* 'hard.' never alone on a line (re-check Nov 15) */}</h1></section>`;
+  const head = `<section class="tc-h"><p class="np-eyebrow"><span>Battle · Type Chart</span></p><h1 class="u">${who ? `<span>What hits ${who}</span><span class="tc-j">&nbsp;</span><span class="pl">hard.</span>` : '<span>What hits</span>&nbsp;<span class="pl">what.</span>' /* 'hard.' never alone on a line (re-check Nov 15) */}</h1></section>`;
   const team = X.team.length ? `<div class="tc-team" role="group" aria-label="Your team">${X.team.map(m => `<button type="button" class="tc-tm${mon && m.p.n === mon.n ? ' on' : ''}" data-tcmon="${E(m.p.n)}" aria-pressed="${!!(mon && m.p.n === mon.n)}" aria-label="${E(V2.disp(m.p.n))}">${V2.mon(m.p.n, {iw: 40, bare: true})}<span>${V2.rowName(V2.disp(m.p.n))}</span></button>`).join('')}</div>` : '';
   const find = `<div class="tc-findw"><label class="np-field tc-find">${V2.ICON.search}<input type="search" data-tcfind value="${E(V2.tcFind || '')}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon: type its name" autocomplete="off"></label><div class="bd-hits tc-hits" data-tchits>${V2.tcFind ? V2.tcHits(V2.tcFind) : ''}</div></div>`;
   const picks = `<div class="tc-picks" role="group" aria-label="Or pick one or two types">${TYPES.map(t => `<button type="button" class="tc-tp${sel.includes(t) ? ' on' : ''}" data-tctype="${t}" aria-pressed="${sel.includes(t)}" style="--tc:var(--ty-${t})">${t}</button>`).join('')}</div>`;
