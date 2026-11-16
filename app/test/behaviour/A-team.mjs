@@ -266,7 +266,7 @@ t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use Na
   pl = await r.ui.gamePlanLine(); ok(!/your pick/.test(pl), 'still "your pick": ' + pl); await r.close(); });
 
 t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => {
-  const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(/^Game [Pp]lan vs the meta's top six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\.$/.test(await ui.gamePlanLine() || ''), 'plan line: ' + await ui.gamePlanLine());
+  const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(/^Game [Pp]lan(?: ›)? vs the meta's top six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\.$/.test(await ui.gamePlanLine() || ''), 'plan line: ' + await ui.gamePlanLine());
   const r = await myTeam({team: ['Garchomp', 'Incineroar']}); if (NEW) ok(!(await r.ui.gamePlanLine()), 'a team being built shows a Game Plan line: ' + await r.ui.gamePlanLine()); /* Sim, Nov 15 night: no Lead/Back/Bench or plan until all six are in */ else ok(/in team order/.test(await r.ui.gamePlanLine() || ''), 'under 4: no "in team order" line'); await r.close(); });
 
 t('TEAM-13', 'Team actions row: Save/Update label, ⋯ menu; empty team keeps only Saved Teams, My Box, ⋯ Import', async () => {
@@ -337,14 +337,14 @@ t('TEAM-19', 'Empty team: Darkrai, invitation, "Add your first Pokémon" opens t
     has(tx, /Or Start from a Winner Today's six highest-rated Pokémon\. Tap one to build a team around it\./);
     ok(await r.ui.emptyTiles() === 6, 'not six "+ Add a Pokémon" spots'); ok(!/Suggestions|Matchups|Who Beats You|Team Checks/.test(tx), 'parts 1-3 still shown');
     await r.ui.tapText(/^Add a Pokémon$/, 900); const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'Add a Pokémon did not open the add box with the name box focused'); await r.ui.closeEditPanel(); await r.ui.settle();
-    await r.ui.tapText(/^Build Me a Team$/, 900); ok(await r.ui.current() === 'auto', 'Build Me a Team did not open Build (' + await r.ui.current() + ')'); await r.close(); return; }
+    await r.ui.tapText(/^Build Me a Team( ›)?$/, 900); ok(await r.ui.current() === 'auto', 'Build Me a Team did not open Build (' + await r.ui.current() + ')'); await r.close(); return; }
   const r = await myTeam({team: []}); const tx = await r.ui.text();
   has(tx, 'Add your six and NastyPlot scouts the top 30 threats for you.'); has(tx, (NEW ? 'Build Me a Team' : 'Build me a team')); ok(await r.ui.emptyTiles() === 6, 'not six "+ Add a Pokémon" tiles');
   ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai picture');
   ok(!/Suggestions What to Change|Who Beats You/.test(tx), 'parts 1-3 still shown'); has(tx, /Tap a Slot to Add a Pokémon/i);
   await r.ui.tapText('Add your first Pokémon', 900); const p = await r.ui.editPanel(); ok(p && /Add a Pokémon/.test(p.title + p.text), 'add panel did not open');
   const nb = await r.ui.nameBox(); ok(nb && nb.focused, 'name box not focused'); await r.ui.closeEditPanel(); await r.ui.settle();
-  await r.ui.tapText((NEW ? /^Build Me a Team$/ : /^Build me a team$/), 900); ok(await r.ui.current() === 'auto', (NEW ? 'Build Me a Team did not open Build' : 'Build me a team did not open Build')); await r.close(); });
+  await r.ui.tapText((NEW ? /^Build Me a Team( ›)?$/ : /^Build me a team$/), 900); ok(await r.ui.current() === 'auto', (NEW ? 'Build Me a Team did not open Build' : 'Build me a team did not open Build')); await r.close(); });
 
 t('TEAM-20', 'Partial team: "so far" score, "+ X added" suggestions, no Your games, Save/Share available', async () => {
   const r = await myTeam({team: ['Garchomp', 'Incineroar']}); const s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score so far', 'score not "so far"');
@@ -482,7 +482,7 @@ t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control co
   if (NEW) { /* new build (Sim, Nov 12): no Game Plan fold; the six's plan line starts with a "Game plan" link that opens a "Game Plan"
     sheet: eyebrow "My Team · <archetype>", one row per gamePlan() row (label, Covered / Partly / Missing / Optional, who, note).
     Nothing is remembered: after a reload no sheet is open and there is no Game Plan fold */
-    const r = await myTeam(); ok(/^Game [Pp]lan vs the meta's top six: lead /.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game Plan": ' + await r.ui.gamePlanLine());
+    const r = await myTeam(); ok(/^Game [Pp]lan(?: ›)? vs the meta's top six: lead /.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game Plan": ' + await r.ui.gamePlanLine());
     await r.ui.tapText(/^Game [Pp]lan( ›)?$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
     const W = s => String(s || '').replace(/\s+/g, ' ').trim();
     const want = await r.ui.peek("[(teamArchetype(members()) || {}).label || '', gamePlan(members()).rows.map(r => [r.label, ({ok: 'Covered', part: 'Partly', miss: 'Missing', opt: 'Optional'})[r.st] || 'Optional', r.who || '', r.note || ''])]");
@@ -526,7 +526,7 @@ t('SETS-01', 'Open Team Sheet fold: one card per Pokémon; tapping opens its edi
   if (NEW) { /* new build (Sim, Nov 12): today's "Open Team Sheet" fold is the Team Sheet sheet: one card per Pokémon (item, Ability,
     stats), the two leads marked "↑ Lead vs the meta's top six" (the plan line's lead pair, no other card), a card opens Edit Set. Sim
     dropped the per-card "−": the six's "− Remove" (with Undo) covers removing */
-    const r = await myTeam(); const pl = (await r.ui.gamePlanLine() || '').match(/^Game [Pp]lan (vs the meta's top six): lead (.+?) \+ (.+?), back /); ok(pl, 'plan line: ' + await r.ui.gamePlanLine());
+    const r = await myTeam(); const pl = (await r.ui.gamePlanLine() || '').match(/^Game [Pp]lan(?: ›)? (vs the meta's top six): lead (.+?) \+ (.+?), back /); ok(pl, 'plan line: ' + await r.ui.gamePlanLine());
     await r.ui.go('Team Sheet', 900); const leads = [pl[2], pl[3]], names = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
     for (const n of names) { const c = await r.ui.teamSheetCard(n) || ''; ok(/ Item .+ Ability /.test(c) && /HP \d+ \d+/.test(c), `${n}'s card misses item / Ability / stats: ` + c.slice(0, 120));
       if (leads.includes(n)) ok(c.startsWith(`${n} ↑ Lead ${pl[1]} Item `), `lead ${n}'s card has no "↑ Lead ${pl[1]}": ` + c.slice(0, 80)); else ok(!/↑ Lead/.test(c), `${n} is not a lead but its card says "↑ Lead": ` + c.slice(0, 80)); }
@@ -937,7 +937,7 @@ t('SAVED-07', '⋯ → Team poster opens the share box with that team\'s poster'
 
 t('SAVED-08', 'Compare on two saved teams opens Compare with both', async () => {
   const r = await aopen({team: TEAM, saved: SAVED}); await r.ui.go('Saved Teams', 900); has(await r.ui.text(), /(Click|Tap) Compare on two teams to see them side by side/);
-  await r.ui.savedAction('Rain test', 'Compare'); has(await r.ui.text(), /Picked ✓/); has(await r.ui.text(), /Compare:? Rain test is picked\. Pick one more saved team, or/); has(await r.ui.text(), NEW ? /Pick one more saved team, or Compare with My Team · Cancel/ : 'Compare with my current team'); // new build: Title Case "Compare with My Team"
+  await r.ui.savedAction('Rain test', 'Compare'); has(await r.ui.text(), /Picked ✓/); has(await r.ui.text(), /Compare:? Rain test is picked\. Pick one more saved team, or/); has(await r.ui.text(), NEW ? /Pick one more saved team, or Compare with My Team(?: ›)? · Cancel/ : 'Compare with my current team'); // new build: Title Case "Compare with My Team"
   await r.ui.savedAction('Sun six', 'Compare'); ok(await r.ui.current() === 'compare', 'Compare did not open'); await r.ui.settle(); const tx = await r.ui.text(); has(tx, 'Rain test', 'Compare'); has(tx, 'Sun six', 'Compare'); await r.close(); });
 
 t('SAVED-09', 'No saved teams: Darkrai, "No saved teams yet…", "Open My team", "Build me a team"', async () => {
@@ -948,7 +948,7 @@ t('SAVED-09', 'No saved teams: Darkrai, "No saved teams yet…", "Open My team",
     await r.ui.tapText((NEW ? /^Save Team$/ : /^Save This Team$/), 700); has(await r.ui.pg.evaluate(() => (document.querySelector('.np-sheet') || {}).innerText || ''), /Save Team[\s\S]*Give this six a name/); await r.close(); return; }
   const r = await homePage(); await r.ui.go('Saved Teams', 900); const tx = await r.ui.text(); has(tx, /No saved teams yet\. Open My team and tap Save team, or let NastyPlot build six for you\./);
   ok(await r.ui.pg.evaluate(() => [...document.querySelectorAll('[data-pane="teams"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)), 'no Darkrai');
-  await r.ui.tapText((NEW ? /^Build Me a Team$/ : /^Build me a team$/), 900); ok(await r.ui.current() === 'auto', (NEW ? 'Build Me a Team did not open Build' : 'Build me a team did not open Build')); await r.ui.go('Saved Teams', 700); await r.ui.tapText(/^Open My team$/i, 900); ok(await r.ui.current() === 'report', 'Open My team did not'); await r.close(); });
+  await r.ui.tapText((NEW ? /^Build Me a Team( ›)?$/ : /^Build me a team$/), 900); ok(await r.ui.current() === 'auto', (NEW ? 'Build Me a Team did not open Build' : 'Build me a team did not open Build')); await r.ui.go('Saved Teams', 700); await r.ui.tapText(/^Open My team$/i, 900); ok(await r.ui.current() === 'report', 'Open My team did not'); await r.close(); });
 
 t('SAVED-10', 'Older singles teams are kept, not shown, but count toward the 10', async () => {
   const nine = Array.from({length: 9}, (_, i) => ({name: 'Team ' + i, team: TEAM.slice(0, 2)}));
@@ -1118,7 +1118,7 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
     team" (opens Import). It is saved and open; My Box holds the default 36 ("36 Pokémon · 2 boxes"). The Saved Teams sheet is closed
     with its "← My Team" before going to My Box, as a player would (the sheet covers the page) */
     const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); const tx = await r.ui.text(); ok(await r.ui.teamHeading() === 'Sun Tailwind (sample)', 'heading: ' + await r.ui.teamHeading());
-    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. (?:Build [Yy]our [Oo]wn|Build Me a Team) · Import a [Tt]eam /, 'sample note');
+    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. (?:Build [Yy]our [Oo]wn|Build Me a Team(?: ›)?) · Import a [Tt]eam(?: ›)? /, 'sample note');
     const bo = NEW ? (NEW ? 'Build Me a Team' : 'Build Your Own') : 'Build your own'; ok(await r.ui.linkHref(bo) === '#build', '"' + bo + '" leads to ' + await r.ui.linkHref(bo));
     await r.ui.tapText(/^Import a team$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');
@@ -1197,7 +1197,7 @@ t('X-13', 'Links out of this scope still work: replay "Paste its log" → Battle
 
 // ================= Inventory "looks broken" items that a player can hit (correct behaviour, marked known) =================
 t('HOME-11b', 'Sample note "Build your own" on My Team opens Build', async () => {
-  const r = await myTeam({fresh: true}); await r.ui.tapText(NEW ? /^Build Me a Team$/ : /^Build [Yy]our [Oo]wn$/, 1000); ok(await r.ui.current() === 'auto', '"Build your own" stayed on ' + await r.ui.current()); await r.close(); },
+  const r = await myTeam({fresh: true}); await r.ui.tapText(NEW ? /^Build Me a Team( ›)?$/ : /^Build [Yy]our [Oo]wn$/, 1000); ok(await r.ui.current() === 'auto', '"Build your own" stayed on ' + await r.ui.current()); await r.close(); },
   {known: NEW ? '' /* the new site has a real Build page now (Nov 12): the link works */ : 'inventory #16: on My Team the note\'s "Build your own" points at `build`, which is My Team itself, so nothing visible happens'});
 t('HOME-10b', 'Home empty tile "Add a Pokémon to slot N" opens the add box for that slot', async () => {
   const r = await aopen({team: []}); await r.ui.tapLabel('Add a Pokémon to slot 3', 1200); const p = await r.ui.editPanel(); const nb = await r.ui.nameBox();
