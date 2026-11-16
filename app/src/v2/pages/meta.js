@@ -94,8 +94,11 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
   return `<div class="ra gsp"><div class="gs-top">${head}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div></div>${tabs}<div class="gs-body"><div class="gs-ctl">${filt}</div>${body}${legend}${about}</div></div>`; }};
 
 // search, filters, see all, tiers
-document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-raq]'); if (!i) return; V2.raUi.q = i.value; const at = i.selectionStart; V2.redraw();
-  const n = document.querySelector('[data-raq]'); if (n) { n.focus(); try { n.setSelectionRange(at, at); } catch (x) {} } });
+/* speed audit Nov 16 (4x CPU: 360 ms per keystroke, every key redrew the whole page): the redraw waits 250 ms after the last key (normal typing speed), so a
+   typed name redraws once; the box keeps its text, focus and cursor */
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-raq]'); if (!i) return; V2.raUi.q = i.value; clearTimeout(V2._raqT);
+  V2._raqT = setTimeout(() => { const cur = document.querySelector('[data-raq]'), had = cur && document.activeElement === cur, at = cur ? cur.selectionStart : null; V2.redraw();
+    const n = document.querySelector('[data-raq]'); if (n && had) { n.focus(); try { n.setSelectionRange(at, at); } catch (x) {} } }, 250); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-raflag],[data-ratypes],[data-raty],[data-raall],[data-ratier],[data-rajump],[data-raview]'); if (!b) return; const U = V2.raUi, d = b.dataset;
   if (d.raflag === 'all' || d.raflag === 'clear') { U.q = ''; U.ty = []; U.f = {}; U.types = false; }
   else if (d.raflag) { const k = d.raflag; U.f = {...U.f, [k]: !U.f[k]}; if (k === 'mega' && U.f.mega) U.f.nomega = false; if (k === 'nomega' && U.f.nomega) U.f.mega = false; }
