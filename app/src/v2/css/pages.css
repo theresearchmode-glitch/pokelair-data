@@ -2841,7 +2841,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* quality pass Nov 15: the Game Plan strip (My Team, Battle) reads left-aligned (a centred 3-line sentence is hard to read, audit 42), and its
    label keeps a 44px tap area through ::after instead of a 44px-tall box that sat over the sentence's second line */
 .tm-six.mh .sx-plan{justify-content:flex-start;text-align:left}
-.tm-six.mh .sx-gpl{min-height:0;display:inline;position:relative}.tm-six.mh .sx-gpl::after{content:"";position:absolute;inset:-12px -4px}
+.tm-six.mh .sx-gpl{min-height:0;display:inline;position:relative}.tm-six.mh .sx-gpl::after{content:"";position:absolute;inset:-12px -4px -16px} /* Nov 15: 43 -> 44px+ tall: the panel's clipped top edge is 19px above, so the extra goes below */
 /* quality pass Nov 15 (Compare): the giant score keeps clear of its band word; Change and Swap keep their look but get a 44px tap area */
 .cxf-score>b{margin-bottom:var(--s5)}.cx2-tm{white-space:nowrap} /* 'Team A' never splits across lines */
 .cxf-id .np-link,.cx2-swap{position:relative}.cxf-id .np-link::after,.cx2-swap::after{content:"";position:absolute;inset:-12px -6px}

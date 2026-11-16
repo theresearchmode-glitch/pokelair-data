@@ -100,7 +100,7 @@ t('NAV-08', 'Back steps through pages to the same scroll place, closes the sheet
   await d.openPokemon('Incineroar'); await d.closeSheet('x'); await d.browserBack(); expect(await ui.current() === 'usage' || await ui.current() === 'meta', '× did not remove the sheet\'s history step: Back went to ' + await ui.current()); }));
 
 t('NAV-09', 'A new page opens at its top', run({team: TEAM}, async ({ui, d}) => {
-  // the "Track Record →" link sits near the top of Ratings, so after scrolling down the player opens it from the menu
+  // the "Track Record ›" link sits near the top of Ratings, so after scrolling down the player opens it from the menu
   await ui.go('Ratings'); await d.scrollToBottom(); expect(await d.scrollY() > 400, 'could not scroll Ratings');
   await d.openMenu(); await d.tapMenuPage('Track Record'); await ui.pg.waitForTimeout(600); expect(await ui.current() === 'track' && await d.scrollY() < 5, `Track Record opened at ${await d.scrollY()}`);
   await d.scrollToBottom(); await ui.go('Events'); await ui.pg.waitForTimeout(500); expect(await d.scrollY() < 5, 'Events opened at ' + await d.scrollY()); }));
@@ -417,7 +417,7 @@ t('SHELL-34', 'Broken data for one page never breaks the others', withDocs({'met
 // =============================== RATE · Ratings ===============================
 t('RATE-01', 'Ratings head: kicker with team count and date; "How ratings work →" opens the method section', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); expect(/Rated 0–100 from real results: Reg M.C doubles, [\d,]+ teams, data as of [A-Z][a-z]{2} \d/.test(await ui.text()), 'kicker missing');
-  expect(has(await ui.text(), 'Track Record →'), 'no Track Record link');
+  expect(has(await ui.text(), 'Track Record ›'), 'no Track Record link');
   await ui.tap((NEW ? /^How Ratings Work ›$/ : (NEW ? /^How Ratings Work →$/ : /^How ratings work →$/))); await ui.pg.waitForTimeout(500); expect(await ui.current() === 'method', 'link opened ' + await ui.current());
   expect(await d.foldIsOpen('Pokémon Ratings'), 'Pokémon Ratings section not open'); expect(await d.inView('Pokémon Ratings'), 'section not scrolled into view'); }));
 
@@ -505,7 +505,7 @@ t('SHEET-04', 'Info tab: usual set, stats, abilities with share, weaknesses, spe
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); await d.tapSheetTab('Info'); const s = await d.sheetPanel();
   expect(has(s, 'Usually') && has(s, 'Full set ›') && has(s, 'Base Stats'), 'usual set / stats missing'); expect(/Intimidate.*Most used, \d+%/.test(s), 'Intimidate share missing');
   expect(/2× weak[^A-Z]*Water.*Fighting.*Ground.*Rock/.test(s), 'weaknesses: ' + (s.match(/2× weak.{0,60}/) || [''])[0]);
-  expect(has(s, 'Speed at Level 50') && /outspeeds \d+% of the top 30/.test(s) && has(s, 'Speed Tiers →'), 'speed builds missing');
+  expect(has(s, 'Speed at Level 50') && /outspeeds \d+% of the top 30/.test(s) && has(s, 'Speed Tiers ›'), 'speed builds missing');
   await d.tapInSheet(/^Full set ›$/); expect((await d.sheetTabs()).find(x => x.on).name.startsWith('Meta'), '"Full set" did not open the Meta tab'); }));
 
 t('SHEET-05', 'Meta tab: typical set, move and item bars, "Brought with" partners open their sheet (PKMN-06)', run({team: TEAM}, async ({ui, d}) => {
@@ -518,7 +518,7 @@ t('SHEET-06', 'Rating tab: why it rates N, what the data says, other tier lists 
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); const n = await d.sheetRating(); await d.tapSheetTab('Rating'); const s = await d.sheetPanel();
   expect(has(s, `Why It Rates ${n}`), 'no "Why It Rates ' + n + '"'); for (const b of ['Top-cut presence', 'Picked by strong players', 'Converts to top cut', 'Win rate']) expect(has(s, b), 'bar missing: ' + b);
   expect(has(s, 'What the Data Says') && has(s, 'Limitless'), 'no data rows'); expect(has(s, 'Other Tier Lists') && has(s, 'not counted'), 'no outside tier lists');
-  expect(await d.outsideLinksNewTab(), 'outside tier list links do not open a new tab'); expect(has(s, (NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →'))) && has(s, 'Track Record →'), 'links missing'); }));
+  expect(await d.outsideLinksNewTab(), 'outside tier list links do not open a new tab'); expect(has(s, (NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →'))) && has(s, 'Track Record ›'), 'links missing'); }));
 
 t('SHEET-07', 'Sheet actions: Add to team, Build around it, Popular Sets (PKMN-03)', run({team: FIVE}, async ({ui, d, acct}) => {
   await ui.go('Ratings'); await d.openPokemon('Kingambit'); await d.tapInSheet((NEW ? /^Add to My Team$/ : /^Add to team$/));

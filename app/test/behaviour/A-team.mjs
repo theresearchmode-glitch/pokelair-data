@@ -1043,8 +1043,8 @@ t('PKMN-04', 'Jump links ("On this page") go to each part and move keyboard focu
 
 t('PKMN-05', 'Build, stats, abilities, type matchups, speed: usual set, base stats, "Most used", weak/resists, speed builds, Speed Tiers link', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.openAllParts() >= 1, 'no folded part to open'); const s = await r.ui.pokemonPage();
-  for (const x of [/Usually .+ Adamant/, /Base Stats TOTAL \d+ HP \d+ Attack \d+/, /Abilities (Hide )?Defiant most used, \d+%/i, /What beats it Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run/i, /Trick Room build/i, /outspeeds \d+% of the top 30/, /Speed Tiers →/]) has(s, x, 'page');
-  await r.ui.tapInPage('Speed Tiers →'); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
+  for (const x of [/Usually .+ Adamant/, /Base Stats TOTAL \d+ HP \d+ Attack \d+/, /Abilities (Hide )?Defiant most used, \d+%/i, /What beats it Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run/i, /Trick Room build/i, /outspeeds \d+% of the top 30/, /Speed Tiers ›/]) has(s, x, 'page');
+  await r.ui.tapInPage('Speed Tiers ›'); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
 
 t('PKMN-06', 'How to build it and partners: typical set, moves and items with %, a partner opens its own page', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
@@ -1054,8 +1054,8 @@ t('PKMN-06', 'How to build it and partners: typical set, moves and items with %,
 
 t('PKMN-07', 'Why it rates N: its bars, What the data says, other tier lists, How Ratings Work and Track Record links', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.openAllParts() >= 1, 'no folded part to open'); const s = await r.ui.pokemonPage();
-  for (const x of [/Why it rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Win rate \d+/, /What the data says/i, /Other tier lists/i, /How Ratings Work ›/, /Track Record →/]) has(s, x, 'page');
-  await r.ui.tapInPage('Track Record →'); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
+  for (const x of [/Why it rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Win rate \d+/, /What the data says/i, /Other tier lists/i, /How Ratings Work ›/, /Track Record ›/]) has(s, x, 'page');
+  await r.ui.tapInPage('Track Record ›'); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
 } else {
 t('PKMN-01', 'Info sheet opens from Home; ✕ and Escape close it, focus returns; desktop is a wide two-column panel', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.infoSheet(), 'sheet did not open');
@@ -1085,8 +1085,8 @@ t('PKMN-04', 'Tabs Info | Meta | Rating: last tab remembered; arrow keys move be
 
 t('PKMN-05', 'Info tab: usual set, base stats, abilities with "Most used", type matchups, speed rows, Speed Tiers link', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoTabText();
-  for (const x of [/Usually .+, Adamant/, /Full set ›/, /Base Stats HP \d+ Attack \d+/, /Abilities Defiant Most used, \d+%/, /Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run \d+/, /Trick Room build \d+/, /outspeeds \d+% of the top 30/, /Speed Tiers →/]) has(s, x, 'Info tab');
-  await r.ui.tapText('Full set ›', 600); ok(await r.ui.infoTabNow() === 'meta', 'Full set › did not open Meta'); await r.ui.infoTab('Info'); await r.ui.tapText('Speed Tiers →', 900); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
+  for (const x of [/Usually .+, Adamant/, /Full set ›/, /Base Stats HP \d+ Attack \d+/, /Abilities Defiant Most used, \d+%/, /Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run \d+/, /Trick Room build \d+/, /outspeeds \d+% of the top 30/, /Speed Tiers ›/]) has(s, x, 'Info tab');
+  await r.ui.tapText('Full set ›', 600); ok(await r.ui.infoTabNow() === 'meta', 'Full set › did not open Meta'); await r.ui.infoTab('Info'); await r.ui.tapText('Speed Tiers ›', 900); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
 
 t('PKMN-06', 'Meta tab: typical set, moves and items with %, "Brought with" opens the partner\'s sheet', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Meta'); const s = await r.ui.infoTabText();
@@ -1095,8 +1095,8 @@ t('PKMN-06', 'Meta tab: typical set, moves and items with %, "Brought with" open
 
 t('PKMN-07', 'Rating tab: "Why it rates N", four bars, What the Data Says, other tier lists, links', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Rating'); const s = await r.ui.infoTabText();
-  for (const x of [/Why It Rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Converts to top cut \d+/, /Win rate \d+/, /What the Data Says/i, /Other Tier Lists/i, (NEW ? /How Ratings Work ›/ : (NEW ? /How Ratings Work →/ : /How ratings work →/)), /Track Record →/]) has(s, x, 'Rating tab');
-  await r.ui.tapText('Track Record →', 900); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
+  for (const x of [/Why It Rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Converts to top cut \d+/, /Win rate \d+/, /What the Data Says/i, /Other Tier Lists/i, (NEW ? /How Ratings Work ›/ : (NEW ? /How Ratings Work →/ : /How ratings work →/)), /Track Record ›/]) has(s, x, 'Rating tab');
+  await r.ui.tapText('Track Record ›', 900); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
 
 }
 

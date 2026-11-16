@@ -26,7 +26,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage">Usage</a><a href="#sets" class="on" aria-current="page">Popular Sets</a></nav></div>`;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Sets</span></p><h1 class="u"><span>How it's built</span> <span class="pl">right now.</span></h1>
-    <p class="ra-lede">The moves, items, Abilities and natures real players run, and who they pair it with.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings →</a><a class="np-link" href="#usage">Usage →</a></p></section>`;
+    <p class="ra-lede">The moves, items, Abilities and natures real players run, and who they pair it with.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#usage">Usage ›</a></p></section>`;
   const q = U.q.trim().toLowerCase(), hits = q ? ROSTER.filter(x => x.d.toLowerCase().includes(q)).slice(0, 8) : [];
   const S2 = p ? V2.stSet(p) : null;
   const ctl = `<div class="gs-ctl"><div class="ra-find st-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-stq value="${E(U.q)}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon" autocomplete="off"></label>
