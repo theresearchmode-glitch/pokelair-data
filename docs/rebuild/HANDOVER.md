@@ -16,6 +16,8 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
   (.claude/settings.json, Sim's yes; never put a model line in a commit: the repo guard refuses it).
 - Next: code review B9 (focus on page change, Undo inside sheets, after() repeats, double-tap guard, inert), B12, B13, B8 (latent
   sync), then C1-C8 cleanup, then the uniformity audit's findings.
+- AFTER THE SWITCH (Sim, Nov 15, Q1 A): code review B8 cross-device sync, its own careful step tested on two devices; then C1 delete the
+  old site's dead code (the live site still runs it until the switch).
 - BEFORE THE SWITCH (checklist): publish the live page with the same runtime capabilities today's live artifact declares (db/user for
   saving, feedback, usage); read today's live artifact first (not yet read, unsure what it declares). The plain v2 build has no Preview
   stand-in (checked: 0 matches for __NP_PREVIEW). fields-audit needs the Showdown sim installed (not run in the cloud machine).
