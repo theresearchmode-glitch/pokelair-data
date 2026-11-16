@@ -2058,7 +2058,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .mh-pair{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}.tm-hero.mt .mh-slot{grid-template-columns:minmax(0,1fr);row-gap:var(--s2)}
   .mh .ms-card{height:152px}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:96px}.mh .mc-id h3{font-size:var(--t13)}.mh-it b{font-size:var(--t15)}
   .mh-slot .mh-mv{display:none}.mt-emv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-  .tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr) auto;align-items:start}.tm-hero.mt .mt-right{grid-column:1/-1}
+  .tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr) minmax(0,48%);align-items:start}.tm-hero.mt .mt-belt .w span{text-wrap:balance;text-align:center} /* the belt never takes more than about half: a long band word wraps evenly (Sim, Nov 15 night) */.tm-hero.mt .mt-right{grid-column:1/-1}
   .tm-hero.mt .mt-belt .np-score b{font-size:var(--d64)}.mt-id .tm-name{font-size:var(--t24)}.mt-id{gap:var(--s1)}.mt-id .tm-links{margin-top:0}.tm-hero.mt{gap:var(--s4)}
   .mt-band{font-size:var(--t13);letter-spacing:.02em;column-gap:var(--s2)}.mt-band span{white-space:nowrap}
   .mt-edit{padding:var(--s2) var(--s3);gap:var(--s2)}.tm-six.mh .sx-plan{padding:var(--s2) var(--s3)}}
@@ -3149,3 +3149,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* full sweep, Nov 15: at 700-859 the two side-by-side hero cards are ~290-370px wide; picture + big numbers ran up to 70px past the card's
    edge. There the card stacks (picture above, numbers below) and keeps the numbers as big as on desktop */
 @media (min-width:700px) and (max-width:859px){.wk-hl{grid-template-columns:minmax(0,1fr);align-items:start}.wk-hmon{margin-top:calc(var(--s10)*-1)}.wk-ht{padding-top:0}}
+/* The Hand for a team of one to five (Sim, Nov 15 night): an empty spot is an 'Add' Card the same size as a Pokémon's Card */
+.mh-add{display:grid;place-content:center;justify-items:center;gap:var(--s1);width:100%;height:300px;padding:var(--s4);border:2px dashed var(--rule);border-radius:var(--r-m);background:color-mix(in srgb,var(--plot) 6%,transparent);color:var(--ink-2);font:inherit;cursor:pointer}
+.mh-add:hover{border-color:var(--plot);color:var(--ink)}.mh-addart{font:900 var(--d64)/1 var(--u);font-style:italic;color:var(--plot-text)}.mh-add b{font:900 var(--t22)/1.2 var(--u);font-style:italic;color:var(--ink)}.mh-add small{font:600 var(--t13)/1.5 var(--b)}
+@media (max-width:1099px){.mh-empty{grid-template-columns:minmax(0,1fr)}.mh-add{height:220px}}
+@media (max-width:699px){.mh-add{height:152px}.mh-addart{font-size:var(--t34)}.mh-add b{font-size:var(--t17)}}
+/* a long band word on phones: the belt gets its own full-width row under the name (V2.mtBeltFit, Sim, Nov 15 night) */
+@media (max-width:699px){.tm-hero.mt.mt-wide .mt-head{grid-template-columns:minmax(0,1fr)}.tm-hero.mt.mt-wide .mt-belt{grid-column:1;grid-row:3}.tm-hero.mt.mt-wide .mt-belt .np-score{width:100%}}

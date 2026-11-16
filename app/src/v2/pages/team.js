@@ -384,6 +384,12 @@ document.addEventListener('click', e => { if (e.target.closest('[data-v2more]'))
 // ---------- drawing ----------
 V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
+// Sim, Nov 15 night: on phones a long band word ('Tournament ready') can't fit beside the name (it was cut off, or squeezed the name to a
+// letter-wide column); then the score belt takes its own full-width row under the name, at full size. Safe to repeat (after every draw).
+V2.mtBeltFit = () => { const h = document.querySelector('.tm-hero.mt'); if (!h) return; h.classList.remove('mt-wide'); if (innerWidth >= 700) return; const sp = h.querySelector('.mt-belt .w span'), belt = h.querySelector('.mt-belt .np-score'); if (!sp || !belt) return;
+  const longest = Math.max(...sp.textContent.trim().split(/\s+/).map(wd => { const r = document.createElement('span'); r.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'; const cs = getComputedStyle(sp); r.style.font = cs.font; r.style.fontStyle = cs.fontStyle; r.textContent = wd; document.body.append(r); const w = r.getBoundingClientRect().width; r.remove(); return w; }));
+  const cs = getComputedStyle(belt), room = belt.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); if (longest > room) h.classList.add('mt-wide'); };
+{ let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (V2.mtBeltFit) V2.mtBeltFit(); }, 120); }); }
 V2.pages.team = {place: 'team', draw() {
   const D = V2.teamData();
   if (D.empty) return V2.emptyHtml();
@@ -410,12 +416,12 @@ V2.pages.team = {place: 'team', draw() {
   // your corner (name, win line with the rank, links), the Strength Score belt, the matchup counts over the four buttons. Same hooks
   // and words as today's header (tm-lock / np-score / tm-acts / data-v2*), so every TEAM / SHARE / IO feature works as before.
   const bandWord = G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid' : 'solid';
-  const mtBand = `<p class="fn-band mt-band" aria-hidden="true"><span class="live">My Team</span><span class="tm-eb">${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}${ms.length ? ` · ${L.illegal ? 'Not legal yet' : 'Legal for ' + V2.esc(REG_NAME)}` : ''}</span>${rank ? `<span>${V2.esc(rank)}</span>` : ''}</p>`;
+  const mtBand = `<p class="fn-band mt-band" aria-hidden="true"><span class="live">My Team</span><span class="tm-eb">${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}${ms.length ? ` · ${L.illegal ? 'Not legal yet' : 'Legal for ' + V2.esc(REG_NAME)}` : ''}</span>${rank && !(G && G.partial) ? `<span>${V2.esc(rank)}</span>` : ''}</p>`; /* a team being built: the count is already in the band (it said '5 of 6' twice) */
   const mtSample = /\(sample\)\s*$/i.test(title || '') ? '<p class="fine tm-sample">This is a sample team, here to show how NastyPlot works. <span class="tm-sample-acts"><a class="np-link" href="#build">Build Me a Team</a><span class="tm-sep" aria-hidden="true"> · </span><button type="button" class="np-link" data-v2import>Import a Team</button></span></p>' : '';
   const mtId = `<div class="mt-id"><p class="vh">My Team · ${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}${ms.length ? ` · ${L.illegal ? 'Not legal yet' : 'Legal for ' + V2.esc(REG_NAME)}` : ''}</p><p class="fn-k">Your corner</p>${title ? `<h1 class="tm-name u">${V2.esc(title).replace(/(Mega \S+) ([XYZ])\b/g, '$1 $2')}</h1>` : ''}${mtSample}
     ${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>` : `${win ? `<p class="tm-line">${win}. <b class="tm-rank">${V2.esc(rank)}</b>${V2.asOf() ? `<span class="tm-asof"> · ${V2.esc(V2.asOf().replace(/ \(\d+ days? old\)/, ''))}</span>` : ''}</p>` : `<p class="tm-rank">${V2.esc(rank)}</p>`}${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess</p>' : ''}
     <div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why This Score?</button><button type="button" class="np-link" data-v2sheetopen aria-haspopup="dialog">Team Sheet <span aria-hidden="true">↗</span></button>${others ? `<button type="button" class="np-link" data-v2switch aria-haspopup="dialog">Saved Teams <small>${others} saved</small></button>` : ''}${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
-  const mtBelt = s == null ? '' : `<div class="mt-belt"><div class="np-score fn-belt" style="--band:var(--band-${bandWord});--bd:var(--band-${bandWord})"><b class="u">${s}</b><div class="w"><span class="u">${V2.esc(word)}</span><small>Strength Score</small></div></div></div>`;
+  const mtBelt = s == null ? '' : `<div class="mt-belt"><div class="np-score fn-belt" style="--band:var(--band-${bandWord});--bd:var(--band-${bandWord})"><b class="u">${s}</b><div class="w"><span class="u">${V2.esc(G ? CH.wordOf(G.s) : word)}</span><small>Strength Score${G && G.partial ? ' so far' : ''}</small></div></div></div>`; /* Sim, Nov 15 night: 'so far' in the small line, not in the big word (it widened the belt and squeezed the name) */
   // the three counts (brief s1) are left out: Sim, Nov 12, 'no Matchups summary in the header' (TEAM-15); question to Sim with pictures
   const mtNums = nm ? `<div class="mt-nums"><p class="lf"><b class="u">${D.mu.fav}</b><span>Favoured</span></p><p class="le"><b class="u">${D.mu.even}</b><span>Even match</span></p><p class="lu"><b class="u">${D.mu.unf}</b><span>Unfavoured</span></p></div>` : '';
   const mtHead = `${mtBand}<div class="tm-lock mt-head">${mtId}${mtBelt}<div class="mt-right">${acts.replace(/ tm-svl/g, '')}</div></div>`;
@@ -433,7 +439,7 @@ V2.pages.team = {place: 'team', draw() {
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
   return `<section class="tm-hero mt">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}">${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
-after() {
+after() { V2.mtBeltFit();
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
   // a redraw now keeps unchanged elements (A5), so bind each element once (a second listener would fire twice)
   document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }); });

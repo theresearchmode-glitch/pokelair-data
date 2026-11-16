@@ -16,8 +16,13 @@ V2.handHtml = (D, sel) => { const {ms, L} = D, E = V2.esc, role = m => L.lead.in
       ${R ? `<span class="mh-rate" aria-hidden="true"><b class="u">${R.n}</b>${R.tier ? ` ${E(R.tier)} tier<span class="vh"> rating</span>` : ''}${lock}</span> ` : lock}
       ${V2.msCard(m.p, m.p.n, `<h3 class="u">${V2.nameHtml(V2.disp(m.p.n))}</h3>`, `<div class="ms-ty">${(m.p.t || []).map(V2.typeChip).join('')}</div>`, 150)}</button>
       <div class="mh-set"><div class="ms-ty mh-ty">${(m.p.t || []).map(V2.typeChip).join('')}</div><p class="mh-it"><span class="vh">Item </span><b>${V2.keepForm(E(it))}</b> <small><span class="vh">Ability </span>${E(m.ability || 'None')}</small></p><ul class="mh-mv">${mv}</ul></div></div>`; };
-  const G = [['Lead', 'start the battle', L.lead], ['Back', 'come in next', L.back], ['Bench', 'stay out this game', L.bench]];
-  return `<div class="mh-hand">${G.map(([name, note, g]) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${g.map(card).join('')}</div></div>`).join('')}</div>`; };
+  // Sim, Nov 15 (night): a team of one to five keeps the Hand too (it fell back to the old tiles): members in plan order, then an 'Add' Card
+  // for each empty spot (the same name box as the old tile, data-v2addto), two per group as with six
+  const ord = [...L.lead, ...L.back, ...L.bench].filter((m, k, a) => a.indexOf(m) === k); ms.forEach(m => { if (!ord.includes(m)) ord.push(m); });
+  const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
+  const add = i => `<div class="sx-slot mh-slot mh-empty"><button type="button" class="sx-add mh-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="mh-addart" aria-hidden="true">+</span><b class="u">Add</b><small>Spot ${i + 1}</small></button></div>`;
+  const cells = ord.map(card).concat(open.map(add)), G = [['Lead', 'start the battle'], ['Back', 'come in next'], ['Bench', 'stay out this game']];
+  return `<div class="mh-hand">${G.map(([name, note], j) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${cells.slice(j * 2, j * 2 + 2).join('')}</div></div>`).join('')}</div>`; };
 // The Hand, piece 3 (brief section 3): the editing strip replaces the Set section. Only what the Card does not show: its place in the plan,
 // nature and stat points with their "most run" notes; then Edit Set, Info Sheet, Set as Lead / Use NastyPlot's pick (today's buttons, not
 // drawn in the brief: picture for Sim), Lock, Remove. Same hooks as today (data-v2edit, data-v2mon, data-v2lead, data-v2lock, data-v2rm).
@@ -48,7 +53,7 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
       + (lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : '')
       + `</div></div>`; })() : ''; // Edit Set lives only in the Set section (Sim, Nov 12: "your recommendation"; rule C3, nothing twice)
   return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? V2.handHtml(D, sel) + V2.editStripHtml(D, sel) : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
-V2.isHand = D => D.ms.length === 6 && D.L && D.L.lead.length === 2 && D.L.back.length === 2 && D.L.bench.length === 2;
+V2.isHand = D => D.ms.length >= 1 && !!D.L; /* any team of one to six (Sim, Nov 15 night); an empty team keeps its own empty screen */
 
 // the set card (TEAM-10; Sim, Nov 11: no second big picture, the six above already shows it on its floor ring): its place in the plan, the rating with its tier, item, Ability, nature and stat points (yours or what
 // most players run), the four moves, then Edit Set, Set as Lead (not already a lead) and its Info Sheet. Today's words throughout.
