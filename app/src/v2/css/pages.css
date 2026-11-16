@@ -3253,6 +3253,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    the hand-of-cards feel */
 @media (max-width:499.98px){.dc2-hand{grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch;gap:var(--s2);padding-top:var(--s2)}
   .dc2-hand .dc2-mv{min-height:112px;margin:0}.dc2-hand>:nth-child(odd){rotate:-1.5deg}.dc2-hand>:nth-child(even){rotate:1.5deg}}
+@media (min-width:500px) and (max-width:1099.98px){.dc2-hand{grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch;gap:var(--s2);padding-top:var(--s2)}.dc2-hand .dc2-mv{min-height:112px;margin:0}.dc2-hand>:nth-child(odd){rotate:-1.5deg}.dc2-hand>:nth-child(even){rotate:1.5deg}} /* tablets too (Nov 16 audit: 760 cut names at 700, the fan cards were 79-92px): the 2x2 hand Sim approved for phones */
+.dc2-hand .dc2-mv .nm{max-width:100%}@media (min-width:1100px){.dc2-hand .dc2-mv{padding-inline:var(--s2)}}@media (min-width:1366px){.dc2-hand{grid-template-columns:repeat(var(--hn),minmax(0,196px))}} /* wider cards where the table has room, so long names keep their size */ /* the name box stays inside its card, so the fit step (V2.fitWords) can see a word that is too wide */
 @media (max-width:359.98px){.dc2-hand .dc2-mv .nm{font-size:var(--t13);letter-spacing:-.03em}.dc2-hand .dc2-mv{padding-inline:var(--s1)}} /* 320-359: the longest one-word moves (Flamethrower) fit at 13px */
 .tc-h h1{text-wrap-style:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
 .tc>.tc-h,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */

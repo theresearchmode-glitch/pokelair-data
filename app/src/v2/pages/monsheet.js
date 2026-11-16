@@ -106,6 +106,10 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
   document.querySelectorAll('.pk-is h1').forEach(b => { if (!fit(b)) b.classList.add('np-brk'); });
   const pn = [...document.querySelectorAll('.pk-pc .mc-nm')]; pn.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); /* partner names: one size for the row (the smallest any of them needed), so the four read even */
   const px = Math.min(...pn.map(b => parseFloat(getComputedStyle(b).fontSize))); if (pn.length && isFinite(px)) pn.forEach(b => { if (parseFloat(getComputedStyle(b).fontSize) > px) b.style.fontSize = px + 'px'; });
+  /* Damage Calc hand (Nov 16 audit: 'Thunderbol', 'Flamethrowe', 'Horsepow' cut on 15-108 attackers at 1100-1600): a one-word move too wide for its
+     card steps down the scale (17 -> 15 -> 13); the four names then share the smallest size so the hand reads even */
+  const hn = [...document.querySelectorAll('.dc2-hand .dc2-mv .nm')]; hn.forEach(b => { b.style.fontSize = ''; b.style.letterSpacing = ''; for (const s of ['--t15', '--t13']) { if (!ow(b)) break; b.style.fontSize = `var(${s})`; } if (ow(b)) b.style.letterSpacing = '-.03em'; /* last step, as on phones (Flamethrower at 1100) */ });
+  const hx = Math.min(...hn.map(b => parseFloat(getComputedStyle(b).fontSize))); if (hn.length && isFinite(hx)) hn.forEach(b => { if (parseFloat(getComputedStyle(b).fontSize) > hx) b.style.fontSize = hx + 'px'; });
   document.querySelectorAll('.pk-slots').forEach(u => { u.classList.remove('pk-slots1'); const bs = [...u.querySelectorAll('b')]; if (bs.map(fit).every(Boolean)) return;
     u.classList.add('pk-slots1'); /* a move can't fit two across even at 15 px (320 wide): one per row, then fit again */ bs.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); });
   const groups = new Map(); document.querySelectorAll('.mh-mv').forEach(u => { u.classList.remove('mh-mv1', 'mh-mv2'); u.querySelectorAll('li').forEach(li => li.classList.remove('np-brk')); const g = u.closest('.mh') || u.parentElement; groups.set(g, [...(groups.get(g) || []), u]); });
