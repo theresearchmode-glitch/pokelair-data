@@ -209,3 +209,12 @@
 /* Night chips (Nov 16, re-verify #15: selected vs unselected differed 1.25:1): a selected chip is filled with the selected blue, so it reads at a glance; day keeps the black plate */:root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on,:root[data-theme="night"] .ra-chip[aria-pressed="true"],:root[data-theme="night"] .dc2-tok button[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 42%,var(--surface));color:var(--ink);box-shadow:none;outline:1.5px solid var(--plot);outline-offset:-1.5px}
 .sg2-adj{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}.sg2-adjk{margin:0 0 var(--s2);font:700 var(--t13)/1.5 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
 .sg2-tipop:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+/* Windows high contrast / forced colours (Nov 16 stress test): buttons keep an edge, selected and current items keep a visible mark,
+   decorative watermark letters step aside. Applies only when the system forces its own colours. */
+@media (forced-colors:active){
+  .np-btn,.np-btn2,.np-chip,.ra-chip,.ra-seg a,.np-slide button,.dc2-tok button,.tier-tag,.ev-pk{border:1px solid ButtonText;forced-color-adjust:auto}
+  .np-chip[aria-pressed="true"],.np-chip.on,.ra-chip[aria-pressed="true"],.ra-seg a.on,.np-slide button[aria-pressed="true"],.dc2-tok button[aria-pressed="true"]{forced-color-adjust:none;background:Highlight;color:HighlightText} /* the slanted shapes clip an outline, so the system highlight fills them */
+  .np-nav a[aria-current="page"],.bt-tools a[aria-current="page"]{outline:2px solid Highlight;outline-offset:2px}
+  .ff.lead,.sx-sel,[aria-current="true"]{outline:2px solid Highlight}
+  .mc-giant,.inf-no,.mc-orbit,.mc-glow{display:none}
+}
