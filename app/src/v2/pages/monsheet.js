@@ -57,7 +57,7 @@ V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc
   const noSets = !(st.mv && st.mv.length) && !(st.it && st.it.length) && !(bw && bw.length);
   const meta = noSets ? `<p class="ms-empty"><b>No tournament or ladder sets yet.</b> Nobody has brought ${E(V2.disp(n))} to the events and ladders we read, so there are no popular moves or items to show.</p>${typ}` : typ + mvs + items + with_;
   // Rating: why it rates N, what the data says, other tier lists
-  const B = lairBars(p), bar = ([l, v, note]) => `<div class="ms-rb"><span>${E(l)}</span><i style="--v:${Math.max(2, Math.min(100, v || 0))}" aria-hidden="true"></i><b>${v == null ? '–' : v}</b><small>${v == null ? '' : `Top ${Math.max(1, 100 - v)}% of Pokémon`}${note ? (v == null ? '' : ' · ') + E(V2.txt(note)) : ''}</small></div>`;
+  const B = V2.bars(p), bar = ([l, v, note]) => `<div class="ms-rb"><span>${E(l)}</span><i style="--v:${Math.max(2, Math.min(100, v || 0))}" aria-hidden="true"></i><b>${v == null ? '–' : v}</b><small>${v == null ? '' : `Top ${Math.max(1, 100 - v)}% of Pokémon`}${note ? (v == null ? '' : ' · ') + E(V2.txt(note)) : ''}</small></div>`;
   const of = (lairRank(p) || {of: lairRows().length}).of;
   const why = `<section class="ms-sec ms-wide"><h3 class="ms-h">Why it rates ${rs}</h3>${B.length ? `<p class="fine">Each bar ranks it against the ${of} Pokémon with tournament results: 94 means better than 94% of them. Its rating is ${E(rRange(r))}${r.band >= 10 ? '; few games so far, so treat it as an estimate' : ''}.</p>${B.map(bar).join('')}`
     : `<p>No tournament results yet, so this is a rough placeholder from its stats, typing and tools (never above ${RS(30)}). It moves up once it shows up at events.</p>`}</section>`;

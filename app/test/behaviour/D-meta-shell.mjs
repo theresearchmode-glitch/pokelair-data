@@ -519,7 +519,7 @@ t('SHEET-05', 'Meta tab: typical set, move and item bars, "Brought with" partner
 
 t('SHEET-06', 'Rating tab: why it rates N, what the data says, other tier lists open a new tab (PKMN-07)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); const n = await d.sheetRating(); await d.tapSheetTab('Rating'); const s = await d.sheetPanel();
-  expect(has(s, `Why It Rates ${n}`), 'no "Why It Rates ' + n + '"'); for (const b of ['Top-cut presence', 'Picked by strong players', 'Converts to top cut', 'Win rate']) expect(has(s, b), 'bar missing: ' + b);
+  expect(has(s, `Why It Rates ${n}`), 'no "Why It Rates ' + n + '"'); for (const b of ['Top-cut presence', 'Picked by strong players', NEW ? 'Top cut beyond its use' : 'Converts to top cut', 'Win rate'] /* word list (Nov 16) */) expect(has(s, b), 'bar missing: ' + b);
   expect(has(s, 'What the Data Says') && has(s, 'Limitless'), 'no data rows'); expect(has(s, 'Other Tier Lists') && has(s, 'not counted'), 'no outside tier lists');
   expect(await d.outsideLinksNewTab(), 'outside tier list links do not open a new tab'); expect(has(s, (NEW ? 'How Ratings Work ›' : (NEW ? 'How Ratings Work →' : 'How ratings work →'))) && has(s, 'Track Record ›'), 'links missing'); }));
 

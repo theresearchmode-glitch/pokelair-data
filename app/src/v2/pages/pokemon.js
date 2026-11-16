@@ -1,3 +1,5 @@
+/* word list (Nov 16 stress test): 'conversion' is not a player word; the shared label reads 'Converts to top cut' */
+V2.bars = p => lairBars(p).map(([l, ...r]) => [l === 'Converts to top cut' ? 'Top cut beyond its use' : l, ...r]);
 // ---------- The Pokémon page, "The Answer Page" (Sim's pick Nov 15; docs/rebuild/mocks/pokemon-answer-page/BRIEF.md) ----------
 // Sim, Nov 15 (recommended A): one full page per Pokémon at its own address, #pokemon=<name>; the info sheet retires once every part
 // is here (until then taps still open the sheet, so nothing is lost). Every number comes from the same shared helpers the sheet uses
@@ -108,7 +110,7 @@ V2.pkAbilities = p => { const E = V2.esc, st = (() => { try { return setFor(p) |
   return `<section class="pk-sec" aria-labelledby="pk-s5">${V2.pkHead(5, p.a.length > 1 ? 'Abilities' : 'Ability', '', 'pk-s5')}${bar}<div class="pk-abs" style="--n:${Math.min(3, list.length)}">${items}</div>${note ? `<p class="fine">${note}</p>` : ''}</section>`; };
 // 6. Why it rates N (today's: the note and the four reasons, What the data says, Other tier lists): the reasons as a till receipt (Track
 // Record's paper), the evidence as paper slips
-V2.pkWhy = p => { const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), B = lairBars(p), of = (lairRank(p) || {of: lairRows().length}).of;
+V2.pkWhy = p => { const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), B = V2.bars(p), of = (lairRank(p) || {of: lairRows().length}).of;
   const lines = B.map(([l, v, note]) => `<li><p class="trk-ln"><span>${E(l)}</span><i aria-hidden="true"></i><b class="u">${v == null ? '–' : v}</b></p><small>${v == null ? '' : `Top ${Math.max(1, 100 - v)}% of Pokémon`}${note ? (v == null ? '' : ' · ') + E(V2.txt(note)) : ''}</small></li>`).join('');
   const receipt = `<section class="trk-rc pk-rc" aria-labelledby="pk-s6r"><i class="trk-tape" aria-hidden="true"></i><p class="trk-rn u" aria-hidden="true">NastyPlot</p><p class="trk-rk" aria-hidden="true">* * * ${E(V2.disp(p.n))} * * *</p>
     <h3 class="pk-rt" id="pk-s6r">Why it rates ${rs}</h3>${B.length ? `<p class="trk-rs">Each bar ranks it against the ${of} Pokémon with tournament results: 94 means better than 94% of them. Its rating is ${E(rRange(r))}${r.band >= 10 ? '; few games so far, so treat it as an estimate' : ''}.</p><ul class="trk-lines">${lines}</ul>`
@@ -138,7 +140,7 @@ V2.pkSums = p => { const E = V2.esc, o = {};
   try { const M = SHT.matchups(p), q = M.g.q || [], d = M.g.d || []; o['pk-s3'] = [q.length ? `4× weak: ${q.join(', ')}` : '', d.length ? `2× weak: ${d.join(', ')}` : ''].filter(Boolean).join(' · ') || 'No weaknesses'; } catch (e) {}
   try { const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'); if (run) o['pk-s4'] = `${run.v} Speed${run.main ? ' (what players run)' : ''}${run.os ? ` · outspeeds ${run.os.pct}% of the top 30` : ''}`; } catch (e) {}
   try { const st = setFor(p) || {}, sh = new Map((st.ab || []).map(([a, v]) => [a, v])); o['pk-s5'] = [...new Set(p.a)].sort((x, y) => (+(sh.get(y) ?? -1)) - (+(sh.get(x) ?? -1))).map(a => sh.get(a) != null && p.a.length > 1 && +sh.get(a) >= 1 ? `${a} (${Math.round(+sh.get(a))}%)` : a).join(' or '); } catch (e) {}
-  try { o['pk-s6'] = lairBars(p).filter(([, v]) => v != null).map(([l, v]) => `${l} ${v}`).join(' · '); } catch (e) {}
+  try { o['pk-s6'] = V2.bars(p).filter(([, v]) => v != null).map(([l, v]) => `${l} ${v}`).join(' · '); } catch (e) {}
   try { const f = ROSTER.filter(q => q.b === p.b); if (f.length > 1) o['pk-s7'] = `${f.length} forms: ${f.map(q => V2.disp(q.n)).join(', ')}`; } catch (e) {}
   for (const k in o) o[k] = E(o[k]); return o; };
 // wide screens pair folded parts two across; a folded part left without a partner takes the full width (no lone tile beside an empty half)

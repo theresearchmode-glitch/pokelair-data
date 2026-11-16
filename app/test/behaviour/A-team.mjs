@@ -1100,7 +1100,7 @@ t('PKMN-06', 'Meta tab: typical set, moves and items with %, "Brought with" open
 
 t('PKMN-07', 'Rating tab: "Why it rates N", four bars, What the Data Says, other tier lists, links', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.infoTab('Rating'); const s = await r.ui.infoTabText();
-  for (const x of [/Why It Rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Converts to top cut \d+/, /Win rate \d+/, /What the Data Says/i, /Other Tier Lists/i, (NEW ? /How Ratings Work ›/ : (NEW ? /How Ratings Work →/ : /How ratings work →/)), /Track Record ›/]) has(s, x, 'Rating tab');
+  for (const x of [/Why It Rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /(Converts to top cut|Top cut beyond its use) \d+/, /Win rate \d+/, /What the Data Says/i, /Other Tier Lists/i, (NEW ? /How Ratings Work ›/ : (NEW ? /How Ratings Work →/ : /How ratings work →/)), /Track Record ›/]) has(s, x, 'Rating tab');
   await r.ui.tapText('Track Record ›', 900); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
 
 }
