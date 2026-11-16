@@ -134,6 +134,8 @@ V2.pkForms = p => { const E = V2.esc, forms = ROSTER.filter(q => q.b === p.b); i
     <p class="fine">On teams, win rate and rating: tournament teams. Base stats: game data.</p></section>`;
   return {strip, table}; };
 
+/* audit Nov 16 (screen readers): each part's Show/Hide button says which part ('Show What beats it'), from the part's heading */
+V2.pkName = id => { const h = document.getElementById(id); return h ? h.textContent.replace(/\s+/g, ' ').trim() : ''; };
 // Sim, Nov 15 (Q1 A): on phones parts 3-6 fold to their heading and one line, so the page is about half as long; "Show ›" opens a part
 // (remembered per part), a jump link to it opens it too. Desktop shows every part as before. The line uses the same data as the part.
 V2.pkSums = p => { const E = V2.esc, o = {};
@@ -151,10 +153,10 @@ V2.pkOpen = id => { try { return localStorage.getItem('np2.pkopen.' + id) === '1
 V2.pkFoldAll = (html, p) => { const S = V2.pkSums(p);
   return ['pk-s3', 'pk-s4', 'pk-s5', 'pk-s6', 'pk-s7'].reduce((h, id) => { const tag = `<section class="pk-sec" aria-labelledby="${id}">`; const i = h.indexOf(tag); if (i < 0 || !S[id]) return h;
     const j = h.indexOf('</header>', i) + '</header>'.length, open = V2.pkOpen(id);
-    const sum = `<div class="pk-sum"><p>${S[id]}</p><button type="button" class="np-link" data-pkopen="${id}" aria-expanded="${open}" aria-controls="${id}-sec" aria-describedby="${id}">${open ? 'Hide' : 'Show ›'}</button></div>`; /* stress test (Nov 16): four 'Show ›' told apart by their section's heading */
+    const sum = `<div class="pk-sum"><p>${S[id]}</p><button type="button" class="np-link" data-pkopen="${id}" aria-expanded="${open}" aria-controls="${id}-sec" aria-label="${open ? 'Hide' : 'Show'} ${V2.esc(V2.pkName ? V2.pkName(id) : '')}">${open ? 'Hide' : 'Show ›'}</button></div>`; /* stress test (Nov 16): four 'Show ›' told apart by their section's heading */
     return h.slice(0, i) + `<section class="pk-sec pk-fold${open ? ' open' : ''}" id="${id}-sec" aria-labelledby="${id}">` + h.slice(i + tag.length, j) + sum + h.slice(j); }, html); };
 V2.pkSetOpen = (id, open) => { const s = document.getElementById(id + '-sec'), b = s && s.querySelector('[data-pkopen]'); if (!s) return; s.classList.toggle('open', open);
-  if (b) { b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide' : 'Show ›'; } try { localStorage.setItem('np2.pkopen.' + id, open ? '1' : '0'); } catch (e) {} V2.pkPair(); if (open) V2.pkFlags(); };
+  if (b) { b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide' : 'Show ›'; b.setAttribute('aria-label', (open ? 'Hide ' : 'Show ') + V2.pkName(id)); } try { localStorage.setItem('np2.pkopen.' + id, open ? '1' : '0'); } catch (e) {} V2.pkPair(); if (open) V2.pkFlags(); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkopen]'); if (!b) return; const s = document.getElementById(b.dataset.pkopen + '-sec'); V2.pkSetOpen(b.dataset.pkopen, !(s && s.classList.contains('open'))); });
 V2.pkFocusName = () => { if (!V2.pkFocus) return; V2.pkFocus = 0; const h = document.querySelector(innerWidth < 900 ? '.pk-card .mc-nm' : '.pk-is h1') || document.querySelector('.pk-is h1'); if (h) { h.setAttribute('tabindex', '-1'); h.setAttribute('data-pgfocus', ''); h.focus({preventScroll: true}); h.addEventListener('blur', () => { h.removeAttribute('tabindex'); h.removeAttribute('data-pgfocus'); }, {once: true}); } }; /* tabindex only while focused (a lasting one reads as a control) */
 V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkPair(); V2.pkFlags(); V2.pkFocusName(); }, draw() { const p = V2.monFromHash(), E = V2.esc;
