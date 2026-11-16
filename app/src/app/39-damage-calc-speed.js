@@ -233,7 +233,10 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
   if(eff===0||abMul===0||(dab==='Bulletproof'&&mFlag(nm,'l',BULLET))||(dab==='Soundproof'&&mv.sound)||(pri&&(['Queenly Majesty','Armor Tail','Dazzling'].includes(dab)||(T==='psychic'&&gD)))
     ||(type==='Ground'&&dIt==='Air Balloon'&&nm!=='Thousand Arrows')
     // (a Mega always holds its Mega Stone, which callers leave out of the item slot)
-    ||(nm==='Poltergeist'&&!D.item&&!(D.p&&D.p.m))||(nm==='Steel Roller'&&!T))return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0}};
+    ||(nm==='Poltergeist'&&!D.item&&!(D.p&&D.p.m))||(nm==='Steel Roller'&&!T)){
+    // the real reason when it isn't a type or Ability immunity, so the page never says 'immune to Water' for a terrain block (Nov 16 audit)
+    const why=eff===0||abMul===0?undefined:(dab==='Bulletproof'&&mFlag(nm,'l',BULLET))||(dab==='Soundproof'&&mv.sound)?`${dab} blocks ${nm}`:pri&&['Queenly Majesty','Armor Tail','Dazzling'].includes(dab)?`${dab} blocks priority moves`:pri&&T==='psychic'&&gD?'Psychic Terrain blocks priority moves into grounded Pokémon':(type==='Ground'&&dIt==='Air Balloon')?'Air Balloon keeps it off the ground':nm==='Poltergeist'?'Poltergeist fails: the target holds no item':nm==='Steel Roller'?'Steel Roller fails without a terrain':undefined;
+    return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0},...(why?{fail:why}:{})};}
   if(mv.vbp==='fling'&&!bp)return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0},fail:'Fling fails: it needs a held item it can throw'};
   // fixed damage: Seismic Toss / Night Shade = the user's level (50); Super Fang / Ruination / Nature's Madness = half the
   // target's current HP (full, then a quarter); one-hit KO moves KO when they land (Sturdy and Ice types vs Sheer Cold are immune)
