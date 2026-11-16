@@ -2666,7 +2666,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .ar-reg{flex:var(--g) 1 0;min-width:0;display:grid;grid-template-rows:auto auto 1fr auto;align-content:start;gap:var(--s1);padding:var(--s4) var(--s5) 0;border:0;border-radius:var(--r-s);text-align:left;font:inherit;cursor:pointer}
 .ar-row .ar-reg{height:var(--h)}
 .ar-reg:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
-.ar-rk{display:flex;align-items:center;gap:var(--s2);font:800 var(--t13)/1.5 var(--u);font-style:italic}
+.ar-rk{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:800 var(--t13)/1.5 var(--u);font-style:italic}
+.ar-rk b{white-space:nowrap} /* "No. 7" stays whole; the Your style badge moves under it in narrow tiles (Nov 16 audit) */
 .ar-you{padding:0 var(--s2);background:var(--on-type);color:var(--tk-ink);font:800 var(--t13)/1.5 var(--u);font-style:italic;text-shadow:none;transform:skewX(-8deg)}
 .ar-nm{font:900 var(--t28)/1.15 var(--u);font-style:italic}
 .ar-sh{display:flex;align-items:flex-end;gap:var(--s2);margin:0}.ar-sh b{font:900 var(--d64)/1 var(--u);font-style:italic}.ar-sh small{font:600 var(--t13)/1.4 var(--b);padding-bottom:var(--s2)}.ar-sh small span{display:block}.ar-sh small .c3{display:none}
