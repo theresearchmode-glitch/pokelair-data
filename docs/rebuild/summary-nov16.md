@@ -24,6 +24,11 @@ Every decision is in docs/rebuild/decisions.md (from the 1:03 PM entry on). Pict
   My Team "Saved ✓" reads as a status; Grandstand legend moved into a "?".
 - Touch: every tap target measured is 44px+ (Battle "Change on My Team", How We Calculate link, Game Plan link (your Q5: decided, moved)).
 - Helpers used (you asked): touch sweep, say-it-once sweep, button/fold inventory, arrow test-safety audit, tints/tier inventory, file counts.
+- Re-checked every older audit item still marked open (helper, audits/reverify-nov16.md) and fixed the real ones: Battle Your Six names whole at 320;
+  This Week badges under names on small phones; Type Chart chips whole; Track "?" stays with its word; Usage / Sets / Meta spotlight numbers never touch;
+  Events ticket names inside at 320 and the counts said once (no empty strip on desktop); Home corner rows even; Damage Calc at 320 (labels, Swap,
+  move cards); Build blueprint at 320; Team Sheet spread note said once; My Box team in Lead / Back / Bench order; Archetypes sprites spread out;
+  night chips: selected is clearly blue. Accessibility (audits/a11y-nov16.md): Base Stats labels, "Needs work" text, This Week sun tiles now pass.
 - Correction: some of my early checks used #report/#top/#ratings, which open Home in the new site; re-done on the real pages, results held.
 
 ## Still open for you (each with a reason)
