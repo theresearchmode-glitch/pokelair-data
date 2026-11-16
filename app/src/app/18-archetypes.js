@@ -201,7 +201,7 @@ function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) r
 // Trends: compare each Pokémon's rank today with about a week ago.
 function cleanHistory(d) { if (!d || !Array.isArray(d.days)) return null;
   const obj = o => { const out = {}; if (o && typeof o === 'object') for (const k of Object.keys(o).slice(0, 80)) { const v = num(o[k]); if (v != null && typeof k === 'string') out[k] = v; } return out; };
-  return {days: d.days.slice(-40).filter(x => x && typeof x.d === 'string').map(x => ({d: x.d.slice(0, 10), ing: obj(x.ing), tour: obj(x.tour), lad: obj(x.lad)}))}; }
+  return {days: d.days.slice(-40).filter(x => x && typeof x.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.d.slice(0, 10)) && !isNaN(Date.parse(x.d.slice(0, 10) + 'T12:00:00Z'))).map(x => ({d: x.d.slice(0, 10), ing: obj(x.ing), tour: obj(x.tour), lad: obj(x.lad)}))}; } /* code review B10: a malformed day is dropped (trendFor's toISOString threw on it), as cleanWeekly does */
 function trendKey() { return {ingame: 'ing', tour: 'tour', ladder: 'lad'}[ui.metaSrc]; }
 function trendFor(name, rank) {
   const h = META.history; if (!h || h.days.length < 2) return null;

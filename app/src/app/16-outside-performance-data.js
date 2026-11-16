@@ -34,6 +34,9 @@ function opggNames(list) { const seen = new Set(), out = [];
     if (!reg && !form && ['Arcanine', 'Zoroark', 'Typhlosion', 'Samurott', 'Goodra', 'Decidueye', 'Avalugg'].includes(base) && !seen.has(base)) { seen.add(base); n = base + '-Hisui'; }
     out.push(srcName(n) || srcName(x0)); }
   return out; }
+// code review B14: another site's list is shown only with an https:// link and a plain key; the name is trimmed
+function outsideClean(o) { const lists = o.lists.filter(L => L && typeof L === 'object' && typeof L.url === 'string' && /^https:\/\/[^\s"'<>]+$/.test(L.url) && L.url.length <= 300 && typeof L.k === 'string' && /^[\w-]{1,40}$/.test(L.k))
+  .map(L => Object.assign({}, L, {name: String(L.name || '').slice(0, 60)})); return lists.length ? Object.assign({}, o, {lists}) : null; }
 function perfFromRaw(raw) {
   if (!raw || typeof raw !== 'object') return null;
   const num = v => (typeof v === 'number' && isFinite(v)) ? v : +v;
@@ -77,7 +80,7 @@ function perfFromRaw(raw) {
     // the date of each source's data, for the sheet ("Oct 30", "Sep 2026"), and the in-game season
     frozenOfficial: !!(raw.official && raw.official.frozen),
     dates: Object.fromEntries(PERF_KEYS.map(k => [k, perfDate(raw, k)]).filter(x => x[1])), season: (raw.ingame && (raw.ingame.season || ((raw.ingame.label || '').match(/season ([A-Z]-?\d+)/) || [])[1])) || '',
-    outside: raw.outside && Array.isArray(raw.outside.lists) && raw.outside.data && typeof raw.outside.data === 'object' ? raw.outside : null};
+    outside: raw.outside && Array.isArray(raw.outside.lists) && raw.outside.data && typeof raw.outside.data === 'object' ? outsideClean(raw.outside) : null};
   return Object.keys(out.doubles).length >= 20 ? out : null;
 }
 // Outdated numbers are wrong numbers: every part of the outside data carries the date of its data, and a part older than its

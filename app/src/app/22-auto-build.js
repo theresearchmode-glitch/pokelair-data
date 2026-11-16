@@ -319,7 +319,8 @@ function addFreshTake(res) { return genRun(addFreshTakeGen(res)); }
 function* addFreshTakeGen(res) {
   if (OFFMETA || ui.abLock || !res || !res.teams || !res.teams.length) return res;
   // the off-meta search runs with off-meta scoring switched on only while each of its steps runs (never while the page draws)
-  let alt = null; try { const g = buildBestGen(); while (true) { const keep = OFFMETA; OFFMETA = true; let r; try { r = g.next(); } finally { OFFMETA = keep; } if (r.done) { alt = r.value; break; } yield; } } catch (e) { alt = null; }
+  // code review B4: when the build is cancelled mid-way, close the inner search too so its own clean-up (tsMemoB, abMemo) runs
+  let alt = null; const g = buildBestGen(); try { while (true) { const keep = OFFMETA; OFFMETA = true; let r; try { r = g.next(); } finally { OFFMETA = keep; } if (r.done) { alt = r.value; break; } yield; } } catch (e) { alt = null; } finally { try { g.return(); } catch (e) {} }
   if (!alt || !alt.teams || !alt.teams.length) return res;
   const best = res.teams[0], names = new Set(best.mons.map(m => m.n));
   // a fresh take must still be a good team (Oct 28 audit: one scored 15): ready for 60%+ of the top threats and within 10 of the best option

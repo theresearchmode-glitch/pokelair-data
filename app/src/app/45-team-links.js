@@ -45,7 +45,10 @@ async function copyTeamLink(btn) { const l = teamLink(); if (!l) { toast('Add so
   let ok = false; try { await navigator.clipboard.writeText(l); ok = true; } catch (e) {}
   if (!ok) { try { const ta = document.createElement('textarea'); ta.value = l; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }
   if (ok) toast('Team link copied'); else { const msg = $('shareMsg'); if (msg) msg.textContent = l; toast('Copy the link shown below'); }
-  if (btn) { const t = btn.textContent; btn.textContent = ok ? 'Copied' : t; setTimeout(() => { btn.textContent = t; }, 1600); } }
+  // code review B5: the label is kept once (a second tap inside 1.6 s no longer saves 'Copied' as the label), and only the text
+  // inside the button's <span> changes, so its markup survives
+  if (btn && ok) { const el = btn.querySelector('span') || btn; if (btn.dataset.lbl == null) btn.dataset.lbl = el.textContent; el.textContent = 'Copied';
+    clearTimeout(btn._cpT); btn._cpT = setTimeout(() => { el.textContent = btn.dataset.lbl; delete btn.dataset.lbl; }, 1600); } }
 // a link opened directly: ask before replacing the current team
 function checkSharedLink() { let raw = ''; try { raw = (location.hash || '') + ' ' + (location.search || ''); } catch (e) {}
   const x = decodeTeam(raw); if (!x) return;
