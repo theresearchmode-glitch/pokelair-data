@@ -650,7 +650,7 @@ t('SETS-04', 'Which Pokémon opens first: last looked up, else first team member
 
 t('SETS-05', 'Pokémon header: tier, rating, rank, and your own set when it is on your team', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); const tx = await ui.text();
-  has(tx, NEW ? /On your team Mega Charizard Y Fire Flying \d+ S tier S tier, rated \d+, #\d+ of \d+/ : /Mega Charizard Y Fire Flying Mega S tier, rated \d+, #\d+ of \d+ Pokémon with tournament results/, 'header'); /* new: the Grandstand spotlight (brief section 1: tag 'On your team', name, type chips, rating with its tier) */ has(tx, /Your Mega Charizard Y: Drought @ Charizardite Y/, 'your set line'); await close(); });
+  has(tx, NEW ? /On your team Mega Charizard Y Fire Flying \d+ S tier Rated \d+, #\d+ of \d+/ /* say it once (Nov 16): the small line no longer repeats 'S tier' */ : /Mega Charizard Y Fire Flying Mega S tier, rated \d+, #\d+ of \d+ Pokémon with tournament results/, 'header'); /* new: the Grandstand spotlight (brief section 1: tag 'On your team', name, type chips, rating with its tier) */ has(tx, /Your Mega Charizard Y: Drought @ Charizardite Y/, 'your set line'); await close(); });
 
 t('SETS-06', 'Source switch Best data · Tournaments · Showdown changes the numbers and is remembered', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); const a = await ui.text(); expect(await ui.setsSource() === 'Best data', 'default not Best data');

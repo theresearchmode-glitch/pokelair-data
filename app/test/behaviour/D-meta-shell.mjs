@@ -576,7 +576,7 @@ t('SETS-03', 'Default: your first team member, else the #1 rated Pokémon (B SET
 t('SETS-03b', 'Default with no team: the #1 rated Pokémon', run({team: [], account: false, stored: {'cc2.state': JSON.stringify({slots: Array(6).fill({n: '', a: null, lock: false}), box: [], teams: [], opp: []})}}, async ({ui, d}) => {
   await ui.go('Ratings'); const top = (await d.topList())[0]; await ui.go('Popular Sets'); expect(has((await d.setsShowing()).slice(0, 400), top.name), 'did not open on #1 ' + top.name); }));
 t('SETS-04', 'Set head: tier pill and "Your <Pokémon>: Ability @ Item, moves" (B SETS-05)', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Popular Sets'); const s = await d.setsShowing(); expect(/[SABCDF] tier, rated \d+, #\d+ of \d+/.test(s), 'no tier pill'); expect(/Your Mega Charizard Y: Drought @ Charizardite Y/.test(s), 'no "Your …" line'); }));
+  await ui.go('Popular Sets'); const s = await d.setsShowing(); expect((NEW ? /[SABCDF] tier\s*Rated \d+, #\d+ of \d+/ /* say it once (Nov 16) */ : /[SABCDF] tier, rated \d+, #\d+ of \d+/).test(s), 'no tier pill'); expect(/Your Mega Charizard Y: Drought @ Charizardite Y/.test(s), 'no "Your …" line'); }));
 t('SETS-05', 'Sets source switch Best data / Tournaments / Showdown, remembered (B SETS-06/07)', run({team: TEAM}, async ({ui, d, ls}) => {
   await ui.go('Popular Sets'); await d.tapSetsTeam('Incineroar'); const s = await d.setsSources(); expect(s.map(x => x.name).join() === 'Best data,Tournaments,Showdown', 'sources: ' + s.map(x => x.name));
   const a = await d.setsShowing(); await d.chooseSetsSource('Tournaments'); const b = await d.setsShowing(); expect(a !== b && /tournament/i.test(b), 'card did not switch to tournament data');
