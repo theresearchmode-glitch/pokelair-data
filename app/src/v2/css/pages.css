@@ -964,6 +964,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .bt-tools a.on{color:var(--ink)}.bt-tools a.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}.bt-tools .r{margin-left:auto}}
 @media (min-width:700px) and (max-width:1179.98px){.bt-tools{gap:var(--s4)}.bt-tools .r{display:none}}
 @media (min-width:700px) and (max-width:899.98px){.bt-tools a small{display:none}}
+@media (min-width:700px) and (max-width:759.98px){.bt-tools{gap:var(--s3)}} /* "Type Chart" was cut by 10px at 700-719 (Nov 16 audit) */
 @media (max-width:699.98px){.bt-more{display:block;margin-top:var(--s8)}.bt-more h2{font-size:var(--t24);margin:0 0 var(--s2)}.bt-more ul{list-style:none;margin:0;padding:0}
   .bt-more a{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:56px;padding:var(--s2) 0;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none;font:700 var(--t15)/1.5 var(--b)}
   .bt-more small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-more i{font-style:normal;color:var(--ink-3)}}
