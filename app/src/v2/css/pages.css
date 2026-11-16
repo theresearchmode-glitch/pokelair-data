@@ -3214,3 +3214,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .npspr .mth-spr{display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:var(--s3);text-align:left}.npspr .mth-spr small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);text-wrap:balance}
 @container (min-width:480px){.npspr{grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s4) var(--s3)}.npspr .mth-spr{grid-template-columns:none;grid-template-rows:48px auto;justify-items:center;align-items:start;text-align:center}}
 @container (min-width:900px){.npspr{grid-template-columns:repeat(10,minmax(0,1fr))}}
+.trk-edge{stroke:var(--rc-ink)}.trk-dot{stroke:var(--rc-ink);stroke-width:1.5} /* audit Nov 16 (WCAG 1.4.11): a dark edge on every line and dot, so the amber and green tier lines read at 3:1 on the white card; the tier colours stay */
