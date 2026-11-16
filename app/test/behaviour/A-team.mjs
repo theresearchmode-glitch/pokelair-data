@@ -93,7 +93,7 @@ t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
   if (NEW) { /* new build (Home piece 4, decisions.md Nov 12, published Preview v76): "Everything NastyPlot does.", 12 tiles (today's 11
     + How We Calculate); each opens the page today's site files the tool under (32-views.js VIEW_PARENT/VIEW_ALIAS): Battle, Meta or Build */
     const r = await homePage(); has(await r.ui.text(), /Everything NastyPlot does\./); /* Nov 15 night (say it once): the tools are a list of links, no '12 tools' line */
-    const B = 'matchup', M = 'meta', BU = 'auto', want = {[NEW ? 'Battle' : 'Battle Mode']: B, [NEW ? 'Winning Teams' : 'Teams']: M, 'Type Chart': B, Ratings: M, 'Damage Calc': B, Events: M, 'Test Run': B, 'Popular Sets': M, 'Speed Tiers': B, Archetypes: M, 'Winning Cores': BU, 'How We Calculate': M};
+    const want = {Battle: 'matchup', 'Winning Teams': 'top', 'Type Chart': 'types', Ratings: 'meta', 'Damage Calc': 'calc', Events: 'events', 'Test Run': 'gauntlet', 'Popular Sets': 'sets', 'Speed Tiers': 'speed', Archetypes: 'arch', 'Winning Cores': 'auto', 'How We Calculate': 'method'}; /* stress test (Nov 16): each link opens the page it names, not its hub */
     const tools = await r.ui.homeTools(); ok(tools.length === 12, `${tools.length} tool cards: ${tools.join(', ')}`);
     for (const [name, v] of Object.entries(want)) { ok(tools.includes(name), 'no tool card ' + name); await r.ui.go('Home', 300); await r.ui.tapTool(name); const now = await r.ui.current(); ok(now === v || (v === 'auto' && now === 'build'), `${name} opened ${now}`); }
     noErrs(r); await r.close(); return; }

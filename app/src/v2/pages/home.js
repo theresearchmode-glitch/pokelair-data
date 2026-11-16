@@ -90,16 +90,17 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // 2 columns. Names as in the mock-up, descriptions are today's (HOME_TILES). Each tile opens the page today's site files the tool
 // under (32-views.js VIEW_PARENT / VIEW_ALIAS): Battle, Meta (Pokémon + Tournaments) or Build (cores); the tool's own spot inside
 // that page comes when the page is rebuilt.
-V2.HOME_TOOLS = [['Battle', 'Their six in, your four, the leads and turn 1 out', 'battle'], ['Winning Teams', 'Search every winning team by Pokémon, item or move', 'meta'],
-  ['Type Chart', 'What hits what, and your team against every type', 'battle'], ['Ratings', 'Every legal Pokémon on one tier board', 'meta'],
-  ['Damage Calc', 'Real damage with stats, items and spread moves', 'battle'], ['Events', 'Every recent tournament, top cut and full sets', 'meta'],
-  ['Test Run', 'Run your team into the top 20 tournament teams', 'battle'], ['Popular Sets', 'Moves, items and natures players run', 'meta'],
-  ['Speed Tiers', 'Who moves first, with Tailwind and Trick Room', 'battle'], ['Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', 'meta'],
-  ['Winning Cores', 'Pairs and trios that win the most', 'build'], ['How We Calculate', 'Where every number comes from', 'meta']];
+/* stress test (Nov 16): each link opens the page it names (they opened the hub: 'Damage Calc ›' landed on Battle) */
+V2.HOME_TOOLS = [['Battle', 'Their six in, your four, the leads and turn 1 out', 'battle'], ['Winning Teams', 'Search every winning team by Pokémon, item or move', 'tournaments'],
+  ['Type Chart', 'What hits what, and your team against every type', 'types'], ['Ratings', 'Every legal Pokémon on one tier board', 'meta'],
+  ['Damage Calc', 'Real damage with stats, items and spread moves', 'calc'], ['Events', 'Every recent tournament, top cut and full sets', 'events'],
+  ['Test Run', 'Run your team into the top 20 tournament teams', 'gauntlet'], ['Popular Sets', 'Moves, items and natures players run', 'sets'],
+  ['Speed Tiers', 'Who moves first, with Tailwind and Trick Room', 'speed'], ['Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', 'archetypes'],
+  ['Winning Cores', 'Pairs and trios that win the most', 'build'], ['How We Calculate', 'Where every number comes from', 'method']];
 // Say it once (Nov 15 night, design review A/E): the 12 big tool tiles repeated the menu; now a compact list of links (each tool's line
 // stays as its hover title and spoken label), so Home is shorter and nothing is lost
 V2.homeTools = () => `<section class="fn-tools hm-tools"><p class="fn-k">The full card</p><h2 class="u">Everything NastyPlot does.</h2>
-  <ul class="hm-tlinks">${V2.HOME_TOOLS.map(([n, d, to]) => `<li><a class="np-link" href="#${to}" title="${V2.esc(d)}" aria-label="${V2.esc(n)}: ${V2.esc(d)}">${V2.esc(n)} <span aria-hidden="true">›</span></a></li>`).join('')}</ul></section>`;
+  <ul class="hm-tlinks">${V2.HOME_TOOLS.map(([n, d, to]) => `<li><a class="np-link" href="#${to}"${n === 'Winning Cores' ? ' data-hmcores' : ''} title="${V2.esc(d)}" aria-label="${V2.esc(n)}: ${V2.esc(d)}">${V2.esc(n)} <span aria-hidden="true">›</span></a></li>`).join('')}</ul></section>`;
 // Home piece 5 (mock-up R2): the More on Home fold, closed by default, with today's four parts and words (60-concept-h.js):
 // Doubles is played in pairs (homePairs), What changed this week (homeTrendData), Winning cores (RES.cores) and Your battles
 // (logStats on S.log), then the ratings' source line. Data helpers shared in 05-home-data.js (today's Home proven unchanged).
