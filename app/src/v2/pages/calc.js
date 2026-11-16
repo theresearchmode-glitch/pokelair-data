@@ -20,7 +20,7 @@ V2.dcBar = (r, cls) => { if (!r || !r.hp) return ''; const lo = Math.min(100, 10
 
 // a Pokemon on the table: the info sheet's Card with its role, a picker on its name, "nature, ability" and the spread tag
 V2.dcPoke = (X, role, id) => { const E = V2.esc, n = X.p.n, d = V2.disp(n);
-  const tag = X.src && X.src !== 'yours' ? `<span class="dc2-tag" title="${X.src === 'estimated' ? 'No spread data: points and nature are estimated' : 'Most common spread (or your nature on it); change it in the set below to match yours'}">${X.src === 'estimated' ? 'estimated' : 'assumed'} spread</span>` : '';
+  const tag = X.src && X.src !== 'yours' ? `<span class="dc2-tag" title="${X.src === 'estimated' ? 'No spread data: points and nature are estimated' : 'Most common spread (or your nature on it); change it in the set below to match yours'}">${X.src === 'estimated' ? 'estimated' : 'most used'} spread</span>` : '';
   const nameH = `<h2 class="u">${V2.nameHtml(d)}<i class="dc2-arw" aria-hidden="true"></i></h2>`;
   const sub = `<p class="dc2-na">${E(X.nat)}, ${E(X.ability)}</p>${tag}`;
   return `<div class="dc2-pc ${role.toLowerCase()}">${V2.msCard(X.p, n, nameH, sub)}<span class="dc2-role" aria-hidden="true">${role}</span><select class="dc2-pick" id="${id}" aria-label="${role}: ${E(d)}. Choose another Pokémon">${monOptions(n)}</select></div>`; };

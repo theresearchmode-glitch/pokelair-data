@@ -374,7 +374,9 @@ const CALC_ITEMS=['','Life Orb','Choice Scarf','Expert Belt','Focus Sash','Sitru
 const NATURES=['Hardy','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
 // Nov 15 (code review A5): the cached side is rebuilt when that team member's set changes (item, ability, spread); it went stale before
 function dcSide(role,n){const p=byName.get(n);if(!p)return null;const key=role+':'+n;let mem=null;try{mem=members().find(m=>m.p.n===n)}catch(e){}
-  let sig='';try{sig=mem?JSON.stringify([mem.item||'',mem.heldItem||'',mem.ability||'',mem.spread||null]):''}catch(e){}
+  /* Nov 16 (stress test B5): the side was cached before the usage data arrived (commonSpread null -> 'estimated', most-run nature) and kept,
+     so a calc opened first showed a different set than My Team; the data source and whether it has loaded are part of the key now */
+  let sig='';try{sig=JSON.stringify([mem?mem.item||'':'',mem?mem.heldItem||'':'',mem?mem.ability||'':'',mem?mem.spread||null:null,typeof ui==='object'?ui.metaSrc||'':'',!!(META.doubles&&(META.doubles.top||[]).length)])}catch(e){}
   if(!dc.inv[key]||dc.inv[key]._sig!==sig){dc.inv[key]=sideDefaults(p,role,mem);dc.inv[key]._sig=sig}const {_sig,...side}=dc.inv[key];return {p,...side}}
 function dcMoves(p){const learn=(LEARN[p.n]||[]).map(k=>MV[k]).filter(m=>m.bp>0);let pop=[];try{const mem=members().find(m=>m.p.n===p.n);pop=(mem?mem.moves:popularMoves(p)).filter(m=>m&&m.bp>0)}catch(e){}
   const seen=new Set(pop.map(m=>m.name));return {pop,rest:learn.filter(m=>!seen.has(m.name)).sort((a,b)=>a.name.localeCompare(b.name))}}
