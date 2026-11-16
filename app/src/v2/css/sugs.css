@@ -297,3 +297,6 @@ p,li,small{text-wrap:pretty}
 .inf-row[open]>summary::after,.ev-what[open]>summary::after{rotate:90deg}
 .ev-what summary{list-style:none;color:var(--ink);gap:var(--s4)}.ev-what summary::-webkit-details-marker{display:none}
 @media (prefers-reduced-motion:reduce){.inf-row>summary::after,.ev-what>summary::after{transition:none}}
+/* Nov 16 audit (night scan, This Week at 390): white words on the Snow tile fell to 2.6:1 where the bright snowfall and drift sit; on the small
+   tiles the snow is the faint layer and the ice a little deeper (15% dark), so the words stay readable */
+.wk-tile.wx-snow{--wx-hi:var(--wx-lo);--wx-mid:var(--wx-lo);background-color:color-mix(in srgb,var(--wc) 85%,var(--tk-ink))}

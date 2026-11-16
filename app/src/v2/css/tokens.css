@@ -65,7 +65,7 @@
   --x4:#B71C1C;--pk-main:var(--plot);--on-pk-main:var(--on-mark);--on-x4:#FFFFFF;--st-hp:#2E9E5B;--st-atk:#E0601F;--st-def:#D9A21A;--st-spa:#5B8DF0;--st-spd:#A27BEA;--st-spe:#E5578A;--on-st:#12121B;--on-st-def:#12121B;
   --band-top:#62BEF7;--band-ready:#C9B0FF;--band-solid:#B0AAB8;--band-work:#F0C768;--band-miss:var(--bad-text);
   --band-work-text:var(--band-work); /* Nov 16 (a11y): "Needs work" as text; the bright amber is for fills */
-  --plot-text-deep:var(--plot-text); /* night: the light blue already passes on dark tints */
+  --plot-text-deep:#81CBF9; /* night (Nov 16 audit): the light blue was 4.45:1 on the tinted Team Cards; 20% lighter, 5.15:1 */
   --contact:transparent;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35);
   --grain:.05;--score-ink:#D6D1CA;
