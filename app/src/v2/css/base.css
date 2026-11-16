@@ -14,6 +14,7 @@ a{color:inherit;text-decoration:none}
 :root[data-theme="night"] .u{font-weight:800}
 .unit{font-size:var(--unit);color:var(--ink-2);letter-spacing:0;margin-left:2px;font-family:var(--b);font-style:normal;font-weight:600}
 .fine{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.nw{white-space:nowrap} /* a bracketed range like (0–100) never breaks after its dash */
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 .np-skip:focus-visible{position:fixed;top:var(--s2);left:var(--s2);z-index:1000;width:auto;height:auto;clip:auto;overflow:visible;padding:var(--s3) var(--s4);background:var(--surface);color:var(--ink);font:700 var(--t15)/1.3 var(--b)} /* visible when a keyboard user lands on it (code review A1) */
