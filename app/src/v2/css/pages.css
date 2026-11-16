@@ -1796,6 +1796,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    face-off as two corners side by side under the score + Prep row, headline above the buttons, Ringside stacked; full tap height for
    the small links; the underdog block a little tighter (desktop height) */
 @media (max-width:699.98px){.fn-band{flex-wrap:wrap;justify-content:flex-start}}
+@media (min-width:1100px) and (max-width:1339.98px){.fn-top{grid-template-columns:minmax(0,1fr)}} /* Sim Q2 (Nov 16): the headline was 4 lines here beside the intro; the intro goes under it (as on tablets) so it reads in 2 lines at full size */
 @media (min-width:700px) and (max-width:1099.98px){.fn-top{grid-template-columns:minmax(0,1fr)}.fn-hero .hm-tag{font-size:var(--d64)}
  .fn-ring{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s5) var(--s6);align-items:start}.fn-mid{grid-column:1/-1;grid-row:1;grid-template-columns:auto auto;align-items:center;justify-content:center;column-gap:var(--s8)}.fn-mid .fn-vs{display:none}
  .fn-corner.them{text-align:left}.fn-corner.them .fn-cacts{justify-content:flex-start}.ff .np-mon{--iw:88px}.fn-belt b{font-size:var(--d64)}
@@ -1954,7 +1955,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .us-tr{font:700 var(--t13)/1 var(--b);font-style:normal;color:var(--plot-text)}.us-tr.down,.us-tr.dn{color:var(--bad-text)}
 .us-benches{display:grid;gap:var(--s4)}.us-bench{--gsw:96px}
 .us-bench::before{border-bottom-color:var(--plot)}
-.us-bench .us-fig{flex:0 0 calc(100% / var(--c))}
+.us-bench .us-fig{flex:0 0 calc(100% / var(--c))}@media (max-width:699.98px){.us-bench{justify-content:space-evenly}} /* a short row spreads out so long names never touch (Nov 16 audit: "WhimsicottBasculegion" at 320) */
 .us-how{display:grid;gap:var(--s4);padding-top:var(--s6);border-top:1px solid var(--rule)}
 .us-hh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:var(--s2) var(--s6)}.us-hh h2{margin:0;font:900 var(--t28)/1.1 var(--u);font-style:italic}.us-hh p{margin:0}
 .us-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4) var(--s8)}

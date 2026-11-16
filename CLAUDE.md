@@ -49,6 +49,7 @@ agents) would really help it, with a rough usage multiple, so she can turn it on
 audits and research sweeps, not our one-change-at-a-time work.
 
 ## How Sim likes work done
+- Shorter replies (Sim, Nov 16): leave nothing out, but use tight wording: short sentences, short lines, no long run-ons.
 - Preview before live: nothing goes to the live artifact without her explicit go (unless she says "publish when done" for that change).
 - Faster flow (Sim, Nov 10, latest, overrides the line above for now): skip the Preview for today's site; send Sim screenshots
   and put fixes live directly. The rebuild lives on its own artifact, "NastyPlot Full Redesign", until the switch.
