@@ -234,7 +234,7 @@
 @media (max-width:499.98px){.fn-mid:has(.fn-belt.long){grid-template-columns:minmax(0,1fr);justify-items:center;row-gap:var(--s3)}.fn-mid:has(.fn-belt.long) .fn-prep{width:auto;max-width:100%}}
 /* nuclear stress test (Nov 16): a link's "›" could wrap alone onto its own line (3 found over 23 pages at 320/360/768); links and buttons
    avoid a lone last word (measured 3 -> 1), and the editing panel's short "Pokémon Page ›" stays on one line (-> 0). Text unchanged. */
-a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
+a,button,summary{text-wrap-style:pretty}.sx-info{white-space:nowrap}
 /* nuclear stress test (Nov 16): on 320-339 phones "Winner's team" needed 114px of 113, so 9 tickets wrapped it and 3 did not; one line in the
    approved 88% letters (92px), the same on every ticket. (Ticket names keep "M-C" together with a word joiner, events.js.) */
 @media (max-width:359.98px){.tk-k{white-space:nowrap;font-stretch:88%}}
@@ -253,7 +253,7 @@ a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
 @media (min-width:1440px){.dc2-tok{grid-template-columns:repeat(2,76px)}.dc2-tok button{width:76px}}
 @media (max-width:379.98px){.us-bench{--gsw:64px}.us-bench .us-fig{padding-inline:0}.us-bench .us-fig .np-mon{--iw:64px}}
 /* Sim Q2 (Nov 16, A): an Undo inside an open sheet sits at its top, in the Undo bar style, clear of the sheet's close button */
-.np-sheet-undo{flex-wrap:nowrap;margin:0 var(--s12) var(--s4) 0;padding:var(--s2) var(--s2) var(--s2) var(--s4)}.np-sheet-undo>span{flex:1 1 0;text-wrap:balance}.np-sheet-undo .np-btn2{flex:none}
+.np-sheet-undo{flex-wrap:nowrap;margin:0 var(--s12) var(--s4) 0;padding:var(--s2) var(--s2) var(--s2) var(--s4)}.np-sheet-undo>span{flex:1 1 0;text-wrap-style:balance}.np-sheet-undo .np-btn2{flex:none}
 @media (max-width:699.98px){.np-sheet-undo{margin-right:var(--s10)}}
 /* Sim Q6 (Nov 16): four settings - Suggest from across the width, then Megas on team, Swap my Mega and Count abilities three across (phones too);
    on a wide column all four in one row */
@@ -282,7 +282,7 @@ a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
 input::placeholder,textarea::placeholder{color:var(--ink-3);opacity:1}
 /* Nov 16 audit (detector "straggler"): paragraphs avoid a lone last word too, as links already do; 137 -> 79 one-word last lines over 23 pages at
    390 and 1280, for about 7px of page height per page */
-p,li,small{text-wrap:pretty}
+p,li,small{text-wrap-style:pretty}
 /* Nov 16 audit (detector, day and night): white words on the type-coloured tickets, the Events plate and This Week's headline measured 3.6-4.2:1;
    a 15% dark layer under the ticket lines brings every type colour to 4.6:1+ (official tickets are gold with dark ink and stay as they are) */
 .tk:not(.off),.ev-oh,.wk-hl{background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(var(--tk-scrim),var(--tk-scrim)),linear-gradient(115deg,var(--ta),var(--tb))}

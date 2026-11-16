@@ -695,7 +695,7 @@
 .bd-why>div{padding-top:var(--s3);border-top:1px solid var(--rule);min-width:0}
 .bd-why .n{font:900 var(--t28)/1 var(--u);font-style:italic;white-space:nowrap}.bd-why .n.good{color:var(--good-text)}
 .bd-why .unit{font-family:var(--b);font-style:normal;font-weight:600;font-size:var(--t15)}
-.bd-why .l{display:block;margin-top:var(--s1);font:700 var(--t15)/1.3 var(--b);text-wrap:balance} /* review (Nov 13): titles split evenly, no lone word; '1 swap' / '4 basics' kept together */.bd-why p{margin:var(--s1) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.bd-why .l{display:block;margin-top:var(--s1);font:700 var(--t15)/1.3 var(--b);text-wrap-style:balance} /* review (Nov 13): titles split evenly, no lone word; '1 swap' / '4 basics' kept together */.bd-why p{margin:var(--s1) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .bd-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s6);padding-bottom:var(--s8)}
 .bd-catch{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)} /* Build Q3 B (Sim, Nov 13): right after the buttons it belongs with */
 .bd-busy,.bd-none{padding:var(--s8) 0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
@@ -1296,8 +1296,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .dc2-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap)} /* 44 px to tap */
 @media (min-width:1024px){.dc2-tok button:last-child{grid-column:1/-1;justify-self:center}} /* the fifth token centred under the two pairs */
 /* long KO text (Focus Sash wording): the plate wraps inside the screen and the HP line moves under it, never off the side */
-.dc2-ko{flex-wrap:wrap;row-gap:var(--s1)}.dc2-ko b{flex:0 1 auto;max-width:100%;text-wrap:balance}
-.dc2-mv.play .ko{max-width:200px;text-wrap:balance}.dc2-mv .ko{text-wrap:balance}
+.dc2-ko{flex-wrap:wrap;row-gap:var(--s1)}.dc2-ko b{flex:0 1 auto;max-width:100%;text-wrap-style:balance}
+.dc2-mv.play .ko{max-width:200px;text-wrap-style:balance}.dc2-mv .ko{text-wrap-style:balance}
 /* iPad (700-1023): not designed yet (Sim wants it after this); until then the phone scene, scaled up to the room it has */
 @media (min-width:700px) and (max-width:1023.98px){.dc2 .ms-card{--ch:224px}.dc2 .mc-mon .np-mon,.dc2 .mc-mon .np-mon .st{--iw:120px}
  .dc2-hand{grid-template-columns:repeat(var(--hn),minmax(0,168px));gap:var(--s2)}.dc2-hand .dc2-mv{min-height:180px;padding:var(--s3)}.dc2-hand .dc2-mv .nm{font-size:var(--t15)}.dc2-hand .dc2-mv .rg{font-size:var(--t20)}.dc2-mv .cat{display:block}
@@ -1328,7 +1328,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    in a 76 px card) still break, and only at the dash */
 @media (max-width:1023.98px){.dc2-hand .dc2-mv .rg{font-size:var(--t15);letter-spacing:-.02em}}
 /* narrow phones (under 380): "x–y of z HP" fills the space beside the big number; the KO plate gets its own line under the move line */
-@media (max-width:379.98px){.dc2-ko{display:contents}.dc2-hp{grid-column:2;grid-row:1;align-self:center;text-wrap:balance}.dc2-ko b{grid-column:1/-1;justify-self:start;margin-top:var(--s2)}}
+@media (max-width:379.98px){.dc2-ko{display:contents}.dc2-hp{grid-column:2;grid-row:1;align-self:center;text-wrap-style:balance}.dc2-ko b{grid-column:1/-1;justify-self:start;margin-top:var(--s2)}}
 .dc2-tok button span{display:block;white-space:nowrap}
 @media (max-width:359.98px){.dc2-tok button{font-stretch:80%}} /* "Hits both" fits a 320-wide pill (narrower letters, as Basculegion on My Box) */
 /* desktop (review point 3): the tilted surface reaches up and out behind the far row, so the defender and the KO Board wings lie on the
@@ -1349,7 +1349,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699.98px){.dc2-grid thead th:first-child{width:var(--s10)}}
 @media (max-width:379.98px){.dc2-grid{border-spacing:1px}.dc2-grid td{padding:var(--s1) 2px}.dc2-grid td b{font-size:var(--t13);letter-spacing:-.02em}}
 .dc2-tok button[aria-pressed="false"]{border-color:color-mix(in srgb,var(--ink) 28%,transparent)} /* off tokens read as buttons (the table edge colour, 10-12%, was too faint) */
-.dc2-dl p{text-wrap:pretty} /* the set readout breaks between whole phrases where it can (Close / Combat split) */
+.dc2-dl p{text-wrap-style:pretty} /* the set readout breaks between whole phrases where it can (Close / Combat split) */
 /* iPad upright, 700-1023 (Sim, Nov 14, iPad Q1 B): the table on the left, the KO Board beside it on the right, so the duel and the board
    share the first screen; the rest (Details, folds) runs full width below */
 @media (min-width:700px) and (max-width:1023.98px){
@@ -2058,14 +2058,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .mh-pair{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}.tm-hero.mt .mh-slot{grid-template-columns:minmax(0,1fr);row-gap:var(--s2)}
   .mh .ms-card{height:152px}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:96px}.mh .mc-id h3{font-size:var(--t13)}.mh-it b{font-size:var(--t15)}
   .mh-slot .mh-mv{display:none}.mt-emv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-  .tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr) minmax(0,48%);align-items:start}.tm-hero.mt .mt-belt .w span{text-wrap:balance;text-align:center} /* the belt never takes more than about half: a long band word wraps evenly (Sim, Nov 15 night) */.tm-hero.mt .mt-right{grid-column:1/-1}
+  .tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr) minmax(0,48%);align-items:start}.tm-hero.mt .mt-belt .w span{text-wrap-style:balance;text-align:center} /* the belt never takes more than about half: a long band word wraps evenly (Sim, Nov 15 night) */.tm-hero.mt .mt-right{grid-column:1/-1}
   .tm-hero.mt .mt-belt .np-score b{font-size:var(--d64)}.mt-id .tm-name{font-size:var(--t24)}.mt-id{gap:var(--s1)}.mt-id .tm-links{margin-top:0}.tm-hero.mt{gap:var(--s4)}
   .mt-band{font-size:var(--t13);letter-spacing:.02em;column-gap:var(--s2)}.mt-band span{white-space:nowrap}
   .mt-edit{padding:var(--s2) var(--s3);gap:var(--s2)}.tm-six.mh .sx-plan{padding:var(--s3)}} /* Nov 16 (Sim's Q5, under her authority): 12px so the Game Plan link's 44px tap area fits inside the slanted panel */
 @media (max-width:399.98px){.mt-band span:nth-child(2){white-space:normal}}
 @media (max-width:699.98px){.tm-hero.mt .mt-id{display:contents}.tm-hero.mt .mt-id>*{grid-column:1/-1}.tm-hero.mt .mt-id>.fn-k,.tm-hero.mt .mt-id>.tm-name{grid-column:1}
   .tm-hero.mt .mt-id>.fn-k{grid-row:1;align-self:end}.tm-hero.mt .mt-id>.tm-name{grid-row:2;align-self:start}.tm-hero.mt .mt-belt{grid-column:2;grid-row:1/3}
-  .tm-hero.mt .mt-head{row-gap:var(--s2)}.mt-band span:nth-child(2){text-wrap:balance}}
+  .tm-hero.mt .mt-head{row-gap:var(--s2)}.mt-band span:nth-child(2){text-wrap-style:balance}}
 /* My Team: The Hand, piece 4 (brief section 5): Matchups full width above Suggestions (left) and Team Checks / Your Games (right);
    iPhone order Matchups, Suggestions, Team Checks, Your Games */
 .tm-work.mt-work,.tm-work.mt-work:has(.tm-yg){grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"mu mu" "sg ck" "sg yg";grid-template-rows:auto auto 1fr}
@@ -2506,8 +2506,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1100px) and (max-width:1279.98px){.tp-ct b{font-size:var(--t17)}.tp-lead .np-mon,.tp-lead .np-mon .st{--iw:64px}}
 .tp-open{grid-template-columns:minmax(0,1fr)}
 .tp-name{white-space:nowrap}.tp-ph{min-height:72px}.tp-ph>div{min-width:0}
-@media (min-width:1100px) and (max-width:1599.98px){.tp-pile.g .tp-name,.tp-pile.p .tp-name{font-size:var(--t15)}.tp-pile.g .tp-n,.tp-pile.p .tp-n{font-size:var(--t34)}}
-.tp-open{margin-top:var(--s6)}.tp-open .tp-start{top:calc(var(--s3)*-1.5)}
+@media (min-width:1100px) and (max-width:1599.98px){.tp-ph{gap:var(--s2)}.tp-pile.g .tp-name,.tp-pile.p .tp-name{font-size:var(--t15)}.tp-pile.g .tp-n,.tp-pile.p .tp-n{font-size:var(--t34)}}
+.tp-open{margin-top:var(--s6);clip-path:polygon(0 -24px,100% -24px,100% 0,calc(100% - 16px) 100%,0 100%)}.tp-open .tp-start{top:calc(var(--s3)*-1.5)}
 .tp-four{flex-wrap:wrap}.tp-four .big .np-mon,.tp-four .big .np-mon .st{--iw:64px}.tp-four .np-mon,.tp-four .np-mon .st{--iw:48px}
 @media (min-width:1100px) and (max-width:1279.98px){.tp-pile.g .tp-name,.tp-pile.p .tp-name{font-size:var(--t13)}}
 /* audit fix (Nov 14): 1100-1279 the name no longer runs under the score, and Spec gets the full width (it was cut off) */
@@ -2858,7 +2858,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* the shortest row: the count and one Pokémon, the Pokémon to the right of the words, so 152px is enough */
 @media (min-width:700px){.ar-row.r2 .ar-reg{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto 1fr;padding-bottom:0}.ar-row.r2 .ar-reg>:not(.ar-km){grid-column:1}.ar-row.r2 .ar-reg>.ar-km{grid-column:2;grid-row:1/-1}.ar-row.r2 .ar-km span:not(.lead){display:none}}
 @media (max-width:699.98px){.ar-row .ar-reg{height:auto}}
-.ar-ban h2{margin-bottom:var(--s2)}.ar-pl span{text-wrap:pretty} /* audit: guide name clear of its share; no lone '90' in the plate */
+.ar-ban h2{margin-bottom:var(--s2)}.ar-pl span{text-wrap-style:pretty} /* audit: guide name clear of its share; no lone '90' in the plate */
 
 /* audit fixes (Nov 15), This Week: small-phone ticket names may break anywhere; Most Used 3 + 2 on small phones; 3x3 weather tiles below
    1280 (9 across cut the numbers at 1100); counts never touch their words; shorter tiles; folds show their open/close mark */
@@ -2951,7 +2951,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:429.98px){.tt thead th{padding-left:2px;padding-right:2px}.tt-nm{font-stretch:88%}.tt td{padding-left:var(--s1);padding-right:var(--s1)}} /* Nov 15 (re-audit #5): at 320-390 the names touched ("Charizard YWhimsicottBasculegion") and the move chips met the next column; a small gap each side, names in the approved narrower letters (88%, as Home and My Box) */
 @media (max-width:379.98px){.tt td{font-stretch:88%;padding-left:6px;padding-right:6px}.tt-mv .np-type{font-stretch:88%}} /* Nov 15 (re-audit #5): the approved narrower letters for cell text on the smallest phones ("Adaptability" met the edge, chips met the next column) */
 @media (max-width:399.98px){.mt-id .tm-name{font-size:var(--t20)}} /* Nov 15 (re-audit #4): beside the score box at 320 the name column is ~140 px; "Tailwind" broke mid-word at 24 px */
-.tm-name{text-wrap:balance} /* Nov 15 (re-audit #4): no lone word on the team name's last line */
+.tm-name{text-wrap-style:balance} /* Nov 15 (re-audit #4): no lone word on the team name's last line */
 @media (max-width:699.98px){.cxf-half.b .cxf-id{margin-top:var(--s6)}} /* Nov 15 (re-audit #3): Team B's headline starts below the VS badge (it sat under its lower half and broke "Challeng/er" at 320) */
 @media (max-width:359.98px){.cxf-id h2{font-size:var(--t17)}} /* Nov 15 (re-audit #3): at 320 "Challenger" (141 px at 20) was wider than its 128 px box */
 /* Nov 15 (re-audit #10): tap areas: the search chip x (was 8x15), Events' stacked Recent links (20 px tall, hit areas overlapped), the calendar link (~40 px) */
@@ -3211,14 +3211,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* the top 10 always fills its rows evenly: 2 columns of sprite + name on phones, 5 across in the middle, all 10 in one row when wide */
 .npmini{container-type:inline-size}
 .npspr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s4)}
-.npspr .mth-spr{display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:var(--s3);text-align:left}.npspr .mth-spr small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);text-wrap:balance}
+.npspr .mth-spr{display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:var(--s3);text-align:left}.npspr .mth-spr small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);text-wrap-style:balance}
 @container (min-width:480px){.npspr{grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s4) var(--s3)}.npspr .mth-spr{grid-template-columns:none;grid-template-rows:48px auto;justify-items:center;align-items:start;text-align:center}}
 @container (min-width:900px){.npspr{grid-template-columns:repeat(10,minmax(0,1fr))}}
 .trk-edge{stroke:var(--rc-ink)}.trk-dot{stroke:var(--rc-ink);stroke-width:1.5} /* audit Nov 16 (WCAG 1.4.11): a dark edge on every line and dot, so the amber and green tier lines read at 3:1 on the white card; the tier colours stay */
 .ev-f [aria-pressed="true"] small{opacity:1} /* audit Nov 16 (WCAG 1.4.3): the count on the selected night chip was 3.9:1 at 80%; full strength on the selected chip */
 /* audit Nov 16 (WCAG 1.4.12 text spacing): names wrap instead of being cut with "…": Build's winning-event names (cut at 320 even at normal
    spacing) and My Box names (cut when a reader raises letter/word spacing); at normal spacing box names still fit on one line */
-.bd-wev{white-space:normal;overflow:visible;text-overflow:clip;text-wrap:balance}
+.bd-wev{white-space:normal;overflow:visible;text-overflow:clip;text-wrap-style:balance}
 .bx-t>b{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
 /* style guide: the logo row (Nov 16) */
 .sg-logo{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s6);align-items:end}
@@ -3248,7 +3248,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:499.98px){.dc2-hand{grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch;gap:var(--s2);padding-top:var(--s2)}
   .dc2-hand .dc2-mv{min-height:112px;margin:0}.dc2-hand>:nth-child(odd){rotate:-1.5deg}.dc2-hand>:nth-child(even){rotate:1.5deg}}
 @media (max-width:359.98px){.dc2-hand .dc2-mv .nm{font-size:var(--t13);letter-spacing:-.03em}.dc2-hand .dc2-mv{padding-inline:var(--s1)}} /* 320-359: the longest one-word moves (Flamethrower) fit at 13px */
-.tc-h h1{text-wrap:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
+.tc-h h1{text-wrap-style:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
 .tc>.tc-h,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
 @media (max-width:389.98px){.pk-pc .mc-nm{font-size:var(--t13);overflow-wrap:normal}} /* morning helper (confirmed): partner names broke mid-word at 320 (Incineroa/r) and Kingambit ran 2px over at 360; 13px fits them whole */
 @media (max-width:359.98px){.pk-pc .mc-nm{letter-spacing:-.03em}} /* 320-359: Whimsicott fits whole */

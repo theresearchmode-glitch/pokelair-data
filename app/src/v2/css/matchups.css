@@ -94,7 +94,7 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 /* the threat sheet */
 .mu-sh{padding:var(--s8)}
 .mu-shh{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4) var(--s8);flex-wrap:wrap;padding-right:var(--s12)}
-.mu-shh h2{margin-top:var(--s3);font-size:var(--t34);text-wrap:balance}
+.mu-shh h2{margin-top:var(--s3);font-size:var(--t34);text-wrap-style:balance}
 .mu-score{flex:0 1 auto;min-width:0}.mu-score .w{min-width:0}
 .mu-sum{margin-top:var(--s5);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.mu-sum b{color:var(--ink)}
 .mu-stiles{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:var(--s2);margin-top:var(--s5)}
@@ -182,7 +182,7 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 .tm-mus .mu-cards .mu-out .mu-row .mu-dis{display:block;text-align:center}
 .tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:112px}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:100%;justify-self:stretch}
 .tm-mus .mu-cards .mu-card img{width:100%;height:auto}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:auto;max-width:128px;justify-self:center}
-.tm-mus .mu-cards .mu-out .mu-row .mu-dis{max-width:100%;text-wrap:balance}
+.tm-mus .mu-cards .mu-out .mu-row .mu-dis{max-width:100%;text-wrap-style:balance}
 @media (max-width:699.98px){.tm-mus .mu-cards .mu-card .ms-card{height:100px}.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:76px}.tm-mus .mu-cards .mu-card{max-width:86px}.tm-mus .mu-cards .mu-out .mu-row .tm-v{font-size:var(--t13);padding:0 var(--s1);gap:2px;clip-path:none;background:none;white-space:nowrap}.tm-mus .mu-cards .mu-out .mu-row .tm-v i{width:8px}}
 /* Nov 15 (full check, a 5-of-6 team on phones): a row with a "Calc disagrees" note had no place for the note, so the grid's auto-placement
    pushed the verdict onto the name. The verdict keeps its column on the first line; the note gets the line under the name and verdict. */
