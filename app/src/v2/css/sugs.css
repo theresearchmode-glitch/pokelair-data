@@ -303,3 +303,6 @@ p,li,small{text-wrap:pretty}
 /* the day and night logos are both in the page; the theme attribute shows one (Sim, Nov 16: a theme change without a redraw left the day logo at night) */
 .np-lg-d{display:contents}.np-lg-n{display:none}
 :root[data-theme="night"] .np-lg-d{display:none}:root[data-theme="night"] .np-lg-n{display:contents}
+/* Nov 16 audit (Track Record, 1920): the receipt stretches to the right column's height and its barcode was pushed to the bottom, leaving an
+   empty band in the middle; its lines now spread evenly down the paper, so it reads as a longer receipt instead */
+@media (min-width:1100px){.trk-rc{justify-content:space-between}.trk-bar{margin-top:0}}
