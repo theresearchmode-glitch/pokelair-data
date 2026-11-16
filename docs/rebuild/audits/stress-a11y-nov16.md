@@ -5,10 +5,11 @@ SERIOUS
 2. Home "Import a Team ›" then Escape: focus fell to <body>. FIXED in two places: a heading opener gets a temporary tabindex; and V2.redraw
    restores focus when the merge strips a temporary tabindex (that was the real cause: My Team redrew ~330 ms later). Full test run pending.
 3. "?" tips unreachable by keyboard / screen reader. FIXED (focus into the tip; Tab continues after the '?'; Shift+Tab / Escape back to it).
-MINOR (open)
+MINOR (status Nov 16, 3:27 AM)
 4. Headings skip h1 -> h3 (My Team tiles; Practice pairs). 5. Same-name buttons without context (Winning Teams: Load Team / Copy / Set as
 Opponent / Compare x3; Pokémon page "Show ›" x4). 6. Forced colours (Windows high contrast): no rules; filled buttons lose edges, selected
 states vanish, watermark letters turn solid. 7. Meta filters don't announce the new count. 8. Header search re-announces the whole list each
 keystroke. 9. 200% zoom: Meta chip row cut with no sign it scrolls.
+STATUS: 4 FIXED 3:26 AM (m-h.cjs 2 skips -> 0). 5 FIXED (Winning Teams buttons say which team; the four 'Show ›' are described by their section heading). 6 FIXED (forced-colors rules: Highlight fill for selected items, edges on buttons, watermarks hidden). 7 FIXED (the Meta count is a status). 8 FIXED 3:27 AM (a count status instead of a live list). 9 OPEN: 200% zoom chip row gives no sign it scrolls (a scroll hint needs scroll-driven animation support; after the switch).
 PASSED: lang, one h1 and one main per route, no unnamed controls, decorative images, skip link, visible focus everywhere, modal sheets trap
 and return focus (20+ sheets), reduced motion honoured.

@@ -83,7 +83,7 @@ V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back :
   const first = wrap.querySelector(o.focus || '.np-sheet'); (first || wrap.querySelector('.np-sheet')).focus({preventScroll: true});
   return wrap.querySelector('.np-sheet'); };
 V2.closeSheet = (quiet, swap) => { const S = V2._sheet; if (!S) return; V2._sheet = null; S.wrap.remove(); document.documentElement.classList.remove('np-locked'); { const app = document.getElementById('app'); if (app) app.inert = false; } if (!swap) V2.histClose();
-  if (S.onClose) try { S.onClose(!!swap); } catch (e) {} /* Nov 15: onClose learns whether another sheet is replacing this one */ if (!quiet && S.back && S.back.isConnected) S.back.focus({preventScroll: true}); };
+  if (S.onClose) try { S.onClose(!!swap); } catch (e) {} /* Nov 15: onClose learns whether another sheet is replacing this one */ if (!quiet && S.back && S.back.isConnected) { const b = S.back; if (!b.matches('a[href],button,input,select,textarea,summary,[tabindex]')) { b.tabIndex = -1; b.addEventListener('blur', () => b.removeAttribute('tabindex'), {once: true}); } b.focus({preventScroll: true}); } }; /* stress test (Nov 16): a heading opener (Home's Import lands on My Team's h1) can't take focus without a temporary tabindex: focus fell to <body> */ /* stress test (Nov 16): the opener was gone (Home's Import opens My Team), focus fell to <body>; now the page heading */
 document.addEventListener('click', e => { if (V2._sheet && e.target.closest('[data-v2close]')) V2.closeSheet(); });
 document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
   if (e.key === 'Escape') { const t = e.target; if (t && t.matches && t.matches('[data-btfind]') && t.value) return; /* code review B1: a filled Their Six box clears first (its own handler); the next Escape closes */ e.preventDefault(); V2.closeSheet(); return; }
@@ -105,7 +105,7 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
-V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, a saved team or a page" aria-label="Find a Pokémon, a saved team or a page" autocomplete="off"></label><div class="hits" data-v2hits aria-live="polite"></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
+V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, a saved team or a page" aria-label="Find a Pokémon, a saved team or a page" autocomplete="off"></label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
   const inp = sh.querySelector('[data-v2q]'), out = sh.querySelector('[data-v2hits]');
   // saved teams by name too (today's search does): choosing one opens it, like Open in Saved Teams
   const teams = q => { q = q.trim().toLowerCase(); return q && typeof S === 'object' ? S.teams.filter(t => t.format !== 'singles' && String(t.name).toLowerCase().includes(q)).slice(0, 4) : []; };
@@ -115,7 +115,9 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
       : r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${n}</b>${V2.placeLines[k] ? `<small>${V2.esc(V2.placeLines[k])}</small>` : ''}</span></a>`).join('')
         + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
         + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join(''); };
-  inp.addEventListener('input', draw);
+  /* a11y stress (Nov 16): the list itself re-announced every hit on each keystroke; now a short status says how many (or that nothing matched) */
+  const say = sh.querySelector('[data-v2hitsay]'), draw2 = () => { draw(); if (!say) return; const q = inp.value.trim(), n = out.querySelectorAll('.np-hit').length; say.textContent = !q ? '' : n ? `${n} result${n === 1 ? '' : 's'}` : 'No matches'; };
+  inp.addEventListener('input', draw2);
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
   draw(); };
 // a Pokémon picked anywhere opens its info sheet; pages replace V2.openMon when the full sheet is built (R4)
@@ -187,10 +189,13 @@ V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg =
 // say it once (Nov 16): a page's own data date shows only when it differs from the footer's 'Data as of' (V2.otherDay('Nov 10') -> '' when the same)
 V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + d.replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); };
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
+/* functions stress test (Nov 16): with storage blocked, Save still said "Saved" and nothing survived a reload; one check, and the save words say so */
+V2.canStore = (() => { try { localStorage.setItem('np2.probe', '1'); localStorage.removeItem('np2.probe'); return true; } catch (e) { return false; } })();
+V2.noStoreTxt = 'This browser blocks saving, so it lasts until you close the page.';
 V2.asOf = () => { try { const t = typeof dataDateText === 'function' ? dataDateText() : ''; if (t) return t;
   /* no live data (SHELL-29, Nov 16): the built-in snapshot's own date, as the Ratings line used to show it, so the footer is never dateless */
   const pf = typeof activePerf === 'function' ? activePerf() : null, u = pf && pf.updated ? Date.parse(String(pf.updated).slice(0, 10) + 'T12:00:00Z') : NaN; if (isNaN(u)) return '';
-  const days = Math.floor((Date.now() - u) / 864e5); return 'Data as of ' + new Date(u).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + (days > 2 ? ' (' + days + ' days old)' : ''); } catch (e) { return ''; } };
+  const days = calDays(u, Date.now()); return 'Data as of ' + new Date(u).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + (days > 2 ? ' (' + days + ' days old)' : ''); } catch (e) { return ''; } };
 V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
 // Word list (Sim, Nov 9; Nov 12: "fix them based on your recommendation"): the idea is Matchups and its levels are Beats it /
 // Handles it, never "ready". Shared logic (also today's site) still writes "Ready for ..."; the new site says it the word list's way.
@@ -242,6 +247,8 @@ V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app
   const y = scrollY, act = document.activeElement, key = V2.focusKey(act), r = V2.shell(), t = document.createElement('template'); t.innerHTML = r.html;
   V2.morphKids(app, t.content); scrollTo(0, y);
   if (key && !act.isConnected) { const e = [...document.querySelectorAll('#app ' + key.sel)][Math.max(0, key.i)]; if (e) e.focus({preventScroll: true}); }
+  /* stress test (Nov 16): a focused heading kept by the merge loses its temporary tabindex (copied from the fresh HTML) and the browser drops focus to <body>; put both back */
+  else if (act && act !== document.body && act.isConnected && document.activeElement !== act && !(V2._sheet)) { if (!act.matches('a[href],button,input,select,textarea,summary,[tabindex]')) { act.tabIndex = -1; act.addEventListener('blur', () => act.removeAttribute('tabindex'), {once: true}); } act.focus({preventScroll: true}); }
   /* a page's after() runs after EVERY redraw, not only on entry: it must be safe to repeat (measure and lay out; anything that opens,
      focuses or announces must guard itself to run once, as #sheet and the Pokémon page's name focus do; code review B9c) */
   if (r.P && r.P.after) try { r.P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } };

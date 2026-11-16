@@ -163,7 +163,7 @@ V2.battleLog = P => { const E = V2.esc, ms = members(); if (ms.length < 4) retur
   const order = pick.length === 4 ? `lead ${E(dn(pick[0]))} + ${E(dn(pick[1]))}, back ${E(dn(pick[2]))} + ${E(dn(pick[3]))}` : `${pick.length} of 4 picked`;
   const four = `<button type="button" class="bt-lfour" data-btlfour aria-label="Change the four you brought: ${order}"><b>${order}</b></button> (tap to change)`;
   const whose = fromPlan ? "the plan's four" : 'your four';
-  const say = L.length ? `<p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> games logged</span></p><p class="bt-lsay">Next game: log it with ${whose}: ${four}.</p>`
+  const say = L.length ? `<p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> ${L.length === 1 ? 'game' : 'games'} logged</span></p><p class="bt-lsay">Next game: log it with ${whose}: ${four}.</p>`
     : `<p class="bt-lsay">No games logged yet. After the match, log the result with ${whose}: ${four}.</p>`;
   V2.btUi.logPicksHtml = `<div class="bt-lpicks" role="group" aria-label="The four you brought, leads first">${ms.map(m => { const i = pick.indexOf(m.p.n);
     return `<button type="button" class="bt-lp${i >= 0 ? ' on' : ''}" data-btlp="${E(m.p.n)}" aria-pressed="${i >= 0}">${V2.mon(m.p.n, {iw: 40, bare: true})}<span>${V2.rowName(m.d)}</span><small>${i >= 0 ? (i < 2 ? 'Lead ' : 'Back ') + (i + 1) : '&nbsp;'}</small></button>`; }).join('')}</div>`;
@@ -180,7 +180,7 @@ V2.btRecord = () => { const E = V2.esc, L = Array.isArray(S.log) ? S.log : []; i
   const leads = [...byLead].map(([k, e]) => [k, logStats(e)]).filter(x => x[1].n >= 2).sort((a, b) => b[1].pct - a[1].pct || b[1].n - a[1].n).slice(0, 4);
   const opps = [...byOpp].map(([n, e]) => [n, logStats(e)]).filter(x => x[1].n >= 3 && x[1].pct <= 50).sort((a, b) => a[1].pct - b[1].pct).slice(0, 4); // Nov 15 (re-audit #23): a 2-1 win isn't a tough opponent: only even or losing records
   const when = t => { try { return new Date(t).toLocaleDateString([], {month: 'short', day: 'numeric'}); } catch (e) { return ''; } };
-  return `<div class="bt-rec"><h2 class="u">Your Games</h2><p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> games logged</span></p>
+  return `<div class="bt-rec"><h2 class="u">Your Games</h2><p class="bt-lrec"><span><b class="u">${all.w}–${all.l}</b> overall · ${all.pct}%</span>${tr ? `<span><b class="u">${tr.w}–${tr.l}</b> this team · ${tr.pct}%</span>` : ''}<span><b class="u">${L.length}</b> ${L.length === 1 ? 'game' : 'games'} logged</span></p>
     <h3 class="bt-oh">Your Pokémon</h3><ul class="bt-rrows">${mons.map(([n, st]) => row(E(dn(n)), st)).join('')}</ul>
     ${leads.length ? `<h3 class="bt-oh">Lead Pairs (2+ Games)</h3><ul class="bt-rrows">${leads.map(([k, st]) => row(k.split('|').map(x => E(dn(x))).join(' + '), st)).join('')}</ul>` : ''}
     ${opps.length ? `<h3 class="bt-oh">Toughest Opponents (3+ Games)</h3><ul class="bt-rrows">${opps.map(([n, st]) => row(E(dn(n)), st)).join('')}</ul>` : ''}
@@ -193,7 +193,10 @@ V2.btReplaySheet = () => `<div class="bt-rep"><h2 class="u">Log from a Showdown 
   <div class="row"><button type="button" class="np-btn" data-btrepgo><span>Log a Game</span></button><label class="np-btn2"><span>Choose Replay File</span><input type="file" data-btrepfile accept=".html,.htm,.txt,.log" hidden></label></div><p class="fine" data-btrepout aria-live="polite"></p></div>`;
 V2.btAddReplay = text => { let x; try { x = parseReplay(text); } catch (e) { console.error(e); x = {error: "That log couldn't be read. Paste the whole battle log from the replay."}; } const out = document.querySelector('[data-btrepout]'); /* code review C8: no crash on a bad paste */
   if (x.error) { if (out) out.textContent = x.error; return; } if (!Array.isArray(S.log)) S.log = [];
-  S.log.push({t: Date.now(), r: x.r, b: x.b, tm: members().map(m => m.p.n), o: x.o}); if (S.log.length > 400) S.log = S.log.slice(-400); persist();
+  /* functions stress test (Nov 16): the same replay pasted twice was logged twice; each replay keeps a short fingerprint of its text */
+  const rp = (() => { let h = 5381; const t = String(text).replace(/\s+/g, ' ').trim(); for (let i = 0; i < t.length; i++) h = (h * 33 + t.charCodeAt(i)) >>> 0; return h.toString(36) + t.length.toString(36); })();
+  if (S.log.some(g => g && g.rp === rp)) { if (out) out.textContent = 'That replay is already logged.'; return; }
+  S.log.push({t: Date.now(), r: x.r, b: x.b, tm: members().map(m => m.p.n), o: x.o, rp}); if (S.log.length > 400) S.log = S.log.slice(-400); persist();
   if (out) out.textContent = `${x.r === 'W' ? 'Win' : 'Loss'} logged: ${x.me} vs ${x.them}, you brought ${x.b.map(n => (byName.get(n) || {}).d || n).join(', ')}.`;
   const ta = document.querySelector('[data-btrepin]'); if (ta) ta.value = ''; V2.redraw(); toast(x.r === 'W' ? 'Win logged from replay' : 'Loss logged from replay'); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-btlp],[data-btlfour],[data-btlres],[data-btreplay],[data-btrepgo],[data-btrecord],[data-btldel]'); if (!b) return; const d = b.dataset;

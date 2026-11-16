@@ -151,7 +151,7 @@ V2.pkOpen = id => { try { return localStorage.getItem('np2.pkopen.' + id) === '1
 V2.pkFoldAll = (html, p) => { const S = V2.pkSums(p);
   return ['pk-s3', 'pk-s4', 'pk-s5', 'pk-s6', 'pk-s7'].reduce((h, id) => { const tag = `<section class="pk-sec" aria-labelledby="${id}">`; const i = h.indexOf(tag); if (i < 0 || !S[id]) return h;
     const j = h.indexOf('</header>', i) + '</header>'.length, open = V2.pkOpen(id);
-    const sum = `<div class="pk-sum"><p>${S[id]}</p><button type="button" class="np-link" data-pkopen="${id}" aria-expanded="${open}" aria-controls="${id}-sec">${open ? 'Hide' : 'Show ›'}</button></div>`;
+    const sum = `<div class="pk-sum"><p>${S[id]}</p><button type="button" class="np-link" data-pkopen="${id}" aria-expanded="${open}" aria-controls="${id}-sec" aria-describedby="${id}">${open ? 'Hide' : 'Show ›'}</button></div>`; /* stress test (Nov 16): four 'Show ›' told apart by their section's heading */
     return h.slice(0, i) + `<section class="pk-sec pk-fold${open ? ' open' : ''}" id="${id}-sec" aria-labelledby="${id}">` + h.slice(i + tag.length, j) + sum + h.slice(j); }, html); };
 V2.pkSetOpen = (id, open) => { const s = document.getElementById(id + '-sec'), b = s && s.querySelector('[data-pkopen]'); if (!s) return; s.classList.toggle('open', open);
   if (b) { b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide' : 'Show ›'; } try { localStorage.setItem('np2.pkopen.' + id, open ? '1' : '0'); } catch (e) {} V2.pkPair(); if (open) V2.pkFlags(); };

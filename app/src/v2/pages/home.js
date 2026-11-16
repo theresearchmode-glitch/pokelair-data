@@ -32,7 +32,7 @@ V2.homeFight = () => { const E = V2.esc, ms = members(), has = ms.length > 0, n 
   if (C) { const {ev, t} = C, key = ev.id + '#' + ev.top.indexOf(t), sure = V2.hmUi.sure === key;
     them = `<div class="fn-corner them hm-them"><div class="fn-chd"><p class="fn-k">The Champion's corner · latest winner</p><p class="u fn-name">${E(V2.evTitle(ev.name))}</p><p class="fn-who"><b>${E(teamWho(t))}</b> · ${E(evDate(ev.date))}${ev.players ? ` · ${ev.players} players` : ''}</p></div>
       <div class="fn-six">${C.six.map(x => fighter(x.p.n, x.it, false)).join('')}</div>
-      ${sure ? V2.hmSure(key) : ''}<p class="fn-cacts">${sure ? '' : `<button type="button" class="np-link" data-hmload="${E(key)}">Load Team ›</button>`}<button type="button" class="np-link" data-hmcopy="${E(key)}">Copy for Showdown</button><a class="np-link" href="#meta">All ${C.n} Events ›</a></p></div>`; }
+      ${sure ? V2.hmSure(key) : ''}<p class="fn-cacts">${sure ? '' : `<button type="button" class="np-link" data-hmload="${E(key)}">Load Team ›</button>`}<button type="button" class="np-link" data-hmcopy="${E(key)}">Copy for Showdown</button><a class="np-link" href="#events">All ${C.n} Events ›</a></p></div>`; }
   const prep = has ? (C && FC ? `<button type="button" class="np-btn fn-prep" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}">Set as Opponent</button>` : '') : '<a class="np-btn fn-prep" href="#team">Add Your Six</a>';
   const plan = lead.length >= 2 ? `<p class="fn-plan hm-plan"><strong class="u">Game Plan</strong> <span>${E(vs)}: lead <b>${pair(lead)}</b>${back.length ? `, back ${pair(back)}` : ''}${bench.length ? `, bench ${pair(bench)}` : ''}.</span></p>`
     : `<p class="fn-plan hm-plan"><strong class="u">Game Plan</strong> <span>${has ? 'Add at least four Pokémon and NastyPlot plans your four and two leads.' : 'Add your six and NastyPlot plans your four and two leads against the Champion.'}</span></p>`;
@@ -109,7 +109,7 @@ V2.hmUi.more = (() => { try { return localStorage.getItem('np2.fold.homemore') =
 // More on Home fold to Team Preview Practice, the page about choosing what to bring (same markup and numbers)
 V2.pairsHtml = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''; };
   const games = RES && RES.tc && RES.tc.games, pairs = homePairs(CH.metaSix(), 4);
-  const pr = pairs.length >= 2 ? `<div class="hm-mp"><p class="np-eyebrow">Team preview · Showdown replays${games ? ` · ${homeNum(games)} games` : ''}</p><h3 class="u">Doubles is played in <span>pairs.</span></h3>
+  const pr = pairs.length >= 2 ? `<div class="hm-mp"><p class="np-eyebrow">Team preview · Showdown replays${games ? ` · ${homeNum(games)} games` : ''}</p><h3 class="u" aria-level="2">Doubles is played in <span>pairs.</span></h3>
     <div class="hm-pairs">${pairs.map(x => `<button type="button" class="hm-pair" data-v2mon="${E(x.b.n)}" aria-label="${E(x.a.d)} and ${E(x.b.d)}: brought together ${x.pct}%"><span class="hm-pi">${img(x.a.n)}${img(x.b.n)}</span><span><b class="hm-pp">${x.pct}<span class="unit">%</span></b><span class="hm-pn">${V2.rowName(x.a.d)} + ${V2.rowName(x.b.d)}</span><small>${homeNum(x.g)} games</small></span></button>`).join('')}</div>
     <p class="hm-hint">% = how often the pair is brought together when both are on the team.</p></div>` : '';
   return pr; };

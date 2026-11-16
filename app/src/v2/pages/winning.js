@@ -17,21 +17,21 @@ V2.wtChips = names => { const L = String(teamPlanLabel(names) || '').split(' · 
 // one Card: tap opens the Pokémon's info sheet (as everywhere a Card is shown)
 V2.wtCard = (n, iw, i) => { const p = byName.get(n); if (!p) return ''; const d = V2.disp(n);
   return `<button type="button" class="wt-card" style="--i:${i}" data-v2mon="${V2.esc(n)}" aria-label="${V2.esc(d)}: open its page">${V2.msCard(p, n, `<h3 class="u">${V2.nameHtml(d)}</h3>`, '', iw)}</button>`; };
-V2.wtActs = k => { const E = V2.esc, sure = V2.wtUi.sure === k;
+V2.wtActs = (k, who) => { const E = V2.esc, sure = V2.wtUi.sure === k, of = who ? `: ${E(String(who).replace(/^Challenger · /, '').replace(/^([^,]+)/, '$1 team'))}` : '', al = t => of ? ` aria-label="${t}${of}"` : ''; /* stress test (Nov 16): three cards' buttons had the same names; each names its team, starting with the visible words */
   return sure ? `<div class="wt-acts wt-sure" role="group" aria-label="Load this team"><span class="wt-q">Replace your current team?</span><button type="button" class="np-btn" data-wtload="${k}"><span>Replace</span></button><button type="button" class="np-btn2" data-wtx><span>Cancel</span></button></div>`
-    : `<div class="wt-acts"><button type="button" class="np-btn2" data-wtask="${k}"><span>Load Team</span></button><button type="button" class="np-btn2" data-wtcopy="${k}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-wtvs="${k}">Set as Opponent ›</button><button type="button" class="np-link" data-cxgo2="cur|t:${k}">Compare ›</button></div>`; };
+    : `<div class="wt-acts"><button type="button" class="np-btn2" data-wtask="${k}"${al('Load Team')}><span>Load Team</span></button><button type="button" class="np-btn2" data-wtcopy="${k}"${al('Copy for Showdown')}><span>Copy for Showdown</span></button><button type="button" class="np-link" data-wtvs="${k}"${al('Set as Opponent')}>Set as Opponent ›</button><button type="button" class="np-link" data-cxgo2="cur|t:${k}"${al('Compare')}>Compare ›</button></div>`; };
 V2.wtTag = t => V2.wtOfficial(t) ? '<span class="wt-off">Official event</span>' : '';
 // a hand: the top three of a group (place 1 big; 2 and 3 smaller)
 V2.wtHand = (x, rank, sameEv) => { const {t, k} = x, E = V2.esc, g = gradeNames(t.mons), pl = V2.wtPlace(t) || rank;
   return `<article class="wt-hand r${rank}" aria-label="${E(teamWho(t))}"><header class="wt-hh"><span class="wt-no u" aria-hidden="true">${pl}</span><h3 class="u">${E(teamWho(t))}</h3>${V2.wtTag(t)}</header>
     ${sameEv ? '' : `<p class="wt-ev">${E(t.event)}</p>`}
     <div class="wt-fan">${t.mons.map((n, i) => V2.wtCard(n, rank === 1 ? 180 : 112, i)).join('')}</div>
-    <p class="wt-meta">${V2.wtChecks(g, true)}${V2.wtChips(t.mons)}</p>${V2.wtActs(k)}</article>`; };
+    <p class="wt-meta">${V2.wtChecks(g, true)}${V2.wtChips(t.mons)}</p>${V2.wtActs(k, teamWho(t) + (t.event ? ', ' + V2.evTitle(t.event).replace(/ · [\d,]+ players$/, '') : ''))}</article>`; };
 // a row: every team after the third
 V2.wtRow = (x, sameEv) => { const {t, k} = x, E = V2.esc, g = gradeNames(t.mons), pl = V2.wtPlace(t);
   return `<article class="wt-row" aria-label="${E(teamWho(t))}"><span class="wt-no u" aria-hidden="true">${pl || ''}</span><div class="wt-six">${t.mons.map((n, i) => V2.wtCard(n, 64, i)).join('')}</div>
     <div class="wt-rt"><p class="wt-rh"><b class="u">${E(teamWho(t))}</b>${V2.wtTag(t)}</p>${sameEv ? '' : `<p class="wt-ev">${E(t.event)}</p>`}<p class="wt-names">${t.mons.map(n => E(V2.disp(n))).join(' · ')}</p>
-    <p class="wt-meta">${V2.wtChecks(g, true)}${V2.wtChips(t.mons)}</p>${V2.wtActs(k)}</div></article>`; };
+    <p class="wt-meta">${V2.wtChecks(g, true)}${V2.wtChips(t.mons)}</p>${V2.wtActs(k, teamWho(t) + (t.event ? ', ' + V2.evTitle(t.event).replace(/ · [\d,]+ players$/, '') : ''))}</div></article>`; };
 // Your Team, in the header spotlight (today's strip: checks as the Team page grades them, style chips, the six)
 V2.wtYours = () => { const E = V2.esc, mine = members();
   if (mine.length !== 6) return `<div class="wt-spot"><p class="gs-tag u">Your Team</p><p class="tm-sub">Add six Pokémon on My Team to compare.</p><a class="np-btn2" href="#team"><span>Go to My Team</span></a></div>`;
@@ -48,11 +48,11 @@ V2.wtSug = () => { const E = V2.esc, U = V2.wtUi, q = norm(U.q || ''); if (!q) r
 V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = pool.filter(x => U.f.every(f => tsMatch(x.t, f))).sort((a, b) => (b.ev.src === 'official') - (a.ev.src === 'official') || a.t.place - b.t.place || (b.ev.date > a.ev.date ? 1 : -1));
   const cap = 8 + U.fmore * 8, c = new Map(); hits.forEach(x => new Set(x.t.mons.map(m => m.n)).forEach(n => { if (!U.f.some(f => f.k === 'mon' && f.v === n)) c.set(n, (c.get(n) || 0) + 1); }));
   const mates = [...c].sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const row = x => { const ns = x.t.mons.map(m => m.n), key = x.key;
+  const row = x => { const ns = x.t.mons.map(m => m.n), key = x.key, of = `: ${E(String(teamWho(x.t)).replace(/^Challenger · /, ''))} team, ${E(V2.evTitle(x.ev.name))}`;
     return `<article class="wt-row" aria-label="${E(teamWho(x.t))}"><span class="wt-no u" aria-hidden="true">${x.t.place || ''}</span><div class="wt-six">${ns.map((n, i) => V2.wtCard(n, 64, i)).join('')}</div>
       <div class="wt-rt"><p class="wt-rh"><b class="u">${E(teamWho(x.t))}</b>${x.ev.src === 'official' ? '<span class="wt-off">Official event</span>' : ''}</p><p class="wt-ev">${E(V2.evTitle(x.ev.name))} · ${E(evDate(x.ev.date))} · ${x.ev.players} players</p>
       <p class="wt-names">${x.t.mons.map(m => `${E(V2.disp(m.n))}${m.i ? ` @ ${E(m.i)}` : ''}`).join(' · ')}</p>${V2.wtChips(ns)}
-      ${V2.hmUi && V2.hmUi.sure === key ? V2.hmSure(key) : ''}<div class="wt-acts">${V2.hmUi && V2.hmUi.sure === key ? '' : `<button type="button" class="np-btn2" data-hmload="${E(key)}"><span>Load Team</span></button>`}<button type="button" class="np-btn2" data-hmcopy="${E(key)}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-hmprep="${E(key)}">Set as Opponent ›</button><button type="button" class="np-link" data-cxgo2="cur|e:${E(key)}">Compare ›</button></div></div></article>`; };
+      ${V2.hmUi && V2.hmUi.sure === key ? V2.hmSure(key) : ''}<div class="wt-acts">${V2.hmUi && V2.hmUi.sure === key ? '' : `<button type="button" class="np-btn2" data-hmload="${E(key)}" aria-label="Load Team${of}"><span>Load Team</span></button>`}<button type="button" class="np-btn2" data-hmcopy="${E(key)}" aria-label="Copy for Showdown${of}"><span>Copy for Showdown</span></button><button type="button" class="np-link" data-hmprep="${E(key)}" aria-label="Set as Opponent${of}">Set as Opponent ›</button><button type="button" class="np-link" data-cxgo2="cur|e:${E(key)}" aria-label="Compare${of}">Compare ›</button></div></div></article>`; };
   return `<section class="wt-res" aria-live="polite"><p class="wt-cnt"><b class="u">${homeNum(hits.length)}</b>&nbsp;team${hits.length === 1 ? '' : 's'} match${hits.length ? `, ${hits.filter(x => x.t.place === 1).length} won their event` : ''}<span class="wt-pool"> · searched all ${homeNum(pool.length)} event team sheets</span></p>
     ${mates.length && hits.length >= 3 ? `<p class="wt-mates"><span>Often with:</span>${mates.map(([n, k]) => `<button type="button" class="np-chip" data-tsadd="${E(n)}">${E(V2.disp(n))}&nbsp;<b>${Math.round(100 * k / hits.length)}%</b></button>`).join('')}</p>` : ''}
     ${hits.length ? `<div class="wt-rows">${hits.slice(0, cap).map(row).join('')}</div>` : '<p class="tm-sub">No winning team has all of these. Remove a filter.</p>'}

@@ -3,24 +3,24 @@ HIGH
 1. Home tool links opened the hub, not the page named. FIXED (ed969c0).
 2. "outspeeds X% of the top 30" differs: Speed page (your sets, e.g. Choice Scarf Garchomp 95%) vs Pokémon page (usual set 98%). OPEN: name the set.
 3. Speed: heading "top 20" vs rows "top 30 threats". OPEN (both true; Sim note).
-4. Footer "(5 days old)" vs Events "(6 days ago)": two ways of counting days. OPEN.
+4. Footer "(5 days old)" vs Events "(6 days ago)": two ways of counting days. FIXED Nov 16 3:19 AM: both count calendar days (both "6").
 5. One pair, two game counts: Kingambit page "Sneasler 2,884 games" vs Sneasler page / Practice "3,582". OPEN (check source).
-6. Word list: "Converts to top cut 93" (Pokémon pages). OPEN.
-7. Word list: "grade" for the team score on How We Calculate (6 places). OPEN.
-8. My Team: Suggestions "Nothing to fix" while Things to Know shows "1 fix" (Quick add Mega Dragonite). OPEN (check).
+6. Word list: "Converts to top cut 93" (Pokémon pages). FIXED (checked Nov 16 3:21 AM: no longer on any page, folds open).
+7. Word list: "grade" for the team score on How We Calculate (6 places). FIXED (checked 3:21 AM: only "like school grades" for rating letters remains, an analogy).
+8. My Team: Suggestions "Nothing to fix" while Things to Know shows "1 fix" (Quick add Mega Dragonite). FIXED 3:20 AM: with "Nothing to fix" the counters read "1 idea".
 MEDIUM
-9. "ready for" wording (About, Test Run, How We Calculate). OPEN.
+9. "ready for" wording (About, Test Run, How We Calculate). FIXED (checked 3:21 AM: none left; "have an answer for" is the replacement).
 10. Kingambit page: Typical set Defiant 99% vs Abilities 96%; typical item Life Orb vs list Chople 40% first; Usually moves skip Iron Head 76%. OPEN (check sources).
 11. Counts: "345 rated" vs "ranked among 321"; About "9 sources" vs Meta "4 data sources". OPEN.
 12. Source names vs the word list (Limitless, Showdowntier, Smogon usage stats, op.gg). OPEN.
 13. Showdown rating cut-offs: 1630+ (Home, Sets) vs 1760+ (Meta, Method) vs 1,300+ (Practice). OPEN (check: may be different data).
 14. Events "113 events" then "from the last 30 days"; top-cut depth differs Events vs Winning Teams. OPEN.
-15. My Team Your Games block vs say-it-once one line; "None logged yet" vs "No games logged yet". OPEN.
+15. My Team Your Games block vs say-it-once one line; "None logged yet" vs "No games logged yet". KEPT: Sim's Nov 11 wording under the Your Games heading (3 tests read it).
 16. "?" tip reads into the text in innerText ("teams?"). Spoken label is right; check spacing.
-17. Missing spaces where elements meet (innerText): Build "1st9-1", Method "statsNov 2". Check screen readers.
+17. Missing spaces where elements meet (innerText): Build "1st9-1", Method "statsNov 2". FIXED Nov 16 3:22 AM: Build reads "1st place, 9-1"; Method no longer has it.
 SAY IT ONCE: 18 My Team top bar repeats the eyebrow; "TOP 1%" twice; "most recent event winners" x4. 19 Home "13,826 real tournament teams" x3.
   20 Meta tier band twice. 21 Method repeats. 22 Track "fair test" twice. 23 About disclaimer twice. 24 dates outside footer (Meta "DATA FROM NOV 10", Events "checked Nov 10").
-  25 card watermark names not aria-hidden (read 3 times).
+  25 card watermark names not aria-hidden (read 3 times) - CHECKED Nov 16: already hidden (aria snapshot of My Team, Home, Meta).
 CAPITALISATION: 26 "How It Works" vs "How it works", "Load Team ›" vs "Load Team" etc. 27 sentence-case buttons ("In my box", "List with win rates",
   "Best data", "See the placings, 1st to 8th ›", "Show More · 100 left ›", calc toggles, "Matchup prep ›", usage tabs). 28 headings sentence case on
   Pokémon/Usage/Sets vs Title Case elsewhere. 29 "MEGA Charizard Y" on Sets.

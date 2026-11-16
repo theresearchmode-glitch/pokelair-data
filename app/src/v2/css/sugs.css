@@ -218,3 +218,33 @@
   .ff.lead,.sx-sel,[aria-current="true"]{outline:2px solid Highlight}
   .mc-giant,.inf-no,.mc-orbit,.mc-glow{display:none}
 }
+/* nuclear stress test (Nov 16): at 360 four stand-out cards ran names and verdicts together; three across up to 404 (390 with a desktop scrollbar still touched by 4px; 414 measured clean) */
+@media (min-width:360px) and (max-width:404px){.mu-cards .nm{font-stretch:88%}.mu-cards li{flex-basis:33.333%}}
+/* nuclear stress test (Nov 16): Usage's four bench figures at 320 (72px sprites + padding = 304px) overran a 273px row when the window
+   has a scrollbar, cutting "Indeedee (F)"; 64px sprites, no side padding, so four always fit */
+/* nuclear stress test (Nov 16): the underdog's colour field faded to nothing at 75%, so on wide screens the panel read as ending at 70% width
+   beside full-width sections; the field now runs the full width and eases to a faint tint */
+.fn-dog,.hm-ud.fn-dog{background:linear-gradient(110deg,rgba(var(--cp),.3),rgba(var(--cp),.1) 70%,rgba(var(--cp),.06))}
+/* nuclear stress test (Nov 16): This Week's five Most Used tiles were meant to sit 3 + 2 on phones, but the 4px column gap pushed three
+   33.3% tiles past the row, so they fell 2 + 2 + 1 with the fifth alone; no column gap (the tiles' own padding spaces them) */
+@media (max-width:429px){.wk-top ul{column-gap:0}}
+/* nuclear stress test (Nov 16): a link's "›" could wrap alone onto its own line (3 found over 23 pages at 320/360/768); links and buttons
+   avoid a lone last word (measured 3 -> 1), and the editing panel's short "Pokémon Page ›" stays on one line (-> 0). Text unchanged. */
+a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
+/* nuclear stress test (Nov 16): on 320-339 phones "Winner's team" needed 114px of 113, so 9 tickets wrapped it and 3 did not; one line in the
+   approved 88% letters (92px), the same on every ticket. (Ticket names keep "M-C" together with a word joiner, events.js.) */
+@media (max-width:359px){.tk-k{white-space:nowrap;font-stretch:88%}}
+/* nuclear stress test (Nov 16): when a move wraps in any Card, V2.fitWords marks the Hand mh-mv2 and every chip takes the two-line height */
+.mh-mv.mh-mv2 li{display:grid;align-content:center;min-height:calc(2lh + var(--s2))}
+/* nuclear stress test (Nov 16): Home corner links on narrow phones wrapped unevenly ("Copy for Showdown" centred on two lines beside
+   left-aligned links); each corner's links stack in one left-aligned column */
+@media (max-width:479px){.fn-corner .fn-cacts,.fn-corner.them .fn-cacts{flex-direction:column;align-items:flex-start;gap:0}.fn-corner .fn-cacts .np-link{text-align:left}}
+/* nuclear stress test (Nov 16): Usage "How X is played" at three columns put Natures under the long Moves list (that column ~3x the
+   others, an empty block on the right); Moves spans two rows and Natures packs in beside it */
+@media (min-width:900px) and (max-width:1279px){.us-groups{grid-auto-flow:row dense}.us-groups>.us-bars:first-child{grid-row:span 2}} /* 443 -> 336px tall; at two columns it made things taller, so three only */
+/* nuclear stress test (Nov 16): on the calc table (1024 and up) "Hits both" pressed against its 64px tile's slanted edges; tiles sized to the
+   measured room (132px at 1024, 158 at 1280, 179 at 1440; the old pair ran 3px over at 1024) */
+@media (min-width:1024px) and (max-width:1279px){.dc2-tok{column-gap:var(--s1)}}
+@media (min-width:1280px){.dc2-tok{grid-template-columns:repeat(2,72px)}.dc2-tok button{width:72px}}
+@media (min-width:1440px){.dc2-tok{grid-template-columns:repeat(2,76px)}.dc2-tok button{width:76px}}
+@media (max-width:379px){.us-bench{--gsw:64px}.us-bench .us-fig{padding-inline:0}.us-bench .us-fig .np-mon{--iw:64px}}

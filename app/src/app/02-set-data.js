@@ -116,7 +116,7 @@ function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>
 // Nov 15 (code review A2): names this regulation doesn't have are kept per list in gx, and rejoin their list if they come back
 function fixLog(){const arr=x=>Array.isArray(x)?x:[];S.log=arr(S.log).filter(e=>e&&(e.r==='W'||e.r==='L')&&Array.isArray(e.b)).slice(-400).map(e=>{const gx=e.gx&&typeof e.gx==='object'?e.gx:{},out={t:+e.t||0,r:e.r},keep={};
   for(const [k,max] of [['b',4],['tm',6],['o',6]]){const all=arr(e[k]).concat(arr(gx[k])).filter(n=>typeof n==='string');out[k]=all.filter(n=>byName.has(n)).slice(0,max);const g=all.filter(n=>!byName.has(n)&&goneId(n)).slice(0,max);if(g.length)keep[k]=g}
-  if(Object.keys(keep).length)out.gx=keep;return out})}
+  if(Object.keys(keep).length)out.gx=keep;if(typeof e.rp==='string'&&e.rp.length<24)out.rp=e.rp;/* a logged replay's fingerprint, so the same replay isn't logged twice (Nov 16) */return out})}
 function fixSlots(){S.slots=normSlots(S.slots);S.opp=(Array.isArray(S.opp)?S.opp:[]).slice(0,6).map(n=>typeof n==='string'&&byName.has(n)?n:'');while(S.opp.length<6)S.opp.push('')}
 fixSlots();fixTeams();fixLog();
 for(const k of ['doubles','doubles_ingame','doubles_tour','singles'])META[k]=cleanMeta(META[k]);
@@ -126,7 +126,9 @@ let ui={recSrc:LS.get('cc2.recsrc','box')==='all'?'all':'box',abSrc:LS.get('cc2.
 // "Data as of …" in the header: the newest date any data document carries (pre-launch, Nov 2: "as of" reads as a date stamp).
 const DATA_AT={};
 function noteDataDate(k,v){try{const t=v&&(v.updated||v.pulled||v.date);const ms=t?Date.parse(String(t).length===10?t+'T12:00:00':t):NaN;if(!isNaN(ms))DATA_AT[k]=ms;showDataDate()}catch(e){}}
-function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';const last=Math.max(...ts),days=Math.floor((Date.now()-last)/864e5);
+// days are counted as calendar days, as Events counts them (stress test Nov 16: the footer said "5 days old" while Events said "6 days ago" for the same date)
+const calDays=(a,b)=>{const x=new Date(a),y=new Date(b);return Math.round((Date.UTC(y.getFullYear(),y.getMonth(),y.getDate())-Date.UTC(x.getFullYear(),x.getMonth(),x.getDate()))/864e5)};
+function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';const last=Math.max(...ts),days=calDays(last,Date.now());
   return 'Data as of '+new Date(last).toLocaleDateString('en-US',{month:'short',day:'numeric'})+(days>2?' ('+days+' days old)':'')}
 function showDataDate(){try{if(typeof renderHealth==='function')renderHealth()}catch(e){}const t=dataDateText();if(!t)return;const el=document.getElementById('eyebrow');
   if(el&&!el.querySelector('.datadate')){const sp=document.createElement('span');sp.className='datadate';el.append(' · ',sp)}

@@ -67,10 +67,12 @@ function speciesFromPaste(name) {
 // Moves from the paste become that Pokémon's moves for the current format.
 function parsePaste(text) {
   const notes = [], slots = [], assumed = [];
-  const all = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean), blocks = all.slice(0, 6);
+  const all = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
   // more than six in the paste (Sim, Nov 12: say so): the names of the ones left out, read from each extra block's first line
-  const over = all.slice(6).map(b => { const h = b.split('\n')[0].split(' @ ')[0].trim().replace(/\s*\([MF]\)\s*$/, ''), m = h.match(/\(([^()]{2,})\)\s*$/); return m ? m[1].trim() : h; }).filter(Boolean);
-  for (const b of blocks) {
+  const nameOf = b => { const h = b.split('\n')[0].split(' @ ')[0].trim().replace(/\s*\([MF]\)\s*$/, ''), m = h.match(/\(([^()]{2,})\)\s*$/); return m ? m[1].trim() : h; };
+  /* stress test (Nov 16): blocks are read until six different Pokémon are in (a repeat no longer uses up one of the six), then the rest are "over" */
+  const over = [];
+  for (const b of all) { if (slots.length >= 6) { const n = nameOf(b); if (n) over.push(n); continue; }
     const lines = b.split('\n').map(l => l.trim()).filter(Boolean); if (!lines.length) continue;
     let head = lines[0], item = '';
     const at = head.lastIndexOf(' @ '); if (at >= 0) { item = head.slice(at + 3).trim(); head = head.slice(0, at).trim(); if (typeof canonItem === 'function') item = canonItem(item); }
@@ -84,6 +86,7 @@ function parsePaste(text) {
     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();
     // a Mega's ability is fixed by its form (Showdown pastes write the base form's), so it is filled in on import
     const ability = p.m ? (p.a[0] || null) : p.a.includes(abl) ? abl : null;
+    if (abl && !p.m && !ability) notes.push(`${p.d}: skipped ability "${abl}"`); /* stress test (Nov 16): a wrong Ability was dropped without a word; listed like a bad item or move */
     const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), mv = [];
     for (const l of lines.filter(l => l.startsWith('-'))) { const name = l.replace(/^-\s*/, '').replace(/\s*\[.*\]$/, '').trim();
       const m = [...mvByName.values()].find(x => pnorm(x.name) === pnorm(name));
@@ -108,11 +111,17 @@ function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decode
   const r = parsePaste(raw);
   if (!r.slots.length) return {error: r.notes.length ? r.notes.join('. ') + '.' : 'No Pokémon found. Paste the team text, one Pokémon per block.'};
   keepUndo(); S.slots = normSlots(r.slots); S.loadedId = null; ui.paste = null;
-  const sk = r.notes.map(n => { const x = n.match(/^(.+?): skipped (item|move) "(.+?)"/); return x ? `${x[3]} (${x[1]})` : null; }).filter(Boolean);
+  const sk = r.notes.map(n => { const x = n.match(/^(.+?): skipped (item|move|ability) "(.+?)"/); return x ? `${x[3]} (${x[1]})` : null; }).filter(Boolean);
   const skm = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": not on the M-C roster/); return x ? x[1] : null; }).filter(Boolean);
+  /* stress test (Nov 16): a repeated Pokémon was dropped without a word (6 Incineroar: "Imported 1 Pokémon"), and a repeat past the sixth
+     block was blamed on "Only 6 fit"; repeats are now named as repeats, and "Only 6 fit" lists only the different Pokémon left out */
+  const got = new Set(r.slots.map(s => byName.get(s.n).b)), sp = n => { const p = speciesFromPaste(n); return p ? p.b : null; };
+  const dup = r.notes.map(n => { const x = n.match(/^Skipped a second (.+?) \(one per species\)/); return x ? ((byName.get(x[1]) || {}).d || x[1]) : null; }).filter(Boolean).concat((r.over || []).filter(n => got.has(sp(n))).map(n => (byName.get(sp(n)) || {}).d || n));
+  const over = (r.over || []).filter(n => !got.has(sp(n))), dupN = [...new Set(dup)];
   return {msg: `Imported ${r.slots.length} Pokémon` + (skm.length ? `. Not in Reg M-C, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
     + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')
-    + (r.over && r.over.length ? `. Only 6 fit: left out ${r.over.slice(0, 3).join(', ')}${r.over.length > 3 ? ` and ${r.over.length - 3} more` : ''}` : '')}; }
+    + (dup.length ? `. One of each Pokémon per team: left out ${dup.length} more ${dupN.slice(0, 3).join(', ')}${dupN.length > 3 ? ` and ${dupN.length - 3} others` : ''}` : '')
+    + (over.length ? `. Only 6 fit: left out ${over.slice(0, 3).join(', ')}${over.length > 3 ? ` and ${over.length - 3} more` : ''}` : '')}; }
 function renderPastePanel() {
   const el = $('pastePanel'); if (!ui.paste) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;

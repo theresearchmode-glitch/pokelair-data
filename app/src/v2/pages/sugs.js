@@ -136,7 +136,7 @@ V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms, 
     if (l === 'Weakness' && (D.basics || []).some(x => /major weak spot/i.test(x.label) && x.ok)) l = 'Minor weakness';
     const head = `<span class="sg2-sev ${s}">${V2.esc(l)}</span><span class="sg2-pt">${V2.undotHtml(tx)}</span>`;
     if (!n) return `<div class="sg2-prob${minor ? ' minor' : ''}">${head}${Q && Q.note ? `<p class="fine sg2-qn">${Q.note}</p>` : ''}</div>`;
-    return `<details class="sg2-prob sg2-pf" data-v2pk="${V2.esc(key)}"${V2.fx.open.has(key) ? ' open' : ''}><summary>${head}<span class="sg2-fixn">${n} fix${n > 1 ? 'es' : ''}</span></summary><div class="sg2-qbox"><p class="sg2-k">Quick add</p><ul class="sg2-qps">${Q.picks.map(pl => pick(key, pl)).join('')}</ul></div></details>`; };
+    return `<details class="sg2-prob sg2-pf" data-v2pk="${V2.esc(key)}"${V2.fx.open.has(key) ? ' open' : ''}><summary>${head}<span class="sg2-fixn">${n} ${P && P.nothing ? `idea${n > 1 ? 's' : ''}` : `fix${n > 1 ? 'es' : ''}`}</span></summary><div class="sg2-qbox"><p class="sg2-k">Quick add</p><ul class="sg2-qps">${Q.picks.map(pl => pick(key, pl)).join('')}</ul></div></details>`; };
   const real = out.filter(o => o[0] !== 'ok'), rows = out.map(row), cap = ui.needsAll ? rows.length : 4, more = rows.length - cap;
   return {real, html: (real.length ? '' : `<div class="sg2-prob"><span class="sg2-sev ok">${PROB_TXT.clear}</span><span class="sg2-pt">${PROB_TXT.clearWhy}</span></div>`) + rows.slice(0, cap).join('')
     + (more > 0 ? `<button type="button" class="np-link sg2-all" data-v2needs>Show ${more} More ›</button>` : ui.needsAll && rows.length > 4 ? '<button type="button" class="np-link sg2-all" data-v2needs>Show Fewer</button>' : '')}; };
@@ -191,7 +191,7 @@ document.addEventListener('keydown', e => { if (e.key !== 'Tab') return; const p
     const nx = all[all.indexOf(b) + 1]; V2.tipClose(); (nx || b).focus(); } });
 document.addEventListener('focusout', e => { const p = document.querySelector('.sg2-tipop'); if (!p || !p.contains(e.target)) return; setTimeout(() => { const q = document.querySelector('.sg2-tipop'), f = document.activeElement; if (!q || q.contains(f) || (f && f.matches && f.matches('[data-v2tip]'))) return; V2.tipClose(); }, 0); }); /* after the move: removing the tip itself fires focusout */
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.querySelector('.sg2-tipop')) { const b = document.querySelector('[data-v2tip][aria-expanded="true"]'); V2.tipClose(); if (b) b.focus(); } });
-addEventListener('scroll', () => { if (document.querySelector('.sg2-tipop')) V2.tipClose(); }, {passive: true});
+addEventListener('scroll', () => { const p = document.querySelector('.sg2-tipop'); if (p && !p.contains(document.activeElement)) V2.tipClose(); }, {passive: true}); /* Nov 16 (TEST-09): a tip holding keyboard focus stays open on scroll (focusing it can scroll it into view; it is anchored to the page, so it moves with it) */
 
 // ---------- Types (Nov 12, today's "Types" fold, every part kept; Sim: inside Things to Know) ----------
 // Offense / Defense switch, today's headlines (threat 2HKOs, types hit; weaknesses vs resists, top threats that beat 3+),

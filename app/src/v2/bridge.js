@@ -13,6 +13,10 @@ function render() { persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.
 function scheduleRender() { clearTimeout(V2._rq); V2._rq = setTimeout(() => { fixMetaSrc(); clearCaches(); V2.redraw(); }, 700); }
 // toasts from the shared logic (Undo, applied suggestions): the rebuild's toast; its Undo button uses today's Undo handler (#toastUndo, 06-helpers.js)
 function toast(t, undo) { V2.toast(V2.esc(t) + (undo && ui.undo ? ' <button type="button" id="toastUndo">Undo</button>' : '')); }
+/* stress test (Nov 16, B3): a newer change (e.g. Apply, which shows its own Undo bar) replaced the Undo point but left the older
+   "Removed X · Undo" toast up, whose Undo then reversed the newer change; when the Undo point changes, an older Undo toast goes */
+(() => { let u = ui.undo; Object.defineProperty(ui, 'undo', {configurable: true, enumerable: true, get: () => u,
+  set: v => { if (v !== u) document.querySelectorAll('.np-toast').forEach(x => { if (x.querySelector('#toastUndo')) x.remove(); }); u = v; }}); })();
 // the rebuild redraws in place (V2.redraw keeps the reader's place), so keeping the scroll is just running the change
 function keepScroll(fn) { fn(); }
 

@@ -100,13 +100,13 @@ document.addEventListener('keydown', e => { const c = e.target && e.target.close
 // Same choices as today's save panel: update the open saved team or save as new, up to 10 teams; Enter does the main action.
 V2.openSave = () => { if (!members().length) return; const lo = S.teams.find(t => t.id === S.loadedId), full = S.teams.length >= 10, n = S.teams.length;
   const sh = V2.sheet(`<div class="sv2"><h2 class="u">Save Team</h2>
-    <p class="tm-sub">${lo ? `Open now: <b>${V2.esc(lo.name)}</b>. Update it, or save this six as a new team.` : 'Give this six a name.'} <span class="sv2-n">${n} of 10 saved</span></p>
+    <p class="tm-sub">${lo ? `Open now: <b>${V2.esc(lo.name)}</b>. Update it, or save ${members().length === 6 ? 'this six' : 'it'} as a new team.` : `Give this ${members().length === 6 ? 'six' : 'team'} a name.`} <span class="sv2-n">${n} of 10 saved</span></p>
     <form data-v2saveform><label class="np-field"><input data-v2savename maxlength="40" placeholder="Team name, e.g. Rain Archaludon" aria-label="Team name" autocomplete="off" value="${V2.esc(lo ? lo.name : '')}"></label>
     <div class="sv2-acts">${lo ? `<button type="submit" class="np-btn">Update Team</button><button type="button" class="np-btn2" data-v2savenew${full ? ' disabled' : ''}><span>Save as New</span></button>`
       : `<button type="submit" class="np-btn"${full ? ' disabled' : ''}>Save Team</button>`}<button type="button" class="np-link" data-v2close>Cancel</button></div></form>
     ${full ? '<p class="fine sv2-full">You have 10 saved teams. Update the open team, or delete one in Saved Teams to save a new one.</p>' : ''}</div>`, {label: 'Save Team', small: true, focus: lo ? '[data-v2saveform] .np-btn' : '[data-v2savename]'}); // Sim, Nov 11: updating needs no typing, so on phones the keyboard stays down until you tap the name
   const box = document.querySelector('[data-v2saveform]'), inp = box && box.querySelector('[data-v2savename]'); if (!box) return; if (inp && !lo) inp.select();
-  const go = over => { const t = saveTeamAs(inp.value, over); if (!t) return; V2.closeSheet(); render(); toast(`Saved "${t.name}"`); };
+  const go = over => { const t = saveTeamAs(inp.value, over); if (!t) return; V2.closeSheet(); render(); toast(V2.canStore ? `Saved "${t.name}"` : `Saved "${t.name}" for this visit. ${V2.noStoreTxt}`); };
   box.addEventListener('submit', e => { e.preventDefault(); go(!!lo); });
   const nw = box.querySelector('[data-v2savenew]'); if (nw) nw.addEventListener('click', () => go(false));
   return sh; };
@@ -131,9 +131,9 @@ V2.savedHtml = () => { const U = V2.svUi, rows = savedRows(U.sort), n = rows.len
   const mine = members().length, free = `<article class="svt2-card svt2-free"><h3 class="u">${10 - n} spots free</h3><p class="tm-sub">${mine ? 'Keep the six on My Team as a saved team.' : 'Build a team on My Team, then save it here.'}</p>
     <div class="svt2-acts">${mine ? '<button type="button" class="np-btn2" data-svact="new"><span>Save Team</span></button>' : '<a class="np-btn2" href="#build"><span>Build Me a Team</span></a>'}</div></article>`;
   return `<div class="svt2"><div class="np-eyebrow"><span><a class="np-back" href="#team" data-v2close>← My Team</a> · ${n} of 10 saved</span></div><h2 class="u">Saved Teams</h2>
-    <p class="fine svt2-sync">Up to 10 teams. ${(ui.syncSt || 'local') === 'local' ? 'Saved in this browser only.' : 'Saved and kept in step across your devices.'}</p>
+    <p class="fine svt2-sync">Up to 10 teams. ${!V2.canStore ? V2.noStoreTxt : (ui.syncSt || 'local') === 'local' ? 'Saved in this browser only.' : 'Saved and kept in step across your devices.'}</p>
     ${U.cmp && S.teams.some(t => t.id === U.cmp) ? `<p class="svt2-cmp" role="status"><b>Compare:</b> ${V2.esc((S.teams.find(t => t.id === U.cmp) || {}).name || '')} is picked. Pick one more saved team, or <button type="button" class="np-link" data-svact="cmpcur">Compare with My Team ›</button> · <button type="button" class="np-link" data-svact="cmpx">Cancel</button></p>` : n > 1 ? '<p class="fine svt2-cmp">Tap Compare on two teams to see them side by side.</p>' : ''}${n ? `<div class="svt2-sort">${V2.slide('svsort', [['recent', 'Newest', 'clock'], ['name', 'Name'], ['rating', 'Matchups', 'gauge']], U.sort, 'Sort saved teams')}</div><div class="svt2-grid" aria-live="polite">${rows.map(card).join('')}${n % 2 && n < 10 ? free : ''}</div>`
-      : mine ? `<p class="tm-sub">No saved teams yet. Save this six to come back to it, compare it, or try changes without losing it.</p><div class="svt2-empty"><button type="button" class="np-btn" data-svact="new"><span>Save Team</span></button></div>` // Sim, Nov 12 (option B)
+      : mine ? `<p class="tm-sub">No saved teams yet. Save this ${members().length === 6 ? 'six' : 'team'} to come back to it, compare it, or try changes without losing it.</p><div class="svt2-empty"><button type="button" class="np-btn" data-svact="new"><span>Save Team</span></button></div>` // Sim, Nov 12 (option B)
       : `<p class="tm-sub">No saved teams yet. Add Pokémon on My Team, then save them here.</p>`}</div>`; };
 V2.openSavedTeams = () => { V2.svUi.ren = V2.svUi.del = V2.svUi.cmp = null; V2.sheet(V2.savedHtml(), {label: 'Saved Teams', fit: true}); };
 // redraw the sheet in place (the page under it redraws through render()); focus goes to `focus` or the sheet itself

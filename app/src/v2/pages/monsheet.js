@@ -108,8 +108,10 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
   const px = Math.min(...pn.map(b => parseFloat(getComputedStyle(b).fontSize))); if (pn.length && isFinite(px)) pn.forEach(b => { if (parseFloat(getComputedStyle(b).fontSize) > px) b.style.fontSize = px + 'px'; });
   document.querySelectorAll('.pk-slots').forEach(u => { u.classList.remove('pk-slots1'); const bs = [...u.querySelectorAll('b')]; if (bs.map(fit).every(Boolean)) return;
     u.classList.add('pk-slots1'); /* a move can't fit two across even at 15 px (320 wide): one per row, then fit again */ bs.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); });
-  const groups = new Map(); document.querySelectorAll('.mh-mv').forEach(u => { u.classList.remove('mh-mv1'); u.querySelectorAll('li').forEach(li => li.classList.remove('np-brk')); const g = u.closest('.mh') || u.parentElement; groups.set(g, [...(groups.get(g) || []), u]); });
-  groups.forEach(us => { if (!us.some(u => [...u.children].some(ow))) return; /* one Card needs it, so the whole Hand goes one per row (even Cards, Sim's eye for symmetry) */
+  const groups = new Map(); document.querySelectorAll('.mh-mv').forEach(u => { u.classList.remove('mh-mv1', 'mh-mv2'); u.querySelectorAll('li').forEach(li => li.classList.remove('np-brk')); const g = u.closest('.mh') || u.parentElement; groups.set(g, [...(groups.get(g) || []), u]); });
+  groups.forEach(us => { if (!us.some(u => [...u.children].some(ow))) { /* nuclear stress test (Nov 16): a two-word move wrapping ("Stomping Tantrum") made the Hand's move grids uneven; every chip in the Hand then takes the two-line height */
+      const lis = us.flatMap(u => [...u.children]).filter(li => li.offsetHeight > 0), hs = lis.map(li => li.offsetHeight), lo = Math.min(...hs);
+      if (lis.length && hs.some(h => h > lo + 4)) us.forEach(u => u.classList.add('mh-mv2')); return; } /* one Card needs it, so the whole Hand goes one per row (even Cards, Sim's eye for symmetry) */
     us.forEach(u => u.classList.add('mh-mv1')); us.forEach(u => u.querySelectorAll('li').forEach(li => { if (ow(li)) li.classList.add('np-brk'); })); }); };
 addEventListener('resize', () => requestAnimationFrame(() => V2.fitWords()));
 try { document.fonts.ready.then(() => V2.fitWords()); document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(() => V2.fitWords())); } catch (e) {} /* again when a font arrives: measured with a stand-in font the fit is wrong */

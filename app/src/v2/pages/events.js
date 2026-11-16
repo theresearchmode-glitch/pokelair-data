@@ -19,7 +19,7 @@ V2.ticket = (ev, big) => { const E = V2.esc, w = ev.top[0], ns = w ? w.mons.map(
   const stub = `<span class="tk-stub" aria-hidden="true"><small class="tk-mo">${E(V2.evMonth(ev.date))}</small><b class="u">${V2.evDay(ev.date)}</b><small>${homeNum(ev.players)} players</small><i class="tk-bar"></i></span>`;
   const hero = `<span class="tk-hero" aria-hidden="true">${lead ? V2.mon(lead, {bare: true}) : ''}<b class="tk-seal u">1st</b>${big && lead ? `<span class="tk-ln u">${E(V2.disp(lead))}</span>` : ''}</span>`;
   if (!big) return `<button type="button" class="tk${off ? ' off' : ''}" style="${V2.evTy(lead)}" data-evgo="${E(ev.id)}" aria-label="${E(say)} Open the placings.">${hero}
-    <span class="tk-mid" aria-hidden="true">${k}<b class="tk-name u">${E(V2.evTitle(ev.name))}</b></span><span class="tk-five" aria-hidden="true">${rest.map(n => V2.mon(n, {bare: true})).join('')}</span>${stub}</button>`;
+    <span class="tk-mid" aria-hidden="true">${k}<b class="tk-name u">${E(V2.evTitle(ev.name)).replace(/\b([A-Z])-([A-Z])\b/g, '$1-⁠$2')}</b></span><span class="tk-five" aria-hidden="true">${rest.map(n => V2.mon(n, {bare: true})).join('')}</span>${stub}</button>`;
   return `<article class="tk big${off ? ' off' : ''}" style="${V2.evTy(lead)}" data-evgo="${E(ev.id)}" aria-label="Latest result. ${E(say)}">${hero}
     <div class="tk-mid"><span class="tk-tag u">Latest result</span>${k}<h3 class="tk-name u">${E(V2.evTitle(ev.name))}</h3>
       <ul class="tk-five">${rest.map(n => `<li>${V2.mon(n, {bare: true})}<span>${E(V2.disp(n)).replace(/ (\S{1,2})$/, '\u00a0$1')}</span></li>`).join('')}</ul>

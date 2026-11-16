@@ -47,7 +47,7 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
 
 // E20 proposal (Sim's check, Nov 12): the shared syncText names the Claude account, which can't be on the public site; the new site
 // says it in plain words (today's site keeps its wording). Local = this browser's storage, so "browser", not "device".
-V2.syncTxt = st => st === 'local' ? 'Saved in this browser only. To use your box on another device, copy its box link.' : 'Saved and kept in step across your devices.';
+V2.syncTxt = st => !V2.canStore ? V2.noStoreTxt : st === 'local' ? 'Saved in this browser only. To use your box on another device, copy its box link.' : 'Saved and kept in step across your devices.';
 // E19 proposal (Sim's check, Nov 12): the share is stored rounded to 0.1 (meta_tour), so 0 with tournament games means under 0.05%:
 // shown as "<0.1%" (the site's own rule for tiny shares, pctFmt); no tournament games at all stays "–"
 V2.shareTxt = H => H.hU == null ? '–' : +H.hU === 0 && H.hG > 0 ? '<0.1%' : pctFmt(H.hU);
