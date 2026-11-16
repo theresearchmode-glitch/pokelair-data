@@ -35,7 +35,7 @@ V2.ICON = {fwd: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path
 // one toast at a time, always just above the team dock and the phone bar (whichever is higher on screen)
 // code review C8: one Undo for actions outside the team's own Undo (a deleted game, cleared Their Six): the toast's button runs restore
 V2.undoToast = (msg, restore) => { V2._undoFn = restore; return V2.toast(V2.esc(msg) + ' <button type="button" data-v2undo>Undo</button>', 6000); };
-document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2undo]'))) return; const f = V2._undoFn; V2._undoFn = null; document.querySelectorAll('.np-toast').forEach(x => x.remove()); if (f) { try { f(); } catch (x) { console.error(x); } V2.toast('Undone'); } });
+document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2undo]'))) return; const f = V2._undoFn; V2._undoFn = null; document.querySelectorAll('.np-toast,.np-sheet-undo').forEach(x => x.remove()); if (f) { try { f(); } catch (x) { console.error(x); } V2.toast('Undone'); } });
 // smooth scrolling only when the device doesn't ask for reduced motion (code review C7: eight scrolls ignored it)
 V2.smooth = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; } catch (e) { return 'auto'; } };
 V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach(x => x.remove());
@@ -43,6 +43,12 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
   const tops = [...document.querySelectorAll('.np-dock,.np-bar')].map(e => e.getBoundingClientRect()).filter(r => r.height && r.top < innerHeight).map(r => r.top);
   if (tops.length) t.style.setProperty('--tb', (innerHeight - Math.min(...tops) + 12) + 'px'); // a custom property, so an open sheet can still move it (components.css)
   // code review B9b: a toast stays while it has keyboard focus or the pointer (its Undo was gone after 4 s even mid-reach)
+  /* Sim Q2 (Nov 16, recommended A): while a sheet is open the toast sits under its backdrop (her Nov 11 rule), so an Undo moves into a bar at
+     the top of the sheet (the Undo bar style Suggestions uses); the words stay in the toast; the bar goes with the next change or the sheet */
+  { const sh = document.querySelector('.np-sheet'), ub = t.querySelector('#toastUndo,[data-v2undo]'); document.querySelectorAll('.np-sheet-undo').forEach(x => x.remove());
+    if (sh && ub) { const bar = document.createElement('div'), m = document.createElement('span'); bar.className = 'sg2-undo np-sheet-undo'; bar.setAttribute('role', 'status');
+      m.textContent = t.textContent.replace(/\s*Undo\s*$/, ''); ub.classList.add('np-btn2'); ub.innerHTML = '<span>Undo</span>'; bar.append(m, ub);
+      const host = [...sh.children].find(c => !c.classList.contains('x') && c.tagName !== 'BUTTON') || sh; host.prepend(bar); } }
   const gone = () => { if (t.matches(':focus-within,:hover')) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };
 // ---------- phones: keep an open sheet above the on-screen keyboard (Sim, Nov 11: the keyboard covered Save Team) ----------
 // iOS draws the keyboard over fixed elements; visualViewport says how much of the screen is left, so --kb lifts and shortens

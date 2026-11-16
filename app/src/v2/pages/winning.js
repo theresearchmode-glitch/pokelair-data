@@ -62,8 +62,8 @@ V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = po
 // champion names ran under the next card); shrink a name 1px at a time, never below 13px. Runs after every draw (safe to repeat) and on resize.
 V2.wtFit = () => { for (const fan of document.querySelectorAll('#main .wt-fan:not(.wt-mini)')) { const cards = [...fan.querySelectorAll('.wt-card')], hs = cards.map(c => c.querySelector('.mc-id h3')); hs.forEach(h => { if (h) h.style.fontSize = ''; });
   if (getComputedStyle(fan).display === 'grid' || !hs[0]) continue; const w = h => { const r = document.createRange(); r.selectNodeContents(h); return r.getBoundingClientRect().width; };
-  let fs = parseFloat(getComputedStyle(hs[0]).fontSize); const fits = () => cards.every((c, i) => { const h = hs[i]; if (!h) return true; const nx = cards[i + 1], room = (nx ? nx.getBoundingClientRect().left : c.getBoundingClientRect().right) - h.getBoundingClientRect().left - 6; return w(h) <= room; });
-  while (!fits() && fs > 13) { fs -= 1; hs.forEach(h => { if (h) h.style.fontSize = fs + 'px'; }); } } }; /* one size per hand (the smallest any name needs), so the six read as a set */
+  const fs0 = parseFloat(getComputedStyle(hs[0]).fontSize), fits = i => { const h = hs[i], c = cards[i]; if (!h) return true; const nx = cards[i + 1], room = (nx ? nx.getBoundingClientRect().left : c.getBoundingClientRect().right) - h.getBoundingClientRect().left - 6; return w(h) <= room; };
+  cards.forEach((c, i) => { let fs = fs0; while (hs[i] && !fits(i) && fs > 13) { fs -= 1; hs[i].style.fontSize = fs + 'px'; } }); } }; /* Sim Q5 (Nov 16, B): only the name that needs it shrinks, so the rest keep the big slanted look */
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (document.querySelector('#main .wt-fan')) V2.wtFit(); }, 120); }); }
 V2.pages.tournaments = {place: 'meta', after() { V2.wtFit(); }, draw() { const E = V2.esc, d = META.teams, U = V2.wtUi, G = V2.wtGroups();
   if (!U.grp || !G.some(([g]) => g === U.grp)) U.grp = G.length ? G[0][0] : null;

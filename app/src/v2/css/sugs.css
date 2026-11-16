@@ -252,3 +252,23 @@ a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
 @media (min-width:1280px){.dc2-tok{grid-template-columns:repeat(2,72px)}.dc2-tok button{width:72px}}
 @media (min-width:1440px){.dc2-tok{grid-template-columns:repeat(2,76px)}.dc2-tok button{width:76px}}
 @media (max-width:379px){.us-bench{--gsw:64px}.us-bench .us-fig{padding-inline:0}.us-bench .us-fig .np-mon{--iw:64px}}
+/* Sim Q2 (Nov 16, A): an Undo inside an open sheet sits at its top, in the Undo bar style, clear of the sheet's close button */
+.np-sheet-undo{flex-wrap:nowrap;margin:0 var(--s12) var(--s4) 0;padding:var(--s2) var(--s2) var(--s2) var(--s4)}.np-sheet-undo>span{flex:1 1 0;text-wrap:balance}.np-sheet-undo .np-btn2{flex:none}
+@media (max-width:699px){.np-sheet-undo{margin-right:var(--s10)}}
+/* Sim Q6 (Nov 16): four settings - Suggest from across the width, then Megas on team, Swap my Mega and Count abilities three across (phones too);
+   on a wide column all four in one row */
+.sg2-ctl{grid-template-columns:repeat(3,max-content)}
+@container (min-width:1100px){.sg2-ctl{grid-template-columns:repeat(4,max-content)}.sg2-pool{grid-column:auto}}
+@container (min-width:900px) and (max-width:1099px){.sg2-pool{grid-column:1/-1}}
+@container (max-width:519px){.sg2-ctl{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}}
+@media (max-width:519px){.sg2-ctl{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}}
+/* Sim Q6: with Refresh Suggestions the links row split 2 + 1 on phones; under 520 the links stack in one left-aligned column (as Home's corner links) */
+@media (max-width:519px){.sg2-links{display:flex;flex-direction:column;align-items:flex-start;gap:0}}
+@container (max-width:519px){.sg2-links{flex-direction:column;align-items:flex-start;gap:0}}
+/* Q6 follow-up (layout check: Megas' 0/1/2 were 30-38px wide three across): Megas keeps room for three 44px buttons; under 360 it takes its own row
+   and Swap / Count abilities sit two across */
+@container (max-width:519px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:519px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:359px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.sg2-ctl>.sg2-c:nth-child(2){grid-column:1/-1}}
+/* the three switches line up along the bottom when a label wraps (390: "Swap my / Mega?" beside one-line "Megas on team") */
+.sg2-ctl{align-items:end}

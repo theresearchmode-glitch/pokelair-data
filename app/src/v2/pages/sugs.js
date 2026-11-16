@@ -8,15 +8,20 @@ V2.sgAdj = () => `<div class="sg2-adj"><p class="sg2-adjk">Adjust suggestions</p
 V2.sgCtl = () => `<div class="sg2-ctl" role="group" aria-label="Suggestion settings">
   <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div>
   <div class="sg2-c"><span class="sg2-k">Megas on team</span>${V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on the team')}</div>
-  <div class="sg2-c"><span class="sg2-k">Swap my Mega?</span>${V2.slide('sgswap', [['0', 'No'], ['1', 'Yes']], $('swapMega').checked ? '1' : '0', 'Suggestions can swap out my Mega')}</div></div>${V2.exclLine()}`;
+  <div class="sg2-c"><span class="sg2-k">Swap my Mega?</span>${V2.slide('sgswap', [['0', 'No'], ['1', 'Yes']], $('swapMega').checked ? '1' : '0', 'Suggestions can swap out my Mega')}</div>
+  <div class="sg2-c sg2-abil"><span class="sg2-k">Count abilities?</span>${V2.slide('sgabil', [['0', 'No'], ['1', 'Yes']], $('useAbil').checked ? '1' : '0', 'Count abilities like Levitate in matchups and suggestions')}</div></div>${V2.exclLine()}`; /* Sim Q6 (Nov 16): Count abilities beside Megas and Swap (today's page has it; the new build kept it always on, hidden) */
 // Swap my Mega? is kept in this browser on the new build (today's page forgets it on reload while Megas on team is kept: SUG-03b)
 try { if (V2.LS.get('np2.swapMega') === '1') $('swapMega').checked = true; } catch (e) {}
+try { if (V2.LS.get('np2.useAbil') === '0') $('useAbil').checked = false; } catch (e) {} /* Count abilities, kept in this browser too */
 // a new choice: the setting and its message at once; the page redraws once the plate has slid over (so the slide is seen)
 V2.sgLater = fn => { clearTimeout(V2._sgT); V2._sgT = setTimeout(fn, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 240); };
 document.addEventListener('v2slide', e => { const {key, value} = e.detail;
   if (key === 'sgpool') { if (value === ui.pool) return; const say = setPool(value); toast(say); V2.sgLater(render); }
   else if (key === 'sgmega') { if (+value === megaGoal()) return; const say = setMegaGoal(value); if (ui.ab && !ui.ab.busy) { if (V2.route() === 'build') runAutoBuild(); else ui.ab = null; } toast(say); V2.sgLater(render); } // Build results follow the new Megas number (today's 34-events.js)
-  else if (key === 'sgswap') { const say = setSwapMega(value === '1'); if (!say) return; V2.LS.set('np2.swapMega', value); toast(say); V2.sgLater(render); } });
+  else if (key === 'sgswap') { const say = setSwapMega(value === '1'); if (!say) return; V2.LS.set('np2.swapMega', value); toast(say); V2.sgLater(render); }
+  else if (key === 'sgabil') { const on = value === '1'; if ($('useAbil').checked === on) return; $('useAbil').checked = on; V2.LS.set('np2.useAbil', value); toast(on ? 'Counting abilities (Levitate, Flash Fire and the rest)' : 'Not counting abilities: types only'); V2.sgLater(render); } });
+/* Refresh Suggestions (today's 'Refresh plans', Sim Q6): work the suggestions out again from scratch */
+document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2replan]'))) return; if (typeof clearCaches === 'function') clearCaches(); V2.plan = {key: null, plans: null, job: null}; render(); toast('Suggestions refreshed'); });
 
 // ---------- the cards' reasons: today's planWhy over the same plans renderPlans works them out for ----------
 // (the plans, then up to 3 side options when nothing improves the team), so Why? lists today's reasons word for word
@@ -51,7 +56,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
     const pre = V2.itemFixCard(ms) + V2.setTipsCard() + V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
-    const all = `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgall>See All Suggestions ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>`;
+    const all = `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgall>See All Suggestions ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}<button type="button" class="np-link sg2-all" data-v2replan>Refresh Suggestions</button></span>`;
     // A3 proposal (Sim's fix plan, Nov 12: "your recommendation"): a best swap that doesn't raise the score (±0 or lower) gets no
     // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
     const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
