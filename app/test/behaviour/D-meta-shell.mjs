@@ -204,6 +204,9 @@ t('SHELL-02b', 'Header on a phone: logo, search, day/night, ⋯', run({team: TEA
 
 t('SHELL-03', '"Data as of" dates show on the pages', run({team: TEAM}, async ({ui}) => {
   const D = /[A-Z][a-z]{2} \d{1,2}/;
+  if (NEW) { /* say it once (Nov 16, docs/rebuild/say-it-once.md): "Data as of <date>" once per page, in the footer; a page's own date only when it differs */
+    for (const p of ['Ratings', 'Winning Teams', 'This Week', 'My Team']) { await ui.go(p); const tx = await ui.text(), hit = tx.match(new RegExp('.{0,60}(data as of|(?<!last )updated) ' + D.source, 'i') /* a source list's "last updated <date>" per source is detail, not the page stamp */); expect(!hit, p + ' repeats the data date in the page (it belongs in the footer only): ' + (hit && hit[0])); }
+    await ui.go('Events'); expect(new RegExp('checked ' + D.source).test(await ui.text()), 'Events calendar has no "checked <date>"'); return; }
   await ui.go('Ratings'); expect(new RegExp('data as of ' + D.source, 'i').test(await ui.text()), 'Ratings has no "data as of <date>"');
   await ui.go('Winning Teams'); expect(new RegExp('updated ' + D.source).test(await ui.text()), 'Winning Teams has no "updated <date>"');
   await ui.go('Events'); expect(new RegExp('checked ' + D.source).test(await ui.text()), 'Events calendar has no "checked <date>"');

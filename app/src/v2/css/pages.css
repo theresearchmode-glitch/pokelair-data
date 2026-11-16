@@ -3179,9 +3179,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-bsr{display:grid;grid-template-columns:76px auto minmax(0,1fr);align-items:center;column-gap:var(--s3);min-height:40px}
 .pk-bsr dt{font:700 var(--t15)/1.2 var(--b);color:var(--c)}
 .pk-bsr dd{display:contents}
-.pk-bsr dd>b{min-width:56px;text-align:right;font:900 var(--t24)/1 var(--u);font-style:italic;color:var(--ink);text-shadow:0 2px 0 color-mix(in srgb,var(--c) 45%,transparent),0 0 12px color-mix(in srgb,var(--c) 30%,transparent)}
+.pk-bsr dd>b{min-width:56px;text-align:right;font:900 var(--t24)/1 var(--u);font-style:italic;color:var(--ink);text-shadow:0 2px 0 color-mix(in srgb,var(--c) 45%,transparent)}
 /* a Mega's change sits in its own end column, so every row keeps one height */.pk-bsd .pk-bsr{grid-template-columns:76px auto minmax(0,1fr) 36px}.pk-bsr dd>em{grid-column:4;grid-row:1;justify-self:start;font:700 var(--t13)/1 var(--b);font-style:normal}.pk-bsr dd>em.up{color:var(--good-text)}.pk-bsr dd>em.dn{color:var(--bad-text)}
-.pk-bt{grid-column:3;grid-row:1;position:relative;height:14px;border-radius:7px;background:color-mix(in srgb,var(--ink) 8%,transparent);box-shadow:inset 0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}
-.pk-bt i{position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:7px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,var(--surface)),var(--c) 70%);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,var(--ink)),0 0 14px color-mix(in srgb,var(--c) 45%,transparent)}
-.pk-bt i::after{content:'';position:absolute;left:var(--s2);right:var(--s2);top:2px;height:3px;border-radius:2px;background:color-mix(in srgb,var(--surface) 55%,transparent)}
+/* Sim, Nov 15 10:26 PM: 'a little too bubbly': square slanted bars (the site's skewed shapes), soft glow, depth from the lower edge */.pk-bt{grid-column:3;grid-row:1;position:relative;height:12px;margin:0 2px;border-radius:2px;transform:skewX(-14deg);background:color-mix(in srgb,var(--ink) 8%,transparent);box-shadow:inset 0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}
+.pk-bt i{position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:2px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,var(--surface)),var(--c) 70%);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,var(--ink)),0 0 6px color-mix(in srgb,var(--c) 20%,transparent)}
+.pk-bt i::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:color-mix(in srgb,var(--surface) 30%,transparent)}
 @media (max-width:379px){.pk-bsr{grid-template-columns:64px auto minmax(0,1fr)}.pk-bsd .pk-bsr{grid-template-columns:64px auto minmax(0,1fr) 32px}.pk-bsr dd>b{min-width:48px;font-size:var(--t22)}}

@@ -46,7 +46,7 @@ t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => 
 
 t('HOME-03', 'Runner-up strips (#2, #3) open their info sheets', async () => {
   if (NEW) { /* new build (Home piece 1, decisions.md Nov 12; Preview v74): #2 and #3 are tiles either side of #1, "<name> N% of ladder teams" */
-    const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now\.? (?:Most used in .*? Data as of [A-Z][a-z]{2} \d+(?: \([^)]*\))? )?(.+?) ([\d.]+)% of ladder teams .+? [\d.]+% of ladder teams · #1 (.+?) ([\d.]+)% of ladder teams/);
+    const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/Most used right now\.? (?:Most used in [^,]*, [^0-9]*\d*\+?\.? (?:Data as of [A-Z][a-z]{2} \d+(?: \([^)]*\))? )?)?(.+?) ([\d.]+)% of ladder teams .+? [\d.]+% of ladder teams · #1 (.+?) ([\d.]+)% of ladder teams/);
     ok(m, 'no #2 and #3 tiles with name and %'); await r.ui.tapText(`${m[1]} ${m[2]}%`); let s = await r.ui.infoSheet(); ok(s && s.includes(m[1]), `info sheet for ${m[1]} did not open`);
     await r.ui.closeInfoSheet(); await r.ui.tapText(`${m[3]} ${m[4]}%`); s = await r.ui.infoSheet(); ok(s && s.includes(m[3]), `info sheet for ${m[3]} did not open`); await r.close(); return; }
   const r = await homePage(); const tx = await r.ui.text(); const m = tx.match(/bring \S+(?: \S+)?? ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)% ([A-Z][\w-]+(?: [A-Z]\w*)?) ([\d.]+)%/);
@@ -55,6 +55,9 @@ t('HOME-03', 'Runner-up strips (#2, #3) open their info sheets', async () => {
 
 t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', async () => {
   const {ui} = await view('home', {team: TEAM}); const tx = await ui.text();
+  if (NEW) { /* say it once (Nov 16, docs/rebuild/say-it-once.md): the line keeps month + source; "Data as of <date>" shows once, in the footer */
+    has(tx, /Most used in (January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)/, 'Home data line');
+    ok(!/Data as of [A-Z][a-z]{2} \d{1,2}/i.test(tx), 'Home repeats "Data as of <date>" in the page (it belongs in the footer only)'); return; }
   has(tx, /Most used in (January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)[^.]*\. Data as of [A-Z][a-z]{2} \d{1,2}/, 'Home data line'); });
 
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {

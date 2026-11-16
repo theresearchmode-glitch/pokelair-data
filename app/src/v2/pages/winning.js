@@ -72,7 +72,7 @@ V2.pages.tournaments = {place: 'meta', after() { V2.wtFit(); }, draw() { const E
   const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> top-cut teams${G.map(([g, n]) => ` · <b>${n}</b> from ${/^last/i.test(g) ? 'the ' : ''}${E(g.toLowerCase())}`).join('')}</p>` : '';
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Winning Teams</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>
     <p class="ra-lede">Top-cut teams from real tournaments. Load one, practice against it, or compare it with yours.</p>${facts}</section>`;
-  const src = d ? `<p class="fine wt-src">${E(ttSourceText(d.source))}${d.updated ? ', updated ' + E(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) : ''}</p>` : '';
+  const src = d ? `<p class="fine wt-src">${E(ttSourceText(d.source))}${d.updated && V2.otherDay(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) ? ', updated ' + E(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) : ''}</p>` : '';
   const top = `<div class="gs-top wt-top">${head}<div class="ra-spotw">${V2.wtYours()}</div></div>`;
   if (!G.length) return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body"><p class="tm-sub">Top teams appear here after the next data refresh.</p></div></div>`;
   const ctl = `<div class="wt-ctl">${V2.wtSearch()}${U.f.length ? '' : `<div class="ra-filt wt-grps" role="group" aria-label="Which teams">${G.map(([g, n]) => `<button type="button" class="ra-chip" data-wtgrp="${E(g)}" aria-pressed="${g === U.grp}">${E(g)} <b>${n}</b></button>`).join('')}</div>`}</div>${src}`;

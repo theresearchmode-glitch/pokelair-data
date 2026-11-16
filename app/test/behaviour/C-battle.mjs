@@ -424,9 +424,8 @@ t('LOG-06', '"Your games · this six" on My team: log a loss with leads, then Un
 
 t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); await ui.openFold('Battle log'); await ui.logResult('W');
-  await ui.go('Home', 900);
-  if (NEW) await ui.openFold('More on Home'); /* approved Home mock-up (docs/rebuild/mocks/home.tpl.html:159; decisions.md:473): the record sits in the "More on Home" fold, closed by default */
-  expect(/1[–-]0/.test(await ui.pageText()), 'Home does not show the 1–0 record'); await close(); });
+  await ui.go(NEW ? 'My Team' : 'Home', 900); /* say it once (Nov 16, docs/rebuild/say-it-once.md): Home no longer repeats Your Games; the six's record line lives on My Team */
+  expect(/1[–-]0/.test(await ui.pageText()), (NEW ? 'My Team' : 'Home') + ' does not show the 1–0 record'); await close(); });
 
 // ============================== CALC: Damage calc ==============================
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
@@ -791,9 +790,11 @@ t('X-02', 'two- and three-choice switches show exactly one choice and move with 
   expect(await ui.isPressed('Their hits on you') === true && await ui.isPressed('Your hits on them') === false, 'hits switch did not move'); await close(); });
 
 t('X-03', 'folds remember open/closed per device (Speed tiers fold)', async () => {
-  const {ui, close} = await open({team: TEAM}); await ui.go('Speed Tiers');
-  const was = await ui.isFoldOpen('Your six vs the field'); await ui.openFold('Your six vs the field', !was);
-  await ui.reload(); await ui.go('Speed Tiers'); expect(await ui.isFoldOpen('Your six vs the field') === !was, 'fold state not remembered'); await close(); });
+  /* v2: Speed Tiers has no fold now (compact page); the remembered fold is Meta's "About the ratings" (meta.js data-raabout) */
+  const pg_ = NEW ? 'Ratings' : 'Speed Tiers', f = NEW ? 'About the ratings' : 'Your six vs the field';
+  const {ui, close} = await open({team: TEAM}); await ui.go(pg_);
+  const was = await ui.isFoldOpen(f); await ui.openFold(f, !was);
+  await ui.reload(); await ui.go(pg_); expect(await ui.isFoldOpen(f) === !was, 'fold state not remembered'); await close(); });
 
 t('X-04', 'a calc button stays under your finger when the page redraws', async () => {
   const {ui, pg, close} = await open({team: TEAM, width: 390}); await ui.go('Damage Calc');

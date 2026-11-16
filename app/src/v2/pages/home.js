@@ -43,7 +43,7 @@ V2.homeFight = () => { const E = V2.esc, ms = members(), has = ms.length > 0, n 
 // Ringside: the three most used right now (today's hero "Most used right now", HOME-02/03/04): the same buttons, sizes fitted by V2.fitUsed
 V2.homeRing = () => { const E = V2.esc, six = CH.metaSix();
   const used = (p, rank) => p ? `<button type="button" class="hm-used${rank === 1 ? ' one' : ''}" data-v2mon="${E(p.n)}" aria-label="${E(V2.disp(p.n))}, most used #${rank}, ${homePct(p)}% of teams: open its info">${V2.mon(p.n, {bare: true})}<span class="hm-ut"><b>${V2.nameHtml(V2.disp(p.n))}</b><small><span class="num">${homePct(p)}<span class="unit">%</span></span> of ladder teams${rank === 1 ? ' · #1' : ''}</small></span></button>` : '';
-  return `<section class="fn-ringside"><div class="fn-rh"><p class="fn-k">Ringside</p><h2 class="u">Most used right now.</h2><p class="fine hm-src">${E(homeSrcLine())}</p></div>
+  return `<section class="fn-ringside"><div class="fn-rh"><p class="fn-k">Ringside</p><h2 class="u">Most used right now.</h2><p class="fine hm-src">${E(homeSrcLine().replace(/\.\s*Data as of .*$/i, ''))}</p></div>
     <div class="fn-crowd"><div class="hm-three"><i class="hm-floor" aria-hidden="true"></i>${used(six[1], 2)}${used(six[0], 1)}${used(six[2], 3)}</div></div></section>`; };
 // Piece 2: the duel (mock-up "duel"; today's HOME-09 / HOME-10): the Champion's six beside your six. Both sides share the same
 // rows (head, six, plan, actions: one grid, subgrid rows), so the two sixes always start on the same line (Sim, Nov 12).
