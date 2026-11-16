@@ -236,7 +236,7 @@ t('SHELL-07', 'Toast with Undo after loading a team; Undo brings your team back'
   expect(JSON.stringify(await ui.team()) !== JSON.stringify(TEAM), 'team was not replaced');
   await d.tapUndo(); expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Undo did not restore: ' + await ui.team()); }));
 t('SHELL-07b', 'A plain toast goes after about 2 s; an Undo toast stays about 6 s', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); await ui.tap(/^(Practice against|Set as Opponent)$/i); /* Sim, Nov 14 naming */ // a plain toast ("Opponent set: ...")
+  await ui.go('Winning Teams'); await ui.tap(/^(Practice against|Set as Opponent)( ›)?$/i); /* Sim, Nov 14 naming */ // a plain toast ("Opponent set: ...")
   expect(await d.toastText(), 'no toast'); expect(!(await d.toastHasUndo()), 'plain toast has Undo'); await ui.pg.waitForTimeout(3000); expect(!(await d.toastText()), 'plain toast still showing after 3 s');
   await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/); await ui.pg.waitForTimeout(3500);
   expect(await d.toastText(), 'Undo toast gone before 3.5 s'); await ui.pg.waitForTimeout(3500); expect(!(await d.toastText()), 'Undo toast still showing after 7 s'); }));
@@ -334,7 +334,7 @@ t('SHELL-20', 'Feedback: anonymous, no name/email fields, too-short check, sent 
   expect(!(await d.dialogText()), 'dialog stayed open'); const saved = JSON.stringify(await d.savedFeedback());
   expect(saved && has(saved, 'usage list is great') && !saved.includes(String.fromCharCode(64)), 'saved feedback: ' + saved); }));
 t('SHELL-20b', '"Report a mistake" on a sheet sends what was on screen', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Ratings'); await d.openPokemon('Incineroar'); await d.tapInSheet(/^Report a mistake$/); const dl = await d.dialogText();
+  await ui.go('Ratings'); await d.openPokemon('Incineroar'); await d.tapInSheet(/^Report a mistake( ›)?$/); const dl = await d.dialogText();
   expect(dl && has(dl, 'Report a mistake') && has(dl, 'Incineroar'), 'mistake dialog: ' + (dl || '').slice(0, 200)); await d.tapInDialog(/^Send$/);
   expect(has(await d.until(() => d.toastText()) || '', 'Thanks! Mistake reported.'), 'toast: ' + await d.toastText()); }));
 t('SHELL-20c', 'Viewers who cannot save see no feedback buttons', run({team: TEAM, account: false}, async ({ui, d}) => {
@@ -459,7 +459,7 @@ t('RATE-06', 'Details on the top list shows win % and games', run({team: TEAM}, 
 t('RATE-07', 'Every Pokémon, by Tier: six tier rows, "+N more" / "Show fewer", remembered', run({team: TEAM}, async ({ui, d, ls}) => {
   await ui.go('Ratings'); if (await d.foldIsOpen('Every Pokémon, by Tier')) await d.toggleFold('Every Pokémon, by Tier'); await d.toggleFold('Every Pokémon, by Tier');
   const rows = await d.boardRows(); expect(rows.map(r => r.tier).join() === 'S,A,B,C,D,F', 'tiers: ' + rows.map(r => r.tier));
-  expect(/Top of the [Ff]ormat(:| ·) \d+/.test(rows[0].head), 'S row head: ' + rows[0].head); const f = rows[5]; expect(/^\+\d+ more$/.test(f.more), 'F row has no "+N more": ' + f.more);
+  expect(/Top of the [Ff]ormat(:| ·) \d+/.test(rows[0].head), 'S row head: ' + rows[0].head); const f = rows[5]; expect(/^\+\d+ more( ›)?$/.test(f.more), 'F row has no "+N more": ' + f.more);
   await d.tapTierMore('F'); const f2 = (await d.boardRows())[5]; expect(f2.tiles > f.tiles && f2.more === (NEW ? 'Show Fewer' : 'Show fewer'), 'F row did not expand: ' + JSON.stringify(f2));
   expect(await ls('cc2.chf.lairboard') == 1 || /"open":\{[^}]*"F":true/.test(JSON.stringify(await ls('np2.ra.board'))), 'open state not remembered'); /* new site: the opened tier is remembered */ }));
 
@@ -606,9 +606,9 @@ t('TOP-06', 'Card actions: Load team (confirm, Undo), Practice against, Compare'
   await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); expect(has(await ui.text(), 'Replace your current team?'), 'no confirm'); await ui.tap(/^Cancel$/);
   expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Cancel changed the team'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/);
   expect(await ui.current() === 'report', 'did not open My Team'); expect(await d.toastHasUndo(), 'no Undo'); const loaded = await ui.team(); expect(loaded.includes('Gholdengo'), 'first card not loaded: ' + loaded);
-  await ui.go('Winning Teams'); await ui.tap(/^(Practice against|Set as Opponent)$/i); /* Sim, Nov 14 naming */ expect(await ui.current() === 'matchup', 'Practice against opened ' + await ui.current());
+  await ui.go('Winning Teams'); await ui.tap(/^(Practice against|Set as Opponent)( ›)?$/i); /* Sim, Nov 14 naming */ expect(await ui.current() === 'matchup', 'Practice against opened ' + await ui.current());
   expect(has(await d.toastText() || '', 'Opponent set'), 'toast: ' + await d.toastText());
-  await ui.go('Winning Teams'); await ui.tap(/^Compare$/, '[data-pane=top]'); expect(await ui.current() === 'compare', 'Compare opened ' + await ui.current()); }));
+  await ui.go('Winning Teams'); await ui.tap(/^Compare( ›)?$/, '[data-pane=top]'); expect(await ui.current() === 'compare', 'Compare opened ' + await ui.current()); }));
 t('TOP-07', 'Winning Teams without data says so', run({team: TEAM, account: false}, async ({ui}) => {
   await ui.go('Winning Teams'); expect(has(await ui.text(), 'Top teams appear here after the next data refresh.'), 'no empty line'); }));
 

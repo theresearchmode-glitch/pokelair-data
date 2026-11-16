@@ -117,7 +117,7 @@ V2.dcDetails = (C) => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc 
   const fold = (k, who, line, boxes) => `<details class="dc2-fold" data-dcfold="${k}"${V2.dcOpen && V2.dcOpen[k] ? ' open' : ''}><summary><span><b>${E(who)}'s set</b><small>${line}</small></span><i aria-hidden="true">›</i></summary><div class="dc2-boxes">${boxes}</div></details>`;
   return `<section class="dc2-det"><div class="dc2-dl"><p class="np-eyebrow"><span>Details</span></p>
       ${notes.length ? `<p>${notes.join(' · ')}</p>` : ''}${nc.length ? `<p>Not counted: ${nc.join('; ')}.</p>` : ''}${bulk ? `<p>${bulk}</p>` : ''}${set}
-      <p class="dc2-links">${V2.FB && V2.FB.ok ? '<a class="np-link" href="#feedback" data-fbmistake="calc">Report a Mistake</a>' : ''}<a class="np-link" href="#method">How the Calc Works ›</a></p></div>
+      <p class="dc2-links">${V2.FB && V2.FB.ok ? '<a class="np-link" href="#feedback" data-fbmistake="calc">Report a Mistake ›</a>' : ''}<a class="np-link" href="#method">How the Calc Works ›</a></p></div>
     <div class="dc2-dr">${fold('a', V2.disp(A.p.n), aLine, aBoxes)}${fold('d', V2.disp(D.p.n), dLine, dBoxes)}</div></section>`; };
 
 // each Pokemon fits the room its Card actually has: below the ATTACKER / DEFENDER label and at least 8 px above its name (a Mega's blue

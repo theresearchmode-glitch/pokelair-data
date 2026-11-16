@@ -425,7 +425,7 @@ t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap
   await r.ui.openFold(FT, true, 1500); const f0 = await r.ui.foldContent(FT), f = FT === 'Things to Know' ? f0 + '\n' + await r.ui.pg.evaluate(() => { document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; }); return document.querySelector('#tm-ck').innerText; }) : f0;
   for (const s of [NEW ? /[Ww]eakness Ice 3 weak/ : /Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, NEW ? /Show \d+ More/ : /Show \d+ more/, NEW ? /Team Checks/ : /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, NEW ? /Handles the top threats/ : /Ready for the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
   ok(await r.ui.foldOpen('Weakness Ice') === true, 'first fixable problem not opened automatically');
-  await r.ui.tapText(NEW ? /^Show \d+ More$/ : /^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => (NEW ? /Show Fewer/ : /Show less/).test(await r.ui.foldContent(FT) || ''), 4000), (NEW ? 'Problems fold shows no "Show Fewer"' : 'Problems fold shows no "Show less"'));
+  await r.ui.tapText(NEW ? /^Show \d+ More( ›)?$/ : /^Show \d+ more$/, 700); ok(await r.ui.waitFor(async () => (NEW ? /Show Fewer/ : /Show less/).test(await r.ui.foldContent(FT) || ''), 4000), (NEW ? 'Problems fold shows no "Show Fewer"' : 'Problems fold shows no "Show less"'));
   await r.ui.tapText('Swap out Rillaboom', 1500); await r.ui.settle(); ok(await r.ui.has('#toastUndo'), 'no Undo toast'); ok(!(await r.ui.team()).includes('Rillaboom'), 'Rillaboom not swapped out');
   ok(await r.ui.undoBar(), 'no Undo bar'); await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen(FT) === true, 'fold not remembered open'); await r.close(); });
 
@@ -483,7 +483,7 @@ t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control co
     sheet: eyebrow "My Team · <archetype>", one row per gamePlan() row (label, Covered / Partly / Missing / Optional, who, note).
     Nothing is remembered: after a reload no sheet is open and there is no Game Plan fold */
     const r = await myTeam(); ok(/^Game [Pp]lan vs the meta's top six: lead /.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game Plan": ' + await r.ui.gamePlanLine());
-    await r.ui.tapText(/^Game [Pp]lan$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
+    await r.ui.tapText(/^Game [Pp]lan( ›)?$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
     const W = s => String(s || '').replace(/\s+/g, ' ').trim();
     const want = await r.ui.peek("[(teamArchetype(members()) || {}).label || '', gamePlan(members()).rows.map(r => [r.label, ({ok: 'Covered', part: 'Partly', miss: 'Missing', opt: 'Optional'})[r.st] || 'Optional', r.who || '', r.note || ''])]");
     ok(want && want[1].length >= 7, 'no gamePlan() rows to compare: ' + JSON.stringify(want)); ok(g.eyebrow === 'My Team' + (want[0] ? ' · ' + want[0] : ''), 'eyebrow "' + g.eyebrow + '", want the archetype "' + want[0] + '"');
@@ -1011,7 +1011,7 @@ t('CMP-02', 'Team headers A/B with source and Change; "Swap A and B" swaps the c
 t('CMP-03', 'Team picker: My Team (greyed when already A), saved teams, winners, paste a Showdown team; never changes my team', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); const tx = await r.ui.text();
   for (const s of ['Saved Teams', 'Rain test', /Winning [Tt]eams:? event winners, newest first/, (NEW ? /Show 10 More Winners/ : /Show 10 more winners/), /Any other tournament team: tap Compare on its card in Winning [Tt]eams/, /Paste a Showdown [Tt]eam/, /Use [Tt]his [Tt]eam/, /Already team A/]) has(tx, s, 'picker');
-  await r.ui.tapText((NEW ? /^Show 10 More Winners$/ : /^Show 10 more winners$/), 700); { const t10 = await r.ui.text(), n10 = (t10.match(NEW ? /\bWon .+?· [A-Z][a-z]{2} \d+/g : /Champion Won/g) || []).length; ok(n10 >= 16, 'Show 10 more did not add winners: ' + n10 + ' found; ' + JSON.stringify(t10.slice(t10.indexOf('newest first'), t10.indexOf('newest first') + 160))); } // new site (Nov 15): rows are titled by team style, not 'Champion'
+  await r.ui.tapText((NEW ? /^Show 10 More Winners( ›)?$/ : /^Show 10 more winners$/), 700); { const t10 = await r.ui.text(), n10 = (t10.match(NEW ? /\bWon .+?· [A-Z][a-z]{2} \d+/g : /Champion Won/g) || []).length; ok(n10 >= 16, 'Show 10 more did not add winners: ' + n10 + ' found; ' + JSON.stringify(t10.slice(t10.indexOf('newest first'), t10.indexOf('newest first') + 160))); } // new site (Nov 15): rows are titled by team style, not 'Champion'
   await r.ui.pasteCompareTeam(PASTE); await r.ui.settle(); has((await r.ui.compareHeads()).join(' '), /From a Showdown paste/, 'B head'); ok((await r.ui.team()).join() === TEAM.join(), 'my team changed'); await r.close(); });
 
 t('CMP-04', 'Comparison: "What\'s different" (Tailwind, sun vs rain), Strength Score row, Same-on-both fold', async () => {
@@ -1152,7 +1152,7 @@ t('X-07', 'Folds and views stay as left after reload (Game Plan, Types view, inf
   if (NEW) { /* new build (Sim, Nov 12): Game Plan is a sheet from the plan line (nothing remembered: no sheet after a reload); Types sits
     in the Things to Know fold (fold kept open, cc2.chf.rfix) and keeps its Offense / Defense view (np2.seg.types); the pool is kept */
     const r = await myTeam(); await r.ui.openFold('Things to Know', true, 600); await r.ui.choose('Defense', 800); await r.ui.choose('Whole roster', 900);
-    await r.ui.tapText(/^Game [Pp]lan$/, 900); ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
+    await r.ui.tapText(/^Game [Pp]lan( ›)?$/, 900); ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
     await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(!(await r.ui.gamePlanSheet()), 'Game Plan sheet came back after a reload');
     ok(await r.ui.foldOpen('Things to Know') === true, 'Things to Know closed'); ok(await r.ui.chosen('Defense') === true && /^Types Offense Defense What hits you\./.test(await r.ui.typesPart() || ''), 'Types view not kept');
     ok(await r.ui.chosen('Whole roster') === true, 'pool not kept'); await r.close(); return; }

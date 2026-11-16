@@ -48,7 +48,7 @@ V2.muTop = RD => { const {top, rest, RV} = CH.top10(RD), more = !!ui.tlMore;
   const tile = r => { const R = RV.get(r), w = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
     return `<button type="button" class="mu-tile${R ? ' ' + V2.VCLS[R.w] : ''}" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(w)}" title="${V2.esc(r.t.d)}: ${V2.esc(w)}">${V2.muImg(r.t.n)}</button>`; };
   return `<ol class="tm-rows mu-rows${more ? ' is-more' : ''}">${top.map(row).join('')}</ol>
-    ${top.length > 5 ? `<button type="button" class="np-link mu-more" data-mumore aria-expanded="${more}">${more ? 'Show Top 5 Only' : `Show ${top.length - 5} More`}</button>` : ''}
+    ${top.length > 5 ? `<button type="button" class="np-link mu-more" data-mumore aria-expanded="${more}">${more ? 'Show Top 5 Only' : `Show ${top.length - 5} More ›`}</button>` : ''}
     ${rest.length ? `<h3 class="tm-h3 mu-h3">The next ${rest.length}, worst first</h3><div class="mu-tiles" role="group" aria-label="The next ${rest.length} threats">${rest.map(tile).join('')}</div>` : ''}`; };
 
 // Top 12 grid: your six across, the top 12 threats down (worst first); a cell says what that Pokémon does 1-on-1
@@ -72,7 +72,7 @@ V2.muAll = (RD, ms) => { const open = ui.thrOpen || {}, un = RD.rows.filter(r =>
     : `<ul class="mu-big">${shown.map(r => `<li>${V2.muImg(r.o.p.n)}<div><p class="nm">${V2.nameHtml(r.name)} <span class="ty">${r.o.types.map(V2.typeChip).join('')}</span></p>
       <p class="t">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => V2.esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => V2.esc(ms[i].d)).join(', ') : r.lv >= 2 ? 'Answered by the team as a whole (speed control, support or a combined KO), not 1-on-1' : '<b class="no">No clean answer</b>'}${r.hard ? `<br>Hardest hit: ${V2.esc(r.hard.mv)} does up to ${r.hard.pct}% to ${V2.esc(r.hard.m.d)}.` : ''}</p></div>
       ${r.lv != null ? V2.muLv(r.lv) : r.ans.length ? '' : '<span class="mu-lv l0">No answer</span>'}</li>`).join('')}</ul>
-      ${shown.length < bt.length ? `<button type="button" class="np-link mu-more" data-muall>Show All ${bt.length}</button>` : ''}`;
+      ${shown.length < bt.length ? `<button type="button" class="np-link mu-more" data-muall>Show All ${bt.length} ›</button>` : ''}`;
   return `<div class="mu-prep"><div class="np-eyebrow">Matchups${ms.length < 6 ? ' · so far' : ''}</div><p class="mu-big1 u">${(h => h ? `Beats or handles ${h.x} of the top ${h.n} threats` : '')(CH.hand(RD))}</p>
     <p class="fine">${un ? `${un} with no answer` : 'Every threat has an answer'} · weighted by how often each makes top cut</p></div>
     ${grp(0, true)}${grp(1, true)}${grp(2, false)}${grp(3, false)}

@@ -59,7 +59,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
       <ol class="tm-sug">${top.map((x, k) => V2.sgCard({pl: x.pl, k, g0, attr: 'data-v2plan', side, hidden: k > 0 && !open, main: !k})).join('')}</ol>
-      ${hid > 0 && !open ? `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More Suggestion${hid === 1 ? '' : 's'}</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>` : all}`;
+      ${hid > 0 && !open ? `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More Suggestion${hid === 1 ? '' : 's'} ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>` : all}`;
     V2._sgLast = body; }
   if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button></p>'; /* always reachable */
   return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; };
@@ -106,7 +106,7 @@ V2.allSugsHtml = () => { const ms = members(), P = V2.plan.plans || [], shown = 
     return V2.sgCard({pl, k, g0, attr: 'data-v2plana', side: side && k < shown.length, why, main: !k}); }).join('');
   return `<div class="sga2"><div class="np-eyebrow">${list.length} suggestion${list.length === 1 ? '' : 's'}</div><h2 class="u">All Suggestions</h2>
     <p class="tm-sub">The ones on My Team first, then every other change the planner found in ${V2.esc({box: 'your box', boxfill: 'your box and the best Pokémon to catch', all: 'the whole roster'}[ui.pool])}, each with how it moves the Strength Score.</p>
-    ${list.length ? `<ol class="tm-sug">${cards}</ol>${left > 0 ? `<button type="button" class="np-link sg2-all" data-v2sgamore>Show ${Math.min(12, left)} More</button>` : ''}` : '<p class="tm-sub">No suggestions for this team from this pool.</p>'}</div>`; };
+    ${list.length ? `<ol class="tm-sug">${cards}</ol>${left > 0 ? `<button type="button" class="np-link sg2-all" data-v2sgamore>Show ${Math.min(12, left)} More ›</button>` : ''}` : '<p class="tm-sub">No suggestions for this team from this pool.</p>'}</div>`; };
 V2.openAllSugs = () => { if (!members().length) return; V2.sgAll.n = 12; V2.sheet(V2.allSugsHtml(), {label: 'All Suggestions'}); };
 document.addEventListener('click', e => { if (!e.target.closest) return;
   if (e.target.closest('[data-v2sgall]')) { V2.openAllSugs(); return; }
@@ -137,7 +137,7 @@ V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms, 
     return `<details class="sg2-prob sg2-pf" data-v2pk="${V2.esc(key)}"${V2.fx.open.has(key) ? ' open' : ''}><summary>${head}<span class="sg2-fixn">${n} fix${n > 1 ? 'es' : ''}</span></summary><div class="sg2-qbox"><p class="sg2-k">Quick add</p><ul class="sg2-qps">${Q.picks.map(pl => pick(key, pl)).join('')}</ul></div></details>`; };
   const real = out.filter(o => o[0] !== 'ok'), rows = out.map(row), cap = ui.needsAll ? rows.length : 4, more = rows.length - cap;
   return {real, html: (real.length ? '' : `<div class="sg2-prob"><span class="sg2-sev ok">${PROB_TXT.clear}</span><span class="sg2-pt">${PROB_TXT.clearWhy}</span></div>`) + rows.slice(0, cap).join('')
-    + (more > 0 ? `<button type="button" class="np-link sg2-all" data-v2needs>Show ${more} More</button>` : ui.needsAll && rows.length > 4 ? '<button type="button" class="np-link sg2-all" data-v2needs>Show Fewer</button>' : '')}; };
+    + (more > 0 ? `<button type="button" class="np-link sg2-all" data-v2needs>Show ${more} More ›</button>` : ui.needsAll && rows.length > 4 ? '<button type="button" class="np-link sg2-all" data-v2needs>Show Fewer</button>' : '')}; };
 V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const useA = $('useAbil').checked, a = analyze(playForm(ms), useA), {tRows} = offenseRows(ms, useA);
   const ready = V2.plan.key === V2.planKey() && V2.plan.plans, P = ready ? V2.plan.plans : null; if (P) ui.plans = P;
   let pr; try { pr = V2.fixRows(D, useA, a, tRows, P); } catch (e) { console.error(e); pr = {real: [], html: ''}; }
