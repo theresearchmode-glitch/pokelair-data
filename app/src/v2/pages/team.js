@@ -1,3 +1,4 @@
+if (typeof TIPS === 'object' && TIPS.checklist && TIPS.checklist[0] === 'Checklist') TIPS.checklist = ['How Team Checks work', TIPS.checklist[1]]; /* word list (naming audit #15, Nov 16): the tip was read out as 'What is Checklist?' */
 // ---------- My Team (R4, Nov 11) ----------
 // Everything the page shows is worked out by today's shared logic; this file only gathers it (teamData) and draws it.
 // Approved design: docs/rebuild/mocks/myteam.tpl.html (NastyPlot Full Redesign artifact). Word list: CLAUDE.md.
