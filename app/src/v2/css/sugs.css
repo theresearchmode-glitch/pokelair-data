@@ -310,3 +310,8 @@ p,li,small{text-wrap-style:pretty}
 :root[data-theme] .np-fin:focus-visible{outline:3px solid var(--fring);outline-offset:-6px;box-shadow:inset 0 0 0 3px var(--bg)} /* in the last layer (sugs), so it wins over "selected" outlines such as night chips: the build puts each sheet in its own cascade layer */
 @container (min-width:520px) and (max-width:599.98px){.sg2-ctl{column-gap:var(--s4)}} /* audit Nov 16: at 520-599 the 32px gaps left the two choice columns 7px narrower than their buttons */
 :root[data-theme="night"] .ra-seg a.on{background:color-mix(in srgb,var(--plot) 42%,var(--surface));color:var(--ink);outline:1.5px solid var(--plot);outline-offset:-1.5px} /* Nov 16 (design audit): night page tabs show "selected" in the same blue as every other night chip and switch (they were a grey plate) */
+
+/* Rule C4 (Sim, Nov 16: "all recommendations are good to go"): in day mode a selected chip, tab or switch must not look like the main
+   button (dark plate). One look for every selected control: a light blue tint, blue text, a blue edge. Night keeps its own. */
+:root:not([data-theme="night"]) :is(.np-chip[aria-pressed="true"],.np-chip.on,.ra-seg a.on,.ra-chip[aria-pressed="true"],.fn-sw a.on,.dc2-tok button[aria-pressed="true"],.pk-forms a[aria-current]){background:color-mix(in srgb,var(--plot) 18%,var(--surface));color:var(--plot-text-deep);box-shadow:inset 0 0 0 1.5px var(--plot)}
+:root:not([data-theme="night"]) :is(.np-chip[aria-pressed="true"],.np-chip.on,.ra-seg a.on,.ra-chip[aria-pressed="true"],.fn-sw a.on,.dc2-tok button[aria-pressed="true"]) :is(b,small,span){color:inherit}
