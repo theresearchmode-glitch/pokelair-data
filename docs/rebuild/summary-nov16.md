@@ -22,8 +22,11 @@ Every decision is in docs/rebuild/decisions.md (from the 1:03 PM entry on). Pict
 4. Undo inside an open sheet: the toast sits under the backdrop (your Nov 11 rule), so its Undo can't be used while a sheet is open (e.g. Remove in
    Edit Set: no Undo shows at all). Pictures: undo-in-sheet-now.png, undo-in-sheet-A.png. Recommend A: 'Removed Whimsicott · Undo' inside the sheet, in the
    Undo bar style Suggestions already uses. Why: Undo should always be reachable.
-5. Game Plan link: tap area 47px tall but only 19px above its centre (the checker wants 21). Fix moves the line 2px down. Picture: (to make).
-6. Plan settings (Count abilities, Refresh plans): where they live. Pictures: (to make).
+5. Game Plan link: tap area 47px tall but only 19px above its centre (the checker wants 21). Fix moves the line 2px down. Picture: gameplan-tap-area-390.png (the tap area tinted blue). Recommend: move it 2px. Why: the 44px rule,
+   and 2px is not visible.
+6. Plan settings (Count abilities, Refresh plans): today Count abilities is always on (hidden). Pictures: plan-settings-now/A-390/1440.png. My first try
+   (A, a slider on its own row) leaves a lone slider and a lone link at 390, so I recommend instead: Count abilities beside Megas and Swap (three across
+   on desktop, two by two on phones), Refresh Suggestions in the links row. Why: no half-filled rows; settings stay in one place.
 
 ## After the switch (Sim, Q1 A)
 - Cross-device sync (code review B8), its own step tested on two devices; delete the old site's dead code (C1).
