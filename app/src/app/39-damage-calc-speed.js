@@ -242,7 +242,7 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
     // (move data stores fixed: 0 for "no fixed damage", so only a positive number is a fixed amount)
     const v=mv.vbp==='gambit'?calcStat(A.p,'HP',A.hpSp??0,1):mv.ohko?((dab==='Sturdy'||(mv.ohko==='Ice'&&D.p.t.includes('Ice')))?0:hp):mv.fixed==='level'?50:typeof mv.fixed==='number'&&mv.fixed>0?mv.fixed:Math.max(1,Math.floor(hp/2));
     const v2=mv.vbp==='half'?Math.max(1,Math.floor((hp-v)/2)):v,rr=Array(16).fill(v),r2=Array(16).fill(v2);
-    return {min:v,max:v,rolls:rr,hp,eff:v?1:0,type,hits:1,fixed:true,ohko:!!mv.ohko,next:{min:v2,max:v2,rolls:r2},sash:dIt==='Focus Sash'&&!mv.ohko&&mv.vbp!=='half'&&o.fullHp!==false,band:dIt==='Focus Band'&&!mv.ohko}}
+    return {min:v,max:v,rolls:rr,hp,eff:v?1:0,type,hits:1,fixed:true,ohko:!!mv.ohko,next:{min:v2,max:v2,rolls:r2},sash:(dIt==='Focus Sash'||dab==='Sturdy')&&!mv.ohko&&mv.vbp!=='half'&&o.fullHp!==false,sashBy:dab==='Sturdy'?'Sturdy':'Focus Sash',band:dIt==='Focus Band'&&!mv.ohko}}
   // Attack and Defense. Foul Play uses the target's own Attack (its points, nature and stage); Body Press the user's Defense.
   const aStat=nm==='Body Press'?'Def':phys?'Atk':'SpA',dStat=(phys||['Psyshock','Psystrike','Secret Sword'].includes(nm))?'Def':'SpD',foul=nm==='Foul Play',S=foul?D:A;
   const aPts=foul?(D.atkSp??0):aStat==='Atk'?(A.spA??A.sp):aStat==='SpA'?(A.spS??A.sp):(A.spDef??0);
@@ -253,16 +253,17 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
   // Unaware ignores the other side's stat stages; a crit ignores the attacker's drops and the defender's boosts
   if(dab==='Unaware')aB=0;if(ab==='Unaware'||['Sacred Sword','Darkest Lariat','Chip Away'].includes(nm))dB=0;if(crit){aB=Math.max(0,aB);dB=Math.min(0,dB)}
   let a=statStage(calcStat(S.p,aStat,aPts,natMul(S.nat,aStat)),aB),d=statStage(calcStat(D.p,dStat,dStat==='Def'?D.defSp:D.spdSp,natMul(D.nat,dStat)),dB);
-  if(phys&&ab==='Hustle')a=Math.floor(a*1.5);
+  // Nov 15 (code review A5f): Body Press hits with Defense, so Attack boosters (Hustle, Guts, Huge/Pure Power, Choice Band) skip it
+  const physAtk=phys&&nm!=='Body Press';if(physAtk&&ab==='Hustle')a=Math.floor(a*1.5);
   const burned=!!A.burn,am=[];
   if(ab==='Solar Power'&&!phys&&fw==='sun')am.push(6144);
   // Plus / Minus: 1.5× Sp. Atk when an ally on the field has Plus or Minus (o.plusAlly)
-  else if((ab==='Guts'&&burned&&phys)||(o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab])||(o.plusAlly&&!phys&&(ab==='Plus'||ab==='Minus')))am.push(6144);
+  else if((ab==='Guts'&&burned&&physAtk)||(o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab])||(o.plusAlly&&!phys&&(ab==='Plus'||ab==='Minus')))am.push(6144);
   else if((ab==='Fire Mane'&&type==='Fire')||(ab==='Steelworker'&&type==='Steel')||(ab==="Dragon's Maw"&&type==='Dragon')||(ab==='Rocky Payload'&&type==='Rock'))am.push(6144);
   else if(ab==='Transistor'&&type==='Electric')am.push(5325);
-  else if((ab==='Water Bubble'&&type==='Water')||(phys&&(ab==='Huge Power'||ab==='Pure Power')))am.push(8192);
+  else if((ab==='Water Bubble'&&type==='Water')||(physAtk&&(ab==='Huge Power'||ab==='Pure Power')))am.push(8192);
   if((dab==='Thick Fat'&&(type==='Fire'||type==='Ice'))||(dab==='Water Bubble'&&type==='Fire')||(dab==='Purifying Salt'&&type==='Ghost')||(dab==='Heatproof'&&type==='Fire'))am.push(2048);
-  if((aIt==='Choice Band'&&phys)||(aIt==='Choice Specs'&&!phys))am.push(6144);
+  if((aIt==='Choice Band'&&physAtk)||(aIt==='Choice Specs'&&!phys))am.push(6144);
   // Light Ball doubles Pikachu's Attack and Sp. Atk (any Pikachu form)
   if(aIt==='Light Ball'&&(A.p.b||A.p.n||'').startsWith('Pikachu'))am.push(8192);
   a=applyMods(a,am);
@@ -325,7 +326,7 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
   // Disguise (Mimikyu): the first hit only breaks the disguise and costs it 1/8 of its HP
   const disg=dab==='Disguise'&&o.fullHp!==false,dg=Math.floor(hp/8);
   const R=[...Array(16)].map((_,i)=>85+i),rolls=R.map(r=>H.reduce((s,b,h)=>s+(disg&&h===0?dg:one(b,r,h?FB:FA)),0)),later=R.map(r=>H.reduce((s,b)=>s+one(b,r,FB),0));
-  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:dIt==='Focus Sash'&&hits===1&&o.fullHp!==false,
+  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:(dIt==='Focus Sash'||dab==='Sturdy')&&hits===1&&o.fullHp!==false,sashBy:dab==='Sturdy'?'Sturdy':'Focus Sash', /* Nov 15 (code review A5): Sturdy holds at 1 HP from full like a Sash (dab is empty under Mold Breaker) */
     band:dIt==='Focus Band',contact,beatUp,bp,crit,critStage:critStage(A,mv),aTypes:ta,dTypes:td}}
 // Fewest bulk points (HP + the defense the move hits) that survive every roll, keeping the defender's nature.
 function bulkToSurvive(o){const mv=o.move;if(!mv||!mv.bp||mv.cat===0||mv.fixed||mv.ohko||mv.vbp==='half')return null;const special=mv.cat===2&&!['Psyshock','Psystrike','Secret Sword'].includes(mv.name);
@@ -342,7 +343,7 @@ function koText(r){const t=koText0(r);return r&&r.band&&r.max>0&&r.max+(r.next||
 function ko2Odds(r){const a=r&&r.rolls,b=r&&r.next&&r.next.rolls||a;if(!Array.isArray(a)||!Array.isArray(b)||!a.length||!b.length)return null;let c=0;for(const x of a)for(const y of b)if(x+y>=r.hp)c++;return c/(a.length*b.length)}
 const koPc=k=>Math.min(99,Math.max(1,Math.round(100*k)));
 function koShort(r){if(!r||!r.hp)return '';if(r.max===0)return 'no effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r,k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
-  if(r.sash&&k1>0)return 'Sash holds';if(k1>=1)return 'OHKO';if(k1>0)return `OHKO ${koPc(k1)}%`;if(r.min+nx.min>=r.hp)return '2HKO';
+  if(r.sash&&k1>0)return r.sashBy==='Sturdy'?'Sturdy holds':'Sash holds';if(k1>=1)return 'OHKO';if(k1>0)return `OHKO ${koPc(k1)}%`;if(r.min+nx.min>=r.hp)return '2HKO';
   if(r.max+nx.max>=r.hp){const k2=ko2Odds(r);return k2!=null?`2HKO ${koPc(k2)}%`:'2HKO?'}if(r.min+2*nx.min>=r.hp)return '3HKO';const n=1+Math.ceil((r.hp-r.max)/Math.max(1,nx.max));return `${n}HKO+`}
 /* a damage percentage under the shared rounding rule, never showing 100 for a hit that can't reach 100% */
 const dmgP=v=>{const t=ptsTxt(v);return v<100&&+t>=100?'99':t};
@@ -350,7 +351,7 @@ const dmgP=v=>{const t=ptsTxt(v);return v<100&&+t>=100?'99':t};
 const dmgRange=r=>r&&r.hp?`${dmgP(100*r.min/r.hp)}–${dmgP(100*r.max/r.hp)}% of HP`:'';
 function koText0(r){if(!r)return '';if(r.max===0)return 'No effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r;
   const k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
-  if(r.sash&&k1>0)return k1>=1?'Focus Sash holds at 1 HP, then any hit KOs':`${Math.round(k1*100)}% to OHKO without its Focus Sash; the Sash holds at 1 HP`;
+  if(r.sash&&k1>0){const st=r.sashBy==='Sturdy';return k1>=1?(st?'Sturdy holds at 1 HP from full, then any hit KOs':'Focus Sash holds at 1 HP, then any hit KOs'):st?`${Math.round(k1*100)}% to OHKO without Sturdy; Sturdy holds at 1 HP from full`:`${Math.round(k1*100)}% to OHKO without its Focus Sash; the Sash holds at 1 HP`}
   if(k1>=1)return 'Guaranteed OHKO';if(k1>0)return `${Math.round(k1*100)}% chance to OHKO`;
   if(r.min+nx.min>=r.hp)return 'Guaranteed 2HKO';if(r.max+nx.max>=r.hp){const k2=ko2Odds(r);return k2!=null?`${koPc(k2)}% chance to 2HKO`:'Possible 2HKO'}if(r.min+2*nx.min>=r.hp)return 'Guaranteed 3HKO';
   return `${1+Math.ceil((r.hp-r.max)/Math.max(1,nx.max))}HKO or worse`}
@@ -360,8 +361,8 @@ function sideDefaults(p,role,mem){const nat=topNature(p),it=topItem(p);let ab;tr
   if(mem&&mem.ability&&p.a.includes(mem.ability))ab=mem.ability;
   // your own member: your spread if you set one (paste/link), and its item (your pick, or the team-aware default)
   const st=p.st,phys=st[1]>=st[3],cs=(mem&&mem.spread)||commonSpread(p),item=mem&&mem.item&&!STONE_RE.test(mem.item)?mem.item:mem&&mem.heldItem?mem.heldItem:it&&!STONE_RE.test(it[0])?it[0]:'';
-  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,hpSp:cs.hp,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}
-    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'};
+  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,hpSp:cs.hp,speSp:cs.spe,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}
+    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,speSp:cs.spe,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}; /* Nov 15 (code review A5): speSp, read by Gyro Ball and Electro Ball, was never set (always 0 Speed points) */
   // no spread data: assume full Defense for Body Press on Pokémon built around their Defense (base 100+);
   // a defender's Attack points (for Foul Play) are full on physical attackers
   return role==='atk'?{nat:nat||(phys?'Adamant':'Modest'),sp:32,spDef:st[2]>=100?32:0,item,ability:ab,boost:0,src:'estimated'}
@@ -371,7 +372,10 @@ let dc={dir:'mine',a:null,d:null,mv:null,weather:'',terrain:'',screen:false,hh:f
 // player in any of our usage data runs them), so the calc doesn't offer them; their math stays in damage().
 const CALC_ITEMS=['','Life Orb','Choice Scarf','Expert Belt','Focus Sash','Sitrus Berry','Leftovers',...Object.keys(TYPE_ITEM),...Object.keys(RESIST_BERRY)];
 const NATURES=['Hardy','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
-function dcSide(role,n){const p=byName.get(n);if(!p)return null;const key=role+':'+n;if(!dc.inv[key]){let mem=null;try{mem=members().find(m=>m.p.n===n)}catch(e){}dc.inv[key]=sideDefaults(p,role,mem)}return {p,...dc.inv[key]}}
+// Nov 15 (code review A5): the cached side is rebuilt when that team member's set changes (item, ability, spread); it went stale before
+function dcSide(role,n){const p=byName.get(n);if(!p)return null;const key=role+':'+n;let mem=null;try{mem=members().find(m=>m.p.n===n)}catch(e){}
+  let sig='';try{sig=mem?JSON.stringify([mem.item||'',mem.heldItem||'',mem.ability||'',mem.spread||null]):''}catch(e){}
+  if(!dc.inv[key]||dc.inv[key]._sig!==sig){dc.inv[key]=sideDefaults(p,role,mem);dc.inv[key]._sig=sig}const {_sig,...side}=dc.inv[key];return {p,...side}}
 function dcMoves(p){const learn=(LEARN[p.n]||[]).map(k=>MV[k]).filter(m=>m.bp>0);let pop=[];try{const mem=members().find(m=>m.p.n===p.n);pop=(mem?mem.moves:popularMoves(p)).filter(m=>m&&m.bp>0)}catch(e){}
   const seen=new Set(pop.map(m=>m.name));return {pop,rest:learn.filter(m=>!seen.has(m.name)).sort((a,b)=>a.name.localeCompare(b.name))}}
 function monOptions(sel){const mine=members().map(m=>m.p);let thr=[];try{thr=metaThreats(30).map(x=>x.p||x)}catch(e){}

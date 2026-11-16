@@ -78,7 +78,7 @@ function parsePaste(text) {
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);
     if (!p) { notes.push(`Skipped "${speciesName}": not on the M-C roster`); continue; }
-    if (item && !p.m && /ite( [XYZ])?$|inite/.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
+    if (item && !p.m && STONE_RE.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
       // Meowstic has a Mega for each gender: Showdown writes the female as "Meowstic-F" (stress test, Oct 28)
       if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();

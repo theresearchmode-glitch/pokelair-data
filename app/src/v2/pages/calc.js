@@ -54,7 +54,7 @@ V2.dcResult = (C) => { const E = V2.esc, r = C.r, mv = C.mv, t = (r && r.type) |
     <div class="dc2-side"><p class="dc2-line"><i aria-hidden="true"></i>${E(line)}</p><p class="dc2-ko"><b class="u">${E(koText(r))}</b><span class="dc2-hp">${r.min}–${r.max} of ${r.hp} HP${r.hits > 1 ? ` · ${r.hits} hits` : ''}</span></p>${V2.dcBar(r, 'big')}${eff ? `<p class="dc2-eff">${eff}</p>` : ''}</div></section>`; };
 
 // the KO Board: each top-30 Pokemon with your best hit on it (or, switched, its best hit on your six), surest KO first
-V2.dcKB = () => { const ms = members(), dir = dc.dir === 'theirs' ? 'theirs' : 'mine', key = [dir, S.format, metaVersion, ms.map(m => m.p.n + '/' + (m.item || '') + '/' + (m.ability || '') + '/' + (m.moves || []).map(x => x && x.name).join('+')).join(',')].join('|');
+V2.dcKB = () => { const ms = members(), dir = dc.dir === 'theirs' ? 'theirs' : 'mine', key = [dir, S.format, metaVersion, ms.map(m => m.p.n + '/' + (m.item || '') + '/' + (m.ability || '') + '/' + (m.moves || []).map(x => x && x.name).join('+') + '/' + (m.spread ? JSON.stringify(m.spread) : '')).join(',')].join('|');
   if (V2._dcKB && V2._dcKB.key === key) return V2._dcKB.v;
   let thr = []; try { thr = metaThreats(30).map(x => x.p || x).filter(p => p && p.st); } catch (e) {}
   const myF = typeof sideField === 'function' ? sideField(ms) : {}, thF = t => typeof sideField === 'function' ? sideField([{p: t, ability: abilityOf({p: t})}]) : {};

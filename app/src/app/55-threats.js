@@ -116,7 +116,7 @@ const THR = (() => {
     let best = null; const st = intimidated(att, def), E = ext || {};
     for (const mv of att.moves) { if (!mv || !mv.bp || mv.cat === 0 || mv.name === 'Fake Out') continue;
       if (mv.vbp === 'counter' || mv.vbp === 'endeavor') continue; // conditional damage, never a planned KO
-      const k = mv.cat === 1 ? 'atk' : 'spa', b0 = st[k] + (E.after ? 0 : (E[k] || 0)), bLate = st[k] + (E[k] || 0);
+      const k = mv.name === 'Body Press' ? 'def' : mv.cat === 1 ? 'atk' : 'spa', b0 = (st[k] || 0) + (E.after ? 0 : (E[k] || 0)), bLate = (st[k] || 0) + (E[k] || 0); /* Body Press: its own Defense stage, which Intimidate never lowers (code review A5e) */
       const base = {def: defObj(def), move: mv, spread: !!mv.spread, weather: field.weather, terrain: field.terrain, auras: field.auras};
       const r = damage({...base, atk: atkObj(att, b0)}); if (!r) continue;
       // its own drop after the hit; White Herb resets it once (unless Intimidate already used the herb), so the second hit is

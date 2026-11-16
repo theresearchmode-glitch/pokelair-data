@@ -9,7 +9,7 @@ let bmUi = {tab: 'plan', tw: false, twOpp: false, tr: false, icy: false, weather
 function bmHit(aP, moves, dP, weather, intim, aMem, dMem, terrain) {
   let best = null; const A = {p: aP, ...sideDefaults(aP, 'atk', aMem)}, D = {p: dP, ...sideDefaults(dP, 'def', dMem)};
   for (const mv of moves || []) { if (!mv || !mv.bp) continue;
-    const r = damage({atk: {...A, boost: intim && mv.cat === 1 ? -1 : 0}, def: D, move: mv, spread: !!mv.spread, weather, terrain: terrain || ''}); if (!r || !r.hp) continue;
+    const r = damage({atk: {...A, boost: intim && mv.cat === 1 && mv.name !== 'Body Press' ? -1 : 0} /* Intimidate lowers Attack; Body Press hits with Defense (code review A5e) */, def: D, move: mv, spread: !!mv.spread, weather, terrain: terrain || ''}); if (!r || !r.hp) continue;
     // weigh by what you can count on (accuracy, charging turn, recharge), the same way the hit tables do
     const ch = chargesFirst(mv, weather, A.item), acc = moveAcc(mv, A.ability, weather, D, A.item), val = r.max * acc / 100 * (ch ? .5 : 1) * (mv.recharge ? .7 : 1);
     if (!best || val > best.val) best = {mv, r, val, charge: ch, acc, recharge: !!mv.recharge}; }

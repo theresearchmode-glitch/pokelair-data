@@ -94,8 +94,10 @@ function renderProblems(ms,a,tRows,useA,plans){const el=$('needs');ui.quick=[];
   el.innerHTML=(real.length?'':`<div class="prob-row"><span class="sev ok">${PROB_TXT.clear}</span><div>${PROB_TXT.clearWhy}</div></div>`)+rows.slice(0,cap).join('')
     +(more>0?`<button type="button" class="btn sm ghost needsmore" id="needsMore">Show ${more} more</button>`:ui.needsAll&&rows.length>4?'<button type="button" class="btn sm ghost needsmore" id="needsMore">Show less</button>':'');
 }
-function megaFormFor(p,t){if(p.m||!t||!t.it||!t.it.length)return p;const [item,pct]=t.it[0];if(!(pct>=50)||!/ite( [XYZ])?$|inite/.test(item))return p;
-  const suf=(item.match(/ ([XYZ])$/)||[])[1];const want=p.b+'-Mega'+(suf?'-'+suf:'');return byName.get(want)||byName.get(p.b+'-Mega')||byName.get(p.b+'-M-Mega')||p}
+function megaFormFor(p,t){if(p.m||!t||!t.it||!t.it.length)return p;const [item,pct]=t.it[0];if(!(pct>=50)||!STONE_RE.test(item))return p;
+  const suf=(item.match(/ ([XYZ])$/)||[])[1];const want=p.b+'-Mega'+(suf?'-'+suf:'');const mf=byName.get(want)||byName.get(p.b+'-Mega')||byName.get(p.b+'-M-Mega');if(!mf)return p;
+  // Nov 15 (code review A4): only that Mega's own stone makes the Mega (an unrelated '-ite' item, e.g. Eviolite, made Garchomp Mega Garchomp)
+  const own=typeof MEGA_STONE==='object'&&(MEGA_STONE[mf.n]||(mf.n==='Meowstic-M-Mega'&&MEGA_STONE['Meowstic-F-Mega']));return !own||own===item?mf:p}
 function renderOffMeta(entries,useA){const d=metaDoc();const wrap=$('offMetaWrap');
   if(!d||!d.top||!entries.length){$('offMetaTitle').textContent='';wrap.hidden=true;return}
   wrap.hidden=false;const src={ingame:'in-game doubles',tour:'tournament',ladder:'Showdown doubles'}[ui.metaSrc];

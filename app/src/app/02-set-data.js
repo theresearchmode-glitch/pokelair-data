@@ -21,7 +21,7 @@ function sdRow(p,fmt){if(!builtinOk())return null;const k='M'+FK(fmt)+'|'+p.n;if
   const r=typeof SETS==='object'&&SETS['M'+FK(fmt)][p.n];let o=null;
   if(r)o={n:p.n,mv:pairsOf(r[0],i=>MV[i]?MV[i].name:null),na:r[1].map(i=>[SETS.NAT[i],null]),tm:r[2].map(i=>ROSTER[i]?[ROSTER[i].n,null]:null).filter(Boolean),it:[],ab:[],u:r[3],raw:r[4],cut:r[5]};
   gameCache.set(k,o);return o}
-const STONE_RE=/ite( [XYZ])?$|inite$/;
+const STONE_RE=/^(?!Eviolite$).*(?:ite( [XYZ])?|inite)$/; // Nov 15 (code review A4): Eviolite ends in 'ite' but is no Mega Stone; paste, team links and the Calc dropped it
 // Moves under 80% accuracy. Only worth running with No Guard (or the weather that makes them sure-hit).
 const LOW_ACC=new Set(['Zap Cannon','Inferno','Dynamic Punch','Grass Whistle','Sing','Supersonic','Hypnosis','Lovely Kiss','Sleep Powder','Stun Spore','Poison Powder','Focus Blast','Iron Tail','Mega Kick','Thunder','Blizzard','Hurricane','Fissure','Guillotine','Horn Drill','Sheer Cold','Sweet Kiss','Dark Void','Magma Storm','Smog','Slam','Submission']);
 // Moves a plain form shouldn't inherit from its Mega's set: species-level rows (the in-game data, tournament and
