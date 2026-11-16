@@ -23,14 +23,14 @@ V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T 
     <div class="pk-acts"><button type="button" class="np-btn" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-mssets="${E(n)}"><span>Popular Sets</span></button>${V2.addBtn ? V2.addBtn(n) : ''}</div></div></section>`; };
 // Base Stats: one panel, six lanes (a plate in the stat's colour, a streak growing to a point where the stat lands, the number past it),
 // a scale under the lanes, then one bar split by each stat's share of the total. A Mega shows the change from its base form (today's note).
-V2.pkStats = p => { const E = V2.esc, bf = SHT.baseForm(p), tot = p.st.reduce((a, b) => a + b, 0), btot = bf ? bf.st.reduce((a, b) => a + b, 0) : 0;
-  const top = Math.max(160, Math.ceil(Math.max(...p.st) / 40) * 40), ticks = []; for (let v = 0; v <= top; v += 40) ticks.push(v);
+// Base Stats (Sim, Nov 15 night: B 'clean bars', 'add more pop and depth'): six rows, a coloured label, the number in Unbounded with a soft
+// shadow in the stat's colour, and one raised bar (gradient, glow, darker lower edge) in a recessed track; physical stats left, special right
+// on wide screens. Replaces the lanes + scale + share bar (609 -> ~390px on a phone). A Mega shows the change from its base form.
+V2.pkStats = p => { const E = V2.esc, bf = SHT.baseForm(p), tot = p.st.reduce((a, b) => a + b, 0), btot = bf ? bf.st.reduce((a, b) => a + b, 0) : 0, top = Math.max(160, ...p.st);
   const dif = (a, b) => { const d = a - b; return d ? `<em class="${d < 0 ? 'dn' : 'up'}">${d > 0 ? '+' : '−'}${Math.abs(d)}</em>` : ''; };
-  const lanes = V2.STATS.map(([l, k], i) => `<div class="pk-lane" style="--c:var(--st-${k});--on:var(--on-st${k === 'def' ? '-def' : ''});--w:${(100 * p.st[i] / top).toFixed(2)}%;--f:${(p.st[i] / top).toFixed(4)}"><dt class="pk-sl">${l}</dt><dd><i class="pk-streak" aria-hidden="true"></i><span class="pk-v"><b class="u">${p.st[i]}</b>${bf ? dif(p.st[i], bf.st[i]) : ''}</span></dd></div>`).join('');
-  const share = V2.STATS.map(([l, k], i) => `<i style="--c:var(--st-${k});--on:var(--on-st${k === 'def' ? '-def' : ''});flex:${p.st[i]}"><span>${l}</span></i>`).join('');
+  const rows = V2.STATS.map(([l, k], i) => `<div class="pk-bsr" style="--c:var(--st-${k});--w:${(100 * p.st[i] / top).toFixed(2)}%"><dt>${l}</dt><dd><b class="u">${p.st[i]}</b>${bf ? dif(p.st[i], bf.st[i]) : ''}<span class="pk-bt" aria-hidden="true"><i></i></span></dd></div>`).join('');
   return `<section class="pk-stats" aria-labelledby="pk-bs"><div class="pk-sh"><h2 class="u" id="pk-bs">Base Stats</h2><p class="pk-tot"><small>Total</small> <b class="u">${tot}</b>${bf ? dif(tot, btot) : ''}</p></div>
-    <dl class="pk-lanes" style="--n:${ticks.length - 1}">${lanes}</dl><div class="pk-scale" aria-hidden="true">${ticks.map(v => `<span style="--v:${(100 * v / top).toFixed(2)}%">${v}</span>`).join('')}</div>
-    <div class="pk-share" aria-hidden="true">${share}</div>${bf ? `<p class="fine">Mega Evolved stats; the small numbers are the change from ${E(bf.d)}.</p>` : ''}</section>`; };
+    <dl class="pk-bs${bf ? ' pk-bsd' : ''}">${rows}</dl>${bf ? `<p class="fine">Mega Evolved stats; the small numbers are the change from ${E(bf.d)}.</p>` : ''}</section>`; };
 
 // each part's head (brief 4): a blue slanted square with its number, the question, today's section name small under it, a thick rule
 V2.pkHead = (no, q, sub, id) => `<header class="pk-h"><i class="pk-no u" aria-hidden="true">${no}</i><div><h2 class="u" id="${id}">${q}</h2>${sub ? `<p>${sub}</p>` : ''}</div></header>`;
