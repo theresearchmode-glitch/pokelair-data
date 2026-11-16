@@ -12,6 +12,25 @@ Every decision is in docs/rebuild/decisions.md (from the 1:03 PM entry on). Pict
 - Function sweep (10 sure findings), code review A1-A6, B1-B5, B9-B14, C2, C3, C6-C8, regression sweep, full layout sweep at 13 widths.
 - Commits: work in Auto mode again (the blocker was a model-name line in the commit message; Sim approved the settings file).
 
+## Overnight Nov 15-16 (full authority to 10 AM; each item checked, committed; pictures in docs/rebuild/pics/nov16/)
+- Base Stats B with depth, then less bubbly (square slanted bars, soft glow); Mega change numbers in their own column. Pictures statsB3-*.
+- How to build it smaller, same design (733 -> 657 px on phones); the repeated set line removed.
+- Say it once: "Data as of" once per page, in the footer; Meta's kick line no longer repeats the subtitle; Home's This Week joined the Meta strip
+  (one Meta strip: Top Rated / Hidden Gems / This Week); Battle's Win / Loss appear once four are picked.
+- One system: show-more is the blue link with ›; ONE fold marker (grey › on the right) for every text fold; blue links that open something end in ›;
+  one chip; one segmented control (Meta's segments now 44px, same look); one section-heading size (24 phones, 28 desktop); one tier colour
+  ("S tier" is always a gold tag, never blue text); Test Run's box-in-box fixed.
+- Pages: Meta on phones has one swipe row per tier (5.2 -> 4.1 screens); Home's underdog large on top (no empty strip), Home 5.07 -> 4.82 screens;
+  My Team "Saved ✓" reads as a status; Grandstand legend moved into a "?".
+- Touch: every tap target measured is 44px+ (Battle "Change on My Team", How We Calculate link, Game Plan link (your Q5: decided, moved)).
+- Helpers used (you asked): touch sweep, say-it-once sweep, button/fold inventory, arrow test-safety audit, tints/tier inventory, file counts.
+- Correction: some of my early checks used #report/#top/#ratings, which open Home in the new site; re-done on the real pages, results held.
+
+## Still open for you (each with a reason)
+- Suggestions: settings behind "Adjust ›" (the answer's words say "above" and come from code shared with today's live site; needs a wording change).
+- Colours: B-tier purple = "Tournament ready" purple; C-tier blue = "Top tier" blue (the helper's flag): a colour call for you.
+- Heading rule: section heads unified; the ~19 Unbounded sub-headings (Usually, Typical set, Rising...) left as they are (the WOW).
+
 ## Questions (each with pictures in the message)
 1. A core's share on phones (today hover-only). Pictures: core-pct-now.png, core-pct-A.png. Recommend A: '671 teams (4.9%)' on the line that already
    shows the count. Why: touch players never see a hover title; no new element.
