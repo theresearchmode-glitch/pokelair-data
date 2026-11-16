@@ -303,3 +303,8 @@ p,li,small{text-wrap:pretty}
 /* Nov 16 audit (Track Record, 1920): the receipt stretches to the right column's height and its barcode was pushed to the bottom, leaving an
    empty band in the middle; its lines now spread evenly down the paper, so it reads as a longer receipt instead */
 @media (min-width:1100px){.trk-rc{justify-content:space-between}.trk-bar{margin-top:0}}
+/* Focus on slanted controls (audit P0, Nov 16): the shared ring sits outside the box, and a slanted shape (clip-path) cuts away everything
+   outside it, so focus was invisible on buttons, tabs, chips and cards. On those controls (marked .np-fin by shell.js when focused) the ring
+   is drawn inside: a band in the page colour at the edge, then the blue ring, so it shows on black, blue, pale and night fills */
+:root{--fring:var(--plot)}:root[data-theme="night"]{--fring:var(--ink)} /* night: light ring, so it shows on the blue main button and stays apart from the blue 'selected' outline */
+:root[data-theme] .np-fin:focus-visible{outline:3px solid var(--fring);outline-offset:-6px;box-shadow:inset 0 0 0 3px var(--bg)} /* in the last layer (sugs), so it wins over "selected" outlines such as night chips: the build puts each sheet in its own cascade layer */

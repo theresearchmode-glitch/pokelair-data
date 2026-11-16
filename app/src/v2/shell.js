@@ -53,6 +53,10 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
       m.textContent = t.textContent.replace(/\s*Undo\s*$/, ''); bar.append(m, tw); V2._ubar = bar;
       const host = [...sh.children].find(c => !c.classList.contains('x') && c.tagName !== 'BUTTON') || sh; host.prepend(bar); } }
   const gone = () => { if (t.matches(':focus-within,:hover') || (V2._ubar && V2._ubar.isConnected && t.contains(t.querySelector('#toastUndo,[data-v2undo],[data-bxundo]')))) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };
+// Focus on slanted controls (audit P0, Nov 16): a control whose own shape (or a near parent's) is clipped gets .np-fin while focused, so its
+// ring is drawn inside the shape (base.css); checked on focus, so any slanted control, now or later, is covered without a list of classes
+document.addEventListener('focusin', e => { const t = e.target; if (!(t instanceof Element) || t.classList.contains('np-fin')) return;
+  for (let el = t, k = 0; el && k < 3; el = el.parentElement, k++) { const cp = getComputedStyle(el).clipPath; if (cp && cp !== 'none' && !/^inset\(50%/.test(cp)) { t.classList.add('np-fin'); return; } } }, true);
 // ---------- phones: keep an open sheet above the on-screen keyboard (Sim, Nov 11: the keyboard covered Save Team) ----------
 // iOS draws the keyboard over fixed elements; visualViewport says how much of the screen is left, so --kb lifts and shortens
 // the sheet (components.css), and the box being typed in is scrolled into view inside it.
