@@ -202,7 +202,8 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (d.btlfour != null) { V2.sheet(V2.btLogSheet(), {label: 'The Four You Brought'}); return; }
   if (d.btlres) { const {pick} = V2.btLogPick(V2.btPlan().P); if (pick.length !== 4) return; if (!Array.isArray(S.log)) S.log = [];
     S.log.push({t: Date.now(), r: d.btlres, b: pick.slice(), tm: members().map(m => m.p.n), o: S.opp.filter(Boolean)}); if (S.log.length > 400) S.log = S.log.slice(-400);
-    V2.btUi.logPick = []; V2.btUi.logTouched = false; persist(); V2.redraw(); toast(d.btlres === 'W' ? 'Win logged' : 'Loss logged'); return; }
+    V2.btUi.logPick = []; V2.btUi.logTouched = false; persist(); V2.redraw(); toast(d.btlres === 'W' ? 'Win logged' : 'Loss logged');
+    { const t = document.querySelector('.bt-log [data-btrecord]') || document.querySelector('.bt-log [data-btlfour]'); if (t) t.focus({preventScroll: true}); } /* stress test (Nov 16): focus stayed nowhere after the redraw */ return; }
   if (d.btreplay != null) { V2.sheet(V2.btReplaySheet(), {label: 'Log from a Showdown Replay'}); return; }
   if (d.btrepgo != null) { V2.btAddReplay((document.querySelector('[data-btrepin]') || {}).value); return; }
   if (d.btrecord != null) { V2.sheet(V2.btRecord(), {label: 'Your Games'}); return; }
