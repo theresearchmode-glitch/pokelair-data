@@ -140,3 +140,11 @@
 .dc2-fold summary i,.tc-fold summary i,.ra-about summary i{font:700 var(--t20)/1 var(--b);font-style:normal;color:var(--ink-3);rotate:0deg;transition:rotate .2s}.dc2-fold[open] summary i,.tc-fold[open] summary i,.ra-about[open] summary i{rotate:90deg}
 .tr-how summary::before,.tr-prep summary::before,.cx2-same summary::before,.cxf .cx2-why>summary::before,.cxf .cx2-same>summary::before{content:none}
 .tr-prep summary,.cx2-why>summary{display:flex;align-items:center;gap:var(--s3);list-style:none}.tr-prep summary::-webkit-details-marker,.cx2-why>summary::-webkit-details-marker,.tr-how summary::-webkit-details-marker{display:none}.tr-how summary{list-style:none}
+/* ONE chip (Nov 16, one system item 5; helper inventory): Meta's chips and the Damage Calc's 'In play' toggles take the site chip's look
+   (wash, 10px slant, black plate when on, the lit night edge); the calc's round pills broke the slanted-chip rule */
+.ra-chip{clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+:root[data-theme="night"] .ra-chip[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
+.dc2-tok button{border:0;border-radius:0;background:color-mix(in srgb,var(--ink) 9%,transparent);color:var(--ink);padding:0 6px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.dc2-tok button[aria-pressed="true"]{background:var(--plate);color:var(--on-plate)}
+:root[data-theme="night"] .dc2-tok button[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
+@media (max-width:439px){.dc2-tok{grid-template-columns:minmax(0,1.2fr) repeat(4,minmax(0,1fr))}}@media (max-width:399px){.dc2-tok{gap:2px}.dc2-tok button{padding:0 4px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}} /* narrow phones: "Hits both" keeps clear of the slant */

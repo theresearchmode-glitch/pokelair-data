@@ -391,7 +391,7 @@ t('SHELL-28', 'Darkrai on empty screens and tips, never beside ratings', run({te
   await ui.go('Ratings'); expect(!(await d.mascotShown()), 'Darkrai shown on Ratings'); await d.openPokemon('Incineroar'); expect(!(await d.mascotShown('#lairSheet')), 'Darkrai on a rating sheet'); }));
 
 t('SHELL-29', 'With no live data the pages still work from the built-in snapshot', run({team: TEAM, account: false}, async ({ui, d}) => {
-  await ui.go('Ratings'); expect((await d.topList()).length >= 16, 'Ratings empty without live data'); expect(/data as of [A-Z][a-z]{2} \d/.test(await ui.text()), 'no data date');
+  await ui.go('Ratings'); expect((await d.topList()).length >= 16, 'Ratings empty without live data'); expect(/data as of [A-Z][a-z]{2} \d/i.test(NEW ? await d.footerText() : await ui.text()), 'no data date'); /* v2 (say it once, Nov 16): the date lives in the footer */
   await ui.go('Usage'); expect(/No meta data loaded yet|Plotting/.test(await ui.text()), 'Usage has no loading/no-data line'); }));
 
 t('SHELL-30', 'A fast double tap on "Add to team" adds once', run({team: ['Garchomp', 'Incineroar', 'Whimsicott']}, async ({ui, d}) => {
@@ -584,7 +584,9 @@ t('SETS-05', 'Sets source switch Best data / Tournaments / Showdown, remembered 
 
 // =============================== TOP · Winning Teams ===============================
 t('TOP-01', 'Winning Teams source line with update date', run({team: TEAM}, async ({ui}) => {
-  await ui.go('Winning Teams'); expect(/Top 4 from online tournaments with 32\+ players, top 8 from official events, updated [A-Z][a-z]{2} \d/.test(await ui.text()), 'no source line'); }));
+  await ui.go('Winning Teams'); if (NEW) { /* say it once (Nov 16): the line keeps its source; its own date shows only when it differs from the footer's "Data as of" */
+    expect(/Top 4 from online tournaments with 32\+ players, top 8 from official events/.test(await ui.text()), 'no source line'); expect(/data as of [A-Z][a-z]{2} \d/i.test(await d.footerText()), 'no date in the footer'); return; }
+  expect(/Top 4 from online tournaments with 32\+ players, top 8 from official events, updated [A-Z][a-z]{2} \d/.test(await ui.text()), 'no source line'); }));
 t('TOP-02', 'Team search: suggestions with kind and count; Enter makes a chip; nonsense says so', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Winning Teams'); await d.teamSearch('Sitrus', false); const sug = (await d.teamSearchSuggestions()).join(' | ');
   expect(/Sitrus Berry.*Item.*\d+ teams/.test(sug), 'suggestion: ' + sug); await ui.pg.press('#tsIn', 'Enter'); await ui.pg.waitForTimeout(600);
