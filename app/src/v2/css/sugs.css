@@ -300,9 +300,6 @@ p,li,small{text-wrap:pretty}
 /* Nov 16 audit (night scan, This Week at 390): white words on the Snow tile fell to 2.6:1 where the bright snowfall and drift sit; on the small
    tiles the snow is the faint layer and the ice a little deeper (15% dark), so the words stay readable */
 .wk-tile.wx-snow{--wx-hi:var(--wx-lo);--wx-mid:var(--wx-lo);background-color:color-mix(in srgb,var(--wc) 85%,var(--tk-ink))}
-/* the day and night logos are both in the page; the theme attribute shows one (Sim, Nov 16: a theme change without a redraw left the day logo at night) */
-.np-lg-d{display:contents}.np-lg-n{display:none}
-:root[data-theme="night"] .np-lg-d{display:none}:root[data-theme="night"] .np-lg-n{display:contents}
 /* Nov 16 audit (Track Record, 1920): the receipt stretches to the right column's height and its barcode was pushed to the bottom, leaving an
    empty band in the middle; its lines now spread evenly down the paper, so it reads as a longer receipt instead */
 @media (min-width:1100px){.trk-rc{justify-content:space-between}.trk-bar{margin-top:0}}
