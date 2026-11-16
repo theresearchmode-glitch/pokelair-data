@@ -123,7 +123,7 @@ export default (ui, pg) => {
       if (v === 'cores') { await prevGo('Home', 400); const ok = await pg.evaluate(() => { const b = [...document.querySelectorAll('#main a.hm-all[data-hmcores], #main a[data-hmcores]')]; const e = b.find(x => x.getClientRects().length) || b[0]; if (!e) return false;
           const d = e.closest('details'); if (d && !d.open) d.querySelector(':scope > summary').click(); e.click(); return true; });
         if (!ok) { /* say it once (Nov 16, docs/rebuild/say-it-once.md): Home's More on Home fold (with its cores link) is gone; the way in is Build's own Cores tab */
-          await prevGo('Build', 500); const t = await pg.$('#main [data-bdjump="cores"]'); if (!t) NOT('a way to Build\'s cores (no Cores tab on Build)'); await t.click(); }
+          await ui.go('Build', 500); const t = await pg.$('#main [data-bdjump="cores"]'); if (!t) NOT('a way to Build\'s cores (no Cores tab on Build)'); await t.click(); }
         await pg.waitForTimeout(wait); return 'auto'; }
       if (v === 'coverage') return openAll(wait);
       if (v !== 'auto') return prevGo(name, wait);
