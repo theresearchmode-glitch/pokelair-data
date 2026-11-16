@@ -59,7 +59,10 @@ if (process.argv.includes('--v2')) {
   // --fonts=<folder>/ when the files live elsewhere (as --art). The build fails if a Google Fonts link ever comes back.
   const fontsArg = (process.argv.find(x => x.startsWith('--fonts=')) || '').slice(8) || 'fonts/', fontCss = rd('src/v2/fonts/fonts.css').split('FONTS/').join(fontsArg);
   let head = rd(P.head); if (!head.includes('<!--NP-FONTS')) throw new Error('src/v2/head.html lost its <!--NP-FONTS--> marker');
-  head = head.replace(/<!--NP-FONTS[^>]*-->/, `<style>\n${fontCss}</style>`); if (/fonts\.(googleapis|gstatic)\.com/.test(head)) throw new Error('a Google Fonts link is back in the v2 head');
+  /* speed audit Nov 16 (Meta desktop shifted 0.110 on every first load when the fonts arrived): the two Latin files every page uses are
+     preloaded, so the browser fetches them at once instead of after the page's scripts */
+  const preload = ['unbounded-latin.woff2', 'instrument-sans-latin.woff2'].map(f => `<link rel="preload" href="${fontsArg}${f}" as="font" type="font/woff2" crossorigin>`).join('');
+  head = head.replace(/<!--NP-FONTS[^>]*-->/, `${preload}<style>\n${fontCss}</style>`); if (/fonts\.(googleapis|gstatic)\.com/.test(head)) throw new Error('a Google Fonts link is back in the v2 head');
   const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${js}\n</script>\n</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
   // the font files beside the built page (fonts/ is the default place the page reads them from)
