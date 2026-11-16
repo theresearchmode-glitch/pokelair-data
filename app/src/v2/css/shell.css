@@ -82,7 +82,7 @@ html,body{overflow-x:clip}
    below 414 (the brief: under the 28px minimum, use the imp), logo-small 28-32px from 414 to 999, the full logo 44px from 1000 */
 @media (max-width:999.98px){.np-head .np-lg img{height:28px}}
 @media (min-width:480px) and (max-width:699.98px){.np-head .np-lg img{height:32px}}
-@media (max-width:413.98px){.np-head .np-lg img{height:32px}}
+@media (max-width:413.98px){.np-head .np-lg img{height:auto;width:min(160px,calc(100vw - 221px))}.np-gofwd[hidden]{display:none}.np-head .logo:has(+ .np-gofwd:not([hidden])) .np-lg img{width:min(160px,calc(100vw - 269px))}}@media (max-width:359.98px){.np-head .np-lg img{width:calc(100vw - 205px)}.np-head .logo:has(+ .np-gofwd:not([hidden])) .np-lg img{width:calc(100vw - 253px)}} /* Sim, Nov 16: the full logo on phones, not the imp alone (the imp is the browser-tab icon); sized to the room left beside the tools: 28px tall from 390, about 20px at 320; it uses Forward's spot while Forward is hidden and steps down when Forward shows */
 .np-head .logo{flex:none}
 /* Footer with the new logo (Nov 16): the Sly Devil logo is about 2.4x as wide as the old one, which pushed the links under the text at 1280
    (an empty left half). From 1100 the logo sits above the tagline in the left column (as on phones) and the links keep the right side;

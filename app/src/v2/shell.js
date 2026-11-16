@@ -208,7 +208,7 @@ try { let last = document.documentElement.dataset.theme; new MutationObserver(()
 V2.logo = (foot) => { const L = typeof NP_LOGO === 'object' ? NP_LOGO : null; if (!L) return '<b class="u">NastyPlot</b>';
   const u = V2._lgu || (V2._lgu = {full: 'data:image/svg+xml,' + encodeURIComponent(L.full), small: 'data:image/svg+xml,' + encodeURIComponent(L.small), mark: 'data:image/svg+xml,' + encodeURIComponent(L.markSmall)});
   return foot ? `<img class="np-lg" src="${u.small}" alt="NastyPlot" width="183" height="32" decoding="async">`
-    : `<picture class="np-lg"><source media="(max-width:413.98px)" srcset="${u.mark}"><source media="(max-width:999.98px)" srcset="${u.small}"><img src="${u.full}" alt="" width="241" height="44" decoding="async"></picture>`; };
+    : `<picture class="np-lg"><source media="(max-width:999.98px)" srcset="${u.small}"><img src="${u.full}" alt="" width="241" height="44" decoding="async"></picture>`; };
 // say it once (Nov 16): a page's own data date shows only when it differs from the footer's 'Data as of' (V2.otherDay('Nov 10') -> '' when the same)
 V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + d.replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); };
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
