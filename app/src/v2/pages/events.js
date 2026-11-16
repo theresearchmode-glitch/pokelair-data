@@ -39,10 +39,12 @@ V2.evCal = () => { const C = META.calendar, E = V2.esc;
 // the plate at the top right: counted this regulation, what counts, Next Events
 V2.evPlate = () => { const E = META.events, ev = E ? E.events : [], on = ev.filter(e => e.src !== 'official').length, off = ev.length - on;
   const cell = (v, l) => `<span class="ev-n"><b class="u">${homeNum(v)}</b><small>${l}</small></span>`;
-  return `<aside class="ev-plate" aria-label="Events counted and next events"><p class="ev-pk u">Counted this regulation</p>
-    ${E ? `<p class="ev-ns" role="group" aria-label="Events counted">${cell(ev.length, 'events')}${off ? cell(on, 'online') + cell(off, 'official') : ''}</p>
-    <details class="ev-what"><summary>What counts as an event?</summary><p>${V2.esc(V2.evSrc(E.source))}</p></details>` : ''}
-    <h2 class="u ev-ph">Next Events</h2>${V2.evCal()}</aside>`; };
+  return `<aside class="ev-plate" aria-label="Next events"><h2 class="u ev-ph">Next Events</h2>${V2.evCal()}</aside>`; };
+/* say it once (Nov 16, re-verify #2): the counts sit under the headline (they were said twice, and the left column stood half empty beside the tall plate) */
+V2.evCounts = () => { const E = META.events, ev = E ? E.events : [], on = ev.filter(e => e.src !== 'official').length, off = ev.length - on;
+  const cell = (v, l) => `<span class="ev-n"><b class="u">${homeNum(v)}</b><small>${l}</small></span>`;
+  return E ? `<div class="ev-counts"><p class="ev-pk u">Counted this regulation</p><p class="ev-ns" role="group" aria-label="Events counted">${cell(ev.length, 'events')}${off ? cell(on, 'online') + cell(off, 'official') : ''}</p>
+    <details class="ev-what"><summary>What counts as an event?</summary><p>${V2.esc(V2.evSrc(E.source))}</p></details></div>` : ''; };
 // an event opened: its placings, each with today's actions (Load Team, Sets, Set as Opponent, Compare, Copy for Showdown)
 V2.evActs = key => { const E = V2.esc, U = V2.evUi, sure = U.sure === key, open = !!U.sets[key];
   return sure ? `<div class="wt-acts wt-sure" role="group" aria-label="Load this team"><span class="wt-q">Replace your current team?</span><button type="button" class="np-btn" data-evload="${E(key)}"><span>Replace</span></button><button type="button" class="np-btn2" data-evx><span>Cancel</span></button></div>`
@@ -62,7 +64,7 @@ V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U 
   const tabs = `${V2.tourTabs('events')}`;
   const ev = D ? D.events : [], on = ev.filter(e => e.src !== 'official').length;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Events</span></p><h1 class="u"><span>Every result,</span> <span class="pl">event by event.</span></h1>
-    <p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${D ? `<p class="wt-facts"><b>${homeNum(ev.length)}</b> events · <b>${homeNum(on)}</b> online · <b>${homeNum(ev.length - on)}</b> official</p>` : ''}</section>`;
+    <p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${D ? V2.evCounts() : ''}</section>`;
   const top = `<div class="gs-top wt-top ev-top">${head}<div class="ra-spotw">${V2.evPlate()}</div></div>`;
   if (!D) return `<div class="ra gsp ev">${top}${tabs}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
   const opened = U.open && ev.find(e => e.id === U.open);
